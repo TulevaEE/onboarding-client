@@ -1,7 +1,10 @@
 import React, { PropTypes as Types } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import { Message, withTranslations } from 'retranslate';
 
 import logo from '../logo.svg';
+import { changePhoneNumber } from './actions';
 
 export const LoginPage = ({
   translations: { translate },
@@ -66,4 +69,11 @@ LoginPage.propTypes = {
   phoneNumber: Types.string,
 };
 
-export default withTranslations(LoginPage);
+const mapStateToProps = state => state.login;
+const mapDispatchToProps = dispatch => bindActionCreators({
+  onPhoneNumberChange: changePhoneNumber,
+}, dispatch);
+
+const withRedux = connect(mapStateToProps, mapDispatchToProps);
+
+export default withRedux(withTranslations(LoginPage));
