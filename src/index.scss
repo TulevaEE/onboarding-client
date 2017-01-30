@@ -1,0 +1,62 @@
+/**
+ * Here we lay out base styles, like typography and bootstrap customization.
+ */
+
+@import url('https://fonts.googleapis.com/css?family=Roboto:400,500,700');
+
+/**
+ * Fonts customization
+ */
+
+$font-family-sans-serif: Roboto, "Segoe UI", "Helvetica Neue", Arial, sans-serif !default;
+$font-family-serif: Georgia, "Times New Roman", Times, serif !default;
+$font-family-monospace: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !default;
+$font-family-base: $font-family-sans-serif !default;
+
+/**
+ * Colors
+ */
+
+$text-primary: #303030;
+
+$blue: #0078ff;
+$green: #51c26c;
+
+/**
+ * Brand definitions
+ */
+
+$brand-primary: $blue !default;
+$brand-success: $green !default;
+$body-color: $text-primary !default;
+
+@import "~bootstrap/scss/bootstrap.scss";
+
+/**
+ * Element overrides
+ */
+
+h2, .h2 {
+  line-height: 1.08;
+  font-size: 24px;
+  font-weight: 500;
+  color: $text-primary;
+}
+
+h3, .h3 {
+  line-height: 1.18;
+  font-size: 24px;
+  font-weight: bold;
+  color: $text-primary;
+}
+
+p, .p {
+  line-height: 1.4;
+  font-size: 20px;
+  font-weight: normal;
+  color: $text-primary;
+}
+
+.btn {
+  cursor: pointer;
+}
