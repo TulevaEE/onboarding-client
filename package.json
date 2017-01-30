@@ -111,5 +111,5 @@
       "import/no-named-as-default": 0
     }
   },
-  "proxy": "localhost:9000"
+  "proxy": "http://localhost:9000"
 }

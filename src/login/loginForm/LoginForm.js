@@ -1,6 +1,13 @@
 import React, { PropTypes as Types } from 'react';
 import { Message, withTranslations } from 'retranslate';
 
+function runWithDefaultPrevention(fn) {
+  return (event) => {
+    event.preventDefault();
+    fn();
+  };
+}
+
 export const LoginForm = ({
   translations: { translate },
   phoneNumber,
@@ -9,7 +16,7 @@ export const LoginForm = ({
 }) => (
   <div className="row mt-4 pt-4 justify-content-center">
     <div className="col-sm-6 col-md-4 col-lg-3">
-      <form onSubmit={event => event.preventDefault() && onPhoneNumberSubmit(phoneNumber)}>
+      <form onSubmit={runWithDefaultPrevention(() => onPhoneNumberSubmit(phoneNumber))}>
         <div className="form-group">
           <label htmlFor="mobile-id-number" className="lead">
             <Message>login.mobile.id</Message>

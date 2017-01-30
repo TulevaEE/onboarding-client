@@ -5,7 +5,7 @@ import { Message } from 'retranslate';
 
 import logo from '../logo.svg';
 import LoginForm from './loginForm';
-import { changePhoneNumber } from './actions';
+import { changePhoneNumber, authenticateWithPhoneNumber } from './actions';
 
 export const LoginPage = ({
   onPhoneNumberSubmit,
@@ -62,6 +62,7 @@ LoginPage.propTypes = {
 const mapStateToProps = state => state.login;
 const mapDispatchToProps = dispatch => bindActionCreators({
   onPhoneNumberChange: changePhoneNumber,
+  onPhoneNumberSubmit: authenticateWithPhoneNumber,
 }, dispatch);
 
 const withRedux = connect(mapStateToProps, mapDispatchToProps);
