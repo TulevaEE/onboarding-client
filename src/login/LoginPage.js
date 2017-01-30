@@ -3,7 +3,7 @@ import { Message, withTranslations } from 'retranslate';
 
 import logo from '../logo.svg';
 
-const LoginPage = ({
+export const LoginPage = ({
   translations: { translate },
   onPhoneNumberSubmit,
   onPhoneNumberChange,
@@ -19,7 +19,7 @@ const LoginPage = ({
     </div>
     <div className="row mt-4 pt-4 justify-content-center">
       <div className="col-sm-6 col-md-4 col-lg-3">
-        <form onSubmit={event => event.preventDefault() && onPhoneNumberSubmit()}>
+        <form onSubmit={event => event.preventDefault() && onPhoneNumberSubmit(phoneNumber)}>
           <div className="form-group">
             <label htmlFor="mobile-id-number" className="lead">
               <Message>login.mobile.id</Message>
@@ -34,9 +34,13 @@ const LoginPage = ({
             />
           </div>
           <div className="form-group">
-            <button className="btn btn-primary btn-block btn-lg">
-              <Message>login.enter</Message>
-            </button>
+            <input
+              id="mobile-id-submit"
+              type="submit"
+              className="btn btn-primary btn-block btn-lg"
+              disabled={!phoneNumber}
+              value={translate('login.enter')}
+            />
           </div>
         </form>
       </div>
