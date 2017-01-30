@@ -2,6 +2,7 @@
   "login.title": "Tere! Sisene oma Tuleva kontole.",
   "login.subtitle": "Sinu isikukoodi alusel teeb Tuleva päringu sinu andmetesse pensioniregistris.",
   "login.mobile.id": "Mobiil-ID",
+  "login.phone.number": "Telefoninumber",
   "login.id.card": "ID-kaart",
   "login.enter": "Sisenen"
 }

@@ -2,7 +2,7 @@
  * Here we lay out base styles, like typography and bootstrap customization.
  */
 
-@import url('https://fonts.googleapis.com/css?family=Roboto:400,500,700');
+@import "./fonts/index";
 
 /**
  * Fonts customization
@@ -59,4 +59,8 @@ p, .p {
 
 .btn {
   cursor: pointer;
+}
+
+.brand-logo {
+  max-width: 150px;
 }

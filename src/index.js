@@ -7,7 +7,7 @@ import { Router, Route, browserHistory } from 'react-router';
 import { syncHistoryWithStore, routerReducer } from 'react-router-redux';
 
 import translations from './translations';
-import App from './App';
+import LoginPage from './login';
 import './index.scss';
 
 const store = createStore(combineReducers({ routing: routerReducer }));
@@ -17,7 +17,7 @@ render((
   <TranslationProvider messages={translations} language="et" fallbackLanguage="et">
     <ReduxProvider store={store}>
       <Router history={history}>
-        <Route path="/" component={App} />
+        <Route path="/login" component={LoginPage} />
       </Router>
     </ReduxProvider>
   </TranslationProvider>
