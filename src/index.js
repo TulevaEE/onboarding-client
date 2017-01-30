@@ -7,11 +7,16 @@ import { Router, Route, browserHistory } from 'react-router';
 import { syncHistoryWithStore, routerReducer } from 'react-router-redux';
 
 import translations from './translations';
-import LoginPage from './login';
+import LoginPage, { reducer as loginReducer } from './login';
 import './index.scss';
 
+const rootReducer = combineReducers({
+  routing: routerReducer,
+  login: loginReducer,
+});
+
 const store = createStore(
-  combineReducers({ routing: routerReducer }),
+  rootReducer,
   process.env.NODE_ENV === 'development' &&
   window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(), // eslint-disable-line
 );
