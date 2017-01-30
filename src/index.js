@@ -10,7 +10,12 @@ import translations from './translations';
 import LoginPage from './login';
 import './index.scss';
 
-const store = createStore(combineReducers({ routing: routerReducer }));
+const store = createStore(
+  combineReducers({ routing: routerReducer }),
+  process.env.NODE_ENV === 'development' &&
+  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(), // eslint-disable-line
+);
+
 const history = syncHistoryWithStore(browserHistory, store);
 
 render((
