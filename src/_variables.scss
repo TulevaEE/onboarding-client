@@ -1,0 +1,28 @@
+
+/**
+ * Fonts customization
+ */
+
+$font-family-sans-serif: Roboto, "Segoe UI", "Helvetica Neue", Arial, sans-serif !default;
+$font-family-serif: Georgia, "Times New Roman", Times, serif !default;
+$font-family-monospace: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !default;
+$font-family-base: $font-family-sans-serif !default;
+
+/**
+ * Colors
+ */
+
+$text-primary: #303030;
+$text-secondary: rgba(48, 48, 48, 0.64);
+$text-hint: rgba(48, 48, 48, 0.32);
+
+$blue: #0078ff;
+$green: #51c26c;
+
+/**
+ * Brand definitions
+ */
+
+$brand-primary: $blue !default;
+$brand-success: $green !default;
+$body-color: $text-primary !default;

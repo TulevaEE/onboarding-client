@@ -3,58 +3,53 @@
  */
 
 @import "./fonts/index";
-
-/**
- * Fonts customization
- */
-
-$font-family-sans-serif: Roboto, "Segoe UI", "Helvetica Neue", Arial, sans-serif !default;
-$font-family-serif: Georgia, "Times New Roman", Times, serif !default;
-$font-family-monospace: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !default;
-$font-family-base: $font-family-sans-serif !default;
-
-/**
- * Colors
- */
-
-$text-primary: #303030;
-
-$blue: #0078ff;
-$green: #51c26c;
-
-/**
- * Brand definitions
- */
-
-$brand-primary: $blue !default;
-$brand-success: $green !default;
-$body-color: $text-primary !default;
-
+@import "variables";
 @import "~bootstrap/scss/bootstrap.scss";
 
 /**
  * Element overrides
  */
 
+body {
+  font-size: 18px;
+}
+
+h1, .h1 {
+  font-size: 2em;
+  font-weight: 400;
+  color: $text-primary;
+}
+
 h2, .h2 {
-  line-height: 1.08;
-  font-size: 24px;
-  font-weight: 500;
+  font-size: 1.5em;
+  font-weight: 400;
   color: $text-primary;
 }
 
 h3, .h3 {
-  line-height: 1.18;
-  font-size: 24px;
-  font-weight: bold;
+  font-size: 1.25em;
+  font-weight: 400;
   color: $text-primary;
 }
 
 p, .p {
-  line-height: 1.4;
-  font-size: 20px;
+  line-height: 1.44;
+  font-size: 1em;
   font-weight: normal;
   color: $text-primary;
+}
+
+small {
+  font-size: 0.8em;
+  color: $text-secondary;
+}
+
+.form-control::placeholder {
+  color: $text-hint;
+}
+
+.text-muted {
+  color: $text-secondary;
 }
 
 .btn {

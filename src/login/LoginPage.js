@@ -1,53 +1,37 @@
 import React, { PropTypes as Types } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Message, withTranslations } from 'retranslate';
+import { Message } from 'retranslate';
 
 import logo from '../logo.svg';
+import LoginForm from './loginForm';
 import { changePhoneNumber } from './actions';
 
 export const LoginPage = ({
-  translations: { translate },
   onPhoneNumberSubmit,
   onPhoneNumberChange,
   phoneNumber,
+  controlCode,
+  loadingControlCode,
+  successful,
+  error,
 }) => (
   <div className="container mt-4 pt-4">
     <div className="row">
       <div className="col-12 text-center">
         <img src={logo} alt="Tuleva" className="img-responsive brand-logo mb-4 pb-4 mt-4" />
-        <h2><Message>login.title</Message></h2>
-        <p className="text-muted mt-2"><Message>login.subtitle</Message></p>
+        <h3><Message>login.title</Message></h3>
+        <small className="mt-2"><Message>login.subtitle</Message></small>
       </div>
     </div>
-    <div className="row mt-4 pt-4 justify-content-center">
-      <div className="col-sm-6 col-md-4 col-lg-3">
-        <form onSubmit={event => event.preventDefault() && onPhoneNumberSubmit(phoneNumber)}>
-          <div className="form-group">
-            <label htmlFor="mobile-id-number" className="lead">
-              <Message>login.mobile.id</Message>
-            </label>
-            <input
-              id="mobile-id-number"
-              type="tel"
-              value={phoneNumber}
-              onChange={event => onPhoneNumberChange(event.target.value)}
-              className="form-control form-control-lg"
-              placeholder={translate('login.phone.number')}
-            />
-          </div>
-          <div className="form-group">
-            <input
-              id="mobile-id-submit"
-              type="submit"
-              className="btn btn-primary btn-block btn-lg"
-              disabled={!phoneNumber}
-              value={translate('login.enter')}
-            />
-          </div>
-        </form>
-      </div>
-    </div>
+    {
+      !error && !successful && !loadingControlCode && !controlCode ?
+        <LoginForm
+          onPhoneNumberSubmit={onPhoneNumberSubmit}
+          onPhoneNumberChange={onPhoneNumberChange}
+          phoneNumber={phoneNumber}
+        /> : ''
+    }
   </div>
 );
 
@@ -58,15 +42,21 @@ LoginPage.defaultProps = {
   onPhoneNumberSubmit: noop,
 
   phoneNumber: '',
+  controlCode: '',
+  loadingControlCode: false,
+  successful: false,
+  error: null,
 };
 
 LoginPage.propTypes = {
-  translations: Types.shape({ translate: Types.func.isRequired }).isRequired,
-
   onPhoneNumberChange: Types.func,
   onPhoneNumberSubmit: Types.func,
 
   phoneNumber: Types.string,
+  controlCode: Types.string,
+  loadingControlCode: Types.bool,
+  successful: Types.bool,
+  error: Types.shape({}),
 };
 
 const mapStateToProps = state => state.login;
@@ -76,4 +66,4 @@ const mapDispatchToProps = dispatch => bindActionCreators({
 
 const withRedux = connect(mapStateToProps, mapDispatchToProps);
 
-export default withRedux(withTranslations(LoginPage));
+export default withRedux(LoginPage);
