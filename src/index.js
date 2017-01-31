@@ -11,7 +11,7 @@ import translations from './translations';
 import './index.scss';
 
 import requireAuthentication from './requireAuthentication';
-import LoginPage, { reducer as loginReducer } from './login';
+import LoginPage, { reducer as loginReducer, actions as loginActions } from './login';
 import App from './app';
 import Steps, { SelectExchange } from './steps';
 
@@ -29,12 +29,19 @@ const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk, r
 
 const history = syncHistoryWithStore(browserHistory, store);
 
+// TODO: figure out a place where to put this
+function getUserIfNecessary() {
+  if (store.getState().login.token && !store.getState().login.user) {
+    store.dispatch(loginActions.getUser());
+  }
+}
+
 render((
   <TranslationProvider messages={translations} language="et" fallbackLanguage="et">
     <ReduxProvider store={store}>
       <Router history={history}>
         <Route path="/login" component={LoginPage} />
-        <Route path="/" component={requireAuthentication(App)}>
+        <Route path="/" component={requireAuthentication(App)} onEnter={getUserIfNecessary}>
           <Route path="/steps" component={Steps}>
             <Route path="select-exchange" component={SelectExchange} />
           </Route>
