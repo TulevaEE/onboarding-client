@@ -10,6 +10,10 @@ import {
   MOBILE_AUTHENTICATION_ERROR,
 
   MOBILE_AUTHENTICATION_CANCEL,
+
+  GET_USER_START,
+  GET_USER_SUCCESS,
+  GET_USER_ERROR,
 } from './constants';
 
 describe('Login reducer', () => {
@@ -61,5 +65,27 @@ describe('Login reducer', () => {
     const newState = loginReducer({ loadingControlCode: true, controlCode: '1337' }, action);
     expect(newState.loadingControlCode).toBe(false);
     expect(newState.controlCode).toBe(null);
+  });
+
+  it('starts loading when user when starting to get the user', () => {
+    const newState = loginReducer(undefined, { type: GET_USER_START });
+    expect(newState.user).toBe(null);
+    expect(newState.loadingUser).toBe(true);
+    expect(newState.userError).toBe(null);
+  });
+
+  it('stops loading and saves the user once user is received', () => {
+    const user = { hello: 'world' };
+    const newState = loginReducer({ loadingUser: true }, { type: GET_USER_SUCCESS, user });
+    expect(newState.user).toBe(user);
+    expect(newState.loadingUser).toBe(false);
+    expect(newState.userError).toBe(null);
+  });
+
+  it('stops loading and saves the error if getting hte user fails', () => {
+    const error = new Error('oh no!');
+    const newState = loginReducer({ loadingUser: true }, { type: GET_USER_ERROR, error });
+    expect(newState.loadingUser).toBe(false);
+    expect(newState.userError).toBe(error);
   });
 });
