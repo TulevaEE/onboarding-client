@@ -9,6 +9,8 @@ import { syncHistoryWithStore, routerReducer, routerMiddleware } from 'react-rou
 
 import translations from './translations';
 import './index.scss';
+
+import requireAuthentication from './requireAuthentication';
 import LoginPage, { reducer as loginReducer } from './login';
 import App from './app';
 import Steps, { SelectExchange } from './steps';
@@ -32,7 +34,7 @@ render((
     <ReduxProvider store={store}>
       <Router history={history}>
         <Route path="/login" component={LoginPage} />
-        <Route path="/" component={App}>
+        <Route path="/" component={requireAuthentication(App)}>
           <Route path="/steps" component={Steps}>
             <Route path="select-exchange" component={SelectExchange} />
           </Route>
