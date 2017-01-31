@@ -13,5 +13,11 @@ export function authenticateWithPhoneNumber(phoneNumber) {
 
 export function getAuthenticationCompletion() {
   return get(getEndpoint('/authenticate/is-complete'))
-    .then(({ complete }) => complete);
+    .then(({ complete }) => complete)
+    .catch((error) => {
+      if (error.message) {
+        throw error;
+      }
+      return false;
+    });
 }

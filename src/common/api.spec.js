@@ -38,4 +38,20 @@ describe('api', () => {
               expect(mockHttp.get).toHaveBeenCalledWith('/authenticate/is-complete');
             });
         })));
+
+  it('throws in authentication check if response contains an error message', () => {
+    const error = { message: 'oh no!' };
+    mockHttp.get = jest.fn(() => Promise.reject(error));
+    return api
+      .getAuthenticationCompletion()
+      .then(() => expect(0).toBe(1)) // fail, should not go to then.
+      .catch(givenError => expect(givenError).toEqual(error));
+  });
+
+  it('gives false in authentication check if response fails but does not contain an error', () => {
+    mockHttp.get = jest.fn(() => Promise.reject({}));
+    return api
+      .getAuthenticationCompletion()
+      .then(completed => expect(completed).toBe(false));
+  });
 });
