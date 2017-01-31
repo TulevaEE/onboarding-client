@@ -15,7 +15,7 @@ const defaultState = {
   phoneNumber: '',
   controlCode: null,
   loadingControlCode: false,
-  successful: false,
+  token: null,
   error: null,
 };
 
@@ -32,7 +32,7 @@ export default function loginReducer(state = defaultState, action) {
       return { ...state, loadingControlCode: false, error: action.error };
 
     case MOBILE_AUTHENTICATION_SUCCESS:
-      return { ...state, successful: true };
+      return { ...state, token: action.token };
     case MOBILE_AUTHENTICATION_ERROR:
       return { ...state, error: action.error };
 

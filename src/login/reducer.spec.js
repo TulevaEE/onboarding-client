@@ -42,16 +42,17 @@ describe('Login reducer', () => {
     expect(newState.error).toBe(error);
   });
 
-  it('sets successful when mobile authentication succeeds', () => {
-    const action = { type: MOBILE_AUTHENTICATION_SUCCESS };
-    expect(loginReducer(undefined, action).successful).toBe(true);
+  it('sets the token when mobile authentication succeeds', () => {
+    const token = 'token';
+    const action = { type: MOBILE_AUTHENTICATION_SUCCESS, token };
+    expect(loginReducer(undefined, action).token).toBe(token);
   });
 
   it('sets the error when mobile authentication fails', () => {
     const error = new Error('oh no');
     const action = { type: MOBILE_AUTHENTICATION_ERROR, error };
     const newState = loginReducer(undefined, action);
-    expect(newState.successful).toBe(false);
+    expect(newState.token).toBe(null);
     expect(newState.error).toBe(error);
   });
 
