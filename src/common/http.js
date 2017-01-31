@@ -11,10 +11,15 @@ function transformResponse(response) {
   throw response;
 }
 
-export function get(url, params = {}, headers = {}) {
-  const urlParameters = Object.keys(params)
+function urlEncodeParameters(params) {
+  return Object
+    .keys(params)
     .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
     .join('&');
+}
+
+export function get(url, params = {}, headers = {}) {
+  const urlParameters = urlEncodeParameters(params);
   return fetch(`${url}${urlParameters ? `?${urlParameters}` : ''}`, {
     method: 'GET',
     headers: {
@@ -22,6 +27,7 @@ export function get(url, params = {}, headers = {}) {
       ...headers,
     },
     mode: 'cors',
+    credentials: 'include',
     cache: 'default',
   }).then(transformResponse);
 }
@@ -34,6 +40,22 @@ export function post(url, params = {}, headers = {}) {
       ...headers,
     },
     body: JSON.stringify(params),
+    credentials: 'include',
+    mode: 'cors',
+    cache: 'default',
+  }).then(transformResponse);
+}
+
+export function postForm(url, params = {}, headers = {}) {
+  const body = urlEncodeParameters(params);
+  return fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      ...headers,
+    },
+    body,
+    credentials: 'include',
     mode: 'cors',
     cache: 'default',
   }).then(transformResponse);

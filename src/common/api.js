@@ -1,4 +1,4 @@
-import { post } from './http';
+import { post, postForm } from './http';
 
 const API_URL = '';
 
@@ -12,13 +12,13 @@ export function authenticateWithPhoneNumber(phoneNumber) {
 }
 
 export function getToken() {
-  return post(getEndpoint('/oauth/token'), {
+  return postForm(getEndpoint('/oauth/token'), {
     grant_type: 'mobile_id',
-    client_id: 'onboarding_client',
-  })
+    client_id: 'onboarding-client',
+  }, { Authorization: 'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ=' })
     .then(({ access_token }) => access_token) // eslint-disable-line
     .catch((error) => {
-      if (error.message !== 'AUTHENTICATION_NOT_COMPLETE') {
+      if (error.error_description !== 'AUTHENTICATION_NOT_COMPLETE') {
         throw error;
       }
       return null;

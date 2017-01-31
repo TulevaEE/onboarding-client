@@ -26,23 +26,23 @@ describe('api', () => {
   });
 
   it('can get a token', () => {
-    mockHttp.post = jest.fn(() => Promise.resolve({ access_token: 'token' }));
-    expect(mockHttp.post).not.toHaveBeenCalled();
+    mockHttp.postForm = jest.fn(() => Promise.resolve({ access_token: 'token' }));
+    expect(mockHttp.postForm).not.toHaveBeenCalled();
     return api
       .getToken()
       .then((token) => {
         expect(token).toBe('token');
-        expect(mockHttp.post).toHaveBeenCalledTimes(1);
-        expect(mockHttp.post).toHaveBeenCalledWith('/oauth/token', {
-          client_id: 'onboarding_client',
+        expect(mockHttp.postForm).toHaveBeenCalledTimes(1);
+        expect(mockHttp.postForm).toHaveBeenCalledWith('/oauth/token', {
+          client_id: 'onboarding-client',
           grant_type: 'mobile_id',
-        });
+        }, { Authorization: 'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ=' });
       });
   });
 
   it('throws in getting token if authentication is finished but errored', () => {
-    const error = { message: 'oh no!' };
-    mockHttp.post = jest.fn(() => Promise.reject(error));
+    const error = { error_description: 'oh no!' };
+    mockHttp.postForm = jest.fn(() => Promise.reject(error));
     return api
       .getToken()
       .then(() => expect(0).toBe(1)) // fail, should not go to then.
@@ -50,7 +50,7 @@ describe('api', () => {
   });
 
   it('gives no token in authentication check if error is auth not completed', () => {
-    mockHttp.post = jest.fn(() => Promise.reject({ message: 'AUTHENTICATION_NOT_COMPLETE' }));
+    mockHttp.postForm = jest.fn(() => Promise.reject({ error_description: 'AUTHENTICATION_NOT_COMPLETE' }));
     return api
       .getToken()
       .then(token => expect(token).toBeFalsy());

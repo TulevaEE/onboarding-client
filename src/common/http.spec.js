@@ -1,4 +1,4 @@
-import { get, post } from './http';
+import { get, post, postForm } from './http';
 
 describe('http', () => {
   let originalFetch;
@@ -85,6 +85,21 @@ describe('http', () => {
         const options = fetch.mock.calls[0][1];
         expect(options.method).toEqual('POST');
         expect(options.body).toEqual('{"thisIsTheBody":true}');
+      });
+  });
+
+  it('can post some data form encoded', () => {
+    const value = { thisIsTheReturnValue: true };
+    fetch.mockReturnValueOnce(fakeSuccessfulResponseWithValue(value));
+    return postForm('https://example.com', { thisIsTheBody: true, yes: 'no' })
+      .then((givenValue) => {
+        expect(givenValue).toEqual(value);
+        const url = fetch.mock.calls[0][0];
+        expect(url).toEqual('https://example.com');
+        const options = fetch.mock.calls[0][1];
+        expect(options.method).toEqual('POST');
+        expect(options.headers['Content-Type']).toBe('application/x-www-form-urlencoded');
+        expect(options.body).toEqual('thisIsTheBody=true&yes=no');
       });
   });
 });
