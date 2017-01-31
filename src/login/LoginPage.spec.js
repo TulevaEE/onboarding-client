@@ -30,10 +30,19 @@ describe('Login page', () => {
   });
 
   it('renders an authentication loader instead if loading or has control code', () => {
-    expect(component.contains(<AuthenticationLoader controlCode="" />)).toBe(false);
+    const onCancelMobileAuthentication = jest.fn();
+    component.setProps({ onCancelMobileAuthentication });
+
+    expect(component.contains(
+      <AuthenticationLoader controlCode="" onCancel={onCancelMobileAuthentication} />,
+    )).toBe(false);
     component.setProps({ loadingControlCode: true });
-    expect(component.contains(<AuthenticationLoader controlCode="" />)).toBe(true);
+    expect(component.contains(
+      <AuthenticationLoader controlCode="" onCancel={onCancelMobileAuthentication} />,
+    )).toBe(true);
     component.setProps({ controlCode: '1337' });
-    expect(component.contains(<AuthenticationLoader controlCode="1337" />)).toBe(true);
+    expect(component.contains(
+      <AuthenticationLoader controlCode="1337" onCancel={onCancelMobileAuthentication} />,
+    )).toBe(true);
   });
 });

@@ -6,11 +6,12 @@ import { Message } from 'retranslate';
 import logo from '../logo.svg';
 import LoginForm from './loginForm';
 import AuthenticationLoader from './authenticationLoader';
-import { changePhoneNumber, authenticateWithPhoneNumber } from './actions';
+import { changePhoneNumber, authenticateWithPhoneNumber, cancelMobileAuthentication } from './actions';
 
 export const LoginPage = ({
   onPhoneNumberSubmit,
   onPhoneNumberChange,
+  onCancelMobileAuthentication,
   phoneNumber,
   controlCode,
   loadingControlCode,
@@ -34,7 +35,11 @@ export const LoginPage = ({
         /> : ''
     }
     {
-      loadingControlCode || controlCode ? <AuthenticationLoader controlCode={controlCode} /> : ''
+      loadingControlCode || controlCode ?
+        <AuthenticationLoader
+          onCancel={onCancelMobileAuthentication}
+          controlCode={controlCode}
+        /> : ''
     }
   </div>
 );
@@ -44,6 +49,7 @@ const noop = () => null;
 LoginPage.defaultProps = {
   onPhoneNumberChange: noop,
   onPhoneNumberSubmit: noop,
+  onCancelMobileAuthentication: noop,
 
   phoneNumber: '',
   controlCode: '',
@@ -55,6 +61,7 @@ LoginPage.defaultProps = {
 LoginPage.propTypes = {
   onPhoneNumberChange: Types.func,
   onPhoneNumberSubmit: Types.func,
+  onCancelMobileAuthentication: Types.func,
 
   phoneNumber: Types.string,
   controlCode: Types.string,
@@ -67,6 +74,7 @@ const mapStateToProps = state => state.login;
 const mapDispatchToProps = dispatch => bindActionCreators({
   onPhoneNumberChange: changePhoneNumber,
   onPhoneNumberSubmit: authenticateWithPhoneNumber,
+  onCancelMobileAuthentication: cancelMobileAuthentication,
 }, dispatch);
 
 const withRedux = connect(mapStateToProps, mapDispatchToProps);
