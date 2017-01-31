@@ -14,6 +14,8 @@ import {
   GET_USER_START,
   GET_USER_SUCCESS,
   GET_USER_ERROR,
+
+  LOG_OUT,
 } from './constants';
 
 import { api } from '../common';
@@ -75,4 +77,8 @@ export function getUser() {
       .then(user => dispatch({ type: GET_USER_SUCCESS, user }))
       .catch(error => dispatch({ type: GET_USER_ERROR, error }));
   };
+}
+
+export function logOut() {
+  return { type: LOG_OUT };
 }

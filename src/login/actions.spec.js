@@ -14,6 +14,8 @@ import {
   GET_USER_START,
   GET_USER_SUCCESS,
   GET_USER_ERROR,
+
+  LOG_OUT,
 } from './constants';
 
 jest.useFakeTimers();
@@ -169,5 +171,9 @@ describe('Login actions', () => {
     expect(dispatch).not.toHaveBeenCalled();
     return getUser()
       .then(() => expect(dispatch).toHaveBeenCalledWith({ type: GET_USER_ERROR, error }));
+  });
+
+  it('can log you out', () => {
+    expect(actions.logOut()).toEqual({ type: LOG_OUT });
   });
 });
