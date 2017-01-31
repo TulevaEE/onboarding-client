@@ -1,3 +1,5 @@
+import { push } from 'react-router-redux';
+
 import {
   CHANGE_PHONE_NUMBER,
   MOBILE_AUTHENTICATION_START,
@@ -73,7 +75,7 @@ describe('Login actions', () => {
       });
   });
 
-  it('starts polling until succeeds when authenticating with a phone number', () => {
+  it('starts polling until succeeds when authenticating with a phone number and redirects', () => {
     const token = 'token';
     mockApi.authenticateWithPhoneNumber = jest.fn(() => Promise.resolve('1337'));
     mockApi.getToken = jest.fn(() => Promise.resolve(null));
@@ -87,6 +89,7 @@ describe('Login actions', () => {
         expect(mockApi.getToken).toHaveBeenCalled();
       }).then(() => {
         expect(dispatch).toHaveBeenCalledWith({ type: MOBILE_AUTHENTICATION_SUCCESS, token });
+        expect(dispatch).toHaveBeenCalledWith(push('/step/select-exchange'));
       });
   });
 

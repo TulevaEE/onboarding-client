@@ -1,3 +1,5 @@
+import { push } from 'react-router-redux';
+
 import {
   CHANGE_PHONE_NUMBER,
   MOBILE_AUTHENTICATION_START,
@@ -29,6 +31,7 @@ function getToken() {
         .then((token) => {
           if (token) { // authentication complete
             dispatch({ type: MOBILE_AUTHENTICATION_SUCCESS, token });
+            dispatch(push('/step/select-exchange'));
           } else { // authentication not yet completed, poll again.
             dispatch(getToken());
           }

@@ -5,7 +5,7 @@ import thunk from 'redux-thunk';
 import { Provider as TranslationProvider } from 'retranslate';
 import { Provider as ReduxProvider } from 'react-redux';
 import { Router, Route, browserHistory } from 'react-router';
-import { syncHistoryWithStore, routerReducer } from 'react-router-redux';
+import { syncHistoryWithStore, routerReducer, routerMiddleware } from 'react-router-redux';
 
 import translations from './translations';
 import LoginPage, { reducer as loginReducer } from './login';
@@ -19,7 +19,9 @@ const rootReducer = combineReducers({
 const composeEnhancers = (process.env.NODE_ENV === 'development' &&
   window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose; // eslint-disable-line
 
-const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk)));
+const routingMiddleware = routerMiddleware(browserHistory);
+
+const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk, routingMiddleware)));
 
 const history = syncHistoryWithStore(browserHistory, store);
 

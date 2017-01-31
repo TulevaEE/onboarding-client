@@ -15,7 +15,6 @@ export const LoginPage = ({
   phoneNumber,
   controlCode,
   loadingControlCode,
-  successful,
   error,
 }) => (
   <div className="container mt-4 pt-4">
@@ -27,7 +26,7 @@ export const LoginPage = ({
       </div>
     </div>
     {
-      !error && !successful && !loadingControlCode && !controlCode ?
+      !error && !loadingControlCode && !controlCode ?
         <LoginForm
           onPhoneNumberSubmit={onPhoneNumberSubmit}
           onPhoneNumberChange={onPhoneNumberChange}
@@ -66,11 +65,16 @@ LoginPage.propTypes = {
   phoneNumber: Types.string,
   controlCode: Types.string,
   loadingControlCode: Types.bool,
-  successful: Types.bool,
   error: Types.shape({}),
 };
 
-const mapStateToProps = state => state.login;
+const mapStateToProps = state => ({
+  phoneNumber: state.login.phoneNumber,
+  controlCode: state.login.controlCode,
+  loadingControlCode: state.login.loadingControlCode,
+  error: state.login.error,
+  successful: !!state.login.token, // not used right now
+});
 const mapDispatchToProps = dispatch => bindActionCreators({
   onPhoneNumberChange: changePhoneNumber,
   onPhoneNumberSubmit: authenticateWithPhoneNumber,
