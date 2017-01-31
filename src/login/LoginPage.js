@@ -5,6 +5,7 @@ import { Message } from 'retranslate';
 
 import logo from '../logo.svg';
 import LoginForm from './loginForm';
+import AuthenticationLoader from './authenticationLoader';
 import { changePhoneNumber, authenticateWithPhoneNumber } from './actions';
 
 export const LoginPage = ({
@@ -31,6 +32,9 @@ export const LoginPage = ({
           onPhoneNumberChange={onPhoneNumberChange}
           phoneNumber={phoneNumber}
         /> : ''
+    }
+    {
+      loadingControlCode || controlCode ? <AuthenticationLoader controlCode={controlCode} /> : ''
     }
   </div>
 );
