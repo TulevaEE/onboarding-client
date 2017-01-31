@@ -3,6 +3,7 @@ import {
   MOBILE_AUTHENTICATION_START,
   MOBILE_AUTHENTICATION_START_SUCCESS,
   MOBILE_AUTHENTICATION_START_ERROR,
+  MOBILE_AUTHENTICATION_CANCEL,
 } from './constants';
 
 import { api } from '../common';
@@ -19,4 +20,8 @@ export function authenticateWithPhoneNumber(phoneNumber) {
       .then(controlCode => dispatch({ type: MOBILE_AUTHENTICATION_START_SUCCESS, controlCode }))
       .catch(error => dispatch({ type: MOBILE_AUTHENTICATION_START_ERROR, error }));
   };
+}
+
+export function cancelMobileAuthentication() {
+  return { type: MOBILE_AUTHENTICATION_CANCEL };
 }

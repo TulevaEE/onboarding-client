@@ -3,6 +3,7 @@ import {
   MOBILE_AUTHENTICATION_START,
   MOBILE_AUTHENTICATION_START_SUCCESS,
   MOBILE_AUTHENTICATION_START_ERROR,
+  MOBILE_AUTHENTICATION_CANCEL,
 } from './constants';
 
 const mockApi = jest.genMockFromModule('../common/api');
@@ -70,5 +71,10 @@ describe('Login actions', () => {
           error,
         });
       });
+  });
+
+  it('can cancel authentication', () => {
+    const action = actions.cancelMobileAuthentication();
+    expect(action).toEqual({ type: MOBILE_AUTHENTICATION_CANCEL });
   });
 });
