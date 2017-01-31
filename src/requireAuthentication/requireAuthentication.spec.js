@@ -36,12 +36,12 @@ describe('requireAuthentication higher-order component', () => {
     fakeReducer.mockClear();
     store.dispatch({ type: 'this type will not be used!' }); // trigger update from fakeState
     expect(component.text()).toContain('I am FakeComponent');
-    expect(fakeReducer).not.toHaveBeenCalledWith({}, push('/login'));
+    expect(fakeReducer).not.toHaveBeenCalledWith(fakeStateGetter(), push('/login'));
 
     // now we remove auth
     fakeStateGetter = () => ({ token: null });
     store.dispatch({ type: 'this type will not be used!' }); // trigger update from fakeState
     expect(component.text()).not.toContain('I am FakeComponent');
-    expect(fakeReducer).toHaveBeenCalledWith({ token: null }, push('/login'));
+    expect(fakeReducer).toHaveBeenCalledWith(fakeStateGetter(), push('/login'));
   });
 });
