@@ -2,12 +2,18 @@ import { push } from 'react-router-redux';
 
 import {
   CHANGE_PHONE_NUMBER,
+
   MOBILE_AUTHENTICATION_START,
   MOBILE_AUTHENTICATION_START_SUCCESS,
   MOBILE_AUTHENTICATION_START_ERROR,
+
   MOBILE_AUTHENTICATION_SUCCESS,
   MOBILE_AUTHENTICATION_ERROR,
   MOBILE_AUTHENTICATION_CANCEL,
+
+  GET_USER_START,
+  GET_USER_SUCCESS,
+  GET_USER_ERROR,
 } from './constants';
 
 import { api } from '../common';
@@ -43,7 +49,7 @@ function getToken() {
 
 export function authenticateWithPhoneNumber(phoneNumber) {
   return (dispatch) => {
-    dispatch({ type: MOBILE_AUTHENTICATION_START, phoneNumber });
+    dispatch({ type: MOBILE_AUTHENTICATION_START });
     return api
       .authenticateWithPhoneNumber(phoneNumber)
       .then((controlCode) => {
@@ -59,4 +65,14 @@ export function cancelMobileAuthentication() {
     clearTimeout(timeout);
   }
   return { type: MOBILE_AUTHENTICATION_CANCEL };
+}
+
+export function getUser() {
+  return (dispatch, getState) => {
+    dispatch({ type: GET_USER_START });
+    return api
+      .getUserWithToken(getState().login.token)
+      .then(user => dispatch({ type: GET_USER_SUCCESS, user }))
+      .catch(error => dispatch({ type: GET_USER_ERROR, error }));
+  };
 }

@@ -2,12 +2,18 @@ import { push } from 'react-router-redux';
 
 import {
   CHANGE_PHONE_NUMBER,
+
   MOBILE_AUTHENTICATION_START,
   MOBILE_AUTHENTICATION_START_SUCCESS,
   MOBILE_AUTHENTICATION_START_ERROR,
+
   MOBILE_AUTHENTICATION_CANCEL,
   MOBILE_AUTHENTICATION_SUCCESS,
   MOBILE_AUTHENTICATION_ERROR,
+
+  GET_USER_START,
+  GET_USER_SUCCESS,
+  GET_USER_ERROR,
 } from './constants';
 
 jest.useFakeTimers();
@@ -19,15 +25,17 @@ const actions = require('./actions'); // need to use require because of jest moc
 
 describe('Login actions', () => {
   let dispatch;
+  let state;
 
   function createBoundAction(action) {
-    return (...args) => action(...args)(dispatch);
+    return (...args) => action(...args)(dispatch, () => state);
   }
 
   function mockDispatch() {
+    state = { login: {} };
     dispatch = jest.fn((action) => {
       if (typeof action === 'function') {
-        action(dispatch);
+        action(dispatch, () => state);
       }
     });
   }
@@ -56,10 +64,7 @@ describe('Login actions', () => {
     const controlCode = '1337';
     mockApi.authenticateWithPhoneNumber = jest.fn(() => {
       expect(dispatch).toHaveBeenCalledTimes(1);
-      expect(dispatch).toHaveBeenCalledWith({
-        type: MOBILE_AUTHENTICATION_START,
-        phoneNumber,
-      });
+      expect(dispatch).toHaveBeenCalledWith({ type: MOBILE_AUTHENTICATION_START });
       dispatch.mockClear();
       return Promise.resolve(controlCode);
     });
@@ -133,5 +138,36 @@ describe('Login actions', () => {
   it('can cancel authentication', () => {
     const action = actions.cancelMobileAuthentication();
     expect(action).toEqual({ type: MOBILE_AUTHENTICATION_CANCEL });
+  });
+
+  it('can get a user', () => {
+    state.login.token = 'token';
+    const user = { iAmAUser: true };
+    mockApi.getUserWithToken = jest.fn(() => {
+      expect(dispatch).toHaveBeenCalledTimes(1);
+      expect(dispatch).toHaveBeenCalledWith({ type: GET_USER_START });
+      dispatch.mockClear();
+      return Promise.resolve(user);
+    });
+    const getUser = createBoundAction(actions.getUser);
+    expect(dispatch).not.toHaveBeenCalled();
+    return getUser()
+      .then(() => {
+        expect(dispatch).toHaveBeenCalledTimes(1);
+        expect(dispatch).toHaveBeenCalledWith({
+          type: GET_USER_SUCCESS,
+          user,
+        });
+      });
+  });
+
+  it('can handle errors when getting a user', () => {
+    state.login.token = 'token';
+    const error = new Error('oh no!');
+    mockApi.getUserWithToken = jest.fn(() => Promise.reject(error));
+    const getUser = createBoundAction(actions.getUser);
+    expect(dispatch).not.toHaveBeenCalled();
+    return getUser()
+      .then(() => expect(dispatch).toHaveBeenCalledWith({ type: GET_USER_ERROR, error }));
   });
 });
