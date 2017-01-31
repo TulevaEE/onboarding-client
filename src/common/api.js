@@ -1,4 +1,4 @@
-import { post, postForm } from './http';
+import { post, postForm, get } from './http';
 
 const API_URL = '';
 
@@ -23,4 +23,8 @@ export function getToken() {
       }
       return null;
     });
+}
+
+export function getUserWithToken(token) {
+  return get(getEndpoint('/v1/me'), undefined, { Authorization: `Bearer ${token}` });
 }

@@ -55,4 +55,18 @@ describe('api', () => {
       .getToken()
       .then(token => expect(token).toBeFalsy());
   });
+
+  it('can get a user with a token', () => {
+    const user = { iAmAUser: true };
+    const token = 'token';
+    mockHttp.get = jest.fn(() => Promise.resolve(user));
+    return api
+      .getUserWithToken(token)
+      .then((givenUser) => {
+        expect(givenUser).toEqual(user);
+        expect(mockHttp.get).toHaveBeenCalledWith('/v1/me', undefined, {
+          Authorization: `Bearer ${token}`,
+        });
+      });
+  });
 });
