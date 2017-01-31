@@ -31,11 +31,15 @@ describe('Authenticaion loader', () => {
 
   it('can cancel authentication', () => {
     const onCancel = jest.fn();
-    component.setProps({ onCancel });
+    component.setProps({ onCancel, controlCode: '1337' });
     const clickButton = () => component.find('button').simulate('click');
     expect(component.contains(<Message>login.stop</Message>)).toBe(true);
     expect(onCancel).not.toHaveBeenCalled();
     clickButton();
     expect(onCancel).toHaveBeenCalledTimes(1);
+  });
+
+  it('can not cancel when no control code yet present', () => {
+    expect(component.contains(<Message>login.stop</Message>)).toBe(false);
   });
 });

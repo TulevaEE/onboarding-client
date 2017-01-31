@@ -25,33 +25,34 @@ describe('api', () => {
       });
   });
 
-  it('can check if authentication is complete', () => Promise
-      .all([true, false]
-        .map((complete) => {
-          mockHttp.get = jest.fn(() => Promise.resolve({ complete }));
-          expect(mockHttp.get).not.toHaveBeenCalled();
-          return api
-            .getAuthenticationCompletion()
-            .then((completion) => {
-              expect(completion).toBe(complete);
-              expect(mockHttp.get).toHaveBeenCalledTimes(1);
-              expect(mockHttp.get).toHaveBeenCalledWith('/authenticate/is-complete');
-            });
-        })));
-
-  it('throws in authentication check if response contains an error message', () => {
-    const error = { message: 'oh no!' };
-    mockHttp.get = jest.fn(() => Promise.reject(error));
+  it('can get a token', () => {
+    mockHttp.post = jest.fn(() => Promise.resolve({ access_token: 'token' }));
+    expect(mockHttp.post).not.toHaveBeenCalled();
     return api
-      .getAuthenticationCompletion()
+      .getToken()
+      .then((token) => {
+        expect(token).toBe('token');
+        expect(mockHttp.post).toHaveBeenCalledTimes(1);
+        expect(mockHttp.post).toHaveBeenCalledWith('/oauth/token', {
+          client_id: 'onboarding_client',
+          grant_type: 'mobile_id',
+        });
+      });
+  });
+
+  it('throws in getting token if authentication is finished but errored', () => {
+    const error = { message: 'oh no!' };
+    mockHttp.post = jest.fn(() => Promise.reject(error));
+    return api
+      .getToken()
       .then(() => expect(0).toBe(1)) // fail, should not go to then.
       .catch(givenError => expect(givenError).toEqual(error));
   });
 
-  it('gives false in authentication check if response fails but does not contain an error', () => {
-    mockHttp.get = jest.fn(() => Promise.reject({}));
+  it('gives no token in authentication check if error is auth not completed', () => {
+    mockHttp.post = jest.fn(() => Promise.reject({ message: 'AUTHENTICATION_NOT_COMPLETE' }));
     return api
-      .getAuthenticationCompletion()
-      .then(completed => expect(completed).toBe(false));
+      .getToken()
+      .then(token => expect(token).toBeFalsy());
   });
 });

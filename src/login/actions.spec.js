@@ -4,7 +4,11 @@ import {
   MOBILE_AUTHENTICATION_START_SUCCESS,
   MOBILE_AUTHENTICATION_START_ERROR,
   MOBILE_AUTHENTICATION_CANCEL,
+  MOBILE_AUTHENTICATION_SUCCESS,
+  MOBILE_AUTHENTICATION_ERROR,
 } from './constants';
+
+jest.useFakeTimers();
 
 const mockApi = jest.genMockFromModule('../common/api');
 jest.mock('../common/api', () => mockApi);
@@ -18,8 +22,22 @@ describe('Login actions', () => {
     return (...args) => action(...args)(dispatch);
   }
 
+  function mockDispatch() {
+    dispatch = jest.fn((action) => {
+      if (typeof action === 'function') {
+        action(dispatch);
+      }
+    });
+  }
+
   beforeEach(() => {
-    dispatch = jest.fn();
+    mockDispatch();
+    mockApi.authenticateWithPhoneNumber = () => Promise.reject();
+    mockApi.getToken = () => Promise.reject();
+  });
+
+  afterEach(() => {
+    jest.runOnlyPendingTimers();
   });
 
   it('can change phone number', () => {
@@ -47,11 +65,47 @@ describe('Login actions', () => {
     expect(dispatch).not.toHaveBeenCalled();
     return authenticateWithPhoneNumber(phoneNumber)
       .then(() => {
-        expect(dispatch).toHaveBeenCalledTimes(1);
+        expect(dispatch).toHaveBeenCalledTimes(2); // calls next action to start polling as well.
         expect(dispatch).toHaveBeenCalledWith({
           type: MOBILE_AUTHENTICATION_START_SUCCESS,
           controlCode,
         });
+      });
+  });
+
+  it('starts polling until succeeds when authenticating with a phone number', () => {
+    const token = 'token';
+    mockApi.authenticateWithPhoneNumber = jest.fn(() => Promise.resolve('1337'));
+    mockApi.getToken = jest.fn(() => Promise.resolve(null));
+    const authenticateWithPhoneNumber = createBoundAction(actions.authenticateWithPhoneNumber);
+    return authenticateWithPhoneNumber('')
+      .then(() => {
+        dispatch.mockClear();
+        mockApi.getToken = jest.fn(() => Promise.resolve(token));
+        jest.runOnlyPendingTimers();
+        expect(dispatch).not.toHaveBeenCalled();
+        expect(mockApi.getToken).toHaveBeenCalled();
+      }).then(() => {
+        expect(dispatch).toHaveBeenCalledWith({ type: MOBILE_AUTHENTICATION_SUCCESS, token });
+      });
+  });
+
+  it('starts polling until fails when authenticating with a phone number', () => {
+    const error = new Error('oh no!');
+    mockApi.authenticateWithPhoneNumber = jest.fn(() => Promise.resolve('1337'));
+    mockApi.getToken = jest.fn(() => Promise.resolve(null));
+    const authenticateWithPhoneNumber = createBoundAction(actions.authenticateWithPhoneNumber);
+    return authenticateWithPhoneNumber('123123')
+      .then(() => {
+        dispatch.mockClear();
+        mockApi.getToken = jest.fn(() => Promise.reject(error));
+        jest.runOnlyPendingTimers();
+        expect(dispatch).not.toHaveBeenCalled();
+        expect(mockApi.getToken).toHaveBeenCalled();
+      }).then(() => {
+        jest.runOnlyPendingTimers();
+      }).then(() => {
+        expect(dispatch).toHaveBeenCalledWith({ type: MOBILE_AUTHENTICATION_ERROR, error });
       });
   });
 

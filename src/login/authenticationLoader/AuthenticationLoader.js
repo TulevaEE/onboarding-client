@@ -17,9 +17,13 @@ const AuthenticationLoader = ({ controlCode, onCancel }) => (
             ) : ''
           }
           <Loader />
-          <button className="btn btn-secondary mt-4" onClick={onCancel}>
-            <Message>login.stop</Message>
-          </button>
+          {
+            controlCode ? (
+              <button className="btn btn-secondary mt-4" onClick={onCancel}>
+                <Message>login.stop</Message>
+              </button>
+            ) : ''
+          }
         </div>
       </div>
     </div>

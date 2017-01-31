@@ -1,4 +1,4 @@
-import { post, get } from './http';
+import { post } from './http';
 
 const API_URL = '';
 
@@ -11,13 +11,16 @@ export function authenticateWithPhoneNumber(phoneNumber) {
     .then(({ mobileIdChallengeCode }) => mobileIdChallengeCode);
 }
 
-export function getAuthenticationCompletion() {
-  return get(getEndpoint('/authenticate/is-complete'))
-    .then(({ complete }) => complete)
+export function getToken() {
+  return post(getEndpoint('/oauth/token'), {
+    grant_type: 'mobile_id',
+    client_id: 'onboarding_client',
+  })
+    .then(({ access_token }) => access_token) // eslint-disable-line
     .catch((error) => {
-      if (error.message) {
+      if (error.message !== 'AUTHENTICATION_NOT_COMPLETE') {
         throw error;
       }
-      return false;
+      return null;
     });
 }
