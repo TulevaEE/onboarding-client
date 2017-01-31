@@ -11,14 +11,14 @@ function getDisplayName(WrappedComponent) {
 const requireAuthentication = (WrappedComponent) => {
   class AuthenticatedComponent extends Component {
     componentWillMount() {
-      this.checkAuth(this.props.authenticated);
+      this.checkAuthenticatedAndRedirect(this.props.authenticated);
     }
 
     componentWillReceiveProps(nextProps) {
-      this.checkAuth(nextProps.authenticated);
+      this.checkAuthenticatedAndRedirect(nextProps.authenticated);
     }
 
-    checkAuth(authenticated) {
+    checkAuthenticatedAndRedirect(authenticated) {
       if (!authenticated) {
         this.props.redirectToLogin();
       }
@@ -27,7 +27,7 @@ const requireAuthentication = (WrappedComponent) => {
     render() {
       return (
         <div>
-          {this.props.authenticated ? <Component {...this.props} /> : null}
+          {this.props.authenticated ? <WrappedComponent {...this.props} /> : ''}
         </div>
       );
     }
