@@ -32,7 +32,14 @@ export default function loginReducer(state = defaultState, action) {
       return { ...state, loadingControlCode: false, error: action.error };
 
     case MOBILE_AUTHENTICATION_SUCCESS:
-      return { ...state, token: action.token };
+      return { // reset all state so page is clean when entered again.
+        ...state,
+        token: action.token,
+        loadingControlCode: false,
+        controlCode: null,
+        error: null,
+        phoneNumber: '',
+      };
     case MOBILE_AUTHENTICATION_ERROR:
       return { ...state, error: action.error };
 
