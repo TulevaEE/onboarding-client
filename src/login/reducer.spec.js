@@ -14,6 +14,8 @@ import {
   GET_USER_START,
   GET_USER_SUCCESS,
   GET_USER_ERROR,
+
+  LOG_OUT,
 } from './constants';
 
 describe('Login reducer', () => {
@@ -87,5 +89,10 @@ describe('Login reducer', () => {
     const newState = loginReducer({ loadingUser: true }, { type: GET_USER_ERROR, error });
     expect(newState.loadingUser).toBe(false);
     expect(newState.userError).toBe(error);
+  });
+
+  it('removes token when you log out', () => {
+    const newState = loginReducer({ token: 'token' }, { type: LOG_OUT });
+    expect(newState.token).toBe(null);
   });
 });

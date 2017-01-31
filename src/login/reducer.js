@@ -13,6 +13,8 @@ import {
   GET_USER_START,
   GET_USER_SUCCESS,
   GET_USER_ERROR,
+
+  LOG_OUT,
 } from './constants';
 
 const defaultState = {
@@ -61,6 +63,9 @@ export default function loginReducer(state = defaultState, action) {
       return { ...state, loadingUser: false, user: action.user, userError: null };
     case GET_USER_ERROR:
       return { ...state, loadingUser: false, userError: action.error };
+
+    case LOG_OUT:
+      return { ...state, token: null };
 
     default:
       return state;
