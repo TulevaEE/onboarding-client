@@ -15,7 +15,7 @@ describe('Authenticaion loader', () => {
   });
 
   it('shows a loader', () => {
-    expect(component.contains(<Loader />)).toBe(true);
+    expect(component.contains(<Loader className="align-middle" />)).toBe(true);
   });
 
   it('does not show the control code message if no control code given', () => {

@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { PropTypes as Types } from 'react';
 
 import './Loader.scss';
 
-const Loader = () => (
-  <div className="loader">
+const Loader = ({ className }) => (
+  <div className={`loader ${className}`}>
     <svg className="circular" viewBox="25 25 50 50">
       <circle
         className="path"
@@ -17,5 +17,13 @@ const Loader = () => (
     </svg>
   </div>
 );
+
+Loader.defaultProps = {
+  className: '',
+};
+
+Loader.propTypes = {
+  className: Types.string,
+};
 
 export default Loader;

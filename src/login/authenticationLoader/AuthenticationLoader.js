@@ -16,7 +16,7 @@ const AuthenticationLoader = ({ controlCode, onCancel }) => (
               </div>
             ) : ''
           }
-          <Loader />
+          <Loader className="align-middle" />
           {
             controlCode ? (
               <button className="btn btn-secondary mt-4" onClick={onCancel}>
