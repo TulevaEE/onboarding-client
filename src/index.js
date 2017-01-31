@@ -8,8 +8,10 @@ import { Router, Route, browserHistory } from 'react-router';
 import { syncHistoryWithStore, routerReducer, routerMiddleware } from 'react-router-redux';
 
 import translations from './translations';
-import LoginPage, { reducer as loginReducer } from './login';
 import './index.scss';
+import LoginPage, { reducer as loginReducer } from './login';
+import App from './app';
+import Steps, { SelectExchange } from './steps';
 
 const rootReducer = combineReducers({
   routing: routerReducer,
@@ -30,6 +32,11 @@ render((
     <ReduxProvider store={store}>
       <Router history={history}>
         <Route path="/login" component={LoginPage} />
+        <Route path="/" component={App}>
+          <Route path="/steps" component={Steps}>
+            <Route path="select-exchange" component={SelectExchange} />
+          </Route>
+        </Route>
       </Router>
     </ReduxProvider>
   </TranslationProvider>
