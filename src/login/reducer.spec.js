@@ -8,6 +8,8 @@ import {
 
   MOBILE_AUTHENTICATION_SUCCESS,
   MOBILE_AUTHENTICATION_ERROR,
+
+  MOBILE_AUTHENTICATION_CANCEL,
 } from './constants';
 
 describe('Login reducer', () => {
@@ -51,5 +53,12 @@ describe('Login reducer', () => {
     const newState = loginReducer(undefined, action);
     expect(newState.successful).toBe(false);
     expect(newState.error).toBe(error);
+  });
+
+  it('removes control code and loading when cancelling mobile authentication', () => {
+    const action = { type: MOBILE_AUTHENTICATION_CANCEL };
+    const newState = loginReducer({ loadingControlCode: true, controlCode: '1337' }, action);
+    expect(newState.loadingControlCode).toBe(false);
+    expect(newState.controlCode).toBe(null);
   });
 });

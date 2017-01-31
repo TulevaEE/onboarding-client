@@ -7,6 +7,8 @@ import {
 
   MOBILE_AUTHENTICATION_SUCCESS,
   MOBILE_AUTHENTICATION_ERROR,
+
+  MOBILE_AUTHENTICATION_CANCEL,
 } from './constants';
 
 const defaultState = {
@@ -33,6 +35,9 @@ export default function loginReducer(state = defaultState, action) {
       return { ...state, successful: true };
     case MOBILE_AUTHENTICATION_ERROR:
       return { ...state, error: action.error };
+
+    case MOBILE_AUTHENTICATION_CANCEL:
+      return { ...state, loadingControlCode: false, error: null, controlCode: null };
 
     default:
       return state;
