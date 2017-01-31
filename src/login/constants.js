@@ -2,7 +2,7 @@ const withPrefix = name => `@login/${name}`;
 
 export const CHANGE_PHONE_NUMBER = withPrefix('CHANGE_PHONE_NUMBER');
 
-// _START gets control code, then we start polling.
+// START gets control code, then we start polling.
 export const MOBILE_AUTHENTICATION_START = withPrefix('MOBILE_AUTHENTICATION_START');
 export const MOBILE_AUTHENTICATION_START_SUCCESS = withPrefix('MOBILE_AUTHENTICATION_START_SUCCESS');
 export const MOBILE_AUTHENTICATION_START_ERROR = withPrefix('MOBILE_AUTHENTICATION_START_ERROR');
