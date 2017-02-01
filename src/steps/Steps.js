@@ -1,6 +1,10 @@
 import React, { PropTypes as Types } from 'react';
 import { connect } from 'react-redux';
 
+import './Steps.scss';
+
+import StepTitle from './stepTitle';
+
 const orderedStepNames = [
   'select-exchange',
   'select-fund',
@@ -15,15 +19,26 @@ const Steps = ({ children, stepName }) => {
   const currentStep = orderedStepNames[stepIndex];
   const afterSteps = orderedStepNames.slice(stepIndex + 1);
   return (
-    <div>
-      <ul>
-        {beforeSteps.map(beforeStep => <li key={beforeStep}>{beforeStep}</li>)}
-      </ul>
-      {currentStep}
-      {children}
-      <ul>
-        {afterSteps.map(afterStep => <li key={afterStep}>{afterStep}</li>)}
-      </ul>
+    <div className="row">
+      <div className="col px-0 tv-steps">
+        {
+          beforeSteps.map((beforeStep, index) =>
+            <StepTitle key={beforeStep} number={index + 1}>
+              {beforeStep}
+            </StepTitle>,
+          )
+        }
+        <StepTitle number={stepIndex + 1} active>{currentStep}</StepTitle>
+        <div className="px-col pb-4 tv-step__content">{children}</div>
+        <hr className="mb-4" />
+        {
+          afterSteps.map((afterStep, index) =>
+            <StepTitle key={afterStep} number={index + 1 + stepIndex + 1}>
+              {afterStep}
+            </StepTitle>,
+          )
+        }
+      </div>
     </div>
   );
 };

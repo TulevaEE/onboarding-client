@@ -8,7 +8,7 @@ const Header = ({ user: { name, personalCode } = {}, loading, onLogout }) => (
     <div className="col align-self-start">
       <img src={logo} alt="Tuleva" className="img-responsive brand-logo" />
     </div>
-    <div className="col align-self-end text-right">
+    <div className="col align-self-end text-right pr-0">
       {
         loading || !(name || personalCode) ?
           <Loader className="align-right" /> :
@@ -23,7 +23,7 @@ const Header = ({ user: { name, personalCode } = {}, loading, onLogout }) => (
           )
       }
     </div>
-    <hr className="col-12" />
+    <hr className="col-12 my-2" />
   </div>
 );
 

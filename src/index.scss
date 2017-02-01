@@ -64,3 +64,10 @@ small {
   font-size: 5em;
   font-weight: bold;
 }
+
+hr {
+  border-color: $gray-mid;
+  background-color: white;
+  margin: 0;
+  padding: 0;
+}

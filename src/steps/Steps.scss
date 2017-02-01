@@ -1,0 +1,26 @@
+@import "../variables";
+
+.px-col {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.tv-step {
+  position: relative;
+
+  &__content {
+    background-color: white;
+  }
+}
+
+.tv-steps > .tv-step:not(:first-child)::before {
+  content: "";
+  background-color: $gray-mid;
+  display: inline-block;
+  position: absolute;
+  height: 24px;
+  width: 1px;
+  z-index: -1;
+  left: 30px;
+  top: -24px;
+}
