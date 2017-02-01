@@ -22,7 +22,7 @@ export const LoginPage = ({
       <div className="col-12 text-center">
         <img src={logo} alt="Tuleva" className="img-responsive brand-logo mb-4 pb-4 mt-4" />
         <h3><Message>login.title</Message></h3>
-        <small className="mt-2"><Message>login.subtitle</Message></small>
+        <small className="mt-2 text-muted"><Message>login.subtitle</Message></small>
       </div>
     </div>
     {

@@ -20,6 +20,14 @@
   padding-left: 7px; // 15 (px-col) - 8 (pl-2) = 7px
   padding-left: 7px; // 15 (px-col) - 8 (pr-2) = 7px
 
+  &--completed {
+    & .tv-step__number {
+      vertical-align: middle;
+      background: white url("success.svg") center center no-repeat;
+      background-size: 24px;
+    }
+  }
+
   &--active {
     &::before, &::after {
       background-color: $gray-mid;
@@ -42,8 +50,6 @@
     & .tv-step__number {
       color: $blue;
       background-color: rgba(5, 147, 252, 0.24);
-      line-height: 32px;
-      border-radius: 50%;
       border: none;
     }
   }

@@ -19,11 +19,11 @@ const Steps = ({ children, stepName }) => {
   const currentStep = orderedStepNames[stepIndex];
   const afterSteps = orderedStepNames.slice(stepIndex + 1);
   return (
-    <div className="row">
+    <div className="row mt-4 pt-4">
       <div className="col px-0 tv-steps">
         {
           beforeSteps.map((beforeStep, index) =>
-            <StepTitle key={beforeStep} number={index + 1}>
+            <StepTitle key={beforeStep} number={index + 1} completed>
               {beforeStep}
             </StepTitle>,
           )
