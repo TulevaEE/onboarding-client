@@ -12,7 +12,7 @@ import './index.scss';
 
 import requireAuthentication from './requireAuthentication';
 import LoginPage, { reducer as loginReducer, actions as loginActions } from './login';
-import { reducer as exchangeReducer } from './exchange';
+import { reducer as exchangeReducer, actions as exchangeActions } from './exchange';
 import App from './app';
 import Steps, {
   SelectExchange,
@@ -36,11 +36,18 @@ const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk, r
 
 const history = syncHistoryWithStore(browserHistory, store);
 
-// TODO: figure out a place where to put this
+// TODO: figure out a place where to put these two
 function getUserIfNecessary() {
   const { login } = store.getState();
   if (login.token && !(login.user || login.loadingUser)) {
     store.dispatch(loginActions.getUser());
+  }
+}
+
+function getPensionFundsIfNecessary() {
+  const { login, exchange } = store.getState();
+  if (login.token && !(exchange.pensionFunds || exchange.loadingPensionFunds)) {
+    store.dispatch(exchangeActions.getPensionFunds());
   }
 }
 
@@ -50,7 +57,7 @@ render((
       <Router history={history}>
         <Route path="/login" component={LoginPage} />
         <Route path="/" component={requireAuthentication(App)} onEnter={getUserIfNecessary}>
-          <Route path="/steps" component={Steps}>
+          <Route path="/steps" component={Steps} onEnter={getPensionFundsIfNecessary}>
             <Route path="select-exchange" component={SelectExchange} />
             <Route path="select-fund" component={SelectFund} />
             <Route path="transfer-future-capital" component={TransferFutureCapital} />
