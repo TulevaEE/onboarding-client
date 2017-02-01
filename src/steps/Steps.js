@@ -14,7 +14,7 @@ const orderedStepNames = [
 ];
 
 // this component wraps all steps and renders the top and bottom areas.
-const Steps = ({ children, stepName }) => {
+export const Steps = ({ children, stepName }) => {
   const stepIndex = orderedStepNames.indexOf(stepName);
   const beforeSteps = orderedStepNames.slice(0, stepIndex);
   const currentStep = orderedStepNames[stepIndex];
