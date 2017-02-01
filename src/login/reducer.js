@@ -17,13 +17,17 @@ import {
   LOG_OUT,
 } from './constants';
 
+const TOKEN_STORAGE_KEY = 'token';
+
+// get saved token if it's there
+const token = (window.localStorage && localStorage.getItem(TOKEN_STORAGE_KEY)) || null;
+
 const defaultState = {
   phoneNumber: '',
   controlCode: null,
   loadingControlCode: false,
-  token: null,
+  token,
   error: null,
-
   user: null,
   loadingUser: false,
   userError: null,
@@ -42,6 +46,9 @@ export default function loginReducer(state = defaultState, action) {
       return { ...state, loadingControlCode: false, error: action.error };
 
     case MOBILE_AUTHENTICATION_SUCCESS:
+      if (window.localStorage) {
+        localStorage.setItem(TOKEN_STORAGE_KEY, action.token);
+      }
       return { // reset all state so page is clean when entered again.
         ...state,
         token: action.token,
@@ -65,6 +72,9 @@ export default function loginReducer(state = defaultState, action) {
       return { ...state, loadingUser: false, userError: action.error };
 
     case LOG_OUT:
+      if (window.localStorage) {
+        localStorage.removeItem(TOKEN_STORAGE_KEY);
+      }
       return { ...state, token: null };
 
     default:
