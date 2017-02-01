@@ -13,7 +13,12 @@ import './index.scss';
 import requireAuthentication from './requireAuthentication';
 import LoginPage, { reducer as loginReducer, actions as loginActions } from './login';
 import App from './app';
-import Steps, { SelectExchange } from './steps';
+import Steps, {
+  SelectExchange,
+  SelectFund,
+  TransferFutureCapital,
+  ConfirmApplication,
+} from './steps';
 
 const rootReducer = combineReducers({
   routing: routerReducer,
@@ -31,7 +36,8 @@ const history = syncHistoryWithStore(browserHistory, store);
 
 // TODO: figure out a place where to put this
 function getUserIfNecessary() {
-  if (store.getState().login.token && !store.getState().login.user) {
+  if (store.getState().login.token &&
+    !(store.getState().login.user || store.getState().login.loadingUser)) {
     store.dispatch(loginActions.getUser());
   }
 }
@@ -44,6 +50,9 @@ render((
         <Route path="/" component={requireAuthentication(App)} onEnter={getUserIfNecessary}>
           <Route path="/steps" component={Steps}>
             <Route path="select-exchange" component={SelectExchange} />
+            <Route path="select-fund" component={SelectFund} />
+            <Route path="transfer-future-capital" component={TransferFutureCapital} />
+            <Route path="confirm-application" component={ConfirmApplication} />
           </Route>
         </Route>
       </Router>

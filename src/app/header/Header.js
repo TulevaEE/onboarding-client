@@ -10,7 +10,7 @@ const Header = ({ user: { name, personalCode } = {}, loading, onLogout }) => (
     </div>
     <div className="col align-self-end text-right">
       {
-        loading ?
+        loading || !(name || personalCode) ?
           <Loader className="align-right" /> :
           (
             <small>

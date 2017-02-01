@@ -7,8 +7,12 @@ import Header from './header';
 
 export const App = ({ children, user, loadingUser, onLogout }) => (
   <div className="container mt-4">
-    <Header user={user} loading={loadingUser} onLogout={onLogout} />
-    {children}
+    <div className="row justify-content-center">
+      <div className="col-lg-8">
+        <Header user={user} loading={loadingUser} onLogout={onLogout} />
+        {children}
+      </div>
+    </div>
   </div>
 );
 
