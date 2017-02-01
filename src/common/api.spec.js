@@ -69,4 +69,18 @@ describe('api', () => {
         });
       });
   });
+
+  it('can get pension funds with a token', () => {
+    const pensionFunds = [{ iAmAFund: true }];
+    const token = 'token';
+    mockHttp.get = jest.fn(() => Promise.resolve(pensionFunds));
+    return api
+      .getPensionFundsWithToken(token)
+      .then((givenPensionFunds) => {
+        expect(givenPensionFunds).toEqual(pensionFunds);
+        expect(mockHttp.get).toHaveBeenCalledWith('/v1/pension-account-statement', undefined, {
+          Authorization: `Bearer ${token}`,
+        });
+      });
+  });
 });

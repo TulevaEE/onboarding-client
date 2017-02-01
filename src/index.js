@@ -38,8 +38,8 @@ const history = syncHistoryWithStore(browserHistory, store);
 
 // TODO: figure out a place where to put this
 function getUserIfNecessary() {
-  if (store.getState().login.token &&
-    !(store.getState().login.user || store.getState().login.loadingUser)) {
+  const { login } = store.getState();
+  if (login.token && !(login.user || login.loadingUser)) {
     store.dispatch(loginActions.getUser());
   }
 }
