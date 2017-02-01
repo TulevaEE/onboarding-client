@@ -9,8 +9,11 @@
   "log.out": "Logi välja",
   "steps.welcome": "Tere {{name}}!",
   "steps.intro": "Me tegime Sinu abiga Tuleva valmis! Sa saad Tulevast kõige rohkem kasu, kui tood oma pensionifondid üle Tulevasse. Selleks on vaja teha neli lihtsat sammu.",
+  "steps.next": "Järgmine samm",
+  "steps.previous": "Eelmine samm",
   "steps.select-exchange": "Too kogunenud pensionivara Tulevasse",
   "steps.select-fund": "Vali Tuleva pensionifond",
   "steps.transfer-future-capital": "Suuna edasised maksed Tulevasse",
-  "steps.confirm-application": "Kinnita avaldus"
+  "steps.confirm-application": "Kinnita avaldus",
+  "select.exchange.calculation.info": "* – Arvutuses kasutatud andmed: sinu tänane teise samba makse, sinu praeguse pensionifondi teenustasud, Tuleva fondide teenustasud. Arvutuse eelduseks on 3% palgakasvu aastas, 5% fondi tootlus (enne teenustasusid)."
 }
