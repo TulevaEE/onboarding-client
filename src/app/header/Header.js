@@ -23,7 +23,9 @@ const Header = ({ user: { name, personalCode } = {}, loading, onLogout }) => (
           )
       }
     </div>
-    <hr className="col-12 my-2" />
+    <div className="col-12 my-2 px-0">
+      <hr />
+    </div>
   </div>
 );
 
