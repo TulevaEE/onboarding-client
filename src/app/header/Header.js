@@ -16,7 +16,7 @@ const Header = ({ user: { name, personalCode } = {}, loading, onLogout }) => (
             <small>
               <b>{name}</b> <br />
               {personalCode} <br />
-              <button className="btn btn-link p-0" onClick={onLogout}>
+              <button className="btn btn-link pl-0 py-0 pr-1" onClick={onLogout}>
                 <Message>log.out</Message>
               </button>
             </small>

@@ -1,10 +1,19 @@
-import React from 'react';
+import React, { PropTypes as Types } from 'react';
 import { Message } from 'retranslate';
 import { Link } from 'react-router';
+import { connect } from 'react-redux';
 
-const SelectExchange = () => (
+import { Loader } from '../../common';
+import PensionFundTable from './pensionFundTable';
+
+const SelectExchange = ({ loadingPensionFunds, pensionFunds }) => (
   <div>
-    <div>This will become SelectExchange</div>
+    <p className="mb-4 mt-4"><Message>select.exchange.current.status</Message></p>
+    {
+      loadingPensionFunds ?
+        <Loader className="align-middle" /> :
+        <PensionFundTable funds={pensionFunds} />
+    }
     <Link className="btn btn-primary mt-4 mb-4" to="/steps/select-fund">
       <Message>steps.next</Message>
     </Link>
@@ -15,4 +24,21 @@ const SelectExchange = () => (
   </div>
 );
 
-export default SelectExchange;
+SelectExchange.defaultProps = {
+  pensionFunds: [],
+  loadingPensionFunds: false,
+};
+
+SelectExchange.propTypes = {
+  pensionFunds: Types.arrayOf(Types.shape({})),
+  loadingPensionFunds: Types.bool,
+};
+
+const mapStateToProps = state => ({
+  pensionFunds: state.exchange.pensionFunds,
+  loadingPensionFunds: state.exchange.loadingPensionFunds,
+});
+
+const connectToRedux = connect(mapStateToProps);
+
+export default connectToRedux(SelectExchange);

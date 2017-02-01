@@ -18,5 +18,10 @@
   "steps.select-fund": "Vali Tuleva pensionifond",
   "steps.transfer-future-capital": "Suuna edasised maksed Tulevasse",
   "steps.confirm-application": "Kinnita avaldus",
-  "select.exchange.calculation.info": "* – Arvutuses kasutatud andmed: sinu tänane teise samba makse, sinu praeguse pensionifondi teenustasud, Tuleva fondide teenustasud. Arvutuse eelduseks on 3% palgakasvu aastas, 5% fondi tootlus (enne teenustasusid)."
+  "select.exchange.calculation.info": "* – Arvutuses kasutatud andmed: sinu tänane teise samba makse, sinu praeguse pensionifondi teenustasud, Tuleva fondide teenustasud. Arvutuse eelduseks on 3% palgakasvu aastas, 5% fondi tootlus (enne teenustasusid).",
+  "select.exchange.pension.fund": "Pensionifond",
+  "select.exchange.value": "Osakute väärtus",
+  "select.exchange.fees": "Teenustasu kulu",
+  "select.exchange.current.status": "Sinu II samba pensionivara seis täna",
+  "select.exchange.total": "Kokku"
 }

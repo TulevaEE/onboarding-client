@@ -44,6 +44,10 @@ small {
   color: $text-primary;
 }
 
+.text-regular {
+  font-weight: medium;
+}
+
 .form-control::placeholder {
   color: $text-hint;
 }
