@@ -12,6 +12,7 @@ import './index.scss';
 
 import requireAuthentication from './requireAuthentication';
 import LoginPage, { reducer as loginReducer, actions as loginActions } from './login';
+import { reducer as exchangeReducer } from './exchange';
 import App from './app';
 import Steps, {
   SelectExchange,
@@ -23,6 +24,7 @@ import Steps, {
 const rootReducer = combineReducers({
   routing: routerReducer,
   login: loginReducer,
+  exchange: exchangeReducer, // exchage of funds
 });
 
 const composeEnhancers = (process.env.NODE_ENV === 'development' &&
