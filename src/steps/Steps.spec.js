@@ -55,4 +55,14 @@ describe('Steps', () => {
       </StepTitle>,
     )).toBe(true);
   });
+
+  it('renders an intro with the user\'s name if they are on the first step', () => {
+    const name = 'name';
+    component.setProps({ stepName: 'select-fund', userFirstName: name }); // not first step
+    expect(component.contains(<Message params={{ name }}>steps.welcome</Message>)).toBe(false);
+    expect(component.contains(<Message>steps.intro</Message>)).toBe(false);
+    component.setProps({ stepName: 'select-exchange' }); // first step
+    expect(component.contains(<Message params={{ name }}>steps.welcome</Message>)).toBe(true);
+    expect(component.contains(<Message>steps.intro</Message>)).toBe(true);
+  });
 });
