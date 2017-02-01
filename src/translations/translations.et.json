@@ -6,5 +6,9 @@
   "login.enter": "Sisenen",
   "login.control.code": "Kontrollige, et saabunud kontrollkood ühtiks alloleva koodiga.",
   "login.stop": "Katkesta",
-  "log.out": "Logi välja"
+  "log.out": "Logi välja",
+  "steps.select-exchange": "Too kogunenud pensionivara Tulevasse",
+  "steps.select-fund": "Vali Tuleva pensionifond",
+  "steps.transfer-future-capital": "Suuna edasised maksed Tulevasse",
+  "steps.confirm-application": "Kinnita avaldus"
 }

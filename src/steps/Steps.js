@@ -1,5 +1,6 @@
 import React, { PropTypes as Types } from 'react';
 import { connect } from 'react-redux';
+import { Message } from 'retranslate';
 
 import './Steps.scss';
 
@@ -24,17 +25,19 @@ const Steps = ({ children, stepName }) => {
         {
           beforeSteps.map((beforeStep, index) =>
             <StepTitle key={beforeStep} number={index + 1} completed>
-              {beforeStep}
+              <Message>{`steps.${beforeStep}`}</Message>
             </StepTitle>,
           )
         }
-        <StepTitle number={stepIndex + 1} active>{currentStep}</StepTitle>
+        <StepTitle number={stepIndex + 1} active>
+          <Message>{`steps.${currentStep}`}</Message>
+        </StepTitle>
         <div className="px-col pb-4 tv-step__content">{children}</div>
         <hr className="mb-4" />
         {
           afterSteps.map((afterStep, index) =>
             <StepTitle key={afterStep} number={index + 1 + stepIndex + 1}>
-              {afterStep}
+              <Message>{`steps.${afterStep}`}</Message>
             </StepTitle>,
           )
         }
