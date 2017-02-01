@@ -3,6 +3,7 @@ import { shallow } from 'enzyme';
 import { Message } from 'retranslate';
 import { LoginPage } from './LoginPage';
 import AuthenticationLoader from './authenticationLoader';
+import ErrorAlert from './errorAlert';
 import LoginForm from './loginForm';
 
 describe('Login page', () => {
@@ -45,21 +46,9 @@ describe('Login page', () => {
     )).toBe(true);
   });
 
-  it('renders a generic error if the server returns some unknown error', () => {
-    const formProps = {
-      error: { error_description: 'GENERIC_ERROR' },
-    };
-    component.setProps(formProps);
-    expect(component.contains(<Message>login.error.generic</Message>)).toBe(true);
-    expect(component.contains(<Message>login.error.invalid.user.credentials</Message>)).toBe(false);
-  });
-
-  it('renders a specific signup error message if the server returns that the credentials are invalid', () => {
-    const formProps = {
-      error: { error_description: 'INVALID_USER_CREDENTIALS' },
-    };
-    component.setProps(formProps);
-    expect(component.contains(<Message>login.error.invalid.user.credentials</Message>)).toBe(true);
-    expect(component.contains(<Message>login.error.generic</Message>)).toBe(false);
+  it('passes an error forwards to ErrorAlert and does not show other components', () => {
+    const errorDescription = 'oh no something broke yo';
+    component.setProps({ errorDescription });
+    expect(component.contains(<ErrorAlert description={errorDescription} />)).toBe(true);
   });
 });

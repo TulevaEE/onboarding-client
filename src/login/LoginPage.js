@@ -5,6 +5,7 @@ import { Message } from 'retranslate';
 import { logo } from '../common';
 import LoginForm from './loginForm';
 import AuthenticationLoader from './authenticationLoader';
+import ErrorAlert from './errorAlert';
 import { changePhoneNumber, authenticateWithPhoneNumber, cancelMobileAuthentication } from './actions';
 
 export const LoginPage = ({
@@ -14,23 +15,20 @@ export const LoginPage = ({
   phoneNumber,
   controlCode,
   loadingControlCode,
-  error,
+  errorDescription,
 }) => (
   <div className="container mt-4 pt-4">
     <div className="row">
       <div className="col-12 text-center">
         <img src={logo} alt="Tuleva" className="img-responsive brand-logo mb-4 pb-4 mt-4" />
-        {
-          !error ?
-            <div>
-              <h3><Message>login.title</Message></h3>
-              <small className="mt-2 text-muted"><Message>login.subtitle</Message></small>
-            </div> : ''
-        }
+        <div>
+          <h3><Message>login.title</Message></h3>
+          <small className="mt-2 text-muted"><Message>login.subtitle</Message></small>
+        </div>
       </div>
     </div>
     {
-      !error && !loadingControlCode && !controlCode ?
+      !errorDescription && !loadingControlCode && !controlCode ?
         <LoginForm
           onPhoneNumberSubmit={onPhoneNumberSubmit}
           onPhoneNumberChange={onPhoneNumberChange}
@@ -38,18 +36,13 @@ export const LoginPage = ({
         /> : ''
     }
     {
-      loadingControlCode || controlCode ?
+      !errorDescription && (loadingControlCode || controlCode) ?
         <AuthenticationLoader
           onCancel={onCancelMobileAuthentication}
           controlCode={controlCode}
         /> : ''
     }
-    {
-      error && error.error_description === 'INVALID_USER_CREDENTIALS' ?
-        <div className="alert alert-danger">
-          <Message>login.error.invalid.user.credentials</Message> <a href="https://tuleva.ee/#liitu"><Message>login.join.tuleva</Message></a>
-        </div> : <div className="alert alert-danger"><Message>login.error.generic</Message></div>
-    }
+    { errorDescription ? <ErrorAlert description={errorDescription} /> : '' }
   </div>
 );
 
@@ -64,7 +57,7 @@ LoginPage.defaultProps = {
   controlCode: '',
   loadingControlCode: false,
   successful: false,
-  error: null,
+  errorDescription: '',
 };
 
 LoginPage.propTypes = {
@@ -75,14 +68,14 @@ LoginPage.propTypes = {
   phoneNumber: Types.string,
   controlCode: Types.string,
   loadingControlCode: Types.bool,
-  error: Types.shape({}),
+  errorDescription: Types.string,
 };
 
 const mapStateToProps = state => ({
   phoneNumber: state.login.phoneNumber,
   controlCode: state.login.controlCode,
   loadingControlCode: state.login.loadingControlCode,
-  error: state.login.error,
+  errorDescription: (state.login.error || {}).error_description,
   successful: !!state.login.token, // not used right now
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
