@@ -9,8 +9,8 @@ import {
   GET_USER_START,
   GET_USER_SUCCESS,
   GET_USER_ERROR,
-  LOG_OUT
-} from "./constants";
+  LOG_OUT,
+} from './constants';
 
 const TOKEN_STORAGE_KEY = 'token';
 

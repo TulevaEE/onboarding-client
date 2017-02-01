@@ -1,9 +1,9 @@
-import React from "react";
-import {shallow} from "enzyme";
-import {Message} from "retranslate";
-import {LoginPage} from "./LoginPage";
-import AuthenticationLoader from "./authenticationLoader";
-import LoginForm from "./loginForm";
+import React from 'react';
+import { shallow } from 'enzyme';
+import { Message } from 'retranslate';
+import { LoginPage } from './LoginPage';
+import AuthenticationLoader from './authenticationLoader';
+import LoginForm from './loginForm';
 
 describe('Login page', () => {
   let props;

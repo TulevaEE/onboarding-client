@@ -1,11 +1,11 @@
-import React, {PropTypes as Types} from "react";
-import {bindActionCreators} from "redux";
-import {connect} from "react-redux";
-import {Message} from "retranslate";
-import {logo} from "../common";
-import LoginForm from "./loginForm";
-import AuthenticationLoader from "./authenticationLoader";
-import {changePhoneNumber, authenticateWithPhoneNumber, cancelMobileAuthentication} from "./actions";
+import React, { PropTypes as Types } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { Message } from 'retranslate';
+import { logo } from '../common';
+import LoginForm from './loginForm';
+import AuthenticationLoader from './authenticationLoader';
+import { changePhoneNumber, authenticateWithPhoneNumber, cancelMobileAuthentication } from './actions';
 
 export const LoginPage = ({
   onPhoneNumberSubmit,
