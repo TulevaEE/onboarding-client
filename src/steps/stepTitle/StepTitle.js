@@ -14,7 +14,6 @@ const StepTitle = ({ children, number, active, completed }) => (
         {!completed ? number : ''}
       </span>
       <span className={`mr-2 ${active ? 'h3' : 'text-muted'}`}>{children}</span>
-      {active}
     </div>
   </div>
 );
