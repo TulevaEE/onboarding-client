@@ -70,7 +70,7 @@ Steps.propTypes = {
 
 const mapStateToProps = state => ({
   stepName: state.routing.locationBeforeTransitions.pathname.split('/').pop(),
-  userFirstName: state.login.user.firstName,
+  userFirstName: (state.login.user || {}).firstName,
 });
 
 const connectToRedux = connect(mapStateToProps);
