@@ -1,10 +1,9 @@
-import React from 'react';
-import { shallow } from 'enzyme';
-import { Message } from 'retranslate';
-
-import { LoginPage } from './LoginPage';
-import AuthenticationLoader from './authenticationLoader';
-import LoginForm from './loginForm';
+import React from "react";
+import {shallow} from "enzyme";
+import {Message} from "retranslate";
+import {LoginPage} from "./LoginPage";
+import AuthenticationLoader from "./authenticationLoader";
+import LoginForm from "./loginForm";
 
 describe('Login page', () => {
   let props;
@@ -44,5 +43,23 @@ describe('Login page', () => {
     expect(component.contains(
       <AuthenticationLoader controlCode="1337" onCancel={onCancelMobileAuthentication} />,
     )).toBe(true);
+  });
+
+  it('renders a generic error if the server returns some unknown error', () => {
+    const formProps = {
+      error: { error_description: 'GENERIC_ERROR' },
+    };
+    component.setProps(formProps);
+    expect(component.contains(<Message>login.error.generic</Message>)).toBe(true);
+    expect(component.contains(<Message>login.error.invalid.user.credentials</Message>)).toBe(false);
+  });
+
+  it('renders a specific signup error message if the server returns that the credentials are invalid', () => {
+    const formProps = {
+      error: { error_description: 'INVALID_USER_CREDENTIALS' },
+    };
+    component.setProps(formProps);
+    expect(component.contains(<Message>login.error.invalid.user.credentials</Message>)).toBe(true);
+    expect(component.contains(<Message>login.error.generic</Message>)).toBe(false);
   });
 });

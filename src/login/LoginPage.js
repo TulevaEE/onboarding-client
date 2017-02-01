@@ -1,12 +1,11 @@
-import React, { PropTypes as Types } from 'react';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { Message } from 'retranslate';
-
-import { logo } from '../common';
-import LoginForm from './loginForm';
-import AuthenticationLoader from './authenticationLoader';
-import { changePhoneNumber, authenticateWithPhoneNumber, cancelMobileAuthentication } from './actions';
+import React, {PropTypes as Types} from "react";
+import {bindActionCreators} from "redux";
+import {connect} from "react-redux";
+import {Message} from "retranslate";
+import {logo} from "../common";
+import LoginForm from "./loginForm";
+import AuthenticationLoader from "./authenticationLoader";
+import {changePhoneNumber, authenticateWithPhoneNumber, cancelMobileAuthentication} from "./actions";
 
 export const LoginPage = ({
   onPhoneNumberSubmit,
@@ -21,8 +20,13 @@ export const LoginPage = ({
     <div className="row">
       <div className="col-12 text-center">
         <img src={logo} alt="Tuleva" className="img-responsive brand-logo mb-4 pb-4 mt-4" />
-        <h3><Message>login.title</Message></h3>
-        <small className="mt-2 text-muted"><Message>login.subtitle</Message></small>
+        {
+          !error ?
+            <div>
+              <h3><Message>login.title</Message></h3>
+              <small className="mt-2 text-muted"><Message>login.subtitle</Message></small>
+            </div> : ''
+        }
       </div>
     </div>
     {
@@ -39,6 +43,12 @@ export const LoginPage = ({
           onCancel={onCancelMobileAuthentication}
           controlCode={controlCode}
         /> : ''
+    }
+    {
+      error && error.error_description === 'INVALID_USER_CREDENTIALS' ?
+        <div className="alert alert-danger">
+          <Message>login.error.invalid.user.credentials</Message> <a href="https://tuleva.ee/#liitu"><Message>login.join.tuleva</Message></a>
+        </div> : <div className="alert alert-danger"><Message>login.error.generic</Message></div>
     }
   </div>
 );
