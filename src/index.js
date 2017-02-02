@@ -44,10 +44,12 @@ function getUserIfNecessary() {
   }
 }
 
-function getSourceFundsIfNecessary() {
+function getFundsIfNecessary() {
   const { login, exchange } = store.getState();
-  if (login.token && !(exchange.pensionFunds || exchange.loadingPensionFunds)) {
+  if (login.token && !(exchange.sourceFunds || exchange.loadingSourceFunds ||
+    exchange.targetFunds || exchange.loadingTargetFunds)) {
     store.dispatch(exchangeActions.getSourceFunds());
+    store.dispatch(exchangeActions.getTargetFunds());
   }
 }
 
@@ -57,7 +59,7 @@ render((
       <Router history={history}>
         <Route path="/login" component={LoginPage} />
         <Route path="/" component={requireAuthentication(App)} onEnter={getUserIfNecessary}>
-          <Route path="/steps" component={Steps} onEnter={getSourceFundsIfNecessary}>
+          <Route path="/steps" component={Steps} onEnter={getFundsIfNecessary}>
             <Route path="select-sources" component={SelectSources} />
             <Route path="select-target-fund" component={SelectTargetFund} />
             <Route path="transfer-future-capital" component={TransferFutureCapital} />
