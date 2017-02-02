@@ -11,6 +11,8 @@ import {
   GET_TARGET_FUNDS_ERROR,
 
   SELECT_TARGET_FUND,
+
+  SET_TRANSFER_FUTURE_CAPITAL,
 } from './constants';
 
 export function getSourceFunds() {
@@ -37,4 +39,8 @@ export function getTargetFunds() {
 
 export function selectTargetFund(targetFund) {
   return { type: SELECT_TARGET_FUND, targetFund };
+}
+
+export function setTransferFutureCapital(transferFutureCapital) {
+  return { type: SET_TRANSFER_FUTURE_CAPITAL, transferFutureCapital };
 }

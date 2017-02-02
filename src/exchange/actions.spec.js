@@ -10,6 +10,8 @@ import {
   GET_TARGET_FUNDS_ERROR,
 
   SELECT_TARGET_FUND,
+
+  SET_TRANSFER_FUTURE_CAPITAL,
 } from './constants';
 
 const mockApi = jest.genMockFromModule('../common/api');
@@ -113,6 +115,15 @@ describe('Exchange actions', () => {
     expect(actions.selectTargetFund(targetFund)).toEqual({
       type: SELECT_TARGET_FUND,
       targetFund,
+    });
+  });
+
+  it('can set if you want to transfer future capital', () => {
+    [true, false].forEach((transferFutureCapital) => {
+      expect(actions.setTransferFutureCapital(transferFutureCapital)).toEqual({
+        type: SET_TRANSFER_FUTURE_CAPITAL,
+        transferFutureCapital,
+      });
     });
   });
 });
