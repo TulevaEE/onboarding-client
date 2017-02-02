@@ -68,7 +68,7 @@ export const SelectSources = ({
         <Message>select.sources.select.none.subtitle</Message>
       </Radio>
       <div className="px-col">
-        <Link className="btn btn-primary mt-4 mb-4" to="/steps/select-fund">
+        <Link className="btn btn-primary mt-4 mb-4" to="/steps/select-target-fund">
           <Message>steps.next</Message>
         </Link>
         <br />

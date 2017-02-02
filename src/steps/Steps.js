@@ -8,7 +8,7 @@ import StepTitle from './stepTitle';
 
 const orderedStepNames = [
   'select-sources',
-  'select-fund',
+  'select-target-fund',
   'transfer-future-capital',
   'confirm-application',
 ];

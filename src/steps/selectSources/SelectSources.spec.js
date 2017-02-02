@@ -41,7 +41,7 @@ describe('Select sources step', () => {
 
   it('renders a link to the next step', () => {
     expect(component.contains(
-      <Link className="btn btn-primary mt-4 mb-4" to="/steps/select-fund">
+      <Link className="btn btn-primary mt-4 mb-4" to="/steps/select-target-fund">
         <Message>steps.next</Message>
       </Link>,
     )).toBe(true);
