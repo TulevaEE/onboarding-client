@@ -33,5 +33,8 @@
   "target.funds.AE123232334.title": "Tuleva maailma aktsiate pensionifond",
   "target.funds.AE123232334.description": "Lähtuvalt sinu vanusest, soovitab Tuleva sul koguda raha siia fondi. Tuleva maailma aktsiate pensionifondi kaudu ostad sa 75% ulatuses tükikese kõikidest maailma suurimate börsiettevõtete aktsiatest ning 25% ulatuses valitsuste ja ettevõtete võlakirju.",
   "target.funds.AE123232335.title": "Tuleva maailma võlakirjade pensionifond",
-  "target.funds.AE123232335.description": "Tuleva võlakirjafondi kaudu ostad sa 100% ulatuses maailma valitsuste ja ettevõtete võlakirju."
+  "target.funds.AE123232335.description": "Tuleva võlakirjafondi kaudu ostad sa 100% ulatuses maailma valitsuste ja ettevõtete võlakirju.",
+  "transfer.future.capital.intro": "Sinu pensionikontole laekub iga kuu täiendavat raha. Suuna ka need maksed Tuleva fondi, sest muidu lähevad need su vanasse fondi edasi.",
+  "transfer.future.capital.yes": "Suunan edasised maksed Tuleva maailma aktsiate pensionifondi",
+  "transfer.future.capital.no": "Ei soovi edasisi makseid Tuleva pensionifondi suunata"
 }
