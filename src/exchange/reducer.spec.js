@@ -51,7 +51,10 @@ describe('Exchange reducer', () => {
   });
 
   it('stops loading, saves and selects target funds when getting them succeeds', () => {
-    const targetFunds = [{ id: 0, hello: true }, { id: 1, iShouldBeSelected: true }];
+    const targetFunds = [
+      { isin: 'asd', hello: true },
+      { isin: 'AE123232334', iShouldBeSelected: true },
+    ];
     const action = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
     const newState = exchangeReducer({ loadingTargetFunds: true }, action);
     expect(newState.targetFunds).toEqual(targetFunds);
