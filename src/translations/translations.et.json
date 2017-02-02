@@ -29,5 +29,9 @@
   "select.sources.select.some": "Toon kogutud pensioni osaliselt Tulevasse",
   "select.sources.select.some.subtitle": "Sa saad valida, millise osa millisest fondist Sa Tulevasse üle tood.",
   "select.sources.select.none": "Ei too kogutud pensionit üle ja suunan ümber vaid uued maksed.",
-  "select.sources.select.none.subtitle": "Sinu kogutud pensionifondid ei muutu ja sa säästad selle arvelt, et Sinu tuleviku maksed lähevad Tulevasse."
+  "select.sources.select.none.subtitle": "Sinu kogutud pensionifondid ei muutu ja sa säästad selle arvelt, et Sinu tuleviku maksed lähevad Tulevasse.",
+  "target.funds.AE123232334.title": "Tuleva maailma aktsiate pensionifond",
+  "target.funds.AE123232334.description": "Lähtuvalt sinu vanusest, soovitab Tuleva sul koguda raha siia fondi. Tuleva maailma aktsiate pensionifondi kaudu ostad sa 75% ulatuses tükikese kõikidest maailma suurimate börsiettevõtete aktsiatest ning 25% ulatuses valitsuste ja ettevõtete võlakirju.",
+  "target.funds.AE123232335.title": "Tuleva maailma võlakirjade pensionifond",
+  "target.funds.AE123232335.description": "Tuleva võlakirjafondi kaudu ostad sa 100% ulatuses maailma valitsuste ja ettevõtete võlakirju."
 }
