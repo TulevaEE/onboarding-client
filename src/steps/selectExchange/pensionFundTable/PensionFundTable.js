@@ -21,11 +21,11 @@ const PensionFundTable = ({ funds }) => {
         </div>
       </div>
       {
-        funds.map(({ currency, price, name, manager, isin }) =>
+        funds.map(({ currency, price, name, isin }) =>
           <FundRow
             key={isin}
             price={price}
-            name={`${manager} ${name}`}
+            name={name}
             currency={currency}
           />,
         )
