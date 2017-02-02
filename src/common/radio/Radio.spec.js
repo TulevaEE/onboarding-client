@@ -39,4 +39,10 @@ describe('Radio', () => {
     component.setProps({ selected: true });
     expect(componentSelected()).toBe(true);
   });
+
+  it('passes className to the main div', () => {
+    expect(component.find('div.tv-radio').hasClass('test-class')).toBe(false);
+    component.setProps({ className: 'test-class' });
+    expect(component.find('div.tv-radio').hasClass('test-class')).toBe(true);
+  });
 });
