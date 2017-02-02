@@ -2,7 +2,14 @@ import {
   GET_SOURCE_FUNDS_START,
   GET_SOURCE_FUNDS_SUCCESS,
   GET_SOURCE_FUNDS_ERROR,
+
   SELECT_EXCHANGE_SOURCES,
+
+  GET_TARGET_FUNDS_START,
+  GET_TARGET_FUNDS_SUCCESS,
+  GET_TARGET_FUNDS_ERROR,
+
+  SELECT_TARGET_FUND,
 } from './constants';
 
 const mockApi = jest.genMockFromModule('../common/api');
@@ -69,6 +76,43 @@ describe('Exchange actions', () => {
       type: SELECT_EXCHANGE_SOURCES,
       sourceSelection,
       sourceSelectionExact: true,
+    });
+  });
+
+  it('can get target funds', () => {
+    const targetFunds = [{ iAmPensionFunds: true }];
+    mockApi.getTargetFundsWithToken = jest.fn(() => {
+      expect(dispatch).toHaveBeenCalledTimes(1);
+      expect(dispatch).toHaveBeenCalledWith({ type: GET_TARGET_FUNDS_START });
+      dispatch.mockClear();
+      return Promise.resolve(targetFunds);
+    });
+    const getTargetFunds = createBoundAction(actions.getTargetFunds);
+    expect(dispatch).not.toHaveBeenCalled();
+    return getTargetFunds()
+      .then(() => {
+        expect(dispatch).toHaveBeenCalledTimes(1);
+        expect(dispatch).toHaveBeenCalledWith({
+          type: GET_TARGET_FUNDS_SUCCESS,
+          targetFunds,
+        });
+      });
+  });
+
+  it('can handle errors when getting target funds', () => {
+    const error = new Error('oh no!');
+    mockApi.getTargetFundsWithToken = jest.fn(() => Promise.reject(error));
+    const getTargetFunds = createBoundAction(actions.getTargetFunds);
+    expect(dispatch).not.toHaveBeenCalled();
+    return getTargetFunds()
+      .then(() => expect(dispatch).toHaveBeenCalledWith({ type: GET_TARGET_FUNDS_ERROR, error }));
+  });
+
+  it('can select a target fund', () => {
+    const targetFund = { iAmATargetFund: true };
+    expect(actions.selectTargetFund(targetFund)).toEqual({
+      type: SELECT_TARGET_FUND,
+      targetFund,
     });
   });
 });
