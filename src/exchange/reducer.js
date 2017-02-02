@@ -10,6 +10,8 @@ import {
   GET_TARGET_FUNDS_ERROR,
 
   SELECT_TARGET_FUND,
+
+  SET_TRANSFER_FUTURE_CAPITAL,
 } from './constants';
 
 const initialState = {
@@ -20,6 +22,7 @@ const initialState = {
   targetFunds: null,
   loadingTargetFunds: false,
   selectedTargetFund: null,
+  transferFutureCapital: true,
   error: null,
 };
 
@@ -62,6 +65,9 @@ export default function exchangeReducer(state = initialState, action) {
       return { ...state, loadingTargetFunds: false, error: action.error };
     case SELECT_TARGET_FUND:
       return { ...state, selectedTargetFund: action.targetFund };
+
+    case SET_TRANSFER_FUTURE_CAPITAL:
+      return { ...state, transferFutureCapital: action.transferFutureCapital };
 
     default:
       return state;

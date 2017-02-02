@@ -11,6 +11,8 @@ import {
   GET_TARGET_FUNDS_ERROR,
 
   SELECT_TARGET_FUND,
+
+  SET_TRANSFER_FUTURE_CAPITAL,
 } from './constants';
 
 describe('Exchange reducer', () => {
@@ -74,5 +76,12 @@ describe('Exchange reducer', () => {
     const targetFund = { thisIsTheTarget: true };
     const action = { type: SELECT_TARGET_FUND, targetFund };
     expect(exchangeReducer(undefined, action).selectedTargetFund).toEqual(targetFund);
+  });
+
+  it('can set if the user wants to transfer future capital', () => {
+    const action = { type: SET_TRANSFER_FUTURE_CAPITAL, transferFutureCapital: true };
+    expect(exchangeReducer(undefined, action).transferFutureCapital).toBe(true);
+    action.transferFutureCapital = false;
+    expect(exchangeReducer(undefined, action).transferFutureCapital).toBe(false);
   });
 });
