@@ -8,7 +8,7 @@ const Header = ({ user: { name, personalCode } = {}, loading, onLogout }) => (
     <div className="col align-self-start">
       <img src={logo} alt="Tuleva" className="img-responsive brand-logo" />
     </div>
-    <div className="col align-self-end text-right pr-0">
+    <div className="col align-self-end text-right">
       {
         loading || !(name || personalCode) ?
           <Loader className="align-right" /> :

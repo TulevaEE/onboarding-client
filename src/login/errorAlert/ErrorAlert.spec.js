@@ -23,8 +23,11 @@ describe('Error alert', () => {
 
   it('shows a call to action with a link to join tuleva when user has not joined tuleva', () => {
     component.setProps({ description: 'INVALID_USER_CREDENTIALS' });
-    expect(component.find('a').first().prop('href')).toBe('https://tuleva.ee/#liitu');
+    expect(component.contains(
+      <a href="https://tuleva.ee/#liitu">
+        <Message>login.join.tuleva</Message>
+      </a>,
+    )).toBe(true);
     expect(component.contains(<Message>login.error.invalid.user.credentials</Message>)).toBe(true);
-    expect(component.contains(<Message>login.join.tuleva</Message>)).toBe(true);
   });
 });
