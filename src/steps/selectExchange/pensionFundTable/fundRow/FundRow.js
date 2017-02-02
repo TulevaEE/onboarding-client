@@ -24,7 +24,6 @@ const FundRow = ({ price, currency, name, highlighted }) => {
 FundRow.defaultProps = {
   price: 0,
   currency: 'EUR',
-  key: '',
   name: '',
   highlighted: false,
 };
