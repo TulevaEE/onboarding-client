@@ -23,5 +23,11 @@
   "select.exchange.value": "Osakute väärtus",
   "select.exchange.fees": "Teenustasu kulu",
   "select.exchange.current.status": "Sinu II samba pensionivara seis täna",
-  "select.exchange.total": "Kokku"
+  "select.exchange.total": "Kokku",
+  "select.exchange.select.all": "Toon kõik kogutud pensioni Tulevasse",
+  "select.exchange.select.all.subtitle": "Tuleva pensionifondi tasud on kõige madalamad. Fondivahetus on Sulle tasuta.",
+  "select.exchange.select.some": "Toon kogutud pensioni osaliselt Tulevasse",
+  "select.exchange.select.some.subtitle": "Sa saad valida, millise osa millisest fondist Sa Tulevasse üle tood.",
+  "select.exchange.select.none": "Ei too kogutud pensionit üle ja suunan ümber vaid uued maksed.",
+  "select.exchange.select.none.subtitle": "Sinu kogutud pensionifondid ei muutu ja sa säästad selle arvelt, et Sinu tuleviku maksed lähevad Tulevasse."
 }

@@ -41,7 +41,7 @@ export const Steps = ({ children, stepName, userFirstName }) => {
           <StepTitle number={stepIndex + 1} active>
             <Message>{`steps.${currentStep}`}</Message>
           </StepTitle>
-          <div className="px-col pb-4 tv-step__content">{children}</div>
+          <div className="pb-4 tv-step__content">{children}</div>
           <hr className="mb-4" />
           {
             afterSteps.map((afterStep, index) =>

@@ -46,4 +46,6 @@ describe('Select exchange step', () => {
       </Link>,
     )).toBe(true);
   });
+
+  // TODO: write tests once selectexchange supports selecting parts of funds.
 });
