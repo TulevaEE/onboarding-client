@@ -55,20 +55,21 @@ describe('Exchange actions', () => {
     const getExistingPensionFunds = createBoundAction(actions.getExistingPensionFunds);
     expect(dispatch).not.toHaveBeenCalled();
     return getExistingPensionFunds()
-      .then(() => expect(dispatch).toHaveBeenCalledWith({ type: GET_EXISTING_PENSION_FUNDS_ERROR, error }));
+      .then(() => expect(dispatch)
+        .toHaveBeenCalledWith({ type: GET_EXISTING_PENSION_FUNDS_ERROR, error }));
   });
 
   it('can select an exchange', () => {
-    const exchange = [{ exchangeMe: true }];
-    expect(actions.selectExchangeSources(exchange)).toEqual({
+    const sourceSelection = [{ exchangeMe: true }];
+    expect(actions.selectExchangeSources(sourceSelection)).toEqual({
       type: SELECT_EXCHANGE_SOURCES,
-      exchange,
-      selectedSome: false,
+      sourceSelection,
+      sourceSelectionExact: false,
     });
-    expect(actions.selectExchangeSources(exchange, true)).toEqual({
+    expect(actions.selectExchangeSources(sourceSelection, true)).toEqual({
       type: SELECT_EXCHANGE_SOURCES,
-      exchange,
-      selectedSome: true,
+      sourceSelection,
+      sourceSelectionExact: true,
     });
   });
 });

@@ -15,6 +15,6 @@ export function getExistingPensionFunds() { // eslint-disable-line
   };
 }
 
-export function selectExchangeSources(exchange, selectedSome = false) {
-  return { type: SELECT_EXCHANGE_SOURCES, exchange, selectedSome };
+export function selectExchangeSources(sourceSelection, sourceSelectionExact = false) {
+  return { type: SELECT_EXCHANGE_SOURCES, sourceSelection, sourceSelectionExact };
 }
