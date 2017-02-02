@@ -15,13 +15,13 @@ describe('Select sources step', () => {
   });
 
   it('renders a loader when loading pension funds', () => {
-    component.setProps({ loadingPensionFunds: true });
+    component.setProps({ loadingSourceFunds: true });
     expect(component.find(Loader).length).toBe(1);
     expect(component.get(0)).toEqual(<Loader className="align-middle" />);
   });
 
   it('does not render a loader when pension funds loaded', () => {
-    component.setProps({ loadingPensionFunds: false });
+    component.setProps({ loadingSourceFunds: false });
     expect(component.find(Loader).length).toBe(0);
   });
 
@@ -30,9 +30,9 @@ describe('Select sources step', () => {
   });
 
   it('renders a pension funds table with given funds', () => {
-    const pensionFunds = [{ iAmAFund: true }, { iAmAlsoAFund: true }];
-    component.setProps({ pensionFunds });
-    expect(component.contains(<PensionFundTable funds={pensionFunds} />)).toBe(true);
+    const sourceFunds = [{ iAmAFund: true }, { iAmAlsoAFund: true }];
+    component.setProps({ sourceFunds });
+    expect(component.contains(<PensionFundTable funds={sourceFunds} />)).toBe(true);
   });
 
   it('renders an explanation of the savings calculations', () => {

@@ -1,7 +1,7 @@
 import {
-  GET_EXISTING_PENSION_FUNDS_START,
-  GET_EXISTING_PENSION_FUNDS_SUCCESS,
-  GET_EXISTING_PENSION_FUNDS_ERROR,
+  GET_SOURCE_FUNDS_START,
+  GET_SOURCE_FUNDS_SUCCESS,
+  GET_SOURCE_FUNDS_ERROR,
   SELECT_EXCHANGE_SOURCES,
 } from './constants';
 
@@ -15,9 +15,9 @@ const initialState = {
 
 export default function exchangeReducer(state = initialState, action) {
   switch (action.type) {
-    case GET_EXISTING_PENSION_FUNDS_START:
+    case GET_SOURCE_FUNDS_START:
       return { ...state, loadingSourceFunds: true, error: null };
-    case GET_EXISTING_PENSION_FUNDS_SUCCESS:
+    case GET_SOURCE_FUNDS_SUCCESS:
       return {
         ...state,
         loadingSourceFunds: false,
@@ -25,7 +25,7 @@ export default function exchangeReducer(state = initialState, action) {
         sourceSelection: action.sourceFunds
           .map(({ name, isin }) => ({ name, isin, percentage: 1 })),
       };
-    case GET_EXISTING_PENSION_FUNDS_ERROR:
+    case GET_SOURCE_FUNDS_ERROR:
       return { ...state, loadingSourceFunds: false, error: action.error };
     case SELECT_EXCHANGE_SOURCES:
       return {

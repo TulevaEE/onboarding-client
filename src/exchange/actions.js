@@ -1,17 +1,17 @@
-import { getExistingPensionFundsWithToken } from '../common/api';
+import { getSourceFundsWithToken } from '../common/api';
 import {
-  GET_EXISTING_PENSION_FUNDS_START,
-  GET_EXISTING_PENSION_FUNDS_SUCCESS,
-  GET_EXISTING_PENSION_FUNDS_ERROR,
+  GET_SOURCE_FUNDS_START,
+  GET_SOURCE_FUNDS_SUCCESS,
+  GET_SOURCE_FUNDS_ERROR,
   SELECT_EXCHANGE_SOURCES,
 } from './constants';
 
-export function getExistingPensionFunds() { // eslint-disable-line
+export function getSourceFunds() { // eslint-disable-line
   return (dispatch, getState) => {
-    dispatch({ type: GET_EXISTING_PENSION_FUNDS_START });
-    return getExistingPensionFundsWithToken(getState().login.token)
-      .then(pensionFunds => dispatch({ type: GET_EXISTING_PENSION_FUNDS_SUCCESS, pensionFunds }))
-      .catch(error => dispatch({ type: GET_EXISTING_PENSION_FUNDS_ERROR, error }));
+    dispatch({ type: GET_SOURCE_FUNDS_START });
+    return getSourceFundsWithToken(getState().login.token)
+      .then(sourceFunds => dispatch({ type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds }))
+      .catch(error => dispatch({ type: GET_SOURCE_FUNDS_ERROR, error }));
   };
 }
 

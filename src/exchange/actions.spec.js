@@ -1,7 +1,7 @@
 import {
-  GET_EXISTING_PENSION_FUNDS_START,
-  GET_EXISTING_PENSION_FUNDS_SUCCESS,
-  GET_EXISTING_PENSION_FUNDS_ERROR,
+  GET_SOURCE_FUNDS_START,
+  GET_SOURCE_FUNDS_SUCCESS,
+  GET_SOURCE_FUNDS_ERROR,
   SELECT_EXCHANGE_SOURCES,
 } from './constants';
 
@@ -30,33 +30,32 @@ describe('Exchange actions', () => {
   beforeEach(mockDispatch);
 
   it('can get pension funds', () => {
-    const pensionFunds = [{ iAmPensionFunds: true }];
-    mockApi.getExistingPensionFundsWithToken = jest.fn(() => {
+    const sourceFunds = [{ iAmPensionFunds: true }];
+    mockApi.getSourceFundsWithToken = jest.fn(() => {
       expect(dispatch).toHaveBeenCalledTimes(1);
-      expect(dispatch).toHaveBeenCalledWith({ type: GET_EXISTING_PENSION_FUNDS_START });
+      expect(dispatch).toHaveBeenCalledWith({ type: GET_SOURCE_FUNDS_START });
       dispatch.mockClear();
-      return Promise.resolve(pensionFunds);
+      return Promise.resolve(sourceFunds);
     });
-    const getExistingPensionFunds = createBoundAction(actions.getExistingPensionFunds);
+    const getSourceFunds = createBoundAction(actions.getSourceFunds);
     expect(dispatch).not.toHaveBeenCalled();
-    return getExistingPensionFunds()
+    return getSourceFunds()
       .then(() => {
         expect(dispatch).toHaveBeenCalledTimes(1);
         expect(dispatch).toHaveBeenCalledWith({
-          type: GET_EXISTING_PENSION_FUNDS_SUCCESS,
-          pensionFunds,
+          type: GET_SOURCE_FUNDS_SUCCESS,
+          sourceFunds,
         });
       });
   });
 
   it('can handle errors when getting pension funds', () => {
     const error = new Error('oh no!');
-    mockApi.getExistingPensionFundsWithToken = jest.fn(() => Promise.reject(error));
-    const getExistingPensionFunds = createBoundAction(actions.getExistingPensionFunds);
+    mockApi.getSourceFundsWithToken = jest.fn(() => Promise.reject(error));
+    const getSourceFunds = createBoundAction(actions.getSourceFunds);
     expect(dispatch).not.toHaveBeenCalled();
-    return getExistingPensionFunds()
-      .then(() => expect(dispatch)
-        .toHaveBeenCalledWith({ type: GET_EXISTING_PENSION_FUNDS_ERROR, error }));
+    return getSourceFunds()
+      .then(() => expect(dispatch).toHaveBeenCalledWith({ type: GET_SOURCE_FUNDS_ERROR, error }));
   });
 
   it('can select an exchange', () => {

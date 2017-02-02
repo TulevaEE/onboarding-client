@@ -8,42 +8,42 @@ import { selectExchangeSources } from '../../exchange/actions';
 import { Loader, Radio } from '../../common';
 import PensionFundTable from './pensionFundTable';
 
-function isFullSelection(selection) {
-  return selection.reduce((isFull, { percentage }) => isFull && percentage === 1, true);
+function isFullSelection(sourceSelection) {
+  return sourceSelection.reduce((isFull, { percentage }) => isFull && percentage === 1, true);
 }
 
-function isNoneSelection(selection) {
-  return selection.reduce((isNone, { percentage }) => isNone && percentage === 0, true);
+function isNoneSelection(sourceSelection) {
+  return sourceSelection.reduce((isNone, { percentage }) => isNone && percentage === 0, true);
 }
 
-function selectFull(selection) {
-  return selection.map(fund => ({ ...fund, percentage: 1 }));
+function selectFull(sourceSelection) {
+  return sourceSelection.map(fund => ({ ...fund, percentage: 1 }));
 }
 
-function selectNone(selection) {
-  return selection.map(fund => ({ ...fund, percentage: 0 }));
+function selectNone(sourceSelection) {
+  return sourceSelection.map(fund => ({ ...fund, percentage: 0 }));
 }
 
 export const SelectSources = ({
-  loadingPensionFunds,
-  pensionFunds,
-  selection,
+  loadingSourceFunds,
+  sourceFunds,
+  sourceSelection,
   onSelect,
-  selectedSome,
+  sourceSelectionExact,
 }) => {
-  if (loadingPensionFunds) {
+  if (loadingSourceFunds) {
     return <Loader className="align-middle" />;
   }
   return (
     <div>
       <div className="px-col mb-4">
         <p className="mb-4 mt-4"><Message>select.sources.current.status</Message></p>
-        <PensionFundTable funds={pensionFunds} />
+        <PensionFundTable funds={sourceFunds} />
       </div>
       <Radio
         name="tv-select-sources-type"
-        selected={isFullSelection(selection) && !selectedSome}
-        onSelect={() => onSelect(selectFull(selection), false)}
+        selected={isFullSelection(sourceSelection) && !sourceSelectionExact}
+        onSelect={() => onSelect(selectFull(sourceSelection), false)}
       >
         <h3><Message>select.sources.select.all</Message></h3>
         <Message>select.sources.select.all.subtitle</Message>
@@ -52,8 +52,8 @@ export const SelectSources = ({
       <Radio
         name="tv-select-sources-type"
         className="mt-3"
-        selected={selectedSome}
-        onSelect={() => onSelect(selection, true)}
+        selected={sourceSelectionExact}
+        onSelect={() => onSelect(sourceSelection, true)}
       >
         <h3><Message>select.sources.select.some</Message></h3>
         <Message>select.sources.select.some.subtitle</Message>
@@ -61,8 +61,8 @@ export const SelectSources = ({
       <Radio
         name="tv-select-sources-type"
         className="mt-3"
-        selected={isNoneSelection(selection) && !selectedSome}
-        onSelect={() => onSelect(selectNone(selection), false)}
+        selected={isNoneSelection(sourceSelection) && !sourceSelectionExact}
+        onSelect={() => onSelect(selectNone(sourceSelection), false)}
       >
         <h3><Message>select.sources.select.none</Message></h3>
         <Message>select.sources.select.none.subtitle</Message>
@@ -83,26 +83,26 @@ export const SelectSources = ({
 const noop = () => null;
 
 SelectSources.defaultProps = {
-  pensionFunds: [],
-  loadingPensionFunds: false,
-  selection: [],
-  selectedSome: false,
+  sourceFunds: [],
+  loadingSourceFunds: false,
+  sourceSelection: [],
+  sourceSelectionExact: false,
   onSelect: noop,
 };
 
 SelectSources.propTypes = {
-  selection: Types.arrayOf(Types.shape({})),
-  selectedSome: Types.bool,
-  pensionFunds: Types.arrayOf(Types.shape({})),
-  loadingPensionFunds: Types.bool,
+  sourceSelection: Types.arrayOf(Types.shape({})),
+  sourceSelectionExact: Types.bool,
+  sourceFunds: Types.arrayOf(Types.shape({})),
+  loadingSourceFunds: Types.bool,
   onSelect: Types.func,
 };
 
 const mapStateToProps = state => ({
-  selection: state.exchange.selection,
-  selectedSome: state.exchange.selectedSome,
-  pensionFunds: state.exchange.pensionFunds,
-  loadingPensionFunds: state.exchange.loadingPensionFunds,
+  sourceSelection: state.exchange.sourceSelection,
+  sourceSelectionExact: state.exchange.sourceSelectionExact,
+  sourceFunds: state.exchange.sourceFunds,
+  loadingSourceFunds: state.exchange.loadingSourceFunds,
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({

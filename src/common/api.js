@@ -29,7 +29,7 @@ export function getUserWithToken(token) {
   return get(getEndpoint('/v1/me'), undefined, { Authorization: `Bearer ${token}` });
 }
 
-export function getExistingPensionFundsWithToken(token) {
+export function getSourceFundsWithToken(token) {
   return get(getEndpoint('/v1/pension-account-statement'), undefined, {
     Authorization: `Bearer ${token}`,
   });

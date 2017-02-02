@@ -1,20 +1,20 @@
 import exchangeReducer from './reducer';
 import {
-  GET_EXISTING_PENSION_FUNDS_START,
-  GET_EXISTING_PENSION_FUNDS_SUCCESS,
-  GET_EXISTING_PENSION_FUNDS_ERROR,
+  GET_SOURCE_FUNDS_START,
+  GET_SOURCE_FUNDS_SUCCESS,
+  GET_SOURCE_FUNDS_ERROR,
   SELECT_EXCHANGE_SOURCES,
 } from './constants';
 
 describe('Exchange reducer', () => {
   it('starts loading when starting to get pension funds', () => {
-    const newState = exchangeReducer(undefined, { type: GET_EXISTING_PENSION_FUNDS_START });
+    const newState = exchangeReducer(undefined, { type: GET_SOURCE_FUNDS_START });
     expect(newState.loadingSourceFunds).toBe(true);
   });
 
   it('stops loading and saves funds and default seletion when getting pension funds succeeded', () => {
     const sourceFunds = [{ name: 'name', isin: 'isin' }];
-    const action = { type: GET_EXISTING_PENSION_FUNDS_SUCCESS, sourceFunds };
+    const action = { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds };
     const newState = exchangeReducer({ loadingSourceFunds: true }, action);
     expect(newState.loadingSourceFunds).toBe(false);
     expect(newState.sourceFunds).toBe(sourceFunds);
@@ -23,7 +23,7 @@ describe('Exchange reducer', () => {
 
   it('stops loading and saves the error when getting pension funds fails', () => {
     const error = new Error('oh no');
-    const action = { type: GET_EXISTING_PENSION_FUNDS_ERROR, error };
+    const action = { type: GET_SOURCE_FUNDS_ERROR, error };
     const newState = exchangeReducer({ loadingSourceFunds: true }, action);
     expect(newState.loadingSourceFunds).toBe(false);
     expect(newState.error).toBe(error);
