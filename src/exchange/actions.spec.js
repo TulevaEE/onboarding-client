@@ -2,6 +2,7 @@ import {
   GET_PENSION_FUNDS_START,
   GET_PENSION_FUNDS_SUCCESS,
   GET_PENSION_FUNDS_ERROR,
+  SELECT_EXCHANGE,
 } from './constants';
 
 const mockApi = jest.genMockFromModule('../common/api');
@@ -55,5 +56,19 @@ describe('Exchange actions', () => {
     expect(dispatch).not.toHaveBeenCalled();
     return getPensionFunds()
       .then(() => expect(dispatch).toHaveBeenCalledWith({ type: GET_PENSION_FUNDS_ERROR, error }));
+  });
+
+  it('can select an exchange', () => {
+    const exchange = [{ exchangeMe: true }];
+    expect(actions.selectExchange(exchange)).toEqual({
+      type: SELECT_EXCHANGE,
+      exchange,
+      selectedSome: false,
+    });
+    expect(actions.selectExchange(exchange, true)).toEqual({
+      type: SELECT_EXCHANGE,
+      exchange,
+      selectedSome: true,
+    });
   });
 });
