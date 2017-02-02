@@ -11,13 +11,13 @@ const PensionFundTable = ({ funds }) => {
     <div>
       <div className="row tv-table__header py-2">
         <div className="col-12 col-sm">
-          <Message>select.exchange.pension.fund</Message>
+          <Message>select.sources.pension.fund</Message>
         </div>
         <div className="col-12 col-sm text-sm-right">
-          <Message>select.exchange.value</Message>
+          <Message>select.sources.value</Message>
         </div>
         <div className="col-12 col-sm text-sm-right">
-          <Message>select.exchange.fees</Message>
+          <Message>select.sources.fees</Message>
         </div>
       </div>
       {
@@ -33,7 +33,7 @@ const PensionFundTable = ({ funds }) => {
       <FundRow
         price={totalPrice}
         currency={'EUR'} // hardcoded until there are more currencies
-        name={'select.exchange.total'}
+        name={'select.sources.total'}
         highlighted
       />
     </div>

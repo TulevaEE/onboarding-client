@@ -96,7 +96,7 @@ describe('Login actions', () => {
         expect(mockApi.getToken).toHaveBeenCalled();
       }).then(() => {
         expect(dispatch).toHaveBeenCalledWith({ type: MOBILE_AUTHENTICATION_SUCCESS, token });
-        expect(dispatch).toHaveBeenCalledWith(push('/steps/select-exchange'));
+        expect(dispatch).toHaveBeenCalledWith(push('/steps/select-sources'));
       });
   });
 

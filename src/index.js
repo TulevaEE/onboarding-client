@@ -15,7 +15,7 @@ import LoginPage, { reducer as loginReducer, actions as loginActions } from './l
 import { reducer as exchangeReducer, actions as exchangeActions } from './exchange';
 import App from './app';
 import Steps, {
-  SelectExchange,
+  SelectSources,
   SelectFund,
   TransferFutureCapital,
   ConfirmApplication,
@@ -44,10 +44,10 @@ function getUserIfNecessary() {
   }
 }
 
-function getPensionFundsIfNecessary() {
+function getExistingPensionFundsIfNecessary() {
   const { login, exchange } = store.getState();
   if (login.token && !(exchange.pensionFunds || exchange.loadingPensionFunds)) {
-    store.dispatch(exchangeActions.getPensionFunds());
+    store.dispatch(exchangeActions.getExistingPensionFunds());
   }
 }
 
@@ -57,8 +57,8 @@ render((
       <Router history={history}>
         <Route path="/login" component={LoginPage} />
         <Route path="/" component={requireAuthentication(App)} onEnter={getUserIfNecessary}>
-          <Route path="/steps" component={Steps} onEnter={getPensionFundsIfNecessary}>
-            <Route path="select-exchange" component={SelectExchange} />
+          <Route path="/steps" component={Steps} onEnter={getExistingPensionFundsIfNecessary}>
+            <Route path="select-sources" component={SelectSources} />
             <Route path="select-fund" component={SelectFund} />
             <Route path="transfer-future-capital" component={TransferFutureCapital} />
             <Route path="confirm-application" component={ConfirmApplication} />

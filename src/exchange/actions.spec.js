@@ -1,8 +1,8 @@
 import {
-  GET_PENSION_FUNDS_START,
-  GET_PENSION_FUNDS_SUCCESS,
-  GET_PENSION_FUNDS_ERROR,
-  SELECT_EXCHANGE,
+  GET_EXISTING_PENSION_FUNDS_START,
+  GET_EXISTING_PENSION_FUNDS_SUCCESS,
+  GET_EXISTING_PENSION_FUNDS_ERROR,
+  SELECT_EXCHANGE_SOURCES,
 } from './constants';
 
 const mockApi = jest.genMockFromModule('../common/api');
@@ -31,19 +31,19 @@ describe('Exchange actions', () => {
 
   it('can get pension funds', () => {
     const pensionFunds = [{ iAmPensionFunds: true }];
-    mockApi.getPensionFundsWithToken = jest.fn(() => {
+    mockApi.getExistingPensionFundsWithToken = jest.fn(() => {
       expect(dispatch).toHaveBeenCalledTimes(1);
-      expect(dispatch).toHaveBeenCalledWith({ type: GET_PENSION_FUNDS_START });
+      expect(dispatch).toHaveBeenCalledWith({ type: GET_EXISTING_PENSION_FUNDS_START });
       dispatch.mockClear();
       return Promise.resolve(pensionFunds);
     });
-    const getPensionFunds = createBoundAction(actions.getPensionFunds);
+    const getExistingPensionFunds = createBoundAction(actions.getExistingPensionFunds);
     expect(dispatch).not.toHaveBeenCalled();
-    return getPensionFunds()
+    return getExistingPensionFunds()
       .then(() => {
         expect(dispatch).toHaveBeenCalledTimes(1);
         expect(dispatch).toHaveBeenCalledWith({
-          type: GET_PENSION_FUNDS_SUCCESS,
+          type: GET_EXISTING_PENSION_FUNDS_SUCCESS,
           pensionFunds,
         });
       });
@@ -51,22 +51,22 @@ describe('Exchange actions', () => {
 
   it('can handle errors when getting pension funds', () => {
     const error = new Error('oh no!');
-    mockApi.getPensionFundsWithToken = jest.fn(() => Promise.reject(error));
-    const getPensionFunds = createBoundAction(actions.getPensionFunds);
+    mockApi.getExistingPensionFundsWithToken = jest.fn(() => Promise.reject(error));
+    const getExistingPensionFunds = createBoundAction(actions.getExistingPensionFunds);
     expect(dispatch).not.toHaveBeenCalled();
-    return getPensionFunds()
-      .then(() => expect(dispatch).toHaveBeenCalledWith({ type: GET_PENSION_FUNDS_ERROR, error }));
+    return getExistingPensionFunds()
+      .then(() => expect(dispatch).toHaveBeenCalledWith({ type: GET_EXISTING_PENSION_FUNDS_ERROR, error }));
   });
 
   it('can select an exchange', () => {
     const exchange = [{ exchangeMe: true }];
-    expect(actions.selectExchange(exchange)).toEqual({
-      type: SELECT_EXCHANGE,
+    expect(actions.selectExchangeSources(exchange)).toEqual({
+      type: SELECT_EXCHANGE_SOURCES,
       exchange,
       selectedSome: false,
     });
-    expect(actions.selectExchange(exchange, true)).toEqual({
-      type: SELECT_EXCHANGE,
+    expect(actions.selectExchangeSources(exchange, true)).toEqual({
+      type: SELECT_EXCHANGE_SOURCES,
       exchange,
       selectedSome: true,
     });

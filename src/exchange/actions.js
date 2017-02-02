@@ -1,20 +1,20 @@
-import { getPensionFundsWithToken } from '../common/api';
+import { getExistingPensionFundsWithToken } from '../common/api';
 import {
-  GET_PENSION_FUNDS_START,
-  GET_PENSION_FUNDS_SUCCESS,
-  GET_PENSION_FUNDS_ERROR,
-  SELECT_EXCHANGE,
+  GET_EXISTING_PENSION_FUNDS_START,
+  GET_EXISTING_PENSION_FUNDS_SUCCESS,
+  GET_EXISTING_PENSION_FUNDS_ERROR,
+  SELECT_EXCHANGE_SOURCES,
 } from './constants';
 
-export function getPensionFunds() { // eslint-disable-line
+export function getExistingPensionFunds() { // eslint-disable-line
   return (dispatch, getState) => {
-    dispatch({ type: GET_PENSION_FUNDS_START });
-    return getPensionFundsWithToken(getState().login.token)
-      .then(pensionFunds => dispatch({ type: GET_PENSION_FUNDS_SUCCESS, pensionFunds }))
-      .catch(error => dispatch({ type: GET_PENSION_FUNDS_ERROR, error }));
+    dispatch({ type: GET_EXISTING_PENSION_FUNDS_START });
+    return getExistingPensionFundsWithToken(getState().login.token)
+      .then(pensionFunds => dispatch({ type: GET_EXISTING_PENSION_FUNDS_SUCCESS, pensionFunds }))
+      .catch(error => dispatch({ type: GET_EXISTING_PENSION_FUNDS_ERROR, error }));
   };
 }
 
-export function selectExchange(exchange, selectedSome = false) {
-  return { type: SELECT_EXCHANGE, exchange, selectedSome };
+export function selectExchangeSources(exchange, selectedSome = false) {
+  return { type: SELECT_EXCHANGE_SOURCES, exchange, selectedSome };
 }

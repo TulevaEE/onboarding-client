@@ -5,13 +5,13 @@ import { Message } from 'retranslate';
 
 import { Loader } from '../../common';
 import PensionFundTable from './pensionFundTable';
-import { SelectExchange } from './SelectExchange';
+import { SelectSources } from './SelectSources';
 
-describe('Select exchange step', () => {
+describe('Select sources step', () => {
   let component;
 
   beforeEach(() => {
-    component = shallow(<SelectExchange />);
+    component = shallow(<SelectSources />);
   });
 
   it('renders a loader when loading pension funds', () => {
@@ -26,7 +26,7 @@ describe('Select exchange step', () => {
   });
 
   it('renders a title', () => {
-    expect(component.contains(<Message>select.exchange.current.status</Message>)).toBe(true);
+    expect(component.contains(<Message>select.sources.current.status</Message>)).toBe(true);
   });
 
   it('renders a pension funds table with given funds', () => {
@@ -36,7 +36,7 @@ describe('Select exchange step', () => {
   });
 
   it('renders an explanation of the savings calculations', () => {
-    expect(component.contains(<Message>select.exchange.calculation.info</Message>)).toBe(true);
+    expect(component.contains(<Message>select.sources.calculation.info</Message>)).toBe(true);
   });
 
   it('renders a link to the next step', () => {
@@ -47,5 +47,5 @@ describe('Select exchange step', () => {
     )).toBe(true);
   });
 
-  // TODO: write tests once selectexchange supports selecting parts of funds.
+  // TODO: write tests once selectExchangeSources supports selecting parts of funds.
 });

@@ -32,7 +32,7 @@ describe('Steps', () => {
     component.setProps({ stepName: 'transfer-future-capital' });
     expect(component.contains(
       <StepTitle completed number={1}>
-        <Message>steps.select-exchange</Message>
+        <Message>steps.select-sources</Message>
       </StepTitle>,
     )).toBe(true);
     expect(component.contains(
@@ -61,7 +61,7 @@ describe('Steps', () => {
     component.setProps({ stepName: 'select-fund', userFirstName: name }); // not first step
     expect(component.contains(<Message params={{ name }}>steps.welcome</Message>)).toBe(false);
     expect(component.contains(<Message>steps.intro</Message>)).toBe(false);
-    component.setProps({ stepName: 'select-exchange' }); // first step
+    component.setProps({ stepName: 'select-sources' }); // first step
     expect(component.contains(<Message params={{ name }}>steps.welcome</Message>)).toBe(true);
     expect(component.contains(<Message>steps.intro</Message>)).toBe(true);
   });

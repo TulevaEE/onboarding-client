@@ -7,7 +7,7 @@ import './Steps.scss';
 import StepTitle from './stepTitle';
 
 const orderedStepNames = [
-  'select-exchange',
+  'select-sources',
   'select-fund',
   'transfer-future-capital',
   'confirm-application',

@@ -75,7 +75,7 @@ describe('api', () => {
     const token = 'token';
     mockHttp.get = jest.fn(() => Promise.resolve(pensionFunds));
     return api
-      .getPensionFundsWithToken(token)
+      .getExistingPensionFundsWithToken(token)
       .then((givenPensionFunds) => {
         expect(givenPensionFunds).toEqual(pensionFunds);
         expect(mockHttp.get).toHaveBeenCalledWith('/v1/pension-account-statement', undefined, {

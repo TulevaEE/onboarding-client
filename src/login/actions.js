@@ -39,7 +39,7 @@ function getToken() {
         .then((token) => {
           if (token) { // authentication complete
             dispatch({ type: MOBILE_AUTHENTICATION_SUCCESS, token });
-            dispatch(push('/steps/select-exchange'));
+            dispatch(push('/steps/select-sources'));
           } else { // authentication not yet completed, poll again.
             dispatch(getToken());
           }
