@@ -34,3 +34,9 @@ export function getSourceFundsWithToken(token) {
     Authorization: `Bearer ${token}`,
   });
 }
+
+export function getTargetFundsWithToken(token) {
+  return get(getEndpoint('/v1/available-funds'), undefined, {
+    Authorization: `Bearer ${token}`,
+  });
+}

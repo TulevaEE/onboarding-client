@@ -70,7 +70,7 @@ describe('api', () => {
       });
   });
 
-  it('can get pension funds with a token', () => {
+  it('can get existing funds with a token', () => {
     const pensionFunds = [{ iAmAFund: true }];
     const token = 'token';
     mockHttp.get = jest.fn(() => Promise.resolve(pensionFunds));
@@ -79,6 +79,20 @@ describe('api', () => {
       .then((givenPensionFunds) => {
         expect(givenPensionFunds).toEqual(pensionFunds);
         expect(mockHttp.get).toHaveBeenCalledWith('/v1/pension-account-statement', undefined, {
+          Authorization: `Bearer ${token}`,
+        });
+      });
+  });
+
+  it('can get target funds with a token', () => {
+    const targetFunds = [{ iAmAFund: true }];
+    const token = 'token';
+    mockHttp.get = jest.fn(() => Promise.resolve(targetFunds));
+    return api
+      .getTargetFundsWithToken(token)
+      .then((givenTarget) => {
+        expect(givenTarget).toEqual(targetFunds);
+        expect(mockHttp.get).toHaveBeenCalledWith('/v1/available-funds', undefined, {
           Authorization: `Bearer ${token}`,
         });
       });
