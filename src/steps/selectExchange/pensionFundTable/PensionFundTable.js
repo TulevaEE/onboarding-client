@@ -32,7 +32,7 @@ const PensionFundTable = ({ funds }) => {
       }
       <FundRow
         price={totalPrice}
-        currency={'EUR'}
+        currency={'EUR'} // hardcoded until there are more currencies
         name={'select.exchange.total'}
         highlighted
       />
