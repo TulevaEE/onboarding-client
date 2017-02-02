@@ -45,4 +45,10 @@ describe('Radio', () => {
     component.setProps({ className: 'test-class' });
     expect(component.find('div.tv-radio').hasClass('test-class')).toBe(true);
   });
+
+  it('renders children given to it', () => {
+    const children = <div>I am a child yo</div>;
+    component.setProps({ children });
+    expect(component.contains(children)).toBe(true);
+  });
 });
