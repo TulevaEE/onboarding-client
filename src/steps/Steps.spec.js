@@ -51,7 +51,7 @@ describe('Steps', () => {
     )).toBe(true);
     expect(component.contains(
       <StepTitle number={4}>
-        <Message>steps.confirm-application</Message>
+        <Message>steps.confirm-mandate</Message>
       </StepTitle>,
     )).toBe(true);
   });

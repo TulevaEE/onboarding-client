@@ -10,7 +10,7 @@ const orderedStepNames = [
   'select-sources',
   'select-target-fund',
   'transfer-future-capital',
-  'confirm-application',
+  'confirm-mandate',
 ];
 
 // this component wraps all steps and renders the top and bottom areas.

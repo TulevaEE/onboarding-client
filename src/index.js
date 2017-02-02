@@ -18,7 +18,7 @@ import Steps, {
   SelectSources,
   SelectTargetFund,
   TransferFutureCapital,
-  ConfirmApplication,
+  ConfirmMandate,
 } from './steps';
 
 const rootReducer = combineReducers({
@@ -63,7 +63,7 @@ render((
             <Route path="select-sources" component={SelectSources} />
             <Route path="select-target-fund" component={SelectTargetFund} />
             <Route path="transfer-future-capital" component={TransferFutureCapital} />
-            <Route path="confirm-application" component={ConfirmApplication} />
+            <Route path="confirm-mandate" component={ConfirmMandate} />
           </Route>
         </Route>
       </Router>

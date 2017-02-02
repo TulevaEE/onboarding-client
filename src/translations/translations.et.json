@@ -17,7 +17,7 @@
   "steps.select-sources": "Too kogunenud pensionivara Tulevasse",
   "steps.select-target-fund": "Vali Tuleva pensionifond",
   "steps.transfer-future-capital": "Suuna edasised maksed Tulevasse",
-  "steps.confirm-application": "Kinnita avaldus",
+  "steps.confirm-mandate": "Kinnita avaldus",
   "select.sources.calculation.info": "* – Arvutuses kasutatud andmed: sinu tänane teise samba makse, sinu praeguse pensionifondi teenustasud, Tuleva fondide teenustasud. Arvutuse eelduseks on 3% palgakasvu aastas, 5% fondi tootlus (enne teenustasusid).",
   "select.sources.pension.fund": "Pensionifond",
   "select.sources.value": "Osakute väärtus",
