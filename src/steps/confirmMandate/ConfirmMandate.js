@@ -1,5 +1,6 @@
 import React, { PropTypes as Types } from 'react';
 import { Message } from 'retranslate';
+import { Link } from 'react-router';
 import { connect } from 'react-redux';
 
 import { Loader } from '../../common';
@@ -51,6 +52,14 @@ const ConfirmMandate = ({ user, loadingUser, exchange }) => {
           </div>
         ))
       }
+      <div className="mt-5">
+        <button className="btn btn-primary mr-2">
+          <Message>confirm.mandate.sign</Message>
+        </button>
+        <Link className="btn btn-secondary" to="/steps/transfer-future-capital">
+          <Message>steps.previous</Message>
+        </Link>
+      </div>
     </div>
   );
 };

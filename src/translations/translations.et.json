@@ -46,5 +46,6 @@
   "confirm.mandate.amounts.all": "kõik",
   "confirm.mandate.under.my.control": " minu kontol olevad ",
   "confirm.mandate.shares": " osakud ",
-  "confirm.mandate.for.shares": " osakute vastu."
+  "confirm.mandate.for.shares": " osakute vastu.",
+  "confirm.mandate.sign": "Allkirjasta volitus"
 }
