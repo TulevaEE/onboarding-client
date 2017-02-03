@@ -8,9 +8,6 @@ const app = express();
 
 app.use(express.static(path.join(__dirname, '..', 'build')));
 
-app.get('/.well-known/acme-challenge/W57jQBxZBGjcJeNwZ7xdJ0I955AMgUNnOSuEUA3Jkos', (request, response) =>
-  response.send('W57jQBxZBGjcJeNwZ7xdJ0I955AMgUNnOSuEUA3Jkos.WmtYasmHj0-9Rw5MJjwC0wMmsYFHPXTJMhCCgqBxzTo'));
-
 app.get('*', (request, response) =>
   response.sendFile(path.join(__dirname, '..', 'build', 'index.html')));
 
