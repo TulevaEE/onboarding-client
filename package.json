@@ -54,6 +54,7 @@
   },
   "dependencies": {
     "bootstrap": "4.0.0-alpha.6",
+    "express": "^4.14.1",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "react-redux": "^5.0.2",
@@ -64,7 +65,9 @@
     "retranslate": "^0.1.2"
   },
   "scripts": {
-    "start": "node scripts/start.js",
+    "start": "NODE_ENV=production node scripts/start.js",
+    "prestart": "node scripts/build.js",
+    "develop": "node scripts/develop.js",
     "build": "node scripts/build.js",
     "test": "node scripts/test.js --env=jsdom"
   },

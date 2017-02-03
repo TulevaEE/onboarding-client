@@ -1,9 +1,12 @@
 import { post, postForm, get, put } from './http';
 
-const API_URL = '';
+const API_URL = 'https://onboarding-service.tuleva.ee';
 
 function getEndpoint(endpoint) {
-  return `${API_URL}${endpoint}`;
+  if (process.env.NODE_ENV === 'production') {
+    return `${API_URL}${endpoint}`;
+  }
+  return endpoint;
 }
 
 export function authenticateWithPhoneNumber(phoneNumber) {
