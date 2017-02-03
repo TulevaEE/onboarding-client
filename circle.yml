@@ -10,3 +10,8 @@ dependencies:
     - ~/.yarn-cache
   override:
     - yarn install
+deployment:
+  production:
+    branch: master
+    heroku:
+      appname: onboarding-client
