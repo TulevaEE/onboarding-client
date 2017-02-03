@@ -53,9 +53,9 @@ export function saveMandateWithToken(mandate, token) {
 
 // TODO: test after demo
 export function getMandateControlCodeForMandateIdWithToken(id, token) {
-  return put(getEndpoint(`/v1/mandate/${id}/signature`, undefined, {
+  return put(getEndpoint(`/v1/mandate/${id}/signature`), undefined, {
     Authorization: `Bearer ${token}`,
-  })).then(({ mobileIdChallengeCode }) => mobileIdChallengeCode);
+  }).then(({ mobileIdChallengeCode }) => mobileIdChallengeCode);
 }
 
 // TODO: test after demo

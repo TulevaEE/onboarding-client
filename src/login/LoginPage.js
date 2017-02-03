@@ -2,9 +2,9 @@ import React, { PropTypes as Types } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Message } from 'retranslate';
-import { logo } from '../common';
+
+import { logo, AuthenticationLoader } from '../common';
 import LoginForm from './loginForm';
-import AuthenticationLoader from './authenticationLoader';
 import ErrorAlert from './errorAlert';
 import { changePhoneNumber, authenticateWithPhoneNumber, cancelMobileAuthentication } from './actions';
 

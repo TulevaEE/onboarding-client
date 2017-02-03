@@ -4,7 +4,7 @@ import { Message } from 'retranslate';
 import { Link } from 'react-router';
 import { connect } from 'react-redux';
 
-import { Loader } from '../../common';
+import { Loader, AuthenticationLoader } from '../../common';
 
 import { signMandate } from '../../exchange/actions';
 
@@ -14,6 +14,24 @@ import './ConfirmMandate.scss';
 const ConfirmMandate = ({ user, loadingUser, exchange, onSignMandate }) => {
   if (loadingUser || exchange.loadingSourceFunds || exchange.loadingTargetFunds) {
     return <Loader className="align-middle" />;
+  } else if (exchange.loadingMandate || exchange.mandateSigningControlCode) {
+    return <AuthenticationLoader controlCode={exchange.mandateSigningControlCode} />;
+  } else if (exchange.mandateSigningSuccessful) {
+    return (
+      <div
+        className="alert alert-success text-center pt-5 pb-5" style={{
+          backgroundColor: 'rgba(11, 250, 67, 0.08)',
+          border: 'solid 2px #51c26c',
+          borderRadius: '8px',
+        }}
+      >
+        <h2 className="text-center">Avaldus esitatud</h2>
+        <p className="mt-4">
+          Sinu maksed suunatakse Tuleva pensionifondi alates järgmisest maksest.
+        </p>
+        <p>Sinu olemasolevad osakud vahetatakse Tuleva pensionifondi osakute vastu 1. mail 2017.</p>
+      </div>
+    );
   }
   return (
     <div className="px-col">

@@ -72,8 +72,8 @@ function pollForMandateSignatureWithMandateId(id) {
     }
     timeout = setTimeout(() => {
       getMandateSignatureForMandateIdWithToken(id, getState().login.token)
-        .then(({ status }) => {
-          if (status === SIGNING_IN_PROGRESS_STATUS) {
+        .then(({ statusCode }) => {
+          if (statusCode === SIGNING_IN_PROGRESS_STATUS) {
             dispatch(pollForMandateSignatureWithMandateId(id));
           } else {
             dispatch({ type: SIGN_MANDATE_SUCCESS });
