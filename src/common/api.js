@@ -1,4 +1,4 @@
-import { post, postForm, get } from './http';
+import { post, postForm, get, put } from './http';
 
 const API_URL = '';
 
@@ -41,9 +41,23 @@ export function getTargetFundsWithToken(token) {
   });
 }
 
-// TODO: test
+// TODO: test after demo
 export function saveMandateWithToken(mandate, token) {
   return post(getEndpoint('/v1/mandate'), mandate, {
+    Authorization: `Bearer ${token}`,
+  });
+}
+
+// TODO: test after demo
+export function getMandateControlCodeForMandateIdWithToken(id, token) {
+  return put(getEndpoint(`/v1/mandate/${id}/signature`, undefined, {
+    Authorization: `Bearer ${token}`,
+  })).then(({ mobileIdChallengeCode }) => mobileIdChallengeCode);
+}
+
+// TODO: test after demo
+export function getMandateSignatureForMandateIdWithToken(id, token) {
+  return get(getEndpoint(`/v1/mandate/${id}/signature`), undefined, {
     Authorization: `Bearer ${token}`,
   });
 }

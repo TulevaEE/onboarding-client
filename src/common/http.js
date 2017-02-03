@@ -46,6 +46,21 @@ export function post(url, params = {}, headers = {}) {
   }).then(transformResponse);
 }
 
+// TODO: write tests for this
+export function put(url, params = {}, headers = {}) {
+  return fetch(url, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      ...headers,
+    },
+    body: JSON.stringify(params),
+    credentials: 'include',
+    mode: 'cors',
+    cache: 'default',
+  }).then(transformResponse);
+}
+
 export function postForm(url, params = {}, headers = {}) {
   const body = urlEncodeParameters(params);
   return fetch(url, {

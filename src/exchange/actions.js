@@ -1,4 +1,10 @@
-import { getSourceFundsWithToken, getTargetFundsWithToken } from '../common/api';
+import {
+  getSourceFundsWithToken,
+  getTargetFundsWithToken,
+  saveMandateWithToken,
+  getMandateControlCodeForMandateIdWithToken,
+  getMandateSignatureForMandateIdWithToken,
+} from '../common/api';
 import {
   GET_SOURCE_FUNDS_START,
   GET_SOURCE_FUNDS_SUCCESS,
@@ -13,7 +19,20 @@ import {
   SELECT_TARGET_FUND,
 
   SET_TRANSFER_FUTURE_CAPITAL,
+
+  // TODO: write tests for these after demo
+  SIGN_MANDATE_START,
+  SIGN_MANDATE_START_SUCCESS,
+  SIGN_MANDATE_START_ERROR,
+  SIGN_MANDATE_SUCCESS,
+  SIGN_MANDATE_ERROR,
 } from './constants';
+
+const POLL_DELAY = 1000;
+
+const SIGNING_IN_PROGRESS_STATUS = 'OUTSTANDING_TRANSACTION';
+
+let timeout;
 
 export function getSourceFunds() {
   return (dispatch, getState) => {
@@ -43,4 +62,43 @@ export function selectTargetFund(targetFund) {
 
 export function setTransferFutureCapital(transferFutureCapital) {
   return { type: SET_TRANSFER_FUTURE_CAPITAL, transferFutureCapital };
+}
+
+// TODO: test this after demo
+function pollForMandateSignatureWithMandateId(id) {
+  return (dispatch, getState) => {
+    if (timeout && process.env.NODE_ENV !== 'test') {
+      clearTimeout(timeout);
+    }
+    timeout = setTimeout(() => {
+      getMandateSignatureForMandateIdWithToken(id, getState().login.token)
+        .then(({ status }) => {
+          if (status === SIGNING_IN_PROGRESS_STATUS) {
+            dispatch(pollForMandateSignatureWithMandateId(id));
+          } else {
+            dispatch({ type: SIGN_MANDATE_SUCCESS });
+          }
+        })
+        .catch(error => dispatch({ type: SIGN_MANDATE_ERROR, error }));
+    }, POLL_DELAY);
+  };
+}
+
+// TODO: test this after demo
+export function signMandate(mandate) {
+  return (dispatch, getState) => {
+    dispatch({ type: SIGN_MANDATE_START });
+    const token = getState().login.token;
+    let mandateId;
+    return saveMandateWithToken(mandate, token)
+      .then(({ id }) => {
+        mandateId = id;
+        return getMandateControlCodeForMandateIdWithToken(id, token);
+      })
+      .then((controlCode) => {
+        dispatch({ type: SIGN_MANDATE_START_SUCCESS, controlCode });
+        dispatch(pollForMandateSignatureWithMandateId(mandateId));
+      })
+      .catch(error => dispatch({ type: SIGN_MANDATE_START_ERROR, error }));
+  };
 }
