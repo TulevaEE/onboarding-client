@@ -16,9 +16,13 @@ const PensionFundTable = ({ funds }) => {
         <div className="col-12 col-sm text-sm-right">
           <Message>select.sources.value</Message>
         </div>
-        <div className="col-12 col-sm text-sm-right">
-          <Message>select.sources.fees</Message>
-        </div>
+        {
+          /*
+          <div className="col-12 col-sm text-sm-right">
+            <Message>select.sources.fees</Message>
+          </div>
+           */
+        }
       </div>
       {
         funds.map(({ currency, price, name, isin }) =>

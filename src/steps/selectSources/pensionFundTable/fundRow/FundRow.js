@@ -16,7 +16,11 @@ const FundRow = ({ price, currency, name, highlighted }) => {
       <div className="col-12 col-sm text-sm-right">
         { highlighted ? <b>{displayPrice}</b> : displayPrice }
       </div>
-      <div className="col-12 col-sm text-sm-right">TODO</div>
+      {
+        /*
+        <div className="col-12 col-sm text-sm-right">TODO</div>
+         */
+      }
     </div>
   );
 };

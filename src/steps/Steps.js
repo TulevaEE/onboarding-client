@@ -24,11 +24,11 @@ export const Steps = ({ children, stepName, userFirstName }) => {
       <div className="col px-0">
         { // show welcome when in first step
           stepIndex === 0 ? (
-            <div className="px-col mt-4">
+            <div className="px-col mt-5">
               <p className="lead">
                 <Message params={{ name: userFirstName }}>steps.welcome</Message>
               </p>
-              <p className="mt-5 lead"><Message>steps.intro</Message></p>
+              <p className="lead"><Message>steps.intro</Message></p>
             </div>
           ) : ''
         }
