@@ -14,4 +14,4 @@ deployment:
   production:
     branch: master
     heroku:
-      appname: onboarding-client
+      appname: tuleva-onboarding-client
