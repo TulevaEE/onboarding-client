@@ -28,11 +28,11 @@ export const Steps = ({ children, stepName, userFirstName }) => {
               <p className="lead">
                 <Message params={{ name: userFirstName }}>steps.welcome</Message>
               </p>
-              <p className="mt-4 lead"><Message>steps.intro</Message></p>
+              <p className="mt-5 lead"><Message>steps.intro</Message></p>
             </div>
           ) : ''
         }
-        <div className="tv-steps mt-4">
+        <div className="tv-steps mt-5">
           {
             beforeSteps.map((beforeStep, index) =>
               <StepTitle key={beforeStep} number={index + 1} completed>
