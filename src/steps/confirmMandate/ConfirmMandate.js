@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 
 import { Loader } from '../../common';
 
-const ConfirmApplication = ({ user, loadingUser, exchange }) => {
+const ConfirmMandate = ({ user, loadingUser, exchange }) => {
   if (loadingUser || exchange.loadingSourceFunds || exchange.loadingTargetFunds) {
     return <Loader className="align-middle" />;
   }
@@ -52,7 +52,7 @@ const ConfirmApplication = ({ user, loadingUser, exchange }) => {
   );
 };
 
-ConfirmApplication.defaultProps = {
+ConfirmMandate.defaultProps = {
   user: {},
   loadingUser: false,
   exchange: {
@@ -64,7 +64,7 @@ ConfirmApplication.defaultProps = {
   },
 };
 
-ConfirmApplication.propTypes = {
+ConfirmMandate.propTypes = {
   user: Types.shape({}),
   loadingUser: Types.bool,
   exchange: Types.shape({
@@ -84,4 +84,4 @@ const mapStateToProps = state => ({
 
 const connectToRedux = connect(mapStateToProps);
 
-export default connectToRedux(ConfirmApplication);
+export default connectToRedux(ConfirmMandate);
