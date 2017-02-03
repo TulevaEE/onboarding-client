@@ -4,6 +4,9 @@ import { connect } from 'react-redux';
 
 import { Loader } from '../../common';
 
+import './ConfirmMandate.scss';
+
+// TODO: write tests after demo
 const ConfirmMandate = ({ user, loadingUser, exchange }) => {
   if (loadingUser || exchange.loadingSourceFunds || exchange.loadingTargetFunds) {
     return <Loader className="align-middle" />;
@@ -17,7 +20,7 @@ const ConfirmMandate = ({ user, loadingUser, exchange }) => {
         exchange.transferFutureCapital ? (
           <div className="mt-4">
             <Message>confirm.mandate.transfer.pension</Message>
-            <b>
+            <b className="highlight">
               <Message>
                 {`target.funds.${exchange.selectedTargetFund.isin}.title.into`}
               </Message>
@@ -39,7 +42,7 @@ const ConfirmMandate = ({ user, loadingUser, exchange }) => {
             <Message>confirm.mandate.under.my.control</Message>
             <b>{fund.name}</b>
             <Message>confirm.mandate.shares</Message>
-            <b>
+            <b className="highlight">
               <Message>
                 {`target.funds.${exchange.selectedTargetFund.isin}.title`}
               </Message>

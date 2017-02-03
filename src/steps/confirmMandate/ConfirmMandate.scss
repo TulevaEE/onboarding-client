@@ -1,0 +1,15 @@
+.highlight {
+  position: relative;
+}
+
+.highlight::before {
+  content: "";
+  background-color: #f8e81c;
+  position: absolute;
+  height: 8px;
+  width: 110%;
+  left: -5%;
+  display: inline-block;
+  bottom: 0.1em;
+  z-index: -1;
+}
