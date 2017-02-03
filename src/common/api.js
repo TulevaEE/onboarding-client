@@ -40,3 +40,10 @@ export function getTargetFundsWithToken(token) {
     Authorization: `Bearer ${token}`,
   });
 }
+
+// TODO: test
+export function saveMandateWithToken(mandate, token) {
+  return post(getEndpoint('/v1/mandate'), mandate, {
+    Authorization: `Bearer ${token}`,
+  });
+}

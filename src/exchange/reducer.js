@@ -12,6 +12,13 @@ import {
   SELECT_TARGET_FUND,
 
   SET_TRANSFER_FUTURE_CAPITAL,
+
+  // TODO: write tests after demo
+  SIGN_MANDATE_START,
+  SIGN_MANDATE_START_SUCCESS,
+  SIGN_MANDATE_START_ERROR,
+  SIGN_MANDATE_SUCCESS,
+  SIGN_MANDATE_ERROR,
 } from './constants';
 
 const initialState = {
@@ -24,6 +31,11 @@ const initialState = {
   selectedTargetFund: null,
   transferFutureCapital: true,
   error: null,
+
+  loadingMandate: false,
+  mandateSigningControlCode: null,
+  mandateSigningSuccessful: false,
+  mandateSigningError: null,
 };
 
 // TODO: add actual isin once Tuleva becomes a pension fund.
@@ -68,6 +80,24 @@ export default function exchangeReducer(state = initialState, action) {
 
     case SET_TRANSFER_FUTURE_CAPITAL:
       return { ...state, transferFutureCapital: action.transferFutureCapital };
+
+    // TODO: test the following actions after demo
+
+    case SIGN_MANDATE_START:
+      return { ...state, loadingMandate: true, mandateSigningError: null };
+    case SIGN_MANDATE_START_SUCCESS:
+      return { ...state, mandateSigningControlCode: action.controlCode, loadingMandate: false };
+    case SIGN_MANDATE_SUCCESS:
+      return { ...state, mandateSigningControlCode: null, mandateSigningSuccessful: true };
+
+    case SIGN_MANDATE_START_ERROR: // fallthrough
+    case SIGN_MANDATE_ERROR:
+      return {
+        ...state,
+        loadingMandate: false,
+        mandateSigningControlCode: null,
+        mandateSigningError: action.error,
+      };
 
     default:
       return state;
