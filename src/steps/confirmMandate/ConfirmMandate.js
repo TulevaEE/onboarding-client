@@ -1,14 +1,17 @@
 import React, { PropTypes as Types } from 'react';
+import { bindActionCreators } from 'redux';
 import { Message } from 'retranslate';
 import { Link } from 'react-router';
 import { connect } from 'react-redux';
 
 import { Loader } from '../../common';
 
+import { signMandate } from '../../exchange/actions';
+
 import './ConfirmMandate.scss';
 
 // TODO: write tests after demo
-const ConfirmMandate = ({ user, loadingUser, exchange }) => {
+const ConfirmMandate = ({ user, loadingUser, exchange, onSignMandate }) => {
   if (loadingUser || exchange.loadingSourceFunds || exchange.loadingTargetFunds) {
     return <Loader className="align-middle" />;
   }
@@ -53,7 +56,18 @@ const ConfirmMandate = ({ user, loadingUser, exchange }) => {
         ))
       }
       <div className="mt-5">
-        <button className="btn btn-primary mr-2">
+        <button
+          className="btn btn-primary mr-2"
+          onClick={() => onSignMandate({
+            fundTransferExchanges: exchange.sourceSelection.map(fund => ({
+              percent: fund.percentage * 100,
+              sourceFundIsin: fund.isin,
+              targetFundIsin: exchange.selectedTargetFund.isin,
+            })),
+            futureContributionFundIsin: exchange.transferFutureCapital ?
+              exchange.selectedTargetFund.isin : null,
+          })}
+        >
           <Message>confirm.mandate.sign</Message>
         </button>
         <Link className="btn btn-secondary" to="/steps/transfer-future-capital">
@@ -63,6 +77,8 @@ const ConfirmMandate = ({ user, loadingUser, exchange }) => {
     </div>
   );
 };
+
+const noop = () => null;
 
 ConfirmMandate.defaultProps = {
   user: {},
@@ -74,6 +90,7 @@ ConfirmMandate.defaultProps = {
     sourceSelection: [],
     selectedTargetFund: {},
   },
+  onSignMandate: noop,
 };
 
 ConfirmMandate.propTypes = {
@@ -86,6 +103,7 @@ ConfirmMandate.propTypes = {
     sourceSelection: Types.arrayOf(Types.shape({})),
     selectedTargetFund: Types.shape({ isin: Types.string }),
   }).isRequired,
+  onSignMandate: Types.func,
 };
 
 const mapStateToProps = state => ({
@@ -94,6 +112,10 @@ const mapStateToProps = state => ({
   exchange: state.exchange,
 });
 
-const connectToRedux = connect(mapStateToProps);
+const mapDispatchToProps = dispatch => bindActionCreators({
+  onSignMandate: signMandate,
+}, dispatch);
+
+const connectToRedux = connect(mapStateToProps, mapDispatchToProps);
 
 export default connectToRedux(ConfirmMandate);
