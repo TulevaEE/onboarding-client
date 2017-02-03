@@ -41,7 +41,7 @@ describe('api', () => {
   });
 
   it('throws in getting token if authentication is finished but errored', () => {
-    const error = { error_description: 'oh no!' };
+    const error = { error: 'oh no!' };
     mockHttp.postForm = jest.fn(() => Promise.reject(error));
     return api
       .getToken()
@@ -50,7 +50,7 @@ describe('api', () => {
   });
 
   it('gives no token in authentication check if error is auth not completed', () => {
-    mockHttp.postForm = jest.fn(() => Promise.reject({ error_description: 'AUTHENTICATION_NOT_COMPLETE' }));
+    mockHttp.postForm = jest.fn(() => Promise.reject({ error: 'AUTHENTICATION_NOT_COMPLETE' }));
     return api
       .getToken()
       .then(token => expect(token).toBeFalsy());

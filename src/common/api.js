@@ -21,7 +21,7 @@ export function getToken() {
   }, { Authorization: 'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ=' })
     .then(({ access_token }) => access_token) // eslint-disable-line
     .catch((error) => {
-      if (error.error_description !== 'AUTHENTICATION_NOT_COMPLETE') {
+      if (error.error !== 'AUTHENTICATION_NOT_COMPLETE') {
         throw error;
       }
       return null;

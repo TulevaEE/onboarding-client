@@ -34,7 +34,7 @@ const ConfirmMandate = ({ user, loadingUser, exchange, onSignMandate }) => {
       }
       {
         exchange.sourceSelection.map(fund => (
-          <div className="mt-4">
+          <div className="mt-4" key={fund.isin}>
             <Message>confirm.mandate.switch</Message>
             <b>
               {
@@ -60,7 +60,7 @@ const ConfirmMandate = ({ user, loadingUser, exchange, onSignMandate }) => {
           className="btn btn-primary mr-2"
           onClick={() => onSignMandate({
             fundTransferExchanges: exchange.sourceSelection.map(fund => ({
-              percent: fund.percentage * 100,
+              amount: fund.percentage,
               sourceFundIsin: fund.isin,
               targetFundIsin: exchange.selectedTargetFund.isin,
             })),
