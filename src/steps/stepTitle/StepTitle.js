@@ -7,14 +7,14 @@ const StepTitle = ({ children, number, active, completed }) => (
     <div
       className={`
         tv-step__title mb-4
-        ${active ? 'tv-step__title--active' : ''}
+        ${active ? 'tv-step__title--active mb-5' : ''}
         ${completed ? 'tv-step__title--completed' : ''}`}
     >
       <span className="tv-step__number ml-2 mr-3">
         {!completed && !active ? <span className="text-regular">{number}</span> : ''}
         {!completed && active ? <b>{number}</b> : ''}
       </span>
-      <span className={`mr-2 ${active ? 'h3' : 'text-muted'}`}>{children}</span>
+      <span className={`mr-2 ${active ? 'h2' : 'text-muted'}`}>{children}</span>
     </div>
   </div>
 );

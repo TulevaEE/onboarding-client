@@ -25,14 +25,14 @@ export const SelectTargetFund = ({
             name="tv-select-target-fund"
             selected={selectedTargetFund && selectedTargetFund.isin === fund.isin}
             onSelect={() => onSelectTargetFund(fund)}
-            className={index !== 0 ? 'mt-2' : ''}
+            className={index !== 0 ? 'mt-4' : ''}
           >
             <h3><Message>{`target.funds.${fund.isin}.title`}</Message></h3>
             <Message>{`target.funds.${fund.isin}.description`}</Message>
           </Radio>
         ))
       }
-      <div className="px-col mt-4">
+      <div className="px-col mt-5">
         <Link className="btn btn-primary mr-2" to="/steps/transfer-future-capital">
           <Message>steps.next</Message>
         </Link>

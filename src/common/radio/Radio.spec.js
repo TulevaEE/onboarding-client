@@ -34,16 +34,16 @@ describe('Radio', () => {
   });
 
   it('sets it to selected when the component is selected', () => {
-    const componentSelected = () => component.find('div.tv-radio').hasClass('tv-radio--selected');
+    const componentSelected = () => component.find('.tv-radio').hasClass('tv-radio--selected');
     expect(componentSelected()).toBe(false);
     component.setProps({ selected: true });
     expect(componentSelected()).toBe(true);
   });
 
   it('passes className to the main div', () => {
-    expect(component.find('div.tv-radio').hasClass('test-class')).toBe(false);
+    expect(component.find('.tv-radio').hasClass('test-class')).toBe(false);
     component.setProps({ className: 'test-class' });
-    expect(component.find('div.tv-radio').hasClass('test-class')).toBe(true);
+    expect(component.find('.tv-radio').hasClass('test-class')).toBe(true);
   });
 
   it('renders children given to it', () => {

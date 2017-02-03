@@ -25,8 +25,10 @@ export const Steps = ({ children, stepName, userFirstName }) => {
         { // show welcome when in first step
           stepIndex === 0 ? (
             <div className="px-col mt-4">
-              <p><Message params={{ name: userFirstName }}>steps.welcome</Message></p>
-              <p className="mt-4"><Message>steps.intro</Message></p>
+              <p className="lead">
+                <Message params={{ name: userFirstName }}>steps.welcome</Message>
+              </p>
+              <p className="mt-4 lead"><Message>steps.intro</Message></p>
             </div>
           ) : ''
         }
@@ -41,7 +43,7 @@ export const Steps = ({ children, stepName, userFirstName }) => {
           <StepTitle number={stepIndex + 1} active>
             <Message>{`steps.${currentStep}`}</Message>
           </StepTitle>
-          <div className="pb-4 tv-step__content">{children}</div>
+          <div className="pb-5 tv-step__content">{children}</div>
           <hr className="mb-4" />
           {
             afterSteps.map((afterStep, index) =>

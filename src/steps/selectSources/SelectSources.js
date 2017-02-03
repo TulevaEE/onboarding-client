@@ -37,7 +37,7 @@ export const SelectSources = ({
   return (
     <div>
       <div className="px-col mb-4">
-        <p className="mb-4 mt-4"><Message>select.sources.current.status</Message></p>
+        <p className="mb-4 mt-5 lead"><Message>select.sources.current.status</Message></p>
         <PensionFundTable funds={sourceFunds} />
       </div>
       <Radio
@@ -68,13 +68,9 @@ export const SelectSources = ({
         <Message>select.sources.select.none.subtitle</Message>
       </Radio>
       <div className="px-col">
-        <Link className="btn btn-primary mt-4 mb-4" to="/steps/select-target-fund">
+        <Link className="btn btn-primary mt-5" to="/steps/select-target-fund">
           <Message>steps.next</Message>
         </Link>
-        <br />
-        <small className="text-muted">
-          <Message>select.sources.calculation.info</Message>
-        </small>
       </div>
     </div>
   );

@@ -1,8 +1,8 @@
 @import "../variables";
 
 .px-col {
-  padding-left: 15px;
-  padding-right: 15px;
+  padding-left: 15px !important;
+  padding-right: 15px !important;
 }
 
 .tv-step {
@@ -18,7 +18,7 @@
   background-color: $gray-mid;
   display: inline-block;
   position: absolute;
-  height: 24px;
+  height: 25px;
   width: 1px;
   z-index: -1;
   left: 30px;

@@ -11,7 +11,7 @@
  */
 
 body {
-  font-size: 18px;
+  font-size: 16px;
 }
 
 h1, .h1 {
@@ -22,13 +22,13 @@ h1, .h1 {
 
 h2, .h2 {
   font-size: 1.5em;
-  font-weight: 400;
+  font-weight: 500;
   color: $text-primary;
 }
 
 h3, .h3 {
   font-size: 1.25em;
-  font-weight: 400;
+  font-weight: 500;
   color: $text-primary;
 }
 
@@ -37,10 +37,14 @@ p, .p {
   font-size: 1em;
   font-weight: normal;
   color: $text-primary;
+
+  & .lead {
+    font-size: 1.25em;
+  }
 }
 
 small {
-  font-size: 0.8em;
+  font-size: 0.875em;
   color: $text-primary;
 }
 

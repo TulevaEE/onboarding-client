@@ -35,13 +35,9 @@ describe('Select sources step', () => {
     expect(component.contains(<PensionFundTable funds={sourceFunds} />)).toBe(true);
   });
 
-  it('renders an explanation of the savings calculations', () => {
-    expect(component.contains(<Message>select.sources.calculation.info</Message>)).toBe(true);
-  });
-
   it('renders a link to the next step', () => {
     expect(component.contains(
-      <Link className="btn btn-primary mt-4 mb-4" to="/steps/select-target-fund">
+      <Link className="btn btn-primary mt-5" to="/steps/select-target-fund">
         <Message>steps.next</Message>
       </Link>,
     )).toBe(true);
