@@ -66,7 +66,7 @@
   },
   "scripts": {
     "start": "NODE_ENV=production node scripts/start.js",
-    "postinstall": "node scripts/build.js",
+    "heroku-postbuild": "node scripts/build.js",
     "develop": "node scripts/develop.js",
     "build": "node scripts/build.js",
     "test": "node scripts/test.js --env=jsdom"
