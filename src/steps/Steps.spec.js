@@ -65,4 +65,18 @@ describe('Steps', () => {
     expect(component.contains(<Message params={{ name }}>steps.welcome</Message>)).toBe(true);
     expect(component.contains(<Message>steps.intro</Message>)).toBe(true);
   });
+
+  it('renders a vertical line in the bottom for all but the last step', () => {
+    [
+      'select-sources',
+      'select-target-fund',
+      'transfer-future-capital',
+    ].forEach((stepName) => {
+      component.setProps({ stepName });
+      expect(component.contains(<hr className="mb-4" />)).toBe(true);
+    });
+
+    component.setProps({ stepName: 'confirm-mandate' });
+    expect(component.contains(<hr className="mb-4" />)).toBe(false);
+  });
 });
