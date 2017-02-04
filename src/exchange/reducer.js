@@ -13,7 +13,7 @@ import {
 
   SET_TRANSFER_FUTURE_CAPITAL,
 
-  // TODO: write tests after demo
+  // NOTE: maybe we should move this state to a separate mandate reducer?
   SIGN_MANDATE_START,
   SIGN_MANDATE_START_SUCCESS,
   SIGN_MANDATE_START_ERROR,

@@ -13,6 +13,12 @@ import {
   SELECT_TARGET_FUND,
 
   SET_TRANSFER_FUTURE_CAPITAL,
+
+  SIGN_MANDATE_START,
+  SIGN_MANDATE_START_SUCCESS,
+  SIGN_MANDATE_START_ERROR,
+  SIGN_MANDATE_SUCCESS,
+  SIGN_MANDATE_ERROR,
 } from './constants';
 
 describe('Exchange reducer', () => {
@@ -83,5 +89,41 @@ describe('Exchange reducer', () => {
     expect(exchangeReducer(undefined, action).transferFutureCapital).toBe(true);
     action.transferFutureCapital = false;
     expect(exchangeReducer(undefined, action).transferFutureCapital).toBe(false);
+  });
+
+  it('starts loading mandate when starting to sign mandate', () => {
+    const action = { type: SIGN_MANDATE_START };
+    expect(exchangeReducer(undefined, action).loadingMandate).toBe(true);
+  });
+
+  it('stops loading mandate and saves control code when starting to sign succeeds', () => {
+    const controlCode = 'control code';
+    const action = { type: SIGN_MANDATE_START_SUCCESS, controlCode };
+    const newState = exchangeReducer({ mandateSigningControlCode: true }, action);
+    expect(newState.mandateSigningControlCode).toBe(controlCode);
+    expect(newState.loadingMandate).toBe(false);
+  });
+
+  it('sets mandate signing successful when signing mandate succeeds', () => {
+    const action = { type: SIGN_MANDATE_SUCCESS };
+    const newState = exchangeReducer({ mandateSigningControlCode: 'code' }, action);
+    expect(newState.mandateSigningControlCode).toBeFalsy();
+    expect(newState.mandateSigningSuccessful).toBe(true);
+  });
+
+  it('sets the error when signing mandate fails', () => {
+    const error = new Error('oh no!');
+    const action = { type: SIGN_MANDATE_ERROR, error };
+    const newState = exchangeReducer({ mandateSigningControlCode: 'code' }, action);
+    expect(newState.mandateSigningControlCode).toBeFalsy();
+    expect(newState.mandateSigningError).toEqual(error);
+  });
+
+  it('stops loading and sets the error when starting to sign mandate fails', () => {
+    const error = new Error('oh no!');
+    const action = { type: SIGN_MANDATE_START_ERROR, error };
+    const newState = exchangeReducer({ loadingMandate: true }, action);
+    expect(newState.loadingMandate).toBe(false);
+    expect(newState.mandateSigningError).toEqual(error);
   });
 });
