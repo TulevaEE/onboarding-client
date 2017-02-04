@@ -1,3 +1,5 @@
+import { push } from 'react-router-redux';
+
 import {
   GET_SOURCE_FUNDS_START,
   GET_SOURCE_FUNDS_SUCCESS,
@@ -195,6 +197,7 @@ describe('Exchange actions', () => {
         expect(mockApi.getMandateSignatureForMandateIdWithToken).toHaveBeenCalledWith('id', 'token');
       }).then(() => {
         expect(dispatch).toHaveBeenCalledWith({ type: SIGN_MANDATE_SUCCESS });
+        expect(dispatch).toHaveBeenCalledWith(push('/steps/success'));
       });
   });
 

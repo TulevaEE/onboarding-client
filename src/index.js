@@ -19,6 +19,7 @@ import Steps, {
   SelectTargetFund,
   TransferFutureCapital,
   ConfirmMandate,
+  Success,
 } from './steps';
 
 const rootReducer = combineReducers({
@@ -65,6 +66,7 @@ render((
             <Route path="transfer-future-capital" component={TransferFutureCapital} />
             <Route path="confirm-mandate" component={ConfirmMandate} />
           </Route>
+          <Route path="/steps/success" component={Success} />
         </Route>
       </Router>
     </ReduxProvider>

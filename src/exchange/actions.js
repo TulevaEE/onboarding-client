@@ -1,3 +1,5 @@
+import { push } from 'react-router-redux';
+
 import {
   getSourceFundsWithToken,
   getTargetFundsWithToken,
@@ -76,6 +78,7 @@ function pollForMandateSignatureWithMandateId(id) {
             dispatch(pollForMandateSignatureWithMandateId(id));
           } else {
             dispatch({ type: SIGN_MANDATE_SUCCESS });
+            dispatch(push('/steps/success'));
           }
         })
         .catch(error => dispatch({ type: SIGN_MANDATE_ERROR, error }));

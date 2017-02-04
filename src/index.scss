@@ -81,3 +81,13 @@ hr {
   margin: 0;
   padding: 0;
 }
+
+.alert {
+  border: solid 2px $gray-mid;
+  border-radius: 8px;
+
+  &-success {
+    background-color: rgba(11, 250, 67, 0.08);
+    border-color: $green;
+  }
+}

@@ -52,5 +52,10 @@
   "footer.address": "Telliskivi 60, Tallinn, 10412",
   "footer.email": "info@tuleva.ee",
   "footer.phone.number": "+372 5304 4744",
-  "footer.registration.code": "Reg.kood: 14041764"
+  "footer.registration.code": "Reg.kood: 14041764",
+  "success.done": "Avaldus esitatud",
+  "success.your.payments": "Sinu maksed suunatakse Tuleva pensionifondi ",
+  "success.your.payments.next.payment": "alates järgmisest maksest",
+  "success.shares.switched": "Sinu olemasolevad osakud vahetatakse Tuleva pensionifondi osakute vastu ",
+  "success.shares.switched.when": "1. mail 2017"
 }
