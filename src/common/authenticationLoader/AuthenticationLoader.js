@@ -6,7 +6,7 @@ import './AuthenticationLoader.scss';
 
 const AuthenticationLoader = ({ controlCode, onCancel, overlayed }) => {
   const content = (
-    <div className="card text-center p-4">
+    <div className="card text-center p-4 tv-modal__content">
       <div className="p-4">
         {
           controlCode ? (
@@ -32,7 +32,7 @@ const AuthenticationLoader = ({ controlCode, onCancel, overlayed }) => {
       <div className="tv-modal">
         <div className="container">
           <div className="row mt-4 pt-4 justify-content-center">
-            <div className="col-md-8 col-lg-6 tv-modal__content">
+            <div className="col-md-8 col-lg-6">
               {content}
             </div>
           </div>
