@@ -21,6 +21,15 @@ const ConfirmMandate = ({
   if (loadingUser || exchange.loadingSourceFunds || exchange.loadingTargetFunds) {
     return <Loader className="align-middle" />;
   }
+  const startSigningMandate = () => onSignMandate({
+    fundTransferExchanges: exchange.sourceSelection.map(fund => ({
+      amount: fund.percentage,
+      sourceFundIsin: fund.isin,
+      targetFundIsin: exchange.selectedTargetFund.isin,
+    })),
+    futureContributionFundIsin: exchange.transferFutureCapital ?
+      exchange.selectedTargetFund.isin : null,
+  });
   return (
     <div className="px-col">
       {
@@ -70,18 +79,7 @@ const ConfirmMandate = ({
         ))
       }
       <div className="mt-5">
-        <button
-          className="btn btn-primary mr-2"
-          onClick={() => onSignMandate({
-            fundTransferExchanges: exchange.sourceSelection.map(fund => ({
-              amount: fund.percentage,
-              sourceFundIsin: fund.isin,
-              targetFundIsin: exchange.selectedTargetFund.isin,
-            })),
-            futureContributionFundIsin: exchange.transferFutureCapital ?
-              exchange.selectedTargetFund.isin : null,
-          })}
-        >
+        <button className="btn btn-primary mr-2" onClick={() => startSigningMandate()}>
           <Message>confirm.mandate.sign</Message>
         </button>
         <Link className="btn btn-secondary" to="/steps/transfer-future-capital">
