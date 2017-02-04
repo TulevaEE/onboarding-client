@@ -6,12 +6,18 @@ import { connect } from 'react-redux';
 
 import { Loader, AuthenticationLoader } from '../../common';
 
-import { signMandate } from '../../exchange/actions';
+import { signMandate, cancelSigningMandate } from '../../exchange/actions';
 
 import './ConfirmMandate.scss';
 
 // TODO: write tests after demo
-const ConfirmMandate = ({ user, loadingUser, exchange, onSignMandate }) => {
+const ConfirmMandate = ({
+  user,
+  loadingUser,
+  exchange,
+  onSignMandate,
+  onCancelSigningMandate,
+}) => {
   if (loadingUser || exchange.loadingSourceFunds || exchange.loadingTargetFunds) {
     return <Loader className="align-middle" />;
   } else if (exchange.mandateSigningSuccessful) {
@@ -35,7 +41,11 @@ const ConfirmMandate = ({ user, loadingUser, exchange, onSignMandate }) => {
     <div className="px-col">
       {
         exchange.loadingMandate || exchange.mandateSigningControlCode ?
-          <AuthenticationLoader controlCode={exchange.mandateSigningControlCode} overlayed /> : ''
+          <AuthenticationLoader
+            controlCode={exchange.mandateSigningControlCode}
+            onCancel={onCancelSigningMandate}
+            overlayed
+          /> : ''
       }
       <Message>confirm.mandate.me</Message><b>{user.firstName} {user.lastName}</b>
       <Message>confirm.mandate.idcode</Message><b>{user.personalCode}</b>
@@ -111,6 +121,7 @@ ConfirmMandate.defaultProps = {
     selectedTargetFund: {},
   },
   onSignMandate: noop,
+  onCancelSigningMandate: noop,
 };
 
 ConfirmMandate.propTypes = {
@@ -124,16 +135,18 @@ ConfirmMandate.propTypes = {
     selectedTargetFund: Types.shape({ isin: Types.string }),
   }).isRequired,
   onSignMandate: Types.func,
+  onCancelSigningMandate: Types.func,
 };
 
 const mapStateToProps = state => ({
-  user: state.login.user,
+  user: state.login.user || {},
   loadingUser: state.login.loadingUser,
   exchange: state.exchange,
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   onSignMandate: signMandate,
+  onCancelSigningMandate: cancelSigningMandate,
 }, dispatch);
 
 const connectToRedux = connect(mapStateToProps, mapDispatchToProps);
