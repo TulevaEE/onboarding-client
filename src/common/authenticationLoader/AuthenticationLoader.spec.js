@@ -42,4 +42,11 @@ describe('Authenticaion loader', () => {
   it('can not cancel when no control code yet present', () => {
     expect(component.contains(<Message>login.stop</Message>)).toBe(false);
   });
+
+  it('renders as a modal when it is overlayed', () => {
+    const isComponentModal = () => component.at(0).hasClass('tv-modal');
+    expect(isComponentModal()).toBe(false);
+    component.setProps({ overlayed: true });
+    expect(isComponentModal()).toBe(true);
+  });
 });
