@@ -7,7 +7,7 @@ Client for Tuleva onboarding.
 
 ## Stack
 
-It's built using the react and redux stack. It's tested using jest. All routing happens on the client side, using react-router. Bindings between the router and redux are handled with react-router-redux. All strings in the application
+It's built using the `react` and `redux` stack. It's tested using `jest`. All routing happens on the client side, using `react-router`. Bindings between the router and redux are handled with `react-router-redux`. All strings in the application
 are defined in translation files and consumed using `retranslate`.
 
 ## Development
@@ -16,4 +16,4 @@ Use `yarn` or `npm install` to install dependencies. Then use `yarn develop` or 
 
 ### Production and deployment
 
-In production, the files are built using webpack and served using a tiny content server (scripts/start.js). When a branch is merged to master, circleci builds and runs tests. When tests pass, deployment is done automatically on heroku.
+In production, the files are built using webpack and served using a tiny content server (`scripts/start.js`). When a branch is merged to master, CircleCI builds and runs tests. When tests pass, deployment is done automatically on Heroku.
