@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 
 import { actions } from '../login';
 import Header from './header';
+import Footer from './footer';
 
 export const App = ({ children, user, loadingUser, onLogout }) => (
   <div className="container mt-4">
@@ -11,6 +12,7 @@ export const App = ({ children, user, loadingUser, onLogout }) => (
       <div className="col-lg-10">
         <Header user={user} loading={loadingUser} onLogout={onLogout} />
         {children}
+        <Footer />
       </div>
     </div>
   </div>

@@ -47,5 +47,10 @@
   "confirm.mandate.under.my.control": " minu kontol olevad ",
   "confirm.mandate.shares": " osakud ",
   "confirm.mandate.for.shares": " osakute vastu.",
-  "confirm.mandate.sign": "Allkirjasta volitus"
+  "confirm.mandate.sign": "Allkirjasta volitus",
+  "footer.name": "Tulundusühistu Tuleva",
+  "footer.address": "Telliskivi 60, Tallinn, 10412",
+  "footer.email": "info@tuleva.ee",
+  "footer.phone.number": "+372 5304 4744",
+  "footer.registration.code": "Reg.kood: 14041764"
 }

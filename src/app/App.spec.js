@@ -3,6 +3,7 @@ import { shallow } from 'enzyme';
 
 import { App } from './App';
 import Header from './header';
+import Footer from './footer';
 
 describe('App', () => {
   let component;
@@ -18,7 +19,7 @@ describe('App', () => {
     expect(component.text()).toContain('we are the children');
   });
 
-  it('passed props to the header', () => {
+  it('passes props to the header', () => {
     const user = { name: 'name', personalCode: 'code' };
     const onLogout = jest.fn();
     component.setProps({
@@ -27,5 +28,9 @@ describe('App', () => {
       loadingUser: true,
     });
     expect(component.contains(<Header user={user} loading onLogout={onLogout} />)).toBe(true);
+  });
+
+  it('renders a footer', () => {
+    expect(component.contains(<Footer />)).toBe(true);
   });
 });
