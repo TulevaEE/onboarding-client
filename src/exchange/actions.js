@@ -64,7 +64,6 @@ export function setTransferFutureCapital(transferFutureCapital) {
   return { type: SET_TRANSFER_FUTURE_CAPITAL, transferFutureCapital };
 }
 
-// TODO: test this after demo
 function pollForMandateSignatureWithMandateId(id) {
   return (dispatch, getState) => {
     if (timeout && process.env.NODE_ENV !== 'test') {
@@ -84,7 +83,6 @@ function pollForMandateSignatureWithMandateId(id) {
   };
 }
 
-// TODO: test this after demo
 export function signMandate(mandate) {
   return (dispatch, getState) => {
     dispatch({ type: SIGN_MANDATE_START });
