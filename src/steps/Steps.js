@@ -43,7 +43,7 @@ export const Steps = ({ children, stepName, userFirstName }) => {
           <StepTitle number={stepIndex + 1} active>
             <Message>{`steps.${currentStep}`}</Message>
           </StepTitle>
-          <div className="pb-5 tv-step__content">{children}</div>
+          <div className="pb-5">{children}</div>
           {
             stepIndex !== orderedStepNames.length - 1 ? <hr className="mb-4" /> : ''
           }

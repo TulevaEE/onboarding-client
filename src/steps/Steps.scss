@@ -7,10 +7,6 @@
 
 .tv-step {
   position: relative;
-
-  &__content {
-    background-color: white;
-  }
 }
 
 .tv-steps > .tv-step:not(:first-child)::before {

@@ -16,7 +16,6 @@ describe('Steps', () => {
     const children = <div id="test-step">I am a test step</div>;
     component.setProps({ children });
     expect(component.contains(children)).toBe(true);
-    expect(component.find('div#test-step').parent().prop('className')).toContain('tv-step__content');
   });
 
   it('renders the title of the step given to it as active', () => {

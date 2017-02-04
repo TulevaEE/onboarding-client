@@ -1,15 +1,7 @@
 .highlight {
-  position: relative;
-}
-
-.highlight::before {
-  content: "";
-  background-color: #f8e81c;
-  position: absolute;
-  height: 8px;
-  width: 110%;
-  left: -5%;
+  border-bottom-style: solid;
+  border-bottom-width: 8px;
+  border-bottom-color: #f8e81c;
+  line-height: 0;
   display: inline-block;
-  bottom: 0.1em;
-  z-index: -1;
 }
