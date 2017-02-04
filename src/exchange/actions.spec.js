@@ -17,6 +17,7 @@ import {
   SIGN_MANDATE_START_ERROR,
   SIGN_MANDATE_SUCCESS,
   SIGN_MANDATE_ERROR,
+  SIGN_MANDATE_CANCEL,
 } from './constants';
 
 jest.useFakeTimers();
@@ -234,5 +235,11 @@ describe('Exchange actions', () => {
           error,
         });
       });
+  });
+
+  it('can cancel signing the mandate', () => {
+    expect(actions.cancelSigningMandate()).toEqual({
+      type: SIGN_MANDATE_CANCEL,
+    });
   });
 });

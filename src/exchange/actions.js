@@ -20,12 +20,12 @@ import {
 
   SET_TRANSFER_FUTURE_CAPITAL,
 
-  // TODO: write tests for these after demo
   SIGN_MANDATE_START,
   SIGN_MANDATE_START_SUCCESS,
   SIGN_MANDATE_START_ERROR,
   SIGN_MANDATE_SUCCESS,
   SIGN_MANDATE_ERROR,
+  SIGN_MANDATE_CANCEL,
 } from './constants';
 
 const POLL_DELAY = 1000;
@@ -99,4 +99,11 @@ export function signMandate(mandate) {
       })
       .catch(error => dispatch({ type: SIGN_MANDATE_START_ERROR, error }));
   };
+}
+
+export function cancelSigningMandate() {
+  if (timeout && process.env.NODE_ENV !== 'test') {
+    clearTimeout(timeout);
+  }
+  return { type: SIGN_MANDATE_CANCEL };
 }

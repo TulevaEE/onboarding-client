@@ -14,8 +14,6 @@ import './ConfirmMandate.scss';
 const ConfirmMandate = ({ user, loadingUser, exchange, onSignMandate }) => {
   if (loadingUser || exchange.loadingSourceFunds || exchange.loadingTargetFunds) {
     return <Loader className="align-middle" />;
-  } else if (exchange.loadingMandate || exchange.mandateSigningControlCode) {
-    return <AuthenticationLoader controlCode={exchange.mandateSigningControlCode} />;
   } else if (exchange.mandateSigningSuccessful) {
     return (
       <div
@@ -35,6 +33,10 @@ const ConfirmMandate = ({ user, loadingUser, exchange, onSignMandate }) => {
   }
   return (
     <div className="px-col">
+      {
+        exchange.loadingMandate || exchange.mandateSigningControlCode ?
+          <AuthenticationLoader controlCode={exchange.mandateSigningControlCode} overlayed /> : ''
+      }
       <Message>confirm.mandate.me</Message><b>{user.firstName} {user.lastName}</b>
       <Message>confirm.mandate.idcode</Message><b>{user.personalCode}</b>
       <Message>confirm.mandate.change.mandate</Message>

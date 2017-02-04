@@ -19,6 +19,7 @@ import {
   SIGN_MANDATE_START_ERROR,
   SIGN_MANDATE_SUCCESS,
   SIGN_MANDATE_ERROR,
+  SIGN_MANDATE_CANCEL,
 } from './constants';
 
 const initialState = {
@@ -97,6 +98,13 @@ export default function exchangeReducer(state = initialState, action) {
         loadingMandate: false,
         mandateSigningControlCode: null,
         mandateSigningError: action.error,
+      };
+    case SIGN_MANDATE_CANCEL:
+      return {
+        ...state,
+        loadingMandate: false,
+        mandateSigningControlCode: null,
+        mandateSigningSuccessful: false,
       };
 
     default:

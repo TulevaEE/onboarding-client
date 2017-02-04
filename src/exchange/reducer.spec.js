@@ -19,6 +19,7 @@ import {
   SIGN_MANDATE_START_ERROR,
   SIGN_MANDATE_SUCCESS,
   SIGN_MANDATE_ERROR,
+  SIGN_MANDATE_CANCEL,
 } from './constants';
 
 describe('Exchange reducer', () => {
@@ -125,5 +126,17 @@ describe('Exchange reducer', () => {
     const newState = exchangeReducer({ loadingMandate: true }, action);
     expect(newState.loadingMandate).toBe(false);
     expect(newState.mandateSigningError).toEqual(error);
+  });
+
+  it('can cancel signing the mandate', () => {
+    const action = { type: SIGN_MANDATE_CANCEL };
+    const newState = exchangeReducer({
+      loadingMandate: true,
+      mandateSigningControlCode: '1337',
+      mandateSigningSuccessful: true,
+    }, action);
+    expect(newState.loadingMandate).toBe(false);
+    expect(newState.mandateSigningControlCode).toBeFalsy();
+    expect(newState.mandateSigningSuccessful).toBe(false);
   });
 });
