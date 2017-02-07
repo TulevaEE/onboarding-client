@@ -6,14 +6,15 @@ const path = require('path');
 
 const app = express();
 
-app.use(express.static(path.join(__dirname, '..', 'build')));
+function forceHttps(request, response, next) {
+  if (request.headers['x-forwarded-proto'] !== 'https') {
+    return response.redirect(301, `https://${request.get('host')}${request.url}`);
+  }
+  return next();
+}
 
-app.use(function (req, res, next) {
-    if (req.headers['x-forwarded-proto'] !== 'https') {
-        return res.redirect(['https://', req.get('Host'), req.url].join(''));
-    }
-    return next();
-});
+app.use(forceHttps);
+app.use(express.static(path.join(__dirname, '..', 'build')));
 
 app.get('*', (request, response) =>
   response.sendFile(path.join(__dirname, '..', 'build', 'index.html')));
