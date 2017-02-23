@@ -1,10 +1,32 @@
+
+import {
+  captureExeption,
+  captureMessage,
+} from '../util/error';
+
 function transformResponse(response) {
   if (response.ok && response.status < 400) {
     return response.json();
   } else if (response.status >= 400) {
     return response
       .json()
+      .catch((err) => {
+        // Report JSON parsing errors
+        captureExeption(err, {
+          http_status: response.status,
+          http_url: response.url,
+        });
+        return err;
+      })
       .then((data) => {
+        if (response.status <= 500) {
+          // Report 500 errors
+          captureMessage(data.error, {
+            http_status: response.status,
+            http_url: response.url,
+            error: data,
+          });
+        }
         throw data;
       });
   }
