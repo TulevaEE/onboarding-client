@@ -19,7 +19,7 @@ function transformResponse(response) {
         return err;
       })
       .then((data) => {
-        if (response.status <= 500) {
+        if (response.status >= 500) {
           // Report 500 errors
           captureMessage(data.error, {
             http_status: response.status,
