@@ -1,6 +1,6 @@
 
 import {
-  captureExeption,
+  captureException,
   captureMessage,
 } from '../util/error';
 
@@ -12,11 +12,11 @@ function transformResponse(response) {
       .json()
       .catch((err) => {
         // Report JSON parsing errors
-        captureExeption(err, {
+        captureException(err, {
           http_status: response.status,
           http_url: response.url,
         });
-        return err;
+        throw err;
       })
       .then((data) => {
         if (response.status >= 500) {

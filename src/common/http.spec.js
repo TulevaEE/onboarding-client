@@ -1,5 +1,16 @@
 import { get, post, postForm } from './http';
 
+jest.mock('../util/error', () => {
+  return {
+    captureException: jest.fn(),
+    captureMessage: jest.fn(),
+  };
+});
+import {
+  captureException,
+  captureMessage,
+} from "../util/error";
+
 describe('http', () => {
   let originalFetch;
   let fetch;
@@ -18,8 +29,18 @@ describe('http', () => {
     return Promise.resolve({ status: 200, ok: true, json: () => Promise.resolve(value) });
   }
 
-  function fakeUnsuccessfulResponseWithValue(value) {
-    return Promise.resolve({ status: 400, json: () => Promise.resolve(value) });
+  function fakeUnsuccessfulResponseWithValue(value, status = 400) {
+    return Promise.resolve({ status, json: () => Promise.resolve(value) });
+  }
+
+  function fakeUnsuccessfulResponseWithInvalidJson() {
+    return Promise.resolve({ status: 400, json: () => {
+      try {
+        JSON.parse('{ invalid json');
+      } catch (e) {
+        return Promise.reject(e);
+      }
+    }});
   }
 
   function fail() {
@@ -101,5 +122,33 @@ describe('http', () => {
         expect(options.headers['Content-Type']).toBe('application/x-www-form-urlencoded');
         expect(options.body).toEqual('thisIsTheBody=true&yes=no');
       });
+  });
+
+  describe('error capturing', () => {
+    afterEach(() => {
+      captureException.mockReset();
+      captureMessage.mockReset();
+    });
+
+    it('captures bad JSON error', () => {
+      fetch.mockReturnValueOnce(fakeUnsuccessfulResponseWithInvalidJson());
+      return get('https://example.com')
+        .then(fail)
+        .catch(err => {
+          expect(err).toBeInstanceOf(SyntaxError);
+          expect(captureException).toHaveBeenCalled();
+        });
+    });
+
+    it('captures 500 errors', () => {
+      const value = { error: "testing" };
+      fetch.mockReturnValueOnce(fakeUnsuccessfulResponseWithValue(value, 500));
+      return get('https://example.com')
+        .then(fail)
+        .catch(err => {
+          expect(captureMessage).toHaveBeenCalled();
+          expect(err).toBe(value);
+        });
+    });
   });
 });
