@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import { selectExchangeSources } from '../../exchange/actions';
 import { Loader, Radio } from '../../common';
 import PensionFundTable from './pensionFundTable';
+import ExactFundSelector from './exactFundSelector';
 
 function isFullSelection(sourceSelection) {
   return sourceSelection.reduce((isFull, { percentage }) => isFull && percentage === 1, true);
@@ -48,7 +49,6 @@ export const SelectSources = ({
         <h3><Message>select.sources.select.all</Message></h3>
         <Message>select.sources.select.all.subtitle</Message>
       </Radio>
-      {/* TODO: write tests once we add this section
       <Radio
         name="tv-select-sources-type"
         className="mt-3"
@@ -57,7 +57,14 @@ export const SelectSources = ({
       >
         <h3><Message>select.sources.select.some</Message></h3>
         <Message>select.sources.select.some.subtitle</Message>
-      </Radio>*/}
+        {
+          sourceSelectionExact ?
+            <ExactFundSelector
+              selections={sourceSelection}
+              onSelect={selection => onSelect(selection, true)}
+            /> : ''
+        }
+      </Radio>
       <Radio
         name="tv-select-sources-type"
         className="mt-3"
