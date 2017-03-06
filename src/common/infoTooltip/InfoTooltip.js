@@ -1,5 +1,6 @@
 import React, { PropTypes as Types } from 'react';
 import ReactTooltip from 'react-tooltip';
+
 import infoImage from './info.svg';
 
 const InfoTooltip = ({ children, name }) => (
