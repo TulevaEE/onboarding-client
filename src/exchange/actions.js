@@ -40,7 +40,13 @@ export function getSourceFunds() {
   return (dispatch, getState) => {
     dispatch({ type: GET_SOURCE_FUNDS_START });
     return getSourceFundsWithToken(getState().login.token)
-      .then(sourceFunds => dispatch({ type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds }))
+      .then((sourceFunds) => {
+        if (sourceFunds.length === 0) {
+          dispatch(push('/'));
+          return;
+        }
+        dispatch({ type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds });
+      })
       .catch(error => dispatch({ type: GET_SOURCE_FUNDS_ERROR, error }));
   };
 }
