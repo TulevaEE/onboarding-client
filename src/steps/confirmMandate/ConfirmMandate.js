@@ -56,27 +56,29 @@ const ConfirmMandate = ({
         ) : ''
       }
       {
-        exchange.sourceSelection.map(fund => (
-          <div className="mt-4" key={fund.isin}>
-            <Message>confirm.mandate.switch</Message>
-            <b>
-              {
-                fund.percentage === 1 ?
-                  <Message>confirm.mandate.amounts.all</Message> :
-                  `${fund.percentage * 100}%`
-              }
-            </b>
-            <Message>confirm.mandate.under.my.control</Message>
-            <b>{fund.name}</b>
-            <Message>confirm.mandate.shares</Message>
-            <b className="highlight">
-              <Message>
-                {`target.funds.${exchange.selectedTargetFund.isin}.title`}
-              </Message>
-            </b>
-            <Message>confirm.mandate.for.shares</Message>
-          </div>
-        ))
+        exchange.sourceSelection
+          .filter(selection => !!selection.percentage)
+          .map(fund => (
+            <div className="mt-4" key={fund.isin}>
+              <Message>confirm.mandate.switch</Message>
+              <b>
+                {
+                  fund.percentage === 1 ?
+                    <Message>confirm.mandate.amounts.all</Message> :
+                    `${fund.percentage * 100}%`
+                }
+              </b>
+              <Message>confirm.mandate.under.my.control</Message>
+              <b>{fund.name}</b>
+              <Message>confirm.mandate.shares</Message>
+              <b className="highlight">
+                <Message>
+                  {`target.funds.${exchange.selectedTargetFund.isin}.title`}
+                </Message>
+              </b>
+              <Message>confirm.mandate.for.shares</Message>
+            </div>
+          ))
       }
       <div className="mt-5">
         <button className="btn btn-primary mr-2" onClick={() => startSigningMandate()}>
