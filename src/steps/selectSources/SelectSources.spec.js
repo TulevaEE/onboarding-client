@@ -5,6 +5,7 @@ import { Message } from 'retranslate';
 
 import { Loader, Radio } from '../../common';
 import PensionFundTable from './pensionFundTable';
+import ExactFundSelector from './exactFundSelector';
 import { SelectSources } from './SelectSources';
 
 describe('Select sources step', () => {
@@ -99,5 +100,31 @@ describe('Select sources step', () => {
     component.find(Radio).last().simulate('select');
     expect(onSelect).toHaveBeenCalledTimes(1);
     expect(onSelect).toHaveBeenCalledWith(noneSelection, false);
+  });
+
+  it('sets the exact fund selector active as selected when fund selection is exact', () => {
+    component.setProps({ sourceSelectionExact: true });
+    const exactFundSelector = () => component.find(Radio).at(1);
+    expect(exactFundSelector().prop('selected')).toBe(true);
+    component.setProps({ sourceSelectionExact: false });
+    expect(exactFundSelector().prop('selected')).toBe(false);
+  });
+
+  it('shows the exact fund selector when fund selection is exact', () => {
+    const exactFundSelectorRendered = () => !!component.find(ExactFundSelector).length;
+    component.setProps({ sourceSelectionExact: true });
+    expect(exactFundSelectorRendered()).toBe(true);
+    component.setProps({ sourceSelectionExact: false });
+    expect(exactFundSelectorRendered()).toBe(false);
+  });
+
+  it('selects exact funds when the selector tells it to', () => {
+    const onSelect = jest.fn();
+    component.setProps({ onSelect, sourceSelectionExact: true });
+    const selection = [{ name: 'a', percentage: 0.7 }, { name: 'b', percentage: 0.8 }];
+    expect(onSelect).not.toHaveBeenCalled();
+    component.find(ExactFundSelector).simulate('select', selection);
+    expect(onSelect).toHaveBeenCalledTimes(1);
+    expect(onSelect).toHaveBeenCalledWith(selection, true);
   });
 });
