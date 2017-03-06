@@ -2,6 +2,7 @@
 // Would be preferrable to replace with apache.
 
 const express = require('express');
+const compression = require('compression');
 const path = require('path');
 
 const app = express();
@@ -13,6 +14,7 @@ function forceHttps(request, response, next) {
   return next();
 }
 
+app.use(compression());
 app.use(forceHttps);
 app.use(express.static(path.join(__dirname, '..', 'build')));
 
