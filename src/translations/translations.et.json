@@ -1,7 +1,6 @@
 {
   "login.title": "Tere! Astu sisse.",
-  "login.subtitle": "Et saaksime sulle abiks olla, teeme sinu andmete kohta päringu pensioniregistrisse. Sisse logides annad Tulevale selleks loa. 
-.",
+  "login.subtitle": "Et saaksime sulle abiks olla, teeme sinu andmete kohta päringu pensioniregistrisse. Sisse logides annad Tulevale selleks loa.",
   "login.mobile.id": "Mobiil-ID",
   "login.phone.number": "Telefoninumber",
   "login.enter": "Sisenen",
@@ -36,8 +35,7 @@
   "target.funds.AE123232335.title": "Tuleva maailma võlakirjade pensionifond",
   "target.funds.AE123232335.title.into": "Tuleva maailma võlakirjade pensionifondi",
   "target.funds.AE123232335.description": "Tuleva võlakirjafondi kaudu ostad sa 100% ulatuses maailma valitsuste ja ettevõtete võlakirju.",
-  "transfer.future.capital.intro": "Kogudes pensioni Tulevas, võid kindel olla, et sinu pensionifondi teenustasu on just selline, nagu sina ise ja teised Tuleva liikmed otsustavad Vali fond, kuhu suunad oma tulevased sissemaksed:   
-.",
+  "transfer.future.capital.intro": "Kogudes pensioni Tulevas, võid kindel olla, et sinu pensionifondi teenustasu on just selline, nagu sina ise ja teised Tuleva liikmed otsustavad Vali fond, kuhu suunad oma tulevased sissemaksed:",
   "transfer.future.capital.yes": "Tuleva maailma aktsiate pensionifond",
   "transfer.future.capital.no": "Tuleva maailma võlakirjade pensionifond",
   "confirm.mandate.me": "Mina, ",
