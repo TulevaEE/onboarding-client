@@ -19,14 +19,11 @@ describe('InfoTooltip', () => {
   });
 
   it('renders info sign image with correct tooltip triggers', () => {
-    const infoImage = "info.svg";
-    component.setProps({ infoImage });
-
     const image = () => component.find('img.infoTooltip');
     expect(image().prop('data-for')).toBe('test-tooltip');
-    expect(image().prop('data-tip')).toBe(true);
+    expect(image().prop('data-tip')).toBeTruthy();
     expect(image().prop('alt')).toBe('Information');
-    expect(image().prop('src')).toBe(infoImage);
+    expect(image().prop('src')).toBeTruthy();
   });
 
   it('renders component with correctly included react tooltip component', () => {
