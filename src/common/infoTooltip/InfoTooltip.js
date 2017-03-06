@@ -1,11 +1,14 @@
 import React, { PropTypes as Types } from 'react';
 import ReactTooltip from 'react-tooltip';
 
+import './InfoTooltip.scss';
 import infoImage from './info.svg';
 
 const InfoTooltip = ({ children, name }) => (
-  <span>
-    <img data-tip data-for={name} src={infoImage} alt="Information" className="infoTooltip" />
+  <span className="info-tooltip">
+    <img
+      data-tip data-for={name} src={infoImage} alt="Information" className="info-tooltip__image"
+    />
     <ReactTooltip id={name} place="right" type="light" effect="float">
       { children }
     </ReactTooltip>
