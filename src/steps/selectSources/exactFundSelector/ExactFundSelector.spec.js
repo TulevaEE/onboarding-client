@@ -54,4 +54,8 @@ describe('Exact fund selector', () => {
     expect(onSelect).toHaveBeenCalledTimes(1);
     expect(onSelect).toHaveBeenCalledWith(expectedSelectionsAfterChange);
   });
+
+  it('renders info about cost', () => {
+    expect(component.contains(<Message>select.sources.select.some.cost</Message>)).toBe(true);
+  });
 });
