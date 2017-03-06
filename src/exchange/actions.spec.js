@@ -57,33 +57,56 @@ describe('Exchange actions', () => {
     mockApi.getMandateSignatureForMandateIdWithToken = () => Promise.reject();
   });
 
-  it('can get pension funds', () => {
-    const sourceFunds = [{ iAmPensionFunds: true }];
-    mockApi.getSourceFundsWithToken = jest.fn(() => {
-      expect(dispatch).toHaveBeenCalledTimes(1);
-      expect(dispatch).toHaveBeenCalledWith({ type: GET_SOURCE_FUNDS_START });
-      dispatch.mockClear();
-      return Promise.resolve(sourceFunds);
-    });
-    const getSourceFunds = createBoundAction(actions.getSourceFunds);
-    expect(dispatch).not.toHaveBeenCalled();
-    return getSourceFunds()
-      .then(() => {
+  describe('When getting source funds', () => {
+    it('can get pension funds', () => {
+      const sourceFunds = [{ iAmPensionFunds: true }];
+      mockApi.getSourceFundsWithToken = jest.fn(() => {
         expect(dispatch).toHaveBeenCalledTimes(1);
-        expect(dispatch).toHaveBeenCalledWith({
-          type: GET_SOURCE_FUNDS_SUCCESS,
-          sourceFunds,
-        });
+        expect(dispatch).toHaveBeenCalledWith({ type: GET_SOURCE_FUNDS_START });
+        dispatch.mockClear();
+        return Promise.resolve(sourceFunds);
       });
-  });
+      const getSourceFunds = createBoundAction(actions.getSourceFunds);
+      expect(dispatch).not.toHaveBeenCalled();
+      return getSourceFunds()
+        .then(() => {
+          expect(dispatch).toHaveBeenCalledTimes(1);
+          expect(dispatch).toHaveBeenCalledWith({
+            type: GET_SOURCE_FUNDS_SUCCESS,
+            sourceFunds,
+          });
+        });
+    });
 
-  it('can handle errors when getting pension funds', () => {
-    const error = new Error('oh no!');
-    mockApi.getSourceFundsWithToken = jest.fn(() => Promise.reject(error));
-    const getSourceFunds = createBoundAction(actions.getSourceFunds);
-    expect(dispatch).not.toHaveBeenCalled();
-    return getSourceFunds()
-      .then(() => expect(dispatch).toHaveBeenCalledWith({ type: GET_SOURCE_FUNDS_ERROR, error }));
+    it('redirects to overview when no source funds detected', () => {
+      const sourceFunds = [];
+      mockApi.getSourceFundsWithToken = jest.fn(() => {
+        expect(dispatch).toHaveBeenCalledTimes(1);
+        expect(dispatch).toHaveBeenCalledWith({ type: GET_SOURCE_FUNDS_START });
+        dispatch.mockClear();
+        return Promise.resolve(sourceFunds);
+      });
+      const getSourceFunds = createBoundAction(actions.getSourceFunds);
+      expect(dispatch).not.toHaveBeenCalled();
+      return getSourceFunds()
+        .then(() => {
+          expect(dispatch).toHaveBeenCalledTimes(1);
+          expect(dispatch).toHaveBeenCalledWith(push('/'));
+          expect(dispatch).not.toHaveBeenCalledWith({
+            type: GET_SOURCE_FUNDS_SUCCESS,
+            sourceFunds,
+          });
+        });
+    });
+
+    it('can handle errors when getting pension funds', () => {
+      const error = new Error('oh no!');
+      mockApi.getSourceFundsWithToken = jest.fn(() => Promise.reject(error));
+      const getSourceFunds = createBoundAction(actions.getSourceFunds);
+      expect(dispatch).not.toHaveBeenCalled();
+      return getSourceFunds()
+        .then(() => expect(dispatch).toHaveBeenCalledWith({ type: GET_SOURCE_FUNDS_ERROR, error }));
+    });
   });
 
   it('can select an exchange', () => {
