@@ -1,0 +1,14 @@
+@import "../variables";
+
+.login-page {
+  background: rgba(48, 48, 48, 0.06);
+  min-height: 100vh;
+  &__not-member {
+    font-weight: 500;
+    color: $text-primary;
+    font-size: 1.3em;
+  }
+  &__apply {
+    text-decoration: underline;
+  }
+}
