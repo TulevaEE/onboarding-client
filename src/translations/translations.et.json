@@ -77,5 +77,16 @@
   "success.your.payments": "Sinu maksed suunatakse Tuleva pensionifondi ",
   "success.your.payments.next.payment": "alates järgmisest maksest",
   "success.shares.switched": "Sinu olemasolevad osakud vahetatakse Tuleva pensionifondi osakute vastu ",
-  "success.shares.switched.when": "1. mail 2017"
+  "success.shares.switched.when": "1. mail 2017",
+  "terms.of.use.title": "Nõusolek",
+  "terms.of.use.subheading": "Tuleva veebirakendusse sisse logides annad Tulundusühistule Tuleva nõusoleku teha Eesti väärtpaberite keskregistrisse päringu sinu isikuandmete kohta. Nimetatud andmete hulgas on sinu:",
+  "terms.of.use.list.item.1": "pensionikonto number",
+  "terms.of.use.list.item.2": "nimi",
+  "terms.of.use.list.item.3": "isikukood",
+  "terms.of.use.list.item.4": "pensionifond, kuhu sa teed kohustusliku kogumispensioni sissemakseid",
+  "terms.of.use.list.item.5": "pensionikonto saldoteatis",
+  "terms.of.use.list.item.6": "pensionikonto väljavõte",
+  "terms.of.use.main.line.1": "Tuleva kuvab nende andmete põhjal sinu pensionikonto informatsiooni, aitab sul teha pensionifondi valikuavalduse ja/ või osakute vahetamise avalduse ning esitab avaldused otse või kontohalduri kaudu Eesti väärtpaberite keskregistrile.",
+  "terms.of.use.main.line.2": "Tulundusühistu Tuleva ei salvesta Eesti väärtpaberite keskregistrist saadud andmeid oma infosüsteemi, vaid registreerib sinu veebirakendusse sisse logimise fakti (ees- ja perekonnanime, isikukoodi, sisselogimise aja).",
+  "terms.of.use.main.line.3": "Käesoleval juhul on Tulundusühistu Tuleva isikuandmete töötleja Tõnu Pekk, e-mail: tuleva@tuleva.ee."
 }
