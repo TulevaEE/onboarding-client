@@ -96,11 +96,11 @@ describe('Select sources step', () => {
     expect(noneSelectionRadio().prop('selected')).toBe(false);
   });
 
-  it('when no funds selected, only then shows subtitle', () => {
+  it('shows subtitle for no funds only when it is selected', () => {
     const noneSelectionRadio = () => component.find(Radio).last();
     component.setProps({
       sourceSelectionExact: false,
-      sourceSelection: [{ name: 'a', percentage: 0 }, { name: 'b', percentage: 0 }],
+      sourceSelection: [],
     });
 
     expect(noneSelectionRadio().prop('selected')).toBe(true);
