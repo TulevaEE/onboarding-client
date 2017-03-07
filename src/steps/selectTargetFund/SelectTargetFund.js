@@ -4,8 +4,9 @@ import { connect } from 'react-redux';
 import { Message } from 'retranslate';
 import { Link } from 'react-router';
 
-import { Loader, Radio } from '../../common';
+import { Loader, Radio, InfoTooltip } from '../../common';
 import { selectTargetFund } from '../../exchange/actions';
+import TargetFundTooltipBody from './targetFundTooltipBody';
 
 export const SelectTargetFund = ({
   targetFunds,
@@ -27,7 +28,12 @@ export const SelectTargetFund = ({
             onSelect={() => onSelectTargetFund(fund)}
             className={index !== 0 ? 'mt-4' : ''}
           >
-            <h3><Message>{`target.funds.${fund.isin}.title`}</Message></h3>
+            <h3>
+              <Message>{`target.funds.${fund.isin}.title`}</Message>
+              <InfoTooltip name={fund.isin}>
+                <TargetFundTooltipBody targetFundIsin={fund.isin} />
+              </InfoTooltip>
+            </h3>
             <Message>{`target.funds.${fund.isin}.description`}</Message>
           </Radio>
         ))
