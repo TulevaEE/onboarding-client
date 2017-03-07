@@ -16,7 +16,7 @@ describe('Login page', () => {
   });
 
   it('renders some messages', () => {
-    expect(component.contains(<Message>login.title</Message>)).toBe(true);
+    expect(component.contains(<Message>login.not.member</Message>)).toBe(true);
   });
 
   it('renders a login form if no actions have not been taken', () => {
