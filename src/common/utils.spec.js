@@ -14,6 +14,11 @@ describe('Utils', () => {
       expect(result).toBe(null);
     });
 
+    it('works for falsy items', () => {
+      const list = [true, true, false, true];
+      expect(findWhere(list, element => !element)).toBe(false);
+    });
+
     it('works for objects', () => {
       const list = [{ findMe: false, id: 0 }, { findMe: true, id: 1 }, { findMe: false, id: 2 }];
       expect(findWhere(list, element => element.findMe)).toBe(list[1]);
