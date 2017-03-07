@@ -2,12 +2,25 @@
   border-radius: 8px;
   background-color: white;
   border: solid 1px #cccccc;
+  cursor: pointer;
+  transition: border-color .15s ease-out;
+
+  &__inner-container {
+    border-style: solid;
+    border-width: 1px;
+    width: 100%;
+    border-color: transparent;
+  }
 
   &__container {
     align-items: baseline;
   }
 
   &--active {
-    background-color: red; // TODO: style this
+    border: solid 2px #0593fc;
+
+    & .tv-target-fund__inner-container {
+      border-width: 0;
+    }
   }
 }
