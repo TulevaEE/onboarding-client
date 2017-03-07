@@ -28,7 +28,7 @@ describe('Transfer future capital step', () => {
       </Link>,
     )).toBe(true);
     expect(component.contains(
-      <Link className="btn btn-secondary" to="/steps/select-target-fund">
+      <Link className="btn btn-secondary" to="/steps/select-sources">
         <Message>steps.previous</Message>
       </Link>,
     )).toBe(true);

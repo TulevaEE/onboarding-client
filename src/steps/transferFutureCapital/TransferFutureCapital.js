@@ -34,7 +34,7 @@ export const TransferFutureCapital = ({ transferFutureCapital, onChangeTransferF
       <Link className="btn btn-primary mr-2" to="/steps/confirm-mandate">
         <Message>steps.next</Message>
       </Link>
-      <Link className="btn btn-secondary" to="/steps/select-target-fund">
+      <Link className="btn btn-secondary" to="/steps/select-sources">
         <Message>steps.previous</Message>
       </Link>
     </div>

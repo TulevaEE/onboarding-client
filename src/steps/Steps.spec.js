@@ -19,16 +19,16 @@ describe('Steps', () => {
   });
 
   it('renders the title of the step given to it as active', () => {
-    component.setProps({ stepName: 'select-target-fund' });
+    component.setProps({ stepName: 'select-sources' });
     expect(component.contains(
-      <StepTitle active number={2}>
-        <Message>steps.select-target-fund</Message>
+      <StepTitle active number={1}>
+        <Message>steps.select-sources</Message>
       </StepTitle>,
     )).toBe(true);
   });
 
   it('renders the titles of the steps before the given step as completed steps', () => {
-    component.setProps({ stepName: 'transfer-future-capital' });
+    component.setProps({ stepName: 'confirm-mandate' });
     expect(component.contains(
       <StepTitle completed number={1}>
         <Message>steps.select-sources</Message>
@@ -36,20 +36,20 @@ describe('Steps', () => {
     )).toBe(true);
     expect(component.contains(
       <StepTitle completed number={2}>
-        <Message>steps.select-target-fund</Message>
+        <Message>steps.transfer-future-capital</Message>
       </StepTitle>,
     )).toBe(true);
   });
 
   it('renders the titles of the steps after the given step', () => {
-    component.setProps({ stepName: 'select-target-fund' });
+    component.setProps({ stepName: 'select-sources' });
     expect(component.contains(
-      <StepTitle number={3}>
+      <StepTitle number={2}>
         <Message>steps.transfer-future-capital</Message>
       </StepTitle>,
     )).toBe(true);
     expect(component.contains(
-      <StepTitle number={4}>
+      <StepTitle number={3}>
         <Message>steps.confirm-mandate</Message>
       </StepTitle>,
     )).toBe(true);

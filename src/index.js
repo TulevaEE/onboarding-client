@@ -16,7 +16,6 @@ import { reducer as exchangeReducer, actions as exchangeActions } from './exchan
 import App from './app';
 import Steps, {
   SelectSources,
-  SelectTargetFund,
   TransferFutureCapital,
   ConfirmMandate,
   Success,
@@ -62,7 +61,6 @@ render((
         <Route path="/" component={requireAuthentication(App)} onEnter={getUserIfNecessary}>
           <Route path="/steps" component={Steps} onEnter={getFundsIfNecessary}>
             <Route path="select-sources" component={SelectSources} />
-            <Route path="select-target-fund" component={SelectTargetFund} />
             <Route path="transfer-future-capital" component={TransferFutureCapital} />
             <Route path="confirm-mandate" component={ConfirmMandate} />
           </Route>

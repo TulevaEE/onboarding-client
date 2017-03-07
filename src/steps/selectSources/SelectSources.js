@@ -75,7 +75,7 @@ export const SelectSources = ({
         <Message>select.sources.select.none.subtitle</Message>
       </Radio>
       <div className="px-col">
-        <Link className="btn btn-primary mt-5" to="/steps/select-target-fund">
+        <Link className="btn btn-primary mt-5" to="/steps/transfer-future-capital">
           <Message>steps.next</Message>
         </Link>
       </div>
