@@ -36,6 +36,7 @@ export const SelectSources = ({
     return <Loader className="align-middle" />;
   }
   const fullSelectionActive = isFullSelection(sourceSelection) && !sourceSelectionExact;
+  const noneSelectionActive = isNoneSelection(sourceSelection) && !sourceSelectionExact;
   return (
     <div>
       <div className="px-col mb-4">
@@ -78,8 +79,14 @@ export const SelectSources = ({
         selected={isNoneSelection(sourceSelection) && !sourceSelectionExact}
         onSelect={() => onSelect(selectNone(sourceSelection), false)}
       >
-        <h3><Message>select.sources.select.none</Message></h3>
-        <Message>select.sources.select.none.subtitle</Message>
+        <h3 className="m-0"><Message>select.sources.select.none</Message></h3>
+        {
+          noneSelectionActive ? (
+            <div className="mt-2 tv-select-sources-type-none-subtitle">
+              <Message>select.sources.select.none.subtitle</Message>
+            </div>
+          ) : ''
+        }
       </Radio>
       <div className="px-col">
         <Link className="btn btn-primary mt-5" to="/steps/transfer-future-capital">
