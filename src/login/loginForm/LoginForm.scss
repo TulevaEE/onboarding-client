@@ -1,0 +1,43 @@
+@import "../../variables";
+
+.login-form {
+  background: #fff;
+  box-shadow: 0 0 16px 0 rgba(0, 0, 0, 0.08);
+  border-radius: 5px;
+
+  &__note {
+    color: $text-secondary;
+    font-size: 0.85em;
+    a {
+      text-decoration: underline;
+    }
+  }
+
+  &__break {
+    overflow: hidden;
+    padding-left: 7px;
+    color: $text-secondary;
+
+    &::before, &::after {
+      background-color: $gray-mid;
+      content: "";
+      display: inline-block;
+      height: 1px;
+      position: relative;
+      vertical-align: middle;
+      width: 100%;
+    }
+
+    &::before {
+      margin-left: -100%;
+    }
+
+    &::after {
+      margin-right: -100%;
+    }
+
+    & > .h2 > span {
+      vertical-align: middle;
+    }
+  }
+}
