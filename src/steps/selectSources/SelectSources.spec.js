@@ -91,6 +91,25 @@ describe('Select sources step', () => {
     expect(noneSelectionRadio().prop('selected')).toBe(false);
   });
 
+  it('when no funds selected, only then shows subtitle', () => {
+    const noneSelectionRadio = () => component.find(Radio).last();
+    component.setProps({
+      sourceSelectionExact: false,
+      sourceSelection: [{ name: 'a', percentage: 0 }, { name: 'b', percentage: 0 }],
+    });
+
+    expect(noneSelectionRadio().prop('selected')).toBe(true);
+    expect(component.contains(<Message>select.sources.select.none.subtitle</Message>)).toBe(true);
+
+    component.setProps({
+      sourceSelectionExact: false,
+      sourceSelection: [{ name: 'a', percentage: 0.5 }, { name: 'b', percentage: 1 }],
+    });
+
+    expect(noneSelectionRadio().prop('selected')).toBe(false);
+    expect(component.contains(<Message>select.sources.select.none.subtitle</Message>)).toBe(false);
+  });
+
   it('selects no funds when clicking on the no selection radio', () => {
     const onSelect = jest.fn();
     const sourceSelection = [{ name: 'a', percentage: 0.7 }, { name: 'b', percentage: 0.8 }];
