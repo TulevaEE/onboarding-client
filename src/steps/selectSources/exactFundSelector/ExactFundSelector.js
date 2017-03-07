@@ -9,6 +9,17 @@ function createSelectionChangeHandler(index, selections, onSelect) {
     onSelect([...selections.slice(0, index), newSelection, ...selections.slice(index + 1)]);
 }
 
+function createRowAdder({ sourceFunds, targetFunds, selections, onSelect }) {
+  return () => {
+    const newSelection = {
+      sourceFundIsin: sourceFunds[0].isin,
+      targetFundIsin: targetFunds[0].isin,
+      percentage: 1,
+    };
+    onSelect([...selections, newSelection]);
+  };
+}
+
 const ExactFundSelector = ({ selections, sourceFunds, targetFunds, onSelect }) => (
   <div>
     <div className="row mt-4">
@@ -33,8 +44,18 @@ const ExactFundSelector = ({ selections, sourceFunds, targetFunds, onSelect }) =
         />
       ))
     }
-    <div className="mt-4">
-      <small><Message>select.sources.select.some.cost</Message></small>
+    <div className="row mt-2">
+      <div className="col">
+        <small><Message>select.sources.select.some.cost</Message></small>
+      </div>
+      <div className="col">
+        <button
+          className="btn btn-secondary btn-sm pull-right"
+          onClick={createRowAdder({ sourceFunds, targetFunds, selections, onSelect })}
+        >
+          <Message>select.sources.select.some.add</Message>
+        </button>
+      </div>
     </div>
   </div>
 );
