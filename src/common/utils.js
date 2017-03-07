@@ -1,6 +1,6 @@
 const isTruthy = value => !!value;
 
-const NOT_FOUND_ITEM_CONSTANT = {};
+const NOT_FOUND_ITEM_CONSTANT = {}; // using this as a secret comparison reference.
 
 export function findWhere(list = [], predicate = isTruthy) { // eslint-disable-line
   const value = list.reduce((foundItem, current) => {

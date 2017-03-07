@@ -1,52 +1,36 @@
 import React, { PropTypes as Types } from 'react';
 import { Message } from 'retranslate';
 
+import FundExchangeRow from './fundExchangeRow';
 import './ExactFundSelector.scss';
 
-function createOnSelectHandlerForFundAndSelections(fund, selections, onSelect) {
-  return (event) => {
-    onSelect(selections.map((currentFund) => {
-      if (currentFund.isin === fund.isin) {
-        return {
-          ...currentFund,
-          percentage: parseInt(event.target.value, 10) / 100,
-        };
-      }
-      return currentFund;
-    }));
-  };
+function createSelectionChangeHandler(index, selections, onSelect) {
+  return newSelection =>
+    onSelect([...selections.slice(0, index), newSelection, ...selections.slice(index + 1)]);
 }
 
-const ExactFundSelector = ({ selections, onSelect }) => (
+const ExactFundSelector = ({ selections, sourceFunds, targetFunds, onSelect }) => (
   <div>
     <div className="row mt-4">
-      <div className="col">
-        <b><Message>select.sources.select.some.current</Message></b>
+      <div className="col-5">
+        <b><Message>select.sources.select.some.source</Message></b>
       </div>
       <div className="col">
-        <b><Message>select.sources.select.some.select</Message></b>
+        <b><Message>select.sources.select.some.percentage</Message></b>
+      </div>
+      <div className="col-5">
+        <b><Message>select.sources.select.some.target</Message></b>
       </div>
     </div>
     {
-      selections.map(fund => (
-        <div className="row mt-2" key={fund.isin}>
-          <div className="col">
-            <Message>{fund.name}</Message>
-          </div>
-          <div className="col">
-            <div className="input-group input-group-sm tv-exact-fund-selector">
-              <input
-                className="form-control"
-                min="0"
-                max="100"
-                value={fund.percentage * 100}
-                type="number"
-                onChange={createOnSelectHandlerForFundAndSelections(fund, selections, onSelect)}
-              />
-              <span className="input-group-addon">%</span>
-            </div>
-          </div>
-        </div>
+      selections.map((selection, index) => (
+        <FundExchangeRow
+          key={index} // eslint-disable-line react/no-array-index-key
+          selection={selection}
+          sourceFunds={sourceFunds}
+          targetFunds={targetFunds}
+          onChange={createSelectionChangeHandler(index, selections, onSelect)}
+        />
       ))
     }
     <div className="mt-4">
@@ -59,14 +43,15 @@ const noop = () => null;
 
 ExactFundSelector.defaultProps = {
   selections: [],
+  sourceFunds: [],
+  targetFunds: [],
   onSelect: noop,
 };
 
 ExactFundSelector.propTypes = {
-  selections: Types.arrayOf(Types.shape({
-    name: Types.string.isRequired,
-    percentage: Types.number.isRequired,
-  })),
+  selections: Types.arrayOf(Types.shape({})),
+  sourceFunds: Types.arrayOf(Types.shape({})),
+  targetFunds: Types.arrayOf(Types.shape({})),
   onSelect: Types.func,
 };
 
