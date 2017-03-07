@@ -1,5 +1,9 @@
 .react-tooltip {
-  box-shadow: 0 0 15px #2a2c2e;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  opacity: 1 !important;
+  h3{
+    color: #2a2c2e;
+  }
   img {
     margin-left: auto;
     margin-right: auto;
@@ -9,7 +13,6 @@
 
 .info-tooltip {
   margin: 0 5px;
-  color: #2a2c2e;
 
   &__image {
     width: 15px;
