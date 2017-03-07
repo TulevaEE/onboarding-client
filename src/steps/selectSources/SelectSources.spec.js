@@ -15,22 +15,23 @@ describe('Select sources step', () => {
     component = shallow(<SelectSources />);
   });
 
-  it('renders a loader when loading pension funds', () => {
+  it('renders a loader when loading source or target funds', () => {
     component.setProps({ loadingSourceFunds: true });
-    expect(component.find(Loader).length).toBe(1);
+    expect(component.get(0)).toEqual(<Loader className="align-middle" />);
+    component.setProps({ loadingSourceFunds: false, loadingTargetFunds: true });
     expect(component.get(0)).toEqual(<Loader className="align-middle" />);
   });
 
-  it('does not render a loader when pension funds loaded', () => {
-    component.setProps({ loadingSourceFunds: false });
-    expect(component.find(Loader).length).toBe(0);
+  it('does not render a loader when funds loaded', () => {
+    component.setProps({ loadingSourceFunds: false, loadingTargetFunds: false });
+    expect(component.get(0)).not.toEqual(<Loader className="align-middle" />);
   });
 
   it('renders a title', () => {
     expect(component.contains(<Message>select.sources.current.status</Message>)).toBe(true);
   });
 
-  it('renders a pension funds table with given funds', () => {
+  it('renders a pension fund table with given funds', () => {
     const sourceFunds = [{ iAmAFund: true }, { iAmAlsoAFund: true }];
     component.setProps({ sourceFunds });
     expect(component.contains(<PensionFundTable funds={sourceFunds} />)).toBe(true);
@@ -57,16 +58,20 @@ describe('Select sources step', () => {
 
     component.setProps({
       sourceSelectionExact: false,
-      sourceSelection: [{ name: 'a', percentage: 1 }, { name: 'b', percentage: 0.9 }],
+      sourceSelection: [],
     });
     expect(fullSelectionRadio().prop('selected')).toBe(false);
   });
 
   it('selects all funds when clicking on the full selection radio', () => {
     const onSelect = jest.fn();
-    const sourceSelection = [{ name: 'a', percentage: 0.7 }, { name: 'b', percentage: 0.8 }];
-    const fullSelection = [{ name: 'a', percentage: 1 }, { name: 'b', percentage: 1 }];
-    component.setProps({ sourceSelection, onSelect });
+    const sourceFunds = [{ isin: 'a' }, { isin: 'b' }];
+    const targetFunds = [{ isin: 'c' }];
+    const fullSelection = [
+      { sourceFundIsin: 'a', targetFundIsin: 'c', percentage: 1 },
+      { sourceFundIsin: 'b', targetFundIsin: 'c', percentage: 1 },
+    ];
+    component.setProps({ sourceFunds, targetFunds, onSelect });
     expect(onSelect).not.toHaveBeenCalled();
     component.find(Radio).first().simulate('select');
     expect(onSelect).toHaveBeenCalledTimes(1);
@@ -77,7 +82,7 @@ describe('Select sources step', () => {
     const noneSelectionRadio = () => component.find(Radio).last();
     component.setProps({
       sourceSelectionExact: false,
-      sourceSelection: [{ name: 'a', percentage: 0 }, { name: 'b', percentage: 0 }],
+      sourceSelection: [],
     });
     expect(noneSelectionRadio().prop('selected')).toBe(true);
 
@@ -93,13 +98,12 @@ describe('Select sources step', () => {
 
   it('selects no funds when clicking on the no selection radio', () => {
     const onSelect = jest.fn();
-    const sourceSelection = [{ name: 'a', percentage: 0.7 }, { name: 'b', percentage: 0.8 }];
-    const noneSelection = [{ name: 'a', percentage: 0 }, { name: 'b', percentage: 0 }];
-    component.setProps({ sourceSelection, onSelect });
+    const sourceFunds = [{ isin: 'a' }, { isin: 'b' }];
+    component.setProps({ sourceFunds, onSelect });
     expect(onSelect).not.toHaveBeenCalled();
     component.find(Radio).last().simulate('select');
     expect(onSelect).toHaveBeenCalledTimes(1);
-    expect(onSelect).toHaveBeenCalledWith(noneSelection, false);
+    expect(onSelect).toHaveBeenCalledWith([], false);
   });
 
   it('sets the exact fund selector active as selected when fund selection is exact', () => {

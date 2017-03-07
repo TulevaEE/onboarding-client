@@ -1,0 +1,13 @@
+.tv-target-fund {
+  border-radius: 8px;
+  background-color: white;
+  border: solid 1px #cccccc;
+
+  &__container {
+    align-items: baseline;
+  }
+
+  &--active {
+    background-color: red; // TODO: style this
+  }
+}

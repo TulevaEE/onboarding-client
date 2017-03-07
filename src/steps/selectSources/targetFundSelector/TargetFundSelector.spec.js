@@ -34,9 +34,9 @@ describe('Target fund selector', () => {
       { isin: '789' },
     ];
     component.setProps({ targetFunds, selectedTargetFundIsin });
-    expect(component.find('button').first().hasClass('tv-target-fund__active')).toBe(false);
-    expect(component.find('button').at(1).hasClass('tv-target-fund__active')).toBe(true);
-    expect(component.find('button').last().hasClass('tv-target-fund__active')).toBe(false);
+    expect(component.find('button').first().hasClass('tv-target-fund--active')).toBe(false);
+    expect(component.find('button').at(1).hasClass('tv-target-fund--active')).toBe(true);
+    expect(component.find('button').last().hasClass('tv-target-fund--active')).toBe(false);
   });
 
   it('can select a target fund', () => {

@@ -28,13 +28,12 @@ describe('Exchange reducer', () => {
     expect(newState.loadingSourceFunds).toBe(true);
   });
 
-  it('stops loading and saves funds and default seletion when getting pension funds succeeded', () => {
+  it('stops loading and saves funds when getting pension funds succeeded', () => {
     const sourceFunds = [{ name: 'name', isin: 'isin' }];
     const action = { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds };
     const newState = exchangeReducer({ loadingSourceFunds: true }, action);
     expect(newState.loadingSourceFunds).toBe(false);
     expect(newState.sourceFunds).toBe(sourceFunds);
-    expect(newState.sourceSelection).toEqual([{ name: 'name', isin: 'isin', percentage: 1 }]);
   });
 
   it('stops loading and saves the error when getting pension funds fails', () => {
@@ -61,14 +60,30 @@ describe('Exchange reducer', () => {
 
   it('stops loading, saves and selects target funds when getting them succeeds', () => {
     const targetFunds = [
-      { isin: 'asd', hello: true },
       { isin: 'AE123232334', iShouldBeSelected: true },
+      { isin: 'asd', hello: true },
     ];
     const action = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
     const newState = exchangeReducer({ loadingTargetFunds: true }, action);
     expect(newState.targetFunds).toEqual(targetFunds);
     expect(newState.loadingTargetFunds).toBe(false);
-    expect(newState.selectedTargetFund).toEqual(targetFunds[1]);
+    expect(newState.selectedTargetFund).toEqual(targetFunds[0]);
+  });
+
+  it('selects full source selection when both target and source funds have arrived', () => {
+    const expectedFullSelection = [
+      { sourceFundIsin: 'source', targetFundIsin: 'target', percentage: 1 },
+      { sourceFundIsin: 'source 2', targetFundIsin: 'target', percentage: 1 },
+    ];
+
+    const sourceFunds = [{ name: 'name', isin: 'source' }, { name: 'name', isin: 'source 2' }];
+    const sourceFundsAction = { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds };
+    const targetFunds = [{ name: 'name', isin: 'target' }, { name: 'name', isin: 'target 2' }];
+    const targetFundsAction = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
+    const state = [sourceFundsAction, targetFundsAction].reduce(exchangeReducer);
+    expect(state.sourceSelection).toEqual(expectedFullSelection);
+    const stateOtherWay = [targetFundsAction, sourceFundsAction].reduce(exchangeReducer);
+    expect(stateOtherWay.sourceSelection).toEqual(expectedFullSelection);
   });
 
   it('stops loading and saves the error when getting target funds fails', () => {

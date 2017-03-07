@@ -39,8 +39,13 @@ const initialState = {
   mandateSigningError: null,
 };
 
-// TODO: add actual isin once Tuleva becomes a pension fund.
-const DEFAULT_SELECTED_TARGET_FUND_ISIN = 'AE123232334';
+function createFullDefaultSourceSelection({ sourceFunds, targetFunds }) {
+  return sourceFunds.map(({ isin }) => ({
+    sourceFundIsin: isin,
+    targetFundIsin: targetFunds[0].isin,
+    percentage: 1,
+  }));
+}
 
 export default function exchangeReducer(state = initialState, action) {
   switch (action.type) {
@@ -51,8 +56,14 @@ export default function exchangeReducer(state = initialState, action) {
         ...state,
         loadingSourceFunds: false,
         sourceFunds: action.sourceFunds,
-        sourceSelection: action.sourceFunds
-          .map(({ name, isin }) => ({ name, isin, percentage: 1 })),
+        // we do not know if source or target funds get here first, so we check if we can
+        // calculate the default source selection and they have not yet been calculated in
+        // both the target and source fund arrival
+        sourceSelection: state.targetFunds && !state.sourceSelection ?
+          createFullDefaultSourceSelection({
+            sourceFunds: action.sourceFunds,
+            targetFunds: state.targetFunds,
+          }) : state.sourceSelection,
       };
     case GET_SOURCE_FUNDS_ERROR:
       return { ...state, loadingSourceFunds: false, error: action.error };
@@ -70,9 +81,15 @@ export default function exchangeReducer(state = initialState, action) {
         ...state,
         loadingTargetFunds: false,
         targetFunds: action.targetFunds,
-        selectedTargetFund: action.targetFunds
-          .reduce((foundFund, current) => foundFund ||
-            (current.isin === DEFAULT_SELECTED_TARGET_FUND_ISIN ? current : null), null),
+        selectedTargetFund: action.targetFunds[0],
+        // we do not know if source or target funds get here first, so we check if we can
+        // calculate the default source selection and they have not yet been calculated in
+        // both the target and source fund arrival
+        sourceSelection: state.sourceFunds && !state.sourceSelection ?
+          createFullDefaultSourceSelection({
+            sourceFunds: state.sourceFunds,
+            targetFunds: action.targetFunds,
+          }) : state.sourceSelection,
       };
     case GET_TARGET_FUNDS_ERROR:
       return { ...state, loadingTargetFunds: false, error: action.error };
