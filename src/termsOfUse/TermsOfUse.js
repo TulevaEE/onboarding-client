@@ -16,24 +16,11 @@ export const TermsOfUse = () => (
       <p className="mt-3"><Message>terms.of.use.subheading</Message></p>
 
       <ol className="mt-3">
-        <li>
-          <Message>terms.of.use.list.item.1</Message>
-        </li>
-        <li>
-          <Message>terms.of.use.list.item.2</Message>
-        </li>
-        <li>
-          <Message>terms.of.use.list.item.3</Message>
-        </li>
-        <li>
-          <Message>terms.of.use.list.item.4</Message>
-        </li>
-        <li>
-          <Message>terms.of.use.list.item.5</Message>
-        </li>
-        <li>
-          <Message>terms.of.use.list.item.6</Message>
-        </li>
+        {[...Array(6)].map((item, index) => (
+          <li>
+            <Message>{`terms.of.use.list.item.${index + 1}`}</Message>
+          </li>
+        ))}
       </ol>
 
       <p className="mt-3">
