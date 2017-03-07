@@ -93,30 +93,21 @@ describe('Confirm mandate step', () => {
 
   it('renders a fund transfer mandate for every fund exchanged', () => {
     const sourceSelection = [
-      { percentage: 0, isin: '123', name: 'test 1' },
-      { percentage: 0.5, isin: '456', name: 'test 2' },
-      { percentage: 1, isin: '789', name: 'test 3' },
+      { percentage: 0, sourceFundIsin: 'source 1', targetFundIsin: 'target 2' },
+      { percentage: 0.5, sourceFundIsin: 'source 1', targetFundIsin: 'target 1' },
+      { percentage: 1, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
     ];
-    const selectedTargetFund = { isin: 'asd' };
+    const sourceFunds = [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }];
+    component.setProps({ exchange: { sourceSelection, sourceFunds } });
 
-    component.setProps({ exchange: { sourceSelection, selectedTargetFund } });
     expect(component.contains(
-      <FundTransferMandate
-        fund={sourceSelection[1]}
-        targetFund={selectedTargetFund}
-      />,
+      <FundTransferMandate selection={{ ...sourceSelection[1], sourceFundName: 'a' }} />,
     )).toBe(true);
     expect(component.contains(
-      <FundTransferMandate
-        fund={sourceSelection[2]}
-        targetFund={selectedTargetFund}
-      />,
+      <FundTransferMandate selection={{ ...sourceSelection[2], sourceFundName: 'b' }} />,
     )).toBe(true);
     expect(component.contains(
-      <FundTransferMandate
-        fund={sourceSelection[0]}
-        targetFund={selectedTargetFund}
-      />,
+      <FundTransferMandate selection={{ ...sourceSelection[0], sourceFundName: 'a' }} />,
     )).toBe(false); // first is 0 percent, so should not be rendered
   });
 
@@ -151,11 +142,12 @@ describe('Confirm mandate step', () => {
     const onSignMandate = jest.fn();
     const exchange = {
       sourceSelection: [
-        { percentage: 0.5, isin: 'test isin 1', name: 'test 1' },
-        { percentage: 1, isin: 'test isin 2', name: 'test 2' },
+        { percentage: 0.5, sourceFundIsin: 'source 1', targetFundIsin: 'target 1' },
+        { percentage: 1, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
       ],
+      sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
       transferFutureCapital: true,
-      selectedTargetFund: { isin: 'target isin' },
+      selectedTargetFund: { isin: 'target 1' },
     };
     component.setProps({ onSignMandate, exchange });
     expect(onSignMandate).not.toHaveBeenCalled();
@@ -163,22 +155,23 @@ describe('Confirm mandate step', () => {
     expect(onSignMandate).toHaveBeenCalledTimes(1);
     expect(onSignMandate).toHaveBeenCalledWith({
       fundTransferExchanges: [
-        { amount: 0.5, sourceFundIsin: 'test isin 1', targetFundIsin: 'target isin' },
-        { amount: 1, sourceFundIsin: 'test isin 2', targetFundIsin: 'target isin' },
+        { amount: 0.5, sourceFundIsin: 'source 1', targetFundIsin: 'target 1' },
+        { amount: 1, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
       ],
-      futureContributionFundIsin: 'target isin',
+      futureContributionFundIsin: 'target 1',
     });
   });
 
-  it('can start signing the mandate without a future capital fund', () => {
+  it('can start signing the mandate with a future capital fund', () => {
     const onSignMandate = jest.fn();
     const exchange = {
       sourceSelection: [
-        { percentage: 0.5, isin: 'test isin 1', name: 'test 1' },
-        { percentage: 1, isin: 'test isin 2', name: 'test 2' },
+        { percentage: 0.5, sourceFundIsin: 'source 1', targetFundIsin: 'target 1' },
+        { percentage: 1, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
       ],
+      sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
       transferFutureCapital: false,
-      selectedTargetFund: { isin: 'target isin' },
+      selectedTargetFund: null,
     };
     component.setProps({ onSignMandate, exchange });
     expect(onSignMandate).not.toHaveBeenCalled();
@@ -186,8 +179,8 @@ describe('Confirm mandate step', () => {
     expect(onSignMandate).toHaveBeenCalledTimes(1);
     expect(onSignMandate).toHaveBeenCalledWith({
       fundTransferExchanges: [
-        { amount: 0.5, sourceFundIsin: 'test isin 1', targetFundIsin: 'target isin' },
-        { amount: 1, sourceFundIsin: 'test isin 2', targetFundIsin: 'target isin' },
+        { amount: 0.5, sourceFundIsin: 'source 1', targetFundIsin: 'target 1' },
+        { amount: 1, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
       ],
       futureContributionFundIsin: null,
     });
