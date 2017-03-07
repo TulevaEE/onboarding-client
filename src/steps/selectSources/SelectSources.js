@@ -84,8 +84,14 @@ export const SelectSources = ({
         selected={noneSelectionActive}
         onSelect={() => onSelect([], false)}
       >
-        <h3><Message>select.sources.select.none</Message></h3>
-        <Message>select.sources.select.none.subtitle</Message>
+        <h3 className="m-0"><Message>select.sources.select.none</Message></h3>
+        {
+          noneSelectionActive ? (
+            <div className="mt-2 tv-select-sources-type-none-subtitle">
+              <Message>select.sources.select.none.subtitle</Message>
+            </div>
+          ) : ''
+        }
       </Radio>
       <div className="px-col">
         <Link className="btn btn-primary mt-5" to="/steps/transfer-future-capital">
