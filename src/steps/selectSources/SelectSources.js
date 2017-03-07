@@ -35,6 +35,7 @@ export const SelectSources = ({
   if (loadingSourceFunds) {
     return <Loader className="align-middle" />;
   }
+  const fullSelectionActive = isFullSelection(sourceSelection) && !sourceSelectionExact;
   return (
     <div>
       <div className="px-col mb-4">
@@ -43,11 +44,17 @@ export const SelectSources = ({
       </div>
       <Radio
         name="tv-select-sources-type"
-        selected={isFullSelection(sourceSelection) && !sourceSelectionExact}
+        selected={fullSelectionActive}
         onSelect={() => onSelect(selectFull(sourceSelection), false)}
       >
-        <h3><Message>select.sources.select.all</Message></h3>
-        <Message>select.sources.select.all.subtitle</Message>
+        <h3 className="m-0"><Message>select.sources.select.all</Message></h3>
+        {
+          fullSelectionActive ? (
+            <div className="mt-2">
+              <Message>select.sources.select.all.subtitle</Message>
+            </div>
+          ) : ''
+        }
       </Radio>
       <Radio
         name="tv-select-sources-type"
