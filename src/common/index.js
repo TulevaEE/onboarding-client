@@ -1,11 +1,13 @@
 import * as httpModule from './http';
 import * as apiModule from './api';
+import * as utilsModule from './utils';
 import logoModule from './logo.svg';
 import LoaderModule from './loader';
 import RadioModule from './radio';
 import AuthenticationLoaderModule from './authenticationLoader';
 
 export const http = httpModule;
+export const utils = utilsModule;
 export const Loader = LoaderModule;
 export const Radio = RadioModule;
 export const api = apiModule;
