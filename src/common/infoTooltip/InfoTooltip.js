@@ -9,7 +9,7 @@ const InfoTooltip = ({ children, name }) => (
     <img
       data-tip data-for={name} src={infoImage} alt="Information" className="info-tooltip__image"
     />
-    <ReactTooltip id={name} place="right" type="light" effect="float">
+    <ReactTooltip id={name} place="right" type="light" effect="float" className="react-tooltip">
       { children }
     </ReactTooltip>
   </span>

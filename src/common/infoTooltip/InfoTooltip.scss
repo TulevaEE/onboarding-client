@@ -1,8 +1,27 @@
+.react-tooltip {
+  box-shadow: 0 0 15px #2a2c2e;
+  img {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+  }
+}
+
 .info-tooltip {
   margin: 0 5px;
+  color: #2a2c2e;
 
   &__image {
     width: 15px;
     height: 15px;
   }
+
+  ul {
+    padding: 0 20px;
+    li {
+      font-size: 1.1em;
+      line-height: 1.7em;
+    }
+  }
+
 }
