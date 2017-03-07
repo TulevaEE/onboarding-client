@@ -74,6 +74,8 @@ export const SelectSources = ({
           sourceSelectionExact ?
             <ExactFundSelector
               selections={sourceSelection}
+              sourceFunds={sourceFunds}
+              targetFunds={targetFunds}
               onSelect={selection => onSelect(selection, true)}
             /> : ''
         }

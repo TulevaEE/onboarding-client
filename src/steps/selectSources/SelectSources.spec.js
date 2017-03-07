@@ -141,6 +141,20 @@ describe('Select sources step', () => {
     expect(exactFundSelectorRendered()).toBe(false);
   });
 
+  it('passes the current selection and funds to the exact fund selector', () => {
+    const sourceSelection = [
+      { sourceFundIsin: 'a', targetFundIsin: 'c', percentage: 1 },
+      { sourceFundIsin: 'b', targetFundIsin: 'c', percentage: 1 },
+    ];
+    const sourceFunds = [{ isin: 'a' }, { isin: 'b' }];
+    const targetFunds = [{ isin: 'c' }];
+    component.setProps({ sourceSelectionExact: true, sourceSelection, sourceFunds, targetFunds });
+    const selectorProp = name => component.find(ExactFundSelector).prop(name);
+    expect(selectorProp('selections')).toBe(sourceSelection);
+    expect(selectorProp('sourceFunds')).toBe(sourceFunds);
+    expect(selectorProp('targetFunds')).toBe(targetFunds);
+  });
+
   it('selects exact funds when the selector tells it to', () => {
     const onSelect = jest.fn();
     component.setProps({ onSelect, sourceSelectionExact: true });
