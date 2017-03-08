@@ -3,19 +3,18 @@ import { Message } from 'retranslate';
 
 import { logo, Loader } from '../../common';
 
-const Header = ({ user: { name, personalCode } = {}, loading, onLogout }) => (
+const Header = ({ user: { name } = {}, loading, onLogout }) => (
   <div className="row">
     <div className="col align-self-start">
       <img src={logo} alt="Tuleva" className="img-responsive brand-logo" />
     </div>
     <div className="col align-self-end text-right">
       {
-        loading || !(name || personalCode) ?
+        loading || !name ?
           <Loader className="align-right" /> :
           (
             <small>
               <b>{name}</b> <br />
-              {personalCode} <br />
               <button className="btn btn-link pl-0 py-0 pr-1" onClick={onLogout}>
                 <Message>log.out</Message>
               </button>
@@ -23,7 +22,7 @@ const Header = ({ user: { name, personalCode } = {}, loading, onLogout }) => (
           )
       }
     </div>
-    <div className="col-12 my-2 px-0">
+    <div className="col-12 my-3 px-0">
       <hr />
     </div>
   </div>
@@ -38,7 +37,7 @@ Header.defaultProps = {
 };
 
 Header.propTypes = {
-  user: Types.shape({ name: Types.string, personalCode: Types.string }),
+  user: Types.shape({ name: Types.string }),
   loading: Types.bool,
   onLogout: Types.func,
 };
