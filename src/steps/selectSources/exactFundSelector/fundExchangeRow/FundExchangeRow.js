@@ -1,8 +1,15 @@
 import React, { PropTypes as Types } from 'react';
+import { withTranslations } from 'retranslate';
 
 import './FundExchangeRow.scss';
 
-const FundExchangeRow = ({ sourceFunds, targetFunds, onChange, selection }) => {
+export const FundExchangeRow = ({ // exporting without translations for testing purposes
+  sourceFunds,
+  targetFunds,
+  onChange,
+  selection,
+  translations: { translate },
+}) => {
   const randomString = (Math.random() + 1).toString(36).substring(7);
   const randomId = `tv-percentage-selector-${randomString}`;
   return (
@@ -55,7 +62,7 @@ const FundExchangeRow = ({ sourceFunds, targetFunds, onChange, selection }) => {
             {
               targetFunds.map(fund =>
                 <option key={fund.isin} value={fund.isin}>
-                  {fund.name}
+                  {translate(`target.funds.${fund.isin}.title`)}
                 </option>,
               )
             }
@@ -90,6 +97,9 @@ FundExchangeRow.propTypes = {
     name: Types.string.isRequired,
   })),
   onChange: Types.func,
+  translations: Types.shape({
+    translate: Types.func.isRequired,
+  }).isRequired,
 };
 
-export default FundExchangeRow;
+export default withTranslations(FundExchangeRow);

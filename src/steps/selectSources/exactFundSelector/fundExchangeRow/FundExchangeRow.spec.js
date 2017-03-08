@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import FundExchangeRow from './FundExchangeRow';
+import { FundExchangeRow } from './FundExchangeRow';
 
 describe('Fund exchange row', () => {
   let component;
@@ -13,7 +13,8 @@ describe('Fund exchange row', () => {
   }
 
   beforeEach(() => {
-    component = shallow(<FundExchangeRow />);
+    const translate = key => `translated:${key}`;
+    component = shallow(<FundExchangeRow translations={{ translate }} />);
     sourceFunds = [
       { isin: 'source isin 1', name: 'source name 1' },
       { isin: 'source isin 2', name: 'source name 2' },
@@ -53,7 +54,11 @@ describe('Fund exchange row', () => {
   it('shows all target funds as options', () => {
     component.setProps({ targetFunds });
     targetFunds.forEach(fund =>
-      expect(component.contains(<option value={fund.isin}>{fund.name}</option>)).toBe(true));
+      expect(component.contains(
+        <option value={fund.isin}>
+          {`translated:target.funds.${fund.isin}.title`}
+        </option>,
+      )).toBe(true));
   });
 
   it('sets the current selection\'s source fund as active', () => {
