@@ -15,8 +15,9 @@ build
 npm-debug.log
 yarn-error.log
 
-# IntelliJ IDEA
+# Editors
 .idea
 *.iws
 *.iml
 *.ipr
+.vscode/
