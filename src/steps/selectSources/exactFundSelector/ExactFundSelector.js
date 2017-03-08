@@ -46,7 +46,7 @@ const ExactFundSelector = ({ selections, sourceFunds, targetFunds, onChange }) =
       </div>
       <div className="col">
         <button
-          className="btn btn-secondary btn-sm pull-right"
+          className="btn btn-secondary btn-sm float-right"
           onClick={createRowAdder({ sourceFunds, targetFunds, selections, onChange })}
         >
           <Message>select.sources.select.some.add</Message>
