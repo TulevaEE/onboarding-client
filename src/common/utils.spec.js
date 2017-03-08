@@ -1,4 +1,4 @@
-import { findWhere, createClamper } from './utils';
+import { findWhere, createClamper, formatAmountForCurrency } from './utils';
 
 describe('Utils', () => {
   describe('findWhere', () => {
@@ -47,6 +47,18 @@ describe('Utils', () => {
     it('has some default values for limits', () => {
       const defaultClamp = createClamper();
       expect(defaultClamp(5)).toBe(5);
+    });
+  });
+
+  describe('formatAmountForCurrency', () => {
+    it('gives a fixed number with a euro sign after it', () => {
+      expect(formatAmountForCurrency(123.456, 'EUR')).toBe('123.46€');
+      expect(formatAmountForCurrency(0.000456, 'EUR')).toBe('0.00€');
+      expect(formatAmountForCurrency(5, 'GBP')).toBe('5.00€');
+    });
+
+    it('handles no arguments', () => {
+      expect(formatAmountForCurrency()).toBe('0.00€');
     });
   });
 });
