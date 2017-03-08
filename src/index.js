@@ -12,6 +12,7 @@ import './index.scss';
 
 import requireAuthentication from './requireAuthentication';
 import LoginPage, { reducer as loginReducer, actions as loginActions } from './login';
+import TermsOfUse from './termsOfUse';
 import { reducer as exchangeReducer, actions as exchangeActions } from './exchange';
 import App from './app';
 import Steps, {
@@ -58,6 +59,7 @@ render((
     <ReduxProvider store={store}>
       <Router history={history}>
         <Route path="/login" component={LoginPage} />
+        <Route path="/terms-of-use" component={TermsOfUse} />
         <Route path="/" component={requireAuthentication(App)} onEnter={getUserIfNecessary}>
           <Route path="/steps" component={Steps} onEnter={getFundsIfNecessary}>
             <Route path="select-sources" component={SelectSources} />
