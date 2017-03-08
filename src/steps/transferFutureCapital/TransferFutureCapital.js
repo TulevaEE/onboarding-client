@@ -81,7 +81,7 @@ TransferFutureCapital.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  selectedFutureContributionsFundIsin: state.exchange.selectedTargetFund,
+  selectedFutureContributionsFundIsin: state.exchange.selectedFutureContributionsFundIsin,
   targetFunds: state.exchange.targetFunds,
   loadingTargetFunds: state.exchange.loadingTargetFunds,
 });
