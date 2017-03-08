@@ -13,7 +13,6 @@ import {
 
   SELECT_TARGET_FUND,
 
-  SET_TRANSFER_FUTURE_CAPITAL,
   SIGN_MANDATE_START,
   SIGN_MANDATE_START_SUCCESS,
   SIGN_MANDATE_START_ERROR,
@@ -157,15 +156,6 @@ describe('Exchange actions', () => {
     expect(actions.selectTargetFund(targetFund)).toEqual({
       type: SELECT_TARGET_FUND,
       targetFund,
-    });
-  });
-
-  it('can set if you want to transfer future capital', () => {
-    [true, false].forEach((transferFutureCapital) => {
-      expect(actions.setTransferFutureCapital(transferFutureCapital)).toEqual({
-        type: SET_TRANSFER_FUTURE_CAPITAL,
-        transferFutureCapital,
-      });
     });
   });
 

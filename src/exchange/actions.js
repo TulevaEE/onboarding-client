@@ -20,8 +20,6 @@ import {
 
   SELECT_TARGET_FUND,
 
-  SET_TRANSFER_FUTURE_CAPITAL,
-
   SIGN_MANDATE_START,
   SIGN_MANDATE_START_SUCCESS,
   SIGN_MANDATE_START_ERROR,
@@ -66,10 +64,6 @@ export function getTargetFunds() {
 
 export function selectTargetFund(targetFund) {
   return { type: SELECT_TARGET_FUND, targetFund };
-}
-
-export function setTransferFutureCapital(transferFutureCapital) {
-  return { type: SET_TRANSFER_FUTURE_CAPITAL, transferFutureCapital };
 }
 
 function pollForMandateSignatureWithMandateId(id) {
