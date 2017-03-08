@@ -203,7 +203,6 @@ describe('Confirm mandate step', () => {
         expect(component.contains(<FundTransferMandate selection={selection} />)).toBe(true));
   });
 
-
   it('can start signing the mandate with a future capital fund', () => {
     const onSignMandate = jest.fn();
     const exchange = {
