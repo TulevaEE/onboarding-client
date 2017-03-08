@@ -1,6 +1,9 @@
 import React, { PropTypes as Types } from 'react';
 import { Message } from 'retranslate';
 
+import { InfoTooltip } from '../../../common';
+import TargetFundTooltipBody from '../../transferFutureCapital/targetFundTooltipBody';
+
 import './TargetFundSelector.scss';
 import checkImage from '../../success/success.svg';
 
@@ -24,7 +27,12 @@ const TargetFundSelector = ({ targetFunds, onSelectFund, selectedTargetFundIsin 
             </div>)
             : ''}
           <div className="tv-target-fund__inner-container">
-            <h5 className="mb-2 tv-target-fund__title"><Message>{`target.funds.${fund.isin}.title`}</Message></h5>
+            <h5 className="mb-2 tv-target-fund__title">
+              <Message>{`target.funds.${fund.isin}.title`}</Message>
+              <InfoTooltip name={fund.isin}>
+                <TargetFundTooltipBody targetFundIsin={fund.isin} />
+              </InfoTooltip>
+            </h5>
             <div className="mb-2 tv-target-fund__description">
               <Message>{`target.funds.${fund.isin}.description`}</Message>
             </div>
