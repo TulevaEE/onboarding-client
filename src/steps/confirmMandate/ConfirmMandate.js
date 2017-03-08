@@ -4,7 +4,7 @@ import { Message } from 'retranslate';
 import { Link } from 'react-router';
 import { connect } from 'react-redux';
 
-import { Loader, AuthenticationLoader } from '../../common';
+import { Loader, AuthenticationLoader, utils } from '../../common';
 
 import { signMandate, cancelSigningMandate } from '../../exchange/actions';
 
@@ -23,10 +23,10 @@ export const ConfirmMandate = ({
     return <Loader className="align-middle" />;
   }
   const startSigningMandate = () => onSignMandate({
-    fundTransferExchanges: exchange.sourceSelection.map(fund => ({
-      amount: fund.percentage,
-      sourceFundIsin: fund.isin,
-      targetFundIsin: exchange.selectedTargetFund.isin,
+    fundTransferExchanges: exchange.sourceSelection.map(selection => ({
+      amount: selection.percentage,
+      sourceFundIsin: selection.sourceFundIsin,
+      targetFundIsin: selection.targetFundIsin,
     })),
     futureContributionFundIsin: exchange.transferFutureCapital ?
       exchange.selectedTargetFund.isin : null,
@@ -60,11 +60,15 @@ export const ConfirmMandate = ({
         exchange
           .sourceSelection
           .filter(selection => !!selection.percentage)
-          .map(fund =>
+          .map((selection, index) =>
             <FundTransferMandate
-              fund={fund}
-              targetFund={exchange.selectedTargetFund}
-              key={fund.isin}
+              selection={{
+                ...selection,
+                sourceFundName: utils.findWhere(exchange.sourceFunds, ({ isin }) => (
+                  isin === selection.sourceFundIsin
+                )).name,
+              }}
+              key={index}
             />,
           )
       }

@@ -1,56 +1,57 @@
 import React, { PropTypes as Types } from 'react';
 import { Message } from 'retranslate';
 
-import './ExactFundSelector.scss';
+import FundExchangeRow from './fundExchangeRow';
 
-function createOnSelectHandlerForFundAndSelections(fund, selections, onSelect) {
-  return (event) => {
-    onSelect(selections.map((currentFund) => {
-      if (currentFund.isin === fund.isin) {
-        return {
-          ...currentFund,
-          percentage: parseInt(event.target.value, 10) / 100,
-        };
-      }
-      return currentFund;
-    }));
-  };
+function createSelectionChangeHandler(index, selections, onChange) {
+  return newSelection =>
+    onChange([...selections.slice(0, index), newSelection, ...selections.slice(index + 1)]);
 }
 
-const ExactFundSelector = ({ selections, onSelect }) => (
+function createRowAdder({ sourceFunds, targetFunds, selections, onChange }) {
+  return () => onChange(selections.concat({
+    sourceFundIsin: sourceFunds[0].isin,
+    targetFundIsin: targetFunds[0].isin,
+    percentage: 1,
+  }));
+}
+
+const ExactFundSelector = ({ selections, sourceFunds, targetFunds, onChange }) => (
   <div>
     <div className="row mt-4">
-      <div className="col">
-        <b><Message>select.sources.select.some.current</Message></b>
+      <div className="col-12 col-sm-5">
+        <small><b><Message>select.sources.select.some.source</Message></b></small>
       </div>
-      <div className="col">
-        <b><Message>select.sources.select.some.select</Message></b>
+      <div className="col-12 col-sm">
+        <small><b><Message>select.sources.select.some.percentage</Message></b></small>
+      </div>
+      <div className="col-12 col-sm-5">
+        <small><b><Message>select.sources.select.some.target</Message></b></small>
       </div>
     </div>
     {
-      selections.map(fund => (
-        <div className="row mt-2" key={fund.isin}>
-          <div className="col">
-            <Message>{fund.name}</Message>
-          </div>
-          <div className="col">
-            <div className="input-group input-group-sm tv-exact-fund-selector">
-              <input
-                className="form-control"
-                min="0"
-                max="100"
-                value={fund.percentage * 100}
-                type="number"
-                onChange={createOnSelectHandlerForFundAndSelections(fund, selections, onSelect)}
-              />
-              <span className="input-group-addon">%</span>
-            </div>
-          </div>
-        </div>
+      selections.map((selection, index) => (
+        <FundExchangeRow
+          key={index}
+          selection={selection}
+          sourceFunds={sourceFunds}
+          targetFunds={targetFunds}
+          onChange={createSelectionChangeHandler(index, selections, onChange)}
+        />
       ))
     }
-    <div className="mt-4">
-      <small><Message>select.sources.select.some.cost</Message></small>
+    <div className="row mt-2">
+      <div className="col">
+        <small><Message>select.sources.select.some.cost</Message></small>
+      </div>
+      <div className="col">
+        <button
+          className="btn btn-secondary btn-sm float-right"
+          onClick={createRowAdder({ sourceFunds, targetFunds, selections, onChange })}
+        >
+          <Message>select.sources.select.some.add</Message>
+        </button>
+      </div>
     </div>
   </div>
 );
@@ -59,15 +60,16 @@ const noop = () => null;
 
 ExactFundSelector.defaultProps = {
   selections: [],
-  onSelect: noop,
+  sourceFunds: [],
+  targetFunds: [],
+  onChange: noop,
 };
 
 ExactFundSelector.propTypes = {
-  selections: Types.arrayOf(Types.shape({
-    name: Types.string.isRequired,
-    percentage: Types.number.isRequired,
-  })),
-  onSelect: Types.func,
+  selections: Types.arrayOf(Types.shape({})),
+  sourceFunds: Types.arrayOf(Types.shape({})),
+  targetFunds: Types.arrayOf(Types.shape({})),
+  onChange: Types.func,
 };
 
 export default ExactFundSelector;
