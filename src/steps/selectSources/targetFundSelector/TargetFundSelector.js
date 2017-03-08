@@ -27,8 +27,8 @@ const TargetFundSelector = ({ targetFunds, onSelectFund, selectedTargetFundIsin 
             </div>)
             : ''}
           <div className="tv-target-fund__inner-container">
-            <div className="mb-2 text-bold">
-              <Message>{`target.funds.${fund.isin}.title`}</Message>
+            <div className="mb-2">
+              <b><Message>{`target.funds.${fund.isin}.title`}</Message></b>
               <InfoTooltip name={fund.isin}>
                 <TargetFundTooltipBody targetFundIsin={fund.isin} />
               </InfoTooltip>
