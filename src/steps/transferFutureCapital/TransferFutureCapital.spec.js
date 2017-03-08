@@ -18,6 +18,9 @@ describe('Transfer future capital step', () => {
       <Message>
         transfer.future.capital.intro
       </Message>,
+      <Message>
+        transfer.future.capital.intro.choose
+      </Message>,
     )).toBe(true);
   });
 
