@@ -12,6 +12,8 @@ export const TransferFutureCapital = ({ transferFutureCapital, onChangeTransferF
     <div className="px-col">
       <p className="lead m-0">
         <Message>transfer.future.capital.intro</Message>
+        <br /><br />
+        <Message>transfer.future.capital.intro.choose</Message>
       </p>
     </div>
     <Radio
