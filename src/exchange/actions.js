@@ -62,8 +62,8 @@ export function getTargetFunds() {
   };
 }
 
-export function selectTargetFund(targetFund) {
-  return { type: SELECT_TARGET_FUND, targetFund };
+export function selectTargetFund(targetFundIsin) {
+  return { type: SELECT_TARGET_FUND, targetFundIsin };
 }
 
 function pollForMandateSignatureWithMandateId(id) {

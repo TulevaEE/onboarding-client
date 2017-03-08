@@ -152,10 +152,10 @@ describe('Exchange actions', () => {
   });
 
   it('can select a target fund', () => {
-    const targetFund = { iAmATargetFund: true };
-    expect(actions.selectTargetFund(targetFund)).toEqual({
+    const targetFundIsin = 'AAA';
+    expect(actions.selectTargetFund(targetFundIsin)).toEqual({
       type: SELECT_TARGET_FUND,
-      targetFund,
+      targetFundIsin,
     });
   });
 
