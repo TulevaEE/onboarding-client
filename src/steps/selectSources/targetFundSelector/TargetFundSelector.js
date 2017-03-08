@@ -27,18 +27,20 @@ const TargetFundSelector = ({ targetFunds, onSelectFund, selectedTargetFundIsin 
             </div>)
             : ''}
           <div className="tv-target-fund__inner-container">
-            <h5 className="mb-2 tv-target-fund__title">
+            <div className="mb-2 text-bold">
               <Message>{`target.funds.${fund.isin}.title`}</Message>
               <InfoTooltip name={fund.isin}>
                 <TargetFundTooltipBody targetFundIsin={fund.isin} />
               </InfoTooltip>
-            </h5>
-            <div className="mb-2 tv-target-fund__description">
-              <Message>{`target.funds.${fund.isin}.description`}</Message>
             </div>
-            <a href={`example.com/${fund.isin}`} className="tv-target-fund__description"> {/* TODO: once we have links, resolve by isin */}
-              <Message>target.funds.terms</Message>
-            </a>
+            <small>
+              <div className="mb-2">
+                <Message>{`target.funds.${fund.isin}.description`}</Message>
+              </div>
+              <a href={`example.com/${fund.isin}`}> {/* TODO: once we have links, resolve by isin */}
+                <Message>target.funds.terms</Message>
+              </a>
+            </small>
           </div>
         </button>
       ))
