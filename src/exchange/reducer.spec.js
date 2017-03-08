@@ -65,7 +65,7 @@ describe('Exchange reducer', () => {
     const newState = exchangeReducer({ loadingTargetFunds: true }, action);
     expect(newState.targetFunds).toEqual(targetFunds);
     expect(newState.loadingTargetFunds).toBe(false);
-    expect(newState.selectedTargetFund).toEqual(targetFunds[0]);
+    expect(newState.selectedTargetFund).toEqual(targetFunds[0].isin);
   });
 
   it('selects full source selection when both target and source funds have arrived', () => {
@@ -93,9 +93,9 @@ describe('Exchange reducer', () => {
   });
 
   it('can select a target fund for future capital', () => {
-    const targetFund = { thisIsTheTarget: true };
-    const action = { type: SELECT_TARGET_FUND, targetFund };
-    expect(exchangeReducer(undefined, action).selectedTargetFund).toEqual(targetFund);
+    const targetFundIsin = 'AAA';
+    const action = { type: SELECT_TARGET_FUND, targetFundIsin };
+    expect(exchangeReducer(undefined, action).selectedTargetFund).toEqual(targetFundIsin);
   });
 
   it('starts loading mandate when starting to sign mandate', () => {

@@ -28,7 +28,7 @@ const initialState = {
   targetFunds: null,
   loadingTargetFunds: false,
   selectedTargetFund: null,
-  transferFutureCapital: true,
+  transferFutureCapital: true, // todo: remove
   error: null,
 
   loadingMandate: false,
@@ -79,7 +79,7 @@ export default function exchangeReducer(state = initialState, action) {
         ...state,
         loadingTargetFunds: false,
         targetFunds: action.targetFunds,
-        selectedTargetFund: action.targetFunds[0],
+        selectedTargetFund: action.targetFunds[0].isin,
         // we do not know if source or target funds get here first, so we check if we can
         // calculate the default source selection and they have not yet been calculated in
         // both the target and source fund arrival
@@ -92,7 +92,7 @@ export default function exchangeReducer(state = initialState, action) {
     case GET_TARGET_FUNDS_ERROR:
       return { ...state, loadingTargetFunds: false, error: action.error };
     case SELECT_TARGET_FUND:
-      return { ...state, selectedTargetFund: action.targetFund };
+      return { ...state, selectedTargetFund: action.targetFundIsin };
 
     // TODO: test the following actions after demo
 
