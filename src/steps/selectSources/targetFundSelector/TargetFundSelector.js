@@ -2,6 +2,7 @@ import React, { PropTypes as Types } from 'react';
 import { Message } from 'retranslate';
 
 import './TargetFundSelector.scss';
+import checkImage from '../../success/success.svg';
 
 const TargetFundSelector = ({ targetFunds, onSelectFund, selectedTargetFundIsin }) => (
   <div className="row mx-0 mt-2 tv-target-fund__container">
@@ -15,6 +16,13 @@ const TargetFundSelector = ({ targetFunds, onSelectFund, selectedTargetFundIsin 
           `}
           onClick={() => onSelectFund(fund)}
         >
+          {(selectedTargetFundIsin === fund.isin) ?
+            (<div className="tv-target-fund__corner-check">
+              <span>
+                <img src={checkImage} alt="Success" />
+              </span>
+            </div>)
+            : ''}
           <div className="tv-target-fund__inner-container">
             <h5 className="mb-2 tv-target-fund__title"><Message>{`target.funds.${fund.isin}.title`}</Message></h5>
             <div className="mb-2 tv-target-fund__description">
