@@ -65,20 +65,19 @@ describe('Confirm mandate step', () => {
 
   it('shows the future contribution fund if one is given', () => {
     const exchange = {
-      selectedTargetFund: { isin: 'test isin' },
+      selectedTargetFund: 'test isin',
       sourceSelection: [],
-      transferFutureCapital: true,
     };
     component.setProps({ exchange });
     expect(component.contains(
       <div className="mt-4">
         <Message>confirm.mandate.transfer.pension</Message>
         <b className="highlight">
-          <Message>{`target.funds.${exchange.selectedTargetFund.isin}.title.into`}</Message>
+          <Message>{`target.funds.${exchange.selectedTargetFund}.title.into`}</Message>
         </b>.
       </div>,
     )).toBe(true);
-    exchange.transferFutureCapital = false;
+    exchange.selectedTargetFund = null;
     component.setProps({ exchange });
     expect(component.contains(<Message>confirm.mandate.transfer.pension</Message>)).toBe(false);
   });
@@ -147,7 +146,7 @@ describe('Confirm mandate step', () => {
       ],
       sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
       transferFutureCapital: true,
-      selectedTargetFund: { isin: 'target 1' },
+      selectedTargetFund: 'target 1',
     };
     component.setProps({ onSignMandate, exchange });
     expect(onSignMandate).not.toHaveBeenCalled();

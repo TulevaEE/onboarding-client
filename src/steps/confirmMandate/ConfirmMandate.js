@@ -68,8 +68,7 @@ export const ConfirmMandate = ({
       sourceFundIsin: selection.sourceFundIsin,
       targetFundIsin: selection.targetFundIsin,
     })),
-    futureContributionFundIsin: exchange.transferFutureCapital ?
-      exchange.selectedTargetFund.isin : null,
+    futureContributionFundIsin: exchange.selectedTargetFund,
   });
   return (
     <div className="px-col">
@@ -85,12 +84,12 @@ export const ConfirmMandate = ({
       <Message>confirm.mandate.idcode</Message><b>{user.personalCode}</b>
       <Message>confirm.mandate.change.mandate</Message>
       {
-        exchange.transferFutureCapital ? (
+        exchange.selectedTargetFund ? (
           <div className="mt-4">
             <Message>confirm.mandate.transfer.pension</Message>
             <b className="highlight">
               <Message>
-                {`target.funds.${exchange.selectedTargetFund.isin}.title.into`}
+                {`target.funds.${exchange.selectedTargetFund}.title.into`}
               </Message>
             </b>.
           </div>
@@ -132,7 +131,7 @@ ConfirmMandate.defaultProps = {
     loadingTargetFunds: false,
     transferFutureCapital: true,
     sourceSelection: [],
-    selectedTargetFund: {},
+    selectedTargetFund: null,
   },
   onSignMandate: noop,
   onCancelSigningMandate: noop,
@@ -146,7 +145,7 @@ ConfirmMandate.propTypes = {
     loadingTargetFunds: Types.bool,
     transferFutureCapital: Types.bool,
     sourceSelection: Types.arrayOf(Types.shape({})),
-    selectedTargetFund: Types.shape({ isin: Types.string }),
+    selectedTargetFund: Types.string,
   }).isRequired,
   onSignMandate: Types.func,
   onCancelSigningMandate: Types.func,
