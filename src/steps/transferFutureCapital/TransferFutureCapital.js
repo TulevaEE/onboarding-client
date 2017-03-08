@@ -5,7 +5,7 @@ import { Message } from 'retranslate';
 import { Link } from 'react-router';
 
 import { Radio, Loader, InfoTooltip } from '../../common';
-import TargetFundTooltipBody from '../selectTargetFund/targetFundTooltipBody';
+import TargetFundTooltipBody from './targetFundTooltipBody';
 import { selectFutureContributionsFund } from '../../exchange/actions';
 
 export const TransferFutureCapital = ({
