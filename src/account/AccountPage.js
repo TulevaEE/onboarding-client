@@ -15,6 +15,7 @@ export const AccountPage = ({ currentBalanceFunds, loadingCurrentBalanceFunds })
         />
       </div>
     </div>
+    {/* TODO: any time work starts on every module, move to separate file and add tests. */}
     <div className="row">
       <div className="col">
         <h3 className="mt-5"><Message>account.active.fund.title</Message></h3>
