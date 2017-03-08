@@ -11,8 +11,6 @@ import {
 
   SELECT_TARGET_FUND,
 
-  SET_TRANSFER_FUTURE_CAPITAL,
-
   // NOTE: maybe we should move this state to a separate mandate reducer?
   SIGN_MANDATE_START,
   SIGN_MANDATE_START_SUCCESS,
@@ -95,9 +93,6 @@ export default function exchangeReducer(state = initialState, action) {
       return { ...state, loadingTargetFunds: false, error: action.error };
     case SELECT_TARGET_FUND:
       return { ...state, selectedTargetFund: action.targetFund };
-
-    case SET_TRANSFER_FUTURE_CAPITAL:
-      return { ...state, transferFutureCapital: action.transferFutureCapital };
 
     // TODO: test the following actions after demo
 

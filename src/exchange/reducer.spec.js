@@ -12,8 +12,6 @@ import {
 
   SELECT_TARGET_FUND,
 
-  SET_TRANSFER_FUTURE_CAPITAL,
-
   SIGN_MANDATE_START,
   SIGN_MANDATE_START_SUCCESS,
   SIGN_MANDATE_START_ERROR,
@@ -94,17 +92,10 @@ describe('Exchange reducer', () => {
     expect(newState.loadingTargetFunds).toBe(false);
   });
 
-  it('can select a target fund', () => {
+  it('can select a target fund for future capital', () => {
     const targetFund = { thisIsTheTarget: true };
     const action = { type: SELECT_TARGET_FUND, targetFund };
     expect(exchangeReducer(undefined, action).selectedTargetFund).toEqual(targetFund);
-  });
-
-  it('can set if the user wants to transfer future capital', () => {
-    const action = { type: SET_TRANSFER_FUTURE_CAPITAL, transferFutureCapital: true };
-    expect(exchangeReducer(undefined, action).transferFutureCapital).toBe(true);
-    action.transferFutureCapital = false;
-    expect(exchangeReducer(undefined, action).transferFutureCapital).toBe(false);
   });
 
   it('starts loading mandate when starting to sign mandate', () => {
