@@ -6,7 +6,7 @@ import { Link } from 'react-router';
 
 import { Radio, Loader, InfoTooltip } from '../../common';
 import TargetFundTooltipBody from '../selectTargetFund/targetFundTooltipBody';
-import { selectTargetFund } from '../../exchange/actions';
+import { selectFutureContributionsFund } from '../../exchange/actions';
 
 export const TransferFutureCapital = ({
   selectedFutureContributionsFundIsin,
@@ -87,7 +87,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-  onSelectFutureCapitalFund: selectTargetFund,
+  onSelectFutureCapitalFund: selectFutureContributionsFund,
 }, dispatch);
 
 const connectToRedux = connect(mapStateToProps, mapDispatchToProps);

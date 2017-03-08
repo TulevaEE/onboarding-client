@@ -62,7 +62,7 @@ export function getTargetFunds() {
   };
 }
 
-export function selectTargetFund(targetFundIsin) {
+export function selectFutureContributionsFund(targetFundIsin) {
   return { type: SELECT_TARGET_FUND, targetFundIsin };
 }
 

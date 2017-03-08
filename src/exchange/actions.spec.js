@@ -151,9 +151,9 @@ describe('Exchange actions', () => {
       .then(() => expect(dispatch).toHaveBeenCalledWith({ type: GET_TARGET_FUNDS_ERROR, error }));
   });
 
-  it('can select a target fund', () => {
+  it('can select future contributions fund fund', () => {
     const targetFundIsin = 'AAA';
-    expect(actions.selectTargetFund(targetFundIsin)).toEqual({
+    expect(actions.selectFutureContributionsFund(targetFundIsin)).toEqual({
       type: SELECT_TARGET_FUND,
       targetFundIsin,
     });
