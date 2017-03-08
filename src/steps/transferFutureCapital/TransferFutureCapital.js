@@ -4,63 +4,96 @@ import { connect } from 'react-redux';
 import { Message } from 'retranslate';
 import { Link } from 'react-router';
 
-import { Radio } from '../../common';
-import { setTransferFutureCapital } from '../../exchange/actions';
+import { Radio, Loader, InfoTooltip } from '../../common';
+import TargetFundTooltipBody from '../selectTargetFund/targetFundTooltipBody';
+import { selectTargetFund } from '../../exchange/actions';
 
-export const TransferFutureCapital = ({ transferFutureCapital, onChangeTransferFutureCapital }) => (
-  <div>
-    <div className="px-col">
-      <p className="lead m-0">
-        <Message>transfer.future.capital.intro</Message>
-        <br /><br />
-        <Message>transfer.future.capital.intro.choose</Message>
-      </p>
+function isTargetFundSelected(currentTargetFund, selectedTargetFund) {
+  return selectedTargetFund && currentTargetFund.isin === selectedTargetFund.isin;
+}
+
+export const TransferFutureCapital = ({
+  selectedTargetFund,
+  onSelectFutureCapitalFund,
+  targetFunds,
+  loadingTargetFunds,
+}) => {
+  if (loadingTargetFunds) {
+    return <Loader className="align-middle" />;
+  }
+  return (
+    <div>
+      <div className="px-col">
+        <p className="lead m-0">
+          <Message>transfer.future.capital.intro</Message>
+          <br /><br />
+          <Message>transfer.future.capital.intro.choose</Message>
+        </p>
+      </div>
+      {
+        targetFunds.map(fund => (
+          <Radio
+            key={fund.isin}
+            name="tv-transfer-future-capital"
+            selected={isTargetFundSelected(fund, selectedTargetFund)}
+            className="mt-4"
+            onSelect={() => onSelectFutureCapitalFund(fund)}
+          >
+            <h3 className="m-0">
+              <Message>{`transfer.future.capital.${fund.isin}.fund`}</Message>
+              <InfoTooltip name={fund.isin}>
+                <TargetFundTooltipBody targetFundIsin={fund.isin} />
+              </InfoTooltip>
+            </h3>
+          </Radio>
+        ))
+      }
+      <Radio
+        name="tv-transfer-future-capital"
+        selected={!selectedTargetFund}
+        className="mt-4"
+        onSelect={() => onSelectFutureCapitalFund(null)}
+      >
+        <p className="m-0"><Message>transfer.future.capital.no</Message></p>
+      </Radio>
+      <div className="px-col mt-5">
+        <Link className="btn btn-primary mr-2" to="/steps/confirm-mandate">
+          <Message>steps.next</Message>
+        </Link>
+        <Link className="btn btn-secondary" to="/steps/select-sources">
+          <Message>steps.previous</Message>
+        </Link>
+      </div>
     </div>
-    <Radio
-      name="tv-transfer-future-capital"
-      selected={transferFutureCapital}
-      className="mt-4"
-      onSelect={() => onChangeTransferFutureCapital(true)}
-    >
-      <h3 className="m-0"><Message>transfer.future.capital.yes</Message></h3>
-    </Radio>
-    <Radio
-      name="tv-transfer-future-capital"
-      selected={!transferFutureCapital}
-      className="mt-4"
-      onSelect={() => onChangeTransferFutureCapital(false)}
-    >
-      <h3 className="m-0"><Message>transfer.future.capital.no</Message></h3>
-    </Radio>
-    <div className="px-col mt-5">
-      <Link className="btn btn-primary mr-2" to="/steps/confirm-mandate">
-        <Message>steps.next</Message>
-      </Link>
-      <Link className="btn btn-secondary" to="/steps/select-sources">
-        <Message>steps.previous</Message>
-      </Link>
-    </div>
-  </div>
-);
+  );
+};
 
 const noop = () => null;
 
 TransferFutureCapital.defaultProps = {
-  transferFutureCapital: true,
-  onChangeTransferFutureCapital: noop,
+  selectedTargetFund: null,
+  onSelectFutureCapitalFund: noop,
+  targetFunds: [],
+  loadingTargetFunds: false,
 };
 
 TransferFutureCapital.propTypes = {
-  transferFutureCapital: Types.bool,
-  onChangeTransferFutureCapital: Types.func,
+  selectedTargetFund: Types.shape({
+    isin: Types.string.isRequired,
+  }),
+  onSelectFutureCapitalFund: Types.func,
+  targetFunds: Types.arrayOf(Types.shape({})),
+  loadingTargetFunds: Types.bool,
 };
 
 const mapStateToProps = state => ({
-  transferFutureCapital: state.exchange.transferFutureCapital,
+  selectedTargetFund: state.exchange.selectedTargetFund,
+  targetFunds: state.exchange.targetFunds,
+  loadingTargetFunds: state.exchange.loadingTargetFunds,
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-  onChangeTransferFutureCapital: setTransferFutureCapital,
+  onSelectFutureCapitalFund: selectTargetFund,
 }, dispatch);
 
 const connectToRedux = connect(mapStateToProps, mapDispatchToProps);
