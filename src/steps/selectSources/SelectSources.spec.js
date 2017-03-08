@@ -160,7 +160,7 @@ describe('Select sources step', () => {
     component.setProps({ onSelect, sourceSelectionExact: true });
     const selection = [{ name: 'a', percentage: 0.7 }, { name: 'b', percentage: 0.8 }];
     expect(onSelect).not.toHaveBeenCalled();
-    component.find(ExactFundSelector).simulate('select', selection);
+    component.find(ExactFundSelector).simulate('change', selection);
     expect(onSelect).toHaveBeenCalledTimes(1);
     expect(onSelect).toHaveBeenCalledWith(selection, true);
   });

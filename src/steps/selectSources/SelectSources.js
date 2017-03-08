@@ -76,7 +76,7 @@ export const SelectSources = ({
               selections={sourceSelection}
               sourceFunds={sourceFunds}
               targetFunds={targetFunds}
-              onSelect={selection => onSelect(selection, true)}
+              onChange={selection => onSelect(selection, true)}
             /> : ''
         }
       </Radio>
