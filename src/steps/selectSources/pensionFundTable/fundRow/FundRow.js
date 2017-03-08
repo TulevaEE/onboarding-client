@@ -1,13 +1,11 @@
 import React, { PropTypes as Types } from 'react';
 import { Message } from 'retranslate';
 
-function formatForCurrency(amount) {
-  return `${amount.toFixed(2)}€`; // hardcoded euro until more currencies.
-}
+import { formatAmountForCurrency } from '../../../../common/utils';
 
 const FundRow = ({ price, currency, name, highlighted }) => {
   const displayName = <Message>{name}</Message>;
-  const displayPrice = formatForCurrency(price, currency);
+  const displayPrice = formatAmountForCurrency(price, currency);
   return (
     <div className="row tv-table__row py-2">
       <div className="col-12 col-sm">

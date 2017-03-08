@@ -1,25 +1,18 @@
-import React from 'react';
+import React, { PropTypes as Types } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Message } from 'retranslate';
 
-export const AccountPage = () => (
-  <div>
-    <div className="row">
-      <div className="col">
-        <h3 className="mt-5"><Message>account.current.balance.title</Message></h3>
-        <p>
-          <Message>account.current.balance.subtitle</Message>
-          <a
-            target="_blank"
-            rel="noopener noreferrer"
-            href="https://www.e-register.ee/"
-          >
-            <Message>account.current.balance.evk</Message>
-          </a>
-        </p>
+import CurrentBalance from './currentBalance';
 
-        PENSION FUND TABLE WILL COME HERE
+export const AccountPage = ({ currentBalanceFunds, loadingCurrentBalanceFunds }) => (
+  <div>
+    <div className="row mt-5">
+      <div className="col">
+        <CurrentBalance
+          loading={loadingCurrentBalanceFunds}
+          funds={currentBalanceFunds}
+        />
       </div>
     </div>
     <div className="row">
@@ -45,8 +38,21 @@ export const AccountPage = () => (
   </div>
 );
 
+AccountPage.defaultProps = {
+  currentBalanceFunds: [],
+  loadingCurrentBalanceFunds: false,
+};
+
+AccountPage.propTypes = {
+  currentBalanceFunds: Types.arrayOf(Types.shape({})),
+  loadingCurrentBalanceFunds: Types.bool,
+};
+
 // TODO: write component
-const mapStateToProps = state => state;
+const mapStateToProps = state => ({
+  currentBalanceFunds: state.exchange.sourceFunds,
+  loadingCurrentBalanceFunds: state.exchange.loadingSourceFunds,
+});
 const mapDispatchToProps = dispatch => bindActionCreators({}, dispatch);
 
 const withRedux = connect(mapStateToProps, mapDispatchToProps);
