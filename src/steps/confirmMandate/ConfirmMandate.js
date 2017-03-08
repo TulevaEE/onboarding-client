@@ -129,7 +129,6 @@ ConfirmMandate.defaultProps = {
   exchange: {
     loadingSourceFunds: false,
     loadingTargetFunds: false,
-    transferFutureCapital: true,
     sourceSelection: [],
     selectedTargetFund: null,
   },
@@ -143,7 +142,6 @@ ConfirmMandate.propTypes = {
   exchange: Types.shape({
     loadingSourceFunds: Types.bool,
     loadingTargetFunds: Types.bool,
-    transferFutureCapital: Types.bool,
     sourceSelection: Types.arrayOf(Types.shape({})),
     selectedTargetFund: Types.string,
   }).isRequired,

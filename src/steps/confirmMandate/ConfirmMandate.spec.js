@@ -145,7 +145,6 @@ describe('Confirm mandate step', () => {
         { percentage: 1, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
       ],
       sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
-      transferFutureCapital: true,
       selectedTargetFund: 'target 1',
     };
     component.setProps({ onSignMandate, exchange });
@@ -211,7 +210,6 @@ describe('Confirm mandate step', () => {
         { percentage: 1, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
       ],
       sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
-      transferFutureCapital: false,
       selectedTargetFund: null,
     };
     component.setProps({ onSignMandate, exchange });

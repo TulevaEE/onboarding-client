@@ -28,7 +28,6 @@ const initialState = {
   targetFunds: null,
   loadingTargetFunds: false,
   selectedTargetFund: null,
-  transferFutureCapital: true, // todo: remove
   error: null,
 
   loadingMandate: false,
