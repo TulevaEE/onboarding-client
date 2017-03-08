@@ -19,7 +19,7 @@ describe('Current balance', () => {
   });
 
   it('renders a link to the EVK', () => {
-    const evkLink = () => component.find('a');
+    const evkLink = () => component.find('a').first();
     expect(evkLink().prop('href')).toBe('https://www.e-register.ee/');
     expect(evkLink().children().at(0).node)
       .toEqual(<Message>account.current.balance.evk</Message>);
