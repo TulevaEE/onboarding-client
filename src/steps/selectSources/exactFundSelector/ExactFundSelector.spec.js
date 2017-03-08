@@ -53,13 +53,13 @@ describe('Exact fund selector', () => {
       percentage: 1,
     };
     const expectedSelectionsAfterChange = [selections[0], newSecondSelection, selections[2]];
-    const onSelect = jest.fn();
-    component.setProps({ selections, onSelect });
+    const onChange = jest.fn();
+    component.setProps({ selections, onChange });
 
-    expect(onSelect).not.toHaveBeenCalled();
+    expect(onChange).not.toHaveBeenCalled();
     component.find(FundExchangeRow).at(1).simulate('change', newSecondSelection);
-    expect(onSelect).toHaveBeenCalledTimes(1);
-    expect(onSelect).toHaveBeenCalledWith(expectedSelectionsAfterChange);
+    expect(onChange).toHaveBeenCalledTimes(1);
+    expect(onChange).toHaveBeenCalledWith(expectedSelectionsAfterChange);
   });
 
   it('renders info about cost', () => {
@@ -67,12 +67,12 @@ describe('Exact fund selector', () => {
   });
 
   it('can add rows', () => {
-    const onSelect = jest.fn();
-    component.setProps({ selections, sourceFunds, targetFunds, onSelect });
-    expect(onSelect).not.toHaveBeenCalled();
+    const onChange = jest.fn();
+    component.setProps({ selections, sourceFunds, targetFunds, onChange });
+    expect(onChange).not.toHaveBeenCalled();
     component.find('button').simulate('click');
-    expect(onSelect).toHaveBeenCalledTimes(1);
-    expect(onSelect).toHaveBeenCalledWith([...selections, {
+    expect(onChange).toHaveBeenCalledTimes(1);
+    expect(onChange).toHaveBeenCalledWith([...selections, {
       sourceFundIsin: sourceFunds[0].isin,
       targetFundIsin: targetFunds[0].isin,
       percentage: 1,

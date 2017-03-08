@@ -4,23 +4,23 @@ import { Message } from 'retranslate';
 import FundExchangeRow from './fundExchangeRow';
 import './ExactFundSelector.scss';
 
-function createSelectionChangeHandler(index, selections, onSelect) {
+function createSelectionChangeHandler(index, selections, onChange) {
   return newSelection =>
-    onSelect([...selections.slice(0, index), newSelection, ...selections.slice(index + 1)]);
+    onChange([...selections.slice(0, index), newSelection, ...selections.slice(index + 1)]);
 }
 
-function createRowAdder({ sourceFunds, targetFunds, selections, onSelect }) {
+function createRowAdder({ sourceFunds, targetFunds, selections, onChange }) {
   return () => {
     const newSelection = {
       sourceFundIsin: sourceFunds[0].isin,
       targetFundIsin: targetFunds[0].isin,
       percentage: 1,
     };
-    onSelect([...selections, newSelection]);
+    onChange([...selections, newSelection]);
   };
 }
 
-const ExactFundSelector = ({ selections, sourceFunds, targetFunds, onSelect }) => (
+const ExactFundSelector = ({ selections, sourceFunds, targetFunds, onChange }) => (
   <div>
     <div className="row mt-4">
       <div className="col-5">
@@ -40,7 +40,7 @@ const ExactFundSelector = ({ selections, sourceFunds, targetFunds, onSelect }) =
           selection={selection}
           sourceFunds={sourceFunds}
           targetFunds={targetFunds}
-          onChange={createSelectionChangeHandler(index, selections, onSelect)}
+          onChange={createSelectionChangeHandler(index, selections, onChange)}
         />
       ))
     }
@@ -51,7 +51,7 @@ const ExactFundSelector = ({ selections, sourceFunds, targetFunds, onSelect }) =
       <div className="col">
         <button
           className="btn btn-secondary btn-sm pull-right"
-          onClick={createRowAdder({ sourceFunds, targetFunds, selections, onSelect })}
+          onClick={createRowAdder({ sourceFunds, targetFunds, selections, onChange })}
         >
           <Message>select.sources.select.some.add</Message>
         </button>
@@ -66,14 +66,14 @@ ExactFundSelector.defaultProps = {
   selections: [],
   sourceFunds: [],
   targetFunds: [],
-  onSelect: noop,
+  onChange: noop,
 };
 
 ExactFundSelector.propTypes = {
   selections: Types.arrayOf(Types.shape({})),
   sourceFunds: Types.arrayOf(Types.shape({})),
   targetFunds: Types.arrayOf(Types.shape({})),
-  onSelect: Types.func,
+  onChange: Types.func,
 };
 
 export default ExactFundSelector;
