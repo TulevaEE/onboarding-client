@@ -104,6 +104,24 @@ describe('Fund exchange row', () => {
     });
   });
 
+  it('clamps the changed percentage from 0 to 100', () => {
+    const onChange = jest.fn();
+    const selection = {
+      sourceFundIsin: 'source isin 1',
+      percentage: 1,
+      targetFundIsin: 'target isin 1',
+    };
+    component.setProps({ onChange, selection, sourceFunds, targetFunds });
+    expect(onChange).not.toHaveBeenCalled();
+    component.find('input').simulate('change', fakeEvent('200'));
+    expect(onChange).toHaveBeenCalledTimes(1);
+    expect(onChange).toHaveBeenCalledWith({
+      sourceFundIsin: 'source isin 1',
+      percentage: 1,
+      targetFundIsin: 'target isin 1',
+    });
+  });
+
   it('can change the target fund', () => {
     const onChange = jest.fn();
     const selection = {

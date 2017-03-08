@@ -1,7 +1,10 @@
 import React, { PropTypes as Types } from 'react';
 import { withTranslations } from 'retranslate';
 
+import { createClamper } from '../../../../common/utils';
 import './FundExchangeRow.scss';
+
+const clampFromZeroToHundred = createClamper(0, 100);
 
 export const FundExchangeRow = ({ // exporting without translations for testing purposes
   sourceFunds,
@@ -44,7 +47,7 @@ export const FundExchangeRow = ({ // exporting without translations for testing 
             type="number"
             onChange={
               ({ target: { value } }) => onChange({
-                ...selection, percentage: parseInt(value, 10) / 100,
+                ...selection, percentage: clampFromZeroToHundred(parseInt(value, 10)) / 100,
               })
             }
           />
