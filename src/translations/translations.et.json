@@ -94,5 +94,12 @@
   "terms.of.use.list.item.6": "pensionikonto väljavõte",
   "terms.of.use.main.line.1": "Tuleva kuvab nende andmete põhjal sinu pensionikonto informatsiooni, aitab sul teha pensionifondi valikuavalduse ja/ või osakute vahetamise avalduse ning esitab avaldused otse või kontohalduri kaudu Eesti väärtpaberite keskregistrile.",
   "terms.of.use.main.line.2": "Tulundusühistu Tuleva ei salvesta Eesti väärtpaberite keskregistrist saadud andmeid oma infosüsteemi, vaid registreerib sinu veebirakendusse sisse logimise fakti (ees- ja perekonnanime, isikukoodi, sisselogimise aja).",
-  "terms.of.use.main.line.3": "Käesoleval juhul on Tulundusühistu Tuleva isikuandmete töötleja Tõnu Pekk, e-mail: tuleva@tuleva.ee."
+  "terms.of.use.main.line.3": "Käesoleval juhul on Tulundusühistu Tuleva isikuandmete töötleja Tõnu Pekk, e-mail: tuleva@tuleva.ee.",
+  "account.current.balance.title": "Minu II samba pensionikonto seis",
+  "account.current.balance.subtitle": "Pensionikontode üle peab arvestust ",
+  "account.current.balance.evk": "Eesti väärtpaberite keskregister",
+  "account.active.fund.title": "Minu aktiivne pensionifond",
+  "account.tuleva.balance.title": "Minu Tuleva pensionikapitali seis",
+  "account.tuleva.balance.subtitle": "Tuleva pensionikapital on sinu osa Tuleva Fondid AS ehk meie ühise fondivalitseja omakapitalist, mille üle peame arvestust Tuleva Tulundusühistu registris. See on lisaks sinu kogumispensionile, mitte osa sellest!",
+  "account.contact.info.title": "Minu kontaktandmed"
 }

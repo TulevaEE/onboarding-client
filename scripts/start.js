@@ -18,6 +18,9 @@ app.use(compression());
 app.use(forceHttps);
 app.use(express.static(path.join(__dirname, '..', 'build')));
 
+app.get('/.well-known/acme-challenge/KmkeIleRyIRV7VQCFLK-L6EjRSwW_WZweA9DRQy21-E', (request, response) =>
+  response.send('KmkeIleRyIRV7VQCFLK-L6EjRSwW_WZweA9DRQy21-E.EMEBBxvSam3n_ien1J0z4dXeTuc2JuR3HqfAP6teLjE'));
+
 app.get('*', (request, response) =>
   response.sendFile(path.join(__dirname, '..', 'build', 'index.html')));
 
