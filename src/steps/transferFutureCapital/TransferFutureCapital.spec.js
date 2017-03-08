@@ -62,8 +62,8 @@ describe('Transfer future capital step', () => {
   it('can where you want to transfer future capital', () => {
     const targetFunds = [{ isin: 'AAA'}, { isin: 'BBB'}];
     const loadingTargetFunds = false;
-    let selectedTargetFund = { isin: 'AAA'};
-    component.setProps({ targetFunds, loadingTargetFunds, selectedTargetFund });
+    let selectedFutureContributionsFundIsin = 'AAA';
+    component.setProps({ targetFunds, loadingTargetFunds, selectedFutureContributionsFundIsin });
 
     const radioAtIndexSelected = index => component.find(Radio).at(index).prop('selected');
     expect(radioAtIndexSelected(0)).toBe(true);
@@ -82,7 +82,7 @@ describe('Transfer future capital step', () => {
 
     selectRadioAtIndex(1);
     expect(onSelectFutureCapitalFund).toHaveBeenCalledTimes(1);
-    expect(onSelectFutureCapitalFund).toHaveBeenCalledWith({isin: "BBB"});
+    expect(onSelectFutureCapitalFund).toHaveBeenCalledWith('BBB');
     onSelectFutureCapitalFund.mockClear();
   });
 });

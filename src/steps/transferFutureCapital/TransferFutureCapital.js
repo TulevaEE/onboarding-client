@@ -8,12 +8,8 @@ import { Radio, Loader, InfoTooltip } from '../../common';
 import TargetFundTooltipBody from '../selectTargetFund/targetFundTooltipBody';
 import { selectTargetFund } from '../../exchange/actions';
 
-function isTargetFundSelected(currentTargetFund, selectedTargetFund) {
-  return selectedTargetFund && currentTargetFund.isin === selectedTargetFund.isin;
-}
-
 export const TransferFutureCapital = ({
-  selectedTargetFund,
+  selectedFutureContributionsFundIsin,
   onSelectFutureCapitalFund,
   targetFunds,
   loadingTargetFunds,
@@ -35,9 +31,9 @@ export const TransferFutureCapital = ({
           <Radio
             key={fund.isin}
             name="tv-transfer-future-capital"
-            selected={isTargetFundSelected(fund, selectedTargetFund)}
+            selected={fund.isin === selectedFutureContributionsFundIsin}
             className="mt-4"
-            onSelect={() => onSelectFutureCapitalFund(fund)}
+            onSelect={() => onSelectFutureCapitalFund(fund.isin)}
           >
             <h3 className="m-0">
               <Message>{`transfer.future.capital.${fund.isin}.fund`}</Message>
@@ -50,7 +46,7 @@ export const TransferFutureCapital = ({
       }
       <Radio
         name="tv-transfer-future-capital"
-        selected={!selectedTargetFund}
+        selected={!selectedFutureContributionsFundIsin}
         className="mt-4"
         onSelect={() => onSelectFutureCapitalFund(null)}
       >
@@ -71,23 +67,21 @@ export const TransferFutureCapital = ({
 const noop = () => null;
 
 TransferFutureCapital.defaultProps = {
-  selectedTargetFund: null,
+  selectedFutureContributionsFundIsin: null,
   onSelectFutureCapitalFund: noop,
   targetFunds: [],
   loadingTargetFunds: false,
 };
 
 TransferFutureCapital.propTypes = {
-  selectedTargetFund: Types.shape({
-    isin: Types.string.isRequired,
-  }),
+  selectedFutureContributionsFundIsin: Types.string,
   onSelectFutureCapitalFund: Types.func,
   targetFunds: Types.arrayOf(Types.shape({})),
   loadingTargetFunds: Types.bool,
 };
 
 const mapStateToProps = state => ({
-  selectedTargetFund: state.exchange.selectedTargetFund,
+  selectedFutureContributionsFundIsin: state.exchange.selectedTargetFund,
   targetFunds: state.exchange.targetFunds,
   loadingTargetFunds: state.exchange.loadingTargetFunds,
 });
