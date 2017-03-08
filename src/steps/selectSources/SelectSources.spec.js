@@ -141,6 +141,15 @@ describe('Select sources step', () => {
     expect(exactFundSelectorRendered()).toBe(false);
   });
 
+  it('shows the subtitle for exact fund selection when selection is exact', () => {
+    const subtitleRendered = () => component
+      .contains(<Message>select.sources.select.some.subtitle</Message>);
+    component.setProps({ sourceSelectionExact: false });
+    expect(subtitleRendered()).toBe(false);
+    component.setProps({ sourceSelectionExact: true });
+    expect(subtitleRendered()).toBe(true);
+  });
+
   it('passes the current selection and funds to the exact fund selector', () => {
     const sourceSelection = [
       { sourceFundIsin: 'a', targetFundIsin: 'c', percentage: 1 },

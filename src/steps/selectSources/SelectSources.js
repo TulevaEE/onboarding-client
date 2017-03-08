@@ -68,16 +68,18 @@ export const SelectSources = ({
         selected={sourceSelectionExact}
         onSelect={() => onSelect(sourceSelection, true)}
       >
-        <h3><Message>select.sources.select.some</Message></h3>
-        <Message>select.sources.select.some.subtitle</Message>
+        <h3 className="m-0"><Message>select.sources.select.some</Message></h3>
         {
           sourceSelectionExact ?
-            <ExactFundSelector
-              selections={sourceSelection}
-              sourceFunds={sourceFunds}
-              targetFunds={targetFunds}
-              onChange={selection => onSelect(selection, true)}
-            /> : ''
+            <div className="mt-3">
+              <Message>select.sources.select.some.subtitle</Message>
+              <ExactFundSelector
+                selections={sourceSelection}
+                sourceFunds={sourceFunds}
+                targetFunds={targetFunds}
+                onChange={selection => onSelect(selection, true)}
+              />
+            </div> : ''
         }
       </Radio>
       <Radio

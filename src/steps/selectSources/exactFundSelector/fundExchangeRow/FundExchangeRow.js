@@ -1,54 +1,70 @@
 import React, { PropTypes as Types } from 'react';
 
-const FundExchangeRow = ({ sourceFunds, targetFunds, onChange, selection }) => (
-  <div className="row mt-2">
-    <div className="col-5">
-      <div className="input-group input-group-sm">
-        <select
-          className="form-control"
-          value={selection.sourceFundIsin}
-          onChange={
-            ({ target: { value: sourceFundIsin } }) => onChange({ ...selection, sourceFundIsin })
-          }
-        >
-          {
-            sourceFunds.map(fund => <option key={fund.isin} value={fund.isin}>{fund.name}</option>)
-          }
-        </select>
+import './FundExchangeRow.scss';
+
+const FundExchangeRow = ({ sourceFunds, targetFunds, onChange, selection }) => {
+  const randomString = (Math.random() + 1).toString(36).substring(7);
+  const randomId = `tv-percentage-selector-${randomString}`;
+  return (
+    <div className="row mt-2">
+      <div className="col-12 col-sm-5">
+        <div className="input-group">
+          <select
+            className="custom-select"
+            value={selection.sourceFundIsin}
+            onChange={
+              ({ target: { value: sourceFundIsin } }) => onChange({ ...selection, sourceFundIsin })
+            }
+          >
+            {
+              sourceFunds.map(fund =>
+                <option key={fund.isin} value={fund.isin}>
+                  {fund.name}
+                </option>,
+              )
+            }
+          </select>
+        </div>
+      </div>
+      <div className="col-12 col-sm">
+        <div className="input-group tv-percentage-selector">
+          <input
+            id={randomId}
+            className="form-control pr-0"
+            min="0"
+            max="100"
+            value={selection.percentage * 100}
+            type="number"
+            onChange={
+              ({ target: { value } }) => onChange({
+                ...selection, percentage: parseInt(value, 10) / 100,
+              })
+            }
+          />
+          <label htmlFor={randomId} className="tv-percentage-selector__addon">%</label>
+        </div>
+      </div>
+      <div className="col-12 col-sm-5">
+        <div className="input-group">
+          <select
+            className="custom-select"
+            value={selection.targetFundIsin}
+            onChange={
+              ({ target: { value: targetFundIsin } }) => onChange({ ...selection, targetFundIsin })}
+          >
+            {
+              targetFunds.map(fund =>
+                <option key={fund.isin} value={fund.isin}>
+                  {fund.name}
+                </option>,
+              )
+            }
+          </select>
+        </div>
       </div>
     </div>
-    <div className="col">
-      <div className="input-group input-group-sm tv-exact-fund-selector">
-        <input
-          className="form-control"
-          min="0"
-          max="100"
-          value={selection.percentage * 100}
-          type="number"
-          onChange={
-            ({ target: { value } }) => onChange({
-              ...selection, percentage: parseInt(value, 10) / 100,
-            })
-          }
-        />
-      </div>
-    </div>
-    <div className="col-5">
-      <div className="input-group input-group-sm">
-        <select
-          className="form-control"
-          value={selection.targetFundIsin}
-          onChange={
-            ({ target: { value: targetFundIsin } }) => onChange({ ...selection, targetFundIsin })}
-        >
-          {
-            targetFunds.map(fund => <option key={fund.isin} value={fund.isin}>{fund.name}</option>)
-          }
-        </select>
-      </div>
-    </div>
-  </div>
-);
+  );
+};
 
 const noop = () => null;
 
