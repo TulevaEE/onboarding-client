@@ -15,6 +15,7 @@ import LoginPage, { reducer as loginReducer, actions as loginActions } from './l
 import TermsOfUse from './termsOfUse';
 import { reducer as exchangeReducer, actions as exchangeActions } from './exchange';
 import App from './app';
+import AccountPage from './account';
 import Steps, {
   SelectSources,
   TransferFutureCapital,
@@ -38,19 +39,26 @@ const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk, r
 const history = syncHistoryWithStore(browserHistory, store);
 
 // TODO: figure out a place where to put these two
-function getUserIfNecessary() {
+function getDataForApp() {
   const { login } = store.getState();
   if (login.token && !(login.user || login.loadingUser)) {
     store.dispatch(loginActions.getUser());
   }
 }
 
-function getFundsIfNecessary() {
+function getDataForFlow() {
   const { login, exchange } = store.getState();
   if (login.token && !(exchange.sourceFunds || exchange.loadingSourceFunds ||
     exchange.targetFunds || exchange.loadingTargetFunds)) {
     store.dispatch(exchangeActions.getSourceFunds());
     store.dispatch(exchangeActions.getTargetFunds());
+  }
+}
+
+function getDataForAccount() {
+  const { login, exchange } = store.getState();
+  if (login.token && !(exchange.sourceFunds || exchange.loadingSourceFunds)) {
+    store.dispatch(exchangeActions.getSourceFunds());
   }
 }
 
@@ -60,13 +68,14 @@ render((
       <Router history={history}>
         <Route path="/login" component={LoginPage} />
         <Route path="/terms-of-use" component={TermsOfUse} />
-        <Route path="/" component={requireAuthentication(App)} onEnter={getUserIfNecessary}>
-          <Route path="/steps" component={Steps} onEnter={getFundsIfNecessary}>
+        <Route path="/" component={requireAuthentication(App)} onEnter={getDataForApp}>
+          <Route path="/steps" component={Steps} onEnter={getDataForFlow}>
             <Route path="select-sources" component={SelectSources} />
             <Route path="transfer-future-capital" component={TransferFutureCapital} />
             <Route path="confirm-mandate" component={ConfirmMandate} />
           </Route>
           <Route path="/steps/success" component={Success} />
+          <Route path="/account" component={AccountPage} onEnter={getDataForAccount} />
         </Route>
       </Router>
     </ReduxProvider>
