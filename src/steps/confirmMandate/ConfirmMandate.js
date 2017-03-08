@@ -11,7 +11,47 @@ import { signMandate, cancelSigningMandate } from '../../exchange/actions';
 import FundTransferMandate from './fundTransferMandate';
 import './ConfirmMandate.scss';
 
-// TODO: write tests after demo
+function joinDuplicateSelections(selections) {
+  return selections.reduce((currentRoutes, selection) => {
+    const newCurrentRoutes = currentRoutes; // linter
+    if (!newCurrentRoutes[selection.sourceFundIsin]) {
+      newCurrentRoutes[selection.sourceFundIsin] = {};
+    }
+    if (!newCurrentRoutes[selection.sourceFundIsin][selection.targetFundIsin]) {
+      newCurrentRoutes[selection.sourceFundIsin][selection.targetFundIsin] = 0;
+    }
+    newCurrentRoutes[selection.sourceFundIsin][selection.targetFundIsin] += selection.percentage;
+    return newCurrentRoutes;
+  }, {});
+}
+
+function normalizeAndGetSelections(routes) {
+  const selections = [];
+  const clampBetweenOneAndZero = utils.createClamper(0, 1);
+  Object
+    .keys(routes)
+    .forEach(sourceFundIsin => Object
+      .keys(routes[sourceFundIsin])
+      .forEach((targetFundIsin) => {
+        const percentage = clampBetweenOneAndZero(routes[sourceFundIsin][targetFundIsin]);
+        if (percentage) { // we do not need to show empty rows.
+          selections.push({
+            sourceFundIsin,
+            targetFundIsin,
+            percentage,
+          });
+        }
+      }));
+  return selections;
+}
+
+function aggregateSelections(selections) {
+  // first, let's add up all the percentages
+  const routes = joinDuplicateSelections(selections);
+  // now, let's normalize the percentages and turn it back into a selection
+  return normalizeAndGetSelections(routes);
+}
+
 export const ConfirmMandate = ({
   user,
   loadingUser,
@@ -57,9 +97,7 @@ export const ConfirmMandate = ({
         ) : ''
       }
       {
-        exchange
-          .sourceSelection
-          .filter(selection => !!selection.percentage)
+        aggregateSelections(exchange.sourceSelection)
           .map((selection, index) =>
             <FundTransferMandate
               selection={{

@@ -162,6 +162,48 @@ describe('Confirm mandate step', () => {
     });
   });
 
+  it('aggregates selections for showing funds', () => {
+    const exchange = {
+      sourceSelection: [
+        // these two are joined
+        { percentage: 0.1, sourceFundIsin: 'source 1', targetFundIsin: 'target 1' },
+        { percentage: 1, sourceFundIsin: 'source 1', targetFundIsin: 'target 1' },
+
+        // these are joined
+        { percentage: 0.2, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
+        { percentage: 0.3, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
+        { percentage: 0.4, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
+
+        // separate
+        { percentage: 0.4, sourceFundIsin: 'source 1', targetFundIsin: 'target 2' },
+      ],
+      sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
+    };
+    component.setProps({ exchange });
+    const firstExpectedSelection = {
+      sourceFundName: 'a',
+      percentage: 1,
+      sourceFundIsin: 'source 1',
+      targetFundIsin: 'target 1',
+    };
+    const secondExpectedSelection = {
+      sourceFundName: 'b',
+      percentage: 0.9,
+      sourceFundIsin: 'source 2',
+      targetFundIsin: 'target 2',
+    };
+    const thirdExpectedSelection = {
+      sourceFundName: 'a',
+      percentage: 0.4,
+      sourceFundIsin: 'source 1',
+      targetFundIsin: 'target 2',
+    };
+    [firstExpectedSelection, secondExpectedSelection, thirdExpectedSelection]
+      .forEach(selection =>
+        expect(component.contains(<FundTransferMandate selection={selection} />)).toBe(true));
+  });
+
+
   it('can start signing the mandate with a future capital fund', () => {
     const onSignMandate = jest.fn();
     const exchange = {
