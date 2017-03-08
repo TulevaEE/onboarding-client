@@ -18,17 +18,17 @@ describe('Current balance', () => {
     expect(component.contains(<Message>account.current.balance.subtitle</Message>)).toBe(true);
   });
 
+  it('renders a loader instead of pension funds if it is still loading', () => {
+    component.setProps({ loading: true });
+    expect(!!component.find(Loader).length).toBe(true);
+    expect(!!component.find(PensionFundOverview).length).toBe(false);
+  });
+
   it('renders a link to the EVK', () => {
     const evkLink = () => component.find('a').first();
     expect(evkLink().prop('href')).toBe('https://www.e-register.ee/');
     expect(evkLink().children().at(0).node)
       .toEqual(<Message>account.current.balance.evk</Message>);
-  });
-
-  it('renders a loader instead of pension funds if it is still loading', () => {
-    component.setProps({ loading: true });
-    expect(!!component.find(Loader).length).toBe(true);
-    expect(!!component.find(PensionFundOverview).length).toBe(false);
   });
 
   it('renders a pension fund overview instead of a loader when not loading', () => {
