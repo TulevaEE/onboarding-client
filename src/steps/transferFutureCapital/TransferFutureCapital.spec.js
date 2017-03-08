@@ -37,41 +37,52 @@ describe('Transfer future capital step', () => {
     )).toBe(true);
   });
 
-  it('has two options if you want to transfer future capital', () => {
-    expect(component.find(Radio).length).toBe(2);
+  it('has three options if you want to transfer future capital to one of two funds or not', () => {
+    const targetFunds = [{ isin: 'AAA'}, { isin: 'BBB'}];
+    const loadingTargetFunds = false;
+    component.setProps({ targetFunds, loadingTargetFunds });
+    expect(component.find(Radio).length).toBe(3);
     expect(component.find(Radio)
       .at(0)
       .childAt(0)
       .childAt(0)
-      .get(0)).toEqual(<Message>transfer.future.capital.yes</Message>);
+      .get(0)).toEqual(<Message>transfer.future.capital.AAA.fund</Message>);
     expect(component.find(Radio)
       .at(1)
+      .childAt(0)
+      .childAt(0)
+      .get(0)).toEqual(<Message>transfer.future.capital.BBB.fund</Message>);
+    expect(component.find(Radio)
+      .at(2)
       .childAt(0)
       .childAt(0)
       .get(0)).toEqual(<Message>transfer.future.capital.no</Message>);
   });
 
-  it('can change if you want to transfer future capital', () => {
+  it('can where you want to transfer future capital', () => {
+    const targetFunds = [{ isin: 'AAA'}, { isin: 'BBB'}];
+    const loadingTargetFunds = false;
+    let selectedFutureContributionsFundIsin = 'AAA';
+    component.setProps({ targetFunds, loadingTargetFunds, selectedFutureContributionsFundIsin });
+
     const radioAtIndexSelected = index => component.find(Radio).at(index).prop('selected');
     expect(radioAtIndexSelected(0)).toBe(true);
     expect(radioAtIndexSelected(1)).toBe(false);
+    expect(radioAtIndexSelected(2)).toBe(false);
+
     const selectRadioAtIndex = index => component.find(Radio).at(index).prop('onSelect')();
-    const onChangeTransferFutureCapital = jest.fn();
-    component.setProps({ onChangeTransferFutureCapital });
+    const onSelectFutureCapitalFund = jest.fn();
+    component.setProps({ onSelectFutureCapitalFund });
 
-    expect(onChangeTransferFutureCapital).not.toHaveBeenCalled();
+    expect(onSelectFutureCapitalFund).not.toHaveBeenCalled();
+    selectRadioAtIndex(2);
+    expect(onSelectFutureCapitalFund).toHaveBeenCalledTimes(1);
+    expect(onSelectFutureCapitalFund).toHaveBeenCalledWith(null);
+    onSelectFutureCapitalFund.mockClear();
+
     selectRadioAtIndex(1);
-    expect(onChangeTransferFutureCapital).toHaveBeenCalledTimes(1);
-    expect(onChangeTransferFutureCapital).toHaveBeenCalledWith(false);
-    onChangeTransferFutureCapital.mockClear();
-
-    component.setProps({ transferFutureCapital: false });
-    expect(radioAtIndexSelected(0)).toBe(false);
-    expect(radioAtIndexSelected(1)).toBe(true);
-
-    expect(onChangeTransferFutureCapital).not.toHaveBeenCalled();
-    selectRadioAtIndex(0);
-    expect(onChangeTransferFutureCapital).toHaveBeenCalledTimes(1);
-    expect(onChangeTransferFutureCapital).toHaveBeenCalledWith(true);
+    expect(onSelectFutureCapitalFund).toHaveBeenCalledTimes(1);
+    expect(onSelectFutureCapitalFund).toHaveBeenCalledWith('BBB');
+    onSelectFutureCapitalFund.mockClear();
   });
 });
