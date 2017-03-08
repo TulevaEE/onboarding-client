@@ -65,20 +65,19 @@ describe('Confirm mandate step', () => {
 
   it('shows the future contribution fund if one is given', () => {
     const exchange = {
-      selectedTargetFund: { isin: 'test isin' },
+      selectedFutureContributionsFundIsin: 'test isin',
       sourceSelection: [],
-      transferFutureCapital: true,
     };
     component.setProps({ exchange });
     expect(component.contains(
       <div className="mt-4">
         <Message>confirm.mandate.transfer.pension</Message>
         <b className="highlight">
-          <Message>{`target.funds.${exchange.selectedTargetFund.isin}.title.into`}</Message>
+          <Message>{`target.funds.${exchange.selectedFutureContributionsFundIsin}.title.into`}</Message>
         </b>.
       </div>,
     )).toBe(true);
-    exchange.transferFutureCapital = false;
+    exchange.selectedFutureContributionsFundIsin = null;
     component.setProps({ exchange });
     expect(component.contains(<Message>confirm.mandate.transfer.pension</Message>)).toBe(false);
   });
@@ -146,8 +145,7 @@ describe('Confirm mandate step', () => {
         { percentage: 1, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
       ],
       sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
-      transferFutureCapital: true,
-      selectedTargetFund: { isin: 'target 1' },
+      selectedFutureContributionsFundIsin: 'target 1',
     };
     component.setProps({ onSignMandate, exchange });
     expect(onSignMandate).not.toHaveBeenCalled();
@@ -211,8 +209,7 @@ describe('Confirm mandate step', () => {
         { percentage: 1, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
       ],
       sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
-      transferFutureCapital: false,
-      selectedTargetFund: null,
+      selectedFutureContributionsFundIsin: null,
     };
     component.setProps({ onSignMandate, exchange });
     expect(onSignMandate).not.toHaveBeenCalled();
