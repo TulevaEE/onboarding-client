@@ -32,7 +32,7 @@ const ExactFundSelector = ({ selections, sourceFunds, targetFunds, onChange }) =
     {
       selections.map((selection, index) => (
         <FundExchangeRow
-          key={index} // eslint-disable-line react/no-array-index-key
+          key={index}
           selection={selection}
           sourceFunds={sourceFunds}
           targetFunds={targetFunds}

@@ -68,7 +68,7 @@ export const ConfirmMandate = ({
                   isin === selection.sourceFundIsin
                 )).name,
               }}
-              key={index} // eslint-disable-line react/no-array-index-key
+              key={index}
             />,
           )
       }
