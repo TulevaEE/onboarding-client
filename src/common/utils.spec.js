@@ -1,4 +1,4 @@
-import { findWhere } from './utils';
+import { findWhere, createClamper } from './utils';
 
 describe('Utils', () => {
   describe('findWhere', () => {
@@ -29,6 +29,24 @@ describe('Utils', () => {
       expect(findWhere([0, 1, 2, 3])).toBe(1);
       expect(findWhere([false, false, true, false])).toBe(true);
       expect(findWhere(undefined, () => true)).toBe(null);
+    });
+  });
+
+  describe('createClamper', () => {
+    it('creates a clamping function that clamps values between a maximum and minimum', () => {
+      const clampFromSevenToEleven = createClamper(7, 11);
+      expect(clampFromSevenToEleven(7)).toBe(7);
+      expect(clampFromSevenToEleven(11)).toBe(11);
+      expect(clampFromSevenToEleven(8.5)).toBe(8.5);
+      expect(clampFromSevenToEleven(10)).toBe(10);
+      expect(clampFromSevenToEleven(6.9)).toBe(7);
+      expect(clampFromSevenToEleven(13)).toBe(11);
+      expect(clampFromSevenToEleven(-100)).toBe(7);
+    });
+
+    it('has some default values for limits', () => {
+      const defaultClamp = createClamper();
+      expect(defaultClamp(5)).toBe(5);
     });
   });
 });
