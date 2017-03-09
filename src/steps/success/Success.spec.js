@@ -1,6 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Message } from 'retranslate';
+import { Link } from 'react-router';
 
 import { Success } from './Success';
 
@@ -11,8 +12,37 @@ describe('Success step', () => {
     component = shallow(<Success />);
   });
 
-  it('shows the user info about their mandate', () => {
+  it('shows the user default success message and profile button', () => {
     expect(component.contains(<Message>success.done</Message>)).toBe(true);
+    expect(component.contains(<Message>success.view.profile.title</Message>)).toBe(true);
+    expect(component.contains(<Message>success.view.profile.title.button</Message>)).toBe(true);
+    expect(component.contains(
+      <Link className="btn btn-primary mt-4 profile-link" to="/account">
+        <Message>success.view.profile.title.button</Message>
+      </Link>,
+    )).toBe(true);
+    expect(component.contains(<Message>success.your.payments</Message>)).toBe(false);
+    expect(component.contains(<Message>success.shares.switched</Message>)).toBe(false);
+  });
+
+  it('show message for future contributions only', () => {
+    component.setProps({ userContributingFuturePayments: true });
+    expect(component.contains(<Message>success.your.payments</Message>)).toBe(true);
+    expect(component.contains(<Message>success.your.payments.next.payment</Message>)).toBe(true);
+    expect(component.contains(<Message>success.shares.switched</Message>)).toBe(false);
+    expect(component.contains(<Message>success.shares.switched.when</Message>)).toBe(false);
+  });
+
+  it('show message for switched funds only', () => {
+    component.setProps({ userHasTransferredFunds: true });
+    expect(component.contains(<Message>success.shares.switched</Message>)).toBe(true);
+    expect(component.contains(<Message>success.shares.switched.when</Message>)).toBe(true);
+    expect(component.contains(<Message>success.your.payments</Message>)).toBe(false);
+    expect(component.contains(<Message>success.your.payments.next.payment</Message>)).toBe(false);
+  });
+
+  it('show message both future contributions and switched funds', () => {
+    component.setProps({ userContributingFuturePayments: true, userHasTransferredFunds: true });
     expect(component.contains(<Message>success.your.payments</Message>)).toBe(true);
     expect(component.contains(<Message>success.your.payments.next.payment</Message>)).toBe(true);
     expect(component.contains(<Message>success.shares.switched</Message>)).toBe(true);

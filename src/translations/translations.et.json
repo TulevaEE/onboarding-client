@@ -92,6 +92,8 @@
   "success.shares.switched": "Sinu olemasolevad osakud vahetatakse Tuleva pensionifondi osakute vastu ",
   "success.shares.switched.when": "1. mail 2017",
   "success.download.mandate": "Lae alla",
+  "success.view.profile.title": "Vaata oma Tuleva liikme profiili ja kontoseisu",
+  "success.view.profile.title.button": "Minu konto",
   "terms.of.use.title": "Nõusolek",
   "terms.of.use.subheading": "Tuleva veebirakendusse sisse logides annad Tulundusühistule Tuleva nõusoleku teha Eesti väärtpaberite keskregistrisse päringu sinu isikuandmete kohta. Nimetatud andmete hulgas on sinu:",
   "terms.of.use.list.item.1": "pensionikonto number",
