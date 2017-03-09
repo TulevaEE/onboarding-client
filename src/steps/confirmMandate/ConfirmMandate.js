@@ -6,7 +6,11 @@ import { connect } from 'react-redux';
 
 import { Loader, AuthenticationLoader, utils } from '../../common';
 
-import { signMandate, cancelSigningMandate } from '../../exchange/actions';
+import {
+  signMandate,
+  cancelSigningMandate,
+  changeAgreementToTerms,
+} from '../../exchange/actions';
 
 import FundTransferMandate from './fundTransferMandate';
 import './ConfirmMandate.scss';
@@ -58,11 +62,12 @@ export const ConfirmMandate = ({
   exchange,
   onSignMandate,
   onCancelSigningMandate,
+  onChangeAgreementToTerms,
 }) => {
   if (loadingUser || exchange.loadingSourceFunds || exchange.loadingTargetFunds) {
     return <Loader className="align-middle" />;
   }
-  const startSigningMandate = () => onSignMandate({
+  const startSigningMandate = () => exchange.agreedToTerms && onSignMandate({
     fundTransferExchanges: exchange.sourceSelection.map(selection => ({
       amount: selection.percentage,
       sourceFundIsin: selection.sourceFundIsin,
@@ -110,7 +115,26 @@ export const ConfirmMandate = ({
           )
       }
       <div className="mt-5">
-        <button className="btn btn-primary mr-2" onClick={startSigningMandate}>
+        <label className="custom-control custom-checkbox" htmlFor="agree-to-terms-checkbox">
+          <input
+            checked={exchange.agreedToTerms}
+            onChange={() => onChangeAgreementToTerms(!exchange.agreedToTerms)}
+            type="checkbox"
+            className="custom-control-input"
+            id="agree-to-terms-checkbox"
+          />
+          <span className="custom-control-indicator" />
+          <span className="custom-control-description">
+            <Message>confirm.mandate.agree.to.terms</Message>
+          </span>
+        </label>
+      </div>
+      <div className="mt-5">
+        <button
+          className="btn btn-primary mr-2"
+          disabled={!exchange.agreedToTerms}
+          onClick={startSigningMandate}
+        >
           <Message>confirm.mandate.sign</Message>
         </button>
         <Link className="btn btn-secondary" to="/steps/transfer-future-capital">
@@ -131,9 +155,11 @@ ConfirmMandate.defaultProps = {
     loadingTargetFunds: false,
     sourceSelection: [],
     selectedFutureContributionsFundIsin: null,
+    agreedToTerms: false,
   },
   onSignMandate: noop,
   onCancelSigningMandate: noop,
+  onChangeAgreementToTerms: noop,
 };
 
 ConfirmMandate.propTypes = {
@@ -144,9 +170,11 @@ ConfirmMandate.propTypes = {
     loadingTargetFunds: Types.bool,
     sourceSelection: Types.arrayOf(Types.shape({})),
     selectedFutureContributionsFundIsin: Types.string,
+    agreedToTerms: Types.bool,
   }).isRequired,
   onSignMandate: Types.func,
   onCancelSigningMandate: Types.func,
+  onChangeAgreementToTerms: Types.func,
 };
 
 const mapStateToProps = state => ({
@@ -157,6 +185,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   onSignMandate: signMandate,
+  onChangeAgreementToTerms: changeAgreementToTerms,
   onCancelSigningMandate: cancelSigningMandate,
 }, dispatch);
 

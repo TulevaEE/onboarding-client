@@ -146,6 +146,7 @@ describe('Confirm mandate step', () => {
       ],
       sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
       selectedFutureContributionsFundIsin: 'target 1',
+      agreedToTerms: true,
     };
     component.setProps({ onSignMandate, exchange });
     expect(onSignMandate).not.toHaveBeenCalled();
@@ -210,6 +211,7 @@ describe('Confirm mandate step', () => {
       ],
       sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
       selectedFutureContributionsFundIsin: null,
+      agreedToTerms: true,
     };
     component.setProps({ onSignMandate, exchange });
     expect(onSignMandate).not.toHaveBeenCalled();
@@ -222,5 +224,78 @@ describe('Confirm mandate step', () => {
       ],
       futureContributionFundIsin: null,
     });
+  });
+
+  it('keeps an input for agreeing to terms', () => {
+    const exchange = {
+      sourceSelection: [
+        { percentage: 0.5, sourceFundIsin: 'source 1', targetFundIsin: 'target 1' },
+        { percentage: 1, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
+      ],
+      sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
+      selectedFutureContributionsFundIsin: null,
+      agreedToTerms: false,
+    };
+    component.setProps({ exchange });
+    expect(component.find('#agree-to-terms-checkbox').prop('checked')).toBe(false);
+    exchange.agreedToTerms = true;
+    component.setProps({ exchange });
+    expect(component.find('#agree-to-terms-checkbox').prop('checked')).toBe(true);
+  });
+
+  it('disables the signing button if user has not agreed to terms', () => {
+    const exchange = {
+      sourceSelection: [
+        { percentage: 0.5, sourceFundIsin: 'source 1', targetFundIsin: 'target 1' },
+        { percentage: 1, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
+      ],
+      sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
+      selectedFutureContributionsFundIsin: null,
+      agreedToTerms: false,
+    };
+    component.setProps({ exchange });
+    expect(component.find('button.btn-primary').prop('disabled')).toBe(true);
+    exchange.agreedToTerms = true;
+    component.setProps({ exchange });
+    expect(component.find('button.btn-primary').prop('disabled')).toBe(false);
+  });
+
+  it('can change if the user has agreed to terms', () => {
+    const exchange = {
+      sourceSelection: [
+        { percentage: 0.5, sourceFundIsin: 'source 1', targetFundIsin: 'target 1' },
+        { percentage: 1, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
+      ],
+      sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
+      selectedFutureContributionsFundIsin: null,
+      agreedToTerms: false,
+    };
+    const onChangeAgreementToTerms = jest.fn();
+    component.setProps({ exchange, onChangeAgreementToTerms });
+    expect(onChangeAgreementToTerms).not.toHaveBeenCalled();
+    component.find('#agree-to-terms-checkbox').simulate('change');
+    expect(onChangeAgreementToTerms).toHaveBeenCalledTimes(1);
+    expect(onChangeAgreementToTerms).toHaveBeenCalledWith(true);
+    exchange.agreedToTerms = true;
+    component.setProps({ exchange });
+    component.find('#agree-to-terms-checkbox').simulate('change');
+    expect(onChangeAgreementToTerms).toHaveBeenCalledTimes(2);
+    expect(onChangeAgreementToTerms).toHaveBeenLastCalledWith(false);
+  });
+
+  it('does not start signing if user has not agreed to terms', () => {
+    const onSignMandate = jest.fn();
+    const exchange = {
+      sourceSelection: [
+        { percentage: 0.5, sourceFundIsin: 'source 1', targetFundIsin: 'target 1' },
+        { percentage: 1, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
+      ],
+      sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
+      selectedFutureContributionsFundIsin: null,
+      agreedToTerms: false,
+    };
+    component.setProps({ onSignMandate, exchange });
+    component.find('button').simulate('click');
+    expect(onSignMandate).not.toHaveBeenCalled();
   });
 });
