@@ -52,17 +52,14 @@ export const LoginForm = ({
           <Message>login.id.card</Message>
         </button>
       </div>
-
     </div>
-    <div className="col">
-      <div className="login-form__note mt-4">
-        <Message>login.permission.note</Message>
-      </div>
-      <div className="login-form__note mb-2">
-        <a href="/terms-of-use" target="_blank" rel="noopener noreferrer">
-          <Message>login.terms.link</Message>
-        </a>
-      </div>
+    <div className="col-12 login-form__note mt-4">
+      <Message>login.permission.note</Message>
+    </div>
+    <div className="col-12 login-form__note mb-2">
+      <a href="/terms-of-use" target="_blank" rel="noopener noreferrer">
+        <Message>login.terms.link</Message>
+      </a>
     </div>
   </div>
 );
