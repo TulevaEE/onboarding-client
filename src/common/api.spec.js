@@ -25,13 +25,27 @@ describe('api', () => {
       });
   });
 
-  it('can get a token', () => {
-    mockHttp.postForm = jest.fn(() => Promise.resolve({ access_token: 'token' }));
+  it('can authenticate with id card', () => {
+    mockHttp.post = jest.fn(() => Promise.resolve({
+      success: true,
+    }));
+    expect(mockHttp.post).not.toHaveBeenCalled();
+    return api
+      .authenticateWithIdCard()
+      .then((success) => {
+        expect(success).toBe(true);
+        expect(mockHttp.post).toHaveBeenCalledTimes(1);
+        expect(mockHttp.post).toHaveBeenCalledWith('https://id.tuleva.ee/idLogin');
+      });
+  });
+
+  it('can get a mobile id token', () => {
+    mockHttp.postForm = jest.fn(() => Promise.resolve({ access_token: 'mobile_id_token' }));
     expect(mockHttp.postForm).not.toHaveBeenCalled();
     return api
-      .getToken()
+      .getMobileIdToken()
       .then((token) => {
-        expect(token).toBe('token');
+        expect(token).toBe('mobile_id_token');
         expect(mockHttp.postForm).toHaveBeenCalledTimes(1);
         expect(mockHttp.postForm).toHaveBeenCalledWith('/oauth/token', {
           client_id: 'onboarding-client',
@@ -40,11 +54,26 @@ describe('api', () => {
       });
   });
 
+  it('can get an id card token', () => {
+    mockHttp.postForm = jest.fn(() => Promise.resolve({ access_token: 'token' }));
+    expect(mockHttp.postForm).not.toHaveBeenCalled();
+    return api
+      .getIdCardToken()
+      .then((token) => {
+        expect(token).toBe('token');
+        expect(mockHttp.postForm).toHaveBeenCalledTimes(1);
+        expect(mockHttp.postForm).toHaveBeenCalledWith('/oauth/token', {
+          client_id: 'onboarding-client',
+          grant_type: 'id_card',
+        }, { Authorization: 'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ=' });
+      });
+  });
+
   it('throws in getting token if authentication is finished but errored', () => {
     const error = { error: 'oh no!' };
     mockHttp.postForm = jest.fn(() => Promise.reject(error));
     return api
-      .getToken()
+      .getMobileIdToken()
       .then(() => expect(0).toBe(1)) // fail, should not go to then.
       .catch(givenError => expect(givenError).toEqual(error));
   });
@@ -52,7 +81,7 @@ describe('api', () => {
   it('gives no token in authentication check if error is auth not completed', () => {
     mockHttp.postForm = jest.fn(() => Promise.reject({ error: 'AUTHENTICATION_NOT_COMPLETE' }));
     return api
-      .getToken()
+      .getMobileIdToken()
       .then(token => expect(token).toBeFalsy());
   });
 

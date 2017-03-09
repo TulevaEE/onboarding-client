@@ -14,9 +14,14 @@ export function authenticateWithPhoneNumber(phoneNumber) {
     .then(({ mobileIdChallengeCode }) => mobileIdChallengeCode);
 }
 
-export function getToken() {
+export function authenticateWithIdCard() {
+  return post('https://id.tuleva.ee/idLogin')
+    .then(({ success }) => success);
+}
+
+function getTokenWithClientId(clientId) {
   return postForm(getEndpoint('/oauth/token'), {
-    grant_type: 'mobile_id',
+    grant_type: clientId,
     client_id: 'onboarding-client',
   }, { Authorization: 'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ=' })
     .then(({ access_token }) => access_token) // eslint-disable-line
@@ -26,6 +31,15 @@ export function getToken() {
       }
       return null;
     });
+}
+
+
+export function getMobileIdToken() {
+  return getTokenWithClientId('mobile_id');
+}
+
+export function getIdCardToken() {
+  return getTokenWithClientId('id_card');
 }
 
 export function downloadMandateWithIdAndToken(id, token) {
