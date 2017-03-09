@@ -26,7 +26,9 @@ import {
 jest.useFakeTimers();
 
 const mockApi = jest.genMockFromModule('../common/api');
+const mockDownload = jest.fn();
 jest.mock('../common/api', () => mockApi);
+jest.mock('downloadjs', () => mockDownload);
 
 const actions = require('./actions'); // need to use require because of jest mocks being weird
 
@@ -172,11 +174,24 @@ describe('Exchange actions', () => {
   it('can download the mandate', () => {
     state.login.token = 'token';
     state.exchange.signedMandateId = 'mandate id';
-    mockApi.downloadMandateWithIdAndToken = jest.fn(() => Promise.resolve());
+    const file = { iAmAFakeFile: true };
+    mockApi.downloadMandateWithIdAndToken = jest.fn(() => Promise.resolve(file));
     const downloadMandate = createBoundAction(actions.downloadMandate);
     downloadMandate()
-      .then(() => expect(mockApi.downloadMandateWithIdAndToken)
-        .toHaveBeenCalledWith('token', 'mandate id'));
+      .then(() => {
+        expect(mockApi.downloadMandateWithIdAndToken).toHaveBeenCalledWith('token', 'mandate id');
+        expect(mockDownload).toHaveBeenCalledWith(file, 'avaldus.bdoc', 'application/bdoc');
+      });
+  });
+
+  it('will not download the mandate if mandate id is missing', () => {
+    state.login.token = 'token';
+    state.exchange.signedMandateId = null;
+    const file = { iAmAFakeFile: true };
+    mockApi.downloadMandateWithIdAndToken = jest.fn(() => Promise.resolve(file));
+    const downloadMandate = createBoundAction(actions.downloadMandate);
+    downloadMandate()
+      .then(() => expect(mockApi.downloadMandateWithIdAndToken).not.toHaveBeenCalled());
   });
 
   it('can sign the mandate', () => {

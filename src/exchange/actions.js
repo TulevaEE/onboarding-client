@@ -1,4 +1,5 @@
 import { push } from 'react-router-redux';
+import download from 'downloadjs';
 
 import {
   getSourceFundsWithToken,
@@ -65,7 +66,8 @@ export function downloadMandate() {
     const mandateId = getState().exchange.signedMandateId;
     const token = getState().login.token;
     if (mandateId && token) {
-      return downloadMandateWithIdAndToken(mandateId, token);
+      return downloadMandateWithIdAndToken(mandateId, token)
+        .then(file => download(file, 'avaldus.bdoc', 'application/bdoc'));
     }
     return Promise.resolve();
   };
