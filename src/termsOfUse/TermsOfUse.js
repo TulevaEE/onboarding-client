@@ -11,29 +11,31 @@ export const TermsOfUse = () => (
       </div>
     </div>
     <div className="row">
-      <h4><Message>terms.of.use.title</Message></h4>
+      <div className="col">
+        <h4><Message>terms.of.use.title</Message></h4>
 
-      <p className="mt-3"><Message>terms.of.use.subheading</Message></p>
+        <p className="mt-3"><Message>terms.of.use.subheading</Message></p>
 
-      <ol className="mt-3">
-        {[...Array(6)].map((item, index) => (
-          <li key={index}>
-            <Message>{`terms.of.use.list.item.${index + 1}`}</Message>
-          </li>
-        ))}
-      </ol>
+        <ol className="mt-3">
+          {[...Array(6)].map((item, index) => (
+            <li key={index}>
+              <Message>{`terms.of.use.list.item.${index + 1}`}</Message>
+            </li>
+          ))}
+        </ol>
 
-      <p className="mt-3">
-        <Message>terms.of.use.main.line.1</Message>
-      </p>
+        <p className="mt-3">
+          <Message>terms.of.use.main.line.1</Message>
+        </p>
 
-      <p className="mt-3">
-        <Message>terms.of.use.main.line.2</Message>
-      </p>
+        <p className="mt-3">
+          <Message>terms.of.use.main.line.2</Message>
+        </p>
 
-      <p className="mt-3">
-        <Message>terms.of.use.main.line.3</Message>
-      </p>
+        <p className="mt-3">
+          <Message>terms.of.use.main.line.3</Message>
+        </p>
+      </div>
     </div>
   </div>
 );
