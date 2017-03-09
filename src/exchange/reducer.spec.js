@@ -122,11 +122,12 @@ describe('Exchange reducer', () => {
     expect(newState.loadingMandate).toBe(false);
   });
 
-  it('sets mandate signing successful when signing mandate succeeds', () => {
-    const action = { type: SIGN_MANDATE_SUCCESS };
+  it('saves the mandate id when signing mandate succeeds', () => {
+    const signedMandateId = 'an id';
+    const action = { type: SIGN_MANDATE_SUCCESS, signedMandateId };
     const newState = exchangeReducer({ mandateSigningControlCode: 'code' }, action);
     expect(newState.mandateSigningControlCode).toBeFalsy();
-    expect(newState.mandateSigningSuccessful).toBe(true);
+    expect(newState.signedMandateId).toBe(signedMandateId);
   });
 
   it('sets the error when signing mandate fails', () => {
@@ -150,10 +151,10 @@ describe('Exchange reducer', () => {
     const newState = exchangeReducer({
       loadingMandate: true,
       mandateSigningControlCode: '1337',
-      mandateSigningSuccessful: true,
+      signedMandateId: 'an id',
     }, action);
     expect(newState.loadingMandate).toBe(false);
     expect(newState.mandateSigningControlCode).toBeFalsy();
-    expect(newState.mandateSigningSuccessful).toBe(false);
+    expect(newState.signedMandateId).toBe(null);
   });
 });

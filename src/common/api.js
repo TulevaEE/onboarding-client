@@ -1,4 +1,4 @@
-import { post, postForm, get, put } from './http';
+import { post, postForm, get, put, downloadFile } from './http';
 
 const API_URL = 'https://onboarding-service.tuleva.ee';
 
@@ -33,12 +33,19 @@ function getTokenWithClientId(clientId) {
     });
 }
 
+
 export function getMobileIdToken() {
   return getTokenWithClientId('mobile_id');
 }
 
 export function getIdCardToken() {
   return getTokenWithClientId('id_card');
+}
+
+export function downloadMandateWithIdAndToken(id, token) {
+  return downloadFile(getEndpoint(`/v1/mandates/${id}/file`), {
+    Authorization: `Bearer ${token}`,
+  });
 }
 
 export function getUserWithToken(token) {
@@ -59,21 +66,21 @@ export function getTargetFundsWithToken(token) {
 
 // TODO: test after demo
 export function saveMandateWithToken(mandate, token) {
-  return post(getEndpoint('/v1/mandate'), mandate, {
+  return post(getEndpoint('/v1/mandates'), mandate, {
     Authorization: `Bearer ${token}`,
   });
 }
 
 // TODO: test after demo
 export function getMandateControlCodeForMandateIdWithToken(id, token) {
-  return put(getEndpoint(`/v1/mandate/${id}/signature`), undefined, {
+  return put(getEndpoint(`/v1/mandates/${id}/signature`), undefined, {
     Authorization: `Bearer ${token}`,
   }).then(({ mobileIdChallengeCode }) => mobileIdChallengeCode);
 }
 
 // TODO: test after demo
 export function getMandateSignatureForMandateIdWithToken(id, token) {
-  return get(getEndpoint(`/v1/mandate/${id}/signature`), undefined, {
+  return get(getEndpoint(`/v1/mandates/${id}/signature`), undefined, {
     Authorization: `Bearer ${token}`,
   });
 }
