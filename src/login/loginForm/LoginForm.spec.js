@@ -40,4 +40,13 @@ describe('Login form', () => {
     expect(onPhoneNumberSubmit).toHaveBeenCalledTimes(1);
     expect(onPhoneNumberSubmit).toHaveBeenCalledWith(phoneNumber);
   });
+
+  it('can log in with id card', () => {
+    const onAuthenticateWithIdCard = jest.fn();
+    component.setProps({ onAuthenticateWithIdCard });
+
+    expect(onAuthenticateWithIdCard).not.toHaveBeenCalled();
+    component.find('button').simulate('click');
+    expect(onAuthenticateWithIdCard).toHaveBeenCalledTimes(1);
+  });
 });

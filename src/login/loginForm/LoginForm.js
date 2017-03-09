@@ -15,6 +15,7 @@ export const LoginForm = ({
   phoneNumber,
   onPhoneNumberChange,
   onPhoneNumberSubmit,
+  onAuthenticateWithIdCard,
 }) => (
   <div className="row mt-4 pt-4 pb-4 justify-content-center login-form">
     <div className="col-lg-9">
@@ -48,7 +49,7 @@ export const LoginForm = ({
         </span>
       </div>
       <div>
-        <button className="btn btn-primary btn-block btn-lg" disabled="true">
+        <button className="btn btn-primary btn-block btn-lg" onClick={onAuthenticateWithIdCard}>
           <Message>login.id.card</Message>
         </button>
       </div>
@@ -69,6 +70,7 @@ const noop = () => null;
 LoginForm.defaultProps = {
   onPhoneNumberChange: noop,
   onPhoneNumberSubmit: noop,
+  onAuthenticateWithIdCard: noop,
 
   phoneNumber: '',
 };
@@ -78,6 +80,7 @@ LoginForm.propTypes = {
 
   onPhoneNumberChange: Types.func,
   onPhoneNumberSubmit: Types.func,
+  onAuthenticateWithIdCard: Types.func,
 
   phoneNumber: Types.string,
 };
