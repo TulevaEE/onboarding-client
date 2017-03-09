@@ -1,21 +1,24 @@
-import {push} from "react-router-redux";
+import { push } from 'react-router-redux';
+
 import {
   CHANGE_PHONE_NUMBER,
+
   MOBILE_AUTHENTICATION_START,
   MOBILE_AUTHENTICATION_START_SUCCESS,
   MOBILE_AUTHENTICATION_START_ERROR,
+
   MOBILE_AUTHENTICATION_SUCCESS,
   MOBILE_AUTHENTICATION_ERROR,
   MOBILE_AUTHENTICATION_CANCEL,
-  ID_CARD_AUTHENTICATION_START,
-  ID_CARD_AUTHENTICATION_SUCCESS,
-  ID_CARD_AUTHENTICATION_ERROR,
+
   GET_USER_START,
   GET_USER_SUCCESS,
   GET_USER_ERROR,
-  LOG_OUT
-} from "./constants";
-import {api} from "../common";
+
+  LOG_OUT,
+} from './constants';
+
+import { api } from '../common';
 
 const POLL_DELAY = 1000;
 
