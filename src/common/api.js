@@ -16,7 +16,7 @@ export function authenticateWithPhoneNumber(phoneNumber) {
 
 export function authenticateWithIdCard() {
   return post('https://id.tuleva.ee/idLogin')
-    .then(({ success }) => success)
+    .then(({ success }) => success);
 }
 
 function getTokenWithClientId(clientId) {

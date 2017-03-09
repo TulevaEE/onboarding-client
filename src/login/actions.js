@@ -72,8 +72,8 @@ export function authenticateWithIdCard() {
     return api
       .authenticateWithIdCard()
       .then(() => api.getIdCardToken())
-      .then(token => {
-        dispatch({type: ID_CARD_AUTHENTICATION_SUCCESS, token});
+      .then((token) => {
+        dispatch({ type: ID_CARD_AUTHENTICATION_SUCCESS, token });
         dispatch(push('/steps/select-sources'));
       }).catch(error => dispatch({ type: ID_CARD_AUTHENTICATION_ERROR, error }));
   };
