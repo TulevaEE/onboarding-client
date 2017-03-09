@@ -12,7 +12,7 @@ describe('Success step', () => {
     component = shallow(<Success />);
   });
 
-  it('shows the user default succsess message and profile button', () => {
+  it('shows the user default success message and profile button', () => {
     expect(component.contains(<Message>success.done</Message>)).toBe(true);
     expect(component.contains(<Message>success.view.profile.title</Message>)).toBe(true);
     expect(component.contains(<Message>success.view.profile.title.button</Message>)).toBe(true);
@@ -21,24 +21,24 @@ describe('Success step', () => {
         <Message>success.view.profile.title.button</Message>
       </Link>,
     )).toBe(true);
-    expect(component.contains(<Message>success.your.payments</Message>)).not.toBe(true);
-    expect(component.contains(<Message>success.shares.switched</Message>)).not.toBe(true);
+    expect(component.contains(<Message>success.your.payments</Message>)).toBe(false);
+    expect(component.contains(<Message>success.shares.switched</Message>)).toBe(false);
   });
 
   it('show message for future contributions only', () => {
     component.setProps({ userContributingFuturePayments: true });
     expect(component.contains(<Message>success.your.payments</Message>)).toBe(true);
     expect(component.contains(<Message>success.your.payments.next.payment</Message>)).toBe(true);
-    expect(component.contains(<Message>success.shares.switched</Message>)).not.toBe(true);
-    expect(component.contains(<Message>success.shares.switched.when</Message>)).not.toBe(true);
+    expect(component.contains(<Message>success.shares.switched</Message>)).toBe(false);
+    expect(component.contains(<Message>success.shares.switched.when</Message>)).toBe(false);
   });
 
   it('show message for switched funds only', () => {
     component.setProps({ userHasTransferredFunds: true });
     expect(component.contains(<Message>success.shares.switched</Message>)).toBe(true);
     expect(component.contains(<Message>success.shares.switched.when</Message>)).toBe(true);
-    expect(component.contains(<Message>success.your.payments</Message>)).not.toBe(true);
-    expect(component.contains(<Message>success.your.payments.next.payment</Message>)).not.toBe(true);
+    expect(component.contains(<Message>success.your.payments</Message>)).toBe(false);
+    expect(component.contains(<Message>success.your.payments.next.payment</Message>)).toBe(false);
   });
 
   it('show message both future contributions and switched funds', () => {
