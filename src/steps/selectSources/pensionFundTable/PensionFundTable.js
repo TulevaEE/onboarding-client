@@ -25,12 +25,13 @@ const PensionFundTable = ({ funds }) => {
         }
       </div>
       {
-        funds.map(({ currency, price, name, isin }) =>
+        funds.map(({ currency, price, name, isin, activeFund }) =>
           <FundRow
             key={isin}
             price={price}
             name={name}
             currency={currency}
+            active={activeFund}
           />,
         )
       }
@@ -40,6 +41,11 @@ const PensionFundTable = ({ funds }) => {
         name={'select.sources.total'}
         highlighted
       />
+      <div className="mt-2">
+        <small className="text-muted">
+          <Message>select.sources.active.fund</Message>
+        </small>
+      </div>
     </div>
   );
 };
@@ -55,6 +61,7 @@ PensionFundTable.propTypes = {
     name: Types.string,
     manager: Types.string,
     isin: Types.string,
+    activeFund: Types.bool,
   })),
 };
 

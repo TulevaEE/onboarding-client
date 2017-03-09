@@ -27,6 +27,7 @@
   "select.sources.pension.fund": "Pensionifond",
   "select.sources.value": "Osakute väärtus",
   "select.sources.fees": "Teenustasu kulu",
+  "select.sources.active.fund": "* - siia lähevad igakuised maksed",
   "select.sources.current.status": "Sinu II samba pensionivara seis täna",
   "select.sources.total": "Kokku",
   "select.sources.select.all": "Toon üle kõik olemasolevad osakud.",
