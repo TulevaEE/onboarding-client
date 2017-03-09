@@ -5,6 +5,7 @@ import { Link } from 'react-router';
 
 import { ConfirmMandate } from './ConfirmMandate';
 import FundTransferMandate from './fundTransferMandate';
+import MandateNotFilledAlert from './mandateNotFilledAlert';
 import { Loader, AuthenticationLoader } from '../../common';
 
 describe('Confirm mandate step', () => {
@@ -53,7 +54,11 @@ describe('Confirm mandate step', () => {
       lastName: 'last',
       personalCode: '123456789',
     };
-    component.setProps({ user });
+    const exchange = {
+      sourceSelection: [],
+      selectedFutureContributionsFundIsin: 'asd',
+    };
+    component.setProps({ user, exchange });
     expect(component.contains([
       <Message>confirm.mandate.me</Message>,
       <b>{user.firstName} {user.lastName}</b>,
@@ -83,6 +88,12 @@ describe('Confirm mandate step', () => {
   });
 
   it('has a link to the previous step', () => {
+    component.setProps({
+      exchange: {
+        sourceSelection: [],
+        selectedFutureContributionsFundIsin: 'asd',
+      },
+    });
     expect(component.contains(
       <Link className="btn btn-secondary" to="/steps/transfer-future-capital">
         <Message>steps.previous</Message>
@@ -112,24 +123,45 @@ describe('Confirm mandate step', () => {
 
   it('renders an overlayed authentication loader when you are signing the mandate', () => {
     const onCancelSigningMandate = jest.fn();
-    component.setProps({ onCancelSigningMandate });
+    component.setProps({
+      onCancelSigningMandate,
+      exchange: {
+        sourceSelection: [],
+        selectedFutureContributionsFundIsin: 'asd',
+      },
+    });
     const hasAuthLoader = () => !!component.find(AuthenticationLoader).length;
     expect(hasAuthLoader()).toBe(false);
     component.setProps({
-      exchange: { mandateSigningControlCode: null, sourceSelection: [], loadingMandate: true },
+      exchange: {
+        mandateSigningControlCode: null,
+        sourceSelection: [],
+        loadingMandate: true,
+        selectedFutureContributionsFundIsin: 'asd',
+      },
     });
     expect(hasAuthLoader()).toBe(true);
   });
 
   it('renders the authentication loader with a control code', () => {
-    component.setProps({ exchange: { sourceSelection: [], mandateSigningControlCode: '1337' } });
+    component.setProps({
+      exchange: {
+        sourceSelection: [],
+        mandateSigningControlCode: '1337',
+        selectedFutureContributionsFundIsin: 'asd',
+      },
+    });
     expect(component.find(AuthenticationLoader).prop('controlCode')).toBe('1337');
   });
 
   it('can cancel signing the mandate', () => {
     const onCancelSigningMandate = jest.fn();
     component.setProps({
-      exchange: { sourceSelection: [], mandateSigningControlCode: '1337' },
+      exchange: {
+        sourceSelection: [],
+        mandateSigningControlCode: '1337',
+        selectedFutureContributionsFundIsin: 'asd',
+      },
       onCancelSigningMandate,
     });
     expect(onCancelSigningMandate).not.toHaveBeenCalled();
@@ -297,5 +329,20 @@ describe('Confirm mandate step', () => {
     component.setProps({ onSignMandate, exchange });
     component.find('button').simulate('click');
     expect(onSignMandate).not.toHaveBeenCalled();
+  });
+
+  it('shows a mandate not filled alert instead of the mandate when mandate not filled', () => {
+    const exchange = {
+      sourceSelection: [
+        { percentage: 0, sourceFundIsin: 'source 1', targetFundIsin: 'target 1' },
+        { percentage: 0, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
+      ],
+      sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
+      selectedFutureContributionsFundIsin: null,
+      agreedToTerms: false,
+    };
+    component.setProps({ exchange });
+    expect(component.at(0).node).toEqual(<MandateNotFilledAlert />);
+    expect(component.find('button').length === 0).toBe(true);
   });
 });

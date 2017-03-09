@@ -12,6 +12,7 @@ import {
   changeAgreementToTerms,
 } from '../../exchange/actions';
 
+import MandateNotFilledAlert from './mandateNotFilledAlert';
 import FundTransferMandate from './fundTransferMandate';
 import './ConfirmMandate.scss';
 
@@ -67,7 +68,13 @@ export const ConfirmMandate = ({
   if (loadingUser || exchange.loadingSourceFunds || exchange.loadingTargetFunds) {
     return <Loader className="align-middle" />;
   }
-  const startSigningMandate = () => exchange.agreedToTerms && onSignMandate({
+  const aggregatedSelections = aggregateSelections(exchange.sourceSelection);
+  const hasFilledFlow = aggregatedSelections.length || exchange.selectedFutureContributionsFundIsin;
+  if (!hasFilledFlow) {
+    return <MandateNotFilledAlert />;
+  }
+  const canSignMandate = exchange.agreedToTerms && hasFilledFlow;
+  const startSigningMandate = () => canSignMandate && onSignMandate({
     fundTransferExchanges: exchange.sourceSelection.map(selection => ({
       amount: selection.percentage,
       sourceFundIsin: selection.sourceFundIsin,
@@ -101,18 +108,17 @@ export const ConfirmMandate = ({
         ) : ''
       }
       {
-        aggregateSelections(exchange.sourceSelection)
-          .map((selection, index) =>
-            <FundTransferMandate
-              selection={{
-                ...selection,
-                sourceFundName: utils.findWhere(exchange.sourceFunds, ({ isin }) => (
-                  isin === selection.sourceFundIsin
-                )).name,
-              }}
-              key={index}
-            />,
-          )
+        aggregatedSelections.map((selection, index) =>
+          <FundTransferMandate
+            selection={{
+              ...selection,
+              sourceFundName: utils.findWhere(exchange.sourceFunds, ({ isin }) => (
+                isin === selection.sourceFundIsin
+              )).name,
+            }}
+            key={index}
+          />,
+        )
       }
       <div className="mt-5">
         <label className="custom-control custom-checkbox" htmlFor="agree-to-terms-checkbox">
@@ -129,10 +135,11 @@ export const ConfirmMandate = ({
           </span>
         </label>
       </div>
+      {/* TODO: */}
       <div className="mt-5">
         <button
           className="btn btn-primary mr-2"
-          disabled={!exchange.agreedToTerms}
+          disabled={!canSignMandate}
           onClick={startSigningMandate}
         >
           <Message>confirm.mandate.sign</Message>
