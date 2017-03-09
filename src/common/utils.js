@@ -18,3 +18,7 @@ export function findWhere(list = [], predicate = isTruthy) {
 export function createClamper(lowerLimit = 0, upperLimit = 10) {
   return value => Math.max(Math.min(value, upperLimit), lowerLimit);
 }
+
+export function formatAmountForCurrency(amount = 0) {
+  return `${amount.toFixed(2)}€`; // hardcoded euro until more currencies.
+}
