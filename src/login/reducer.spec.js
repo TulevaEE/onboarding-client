@@ -1,22 +1,20 @@
-import loginReducer from './reducer';
+import loginReducer from "./reducer";
 import {
   CHANGE_PHONE_NUMBER,
-
   MOBILE_AUTHENTICATION_START,
   MOBILE_AUTHENTICATION_START_SUCCESS,
   MOBILE_AUTHENTICATION_START_ERROR,
-
   MOBILE_AUTHENTICATION_SUCCESS,
   MOBILE_AUTHENTICATION_ERROR,
-
   MOBILE_AUTHENTICATION_CANCEL,
-
+  ID_CARD_AUTHENTICATION_START,
+  ID_CARD_AUTHENTICATION_SUCCESS,
+  ID_CARD_AUTHENTICATION_ERROR,
   GET_USER_START,
   GET_USER_SUCCESS,
   GET_USER_ERROR,
-
-  LOG_OUT,
-} from './constants';
+  LOG_OUT
+} from "./constants";
 
 describe('Login reducer', () => {
   it('changes phone number', () => {
@@ -67,6 +65,26 @@ describe('Login reducer', () => {
     const newState = loginReducer({ loadingControlCode: true, controlCode: '1337' }, action);
     expect(newState.loadingControlCode).toBe(false);
     expect(newState.controlCode).toBe(null);
+  });
+
+  it('resets error when starting id card authentication', () => {
+    const action = { type: ID_CARD_AUTHENTICATION_START };
+    const newState = loginReducer({ error: { anError: true } }, action);
+    expect(newState.error).toBe(null);
+  });
+
+  it('sets the token when id card authentication succeeds', () => {
+    const token = 'token';
+    const action = { type: ID_CARD_AUTHENTICATION_SUCCESS, token };
+    expect(loginReducer(undefined, action).token).toBe(token);
+  });
+
+  it('sets the error when mobile authentication fails', () => {
+    const error = new Error('oh noes!!1');
+    const action = { type: ID_CARD_AUTHENTICATION_ERROR, error };
+    const newState = loginReducer(undefined, action);
+    expect(newState.token).toBe(null);
+    expect(newState.error).toBe(error);
   });
 
   it('starts loading when user when starting to get the user', () => {

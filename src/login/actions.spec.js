@@ -1,22 +1,19 @@
-import { push } from 'react-router-redux';
-
+import {push} from "react-router-redux";
 import {
   CHANGE_PHONE_NUMBER,
-
   MOBILE_AUTHENTICATION_START,
   MOBILE_AUTHENTICATION_START_SUCCESS,
   MOBILE_AUTHENTICATION_START_ERROR,
-
   MOBILE_AUTHENTICATION_CANCEL,
   MOBILE_AUTHENTICATION_SUCCESS,
   MOBILE_AUTHENTICATION_ERROR,
-
+  ID_CARD_AUTHENTICATION_START,
+  ID_CARD_AUTHENTICATION_SUCCESS,
   GET_USER_START,
   GET_USER_SUCCESS,
   GET_USER_ERROR,
-
-  LOG_OUT,
-} from './constants';
+  LOG_OUT
+} from "./constants";
 
 jest.useFakeTimers();
 
@@ -45,7 +42,8 @@ describe('Login actions', () => {
   beforeEach(() => {
     mockDispatch();
     mockApi.authenticateWithPhoneNumber = () => Promise.reject();
-    mockApi.getToken = () => Promise.reject();
+    mockApi.getMobileIdToken = () => Promise.reject();
+    mockApi.getIdCardToken = () => Promise.reject();
   });
 
   afterEach(() => {
@@ -82,18 +80,37 @@ describe('Login actions', () => {
       });
   });
 
+  it('can authenticate with an id card', () => {
+    const token = 'token';
+    mockApi.authenticateWithIdCard = jest.fn(() => {
+      expect(dispatch).toHaveBeenCalledTimes(1);
+      expect(dispatch).toHaveBeenCalledWith({ type: ID_CARD_AUTHENTICATION_START });
+      dispatch.mockClear();
+      return Promise.resolve();
+    });
+    const authenticateWithIdCard = createBoundAction(actions.authenticateWithIdCard);
+    expect(dispatch).not.toHaveBeenCalled();
+    mockApi.getIdCardToken = jest.fn(() => Promise.resolve(token));
+    return authenticateWithIdCard()
+      .then(() => {
+        expect(mockApi.getIdCardToken).toHaveBeenCalled();
+        expect(dispatch).toHaveBeenCalledWith({ type: ID_CARD_AUTHENTICATION_SUCCESS, token });
+        expect(dispatch).toHaveBeenLastCalledWith(push('/steps/select-sources'));
+      });
+  });
+
   it('starts polling until succeeds when authenticating with a phone number and redirects', () => {
     const token = 'token';
     mockApi.authenticateWithPhoneNumber = jest.fn(() => Promise.resolve('1337'));
-    mockApi.getToken = jest.fn(() => Promise.resolve(null));
+    mockApi.getMobileIdToken = jest.fn(() => Promise.resolve(null));
     const authenticateWithPhoneNumber = createBoundAction(actions.authenticateWithPhoneNumber);
     return authenticateWithPhoneNumber('')
       .then(() => {
         dispatch.mockClear();
-        mockApi.getToken = jest.fn(() => Promise.resolve(token));
+        mockApi.getMobileIdToken = jest.fn(() => Promise.resolve(token));
         jest.runOnlyPendingTimers();
         expect(dispatch).not.toHaveBeenCalled();
-        expect(mockApi.getToken).toHaveBeenCalled();
+        expect(mockApi.getMobileIdToken).toHaveBeenCalled();
       }).then(() => {
         expect(dispatch).toHaveBeenCalledWith({ type: MOBILE_AUTHENTICATION_SUCCESS, token });
         expect(dispatch).toHaveBeenCalledWith(push('/steps/select-sources'));
@@ -103,15 +120,15 @@ describe('Login actions', () => {
   it('starts polling until fails when authenticating with a phone number', () => {
     const error = new Error('oh no!');
     mockApi.authenticateWithPhoneNumber = jest.fn(() => Promise.resolve('1337'));
-    mockApi.getToken = jest.fn(() => Promise.resolve(null));
+    mockApi.getMobileIdToken = jest.fn(() => Promise.resolve(null));
     const authenticateWithPhoneNumber = createBoundAction(actions.authenticateWithPhoneNumber);
     return authenticateWithPhoneNumber('123123')
       .then(() => {
         dispatch.mockClear();
-        mockApi.getToken = jest.fn(() => Promise.reject(error));
+        mockApi.getMobileIdToken = jest.fn(() => Promise.reject(error));
         jest.runOnlyPendingTimers();
         expect(dispatch).not.toHaveBeenCalled();
-        expect(mockApi.getToken).toHaveBeenCalled();
+        expect(mockApi.getMobileIdToken).toHaveBeenCalled();
       }).then(() => {
         jest.runOnlyPendingTimers();
       }).then(() => {

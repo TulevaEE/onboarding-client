@@ -6,11 +6,14 @@ import {
   MOBILE_AUTHENTICATION_SUCCESS,
   MOBILE_AUTHENTICATION_ERROR,
   MOBILE_AUTHENTICATION_CANCEL,
+  ID_CARD_AUTHENTICATION_START,
+  ID_CARD_AUTHENTICATION_SUCCESS,
+  ID_CARD_AUTHENTICATION_ERROR,
   GET_USER_START,
   GET_USER_SUCCESS,
   GET_USER_ERROR,
-  LOG_OUT,
-} from './constants';
+  LOG_OUT
+} from "./constants";
 
 const TOKEN_STORAGE_KEY = 'token';
 
@@ -57,6 +60,22 @@ export default function loginReducer(state = defaultState, action) {
 
     case MOBILE_AUTHENTICATION_CANCEL:
       return { ...state, loadingControlCode: false, error: null, controlCode: null };
+
+
+    case ID_CARD_AUTHENTICATION_START:
+      return { ...state, error: null };
+
+    case ID_CARD_AUTHENTICATION_SUCCESS:
+      if (window.localStorage) {
+        localStorage.setItem(TOKEN_STORAGE_KEY, action.token);
+      }
+      return { // reset all state so page is clean when entered again.
+        ...state,
+        token: action.token,
+        error: null,
+      };
+    case ID_CARD_AUTHENTICATION_ERROR:
+      return { ...state, error: action.error };
 
 
     case GET_USER_START:
