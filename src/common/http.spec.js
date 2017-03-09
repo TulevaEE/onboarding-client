@@ -1,4 +1,4 @@
-import { get, post, postForm } from './http';
+import { get, post, postForm, downloadFile } from './http';
 
 describe('http', () => {
   let originalFetch;
@@ -15,11 +15,20 @@ describe('http', () => {
   });
 
   function fakeSuccessfulResponseWithValue(value) {
-    return Promise.resolve({ status: 200, ok: true, json: () => Promise.resolve(value) });
+    return Promise.resolve({
+      status: 200,
+      ok: true,
+      json: () => Promise.resolve(value),
+      blob: () => Promise.resolve(value),
+    });
   }
 
   function fakeUnsuccessfulResponseWithValue(value) {
-    return Promise.resolve({ status: 400, json: () => Promise.resolve(value) });
+    return Promise.resolve({
+      status: 400,
+      json: () => Promise.resolve(value),
+      blob: () => Promise.resolve(value),
+    });
   }
 
   function fail() {
@@ -49,6 +58,21 @@ describe('http', () => {
         expect(url).toEqual('https://example.com?thing=hello&another=5');
         const options = fetch.mock.calls[0][1];
         expect(options.method).toEqual('GET');
+      });
+  });
+
+  it('can download a file', () => {
+    const value = { thisIsTheReturnValue: true };
+    fetch.mockReturnValueOnce(fakeSuccessfulResponseWithValue(value));
+    const headers = { thing: 'hello', another: 5 };
+    return downloadFile('https://example.com', headers)
+      .then((givenValue) => {
+        expect(givenValue).toEqual(value);
+        const url = fetch.mock.calls[0][0];
+        expect(url).toEqual('https://example.com');
+        const options = fetch.mock.calls[0][1];
+        expect(options.method).toEqual('GET');
+        expect(options.headers).toEqual(headers);
       });
   });
 

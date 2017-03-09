@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { PropTypes as Types } from 'react';
 import { Message } from 'retranslate';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 
+import { downloadMandate } from '../../exchange/actions';
 import successImage from './success.svg';
 import './Success.scss';
 
-const Success = () => (
+export const Success = ({ onDownloadMandate }) => (
   <div className="row">
     <div className="col-12 mt-5 px-0">
       <div className="alert alert-success text-center pt-5 pb-5">
@@ -12,6 +15,9 @@ const Success = () => (
           <img src={successImage} alt="Success" className="tv-success__check" />
         </div>
         <h2 className="text-center mt-3"><Message>success.done</Message></h2>
+        <button className="btn btn-secondary text-center" onClick={onDownloadMandate}>
+          <Message>success.download.mandate</Message>
+        </button>
         <p className="mt-4">
           <Message>success.your.payments</Message>
           <b><Message>success.your.payments.next.payment</Message></b>.
@@ -25,4 +31,22 @@ const Success = () => (
   </div>
 );
 
-export default Success;
+
+const noop = () => null;
+
+Success.defaultProps = {
+  onDownloadMandate: noop,
+};
+
+Success.propTypes = {
+  onDownloadMandate: Types.func,
+};
+
+const mapStateToProps = () => ({});
+const mapDispatchToProps = dispatch => bindActionCreators({
+  onDownloadMandate: downloadMandate,
+}, dispatch);
+
+const connectToRedux = connect(mapStateToProps, mapDispatchToProps);
+
+export default connectToRedux(Success);

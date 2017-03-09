@@ -26,7 +26,9 @@ import {
 jest.useFakeTimers();
 
 const mockApi = jest.genMockFromModule('../common/api');
+const mockDownload = jest.fn();
 jest.mock('../common/api', () => mockApi);
+jest.mock('downloadjs', () => mockDownload);
 
 const actions = require('./actions'); // need to use require because of jest mocks being weird
 
@@ -39,7 +41,7 @@ describe('Exchange actions', () => {
   }
 
   function mockDispatch() {
-    state = { login: { token: 'token' } };
+    state = { login: { token: 'token' }, exchange: {} };
     dispatch = jest.fn((action) => {
       if (typeof action === 'function') {
         action(dispatch, () => state);
@@ -169,6 +171,29 @@ describe('Exchange actions', () => {
     });
   });
 
+  it('can download the mandate', () => {
+    state.login.token = 'token';
+    state.exchange.signedMandateId = 'mandate id';
+    const file = { iAmAFakeFile: true };
+    mockApi.downloadMandateWithIdAndToken = jest.fn(() => Promise.resolve(file));
+    const downloadMandate = createBoundAction(actions.downloadMandate);
+    downloadMandate()
+      .then(() => {
+        expect(mockApi.downloadMandateWithIdAndToken).toHaveBeenCalledWith('token', 'mandate id');
+        expect(mockDownload).toHaveBeenCalledWith(file, 'avaldus.bdoc', 'application/bdoc');
+      });
+  });
+
+  it('will not download the mandate if mandate id is missing', () => {
+    state.login.token = 'token';
+    state.exchange.signedMandateId = null;
+    const file = { iAmAFakeFile: true };
+    mockApi.downloadMandateWithIdAndToken = jest.fn(() => Promise.resolve(file));
+    const downloadMandate = createBoundAction(actions.downloadMandate);
+    downloadMandate()
+      .then(() => expect(mockApi.downloadMandateWithIdAndToken).not.toHaveBeenCalled());
+  });
+
   it('can sign the mandate', () => {
     state.login.token = 'token';
     const mandate = { id: 'mandate id' };
@@ -219,7 +244,10 @@ describe('Exchange actions', () => {
         expect(mockApi.getMandateSignatureForMandateIdWithToken).toHaveBeenCalledTimes(1);
         expect(mockApi.getMandateSignatureForMandateIdWithToken).toHaveBeenCalledWith('id', 'token');
       }).then(() => {
-        expect(dispatch).toHaveBeenCalledWith({ type: SIGN_MANDATE_SUCCESS });
+        expect(dispatch).toHaveBeenCalledWith({
+          type: SIGN_MANDATE_SUCCESS,
+          signedMandateId: 'id',
+        });
         expect(dispatch).toHaveBeenCalledWith(push('/steps/success'));
       });
   });

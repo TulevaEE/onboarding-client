@@ -11,6 +11,13 @@ function transformResponse(response) {
   throw response;
 }
 
+function transformFileResponse(response) {
+  if (response.ok && response.status < 400) {
+    return response.blob();
+  }
+  throw response;
+}
+
 function urlEncodeParameters(params) {
   return Object
     .keys(params)
@@ -30,6 +37,16 @@ export function get(url, params = {}, headers = {}) {
     credentials: 'include',
     cache: 'default',
   }).then(transformResponse);
+}
+
+export function downloadFile(url, headers = {}) {
+  return fetch(url, {
+    headers,
+    method: 'GET',
+    credentials: 'include',
+    mode: 'cors',
+    cache: 'default',
+  }).then(transformFileResponse);
 }
 
 export function post(url, params = {}, headers = {}) {
