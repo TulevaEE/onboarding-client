@@ -26,6 +26,8 @@ import {
   SIGN_MANDATE_SUCCESS,
   SIGN_MANDATE_ERROR,
   SIGN_MANDATE_CANCEL,
+
+  CHANGE_AGREEMENT_TO_TERMS,
 } from './constants';
 
 const POLL_DELAY = 1000;
@@ -51,6 +53,10 @@ export function getSourceFunds() {
 
 export function selectExchangeSources(sourceSelection, sourceSelectionExact = false) {
   return { type: SELECT_EXCHANGE_SOURCES, sourceSelection, sourceSelectionExact };
+}
+
+export function changeAgreementToTerms(agreement) {
+  return { type: CHANGE_AGREEMENT_TO_TERMS, agreement };
 }
 
 export function getTargetFunds() {
