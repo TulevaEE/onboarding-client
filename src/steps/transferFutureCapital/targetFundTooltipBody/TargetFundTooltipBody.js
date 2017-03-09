@@ -15,6 +15,7 @@ function getTooltipBodyData(fundIsin) {
         `target.funds.${ADVANCED_TARGET_FUND_ISIN}.tooltip.investment.2`,
         `target.funds.${ADVANCED_TARGET_FUND_ISIN}.tooltip.investment.3`,
         `target.funds.${ADVANCED_TARGET_FUND_ISIN}.tooltip.investment.4`,
+        `target.funds.${ADVANCED_TARGET_FUND_ISIN}.tooltip.investment.5`,
       ],
       diagram: advancedFundDiagram,
     };
@@ -33,29 +34,36 @@ function getTooltipBodyData(fundIsin) {
   return [];
 }
 
-const TargetFundTooltipBody = ({ targetFundIsin }) => (
-  <div>
-    <h3 className="mt-3 mb-3"><Message>{`target.funds.${targetFundIsin}.tooltip.title`}</Message></h3>
-    <img
-      src={getTooltipBodyData(targetFundIsin).diagram}
-      alt="Fund diagram" width="180px" height="180px" className="diagram"
-    />
-    <ul className="mt-4">
-      {getTooltipBodyData(targetFundIsin).funds.map(item => (
-        <li key={item}>
-          <Message>{item}</Message>
-        </li>
-      ))}
-    </ul>
-  </div>
-);
+const TargetFundTooltipBody = ({ targetFundIsin }) => {
+  if (getTooltipBodyData(targetFundIsin).length === 0) {
+    return <div className="target-fund-tooltip__no-data">No data available for this fund</div>;
+  }
+  return (
+    <div className="target-fund-tooltip">
+      <h3 className="mt-3 mb-3">
+        <b><Message>{`target.funds.${targetFundIsin}.tooltip.title`}</Message></b>
+      </h3>
+      <img
+        src={getTooltipBodyData(targetFundIsin).diagram}
+        alt="Fund diagram" width="180px" height="180px" className="diagram"
+      />
+      <ul className="mt-4">
+        {getTooltipBodyData(targetFundIsin).funds.map(item => (
+          <li key={item}>
+            <Message>{item}</Message>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
 
 TargetFundTooltipBody.defaultProps = {
   targetFundIsin: '',
 };
 
 TargetFundTooltipBody.propTypes = {
-  targetFundIsin: Types.string,
+  targetFundIsin: Types.string.isRequired,
 };
 
 export default TargetFundTooltipBody;
