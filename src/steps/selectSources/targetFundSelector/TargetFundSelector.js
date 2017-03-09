@@ -14,7 +14,7 @@ const TargetFundSelector = ({ targetFunds, onSelectFund, selectedTargetFundIsin 
         <button
           key={fund.isin}
           className={`
-            col tv-target-fund p-4 mr-2 text-left
+            col-12 col-sm tv-target-fund p-4 mr-2 text-left mb-2
             ${selectedTargetFundIsin === fund.isin ? 'tv-target-fund--active' : ''}
           `}
           onClick={() => onSelectFund(fund)}

@@ -14,14 +14,22 @@ describe('Radio', () => {
     const hiddenInput = () => component.find('input');
     expect(hiddenInput().prop('className')).toContain('sr-only');
     expect(hiddenInput().prop('name')).toBe('test-radio');
-    expect(hiddenInput().prop('checked')).toBe(false);
     const onSelect = jest.fn();
-    component.setProps({ selected: true, onSelect });
-    expect(hiddenInput().prop('checked')).toBe(true);
+    component.setProps({ selected: false, onSelect });
+    expect(hiddenInput().prop('checked')).toBe(false);
     expect(onSelect).not.toHaveBeenCalled();
     hiddenInput().simulate('change');
     expect(onSelect).toHaveBeenCalledTimes(1);
-    expect(onSelect).toHaveBeenCalledWith(false);
+    expect(onSelect).toHaveBeenCalledWith(true);
+    component.setProps({ selected: true });
+    expect(hiddenInput().prop('checked')).toBe(true);
+  });
+
+  it('can not be changed by clicking it again', () => {
+    const onSelect = jest.fn();
+    component.setProps({ selected: true, onSelect });
+    component.find('button').simulate('click');
+    expect(onSelect).not.toHaveBeenCalled();
   });
 
   it('has a button that can also be clicked to change state', () => {
