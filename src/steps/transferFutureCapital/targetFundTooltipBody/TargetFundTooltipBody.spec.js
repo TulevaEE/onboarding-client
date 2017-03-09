@@ -15,7 +15,7 @@ describe('TargetFundTooltipBody', () => {
 
     const noDataMessage = () => component.find('div.target-fund-tooltip__no-data');
     const listItems = () => component.find('ul li');
-    expect(noDataMessage).toBeTruthy();
+    expect(noDataMessage()).toBeTruthy();
     expect(listItems().length).toBe(0);
   });
 
