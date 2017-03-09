@@ -12,12 +12,12 @@ const Radio = ({ children, onSelect, selected, name, className }) => (
           className="sr-only"
           name={name}
           checked={selected}
-          onChange={() => onSelect(!selected)}
+          onChange={() => !selected && onSelect(!selected)}
         />
         <button
           type="button"
           className="tv-radio__button"
-          onClick={() => onSelect(!selected)}
+          onClick={() => !selected && onSelect(!selected)}
           aria-pressed={selected}
         >
           <span className="tv-radio__check" />
