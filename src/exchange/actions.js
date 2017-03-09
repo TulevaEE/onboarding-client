@@ -6,6 +6,7 @@ import {
   saveMandateWithToken,
   getMandateControlCodeForMandateIdWithToken,
   getMandateSignatureForMandateIdWithToken,
+  downloadMandateWithIdAndToken,
 } from '../common/api';
 import {
   GET_SOURCE_FUNDS_START,
@@ -59,6 +60,17 @@ export function changeAgreementToTerms(agreement) {
   return { type: CHANGE_AGREEMENT_TO_TERMS, agreement };
 }
 
+export function downloadMandate() {
+  return (dispatch, getState) => {
+    const mandateId = getState().exchange.signedMandateId;
+    const token = getState().login.token;
+    if (mandateId && token) {
+      return downloadMandateWithIdAndToken(mandateId, token);
+    }
+    return Promise.resolve();
+  };
+}
+
 export function getTargetFunds() {
   return (dispatch, getState) => {
     dispatch({ type: GET_TARGET_FUNDS_START });
@@ -83,7 +95,7 @@ function pollForMandateSignatureWithMandateId(id) {
           if (statusCode === SIGNING_IN_PROGRESS_STATUS) {
             dispatch(pollForMandateSignatureWithMandateId(id));
           } else {
-            dispatch({ type: SIGN_MANDATE_SUCCESS });
+            dispatch({ type: SIGN_MANDATE_SUCCESS, signedMandateId: id });
             dispatch(push('/steps/success'));
           }
         })

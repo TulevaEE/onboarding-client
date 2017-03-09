@@ -52,21 +52,21 @@ export function getTargetFundsWithToken(token) {
 
 // TODO: test after demo
 export function saveMandateWithToken(mandate, token) {
-  return post(getEndpoint('/v1/mandate'), mandate, {
+  return post(getEndpoint('/v1/mandates'), mandate, {
     Authorization: `Bearer ${token}`,
   });
 }
 
 // TODO: test after demo
 export function getMandateControlCodeForMandateIdWithToken(id, token) {
-  return put(getEndpoint(`/v1/mandate/${id}/signature`), undefined, {
+  return put(getEndpoint(`/v1/mandates/${id}/signature`), undefined, {
     Authorization: `Bearer ${token}`,
   }).then(({ mobileIdChallengeCode }) => mobileIdChallengeCode);
 }
 
 // TODO: test after demo
 export function getMandateSignatureForMandateIdWithToken(id, token) {
-  return get(getEndpoint(`/v1/mandate/${id}/signature`), undefined, {
+  return get(getEndpoint(`/v1/mandates/${id}/signature`), undefined, {
     Authorization: `Bearer ${token}`,
   });
 }

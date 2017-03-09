@@ -34,8 +34,8 @@ const initialState = {
 
   loadingMandate: false,
   mandateSigningControlCode: null,
-  mandateSigningSuccessful: false,
   mandateSigningError: null,
+  signedMandateId: false,
   agreedToTerms: false,
 };
 
@@ -103,7 +103,7 @@ export default function exchangeReducer(state = initialState, action) {
     case SIGN_MANDATE_START_SUCCESS:
       return { ...state, mandateSigningControlCode: action.controlCode, loadingMandate: false };
     case SIGN_MANDATE_SUCCESS:
-      return { ...state, mandateSigningControlCode: null, mandateSigningSuccessful: true };
+      return { ...state, mandateSigningControlCode: null, signedMandateId: action.signedMandateId };
 
     case SIGN_MANDATE_START_ERROR: // fallthrough
     case SIGN_MANDATE_ERROR:
@@ -118,7 +118,7 @@ export default function exchangeReducer(state = initialState, action) {
         ...state,
         loadingMandate: false,
         mandateSigningControlCode: null,
-        mandateSigningSuccessful: false,
+        signedMandateId: null,
       };
 
     case CHANGE_AGREEMENT_TO_TERMS:
