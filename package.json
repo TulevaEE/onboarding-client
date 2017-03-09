@@ -114,7 +114,8 @@
       "react/jsx-filename-extension": 0,
       "react/no-array-index-key": 0,
       "import/no-extraneous-dependencies": 0,
-      "import/no-named-as-default": 0
+      "import/no-named-as-default": 0,
+      "linebreak-style": 0
     }
   },
   "proxy": "http://localhost:9000"
