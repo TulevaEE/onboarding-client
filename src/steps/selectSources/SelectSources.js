@@ -88,7 +88,7 @@ export const SelectSources = ({
         selected={noneSelectionActive}
         onSelect={() => onSelect([], false)}
       >
-        <h3 className="m-0"><Message>select.sources.select.none</Message></h3>
+        <p className="m-0"><Message>select.sources.select.none</Message></p>
         {
           noneSelectionActive ? (
             <div className="mt-2 tv-select-sources-type-none-subtitle">
