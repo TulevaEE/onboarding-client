@@ -8,12 +8,13 @@ import './LoginPage.scss';
 import { logo, AuthenticationLoader } from '../common';
 import LoginForm from './loginForm';
 import ErrorAlert from './errorAlert';
-import { changePhoneNumber, authenticateWithPhoneNumber, cancelMobileAuthentication } from './actions';
+import { changePhoneNumber, authenticateWithPhoneNumber, cancelMobileAuthentication, authenticateWithIdCard } from './actions';
 
 export const LoginPage = ({
   onPhoneNumberSubmit,
   onPhoneNumberChange,
   onCancelMobileAuthentication,
+  onAuthenticateWithIdCard,
   phoneNumber,
   controlCode,
   loadingControlCode,
@@ -35,6 +36,7 @@ export const LoginPage = ({
                   onPhoneNumberSubmit={onPhoneNumberSubmit}
                   onPhoneNumberChange={onPhoneNumberChange}
                   phoneNumber={phoneNumber}
+                  onAuthenticateWithIdCard={onAuthenticateWithIdCard}
                 /> : ''
             }
             {
@@ -66,6 +68,7 @@ LoginPage.defaultProps = {
   onPhoneNumberChange: noop,
   onPhoneNumberSubmit: noop,
   onCancelMobileAuthentication: noop,
+  onAuthenticateWithIdCard: noop,
 
   phoneNumber: '',
   controlCode: '',
@@ -78,6 +81,7 @@ LoginPage.propTypes = {
   onPhoneNumberChange: Types.func,
   onPhoneNumberSubmit: Types.func,
   onCancelMobileAuthentication: Types.func,
+  onAuthenticateWithIdCard: Types.func,
 
   phoneNumber: Types.string,
   controlCode: Types.string,
@@ -96,6 +100,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   onPhoneNumberChange: changePhoneNumber,
   onPhoneNumberSubmit: authenticateWithPhoneNumber,
   onCancelMobileAuthentication: cancelMobileAuthentication,
+  onAuthenticateWithIdCard: authenticateWithIdCard,
 }, dispatch);
 
 const withRedux = connect(mapStateToProps, mapDispatchToProps);

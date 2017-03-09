@@ -24,6 +24,7 @@ describe('Login page', () => {
       phoneNumber: 'number',
       onPhoneNumberChange: jest.fn(),
       onPhoneNumberSubmit: jest.fn(),
+      onAuthenticateWithIdCard: jest.fn(),
     };
     component.setProps(formProps);
     expect(component.contains(<LoginForm {...formProps} />)).toBe(true);
