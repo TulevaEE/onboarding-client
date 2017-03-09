@@ -1,4 +1,4 @@
-import {post, postForm, get, put} from "./http";
+import { post, postForm, get, put } from './http';
 
 const API_URL = 'https://onboarding-service.tuleva.ee';
 
