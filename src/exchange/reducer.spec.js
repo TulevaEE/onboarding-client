@@ -18,6 +18,8 @@ import {
   SIGN_MANDATE_SUCCESS,
   SIGN_MANDATE_ERROR,
   SIGN_MANDATE_CANCEL,
+
+  CHANGE_AGREEMENT_TO_TERMS,
 } from './constants';
 
 describe('Exchange reducer', () => {
@@ -95,7 +97,16 @@ describe('Exchange reducer', () => {
   it('can select a target fund for future capital contributions', () => {
     const targetFundIsin = 'AAA';
     const action = { type: SELECT_TARGET_FUND, targetFundIsin };
-    expect(exchangeReducer(undefined, action).selectedFutureContributionsFundIsin).toEqual(targetFundIsin);
+    expect(exchangeReducer(undefined, action).selectedFutureContributionsFundIsin)
+      .toEqual(targetFundIsin);
+  });
+
+  it('can change the agreement to the terms of use', () => {
+    [true, false].forEach(agreement => (
+      expect(exchangeReducer(undefined, {
+        type: CHANGE_AGREEMENT_TO_TERMS,
+        agreement,
+      }).agreedToTerms).toEqual(agreement)));
   });
 
   it('starts loading mandate when starting to sign mandate', () => {

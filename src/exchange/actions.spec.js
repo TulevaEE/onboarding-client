@@ -153,7 +153,7 @@ describe('Exchange actions', () => {
       .then(() => expect(dispatch).toHaveBeenCalledWith({ type: GET_TARGET_FUNDS_ERROR, error }));
   });
 
-  it('', () => {
+  it('can change agreement to terms', () => {
     [true, false].forEach(agreement =>
       expect(actions.changeAgreementToTerms(agreement)).toEqual({
         type: CHANGE_AGREEMENT_TO_TERMS,

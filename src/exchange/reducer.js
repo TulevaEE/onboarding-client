@@ -11,6 +11,8 @@ import {
 
   SELECT_TARGET_FUND,
 
+  CHANGE_AGREEMENT_TO_TERMS,
+
   // NOTE: maybe we should move this state to a separate mandate reducer?
   SIGN_MANDATE_START,
   SIGN_MANDATE_START_SUCCESS,
@@ -34,6 +36,7 @@ const initialState = {
   mandateSigningControlCode: null,
   mandateSigningSuccessful: false,
   mandateSigningError: null,
+  agreedToTerms: false,
 };
 
 function createFullDefaultSourceSelection({ sourceFunds, targetFunds }) {
@@ -116,6 +119,12 @@ export default function exchangeReducer(state = initialState, action) {
         loadingMandate: false,
         mandateSigningControlCode: null,
         mandateSigningSuccessful: false,
+      };
+
+    case CHANGE_AGREEMENT_TO_TERMS:
+      return {
+        ...state,
+        agreedToTerms: action.agreement,
       };
 
     default:
