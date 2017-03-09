@@ -22,8 +22,4 @@ const MandateNotFilledAlert = () => (
   </div>
 );
 
-MandateNotFilledAlert.defaultProps = {};
-
-MandateNotFilledAlert.propTypes = {};
-
 export default MandateNotFilledAlert;
