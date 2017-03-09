@@ -135,7 +135,6 @@ export const ConfirmMandate = ({
           </span>
         </label>
       </div>
-      {/* TODO: */}
       <div className="mt-5">
         <button
           className="btn btn-primary mr-2"
