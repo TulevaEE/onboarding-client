@@ -40,6 +40,12 @@ describe('Fund row', () => {
     ).toBe(1);
   });
 
+  it('adds a star to the name of an active fund row', () => {
+    expect(component.text()).not.toContain('*');
+    component.setProps({ active: true });
+    expect(component.text()).toContain('*');
+  });
+
   it('renders the formatted value of a fund, highlighted if component is highlighted', () => {
     component.setProps({ price: 1234.56, currency: 'EUR', highlighted: true });
     expect(component.text()).toContain('formatted(1234.56, EUR)');
