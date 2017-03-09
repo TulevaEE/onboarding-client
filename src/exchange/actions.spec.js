@@ -19,6 +19,8 @@ import {
   SIGN_MANDATE_SUCCESS,
   SIGN_MANDATE_ERROR,
   SIGN_MANDATE_CANCEL,
+
+  CHANGE_AGREEMENT_TO_TERMS,
 } from './constants';
 
 jest.useFakeTimers();
@@ -149,6 +151,14 @@ describe('Exchange actions', () => {
     expect(dispatch).not.toHaveBeenCalled();
     return getTargetFunds()
       .then(() => expect(dispatch).toHaveBeenCalledWith({ type: GET_TARGET_FUNDS_ERROR, error }));
+  });
+
+  it('', () => {
+    [true, false].forEach(agreement =>
+      expect(actions.changeAgreementToTerms(agreement)).toEqual({
+        type: CHANGE_AGREEMENT_TO_TERMS,
+        agreement,
+      }));
   });
 
   it('can select future contributions fund fund', () => {
