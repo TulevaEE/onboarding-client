@@ -28,6 +28,12 @@ export function getToken() {
     });
 }
 
+export function downloadMandateWithIdAndToken(id, token) {
+  return get(getEndpoint(`/v1/mandates/${id}/file`), undefined, {
+    Authorization: `Bearer ${token}`,
+  });
+}
+
 export function getUserWithToken(token) {
   return get(getEndpoint('/v1/me'), undefined, { Authorization: `Bearer ${token}` });
 }

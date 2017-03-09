@@ -97,4 +97,14 @@ describe('api', () => {
         });
       });
   });
+
+  it('can download a mandate', () => {
+    mockHttp.get = jest.fn(() => Promise.resolve());
+    const mandateId = '123';
+    const token = 'a token';
+    return api.downloadMandateWithIdAndToken(mandateId, token)
+      .then(() => expect(mockHttp.get).toHaveBeenCalledWith('/v1/mandates/123/file', undefined, {
+        Authorization: `Bearer ${token}`,
+      }));
+  });
 });
