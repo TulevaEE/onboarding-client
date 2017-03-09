@@ -1,9 +1,24 @@
 import React from 'react';
-// import { Message } from 'retranslate';
+import { Link } from 'react-router';
+import { Message } from 'retranslate';
 
 const MandateNotFilledAlert = () => (
   <div className="col">
-    I will become the mandate not filled alert.
+    <p><Message>confirm.mandate.not.filled.understand</Message></p>
+    <p><Message>confirm.mandate.not.filled.cheapest</Message></p>
+    <p><Message>confirm.mandate.not.filled.help</Message></p>
+    <ul>
+      <li>
+        <Link to="/steps/select-sources">
+          <Message>confirm.mandate.not.filled.look.again</Message>
+        </Link>
+      </li>
+      <li>
+        <Link to="/account">
+          <Message>confirm.mandate.not.filled.thinking</Message>
+        </Link>
+      </li>
+    </ul>
   </div>
 );
 
