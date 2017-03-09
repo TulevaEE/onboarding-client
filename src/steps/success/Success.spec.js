@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Message } from 'retranslate';
 
-import Success from './Success';
+import { Success } from './Success';
 
 describe('Success step', () => {
   let component;
