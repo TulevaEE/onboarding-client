@@ -26,7 +26,7 @@ describe('Success step', () => {
   });
 
   it('show message for future contributions only', () => {
-    component.setProps({ selectedFutureContributionsFundIsin: 'AAAA' });
+    component.setProps({ userContributingFuturePayments: true });
     expect(component.contains(<Message>success.your.payments</Message>)).toBe(true);
     expect(component.contains(<Message>success.your.payments.next.payment</Message>)).toBe(true);
     expect(component.contains(<Message>success.shares.switched</Message>)).not.toBe(true);
@@ -34,7 +34,7 @@ describe('Success step', () => {
   });
 
   it('show message for switched funds only', () => {
-    component.setProps({ sourceSelection: [{isin: "BBBB"}] });
+    component.setProps({ userHasTransferredFunds: true });
     expect(component.contains(<Message>success.shares.switched</Message>)).toBe(true);
     expect(component.contains(<Message>success.shares.switched.when</Message>)).toBe(true);
     expect(component.contains(<Message>success.your.payments</Message>)).not.toBe(true);
@@ -42,7 +42,7 @@ describe('Success step', () => {
   });
 
   it('show message both future contributions and switched funds', () => {
-    component.setProps({ selectedFutureContributionsFundIsin: 'AAAA', sourceSelection: [{isin: "BBBB"}] });
+    component.setProps({ userContributingFuturePayments: true, userHasTransferredFunds: true });
     expect(component.contains(<Message>success.your.payments</Message>)).toBe(true);
     expect(component.contains(<Message>success.your.payments.next.payment</Message>)).toBe(true);
     expect(component.contains(<Message>success.shares.switched</Message>)).toBe(true);

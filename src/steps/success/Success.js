@@ -9,8 +9,8 @@ import successImage from './success.svg';
 import './Success.scss';
 
 export const Success = ({
-  selectedFutureContributionsFundIsin,
-  sourceSelection,
+  userContributingFuturePayments,
+  userHasTransferredFunds,
   onDownloadMandate,
 }) => (
   <div className="row">
@@ -24,17 +24,17 @@ export const Success = ({
           <Message>success.download.mandate</Message>
         </button>
         {
-          selectedFutureContributionsFundIsin ? (
+          userContributingFuturePayments ? (
             <p className="mt-4">
               <Message>success.your.payments</Message>
-              <b alt={selectedFutureContributionsFundIsin}>
+              <b>
                 <Message>success.your.payments.next.payment</Message>
               </b>.
             </p>
           ) : ''
         }
         {
-          sourceSelection ? (
+          userHasTransferredFunds ? (
             <p>
               <Message>success.shares.switched</Message>
               <b><Message>success.shares.switched.when</Message></b>.
@@ -55,20 +55,20 @@ export const Success = ({
 const noop = () => null;
 
 Success.defaultProps = {
-  selectedFutureContributionsFundIsin: null,
-  sourceSelection: null,
+  userContributingFuturePayments: null,
+  userHasTransferredFunds: null,
   onDownloadMandate: noop,
 };
 
 Success.propTypes = {
-  selectedFutureContributionsFundIsin: Types.string,
-  sourceSelection: Types.arrayOf(Types.shape({})),
+  userContributingFuturePayments: Types.bool,
+  userHasTransferredFunds: Types.bool,
   onDownloadMandate: Types.func,
 };
 
 const mapStateToProps = state => ({
-  selectedFutureContributionsFundIsin: state.exchange.selectedFutureContributionsFundIsin,
-  sourceSelection: state.exchange.sourceSelection,
+  userContributingFuturePayments: !!state.exchange.selectedFutureContributionsFundIsin,
+  userHasTransferredFunds: !!state.exchange.sourceSelection,
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
   onDownloadMandate: downloadMandate,
