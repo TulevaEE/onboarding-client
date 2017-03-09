@@ -1,4 +1,4 @@
-import { post, postForm, get, put } from './http';
+import { post, postForm, get, put, downloadFile } from './http';
 
 const API_URL = 'https://onboarding-service.tuleva.ee';
 
@@ -29,7 +29,7 @@ export function getToken() {
 }
 
 export function downloadMandateWithIdAndToken(id, token) {
-  return get(getEndpoint(`/v1/mandates/${id}/file`), undefined, {
+  return downloadFile(getEndpoint(`/v1/mandates/${id}/file`), {
     Authorization: `Bearer ${token}`,
   });
 }
