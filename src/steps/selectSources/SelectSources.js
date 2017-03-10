@@ -9,6 +9,7 @@ import { Loader, Radio } from '../../common';
 import PensionFundTable from './pensionFundTable';
 import TargetFundSelector from './targetFundSelector';
 import ExactFundSelector from './exactFundSelector';
+import CalculatorLauncher from './calculatorLauncher';
 
 function selectAllWithTarget(sourceFunds, targetFund) {
   return sourceFunds.map(fund => ({
@@ -37,7 +38,14 @@ export const SelectSources = ({
     <div>
       <div className="px-col mb-4">
         <p className="mb-4 mt-5 lead"><Message>select.sources.current.status</Message></p>
-        <PensionFundTable funds={sourceFunds} />
+        <div className="row">
+          <div className="col-lg-8">
+            <PensionFundTable funds={sourceFunds} />
+          </div>
+          <div className="col-lg-3 offset-1">
+            <CalculatorLauncher />
+          </div>
+        </div>
       </div>
       <Radio
         name="tv-select-sources-type"
