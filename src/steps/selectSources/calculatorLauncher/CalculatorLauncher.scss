@@ -1,0 +1,9 @@
+.tv-calc-launcher {
+  position: relative;
+
+  &__close {
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+}
