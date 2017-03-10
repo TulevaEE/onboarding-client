@@ -148,7 +148,7 @@ describe('api', () => {
             isin: 'AA123123123124',
             managementFeeRate: 1,
             activeFund: true,
-            value: 200,
+            price: 200,
             currency: 'GBP',
           },
         ]);
