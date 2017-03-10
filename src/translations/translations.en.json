@@ -64,6 +64,7 @@
   "transfer.future.capital.AE123232334.fund": "Tuleva maailma aktsiate pensionifond",
   "transfer.future.capital.AE123232335.fund": "Tuleva maailma võlakirjade pensionifond",
   "transfer.future.capital.no": "Skip this step",
+  "transfer.future.capital.no.subtitle": "Your pension fund contributions will continue to be directed into  {{currentFundName}} pension fund, with a management fee of {{currentFundManagementFee}}% per year. If you wish to save money on fees, you can direct your contributions to Tuleva at a later date.",
   "confirm.mandate.me": "I, ",
   "confirm.mandate.idcode": " (personal ID code ",
   "confirm.mandate.change.mandate": "), authorize Commercial Association Tuleva:",
