@@ -32,7 +32,6 @@ if (process.env.NODE_ENV === 'production') {
       environment: process.env.NODE_ENV,
     })
     .install();
-  Raven.captureMessage('test event');
 }
 
 const rootReducer = combineReducers({
