@@ -55,7 +55,7 @@ export const TransferFutureCapital = ({
           <Message>transfer.future.capital.no</Message>
         </p>
         {
-          (!selectedFutureContributionsFundIsin && activeSourceFund) ?
+          !selectedFutureContributionsFundIsin && activeSourceFund ?
           (<p className="mb-0 mt-2">
             <Message
               params={{

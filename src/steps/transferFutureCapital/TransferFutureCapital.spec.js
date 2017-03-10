@@ -59,7 +59,7 @@ describe('Transfer future capital step', () => {
       .get(0)).toEqual(<Message>transfer.future.capital.no</Message>);
   });
 
-  it('can chose where you want to transfer future capital', () => {
+  it('can choose where you want to transfer future capital', () => {
     const targetFunds = [{ isin: 'AAA'}, { isin: 'BBB'}];
     const loadingTargetFunds = false;
     let selectedFutureContributionsFundIsin = 'AAA';
