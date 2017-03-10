@@ -20,6 +20,8 @@ import {
   SIGN_MANDATE_CANCEL,
 
   CHANGE_AGREEMENT_TO_TERMS,
+
+  TOGGLE_CALCULATOR_MODAL,
 } from './constants';
 
 describe('Exchange reducer', () => {
@@ -156,5 +158,18 @@ describe('Exchange reducer', () => {
     expect(newState.loadingMandate).toBe(false);
     expect(newState.mandateSigningControlCode).toBeFalsy();
     expect(newState.signedMandateId).toBe(null);
+  });
+
+  it('cat toggle calculator modal', () => {
+    const action = { type: TOGGLE_CALCULATOR_MODAL };
+    let newState = exchangeReducer({
+      isCalculatorModalOpen: false,
+    }, action);
+    expect(newState.isCalculatorModalOpen).toBe(true);
+
+    newState = exchangeReducer({
+      isCalculatorModalOpen: true,
+    }, action);
+    expect(newState.isCalculatorModalOpen).toBe(false);
   });
 });

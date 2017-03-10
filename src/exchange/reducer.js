@@ -20,6 +20,7 @@ import {
   SIGN_MANDATE_SUCCESS,
   SIGN_MANDATE_ERROR,
   SIGN_MANDATE_CANCEL,
+  TOGGLE_CALCULATOR_MODAL,
 } from './constants';
 
 const initialState = {
@@ -37,6 +38,8 @@ const initialState = {
   mandateSigningError: null,
   signedMandateId: false,
   agreedToTerms: false,
+
+  isCalculatorModalOpen: false,
 };
 
 function createFullDefaultSourceSelection({ sourceFunds, targetFunds }) {
@@ -126,6 +129,9 @@ export default function exchangeReducer(state = initialState, action) {
         ...state,
         agreedToTerms: action.agreement,
       };
+
+    case TOGGLE_CALCULATOR_MODAL:
+      return { ...state, isCalculatorModalOpen: !state.isCalculatorModalOpen };
 
     default:
       return state;
