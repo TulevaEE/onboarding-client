@@ -100,14 +100,6 @@ describe('api', () => {
   });
 
   it('can get existing funds and converts them with a token', () => {
-    /*
-    isin: fund.fund.isin,
-    price: fund.value,
-    activeFund: fund.activeContributions,
-    currency: fund.currency || 'EUR',
-    name: fund.fund.name,
-    managementFeeRate: fund.fund.managementFeeRate,
-     */
     const pensionFunds = [
       {
         fund: {
