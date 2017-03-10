@@ -61,7 +61,7 @@ describe('Target fund selector', () => {
     ];
     component.setProps({ targetFunds, onSelectFund });
 
-    expect(component.find('a').first().prop('href')).toEqual('https://tuleva.ee/fondid/');
-    expect(component.find('a').last().prop('href')).toEqual('https://tuleva.ee/fondid/');
+    expect(component.find('a.tv-target-fund__terms-link').at(0).prop('href')).toEqual('https://tuleva.ee/fondid/');
+    expect(component.find('a.tv-target-fund__terms-link').at(1).prop('href')).toEqual('https://tuleva.ee/fondid/');
   });
 });

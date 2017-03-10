@@ -37,7 +37,7 @@ const TargetFundSelector = ({ targetFunds, onSelectFund, selectedTargetFundIsin 
               <div className="mb-2">
                 <Message>{`target.funds.${fund.isin}.description`}</Message>
               </div>
-              <a href="https://tuleva.ee/fondid/" target="_blank" rel="noopener noreferrer">
+              <a className="tv-target-fund__terms-link" href="https://tuleva.ee/fondid/" target="_blank" rel="noopener noreferrer">
                 <Message>target.funds.terms</Message>
               </a>
             </small>
