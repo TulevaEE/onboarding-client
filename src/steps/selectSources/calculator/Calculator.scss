@@ -1,0 +1,46 @@
+.tv-calculator {
+
+  &__close-button {
+
+  }
+
+  &__input-row {
+    background-color: #fcf492;
+    border-radius: 8px;
+  }
+
+  &__underline {
+    border-bottom: 1px solid lightgray;
+  }
+
+  &__input {
+    max-width: 150px;
+  }
+
+  &__details-block {
+    font-size: 0.9rem;
+  }
+
+  &__details-row {
+    background-color: #fefbda;
+  }
+
+  &__num {
+    font-size: 2rem;
+    font-weight: 600;
+  }
+  
+  &__red {
+    color: #f72f00;
+  }
+
+  &__green {
+    color: #12cd3e;
+  }
+}
+
+.calculator-modal {
+  .modal-xlg {
+    max-width: 960px;
+  }
+}
