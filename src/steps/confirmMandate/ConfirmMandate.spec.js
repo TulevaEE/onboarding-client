@@ -21,14 +21,10 @@ describe('Confirm mandate step', () => {
     const expectComponentNotToBeLoader = () =>
       expect(component.at(0).node).not.toEqual(<Loader className="align-middle" />);
 
-    component.setProps({ loadingUser: true });
-    expectComponentToBeLoader();
-
-    component.setProps({ loadingUser: false, exchange: { loadingSourceFunds: true } });
+    component.setProps({ exchange: { loadingSourceFunds: true } });
     expectComponentToBeLoader();
 
     component.setProps({
-      loadingUser: false,
       exchange: {
         loadingSourceFunds: false,
         loadingTargetFunds: true,
@@ -38,7 +34,6 @@ describe('Confirm mandate step', () => {
     expectComponentToBeLoader();
 
     component.setProps({
-      loadingUser: false,
       exchange: {
         loadingSourceFunds: false,
         loadingTargetFunds: false,
@@ -49,23 +44,12 @@ describe('Confirm mandate step', () => {
   });
 
   it('shows the intro to the mandate', () => {
-    const user = {
-      firstName: 'first',
-      lastName: 'last',
-      personalCode: '123456789',
-    };
     const exchange = {
       sourceSelection: [],
       selectedFutureContributionsFundIsin: 'asd',
     };
-    component.setProps({ user, exchange });
-    expect(component.contains([
-      <Message>confirm.mandate.me</Message>,
-      <b>{user.firstName} {user.lastName}</b>,
-      <Message>confirm.mandate.idcode</Message>,
-      <b>{user.personalCode}</b>,
-      <Message>confirm.mandate.change.mandate</Message>,
-    ])).toBe(true);
+    component.setProps({ exchange });
+    expect(component.contains(<Message>confirm.mandate.intro</Message>)).toBe(true);
   });
 
   it('shows the future contribution fund if one is given', () => {
@@ -76,15 +60,40 @@ describe('Confirm mandate step', () => {
     component.setProps({ exchange });
     expect(component.contains(
       <div className="mt-4">
-        <Message>confirm.mandate.transfer.pension</Message>
+        <Message>confirm.mandate.future.contribution</Message>
         <b className="highlight">
           <Message>{`target.funds.${exchange.selectedFutureContributionsFundIsin}.title.into`}</Message>
-        </b>.
+        </b>
+        {''}
       </div>,
     )).toBe(true);
     exchange.selectedFutureContributionsFundIsin = null;
     component.setProps({ exchange });
-    expect(component.contains(<Message>confirm.mandate.transfer.pension</Message>)).toBe(false);
+    expect(component.contains(<Message>confirm.mandate.future.contribution</Message>)).toBe(false);
+  });
+
+  it('shows "and" between the two mandate parts if there are source selections', () => {
+    const exchange = {
+      selectedFutureContributionsFundIsin: 'test isin',
+      sourceSelection: [
+        { sourceFundIsin: 'a', targetFundIsin: 'b', percentage: 1 },
+      ],
+      sourceFunds: [{ isin: 'a', name: 'source' }],
+      targetFunds: [{ isin: 'b', name: 'target' }],
+    };
+    component.setProps({ exchange });
+    expect(component.contains(
+      <div className="mt-4">
+        <Message>confirm.mandate.future.contribution</Message>
+        <b className="highlight">
+          <Message>{`target.funds.${exchange.selectedFutureContributionsFundIsin}.title.into`}</Message>
+        </b>
+        <Message>confirm.mandate.and</Message>
+      </div>,
+    )).toBe(true);
+    exchange.selectedFutureContributionsFundIsin = null;
+    component.setProps({ exchange });
+    expect(component.contains(<Message>confirm.mandate.future.contribution</Message>)).toBe(false);
   });
 
   it('has a link to the previous step', () => {

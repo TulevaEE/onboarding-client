@@ -58,14 +58,12 @@ function aggregateSelections(selections) {
 }
 
 export const ConfirmMandate = ({
-  user,
-  loadingUser,
   exchange,
   onSignMandate,
   onCancelSigningMandate,
   onChangeAgreementToTerms,
 }) => {
-  if (loadingUser || exchange.loadingSourceFunds || exchange.loadingTargetFunds) {
+  if (exchange.loadingSourceFunds || exchange.loadingTargetFunds) {
     return <Loader className="align-middle" />;
   }
   const aggregatedSelections = aggregateSelections(exchange.sourceSelection);
@@ -92,18 +90,21 @@ export const ConfirmMandate = ({
             overlayed
           /> : ''
       }
-      <Message>confirm.mandate.me</Message><b>{user.firstName} {user.lastName}</b>
-      <Message>confirm.mandate.idcode</Message><b>{user.personalCode}</b>
-      <Message>confirm.mandate.change.mandate</Message>
+      <Message>confirm.mandate.intro</Message>
       {
         exchange.selectedFutureContributionsFundIsin ? (
           <div className="mt-4">
-            <Message>confirm.mandate.transfer.pension</Message>
+            <Message>confirm.mandate.future.contribution</Message>
             <b className="highlight">
               <Message>
                 {`target.funds.${exchange.selectedFutureContributionsFundIsin}.title.into`}
               </Message>
-            </b>.
+            </b>
+            {
+              aggregatedSelections.length ? (
+                <Message>confirm.mandate.and</Message>
+              ) : ''
+            }
           </div>
         ) : ''
       }
@@ -169,8 +170,6 @@ ConfirmMandate.defaultProps = {
 };
 
 ConfirmMandate.propTypes = {
-  user: Types.shape({}),
-  loadingUser: Types.bool,
   exchange: Types.shape({
     loadingSourceFunds: Types.bool,
     loadingTargetFunds: Types.bool,
@@ -184,8 +183,6 @@ ConfirmMandate.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  user: state.login.user || {},
-  loadingUser: state.login.loadingUser,
   exchange: state.exchange,
 });
 
