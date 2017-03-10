@@ -13,7 +13,7 @@ import {
 } from '../../exchange/actions';
 
 import MandateNotFilledAlert from './mandateNotFilledAlert';
-import FundTransferMandate from './fundTransferMandate';
+import FundTransferTable from './fundTransferTable';
 import './ConfirmMandate.scss';
 
 function joinDuplicateSelections(selections) {
@@ -57,18 +57,26 @@ function aggregateSelections(selections) {
   return normalizeAndGetSelections(routes);
 }
 
+function attachNames(selections, sourceFunds) {
+  return selections.map(selection => ({
+    ...selection,
+    sourceFundName: utils.findWhere(sourceFunds, ({ isin }) => (
+      isin === selection.sourceFundIsin
+    )).name,
+  }));
+}
+
 export const ConfirmMandate = ({
-  user,
-  loadingUser,
   exchange,
   onSignMandate,
   onCancelSigningMandate,
   onChangeAgreementToTerms,
 }) => {
-  if (loadingUser || exchange.loadingSourceFunds || exchange.loadingTargetFunds) {
+  if (exchange.loadingSourceFunds || exchange.loadingTargetFunds) {
     return <Loader className="align-middle" />;
   }
   const aggregatedSelections = aggregateSelections(exchange.sourceSelection);
+  const aggregatedSelectionsWithNames = attachNames(aggregatedSelections, exchange.sourceFunds);
   const hasFilledFlow = aggregatedSelections.length || exchange.selectedFutureContributionsFundIsin;
   if (!hasFilledFlow) {
     return <MandateNotFilledAlert />;
@@ -92,33 +100,33 @@ export const ConfirmMandate = ({
             overlayed
           /> : ''
       }
-      <Message>confirm.mandate.me</Message><b>{user.firstName} {user.lastName}</b>
-      <Message>confirm.mandate.idcode</Message><b>{user.personalCode}</b>
-      <Message>confirm.mandate.change.mandate</Message>
+      <Message>confirm.mandate.intro</Message>
       {
         exchange.selectedFutureContributionsFundIsin ? (
           <div className="mt-4">
-            <Message>confirm.mandate.transfer.pension</Message>
+            <Message>confirm.mandate.future.contribution</Message>
             <b className="highlight">
               <Message>
                 {`target.funds.${exchange.selectedFutureContributionsFundIsin}.title.into`}
               </Message>
-            </b>.
+            </b>
+            {
+              aggregatedSelections.length ? (
+                <Message>confirm.mandate.and</Message>
+              ) : ''
+            }
           </div>
         ) : ''
       }
       {
-        aggregatedSelections.map((selection, index) =>
-          <FundTransferMandate
-            selection={{
-              ...selection,
-              sourceFundName: utils.findWhere(exchange.sourceFunds, ({ isin }) => (
-                isin === selection.sourceFundIsin
-              )).name,
-            }}
-            key={index}
-          />,
-        )
+        aggregatedSelections.length ? (
+          <div className="mt-4">
+            <Message>confirm.mandate.switch.sources</Message>
+            <div className="mt-4">
+              <FundTransferTable selections={aggregatedSelectionsWithNames} />
+            </div>
+          </div>
+        ) : ''
       }
       <div className="mt-5">
         <label className="custom-control custom-checkbox" htmlFor="agree-to-terms-checkbox">
@@ -130,9 +138,17 @@ export const ConfirmMandate = ({
             id="agree-to-terms-checkbox"
           />
           <span className="custom-control-indicator" />
-          <span className="custom-control-description">
+          <div className="custom-control-description">
             <Message>confirm.mandate.agree.to.terms</Message>
-          </span>
+            <div className="mt-2">
+              <small className="text-muted">
+                <a target="_blank" rel="noopener noreferrer" href="//www.pensionikeskus.ee/">
+                  <Message>confirm.mandate.pension.centre</Message>
+                </a>
+                <Message>confirm.mandate.view.info</Message>
+              </small>
+            </div>
+          </div>
         </label>
       </div>
       <div className="mt-5">
@@ -169,8 +185,6 @@ ConfirmMandate.defaultProps = {
 };
 
 ConfirmMandate.propTypes = {
-  user: Types.shape({}),
-  loadingUser: Types.bool,
   exchange: Types.shape({
     loadingSourceFunds: Types.bool,
     loadingTargetFunds: Types.bool,
@@ -184,8 +198,6 @@ ConfirmMandate.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  user: state.login.user || {},
-  loadingUser: state.login.loadingUser,
   exchange: state.exchange,
 });
 
