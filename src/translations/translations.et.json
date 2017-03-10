@@ -65,6 +65,7 @@
   "transfer.future.capital.AE123232334.fund": "Tuleva maailma aktsiate pensionifond",
   "transfer.future.capital.AE123232335.fund": "Tuleva maailma võlakirjade pensionifond",
   "transfer.future.capital.no": "Ei suuna makseid Tulevasse",
+  "transfer.future.capital.no.subtitle": "Sinu pensionimaksed lähevad ka edaspidi {{currentFundName}} pensionifondi, mille valitsemistasu on {{currentFundManagementFee}}% aastas. Kui soovid teenustasudelt säästa, saad oma maksed ka hiljem Tulevasse ümber suunata.",
   "confirm.mandate.me": "Mina, ",
   "confirm.mandate.idcode": " (isikukood ",
   "confirm.mandate.change.mandate": "), volitan tulundusühistu Tulevat:",
