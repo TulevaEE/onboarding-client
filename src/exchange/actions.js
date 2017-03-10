@@ -30,6 +30,8 @@ import {
   SIGN_MANDATE_CANCEL,
 
   CHANGE_AGREEMENT_TO_TERMS,
+
+  TOGGLE_CALCULATOR_MODAL,
 } from './constants';
 
 const POLL_DELAY = 1000;
@@ -129,4 +131,8 @@ export function cancelSigningMandate() {
     clearTimeout(timeout);
   }
   return { type: SIGN_MANDATE_CANCEL };
+}
+
+export function toggleCalculatorModal() {
+  return { type: TOGGLE_CALCULATOR_MODAL };
 }

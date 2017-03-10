@@ -21,6 +21,8 @@ import {
   SIGN_MANDATE_CANCEL,
 
   CHANGE_AGREEMENT_TO_TERMS,
+
+  TOGGLE_CALCULATOR_MODAL,
 } from './constants';
 
 jest.useFakeTimers();
@@ -294,6 +296,12 @@ describe('Exchange actions', () => {
   it('can cancel signing the mandate', () => {
     expect(actions.cancelSigningMandate()).toEqual({
       type: SIGN_MANDATE_CANCEL,
+    });
+  });
+
+  it('can toggle calculator modal', () => {
+    expect(actions.toggleCalculatorModal()).toEqual({
+      type: TOGGLE_CALCULATOR_MODAL,
     });
   });
 });
