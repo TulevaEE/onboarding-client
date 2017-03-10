@@ -41,6 +41,8 @@
   "select.sources.select.some.percentage": "Osakaal",
   "select.sources.select.some.target": "Tuleva fond",
   "select.sources.select.none": "Ei too osakuid üle",
+  "select.sources.calc.launcher.title": "Tulevaga säästad teenustasudelt tuhandeid eurosid.",
+  "select.sources.calc.launcher.button": "Vaata lähemalt",
   "select.sources.select.none.subtitle": "Sinu olemasolevad osakud jäävad praegu vanasse fondi. Kui tahad teenustasudelt kokku hoida ja ka olemasolevad osakud üle tuua, saad seda hiljem teha. Järgmise sammuga aitame sul üle tuua tulevased maksed.",
   "target.funds.AE123232334.title": "Tuleva maailma aktsiate pensionifond",
   "target.funds.AE123232334.title.into": "Tuleva maailma aktsiate pensionifondi",
