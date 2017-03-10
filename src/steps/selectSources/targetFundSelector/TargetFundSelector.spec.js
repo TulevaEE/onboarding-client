@@ -63,6 +63,5 @@ describe('Target fund selector', () => {
 
     expect(component.find('a').first().prop('href')).toEqual('https://tuleva.ee/fondid/');
     expect(component.find('a').last().prop('href')).toEqual('https://tuleva.ee/fondid/');
-
   });
 });
