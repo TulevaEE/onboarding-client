@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Message } from 'retranslate';
 import { Link } from 'react-router';
 
-import { Radio, Loader, InfoTooltip } from '../../common';
+import { Radio, Loader, InfoTooltip, utils } from '../../common';
 import TargetFundTooltipBody from './targetFundTooltipBody';
 import { selectFutureContributionsFund } from '../../exchange/actions';
 
@@ -13,6 +13,7 @@ export const TransferFutureCapital = ({
   onSelectFutureCapitalFund,
   targetFunds,
   loadingTargetFunds,
+  activeSourceFund,
 }) => {
   if (loadingTargetFunds) {
     return <Loader className="align-middle" />;
@@ -50,7 +51,22 @@ export const TransferFutureCapital = ({
         className="mt-4"
         onSelect={() => onSelectFutureCapitalFund(null)}
       >
-        <p className="m-0"><Message>transfer.future.capital.no</Message></p>
+        <p className={`m-0 ${!selectedFutureContributionsFundIsin ? 'text-bold' : ''}`}>
+          <Message>transfer.future.capital.no</Message>
+        </p>
+        {
+          !selectedFutureContributionsFundIsin && activeSourceFund ?
+          (<p className="mb-0 mt-2">
+            <Message
+              params={{
+                currentFundName: activeSourceFund.name,
+                currentFundManagementFee: activeSourceFund.managementFeeRate,
+              }}
+            >
+              transfer.future.capital.no.subtitle
+            </Message>
+          </p>) : ''
+        }
       </Radio>
       <div className="px-col mt-5">
         <Link className="btn btn-primary mr-2" to="/steps/confirm-mandate">
@@ -71,6 +87,7 @@ TransferFutureCapital.defaultProps = {
   onSelectFutureCapitalFund: noop,
   targetFunds: [],
   loadingTargetFunds: false,
+  activeSourceFund: null,
 };
 
 TransferFutureCapital.propTypes = {
@@ -78,12 +95,15 @@ TransferFutureCapital.propTypes = {
   onSelectFutureCapitalFund: Types.func,
   targetFunds: Types.arrayOf(Types.shape({})),
   loadingTargetFunds: Types.bool,
+  activeSourceFund: Types.shape({}),
 };
 
 const mapStateToProps = state => ({
   selectedFutureContributionsFundIsin: state.exchange.selectedFutureContributionsFundIsin,
   targetFunds: state.exchange.targetFunds,
   loadingTargetFunds: state.exchange.loadingTargetFunds,
+  activeSourceFund: utils.findWhere(state.exchange.sourceFunds || [],
+    element => element.activeFund),
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({

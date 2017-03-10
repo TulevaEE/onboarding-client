@@ -94,7 +94,7 @@ describe('Exchange actions', () => {
       return getSourceFunds()
         .then(() => {
           expect(dispatch).toHaveBeenCalledTimes(1);
-          expect(dispatch).toHaveBeenCalledWith(push('/'));
+          expect(dispatch).toHaveBeenCalledWith(push('/account'));
           expect(dispatch).not.toHaveBeenCalledWith({
             type: GET_SOURCE_FUNDS_SUCCESS,
             sourceFunds,

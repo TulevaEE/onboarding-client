@@ -59,7 +59,7 @@ describe('Transfer future capital step', () => {
       .get(0)).toEqual(<Message>transfer.future.capital.no</Message>);
   });
 
-  it('can where you want to transfer future capital', () => {
+  it('can choose where you want to transfer future capital', () => {
     const targetFunds = [{ isin: 'AAA'}, { isin: 'BBB'}];
     const loadingTargetFunds = false;
     let selectedFutureContributionsFundIsin = 'AAA';
@@ -84,5 +84,46 @@ describe('Transfer future capital step', () => {
     expect(onSelectFutureCapitalFund).toHaveBeenCalledTimes(1);
     expect(onSelectFutureCapitalFund).toHaveBeenCalledWith('BBB');
     onSelectFutureCapitalFund.mockClear();
+  });
+
+  describe('When user selected to not transfer future contributions to Tuleva', () => {
+    it('show selected radio title in bold', () => {
+      const targetFunds = [{ isin: 'AAA'}, { isin: 'BBB'}];
+      const loadingTargetFunds = false;
+      component.setProps({ targetFunds, loadingTargetFunds, selectedFutureContributionsFundIsin: null });
+
+      const radioAtIndexSelected = index => component.find(Radio).at(index).prop('selected');
+      expect(radioAtIndexSelected(2)).toBe(true);
+
+      const noFutureConributionsTitleInBold = () => component.find(Radio).at(2).find('p').hasClass('text-bold');
+
+      expect(noFutureConributionsTitleInBold()).toBe(true);
+
+      component.setProps({ targetFunds, loadingTargetFunds, selectedFutureContributionsFundIsin: 'AAA' });
+      expect(noFutureConributionsTitleInBold()).toBe(false);
+    });
+
+    it('shows active fund note only if user has active fund', () => {
+      let activeSourceFund = { isin: 'AAA', name: 'bla', managementFeeRate: '100'};
+      const targetFunds = [{ isin: 'AAA'}, { isin: 'BBB'}];
+      const loadingTargetFunds = false;
+      const selectedFutureContributionsFundIsin = null;
+
+      const activeFundMessage = (<Message
+        params={{
+          currentFundName: activeSourceFund.name,
+          currentFundManagementFee: activeSourceFund.managementFeeRate,
+        }}
+      >
+        transfer.future.capital.no.subtitle
+      </Message>);
+
+      component.setProps({ targetFunds, loadingTargetFunds, selectedFutureContributionsFundIsin, activeSourceFund });
+      expect(component.contains(activeFundMessage)).toBe(true);
+
+      activeSourceFund = null;
+      component.setProps({ targetFunds, loadingTargetFunds, selectedFutureContributionsFundIsin, activeSourceFund });
+      expect(component.contains(activeFundMessage)).toBe(false);
+    });
   });
 });
