@@ -1,4 +1,3 @@
-import Raven from 'raven-js';
 import React from 'react';
 import { render } from 'react-dom';
 import { createStore, combineReducers, compose, applyMiddleware } from 'redux';
@@ -23,16 +22,6 @@ import Steps, {
   ConfirmMandate,
   Success,
 } from './steps';
-
-// Error tracking, public key.
-if (process.env.NODE_ENV === 'production') {
-  Raven
-    .config('https://cfcb0c4bb8cb4264942f80ca1eb78c49@sentry.io/146907', {
-      release: process.env.HEROKU_SLUG_COMMIT,
-      environment: process.env.NODE_ENV,
-    })
-    .install();
-}
 
 const rootReducer = combineReducers({
   routing: routerReducer,
