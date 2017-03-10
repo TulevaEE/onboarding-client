@@ -3,6 +3,10 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal, ModalBody } from 'reactstrap';
 import { Message } from 'retranslate';
+import Calculator from '../calculator';
+import closeButton from './close-button.svg';
+
+import './CalculatorLauncher.scss';
 
 import {
   toggleCalculatorModal,
@@ -23,10 +27,19 @@ export const CalculatorLauncher = ({
       <Message>select.sources.calc.launcher.button</Message>
     </button>
 
-    <Modal isOpen={isCalculatorModalOpen} toggle={onToggleCalculatorModal}>
+    <Modal
+      isOpen={isCalculatorModalOpen}
+      toggle={onToggleCalculatorModal} size="xlg" wrapClassName="calculator-modal"
+    >
       <ModalBody>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        <div className="tv-calc-launcher">
+          <img
+            src={closeButton}
+            alt="close"
+            className="tv-calc-launcher__close"
+          />
+          <Calculator />
+        </div>
       </ModalBody>
     </Modal>
   </div>
