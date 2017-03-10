@@ -24,7 +24,7 @@ describe('Error alert', () => {
   it('shows a call to action with a link to join tuleva when user has not joined tuleva', () => {
     component.setProps({ description: 'INVALID_USER_CREDENTIALS' });
     expect(component.contains(
-      <a href="https://tuleva.ee/#liitu">
+      <a href="//tuleva.ee/#liitu">
         <Message>login.join.tuleva</Message>
       </a>,
     )).toBe(true);

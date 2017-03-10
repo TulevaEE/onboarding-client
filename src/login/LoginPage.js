@@ -51,7 +51,7 @@ export const LoginPage = ({
               <div className="login-page__not-member">
                 <Message>login.not.member</Message>
               </div>
-              <a href="/" className="login-page__apply">
+              <a href="//tuleva.ee/#liitu" className="login-page__apply">
                 <Message>login.apply.link</Message>
               </a>
             </div>

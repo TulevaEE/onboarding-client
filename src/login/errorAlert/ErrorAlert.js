@@ -10,7 +10,7 @@ const ErrorAlert = ({ description }) => (
         description === NOT_JOINED_ERROR_DESCRIPTION ? (
           <div>
             <Message>login.error.invalid.user.credentials</Message><br />
-            <a href="https://tuleva.ee/#liitu"><Message>login.join.tuleva</Message></a>
+            <a href="//tuleva.ee/#liitu"><Message>login.join.tuleva</Message></a>
           </div>
         ) : <Message>login.error.generic</Message>
       }
