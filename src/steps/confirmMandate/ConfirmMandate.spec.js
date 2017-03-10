@@ -4,7 +4,7 @@ import { Message } from 'retranslate';
 import { Link } from 'react-router';
 
 import { ConfirmMandate } from './ConfirmMandate';
-import FundTransferMandate from './fundTransferMandate';
+import FundTransferTable from './fundTransferTable';
 import MandateNotFilledAlert from './mandateNotFilledAlert';
 import { Loader, AuthenticationLoader } from '../../common';
 
@@ -110,24 +110,78 @@ describe('Confirm mandate step', () => {
     )).toBe(true);
   });
 
-  it('renders a fund transfer mandate for every fund exchanged', () => {
+  it('does not show the funds table if you are not transferring funds', () => {
     const sourceSelection = [
       { percentage: 0, sourceFundIsin: 'source 1', targetFundIsin: 'target 2' },
+    ];
+    component.setProps({ exchange: { sourceSelection } });
+    expect(component.contains(<Message>confirm.mandate.switch.sources</Message>)).toBe(false);
+    expect(!!component.find(FundTransferTable).length).toBe(false);
+  });
+
+  it('shows the funds you are transferring', () => {
+    const sourceSelection = [
+
       { percentage: 0.5, sourceFundIsin: 'source 1', targetFundIsin: 'target 1' },
       { percentage: 1, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
     ];
     const sourceFunds = [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }];
     component.setProps({ exchange: { sourceSelection, sourceFunds } });
+    expect(component.find(FundTransferTable).prop('selections')).toEqual([
+      {
+        percentage: 0.5,
+        sourceFundIsin: 'source 1',
+        targetFundIsin: 'target 1',
+        sourceFundName: 'a',
+      },
+      {
+        percentage: 1,
+        sourceFundIsin: 'source 2',
+        targetFundIsin: 'target 2',
+        sourceFundName: 'b',
+      },
+    ]);
+    expect(component.contains(<Message>confirm.mandate.switch.sources</Message>)).toBe(true);
+  });
 
-    expect(component.contains(
-      <FundTransferMandate selection={{ ...sourceSelection[1], sourceFundName: 'a' }} />,
-    )).toBe(true);
-    expect(component.contains(
-      <FundTransferMandate selection={{ ...sourceSelection[2], sourceFundName: 'b' }} />,
-    )).toBe(true);
-    expect(component.contains(
-      <FundTransferMandate selection={{ ...sourceSelection[0], sourceFundName: 'a' }} />,
-    )).toBe(false); // first is 0 percent, so should not be rendered
+  it('aggregates selections for showing funds', () => {
+    const exchange = {
+      sourceSelection: [
+        // these two are joined
+        { percentage: 0.1, sourceFundIsin: 'source 1', targetFundIsin: 'target 1' },
+        { percentage: 1, sourceFundIsin: 'source 1', targetFundIsin: 'target 1' },
+
+        // these are joined
+        { percentage: 0.2, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
+        { percentage: 0.3, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
+        { percentage: 0.4, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
+
+        // separate
+        { percentage: 0.4, sourceFundIsin: 'source 1', targetFundIsin: 'target 2' },
+      ],
+      sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
+    };
+    component.setProps({ exchange });
+    expect(component.find(FundTransferTable).prop('selections')).toEqual([
+      {
+        percentage: 1,
+        sourceFundIsin: 'source 1',
+        targetFundIsin: 'target 1',
+        sourceFundName: 'a',
+      },
+      {
+        percentage: 0.4,
+        sourceFundIsin: 'source 1',
+        targetFundIsin: 'target 2',
+        sourceFundName: 'a',
+      },
+      {
+        percentage: 0.9,
+        sourceFundIsin: 'source 2',
+        targetFundIsin: 'target 2',
+        sourceFundName: 'b',
+      },
+    ]);
   });
 
   it('renders an overlayed authentication loader when you are signing the mandate', () => {
@@ -200,47 +254,6 @@ describe('Confirm mandate step', () => {
       ],
       futureContributionFundIsin: 'target 1',
     });
-  });
-
-  it('aggregates selections for showing funds', () => {
-    const exchange = {
-      sourceSelection: [
-        // these two are joined
-        { percentage: 0.1, sourceFundIsin: 'source 1', targetFundIsin: 'target 1' },
-        { percentage: 1, sourceFundIsin: 'source 1', targetFundIsin: 'target 1' },
-
-        // these are joined
-        { percentage: 0.2, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
-        { percentage: 0.3, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
-        { percentage: 0.4, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
-
-        // separate
-        { percentage: 0.4, sourceFundIsin: 'source 1', targetFundIsin: 'target 2' },
-      ],
-      sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
-    };
-    component.setProps({ exchange });
-    const firstExpectedSelection = {
-      sourceFundName: 'a',
-      percentage: 1,
-      sourceFundIsin: 'source 1',
-      targetFundIsin: 'target 1',
-    };
-    const secondExpectedSelection = {
-      sourceFundName: 'b',
-      percentage: 0.9,
-      sourceFundIsin: 'source 2',
-      targetFundIsin: 'target 2',
-    };
-    const thirdExpectedSelection = {
-      sourceFundName: 'a',
-      percentage: 0.4,
-      sourceFundIsin: 'source 1',
-      targetFundIsin: 'target 2',
-    };
-    [firstExpectedSelection, secondExpectedSelection, thirdExpectedSelection]
-      .forEach(selection =>
-        expect(component.contains(<FundTransferMandate selection={selection} />)).toBe(true));
   });
 
   it('can start signing the mandate with a future capital fund', () => {

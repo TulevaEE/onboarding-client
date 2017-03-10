@@ -13,7 +13,7 @@ import {
 } from '../../exchange/actions';
 
 import MandateNotFilledAlert from './mandateNotFilledAlert';
-import FundTransferMandate from './fundTransferMandate';
+import FundTransferTable from './fundTransferTable';
 import './ConfirmMandate.scss';
 
 function joinDuplicateSelections(selections) {
@@ -57,6 +57,15 @@ function aggregateSelections(selections) {
   return normalizeAndGetSelections(routes);
 }
 
+function attachNames(selections, sourceFunds) {
+  return selections.map(selection => ({
+    ...selection,
+    sourceFundName: utils.findWhere(sourceFunds, ({ isin }) => (
+      isin === selection.sourceFundIsin
+    )).name,
+  }));
+}
+
 export const ConfirmMandate = ({
   exchange,
   onSignMandate,
@@ -67,6 +76,7 @@ export const ConfirmMandate = ({
     return <Loader className="align-middle" />;
   }
   const aggregatedSelections = aggregateSelections(exchange.sourceSelection);
+  const aggregatedSelectionsWithNames = attachNames(aggregatedSelections, exchange.sourceFunds);
   const hasFilledFlow = aggregatedSelections.length || exchange.selectedFutureContributionsFundIsin;
   if (!hasFilledFlow) {
     return <MandateNotFilledAlert />;
@@ -109,17 +119,14 @@ export const ConfirmMandate = ({
         ) : ''
       }
       {
-        aggregatedSelections.map((selection, index) =>
-          <FundTransferMandate
-            selection={{
-              ...selection,
-              sourceFundName: utils.findWhere(exchange.sourceFunds, ({ isin }) => (
-                isin === selection.sourceFundIsin
-              )).name,
-            }}
-            key={index}
-          />,
-        )
+        aggregatedSelections.length ? (
+          <div className="mt-4">
+            <Message>confirm.mandate.switch.sources</Message>
+            <div className="mt-4">
+              <FundTransferTable selections={aggregatedSelectionsWithNames} />
+            </div>
+          </div>
+        ) : ''
       }
       <div className="mt-5">
         <label className="custom-control custom-checkbox" htmlFor="agree-to-terms-checkbox">
