@@ -9,6 +9,17 @@ function getEndpoint(endpoint) {
   return endpoint;
 }
 
+function transformFundBalance(fundBalance) {
+  return {
+    isin: fundBalance.fund.isin,
+    price: fundBalance.value,
+    activeFund: fundBalance.activeContributions,
+    currency: fundBalance.currency || 'EUR',
+    name: fundBalance.fund.name,
+    managementFeeRate: fundBalance.fund.managementFeeRate,
+  };
+}
+
 export function authenticateWithPhoneNumber(phoneNumber) {
   return post(getEndpoint('/authenticate'), { phoneNumber })
     .then(({ mobileIdChallengeCode }) => mobileIdChallengeCode);
@@ -33,7 +44,6 @@ function getTokenWithClientId(clientId) {
     });
 }
 
-
 export function getMobileIdToken() {
   return getTokenWithClientId('mobile_id');
 }
@@ -55,11 +65,11 @@ export function getUserWithToken(token) {
 export function getSourceFundsWithToken(token) {
   return get(getEndpoint('/v1/pension-account-statement'), undefined, {
     Authorization: `Bearer ${token}`,
-  });
+  }).then(funds => funds.map(transformFundBalance));
 }
 
 export function getTargetFundsWithToken(token) {
-  return get(getEndpoint('/v1/available-funds'), undefined, {
+  return get(getEndpoint('/v1/funds'), { 'fundManager.name': 'Tuleva' }, {
     Authorization: `Bearer ${token}`,
   });
 }

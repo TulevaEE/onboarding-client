@@ -99,14 +99,59 @@ describe('api', () => {
       });
   });
 
-  it('can get existing funds with a token', () => {
-    const pensionFunds = [{ iAmAFund: true }];
+  it('can get existing funds and converts them with a token', () => {
+    /*
+    isin: fund.fund.isin,
+    price: fund.value,
+    activeFund: fund.activeContributions,
+    currency: fund.currency || 'EUR',
+    name: fund.fund.name,
+    managementFeeRate: fund.fund.managementFeeRate,
+     */
+    const pensionFunds = [
+      {
+        fund: {
+          name: 'name',
+          isin: 'AA123123123123',
+          managementFeeRate: 0.5,
+        },
+        activeContributions: false,
+        value: 100,
+      },
+      {
+        fund: {
+          name: 'name 2',
+          isin: 'AA123123123124',
+          managementFeeRate: 1,
+        },
+        activeContributions: true,
+        value: 200,
+        currency: 'GBP',
+      },
+    ];
     const token = 'token';
     mockHttp.get = jest.fn(() => Promise.resolve(pensionFunds));
     return api
       .getSourceFundsWithToken(token)
       .then((givenPensionFunds) => {
-        expect(givenPensionFunds).toEqual(pensionFunds);
+        expect(givenPensionFunds).toEqual([
+          {
+            name: 'name',
+            isin: 'AA123123123123',
+            managementFeeRate: 0.5,
+            activeFund: false,
+            price: 100,
+            currency: 'EUR',
+          },
+          {
+            name: 'name 2',
+            isin: 'AA123123123124',
+            managementFeeRate: 1,
+            activeFund: true,
+            value: 200,
+            currency: 'GBP',
+          },
+        ]);
         expect(mockHttp.get).toHaveBeenCalledWith('/v1/pension-account-statement', undefined, {
           Authorization: `Bearer ${token}`,
         });
@@ -121,7 +166,7 @@ describe('api', () => {
       .getTargetFundsWithToken(token)
       .then((givenTarget) => {
         expect(givenTarget).toEqual(targetFunds);
-        expect(mockHttp.get).toHaveBeenCalledWith('/v1/available-funds', undefined, {
+        expect(mockHttp.get).toHaveBeenCalledWith('/v1/funds', { 'fundManager.name': 'Tuleva' }, {
           Authorization: `Bearer ${token}`,
         });
       });
