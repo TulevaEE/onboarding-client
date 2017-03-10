@@ -3,13 +3,14 @@ import { Message } from 'retranslate';
 
 import { formatAmountForCurrency } from '../../../../common/utils';
 
-const FundRow = ({ price, currency, name, highlighted }) => {
+const FundRow = ({ price, currency, name, highlighted, active }) => {
   const displayName = <Message>{name}</Message>;
   const displayPrice = formatAmountForCurrency(price, currency);
   return (
     <div className="row tv-table__row py-2">
       <div className="col-12 col-sm">
         { highlighted ? <b>{displayName}</b> : displayName }
+        { active ? '*' : '' }
       </div>
       <div className="col-12 col-sm text-sm-right">
         { highlighted ? <b>{displayPrice}</b> : displayPrice }
@@ -28,6 +29,7 @@ FundRow.defaultProps = {
   currency: 'EUR',
   name: '',
   highlighted: false,
+  active: false,
 };
 
 FundRow.propTypes = {
@@ -35,6 +37,7 @@ FundRow.propTypes = {
   currency: Types.string,
   name: Types.oneOfType([Types.node, Types.string]),
   highlighted: Types.bool,
+  active: Types.bool,
 };
 
 export default FundRow;

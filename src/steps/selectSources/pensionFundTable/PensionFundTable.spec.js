@@ -16,10 +16,8 @@ describe('Pension fund table', () => {
     const headerFields = () => component.find('div.tv-table__header').children();
     const headerField = index => headerFields().at(index).childAt(0).get(0);
     expect(headerFields().length).toBe(2);
-    // expect(headerFields().length).toBe(3); TODO
     expect(headerField(0)).toEqual(<Message>select.sources.pension.fund</Message>);
     expect(headerField(1)).toEqual(<Message>select.sources.value</Message>);
-    // expect(headerField(2)).toEqual(<Message>select.sources.fees</Message>); TODO
   });
 
   it('renders a fund row for every fund', () => {
@@ -32,6 +30,10 @@ describe('Pension fund table', () => {
       .toEqual(<FundRow name="fund 1" key="isin 1" price={1} currency="EUR" />);
     expect(component.find(FundRow).at(1).get(0))
       .toEqual(<FundRow name="fund 2" key="isin 2" price={2} currency="EUR" />);
+  });
+
+  it('renders a tiny legend under the table', () => {
+    expect(component.contains(<Message>select.sources.active.fund</Message>)).toBe(true);
   });
 
   it('renders a fundrow for totals', () => {
