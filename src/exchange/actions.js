@@ -44,7 +44,7 @@ export function getSourceFunds() {
     return getSourceFundsWithToken(getState().login.token)
       .then((sourceFunds) => {
         if (sourceFunds.length === 0) {
-          dispatch(push('/'));
+          dispatch(push('/account'));
           return;
         }
         dispatch({ type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds });
