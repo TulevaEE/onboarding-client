@@ -1,4 +1,5 @@
 import { push } from 'react-router-redux';
+import Raven from 'raven-js';
 
 import {
   CHANGE_PHONE_NUMBER,
@@ -91,11 +92,19 @@ export function getUser() {
     dispatch({ type: GET_USER_START });
     return api
       .getUserWithToken(getState().login.token)
-      .then(user => dispatch({ type: GET_USER_SUCCESS, user }))
+      .then((user) => {
+        if (process.env.NODE_ENV === 'production') {
+          Raven.setUserContext({ id: user.id });
+        }
+        dispatch({ type: GET_USER_SUCCESS, user });
+      })
       .catch(error => dispatch({ type: GET_USER_ERROR, error }));
   };
 }
 
 export function logOut() {
+  if (process.env.NODE_ENV === 'production') {
+    Raven.setUserContext(); // unauthenticate
+  }
   return { type: LOG_OUT };
 }
