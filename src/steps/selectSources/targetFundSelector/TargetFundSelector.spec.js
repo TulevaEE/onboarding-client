@@ -52,4 +52,16 @@ describe('Target fund selector', () => {
     expect(onSelectFund).toHaveBeenCalledTimes(1);
     expect(onSelectFund).toHaveBeenCalledWith(targetFunds[2]);
   });
+
+  it('has terms links for every fund', () => {
+    const onSelectFund = jest.fn();
+    const targetFunds = [
+      { isin: '123' },
+      { isin: '456' },
+    ];
+    component.setProps({ targetFunds, onSelectFund });
+
+    expect(component.find('a.tv-target-fund__terms-link').at(0).prop('href')).toEqual('https://tuleva.ee/fondid/');
+    expect(component.find('a.tv-target-fund__terms-link').at(1).prop('href')).toEqual('https://tuleva.ee/fondid/');
+  });
 });
