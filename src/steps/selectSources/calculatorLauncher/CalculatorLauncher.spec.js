@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Message } from 'retranslate';
 
-import CalculatorLauncher from './CalculatorLauncher';
+import { CalculatorLauncher } from './CalculatorLauncher';
 
 describe('Calculator launcher', () => {
   let component;
