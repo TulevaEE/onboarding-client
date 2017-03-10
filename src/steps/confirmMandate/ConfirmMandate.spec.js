@@ -232,6 +232,31 @@ describe('Confirm mandate step', () => {
     expect(onCancelSigningMandate).toHaveBeenCalledTimes(1);
   });
 
+  it('shows what the user is agreeing to', () => {
+    component.setProps({
+      exchange: {
+        sourceSelection: [
+          { percentage: 0.1, sourceFundIsin: 'source 1', targetFundIsin: 'target 1' },
+        ],
+        sourceFunds: [{ isin: 'source 1', name: 'a' }],
+        selectedFutureContributionsFundIsin: 'asd',
+      },
+    });
+    expect(component.contains(
+      <div className="custom-control-description">
+        <Message>confirm.mandate.agree.to.terms</Message>
+        <div className="mt-2">
+          <small className="text-muted">
+            <a target="_blank" rel="noopener noreferrer" href="//www.pensionikeskus.ee/">
+              <Message>confirm.mandate.pension.centre</Message>
+            </a>
+            <Message>confirm.mandate.view.info</Message>
+          </small>
+        </div>
+      </div>,
+    )).toBe(true);
+  });
+
   it('can start signing the mandate with a future capital fund', () => {
     const onSignMandate = jest.fn();
     const exchange = {

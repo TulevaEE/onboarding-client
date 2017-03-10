@@ -138,9 +138,17 @@ export const ConfirmMandate = ({
             id="agree-to-terms-checkbox"
           />
           <span className="custom-control-indicator" />
-          <span className="custom-control-description">
+          <div className="custom-control-description">
             <Message>confirm.mandate.agree.to.terms</Message>
-          </span>
+            <div className="mt-2">
+              <small className="text-muted">
+                <a target="_blank" rel="noopener noreferrer" href="//www.pensionikeskus.ee/">
+                  <Message>confirm.mandate.pension.centre</Message>
+                </a>
+                <Message>confirm.mandate.view.info</Message>
+              </small>
+            </div>
+          </div>
         </label>
       </div>
       <div className="mt-5">
