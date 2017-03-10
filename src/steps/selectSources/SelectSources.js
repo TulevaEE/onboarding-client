@@ -19,6 +19,7 @@ function selectAllWithTarget(sourceFunds, targetFund) {
 }
 
 export const SelectSources = ({
+  recommendedFundIsin,
   loadingSourceFunds,
   loadingTargetFunds,
   sourceFunds,
@@ -57,6 +58,7 @@ export const SelectSources = ({
                 onSelectFund={
                   targetFund => onSelect(selectAllWithTarget(sourceFunds, targetFund), false)}
                 selectedTargetFundIsin={sourceSelection[0].targetFundIsin}
+                recommendedFundIsin={recommendedFundIsin}
               />
             </div>
           ) : ''
@@ -109,6 +111,7 @@ export const SelectSources = ({
 const noop = () => null;
 
 SelectSources.defaultProps = {
+  recommendedFundIsin: '',
   sourceFunds: [],
   targetFunds: [],
   loadingSourceFunds: false,
@@ -119,6 +122,7 @@ SelectSources.defaultProps = {
 };
 
 SelectSources.propTypes = {
+  recommendedFundIsin: Types.string,
   sourceSelection: Types.arrayOf(Types.shape({})),
   sourceSelectionExact: Types.bool,
   sourceFunds: Types.arrayOf(Types.shape({})),
@@ -129,6 +133,7 @@ SelectSources.propTypes = {
 };
 
 const mapStateToProps = state => ({
+  recommendedFundIsin: (state.login.user || {}).age < 55 ? 'AE0000000001' : '',
   sourceSelection: state.exchange.sourceSelection,
   sourceSelectionExact: state.exchange.sourceSelectionExact,
   sourceFunds: state.exchange.sourceFunds,

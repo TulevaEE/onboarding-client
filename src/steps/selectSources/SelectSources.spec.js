@@ -6,6 +6,7 @@ import { Message } from 'retranslate';
 import { Loader, Radio } from '../../common';
 import PensionFundTable from './pensionFundTable';
 import ExactFundSelector from './exactFundSelector';
+import TargetFundSelector from './targetFundSelector';
 import { SelectSources } from './SelectSources';
 
 describe('Select sources step', () => {
@@ -172,5 +173,16 @@ describe('Select sources step', () => {
     component.find(ExactFundSelector).simulate('change', selection);
     expect(onSelect).toHaveBeenCalledTimes(1);
     expect(onSelect).toHaveBeenCalledWith(selection, true);
+  });
+
+  it('passes the recommended fund isin forward to the target fund selector', () => {
+    const recommendedFundIsin = 'asd';
+    component.setProps({
+      sourceSelection: [{ name: 'a', percentage: 1 }],
+      sourceSelectionExact: false,
+      recommendedFundIsin,
+    });
+    expect(component.find(TargetFundSelector).prop('recommendedFundIsin'))
+      .toBe(recommendedFundIsin);
   });
 });

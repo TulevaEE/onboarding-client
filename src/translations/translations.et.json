@@ -42,6 +42,7 @@
   "select.sources.select.some.target": "Tuleva fond",
   "select.sources.select.none": "Ei too osakuid üle",
   "select.sources.select.none.subtitle": "Sinu olemasolevad osakud jäävad praegu vanasse fondi. Kui tahad teenustasudelt kokku hoida ja ka olemasolevad osakud üle tuua, saad seda hiljem teha. Järgmise sammuga aitame sul üle tuua tulevased maksed.",
+  "select.sources.select.all.recommended": "Soovitame sinu vanuse põhjal",
   "target.funds.AE0000000001.title": "Tuleva maailma aktsiate pensionifond",
   "target.funds.AE0000000001.title.into": "Tuleva maailma aktsiate pensionifondi",
   "target.funds.AE0000000001.description": "Ostad 75% ulatuses maailma suurimate börsiettevõtete aktsiaid ning 25% ulatuses valitsuste ja ettevõtete võlakirju.",

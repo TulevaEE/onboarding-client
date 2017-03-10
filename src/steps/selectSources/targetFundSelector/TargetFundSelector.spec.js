@@ -53,6 +53,26 @@ describe('Target fund selector', () => {
     expect(onSelectFund).toHaveBeenCalledWith(targetFunds[2]);
   });
 
+  it('shows that the recommended fund is recommended', () => {
+    const targetFunds = [
+      { isin: '123' },
+      { isin: '456' },
+      { isin: '789' },
+    ];
+    const recommendedFundIsin = '456';
+    component.setProps({ targetFunds, recommendedFundIsin });
+    const fundWithIndexIsRecommended = index => !!component
+      .find('button')
+      .at(index)
+      .parent()
+      .children()
+      .at(1)
+      .equals(<Message>select.sources.select.all.recommended</Message>);
+    expect(fundWithIndexIsRecommended(0)).toBe(false);
+    expect(fundWithIndexIsRecommended(1)).toBe(true);
+    expect(fundWithIndexIsRecommended(2)).toBe(false);
+  });
+
   it('has terms links for every fund', () => {
     const onSelectFund = jest.fn();
     const targetFunds = [
