@@ -66,7 +66,8 @@
     "react-tooltip": "^3.2.7",
     "redux": "^3.6.0",
     "redux-thunk": "^2.2.0",
-    "retranslate": "^0.1.2"
+    "retranslate": "^0.1.2",
+    "hwcrypto-js": "ErkoRisthein/hwcrypto.js"
   },
   "scripts": {
     "start": "NODE_ENV=production node scripts/start.js",
