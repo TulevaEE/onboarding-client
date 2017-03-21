@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import { Loader, AuthenticationLoader, utils } from '../../common';
 
 import {
-  signMandate,
+  signMandateWithMobileId,
   cancelSigningMandate,
   changeAgreementToTerms,
 } from '../../exchange/actions';
@@ -202,7 +202,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-  onSignMandate: signMandate,
+  onSignMandate: signMandateWithMobileId,
   onChangeAgreementToTerms: changeAgreementToTerms,
   onCancelSigningMandate: cancelSigningMandate,
 }, dispatch);

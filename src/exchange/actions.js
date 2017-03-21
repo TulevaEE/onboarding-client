@@ -5,8 +5,8 @@ import {
   getSourceFundsWithToken,
   getTargetFundsWithToken,
   saveMandateWithToken,
-  getMandateControlCodeForMandateIdWithToken,
-  getMandateSignatureForMandateIdWithToken,
+  getMobileIdSignatureChallengeCodeForMandateIdWithToken,
+  getMobileIdSignatureStatusForMandateIdWithToken,
   downloadMandateWithIdAndToken,
 } from '../common/api';
 import {
@@ -22,12 +22,12 @@ import {
 
   SELECT_TARGET_FUND,
 
-  SIGN_MANDATE_START,
-  SIGN_MANDATE_START_SUCCESS,
-  SIGN_MANDATE_START_ERROR,
-  SIGN_MANDATE_SUCCESS,
-  SIGN_MANDATE_ERROR,
-  SIGN_MANDATE_CANCEL,
+  SIGN_MANDATE_MOBILE_ID_START,
+  SIGN_MANDATE_MOBILE_ID_START_SUCCESS,
+  SIGN_MANDATE_MOBILE_ID_START_ERROR,
+  SIGN_MANDATE_MOBILE_ID_SUCCESS,
+  SIGN_MANDATE_MOBILE_ID_ERROR,
+  SIGN_MANDATE_MOBILE_ID_CANCEL,
 
   CHANGE_AGREEMENT_TO_TERMS,
 } from './constants';
@@ -92,35 +92,35 @@ function pollForMandateSignatureWithMandateId(id) {
       clearTimeout(timeout);
     }
     timeout = setTimeout(() => {
-      getMandateSignatureForMandateIdWithToken(id, getState().login.token)
-        .then(({ statusCode }) => {
+      getMobileIdSignatureStatusForMandateIdWithToken(id, getState().login.token)
+        .then((statusCode) => {
           if (statusCode === SIGNING_IN_PROGRESS_STATUS) {
             dispatch(pollForMandateSignatureWithMandateId(id));
           } else {
-            dispatch({ type: SIGN_MANDATE_SUCCESS, signedMandateId: id });
+            dispatch({ type: SIGN_MANDATE_MOBILE_ID_SUCCESS, signedMandateId: id });
             dispatch(push('/steps/success'));
           }
         })
-        .catch(error => dispatch({ type: SIGN_MANDATE_ERROR, error }));
+        .catch(error => dispatch({ type: SIGN_MANDATE_MOBILE_ID_ERROR, error }));
     }, POLL_DELAY);
   };
 }
 
-export function signMandate(mandate) {
+export function signMandateWithMobileId(mandate) {
   return (dispatch, getState) => {
-    dispatch({ type: SIGN_MANDATE_START });
+    dispatch({ type: SIGN_MANDATE_MOBILE_ID_START });
     const token = getState().login.token;
     let mandateId;
     return saveMandateWithToken(mandate, token)
       .then(({ id }) => {
         mandateId = id;
-        return getMandateControlCodeForMandateIdWithToken(id, token);
+        return getMobileIdSignatureChallengeCodeForMandateIdWithToken(id, token);
       })
       .then((controlCode) => {
-        dispatch({ type: SIGN_MANDATE_START_SUCCESS, controlCode });
+        dispatch({ type: SIGN_MANDATE_MOBILE_ID_START_SUCCESS, controlCode });
         dispatch(pollForMandateSignatureWithMandateId(mandateId));
       })
-      .catch(error => dispatch({ type: SIGN_MANDATE_START_ERROR, error }));
+      .catch(error => dispatch({ type: SIGN_MANDATE_MOBILE_ID_START_ERROR, error }));
   };
 }
 
@@ -128,5 +128,5 @@ export function cancelSigningMandate() {
   if (timeout && process.env.NODE_ENV !== 'test') {
     clearTimeout(timeout);
   }
-  return { type: SIGN_MANDATE_CANCEL };
+  return { type: SIGN_MANDATE_MOBILE_ID_CANCEL };
 }

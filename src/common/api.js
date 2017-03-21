@@ -81,16 +81,27 @@ export function saveMandateWithToken(mandate, token) {
   });
 }
 
-// TODO: test after demo
-export function getMandateControlCodeForMandateIdWithToken(id, token) {
-  return put(getEndpoint(`/v1/mandates/${id}/signature`), undefined, {
+export function getMobileIdSignatureChallengeCodeForMandateIdWithToken(id, token) {
+  return put(getEndpoint(`/v1/mandates/${id}/signature/mobileId`), undefined, {
     Authorization: `Bearer ${token}`,
   }).then(({ mobileIdChallengeCode }) => mobileIdChallengeCode);
 }
 
-// TODO: test after demo
-export function getMandateSignatureForMandateIdWithToken(id, token) {
-  return get(getEndpoint(`/v1/mandates/${id}/signature`), undefined, {
+export function getMobileIdSignatureStatusForMandateIdWithToken(id, token) {
+  return get(getEndpoint(`/v1/mandates/${id}/signature/mobileId/status`), undefined, {
     Authorization: `Bearer ${token}`,
-  });
+  }).then(({ statusCode }) => statusCode);
+}
+
+export function getIdCardSignatureHashForMandateIdWithClientCertificateAndToken(
+  id, clientCertificate, token) {
+  return put(getEndpoint(`/v1/mandates/${id}/signature/idCard`), { clientCertificate }, {
+    Authorization: `Bearer ${token}`,
+  }).then(({ hash }) => hash);
+}
+
+export function getIdCardSignatureStatusForMandateIdWithSignedHashAndToken(id, signedHash, token) {
+  return put(getEndpoint(`/v1/mandates/${id}/signature/idCard/status`), { signedHash }, {
+    Authorization: `Bearer ${token}`,
+  }).then(({ statusCode }) => statusCode);
 }
