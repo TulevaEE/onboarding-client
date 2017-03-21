@@ -32,22 +32,40 @@ function joinDuplicateSelections(selections) {
 
 function normalizeAndGetSelections(routes) {
   const selections = [];
+  const selections2 = [];
   const clampBetweenOneAndZero = utils.createClamper(0, 1);
   Object
     .keys(routes)
-    .forEach(sourceFundIsin => Object
+    .forEach((sourceFundIsin) => {
+      selections2[sourceFundIsin] = {
+        sourceFund: { isin: sourceFundIsin },
+        targetFunds: [],
+      };
+      Object
       .keys(routes[sourceFundIsin])
       .forEach((targetFundIsin) => {
         const percentage = clampBetweenOneAndZero(routes[sourceFundIsin][targetFundIsin]);
         if (percentage) { // we do not need to show empty rows.
+          selections2[sourceFundIsin].targetFunds.push({
+            isin: targetFundIsin,
+            percentage,
+          });
           selections.push({
             sourceFundIsin,
             targetFundIsin,
             percentage,
           });
         }
-      }));
-  return selections;
+      });
+    });
+
+  const selectionList = [];
+  Object.keys(selections2).forEach((key) => {
+    selectionList.push(selections2[key]);
+  });
+
+//  return selections;
+  return selectionList;
 }
 
 function aggregateSelections(selections) {
@@ -57,6 +75,7 @@ function aggregateSelections(selections) {
   return normalizeAndGetSelections(routes);
 }
 
+/*
 function attachNames(selections, sourceFunds) {
   return selections.map(selection => ({
     ...selection,
@@ -64,6 +83,41 @@ function attachNames(selections, sourceFunds) {
       isin === selection.sourceFundIsin
     )).name,
   }));
+}
+*/
+
+function findFundName(isin, sourceFunds) {
+  const foundFund = sourceFunds.find(fund => fund.isin === isin);
+  if (!foundFund) {
+    return 'Unknown Name';
+  }
+  return foundFund.name;
+  /*
+  return utils.findWhere(sourceFunds, ({ fund }) => (
+      fund.isin === isin
+  )).name;
+  */
+}
+
+function attachNames(selections, sourceFunds) {
+  return selections.map((selection) => {
+    const selectionWithNames = selection;
+    selectionWithNames.sourceFund.name = findFundName(selection.sourceFund.isin, sourceFunds);
+    selectionWithNames.targetFunds = selection.targetFunds.map(targetFund => ({
+      ...targetFund,
+      name: findFundName(targetFund.isin, sourceFunds),
+    }));
+    return selectionWithNames;
+  });
+
+/*
+  return selections.map(selection => ({
+    ...selection,
+    sourceFundName: utils.findWhere(sourceFunds, ({ isin }) => (
+        isin === selection.sourceFundIsin
+    )).name,
+  }));
+*/
 }
 
 export const ConfirmMandate = ({
@@ -77,6 +131,7 @@ export const ConfirmMandate = ({
   }
   const aggregatedSelections = aggregateSelections(exchange.sourceSelection);
   const aggregatedSelectionsWithNames = attachNames(aggregatedSelections, exchange.sourceFunds);
+
   const hasFilledFlow = aggregatedSelections.length || exchange.selectedFutureContributionsFundIsin;
   if (!hasFilledFlow) {
     return <MandateNotFilledAlert />;
