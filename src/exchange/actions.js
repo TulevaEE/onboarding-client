@@ -1,5 +1,6 @@
 import { push } from 'react-router-redux';
 import download from 'downloadjs';
+import 'hwcrypto-js/hwcrypto';
 
 import {
   getSourceFundsWithToken,

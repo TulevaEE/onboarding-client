@@ -44,6 +44,7 @@
     "react-dev-utils": "^0.4.2",
     "recursive-readdir": "2.1.0",
     "sass-loader": "^4.1.1",
+    "script-loader": "^0.7.0",
     "strip-ansi": "3.0.1",
     "style-loader": "0.13.1",
     "url-loader": "0.5.7",
@@ -67,7 +68,9 @@
     "redux": "^3.6.0",
     "redux-thunk": "^2.2.0",
     "retranslate": "^0.1.2",
-    "hwcrypto-js": "ErkoRisthein/hwcrypto.js"
+    "hwcrypto-js": "ErkoRisthein/hwcrypto.js",
+    "exports-loader": "^0.6.4",
+    "imports-loader": "^0.7.1"
   },
   "scripts": {
     "start": "NODE_ENV=production node scripts/start.js",

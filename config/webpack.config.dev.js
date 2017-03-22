@@ -158,6 +158,10 @@ module.exports = {
         query: {
           name: 'static/media/[name].[hash:8].[ext]'
         }
+      },
+      {
+        test: /hwcrypto/,
+        loader: 'script-loader'
       }
     ]
   },
