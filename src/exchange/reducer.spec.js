@@ -12,13 +12,13 @@ import {
 
   SELECT_TARGET_FUND,
 
-  SIGN_MANDATE_START,
-  SIGN_MANDATE_START_SUCCESS,
-  SIGN_MANDATE_START_ERROR,
-  SIGN_MANDATE_SUCCESS,
-  SIGN_MANDATE_ERROR,
+  SIGN_MANDATE_MOBILE_ID_START,
+  SIGN_MANDATE_MOBILE_ID_START_SUCCESS,
+  SIGN_MANDATE_MOBILE_ID_START_ERROR,
   SIGN_MANDATE_INVALID_ERROR,
-  SIGN_MANDATE_CANCEL,
+  SIGN_MANDATE_MOBILE_ID_SUCCESS,
+  SIGN_MANDATE_MOBILE_ID_ERROR,
+  SIGN_MANDATE_MOBILE_ID_CANCEL,
 
   CHANGE_AGREEMENT_TO_TERMS,
 } from './constants';
@@ -111,13 +111,13 @@ describe('Exchange reducer', () => {
   });
 
   it('starts loading mandate when starting to sign mandate', () => {
-    const action = { type: SIGN_MANDATE_START };
+    const action = { type: SIGN_MANDATE_MOBILE_ID_START };
     expect(exchangeReducer(undefined, action).loadingMandate).toBe(true);
   });
 
   it('stops loading mandate and saves control code when starting to sign succeeds', () => {
     const controlCode = 'control code';
-    const action = { type: SIGN_MANDATE_START_SUCCESS, controlCode };
+    const action = { type: SIGN_MANDATE_MOBILE_ID_START_SUCCESS, controlCode };
     const newState = exchangeReducer({ mandateSigningControlCode: true }, action);
     expect(newState.mandateSigningControlCode).toBe(controlCode);
     expect(newState.loadingMandate).toBe(false);
@@ -125,7 +125,7 @@ describe('Exchange reducer', () => {
 
   it('saves the mandate id when signing mandate succeeds', () => {
     const signedMandateId = 'an id';
-    const action = { type: SIGN_MANDATE_SUCCESS, signedMandateId };
+    const action = { type: SIGN_MANDATE_MOBILE_ID_SUCCESS, signedMandateId };
     const newState = exchangeReducer({ mandateSigningControlCode: 'code' }, action);
     expect(newState.mandateSigningControlCode).toBeFalsy();
     expect(newState.signedMandateId).toBe(signedMandateId);
@@ -133,7 +133,7 @@ describe('Exchange reducer', () => {
 
   it('sets the error when signing mandate fails', () => {
     const error = new Error('oh no!');
-    const action = { type: SIGN_MANDATE_ERROR, error };
+    const action = { type: SIGN_MANDATE_MOBILE_ID_ERROR, error };
     const newState = exchangeReducer({ mandateSigningControlCode: 'code' }, action);
     expect(newState.mandateSigningControlCode).toBeFalsy();
     expect(newState.mandateSigningError).toEqual(error);
@@ -150,14 +150,14 @@ describe('Exchange reducer', () => {
 
   it('stops loading and sets the error when starting to sign mandate fails', () => {
     const error = new Error('oh no!');
-    const action = { type: SIGN_MANDATE_START_ERROR, error };
+    const action = { type: SIGN_MANDATE_MOBILE_ID_START_ERROR, error };
     const newState = exchangeReducer({ loadingMandate: true }, action);
     expect(newState.loadingMandate).toBe(false);
     expect(newState.mandateSigningError).toEqual(error);
   });
 
   it('can cancel signing the mandate', () => {
-    const action = { type: SIGN_MANDATE_CANCEL };
+    const action = { type: SIGN_MANDATE_MOBILE_ID_CANCEL };
     const newState = exchangeReducer({
       loadingMandate: true,
       mandateSigningControlCode: '1337',
