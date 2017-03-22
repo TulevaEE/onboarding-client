@@ -392,4 +392,22 @@ describe('Confirm mandate step', () => {
     expect(component.at(0).node).toEqual(<MandateNotFilledAlert />);
     expect(component.find('button').length === 0).toBe(true);
   });
+
+  it('shows error message on invalid mandate', () => {
+    component.setProps({
+      exchange: {
+        selectedFutureContributionsFundIsin: 'test isin',
+        sourceSelection: [],
+        invalidMandateError: true
+      },
+    });
+    expect(component.contains(
+        <div className="mt-4">
+          <b className="highlight">
+            <Message>confirm.mandate.invalid.mandate</Message>
+          </b>
+        </div>,
+    )).toBe(true);
+  });
+  
 });

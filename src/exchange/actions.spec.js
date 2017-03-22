@@ -16,6 +16,7 @@ import {
   SIGN_MANDATE_MOBILE_ID_START,
   SIGN_MANDATE_MOBILE_ID_START_SUCCESS,
   SIGN_MANDATE_MOBILE_ID_START_ERROR,
+  SIGN_MANDATE_INVALID_ERROR,
   SIGN_MANDATE_MOBILE_ID_SUCCESS,
   SIGN_MANDATE_MOBILE_ID_ERROR,
   SIGN_MANDATE_MOBILE_ID_CANCEL,
@@ -291,6 +292,24 @@ describe('Exchange actions', () => {
           error,
         });
       });
+  });
+
+  it('can handle unprocessable entity errors when saving the mandate', () => {
+    const error = new Error('oh no it failed');
+    error.status = 422;
+    mockApi.saveMandateWithToken = jest.fn(() => {
+      dispatch.mockClear();
+      return Promise.reject(error);
+    });
+    const signMandate = createBoundAction(actions.signMandate);
+    return signMandate({})
+        .then(() => {
+          expect(dispatch).toHaveBeenCalledTimes(1);
+          expect(dispatch).toHaveBeenCalledWith({
+            type: SIGN_MANDATE_INVALID_ERROR,
+            error,
+          });
+        });
   });
 
   it('can cancel signing the mandate', () => {

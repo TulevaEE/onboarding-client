@@ -25,6 +25,7 @@ import {
   SIGN_MANDATE_MOBILE_ID_START,
   SIGN_MANDATE_MOBILE_ID_START_SUCCESS,
   SIGN_MANDATE_MOBILE_ID_START_ERROR,
+  SIGN_MANDATE_INVALID_ERROR,
   SIGN_MANDATE_MOBILE_ID_SUCCESS,
   SIGN_MANDATE_MOBILE_ID_ERROR,
   SIGN_MANDATE_MOBILE_ID_CANCEL,
@@ -120,7 +121,13 @@ export function signMandateWithMobileId(mandate) {
         dispatch({ type: SIGN_MANDATE_MOBILE_ID_START_SUCCESS, controlCode });
         dispatch(pollForMandateSignatureWithMandateId(mandateId));
       })
-      .catch(error => dispatch({ type: SIGN_MANDATE_MOBILE_ID_START_ERROR, error }));
+      .catch((error) => {
+        if (error.status === 422) {
+          dispatch({ type: SIGN_MANDATE_INVALID_ERROR, error });
+        } else {
+          dispatch({ type: SIGN_MANDATE_MOBILE_ID_START_ERROR, error });
+        }
+      });
   };
 }
 

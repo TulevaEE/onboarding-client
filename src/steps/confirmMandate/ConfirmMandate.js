@@ -151,6 +151,15 @@ export const ConfirmMandate = ({
           </div>
         </label>
       </div>
+      {
+        exchange.invalidMandateError ? (
+          <div className="mt-4">
+            <b className="highlight">
+              <Message>confirm.mandate.invalid.mandate</Message>
+            </b>
+          </div>
+        ) : ''
+      }
       <div className="mt-5">
         <button
           className="btn btn-primary mr-2"

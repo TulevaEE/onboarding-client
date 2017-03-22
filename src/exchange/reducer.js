@@ -17,6 +17,7 @@ import {
   SIGN_MANDATE_MOBILE_ID_START,
   SIGN_MANDATE_MOBILE_ID_START_SUCCESS,
   SIGN_MANDATE_MOBILE_ID_START_ERROR,
+  SIGN_MANDATE_INVALID_ERROR,
   SIGN_MANDATE_MOBILE_ID_SUCCESS,
   SIGN_MANDATE_MOBILE_ID_ERROR,
   SIGN_MANDATE_MOBILE_ID_CANCEL,
@@ -112,6 +113,14 @@ export default function exchangeReducer(state = initialState, action) {
         loadingMandate: false,
         mandateSigningControlCode: null,
         mandateSigningError: action.error,
+      };
+    case SIGN_MANDATE_INVALID_ERROR:
+      return {
+        ...state,
+        loadingMandate: false,
+        mandateSigningControlCode: null,
+        mandateSigningError: action.error,
+        invalidMandateError: true,
       };
     case SIGN_MANDATE_MOBILE_ID_CANCEL:
       return {
