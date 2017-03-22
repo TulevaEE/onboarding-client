@@ -257,6 +257,30 @@ describe('Confirm mandate step', () => {
     )).toBe(true);
   });
 
+  it('can preview mandate', () => {
+    const onPreviewMandate = jest.fn();
+    const exchange = {
+      sourceSelection: [
+        { percentage: 0.5, sourceFundIsin: 'source 1', targetFundIsin: 'target 1' },
+        { percentage: 1, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
+      ],
+      sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
+      selectedFutureContributionsFundIsin: 'target 1',
+      agreedToTerms: true,
+    };
+    component.setProps({ onPreviewMandate, exchange });
+    expect(onPreviewMandate).not.toHaveBeenCalled();
+    component.find('button#preview').simulate('click');
+    expect(onPreviewMandate).toHaveBeenCalledTimes(1);
+    expect(onPreviewMandate).toHaveBeenCalledWith({
+      fundTransferExchanges: [
+        { amount: 0.5, sourceFundIsin: 'source 1', targetFundIsin: 'target 1' },
+        { amount: 1, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
+      ],
+      futureContributionFundIsin: 'target 1',
+    });
+  });  
+
   it('can start signing the mandate with a future capital fund', () => {
     const onSignMandate = jest.fn();
     const exchange = {
@@ -270,7 +294,7 @@ describe('Confirm mandate step', () => {
     };
     component.setProps({ onSignMandate, exchange });
     expect(onSignMandate).not.toHaveBeenCalled();
-    component.find('button').simulate('click');
+    component.find('button#sign').simulate('click');
     expect(onSignMandate).toHaveBeenCalledTimes(1);
     expect(onSignMandate).toHaveBeenCalledWith({
       fundTransferExchanges: [
@@ -294,7 +318,7 @@ describe('Confirm mandate step', () => {
     };
     component.setProps({ onSignMandate, exchange });
     expect(onSignMandate).not.toHaveBeenCalled();
-    component.find('button').simulate('click');
+    component.find('button#sign').simulate('click');
     expect(onSignMandate).toHaveBeenCalledTimes(1);
     expect(onSignMandate).toHaveBeenCalledWith({
       fundTransferExchanges: [
@@ -333,10 +357,10 @@ describe('Confirm mandate step', () => {
       agreedToTerms: false,
     };
     component.setProps({ exchange });
-    expect(component.find('button.btn-primary').prop('disabled')).toBe(true);
+    expect(component.find('button#sign').prop('disabled')).toBe(true);
     exchange.agreedToTerms = true;
     component.setProps({ exchange });
-    expect(component.find('button.btn-primary').prop('disabled')).toBe(false);
+    expect(component.find('button#sign').prop('disabled')).toBe(false);
   });
 
   it('can change if the user has agreed to terms', () => {
@@ -374,7 +398,7 @@ describe('Confirm mandate step', () => {
       agreedToTerms: false,
     };
     component.setProps({ onSignMandate, exchange });
-    component.find('button').simulate('click');
+    component.find('button#sign').simulate('click');
     expect(onSignMandate).not.toHaveBeenCalled();
   });
 
