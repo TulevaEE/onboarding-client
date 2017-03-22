@@ -15,6 +15,7 @@ import {
   SIGN_MANDATE_MOBILE_ID_START,
   SIGN_MANDATE_MOBILE_ID_START_SUCCESS,
   SIGN_MANDATE_MOBILE_ID_START_ERROR,
+  SIGN_MANDATE_INVALID_ERROR,
   SIGN_MANDATE_MOBILE_ID_SUCCESS,
   SIGN_MANDATE_MOBILE_ID_ERROR,
   SIGN_MANDATE_MOBILE_ID_CANCEL,
@@ -136,6 +137,15 @@ describe('Exchange reducer', () => {
     const newState = exchangeReducer({ mandateSigningControlCode: 'code' }, action);
     expect(newState.mandateSigningControlCode).toBeFalsy();
     expect(newState.mandateSigningError).toEqual(error);
+  });
+
+  it('sets an invalid mandate error when getting invalid mandate', () => {
+    const error = new Error('oh no!');
+    const action = { type: SIGN_MANDATE_INVALID_ERROR, error };
+    const newState = exchangeReducer({ mandateSigningControlCode: 'code' }, action);
+    expect(newState.mandateSigningControlCode).toBeFalsy();
+    expect(newState.mandateSigningError).toEqual(error);
+    expect(newState.invalidMandateError).toEqual(true);
   });
 
   it('stops loading and sets the error when starting to sign mandate fails', () => {
