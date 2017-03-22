@@ -25,6 +25,7 @@ import {
   SIGN_MANDATE_START,
   SIGN_MANDATE_START_SUCCESS,
   SIGN_MANDATE_START_ERROR,
+  SIGN_MANDATE_INVALID_ERROR,
   SIGN_MANDATE_SUCCESS,
   SIGN_MANDATE_ERROR,
   SIGN_MANDATE_CANCEL,
@@ -120,7 +121,13 @@ export function signMandate(mandate) {
         dispatch({ type: SIGN_MANDATE_START_SUCCESS, controlCode });
         dispatch(pollForMandateSignatureWithMandateId(mandateId));
       })
-      .catch(error => dispatch({ type: SIGN_MANDATE_START_ERROR, error }));
+      .catch((error) => {
+        if (error.status === 422) {
+          dispatch({ type: SIGN_MANDATE_INVALID_ERROR, error });
+        } else {
+          dispatch({ type: SIGN_MANDATE_START_ERROR, error });
+        }
+      });
   };
 }
 
