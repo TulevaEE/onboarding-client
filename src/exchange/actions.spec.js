@@ -301,7 +301,7 @@ describe('Exchange actions', () => {
       dispatch.mockClear();
       return Promise.reject(error);
     });
-    const signMandate = createBoundAction(actions.signMandate);
+    const signMandate = createBoundAction(actions.signMandateWithMobileId);
     return signMandate({})
         .then(() => {
           expect(dispatch).toHaveBeenCalledTimes(1);
