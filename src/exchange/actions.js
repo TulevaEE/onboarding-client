@@ -5,6 +5,7 @@ import {
   getSourceFundsWithToken,
   getTargetFundsWithToken,
   saveMandateWithToken,
+  downloadMandatePreviewWithIdAndToken,
   getMobileIdSignatureChallengeCodeForMandateIdWithToken,
   getMobileIdSignatureStatusForMandateIdWithToken,
   downloadMandateWithIdAndToken,
@@ -68,7 +69,7 @@ export function downloadMandate() {
     const token = getState().login.token;
     if (mandateId && token) {
       return downloadMandateWithIdAndToken(mandateId, token)
-        .then(file => download(file, 'avaldus.bdoc', 'application/bdoc'));
+        .then(file => download(file, 'Tuleva_avaldus.bdoc', 'application/bdoc'));
     }
     return Promise.resolve();
   };
@@ -107,6 +108,25 @@ function pollForMandateSignatureWithMandateId(id) {
   };
 }
 
+function handleSaveMandateError(dispatch, error) {
+  if (error.status === 422) {
+    dispatch({ type: SIGN_MANDATE_INVALID_ERROR, error });
+  } else {
+    dispatch({ type: SIGN_MANDATE_MOBILE_ID_START_ERROR, error });
+  }
+}
+
+export function previewMandate(mandate) {
+  return (dispatch, getState) => {
+    const token = getState().login.token;
+    return saveMandateWithToken(mandate, token)
+        .then(({ id }) => downloadMandatePreviewWithIdAndToken(id, token).then(file => download(file, 'Tuleva_avaldus_eelvaade.zip', 'application/zip'))
+        .catch((error) => {
+          handleSaveMandateError(dispatch, error);
+        }));
+  };
+}
+
 export function signMandateWithMobileId(mandate) {
   return (dispatch, getState) => {
     dispatch({ type: SIGN_MANDATE_MOBILE_ID_START });
@@ -122,11 +142,7 @@ export function signMandateWithMobileId(mandate) {
         dispatch(pollForMandateSignatureWithMandateId(mandateId));
       })
       .catch((error) => {
-        if (error.status === 422) {
-          dispatch({ type: SIGN_MANDATE_INVALID_ERROR, error });
-        } else {
-          dispatch({ type: SIGN_MANDATE_MOBILE_ID_START_ERROR, error });
-        }
+        handleSaveMandateError(dispatch, error);
       });
   };
 }

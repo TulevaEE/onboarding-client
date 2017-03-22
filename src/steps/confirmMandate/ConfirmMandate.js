@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import { Loader, AuthenticationLoader, utils } from '../../common';
 
 import {
+  previewMandate,
   signMandateWithMobileId,
   cancelSigningMandate,
   changeAgreementToTerms,
@@ -68,6 +69,7 @@ function attachNames(selections, sourceFunds) {
 
 export const ConfirmMandate = ({
   exchange,
+  onPreviewMandate,
   onSignMandate,
   onCancelSigningMandate,
   onChangeAgreementToTerms,
@@ -82,6 +84,17 @@ export const ConfirmMandate = ({
     return <MandateNotFilledAlert />;
   }
   const canSignMandate = exchange.agreedToTerms && hasFilledFlow;
+  // TODO: extract into a function
+  const startPreviewMandate = () => {
+    onPreviewMandate({
+      fundTransferExchanges: exchange.sourceSelection.map(selection => ({
+        amount: selection.percentage,
+        sourceFundIsin: selection.sourceFundIsin,
+        targetFundIsin: selection.targetFundIsin,
+      })),
+      futureContributionFundIsin: exchange.selectedFutureContributionsFundIsin,
+    });
+  };
   const startSigningMandate = () => canSignMandate && onSignMandate({
     fundTransferExchanges: exchange.sourceSelection.map(selection => ({
       amount: selection.percentage,
@@ -162,6 +175,14 @@ export const ConfirmMandate = ({
       }
       <div className="mt-5">
         <button
+          id="preview"
+          className="btn btn-primary mr-2"
+          onClick={startPreviewMandate}
+        >
+          <Message>confirm.mandate.preview</Message>
+        </button>
+        <button
+          id="sign"
           className="btn btn-primary mr-2"
           disabled={!canSignMandate}
           onClick={startSigningMandate}
@@ -188,6 +209,7 @@ ConfirmMandate.defaultProps = {
     selectedFutureContributionsFundIsin: null,
     agreedToTerms: false,
   },
+  onPreviewMandate: noop,
   onSignMandate: noop,
   onCancelSigningMandate: noop,
   onChangeAgreementToTerms: noop,
@@ -201,6 +223,7 @@ ConfirmMandate.propTypes = {
     selectedFutureContributionsFundIsin: Types.string,
     agreedToTerms: Types.bool,
   }).isRequired,
+  onPreviewMandate: Types.func,
   onSignMandate: Types.func,
   onCancelSigningMandate: Types.func,
   onChangeAgreementToTerms: Types.func,
@@ -211,6 +234,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({
+  onPreviewMandate: previewMandate,
   onSignMandate: signMandateWithMobileId,
   onChangeAgreementToTerms: changeAgreementToTerms,
   onCancelSigningMandate: cancelSigningMandate,

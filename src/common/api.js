@@ -52,6 +52,12 @@ export function getIdCardToken() {
   return getTokenWithClientId('id_card');
 }
 
+export function downloadMandatePreviewWithIdAndToken(id, token) {
+  return downloadFile(getEndpoint(`/v1/mandates/${id}/file/preview`), {
+    Authorization: `Bearer ${token}`,
+  });
+}
+
 export function downloadMandateWithIdAndToken(id, token) {
   return downloadFile(getEndpoint(`/v1/mandates/${id}/file`), {
     Authorization: `Bearer ${token}`,
