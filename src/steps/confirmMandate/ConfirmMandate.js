@@ -9,6 +9,7 @@ import { Loader, AuthenticationLoader, utils } from '../../common';
 import {
   previewMandate,
   signMandateWithMobileId,
+  signMandateWithIdCard,
   cancelSigningMandate,
   changeAgreementToTerms,
 } from '../../exchange/actions';
@@ -71,6 +72,7 @@ export const ConfirmMandate = ({
   exchange,
   onPreviewMandate,
   onSignMandate,
+  onIdCardSignMandate,
   onCancelSigningMandate,
   onChangeAgreementToTerms,
 }) => {
@@ -96,6 +98,14 @@ export const ConfirmMandate = ({
     });
   };
   const startSigningMandate = () => canSignMandate && onSignMandate({
+    fundTransferExchanges: exchange.sourceSelection.map(selection => ({
+      amount: selection.percentage,
+      sourceFundIsin: selection.sourceFundIsin,
+      targetFundIsin: selection.targetFundIsin,
+    })),
+    futureContributionFundIsin: exchange.selectedFutureContributionsFundIsin,
+  });
+  const startSigningMandateWithIdCard = () => canSignMandate && onIdCardSignMandate({
     fundTransferExchanges: exchange.sourceSelection.map(selection => ({
       amount: selection.percentage,
       sourceFundIsin: selection.sourceFundIsin,
@@ -189,6 +199,13 @@ export const ConfirmMandate = ({
         >
           <Message>confirm.mandate.sign</Message>
         </button>
+        <button
+          className="btn btn-primary mr-2"
+          disabled={!canSignMandate}
+          onClick={startSigningMandateWithIdCard}
+        >
+          <Message>Allkirjasta ID-kaardiga</Message>
+        </button>
         <Link className="btn btn-secondary" to="/steps/transfer-future-capital">
           <Message>steps.previous</Message>
         </Link>
@@ -211,6 +228,7 @@ ConfirmMandate.defaultProps = {
   },
   onPreviewMandate: noop,
   onSignMandate: noop,
+  onIdCardSignMandate: noop,
   onCancelSigningMandate: noop,
   onChangeAgreementToTerms: noop,
 };
@@ -225,6 +243,7 @@ ConfirmMandate.propTypes = {
   }).isRequired,
   onPreviewMandate: Types.func,
   onSignMandate: Types.func,
+  onIdCardSignMandate: Types.func,
   onCancelSigningMandate: Types.func,
   onChangeAgreementToTerms: Types.func,
 };
@@ -236,6 +255,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => bindActionCreators({
   onPreviewMandate: previewMandate,
   onSignMandate: signMandateWithMobileId,
+  onIdCardSignMandate: signMandateWithIdCard,
   onChangeAgreementToTerms: changeAgreementToTerms,
   onCancelSigningMandate: cancelSigningMandate,
 }, dispatch);

@@ -15,10 +15,10 @@ import {
 
   SIGN_MANDATE_MOBILE_ID_START,
   SIGN_MANDATE_MOBILE_ID_START_SUCCESS,
-  SIGN_MANDATE_MOBILE_ID_START_ERROR,
+  SIGN_MANDATE_START_ERROR,
   SIGN_MANDATE_INVALID_ERROR,
-  SIGN_MANDATE_MOBILE_ID_SUCCESS,
-  SIGN_MANDATE_MOBILE_ID_ERROR,
+  SIGN_MANDATE_SUCCESS,
+  SIGN_MANDATE_ERROR,
   SIGN_MANDATE_MOBILE_ID_CANCEL,
 
   CHANGE_AGREEMENT_TO_TERMS,
@@ -253,14 +253,17 @@ describe('Exchange actions', () => {
     return signMandate(mandate)
       .then(() => {
         dispatch.mockClear();
-        mockApi.getMobileIdSignatureStatusForMandateIdWithToken = jest.fn(() => Promise.resolve({}));
+        mockApi.getMobileIdSignatureStatusForMandateIdWithToken =
+          jest.fn(() => Promise.resolve({
+            statusCode: 'SIGNATURE',
+          }));
         jest.runOnlyPendingTimers();
         expect(dispatch).not.toHaveBeenCalled();
         expect(mockApi.getMobileIdSignatureStatusForMandateIdWithToken).toHaveBeenCalledTimes(1);
         expect(mockApi.getMobileIdSignatureStatusForMandateIdWithToken).toHaveBeenCalledWith('id', 'token');
       }).then(() => {
         expect(dispatch).toHaveBeenCalledWith({
-          type: SIGN_MANDATE_MOBILE_ID_SUCCESS,
+          type: SIGN_MANDATE_SUCCESS,
           signedMandateId: 'id',
         });
         expect(dispatch).toHaveBeenCalledWith(push('/steps/success'));
@@ -280,14 +283,15 @@ describe('Exchange actions', () => {
     return signMandate(mandate)
       .then(() => {
         dispatch.mockClear();
-        mockApi.getMobileIdSignatureStatusForMandateIdWithToken = jest.fn(() => Promise.reject(error));
+        mockApi.getMobileIdSignatureStatusForMandateIdWithToken =
+          jest.fn(() => Promise.reject(error));
         jest.runOnlyPendingTimers();
         expect(dispatch).not.toHaveBeenCalled();
         expect(mockApi.getMobileIdSignatureStatusForMandateIdWithToken).toHaveBeenCalledTimes(1);
       })
       .then(() => jest.runOnlyPendingTimers())
       .then(() => expect(dispatch).toHaveBeenCalledWith(
-        { type: SIGN_MANDATE_MOBILE_ID_ERROR, error }));
+        { type: SIGN_MANDATE_ERROR, error }));
   });
 
   it('can handle errors when starting to sign the mandate', () => {
@@ -301,7 +305,7 @@ describe('Exchange actions', () => {
       .then(() => {
         expect(dispatch).toHaveBeenCalledTimes(1);
         expect(dispatch).toHaveBeenCalledWith({
-          type: SIGN_MANDATE_MOBILE_ID_START_ERROR,
+          type: SIGN_MANDATE_START_ERROR,
           error,
         });
       });

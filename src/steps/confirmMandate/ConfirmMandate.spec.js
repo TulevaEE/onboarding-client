@@ -279,7 +279,7 @@ describe('Confirm mandate step', () => {
       ],
       futureContributionFundIsin: 'target 1',
     });
-  });  
+  });
 
   it('can start signing the mandate with a future capital fund', () => {
     const onSignMandate = jest.fn();
@@ -422,16 +422,15 @@ describe('Confirm mandate step', () => {
       exchange: {
         selectedFutureContributionsFundIsin: 'test isin',
         sourceSelection: [],
-        invalidMandateError: true
+        invalidMandateError: true,
       },
     });
     expect(component.contains(
-        <div className="mt-4">
-          <b className="highlight">
-            <Message>confirm.mandate.invalid.mandate</Message>
-          </b>
-        </div>,
+      <div className="mt-4">
+        <b className="highlight">
+          <Message>confirm.mandate.invalid.mandate</Message>
+        </b>
+      </div>,
     )).toBe(true);
   });
-  
 });
