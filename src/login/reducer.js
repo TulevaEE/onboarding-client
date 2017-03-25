@@ -25,6 +25,7 @@ const defaultState = {
   controlCode: null,
   loadingControlCode: false,
   token,
+  loggedInWithMobileId: false,
   error: null,
   user: null,
   loadingUser: false,
@@ -50,6 +51,7 @@ export default function loginReducer(state = defaultState, action) {
       return { // reset all state so page is clean when entered again.
         ...state,
         token: action.token,
+        loggedInWithMobileId: true,
         loadingControlCode: false,
         controlCode: null,
         error: null,
@@ -89,7 +91,7 @@ export default function loginReducer(state = defaultState, action) {
       if (window.localStorage) {
         localStorage.removeItem(TOKEN_STORAGE_KEY);
       }
-      return { ...state, token: null };
+      return { ...state, token: null, loggedInWithMobileId: false };
 
     default:
       return state;

@@ -104,7 +104,7 @@ describe('Confirm mandate step', () => {
       },
     });
     expect(component.contains(
-      <Link className="btn btn-secondary" to="/steps/transfer-future-capital">
+      <Link className="btn btn-secondary mb-2" to="/steps/transfer-future-capital">
         <Message>steps.previous</Message>
       </Link>,
     )).toBe(true);

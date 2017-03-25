@@ -206,12 +206,13 @@ describe('Exchange actions', () => {
           expect(mockApi.downloadMandatePreviewWithIdAndToken).toHaveBeenCalledWith('mandate id', 'token');
           expect(mockDownload).toHaveBeenCalledWith(file, 'Tuleva_avaldus_eelvaade.zip', 'application/zip');
         });
-  });  
+  });
 
-  it('can sign the mandate', () => {
+  it('can sign the mandate with mobile id', () => {
     state.login.token = 'token';
     const mandate = { id: 'mandate id' };
     const controlCode = '1337';
+
     mockApi.saveMandateWithToken = jest.fn(() => {
       expect(dispatch).toHaveBeenCalledTimes(1);
       expect(dispatch).toHaveBeenCalledWith({ type: SIGN_MANDATE_MOBILE_ID_START });
@@ -241,6 +242,7 @@ describe('Exchange actions', () => {
 
   it('starts polling until succeeds when signing the mandate', () => {
     state.login.token = 'token';
+
     const mandate = { id: 'id' };
     const controlCode = '1337';
     mockApi.saveMandateWithToken = jest.fn(() => Promise.resolve(mandate));
@@ -270,8 +272,9 @@ describe('Exchange actions', () => {
       });
   });
 
-  it('starts polling until fails when signing the mandate', () => {
+  it('starts polling until fails when signing the mandate with mobile id', () => {
     state.login.token = 'token';
+
     const mandate = { id: 'id' };
     mockApi.saveMandateWithToken = jest.fn(() => Promise.resolve(mandate));
     mockApi.getMobileIdSignatureChallengeCodeForMandateIdWithToken = jest.fn(() => Promise.resolve('1337'));
@@ -294,7 +297,7 @@ describe('Exchange actions', () => {
         { type: SIGN_MANDATE_ERROR, error }));
   });
 
-  it('can handle errors when starting to sign the mandate', () => {
+  it('can handle errors when starting to sign the mandate with mobile id', () => {
     const error = new Error('oh no it failed');
     mockApi.saveMandateWithToken = jest.fn(() => {
       dispatch.mockClear();

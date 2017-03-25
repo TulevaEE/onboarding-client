@@ -8,8 +8,7 @@ import { Loader, AuthenticationLoader, utils } from '../../common';
 
 import {
   previewMandate,
-  signMandateWithMobileId,
-  signMandateWithIdCard,
+  signMandate,
   cancelSigningMandate,
   changeAgreementToTerms,
 } from '../../exchange/actions';
@@ -72,7 +71,6 @@ export const ConfirmMandate = ({
   exchange,
   onPreviewMandate,
   onSignMandate,
-  onIdCardSignMandate,
   onCancelSigningMandate,
   onChangeAgreementToTerms,
 }) => {
@@ -98,14 +96,6 @@ export const ConfirmMandate = ({
     });
   };
   const startSigningMandate = () => canSignMandate && onSignMandate({
-    fundTransferExchanges: exchange.sourceSelection.map(selection => ({
-      amount: selection.percentage,
-      sourceFundIsin: selection.sourceFundIsin,
-      targetFundIsin: selection.targetFundIsin,
-    })),
-    futureContributionFundIsin: exchange.selectedFutureContributionsFundIsin,
-  });
-  const startSigningMandateWithIdCard = () => canSignMandate && onIdCardSignMandate({
     fundTransferExchanges: exchange.sourceSelection.map(selection => ({
       amount: selection.percentage,
       sourceFundIsin: selection.sourceFundIsin,
@@ -185,28 +175,21 @@ export const ConfirmMandate = ({
       }
       <div className="mt-5">
         <button
-          id="preview"
-          className="btn btn-primary mr-2"
-          onClick={startPreviewMandate}
-        >
-          <Message>confirm.mandate.preview</Message>
-        </button>
-        <button
           id="sign"
-          className="btn btn-primary mr-2"
+          className="btn btn-primary mb-2 mr-2"
           disabled={!canSignMandate}
           onClick={startSigningMandate}
         >
           <Message>confirm.mandate.sign</Message>
         </button>
         <button
-          className="btn btn-primary mr-2"
-          disabled={!canSignMandate}
-          onClick={startSigningMandateWithIdCard}
+          id="preview"
+          className="btn btn-secondary mb-2 mr-2"
+          onClick={startPreviewMandate}
         >
-          <Message>Allkirjasta ID-kaardiga</Message>
+          <Message>confirm.mandate.preview</Message>
         </button>
-        <Link className="btn btn-secondary" to="/steps/transfer-future-capital">
+        <Link className="btn btn-secondary mb-2" to="/steps/transfer-future-capital">
           <Message>steps.previous</Message>
         </Link>
       </div>
@@ -228,7 +211,6 @@ ConfirmMandate.defaultProps = {
   },
   onPreviewMandate: noop,
   onSignMandate: noop,
-  onIdCardSignMandate: noop,
   onCancelSigningMandate: noop,
   onChangeAgreementToTerms: noop,
 };
@@ -243,7 +225,6 @@ ConfirmMandate.propTypes = {
   }).isRequired,
   onPreviewMandate: Types.func,
   onSignMandate: Types.func,
-  onIdCardSignMandate: Types.func,
   onCancelSigningMandate: Types.func,
   onChangeAgreementToTerms: Types.func,
 };
@@ -254,8 +235,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   onPreviewMandate: previewMandate,
-  onSignMandate: signMandateWithMobileId,
-  onIdCardSignMandate: signMandateWithIdCard,
+  onSignMandate: signMandate,
   onChangeAgreementToTerms: changeAgreementToTerms,
   onCancelSigningMandate: cancelSigningMandate,
 }, dispatch);
