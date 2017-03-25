@@ -222,7 +222,7 @@ describe('api', () => {
     const clientCertificate = 'a certificate';
     const mandateId = '123';
     const token = 'a token';
-    return api.getIdCardSignatureHashForMandateIdWithClientCertificateAndToken(
+    return api.getIdCardSignatureHashForMandateIdWithCertificateHexAndToken(
       mandateId, clientCertificate, token)
       .then((hash) => {
         expect(hash).toBe('asdfg');

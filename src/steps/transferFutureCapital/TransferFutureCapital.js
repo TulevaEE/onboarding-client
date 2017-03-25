@@ -69,10 +69,10 @@ export const TransferFutureCapital = ({
         }
       </Radio>
       <div className="px-col mt-5">
-        <Link className="btn btn-primary mr-2" to="/steps/confirm-mandate">
+        <Link className="btn btn-primary mb-2 mr-2" to="/steps/confirm-mandate">
           <Message>steps.next</Message>
         </Link>
-        <Link className="btn btn-secondary" to="/steps/select-sources">
+        <Link className="btn btn-secondary mb-2" to="/steps/select-sources">
           <Message>steps.previous</Message>
         </Link>
       </div>

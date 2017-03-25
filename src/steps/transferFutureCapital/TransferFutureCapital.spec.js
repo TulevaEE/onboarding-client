@@ -26,19 +26,19 @@ describe('Transfer future capital step', () => {
 
   it('has buttons to the previous and next pages', () => {
     expect(component.contains(
-      <Link className="btn btn-primary mr-2" to="/steps/confirm-mandate">
+      <Link className="btn btn-primary mb-2 mr-2" to="/steps/confirm-mandate">
         <Message>steps.next</Message>
       </Link>,
     )).toBe(true);
     expect(component.contains(
-      <Link className="btn btn-secondary" to="/steps/select-sources">
+      <Link className="btn btn-secondary mb-2" to="/steps/select-sources">
         <Message>steps.previous</Message>
       </Link>,
     )).toBe(true);
   });
 
   it('has three options if you want to transfer future capital to one of two funds or not', () => {
-    const targetFunds = [{ isin: 'AAA'}, { isin: 'BBB'}];
+    const targetFunds = [{ isin: 'AAA' }, { isin: 'BBB' }];
     const loadingTargetFunds = false;
     component.setProps({ targetFunds, loadingTargetFunds });
     expect(component.find(Radio).length).toBe(3);
@@ -60,9 +60,9 @@ describe('Transfer future capital step', () => {
   });
 
   it('can choose where you want to transfer future capital', () => {
-    const targetFunds = [{ isin: 'AAA'}, { isin: 'BBB'}];
+    const targetFunds = [{ isin: 'AAA' }, { isin: 'BBB' }];
     const loadingTargetFunds = false;
-    let selectedFutureContributionsFundIsin = 'AAA';
+    const selectedFutureContributionsFundIsin = 'AAA';
     component.setProps({ targetFunds, loadingTargetFunds, selectedFutureContributionsFundIsin });
 
     const radioAtIndexSelected = index => component.find(Radio).at(index).prop('selected');
@@ -88,9 +88,12 @@ describe('Transfer future capital step', () => {
 
   describe('When user selected to not transfer future contributions to Tuleva', () => {
     it('show selected radio title in bold', () => {
-      const targetFunds = [{ isin: 'AAA'}, { isin: 'BBB'}];
+      const targetFunds = [{ isin: 'AAA' }, { isin: 'BBB' }];
       const loadingTargetFunds = false;
-      component.setProps({ targetFunds, loadingTargetFunds, selectedFutureContributionsFundIsin: null });
+      component.setProps({
+        targetFunds,
+        loadingTargetFunds,
+        selectedFutureContributionsFundIsin: null });
 
       const radioAtIndexSelected = index => component.find(Radio).at(index).prop('selected');
       expect(radioAtIndexSelected(2)).toBe(true);
@@ -104,8 +107,8 @@ describe('Transfer future capital step', () => {
     });
 
     it('shows active fund note only if user has active fund', () => {
-      let activeSourceFund = { isin: 'AAA', name: 'bla', managementFeeRate: '100'};
-      const targetFunds = [{ isin: 'AAA'}, { isin: 'BBB'}];
+      let activeSourceFund = { isin: 'AAA', name: 'bla', managementFeeRate: '100' };
+      const targetFunds = [{ isin: 'AAA' }, { isin: 'BBB' }];
       const loadingTargetFunds = false;
       const selectedFutureContributionsFundIsin = null;
 
@@ -118,11 +121,21 @@ describe('Transfer future capital step', () => {
         transfer.future.capital.no.subtitle
       </Message>);
 
-      component.setProps({ targetFunds, loadingTargetFunds, selectedFutureContributionsFundIsin, activeSourceFund });
+      component.setProps({
+        targetFunds,
+        loadingTargetFunds,
+        selectedFutureContributionsFundIsin,
+        activeSourceFund,
+      });
       expect(component.contains(activeFundMessage)).toBe(true);
 
       activeSourceFund = null;
-      component.setProps({ targetFunds, loadingTargetFunds, selectedFutureContributionsFundIsin, activeSourceFund });
+      component.setProps({
+        targetFunds,
+        loadingTargetFunds,
+        selectedFutureContributionsFundIsin,
+        activeSourceFund,
+      });
       expect(component.contains(activeFundMessage)).toBe(false);
     });
   });

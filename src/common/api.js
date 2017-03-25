@@ -52,14 +52,14 @@ export function getIdCardToken() {
   return getTokenWithClientId('id_card');
 }
 
-export function downloadMandatePreviewWithIdAndToken(id, token) {
-  return downloadFile(getEndpoint(`/v1/mandates/${id}/file/preview`), {
+export function downloadMandatePreviewWithIdAndToken(mandateId, token) {
+  return downloadFile(getEndpoint(`/v1/mandates/${mandateId}/file/preview`), {
     Authorization: `Bearer ${token}`,
   });
 }
 
-export function downloadMandateWithIdAndToken(id, token) {
-  return downloadFile(getEndpoint(`/v1/mandates/${id}/file`), {
+export function downloadMandateWithIdAndToken(mandateId, token) {
+  return downloadFile(getEndpoint(`/v1/mandates/${mandateId}/file`), {
     Authorization: `Bearer ${token}`,
   });
 }
@@ -87,27 +87,28 @@ export function saveMandateWithToken(mandate, token) {
   });
 }
 
-export function getMobileIdSignatureChallengeCodeForMandateIdWithToken(id, token) {
-  return put(getEndpoint(`/v1/mandates/${id}/signature/mobileId`), undefined, {
+export function getMobileIdSignatureChallengeCodeForMandateIdWithToken(mandateId, token) {
+  return put(getEndpoint(`/v1/mandates/${mandateId}/signature/mobileId`), undefined, {
     Authorization: `Bearer ${token}`,
   }).then(({ mobileIdChallengeCode }) => mobileIdChallengeCode);
 }
 
-export function getMobileIdSignatureStatusForMandateIdWithToken(id, token) {
-  return get(getEndpoint(`/v1/mandates/${id}/signature/mobileId/status`), undefined, {
+export function getMobileIdSignatureStatusForMandateIdWithToken(mandateId, token) {
+  return get(getEndpoint(`/v1/mandates/${mandateId}/signature/mobileId/status`), undefined, {
     Authorization: `Bearer ${token}`,
   }).then(({ statusCode }) => statusCode);
 }
 
-export function getIdCardSignatureHashForMandateIdWithClientCertificateAndToken(
-  id, clientCertificate, token) {
-  return put(getEndpoint(`/v1/mandates/${id}/signature/idCard`), { clientCertificate }, {
+export function getIdCardSignatureHashForMandateIdWithCertificateHexAndToken(
+  mandateId, certificateHex, token) {
+  return put(getEndpoint(`/v1/mandates/${mandateId}/signature/idCard`), { clientCertificate: certificateHex }, {
     Authorization: `Bearer ${token}`,
   }).then(({ hash }) => hash);
 }
 
-export function getIdCardSignatureStatusForMandateIdWithSignedHashAndToken(id, signedHash, token) {
-  return put(getEndpoint(`/v1/mandates/${id}/signature/idCard/status`), { signedHash }, {
+export function getIdCardSignatureStatusForMandateIdWithSignedHashAndToken(
+  mandateId, signedHash, token) {
+  return put(getEndpoint(`/v1/mandates/${mandateId}/signature/idCard/status`), { signedHash }, {
     Authorization: `Bearer ${token}`,
   }).then(({ statusCode }) => statusCode);
 }

@@ -16,11 +16,11 @@ import {
   // NOTE: maybe we should move this state to a separate mandate reducer?
   SIGN_MANDATE_MOBILE_ID_START,
   SIGN_MANDATE_MOBILE_ID_START_SUCCESS,
-  SIGN_MANDATE_MOBILE_ID_START_ERROR,
-  SIGN_MANDATE_INVALID_ERROR,
-  SIGN_MANDATE_MOBILE_ID_SUCCESS,
-  SIGN_MANDATE_MOBILE_ID_ERROR,
   SIGN_MANDATE_MOBILE_ID_CANCEL,
+  SIGN_MANDATE_START_ERROR,
+  SIGN_MANDATE_INVALID_ERROR,
+  SIGN_MANDATE_SUCCESS,
+  SIGN_MANDATE_ERROR,
 } from './constants';
 
 const initialState = {
@@ -103,11 +103,11 @@ export default function exchangeReducer(state = initialState, action) {
       return { ...state, loadingMandate: true, mandateSigningError: null };
     case SIGN_MANDATE_MOBILE_ID_START_SUCCESS:
       return { ...state, mandateSigningControlCode: action.controlCode, loadingMandate: false };
-    case SIGN_MANDATE_MOBILE_ID_SUCCESS:
+    case SIGN_MANDATE_SUCCESS:
       return { ...state, mandateSigningControlCode: null, signedMandateId: action.signedMandateId };
 
-    case SIGN_MANDATE_MOBILE_ID_START_ERROR: // fallthrough
-    case SIGN_MANDATE_MOBILE_ID_ERROR:
+    case SIGN_MANDATE_START_ERROR: // fallthrough
+    case SIGN_MANDATE_ERROR:
       return {
         ...state,
         loadingMandate: false,

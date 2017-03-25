@@ -8,7 +8,7 @@ import { Loader, AuthenticationLoader, utils } from '../../common';
 
 import {
   previewMandate,
-  signMandateWithMobileId,
+  signMandate,
   cancelSigningMandate,
   changeAgreementToTerms,
 } from '../../exchange/actions';
@@ -175,21 +175,21 @@ export const ConfirmMandate = ({
       }
       <div className="mt-5">
         <button
-          id="preview"
-          className="btn btn-primary mr-2"
-          onClick={startPreviewMandate}
-        >
-          <Message>confirm.mandate.preview</Message>
-        </button>
-        <button
           id="sign"
-          className="btn btn-primary mr-2"
+          className="btn btn-primary mb-2 mr-2"
           disabled={!canSignMandate}
           onClick={startSigningMandate}
         >
           <Message>confirm.mandate.sign</Message>
         </button>
-        <Link className="btn btn-secondary" to="/steps/transfer-future-capital">
+        <button
+          id="preview"
+          className="btn btn-secondary mb-2 mr-2"
+          onClick={startPreviewMandate}
+        >
+          <Message>confirm.mandate.preview</Message>
+        </button>
+        <Link className="btn btn-secondary mb-2" to="/steps/transfer-future-capital">
           <Message>steps.previous</Message>
         </Link>
       </div>
@@ -235,7 +235,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   onPreviewMandate: previewMandate,
-  onSignMandate: signMandateWithMobileId,
+  onSignMandate: signMandate,
   onChangeAgreementToTerms: changeAgreementToTerms,
   onCancelSigningMandate: cancelSigningMandate,
 }, dispatch);

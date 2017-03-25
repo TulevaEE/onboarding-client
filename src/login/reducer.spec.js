@@ -54,7 +54,9 @@ describe('Login reducer', () => {
   it('sets the token when mobile authentication succeeds', () => {
     const token = 'token';
     const action = { type: MOBILE_AUTHENTICATION_SUCCESS, token };
-    expect(loginReducer(undefined, action).token).toBe(token);
+    const newState = loginReducer(undefined, action);
+    expect(newState.token).toBe(token);
+    expect(newState.loggedInWithMobileId).toBe(true);
   });
 
   it('sets the error when mobile authentication fails', () => {
@@ -114,8 +116,9 @@ describe('Login reducer', () => {
     expect(newState.userError).toBe(error);
   });
 
-  it('removes token when you log out', () => {
-    const newState = loginReducer({ token: 'token' }, { type: LOG_OUT });
+  it('removes token and login method flag when you log out', () => {
+    const newState = loginReducer({ token: 'token', loggedInWithMobileId: true }, { type: LOG_OUT });
     expect(newState.token).toBe(null);
+    expect(newState.loggedInWithMobileId).toBe(false);
   });
 });
