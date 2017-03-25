@@ -33,7 +33,7 @@ export function get(url, params = {}, headers = {}) {
   return fetch(`${url}${urlParameters ? `?${urlParameters}` : ''}`, {
     method: 'GET',
     headers: {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json; charset=utf-8',
       ...headers,
     },
     mode: 'cors',
@@ -56,7 +56,7 @@ export function post(url, params = {}, headers = {}) {
   return fetch(url, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json; charset=utf-8',
       ...headers,
     },
     body: JSON.stringify(params),
@@ -71,7 +71,7 @@ export function put(url, params = {}, headers = {}) {
   return fetch(url, {
     method: 'PUT',
     headers: {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json; charset=utf-8',
       ...headers,
     },
     body: JSON.stringify(params),
