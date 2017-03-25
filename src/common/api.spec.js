@@ -28,14 +28,18 @@ describe('api', () => {
   });
 
   it('can authenticate with id card', () => {
+    mockHttp.get = jest.fn(() => Promise.resolve());
     mockHttp.post = jest.fn(() => Promise.resolve({
       success: true,
     }));
+    expect(mockHttp.get).not.toHaveBeenCalled();
     expect(mockHttp.post).not.toHaveBeenCalled();
     return api
       .authenticateWithIdCard()
       .then((success) => {
         expect(success).toBe(true);
+        expect(mockHttp.get).toHaveBeenCalledTimes(1);
+        expect(mockHttp.get).toHaveBeenCalledWith('https://id.tuleva.ee/');
         expect(mockHttp.post).toHaveBeenCalledTimes(1);
         expect(mockHttp.post).toHaveBeenCalledWith('https://id.tuleva.ee/idLogin');
       });

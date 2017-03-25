@@ -1,4 +1,4 @@
-import { post, postForm, get, put, downloadFile } from './http';
+import { downloadFile, get, post, postForm, put } from './http';
 
 const API_URL = 'https://onboarding-service.tuleva.ee';
 
@@ -26,7 +26,8 @@ export function authenticateWithPhoneNumber(phoneNumber) {
 }
 
 export function authenticateWithIdCard() {
-  return post('https://id.tuleva.ee/idLogin')
+  return get('https://id.tuleva.ee/') // http://stackoverflow.com/a/16818527
+    .then(() => post('https://id.tuleva.ee/idLogin'))
     .then(({ success }) => success);
 }
 
