@@ -92,10 +92,11 @@ describe('http', () => {
 
   it('throws if response is not successful', () => {
     const errorData = { iAmError: true };
+    const expectedError = { status: 400, body: errorData }
     fetch.mockReturnValueOnce(fakeUnsuccessfulResponseWithValue(errorData));
     return get('https://example.com')
       .then(fail)
-      .catch(givenResponse => expect(givenResponse).toEqual(errorData));
+      .catch(givenResponse => expect(givenResponse).toEqual(expectedError));
   });
 
   it('can post some data', () => {

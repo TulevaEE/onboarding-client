@@ -5,7 +5,10 @@ function transformResponse(response) {
     return response
       .json()
       .then((data) => {
-        throw data;
+        const error = {};
+        error.status = response.status;
+        error.body = data;
+        throw error;
       });
   }
   throw response;
