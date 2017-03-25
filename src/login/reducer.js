@@ -40,7 +40,12 @@ export default function loginReducer(state = defaultState, action) {
     case MOBILE_AUTHENTICATION_START:
       return { ...state, loadingAuthentication: true, error: null };
     case MOBILE_AUTHENTICATION_START_SUCCESS:
-      return { ...state, loadingAuthentication: false, controlCode: action.controlCode, error: null };
+      return {
+        ...state,
+        loadingAuthentication: false,
+        controlCode: action.controlCode,
+        error: null,
+      };
     case MOBILE_AUTHENTICATION_START_ERROR:
       return { ...state, loadingAuthentication: false, error: action.error };
 
