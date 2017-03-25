@@ -37,7 +37,7 @@ describe('Login page', () => {
     expect(component.contains(
       <AuthenticationLoader controlCode="" onCancel={onCancelMobileAuthentication} />,
     )).toBe(false);
-    component.setProps({ loadingControlCode: true });
+    component.setProps({ loadingAuthentication: true });
     expect(component.contains(
       <AuthenticationLoader controlCode="" onCancel={onCancelMobileAuthentication} />,
     )).toBe(true);

@@ -23,7 +23,7 @@ const token = (window.localStorage && localStorage.getItem(TOKEN_STORAGE_KEY)) |
 const defaultState = {
   phoneNumber: '',
   controlCode: null,
-  loadingControlCode: false,
+  loadingAuthentication: false,
   token,
   loggedInWithMobileId: false,
   error: null,
@@ -38,11 +38,11 @@ export default function loginReducer(state = defaultState, action) {
       return { ...state, phoneNumber: action.phoneNumber };
 
     case MOBILE_AUTHENTICATION_START:
-      return { ...state, loadingControlCode: true, error: null };
+      return { ...state, loadingAuthentication: true, error: null };
     case MOBILE_AUTHENTICATION_START_SUCCESS:
-      return { ...state, loadingControlCode: false, controlCode: action.controlCode, error: null };
+      return { ...state, loadingAuthentication: false, controlCode: action.controlCode, error: null };
     case MOBILE_AUTHENTICATION_START_ERROR:
-      return { ...state, loadingControlCode: false, error: action.error };
+      return { ...state, loadingAuthentication: false, error: action.error };
 
     case MOBILE_AUTHENTICATION_SUCCESS:
       if (window.localStorage) {
@@ -52,7 +52,7 @@ export default function loginReducer(state = defaultState, action) {
         ...state,
         token: action.token,
         loggedInWithMobileId: true,
-        loadingControlCode: false,
+        loadingAuthentication: false,
         controlCode: null,
         error: null,
         phoneNumber: '',
@@ -61,11 +61,11 @@ export default function loginReducer(state = defaultState, action) {
       return { ...state, error: action.error };
 
     case MOBILE_AUTHENTICATION_CANCEL:
-      return { ...state, loadingControlCode: false, error: null, controlCode: null };
+      return { ...state, loadingAuthentication: false, error: null, controlCode: null };
 
 
     case ID_CARD_AUTHENTICATION_START:
-      return { ...state, error: null };
+      return { ...state, loadingAuthentication: true, error: null };
 
     case ID_CARD_AUTHENTICATION_SUCCESS:
       if (window.localStorage) {
@@ -74,10 +74,11 @@ export default function loginReducer(state = defaultState, action) {
       return { // reset all state so page is clean when entered again.
         ...state,
         token: action.token,
+        loadingAuthentication: false,
         error: null,
       };
     case ID_CARD_AUTHENTICATION_ERROR:
-      return { ...state, error: action.error };
+      return { ...state, error: action.error, loadingAuthentication: false };
 
 
     case GET_USER_START:

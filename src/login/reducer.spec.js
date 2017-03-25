@@ -31,7 +31,7 @@ describe('Login reducer', () => {
   it('starts loading control code and resets error when starting mobile authentication', () => {
     const action = { type: MOBILE_AUTHENTICATION_START };
     const newState = loginReducer({ error: { anError: true } }, action);
-    expect(newState.loadingControlCode).toBe(true);
+    expect(newState.loadingAuthentication).toBe(true);
     expect(newState.error).toBe(null);
   });
 
@@ -39,7 +39,7 @@ describe('Login reducer', () => {
     const controlCode = '1234';
     const action = { type: MOBILE_AUTHENTICATION_START_SUCCESS, controlCode };
     const newState = loginReducer(undefined, action);
-    expect(newState.loadingControlCode).toBe(false);
+    expect(newState.loadingAuthentication).toBe(false);
     expect(newState.controlCode).toBe(controlCode);
   });
 
@@ -47,7 +47,7 @@ describe('Login reducer', () => {
     const error = new Error('oh no');
     const action = { type: MOBILE_AUTHENTICATION_START_ERROR, error };
     const newState = loginReducer(undefined, action);
-    expect(newState.loadingControlCode).toBe(false);
+    expect(newState.loadingAuthentication).toBe(false);
     expect(newState.error).toBe(error);
   });
 
@@ -69,8 +69,8 @@ describe('Login reducer', () => {
 
   it('removes control code and loading when cancelling mobile authentication', () => {
     const action = { type: MOBILE_AUTHENTICATION_CANCEL };
-    const newState = loginReducer({ loadingControlCode: true, controlCode: '1337' }, action);
-    expect(newState.loadingControlCode).toBe(false);
+    const newState = loginReducer({ loadingAuthentication: true, controlCode: '1337' }, action);
+    expect(newState.loadingAuthentication).toBe(false);
     expect(newState.controlCode).toBe(null);
   });
 
