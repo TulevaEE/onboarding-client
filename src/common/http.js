@@ -33,7 +33,8 @@ export function get(url, params = {}, headers = {}) {
   return fetch(`${url}${urlParameters ? `?${urlParameters}` : ''}`, {
     method: 'GET',
     headers: {
-      'Content-Type': 'application/json; charset=utf-8',
+      'Content-Type': 'text/plain', // for Firefox CORS:
+      // https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS?redirectlocale=en-US&redirectslug=HTTP_access_control#Simple_requests
       ...headers,
     },
     mode: 'cors',
