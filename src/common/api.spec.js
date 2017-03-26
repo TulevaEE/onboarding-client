@@ -111,7 +111,7 @@ describe('api', () => {
         fund: {
           name: 'name',
           isin: 'AA123123123123',
-          managementFeeRate: 0.5,
+          managementFeeRate: 0.005,
         },
         activeContributions: false,
         value: 100,
@@ -120,7 +120,7 @@ describe('api', () => {
         fund: {
           name: 'name 2',
           isin: 'AA123123123124',
-          managementFeeRate: 1,
+          managementFeeRate: 0.0039,
         },
         activeContributions: true,
         value: 200,
@@ -136,7 +136,7 @@ describe('api', () => {
           {
             name: 'name',
             isin: 'AA123123123123',
-            managementFeeRate: 0.5,
+            managementFeePercent: '0.5',
             activeFund: false,
             price: 100,
             currency: 'EUR',
@@ -144,7 +144,7 @@ describe('api', () => {
           {
             name: 'name 2',
             isin: 'AA123123123124',
-            managementFeeRate: 1,
+            managementFeePercent: '0.39',
             activeFund: true,
             price: 200,
             currency: 'GBP',

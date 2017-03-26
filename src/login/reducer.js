@@ -16,16 +16,19 @@ import {
 } from './constants';
 
 const TOKEN_STORAGE_KEY = 'token';
+const LOGIN_METHOD_STORAGE_KEY = 'loginMethod';
+
 
 // get saved token if it's there
 const token = (window.localStorage && localStorage.getItem(TOKEN_STORAGE_KEY)) || null;
+const loginMethod = (window.localStorage && localStorage.getItem(LOGIN_METHOD_STORAGE_KEY)) || null;
 
 const defaultState = {
   phoneNumber: '',
   controlCode: null,
   loadingAuthentication: false,
   token,
-  loggedInWithMobileId: false,
+  loginMethod,
   error: null,
   user: null,
   loadingUser: false,
@@ -52,11 +55,12 @@ export default function loginReducer(state = defaultState, action) {
     case MOBILE_AUTHENTICATION_SUCCESS:
       if (window.localStorage) {
         localStorage.setItem(TOKEN_STORAGE_KEY, action.token);
+        localStorage.setItem(LOGIN_METHOD_STORAGE_KEY, 'mobileId');
       }
       return { // reset all state so page is clean when entered again.
         ...state,
         token: action.token,
-        loggedInWithMobileId: true,
+        loginMethod: 'mobileId',
         loadingAuthentication: false,
         controlCode: null,
         error: null,
@@ -75,11 +79,13 @@ export default function loginReducer(state = defaultState, action) {
     case ID_CARD_AUTHENTICATION_SUCCESS:
       if (window.localStorage) {
         localStorage.setItem(TOKEN_STORAGE_KEY, action.token);
+        localStorage.setItem(LOGIN_METHOD_STORAGE_KEY, 'idCard');
       }
       return { // reset all state so page is clean when entered again.
         ...state,
         token: action.token,
         loadingAuthentication: false,
+        loginMethod: 'idCard',
         error: null,
       };
     case ID_CARD_AUTHENTICATION_ERROR:
@@ -96,8 +102,9 @@ export default function loginReducer(state = defaultState, action) {
     case LOG_OUT:
       if (window.localStorage) {
         localStorage.removeItem(TOKEN_STORAGE_KEY);
+        localStorage.removeItem(LOGIN_METHOD_STORAGE_KEY);
       }
-      return { ...state, token: null, loggedInWithMobileId: false };
+      return { ...state, token: null, loginMethod: null };
 
     default:
       return state;

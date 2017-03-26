@@ -60,7 +60,7 @@ export const TransferFutureCapital = ({
             <Message
               params={{
                 currentFundName: activeSourceFund.name,
-                currentFundManagementFee: activeSourceFund.managementFeeRate,
+                currentFundManagementFee: activeSourceFund.managementFeePercent,
               }}
             >
               transfer.future.capital.no.subtitle

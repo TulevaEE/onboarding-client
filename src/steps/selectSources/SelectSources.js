@@ -99,11 +99,10 @@ export const SelectSources = ({
           ) : ''
         }
       </Radio>
-      <div className="px-col">
-        <Link className="btn btn-primary mt-5" to="/steps/transfer-future-capital">
-          <Message>steps.next</Message>
-        </Link>
-      </div>
+
+      <Link className="btn btn-primary mt-5" to="/steps/transfer-future-capital">
+        <Message>steps.next</Message>
+      </Link>
     </div>
   );
 };

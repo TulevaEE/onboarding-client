@@ -16,8 +16,8 @@ export const FundExchangeRow = ({ // exporting without translations for testing 
   const randomString = (Math.random() + 1).toString(36).substring(7);
   const randomId = `tv-percentage-selector-${randomString}`;
   return (
-    <div className="row mt-2">
-      <div className="col-12 col-sm-5">
+    <div className="row">
+      <div className="col-12 col-sm-5 mt-2">
         <div className="input-group">
           <select
             className="custom-select"
@@ -36,7 +36,7 @@ export const FundExchangeRow = ({ // exporting without translations for testing 
           </select>
         </div>
       </div>
-      <div className="col-12 col-sm">
+      <div className="col-12 col-sm mt-2">
         <div className="input-group tv-percentage-selector">
           <input
             id={randomId}
@@ -54,7 +54,7 @@ export const FundExchangeRow = ({ // exporting without translations for testing 
           <label htmlFor={randomId} className="tv-percentage-selector__addon">%</label>
         </div>
       </div>
-      <div className="col-12 col-sm-5">
+      <div className="col-12 col-sm-5 mt-2">
         <div className="input-group">
           <select
             className="custom-select"

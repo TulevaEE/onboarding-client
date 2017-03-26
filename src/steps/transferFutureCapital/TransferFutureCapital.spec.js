@@ -107,7 +107,7 @@ describe('Transfer future capital step', () => {
     });
 
     it('shows active fund note only if user has active fund', () => {
-      let activeSourceFund = { isin: 'AAA', name: 'bla', managementFeeRate: '100' };
+      let activeSourceFund = { isin: 'AAA', name: 'bla', managementFeePercent: 0.5 };
       const targetFunds = [{ isin: 'AAA' }, { isin: 'BBB' }];
       const loadingTargetFunds = false;
       const selectedFutureContributionsFundIsin = null;
@@ -115,7 +115,7 @@ describe('Transfer future capital step', () => {
       const activeFundMessage = (<Message
         params={{
           currentFundName: activeSourceFund.name,
-          currentFundManagementFee: activeSourceFund.managementFeeRate,
+          currentFundManagementFee: activeSourceFund.managementFeePercent,
         }}
       >
         transfer.future.capital.no.subtitle

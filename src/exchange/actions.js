@@ -203,7 +203,7 @@ export function signMandateWithIdCard(mandate) {
 
 export function signMandate(mandate) {
   return (dispatch, getState) => {
-    const loggedInWithMobileId = getState().login.loggedInWithMobileId;
+    const loggedInWithMobileId = getState().login.loginMethod === 'mobileId';
     if (loggedInWithMobileId) {
       return dispatch(signMandateWithMobileId(mandate));
     }
