@@ -27,7 +27,7 @@ export function authenticateWithPhoneNumber(phoneNumber) {
 
 export function authenticateWithIdCard() {
   return get('https://id.tuleva.ee/') // http://stackoverflow.com/a/16818527
-    .then(() => post('https://id.tuleva.ee/idLogin'))
+    .then(() => post('https://id.tuleva.ee/idLogin', undefined, { 'Content-Type': 'text/plain' })) // Firefox CORS
     .then(({ success }) => success);
 }
 
