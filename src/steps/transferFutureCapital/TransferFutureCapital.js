@@ -68,7 +68,7 @@ export const TransferFutureCapital = ({
           </p>) : ''
         }
       </Radio>
-      <div className="px-col mt-5">
+      <div className="mt-5">
         <Link className="btn btn-primary mb-2 mr-2" to="/steps/confirm-mandate">
           <Message>steps.next</Message>
         </Link>
