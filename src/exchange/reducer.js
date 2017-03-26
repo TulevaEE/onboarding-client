@@ -17,6 +17,7 @@ import {
   SIGN_MANDATE_MOBILE_ID_START,
   SIGN_MANDATE_MOBILE_ID_START_SUCCESS,
   SIGN_MANDATE_MOBILE_ID_CANCEL,
+  SIGN_MANDATE_ID_CARD_START,
   SIGN_MANDATE_START_ERROR,
   SIGN_MANDATE_INVALID_ERROR,
   SIGN_MANDATE_SUCCESS,
@@ -97,14 +98,18 @@ export default function exchangeReducer(state = initialState, action) {
     case SELECT_TARGET_FUND:
       return { ...state, selectedFutureContributionsFundIsin: action.targetFundIsin };
 
-    // TODO: test the following actions after demo
-
     case SIGN_MANDATE_MOBILE_ID_START:
+    case SIGN_MANDATE_ID_CARD_START:
       return { ...state, loadingMandate: true, mandateSigningError: null };
     case SIGN_MANDATE_MOBILE_ID_START_SUCCESS:
       return { ...state, mandateSigningControlCode: action.controlCode, loadingMandate: false };
     case SIGN_MANDATE_SUCCESS:
-      return { ...state, mandateSigningControlCode: null, signedMandateId: action.signedMandateId };
+      return {
+        ...state,
+        mandateSigningControlCode: null,
+        signedMandateId: action.signedMandateId,
+        loadingMandate: false,
+      };
 
     case SIGN_MANDATE_START_ERROR: // fallthrough
     case SIGN_MANDATE_ERROR:

@@ -14,6 +14,8 @@ import {
 
   SIGN_MANDATE_MOBILE_ID_START,
   SIGN_MANDATE_MOBILE_ID_START_SUCCESS,
+  SIGN_MANDATE_ID_CARD_START,
+  SIGN_MANDATE_ID_CARD_START_SUCCESS,
   SIGN_MANDATE_START_ERROR,
   SIGN_MANDATE_INVALID_ERROR,
   SIGN_MANDATE_SUCCESS,
@@ -110,12 +112,17 @@ describe('Exchange reducer', () => {
       }).agreedToTerms).toEqual(agreement)));
   });
 
-  it('starts loading mandate when starting to sign mandate', () => {
+  it('starts loading mandate when starting to sign mandate with mobile id', () => {
     const action = { type: SIGN_MANDATE_MOBILE_ID_START };
     expect(exchangeReducer(undefined, action).loadingMandate).toBe(true);
   });
 
-  it('stops loading mandate and saves control code when starting to sign succeeds', () => {
+  it('starts loading mandate when starting to sign mandate with id card', () => {
+    const action = { type: SIGN_MANDATE_ID_CARD_START };
+    expect(exchangeReducer(undefined, action).loadingMandate).toBe(true);
+  });
+
+  it('stops loading mandate and saves control code when starting to sign with mobile id succeeds', () => {
     const controlCode = 'control code';
     const action = { type: SIGN_MANDATE_MOBILE_ID_START_SUCCESS, controlCode };
     const newState = exchangeReducer({ mandateSigningControlCode: true }, action);
@@ -126,9 +133,10 @@ describe('Exchange reducer', () => {
   it('saves the mandate id when signing mandate succeeds', () => {
     const signedMandateId = 'an id';
     const action = { type: SIGN_MANDATE_SUCCESS, signedMandateId };
-    const newState = exchangeReducer({ mandateSigningControlCode: 'code' }, action);
+    const newState = exchangeReducer({ mandateSigningControlCode: 'code', loadingMandate: true }, action);
     expect(newState.mandateSigningControlCode).toBeFalsy();
     expect(newState.signedMandateId).toBe(signedMandateId);
+    expect(newState.loadingMandate).toBe(false);
   });
 
   it('sets the error when signing mandate fails', () => {
