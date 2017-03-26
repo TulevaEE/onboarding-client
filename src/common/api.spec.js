@@ -41,7 +41,7 @@ describe('api', () => {
         expect(mockHttp.get).toHaveBeenCalledTimes(1);
         expect(mockHttp.get).toHaveBeenCalledWith('https://id.tuleva.ee/');
         expect(mockHttp.post).toHaveBeenCalledTimes(1);
-        expect(mockHttp.post).toHaveBeenCalledWith('https://id.tuleva.ee/idLogin');
+        expect(mockHttp.post).toHaveBeenCalledWith('https://id.tuleva.ee/idLogin', undefined, { 'Content-Type': 'text/plain' });
       });
   });
 
