@@ -70,7 +70,13 @@ export default function loginReducer(state = defaultState, action) {
       return { ...state, error: action.error };
 
     case MOBILE_AUTHENTICATION_CANCEL:
-      return { ...state, loadingAuthentication: false, error: null, controlCode: null };
+      return {
+        ...state,
+        loadingAuthentication: false,
+        error: null,
+        controlCode: null,
+        loadingUser: false,
+      };
 
 
     case ID_CARD_AUTHENTICATION_START:
@@ -89,7 +95,7 @@ export default function loginReducer(state = defaultState, action) {
         error: null,
       };
     case ID_CARD_AUTHENTICATION_ERROR:
-      return { ...state, error: action.error, loadingAuthentication: false };
+      return { ...state, error: action.error, loadingAuthentication: false, loadingUser: false };
 
 
     case GET_USER_START:

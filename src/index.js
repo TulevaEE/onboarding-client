@@ -29,8 +29,7 @@ const rootReducer = combineReducers({
   exchange: exchangeReducer, // exchage of funds
 });
 
-const composeEnhancers = (process.env.NODE_ENV === 'development' &&
-  window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose; // eslint-disable-line
+const composeEnhancers = (window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose; // eslint-disable-line
 
 const routingMiddleware = routerMiddleware(browserHistory);
 
