@@ -4,8 +4,9 @@ import { Message } from 'retranslate';
 import advancedFundDiagram from './advanced.png';
 import conservativeFundDiagram from './conservative.png';
 
-const ADVANCED_TARGET_FUND_ISIN = 'AE0000000001';
-const CONSERVATIVE_TARGET_FUND_ISIN = 'AE0000000002';
+// FIXME : make these independed from code
+const ADVANCED_TARGET_FUND_ISIN = 'EE3600109435';
+const CONSERVATIVE_TARGET_FUND_ISIN = 'EE3600109443';
 
 function getTooltipBodyData(fundIsin) {
   if (ADVANCED_TARGET_FUND_ISIN === fundIsin) {

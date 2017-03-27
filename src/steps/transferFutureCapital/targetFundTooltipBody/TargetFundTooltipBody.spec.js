@@ -20,7 +20,7 @@ describe('TargetFundTooltipBody', () => {
   });
 
   it('renders component with correct fund info for advanced fund', () => {
-    component.setProps({ targetFundIsin: 'AE0000000001'});
+    component.setProps({ targetFundIsin: 'EE3600109435'});
 
     const image = () => component.find('img.diagram');
     const listItems = () => component.find('ul li');
@@ -29,7 +29,7 @@ describe('TargetFundTooltipBody', () => {
   });
 
   it('renders component with correct fund info for conservative fund', () => {
-    component.setProps({ targetFundIsin: 'AE0000000002'});
+    component.setProps({ targetFundIsin: 'EE3600109443'});
 
     const image = () => component.find('img.diagram');
     const listItems = () => component.find('ul li');
