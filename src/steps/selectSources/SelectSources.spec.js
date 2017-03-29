@@ -39,11 +39,8 @@ describe('Select sources step', () => {
   });
 
   it('renders a link to the next step', () => {
-    expect(component.contains(
-      <Link className="btn btn-primary mt-5" to="/steps/transfer-future-capital">
-        <Message>steps.next</Message>
-      </Link>,
-    )).toBe(true);
+    expect(component.find(Link).prop('to')).toBe('/steps/transfer-future-capital');
+    expect(component.find(Link).children().at(0).node).toEqual(<Message>steps.next</Message>);
   });
 
   it('sets the full selection radio as selected only when all funds selected', () => {
@@ -184,5 +181,17 @@ describe('Select sources step', () => {
     });
     expect(component.find(TargetFundSelector).prop('recommendedFundIsin'))
       .toBe(recommendedFundIsin);
+  });
+
+  it('disables the next step button if selection is invalid', () => {
+    component.setProps({ sourceSelection: [{ sourceFundIsin: 'a', percentage: 1 }] });
+    expect(component.find(Link).prop('className')).not.toContain('disabled');
+    component.setProps({
+      sourceSelection: [
+        { sourceFundIsin: 'a', percentage: 1 },
+        { sourceFundIsin: 'a', percentage: 1 },
+      ],
+    });
+    expect(component.find(Link).prop('className')).toContain('disabled');
   });
 });
