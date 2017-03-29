@@ -26,6 +26,9 @@ jest.useFakeTimers();
 const mockApi = jest.genMockFromModule('../common/api');
 jest.mock('../common/api', () => mockApi);
 
+const mockHttp = jest.genMockFromModule('../common/http');
+jest.mock('../common/http', () => mockHttp);
+
 const actions = require('./actions'); // need to use require because of jest mocks being weird
 
 describe('Login actions', () => {
@@ -50,6 +53,7 @@ describe('Login actions', () => {
     mockApi.authenticateWithPhoneNumber = () => Promise.reject();
     mockApi.getMobileIdToken = () => Promise.reject();
     mockApi.getIdCardToken = () => Promise.reject();
+    mockHttp.resetStatisticsIdentification = jest.fn();
   });
 
   afterEach(() => {
@@ -208,6 +212,8 @@ describe('Login actions', () => {
   });
 
   it('can log you out', () => {
+    expect(mockHttp.resetStatisticsIdentification).not.toHaveBeenCalled();
     expect(actions.logOut()).toEqual({ type: LOG_OUT });
+    expect(mockHttp.resetStatisticsIdentification).toHaveBeenCalledTimes(1);
   });
 });

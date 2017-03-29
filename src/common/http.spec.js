@@ -1,4 +1,7 @@
-import { get, post, postForm, downloadFile } from './http';
+const mockUuid = jest.genMockFromModule('uuid/v4');
+jest.mock('uuid/v4', () => mockUuid);
+
+const { get, post, postForm, downloadFile, resetStatisticsIdentification } = require('./http');
 
 describe('http', () => {
   let originalFetch;
@@ -7,7 +10,21 @@ describe('http', () => {
   beforeEach(() => {
     originalFetch = global.window.fetch;
     fetch = jest.fn();
+    mockUuid.mockImplementation(() => 'fake uuid');
     global.window.fetch = fetch;
+    global.window.localStorage = new (class {
+      constructor() {
+        this.items = {};
+      }
+
+      setItem(name, item) {
+        this.items[name] = item;
+      }
+
+      getItem(name) {
+        return this.items[name];
+      }
+    })();
   });
 
   afterEach(() => {
@@ -64,7 +81,7 @@ describe('http', () => {
   it('can download a file', () => {
     const value = { thisIsTheReturnValue: true };
     fetch.mockReturnValueOnce(fakeSuccessfulResponseWithValue(value));
-    const headers = { thing: 'hello', another: 5 };
+    const headers = { thing: 'hello', another: 5, 'x-statistics-identifier': 'fake uuid' };
     return downloadFile('https://example.com', headers)
       .then((givenValue) => {
         expect(givenValue).toEqual(value);
@@ -73,6 +90,27 @@ describe('http', () => {
         const options = fetch.mock.calls[0][1];
         expect(options.method).toEqual('GET');
         expect(options.headers).toEqual(headers);
+      });
+  });
+
+  it('sends statistics and can reset them', () => {
+    fetch.mockReturnValue(fakeSuccessfulResponseWithValue());
+    return get('')
+      .then(() => {
+        expect(fetch.mock.calls[0][1].headers['x-statistics-identifier']).toBe('fake uuid');
+        expect(window.localStorage.getItem('statisticsId')).toBe('fake uuid');
+        mockUuid.mockImplementation(() => 'fake uuid 2');
+        return get('');
+      })
+      .then(() => {
+        expect(fetch.mock.calls[1][1].headers['x-statistics-identifier']).toBe('fake uuid');
+        expect(window.localStorage.getItem('statisticsId')).toBe('fake uuid');
+        resetStatisticsIdentification();
+        return get('');
+      })
+      .then(() => {
+        expect(fetch.mock.calls[2][1].headers['x-statistics-identifier']).toBe('fake uuid 2');
+        expect(window.localStorage.getItem('statisticsId')).toBe('fake uuid 2');
       });
   });
 
@@ -92,7 +130,7 @@ describe('http', () => {
 
   it('throws if response is not successful', () => {
     const errorData = { iAmError: true };
-    const expectedError = { status: 400, body: errorData }
+    const expectedError = { status: 400, body: errorData };
     fetch.mockReturnValueOnce(fakeUnsuccessfulResponseWithValue(errorData));
     return get('https://example.com')
       .then(fail)

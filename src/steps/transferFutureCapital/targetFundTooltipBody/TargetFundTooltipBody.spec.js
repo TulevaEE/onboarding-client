@@ -7,7 +7,7 @@ describe('TargetFundTooltipBody', () => {
   let component;
 
   beforeEach(() => {
-    component = shallow(<TargetFundTooltipBody targetFundIsin="AE0000000001" />);
+    component = shallow(<TargetFundTooltipBody targetFundIsin="EE3600109435" />);
   });
 
   it('when wrong isin passed - renders default no data message', () => {

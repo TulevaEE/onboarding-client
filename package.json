@@ -57,7 +57,10 @@
     "bootstrap": "4.0.0-alpha.6",
     "compression": "^1.6.2",
     "downloadjs": "^1.4.7",
+    "exports-loader": "^0.6.4",
     "express": "^4.14.1",
+    "hwcrypto-js": "ErkoRisthein/hwcrypto.js",
+    "imports-loader": "^0.7.1",
     "raven-js": "^3.12.1",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
@@ -68,9 +71,7 @@
     "redux": "^3.6.0",
     "redux-thunk": "^2.2.0",
     "retranslate": "^0.1.2",
-    "hwcrypto-js": "ErkoRisthein/hwcrypto.js",
-    "exports-loader": "^0.6.4",
-    "imports-loader": "^0.7.1"
+    "uuid": "^3.0.1"
   },
   "scripts": {
     "start": "NODE_ENV=production node scripts/start.js",

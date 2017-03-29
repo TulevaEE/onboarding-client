@@ -18,6 +18,21 @@ function selectAllWithTarget(sourceFunds, targetFund) {
   }));
 }
 
+function selectionsValid(selections) {
+  const sourceFundPercentages = {};
+  let valid = true;
+  selections.forEach((selection) => {
+    if (!sourceFundPercentages[selection.sourceFundIsin]) {
+      sourceFundPercentages[selection.sourceFundIsin] = 0;
+    }
+    sourceFundPercentages[selection.sourceFundIsin] += selection.percentage;
+    if (sourceFundPercentages[selection.sourceFundIsin] > 1) {
+      valid = false;
+    }
+  });
+  return valid;
+}
+
 export const SelectSources = ({
   recommendedFundIsin,
   loadingSourceFunds,
@@ -34,6 +49,7 @@ export const SelectSources = ({
   const defaultTargetFund = targetFunds && targetFunds.length ? targetFunds[0] : null;
   const fullSelectionActive = !!sourceSelection.length && !sourceSelectionExact;
   const noneSelectionActive = !sourceSelection.length && !sourceSelectionExact;
+  const valid = selectionsValid(sourceSelection);
   return (
     <div>
       <div className="px-col mb-4">
@@ -100,7 +116,10 @@ export const SelectSources = ({
         }
       </Radio>
 
-      <Link className="btn btn-primary mt-5" to="/steps/transfer-future-capital">
+      <Link
+        className={`btn btn-primary mt-5 ${!valid ? 'disabled' : ''}`}
+        to="/steps/transfer-future-capital"
+      >
         <Message>steps.next</Message>
       </Link>
     </div>
@@ -132,7 +151,7 @@ SelectSources.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  recommendedFundIsin: (state.login.user || {}).age < 55 ? 'AE0000000001' : '',
+  recommendedFundIsin: (state.login.user || {}).age < 55 ? 'EE3600109435' : '',
   sourceSelection: state.exchange.sourceSelection,
   sourceSelectionExact: state.exchange.sourceSelectionExact,
   sourceFunds: state.exchange.sourceFunds,
