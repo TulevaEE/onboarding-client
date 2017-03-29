@@ -23,7 +23,7 @@ import {
   LOG_OUT,
 } from './constants';
 
-import { api } from '../common';
+import { api, http } from '../common';
 
 const POLL_DELAY = 1000;
 
@@ -112,5 +112,6 @@ export function logOut() {
   if (process.env.NODE_ENV === 'production') {
     Raven.setUserContext(); // unauthenticate
   }
+  http.resetStatisticsIdentification();
   return { type: LOG_OUT };
 }
