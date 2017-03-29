@@ -63,7 +63,7 @@ describe('Exchange reducer', () => {
 
   it('stops loading, saves and selects target funds when getting them succeeds', () => {
     const targetFunds = [
-      { isin: 'AE0000000001', iShouldBeSelected: true },
+      { isin: 'EE3600109435', iShouldBeSelected: true },
       { isin: 'asd', hello: true },
     ];
     const action = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };

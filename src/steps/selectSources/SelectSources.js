@@ -132,7 +132,7 @@ SelectSources.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  recommendedFundIsin: (state.login.user || {}).age < 55 ? 'AE0000000001' : '',
+  recommendedFundIsin: (state.login.user || {}).age < 55 ? 'EE3600109435' : '',
   sourceSelection: state.exchange.sourceSelection,
   sourceSelectionExact: state.exchange.sourceSelectionExact,
   sourceFunds: state.exchange.sourceFunds,
