@@ -18,7 +18,7 @@ function forceHttps(request, response, next) {
 app.use(compression());
 app.use(forceHttps);
 app.use(express.static(path.join(__dirname, '..', 'build')));
-app.use('/api', proxy('onboarding-service.tuleva.ee'));
+app.use('/api', proxy('https://onboarding-service.tuleva.ee'));
 
 app.get('*', (request, response) =>
   response.sendFile(path.join(__dirname, '..', 'build', 'index.html')));
