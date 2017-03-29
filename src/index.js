@@ -61,6 +61,10 @@ function getDataForAccount() {
   }
 }
 
+function scrollToTop() {
+  window.scrollTo(0, 0);
+}
+
 render((
   <TranslationProvider messages={translations} language="et" fallbackLanguage="et">
     <ReduxProvider store={store}>
@@ -69,9 +73,13 @@ render((
         <Route path="/terms-of-use" component={TermsOfUse} />
         <Route path="/" component={requireAuthentication(App)} onEnter={getDataForApp}>
           <Route path="/steps" component={Steps} onEnter={getDataForFlow}>
-            <Route path="select-sources" component={SelectSources} />
-            <Route path="transfer-future-capital" component={TransferFutureCapital} />
-            <Route path="confirm-mandate" component={ConfirmMandate} />
+            <Route path="select-sources" component={SelectSources} onEnter={scrollToTop} />
+            <Route
+              path="transfer-future-capital"
+              component={TransferFutureCapital}
+              onEnter={scrollToTop}
+            />
+            <Route path="confirm-mandate" component={ConfirmMandate} onEnter={scrollToTop} />
           </Route>
           <Route path="/steps/success" component={Success} />
           <Route path="/account" component={AccountPage} onEnter={getDataForAccount} />
