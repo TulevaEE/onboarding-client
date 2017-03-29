@@ -1,7 +1,8 @@
-// This script is used to serve the built files in production.
+// This script is used to serve the built files in production and proxy api requests to the service.
 // Would be preferrable to replace with apache.
 
 const express = require('express');
+const proxy = require('express-http-proxy');
 const compression = require('compression');
 const path = require('path');
 
@@ -17,9 +18,10 @@ function forceHttps(request, response, next) {
 app.use(compression());
 app.use(forceHttps);
 app.use(express.static(path.join(__dirname, '..', 'build')));
+app.use('/api', proxy('https://onboarding-service.tuleva.ee'));
 
 app.get('*', (request, response) =>
   response.sendFile(path.join(__dirname, '..', 'build', 'index.html')));
 
 const port = process.env.PORT || 8080;
-app.listen(port, () => console.log(`Static files server running on ${port}`)); // eslint-disable-line
+app.listen(port, () => console.log(`Static server running on ${port}`)); // eslint-disable-line
