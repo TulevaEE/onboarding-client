@@ -13,6 +13,9 @@ import {
   MOBILE_AUTHENTICATION_CANCEL,
 
   ID_CARD_AUTHENTICATION_START,
+  ID_CARD_AUTHENTICATION_START_SUCCESS,
+  ID_CARD_AUTHENTICATION_START_ERROR,
+
   ID_CARD_AUTHENTICATION_SUCCESS,
   ID_CARD_AUTHENTICATION_ERROR,
 
@@ -67,16 +70,37 @@ export function authenticateWithPhoneNumber(phoneNumber) {
   };
 }
 
+function getIdCardToken() {
+  return (dispatch) => {
+    if (timeout && process.env.NODE_ENV !== 'test') {
+      clearTimeout(timeout);
+    }
+    timeout = setTimeout(() => {
+      api
+        .getIdCardToken()
+        .then((token) => {
+          if (token) { // authentication complete
+            dispatch({ type: ID_CARD_AUTHENTICATION_SUCCESS, token });
+            dispatch(push('/steps/select-sources'));
+          } else { // authentication not yet completed, poll again.
+            dispatch(getIdCardToken());
+          }
+        })
+        .catch(error => dispatch({ type: ID_CARD_AUTHENTICATION_ERROR, error }));
+    }, POLL_DELAY);
+  };
+}
+
 export function authenticateWithIdCard() {
   return (dispatch) => {
     dispatch({ type: ID_CARD_AUTHENTICATION_START });
     return api
       .authenticateWithIdCard()
-      .then(() => api.getIdCardToken())
-      .then((token) => {
-        dispatch({ type: ID_CARD_AUTHENTICATION_SUCCESS, token });
-        dispatch(push('/steps/select-sources'));
-      }).catch(error => dispatch({ type: ID_CARD_AUTHENTICATION_ERROR, error }));
+      .then(() => {
+        dispatch({ type: ID_CARD_AUTHENTICATION_START_SUCCESS });
+        dispatch(getIdCardToken());
+      })
+      .catch(error => dispatch({ type: ID_CARD_AUTHENTICATION_START_ERROR, error }));
   };
 }
 

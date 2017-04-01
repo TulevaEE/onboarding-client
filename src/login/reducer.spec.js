@@ -13,6 +13,7 @@ import {
   ID_CARD_AUTHENTICATION_START,
   ID_CARD_AUTHENTICATION_SUCCESS,
   ID_CARD_AUTHENTICATION_ERROR,
+  ID_CARD_AUTHENTICATION_START_ERROR,
 
   GET_USER_START,
   GET_USER_SUCCESS,
@@ -84,7 +85,16 @@ describe('Login reducer', () => {
     const token = 'token';
     const action = { type: ID_CARD_AUTHENTICATION_SUCCESS, token };
     expect(loginReducer(undefined, action).token).toBe(token);
+  })
+
+  it('sets the error when mobile authentication fails', () => {
+    const error = new Error('oh noes!!1');
+    const action = { type: ID_CARD_AUTHENTICATION_START_ERROR, error };
+    const newState = loginReducer(undefined, action);
+    expect(newState.token).toBe(null);
+    expect(newState.error).toBe(error);
   });
+
 
   it('sets the error when mobile authentication fails', () => {
     const error = new Error('oh noes!!1');

@@ -7,6 +7,7 @@ import {
   MOBILE_AUTHENTICATION_ERROR,
   MOBILE_AUTHENTICATION_CANCEL,
   ID_CARD_AUTHENTICATION_START,
+  ID_CARD_AUTHENTICATION_START_ERROR,
   ID_CARD_AUTHENTICATION_SUCCESS,
   ID_CARD_AUTHENTICATION_ERROR,
   GET_USER_START,
@@ -94,6 +95,7 @@ export default function loginReducer(state = defaultState, action) {
         loginMethod: 'idCard',
         error: null,
       };
+    case ID_CARD_AUTHENTICATION_START_ERROR:
     case ID_CARD_AUTHENTICATION_ERROR:
       return { ...state, error: action.error, loadingAuthentication: false, loadingUser: false };
 
