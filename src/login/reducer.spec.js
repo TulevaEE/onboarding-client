@@ -120,5 +120,6 @@ describe('Login reducer', () => {
     const newState = loginReducer({ token: 'token', loginMethod: 'mobileId' }, { type: LOG_OUT });
     expect(newState.token).toBe(null);
     expect(newState.loginMethod).toBe(null);
+    expect(newState.loadingUser).toBe(false);
   });
 });
