@@ -67,6 +67,17 @@ function attachNames(selections, sourceFunds) {
   }));
 }
 
+function getMandate(exchange) {
+  return {
+    fundTransferExchanges: exchange.sourceSelection.map(selection => ({
+      amount: selection.percentage,
+      sourceFundIsin: selection.sourceFundIsin,
+      targetFundIsin: selection.targetFundIsin,
+    })),
+    futureContributionFundIsin: exchange.selectedFutureContributionsFundIsin,
+  };
+}
+
 export const ConfirmMandate = ({
   exchange,
   onPreviewMandate,
@@ -86,23 +97,9 @@ export const ConfirmMandate = ({
   const canSignMandate = exchange.agreedToTerms && hasFilledFlow;
   // TODO: extract into a function
   const startPreviewMandate = () => {
-    onPreviewMandate({
-      fundTransferExchanges: exchange.sourceSelection.map(selection => ({
-        amount: selection.percentage,
-        sourceFundIsin: selection.sourceFundIsin,
-        targetFundIsin: selection.targetFundIsin,
-      })),
-      futureContributionFundIsin: exchange.selectedFutureContributionsFundIsin,
-    });
+    onPreviewMandate(getMandate(exchange));
   };
-  const startSigningMandate = () => canSignMandate && onSignMandate({
-    fundTransferExchanges: exchange.sourceSelection.map(selection => ({
-      amount: selection.percentage,
-      sourceFundIsin: selection.sourceFundIsin,
-      targetFundIsin: selection.targetFundIsin,
-    })),
-    futureContributionFundIsin: exchange.selectedFutureContributionsFundIsin,
-  });
+  const startSigningMandate = () => canSignMandate && onSignMandate(getMandate(exchange));
   return (
     <div className="px-col">
       {
