@@ -156,6 +156,20 @@ describe('api', () => {
       });
   });
 
+    it('can get contributions fund name with a token', () => {
+        const contributionsFund = [{ name: "fund" }];
+        const token = 'token';
+        mockHttp.get = jest.fn(() => Promise.resolve(contributionsFund));
+        return api
+            .getContributionsFund(token)
+            .then((givenContributionsFundName) => {
+                expect(givenContributionsFundName).toEqual(contributionsFund);
+                expect(mockHttp.get).toHaveBeenCalledWith('/v1/contributions-fund-name', undefined, {
+                    Authorization: `Bearer ${token}`,
+                });
+            });
+    });    
+
   it('can get target funds with a token', () => {
     const targetFunds = [{ iAmAFund: true }];
     const token = 'token';
