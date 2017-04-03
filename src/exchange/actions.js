@@ -18,6 +18,9 @@ import {
   GET_SOURCE_FUNDS_ERROR,
   GET_SOURCE_FUNDS_START,
   GET_SOURCE_FUNDS_SUCCESS,
+  GET_CONTRIBUTIONS_FUNDS_START,
+  GET_CONTRIBUTIONS_FUNDS_SUCCESS,
+  GET_CONTRIBUTIONS_FUNDS_ERROR,
   GET_TARGET_FUNDS_ERROR,
   GET_TARGET_FUNDS_START,
   GET_TARGET_FUNDS_SUCCESS,
@@ -54,6 +57,15 @@ export function getSourceFunds() {
         dispatch({ type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds });
       })
       .catch(error => dispatch({ type: GET_SOURCE_FUNDS_ERROR, error }));
+  };
+}
+
+export function getContributionsFund() {
+  return (dispatch, getState) => {
+    dispatch({ type: GET_CONTRIBUTIONS_FUNDS_START });
+    return getContributionsFund(getState().login.token)
+        .then(targetFunds => dispatch({ type: GET_CONTRIBUTIONS_FUNDS_SUCCESS, targetFunds }))
+        .catch(error => dispatch({ type: GET_CONTRIBUTIONS_FUNDS_ERROR, error }));
   };
 }
 

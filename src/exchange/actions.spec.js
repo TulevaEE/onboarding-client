@@ -5,6 +5,11 @@ import {
   GET_SOURCE_FUNDS_SUCCESS,
   GET_SOURCE_FUNDS_ERROR,
 
+  GET_CONTRIBUTIONS_FUNDS_START,
+  GET_CONTRIBUTIONS_FUNDS_SUCCESS,
+  GET_CONTRIBUTIONS_FUNDS_ERROR,
+
+
   SELECT_EXCHANGE_SOURCES,
 
   GET_TARGET_FUNDS_START,
@@ -125,6 +130,26 @@ describe('Exchange actions', () => {
       sourceSelection,
       sourceSelectionExact: true,
     });
+  });
+
+  it('can get contributions fund', () => {
+    const contributionsFund = [{ name: "FundName" }];
+    mockApi.getContributionsFund = jest.fn(() => {
+      expect(dispatch).toHaveBeenCalledTimes(1);
+      expect(dispatch).toHaveBeenCalledWith({ type: GET_CONTRIBUTIONS_FUNDS_START });
+      dispatch.mockClear();
+      return Promise.resolve(contributionsFund);
+    });
+    const getTargetFunds = createBoundAction(actions.getTargetFunds);
+    expect(dispatch).not.toHaveBeenCalled();
+    return getTargetFunds()
+        .then(() => {
+          expect(dispatch).toHaveBeenCalledTimes(1);
+          expect(dispatch).toHaveBeenCalledWith({
+            type: GET_CONTRIBUTIONS_FUNDS_SUCCESS,
+            contributionsFund,
+          });
+        });
   });
 
   it('can get target funds', () => {
