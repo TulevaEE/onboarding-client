@@ -24,6 +24,10 @@ import {
   SIGN_MANDATE_ERROR,
 } from './constants';
 
+import {
+  LOG_OUT,
+} from '../login/constants';
+
 const initialState = {
   sourceFunds: null,
   loadingSourceFunds: false,
@@ -141,6 +145,8 @@ export default function exchangeReducer(state = initialState, action) {
         agreedToTerms: action.agreement,
       };
 
+    case LOG_OUT:
+      return initialState;
     default:
       return state;
   }

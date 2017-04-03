@@ -25,6 +25,10 @@ import {
   CHANGE_AGREEMENT_TO_TERMS,
 } from './constants';
 
+import {
+    LOG_OUT,
+} from '../login/constants';
+
 describe('Exchange reducer', () => {
   it('starts loading when starting to get pension funds', () => {
     const newState = exchangeReducer(undefined, { type: GET_SOURCE_FUNDS_START });
@@ -175,4 +179,39 @@ describe('Exchange reducer', () => {
     expect(newState.mandateSigningControlCode).toBeFalsy();
     expect(newState.signedMandateId).toBe(null);
   });
+
+  it('reverts to initial state when log out', () => {
+    const action = { type: LOG_OUT };
+    const newState = exchangeReducer({
+      sourceFunds: [],
+      loadingSourceFunds: true,
+      sourceSelection: "123",
+      sourceSelectionExact: true,
+      targetFunds: [],
+      loadingTargetFunds: true,
+      selectedFutureContributionsFundIsin: "123",
+      error: "123",
+      loadingMandate: true,
+      mandateSigningControlCode: "123",
+      mandateSigningError: "123",
+      signedMandateId: 123,
+      agreedToTerms: true,
+    }, action);
+
+    expect(newState.sourceFunds).toBe(null);
+    expect(newState.loadingSourceFunds).toBe(false);
+    expect(newState.sourceSelection).toBe(null);
+    expect(newState.sourceSelectionExact).toBe(false);
+    expect(newState.targetFunds).toBe(null);
+    expect(newState.loadingTargetFunds).toBe(false);
+    expect(newState.selectedFutureContributionsFundIsin).toBe(null);
+    expect(newState.error).toBe(null);
+
+    expect(newState.loadingMandate).toBe(false);
+    expect(newState.mandateSigningControlCode).toBe(null);
+    expect(newState.mandateSigningError).toBe(null);
+    expect(newState.signedMandateId).toBe(false);
+    expect(newState.agreedToTerms).toBe(false);
+  });
+
 });
