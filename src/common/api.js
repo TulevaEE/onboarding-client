@@ -77,10 +77,6 @@ export function getSourceFundsWithToken(token) {
   }).then(funds => funds.map(transformFundBalance));
 }
 
-export function getContributionsFund(token) {
-  return get(getEndpoint('/v1/contributions-fund-name'), undefined, { Authorization: `Bearer ${token}` });
-}
-
 export function getTargetFundsWithToken(token) {
   return get(getEndpoint('/v1/funds'), { 'fundManager.name': 'Tuleva' }, {
     Authorization: `Bearer ${token}`,

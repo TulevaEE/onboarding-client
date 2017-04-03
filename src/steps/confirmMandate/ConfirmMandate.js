@@ -67,13 +67,25 @@ function attachNames(selections, sourceFunds) {
   }));
 }
 
+function isFundPriceZero(sourceFunds, isinToMatch) {
+  const funds = utils.findWhere(sourceFunds, ({ isin }) => (
+      isin === isinToMatch
+  )).price === 0;
+
+  return funds;
+}
+
 function getMandate(exchange) {
   return {
-    fundTransferExchanges: exchange.sourceSelection.map(selection => ({
-      amount: selection.percentage,
-      sourceFundIsin: selection.sourceFundIsin,
-      targetFundIsin: selection.targetFundIsin,
-    })),
+    fundTransferExchanges:
+      exchange.sourceSelection
+        .filter(selection =>
+          isFundPriceZero(exchange.sourceFunds, selection.sourceFundIsin) !== true)
+        .map(selection => ({
+          amount: selection.percentage,
+          sourceFundIsin: selection.sourceFundIsin,
+          targetFundIsin: selection.targetFundIsin,
+        })),
     futureContributionFundIsin: exchange.selectedFutureContributionsFundIsin,
   };
 }
