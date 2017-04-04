@@ -116,5 +116,10 @@
   "account.active.fund.title": "Minu aktiivne pensionifond",
   "account.tuleva.balance.title": "Minu Tuleva pensionikapitali seis",
   "account.tuleva.balance.subtitle": "Tuleva pensionikapital on sinu osa Tuleva Fondid AS ehk meie ühise fondivalitseja omakapitalist, mille üle peame arvestust Tuleva Tulundusühistu registris. See on lisaks sinu kogumispensionile, mitte osa sellest!",
-  "account.contact.info.title": "Minu kontaktandmed"
+  "account.contact.info.title": "Minu kontaktandmed",
+  "error.messages.intro": "Leitud järgnevad vead",
+  "error.message.close": "Sulge",
+  "mandate.processing.error.epis.already.active.contributions.fund": "Valitud fond on juba aktiivne",
+  "mandate.processing.error.epis.unknown": "Tundmatu Eesti Pensioni Infosüsteemi viga",
+  "mandate.processing.error.epis.technical.error": "Tundmatu Eesti Pensioni Infosüsteemi tehniline viga"
 }

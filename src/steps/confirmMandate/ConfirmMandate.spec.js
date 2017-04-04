@@ -6,7 +6,7 @@ import { Link } from 'react-router';
 import { ConfirmMandate } from './ConfirmMandate';
 import FundTransferTable from './fundTransferTable';
 import MandateNotFilledAlert from './mandateNotFilledAlert';
-import { Loader, AuthenticationLoader } from '../../common';
+import { Loader, AuthenticationLoader, ErrorMessage } from '../../common';
 
 describe('Confirm mandate step', () => {
   let component;
@@ -435,4 +435,28 @@ describe('Confirm mandate step', () => {
       </div>,
     )).toBe(true);
   });
+
+  it('renders an overlayed error messages on error while signing the mandate', () => {
+    const onCloseErrorMessages = jest.fn();
+    component.setProps({
+      onCloseErrorMessages,
+      exchange: {
+        selectedFutureContributionsFundIsin: 'test isin',
+        sourceSelection: [],
+        mandateSigningError: null,
+      },
+    });
+    const hasErrorMessage = () => !!component.find(ErrorMessage).length;
+
+    expect(hasErrorMessage()).toBe(false);
+    component.setProps({
+      exchange: {
+        selectedFutureContributionsFundIsin: 'test isin',
+        sourceSelection: [],
+        mandateSigningError: {errors:[]},
+      },
+    });
+    expect(hasErrorMessage()).toBe(true);
+  });
+
 });

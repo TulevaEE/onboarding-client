@@ -23,6 +23,8 @@ import {
   SIGN_MANDATE_MOBILE_ID_CANCEL,
 
   CHANGE_AGREEMENT_TO_TERMS,
+
+  NO_SIGN_MANDATE_ERROR,
 } from './constants';
 
 import {
@@ -178,6 +180,14 @@ describe('Exchange reducer', () => {
     expect(newState.loadingMandate).toBe(false);
     expect(newState.mandateSigningControlCode).toBeFalsy();
     expect(newState.signedMandateId).toBe(null);
+  });
+
+  it('can remove mandate sign errors', () => {
+    const action = { type: NO_SIGN_MANDATE_ERROR };
+    const newState = exchangeReducer({
+      mandateSigningError: {error:[]},
+    }, action);
+    expect(newState.mandateSigningError).toBe(null);
   });
 
   it('reverts to initial state when log out', () => {
