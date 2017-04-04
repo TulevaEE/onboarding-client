@@ -8,11 +8,17 @@ const ErrorMessage = ({ errors, onCancel, overlayed }) => {
     <div className="card text-center p-4 tv-modal__content">
       <div className="p-4">
         <div>
-          <p><Message>login.control.code</Message></p>
-          <p>{errors.toString()}</p>
+          <p>
+            <b><Message>error.messages.intro</Message></b>
+          </p>
+          {
+            errors.errors.map((error, index) => (
+              <p key={index}><Message>{error.code}</Message></p>
+            ))
+          }
         </div>
         <button className="btn btn-secondary mt-4" onClick={onCancel}>
-          <Message>Close</Message>
+          <Message>error.message.close</Message>
         </button>
       </div>
     </div>
@@ -38,13 +44,15 @@ const ErrorMessage = ({ errors, onCancel, overlayed }) => {
 const noop = () => null;
 
 ErrorMessage.defaultProps = {
-  errors: [],
+  errors: {errors:[]},
   onCancel: noop,
   overlayed: false,
 };
 
 ErrorMessage.propTypes = {
-  errors: Types.shape({}),
+  errors: Types.shape({
+    errors: Types.arrayOf(Types.shape({}))
+  }),
   onCancel: Types.func,
   overlayed: Types.bool,
 };

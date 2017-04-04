@@ -41,7 +41,7 @@ const initialState = {
 
   loadingMandate: false,
   mandateSigningControlCode: null,
-  mandateSigningError: { errors: [{ 1: 2 }, { 3: 4 }] },
+  mandateSigningError: null,
   signedMandateId: false,
   agreedToTerms: false,
 };
