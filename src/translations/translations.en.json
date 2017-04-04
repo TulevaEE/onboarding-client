@@ -112,5 +112,9 @@
   "account.tuleva.balance.subtitle": "Tuleva pension capital is a part of the Tuleva Fondid AS capital, which is kept track of in the Commercial Association Tuleva registry. This money is in addition to your second pillar funds, not a part of them.",
   "account.contact.info.title": "My contact information",
   "error.messages.intro": "Following errors found",
-  "error.message.close": "Close"
+  "error.message.close": "Close",
+  "mandate.processing.error.epis.already.active.contributions.fund": "Selected contributions fund is already active",
+  "mandate.processing.error.epis.unknown": "Unknown Estonian Pension Information system error",
+  "mandate.processing.error.epis.technical.error": "Unknown Estonian Pension Information system technical error"
+
 }

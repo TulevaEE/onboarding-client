@@ -12,7 +12,7 @@ const ErrorMessage = ({ errors, onCancel, overlayed }) => {
             <b><Message>error.messages.intro</Message></b>
           </p>
           {
-            errors.errors.map((error, index) => (
+            errors.errors && errors.errors.map((error, index) => (
               <p key={index}><Message>{error.code}</Message></p>
             ))
           }
