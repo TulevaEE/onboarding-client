@@ -22,6 +22,8 @@ import {
   SIGN_MANDATE_MOBILE_ID_CANCEL,
 
   CHANGE_AGREEMENT_TO_TERMS,
+
+  NO_SIGN_MANDATE_ERROR,
 } from './constants';
 
 jest.useFakeTimers();
@@ -337,4 +339,11 @@ describe('Exchange actions', () => {
       type: SIGN_MANDATE_MOBILE_ID_CANCEL,
     });
   });
+
+  it('can close error messages', () => {
+    expect(actions.closeErrorMessages()).toEqual({
+      type: NO_SIGN_MANDATE_ERROR,
+    });
+  });
+
 });

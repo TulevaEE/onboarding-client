@@ -33,6 +33,7 @@ import {
   SIGN_MANDATE_MOBILE_ID_START_SUCCESS,
   SIGN_MANDATE_START_ERROR,
   SIGN_MANDATE_SUCCESS,
+  NO_SIGN_MANDATE_ERROR,
 } from './constants';
 
 const POLL_DELAY = 1000;
@@ -216,4 +217,8 @@ export function cancelSigningMandate() {
     clearTimeout(timeout);
   }
   return { type: SIGN_MANDATE_MOBILE_ID_CANCEL };
+}
+
+export function closeErrorMessages() {
+  return { type: NO_SIGN_MANDATE_ERROR };
 }

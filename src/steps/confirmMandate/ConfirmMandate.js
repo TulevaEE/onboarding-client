@@ -4,13 +4,14 @@ import { Message } from 'retranslate';
 import { Link } from 'react-router';
 import { connect } from 'react-redux';
 
-import { Loader, AuthenticationLoader, utils } from '../../common';
+import { Loader, AuthenticationLoader, ErrorMessage, utils } from '../../common';
 
 import {
   previewMandate,
   signMandate,
   cancelSigningMandate,
   changeAgreementToTerms,
+  closeErrorMessages,
 } from '../../exchange/actions';
 
 import MandateNotFilledAlert from './mandateNotFilledAlert';
@@ -96,6 +97,7 @@ export const ConfirmMandate = ({
   onSignMandate,
   onCancelSigningMandate,
   onChangeAgreementToTerms,
+  onCloseErrorMessages,
 }) => {
   if (exchange.loadingSourceFunds || exchange.loadingTargetFunds) {
     return <Loader className="align-middle" />;
@@ -182,6 +184,16 @@ export const ConfirmMandate = ({
           </div>
         ) : ''
       }
+
+      {
+        exchange.mandateSigningError ? (
+          <ErrorMessage
+            errors={exchange.mandateSigningError}
+            onCancel={onCloseErrorMessages}
+            overlayed
+          />
+        ) : ''
+      }
       <div className="mt-5">
         <button
           id="sign"
@@ -222,6 +234,7 @@ ConfirmMandate.defaultProps = {
   onSignMandate: noop,
   onCancelSigningMandate: noop,
   onChangeAgreementToTerms: noop,
+  onCloseErrorMessages: noop,
 };
 
 ConfirmMandate.propTypes = {
@@ -236,6 +249,7 @@ ConfirmMandate.propTypes = {
   onSignMandate: Types.func,
   onCancelSigningMandate: Types.func,
   onChangeAgreementToTerms: Types.func,
+  onCloseErrorMessages: Types.func,
 };
 
 const mapStateToProps = state => ({
@@ -247,6 +261,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   onSignMandate: signMandate,
   onChangeAgreementToTerms: changeAgreementToTerms,
   onCancelSigningMandate: cancelSigningMandate,
+  onCloseErrorMessages: closeErrorMessages,
 }, dispatch);
 
 const connectToRedux = connect(mapStateToProps, mapDispatchToProps);

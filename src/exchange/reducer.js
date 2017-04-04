@@ -22,6 +22,7 @@ import {
   SIGN_MANDATE_INVALID_ERROR,
   SIGN_MANDATE_SUCCESS,
   SIGN_MANDATE_ERROR,
+  NO_SIGN_MANDATE_ERROR,
 } from './constants';
 
 import {
@@ -40,7 +41,7 @@ const initialState = {
 
   loadingMandate: false,
   mandateSigningControlCode: null,
-  mandateSigningError: null,
+  mandateSigningError: { errors: [{ 1: 2 }, { 3: 4 }] },
   signedMandateId: false,
   agreedToTerms: false,
 };
@@ -147,6 +148,11 @@ export default function exchangeReducer(state = initialState, action) {
 
     case LOG_OUT:
       return initialState;
+    case NO_SIGN_MANDATE_ERROR:
+      return {
+        ...state,
+        mandateSigningError: null,
+      };
     default:
       return state;
   }
