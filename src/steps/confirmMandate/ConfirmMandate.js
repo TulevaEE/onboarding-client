@@ -186,7 +186,7 @@ export const ConfirmMandate = ({
       }
 
       {
-        exchange.mandateSigningError ? (
+        exchange.mandateSigningError && exchange.mandateSigningError.errors ? (
           <ErrorMessage
             errors={exchange.mandateSigningError}
             onCancel={onCloseErrorMessages}
