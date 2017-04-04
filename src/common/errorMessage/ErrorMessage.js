@@ -44,14 +44,14 @@ const ErrorMessage = ({ errors, onCancel, overlayed }) => {
 const noop = () => null;
 
 ErrorMessage.defaultProps = {
-  errors: {errors:[]},
+  errors: { errors: [] },
   onCancel: noop,
   overlayed: false,
 };
 
 ErrorMessage.propTypes = {
   errors: Types.shape({
-    errors: Types.arrayOf(Types.shape({}))
+    errors: Types.arrayOf(Types.shape({})),
   }),
   onCancel: Types.func,
   overlayed: Types.bool,
