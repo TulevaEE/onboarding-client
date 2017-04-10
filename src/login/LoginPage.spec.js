@@ -2,8 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Message } from 'retranslate';
 import { LoginPage } from './LoginPage';
-import { AuthenticationLoader } from '../common';
-import ErrorAlert from './errorAlert';
+import { AuthenticationLoader, ErrorAlert } from '../common';
 import LoginForm from './loginForm';
 
 describe('Login page', () => {

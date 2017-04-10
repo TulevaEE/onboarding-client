@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
 import { selectExchangeSources } from '../../exchange/actions';
-import { Loader, Radio } from '../../common';
+import { Loader, Radio, ErrorAlert } from '../../common';
 import PensionFundTable from './pensionFundTable';
 import TargetFundSelector from './targetFundSelector';
 import ExactFundSelector from './exactFundSelector';
@@ -42,7 +42,11 @@ export const SelectSources = ({
   sourceSelection,
   onSelect,
   sourceSelectionExact,
+  errorDescription,
 }) => {
+  if (errorDescription) {
+    return <ErrorAlert description={errorDescription} />;
+  }
   if (loadingSourceFunds || loadingTargetFunds) {
     return <Loader className="align-middle" />;
   }
@@ -137,6 +141,7 @@ SelectSources.defaultProps = {
   sourceSelection: [],
   sourceSelectionExact: false,
   onSelect: noop,
+  errorDescription: '',
 };
 
 SelectSources.propTypes = {
@@ -148,6 +153,7 @@ SelectSources.propTypes = {
   loadingSourceFunds: Types.bool,
   loadingTargetFunds: Types.bool,
   onSelect: Types.func,
+  errorDescription: Types.string,
 };
 
 const mapStateToProps = state => ({
@@ -158,6 +164,7 @@ const mapStateToProps = state => ({
   targetFunds: state.exchange.targetFunds,
   loadingSourceFunds: state.exchange.loadingSourceFunds,
   loadingTargetFunds: state.exchange.loadingTargetFunds,
+  errorDescription: ((state.exchange.error || {}).body || {}).error_description,
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({

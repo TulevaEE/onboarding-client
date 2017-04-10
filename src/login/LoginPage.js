@@ -5,9 +5,8 @@ import { Message } from 'retranslate';
 
 import './LoginPage.scss';
 
-import { logo, AuthenticationLoader } from '../common';
+import { logo, AuthenticationLoader, ErrorAlert } from '../common';
 import LoginForm from './loginForm';
-import ErrorAlert from './errorAlert';
 import { changePhoneNumber, authenticateWithPhoneNumber, cancelMobileAuthentication, authenticateWithIdCard } from './actions';
 
 export const LoginPage = ({

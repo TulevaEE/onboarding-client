@@ -7,6 +7,7 @@ import RadioModule from './radio';
 import AuthenticationLoaderModule from './authenticationLoader';
 import ErrorMessageModule from './errorMessage';
 import InfoTooltipModule from './infoTooltip';
+import ErrorAlertModule from './errorAlert';
 
 export const http = httpModule;
 export const utils = utilsModule;
@@ -17,3 +18,4 @@ export const logo = logoModule;
 export const AuthenticationLoader = AuthenticationLoaderModule;
 export const ErrorMessage = ErrorMessageModule;
 export const InfoTooltip = InfoTooltipModule;
+export const ErrorAlert = ErrorAlertModule;
