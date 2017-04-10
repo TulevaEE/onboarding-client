@@ -30,8 +30,9 @@ export const LoginPage = ({
       <div className="row">
         <div className="col-lg-10 offset-lg-1 col-sm-12 offset-sm-0 text-center">
           <div className="col-lg-6 offset-lg-3 col-md-8 offset-md-2 col-sm-12">
+            { errorDescription ? <ErrorAlert description={errorDescription} /> : '' }
             {
-              !errorDescription && !loadingAuthentication && !controlCode ?
+              !loadingAuthentication && !controlCode ?
                 <LoginForm
                   onPhoneNumberSubmit={onPhoneNumberSubmit}
                   onPhoneNumberChange={onPhoneNumberChange}
@@ -46,7 +47,6 @@ export const LoginPage = ({
                   controlCode={controlCode}
                 /> : ''
             }
-            { errorDescription ? <ErrorAlert description={errorDescription} /> : '' }
             <div className="mt-3 mb-3">
               <div className="login-page__not-member">
                 <Message>login.not.member</Message>
@@ -93,7 +93,7 @@ const mapStateToProps = state => ({
   phoneNumber: state.login.phoneNumber,
   controlCode: state.login.controlCode,
   loadingAuthentication: state.login.loadingAuthentication,
-  errorDescription: (state.login.error || {}).error_description,
+  errorDescription: ((state.login.error || {}).body || {}).error_description,
   successful: !!state.login.token, // not used right now
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
