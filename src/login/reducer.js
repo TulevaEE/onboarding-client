@@ -68,7 +68,13 @@ export default function loginReducer(state = defaultState, action) {
         phoneNumber: '',
       };
     case MOBILE_AUTHENTICATION_ERROR:
-      return { ...state, error: action.error };
+      return {
+        ...state,
+        error: action.error,
+        controlCode: null,
+        loadingAuthentication: false,
+        loadingUser: false,
+      };
 
     case MOBILE_AUTHENTICATION_CANCEL:
       return {
