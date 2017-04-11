@@ -37,7 +37,7 @@ export function changePhoneNumber(phoneNumber) {
 }
 
 function getMobileIdToken() {
-  return (dispatch) => {
+  return (dispatch, getState) => {
     if (timeout && process.env.NODE_ENV !== 'test') {
       clearTimeout(timeout);
     }
@@ -48,8 +48,8 @@ function getMobileIdToken() {
           if (token) { // authentication complete
             dispatch({ type: MOBILE_AUTHENTICATION_SUCCESS, token });
             dispatch(push('/steps/select-sources'));
-          } else { // authentication not yet completed, poll again.
-            dispatch(getMobileIdToken());
+          } else if (getState().login.loadingAuthentication) { // authentication not yet completed
+            dispatch(getMobileIdToken()); // poll again
           }
         })
         .catch(error => dispatch({ type: MOBILE_AUTHENTICATION_ERROR, error }));
@@ -71,7 +71,7 @@ export function authenticateWithPhoneNumber(phoneNumber) {
 }
 
 function getIdCardToken() {
-  return (dispatch) => {
+  return (dispatch, getState) => {
     if (timeout && process.env.NODE_ENV !== 'test') {
       clearTimeout(timeout);
     }
@@ -82,8 +82,8 @@ function getIdCardToken() {
           if (token) { // authentication complete
             dispatch({ type: ID_CARD_AUTHENTICATION_SUCCESS, token });
             dispatch(push('/steps/select-sources'));
-          } else { // authentication not yet completed, poll again.
-            dispatch(getIdCardToken());
+          } else if (getState().login.loadingAuthentication) { // authentication not yet completed
+            dispatch(getIdCardToken()); // poll again
           }
         })
         .catch(error => dispatch({ type: ID_CARD_AUTHENTICATION_ERROR, error }));

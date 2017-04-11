@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import { Link } from 'react-router';
 import { Message } from 'retranslate';
 
-import { Loader, Radio } from '../../common';
+import { Loader, Radio, ErrorAlert } from '../../common';
 import PensionFundTable from './pensionFundTable';
 import ExactFundSelector from './exactFundSelector';
 import TargetFundSelector from './targetFundSelector';
@@ -193,5 +193,16 @@ describe('Select sources step', () => {
       ],
     });
     expect(component.find(Link).prop('className')).toContain('disabled');
+  });
+
+  it('passes an error forwards to ErrorAlert and does not show other components', () => {
+    const errorDescription = 'aww no';
+    const funds = [{ aFund: true }];
+
+    component.setProps({ errorDescription, funds });
+
+    expect(component.contains(<ErrorAlert description={errorDescription} />)).toBe(true);
+    expect(component.contains(<Loader className="align-middle" />)).toBe(false);
+    expect(component.contains(<PensionFundTable funds={funds} />)).toBe(false);
   });
 });
