@@ -1,12 +1,16 @@
 import React from 'react';
 import { render } from 'react-dom';
+import config from 'react-global-configuration';
 import { createStore, combineReducers, compose, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import { Provider as TranslationProvider } from 'retranslate';
 import { Provider as ReduxProvider } from 'react-redux';
 import { Router, Route, browserHistory } from 'react-router';
 import { syncHistoryWithStore, routerReducer, routerMiddleware } from 'react-router-redux';
+import mixpanel from 'mixpanel-browser';
+import MixpanelProvider from 'react-mixpanel';
 
+import initializeConfiguration from './config/config';
 import translations from './translations';
 import './index.scss';
 
@@ -65,26 +69,34 @@ function scrollToTop() {
   window.scrollTo(0, 0);
 }
 
+initializeConfiguration();
+
+mixpanel.init(config.get('mixpanelKey'));
+
+mixpanel.track('init');
+
 render((
-  <TranslationProvider messages={translations} language="et" fallbackLanguage="et">
-    <ReduxProvider store={store}>
-      <Router history={history}>
-        <Route path="/login" component={LoginPage} />
-        <Route path="/terms-of-use" component={TermsOfUse} />
-        <Route path="/" component={requireAuthentication(App)} onEnter={getDataForApp}>
-          <Route path="/steps" component={Steps} onEnter={getDataForFlow}>
-            <Route path="select-sources" component={SelectSources} onEnter={scrollToTop} />
-            <Route
-              path="transfer-future-capital"
-              component={TransferFutureCapital}
-              onEnter={scrollToTop}
-            />
-            <Route path="confirm-mandate" component={ConfirmMandate} onEnter={scrollToTop} />
+  <MixpanelProvider mixpanel={mixpanel}>
+    <TranslationProvider messages={translations} language="et" fallbackLanguage="et">
+      <ReduxProvider store={store}>
+        <Router history={history}>
+          <Route path="/login" component={LoginPage} />
+          <Route path="/terms-of-use" component={TermsOfUse} />
+          <Route path="/" component={requireAuthentication(App)} onEnter={getDataForApp}>
+            <Route path="/steps" component={Steps} onEnter={getDataForFlow}>
+              <Route path="select-sources" component={SelectSources} onEnter={scrollToTop} />
+              <Route
+                path="transfer-future-capital"
+                component={TransferFutureCapital}
+                onEnter={scrollToTop}
+              />
+              <Route path="confirm-mandate" component={ConfirmMandate} onEnter={scrollToTop} />
+            </Route>
+            <Route path="/steps/success" component={Success} />
+            <Route path="/account" component={AccountPage} onEnter={getDataForAccount} />
           </Route>
-          <Route path="/steps/success" component={Success} />
-          <Route path="/account" component={AccountPage} onEnter={getDataForAccount} />
-        </Route>
-      </Router>
-    </ReduxProvider>
-  </TranslationProvider>
+        </Router>
+      </ReduxProvider>
+    </TranslationProvider>
+  </MixpanelProvider>
 ), document.getElementById('root'));
