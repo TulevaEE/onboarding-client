@@ -73,6 +73,8 @@ initializeConfiguration();
 
 mixpanel.init(config.get('mixpanelKey'));
 
+mixpanel.track('init');
+
 render((
   <MixpanelProvider mixpanel={mixpanel}>
     <TranslationProvider messages={translations} language="et" fallbackLanguage="et">
