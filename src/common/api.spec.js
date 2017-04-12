@@ -9,6 +9,7 @@ describe('api', () => {
     mockHttp.post = jest.fn();
     mockHttp.postForm = jest.fn();
     mockHttp.put = jest.fn();
+    mockHttp.simpleFetch = jest.fn();
   });
 
   it('can authenticate with a phone number', () => {
@@ -28,20 +29,17 @@ describe('api', () => {
   });
 
   it('can authenticate with id card', () => {
-    mockHttp.get = jest.fn(() => Promise.resolve());
-    mockHttp.post = jest.fn(() => Promise.resolve({
+    mockHttp.simpleFetch = jest.fn(() => Promise.resolve({
       success: true,
     }));
-    expect(mockHttp.get).not.toHaveBeenCalled();
-    expect(mockHttp.post).not.toHaveBeenCalled();
+    expect(mockHttp.simpleFetch).not.toHaveBeenCalled();
     return api
       .authenticateWithIdCard()
       .then((success) => {
         expect(success).toBe(true);
-        expect(mockHttp.get).toHaveBeenCalledTimes(1);
-        expect(mockHttp.get).toHaveBeenCalledWith('https://id.tuleva.ee/');
-        expect(mockHttp.post).toHaveBeenCalledTimes(1);
-        expect(mockHttp.post).toHaveBeenCalledWith('https://id.tuleva.ee/idLogin', undefined, { 'Content-Type': 'text/plain' });
+        expect(mockHttp.simpleFetch).toHaveBeenCalledTimes(2);
+        expect(mockHttp.simpleFetch).toHaveBeenCalledWith('GET', 'https://id.tuleva.ee/');
+        expect(mockHttp.simpleFetch).toHaveBeenCalledWith('POST', 'https://id.tuleva.ee/idLogin');
       });
   });
 
