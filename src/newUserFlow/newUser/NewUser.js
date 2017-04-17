@@ -4,29 +4,34 @@ import { Link } from 'react-router';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import PensionFundTable from '../../onboardingFlow/selectSources/pensionFundTable';
-import { Loader } from '../../common';
+import { Loader, ErrorAlert } from '../../common/index';
+import PensionFundTable from '../../onboardingFlow/selectSources/pensionFundTable/index';
 
 export const NewUser = ({
-  sourceFunds,
   loadingSourceFunds,
+  sourceFunds,
+  errorDescription,
 }) => {
+  if (errorDescription) {
+    return <ErrorAlert description={errorDescription} />;
+  }
   if (loadingSourceFunds) {
     return <Loader className="align-middle" />;
   }
+
   return (
     <div>
-      <div className="mb-4">
+      <div className="px-col mb-4">
         <p className="mb-4 mt-5 lead">Tere Jaana!</p>
         <p>Veendu ise Tuleva kasulikkuses ja astu liikmeks.
           Või siis too pension üle oma netipangast ilma liikmeks astumata.</p>
-        <p>Pensioni II samba tänane seis <br />
+        <p className="mb-4 mt-5 lead"><Message>select.sources.current.status</Message></p>
+        <PensionFundTable funds={sourceFunds} />
+        <p>
           Kui palju on osakute väärtus ja kui palju kulub teenustasudeks.
         </p>
-        <div className="px-col mb-4">
-          <p className="mb-4 mt-5 lead"><Message>select.sources.current.status</Message></p>
-          <PensionFundTable funds={sourceFunds} />
-        </div>
+      </div>
+      <div className="mb-4">
         <p>Tuleva fondid on väga madalate kuludega.
           Liikmena säästad veel lisaks pensioniboonuse võrra.</p>
         <p>Võrdle, kui palju sa säästaksid Tuleva fondiga.<br />
@@ -36,10 +41,10 @@ export const NewUser = ({
       </div>
 
       <Link className={'btn btn-primary mb-2 mr-2'} to="/signup">
-        <Message>Soovin liituda</Message>
+        <Message>newUserFlow.newUser.i.wish.to.join</Message>
       </Link>
       <Link className="btn btn-secondary mb-2" to="/non-member">
-        <Message>Toon lihtsalt pensioni Tulevasse</Message>
+        <Message>newUserFlow.newUser.i.want.just.to.transfer.my.pension</Message>
       </Link>
     </div>
   );
@@ -47,17 +52,21 @@ export const NewUser = ({
 
 NewUser.defaultProps = {
   sourceFunds: [],
+  targetFunds: [],
   loadingSourceFunds: false,
+  errorDescription: '',
 };
 
 NewUser.propTypes = {
   sourceFunds: Types.arrayOf(Types.shape({})),
   loadingSourceFunds: Types.bool,
+  errorDescription: Types.string,
 };
 
 const mapStateToProps = state => ({
   sourceFunds: state.exchange.sourceFunds,
   loadingSourceFunds: state.exchange.loadingSourceFunds,
+  errorDescription: ((state.exchange.error || {}).body || {}).error_description,
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({
