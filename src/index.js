@@ -28,7 +28,7 @@ import Steps, {
   TransferFutureCapital,
   ConfirmMandate,
   Success,
-} from './steps';
+} from './onboardingFlow';
 
 const rootReducer = combineReducers({
   routing: routerReducer,
