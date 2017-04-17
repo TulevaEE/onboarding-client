@@ -17,6 +17,9 @@ import './index.scss';
 import requireAuthentication from './requireAuthentication';
 import LoginPage, { reducer as loginReducer, actions as loginActions } from './login';
 import TermsOfUse from './termsOfUse';
+import NewUser from './newUserFlow/newUser';
+import NonMember from './newUserFlow/nonMember';
+import SignUp from './newUserFlow/signUp';
 import { reducer as exchangeReducer, actions as exchangeActions } from './exchange';
 import App from './app';
 import AccountPage from './account';
@@ -83,6 +86,11 @@ render((
           <Route path="/login" component={LoginPage} />
           <Route path="/terms-of-use" component={TermsOfUse} />
           <Route path="/" component={requireAuthentication(App)} onEnter={getDataForApp}>
+
+            <Route path="/new-user" component={NewUser} />
+            <Route path="/non-member" component={NonMember} />
+            <Route path="/signup" component={SignUp} />
+
             <Route path="/steps" component={Steps} onEnter={getDataForFlow}>
               <Route path="select-sources" component={SelectSources} onEnter={scrollToTop} />
               <Route
