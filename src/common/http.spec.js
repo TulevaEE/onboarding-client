@@ -1,7 +1,7 @@
 const mockUuid = jest.genMockFromModule('uuid/v4');
 jest.mock('uuid/v4', () => mockUuid);
 
-const { get, post, postForm, downloadFile, resetStatisticsIdentification } = require('./http');
+const { get, post, postForm, downloadFile, simpleFetch, resetStatisticsIdentification } = require('./http');
 
 describe('http', () => {
   let originalFetch;
@@ -163,6 +163,20 @@ describe('http', () => {
         expect(options.method).toEqual('POST');
         expect(options.headers['Content-Type']).toBe('application/x-www-form-urlencoded');
         expect(options.body).toEqual('thisIsTheBody=true&yes=no');
+      });
+  });
+
+  it('can send a simple fetch request', () => {
+    const someResponse = {};
+    fetch.mockReturnValueOnce(fakeSuccessfulResponseWithValue(someResponse));
+    return simpleFetch('GET', 'https://id.tuleva.ee')
+      .then((response) => {
+        expect(response).toEqual(someResponse);
+        const url = fetch.mock.calls[0][0];
+        expect(url).toEqual('https://id.tuleva.ee');
+        const options = fetch.mock.calls[0][1];
+        expect(options.method).toEqual('GET');
+        expect(options.headers).toEqual({ 'Content-Type': 'text/plain' }); // do not add anything here, id card login will break
       });
   });
 });
