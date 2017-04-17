@@ -14,7 +14,7 @@ describe('Select sources step', () => {
     component = shallow(<NewUser />);
   });
 
-  it('renders a loader when loading source or target funds', () => {
+  it('renders a loader when loading source funds', () => {
     component.setProps({ loadingSourceFunds: true });
     expect(component.get(0)).toEqual(<Loader className="align-middle" />);
   });
