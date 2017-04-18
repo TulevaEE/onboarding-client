@@ -1,4 +1,4 @@
-import { downloadFile, get, post, postForm, put } from './http';
+import { downloadFile, get, post, postForm, put, simpleFetch } from './http';
 
 const API_URL = '/api';
 
@@ -28,8 +28,8 @@ export function authenticateWithPhoneNumber(phoneNumber) {
 }
 
 export function authenticateWithIdCard() {
-  return get('https://id.tuleva.ee/') // http://stackoverflow.com/a/16818527
-    .then(() => post('https://id.tuleva.ee/idLogin', undefined, { 'Content-Type': 'text/plain' })) // Firefox CORS
+  return simpleFetch('GET', 'https://id.tuleva.ee/') // http://stackoverflow.com/a/16818527
+    .then(() => simpleFetch('POST', 'https://id.tuleva.ee/idLogin'))
     .then(({ success }) => success);
 }
 
