@@ -7,7 +7,7 @@ import { Loader } from '../../common/index';
 import PensionFundTable from '../../onboardingFlow/selectSources/pensionFundTable/index';
 import { NewUser } from './NewUser';
 
-describe('Select sources step', () => {
+describe('New user step', () => {
   let component;
 
   beforeEach(() => {
