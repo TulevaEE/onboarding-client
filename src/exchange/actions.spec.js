@@ -345,5 +345,4 @@ describe('Exchange actions', () => {
       type: NO_SIGN_MANDATE_ERROR,
     });
   });
-
 });

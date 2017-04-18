@@ -73,6 +73,7 @@
     "react-router-redux": "^4.0.7",
     "react-tooltip": "^3.2.7",
     "redux": "^3.6.0",
+    "redux-form": "^6.6.3",
     "redux-thunk": "^2.2.0",
     "retranslate": "^0.1.2",
     "uuid": "^3.0.1"
@@ -82,7 +83,7 @@
     "heroku-postbuild": "npm rebuild node-sass && node scripts/build.js",
     "develop": "node scripts/develop.js",
     "build": "node scripts/build.js",
-    "test": "node scripts/test.js --env=jsdom"
+    "test": "node --trace-warnings scripts/test.js --env=jsdom"
   },
   "jest": {
     "collectCoverageFrom": [

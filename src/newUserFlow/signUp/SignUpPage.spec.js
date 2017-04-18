@@ -2,13 +2,13 @@ import React from 'react';
 import { shallow } from 'enzyme';
 // import { Message } from 'retranslate';
 
-import SignUp from './SignUp';
+import { SignUpPage } from './SignUpPage';
 
-describe('SignUp', () => {
+describe('SignUpPage', () => {
   let component;
 
   beforeEach(() => {
-    component = shallow(<SignUp />);
+    component = shallow(<SignUpPage />);
   });
 
   it('renders component', () => {

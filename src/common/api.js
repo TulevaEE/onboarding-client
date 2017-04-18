@@ -115,3 +115,9 @@ export function getIdCardSignatureStatusForMandateIdWithSignedHashAndToken(
     Authorization: `Bearer ${token}`,
   }).then(({ statusCode }) => statusCode);
 }
+
+export function createUserWithToken(user, token) {
+  return post(getEndpoint('/v1/users'), user, {
+    Authorization: `Bearer ${token}`,
+  }).then(savedUser => savedUser);
+}

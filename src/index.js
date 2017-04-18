@@ -3,6 +3,7 @@ import { render } from 'react-dom';
 import config from 'react-global-configuration';
 import { createStore, combineReducers, compose, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
+import { reducer as formReducer } from 'redux-form';
 import { Provider as TranslationProvider } from 'retranslate';
 import { Provider as ReduxProvider } from 'react-redux';
 import { Router, Route, browserHistory } from 'react-router';
@@ -19,7 +20,7 @@ import LoginPage, { reducer as loginReducer, actions as loginActions } from './l
 import TermsOfUse from './termsOfUse';
 import NewUser from './newUserFlow/newUser';
 import NonMember from './newUserFlow/nonMember';
-import SignUp from './newUserFlow/signUp';
+import SignUpPage from './newUserFlow/signUp';
 import { reducer as exchangeReducer, actions as exchangeActions } from './exchange';
 import App from './app';
 import AccountPage from './account';
@@ -34,6 +35,7 @@ const rootReducer = combineReducers({
   routing: routerReducer,
   login: loginReducer,
   exchange: exchangeReducer, // exchage of funds
+  form: formReducer,
 });
 
 const composeEnhancers = (window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose; // eslint-disable-line
@@ -89,7 +91,7 @@ render((
 
             <Route path="/new-user" component={NewUser} />
             <Route path="/non-member" component={NonMember} />
-            <Route path="/signup" component={SignUp} />
+            <Route path="/signup" component={SignUpPage} />
 
             <Route path="/steps" component={Steps} onEnter={getDataForFlow}>
               <Route path="select-sources" component={SelectSources} onEnter={scrollToTop} />
