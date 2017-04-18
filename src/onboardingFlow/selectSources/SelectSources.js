@@ -69,6 +69,7 @@ export const SelectSources = ({
         {
           fullSelectionActive ? (
             <div className="mt-3">
+
               <Message>select.sources.select.all.subtitle</Message>
               <div className="mt-4">
                 <Message className="pt-2">select.sources.select.all.choose</Message>
