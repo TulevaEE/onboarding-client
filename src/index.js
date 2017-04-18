@@ -28,7 +28,7 @@ import Steps, {
   TransferFutureCapital,
   ConfirmMandate,
   Success,
-} from './steps';
+} from './onboardingFlow';
 
 const rootReducer = combineReducers({
   routing: routerReducer,
@@ -87,9 +87,11 @@ render((
           <Route path="/terms-of-use" component={TermsOfUse} />
           <Route path="/" component={requireAuthentication(App)} onEnter={getDataForApp}>
 
-            <Route path="/new-user" component={NewUser} />
-            <Route path="/non-member" component={NonMember} />
-            <Route path="/signup" component={SignUp} />
+            <Route path="/steps" onEnter={getDataForFlow}>
+              <Route path="new-user" component={NewUser} onEnter={scrollToTop} />
+              <Route path="non-member" component={NonMember} />
+              <Route path="signup" component={SignUp} />
+            </Route>
 
             <Route path="/steps" component={Steps} onEnter={getDataForFlow}>
               <Route path="select-sources" component={SelectSources} onEnter={scrollToTop} />
