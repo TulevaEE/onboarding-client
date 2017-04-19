@@ -23,7 +23,7 @@ function identifyUserForTracking(user) {
   mixpanel.identify(user.id);
 
   mixpanel.people.set({
-    userId: user.id,
+    id: user.id,
   });
 }
 
