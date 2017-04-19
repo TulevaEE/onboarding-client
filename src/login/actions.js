@@ -1,5 +1,6 @@
 import { push } from 'react-router-redux';
 import Raven from 'raven-js';
+import mixpanel from 'mixpanel-browser';
 
 import {
   CHANGE_PHONE_NUMBER,

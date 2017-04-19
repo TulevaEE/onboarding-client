@@ -21,6 +21,8 @@ import NewUser from './newUserFlow/newUser';
 import NonMember from './newUserFlow/nonMember';
 import SignUp from './newUserFlow/signUp';
 import { reducer as exchangeReducer, actions as exchangeActions } from './exchange';
+import { reducer as trackingReducer } from './tracking';
+
 import App from './app';
 import AccountPage from './account';
 import Steps, {
@@ -34,6 +36,7 @@ const rootReducer = combineReducers({
   routing: routerReducer,
   login: loginReducer,
   exchange: exchangeReducer, // exchage of funds
+  tracking: trackingReducer,
 });
 
 const composeEnhancers = (window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose; // eslint-disable-line
@@ -75,8 +78,6 @@ function scrollToTop() {
 initializeConfiguration();
 
 mixpanel.init(config.get('mixpanelKey'));
-
-mixpanel.track('init');
 
 render((
   <MixpanelProvider mixpanel={mixpanel}>
