@@ -169,14 +169,14 @@ describe('api', () => {
   });
 
   it('can download mandate preview', () => {
-      mockHttp.downloadFile = jest.fn(() => Promise.resolve());
-      const mandateId = '123';
-      const token = 'a token';
-      return api.downloadMandatePreviewWithIdAndToken(mandateId, token)
+    mockHttp.downloadFile = jest.fn(() => Promise.resolve());
+    const mandateId = '123';
+    const token = 'a token';
+    return api.downloadMandatePreviewWithIdAndToken(mandateId, token)
           .then(() => expect(mockHttp.downloadFile).toHaveBeenCalledWith('/v1/mandates/123/file/preview', {
-              Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           }));
-  });    
+  });
 
   it('can download a mandate', () => {
     mockHttp.downloadFile = jest.fn(() => Promise.resolve());
@@ -247,6 +247,25 @@ describe('api', () => {
         expect(statusCode).toBe('SIGNATURE');
         expect(mockHttp.put).toHaveBeenCalledTimes(1);
         expect(mockHttp.put).toHaveBeenCalledWith('/v1/mandates/123/signature/idCard/status', { signedHash }, {
+          Authorization: `Bearer ${token}`,
+        });
+      });
+  });
+
+  it('can register new user', () => {
+    const user = { firstName: 'Erko' };
+    const token = 'a token';
+
+    mockHttp.post = jest.fn(() => Promise.resolve({
+      firstName: 'Erko',
+    }));
+    expect(mockHttp.post).not.toHaveBeenCalled();
+    return api
+      .createUserWithToken(user, token)
+      .then((createdUser) => {
+        expect(createdUser.firstName).toBe('Erko');
+        expect(mockHttp.post).toHaveBeenCalledTimes(1);
+        expect(mockHttp.post).toHaveBeenCalledWith('/v1/users', user, {
           Authorization: `Bearer ${token}`,
         });
       });
