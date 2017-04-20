@@ -24,6 +24,11 @@ function getActionType(actionType) {
   return actionType.split('/')[1];
 }
 
+beforeEach(() => {
+  mixpanel.track = jest.fn();
+});
+
+
 it('can track getting user', () => {
   const user = { id: 123 };
   const action = { type: GET_USER_SUCCESS, user };
@@ -32,7 +37,6 @@ it('can track getting user', () => {
     set: jest.fn(),
   };
 
-  mixpanel.track = jest.fn();
   mixpanel.identify = jest.fn();
 
   trackingReducer(undefined, action);
@@ -52,8 +56,6 @@ it('can track exchange source selection', () => {
 
   const action = { type: SELECT_EXCHANGE_SOURCES, sourceSelection, sourceSelectionExact };
 
-  mixpanel.track = jest.fn();
-
   trackingReducer(undefined, action);
 
   expect(mixpanel.track).toHaveBeenCalledTimes(1);
@@ -65,8 +67,6 @@ it('can track exchange source selection', () => {
 it('can track target fund selection', () => {
   const targetFundIsin = '123';
   const action = { type: SELECT_TARGET_FUND, targetFundIsin };
-
-  mixpanel.track = jest.fn();
 
   trackingReducer(undefined, action);
 
@@ -80,8 +80,6 @@ it('can track sign mandate errors', () => {
   const error = {};
   const action = { type: SIGN_MANDATE_ERROR, error };
 
-  mixpanel.track = jest.fn();
-
   trackingReducer(undefined, action);
 
   expect(mixpanel.track).toHaveBeenCalledTimes(1);
@@ -91,16 +89,13 @@ it('can track sign mandate errors', () => {
 });
 
 it('can track simple events', () => {
-
   const events = [LOG_OUT, MOBILE_AUTHENTICATION_SUCCESS,
     ID_CARD_AUTHENTICATION_SUCCESS, GET_TARGET_FUNDS_ERROR,
     CHANGE_AGREEMENT_TO_TERMS, SIGN_MANDATE_MOBILE_ID_START_SUCCESS,
     SIGN_MANDATE_MOBILE_ID_CANCEL,
     SIGN_MANDATE_ID_CARD_START, SIGN_MANDATE_SUCCESS];
 
-  mixpanel.track = jest.fn();
-
-  events.forEach( (event) => {
+  events.forEach((event) => {
     const action = { type: event };
     trackingReducer(undefined, action);
     expect(mixpanel.track)
