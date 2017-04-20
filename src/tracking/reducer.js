@@ -14,6 +14,8 @@ import {
 
 import {
   LOG_OUT,
+  MOBILE_AUTHENTICATION_START,
+  ID_CARD_AUTHENTICATION_START,
   MOBILE_AUTHENTICATION_SUCCESS,
   ID_CARD_AUTHENTICATION_SUCCESS,
   GET_USER_SUCCESS,
@@ -56,7 +58,9 @@ export default function trackingReducer(state = initialState, action) {
       });
       return initialState;
     case LOG_OUT:
+    case MOBILE_AUTHENTICATION_START:
     case MOBILE_AUTHENTICATION_SUCCESS:
+    case ID_CARD_AUTHENTICATION_START:
     case ID_CARD_AUTHENTICATION_SUCCESS:
     case GET_TARGET_FUNDS_ERROR:
     case CHANGE_AGREEMENT_TO_TERMS:
