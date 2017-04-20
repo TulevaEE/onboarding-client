@@ -1,4 +1,5 @@
 import React from 'react';
+import mixpanel from 'mixpanel-browser';
 import { Message } from 'retranslate';
 import { shallow } from 'enzyme';
 
@@ -9,6 +10,7 @@ describe('Steps', () => {
   let component;
 
   beforeEach(() => {
+    mixpanel.track = jest.fn();
     component = shallow(<Steps />);
   });
 
@@ -77,5 +79,11 @@ describe('Steps', () => {
 
     component.setProps({ stepName: 'confirm-mandate' });
     expect(component.contains(<hr className="mb-4" />)).toBe(false);
+  });
+
+  it('tracks step changes', () => {
+    const stepName = 'select-sources';
+    component.setProps({ stepName });
+    expect(mixpanel.track).toHaveBeenCalledWith(`ONBOARDING_STEP_${stepName}`);
   });
 });

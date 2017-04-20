@@ -1,6 +1,7 @@
 import React, { PropTypes as Types } from 'react';
 import { connect } from 'react-redux';
 import { Message } from 'retranslate';
+import mixpanel from 'mixpanel-browser';
 
 import './Steps.scss';
 
@@ -18,6 +19,9 @@ export const Steps = ({ children, stepName, userFirstName }) => {
   const beforeSteps = orderedStepNames.slice(0, stepIndex);
   const currentStep = orderedStepNames[stepIndex];
   const afterSteps = orderedStepNames.slice(stepIndex + 1);
+
+  mixpanel.track(`ONBOARDING_STEP_${currentStep}`);
+
   return (
     <div className="row">
       <div className="col px-0">
