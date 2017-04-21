@@ -1,14 +1,14 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import SignUpForm from './SignUpForm';
+import { SignUpForm } from './SignUpForm';
 
 describe('SignUpForm', () => {
-  let props;
   let component;
+  let props;
 
   beforeEach(() => {
-    props = {};
+    props = { translations: { translate: () => '' } };
     component = shallow(<SignUpForm {...props} />);
   });
 

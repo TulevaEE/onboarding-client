@@ -115,6 +115,14 @@
   "error.message.close": "Close",
   "mandate.processing.error.epis.already.active.contributions.fund": "Selected contributions fund is already active",
   "mandate.processing.error.epis.unknown": "Unknown Estonian Pension Information system error",
-  "mandate.processing.error.epis.technical.error": "Unknown Estonian Pension Information system technical error"
-
+  "mandate.processing.error.epis.technical.error": "Unknown Estonian Pension Information system technical error",
+  "new.user.flow.signup.firstName": "First name*",
+  "new.user.flow.signup.lastName": "Last name*",
+  "new.user.flow.signup.personalCode": "Personal code*",
+  "new.user.flow.signup.email": "Email*",
+  "new.user.flow.signup.phoneNumber": "Phone number",
+  "new.user.flow.signup.submit": "Join tuleva",
+  "new.user.flow.back": "Back",
+  "new.user.flow.signup.required.field": "Please fill out this field :)",
+  "new.user.flow.signup.invalid.email": "Invalid email :)"
 }
