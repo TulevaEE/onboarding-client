@@ -46,11 +46,13 @@ describe('Exchange reducer', () => {
   });
 
   it('stops loading and saves the error when getting pension funds fails', () => {
-    const error = new Error('oh no');
+    const error = { body: { errors: [{ code: 'oh no' }] } };
     const action = { type: GET_SOURCE_FUNDS_ERROR, error };
+
     const newState = exchangeReducer({ loadingSourceFunds: true }, action);
+
+    expect(newState.error).toBe('oh no');
     expect(newState.loadingSourceFunds).toBe(false);
-    expect(newState.error).toBe(error);
   });
 
   it('can select some source funds', () => {
@@ -96,10 +98,11 @@ describe('Exchange reducer', () => {
   });
 
   it('stops loading and saves the error when getting target funds fails', () => {
-    const error = new Error('oh no!');
+    const error = { body: { errors: [{ code: 'oh no!' }] } };
     const action = { type: GET_TARGET_FUNDS_ERROR, error };
+
     const newState = exchangeReducer({ loadingTargetFunds: true }, action);
-    expect(newState.error).toEqual(error);
+    expect(newState.error).toEqual('oh no!');
     expect(newState.loadingTargetFunds).toBe(false);
   });
 
