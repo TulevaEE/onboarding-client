@@ -45,11 +45,13 @@ describe('Login reducer', () => {
   });
 
   it('stops loading and saves the error when starting mobile authentication fails', () => {
-    const error = new Error('oh no');
+    const error = { body: { errors: [{ code: 'oh no!' }] } };
     const action = { type: MOBILE_AUTHENTICATION_START_ERROR, error };
+
     const newState = loginReducer(undefined, action);
+
     expect(newState.loadingAuthentication).toBe(false);
-    expect(newState.error).toBe(error);
+    expect(newState.error).toBe('oh no!');
   });
 
   it('sets the token when mobile authentication succeeds', () => {
@@ -61,9 +63,12 @@ describe('Login reducer', () => {
   });
 
   it('sets the error when mobile authentication fails', () => {
-    const error = new Error('oh no');
+    const error = { body: { error_description: 'oh no' } };
     const action = { type: MOBILE_AUTHENTICATION_ERROR, error };
+
     const newState = loginReducer(undefined, action);
+
+    expect(newState.error).toBe('oh no');
     expect(newState.token).toBe(null);
     expect(newState.controlCode).toBe(null);
     expect(newState.loadingAuthentication).toBe(false);
@@ -90,20 +95,24 @@ describe('Login reducer', () => {
   });
 
   it('sets the error when mobile authentication fails', () => {
-    const error = new Error('oh noes!!1');
+    const error = { body: { errors: [{ code: 'oh noes!!1' }] } };
     const action = { type: ID_CARD_AUTHENTICATION_START_ERROR, error };
+
     const newState = loginReducer(undefined, action);
+
+    expect(newState.error).toBe('oh noes!!1');
     expect(newState.token).toBe(null);
-    expect(newState.error).toBe(error);
   });
 
 
   it('sets the error when mobile authentication fails', () => {
-    const error = new Error('oh noes!!1');
+    const error = { body: { error_description: 'oh noes!!1' } };
     const action = { type: ID_CARD_AUTHENTICATION_ERROR, error };
+
     const newState = loginReducer(undefined, action);
+
+    expect(newState.error).toBe('oh noes!!1');
     expect(newState.token).toBe(null);
-    expect(newState.error).toBe(error);
   });
 
   it('starts loading when user when starting to get the user', () => {
@@ -122,10 +131,12 @@ describe('Login reducer', () => {
   });
 
   it('stops loading and saves the error if getting hte user fails', () => {
-    const error = new Error('oh no!');
+    const error = { body: { errors: [{ code: 'oh no!' }] } };
+
     const newState = loginReducer({ loadingUser: true }, { type: GET_USER_ERROR, error });
+
+    expect(newState.userError).toBe('oh no!');
     expect(newState.loadingUser).toBe(false);
-    expect(newState.userError).toBe(error);
   });
 
   it('removes token and login method flag when you log out', () => {
