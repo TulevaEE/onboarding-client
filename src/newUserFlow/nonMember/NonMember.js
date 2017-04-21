@@ -13,7 +13,7 @@ export const NonMember = () => (
       <button className="btn btn-secondary">Pensionikeskus</button>
     </div>
 
-    <Link className={'btn btn-primary mb-2 mr-2'} to="/new-user">
+    <Link className={'btn btn-primary mb-2 mr-2'} to="/steps/new-user">
       <Message>Tagasi</Message>
     </Link>
   </div>

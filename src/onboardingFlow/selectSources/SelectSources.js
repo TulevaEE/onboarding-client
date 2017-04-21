@@ -165,7 +165,7 @@ const mapStateToProps = state => ({
   targetFunds: state.exchange.targetFunds,
   loadingSourceFunds: state.exchange.loadingSourceFunds,
   loadingTargetFunds: state.exchange.loadingTargetFunds,
-  errorDescription: ((state.exchange.error || {}).body || {}).error_description,
+  errorDescription: state.exchange.error,
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({

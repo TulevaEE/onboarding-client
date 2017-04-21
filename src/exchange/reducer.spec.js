@@ -185,7 +185,7 @@ describe('Exchange reducer', () => {
   it('can remove mandate sign errors', () => {
     const action = { type: NO_SIGN_MANDATE_ERROR };
     const newState = exchangeReducer({
-      mandateSigningError: {error:[]},
+      mandateSigningError: { error: [] },
     }, action);
     expect(newState.mandateSigningError).toBe(null);
   });
@@ -195,15 +195,15 @@ describe('Exchange reducer', () => {
     const newState = exchangeReducer({
       sourceFunds: [],
       loadingSourceFunds: true,
-      sourceSelection: "123",
+      sourceSelection: '123',
       sourceSelectionExact: true,
       targetFunds: [],
       loadingTargetFunds: true,
-      selectedFutureContributionsFundIsin: "123",
-      error: "123",
+      selectedFutureContributionsFundIsin: '123',
+      error: '123',
       loadingMandate: true,
-      mandateSigningControlCode: "123",
-      mandateSigningError: "123",
+      mandateSigningControlCode: '123',
+      mandateSigningError: '123',
       signedMandateId: 123,
       agreedToTerms: true,
     }, action);
@@ -223,5 +223,4 @@ describe('Exchange reducer', () => {
     expect(newState.signedMandateId).toBe(false);
     expect(newState.agreedToTerms).toBe(false);
   });
-
 });

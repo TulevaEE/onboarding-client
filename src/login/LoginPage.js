@@ -92,7 +92,7 @@ const mapStateToProps = state => ({
   phoneNumber: state.login.phoneNumber,
   controlCode: state.login.controlCode,
   loadingAuthentication: state.login.loadingAuthentication,
-  errorDescription: ((state.login.error || {}).body || {}).error_description,
+  errorDescription: state.login.error,
   successful: !!state.login.token, // not used right now
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
