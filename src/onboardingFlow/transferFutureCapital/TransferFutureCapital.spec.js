@@ -63,7 +63,12 @@ describe('Transfer future capital step', () => {
     const targetFunds = [{ isin: 'AAA' }, { isin: 'BBB' }];
     const loadingTargetFunds = false;
     const selectedFutureContributionsFundIsin = 'AAA';
-    component.setProps({ targetFunds, loadingTargetFunds, selectedFutureContributionsFundIsin });
+    const activeSourceFund = { isin: 'CCC' };
+    component.setProps({
+      targetFunds,
+      loadingTargetFunds,
+      selectedFutureContributionsFundIsin,
+      activeSourceFund });
 
     const radioAtIndexSelected = index => component.find(Radio).at(index).prop('selected');
     expect(radioAtIndexSelected(0)).toBe(true);
@@ -77,7 +82,7 @@ describe('Transfer future capital step', () => {
     expect(onSelectFutureCapitalFund).not.toHaveBeenCalled();
     selectRadioAtIndex(2);
     expect(onSelectFutureCapitalFund).toHaveBeenCalledTimes(1);
-    expect(onSelectFutureCapitalFund).toHaveBeenCalledWith(null);
+    expect(onSelectFutureCapitalFund).toHaveBeenCalledWith(activeSourceFund.isin);
     onSelectFutureCapitalFund.mockClear();
 
     selectRadioAtIndex(1);
@@ -90,15 +95,18 @@ describe('Transfer future capital step', () => {
     it('show selected radio title in bold', () => {
       const targetFunds = [{ isin: 'AAA' }, { isin: 'BBB' }];
       const loadingTargetFunds = false;
+      const activeSourceFund = { isin: 'CCC' };
       component.setProps({
         targetFunds,
         loadingTargetFunds,
-        selectedFutureContributionsFundIsin: null });
+        selectedFutureContributionsFundIsin: activeSourceFund.isin,
+        activeSourceFund,
+      });
 
       const radioAtIndexSelected = index => component.find(Radio).at(index).prop('selected');
       expect(radioAtIndexSelected(2)).toBe(true);
 
-      const noFutureConributionsTitleInBold = () => component.find(Radio).at(2).find('p').hasClass('text-bold');
+      const noFutureConributionsTitleInBold = () => component.find(Radio).at(2).find('p').at(0).hasClass('text-bold');
 
       expect(noFutureConributionsTitleInBold()).toBe(true);
 
@@ -110,7 +118,7 @@ describe('Transfer future capital step', () => {
       let activeSourceFund = { isin: 'AAA', name: 'bla', managementFeePercent: 0.5 };
       const targetFunds = [{ isin: 'AAA' }, { isin: 'BBB' }];
       const loadingTargetFunds = false;
-      const selectedFutureContributionsFundIsin = null;
+      const selectedFutureContributionsFundIsin = activeSourceFund.isin;
 
       const activeFundMessage = (<Message
         params={{

@@ -47,15 +47,15 @@ export const TransferFutureCapital = ({
       }
       <Radio
         name="tv-transfer-future-capital"
-        selected={!selectedFutureContributionsFundIsin}
+        selected={activeSourceFund && activeSourceFund.isin === selectedFutureContributionsFundIsin}
         className="mt-4"
-        onSelect={() => onSelectFutureCapitalFund(null)}
+        onSelect={() => onSelectFutureCapitalFund(activeSourceFund.isin)}
       >
-        <p className={`m-0 ${!selectedFutureContributionsFundIsin ? 'text-bold' : ''}`}>
+        <p className={`m-0 ${activeSourceFund && activeSourceFund.isin === selectedFutureContributionsFundIsin ? 'text-bold' : ''}`}>
           <Message>transfer.future.capital.no</Message>
         </p>
         {
-          !selectedFutureContributionsFundIsin && activeSourceFund ?
+          activeSourceFund && activeSourceFund.isin === selectedFutureContributionsFundIsin ?
           (<p className="mb-0 mt-2">
             <Message
               params={{
