@@ -117,5 +117,11 @@
   "mandate.processing.error.epis.unknown": "Unknown Estonian Pension Information system error",
   "mandate.processing.error.epis.technical.error": "Unknown Estonian Pension Information system technical error",
   "newUserFlow.newUser.i.wish.to.join": "I wish to join",
-  "newUserFlow.newUser.i.want.just.to.transfer.my.pension": "I just want to transfer my pension"
+  "newUserFlow.newUser.i.want.just.to.transfer.my.pension": "I just want to transfer my pension",
+  "new.user.intro.salary": "For calculating how much money you save with Tuleva, please enter your approximate gross income",
+  "new.user.intro.old.funds.management.fee": "If you leave your pension funds unchanged, the management fees will cost you {{ fees }} euros. ",
+  "new.user.intro.new.funds.management.fee": "If you start using Tuleva funds today, you will spend {{fees}} euros on management fees. ",
+  "new.user.intro.member.bonus": "If you become a member, you'll save even more. You will get back part of the yearly management fee as a bonus. As a member, your management fees will be {{ fees }} euros."
+  "new.user.intro.summary": "Compared to previous funds, you would save {{ nonMemberSavings }} euros with Tuleva. If you become a member, then {{ memberSavings }} euros. ",
+  "new.user.intro.calc.link": "How savings work?"
 }

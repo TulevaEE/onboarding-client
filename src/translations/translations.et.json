@@ -123,5 +123,11 @@
   "mandate.processing.error.epis.unknown": "Tundmatu Eesti Pensioni Infosüsteemi viga",
   "mandate.processing.error.epis.technical.error": "Tundmatu Eesti Pensioni Infosüsteemi tehniline viga",
   "newUserFlow.newUser.i.wish.to.join": "Soovin liituda",
-  "newUserFlow.newUser.i.want.just.to.transfer.my.pension": "Toon lihtsalt pensioni Tulevasse"
+  "newUserFlow.newUser.i.want.just.to.transfer.my.pension": "Toon lihtsalt pensioni Tulevasse",
+  "new.user.intro.salary": "Et saaksime arvutada, kui palju raha sa Tulevas kokku saad hoida, sisesta oma ligikaudne brutopalk",
+  "new.user.intro.old.funds.management.fee": "Kui jätad pensioni vana(de)sse fondi(de)sse, kulub sul elu vältel valitsemistasude tõttu {{ fees }} eurot. ",
+  "new.user.intro.new.funds.management.fee": "Kui hakkad tänasest koguma pensioni Tulevas, kulutad valitsemistasudele {{fees}} eurot. ",
+  "new.user.intro.member.bonus": "Kui astud ka Tuleva liikmeks, võidad veelgi rohkem, sest saad osa valitsemistasust igal aastal liikmeboonusena tagasi. Liikmena kulub sul valitsemistasudele kokku vaid {{ fees }} eurot.",
+  "new.user.intro.summary": "Võrreldes vana(de) fondi(de)ga võidaksid Tuleva pensionifondi kliendina {{ nonMemberSavings }} eurot. Kui astud ka Tuleva liikmeks, siis {{ memberSavings }} eurot. ",
+  "new.user.intro.calc.link": "Kuidas sääst kujuneb?"
 }
