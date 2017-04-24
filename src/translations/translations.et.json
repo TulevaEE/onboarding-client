@@ -122,6 +122,8 @@
   "mandate.processing.error.epis.already.active.contributions.fund": "Valitud fond on juba aktiivne",
   "mandate.processing.error.epis.unknown": "Tundmatu Eesti Pensioni Infosüsteemi viga",
   "mandate.processing.error.epis.technical.error": "Tundmatu Eesti Pensioni Infosüsteemi tehniline viga",
+  "newUserFlow.newUser.i.wish.to.join": "Soovin liituda",
+  "newUserFlow.newUser.i.want.just.to.transfer.my.pension": "Toon lihtsalt pensioni Tulevasse",
   "new.user.flow.signup.firstName": "Eesnimi*",
   "new.user.flow.signup.lastName": "Perekonnanimi*",
   "new.user.flow.signup.personalCode": "Isikukood*",
