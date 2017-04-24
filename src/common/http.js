@@ -102,6 +102,21 @@ export function put(url, params = {}, headers = {}) {
   }).then(transformResponse);
 }
 
+export function patch(url, params = {}, headers = {}) {
+  return fetch(url, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      ...headers,
+      ...createStatisticsHeaders(),
+    },
+    body: JSON.stringify(params),
+    credentials: 'include',
+    mode: 'cors',
+    cache: 'default',
+  }).then(transformResponse);
+}
+
 export function postForm(url, params = {}, headers = {}) {
   const body = urlEncodeParameters(params);
   return fetch(url, {
