@@ -116,6 +116,8 @@
   "mandate.processing.error.epis.already.active.contributions.fund": "Selected contributions fund is already active",
   "mandate.processing.error.epis.unknown": "Unknown Estonian Pension Information system error",
   "mandate.processing.error.epis.technical.error": "Unknown Estonian Pension Information system technical error",
+  "newUserFlow.newUser.i.wish.to.join": "I wish to join",
+  "newUserFlow.newUser.i.want.just.to.transfer.my.pension": "I just want to transfer my pension",
   "new.user.flow.signup.firstName": "First name*",
   "new.user.flow.signup.lastName": "Last name*",
   "new.user.flow.signup.personalCode": "Personal code*",
