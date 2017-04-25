@@ -69,7 +69,6 @@
   "transfer.future.capital.no.subtitle": "Sinu pensionimaksed lähevad ka edaspidi {{currentFundName}} pensionifondi, mille valitsemistasu on {{currentFundManagementFee}}% aastas. Kui soovid teenustasudelt säästa, saad oma maksed ka hiljem Tulevasse ümber suunata.",
   "confirm.mandate.intro": "Avaldust allkirjastades kinnitad, et",
   "confirm.mandate.future.contribution": "soovid hakata tegema kohustusliku kogumispensioni sissemakseid ",
-  "confirm.mandate.invalid.mandate": "Mõne ületoomiseks esitatud fondi osakaal ületab 100%. Palun mine tagasi ja paranda osakaalud. Seejärel allkirjasta uuesti.",
   "confirm.mandate.and": " ja",
   "confirm.mandate.switch.sources": "soovid vahetada olemasolevad osakud järgmiselt:",
   "confirm.mandate.current.fund": "Praegune pensionifond",
