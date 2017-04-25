@@ -50,11 +50,13 @@ const initialState = {
 };
 
 function createFullDefaultSourceSelection({ sourceFunds, targetFunds }) {
-  return sourceFunds.map(({ isin }) => ({
-    sourceFundIsin: isin,
-    targetFundIsin: targetFunds[0].isin,
-    percentage: 1,
-  }));
+  return sourceFunds
+    .filter(fund => fund.isin !== targetFunds[0].isin)
+    .map(({ isin }) => ({
+      sourceFundIsin: isin,
+      targetFundIsin: targetFunds[0].isin,
+      percentage: 1,
+    }));
 }
 
 export default function exchangeReducer(state = initialState, action) {
