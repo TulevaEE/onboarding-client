@@ -209,6 +209,17 @@ describe('Select sources step', () => {
     expect(component.find(Link).prop('className')).toContain('disabled');
   });
 
+  it('disables the next step button if selection is invalid due to inter fund transfer', () => {
+    component.setProps({ sourceSelection: [{ sourceFundIsin: 'a', targetFundIsin: 'b', percentage: 1 }] });
+    expect(component.find(Link).prop('className')).not.toContain('disabled');
+    component.setProps({
+      sourceSelection: [
+        { sourceFundIsin: 'a', targetFundIsin: 'a', percentage: 1 },
+      ],
+    });
+    expect(component.find(Link).prop('className')).toContain('disabled');
+  });
+
   it('passes an error forwards to ErrorAlert and does not show other components', () => {
     const errorDescription = 'aww no';
     const funds = [{ aFund: true }];

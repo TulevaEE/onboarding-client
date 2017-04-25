@@ -318,7 +318,7 @@ describe('Exchange actions', () => {
 
   it('can handle unprocessable entity errors when saving the mandate', () => {
     const error = new Error('oh no it failed');
-    error.status = 422;
+    error.status = 400;
     mockApi.saveMandateWithToken = jest.fn(() => {
       dispatch.mockClear();
       return Promise.reject(error);

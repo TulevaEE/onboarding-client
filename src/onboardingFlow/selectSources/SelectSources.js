@@ -31,7 +31,12 @@ function selectionsValid(selections) {
     if (sourceFundPercentages[selection.sourceFundIsin] > 1) {
       valid = false;
     }
+
+    if (selection.sourceFundIsin === selection.targetFundIsin) {
+      valid = false;
+    }
   });
+
   return valid;
 }
 

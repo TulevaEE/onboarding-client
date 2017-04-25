@@ -112,7 +112,7 @@ function pollForMandateSignatureWithMandateId(mandateId) {
 }
 
 function handleSaveMandateError(dispatch, error) {
-  if (error.status === 422) {
+  if (error.status === 400) {
     dispatch({ type: SIGN_MANDATE_INVALID_ERROR, error });
   } else {
     dispatch({ type: SIGN_MANDATE_START_ERROR, error });
@@ -123,10 +123,11 @@ export function previewMandate(mandate) {
   return (dispatch, getState) => {
     const token = getState().login.token;
     return saveMandateWithToken(mandate, token)
-        .then(({ id }) => downloadMandatePreviewWithIdAndToken(id, token).then(file => download(file, 'Tuleva_avaldus_eelvaade.zip', 'application/zip'))
+        .then(({ id }) => downloadMandatePreviewWithIdAndToken(id, token))
+        .then(file => download(file, 'Tuleva_avaldus_eelvaade.zip', 'application/zip'))
         .catch((error) => {
           handleSaveMandateError(dispatch, error);
-        }));
+        });
   };
 }
 

@@ -97,6 +97,21 @@ describe('Exchange reducer', () => {
     expect(stateOtherWay.sourceSelection).toEqual(expectedFullSelection);
   });
 
+  it('selects full source selection and skips inter fund transfers', () => {
+    const expectedFullSelection = [
+      { sourceFundIsin: 'source', targetFundIsin: 'target', percentage: 1 },
+    ];
+
+    const sourceFunds = [{ name: 'name', isin: 'source' }, { name: 'name', isin: 'target' }];
+    const sourceFundsAction = { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds };
+    const targetFunds = [{ name: 'name', isin: 'target' }, { name: 'name', isin: 'target 2' }];
+    const targetFundsAction = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
+    const state = [sourceFundsAction, targetFundsAction].reduce(exchangeReducer);
+    expect(state.sourceSelection).toEqual(expectedFullSelection);
+    const stateOtherWay = [targetFundsAction, sourceFundsAction].reduce(exchangeReducer);
+    expect(stateOtherWay.sourceSelection).toEqual(expectedFullSelection);
+  });
+
   it('stops loading and saves the error when getting target funds fails', () => {
     const error = { body: { errors: [{ code: 'oh no!' }] } };
     const action = { type: GET_TARGET_FUNDS_ERROR, error };
