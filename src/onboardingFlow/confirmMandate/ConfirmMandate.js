@@ -176,16 +176,6 @@ export const ConfirmMandate = ({
         </label>
       </div>
       {
-        exchange.invalidMandateError ? (
-          <div className="mt-4">
-            <b className="highlight">
-              <Message>confirm.mandate.invalid.mandate</Message>
-            </b>
-          </div>
-        ) : ''
-      }
-
-      {
         exchange.mandateSigningError ? (
           <ErrorMessage
             errors={exchange.mandateSigningError.body}
