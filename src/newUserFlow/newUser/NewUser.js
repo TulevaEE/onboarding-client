@@ -40,10 +40,10 @@ export const NewUser = ({
         </p>
       </div>
 
-      <Link className={'btn btn-primary mb-2 mr-2'} to="/signup">
+      <Link className={'btn btn-primary mb-2 mr-2'} to="/steps/signup">
         <Message>newUserFlow.newUser.i.wish.to.join</Message>
       </Link>
-      <Link className="btn btn-secondary mb-2" to="/non-member">
+      <Link className="btn btn-secondary mb-2" to="/steps/non-member">
         <Message>newUserFlow.newUser.i.want.just.to.transfer.my.pension</Message>
       </Link>
     </div>
@@ -66,7 +66,7 @@ NewUser.propTypes = {
 const mapStateToProps = state => ({
   sourceFunds: state.exchange.sourceFunds,
   loadingSourceFunds: state.exchange.loadingSourceFunds,
-  errorDescription: ((state.exchange.error || {}).body || {}).error_description,
+  errorDescription: state.exchange.error,
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({

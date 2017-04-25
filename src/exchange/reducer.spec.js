@@ -46,11 +46,13 @@ describe('Exchange reducer', () => {
   });
 
   it('stops loading and saves the error when getting pension funds fails', () => {
-    const error = new Error('oh no');
+    const error = { body: { errors: [{ code: 'oh no' }] } };
     const action = { type: GET_SOURCE_FUNDS_ERROR, error };
+
     const newState = exchangeReducer({ loadingSourceFunds: true }, action);
+
+    expect(newState.error).toBe('oh no');
     expect(newState.loadingSourceFunds).toBe(false);
-    expect(newState.error).toBe(error);
   });
 
   it('can select some source funds', () => {
@@ -96,10 +98,11 @@ describe('Exchange reducer', () => {
   });
 
   it('stops loading and saves the error when getting target funds fails', () => {
-    const error = new Error('oh no!');
+    const error = { body: { errors: [{ code: 'oh no!' }] } };
     const action = { type: GET_TARGET_FUNDS_ERROR, error };
+
     const newState = exchangeReducer({ loadingTargetFunds: true }, action);
-    expect(newState.error).toEqual(error);
+    expect(newState.error).toEqual('oh no!');
     expect(newState.loadingTargetFunds).toBe(false);
   });
 
@@ -185,7 +188,7 @@ describe('Exchange reducer', () => {
   it('can remove mandate sign errors', () => {
     const action = { type: NO_SIGN_MANDATE_ERROR };
     const newState = exchangeReducer({
-      mandateSigningError: {error:[]},
+      mandateSigningError: { error: [] },
     }, action);
     expect(newState.mandateSigningError).toBe(null);
   });
@@ -195,15 +198,15 @@ describe('Exchange reducer', () => {
     const newState = exchangeReducer({
       sourceFunds: [],
       loadingSourceFunds: true,
-      sourceSelection: "123",
+      sourceSelection: '123',
       sourceSelectionExact: true,
       targetFunds: [],
       loadingTargetFunds: true,
-      selectedFutureContributionsFundIsin: "123",
-      error: "123",
+      selectedFutureContributionsFundIsin: '123',
+      error: '123',
       loadingMandate: true,
-      mandateSigningControlCode: "123",
-      mandateSigningError: "123",
+      mandateSigningControlCode: '123',
+      mandateSigningError: '123',
       signedMandateId: 123,
       agreedToTerms: true,
     }, action);
@@ -223,5 +226,4 @@ describe('Exchange reducer', () => {
     expect(newState.signedMandateId).toBe(false);
     expect(newState.agreedToTerms).toBe(false);
   });
-
 });

@@ -35,11 +35,11 @@ describe('New user step', () => {
   });
 
   it('renders a link to the next step', () => {
-    expect(component.find(Link).at(0).prop('to')).toBe('/signup');
+    expect(component.find(Link).at(0).prop('to')).toBe('/steps/signup');
     expect(component.find(Link).at(0).children().at(0).node)
       .toEqual(<Message>newUserFlow.newUser.i.wish.to.join</Message>);
 
-    expect(component.find(Link).at(1).prop('to')).toBe('/non-member');
+    expect(component.find(Link).at(1).prop('to')).toBe('/steps/non-member');
     expect(component.find(Link).at(1).children().at(0).node)
       .toEqual(<Message>newUserFlow.newUser.i.want.just.to.transfer.my.pension</Message>);
   });

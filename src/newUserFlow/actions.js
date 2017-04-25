@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign,no-underscore-dangle */
 import { push } from 'react-router-redux';
 import { SubmissionError } from 'redux-form';
 
@@ -12,8 +13,11 @@ import {
 
 function toFieldErrors(errorResponse) {
   return errorResponse.body.errors.reduce((totalErrors, currentError) => {
-    // eslint-disable-next-line no-param-reassign
-    totalErrors[currentError.path] = currentError.code;
+    if (currentError.path) {
+      totalErrors[currentError.path] = currentError.code;
+    } else {
+      totalErrors._error = currentError.code;
+    }
     return totalErrors;
   }, {});
 }

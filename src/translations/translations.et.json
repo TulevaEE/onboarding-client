@@ -123,5 +123,14 @@
   "mandate.processing.error.epis.unknown": "Tundmatu Eesti Pensioni Infosüsteemi viga",
   "mandate.processing.error.epis.technical.error": "Tundmatu Eesti Pensioni Infosüsteemi tehniline viga",
   "newUserFlow.newUser.i.wish.to.join": "Soovin liituda",
-  "newUserFlow.newUser.i.want.just.to.transfer.my.pension": "Toon lihtsalt pensioni Tulevasse"
+  "newUserFlow.newUser.i.want.just.to.transfer.my.pension": "Toon lihtsalt pensioni Tulevasse",
+  "new.user.flow.signup.firstName": "Eesnimi*",
+  "new.user.flow.signup.lastName": "Perekonnanimi*",
+  "new.user.flow.signup.personalCode": "Isikukood*",
+  "new.user.flow.signup.email": "Email*",
+  "new.user.flow.signup.phoneNumber": "Telefoninumber",
+  "new.user.flow.signup.submit": "Liitun Tulevaga",
+  "new.user.flow.back": "Tagasi",
+  "new.user.flow.signup.required.field": "Palun täida ikka ära :)",
+  "new.user.flow.signup.invalid.email": "Vigane email :)"
 }

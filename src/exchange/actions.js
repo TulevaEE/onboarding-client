@@ -157,7 +157,7 @@ function signIdCardSignatureHashWithCertificateForMandateId(hash, certificate, m
         dispatch({ type: SIGN_MANDATE_ID_CARD_SIGN_HASH_SUCCESS });
         return signature.hex;
       }, (error) => {
-        dispatch({ type: SIGN_MANDATE_ERROR, error: error.message });
+        dispatch({ type: SIGN_MANDATE_ERROR, error });
       }).then(signedHash => getIdCardSignatureStatusForMandateIdWithSignedHashAndToken(
       mandateId, signedHash, getState().login.token))
       .then((statusCode) => {

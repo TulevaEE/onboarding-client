@@ -50,7 +50,13 @@ export default function loginReducer(state = defaultState, action) {
         error: null,
       };
     case MOBILE_AUTHENTICATION_START_ERROR:
-      return { ...state, loadingAuthentication: false, error: action.error };
+    case ID_CARD_AUTHENTICATION_START_ERROR:
+      return {
+        ...state,
+        error: action.error.body.errors[0].code,
+        loadingAuthentication: false,
+        loadingUser: false,
+      };
 
     case MOBILE_AUTHENTICATION_SUCCESS:
       if (window.localStorage) {
@@ -66,10 +72,11 @@ export default function loginReducer(state = defaultState, action) {
         error: null,
         phoneNumber: '',
       };
+    case ID_CARD_AUTHENTICATION_ERROR:
     case MOBILE_AUTHENTICATION_ERROR:
       return {
         ...state,
-        error: action.error,
+        error: action.error.body.error_description,
         controlCode: null,
         loadingAuthentication: false,
         loadingUser: false,
@@ -100,17 +107,13 @@ export default function loginReducer(state = defaultState, action) {
         loginMethod: 'idCard',
         error: null,
       };
-    case ID_CARD_AUTHENTICATION_START_ERROR:
-    case ID_CARD_AUTHENTICATION_ERROR:
-      return { ...state, error: action.error, loadingAuthentication: false, loadingUser: false };
-
 
     case GET_USER_START:
       return { ...state, loadingUser: true, userError: null };
     case GET_USER_SUCCESS:
       return { ...state, loadingUser: false, user: action.user, userError: null };
     case GET_USER_ERROR:
-      return { ...state, loadingUser: false, userError: action.error };
+      return { ...state, loadingUser: false, userError: action.error.body.errors[0].code };
 
     case LOG_OUT:
       if (window.localStorage) {
