@@ -133,7 +133,6 @@ export default function exchangeReducer(state = initialState, action) {
         loadingMandate: false,
         mandateSigningControlCode: null,
         mandateSigningError: action.error,
-        invalidMandateError: true,
       };
     case SIGN_MANDATE_MOBILE_ID_CANCEL:
       return {

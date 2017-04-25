@@ -162,7 +162,6 @@ describe('Exchange reducer', () => {
     const newState = exchangeReducer({ mandateSigningControlCode: 'code' }, action);
     expect(newState.mandateSigningControlCode).toBeFalsy();
     expect(newState.mandateSigningError).toEqual(error);
-    expect(newState.invalidMandateError).toEqual(true);
   });
 
   it('stops loading and sets the error when starting to sign mandate fails', () => {

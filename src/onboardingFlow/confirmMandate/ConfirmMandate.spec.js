@@ -265,7 +265,7 @@ describe('Confirm mandate step', () => {
         { percentage: 1, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
         { percentage: 1, sourceFundIsin: 'source 3', targetFundIsin: 'target 3' },
       ],
-      sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }, { isin: 'source 3', name: 'c', price: 0}],
+      sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }, { isin: 'source 3', name: 'c', price: 0 }],
       selectedFutureContributionsFundIsin: 'target 1',
       agreedToTerms: true,
     };
@@ -290,7 +290,7 @@ describe('Confirm mandate step', () => {
         { percentage: 1, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
         { percentage: 1, sourceFundIsin: 'source 3', targetFundIsin: 'target 3' },
       ],
-      sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }, { isin: 'source 3', name: 'c', price: 0}],
+      sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }, { isin: 'source 3', name: 'c', price: 0 }],
       selectedFutureContributionsFundIsin: 'target 1',
       agreedToTerms: true,
     };
@@ -419,23 +419,6 @@ describe('Confirm mandate step', () => {
     expect(component.find('button').length === 0).toBe(true);
   });
 
-  it('shows error message on invalid mandate', () => {
-    component.setProps({
-      exchange: {
-        selectedFutureContributionsFundIsin: 'test isin',
-        sourceSelection: [],
-        invalidMandateError: true,
-      },
-    });
-    expect(component.contains(
-      <div className="mt-4">
-        <b className="highlight">
-          <Message>confirm.mandate.invalid.mandate</Message>
-        </b>
-      </div>,
-    )).toBe(true);
-  });
-
   it('renders an overlayed error messages on error while signing the mandate', () => {
     const onCloseErrorMessages = jest.fn();
     component.setProps({
@@ -453,10 +436,9 @@ describe('Confirm mandate step', () => {
       exchange: {
         selectedFutureContributionsFundIsin: 'test isin',
         sourceSelection: [],
-        mandateSigningError: {errors:[]},
+        mandateSigningError: { errors: [] },
       },
     });
     expect(hasErrorMessage()).toBe(true);
   });
-
 });
