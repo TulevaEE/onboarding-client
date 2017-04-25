@@ -11,11 +11,13 @@ import TargetFundSelector from './targetFundSelector';
 import ExactFundSelector from './exactFundSelector';
 
 function selectAllWithTarget(sourceFunds, targetFund) {
-  return sourceFunds.map(fund => ({
-    sourceFundIsin: fund.isin,
-    targetFundIsin: targetFund.isin,
-    percentage: 1,
-  }));
+  return sourceFunds
+    .filter(fund => fund.isin !== targetFund.isin)
+    .map(fund => ({
+      sourceFundIsin: fund.isin,
+      targetFundIsin: targetFund.isin,
+      percentage: 1,
+    }));
 }
 
 function selectionsValid(selections) {
