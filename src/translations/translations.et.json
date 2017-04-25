@@ -131,5 +131,7 @@
   "new.user.flow.signup.submit": "Liitun Tulevaga",
   "new.user.flow.back": "Tagasi",
   "new.user.flow.signup.required.field": "Palun täida ikka ära :)",
-  "new.user.flow.signup.invalid.email": "Vigane email :)"
+  "new.user.flow.signup.invalid.email": "Vigane email :)",
+  "invalid.mandate.source.amount.exceeded": "Mõne fondi ületoomise protsent on rohkem kui 100%.",
+  "invalid.mandate.same.source.and.target.transfer.present": "Mõne fondi osakute vahetus on hetkel määratud samasse fondi - seda ei saa teostada."
 }

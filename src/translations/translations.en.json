@@ -126,5 +126,7 @@
   "new.user.flow.signup.submit": "Join tuleva",
   "new.user.flow.back": "Back",
   "new.user.flow.signup.required.field": "Please fill out this field :)",
-  "new.user.flow.signup.invalid.email": "Invalid email :)"
+  "new.user.flow.signup.invalid.email": "Invalid email :)",
+  "invalid.mandate.source.amount.exceeded": "Transfer amount for one of the funds is more than 100%.",
+  "invalid.mandate.same.source.and.target.transfer.present": "Same source and target fund transfers are not allowed."
 }
