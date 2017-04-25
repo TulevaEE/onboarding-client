@@ -16,6 +16,8 @@ import {
   LOG_OUT,
 } from './constants';
 
+import { getGlobalErrorCode } from '../common/errorMessage';
+
 const TOKEN_STORAGE_KEY = 'token';
 const LOGIN_METHOD_STORAGE_KEY = 'loginMethod';
 
@@ -53,7 +55,7 @@ export default function loginReducer(state = defaultState, action) {
     case ID_CARD_AUTHENTICATION_START_ERROR:
       return {
         ...state,
-        error: action.error.body.errors[0].code,
+        error: getGlobalErrorCode(action.error.body),
         loadingAuthentication: false,
         loadingUser: false,
       };
@@ -113,7 +115,7 @@ export default function loginReducer(state = defaultState, action) {
     case GET_USER_SUCCESS:
       return { ...state, loadingUser: false, user: action.user, userError: null };
     case GET_USER_ERROR:
-      return { ...state, loadingUser: false, userError: action.error.body.errors[0].code };
+      return { ...state, loadingUser: false, userError: getGlobalErrorCode(action.error.body) };
 
     case LOG_OUT:
       if (window.localStorage) {

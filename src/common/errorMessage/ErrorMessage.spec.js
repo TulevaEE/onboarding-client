@@ -2,12 +2,12 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Message } from 'retranslate';
 
-import ErrorMessage from './ErrorMessage';
+import ErrorMessage, { getGlobalErrorCode } from './ErrorMessage';
 
 describe('Error message', () => {
   let component;
   let props;
-  const errors = { errors: [{ code: 'some.code' }, { code: 'some.other.code' }] };
+  let errors = { errors: [{ code: 'some.code' }, { code: 'some.other.code' }] };
 
   beforeEach(() => {
     component = shallow(<ErrorMessage {...props} />);
@@ -19,11 +19,11 @@ describe('Error message', () => {
   });
 
   it('shows an error messages', () => {
-    const errors = { errors: [{ code: 'some.code' }, { code: 'some.other.code' }] };
+    errors = { errors: [{ code: 'some.code' }, { code: 'some.other.code' }] };
 
-    errors.errors.forEach((error, index) => {
+    errors.errors.forEach((error) => {
       expect(component.contains(error.code.toString())).toBe(true);
-    });    
+    });
   });
 
   it('shows close button', () => {
@@ -35,6 +35,23 @@ describe('Error message', () => {
     expect(isComponentModal()).toBe(false);
     component.setProps({ overlayed: true });
     expect(isComponentModal()).toBe(true);
-  });  
-  
+  });
+
+  it('returns global error message', () => {
+    errors = { errors: [{ code: 'some.code', path: 'somePath' }, { code: 'global.error.code' }] };
+    expect(getGlobalErrorCode(errors)).toBe('global.error.code');
+  });
+
+  it('global error message retrieval works with no errors', () => {
+    errors = { errors: [] };
+    expect(getGlobalErrorCode(errors)).toBe(undefined);
+  });
+
+  it('global error message retrieval works with empty object', () => {
+    expect(getGlobalErrorCode({})).toBe(undefined);
+  });
+
+  it('global error message retrieval works with undefined', () => {
+    expect(getGlobalErrorCode(undefined)).toBe(undefined);
+  });
 });

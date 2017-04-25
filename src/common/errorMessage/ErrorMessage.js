@@ -57,4 +57,8 @@ ErrorMessage.propTypes = {
   overlayed: Types.bool,
 };
 
+export function getGlobalErrorCode(errors) {
+  return (((errors || {}).errors || []).find(error => !error.path) || {}).code;
+}
+
 export default ErrorMessage;

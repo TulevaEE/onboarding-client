@@ -1,4 +1,4 @@
-import { downloadFile, get, post, postForm, put, simpleFetch } from './http';
+import { downloadFile, get, post, postForm, put, patch, simpleFetch } from './http';
 
 const API_URL = '/api';
 
@@ -117,7 +117,7 @@ export function getIdCardSignatureStatusForMandateIdWithSignedHashAndToken(
 }
 
 export function createUserWithToken(user, token) {
-  return post(getEndpoint('/v1/users'), user, {
+  return patch(getEndpoint('/v1/me'), user, {
     Authorization: `Bearer ${token}`,
   }).then(savedUser => savedUser);
 }

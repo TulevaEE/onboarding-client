@@ -29,6 +29,9 @@ import {
   LOG_OUT,
 } from '../login/constants';
 
+import { getGlobalErrorCode } from '../common/errorMessage';
+
+
 const initialState = {
   sourceFunds: null,
   loadingSourceFunds: false,
@@ -73,7 +76,7 @@ export default function exchangeReducer(state = initialState, action) {
           }) : state.sourceSelection,
       };
     case GET_SOURCE_FUNDS_ERROR:
-      return { ...state, loadingSourceFunds: false, error: action.error.body.errors[0].code };
+      return { ...state, loadingSourceFunds: false, error: getGlobalErrorCode(action.error.body) };
     case SELECT_EXCHANGE_SOURCES:
       return {
         ...state,
@@ -99,7 +102,7 @@ export default function exchangeReducer(state = initialState, action) {
           }) : state.sourceSelection,
       };
     case GET_TARGET_FUNDS_ERROR:
-      return { ...state, loadingTargetFunds: false, error: action.error.body.errors[0].code };
+      return { ...state, loadingTargetFunds: false, error: getGlobalErrorCode(action.error.body) };
     case SELECT_TARGET_FUND:
       return { ...state, selectedFutureContributionsFundIsin: action.targetFundIsin };
 

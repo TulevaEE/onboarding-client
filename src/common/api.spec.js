@@ -9,6 +9,7 @@ describe('api', () => {
     mockHttp.post = jest.fn();
     mockHttp.postForm = jest.fn();
     mockHttp.put = jest.fn();
+    mockHttp.patch = jest.fn();
     mockHttp.simpleFetch = jest.fn();
   });
 
@@ -256,16 +257,16 @@ describe('api', () => {
     const user = { firstName: 'Erko' };
     const token = 'a token';
 
-    mockHttp.post = jest.fn(() => Promise.resolve({
+    mockHttp.patch = jest.fn(() => Promise.resolve({
       firstName: 'Erko',
     }));
-    expect(mockHttp.post).not.toHaveBeenCalled();
+    expect(mockHttp.patch).not.toHaveBeenCalled();
     return api
       .createUserWithToken(user, token)
       .then((createdUser) => {
         expect(createdUser.firstName).toBe('Erko');
-        expect(mockHttp.post).toHaveBeenCalledTimes(1);
-        expect(mockHttp.post).toHaveBeenCalledWith('/v1/users', user, {
+        expect(mockHttp.patch).toHaveBeenCalledTimes(1);
+        expect(mockHttp.patch).toHaveBeenCalledWith('/v1/me', user, {
           Authorization: `Bearer ${token}`,
         });
       });

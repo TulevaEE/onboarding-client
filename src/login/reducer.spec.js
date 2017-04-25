@@ -130,7 +130,7 @@ describe('Login reducer', () => {
     expect(newState.userError).toBe(null);
   });
 
-  it('stops loading and saves the error if getting hte user fails', () => {
+  it('stops loading and saves the error if getting the user fails', () => {
     const error = { body: { errors: [{ code: 'oh no!' }] } };
 
     const newState = loginReducer({ loadingUser: true }, { type: GET_USER_ERROR, error });

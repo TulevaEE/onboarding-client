@@ -6,9 +6,10 @@ import { Field, reduxForm } from 'redux-form';
 import { Message, withTranslations } from 'retranslate';
 import { Link } from 'react-router';
 
-const required = value => value ? undefined :
+const requiredField = value => value ? undefined :
 <Message>new.user.flow.signup.required.field</Message>;
-const email = value =>
+
+const emailValidator = value =>
   value && !/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()\.,;\s@\"]+\.{0,1})+[^<>()\.,;:\s@\"]{2,})$/.test(value) ?
     <Message>new.user.flow.signup.invalid.email</Message> : undefined;
 
@@ -49,28 +50,28 @@ translations: { translate } }) => (
         <Field
           component={renderField} type="text" name="firstName"
           placeholder={translate('new.user.flow.signup.firstName')}
-          validate={required} disabled="disabled"
+          validate={requiredField} disabled="disabled"
         />
       </div>
       <div className="form-group">
         <Field
           component={renderField} type="text" name="lastName"
           placeholder={translate('new.user.flow.signup.lastName')}
-          validate={required} disabled="disabled"
+          validate={requiredField} disabled="disabled"
         />
       </div>
       <div className="form-group">
         <Field
           component={renderField} type="number" name="personalCode"
           placeholder={translate('new.user.flow.signup.personalCode')}
-          validate={required} disabled="disabled"
+          validate={requiredField} disabled="disabled"
         />
       </div>
       <div className="form-group">
         <Field
           component={renderField} type="email" name="email"
           placeholder={translate('new.user.flow.signup.email')}
-          validate={[required, email]}
+          validate={[requiredField, emailValidator]}
         />
       </div>
       <div className="form-group">
