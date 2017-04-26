@@ -128,5 +128,8 @@
   "new.user.flow.signup.required.field": "Please fill out this field :)",
   "new.user.flow.signup.invalid.email": "Invalid email :)",
   "invalid.mandate.source.amount.exceeded": "Transfer amount for one of the funds is more than 100%.",
-  "invalid.mandate.same.source.and.target.transfer.present": "Same source and target fund transfers are not allowed."
+  "invalid.mandate.same.source.and.target.transfer.present": "Same source and target fund transfers are not allowed.",
+  "mobile.id.session.not.found": "Mobile id session is expired. Please log in again.",
+  "mobile.id.signature.session.not.found": "Mobile id session is expired. Please log in again.",
+  "id.card.signature.session.not.found": "Id card session is expired. Please log in again."
 }
