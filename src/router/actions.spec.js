@@ -1,3 +1,5 @@
+import { push } from 'react-router-redux';
+
 const actions = require('./actions'); // need to use require because of jest mocks being weird
 
 describe('Routing actions', () => {
@@ -5,7 +7,7 @@ describe('Routing actions', () => {
   let state;
 
   function mockDispatch() {
-    state = { login: {} };
+    state = { login: {}, user: {} };
     dispatch = jest.fn((action) => {
       if (typeof action === 'function') {
         action(dispatch, () => state);
@@ -21,13 +23,23 @@ describe('Routing actions', () => {
     mockDispatch();
   });
 
+  it('can perform a member routing', () => {
+    state.user.memberNumber = 123;
 
-  it('can perform routing', () => {
-    const action = createBoundAction(actions.getRoute());
-
+    const action = createBoundAction(actions.route);
     action();
 
     expect(dispatch).toHaveBeenCalledTimes(1);
-    expect(dispatch).toHaveBeenCalledWith({ type: '@router/blah' });
+    expect(dispatch).toHaveBeenCalledWith(push('/steps/select-sources'));
+  });
+
+  it('can perform non member routing', () => {
+    state.user.memberNumber = null;
+
+    const action = createBoundAction(actions.route);
+    action();
+
+    expect(dispatch).toHaveBeenCalledTimes(1);
+    expect(dispatch).toHaveBeenCalledWith(push('/newUser'));
   });
 });

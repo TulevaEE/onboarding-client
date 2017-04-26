@@ -2,13 +2,20 @@ import { push } from 'react-router-redux';
 
 
 function isMember(state) {
+  if (state.user.memberNumber) {
+    return true;
+  }
   return false;
 }
 
-export function getRoute() {
+export function route() {
   return (dispatch, getState) => {
-    isMember(getState());
-    dispatch(push('/newUser'));
+    // getState();
+    if (isMember(getState())) {
+      dispatch(push('/steps/select-sources'));
+    } else {
+      dispatch(push('/newUser'));
+    }
   };
 }
 
