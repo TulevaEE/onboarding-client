@@ -1,5 +1,9 @@
 import uuid from 'uuid/v4';
 
+import {
+  LOG_OUT,
+} from '../login/constants';
+
 export function resetStatisticsIdentification() {
   localStorage.setItem('statisticsId', uuid());
 }
@@ -19,6 +23,8 @@ function createStatisticsHeaders() {
 function transformResponse(response) {
   if (response.ok && response.status < 400) {
     return response.json();
+  } else if (response.status === 401) {
+    dispatch({ type: LOG_OUT });
   } else if (response.status >= 400) {
     return response
       .json()

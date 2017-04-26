@@ -48,6 +48,15 @@ describe('http', () => {
     });
   }
 
+  function fakeUnauthorisedResponse() {
+    const value = { error: 'invalid_token' };
+    return Promise.resolve({
+      status: 401,
+      json: () => Promise.resolve(value),
+      blob: () => Promise.resolve(value),
+    });
+  }
+
   function fail() {
     expect(0).toBe(1);
   }
@@ -132,6 +141,15 @@ describe('http', () => {
     const errorData = { iAmError: true };
     const expectedError = { status: 400, body: errorData };
     fetch.mockReturnValueOnce(fakeUnsuccessfulResponseWithValue(errorData));
+    return get('https://example.com')
+      .then(fail)
+      .catch(givenResponse => expect(givenResponse).toEqual(expectedError));
+  });
+
+  it('logs out on unauthorized and invalid token request', () => {
+    const errorData = { error: 'invalid_token' };
+    const expectedError = { status: 401, body: errorData };
+    fetch.mockReturnValueOnce(fakeUnauthorisedResponse());
     return get('https://example.com')
       .then(fail)
       .catch(givenResponse => expect(givenResponse).toEqual(expectedError));
