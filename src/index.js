@@ -73,6 +73,17 @@ function getDataForAccount() {
   }
 }
 
+function getLanguage() {
+  const params = window.location.search;
+
+  if (params.includes('language=et')) {
+    return 'et';
+  } else if (params.includes('language=en')) {
+    return 'en';
+  }
+  return 'et';
+}
+
 function scrollToTop() {
   window.scrollTo(0, 0);
 }
@@ -83,7 +94,9 @@ mixpanel.init(config.get('mixpanelKey'));
 
 render((
   <MixpanelProvider mixpanel={mixpanel}>
-    <TranslationProvider messages={translations} language="et" fallbackLanguage="et">
+    <TranslationProvider
+      messages={translations} language={getLanguage()} fallbackLanguage="et"
+    >
       <ReduxProvider store={store}>
         <Router history={history}>
           <Route path="/login" component={LoginPage} />
