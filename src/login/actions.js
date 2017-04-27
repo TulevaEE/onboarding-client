@@ -1,5 +1,6 @@
 import { push } from 'react-router-redux';
 import Raven from 'raven-js';
+import { router } from '../router';
 
 import {
   CHANGE_PHONE_NUMBER,
@@ -47,7 +48,7 @@ function getMobileIdToken() {
         .then((token) => {
           if (token) { // authentication complete
             dispatch({ type: MOBILE_AUTHENTICATION_SUCCESS, token });
-            dispatch(push('/steps/select-sources'));
+            router.route();
           } else if (getState().login.loadingAuthentication) { // authentication not yet completed
             dispatch(getMobileIdToken()); // poll again
           }
@@ -81,7 +82,7 @@ function getIdCardToken() {
         .then((token) => {
           if (token) { // authentication complete
             dispatch({ type: ID_CARD_AUTHENTICATION_SUCCESS, token });
-            dispatch(push('/steps/select-sources'));
+            router.route();
           } else if (getState().login.loadingAuthentication) { // authentication not yet completed
             dispatch(getIdCardToken()); // poll again
           }

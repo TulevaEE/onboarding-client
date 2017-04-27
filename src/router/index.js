@@ -1,3 +1,5 @@
-import * as actions from './actions';
+import * as actionsModule from './actions';
 
-export default actions;
+export const router = actionsModule;
+
+export default router;

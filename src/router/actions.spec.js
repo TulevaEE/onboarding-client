@@ -7,7 +7,10 @@ describe('Routing actions', () => {
   let state;
 
   function mockDispatch() {
-    state = { login: {}, user: {} };
+    // state = { login: { user: {} } };
+    state = {};
+    state.login = { };
+    state.login.user = {};
     dispatch = jest.fn((action) => {
       if (typeof action === 'function') {
         action(dispatch, () => state);
@@ -24,7 +27,7 @@ describe('Routing actions', () => {
   });
 
   it('can perform a member routing', () => {
-    state.user.memberNumber = 123;
+    state.login.user.memberNumber = 123;
 
     const action = createBoundAction(actions.route);
     action();
@@ -34,7 +37,7 @@ describe('Routing actions', () => {
   });
 
   it('can perform non member routing', () => {
-    state.user.memberNumber = null;
+    state.login.user.memberNumber = null;
 
     const action = createBoundAction(actions.route);
     action();
