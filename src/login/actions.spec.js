@@ -1,5 +1,3 @@
-import { push } from 'react-router-redux';
-
 import {
   CHANGE_PHONE_NUMBER,
 
@@ -22,6 +20,9 @@ import {
 
   LOG_OUT,
 } from './constants';
+
+const mockRouter = jest.genMockFromModule('../router/actions');
+jest.mock('../router/actions', () => mockRouter);
 
 jest.useFakeTimers();
 
@@ -56,6 +57,7 @@ describe('Login actions', () => {
     mockApi.getMobileIdToken = () => Promise.reject();
     mockApi.getIdCardToken = () => Promise.reject();
     mockHttp.resetStatisticsIdentification = jest.fn();
+    mockRouter.selectRouteForState = jest.fn();
   });
 
   afterEach(() => {
@@ -124,7 +126,7 @@ describe('Login actions', () => {
         expect(mockApi.getMobileIdToken).toHaveBeenCalled();
       }).then(() => {
         expect(dispatch).toHaveBeenCalledWith({ type: MOBILE_AUTHENTICATION_SUCCESS, token });
-        expect(dispatch).toHaveBeenCalledWith(push('/steps/select-sources'));
+        expect(mockRouter.selectRouteForState).toHaveBeenCalled();
       });
   });
 
@@ -161,7 +163,7 @@ describe('Login actions', () => {
         expect(mockApi.getIdCardToken).toHaveBeenCalled();
       }).then(() => {
         expect(dispatch).toHaveBeenCalledWith({ type: ID_CARD_AUTHENTICATION_SUCCESS, token });
-        expect(dispatch).toHaveBeenCalledWith(push('/steps/select-sources'));
+        expect(mockRouter.selectRouteForState).toHaveBeenCalled();
       });
   });
 
@@ -220,11 +222,11 @@ describe('Login actions', () => {
     expect(dispatch).not.toHaveBeenCalled();
     return getUser()
       .then(() => {
-        expect(dispatch).toHaveBeenCalledTimes(1);
         expect(dispatch).toHaveBeenCalledWith({
           type: GET_USER_SUCCESS,
           user,
         });
+        expect(mockRouter.selectRouteForState).toHaveBeenCalled();
       });
   });
 
