@@ -47,7 +47,7 @@ function getMobileIdToken() {
         .then((token) => {
           if (token) { // authentication complete
             dispatch({ type: MOBILE_AUTHENTICATION_SUCCESS, token });
-            dispatch(router.route());
+            dispatch(router.selectStateRoute());
           } else if (getState().login.loadingAuthentication) { // authentication not yet completed
             dispatch(getMobileIdToken()); // poll again
           }
@@ -81,7 +81,7 @@ function getIdCardToken() {
         .then((token) => {
           if (token) { // authentication complete
             dispatch({ type: ID_CARD_AUTHENTICATION_SUCCESS, token });
-            dispatch(router.route());
+            dispatch(router.selectStateRoute());
           } else if (getState().login.loadingAuthentication) { // authentication not yet completed
             dispatch(getIdCardToken()); // poll again
           }
@@ -121,7 +121,7 @@ export function getUser() {
           Raven.setUserContext({ id: user.id });
         }
         dispatch({ type: GET_USER_SUCCESS, user });
-        dispatch(router.route());
+        dispatch(router.selectStateRoute());
       })
       .catch((error) => {
         if (error.status === 401) {

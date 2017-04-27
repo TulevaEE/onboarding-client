@@ -7,7 +7,6 @@ describe('Routing actions', () => {
   let state;
 
   function mockDispatch() {
-    // state = { login: { user: {} } };
     state = {};
     state.login = { };
     state.login.user = {};
@@ -29,7 +28,7 @@ describe('Routing actions', () => {
   it('can perform a member routing', () => {
     state.login.user.memberNumber = 123;
 
-    const action = createBoundAction(actions.route);
+    const action = createBoundAction(actions.selectStateRoute);
     action();
 
     expect(dispatch).toHaveBeenCalledTimes(1);
@@ -39,7 +38,7 @@ describe('Routing actions', () => {
   it('can perform non member routing', () => {
     state.login.user.memberNumber = null;
 
-    const action = createBoundAction(actions.route);
+    const action = createBoundAction(actions.selectStateRoute);
     action();
 
     expect(dispatch).toHaveBeenCalledTimes(1);
@@ -49,7 +48,7 @@ describe('Routing actions', () => {
   it('can perform routing when user is not loaded', () => {
     state.login = {};
 
-    const action = createBoundAction(actions.route);
+    const action = createBoundAction(actions.selectStateRoute);
     action();
 
     expect(dispatch).toHaveBeenCalledTimes(1);
