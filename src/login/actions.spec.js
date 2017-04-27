@@ -222,11 +222,11 @@ describe('Login actions', () => {
     expect(dispatch).not.toHaveBeenCalled();
     return getUser()
       .then(() => {
-        expect(dispatch).toHaveBeenCalledTimes(1);
         expect(dispatch).toHaveBeenCalledWith({
           type: GET_USER_SUCCESS,
           user,
         });
+        expect(mockRouter.route).toHaveBeenCalled();
       });
   });
 

@@ -43,6 +43,16 @@ describe('Routing actions', () => {
     action();
 
     expect(dispatch).toHaveBeenCalledTimes(1);
-    expect(dispatch).toHaveBeenCalledWith(push('/newUser'));
+    expect(dispatch).toHaveBeenCalledWith(push('/steps/new-user'));
+  });
+
+  it('can perform routing when user is not loaded', () => {
+    state.login = {};
+
+    const action = createBoundAction(actions.route);
+    action();
+
+    expect(dispatch).toHaveBeenCalledTimes(1);
+    expect(dispatch).toHaveBeenCalledWith(push('/'));
   });
 });

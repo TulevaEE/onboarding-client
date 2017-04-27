@@ -1,7 +1,14 @@
 import { push } from 'react-router-redux';
 
-function isMember(state) {
-  if (state.login.user.memberNumber) {
+function isMember(getState) {
+  if (getState().login.user.memberNumber) {
+    return true;
+  }
+  return false;
+}
+
+function isDataLoaded(getState) {
+  if (getState().login.user) {
     return true;
   }
   return false;
@@ -9,10 +16,12 @@ function isMember(state) {
 
 export function route() {
   return (dispatch, getState) => {
-    if (isMember(getState())) {
+    if (!isDataLoaded(getState)) {
+      dispatch(push('/'));
+    } else if (isMember(getState)) {
       dispatch(push('/steps/select-sources'));
     } else {
-      dispatch(push('/newUser'));
+      dispatch(push('/steps/new-user'));
     }
   };
 }
