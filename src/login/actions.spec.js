@@ -57,7 +57,7 @@ describe('Login actions', () => {
     mockApi.getMobileIdToken = () => Promise.reject();
     mockApi.getIdCardToken = () => Promise.reject();
     mockHttp.resetStatisticsIdentification = jest.fn();
-    mockRouter.selectStateRoute = jest.fn();
+    mockRouter.selectRouteForState = jest.fn();
   });
 
   afterEach(() => {
@@ -126,7 +126,7 @@ describe('Login actions', () => {
         expect(mockApi.getMobileIdToken).toHaveBeenCalled();
       }).then(() => {
         expect(dispatch).toHaveBeenCalledWith({ type: MOBILE_AUTHENTICATION_SUCCESS, token });
-        expect(mockRouter.selectStateRoute).toHaveBeenCalled();
+        expect(mockRouter.selectRouteForState).toHaveBeenCalled();
       });
   });
 
@@ -163,7 +163,7 @@ describe('Login actions', () => {
         expect(mockApi.getIdCardToken).toHaveBeenCalled();
       }).then(() => {
         expect(dispatch).toHaveBeenCalledWith({ type: ID_CARD_AUTHENTICATION_SUCCESS, token });
-        expect(mockRouter.selectStateRoute).toHaveBeenCalled();
+        expect(mockRouter.selectRouteForState).toHaveBeenCalled();
       });
   });
 
@@ -226,7 +226,7 @@ describe('Login actions', () => {
           type: GET_USER_SUCCESS,
           user,
         });
-        expect(mockRouter.selectStateRoute).toHaveBeenCalled();
+        expect(mockRouter.selectRouteForState).toHaveBeenCalled();
       });
   });
 

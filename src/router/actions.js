@@ -14,7 +14,7 @@ function isDataLoaded(getState) {
   return false;
 }
 
-export function selectStateRoute() {
+export function selectRouteForState() {
   return (dispatch, getState) => {
     if (!isDataLoaded(getState)) {
       dispatch(push('/'));
@@ -26,4 +26,4 @@ export function selectStateRoute() {
   };
 }
 
-export default selectStateRoute;
+export default selectRouteForState;

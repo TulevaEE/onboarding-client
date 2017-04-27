@@ -28,7 +28,7 @@ describe('Routing actions', () => {
   it('can perform a member routing', () => {
     state.login.user.memberNumber = 123;
 
-    const action = createBoundAction(actions.selectStateRoute);
+    const action = createBoundAction(actions.selectRouteForState);
     action();
 
     expect(dispatch).toHaveBeenCalledTimes(1);
@@ -38,7 +38,7 @@ describe('Routing actions', () => {
   it('can perform non member routing', () => {
     state.login.user.memberNumber = null;
 
-    const action = createBoundAction(actions.selectStateRoute);
+    const action = createBoundAction(actions.selectRouteForState);
     action();
 
     expect(dispatch).toHaveBeenCalledTimes(1);
@@ -48,7 +48,7 @@ describe('Routing actions', () => {
   it('can perform routing when user is not loaded', () => {
     state.login = {};
 
-    const action = createBoundAction(actions.selectStateRoute);
+    const action = createBoundAction(actions.selectRouteForState);
     action();
 
     expect(dispatch).toHaveBeenCalledTimes(1);
