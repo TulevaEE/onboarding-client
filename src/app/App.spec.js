@@ -20,7 +20,7 @@ describe('App', () => {
   });
 
   it('passes props to the header', () => {
-    const user = { name: 'name', personalCode: 'code' };
+    const user = { name: 'name' };
     const onLogout = jest.fn();
     component.setProps({
       user,

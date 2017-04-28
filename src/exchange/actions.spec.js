@@ -13,19 +13,25 @@ import {
 
   SELECT_TARGET_FUND,
 
-  SET_TRANSFER_FUTURE_CAPITAL,
-  SIGN_MANDATE_START,
-  SIGN_MANDATE_START_SUCCESS,
+  SIGN_MANDATE_MOBILE_ID_START,
+  SIGN_MANDATE_MOBILE_ID_START_SUCCESS,
   SIGN_MANDATE_START_ERROR,
+  SIGN_MANDATE_INVALID_ERROR,
   SIGN_MANDATE_SUCCESS,
   SIGN_MANDATE_ERROR,
-  SIGN_MANDATE_CANCEL,
+  SIGN_MANDATE_MOBILE_ID_CANCEL,
+
+  CHANGE_AGREEMENT_TO_TERMS,
+
+  NO_SIGN_MANDATE_ERROR,
 } from './constants';
 
 jest.useFakeTimers();
 
 const mockApi = jest.genMockFromModule('../common/api');
+const mockDownload = jest.fn();
 jest.mock('../common/api', () => mockApi);
+jest.mock('downloadjs', () => mockDownload);
 
 const actions = require('./actions'); // need to use require because of jest mocks being weird
 
@@ -38,7 +44,7 @@ describe('Exchange actions', () => {
   }
 
   function mockDispatch() {
-    state = { login: { token: 'token' } };
+    state = { login: { token: 'token' }, exchange: {} };
     dispatch = jest.fn((action) => {
       if (typeof action === 'function') {
         action(dispatch, () => state);
@@ -52,9 +58,9 @@ describe('Exchange actions', () => {
 
   afterEach(() => {
     jest.runOnlyPendingTimers();
-    mockApi.getMandateControlCodeForMandateIdWithToken = () => Promise.reject();
+    mockApi.getMobileIdSignatureChallengeCodeForMandateIdWithToken = () => Promise.reject();
     mockApi.saveMandateWithToken = () => Promise.reject();
-    mockApi.getMandateSignatureForMandateIdWithToken = () => Promise.reject();
+    mockApi.getMobileIdSignatureStatusForMandateIdWithToken = () => Promise.reject();
   });
 
   describe('When getting source funds', () => {
@@ -91,7 +97,7 @@ describe('Exchange actions', () => {
       return getSourceFunds()
         .then(() => {
           expect(dispatch).toHaveBeenCalledTimes(1);
-          expect(dispatch).toHaveBeenCalledWith(push('/'));
+          expect(dispatch).toHaveBeenCalledWith(push('/account'));
           expect(dispatch).not.toHaveBeenCalledWith({
             type: GET_SOURCE_FUNDS_SUCCESS,
             sourceFunds,
@@ -152,48 +158,85 @@ describe('Exchange actions', () => {
       .then(() => expect(dispatch).toHaveBeenCalledWith({ type: GET_TARGET_FUNDS_ERROR, error }));
   });
 
-  it('can select a target fund', () => {
-    const targetFund = { iAmATargetFund: true };
-    expect(actions.selectTargetFund(targetFund)).toEqual({
+  it('can change agreement to terms', () => {
+    [true, false].forEach(agreement =>
+      expect(actions.changeAgreementToTerms(agreement)).toEqual({
+        type: CHANGE_AGREEMENT_TO_TERMS,
+        agreement,
+      }));
+  });
+
+  it('can select future contributions fund fund', () => {
+    const targetFundIsin = 'AAA';
+    expect(actions.selectFutureContributionsFund(targetFundIsin)).toEqual({
       type: SELECT_TARGET_FUND,
-      targetFund,
+      targetFundIsin,
     });
   });
 
-  it('can set if you want to transfer future capital', () => {
-    [true, false].forEach((transferFutureCapital) => {
-      expect(actions.setTransferFutureCapital(transferFutureCapital)).toEqual({
-        type: SET_TRANSFER_FUTURE_CAPITAL,
-        transferFutureCapital,
+  it('can download the mandate', () => {
+    state.login.token = 'token';
+    state.exchange.signedMandateId = 'mandate id';
+    const file = { iAmAFakeFile: true };
+    mockApi.downloadMandateWithIdAndToken = jest.fn(() => Promise.resolve(file));
+    const downloadMandate = createBoundAction(actions.downloadMandate);
+    downloadMandate()
+      .then(() => {
+        expect(mockApi.downloadMandateWithIdAndToken).toHaveBeenCalledWith('mandate id', 'token');
+        expect(mockDownload).toHaveBeenCalledWith(file, 'avaldus.bdoc', 'application/bdoc');
       });
-    });
   });
 
-  it('can sign the mandate', () => {
+  it('will not download the mandate if mandate id is missing', () => {
+    state.login.token = 'token';
+    state.exchange.signedMandateId = null;
+    const file = { iAmAFakeFile: true };
+    mockApi.downloadMandateWithIdAndToken = jest.fn(() => Promise.resolve(file));
+    const downloadMandate = createBoundAction(actions.downloadMandate);
+    downloadMandate()
+      .then(() => expect(mockApi.downloadMandateWithIdAndToken).not.toHaveBeenCalled());
+  });
+
+// TODO: fix the test, doesn't fail
+  it('can preview the mandate', () => {
+    state.login.token = 'token';
+    const file = { iAmAFakeFile: true };
+    mockApi.downloadMandatePreviewWithIdAndToken = jest.fn(() => Promise.resolve(file));
+    const previewMandate = createBoundAction(actions.previewMandate);
+    previewMandate()
+        .then(() => {
+          expect(mockApi.downloadMandatePreviewWithIdAndToken).toHaveBeenCalledWith('mandate id', 'token');
+          expect(mockDownload).toHaveBeenCalledWith(file, 'Tuleva_avaldus_eelvaade.zip', 'application/zip');
+        });
+  });
+
+  it('can sign the mandate with mobile id', () => {
     state.login.token = 'token';
     const mandate = { id: 'mandate id' };
     const controlCode = '1337';
+
     mockApi.saveMandateWithToken = jest.fn(() => {
       expect(dispatch).toHaveBeenCalledTimes(1);
-      expect(dispatch).toHaveBeenCalledWith({ type: SIGN_MANDATE_START });
+      expect(dispatch).toHaveBeenCalledWith({ type: SIGN_MANDATE_MOBILE_ID_START });
       dispatch.mockClear();
       return Promise.resolve(mandate);
     });
-    mockApi.getMandateControlCodeForMandateIdWithToken = jest.fn(() => {
+    mockApi.getMobileIdSignatureChallengeCodeForMandateIdWithToken = jest.fn(() => {
       expect(mockApi.saveMandateWithToken).toHaveBeenCalledTimes(1);
       expect(mockApi.saveMandateWithToken).toHaveBeenCalledWith(mandate, 'token');
       return Promise.resolve(controlCode);
     });
-    const signMandate = createBoundAction(actions.signMandate);
+    const signMandate = createBoundAction(actions.signMandateWithMobileId);
     expect(dispatch).not.toHaveBeenCalled();
     return signMandate(mandate)
       .then(() => {
-        expect(mockApi.getMandateControlCodeForMandateIdWithToken).toHaveBeenCalledTimes(1);
-        expect(mockApi.getMandateControlCodeForMandateIdWithToken)
+        expect(mockApi.getMobileIdSignatureChallengeCodeForMandateIdWithToken)
+          .toHaveBeenCalledTimes(1);
+        expect(mockApi.getMobileIdSignatureChallengeCodeForMandateIdWithToken)
           .toHaveBeenCalledWith(mandate.id, 'token');
         expect(dispatch).toHaveBeenCalledTimes(2); // calls next action to start polling as well.
         expect(dispatch).toHaveBeenCalledWith({
-          type: SIGN_MANDATE_START_SUCCESS,
+          type: SIGN_MANDATE_MOBILE_ID_START_SUCCESS,
           controlCode,
         });
       });
@@ -201,58 +244,68 @@ describe('Exchange actions', () => {
 
   it('starts polling until succeeds when signing the mandate', () => {
     state.login.token = 'token';
+
     const mandate = { id: 'id' };
     const controlCode = '1337';
     mockApi.saveMandateWithToken = jest.fn(() => Promise.resolve(mandate));
-    mockApi.getMandateControlCodeForMandateIdWithToken = jest
+    mockApi.getMobileIdSignatureChallengeCodeForMandateIdWithToken = jest
       .fn(() => Promise.resolve(controlCode));
-    mockApi.getMandateSignatureForMandateIdWithToken = jest.fn(() => Promise.resolve({
+    mockApi.getMobileIdSignatureStatusForMandateIdWithToken = jest.fn(() => Promise.resolve({
       statusCode: 'OUTSTANDING_TRANSACTION',
     }));
-    const signMandate = createBoundAction(actions.signMandate);
+    const signMandate = createBoundAction(actions.signMandateWithMobileId);
     return signMandate(mandate)
       .then(() => {
         dispatch.mockClear();
-        mockApi.getMandateSignatureForMandateIdWithToken = jest.fn(() => Promise.resolve({}));
+        mockApi.getMobileIdSignatureStatusForMandateIdWithToken =
+          jest.fn(() => Promise.resolve({
+            statusCode: 'SIGNATURE',
+          }));
         jest.runOnlyPendingTimers();
         expect(dispatch).not.toHaveBeenCalled();
-        expect(mockApi.getMandateSignatureForMandateIdWithToken).toHaveBeenCalledTimes(1);
-        expect(mockApi.getMandateSignatureForMandateIdWithToken).toHaveBeenCalledWith('id', 'token');
+        expect(mockApi.getMobileIdSignatureStatusForMandateIdWithToken).toHaveBeenCalledTimes(1);
+        expect(mockApi.getMobileIdSignatureStatusForMandateIdWithToken).toHaveBeenCalledWith('id', 'token');
       }).then(() => {
-        expect(dispatch).toHaveBeenCalledWith({ type: SIGN_MANDATE_SUCCESS });
+        expect(dispatch).toHaveBeenCalledWith({
+          type: SIGN_MANDATE_SUCCESS,
+          signedMandateId: 'id',
+        });
         expect(dispatch).toHaveBeenCalledWith(push('/steps/success'));
       });
   });
 
-  it('starts polling until fails when signing the mandate', () => {
+  it('starts polling until fails when signing the mandate with mobile id', () => {
     state.login.token = 'token';
+
     const mandate = { id: 'id' };
     mockApi.saveMandateWithToken = jest.fn(() => Promise.resolve(mandate));
-    mockApi.getMandateControlCodeForMandateIdWithToken = jest.fn(() => Promise.resolve('1337'));
-    mockApi.getMandateSignatureForMandateIdWithToken = jest.fn(() => Promise.resolve({
+    mockApi.getMobileIdSignatureChallengeCodeForMandateIdWithToken = jest.fn(() => Promise.resolve('1337'));
+    mockApi.getMobileIdSignatureStatusForMandateIdWithToken = jest.fn(() => Promise.resolve({
       statusCode: 'OUTSTANDING_TRANSACTION',
     }));
     const error = new Error('oh no dude');
-    const signMandate = createBoundAction(actions.signMandate);
+    const signMandate = createBoundAction(actions.signMandateWithMobileId);
     return signMandate(mandate)
       .then(() => {
         dispatch.mockClear();
-        mockApi.getMandateSignatureForMandateIdWithToken = jest.fn(() => Promise.reject(error));
+        mockApi.getMobileIdSignatureStatusForMandateIdWithToken =
+          jest.fn(() => Promise.reject(error));
         jest.runOnlyPendingTimers();
         expect(dispatch).not.toHaveBeenCalled();
-        expect(mockApi.getMandateSignatureForMandateIdWithToken).toHaveBeenCalledTimes(1);
+        expect(mockApi.getMobileIdSignatureStatusForMandateIdWithToken).toHaveBeenCalledTimes(1);
       })
       .then(() => jest.runOnlyPendingTimers())
-      .then(() => expect(dispatch).toHaveBeenCalledWith({ type: SIGN_MANDATE_ERROR, error }));
+      .then(() => expect(dispatch).toHaveBeenCalledWith(
+        { type: SIGN_MANDATE_ERROR, error }));
   });
 
-  it('can handle errors when starting to sign the mandate', () => {
+  it('can handle errors when starting to sign the mandate with mobile id', () => {
     const error = new Error('oh no it failed');
     mockApi.saveMandateWithToken = jest.fn(() => {
       dispatch.mockClear();
       return Promise.reject(error);
     });
-    const signMandate = createBoundAction(actions.signMandate);
+    const signMandate = createBoundAction(actions.signMandateWithMobileId);
     return signMandate({})
       .then(() => {
         expect(dispatch).toHaveBeenCalledTimes(1);
@@ -263,9 +316,33 @@ describe('Exchange actions', () => {
       });
   });
 
+  it('can handle unprocessable entity errors when saving the mandate', () => {
+    const error = new Error('oh no it failed');
+    error.status = 400;
+    mockApi.saveMandateWithToken = jest.fn(() => {
+      dispatch.mockClear();
+      return Promise.reject(error);
+    });
+    const signMandate = createBoundAction(actions.signMandateWithMobileId);
+    return signMandate({})
+        .then(() => {
+          expect(dispatch).toHaveBeenCalledTimes(1);
+          expect(dispatch).toHaveBeenCalledWith({
+            type: SIGN_MANDATE_INVALID_ERROR,
+            error,
+          });
+        });
+  });
+
   it('can cancel signing the mandate', () => {
     expect(actions.cancelSigningMandate()).toEqual({
-      type: SIGN_MANDATE_CANCEL,
+      type: SIGN_MANDATE_MOBILE_ID_CANCEL,
+    });
+  });
+
+  it('can close error messages', () => {
+    expect(actions.closeErrorMessages()).toEqual({
+      type: NO_SIGN_MANDATE_ERROR,
     });
   });
 });

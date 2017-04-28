@@ -32,9 +32,7 @@ const AuthenticationLoader = ({ controlCode, onCancel, overlayed }) => {
       <div className="tv-modal">
         <div className="container">
           <div className="row mt-4 pt-4 justify-content-center">
-            <div className="col-md-8 col-lg-6">
-              {content}
-            </div>
+            {content}
           </div>
         </div>
       </div>
@@ -42,9 +40,7 @@ const AuthenticationLoader = ({ controlCode, onCancel, overlayed }) => {
   }
   return (
     <div className="row mt-4 pt-4 justify-content-center">
-      <div className="col-md-8 col-lg-6">
-        {content}
-      </div>
+      {content}
     </div>
   );
 };

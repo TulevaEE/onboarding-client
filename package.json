@@ -44,6 +44,7 @@
     "react-dev-utils": "^0.4.2",
     "recursive-readdir": "2.1.0",
     "sass-loader": "^4.1.1",
+    "script-loader": "^0.7.0",
     "strip-ansi": "3.0.1",
     "style-loader": "0.13.1",
     "url-loader": "0.5.7",
@@ -55,22 +56,34 @@
   "dependencies": {
     "bootstrap": "4.0.0-alpha.6",
     "compression": "^1.6.2",
+    "downloadjs": "^1.4.7",
+    "exports-loader": "^0.6.4",
     "express": "^4.14.1",
+    "express-http-proxy": "^0.11.0",
+    "hwcrypto-js": "ErkoRisthein/hwcrypto.js",
+    "imports-loader": "^0.7.1",
+    "mixpanel-browser": "^2.11.0",
+    "raven-js": "^3.12.1",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
+    "react-global-configuration": "^1.0.1",
+    "react-mixpanel": "^0.0.8",
     "react-redux": "^5.0.2",
     "react-router": "^3.0.2",
     "react-router-redux": "^4.0.7",
+    "react-tooltip": "^3.2.7",
     "redux": "^3.6.0",
+    "redux-form": "^6.6.3",
     "redux-thunk": "^2.2.0",
-    "retranslate": "^0.1.2"
+    "retranslate": "^0.1.2",
+    "uuid": "^3.0.1"
   },
   "scripts": {
     "start": "NODE_ENV=production node scripts/start.js",
     "heroku-postbuild": "npm rebuild node-sass && node scripts/build.js",
     "develop": "node scripts/develop.js",
     "build": "node scripts/build.js",
-    "test": "node scripts/test.js --env=jsdom"
+    "test": "node --trace-warnings scripts/test.js --env=jsdom"
   },
   "jest": {
     "collectCoverageFrom": [
@@ -111,8 +124,10 @@
     },
     "rules": {
       "react/jsx-filename-extension": 0,
+      "react/no-array-index-key": 0,
       "import/no-extraneous-dependencies": 0,
-      "import/no-named-as-default": 0
+      "import/no-named-as-default": 0,
+      "linebreak-style": 0
     }
   },
   "proxy": "http://localhost:9000"

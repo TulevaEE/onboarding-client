@@ -6,22 +6,32 @@ import {
   MOBILE_AUTHENTICATION_SUCCESS,
   MOBILE_AUTHENTICATION_ERROR,
   MOBILE_AUTHENTICATION_CANCEL,
+  ID_CARD_AUTHENTICATION_START,
+  ID_CARD_AUTHENTICATION_START_ERROR,
+  ID_CARD_AUTHENTICATION_SUCCESS,
+  ID_CARD_AUTHENTICATION_ERROR,
   GET_USER_START,
   GET_USER_SUCCESS,
   GET_USER_ERROR,
   LOG_OUT,
 } from './constants';
 
+import { getGlobalErrorCode } from '../common/errorMessage';
+
 const TOKEN_STORAGE_KEY = 'token';
+const LOGIN_METHOD_STORAGE_KEY = 'loginMethod';
+
 
 // get saved token if it's there
 const token = (window.localStorage && localStorage.getItem(TOKEN_STORAGE_KEY)) || null;
+const loginMethod = (window.localStorage && localStorage.getItem(LOGIN_METHOD_STORAGE_KEY)) || null;
 
 const defaultState = {
   phoneNumber: '',
   controlCode: null,
-  loadingControlCode: false,
+  loadingAuthentication: false,
   token,
+  loginMethod,
   error: null,
   user: null,
   loadingUser: false,
@@ -34,43 +44,85 @@ export default function loginReducer(state = defaultState, action) {
       return { ...state, phoneNumber: action.phoneNumber };
 
     case MOBILE_AUTHENTICATION_START:
-      return { ...state, loadingControlCode: true, error: null };
+      return { ...state, loadingAuthentication: true, error: null };
     case MOBILE_AUTHENTICATION_START_SUCCESS:
-      return { ...state, loadingControlCode: false, controlCode: action.controlCode, error: null };
+      return {
+        ...state,
+        controlCode: action.controlCode,
+        error: null,
+      };
     case MOBILE_AUTHENTICATION_START_ERROR:
-      return { ...state, loadingControlCode: false, error: action.error };
+    case ID_CARD_AUTHENTICATION_START_ERROR:
+      return {
+        ...state,
+        error: getGlobalErrorCode(action.error.body),
+        loadingAuthentication: false,
+        loadingUser: false,
+      };
 
     case MOBILE_AUTHENTICATION_SUCCESS:
       if (window.localStorage) {
         localStorage.setItem(TOKEN_STORAGE_KEY, action.token);
+        localStorage.setItem(LOGIN_METHOD_STORAGE_KEY, 'mobileId');
       }
       return { // reset all state so page is clean when entered again.
         ...state,
         token: action.token,
-        loadingControlCode: false,
+        loginMethod: 'mobileId',
+        loadingAuthentication: false,
         controlCode: null,
         error: null,
         phoneNumber: '',
       };
+    case ID_CARD_AUTHENTICATION_ERROR:
     case MOBILE_AUTHENTICATION_ERROR:
-      return { ...state, error: action.error };
+      return {
+        ...state,
+        error: action.error.body.error_description,
+        controlCode: null,
+        loadingAuthentication: false,
+        loadingUser: false,
+      };
 
     case MOBILE_AUTHENTICATION_CANCEL:
-      return { ...state, loadingControlCode: false, error: null, controlCode: null };
+      return {
+        ...state,
+        loadingAuthentication: false,
+        error: null,
+        controlCode: null,
+        loadingUser: false,
+      };
 
+
+    case ID_CARD_AUTHENTICATION_START:
+      return { ...state, loadingAuthentication: true, error: null };
+
+    case ID_CARD_AUTHENTICATION_SUCCESS:
+      if (window.localStorage) {
+        localStorage.setItem(TOKEN_STORAGE_KEY, action.token);
+        localStorage.setItem(LOGIN_METHOD_STORAGE_KEY, 'idCard');
+      }
+      return { // reset all state so page is clean when entered again.
+        ...state,
+        token: action.token,
+        loadingAuthentication: false,
+        loginMethod: 'idCard',
+        error: null,
+      };
 
     case GET_USER_START:
       return { ...state, loadingUser: true, userError: null };
     case GET_USER_SUCCESS:
       return { ...state, loadingUser: false, user: action.user, userError: null };
     case GET_USER_ERROR:
-      return { ...state, loadingUser: false, userError: action.error };
+      return { ...state, loadingUser: false, userError: getGlobalErrorCode(action.error.body) };
 
     case LOG_OUT:
       if (window.localStorage) {
         localStorage.removeItem(TOKEN_STORAGE_KEY);
+        localStorage.removeItem(LOGIN_METHOD_STORAGE_KEY);
       }
-      return { ...state, token: null };
+      return { ...state, token: null, loginMethod: null, loadingUser: false };
 
     default:
       return state;

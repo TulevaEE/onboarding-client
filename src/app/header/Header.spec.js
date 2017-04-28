@@ -11,21 +11,19 @@ describe('Header', () => {
     component = shallow(<Header />);
   });
 
-  it('shows the user\'s name and id code when not loading', () => {
+  it('shows the user\'s name when not loading', () => {
     const name = 'A name of a person';
-    const personalCode = 'The id code a of a person';
     component.setProps({
-      user: { name, personalCode },
+      user: { name },
       loading: false,
     });
     expect(component.text()).toContain(name);
-    expect(component.text()).toContain(personalCode);
     expect(component.contains(<Loader className="align-right" />)).toBe(false);
   });
 
   it('can log out the user', () => {
     const onLogout = jest.fn();
-    component.setProps({ loading: false, onLogout, user: { name: 'name', personalCode: 'code' } });
+    component.setProps({ loading: false, onLogout, user: { name: 'name' } });
     expect(onLogout).not.toHaveBeenCalled();
     component.find('button').simulate('click');
     expect(onLogout).toHaveBeenCalledTimes(1);

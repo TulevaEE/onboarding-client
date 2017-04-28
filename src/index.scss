@@ -14,6 +14,10 @@ body {
   font-size: 16px;
 }
 
+button {
+  font-family: $font-family-sans-serif;
+}
+
 h1, .h1 {
   font-size: 2em;
   font-weight: 400;
@@ -60,6 +64,10 @@ small {
   color: $text-secondary;
 }
 
+.text-bold {
+  font-weight: 600;
+}
+
 .btn {
   cursor: pointer;
   padding-left: 32px;
@@ -80,6 +88,10 @@ hr {
   background-color: white;
   margin: 0;
   padding: 0;
+}
+
+.custom-select {
+  width: 100%;
 }
 
 .alert {

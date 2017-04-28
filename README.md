@@ -12,7 +12,7 @@ are defined in translation files and consumed using `retranslate`.
 
 ## Development
 
-Use `yarn` or `npm install` to install dependencies. Then use `yarn develop` or `npm run develop` to run the local test environment. It expects `onboarding-service` to be running on port 9000. On local development, CORS is not used, but instead requests are proxied to the service. To run tests, use `yarn test` or `npm test`. On the live environment, CORS is used instead of a proxy.
+Use `yarn` or `npm install` to install dependencies. Then use `yarn develop` or `npm run develop` to run the local test environment. It expects `onboarding-service` to be running on port 9000. To run tests, use `yarn test` or `npm test`. On the live environment, requests to the api are routed through the proxy running in the static server.
 
 ### Production and deployment
 
