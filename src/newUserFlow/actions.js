@@ -28,7 +28,7 @@ export function createNewUser(user) {
     return createUserWithToken(user, getState().login.token)
       .then((newUser) => {
         dispatch({ type: CREATE_NEW_USER_SUCCESS, newUser });
-        dispatch(push('/payment'));
+        dispatch(push('/steps/payment'));
       },
       ).catch((errorResponse) => {
         dispatch({ type: CREATE_NEW_USER_ERROR, errorResponse });

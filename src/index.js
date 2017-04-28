@@ -21,6 +21,7 @@ import TermsOfUse from './termsOfUse';
 import NewUser from './newUserFlow/newUser';
 import NonMember from './newUserFlow/nonMember';
 import SignUpPage from './newUserFlow/signUp';
+import Payment from './newUserFlow/payment';
 import { reducer as exchangeReducer, actions as exchangeActions } from './exchange';
 import trackingReducer from './tracking';
 
@@ -57,7 +58,8 @@ function getDataForApp() {
   }
 }
 
-function getDataForFlow() {
+function getDataForFlow(nextState) {
+  store.dispatch(exchangeActions.mapUrlQueryParamsToState(nextState.location.query));
   const { login, exchange } = store.getState();
   if (login.token && !(exchange.sourceFunds || exchange.loadingSourceFunds ||
     exchange.targetFunds || exchange.loadingTargetFunds)) {
@@ -107,6 +109,7 @@ render((
               <Route path="new-user" component={NewUser} onEnter={scrollToTop} />
               <Route path="non-member" component={NonMember} />
               <Route path="signup" component={SignUpPage} />
+              <Route path="payment" component={Payment} />
             </Route>
 
             <Route path="/steps" component={Steps} onEnter={getDataForFlow}>

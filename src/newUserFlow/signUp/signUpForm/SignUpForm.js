@@ -42,7 +42,7 @@ renderField.propTypes = {
 };
 
 
-export const SignUpForm = ({ handleSubmit, pristine, submitting, error,
+export const SignUpForm = ({ handleSubmit, invalid, submitting, error,
 translations: { translate } }) => (
   <div>
     <form id="register-form" onSubmit={handleSubmit} role="form">
@@ -82,7 +82,7 @@ translations: { translate } }) => (
       </div>
       <div className={`form-group ${error ? 'has-danger' : ''}`}>
         {error && <div className="form-control-feedback mb-3">{error}</div>}
-        <button type="submit" disabled={pristine || submitting} className={'btn btn-primary mb-2 mr-2'}>
+        <button type="submit" disabled={invalid || submitting} className={'btn btn-primary mb-2 mr-2'}>
           <Message>new.user.flow.signup.submit</Message>
         </button>
         <Link to="/steps/new-user" className={'btn btn-secondary mb-2'}>
@@ -97,14 +97,14 @@ const noop = () => null;
 
 SignUpForm.defaultProps = {
   handleSubmit: noop,
-  pristine: true,
+  invalid: true,
   submitting: false,
   error: '',
 };
 
 SignUpForm.propTypes = {
   handleSubmit: Types.func,
-  pristine: Types.bool,
+  invalid: Types.bool,
   submitting: Types.bool,
   error: Types.string,
   translations: Types.shape({ translate: Types.func.isRequired }).isRequired,

@@ -47,7 +47,7 @@ describe('newUserFlow actions', () => {
       .then(() => {
         expect(dispatch).toHaveBeenCalledTimes(2);
         expect(dispatch).toHaveBeenCalledWith({ type: CREATE_NEW_USER_SUCCESS, newUser });
-        expect(dispatch).toHaveBeenCalledWith(push('/payment'));
+        expect(dispatch).toHaveBeenCalledWith(push('/steps/payment'));
       });
   });
 

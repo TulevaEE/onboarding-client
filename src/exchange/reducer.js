@@ -23,6 +23,8 @@ import {
   SIGN_MANDATE_SUCCESS,
   SIGN_MANDATE_ERROR,
   NO_SIGN_MANDATE_ERROR,
+
+  QUERY_PARAMETERS,
 } from './constants';
 
 import {
@@ -156,6 +158,11 @@ export default function exchangeReducer(state = initialState, action) {
       return {
         ...state,
         mandateSigningError: null,
+      };
+    case QUERY_PARAMETERS:
+      return {
+        ...state,
+        isNewMember: action.query.isNewMember === 'true',
       };
     default:
       return state;
