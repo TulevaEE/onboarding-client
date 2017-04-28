@@ -29,7 +29,7 @@ App.defaultProps = {
 
 App.propTypes = {
   children: Types.oneOfType([Types.node, Types.arrayOf(Types.node)]),
-  user: Types.shape({ name: Types.string, personalCode: Types.string }),
+  user: Types.shape({ name: Types.string }),
   loadingUser: Types.bool,
   onLogout: Types.func,
 };
@@ -37,7 +37,6 @@ App.propTypes = {
 const mapStateToProps = state => ({
   user: {
     name: `${(state.login.user || {}).firstName} ${(state.login.user || {}).lastName}`,
-    personalCode: (state.login.user || {}).personalCode,
   },
   loadingUser: state.login.loadingUser,
 });

@@ -1,4 +1,5 @@
-import { push } from 'react-router-redux';
+import Raven from 'raven-js';
+import { router } from '../router';
 
 import {
   CHANGE_PHONE_NUMBER,
@@ -12,6 +13,9 @@ import {
   MOBILE_AUTHENTICATION_CANCEL,
 
   ID_CARD_AUTHENTICATION_START,
+  ID_CARD_AUTHENTICATION_START_SUCCESS,
+  ID_CARD_AUTHENTICATION_START_ERROR,
+
   ID_CARD_AUTHENTICATION_SUCCESS,
   ID_CARD_AUTHENTICATION_ERROR,
 
@@ -22,7 +26,7 @@ import {
   LOG_OUT,
 } from './constants';
 
-import { api } from '../common';
+import { api, http } from '../common';
 
 const POLL_DELAY = 1000;
 
@@ -33,7 +37,7 @@ export function changePhoneNumber(phoneNumber) {
 }
 
 function getMobileIdToken() {
-  return (dispatch) => {
+  return (dispatch, getState) => {
     if (timeout && process.env.NODE_ENV !== 'test') {
       clearTimeout(timeout);
     }
@@ -43,9 +47,9 @@ function getMobileIdToken() {
         .then((token) => {
           if (token) { // authentication complete
             dispatch({ type: MOBILE_AUTHENTICATION_SUCCESS, token });
-            dispatch(push('/steps/select-sources'));
-          } else { // authentication not yet completed, poll again.
-            dispatch(getMobileIdToken());
+            dispatch(router.selectRouteForState());
+          } else if (getState().login.loadingAuthentication) { // authentication not yet completed
+            dispatch(getMobileIdToken()); // poll again
           }
         })
         .catch(error => dispatch({ type: MOBILE_AUTHENTICATION_ERROR, error }));
@@ -66,16 +70,37 @@ export function authenticateWithPhoneNumber(phoneNumber) {
   };
 }
 
+function getIdCardToken() {
+  return (dispatch, getState) => {
+    if (timeout && process.env.NODE_ENV !== 'test') {
+      clearTimeout(timeout);
+    }
+    timeout = setTimeout(() => {
+      api
+        .getIdCardToken()
+        .then((token) => {
+          if (token) { // authentication complete
+            dispatch({ type: ID_CARD_AUTHENTICATION_SUCCESS, token });
+            dispatch(router.selectRouteForState());
+          } else if (getState().login.loadingAuthentication) { // authentication not yet completed
+            dispatch(getIdCardToken()); // poll again
+          }
+        })
+        .catch(error => dispatch({ type: ID_CARD_AUTHENTICATION_ERROR, error }));
+    }, POLL_DELAY);
+  };
+}
+
 export function authenticateWithIdCard() {
   return (dispatch) => {
     dispatch({ type: ID_CARD_AUTHENTICATION_START });
     return api
       .authenticateWithIdCard()
-      .then(() => api.getIdCardToken())
-      .then((token) => {
-        dispatch({ type: ID_CARD_AUTHENTICATION_SUCCESS, token });
-        dispatch(push('/steps/select-sources'));
-      }).catch(error => dispatch({ type: ID_CARD_AUTHENTICATION_ERROR, error }));
+      .then(() => {
+        dispatch({ type: ID_CARD_AUTHENTICATION_START_SUCCESS });
+        dispatch(getIdCardToken());
+      })
+      .catch(error => dispatch({ type: ID_CARD_AUTHENTICATION_START_ERROR, error }));
   };
 }
 
@@ -91,11 +116,27 @@ export function getUser() {
     dispatch({ type: GET_USER_START });
     return api
       .getUserWithToken(getState().login.token)
-      .then(user => dispatch({ type: GET_USER_SUCCESS, user }))
-      .catch(error => dispatch({ type: GET_USER_ERROR, error }));
+      .then((user) => {
+        if (process.env.NODE_ENV === 'production') {
+          Raven.setUserContext({ id: user.id });
+        }
+        dispatch({ type: GET_USER_SUCCESS, user });
+        dispatch(router.selectRouteForState());
+      })
+      .catch((error) => {
+        if (error.status === 401) {
+          dispatch({ type: LOG_OUT });
+        } else {
+          dispatch({ type: GET_USER_ERROR, error });
+        }
+      });
   };
 }
 
 export function logOut() {
+  if (process.env.NODE_ENV === 'production') {
+    Raven.setUserContext(); // unauthenticate
+  }
+  http.resetStatisticsIdentification();
   return { type: LOG_OUT };
 }

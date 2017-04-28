@@ -5,9 +5,8 @@ import { Message } from 'retranslate';
 
 import './LoginPage.scss';
 
-import { logo, AuthenticationLoader } from '../common';
+import { logo, AuthenticationLoader, ErrorAlert } from '../common';
 import LoginForm from './loginForm';
-import ErrorAlert from './errorAlert';
 import { changePhoneNumber, authenticateWithPhoneNumber, cancelMobileAuthentication, authenticateWithIdCard } from './actions';
 
 export const LoginPage = ({
@@ -17,7 +16,7 @@ export const LoginPage = ({
   onAuthenticateWithIdCard,
   phoneNumber,
   controlCode,
-  loadingControlCode,
+  loadingAuthentication,
   errorDescription,
 }) => (
   <div className="login-page">
@@ -30,8 +29,9 @@ export const LoginPage = ({
       <div className="row">
         <div className="col-lg-10 offset-lg-1 col-sm-12 offset-sm-0 text-center">
           <div className="col-lg-6 offset-lg-3 col-md-8 offset-md-2 col-sm-12">
+            { errorDescription ? <ErrorAlert description={errorDescription} /> : '' }
             {
-              !errorDescription && !loadingControlCode && !controlCode ?
+              !loadingAuthentication && !controlCode ?
                 <LoginForm
                   onPhoneNumberSubmit={onPhoneNumberSubmit}
                   onPhoneNumberChange={onPhoneNumberChange}
@@ -40,18 +40,17 @@ export const LoginPage = ({
                 /> : ''
             }
             {
-              !errorDescription && (loadingControlCode || controlCode) ?
+              !errorDescription && (loadingAuthentication || controlCode) ?
                 <AuthenticationLoader
                   onCancel={onCancelMobileAuthentication}
                   controlCode={controlCode}
                 /> : ''
             }
-            { errorDescription ? <ErrorAlert description={errorDescription} /> : '' }
             <div className="mt-3 mb-3">
               <div className="login-page__not-member">
                 <Message>login.not.member</Message>
               </div>
-              <a href="/" className="login-page__apply">
+              <a href="//tuleva.ee/#liitu" className="login-page__apply">
                 <Message>login.apply.link</Message>
               </a>
             </div>
@@ -72,7 +71,7 @@ LoginPage.defaultProps = {
 
   phoneNumber: '',
   controlCode: '',
-  loadingControlCode: false,
+  loadingAuthentication: false,
   successful: false,
   errorDescription: '',
 };
@@ -85,15 +84,15 @@ LoginPage.propTypes = {
 
   phoneNumber: Types.string,
   controlCode: Types.string,
-  loadingControlCode: Types.bool,
+  loadingAuthentication: Types.bool,
   errorDescription: Types.string,
 };
 
 const mapStateToProps = state => ({
   phoneNumber: state.login.phoneNumber,
   controlCode: state.login.controlCode,
-  loadingControlCode: state.login.loadingControlCode,
-  errorDescription: (state.login.error || {}).error_description,
+  loadingAuthentication: state.login.loadingAuthentication,
+  errorDescription: state.login.error,
   successful: !!state.login.token, // not used right now
 });
 const mapDispatchToProps = dispatch => bindActionCreators({

@@ -1,3 +1,21 @@
+import uuid from 'uuid/v4';
+
+export function resetStatisticsIdentification() {
+  localStorage.setItem('statisticsId', uuid());
+}
+
+function getStatisticsId() {
+  // Generate a random id to gather statistics without tying to a specific person.
+  if (!localStorage.getItem('statisticsId')) {
+    resetStatisticsIdentification();
+  }
+  return localStorage.getItem('statisticsId');
+}
+
+function createStatisticsHeaders() {
+  return { 'x-statistics-identifier': getStatisticsId() };
+}
+
 function transformResponse(response) {
   if (response.ok && response.status < 400) {
     return response.json();
@@ -5,7 +23,10 @@ function transformResponse(response) {
     return response
       .json()
       .then((data) => {
-        throw data;
+        const error = {};
+        error.status = response.status;
+        error.body = data;
+        throw error;
       });
   }
   throw response;
@@ -30,8 +51,9 @@ export function get(url, params = {}, headers = {}) {
   return fetch(`${url}${urlParameters ? `?${urlParameters}` : ''}`, {
     method: 'GET',
     headers: {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json; charset=utf-8',
       ...headers,
+      ...createStatisticsHeaders(),
     },
     mode: 'cors',
     credentials: 'include',
@@ -41,7 +63,7 @@ export function get(url, params = {}, headers = {}) {
 
 export function downloadFile(url, headers = {}) {
   return fetch(url, {
-    headers,
+    headers: { ...headers, ...createStatisticsHeaders() },
     method: 'GET',
     credentials: 'include',
     mode: 'cors',
@@ -53,8 +75,9 @@ export function post(url, params = {}, headers = {}) {
   return fetch(url, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json; charset=utf-8',
       ...headers,
+      ...createStatisticsHeaders(),
     },
     body: JSON.stringify(params),
     credentials: 'include',
@@ -68,8 +91,24 @@ export function put(url, params = {}, headers = {}) {
   return fetch(url, {
     method: 'PUT',
     headers: {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json; charset=utf-8',
       ...headers,
+      ...createStatisticsHeaders(),
+    },
+    body: JSON.stringify(params),
+    credentials: 'include',
+    mode: 'cors',
+    cache: 'default',
+  }).then(transformResponse);
+}
+
+export function patch(url, params = {}, headers = {}) {
+  return fetch(url, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      ...headers,
+      ...createStatisticsHeaders(),
     },
     body: JSON.stringify(params),
     credentials: 'include',
@@ -85,10 +124,24 @@ export function postForm(url, params = {}, headers = {}) {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
       ...headers,
+      ...createStatisticsHeaders(),
     },
     body,
     credentials: 'include',
     mode: 'cors',
+    cache: 'default',
+  }).then(transformResponse);
+}
+
+export function simpleFetch(method, url) {
+  return fetch(url, {
+    method,
+    headers: {
+      'Content-Type': 'text/plain', // for Firefox CORS:
+      // https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS?redirectlocale=en-US&redirectslug=HTTP_access_control#Simple_requests
+    },
+    mode: 'cors',
+    credentials: 'include',
     cache: 'default',
   }).then(transformResponse);
 }

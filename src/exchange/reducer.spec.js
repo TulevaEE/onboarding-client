@@ -12,15 +12,24 @@ import {
 
   SELECT_TARGET_FUND,
 
-  SIGN_MANDATE_START,
-  SIGN_MANDATE_START_SUCCESS,
+  SIGN_MANDATE_MOBILE_ID_START,
+  SIGN_MANDATE_MOBILE_ID_START_SUCCESS,
+  SIGN_MANDATE_ID_CARD_START,
+  SIGN_MANDATE_ID_CARD_START_SUCCESS,
   SIGN_MANDATE_START_ERROR,
+  SIGN_MANDATE_INVALID_ERROR,
   SIGN_MANDATE_SUCCESS,
   SIGN_MANDATE_ERROR,
-  SIGN_MANDATE_CANCEL,
+  SIGN_MANDATE_MOBILE_ID_CANCEL,
 
   CHANGE_AGREEMENT_TO_TERMS,
+
+  NO_SIGN_MANDATE_ERROR,
 } from './constants';
+
+import {
+    LOG_OUT,
+} from '../login/constants';
 
 describe('Exchange reducer', () => {
   it('starts loading when starting to get pension funds', () => {
@@ -37,11 +46,13 @@ describe('Exchange reducer', () => {
   });
 
   it('stops loading and saves the error when getting pension funds fails', () => {
-    const error = new Error('oh no');
+    const error = { body: { errors: [{ code: 'oh no' }] } };
     const action = { type: GET_SOURCE_FUNDS_ERROR, error };
+
     const newState = exchangeReducer({ loadingSourceFunds: true }, action);
+
+    expect(newState.error).toBe('oh no');
     expect(newState.loadingSourceFunds).toBe(false);
-    expect(newState.error).toBe(error);
   });
 
   it('can select some source funds', () => {
@@ -60,7 +71,7 @@ describe('Exchange reducer', () => {
 
   it('stops loading, saves and selects target funds when getting them succeeds', () => {
     const targetFunds = [
-      { isin: 'AE123232334', iShouldBeSelected: true },
+      { isin: 'EE3600109435', iShouldBeSelected: true },
       { isin: 'asd', hello: true },
     ];
     const action = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
@@ -86,11 +97,27 @@ describe('Exchange reducer', () => {
     expect(stateOtherWay.sourceSelection).toEqual(expectedFullSelection);
   });
 
+  it('selects full source selection and skips inter fund transfers', () => {
+    const expectedFullSelection = [
+      { sourceFundIsin: 'source', targetFundIsin: 'target', percentage: 1 },
+    ];
+
+    const sourceFunds = [{ name: 'name', isin: 'source' }, { name: 'name', isin: 'target' }];
+    const sourceFundsAction = { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds };
+    const targetFunds = [{ name: 'name', isin: 'target' }, { name: 'name', isin: 'target 2' }];
+    const targetFundsAction = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
+    const state = [sourceFundsAction, targetFundsAction].reduce(exchangeReducer);
+    expect(state.sourceSelection).toEqual(expectedFullSelection);
+    const stateOtherWay = [targetFundsAction, sourceFundsAction].reduce(exchangeReducer);
+    expect(stateOtherWay.sourceSelection).toEqual(expectedFullSelection);
+  });
+
   it('stops loading and saves the error when getting target funds fails', () => {
-    const error = new Error('oh no!');
+    const error = { body: { errors: [{ code: 'oh no!' }] } };
     const action = { type: GET_TARGET_FUNDS_ERROR, error };
+
     const newState = exchangeReducer({ loadingTargetFunds: true }, action);
-    expect(newState.error).toEqual(error);
+    expect(newState.error).toEqual('oh no!');
     expect(newState.loadingTargetFunds).toBe(false);
   });
 
@@ -109,14 +136,19 @@ describe('Exchange reducer', () => {
       }).agreedToTerms).toEqual(agreement)));
   });
 
-  it('starts loading mandate when starting to sign mandate', () => {
-    const action = { type: SIGN_MANDATE_START };
+  it('starts loading mandate when starting to sign mandate with mobile id', () => {
+    const action = { type: SIGN_MANDATE_MOBILE_ID_START };
     expect(exchangeReducer(undefined, action).loadingMandate).toBe(true);
   });
 
-  it('stops loading mandate and saves control code when starting to sign succeeds', () => {
+  it('starts loading mandate when starting to sign mandate with id card', () => {
+    const action = { type: SIGN_MANDATE_ID_CARD_START };
+    expect(exchangeReducer(undefined, action).loadingMandate).toBe(true);
+  });
+
+  it('stops loading mandate and saves control code when starting to sign with mobile id succeeds', () => {
     const controlCode = 'control code';
-    const action = { type: SIGN_MANDATE_START_SUCCESS, controlCode };
+    const action = { type: SIGN_MANDATE_MOBILE_ID_START_SUCCESS, controlCode };
     const newState = exchangeReducer({ mandateSigningControlCode: true }, action);
     expect(newState.mandateSigningControlCode).toBe(controlCode);
     expect(newState.loadingMandate).toBe(false);
@@ -125,14 +157,23 @@ describe('Exchange reducer', () => {
   it('saves the mandate id when signing mandate succeeds', () => {
     const signedMandateId = 'an id';
     const action = { type: SIGN_MANDATE_SUCCESS, signedMandateId };
-    const newState = exchangeReducer({ mandateSigningControlCode: 'code' }, action);
+    const newState = exchangeReducer({ mandateSigningControlCode: 'code', loadingMandate: true }, action);
     expect(newState.mandateSigningControlCode).toBeFalsy();
     expect(newState.signedMandateId).toBe(signedMandateId);
+    expect(newState.loadingMandate).toBe(false);
   });
 
   it('sets the error when signing mandate fails', () => {
     const error = new Error('oh no!');
     const action = { type: SIGN_MANDATE_ERROR, error };
+    const newState = exchangeReducer({ mandateSigningControlCode: 'code' }, action);
+    expect(newState.mandateSigningControlCode).toBeFalsy();
+    expect(newState.mandateSigningError).toEqual(error);
+  });
+
+  it('sets an invalid mandate error when getting invalid mandate', () => {
+    const error = new Error('oh no!');
+    const action = { type: SIGN_MANDATE_INVALID_ERROR, error };
     const newState = exchangeReducer({ mandateSigningControlCode: 'code' }, action);
     expect(newState.mandateSigningControlCode).toBeFalsy();
     expect(newState.mandateSigningError).toEqual(error);
@@ -147,7 +188,7 @@ describe('Exchange reducer', () => {
   });
 
   it('can cancel signing the mandate', () => {
-    const action = { type: SIGN_MANDATE_CANCEL };
+    const action = { type: SIGN_MANDATE_MOBILE_ID_CANCEL };
     const newState = exchangeReducer({
       loadingMandate: true,
       mandateSigningControlCode: '1337',
@@ -156,5 +197,47 @@ describe('Exchange reducer', () => {
     expect(newState.loadingMandate).toBe(false);
     expect(newState.mandateSigningControlCode).toBeFalsy();
     expect(newState.signedMandateId).toBe(null);
+  });
+
+  it('can remove mandate sign errors', () => {
+    const action = { type: NO_SIGN_MANDATE_ERROR };
+    const newState = exchangeReducer({
+      mandateSigningError: { error: [] },
+    }, action);
+    expect(newState.mandateSigningError).toBe(null);
+  });
+
+  it('reverts to initial state when log out', () => {
+    const action = { type: LOG_OUT };
+    const newState = exchangeReducer({
+      sourceFunds: [],
+      loadingSourceFunds: true,
+      sourceSelection: '123',
+      sourceSelectionExact: true,
+      targetFunds: [],
+      loadingTargetFunds: true,
+      selectedFutureContributionsFundIsin: '123',
+      error: '123',
+      loadingMandate: true,
+      mandateSigningControlCode: '123',
+      mandateSigningError: '123',
+      signedMandateId: 123,
+      agreedToTerms: true,
+    }, action);
+
+    expect(newState.sourceFunds).toBe(null);
+    expect(newState.loadingSourceFunds).toBe(false);
+    expect(newState.sourceSelection).toBe(null);
+    expect(newState.sourceSelectionExact).toBe(false);
+    expect(newState.targetFunds).toBe(null);
+    expect(newState.loadingTargetFunds).toBe(false);
+    expect(newState.selectedFutureContributionsFundIsin).toBe(null);
+    expect(newState.error).toBe(null);
+
+    expect(newState.loadingMandate).toBe(false);
+    expect(newState.mandateSigningControlCode).toBe(null);
+    expect(newState.mandateSigningError).toBe(null);
+    expect(newState.signedMandateId).toBe(false);
+    expect(newState.agreedToTerms).toBe(false);
   });
 });

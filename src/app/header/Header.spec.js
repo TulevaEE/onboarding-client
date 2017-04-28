@@ -23,7 +23,7 @@ describe('Header', () => {
 
   it('can log out the user', () => {
     const onLogout = jest.fn();
-    component.setProps({ loading: false, onLogout, user: { name: 'name', personalCode: 'code' } });
+    component.setProps({ loading: false, onLogout, user: { name: 'name' } });
     expect(onLogout).not.toHaveBeenCalled();
     component.find('button').simulate('click');
     expect(onLogout).toHaveBeenCalledTimes(1);

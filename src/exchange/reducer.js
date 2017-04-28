@@ -14,13 +14,23 @@ import {
   CHANGE_AGREEMENT_TO_TERMS,
 
   // NOTE: maybe we should move this state to a separate mandate reducer?
-  SIGN_MANDATE_START,
-  SIGN_MANDATE_START_SUCCESS,
+  SIGN_MANDATE_MOBILE_ID_START,
+  SIGN_MANDATE_MOBILE_ID_START_SUCCESS,
+  SIGN_MANDATE_MOBILE_ID_CANCEL,
+  SIGN_MANDATE_ID_CARD_START,
   SIGN_MANDATE_START_ERROR,
+  SIGN_MANDATE_INVALID_ERROR,
   SIGN_MANDATE_SUCCESS,
   SIGN_MANDATE_ERROR,
-  SIGN_MANDATE_CANCEL,
+  NO_SIGN_MANDATE_ERROR,
 } from './constants';
+
+import {
+  LOG_OUT,
+} from '../login/constants';
+
+import { getGlobalErrorCode } from '../common/errorMessage';
+
 
 const initialState = {
   sourceFunds: null,
@@ -40,11 +50,13 @@ const initialState = {
 };
 
 function createFullDefaultSourceSelection({ sourceFunds, targetFunds }) {
-  return sourceFunds.map(({ isin }) => ({
-    sourceFundIsin: isin,
-    targetFundIsin: targetFunds[0].isin,
-    percentage: 1,
-  }));
+  return sourceFunds
+    .filter(fund => fund.isin !== targetFunds[0].isin)
+    .map(({ isin }) => ({
+      sourceFundIsin: isin,
+      targetFundIsin: targetFunds[0].isin,
+      percentage: 1,
+    }));
 }
 
 export default function exchangeReducer(state = initialState, action) {
@@ -66,7 +78,7 @@ export default function exchangeReducer(state = initialState, action) {
           }) : state.sourceSelection,
       };
     case GET_SOURCE_FUNDS_ERROR:
-      return { ...state, loadingSourceFunds: false, error: action.error };
+      return { ...state, loadingSourceFunds: false, error: getGlobalErrorCode(action.error.body) };
     case SELECT_EXCHANGE_SOURCES:
       return {
         ...state,
@@ -92,18 +104,22 @@ export default function exchangeReducer(state = initialState, action) {
           }) : state.sourceSelection,
       };
     case GET_TARGET_FUNDS_ERROR:
-      return { ...state, loadingTargetFunds: false, error: action.error };
+      return { ...state, loadingTargetFunds: false, error: getGlobalErrorCode(action.error.body) };
     case SELECT_TARGET_FUND:
       return { ...state, selectedFutureContributionsFundIsin: action.targetFundIsin };
 
-    // TODO: test the following actions after demo
-
-    case SIGN_MANDATE_START:
+    case SIGN_MANDATE_MOBILE_ID_START:
+    case SIGN_MANDATE_ID_CARD_START:
       return { ...state, loadingMandate: true, mandateSigningError: null };
-    case SIGN_MANDATE_START_SUCCESS:
+    case SIGN_MANDATE_MOBILE_ID_START_SUCCESS:
       return { ...state, mandateSigningControlCode: action.controlCode, loadingMandate: false };
     case SIGN_MANDATE_SUCCESS:
-      return { ...state, mandateSigningControlCode: null, signedMandateId: action.signedMandateId };
+      return {
+        ...state,
+        mandateSigningControlCode: null,
+        signedMandateId: action.signedMandateId,
+        loadingMandate: false,
+      };
 
     case SIGN_MANDATE_START_ERROR: // fallthrough
     case SIGN_MANDATE_ERROR:
@@ -113,7 +129,14 @@ export default function exchangeReducer(state = initialState, action) {
         mandateSigningControlCode: null,
         mandateSigningError: action.error,
       };
-    case SIGN_MANDATE_CANCEL:
+    case SIGN_MANDATE_INVALID_ERROR:
+      return {
+        ...state,
+        loadingMandate: false,
+        mandateSigningControlCode: null,
+        mandateSigningError: action.error,
+      };
+    case SIGN_MANDATE_MOBILE_ID_CANCEL:
       return {
         ...state,
         loadingMandate: false,
@@ -127,6 +150,13 @@ export default function exchangeReducer(state = initialState, action) {
         agreedToTerms: action.agreement,
       };
 
+    case LOG_OUT:
+      return initialState;
+    case NO_SIGN_MANDATE_ERROR:
+      return {
+        ...state,
+        mandateSigningError: null,
+      };
     default:
       return state;
   }

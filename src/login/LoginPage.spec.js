@@ -2,8 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Message } from 'retranslate';
 import { LoginPage } from './LoginPage';
-import { AuthenticationLoader } from '../common';
-import ErrorAlert from './errorAlert';
+import { AuthenticationLoader, ErrorAlert } from '../common';
 import LoginForm from './loginForm';
 
 describe('Login page', () => {
@@ -37,7 +36,7 @@ describe('Login page', () => {
     expect(component.contains(
       <AuthenticationLoader controlCode="" onCancel={onCancelMobileAuthentication} />,
     )).toBe(false);
-    component.setProps({ loadingControlCode: true });
+    component.setProps({ loadingAuthentication: true });
     expect(component.contains(
       <AuthenticationLoader controlCode="" onCancel={onCancelMobileAuthentication} />,
     )).toBe(true);
@@ -47,9 +46,22 @@ describe('Login page', () => {
     )).toBe(true);
   });
 
-  it('passes an error forwards to ErrorAlert and does not show other components', () => {
+  it('passes an error forwards to ErrorAlert, shows login form and does not show other components', () => {
     const errorDescription = 'oh no something broke yo';
-    component.setProps({ errorDescription });
+    const formProps = {
+      phoneNumber: 'number',
+      onPhoneNumberChange: jest.fn(),
+      onPhoneNumberSubmit: jest.fn(),
+      onAuthenticateWithIdCard: jest.fn(),
+    };
+    const authProps = {
+      controlCode: null,
+      onCancel: jest.fn(),
+    };
+    component.setProps({ errorDescription, ...formProps, ...authProps });
+
     expect(component.contains(<ErrorAlert description={errorDescription} />)).toBe(true);
+    expect(component.contains(<LoginForm {...formProps} />)).toBe(true);
+    expect(component.contains(<AuthenticationLoader {...authProps} />)).toBe(false);
   });
 });
