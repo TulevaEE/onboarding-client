@@ -11,7 +11,7 @@ export const Payment = ({ userId }) => (
       <p>Seejärel saad kogu oma pensioni Tulevasse üle tuua.</p>
 
       <a
-        href={`https://payment-test.maksekeskus.ee/pay/1/link.html?shopId=322a5e5e-37ee-45b1-8961-ebd00e84e209&amount=1000&reference=${userId}`}
+        href={`https://payment-test.maksekeskus.ee/pay/1/link.html?shopId=322a5e5e-37ee-45b1-8961-ebd00e84e209&amount=100&reference=${userId}`}
         className="btn btn-primary"
       >Pangalingid</a>
     </div>
