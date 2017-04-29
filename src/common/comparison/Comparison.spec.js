@@ -16,6 +16,7 @@ describe('Comparison widget', () => {
   });
 
   it('shows close button', () => {
+    component.setProps({ overlayed: true });
     expect(component.contains(<Message>comparison.close</Message>)).toBe(true);
   });
 
