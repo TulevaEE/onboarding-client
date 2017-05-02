@@ -2,6 +2,8 @@ import {
   GET_COMPARISON_START,
   GET_COMPARISON_SUCCESS,
   GET_COMPARISON_ERROR,
+  COMPARISON_SALARY_CHANGE,
+  COMPARISON_RATE_CHANGE,
 } from './constants';
 
 import comparisonReducer from './reducer';
@@ -28,5 +30,23 @@ describe('Comparison reducer', () => {
 
     expect(newState.error).toBe(error);
     expect(newState.loadingComparison).toBe(false);
+  });
+
+  it('reacts to salary change', () => {
+    const salary = 1500;
+    const action = { type: COMPARISON_SALARY_CHANGE, salary };
+
+    const newState = comparisonReducer(undefined, action);
+
+    expect(newState.salary).toBe(salary);
+  });
+
+  it('reacts to rate change', () => {
+    const rate = 8;
+    const action = { type: COMPARISON_RATE_CHANGE, rate };
+
+    const newState = comparisonReducer(undefined, action);
+
+    expect(newState.rate).toBe(rate);
   });
 });
