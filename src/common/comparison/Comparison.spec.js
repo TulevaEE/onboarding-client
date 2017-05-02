@@ -1,8 +1,8 @@
 import React from 'react';
-import { Message } from 'retranslate';
 import { shallow } from 'enzyme';
+import { Message } from 'retranslate';
 
-import Comparison from './Comparison';
+import { Comparison } from './Comparison';
 
 describe('Comparison widget', () => {
   let component;

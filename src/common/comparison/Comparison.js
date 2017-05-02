@@ -1,11 +1,15 @@
 import React, { PropTypes as Types } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import { Message } from 'retranslate';
 
 import { InfoTooltip } from '../';
 
+import { getComparison } from '../../comparison/actions';
+
 import './Comparison.scss';
 
-const Comparison = ({ overlayed, onCancel }) => {
+export const Comparison = ({ overlayed, comparison, onCancel }) => {
   const content = (
     <div>
       <div className="px-col mb-4">
@@ -74,7 +78,11 @@ const Comparison = ({ overlayed, onCancel }) => {
               <tr>
                 <td><Message>comparison.output.calculation.second.row</Message></td>
                 <td className="output-amount">127857€</td>
-                <td className="output-amount new-fund-total">159768€</td>
+                {
+                  comparison ? (
+                    <td className="output-amount new-fund-total">{comparison.amount}</td>
+                  ) : ''
+                }
               </tr>
             </tbody>
           </table>
@@ -110,12 +118,25 @@ const noop = () => null;
 
 Comparison.defaultProps = {
   overlayed: false,
+  comparison: null,
   onCancel: noop,
 };
 
 Comparison.propTypes = {
   overlayed: Types.bool,
+  comparison: Types.shape({}),
   onCancel: Types.func,
 };
 
-export default Comparison;
+const mapStateToProps = state => ({
+  comparison: state.comparison ? state.comparison.comparison : null,
+  error: state.comparison ? state.comparison.error : null,
+});
+
+const mapDispatchToProps = dispatch => bindActionCreators({
+  onSelect: getComparison,
+}, dispatch);
+
+const connectToRedux = connect(mapStateToProps, mapDispatchToProps);
+
+export default connectToRedux(Comparison);
