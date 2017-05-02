@@ -23,6 +23,7 @@ import NonMember from './newUserFlow/nonMember';
 import SignUpPage from './newUserFlow/signUp';
 import { reducer as exchangeReducer, actions as exchangeActions } from './exchange';
 import trackingReducer from './tracking';
+import { reducer as comparisonReducer } from './comparison';
 
 import App from './app';
 import AccountPage from './account';
@@ -37,6 +38,7 @@ const rootReducer = combineReducers({
   routing: routerReducer,
   login: loginReducer,
   exchange: exchangeReducer, // exchage of funds
+  comparison: comparisonReducer,
   tracking: trackingReducer,
   form: formReducer,
 });
