@@ -2,6 +2,8 @@ import {
   GET_COMPARISON_START,
   GET_COMPARISON_SUCCESS,
   GET_COMPARISON_ERROR,
+  COMPARISON_SALARY_CHANGE,
+  COMPARISON_RATE_CHANGE,
 } from './constants';
 
 const mockApi = jest.genMockFromModule('../common/api');
@@ -41,9 +43,9 @@ describe('Comparison actions', () => {
       dispatch.mockClear();
       return Promise.resolve(comparison);
     });
-    const getTargetFunds = createBoundAction(actions.getComparison);
+    const getComparison = createBoundAction(actions.getComparison);
     expect(dispatch).not.toHaveBeenCalled();
-    return getTargetFunds()
+    return getComparison()
       .then(() => {
         expect(dispatch).toHaveBeenCalledTimes(1);
         expect(dispatch).toHaveBeenCalledWith({
@@ -56,9 +58,25 @@ describe('Comparison actions', () => {
   it('can handle errors when getting comparison', () => {
     const error = new Error('oh no!');
     mockApi.getComparisonWithToken = jest.fn(() => Promise.reject(error));
-    const getTargetFunds = createBoundAction(actions.getComparison);
+    const getComparison = createBoundAction(actions.getComparison);
     expect(dispatch).not.toHaveBeenCalled();
-    return getTargetFunds()
+    return getComparison()
       .then(() => expect(dispatch).toHaveBeenCalledWith({ type: GET_COMPARISON_ERROR, error }));
+  });
+
+  it('can handle salary change', () => {
+    const salary = 1500;
+    expect(actions.changeSalary(salary)).toEqual({
+      type: COMPARISON_SALARY_CHANGE,
+      salary,
+    });
+  });
+
+  it('can handle rate change', () => {
+    const rate = 5;
+    expect(actions.changeRate(rate)).toEqual({
+      type: COMPARISON_RATE_CHANGE,
+      rate,
+    });
   });
 });
