@@ -122,7 +122,7 @@ export function createUserWithToken(user, token) {
   }).then(savedUser => savedUser);
 }
 
-export function getComparison(monthlyWage, returnRate, token) {
+export function getComparisonWithToken(monthlyWage, returnRate, token) {
   return get(getEndpoint(`/v1/comparisons?monthlyWage=${monthlyWage}&returnRate=${returnRate}`),
     undefined, { Authorization: `Bearer ${token}` });
 }

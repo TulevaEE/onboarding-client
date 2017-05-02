@@ -1,0 +1,34 @@
+import {
+  GET_COMPARISON_START,
+  GET_COMPARISON_SUCCESS,
+  GET_COMPARISON_ERROR,
+} from './constants';
+
+const initialState = {
+  comparison: null,
+  loadingComparison: false,
+  error: null,
+};
+
+export default function comparisonReducer(state = initialState, action) {
+  switch (action.type) {
+    case GET_COMPARISON_START:
+      return { ...state,
+        loadingComparison: true,
+        error: null,
+      };
+    case GET_COMPARISON_SUCCESS:
+      return {
+        ...state,
+        loadingComparison: false,
+        comparison: action.comparison,
+      };
+    case GET_COMPARISON_ERROR:
+      return { ...state,
+        loadingComparison: false,
+        error: action.error,
+      };
+    default:
+      return state;
+  }
+}
