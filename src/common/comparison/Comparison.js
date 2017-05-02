@@ -5,11 +5,15 @@ import { Message } from 'retranslate';
 
 import { InfoTooltip } from '../';
 
-import { getComparison } from '../../comparison/actions';
+import {
+  getComparison,
+  changeSalary,
+  changeRate,
+} from '../../comparison/actions';
 
 import './Comparison.scss';
 
-export const Comparison = ({ overlayed, comparison, onCancel }) => {
+export const Comparison = ({ overlayed, comparison, onSalaryChange, onRateChange, onCancel }) => {
   const content = (
     <div>
       <div className="px-col mb-4">
@@ -26,7 +30,7 @@ export const Comparison = ({ overlayed, comparison, onCancel }) => {
             <div className="col-md-6 form-header">
               <span><Message>comparison.expected.index.return</Message>
                 <InfoTooltip
-                  name={<Message>comparison.expected.index.return.tooltip.header</Message>}
+                  name="TODO:comparison.expected.index.return.tooltip.header"
                 >
                   <Message>comparison.expected.index.return.tooltip.content</Message>
                 </InfoTooltip>
@@ -36,23 +40,21 @@ export const Comparison = ({ overlayed, comparison, onCancel }) => {
           <div className="row form-inline">
             <div className="col-md-6 form-group">
               <input
+                onChange={event => onSalaryChange(event.target.value)}
                 type="number" required="true" className="form-control"
                 placeholder="2500" id="salary" name="salary"
               />
             </div>
             <div className="col-md-6 form-group">
               <input
+                onChange={event => onRateChange(event.target.value)}
                 type="text" required="true" className="form-control"
-                placeholder="8" id="return" name="return"
+                placeholder="5" id="return" name="return"
               />
             </div>
           </div>
         </div>
-
-        <div className="row">
-          <br />
-        </div>
-
+        <div className="row" />
         <div>
           <table className="table">
             <thead>
@@ -67,7 +69,7 @@ export const Comparison = ({ overlayed, comparison, onCancel }) => {
                 <td>
                   <Message>comparison.output.calculation.first.row</Message>
                   <InfoTooltip
-                    name={<Message>comparison.output.calculation.first.row.tooltip.header</Message>}
+                    name="TODO: comparison.output.calculation.first.row.tooltip.header"
                   >
                     <Message>comparison.output.calculation.first.row.tooltip.content</Message>
                   </InfoTooltip>
@@ -119,12 +121,16 @@ const noop = () => null;
 Comparison.defaultProps = {
   overlayed: false,
   comparison: null,
+  onSalaryChange: noop,
+  onRateChange: noop,
   onCancel: noop,
 };
 
 Comparison.propTypes = {
   overlayed: Types.bool,
   comparison: Types.shape({}),
+  onSalaryChange: Types.func,
+  onRateChange: Types.func,
   onCancel: Types.func,
 };
 
@@ -135,6 +141,8 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   onSelect: getComparison,
+  onSalaryChange: changeSalary,
+  onRateChange: changeRate,
 }, dispatch);
 
 const connectToRedux = connect(mapStateToProps, mapDispatchToProps);
