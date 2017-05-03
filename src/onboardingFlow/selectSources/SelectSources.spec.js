@@ -76,20 +76,6 @@ describe('Select sources step', () => {
     expect(onSelect).toHaveBeenCalledWith(fullSelection, false);
   });
 
-  it('when selecting all funds, skip inter fund transfer', () => {
-    const onSelect = jest.fn();
-    const sourceFunds = [{ isin: 'c' }, { isin: 'b' }];
-    const targetFunds = [{ isin: 'c' }];
-    const fullSelection = [
-      { sourceFundIsin: 'b', targetFundIsin: 'c', percentage: 1 },
-    ];
-    component.setProps({ sourceFunds, targetFunds, onSelect });
-    expect(onSelect).not.toHaveBeenCalled();
-    component.find(Radio).first().simulate('select');
-    expect(onSelect).toHaveBeenCalledTimes(1);
-    expect(onSelect).toHaveBeenCalledWith(fullSelection, false);
-  });
-
   it('sets the no selection radio as selected only when no funds selected', () => {
     const noneSelectionRadio = () => component.find(Radio).last();
     component.setProps({
