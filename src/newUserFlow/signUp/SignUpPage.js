@@ -1,6 +1,7 @@
 import React, { PropTypes as Types } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { Message } from 'retranslate';
 import { createNewUser } from '../actions';
 
 import SignUpForm from './signUpForm';
@@ -8,10 +9,8 @@ import SignUpForm from './signUpForm';
 export const SignUpPage = ({ createUser }) => (
   <div>
     <div className="mb-4">
-      <p className="mb-4 mt-5 lead">Väga hea otsus</p>
-      <p>Tuleva olulisemad tingimused</p>
-      <p>Soovi korral saad lugeda kogu põhikirja</p>
-      <p>Eeltäidetud väljad isikuandmetega</p>
+      <p className="mb-4 mt-5 lead"><Message>new.user.flow.signup.title</Message></p>
+      <p><Message>new.user.flow.signup.intro</Message></p>
 
       <div className="row">
         <div className="col-6">
