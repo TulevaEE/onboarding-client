@@ -12,7 +12,7 @@ import ExactFundSelector from './exactFundSelector';
 
 function selectAllWithTarget(sourceFunds, targetFund) {
   return sourceFunds
-    .filter(fund => fund.isin !== targetFund.isin)
+    .filter((fund, index, list) => list.length === 1 || fund.isin !== targetFund.isin)
     .map(fund => ({
       sourceFundIsin: fund.isin,
       targetFundIsin: targetFund.isin,
