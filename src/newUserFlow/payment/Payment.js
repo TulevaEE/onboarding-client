@@ -1,19 +1,17 @@
 import React, { PropTypes as Types } from 'react';
 import { connect } from 'react-redux';
-// import { Message } from 'retranslate';
-// import { Link } from 'react-router';
+import { Message } from 'retranslate';
 
 export const Payment = ({ userId }) => (
   <div>
     <div className="mb-4">
-      <p className="mb-4 mt-5 lead">Liikmetasu</p>
-      <p>Järgmiseks kanna üle liikmetasu ning oledki Tuleva liige.</p>
-      <p>Seejärel saad kogu oma pensioni Tulevasse üle tuua.</p>
+      <p className="mb-4 mt-5 lead"><Message>new.user.flow.payment.title</Message></p>
+      <p><Message>new.user.flow.payment.intro</Message></p>
 
       <a
         href={`https://payment-test.maksekeskus.ee/pay/1/link.html?shopId=322a5e5e-37ee-45b1-8961-ebd00e84e209&amount=100&reference=${userId}`}
         className="btn btn-primary"
-      >Pangalingid</a>
+      ><Message>new.user.flow.payment.bank.links</Message></a>
     </div>
 
   </div>

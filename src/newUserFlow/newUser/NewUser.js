@@ -11,6 +11,7 @@ export const NewUser = ({
   loadingSourceFunds,
   sourceFunds,
   errorDescription,
+  userFirstName,
 }) => {
   if (errorDescription) {
     return <ErrorAlert description={errorDescription} />;
@@ -22,21 +23,19 @@ export const NewUser = ({
   return (
     <div>
       <div className="px-col mb-4">
-        <p className="mb-4 mt-5 lead">Tere Jaana!</p>
-        <p>Veendu ise Tuleva kasulikkuses ja astu liikmeks.
-          Või siis too pension üle oma netipangast ilma liikmeks astumata.</p>
+        <p className="mb-4 mt-5 lead">
+          <Message params={{ name: userFirstName }}>steps.welcome</Message>
+        </p>
+        <p><Message>new.user.flow.intro</Message></p>
         <p className="mb-4 mt-5 lead"><Message>select.sources.current.status</Message></p>
         <PensionFundTable funds={sourceFunds} />
-        <p>
-          Kui palju on osakute väärtus ja kui palju kulub teenustasudeks.
-        </p>
       </div>
       <div className="mb-4">
-        <p>Tuleva fondid on väga madalate kuludega.
-          Liikmena säästad veel lisaks pensioniboonuse võrra.</p>
-        <p>Võrdle, kui palju sa säästaksid Tuleva fondiga.<br />
-          Kui astud liikmeks ja tood kogutud pensioni üle - arvutus<br />
-          Kui tood pensioni üple ilma liikmseks astumata - arvutus
+        <p>
+          <Message>new.user.flow.why</Message>
+        </p>
+        <p>
+          <Message>new.user.flow.comparison</Message>
         </p>
       </div>
 
@@ -55,18 +54,21 @@ NewUser.defaultProps = {
   targetFunds: [],
   loadingSourceFunds: false,
   errorDescription: '',
+  userFirstName: '',
 };
 
 NewUser.propTypes = {
   sourceFunds: Types.arrayOf(Types.shape({})),
   loadingSourceFunds: Types.bool,
   errorDescription: Types.string,
+  userFirstName: Types.string,
 };
 
 const mapStateToProps = state => ({
   sourceFunds: state.exchange.sourceFunds,
   loadingSourceFunds: state.exchange.loadingSourceFunds,
   errorDescription: state.exchange.error,
+  userFirstName: (state.login.user || {}).firstName,
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({
