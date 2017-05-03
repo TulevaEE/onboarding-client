@@ -20,11 +20,15 @@ export function getComparison(monthlyWage, returnRate) {
 }
 
 export function changeSalary(salary) {
-  return { type: COMPARISON_SALARY_CHANGE, salary };
+  return (dispatch) => {
+    dispatch({ type: COMPARISON_SALARY_CHANGE, salary });
+  };
 }
 
 export function changeRate(rate) {
-  return { type: COMPARISON_RATE_CHANGE, rate };
+  return (dispatch) => {
+    dispatch({ type: COMPARISON_RATE_CHANGE, rate });
+  };
 }
 
 export default getComparison;

@@ -66,17 +66,15 @@ describe('Comparison actions', () => {
 
   it('can handle salary change', () => {
     const salary = 1500;
-    expect(actions.changeSalary(salary)).toEqual({
-      type: COMPARISON_SALARY_CHANGE,
-      salary,
-    });
+    const changeSalary = createBoundAction(actions.changeSalary);
+    changeSalary(salary);
+    expect(dispatch).toHaveBeenCalledWith({ type: COMPARISON_SALARY_CHANGE, salary });
   });
 
   it('can handle rate change', () => {
     const rate = 5;
-    expect(actions.changeRate(rate)).toEqual({
-      type: COMPARISON_RATE_CHANGE,
-      rate,
-    });
+    const changeRate = createBoundAction(actions.changeRate);
+    changeRate(rate);
+    expect(dispatch).toHaveBeenCalledWith({ type: COMPARISON_RATE_CHANGE, rate });
   });
 });
