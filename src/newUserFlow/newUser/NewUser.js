@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 
 import { Loader, ErrorAlert } from '../../common/index';
 import PensionFundTable from '../../onboardingFlow/selectSources/pensionFundTable/index';
+import Comparison from '../../common/comparison';
 
 export const NewUser = ({
   loadingSourceFunds,
@@ -29,6 +30,7 @@ export const NewUser = ({
         <p><Message>new.user.flow.intro</Message></p>
         <p className="mb-4 mt-5 lead"><Message>select.sources.current.status</Message></p>
         <PensionFundTable funds={sourceFunds} />
+        <Comparison />
       </div>
       <div className="mb-4">
         <p>

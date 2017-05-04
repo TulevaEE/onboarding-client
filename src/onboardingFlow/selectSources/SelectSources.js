@@ -9,6 +9,8 @@ import { Loader, Radio, ErrorAlert } from '../../common';
 import PensionFundTable from './pensionFundTable';
 import TargetFundSelector from './targetFundSelector';
 import ExactFundSelector from './exactFundSelector';
+import Comparison from '../../common/comparison';
+import { show as showComparison, hide as hideComparison } from '../../comparison/actions';
 
 function selectAllWithTarget(sourceFunds, targetFund) {
   return sourceFunds
@@ -50,6 +52,9 @@ export const SelectSources = ({
   onSelect,
   sourceSelectionExact,
   errorDescription,
+  comparisonVisible,
+  onShowComparison,
+  onHideComparison,
 }) => {
   if (errorDescription) {
     return <ErrorAlert description={errorDescription} />;
@@ -63,10 +68,19 @@ export const SelectSources = ({
   const valid = selectionsValid(sourceSelection);
   return (
     <div>
+      {
+        comparisonVisible ?
+          <Comparison overlayed onClose={onHideComparison} />
+        : ''
+      }
       <div className="px-col mb-4">
         <p className="mb-4 mt-5 lead"><Message>select.sources.current.status</Message></p>
         <PensionFundTable funds={sourceFunds} />
       </div>
+      <button
+        className={'btn btn-primary mt-3 mb-3'}
+        onClick={onShowComparison}
+      ><Message>select.sources.show.comparison</Message></button>
       <Radio
         name="tv-select-sources-type"
         selected={fullSelectionActive}
@@ -150,6 +164,9 @@ SelectSources.defaultProps = {
   sourceSelectionExact: false,
   onSelect: noop,
   errorDescription: '',
+  comparisonVisible: false,
+  onShowComparison: noop,
+  onHideComparison: noop,
 };
 
 SelectSources.propTypes = {
@@ -162,6 +179,9 @@ SelectSources.propTypes = {
   loadingTargetFunds: Types.bool,
   onSelect: Types.func,
   errorDescription: Types.string,
+  comparisonVisible: Types.bool,
+  onShowComparison: Types.func,
+  onHideComparison: Types.func,
 };
 
 const mapStateToProps = state => ({
@@ -173,10 +193,13 @@ const mapStateToProps = state => ({
   loadingSourceFunds: state.exchange.loadingSourceFunds,
   loadingTargetFunds: state.exchange.loadingTargetFunds,
   errorDescription: state.exchange.error,
+  comparisonVisible: state.comparison.visible,
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   onSelect: selectExchangeSources,
+  onShowComparison: showComparison,
+  onHideComparison: hideComparison,
 }, dispatch);
 
 const connectToRedux = connect(mapStateToProps, mapDispatchToProps);

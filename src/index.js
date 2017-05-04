@@ -24,6 +24,7 @@ import SignUpPage from './newUserFlow/signUp';
 import Payment from './newUserFlow/payment';
 import { reducer as exchangeReducer, actions as exchangeActions } from './exchange';
 import trackingReducer from './tracking';
+import { reducer as comparisonReducer, actions as comparisonActions } from './comparison';
 
 import App from './app';
 import AccountPage from './account';
@@ -38,6 +39,7 @@ const rootReducer = combineReducers({
   routing: routerReducer,
   login: loginReducer,
   exchange: exchangeReducer, // exchage of funds
+  comparison: comparisonReducer,
   tracking: trackingReducer,
   form: formReducer,
 });
@@ -60,11 +62,12 @@ function getDataForApp() {
 
 function getDataForFlow(nextState) {
   store.dispatch(exchangeActions.mapUrlQueryParamsToState(nextState.location.query));
-  const { login, exchange } = store.getState();
+  const { login, exchange, comparison } = store.getState();
   if (login.token && !(exchange.sourceFunds || exchange.loadingSourceFunds ||
-    exchange.targetFunds || exchange.loadingTargetFunds)) {
+    exchange.targetFunds || exchange.loadingTargetFunds || comparison.loadingComparison)) {
     store.dispatch(exchangeActions.getSourceFunds());
     store.dispatch(exchangeActions.getTargetFunds());
+    store.dispatch(comparisonActions.getComparison());
   }
 }
 

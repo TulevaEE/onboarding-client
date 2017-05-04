@@ -271,4 +271,16 @@ describe('api', () => {
         });
       });
   });
+
+  it('can get comparison', () => {
+    mockHttp.get = jest.fn(() => Promise.resolve());
+    const monthlyWage = 1000;
+    const returnRate = 0.05;
+    const token = 'a token';
+    return api.getComparisonWithToken(monthlyWage, returnRate, token)
+      .then(() => expect(mockHttp.get).toHaveBeenCalledWith(`/v1/comparisons?monthlyWage=${monthlyWage}&returnRate=${returnRate}`,
+        undefined, {
+          Authorization: `Bearer ${token}`,
+        }));
+  });
 });

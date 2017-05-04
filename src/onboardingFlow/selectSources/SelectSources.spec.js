@@ -8,6 +8,7 @@ import PensionFundTable from './pensionFundTable';
 import ExactFundSelector from './exactFundSelector';
 import TargetFundSelector from './targetFundSelector';
 import { SelectSources } from './SelectSources';
+import Comparison from '../../common/comparison';
 
 describe('Select sources step', () => {
   let component;
@@ -243,5 +244,28 @@ describe('Select sources step', () => {
     expect(component.contains(<ErrorAlert description={errorDescription} />)).toBe(true);
     expect(component.contains(<Loader className="align-middle" />)).toBe(false);
     expect(component.contains(<PensionFundTable funds={funds} />)).toBe(false);
+  });
+
+  it('can hide and show comparison', () => {
+    const onHideComparison = () => jest.fn();
+    component.setProps({
+      onHideComparison,
+      comparisonVisible: true,
+    });
+
+    expect(component.contains(<Comparison overlayed onClose={onHideComparison} />)).toBe(true);
+    component.setProps({ comparisonVisible: false });
+    expect(component.contains(<Comparison overlayed onClose={onHideComparison} />)).toBe(false);
+  });
+
+  it('displays show comparison', () => {
+    const onShowComparison = () => jest.fn();
+
+    component.setProps({ onShowComparison });
+
+    expect(component.contains(<button
+      className={'btn btn-primary mt-3 mb-3'}
+      onClick={onShowComparison}
+    ><Message>select.sources.show.comparison</Message></button>)).toBe(true);
   });
 });
