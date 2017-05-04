@@ -43,16 +43,16 @@ export const Comparison = ({ overlayed, comparison, rate, salary, loading,
           <div className="row form-inline">
             <div className="col-md-6 form-group">
               <input
-                onChange={event => onSalaryChange(event.target.value)}
+                onChange={event => onSalaryChange(Number(event.target.value))}
                 type="number" required="true" className="form-control"
                 placeholder="1500" id="salary" name="salary" value={salary}
               />
             </div>
             <div className="col-md-6 form-group">
               <input
-                onChange={event => onRateChange(event.target.value)}
+                onChange={event => onRateChange(Number(event.target.value) / 100)}
                 type="text" required="true" className="form-control"
-                placeholder="8" id="return" name="return" value={rate}
+                placeholder="8" id="return" name="return" value={Math.round(rate * 100)}
               />
             </div>
           </div>

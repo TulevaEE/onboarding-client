@@ -52,7 +52,7 @@ describe('Comparison reducer', () => {
     expect(newState.rate).toBe(rate);
   });
 
-  it('can show and hide comparison ', () => {
+  it('can show and hide comparison', () => {
     let action = { type: SHOW_COMPARISON };
 
     let newState = comparisonReducer(undefined, action);
