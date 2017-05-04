@@ -6,6 +6,7 @@ import { Message } from 'retranslate';
 import { Loader } from '../../common/index';
 import PensionFundTable from '../../onboardingFlow/selectSources/pensionFundTable/index';
 import { NewUser } from './NewUser';
+import Comparison from '../../common/comparison';
 
 describe('New user step', () => {
   let component;
@@ -42,5 +43,9 @@ describe('New user step', () => {
     expect(component.find(Link).at(1).prop('to')).toBe('/steps/non-member');
     expect(component.find(Link).at(1).children().at(0).node)
       .toEqual(<Message>newUserFlow.newUser.i.want.just.to.transfer.my.pension</Message>);
+  });
+
+  it('renders comparison', () => {
+    expect(component.contains(<Comparison />)).toBe(true);
   });
 });
