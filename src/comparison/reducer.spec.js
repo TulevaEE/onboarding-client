@@ -4,6 +4,8 @@ import {
   GET_COMPARISON_ERROR,
   COMPARISON_SALARY_CHANGE,
   COMPARISON_RATE_CHANGE,
+  SHOW_COMPARISON,
+  HIDE_COMPARISON,
 } from './constants';
 
 import comparisonReducer from './reducer';
@@ -49,4 +51,18 @@ describe('Comparison reducer', () => {
 
     expect(newState.rate).toBe(rate);
   });
+
+  it('can show and hide comparison ', () => {
+    let action = { type: SHOW_COMPARISON };
+
+    let newState = comparisonReducer(undefined, action);
+
+    expect(newState.visible).toBe(true);
+
+    action = { type: SHOW_COMPARISON };
+    newState = comparisonReducer(undefined, action);
+
+    expect(newState.visible).toBe(true);
+  });
+
 });

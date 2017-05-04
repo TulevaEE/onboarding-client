@@ -4,6 +4,8 @@ import {
   GET_COMPARISON_ERROR,
   COMPARISON_SALARY_CHANGE,
   COMPARISON_RATE_CHANGE,
+  SHOW_COMPARISON,
+  HIDE_COMPARISON,
 } from './constants';
 
 const initialState = {
@@ -12,6 +14,7 @@ const initialState = {
   comparison: null,
   loadingComparison: false,
   error: null,
+  visible: false,
 };
 
 export default function comparisonReducer(state = initialState, action) {
@@ -39,6 +42,14 @@ export default function comparisonReducer(state = initialState, action) {
     case COMPARISON_RATE_CHANGE:
       return { ...state,
         rate: action.rate,
+      };
+    case SHOW_COMPARISON:
+      return { ...state,
+        visible: true,
+      };
+    case HIDE_COMPARISON:
+      return { ...state,
+        visible: false,
       };
     default:
       return state;
