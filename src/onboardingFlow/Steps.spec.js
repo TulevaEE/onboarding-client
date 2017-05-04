@@ -67,6 +67,13 @@ describe('Steps', () => {
     expect(component.contains(<Message>steps.intro</Message>)).toBe(true);
   });
 
+  it('renders a different into message if a new member is on the first step', () => {
+    const name = 'name';
+    component.setProps({ stepName: 'select-sources', userFirstName: name, isNewMember: true });
+    expect(component.contains(<Message params={{ name }}>steps.welcome</Message>)).toBe(true);
+    expect(component.contains(<Message>steps.intro.new.member</Message>)).toBe(true);
+  });
+
   it('renders a vertical line in the bottom for all but the last step', () => {
     [
       'select-sources',

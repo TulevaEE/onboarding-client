@@ -144,5 +144,6 @@ describe('Login reducer', () => {
     expect(newState.token).toBe(null);
     expect(newState.loginMethod).toBe(null);
     expect(newState.loadingUser).toBe(false);
+    expect(newState.user).toBe(null);
   });
 });

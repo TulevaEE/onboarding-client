@@ -14,7 +14,7 @@ const orderedStepNames = [
 ];
 
 // this component wraps all steps and renders the top and bottom areas.
-export const Steps = ({ children, stepName, userFirstName }) => {
+export const Steps = ({ children, stepName, userFirstName, isNewMember }) => {
   const stepIndex = orderedStepNames.indexOf(stepName);
   const beforeSteps = orderedStepNames.slice(0, stepIndex);
   const currentStep = orderedStepNames[stepIndex];
@@ -31,7 +31,10 @@ export const Steps = ({ children, stepName, userFirstName }) => {
               <p className="lead">
                 <Message params={{ name: userFirstName }}>steps.welcome</Message>
               </p>
-              <p className="lead"><Message>steps.intro</Message></p>
+              { isNewMember ? (
+                <p className="lead"><Message>steps.intro.new.member</Message></p>
+              ) : <p className="lead"><Message>steps.intro</Message></p>
+              }
             </div>
           ) : ''
         }
@@ -67,17 +70,20 @@ Steps.defaultProps = {
   children: null,
   stepName: null,
   userFirstName: '',
+  isNewMember: false,
 };
 
 Steps.propTypes = {
   stepName: Types.string,
   userFirstName: Types.string,
   children: Types.oneOfType([Types.node, Types.arrayOf(Types.node)]),
+  isNewMember: Types.bool,
 };
 
 const mapStateToProps = state => ({
   stepName: state.routing.locationBeforeTransitions.pathname.split('/').pop(),
   userFirstName: (state.login.user || {}).firstName,
+  isNewMember: state.exchange.isNewMember,
 });
 
 const connectToRedux = connect(mapStateToProps);
