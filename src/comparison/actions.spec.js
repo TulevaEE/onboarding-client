@@ -22,7 +22,7 @@ describe('Comparison actions', () => {
   }
 
   function mockDispatch() {
-    state = { login: { token: 'token' }, exchange: {} };
+    state = { login: { token: 'token' }, comparison: {} };
     dispatch = jest.fn((action) => {
       if (typeof action === 'function') {
         action(dispatch, () => state);
@@ -66,15 +66,19 @@ describe('Comparison actions', () => {
 
   it('can handle salary change', () => {
     const salary = 1500;
+    state.comparison.salary = salary;
     const changeSalary = createBoundAction(actions.changeSalary);
     changeSalary(salary);
     expect(dispatch).toHaveBeenCalledWith({ type: COMPARISON_SALARY_CHANGE, salary });
+    expect(dispatch).toHaveBeenCalledWith({ type: GET_COMPARISON_START });
   });
 
   it('can handle rate change', () => {
     const rate = 5;
+    state.comparison.rate = rate;
     const changeRate = createBoundAction(actions.changeRate);
     changeRate(rate);
     expect(dispatch).toHaveBeenCalledWith({ type: COMPARISON_RATE_CHANGE, rate });
+    expect(dispatch).toHaveBeenCalledWith({ type: GET_COMPARISON_START });
   });
 });

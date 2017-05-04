@@ -7,8 +7,8 @@ import {
 } from './constants';
 
 const initialState = {
-  salary: null,
-  rate: null,
+  salary: 1500,
+  rate: 7,
   comparison: null,
   loadingComparison: false,
   error: null,
