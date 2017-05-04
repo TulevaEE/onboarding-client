@@ -8,6 +8,8 @@ import {
   GET_COMPARISON_ERROR,
   COMPARISON_SALARY_CHANGE,
   COMPARISON_RATE_CHANGE,
+  SHOW_COMPARISON,
+  HIDE_COMPARISON,
 } from './constants';
 
 export function getComparison() {
@@ -18,6 +20,18 @@ export function getComparison() {
     return getComparisonWithToken(salary, rate, getState().login.token)
         .then(comparison => dispatch({ type: GET_COMPARISON_SUCCESS, comparison }))
         .catch(error => dispatch({ type: GET_COMPARISON_ERROR, error }));
+  };
+}
+
+export function show() {
+  return (dispatch) => {
+    dispatch({ type: SHOW_COMPARISON });
+  };
+}
+
+export function hide() {
+  return (dispatch) => {
+    dispatch({ type: HIDE_COMPARISON });
   };
 }
 

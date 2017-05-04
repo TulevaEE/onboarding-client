@@ -13,7 +13,7 @@ import {
 import './Comparison.scss';
 
 export const Comparison = ({ overlayed, comparison, rate, salary, loading,
-                              onSalaryChange, onRateChange, onCancel }) => {
+                              onSalaryChange, onRateChange, onClose }) => {
   if (loading) {
     return <Loader className="align-middle" />;
   }
@@ -105,7 +105,7 @@ export const Comparison = ({ overlayed, comparison, rate, salary, loading,
           <div className="row mt-4 pt-4 justify-content-center">
             {content}
             <div className="row">
-              <button className="btn btn-secondary mt-4" onClick={onCancel}>
+              <button className="btn btn-secondary mt-4" onClick={onClose}>
                 <Message>comparison.close</Message>
               </button>
             </div>
@@ -129,7 +129,7 @@ Comparison.defaultProps = {
   loading: false,
   onSalaryChange: noop,
   onRateChange: noop,
-  onCancel: noop,
+  onClose: noop,
   rate: null,
   salary: null,
 };
@@ -142,7 +142,7 @@ Comparison.propTypes = {
   loading: Types.bool,
   onSalaryChange: Types.func,
   onRateChange: Types.func,
-  onCancel: Types.func,
+  onClose: Types.func,
 };
 
 const mapStateToProps = state => ({

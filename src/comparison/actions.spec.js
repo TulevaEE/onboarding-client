@@ -4,6 +4,8 @@ import {
   GET_COMPARISON_ERROR,
   COMPARISON_SALARY_CHANGE,
   COMPARISON_RATE_CHANGE,
+  SHOW_COMPARISON,
+  HIDE_COMPARISON,
 } from './constants';
 
 const mockApi = jest.genMockFromModule('../common/api');
@@ -80,5 +82,19 @@ describe('Comparison actions', () => {
     changeRate(rate);
     expect(dispatch).toHaveBeenCalledWith({ type: COMPARISON_RATE_CHANGE, rate });
     expect(dispatch).toHaveBeenCalledWith({ type: GET_COMPARISON_START });
+  });
+
+  it('can make comparison visible', () => {
+    state.comparison.visible = false;
+    const show = createBoundAction(actions.show);
+    show();
+    expect(dispatch).toHaveBeenCalledWith({ type: SHOW_COMPARISON });
+  });
+
+  it('can make comparison hidden', () => {
+    state.comparison.visible = true;
+    const hide = createBoundAction(actions.hide);
+    hide();
+    expect(dispatch).toHaveBeenCalledWith({ type: HIDE_COMPARISON });
   });
 });
