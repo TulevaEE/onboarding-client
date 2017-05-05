@@ -10,6 +10,11 @@
  * Element overrides
  */
 
+html {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
 body {
   font-size: 16px;
 }

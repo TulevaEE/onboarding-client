@@ -2,7 +2,7 @@
 
 import React, { PropTypes as Types } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from 'redux-form';
+import { Field, reduxForm, formValueSelector } from 'redux-form';
 import { Message, withTranslations } from 'retranslate';
 import { Link } from 'react-router';
 
@@ -42,7 +42,7 @@ renderField.propTypes = {
 };
 
 
-export const SignUpForm = ({ handleSubmit, invalid, submitting, error,
+export const SignUpForm = ({ handleSubmit, invalid, submitting, error, hasAcceptedTerms,
 translations: { translate } }) => (
   <div>
     <form id="register-form" onSubmit={handleSubmit} role="form">
@@ -80,9 +80,21 @@ translations: { translate } }) => (
           placeholder={translate('new.user.flow.signup.phoneNumber')}
         />
       </div>
+      <div className="form-check">
+        <label className="custom-control custom-checkbox" htmlFor="hasAcceptedTerms">
+          <Field
+            component="input" name="hasAcceptedTerms" id="hasAcceptedTerms"
+            type="checkbox" className="custom-control-input"
+          />
+          <span className="custom-control-indicator" />
+          <div className="custom-control-description">
+            <Message>new.user.flow.signup.tos</Message>
+          </div>
+        </label>
+      </div>
       <div className={`form-group ${error ? 'has-danger' : ''}`}>
         {error && <div className="form-control-feedback mb-3">{error}</div>}
-        <button type="submit" disabled={invalid || submitting} className={'btn btn-primary mb-2 mr-2'}>
+        <button type="submit" disabled={invalid || submitting || !hasAcceptedTerms} className={'btn btn-primary mb-2 mr-2'}>
           <Message>new.user.flow.signup.submit</Message>
         </button>
         <Link to="/steps/new-user" className={'btn btn-secondary mb-2'}>
@@ -100,6 +112,7 @@ SignUpForm.defaultProps = {
   invalid: true,
   submitting: false,
   error: '',
+  hasAcceptedTerms: true,
 };
 
 SignUpForm.propTypes = {
@@ -107,14 +120,18 @@ SignUpForm.propTypes = {
   invalid: Types.bool,
   submitting: Types.bool,
   error: Types.string,
+  hasAcceptedTerms: Types.bool,
   translations: Types.shape({ translate: Types.func.isRequired }).isRequired,
 };
 
 const reduxSignUpForm = reduxForm({ form: 'signUp' })(SignUpForm);
 const translatedForm = withTranslations(reduxSignUpForm);
 
+const selector = formValueSelector('signUp');
+
 const mapStateToProps = state => ({
-  initialValues: state.login.user,
+  initialValues: state.login.user ? { ...state.login.user, hasAcceptedTerms: true } : null,
+  hasAcceptedTerms: selector(state, 'hasAcceptedTerms'),
 });
 
 const connectToRedux = connect(mapStateToProps, null);
