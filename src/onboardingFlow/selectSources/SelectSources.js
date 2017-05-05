@@ -4,6 +4,8 @@ import { Link } from 'react-router';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
+import './SelectSources.scss';
+
 import { selectExchangeSources } from '../../exchange/actions';
 import { Loader, Radio, ErrorAlert } from '../../common';
 import PensionFundTable from './pensionFundTable';
@@ -73,14 +75,21 @@ export const SelectSources = ({
           <Comparison overlayed onClose={onHideComparison} />
         : ''
       }
-      <div className="px-col mb-4">
-        <p className="mb-4 mt-5 lead"><Message>select.sources.current.status</Message></p>
-        <PensionFundTable funds={sourceFunds} />
+      <div className="row justify-content-around align-items-center">
+        <div className="col-8">
+          <div className="px-col mb-4">
+            <p className="mb-4 mt-5 lead"><Message>select.sources.current.status</Message></p>
+            <PensionFundTable funds={sourceFunds} />
+          </div>
+        </div>
+        <div className="col-4 select-sources-comparison mt-3">
+          <Message>select.sources.comparison.intro</Message>
+          <button
+            className={'btn btn-primary mt-3 mb-3'}
+            onClick={onShowComparison}
+          ><Message>select.sources.show.comparison</Message></button>
+        </div>
       </div>
-      <button
-        className={'btn btn-primary mt-3 mb-3'}
-        onClick={onShowComparison}
-      ><Message>select.sources.show.comparison</Message></button>
       <Radio
         name="tv-select-sources-type"
         selected={fullSelectionActive}
