@@ -4,6 +4,8 @@ import { Message } from 'retranslate';
 
 import { Comparison } from './Comparison';
 
+import { Loader } from '../';
+
 describe('Comparison widget', () => {
   let component;
   let props;
@@ -23,6 +25,14 @@ describe('Comparison widget', () => {
     expect(component.contains(<Message>comparison.expected.index.return</Message>)).toBe(true);
   });
 
+  it('renders a loader when loading comparison and results table when not loading', () => {
+    component.setProps({ loading: true });
+    expect(component.contains(<Loader className="align-middle mt-4" />)).toBe(true);
+    expect(component.find('table').length).toBe(0);
+    component.setProps({ loading: false });
+    expect(component.contains(<Loader className="align-middle mt-4" />)).not.toBe(true);
+    expect(component.find('table').length).toBe(1);
+  });
 
   it('renders form fields', () => {
     const salary = 123;
@@ -32,7 +42,9 @@ describe('Comparison widget', () => {
       onSalaryChange,
     });
 
-    expect(component.find('input')).length === 2;
+    expect(component.find('input').length).toBe(2);
+    expect(component.find('input').at(0).prop('onChange')).not.toBe(null);
+    expect(component.find('input').at(1).prop('onChange')).not.toBe(null);
   });
 
   it('renders comparison table headers', () => {
