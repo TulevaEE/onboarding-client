@@ -6,7 +6,7 @@ export const NonMember = () => (
   <div>
     <div className="mb-4">
       <p className="mb-4 mt-5 lead"><Message>new.user.flow.non.member.title</Message></p>
-      <p><Message>new.user.flow.non.member.title</Message></p>
+      <p><Message>new.user.flow.non.member.intro</Message></p>
       <button className="btn btn-secondary mr-2 mt-2">Swedbank</button>
       <button className="btn btn-secondary mr-2 mt-2">SEB</button>
       <button className="btn btn-secondary mr-2 mt-2">LHV</button>

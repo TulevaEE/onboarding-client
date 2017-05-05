@@ -30,15 +30,27 @@ export const NewUser = ({
         <p><Message>new.user.flow.intro</Message></p>
         <p className="mb-4 mt-5 lead"><Message>select.sources.current.status</Message></p>
         <PensionFundTable funds={sourceFunds} />
-        <Comparison />
       </div>
-      <div className="mb-4">
-        <p>
-          <Message>new.user.flow.why</Message>
-        </p>
-        <p>
-          <Message>new.user.flow.comparison</Message>
-        </p>
+      <div className="px-col mb-4">
+        <p className="lead">Kuidas mõjutab valitsemistasu sinu pensioni suurust?</p>
+
+        <p>Täna maksad iga 1000 euro pealt valitsemistasuks pangale €13.40 aastas.
+          Tulevas maksaksid €3.40. Esmapilgul pisikesed summad, eks?
+          Aastate jooksul hammustab isegi näiliselt vaid natuke kõrgem
+          valitsemistasu väga suure tüki sinu tulevasest pensionist.</p>
+
+        <p>Arvuta, kui palju sa tänu Tulevale säästaksid.</p>
+
+        <Comparison />
+
+        <p>Tuleva pensionifondi kliendina võidaksid 20 000 eurot.<br />
+        Kui astud ka Tuleva liikmeks, võidaksid lisaks veel 2000 eurot,
+          sest liikmed saavad igal aastal liikmeboonust 0,05% oma pensionivara mahust.</p>
+
+        <p>Tuleva pensionifondi kliendiks saavad tulla kõik Eesti inimesed, kes II sambasse koguvad.
+          Et Tulevast kõige rohkem kasu saada ja toetada Eesti pensionisüsteemi arengut,
+          kutsume sind astuma ka Tuleva liikmeks.</p>
+
       </div>
 
       <Link className={'btn btn-primary mb-2 mr-2'} to="/steps/signup">
