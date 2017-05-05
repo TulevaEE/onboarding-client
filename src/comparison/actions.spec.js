@@ -72,7 +72,6 @@ describe('Comparison actions', () => {
     const changeSalary = createBoundAction(actions.changeSalary);
     changeSalary(salary);
     expect(dispatch).toHaveBeenCalledWith({ type: COMPARISON_SALARY_CHANGE, salary });
-    expect(dispatch).toHaveBeenCalledWith({ type: GET_COMPARISON_START });
   });
 
   it('can handle rate change', () => {
@@ -81,7 +80,6 @@ describe('Comparison actions', () => {
     const changeRate = createBoundAction(actions.changeRate);
     changeRate(rate);
     expect(dispatch).toHaveBeenCalledWith({ type: COMPARISON_RATE_CHANGE, rate });
-    expect(dispatch).toHaveBeenCalledWith({ type: GET_COMPARISON_START });
   });
 
   it('can make comparison visible', () => {

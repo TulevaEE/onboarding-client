@@ -21,7 +21,7 @@ export const Comparison = ({ overlayed, comparison, rate, salary, loading,
     <div>
       <div className="px-col mb-4">
         <div>
-          <p className="mb-4 mt-5 header"><Message>comparison.header</Message></p>
+          <p className="mb-4 mt-5"><Message>comparison.header</Message></p>
           <p><Message>comparison.intro</Message></p>
           <p><Message>comparison.call.to.action</Message></p>
         </div>
@@ -51,7 +51,7 @@ export const Comparison = ({ overlayed, comparison, rate, salary, loading,
             <div className="col-md-6 form-group">
               <input
                 onChange={event => onRateChange(Number(event.target.value) / 100)}
-                type="text" required="true" className="form-control"
+                type="number" required="true" className="form-control"
                 placeholder="8" id="return" name="return" value={Math.round(rate * 100)}
               />
             </div>
@@ -79,14 +79,18 @@ export const Comparison = ({ overlayed, comparison, rate, salary, loading,
                         <Message>comparison.output.calculation.first.row.tooltip.content</Message>
                       </InfoTooltip>
                     </td>
-                    <td className="output-amount old-fund-fees">{comparison.currentFundFee}€</td>
-                    <td className="output-amount">{comparison.newFundFee}€</td>
+                    <td className="output-amount old-fund-fees">
+                      {Math.round(comparison.currentFundFee)}
+                    </td>
+                    <td className="output-amount">{Math.round(comparison.newFundFee)}</td>
                   </tr>
                   <tr>
                     <td><Message>comparison.output.calculation.second.row</Message></td>
-                    <td className="output-amount">{comparison.currentFundFutureValue}€</td>
+                    <td className="output-amount">
+                      {Math.round(comparison.currentFundFutureValue)}
+                    </td>
                     <td className="output-amount new-fund-total">
-                      {comparison.newFundFutureValue}€
+                      {Math.round(comparison.newFundFutureValue)}
                     </td>
                   </tr>
                 </tbody>

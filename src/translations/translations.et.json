@@ -154,14 +154,12 @@
   "comparison.call.to.action": "Arvuta, kui palju sa tänu Tulevale säästad!",
   "comparison.your.gross.salary.today": "Sinu brutopalk täna",
   "comparison.expected.index.return": "Maailma väärtpaberiturgude kesmine oodatav aastatootlus",
-  "comparison.expected.index.return.tooltip.header": "Arvutuses kasutatud andmed",
   "comparison.expected.index.return.tooltip.content": "Vaikimisi pakub kalkulaator maailma ühe suurima indeksifondi (Black Rock trallalllaa) ajaloolist keskmist, aga Tuleva liikmena sa juba tead, et eelmiste perioodide tootlus ei garanteeri tootlust tulevikus. Vaata, kuidas numbrid muutuvad, kui oodatav tootlus oleks madalam ja miks mitte ka kõrgem. ",
   "comparison.output.calculation": "Arvutus",
   "comparison.output.old.funds": "Vanades fondides",
   "comparison.output.new.funds": "Tuleva fondis",
   "comparison.output.calculation.first.row": "Fondivalitsejale makstud valitsemistasude tõttu kulutad kokku",
   "comparison.output.calculation.second.row": "Pensioniks koguneb sulle",
-  "comparison.output.calculation.first.row.tooltip.header": "Fondivalitsejale makstud tasu + alternatiivkulud",
   "comparison.output.calculation.first.row.tooltip.content": "Meie kalkulaatori on teinud Tuleva liikmed, et aidata sul mõista, miks teenustasud loevad. Nad on andnud endast parima, et kalkulaator arvutaks õigesti ja võtaks aluseks eeldused, mis kõige paremini tegelikkust peegeldavad. Lihtsuse mõttes oleme eeldusi lihtsustanud. Näiteks eeldame, et pensionifondide valitsemistasud jäävad samaks - tegelikkuses Tuleva tasud kindlasti langevad, loodetavasti langetavad tihenevas konkurentsis tasusid ka teised. Kui sa märkad küsitavusi või ebatäpsusi, anna meile kohe märku, et saaksime kalkulaatorit paremaks ja täpsemaks teha! ",
   "select.sources.show.comparison": "Võid säästa tuhandeid eurosid, vaata lähemalt!"
 }
