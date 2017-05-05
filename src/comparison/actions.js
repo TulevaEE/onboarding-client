@@ -38,14 +38,12 @@ export function hide() {
 export function changeSalary(salary) {
   return (dispatch) => {
     dispatch({ type: COMPARISON_SALARY_CHANGE, salary });
-    dispatch(getComparison());
   };
 }
 
 export function changeRate(rate) {
   return (dispatch) => {
     dispatch({ type: COMPARISON_RATE_CHANGE, rate });
-    dispatch(getComparison());
   };
 }
 
