@@ -136,6 +136,7 @@
   "new.user.flow.signup.personalCode": "Isikukood*",
   "new.user.flow.signup.email": "Email*",
   "new.user.flow.signup.phoneNumber": "Telefoninumber",
+  "new.user.flow.signup.tos": "Nõustun tingimustega ja ei oma kehtivat kriminaalkaristust",
   "new.user.flow.signup.submit": "Liitun Tulevaga",
   "new.user.flow.back": "Tagasi",
   "new.user.flow.signup.required.field": "Palun täida ikka ära :)",
