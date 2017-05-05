@@ -23,7 +23,7 @@ export const Comparison = ({ overlayed, comparison, rate, salary, loading,
     <div>
       <div className="px-col mb-4">
         <div>
-          <p className="mb-4 mt-5"><Message>comparison.header</Message></p>
+          <p className="mb-4"><Message>comparison.header</Message></p>
           <p><Message>comparison.intro</Message></p>
           <p><Message>comparison.call.to.action</Message></p>
         </div>
