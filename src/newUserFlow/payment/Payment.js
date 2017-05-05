@@ -9,7 +9,7 @@ export const Payment = ({ userId }) => (
       <p><Message>new.user.flow.payment.intro</Message></p>
 
       <a
-        href={`https://payment.maksekeskus.ee/pay/1/link.html?shopId=8c1a6c0a-2467-4166-ab47-006ddbf38b06&amount=100&reference=${userId}&return_url=https://onboarding-service.tuleva.ee/notifications/payments&return_method=POST&cancel_url=https://pension.tuleva.ee/steps/payment&cancel_method=POST&notification_url=https://onboarding-service.tuleva.ee/notifications/payments&notification_method=POST`}
+        href={`https://payment.maksekeskus.ee/pay/1/link.html?shopId=8c1a6c0a-2467-4166-ab47-006ddbf38b06&amount=100&reference=${userId}&return_url=https://onboarding-service.tuleva.ee/notifications/payments&return_method=POST&cancel_url=https://pension.tuleva.ee/steps/payment&cancel_method=GET&notification_url=https://onboarding-service.tuleva.ee/notifications/payments&notification_method=POST`}
         className="btn btn-primary"
       ><Message>new.user.flow.payment.bank.links</Message></a>
     </div>
