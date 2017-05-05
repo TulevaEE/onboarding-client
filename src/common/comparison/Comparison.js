@@ -12,6 +12,8 @@ import {
 
 import './Comparison.scss';
 
+import closeImage from './btn-close.svg';
+
 export const Comparison = ({ overlayed, comparison, rate, salary, loading,
                               onSalaryChange, onRateChange, onClose }) => {
   if (loading) {
@@ -106,13 +108,16 @@ export const Comparison = ({ overlayed, comparison, rate, salary, loading,
     return (
       <div className="tv-modal">
         <div className="container">
-          <div className="row mt-4 pt-4 justify-content-center">
-            {content}
-            <div className="row">
-              <button className="btn btn-secondary mt-4" onClick={onClose}>
-                <Message>comparison.close</Message>
+          <div className="row justify-content-end align-items-center mt-4">
+            <div className="col-3">
+              <button className="btn comparison-close" onClick={onClose}>
+                <span className="mr-2"><Message>comparison.close</Message></span>
+                <img src={closeImage} alt="Close" className="comparison-close__image" />
               </button>
             </div>
+          </div>
+          <div className="row mt-4 pt-4 justify-content-center">
+            {content}
           </div>
         </div>
       </div>

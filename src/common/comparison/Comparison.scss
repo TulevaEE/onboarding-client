@@ -8,9 +8,7 @@
   z-index: 999;
 
   background-color: #ffffff;
-  &__content {
-    background-color: #ffffff;
-  }
+
 }
 
 .header {
@@ -75,4 +73,13 @@ td {
 .new-fund-total {
   color: #12cd3e !important;
   color: var(--red);
+}
+
+.comparison-close {
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 500;
+  color: #0078ff;
+  background-color: transparent;
+  border-color: transparent;
 }
