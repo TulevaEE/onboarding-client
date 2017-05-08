@@ -82,10 +82,14 @@ export const SelectSources = ({
             <PensionFundTable funds={sourceFunds} />
           </div>
         </div>
-        <div className="col-4 select-sources-comparison mt-3">
-          <Message>select.sources.comparison.intro</Message>
+        <div className="col-4 select-sources-comparison">
+          <div className="select-sources-comparison-message mt-3">
+            <Message>
+            select.sources.comparison.intro
+          </Message>
+          </div>
           <button
-            className={'btn btn-primary mt-3 mb-3'}
+            className="btn btn-primary mt-3 mb-3"
             onClick={onShowComparison}
           ><Message>select.sources.show.comparison</Message></button>
         </div>
