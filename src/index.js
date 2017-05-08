@@ -55,8 +55,10 @@ const history = syncHistoryWithStore(browserHistory, store);
 // TODO: figure out a place where to put these two
 function getDataForApp() {
   const { login } = store.getState();
-  if (login.token && !(login.user || login.loadingUser)) {
+  if (login.token && !(login.user || login.loadingUser) &&
+    !(login.userConversion || login.loadingUserConversion)) {
     store.dispatch(loginActions.getUser());
+    store.dispatch(loginActions.getUserConversion());
   }
 }
 

@@ -23,6 +23,10 @@ import {
   GET_USER_SUCCESS,
   GET_USER_ERROR,
 
+  GET_USER_CONVERSION_START,
+  GET_USER_CONVERSION_SUCCESS,
+  GET_USER_CONVERSION_ERROR,
+
   LOG_OUT,
 } from './constants';
 
@@ -129,6 +133,21 @@ export function getUser() {
         } else {
           dispatch({ type: GET_USER_ERROR, error });
         }
+      });
+  };
+}
+
+export function getUserConversion() {
+  return (dispatch, getState) => {
+    dispatch({ type: GET_USER_CONVERSION_START });
+    return api
+      .getUserConversionWithToken(getState().login.token)
+      .then((userConversion) => {
+        dispatch({ type: GET_USER_CONVERSION_SUCCESS, userConversion });
+        dispatch(router.selectRouteForState());
+      })
+      .catch((error) => {
+        dispatch({ type: GET_USER_CONVERSION_ERROR, error });
       });
   };
 }

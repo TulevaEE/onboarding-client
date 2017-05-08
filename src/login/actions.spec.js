@@ -18,6 +18,10 @@ import {
   GET_USER_SUCCESS,
   GET_USER_ERROR,
 
+  GET_USER_CONVERSION_START,
+  GET_USER_CONVERSION_SUCCESS,
+  GET_USER_CONVERSION_ERROR,
+
   LOG_OUT,
 } from './constants';
 
@@ -255,5 +259,37 @@ describe('Login actions', () => {
     expect(mockHttp.resetStatisticsIdentification).not.toHaveBeenCalled();
     expect(actions.logOut()).toEqual({ type: LOG_OUT });
     expect(mockHttp.resetStatisticsIdentification).toHaveBeenCalledTimes(1);
+  });
+
+  it('can get user conversion', () => {
+    state.login.token = 'token';
+    const userConversion = { iAmAConversion: true };
+    mockApi.getUserConversionWithToken = jest.fn(() => {
+      expect(dispatch).toHaveBeenCalledTimes(1);
+      expect(dispatch).toHaveBeenCalledWith({ type: GET_USER_CONVERSION_START });
+      dispatch.mockClear();
+      return Promise.resolve(userConversion);
+    });
+    const getUserConversion = createBoundAction(actions.getUserConversion);
+    expect(dispatch).not.toHaveBeenCalled();
+    return getUserConversion()
+      .then(() => {
+        expect(dispatch).toHaveBeenCalledWith({
+          type: GET_USER_CONVERSION_SUCCESS,
+          userConversion,
+        });
+        expect(mockRouter.selectRouteForState).toHaveBeenCalled();
+      });
+  });
+
+  it('can handle errors when getting user conversion', () => {
+    state.login.token = 'token';
+    const error = new Error('oh no!');
+    mockApi.getUserConversionWithToken = jest.fn(() => Promise.reject(error));
+    const getUserConversion = createBoundAction(actions.getUserConversion);
+    expect(dispatch).not.toHaveBeenCalled();
+    return getUserConversion()
+      .then(() => expect(dispatch)
+        .toHaveBeenCalledWith({ type: GET_USER_CONVERSION_ERROR, error }));
   });
 });
