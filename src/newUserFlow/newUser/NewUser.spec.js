@@ -51,7 +51,6 @@ describe('New user step', () => {
     expect(component.find(Link).at(1).prop('to')).not.toBe('/steps/non-member');
   });
 
-
   it('renders comparison', () => {
     expect(component.contains(<Comparison />)).toBe(true);
   });
