@@ -283,4 +283,14 @@ describe('api', () => {
           Authorization: `Bearer ${token}`,
         }));
   });
+
+  it('can get user conversion', () => {
+    mockHttp.get = jest.fn(() => Promise.resolve());
+    const token = 'a token';
+    return api.getUserConversionWithToken(token)
+      .then(() => expect(mockHttp.get).toHaveBeenCalledWith('/v1/me/conversion',
+        undefined, {
+          Authorization: `Bearer ${token}`,
+        }));
+  });
 });

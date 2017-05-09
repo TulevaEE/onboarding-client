@@ -19,6 +19,10 @@ import {
   GET_USER_SUCCESS,
   GET_USER_ERROR,
 
+  GET_USER_CONVERSION_START,
+  GET_USER_CONVERSION_SUCCESS,
+  GET_USER_CONVERSION_ERROR,
+
   LOG_OUT,
 } from './constants';
 
@@ -145,5 +149,35 @@ describe('Login reducer', () => {
     expect(newState.loginMethod).toBe(null);
     expect(newState.loadingUser).toBe(false);
     expect(newState.user).toBe(null);
+  });
+
+  it('starts loading when starting to get the user conversion', () => {
+    const newState = loginReducer(undefined, { type: GET_USER_CONVERSION_START });
+    expect(newState.userConversion).toBe(null);
+    expect(newState.loadingUserConversion).toBe(true);
+    expect(newState.userConversionError).toBe(null);
+  });
+
+  it('stops loading and saves the user once user conversion is received', () => {
+    const userConversion = { hello: 'world' };
+    const newState = loginReducer(
+      { loadingUser: true },
+      { type: GET_USER_CONVERSION_SUCCESS, userConversion },
+    );
+    expect(newState.userConversion).toBe(userConversion);
+    expect(newState.loadingUserConversion).toBe(false);
+    expect(newState.userConversionError).toBe(null);
+  });
+
+  it('stops loading and saves the error if getting the user conversion fails', () => {
+    const error = { body: { errors: [{ code: 'oh no!' }] } };
+
+    const newState = loginReducer(
+      { loadingUserConversion: true },
+      { type: GET_USER_CONVERSION_ERROR, error },
+    );
+
+    expect(newState.userConversionError).toBe('oh no!');
+    expect(newState.loadingUserConversion).toBe(false);
   });
 });

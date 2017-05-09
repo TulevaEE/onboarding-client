@@ -9,11 +9,12 @@ import PensionFundTable from '../../onboardingFlow/selectSources/pensionFundTabl
 import Comparison from '../../common/comparison';
 
 export const NewUser = ({
-  loadingSourceFunds,
-  sourceFunds,
-  errorDescription,
-  userFirstName,
-}) => {
+                          loadingSourceFunds,
+                          sourceFunds,
+                          errorDescription,
+                          userFirstName,
+                          userConverted,
+                        }) => {
   if (errorDescription) {
     return <ErrorAlert description={errorDescription} />;
   }
@@ -44,7 +45,7 @@ export const NewUser = ({
         <Comparison />
 
         <p>Tuleva pensionifondi kliendina võidaksid 20 000 eurot.<br />
-        Kui astud ka Tuleva liikmeks, võidaksid lisaks veel 2000 eurot,
+          Kui astud ka Tuleva liikmeks, võidaksid lisaks veel 2000 eurot,
           sest liikmed saavad igal aastal liikmeboonust 0,05% oma pensionivara mahust.</p>
 
         <p>Tuleva pensionifondi kliendiks saavad tulla kõik Eesti inimesed, kes II sambasse koguvad.
@@ -56,9 +57,13 @@ export const NewUser = ({
       <Link className={'btn btn-primary mb-2 mr-2'} to="/steps/signup">
         <Message>newUserFlow.newUser.i.wish.to.join</Message>
       </Link>
-      <Link className="btn btn-secondary mb-2" to="/steps/non-member">
-        <Message>newUserFlow.newUser.i.want.just.to.transfer.my.pension</Message>
-      </Link>
+      {
+        !userConverted ? (
+          <Link className="btn btn-secondary mb-2" to="/steps/non-member">
+            <Message>newUserFlow.newUser.i.want.just.to.transfer.my.pension</Message>
+          </Link>
+        ) : ''
+      }
     </div>
   );
 };
@@ -69,6 +74,7 @@ NewUser.defaultProps = {
   loadingSourceFunds: false,
   errorDescription: '',
   userFirstName: '',
+  userConverted: false,
 };
 
 NewUser.propTypes = {
@@ -76,6 +82,7 @@ NewUser.propTypes = {
   loadingSourceFunds: Types.bool,
   errorDescription: Types.string,
   userFirstName: Types.string,
+  userConverted: Types.bool,
 };
 
 const mapStateToProps = state => ({
@@ -83,6 +90,8 @@ const mapStateToProps = state => ({
   loadingSourceFunds: state.exchange.loadingSourceFunds,
   errorDescription: state.exchange.error,
   userFirstName: (state.login.user || {}).firstName,
+  userConverted: (state.login.userConversion || {}).transfersComplete &&
+    (state.login.userConversion || {}).selectionComplete,
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({

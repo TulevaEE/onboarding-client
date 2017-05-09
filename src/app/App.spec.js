@@ -19,15 +19,26 @@ describe('App', () => {
     expect(component.text()).toContain('we are the children');
   });
 
-  it('passes props to the header', () => {
+  it('passes props to the header when loading', () => {
     const user = { name: 'name' };
     const onLogout = jest.fn();
     component.setProps({
       user,
       onLogout,
-      loadingUser: true,
+      loading: true,
     });
     expect(component.contains(<Header user={user} loading onLogout={onLogout} />)).toBe(true);
+  });
+
+  it('passes props to the header when not loading', () => {
+    const user = { name: 'name' };
+    const onLogout = jest.fn();
+    component.setProps({
+      user,
+      onLogout,
+      loading: false,
+    });
+    expect(component.contains(<Header user={user} onLogout={onLogout} />)).toBe(true);
   });
 
   it('renders a footer', () => {

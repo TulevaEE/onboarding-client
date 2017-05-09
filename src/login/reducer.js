@@ -13,6 +13,9 @@ import {
   GET_USER_START,
   GET_USER_SUCCESS,
   GET_USER_ERROR,
+  GET_USER_CONVERSION_START,
+  GET_USER_CONVERSION_SUCCESS,
+  GET_USER_CONVERSION_ERROR,
   LOG_OUT,
 } from './constants';
 
@@ -36,6 +39,9 @@ const defaultState = {
   user: null,
   loadingUser: false,
   userError: null,
+  userConversion: null,
+  loadingUserConversion: false,
+  userConversionError: null,
 };
 
 export default function loginReducer(state = defaultState, action) {
@@ -116,6 +122,18 @@ export default function loginReducer(state = defaultState, action) {
       return { ...state, loadingUser: false, user: action.user, userError: null };
     case GET_USER_ERROR:
       return { ...state, loadingUser: false, userError: getGlobalErrorCode(action.error.body) };
+
+    case GET_USER_CONVERSION_START:
+      return { ...state, loadingUserConversion: true, userConversionError: null };
+    case GET_USER_CONVERSION_SUCCESS:
+      return { ...state,
+        loadingUserConversion: false,
+        userConversion: action.userConversion,
+        userConversionError: null };
+    case GET_USER_CONVERSION_ERROR:
+      return { ...state,
+        loadingUserConversion: false,
+        userConversionError: getGlobalErrorCode(action.error.body) };
 
     case LOG_OUT:
       if (window.localStorage) {
