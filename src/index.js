@@ -27,7 +27,7 @@ import trackingReducer from './tracking';
 import { reducer as comparisonReducer, actions as comparisonActions } from './comparison';
 
 import App from './app';
-import AccountPage from './account';
+import AccountPage, { reducer as accountReducer, actions as accountActions } from './account';
 import Steps, {
   SelectSources,
   TransferFutureCapital,
@@ -40,6 +40,7 @@ const rootReducer = combineReducers({
   login: loginReducer,
   exchange: exchangeReducer, // exchage of funds
   comparison: comparisonReducer,
+  account: accountReducer,
   tracking: trackingReducer,
   form: formReducer,
 });
@@ -74,9 +75,12 @@ function getDataForFlow(nextState) {
 }
 
 function getDataForAccount() {
-  const { login, exchange } = store.getState();
-  if (login.token && !(exchange.sourceFunds || exchange.loadingSourceFunds)) {
+  const { login, exchange, account } = store.getState();
+  if (login.token &&
+    !(exchange.sourceFunds || exchange.loadingSourceFunds) &&
+    !(account.initialCapital || account.loadingInitialCapital)) {
     store.dispatch(exchangeActions.getSourceFunds());
+    store.dispatch(accountActions.getInitialCapital());
   }
 }
 

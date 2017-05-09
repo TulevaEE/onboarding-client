@@ -59,10 +59,9 @@ describe('Comparison reducer', () => {
 
     expect(newState.visible).toBe(true);
 
-    action = { type: SHOW_COMPARISON };
+    action = { type: HIDE_COMPARISON };
     newState = comparisonReducer(undefined, action);
 
-    expect(newState.visible).toBe(true);
+    expect(newState.visible).toBe(false);
   });
-
 });

@@ -5,7 +5,11 @@ import { Message } from 'retranslate';
 
 import CurrentBalance from './currentBalance';
 
-export const AccountPage = ({ currentBalanceFunds, loadingCurrentBalanceFunds }) => (
+export const AccountPage = ({
+                              currentBalanceFunds,
+                              loadingCurrentBalanceFunds,
+                              initialCapital,
+}) => (
   <div>
     <div className="row mt-5">
       <div className="col">
@@ -23,6 +27,15 @@ export const AccountPage = ({ currentBalanceFunds, loadingCurrentBalanceFunds })
         ACTIVE PENSION FUND WILL COME HERE
       </div>
     </div>
+    {
+      initialCapital ? (
+        <div className="row">
+          <div className="col">
+            <h3 className="mt-5"><Message>account.initial.capital.title</Message></h3>
+            {initialCapital.amount}
+          </div>
+        </div>) : ''
+    }
     <div className="row">
       <div className="col">
         <h3 className="mt-5"><Message>account.tuleva.balance.title</Message></h3>
@@ -42,17 +55,20 @@ export const AccountPage = ({ currentBalanceFunds, loadingCurrentBalanceFunds })
 AccountPage.defaultProps = {
   currentBalanceFunds: [],
   loadingCurrentBalanceFunds: false,
+  initialCapital: null,
 };
 
 AccountPage.propTypes = {
   currentBalanceFunds: Types.arrayOf(Types.shape({})),
   loadingCurrentBalanceFunds: Types.bool,
+  initialCapital: Types.number,
 };
 
 // TODO: write component
 const mapStateToProps = state => ({
   currentBalanceFunds: state.exchange.sourceFunds,
   loadingCurrentBalanceFunds: state.exchange.loadingSourceFunds,
+  initialCapital: state.account.initialCapital,
 });
 const mapDispatchToProps = dispatch => bindActionCreators({}, dispatch);
 
