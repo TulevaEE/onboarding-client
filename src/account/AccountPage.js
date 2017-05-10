@@ -61,7 +61,7 @@ AccountPage.defaultProps = {
 AccountPage.propTypes = {
   currentBalanceFunds: Types.arrayOf(Types.shape({})),
   loadingCurrentBalanceFunds: Types.bool,
-  initialCapital: Types.number,
+  initialCapital: Types.shape({}),
 };
 
 // TODO: write component
