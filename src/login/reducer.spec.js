@@ -190,7 +190,7 @@ describe('Login reducer', () => {
     expect(newState.loadingUserConversion).toBe(false);
   });
 
-  it('refreshes tokens in the state', () => {
+  it('can refresh token', () => {
     const oldState = { token: 'old_token', refreshToken: 'old_refresh_token' };
     const tokens = { accessToken: 'new_token', refreshToken: 'new_refresh_token' };
 

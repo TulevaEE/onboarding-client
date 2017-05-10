@@ -130,7 +130,7 @@ export default function loginReducer(state = defaultState, action) {
 
     case TOKEN_REFRESH_SUCCESS:
       updateLocalStorage(action);
-      return { // reset all state so page is clean when entered again.
+      return {
         ...state,
         token: action.tokens.accessToken,
         refreshToken: action.tokens.refreshToken,
