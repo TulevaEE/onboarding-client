@@ -7,6 +7,26 @@ function isMember(getState) {
   return false;
 }
 
+function isSelectionComplete(getState) {
+  const userConversion = getState().login.userConversion;
+  if (userConversion.selectionComplete) {
+    return true;
+  }
+  return false;
+}
+
+function isTransfersComplete(getState) {
+  const userConversion = getState().login.userConversion;
+  if (userConversion.transfersComplete) {
+    return true;
+  }
+  return false;
+}
+
+function isFullyConverted(getState) {
+  return isSelectionComplete(getState) && isTransfersComplete(getState);
+}
+
 function isDataLoaded(getState) {
   if (getState().login.user) {
     return true;
@@ -19,7 +39,15 @@ export function selectRouteForState() {
     if (!isDataLoaded(getState)) {
       dispatch(push('/'));
     } else if (isMember(getState)) {
-      dispatch(push('/steps/select-sources'));
+      if (isFullyConverted(getState)) {
+        dispatch(push('/account'));
+      } else if (isSelectionComplete(getState)) {
+        dispatch(push('/steps/select-sources'));
+      } else if (isTransfersComplete(getState)) {
+        dispatch(push('/steps/transfer-future-capital'));
+      } else {
+        dispatch(push('/steps/select-sources'));
+      }
     } else {
       dispatch(push('/steps/new-user'));
     }
