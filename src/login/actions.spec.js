@@ -22,6 +22,10 @@ import {
   GET_USER_CONVERSION_SUCCESS,
   GET_USER_CONVERSION_ERROR,
 
+  TOKEN_REFRESH_START,
+  TOKEN_REFRESH_SUCCESS,
+  TOKEN_REFRESH_ERROR,
+
   LOG_OUT,
 } from './constants';
 
@@ -58,8 +62,8 @@ describe('Login actions', () => {
   beforeEach(() => {
     mockDispatch();
     mockApi.authenticateWithPhoneNumber = () => Promise.reject();
-    mockApi.getMobileIdToken = () => Promise.reject();
-    mockApi.getIdCardToken = () => Promise.reject();
+    mockApi.getMobileIdTokens = () => Promise.reject();
+    mockApi.getIdCardTokens = () => Promise.reject();
     mockHttp.resetStatisticsIdentification = jest.fn();
     mockRouter.selectRouteForState = jest.fn();
   });
@@ -99,7 +103,7 @@ describe('Login actions', () => {
   });
 
   it('can authenticate with an id card', () => {
-    const token = 'token';
+    const tokens = { accessToken: 'token' };
     mockApi.authenticateWithIdCard = jest.fn(() => {
       expect(dispatch).toHaveBeenCalledTimes(1);
       expect(dispatch).toHaveBeenCalledWith({ type: ID_CARD_AUTHENTICATION_START });
@@ -108,7 +112,7 @@ describe('Login actions', () => {
     });
     const authenticateWithIdCard = createBoundAction(actions.authenticateWithIdCard);
     expect(dispatch).not.toHaveBeenCalled();
-    mockApi.getIdCardToken = jest.fn(() => Promise.resolve(token));
+    mockApi.getIdCardTokens = jest.fn(() => Promise.resolve(tokens));
     return authenticateWithIdCard()
       .then(() => {
         expect(dispatch).toHaveBeenCalledTimes(2);
@@ -117,19 +121,19 @@ describe('Login actions', () => {
   });
 
   it('starts polling until succeeds when authenticating with a phone number and redirects', () => {
-    const token = 'token';
+    const tokens = { accessToken: 'token' };
     mockApi.authenticateWithPhoneNumber = jest.fn(() => Promise.resolve('1337'));
-    mockApi.getMobileIdToken = jest.fn(() => Promise.resolve(null));
+    mockApi.getMobileIdTokens = jest.fn(() => Promise.resolve(null));
     const authenticateWithPhoneNumber = createBoundAction(actions.authenticateWithPhoneNumber);
     return authenticateWithPhoneNumber('')
       .then(() => {
         dispatch.mockClear();
-        mockApi.getMobileIdToken = jest.fn(() => Promise.resolve(token));
+        mockApi.getMobileIdTokens = jest.fn(() => Promise.resolve(tokens));
         jest.runOnlyPendingTimers();
         expect(dispatch).not.toHaveBeenCalled();
-        expect(mockApi.getMobileIdToken).toHaveBeenCalled();
+        expect(mockApi.getMobileIdTokens).toHaveBeenCalled();
       }).then(() => {
-        expect(dispatch).toHaveBeenCalledWith({ type: MOBILE_AUTHENTICATION_SUCCESS, token });
+        expect(dispatch).toHaveBeenCalledWith({ type: MOBILE_AUTHENTICATION_SUCCESS, tokens });
         expect(mockRouter.selectRouteForState).toHaveBeenCalled();
       });
   });
@@ -137,15 +141,15 @@ describe('Login actions', () => {
   it('starts polling until fails when authenticating with a phone number', () => {
     const error = new Error('oh no!');
     mockApi.authenticateWithPhoneNumber = jest.fn(() => Promise.resolve('1337'));
-    mockApi.getMobileIdToken = jest.fn(() => Promise.resolve(null));
+    mockApi.getMobileIdTokens = jest.fn(() => Promise.resolve(null));
     const authenticateWithPhoneNumber = createBoundAction(actions.authenticateWithPhoneNumber);
     return authenticateWithPhoneNumber('123123')
       .then(() => {
         dispatch.mockClear();
-        mockApi.getMobileIdToken = jest.fn(() => Promise.reject(error));
+        mockApi.getMobileIdTokens = jest.fn(() => Promise.reject(error));
         jest.runOnlyPendingTimers();
         expect(dispatch).not.toHaveBeenCalled();
-        expect(mockApi.getMobileIdToken).toHaveBeenCalled();
+        expect(mockApi.getMobileIdTokens).toHaveBeenCalled();
       }).then(() => {
         jest.runOnlyPendingTimers();
       }).then(() => {
@@ -153,20 +157,20 @@ describe('Login actions', () => {
       });
   });
 
-  it('starts polling until succeeds when authenticating with a phone number and redirects', () => {
-    const token = 'token';
+  it('starts polling until succeeds when authenticating with id card and redirects', () => {
+    const tokens = { accessToken: 'token' };
     mockApi.authenticateWithIdCard = jest.fn(() => Promise.resolve());
-    mockApi.getIdCardToken = jest.fn(() => Promise.resolve(null));
+    mockApi.getIdCardTokens = jest.fn(() => Promise.resolve(null));
     const authenticateWithIdCard = createBoundAction(actions.authenticateWithIdCard);
     return authenticateWithIdCard()
       .then(() => {
         dispatch.mockClear();
-        mockApi.getIdCardToken = jest.fn(() => Promise.resolve(token));
+        mockApi.getIdCardTokens = jest.fn(() => Promise.resolve(tokens));
         jest.runOnlyPendingTimers();
         expect(dispatch).not.toHaveBeenCalled();
-        expect(mockApi.getIdCardToken).toHaveBeenCalled();
+        expect(mockApi.getIdCardTokens).toHaveBeenCalled();
       }).then(() => {
-        expect(dispatch).toHaveBeenCalledWith({ type: ID_CARD_AUTHENTICATION_SUCCESS, token });
+        expect(dispatch).toHaveBeenCalledWith({ type: ID_CARD_AUTHENTICATION_SUCCESS, tokens });
         expect(mockRouter.selectRouteForState).toHaveBeenCalled();
       });
   });
@@ -174,15 +178,15 @@ describe('Login actions', () => {
   it('starts polling until fails when authenticating with id card', () => {
     const error = new Error('oh no!');
     mockApi.authenticateWithIdCard = jest.fn(() => Promise.resolve());
-    mockApi.getIdCardToken = jest.fn(() => Promise.resolve(null));
+    mockApi.getIdCardTokens = jest.fn(() => Promise.resolve(null));
     const authenticateWithIdCard = createBoundAction(actions.authenticateWithIdCard);
     return authenticateWithIdCard()
       .then(() => {
         dispatch.mockClear();
-        mockApi.getIdCardToken = jest.fn(() => Promise.reject(error));
+        mockApi.getIdCardTokens = jest.fn(() => Promise.reject(error));
         jest.runOnlyPendingTimers();
         expect(dispatch).not.toHaveBeenCalled();
-        expect(mockApi.getIdCardToken).toHaveBeenCalled();
+        expect(mockApi.getIdCardTokens).toHaveBeenCalled();
       }).then(() => {
         jest.runOnlyPendingTimers();
       }).then(() => {
@@ -291,5 +295,43 @@ describe('Login actions', () => {
     return getUserConversion()
       .then(() => expect(dispatch)
         .toHaveBeenCalledWith({ type: GET_USER_CONVERSION_ERROR, error }));
+  });
+
+  it('can refresh a token', () => {
+    state.login.refreshToken = 'old_refresh_token';
+    const tokens = { accessToken: 'access', refreshToken: 'refresh' };
+    mockApi.refreshTokenWith = jest.fn(() => {
+      expect(dispatch).toHaveBeenCalledTimes(1);
+      expect(dispatch).toHaveBeenCalledWith({ type: TOKEN_REFRESH_START });
+      dispatch.mockClear();
+      return Promise.resolve(tokens);
+    });
+
+    const refreshToken = createBoundAction(actions.refreshToken);
+    expect(dispatch).not.toHaveBeenCalled();
+
+    return refreshToken()
+      .then(() => {
+        expect(dispatch).toHaveBeenCalledWith({
+          type: TOKEN_REFRESH_SUCCESS,
+          tokens,
+        });
+      });
+  });
+
+  it('can handle refresh token errors', () => {
+    const error = new Error('awww noes');
+    mockApi.refreshTokenWith = jest.fn(() => Promise.reject(error));
+
+    const refreshToken = createBoundAction(actions.refreshToken);
+    expect(dispatch).not.toHaveBeenCalled();
+
+    return refreshToken()
+      .then(() => {
+        expect(dispatch).toHaveBeenCalledWith({
+          type: TOKEN_REFRESH_ERROR,
+          error,
+        });
+      });
   });
 });
