@@ -45,12 +45,14 @@ describe('api', () => {
   });
 
   it('can get a mobile id token', () => {
-    mockHttp.postForm = jest.fn(() => Promise.resolve({ access_token: 'mobile_id_token' }));
+    mockHttp.postForm = jest.fn(() => Promise.resolve({ access_token: 'mobile_id_token',
+      refresh_token: 'mobile_id_refresh_token' }));
     expect(mockHttp.postForm).not.toHaveBeenCalled();
     return api
-      .getMobileIdToken()
+      .getMobileIdTokens()
       .then((token) => {
-        expect(token).toBe('mobile_id_token');
+        expect(token.accessToken).toBe('mobile_id_token');
+        expect(token.refreshToken).toBe('mobile_id_refresh_token');
         expect(mockHttp.postForm).toHaveBeenCalledTimes(1);
         expect(mockHttp.postForm).toHaveBeenCalledWith('/oauth/token', {
           client_id: 'onboarding-client',
@@ -60,12 +62,13 @@ describe('api', () => {
   });
 
   it('can get an id card token', () => {
-    mockHttp.postForm = jest.fn(() => Promise.resolve({ access_token: 'token' }));
+    mockHttp.postForm = jest.fn(() => Promise.resolve({ access_token: 'token', refresh_token: 'refresh' }));
     expect(mockHttp.postForm).not.toHaveBeenCalled();
     return api
-      .getIdCardToken()
+      .getIdCardTokens()
       .then((token) => {
-        expect(token).toBe('token');
+        expect(token.accessToken).toBe('token');
+        expect(token.refreshToken).toBe('refresh');
         expect(mockHttp.postForm).toHaveBeenCalledTimes(1);
         expect(mockHttp.postForm).toHaveBeenCalledWith('/oauth/token', {
           client_id: 'onboarding-client',
@@ -78,7 +81,7 @@ describe('api', () => {
     const error = { error: 'oh no!' };
     mockHttp.postForm = jest.fn(() => Promise.reject(error));
     return api
-      .getMobileIdToken()
+      .getMobileIdTokens()
       .then(() => expect(0).toBe(1)) // fail, should not go to then.
       .catch(givenError => expect(givenError).toEqual(error));
   });
@@ -86,7 +89,7 @@ describe('api', () => {
   it('gives no token in authentication check if error is auth not completed', () => {
     mockHttp.postForm = jest.fn(() => Promise.reject({ error: 'AUTHENTICATION_NOT_COMPLETE' }));
     return api
-      .getMobileIdToken()
+      .getMobileIdTokens()
       .then(token => expect(token).toBeFalsy());
   });
 
@@ -302,5 +305,22 @@ describe('api', () => {
         undefined, {
           Authorization: `Bearer ${token}`,
         }));
+  });
+
+  it('can refresh token', () => {
+    mockHttp.postForm = jest.fn(() => Promise.resolve({ access_token: 'new_token',
+      refresh_token: 'new_refresh_token' }));
+    expect(mockHttp.postForm).not.toHaveBeenCalled();
+    return api
+      .refreshTokenWith('old_refresh_token')
+      .then((token) => {
+        expect(token.accessToken).toBe('new_token');
+        expect(token.refreshToken).toBe('new_refresh_token');
+        expect(mockHttp.postForm).toHaveBeenCalledTimes(1);
+        expect(mockHttp.postForm).toHaveBeenCalledWith('/oauth/token', {
+          grant_type: 'refresh_token',
+          refresh_token: 'old_refresh_token',
+        }, { Authorization: 'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ=' });
+      });
   });
 });

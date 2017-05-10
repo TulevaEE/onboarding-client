@@ -33,12 +33,15 @@ export function authenticateWithIdCard() {
     .then(({ success }) => success);
 }
 
-function getTokenWithClientId(clientId) {
+function getTokensWithGrantType(grantType) {
   return postForm(getEndpoint('/oauth/token'), {
-    grant_type: clientId,
+    grant_type: grantType,
     client_id: 'onboarding-client',
   }, { Authorization: 'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ=' })
-    .then(({ access_token }) => access_token) // eslint-disable-line
+    .then(({ access_token, refresh_token }) => ({
+      accessToken: access_token,
+      refreshToken: refresh_token,
+    }))
     .catch((error) => {
       if (error.error !== 'AUTHENTICATION_NOT_COMPLETE') {
         throw error;
@@ -47,12 +50,23 @@ function getTokenWithClientId(clientId) {
     });
 }
 
-export function getMobileIdToken() {
-  return getTokenWithClientId('mobile_id');
+export function refreshTokenWith(refreshToken) {
+  return postForm(getEndpoint('/oauth/token'), {
+    grant_type: 'refresh_token',
+    refresh_token: refreshToken,
+  }, { Authorization: 'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ=' })
+    .then(({ access_token, refresh_token }) => ({
+      accessToken: access_token,
+      refreshToken: refresh_token,
+    }));
 }
 
-export function getIdCardToken() {
-  return getTokenWithClientId('id_card');
+export function getMobileIdTokens() {
+  return getTokensWithGrantType('mobile_id');
+}
+
+export function getIdCardTokens() {
+  return getTokensWithGrantType('id_card');
 }
 
 export function downloadMandatePreviewWithIdAndToken(mandateId, token) {
