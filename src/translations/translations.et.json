@@ -114,8 +114,6 @@
   "account.current.balance.evk": "Eesti väärtpaberite keskregister",
   "account.current.balance.total": "Kokku",
   "account.active.fund.title": "Minu aktiivne pensionifond",
-  "account.tuleva.balance.title": "Minu Tuleva pensionikapitali seis",
-  "account.tuleva.balance.subtitle": "Tuleva pensionikapital on sinu osa Tuleva Fondid AS ehk meie ühise fondivalitseja omakapitalist, mille üle peame arvestust Tuleva Tulundusühistu registris. See on lisaks sinu kogumispensionile, mitte osa sellest!",
   "account.contact.info.title": "Minu kontaktandmed",
   "error.messages.intro": "Leitud järgnevad vead",
   "error.message.close": "Sulge",
@@ -165,5 +163,7 @@
   "select.sources.show.comparison": "Vaata lähemalt!",
   "select.sources.comparison.intro": "Tulevaga säästad teenustasudelt tuhandeid eurosid.",
   "header.my.account": "Minu konto",
-  "account.initial.capital.title": "Minu Tuleva alg kapital"
+  "account.member.statement": "Oled Tuleva liige nr. {{memberNumber}}.",
+  "account.initial-capital.statement": "Oled panustanud Tuleva algkapitali {{initialCapital}}€.",
+  "account.converted.user.statement": "Avaldus maksete ümber suunamiseks ja olemasolevate osakute ümber vahetamiseks Tuleva pensionifondi on tehtud."
 }
