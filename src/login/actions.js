@@ -53,7 +53,7 @@ function getMobileIdTokens() {
       api
         .getMobileIdTokens()
         .then((tokens) => {
-          if (tokens) { // authentication complete
+          if (tokens.accessToken) { // authentication complete
             dispatch({ type: MOBILE_AUTHENTICATION_SUCCESS, tokens });
             dispatch(router.selectRouteForState());
           } else if (getState().login.loadingAuthentication) { // authentication not yet completed
@@ -87,7 +87,7 @@ function getIdCardTokens() {
       api
         .getIdCardTokens()
         .then((tokens) => {
-          if (tokens) { // authentication complete
+          if (tokens.accessToken) { // authentication complete
             dispatch({ type: ID_CARD_AUTHENTICATION_SUCCESS, tokens });
             dispatch(router.selectRouteForState());
           } else if (getState().login.loadingAuthentication) { // authentication not yet completed
