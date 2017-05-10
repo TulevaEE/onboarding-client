@@ -52,15 +52,16 @@ describe('Comparison reducer', () => {
     expect(newState.rate).toBe(rate);
   });
 
-  it('can show and hide comparison', () => {
-    let action = { type: SHOW_COMPARISON };
-
-    let newState = comparisonReducer(undefined, action);
+  it('can show comparison', () => {
+    const action = { type: SHOW_COMPARISON };
+    const newState = comparisonReducer({ visible: false }, action);
 
     expect(newState.visible).toBe(true);
+  });
 
-    action = { type: HIDE_COMPARISON };
-    newState = comparisonReducer(undefined, action);
+  it('can show and hide comparison', () => {
+    const action = { type: HIDE_COMPARISON };
+    const newState = comparisonReducer({ visible: true }, action);
 
     expect(newState.visible).toBe(false);
   });

@@ -13,7 +13,7 @@ jest.mock('../common/api', () => mockApi);
 
 const actions = require('./actions'); // need to use require because of jest mocks being weird
 
-describe('Comparison actions', () => {
+describe('Account actions', () => {
   let dispatch;
   let state;
 
@@ -34,7 +34,7 @@ describe('Comparison actions', () => {
     mockDispatch();
   });
 
-  it('can get comparison', () => {
+  it('can get initial capital', () => {
     const initialCapital = [{ initialCapital: true }];
     mockApi.getInitialCapitalWithToken = jest.fn(() => {
       expect(dispatch).toHaveBeenCalledTimes(1);

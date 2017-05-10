@@ -32,7 +32,7 @@ describe('Current balance', () => {
     const initialCapital = { amount: 1200, currency: 'EUR' };
     component.setProps({ initialCapital });
     expect(component.contains(<Message>account.initial.capital.title</Message>)).toBe(true);
-    // expect(component.contains({initialCapital.amount})).toBe(true);
+    expect(component.contains(initialCapital.amount)).toBe(true);
     component.setProps({ initialCapital: null });
     expect(component.contains(<Message>account.initial.capital.title</Message>)).not.toBe(true);
   });
