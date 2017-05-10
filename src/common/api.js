@@ -130,3 +130,7 @@ export function getComparisonWithToken(monthlyWage, returnRate, token) {
 export function getUserConversionWithToken(token) {
   return get(getEndpoint('/v1/me/conversion'), undefined, { Authorization: `Bearer ${token}` });
 }
+
+export function getInitialCapitalWithToken(token) {
+  return get(getEndpoint('/v1/me/initial-capital'), undefined, { Authorization: `Bearer ${token}` });
+}

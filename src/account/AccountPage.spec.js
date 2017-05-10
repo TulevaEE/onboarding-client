@@ -1,14 +1,17 @@
 import React from 'react';
 import { shallow } from 'enzyme';
+import { Message } from 'retranslate';
 
 import { AccountPage } from './AccountPage';
 import CurrentBalance from './currentBalance';
 
 describe('Current balance', () => {
   let component;
+  let props;
 
   beforeEach(() => {
-    component = shallow(<AccountPage />);
+    props = {};
+    component = shallow(<AccountPage {...props} />);
   });
 
   it('renders the current balance', () => {
@@ -23,5 +26,14 @@ describe('Current balance', () => {
     component.setProps({ currentBalanceFunds: [], loadingCurrentBalanceFunds: true });
     expect(currentBalanceProp('funds')).toEqual([]);
     expect(currentBalanceProp('loading')).toBe(true);
+  });
+
+  it('renders initial capital, only if it is present', () => {
+    const initialCapital = { amount: 1200, currency: 'EUR' };
+    component.setProps({ initialCapital });
+    expect(component.contains(<Message>account.initial.capital.title</Message>)).toBe(true);
+    expect(component.contains(initialCapital.amount)).toBe(true);
+    component.setProps({ initialCapital: null });
+    expect(component.contains(<Message>account.initial.capital.title</Message>)).not.toBe(true);
   });
 });

@@ -163,5 +163,7 @@
   "comparison.output.calculation.second.row": "Pensioniks koguneb sulle",
   "comparison.output.calculation.first.row.tooltip.content": "Meie kalkulaatori on teinud Tuleva liikmed, et aidata sul mõista, miks teenustasud loevad. Nad on andnud endast parima, et kalkulaator arvutaks õigesti ja võtaks aluseks eeldused, mis kõige paremini tegelikkust peegeldavad. Lihtsuse mõttes oleme eeldusi lihtsustanud. Näiteks eeldame, et pensionifondide valitsemistasud jäävad samaks - tegelikkuses Tuleva tasud kindlasti langevad, loodetavasti langetavad tihenevas konkurentsis tasusid ka teised. Kui sa märkad küsitavusi või ebatäpsusi, anna meile kohe märku, et saaksime kalkulaatorit paremaks ja täpsemaks teha! ",
   "select.sources.show.comparison": "Vaata lähemalt!",
-  "select.sources.comparison.intro": "Tulevaga säästad teenustasudelt tuhandeid eurosid."
+  "select.sources.comparison.intro": "Tulevaga säästad teenustasudelt tuhandeid eurosid.",
+  "header.my.account": "Minu konto",
+  "account.initial.capital.title": "Minu Tuleva alg kapital"
 }
