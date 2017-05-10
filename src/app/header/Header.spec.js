@@ -1,5 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
+import { Link } from 'react-router';
+import { Message } from 'retranslate';
 
 import { Loader } from '../../common';
 import Header from './Header';
@@ -32,5 +34,13 @@ describe('Header', () => {
   it('shows a loader when it\'s loading', () => {
     component.setProps({ loading: true });
     expect(component.contains(<Loader className="align-right" />)).toBe(true);
+  });
+
+  it('renders my account button', () => {
+    const onLogout = jest.fn();
+    component.setProps({ loading: false, onLogout, user: { name: 'name' } });
+    expect(component.find(Link).at(0).prop('to')).toBe('/account');
+    expect(component.find(Link).at(0).children().at(0).node)
+      .toEqual(<Message>header.my.account</Message>);
   });
 });
