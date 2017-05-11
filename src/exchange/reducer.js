@@ -63,8 +63,17 @@ function createFullDefaultSourceSelection({ sourceFunds, targetFunds }) {
 
 function isContributionsFundAlreadyActive(state, isinToCompareTo) {
   return state.sourceFunds && !!state.sourceFunds
-    .find(sourceFund =>
-    sourceFund.activeFund && sourceFund.isin === isinToCompareTo);
+      .find(sourceFund =>
+      sourceFund.activeFund && sourceFund.isin === isinToCompareTo);
+}
+
+function getContributionFundIsin(action, state) {
+  if (!action.sourceSelectionExact) {
+    const futureContributionsFundCandidate = action.sourceSelection[0].targetFundIsin;
+    return isContributionsFundAlreadyActive(state, futureContributionsFundCandidate)
+        ? null : futureContributionsFundCandidate;
+  }
+  return state.selectedFutureContributionsFundIsin;
 }
 
 export default function exchangeReducer(state = initialState, action) {
@@ -88,21 +97,11 @@ export default function exchangeReducer(state = initialState, action) {
     case GET_SOURCE_FUNDS_ERROR:
       return { ...state, loadingSourceFunds: false, error: getGlobalErrorCode(action.error.body) };
     case SELECT_EXCHANGE_SOURCES:
-      if (!action.sourceSelectionExact) {
-        const futureContributionsFundCandidate = action.sourceSelection[0].targetFundIsin;
-        return {
-          ...state,
-          sourceSelection: action.sourceSelection,
-          sourceSelectionExact: !!action.sourceSelectionExact,
-          selectedFutureContributionsFundIsin:
-            isContributionsFundAlreadyActive(state, futureContributionsFundCandidate)
-              ? null : futureContributionsFundCandidate,
-        };
-      }
       return {
         ...state,
         sourceSelection: action.sourceSelection,
         sourceSelectionExact: !!action.sourceSelectionExact,
+        selectedFutureContributionsFundIsin: getContributionFundIsin(action, state),
       };
 
     case GET_TARGET_FUNDS_START:
