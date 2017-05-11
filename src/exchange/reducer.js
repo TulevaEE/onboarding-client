@@ -61,6 +61,12 @@ function createFullDefaultSourceSelection({ sourceFunds, targetFunds }) {
     }));
 }
 
+function isContributionsFundAlreadyActive(state, isinToCompareTo) {
+  return state.sourceFunds && !!state.sourceFunds
+    .find(sourceFund =>
+    sourceFund.activeFund && sourceFund.isin === isinToCompareTo);
+}
+
 export default function exchangeReducer(state = initialState, action) {
   switch (action.type) {
     case GET_SOURCE_FUNDS_START:
@@ -84,15 +90,13 @@ export default function exchangeReducer(state = initialState, action) {
     case SELECT_EXCHANGE_SOURCES:
       if (!action.sourceSelectionExact) {
         const futureContributionsFundCandidate = action.sourceSelection[0].targetFundIsin;
-        const isContributionsFundAlreadyActive = state.sourceFunds && !!state.sourceFunds
-          .find(sourceFund =>
-          sourceFund.activeFund && sourceFund.isin === futureContributionsFundCandidate);
         return {
           ...state,
           sourceSelection: action.sourceSelection,
           sourceSelectionExact: !!action.sourceSelectionExact,
           selectedFutureContributionsFundIsin:
-            isContributionsFundAlreadyActive ? null : futureContributionsFundCandidate,
+            isContributionsFundAlreadyActive(state, futureContributionsFundCandidate)
+              ? null : futureContributionsFundCandidate,
         };
       }
       return {
@@ -121,7 +125,12 @@ export default function exchangeReducer(state = initialState, action) {
     case GET_TARGET_FUNDS_ERROR:
       return { ...state, loadingTargetFunds: false, error: getGlobalErrorCode(action.error.body) };
     case SELECT_TARGET_FUND:
-      return { ...state, selectedFutureContributionsFundIsin: action.targetFundIsin };
+      return {
+        ...state,
+        selectedFutureContributionsFundIsin:
+          isContributionsFundAlreadyActive(state, action.targetFundIsin)
+            ? null : action.targetFundIsin,
+      };
 
     case SIGN_MANDATE_MOBILE_ID_START:
     case SIGN_MANDATE_ID_CARD_START:

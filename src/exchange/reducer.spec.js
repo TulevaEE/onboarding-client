@@ -180,6 +180,19 @@ describe('Exchange reducer', () => {
       .toEqual(targetFundIsin);
   });
 
+  it('selecting a target fund which is already active for future contributions will result an empty selection', () => {
+    const activeFundIsin = 'activeFundIsin';
+    const state = {
+      sourceFunds: [{
+        isin: activeFundIsin,
+        activeFund: true,
+      }],
+    };
+    const action = { type: SELECT_TARGET_FUND, targetFundIsin: activeFundIsin };
+    expect(exchangeReducer(state, action).selectedFutureContributionsFundIsin)
+      .toEqual(null);
+  });
+
   it('can change the agreement to the terms of use', () => {
     [true, false].forEach(agreement => (
       expect(exchangeReducer(undefined, {
