@@ -82,6 +82,19 @@ export default function exchangeReducer(state = initialState, action) {
     case GET_SOURCE_FUNDS_ERROR:
       return { ...state, loadingSourceFunds: false, error: getGlobalErrorCode(action.error.body) };
     case SELECT_EXCHANGE_SOURCES:
+      if (!action.sourceSelectionExact) {
+        const futureContributionsFundCandidate = action.sourceSelection[0].targetFundIsin;
+        const isContributionsFundAlreadyActive = state.sourceFunds && !!state.sourceFunds
+          .find(sourceFund =>
+          sourceFund.activeFund && sourceFund.isin === futureContributionsFundCandidate);
+        return {
+          ...state,
+          sourceSelection: action.sourceSelection,
+          sourceSelectionExact: !!action.sourceSelectionExact,
+          selectedFutureContributionsFundIsin:
+            isContributionsFundAlreadyActive ? null : futureContributionsFundCandidate,
+        };
+      }
       return {
         ...state,
         sourceSelection: action.sourceSelection,
