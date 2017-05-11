@@ -54,4 +54,28 @@ export function selectRouteForState() {
   };
 }
 
+function isSkippingFutureCapitalStepNecessary(getState) {
+  return !getState().exchange.sourceSelectionExact;
+}
+
+export function routeForwardFromSourceSelection() {
+  return (dispatch, getState) => {
+    if (isSkippingFutureCapitalStepNecessary(getState)) {
+      dispatch(push('/steps/confirm-mandate'));
+    } else {
+      dispatch(push('/steps/transfer-future-capital'));
+    }
+  };
+}
+
+export function routeBackFromMandateConfirmation() {
+  return (dispatch, getState) => {
+    if (isSkippingFutureCapitalStepNecessary(getState)) {
+      dispatch(push('/steps/select-sources'));
+    } else {
+      dispatch(push('/steps/transfer-future-capital'));
+    }
+  };
+}
+
 export default selectRouteForState;

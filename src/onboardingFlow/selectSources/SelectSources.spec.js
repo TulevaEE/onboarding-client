@@ -1,6 +1,5 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Link } from 'react-router';
 import { Message } from 'retranslate';
 
 import { Loader, Radio, ErrorAlert } from '../../common';
@@ -39,9 +38,35 @@ describe('Select sources step', () => {
     expect(component.contains(<PensionFundTable funds={sourceFunds} />)).toBe(true);
   });
 
-  it('renders a link to the next step', () => {
-    expect(component.find(Link).prop('to')).toBe('/steps/transfer-future-capital');
-    expect(component.find(Link).children().at(0).node).toEqual(<Message>steps.next</Message>);
+  it('renders a button to the next step', () => {
+    const onNextStep = jest.fn();
+    component.setProps({ onNextStep });
+    expect(component.find('#nextStep').prop('onClick')).toBe(onNextStep);
+    expect(component.find('#nextStep').children().at(0).node).toEqual(<Message>steps.next</Message>);
+  });
+
+
+  it('disables the next step button if selection is invalid', () => {
+    component.setProps({ sourceSelection: [{ sourceFundIsin: 'a', percentage: 1 }] });
+    expect(component.find('#nextStep').prop('className')).not.toContain('disabled');
+    component.setProps({
+      sourceSelection: [
+        { sourceFundIsin: 'a', percentage: 1 },
+        { sourceFundIsin: 'a', percentage: 1 },
+      ],
+    });
+    expect(component.find('#nextStep').prop('className')).toContain('disabled');
+  });
+
+  it('disables the next step button if selection is invalid due to inter fund transfer', () => {
+    component.setProps({ sourceSelection: [{ sourceFundIsin: 'a', targetFundIsin: 'b', percentage: 1 }] });
+    expect(component.find('#nextStep').prop('className')).not.toContain('disabled');
+    component.setProps({
+      sourceSelection: [
+        { sourceFundIsin: 'a', targetFundIsin: 'a', percentage: 1 },
+      ],
+    });
+    expect(component.find('#nextStep').prop('className')).toContain('disabled');
   });
 
   it('sets the full selection radio as selected only when all funds selected', () => {
@@ -210,29 +235,6 @@ describe('Select sources step', () => {
     });
     expect(component.find(TargetFundSelector).prop('recommendedFundIsin'))
       .toBe(recommendedFundIsin);
-  });
-
-  it('disables the next step button if selection is invalid', () => {
-    component.setProps({ sourceSelection: [{ sourceFundIsin: 'a', percentage: 1 }] });
-    expect(component.find(Link).prop('className')).not.toContain('disabled');
-    component.setProps({
-      sourceSelection: [
-        { sourceFundIsin: 'a', percentage: 1 },
-        { sourceFundIsin: 'a', percentage: 1 },
-      ],
-    });
-    expect(component.find(Link).prop('className')).toContain('disabled');
-  });
-
-  it('disables the next step button if selection is invalid due to inter fund transfer', () => {
-    component.setProps({ sourceSelection: [{ sourceFundIsin: 'a', targetFundIsin: 'b', percentage: 1 }] });
-    expect(component.find(Link).prop('className')).not.toContain('disabled');
-    component.setProps({
-      sourceSelection: [
-        { sourceFundIsin: 'a', targetFundIsin: 'a', percentage: 1 },
-      ],
-    });
-    expect(component.find(Link).prop('className')).toContain('disabled');
   });
 
   it('passes an error forwards to ErrorAlert and does not show other components', () => {
