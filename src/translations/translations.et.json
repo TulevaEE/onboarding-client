@@ -19,6 +19,7 @@
   "log.out": "Logi välja",
   "steps.welcome": "Tere, {{name}}!",
   "steps.intro": "Tuleva liikmeks astudes tegid võimalikuks meie ühiste pensionifondide sünni! Nüüd saadki oma pensionivara üle tuua. Selleks astu kolm lihtsat sammu.",
+  "steps.intro.new.member": "Palju õnne Tulevaga liitumise puhul! Nüüd saad ka oma pensionivara Tulevasse üle tuua.",
   "steps.next": "Järgmine samm",
   "steps.previous": "Eelmine samm",
   "steps.select-sources": "Too kogunenud pensionivara Tulevasse",
