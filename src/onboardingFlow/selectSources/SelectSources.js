@@ -1,11 +1,11 @@
 import React, { PropTypes as Types } from 'react';
 import { Message } from 'retranslate';
-import { Link } from 'react-router';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
 import './SelectSources.scss';
 
+import { routeForwardFromSourceSelection } from '../../router/actions';
 import { selectExchangeSources } from '../../exchange/actions';
 import { Loader, Radio, ErrorAlert } from '../../common';
 import PensionFundTable from './pensionFundTable';
@@ -57,6 +57,7 @@ export const SelectSources = ({
   comparisonVisible,
   onShowComparison,
   onHideComparison,
+  onNextStep,
 }) => {
   if (errorDescription) {
     return <ErrorAlert description={errorDescription} />;
@@ -155,12 +156,13 @@ export const SelectSources = ({
         }
       </Radio>
 
-      <Link
+      <button
+        id="nextStep"
         className={`btn btn-primary mt-5 ${!valid ? 'disabled' : ''}`}
-        to="/steps/transfer-future-capital"
+        onClick={onNextStep}
       >
         <Message>steps.next</Message>
-      </Link>
+      </button>
     </div>
   );
 };
@@ -180,6 +182,7 @@ SelectSources.defaultProps = {
   comparisonVisible: false,
   onShowComparison: noop,
   onHideComparison: noop,
+  onNextStep: noop,
 };
 
 SelectSources.propTypes = {
@@ -195,6 +198,7 @@ SelectSources.propTypes = {
   comparisonVisible: Types.bool,
   onShowComparison: Types.func,
   onHideComparison: Types.func,
+  onNextStep: Types.func,
 };
 
 const mapStateToProps = state => ({
@@ -213,6 +217,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   onSelect: selectExchangeSources,
   onShowComparison: showComparison,
   onHideComparison: hideComparison,
+  onNextStep: routeForwardFromSourceSelection,
 }, dispatch);
 
 const connectToRedux = connect(mapStateToProps, mapDispatchToProps);
