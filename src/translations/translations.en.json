@@ -115,8 +115,6 @@
   "account.current.balance.evk": "Estonian Central Securities Depository",
   "account.current.balance.total": "Total",
   "account.active.fund.title": "My current active pension fund",
-  "account.tuleva.balance.title": "My Tuleva pension capital account statement",
-  "account.tuleva.balance.subtitle": "Tuleva pension capital is a part of the Tuleva Fondid AS capital, which is kept track of in the Commercial Association Tuleva registry. This money is in addition to your second pillar funds, not a part of them.",
   "account.contact.info.title": "My contact information",
   "error.messages.intro": "Following errors found",
   "error.message.close": "Close",
@@ -191,5 +189,8 @@
   "select.sources.show.comparison": "Vaata lähemalt!",
   "select.sources.comparison.intro": "Tulevaga säästad teenustasudelt tuhandeid eurosid.",
   "header.my.account": "Minu konto",
-  "account.initial.capital.title": "Minu Tuleva alg kapital"
+  "account.member.statement": "Oled Tuleva liige nr. {{memberNumber}}.",
+  "account.initial-capital.statement": "Oled panustanud Tuleva algkapitali {{initialCapital}}€.",
+  "account.converted.user.statement": "Avaldus maksete ümber suunamiseks ja olemasolevate osakute ümber vahetamiseks Tuleva pensionifondi on tehtud."
+
 }
