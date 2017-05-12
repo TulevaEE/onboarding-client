@@ -6,7 +6,8 @@ import { connect } from 'react-redux';
 
 import { Loader, ErrorAlert } from '../../common/index';
 import PensionFundTable from '../../onboardingFlow/selectSources/pensionFundTable/index';
-import Comparison from '../../common/comparison';
+import ComparisonWidget from '../../common/comparison/widget';
+import './NewUser.scss';
 
 export const NewUser = ({
                           loadingSourceFunds,
@@ -29,41 +30,67 @@ export const NewUser = ({
           <Message params={{ name: userFirstName }}>steps.welcome</Message>
         </p>
         <p><Message>new.user.flow.intro</Message></p>
-        <p className="mb-4 mt-5 lead"><Message>select.sources.current.status</Message></p>
-        <PensionFundTable funds={sourceFunds} />
-      </div>
-      <div className="px-col mb-4">
-        <p className="lead">Kuidas mõjutab valitsemistasu sinu pensioni suurust?</p>
-
-        <p>Täna maksad iga 1000 euro pealt valitsemistasuks pangale €13.40 aastas.
-          Tulevas maksaksid €3.40. Esmapilgul pisikesed summad, eks?
-          Aastate jooksul hammustab isegi näiliselt vaid natuke kõrgem
-          valitsemistasu väga suure tüki sinu tulevasest pensionist.</p>
-
-        <p>Arvuta, kui palju sa tänu Tulevale säästaksid.</p>
-
-        <Comparison />
-
-        <p>Tuleva pensionifondi kliendina võidaksid 20 000 eurot.<br />
-          Kui astud ka Tuleva liikmeks, võidaksid lisaks veel 2000 eurot,
-          sest liikmed saavad igal aastal liikmeboonust 0,05% oma pensionivara mahust.</p>
-
-        <p>Tuleva pensionifondi kliendiks saavad tulla kõik Eesti inimesed, kes II sambasse koguvad.
-          Et Tulevast kõige rohkem kasu saada ja toetada Eesti pensionisüsteemi arengut,
-          kutsume sind astuma ka Tuleva liikmeks.</p>
-
+        <div className="row">
+          <div className="col-8 mt-3">
+            <p className="mb-4 lead"><Message>select.sources.current.status</Message></p>
+            <PensionFundTable funds={sourceFunds} />
+          </div>
+          <div className="col-4 mb-4 mt-3">
+            <ComparisonWidget />
+          </div>
+        </div>
       </div>
 
-      <Link className={'btn btn-primary mb-2 mr-2'} to="/steps/signup">
-        <Message>newUserFlow.newUser.i.wish.to.join</Message>
-      </Link>
-      {
-        !userConverted ? (
-          <Link className="btn btn-secondary mb-2" to="/steps/non-member">
-            <Message>newUserFlow.newUser.i.want.just.to.transfer.my.pension</Message>
-          </Link>
-        ) : ''
-      }
+      <div className="row text-boxes">
+        <div className="col-md-6">
+          <div className="text-box text-box--rounder">
+            <h2 className="text-box__title text-box__title--border-blue">
+              Miks astuda Tuleva ühistu liikmeks?
+            </h2>
+            <div className="text-box__content">
+              <ul className="list-style-plussign text-lg">
+                <li>oled oma pensionifondi kaasomanik</li>
+                <li>saad otsustada Tuleva tuleviku üle</li>
+                <li>kogud igal aastal <span className="highlight">0,05% liikmeboonust</span>
+                </li>
+              </ul>
+              <p><em>Pensioni kogumine on tänu liikmeboonusele veel soodsam.</em></p>
+              <div className="text-center">
+                <Link className={'btn btn-primary mb-2 mr-2'} to="/steps/signup">
+                  <Message>newUserFlow.newUser.i.wish.to.join</Message>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+        {
+          !userConverted ? (
+            <div className="col-md-6">
+              <div className="text-box text-box--rounder">
+                <h2 className="text-box__title text-box__title--border-lightblue">
+                  Miks koguda pensionit Tuleva fondidesse?
+                </h2>
+                <div className="text-box__content">
+                  <ul className="list-style-checkmark text-lg">
+                    <li>madalad kulud — rohkem jääb sulle</li>
+                    <li>selged investeerimisreeglid</li>
+                    <li>kogud raha endale, mitte pangale</li>
+                  </ul>
+                  <p className="lead"><em>
+                    Tulevas pensioni kogumiseks <span className="highlight">
+                    ei pea olema ühistu liige.</span>
+                  </em></p>
+                  <div className="text-center">
+                    <Link className="btn btn-secondary mb-2" to="/steps/non-member">
+                      <Message>newUserFlow.newUser.i.want.just.to.transfer.my.pension</Message>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : ''
+        }
+      </div>
     </div>
   );
 };

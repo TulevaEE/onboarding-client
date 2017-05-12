@@ -105,18 +105,18 @@ export const Comparison = ({ overlayed, comparison, rate, salary, loading,
                             </Message>
                             </InfoTooltip>
                           </td>
-                          <td className="output-amount old-fund-fees">
-                            {Math.round(comparison.currentFundFee)}
+                          <td className="output-amount old-fund-fees text-right">
+                            {Math.round(comparison.currentFundFee).toLocaleString('et-EE')}&nbsp;&euro;
                           </td>
-                          <td className="output-amount">{Math.round(comparison.newFundFee)}</td>
+                          <td className="output-amount text-right">{Math.round(comparison.newFundFee).toLocaleString('et-EE')}&nbsp;&euro;</td>
                         </tr>
                         <tr>
                           <td><Message>comparison.output.calculation.second.row</Message></td>
-                          <td className="output-amount">
-                            {Math.round(comparison.currentFundFutureValue)}
+                          <td className="output-amount text-right">
+                            {Math.round(comparison.currentFundFutureValue).toLocaleString('et-EE')}&nbsp;&euro;
                           </td>
-                          <td className="output-amount new-fund-total">
-                            {Math.round(comparison.newFundFutureValue)}
+                          <td className="output-amount new-fund-total text-right">
+                            {Math.round(comparison.newFundFutureValue).toLocaleString('et-EE')}&nbsp;&euro;
                           </td>
                         </tr>
                       </tbody>

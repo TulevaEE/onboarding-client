@@ -15,7 +15,7 @@ export const ComparisonWidget = ({ comparisonVisible, onShowComparison, onHideCo
         <Comparison overlayed onClose={onHideComparison} />
         : ''
     }
-    <div className="comparison-widget">
+    <div className="comparison-widget text-center">
       <div className="comparison-widget-message mt-3">
         <Message>
           select.sources.comparison.intro

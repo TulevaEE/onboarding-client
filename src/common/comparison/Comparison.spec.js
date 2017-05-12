@@ -66,16 +66,16 @@ describe('Comparison widget', () => {
     };
 
     component.setProps({ comparison });
-    expect(component.contains(<td className="output-amount old-fund-fees">
-      {Math.round(comparison.currentFundFee)}
+    expect(component.contains(<td className="output-amount old-fund-fees text-right">
+      {Math.round(comparison.currentFundFee).toLocaleString('et-EE')}&nbsp;&euro;
     </td>)).toBe(true);
     expect(component.contains(
-      <td className="output-amount">{Math.round(comparison.newFundFee)}</td>)).toBe(true);
-    expect(component.contains(<td className="output-amount">
-      {Math.round(comparison.currentFundFutureValue)}
+      <td className="output-amount text-right">{Math.round(comparison.newFundFee).toLocaleString('et-EE')}&nbsp;&euro;</td>)).toBe(true);
+    expect(component.contains(<td className="output-amount text-right">
+      {Math.round(comparison.currentFundFutureValue).toLocaleString('et-EE')}&nbsp;&euro;
     </td>)).toBe(true);
-    expect(component.contains(<td className="output-amount new-fund-total">
-      {Math.round(comparison.newFundFutureValue)}
+    expect(component.contains(<td className="output-amount new-fund-total text-right">
+      {Math.round(comparison.newFundFutureValue).toLocaleString('et-EE')}&nbsp;&euro;
     </td>)).toBe(true);
   });
 
