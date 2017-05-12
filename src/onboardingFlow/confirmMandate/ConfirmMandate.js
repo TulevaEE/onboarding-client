@@ -1,7 +1,6 @@
 import React, { PropTypes as Types } from 'react';
 import { bindActionCreators } from 'redux';
 import { Message } from 'retranslate';
-import { Link } from 'react-router';
 import { connect } from 'react-redux';
 
 import { Loader, AuthenticationLoader, ErrorMessage, utils } from '../../common';
@@ -14,6 +13,7 @@ import {
   closeErrorMessages,
 } from '../../exchange/actions';
 
+import { routeBackFromMandateConfirmation } from '../../router/actions';
 import MandateNotFilledAlert from './mandateNotFilledAlert';
 import FundTransferTable from './fundTransferTable';
 import './ConfirmMandate.scss';
@@ -98,6 +98,7 @@ export const ConfirmMandate = ({
   onCancelSigningMandate,
   onChangeAgreementToTerms,
   onCloseErrorMessages,
+  onPreviousStep,
 }) => {
   if (exchange.loadingSourceFunds || exchange.loadingTargetFunds) {
     return <Loader className="align-middle" />;
@@ -200,9 +201,11 @@ export const ConfirmMandate = ({
         >
           <Message>confirm.mandate.preview</Message>
         </button>
-        <Link className="btn btn-secondary mb-2" to="/steps/transfer-future-capital">
+        <button
+          className="btn btn-secondary mb-2" onClick={onPreviousStep}
+        >
           <Message>steps.previous</Message>
-        </Link>
+        </button>
       </div>
     </div>
   );
@@ -225,6 +228,7 @@ ConfirmMandate.defaultProps = {
   onCancelSigningMandate: noop,
   onChangeAgreementToTerms: noop,
   onCloseErrorMessages: noop,
+  onPreviousStep: noop,
 };
 
 ConfirmMandate.propTypes = {
@@ -240,6 +244,7 @@ ConfirmMandate.propTypes = {
   onCancelSigningMandate: Types.func,
   onChangeAgreementToTerms: Types.func,
   onCloseErrorMessages: Types.func,
+  onPreviousStep: Types.func,
 };
 
 const mapStateToProps = state => ({
@@ -252,6 +257,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   onChangeAgreementToTerms: changeAgreementToTerms,
   onCancelSigningMandate: cancelSigningMandate,
   onCloseErrorMessages: closeErrorMessages,
+  onPreviousStep: routeBackFromMandateConfirmation,
 }, dispatch);
 
 const connectToRedux = connect(mapStateToProps, mapDispatchToProps);

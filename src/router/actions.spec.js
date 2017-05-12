@@ -86,4 +86,44 @@ describe('Routing actions', () => {
     expect(dispatch).toHaveBeenCalledTimes(1);
     expect(dispatch).toHaveBeenCalledWith(push('/'));
   });
+
+  it('routes forward from source selection step on advanced flow', () => {
+    state.exchange = { sourceSelectionExact: true};
+
+    const action = createBoundAction(actions.routeForwardFromSourceSelection);
+    action();
+
+    expect(dispatch).toHaveBeenCalledTimes(1);
+    expect(dispatch).toHaveBeenCalledWith(push('/steps/transfer-future-capital'));
+  });
+
+  it('routes forward from source selection step, skiping contributions fund selection, on simple flow', () => {
+    state.exchange = { sourceSelectionExact: false, sourceSelection: [[]] };
+
+    const action = createBoundAction(actions.routeForwardFromSourceSelection);
+    action();
+
+    expect(dispatch).toHaveBeenCalledTimes(1);
+    expect(dispatch).toHaveBeenCalledWith(push('/steps/confirm-mandate'));
+  });
+
+  it('routes back from source selection step on advanced flow', () => {
+    state.exchange = { sourceSelectionExact: true };
+
+    const action = createBoundAction(actions.routeBackFromMandateConfirmation);
+    action();
+
+    expect(dispatch).toHaveBeenCalledTimes(1);
+    expect(dispatch).toHaveBeenCalledWith(push('/steps/transfer-future-capital'));
+  });
+
+  it('routes back from source selection step, skiping contributions fund selection, on simple flow', () => {
+    state.exchange = { sourceSelectionExact: false, sourceSelection: [[]] };
+
+    const action = createBoundAction(actions.routeBackFromMandateConfirmation);
+    action();
+
+    expect(dispatch).toHaveBeenCalledTimes(1);
+    expect(dispatch).toHaveBeenCalledWith(push('/steps/select-sources'));
+  });
 });
