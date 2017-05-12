@@ -48,27 +48,6 @@ translations: { translate } }) => (
     <form id="register-form" onSubmit={handleSubmit} role="form">
       <div className="form-group">
         <Field
-          component={renderField} type="text" name="firstName"
-          placeholder={translate('new.user.flow.signup.firstName')}
-          validate={requiredField} disabled="disabled"
-        />
-      </div>
-      <div className="form-group">
-        <Field
-          component={renderField} type="text" name="lastName"
-          placeholder={translate('new.user.flow.signup.lastName')}
-          validate={requiredField} disabled="disabled"
-        />
-      </div>
-      <div className="form-group">
-        <Field
-          component={renderField} type="number" name="personalCode"
-          placeholder={translate('new.user.flow.signup.personalCode')}
-          validate={requiredField} disabled="disabled"
-        />
-      </div>
-      <div className="form-group">
-        <Field
           component={renderField} type="email" name="email"
           placeholder={translate('new.user.flow.signup.email')}
           validate={[requiredField, emailValidator]}
@@ -88,7 +67,9 @@ translations: { translate } }) => (
           />
           <span className="custom-control-indicator" />
           <div className="custom-control-description">
-            <Message>new.user.flow.signup.tos</Message>
+            <Message>new.user.flow.signup.tos.start</Message>
+            <a href="https://drive.google.com/open?id=0BxDN-jvgOSUxd1J5LXVKWDlDa1U"><Message>new.user.flow.signup.tos.statute</Message></a>
+            <Message>new.user.flow.signup.tos.end</Message>
           </div>
         </label>
       </div>
@@ -112,7 +93,7 @@ SignUpForm.defaultProps = {
   invalid: true,
   submitting: false,
   error: '',
-  hasAcceptedTerms: true,
+  hasAcceptedTerms: false,
 };
 
 SignUpForm.propTypes = {
@@ -130,7 +111,7 @@ const translatedForm = withTranslations(reduxSignUpForm);
 const selector = formValueSelector('signUp');
 
 const mapStateToProps = state => ({
-  initialValues: state.login.user ? { ...state.login.user, hasAcceptedTerms: true } : null,
+  initialValues: state.login.user ? { ...state.login.user, hasAcceptedTerms: false } : null,
   hasAcceptedTerms: selector(state, 'hasAcceptedTerms'),
 });
 
