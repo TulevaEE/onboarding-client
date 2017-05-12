@@ -7,6 +7,7 @@ import PensionFundTable from './pensionFundTable';
 import ExactFundSelector from './exactFundSelector';
 import TargetFundSelector from './targetFundSelector';
 import { SelectSources } from './SelectSources';
+import ComparisonWidget from '../../common/comparison/widget';
 
 describe('Select sources step', () => {
   let component;
@@ -245,5 +246,9 @@ describe('Select sources step', () => {
     expect(component.contains(<ErrorAlert description={errorDescription} />)).toBe(true);
     expect(component.contains(<Loader className="align-middle" />)).toBe(false);
     expect(component.contains(<PensionFundTable funds={funds} />)).toBe(false);
+  });
+
+  it('renders comparison widget', () => {
+    expect(component.contains(<ComparisonWidget />)).toBe(true);
   });
 });

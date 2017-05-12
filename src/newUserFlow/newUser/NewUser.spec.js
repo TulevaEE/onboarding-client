@@ -6,7 +6,7 @@ import { Message } from 'retranslate';
 import { Loader } from '../../common/index';
 import PensionFundTable from '../../onboardingFlow/selectSources/pensionFundTable/index';
 import { NewUser } from './NewUser';
-import Comparison from '../../common/comparison';
+import ComparisonWidget from '../../common/comparison/widget';
 
 describe('New user step', () => {
   let component;
@@ -51,7 +51,7 @@ describe('New user step', () => {
     expect(component.find(Link).at(1).prop('to')).not.toBe('/steps/non-member');
   });
 
-  it('renders comparison', () => {
-    expect(component.contains(<Comparison />)).toBe(true);
+  it('renders comparison widget', () => {
+    expect(component.contains(<ComparisonWidget />)).toBe(true);
   });
 });
