@@ -3,16 +3,13 @@ import { Message } from 'retranslate';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import './SelectSources.scss';
-
 import { routeForwardFromSourceSelection } from '../../router/actions';
 import { selectExchangeSources } from '../../exchange/actions';
 import { Loader, Radio, ErrorAlert } from '../../common';
 import PensionFundTable from './pensionFundTable';
 import TargetFundSelector from './targetFundSelector';
 import ExactFundSelector from './exactFundSelector';
-import Comparison from '../../common/comparison';
-import { show as showComparison, hide as hideComparison } from '../../comparison/actions';
+import ComparisonWidget from '../../common/comparison/widget';
 
 function selectAllWithTarget(sourceFunds, targetFund) {
   return sourceFunds
@@ -54,9 +51,6 @@ export const SelectSources = ({
   onSelect,
   sourceSelectionExact,
   errorDescription,
-  comparisonVisible,
-  onShowComparison,
-  onHideComparison,
   onNextStep,
 }) => {
   if (errorDescription) {
@@ -71,28 +65,15 @@ export const SelectSources = ({
   const valid = selectionsValid(sourceSelection);
   return (
     <div>
-      {
-        comparisonVisible ?
-          <Comparison overlayed onClose={onHideComparison} />
-        : ''
-      }
       <div className="row justify-content-around align-items-center">
         <div className="col-8">
           <div className="px-col mb-4">
-            <p className="mb-4 mt-5 lead"><Message>select.sources.current.status</Message></p>
+            <p className="mb-4 lead"><Message>select.sources.current.status</Message></p>
             <PensionFundTable funds={sourceFunds} />
           </div>
         </div>
-        <div className="col-4 select-sources-comparison">
-          <div className="select-sources-comparison-message mt-3">
-            <Message>
-            select.sources.comparison.intro
-          </Message>
-          </div>
-          <button
-            className="btn btn-primary mt-3 mb-3"
-            onClick={onShowComparison}
-          ><Message>select.sources.show.comparison</Message></button>
+        <div className="col-4 mb-4">
+          <ComparisonWidget />
         </div>
       </div>
       <Radio
@@ -179,9 +160,6 @@ SelectSources.defaultProps = {
   sourceSelectionExact: false,
   onSelect: noop,
   errorDescription: '',
-  comparisonVisible: false,
-  onShowComparison: noop,
-  onHideComparison: noop,
   onNextStep: noop,
 };
 
@@ -195,9 +173,6 @@ SelectSources.propTypes = {
   loadingTargetFunds: Types.bool,
   onSelect: Types.func,
   errorDescription: Types.string,
-  comparisonVisible: Types.bool,
-  onShowComparison: Types.func,
-  onHideComparison: Types.func,
   onNextStep: Types.func,
 };
 
@@ -210,13 +185,10 @@ const mapStateToProps = state => ({
   loadingSourceFunds: state.exchange.loadingSourceFunds,
   loadingTargetFunds: state.exchange.loadingTargetFunds,
   errorDescription: state.exchange.error,
-  comparisonVisible: state.comparison.visible,
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   onSelect: selectExchangeSources,
-  onShowComparison: showComparison,
-  onHideComparison: hideComparison,
   onNextStep: routeForwardFromSourceSelection,
 }, dispatch);
 
