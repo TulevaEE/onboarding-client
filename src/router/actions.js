@@ -55,7 +55,8 @@ export function selectRouteForState() {
 }
 
 function isSkippingFutureCapitalStepNecessary(getState) {
-  return !getState().exchange.sourceSelectionExact;
+  const state = getState();
+  return !state.exchange.sourceSelectionExact && state.exchange.sourceSelection.length > 0;
 }
 
 export function routeForwardFromSourceSelection() {

@@ -82,6 +82,18 @@ describe('Exchange reducer', () => {
       .selectedFutureContributionsFundIsin).toEqual(null);
   });
 
+  it('selecting source fund non exact but with empty source selection will not trigger defaulting contributions fund selection', () => {
+    const sourceSelection = [];
+    const action = { type: SELECT_EXCHANGE_SOURCES, sourceSelection, sourceSelectionExact: false };
+
+    const state = {
+      selectedFutureContributionsFundIsin: 'will not change',
+    };
+
+    expect(exchangeReducer(state, action)
+      .selectedFutureContributionsFundIsin).toEqual(state.selectedFutureContributionsFundIsin);
+  });
+
   it('when defaulting contributions fund selection, remove selection when fund is already active', () => {
     const activeFundIsin = 'activeFundIsin';
     const state = {

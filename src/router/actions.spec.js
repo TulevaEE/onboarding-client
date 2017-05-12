@@ -88,7 +88,7 @@ describe('Routing actions', () => {
   });
 
   it('routes forward from source selection step on advanced flow', () => {
-    state.exchange = { sourceSelectionExact: true };
+    state.exchange = { sourceSelectionExact: true};
 
     const action = createBoundAction(actions.routeForwardFromSourceSelection);
     action();
@@ -98,7 +98,7 @@ describe('Routing actions', () => {
   });
 
   it('routes forward from source selection step, skiping contributions fund selection, on simple flow', () => {
-    state.exchange = { sourceSelectionExact: false };
+    state.exchange = { sourceSelectionExact: false, sourceSelection: [[]] };
 
     const action = createBoundAction(actions.routeForwardFromSourceSelection);
     action();
@@ -118,7 +118,7 @@ describe('Routing actions', () => {
   });
 
   it('routes back from source selection step, skiping contributions fund selection, on simple flow', () => {
-    state.exchange = { sourceSelectionExact: false };
+    state.exchange = { sourceSelectionExact: false, sourceSelection: [[]] };
 
     const action = createBoundAction(actions.routeBackFromMandateConfirmation);
     action();

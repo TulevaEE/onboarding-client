@@ -68,7 +68,7 @@ function isContributionsFundAlreadyActive(state, isinToCompareTo) {
 }
 
 function getContributionFundIsin(action, state) {
-  if (!action.sourceSelectionExact) {
+  if (!action.sourceSelectionExact && action.sourceSelection.length > 0) {
     const futureContributionsFundCandidate = action.sourceSelection[0].targetFundIsin;
     return isContributionsFundAlreadyActive(state, futureContributionsFundCandidate)
         ? null : futureContributionsFundCandidate;
