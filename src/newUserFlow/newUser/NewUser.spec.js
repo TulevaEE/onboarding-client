@@ -36,19 +36,19 @@ describe('New user step', () => {
   });
 
   it('renders a link to join as a member', () => {
-    expect(component.find(Link).at(0).prop('to')).toBe('/steps/signup');
-    expect(component.find(Link).at(0).children().at(0).node)
+    expect(component.find(Link).at(1).prop('to')).toBe('/steps/signup');
+    expect(component.find(Link).at(1).children().at(0).node)
       .toEqual(<Message>newUserFlow.newUser.i.wish.to.join</Message>);
   });
 
   it('renders a link to just transfers funds, only if user is not converted', () => {
     component.setProps({ userConverted: false });
-    expect(component.find(Link).at(1).prop('to')).toBe('/steps/non-member');
-    expect(component.find(Link).at(1).children().at(0).node)
+    expect(component.find(Link).at(0).prop('to')).toBe('/steps/non-member');
+    expect(component.find(Link).at(0).children().at(0).node)
       .toEqual(<Message>newUserFlow.newUser.i.want.just.to.transfer.my.pension</Message>);
 
     component.setProps({ userConverted: true });
-    expect(component.find(Link).at(1).prop('to')).not.toBe('/steps/non-member');
+    expect(component.find(Link).at(0).prop('to')).not.toBe('/steps/non-member');
   });
 
   it('renders comparison widget', () => {
