@@ -42,46 +42,25 @@ export const NewUser = ({
       </div>
 
       <div className="row text-boxes">
-        <div className="col-md-6">
-          <div className="text-box text-box--rounder">
-            <h2 className="text-box__title text-box__title--border-blue">
-              Miks astuda Tuleva ühistu liikmeks?
-            </h2>
-            <div className="text-box__content">
-              <ul className="list-style-plussign text-lg">
-                <li>oled oma pensionifondi kaasomanik</li>
-                <li>saad otsustada Tuleva tuleviku üle</li>
-                <li>kogud igal aastal <span className="highlight">0,05% liikmeboonust</span>
-                </li>
-              </ul>
-              <p><em>Pensioni kogumine on tänu liikmeboonusele veel soodsam.</em></p>
-              <div className="text-center">
-                <Link className={'btn btn-primary mb-2 mr-2'} to="/steps/signup">
-                  <Message>newUserFlow.newUser.i.wish.to.join</Message>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
         {
           !userConverted ? (
             <div className="col-md-6">
               <div className="text-box text-box--rounder">
-                <h2 className="text-box__title text-box__title--border-lightblue">
+                <h3 className="text-box__title text-box__title--border-lightblue">
                   Miks koguda pensionit Tuleva fondidesse?
-                </h2>
+                </h3>
                 <div className="text-box__content">
                   <ul className="list-style-checkmark text-lg">
                     <li>madalad kulud — rohkem jääb sulle</li>
                     <li>selged investeerimisreeglid</li>
                     <li>kogud raha endale, mitte pangale</li>
                   </ul>
-                  <p className="lead"><em>
-                    Tulevas pensioni kogumiseks <span className="highlight">
-                    ei pea olema ühistu liige.</span>
-                  </em></p>
+                  {/* <p className="lead"><em>*/}
+                  {/* Tulevas pensioni kogumiseks <span className="highlight">*/}
+                  {/* ei pea olema ühistu liige.</span>*/}
+                  {/* </em></p>*/}
                   <div className="text-center">
-                    <Link className="btn btn-secondary mb-2" to="/steps/non-member">
+                    <Link className="btn btn-secondary btn-block mb-2" to="/steps/non-member">
                       <Message>newUserFlow.newUser.i.want.just.to.transfer.my.pension</Message>
                     </Link>
                   </div>
@@ -90,6 +69,27 @@ export const NewUser = ({
             </div>
           ) : ''
         }
+        <div className="col-md-6">
+          <div className="text-box text-box--rounder">
+            <h3 className="text-box__title text-box__title--border-blue">
+              Miks astuda Tuleva ühistu liikmeks?
+            </h3>
+            <div className="text-box__content">
+              <ul className="list-style-plussign text-lg">
+                <li>oled oma pensionifondi kaasomanik</li>
+                <li>saad otsustada Tuleva tuleviku üle</li>
+                <li>kogud igal aastal <span className="highlight">0,05% liikmeboonust</span>
+                </li>
+              </ul>
+              {/* <p><em>Pensioni kogumine on tänu liikmeboonusele veel soodsam.</em></p>*/}
+              <div className="text-center">
+                <Link className={'btn btn-primary btn-block mb-2'} to="/steps/signup">
+                  <Message>newUserFlow.newUser.i.wish.to.join</Message>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
