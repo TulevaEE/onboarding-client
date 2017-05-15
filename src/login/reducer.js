@@ -16,17 +16,22 @@ import {
   GET_USER_CONVERSION_START,
   GET_USER_CONVERSION_SUCCESS,
   GET_USER_CONVERSION_ERROR,
+  TOKEN_REFRESH_SUCCESS,
+  TOKEN_REFRESH_ERROR,
   LOG_OUT,
 } from './constants';
 
 import { getGlobalErrorCode } from '../common/errorMessage';
 
-const TOKEN_STORAGE_KEY = 'token';
+const TOKEN_STORAGE_KEY = 'accessToken';
+const REFRESH_TOKEN_STORAGE_KEY = 'refreshToken';
 const LOGIN_METHOD_STORAGE_KEY = 'loginMethod';
 
 
 // get saved token if it's there
 const token = (window.localStorage && localStorage.getItem(TOKEN_STORAGE_KEY)) || null;
+const refreshToken = (window.localStorage &&
+  localStorage.getItem(REFRESH_TOKEN_STORAGE_KEY)) || null;
 const loginMethod = (window.localStorage && localStorage.getItem(LOGIN_METHOD_STORAGE_KEY)) || null;
 
 const defaultState = {
@@ -34,6 +39,7 @@ const defaultState = {
   controlCode: null,
   loadingAuthentication: false,
   token,
+  refreshToken,
   loginMethod,
   error: null,
   user: null,
@@ -44,6 +50,15 @@ const defaultState = {
   userConversionError: null,
 };
 
+function updateLocalStorage(action, loginMethodUsed) {
+  if (window.localStorage) {
+    localStorage.setItem(TOKEN_STORAGE_KEY, action.tokens.accessToken);
+    localStorage.setItem(REFRESH_TOKEN_STORAGE_KEY, action.tokens.refreshToken);
+    if (loginMethodUsed) {
+      localStorage.setItem(LOGIN_METHOD_STORAGE_KEY, loginMethodUsed);
+    }
+  }
+}
 export default function loginReducer(state = defaultState, action) {
   switch (action.type) {
     case CHANGE_PHONE_NUMBER:
@@ -67,13 +82,12 @@ export default function loginReducer(state = defaultState, action) {
       };
 
     case MOBILE_AUTHENTICATION_SUCCESS:
-      if (window.localStorage) {
-        localStorage.setItem(TOKEN_STORAGE_KEY, action.token);
-        localStorage.setItem(LOGIN_METHOD_STORAGE_KEY, 'mobileId');
-      }
+      updateLocalStorage(action, 'mobileId');
+
       return { // reset all state so page is clean when entered again.
         ...state,
-        token: action.token,
+        token: action.tokens.accessToken,
+        refreshToken: action.tokens.refreshToken,
         loginMethod: 'mobileId',
         loadingAuthentication: false,
         controlCode: null,
@@ -104,17 +118,33 @@ export default function loginReducer(state = defaultState, action) {
       return { ...state, loadingAuthentication: true, error: null };
 
     case ID_CARD_AUTHENTICATION_SUCCESS:
-      if (window.localStorage) {
-        localStorage.setItem(TOKEN_STORAGE_KEY, action.token);
-        localStorage.setItem(LOGIN_METHOD_STORAGE_KEY, 'idCard');
-      }
+      updateLocalStorage(action, 'idCard');
       return { // reset all state so page is clean when entered again.
         ...state,
-        token: action.token,
+        token: action.tokens.accessToken,
+        refreshToken: action.tokens.refreshToken,
         loadingAuthentication: false,
         loginMethod: 'idCard',
         error: null,
       };
+
+    case TOKEN_REFRESH_SUCCESS:
+      updateLocalStorage(action);
+      return {
+        ...state,
+        token: action.tokens.accessToken,
+        refreshToken: action.tokens.refreshToken,
+        error: null,
+      };
+
+    case TOKEN_REFRESH_ERROR:
+      return {
+        ...state,
+        token: null,
+        refreshToken: null,
+        error: action.error.body.error_description,
+      };
+
 
     case GET_USER_START:
       return { ...state, loadingUser: true, userError: null };
@@ -138,9 +168,17 @@ export default function loginReducer(state = defaultState, action) {
     case LOG_OUT:
       if (window.localStorage) {
         localStorage.removeItem(TOKEN_STORAGE_KEY);
+        localStorage.removeItem(REFRESH_TOKEN_STORAGE_KEY);
         localStorage.removeItem(LOGIN_METHOD_STORAGE_KEY);
       }
-      return { ...state, token: null, user: null, loginMethod: null, loadingUser: false };
+      return {
+        ...state,
+        token: null,
+        refreshToken: null,
+        user: null,
+        loginMethod: null,
+        loadingUser: false,
+      };
 
     default:
       return state;

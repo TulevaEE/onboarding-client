@@ -1,4 +1,5 @@
 import React, { PropTypes as Types } from 'react';
+import { Link } from 'react-router';
 import { Message } from 'retranslate';
 
 import { logo, Loader } from '../../common';
@@ -15,6 +16,9 @@ const Header = ({ user: { name } = {}, loading, onLogout }) => (
           (
             <small>
               <b>{name}</b> <br />
+              <Link className="btn btn-link pl-0 py-0 pr-1" to="/account">
+                <Message>header.my.account</Message>
+              </Link> <br />
               <button className="btn btn-link pl-0 py-0 pr-1" onClick={onLogout}>
                 <Message>log.out</Message>
               </button>

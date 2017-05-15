@@ -25,14 +25,46 @@ describe('Routing actions', () => {
     mockDispatch();
   });
 
-  it('can perform a member routing', () => {
+  it('can perform routing for members who have not completed transfers', () => {
     state.login.user.memberNumber = 123;
+    state.login.userConversion = {
+      transfersComplete: false,
+      selectionComplete: true,
+    };
 
     const action = createBoundAction(actions.selectRouteForState);
     action();
 
     expect(dispatch).toHaveBeenCalledTimes(1);
     expect(dispatch).toHaveBeenCalledWith(push('/steps/select-sources'));
+  });
+
+  it('can perform routing for members who have completed transfers but not completed selection', () => {
+    state.login.user.memberNumber = 123;
+    state.login.userConversion = {
+      transfersComplete: true,
+      selectionComplete: false,
+    };
+
+    const action = createBoundAction(actions.selectRouteForState);
+    action();
+
+    expect(dispatch).toHaveBeenCalledTimes(1);
+    expect(dispatch).toHaveBeenCalledWith(push('/steps/transfer-future-capital'));
+  });
+
+  it('can perform routing for fully converted members', () => {
+    state.login.user.memberNumber = 123;
+    state.login.userConversion = {
+      transfersComplete: true,
+      selectionComplete: true,
+    };
+
+    const action = createBoundAction(actions.selectRouteForState);
+    action();
+
+    expect(dispatch).toHaveBeenCalledTimes(1);
+    expect(dispatch).toHaveBeenCalledWith(push('/account'));
   });
 
   it('can perform non member routing', () => {
@@ -53,5 +85,45 @@ describe('Routing actions', () => {
 
     expect(dispatch).toHaveBeenCalledTimes(1);
     expect(dispatch).toHaveBeenCalledWith(push('/'));
+  });
+
+  it('routes forward from source selection step on advanced flow', () => {
+    state.exchange = { sourceSelectionExact: true};
+
+    const action = createBoundAction(actions.routeForwardFromSourceSelection);
+    action();
+
+    expect(dispatch).toHaveBeenCalledTimes(1);
+    expect(dispatch).toHaveBeenCalledWith(push('/steps/transfer-future-capital'));
+  });
+
+  it('routes forward from source selection step, skiping contributions fund selection, on simple flow', () => {
+    state.exchange = { sourceSelectionExact: false, sourceSelection: [[]] };
+
+    const action = createBoundAction(actions.routeForwardFromSourceSelection);
+    action();
+
+    expect(dispatch).toHaveBeenCalledTimes(1);
+    expect(dispatch).toHaveBeenCalledWith(push('/steps/confirm-mandate'));
+  });
+
+  it('routes back from source selection step on advanced flow', () => {
+    state.exchange = { sourceSelectionExact: true };
+
+    const action = createBoundAction(actions.routeBackFromMandateConfirmation);
+    action();
+
+    expect(dispatch).toHaveBeenCalledTimes(1);
+    expect(dispatch).toHaveBeenCalledWith(push('/steps/transfer-future-capital'));
+  });
+
+  it('routes back from source selection step, skiping contributions fund selection, on simple flow', () => {
+    state.exchange = { sourceSelectionExact: false, sourceSelection: [[]] };
+
+    const action = createBoundAction(actions.routeBackFromMandateConfirmation);
+    action();
+
+    expect(dispatch).toHaveBeenCalledTimes(1);
+    expect(dispatch).toHaveBeenCalledWith(push('/steps/select-sources'));
   });
 });

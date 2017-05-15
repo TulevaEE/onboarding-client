@@ -10,7 +10,7 @@ import {
 
 const initialState = {
   salary: 1500,
-  rate: 0.07,
+  rate: 0.05,
   comparison: null,
   loadingComparison: false,
   error: null,

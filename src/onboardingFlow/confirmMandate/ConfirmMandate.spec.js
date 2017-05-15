@@ -1,7 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Message } from 'retranslate';
-import { Link } from 'react-router';
 
 import { ConfirmMandate } from './ConfirmMandate';
 import FundTransferTable from './fundTransferTable';
@@ -96,18 +95,21 @@ describe('Confirm mandate step', () => {
     expect(component.contains(<Message>confirm.mandate.future.contribution</Message>)).toBe(false);
   });
 
-  it('has a link to the previous step', () => {
+  it('has a button to the previous step', () => {
+    const onPreviousStep = jest.fn();
     component.setProps({
       exchange: {
         sourceSelection: [],
         selectedFutureContributionsFundIsin: 'asd',
       },
+      onPreviousStep,
     });
     expect(component.contains(
-      <Link className="btn btn-secondary mb-2" to="/steps/transfer-future-capital">
+      <button
+        className="btn btn-secondary mb-2" onClick={onPreviousStep}
+      >
         <Message>steps.previous</Message>
-      </Link>,
-    )).toBe(true);
+      </button>)).toBe(true);
   });
 
   it('does not show the funds table if you are not transferring funds', () => {

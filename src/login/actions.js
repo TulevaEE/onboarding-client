@@ -27,6 +27,10 @@ import {
   GET_USER_CONVERSION_SUCCESS,
   GET_USER_CONVERSION_ERROR,
 
+  TOKEN_REFRESH_START,
+  TOKEN_REFRESH_SUCCESS,
+  TOKEN_REFRESH_ERROR,
+
   LOG_OUT,
 } from './constants';
 
@@ -40,20 +44,20 @@ export function changePhoneNumber(phoneNumber) {
   return { type: CHANGE_PHONE_NUMBER, phoneNumber };
 }
 
-function getMobileIdToken() {
+function getMobileIdTokens() {
   return (dispatch, getState) => {
     if (timeout && process.env.NODE_ENV !== 'test') {
       clearTimeout(timeout);
     }
     timeout = setTimeout(() => {
       api
-        .getMobileIdToken()
-        .then((token) => {
-          if (token) { // authentication complete
-            dispatch({ type: MOBILE_AUTHENTICATION_SUCCESS, token });
+        .getMobileIdTokens()
+        .then((tokens) => {
+          if (tokens.accessToken) { // authentication complete
+            dispatch({ type: MOBILE_AUTHENTICATION_SUCCESS, tokens });
             dispatch(router.selectRouteForState());
           } else if (getState().login.loadingAuthentication) { // authentication not yet completed
-            dispatch(getMobileIdToken()); // poll again
+            dispatch(getMobileIdTokens()); // poll again
           }
         })
         .catch(error => dispatch({ type: MOBILE_AUTHENTICATION_ERROR, error }));
@@ -68,26 +72,26 @@ export function authenticateWithPhoneNumber(phoneNumber) {
       .authenticateWithPhoneNumber(phoneNumber)
       .then((controlCode) => {
         dispatch({ type: MOBILE_AUTHENTICATION_START_SUCCESS, controlCode });
-        dispatch(getMobileIdToken());
+        dispatch(getMobileIdTokens());
       })
       .catch(error => dispatch({ type: MOBILE_AUTHENTICATION_START_ERROR, error }));
   };
 }
 
-function getIdCardToken() {
+function getIdCardTokens() {
   return (dispatch, getState) => {
     if (timeout && process.env.NODE_ENV !== 'test') {
       clearTimeout(timeout);
     }
     timeout = setTimeout(() => {
       api
-        .getIdCardToken()
-        .then((token) => {
-          if (token) { // authentication complete
-            dispatch({ type: ID_CARD_AUTHENTICATION_SUCCESS, token });
+        .getIdCardTokens()
+        .then((tokens) => {
+          if (tokens.accessToken) { // authentication complete
+            dispatch({ type: ID_CARD_AUTHENTICATION_SUCCESS, tokens });
             dispatch(router.selectRouteForState());
           } else if (getState().login.loadingAuthentication) { // authentication not yet completed
-            dispatch(getIdCardToken()); // poll again
+            dispatch(getIdCardTokens()); // poll again
           }
         })
         .catch(error => dispatch({ type: ID_CARD_AUTHENTICATION_ERROR, error }));
@@ -102,7 +106,7 @@ export function authenticateWithIdCard() {
       .authenticateWithIdCard()
       .then(() => {
         dispatch({ type: ID_CARD_AUTHENTICATION_START_SUCCESS });
-        dispatch(getIdCardToken());
+        dispatch(getIdCardTokens());
       })
       .catch(error => dispatch({ type: ID_CARD_AUTHENTICATION_START_ERROR, error }));
   };
@@ -149,6 +153,17 @@ export function getUserConversion() {
       .catch((error) => {
         dispatch({ type: GET_USER_CONVERSION_ERROR, error });
       });
+  };
+}
+
+export function refreshToken() {
+  return (dispatch, getState) => {
+    dispatch({ type: TOKEN_REFRESH_START });
+    return api.refreshTokenWith(getState().login.refreshToken)
+      .then((tokens) => {
+        dispatch({ type: TOKEN_REFRESH_SUCCESS, tokens });
+      })
+      .catch(error => dispatch({ type: TOKEN_REFRESH_ERROR, error }));
   };
 }
 

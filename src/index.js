@@ -27,7 +27,7 @@ import trackingReducer from './tracking';
 import { reducer as comparisonReducer, actions as comparisonActions } from './comparison';
 
 import App from './app';
-import AccountPage from './account';
+import AccountPage, { reducer as accountReducer, actions as accountActions } from './account';
 import Steps, {
   SelectSources,
   TransferFutureCapital,
@@ -40,6 +40,7 @@ const rootReducer = combineReducers({
   login: loginReducer,
   exchange: exchangeReducer, // exchage of funds
   comparison: comparisonReducer,
+  account: accountReducer,
   tracking: trackingReducer,
   form: formReducer,
 });
@@ -53,31 +54,55 @@ const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk, r
 const history = syncHistoryWithStore(browserHistory, store);
 
 // TODO: figure out a place where to put these two
+
+function getConversionData() {
+  const { login } = store.getState();
+  if (login.token && !(login.userConversion || login.loadingUserConversion)) {
+    store.dispatch(loginActions.getUserConversion());
+  }
+}
+
 function getDataForApp() {
   const { login } = store.getState();
-  if (login.token && !(login.user || login.loadingUser) &&
-    !(login.userConversion || login.loadingUserConversion)) {
+  if (login.token && !(login.user || login.loadingUser)) {
     store.dispatch(loginActions.getUser());
-    store.dispatch(loginActions.getUserConversion());
+  }
+  getConversionData();
+}
+
+function getSourceAndTargetFundsData() {
+  const { login, exchange } = store.getState();
+  if (login.token && !(exchange.sourceFunds || exchange.loadingSourceFunds ||
+    exchange.targetFunds || exchange.loadingTargetFunds)) {
+    store.dispatch(exchangeActions.getSourceFunds());
+    store.dispatch(exchangeActions.getTargetFunds());
+  }
+}
+
+function getComparisonData() {
+  const { login, comparison } = store.getState();
+  if (login.token && !(comparison.comparison || comparison.loadingComparison)) {
+    store.dispatch(comparisonActions.getComparison());
   }
 }
 
 function getDataForFlow(nextState) {
   store.dispatch(exchangeActions.mapUrlQueryParamsToState(nextState.location.query));
-  const { login, exchange, comparison } = store.getState();
-  if (login.token && !(exchange.sourceFunds || exchange.loadingSourceFunds ||
-    exchange.targetFunds || exchange.loadingTargetFunds || comparison.loadingComparison)) {
-    store.dispatch(exchangeActions.getSourceFunds());
-    store.dispatch(exchangeActions.getTargetFunds());
-    store.dispatch(comparisonActions.getComparison());
+  getSourceAndTargetFundsData();
+  getComparisonData();
+}
+
+function getInitialCapitalData() {
+  const { login, account } = store.getState();
+  if (login.token && login.user && login.user.memberNumber &&
+    !(account.initialCapital || account.loadingInitialCapital)) {
+    store.dispatch(accountActions.getInitialCapital());
   }
 }
 
 function getDataForAccount() {
-  const { login, exchange } = store.getState();
-  if (login.token && !(exchange.sourceFunds || exchange.loadingSourceFunds)) {
-    store.dispatch(exchangeActions.getSourceFunds());
-  }
+  getInitialCapitalData();
+  getSourceAndTargetFundsData();
 }
 
 function getLanguage() {
