@@ -23,7 +23,7 @@ export const AccountPage = ({
             <span>
               <Message>account.non.member.statement</Message>
               { ' ' }
-              <Link className="btn btn-link p-0 border-0" to="/steps/new-member">
+              <Link className="btn btn-link p-0 border-0" to="/steps/new-user">
                 <Message>login.join.tuleva</Message>
               </Link>
             </span>

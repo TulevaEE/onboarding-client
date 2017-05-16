@@ -27,9 +27,19 @@ function isFullyConverted(getState) {
   return isSelectionComplete(getState) && isTransfersComplete(getState);
 }
 
+
+function isUserLoaded(getState) {
+  if (getState().login.user) {
+    return true;
+  }
+  return false;
+}
+
 export function selectRouteForState() {
   return (dispatch, getState) => {
-    if (isMember(getState)) {
+    if (!isUserLoaded(getState)) {
+      dispatch(push('/')); // load user
+    } else if (isMember(getState)) {
       if (isFullyConverted(getState)) {
         dispatch(push('/account'));
       } else if (isSelectionComplete(getState)) {
