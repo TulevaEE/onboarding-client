@@ -167,6 +167,7 @@
   "select.sources.comparison.intro": "Tulevaga säästad teenustasudelt tuhandeid eurosid.",
   "header.my.account": "Minu konto",
   "account.member.statement": "Oled Tuleva liige nr. {{memberNumber}}.",
+  "account.non.member.statement": "Sa pole veel Tuleva liige.",
   "account.initial-capital.statement": "Oled panustanud Tuleva algkapitali {{initialCapital}}€.",
   "account.converted.user.statement": "Avaldus maksete ümber suunamiseks ja olemasolevate osakute ümber vahetamiseks Tuleva pensionifondi on tehtud."
 }

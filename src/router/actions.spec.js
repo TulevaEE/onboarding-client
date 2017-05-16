@@ -77,18 +77,8 @@ describe('Routing actions', () => {
     expect(dispatch).toHaveBeenCalledWith(push('/steps/new-user'));
   });
 
-  it('can perform routing when user is not loaded', () => {
-    state.login = {};
-
-    const action = createBoundAction(actions.selectRouteForState);
-    action();
-
-    expect(dispatch).toHaveBeenCalledTimes(1);
-    expect(dispatch).toHaveBeenCalledWith(push('/'));
-  });
-
   it('routes forward from source selection step on advanced flow', () => {
-    state.exchange = { sourceSelectionExact: true};
+    state.exchange = { sourceSelectionExact: true };
 
     const action = createBoundAction(actions.routeForwardFromSourceSelection);
     action();

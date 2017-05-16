@@ -1,7 +1,7 @@
 import { push } from 'react-router-redux';
 
 function isMember(getState) {
-  if (getState().login.user.memberNumber) {
+  if ((getState().login.user || {}).memberNumber) {
     return true;
   }
   return false;
@@ -27,18 +27,9 @@ function isFullyConverted(getState) {
   return isSelectionComplete(getState) && isTransfersComplete(getState);
 }
 
-function isDataLoaded(getState) {
-  if (getState().login.user) {
-    return true;
-  }
-  return false;
-}
-
 export function selectRouteForState() {
   return (dispatch, getState) => {
-    if (!isDataLoaded(getState)) {
-      dispatch(push('/'));
-    } else if (isMember(getState)) {
+    if (isMember(getState)) {
       if (isFullyConverted(getState)) {
         dispatch(push('/account'));
       } else if (isSelectionComplete(getState)) {
@@ -78,5 +69,3 @@ export function routeBackFromMandateConfirmation() {
     }
   };
 }
-
-export default selectRouteForState;

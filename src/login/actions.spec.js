@@ -282,7 +282,6 @@ describe('Login actions', () => {
           type: GET_USER_CONVERSION_SUCCESS,
           userConversion,
         });
-        expect(mockRouter.selectRouteForState).toHaveBeenCalled();
       });
   });
 
