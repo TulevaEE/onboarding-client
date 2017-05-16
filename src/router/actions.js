@@ -1,7 +1,7 @@
 import { push } from 'react-router-redux';
 
 function isMember(getState) {
-  if ((getState().login.user || {}).memberNumber) {
+  if (getState().login.user.memberNumber) {
     return true;
   }
   return false;
