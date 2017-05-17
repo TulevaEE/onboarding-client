@@ -29,6 +29,7 @@ export const AccountPage = ({
             </span>
           )
         }
+        { ' ' }
         {
           initialCapital ? (
             <Message params={{ initialCapital: initialCapital.amount }}>
@@ -69,9 +70,9 @@ export const AccountPage = ({
 AccountPage.defaultProps = {
   currentBalanceFunds: [],
   loadingCurrentBalance: false,
-  initialCapital: null,
+  initialCapital: {},
   memberNumber: null,
-  conversion: null,
+  conversion: {},
 };
 
 AccountPage.propTypes = {
