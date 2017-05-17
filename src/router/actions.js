@@ -27,7 +27,8 @@ function isFullyConverted(getState) {
   return isSelectionComplete(getState) && isTransfersComplete(getState);
 }
 
-function isDataLoaded(getState) {
+
+function isUserLoaded(getState) {
   if (getState().login.user) {
     return true;
   }
@@ -36,8 +37,8 @@ function isDataLoaded(getState) {
 
 export function selectRouteForState() {
   return (dispatch, getState) => {
-    if (!isDataLoaded(getState)) {
-      dispatch(push('/'));
+    if (!isUserLoaded(getState)) {
+      dispatch(push('/')); // load user
     } else if (isMember(getState)) {
       if (isFullyConverted(getState)) {
         dispatch(push('/account'));
@@ -78,5 +79,3 @@ export function routeBackFromMandateConfirmation() {
     }
   };
 }
-
-export default selectRouteForState;

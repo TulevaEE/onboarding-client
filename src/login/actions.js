@@ -148,7 +148,6 @@ export function getUserConversion() {
       .getUserConversionWithToken(getState().login.token)
       .then((userConversion) => {
         dispatch({ type: GET_USER_CONVERSION_SUCCESS, userConversion });
-        dispatch(router.selectRouteForState());
       })
       .catch((error) => {
         dispatch({ type: GET_USER_CONVERSION_ERROR, error });
