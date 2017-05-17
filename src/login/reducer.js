@@ -98,7 +98,7 @@ export default function loginReducer(state = defaultState, action) {
     case MOBILE_AUTHENTICATION_ERROR:
       return {
         ...state,
-        error: action.error.body.error_description,
+        error: (action.error.body || {}).error_description,
         controlCode: null,
         loadingAuthentication: false,
         loadingUser: false,
@@ -142,7 +142,7 @@ export default function loginReducer(state = defaultState, action) {
         ...state,
         token: null,
         refreshToken: null,
-        error: action.error.body.error_description,
+        error: (action.error.body || {}).error_description,
       };
 
 

@@ -136,6 +136,7 @@ export function getUser() {
           dispatch({ type: LOG_OUT });
         } else {
           dispatch({ type: GET_USER_ERROR, error });
+          console.log(error); // for live debugging
         }
       });
   };
