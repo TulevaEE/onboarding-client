@@ -88,7 +88,7 @@ describe('Routing actions', () => {
   });
 
   it('routes forward from source selection step on advanced flow', () => {
-    state.exchange = { sourceSelectionExact: true};
+    state.exchange = { sourceSelectionExact: true };
 
     const action = createBoundAction(actions.routeForwardFromSourceSelection);
     action();

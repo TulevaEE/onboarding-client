@@ -49,11 +49,10 @@ describe('Comparison widget', () => {
 
   it('renders comparison table headers', () => {
     expect(component.contains(
-      <tr>
-        <th><Message>comparison.output.calculation</Message></th>
-        <th><Message>comparison.output.old.funds</Message></th>
-        <th><Message>comparison.output.new.funds</Message></th>
-      </tr>,
+      <th className="text-right"><Message>comparison.output.old.funds</Message></th>,
+    )).toBe(true);
+    expect(component.contains(
+      <th className="text-right"><Message>comparison.output.new.funds</Message></th>,
     )).toBe(true);
   });
 
@@ -70,11 +69,11 @@ describe('Comparison widget', () => {
       {Math.round(comparison.currentFundFee).toLocaleString('et-EE')}&nbsp;&euro;
     </td>)).toBe(true);
     expect(component.contains(
-      <td className="output-amount text-right">{Math.round(comparison.newFundFee).toLocaleString('et-EE')}&nbsp;&euro;</td>)).toBe(true);
+      <td className="output-amount new-fund-fees text-right">{Math.round(comparison.newFundFee).toLocaleString('et-EE')}&nbsp;&euro;</td>)).toBe(true);
     expect(component.contains(<td className="output-amount text-right">
       {Math.round(comparison.currentFundFutureValue).toLocaleString('et-EE')}&nbsp;&euro;
     </td>)).toBe(true);
-    expect(component.contains(<td className="output-amount new-fund-total text-right">
+    expect(component.contains(<td className="output-amount text-right">
       {Math.round(comparison.newFundFutureValue).toLocaleString('et-EE')}&nbsp;&euro;
     </td>)).toBe(true);
   });

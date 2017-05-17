@@ -101,8 +101,8 @@ function getInitialCapitalData() {
 }
 
 function getDataForAccount() {
-  getInitialCapitalData();
   getSourceAndTargetFundsData();
+  getInitialCapitalData();
 }
 
 function getLanguage() {

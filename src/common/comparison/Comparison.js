@@ -40,8 +40,6 @@ export const Comparison = ({ overlayed, comparison, rate, salary, loading,
     <div>
       <div className="px-col mb-4">
         <div>
-          <p className="mb-4"><Message>comparison.header</Message></p>
-          <p><Message>comparison.intro</Message></p>
           <p><Message>comparison.call.to.action</Message></p>
         </div>
         <div>
@@ -62,18 +60,26 @@ export const Comparison = ({ overlayed, comparison, rate, salary, loading,
             </div>
             <div className="row form-inline">
               <div className="col-md-6 form-group">
-                <input
-                  onChange={event => onSalaryChange(Number(event.target.value))}
-                  type="number" required="true" className="form-control"
-                  placeholder="1500" id="salary" name="salary" value={salary}
-                />
+                <div className="input-group">
+                  <input
+                    onChange={event => onSalaryChange(Number(event.target.value))}
+                    type="text" required="true" className="form-control"
+                    placeholder="1500" id="salary" name="salary" value={salary}
+                    aria-describedby="salary-euro"
+                  />
+                  <span className="input-group-addon" id="salary-euro">&euro;</span>
+                </div>
               </div>
               <div className="col-md-6 form-group">
-                <input
-                  onChange={event => onRateChange(Number(event.target.value) / 100)}
-                  type="number" required="true" className="form-control"
-                  placeholder="8" id="return" name="return" value={Math.round(rate * 100)}
-                />
+                <div className="input-group">
+                  <input
+                    onChange={event => onRateChange(Number(event.target.value) / 100)}
+                    type="text" required="true" className="form-control"
+                    placeholder="8" id="return" name="return" value={Math.round(rate * 100)}
+                    aria-describedby="return-percentage"
+                  />
+                  <span className="input-group-addon" id="return-percentage">%</span>
+                </div>
               </div>
             </div>
           </div>
@@ -86,9 +92,9 @@ export const Comparison = ({ overlayed, comparison, rate, salary, loading,
                 <table className="table">
                   <thead>
                     <tr>
-                      <th><Message>comparison.output.calculation</Message></th>
-                      <th><Message>comparison.output.old.funds</Message></th>
-                      <th><Message>comparison.output.new.funds</Message></th>
+                      <th>&nbsp;</th>
+                      <th className="text-right"><Message>comparison.output.old.funds</Message></th>
+                      <th className="text-right"><Message>comparison.output.new.funds</Message></th>
                     </tr>
                   </thead>
                   {
@@ -108,14 +114,14 @@ export const Comparison = ({ overlayed, comparison, rate, salary, loading,
                           <td className="output-amount old-fund-fees text-right">
                             {Math.round(comparison.currentFundFee).toLocaleString('et-EE')}&nbsp;&euro;
                           </td>
-                          <td className="output-amount text-right">{Math.round(comparison.newFundFee).toLocaleString('et-EE')}&nbsp;&euro;</td>
+                          <td className="output-amount new-fund-fees text-right">{Math.round(comparison.newFundFee).toLocaleString('et-EE')}&nbsp;&euro;</td>
                         </tr>
                         <tr>
                           <td><Message>comparison.output.calculation.second.row</Message></td>
                           <td className="output-amount text-right">
                             {Math.round(comparison.currentFundFutureValue).toLocaleString('et-EE')}&nbsp;&euro;
                           </td>
-                          <td className="output-amount new-fund-total text-right">
+                          <td className="output-amount text-right">
                             {Math.round(comparison.newFundFutureValue).toLocaleString('et-EE')}&nbsp;&euro;
                           </td>
                         </tr>
@@ -126,6 +132,10 @@ export const Comparison = ({ overlayed, comparison, rate, salary, loading,
               </div>
             )
           }
+        </div>
+        <div>
+          <p className="mb-4 lead"><Message>comparison.header</Message></p>
+          <p><Message>comparison.intro</Message></p>
         </div>
       </div>
     </div>
@@ -144,7 +154,9 @@ export const Comparison = ({ overlayed, comparison, rate, salary, loading,
             </div>
           </div>
           <div className="row mt-4 pt-4 justify-content-center">
-            {content}
+            <div className="col-lg-10">
+              {content}
+            </div>
           </div>
         </div>
       </div>
