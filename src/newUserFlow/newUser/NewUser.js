@@ -4,10 +4,12 @@ import { Link } from 'react-router';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import { Loader, ErrorAlert } from '../../common/index';
-import PensionFundTable from '../../onboardingFlow/selectSources/pensionFundTable/index';
-import ComparisonWidget from '../../common/comparison/widget';
+import { Loader, ErrorAlert } from '../../common';
+import MiniComparison from '../../common/comparison/mini';
+
 import './NewUser.scss';
+import { formatLargeAmountForCurrency, getTotalFundValue } from '../../common/utils';
+
 
 export const NewUser = ({
                           loadingSourceFunds,
@@ -15,6 +17,7 @@ export const NewUser = ({
                           errorDescription,
                           userFirstName,
                           userConverted,
+                          comparison,
                         }) => {
   if (errorDescription) {
     return <ErrorAlert description={errorDescription} />;
@@ -22,43 +25,44 @@ export const NewUser = ({
   if (loadingSourceFunds) {
     return <Loader className="align-middle" />;
   }
-
+  const totalFundValue = formatLargeAmountForCurrency(getTotalFundValue(sourceFunds));
   return (
     <div>
       <div className="px-col mb-4">
         <p className="mb-4 mt-5 lead">
           <Message params={{ name: userFirstName }}>steps.welcome</Message>
         </p>
-        <p><Message>new.user.flow.intro</Message></p>
-        <div className="row">
-          <div className="col-8 mt-3">
-            <p className="mb-4 lead"><Message>select.sources.current.status</Message></p>
-            <PensionFundTable funds={sourceFunds} />
-          </div>
-          <div className="col-4 mb-4 mt-3">
-            <ComparisonWidget />
-          </div>
+        <div className="lead">
+          <p className="mb-4">
+            <Message>Sinu II samba pensionikontole on tänaseks kogunenud </Message>
+            <strong>{totalFundValue}</strong>.
+            </p>
+          <MiniComparison />
         </div>
       </div>
 
-      <div className="row text-boxes">
+      <div className="row text-boxes mb-5">
         {
           !userConverted ? (
             <div className="col-md-6">
               <div className="text-box text-box--rounder">
                 <h3 className="text-box__title text-box__title--border-lightblue">
-                  Miks koguda pensionit Tuleva fondidesse?
+                  Miks koguda pensionit Tulevas?
                 </h3>
                 <div className="text-box__content">
+                  <div className="mb-4">
+                    <span>Valides Tuleva pensionifondi, hoiaksid tasudelt kokku </span>
+                    <span className="lead highlight">
+                      {formatLargeAmountForCurrency(
+                        comparison.currentFundFee - comparison.newFundFee)}
+                    </span>
+                  </div>
                   <ul className="list-style-checkmark text-lg">
-                    <li>madalad kulud — rohkem jääb sulle</li>
-                    <li>selged investeerimisreeglid</li>
+                    <li><span>madalad kulud — valitsemistasu vaid </span>
+                      <strong>0.34%</strong></li>
+                    <li><a href="http://tuleva.ee/tuleva20/fondid/">selged investeerimisreeglid</a></li>
                     <li>kogud raha endale, mitte pangale</li>
                   </ul>
-                  {/* <p className="lead"><em>*/}
-                  {/* Tulevas pensioni kogumiseks <span className="highlight">*/}
-                  {/* ei pea olema ühistu liige.</span>*/}
-                  {/* </em></p>*/}
                   <div className="text-center">
                     <Link className="btn btn-secondary btn-block mb-2" to="/steps/non-member">
                       <Message>newUserFlow.newUser.i.want.just.to.transfer.my.pension</Message>
@@ -72,16 +76,22 @@ export const NewUser = ({
         <div className="col-md-6">
           <div className="text-box text-box--rounder">
             <h3 className="text-box__title text-box__title--border-blue">
-              Miks astuda Tuleva ühistu liikmeks?
+              Miks astuda ka Tuleva liikmeks?
             </h3>
             <div className="text-box__content">
+              <div className="mb-4">
+                <span>Astudes Tuleva liikmeks, hoiaksid tasudelt kokku </span>
+                <span className="lead highlight">
+                  {formatLargeAmountForCurrency(comparison.currentFundFee - comparison.newFundFee)}
+                </span>
+                <span> ja lisaks teeniksid </span>
+                <span className="lead highlight">2 000 €</span> liikmeboonust
+              </div>
               <ul className="list-style-plussign text-lg">
+                <li>kogud igal aastal <strong>0,05%</strong> liikmeboonust</li>
                 <li>oled oma pensionifondi kaasomanik</li>
                 <li>saad otsustada Tuleva tuleviku üle</li>
-                <li>kogud igal aastal <span className="highlight">0,05% liikmeboonust</span>
-                </li>
               </ul>
-              {/* <p><em>Pensioni kogumine on tänu liikmeboonusele veel soodsam.</em></p>*/}
               <div className="text-center">
                 <Link className={'btn btn-primary btn-block mb-2'} to="/steps/signup">
                   <Message>newUserFlow.newUser.i.wish.to.join</Message>
@@ -102,6 +112,7 @@ NewUser.defaultProps = {
   errorDescription: '',
   userFirstName: '',
   userConverted: false,
+  comparison: {},
 };
 
 NewUser.propTypes = {
@@ -110,6 +121,7 @@ NewUser.propTypes = {
   errorDescription: Types.string,
   userFirstName: Types.string,
   userConverted: Types.bool,
+  comparison: Types.shape({}),
 };
 
 const mapStateToProps = state => ({
@@ -119,6 +131,7 @@ const mapStateToProps = state => ({
   userFirstName: (state.login.user || {}).firstName,
   userConverted: (state.login.userConversion || {}).transfersComplete &&
     (state.login.userConversion || {}).selectionComplete,
+  comparison: (state.comparison || {}).comparison || {},
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({

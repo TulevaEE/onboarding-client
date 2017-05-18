@@ -114,6 +114,9 @@ describe('api', () => {
           name: 'name',
           isin: 'AA123123123123',
           managementFeeRate: 0.005,
+          fundManager: {
+            name: 'manager',
+          },
         },
         activeContributions: false,
         value: 100,
@@ -123,6 +126,9 @@ describe('api', () => {
           name: 'name 2',
           isin: 'AA123123123124',
           managementFeeRate: 0.0039,
+          fundManager: {
+            name: 'manager',
+          },
         },
         activeContributions: true,
         value: 200,
@@ -142,6 +148,7 @@ describe('api', () => {
             activeFund: false,
             price: 100,
             currency: 'EUR',
+            managerName: 'manager',
           },
           {
             name: 'name 2',
@@ -150,6 +157,7 @@ describe('api', () => {
             activeFund: true,
             price: 200,
             currency: 'GBP',
+            managerName: 'manager',
           },
         ]);
         expect(mockHttp.get).toHaveBeenCalledWith('/v1/pension-account-statement', undefined, {

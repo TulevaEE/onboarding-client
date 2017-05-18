@@ -4,9 +4,11 @@ import { Message } from 'retranslate';
 import FundRow from './fundRow';
 
 import './PensionFundTable.scss';
+import { getTotalFundValue } from '../../../common/utils';
+
 
 const PensionFundTable = ({ funds }) => {
-  const totalPrice = (funds || []).reduce((sum, { price }) => sum + price, 0);
+  const totalPrice = getTotalFundValue(funds);
   return (
     <div>
       <div className="row tv-table__header py-2">

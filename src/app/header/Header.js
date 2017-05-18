@@ -14,17 +14,16 @@ const Header = ({ user: { name } = {}, loading, onLogout }) => (
         loading || !name ?
           <Loader className="align-right" /> :
           (
-            <small>
-              <b>{name}</b>
-              <br />
-              <Link className="btn btn-link pl-0 py-0 pr-0" to="/account">
-                <Message>header.my.account</Message>
-              </Link>
-              <br />
-              <button className="btn btn-link pl-0 py-0 pr-0" onClick={onLogout}>
+            <div>
+              {name}&ensp;&middot;&ensp;
+              <button className="btn btn-link p-0 border-0" onClick={onLogout}>
                 <Message>log.out</Message>
               </button>
-            </small>
+              <br />
+              <Link className="btn btn-link p-0 border-0" to="/account">
+                <Message>header.my.account</Message>
+              </Link>
+            </div>
           )
       }
     </div>

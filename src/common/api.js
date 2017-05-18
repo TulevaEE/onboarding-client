@@ -18,6 +18,7 @@ function transformFundBalance(fundBalance) {
     activeFund: fundBalance.activeContributions,
     currency: fundBalance.currency || 'EUR',
     name: fundBalance.fund.name,
+    managerName: fundBalance.fund.fundManager.name,
     managementFeePercent: (fundBalance.fund.managementFeeRate * 100).toFixed(2).replace(/0+$/, ''),
   };
 }

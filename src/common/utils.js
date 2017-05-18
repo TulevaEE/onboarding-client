@@ -22,3 +22,11 @@ export function createClamper(lowerLimit = 0, upperLimit = 10) {
 export function formatAmountForCurrency(amount = 0) {
   return `${amount.toFixed(2)}€`; // hardcoded euro until more currencies.
 }
+
+export function formatLargeAmountForCurrency(amount = 0) {
+  return `${Math.round(amount).toLocaleString('et-EE')}\u00A0€`; // hardcoded euro until more currencies.
+}
+
+export function getTotalFundValue(funds) {
+  return (funds || []).reduce((sum, { price }) => sum + price, 0);
+}

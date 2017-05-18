@@ -1,3 +1,5 @@
+import debounce from 'lodash/debounce';
+
 import {
   getComparisonWithToken,
 } from '../common/api';
@@ -11,6 +13,8 @@ import {
   SHOW_COMPARISON,
   HIDE_COMPARISON,
 } from './constants';
+
+const debounceTime = 500;
 
 export function getComparison() {
   return (dispatch, getState) => {
@@ -47,4 +51,18 @@ export function changeRate(rate) {
   };
 }
 
-export default getComparison;
+export function debouncedSalaryChange(salary) {
+  return (dispatch) => {
+    dispatch(changeSalary(salary));
+    const debouncedDispatch = debounce(dispatch, debounceTime);
+    debouncedDispatch(getComparison());
+  };
+}
+
+export function debouncedRateChange(rate) {
+  return (dispatch) => {
+    dispatch(changeRate(rate));
+    const debouncedDispatch = debounce(dispatch, debounceTime);
+    debouncedDispatch(getComparison());
+  };
+}
