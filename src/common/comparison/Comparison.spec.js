@@ -6,7 +6,7 @@ import { Comparison } from './Comparison';
 
 import { Loader } from '../';
 
-describe('Comparison widget', () => {
+describe('Comparison', () => {
   let component;
   let props;
 

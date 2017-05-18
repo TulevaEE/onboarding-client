@@ -3,8 +3,7 @@ import { shallow } from 'enzyme';
 import { Link } from 'react-router';
 import { Message } from 'retranslate';
 
-import { Loader } from '../../common/index';
-import PensionFundTable from '../../onboardingFlow/selectSources/pensionFundTable/index';
+import { Loader } from '../../common';
 import { NewUser } from './NewUser';
 import ComparisonWidget from '../../common/comparison/widget';
 
@@ -25,16 +24,6 @@ describe('New user step', () => {
     expect(component.get(0)).not.toEqual(<Loader className="align-middle" />);
   });
 
-  it('renders a title', () => {
-    expect(component.contains(<Message>select.sources.current.status</Message>)).toBe(true);
-  });
-
-  it('renders a pension fund table with given funds', () => {
-    const sourceFunds = [{ iAmAFund: true }, { iAmAlsoAFund: true }];
-    component.setProps({ sourceFunds });
-    expect(component.contains(<PensionFundTable funds={sourceFunds} />)).toBe(true);
-  });
-
   it('renders a link to join as a member', () => {
     expect(component.find(Link).at(1).prop('to')).toBe('/steps/signup');
     expect(component.find(Link).at(1).children().at(0).node)
@@ -49,9 +38,5 @@ describe('New user step', () => {
 
     component.setProps({ userConverted: true });
     expect(component.find(Link).at(0).prop('to')).not.toBe('/steps/non-member');
-  });
-
-  it('renders comparison widget', () => {
-    expect(component.contains(<ComparisonWidget />)).toBe(true);
   });
 });

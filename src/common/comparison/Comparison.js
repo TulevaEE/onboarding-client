@@ -1,4 +1,3 @@
-import debounce from 'lodash/debounce';
 import React, { PropTypes as Types } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -7,32 +6,13 @@ import { Message } from 'retranslate';
 import { InfoTooltip, Loader } from '../';
 
 import {
-  changeSalary,
-  changeRate,
-  getComparison,
+  debouncedSalaryChange,
+  debouncedRateChange,
 } from '../../comparison/actions';
 
 import './Comparison.scss';
 
 import closeImage from './btn-close.svg';
-
-const debounceTime = 500;
-
-function debouncedSalaryChange(salary) {
-  return (dispatch) => {
-    dispatch(changeSalary(salary));
-    const debouncedDispatch = debounce(dispatch, debounceTime);
-    debouncedDispatch(getComparison());
-  };
-}
-
-function debouncedRateChange(rate) {
-  return (dispatch) => {
-    dispatch(changeRate(rate));
-    const debouncedDispatch = debounce(dispatch, debounceTime);
-    debouncedDispatch(getComparison());
-  };
-}
 
 export const Comparison = ({ overlayed, comparison, rate, salary, loading,
                               onSalaryChange, onRateChange, onClose }) => {
