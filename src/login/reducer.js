@@ -50,7 +50,7 @@ const defaultState = {
   loadingUserConversion: false,
   userConversionError: null,
   grantToken: false,
-  redirectUrl: 'redirecturl.ee',
+  redirectUrl: 'http://redirecturl.ee',
 };
 
 function updateLocalStorage(action, loginMethodUsed) {
