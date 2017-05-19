@@ -1,7 +1,6 @@
 {
   
   "login.title": "Hello! Welcome.",
-  "login.subtitle": "Based on your personal ID code Tuleva will request information about your pension account from the Estonian Central Securities Depository.",
   "login.mobile.id": "Enter with mobile-ID",
   "login.id.card": "Enter with ID-card",
   "login.phone.number": "Phone number",

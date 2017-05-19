@@ -1,7 +1,6 @@
 {
 
   "login.title": "Vaata oma andmete põhjal, palju Tulevaga säästad",
-  "login.subtitle": "Et saaksime sulle abiks olla, teeme sinu andmete kohta päringu pensioniregistrisse. Sisse logides annad Tulevale selleks loa.",
   "login.mobile.id": "Mobiil-ID",
   "login.id.card": "ID-kaart",
   "login.phone.number": "Telefoninumber",
@@ -12,7 +11,7 @@
   "login.error.generic": "Oi, sisselogimisel tekkis viga. Palun proovi uuesti.",
   "login.join.tuleva": "Liitu!",
   "login.or": "või",
-  "login.permission.note": "Et saaksime sulle abiks olla, teeme sinu andmete kohta päringu pensioniregistrisse. Sisse logides annad Tulevale selleks loa.",
+  "login.permission.note": "Luban Tuleval küsida pensioniregistrist minu andmeid",
   "login.terms.link": "Tuleva kasutustingimused",
   "login.not.member": "Sa pole veel Tuleva liige?",
   "login.apply.link": "Täida liitumisavaldus",

@@ -1,6 +1,7 @@
 import React, { PropTypes as Types } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { Message } from 'retranslate';
 
 import './LoginPage.scss';
 
@@ -45,6 +46,11 @@ export const LoginPage = ({
                   controlCode={controlCode}
                 /> : ''
             }
+            <div className="mt-3 mb-3">
+              <a href="/terms-of-use" target="_blank" rel="noopener noreferrer">
+                <Message>login.terms.link</Message>
+              </a>
+            </div>
           </div>
         </div>
       </div>
