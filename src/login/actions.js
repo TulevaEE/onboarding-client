@@ -32,6 +32,8 @@ import {
   TOKEN_REFRESH_ERROR,
 
   LOG_OUT,
+
+  QUERY_PARAMETERS,
 } from './constants';
 
 import { api, http } from '../common';
@@ -119,6 +121,16 @@ export function cancelMobileAuthentication() {
   return { type: MOBILE_AUTHENTICATION_CANCEL };
 }
 
+function grantToken(state) {
+  window.location.href = `${state.login.redirectUrl}?accessToken=${state.login.token}`;
+}
+
+function checkGrantToken(getState) {
+  if (getState().login.grantToken === true) {
+    grantToken(getState());
+  }
+}
+
 export function getUser() {
   return (dispatch, getState) => {
     dispatch({ type: GET_USER_START });
@@ -129,6 +141,7 @@ export function getUser() {
           Raven.setUserContext({ id: user.id });
         }
         dispatch({ type: GET_USER_SUCCESS, user });
+        checkGrantToken(getState);
         dispatch(router.selectRouteForState());
       })
       .catch((error) => {
@@ -136,7 +149,6 @@ export function getUser() {
           dispatch({ type: LOG_OUT });
         } else {
           dispatch({ type: GET_USER_ERROR, error });
-          console.log(error); // for live debugging
         }
       });
   };
@@ -173,4 +185,8 @@ export function logOut() {
   }
   http.resetStatisticsIdentification();
   return { type: LOG_OUT };
+}
+
+export function mapUrlQueryParamsToState(query) {
+  return { type: QUERY_PARAMETERS, query };
 }
