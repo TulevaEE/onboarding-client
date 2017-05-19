@@ -184,10 +184,14 @@ export default function loginReducer(state = defaultState, action) {
       };
 
     case QUERY_PARAMETERS:
-      return {
-        ...state,
-        grantToken: action.query.grantToken === 'true',
-      };
+      if (action.query.grantToken === 'true') {
+        return {
+          ...state,
+          grantToken: action.query.grantToken === 'true',
+        };
+      }
+      return state;
+
 
     default:
       return state;
