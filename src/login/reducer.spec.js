@@ -27,6 +27,8 @@ import {
   TOKEN_REFRESH_ERROR,
 
   LOG_OUT,
+
+  QUERY_PARAMETERS,
 } from './constants';
 
 describe('Login reducer', () => {
@@ -210,5 +212,11 @@ describe('Login reducer', () => {
     expect(newState.token).toBe(null);
     expect(newState.refreshToken).toBe(null);
     expect(newState.error).toBe('oh noes');
+  });
+
+  it('maps query parameters', () => {
+    const query = { grantToken: 'true' };
+    const newState = loginReducer(undefined, { type: QUERY_PARAMETERS, query });
+    expect(newState.grantToken).toBe(true);
   });
 });

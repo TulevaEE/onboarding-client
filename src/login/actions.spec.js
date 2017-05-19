@@ -25,6 +25,7 @@ import {
   TOKEN_REFRESH_START,
   TOKEN_REFRESH_SUCCESS,
   TOKEN_REFRESH_ERROR,
+  QUERY_PARAMETERS,
 
   LOG_OUT,
 } from './constants';
@@ -333,4 +334,13 @@ describe('Login actions', () => {
         });
       });
   });
+
+  it('can handle query parameters', () => {
+    const query = 'AAA';
+    expect(actions.mapUrlQueryParamsToState(query)).toEqual({
+      type: QUERY_PARAMETERS,
+      query,
+    });
+  });
+
 });

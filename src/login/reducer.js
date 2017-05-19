@@ -19,6 +19,7 @@ import {
   TOKEN_REFRESH_SUCCESS,
   TOKEN_REFRESH_ERROR,
   LOG_OUT,
+  QUERY_PARAMETERS,
 } from './constants';
 
 import { getGlobalErrorCode } from '../common/errorMessage';
@@ -48,6 +49,8 @@ const defaultState = {
   userConversion: null,
   loadingUserConversion: false,
   userConversionError: null,
+  grantToken: false,
+  redirectUrl: 'http://redirecturl.ee',
 };
 
 function updateLocalStorage(action, loginMethodUsed) {
@@ -178,6 +181,12 @@ export default function loginReducer(state = defaultState, action) {
         user: null,
         loginMethod: null,
         loadingUser: false,
+      };
+
+    case QUERY_PARAMETERS:
+      return {
+        ...state,
+        grantToken: action.query.grantToken === 'true',
       };
 
     default:

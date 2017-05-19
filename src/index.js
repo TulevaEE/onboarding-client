@@ -62,7 +62,8 @@ function getConversionData() {
   }
 }
 
-function getDataForApp() {
+function getDataForApp(nextState) {
+  store.dispatch(loginActions.mapUrlQueryParamsToState(nextState.location.query));
   const { login } = store.getState();
   if (login.token && !(login.user || login.loadingUser)) {
     store.dispatch(loginActions.getUser());
