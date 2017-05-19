@@ -68,6 +68,7 @@
   "transfer.future.capital.EE3600109443.fund": "Tuleva Maailma Võlakirjade Pensionifond",
   "transfer.future.capital.no": "Ei suuna makseid Tulevasse",
   "transfer.future.capital.no.subtitle": "Sinu pensionimaksed lähevad ka edaspidi {{currentFundName}} pensionifondi, mille valitsemistasu on {{currentFundManagementFee}}% aastas. Kui soovid teenustasudelt säästa, saad oma maksed ka hiljem Tulevasse ümber suunata.",
+  "transfer.future.capital.no.already.converted.subtitle": "Sinu pensionimaksed lähevad ka edaspidi {{currentFundName}} pensionifondi, mille valitsemistasu on {{currentFundManagementFee}}% aastas.",
   "confirm.mandate.intro": "Avaldust allkirjastades kinnitad, et",
   "confirm.mandate.future.contribution": "soovid hakata tegema kohustusliku kogumispensioni sissemakseid ",
   "confirm.mandate.and": " ja",

@@ -14,6 +14,7 @@ export const TransferFutureCapital = ({
   targetFunds,
   loadingTargetFunds,
   activeSourceFund,
+  isUserConverted,
 }) => {
   if (loadingTargetFunds) {
     return <Loader className="align-middle" />;
@@ -57,14 +58,25 @@ export const TransferFutureCapital = ({
         {
           !selectedFutureContributionsFundIsin && activeSourceFund ?
           (<p className="mb-0 mt-2">
-            <Message
-              params={{
-                currentFundName: activeSourceFund.name,
-                currentFundManagementFee: activeSourceFund.managementFeePercent,
-              }}
-            >
-              transfer.future.capital.no.subtitle
-            </Message>
+            {
+              isUserConverted ?
+                (<Message
+                  params={{
+                    currentFundName: activeSourceFund.name,
+                    currentFundManagementFee: activeSourceFund.managementFeePercent,
+                  }}
+                >
+                  transfer.future.capital.no.already.converted.subtitle
+                </Message>) :
+                (<Message
+                  params={{
+                    currentFundName: activeSourceFund.name,
+                    currentFundManagementFee: activeSourceFund.managementFeePercent,
+                  }}
+                >
+                  transfer.future.capital.no.subtitle
+                </Message>)
+            }
           </p>) : ''
         }
       </Radio>
@@ -88,6 +100,7 @@ TransferFutureCapital.defaultProps = {
   targetFunds: [],
   loadingTargetFunds: false,
   activeSourceFund: null,
+  isUserConverted: false,
 };
 
 TransferFutureCapital.propTypes = {
@@ -96,6 +109,7 @@ TransferFutureCapital.propTypes = {
   targetFunds: Types.arrayOf(Types.shape({})),
   loadingTargetFunds: Types.bool,
   activeSourceFund: Types.shape({}),
+  isUserConverted: Types.bool,
 };
 
 const mapStateToProps = state => ({
@@ -104,6 +118,7 @@ const mapStateToProps = state => ({
   loadingTargetFunds: state.exchange.loadingTargetFunds,
   activeSourceFund: utils.findWhere(state.exchange.sourceFunds || [],
     element => element.activeFund),
+  isUserConverted: state.login.userConversion.selectionComplete,
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({

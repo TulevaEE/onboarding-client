@@ -138,5 +138,38 @@ describe('Transfer future capital step', () => {
       });
       expect(component.contains(activeFundMessage)).toBe(false);
     });
+
+    it('shows different active fund message for converted user', () => {
+      let activeSourceFund = { isin: 'AAA', name: 'bla', managementFeePercent: 0.5 };
+      const targetFunds = [{ isin: 'AAA' }, { isin: 'BBB' }];
+      const loadingTargetFunds = false;
+      const selectedFutureContributionsFundIsin = null;
+
+      const activeFundMessage = (<Message
+        params={{
+          currentFundName: activeSourceFund.name,
+          currentFundManagementFee: activeSourceFund.managementFeePercent,
+        }}
+      >
+        transfer.future.capital.no.subtitle
+      </Message>);
+
+      component.setProps({
+        targetFunds,
+        loadingTargetFunds,
+        selectedFutureContributionsFundIsin,
+        activeSourceFund,
+      });
+      expect(component.contains(activeFundMessage)).toBe(true);
+
+      activeSourceFund = null;
+      component.setProps({
+        targetFunds,
+        loadingTargetFunds,
+        selectedFutureContributionsFundIsin,
+        activeSourceFund,
+      });
+      expect(component.contains(activeFundMessage)).toBe(false);
+    });
   });
 });
