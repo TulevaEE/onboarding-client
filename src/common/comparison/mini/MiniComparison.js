@@ -36,8 +36,8 @@ export const MiniComparison = ({ comparison, salary, loading, onSalaryChange,
           {
             comparison ? (
               <span>
-                <strong className="lead red">
-                  <span>-{Math.round(comparison.currentFundFee).toLocaleString('et-EE')}&nbsp;&euro;</span>
+                <strong className="red">
+                  <span>{Math.round(comparison.currentFundFee).toLocaleString('et-EE')}&nbsp;&euro;</span>
                 </strong>
                 <span>. </span>
                 <InfoTooltip name="comparison.mini.tooltip">

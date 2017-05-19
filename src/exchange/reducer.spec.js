@@ -1,5 +1,7 @@
 import exchangeReducer from './reducer';
 import {
+  LOAD_PENSION_DATA_SUCCESS,
+
   GET_SOURCE_FUNDS_START,
   GET_SOURCE_FUNDS_SUCCESS,
   GET_SOURCE_FUNDS_ERROR,
@@ -32,6 +34,11 @@ import {
 } from '../login/constants';
 
 describe('Exchange reducer', () => {
+  it('finishes loading pension data', () => {
+    const newState = exchangeReducer(undefined, { type: LOAD_PENSION_DATA_SUCCESS });
+    expect(newState.loadingPensionData).toBe(false);
+  });
+
   it('starts loading when starting to get pension funds', () => {
     const newState = exchangeReducer(undefined, { type: GET_SOURCE_FUNDS_START });
     expect(newState.loadingSourceFunds).toBe(true);

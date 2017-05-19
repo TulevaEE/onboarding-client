@@ -1,4 +1,6 @@
 import {
+  LOAD_PENSION_DATA_SUCCESS,
+
   GET_SOURCE_FUNDS_START,
   GET_SOURCE_FUNDS_SUCCESS,
   GET_SOURCE_FUNDS_ERROR,
@@ -35,6 +37,7 @@ import { getGlobalErrorCode } from '../common/errorMessage';
 
 
 const initialState = {
+  loadingPensionData: true,
   sourceFunds: null,
   loadingSourceFunds: false,
   sourceSelection: null,
@@ -78,6 +81,8 @@ function getContributionFundIsin(action, state) {
 
 export default function exchangeReducer(state = initialState, action) {
   switch (action.type) {
+    case LOAD_PENSION_DATA_SUCCESS:
+      return { ...state, loadingPensionData: false };
     case GET_SOURCE_FUNDS_START:
       return { ...state, loadingSourceFunds: true, error: null };
     case GET_SOURCE_FUNDS_SUCCESS:

@@ -32,6 +32,6 @@ describe('Mini Comparison', () => {
     component.setProps({ comparison });
 
     expect(component.contains(
-      <span>-{Math.round(comparison.currentFundFee).toLocaleString('et-EE')}&nbsp;&euro;</span>)).toBe(true);
+      <span>{Math.round(comparison.currentFundFee).toLocaleString('et-EE')}&nbsp;&euro;</span>)).toBe(true);
   });
 });

@@ -4,7 +4,7 @@ import { Message } from 'retranslate';
 import { Loader } from '../../common';
 import './AuthenticationLoader.scss';
 
-const AuthenticationLoader = ({ controlCode, onCancel, overlayed }) => {
+const AuthenticationLoader = ({ controlCode, onCancel, overlayed, message }) => {
   const content = (
     <div className="card text-center p-4 tv-modal__content">
       <div className="p-4">
@@ -17,6 +17,13 @@ const AuthenticationLoader = ({ controlCode, onCancel, overlayed }) => {
           ) : ''
         }
         <Loader className="align-middle" />
+        {
+          message ? (
+            <div>
+              <h3 className="mt-4"><Message>{message}</Message></h3>
+            </div>
+          ) : ''
+        }
         {
           controlCode ? (
             <button className="btn btn-secondary mt-4" onClick={onCancel}>
@@ -51,12 +58,14 @@ AuthenticationLoader.defaultProps = {
   controlCode: null,
   onCancel: noop,
   overlayed: false,
+  message: null,
 };
 
 AuthenticationLoader.propTypes = {
   controlCode: Types.string,
   onCancel: Types.func,
   overlayed: Types.bool,
+  message: Types.string,
 };
 
 export default AuthenticationLoader;

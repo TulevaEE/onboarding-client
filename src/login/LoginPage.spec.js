@@ -14,10 +14,6 @@ describe('Login page', () => {
     component = shallow(<LoginPage {...props} />);
   });
 
-  it('renders some messages', () => {
-    expect(component.contains(<Message>login.not.member</Message>)).toBe(true);
-  });
-
   it('renders a login form if no actions have not been taken', () => {
     const formProps = {
       phoneNumber: 'number',

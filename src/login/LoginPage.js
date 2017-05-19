@@ -1,7 +1,6 @@
 import React, { PropTypes as Types } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Message } from 'retranslate';
 
 import './LoginPage.scss';
 
@@ -46,14 +45,6 @@ export const LoginPage = ({
                   controlCode={controlCode}
                 /> : ''
             }
-            <div className="mt-3 mb-3">
-              <div className="login-page__not-member">
-                <Message>login.not.member</Message>
-              </div>
-              <a href="//tuleva.ee/#liitu" className="login-page__apply">
-                <Message>login.apply.link</Message>
-              </a>
-            </div>
           </div>
         </div>
       </div>

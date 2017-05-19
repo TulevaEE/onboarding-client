@@ -1,5 +1,7 @@
 const withPrefix = name => `@exchange/${name}`;
 
+export const LOAD_PENSION_DATA_SUCCESS = withPrefix('LOAD_PENSION_DATA_SUCCESS');
+
 export const GET_SOURCE_FUNDS_START = withPrefix('GET_SOURCE_FUNDS_START');
 export const GET_SOURCE_FUNDS_SUCCESS = withPrefix('GET_SOURCE_FUNDS_SUCCESS');
 export const GET_SOURCE_FUNDS_ERROR = withPrefix('GET_SOURCE_FUNDS_ERROR');

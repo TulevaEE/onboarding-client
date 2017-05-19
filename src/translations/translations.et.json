@@ -1,6 +1,6 @@
 {
 
-  "login.title": "Tere! Astu sisse. Tuleva veebirakendus töötab hetkel beeta-versioonis. Kui leiad vigu siis palun anna teada tuleva@tuleva.ee",
+  "login.title": "Vaata oma andmete põhjal, palju Tulevaga säästad",
   "login.subtitle": "Et saaksime sulle abiks olla, teeme sinu andmete kohta päringu pensioniregistrisse. Sisse logides annad Tulevale selleks loa.",
   "login.mobile.id": "Mobiil-ID",
   "login.id.card": "ID-kaart",
@@ -122,7 +122,7 @@
   "mandate.processing.error.epis.unknown": "Tundmatu Eesti Pensioni Infosüsteemi viga",
   "mandate.processing.error.epis.technical.error": "Tundmatu Eesti Pensioni Infosüsteemi tehniline viga",
   "newUserFlow.newUser.i.wish.to.join": "Astun Tuleva liikmeks",
-  "newUserFlow.newUser.i.want.just.to.transfer.my.pension": "Toon lihtsalt pensioni Tulevasse",
+  "newUserFlow.newUser.i.want.just.to.transfer.my.pension": "Valin internetipangas Tuleva fondi",
   "new.user.flow.intro": "Veendu ise Tuleva kasulikkuses ja astu liikmeks.",
   "new.user.flow.why": "Tuleva fondid on väga madalate kuludega. Liikmena säästad veel lisaks pensioniboonuse võrra.",
   "new.user.flow.comparison": "Võrdle, kui palju sa säästaksid Tuleva fondiga.",
@@ -230,5 +230,5 @@
   " on": " on",
   "fondis, maksad oma tööelu jooksul ": "fondis, maksad oma tööelu jooksul ",
   " tasudena ": " tasudena ",
-  "Selgitus miks...": "Selgitus miks..."
+  "Selgitus miks...": "Hinnanguline kogusumma, mille maksad pensionikogumise jooksul pangale."
 }

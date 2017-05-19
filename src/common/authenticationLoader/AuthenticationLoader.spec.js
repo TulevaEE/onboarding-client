@@ -49,4 +49,10 @@ describe('Authenticaion loader', () => {
     component.setProps({ overlayed: true });
     expect(isComponentModal()).toBe(true);
   });
+
+  it('shows the message if it is specified', () => {
+    const message = 'test message';
+    component.setProps({ message });
+    expect(component.contains(<Message>{message}</Message>)).toBe(true);
+  });
 });
