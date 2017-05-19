@@ -46,7 +46,7 @@ export const LoginPage = ({
                   controlCode={controlCode}
                 /> : ''
             }
-            <div className="mt-3 mb-3">
+            <div className="mt-3 small mb-3">
               <a href="/terms-of-use" target="_blank" rel="noopener noreferrer">
                 <Message>login.terms.link</Message>
               </a>
