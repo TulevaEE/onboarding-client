@@ -1,7 +1,7 @@
 import React, { PropTypes as Types } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-// import { Message } from 'retranslate';
+import { Message } from 'retranslate';
 
 import { InfoTooltip, utils } from '../../';
 
@@ -14,7 +14,8 @@ import {
 export const MiniComparison = ({ comparison, salary, loading, onSalaryChange,
   activeSourceFund }) => (
     <p className="mb-5">
-      <span className="mr-1">Kui sinu <strong>brutopalk</strong> on</span>
+      <span className="mr-1"><Message>Kui sinu </Message>
+        <strong><Message>brutopalk</Message></strong><Message> on</Message></span>
       <span className="input-group col-xs-1" id="salary-group">
         <input
           onChange={event => onSalaryChange(Number(event.target.value))}
@@ -24,10 +25,10 @@ export const MiniComparison = ({ comparison, salary, loading, onSalaryChange,
         />
         <span className="input-group-addon" id="salary-euro">&euro;</span>
       </span>
-      <span className="ml-1">ja sa jätkad oma raha kogumist
+      <span className="ml-1"><Message>ja sa jätkad oma raha kogumist</Message>
         <span> &quot;<strong>{activeSourceFund.name}</strong>&quot; </span>
-        <span>fondis, maksad oma tööelu jooksul </span>
-        <strong>{activeSourceFund.managerName}</strong>&apos;le tasudena </span>
+        <Message>fondis, maksad oma tööelu jooksul </Message>
+        <strong>{activeSourceFund.managerName}</strong>&apos;le<Message> tasudena </Message></span>
       {
         loading ? (
           ''
@@ -39,7 +40,8 @@ export const MiniComparison = ({ comparison, salary, loading, onSalaryChange,
                   <span>-{Math.round(comparison.currentFundFee).toLocaleString('et-EE')}&nbsp;&euro;</span>
                 </strong>
                 <span>. </span>
-                <InfoTooltip name="comparison.mini.tooltip">Selgitus miks...</InfoTooltip>
+                <InfoTooltip name="comparison.mini.tooltip">
+                  <Message>Selgitus miks...</Message></InfoTooltip>
               </span>
             ) : ''
           }

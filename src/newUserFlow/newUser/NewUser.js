@@ -34,7 +34,7 @@ export const NewUser = ({
         </p>
         <div className="lead">
           <p className="mb-4">
-            <Message>Sinu II samba pensionikontole on tänaseks kogunenud </Message>
+            <Message>Sinu II samba pensionikontole on tänaseks kogunenud</Message>
             <strong>{totalFundValue}</strong>.
             </p>
           <MiniComparison />
@@ -47,21 +47,21 @@ export const NewUser = ({
             <div className="col-md-6">
               <div className="text-box text-box--rounder">
                 <h3 className="text-box__title text-box__title--border-lightblue">
-                  Miks koguda pensionit Tulevas?
+                  <Message>Miks koguda pensionit Tulevas?</Message>
                 </h3>
                 <div className="text-box__content">
                   <div className="mb-4">
-                    <span>Valides Tuleva pensionifondi, hoiaksid tasudelt kokku </span>
+                    <Message>Valides Tuleva pensionifondi, hoiaksid tasudelt kokku</Message>
                     <span className="lead highlight">
                       {formatLargeAmountForCurrency(
                         comparison.currentFundFee - comparison.newFundFee)}
                     </span>
                   </div>
                   <ul className="list-style-checkmark text-lg">
-                    <li><span>madalad kulud — valitsemistasu vaid </span>
+                    <li><Message>madalad kulud — valitsemistasu vaid</Message>
                       <strong>0.34%</strong></li>
-                    <li><a href="http://tuleva.ee/tuleva20/fondid/">selged investeerimisreeglid</a></li>
-                    <li>kogud raha endale, mitte pangale</li>
+                    <li><a href="http://tuleva.ee/tuleva20/fondid/"><Message>selged investeerimisreeglid</Message></a></li>
+                    <li><Message>kogud raha endale, mitte pangale</Message></li>
                   </ul>
                   <div className="text-center">
                     <Link className="btn btn-secondary btn-block mb-2" to="/steps/non-member">
@@ -76,21 +76,22 @@ export const NewUser = ({
         <div className="col-md-6">
           <div className="text-box text-box--rounder">
             <h3 className="text-box__title text-box__title--border-blue">
-              Miks astuda ka Tuleva liikmeks?
+              <Message>Miks astuda ka Tuleva liikmeks?</Message>
             </h3>
             <div className="text-box__content">
               <div className="mb-4">
-                <span>Astudes Tuleva liikmeks, hoiaksid tasudelt kokku </span>
+                <Message>Astudes Tuleva liikmeks, hoiaksid tasudelt kokku</Message>
                 <span className="lead highlight">
                   {formatLargeAmountForCurrency(comparison.currentFundFee - comparison.newFundFee)}
                 </span>
-                <span> ja lisaks teeniksid </span>
-                <span className="lead highlight">2 000 €</span> liikmeboonust
+                <Message>ja lisaks teeniksid</Message>
+                <span className="lead highlight">2 000 €</span> <Message>liikmeboonust</Message>
               </div>
               <ul className="list-style-plussign text-lg">
-                <li>kogud igal aastal <strong>0,05%</strong> liikmeboonust</li>
-                <li>oled oma pensionifondi kaasomanik</li>
-                <li>saad otsustada Tuleva tuleviku üle</li>
+                <li><Message>kogud igal aastal</Message>
+                  <strong>0,05%</strong><Message>liikmeboonust</Message></li>
+                <li><Message>oled oma pensionifondi kaasomanik</Message></li>
+                <li><Message>saad otsustada Tuleva tuleviku üle</Message></li>
               </ul>
               <div className="text-center">
                 <Link className={'btn btn-primary btn-block mb-2'} to="/steps/signup">
