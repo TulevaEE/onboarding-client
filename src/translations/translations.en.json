@@ -68,6 +68,7 @@
   "transfer.future.capital.EE3600109443.fund": "Tuleva World Bonds Pension Fund",
   "transfer.future.capital.no": "Skip this step",
   "transfer.future.capital.no.subtitle": "Your pension fund contributions will continue to be directed into  {{currentFundName}} pension fund, with a management fee of {{currentFundManagementFee}}% per year. If you wish to save money on fees, you can direct your contributions to Tuleva at a later date.",
+  "transfer.future.capital.no.already.converted.subtitle": "Your pension fund contributions will continue to be directed into  {{currentFundName}} pension fund, with a management fee of {{currentFundManagementFee}}% per year.",
   "confirm.mandate.intro": "By signing I confirm that ",
   "confirm.mandate.future.contribution": " I wish to transfer future fund payments to ",
   "confirm.mandate.and": " and",
