@@ -6,10 +6,12 @@ import { nextStep } from './actions';
 import Question1 from './question1/Question1';
 
 export class Quiz extends Component {
-
   componentDidMount() {
   }
-
+  onNextStep(step) {
+    this.setState({ step: step + 1 });
+    // console.log(this.state);
+  }
   render() {
     const {
       question,
@@ -17,7 +19,7 @@ export class Quiz extends Component {
 
     if (question === 1) {
       return (
-        <Question1 />
+        <Question1 onNextStep={() => this.onNextStep(1)} />
       );
     }
     return (
