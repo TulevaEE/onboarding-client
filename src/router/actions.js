@@ -37,6 +37,10 @@ function isUserLoaded(getState) {
 
 export function selectRouteForState() {
   return (dispatch, getState) => {
+    if (getState().quiz.routeToQuiz === true) {
+      dispatch(push('/quiz')); // load user
+      return;
+    }
     if (!isUserLoaded(getState)) {
       dispatch(push('/')); // load user
     } else if (isMember(getState)) {

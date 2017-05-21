@@ -25,7 +25,10 @@ import Payment from './newUserFlow/payment';
 import { reducer as exchangeReducer, actions as exchangeActions } from './exchange';
 import trackingReducer from './tracking';
 import { reducer as comparisonReducer, actions as comparisonActions } from './comparison';
+import { reducer as quizReducer, actions as quizActions } from './quiz';
+import Quiz from './quiz/Quiz';
 
+// import { reducer as quizReducer } from './quiz';
 import App from './app';
 import AccountPage, { reducer as accountReducer, actions as accountActions } from './account';
 import Steps, {
@@ -43,6 +46,7 @@ const rootReducer = combineReducers({
   account: accountReducer,
   tracking: trackingReducer,
   form: formReducer,
+  quiz: quizReducer,
 });
 
 const composeEnhancers = (window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose; // eslint-disable-line
@@ -64,6 +68,10 @@ function getConversionData() {
 
 function getDataForApp(nextState) {
   store.dispatch(loginActions.mapUrlQueryParamsToState(nextState.location.query));
+  if (quizActions.isRouteToQuiz(nextState.location)) {
+    store.dispatch(quizActions.routeToQuiz());
+  }
+  // quizActions.checkRouteToQuiz(221);
   const { login } = store.getState();
   if (login.token && !(login.user || login.loadingUser)) {
     store.dispatch(loginActions.getUser());
@@ -135,6 +143,7 @@ render((
           <Route path="/login" component={LoginPage} />
           <Route path="/terms-of-use" component={TermsOfUse} />
           <Route path="/" component={requireAuthentication(App)} onEnter={getDataForApp}>
+            <Route path="/quiz" component={Quiz} />
 
             <Route path="/steps" onEnter={getDataForFlow}>
               <Route path="new-user" component={NewUser} onEnter={scrollToTop} />
