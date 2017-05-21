@@ -7,6 +7,7 @@ import { nextStep } from './actions';
 import Question1 from './question1/Question1';
 import Question2 from './question2/Question2';
 import Question3 from './question3/Question3';
+import Question4 from './question4/Question4';
 
 export class Quiz extends Component {
   constructor(props) {
@@ -37,6 +38,10 @@ export class Quiz extends Component {
     } else if (this.state.question === 3) {
       return (
         <Question3 onNextStep={() => this.onNextStep(3)} />
+      );
+    } else if (this.state.question === 4) {
+      return (
+        <Question4 />
       );
     }
     return (
