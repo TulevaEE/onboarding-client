@@ -96,7 +96,7 @@ export class Question3 extends Component {
                   {
                     Math.round(
                       (this.state.totalPensionCapital
-                      * this.state.activeFund.managementFeePercent) * 0.0083
+                      * this.state.activeFund.managementFeePercent) * 0.00083
                       * 100) / 100
                   }
                   . &nbsp;This might not look much, but here is the catch:
