@@ -1,25 +1,37 @@
-import React, { Component, PropTypes as Types } from 'react';
+// import React, { Component, PropTypes as Types } from 'react';
+import React, { Component } from 'react';
 import { Message } from 'retranslate';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { nextStep } from './actions';
 import Question1 from './question1/Question1';
+import Question2 from './question2/Question2';
 
 export class Quiz extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      question: 1,
+    };
+  }
   componentDidMount() {
   }
-  onNextStep(step) {
-    this.setState({ step: step + 1 });
+  onNextStep(question) {
+    this.setState({ question: question + 1 });
     // console.log(this.state);
   }
   render() {
-    const {
-      question,
-    } = this.props;
+    // const {
+    //   question,
+    // } = this.props;
 
-    if (question === 1) {
+    if (this.state.question === 1) {
       return (
         <Question1 onNextStep={() => this.onNextStep(1)} />
+      );
+    } else if (this.state.question === 2) {
+      return (
+        <Question2 onNextStep={() => this.onNextStep(2)} />
       );
     }
     return (
@@ -33,12 +45,10 @@ export class Quiz extends Component {
 Quiz.defaultProps = {
   // onNextStep: noop,
   sourceFunds: null,
-  question: 1,
 };
 
 Quiz.propTypes = {
   // onNextStep: Types.func,
-  question: Types.number,
 };
 
 const mapStateToProps = state => ({
