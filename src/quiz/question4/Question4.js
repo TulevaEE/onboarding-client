@@ -32,8 +32,10 @@ export class Question4 extends Component {
         <div className="col-12 text-center">
           <h2 className="mt-5">
             Not bad! If you keep working on paying into your second pillar pension fund,
-            you can expect to receive {comparison.currentFundFutureValue / 300} euros a month
-            from you II pillar, in todays money. 1st pillar will add additional 400 euros.
+            you can expect to receive&nbsp;
+            { Math.round((comparison.currentFundFutureValue / 300) * 100) / 100 }
+            &nbsp;euros a month
+            from you II pillar. 1st pillar will add additional 400 euros.
           </h2>
         </div>
 
