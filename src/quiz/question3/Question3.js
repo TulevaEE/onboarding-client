@@ -111,15 +111,6 @@ export class Question3 extends Component {
                   you would spend {comparison.newFundFee} on
                   fees.
                 </p>
-                <ul>
-                  <li>Conservative funds invests only in bonds</li>
-                  <li>Balanced funds invest up to 25% into stocks, rest goes to bonds</li>
-                  <li>Progressive funds invest up to 55% into stocks, rest goes to bonds</li>
-                  <li>Aggressive funds invest up to 75% into stocks, rest goes to bonds</li>
-                </ul>
-
-                <h3>Most international analysts recomment that you choose aggressive pension fund
-                  if you have more than 10 year left until retirement.</h3>
               </div>
             </div>
           ) : ''
