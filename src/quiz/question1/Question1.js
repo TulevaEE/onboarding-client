@@ -78,10 +78,10 @@ export class Question1 extends Component {
           this.state.totalPensionCapitalSelected ? (
             <div>
               <button
-                className="btn btn-primary text-center mt-2"
+                className="btn btn-success text-center mt-2"
                 onClick={onNextStep}
               >
-                <Message>OK</Message>
+                <Message>Next</Message>
               </button>
             </div>
           ) : ''

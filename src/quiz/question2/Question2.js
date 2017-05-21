@@ -356,8 +356,8 @@ export class Question2 extends Component {
               <div className="incorrect">
                 <h2>Not quite</h2>
                 <p>
-                  Your pension payments go to {this.state.activeFundStrategy}
-                  fund. What does that mean?
+                  Your pension payments go to {this.state.activeFundStrategy} fund.
+                  What does that mean?
                 </p>
                 <ul>
                   <li>Conservative funds invests only in bonds</li>
@@ -377,10 +377,10 @@ export class Question2 extends Component {
           this.state.fundStrategySelected ? (
             <div>
               <button
-                className="btn btn-primary text-center mt-2"
+                className="btn btn-success text-center mt-2"
                 onClick={onNextStep}
               >
-                <Message>OK</Message>
+                <Message>Next</Message>
               </button>
             </div>
           ) : ''
