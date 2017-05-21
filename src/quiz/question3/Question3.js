@@ -86,8 +86,9 @@ export class Question3 extends Component {
               <div className="incorrect">
                 <h2>Say what?</h2>
                 <p>
-                  Your fund managemen fee is {this.state.activeFund.managementFeePercent}.
-                  This means that every year {this.state.activeFund.managementFeePercent} of your II
+                  Your fund managemen fee is {this.state.activeFund.managementFeePercent}%.
+                  This means that every year
+                  &nbsp;{this.state.activeFund.managementFeePercent}% of your II
                   pillar savings go to fund manager. The fee is charged monthly.
                 </p>
                 <p>
