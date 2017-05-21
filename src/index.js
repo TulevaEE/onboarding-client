@@ -71,7 +71,6 @@ function getDataForApp(nextState) {
   if (quizActions.isRouteToQuiz(nextState.location)) {
     store.dispatch(quizActions.routeToQuiz());
   }
-  // quizActions.checkRouteToQuiz(221);
   const { login } = store.getState();
   if (login.token && !(login.user || login.loadingUser)) {
     store.dispatch(loginActions.getUser());
