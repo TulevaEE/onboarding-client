@@ -6,18 +6,21 @@ import { connect } from 'react-redux';
 // import './Question1.scss';
 
 export class Question1 extends Component {
-
+  constructor(props) {
+    super(props);
+    this.state = {
+      totalPensionCapitalSelected: null,
+    };
+  }
   componentDidMount() {
   }
   onTotalPensionSelect(amount) {
-    console.log(this.props.sourceFunds);
-    this.setState(() => ({ totalPensionSelected: amount }));
+    this.setState(() => ({ totalPensionCapitalSelected: amount }));
   }
-
   render() {
-    // const {
-    //   sourceSelection,
-    // } = this.props;
+    const {
+      onNextStep,
+    } = this.props;
 
     return (
       <div>
@@ -51,25 +54,58 @@ export class Question1 extends Component {
             </button>
           </div>
         </div>
+
+        {
+          this.state.totalPensionCapitalSelected ? (
+            <div>
+              <div className="incorrect">
+                <h2>Not quite</h2>
+                <p>
+                  {/* <img*/}
+                  {/* src="img/euros-fund.png"*/}
+                  {/* width="450px"*/}
+                  {/* alt="asd"*/}
+                  {/* />*/}
+                  Every month, 2% of your salary
+                  (+ 4% from the state) or 90 euros goes to your pension fund.
+                  You may not notice it since it is deducted before your salary is paid.</p>
+              </div>
+            </div>
+          ) : ''
+        }
+
+        {
+          this.state.totalPensionCapitalSelected ? (
+            <div>
+              <button
+                className="btn btn-primary text-center mt-2"
+                onClick={onNextStep}
+              >
+                <Message>OK</Message>
+              </button>
+            </div>
+          ) : ''
+        }
       </div>
     );
   }
 }
 
-// const noop = () => null;
+const noop = () => null;
 
 Question1.defaultProps = {
-  // onNextStep: noop,
-  sourceFunds: null,
+  onNextStep: noop,
+  // sourceFunds: null,
+  totalPensionCapital: null,
 };
 
 Question1.propTypes = {
-  // onNextStep: Types.func,
-  sourceFunds: Types.arrayOf(Types.shape({})),
+  onNextStep: Types.func,
+  // sourceFunds: Types.arrayOf(Types.shape({})),
 };
 
 const mapStateToProps = state => ({
-  sourceFunds: state.exchange.sourceFunds,
+  // sourceFunds: state.exchange.sourceFunds,
   totalPensionCapital:
     state.exchange.sourceFunds ? state.exchange.sourceFunds.map(item => item.price)
   .reduce((a, b) => a + b, 0) : 0,
