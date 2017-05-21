@@ -17,7 +17,7 @@ export class NewUser extends Component {
   componentDidMount() {
     const self = this;
     setTimeout(() => {
-      console.log('timeout ended');
+      // console.log('timeout ended');
       // self.props.onLoadComplete();
     }, 3000);
   }
