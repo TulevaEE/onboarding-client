@@ -37,11 +37,13 @@ export class Question4 extends Component {
             &nbsp;euros a month
             from you II pillar. 1st pillar will add additional 400 euros.
           </h2>
+          <div>
+            <a className="btn btn-success mt-3" href="https://tuleva.ee/final/">
+              <Message>Find out whats next</Message>
+            </a>
+          </div>
         </div>
 
-        <a className="btn btn-success" href="https://tuleva.ee/final/">
-          <Message>Find out whats next</Message>
-        </a>
       </div>
     );
   }
