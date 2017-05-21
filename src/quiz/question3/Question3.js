@@ -98,7 +98,7 @@ export class Question3 extends Component {
                       * this.state.activeFund.managementFeePercent) * 0.083
                       * 100) / 100
                   }
-                  This might not look much, but here is the catch:
+                  . &nbsp;This might not look much, but here is the catch:
                   over the years, the sums accumulate and reduce the
                   amount of money that return earn to you.
                 </p>

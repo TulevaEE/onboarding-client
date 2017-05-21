@@ -20,6 +20,7 @@ export class Question1 extends Component {
   render() {
     const {
       onNextStep,
+      totalPensionCapital,
     } = this.props;
 
     return (
@@ -34,7 +35,9 @@ export class Question1 extends Component {
               className="btn btn-primary text-center mt-2"
               onClick={() => this.onTotalPensionSelect(2500)}
             >
-              <Message>2500 euros</Message>
+              <Message>{
+              Math.round(totalPensionCapital * 0.5)
+              }</Message>
             </button>
           </div>
           <div>
@@ -42,7 +45,9 @@ export class Question1 extends Component {
               className="btn btn-primary text-center mt-2"
               onClick={() => this.onTotalPensionSelect(5000)}
             >
-              <Message>5000 euros</Message>
+              <Message>{
+                Math.round(totalPensionCapital)
+              }</Message>
             </button>
           </div>
           <div>
@@ -50,7 +55,9 @@ export class Question1 extends Component {
               className="btn btn-primary text-center mt-2"
               onClick={() => this.onTotalPensionSelect(7500)}
             >
-              <Message>7500 euros</Message>
+              <Message>{
+                Math.round(totalPensionCapital * 1.5)
+              }</Message>
             </button>
           </div>
         </div>
@@ -61,13 +68,8 @@ export class Question1 extends Component {
               <div className="incorrect">
                 <h2>Not quite</h2>
                 <p>
-                  {/* <img*/}
-                  {/* src="img/euros-fund.png"*/}
-                  {/* width="450px"*/}
-                  {/* alt="asd"*/}
-                  {/* />*/}
                   Every month, 2% of your salary
-                  (+ 4% from the state) or 90 euros goes to your pension fund.
+                  (+ 4% from the state).
                   You may not notice it since it is deducted before your salary is paid.</p>
               </div>
             </div>
@@ -101,6 +103,7 @@ Question1.defaultProps = {
 
 Question1.propTypes = {
   onNextStep: Types.func,
+  totalPensionCapital: Types.number,
   // sourceFunds: Types.arrayOf(Types.shape({})),
 };
 
