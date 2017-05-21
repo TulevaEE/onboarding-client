@@ -10,8 +10,8 @@ export function routeToQuiz() {
 }
 
 export function isRouteToQuiz(location) {
-  if (location === '123') {
+  if (location.pathname === '/quiz') {
     return true;
   }
-  return true;
+  return false;
 }
