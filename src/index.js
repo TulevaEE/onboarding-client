@@ -143,7 +143,7 @@ render((
           <Route path="/login" component={LoginPage} />
           <Route path="/terms-of-use" component={TermsOfUse} />
           <Route path="/" component={requireAuthentication(App)} onEnter={getDataForApp}>
-            <Route path="/quiz" component={Quiz} />
+            <Route path="/quiz" component={Quiz} onEnter={getDataForFlow} />
 
             <Route path="/steps" onEnter={getDataForFlow}>
               <Route path="new-user" component={NewUser} onEnter={scrollToTop} />
