@@ -39,7 +39,7 @@ export class Question4 extends Component {
           </h2>
         </div>
 
-        <a className="btn btn-success" href="https://tuleva.ee">
+        <a className="btn btn-success" href="https://tuleva.ee/final/">
           <Message>Find out whats next</Message>
         </a>
       </div>
