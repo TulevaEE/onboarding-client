@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { PropTypes as Types } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -25,10 +26,10 @@ export const MiniComparison = ({ comparison, salary, loading, onSalaryChange,
         />
         <span className="input-group-addon" id="salary-euro">&euro;</span>
       </span>
+      {/*
       <span className="ml-1"><Message>ja sa jätkad oma raha kogumist</Message>
-        <span> &quot;<strong>{activeSourceFund.name}</strong>&quot; </span>
-        <Message>fondis, maksad oma tööelu jooksul </Message>
-        <strong>{activeSourceFund.managerName}</strong>&apos;le<Message> tasudena </Message></span>
+        <span> <strong>{activeSourceFund.name}</strong> </span>
+        <Message>fondis, kulutad oma tööelu jooksul tasudena </Message></span>
       {
         loading ? (
           ''
@@ -37,7 +38,8 @@ export const MiniComparison = ({ comparison, salary, loading, onSalaryChange,
             comparison ? (
               <span>
                 <strong className="red">
-                  <span>{Math.round(comparison.currentFundFee).toLocaleString('et-EE')}&nbsp;&euro;</span>
+                  <span>{Math.round(comparison.currentFundFee).toLocaleString('et-EE')}
+                  &nbsp;&euro;</span>
                 </strong>
                 <span>. </span>
                 <InfoTooltip name="comparison.mini.tooltip">
@@ -47,6 +49,7 @@ export const MiniComparison = ({ comparison, salary, loading, onSalaryChange,
           }
         </span>
       }
+      */}
     </p>
   );
 

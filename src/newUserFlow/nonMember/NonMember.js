@@ -13,7 +13,7 @@ export const NonMember = () => (
     </div>
 
     <Collapsible
-      trigger={<button className="btn btn-secondary mr-2 mt-2">
+      trigger={<button className="btn btn-secondary swed mr-2 mt-2">
         <Message>new.user.flow.non.member.bank1.button</Message>
       </button>}
     >
@@ -30,7 +30,7 @@ export const NonMember = () => (
       </ol>
     </Collapsible>
     <Collapsible
-      trigger={<button className="btn btn-secondary mr-2 mt-2">
+      trigger={<button className="btn btn-secondary seb mr-2 mt-2">
         <Message>new.user.flow.non.member.bank2.button</Message>
       </button>}
     >
@@ -48,7 +48,7 @@ export const NonMember = () => (
       </ol>
     </Collapsible>
     <Collapsible
-      trigger={<button className="btn btn-secondary mr-2 mt-2">
+      trigger={<button className="btn btn-secondary lhv mr-2 mt-2">
         <Message>new.user.flow.non.member.bank3.button</Message>
       </button>}
     >

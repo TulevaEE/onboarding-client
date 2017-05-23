@@ -24,7 +24,7 @@ describe('Mini Comparison', () => {
     expect(component.find('input').at(0).prop('onChange')).not.toBe(null);
   });
 
-  it('if comparison is present, render current fund fee', () => {
+  xit('if comparison is present, render current fund fee', () => {
     const comparison = {
       currentFundFee: 123,
     };

@@ -10,7 +10,7 @@ describe('New user step', () => {
   let component;
 
   beforeEach(() => {
-    const props = { loading: false };
+    const props = { loading: false, activeSourceFund: { managementFeePercent: '0.05' } };
     component = shallow(<NewUser {...props} />);
   });
 
