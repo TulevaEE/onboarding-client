@@ -26,6 +26,7 @@ import { reducer as exchangeReducer, actions as exchangeActions } from './exchan
 import trackingReducer from './tracking';
 import { reducer as comparisonReducer, actions as comparisonActions } from './comparison';
 import { reducer as quizReducer, actions as quizActions } from './quiz';
+import { router } from './router';
 import Quiz from './quiz/Quiz';
 
 // import { reducer as quizReducer } from './quiz';
@@ -57,12 +58,18 @@ const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk, r
 
 const history = syncHistoryWithStore(browserHistory, store);
 
-// TODO: figure out a place where to put these two
-
-function getConversionData() {
+function getUserAndConversionData() {
   const { login } = store.getState();
-  if (login.token && !(login.userConversion || login.loadingUserConversion)) {
-    store.dispatch(loginActions.getUserConversion());
+  if (login.token
+    && !(login.user || login.loadingUser)
+    && !(login.userConversion || login.loadingUserConversion)
+  ) {
+    Promise.all([
+      store.dispatch(loginActions.getUserConversion()),
+      store.dispatch(loginActions.getUser()),
+    ]).then(() =>
+      store.dispatch(router.selectRouteForState()),
+    );
   }
 }
 
@@ -71,11 +78,7 @@ function getDataForApp(nextState) {
   if (quizActions.isRouteToQuiz(nextState.location)) {
     store.dispatch(quizActions.routeToQuiz());
   }
-  const { login } = store.getState();
-  if (login.token && !(login.user || login.loadingUser)) {
-    store.dispatch(loginActions.getUser());
-  }
-  getConversionData();
+  getUserAndConversionData();
 }
 
 function getSourceAndTargetFundsData() {
