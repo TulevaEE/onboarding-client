@@ -181,6 +181,7 @@ export default function loginReducer(state = defaultState, action) {
         user: null,
         loginMethod: null,
         loadingUser: false,
+        userConversionError: null,
       };
 
     case QUERY_PARAMETERS:

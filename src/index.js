@@ -61,8 +61,8 @@ const history = syncHistoryWithStore(browserHistory, store);
 function getUserAndConversionData() {
   const { login } = store.getState();
   if (login.token
-    && !(login.user || login.loadingUser)
-    && !(login.userConversion || login.loadingUserConversion)
+    && (!(login.user || login.loadingUser)
+    || !(login.userConversion || login.loadingUserConversion))
   ) {
     Promise.all([
       store.dispatch(loginActions.getUserConversion()),
