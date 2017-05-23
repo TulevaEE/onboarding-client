@@ -2,8 +2,8 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Message } from 'retranslate';
 
-const fakeUtils = jest.genMockFromModule('../../../../common/utils');
-jest.mock('../../../../common/utils', () => fakeUtils);
+const mockUtils = jest.genMockFromModule('../../../../common/utils');
+jest.mock('../../../../common/utils', () => mockUtils);
 
 const FundRow = require('./FundRow').default;
 
@@ -11,7 +11,7 @@ describe('Fund row', () => {
   let component;
 
   beforeEach(() => {
-    fakeUtils.formatAmountForCurrency = (amount, currency) => `formatted(${amount}, ${currency})`;
+    mockUtils.formatAmountForCurrency = (amount, currency) => `formatted(${amount}, ${currency})`;
     component = shallow(<FundRow />);
   });
 
