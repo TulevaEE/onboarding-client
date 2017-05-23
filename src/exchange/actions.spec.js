@@ -30,8 +30,12 @@ jest.useFakeTimers();
 
 const mockApi = jest.genMockFromModule('../common/api');
 const mockDownload = jest.fn();
+const mockHwcrypto = jest.genMockFromModule('hwcrypto-js/hwcrypto');
+
 jest.mock('../common/api', () => mockApi);
 jest.mock('downloadjs', () => mockDownload);
+jest.mock('hwcrypto-js/hwcrypto', () => mockHwcrypto);
+
 
 const actions = require('./actions'); // need to use require because of jest mocks being weird
 
@@ -242,7 +246,7 @@ describe('Exchange actions', () => {
       });
   });
 
-  it('starts polling until succeeds when signing the mandate', () => {
+  it('starts polling until succeeds when signing the mandate with mobile id', () => {
     state.login.token = 'token';
 
     const mandate = { id: 'id' };
@@ -250,17 +254,13 @@ describe('Exchange actions', () => {
     mockApi.saveMandateWithToken = jest.fn(() => Promise.resolve(mandate));
     mockApi.getMobileIdSignatureChallengeCodeForMandateIdWithToken = jest
       .fn(() => Promise.resolve(controlCode));
-    mockApi.getMobileIdSignatureStatusForMandateIdWithToken = jest.fn(() => Promise.resolve({
-      statusCode: 'OUTSTANDING_TRANSACTION',
-    }));
+    mockApi.getMobileIdSignatureStatusForMandateIdWithToken = jest.fn(() => Promise.resolve('OUTSTANDING_TRANSACTION'));
     const signMandate = createBoundAction(actions.signMandateWithMobileId);
     return signMandate(mandate)
       .then(() => {
         dispatch.mockClear();
         mockApi.getMobileIdSignatureStatusForMandateIdWithToken =
-          jest.fn(() => Promise.resolve({
-            statusCode: 'SIGNATURE',
-          }));
+          jest.fn(() => Promise.resolve('SIGNATURE'));
         jest.runOnlyPendingTimers();
         expect(dispatch).not.toHaveBeenCalled();
         expect(mockApi.getMobileIdSignatureStatusForMandateIdWithToken).toHaveBeenCalledTimes(1);
@@ -280,9 +280,7 @@ describe('Exchange actions', () => {
     const mandate = { id: 'id' };
     mockApi.saveMandateWithToken = jest.fn(() => Promise.resolve(mandate));
     mockApi.getMobileIdSignatureChallengeCodeForMandateIdWithToken = jest.fn(() => Promise.resolve('1337'));
-    mockApi.getMobileIdSignatureStatusForMandateIdWithToken = jest.fn(() => Promise.resolve({
-      statusCode: 'OUTSTANDING_TRANSACTION',
-    }));
+    mockApi.getMobileIdSignatureStatusForMandateIdWithToken = jest.fn(() => Promise.resolve('OUTSTANDING_TRANSACTION'));
     const error = new Error('oh no dude');
     const signMandate = createBoundAction(actions.signMandateWithMobileId);
     return signMandate(mandate)
@@ -300,7 +298,7 @@ describe('Exchange actions', () => {
   });
 
   it('can handle errors when starting to sign the mandate with mobile id', () => {
-    const error = new Error('oh no it failed');
+    const error = new Error('oh no it failed 1');
     mockApi.saveMandateWithToken = jest.fn(() => {
       dispatch.mockClear();
       return Promise.reject(error);
@@ -316,8 +314,46 @@ describe('Exchange actions', () => {
       });
   });
 
+  it('starts polling until succeeds when signing the mandate with id card', () => {
+    state.login.token = 'token';
+
+    const mandate = { id: 'id' };
+    const hash = 'hash';
+    const certificate = { hex: 'certificate' };
+    const signedHash = { hex: 'signedHash' };
+
+    global.hwcrypto = mockHwcrypto;
+    mockHwcrypto.getCertificate = jest.fn(() => Promise.resolve(certificate));
+    mockApi.saveMandateWithToken = jest.fn(() => Promise.resolve(mandate));
+
+    mockApi.getIdCardSignatureHashForMandateIdWithCertificateHexAndToken = jest
+      .fn(() => Promise.resolve(hash));
+    mockHwcrypto.sign = jest.fn(() => Promise.resolve(signedHash));
+    mockApi.getIdCardSignatureStatusForMandateIdWithSignedHashAndToken =
+      jest.fn(() => Promise.resolve('OUTSTANDING_TRANSACTION'));
+
+    const signMandate = createBoundAction(actions.signMandateWithIdCard);
+    return signMandate(mandate)
+      .then(() => {
+        dispatch.mockClear();
+        mockApi.getIdCardSignatureStatusForMandateIdWithSignedHashAndToken =
+          jest.fn(() => Promise.resolve('SIGNATURE'));
+        jest.runOnlyPendingTimers();
+        expect(dispatch).not.toHaveBeenCalled();
+        expect(mockApi.getIdCardSignatureStatusForMandateIdWithSignedHashAndToken)
+          .toHaveBeenCalledTimes(1);
+        expect(mockApi.getIdCardSignatureStatusForMandateIdWithSignedHashAndToken).toHaveBeenCalledWith('id', 'signedHash', 'token');
+      }).then(() => {
+        expect(dispatch).toHaveBeenCalledWith({
+          type: SIGN_MANDATE_SUCCESS,
+          signedMandateId: 'id',
+        });
+        expect(dispatch).toHaveBeenCalledWith(push('/steps/success'));
+      });
+  });
+
   it('can handle unprocessable entity errors when saving the mandate', () => {
-    const error = new Error('oh no it failed');
+    const error = new Error('oh no it failed 2');
     error.status = 400;
     mockApi.saveMandateWithToken = jest.fn(() => {
       dispatch.mockClear();

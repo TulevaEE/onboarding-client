@@ -152,26 +152,42 @@ export function signMandateWithMobileId(mandate) {
   };
 }
 
-function signIdCardSignatureHashWithCertificateForMandateId(hash, certificate, mandateId) {
+function pollForMandateSignatureWithMandateIdAndSignedHash(mandateId, signedHash) {
   return (dispatch, getState) => {
-    window.hwcrypto.sign(certificate, { type: 'SHA-256', hex: hash }, { lang: 'en' })
-      .then((signature) => {
-        dispatch({ type: SIGN_MANDATE_ID_CARD_SIGN_HASH_SUCCESS });
-        return signature.hex;
-      }, (error) => {
-        dispatch({ type: SIGN_MANDATE_ERROR, error });
-      }).then(signedHash => getIdCardSignatureStatusForMandateIdWithSignedHashAndToken(
-      mandateId, signedHash, getState().login.token))
-      .then((statusCode) => {
-        if (statusCode === SIGNATURE_DONE_STATUS) {
-          dispatch({ type: SIGN_MANDATE_SUCCESS, signedMandateId: mandateId });
-          dispatch(push('/steps/success'));
-        } else {
-          dispatch({ type: SIGN_MANDATE_ERROR, statusCode });
-        }
-      })
-      .catch(error => dispatch({ type: SIGN_MANDATE_ERROR, error }));
+    if (timeout && process.env.NODE_ENV !== 'test') {
+      clearTimeout(timeout);
+    }
+    timeout = setTimeout(() => {
+      getIdCardSignatureStatusForMandateIdWithSignedHashAndToken(
+        mandateId, signedHash, getState().login.token)
+        .then((statusCode) => {
+          if (statusCode === SIGNATURE_DONE_STATUS) {
+            dispatch({ type: SIGN_MANDATE_SUCCESS, signedMandateId: mandateId });
+            dispatch(push('/steps/success'));
+          } else if (statusCode === SIGNING_IN_PROGRESS_STATUS) {
+            dispatch(pollForMandateSignatureWithMandateIdAndSignedHash(mandateId, signedHash));
+          } else {
+            dispatch({ type: SIGN_MANDATE_ERROR, statusCode });
+          }
+        })
+        .catch(error => dispatch({ type: SIGN_MANDATE_ERROR, error }));
+    }, POLL_DELAY);
   };
+}
+
+function signIdCardSignatureHashWithCertificateForMandateId(hash, certificate, mandateId) {
+  return dispatch => window.hwcrypto.sign(certificate, { type: 'SHA-256', hex: hash }, { lang: 'en' })
+    .then((signature) => {
+      dispatch({ type: SIGN_MANDATE_ID_CARD_SIGN_HASH_SUCCESS });
+      return signature.hex;
+    }, (error) => {
+      dispatch({ type: SIGN_MANDATE_ERROR, error });
+    }).then((signedHash) => {
+      dispatch(pollForMandateSignatureWithMandateIdAndSignedHash(mandateId, signedHash));
+    })
+    .catch((error) => {
+      handleSaveMandateError(dispatch, error);
+    });
 }
 
 export function signMandateWithIdCard(mandate) {
@@ -180,7 +196,8 @@ export function signMandateWithIdCard(mandate) {
     const token = getState().login.token;
     let mandateId;
     let certificate;
-    window.hwcrypto.getCertificate({ lang: 'en' })
+
+    return window.hwcrypto.getCertificate({ lang: 'en' })
       .then((cert) => {
         certificate = cert;
       }, (error) => {
