@@ -53,7 +53,7 @@ export class NewUser extends Component {
           <div className="lead">
             <p className="mb-4">
               <span>
-                <Message>Sinu II samba pensionikontole on tänaseks kogunenud </Message>
+                <Message>new.user.flow.new.user.total.fund.value</Message>
               </span>
               <strong>{totalFundValue}</strong>.
             </p>
@@ -70,7 +70,7 @@ export class NewUser extends Component {
               <div className="text-box__content">
                 <div className="mb-4">
                   <span>
-                    <Message>Oma praeguses fondis maksad tööelu jooksul tasudena </Message>
+                    <Message>new.user.flow.new.user.old.fund.fees</Message>
                   </span>
                   <strong className="red lead">
                     <span>{formatLargeAmountForCurrency(comparison.currentFundFee)}</span>
@@ -78,9 +78,11 @@ export class NewUser extends Component {
                 </div>
                 <ul className="list-style-plussign text-lg">
                   <li>
-                    <Message>fondi valitsemistasu </Message>
+                    <Message>new.user.flow.new.user.old.fund.management.fee</Message>
                     <span className="red">{activeSourceFund.managementFeePercent.split('.').join(',')}%</span>
-                    <span> aastas</span>
+                    <span>
+                      <Message>new.user.flow.new.user.old.fund.management.fee.yearly</Message>
+                    </span>
                   </li>
                 </ul>
               </div>
@@ -91,12 +93,11 @@ export class NewUser extends Component {
               <div className="col-md-4">
                 <div className="text-box text-box--rounder">
                   <h3 className="text-box__title text-box__title--border-lightblue">
-                    <Message>Kogu pensioni koos meiega</Message>
+                    <Message>new.user.flow.new.user.why.tuleva.pension</Message>
                   </h3>
                   <div className="text-box__content">
                     <div className="mb-4">
-                      <span><Message>Kogudes pensionit Tulevas,
-                        hoiad tasudelt kokku </Message></span>
+                      <span><Message>new.user.flow.new.user.save.fees.tuleva</Message></span>
                       <span className="lead highlight">
                         {formatLargeAmountForCurrency(
                         comparison.currentFundFee - comparison.newFundFee)}
@@ -104,13 +105,20 @@ export class NewUser extends Component {
                     </div>
                     <ul className="list-style-checkmark text-lg">
                       <li>
-                        <span><span className="lead highlight">Eesti soodsaim</span> pensionifond
-                          <Message> — valitsemistasu vaid </Message></span>
-                        <strong>0,34%</strong></li>
-                      <li><Message>sama turvaline kui pank</Message></li>
-                      <li><Message>kogud raha endale, mitte pangale</Message></li>
+                        <span>
+                          <span className="lead highlight">
+                            <Message>new.user.flow.new.user.cheapest</Message>
+                          </span>
+                          <Message>new.user.flow.new.user.cheapest.fund.management.fee</Message>
+                          <strong>0,34%</strong>
+                        </span>
+                      </li>
+                      <li><Message>new.user.flow.new.user.safety</Message></li>
+                      <li><Message>new.user.flow.new.user.money.to.self</Message></li>
                     </ul>
-                    <div><i>Pensioni ületoomine on tasuta</i></div>
+                    <div>
+                      <i><Message>new.user.flow.new.user.pension.transfer.free</Message></i>
+                    </div>
                     <div className="mt-4">
                       <Link className="btn btn-secondary btn-link mb-2" to="/steps/non-member">
                         <Message>newUserFlow.newUser.i.want.just.to.transfer.my.pension</Message>
@@ -124,36 +132,34 @@ export class NewUser extends Component {
           <div className="col-md-4">
             <div className="text-box text-box--rounder">
               <h3 className="text-box__title text-box__title--border-blue">
-                <Message>Astu ka Tuleva liikmeks</Message>
+                <Message>new.user.flow.new.user.why.join.tuleva</Message>
               </h3>
               <div className="text-box__content">
                 <div className="mb-4">
-                  <span><Message>Lisaks sellele, et liikmena
-                    hoiad tasudelt kokku </Message></span>
+                  <span><Message>new.user.flow.new.user.tuleva.member.extras</Message></span>
                   <span className="lead highlight">
                     {formatLargeAmountForCurrency(comparison.currentFundFee
                       - comparison.newFundFee)}
                   </span>
                 </div>
                 <ul className="list-style-plussign text-lg">
-                  <li><Message>omanikuna sul on otsustamises hääl</Message></li>
-                  <li><Message>kogud ligikaudu </Message>
+                  <li><Message>new.user.flow.new.user.tuleva.owner</Message></li>
+                  <li><Message>new.user.flow.new.user.member.bonus.start</Message>
                     <span className="lead highlight">2&nbsp;000&nbsp;€</span>
-                    <span><Message> liikmeboonust </Message></span>
-                    <span>(<Message>tööelu jooksul</Message>) </span>
+                    <span><Message>new.user.flow.new.user.member.bonus.end</Message></span>
                   </li>
-                  <li>saad osa kasumijaotusest</li>
-                  <li><Message>
-                    teeme koos Eesti pensionisüsteemi paremaks
-                  </Message></li>
+                  <li><Message>new.user.flow.new.user.profit.sharing</Message></li>
+                  <li>
+                    <Message>new.user.flow.new.user.improve.the.pension.system</Message>
+                  </li>
                 </ul>
-                <div><i>Ühekordne liitumistasu 100 €</i></div>
+                <div><i><Message>new.user.flow.new.user.membership.fee</Message></i></div>
                 <div className="my-4">
                   <Link className={'btn btn-primary btn-block mb-2'} to="/steps/signup">
                     <Message>newUserFlow.newUser.i.wish.to.join</Message>
                   </Link>
                   <div className="mt-4 small">
-                    Hiljem saad läbi Tuleva rakenduse kohe ka pensioni üle tuua
+                    <Message>new.user.flow.new.user.can.transfer.pension</Message>
                   </div>
                 </div>
               </div>
