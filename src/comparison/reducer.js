@@ -1,6 +1,7 @@
 import {
   GET_COMPARISON_START,
   GET_COMPARISON_SUCCESS,
+  GET_COMPARISON_BONUS_SUCCESS,
   GET_COMPARISON_ERROR,
   COMPARISON_SALARY_CHANGE,
   COMPARISON_RATE_CHANGE,
@@ -29,6 +30,12 @@ export default function comparisonReducer(state = initialState, action) {
         ...state,
         loadingComparison: false,
         comparison: action.comparison,
+      };
+    case GET_COMPARISON_BONUS_SUCCESS:
+      return {
+        ...state,
+        loadingComparison: false,
+        comparisonBonus: action.comparison,
       };
     case GET_COMPARISON_ERROR:
       return { ...state,
