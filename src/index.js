@@ -111,9 +111,17 @@ function getInitialCapitalData() {
   }
 }
 
+function getPendingExchangesData() {
+  const { login, exchange } = store.getState();
+  if (login.token && !(exchange.pendingExchanges || exchange.loadingPendingExchanges)) {
+    store.dispatch(exchangeActions.getPendingExchanges());
+  }
+}
+
 function getDataForAccount() {
   getSourceAndTargetFundsData();
   getInitialCapitalData();
+  getPendingExchangesData();
 }
 
 function getLanguage() {

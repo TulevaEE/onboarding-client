@@ -5,6 +5,7 @@ import { Message } from 'retranslate';
 import { Loader } from '../common';
 import { AccountPage } from './AccountPage';
 import PensionFundTable from './../onboardingFlow/selectSources/pensionFundTable';
+import PendingExchangesTable from './pendingExchangeTable';
 
 describe('Current balance', () => {
   let component;
@@ -66,6 +67,17 @@ describe('Current balance', () => {
   it('renders loader when current balance is still loading', () => {
     const loadingCurrentBalance = true;
     component.setProps({ loadingCurrentBalance });
+    expect(component.contains(<Loader className="align-middle" />)).toBe(true);
+  });
+
+  it('renders pending mandates', () => {
+    props.pendingExchanges = {};
+    expect(component.contains(<PendingExchangesTable />)).toBe(true);
+  });
+
+  it('renders loader when pending exchanges is still loading', () => {
+    const loadingPendingExchanges = true;
+    component.setProps({ loadingPendingExchanges });
     expect(component.contains(<Loader className="align-middle" />)).toBe(true);
   });
 });
