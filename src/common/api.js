@@ -150,6 +150,6 @@ export function getInitialCapitalWithToken(token) {
   return get(getEndpoint('/v1/me/initial-capital'), undefined, { Authorization: `Bearer ${token}` });
 }
 
-export function getPendingTransferExchangesWithToken(token) {
+export function getPendingExchangesWithToken(token) {
   return get(getEndpoint('/v1/transfer-exchanges?status=PENDING'), undefined, { Authorization: `Bearer ${token}` });
 }

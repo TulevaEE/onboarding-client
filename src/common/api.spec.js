@@ -337,7 +337,7 @@ describe('api', () => {
     const token = 'token';
     mockHttp.get = jest.fn(() => Promise.resolve(exchanges));
     return api
-      .getPendingTransferExchangesWithToken(token)
+      .getPendingExchangesWithToken(token)
       .then((givenUser) => {
         expect(givenUser).toEqual(exchanges);
         expect(mockHttp.get).toHaveBeenCalledWith('/v1/transfer-exchanges?status=PENDING', undefined, {
