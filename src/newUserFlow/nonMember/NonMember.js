@@ -14,11 +14,11 @@ export const NonMember = () => (
 
     <Collapsible
       trigger={<button className="btn btn-secondary swed mr-2 mt-2">
-        <Message>new.user.flow.non.member.bank1.button</Message>
+        <Message>new.user.flow.non.member.bank1.button</Message> &#9660;
       </button>}
     >
       <ol>
-        <li><Message>new.user.flow.non.member.bank1.content1</Message></li>
+        <li><Message>new.user.flow.non.member.bank1.content1</Message>: <a href="https://swedbank.ee" target="_blank" rel="noopener noreferrer">Swedbank</a></li>
         <li><Message>new.user.flow.non.member.bank1.content2</Message></li>
         <li><Message>new.user.flow.non.member.bank1.content3</Message></li>
         <li><Message>new.user.flow.non.member.bank1.content4</Message></li>
@@ -31,11 +31,11 @@ export const NonMember = () => (
     </Collapsible>
     <Collapsible
       trigger={<button className="btn btn-secondary seb mr-2 mt-2">
-        <Message>new.user.flow.non.member.bank2.button</Message>
+        <Message>new.user.flow.non.member.bank2.button</Message> &#9660;
       </button>}
     >
       <ol>
-        <li><Message>new.user.flow.non.member.bank2.content1</Message></li>
+        <li><Message>new.user.flow.non.member.bank2.content1</Message>: <a href="https://seb.ee" target="_blank" rel="noopener noreferrer">SEB</a></li>
         <li><Message>new.user.flow.non.member.bank2.content2</Message></li>
         <li><Message>new.user.flow.non.member.bank2.content3</Message></li>
         <li><Message>new.user.flow.non.member.bank2.content4</Message></li>
@@ -49,11 +49,11 @@ export const NonMember = () => (
     </Collapsible>
     <Collapsible
       trigger={<button className="btn btn-secondary lhv mr-2 mt-2">
-        <Message>new.user.flow.non.member.bank3.button</Message>
+        <Message>new.user.flow.non.member.bank3.button</Message> &#9660;
       </button>}
     >
       <ol>
-        <li><Message>new.user.flow.non.member.bank3.content1</Message></li>
+        <li><Message>new.user.flow.non.member.bank3.content1</Message>: <a href="https://lhv.ee" target="_blank" rel="noopener noreferrer">LHV</a></li>
         <li><Message>new.user.flow.non.member.bank3.content2</Message></li>
         <li><Message>new.user.flow.non.member.bank3.content3</Message></li>
         <li><Message>new.user.flow.non.member.bank3.content4</Message></li>
@@ -67,11 +67,11 @@ export const NonMember = () => (
     </Collapsible>
     <Collapsible
       trigger={<button className="btn btn-secondary mr-2 mt-2">
-        <Message>new.user.flow.non.member.bank4.button</Message>
+        <Message>new.user.flow.non.member.bank4.button</Message> &#9660;
       </button>}
     >
       <ol>
-        <li><Message>new.user.flow.non.member.bank4.content1</Message></li>
+        <li><Message>new.user.flow.non.member.bank4.content1</Message>: <a href="https://pensionikeskus.ee" target="_blank" rel="noopener noreferrer">Pensionikeskus</a></li>
         <li><Message>new.user.flow.non.member.bank4.content2</Message></li>
         <li><Message>new.user.flow.non.member.bank4.content3</Message></li>
         <li><Message>new.user.flow.non.member.bank4.content4</Message></li>

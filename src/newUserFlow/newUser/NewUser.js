@@ -62,74 +62,77 @@ export class NewUser extends Component {
         </div>
 
         <div className="row text-boxes mb-5">
-          <div className="col-md-4">
-            <div className="text-box text-box--rounder">
-              <h3 className="text-box__title text-box__title--border-blue">
-                <Message>{activeSourceFund.name}</Message>
-              </h3>
-              <div className="text-box__content">
-                <div className="mb-4">
-                  <span>
-                    <Message>new.user.flow.new.user.old.fund.fees</Message>
-                  </span>
-                  <strong className="red lead">
-                    <span>{formatLargeAmountForCurrency(comparison.currentFundFee)}</span>
-                  </strong>
-                </div>
-                <ul className="list-style-plussign text-lg">
-                  <li>
-                    <Message>new.user.flow.new.user.old.fund.management.fee</Message>
-                    <span className="red">{activeSourceFund.managementFeePercent.split('.').join(',')}%</span>
+          { !userConverted ? (
+            <div className="col-md-4">
+              <div className="text-box text-box--rounder">
+                <h3 className="text-box__title text-box__title--border-blue">
+                  <Message>{activeSourceFund.name}</Message>
+                </h3>
+                <div className="text-box__content">
+                  <div className="mb-4">
                     <span>
-                      <Message>new.user.flow.new.user.old.fund.management.fee.yearly</Message>
+                      <Message>new.user.flow.new.user.old.fund.fees</Message>
                     </span>
-                  </li>
-                </ul>
+                    <strong className="red lead">
+                      <span>{formatLargeAmountForCurrency(comparison.currentFundFee)}</span>
+                    </strong>
+                  </div>
+                  <ul className="list-style-plussign text-lg">
+                    <li>
+                      <Message>new.user.flow.new.user.old.fund.management.fee</Message>
+                      <span className="red">{activeSourceFund.managementFeePercent.split('.').join(',')}%</span>
+                      <span>
+                        <Message>new.user.flow.new.user.old.fund.management.fee.yearly</Message>
+                      </span>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
-          </div>
-          {
-            !userConverted ? (
-              <div className="col-md-4">
-                <div className="text-box text-box--rounder">
-                  <h3 className="text-box__title text-box__title--border-lightblue">
-                    <Message>new.user.flow.new.user.why.tuleva.pension</Message>
-                  </h3>
-                  <div className="text-box__content">
-                    <div className="mb-4">
-                      <span><Message>new.user.flow.new.user.save.fees.tuleva</Message></span>
-                      <span className="lead highlight">
-                        {formatLargeAmountForCurrency(
+          ) : '' }
+          { !userConverted ? (
+            <div className="col-md-4">
+              <div className="text-box text-box--rounder">
+                <h3 className="text-box__title text-box__title--border-lightblue">
+                  <Message>new.user.flow.new.user.why.tuleva.pension</Message>
+                </h3>
+                <div className="text-box__content">
+                  <div className="mb-4">
+                    <span><Message>new.user.flow.new.user.save.fees.tuleva</Message></span>
+                    <span className="lead highlight">
+                      {formatLargeAmountForCurrency(
                         comparison.currentFundFee - comparison.newFundFee)}
-                      </span>
-                    </div>
-                    <ul className="list-style-checkmark text-lg">
-                      <li>
-                        <span>
-                          <span className="lead highlight">
-                            <Message>new.user.flow.new.user.cheapest</Message>
-                          </span>
-                          <Message>new.user.flow.new.user.cheapest.fund.management.fee</Message>
-                          <strong>0,34%</strong>
+                    </span>
+                  </div>
+                  <ul className="list-style-checkmark text-lg">
+                    <li>
+                      <span>
+                        <span className="lead highlight">
+                          <Message>new.user.flow.new.user.cheapest</Message>
                         </span>
-                      </li>
-                      <li><Message>new.user.flow.new.user.safety</Message></li>
-                      <li><Message>new.user.flow.new.user.money.to.self</Message></li>
-                    </ul>
-                    <div>
-                      <i><Message>new.user.flow.new.user.pension.transfer.free</Message></i>
-                    </div>
-                    <div className="mt-4">
-                      <Link className="btn btn-secondary btn-link mb-2" to="/steps/non-member">
-                        <Message>newUserFlow.newUser.i.want.just.to.transfer.my.pension</Message>
-                      </Link>
-                    </div>
+                        <Message>new.user.flow.new.user.cheapest.fund.management.fee</Message>
+                        <strong>0,34%</strong>
+                      </span>
+                    </li>
+                    <li><Message>new.user.flow.new.user.safety</Message></li>
+                    <li><Message>new.user.flow.new.user.money.to.self</Message></li>
+                  </ul>
+                  <div>
+                    <i><Message>new.user.flow.new.user.pension.transfer.free</Message></i>
+                  </div>
+                  <div className="mt-4">
+                    <Link
+                      className="btn btn-secondary btn-link btn-block px-0 mb-2"
+                      to="/steps/non-member"
+                    >
+                      <Message>newUserFlow.newUser.i.want.just.to.transfer.my.pension</Message>
+                    </Link>
                   </div>
                 </div>
               </div>
-            ) : ''
-          }
-          <div className="col-md-4">
+            </div>
+          ) : ''}
+          <div className={!userConverted ? 'col-md-4' : ''}>
             <div className="text-box text-box--rounder">
               <h3 className="text-box__title text-box__title--border-blue">
                 <Message>new.user.flow.new.user.why.join.tuleva</Message>

@@ -7,6 +7,10 @@
   border-radius: 4px;
   // color: #373A3C;
 
+  .btn {
+	white-space: normal;
+  }
+
   @include mobile {
 	padding: 0;
 	padding-bottom: 10px;
