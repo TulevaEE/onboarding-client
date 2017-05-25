@@ -1,12 +1,13 @@
 import debounce from 'lodash/debounce';
 
 import {
-  getComparisonWithToken,
+  getComparisonForSalaryAndRateWithToken,
 } from '../common/api';
 
 import {
   GET_COMPARISON_START,
   GET_COMPARISON_SUCCESS,
+  GET_COMPARISON_BONUS_SUCCESS,
   GET_COMPARISON_ERROR,
   COMPARISON_SALARY_CHANGE,
   COMPARISON_RATE_CHANGE,
@@ -21,8 +22,11 @@ export function getComparison() {
     const salary = getState().comparison.salary;
     const rate = getState().comparison.rate;
     dispatch({ type: GET_COMPARISON_START });
-    return getComparisonWithToken(salary, rate, getState().login.token)
+    return getComparisonForSalaryAndRateWithToken(salary, rate, getState().login.token)
         .then(comparison => dispatch({ type: GET_COMPARISON_SUCCESS, comparison }))
+        .then(() =>
+          getComparisonForSalaryAndRateWithToken(salary, rate, getState().login.token, true))
+        .then(comparison => dispatch({ type: GET_COMPARISON_BONUS_SUCCESS, comparison }))
         .catch(error => dispatch({ type: GET_COMPARISON_ERROR, error }));
   };
 }

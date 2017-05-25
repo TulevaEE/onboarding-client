@@ -31,6 +31,7 @@ export class NewUser extends Component {
       userFirstName,
       userConverted,
       comparison,
+      comparisonBonus,
       activeSourceFund,
     } = this.props;
 
@@ -148,7 +149,10 @@ export class NewUser extends Component {
                 <ul className="list-style-plussign text-lg">
                   <li><Message>new.user.flow.new.user.tuleva.owner</Message></li>
                   <li><Message>new.user.flow.new.user.member.bonus.start</Message>
-                    <span className="lead highlight">2&nbsp;000&nbsp;€</span>
+                    <span className="lead highlight">
+                      {formatLargeAmountForCurrency(comparison.newFundFee
+                        - comparisonBonus.newFundFee)}
+                    </span>
                     <span><Message>new.user.flow.new.user.member.bonus.end</Message></span>
                   </li>
                   <li><Message>new.user.flow.new.user.profit.sharing</Message></li>
@@ -185,6 +189,7 @@ NewUser.defaultProps = {
   userFirstName: '',
   userConverted: false,
   comparison: {},
+  comparisonBonus: {},
   onLoadComplete: noop,
   activeSourceFund: null,
 };
@@ -197,6 +202,7 @@ NewUser.propTypes = {
   userFirstName: Types.string,
   userConverted: Types.bool,
   comparison: Types.shape({}),
+  comparisonBonus: Types.shape({}),
   // eslint-disable-next-line react/no-unused-prop-types
   onLoadComplete: Types.func,
   activeSourceFund: Types.shape({}),
@@ -211,6 +217,7 @@ const mapStateToProps = state => ({
   userConverted: (state.login.userConversion || {}).transfersComplete &&
     (state.login.userConversion || {}).selectionComplete,
   comparison: (state.comparison || {}).comparison || {},
+  comparisonBonus: (state.comparison || {}).comparisonBonus || {},
   activeSourceFund: utils.findWhere(state.exchange.sourceFunds || [],
     element => element.activeFund),
 });

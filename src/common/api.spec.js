@@ -288,8 +288,8 @@ describe('api', () => {
     const monthlyWage = 1000;
     const returnRate = 0.05;
     const token = 'a token';
-    return api.getComparisonWithToken(monthlyWage, returnRate, token)
-      .then(() => expect(mockHttp.get).toHaveBeenCalledWith(`/v1/comparisons?monthlyWage=${monthlyWage}&returnRate=${returnRate}`,
+    return api.getComparisonForSalaryAndRateWithToken(monthlyWage, returnRate, token)
+      .then(() => expect(mockHttp.get).toHaveBeenCalledWith(`/v1/comparisons?monthlyWage=${monthlyWage}&returnRate=${returnRate}&isTulevaMember=false`,
         undefined, {
           Authorization: `Bearer ${token}`,
         }));
