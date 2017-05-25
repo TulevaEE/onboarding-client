@@ -1,6 +1,5 @@
 import {
-  GET_COMPARISON_START,
-  GET_COMPARISON_SUCCESS,
+  GET_COMPARISON_BONUS_SUCCESS,
   GET_COMPARISON_ERROR,
   COMPARISON_SALARY_CHANGE,
   COMPARISON_RATE_CHANGE,
@@ -37,11 +36,9 @@ describe('Comparison actions', () => {
   });
 
 
-  it('can get comparison', () => {
+  it('can get comparison and bonus', () => {
     const comparison = [{ comparison: true }];
-    mockApi.getComparisonWithToken = jest.fn(() => {
-      expect(dispatch).toHaveBeenCalledTimes(1);
-      expect(dispatch).toHaveBeenCalledWith({ type: GET_COMPARISON_START });
+    mockApi.getComparisonForSalaryAndRateWithToken = jest.fn(() => {
       dispatch.mockClear();
       return Promise.resolve(comparison);
     });
@@ -51,7 +48,7 @@ describe('Comparison actions', () => {
       .then(() => {
         expect(dispatch).toHaveBeenCalledTimes(1);
         expect(dispatch).toHaveBeenCalledWith({
-          type: GET_COMPARISON_SUCCESS,
+          type: GET_COMPARISON_BONUS_SUCCESS,
           comparison,
         });
       });
@@ -59,7 +56,7 @@ describe('Comparison actions', () => {
 
   it('can handle errors when getting comparison', () => {
     const error = new Error('oh no!');
-    mockApi.getComparisonWithToken = jest.fn(() => Promise.reject(error));
+    mockApi.getComparisonForSalaryAndRateWithToken = jest.fn(() => Promise.reject(error));
     const getComparison = createBoundAction(actions.getComparison);
     expect(dispatch).not.toHaveBeenCalled();
     return getComparison()

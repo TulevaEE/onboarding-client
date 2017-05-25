@@ -1,6 +1,7 @@
 import {
   GET_COMPARISON_START,
   GET_COMPARISON_SUCCESS,
+  GET_COMPARISON_BONUS_SUCCESS,
   GET_COMPARISON_ERROR,
   COMPARISON_SALARY_CHANGE,
   COMPARISON_RATE_CHANGE,
@@ -22,6 +23,14 @@ describe('Comparison reducer', () => {
     const newState = comparisonReducer({ loadingComparison: true }, action);
     expect(newState.loadingComparison).toBe(false);
     expect(newState.comparison).toBe(comparison);
+  });
+
+  it('stops loading and saves comparison bonus on getting comparison bonus success', () => {
+    const comparison = { newFundFutureValue: 2000.12 };
+    const action = { type: GET_COMPARISON_BONUS_SUCCESS, comparison };
+    const newState = comparisonReducer({ loadingComparison: true }, action);
+    expect(newState.loadingComparison).toBe(false);
+    expect(newState.comparisonBonus).toBe(comparison);
   });
 
   it('stops loading and saves error on getting comparison failure', () => {
