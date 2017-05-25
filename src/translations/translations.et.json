@@ -233,5 +233,10 @@
   "new.user.flow.new.user.can.transfer.pension": "Hiljem saad läbi Tuleva rakenduse kohe ka pensioni üle tuua",
   "new.user.flow.mini.comparison.if.your": "Kui sinu ",
   "new.user.flow.mini.comparison.gross.wage": "brutopalk",
-  "new.user.flow.mini.comparison.is": " on"
+  "new.user.flow.mini.comparison.is": " on",
+  "pending.exchanges.source.fund.isin": "Lähtefond",
+  "pending.exchanges.target.fund.isin": "Sihtfond",
+  "pending.exchanges.date": "Kuupäev",
+  "pending.exchanges.amount": "Maht",
+  "pending.exchanges.lead": "Sinu ootel olevad avaldused"
 }

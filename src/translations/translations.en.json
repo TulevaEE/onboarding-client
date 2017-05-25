@@ -258,5 +258,10 @@
   "new.user.flow.new.user.can.transfer.pension": "You can easily transfer your pension after becoming a member",
   "new.user.flow.mini.comparison.if.your": "If your ",
   "new.user.flow.mini.comparison.gross.wage": "gross salary",
-  "new.user.flow.mini.comparison.is": " is"
+  "new.user.flow.mini.comparison.is": " is",
+  "pending.exchanges.source.fund.isin": "Source fund",
+  "pending.exchanges.target.fund.isin": "Target fund",
+  "pending.exchanges.date": "Date",
+  "pending.exchanges.amount": "Amount",
+  "pending.exchanges.lead": "Your pending exchanges"
 }

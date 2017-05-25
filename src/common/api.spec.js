@@ -331,4 +331,18 @@ describe('api', () => {
         }, { Authorization: 'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ=' });
       });
   });
+
+  it('can get pending transfer exchanges with a token', () => {
+    const exchanges = [{ iAmTransferExchange: true }];
+    const token = 'token';
+    mockHttp.get = jest.fn(() => Promise.resolve(exchanges));
+    return api
+      .getPendingExchangesWithToken(token)
+      .then((givenUser) => {
+        expect(givenUser).toEqual(exchanges);
+        expect(mockHttp.get).toHaveBeenCalledWith('/v1/transfer-exchanges?status=PENDING', undefined, {
+          Authorization: `Bearer ${token}`,
+        });
+      });
+  });
 });

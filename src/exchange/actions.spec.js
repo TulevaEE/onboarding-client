@@ -21,6 +21,10 @@ import {
   SIGN_MANDATE_ERROR,
   SIGN_MANDATE_MOBILE_ID_CANCEL,
 
+  GET_PENDING_EXCHANGES_START,
+  GET_PENDING_EXCHANGES_SUCCESS,
+  GET_PENDING_EXCHANGES_ERROR,
+
   CHANGE_AGREEMENT_TO_TERMS,
 
   NO_SIGN_MANDATE_ERROR,
@@ -380,5 +384,35 @@ describe('Exchange actions', () => {
     expect(actions.closeErrorMessages()).toEqual({
       type: NO_SIGN_MANDATE_ERROR,
     });
+  });
+
+  it('can get pending exchanges', () => {
+    const pendingExchanges = [{ pendingExchanges: true }];
+    mockApi.getPendingExchangesWithToken = jest.fn(() => {
+      expect(dispatch).toHaveBeenCalledTimes(1);
+      expect(dispatch).toHaveBeenCalledWith({ type: GET_PENDING_EXCHANGES_START });
+      dispatch.mockClear();
+      return Promise.resolve(pendingExchanges);
+    });
+    const getPendingExchanges = createBoundAction(actions.getPendingExchanges);
+    expect(dispatch).not.toHaveBeenCalled();
+    return getPendingExchanges()
+      .then(() => {
+        expect(dispatch).toHaveBeenCalledTimes(1);
+        expect(dispatch).toHaveBeenCalledWith({
+          type: GET_PENDING_EXCHANGES_SUCCESS,
+          pendingExchanges,
+        });
+      });
+  });
+
+  it('can handle errors when getting pending exchanges', () => {
+    const error = new Error('oh no!');
+    mockApi.getPendingExchangesWithToken = jest.fn(() => Promise.reject(error));
+    const getPendingExchanges = createBoundAction(actions.getPendingExchanges);
+    expect(dispatch).not.toHaveBeenCalled();
+    return getPendingExchanges()
+      .then(() => expect(dispatch)
+        .toHaveBeenCalledWith({ type: GET_PENDING_EXCHANGES_ERROR, error }));
   });
 });

@@ -12,6 +12,7 @@ import {
   getTargetFundsWithToken,
   saveMandateWithToken,
   downloadMandatePreviewWithIdAndToken,
+  getPendingExchangesWithToken,
 } from '../common/api';
 import {
   CHANGE_AGREEMENT_TO_TERMS,
@@ -35,6 +36,9 @@ import {
   SIGN_MANDATE_SUCCESS,
   NO_SIGN_MANDATE_ERROR,
   QUERY_PARAMETERS,
+  GET_PENDING_EXCHANGES_START,
+  GET_PENDING_EXCHANGES_SUCCESS,
+  GET_PENDING_EXCHANGES_ERROR,
 } from './constants';
 
 const POLL_DELAY = 1000;
@@ -246,3 +250,13 @@ export function mapUrlQueryParamsToState(query) {
   return { type: QUERY_PARAMETERS, query };
 }
 
+export function getPendingExchanges() {
+  return (dispatch, getState) => {
+    dispatch({ type: GET_PENDING_EXCHANGES_START });
+    return getPendingExchangesWithToken(getState().login.token)
+      .then((pendingExchanges) => {
+        dispatch({ type: GET_PENDING_EXCHANGES_SUCCESS, pendingExchanges });
+      })
+      .catch(error => dispatch({ type: GET_PENDING_EXCHANGES_ERROR, error }));
+  };
+}

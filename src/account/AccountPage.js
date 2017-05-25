@@ -6,6 +6,7 @@ import { Message } from 'retranslate';
 
 import { Loader } from '../common';
 import PensionFundTable from './../onboardingFlow/selectSources/pensionFundTable';
+import PendingExchangesTable from './pendingExchangeTable';
 
 export const AccountPage = ({
                               currentBalanceFunds,
@@ -13,6 +14,8 @@ export const AccountPage = ({
                               initialCapital,
                               memberNumber,
                               conversion,
+                              pendingExchanges,
+                              loadingPendingExchanges,
 }) => (
   <div>
     <div className="row mt-5">
@@ -49,10 +52,21 @@ export const AccountPage = ({
     }
     <div className="row mt-5">
       <div className="col">
+        <p className="mb-4 lead"><Message>select.sources.current.status</Message></p>
         {
           loadingCurrentBalance ?
             <Loader className="align-middle" /> :
             <PensionFundTable funds={currentBalanceFunds} />
+        }
+      </div>
+    </div>
+    <div className="row mt-5">
+      <div className="col">
+        <p className="mb-4 lead"><Message>pending.exchanges.lead</Message></p>
+        {
+          loadingPendingExchanges ?
+            <Loader className="align-middle" /> :
+            <PendingExchangesTable pendingExchanges={pendingExchanges} />
         }
       </div>
     </div>
@@ -70,6 +84,8 @@ export const AccountPage = ({
 AccountPage.defaultProps = {
   currentBalanceFunds: [],
   loadingCurrentBalance: false,
+  pendingExchanges: [],
+  loadingPendingExchanges: false,
   initialCapital: {},
   memberNumber: null,
   conversion: {},
@@ -78,6 +94,8 @@ AccountPage.defaultProps = {
 AccountPage.propTypes = {
   currentBalanceFunds: Types.arrayOf(Types.shape({})),
   loadingCurrentBalance: Types.bool,
+  pendingExchanges: Types.arrayOf(Types.shape({})),
+  loadingPendingExchanges: Types.bool,
   initialCapital: Types.shape({}),
   memberNumber: Types.number,
   conversion: Types.shape({}),
@@ -87,6 +105,8 @@ AccountPage.propTypes = {
 const mapStateToProps = state => ({
   currentBalanceFunds: state.exchange.sourceFunds,
   loadingCurrentBalance: state.exchange.loadingSourceFunds,
+  pendingExchanges: state.exchange.pendingExchanges,
+  loadingPendingExchanges: state.exchange.loadingPendingExchanges,
   initialCapital: state.account.initialCapital,
   memberNumber: (state.login.user || {}).memberNumber,
   conversion: state.login.conversion,
