@@ -27,26 +27,31 @@ describe('Pending exchange table', () => {
       {
         amount: 1,
         date: '2017-05-22T21:00:00Z',
-        sourceFundIsin: 'isin1',
-        targetFundIsin: 'isin2',
+        sourceFund: { name: 'i am a name 1', id: '121' },
+        targetFund: { name: 'i am a name 2', id: '122' },
       },
       {
         amount: 0.4,
         date: '2017-02-22T21:00:00Z',
-        sourceFundIsin: 'isin3',
-        targetFundIsin: 'isin4',
+        sourceFund: { name: 'i am a name 3', id: '123' },
+        targetFund: { name: 'i am a name 4', id: '124' },
       },
     ];
     component.setProps({ pendingExchanges });
     expect(component.find(PendingExchange).at(0).get(0))
       .toEqual(<PendingExchange
-        key="isin1isin22017-05-22T21:00:00Z"
-        amount={1} date="2017-05-22T21:00:00Z" sourceFundIsin="isin1" targetFundIsin="isin2"
+        key="1211222017-05-22T21:00:00Z"
+        amount={1} date="2017-05-22T21:00:00Z"
+        sourceFund={pendingExchanges[0].sourceFund}
+        targetFund={pendingExchanges[0].targetFund}
       />);
+
     expect(component.find(PendingExchange).at(1).get(0))
       .toEqual(<PendingExchange
-        key="isin3isin42017-02-22T21:00:00Z"
-        amount={0.4} date="2017-02-22T21:00:00Z" sourceFundIsin="isin3" targetFundIsin="isin4"
+        key="1231242017-02-22T21:00:00Z"
+        amount={0.4} date="2017-02-22T21:00:00Z"
+        sourceFund={pendingExchanges[1].sourceFund}
+        targetFund={pendingExchanges[1].targetFund}
       />);
   });
 

@@ -3,15 +3,15 @@ import { Message } from 'retranslate';
 
 const PendingExchange = ({ amount,
                            date,
-                           sourceFundIsin,
-                           targetFundIsin,
+                           sourceFund,
+                           targetFund,
                          }) => (
                            <div className="row tv-table__row py-2">
                              <div className="col-12 col-sm">
-                               <Message>{sourceFundIsin}</Message>
+                               <Message>{sourceFund.name}</Message>
                              </div>
                              <div className="col-12 col-sm">
-                               <Message>{targetFundIsin}</Message>
+                               <Message>{targetFund.name}</Message>
                              </div>
                              <div className="col-12 col-sm">
                                <Message>
@@ -21,7 +21,7 @@ const PendingExchange = ({ amount,
                                </Message>
                              </div>
                              <div className="col-12 col-sm text-sm-right">
-                               <Message>{Math.round(amount * 100)} %</Message>
+                               <Message>{Math.round(amount * 100)}</Message>%
                              </div>
                            </div>
   );
@@ -29,16 +29,16 @@ const PendingExchange = ({ amount,
 PendingExchange.defaultProps = {
   amount: 0,
   date: null,
-  sourceFundIsin: null,
-  targetFundIsin: null,
+  sourceFund: null,
+  targetFund: null,
 
 };
 
 PendingExchange.propTypes = {
   amount: Types.number,
   date: Types.string,
-  sourceFundIsin: Types.string,
-  targetFundIsin: Types.string,
+  sourceFund: Types.shape({}),
+  targetFund: Types.shape({}),
 };
 
 export default PendingExchange;

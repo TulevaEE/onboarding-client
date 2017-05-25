@@ -11,13 +11,24 @@ describe('Pending exchange', () => {
   let component;
 
   beforeEach(() => {
-    component = shallow(<PendingExchange />);
+    const sourceFund = { };
+    const targetFund = { };
+    component = shallow(<PendingExchange sourceFund={sourceFund} targetFund={targetFund} />);
   });
 
-  it('renders source fund isin', () => {
-    component.setProps({ sourceFundIsin: 'i am a isin' });
-    const displayName = <Message>i am a isin</Message>;
+  it('renders source fund name', () => {
+    const sourceFund = { name: 'i am a name', id: '123' };
+    const targetFund = { name: 'i am a name', id: '123' };
+    component.setProps({ sourceFund, targetFund });
+    const displayName = <Message>i am a name</Message>;
     expect(component.contains(displayName)).toBe(true);
-    expect(component.find(Message).first().parent().is('b')).toBe(false);
+  });
+
+  it('renders target fund name', () => {
+    const sourceFund = { name: 'i am a name', id: '123' };
+    const targetFund = { name: 'i am a name2', id: '123' };
+    component.setProps({ sourceFund, targetFund });
+    const displayName = <Message>i am a name2</Message>;
+    expect(component.contains(displayName)).toBe(true);
   });
 });
