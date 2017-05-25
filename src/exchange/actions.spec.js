@@ -406,13 +406,13 @@ describe('Exchange actions', () => {
       });
   });
 
-  // it('can handle errors when getting pending exchanges', () => {
-  //   const error = new Error('oh no!');
-  //   mockApi.getPendingExchangesWithToken = jest.fn(() => Promise.reject(error));
-  //   const getPendingExchanges = createBoundAction(actions.getPendingExchanges);
-  //   expect(dispatch).not.toHaveBeenCalled();
-  //   return getPendingExchanges()
-  //     .then(() => expect(dispatch)
-  //       .toHaveBeenCalledWith({ type: GET_PENDING_EXCHANGES_ERROR, error }));
-  // });
+  it('can handle errors when getting pending exchanges', () => {
+    const error = new Error('oh no!');
+    mockApi.getPendingExchangesWithToken = jest.fn(() => Promise.reject(error));
+    const getPendingExchanges = createBoundAction(actions.getPendingExchanges);
+    expect(dispatch).not.toHaveBeenCalled();
+    return getPendingExchanges()
+      .then(() => expect(dispatch)
+        .toHaveBeenCalledWith({ type: GET_PENDING_EXCHANGES_ERROR, error }));
+  });
 });
