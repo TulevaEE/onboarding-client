@@ -26,8 +26,11 @@ function identifyUserForTracking(user) {
 
   mixpanel.people.set({
     id: user.id,
+    distinct_id: user.id,
     $first_name: user.firstName,
     $last_name: user.lastName,
+    member_number: user.memberNumber,
+    age: user.age,
   });
 }
 

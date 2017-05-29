@@ -46,7 +46,14 @@ it('can track getting user', () => {
   expect(mixpanel.track).toHaveBeenCalledWith(getActionType(GET_USER_SUCCESS), { id: user.id });
   expect(mixpanel.people.set).toHaveBeenCalledTimes(1);
   expect(mixpanel.people.set)
-    .toHaveBeenCalledWith({ id: user.id, $first_name: user.firstName, $last_name: user.lastName });
+    .toHaveBeenCalledWith({
+      id: user.id,
+      distinct_id: user.id,
+      member_number: user.memberNumber,
+      age: user.age,
+      $first_name: user.firstName,
+      $last_name: user.lastName,
+    });
   expect(mixpanel.identify).toHaveBeenCalledTimes(1);
   expect(mixpanel.identify).toHaveBeenCalledWith(user.id);
 });
