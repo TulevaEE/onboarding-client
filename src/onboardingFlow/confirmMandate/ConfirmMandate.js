@@ -167,7 +167,10 @@ export const ConfirmMandate = ({
             <Message>confirm.mandate.agree.to.terms</Message>
             <div className="mt-2">
               <small className="text-muted">
-                <a target="_blank" rel="noopener noreferrer" href="//www.pensionikeskus.ee/ii-sammas/fondid/fonditasude-vordlused/">
+                <a
+                  target="_blank" rel="noopener noreferrer"
+                  href="//www.pensionikeskus.ee/ii-sammas/fondid/fonditasude-vordlused/"
+                >
                   <Message>confirm.mandate.pension.centre</Message>
                 </a>
                 <Message>confirm.mandate.view.info</Message>
