@@ -17,7 +17,7 @@ export const TermsOfUse = () => (
         <p className="mt-3"><Message>terms.of.use.subheading</Message></p>
 
         <ol className="mt-3">
-          {[...Array(6)].map((item, index) => (
+          {[...Array(7)].map((item, index) => (
             <li key={index}>
               <Message>{`terms.of.use.list.item.${index + 1}`}</Message>
             </li>
