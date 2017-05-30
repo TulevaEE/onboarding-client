@@ -1,3 +1,5 @@
+import { LOCATION_CHANGE } from 'react-router-redux';
+
 import mixpanel from 'mixpanel-browser';
 
 import {
@@ -19,7 +21,12 @@ import {
   MOBILE_AUTHENTICATION_SUCCESS,
   ID_CARD_AUTHENTICATION_SUCCESS,
   GET_USER_SUCCESS,
+  GET_USER_CONVERSION_SUCCESS,
 } from '../login/constants';
+
+import {
+  CREATE_NEW_USER_SUCCESS,
+} from '../newUserFlow/constants';
 
 function identifyUserForTracking(user) {
   mixpanel.identify(user.id);
@@ -36,6 +43,8 @@ function identifyUserForTracking(user) {
 
 const initialState = {
 };
+
+const noop = () => null;
 
 export default function trackingReducer(state = initialState, action) {
   const actionType = action.type.split('/')[1];
@@ -62,6 +71,10 @@ export default function trackingReducer(state = initialState, action) {
         error: action.error,
       });
       return initialState;
+    case GET_USER_CONVERSION_SUCCESS:
+      mixpanel.track(actionType, action.userConversion,
+    );
+      return initialState;
     case LOG_OUT:
     case MOBILE_AUTHENTICATION_START:
     case MOBILE_AUTHENTICATION_SUCCESS:
@@ -73,7 +86,15 @@ export default function trackingReducer(state = initialState, action) {
     case SIGN_MANDATE_MOBILE_ID_CANCEL:
     case SIGN_MANDATE_ID_CARD_START:
     case SIGN_MANDATE_SUCCESS:
+    case CREATE_NEW_USER_SUCCESS:
       mixpanel.track(actionType);
+      return initialState;
+    case LOCATION_CHANGE:
+      try {
+        mixpanel.track(actionType, { path: action.payload.pathname });
+      } catch (e) {
+        noop(e); // do nothing when mixpanel is not initialized
+      }
       return initialState;
     default:
       return initialState;

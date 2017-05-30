@@ -1,3 +1,4 @@
+import { LOCATION_CHANGE } from 'react-router-redux';
 import trackingReducer from './reducer';
 import mixpanel from 'mixpanel-browser';
 
@@ -20,7 +21,12 @@ import {
   ID_CARD_AUTHENTICATION_START,
   ID_CARD_AUTHENTICATION_SUCCESS,
   GET_USER_SUCCESS,
+  GET_USER_CONVERSION_SUCCESS,
 } from '../login/constants';
+
+import {
+  CREATE_NEW_USER_SUCCESS,
+} from '../newUserFlow/constants';
 
 function getActionType(actionType) {
   return actionType.split('/')[1];
@@ -98,12 +104,34 @@ it('can track sign mandate errors', () => {
       { error });
 });
 
+it('can track conversion information', () => {
+  const userConversion = {};
+  const action = { type: GET_USER_CONVERSION_SUCCESS, userConversion };
+
+  trackingReducer(undefined, action);
+
+  expect(mixpanel.track).toHaveBeenCalledTimes(1);
+  expect(mixpanel.track)
+    .toHaveBeenCalledWith(getActionType(GET_USER_CONVERSION_SUCCESS), userConversion);
+});
+
+it('can track location changes', () => {
+  const payload = { pathname: 'newPath' };
+  const action = { type: LOCATION_CHANGE, payload };
+
+  trackingReducer(undefined, action);
+
+  expect(mixpanel.track).toHaveBeenCalledTimes(1);
+  expect(mixpanel.track)
+    .toHaveBeenCalledWith(getActionType(LOCATION_CHANGE), { path: payload.pathname });
+});
+
 it('can track simple events', () => {
   const events = [LOG_OUT, MOBILE_AUTHENTICATION_START, MOBILE_AUTHENTICATION_SUCCESS,
     ID_CARD_AUTHENTICATION_START, ID_CARD_AUTHENTICATION_SUCCESS, GET_TARGET_FUNDS_ERROR,
     CHANGE_AGREEMENT_TO_TERMS, SIGN_MANDATE_MOBILE_ID_START_SUCCESS,
     SIGN_MANDATE_MOBILE_ID_CANCEL,
-    SIGN_MANDATE_ID_CARD_START, SIGN_MANDATE_SUCCESS];
+    SIGN_MANDATE_ID_CARD_START, SIGN_MANDATE_SUCCESS, CREATE_NEW_USER_SUCCESS];
 
   events.forEach((event) => {
     const action = { type: event };
