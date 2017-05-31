@@ -10,6 +10,7 @@ import { Router, Route, browserHistory } from 'react-router';
 import { syncHistoryWithStore, routerReducer, routerMiddleware } from 'react-router-redux';
 import mixpanel from 'mixpanel-browser';
 import MixpanelProvider from 'react-mixpanel';
+import GoogleAnalytics from 'react-ga';
 
 import initializeConfiguration from './config/config';
 import translations from './translations';
@@ -143,13 +144,22 @@ initializeConfiguration();
 
 mixpanel.init(config.get('mixpanelKey'));
 
+GoogleAnalytics.initialize('UA-76855836-1', {
+  debug: true,
+  titleCase: false,
+});
+
+function trackPageView() {
+  GoogleAnalytics.pageview(window.location.href);
+}
+
 render((
   <MixpanelProvider mixpanel={mixpanel}>
     <TranslationProvider
       messages={translations} language={getLanguage()} fallbackLanguage="et"
     >
       <ReduxProvider store={store}>
-        <Router history={history}>
+        <Router onUpdate={trackPageView} history={history}>
           <Route path="/login" component={LoginPage} />
           <Route path="/terms-of-use" component={TermsOfUse} />
           <Route path="/" component={requireAuthentication(App)} onEnter={getDataForApp}>
