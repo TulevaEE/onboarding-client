@@ -148,7 +148,6 @@ GoogleAnalytics.initialize('UA-76855836-1', {
   debug: false,
   titleCase: false,
   gaOptions: {
-    name: 'app',
     alwaysSendReferrer: true,
   },
 });
