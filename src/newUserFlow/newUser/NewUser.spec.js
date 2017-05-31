@@ -5,6 +5,9 @@ import { Message } from 'retranslate';
 
 import { AuthenticationLoader } from '../../common';
 import { NewUser } from './NewUser';
+import OldPensionFundList from './oldPensionFundList';
+import BringPensionToTulevaList from './bringPensionToTulevaList';
+import JoinTulevaList from './joinTulevaList';
 
 describe('New user step', () => {
   let component;
@@ -38,6 +41,12 @@ describe('New user step', () => {
 
     component.setProps({ userConverted: true });
     expect(component.find(Link).at(0).prop('to')).not.toBe('/steps/non-member');
+  });
+
+  it('renders 3 lists', () => {
+    expect(component.find(OldPensionFundList).length).toBe(1);
+    expect(component.find(BringPensionToTulevaList).length).toBe(1);
+    expect(component.find(JoinTulevaList).length).toBe(1);
   });
 
   it('renders footnotes for calculator', () => {

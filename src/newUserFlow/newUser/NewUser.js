@@ -9,6 +9,10 @@ import { ErrorAlert, AuthenticationLoader, utils } from '../../common';
 import MiniComparison from '../../common/comparison/mini';
 
 import './NewUser.scss';
+import JoinTulevaList from './joinTulevaList';
+import BringPensionToTulevaList from './bringPensionToTulevaList';
+import OldPensionFundList from './oldPensionFundList';
+
 import { formatLargeAmountForCurrency, getTotalFundValue } from '../../common/utils';
 import { LOAD_PENSION_DATA_SUCCESS } from '../../exchange/constants';
 
@@ -31,7 +35,6 @@ export class NewUser extends Component {
       userFirstName,
       userConverted,
       comparison,
-      comparisonBonus,
       activeSourceFund,
     } = this.props;
 
@@ -78,15 +81,7 @@ export class NewUser extends Component {
                       <span>{formatLargeAmountForCurrency(comparison.currentFundFee)}</span>
                     </strong>
                   </div>
-                  <ul className="list-style-plussign text-lg">
-                    <li>
-                      <Message>new.user.flow.new.user.old.fund.management.fee</Message>
-                      <span className="red">{activeSourceFund.managementFeePercent.split('.').join(',')}%</span>
-                      <span>
-                        <Message>new.user.flow.new.user.old.fund.management.fee.yearly</Message>
-                      </span>
-                    </li>
-                  </ul>
+                  <OldPensionFundList className="list-style-plussign text-lg" />
                 </div>
               </div>
             </div>
@@ -105,19 +100,7 @@ export class NewUser extends Component {
                         comparison.currentFundFee - comparison.newFundFee)}
                     </span>
                   </div>
-                  <ul className="list-style-checkmark text-lg">
-                    <li>
-                      <span>
-                        <span className="lead highlight">
-                          <Message>new.user.flow.new.user.cheapest</Message>
-                        </span>
-                        <Message>new.user.flow.new.user.cheapest.fund.management.fee</Message>
-                        <strong>0,34%</strong>
-                      </span>
-                    </li>
-                    <li><Message>new.user.flow.new.user.safety</Message></li>
-                    <li><Message>new.user.flow.new.user.money.to.self</Message></li>
-                  </ul>
+                  <BringPensionToTulevaList className="list-style-checkmark text-lg" />
                   <div>
                     <i><Message>new.user.flow.new.user.pension.transfer.free</Message></i>
                   </div>
@@ -146,20 +129,7 @@ export class NewUser extends Component {
                       - comparison.newFundFee)}
                   </span>
                 </div>
-                <ul className="list-style-plussign text-lg">
-                  <li><Message>new.user.flow.new.user.tuleva.owner</Message></li>
-                  <li><Message>new.user.flow.new.user.member.bonus.start</Message>
-                    <span className="lead highlight">
-                      {formatLargeAmountForCurrency(comparison.newFundFee
-                        - comparisonBonus.newFundFee)}
-                    </span>
-                    <span><Message>new.user.flow.new.user.member.bonus.end</Message></span>
-                  </li>
-                  <li><Message>new.user.flow.new.user.profit.sharing</Message></li>
-                  <li>
-                    <Message>new.user.flow.new.user.improve.the.pension.system</Message>
-                  </li>
-                </ul>
+                <JoinTulevaList className="list-style-plussign text-lg" />
                 <div><i><Message>new.user.flow.new.user.membership.fee</Message></i></div>
                 <div className="my-4">
                   <Link className={'btn btn-primary btn-block mb-2'} to="/steps/signup">
@@ -205,7 +175,6 @@ NewUser.defaultProps = {
   userFirstName: '',
   userConverted: false,
   comparison: {},
-  comparisonBonus: {},
   onLoadComplete: noop,
   activeSourceFund: null,
 };
@@ -218,7 +187,6 @@ NewUser.propTypes = {
   userFirstName: Types.string,
   userConverted: Types.bool,
   comparison: Types.shape({}),
-  comparisonBonus: Types.shape({}),
   // eslint-disable-next-line react/no-unused-prop-types
   onLoadComplete: Types.func,
   activeSourceFund: Types.shape({}),
@@ -233,7 +201,6 @@ const mapStateToProps = state => ({
   userConverted: (state.login.userConversion || {}).transfersComplete &&
     (state.login.userConversion || {}).selectionComplete,
   comparison: (state.comparison || {}).comparison || {},
-  comparisonBonus: (state.comparison || {}).comparisonBonus || {},
   activeSourceFund: utils.findWhere(state.exchange.sourceFunds || [],
     element => element.activeFund),
 });
