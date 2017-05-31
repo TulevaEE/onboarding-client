@@ -39,4 +39,28 @@ describe('New user step', () => {
     component.setProps({ userConverted: true });
     expect(component.find(Link).at(0).prop('to')).not.toBe('/steps/non-member');
   });
+
+  it('renders footnotes for calculator', () => {
+    expect(component.contains(
+      <p className="small">
+        <Message>new.user.flow.footnote.calculator.part1</Message>
+        <a href="http://www.pensionikeskus.ee/ii-sammas/investorkaitse/varade-kaitse/">
+          <Message>new.user.flow.footnote.calculator.part2link</Message>
+        </a>
+        <Message>new.user.flow.footnote.calculator.part3</Message>
+        <a href="http://www.pensionikeskus.ee/files/dokumendid/kogumispensioni_statistika_012017.pdf">
+          <Message>new.user.flow.footnote.calculator.part4link</Message>
+        </a>
+        <Message>new.user.flow.footnote.calculator.part5</Message>
+      </p>,
+    )).toBe(true);
+  });
+
+  it('renders footnotes for cheapest keyword', () => {
+    expect(component.contains(
+      <p className="small">
+        <Message>new.user.flow.footnote.cheapest</Message>
+      </p>,
+    )).toBe(true);
+  });
 });
