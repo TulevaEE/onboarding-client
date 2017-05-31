@@ -121,16 +121,6 @@ export function cancelMobileAuthentication() {
   return { type: MOBILE_AUTHENTICATION_CANCEL };
 }
 
-function grantToken(state) {
-  window.location.href = `${state.login.redirectUrl}?accessToken=${state.login.token}`;
-}
-
-function checkGrantToken(getState) {
-  if (getState().login.grantToken === true) {
-    grantToken(getState());
-  }
-}
-
 export function getUser() {
   return (dispatch, getState) => {
     dispatch({ type: GET_USER_START });
@@ -141,7 +131,6 @@ export function getUser() {
           Raven.setUserContext({ id: user.id });
         }
         dispatch({ type: GET_USER_SUCCESS, user });
-        checkGrantToken(getState);
       })
       .catch((error) => {
         if (error.status === 401) {

@@ -216,8 +216,8 @@ describe('Login reducer', () => {
   });
 
   it('maps query parameters', () => {
-    const query = { grantToken: 'true' };
+    const query = { disableRouter: 'true' };
     const newState = loginReducer(undefined, { type: QUERY_PARAMETERS, query });
-    expect(newState.grantToken).toBe(true);
+    expect(newState.disableRouter).toBe(true);
   });
 });

@@ -49,7 +49,7 @@ const defaultState = {
   userConversion: null,
   loadingUserConversion: false,
   userConversionError: null,
-  grantToken: false,
+  disableRouter: false,
   redirectUrl: 'http://redirecturl.ee',
 };
 
@@ -185,10 +185,15 @@ export default function loginReducer(state = defaultState, action) {
       };
 
     case QUERY_PARAMETERS:
-      if (action.query.grantToken === 'true') {
+      if (action.query.disableRouter === 'true') {
         return {
           ...state,
-          grantToken: action.query.grantToken === 'true',
+          disableRouter: true,
+        };
+      } else if (action.query.disableRouter === 'false') {
+        return {
+          ...state,
+          disableRouter: false,
         };
       }
       return state;

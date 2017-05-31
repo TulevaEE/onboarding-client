@@ -37,6 +37,9 @@ function isUserLoaded(getState) {
 
 export function selectRouteForState() {
   return (dispatch, getState) => {
+    if (getState().login.disableRouter === true) {
+      return;
+    }
     if (getState().quiz.routeToQuiz === true) {
       dispatch(push('/quiz')); // load user
       return;
