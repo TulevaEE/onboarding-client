@@ -145,8 +145,12 @@ initializeConfiguration();
 mixpanel.init(config.get('mixpanelKey'));
 
 GoogleAnalytics.initialize('UA-76855836-1', {
-  debug: true,
+  debug: false,
   titleCase: false,
+  gaOptions: {
+    name: 'app',
+    alwaysSendReferrer: true,
+  },
 });
 
 function trackPageView() {
