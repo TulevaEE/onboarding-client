@@ -117,6 +117,22 @@ export const Comparison = ({ overlayed, comparison, rate, salary, loading,
           <p className="mb-4 lead"><Message>comparison.header</Message></p>
           <p><Message>comparison.intro</Message></p>
         </div>
+        <div>
+          <p className="small">
+            <Message>footnote.calculator.part1</Message>
+            <a href="http://www.pensionikeskus.ee/ii-sammas/investorkaitse/varade-kaitse/">
+              <Message>footnote.calculator.part2link</Message>
+            </a>
+            <Message>footnote.calculator.part3</Message>
+            <a href="http://www.pensionikeskus.ee/files/dokumendid/kogumispensioni_statistika_012017.pdf">
+              <Message>footnote.calculator.part4link</Message>
+            </a>
+            <Message>footnote.calculator.part5</Message>
+          </p>
+          <p className="small">
+            <Message>footnote.cheapest</Message>
+          </p>
+        </div>
       </div>
     </div>
   );

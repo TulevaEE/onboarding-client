@@ -106,4 +106,28 @@ describe('Comparison', () => {
     component.setProps({ overlayed: true });
     expect(isComponentModal()).toBe(true);
   });
+
+  it('renders footnotes for calculator', () => {
+    expect(component.contains(
+      <p className="small">
+        <Message>footnote.calculator.part1</Message>
+        <a href="http://www.pensionikeskus.ee/ii-sammas/investorkaitse/varade-kaitse/">
+          <Message>footnote.calculator.part2link</Message>
+        </a>
+        <Message>footnote.calculator.part3</Message>
+        <a href="http://www.pensionikeskus.ee/files/dokumendid/kogumispensioni_statistika_012017.pdf">
+          <Message>footnote.calculator.part4link</Message>
+        </a>
+        <Message>footnote.calculator.part5</Message>
+      </p>,
+    )).toBe(true);
+  });
+
+  it('renders footnotes for cheapest keyword', () => {
+    expect(component.contains(
+      <p className="small">
+        <Message>footnote.cheapest</Message>
+      </p>,
+    )).toBe(true);
+  });
 });
