@@ -219,7 +219,7 @@
   "new.user.flow.new.user.old.fund.management.fee.yearly": " aastas",
   "new.user.flow.new.user.why.tuleva.pension": "Miks koguda pensionit Tulevas?",
   "new.user.flow.new.user.save.fees.tuleva": "Kogudes pensionit Tulevas, hoiad tasudelt kokku ",
-  "new.user.flow.new.user.cheapest": "Eesti soodsaim",
+  "new.user.flow.new.user.cheapest.in.estonia": "Eesti soodsaim",
   "new.user.flow.new.user.cheapest.fund.management.fee": " valitsemistasu — vaid ",
   "new.user.flow.new.user.safety": "sama turvaline kui panga pensionifond",
   "new.user.flow.new.user.money.to.self": "kogud raha endale, mitte pangale",
@@ -246,5 +246,14 @@
   "new.user.flow.footnote.calculator.part3": " nagu Tuleva pensionifondides. Samas on nende pensionifondide keskmine valitsemistasu 1,08% (allikas: ",
   "new.user.flow.footnote.calculator.part4link": "rahandusministeerium",
   "new.user.flow.footnote.calculator.part5": ") ehk enam kui kolm korda kõrgem Tuleva pensionifondide valitsemistasust (0,34%).",
-  "new.user.flow.footnote.cheapest": "Tuleva pensionifondide valitsemistasu on keskmiselt kolm korda madalam kui panga pensionifondide valitsemistasu (0,34% vs 1,08%). Tuleva pensionifondid on kõigi fondide lõikes soodsamad kui ühegi teise Eesti fondivalitseja juhitud fondid. Siiski on täna veel üle 60-aastastele inimestele mõeldud Swedbank K1 fondi valitsemistasu madalam - 0,29%. Kui sa oled vähemalt 60-aastane, on see fond sulle Tuleva Maailma Võlakirjade Fondi kõrval arvestatav valik."
+  "new.user.flow.footnote.cheapest": "Tuleva pensionifondide valitsemistasu on keskmiselt kolm korda madalam kui panga pensionifondide valitsemistasu (0,34% vs 1,08%). Tuleva pensionifondid on kõigi fondide lõikes soodsamad kui ühegi teise Eesti fondivalitseja juhitud fondid. Siiski on täna veel üle 60-aastastele inimestele mõeldud Swedbank K1 fondi valitsemistasu madalam - 0,29%. Kui sa oled vähemalt 60-aastane, on see fond sulle Tuleva Maailma Võlakirjade Fondi kõrval arvestatav valik.",
+  "new.user.flow.new.user.old.fund.young.age.recommendation" : "Sinu vanuses on mõistlikum võtta aktsiaturu riske",
+  "new.user.flow.new.user.old.fund.below.55" : "Soovitame alla 55a inimestele ",
+  "new.user.flow.new.user.old.fund.low.fees" : "Kogud juba praegu raha madalate tasudega fondis",
+  "new.user.flow.new.user.cheapest" : "Soodsaim",
+  "new.user.flow.new.user.stock.investing.fund" : " aktsiatesse investeeriv pensionifond - ",
+  "new.user.flow.new.user.management.fee" : "0,34% valitsemistasu",
+  "new.user.flow.new.user.no.benefit" : "Tuleva fondi ümber kolimine ei too sulle tasudelt säästu",
+  "new.user.flow.new.user.no.benefit.join" : "Tuleva liikmeks astumine ei too sulle rahalist boonust",
+  "new.user.flow.new.user.you.can.still.join" : "Võid astuda liikmeks kui soovid Tuleva ideed toetada ja oma häälega sellest märku anda"
 }

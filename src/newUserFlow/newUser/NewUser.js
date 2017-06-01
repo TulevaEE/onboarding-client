@@ -36,6 +36,7 @@ export class NewUser extends Component {
       userConverted,
       comparison,
       activeSourceFund,
+      showAlternative,
     } = this.props;
 
     if (errorDescription) {
@@ -81,7 +82,10 @@ export class NewUser extends Component {
                       <span>{formatLargeAmountForCurrency(comparison.currentFundFee)}</span>
                     </strong>
                   </div>
-                  <OldPensionFundList className="list-style-plussign text-lg" />
+                  <OldPensionFundList
+                    className="list-style-plussign text-lg"
+                    showAlternative={showAlternative}
+                  />
                 </div>
               </div>
             </div>
@@ -93,14 +97,18 @@ export class NewUser extends Component {
                   <Message>new.user.flow.new.user.why.tuleva.pension</Message>
                 </h3>
                 <div className="text-box__content">
-                  <div className="mb-4">
-                    <span><Message>new.user.flow.new.user.save.fees.tuleva</Message></span>
-                    <span className="lead highlight">
-                      {formatLargeAmountForCurrency(
+                  { !showAlternative ?
+                    <div className="mb-4">
+                      <span><Message>new.user.flow.new.user.save.fees.tuleva</Message></span>
+                      <span className="lead highlight">
+                        {formatLargeAmountForCurrency(
                         comparison.currentFundFee - comparison.newFundFee)}
-                    </span>
-                  </div>
-                  <BringPensionToTulevaList className="list-style-checkmark text-lg" />
+                      </span>
+                    </div> : '' }
+                  <BringPensionToTulevaList
+                    className="list-style-checkmark text-lg"
+                    showAlternative={showAlternative}
+                  />
                   <div>
                     <i><Message>new.user.flow.new.user.pension.transfer.free</Message></i>
                   </div>
@@ -122,14 +130,18 @@ export class NewUser extends Component {
                 <Message>new.user.flow.new.user.why.join.tuleva</Message>
               </h3>
               <div className="text-box__content">
-                <div className="mb-4">
-                  <span><Message>new.user.flow.new.user.tuleva.member.extras</Message></span>
-                  <span className="lead highlight">
-                    {formatLargeAmountForCurrency(comparison.currentFundFee
+                { !showAlternative && !userConverted ?
+                  <div className="mb-4">
+                    <span><Message>new.user.flow.new.user.tuleva.member.extras</Message></span>
+                    <span className="lead highlight">
+                      {formatLargeAmountForCurrency(comparison.currentFundFee
                       - comparison.newFundFee)}
-                  </span>
-                </div>
-                <JoinTulevaList className="list-style-plussign text-lg" />
+                    </span>
+                  </div> : '' }
+                <JoinTulevaList
+                  className="list-style-plussign text-lg"
+                  showAlternative={showAlternative}
+                />
                 <div><i><Message>new.user.flow.new.user.membership.fee</Message></i></div>
                 <div className="my-4">
                   <Link className={'btn btn-primary btn-block mb-2'} to="/steps/signup">
@@ -177,6 +189,7 @@ NewUser.defaultProps = {
   comparison: {},
   onLoadComplete: noop,
   activeSourceFund: null,
+  showAlternative: false,
 };
 
 NewUser.propTypes = {
@@ -190,20 +203,26 @@ NewUser.propTypes = {
   // eslint-disable-next-line react/no-unused-prop-types
   onLoadComplete: Types.func,
   activeSourceFund: Types.shape({}),
+  showAlternative: Types.bool,
 };
 
-const mapStateToProps = state => ({
-  sourceFunds: state.exchange.sourceFunds,
-  loading: state.exchange.loadingPensionData,
-  loadingSourceFunds: state.exchange.loadingSourceFunds,
-  errorDescription: state.exchange.error,
-  userFirstName: (state.login.user || {}).firstName,
-  userConverted: (state.login.userConversion || {}).transfersComplete &&
+const mapStateToProps = (state) => {
+  const activeSourceFund = utils.findWhere(state.exchange.sourceFunds || [],
+    element => element.activeFund);
+
+  return {
+    sourceFunds: state.exchange.sourceFunds,
+    loading: state.exchange.loadingPensionData,
+    loadingSourceFunds: state.exchange.loadingSourceFunds,
+    errorDescription: state.exchange.error,
+    userFirstName: (state.login.user || {}).firstName,
+    userConverted: (state.login.userConversion || {}).transfersComplete &&
     (state.login.userConversion || {}).selectionComplete,
-  comparison: (state.comparison || {}).comparison || {},
-  activeSourceFund: utils.findWhere(state.exchange.sourceFunds || [],
-    element => element.activeFund),
-});
+    comparison: (state.comparison || {}).comparison || {},
+    activeSourceFund,
+    showAlternative: (activeSourceFund || {}).isin === 'EE3600019733', // show alternative text for this fund
+  };
+};
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   onLoadComplete: () => {

@@ -19,4 +19,22 @@ describe('Old Pension Fund list', () => {
     expect(component.contains(
       <Message>new.user.flow.new.user.old.fund.management.fee.yearly</Message>)).toBe(true);
   });
+
+  it('renders an alternative list', () => {
+    component.setProps({ showAlternative: true });
+
+    expect(component.contains(
+      <Message>new.user.flow.new.user.old.fund.young.age.recommendation</Message>)).toBe(true); 7;
+    expect(component.contains(
+      <Message>new.user.flow.new.user.old.fund.below.55</Message>)).toBe(true);
+    expect(component.contains(
+      <Message>target.funds.EE3600109435.title.into</Message>)).toBe(true);
+  });
+
+  it('renders an alternative list for over 55 year olds', () => {
+    component.setProps({ showAlternative: true, age: 55 });
+
+    expect(component.contains(
+      <Message>new.user.flow.new.user.old.fund.low.fees</Message>)).toBe(true);
+  });
 });
