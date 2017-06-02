@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import { Message } from 'retranslate';
 
 import { Comparison } from './Comparison';
-import CalculatorFootnotes from '../comparisonFootnotes';
+import ComparisonFootnotes from '../comparisonFootnotes';
 
 import { Loader } from '../';
 
@@ -110,7 +110,7 @@ describe('Comparison', () => {
 
   it('renders comaprison footnotes', () => {
     expect(component.contains(
-      <CalculatorFootnotes />,
+      <ComparisonFootnotes />,
     )).toBe(true);
   });
 });

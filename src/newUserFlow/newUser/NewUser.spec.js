@@ -8,7 +8,7 @@ import { NewUser } from './NewUser';
 import OldPensionFundList from './oldPensionFundList';
 import BringPensionToTulevaList from './bringPensionToTulevaList';
 import JoinTulevaList from './joinTulevaList';
-import CalculatorFootnotes from '../../common/comparisonFootnotes';
+import ComparisonFootnotes from '../../common/comparisonFootnotes';
 
 describe('New user step', () => {
   let component;
@@ -52,7 +52,7 @@ describe('New user step', () => {
 
   it('renders calculator footnotes', () => {
     expect(component.contains(
-      <CalculatorFootnotes />,
+      <ComparisonFootnotes />,
     )).toBe(true);
   });
 });

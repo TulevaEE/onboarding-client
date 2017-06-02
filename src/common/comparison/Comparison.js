@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { Message } from 'retranslate';
 
 import { InfoTooltip, Loader } from '../';
-import CalculatorFootnotes from '../comparisonFootnotes';
+import ComparisonFootnotes from '../comparisonFootnotes';
 
 import {
   debouncedSalaryChange,
@@ -118,7 +118,7 @@ export const Comparison = ({ overlayed, comparison, rate, salary, loading,
           <p className="mb-4 lead"><Message>comparison.header</Message></p>
           <p><Message>comparison.intro</Message></p>
         </div>
-        <CalculatorFootnotes />
+        <ComparisonFootnotes />
       </div>
     </div>
   );

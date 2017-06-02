@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 
 import { ErrorAlert, AuthenticationLoader, utils } from '../../common';
 import MiniComparison from '../../common/comparison/mini';
-import CalculatorFootnotes from '../../common/comparisonFootnotes';
+import ComparisonFootnotes from '../../common/comparisonFootnotes';
 
 import './NewUser.scss';
 import JoinTulevaList from './joinTulevaList';
@@ -160,7 +160,7 @@ export class NewUser extends Component {
             </div>
           </div>
         </div>
-        <CalculatorFootnotes />
+        <ComparisonFootnotes />
       </div>
     );
   }
