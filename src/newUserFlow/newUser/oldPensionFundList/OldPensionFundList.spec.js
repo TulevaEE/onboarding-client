@@ -24,9 +24,10 @@ describe('Old Pension Fund list', () => {
     component.setProps({ showAlternative: true });
 
     expect(component.contains(
-      <Message>new.user.flow.new.user.old.fund.young.age.recommendation</Message>)).toBe(true); 7;
+      <Message>new.user.flow.new.user.alternative.old.fund.young.age.recommendation</Message>))
+      .toBe(true);
     expect(component.contains(
-      <Message>new.user.flow.new.user.old.fund.below.55</Message>)).toBe(true);
+      <Message>new.user.flow.new.user.alternative.old.fund.below.55</Message>)).toBe(true);
     expect(component.contains(
       <Message>target.funds.EE3600109435.title.into</Message>)).toBe(true);
   });
@@ -35,6 +36,6 @@ describe('Old Pension Fund list', () => {
     component.setProps({ showAlternative: true, age: 55 });
 
     expect(component.contains(
-      <Message>new.user.flow.new.user.old.fund.low.fees</Message>)).toBe(true);
+      <Message>new.user.flow.new.user.alternative.old.fund.low.fees</Message>)).toBe(true);
   });
 });

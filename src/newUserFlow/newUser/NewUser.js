@@ -56,11 +56,15 @@ export class NewUser extends Component {
             <Message params={{ name: userFirstName }}>steps.welcome</Message>
           </p>
           <div className="lead">
-            <p className="mb-4">
+            <p>
               <span>
                 <Message>new.user.flow.new.user.total.fund.value</Message>
               </span>
               <strong>{totalFundValue}</strong>.
+            </p>
+            <p>
+              <Message>new.user.flow.new.user.active.fund.name</Message>
+              <strong>{activeSourceFund.name}</strong>.
             </p>
             <MiniComparison />
           </div>
@@ -220,7 +224,7 @@ const mapStateToProps = (state) => {
     (state.login.userConversion || {}).selectionComplete,
     comparison: (state.comparison || {}).comparison || {},
     activeSourceFund,
-    showAlternative: (activeSourceFund || {}).isin === 'EE3600019733', // show alternative text for this fund
+    showAlternative: (activeSourceFund || {}).isin === 'EE3600019758', // show alternative text for this fund
   };
 };
 

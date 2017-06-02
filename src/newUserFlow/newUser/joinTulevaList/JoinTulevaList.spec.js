@@ -44,8 +44,8 @@ describe('Join Tuleva list', () => {
     component.setProps({ showAlternative: true, age: 55 });
 
     expect(component.contains(
-      <Message>new.user.flow.new.user.no.benefit.join</Message>)).toBe(true);
+      <Message>new.user.flow.new.user.alternative.no.benefit.join</Message>)).toBe(true);
     expect(component.contains(
-      <Message>new.user.flow.new.user.you.can.still.join</Message>)).toBe(true);
+      <Message>new.user.flow.new.user.alternative.you.can.still.join</Message>)).toBe(true);
   });
 });

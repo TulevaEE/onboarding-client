@@ -22,10 +22,10 @@ export const OldPensionFundList = ({ className, activeSourceFund, showAlternativ
     return (
       <ul className={className}>
         <li>
-          <Message>new.user.flow.new.user.old.fund.young.age.recommendation</Message>
+          <Message>new.user.flow.new.user.alternative.old.fund.young.age.recommendation</Message>
         </li>
         <li>
-          <Message>new.user.flow.new.user.old.fund.below.55</Message>
+          <Message>new.user.flow.new.user.alternative.old.fund.below.55</Message>
           <strong><Message>target.funds.EE3600109435.title.into</Message></strong>
         </li>
       </ul>
@@ -34,7 +34,7 @@ export const OldPensionFundList = ({ className, activeSourceFund, showAlternativ
   return (
     <ul className={className}>
       <li>
-        <Message>new.user.flow.new.user.old.fund.low.fees</Message>
+        <Message>new.user.flow.new.user.alternative.old.fund.low.fees</Message>
       </li>
     </ul>
   );

@@ -27,11 +27,11 @@ export const BringPensionToTulevaList = ({ className, showAlternative, age }) =>
         <li>
           <span>
             <span className="lead highlight">
-              <Message>new.user.flow.new.user.cheapest</Message>
+              <Message>new.user.flow.new.user.alternative.cheapest</Message>
             </span>
-            <Message>new.user.flow.new.user.stock.investing.fund</Message>
+            <Message>new.user.flow.new.user.alternative.stock.investing.fund</Message>
             <strong>
-              <Message>new.user.flow.new.user.management.fee</Message>
+              <Message>new.user.flow.new.user.alternative.management.fee</Message>
             </strong>
           </span>
         </li>
@@ -41,7 +41,7 @@ export const BringPensionToTulevaList = ({ className, showAlternative, age }) =>
   }
   return (
     <ul className={className}>
-      <li><Message>new.user.flow.new.user.no.benefit</Message></li>
+      <li><Message>new.user.flow.new.user.alternative.no.benefit</Message></li>
     </ul>
   );
 };

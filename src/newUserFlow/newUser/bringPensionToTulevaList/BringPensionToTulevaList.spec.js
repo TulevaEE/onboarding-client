@@ -27,11 +27,11 @@ describe('Bring Pension to Tuleva list', () => {
     component.setProps({ showAlternative: true });
 
     expect(component.contains(
-      <Message>new.user.flow.new.user.cheapest</Message>)).toBe(true);
+      <Message>new.user.flow.new.user.alternative.cheapest</Message>)).toBe(true);
     expect(component.contains(
-      <Message>new.user.flow.new.user.stock.investing.fund</Message>)).toBe(true);
+      <Message>new.user.flow.new.user.alternative.stock.investing.fund</Message>)).toBe(true);
     expect(component.contains(
-      <Message>new.user.flow.new.user.management.fee</Message>)).toBe(true);
+      <Message>new.user.flow.new.user.alternative.management.fee</Message>)).toBe(true);
     expect(component.contains(
       <Message>new.user.flow.new.user.safety</Message>)).toBe(true);
   });
@@ -40,6 +40,6 @@ describe('Bring Pension to Tuleva list', () => {
     component.setProps({ showAlternative: true, age: 55 });
 
     expect(component.contains(
-      <Message>new.user.flow.new.user.no.benefit</Message>)).toBe(true);
+      <Message>new.user.flow.new.user.alternative.no.benefit</Message>)).toBe(true);
   });
 });
