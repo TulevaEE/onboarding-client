@@ -58,7 +58,7 @@ export const LoginPage = ({
       <div className="row">
         <div className="col-lg-12 text-center">
           <FacebookProvider appId="1939240566313354">
-            <Like href="http://www.facebook.com/Tuleva.ee" colorScheme="dark" showFaces share />
+            <Like href="http://www.facebook.com/Tuleva.ee" colorScheme="dark" showFaces />
           </FacebookProvider>
         </div>
       </div>

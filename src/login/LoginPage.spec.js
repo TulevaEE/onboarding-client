@@ -64,7 +64,7 @@ describe('Login page', () => {
 
   it('shows facebook likes', () => {
     expect(component.contains(<FacebookProvider appId="1939240566313354">
-      <Like href="http://www.facebook.com/Tuleva.ee" colorScheme="dark" showFaces share />
+      <Like href="http://www.facebook.com/Tuleva.ee" colorScheme="dark" showFaces />
     </FacebookProvider>)).toBe(true);
   });
 });
