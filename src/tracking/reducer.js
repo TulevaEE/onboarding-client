@@ -10,6 +10,8 @@ import {
   SIGN_MANDATE_MOBILE_ID_START_SUCCESS,
   SIGN_MANDATE_MOBILE_ID_CANCEL,
   SIGN_MANDATE_ID_CARD_START,
+  SIGN_MANDATE_ID_CARD_START_SUCCESS,
+  SIGN_MANDATE_START_ERROR,
   SIGN_MANDATE_SUCCESS,
   SIGN_MANDATE_ERROR,
 } from '../exchange/constants';
@@ -66,6 +68,7 @@ export default function trackingReducer(state = initialState, action) {
         targetFundIsin: action.targetFundIsin,
       });
       return initialState;
+    case SIGN_MANDATE_START_ERROR:
     case SIGN_MANDATE_ERROR:
       mixpanel.track(actionType, {
         error: action.error,
@@ -86,6 +89,7 @@ export default function trackingReducer(state = initialState, action) {
     case SIGN_MANDATE_MOBILE_ID_CANCEL:
     case SIGN_MANDATE_ID_CARD_START:
     case SIGN_MANDATE_SUCCESS:
+    case SIGN_MANDATE_ID_CARD_START_SUCCESS:
     case CREATE_NEW_USER_SUCCESS:
       mixpanel.track(actionType);
       return initialState;
