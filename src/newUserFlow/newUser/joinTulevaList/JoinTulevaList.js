@@ -8,8 +8,8 @@ export const JoinTulevaList = ({ className, comparison, comparisonBonus, showAlt
   if (showAlternative && age >= 55) {
     return (
       <ul className={className}>
-        <li><Message>new.user.flow.new.user.no.benefit.join</Message></li>
-        <li><Message>new.user.flow.new.user.you.can.still.join</Message></li>
+        <li><Message>new.user.flow.new.user.alternative.no.benefit.join</Message></li>
+        <li><Message>new.user.flow.new.user.alternative.you.can.still.join</Message></li>
       </ul>
     );
   }

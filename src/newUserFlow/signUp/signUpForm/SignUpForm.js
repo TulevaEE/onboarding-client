@@ -68,7 +68,7 @@ translations: { translate } }) => (
           <span className="custom-control-indicator" />
           <div className="custom-control-description">
             <Message>new.user.flow.signup.tos.start</Message>
-            <a href="https://drive.google.com/open?id=0BxDN-jvgOSUxd1J5LXVKWDlDa1U"><Message>new.user.flow.signup.tos.statute</Message></a>
+            <a href="https://drive.google.com/open?id=0BxDN-jvgOSUxd1J5LXVKWDlDa1U" target="_blank" rel="noopener noreferrer"><Message>new.user.flow.signup.tos.statute</Message></a>
             <Message>new.user.flow.signup.tos.end</Message>
           </div>
         </label>
