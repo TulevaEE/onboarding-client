@@ -1,4 +1,5 @@
 import React, { PropTypes as Types } from 'react';
+import FacebookProvider, { Like } from 'react-facebook';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Message } from 'retranslate';
@@ -52,6 +53,13 @@ export const LoginPage = ({
               </a>
             </div>
           </div>
+        </div>
+      </div>
+      <div className="row">
+        <div className="col-lg-12 text-center">
+          <FacebookProvider appId="1939240566313354">
+            <Like href="http://www.facebook.com/Tuleva.ee" colorScheme="dark" showFaces share />
+          </FacebookProvider>
         </div>
       </div>
     </div>

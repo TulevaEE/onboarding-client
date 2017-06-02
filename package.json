@@ -67,6 +67,7 @@
     "react": "^15.4.2",
     "react-collapsible": "^1.4.0",
     "react-dom": "^15.4.2",
+    "react-facebook": "^4.0.12",
     "react-ga": "^2.2.0",
     "react-global-configuration": "^1.0.1",
     "react-mixpanel": "^0.0.8",

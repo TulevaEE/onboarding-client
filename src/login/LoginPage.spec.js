@@ -1,4 +1,5 @@
 import React from 'react';
+import FacebookProvider, { Like } from 'react-facebook';
 import { shallow } from 'enzyme';
 import { Message } from 'retranslate';
 import { LoginPage } from './LoginPage';
@@ -59,5 +60,11 @@ describe('Login page', () => {
     expect(component.contains(<ErrorAlert description={errorDescription} />)).toBe(true);
     expect(component.contains(<LoginForm {...formProps} />)).toBe(true);
     expect(component.contains(<AuthenticationLoader {...authProps} />)).toBe(false);
+  });
+
+  it('shows facebook likes', () => {
+    expect(component.contains(<FacebookProvider appId="1939240566313354">
+      <Like href="http://www.facebook.com/Tuleva.ee" colorScheme="dark" showFaces share />
+    </FacebookProvider>)).toBe(true);
   });
 });
