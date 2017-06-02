@@ -161,18 +161,18 @@ export class NewUser extends Component {
         </div>
         <div>
           <p className="small">
-            <Message>new.user.flow.footnote.calculator.part1</Message>
+            <Message>footnote.calculator.part1</Message>
             <a href="http://www.pensionikeskus.ee/ii-sammas/investorkaitse/varade-kaitse/">
-              <Message>new.user.flow.footnote.calculator.part2link</Message>
+              <Message>footnote.calculator.part2link</Message>
             </a>
-            <Message>new.user.flow.footnote.calculator.part3</Message>
+            <Message>footnote.calculator.part3</Message>
             <a href="http://www.pensionikeskus.ee/files/dokumendid/kogumispensioni_statistika_012017.pdf">
-              <Message>new.user.flow.footnote.calculator.part4link</Message>
+              <Message>footnote.calculator.part4link</Message>
             </a>
-            <Message>new.user.flow.footnote.calculator.part5</Message>
+            <Message>footnote.calculator.part5</Message>
           </p>
           <p className="small">
-            <Message>new.user.flow.footnote.cheapest</Message>
+            <Message>footnote.cheapest</Message>
           </p>
         </div>
       </div>

@@ -139,6 +139,7 @@ describe('Routing actions', () => {
     expect(dispatch).toHaveBeenCalledTimes(1);
     expect(dispatch).toHaveBeenCalledWith(push('/quiz'));
   });
+
   it('can disable router', () => {
     state.login = {};
     state.login.disableRouter = true;
