@@ -15,21 +15,21 @@ describe('Calculator Footnotes', () => {
   it('renders footnotes', () => {
     expect(component.contains(
       <p className="small">
-        <Message>new.user.flow.footnote.calculator.part1</Message>
+        <Message>footnote.comparison.part1</Message>
         <a
           target="_blank" rel="noopener noreferrer"
           href="http://www.pensionikeskus.ee/ii-sammas/investorkaitse/varade-kaitse/"
         >
-          <Message>new.user.flow.footnote.calculator.part2link</Message>
+          <Message>footnote.comparison.part2link</Message>
         </a>
-        <Message>new.user.flow.footnote.calculator.part3</Message>
+        <Message>footnote.comparison.part3</Message>
         <a
           target="_blank" rel="noopener noreferrer"
           href="http://www.pensionikeskus.ee/files/dokumendid/kogumispensioni_statistika_012017.pdf"
         >
-          <Message>new.user.flow.footnote.calculator.part4link</Message>
+          <Message>footnote.comparison.part4link</Message>
         </a>
-        <Message>new.user.flow.footnote.calculator.part5</Message>
+        <Message>footnote.comparison.part5</Message>
       </p>,
     )).toBe(true);
   });
@@ -37,7 +37,7 @@ describe('Calculator Footnotes', () => {
   it('renders footnotes for cheapest keyword', () => {
     expect(component.contains(
       <p className="small">
-        <Message>new.user.flow.footnote.cheapest</Message>
+        <Message>footnote.cheapest</Message>
       </p>,
     )).toBe(true);
   });
