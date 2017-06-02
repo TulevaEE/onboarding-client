@@ -8,6 +8,7 @@ import { NewUser } from './NewUser';
 import OldPensionFundList from './oldPensionFundList';
 import BringPensionToTulevaList from './bringPensionToTulevaList';
 import JoinTulevaList from './joinTulevaList';
+import ComparisonFootnotes from '../../common/comparisonFootnotes';
 
 describe('New user step', () => {
   let component;
@@ -49,27 +50,9 @@ describe('New user step', () => {
     expect(component.find(JoinTulevaList).length).toBe(1);
   });
 
-  it('renders footnotes for calculator', () => {
+  it('renders calculator footnotes', () => {
     expect(component.contains(
-      <p className="small">
-        <Message>new.user.flow.footnote.calculator.part1</Message>
-        <a href="http://www.pensionikeskus.ee/ii-sammas/investorkaitse/varade-kaitse/">
-          <Message>new.user.flow.footnote.calculator.part2link</Message>
-        </a>
-        <Message>new.user.flow.footnote.calculator.part3</Message>
-        <a href="http://www.pensionikeskus.ee/files/dokumendid/kogumispensioni_statistika_012017.pdf">
-          <Message>new.user.flow.footnote.calculator.part4link</Message>
-        </a>
-        <Message>new.user.flow.footnote.calculator.part5</Message>
-      </p>,
-    )).toBe(true);
-  });
-
-  it('renders footnotes for cheapest keyword', () => {
-    expect(component.contains(
-      <p className="small">
-        <Message>new.user.flow.footnote.cheapest</Message>
-      </p>,
+      <ComparisonFootnotes />,
     )).toBe(true);
   });
 });

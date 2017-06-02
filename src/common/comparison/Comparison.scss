@@ -6,9 +6,9 @@
   height: 100vw;
   background-color: rgba(255, 255, 255, 0.5);
   z-index: 999;
-
+  max-height: 100vh;
+  overflow-y: auto;
   background-color: #ffffff;
-
 }
 
 .header {
