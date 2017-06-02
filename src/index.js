@@ -128,9 +128,9 @@ function getDataForAccount() {
 function getLanguage() {
   const params = window.location.search;
 
-  if (params.includes('language=et')) {
+  if (params.indexOf('language=et') >= 0) {
     return 'et';
-  } else if (params.includes('language=en')) {
+  } else if (params.indexOf('language=en') >= 0) {
     return 'en';
   }
   return 'et';
