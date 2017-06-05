@@ -8,15 +8,15 @@ const path = require('path');
 
 const app = express();
 
-function forceHttps(request, response, next) {
-  if (request.headers['x-forwarded-proto'] !== 'https') {
-    return response.redirect(301, `https://${request.get('host')}${request.url}`);
-  }
-  return next();
-}
+// function forceHttps(request, response, next) {
+//   if (request.headers['x-forwarded-proto'] !== 'https') {
+//     return response.redirect(301, `https://${request.get('host')}${request.url}`);
+//   }
+//   return next();
+// }
 
 app.use(compression());
-app.use(forceHttps);
+// app.use(forceHttps);
 app.use(express.static(path.join(__dirname, '..', 'build')));
 app.use('/api', proxy('https://onboarding-service.tuleva.ee'));
 
