@@ -210,7 +210,7 @@ const mapStateToProps = (state) => {
     (state.login.userConversion || {}).selectionComplete,
     comparison: (state.comparison || {}).comparison || {},
     activeSourceFund,
-    showAlternative: (activeSourceFund || {}).isin === 'EE3600019758', // show alternative text for this fund
+    showAlternative: (activeSourceFund || {}).isin === 'EE3600019733', // show alternative text for this fund
   };
 };
 
