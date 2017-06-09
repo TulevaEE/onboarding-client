@@ -36,9 +36,13 @@ describe('Calculator Footnotes', () => {
 
   it('renders footnotes for cheapest keyword', () => {
     expect(component.contains(
-      <p className="small">
-        <Message>footnote.cheapest</Message>
-      </p>,
+        <Message>footnote.cheapest</Message>,
+    )).toBe(true);
+  });
+
+  it('renders comparison assumptions', () => {
+    expect(component.contains(
+      <Message>footnote.comparison.assumptions</Message>,
     )).toBe(true);
   });
 
