@@ -1,4 +1,4 @@
-import React, { PropTypes as Types } from 'react';
+import React, { Component, PropTypes as Types } from 'react';
 import { Message, withTranslations } from 'retranslate';
 
 import './InlineLoginForm.scss';
@@ -9,56 +9,67 @@ function runWithDefaultPrevention(fn) {
     fn();
   };
 }
+export class InlineLoginForm extends Component {
 
-export const InlineLoginForm = ({
-  translations: { translate },
-  phoneNumber,
-  onPhoneNumberChange,
-  onPhoneNumberSubmit,
-  onAuthenticateWithIdCard,
-}) => (
-  <div className="row mt-4 pt-4 pb-4 justify-content-center login-form">
-    <div className="col-lg-9">
-      <h3 className="mt-2 mb-4 pb-2">
-        <Message>login.title</Message>
-      </h3>
-      <form onSubmit={runWithDefaultPrevention(() => onPhoneNumberSubmit(phoneNumber))}>
-        <div className="form-group">
-          <input
-            id="mobile-id-number"
-            type="tel"
-            value={phoneNumber}
-            onChange={event => onPhoneNumberChange(event.target.value)}
-            className="form-control form-control-lg"
-            placeholder={translate('login.phone.number')}
-          />
-        </div>
-        <div className="form-group">
-          <input
-            id="mobile-id-submit"
-            type="submit"
-            className="btn btn-primary btn-block btn-lg"
-            disabled={!phoneNumber}
-            value={translate('login.mobile.id')}
-          />
-        </div>
-      </form>
-      <div className="login-form__break mt-3 mb-3">
-        <span className="ml-2 mr-2">
-          <Message>login.or</Message>
-        </span>
-      </div>
+  constructor(props) {
+    super(props);
+    this.state = {
+    };
+  }
+
+  render() {
+    const {
+      translations: { translate },
+      phoneNumber,
+      onPhoneNumberChange,
+      onPhoneNumberSubmit,
+      onAuthenticateWithIdCard,
+    } = this.props;
+
+    return (
       <div>
-        <button className="btn btn-primary btn-block btn-lg" onClick={onAuthenticateWithIdCard}>
-          <Message>login.id.card</Message>
-        </button>
+        <div className="login-form">
+          <form onSubmit={runWithDefaultPrevention(() => onPhoneNumberSubmit(phoneNumber))}>
+            <div>
+              <div className="row">
+                <div className="col">
+                  <input
+                    id="mobile-id-number"
+                    type="tel"
+                    value={phoneNumber}
+                    onChange={event => onPhoneNumberChange(event.target.value)}
+                    className="form-control form-control-lg"
+                    placeholder={translate('login.phone.number')}
+                  />
+                </div>
+                <div className="col">
+                  <input
+                    id="mobile-id-submit"
+                    type="submit"
+                    className="btn btn-primary btn-block btn-lg"
+                    disabled={!phoneNumber}
+                    value={translate('login.mobile.id')}
+                  />
+                </div>
+                <div className="col">
+                  <button
+                    className="btn btn-primary btn-block btn-lg"
+                    onClick={onAuthenticateWithIdCard}
+                  >
+                    <Message>login.id.card</Message>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div className="col-lg-9 mt-4">
+          <Message>login.permission.note</Message>
+        </div>
       </div>
-    </div>
-    <div className="col-lg-9 mt-4">
-      <Message>login.permission.note</Message>
-    </div>
-  </div>
-);
+    );
+  }
+}
 
 const noop = () => null;
 

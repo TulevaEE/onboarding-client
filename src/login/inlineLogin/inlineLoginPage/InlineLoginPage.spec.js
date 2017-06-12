@@ -1,5 +1,4 @@
 import React from 'react';
-import FacebookProvider, { Like } from 'react-facebook';
 import { shallow } from 'enzyme';
 import { Message } from 'retranslate';
 import { InlineLoginPage } from './InlineLoginPage';
@@ -11,11 +10,11 @@ describe('Login page', () => {
   let component;
 
   beforeEach(() => {
-    props = {};
+    props = { translations: { translate: () => '' } };
     component = shallow(<InlineLoginPage {...props} />);
   });
 
-  it('renders a login form if no actions have not been taken', () => {
+  it('renders and persists email field content', () => {
     const formProps = {
       phoneNumber: 'number',
       onPhoneNumberChange: jest.fn(),
@@ -23,12 +22,44 @@ describe('Login page', () => {
       onAuthenticateWithIdCard: jest.fn(),
     };
     component.setProps(formProps);
+    component.setState(() => ({ ctaClicked: false }));
+    expect(component.find('input#email').length).toBe(1);
+    const newEmailFieldValue = 'aiai';
+    component.find('input#email').simulate('change', { target: { value: newEmailFieldValue }, persist: () => null });
+    expect(component.state().email).toBe(newEmailFieldValue);
+  });
+
+  it('renders cta', () => {
+    const formProps = {
+      phoneNumber: 'number',
+      onPhoneNumberChange: jest.fn(),
+      onPhoneNumberSubmit: jest.fn(),
+      onAuthenticateWithIdCard: jest.fn(),
+    };
+    component.setProps(formProps);
+    component.setState(() => ({ ctaClicked: false }));
+    expect(component.find('button').length).toBe(1);
+    expect(component.find('button').at(0).children().at(0).node)
+      .toEqual(<Message>inline.login.cta</Message>);
+    // expect(component.find('button').length).toBe(1);
+  });
+
+  it('renders a login form if cta is clicked', () => {
+    const formProps = {
+      phoneNumber: 'number',
+      onPhoneNumberChange: jest.fn(),
+      onPhoneNumberSubmit: jest.fn(),
+      onAuthenticateWithIdCard: jest.fn(),
+    };
+    component.setProps(formProps);
+    component.setState(() => ({ ctaClicked: true }));
     expect(component.contains(<InlineLoginForm {...formProps} />)).toBe(true);
   });
 
   it('renders an authentication loader instead if loading or has control code', () => {
     const onCancelMobileAuthentication = jest.fn();
     component.setProps({ onCancelMobileAuthentication });
+    component.setState(() => ({ ctaClicked: true }));
 
     expect(component.contains(
       <AuthenticationLoader controlCode="" onCancel={onCancelMobileAuthentication} />,
@@ -56,15 +87,10 @@ describe('Login page', () => {
       onCancel: jest.fn(),
     };
     component.setProps({ errorDescription, ...formProps, ...authProps });
+    component.setState(() => ({ ctaClicked: true }));
 
     expect(component.contains(<ErrorAlert description={errorDescription} />)).toBe(true);
     expect(component.contains(<InlineLoginForm {...formProps} />)).toBe(true);
     expect(component.contains(<AuthenticationLoader {...authProps} />)).toBe(false);
-  });
-
-  it('shows facebook likes', () => {
-    expect(component.contains(<FacebookProvider appId="1939240566313354">
-      <Like href="http://www.facebook.com/Tuleva.ee" colorScheme="dark" showFaces />
-    </FacebookProvider>)).toBe(true);
   });
 });

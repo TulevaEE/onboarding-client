@@ -1,12 +1,11 @@
 import React, { Component, PropTypes as Types } from 'react';
-import FacebookProvider, { Like } from 'react-facebook';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Message } from 'retranslate';
+import { Message, withTranslations } from 'retranslate';
 
 import './InlineLoginPage.scss';
 
-import { logo, AuthenticationLoader, ErrorAlert } from '../../../common';
+import { AuthenticationLoader, ErrorAlert } from '../../../common';
 import LoginForm from '../inlineLoginForm';
 import { changePhoneNumber, authenticateWithPhoneNumber, cancelMobileAuthentication, authenticateWithIdCard } from '../../actions';
 
@@ -16,6 +15,7 @@ export class InlineLoginPage extends Component {
     super(props);
     this.state = {
       ctaClicked: false,
+      email: null,
     };
   }
 
@@ -29,36 +29,35 @@ export class InlineLoginPage extends Component {
       controlCode,
       loadingAuthentication,
       errorDescription,
+      translations: { translate },
     } = this.props;
 
-    if (!this.state.ctaClicked) {
-      return (
-        <div className="container pt-5">
-          <div className="row">
-            <div className="col-lg-12 text-center">
-              <button
-                className="btn btn-primary btn-block btn-lg"
-                onClick={() => this.setState(() => ({ ctaClicked: true }))}
-              >
-                <Message>inline.login.cta</Message>
-              </button>
-            </div>
-          </div>
-        </div>
-      );
-    }
 
     return (
-      <div className="login-page">
-        <div className="container pt-5">
-          <div className="row">
-            <div className="col-lg-12 text-center">
-              <img src={logo} alt="Tuleva" className="img-responsive brand-logo mb-3 pb-3 mt-2" />
+      <div className="row mt-4 pt-4 pb-4 justify-content-center login-form">
+        <div className="col-lg-10 offset-lg-1 col-sm-12 offset-sm-0 text-center">
+          <form>
+            <div>
+              <div className="form-group">
+                <input
+                  id="email"
+                  type="email"
+                  // value={phoneNumber}
+                  onChange={(event) => {
+                    event.persist();
+                    this.setState(() => ({ email: event.target.value }));
+                  }}
+                  className="form-control form-control-lg"
+                  placeholder={translate('inline.login.email')}
+                />
+              </div>
             </div>
-          </div>
-          <div className="row">
-            <div className="col-lg-10 offset-lg-1 col-sm-12 offset-sm-0 text-center">
-              <div className="col-lg-6 offset-lg-3 col-md-8 offset-md-2 col-sm-12">
+          </form>
+        </div>
+        <div className="col-lg-10 offset-lg-1 col-sm-12 offset-sm-0 text-center">
+          {
+            this.state.ctaClicked ? (
+              <div>
                 { errorDescription ? <ErrorAlert description={errorDescription} /> : '' }
                 {
                   !loadingAuthentication && !controlCode ?
@@ -82,15 +81,21 @@ export class InlineLoginPage extends Component {
                   </a>
                 </div>
               </div>
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-lg-12 text-center">
-              <FacebookProvider appId="1939240566313354">
-                <Like href="http://www.facebook.com/Tuleva.ee" colorScheme="dark" showFaces />
-              </FacebookProvider>
-            </div>
-          </div>
+            ) : (
+              <div className="container pt-5">
+                <div className="row">
+                  <div className="col-lg-12 text-center">
+                    <button
+                      className="btn btn-primary btn-block btn-lg"
+                      onClick={() => this.setState(() => ({ ctaClicked: true }))}
+                    >
+                      <Message>inline.login.cta</Message>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )
+          }
         </div>
       </div>
     );
@@ -121,6 +126,7 @@ InlineLoginPage.propTypes = {
   controlCode: Types.string,
   loadingAuthentication: Types.bool,
   errorDescription: Types.string,
+  translations: Types.shape({ translate: Types.func.isRequired }).isRequired,
 };
 
 const mapStateToProps = state => ({
@@ -139,4 +145,4 @@ const mapDispatchToProps = dispatch => bindActionCreators({
 
 const withRedux = connect(mapStateToProps, mapDispatchToProps);
 
-export default withRedux(InlineLoginPage);
+export default withTranslations(withRedux(InlineLoginPage));
