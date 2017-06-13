@@ -31,6 +31,8 @@ import {
   TOKEN_REFRESH_SUCCESS,
   TOKEN_REFRESH_ERROR,
 
+  USE_REDIRECT_LOGIN,
+
   LOG_OUT,
 
   QUERY_PARAMETERS,
@@ -177,4 +179,22 @@ export function logOut() {
 
 export function mapUrlQueryParamsToState(query) {
   return { type: QUERY_PARAMETERS, query };
+}
+
+export function useRedirectLogin() {
+  return { type: USE_REDIRECT_LOGIN };
+}
+
+export function useRedirectLoginWithPhoneNumber(phoneNumber) {
+  return (dispatch) => {
+    dispatch(useRedirectLogin());
+    dispatch(authenticateWithPhoneNumber(phoneNumber));
+  };
+}
+
+export function useRedirectLoginWithIdCard() {
+  return (dispatch) => {
+    dispatch(useRedirectLogin());
+    dispatch(authenticateWithIdCard());
+  };
 }

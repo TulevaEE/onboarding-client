@@ -29,6 +29,8 @@ import {
   TOKEN_REFRESH_ERROR,
   QUERY_PARAMETERS,
 
+  USE_REDIRECT_LOGIN,
+
   LOG_OUT,
 } from './constants';
 
@@ -340,4 +342,25 @@ describe('Login actions', () => {
     });
   });
 
+  it('can handle redirect login', () => {
+    expect(actions.useRedirectLogin()).toEqual({
+      type: USE_REDIRECT_LOGIN,
+    });
+  });
+
+  it('can handle redirect login with mobile id', () => {
+    const useRedirectLoginWithPhoneNumber =
+      createBoundAction(actions.useRedirectLoginWithPhoneNumber);
+    useRedirectLoginWithPhoneNumber(123);
+    expect(dispatch).toHaveBeenCalledWith({ type: USE_REDIRECT_LOGIN });
+    expect(dispatch).toHaveBeenCalledWith({ type: MOBILE_AUTHENTICATION_START });
+  });
+
+  it('can handle redirect login with id card', () => {
+    const useRedirectLoginWithIdCard =
+      createBoundAction(actions.useRedirectLoginWithIdCard);
+    useRedirectLoginWithIdCard();
+    expect(dispatch).toHaveBeenCalledWith({ type: USE_REDIRECT_LOGIN });
+    expect(dispatch).toHaveBeenCalledWith({ type: ID_CARD_AUTHENTICATION_START });
+  });
 });

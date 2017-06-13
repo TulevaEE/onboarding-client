@@ -8,7 +8,12 @@ import './InlineLoginPage.scss';
 
 import { AuthenticationLoader, ErrorAlert } from '../../../common';
 import LoginForm from '../inlineLoginForm';
-import { changePhoneNumber, authenticateWithPhoneNumber, cancelMobileAuthentication, authenticateWithIdCard } from '../../actions';
+import {
+  changePhoneNumber,
+  useRedirectLoginWithPhoneNumber,
+  cancelMobileAuthentication,
+  useRedirectLoginWithIdCard,
+} from '../../actions';
 
 const isEmailValid = value => /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()\.,;\s@\"]+\.{0,1})+[^<>()\.,;:\s@\"]{2,})$/.test(value);
 
@@ -34,7 +39,6 @@ export class InlineLoginPage extends Component {
       translations: { translate },
     } = this.props;
 
-
     return (
       <div className="row mt-4 pt-4 pb-4 justify-content-center login-form">
         <div className="col-lg-10 offset-lg-1 col-sm-12 offset-sm-0 text-center">
@@ -44,7 +48,6 @@ export class InlineLoginPage extends Component {
                 <input
                   id="email"
                   type="email"
-                  // value={phoneNumber}
                   onChange={(event) => {
                     event.persist();
                     this.setState(() => ({ email: event.target.value }));
@@ -141,9 +144,9 @@ const mapStateToProps = state => ({
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
   onPhoneNumberChange: changePhoneNumber,
-  onPhoneNumberSubmit: authenticateWithPhoneNumber,
+  onPhoneNumberSubmit: useRedirectLoginWithPhoneNumber,
   onCancelMobileAuthentication: cancelMobileAuthentication,
-  onAuthenticateWithIdCard: authenticateWithIdCard,
+  onAuthenticateWithIdCard: useRedirectLoginWithIdCard,
 }, dispatch);
 
 const withRedux = connect(mapStateToProps, mapDispatchToProps);

@@ -18,6 +18,7 @@ import {
   GET_USER_CONVERSION_ERROR,
   TOKEN_REFRESH_SUCCESS,
   TOKEN_REFRESH_ERROR,
+  USE_REDIRECT_LOGIN,
   LOG_OUT,
   QUERY_PARAMETERS,
 } from './constants';
@@ -50,7 +51,7 @@ const defaultState = {
   loadingUserConversion: false,
   userConversionError: null,
   disableRouter: false,
-  redirectUrl: 'http://redirecturl.ee',
+  redirectLogin: false,
 };
 
 function updateLocalStorage(action, loginMethodUsed) {
@@ -167,6 +168,10 @@ export default function loginReducer(state = defaultState, action) {
       return { ...state,
         loadingUserConversion: false,
         userConversionError: getGlobalErrorCode(action.error.body) };
+    case USE_REDIRECT_LOGIN:
+      return { ...state,
+        redirectLogin: true,
+      };
 
     case LOG_OUT:
       if (window.localStorage) {

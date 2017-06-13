@@ -26,6 +26,8 @@ import {
   TOKEN_REFRESH_SUCCESS,
   TOKEN_REFRESH_ERROR,
 
+  USE_REDIRECT_LOGIN,
+
   LOG_OUT,
 
   QUERY_PARAMETERS,
@@ -219,5 +221,10 @@ describe('Login reducer', () => {
     const query = { disableRouter: 'true' };
     const newState = loginReducer(undefined, { type: QUERY_PARAMETERS, query });
     expect(newState.disableRouter).toBe(true);
+  });
+
+  it('can switch to redirect login ', () => {
+    const newState = loginReducer(undefined, { type: USE_REDIRECT_LOGIN });
+    expect(newState.redirectLogin).toBe(true);
   });
 });
