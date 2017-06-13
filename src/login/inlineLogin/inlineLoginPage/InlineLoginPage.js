@@ -1,3 +1,4 @@
+/* eslint-disable no-confusing-arrow,no-useless-escape */
 import React, { Component, PropTypes as Types } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -9,8 +10,9 @@ import { AuthenticationLoader, ErrorAlert } from '../../../common';
 import LoginForm from '../inlineLoginForm';
 import { changePhoneNumber, authenticateWithPhoneNumber, cancelMobileAuthentication, authenticateWithIdCard } from '../../actions';
 
-export class InlineLoginPage extends Component {
+const isEmailValid = value => /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()\.,;\s@\"]+\.{0,1})+[^<>()\.,;:\s@\"]{2,})$/.test(value);
 
+export class InlineLoginPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -88,6 +90,7 @@ export class InlineLoginPage extends Component {
                     <button
                       className="btn btn-primary btn-block btn-lg"
                       onClick={() => this.setState(() => ({ ctaClicked: true }))}
+                      disabled={!isEmailValid(this.state.email)}
                     >
                       <Message>inline.login.cta</Message>
                     </button>

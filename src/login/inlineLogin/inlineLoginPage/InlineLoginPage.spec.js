@@ -29,6 +29,23 @@ describe('Login page', () => {
     expect(component.state().email).toBe(newEmailFieldValue);
   });
 
+  it('disable cta button until valid email is inserted', () => {
+    const formProps = {
+      phoneNumber: 'number',
+      onPhoneNumberChange: jest.fn(),
+      onPhoneNumberSubmit: jest.fn(),
+      onAuthenticateWithIdCard: jest.fn(),
+    };
+    component.setProps(formProps);
+    component.setState(() => ({ ctaClicked: false }));
+    const ctaButtonDisabled = () => !!component.find('button').prop('disabled');
+    expect(ctaButtonDisabled()).toBe(true);
+    component.setState(() => ({ email: 'test.email@' }));
+    expect(ctaButtonDisabled()).toBe(true);
+    component.setState(() => ({ email: 'test.email@gmail.com' }));
+    expect(ctaButtonDisabled()).toBe(false);
+  });
+
   it('renders cta', () => {
     const formProps = {
       phoneNumber: 'number',
