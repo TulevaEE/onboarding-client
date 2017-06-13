@@ -48,6 +48,23 @@ export function changePhoneNumber(phoneNumber) {
   return { type: CHANGE_PHONE_NUMBER, phoneNumber };
 }
 
+function hanleLogin() {
+  return (dispatch, getState) => {
+    if (getState().login.redirectLogin) {
+      const token = getState().login.token;
+      const refreshtoken = getState().login.refreshToken;
+      const date = new Date();
+      date.setTime(date.getTime() + (30 * 1000 * 10));
+      const expires = `;expires=${date.toGMTString()}`;
+      document.cookie = `token=${token};path=/;domain=tuleva.ee${expires}`;
+      document.cookie = `refreshToken=${refreshtoken};path=/;domain=tuleva.ee${expires}`;
+      window.location = 'https://pension.tuleva.ee';
+    } else {
+      dispatch(push('/'));
+    }
+  };
+}
+
 function getMobileIdTokens() {
   return (dispatch, getState) => {
     if (timeout && process.env.NODE_ENV !== 'test') {
@@ -59,7 +76,7 @@ function getMobileIdTokens() {
         .then((tokens) => {
           if (tokens.accessToken) { // authentication complete
             dispatch({ type: MOBILE_AUTHENTICATION_SUCCESS, tokens });
-            dispatch(push('/'));
+            dispatch(hanleLogin());
           } else if (getState().login.loadingAuthentication) { // authentication not yet completed
             dispatch(getMobileIdTokens()); // poll again
           }
@@ -93,7 +110,7 @@ function getIdCardTokens() {
         .then((tokens) => {
           if (tokens.accessToken) { // authentication complete
             dispatch({ type: ID_CARD_AUTHENTICATION_SUCCESS, tokens });
-            dispatch(push('/'));
+            dispatch(hanleLogin());
           } else if (getState().login.loadingAuthentication) { // authentication not yet completed
             dispatch(getIdCardTokens()); // poll again
           }
