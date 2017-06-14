@@ -1,5 +1,6 @@
 var path = require('path');
 var fs = require('fs');
+var glob = require('glob');
 
 // Make sure any symlinks in the project folder are resolved:
 // https://github.com/facebookincubator/create-react-app/issues/637
@@ -34,9 +35,13 @@ module.exports = {
   appBuild: resolveApp('build'),
   appPublic: resolveApp('public'),
   appHtml: resolveApp('public/index.html'),
+  appEntries: glob.sync(resolveApp('pages/*.js')).reduce((entries, page) => {
+    entries[path.basename(page, '.js')] = resolveApp(page);
+    return entries;
+  }, {}),
   appIndexJs: resolveApp('src/index.js'),
   appPackageJson: resolveApp('package.json'),
-  appSrc: resolveApp('src'),
+  appSrc: [resolveApp('src'), resolveApp('pages')],
   yarnLockFile: resolveApp('yarn.lock'),
   testsSetup: resolveApp('src/setupTests.js'),
   appNodeModules: resolveApp('node_modules'),

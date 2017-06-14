@@ -23,6 +23,7 @@ import {
   MOBILE_AUTHENTICATION_SUCCESS,
   ID_CARD_AUTHENTICATION_SUCCESS,
   GET_USER_SUCCESS,
+  GET_USER_ERROR,
   GET_USER_CONVERSION_SUCCESS,
 } from '../login/constants';
 
@@ -72,6 +73,11 @@ export default function trackingReducer(state = initialState, action) {
     case SIGN_MANDATE_ERROR:
       mixpanel.track(actionType, {
         error: action.error,
+      });
+      return initialState;
+    case GET_USER_ERROR:
+      mixpanel.track(actionType, {
+        userError: action.userError,
       });
       return initialState;
     case GET_USER_CONVERSION_SUCCESS:

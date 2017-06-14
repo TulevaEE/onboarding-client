@@ -2,6 +2,7 @@ import React, { PropTypes as Types } from 'react';
 import { connect } from 'react-redux';
 import { Message } from 'retranslate';
 import { formatLargeAmountForCurrency } from '../../../common/utils';
+import { InfoTooltip } from '../../../common';
 
 export const JoinTulevaList = ({ className, comparison, comparisonBonus, showAlternative,
                                  age }) => {
@@ -20,7 +21,12 @@ export const JoinTulevaList = ({ className, comparison, comparisonBonus, showAlt
         <span className="lead highlight">
           {formatLargeAmountForCurrency(comparison.newFundFee - comparisonBonus.newFundFee)}
         </span>
-        <span><Message>new.user.flow.new.user.member.bonus.end</Message></span>
+        <span>
+          <Message>new.user.flow.new.user.member.bonus.end</Message>
+          <InfoTooltip name="new-user-flow-member-bonus-info">
+            <Message>new.user.flow.new.user.member.bonus.info.tooltip</Message>
+          </InfoTooltip>
+        </span>
       </li>
       <li><Message>new.user.flow.new.user.profit.sharing</Message></li>
       <li>
