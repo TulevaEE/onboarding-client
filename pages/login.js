@@ -10,7 +10,7 @@ import translations from '../src/translations';
 import '../src/index.scss';
 
 import { reducer as loginReducer } from '../src/login';
-
+import InlineLoginPage from '../src/login/inlineLogin/inlineLoginPage';
 
 const rootReducer = combineReducers({
   login: loginReducer,
@@ -38,7 +38,7 @@ render((
       messages={translations} language={getLanguage()} fallbackLanguage="et"
     >
       <ReduxProvider store={store}>
-        <div>Inline login component</div>
+        <InlineLoginPage />
       </ReduxProvider>
     </TranslationProvider>
   </MixpanelProvider>

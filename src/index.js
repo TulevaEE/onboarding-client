@@ -82,6 +82,11 @@ function getDataForApp(nextState) {
   getUserAndConversionData();
 }
 
+function initApp(nextState) {
+  store.dispatch(loginActions.handleLoginCookies());
+  getDataForApp(nextState);
+}
+
 function getSourceAndTargetFundsData() {
   const { login, exchange } = store.getState();
   if (login.token && !(exchange.sourceFunds || exchange.loadingSourceFunds ||
@@ -165,7 +170,7 @@ render((
         <Router onUpdate={trackPageView} history={history}>
           <Route path="/login" component={LoginPage} />
           <Route path="/terms-of-use" component={TermsOfUse} />
-          <Route path="/" component={requireAuthentication(App)} onEnter={getDataForApp}>
+          <Route path="/" component={requireAuthentication(App)} onEnter={initApp}>
             <Route path="/quiz" component={Quiz} onEnter={getDataForFlow} />
 
             <Route path="/steps" onEnter={getDataForFlow}>

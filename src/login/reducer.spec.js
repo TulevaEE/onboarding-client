@@ -1,6 +1,7 @@
 import loginReducer from './reducer';
 import {
   CHANGE_PHONE_NUMBER,
+  CHANGE_EMAIL,
 
   MOBILE_AUTHENTICATION_START,
   MOBILE_AUTHENTICATION_START_SUCCESS,
@@ -26,6 +27,8 @@ import {
   TOKEN_REFRESH_SUCCESS,
   TOKEN_REFRESH_ERROR,
 
+  USE_REDIRECT_LOGIN,
+
   LOG_OUT,
 
   QUERY_PARAMETERS,
@@ -36,6 +39,12 @@ describe('Login reducer', () => {
     const phoneNumber = 'a phone number';
     const action = { type: CHANGE_PHONE_NUMBER, phoneNumber };
     expect(loginReducer(undefined, action).phoneNumber).toBe(phoneNumber);
+  });
+
+  it('changes email', () => {
+    const email = 'an email';
+    const action = { type: CHANGE_EMAIL, email };
+    expect(loginReducer(undefined, action).email).toBe(email);
   });
 
   it('starts loading control code and resets error when starting mobile authentication', () => {
@@ -219,5 +228,10 @@ describe('Login reducer', () => {
     const query = { disableRouter: 'true' };
     const newState = loginReducer(undefined, { type: QUERY_PARAMETERS, query });
     expect(newState.disableRouter).toBe(true);
+  });
+
+  it('can switch to redirect login ', () => {
+    const newState = loginReducer(undefined, { type: USE_REDIRECT_LOGIN });
+    expect(newState.redirectLogin).toBe(true);
   });
 });
