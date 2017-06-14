@@ -55,17 +55,24 @@ export function changeEmail(email) {
   return { type: CHANGE_EMAIL, email };
 }
 
-function setLoginCookies(getState) {
-  const token = getState().login.token;
-  const refreshtoken = getState().login.refreshToken;
+const LOGIN_COOKIE_TOKEN_NAME = 'token';
+const LOGIN_COOKIE_REFRESH_TOKEN_NAME = 'refreshToken';
+const LOGIN_COOKIE_EMAIL_NAME = 'email';
+const LOGIN_COOKIE_METHOD_NAME = 'loginMethod';
+
+function setCookie(name, value) {
   const date = new Date();
   date.setTime(date.getTime() + (30 * 1000));
-  const domain = `;domain=${window.location.hostname}`;
   const expires = `;expires=${date.toGMTString()}`;
-  document.cookie = `token=${token};path=/${domain}${expires}`;
-  document.cookie = `refreshToken=${refreshtoken};path=/${domain}${expires}`;
-  const email = getState().login.email;
-  document.cookie = `email=${email};path=/${domain}${expires}`;
+  const domain = `;domain=${window.location.hostname}`;
+  document.cookie = `${name}=${value};path=/${domain}${expires}`;
+}
+
+function setLoginCookies(getState) {
+  setCookie(LOGIN_COOKIE_TOKEN_NAME, getState().login.token);
+  setCookie(LOGIN_COOKIE_REFRESH_TOKEN_NAME, getState().login.refreshToken);
+  setCookie(LOGIN_COOKIE_EMAIL_NAME, getState().login.email);
+  setCookie(LOGIN_COOKIE_METHOD_NAME, getState().login.loginMethod);
 }
 
 function hanleLogin() {
@@ -75,6 +82,39 @@ function hanleLogin() {
       window.location = config.get('applicationUrl');
     } else {
       dispatch(push('/'));
+    }
+  };
+}
+
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) {
+    return parts.pop().split(';').shift();
+  }
+  return null;
+}
+
+export function handleLoginCookies() {
+  return (dispatch) => {
+    const email = getCookie(LOGIN_COOKIE_EMAIL_NAME);
+    if (email) {
+      dispatch(changeEmail(email));
+    }
+    const tokens = {
+      accessToken: getCookie(LOGIN_COOKIE_TOKEN_NAME),
+      refreshToken: getCookie(LOGIN_COOKIE_REFRESH_TOKEN_NAME),
+    };
+    if (tokens.accessToken && tokens.refreshToken) {
+      if (getCookie(LOGIN_COOKIE_METHOD_NAME) === 'mobileId') {
+        dispatch({ type: MOBILE_AUTHENTICATION_SUCCESS, tokens });
+        dispatch(push('/'));
+      } else if (getCookie(LOGIN_COOKIE_METHOD_NAME) === 'idCard') {
+        dispatch({ type: ID_CARD_AUTHENTICATION_SUCCESS, tokens });
+        dispatch(push('/'));
+      } else {
+        throw new Error('Login method not recognized.');
+      }
     }
   };
 }
