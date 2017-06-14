@@ -1,6 +1,7 @@
 import React from 'react';
 import { render } from 'react-dom';
-import { createStore, combineReducers, compose } from 'redux';
+import { createStore, combineReducers, compose, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk';
 import { Provider as TranslationProvider } from 'retranslate';
 import { Provider as ReduxProvider } from 'react-redux';
 import mixpanel from 'mixpanel-browser';
@@ -17,8 +18,7 @@ const rootReducer = combineReducers({
 });
 
 const composeEnhancers = (window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose; // eslint-disable-line
-
-const store = createStore(rootReducer);
+const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk)));
 
 function getLanguage() {
   const params = window.location.search;
