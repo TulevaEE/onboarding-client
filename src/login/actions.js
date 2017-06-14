@@ -1,5 +1,6 @@
 import Raven from 'raven-js';
 import { push } from 'react-router-redux';
+import config from 'react-global-configuration';
 
 import {
   CHANGE_PHONE_NUMBER,
@@ -54,20 +55,24 @@ export function changeEmail(email) {
   return { type: CHANGE_EMAIL, email };
 }
 
+function setLoginCookies(getState) {
+  const token = getState().login.token;
+  const refreshtoken = getState().login.refreshToken;
+  const date = new Date();
+  date.setTime(date.getTime() + (30 * 1000));
+  const domain = `;domain=${window.location.hostname}`;
+  const expires = `;expires=${date.toGMTString()}`;
+  document.cookie = `token=${token};path=/${domain}${expires}`;
+  document.cookie = `refreshToken=${refreshtoken};path=/${domain}${expires}`;
+  const email = getState().login.email;
+  document.cookie = `email=${email};path=/${domain}${expires}`;
+}
+
 function hanleLogin() {
   return (dispatch, getState) => {
     if (getState().login.redirectLogin) {
-      const token = getState().login.token;
-      const refreshtoken = getState().login.refreshToken;
-      const date = new Date();
-      date.setTime(date.getTime() + (30 * 1000 * 9999));
-      const domain = ';domain=tuleva.ee';
-      const expires = `;expires=${date.toGMTString()}`;
-      document.cookie = `token=${token};path=/${domain}${expires}`;
-      document.cookie = `refreshToken=${refreshtoken};path=/${domain}${expires}`;
-      // document.cookie = `email=${email};path=/${domain}${expires}`;
-      // window.location = 'https://pension.tuleva.ee';
-      window.location = 'http://localhost:3000/';
+      setLoginCookies(getState);
+      window.location = config.get('applicationUrl');
     } else {
       dispatch(push('/'));
     }
