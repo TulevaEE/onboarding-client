@@ -1,5 +1,6 @@
 import {
   CHANGE_PHONE_NUMBER,
+  CHANGE_EMAIL,
   MOBILE_AUTHENTICATION_START,
   MOBILE_AUTHENTICATION_START_SUCCESS,
   MOBILE_AUTHENTICATION_START_ERROR,
@@ -52,6 +53,7 @@ const defaultState = {
   userConversionError: null,
   disableRouter: false,
   redirectLogin: false,
+  email: null,
 };
 
 function updateLocalStorage(action, loginMethodUsed) {
@@ -67,7 +69,8 @@ export default function loginReducer(state = defaultState, action) {
   switch (action.type) {
     case CHANGE_PHONE_NUMBER:
       return { ...state, phoneNumber: action.phoneNumber };
-
+    case CHANGE_EMAIL:
+      return { ...state, email: action.email };
     case MOBILE_AUTHENTICATION_START:
       return { ...state, loadingAuthentication: true, error: null };
     case MOBILE_AUTHENTICATION_START_SUCCESS:

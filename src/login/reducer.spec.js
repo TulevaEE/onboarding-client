@@ -1,6 +1,7 @@
 import loginReducer from './reducer';
 import {
   CHANGE_PHONE_NUMBER,
+  CHANGE_EMAIL,
 
   MOBILE_AUTHENTICATION_START,
   MOBILE_AUTHENTICATION_START_SUCCESS,
@@ -38,6 +39,12 @@ describe('Login reducer', () => {
     const phoneNumber = 'a phone number';
     const action = { type: CHANGE_PHONE_NUMBER, phoneNumber };
     expect(loginReducer(undefined, action).phoneNumber).toBe(phoneNumber);
+  });
+
+  it('changes email', () => {
+    const email = 'an email';
+    const action = { type: CHANGE_EMAIL, email };
+    expect(loginReducer(undefined, action).email).toBe(email);
   });
 
   it('starts loading control code and resets error when starting mobile authentication', () => {

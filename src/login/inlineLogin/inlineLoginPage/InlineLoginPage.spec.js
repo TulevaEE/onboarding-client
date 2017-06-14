@@ -29,6 +29,18 @@ describe('Login page', () => {
     expect(component.state().email).toBe(newEmailFieldValue);
   });
 
+  it('on cta click update reducer email', () => {
+    const onEmailChange = jest.fn();
+    const email = 'sample@email.com';
+    component.setProps({ onEmailChange });
+    component.setState(() => ({ email }));
+    const clickButton = () => component.find('button').simulate('click');
+    expect(onEmailChange).not.toHaveBeenCalled();
+    clickButton();
+    expect(onEmailChange).toHaveBeenCalledTimes(1);
+    expect(onEmailChange).toHaveBeenCalledWith(email);
+  });
+
   it('disable cta button until valid email is inserted', () => {
     const formProps = {
       phoneNumber: 'number',

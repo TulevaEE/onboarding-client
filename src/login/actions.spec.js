@@ -3,6 +3,8 @@ import { push } from 'react-router-redux';
 import {
   CHANGE_PHONE_NUMBER,
 
+  CHANGE_EMAIL,
+
   MOBILE_AUTHENTICATION_START,
   MOBILE_AUTHENTICATION_START_SUCCESS,
   MOBILE_AUTHENTICATION_START_ERROR,
@@ -79,6 +81,15 @@ describe('Login actions', () => {
     expect(action).toEqual({
       phoneNumber,
       type: CHANGE_PHONE_NUMBER,
+    });
+  });
+
+  it('can change email', () => {
+    const email = 'an@email.it';
+    const action = actions.changeEmail(email);
+    expect(action).toEqual({
+      email,
+      type: CHANGE_EMAIL,
     });
   });
 

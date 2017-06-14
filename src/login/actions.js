@@ -4,6 +4,8 @@ import { push } from 'react-router-redux';
 import {
   CHANGE_PHONE_NUMBER,
 
+  CHANGE_EMAIL,
+
   MOBILE_AUTHENTICATION_START,
   MOBILE_AUTHENTICATION_START_SUCCESS,
   MOBILE_AUTHENTICATION_START_ERROR,
@@ -48,17 +50,24 @@ export function changePhoneNumber(phoneNumber) {
   return { type: CHANGE_PHONE_NUMBER, phoneNumber };
 }
 
+export function changeEmail(email) {
+  return { type: CHANGE_EMAIL, email };
+}
+
 function hanleLogin() {
   return (dispatch, getState) => {
     if (getState().login.redirectLogin) {
       const token = getState().login.token;
       const refreshtoken = getState().login.refreshToken;
       const date = new Date();
-      date.setTime(date.getTime() + (30 * 1000 * 10));
+      date.setTime(date.getTime() + (30 * 1000 * 9999));
+      const domain = ';domain=tuleva.ee';
       const expires = `;expires=${date.toGMTString()}`;
-      document.cookie = `token=${token};path=/;domain=tuleva.ee${expires}`;
-      document.cookie = `refreshToken=${refreshtoken};path=/;domain=tuleva.ee${expires}`;
-      window.location = 'https://pension.tuleva.ee';
+      document.cookie = `token=${token};path=/${domain}${expires}`;
+      document.cookie = `refreshToken=${refreshtoken};path=/${domain}${expires}`;
+      // document.cookie = `email=${email};path=/${domain}${expires}`;
+      // window.location = 'https://pension.tuleva.ee';
+      window.location = 'http://localhost:3000/';
     } else {
       dispatch(push('/'));
     }

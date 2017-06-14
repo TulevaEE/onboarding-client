@@ -10,6 +10,7 @@ import { AuthenticationLoader, ErrorAlert } from '../../../common';
 import LoginForm from '../inlineLoginForm';
 import {
   changePhoneNumber,
+  changeEmail,
   useRedirectLoginWithPhoneNumber,
   cancelMobileAuthentication,
   useRedirectLoginWithIdCard,
@@ -24,6 +25,11 @@ export class InlineLoginPage extends Component {
       ctaClicked: false,
       email: null,
     };
+  }
+
+  onCtaClick() {
+    this.props.onEmailChange(this.state.email);
+    this.setState(() => ({ ctaClicked: true }));
   }
 
   render() {
@@ -92,7 +98,7 @@ export class InlineLoginPage extends Component {
                   <div className="col-lg-12 text-center">
                     <button
                       className="btn btn-primary btn-block btn-lg"
-                      onClick={() => this.setState(() => ({ ctaClicked: true }))}
+                      onClick={() => this.onCtaClick()}
                       disabled={!isEmailValid(this.state.email)}
                     >
                       <Message>inline.login.cta</Message>
@@ -114,6 +120,7 @@ InlineLoginPage.defaultProps = {
   onPhoneNumberSubmit: noop,
   onCancelMobileAuthentication: noop,
   onAuthenticateWithIdCard: noop,
+  onEmailChange: noop,
 
   phoneNumber: '',
   controlCode: '',
@@ -127,6 +134,7 @@ InlineLoginPage.propTypes = {
   onPhoneNumberSubmit: Types.func,
   onCancelMobileAuthentication: Types.func,
   onAuthenticateWithIdCard: Types.func,
+  onEmailChange: Types.func,
 
   phoneNumber: Types.string,
   controlCode: Types.string,
@@ -144,6 +152,7 @@ const mapStateToProps = state => ({
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
   onPhoneNumberChange: changePhoneNumber,
+  onEmailChange: changeEmail,
   onPhoneNumberSubmit: useRedirectLoginWithPhoneNumber,
   onCancelMobileAuthentication: cancelMobileAuthentication,
   onAuthenticateWithIdCard: useRedirectLoginWithIdCard,
