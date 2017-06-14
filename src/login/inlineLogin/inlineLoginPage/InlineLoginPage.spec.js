@@ -1,6 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Message } from 'retranslate';
+import FacebookProvider, { Like } from 'react-facebook';
 import { InlineLoginPage } from './InlineLoginPage';
 import { AuthenticationLoader, ErrorAlert } from '../../../common';
 import InlineLoginForm from './../inlineLoginForm';
@@ -121,5 +122,11 @@ describe('Login page', () => {
     expect(component.contains(<ErrorAlert description={errorDescription} />)).toBe(true);
     expect(component.contains(<InlineLoginForm {...formProps} />)).toBe(true);
     expect(component.contains(<AuthenticationLoader {...authProps} />)).toBe(false);
+  });
+
+  it('shows facebook likes', () => {
+    expect(component.contains(<FacebookProvider appId="1939240566313354">
+      <Like href="http://www.facebook.com/Tuleva.ee" colorScheme="dark" showFaces />
+    </FacebookProvider>)).toBe(true);
   });
 });

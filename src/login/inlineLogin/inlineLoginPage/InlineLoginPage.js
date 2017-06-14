@@ -3,6 +3,7 @@ import React, { Component, PropTypes as Types } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Message, withTranslations } from 'retranslate';
+import FacebookProvider, { Like } from 'react-facebook';
 
 import './InlineLoginPage.scss';
 
@@ -108,6 +109,13 @@ export class InlineLoginPage extends Component {
               </div>
             )
           }
+        </div>
+        <div className="row mt-3">
+          <div className="col-lg-12 text-center">
+            <FacebookProvider appId="1939240566313354">
+              <Like href="http://www.facebook.com/Tuleva.ee" colorScheme="dark" showFaces />
+            </FacebookProvider>
+          </div>
         </div>
       </div>
     );
