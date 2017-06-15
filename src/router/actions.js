@@ -44,6 +44,7 @@ export function selectRouteForState() {
       dispatch(push('/quiz')); // load user
       return;
     }
+
     if (!isUserLoaded(getState)) {
       dispatch(push('/')); // load user
     } else if (isMember(getState)) {

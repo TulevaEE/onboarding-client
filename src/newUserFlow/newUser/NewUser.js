@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
-import React, { Component, PropTypes as Types } from 'react';
+import React, { Component } from 'react';
+import { PropTypes as Types } from 'prop-types';
 import { Message } from 'retranslate';
 import { Link } from 'react-router';
 import { bindActionCreators } from 'redux';
