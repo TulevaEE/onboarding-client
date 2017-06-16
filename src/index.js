@@ -29,6 +29,7 @@ import { reducer as comparisonReducer, actions as comparisonActions } from './co
 import { reducer as quizReducer, actions as quizActions } from './quiz';
 import { router } from './router';
 import Quiz from './quiz/Quiz';
+import { refreshToken } from './login/actions';
 
 // import { reducer as quizReducer } from './quiz';
 import App from './app';
@@ -59,27 +60,11 @@ const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk, r
 
 const history = syncHistoryWithStore(browserHistory, store);
 
-function getUserAndConversionData() {
-  const { login } = store.getState();
-  if (login.token
-    && (!(login.user || login.loadingUser)
-    || !(login.userConversion || login.loadingUserConversion))
-  ) {
-    Promise.all([
-      store.dispatch(loginActions.getUserConversion()),
-      store.dispatch(loginActions.getUser()),
-    ]).then(() =>
-      store.dispatch(router.selectRouteForState()),
-    );
+function refreshTokenIfNeeded(query) {
+  if (query.isNewMember === 'true') {
+    return store.dispatch(refreshToken());
   }
-}
-
-function getDataForApp(nextState) {
-  store.dispatch(loginActions.mapUrlQueryParamsToState(nextState.location.query));
-  if (quizActions.isRouteToQuiz(nextState.location)) {
-    store.dispatch(quizActions.routeToQuiz());
-  }
-  getUserAndConversionData();
+  return Promise.resolve();
 }
 
 function getSourceAndTargetFundsData() {
@@ -98,10 +83,36 @@ function getComparisonData() {
   }
 }
 
-function getDataForFlow(nextState) {
-  store.dispatch(exchangeActions.mapUrlQueryParamsToState(nextState.location.query));
-  getSourceAndTargetFundsData();
-  getComparisonData();
+function getUserAndConversionData(nextState) {
+  const { login } = store.getState();
+  if (login.token
+    && (!(login.user || login.loadingUser)
+    || !(login.userConversion || login.loadingUserConversion))
+  ) {
+    return refreshTokenIfNeeded(nextState.location.query).then(() =>
+      Promise.all([
+        store.dispatch(loginActions.getUserConversion()),
+        store.dispatch(loginActions.getUser()),
+      ]).then(() => {
+        getSourceAndTargetFundsData();
+        getComparisonData();
+        store.dispatch(router.selectRouteForState());
+      }));
+  }
+  return Promise.resolve();
+}
+
+function getDataForApp(nextState) {
+  store.dispatch(loginActions.mapUrlQueryParamsToState(nextState.location.query));
+  if (quizActions.isRouteToQuiz(nextState.location)) {
+    store.dispatch(quizActions.routeToQuiz());
+  }
+  return getUserAndConversionData(nextState);
+}
+
+function initApp(nextState, replace, callback) {
+  store.dispatch(loginActions.handleLoginCookies());
+  getDataForApp(nextState).then(() => callback());
 }
 
 function getInitialCapitalData() {
@@ -165,17 +176,17 @@ render((
         <Router onUpdate={trackPageView} history={history}>
           <Route path="/login" component={LoginPage} />
           <Route path="/terms-of-use" component={TermsOfUse} />
-          <Route path="/" component={requireAuthentication(App)} onEnter={getDataForApp}>
-            <Route path="/quiz" component={Quiz} onEnter={getDataForFlow} />
+          <Route path="/" component={requireAuthentication(App)} onEnter={initApp}>
+            <Route path="/quiz" component={Quiz} />
 
-            <Route path="/steps" onEnter={getDataForFlow}>
+            <Route path="/steps">
               <Route path="new-user" component={NewUser} onEnter={scrollToTop} />
               <Route path="non-member" component={NonMember} />
               <Route path="signup" component={SignUpPage} />
               <Route path="payment" component={Payment} />
             </Route>
 
-            <Route path="/steps" component={Steps} onEnter={getDataForFlow}>
+            <Route path="steps" component={Steps}>
               <Route path="select-sources" component={SelectSources} onEnter={scrollToTop} />
               <Route
                 path="transfer-future-capital"

@@ -3,6 +3,8 @@ import { push } from 'react-router-redux';
 import {
   CHANGE_PHONE_NUMBER,
 
+  CHANGE_EMAIL,
+
   MOBILE_AUTHENTICATION_START,
   MOBILE_AUTHENTICATION_START_SUCCESS,
   MOBILE_AUTHENTICATION_START_ERROR,
@@ -28,6 +30,8 @@ import {
   TOKEN_REFRESH_SUCCESS,
   TOKEN_REFRESH_ERROR,
   QUERY_PARAMETERS,
+
+  USE_REDIRECT_LOGIN,
 
   LOG_OUT,
 } from './constants';
@@ -77,6 +81,15 @@ describe('Login actions', () => {
     expect(action).toEqual({
       phoneNumber,
       type: CHANGE_PHONE_NUMBER,
+    });
+  });
+
+  it('can change email', () => {
+    const email = 'an@email.it';
+    const action = actions.changeEmail(email);
+    expect(action).toEqual({
+      email,
+      type: CHANGE_EMAIL,
     });
   });
 
@@ -340,4 +353,25 @@ describe('Login actions', () => {
     });
   });
 
+  it('can handle redirect login', () => {
+    expect(actions.useRedirectLogin()).toEqual({
+      type: USE_REDIRECT_LOGIN,
+    });
+  });
+
+  it('can handle redirect login with mobile id', () => {
+    const useRedirectLoginWithPhoneNumber =
+      createBoundAction(actions.useRedirectLoginWithPhoneNumber);
+    useRedirectLoginWithPhoneNumber(123);
+    expect(dispatch).toHaveBeenCalledWith({ type: USE_REDIRECT_LOGIN });
+    expect(dispatch).toHaveBeenCalledWith({ type: MOBILE_AUTHENTICATION_START });
+  });
+
+  it('can handle redirect login with id card', () => {
+    const useRedirectLoginWithIdCard =
+      createBoundAction(actions.useRedirectLoginWithIdCard);
+    useRedirectLoginWithIdCard();
+    expect(dispatch).toHaveBeenCalledWith({ type: USE_REDIRECT_LOGIN });
+    expect(dispatch).toHaveBeenCalledWith({ type: ID_CARD_AUTHENTICATION_START });
+  });
 });

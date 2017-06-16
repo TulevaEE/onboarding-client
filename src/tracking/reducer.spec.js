@@ -24,6 +24,7 @@ import {
   ID_CARD_AUTHENTICATION_START,
   ID_CARD_AUTHENTICATION_SUCCESS,
   GET_USER_SUCCESS,
+  GET_USER_ERROR,
   GET_USER_CONVERSION_SUCCESS,
 } from '../login/constants';
 
@@ -156,5 +157,17 @@ it('can track simple events', () => {
   });
 
   expect(mixpanel.track).toHaveBeenCalledTimes(events.length);
+});
+
+it('can track get user errors', () => {
+  const userError = {};
+  const action = { type: GET_USER_ERROR, userError };
+
+  trackingReducer(undefined, action);
+
+  expect(mixpanel.track).toHaveBeenCalledTimes(1);
+  expect(mixpanel.track)
+    .toHaveBeenCalledWith(getActionType(GET_USER_ERROR),
+      { userError });
 });
 

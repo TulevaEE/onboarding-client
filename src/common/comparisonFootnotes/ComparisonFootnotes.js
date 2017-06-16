@@ -22,6 +22,12 @@ export const ComparisonFootnotes = () => (
     </p>
     <p className="small">
       <Message>footnote.cheapest</Message>
+      <a
+        target="_blank" rel="noopener noreferrer"
+        href="https://docs.google.com/document/d/1IKm6NldgI1lu01X2rvCMy9B78wNANh81z3_wvVEKtM4/edit?usp=sharing"
+      >
+        <Message>footnote.comparison.assumptions</Message>
+      </a>
     </p>
   </div>
 );

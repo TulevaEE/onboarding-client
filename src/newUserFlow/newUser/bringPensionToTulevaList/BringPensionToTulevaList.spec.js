@@ -14,24 +14,24 @@ describe('Bring Pension to Tuleva list', () => {
 
   it('renders list', () => {
     expect(component.contains(
-      <Message>new.user.flow.new.user.cheapest.in.estonia</Message>)).toBe(true);
+      <Message>new.user.flow.new.user.cheapest</Message>)).toBe(true);
     expect(component.contains(
-      <Message>new.user.flow.new.user.cheapest.fund.management.fee</Message>)).toBe(true);
+      <Message>new.user.flow.new.user.stock.investing.fund</Message>)).toBe(true);
+    expect(component.contains(
+      <Message>new.user.flow.new.user.management.fee</Message>)).toBe(true);
     expect(component.contains(
       <Message>new.user.flow.new.user.safety</Message>)).toBe(true);
-    // expect(component.contains(
-    //   <Message>new.user.flow.new.user.money.to.self</Message>)).toBe(true);
   });
 
-  it('renders alternative list', () => {
+  it('renders same list as alternative', () => {
     component.setProps({ showAlternative: true });
 
     expect(component.contains(
-      <Message>new.user.flow.new.user.alternative.cheapest</Message>)).toBe(true);
+      <Message>new.user.flow.new.user.cheapest</Message>)).toBe(true);
     expect(component.contains(
-      <Message>new.user.flow.new.user.alternative.stock.investing.fund</Message>)).toBe(true);
+      <Message>new.user.flow.new.user.stock.investing.fund</Message>)).toBe(true);
     expect(component.contains(
-      <Message>new.user.flow.new.user.alternative.management.fee</Message>)).toBe(true);
+      <Message>new.user.flow.new.user.management.fee</Message>)).toBe(true);
     expect(component.contains(
       <Message>new.user.flow.new.user.safety</Message>)).toBe(true);
   });

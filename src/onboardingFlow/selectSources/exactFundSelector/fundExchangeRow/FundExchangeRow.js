@@ -1,4 +1,5 @@
-import React, { PropTypes as Types } from 'react';
+import React from 'react';
+import { PropTypes as Types } from 'prop-types';
 import { withTranslations } from 'retranslate';
 
 import { createClamper } from '../../../../common/utils';

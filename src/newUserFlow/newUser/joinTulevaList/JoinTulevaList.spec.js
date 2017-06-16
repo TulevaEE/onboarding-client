@@ -18,8 +18,6 @@ describe('Join Tuleva list', () => {
     expect(component.contains(
       <Message>new.user.flow.new.user.member.bonus.start</Message>)).toBe(true);
     expect(component.contains(
-      <Message>new.user.flow.new.user.member.bonus.end</Message>)).toBe(true);
-    expect(component.contains(
       <Message>new.user.flow.new.user.profit.sharing</Message>)).toBe(true);
     expect(component.contains(
       <Message>new.user.flow.new.user.improve.the.pension.system</Message>)).toBe(true);
@@ -32,8 +30,6 @@ describe('Join Tuleva list', () => {
       <Message>new.user.flow.new.user.tuleva.owner</Message>)).toBe(true);
     expect(component.contains(
       <Message>new.user.flow.new.user.member.bonus.start</Message>)).toBe(true);
-    expect(component.contains(
-      <Message>new.user.flow.new.user.member.bonus.end</Message>)).toBe(true);
     expect(component.contains(
       <Message>new.user.flow.new.user.profit.sharing</Message>)).toBe(true);
     expect(component.contains(

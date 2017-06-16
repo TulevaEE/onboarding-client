@@ -1,5 +1,6 @@
 import {
   CHANGE_PHONE_NUMBER,
+  CHANGE_EMAIL,
   MOBILE_AUTHENTICATION_START,
   MOBILE_AUTHENTICATION_START_SUCCESS,
   MOBILE_AUTHENTICATION_START_ERROR,
@@ -18,6 +19,7 @@ import {
   GET_USER_CONVERSION_ERROR,
   TOKEN_REFRESH_SUCCESS,
   TOKEN_REFRESH_ERROR,
+  USE_REDIRECT_LOGIN,
   LOG_OUT,
   QUERY_PARAMETERS,
 } from './constants';
@@ -50,7 +52,8 @@ const defaultState = {
   loadingUserConversion: false,
   userConversionError: null,
   disableRouter: false,
-  redirectUrl: 'http://redirecturl.ee',
+  redirectLogin: false,
+  email: null,
 };
 
 function updateLocalStorage(action, loginMethodUsed) {
@@ -66,7 +69,8 @@ export default function loginReducer(state = defaultState, action) {
   switch (action.type) {
     case CHANGE_PHONE_NUMBER:
       return { ...state, phoneNumber: action.phoneNumber };
-
+    case CHANGE_EMAIL:
+      return { ...state, email: action.email };
     case MOBILE_AUTHENTICATION_START:
       return { ...state, loadingAuthentication: true, error: null };
     case MOBILE_AUTHENTICATION_START_SUCCESS:
@@ -167,6 +171,10 @@ export default function loginReducer(state = defaultState, action) {
       return { ...state,
         loadingUserConversion: false,
         userConversionError: getGlobalErrorCode(action.error.body) };
+    case USE_REDIRECT_LOGIN:
+      return { ...state,
+        redirectLogin: true,
+      };
 
     case LOG_OUT:
       if (window.localStorage) {
