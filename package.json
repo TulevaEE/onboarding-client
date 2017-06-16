@@ -64,7 +64,6 @@
     "hwcrypto-js": "ErkoRisthein/hwcrypto.js",
     "imports-loader": "^0.7.1",
     "mixpanel-browser": "^2.11.0",
-    "raven-js": "^3.12.1",
     "react": "^15.4.2",
     "react-collapsible": "^1.4.0",
     "react-dom": "^15.4.2",

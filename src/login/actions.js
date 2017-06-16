@@ -1,4 +1,3 @@
-import Raven from 'raven-js';
 import { push } from 'react-router-redux';
 import config from 'react-global-configuration';
 
@@ -200,9 +199,6 @@ export function getUser() {
     return api
       .getUserWithToken(getState().login.token)
       .then((user) => {
-        if (process.env.NODE_ENV === 'production') {
-          Raven.setUserContext({ id: user.id });
-        }
         dispatch({ type: GET_USER_SUCCESS, user });
       })
       .catch((error) => {
@@ -241,9 +237,6 @@ export function refreshToken() {
 }
 
 export function logOut() {
-  if (process.env.NODE_ENV === 'production') {
-    Raven.setUserContext(); // unauthenticate
-  }
   http.resetStatisticsIdentification();
   return { type: LOG_OUT };
 }
