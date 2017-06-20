@@ -28,8 +28,8 @@ import {
 } from '../login/constants';
 
 import {
-  CREATE_NEW_USER_SUCCESS,
-} from '../newUserFlow/constants';
+  UPDATE_USER_SUCCESS,
+} from '../common/user/constants';
 
 function identifyUserForTracking(user) {
   mixpanel.identify(user.id);
@@ -96,7 +96,7 @@ export default function trackingReducer(state = initialState, action) {
     case SIGN_MANDATE_ID_CARD_START:
     case SIGN_MANDATE_SUCCESS:
     case SIGN_MANDATE_ID_CARD_START_SUCCESS:
-    case CREATE_NEW_USER_SUCCESS:
+    case UPDATE_USER_SUCCESS:
       mixpanel.track(actionType);
       return initialState;
     case LOCATION_CHANGE:

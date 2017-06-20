@@ -4,11 +4,11 @@ import { SubmissionError } from 'redux-form';
 
 import {
   createUserWithToken,
-} from '../common/api';
+} from '../api';
 import {
-  CREATE_NEW_USER_START,
-  CREATE_NEW_USER_SUCCESS,
-  CREATE_NEW_USER_ERROR,
+  UPDATE_USER_START,
+  UPDATE_USER_SUCCESS,
+  UPDATE_USER_ERROR,
 } from './constants';
 
 function toFieldErrors(errorResponse) {
@@ -22,19 +22,24 @@ function toFieldErrors(errorResponse) {
   }, {});
 }
 
-export function createNewUser(user) {
+function updateUserAndPush(user, route) {
   return (dispatch, getState) => {
-    dispatch({ type: CREATE_NEW_USER_START });
+    dispatch({ type: UPDATE_USER_START });
     return createUserWithToken(user, getState().login.token)
       .then((newUser) => {
-        dispatch({ type: CREATE_NEW_USER_SUCCESS, newUser });
-        dispatch(push('/steps/payment'));
-      },
-      ).catch((errorResponse) => {
-        dispatch({ type: CREATE_NEW_USER_ERROR, errorResponse });
+        dispatch({ type: UPDATE_USER_SUCCESS, newUser });
+        dispatch(push(route));
+      }).catch((errorResponse) => {
+        dispatch({ type: UPDATE_USER_ERROR, errorResponse });
         throw new SubmissionError(toFieldErrors(errorResponse));
       });
   };
 }
 
-export default createNewUser;
+export function registerUser(user) {
+  return updateUserAndPush(user, '/steps/payment');
+}
+
+export function updateUser(user) {
+  return updateUserAndPush(user, '/account');
+}

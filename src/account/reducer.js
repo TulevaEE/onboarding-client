@@ -4,10 +4,15 @@ import {
   GET_INITIAL_CAPITAL_ERROR,
 } from './constants';
 
+import {
+  UPDATE_USER_SUCCESS,
+} from '../common/user/constants';
+
 const initialState = {
   initialCapital: null,
   loadingInitialCapital: false,
   error: null,
+  updateUserSuccess: false,
 };
 
 export default function comparisonReducer(state = initialState, action) {
@@ -27,6 +32,11 @@ export default function comparisonReducer(state = initialState, action) {
       return { ...state,
         loadingInitialCapital: false,
         error: action.error,
+      };
+    case UPDATE_USER_SUCCESS:
+      return {
+        ...state,
+        updateUserSuccess: true,
       };
     default:
       return state;

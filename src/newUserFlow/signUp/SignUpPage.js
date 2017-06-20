@@ -3,11 +3,11 @@ import { PropTypes as Types } from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Message } from 'retranslate';
-import { createNewUser } from '../actions';
+import { registerUser } from '../../common/user/actions';
 
 import SignUpForm from './signUpForm';
 
-export const SignUpPage = ({ createUser }) => (
+export const SignUpPage = ({ saveUser }) => (
   <div>
     <div className="mb-4">
       <p className="mb-4 mt-5 lead"><Message>new.user.flow.signup.title</Message></p>
@@ -15,7 +15,7 @@ export const SignUpPage = ({ createUser }) => (
 
       <div className="row">
         <div className="col-6">
-          <SignUpForm onSubmit={createUser} />
+          <SignUpForm onSubmit={saveUser} />
         </div>
       </div>
 
@@ -26,15 +26,15 @@ export const SignUpPage = ({ createUser }) => (
 const noop = () => null;
 
 SignUpPage.defaultProps = {
-  createUser: noop,
+  saveUser: noop,
 };
 
 SignUpPage.propTypes = {
-  createUser: Types.func,
+  saveUser: Types.func,
 };
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-  createUser: createNewUser,
+  saveUser: registerUser,
 }, dispatch);
 
 const connectToRedux = connect(null, mapDispatchToProps);

@@ -120,7 +120,7 @@ export class NewUser extends Component {
                   </div>
                   <div className="mt-4">
                     <Link
-                      className="btn btn-secondary btn-link btn-block px-0 mb-2"
+                      className="btn btn-secondary btn-block px-0 mb-2"
                       to="/steps/non-member"
                     >
                       <Message>newUserFlow.newUser.i.want.just.to.transfer.my.pension</Message>

@@ -29,8 +29,8 @@ import {
 } from '../login/constants';
 
 import {
-  CREATE_NEW_USER_SUCCESS,
-} from '../newUserFlow/constants';
+  UPDATE_USER_SUCCESS,
+} from '../common/user/constants';
 
 function getActionType(actionType) {
   return actionType.split('/')[1];
@@ -147,7 +147,7 @@ it('can track simple events', () => {
     ID_CARD_AUTHENTICATION_START, ID_CARD_AUTHENTICATION_SUCCESS, GET_TARGET_FUNDS_ERROR,
     CHANGE_AGREEMENT_TO_TERMS, SIGN_MANDATE_MOBILE_ID_START_SUCCESS,
     SIGN_MANDATE_MOBILE_ID_CANCEL, SIGN_MANDATE_ID_CARD_START,
-    SIGN_MANDATE_ID_CARD_START_SUCCESS, SIGN_MANDATE_SUCCESS, CREATE_NEW_USER_SUCCESS];
+    SIGN_MANDATE_ID_CARD_START_SUCCESS, SIGN_MANDATE_SUCCESS, UPDATE_USER_SUCCESS];
 
   events.forEach((event) => {
     const action = { type: event };

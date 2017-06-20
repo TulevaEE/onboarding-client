@@ -8,6 +8,8 @@ import { Message } from 'retranslate';
 import { Loader } from '../common';
 import PensionFundTable from './../onboardingFlow/selectSources/pensionFundTable';
 import PendingExchangesTable from './pendingExchangeTable';
+import UpdateUserForm from './updateUserForm';
+import { updateUser } from '../common/user/actions';
 
 export const AccountPage = ({
                               currentBalanceFunds,
@@ -17,6 +19,7 @@ export const AccountPage = ({
                               conversion,
                               pendingExchanges,
                               loadingPendingExchanges,
+                              saveUser,
 }) => (
   <div>
     <div className="row mt-5">
@@ -52,6 +55,12 @@ export const AccountPage = ({
       ) : ''
     }
     <div className="row mt-5">
+      <div className="col-6">
+        <p className="mb-4 lead"><Message>update.user.details.title</Message></p>
+        <UpdateUserForm onSubmit={saveUser} />
+      </div>
+    </div>
+    <div className="row mt-5">
       <div className="col">
         <p className="mb-4 lead"><Message>select.sources.current.status</Message></p>
         {
@@ -82,6 +91,9 @@ export const AccountPage = ({
   </div>
 );
 
+const noop = () => null;
+
+
 AccountPage.defaultProps = {
   currentBalanceFunds: [],
   loadingCurrentBalance: false,
@@ -90,6 +102,7 @@ AccountPage.defaultProps = {
   initialCapital: {},
   memberNumber: null,
   conversion: {},
+  saveUser: noop,
 };
 
 AccountPage.propTypes = {
@@ -100,6 +113,7 @@ AccountPage.propTypes = {
   initialCapital: Types.shape({}),
   memberNumber: Types.number,
   conversion: Types.shape({}),
+  saveUser: Types.func,
 };
 
 // TODO: write component
@@ -112,7 +126,9 @@ const mapStateToProps = state => ({
   memberNumber: (state.login.user || {}).memberNumber,
   conversion: state.login.conversion,
 });
-const mapDispatchToProps = dispatch => bindActionCreators({}, dispatch);
+const mapDispatchToProps = dispatch => bindActionCreators({
+  saveUser: updateUser,
+}, dispatch);
 
 const withRedux = connect(mapStateToProps, mapDispatchToProps);
 
