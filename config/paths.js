@@ -35,6 +35,7 @@ module.exports = {
   appBuild: resolveApp('build'),
   appPublic: resolveApp('public'),
   appHtml: resolveApp('public/index.html'),
+  loginHtml: resolveApp('public/login.html'),
   appEntries: glob.sync(resolveApp('pages/*.js')).reduce((entries, page) => {
     entries[path.basename(page, '.js')] = resolveApp(page);
     return entries;
