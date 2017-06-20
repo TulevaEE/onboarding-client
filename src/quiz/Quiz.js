@@ -1,4 +1,3 @@
-// import React, { Component, PropTypes as Types } from 'react';
 import React, { Component } from 'react';
 import { Message } from 'retranslate';
 import { bindActionCreators } from 'redux';

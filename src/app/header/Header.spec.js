@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import { Link } from 'react-router';
 import { Message } from 'retranslate';
 
-import { Loader } from '../../common';
+import { logo, Loader } from '../../common';
 import Header from './Header';
 
 describe('Header', () => {
@@ -11,6 +11,14 @@ describe('Header', () => {
 
   beforeEach(() => {
     component = shallow(<Header />);
+  });
+
+  it('shows a header logo with a link', () => {
+    expect(component.contains(
+      <a href="//tuleva.ee" target="_blank" rel="noopener noreferrer">
+        <img src={logo} alt="Tuleva" className="img-responsive brand-logo" />
+      </a>,
+    )).toBe(true);
   });
 
   it('shows the user\'s name when not loading', () => {

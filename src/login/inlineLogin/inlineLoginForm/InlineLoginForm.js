@@ -1,4 +1,5 @@
-import React, { Component, PropTypes as Types } from 'react';
+import React, { Component } from 'react';
+import { PropTypes as Types } from 'prop-types';
 import { Message, withTranslations } from 'retranslate';
 
 import './InlineLoginForm.scss';

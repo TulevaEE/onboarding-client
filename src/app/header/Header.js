@@ -1,4 +1,5 @@
-import React, { PropTypes as Types } from 'react';
+import React from 'react';
+import { PropTypes as Types } from 'prop-types';
 import { Link } from 'react-router';
 import { Message } from 'retranslate';
 
@@ -7,7 +8,9 @@ import { logo, Loader } from '../../common';
 const Header = ({ user: { name } = {}, loading, onLogout }) => (
   <div className="row">
     <div className="col align-self-start">
-      <img src={logo} alt="Tuleva" className="img-responsive brand-logo" />
+      <a href="//tuleva.ee" target="_blank" rel="noopener noreferrer">
+        <img src={logo} alt="Tuleva" className="img-responsive brand-logo" />
+      </a>
     </div>
     <div className="col align-self-end text-right">
       {
