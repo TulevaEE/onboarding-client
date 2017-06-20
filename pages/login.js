@@ -8,10 +8,11 @@ import mixpanel from 'mixpanel-browser';
 import MixpanelProvider from 'react-mixpanel';
 
 import translations from '../src/translations';
-import '../src/index.scss';
+import '../src/inline-login-index.scss';
 
 import { reducer as loginReducer } from '../src/login';
 import InlineLoginPage from '../src/login/inlineLogin/inlineLoginPage';
+import initializeConfiguration from '../src/config/config';
 
 const rootReducer = combineReducers({
   login: loginReducer,
@@ -31,6 +32,7 @@ function getLanguage() {
   return 'et';
 }
 
+initializeConfiguration();
 
 render((
   <MixpanelProvider mixpanel={mixpanel}>
@@ -42,4 +44,4 @@ render((
       </ReduxProvider>
     </TranslationProvider>
   </MixpanelProvider>
-), document.getElementById('root'));
+), document.getElementById('inline-login'));

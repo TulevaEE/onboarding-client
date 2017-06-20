@@ -1,14 +1,15 @@
+import config from 'react-global-configuration';
 import { downloadFile, get, post, postForm, put, patch, simpleFetch } from './http';
 
-const API_URL = '/api';
-
+const API_URI = '/api';
 function getEndpoint(endpoint) {
+  const API_BASEPATH = config.get('applicationUrl');
   // in production, we proxy through a proxy endpoint at /proxy.
   // in development, we proxy through webpack dev server without the prefix.
   if (process.env.NODE_ENV === 'production') {
-    return `${API_URL}${endpoint}`;
+    return `${API_BASEPATH}${API_URI}${endpoint}`;
   }
-  return endpoint;
+  return `${API_BASEPATH}${endpoint}`;
 }
 
 function transformFundBalance(fundBalance) {
