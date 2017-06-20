@@ -3,7 +3,7 @@ import { downloadFile, get, post, postForm, put, patch, simpleFetch } from './ht
 
 const API_URI = '/api';
 function getEndpoint(endpoint) {
-  const API_BASEPATH = config.get('applicationUrl');
+  const API_BASEPATH = config.get('applicationUrl') ? config.get('applicationUrl') : '';
   // in production, we proxy through a proxy endpoint at /proxy.
   // in development, we proxy through webpack dev server without the prefix.
   if (process.env.NODE_ENV === 'production') {
