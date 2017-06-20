@@ -1,6 +1,7 @@
 /* eslint-disable no-confusing-arrow,no-useless-escape */
 
-import React, { PropTypes as Types } from 'react';
+import React from 'react';
+import { PropTypes as Types } from 'prop-types';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from 'redux-form';
 import { Message, withTranslations } from 'retranslate';

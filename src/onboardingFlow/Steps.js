@@ -1,9 +1,8 @@
-import React, { PropTypes as Types } from 'react';
-import { bindActionCreators } from 'redux';
+import React from 'react';
+import { PropTypes as Types } from 'prop-types';
 import { connect } from 'react-redux';
 import { Message } from 'retranslate';
 import mixpanel from 'mixpanel-browser';
-import { refreshToken } from '../login/actions';
 
 
 import './Steps.scss';
@@ -17,17 +16,13 @@ const orderedStepNames = [
 ];
 
 // this component wraps all steps and renders the top and bottom areas.
-export const Steps = ({ children, stepName, userFirstName, isNewMember, onNewMember }) => {
+export const Steps = ({ children, stepName, userFirstName, isNewMember }) => {
   const stepIndex = orderedStepNames.indexOf(stepName);
   const beforeSteps = orderedStepNames.slice(0, stepIndex);
   const currentStep = orderedStepNames[stepIndex];
   const afterSteps = orderedStepNames.slice(stepIndex + 1);
 
   mixpanel.track(`ONBOARDING_STEP_${currentStep}`);
-
-  if (isNewMember) {
-    onNewMember();
-  }
 
   return (
     <div className="row">
@@ -73,14 +68,11 @@ export const Steps = ({ children, stepName, userFirstName, isNewMember, onNewMem
   );
 };
 
-const noop = () => null;
-
 Steps.defaultProps = {
   children: null,
   stepName: null,
   userFirstName: '',
   isNewMember: false,
-  onNewMember: noop,
 };
 
 Steps.propTypes = {
@@ -88,7 +80,6 @@ Steps.propTypes = {
   userFirstName: Types.string,
   children: Types.oneOfType([Types.node, Types.arrayOf(Types.node)]),
   isNewMember: Types.bool,
-  onNewMember: Types.func,
 };
 
 const mapStateToProps = state => ({
@@ -97,10 +88,6 @@ const mapStateToProps = state => ({
   isNewMember: state.exchange.isNewMember,
 });
 
-const mapDispatchToProps = dispatch => bindActionCreators({
-  onNewMember: refreshToken,
-}, dispatch);
-
-const connectToRedux = connect(mapStateToProps, mapDispatchToProps);
+const connectToRedux = connect(mapStateToProps);
 
 export default connectToRedux(Steps);

@@ -1,4 +1,5 @@
-import React, { Component, PropTypes as Types } from 'react';
+import React, { Component } from 'react';
+import { PropTypes as Types } from 'prop-types';
 import { Message } from 'retranslate';
 // import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
