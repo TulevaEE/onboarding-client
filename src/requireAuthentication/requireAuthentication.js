@@ -3,13 +3,14 @@ import { PropTypes as Types } from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { push } from 'react-router-redux';
+import { actions as loginActions } from '../login';
 
 function getDisplayName(WrappedComponent) {
   return WrappedComponent.displayName || WrappedComponent.name || 'Component';
 }
 
 // higher order component which will redirect to login if tried to go to without auth.
-const requireAuthentication = (WrappedComponent) => {
+const requireAuthentication = (WrappedComponent, handleLoginCookies) => {
   class AuthenticatedComponent extends Component {
     componentWillMount() {
       this.checkAuthenticatedAndRedirect(this.props.authenticated);
@@ -22,6 +23,7 @@ const requireAuthentication = (WrappedComponent) => {
     checkAuthenticatedAndRedirect(authenticated) {
       if (!authenticated) {
         this.props.redirectToLogin();
+        this.props.handleLoginCookies();
       }
     }
 
@@ -37,6 +39,7 @@ const requireAuthentication = (WrappedComponent) => {
   AuthenticatedComponent.propTypes = {
     authenticated: Types.bool.isRequired,
     redirectToLogin: Types.func.isRequired,
+    handleLoginCookies: Types.func.isRequired,
   };
 
   AuthenticatedComponent.displayName = `requireAuthentication(${getDisplayName(WrappedComponent)})`;
@@ -47,6 +50,7 @@ const requireAuthentication = (WrappedComponent) => {
 
   const mapDispatchToProps = dispatch => bindActionCreators({
     redirectToLogin: () => push('/login'),
+    handleLoginCookies: loginActions.handleLoginCookies,
   }, dispatch);
 
   const connectToRedux = connect(mapStateToProps, mapDispatchToProps);
