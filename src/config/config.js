@@ -5,13 +5,15 @@ export default function initializeConfiguration() {
     config.set({
       mixpanelKey: 'be355b17352ad6b4660ae595cd65ce61',
       applicationUrl: 'http://localhost:3000',
-    });
+      newUserPaymentRedirectBaseUrl: 'https://payment-test.maksekeskus.ee/pay/1/link.html',
+    }, { freeze: false });
   }
 
   if (process.env.NODE_ENV === 'production') {
     config.set({
       mixpanelKey: 'ff49493de3c6ed27e198e6b15063b60f',
       applicationUrl: 'https://pension.tuleva.ee',
-    });
+      newUserPaymentRedirectBaseUrl: 'https://payment.maksekeskus.ee/pay/1/link.html',
+    }, { freeze: false });
   }
 }

@@ -152,6 +152,8 @@ function scrollToTop() {
 
 initializeConfiguration();
 
+window.config = config; // for debug only
+
 mixpanel.init(config.get('mixpanelKey'));
 
 GoogleAnalytics.initialize('UA-76855836-1', {

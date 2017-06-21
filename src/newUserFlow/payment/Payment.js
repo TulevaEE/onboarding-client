@@ -2,6 +2,7 @@ import React from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { connect } from 'react-redux';
 import { Message } from 'retranslate';
+import config from 'react-global-configuration';
 
 export const Payment = ({ userId }) => (
   <div>
@@ -10,8 +11,7 @@ export const Payment = ({ userId }) => (
       <p><Message>new.user.flow.payment.intro</Message></p>
 
       <a
-        href={`https://payment.maksekeskus.ee/pay/1/link.html?shopId=8c1a6c0a-2467-4166-ab47-006ddbf38b06&amount=100&reference=${userId}&return_url=https://onboarding-service.tuleva.ee/notifications/payments&return_method=POST&cancel_url=https://pension.tuleva.ee/steps/payment&cancel_method=GET&notification_url=https://onboarding-service.tuleva.ee/notifications/payments&notification_method=POST`}
-        // href={`https://payment-test.maksekeskus.ee/pay/1/link.html?shopId=322a5e5e-37ee-45b1-8961-ebd00e84e209&amount=100&reference=${userId}`}
+        href={`${config.get('newUserPaymentRedirectBaseUrl')}?shopId=8c1a6c0a-2467-4166-ab47-006ddbf38b06&amount=100&reference=${userId}&return_url=https://onboarding-service.tuleva.ee/notifications/payments&return_method=POST&cancel_url=https://pension.tuleva.ee/steps/payment&cancel_method=GET&notification_url=https://onboarding-service.tuleva.ee/notifications/payments&notification_method=POST`}
         className="btn btn-primary"
       ><Message>new.user.flow.payment.bank.links</Message></a>
     </div>
