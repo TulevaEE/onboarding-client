@@ -163,7 +163,9 @@ GoogleAnalytics.initialize('UA-76855836-1', {
 });
 
 function trackPageView() {
-  GoogleAnalytics.pageview(window.location.href);
+  if (process.env.NODE_ENV === 'production') {
+    GoogleAnalytics.pageview(window.location.href);
+  }
 }
 
 render((
