@@ -10,7 +10,7 @@ function getDisplayName(WrappedComponent) {
 }
 
 // higher order component which will redirect to login if tried to go to without auth.
-const requireAuthentication = (WrappedComponent, handleLoginCookies) => {
+const requireAuthentication = (WrappedComponent) => {
   class AuthenticatedComponent extends Component {
     componentWillMount() {
       this.checkAuthenticatedAndRedirect(this.props.authenticated);
@@ -23,7 +23,9 @@ const requireAuthentication = (WrappedComponent, handleLoginCookies) => {
     checkAuthenticatedAndRedirect(authenticated) {
       if (!authenticated) {
         this.props.redirectToLogin();
-        this.props.handleLoginCookies();
+        if (this.props.handleLoginCookies) { //FIXME: for testing purposes
+          this.props.handleLoginCookies();
+        }
       }
     }
 

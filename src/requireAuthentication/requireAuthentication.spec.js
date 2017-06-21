@@ -5,6 +5,7 @@ import { createStore, combineReducers } from 'redux';
 import { push } from 'react-router-redux';
 
 import requireAuthentication from './requireAuthentication';
+import { actions as loginActions } from '../login';
 
 describe('requireAuthentication higher-order component', () => {
   let component;
@@ -19,6 +20,7 @@ describe('requireAuthentication higher-order component', () => {
     fakeStateGetter = () => ({});
     fakeReducer = jest.fn(() => fakeStateGetter()); // redirection so we can return a new object.
     store = createStore(combineReducers({ login: fakeReducer }));
+    loginActions.handleLoginCookies = null; //see usage in component
     component = mount(
       <Provider store={store}>
         <WrappedFakedComponent />
