@@ -20,7 +20,7 @@ describe('requireAuthentication higher-order component', () => {
     fakeStateGetter = () => ({});
     fakeReducer = jest.fn(() => fakeStateGetter()); // redirection so we can return a new object.
     store = createStore(combineReducers({ login: fakeReducer }));
-    loginActions.handleLoginCookies = null; //see usage in component
+    loginActions.handleLoginCookies = null; // see usage in component
     component = mount(
       <Provider store={store}>
         <WrappedFakedComponent />

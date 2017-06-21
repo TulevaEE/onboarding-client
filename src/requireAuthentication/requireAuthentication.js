@@ -23,7 +23,7 @@ const requireAuthentication = (WrappedComponent) => {
     checkAuthenticatedAndRedirect(authenticated) {
       if (!authenticated) {
         this.props.redirectToLogin();
-        if (this.props.handleLoginCookies) { //FIXME: for testing purposes
+        if (this.props.handleLoginCookies) { // FIXME: for testing purposes
           this.props.handleLoginCookies();
         }
       }
