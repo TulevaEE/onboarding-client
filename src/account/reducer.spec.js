@@ -4,10 +4,14 @@ import {
   GET_INITIAL_CAPITAL_ERROR,
 } from './constants';
 
+import {
+  UPDATE_USER_SUCCESS,
+} from '../common/user/constants';
+
+
 import accountReducer from './reducer';
 
 describe('Account reducer', () => {
-
   it('starts loading when starting to get initial capital', () => {
     const newState = accountReducer(undefined, { type: GET_INITIAL_CAPITAL_START });
     expect(newState.loadingInitialCapital).toBe(true);
@@ -31,4 +35,11 @@ describe('Account reducer', () => {
     expect(newState.loadingInitialCapital).toBe(false);
   });
 
+  it('correctly sets user update success to state', () => {
+    const action = { type: UPDATE_USER_SUCCESS };
+
+    const newState = accountReducer({ updateUserSuccess: false }, action);
+
+    expect(newState.updateUserSuccess).toBe(true);
+  });
 });

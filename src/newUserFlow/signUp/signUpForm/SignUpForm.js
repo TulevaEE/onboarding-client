@@ -6,42 +6,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from 'redux-form';
 import { Message, withTranslations } from 'retranslate';
 import { Link } from 'react-router';
-
-const requiredField = value => value ? undefined :
-<Message>new.user.flow.signup.required.field</Message>;
-
-const emailValidator = value =>
-  value && !/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()\.,;\s@\"]+\.{0,1})+[^<>()\.,;:\s@\"]{2,})$/.test(value) ?
-    <Message>new.user.flow.signup.invalid.email</Message> : undefined;
-
-const renderField = ({ input, type, placeholder, disabled, meta: { touched, error } }) => (
-  <div>
-    <div className={`form-group ${touched && error ? 'has-danger' : ''}`}>
-      <input
-        {...input} type={type} placeholder={placeholder} disabled={disabled}
-        className="form-control"
-      />
-      {touched && error && <div className="form-control-feedback">{error}</div>}
-    </div>
-  </div>
-);
-
-renderField.defaultProps = {
-  input: {},
-  meta: {},
-  type: 'text',
-  placeholder: '',
-  disabled: '',
-};
-
-renderField.propTypes = {
-  input: Types.shape(),
-  meta: Types.shape(),
-  type: Types.string,
-  placeholder: Types.string,
-  disabled: Types.string,
-};
-
+import { requiredField, emailValidator, renderField } from '../../../common/form';
 
 export const SignUpForm = ({ handleSubmit, invalid, submitting, error, hasAcceptedTerms,
 translations: { translate } }) => (

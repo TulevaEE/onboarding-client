@@ -6,6 +6,7 @@ import { Loader } from '../common';
 import { AccountPage } from './AccountPage';
 import PensionFundTable from './../onboardingFlow/selectSources/pensionFundTable';
 import PendingExchangesTable from './pendingExchangeTable';
+import UpdateUserForm from './updateUserForm';
 
 describe('Current balance', () => {
   let component;
@@ -79,5 +80,11 @@ describe('Current balance', () => {
     const loadingPendingExchanges = true;
     component.setProps({ loadingPendingExchanges });
     expect(component.contains(<Loader className="align-middle" />)).toBe(true);
+  });
+
+  it('shows update user form', () => {
+    const saveUser = () => null;
+    component.setProps({ saveUser });
+    expect(component.contains(<UpdateUserForm onSubmit={saveUser} />)).toBe(true);
   });
 });
