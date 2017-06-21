@@ -8,6 +8,11 @@ import {
   UPDATE_USER_SUCCESS,
 } from '../common/user/constants';
 
+import {
+  LOG_OUT,
+} from '../login/constants';
+
+
 const initialState = {
   initialCapital: null,
   loadingInitialCapital: false,
@@ -37,6 +42,11 @@ export default function comparisonReducer(state = initialState, action) {
       return {
         ...state,
         updateUserSuccess: true,
+      };
+    case LOG_OUT:
+      return {
+        ...state,
+        updateUserSuccess: false,
       };
     default:
       return state;

@@ -8,6 +8,10 @@ import {
   UPDATE_USER_SUCCESS,
 } from '../common/user/constants';
 
+import {
+  LOG_OUT,
+} from '../login/constants';
+
 
 import accountReducer from './reducer';
 
@@ -41,5 +45,13 @@ describe('Account reducer', () => {
     const newState = accountReducer({ updateUserSuccess: false }, action);
 
     expect(newState.updateUserSuccess).toBe(true);
+  });
+
+  it('correctly removes the update user success message on logout', () => {
+    const action = { type: LOG_OUT };
+
+    const newState = accountReducer({ updateUserSuccess: true }, action);
+
+    expect(newState.updateUserSuccess).toBe(false);
   });
 });
