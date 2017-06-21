@@ -111,7 +111,6 @@ function getDataForApp(nextState) {
 }
 
 function initApp(nextState, replace, callback) {
-  store.dispatch(loginActions.handleLoginCookies());
   getDataForApp(nextState).then(() => callback());
 }
 
