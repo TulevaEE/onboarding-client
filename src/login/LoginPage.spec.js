@@ -26,7 +26,7 @@ describe('Login page', () => {
     expect(component.contains(<LoginForm {...formProps} />)).toBe(true);
   });
 
-  it('renders an authentication loader instead if loading or has control code', () => {
+  it('renders an authentication loader instead if loading', () => {
     const onCancelMobileAuthentication = jest.fn();
     component.setProps({ onCancelMobileAuthentication });
 
@@ -37,9 +37,23 @@ describe('Login page', () => {
     expect(component.contains(
       <AuthenticationLoader controlCode="" onCancel={onCancelMobileAuthentication} />,
     )).toBe(true);
+  });
+
+  it('renders an authentication loader instead if has control code', () => {
+    const onCancelMobileAuthentication = jest.fn();
+    component.setProps({ onCancelMobileAuthentication });
+
     component.setProps({ controlCode: '1337' });
     expect(component.contains(
       <AuthenticationLoader controlCode="1337" onCancel={onCancelMobileAuthentication} />,
+    )).toBe(true);
+  });
+
+  it('renders an authentication loader instead if loading user conversion', () => {
+    const onCancelMobileAuthentication = jest.fn();
+    component.setProps({ onCancelMobileAuthentication, loadingUserConversion: true });
+    expect(component.contains(
+      <AuthenticationLoader controlCode="" onCancel={onCancelMobileAuthentication} />,
     )).toBe(true);
   });
 

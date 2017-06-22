@@ -19,6 +19,7 @@ export const LoginPage = ({
   phoneNumber,
   controlCode,
   loadingAuthentication,
+  loadingUserConversion,
   errorDescription,
 }) => (
   <div className="login-page">
@@ -33,7 +34,7 @@ export const LoginPage = ({
           <div className="col-lg-6 offset-lg-3 col-md-8 offset-md-2 col-sm-12">
             { errorDescription ? <ErrorAlert description={errorDescription} /> : '' }
             {
-              !loadingAuthentication && !controlCode ?
+              !loadingAuthentication && !controlCode && !loadingUserConversion ?
                 <LoginForm
                   onPhoneNumberSubmit={onPhoneNumberSubmit}
                   onPhoneNumberChange={onPhoneNumberChange}
@@ -42,7 +43,7 @@ export const LoginPage = ({
                 /> : ''
             }
             {
-              !errorDescription && (loadingAuthentication || controlCode) ?
+              !errorDescription && (loadingAuthentication || controlCode || loadingUserConversion) ?
                 <AuthenticationLoader
                   onCancel={onCancelMobileAuthentication}
                   controlCode={controlCode}
@@ -78,6 +79,7 @@ LoginPage.defaultProps = {
   phoneNumber: '',
   controlCode: '',
   loadingAuthentication: false,
+  loadingUserConversion: false,
   successful: false,
   errorDescription: '',
 };
@@ -91,6 +93,7 @@ LoginPage.propTypes = {
   phoneNumber: Types.string,
   controlCode: Types.string,
   loadingAuthentication: Types.bool,
+  loadingUserConversion: Types.bool,
   errorDescription: Types.string,
 };
 
@@ -98,6 +101,7 @@ const mapStateToProps = state => ({
   phoneNumber: state.login.phoneNumber,
   controlCode: state.login.controlCode,
   loadingAuthentication: state.login.loadingAuthentication,
+  loadingUserConversion: state.login.loadingUserConversion,
   errorDescription: state.login.error,
   successful: !!state.login.token, // not used right now
 });
