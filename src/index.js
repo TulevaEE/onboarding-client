@@ -102,11 +102,16 @@ function getUserAndConversionData(nextState) {
   return Promise.resolve();
 }
 
-function getDataForApp(nextState) {
+function applyRouting(nextState) {
   store.dispatch(loginActions.mapUrlQueryParamsToState(nextState.location.query));
+  store.dispatch(exchangeActions.mapUrlQueryParamsToState(nextState.location.query));
   if (quizActions.isRouteToQuiz(nextState.location)) {
     store.dispatch(quizActions.routeToQuiz());
   }
+}
+
+function getDataForApp(nextState) {
+  applyRouting(nextState);
   return getUserAndConversionData(nextState);
 }
 

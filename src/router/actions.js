@@ -41,7 +41,12 @@ export function selectRouteForState() {
       return;
     }
     if (getState().quiz.routeToQuiz === true) {
-      dispatch(push('/quiz')); // load user
+      dispatch(push('/quiz'));
+      return;
+    }
+
+    if (getState().exchange.shortFlow === true) {
+      dispatch(push('/steps/confirm-mandate'));
       return;
     }
 
