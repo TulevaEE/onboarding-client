@@ -29,42 +29,39 @@ export class InlineLoginForm extends Component {
 
     return (
       <div>
-        <div className="login-form">
-          <form onSubmit={runWithDefaultPrevention(() => onPhoneNumberSubmit(phoneNumber))}>
-            <div>
-              <div className="row">
-                <div className="col">
-                  <input
-                    id="mobile-id-number"
-                    type="tel"
-                    value={phoneNumber}
-                    onChange={event => onPhoneNumberChange(event.target.value)}
-                    className="form-control form-control-lg"
-                    placeholder={translate('login.phone.number')}
-                  />
-                </div>
-                <div className="col">
-                  <input
-                    id="mobile-id-submit"
-                    type="submit"
-                    className="btn btn-primary btn-block btn-lg"
-                    disabled={!phoneNumber}
-                    value={translate('login.mobile.id')}
-                  />
-                </div>
-                <div className="col">
-                  <button
-                    className="btn btn-primary btn-block btn-lg"
-                    onClick={onAuthenticateWithIdCard}
-                  >
-                    <Message>login.id.card</Message>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </form>
-        </div>
-        <div className="col-lg-9 mt-4">
+        <form
+          className="row form-group"
+          onSubmit={runWithDefaultPrevention(() => onPhoneNumberSubmit(phoneNumber))}
+        >
+          <div className="col-sm-4">
+            <input
+              id="mobile-id-number"
+              type="tel"
+              value={phoneNumber}
+              onChange={event => onPhoneNumberChange(event.target.value)}
+              className="form-control form-control-lg input-lg"
+              placeholder={translate('login.phone.number')}
+            />
+          </div>
+          <div className="col-sm-4">
+            <input
+              id="mobile-id-submit"
+              type="submit"
+              className="btn btn-primary btn-block btn-lg"
+              disabled={!phoneNumber}
+              value={translate('login.mobile.id')}
+            />
+          </div>
+          <div className="col-sm-4">
+            <button
+              className="btn btn-primary btn-block btn-lg"
+              onClick={onAuthenticateWithIdCard}
+            >
+              <Message>login.id.card</Message>
+            </button>
+          </div>
+        </form>
+        <div className="form-group text-center">
           <Message>login.permission.note</Message>
         </div>
       </div>
