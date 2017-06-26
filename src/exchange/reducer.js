@@ -89,6 +89,8 @@ function getContributionFundIsin(action, state) {
   return state.selectedFutureContributionsFundIsin;
 }
 
+let shortFlowNewState = null;
+
 export default function exchangeReducer(state = initialState, action) {
   switch (action.type) {
     case LOAD_PENSION_DATA_SUCCESS:
@@ -212,10 +214,14 @@ export default function exchangeReducer(state = initialState, action) {
         error: action.error,
       };
     case QUERY_PARAMETERS:
+      shortFlowNewState = state.shortFlow;
+      if (action.query.shortFlow) {
+        shortFlowNewState = action.query.shortFlow === 'true';
+      }
       return {
         ...state,
         isNewMember: action.query.isNewMember === 'true',
-        shortFlow: action.query.shortFlow === 'true',
+        shortFlow: shortFlowNewState,
       };
     case DISABLE_SHORT_FLOW:
       return {
