@@ -75,7 +75,7 @@ function setLoginCookies(getState) {
   setCookie(LOGIN_COOKIE_METHOD_NAME, getState().login.loginMethod);
 }
 
-function handleLogin() {
+function hanleLogin() {
   return (dispatch, getState) => {
     if (getState().login.redirectLogin) {
       setLoginCookies(getState);
@@ -130,7 +130,7 @@ function getMobileIdTokens() {
         .then((tokens) => {
           if (tokens.accessToken) { // authentication complete
             dispatch({ type: MOBILE_AUTHENTICATION_SUCCESS, tokens });
-            dispatch(handleLogin());
+            dispatch(hanleLogin());
           } else if (getState().login.loadingAuthentication) { // authentication not yet completed
             dispatch(getMobileIdTokens()); // poll again
           }
@@ -164,7 +164,7 @@ function getIdCardTokens() {
         .then((tokens) => {
           if (tokens.accessToken) { // authentication complete
             dispatch({ type: ID_CARD_AUTHENTICATION_SUCCESS, tokens });
-            dispatch(handleLogin());
+            dispatch(hanleLogin());
           } else if (getState().login.loadingAuthentication) { // authentication not yet completed
             dispatch(getIdCardTokens()); // poll again
           }

@@ -48,26 +48,20 @@ export class InlineLoginPage extends Component {
     } = this.props;
 
     return (
-      <div className="row mt-4 pt-4 pb-4 justify-content-center login-form">
-        <div className="col-lg-10 offset-lg-1 col-sm-12 offset-sm-0 text-center">
-          <form>
-            <div>
-              <div className="form-group">
-                <input
-                  id="email"
-                  type="email"
-                  onChange={(event) => {
-                    event.persist();
-                    this.setState(() => ({ email: event.target.value }));
-                  }}
-                  className="form-control form-control-lg"
-                  placeholder={translate('inline.login.email')}
-                />
-              </div>
-            </div>
-          </form>
-        </div>
-        <div className="col-lg-10 offset-lg-1 col-sm-12 offset-sm-0 text-center">
+      <div>
+        <form className="row form-group">
+          <input
+            id="email"
+            type="email"
+            onChange={(event) => {
+              event.persist();
+              this.setState(() => ({ email: event.target.value }));
+            }}
+            className="form-control form-control-lg input-lg"
+            placeholder={translate('inline.login.email')}
+          />
+        </form>
+        <div className="row form-group">
           {
             this.state.ctaClicked ? (
               <div>
@@ -88,25 +82,21 @@ export class InlineLoginPage extends Component {
                       controlCode={controlCode}
                     /> : ''
                 }
-                <div className="mt-3 small mb-3">
+                <div className="mt-3 small mb-3 text-center">
                   <a href="/terms-of-use" target="_blank" rel="noopener noreferrer">
                     <Message>login.terms.link</Message>
                   </a>
                 </div>
               </div>
             ) : (
-              <div className="container pt-5">
-                <div className="row">
-                  <div className="col-lg-12 text-center">
-                    <button
-                      className="btn btn-primary btn-block btn-lg"
-                      onClick={() => this.onCtaClick()}
-                      disabled={!isEmailValid(this.state.email)}
-                    >
-                      <Message>inline.login.cta</Message>
-                    </button>
-                  </div>
-                </div>
+              <div>
+                <button
+                  className="btn btn-primary btn-block btn-lg"
+                  onClick={() => this.onCtaClick()}
+                  disabled={!isEmailValid(this.state.email)}
+                >
+                  <Message>inline.login.cta</Message>
+                </button>
               </div>
             )
           }
