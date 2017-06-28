@@ -62,7 +62,7 @@ const LOGIN_COOKIE_METHOD_NAME = 'loginMethod';
 
 function setCookie(name, value) {
   const date = new Date();
-  date.setTime(date.getTime() + (30 * 1000));
+  date.setTime(date.getTime() + (5 * 1000));
   const expires = `;expires=${date.toGMTString()}`;
   const domain = `;domain=${window.location.hostname}`;
   document.cookie = `${name}=${value};path=/${domain}${expires}`;

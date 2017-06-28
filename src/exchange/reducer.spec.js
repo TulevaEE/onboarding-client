@@ -31,6 +31,8 @@ import {
   CHANGE_AGREEMENT_TO_TERMS,
 
   NO_SIGN_MANDATE_ERROR,
+  DISABLE_SHORT_FLOW,
+  QUERY_PARAMETERS,
 } from './constants';
 
 import {
@@ -352,4 +354,20 @@ describe('Exchange reducer', () => {
     expect(newState.loadingPendingExchanges).toBe(false);
   });
 
+  it('works with short flow query parameters', () => {
+    const newState = exchangeReducer(undefined,
+      { type: QUERY_PARAMETERS, query: { shortFlow: 'true' } });
+    expect(newState.shortFlow).toBe(true);
+  });
+
+  it('works with new member query parameters', () => {
+    const newState = exchangeReducer(undefined,
+      { type: QUERY_PARAMETERS, query: { isNewMember: 'true' } });
+    expect(newState.isNewMember).toBe(true);
+  });
+
+  it('can disable short flow', () => {
+    const newState = exchangeReducer({ shortFlow: true }, { type: DISABLE_SHORT_FLOW });
+    expect(newState.shortFlow).toBe(false);
+  });
 });

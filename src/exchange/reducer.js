@@ -31,6 +31,8 @@ import {
   GET_PENDING_EXCHANGES_ERROR,
 
   QUERY_PARAMETERS,
+
+  DISABLE_SHORT_FLOW,
 } from './constants';
 
 import {
@@ -38,7 +40,6 @@ import {
 } from '../login/constants';
 
 import { getGlobalErrorCode } from '../common/errorMessage';
-
 
 const initialState = {
   loadingPensionData: true,
@@ -59,6 +60,8 @@ const initialState = {
 
   loadingPendingExchanges: false,
   pendingExchanges: null,
+
+  shortFlow: false,
 };
 
 function createFullDefaultSourceSelection({ sourceFunds, targetFunds }) {
@@ -85,6 +88,8 @@ function getContributionFundIsin(action, state) {
   }
   return state.selectedFutureContributionsFundIsin;
 }
+
+let shortFlowNewState = null;
 
 export default function exchangeReducer(state = initialState, action) {
   switch (action.type) {
@@ -209,9 +214,19 @@ export default function exchangeReducer(state = initialState, action) {
         error: action.error,
       };
     case QUERY_PARAMETERS:
+      shortFlowNewState = state.shortFlow;
+      if (action.query.shortFlow) {
+        shortFlowNewState = action.query.shortFlow === 'true';
+      }
       return {
         ...state,
         isNewMember: action.query.isNewMember === 'true',
+        shortFlow: shortFlowNewState,
+      };
+    case DISABLE_SHORT_FLOW:
+      return {
+        ...state,
+        shortFlow: false,
       };
     default:
       return state;

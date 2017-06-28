@@ -28,6 +28,8 @@ import {
   CHANGE_AGREEMENT_TO_TERMS,
 
   NO_SIGN_MANDATE_ERROR,
+
+  DISABLE_SHORT_FLOW,
 } from './constants';
 
 jest.useFakeTimers();
@@ -414,5 +416,11 @@ describe('Exchange actions', () => {
     return getPendingExchanges()
       .then(() => expect(dispatch)
         .toHaveBeenCalledWith({ type: GET_PENDING_EXCHANGES_ERROR, error }));
+  });
+});
+
+it('can disable short flow', () => {
+  expect(actions.disableShortFlow()).toEqual({
+    type: DISABLE_SHORT_FLOW,
   });
 });
