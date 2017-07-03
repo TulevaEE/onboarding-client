@@ -273,7 +273,7 @@ describe('api', () => {
     }));
     expect(mockHttp.patch).not.toHaveBeenCalled();
     return api
-      .createUserWithToken(user, token)
+      .updateUserWithToken(user, token)
       .then((createdUser) => {
         expect(createdUser.firstName).toBe('Erko');
         expect(mockHttp.patch).toHaveBeenCalledTimes(1);

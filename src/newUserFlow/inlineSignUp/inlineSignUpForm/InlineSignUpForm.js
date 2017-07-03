@@ -21,6 +21,13 @@ translations: { translate } }) => (
       </div>
       <div className="form-group">
         <Field
+          component={renderField} type="number" name="idCode"
+          placeholder={translate('new.user.flow.signup.personalCode')}
+          validate={[requiredField]}
+        />
+      </div>
+      <div className="form-group">
+        <Field
           component={renderField} type="number" name="phoneNumber"
           placeholder={translate('new.user.flow.signup.phoneNumber')}
         />

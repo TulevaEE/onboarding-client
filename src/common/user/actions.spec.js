@@ -35,7 +35,7 @@ describe('newUserFlow actions', () => {
 
   it('can create a new user', () => {
     const newUser = { firstName: 'Erko' };
-    mockApi.createUserWithToken = jest.fn(() => {
+    mockApi.updateUserWithToken = jest.fn(() => {
       expect(dispatch).toHaveBeenCalledTimes(1);
       expect(dispatch).toHaveBeenCalledWith({ type: UPDATE_USER_START });
       dispatch.mockClear();
@@ -53,7 +53,7 @@ describe('newUserFlow actions', () => {
 
   it('can handle errors when creating a new user', () => {
     const error = { body: { errors: [{ path: 'personalCode', code: 'invalid' }] } };
-    mockApi.createUserWithToken = jest.fn(() => Promise.reject(error));
+    mockApi.updateUserWithToken = jest.fn(() => Promise.reject(error));
     const registerUser = createBoundAction(actions.registerUser);
     expect(dispatch).not.toHaveBeenCalled();
 
