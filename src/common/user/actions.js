@@ -3,6 +3,7 @@ import { push } from 'react-router-redux';
 import { SubmissionError } from 'redux-form';
 
 import {
+  createUserWithToken,
   updateUserWithToken,
 } from '../api';
 import {
@@ -42,4 +43,17 @@ export function registerUser(user) {
 
 export function updateUser(user) {
   return updateUserAndPush(user, '/account');
+}
+
+export function createUser(user) {
+  return (dispatch, getState) => {
+    dispatch({ type: UPDATE_USER_START });
+    return createUserWithToken(user, getState().login.token)
+      .then((newUser) => {
+        dispatch({ type: UPDATE_USER_SUCCESS, newUser });
+      }).catch((errorResponse) => {
+        dispatch({ type: UPDATE_USER_ERROR, errorResponse });
+        throw new SubmissionError(toFieldErrors(errorResponse));
+      });
+  };
 }

@@ -138,6 +138,12 @@ export function updateUserWithToken(user, token) {
   }).then(savedUser => savedUser);
 }
 
+export function createUserWithToken(user, token) {
+  return post(getEndpoint('/v1/users'), user, {
+    Authorization: `Bearer ${token}`,
+  }).then(savedUser => savedUser);
+}
+
 export function getComparisonForSalaryAndRateWithToken(monthlyWage, returnRate, token,
   isTulevaMember = false) {
   return get(getEndpoint(`/v1/comparisons?monthlyWage=${monthlyWage}&returnRate=${returnRate}&isTulevaMember=${isTulevaMember}`),

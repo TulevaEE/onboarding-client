@@ -3,7 +3,7 @@ import { PropTypes as Types } from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Message } from 'retranslate';
-import { registerUser } from '../../common/user/actions';
+import { createUser } from '../../common/user/actions';
 
 import InlineSignUpForm from './inlineSignUpForm';
 
@@ -34,7 +34,7 @@ InlineSignUpPage.propTypes = {
 };
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-  saveUser: registerUser,
+  saveUser: createUser,
 }, dispatch);
 
 const connectToRedux = connect(null, mapDispatchToProps);
