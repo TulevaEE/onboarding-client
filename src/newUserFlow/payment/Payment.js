@@ -11,7 +11,7 @@ export const Payment = ({ userId }) => (
       <p><Message>new.user.flow.payment.intro</Message></p>
 
       <a
-        href={`${config.get('newUserPaymentRedirectBaseUrl')}&amount=100&reference=${userId}&return_url=https://onboarding-service.tuleva.ee/notifications/payments&return_method=POST&cancel_url=https://pension.tuleva.ee/steps/payment&cancel_method=GET&notification_url=https://onboarding-service.tuleva.ee/notifications/payments&notification_method=POST`}
+        href={`${config.get('newUserPaymentRedirectBaseUrl')}&reference=${userId}`}
         className="btn btn-primary"
       ><Message>new.user.flow.payment.bank.links</Message></a>
     </div>

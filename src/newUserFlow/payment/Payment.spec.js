@@ -7,10 +7,10 @@ import config from 'react-global-configuration';
 
 describe('Payment', () => {
   let component;
-  const newUserPaymentRedirectBaseUrl = 'https://payment.maksekeskus.ee/pay/1/link.html';
+  const newUserPaymentRedirectBaseUrl = 'https://payment-test.maksekeskus.ee/pay/1/link.html?shopId=322a5e5e-37ee-45b1-8961-ebd00e84e209&amount=100';
 
   beforeEach(() => {
-    config.get = () => { return newUserPaymentRedirectBaseUrl;}
+    config.get = () => newUserPaymentRedirectBaseUrl;
     component = shallow(<Payment />);
   });
 
@@ -19,10 +19,11 @@ describe('Payment', () => {
   });
 
   it('renders the correct payment link with the correct reference', () => {
-    component.setProps({ userId: 'test123' });
+    const userId = '123';
+    component.setProps({ userId });
 
     expect(component.contains(<a
-      href={ newUserPaymentRedirectBaseUrl + "&amount=100&reference=test123&return_url=https://onboarding-service.tuleva.ee/notifications/payments&return_method=POST&cancel_url=https://pension.tuleva.ee/steps/payment&cancel_method=GET&notification_url=https://onboarding-service.tuleva.ee/notifications/payments&notification_method=POST"}
+      href={`${newUserPaymentRedirectBaseUrl}&reference=${userId}`}
       className="btn btn-primary"
     ><Message>new.user.flow.payment.bank.links</Message></a>)).toBe(true);
   });

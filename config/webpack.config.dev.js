@@ -217,6 +217,13 @@ module.exports = {
       filename: 'login.html',
       chunksSortMode: 'none',
     }),
+    new HtmlWebpackPlugin({
+      inject: true,
+      template: paths.signupHtml,
+      chunks: ['polyfills', 'signup'],
+      filename: 'signup.html',
+      chunksSortMode: 'none',
+    }),
     // Makes some environment variables available to the JS code, for example:
     // if (process.env.NODE_ENV === 'development') { ... }. See `./env.js`.
     new webpack.DefinePlugin(env),
