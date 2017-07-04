@@ -52,6 +52,8 @@ export function createUser(user) {
     return createUserWithToken(user, config.get('clientCredentialsAccessToken'))
       .then((newUser) => {
         dispatch({ type: UPDATE_USER_SUCCESS, newUser });
+        const paymentUrl = `${config.get('newUserPaymentRedirectBaseUrl')}&reference=${newUser.id}`;
+        window.location = paymentUrl;
       }).catch((errorResponse) => {
         dispatch({ type: UPDATE_USER_ERROR, errorResponse });
         throw new SubmissionError(toFieldErrors(errorResponse));
