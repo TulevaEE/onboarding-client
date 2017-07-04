@@ -9,6 +9,7 @@ import {
 
 const mockApi = jest.genMockFromModule('../api');
 jest.mock('../api', () => mockApi);
+import config from 'react-global-configuration';
 
 const actions = require('./actions');
 
@@ -30,6 +31,7 @@ describe('newUserFlow actions', () => {
   }
 
   beforeEach(() => {
+    config.set({ clientCredentialsAccessToken: '123' }, { freeze: false });
     mockDispatch();
   });
 

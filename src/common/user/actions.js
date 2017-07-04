@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign,no-underscore-dangle */
 import { push } from 'react-router-redux';
 import { SubmissionError } from 'redux-form';
+import config from 'react-global-configuration';
 
 import {
   createUserWithToken,
@@ -46,9 +47,9 @@ export function updateUser(user) {
 }
 
 export function createUser(user) {
-  return (dispatch, getState) => {
+  return (dispatch) => {
     dispatch({ type: UPDATE_USER_START });
-    return createUserWithToken(user, getState().login.token)
+    return createUserWithToken(user, config.get('clientCredentialsAccessToken'))
       .then((newUser) => {
         dispatch({ type: UPDATE_USER_SUCCESS, newUser });
       }).catch((errorResponse) => {
