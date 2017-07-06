@@ -1,4 +1,5 @@
 import uuid from 'uuid/v4';
+import config from 'react-global-configuration';
 
 export function resetStatisticsIdentification() {
   localStorage.setItem('statisticsId', uuid());
@@ -12,8 +13,11 @@ function getStatisticsId() {
   return localStorage.getItem('statisticsId');
 }
 
-function createStatisticsHeaders() {
-  return { 'x-statistics-identifier': getStatisticsId() };
+function createCustomHeaders() {
+  return {
+    'x-statistics-identifier': getStatisticsId(),
+    'Accept-Language': config.get('language'),
+  };
 }
 
 function transformResponse(response) {
@@ -53,7 +57,7 @@ export function get(url, params = {}, headers = {}) {
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
       ...headers,
-      ...createStatisticsHeaders(),
+      ...createCustomHeaders(),
     },
     mode: 'cors',
     credentials: 'include',
@@ -63,7 +67,7 @@ export function get(url, params = {}, headers = {}) {
 
 export function downloadFile(url, headers = {}) {
   return fetch(url, {
-    headers: { ...headers, ...createStatisticsHeaders() },
+    headers: { ...headers, ...createCustomHeaders() },
     method: 'GET',
     credentials: 'include',
     mode: 'cors',
@@ -77,7 +81,7 @@ export function post(url, params = {}, headers = {}) {
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
       ...headers,
-      ...createStatisticsHeaders(),
+      ...createCustomHeaders(),
     },
     body: JSON.stringify(params),
     credentials: 'include',
@@ -93,7 +97,7 @@ export function put(url, params = {}, headers = {}) {
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
       ...headers,
-      ...createStatisticsHeaders(),
+      ...createCustomHeaders(),
     },
     body: JSON.stringify(params),
     credentials: 'include',
@@ -108,7 +112,7 @@ export function patch(url, params = {}, headers = {}) {
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
       ...headers,
-      ...createStatisticsHeaders(),
+      ...createCustomHeaders(),
     },
     body: JSON.stringify(params),
     credentials: 'include',
@@ -124,7 +128,7 @@ export function postForm(url, params = {}, headers = {}) {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
       ...headers,
-      ...createStatisticsHeaders(),
+      ...createCustomHeaders(),
     },
     body,
     credentials: 'include',
