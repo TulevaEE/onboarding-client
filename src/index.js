@@ -140,15 +140,18 @@ function getDataForAccount() {
   getPendingExchangesData();
 }
 
-function getLanguage() {
+function applyLanguage() {
   const params = window.location.search;
 
+  let language = 'et';
   if (params.indexOf('language=et') >= 0) {
-    return 'et';
+    language = 'et';
   } else if (params.indexOf('language=en') >= 0) {
-    return 'en';
+    language = 'en';
   }
-  return 'et';
+  config.set({ language });
+
+  return language;
 }
 
 function scrollToTop() {
@@ -178,7 +181,7 @@ function trackPageView() {
 render((
   <MixpanelProvider mixpanel={mixpanel}>
     <TranslationProvider
-      messages={translations} language={getLanguage()} fallbackLanguage="et"
+      messages={translations} language={applyLanguage()} fallbackLanguage="et"
     >
       <ReduxProvider store={store}>
         <Router onUpdate={trackPageView} history={history}>

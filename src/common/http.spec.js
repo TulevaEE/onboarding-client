@@ -1,3 +1,5 @@
+import config from 'react-global-configuration';
+
 const mockUuid = jest.genMockFromModule('uuid/v4');
 jest.mock('uuid/v4', () => mockUuid);
 
@@ -6,6 +8,8 @@ const { get, post, postForm, patch, downloadFile, simpleFetch, resetStatisticsId
 describe('http', () => {
   let originalFetch;
   let fetch;
+
+  config.set({ language: 'en' });
 
   beforeEach(() => {
     originalFetch = global.window.fetch;
@@ -81,7 +85,7 @@ describe('http', () => {
   it('can download a file', () => {
     const value = { thisIsTheReturnValue: true };
     fetch.mockReturnValueOnce(fakeSuccessfulResponseWithValue(value));
-    const headers = { thing: 'hello', another: 5, 'x-statistics-identifier': 'fake uuid' };
+    const headers = { thing: 'hello', another: 5, 'x-statistics-identifier': 'fake uuid', 'Accept-Language': 'en' };
     return downloadFile('https://example.com', headers)
       .then((givenValue) => {
         expect(givenValue).toEqual(value);
