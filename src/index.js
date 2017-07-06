@@ -12,7 +12,7 @@ import mixpanel from 'mixpanel-browser';
 import MixpanelProvider from 'react-mixpanel';
 import GoogleAnalytics from 'react-ga';
 
-import initializeConfiguration from './config/config';
+import { initializeConfiguration, updateLanguage } from './config/config';
 import translations from './translations';
 import './index.scss';
 
@@ -149,7 +149,7 @@ function applyLanguage() {
   } else if (params.indexOf('language=en') >= 0) {
     language = 'en';
   }
-  config.set({ language });
+  updateLanguage(language);
 
   return language;
 }
