@@ -12,7 +12,7 @@ import '../src/inline-login-index.scss';
 
 import { reducer as loginReducer } from '../src/login';
 import InlineLoginPage from '../src/login/inlineLogin/inlineLoginPage';
-import initializeConfiguration from '../src/config/config';
+import { initializeConfiguration } from '../src/config/config';
 
 const rootReducer = combineReducers({
   login: loginReducer,
