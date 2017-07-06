@@ -1,3 +1,3 @@
-import InlineSignUpPage from './InlineSignUpPage';
+import InlineSignUp from './InlineSignUp';
 
-export default InlineSignUpPage;
+export default InlineSignUp;
