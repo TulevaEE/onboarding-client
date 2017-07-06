@@ -12,26 +12,17 @@ import { AuthenticationLoader, ErrorAlert } from '../../../common';
 import LoginForm from '../inlineLoginForm';
 import {
   changePhoneNumber,
-  changeEmail,
   useRedirectLoginWithPhoneNumber,
   cancelMobileAuthentication,
   useRedirectLoginWithIdCard,
 } from '../../actions';
 
-const isEmailValid = value => /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()\.,;\s@\"]+\.{0,1})+[^<>()\.,;:\s@\"]{2,})$/.test(value);
-
 export class InlineLoginPage extends Component {
+
   constructor(props) {
     super(props);
     this.state = {
-      ctaClicked: false,
-      email: null,
     };
-  }
-
-  onCtaClick() {
-    this.props.onEmailChange(this.state.email);
-    this.setState(() => ({ ctaClicked: true }));
   }
 
   render() {
@@ -44,62 +35,35 @@ export class InlineLoginPage extends Component {
       controlCode,
       loadingAuthentication,
       errorDescription,
-      translations: { translate },
     } = this.props;
 
     return (
       <div>
-        <form className="row form-group">
-          <input
-            id="email"
-            type="email"
-            onChange={(event) => {
-              event.persist();
-              this.setState(() => ({ email: event.target.value }));
-            }}
-            className="form-control form-control-lg input-lg"
-            placeholder={translate('inline.login.email')}
-          />
-        </form>
         <div className="row form-group">
-          {
-            this.state.ctaClicked ? (
-              <div>
-                { errorDescription ? <ErrorAlert description={errorDescription} /> : '' }
-                {
-                  !loadingAuthentication && !controlCode ?
-                    <LoginForm
-                      onPhoneNumberSubmit={onPhoneNumberSubmit}
-                      onPhoneNumberChange={onPhoneNumberChange}
-                      phoneNumber={phoneNumber}
-                      onAuthenticateWithIdCard={onAuthenticateWithIdCard}
-                    /> : ''
-                }
-                {
-                  !errorDescription && (loadingAuthentication || controlCode) ?
-                    <AuthenticationLoader
-                      onCancel={onCancelMobileAuthentication}
-                      controlCode={controlCode}
-                    /> : ''
-                }
-                <div className="mt-3 small mb-3 text-center">
-                  <a href="/terms-of-use" target="_blank" rel="noopener noreferrer">
-                    <Message>login.terms.link</Message>
-                  </a>
-                </div>
-              </div>
-            ) : (
-              <div>
-                <button
-                  className="btn btn-primary btn-block btn-lg"
-                  onClick={() => this.onCtaClick()}
-                  disabled={!isEmailValid(this.state.email)}
-                >
-                  <Message>inline.login.cta</Message>
-                </button>
-              </div>
-            )
-          }
+          <div>
+            { errorDescription ? <ErrorAlert description={errorDescription} /> : '' }
+            {
+              !loadingAuthentication && !controlCode ?
+                <LoginForm
+                  onPhoneNumberSubmit={onPhoneNumberSubmit}
+                  onPhoneNumberChange={onPhoneNumberChange}
+                  phoneNumber={phoneNumber}
+                  onAuthenticateWithIdCard={onAuthenticateWithIdCard}
+                /> : ''
+            }
+            {
+              !errorDescription && (loadingAuthentication || controlCode) ?
+                <AuthenticationLoader
+                  onCancel={onCancelMobileAuthentication}
+                  controlCode={controlCode}
+                /> : ''
+            }
+            <div className="mt-3 small mb-3 text-center">
+              <a href="/terms-of-use" target="_blank" rel="noopener noreferrer">
+                <Message>login.terms.link</Message>
+              </a>
+            </div>
+          </div>
         </div>
         <div className="row mt-3">
           <div className="col-lg-12 text-center">
@@ -119,7 +83,6 @@ InlineLoginPage.defaultProps = {
   onPhoneNumberSubmit: noop,
   onCancelMobileAuthentication: noop,
   onAuthenticateWithIdCard: noop,
-  onEmailChange: noop,
 
   phoneNumber: '',
   controlCode: '',
@@ -133,13 +96,11 @@ InlineLoginPage.propTypes = {
   onPhoneNumberSubmit: Types.func,
   onCancelMobileAuthentication: Types.func,
   onAuthenticateWithIdCard: Types.func,
-  onEmailChange: Types.func,
 
   phoneNumber: Types.string,
   controlCode: Types.string,
   loadingAuthentication: Types.bool,
   errorDescription: Types.string,
-  translations: Types.shape({ translate: Types.func.isRequired }).isRequired,
 };
 
 const mapStateToProps = state => ({
@@ -151,7 +112,6 @@ const mapStateToProps = state => ({
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
   onPhoneNumberChange: changePhoneNumber,
-  onEmailChange: changeEmail,
   onPhoneNumberSubmit: useRedirectLoginWithPhoneNumber,
   onCancelMobileAuthentication: cancelMobileAuthentication,
   onAuthenticateWithIdCard: useRedirectLoginWithIdCard,
