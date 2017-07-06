@@ -15,7 +15,7 @@ export default function initializeConfiguration() {
       mixpanelKey: 'ff49493de3c6ed27e198e6b15063b60f',
       applicationUrl: 'https://pension.tuleva.ee',
       newUserPaymentRedirectBaseUrl: 'https://payment.maksekeskus.ee/pay/1/link.html?shopId=8c1a6c0a-2467-4166-ab47-006ddbf38b06&amount=100&return_url=https://onboarding-service.tuleva.ee/notifications/payments&return_method=POST&cancel_url=https://pension.tuleva.ee/steps/payment&cancel_method=GET&notification_url=https://onboarding-service.tuleva.ee/notifications/payments&notification_method=POST',
-      clientCredentialsAccessToken: '8275687a-4096-4b49-ac1d-b0feeadbc35e',
+      clientCredentialsAccessToken: 'b4adb192-29a8-4861-a697-c704947d0023',
     }, { freeze: false });
   }
 }
