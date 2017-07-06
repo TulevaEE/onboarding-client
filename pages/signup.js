@@ -14,7 +14,7 @@ import '../src/inline-login-index.scss';
 import { reducer as loginReducer } from '../src/login';
 import { reducer as accountReducer } from '../src/account';
 import InlineSignUp from '../src/newUserFlow/inlineSignUp';
-import initializeConfiguration from '../src/config/config';
+import { initializeConfiguration } from '../src/config/config';
 
 const rootReducer = combineReducers({
   login: loginReducer,
