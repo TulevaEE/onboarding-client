@@ -1,6 +1,7 @@
 import config from 'react-global-configuration';
 
 export default function initializeConfiguration() {
+  console.log(process.env.NODE_ENV);
   if (process.env.NODE_ENV === 'development') {
     config.set({
       mixpanelKey: 'be355b17352ad6b4660ae595cd65ce61',
@@ -8,9 +9,7 @@ export default function initializeConfiguration() {
       newUserPaymentRedirectBaseUrl: 'https://payment-test.maksekeskus.ee/pay/1/link.html?shopId=322a5e5e-37ee-45b1-8961-ebd00e84e209&amount=100',
       clientCredentialsAccessToken: '6b338ba2-805c-4300-9341-b38bb4ad34a9',
     }, { freeze: false });
-  }
-
-  if (process.env.NODE_ENV === 'production') {
+  } else {
     config.set({
       mixpanelKey: 'ff49493de3c6ed27e198e6b15063b60f',
       applicationUrl: 'https://pension.tuleva.ee',
