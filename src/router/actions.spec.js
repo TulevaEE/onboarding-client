@@ -43,20 +43,6 @@ describe('Routing actions', () => {
     expect(dispatch).toHaveBeenCalledWith(push('/steps/select-sources'));
   });
 
-  it('can perform routing for members who have completed transfers but not completed selection', () => {
-    state.login.user.memberNumber = 123;
-    state.login.userConversion = {
-      transfersComplete: true,
-      selectionComplete: false,
-    };
-
-    const action = createBoundAction(actions.selectRouteForState);
-    action();
-
-    expect(dispatch).toHaveBeenCalledTimes(1);
-    expect(dispatch).toHaveBeenCalledWith(push('/steps/transfer-future-capital'));
-  });
-
   it('can perform routing for fully converted members', () => {
     state.login.user.memberNumber = 123;
     state.login.userConversion = {
@@ -144,6 +130,12 @@ describe('Routing actions', () => {
 
   it('can route to short flow', () => {
     state.login = {};
+    state.login.user = {};
+    state.login.user.memberNumber = 123;
+    state.login.userConversion = {
+      transfersComplete: false,
+      selectionComplete: true,
+    };
     state.exchange.shortFlow = true;
 
     const action = createBoundAction(actions.selectRouteForState);

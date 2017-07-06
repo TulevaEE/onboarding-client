@@ -45,20 +45,13 @@ export function selectRouteForState() {
       return;
     }
 
-    if (getState().exchange.shortFlow === true) {
-      dispatch(push('/steps/confirm-mandate'));
-      return;
-    }
-
     if (!isUserLoaded(getState)) {
       dispatch(push('/')); // load user
     } else if (isMember(getState)) {
       if (isFullyConverted(getState)) {
         dispatch(push('/account'));
-      } else if (isSelectionComplete(getState)) {
-        dispatch(push('/steps/select-sources'));
-      } else if (isTransfersComplete(getState)) {
-        dispatch(push('/steps/transfer-future-capital'));
+      } else if (getState().exchange.shortFlow === true) {
+        dispatch(push('/steps/confirm-mandate'));
       } else {
         dispatch(push('/steps/select-sources'));
       }
