@@ -41,6 +41,8 @@ import {
   QUERY_PARAMETERS,
 } from './constants';
 
+import { DISABLE_SHORT_FLOW } from '../exchange/constants';
+
 import { api, http } from '../common';
 
 const POLL_DELAY = 1000;
@@ -194,6 +196,14 @@ export function cancelMobileAuthentication() {
   return { type: MOBILE_AUTHENTICATION_CANCEL };
 }
 
+function checkShortFlowEligibility(user) {
+  return (dispatch) => {
+    if (user.age >= 55) {
+      dispatch({ type: DISABLE_SHORT_FLOW });
+    }
+  };
+}
+
 export function getUser() {
   return (dispatch, getState) => {
     dispatch({ type: GET_USER_START });
@@ -203,6 +213,7 @@ export function getUser() {
         if (process.env.NODE_ENV === 'production') {
           Raven.setUserContext({ id: user.id });
         }
+        dispatch(checkShortFlowEligibility(user));
         dispatch({ type: GET_USER_SUCCESS, user });
       })
       .catch((error) => {
