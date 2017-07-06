@@ -100,6 +100,8 @@
   "success.download.mandate": "Download",
   "success.view.profile.title": "Check your member profile and account",
   "success.view.profile.title.button": "My account",
+  "success.share.message": "Let your friends know, that you transferred your pension to Tuleva!",
+  "success.share.cta": "Share",
   "terms.of.use.title": "Agreement",
   "terms.of.use.subheading": "By logging into the Tuleva web application you are giving Commercial Association Tuleva permission request information about your pension account from the Estonian Central Securities Depository. Among this information is your:",
   "terms.of.use.list.item.1": "pension account number",
