@@ -1,6 +1,6 @@
 {
 
-  "login.title": "Vaata oma andmete põhjal, palju Tulevaga säästad",
+  "login.title": "Pärast sisse logimist saad astuda Tuleva liikmeks ja soovi korral suunata kohe ka II samba Tuleva pensionifondi. Enne allkirjastamist saad oma andmed üle kontrollida!",
   "login.mobile.id": "Mobiil-ID",
   "login.id.card": "ID-kaart",
   "login.phone.number": "Telefoninumber",
@@ -143,8 +143,11 @@
   "new.user.flow.signup.tos.end": " ja kinnitan, et mul pole kehtivat kriminaalkaristust",
   "new.user.flow.signup.submit": "Liitun Tulevaga",
   "new.user.flow.back": "Tagasi",
-  "new.user.flow.signup.required.field": "Palun täida ikka ära :)",
-  "new.user.flow.signup.invalid.email": "Vigane email :)",
+  "new.user.flow.signup.error.required.field": "Palun täida ikka ära :)",
+  "new.user.flow.signup.error.invalid.email": "Vigane email :)",
+  "new.user.flow.signup.error.field.length": "Isikukood peaks olema 11 numbrit pikk :)",
+  "new.user.flow.signup.error.UserAlreadyAMemberException": "Selliste andmetega ei saa liikmeks registreeruda.",
+  "new.user.flow.signup.error.ValidPersonalCode": "Palun kontrolli isikukoodi",
   "new.user.flow.payment.title": "Liitumistasu",
   "new.user.flow.payment.intro": "Vali sobiv viis liitumistasu maksmiseks. Seejärel saad valida Tuleva pensionifondi. Tähelepanu: liitumistasu peab laekuma enda pangakontolt.",
   "new.user.flow.payment.bank.links": "Pangalingid",

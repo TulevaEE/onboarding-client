@@ -6,11 +6,16 @@ import { Message } from 'retranslate';
 
 export function emailValidator(value) {
   return value && !/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()\.,;\s@\"]+\.{0,1})+[^<>()\.,;:\s@\"]{2,})$/.test(value) ?
-    <Message>new.user.flow.signup.invalid.email</Message> : undefined;
+    'invalid.email' : undefined;
 }
 
 export function requiredField(value) {
-  return value ? undefined : <Message>new.user.flow.signup.required.field</Message>;
+  return value ? undefined : 'required.field';
+}
+
+export function length11(value) {
+  return value && value.length === 11
+    ? undefined : 'field.length';
 }
 
 export const renderField = ({ input, type, placeholder, disabled, meta: { touched, error } }) => (
@@ -20,7 +25,9 @@ export const renderField = ({ input, type, placeholder, disabled, meta: { touche
         {...input} type={type} placeholder={placeholder} disabled={disabled}
         className="form-control"
       />
-      {touched && error && <div className="form-control-feedback">{error}</div>}
+      {touched && error && <div className="form-control-feedback">
+        <Message>{`new.user.flow.signup.error.${error}`}</Message>
+      </div>}
     </div>
   </div>
 );
