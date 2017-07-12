@@ -21,7 +21,10 @@ describe('Steps', () => {
   });
 
   it('renders the title of the step given to it as active', () => {
-    component.setProps({ stepName: 'select-sources' });
+    component.setProps({
+      stepName: 'select-sources',
+      shortFlow: false,
+    });
     expect(component.contains(
       <StepTitle active number={1}>
         <Message>steps.select-sources</Message>
@@ -29,8 +32,23 @@ describe('Steps', () => {
     )).toBe(true);
   });
 
+  it('when in short flow tender the step title without a number', () => {
+    component.setProps({
+      stepName: 'select-sources',
+      shortFlow: true,
+    });
+    expect(component.contains(
+      <StepTitle active>
+        <Message>steps.select-sources</Message>
+      </StepTitle>,
+    )).toBe(true);
+  });
+
   it('renders the titles of the steps before the given step as completed steps', () => {
-    component.setProps({ stepName: 'confirm-mandate' });
+    component.setProps({
+      stepName: 'confirm-mandate',
+      shortFlow: false,
+    });
     expect(component.contains(
       <StepTitle completed number={1}>
         <Message>steps.select-sources</Message>
@@ -41,6 +59,23 @@ describe('Steps', () => {
         <Message>steps.transfer-future-capital</Message>
       </StepTitle>,
     )).toBe(true);
+  });
+
+  it('skips rendering previous steps when short flow is false', () => {
+    component.setProps({
+      stepName: 'confirm-mandate',
+      shortFlow: true,
+    });
+    expect(component.contains(
+      <StepTitle completed number={1}>
+        <Message>steps.select-sources</Message>
+      </StepTitle>,
+    )).toBe(false);
+    expect(component.contains(
+      <StepTitle completed number={2}>
+        <Message>steps.transfer-future-capital</Message>
+      </StepTitle>,
+    )).toBe(false);
   });
 
   it('renders the titles of the steps after the given step', () => {
