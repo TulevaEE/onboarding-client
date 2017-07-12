@@ -16,7 +16,7 @@ const orderedStepNames = [
 ];
 
 // this component wraps all steps and renders the top and bottom areas.
-export const Steps = ({ children, stepName, userFirstName, isNewMember }) => {
+export const Steps = ({ children, stepName, userFirstName, isNewMember, shortFlow }) => {
   const stepIndex = orderedStepNames.indexOf(stepName);
   const beforeSteps = orderedStepNames.slice(0, stepIndex);
   const currentStep = orderedStepNames[stepIndex];
@@ -42,15 +42,26 @@ export const Steps = ({ children, stepName, userFirstName, isNewMember }) => {
         }
         <div className="tv-steps mt-5">
           {
-            beforeSteps.map((beforeStep, index) =>
-              <StepTitle key={beforeStep} number={index + 1} completed>
-                <Message>{`steps.${beforeStep}`}</Message>
-              </StepTitle>,
+            shortFlow ? '' : (
+              beforeSteps.map((beforeStep, index) =>
+                <StepTitle key={beforeStep} number={index + 1} completed>
+                  <Message>{`steps.${beforeStep}`}</Message>
+                </StepTitle>,
+              )
             )
           }
-          <StepTitle number={stepIndex + 1} active>
-            <Message>{`steps.${currentStep}`}</Message>
-          </StepTitle>
+          {
+            shortFlow ? (
+              <StepTitle active>
+                <Message>{`steps.${currentStep}`}</Message>
+              </StepTitle>
+            ) :
+            (
+              <StepTitle number={stepIndex + 1} active>
+                <Message>{`steps.${currentStep}`}</Message>
+              </StepTitle>
+            )
+          }
           <div className="pb-5 px-col">{children}</div>
           {
             stepIndex !== orderedStepNames.length - 1 ? <hr className="mb-4" /> : ''
@@ -73,6 +84,7 @@ Steps.defaultProps = {
   stepName: null,
   userFirstName: '',
   isNewMember: false,
+  shortFlow: true,
 };
 
 Steps.propTypes = {
@@ -80,12 +92,14 @@ Steps.propTypes = {
   userFirstName: Types.string,
   children: Types.oneOfType([Types.node, Types.arrayOf(Types.node)]),
   isNewMember: Types.bool,
+  shortFlow: Types.bool,
 };
 
 const mapStateToProps = state => ({
   stepName: state.routing.locationBeforeTransitions.pathname.split('/').pop(),
   userFirstName: (state.login.user || {}).firstName,
   isNewMember: state.exchange.isNewMember,
+  shortFlow: state.exchange.shortFlow,
 });
 
 const connectToRedux = connect(mapStateToProps);
