@@ -89,6 +89,25 @@ function getContributionFundIsin(action, state) {
   return state.selectedFutureContributionsFundIsin;
 }
 
+function getActiveSourceFund(sourceFunds) {
+  return sourceFunds.find(sourceFund => sourceFund.activeFund);
+}
+
+function selectDefaultContributionsFund(targetFunds, sourceFunds) {
+  if (sourceFunds && targetFunds) {
+    const activeSourceFund = getActiveSourceFund(sourceFunds);
+
+    const isSomeTargetFundAlreadyActive = activeSourceFund &&
+      targetFunds.find(targetFund => targetFund.isin === activeSourceFund.isin) != null;
+
+    if (isSomeTargetFundAlreadyActive) {
+      return null;
+    }
+    return targetFunds[0].isin;
+  }
+  return null;
+}
+
 export default function exchangeReducer(state = initialState, action) {
   switch (action.type) {
     case LOAD_PENSION_DATA_SUCCESS:
@@ -108,6 +127,8 @@ export default function exchangeReducer(state = initialState, action) {
             sourceFunds: action.sourceFunds,
             targetFunds: state.targetFunds,
           }) : state.sourceSelection,
+        selectedFutureContributionsFundIsin:
+          selectDefaultContributionsFund(state.targetFunds, action.sourceFunds),
       };
     case GET_SOURCE_FUNDS_ERROR:
       return { ...state, loadingSourceFunds: false, error: getGlobalErrorCode(action.error.body) };
@@ -126,7 +147,8 @@ export default function exchangeReducer(state = initialState, action) {
         ...state,
         loadingTargetFunds: false,
         targetFunds: action.targetFunds,
-        selectedFutureContributionsFundIsin: action.targetFunds[0].isin,
+        selectedFutureContributionsFundIsin:
+          selectDefaultContributionsFund(action.targetFunds, state.sourceFunds),
         // we do not know if source or target funds get here first, so we check if we can
         // calculate the default source selection and they have not yet been calculated in
         // both the target and source fund arrival
