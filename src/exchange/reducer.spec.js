@@ -155,7 +155,49 @@ describe('Exchange reducer', () => {
     const newState = exchangeReducer({ loadingTargetFunds: true }, action);
     expect(newState.targetFunds).toEqual(targetFunds);
     expect(newState.loadingTargetFunds).toBe(false);
-    expect(newState.selectedFutureContributionsFundIsin).toEqual(targetFunds[0].isin);
+    // expect(newState.selectedFutureContributionsFundIsin).toEqual(targetFunds[0].isin);
+  });
+
+  it('defaults contributions fund to null when source funds not present', () => {
+    const targetFunds = [
+      { isin: 'EE3600109435', iShouldBeSelected: true },
+      { isin: 'asd', hello: true },
+    ];
+    const action = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
+    const newState = exchangeReducer({ loadingTargetFunds: true }, action);
+    expect(newState.selectedFutureContributionsFundIsin).toEqual(null);
+  });
+
+  it('defaults contributions fund to null when target funds not present', () => {
+    const sourceFunds = [{ name: 'name', isin: 'source' }, { name: 'name', isin: 'source 2' }];
+    const sourceFundsAction = { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds };
+    const newState = exchangeReducer({ }, sourceFundsAction);
+    expect(newState.selectedFutureContributionsFundIsin).toEqual(null);
+  });
+
+  it('defaults future contributions fund to first target fund when no target fund is currently active', () => {
+    const sourceFunds = [
+      { name: 'name', isin: 'isin1' },
+      { name: 'name', isin: 'isin2' },
+      { name: 'other random active fund', isin: 'source 3', activeFund: true },
+    ];
+    const sourceFundsAction = { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds };
+    const targetFunds = [{ name: 'name', isin: 'isin1' }, { name: 'name', isin: 'isin2' }];
+    const targetFundsAction = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
+    const state = [sourceFundsAction, targetFundsAction].reduce(exchangeReducer);
+    expect(state.selectedFutureContributionsFundIsin).toEqual(targetFunds[0].isin);
+  });
+
+  it('defaults future contributions fund to null when some target fund is currently active', () => {
+    const sourceFunds = [
+      { name: 'name', isin: 'isin1' },
+      { name: 'name', isin: 'isin2', activeFund: true },
+    ];
+    const sourceFundsAction = { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds };
+    const targetFunds = [{ name: 'name', isin: 'isin1' }, { name: 'name', isin: 'isin2' }];
+    const targetFundsAction = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
+    const state = [sourceFundsAction, targetFundsAction].reduce(exchangeReducer);
+    expect(state.selectedFutureContributionsFundIsin).toEqual(null);
   });
 
   it('selects full source selection when both target and source funds have arrived', () => {
