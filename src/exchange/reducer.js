@@ -66,7 +66,6 @@ const initialState = {
 
 function createFullDefaultSourceSelection({ sourceFunds, targetFunds }) {
   return sourceFunds
-  // .filter(fund => fund.isin !== targetFunds[0].isin)
     .filter(fund => targetFunds.map(targetFund => targetFund.isin).indexOf(fund.isin) === -1)
     .filter(fund => fund.price > 0)
     .map(({ isin }) => ({
