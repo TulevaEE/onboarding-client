@@ -2,6 +2,9 @@
   "name": "onboading-client",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "^8.1.4"
+  },
   "devDependencies": {
     "autoprefixer": "6.5.1",
     "babel-core": "6.17.0",
