@@ -206,7 +206,27 @@ describe('Exchange reducer', () => {
       { sourceFundIsin: 'source 2', targetFundIsin: 'target', percentage: 1 },
     ];
 
-    const sourceFunds = [{ name: 'name', isin: 'source' }, { name: 'name', isin: 'source 2' }];
+    const sourceFunds = [{ name: 'name', isin: 'source', price: 100 }, { name: 'name', isin: 'source 2', price: 100 }];
+    const sourceFundsAction = { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds };
+    const targetFunds = [{ name: 'name', isin: 'target' }, { name: 'name', isin: 'target 2' }];
+    const targetFundsAction = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
+    const state = [sourceFundsAction, targetFundsAction].reduce(exchangeReducer);
+    expect(state.sourceSelection).toEqual(expectedFullSelection);
+    const stateOtherWay = [targetFundsAction, sourceFundsAction].reduce(exchangeReducer);
+    expect(stateOtherWay.sourceSelection).toEqual(expectedFullSelection);
+  });
+
+  it('selects full source selection only source funds where price is bigger than zero', () => {
+    const expectedFullSelection = [
+      { sourceFundIsin: 'source', targetFundIsin: 'target', percentage: 1 },
+      { sourceFundIsin: 'source 3', targetFundIsin: 'target', percentage: 1 },
+    ];
+
+    const sourceFunds = [
+      { name: 'name', isin: 'source', price: 100 },
+      { name: 'name', isin: 'source 2' },
+      { name: 'name', isin: 'source 3', price: 100 },
+    ];
     const sourceFundsAction = { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds };
     const targetFunds = [{ name: 'name', isin: 'target' }, { name: 'name', isin: 'target 2' }];
     const targetFundsAction = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
@@ -218,12 +238,19 @@ describe('Exchange reducer', () => {
 
   it('selects full source selection and skips inter fund transfers', () => {
     const expectedFullSelection = [
-      { sourceFundIsin: 'source', targetFundIsin: 'target', percentage: 1 },
+      { sourceFundIsin: 'source', targetFundIsin: 'thissourcewillbeskipped', percentage: 1 },
     ];
 
-    const sourceFunds = [{ name: 'name', isin: 'source' }, { name: 'name', isin: 'target' }];
+    const sourceFunds = [
+      { name: 'name', isin: 'source', price: 100 },
+      { name: 'name', isin: 'thissourcewillbeskipped', price: 100 },
+      { name: 'name', isin: 'willbeskippedaswell', price: 100 },
+    ];
     const sourceFundsAction = { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds };
-    const targetFunds = [{ name: 'name', isin: 'target' }, { name: 'name', isin: 'target 2' }];
+    const targetFunds = [
+      { name: 'name', isin: 'thissourcewillbeskipped' },
+      { name: 'name', isin: 'willbeskippedaswell' },
+    ];
     const targetFundsAction = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
     const state = [sourceFundsAction, targetFundsAction].reduce(exchangeReducer);
     expect(state.sourceSelection).toEqual(expectedFullSelection);
