@@ -124,7 +124,7 @@ const mapStateToProps = state => ({
   loadingPendingExchanges: state.exchange.loadingPendingExchanges,
   initialCapital: state.account.initialCapital,
   memberNumber: (state.login.user || {}).memberNumber,
-  conversion: state.login.conversion,
+  conversion: state.login.userConversion,
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
   saveUser: updateUser,
