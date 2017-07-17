@@ -52,6 +52,19 @@ describe('Current balance', () => {
     </Message>)).not.toBe(true);
   });
 
+  it('renders no second pillar message', () => {
+    const initialCapital = { currentBalanceFunds: [] };
+    component.setProps({ initialCapital });
+
+    expect(component.contains(<Message>
+      account.second.pillar.missing
+    </Message>)).toBe(true);
+    component.setProps({ currentBalanceFunds: [{ sourcefund: true }] });
+    expect(component.contains(<Message>
+      account.second.pillar.missing
+    </Message>)).not.toBe(true);
+  });
+
   it('renders member number', () => {
     const memberNumber = 123;
     component.setProps({ memberNumber });
