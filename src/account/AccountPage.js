@@ -43,6 +43,13 @@ export const AccountPage = ({
               account.initial-capital.statement
             </Message>) : ''
         }
+        <div>
+          { currentBalanceFunds && currentBalanceFunds.length === 0 ? (
+            <Message>
+              account.second.pillar.missing
+            </Message>) : ''
+          }
+        </div>
       </div>
     </div>
     {

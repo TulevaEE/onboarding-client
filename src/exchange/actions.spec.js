@@ -94,7 +94,7 @@ describe('Exchange actions', () => {
         });
     });
 
-    it('redirects to overview when no source funds detected', () => {
+    it('redirects to account page when no source funds detected', () => {
       const sourceFunds = [];
       mockApi.getSourceFundsWithToken = jest.fn(() => {
         expect(dispatch).toHaveBeenCalledTimes(1);
@@ -106,9 +106,9 @@ describe('Exchange actions', () => {
       expect(dispatch).not.toHaveBeenCalled();
       return getSourceFunds()
         .then(() => {
-          expect(dispatch).toHaveBeenCalledTimes(1);
+          expect(dispatch).toHaveBeenCalledTimes(2);
           expect(dispatch).toHaveBeenCalledWith(push('/account'));
-          expect(dispatch).not.toHaveBeenCalledWith({
+          expect(dispatch).toHaveBeenCalledWith({
             type: GET_SOURCE_FUNDS_SUCCESS,
             sourceFunds,
           });

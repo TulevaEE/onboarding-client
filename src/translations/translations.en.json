@@ -293,5 +293,6 @@
   "update.user.details.title": "Uuenda oma isikuandmeid",
   "update.user.save": "Salvesta",
   "update.user.thanks": "Tänud!",
-  "update.user.success.message": " Sinu isikuandmed on uuendatud."
+  "update.user.success.message": " Sinu isikuandmed on uuendatud.",
+  "account.second.pillar.missing": "Sul puudub pensioni teine sammas."
 }
