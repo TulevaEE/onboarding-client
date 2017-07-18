@@ -25,7 +25,7 @@ import SignUpPage from './newUserFlow/signUp';
 import Payment from './newUserFlow/payment';
 import { reducer as exchangeReducer, actions as exchangeActions } from './exchange';
 import trackingReducer from './tracking';
-import { reducer as comparisonReducer, actions as comparisonActions } from './comparison';
+import { reducer as comparisonReducer } from './comparison';
 import { reducer as quizReducer, actions as quizActions } from './quiz';
 import { router } from './router';
 import Quiz from './quiz/Quiz';
@@ -76,13 +76,6 @@ function getSourceAndTargetFundsData() {
   }
 }
 
-function getComparisonData() {
-  const { login, comparison } = store.getState();
-  if (login.token && !(comparison.comparison || comparison.loadingComparison)) {
-    store.dispatch(comparisonActions.getComparison());
-  }
-}
-
 function getUserAndConversionData(nextState) {
   const { login } = store.getState();
   if (login.token
@@ -95,7 +88,6 @@ function getUserAndConversionData(nextState) {
         store.dispatch(loginActions.getUser()),
       ]).then(() => {
         getSourceAndTargetFundsData();
-        getComparisonData();
         store.dispatch(router.selectRouteForState());
       }));
   }
