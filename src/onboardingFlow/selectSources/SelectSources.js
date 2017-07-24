@@ -10,7 +10,6 @@ import { Loader, Radio, ErrorAlert } from '../../common';
 import PensionFundTable from './pensionFundTable';
 import TargetFundSelector from './targetFundSelector';
 import ExactFundSelector from './exactFundSelector';
-import ComparisonWidget from '../../common/comparison/widget';
 
 function selectAllWithTarget(sourceFunds, targetFund) {
   return sourceFunds
@@ -67,14 +66,11 @@ export const SelectSources = ({
   return (
     <div>
       <div className="row justify-content-around align-items-center">
-        <div className="col-8">
+        <div className="col-12">
           <div className="px-col mb-4">
             <p className="mb-4 lead"><Message>select.sources.current.status</Message></p>
             <PensionFundTable funds={sourceFunds} />
           </div>
-        </div>
-        <div className="col-4 mb-4">
-          <ComparisonWidget />
         </div>
       </div>
       <Radio
