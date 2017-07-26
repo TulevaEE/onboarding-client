@@ -134,6 +134,19 @@ describe('Login actions', () => {
       });
   });
 
+  it('can handle id card login with query parameter', () => {
+    const tokens = { accessToken: 'token' };
+    const handleIdCardLogin = createBoundAction(actions.handleIdCardLogin);
+    expect(dispatch).not.toHaveBeenCalled();
+    mockApi.getIdCardTokens = jest.fn(() => Promise.resolve(tokens));
+
+    handleIdCardLogin({ login: 'idCard' });
+
+    expect(dispatch).toHaveBeenCalledTimes(3);
+    expect(dispatch).toHaveBeenCalledWith({ type: ID_CARD_AUTHENTICATION_START });
+    expect(dispatch).toHaveBeenCalledWith({ type: ID_CARD_AUTHENTICATION_START_SUCCESS });
+  });
+
   it('starts polling until succeeds when authenticating with a phone number and redirects', () => {
     const tokens = { accessToken: 'token' };
     mockApi.authenticateWithPhoneNumber = jest.fn(() => Promise.resolve('1337'));

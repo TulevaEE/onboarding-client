@@ -77,7 +77,7 @@ function setLoginCookies(getState) {
   setCookie(LOGIN_COOKIE_METHOD_NAME, getState().login.loginMethod);
 }
 
-function hanleLogin() {
+function handleLogin() {
   return (dispatch, getState) => {
     if (getState().login.redirectLogin) {
       setLoginCookies(getState);
@@ -132,7 +132,7 @@ function getMobileIdTokens() {
         .then((tokens) => {
           if (tokens.accessToken) { // authentication complete
             dispatch({ type: MOBILE_AUTHENTICATION_SUCCESS, tokens });
-            dispatch(hanleLogin());
+            dispatch(handleLogin());
           } else if (getState().login.loadingAuthentication) { // authentication not yet completed
             dispatch(getMobileIdTokens()); // poll again
           }
@@ -166,7 +166,7 @@ function getIdCardTokens() {
         .then((tokens) => {
           if (tokens.accessToken) { // authentication complete
             dispatch({ type: ID_CARD_AUTHENTICATION_SUCCESS, tokens });
-            dispatch(hanleLogin());
+            dispatch(handleLogin());
           } else if (getState().login.loadingAuthentication) { // authentication not yet completed
             dispatch(getIdCardTokens()); // poll again
           }
@@ -187,6 +187,17 @@ export function authenticateWithIdCard() {
       })
       .catch(error => dispatch({ type: ID_CARD_AUTHENTICATION_START_ERROR, error }));
   };
+}
+
+export function handleIdCardLogin(query) {
+  if (query.login === 'idCard') {
+    return (dispatch) => {
+      dispatch({ type: ID_CARD_AUTHENTICATION_START });
+      dispatch({ type: ID_CARD_AUTHENTICATION_START_SUCCESS });
+      return dispatch(getIdCardTokens());
+    };
+  }
+  return () => {};
 }
 
 export function cancelMobileAuthentication() {
