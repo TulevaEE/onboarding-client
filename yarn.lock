@@ -5082,9 +5082,9 @@ restore-cursor@^1.0.1:
     exit-hook "^1.0.0"
     onetime "^1.0.0"
 
-retranslate@^0.1.2:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/retranslate/-/retranslate-0.1.2.tgz#194a6643a3a94e399559d2eab2a7b0c47b6a454f"
+retranslate@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/retranslate/-/retranslate-0.2.0.tgz#2226721f12a4e9ba20b87ff9463e071625eff7f6"
 
 right-align@^0.1.1:
   version "0.1.3"
