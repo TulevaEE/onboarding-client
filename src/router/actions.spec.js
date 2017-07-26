@@ -64,7 +64,7 @@ describe('Routing actions', () => {
     action();
 
     expect(dispatch).toHaveBeenCalledTimes(1);
-    expect(dispatch).toHaveBeenCalledWith(push('/steps/new-user'));
+    expect(dispatch).toHaveBeenCalledWith(push('/steps/non-member'));
   });
 
   it('can perform routing when user is not loaded', () => {

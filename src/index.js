@@ -19,10 +19,7 @@ import './index.scss';
 import requireAuthentication from './requireAuthentication';
 import LoginPage, { reducer as loginReducer, actions as loginActions } from './login';
 import TermsOfUse from './termsOfUse';
-import NewUser from './newUserFlow/newUser';
 import NonMember from './newUserFlow/nonMember';
-import SignUpPage from './newUserFlow/signUp';
-import Payment from './newUserFlow/payment';
 import { reducer as exchangeReducer, actions as exchangeActions } from './exchange';
 import trackingReducer from './tracking';
 import { reducer as comparisonReducer } from './comparison';
@@ -183,10 +180,7 @@ render((
             <Route path="/quiz" component={Quiz} />
 
             <Route path="/steps">
-              <Route path="new-user" component={NewUser} onEnter={scrollToTop} />
               <Route path="non-member" component={NonMember} />
-              <Route path="signup" component={SignUpPage} />
-              <Route path="payment" component={Payment} />
             </Route>
 
             <Route path="steps" component={Steps}>

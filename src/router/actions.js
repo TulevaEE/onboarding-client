@@ -56,7 +56,7 @@ export function selectRouteForState() {
         dispatch(push('/steps/select-sources'));
       }
     } else {
-      dispatch(push('/steps/new-user'));
+      dispatch(push('/steps/non-member'));
     }
   };
 }
