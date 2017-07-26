@@ -1,3 +1,5 @@
+/* eslint-disable no-useless-escape */
+
 import Raven from 'raven-js';
 import { push } from 'react-router-redux';
 import config from 'react-global-configuration';
@@ -176,7 +178,17 @@ function getIdCardTokens() {
   };
 }
 
+function safariSpecialHandlingIdCardAuth() {
+  // Safari doesn't support sending client certificates via CORS,
+  // so we have to do a full page reload
+  const isSafari = !!navigator.userAgent.match(/Version\/[\d\.]+.*Safari/);
+  if (isSafari) {
+    window.location = 'https://id.tuleva.ee/idLogin';
+  }
+}
+
 export function authenticateWithIdCard() {
+  safariSpecialHandlingIdCardAuth();
   return (dispatch) => {
     dispatch({ type: ID_CARD_AUTHENTICATION_START });
     return api
