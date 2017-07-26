@@ -202,7 +202,13 @@ module.exports = {
     new HtmlWebpackPlugin({
       inject: true,
       template: paths.appHtml,
-      chunks: ['index'],
+      chunks: ['polyfills', 'index'],
+      // chunksSortMode: (c1, c2) => {
+      //   var orders = ['polyfills', 'index'];
+      //   var o1 = orders.indexOf(c1.names[0]);
+      //   var o2 = orders.indexOf(c2.names[0]);
+      //   return o1 - o2;
+      // },
       minify: {
         removeComments: true,
         collapseWhitespace: true,

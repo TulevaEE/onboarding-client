@@ -58,6 +58,7 @@
     "whatwg-fetch": "1.0.0"
   },
   "dependencies": {
+    "array.prototype.find": "^2.0.4",
     "bootstrap": "4.0.0-alpha.6",
     "compression": "^1.6.2",
     "downloadjs": "^1.4.7",
