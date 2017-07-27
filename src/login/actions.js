@@ -45,8 +45,9 @@ import { DISABLE_SHORT_FLOW } from '../exchange/constants';
 
 import { api, http } from '../common';
 
-const POLL_DELAY = 1000;
+import { ID_CARD_LOGIN_START_FAILED_ERROR } from '../common/errorAlert/ErrorAlert';
 
+const POLL_DELAY = 1000;
 let timeout;
 
 export function changePhoneNumber(phoneNumber) {
@@ -185,7 +186,10 @@ export function authenticateWithIdCard() {
         dispatch({ type: ID_CARD_AUTHENTICATION_START_SUCCESS });
         dispatch(getIdCardTokens());
       })
-      .catch(error => dispatch({ type: ID_CARD_AUTHENTICATION_START_ERROR, error }));
+      .catch(() => {
+        const error = { body: { errors: [{ code: ID_CARD_LOGIN_START_FAILED_ERROR }] } };
+        dispatch({ type: ID_CARD_AUTHENTICATION_START_ERROR, error });
+      });
   };
 }
 

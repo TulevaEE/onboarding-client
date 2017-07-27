@@ -15,6 +15,7 @@ import {
 
   ID_CARD_AUTHENTICATION_START,
   ID_CARD_AUTHENTICATION_START_SUCCESS,
+  ID_CARD_AUTHENTICATION_START_ERROR,
   ID_CARD_AUTHENTICATION_ERROR,
   ID_CARD_AUTHENTICATION_SUCCESS,
 
@@ -37,6 +38,8 @@ import {
 } from './constants';
 
 import { DISABLE_SHORT_FLOW } from '../exchange/constants';
+
+import { ID_CARD_LOGIN_START_FAILED_ERROR } from '../common/errorAlert/ErrorAlert';
 
 jest.useFakeTimers();
 
@@ -131,6 +134,29 @@ describe('Login actions', () => {
       .then(() => {
         expect(dispatch).toHaveBeenCalledTimes(2);
         expect(dispatch).toHaveBeenCalledWith({ type: ID_CARD_AUTHENTICATION_START_SUCCESS });
+      });
+  });
+
+  it('can handle authenticate with an id card start error', () => {
+    const initialError = new Error('oh no!');
+    const actualBroadcastedError = { body: { errors: [{ code: ID_CARD_LOGIN_START_FAILED_ERROR }] } };
+
+    // const tokens = { accessToken: 'token' };
+    mockApi.authenticateWithIdCard = jest.fn(() => {
+      expect(dispatch).toHaveBeenCalledTimes(1);
+      expect(dispatch).toHaveBeenCalledWith({ type: ID_CARD_AUTHENTICATION_START });
+      dispatch.mockClear();
+      return Promise.reject(initialError);
+    });
+    const authenticateWithIdCard = createBoundAction(actions.authenticateWithIdCard);
+    expect(dispatch).not.toHaveBeenCalled();
+    // mockApi.getIdCardTokens = jest.fn(() => Promise.resolve(tokens));
+    return authenticateWithIdCard()
+      .then(() => {
+        // expect(dispatch).toHaveBeenCalledTimes(2);
+        expect(dispatch)
+          .toHaveBeenCalledWith(
+            { type: ID_CARD_AUTHENTICATION_START_ERROR, error: actualBroadcastedError });
       });
   });
 
