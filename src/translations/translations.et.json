@@ -3,7 +3,7 @@
   "login.title": "Tuleva liikmed näevad sisse logides oma pensionikonto seisu ning saavad suunata oma II samba Tuleva pensionifondi. Mitteliikmed saavad soovi korral Tulevaga liituda. Enne allkirjastamist saad oma andmed üle kontrollida!",
   "login.mobile.id": "Mobiil-ID",
   "login.id.card": "ID-kaart",
-  "login.id.card.start.failed": "Palun kontrolli, et ID kaart on lugejas ja lugeja ühendatud, ning proovi uuesti.",
+  "login.id.card.start.failed": "Palun kontrolli, et ID kaart on lugejas ja lugeja ühendatud, ning ID kaardiga signeerimise plugin töötab. Vajadusel tee veebilehitsejale restart ja proovi uuesti.",
   "login.phone.number": "Telefoninumber",
   "login.enter": "Sisenen",
   "login.control.code": "Kontrolli, et sinu telefonile saabunud kontrollkood oleks järgmine:",
