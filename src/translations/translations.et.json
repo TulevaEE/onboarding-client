@@ -124,6 +124,7 @@
   "account.contact.info.title": "Minu kontaktandmed",
   "error.messages.intro": "Leitud järgnevad vead",
   "error.message.close": "Sulge",
+  "id.card.signing.error": "Ei leidnud ID kaarti/lugejat või on sertifikaadid aegunud.",
   "mandate.processing.error.epis.already.active.contributions.fund": "Valitud fond on juba aktiivne",
   "mandate.processing.error.epis.unknown": "Tundmatu Eesti Pensioni Infosüsteemi viga",
   "mandate.processing.error.epis.technical.error": "Tundmatu Eesti Pensioni Infosüsteemi tehniline viga",

@@ -204,7 +204,8 @@ export function signMandateWithIdCard(mandate) {
     return window.hwcrypto.getCertificate({ lang: 'en' })
       .then((cert) => {
         certificate = cert;
-      }, (error) => {
+      }, () => {
+        const error = { body: { errors: [{ code: 'id.card.signing.error' }] } };
         dispatch({ type: SIGN_MANDATE_START_ERROR, error });
         throw error;
       })
