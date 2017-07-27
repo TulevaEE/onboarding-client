@@ -3,6 +3,7 @@
   "login.title": "Hello! Welcome.",
   "login.mobile.id": "Enter with mobile-ID",
   "login.id.card": "Enter with ID-card",
+  "login.id.card.start.failed": "Please check that your ID card reader is connected and try again.",
   "login.phone.number": "Phone number",
   "login.enter": "Log in",
   "login.control.code": "Check to see that the control code matches the sms you received:",

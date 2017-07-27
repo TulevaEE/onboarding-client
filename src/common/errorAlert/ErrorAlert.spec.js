@@ -30,4 +30,9 @@ describe('Error alert', () => {
     )).toBe(true);
     expect(component.contains(<Message>login.error.invalid.user.credentials</Message>)).toBe(true);
   });
+
+  it('shows id card login start failed error message', () => {
+    component.setProps({ description: 'ID_CARD_LOGIN_START_FAILED' });
+    expect(component.contains(<Message>login.id.card.start.failed</Message>)).toBe(true);
+  });
 });
