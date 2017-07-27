@@ -1,3 +1,5 @@
+/* eslint-disable no-useless-escape */
+
 import Raven from 'raven-js';
 import { push } from 'react-router-redux';
 import config from 'react-global-configuration';
@@ -78,7 +80,7 @@ function setLoginCookies(getState) {
   setCookie(LOGIN_COOKIE_METHOD_NAME, getState().login.loginMethod);
 }
 
-function hanleLogin() {
+function handleLogin() {
   return (dispatch, getState) => {
     if (getState().login.redirectLogin) {
       setLoginCookies(getState);
@@ -133,7 +135,7 @@ function getMobileIdTokens() {
         .then((tokens) => {
           if (tokens.accessToken) { // authentication complete
             dispatch({ type: MOBILE_AUTHENTICATION_SUCCESS, tokens });
-            dispatch(hanleLogin());
+            dispatch(handleLogin());
           } else if (getState().login.loadingAuthentication) { // authentication not yet completed
             dispatch(getMobileIdTokens()); // poll again
           }
@@ -167,7 +169,7 @@ function getIdCardTokens() {
         .then((tokens) => {
           if (tokens.accessToken) { // authentication complete
             dispatch({ type: ID_CARD_AUTHENTICATION_SUCCESS, tokens });
-            dispatch(hanleLogin());
+            dispatch(handleLogin());
           } else if (getState().login.loadingAuthentication) { // authentication not yet completed
             dispatch(getIdCardTokens()); // poll again
           }
@@ -177,7 +179,17 @@ function getIdCardTokens() {
   };
 }
 
+function safariSpecialHandlingIdCardAuth() {
+  // Safari doesn't support sending client certificates via CORS,
+  // so we have to do a full page reload
+  const isSafari = !!navigator.userAgent.match(/Version\/[\d\.]+.*Safari/);
+  if (isSafari) {
+    window.location = 'https://id.tuleva.ee/idLogin';
+  }
+}
+
 export function authenticateWithIdCard() {
+  safariSpecialHandlingIdCardAuth();
   return (dispatch) => {
     dispatch({ type: ID_CARD_AUTHENTICATION_START });
     return api
@@ -191,6 +203,17 @@ export function authenticateWithIdCard() {
         dispatch({ type: ID_CARD_AUTHENTICATION_START_ERROR, error });
       });
   };
+}
+
+export function handleIdCardLogin(query) {
+  if (query.login === 'idCard') {
+    return (dispatch) => {
+      dispatch({ type: ID_CARD_AUTHENTICATION_START });
+      dispatch({ type: ID_CARD_AUTHENTICATION_START_SUCCESS });
+      return dispatch(getIdCardTokens());
+    };
+  }
+  return () => {};
 }
 
 export function cancelMobileAuthentication() {

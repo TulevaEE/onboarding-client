@@ -137,11 +137,24 @@ describe('Login actions', () => {
       });
   });
 
+  it('can handle id card login with query parameter', () => {
+    const tokens = { accessToken: 'token' };
+    const handleIdCardLogin = createBoundAction(actions.handleIdCardLogin);
+    expect(dispatch).not.toHaveBeenCalled();
+    mockApi.getIdCardTokens = jest.fn(() => Promise.resolve(tokens));
+
+    handleIdCardLogin({ login: 'idCard' });
+
+    expect(dispatch).toHaveBeenCalledTimes(3);
+    expect(dispatch).toHaveBeenCalledWith({ type: ID_CARD_AUTHENTICATION_START });
+    expect(dispatch).toHaveBeenCalledWith({ type: ID_CARD_AUTHENTICATION_START_SUCCESS });
+  });
+
   it('can handle authenticate with an id card start error', () => {
     const initialError = new Error('oh no!');
-    const actualBroadcastedError = { body: { errors: [{ code: ID_CARD_LOGIN_START_FAILED_ERROR }] } };
+    const actualBroadcastedError =
+      { body: { errors: [{ code: ID_CARD_LOGIN_START_FAILED_ERROR }] } };
 
-    // const tokens = { accessToken: 'token' };
     mockApi.authenticateWithIdCard = jest.fn(() => {
       expect(dispatch).toHaveBeenCalledTimes(1);
       expect(dispatch).toHaveBeenCalledWith({ type: ID_CARD_AUTHENTICATION_START });
@@ -150,10 +163,8 @@ describe('Login actions', () => {
     });
     const authenticateWithIdCard = createBoundAction(actions.authenticateWithIdCard);
     expect(dispatch).not.toHaveBeenCalled();
-    // mockApi.getIdCardTokens = jest.fn(() => Promise.resolve(tokens));
     return authenticateWithIdCard()
       .then(() => {
-        // expect(dispatch).toHaveBeenCalledTimes(2);
         expect(dispatch)
           .toHaveBeenCalledWith(
             { type: ID_CARD_AUTHENTICATION_START_ERROR, error: actualBroadcastedError });
