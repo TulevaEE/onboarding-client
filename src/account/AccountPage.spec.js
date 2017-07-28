@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Message } from 'retranslate';
 
-import { Loader } from '../common';
+import { Loader, ErrorMessage } from '../common';
 import { AccountPage } from './AccountPage';
 import PensionFundTable from './../onboardingFlow/selectSources/pensionFundTable';
 import PendingExchangesTable from './pendingExchangeTable';
@@ -99,5 +99,14 @@ describe('Current balance', () => {
     const saveUser = () => null;
     component.setProps({ saveUser });
     expect(component.contains(<UpdateUserForm onSubmit={saveUser} />)).toBe(true);
+  });
+
+  it('renders error', () => {
+    const error = { body: 'aww no' };
+    const funds = [{ aFund: true }];
+
+    component.setProps({ error, funds });
+
+    expect(component.contains(<ErrorMessage errors={error.body} />)).toBe(true);
   });
 });

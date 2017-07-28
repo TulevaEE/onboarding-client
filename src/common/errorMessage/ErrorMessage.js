@@ -4,6 +4,8 @@ import { Message } from 'retranslate';
 
 import './ErrorMessage.scss';
 
+const noop = () => null;
+
 const ErrorMessage = ({ errors, onCancel, overlayed }) => {
   const content = (
     <div className="card text-center p-4 tv-modal__content">
@@ -18,9 +20,13 @@ const ErrorMessage = ({ errors, onCancel, overlayed }) => {
             ))
           }
         </div>
-        <button className="btn btn-secondary mt-4" onClick={onCancel}>
-          <Message>error.message.close</Message>
-        </button>
+        {
+          onCancel !== noop ? (
+            <button className="btn btn-secondary mt-4" onClick={onCancel}>
+              <Message>error.message.close</Message>
+            </button>
+          ) : ''
+        }
       </div>
     </div>
   );
@@ -41,8 +47,6 @@ const ErrorMessage = ({ errors, onCancel, overlayed }) => {
     </div>
   );
 };
-
-const noop = () => null;
 
 ErrorMessage.defaultProps = {
   errors: { errors: [] },

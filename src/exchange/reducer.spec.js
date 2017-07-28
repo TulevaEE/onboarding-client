@@ -64,7 +64,7 @@ describe('Exchange reducer', () => {
 
     const newState = exchangeReducer({ loadingSourceFunds: true }, action);
 
-    expect(newState.error).toBe('oh no');
+    expect(newState.error).toBe(error);
     expect(newState.loadingSourceFunds).toBe(false);
   });
 
@@ -263,7 +263,7 @@ describe('Exchange reducer', () => {
     const action = { type: GET_TARGET_FUNDS_ERROR, error };
 
     const newState = exchangeReducer({ loadingTargetFunds: true }, action);
-    expect(newState.error).toEqual('oh no!');
+    expect(newState.error).toEqual(error);
     expect(newState.loadingTargetFunds).toBe(false);
   });
 
@@ -369,7 +369,7 @@ describe('Exchange reducer', () => {
   it('reverts to initial state when log out', () => {
     const action = { type: LOG_OUT };
     const newState = exchangeReducer({
-      sourceFunds: [],
+      sourceFunds: [{ sourceFund: true }],
       loadingSourceFunds: true,
       sourceSelection: '123',
       sourceSelectionExact: true,
@@ -386,7 +386,7 @@ describe('Exchange reducer', () => {
 
     expect(newState.sourceFunds).toBe(null);
     expect(newState.loadingSourceFunds).toBe(false);
-    expect(newState.sourceSelection).toBe(null);
+    expect(newState.sourceSelection).toHaveLength(0);
     expect(newState.sourceSelectionExact).toBe(false);
     expect(newState.targetFunds).toBe(null);
     expect(newState.loadingTargetFunds).toBe(false);

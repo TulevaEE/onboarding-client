@@ -5,7 +5,7 @@ import { Link } from 'react-router';
 import { connect } from 'react-redux';
 import { Message } from 'retranslate';
 
-import { Loader } from '../common';
+import { Loader, ErrorMessage } from '../common';
 import PensionFundTable from './../onboardingFlow/selectSources/pensionFundTable';
 import PendingExchangesTable from './pendingExchangeTable';
 import UpdateUserForm from './updateUserForm';
@@ -20,6 +20,7 @@ export const AccountPage = ({
                               pendingExchanges,
                               loadingPendingExchanges,
                               saveUser,
+                              error,
 }) => (
   <div>
     <div className="row mt-5">
@@ -67,6 +68,12 @@ export const AccountPage = ({
         <UpdateUserForm onSubmit={saveUser} />
       </div>
     </div>
+    {
+      error ?
+        (<ErrorMessage
+          errors={error.body}
+        />) : ''
+    }
     <div className="row mt-5">
       <div className="col">
         <p className="mb-4 lead"><Message>select.sources.current.status</Message></p>
@@ -109,6 +116,7 @@ AccountPage.defaultProps = {
   initialCapital: {},
   memberNumber: null,
   conversion: {},
+  error: null,
   saveUser: noop,
 };
 
@@ -121,17 +129,19 @@ AccountPage.propTypes = {
   memberNumber: Types.number,
   conversion: Types.shape({}),
   saveUser: Types.func,
+  error: Types.shape({}),
 };
 
 // TODO: write component
 const mapStateToProps = state => ({
-  currentBalanceFunds: state.exchange.sourceFunds,
+  currentBalanceFunds: state.exchange.sourceFunds !== null ? state.exchange.sourceFunds : [],
   loadingCurrentBalance: state.exchange.loadingSourceFunds,
   pendingExchanges: state.exchange.pendingExchanges,
   loadingPendingExchanges: state.exchange.loadingPendingExchanges,
   initialCapital: state.account.initialCapital,
   memberNumber: (state.login.user || {}).memberNumber,
   conversion: state.login.userConversion,
+  error: state.exchange.error,
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
   saveUser: updateUser,

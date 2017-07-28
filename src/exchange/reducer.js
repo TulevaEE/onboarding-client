@@ -39,13 +39,11 @@ import {
   LOG_OUT,
 } from '../login/constants';
 
-import { getGlobalErrorCode } from '../common/errorMessage';
-
 const initialState = {
   loadingPensionData: true,
   sourceFunds: null,
   loadingSourceFunds: false,
-  sourceSelection: null,
+  sourceSelection: [],
   sourceSelectionExact: false,
   targetFunds: null,
   loadingTargetFunds: false,
@@ -132,7 +130,7 @@ export default function exchangeReducer(state = initialState, action) {
           selectDefaultContributionsFund(state.targetFunds, action.sourceFunds),
       };
     case GET_SOURCE_FUNDS_ERROR:
-      return { ...state, loadingSourceFunds: false, error: getGlobalErrorCode(action.error.body) };
+      return { ...state, loadingSourceFunds: false, error: action.error };
     case SELECT_EXCHANGE_SOURCES:
       return {
         ...state,
@@ -160,7 +158,7 @@ export default function exchangeReducer(state = initialState, action) {
           }) : state.sourceSelection,
       };
     case GET_TARGET_FUNDS_ERROR:
-      return { ...state, loadingTargetFunds: false, error: getGlobalErrorCode(action.error.body) };
+      return { ...state, loadingTargetFunds: false, error: action.error };
     case SELECT_TARGET_FUND:
       return {
         ...state,

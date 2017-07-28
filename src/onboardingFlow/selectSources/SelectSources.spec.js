@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Message } from 'retranslate';
 
-import { Loader, Radio, ErrorAlert } from '../../common';
+import { Loader, Radio, ErrorMessage } from '../../common';
 import PensionFundTable from './pensionFundTable';
 import ExactFundSelector from './exactFundSelector';
 import TargetFundSelector from './targetFundSelector';
@@ -237,13 +237,13 @@ describe('Select sources step', () => {
       .toBe(recommendedFundIsin);
   });
 
-  it('passes an error forwards to ErrorAlert and does not show other components', () => {
-    const errorDescription = 'aww no';
+  it('renders error', () => {
+    const error = { body: 'aww no' };
     const funds = [{ aFund: true }];
 
-    component.setProps({ errorDescription, funds });
+    component.setProps({ error, funds });
 
-    expect(component.contains(<ErrorAlert description={errorDescription} />)).toBe(true);
+    expect(component.contains(<ErrorMessage errors={error.body} />)).toBe(true);
     expect(component.contains(<Loader className="align-middle" />)).toBe(false);
     expect(component.contains(<PensionFundTable funds={funds} />)).toBe(false);
   });

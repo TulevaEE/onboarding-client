@@ -454,6 +454,26 @@ describe('Confirm mandate step', () => {
     expect(component.find('button').length === 0).toBe(true);
   });
 
+  it('shows error message on error', () => {
+    const error = 'oh no!';
+    const onCloseErrorMessages = jest.fn();
+    const exchange = {
+      sourceSelection: [
+        { percentage: 0, sourceFundIsin: 'source 1', targetFundIsin: 'target 1' },
+        { percentage: 0, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
+      ],
+      sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
+      selectedFutureContributionsFundIsin: null,
+      error,
+    };
+    component.setProps({ exchange, onCloseErrorMessages });
+    expect(component.at(0).node).toEqual(<ErrorMessage
+      errors={exchange.error.body}
+      onCancel={onCloseErrorMessages}
+      overlayed
+    />);
+  });
+
   it('renders an overlayed error messages on error while signing the mandate', () => {
     const onCloseErrorMessages = jest.fn();
     component.setProps({
