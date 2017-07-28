@@ -32,7 +32,7 @@ InlineSignUp.propTypes = {
 
 const onCreateUser = user => (dispatch) => {
   mixpanel.track('INLINE_SIGNUP_CREATE_USER', user);
-  dispatch(createUser(user));
+  return dispatch(createUser(user));
 };
 
 const mapDispatchToProps = dispatch => bindActionCreators({
