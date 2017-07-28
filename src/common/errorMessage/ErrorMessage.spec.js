@@ -26,7 +26,9 @@ describe('Error message', () => {
     });
   });
 
-  it('shows close button', () => {
+  it('shows close button when onCancel is set', () => {
+    expect(component.contains(<Message>error.message.close</Message>)).not.toBe(true);
+    component.setProps({ onCancel: jest.fn() });
     expect(component.contains(<Message>error.message.close</Message>)).toBe(true);
   });
 

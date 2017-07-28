@@ -230,5 +230,6 @@
   "update.user.save": "Salvesta",
   "update.user.thanks": "Tänud!",
   "update.user.success.message": " Sinu isikuandmed on uuendatud.",
-  "account.second.pillar.missing": "Sa ei ole II sambaga liitunud. Millised võimalused sul tulevikus on? 1. Valitsus plaanib tulevikus II samba liitumiseks uuesti avada - siis saad otsustada, kas soovid liituda. 2. Tulevas otsime ka muid võimalusi, kuidas oma tuleviku jaoks soodsalt raha koguda."
+  "account.second.pillar.missing": "Sa ei ole II sambaga liitunud. Millised võimalused sul tulevikus on? 1. Valitsus plaanib tulevikus II samba liitumiseks uuesti avada - siis saad otsustada, kas soovid liituda. 2. Tulevas otsime ka muid võimalusi, kuidas oma tuleviku jaoks soodsalt raha koguda.",
+  "pension.registry.connection.exception": "Ei saa ühendust Eesti väärtpaberite keskregistriga, palun proovi hetke pärast uuesti."
 }

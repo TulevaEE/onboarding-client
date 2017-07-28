@@ -114,6 +114,13 @@ export const ConfirmMandate = ({
   if (exchange.loadingSourceFunds || exchange.loadingTargetFunds) {
     return <Loader className="align-middle" />;
   }
+  if (exchange.error) {
+    return (<ErrorMessage
+      errors={exchange.error.body}
+      onCancel={onCloseErrorMessages}
+      overlayed
+    />);
+  }
   const aggregatedSelections = aggregateSelections(exchange.sourceSelection);
   const aggregatedSelectionsWithNames = attachNames(aggregatedSelections, exchange.sourceFunds);
   const hasFilledFlow = aggregatedSelections.length || exchange.selectedFutureContributionsFundIsin;
