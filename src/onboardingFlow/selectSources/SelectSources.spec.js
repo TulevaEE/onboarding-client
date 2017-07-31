@@ -247,8 +247,4 @@ describe('Select sources step', () => {
     expect(component.contains(<Loader className="align-middle" />)).toBe(false);
     expect(component.contains(<PensionFundTable funds={funds} />)).toBe(false);
   });
-
-  it('renders comparison widget', () => {
-    expect(component.contains(<ComparisonWidget />)).toBe(true);
-  });
 });
