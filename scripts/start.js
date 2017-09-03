@@ -20,6 +20,9 @@ app.use(forceHttps);
 app.use(express.static(path.join(__dirname, '..', 'build')));
 app.use('/api', proxy('https://onboarding-service.tuleva.ee'));
 
+app.get('/.well-known/acme-challenge/mZOGwyU9JyHicyFj_KWBNXQ1FeslTbIFbjlPnSak-8Q', (request, response) =>
+  response.send('aqfyXwYn_9RtkQy64cwXdzMrRpjW2B4MwtUbtl7kKPk.EMEBBxvSam3n_ien1J0z4dXeTuc2JuR3HqfAP6teLjE'));
+
 app.get('*', (request, response) =>
   response.sendFile(path.join(__dirname, '..', 'build', 'index.html')));
 
