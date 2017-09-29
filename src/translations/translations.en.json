@@ -1,6 +1,6 @@
 {
   
-  "login.title": "Hello! Welcome.",
+  "login.title": "By logging in you are able to see your pension account statement. If you want to change your pension fund, then please use your internet bank or pensionikeskus.ee.",
   "login.mobile.id": "Enter with mobile-ID",
   "login.id.card": "Enter with ID-card",
   "login.id.card.start.failed": "Please check that your ID card reader is connected and try again.",
