@@ -40,6 +40,13 @@ export function selectRouteForState() {
     if (getState().login.disableRouter === true) {
       return;
     }
+
+    // Temporary
+    if (true) {
+      dispatch(push('/account'));
+      return;
+    }
+
     if (getState().quiz.routeToQuiz === true) {
       dispatch(push('/quiz'));
       return;
