@@ -1,6 +1,6 @@
 {
 
-  "login.title": "Tuleva liikmed näevad sisse logides oma pensionikonto seisu ning saavad suunata oma II samba Tuleva pensionifondi. Mitteliikmed saavad soovi korral Tulevaga liituda. Enne allkirjastamist saad oma andmed üle kontrollida!",
+  "login.title": "Sisse logides näed oma pensionikonto seisu. Ajutiselt ei saa meie veebirakenduse kaudu pensionifondi valiku- ja vahetusavaldusi esitada.",
   "login.mobile.id": "Mobiil-ID",
   "login.id.card": "ID-kaart",
   "login.id.card.start.failed": "Palun kontrolli, et ID kaart on lugejas ja lugeja ühendatud, ning ID kaardiga signeerimise plugin töötab. Vajadusel tee veebilehitsejale restart ja proovi uuesti.",
