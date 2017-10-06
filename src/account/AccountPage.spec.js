@@ -109,4 +109,16 @@ describe('Current balance', () => {
 
     expect(component.contains(<ErrorMessage errors={error.body} />)).toBe(true);
   });
+
+  it('renders CTA to non members', () => {
+    const cta = (<a className="btn btn-link p-0 border-0" href="https://tuleva.ee/#inline-signup-anchor">
+      <Message>login.join.tuleva</Message>
+    </a>);
+    expect(component.contains(cta)).toBe(true);
+
+    const memberNumber = '123';
+    component.setProps({ memberNumber});
+    expect(component.contains(cta)).toBe(false);
+  });
+
 });
