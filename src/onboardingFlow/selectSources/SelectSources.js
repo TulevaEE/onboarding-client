@@ -65,6 +65,7 @@ export const SelectSources = ({
   const fullSelectionActive = !!sourceSelection.length && !sourceSelectionExact;
   const noneSelectionActive = !sourceSelection.length && !sourceSelectionExact;
   const valid = selectionsValid(sourceSelection);
+  const tulevaTargetFunds = targetFunds.filter(fund => (fund.fundManager || {}).name === 'Tuleva');
   return (
     <div>
       <div className="row justify-content-around align-items-center">
@@ -90,7 +91,7 @@ export const SelectSources = ({
                 <Message className="pt-2">select.sources.select.all.choose</Message>
               </div>
               <TargetFundSelector
-                targetFunds={targetFunds}
+                targetFunds={tulevaTargetFunds}
                 onSelectFund={
                   targetFund => onSelect(selectAllWithTarget(sourceFunds, targetFund), false)}
                 selectedTargetFundIsin={sourceSelection[0].targetFundIsin}

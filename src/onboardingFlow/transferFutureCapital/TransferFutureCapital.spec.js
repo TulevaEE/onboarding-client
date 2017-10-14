@@ -10,14 +10,12 @@ describe('Transfer future capital step', () => {
   let component;
 
   beforeEach(() => {
-    component = shallow(<TransferFutureCapital />);
+    const props = { translations: { translate: () => '' } };
+    component = shallow(<TransferFutureCapital {...props} />);
   });
 
   it('shows an intro', () => {
     expect(component.contains(
-      <Message>
-        transfer.future.capital.intro
-      </Message>,
       <Message>
         transfer.future.capital.intro.choose
       </Message>,
@@ -38,7 +36,10 @@ describe('Transfer future capital step', () => {
   });
 
   it('has three options if you want to transfer future capital to one of two funds or not', () => {
-    const targetFunds = [{ isin: 'AAA' }, { isin: 'BBB' }];
+    const targetFunds = [
+      { isin: 'AAA', fundManager: { name: 'Tuleva' } },
+      { isin: 'BBB', fundManager: { name: 'Tuleva' } },
+      { isin: 'CCC', fundManager: { name: 'some random bank' } }];
     const loadingTargetFunds = false;
     component.setProps({ targetFunds, loadingTargetFunds });
     expect(component.find(Radio).length).toBe(3);
@@ -60,7 +61,10 @@ describe('Transfer future capital step', () => {
   });
 
   it('can choose where you want to transfer future capital', () => {
-    const targetFunds = [{ isin: 'AAA' }, { isin: 'BBB' }];
+    const targetFunds = [
+      { isin: 'AAA', fundManager: { name: 'Tuleva' } },
+      { isin: 'BBB', fundManager: { name: 'Tuleva' } },
+      { isin: 'CCC', fundManager: { name: 'some random bank' } }];
     const loadingTargetFunds = false;
     const selectedFutureContributionsFundIsin = 'AAA';
     component.setProps({ targetFunds, loadingTargetFunds, selectedFutureContributionsFundIsin });
@@ -88,7 +92,10 @@ describe('Transfer future capital step', () => {
 
   describe('When user selected to not transfer future contributions to Tuleva', () => {
     it('show selected radio title in bold', () => {
-      const targetFunds = [{ isin: 'AAA' }, { isin: 'BBB' }];
+      const targetFunds = [
+        { isin: 'AAA', fundManager: { name: 'Tuleva' } },
+        { isin: 'BBB', fundManager: { name: 'Tuleva' } },
+        { isin: 'CCC', fundManager: { name: 'some random bank' } }];
       const loadingTargetFunds = false;
       component.setProps({
         targetFunds,
@@ -171,5 +178,16 @@ describe('Transfer future capital step', () => {
       });
       expect(component.contains(activeFundMessage)).toBe(false);
     });
+  });
+
+  it('has a select options list for other banks funds', () => {
+    const targetFunds = [
+      { isin: 'AAA', fundManager: { name: 'Tuleva' } },
+      { isin: 'BBB', fundManager: { name: 'Tuleva' } },
+      { isin: 'CCC', fundManager: { name: 'some random bank' } }];
+    const loadingTargetFunds = false;
+    component.setProps({ targetFunds, loadingTargetFunds });
+    expect(component.find('option').length).toBe(2);
+    expect(component.find('option').at(1).prop('value')).toBe('CCC');
   });
 });

@@ -174,7 +174,7 @@ describe('api', () => {
       .getTargetFundsWithToken(token)
       .then((givenTarget) => {
         expect(givenTarget).toEqual(targetFunds);
-        expect(mockHttp.get).toHaveBeenCalledWith('/v1/funds', { 'fundManager.name': 'Tuleva' }, {
+        expect(mockHttp.get).toHaveBeenCalledWith('/v1/funds', undefined, {
           Authorization: `Bearer ${token}`,
         });
       });

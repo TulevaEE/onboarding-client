@@ -94,7 +94,7 @@ export function getSourceFundsWithToken(token) {
 }
 
 export function getTargetFundsWithToken(token) {
-  return get(getEndpoint('/v1/funds'), { 'fundManager.name': 'Tuleva' }, {
+  return get(getEndpoint('/v1/funds'), undefined, {
     Authorization: `Bearer ${token}`,
   });
 }
