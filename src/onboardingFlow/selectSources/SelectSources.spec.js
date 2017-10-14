@@ -259,4 +259,13 @@ describe('Select sources step', () => {
     expect(component.contains(<Loader className="align-middle" />)).toBe(false);
     expect(component.contains(<PensionFundTable funds={funds} />)).toBe(false);
   });
+
+  it('renders info about cost and reference link', () => {
+    component.setProps({ sourceSelection: [{ sourceFundIsin: 'a', percentage: 1 }] });
+    expect(component.contains(
+      <a href="http://www.pensionikeskus.ee/ii-sammas/fondid/fonditasude-vordlused/">
+        <Message>select.sources.select.some.cost</Message>
+      </a>,
+    )).toBe(true);
+  });
 });

@@ -62,8 +62,12 @@ describe('Exact fund selector', () => {
     expect(onChange).toHaveBeenCalledWith(expectedSelectionsAfterChange);
   });
 
-  it('renders info about cost', () => {
-    expect(component.contains(<Message>select.sources.select.some.cost</Message>)).toBe(true);
+  it('renders info about cost and reference link', () => {
+    expect(component.contains(
+      <a href="http://www.pensionikeskus.ee/ii-sammas/fondid/fonditasude-vordlused/">
+        <Message>select.sources.select.some.cost</Message>
+      </a>,
+    )).toBe(true);
   });
 
   it('can add rows', () => {
