@@ -67,7 +67,7 @@ export const TransferFutureCapital = ({
         {
           otherTargetFunds.map(fund => (
             <option value={fund.isin} key={fund.isin}>
-              {translate(`transfer.future.capital.${fund.isin}.fund`)}
+              {fund.name}{/* {translate(`transfer.future.capital.${fund.isin}.fund`)}*/}
             </option>
           ))
         }
