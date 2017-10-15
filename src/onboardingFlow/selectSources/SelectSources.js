@@ -88,7 +88,10 @@ export const SelectSources = ({
 
               <Message>select.sources.select.all.subtitle</Message>
 
-              <a href="http://www.pensionikeskus.ee/ii-sammas/fondid/fonditasude-vordlused/">
+              <a
+                href="//www.pensionikeskus.ee/ii-sammas/fondid/fonditasude-vordlused/"
+                target="_blank" rel="noopener noreferrer"
+              >
                 <Message>select.sources.select.some.cost</Message>
               </a>
               <div className="mt-4">

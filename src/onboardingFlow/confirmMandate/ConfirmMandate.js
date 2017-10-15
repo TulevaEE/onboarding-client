@@ -150,14 +150,9 @@ export const ConfirmMandate = ({
             <Message>confirm.mandate.future.contribution</Message>
             <b className="highlight">
               <Message>
-                {`target.funds.${exchange.selectedFutureContributionsFundIsin}.title.into`}
+                {`target.funds.${exchange.selectedFutureContributionsFundIsin}.title`}
               </Message>
             </b>
-            {
-              aggregatedSelections.length ? (
-                <Message>confirm.mandate.and</Message>
-              ) : ''
-            }
           </div>
         ) : ''
       }

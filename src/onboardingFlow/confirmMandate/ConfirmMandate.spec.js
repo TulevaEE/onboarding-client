@@ -66,33 +66,8 @@ describe('Confirm mandate step', () => {
       <div className="mt-4">
         <Message>confirm.mandate.future.contribution</Message>
         <b className="highlight">
-          <Message>{`target.funds.${exchange.selectedFutureContributionsFundIsin}.title.into`}</Message>
+          <Message>{`target.funds.${exchange.selectedFutureContributionsFundIsin}.title`}</Message>
         </b>
-        {''}
-      </div>,
-    )).toBe(true);
-    exchange.selectedFutureContributionsFundIsin = null;
-    component.setProps({ exchange });
-    expect(component.contains(<Message>confirm.mandate.future.contribution</Message>)).toBe(false);
-  });
-
-  it('shows "and" between the two mandate parts if there are source selections', () => {
-    const exchange = {
-      selectedFutureContributionsFundIsin: 'test isin',
-      sourceSelection: [
-        { sourceFundIsin: 'a', targetFundIsin: 'b', percentage: 1 },
-      ],
-      sourceFunds: [{ isin: 'a', name: 'source' }],
-      targetFunds: [{ isin: 'b', name: 'target' }],
-    };
-    component.setProps({ exchange });
-    expect(component.contains(
-      <div className="mt-4">
-        <Message>confirm.mandate.future.contribution</Message>
-        <b className="highlight">
-          <Message>{`target.funds.${exchange.selectedFutureContributionsFundIsin}.title.into`}</Message>
-        </b>
-        <Message>confirm.mandate.and</Message>
       </div>,
     )).toBe(true);
     exchange.selectedFutureContributionsFundIsin = null;
