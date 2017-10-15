@@ -43,7 +43,11 @@ const ExactFundSelector = ({ selections, sourceFunds, targetFunds, onChange }) =
     }
     <div className="row mt-2">
       <div className="col">
-        <small><Message>select.sources.select.some.cost</Message></small>
+        <small>
+          <a href="http://www.pensionikeskus.ee/ii-sammas/fondid/fonditasude-vordlused/">
+            <Message>select.sources.select.some.cost</Message>
+          </a>
+        </small>
       </div>
       <div className="col">
         <button

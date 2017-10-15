@@ -7,7 +7,6 @@ import PensionFundTable from './pensionFundTable';
 import ExactFundSelector from './exactFundSelector';
 import TargetFundSelector from './targetFundSelector';
 import { SelectSources } from './SelectSources';
-import ComparisonWidget from '../../common/comparison/widget';
 
 describe('Select sources step', () => {
   let component;
@@ -237,6 +236,19 @@ describe('Select sources step', () => {
       .toBe(recommendedFundIsin);
   });
 
+  it('passes only Tuleva funds to the target fund selector', () => {
+    const tulevaFund = { isin: 'b', fundManager: { name: 'Tuleva' } };
+    const targetFunds = [{ isin: 'a' }, tulevaFund];
+
+    component.setProps({
+      sourceSelection: [{ name: 'a', percentage: 1 }],
+      sourceSelectionExact: false,
+      targetFunds,
+    });
+    expect(component.find(TargetFundSelector).prop('targetFunds'))
+        .toEqual([tulevaFund]);
+  });
+
   it('renders error', () => {
     const error = { body: 'aww no' };
     const funds = [{ aFund: true }];
@@ -246,5 +258,14 @@ describe('Select sources step', () => {
     expect(component.contains(<ErrorMessage errors={error.body} />)).toBe(true);
     expect(component.contains(<Loader className="align-middle" />)).toBe(false);
     expect(component.contains(<PensionFundTable funds={funds} />)).toBe(false);
+  });
+
+  it('renders info about cost and reference link', () => {
+    component.setProps({ sourceSelection: [{ sourceFundIsin: 'a', percentage: 1 }] });
+    expect(component.contains(
+      <a href="http://www.pensionikeskus.ee/ii-sammas/fondid/fonditasude-vordlused/">
+        <Message>select.sources.select.some.cost</Message>
+      </a>,
+    )).toBe(true);
   });
 });

@@ -42,7 +42,8 @@ export function selectRouteForState() {
     }
 
     // Temporary
-    if (true) {
+    const temp = true;
+    if (temp) {
       dispatch(push('/account'));
       return;
     }
