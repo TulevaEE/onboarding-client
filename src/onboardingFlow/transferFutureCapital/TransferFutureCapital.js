@@ -15,6 +15,11 @@ function isContributionsFundAlreadyActive(sourceFunds, fundToCompareTo) {
           sourceFund.activeFund && sourceFund.isin === fundToCompareTo.isin);
 }
 
+const fundSelectStyles = {
+  fontSize: '140%',
+  height: '140%',
+};
+
 export const TransferFutureCapital = ({
   selectedFutureContributionsFundIsin,
   onSelectFutureCapitalFund,
@@ -37,6 +42,25 @@ export const TransferFutureCapital = ({
           <Message>transfer.future.capital.intro.choose</Message>
         </p>
       </div>
+
+      <select
+        style={fundSelectStyles}
+        className="custom-select mt-4"
+        onChange={event => onSelectFutureCapitalFund(event.target.value)}
+        value={selectedFutureContributionsFundIsin || ''}
+      >
+        <option value="1" hidden="hidden">
+          {translate('transfer.future.capital.other.fund')}
+        </option>
+        {
+          otherTargetFunds.map(fund => (
+            <option value={fund.isin} key={fund.isin}>
+              {translate(`target.funds.${fund.isin}.title`)}
+            </option>
+          ))
+        }
+      </select>
+
       {
         tulevaTargetFunds.map(fund => (
           <Radio
@@ -56,22 +80,6 @@ export const TransferFutureCapital = ({
         ))
       }
 
-      <select
-        className="custom-select mt-4"
-        onChange={event => onSelectFutureCapitalFund(event.target.value)}
-        value={selectedFutureContributionsFundIsin || ''}
-      >
-        <option value="1" hidden="hidden">
-          {translate('transfer.future.capital.other.fund')}
-        </option>
-        {
-          otherTargetFunds.map(fund => (
-            <option value={fund.isin} key={fund.isin}>
-              {translate(`target.funds.${fund.isin}.title`)}
-            </option>
-          ))
-        }
-      </select>
       <Radio
         name="tv-transfer-future-capital"
         selected={!selectedFutureContributionsFundIsin}
