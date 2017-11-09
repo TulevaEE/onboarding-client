@@ -2,7 +2,7 @@ machine:
   pre:
     - mkdir ~/.yarn-cache
   node:
-    version: lts
+    version: lts/*
 dependencies:
   pre:
     - curl -o- -L https://yarnpkg.com/install.sh | bash
