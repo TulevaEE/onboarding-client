@@ -68,7 +68,7 @@ function getCurrentCompanyFunds(targetFunds) {
   }
   const currentCompanyFunds = targetFunds.filter(fund => fund.fundManager.name === 'Tuleva');
   if (currentCompanyFunds.length === 0) {
-    throw new Error('Could not find Tuleva funds in target funds');
+    throw new Error('Could not find current company funds in target funds');
   }
 
   return currentCompanyFunds;
@@ -110,10 +110,10 @@ function selectDefaultContributionsFund(targetFunds, sourceFunds) {
   if (sourceFunds && targetFunds) {
     const activeSourceFund = getActiveSourceFund(sourceFunds);
 
-    const isSomeTulevaFundAlreadyActive = activeSourceFund &&
+    const isSomeCurrentCompanyFundAlreadyActive = activeSourceFund &&
       currentCompanyFunds.find(tf => tf.isin === activeSourceFund.isin) != null;
 
-    if (isSomeTulevaFundAlreadyActive) {
+    if (isSomeCurrentCompanyFundAlreadyActive) {
       return null;
     }
     return currentCompanyFunds[0].isin;
