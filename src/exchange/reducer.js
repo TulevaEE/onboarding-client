@@ -107,6 +107,10 @@ function selectDefaultContributionsFund(targetFunds, sourceFunds) {
   return null;
 }
 
+function isSourceSelectionDone(sourceSelection) {
+  return sourceSelection ? sourceSelection.length > 0 : false;
+}
+
 export default function exchangeReducer(state = initialState, action) {
   switch (action.type) {
     case LOAD_PENSION_DATA_SUCCESS:
@@ -121,7 +125,7 @@ export default function exchangeReducer(state = initialState, action) {
         // we do not know if source or target funds get here first, so we check if we can
         // calculate the default source selection and they have not yet been calculated in
         // both the target and source fund arrival
-        sourceSelection: state.targetFunds && !state.sourceSelection ?
+        sourceSelection: state.targetFunds && !isSourceSelectionDone(state.sourceSelection) ?
           createFullDefaultSourceSelection({
             sourceFunds: action.sourceFunds,
             targetFunds: state.targetFunds,
@@ -151,7 +155,7 @@ export default function exchangeReducer(state = initialState, action) {
         // we do not know if source or target funds get here first, so we check if we can
         // calculate the default source selection and they have not yet been calculated in
         // both the target and source fund arrival
-        sourceSelection: state.sourceFunds && !state.sourceSelection ?
+        sourceSelection: state.sourceFunds && !isSourceSelectionDone(state.sourceSelection) ?
           createFullDefaultSourceSelection({
             sourceFunds: state.sourceFunds,
             targetFunds: action.targetFunds,
