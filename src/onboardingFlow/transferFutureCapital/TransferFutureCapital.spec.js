@@ -37,9 +37,9 @@ describe('Transfer future capital step', () => {
 
   it('has three options if you want to transfer future capital to one of two funds or not', () => {
     const targetFunds = [
-      { isin: 'AAA', fundManager: { name: 'Tuleva' } },
-      { isin: 'BBB', fundManager: { name: 'Tuleva' } },
-      { isin: 'CCC', fundManager: { name: 'some random bank' } }];
+      { isin: 'AAA', name: 'A', fundManager: { name: 'Tuleva' } },
+      { isin: 'BBB', name: 'B', fundManager: { name: 'Tuleva' } },
+      { isin: 'CCC', name: 'C', fundManager: { name: 'some random bank' } }];
     const loadingTargetFunds = false;
     component.setProps({ targetFunds, loadingTargetFunds });
     expect(component.find(Radio).length).toBe(3);
@@ -62,9 +62,9 @@ describe('Transfer future capital step', () => {
 
   it('can choose where you want to transfer future capital', () => {
     const targetFunds = [
-      { isin: 'AAA', fundManager: { name: 'Tuleva' } },
-      { isin: 'BBB', fundManager: { name: 'Tuleva' } },
-      { isin: 'CCC', fundManager: { name: 'some random bank' } }];
+      { isin: 'AAA', name: 'A', fundManager: { name: 'Tuleva' } },
+      { isin: 'BBB', name: 'B', fundManager: { name: 'Tuleva' } },
+      { isin: 'CCC', name: 'C', fundManager: { name: 'some random bank' } }];
     const loadingTargetFunds = false;
     const selectedFutureContributionsFundIsin = 'AAA';
     component.setProps({ targetFunds, loadingTargetFunds, selectedFutureContributionsFundIsin });
@@ -93,9 +93,9 @@ describe('Transfer future capital step', () => {
   describe('When user selected to not transfer future contributions to Tuleva', () => {
     it('show selected radio title in bold', () => {
       const targetFunds = [
-        { isin: 'AAA', fundManager: { name: 'Tuleva' } },
-        { isin: 'BBB', fundManager: { name: 'Tuleva' } },
-        { isin: 'CCC', fundManager: { name: 'some random bank' } }];
+        { isin: 'AAA', name: 'A', fundManager: { name: 'Tuleva' } },
+        { isin: 'BBB', name: 'B', fundManager: { name: 'Tuleva' } },
+        { isin: 'CCC', name: 'C', fundManager: { name: 'some random bank' } }];
       const loadingTargetFunds = false;
       component.setProps({
         targetFunds,
@@ -115,7 +115,7 @@ describe('Transfer future capital step', () => {
 
     it('shows active fund note only if user has active fund', () => {
       let activeSourceFund = { isin: 'AAA', name: 'bla', managementFeePercent: 0.5 };
-      const targetFunds = [{ isin: 'AAA' }, { isin: 'BBB' }];
+      const targetFunds = [{ isin: 'AAA', name: 'A'}, { isin: 'BBB', name: 'B' }];
       const loadingTargetFunds = false;
       const selectedFutureContributionsFundIsin = null;
 
@@ -148,7 +148,7 @@ describe('Transfer future capital step', () => {
 
     it('shows different active fund message for converted user', () => {
       let activeSourceFund = { isin: 'AAA', name: 'bla', managementFeePercent: 0.5 };
-      const targetFunds = [{ isin: 'AAA' }, { isin: 'BBB' }];
+      const targetFunds = [{ isin: 'AAA', name: 'A' }, { isin: 'BBB', name: 'B' }];
       const loadingTargetFunds = false;
       const selectedFutureContributionsFundIsin = null;
 
@@ -180,14 +180,17 @@ describe('Transfer future capital step', () => {
     });
   });
 
-  it('has a select options list for other banks funds', () => {
+  it('has a sorted select options list for all funds', () => {
     const targetFunds = [
-      { isin: 'AAA', fundManager: { name: 'Tuleva' } },
-      { isin: 'BBB', fundManager: { name: 'Tuleva' } },
-      { isin: 'CCC', fundManager: { name: 'some random bank' } }];
+      { isin: 'AAA', name: 'A', fundManager: { name: 'Tuleva' } },
+      { isin: 'CCC', name: 'C', fundManager: { name: 'Tuleva' } },
+      { isin: 'BBB', name: 'B', fundManager: { name: 'some random bank' } }];
     const loadingTargetFunds = false;
     component.setProps({ targetFunds, loadingTargetFunds });
-    expect(component.find('option').length).toBe(2);
-    expect(component.find('option').at(1).prop('value')).toBe('CCC');
+    expect(component.find('option').at(0).prop('value')).toBe('1');
+    expect(component.find('option').at(1).prop('value')).toBe('AAA');
+    expect(component.find('option').at(2).prop('value')).toBe('BBB');
+    expect(component.find('option').at(3).prop('value')).toBe('CCC');
+    expect(component.find('option').length).toBe(4);
   });
 });

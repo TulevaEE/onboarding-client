@@ -9,12 +9,6 @@ import { Radio, Loader, InfoTooltip, utils } from '../../common';
 import TargetFundTooltipBody from './targetFundTooltipBody';
 import { selectFutureContributionsFund } from '../../exchange/actions';
 
-function isContributionsFundAlreadyActive(sourceFunds, fundToCompareTo) {
-  return sourceFunds && !!sourceFunds
-      .find(sourceFund =>
-          sourceFund.activeFund && sourceFund.isin === fundToCompareTo.isin);
-}
-
 const fundSelectStyles = {
   fontSize: '140%',
   height: '140%',
@@ -23,7 +17,6 @@ const fundSelectStyles = {
 export const TransferFutureCapital = ({
   selectedFutureContributionsFundIsin,
   onSelectFutureCapitalFund,
-  sourceFunds,
   targetFunds,
   loadingTargetFunds,
   activeSourceFund,
@@ -34,7 +27,7 @@ export const TransferFutureCapital = ({
     return <Loader className="align-middle" />;
   }
   const tulevaTargetFunds = targetFunds.filter(fund => (fund.fundManager || {}).name === 'Tuleva');
-  const otherTargetFunds = targetFunds.filter(fund => (fund.fundManager || {}).name !== 'Tuleva' && !isContributionsFundAlreadyActive(sourceFunds, fund));
+  const otherTargetFunds = targetFunds.sort((fund1, fund2) => fund1.name.localeCompare(fund2.name));
   return (
     <div>
       <div className="px-col">
@@ -141,7 +134,6 @@ TransferFutureCapital.defaultProps = {
 TransferFutureCapital.propTypes = {
   selectedFutureContributionsFundIsin: Types.string,
   onSelectFutureCapitalFund: Types.func,
-  sourceFunds: Types.arrayOf(Types.shape({})),
   targetFunds: Types.arrayOf(Types.shape({})),
   loadingTargetFunds: Types.bool,
   activeSourceFund: Types.shape({}),
@@ -153,7 +145,6 @@ TransferFutureCapital.propTypes = {
 
 const mapStateToProps = state => ({
   selectedFutureContributionsFundIsin: state.exchange.selectedFutureContributionsFundIsin,
-  sourceFunds: state.exchange.sourceFunds,
   targetFunds: state.exchange.targetFunds,
   loadingTargetFunds: state.exchange.loadingTargetFunds,
   activeSourceFund: utils.findWhere(state.exchange.sourceFunds || [],
