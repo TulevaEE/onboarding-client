@@ -62,13 +62,26 @@ const initialState = {
   shortFlow: true,
 };
 
+function getCurrentCompanyFunds(targetFunds) {
+  if (!targetFunds) {
+    return [];
+  }
+  const currentCompanyFunds = targetFunds.filter(fund => fund.fundManager.name === 'Tuleva');
+  if (currentCompanyFunds.length === 0) {
+    throw new Error('Could not find Tuleva funds in target funds');
+  }
+
+  return currentCompanyFunds;
+}
+
 function createFullDefaultSourceSelection({ sourceFunds, targetFunds }) {
+  const currentCompanyFunds = getCurrentCompanyFunds(targetFunds);
   return sourceFunds
-    .filter(fund => targetFunds.map(targetFund => targetFund.isin).indexOf(fund.isin) === -1)
+    .filter(fund => currentCompanyFunds.map(tf => tf.isin).indexOf(fund.isin) === -1)
     .filter(fund => fund.price > 0)
     .map(({ isin }) => ({
       sourceFundIsin: isin,
-      targetFundIsin: targetFunds[0].isin,
+      targetFundIsin: currentCompanyFunds[0].isin,
       percentage: 1,
     }));
 }
@@ -93,16 +106,17 @@ function getActiveSourceFund(sourceFunds) {
 }
 
 function selectDefaultContributionsFund(targetFunds, sourceFunds) {
+  const currentCompanyFunds = getCurrentCompanyFunds(targetFunds);
   if (sourceFunds && targetFunds) {
     const activeSourceFund = getActiveSourceFund(sourceFunds);
 
-    const isSomeTargetFundAlreadyActive = activeSourceFund &&
-      targetFunds.find(targetFund => targetFund.isin === activeSourceFund.isin) != null;
+    const isSomeTulevaFundAlreadyActive = activeSourceFund &&
+      currentCompanyFunds.find(tf => tf.isin === activeSourceFund.isin) != null;
 
-    if (isSomeTargetFundAlreadyActive) {
+    if (isSomeTulevaFundAlreadyActive) {
       return null;
     }
-    return targetFunds[0].isin;
+    return currentCompanyFunds[0].isin;
   }
   return null;
 }

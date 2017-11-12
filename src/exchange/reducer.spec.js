@@ -148,8 +148,8 @@ describe('Exchange reducer', () => {
 
   it('stops loading, saves and selects target funds when getting them succeeds', () => {
     const targetFunds = [
-      { isin: 'EE3600109435', iShouldBeSelected: true },
-      { isin: 'asd', hello: true },
+      { isin: 'EE3600109435', iShouldBeSelected: true, fundManager: { name: 'Tuleva' } },
+      { isin: 'asd', hello: true, fundManager: { name: 'A' } },
     ];
     const action = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
     const newState = exchangeReducer({ loadingTargetFunds: true }, action);
@@ -160,8 +160,8 @@ describe('Exchange reducer', () => {
 
   it('defaults contributions fund to null when source funds not present', () => {
     const targetFunds = [
-      { isin: 'EE3600109435', iShouldBeSelected: true },
-      { isin: 'asd', hello: true },
+      { isin: 'EE3600109435', iShouldBeSelected: true, fundManager: { name: 'Tuleva' } },
+      { isin: 'asd', hello: true, fundManager: { name: 'A' } },
     ];
     const action = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
     const newState = exchangeReducer({ loadingTargetFunds: true }, action);
@@ -175,26 +175,30 @@ describe('Exchange reducer', () => {
     expect(newState.selectedFutureContributionsFundIsin).toEqual(null);
   });
 
-  it('defaults future contributions fund to first target fund when no target fund is currently active', () => {
+  it('defaults future contributions fund to first current company target fund when no target fund is currently active', () => {
     const sourceFunds = [
       { name: 'name', isin: 'isin1' },
       { name: 'name', isin: 'isin2' },
       { name: 'other random active fund', isin: 'source 3', activeFund: true },
     ];
     const sourceFundsAction = { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds };
-    const targetFunds = [{ name: 'name', isin: 'isin1' }, { name: 'name', isin: 'isin2' }];
+    const targetFunds = [
+      { name: 'name', isin: 'isin0', fundManager: { name: 'Random company fund' } },
+      { name: 'name', isin: 'isin1', fundManager: { name: 'Tuleva' } },
+      { name: 'name', isin: 'isin2', fundManager: { name: 'Tuleva' } }];
     const targetFundsAction = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
     const state = [sourceFundsAction, targetFundsAction].reduce(exchangeReducer);
-    expect(state.selectedFutureContributionsFundIsin).toEqual(targetFunds[0].isin);
+    expect(state.selectedFutureContributionsFundIsin).toEqual(targetFunds[1].isin);
   });
 
-  it('defaults future contributions fund to null when some target fund is currently active', () => {
+  it('defaults future contributions fund to null when some current company target fund is currently active', () => {
     const sourceFunds = [
       { name: 'name', isin: 'isin1' },
       { name: 'name', isin: 'isin2', activeFund: true },
     ];
     const sourceFundsAction = { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds };
-    const targetFunds = [{ name: 'name', isin: 'isin1' }, { name: 'name', isin: 'isin2' }];
+    const targetFunds = [{ name: 'name', isin: 'isin1', fundManager: { name: 'Tuleva' } },
+      { name: 'name', isin: 'isin2', fundManager: { name: 'Tuleva' } }];
     const targetFundsAction = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
     const state = [sourceFundsAction, targetFundsAction].reduce(exchangeReducer);
     expect(state.selectedFutureContributionsFundIsin).toEqual(null);
@@ -208,7 +212,8 @@ describe('Exchange reducer', () => {
 
     const sourceFunds = [{ name: 'name', isin: 'source', price: 100 }, { name: 'name', isin: 'source 2', price: 100 }];
     const sourceFundsAction = { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds };
-    const targetFunds = [{ name: 'name', isin: 'target' }, { name: 'name', isin: 'target 2' }];
+    const targetFunds = [{ name: 'name', isin: 'target', fundManager: { name: 'Tuleva' } },
+      { name: 'name', isin: 'target 2', fundManager: { name: 'Tuleva' } }];
     const targetFundsAction = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
     const state = [sourceFundsAction, targetFundsAction].reduce(exchangeReducer);
     expect(state.sourceSelection).toEqual(expectedFullSelection);
@@ -228,7 +233,8 @@ describe('Exchange reducer', () => {
       { name: 'name', isin: 'source 3', price: 100 },
     ];
     const sourceFundsAction = { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds };
-    const targetFunds = [{ name: 'name', isin: 'target' }, { name: 'name', isin: 'target 2' }];
+    const targetFunds = [{ name: 'name', isin: 'target', fundManager: { name: 'Tuleva' } },
+      { name: 'name', isin: 'target 2', fundManager: { name: 'Tuleva' } }];
     const targetFundsAction = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
     const state = [sourceFundsAction, targetFundsAction].reduce(exchangeReducer);
     expect(state.sourceSelection).toEqual(expectedFullSelection);
@@ -248,8 +254,8 @@ describe('Exchange reducer', () => {
     ];
     const sourceFundsAction = { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds };
     const targetFunds = [
-      { name: 'name', isin: 'thissourcewillbeskipped' },
-      { name: 'name', isin: 'willbeskippedaswell' },
+      { name: 'name', isin: 'thissourcewillbeskipped', fundManager: { name: 'Tuleva' } },
+      { name: 'name', isin: 'willbeskippedaswell', fundManager: { name: 'Tuleva' } },
     ];
     const targetFundsAction = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
     const state = [sourceFundsAction, targetFundsAction].reduce(exchangeReducer);
