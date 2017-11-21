@@ -1,12 +1,5 @@
 import { push } from 'react-router-redux';
 
-function isMember(getState) {
-  if (getState().login.user.memberNumber) {
-    return true;
-  }
-  return false;
-}
-
 function isSelectionComplete(getState) {
   const userConversion = getState().login.userConversion;
   if (userConversion.selectionComplete) {
@@ -48,16 +41,12 @@ export function selectRouteForState() {
 
     if (!isUserLoaded(getState)) {
       dispatch(push('/')); // load user
-    } else if (isMember(getState)) {
-      if (isFullyConverted(getState)) {
-        dispatch(push('/account'));
-      } else if (getState().exchange.shortFlow === true) {
-        dispatch(push('/steps/confirm-mandate'));
-      } else {
-        dispatch(push('/steps/select-sources'));
-      }
+    } else if (isFullyConverted(getState)) {
+      dispatch(push('/account'));
+    } else if (getState().exchange.shortFlow === true) {
+      dispatch(push('/steps/confirm-mandate'));
     } else {
-      dispatch(push('/steps/non-member'));
+      dispatch(push('/steps/select-sources'));
     }
   };
 }

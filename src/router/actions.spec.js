@@ -57,16 +57,6 @@ describe('Routing actions', () => {
     expect(dispatch).toHaveBeenCalledWith(push('/account'));
   });
 
-  it('can perform non member routing', () => {
-    state.login.user.memberNumber = null;
-
-    const action = createBoundAction(actions.selectRouteForState);
-    action();
-
-    expect(dispatch).toHaveBeenCalledTimes(1);
-    expect(dispatch).toHaveBeenCalledWith(push('/steps/non-member'));
-  });
-
   it('can perform routing when user is not loaded', () => {
     state.login = {};
 
