@@ -1,6 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Message } from 'retranslate';
+import { Link } from 'react-router';
 
 import { Loader, ErrorMessage } from '../common';
 import { AccountPage } from './AccountPage';
@@ -116,9 +117,21 @@ describe('Current balance', () => {
     </a>);
     expect(component.contains(cta)).toBe(true);
 
-    const memberNumber = '123';
-    component.setProps({ memberNumber});
+    const memberNumber = 123;
+    component.setProps({ memberNumber });
     expect(component.contains(cta)).toBe(false);
   });
 
+  it('renders change pension fund button', () => {
+    const initialCapital = { currentBalanceFunds: [] };
+    component.setProps({ initialCapital });
+
+    expect(component.contains(<Link className="btn btn-primary mb-3" to="/steps/select-sources">
+      <Message>change.my.pension.fund</Message>
+    </Link>)).toBe(true);
+    component.setProps({ currentBalanceFunds: [{ sourcefund: true }] });
+    expect(component.contains(<Link className="btn btn-primary mb-3" to="/steps/select-sources">
+      <Message>change.my.pension.fund</Message>
+    </Link>)).not.toBe(true);
+  });
 });

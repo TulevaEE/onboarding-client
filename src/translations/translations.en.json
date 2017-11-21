@@ -276,5 +276,6 @@
   "update.user.thanks": "Thanks!",
   "update.user.success.message": "Your user details are updated.",
   "account.second.pillar.missing": "You have not joined the II pillar.",
-  "pension.registry.connection.exception": "Couldn't connect to the Estonian Pension Registry, please try again."
+  "pension.registry.connection.exception": "Couldn't connect to the Estonian Pension Registry, please try again.",
+  "change.my.pension.fund": "Change pension fund"
 }
