@@ -3,6 +3,7 @@ import { PropTypes as Types } from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Message } from 'retranslate';
+import { Link } from 'react-router';
 
 import { Loader, ErrorMessage } from '../common';
 import PensionFundTable from './../onboardingFlow/selectSources/pensionFundTable';
@@ -74,8 +75,19 @@ export const AccountPage = ({
         />) : ''
     }
     <div className="row mt-5">
+      <div className="col-sm-6">
+        <Message className="mb-4 lead">select.sources.current.status</Message>
+      </div>
+      { currentBalanceFunds && currentBalanceFunds.length === 0 ? (
+        <div className="col-sm-6 text-right">
+          <Link className="btn btn-primary mb-3" to="/steps/select-sources">
+            <Message>change.my.pension.fund</Message>
+          </Link>
+        </div>
+      ) : ''}
+    </div>
+    <div className="row">
       <div className="col">
-        <p className="mb-4 lead"><Message>select.sources.current.status</Message></p>
         {
           loadingCurrentBalance ?
             <Loader className="align-middle" /> :
@@ -93,14 +105,6 @@ export const AccountPage = ({
         }
       </div>
     </div>
-    { /*
-      <div className="row">
-        <div className="col">
-          <h3 className="mt-5"><Message>account.contact.info.title</Message></h3>
-          CONTACT INFO WILL COME HERE
-        </div>
-      </div>
-    */ }
   </div>
 );
 
@@ -131,7 +135,6 @@ AccountPage.propTypes = {
   error: Types.shape({}),
 };
 
-// TODO: write component
 const mapStateToProps = state => ({
   currentBalanceFunds: state.exchange.sourceFunds !== null ? state.exchange.sourceFunds : [],
   loadingCurrentBalance: state.exchange.loadingSourceFunds,
