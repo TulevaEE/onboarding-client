@@ -3,6 +3,7 @@ import { PropTypes as Types } from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { Message } from 'retranslate';
 import { connect } from 'react-redux';
+import { push } from 'react-router-redux';
 
 import { Loader, AuthenticationLoader, ErrorMessage, utils } from '../../common';
 
@@ -96,7 +97,7 @@ function getMandate(exchange) {
 export function exitShortFlow() {
   return (dispatch) => {
     dispatch(disableShortFlow());
-    dispatch(routeBackFromMandateConfirmation());
+    dispatch(push('/steps/select-sources'));
   };
 }
 

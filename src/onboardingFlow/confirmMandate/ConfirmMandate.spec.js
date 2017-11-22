@@ -1,6 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Message } from 'retranslate';
+import { push } from 'react-router-redux';
 
 import { ConfirmMandate, exitShortFlow } from './ConfirmMandate';
 import FundTransferTable from './fundTransferTable';
@@ -115,6 +116,7 @@ describe('Confirm mandate step', () => {
     exitShortFlow()(dispatch);
     expect(dispatch).toHaveBeenCalledTimes(2);
     expect(dispatch).toHaveBeenCalledWith(disableShortFlow());
+    expect(dispatch).toHaveBeenCalledWith(push('/steps/select-sources'));
   });
 
   it('does not show the funds table if you are not transferring funds', () => {
