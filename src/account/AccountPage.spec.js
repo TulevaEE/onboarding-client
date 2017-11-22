@@ -32,12 +32,12 @@ describe('Current balance', () => {
     conversion = { transfersComplete: false, selectionComplete: true };
     component.setProps({ conversion });
 
-    expect(component.contains(<Message>account.converted.user.statement</Message>)).not.toBe(true);
+    expect(component.contains(<Message>account.converted.user.statement</Message>)).toBe(false);
 
     conversion = { transfersComplete: true, selectionComplete: false };
     component.setProps({ conversion });
 
-    expect(component.contains(<Message>account.converted.user.statement</Message>)).not.toBe(true);
+    expect(component.contains(<Message>account.converted.user.statement</Message>)).toBe(false);
   });
 
   it('renders initial capital, only if it is present', () => {
@@ -50,7 +50,7 @@ describe('Current balance', () => {
     component.setProps({ initialCapital: null });
     expect(component.contains(<Message params={{ initialCapital: initialCapital.amount }}>
       account.initial-capital.statement
-    </Message>)).not.toBe(true);
+    </Message>)).toBe(false);
   });
 
   it('renders no second pillar message', () => {
@@ -63,7 +63,7 @@ describe('Current balance', () => {
     component.setProps({ currentBalanceFunds: [{ sourcefund: true }] });
     expect(component.contains(<Message>
       account.second.pillar.missing
-    </Message>)).not.toBe(true);
+    </Message>)).toBe(false);
   });
 
   it('renders member number', () => {
@@ -128,10 +128,10 @@ describe('Current balance', () => {
 
     expect(component.contains(<Link className="btn btn-primary mb-3" to="/steps/select-sources">
       <Message>change.my.pension.fund</Message>
-    </Link>)).toBe(true);
+    </Link>)).toBe(false);
     component.setProps({ currentBalanceFunds: [{ sourcefund: true }] });
     expect(component.contains(<Link className="btn btn-primary mb-3" to="/steps/select-sources">
       <Message>change.my.pension.fund</Message>
-    </Link>)).not.toBe(true);
+    </Link>)).toBe(true);
   });
 });
