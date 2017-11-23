@@ -28,7 +28,7 @@ export const TransferFutureCapital = ({
   }
   const tulevaTargetFunds = targetFunds.filter(fund => (fund.fundManager || {}).name === 'Tuleva');
   const sortedTargetFunds =
-      targetFunds.sort((fund1, fund2) => fund1.name.localeCompare(fund2.name));
+      targetFunds.slice().sort((fund1, fund2) => fund1.name.localeCompare(fund2.name));
   return (
     <div>
       <div className="px-col">

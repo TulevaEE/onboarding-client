@@ -17,13 +17,13 @@ describe('Fund exchange row', () => {
     component = shallow(<FundExchangeRow translations={{ translate }} />);
     sourceFunds = [
       { isin: 'source isin 1', name: 'source name 1' },
-      { isin: 'source isin 2', name: 'source name 2' },
       { isin: 'source isin 3', name: 'source name 3' },
+      { isin: 'source isin 2', name: 'source name 2' },
     ];
     targetFunds = [
       { isin: 'target isin 1', name: 'target name 1' },
-      { isin: 'target isin 2', name: 'target name 2' },
       { isin: 'target isin 3', name: 'target name 3' },
+      { isin: 'target isin 2', name: 'target name 2' },
     ];
   });
 
@@ -59,6 +59,20 @@ describe('Fund exchange row', () => {
           {`translated:target.funds.${fund.isin}.title`}
         </option>,
       )).toBe(true));
+  });
+
+  it('sorts source funds', () => {
+    component.setProps({ sourceFunds });
+    expect(component.find('option').at(0).prop('value')).toBe('source isin 1');
+    expect(component.find('option').at(1).prop('value')).toBe('source isin 2');
+    expect(component.find('option').at(2).prop('value')).toBe('source isin 3');
+  });
+
+  it('sorts target funds', () => {
+    component.setProps({ targetFunds });
+    expect(component.find('option').at(0).prop('value')).toBe('target isin 1');
+    expect(component.find('option').at(1).prop('value')).toBe('target isin 2');
+    expect(component.find('option').at(2).prop('value')).toBe('target isin 3');
   });
 
   it('sets the current selection\'s source fund as active', () => {

@@ -16,6 +16,10 @@ export const FundExchangeRow = ({ // exporting without translations for testing 
 }) => {
   const randomString = (Math.random() + 1).toString(36).substring(7);
   const randomId = `tv-percentage-selector-${randomString}`;
+  const sortedSourceFunds =
+      sourceFunds.slice().sort((fund1, fund2) => fund1.name.localeCompare(fund2.name));
+  const sortedTargetFunds =
+      targetFunds.slice().sort((fund1, fund2) => fund1.name.localeCompare(fund2.name));
   return (
     <div className="row">
       <div className="col-12 col-sm-5 mt-2">
@@ -28,7 +32,7 @@ export const FundExchangeRow = ({ // exporting without translations for testing 
             }
           >
             {
-              sourceFunds.map(fund =>
+              sortedSourceFunds.map(fund =>
                 <option key={fund.isin} value={fund.isin}>
                   {fund.name}
                 </option>,
@@ -64,7 +68,7 @@ export const FundExchangeRow = ({ // exporting without translations for testing 
               ({ target: { value: targetFundIsin } }) => onChange({ ...selection, targetFundIsin })}
           >
             {
-              targetFunds.map(fund =>
+              sortedTargetFunds.map(fund =>
                 <option key={fund.isin} value={fund.isin}>
                   {translate(`target.funds.${fund.isin}.title`)}
                 </option>,
