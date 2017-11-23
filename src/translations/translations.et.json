@@ -1,6 +1,6 @@
 {
 
-  "login.title": "Vabandame! Olime sunnitud veebirakenduse mõneks tunniks kinni panema kuna ägeda kasutamisega ilmnes paar viga. Anname e-mailiga märku kui korras.",
+  "login.title": "Logi sisse, et näha oma pensionikonto seisu ja vahetada pensionifondi.",
   "login.mobile.id": "Mobiil-ID",
   "login.id.card": "ID-kaart",
   "login.id.card.start.failed": "Palun kontrolli, et ID kaart on lugejas ja lugeja ühendatud, ning ID kaardiga signeerimise plugin töötab. Vajadusel tee veebilehitsejale restart ja proovi uuesti.",
