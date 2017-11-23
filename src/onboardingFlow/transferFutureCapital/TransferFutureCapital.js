@@ -27,7 +27,8 @@ export const TransferFutureCapital = ({
     return <Loader className="align-middle" />;
   }
   const tulevaTargetFunds = targetFunds.filter(fund => (fund.fundManager || {}).name === 'Tuleva');
-  const otherTargetFunds = targetFunds.sort((fund1, fund2) => fund1.name.localeCompare(fund2.name));
+  const sortedTargetFunds =
+      targetFunds.sort((fund1, fund2) => fund1.name.localeCompare(fund2.name));
   return (
     <div>
       <div className="px-col">
@@ -46,7 +47,7 @@ export const TransferFutureCapital = ({
           {translate('transfer.future.capital.other.fund')}
         </option>
         {
-          otherTargetFunds.map(fund => (
+          sortedTargetFunds.map(fund => (
             <option value={fund.isin} key={fund.isin}>
               {translate(`target.funds.${fund.isin}.title`)}
             </option>
