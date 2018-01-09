@@ -7,7 +7,7 @@ import { reducer as formReducer } from 'redux-form';
 import { Provider as TranslationProvider } from 'retranslate';
 import { Provider as ReduxProvider } from 'react-redux';
 import { Router, Route, browserHistory } from 'react-router';
-import { syncHistoryWithStore, routerReducer, routerMiddleware } from 'react-router-redux';
+import { syncHistoryWithStore, routerReducer as routingReducer, routerMiddleware } from 'react-router-redux';
 import mixpanel from 'mixpanel-browser';
 import MixpanelProvider from 'react-mixpanel';
 import GoogleAnalytics from 'react-ga';
@@ -24,11 +24,10 @@ import { reducer as exchangeReducer, actions as exchangeActions } from './exchan
 import trackingReducer from './tracking';
 import { reducer as comparisonReducer } from './comparison';
 import { reducer as quizReducer, actions as quizActions } from './quiz';
-import { router } from './router';
+import { reducer as routerReducer, router } from './router';
 import Quiz from './quiz/Quiz';
 import { refreshToken } from './login/actions';
 
-// import { reducer as quizReducer } from './quiz';
 import App from './app';
 import AccountPage, { reducer as accountReducer, actions as accountActions } from './account';
 import Steps, {
@@ -39,7 +38,7 @@ import Steps, {
 } from './onboardingFlow';
 
 const rootReducer = combineReducers({
-  routing: routerReducer,
+  routing: routingReducer,
   login: loginReducer,
   exchange: exchangeReducer, // exchage of funds
   comparison: comparisonReducer,
@@ -47,6 +46,7 @@ const rootReducer = combineReducers({
   tracking: trackingReducer,
   form: formReducer,
   quiz: quizReducer,
+  router: routerReducer,
 });
 
 const composeEnhancers = (window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose; // eslint-disable-line
@@ -97,6 +97,9 @@ function applyRouting(nextState) {
   store.dispatch(exchangeActions.mapUrlQueryParamsToState(nextState.location.query));
   if (quizActions.isRouteToQuiz(nextState.location)) {
     store.dispatch(quizActions.routeToQuiz());
+  }
+  if (router.isRouteToAccount(nextState.location)) {
+    store.dispatch(router.routeToAccount());
   }
 }
 

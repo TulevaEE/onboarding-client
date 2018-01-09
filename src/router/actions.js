@@ -1,5 +1,20 @@
 import { push } from 'react-router-redux';
 
+import {
+  ROUTE_TO_ACCOUNT,
+} from './constants';
+
+export function routeToAccount() {
+  return { type: ROUTE_TO_ACCOUNT };
+}
+
+export function isRouteToAccount(location) {
+  if (location.pathname === '/account') {
+    return true;
+  }
+  return false;
+}
+
 function isSelectionComplete(getState) {
   const userConversion = getState().login.userConversion;
   if (userConversion.selectionComplete) {
@@ -36,6 +51,11 @@ export function selectRouteForState() {
 
     if (getState().quiz.routeToQuiz === true) {
       dispatch(push('/quiz'));
+      return;
+    }
+
+    if (getState().router.routeToAccount === true) {
+      dispatch(push('/account'));
       return;
     }
 

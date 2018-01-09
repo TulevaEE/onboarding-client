@@ -14,6 +14,8 @@ describe('Routing actions', () => {
     state.quiz.routeToQuiz = false;
     state.exchange = {};
     state.exchange.shortFlow = false;
+    state.router = {};
+    state.router.routeToAccount = false;
     dispatch = jest.fn((action) => {
       if (typeof action === 'function') {
         action(dispatch, () => state);
@@ -116,6 +118,17 @@ describe('Routing actions', () => {
 
     expect(dispatch).toHaveBeenCalledTimes(1);
     expect(dispatch).toHaveBeenCalledWith(push('/quiz'));
+  });
+
+  it('can route to account', () => {
+    state.login = {};
+    state.router.routeToAccount = true;
+
+    const action = createBoundAction(actions.selectRouteForState);
+    action();
+
+    expect(dispatch).toHaveBeenCalledTimes(1);
+    expect(dispatch).toHaveBeenCalledWith(push('/account'));
   });
 
   it('can route to short flow', () => {
