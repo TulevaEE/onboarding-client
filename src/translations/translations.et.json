@@ -199,7 +199,7 @@
   "header.my.account": "Minu konto",
   "account.member.statement": "Oled Tuleva liige nr. {{memberNumber}}.",
   "account.non.member.statement": "Sa pole veel Tuleva liige.",
-  "account.initial-capital.statement": "Oled panustanud Tuleva algkapitali {{initialCapital}}€.",
+  "account.initial-capital.statement": "Sinu liikmekapitali väärtus 31.12.2017 seisuga on {{initialCapital}}€.",
   "account.converted.user.statement": "Avaldus maksete ümber suunamiseks ja olemasolevate osakute ümber vahetamiseks Tuleva pensionifondi on tehtud.",
   "new.user.flow.new.user.total.fund.value": "Pensionikeskuse andmetel on sinu II sambasse tänaseks kogunenud ",
   "new.user.flow.new.user.active.fund.name": "Sinu aktiivne pensionifond on ",
