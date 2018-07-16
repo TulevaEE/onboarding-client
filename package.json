@@ -53,5 +53,6 @@
   },
   "lint-staged": {
     "src/**/*.js": ["eslint --fix src", "git add"]
-  }
+  },
+  "proxy": "http://localhost:9000"
 }
