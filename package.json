@@ -30,6 +30,7 @@
     "retranslate": "^0.4.0"
   },
   "scripts": {
+    "precommit": "lint-staged",
     "build-css": "node-sass-chokidar --include-path ./src --include-path ./node_modules src/ -o src/",
     "watch-css": "npm run build-css && node-sass-chokidar --include-path ./src --include-path ./node_modules src/ -o src/ --watch --recursive",
     "start-js": "react-app-rewired start",
@@ -45,7 +46,12 @@
     "eslint-config-airbnb": "^15.0.2",
     "eslint-config-prettier": "^2.9.0",
     "eslint-plugin-prettier": "^2.6.2",
+    "husky": "^0.14.3",
+    "lint-staged": "^7.2.0",
     "prettier": "^1.13.7",
     "react-test-renderer": "^16.4.1"
+  },
+  "lint-staged": {
+    "src/**/*.js": ["eslint --fix src", "git add"]
   }
 }
