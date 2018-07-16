@@ -34,11 +34,11 @@ import { ID_CARD_LOGIN_START_FAILED_ERROR } from '../common/errorAlert/ErrorAler
 
 jest.useFakeTimers();
 
-const mockApi = jest.genMockFromModule('../common/api');
-jest.mock('../common/api', () => mockApi);
-
 const mockHttp = jest.genMockFromModule('../common/http');
 jest.mock('../common/http', () => mockHttp);
+
+const mockApi = jest.genMockFromModule('../common/api');
+jest.mock('../common/api', () => mockApi);
 
 const actions = require('./actions'); // need to use require because of jest mocks being weird
 

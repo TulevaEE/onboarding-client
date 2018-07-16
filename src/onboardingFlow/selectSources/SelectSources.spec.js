@@ -48,7 +48,8 @@ describe('Select sources step', () => {
       component
         .find('#nextStep')
         .children()
-        .at(0).node,
+        .at(0)
+        .getElement(0),
     ).toEqual(<Message>steps.next</Message>);
   });
 

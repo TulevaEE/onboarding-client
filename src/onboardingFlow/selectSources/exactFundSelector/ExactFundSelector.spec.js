@@ -50,6 +50,7 @@ describe('Exact fund selector', () => {
 
   it('renders a table row with selectors for every fund', () => {
     component.setProps({ selections, sourceFunds, targetFunds });
+
     selections.forEach((row, index) => {
       const rowComponentProp = name =>
         component

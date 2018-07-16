@@ -60,7 +60,8 @@ describe('Header', () => {
         .find(Link)
         .at(0)
         .children()
-        .at(0).node,
+        .at(0)
+        .getElement(0),
     ).toEqual(<Message>header.my.account</Message>);
   });
 });

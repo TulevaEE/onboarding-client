@@ -65,14 +65,15 @@ describe('Target fund selector', () => {
     const targetFunds = [{ isin: '123' }, { isin: '456' }, { isin: '789' }];
     const recommendedFundIsin = '456';
     component.setProps({ targetFunds, recommendedFundIsin });
+
     const fundWithIndexIsRecommended = index =>
       !!component
         .find('button')
         .at(index)
         .parent()
-        .children()
-        .at(1)
-        .equals(<Message>select.sources.select.all.recommended</Message>);
+        .html()
+        .includes('select.sources.select.all.recommended');
+
     expect(fundWithIndexIsRecommended(0)).toBe(false);
     expect(fundWithIndexIsRecommended(1)).toBe(true);
     expect(fundWithIndexIsRecommended(2)).toBe(false);

@@ -46,7 +46,7 @@ describe('Fund row', () => {
     expect(component.text()).toContain('formatted(1234.56, EUR)');
     expect(
       component.findWhere(
-        node => node.type() === 'div' && node.childAt(0).node === 'formatted(1234.56, EUR)',
+        node => node.type() === 'div' && node.text() === 'formatted(1234.56, EUR)',
       ).length,
     ).toBe(1);
   });
@@ -61,9 +61,8 @@ describe('Fund row', () => {
     component.setProps({ price: 1234.56, currency: 'EUR', highlighted: true });
     expect(component.text()).toContain('formatted(1234.56, EUR)');
     expect(
-      component.findWhere(
-        node => node.type() === 'b' && node.childAt(0).node === 'formatted(1234.56, EUR)',
-      ).length,
+      component.findWhere(node => node.type() === 'b' && node.text() === 'formatted(1234.56, EUR)')
+        .length,
     ).toBe(1);
   });
 });

@@ -19,9 +19,9 @@ describe('Confirm mandate step', () => {
 
   it('renders a loader if it is loading the user or funds', () => {
     const expectComponentToBeLoader = () =>
-      expect(component.at(0).node).toEqual(<Loader className="align-middle" />);
+      expect(component.at(0).getElement(0)).toEqual(<Loader className="align-middle" />);
     const expectComponentNotToBeLoader = () =>
-      expect(component.at(0).node).not.toEqual(<Loader className="align-middle" />);
+      expect(component.at(0).getElement(0)).not.toEqual(<Loader className="align-middle" />);
 
     component.setProps({ exchange: { loadingSourceFunds: true } });
     expectComponentToBeLoader();
@@ -544,7 +544,7 @@ describe('Confirm mandate step', () => {
       agreedToTerms: false,
     };
     component.setProps({ exchange });
-    expect(component.at(0).node).toEqual(<MandateNotFilledAlert />);
+    expect(component.at(0).getElement(0)).toEqual(<MandateNotFilledAlert />);
     expect(component.find('button').length === 0).toBe(true);
   });
 
@@ -569,7 +569,7 @@ describe('Confirm mandate step', () => {
       error,
     };
     component.setProps({ exchange, onCloseErrorMessages });
-    expect(component.at(0).node).toEqual(
+    expect(component.at(0).getElement(0)).toEqual(
       <ErrorMessage errors={exchange.error.body} onCancel={onCloseErrorMessages} overlayed />,
     );
   });
