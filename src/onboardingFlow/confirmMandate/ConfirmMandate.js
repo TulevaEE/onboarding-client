@@ -38,20 +38,19 @@ function joinDuplicateSelections(selections) {
 function normalizeAndGetSelections(routes) {
   const selections = [];
   const clampBetweenOneAndZero = utils.createClamper(0, 1);
-  Object
-    .keys(routes)
-    .forEach(sourceFundIsin => Object
-      .keys(routes[sourceFundIsin])
-      .forEach((targetFundIsin) => {
-        const percentage = clampBetweenOneAndZero(routes[sourceFundIsin][targetFundIsin]);
-        if (percentage) { // we do not need to show empty rows.
-          selections.push({
-            sourceFundIsin,
-            targetFundIsin,
-            percentage,
-          });
-        }
-      }));
+  Object.keys(routes).forEach(sourceFundIsin =>
+    Object.keys(routes[sourceFundIsin]).forEach(targetFundIsin => {
+      const percentage = clampBetweenOneAndZero(routes[sourceFundIsin][targetFundIsin]);
+      if (percentage) {
+        // we do not need to show empty rows.
+        selections.push({
+          sourceFundIsin,
+          targetFundIsin,
+          percentage,
+        });
+      }
+    }),
+  );
   return selections;
 }
 
@@ -65,37 +64,32 @@ function aggregateSelections(selections) {
 function attachNames(selections, sourceFunds) {
   return selections.map(selection => ({
     ...selection,
-    sourceFundName: utils.findWhere(sourceFunds, ({ isin }) => (
-      isin === selection.sourceFundIsin
-    )).name,
+    sourceFundName: utils.findWhere(sourceFunds, ({ isin }) => isin === selection.sourceFundIsin)
+      .name,
   }));
 }
 
 function isFundPriceZero(sourceFunds, isinToMatch) {
-  const funds = utils.findWhere(sourceFunds, ({ isin }) => (
-    isin === isinToMatch
-  )).price === 0;
+  const funds = utils.findWhere(sourceFunds, ({ isin }) => isin === isinToMatch).price === 0;
 
   return funds;
 }
 
 function getMandate(exchange) {
   return {
-    fundTransferExchanges:
-      exchange.sourceSelection
-        .filter(selection =>
-          isFundPriceZero(exchange.sourceFunds, selection.sourceFundIsin) !== true)
-        .map(selection => ({
-          amount: selection.percentage,
-          sourceFundIsin: selection.sourceFundIsin,
-          targetFundIsin: selection.targetFundIsin,
-        })),
+    fundTransferExchanges: exchange.sourceSelection
+      .filter(selection => isFundPriceZero(exchange.sourceFunds, selection.sourceFundIsin) !== true)
+      .map(selection => ({
+        amount: selection.percentage,
+        sourceFundIsin: selection.sourceFundIsin,
+        targetFundIsin: selection.targetFundIsin,
+      })),
     futureContributionFundIsin: exchange.selectedFutureContributionsFundIsin,
   };
 }
 
 export function exitShortFlow() {
-  return (dispatch) => {
+  return dispatch => {
     dispatch(disableShortFlow());
     dispatch(push('/steps/select-sources'));
   };
@@ -116,11 +110,7 @@ export const ConfirmMandate = ({
     return <Loader className="align-middle" />;
   }
   if (exchange.error) {
-    return (<ErrorMessage
-      errors={exchange.error.body}
-      onCancel={onCloseErrorMessages}
-      overlayed
-    />);
+    return <ErrorMessage errors={exchange.error.body} onCancel={onCloseErrorMessages} overlayed />;
   }
   const aggregatedSelections = aggregateSelections(exchange.sourceSelection);
   const aggregatedSelectionsWithNames = attachNames(aggregatedSelections, exchange.sourceFunds);
@@ -136,37 +126,38 @@ export const ConfirmMandate = ({
   const startSigningMandate = () => canSignMandate && onSignMandate(getMandate(exchange));
   return (
     <div className="px-col">
-      {
-        exchange.loadingMandate || exchange.mandateSigningControlCode ?
-          <AuthenticationLoader
-            controlCode={exchange.mandateSigningControlCode}
-            onCancel={onCancelSigningMandate}
-            overlayed
-          /> : ''
-      }
+      {exchange.loadingMandate || exchange.mandateSigningControlCode ? (
+        <AuthenticationLoader
+          controlCode={exchange.mandateSigningControlCode}
+          onCancel={onCancelSigningMandate}
+          overlayed
+        />
+      ) : (
+        ''
+      )}
       <Message>confirm.mandate.intro</Message>
-      {
-        exchange.selectedFutureContributionsFundIsin ? (
+      {exchange.selectedFutureContributionsFundIsin ? (
+        <div className="mt-4">
+          <Message>confirm.mandate.future.contribution</Message>
+          <b className="highlight">
+            <Message>
+              {`target.funds.${exchange.selectedFutureContributionsFundIsin}.title`}
+            </Message>
+          </b>
+        </div>
+      ) : (
+        ''
+      )}
+      {aggregatedSelections.length ? (
+        <div className="mt-4">
+          <Message>confirm.mandate.switch.sources</Message>
           <div className="mt-4">
-            <Message>confirm.mandate.future.contribution</Message>
-            <b className="highlight">
-              <Message>
-                {`target.funds.${exchange.selectedFutureContributionsFundIsin}.title`}
-              </Message>
-            </b>
+            <FundTransferTable selections={aggregatedSelectionsWithNames} />
           </div>
-        ) : ''
-      }
-      {
-        aggregatedSelections.length ? (
-          <div className="mt-4">
-            <Message>confirm.mandate.switch.sources</Message>
-            <div className="mt-4">
-              <FundTransferTable selections={aggregatedSelectionsWithNames} />
-            </div>
-          </div>
-        ) : ''
-      }
+        </div>
+      ) : (
+        ''
+      )}
       <div className="mt-5">
         <label className="custom-control custom-checkbox" htmlFor="agree-to-terms-checkbox">
           <input
@@ -194,15 +185,15 @@ export const ConfirmMandate = ({
           </div>
         </label>
       </div>
-      {
-        exchange.mandateSigningError ? (
-          <ErrorMessage
-            errors={exchange.mandateSigningError.body}
-            onCancel={onCloseErrorMessages}
-            overlayed
-          />
-        ) : ''
-      }
+      {exchange.mandateSigningError ? (
+        <ErrorMessage
+          errors={exchange.mandateSigningError.body}
+          onCancel={onCloseErrorMessages}
+          overlayed
+        />
+      ) : (
+        ''
+      )}
       <div className="mt-5">
         <button
           id="sign"
@@ -212,30 +203,18 @@ export const ConfirmMandate = ({
         >
           <Message>confirm.mandate.sign</Message>
         </button>
-        <button
-          id="preview"
-          className="btn btn-secondary mb-2 mr-2"
-          onClick={startPreviewMandate}
-        >
+        <button id="preview" className="btn btn-secondary mb-2 mr-2" onClick={startPreviewMandate}>
           <Message>confirm.mandate.preview</Message>
         </button>
-        {
-          isShortFlowActive ? (
-            <button
-              className="btn btn-secondary mb-2"
-              onClick={onExitShortFlow}
-            >
-              <Message>confirm.mandate.exit.short.flow</Message>
-            </button>
-          ) : (
-            <button
-              className="btn btn-secondary mb-2"
-              onClick={onPreviousStep}
-            >
-              <Message>steps.previous</Message>
-            </button>
-          )
-        }
+        {isShortFlowActive ? (
+          <button className="btn btn-secondary mb-2" onClick={onExitShortFlow}>
+            <Message>confirm.mandate.exit.short.flow</Message>
+          </button>
+        ) : (
+          <button className="btn btn-secondary mb-2" onClick={onPreviousStep}>
+            <Message>steps.previous</Message>
+          </button>
+        )}
       </div>
     </div>
   );
@@ -286,16 +265,23 @@ const mapStateToProps = state => ({
   isShortFlowActive: state.exchange.shortFlow,
 });
 
-const mapDispatchToProps = dispatch => bindActionCreators({
-  onPreviewMandate: previewMandate,
-  onSignMandate: signMandate,
-  onChangeAgreementToTerms: changeAgreementToTerms,
-  onCancelSigningMandate: cancelSigningMandate,
-  onCloseErrorMessages: closeErrorMessages,
-  onPreviousStep: routeBackFromMandateConfirmation,
-  onExitShortFlow: exitShortFlow,
-}, dispatch);
+const mapDispatchToProps = dispatch =>
+  bindActionCreators(
+    {
+      onPreviewMandate: previewMandate,
+      onSignMandate: signMandate,
+      onChangeAgreementToTerms: changeAgreementToTerms,
+      onCancelSigningMandate: cancelSigningMandate,
+      onCloseErrorMessages: closeErrorMessages,
+      onPreviousStep: routeBackFromMandateConfirmation,
+      onExitShortFlow: exitShortFlow,
+    },
+    dispatch,
+  );
 
-const connectToRedux = connect(mapStateToProps, mapDispatchToProps);
+const connectToRedux = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+);
 
 export default connectToRedux(ConfirmMandate);

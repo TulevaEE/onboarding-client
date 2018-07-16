@@ -4,20 +4,17 @@ import {
   GET_INITIAL_CAPITAL_ERROR,
 } from './constants';
 
-import {
-  UPDATE_USER_SUCCESS,
-} from '../common/user/constants';
+import { UPDATE_USER_SUCCESS } from '../common/user/constants';
 
-import {
-  LOG_OUT,
-} from '../login/constants';
-
+import { LOG_OUT } from '../login/constants';
 
 import accountReducer from './reducer';
 
 describe('Account reducer', () => {
   it('starts loading when starting to get initial capital', () => {
-    const newState = accountReducer(undefined, { type: GET_INITIAL_CAPITAL_START });
+    const newState = accountReducer(undefined, {
+      type: GET_INITIAL_CAPITAL_START,
+    });
     expect(newState.loadingInitialCapital).toBe(true);
   });
 

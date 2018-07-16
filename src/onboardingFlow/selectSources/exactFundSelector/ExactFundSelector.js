@@ -10,37 +10,50 @@ function createSelectionChangeHandler(index, selections, onChange) {
 }
 
 function createRowAdder({ sourceFunds, targetFunds, selections, onChange }) {
-  return () => onChange(selections.concat({
-    sourceFundIsin: sourceFunds[0].isin,
-    targetFundIsin: targetFunds[0].isin,
-    percentage: 1,
-  }));
+  return () =>
+    onChange(
+      selections.concat({
+        sourceFundIsin: sourceFunds[0].isin,
+        targetFundIsin: targetFunds[0].isin,
+        percentage: 1,
+      }),
+    );
 }
 
 const ExactFundSelector = ({ selections, sourceFunds, targetFunds, onChange }) => (
   <div>
     <div className="row mt-4">
       <div className="col-12 col-sm-5">
-        <small><b><Message>select.sources.select.some.source</Message></b></small>
+        <small>
+          <b>
+            <Message>select.sources.select.some.source</Message>
+          </b>
+        </small>
       </div>
       <div className="col-12 col-sm">
-        <small><b><Message>select.sources.select.some.percentage</Message></b></small>
+        <small>
+          <b>
+            <Message>select.sources.select.some.percentage</Message>
+          </b>
+        </small>
       </div>
       <div className="col-12 col-sm-5">
-        <small><b><Message>select.sources.select.some.target</Message></b></small>
+        <small>
+          <b>
+            <Message>select.sources.select.some.target</Message>
+          </b>
+        </small>
       </div>
     </div>
-    {
-      selections.map((selection, index) => (
-        <FundExchangeRow
-          key={index}
-          selection={selection}
-          sourceFunds={sourceFunds}
-          targetFunds={targetFunds}
-          onChange={createSelectionChangeHandler(index, selections, onChange)}
-        />
-      ))
-    }
+    {selections.map((selection, index) => (
+      <FundExchangeRow
+        key={index}
+        selection={selection}
+        sourceFunds={sourceFunds}
+        targetFunds={targetFunds}
+        onChange={createSelectionChangeHandler(index, selections, onChange)}
+      />
+    ))}
     <div className="row mt-2">
       <div className="col">
         <small>
@@ -56,7 +69,12 @@ const ExactFundSelector = ({ selections, sourceFunds, targetFunds, onChange }) =
       <div className="col">
         <button
           className="btn btn-secondary btn-sm float-right"
-          onClick={createRowAdder({ sourceFunds, targetFunds, selections, onChange })}
+          onClick={createRowAdder({
+            sourceFunds,
+            targetFunds,
+            selections,
+            onChange,
+          })}
         >
           <Message>select.sources.select.some.add</Message>
         </button>

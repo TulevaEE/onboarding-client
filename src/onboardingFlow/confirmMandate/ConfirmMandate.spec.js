@@ -8,10 +8,7 @@ import FundTransferTable from './fundTransferTable';
 import MandateNotFilledAlert from './mandateNotFilledAlert';
 import { Loader, AuthenticationLoader, ErrorMessage } from '../../common';
 
-import {
-  disableShortFlow,
-} from '../../exchange/actions';
-
+import { disableShortFlow } from '../../exchange/actions';
 
 describe('Confirm mandate step', () => {
   let component;
@@ -63,14 +60,18 @@ describe('Confirm mandate step', () => {
       sourceSelection: [],
     };
     component.setProps({ exchange });
-    expect(component.contains(
-      <div className="mt-4">
-        <Message>confirm.mandate.future.contribution</Message>
-        <b className="highlight">
-          <Message>{`target.funds.${exchange.selectedFutureContributionsFundIsin}.title`}</Message>
-        </b>
-      </div>,
-    )).toBe(true);
+    expect(
+      component.contains(
+        <div className="mt-4">
+          <Message>confirm.mandate.future.contribution</Message>
+          <b className="highlight">
+            <Message>{`target.funds.${
+              exchange.selectedFutureContributionsFundIsin
+            }.title`}</Message>
+          </b>
+        </div>,
+      ),
+    ).toBe(true);
     exchange.selectedFutureContributionsFundIsin = null;
     component.setProps({ exchange });
     expect(component.contains(<Message>confirm.mandate.future.contribution</Message>)).toBe(false);
@@ -85,13 +86,13 @@ describe('Confirm mandate step', () => {
       },
       onPreviousStep,
     });
-    expect(component.contains(
-      <button
-        className="btn btn-secondary mb-2"
-        onClick={onPreviousStep}
-      >
-        <Message>steps.previous</Message>
-      </button>)).toBe(true);
+    expect(
+      component.contains(
+        <button className="btn btn-secondary mb-2" onClick={onPreviousStep}>
+          <Message>steps.previous</Message>
+        </button>,
+      ),
+    ).toBe(true);
   });
 
   it('has a button to exit the short flow', () => {
@@ -104,13 +105,13 @@ describe('Confirm mandate step', () => {
       onExitShortFlow,
       isShortFlowActive: true,
     });
-    expect(component.contains(
-      <button
-        className="btn btn-secondary mb-2"
-        onClick={onExitShortFlow}
-      >
-        <Message>confirm.mandate.exit.short.flow</Message>
-      </button>)).toBe(true);
+    expect(
+      component.contains(
+        <button className="btn btn-secondary mb-2" onClick={onExitShortFlow}>
+          <Message>confirm.mandate.exit.short.flow</Message>
+        </button>,
+      ),
+    ).toBe(true);
   });
 
   it('can exit the short flow', () => {
@@ -132,8 +133,11 @@ describe('Confirm mandate step', () => {
 
   it('shows the funds you are transferring', () => {
     const sourceSelection = [
-
-      { percentage: 0.5, sourceFundIsin: 'source 1', targetFundIsin: 'target 1' },
+      {
+        percentage: 0.5,
+        sourceFundIsin: 'source 1',
+        targetFundIsin: 'target 1',
+      },
       { percentage: 1, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
     ];
     const sourceFunds = [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }];
@@ -159,16 +163,40 @@ describe('Confirm mandate step', () => {
     const exchange = {
       sourceSelection: [
         // these two are joined
-        { percentage: 0.1, sourceFundIsin: 'source 1', targetFundIsin: 'target 1' },
-        { percentage: 1, sourceFundIsin: 'source 1', targetFundIsin: 'target 1' },
+        {
+          percentage: 0.1,
+          sourceFundIsin: 'source 1',
+          targetFundIsin: 'target 1',
+        },
+        {
+          percentage: 1,
+          sourceFundIsin: 'source 1',
+          targetFundIsin: 'target 1',
+        },
 
         // these are joined
-        { percentage: 0.2, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
-        { percentage: 0.3, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
-        { percentage: 0.4, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
+        {
+          percentage: 0.2,
+          sourceFundIsin: 'source 2',
+          targetFundIsin: 'target 2',
+        },
+        {
+          percentage: 0.3,
+          sourceFundIsin: 'source 2',
+          targetFundIsin: 'target 2',
+        },
+        {
+          percentage: 0.4,
+          sourceFundIsin: 'source 2',
+          targetFundIsin: 'target 2',
+        },
 
         // separate
-        { percentage: 0.4, sourceFundIsin: 'source 1', targetFundIsin: 'target 2' },
+        {
+          percentage: 0.4,
+          sourceFundIsin: 'source 1',
+          targetFundIsin: 'target 2',
+        },
       ],
       sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
     };
@@ -247,40 +275,62 @@ describe('Confirm mandate step', () => {
     component.setProps({
       exchange: {
         sourceSelection: [
-          { percentage: 0.1, sourceFundIsin: 'source 1', targetFundIsin: 'target 1' },
+          {
+            percentage: 0.1,
+            sourceFundIsin: 'source 1',
+            targetFundIsin: 'target 1',
+          },
         ],
         sourceFunds: [{ isin: 'source 1', name: 'a' }],
         selectedFutureContributionsFundIsin: 'asd',
       },
     });
-    expect(component.contains(
-      <div className="custom-control-description">
-        <Message>confirm.mandate.agree.to.terms</Message>
-        <div className="mt-2">
-          <small className="text-muted">
-            <a
-              target="_blank"
-              rel="noopener noreferrer"
-              href="//www.pensionikeskus.ee/ii-sammas/fondid/fonditasude-vordlused/"
-            >
-              <Message>confirm.mandate.pension.centre</Message>
-            </a>
-            <Message>confirm.mandate.view.info</Message>
-          </small>
-        </div>
-      </div>,
-    )).toBe(true);
+    expect(
+      component.contains(
+        <div className="custom-control-description">
+          <Message>confirm.mandate.agree.to.terms</Message>
+          <div className="mt-2">
+            <small className="text-muted">
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href="//www.pensionikeskus.ee/ii-sammas/fondid/fonditasude-vordlused/"
+              >
+                <Message>confirm.mandate.pension.centre</Message>
+              </a>
+              <Message>confirm.mandate.view.info</Message>
+            </small>
+          </div>
+        </div>,
+      ),
+    ).toBe(true);
   });
 
   it('can preview mandate', () => {
     const onPreviewMandate = jest.fn();
     const exchange = {
       sourceSelection: [
-        { percentage: 0.5, sourceFundIsin: 'source 1', targetFundIsin: 'target 1' },
-        { percentage: 1, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
-        { percentage: 1, sourceFundIsin: 'source 3', targetFundIsin: 'target 3' },
+        {
+          percentage: 0.5,
+          sourceFundIsin: 'source 1',
+          targetFundIsin: 'target 1',
+        },
+        {
+          percentage: 1,
+          sourceFundIsin: 'source 2',
+          targetFundIsin: 'target 2',
+        },
+        {
+          percentage: 1,
+          sourceFundIsin: 'source 3',
+          targetFundIsin: 'target 3',
+        },
       ],
-      sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }, { isin: 'source 3', name: 'c', price: 0 }],
+      sourceFunds: [
+        { isin: 'source 1', name: 'a' },
+        { isin: 'source 2', name: 'b' },
+        { isin: 'source 3', name: 'c', price: 0 },
+      ],
       selectedFutureContributionsFundIsin: 'target 1',
       agreedToTerms: true,
     };
@@ -301,11 +351,27 @@ describe('Confirm mandate step', () => {
     const onSignMandate = jest.fn();
     const exchange = {
       sourceSelection: [
-        { percentage: 0.5, sourceFundIsin: 'source 1', targetFundIsin: 'target 1' },
-        { percentage: 1, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
-        { percentage: 1, sourceFundIsin: 'source 3', targetFundIsin: 'target 3' },
+        {
+          percentage: 0.5,
+          sourceFundIsin: 'source 1',
+          targetFundIsin: 'target 1',
+        },
+        {
+          percentage: 1,
+          sourceFundIsin: 'source 2',
+          targetFundIsin: 'target 2',
+        },
+        {
+          percentage: 1,
+          sourceFundIsin: 'source 3',
+          targetFundIsin: 'target 3',
+        },
       ],
-      sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }, { isin: 'source 3', name: 'c', price: 0 }],
+      sourceFunds: [
+        { isin: 'source 1', name: 'a' },
+        { isin: 'source 2', name: 'b' },
+        { isin: 'source 3', name: 'c', price: 0 },
+      ],
       selectedFutureContributionsFundIsin: 'target 1',
       agreedToTerms: true,
     };
@@ -326,8 +392,16 @@ describe('Confirm mandate step', () => {
     const onSignMandate = jest.fn();
     const exchange = {
       sourceSelection: [
-        { percentage: 0.5, sourceFundIsin: 'source 1', targetFundIsin: 'target 1' },
-        { percentage: 1, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
+        {
+          percentage: 0.5,
+          sourceFundIsin: 'source 1',
+          targetFundIsin: 'target 1',
+        },
+        {
+          percentage: 1,
+          sourceFundIsin: 'source 2',
+          targetFundIsin: 'target 2',
+        },
       ],
       sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
       selectedFutureContributionsFundIsin: null,
@@ -349,8 +423,16 @@ describe('Confirm mandate step', () => {
   it('keeps an input for agreeing to terms', () => {
     const exchange = {
       sourceSelection: [
-        { percentage: 0.5, sourceFundIsin: 'source 1', targetFundIsin: 'target 1' },
-        { percentage: 1, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
+        {
+          percentage: 0.5,
+          sourceFundIsin: 'source 1',
+          targetFundIsin: 'target 1',
+        },
+        {
+          percentage: 1,
+          sourceFundIsin: 'source 2',
+          targetFundIsin: 'target 2',
+        },
       ],
       sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
       selectedFutureContributionsFundIsin: null,
@@ -366,8 +448,16 @@ describe('Confirm mandate step', () => {
   it('disables the signing button if user has not agreed to terms', () => {
     const exchange = {
       sourceSelection: [
-        { percentage: 0.5, sourceFundIsin: 'source 1', targetFundIsin: 'target 1' },
-        { percentage: 1, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
+        {
+          percentage: 0.5,
+          sourceFundIsin: 'source 1',
+          targetFundIsin: 'target 1',
+        },
+        {
+          percentage: 1,
+          sourceFundIsin: 'source 2',
+          targetFundIsin: 'target 2',
+        },
       ],
       sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
       selectedFutureContributionsFundIsin: null,
@@ -383,8 +473,16 @@ describe('Confirm mandate step', () => {
   it('can change if the user has agreed to terms', () => {
     const exchange = {
       sourceSelection: [
-        { percentage: 0.5, sourceFundIsin: 'source 1', targetFundIsin: 'target 1' },
-        { percentage: 1, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
+        {
+          percentage: 0.5,
+          sourceFundIsin: 'source 1',
+          targetFundIsin: 'target 1',
+        },
+        {
+          percentage: 1,
+          sourceFundIsin: 'source 2',
+          targetFundIsin: 'target 2',
+        },
       ],
       sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
       selectedFutureContributionsFundIsin: null,
@@ -407,8 +505,16 @@ describe('Confirm mandate step', () => {
     const onSignMandate = jest.fn();
     const exchange = {
       sourceSelection: [
-        { percentage: 0.5, sourceFundIsin: 'source 1', targetFundIsin: 'target 1' },
-        { percentage: 1, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
+        {
+          percentage: 0.5,
+          sourceFundIsin: 'source 1',
+          targetFundIsin: 'target 1',
+        },
+        {
+          percentage: 1,
+          sourceFundIsin: 'source 2',
+          targetFundIsin: 'target 2',
+        },
       ],
       sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
       selectedFutureContributionsFundIsin: null,
@@ -422,8 +528,16 @@ describe('Confirm mandate step', () => {
   it('shows a mandate not filled alert instead of the mandate when mandate not filled', () => {
     const exchange = {
       sourceSelection: [
-        { percentage: 0, sourceFundIsin: 'source 1', targetFundIsin: 'target 1' },
-        { percentage: 0, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
+        {
+          percentage: 0,
+          sourceFundIsin: 'source 1',
+          targetFundIsin: 'target 1',
+        },
+        {
+          percentage: 0,
+          sourceFundIsin: 'source 2',
+          targetFundIsin: 'target 2',
+        },
       ],
       sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
       selectedFutureContributionsFundIsin: null,
@@ -439,19 +553,25 @@ describe('Confirm mandate step', () => {
     const onCloseErrorMessages = jest.fn();
     const exchange = {
       sourceSelection: [
-        { percentage: 0, sourceFundIsin: 'source 1', targetFundIsin: 'target 1' },
-        { percentage: 0, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
+        {
+          percentage: 0,
+          sourceFundIsin: 'source 1',
+          targetFundIsin: 'target 1',
+        },
+        {
+          percentage: 0,
+          sourceFundIsin: 'source 2',
+          targetFundIsin: 'target 2',
+        },
       ],
       sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
       selectedFutureContributionsFundIsin: null,
       error,
     };
     component.setProps({ exchange, onCloseErrorMessages });
-    expect(component.at(0).node).toEqual(<ErrorMessage
-      errors={exchange.error.body}
-      onCancel={onCloseErrorMessages}
-      overlayed
-    />);
+    expect(component.at(0).node).toEqual(
+      <ErrorMessage errors={exchange.error.body} onCancel={onCloseErrorMessages} overlayed />,
+    );
   });
 
   it('renders an overlayed error messages on error while signing the mandate', () => {

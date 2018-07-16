@@ -56,7 +56,10 @@ describe('Login page', () => {
 
   it('renders an authentication loader instead if loading user conversion', () => {
     const onCancelMobileAuthentication = jest.fn();
-    component.setProps({ onCancelMobileAuthentication, loadingUserConversion: true });
+    component.setProps({
+      onCancelMobileAuthentication,
+      loadingUserConversion: true,
+    });
     expect(
       component.contains(
         <AuthenticationLoader controlCode="" onCancel={onCancelMobileAuthentication} />,

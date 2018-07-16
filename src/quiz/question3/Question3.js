@@ -3,9 +3,7 @@ import { PropTypes as Types } from 'prop-types';
 import { Message } from 'retranslate';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import {
-  debouncedSalaryChange,
-} from '../../comparison/actions';
+import { debouncedSalaryChange } from '../../comparison/actions';
 
 export class Question3 extends Component {
   constructor(props) {
@@ -17,8 +15,7 @@ export class Question3 extends Component {
       // salary: 1500,
     };
   }
-  componentDidMount() {
-  }
+  componentDidMount() {}
   onFundFeeSelected() {
     this.setState(() => ({ fundFeeSelected: 123 }));
   }
@@ -27,26 +24,18 @@ export class Question3 extends Component {
   //   this.setState(() => ({ salary }));
   // }
   render() {
-    const {
-      onNextStep,
-      onSalaryChange,
-      comparison,
-    } = this.props;
+    const { onNextStep, onSalaryChange, comparison } = this.props;
 
     return (
       <div>
         <div className="col-12 text-center">
-          <h2 className="mt-5">
-            For calculation purposes, what is your salary?
-          </h2>
+          <h2 className="mt-5">For calculation purposes, what is your salary?</h2>
 
           <div>
             <input onChange={event => onSalaryChange(Number(event.target.value))} />
           </div>
 
-          <h2 className="mt-5">
-            How much do you pay every month to your fund manager?
-          </h2>
+          <h2 className="mt-5">How much do you pay every month to your fund manager?</h2>
           <div>
             <button
               className="btn btn-primary text-center mt-2"
@@ -81,64 +70,60 @@ export class Question3 extends Component {
           </div>
         </div>
 
-        {
-          this.state.fundFeeSelected ? (
-            <div>
-              <div className="incorrect">
-                <h2>Say what?</h2>
-                <p>
-                  Your fund managemen fee is {this.state.activeFund.managementFeePercent}%.
-                  This means that every year
-                  &nbsp;{this.state.activeFund.managementFeePercent}% of your II
-                  pillar savings go to fund manager. The fee is charged monthly.
-                </p>
-                <p>
-                  Last month you paid&nbsp;
-                  {
-                    Math.round(
-                      (this.state.totalPensionCapital
-                      * this.state.activeFund.managementFeePercent) * 0.00083
-                      * 100) / 100
-                  }
-                  . &nbsp;This might not look much, but here is the catch:
-                  over the years, the sums accumulate and reduce the
-                  amount of money that return earn to you.
-                </p>
-                <p>
-                  By the time you retire, you will have spent {comparison.currentFundFee} on
-                  pension fund fees
-                </p>
-                <p>
-                  If you invested in Tulevas index fund,
-                  you would spend {comparison.newFundFee} on
-                  fees.
-                </p>
-                <ul>
-                  <li>Conservative funds invests only in bonds</li>
-                  <li>Balanced funds invest up to 25% into stocks, rest goes to bonds</li>
-                  <li>Progressive funds invest up to 55% into stocks, rest goes to bonds</li>
-                  <li>Aggressive funds invest up to 75% into stocks, rest goes to bonds</li>
-                </ul>
+        {this.state.fundFeeSelected ? (
+          <div>
+            <div className="incorrect">
+              <h2>Say what?</h2>
+              <p>
+                Your fund managemen fee is {this.state.activeFund.managementFeePercent}%. This means
+                that every year &nbsp;{this.state.activeFund.managementFeePercent}% of your II
+                pillar savings go to fund manager. The fee is charged monthly.
+              </p>
+              <p>
+                Last month you paid&nbsp;
+                {Math.round(
+                  this.state.totalPensionCapital *
+                    this.state.activeFund.managementFeePercent *
+                    0.00083 *
+                    100,
+                ) / 100}
+                . &nbsp;This might not look much, but here is the catch: over the years, the sums
+                accumulate and reduce the amount of money that return earn to you.
+              </p>
+              <p>
+                By the time you retire, you will have spent {comparison.currentFundFee} on pension
+                fund fees
+              </p>
+              <p>
+                If you invested in Tulevas index fund, you would spend {comparison.newFundFee} on
+                fees.
+              </p>
+              <ul>
+                <li>Conservative funds invests only in bonds</li>
+                <li>Balanced funds invest up to 25% into stocks, rest goes to bonds</li>
+                <li>Progressive funds invest up to 55% into stocks, rest goes to bonds</li>
+                <li>Aggressive funds invest up to 75% into stocks, rest goes to bonds</li>
+              </ul>
 
-                <h3>Most international analysts recomment that you choose aggressive pension fund
-                  if you have more than 10 year left until retirement.</h3>
-              </div>
+              <h3>
+                Most international analysts recomment that you choose aggressive pension fund if you
+                have more than 10 year left until retirement.
+              </h3>
             </div>
-          ) : ''
-        }
+          </div>
+        ) : (
+          ''
+        )}
 
-        {
-          this.state.fundFeeSelected ? (
-            <div>
-              <button
-                className="btn btn-success text-center mt-2"
-                onClick={onNextStep}
-              >
-                <Message>Next</Message>
-              </button>
-            </div>
-          ) : ''
-        }
+        {this.state.fundFeeSelected ? (
+          <div>
+            <button className="btn btn-success text-center mt-2" onClick={onNextStep}>
+              <Message>Next</Message>
+            </button>
+          </div>
+        ) : (
+          ''
+        )}
       </div>
     );
   }
@@ -171,16 +156,23 @@ const mapStateToProps = state => ({
   comparison: state.comparison ? state.comparison.comparison : null,
   activeFund: state.exchange.sourceFunds.find(fund => fund.activeFund),
   activeFundStrategy: 'aga',
-  totalPensionCapital:
-    state.exchange.sourceFunds ? state.exchange.sourceFunds.map(item => item.price)
-      .reduce((a, b) => a + b, 0) : 0,
+  totalPensionCapital: state.exchange.sourceFunds
+    ? state.exchange.sourceFunds.map(item => item.price).reduce((a, b) => a + b, 0)
+    : 0,
 });
 
-const mapDispatchToProps = dispatch => bindActionCreators({
-  // onNextStep: nextStep,
-  onSalaryChange: debouncedSalaryChange,
-}, dispatch);
+const mapDispatchToProps = dispatch =>
+  bindActionCreators(
+    {
+      // onNextStep: nextStep,
+      onSalaryChange: debouncedSalaryChange,
+    },
+    dispatch,
+  );
 
-const connectToRedux = connect(mapStateToProps, mapDispatchToProps);
+const connectToRedux = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+);
 
 export default connectToRedux(Question3);

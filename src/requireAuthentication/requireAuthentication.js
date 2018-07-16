@@ -10,7 +10,7 @@ function getDisplayName(WrappedComponent) {
 }
 
 // higher order component which will redirect to login if tried to go to without auth.
-const requireAuthentication = (WrappedComponent) => {
+const requireAuthentication = WrappedComponent => {
   class AuthenticatedComponent extends Component {
     componentWillMount() {
       this.checkAuthenticatedAndRedirect(this.props.authenticated);
@@ -23,18 +23,15 @@ const requireAuthentication = (WrappedComponent) => {
     checkAuthenticatedAndRedirect(authenticated) {
       if (!authenticated) {
         this.props.redirectToLogin();
-        if (this.props.handleLoginCookies) { // FIXME: for testing purposes
+        if (this.props.handleLoginCookies) {
+          // FIXME: for testing purposes
           this.props.handleLoginCookies();
         }
       }
     }
 
     render() {
-      return (
-        <div>
-          {this.props.authenticated ? <WrappedComponent {...this.props} /> : ''}
-        </div>
-      );
+      return <div>{this.props.authenticated ? <WrappedComponent {...this.props} /> : ''}</div>;
     }
   }
 
@@ -50,12 +47,19 @@ const requireAuthentication = (WrappedComponent) => {
     authenticated: !!state.login.token,
   });
 
-  const mapDispatchToProps = dispatch => bindActionCreators({
-    redirectToLogin: () => push('/login'),
-    handleLoginCookies: loginActions.handleLoginCookies,
-  }, dispatch);
+  const mapDispatchToProps = dispatch =>
+    bindActionCreators(
+      {
+        redirectToLogin: () => push('/login'),
+        handleLoginCookies: loginActions.handleLoginCookies,
+      },
+      dispatch,
+    );
 
-  const connectToRedux = connect(mapStateToProps, mapDispatchToProps);
+  const connectToRedux = connect(
+    mapStateToProps,
+    mapDispatchToProps,
+  );
   return connectToRedux(AuthenticatedComponent);
 };
 

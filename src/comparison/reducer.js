@@ -21,7 +21,8 @@ const initialState = {
 export default function comparisonReducer(state = initialState, action) {
   switch (action.type) {
     case GET_COMPARISON_START:
-      return { ...state,
+      return {
+        ...state,
         loadingComparison: true,
         error: null,
       };
@@ -38,24 +39,29 @@ export default function comparisonReducer(state = initialState, action) {
         comparisonBonus: action.comparison,
       };
     case GET_COMPARISON_ERROR:
-      return { ...state,
+      return {
+        ...state,
         loadingComparison: false,
         error: action.error,
       };
     case COMPARISON_SALARY_CHANGE:
-      return { ...state,
+      return {
+        ...state,
         salary: action.salary,
       };
     case COMPARISON_RATE_CHANGE:
-      return { ...state,
+      return {
+        ...state,
         rate: action.rate,
       };
     case SHOW_COMPARISON:
-      return { ...state,
+      return {
+        ...state,
         visible: true,
       };
     case HIDE_COMPARISON:
-      return { ...state,
+      return {
+        ...state,
         visible: false,
       };
     default:

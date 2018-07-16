@@ -15,7 +15,7 @@ const InfoTooltip = ({ children, name }) => (
       className="info-tooltip__image"
     />
     <ReactTooltip id={name} place="right" type="light" effect="float" className="react-tooltip">
-      { children }
+      {children}
     </ReactTooltip>
   </span>
 );

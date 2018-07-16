@@ -24,7 +24,7 @@ describe('Comparison actions', () => {
 
   function mockDispatch() {
     state = { login: { token: 'token' }, comparison: {} };
-    dispatch = jest.fn((action) => {
+    dispatch = jest.fn(action => {
       if (typeof action === 'function') {
         action(dispatch, () => state);
       }
@@ -35,7 +35,6 @@ describe('Comparison actions', () => {
     mockDispatch();
   });
 
-
   it('can get comparison and bonus', () => {
     const comparison = [{ comparison: true }];
     mockApi.getComparisonForSalaryAndRateWithToken = jest.fn(() => {
@@ -44,14 +43,13 @@ describe('Comparison actions', () => {
     });
     const getComparison = createBoundAction(actions.getComparison);
     expect(dispatch).not.toHaveBeenCalled();
-    return getComparison()
-      .then(() => {
-        expect(dispatch).toHaveBeenCalledTimes(1);
-        expect(dispatch).toHaveBeenCalledWith({
-          type: GET_COMPARISON_BONUS_SUCCESS,
-          comparison,
-        });
+    return getComparison().then(() => {
+      expect(dispatch).toHaveBeenCalledTimes(1);
+      expect(dispatch).toHaveBeenCalledWith({
+        type: GET_COMPARISON_BONUS_SUCCESS,
+        comparison,
       });
+    });
   });
 
   it('can handle errors when getting comparison', () => {
@@ -59,8 +57,12 @@ describe('Comparison actions', () => {
     mockApi.getComparisonForSalaryAndRateWithToken = jest.fn(() => Promise.reject(error));
     const getComparison = createBoundAction(actions.getComparison);
     expect(dispatch).not.toHaveBeenCalled();
-    return getComparison()
-      .then(() => expect(dispatch).toHaveBeenCalledWith({ type: GET_COMPARISON_ERROR, error }));
+    return getComparison().then(() =>
+      expect(dispatch).toHaveBeenCalledWith({
+        type: GET_COMPARISON_ERROR,
+        error,
+      }),
+    );
   });
 
   it('can handle salary change', () => {
@@ -68,7 +70,10 @@ describe('Comparison actions', () => {
     state.comparison.salary = salary;
     const changeSalary = createBoundAction(actions.changeSalary);
     changeSalary(salary);
-    expect(dispatch).toHaveBeenCalledWith({ type: COMPARISON_SALARY_CHANGE, salary });
+    expect(dispatch).toHaveBeenCalledWith({
+      type: COMPARISON_SALARY_CHANGE,
+      salary,
+    });
   });
 
   it('can handle rate change', () => {
@@ -76,7 +81,10 @@ describe('Comparison actions', () => {
     state.comparison.rate = rate;
     const changeRate = createBoundAction(actions.changeRate);
     changeRate(rate);
-    expect(dispatch).toHaveBeenCalledWith({ type: COMPARISON_RATE_CHANGE, rate });
+    expect(dispatch).toHaveBeenCalledWith({
+      type: COMPARISON_RATE_CHANGE,
+      rate,
+    });
   });
 
   it('can make comparison visible', () => {

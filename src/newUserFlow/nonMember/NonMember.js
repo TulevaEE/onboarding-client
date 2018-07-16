@@ -7,7 +7,9 @@ export const NonMember = () => (
       <p className="mb-4 mt-5 lead">
         <Message dangerouslyTranslateInnerHTML="new.user.flow.non.member.title" />
       </p>
-      <p><Message dangerouslyTranslateInnerHTML="new.user.flow.non.member.intro" /></p>
+      <p>
+        <Message dangerouslyTranslateInnerHTML="new.user.flow.non.member.intro" />
+      </p>
     </div>
   </div>
 );

@@ -42,10 +42,17 @@ const mapStateToProps = state => ({
   loading: state.login.loadingUser || state.login.loadingUserConversion,
 });
 
-const mapDispatchToProps = dispatch => bindActionCreators({
-  onLogout: actions.logOut,
-}, dispatch);
+const mapDispatchToProps = dispatch =>
+  bindActionCreators(
+    {
+      onLogout: actions.logOut,
+    },
+    dispatch,
+  );
 
-const connectToRedux = connect(mapStateToProps, mapDispatchToProps);
+const connectToRedux = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+);
 
 export default connectToRedux(App);

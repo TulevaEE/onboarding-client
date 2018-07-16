@@ -29,9 +29,12 @@ describe('Comparison widget', () => {
 
     component.setProps({ onShowComparison });
 
-    expect(component.contains(<button
-      className={'btn btn-primary mt-3 mb-3'}
-      onClick={onShowComparison}
-    ><Message>select.sources.show.comparison</Message></button>)).toBe(true);
+    expect(
+      component.contains(
+        <button className={'btn btn-primary mt-3 mb-3'} onClick={onShowComparison}>
+          <Message>select.sources.show.comparison</Message>
+        </button>,
+      ),
+    ).toBe(true);
   });
 });

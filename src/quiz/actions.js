@@ -1,9 +1,6 @@
-import {
-  ROUTE_TO_QUIZ,
-} from './constants';
+import { ROUTE_TO_QUIZ } from './constants';
 
-export function nextStep() {
-}
+export function nextStep() {}
 
 export function routeToQuiz() {
   return { type: ROUTE_TO_QUIZ };

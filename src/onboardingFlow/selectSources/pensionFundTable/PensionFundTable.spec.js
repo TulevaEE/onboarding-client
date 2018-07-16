@@ -14,7 +14,11 @@ describe('Pension fund table', () => {
 
   it('renders a table header', () => {
     const headerFields = () => component.find('div.tv-table__header').children();
-    const headerField = index => headerFields().at(index).childAt(0).get(0);
+    const headerField = index =>
+      headerFields()
+        .at(index)
+        .childAt(0)
+        .get(0);
     expect(headerFields().length).toBe(2);
     expect(headerField(0)).toEqual(<Message>select.sources.pension.fund</Message>);
     expect(headerField(1)).toEqual(<Message>select.sources.value</Message>);
@@ -26,10 +30,18 @@ describe('Pension fund table', () => {
       { name: 'fund 2', isin: 'isin 2', price: 2, currency: 'EUR' },
     ];
     component.setProps({ funds });
-    expect(component.find(FundRow).at(0).get(0))
-      .toEqual(<FundRow name="fund 1" key="isin 1" price={1} currency="EUR" />);
-    expect(component.find(FundRow).at(1).get(0))
-      .toEqual(<FundRow name="fund 2" key="isin 2" price={2} currency="EUR" />);
+    expect(
+      component
+        .find(FundRow)
+        .at(0)
+        .get(0),
+    ).toEqual(<FundRow name="fund 1" key="isin 1" price={1} currency="EUR" />);
+    expect(
+      component
+        .find(FundRow)
+        .at(1)
+        .get(0),
+    ).toEqual(<FundRow name="fund 2" key="isin 2" price={2} currency="EUR" />);
   });
 
   it('renders a tiny legend under the table', () => {
@@ -42,7 +54,11 @@ describe('Pension fund table', () => {
       { name: 'fund 2', isin: 'isin 2', price: 2, currency: 'EUR' },
     ];
     component.setProps({ funds });
-    expect(component.find(FundRow).at(2).get(0))
-      .toEqual(<FundRow name="select.sources.total" price={3} currency="EUR" highlighted />);
+    expect(
+      component
+        .find(FundRow)
+        .at(2)
+        .get(0),
+    ).toEqual(<FundRow name="select.sources.total" price={3} currency="EUR" highlighted />);
   });
 });

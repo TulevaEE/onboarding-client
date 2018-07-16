@@ -24,14 +24,12 @@ function transformResponse(response) {
   if (response.ok && response.status < 400) {
     return response.json();
   } else if (response.status >= 400) {
-    return response
-      .json()
-      .then((data) => {
-        const error = {};
-        error.status = response.status;
-        error.body = data;
-        throw error;
-      });
+    return response.json().then(data => {
+      const error = {};
+      error.status = response.status;
+      error.body = data;
+      throw error;
+    });
   }
   throw response;
 }
@@ -44,8 +42,7 @@ function transformFileResponse(response) {
 }
 
 function urlEncodeParameters(params) {
-  return Object
-    .keys(params)
+  return Object.keys(params)
     .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
     .join('&');
 }

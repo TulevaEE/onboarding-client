@@ -15,8 +15,7 @@ export class Quiz extends Component {
       question: 1,
     };
   }
-  componentDidMount() {
-  }
+  componentDidMount() {}
   onNextStep(question) {
     this.setState({ question: question + 1 });
     // console.log(this.state);
@@ -27,25 +26,15 @@ export class Quiz extends Component {
     // } = this.props;
 
     if (this.state.question === 1) {
-      return (
-        <Question1 onNextStep={() => this.onNextStep(1)} />
-      );
+      return <Question1 onNextStep={() => this.onNextStep(1)} />;
     } else if (this.state.question === 2) {
-      return (
-        <Question2 onNextStep={() => this.onNextStep(2)} />
-      );
+      return <Question2 onNextStep={() => this.onNextStep(2)} />;
     } else if (this.state.question === 3) {
-      return (
-        <Question3 onNextStep={() => this.onNextStep(3)} />
-      );
+      return <Question3 onNextStep={() => this.onNextStep(3)} />;
     } else if (this.state.question === 4) {
-      return (
-        <Question4 />
-      );
+      return <Question4 />;
     }
-    return (
-      <Message>Hmm, something went wrong. Please refresh.</Message>
-    );
+    return <Message>Hmm, something went wrong. Please refresh.</Message>;
   }
 }
 
@@ -64,10 +53,17 @@ const mapStateToProps = state => ({
   aha: state,
 });
 
-const mapDispatchToProps = dispatch => bindActionCreators({
-  onNextStep: nextStep,
-}, dispatch);
+const mapDispatchToProps = dispatch =>
+  bindActionCreators(
+    {
+      onNextStep: nextStep,
+    },
+    dispatch,
+  );
 
-const connectToRedux = connect(mapStateToProps, mapDispatchToProps);
+const connectToRedux = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+);
 
 export default connectToRedux(Quiz);

@@ -43,7 +43,9 @@ const TargetFundTooltipBody = ({ targetFundIsin }) => {
   return (
     <div className="target-fund-tooltip">
       <h3 className="mt-3 mb-3">
-        <b><Message>{`target.funds.${targetFundIsin}.tooltip.title`}</Message></b>
+        <b>
+          <Message>{`target.funds.${targetFundIsin}.tooltip.title`}</Message>
+        </b>
       </h3>
       <img
         src={getTooltipBodyData(targetFundIsin).diagram}

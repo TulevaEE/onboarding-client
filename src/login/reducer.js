@@ -30,11 +30,10 @@ const TOKEN_STORAGE_KEY = 'accessToken';
 const REFRESH_TOKEN_STORAGE_KEY = 'refreshToken';
 const LOGIN_METHOD_STORAGE_KEY = 'loginMethod';
 
-
 // get saved token if it's there
 const token = (window.localStorage && localStorage.getItem(TOKEN_STORAGE_KEY)) || null;
-const refreshToken = (window.localStorage &&
-  localStorage.getItem(REFRESH_TOKEN_STORAGE_KEY)) || null;
+const refreshToken =
+  (window.localStorage && localStorage.getItem(REFRESH_TOKEN_STORAGE_KEY)) || null;
 const loginMethod = (window.localStorage && localStorage.getItem(LOGIN_METHOD_STORAGE_KEY)) || null;
 
 const defaultState = {
@@ -91,7 +90,8 @@ export default function loginReducer(state = defaultState, action) {
     case MOBILE_AUTHENTICATION_SUCCESS:
       updateLocalStorage(action, 'mobileId');
 
-      return { // reset all state so page is clean when entered again.
+      return {
+        // reset all state so page is clean when entered again.
         ...state,
         token: action.tokens.accessToken,
         refreshToken: action.tokens.refreshToken,
@@ -120,13 +120,13 @@ export default function loginReducer(state = defaultState, action) {
         loadingUser: false,
       };
 
-
     case ID_CARD_AUTHENTICATION_START:
       return { ...state, loadingAuthentication: true, error: null };
 
     case ID_CARD_AUTHENTICATION_SUCCESS:
       updateLocalStorage(action, 'idCard');
-      return { // reset all state so page is clean when entered again.
+      return {
+        // reset all state so page is clean when entered again.
         ...state,
         token: action.tokens.accessToken,
         refreshToken: action.tokens.refreshToken,
@@ -152,27 +152,44 @@ export default function loginReducer(state = defaultState, action) {
         error: (action.error.body || {}).error_description,
       };
 
-
     case GET_USER_START:
       return { ...state, loadingUser: true, userError: null };
     case GET_USER_SUCCESS:
-      return { ...state, loadingUser: false, user: action.user, userError: null };
+      return {
+        ...state,
+        loadingUser: false,
+        user: action.user,
+        userError: null,
+      };
     case GET_USER_ERROR:
-      return { ...state, loadingUser: false, userError: getGlobalErrorCode(action.error.body) };
+      return {
+        ...state,
+        loadingUser: false,
+        userError: getGlobalErrorCode(action.error.body),
+      };
 
     case GET_USER_CONVERSION_START:
-      return { ...state, loadingUserConversion: true, userConversionError: null };
+      return {
+        ...state,
+        loadingUserConversion: true,
+        userConversionError: null,
+      };
     case GET_USER_CONVERSION_SUCCESS:
-      return { ...state,
+      return {
+        ...state,
         loadingUserConversion: false,
         userConversion: action.userConversion,
-        userConversionError: null };
+        userConversionError: null,
+      };
     case GET_USER_CONVERSION_ERROR:
-      return { ...state,
+      return {
+        ...state,
         loadingUserConversion: false,
-        userConversionError: getGlobalErrorCode(action.error.body) };
+        userConversionError: getGlobalErrorCode(action.error.body),
+      };
     case USE_REDIRECT_LOGIN:
-      return { ...state,
+      return {
+        ...state,
         redirectLogin: true,
       };
 
@@ -205,7 +222,6 @@ export default function loginReducer(state = defaultState, action) {
         };
       }
       return state;
-
 
     default:
       return state;

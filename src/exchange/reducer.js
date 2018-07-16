@@ -1,18 +1,13 @@
 import {
   LOAD_PENSION_DATA_SUCCESS,
-
   GET_SOURCE_FUNDS_START,
   GET_SOURCE_FUNDS_SUCCESS,
   GET_SOURCE_FUNDS_ERROR,
-
   SELECT_EXCHANGE_SOURCES,
-
   GET_TARGET_FUNDS_START,
   GET_TARGET_FUNDS_SUCCESS,
   GET_TARGET_FUNDS_ERROR,
-
   SELECT_TARGET_FUND,
-
   CHANGE_AGREEMENT_TO_TERMS,
 
   // NOTE: maybe we should move this state to a separate mandate reducer?
@@ -25,19 +20,14 @@ import {
   SIGN_MANDATE_SUCCESS,
   SIGN_MANDATE_ERROR,
   NO_SIGN_MANDATE_ERROR,
-
   GET_PENDING_EXCHANGES_START,
   GET_PENDING_EXCHANGES_SUCCESS,
   GET_PENDING_EXCHANGES_ERROR,
-
   QUERY_PARAMETERS,
-
   DISABLE_SHORT_FLOW,
 } from './constants';
 
-import {
-  LOG_OUT,
-} from '../login/constants';
+import { LOG_OUT } from '../login/constants';
 
 const initialState = {
   loadingPensionData: true,
@@ -87,16 +77,20 @@ function createFullDefaultSourceSelection({ sourceFunds, targetFunds }) {
 }
 
 function isContributionsFundAlreadyActive(state, isinToCompareTo) {
-  return state.sourceFunds && !!state.sourceFunds
-    .find(sourceFund =>
-      sourceFund.activeFund && sourceFund.isin === isinToCompareTo);
+  return (
+    state.sourceFunds &&
+    !!state.sourceFunds.find(
+      sourceFund => sourceFund.activeFund && sourceFund.isin === isinToCompareTo,
+    )
+  );
 }
 
 function getContributionFundIsin(action, state) {
   if (!action.sourceSelectionExact && action.sourceSelection.length > 0) {
     const futureContributionsFundCandidate = action.sourceSelection[0].targetFundIsin;
     return isContributionsFundAlreadyActive(state, futureContributionsFundCandidate)
-      ? null : futureContributionsFundCandidate;
+      ? null
+      : futureContributionsFundCandidate;
   }
   return state.selectedFutureContributionsFundIsin;
 }
@@ -110,8 +104,8 @@ function selectDefaultContributionsFund(targetFunds, sourceFunds) {
   if (sourceFunds && targetFunds) {
     const activeSourceFund = getActiveSourceFund(sourceFunds);
 
-    const isSomeCurrentCompanyFundAlreadyActive = activeSourceFund &&
-      currentCompanyFunds.find(tf => tf.isin === activeSourceFund.isin) != null;
+    const isSomeCurrentCompanyFundAlreadyActive =
+      activeSourceFund && currentCompanyFunds.find(tf => tf.isin === activeSourceFund.isin) != null;
 
     if (isSomeCurrentCompanyFundAlreadyActive) {
       return null;
@@ -139,13 +133,17 @@ export default function exchangeReducer(state = initialState, action) {
         // we do not know if source or target funds get here first, so we check if we can
         // calculate the default source selection and they have not yet been calculated in
         // both the target and source fund arrival
-        sourceSelection: state.targetFunds && !isSourceSelectionDone(state.sourceSelection) ?
-          createFullDefaultSourceSelection({
-            sourceFunds: action.sourceFunds,
-            targetFunds: state.targetFunds,
-          }) : state.sourceSelection,
-        selectedFutureContributionsFundIsin:
-          selectDefaultContributionsFund(state.targetFunds, action.sourceFunds),
+        sourceSelection:
+          state.targetFunds && !isSourceSelectionDone(state.sourceSelection)
+            ? createFullDefaultSourceSelection({
+                sourceFunds: action.sourceFunds,
+                targetFunds: state.targetFunds,
+              })
+            : state.sourceSelection,
+        selectedFutureContributionsFundIsin: selectDefaultContributionsFund(
+          state.targetFunds,
+          action.sourceFunds,
+        ),
       };
     case GET_SOURCE_FUNDS_ERROR:
       return { ...state, loadingSourceFunds: false, error: action.error };
@@ -164,32 +162,43 @@ export default function exchangeReducer(state = initialState, action) {
         ...state,
         loadingTargetFunds: false,
         targetFunds: action.targetFunds,
-        selectedFutureContributionsFundIsin:
-          selectDefaultContributionsFund(action.targetFunds, state.sourceFunds),
+        selectedFutureContributionsFundIsin: selectDefaultContributionsFund(
+          action.targetFunds,
+          state.sourceFunds,
+        ),
         // we do not know if source or target funds get here first, so we check if we can
         // calculate the default source selection and they have not yet been calculated in
         // both the target and source fund arrival
-        sourceSelection: state.sourceFunds && !isSourceSelectionDone(state.sourceSelection) ?
-          createFullDefaultSourceSelection({
-            sourceFunds: state.sourceFunds,
-            targetFunds: action.targetFunds,
-          }) : state.sourceSelection,
+        sourceSelection:
+          state.sourceFunds && !isSourceSelectionDone(state.sourceSelection)
+            ? createFullDefaultSourceSelection({
+                sourceFunds: state.sourceFunds,
+                targetFunds: action.targetFunds,
+              })
+            : state.sourceSelection,
       };
     case GET_TARGET_FUNDS_ERROR:
       return { ...state, loadingTargetFunds: false, error: action.error };
     case SELECT_TARGET_FUND:
       return {
         ...state,
-        selectedFutureContributionsFundIsin:
-          isContributionsFundAlreadyActive(state, action.targetFundIsin)
-            ? null : action.targetFundIsin,
+        selectedFutureContributionsFundIsin: isContributionsFundAlreadyActive(
+          state,
+          action.targetFundIsin,
+        )
+          ? null
+          : action.targetFundIsin,
       };
 
     case SIGN_MANDATE_MOBILE_ID_START:
     case SIGN_MANDATE_ID_CARD_START:
       return { ...state, loadingMandate: true, mandateSigningError: null };
     case SIGN_MANDATE_MOBILE_ID_START_SUCCESS:
-      return { ...state, mandateSigningControlCode: action.controlCode, loadingMandate: false };
+      return {
+        ...state,
+        mandateSigningControlCode: action.controlCode,
+        loadingMandate: false,
+      };
     case SIGN_MANDATE_SUCCESS:
       return {
         ...state,
@@ -235,7 +244,8 @@ export default function exchangeReducer(state = initialState, action) {
         mandateSigningError: null,
       };
     case GET_PENDING_EXCHANGES_START:
-      return { ...state,
+      return {
+        ...state,
         loadingPendingExchanges: true,
         error: null,
       };
@@ -246,7 +256,8 @@ export default function exchangeReducer(state = initialState, action) {
         pendingExchanges: action.pendingExchanges,
       };
     case GET_PENDING_EXCHANGES_ERROR:
-      return { ...state,
+      return {
+        ...state,
         loadingPendingExchanges: false,
         error: action.error,
       };

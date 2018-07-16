@@ -5,7 +5,7 @@ import { Message, withTranslations } from 'retranslate';
 import './InlineLoginForm.scss';
 
 function runWithDefaultPrevention(fn) {
-  return (event) => {
+  return event => {
     event.preventDefault();
     fn();
   };
@@ -13,8 +13,7 @@ function runWithDefaultPrevention(fn) {
 export class InlineLoginForm extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-    };
+    this.state = {};
   }
 
   render() {
@@ -52,10 +51,7 @@ export class InlineLoginForm extends Component {
             />
           </div>
           <div className="col-sm-4">
-            <button
-              className="btn btn-primary btn-block btn-lg"
-              onClick={onAuthenticateWithIdCard}
-            >
+            <button className="btn btn-primary btn-block btn-lg" onClick={onAuthenticateWithIdCard}>
               <Message>login.id.card</Message>
             </button>
           </div>

@@ -10,7 +10,9 @@ const Footer = () => (
     </div>
     <div className="col-12 text-center mb-4">
       <small className="text-muted">
-        <b><Message>footer.name</Message></b>
+        <b>
+          <Message>footer.name</Message>
+        </b>
         <Separator />
         <Message>footer.address</Message>
         <Separator />

@@ -8,7 +8,7 @@ describe('Routing actions', () => {
 
   function mockDispatch() {
     state = {};
-    state.login = { };
+    state.login = {};
     state.login.user = {};
     state.quiz = {};
     state.quiz.routeToQuiz = false;
@@ -16,7 +16,7 @@ describe('Routing actions', () => {
     state.exchange.shortFlow = false;
     state.router = {};
     state.router.routeToAccount = false;
-    dispatch = jest.fn((action) => {
+    dispatch = jest.fn(action => {
       if (typeof action === 'function') {
         action(dispatch, () => state);
       }

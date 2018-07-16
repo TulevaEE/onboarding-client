@@ -78,7 +78,11 @@ describe('Transfer future capital step', () => {
     ];
     const loadingTargetFunds = false;
     const selectedFutureContributionsFundIsin = 'AAA';
-    component.setProps({ targetFunds, loadingTargetFunds, selectedFutureContributionsFundIsin });
+    component.setProps({
+      targetFunds,
+      loadingTargetFunds,
+      selectedFutureContributionsFundIsin,
+    });
 
     const radioAtIndexSelected = index =>
       component
@@ -148,7 +152,11 @@ describe('Transfer future capital step', () => {
     });
 
     it('shows active fund note only if user has active fund', () => {
-      let activeSourceFund = { isin: 'AAA', name: 'bla', managementFeePercent: 0.5 };
+      let activeSourceFund = {
+        isin: 'AAA',
+        name: 'bla',
+        managementFeePercent: 0.5,
+      };
       const targetFunds = [{ isin: 'AAA', name: 'A' }, { isin: 'BBB', name: 'B' }];
       const loadingTargetFunds = false;
       const selectedFutureContributionsFundIsin = null;
@@ -183,7 +191,11 @@ describe('Transfer future capital step', () => {
     });
 
     it('shows different active fund message for converted user', () => {
-      let activeSourceFund = { isin: 'AAA', name: 'bla', managementFeePercent: 0.5 };
+      let activeSourceFund = {
+        isin: 'AAA',
+        name: 'bla',
+        managementFeePercent: 0.5,
+      };
       const targetFunds = [{ isin: 'AAA', name: 'A' }, { isin: 'BBB', name: 'B' }];
       const loadingTargetFunds = false;
       const selectedFutureContributionsFundIsin = null;

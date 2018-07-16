@@ -14,8 +14,7 @@ export class Question4 extends Component {
       // salary: 1500,
     };
   }
-  componentDidMount() {
-  }
+  componentDidMount() {}
   onFundFeeSelected() {
     this.setState(() => ({ fundFeeSelected: 123 }));
   }
@@ -24,19 +23,16 @@ export class Question4 extends Component {
   //   this.setState(() => ({ salary }));
   // }
   render() {
-    const {
-      comparison,
-    } = this.props;
+    const { comparison } = this.props;
 
     return (
       <div>
         <div className="col-12 text-center">
           <h2 className="mt-5">
-            Not bad! If you keep working on paying into your second pillar pension fund,
-            you can expect to receive&nbsp;
-            { Math.round((comparison.currentFundFutureValue / 300) * 100) / 100 }
-            &nbsp;euros a month
-            from you II pillar. 1st pillar will add additional 400 euros.
+            Not bad! If you keep working on paying into your second pillar pension fund, you can
+            expect to receive&nbsp;
+            {Math.round((comparison.currentFundFutureValue / 300) * 100) / 100}
+            &nbsp;euros a month from you II pillar. 1st pillar will add additional 400 euros.
           </h2>
           <div>
             <a className="btn btn-success mt-3" href="https://tuleva.ee/final/">
@@ -44,7 +40,6 @@ export class Question4 extends Component {
             </a>
           </div>
         </div>
-
       </div>
     );
   }

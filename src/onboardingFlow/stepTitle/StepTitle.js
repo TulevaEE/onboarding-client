@@ -11,12 +11,14 @@ const StepTitle = ({ children, number, active, completed }) => (
         ${active ? 'tv-step__title--active mb-5' : ''}
         ${completed ? 'tv-step__title--completed' : ''}`}
     >
-      { number ? (
+      {number ? (
         <span className="tv-step__number ml-2 mr-3">
           {!completed && !active ? <span className="text-regular">{number}</span> : ''}
           {!completed && active ? <b>{number}</b> : ''}
         </span>
-      ) : '' }
+      ) : (
+        ''
+      )}
       <span className={`mr-2 ${active ? 'h2' : 'text-muted'}`}>{children}</span>
     </div>
   </div>

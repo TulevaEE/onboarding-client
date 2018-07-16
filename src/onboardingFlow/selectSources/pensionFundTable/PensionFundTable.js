@@ -7,7 +7,6 @@ import FundRow from './fundRow';
 import './PensionFundTable.scss';
 import { getTotalFundValue } from '../../../common/utils';
 
-
 const PensionFundTable = ({ funds }) => {
   const totalPrice = getTotalFundValue(funds);
   return (
@@ -19,25 +18,15 @@ const PensionFundTable = ({ funds }) => {
         <div className="col-12 col-sm text-sm-right">
           <Message>select.sources.value</Message>
         </div>
-        {
-          /*
+        {/*
           <div className="col-12 col-sm text-sm-right">
             <Message>select.sources.fees</Message>
           </div>
-           */
-        }
+           */}
       </div>
-      {
-        funds.map(({ currency, price, name, isin, activeFund }) =>
-          (<FundRow
-            key={isin}
-            price={price}
-            name={name}
-            currency={currency}
-            active={activeFund}
-          />),
-        )
-      }
+      {funds.map(({ currency, price, name, isin, activeFund }) => (
+        <FundRow key={isin} price={price} name={name} currency={currency} active={activeFund} />
+      ))}
       <FundRow
         price={totalPrice}
         currency={'EUR'} // hardcoded until there are more currencies
@@ -58,14 +47,16 @@ PensionFundTable.defaultProps = {
 };
 
 PensionFundTable.propTypes = {
-  funds: Types.arrayOf(Types.shape({
-    price: Types.number,
-    currency: Types.string,
-    name: Types.string,
-    manager: Types.string,
-    isin: Types.string,
-    activeFund: Types.bool,
-  })),
+  funds: Types.arrayOf(
+    Types.shape({
+      price: Types.number,
+      currency: Types.string,
+      name: Types.string,
+      manager: Types.string,
+      isin: Types.string,
+      activeFund: Types.bool,
+    }),
+  ),
 };
 
 export default PensionFundTable;

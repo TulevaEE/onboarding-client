@@ -299,22 +299,19 @@ export class Question2 extends Component {
       activeFundStrategy: props.activeFundStrategy,
     };
   }
-  componentDidMount() {
-  }
+  componentDidMount() {}
   onStrategySelect(amount) {
     this.setState(() => ({ fundStrategySelected: amount }));
   }
   render() {
-    const {
-      onNextStep,
-    } = this.props;
+    const { onNextStep } = this.props;
 
     return (
       <div>
         <div className="col-12 text-center">
           <h2 className="mt-5">
-            Your contributions go today to {this.state.activeFund.name} pension fund.
-              What is the funds investment strategy?
+            Your contributions go today to {this.state.activeFund.name} pension fund. What is the
+            funds investment strategy?
           </h2>
 
           <div>
@@ -351,41 +348,40 @@ export class Question2 extends Component {
           </div>
         </div>
 
-        {
-          this.state.fundStrategySelected ? (
-            <div>
-              <div className="incorrect">
-                <h2>Not quite</h2>
-                <p>
-                  Your pension payments go to {this.state.activeFundStrategy} fund.
-                  What does that mean?
-                </p>
-                <ul>
-                  <li>Conservative funds invests only in bonds</li>
-                  <li>Balanced funds invest up to 25% into stocks, rest goes to bonds</li>
-                  <li>Progressive funds invest up to 55% into stocks, rest goes to bonds</li>
-                  <li>Aggressive funds invest up to 75% into stocks, rest goes to bonds</li>
-                </ul>
+        {this.state.fundStrategySelected ? (
+          <div>
+            <div className="incorrect">
+              <h2>Not quite</h2>
+              <p>
+                Your pension payments go to {this.state.activeFundStrategy} fund. What does that
+                mean?
+              </p>
+              <ul>
+                <li>Conservative funds invests only in bonds</li>
+                <li>Balanced funds invest up to 25% into stocks, rest goes to bonds</li>
+                <li>Progressive funds invest up to 55% into stocks, rest goes to bonds</li>
+                <li>Aggressive funds invest up to 75% into stocks, rest goes to bonds</li>
+              </ul>
 
-                <h3>Most international analysts recomment that you choose aggressive pension fund
-                  if you have more than 10 year left until retirement.</h3>
-              </div>
+              <h3>
+                Most international analysts recomment that you choose aggressive pension fund if you
+                have more than 10 year left until retirement.
+              </h3>
             </div>
-          ) : ''
-        }
+          </div>
+        ) : (
+          ''
+        )}
 
-        {
-          this.state.fundStrategySelected ? (
-            <div>
-              <button
-                className="btn btn-success text-center mt-2"
-                onClick={onNextStep}
-              >
-                <Message>Next</Message>
-              </button>
-            </div>
-          ) : ''
-        }
+        {this.state.fundStrategySelected ? (
+          <div>
+            <button className="btn btn-success text-center mt-2" onClick={onNextStep}>
+              <Message>Next</Message>
+            </button>
+          </div>
+        ) : (
+          ''
+        )}
       </div>
     );
   }
@@ -414,10 +410,17 @@ const mapStateToProps = state => ({
   activeFundStrategy: getStrategy(state.exchange.sourceFunds.find(fund => fund.activeFund).isin),
 });
 
-const mapDispatchToProps = dispatch => bindActionCreators({
-  // onNextStep: nextStep,
-}, dispatch);
+const mapDispatchToProps = dispatch =>
+  bindActionCreators(
+    {
+      // onNextStep: nextStep,
+    },
+    dispatch,
+  );
 
-const connectToRedux = connect(mapStateToProps, mapDispatchToProps);
+const connectToRedux = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+);
 
 export default connectToRedux(Question2);

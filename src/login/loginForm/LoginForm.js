@@ -5,7 +5,7 @@ import { Message, withTranslations } from 'retranslate';
 import './LoginForm.scss';
 
 function runWithDefaultPrevention(fn) {
-  return (event) => {
+  return event => {
     event.preventDefault();
     fn();
   };

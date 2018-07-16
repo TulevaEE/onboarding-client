@@ -13,9 +13,21 @@ describe('Exact fund selector', () => {
 
   beforeEach(() => {
     selections = [
-      { sourceFundIsin: 'source isin 1', targetFundIsin: 'target isin 1', percentage: 0.7 },
-      { sourceFundIsin: 'source isin 2', targetFundIsin: 'target isin 2', percentage: 0.8 },
-      { sourceFundIsin: 'source isin 3', targetFundIsin: 'target isin 3', percentage: 0.9 },
+      {
+        sourceFundIsin: 'source isin 1',
+        targetFundIsin: 'target isin 1',
+        percentage: 0.7,
+      },
+      {
+        sourceFundIsin: 'source isin 2',
+        targetFundIsin: 'target isin 2',
+        percentage: 0.8,
+      },
+      {
+        sourceFundIsin: 'source isin 3',
+        targetFundIsin: 'target isin 3',
+        percentage: 0.9,
+      },
     ];
     sourceFunds = [
       { isin: 'source isin 1', name: 'source name 1' },
@@ -39,7 +51,11 @@ describe('Exact fund selector', () => {
   it('renders a table row with selectors for every fund', () => {
     component.setProps({ selections, sourceFunds, targetFunds });
     selections.forEach((row, index) => {
-      const rowComponentProp = name => component.find(FundExchangeRow).at(index).prop(name);
+      const rowComponentProp = name =>
+        component
+          .find(FundExchangeRow)
+          .at(index)
+          .prop(name);
       expect(rowComponentProp('sourceFunds')).toBe(sourceFunds);
       expect(rowComponentProp('targetFunds')).toBe(targetFunds);
       expect(rowComponentProp('selection')).toBe(row);
@@ -57,21 +73,26 @@ describe('Exact fund selector', () => {
     component.setProps({ selections, onChange });
 
     expect(onChange).not.toHaveBeenCalled();
-    component.find(FundExchangeRow).at(1).simulate('change', newSecondSelection);
+    component
+      .find(FundExchangeRow)
+      .at(1)
+      .simulate('change', newSecondSelection);
     expect(onChange).toHaveBeenCalledTimes(1);
     expect(onChange).toHaveBeenCalledWith(expectedSelectionsAfterChange);
   });
 
   it('renders info about cost and reference link', () => {
-    expect(component.contains(
-      <a
-        href="//www.pensionikeskus.ee/ii-sammas/fondid/fonditasude-vordlused/"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <Message>select.sources.select.some.cost</Message>
-      </a>,
-    )).toBe(true);
+    expect(
+      component.contains(
+        <a
+          href="//www.pensionikeskus.ee/ii-sammas/fondid/fonditasude-vordlused/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Message>select.sources.select.some.cost</Message>
+        </a>,
+      ),
+    ).toBe(true);
   });
 
   it('can add rows', () => {
@@ -80,10 +101,13 @@ describe('Exact fund selector', () => {
     expect(onChange).not.toHaveBeenCalled();
     component.find('button').simulate('click');
     expect(onChange).toHaveBeenCalledTimes(1);
-    expect(onChange).toHaveBeenCalledWith([...selections, {
-      sourceFundIsin: sourceFunds[0].isin,
-      targetFundIsin: targetFunds[0].isin,
-      percentage: 1,
-    }]);
+    expect(onChange).toHaveBeenCalledWith([
+      ...selections,
+      {
+        sourceFundIsin: sourceFunds[0].isin,
+        targetFundIsin: targetFunds[0].isin,
+        percentage: 1,
+      },
+    ]);
   });
 });

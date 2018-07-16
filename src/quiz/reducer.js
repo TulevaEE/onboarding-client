@@ -1,6 +1,4 @@
-import {
-  ROUTE_TO_QUIZ,
-} from './constants';
+import { ROUTE_TO_QUIZ } from './constants';
 
 const initialState = {
   routeToQuiz: false,
@@ -9,11 +7,11 @@ const initialState = {
 export default function comparisonReducer(state = initialState, action) {
   switch (action.type) {
     case ROUTE_TO_QUIZ:
-      return { ...state,
+      return {
+        ...state,
         routeToQuiz: true,
       };
     default:
       return state;
   }
 }
-

@@ -12,9 +12,13 @@ export const TermsOfUse = () => (
     </div>
     <div className="row">
       <div className="col">
-        <h4><Message>terms.of.use.title</Message></h4>
+        <h4>
+          <Message>terms.of.use.title</Message>
+        </h4>
 
-        <p className="mt-3"><Message>terms.of.use.subheading</Message></p>
+        <p className="mt-3">
+          <Message>terms.of.use.subheading</Message>
+        </p>
 
         <ol className="mt-3">
           {[...Array(7)].map((item, index) => (

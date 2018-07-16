@@ -30,12 +30,16 @@ import { LOG_OUT } from '../login/constants';
 
 describe('Exchange reducer', () => {
   it('finishes loading pension data', () => {
-    const newState = exchangeReducer(undefined, { type: LOAD_PENSION_DATA_SUCCESS });
+    const newState = exchangeReducer(undefined, {
+      type: LOAD_PENSION_DATA_SUCCESS,
+    });
     expect(newState.loadingPensionData).toBe(false);
   });
 
   it('starts loading when starting to get pension funds', () => {
-    const newState = exchangeReducer(undefined, { type: GET_SOURCE_FUNDS_START });
+    const newState = exchangeReducer(undefined, {
+      type: GET_SOURCE_FUNDS_START,
+    });
     expect(newState.loadingSourceFunds).toBe(true);
   });
 
@@ -59,7 +63,11 @@ describe('Exchange reducer', () => {
 
   it('can select some source funds', () => {
     const sourceSelection = [{ iAmTheSelectedExchange: true }];
-    const action = { type: SELECT_EXCHANGE_SOURCES, sourceSelection, sourceSelectionExact: false };
+    const action = {
+      type: SELECT_EXCHANGE_SOURCES,
+      sourceSelection,
+      sourceSelectionExact: false,
+    };
     expect(exchangeReducer(undefined, action).sourceSelection).toEqual(sourceSelection);
     expect(exchangeReducer(undefined, action).sourceSelectionExact).toBe(false);
     action.sourceSelectionExact = true;
@@ -67,9 +75,16 @@ describe('Exchange reducer', () => {
   });
 
   it('selecting source fund non exact will trigger defaulting contributions fund selection', () => {
-    const sourceExchange = { sourceFundIsin: 'sourceFundIsin', targetFundIsin: 'targetFundIsin' };
+    const sourceExchange = {
+      sourceFundIsin: 'sourceFundIsin',
+      targetFundIsin: 'targetFundIsin',
+    };
     const sourceSelection = [sourceExchange];
-    const action = { type: SELECT_EXCHANGE_SOURCES, sourceSelection, sourceSelectionExact: false };
+    const action = {
+      type: SELECT_EXCHANGE_SOURCES,
+      sourceSelection,
+      sourceSelectionExact: false,
+    };
 
     expect(exchangeReducer(undefined, action).selectedFutureContributionsFundIsin).toEqual(
       sourceExchange.targetFundIsin,
@@ -77,16 +92,27 @@ describe('Exchange reducer', () => {
   });
 
   it('selecting source fund exact will not trigger defaulting contributions fund selection', () => {
-    const sourceExchange = { sourceFundIsin: 'sourceFundIsin', targetFundIsin: 'targetFundIsin' };
+    const sourceExchange = {
+      sourceFundIsin: 'sourceFundIsin',
+      targetFundIsin: 'targetFundIsin',
+    };
     const sourceSelection = [sourceExchange];
-    const action = { type: SELECT_EXCHANGE_SOURCES, sourceSelection, sourceSelectionExact: true };
+    const action = {
+      type: SELECT_EXCHANGE_SOURCES,
+      sourceSelection,
+      sourceSelectionExact: true,
+    };
 
     expect(exchangeReducer(undefined, action).selectedFutureContributionsFundIsin).toEqual(null);
   });
 
   it('selecting source fund non exact but with empty source selection will not trigger defaulting contributions fund selection', () => {
     const sourceSelection = [];
-    const action = { type: SELECT_EXCHANGE_SOURCES, sourceSelection, sourceSelectionExact: false };
+    const action = {
+      type: SELECT_EXCHANGE_SOURCES,
+      sourceSelection,
+      sourceSelectionExact: false,
+    };
 
     const state = {
       selectedFutureContributionsFundIsin: 'will not change',
@@ -108,9 +134,16 @@ describe('Exchange reducer', () => {
       ],
     };
 
-    const sourceExchange = { sourceFundIsin: 'sourceFundIsin', targetFundIsin: activeFundIsin };
+    const sourceExchange = {
+      sourceFundIsin: 'sourceFundIsin',
+      targetFundIsin: activeFundIsin,
+    };
     const sourceSelection = [sourceExchange];
-    const action = { type: SELECT_EXCHANGE_SOURCES, sourceSelection, sourceSelectionExact: false };
+    const action = {
+      type: SELECT_EXCHANGE_SOURCES,
+      sourceSelection,
+      sourceSelectionExact: false,
+    };
 
     expect(exchangeReducer(state, action).selectedFutureContributionsFundIsin).toEqual(null);
   });
@@ -128,7 +161,11 @@ describe('Exchange reducer', () => {
 
     const sourceExchange = { sourceFundIsin: 'sourceFundIsin', targetFundIsin };
     const sourceSelection = [sourceExchange];
-    const action = { type: SELECT_EXCHANGE_SOURCES, sourceSelection, sourceSelectionExact: false };
+    const action = {
+      type: SELECT_EXCHANGE_SOURCES,
+      sourceSelection,
+      sourceSelectionExact: false,
+    };
 
     expect(exchangeReducer(state, action).selectedFutureContributionsFundIsin).toEqual(
       sourceExchange.targetFundIsin,
@@ -142,7 +179,11 @@ describe('Exchange reducer', () => {
 
   it('stops loading, saves and selects target funds when getting them succeeds', () => {
     const targetFunds = [
-      { isin: 'EE3600109435', iShouldBeSelected: true, fundManager: { name: 'Tuleva' } },
+      {
+        isin: 'EE3600109435',
+        iShouldBeSelected: true,
+        fundManager: { name: 'Tuleva' },
+      },
       { isin: 'asd', hello: true, fundManager: { name: 'A' } },
     ];
     const action = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
@@ -154,7 +195,11 @@ describe('Exchange reducer', () => {
 
   it('defaults contributions fund to null when source funds not present', () => {
     const targetFunds = [
-      { isin: 'EE3600109435', iShouldBeSelected: true, fundManager: { name: 'Tuleva' } },
+      {
+        isin: 'EE3600109435',
+        iShouldBeSelected: true,
+        fundManager: { name: 'Tuleva' },
+      },
       { isin: 'asd', hello: true, fundManager: { name: 'A' } },
     ];
     const action = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
@@ -177,7 +222,11 @@ describe('Exchange reducer', () => {
     ];
     const sourceFundsAction = { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds };
     const targetFunds = [
-      { name: 'name', isin: 'isin0', fundManager: { name: 'Random company fund' } },
+      {
+        name: 'name',
+        isin: 'isin0',
+        fundManager: { name: 'Random company fund' },
+      },
       { name: 'name', isin: 'isin1', fundManager: { name: 'Tuleva' } },
       { name: 'name', isin: 'isin2', fundManager: { name: 'Tuleva' } },
     ];
@@ -248,7 +297,11 @@ describe('Exchange reducer', () => {
 
   it('selects full source selection and skips inter fund transfers', () => {
     const expectedFullSelection = [
-      { sourceFundIsin: 'source', targetFundIsin: 'thissourcewillbeskipped', percentage: 1 },
+      {
+        sourceFundIsin: 'source',
+        targetFundIsin: 'thissourcewillbeskipped',
+        percentage: 1,
+      },
     ];
 
     const sourceFunds = [
@@ -258,8 +311,16 @@ describe('Exchange reducer', () => {
     ];
     const sourceFundsAction = { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds };
     const targetFunds = [
-      { name: 'name', isin: 'thissourcewillbeskipped', fundManager: { name: 'Tuleva' } },
-      { name: 'name', isin: 'willbeskippedaswell', fundManager: { name: 'Tuleva' } },
+      {
+        name: 'name',
+        isin: 'thissourcewillbeskipped',
+        fundManager: { name: 'Tuleva' },
+      },
+      {
+        name: 'name',
+        isin: 'willbeskippedaswell',
+        fundManager: { name: 'Tuleva' },
+      },
     ];
     const targetFundsAction = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
     const state = [sourceFundsAction, targetFundsAction].reduce(exchangeReducer);
@@ -428,7 +489,9 @@ describe('Exchange reducer', () => {
   });
 
   it('starts loading when starting to get initial capital', () => {
-    const newState = exchangeReducer(undefined, { type: GET_PENDING_EXCHANGES_START });
+    const newState = exchangeReducer(undefined, {
+      type: GET_PENDING_EXCHANGES_START,
+    });
     expect(newState.loadingPendingExchanges).toBe(true);
   });
 

@@ -4,7 +4,9 @@ import { PropTypes as Types } from 'prop-types';
 import './Radio.scss';
 /* eslint-disable jsx-a11y/label-has-for */
 const Radio = ({ children, onSelect, selected, name, className }) => (
-  <label className={`tv-radio p-4 mb-0 px-col ${selected ? 'tv-radio--selected' : ''} ${className}`}>
+  <label
+    className={`tv-radio p-4 mb-0 px-col ${selected ? 'tv-radio--selected' : ''} ${className}`}
+  >
     {/* eslint-enable jsx-a11y/label-has-for */}
     <div className="row mb-0">
       <div className="col col-auto pr-0">
@@ -24,9 +26,7 @@ const Radio = ({ children, onSelect, selected, name, className }) => (
           <span className="tv-radio__check" />
         </button>
       </div>
-      <div className="col">
-        {children}
-      </div>
+      <div className="col">{children}</div>
     </div>
   </label>
 );

@@ -12,21 +12,24 @@ const ErrorMessage = ({ errors, onCancel, overlayed }) => {
       <div className="p-4">
         <div>
           <p>
-            <b><Message>error.messages.intro</Message></b>
+            <b>
+              <Message>error.messages.intro</Message>
+            </b>
           </p>
-          {
-            errors.errors && errors.errors.map((error, index) => (
-              <p key={index}><Message>{error.code}</Message></p>
-            ))
-          }
+          {errors.errors &&
+            errors.errors.map((error, index) => (
+              <p key={index}>
+                <Message>{error.code}</Message>
+              </p>
+            ))}
         </div>
-        {
-          onCancel !== noop ? (
-            <button className="btn btn-secondary mt-4" onClick={onCancel}>
-              <Message>error.message.close</Message>
-            </button>
-          ) : ''
-        }
+        {onCancel !== noop ? (
+          <button className="btn btn-secondary mt-4" onClick={onCancel}>
+            <Message>error.message.close</Message>
+          </button>
+        ) : (
+          ''
+        )}
       </div>
     </div>
   );
@@ -34,18 +37,12 @@ const ErrorMessage = ({ errors, onCancel, overlayed }) => {
     return (
       <div className="tv-modal">
         <div className="container">
-          <div className="row mt-4 pt-4 justify-content-center">
-            {content}
-          </div>
+          <div className="row mt-4 pt-4 justify-content-center">{content}</div>
         </div>
       </div>
     );
   }
-  return (
-    <div className="row mt-4 pt-4 justify-content-center">
-      {content}
-    </div>
-  );
+  return <div className="row mt-4 pt-4 justify-content-center">{content}</div>;
 };
 
 ErrorMessage.defaultProps = {

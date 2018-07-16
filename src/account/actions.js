@@ -1,6 +1,4 @@
-import {
-  getInitialCapitalWithToken,
-} from '../common/api';
+import { getInitialCapitalWithToken } from '../common/api';
 
 import {
   GET_INITIAL_CAPITAL_START,

@@ -10,17 +10,15 @@ const FundRow = ({ price, currency, name, highlighted, active }) => {
   return (
     <div className="row tv-table__row py-2">
       <div className="col-12 col-sm">
-        { highlighted ? <b>{displayName}</b> : displayName }
-        { active ? '*' : '' }
+        {highlighted ? <b>{displayName}</b> : displayName}
+        {active ? '*' : ''}
       </div>
       <div className="col-12 col-sm text-sm-right">
-        { highlighted ? <b>{displayPrice}</b> : displayPrice }
+        {highlighted ? <b>{displayPrice}</b> : displayPrice}
       </div>
-      {
-        /*
+      {/*
         <div className="col-12 col-sm text-sm-right">TODO</div>
-         */
-      }
+         */}
     </div>
   );
 };

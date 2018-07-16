@@ -4,14 +4,9 @@ import {
   GET_INITIAL_CAPITAL_ERROR,
 } from './constants';
 
-import {
-  UPDATE_USER_SUCCESS,
-} from '../common/user/constants';
+import { UPDATE_USER_SUCCESS } from '../common/user/constants';
 
-import {
-  LOG_OUT,
-} from '../login/constants';
-
+import { LOG_OUT } from '../login/constants';
 
 const initialState = {
   initialCapital: null,
@@ -23,7 +18,8 @@ const initialState = {
 export default function comparisonReducer(state = initialState, action) {
   switch (action.type) {
     case GET_INITIAL_CAPITAL_START:
-      return { ...state,
+      return {
+        ...state,
         loadingInitialCapital: true,
         error: null,
       };
@@ -34,7 +30,8 @@ export default function comparisonReducer(state = initialState, action) {
         initialCapital: action.initialCapital,
       };
     case GET_INITIAL_CAPITAL_ERROR:
-      return { ...state,
+      return {
+        ...state,
         loadingInitialCapital: false,
         error: action.error,
       };
@@ -52,4 +49,3 @@ export default function comparisonReducer(state = initialState, action) {
       return state;
   }
 }
-

@@ -8,15 +8,15 @@ import { utils } from '../../';
 
 import './MiniComparison.scss';
 
-import {
-  debouncedSalaryChange,
-} from '../../../comparison/actions';
+import { debouncedSalaryChange } from '../../../comparison/actions';
 
 export const MiniComparison = ({ salary, onSalaryChange }) => (
   <p className="mb-5">
     <span className="mr-1">
       <Message>new.user.flow.mini.comparison.if.your</Message>
-      <strong><Message>new.user.flow.mini.comparison.gross.wage</Message></strong>
+      <strong>
+        <Message>new.user.flow.mini.comparison.gross.wage</Message>
+      </strong>
       <Message>new.user.flow.mini.comparison.is</Message>
     </span>
     <span className="input-group col-xs-1" id="salary-group">
@@ -31,7 +31,9 @@ export const MiniComparison = ({ salary, onSalaryChange }) => (
         value={salary}
         aria-describedby="salary-euro"
       />
-      <span className="input-group-addon" id="salary-euro">&euro;</span>
+      <span className="input-group-addon" id="salary-euro">
+        &euro;
+      </span>
     </span>
   </p>
 );
@@ -56,14 +58,23 @@ const mapStateToProps = state => ({
   error: state.comparison ? state.comparison.error : null,
   salary: state.comparison.salary,
   loading: state.comparison.loadingComparison,
-  activeSourceFund: utils.findWhere(state.exchange.sourceFunds || [],
-    element => element.activeFund),
+  activeSourceFund: utils.findWhere(
+    state.exchange.sourceFunds || [],
+    element => element.activeFund,
+  ),
 });
 
-const mapDispatchToProps = dispatch => bindActionCreators({
-  onSalaryChange: debouncedSalaryChange,
-}, dispatch);
+const mapDispatchToProps = dispatch =>
+  bindActionCreators(
+    {
+      onSalaryChange: debouncedSalaryChange,
+    },
+    dispatch,
+  );
 
-const connectToRedux = connect(mapStateToProps, mapDispatchToProps);
+const connectToRedux = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+);
 
 export default connectToRedux(MiniComparison);

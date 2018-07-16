@@ -19,7 +19,7 @@ describe('newUserFlow actions', () => {
 
   function mockDispatch() {
     state = { login: { token: 'token' }, exchange: {} };
-    dispatch = jest.fn((action) => {
+    dispatch = jest.fn(action => {
       if (typeof action === 'function') {
         action(dispatch, () => state);
       }
@@ -43,19 +43,29 @@ describe('newUserFlow actions', () => {
     expect(dispatch).not.toHaveBeenCalled();
     return registerUser(newUser).then(() => {
       expect(dispatch).toHaveBeenCalledTimes(2);
-      expect(dispatch).toHaveBeenCalledWith({ type: UPDATE_USER_SUCCESS, newUser });
+      expect(dispatch).toHaveBeenCalledWith({
+        type: UPDATE_USER_SUCCESS,
+        newUser,
+      });
       expect(dispatch).toHaveBeenCalledWith(push('/steps/payment'));
     });
   });
 
   it('can handle errors when registering a new user', () => {
-    const error = { body: { errors: [{ path: 'personalCode', code: 'invalid' }] } };
+    const error = {
+      body: { errors: [{ path: 'personalCode', code: 'invalid' }] },
+    };
     mockApi.updateUserWithToken = jest.fn(() => Promise.reject(error));
     const registerUser = createBoundAction(actions.registerUser);
     expect(dispatch).not.toHaveBeenCalled();
 
     return registerUser()
-      .then(() => expect(dispatch).toHaveBeenCalledWith({ type: UPDATE_USER_ERROR, error }))
+      .then(() =>
+        expect(dispatch).toHaveBeenCalledWith({
+          type: UPDATE_USER_ERROR,
+          error,
+        }),
+      )
       .catch(givenError =>
         expect(givenError).toEqual(new SubmissionError({ personalCode: 'invalid' })),
       );
@@ -73,18 +83,28 @@ describe('newUserFlow actions', () => {
     expect(dispatch).not.toHaveBeenCalled();
     return registerUser(newUser).then(() => {
       expect(dispatch).toHaveBeenCalledTimes(1);
-      expect(dispatch).toHaveBeenCalledWith({ type: UPDATE_USER_SUCCESS, newUser });
+      expect(dispatch).toHaveBeenCalledWith({
+        type: UPDATE_USER_SUCCESS,
+        newUser,
+      });
     });
   });
 
   it('can handle errors when creating a new user', () => {
-    const error = { body: { errors: [{ path: 'personalCode', code: 'invalid' }] } };
+    const error = {
+      body: { errors: [{ path: 'personalCode', code: 'invalid' }] },
+    };
     mockApi.createUserWithToken = jest.fn(() => Promise.reject(error));
     const registerUser = createBoundAction(actions.createUser);
     expect(dispatch).not.toHaveBeenCalled();
 
     return registerUser()
-      .then(() => expect(dispatch).toHaveBeenCalledWith({ type: UPDATE_USER_ERROR, error }))
+      .then(() =>
+        expect(dispatch).toHaveBeenCalledWith({
+          type: UPDATE_USER_ERROR,
+          error,
+        }),
+      )
       .catch(givenError =>
         expect(givenError).toEqual(new SubmissionError({ personalCode: 'invalid' })),
       );

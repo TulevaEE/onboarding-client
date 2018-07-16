@@ -1,8 +1,6 @@
 import { push } from 'react-router-redux';
 
-import {
-  ROUTE_TO_ACCOUNT,
-} from './constants';
+import { ROUTE_TO_ACCOUNT } from './constants';
 
 export function routeToAccount() {
   return { type: ROUTE_TO_ACCOUNT };
@@ -34,7 +32,6 @@ function isTransfersComplete(getState) {
 function isFullyConverted(getState) {
   return isSelectionComplete(getState) && isTransfersComplete(getState);
 }
-
 
 function isUserLoaded(getState) {
   if (getState().login.user) {

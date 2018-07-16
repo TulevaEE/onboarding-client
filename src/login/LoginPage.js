@@ -9,7 +9,12 @@ import './LoginPage.scss';
 
 import { logo, AuthenticationLoader, ErrorAlert } from '../common';
 import LoginForm from './loginForm';
-import { changePhoneNumber, authenticateWithPhoneNumber, cancelMobileAuthentication, authenticateWithIdCard } from './actions';
+import {
+  changePhoneNumber,
+  authenticateWithPhoneNumber,
+  cancelMobileAuthentication,
+  authenticateWithIdCard,
+} from './actions';
 
 export const LoginPage = ({
   onPhoneNumberSubmit,
@@ -32,23 +37,26 @@ export const LoginPage = ({
       <div className="row">
         <div className="col-lg-10 offset-lg-1 col-sm-12 offset-sm-0 text-center">
           <div className="col-lg-6 offset-lg-3 col-md-8 offset-md-2 col-sm-12">
-            { errorDescription ? <ErrorAlert description={errorDescription} /> : '' }
-            {
-              !loadingAuthentication && !controlCode && !loadingUserConversion ?
-                <LoginForm
-                  onPhoneNumberSubmit={onPhoneNumberSubmit}
-                  onPhoneNumberChange={onPhoneNumberChange}
-                  phoneNumber={phoneNumber}
-                  onAuthenticateWithIdCard={onAuthenticateWithIdCard}
-                /> : ''
-            }
-            {
-              !errorDescription && (loadingAuthentication || controlCode || loadingUserConversion) ?
-                <AuthenticationLoader
-                  onCancel={onCancelMobileAuthentication}
-                  controlCode={controlCode}
-                /> : ''
-            }
+            {errorDescription ? <ErrorAlert description={errorDescription} /> : ''}
+            {!loadingAuthentication && !controlCode && !loadingUserConversion ? (
+              <LoginForm
+                onPhoneNumberSubmit={onPhoneNumberSubmit}
+                onPhoneNumberChange={onPhoneNumberChange}
+                phoneNumber={phoneNumber}
+                onAuthenticateWithIdCard={onAuthenticateWithIdCard}
+              />
+            ) : (
+              ''
+            )}
+            {!errorDescription &&
+            (loadingAuthentication || controlCode || loadingUserConversion) ? (
+              <AuthenticationLoader
+                onCancel={onCancelMobileAuthentication}
+                controlCode={controlCode}
+              />
+            ) : (
+              ''
+            )}
             <div className="mt-3 small mb-3">
               <a href="/terms-of-use" target="_blank" rel="noopener noreferrer">
                 <Message>login.terms.link</Message>
@@ -105,13 +113,20 @@ const mapStateToProps = state => ({
   errorDescription: state.login.error,
   successful: !!state.login.token, // not used right now
 });
-const mapDispatchToProps = dispatch => bindActionCreators({
-  onPhoneNumberChange: changePhoneNumber,
-  onPhoneNumberSubmit: authenticateWithPhoneNumber,
-  onCancelMobileAuthentication: cancelMobileAuthentication,
-  onAuthenticateWithIdCard: authenticateWithIdCard,
-}, dispatch);
+const mapDispatchToProps = dispatch =>
+  bindActionCreators(
+    {
+      onPhoneNumberChange: changePhoneNumber,
+      onPhoneNumberSubmit: authenticateWithPhoneNumber,
+      onCancelMobileAuthentication: cancelMobileAuthentication,
+      onAuthenticateWithIdCard: authenticateWithIdCard,
+    },
+    dispatch,
+  );
 
-const withRedux = connect(mapStateToProps, mapDispatchToProps);
+const withRedux = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+);
 
 export default withRedux(LoginPage);

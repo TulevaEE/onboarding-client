@@ -7,7 +7,8 @@ import './FundExchangeRow.scss';
 
 const clampFromZeroToHundred = createClamper(0, 100);
 
-export const FundExchangeRow = ({ // exporting without translations for testing purposes
+export const FundExchangeRow = ({
+  // exporting without translations for testing purposes
   sourceFunds,
   targetFunds,
   onChange,
@@ -16,10 +17,12 @@ export const FundExchangeRow = ({ // exporting without translations for testing 
 }) => {
   const randomString = (Math.random() + 1).toString(36).substring(7);
   const randomId = `tv-percentage-selector-${randomString}`;
-  const sortedSourceFunds =
-      sourceFunds.slice().sort((fund1, fund2) => fund1.name.localeCompare(fund2.name));
-  const sortedTargetFunds =
-      targetFunds.slice().sort((fund1, fund2) => fund1.name.localeCompare(fund2.name));
+  const sortedSourceFunds = sourceFunds
+    .slice()
+    .sort((fund1, fund2) => fund1.name.localeCompare(fund2.name));
+  const sortedTargetFunds = targetFunds
+    .slice()
+    .sort((fund1, fund2) => fund1.name.localeCompare(fund2.name));
   return (
     <div className="row">
       <div className="col-12 col-sm-5 mt-2">
@@ -27,17 +30,15 @@ export const FundExchangeRow = ({ // exporting without translations for testing 
           <select
             className="custom-select"
             value={selection.sourceFundIsin}
-            onChange={
-              ({ target: { value: sourceFundIsin } }) => onChange({ ...selection, sourceFundIsin })
+            onChange={({ target: { value: sourceFundIsin } }) =>
+              onChange({ ...selection, sourceFundIsin })
             }
           >
-            {
-              sortedSourceFunds.map(fund =>
-                (<option key={fund.isin} value={fund.isin}>
-                  {fund.name}
-                </option>),
-              )
-            }
+            {sortedSourceFunds.map(fund => (
+              <option key={fund.isin} value={fund.isin}>
+                {fund.name}
+              </option>
+            ))}
           </select>
         </div>
       </div>
@@ -50,13 +51,16 @@ export const FundExchangeRow = ({ // exporting without translations for testing 
             max="100"
             value={selection.percentage * 100}
             type="number"
-            onChange={
-              ({ target: { value } }) => onChange({
-                ...selection, percentage: clampFromZeroToHundred(parseInt(value, 10)) / 100,
+            onChange={({ target: { value } }) =>
+              onChange({
+                ...selection,
+                percentage: clampFromZeroToHundred(parseInt(value, 10)) / 100,
               })
             }
           />
-          <label htmlFor={randomId} className="tv-percentage-selector__addon">%</label>
+          <label htmlFor={randomId} className="tv-percentage-selector__addon">
+            %
+          </label>
         </div>
       </div>
       <div className="col-12 col-sm-5 mt-2">
@@ -64,16 +68,15 @@ export const FundExchangeRow = ({ // exporting without translations for testing 
           <select
             className="custom-select"
             value={selection.targetFundIsin}
-            onChange={
-              ({ target: { value: targetFundIsin } }) => onChange({ ...selection, targetFundIsin })}
-          >
-            {
-              sortedTargetFunds.map(fund =>
-                (<option key={fund.isin} value={fund.isin}>
-                  {translate(`target.funds.${fund.isin}.title`)}
-                </option>),
-              )
+            onChange={({ target: { value: targetFundIsin } }) =>
+              onChange({ ...selection, targetFundIsin })
             }
+          >
+            {sortedTargetFunds.map(fund => (
+              <option key={fund.isin} value={fund.isin}>
+                {translate(`target.funds.${fund.isin}.title`)}
+              </option>
+            ))}
           </select>
         </div>
       </div>
@@ -96,14 +99,18 @@ FundExchangeRow.propTypes = {
     targetFundIsin: Types.string.isRequired,
     percentage: Types.number.isRequired,
   }),
-  sourceFunds: Types.arrayOf(Types.shape({
-    isin: Types.string.isRequired,
-    name: Types.string.isRequired,
-  })),
-  targetFunds: Types.arrayOf(Types.shape({
-    isin: Types.string.isRequired,
-    name: Types.string.isRequired,
-  })),
+  sourceFunds: Types.arrayOf(
+    Types.shape({
+      isin: Types.string.isRequired,
+      name: Types.string.isRequired,
+    }),
+  ),
+  targetFunds: Types.arrayOf(
+    Types.shape({
+      isin: Types.string.isRequired,
+      name: Types.string.isRequired,
+    }),
+  ),
   onChange: Types.func,
   translations: Types.shape({
     translate: Types.func.isRequired,

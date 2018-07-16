@@ -11,8 +11,8 @@ describe('Pending exchange', () => {
   let component;
 
   beforeEach(() => {
-    const sourceFund = { };
-    const targetFund = { };
+    const sourceFund = {};
+    const targetFund = {};
     component = shallow(<PendingExchange sourceFund={sourceFund} targetFund={targetFund} />);
   });
 

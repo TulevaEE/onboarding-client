@@ -7,9 +7,11 @@ describe('InfoTooltip', () => {
   let component;
 
   beforeEach(() => {
-    component = shallow(<InfoTooltip name="test-tooltip">
-      <div className="content">Hello world</div>
-    </InfoTooltip>);
+    component = shallow(
+      <InfoTooltip name="test-tooltip">
+        <div className="content">Hello world</div>
+      </InfoTooltip>,
+    );
   });
 
   it('renders children given to it', () => {

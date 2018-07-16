@@ -13,7 +13,9 @@ import comparisonReducer from './reducer';
 
 describe('Comparison reducer', () => {
   it('starts loading when starting to get comparison', () => {
-    const newState = comparisonReducer(undefined, { type: GET_COMPARISON_START });
+    const newState = comparisonReducer(undefined, {
+      type: GET_COMPARISON_START,
+    });
     expect(newState.loadingComparison).toBe(true);
   });
 

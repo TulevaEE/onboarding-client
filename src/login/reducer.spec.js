@@ -2,35 +2,26 @@ import loginReducer from './reducer';
 import {
   CHANGE_PHONE_NUMBER,
   CHANGE_EMAIL,
-
   MOBILE_AUTHENTICATION_START,
   MOBILE_AUTHENTICATION_START_SUCCESS,
   MOBILE_AUTHENTICATION_START_ERROR,
-
   MOBILE_AUTHENTICATION_SUCCESS,
   MOBILE_AUTHENTICATION_ERROR,
   MOBILE_AUTHENTICATION_CANCEL,
-
   ID_CARD_AUTHENTICATION_START,
   ID_CARD_AUTHENTICATION_SUCCESS,
   ID_CARD_AUTHENTICATION_ERROR,
   ID_CARD_AUTHENTICATION_START_ERROR,
-
   GET_USER_START,
   GET_USER_SUCCESS,
   GET_USER_ERROR,
-
   GET_USER_CONVERSION_START,
   GET_USER_CONVERSION_SUCCESS,
   GET_USER_CONVERSION_ERROR,
-
   TOKEN_REFRESH_SUCCESS,
   TOKEN_REFRESH_ERROR,
-
   USE_REDIRECT_LOGIN,
-
   LOG_OUT,
-
   QUERY_PARAMETERS,
 } from './constants';
 
@@ -126,7 +117,6 @@ describe('Login reducer', () => {
     expect(newState.refreshToken).toBe(null);
   });
 
-
   it('sets the error when mobile authentication fails', () => {
     const error = { body: { error_description: 'oh noes!!1' } };
     const action = { type: ID_CARD_AUTHENTICATION_ERROR, error };
@@ -163,7 +153,10 @@ describe('Login reducer', () => {
   });
 
   it('removes token and login method flag when you log out', () => {
-    const newState = loginReducer({ token: 'token', refreshToken: 'refresh', loginMethod: 'mobileId' }, { type: LOG_OUT });
+    const newState = loginReducer(
+      { token: 'token', refreshToken: 'refresh', loginMethod: 'mobileId' },
+      { type: LOG_OUT },
+    );
     expect(newState.token).toBe(null);
     expect(newState.refreshToken).toBe(null);
     expect(newState.loginMethod).toBe(null);
@@ -173,7 +166,9 @@ describe('Login reducer', () => {
   });
 
   it('starts loading when starting to get the user conversion', () => {
-    const newState = loginReducer(undefined, { type: GET_USER_CONVERSION_START });
+    const newState = loginReducer(undefined, {
+      type: GET_USER_CONVERSION_START,
+    });
     expect(newState.userConversion).toBe(null);
     expect(newState.loadingUserConversion).toBe(true);
     expect(newState.userConversionError).toBe(null);
@@ -204,9 +199,15 @@ describe('Login reducer', () => {
 
   it('can refresh token', () => {
     const oldState = { token: 'old_token', refreshToken: 'old_refresh_token' };
-    const tokens = { accessToken: 'new_token', refreshToken: 'new_refresh_token' };
+    const tokens = {
+      accessToken: 'new_token',
+      refreshToken: 'new_refresh_token',
+    };
 
-    const newState = loginReducer(oldState, { type: TOKEN_REFRESH_SUCCESS, tokens });
+    const newState = loginReducer(oldState, {
+      type: TOKEN_REFRESH_SUCCESS,
+      tokens,
+    });
 
     expect(newState.token).toBe('new_token');
     expect(newState.refreshToken).toBe('new_refresh_token');
@@ -217,7 +218,10 @@ describe('Login reducer', () => {
     const oldState = { token: 'old_token', refreshToken: 'old_refresh_token' };
     const error = { body: { error_description: 'oh noes' } };
 
-    const newState = loginReducer(oldState, { type: TOKEN_REFRESH_ERROR, error });
+    const newState = loginReducer(oldState, {
+      type: TOKEN_REFRESH_ERROR,
+      error,
+    });
 
     expect(newState.token).toBe(null);
     expect(newState.refreshToken).toBe(null);

@@ -2,4 +2,3 @@ import ErrorMessage, { getGlobalErrorCode as getGlobalError } from './ErrorMessa
 
 export const getGlobalErrorCode = getGlobalError;
 export default ErrorMessage;
-

@@ -45,7 +45,10 @@ describe('Success step', () => {
   });
 
   it('show message both future contributions and switched funds', () => {
-    component.setProps({ userContributingFuturePayments: true, userHasTransferredFunds: true });
+    component.setProps({
+      userContributingFuturePayments: true,
+      userHasTransferredFunds: true,
+    });
     expect(component.contains(<Message>success.your.payments</Message>)).toBe(true);
     expect(component.contains(<Message>success.your.payments.next.payment</Message>)).toBe(true);
     expect(component.contains(<Message>success.shares.switched</Message>)).toBe(true);

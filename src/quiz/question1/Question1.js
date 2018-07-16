@@ -13,16 +13,12 @@ export class Question1 extends Component {
       totalPensionCapitalSelected: null,
     };
   }
-  componentDidMount() {
-  }
+  componentDidMount() {}
   onTotalPensionSelect(amount) {
     this.setState(() => ({ totalPensionCapitalSelected: amount }));
   }
   render() {
-    const {
-      onNextStep,
-      totalPensionCapital,
-    } = this.props;
+    const { onNextStep, totalPensionCapital } = this.props;
 
     return (
       <div>
@@ -36,9 +32,7 @@ export class Question1 extends Component {
               className="btn btn-primary text-center mt-2"
               onClick={() => this.onTotalPensionSelect(2500)}
             >
-              <Message>{
-                Math.round(totalPensionCapital * 0.5)
-              }</Message>
+              <Message>{Math.round(totalPensionCapital * 0.5)}</Message>
             </button>
           </div>
           <div>
@@ -46,9 +40,7 @@ export class Question1 extends Component {
               className="btn btn-primary text-center mt-2"
               onClick={() => this.onTotalPensionSelect(5000)}
             >
-              <Message>{
-                Math.round(totalPensionCapital)
-              }</Message>
+              <Message>{Math.round(totalPensionCapital)}</Message>
             </button>
           </div>
           <div>
@@ -56,39 +48,34 @@ export class Question1 extends Component {
               className="btn btn-primary text-center mt-2"
               onClick={() => this.onTotalPensionSelect(7500)}
             >
-              <Message>{
-                Math.round(totalPensionCapital * 1.5)
-              }</Message>
+              <Message>{Math.round(totalPensionCapital * 1.5)}</Message>
             </button>
           </div>
         </div>
 
-        {
-          this.state.totalPensionCapitalSelected ? (
-            <div>
-              <div className="incorrect">
-                <h2>Not quite</h2>
-                <p>
-                  Every month, 2% of your salary
-                  (+ 4% from the state).
-                  You may not notice it since it is deducted before your salary is paid.</p>
-              </div>
+        {this.state.totalPensionCapitalSelected ? (
+          <div>
+            <div className="incorrect">
+              <h2>Not quite</h2>
+              <p>
+                Every month, 2% of your salary (+ 4% from the state). You may not notice it since it
+                is deducted before your salary is paid.
+              </p>
             </div>
-          ) : ''
-        }
+          </div>
+        ) : (
+          ''
+        )}
 
-        {
-          this.state.totalPensionCapitalSelected ? (
-            <div>
-              <button
-                className="btn btn-success text-center mt-2"
-                onClick={onNextStep}
-              >
-                <Message>Next</Message>
-              </button>
-            </div>
-          ) : ''
-        }
+        {this.state.totalPensionCapitalSelected ? (
+          <div>
+            <button className="btn btn-success text-center mt-2" onClick={onNextStep}>
+              <Message>Next</Message>
+            </button>
+          </div>
+        ) : (
+          ''
+        )}
       </div>
     );
   }
@@ -110,15 +97,22 @@ Question1.propTypes = {
 
 const mapStateToProps = state => ({
   // sourceFunds: state.exchange.sourceFunds,
-  totalPensionCapital:
-    state.exchange.sourceFunds ? state.exchange.sourceFunds.map(item => item.price)
-      .reduce((a, b) => a + b, 0) : 0,
+  totalPensionCapital: state.exchange.sourceFunds
+    ? state.exchange.sourceFunds.map(item => item.price).reduce((a, b) => a + b, 0)
+    : 0,
 });
 
-const mapDispatchToProps = dispatch => bindActionCreators({
-  // onNextStep: nextStep,
-}, dispatch);
+const mapDispatchToProps = dispatch =>
+  bindActionCreators(
+    {
+      // onNextStep: nextStep,
+    },
+    dispatch,
+  );
 
-const connectToRedux = connect(mapStateToProps, mapDispatchToProps);
+const connectToRedux = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+);
 
 export default connectToRedux(Question1);

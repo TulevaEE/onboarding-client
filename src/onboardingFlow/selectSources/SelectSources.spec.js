@@ -23,7 +23,10 @@ describe('Select sources step', () => {
   });
 
   it('does not render a loader when funds loaded', () => {
-    component.setProps({ loadingSourceFunds: false, loadingTargetFunds: false });
+    component.setProps({
+      loadingSourceFunds: false,
+      loadingTargetFunds: false,
+    });
     expect(component.get(0)).not.toEqual(<Loader className="align-middle" />);
   });
 
@@ -41,12 +44,18 @@ describe('Select sources step', () => {
     const onNextStep = jest.fn();
     component.setProps({ onNextStep });
     expect(component.find('#nextStep').prop('onClick')).toBe(onNextStep);
-    expect(component.find('#nextStep').children().at(0).node).toEqual(<Message>steps.next</Message>);
+    expect(
+      component
+        .find('#nextStep')
+        .children()
+        .at(0).node,
+    ).toEqual(<Message>steps.next</Message>);
   });
 
-
   it('disables the next step button if selection is invalid', () => {
-    component.setProps({ sourceSelection: [{ sourceFundIsin: 'a', percentage: 1 }] });
+    component.setProps({
+      sourceSelection: [{ sourceFundIsin: 'a', percentage: 1 }],
+    });
     expect(component.find('#nextStep').prop('className')).not.toContain('disabled');
     component.setProps({
       sourceSelection: [
@@ -58,12 +67,12 @@ describe('Select sources step', () => {
   });
 
   it('disables the next step button if selection is invalid due to inter fund transfer', () => {
-    component.setProps({ sourceSelection: [{ sourceFundIsin: 'a', targetFundIsin: 'b', percentage: 1 }] });
+    component.setProps({
+      sourceSelection: [{ sourceFundIsin: 'a', targetFundIsin: 'b', percentage: 1 }],
+    });
     expect(component.find('#nextStep').prop('className')).not.toContain('disabled');
     component.setProps({
-      sourceSelection: [
-        { sourceFundIsin: 'a', targetFundIsin: 'a', percentage: 1 },
-      ],
+      sourceSelection: [{ sourceFundIsin: 'a', targetFundIsin: 'a', percentage: 1 }],
     });
     expect(component.find('#nextStep').prop('className')).toContain('disabled');
   });
@@ -96,7 +105,10 @@ describe('Select sources step', () => {
     ];
     component.setProps({ sourceFunds, targetFunds, onSelect });
     expect(onSelect).not.toHaveBeenCalled();
-    component.find(Radio).first().simulate('select');
+    component
+      .find(Radio)
+      .first()
+      .simulate('select');
     expect(onSelect).toHaveBeenCalledTimes(1);
     expect(onSelect).toHaveBeenCalledWith(fullSelection, false);
   });
@@ -105,12 +117,13 @@ describe('Select sources step', () => {
     const onSelect = jest.fn();
     const sourceFunds = [{ isin: 'c' }, { isin: 'b' }];
     const targetFunds = [{ isin: 'c' }];
-    const fullSelection = [
-      { sourceFundIsin: 'b', targetFundIsin: 'c', percentage: 1 },
-    ];
+    const fullSelection = [{ sourceFundIsin: 'b', targetFundIsin: 'c', percentage: 1 }];
     component.setProps({ sourceFunds, targetFunds, onSelect });
     expect(onSelect).not.toHaveBeenCalled();
-    component.find(Radio).first().simulate('select');
+    component
+      .find(Radio)
+      .first()
+      .simulate('select');
     expect(onSelect).toHaveBeenCalledTimes(1);
     expect(onSelect).toHaveBeenCalledWith(fullSelection, false);
   });
@@ -119,12 +132,13 @@ describe('Select sources step', () => {
     const onSelect = jest.fn();
     const sourceFunds = [{ isin: 'c' }];
     const targetFunds = [{ isin: 'c' }, { isin: 'b' }];
-    const fullSelection = [
-      { sourceFundIsin: 'c', targetFundIsin: 'c', percentage: 1 },
-    ];
+    const fullSelection = [{ sourceFundIsin: 'c', targetFundIsin: 'c', percentage: 1 }];
     component.setProps({ sourceFunds, targetFunds, onSelect });
     expect(onSelect).not.toHaveBeenCalled();
-    component.find(Radio).first().simulate('select');
+    component
+      .find(Radio)
+      .first()
+      .simulate('select');
     expect(onSelect).toHaveBeenCalledTimes(1);
     expect(onSelect).toHaveBeenCalledWith(fullSelection, false);
   });
@@ -171,7 +185,10 @@ describe('Select sources step', () => {
     const sourceFunds = [{ isin: 'a' }, { isin: 'b' }];
     component.setProps({ sourceFunds, onSelect });
     expect(onSelect).not.toHaveBeenCalled();
-    component.find(Radio).last().simulate('select');
+    component
+      .find(Radio)
+      .last()
+      .simulate('select');
     expect(onSelect).toHaveBeenCalledTimes(1);
     expect(onSelect).toHaveBeenCalledWith([], false);
   });
@@ -193,8 +210,8 @@ describe('Select sources step', () => {
   });
 
   it('shows the subtitle for exact fund selection when selection is exact', () => {
-    const subtitleRendered = () => component
-      .contains(<Message>select.sources.select.some.subtitle</Message>);
+    const subtitleRendered = () =>
+      component.contains(<Message>select.sources.select.some.subtitle</Message>);
     component.setProps({ sourceSelectionExact: false });
     expect(subtitleRendered()).toBe(false);
     component.setProps({ sourceSelectionExact: true });
@@ -208,7 +225,12 @@ describe('Select sources step', () => {
     ];
     const sourceFunds = [{ isin: 'a' }, { isin: 'b' }];
     const targetFunds = [{ isin: 'c' }];
-    component.setProps({ sourceSelectionExact: true, sourceSelection, sourceFunds, targetFunds });
+    component.setProps({
+      sourceSelectionExact: true,
+      sourceSelection,
+      sourceFunds,
+      targetFunds,
+    });
     const selectorProp = name => component.find(ExactFundSelector).prop(name);
     expect(selectorProp('selections')).toBe(sourceSelection);
     expect(selectorProp('sourceFunds')).toBe(sourceFunds);
@@ -232,8 +254,9 @@ describe('Select sources step', () => {
       sourceSelectionExact: false,
       recommendedFundIsin,
     });
-    expect(component.find(TargetFundSelector).prop('recommendedFundIsin'))
-      .toBe(recommendedFundIsin);
+    expect(component.find(TargetFundSelector).prop('recommendedFundIsin')).toBe(
+      recommendedFundIsin,
+    );
   });
 
   it('passes only Tuleva funds to the target fund selector', () => {
@@ -245,8 +268,7 @@ describe('Select sources step', () => {
       sourceSelectionExact: false,
       targetFunds,
     });
-    expect(component.find(TargetFundSelector).prop('targetFunds'))
-      .toEqual([tulevaFund]);
+    expect(component.find(TargetFundSelector).prop('targetFunds')).toEqual([tulevaFund]);
   });
 
   it('renders error', () => {
@@ -261,15 +283,19 @@ describe('Select sources step', () => {
   });
 
   it('renders info about cost and reference link', () => {
-    component.setProps({ sourceSelection: [{ sourceFundIsin: 'a', percentage: 1 }] });
-    expect(component.contains(
-      <a
-        href="//www.pensionikeskus.ee/ii-sammas/fondid/fonditasude-vordlused/"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <Message>select.sources.select.some.cost</Message>
-      </a>,
-    )).toBe(true);
+    component.setProps({
+      sourceSelection: [{ sourceFundIsin: 'a', percentage: 1 }],
+    });
+    expect(
+      component.contains(
+        <a
+          href="//www.pensionikeskus.ee/ii-sammas/fondid/fonditasude-vordlused/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Message>select.sources.select.some.cost</Message>
+        </a>,
+      ),
+    ).toBe(true);
   });
 });

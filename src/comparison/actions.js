@@ -1,8 +1,6 @@
 import debounce from 'lodash/debounce';
 
-import {
-  getComparisonForSalaryAndRateWithToken,
-} from '../common/api';
+import { getComparisonForSalaryAndRateWithToken } from '../common/api';
 
 import {
   GET_COMPARISON_START,
@@ -25,38 +23,39 @@ export function getComparison() {
     return getComparisonForSalaryAndRateWithToken(salary, rate, getState().login.token)
       .then(comparison => dispatch({ type: GET_COMPARISON_SUCCESS, comparison }))
       .then(() =>
-        getComparisonForSalaryAndRateWithToken(salary, rate, getState().login.token, true))
+        getComparisonForSalaryAndRateWithToken(salary, rate, getState().login.token, true),
+      )
       .then(comparison => dispatch({ type: GET_COMPARISON_BONUS_SUCCESS, comparison }))
       .catch(error => dispatch({ type: GET_COMPARISON_ERROR, error }));
   };
 }
 
 export function show() {
-  return (dispatch) => {
+  return dispatch => {
     dispatch({ type: SHOW_COMPARISON });
   };
 }
 
 export function hide() {
-  return (dispatch) => {
+  return dispatch => {
     dispatch({ type: HIDE_COMPARISON });
   };
 }
 
 export function changeSalary(salary) {
-  return (dispatch) => {
+  return dispatch => {
     dispatch({ type: COMPARISON_SALARY_CHANGE, salary });
   };
 }
 
 export function changeRate(rate) {
-  return (dispatch) => {
+  return dispatch => {
     dispatch({ type: COMPARISON_RATE_CHANGE, rate });
   };
 }
 
 export function debouncedSalaryChange(salary) {
-  return (dispatch) => {
+  return dispatch => {
     dispatch(changeSalary(salary));
     const debouncedDispatch = debounce(dispatch, debounceTime);
     debouncedDispatch(getComparison());
@@ -64,7 +63,7 @@ export function debouncedSalaryChange(salary) {
 }
 
 export function debouncedRateChange(rate) {
-  return (dispatch) => {
+  return dispatch => {
     dispatch(changeRate(rate));
     const debouncedDispatch = debounce(dispatch, debounceTime);
     debouncedDispatch(getComparison());

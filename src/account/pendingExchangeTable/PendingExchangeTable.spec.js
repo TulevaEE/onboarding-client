@@ -14,7 +14,11 @@ describe('Pending exchange table', () => {
 
   it('renders a table header', () => {
     const headerFields = () => component.find('div.tv-table__header').children();
-    const headerField = index => headerFields().at(index).childAt(0).get(0);
+    const headerField = index =>
+      headerFields()
+        .at(index)
+        .childAt(0)
+        .get(0);
     expect(headerFields().length).toBe(4);
     expect(headerField(0)).toEqual(<Message>pending.exchanges.source.fund.isin</Message>);
     expect(headerField(1)).toEqual(<Message>pending.exchanges.target.fund.isin</Message>);
@@ -38,22 +42,34 @@ describe('Pending exchange table', () => {
       },
     ];
     component.setProps({ pendingExchanges });
-    expect(component.find(PendingExchange).at(0).get(0))
-      .toEqual(<PendingExchange
+    expect(
+      component
+        .find(PendingExchange)
+        .at(0)
+        .get(0),
+    ).toEqual(
+      <PendingExchange
         key="1211222017-05-22T21:00:00Z"
         amount={1}
         date="2017-05-22T21:00:00Z"
         sourceFund={pendingExchanges[0].sourceFund}
         targetFund={pendingExchanges[0].targetFund}
-      />);
+      />,
+    );
 
-    expect(component.find(PendingExchange).at(1).get(0))
-      .toEqual(<PendingExchange
+    expect(
+      component
+        .find(PendingExchange)
+        .at(1)
+        .get(0),
+    ).toEqual(
+      <PendingExchange
         key="1231242017-02-22T21:00:00Z"
         amount={0.4}
         date="2017-02-22T21:00:00Z"
         sourceFund={pendingExchanges[1].sourceFund}
         targetFund={pendingExchanges[1].targetFund}
-      />);
+      />,
+    );
   });
 });

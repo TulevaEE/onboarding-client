@@ -20,8 +20,7 @@ import {
 export class InlineLoginPage extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-    };
+    this.state = {};
   }
 
   render() {
@@ -40,23 +39,25 @@ export class InlineLoginPage extends Component {
       <div>
         <div className="row form-group">
           <div>
-            { errorDescription ? <ErrorAlert description={errorDescription} /> : '' }
-            {
-              !loadingAuthentication && !controlCode ?
-                <LoginForm
-                  onPhoneNumberSubmit={onPhoneNumberSubmit}
-                  onPhoneNumberChange={onPhoneNumberChange}
-                  phoneNumber={phoneNumber}
-                  onAuthenticateWithIdCard={onAuthenticateWithIdCard}
-                /> : ''
-            }
-            {
-              !errorDescription && (loadingAuthentication || controlCode) ?
-                <AuthenticationLoader
-                  onCancel={onCancelMobileAuthentication}
-                  controlCode={controlCode}
-                /> : ''
-            }
+            {errorDescription ? <ErrorAlert description={errorDescription} /> : ''}
+            {!loadingAuthentication && !controlCode ? (
+              <LoginForm
+                onPhoneNumberSubmit={onPhoneNumberSubmit}
+                onPhoneNumberChange={onPhoneNumberChange}
+                phoneNumber={phoneNumber}
+                onAuthenticateWithIdCard={onAuthenticateWithIdCard}
+              />
+            ) : (
+              ''
+            )}
+            {!errorDescription && (loadingAuthentication || controlCode) ? (
+              <AuthenticationLoader
+                onCancel={onCancelMobileAuthentication}
+                controlCode={controlCode}
+              />
+            ) : (
+              ''
+            )}
             <div className="mt-3 small mb-3 text-center">
               <a href="/terms-of-use" target="_blank" rel="noopener noreferrer">
                 <Message>login.terms.link</Message>
@@ -109,13 +110,20 @@ const mapStateToProps = state => ({
   errorDescription: state.login.error,
   successful: !!state.login.token, // not used right now
 });
-const mapDispatchToProps = dispatch => bindActionCreators({
-  onPhoneNumberChange: changePhoneNumber,
-  onPhoneNumberSubmit: useRedirectLoginWithPhoneNumber,
-  onCancelMobileAuthentication: cancelMobileAuthentication,
-  onAuthenticateWithIdCard: useRedirectLoginWithIdCard,
-}, dispatch);
+const mapDispatchToProps = dispatch =>
+  bindActionCreators(
+    {
+      onPhoneNumberChange: changePhoneNumber,
+      onPhoneNumberSubmit: useRedirectLoginWithPhoneNumber,
+      onCancelMobileAuthentication: cancelMobileAuthentication,
+      onAuthenticateWithIdCard: useRedirectLoginWithIdCard,
+    },
+    dispatch,
+  );
 
-const withRedux = connect(mapStateToProps, mapDispatchToProps);
+const withRedux = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+);
 
 export default withTranslations(withRedux(InlineLoginPage));

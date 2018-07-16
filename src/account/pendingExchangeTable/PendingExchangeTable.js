@@ -6,7 +6,6 @@ import PendingExchange from './pendingExchange';
 
 import './PendingExchangeTable.scss';
 
-
 const PendingExchangeTable = ({ pendingExchanges }) => (
   <div>
     <div className="row tv-table__header py-2">
@@ -23,21 +22,15 @@ const PendingExchangeTable = ({ pendingExchanges }) => (
         <Message>pending.exchanges.amount</Message>
       </div>
     </div>
-    {
-      pendingExchanges.map(({ amount,
-        date,
-        sourceFund,
-        targetFund,
-      }) =>
-        (<PendingExchange
-          key={sourceFund.id + targetFund.id + date}
-          amount={amount}
-          date={date}
-          sourceFund={sourceFund}
-          targetFund={targetFund}
-        />),
-      )
-    }
+    {pendingExchanges.map(({ amount, date, sourceFund, targetFund }) => (
+      <PendingExchange
+        key={sourceFund.id + targetFund.id + date}
+        amount={amount}
+        date={date}
+        sourceFund={sourceFund}
+        targetFund={targetFund}
+      />
+    ))}
   </div>
 );
 
@@ -46,14 +39,16 @@ PendingExchangeTable.defaultProps = {
 };
 
 PendingExchangeTable.propTypes = {
-  pendingExchanges: Types.arrayOf(Types.shape({
-    price: Types.number,
-    currency: Types.string,
-    name: Types.string,
-    manager: Types.string,
-    isin: Types.string,
-    activeFund: Types.bool,
-  })),
+  pendingExchanges: Types.arrayOf(
+    Types.shape({
+      price: Types.number,
+      currency: Types.string,
+      name: Types.string,
+      manager: Types.string,
+      isin: Types.string,
+      activeFund: Types.bool,
+    }),
+  ),
 };
 
 export default PendingExchangeTable;

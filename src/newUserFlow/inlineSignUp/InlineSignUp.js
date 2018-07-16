@@ -30,15 +30,22 @@ InlineSignUp.propTypes = {
   saveUser: Types.func,
 };
 
-const onCreateUser = user => (dispatch) => {
+const onCreateUser = user => dispatch => {
   mixpanel.track('INLINE_SIGNUP_CREATE_USER', user);
   return dispatch(createUser(user));
 };
 
-const mapDispatchToProps = dispatch => bindActionCreators({
-  saveUser: onCreateUser,
-}, dispatch);
+const mapDispatchToProps = dispatch =>
+  bindActionCreators(
+    {
+      saveUser: onCreateUser,
+    },
+    dispatch,
+  );
 
-const connectToRedux = connect(null, mapDispatchToProps);
+const connectToRedux = connect(
+  null,
+  mapDispatchToProps,
+);
 
 export default connectToRedux(InlineSignUp);

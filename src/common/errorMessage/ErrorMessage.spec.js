@@ -21,7 +21,7 @@ describe('Error message', () => {
   it('shows an error messages', () => {
     errors = { errors: [{ code: 'some.code' }, { code: 'some.other.code' }] };
 
-    errors.errors.forEach((error) => {
+    errors.errors.forEach(error => {
       expect(component.contains(error.code.toString())).toBe(true);
     });
   });
@@ -40,7 +40,9 @@ describe('Error message', () => {
   });
 
   it('returns global error message', () => {
-    errors = { errors: [{ code: 'some.code', path: 'somePath' }, { code: 'global.error.code' }] };
+    errors = {
+      errors: [{ code: 'some.code', path: 'somePath' }, { code: 'global.error.code' }],
+    };
     expect(getGlobalErrorCode(errors)).toBe('global.error.code');
   });
 

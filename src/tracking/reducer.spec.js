@@ -28,9 +28,7 @@ import {
   GET_USER_CONVERSION_SUCCESS,
 } from '../login/constants';
 
-import {
-  UPDATE_USER_SUCCESS,
-} from '../common/user/constants';
+import { UPDATE_USER_SUCCESS } from '../common/user/constants';
 
 function getActionType(actionType) {
   return actionType.split('/')[1];
@@ -39,7 +37,6 @@ function getActionType(actionType) {
 beforeEach(() => {
   mixpanel.track = jest.fn();
 });
-
 
 it('can track getting user', () => {
   const user = { id: 123, firstName: 'Jordan', lastName: 'Valdma' };
@@ -53,35 +50,50 @@ it('can track getting user', () => {
 
   trackingReducer(undefined, action);
   expect(mixpanel.track).toHaveBeenCalledTimes(1);
-  expect(mixpanel.track).toHaveBeenCalledWith(getActionType(GET_USER_SUCCESS), { id: user.id });
+  expect(mixpanel.track).toHaveBeenCalledWith(getActionType(GET_USER_SUCCESS), {
+    id: user.id,
+  });
   expect(mixpanel.people.set).toHaveBeenCalledTimes(1);
-  expect(mixpanel.people.set)
-    .toHaveBeenCalledWith({
-      id: user.id,
-      distinct_id: user.id,
-      member_number: user.memberNumber,
-      age: user.age,
-      $first_name: user.firstName,
-      $last_name: user.lastName,
-    });
+  expect(mixpanel.people.set).toHaveBeenCalledWith({
+    id: user.id,
+    distinct_id: user.id,
+    member_number: user.memberNumber,
+    age: user.age,
+    $first_name: user.firstName,
+    $last_name: user.lastName,
+  });
   expect(mixpanel.identify).toHaveBeenCalledTimes(1);
   expect(mixpanel.identify).toHaveBeenCalledWith(user.id);
 });
 
 it('can track exchange source selection', () => {
-  const sourceSelection =
-    [{ sourceFundIsin: 'EE3600019832', percentage: 1, targetFundIsin: 'EE3600109435' },
-      { sourceFundIsin: 'EE3600109443', percentage: 1, targetFundIsin: 'EE3600109435' }];
+  const sourceSelection = [
+    {
+      sourceFundIsin: 'EE3600019832',
+      percentage: 1,
+      targetFundIsin: 'EE3600109435',
+    },
+    {
+      sourceFundIsin: 'EE3600109443',
+      percentage: 1,
+      targetFundIsin: 'EE3600109435',
+    },
+  ];
   const sourceSelectionExact = false;
 
-  const action = { type: SELECT_EXCHANGE_SOURCES, sourceSelection, sourceSelectionExact };
+  const action = {
+    type: SELECT_EXCHANGE_SOURCES,
+    sourceSelection,
+    sourceSelectionExact,
+  };
 
   trackingReducer(undefined, action);
 
   expect(mixpanel.track).toHaveBeenCalledTimes(1);
-  expect(mixpanel.track)
-    .toHaveBeenCalledWith(getActionType(SELECT_EXCHANGE_SOURCES),
-      { sourceSelection, sourceSelectionExact });
+  expect(mixpanel.track).toHaveBeenCalledWith(getActionType(SELECT_EXCHANGE_SOURCES), {
+    sourceSelection,
+    sourceSelectionExact,
+  });
 });
 
 it('can track target fund selection', () => {
@@ -91,9 +103,9 @@ it('can track target fund selection', () => {
   trackingReducer(undefined, action);
 
   expect(mixpanel.track).toHaveBeenCalledTimes(1);
-  expect(mixpanel.track)
-    .toHaveBeenCalledWith(getActionType(SELECT_TARGET_FUND),
-      { targetFundIsin });
+  expect(mixpanel.track).toHaveBeenCalledWith(getActionType(SELECT_TARGET_FUND), {
+    targetFundIsin,
+  });
 });
 
 it('can track sign mandate errors', () => {
@@ -103,9 +115,7 @@ it('can track sign mandate errors', () => {
   trackingReducer(undefined, action);
 
   expect(mixpanel.track).toHaveBeenCalledTimes(1);
-  expect(mixpanel.track)
-    .toHaveBeenCalledWith(getActionType(SIGN_MANDATE_ERROR),
-      { error });
+  expect(mixpanel.track).toHaveBeenCalledWith(getActionType(SIGN_MANDATE_ERROR), { error });
 });
 
 it('can track sign mandate start errors', () => {
@@ -115,9 +125,7 @@ it('can track sign mandate start errors', () => {
   trackingReducer(undefined, action);
 
   expect(mixpanel.track).toHaveBeenCalledTimes(1);
-  expect(mixpanel.track)
-    .toHaveBeenCalledWith(getActionType(SIGN_MANDATE_START_ERROR),
-      { error });
+  expect(mixpanel.track).toHaveBeenCalledWith(getActionType(SIGN_MANDATE_START_ERROR), { error });
 });
 
 it('can track conversion information', () => {
@@ -127,8 +135,10 @@ it('can track conversion information', () => {
   trackingReducer(undefined, action);
 
   expect(mixpanel.track).toHaveBeenCalledTimes(1);
-  expect(mixpanel.track)
-    .toHaveBeenCalledWith(getActionType(GET_USER_CONVERSION_SUCCESS), userConversion);
+  expect(mixpanel.track).toHaveBeenCalledWith(
+    getActionType(GET_USER_CONVERSION_SUCCESS),
+    userConversion,
+  );
 });
 
 it('can track location changes', () => {
@@ -138,22 +148,32 @@ it('can track location changes', () => {
   trackingReducer(undefined, action);
 
   expect(mixpanel.track).toHaveBeenCalledTimes(1);
-  expect(mixpanel.track)
-    .toHaveBeenCalledWith(getActionType(LOCATION_CHANGE), { path: payload.pathname });
+  expect(mixpanel.track).toHaveBeenCalledWith(getActionType(LOCATION_CHANGE), {
+    path: payload.pathname,
+  });
 });
 
 it('can track simple events', () => {
-  const events = [LOG_OUT, MOBILE_AUTHENTICATION_START, MOBILE_AUTHENTICATION_SUCCESS,
-    ID_CARD_AUTHENTICATION_START, ID_CARD_AUTHENTICATION_SUCCESS, GET_TARGET_FUNDS_ERROR,
-    CHANGE_AGREEMENT_TO_TERMS, SIGN_MANDATE_MOBILE_ID_START_SUCCESS,
-    SIGN_MANDATE_MOBILE_ID_CANCEL, SIGN_MANDATE_ID_CARD_START,
-    SIGN_MANDATE_ID_CARD_START_SUCCESS, SIGN_MANDATE_SUCCESS, UPDATE_USER_SUCCESS];
+  const events = [
+    LOG_OUT,
+    MOBILE_AUTHENTICATION_START,
+    MOBILE_AUTHENTICATION_SUCCESS,
+    ID_CARD_AUTHENTICATION_START,
+    ID_CARD_AUTHENTICATION_SUCCESS,
+    GET_TARGET_FUNDS_ERROR,
+    CHANGE_AGREEMENT_TO_TERMS,
+    SIGN_MANDATE_MOBILE_ID_START_SUCCESS,
+    SIGN_MANDATE_MOBILE_ID_CANCEL,
+    SIGN_MANDATE_ID_CARD_START,
+    SIGN_MANDATE_ID_CARD_START_SUCCESS,
+    SIGN_MANDATE_SUCCESS,
+    UPDATE_USER_SUCCESS,
+  ];
 
-  events.forEach((event) => {
+  events.forEach(event => {
     const action = { type: event };
     trackingReducer(undefined, action);
-    expect(mixpanel.track)
-      .toHaveBeenCalledWith(getActionType(event));
+    expect(mixpanel.track).toHaveBeenCalledWith(getActionType(event));
   });
 
   expect(mixpanel.track).toHaveBeenCalledTimes(events.length);
@@ -166,8 +186,7 @@ it('can track get user errors', () => {
   trackingReducer(undefined, action);
 
   expect(mixpanel.track).toHaveBeenCalledTimes(1);
-  expect(mixpanel.track)
-    .toHaveBeenCalledWith(getActionType(GET_USER_ERROR),
-      { userError });
+  expect(mixpanel.track).toHaveBeenCalledWith(getActionType(GET_USER_ERROR), {
+    userError,
+  });
 });
-

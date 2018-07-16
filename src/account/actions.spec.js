@@ -19,7 +19,7 @@ describe('Account actions', () => {
 
   function mockDispatch() {
     state = { login: { token: 'token' }, initialCapital: {} };
-    dispatch = jest.fn((action) => {
+    dispatch = jest.fn(action => {
       if (typeof action === 'function') {
         action(dispatch, () => state);
       }
@@ -34,7 +34,9 @@ describe('Account actions', () => {
     const initialCapital = [{ initialCapital: true }];
     mockApi.getInitialCapitalWithToken = jest.fn(() => {
       expect(dispatch).toHaveBeenCalledTimes(1);
-      expect(dispatch).toHaveBeenCalledWith({ type: GET_INITIAL_CAPITAL_START });
+      expect(dispatch).toHaveBeenCalledWith({
+        type: GET_INITIAL_CAPITAL_START,
+      });
       dispatch.mockClear();
       return Promise.resolve(initialCapital);
     });
@@ -55,7 +57,10 @@ describe('Account actions', () => {
     const getInitialCapital = createBoundAction(actions.getInitialCapital);
     expect(dispatch).not.toHaveBeenCalled();
     return getInitialCapital().then(() =>
-      expect(dispatch).toHaveBeenCalledWith({ type: GET_INITIAL_CAPITAL_ERROR, error }),
+      expect(dispatch).toHaveBeenCalledWith({
+        type: GET_INITIAL_CAPITAL_ERROR,
+        error,
+      }),
     );
   });
 });

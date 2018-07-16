@@ -3,7 +3,15 @@ import config from 'react-global-configuration';
 const mockUuid = jest.genMockFromModule('uuid/v4');
 jest.mock('uuid/v4', () => mockUuid);
 
-const { get, post, postForm, patch, downloadFile, simpleFetch, resetStatisticsIdentification } = require('./http');
+const {
+  get,
+  post,
+  postForm,
+  patch,
+  downloadFile,
+  simpleFetch,
+  resetStatisticsIdentification,
+} = require('./http');
 
 describe('http', () => {
   let originalFetch;
@@ -16,7 +24,7 @@ describe('http', () => {
     fetch = jest.fn();
     mockUuid.mockImplementation(() => 'fake uuid');
     global.window.fetch = fetch;
-    global.window.localStorage = new (class {
+    global.window.localStorage = new class {
       constructor() {
         this.items = {};
       }
@@ -28,7 +36,7 @@ describe('http', () => {
       getItem(name) {
         return this.items[name];
       }
-    })();
+    }();
   });
 
   afterEach(() => {
@@ -59,42 +67,44 @@ describe('http', () => {
   it('can get resources in json by urls', () => {
     const value = { thisIsTheReturnValue: true };
     fetch.mockReturnValueOnce(fakeSuccessfulResponseWithValue(value));
-    return get('https://example.com')
-      .then((givenValue) => {
-        expect(givenValue).toEqual(value);
-        const url = fetch.mock.calls[0][0];
-        expect(url).toEqual('https://example.com');
-        const options = fetch.mock.calls[0][1];
-        expect(options.method).toEqual('GET');
-      });
+    return get('https://example.com').then(givenValue => {
+      expect(givenValue).toEqual(value);
+      const url = fetch.mock.calls[0][0];
+      expect(url).toEqual('https://example.com');
+      const options = fetch.mock.calls[0][1];
+      expect(options.method).toEqual('GET');
+    });
   });
 
   it('can add get params to url', () => {
     const value = { thisIsTheReturnValue: true };
     fetch.mockReturnValueOnce(fakeSuccessfulResponseWithValue(value));
-    return get('https://example.com', { thing: 'hello', another: 5 })
-      .then((givenValue) => {
-        expect(givenValue).toEqual(value);
-        const url = fetch.mock.calls[0][0];
-        expect(url).toEqual('https://example.com?thing=hello&another=5');
-        const options = fetch.mock.calls[0][1];
-        expect(options.method).toEqual('GET');
-      });
+    return get('https://example.com', { thing: 'hello', another: 5 }).then(givenValue => {
+      expect(givenValue).toEqual(value);
+      const url = fetch.mock.calls[0][0];
+      expect(url).toEqual('https://example.com?thing=hello&another=5');
+      const options = fetch.mock.calls[0][1];
+      expect(options.method).toEqual('GET');
+    });
   });
 
   it('can download a file', () => {
     const value = { thisIsTheReturnValue: true };
     fetch.mockReturnValueOnce(fakeSuccessfulResponseWithValue(value));
-    const headers = { thing: 'hello', another: 5, 'x-statistics-identifier': 'fake uuid', 'Accept-Language': 'en' };
-    return downloadFile('https://example.com', headers)
-      .then((givenValue) => {
-        expect(givenValue).toEqual(value);
-        const url = fetch.mock.calls[0][0];
-        expect(url).toEqual('https://example.com');
-        const options = fetch.mock.calls[0][1];
-        expect(options.method).toEqual('GET');
-        expect(options.headers).toEqual(headers);
-      });
+    const headers = {
+      thing: 'hello',
+      another: 5,
+      'x-statistics-identifier': 'fake uuid',
+      'Accept-Language': 'en',
+    };
+    return downloadFile('https://example.com', headers).then(givenValue => {
+      expect(givenValue).toEqual(value);
+      const url = fetch.mock.calls[0][0];
+      expect(url).toEqual('https://example.com');
+      const options = fetch.mock.calls[0][1];
+      expect(options.method).toEqual('GET');
+      expect(options.headers).toEqual(headers);
+    });
   });
 
   it('sends statistics and can reset them', () => {
@@ -122,14 +132,13 @@ describe('http', () => {
     const value = { thisIsTheReturnValue: true };
     fetch.mockReturnValueOnce(fakeSuccessfulResponseWithValue(value));
     const headers = { iAmHeaders: true };
-    return get('https://example.com', undefined, headers)
-      .then((givenValue) => {
-        expect(givenValue).toEqual(value);
-        const url = fetch.mock.calls[0][0];
-        expect(url).toEqual('https://example.com');
-        const options = fetch.mock.calls[0][1];
-        expect(options.headers.iAmHeaders).toBe(true);
-      });
+    return get('https://example.com', undefined, headers).then(givenValue => {
+      expect(givenValue).toEqual(value);
+      const url = fetch.mock.calls[0][0];
+      expect(url).toEqual('https://example.com');
+      const options = fetch.mock.calls[0][1];
+      expect(options.headers.iAmHeaders).toBe(true);
+    });
   });
 
   it('throws if response is not successful', () => {
@@ -144,57 +153,56 @@ describe('http', () => {
   it('can post some data', () => {
     const value = { thisIsTheReturnValue: true };
     fetch.mockReturnValueOnce(fakeSuccessfulResponseWithValue(value));
-    return post('https://example.com', { thisIsTheBody: true })
-      .then((givenValue) => {
-        expect(givenValue).toEqual(value);
-        const url = fetch.mock.calls[0][0];
-        expect(url).toEqual('https://example.com');
-        const options = fetch.mock.calls[0][1];
-        expect(options.method).toEqual('POST');
-        expect(options.body).toEqual('{"thisIsTheBody":true}');
-      });
+    return post('https://example.com', { thisIsTheBody: true }).then(givenValue => {
+      expect(givenValue).toEqual(value);
+      const url = fetch.mock.calls[0][0];
+      expect(url).toEqual('https://example.com');
+      const options = fetch.mock.calls[0][1];
+      expect(options.method).toEqual('POST');
+      expect(options.body).toEqual('{"thisIsTheBody":true}');
+    });
   });
 
   it('can post some data form encoded', () => {
     const value = { thisIsTheReturnValue: true };
     fetch.mockReturnValueOnce(fakeSuccessfulResponseWithValue(value));
-    return postForm('https://example.com', { thisIsTheBody: true, yes: 'no' })
-      .then((givenValue) => {
-        expect(givenValue).toEqual(value);
-        const url = fetch.mock.calls[0][0];
-        expect(url).toEqual('https://example.com');
-        const options = fetch.mock.calls[0][1];
-        expect(options.method).toEqual('POST');
-        expect(options.headers['Content-Type']).toBe('application/x-www-form-urlencoded');
-        expect(options.body).toEqual('thisIsTheBody=true&yes=no');
-      });
+    return postForm('https://example.com', {
+      thisIsTheBody: true,
+      yes: 'no',
+    }).then(givenValue => {
+      expect(givenValue).toEqual(value);
+      const url = fetch.mock.calls[0][0];
+      expect(url).toEqual('https://example.com');
+      const options = fetch.mock.calls[0][1];
+      expect(options.method).toEqual('POST');
+      expect(options.headers['Content-Type']).toBe('application/x-www-form-urlencoded');
+      expect(options.body).toEqual('thisIsTheBody=true&yes=no');
+    });
   });
 
   it('can patch some data', () => {
     const value = { thisIsTheReturnValue: true };
     fetch.mockReturnValueOnce(fakeSuccessfulResponseWithValue(value));
-    return patch('https://example.com', { thisIsTheBody: true })
-      .then((givenValue) => {
-        expect(givenValue).toEqual(value);
-        const url = fetch.mock.calls[0][0];
-        expect(url).toEqual('https://example.com');
-        const options = fetch.mock.calls[0][1];
-        expect(options.method).toEqual('PATCH');
-        expect(options.body).toEqual('{"thisIsTheBody":true}');
-      });
+    return patch('https://example.com', { thisIsTheBody: true }).then(givenValue => {
+      expect(givenValue).toEqual(value);
+      const url = fetch.mock.calls[0][0];
+      expect(url).toEqual('https://example.com');
+      const options = fetch.mock.calls[0][1];
+      expect(options.method).toEqual('PATCH');
+      expect(options.body).toEqual('{"thisIsTheBody":true}');
+    });
   });
 
   it('can send a simple fetch request', () => {
     const someResponse = {};
     fetch.mockReturnValueOnce(fakeSuccessfulResponseWithValue(someResponse));
-    return simpleFetch('GET', 'https://id.tuleva.ee')
-      .then((response) => {
-        expect(response).toEqual(someResponse);
-        const url = fetch.mock.calls[0][0];
-        expect(url).toEqual('https://id.tuleva.ee');
-        const options = fetch.mock.calls[0][1];
-        expect(options.method).toEqual('GET');
-        expect(options.headers).toEqual({ 'Content-Type': 'text/plain' }); // do not add anything here, id card login will break
-      });
+    return simpleFetch('GET', 'https://id.tuleva.ee').then(response => {
+      expect(response).toEqual(someResponse);
+      const url = fetch.mock.calls[0][0];
+      expect(url).toEqual('https://id.tuleva.ee');
+      const options = fetch.mock.calls[0][1];
+      expect(options.method).toEqual('GET');
+      expect(options.headers).toEqual({ 'Content-Type': 'text/plain' }); // do not add anything here, id card login will break
+    });
   });
 });

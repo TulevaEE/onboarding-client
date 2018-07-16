@@ -36,7 +36,10 @@ describe('Fund exchange row', () => {
     };
     component.setProps({ onChange, selection, sourceFunds, targetFunds });
     expect(onChange).not.toHaveBeenCalled();
-    component.find('select').first().simulate('change', fakeEvent('source isin 3'));
+    component
+      .find('select')
+      .first()
+      .simulate('change', fakeEvent('source isin 3'));
     expect(onChange).toHaveBeenCalledTimes(1);
     expect(onChange).toHaveBeenCalledWith({
       sourceFundIsin: 'source isin 3',
@@ -48,48 +51,98 @@ describe('Fund exchange row', () => {
   it('shows all source funds as options', () => {
     component.setProps({ sourceFunds });
     sourceFunds.forEach(fund =>
-      expect(component.contains(<option value={fund.isin}>{fund.name}</option>)).toBe(true));
+      expect(component.contains(<option value={fund.isin}>{fund.name}</option>)).toBe(true),
+    );
   });
 
   it('shows all target funds as options', () => {
     component.setProps({ targetFunds });
     targetFunds.forEach(fund =>
-      expect(component.contains(
-        <option value={fund.isin}>
-          {`translated:target.funds.${fund.isin}.title`}
-        </option>,
-      )).toBe(true));
+      expect(
+        component.contains(
+          <option value={fund.isin}>{`translated:target.funds.${fund.isin}.title`}</option>,
+        ),
+      ).toBe(true),
+    );
   });
 
   it('sorts source funds', () => {
     component.setProps({ sourceFunds });
-    expect(component.find('option').at(0).prop('value')).toBe('source isin 1');
-    expect(component.find('option').at(1).prop('value')).toBe('source isin 2');
-    expect(component.find('option').at(2).prop('value')).toBe('source isin 3');
+    expect(
+      component
+        .find('option')
+        .at(0)
+        .prop('value'),
+    ).toBe('source isin 1');
+    expect(
+      component
+        .find('option')
+        .at(1)
+        .prop('value'),
+    ).toBe('source isin 2');
+    expect(
+      component
+        .find('option')
+        .at(2)
+        .prop('value'),
+    ).toBe('source isin 3');
   });
 
   it('sorts target funds', () => {
     component.setProps({ targetFunds });
-    expect(component.find('option').at(0).prop('value')).toBe('target isin 1');
-    expect(component.find('option').at(1).prop('value')).toBe('target isin 2');
-    expect(component.find('option').at(2).prop('value')).toBe('target isin 3');
+    expect(
+      component
+        .find('option')
+        .at(0)
+        .prop('value'),
+    ).toBe('target isin 1');
+    expect(
+      component
+        .find('option')
+        .at(1)
+        .prop('value'),
+    ).toBe('target isin 2');
+    expect(
+      component
+        .find('option')
+        .at(2)
+        .prop('value'),
+    ).toBe('target isin 3');
   });
 
-  it('sets the current selection\'s source fund as active', () => {
+  it("sets the current selection's source fund as active", () => {
     const sourceFundIsin = 'source isin 2';
-    const selection = { sourceFundIsin, targetFundIsin: 'target isin 3', percentage: 1 };
+    const selection = {
+      sourceFundIsin,
+      targetFundIsin: 'target isin 3',
+      percentage: 1,
+    };
     component.setProps({ sourceFunds, selection });
-    expect(component.find('select').first().prop('value')).toBe(sourceFundIsin);
+    expect(
+      component
+        .find('select')
+        .first()
+        .prop('value'),
+    ).toBe(sourceFundIsin);
   });
 
-  it('sets the current selection\'s target fund as active', () => {
+  it("sets the current selection's target fund as active", () => {
     const targetFundIsin = 'target isin 2';
-    const selection = { sourceFundIsin: 'source isin 3', targetFundIsin, percentage: 1 };
+    const selection = {
+      sourceFundIsin: 'source isin 3',
+      targetFundIsin,
+      percentage: 1,
+    };
     component.setProps({ targetFunds, selection });
-    expect(component.find('select').last().prop('value')).toBe(targetFundIsin);
+    expect(
+      component
+        .find('select')
+        .last()
+        .prop('value'),
+    ).toBe(targetFundIsin);
   });
 
-  it('sets the current selection\'s percentage as active', () => {
+  it("sets the current selection's percentage as active", () => {
     const percentage = 0.5;
     const selection = {
       sourceFundIsin: 'source isin 3',
@@ -145,7 +198,10 @@ describe('Fund exchange row', () => {
     };
     component.setProps({ onChange, selection, sourceFunds, targetFunds });
     expect(onChange).not.toHaveBeenCalled();
-    component.find('select').last().simulate('change', fakeEvent('target isin 3'));
+    component
+      .find('select')
+      .last()
+      .simulate('change', fakeEvent('target isin 3'));
     expect(onChange).toHaveBeenCalledTimes(1);
     expect(onChange).toHaveBeenCalledWith({
       sourceFundIsin: 'source isin 1',
