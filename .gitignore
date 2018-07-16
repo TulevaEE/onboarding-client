@@ -21,3 +21,6 @@ yarn-error.log
 *.iml
 *.ipr
 .vscode/
+
+# Built CSS files
+*.css

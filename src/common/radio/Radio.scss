@@ -1,0 +1,68 @@
+@import "../../variables";
+
+.tv-radio {
+  background-color: $gray-washed;
+  border-width: 1px;
+  border-style: solid;
+  border-color: $gray-mid;
+  border-radius: 8px;
+  width: 100%;
+  cursor: pointer;
+
+  transition:
+    background-color .15s ease-out,
+    border-color .15s ease-out;
+
+  & > * {
+    cursor: pointer;
+  }
+
+  & .row {
+    border-style: solid;
+    border-width: 1px;
+    border-color: transparent;
+  }
+
+  &--selected {
+    background-color: rgba(5, 147, 252, 0.08);
+    border-color: #0593fc;
+    border-width: 2px;
+
+    & .row {
+      border-width: 0;
+    }
+
+    & .tv-radio__button {
+      border-color: $blue;
+
+      & .tv-radio__check {
+        transition: transform .15s ease-out;
+        background-color: $blue;
+        transform: scale(1);
+      }
+    }
+  }
+
+  &__button {
+    border-radius: 50%;
+    cursor: pointer;
+    border-color: rgba(48, 48, 48, 0.64);
+    padding: 3px 3px;
+    width: 20px;
+    height: 20px;
+    border-style: solid;
+    display: inline-block;
+    background-color: transparent;
+    border-width: 2px;
+    transition: border-color .15s ease-out;
+  }
+
+  &__check {
+    transition: transform .15s ease-out;
+    width: 10px;
+    height: 10px;
+    display: block;
+    transform: scale(0);
+    border-radius: 50%;
+  }
+}

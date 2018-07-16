@@ -1,0 +1,49 @@
+@import "../../variables";
+
+.loader {
+  width: 50px;
+}
+
+.circular {
+  animation: rotate 2s linear infinite;
+  transform-origin: center center;
+}
+
+.path {
+  stroke: $brand-primary;
+  stroke-dasharray: 1, 200;
+  stroke-dashoffset: 0;
+  animation: dash 1.5s ease-in-out infinite;
+  stroke-linecap: round;
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dash {
+  0% {
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 89, 200;
+    stroke-dashoffset: -35px;
+  }
+  100% {
+    stroke-dasharray: 89, 200;
+    stroke-dashoffset: -124px;
+  }
+}
+
+.align-right {
+  margin-left: auto;
+  margin-right: 0;
+}
+
+.align-middle {
+  margin-left: auto;
+  margin-right: auto;
+}

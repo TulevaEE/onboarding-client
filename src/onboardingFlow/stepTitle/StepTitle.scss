@@ -1,0 +1,60 @@
+@import "../../variables";
+
+.tv-step__number {
+  width: 32px;
+  height: 32px;
+  color: $blue;
+  display: inline-block;
+  border-color: $gray-mid;
+  border-width: 1px;
+  line-height: 32px;
+  border-style: solid;
+  border-radius: 50%;
+  text-align: center;
+  background-color: white;
+  z-index: 3;
+}
+
+.tv-step__title {
+  overflow: hidden;
+  padding-left: 7px; // 15 (px-col) - 8 (pl-2) = 7px
+  padding-left: 7px; // 15 (px-col) - 8 (pr-2) = 7px
+
+  &--completed {
+    & .tv-step__number {
+      vertical-align: middle;
+      background: white url("done.svg") center center no-repeat;
+      background-size: 24px;
+    }
+  }
+
+  &--active {
+    &::before, &::after {
+      background-color: $gray-mid;
+      content: "";
+      display: inline-block;
+      height: 1px;
+      position: relative;
+      vertical-align: middle;
+      width: 100%;
+    }
+
+    &::before {
+      margin-left: -100%;
+    }
+
+    &::after {
+      margin-right: -100%;
+    }
+
+    & .tv-step__number {
+      color: $blue;
+      background-color: rgba(5, 147, 252, 0.24);
+      border: none;
+    }
+  }
+
+  & > .h2 > span {
+    vertical-align: middle;
+  }
+}

@@ -1,0 +1,52 @@
+.tv-target-fund {
+  border-radius: 8px;
+  background-color: white;
+  border: solid 1px #cccccc;
+  cursor: pointer;
+  transition: border-color .15s ease-out;
+  position: relative;
+  overflow: hidden;
+
+  &__corner-check {
+    border-bottom: 60px solid #0593fc;
+    border-left: 60px solid transparent;
+    border-right: 60px solid transparent;
+    margin-right: -62px;
+    position: absolute;
+    top: -22px;
+    right: 0;
+    transform: rotate(45deg);
+    span {
+      color: #fff;
+      font-size: 1em;
+      font-weight: bold;
+      position: absolute;
+      left: -18px;
+      top: 33px;
+      transform: rotate(-45deg);
+      img {
+        width: 25px;
+        height: 25px;
+      }
+    }
+  }
+
+  &__inner-container {
+    border-style: solid;
+    border-width: 1px;
+    width: 100%;
+    border-color: transparent;
+  }
+
+  &__container {
+    align-items: baseline;
+  }
+
+  &--active {
+    border: solid 2px #0593fc;
+
+    & .tv-target-fund__inner-container {
+      border-width: 0;
+    }
+  }
+}
