@@ -32,7 +32,7 @@ const TargetFundSelector = ({
                     <img src={checkImage} alt="Success" />
                   </span>
                 </div>
-              : ''
+                : ''
             }
             <div className="tv-target-fund__inner-container">
               <div className="mb-2">

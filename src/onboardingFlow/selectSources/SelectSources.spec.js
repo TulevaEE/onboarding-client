@@ -246,7 +246,7 @@ describe('Select sources step', () => {
       targetFunds,
     });
     expect(component.find(TargetFundSelector).prop('targetFunds'))
-        .toEqual([tulevaFund]);
+      .toEqual([tulevaFund]);
   });
 
   it('renders error', () => {
@@ -265,7 +265,8 @@ describe('Select sources step', () => {
     expect(component.contains(
       <a
         href="//www.pensionikeskus.ee/ii-sammas/fondid/fonditasude-vordlused/"
-        target="_blank" rel="noopener noreferrer"
+        target="_blank"
+        rel="noopener noreferrer"
       >
         <Message>select.sources.select.some.cost</Message>
       </a>,

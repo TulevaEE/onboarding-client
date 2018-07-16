@@ -81,7 +81,7 @@ it('can track exchange source selection', () => {
   expect(mixpanel.track).toHaveBeenCalledTimes(1);
   expect(mixpanel.track)
     .toHaveBeenCalledWith(getActionType(SELECT_EXCHANGE_SOURCES),
-    { sourceSelection, sourceSelectionExact });
+      { sourceSelection, sourceSelectionExact });
 });
 
 it('can track target fund selection', () => {

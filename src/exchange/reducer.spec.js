@@ -1,43 +1,32 @@
 import exchangeReducer from './reducer';
 import {
   LOAD_PENSION_DATA_SUCCESS,
-
   GET_SOURCE_FUNDS_START,
   GET_SOURCE_FUNDS_SUCCESS,
   GET_SOURCE_FUNDS_ERROR,
-
   SELECT_EXCHANGE_SOURCES,
-
   GET_TARGET_FUNDS_START,
   GET_TARGET_FUNDS_SUCCESS,
   GET_TARGET_FUNDS_ERROR,
-
   SELECT_TARGET_FUND,
-
   SIGN_MANDATE_MOBILE_ID_START,
   SIGN_MANDATE_MOBILE_ID_START_SUCCESS,
   SIGN_MANDATE_ID_CARD_START,
-  SIGN_MANDATE_ID_CARD_START_SUCCESS,
   SIGN_MANDATE_START_ERROR,
   SIGN_MANDATE_INVALID_ERROR,
   SIGN_MANDATE_SUCCESS,
   SIGN_MANDATE_ERROR,
   SIGN_MANDATE_MOBILE_ID_CANCEL,
-
   GET_PENDING_EXCHANGES_START,
   GET_PENDING_EXCHANGES_SUCCESS,
   GET_PENDING_EXCHANGES_ERROR,
-
   CHANGE_AGREEMENT_TO_TERMS,
-
   NO_SIGN_MANDATE_ERROR,
   DISABLE_SHORT_FLOW,
   QUERY_PARAMETERS,
 } from './constants';
 
-import {
-    LOG_OUT,
-} from '../login/constants';
+import { LOG_OUT } from '../login/constants';
 
 describe('Exchange reducer', () => {
   it('finishes loading pension data', () => {
@@ -82,8 +71,9 @@ describe('Exchange reducer', () => {
     const sourceSelection = [sourceExchange];
     const action = { type: SELECT_EXCHANGE_SOURCES, sourceSelection, sourceSelectionExact: false };
 
-    expect(exchangeReducer(undefined, action)
-      .selectedFutureContributionsFundIsin).toEqual(sourceExchange.targetFundIsin);
+    expect(exchangeReducer(undefined, action).selectedFutureContributionsFundIsin).toEqual(
+      sourceExchange.targetFundIsin,
+    );
   });
 
   it('selecting source fund exact will not trigger defaulting contributions fund selection', () => {
@@ -91,8 +81,7 @@ describe('Exchange reducer', () => {
     const sourceSelection = [sourceExchange];
     const action = { type: SELECT_EXCHANGE_SOURCES, sourceSelection, sourceSelectionExact: true };
 
-    expect(exchangeReducer(undefined, action)
-      .selectedFutureContributionsFundIsin).toEqual(null);
+    expect(exchangeReducer(undefined, action).selectedFutureContributionsFundIsin).toEqual(null);
   });
 
   it('selecting source fund non exact but with empty source selection will not trigger defaulting contributions fund selection', () => {
@@ -103,42 +92,47 @@ describe('Exchange reducer', () => {
       selectedFutureContributionsFundIsin: 'will not change',
     };
 
-    expect(exchangeReducer(state, action)
-      .selectedFutureContributionsFundIsin).toEqual(state.selectedFutureContributionsFundIsin);
+    expect(exchangeReducer(state, action).selectedFutureContributionsFundIsin).toEqual(
+      state.selectedFutureContributionsFundIsin,
+    );
   });
 
   it('when defaulting contributions fund selection, remove selection when fund is already active', () => {
     const activeFundIsin = 'activeFundIsin';
     const state = {
-      sourceFunds: [{
-        isin: activeFundIsin,
-        activeFund: true,
-      }],
+      sourceFunds: [
+        {
+          isin: activeFundIsin,
+          activeFund: true,
+        },
+      ],
     };
 
     const sourceExchange = { sourceFundIsin: 'sourceFundIsin', targetFundIsin: activeFundIsin };
     const sourceSelection = [sourceExchange];
     const action = { type: SELECT_EXCHANGE_SOURCES, sourceSelection, sourceSelectionExact: false };
 
-    expect(exchangeReducer(state, action)
-      .selectedFutureContributionsFundIsin).toEqual(null);
+    expect(exchangeReducer(state, action).selectedFutureContributionsFundIsin).toEqual(null);
   });
 
   it('defaulting contributions fund selection works with sourceFunds list', () => {
     const targetFundIsin = 'targetFundIsin';
     const state = {
-      sourceFunds: [{
-        isin: targetFundIsin,
-        activeFund: false,
-      }],
+      sourceFunds: [
+        {
+          isin: targetFundIsin,
+          activeFund: false,
+        },
+      ],
     };
 
     const sourceExchange = { sourceFundIsin: 'sourceFundIsin', targetFundIsin };
     const sourceSelection = [sourceExchange];
     const action = { type: SELECT_EXCHANGE_SOURCES, sourceSelection, sourceSelectionExact: false };
 
-    expect(exchangeReducer(state, action)
-      .selectedFutureContributionsFundIsin).toEqual(sourceExchange.targetFundIsin);
+    expect(exchangeReducer(state, action).selectedFutureContributionsFundIsin).toEqual(
+      sourceExchange.targetFundIsin,
+    );
   });
 
   it('starts loading when getting target funds', () => {
@@ -171,7 +165,7 @@ describe('Exchange reducer', () => {
   it('defaults contributions fund to null when target funds not present', () => {
     const sourceFunds = [{ name: 'name', isin: 'source' }, { name: 'name', isin: 'source 2' }];
     const sourceFundsAction = { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds };
-    const newState = exchangeReducer({ }, sourceFundsAction);
+    const newState = exchangeReducer({}, sourceFundsAction);
     expect(newState.selectedFutureContributionsFundIsin).toEqual(null);
   });
 
@@ -185,7 +179,8 @@ describe('Exchange reducer', () => {
     const targetFunds = [
       { name: 'name', isin: 'isin0', fundManager: { name: 'Random company fund' } },
       { name: 'name', isin: 'isin1', fundManager: { name: 'Tuleva' } },
-      { name: 'name', isin: 'isin2', fundManager: { name: 'Tuleva' } }];
+      { name: 'name', isin: 'isin2', fundManager: { name: 'Tuleva' } },
+    ];
     const targetFundsAction = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
     const state = [sourceFundsAction, targetFundsAction].reduce(exchangeReducer);
     expect(state.selectedFutureContributionsFundIsin).toEqual(targetFunds[1].isin);
@@ -197,8 +192,10 @@ describe('Exchange reducer', () => {
       { name: 'name', isin: 'isin2', activeFund: true },
     ];
     const sourceFundsAction = { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds };
-    const targetFunds = [{ name: 'name', isin: 'isin1', fundManager: { name: 'Tuleva' } },
-      { name: 'name', isin: 'isin2', fundManager: { name: 'Tuleva' } }];
+    const targetFunds = [
+      { name: 'name', isin: 'isin1', fundManager: { name: 'Tuleva' } },
+      { name: 'name', isin: 'isin2', fundManager: { name: 'Tuleva' } },
+    ];
     const targetFundsAction = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
     const state = [sourceFundsAction, targetFundsAction].reduce(exchangeReducer);
     expect(state.selectedFutureContributionsFundIsin).toEqual(null);
@@ -210,10 +207,15 @@ describe('Exchange reducer', () => {
       { sourceFundIsin: 'source 2', targetFundIsin: 'target', percentage: 1 },
     ];
 
-    const sourceFunds = [{ name: 'name', isin: 'source', price: 100 }, { name: 'name', isin: 'source 2', price: 100 }];
+    const sourceFunds = [
+      { name: 'name', isin: 'source', price: 100 },
+      { name: 'name', isin: 'source 2', price: 100 },
+    ];
     const sourceFundsAction = { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds };
-    const targetFunds = [{ name: 'name', isin: 'target', fundManager: { name: 'Tuleva' } },
-      { name: 'name', isin: 'target 2', fundManager: { name: 'Tuleva' } }];
+    const targetFunds = [
+      { name: 'name', isin: 'target', fundManager: { name: 'Tuleva' } },
+      { name: 'name', isin: 'target 2', fundManager: { name: 'Tuleva' } },
+    ];
     const targetFundsAction = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
     const state = [sourceFundsAction, targetFundsAction].reduce(exchangeReducer);
     expect(state.sourceSelection).toEqual(expectedFullSelection);
@@ -233,8 +235,10 @@ describe('Exchange reducer', () => {
       { name: 'name', isin: 'source 3', price: 100 },
     ];
     const sourceFundsAction = { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds };
-    const targetFunds = [{ name: 'name', isin: 'target', fundManager: { name: 'Tuleva' } },
-      { name: 'name', isin: 'target 2', fundManager: { name: 'Tuleva' } }];
+    const targetFunds = [
+      { name: 'name', isin: 'target', fundManager: { name: 'Tuleva' } },
+      { name: 'name', isin: 'target 2', fundManager: { name: 'Tuleva' } },
+    ];
     const targetFundsAction = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
     const state = [sourceFundsAction, targetFundsAction].reduce(exchangeReducer);
     expect(state.sourceSelection).toEqual(expectedFullSelection);
@@ -276,29 +280,34 @@ describe('Exchange reducer', () => {
   it('can select a target fund for future capital contributions', () => {
     const targetFundIsin = 'AAA';
     const action = { type: SELECT_TARGET_FUND, targetFundIsin };
-    expect(exchangeReducer(undefined, action).selectedFutureContributionsFundIsin)
-      .toEqual(targetFundIsin);
+    expect(exchangeReducer(undefined, action).selectedFutureContributionsFundIsin).toEqual(
+      targetFundIsin,
+    );
   });
 
   it('selecting a target fund which is already active for future contributions will result an empty selection', () => {
     const activeFundIsin = 'activeFundIsin';
     const state = {
-      sourceFunds: [{
-        isin: activeFundIsin,
-        activeFund: true,
-      }],
+      sourceFunds: [
+        {
+          isin: activeFundIsin,
+          activeFund: true,
+        },
+      ],
     };
     const action = { type: SELECT_TARGET_FUND, targetFundIsin: activeFundIsin };
-    expect(exchangeReducer(state, action).selectedFutureContributionsFundIsin)
-      .toEqual(null);
+    expect(exchangeReducer(state, action).selectedFutureContributionsFundIsin).toEqual(null);
   });
 
   it('can change the agreement to the terms of use', () => {
-    [true, false].forEach(agreement => (
-      expect(exchangeReducer(undefined, {
-        type: CHANGE_AGREEMENT_TO_TERMS,
-        agreement,
-      }).agreedToTerms).toEqual(agreement)));
+    [true, false].forEach(agreement =>
+      expect(
+        exchangeReducer(undefined, {
+          type: CHANGE_AGREEMENT_TO_TERMS,
+          agreement,
+        }).agreedToTerms,
+      ).toEqual(agreement),
+    );
   });
 
   it('starts loading mandate when starting to sign mandate with mobile id', () => {
@@ -322,7 +331,10 @@ describe('Exchange reducer', () => {
   it('saves the mandate id when signing mandate succeeds', () => {
     const signedMandateId = 'an id';
     const action = { type: SIGN_MANDATE_SUCCESS, signedMandateId };
-    const newState = exchangeReducer({ mandateSigningControlCode: 'code', loadingMandate: true }, action);
+    const newState = exchangeReducer(
+      { mandateSigningControlCode: 'code', loadingMandate: true },
+      action,
+    );
     expect(newState.mandateSigningControlCode).toBeFalsy();
     expect(newState.signedMandateId).toBe(signedMandateId);
     expect(newState.loadingMandate).toBe(false);
@@ -354,11 +366,14 @@ describe('Exchange reducer', () => {
 
   it('can cancel signing the mandate', () => {
     const action = { type: SIGN_MANDATE_MOBILE_ID_CANCEL };
-    const newState = exchangeReducer({
-      loadingMandate: true,
-      mandateSigningControlCode: '1337',
-      signedMandateId: 'an id',
-    }, action);
+    const newState = exchangeReducer(
+      {
+        loadingMandate: true,
+        mandateSigningControlCode: '1337',
+        signedMandateId: 'an id',
+      },
+      action,
+    );
     expect(newState.loadingMandate).toBe(false);
     expect(newState.mandateSigningControlCode).toBeFalsy();
     expect(newState.signedMandateId).toBe(null);
@@ -366,29 +381,35 @@ describe('Exchange reducer', () => {
 
   it('can remove mandate sign errors', () => {
     const action = { type: NO_SIGN_MANDATE_ERROR };
-    const newState = exchangeReducer({
-      mandateSigningError: { error: [] },
-    }, action);
+    const newState = exchangeReducer(
+      {
+        mandateSigningError: { error: [] },
+      },
+      action,
+    );
     expect(newState.mandateSigningError).toBe(null);
   });
 
   it('reverts to initial state when log out', () => {
     const action = { type: LOG_OUT };
-    const newState = exchangeReducer({
-      sourceFunds: [{ sourceFund: true }],
-      loadingSourceFunds: true,
-      sourceSelection: '123',
-      sourceSelectionExact: true,
-      targetFunds: [],
-      loadingTargetFunds: true,
-      selectedFutureContributionsFundIsin: '123',
-      error: '123',
-      loadingMandate: true,
-      mandateSigningControlCode: '123',
-      mandateSigningError: '123',
-      signedMandateId: 123,
-      agreedToTerms: true,
-    }, action);
+    const newState = exchangeReducer(
+      {
+        sourceFunds: [{ sourceFund: true }],
+        loadingSourceFunds: true,
+        sourceSelection: '123',
+        sourceSelectionExact: true,
+        targetFunds: [],
+        loadingTargetFunds: true,
+        selectedFutureContributionsFundIsin: '123',
+        error: '123',
+        loadingMandate: true,
+        mandateSigningControlCode: '123',
+        mandateSigningError: '123',
+        signedMandateId: 123,
+        agreedToTerms: true,
+      },
+      action,
+    );
 
     expect(newState.sourceFunds).toBe(null);
     expect(newState.loadingSourceFunds).toBe(false);
@@ -430,14 +451,18 @@ describe('Exchange reducer', () => {
   });
 
   it('works with short flow query parameters', () => {
-    const newState = exchangeReducer(undefined,
-      { type: QUERY_PARAMETERS, query: { shortFlow: 'true' } });
+    const newState = exchangeReducer(undefined, {
+      type: QUERY_PARAMETERS,
+      query: { shortFlow: 'true' },
+    });
     expect(newState.shortFlow).toBe(true);
   });
 
   it('works with new member query parameters', () => {
-    const newState = exchangeReducer(undefined,
-      { type: QUERY_PARAMETERS, query: { isNewMember: 'true' } });
+    const newState = exchangeReducer(undefined, {
+      type: QUERY_PARAMETERS,
+      query: { isNewMember: 'true' },
+    });
     expect(newState.isNewMember).toBe(true);
   });
 

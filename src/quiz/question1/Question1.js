@@ -37,7 +37,7 @@ export class Question1 extends Component {
               onClick={() => this.onTotalPensionSelect(2500)}
             >
               <Message>{
-              Math.round(totalPensionCapital * 0.5)
+                Math.round(totalPensionCapital * 0.5)
               }</Message>
             </button>
           </div>
@@ -112,7 +112,7 @@ const mapStateToProps = state => ({
   // sourceFunds: state.exchange.sourceFunds,
   totalPensionCapital:
     state.exchange.sourceFunds ? state.exchange.sourceFunds.map(item => item.price)
-  .reduce((a, b) => a + b, 0) : 0,
+      .reduce((a, b) => a + b, 0) : 0,
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({

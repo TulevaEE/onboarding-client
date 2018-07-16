@@ -1,7 +1,6 @@
 import React from 'react';
 import FacebookProvider, { Like } from 'react-facebook';
 import { shallow } from 'enzyme';
-import { Message } from 'retranslate';
 import { LoginPage } from './LoginPage';
 import { AuthenticationLoader, ErrorAlert } from '../common';
 import LoginForm from './loginForm';
@@ -30,13 +29,17 @@ describe('Login page', () => {
     const onCancelMobileAuthentication = jest.fn();
     component.setProps({ onCancelMobileAuthentication });
 
-    expect(component.contains(
-      <AuthenticationLoader controlCode="" onCancel={onCancelMobileAuthentication} />,
-    )).toBe(false);
+    expect(
+      component.contains(
+        <AuthenticationLoader controlCode="" onCancel={onCancelMobileAuthentication} />,
+      ),
+    ).toBe(false);
     component.setProps({ loadingAuthentication: true });
-    expect(component.contains(
-      <AuthenticationLoader controlCode="" onCancel={onCancelMobileAuthentication} />,
-    )).toBe(true);
+    expect(
+      component.contains(
+        <AuthenticationLoader controlCode="" onCancel={onCancelMobileAuthentication} />,
+      ),
+    ).toBe(true);
   });
 
   it('renders an authentication loader instead if has control code', () => {
@@ -44,17 +47,21 @@ describe('Login page', () => {
     component.setProps({ onCancelMobileAuthentication });
 
     component.setProps({ controlCode: '1337' });
-    expect(component.contains(
-      <AuthenticationLoader controlCode="1337" onCancel={onCancelMobileAuthentication} />,
-    )).toBe(true);
+    expect(
+      component.contains(
+        <AuthenticationLoader controlCode="1337" onCancel={onCancelMobileAuthentication} />,
+      ),
+    ).toBe(true);
   });
 
   it('renders an authentication loader instead if loading user conversion', () => {
     const onCancelMobileAuthentication = jest.fn();
     component.setProps({ onCancelMobileAuthentication, loadingUserConversion: true });
-    expect(component.contains(
-      <AuthenticationLoader controlCode="" onCancel={onCancelMobileAuthentication} />,
-    )).toBe(true);
+    expect(
+      component.contains(
+        <AuthenticationLoader controlCode="" onCancel={onCancelMobileAuthentication} />,
+      ),
+    ).toBe(true);
   });
 
   it('passes an error forwards to ErrorAlert, shows login form and does not show other components', () => {
@@ -77,8 +84,12 @@ describe('Login page', () => {
   });
 
   it('shows facebook likes', () => {
-    expect(component.contains(<FacebookProvider appId="1939240566313354">
-      <Like href="http://www.facebook.com/Tuleva.ee" colorScheme="dark" showFaces />
-    </FacebookProvider>)).toBe(true);
+    expect(
+      component.contains(
+        <FacebookProvider appId="1939240566313354">
+          <Like href="http://www.facebook.com/Tuleva.ee" colorScheme="dark" showFaces />
+        </FacebookProvider>,
+      ),
+    ).toBe(true);
   });
 });

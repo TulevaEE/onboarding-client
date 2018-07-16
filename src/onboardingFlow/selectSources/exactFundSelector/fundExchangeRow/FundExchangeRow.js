@@ -33,9 +33,9 @@ export const FundExchangeRow = ({ // exporting without translations for testing 
           >
             {
               sortedSourceFunds.map(fund =>
-                <option key={fund.isin} value={fund.isin}>
+                (<option key={fund.isin} value={fund.isin}>
                   {fund.name}
-                </option>,
+                </option>),
               )
             }
           </select>
@@ -69,9 +69,9 @@ export const FundExchangeRow = ({ // exporting without translations for testing 
           >
             {
               sortedTargetFunds.map(fund =>
-                <option key={fund.isin} value={fund.isin}>
+                (<option key={fund.isin} value={fund.isin}>
                   {translate(`target.funds.${fund.isin}.title`)}
-                </option>,
+                </option>),
               )
             }
           </select>

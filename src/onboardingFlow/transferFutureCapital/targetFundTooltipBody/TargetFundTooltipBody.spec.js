@@ -11,7 +11,7 @@ describe('TargetFundTooltipBody', () => {
   });
 
   it('when wrong isin passed - renders default no data message', () => {
-    component.setProps({ targetFundIsin: 'someising'});
+    component.setProps({ targetFundIsin: 'someising' });
 
     const noDataMessage = () => component.find('div.target-fund-tooltip__no-data');
     const listItems = () => component.find('ul li');
@@ -20,7 +20,7 @@ describe('TargetFundTooltipBody', () => {
   });
 
   it('renders component with correct fund info for advanced fund', () => {
-    component.setProps({ targetFundIsin: 'EE3600109435'});
+    component.setProps({ targetFundIsin: 'EE3600109435' });
 
     const image = () => component.find('img.diagram');
     const listItems = () => component.find('ul li');
@@ -29,7 +29,7 @@ describe('TargetFundTooltipBody', () => {
   });
 
   it('renders component with correct fund info for conservative fund', () => {
-    component.setProps({ targetFundIsin: 'EE3600109443'});
+    component.setProps({ targetFundIsin: 'EE3600109443' });
 
     const image = () => component.find('img.diagram');
     const listItems = () => component.find('ul li');

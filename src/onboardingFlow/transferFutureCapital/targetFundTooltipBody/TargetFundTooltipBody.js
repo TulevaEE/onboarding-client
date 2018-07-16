@@ -47,7 +47,10 @@ const TargetFundTooltipBody = ({ targetFundIsin }) => {
       </h3>
       <img
         src={getTooltipBodyData(targetFundIsin).diagram}
-        alt="Fund diagram" width="180px" height="180px" className="diagram"
+        alt="Fund diagram"
+        width="180px"
+        height="180px"
+        className="diagram"
       />
       <ul className="mt-4">
         {getTooltipBodyData(targetFundIsin).funds.map(item => (

@@ -38,7 +38,8 @@ export const TermsOfUse = () => (
         <p className="mt-3">
           <a
             href="https://drive.google.com/open?id=1IKm6NldgI1lu01X2rvCMy9B78wNANh81z3_wvVEKtM4"
-            target="_blank" rel="noopener noreferrer"
+            target="_blank"
+            rel="noopener noreferrer"
           >
             <Message>terms.of.use.main.line.4</Message>
           </a>

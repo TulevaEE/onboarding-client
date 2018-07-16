@@ -18,7 +18,6 @@ import {
 } from '../../actions';
 
 export class InlineLoginPage extends Component {
-
   constructor(props) {
     super(props);
     this.state = {

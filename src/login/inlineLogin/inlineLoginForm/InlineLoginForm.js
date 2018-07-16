@@ -11,7 +11,6 @@ function runWithDefaultPrevention(fn) {
   };
 }
 export class InlineLoginForm extends Component {
-
   constructor(props) {
     super(props);
     this.state = {

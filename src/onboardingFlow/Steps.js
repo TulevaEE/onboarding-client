@@ -44,9 +44,9 @@ export const Steps = ({ children, stepName, userFirstName, isNewMember, shortFlo
           {
             shortFlow ? '' : (
               beforeSteps.map((beforeStep, index) =>
-                <StepTitle key={beforeStep} number={index + 1} completed>
+                (<StepTitle key={beforeStep} number={index + 1} completed>
                   <Message>{`steps.${beforeStep}`}</Message>
-                </StepTitle>,
+                </StepTitle>),
               )
             )
           }
@@ -56,11 +56,11 @@ export const Steps = ({ children, stepName, userFirstName, isNewMember, shortFlo
                 <Message>{`steps.${currentStep}`}</Message>
               </StepTitle>
             ) :
-            (
-              <StepTitle number={stepIndex + 1} active>
-                <Message>{`steps.${currentStep}`}</Message>
-              </StepTitle>
-            )
+              (
+                <StepTitle number={stepIndex + 1} active>
+                  <Message>{`steps.${currentStep}`}</Message>
+                </StepTitle>
+              )
           }
           <div className="pb-5 px-col">{children}</div>
           {
@@ -68,9 +68,9 @@ export const Steps = ({ children, stepName, userFirstName, isNewMember, shortFlo
           }
           {
             afterSteps.map((afterStep, index) =>
-              <StepTitle key={afterStep} number={index + 1 + stepIndex + 1}>
+              (<StepTitle key={afterStep} number={index + 1 + stepIndex + 1}>
                 <Message>{`steps.${afterStep}`}</Message>
-              </StepTitle>,
+              </StepTitle>),
             )
           }
         </div>

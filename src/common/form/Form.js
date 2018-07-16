@@ -22,7 +22,10 @@ export const renderField = ({ input, type, placeholder, disabled, meta: { touche
   <div>
     <div className={`form-group ${touched && error ? 'has-danger' : ''}`}>
       <input
-        {...input} type={type} placeholder={placeholder} disabled={disabled}
+        {...input}
+        type={type}
+        placeholder={placeholder}
+        disabled={disabled}
         className="form-control"
       />
       {touched && error && <div className="form-control-feedback">

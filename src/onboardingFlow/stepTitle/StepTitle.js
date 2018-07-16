@@ -16,7 +16,7 @@ const StepTitle = ({ children, number, active, completed }) => (
           {!completed && !active ? <span className="text-regular">{number}</span> : ''}
           {!completed && active ? <b>{number}</b> : ''}
         </span>
-        ) : '' }
+      ) : '' }
       <span className={`mr-2 ${active ? 'h2' : 'text-muted'}`}>{children}</span>
     </div>
   </div>

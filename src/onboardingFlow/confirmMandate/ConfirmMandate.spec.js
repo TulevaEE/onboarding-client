@@ -87,7 +87,8 @@ describe('Confirm mandate step', () => {
     });
     expect(component.contains(
       <button
-        className="btn btn-secondary mb-2" onClick={onPreviousStep}
+        className="btn btn-secondary mb-2"
+        onClick={onPreviousStep}
       >
         <Message>steps.previous</Message>
       </button>)).toBe(true);
@@ -105,7 +106,8 @@ describe('Confirm mandate step', () => {
     });
     expect(component.contains(
       <button
-        className="btn btn-secondary mb-2" onClick={onExitShortFlow}
+        className="btn btn-secondary mb-2"
+        onClick={onExitShortFlow}
       >
         <Message>confirm.mandate.exit.short.flow</Message>
       </button>)).toBe(true);
@@ -257,7 +259,8 @@ describe('Confirm mandate step', () => {
         <div className="mt-2">
           <small className="text-muted">
             <a
-              target="_blank" rel="noopener noreferrer"
+              target="_blank"
+              rel="noopener noreferrer"
               href="//www.pensionikeskus.ee/ii-sammas/fondid/fonditasude-vordlused/"
             >
               <Message>confirm.mandate.pension.centre</Message>

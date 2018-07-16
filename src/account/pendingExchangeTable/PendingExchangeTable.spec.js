@@ -41,7 +41,8 @@ describe('Pending exchange table', () => {
     expect(component.find(PendingExchange).at(0).get(0))
       .toEqual(<PendingExchange
         key="1211222017-05-22T21:00:00Z"
-        amount={1} date="2017-05-22T21:00:00Z"
+        amount={1}
+        date="2017-05-22T21:00:00Z"
         sourceFund={pendingExchanges[0].sourceFund}
         targetFund={pendingExchanges[0].targetFund}
       />);
@@ -49,10 +50,10 @@ describe('Pending exchange table', () => {
     expect(component.find(PendingExchange).at(1).get(0))
       .toEqual(<PendingExchange
         key="1231242017-02-22T21:00:00Z"
-        amount={0.4} date="2017-02-22T21:00:00Z"
+        amount={0.4}
+        date="2017-02-22T21:00:00Z"
         sourceFund={pendingExchanges[1].sourceFund}
         targetFund={pendingExchanges[1].targetFund}
       />);
   });
-
 });

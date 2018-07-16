@@ -1,8 +1,4 @@
 import {
-  getInitialCapitalWithToken,
-} from '../common/api';
-
-import {
   GET_INITIAL_CAPITAL_START,
   GET_INITIAL_CAPITAL_SUCCESS,
   GET_INITIAL_CAPITAL_ERROR,
@@ -44,14 +40,13 @@ describe('Account actions', () => {
     });
     const getInitialCapital = createBoundAction(actions.getInitialCapital);
     expect(dispatch).not.toHaveBeenCalled();
-    return getInitialCapital()
-      .then(() => {
-        expect(dispatch).toHaveBeenCalledTimes(1);
-        expect(dispatch).toHaveBeenCalledWith({
-          type: GET_INITIAL_CAPITAL_SUCCESS,
-          initialCapital,
-        });
+    return getInitialCapital().then(() => {
+      expect(dispatch).toHaveBeenCalledTimes(1);
+      expect(dispatch).toHaveBeenCalledWith({
+        type: GET_INITIAL_CAPITAL_SUCCESS,
+        initialCapital,
       });
+    });
   });
 
   it('can handle errors when getting initial capital', () => {
@@ -59,8 +54,8 @@ describe('Account actions', () => {
     mockApi.getInitialCapitalWithToken = jest.fn(() => Promise.reject(error));
     const getInitialCapital = createBoundAction(actions.getInitialCapital);
     expect(dispatch).not.toHaveBeenCalled();
-    return getInitialCapital()
-      .then(() => expect(dispatch)
-        .toHaveBeenCalledWith({ type: GET_INITIAL_CAPITAL_ERROR, error }));
+    return getInitialCapital().then(() =>
+      expect(dispatch).toHaveBeenCalledWith({ type: GET_INITIAL_CAPITAL_ERROR, error }),
+    );
   });
 });

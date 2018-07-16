@@ -88,7 +88,7 @@ function createFullDefaultSourceSelection({ sourceFunds, targetFunds }) {
 
 function isContributionsFundAlreadyActive(state, isinToCompareTo) {
   return state.sourceFunds && !!state.sourceFunds
-      .find(sourceFund =>
+    .find(sourceFund =>
       sourceFund.activeFund && sourceFund.isin === isinToCompareTo);
 }
 
@@ -96,7 +96,7 @@ function getContributionFundIsin(action, state) {
   if (!action.sourceSelectionExact && action.sourceSelection.length > 0) {
     const futureContributionsFundCandidate = action.sourceSelection[0].targetFundIsin;
     return isContributionsFundAlreadyActive(state, futureContributionsFundCandidate)
-        ? null : futureContributionsFundCandidate;
+      ? null : futureContributionsFundCandidate;
   }
   return state.selectedFutureContributionsFundIsin;
 }

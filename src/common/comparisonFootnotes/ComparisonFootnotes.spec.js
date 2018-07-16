@@ -17,14 +17,16 @@ describe('Calculator Footnotes', () => {
       <p className="small">
         <Message>footnote.comparison.part1</Message>
         <a
-          target="_blank" rel="noopener noreferrer"
+          target="_blank"
+          rel="noopener noreferrer"
           href="http://www.pensionikeskus.ee/ii-sammas/investorkaitse/varade-kaitse/"
         >
           <Message>footnote.comparison.part2link</Message>
         </a>
         <Message>footnote.comparison.part3</Message>
         <a
-          target="_blank" rel="noopener noreferrer"
+          target="_blank"
+          rel="noopener noreferrer"
           href="http://www.pensionikeskus.ee/files/dokumendid/kogumispensioni_statistika_012017.pdf"
         >
           <Message>footnote.comparison.part4link</Message>
@@ -36,7 +38,7 @@ describe('Calculator Footnotes', () => {
 
   it('renders footnotes for cheapest keyword', () => {
     expect(component.contains(
-        <Message>footnote.cheapest</Message>,
+      <Message>footnote.cheapest</Message>,
     )).toBe(true);
   });
 
@@ -45,5 +47,4 @@ describe('Calculator Footnotes', () => {
       <Message>footnote.comparison.assumptions</Message>,
     )).toBe(true);
   });
-
 });

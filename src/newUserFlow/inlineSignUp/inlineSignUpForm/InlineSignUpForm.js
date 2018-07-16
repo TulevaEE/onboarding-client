@@ -11,26 +11,40 @@ const renderField = ({ input, type, placeholder, disabled, meta: { touched, erro
   <div>
     <div className={`form-group ${touched && error ? 'has-error' : ''}`}>
       <input
-        {...input} type={type} placeholder={placeholder} disabled={disabled}
+        {...input}
+        type={type}
+        placeholder={placeholder}
+        disabled={disabled}
         className="form-control"
       />
-      {touched && error && <div className="help-block">
-        <Message>{`new.user.flow.signup.error.${error}`}</Message>
-      </div>}
+      {touched &&
+        error && (
+          <div className="help-block">
+            <Message>{`new.user.flow.signup.error.${error}`}</Message>
+          </div>
+        )}
     </div>
   </div>
 );
 
-export const InlineSignUpForm = ({ handleSubmit, invalid, submitting, error,
-translations: { translate } }) => (
+export const InlineSignUpForm = ({
+  handleSubmit,
+  invalid,
+  submitting,
+  error,
+  translations: { translate },
+}) => (
   <div>
-    <form id="register-form" onSubmit={handleSubmit} role="form">
+    <form id="register-form" onSubmit={handleSubmit}>
       <div className="form-group mb-2">
         <label htmlFor="register-form-email">
           <Message>new.user.flow.signup.email</Message>
         </label>
         <Field
-          component={renderField} type="email" name="email" id="register-form-email"
+          component={renderField}
+          type="email"
+          name="email"
+          id="register-form-email"
           placeholder={translate('new.user.flow.signup.email')}
           validate={[requiredField, emailValidator]}
         />
@@ -40,7 +54,10 @@ translations: { translate } }) => (
           <Message>new.user.flow.signup.personalCode</Message>
         </label>
         <Field
-          component={renderField} type="text" name="personalCode" id="register-form-personalCode"
+          component={renderField}
+          type="text"
+          name="personalCode"
+          id="register-form-personalCode"
           placeholder={translate('new.user.flow.signup.personalCode')}
           validate={[requiredField, length11]}
         />
@@ -50,7 +67,10 @@ translations: { translate } }) => (
           <Message>new.user.flow.signup.phoneNumber</Message>
         </label>
         <Field
-          component={renderField} type="text" name="phoneNumber" id="register-form-phoneNumber"
+          component={renderField}
+          type="text"
+          name="phoneNumber"
+          id="register-form-phoneNumber"
           placeholder={translate('new.user.flow.signup.phoneNumber')}
         />
       </div>
@@ -58,15 +78,27 @@ translations: { translate } }) => (
         <span className="custom-control-indicator" />
         <div className="custom-control-description">
           <Message>new.user.flow.signup.tos.start</Message>
-          <a href="https://tuleva.ee/wp-content/uploads/2017/10/P%C3%B5hikiri-Tulundus%C3%BChistu-Tuleva.pdf" target="_blank" rel="noopener noreferrer"><Message>new.user.flow.signup.tos.statute</Message></a>
+          <a
+            href="https://tuleva.ee/wp-content/uploads/2017/10/P%C3%B5hikiri-Tulundus%C3%BChistu-Tuleva.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Message>new.user.flow.signup.tos.statute</Message>
+          </a>
           <Message>new.user.flow.signup.tos.end</Message>
         </div>
       </div>
       <div>
-        {error && <div className="alert alert-danger mb-2" role="alert">
-          <Message>{`new.user.flow.signup.error.${error}`}</Message>
-        </div>}
-        <button type="submit" disabled={invalid || submitting} className={'btn btn-primary btn-lg btn-block'}>
+        {error && (
+          <div className="alert alert-danger mb-2" role="alert">
+            <Message>{`new.user.flow.signup.error.${error}`}</Message>
+          </div>
+        )}
+        <button
+          type="submit"
+          disabled={invalid || submitting}
+          className={'btn btn-primary btn-lg btn-block'}
+        >
           <Message>new.user.flow.signup.submit</Message>
         </button>
       </div>
@@ -98,9 +130,11 @@ const mapStateToProps = state => ({
   initialValues: state.login.user ? { ...state.login.user } : null,
 });
 
-const connectToRedux = connect(mapStateToProps, null);
+const connectToRedux = connect(
+  mapStateToProps,
+  null,
+);
 
 const prefilledForm = connectToRedux(translatedForm);
 
 export default prefilledForm;
-

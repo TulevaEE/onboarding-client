@@ -1,15 +1,11 @@
 import { push } from 'react-router-redux';
 import { SubmissionError } from 'redux-form';
+import config from 'react-global-configuration';
 
-import {
-  UPDATE_USER_START,
-  UPDATE_USER_SUCCESS,
-  UPDATE_USER_ERROR,
-} from './constants';
+import { UPDATE_USER_START, UPDATE_USER_SUCCESS, UPDATE_USER_ERROR } from './constants';
 
 const mockApi = jest.genMockFromModule('../api');
 jest.mock('../api', () => mockApi);
-import config from 'react-global-configuration';
 
 const actions = require('./actions');
 
@@ -45,12 +41,11 @@ describe('newUserFlow actions', () => {
     });
     const registerUser = createBoundAction(actions.registerUser);
     expect(dispatch).not.toHaveBeenCalled();
-    return registerUser(newUser)
-      .then(() => {
-        expect(dispatch).toHaveBeenCalledTimes(2);
-        expect(dispatch).toHaveBeenCalledWith({ type: UPDATE_USER_SUCCESS, newUser });
-        expect(dispatch).toHaveBeenCalledWith(push('/steps/payment'));
-      });
+    return registerUser(newUser).then(() => {
+      expect(dispatch).toHaveBeenCalledTimes(2);
+      expect(dispatch).toHaveBeenCalledWith({ type: UPDATE_USER_SUCCESS, newUser });
+      expect(dispatch).toHaveBeenCalledWith(push('/steps/payment'));
+    });
   });
 
   it('can handle errors when registering a new user', () => {
@@ -61,7 +56,9 @@ describe('newUserFlow actions', () => {
 
     return registerUser()
       .then(() => expect(dispatch).toHaveBeenCalledWith({ type: UPDATE_USER_ERROR, error }))
-      .catch(givenError => expect(givenError).toEqual(new SubmissionError({ personalCode: 'invalid' })));
+      .catch(givenError =>
+        expect(givenError).toEqual(new SubmissionError({ personalCode: 'invalid' })),
+      );
   });
 
   it('can create a new user', () => {
@@ -74,11 +71,10 @@ describe('newUserFlow actions', () => {
     });
     const registerUser = createBoundAction(actions.createUser);
     expect(dispatch).not.toHaveBeenCalled();
-    return registerUser(newUser)
-      .then(() => {
-        expect(dispatch).toHaveBeenCalledTimes(1);
-        expect(dispatch).toHaveBeenCalledWith({ type: UPDATE_USER_SUCCESS, newUser });
-      });
+    return registerUser(newUser).then(() => {
+      expect(dispatch).toHaveBeenCalledTimes(1);
+      expect(dispatch).toHaveBeenCalledWith({ type: UPDATE_USER_SUCCESS, newUser });
+    });
   });
 
   it('can handle errors when creating a new user', () => {
@@ -89,6 +85,8 @@ describe('newUserFlow actions', () => {
 
     return registerUser()
       .then(() => expect(dispatch).toHaveBeenCalledWith({ type: UPDATE_USER_ERROR, error }))
-      .catch(givenError => expect(givenError).toEqual(new SubmissionError({ personalCode: 'invalid' })));
+      .catch(givenError =>
+        expect(givenError).toEqual(new SubmissionError({ personalCode: 'invalid' })),
+      );
   });
 });

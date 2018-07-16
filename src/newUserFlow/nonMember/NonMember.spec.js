@@ -25,5 +25,4 @@ describe('NonMember', () => {
       <Message dangerouslyTranslateInnerHTML="new.user.flow.non.member.intro" />
     </p>)).toBe(true);
   });
-
 });

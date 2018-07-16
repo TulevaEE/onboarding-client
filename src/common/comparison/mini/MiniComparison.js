@@ -22,14 +22,19 @@ export const MiniComparison = ({ salary, onSalaryChange }) => (
     <span className="input-group col-xs-1" id="salary-group">
       <input
         onChange={event => onSalaryChange(Number(event.target.value))}
-        type="text" required="true" className="form-control"
-        placeholder="1500" id="salary" name="salary" value={salary}
+        type="text"
+        required="true"
+        className="form-control"
+        placeholder="1500"
+        id="salary"
+        name="salary"
+        value={salary}
         aria-describedby="salary-euro"
       />
       <span className="input-group-addon" id="salary-euro">&euro;</span>
     </span>
   </p>
-  );
+);
 
 const noop = () => null;
 

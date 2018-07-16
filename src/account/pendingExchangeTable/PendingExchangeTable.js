@@ -24,22 +24,22 @@ const PendingExchangeTable = ({ pendingExchanges }) => (
       </div>
     </div>
     {
-        pendingExchanges.map(({ amount,
-                                date,
-                                sourceFund,
-                                targetFund,
-                              }) =>
-                                <PendingExchange
-                                  key={sourceFund.id + targetFund.id + date}
-                                  amount={amount}
-                                  date={date}
-                                  sourceFund={sourceFund}
-                                  targetFund={targetFund}
-                                />,
-        )
-      }
+      pendingExchanges.map(({ amount,
+        date,
+        sourceFund,
+        targetFund,
+      }) =>
+        (<PendingExchange
+          key={sourceFund.id + targetFund.id + date}
+          amount={amount}
+          date={date}
+          sourceFund={sourceFund}
+          targetFund={targetFund}
+        />),
+      )
+    }
   </div>
-  );
+);
 
 PendingExchangeTable.defaultProps = {
   pendingExchanges: [],

@@ -23,11 +23,11 @@ export function getComparison() {
     const rate = getState().comparison.rate;
     dispatch({ type: GET_COMPARISON_START });
     return getComparisonForSalaryAndRateWithToken(salary, rate, getState().login.token)
-        .then(comparison => dispatch({ type: GET_COMPARISON_SUCCESS, comparison }))
-        .then(() =>
-          getComparisonForSalaryAndRateWithToken(salary, rate, getState().login.token, true))
-        .then(comparison => dispatch({ type: GET_COMPARISON_BONUS_SUCCESS, comparison }))
-        .catch(error => dispatch({ type: GET_COMPARISON_ERROR, error }));
+      .then(comparison => dispatch({ type: GET_COMPARISON_SUCCESS, comparison }))
+      .then(() =>
+        getComparisonForSalaryAndRateWithToken(salary, rate, getState().login.token, true))
+      .then(comparison => dispatch({ type: GET_COMPARISON_BONUS_SUCCESS, comparison }))
+      .catch(error => dispatch({ type: GET_COMPARISON_ERROR, error }));
   };
 }
 

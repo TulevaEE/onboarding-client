@@ -306,7 +306,7 @@ describe('Login actions', () => {
     const getUser = createBoundAction(actions.getUser);
     expect(dispatch).not.toHaveBeenCalled();
     return getUser()
-        .then(() => expect(dispatch).toHaveBeenCalledWith({ type: LOG_OUT }));
+      .then(() => expect(dispatch).toHaveBeenCalledWith({ type: LOG_OUT }));
   });
 
   it('can log you out', () => {

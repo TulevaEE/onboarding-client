@@ -128,11 +128,11 @@ export function previewMandate(mandate) {
   return (dispatch, getState) => {
     const token = getState().login.token;
     return saveMandateWithToken(mandate, token)
-        .then(({ id }) => downloadMandatePreviewWithIdAndToken(id, token))
-        .then(file => download(file, 'Tuleva_avaldus_eelvaade.zip', 'application/zip'))
-        .catch((error) => {
-          handleSaveMandateError(dispatch, error);
-        });
+      .then(({ id }) => downloadMandatePreviewWithIdAndToken(id, token))
+      .then(file => download(file, 'Tuleva_avaldus_eelvaade.zip', 'application/zip'))
+      .catch((error) => {
+        handleSaveMandateError(dispatch, error);
+      });
   };
 }
 

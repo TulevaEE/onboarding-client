@@ -27,9 +27,7 @@ import {
   GET_USER_CONVERSION_SUCCESS,
 } from '../login/constants';
 
-import {
-  UPDATE_USER_SUCCESS,
-} from '../common/user/constants';
+import { UPDATE_USER_SUCCESS } from '../common/user/constants';
 
 function identifyUserForTracking(user) {
   mixpanel.identify(user.id);
@@ -44,8 +42,7 @@ function identifyUserForTracking(user) {
   });
 }
 
-const initialState = {
-};
+const initialState = {};
 
 const noop = () => null;
 
@@ -57,33 +54,32 @@ export default function trackingReducer(state = initialState, action) {
         sourceSelection: action.sourceSelection,
         sourceSelectionExact: !!action.sourceSelectionExact,
       });
-      return initialState;
+      return state;
     case GET_USER_SUCCESS:
       identifyUserForTracking(action.user);
       mixpanel.track(actionType, {
         id: action.user.id,
       });
-      return initialState;
+      return state;
     case SELECT_TARGET_FUND:
       mixpanel.track(actionType, {
         targetFundIsin: action.targetFundIsin,
       });
-      return initialState;
+      return state;
     case SIGN_MANDATE_START_ERROR:
     case SIGN_MANDATE_ERROR:
       mixpanel.track(actionType, {
         error: action.error,
       });
-      return initialState;
+      return state;
     case GET_USER_ERROR:
       mixpanel.track(actionType, {
         userError: action.userError,
       });
-      return initialState;
+      return state;
     case GET_USER_CONVERSION_SUCCESS:
-      mixpanel.track(actionType, action.userConversion,
-    );
-      return initialState;
+      mixpanel.track(actionType, action.userConversion);
+      return state;
     case LOG_OUT:
     case MOBILE_AUTHENTICATION_START:
     case MOBILE_AUTHENTICATION_SUCCESS:
@@ -98,15 +94,15 @@ export default function trackingReducer(state = initialState, action) {
     case SIGN_MANDATE_ID_CARD_START_SUCCESS:
     case UPDATE_USER_SUCCESS:
       mixpanel.track(actionType);
-      return initialState;
+      return state;
     case LOCATION_CHANGE:
       try {
         mixpanel.track(actionType, { path: action.payload.pathname });
       } catch (e) {
         noop(e); // do nothing when mixpanel is not initialized
       }
-      return initialState;
+      return state;
     default:
-      return initialState;
+      return state;
   }
 }

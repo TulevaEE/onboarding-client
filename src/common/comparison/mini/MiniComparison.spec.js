@@ -4,8 +4,6 @@ import { shallow } from 'enzyme';
 
 import { MiniComparison } from './MiniComparison';
 
-import { Loader } from '../../';
-
 describe('Mini Comparison', () => {
   let component;
   let props;
@@ -21,7 +19,12 @@ describe('Mini Comparison', () => {
     component.setProps({ salary, onSalaryChange });
 
     expect(component.find('input').length).toBe(1);
-    expect(component.find('input').at(0).prop('onChange')).not.toBe(null);
+    expect(
+      component
+        .find('input')
+        .at(0)
+        .prop('onChange'),
+    ).not.toBe(null);
   });
 
   xit('if comparison is present, render current fund fee', () => {
@@ -31,7 +34,10 @@ describe('Mini Comparison', () => {
 
     component.setProps({ comparison });
 
-    expect(component.contains(
-      <span>{Math.round(comparison.currentFundFee).toLocaleString('et-EE')}&nbsp;&euro;</span>)).toBe(true);
+    expect(
+      component.contains(
+        <span>{Math.round(comparison.currentFundFee).toLocaleString('et-EE')}&nbsp;&euro;</span>,
+      ),
+    ).toBe(true);
   });
 });

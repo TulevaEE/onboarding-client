@@ -18,7 +18,7 @@ const FundTransferTable = ({ selections }) => (
     </div>
     {
       selections.map((selection, index) =>
-        <div className="row tv-table__row py-2" key={index}>
+        (<div className="row tv-table__row py-2" key={index}>
           <div className="col-12 col-sm">
             {selection.sourceFundName}
           </div>
@@ -30,7 +30,7 @@ const FundTransferTable = ({ selections }) => (
               <Message>{`target.funds.${selection.targetFundIsin}.title`}</Message>
             </b>
           </div>
-        </div>,
+        </div>),
       )
     }
   </div>

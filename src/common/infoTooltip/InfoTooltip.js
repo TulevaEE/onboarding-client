@@ -8,7 +8,11 @@ import infoImage from './info.svg';
 const InfoTooltip = ({ children, name }) => (
   <span className="info-tooltip">
     <img
-      data-tip data-for={name} src={infoImage} alt="Information" className="info-tooltip__image"
+      data-tip
+      data-for={name}
+      src={infoImage}
+      alt="Information"
+      className="info-tooltip__image"
     />
     <ReactTooltip id={name} place="right" type="light" effect="float" className="react-tooltip">
       { children }

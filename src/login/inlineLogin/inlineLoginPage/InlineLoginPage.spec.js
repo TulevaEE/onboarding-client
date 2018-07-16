@@ -1,6 +1,5 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Message } from 'retranslate';
 import FacebookProvider, { Like } from 'react-facebook';
 import { InlineLoginPage } from './InlineLoginPage';
 import { AuthenticationLoader, ErrorAlert } from '../../../common';
@@ -30,17 +29,23 @@ describe('Login page', () => {
     const onCancelMobileAuthentication = jest.fn();
     component.setProps({ onCancelMobileAuthentication });
 
-    expect(component.contains(
-      <AuthenticationLoader controlCode="" onCancel={onCancelMobileAuthentication} />,
-    )).toBe(false);
+    expect(
+      component.contains(
+        <AuthenticationLoader controlCode="" onCancel={onCancelMobileAuthentication} />,
+      ),
+    ).toBe(false);
     component.setProps({ loadingAuthentication: true });
-    expect(component.contains(
-      <AuthenticationLoader controlCode="" onCancel={onCancelMobileAuthentication} />,
-    )).toBe(true);
+    expect(
+      component.contains(
+        <AuthenticationLoader controlCode="" onCancel={onCancelMobileAuthentication} />,
+      ),
+    ).toBe(true);
     component.setProps({ controlCode: '1337' });
-    expect(component.contains(
-      <AuthenticationLoader controlCode="1337" onCancel={onCancelMobileAuthentication} />,
-    )).toBe(true);
+    expect(
+      component.contains(
+        <AuthenticationLoader controlCode="1337" onCancel={onCancelMobileAuthentication} />,
+      ),
+    ).toBe(true);
   });
 
   it('passes an error forwards to ErrorAlert, shows login form and does not show other components', () => {
@@ -63,8 +68,12 @@ describe('Login page', () => {
   });
 
   it('shows facebook likes', () => {
-    expect(component.contains(<FacebookProvider appId="1939240566313354">
-      <Like href="http://www.facebook.com/Tuleva.ee" colorScheme="dark" showFaces />
-    </FacebookProvider>)).toBe(true);
+    expect(
+      component.contains(
+        <FacebookProvider appId="1939240566313354">
+          <Like href="http://www.facebook.com/Tuleva.ee" colorScheme="dark" showFaces />
+        </FacebookProvider>,
+      ),
+    ).toBe(true);
   });
 });

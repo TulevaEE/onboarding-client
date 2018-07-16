@@ -17,7 +17,7 @@ import './Comparison.scss';
 import closeImage from './btn-close.svg';
 
 export const Comparison = ({ overlayed, comparison, rate, salary, loading,
-                              onSalaryChange, onRateChange, onClose }) => {
+  onSalaryChange, onRateChange, onClose }) => {
   const content = (
     <div>
       <div className="px-col mb-4">
@@ -45,8 +45,13 @@ export const Comparison = ({ overlayed, comparison, rate, salary, loading,
                 <div className="input-group">
                   <input
                     onChange={event => onSalaryChange(Number(event.target.value))}
-                    type="text" required="true" className="form-control"
-                    placeholder="1500" id="salary" name="salary" value={salary}
+                    type="text"
+                    required="true"
+                    className="form-control"
+                    placeholder="1500"
+                    id="salary"
+                    name="salary"
+                    value={salary}
                     aria-describedby="salary-euro"
                   />
                   <span className="input-group-addon" id="salary-euro">&euro;</span>
@@ -56,8 +61,13 @@ export const Comparison = ({ overlayed, comparison, rate, salary, loading,
                 <div className="input-group">
                   <input
                     onChange={event => onRateChange(Number(event.target.value) / 100)}
-                    type="text" required="true" className="form-control"
-                    placeholder="8" id="return" name="return" value={Math.round(rate * 100)}
+                    type="text"
+                    required="true"
+                    className="form-control"
+                    placeholder="8"
+                    id="return"
+                    name="return"
+                    value={Math.round(rate * 100)}
                     aria-describedby="return-percentage"
                   />
                   <span className="input-group-addon" id="return-percentage">%</span>
@@ -90,7 +100,7 @@ export const Comparison = ({ overlayed, comparison, rate, salary, loading,
                             >
                               <Message>
                               comparison.output.calculation.first.row.tooltip.content
-                            </Message>
+                              </Message>
                             </InfoTooltip>
                           </td>
                           <td className="output-amount old-fund-fees text-right">

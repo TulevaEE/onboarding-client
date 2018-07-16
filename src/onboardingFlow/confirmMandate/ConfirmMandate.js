@@ -73,7 +73,7 @@ function attachNames(selections, sourceFunds) {
 
 function isFundPriceZero(sourceFunds, isinToMatch) {
   const funds = utils.findWhere(sourceFunds, ({ isin }) => (
-      isin === isinToMatch
+    isin === isinToMatch
   )).price === 0;
 
   return funds;
@@ -182,7 +182,8 @@ export const ConfirmMandate = ({
             <div className="mt-2">
               <small className="text-muted">
                 <a
-                  target="_blank" rel="noopener noreferrer"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   href="//www.pensionikeskus.ee/ii-sammas/fondid/fonditasude-vordlused/"
                 >
                   <Message>confirm.mandate.pension.centre</Message>
@@ -221,13 +222,15 @@ export const ConfirmMandate = ({
         {
           isShortFlowActive ? (
             <button
-              className="btn btn-secondary mb-2" onClick={onExitShortFlow}
+              className="btn btn-secondary mb-2"
+              onClick={onExitShortFlow}
             >
               <Message>confirm.mandate.exit.short.flow</Message>
             </button>
           ) : (
             <button
-              className="btn btn-secondary mb-2" onClick={onPreviousStep}
+              className="btn btn-secondary mb-2"
+              onClick={onPreviousStep}
             >
               <Message>steps.previous</Message>
             </button>

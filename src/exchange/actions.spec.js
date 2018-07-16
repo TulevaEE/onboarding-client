@@ -207,17 +207,17 @@ describe('Exchange actions', () => {
       .then(() => expect(mockApi.downloadMandateWithIdAndToken).not.toHaveBeenCalled());
   });
 
-// TODO: fix the test, doesn't fail
+  // TODO: fix the test, doesn't fail
   it('can preview the mandate', () => {
     state.login.token = 'token';
     const file = { iAmAFakeFile: true };
     mockApi.downloadMandatePreviewWithIdAndToken = jest.fn(() => Promise.resolve(file));
     const previewMandate = createBoundAction(actions.previewMandate);
     previewMandate()
-        .then(() => {
-          expect(mockApi.downloadMandatePreviewWithIdAndToken).toHaveBeenCalledWith('mandate id', 'token');
-          expect(mockDownload).toHaveBeenCalledWith(file, 'Tuleva_avaldus_eelvaade.zip', 'application/zip');
-        });
+      .then(() => {
+        expect(mockApi.downloadMandatePreviewWithIdAndToken).toHaveBeenCalledWith('mandate id', 'token');
+        expect(mockDownload).toHaveBeenCalledWith(file, 'Tuleva_avaldus_eelvaade.zip', 'application/zip');
+      });
   });
 
   it('can sign the mandate with mobile id', () => {
@@ -367,13 +367,13 @@ describe('Exchange actions', () => {
     });
     const signMandate = createBoundAction(actions.signMandateWithMobileId);
     return signMandate({})
-        .then(() => {
-          expect(dispatch).toHaveBeenCalledTimes(1);
-          expect(dispatch).toHaveBeenCalledWith({
-            type: SIGN_MANDATE_INVALID_ERROR,
-            error,
-          });
+      .then(() => {
+        expect(dispatch).toHaveBeenCalledTimes(1);
+        expect(dispatch).toHaveBeenCalledWith({
+          type: SIGN_MANDATE_INVALID_ERROR,
+          error,
         });
+      });
   });
 
   it('can cancel signing the mandate', () => {
