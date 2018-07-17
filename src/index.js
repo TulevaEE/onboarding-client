@@ -1,1 +1,1 @@
-import './apps/onboarding';
+import './entries/onboarding';
