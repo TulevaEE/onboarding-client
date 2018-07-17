@@ -8,13 +8,13 @@ import mixpanel from 'mixpanel-browser';
 import MixpanelProvider from 'react-mixpanel';
 import { reducer as formReducer } from 'redux-form';
 
-import translations from '../src/translations';
-import '../src/inline-login-index.scss';
+import translations from '../translations';
+import '../inline-login-index.scss';
 
-import { reducer as loginReducer } from '../src/login';
-import { reducer as accountReducer } from '../src/account';
-import InlineSignUp from '../src/newUserFlow/inlineSignUp';
-import { initializeConfiguration } from '../src/config/config';
+import { reducer as loginReducer } from '../login';
+import { reducer as accountReducer } from '../account';
+import InlineSignUp from '../newUserFlow/inlineSignUp';
+import { initializeConfiguration } from '../config/config';
 
 const rootReducer = combineReducers({
   login: loginReducer,
@@ -22,7 +22,7 @@ const rootReducer = combineReducers({
   form: formReducer,
 });
 
-const composeEnhancers = (window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose; // eslint-disable-line
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose; // eslint-disable-line
 const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk)));
 
 function getLanguage() {
@@ -38,14 +38,13 @@ function getLanguage() {
 
 initializeConfiguration();
 
-render((
+render(
   <MixpanelProvider mixpanel={mixpanel}>
-    <TranslationProvider
-      messages={translations} language={getLanguage()} fallbackLanguage="et"
-    >
+    <TranslationProvider messages={translations} language={getLanguage()} fallbackLanguage="et">
       <ReduxProvider store={store}>
         <InlineSignUp />
       </ReduxProvider>
     </TranslationProvider>
-  </MixpanelProvider>
-), document.getElementById('inline-signup'));
+  </MixpanelProvider>,
+  document.getElementById('inline-signup'),
+);
