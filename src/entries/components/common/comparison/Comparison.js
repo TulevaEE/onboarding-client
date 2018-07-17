@@ -9,7 +9,7 @@ import ComparisonFootnotes from '../comparisonFootnotes';
 
 import { debouncedSalaryChange, debouncedRateChange } from '../../comparison/actions';
 
-import './Comparison.scss';
+import './Comparison.css';
 
 import closeImage from './btn-close.svg';
 

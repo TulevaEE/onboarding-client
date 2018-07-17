@@ -42,7 +42,7 @@
     "build-js": "react-app-rewired build",
     "start": "npm-run-all -p watch-css start-js",
     "watch-css": "npm run build-css && node-sass-chokidar --include-path ./src --include-path ./node_modules src/ -o src/ --watch --recursive",
-    "test": "react-app-rewired test --env=jsdom",
+    "test": "npm run build-css && react-app-rewired test --env=jsdom",
     "start-js": "react-app-rewired start",
     "eject": "react-scripts eject"
   },

@@ -7,7 +7,7 @@ import Comparison from '../';
 
 import { show as showComparison, hide as hideComparison } from '../../../comparison/actions';
 
-import './ComparisonWidget.scss';
+import './ComparisonWidget.css';
 
 export const ComparisonWidget = ({ comparisonVisible, onShowComparison, onHideComparison }) => (
   <div>

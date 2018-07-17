@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Message } from 'retranslate';
 import mixpanel from 'mixpanel-browser';
 
-import './Steps.scss';
+import './Steps.css';
 
 import StepTitle from './stepTitle';
 

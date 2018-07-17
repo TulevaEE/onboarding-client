@@ -3,7 +3,7 @@ import { PropTypes as Types } from 'prop-types';
 import { Message } from 'retranslate';
 
 import { Loader } from '../../common';
-import './AuthenticationLoader.scss';
+import './AuthenticationLoader.css';
 
 const AuthenticationLoader = ({ controlCode, onCancel, overlayed, message }) => {
   const content = (

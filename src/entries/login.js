@@ -8,7 +8,7 @@ import mixpanel from 'mixpanel-browser';
 import MixpanelProvider from 'react-mixpanel';
 
 import translations from './components/translations';
-import './components/inline-login-index.scss';
+import './components/inline-login-index.css';
 
 import { reducer as loginReducer } from './components/login';
 import InlineLoginPage from './components/login/inlineLogin/inlineLoginPage';

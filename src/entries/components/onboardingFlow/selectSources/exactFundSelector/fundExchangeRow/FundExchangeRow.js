@@ -3,7 +3,7 @@ import { PropTypes as Types } from 'prop-types';
 import { withTranslations } from 'retranslate';
 
 import { createClamper } from '../../../../common/utils';
-import './FundExchangeRow.scss';
+import './FundExchangeRow.css';
 
 const clampFromZeroToHundred = createClamper(0, 100);
 

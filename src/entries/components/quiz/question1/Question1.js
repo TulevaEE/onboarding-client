@@ -4,7 +4,7 @@ import { Message } from 'retranslate';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-// import './Question1.scss';
+// import './Question1.css';
 
 export class Question1 extends Component {
   constructor(props) {

@@ -6,7 +6,7 @@ import { Message } from 'retranslate';
 
 import { utils } from '../../';
 
-import './MiniComparison.scss';
+import './MiniComparison.css';
 
 import { debouncedSalaryChange } from '../../../comparison/actions';
 

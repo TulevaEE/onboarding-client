@@ -5,7 +5,7 @@ import { Message } from 'retranslate';
 import { InfoTooltip } from '../../../common';
 import TargetFundTooltipBody from '../../transferFutureCapital/targetFundTooltipBody';
 
-import './TargetFundSelector.scss';
+import './TargetFundSelector.css';
 import checkImage from '../../success/success.svg';
 
 const TargetFundSelector = ({

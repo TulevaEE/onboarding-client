@@ -9,7 +9,7 @@ import MixpanelProvider from 'react-mixpanel';
 import { reducer as formReducer } from 'redux-form';
 
 import translations from './components/translations';
-import './components/inline-login-index.scss';
+import './components/inline-login-index.css';
 
 import { reducer as loginReducer } from './components/login';
 import { reducer as accountReducer } from './components/account';

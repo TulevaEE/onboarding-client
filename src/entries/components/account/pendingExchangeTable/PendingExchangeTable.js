@@ -4,7 +4,7 @@ import { Message } from 'retranslate';
 
 import PendingExchange from './pendingExchange';
 
-import './PendingExchangeTable.scss';
+import './PendingExchangeTable.css';
 
 const PendingExchangeTable = ({ pendingExchanges }) => (
   <div>
