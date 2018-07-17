@@ -6,8 +6,12 @@ import thunk from 'redux-thunk';
 import { reducer as formReducer } from 'redux-form';
 import { Provider as TranslationProvider } from 'retranslate';
 import { Provider as ReduxProvider } from 'react-redux';
-import { BrowserRouter, Route } from 'react-router-dom';
-import { routerReducer as routingReducer } from 'react-router-redux';
+import { Router, Route, browserHistory } from 'react-router';
+import {
+  routerReducer as routingReducer,
+  routerMiddleware,
+  syncHistoryWithStore,
+} from 'react-router-redux';
 import mixpanel from 'mixpanel-browser';
 import MixpanelProvider from 'react-mixpanel';
 import GoogleAnalytics from 'react-ga';
@@ -51,7 +55,11 @@ const rootReducer = combineReducers({
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose; // eslint-disable-line
 
-const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk)));
+const routingMiddleware = routerMiddleware(browserHistory);
+
+const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk, routingMiddleware)));
+
+const history = syncHistoryWithStore(browserHistory, store);
 
 function refreshTokenIfNeeded(query) {
   if (query.isNewMember === 'true') {
@@ -183,7 +191,7 @@ render(
   <MixpanelProvider mixpanel={mixpanel}>
     <TranslationProvider messages={translations} language={applyLanguage()} fallbackLanguage="et">
       <ReduxProvider store={store}>
-        <BrowserRouter onUpdate={trackPageView}>
+        <Router onUpdate={trackPageView} history={history}>
           <Fragment>
             <Route path="/login" component={LoginPage} />
             <Route path="/terms-of-use" component={TermsOfUse} />
@@ -207,7 +215,7 @@ render(
               <Route path="/account" component={AccountPage} onEnter={getDataForAccount} />
             </Route>
           </Fragment>
-        </BrowserRouter>
+        </Router>
       </ReduxProvider>
     </TranslationProvider>
   </MixpanelProvider>,

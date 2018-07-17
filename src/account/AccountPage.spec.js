@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Message } from 'retranslate';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 
 import { Loader, ErrorMessage } from '../common';
 import { AccountPage } from './AccountPage';

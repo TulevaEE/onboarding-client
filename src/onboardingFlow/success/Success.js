@@ -3,7 +3,7 @@ import { PropTypes as Types } from 'prop-types';
 import { Message } from 'retranslate';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import FacebookProvider, { Share } from 'react-facebook';
 
 import { downloadMandate } from '../../exchange/actions';

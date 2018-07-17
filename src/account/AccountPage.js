@@ -3,7 +3,7 @@ import { PropTypes as Types } from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Message } from 'retranslate';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 
 import { Loader, ErrorMessage } from '../common';
 import PensionFundTable from './../onboardingFlow/selectSources/pensionFundTable';

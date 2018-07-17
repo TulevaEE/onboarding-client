@@ -3,7 +3,7 @@ import { PropTypes as Types } from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Message, withTranslations } from 'retranslate';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 
 import { Radio, Loader, InfoTooltip, utils } from '../../common';
 import TargetFundTooltipBody from './targetFundTooltipBody';
