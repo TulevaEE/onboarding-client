@@ -1,6 +1,6 @@
 import { push } from 'react-router-redux';
 import download from 'downloadjs';
-import 'hwcrypto-js/hwcrypto';
+import hwcrypto from 'hwcrypto-js';
 
 import {
   downloadMandateWithIdAndToken,
@@ -195,7 +195,7 @@ function pollForMandateSignatureWithMandateIdAndSignedHash(mandateId, signedHash
 
 function signIdCardSignatureHashWithCertificateForMandateId(hash, certificate, mandateId) {
   return dispatch =>
-    window.hwcrypto
+    hwcrypto
       .sign(certificate, { type: 'SHA-256', hex: hash }, { lang: 'en' })
       .then(
         signature => {
@@ -221,7 +221,7 @@ export function signMandateWithIdCard(mandate) {
     let mandateId;
     let certificate;
 
-    return window.hwcrypto
+    return hwcrypto
       .getCertificate({ lang: 'en' })
       .then(
         cert => {

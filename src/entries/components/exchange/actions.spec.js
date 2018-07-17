@@ -28,11 +28,11 @@ jest.useFakeTimers();
 
 const mockApi = jest.genMockFromModule('../common/api');
 const mockDownload = jest.fn();
-const mockHwcrypto = jest.genMockFromModule('hwcrypto-js/hwcrypto');
+const mockHwcrypto = jest.genMockFromModule('hwcrypto-js');
 
 jest.mock('../common/api', () => mockApi);
 jest.mock('downloadjs', () => mockDownload);
-jest.mock('hwcrypto-js/hwcrypto', () => mockHwcrypto);
+jest.mock('hwcrypto-js', () => mockHwcrypto);
 
 const actions = require('./actions'); // need to use require because of jest mocks being weird
 
