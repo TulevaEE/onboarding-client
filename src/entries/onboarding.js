@@ -16,33 +16,33 @@ import mixpanel from 'mixpanel-browser';
 import MixpanelProvider from 'react-mixpanel';
 import GoogleAnalytics from 'react-ga';
 
-import { initializeConfiguration, updateLanguage } from '../components/config/config';
-import translations from '../components/translations';
-import '../components/index.css';
+import { initializeConfiguration, updateLanguage } from './components/config/config';
+import translations from './components/translations';
+import './components/index.css';
 
-import requireAuthentication from '../components/requireAuthentication';
-import LoginPage, { reducer as loginReducer, actions as loginActions } from '../components/login';
-import TermsOfUse from '../components/termsOfUse';
-import NonMember from '../components/newUserFlow/nonMember';
-import { reducer as exchangeReducer, actions as exchangeActions } from '../components/exchange';
-import trackingReducer from '../components/tracking';
-import { reducer as comparisonReducer } from '../components/comparison';
-import { reducer as quizReducer, actions as quizActions } from '../components/quiz';
-import { reducer as routerReducer, router } from '../components/router';
-import Quiz from '../components/quiz/Quiz';
-import { refreshToken } from '../components/login/actions';
+import requireAuthentication from './components/requireAuthentication';
+import LoginPage, { reducer as loginReducer, actions as loginActions } from './components/login';
+import TermsOfUse from './components/termsOfUse';
+import NonMember from './components/newUserFlow/nonMember';
+import { reducer as exchangeReducer, actions as exchangeActions } from './components/exchange';
+import trackingReducer from './components/tracking';
+import { reducer as comparisonReducer } from './components/comparison';
+import { reducer as quizReducer, actions as quizActions } from './components/quiz';
+import { reducer as routerReducer, router } from './components/router';
+import Quiz from './components/quiz/Quiz';
+import { refreshToken } from './components/login/actions';
 
-import App from '../components/app';
+import App from './components/app';
 import AccountPage, {
   reducer as accountReducer,
   actions as accountActions,
-} from '../components/account';
+} from './components/account';
 import Steps, {
   SelectSources,
   TransferFutureCapital,
   ConfirmMandate,
   Success,
-} from '../components/onboardingFlow';
+} from './components/onboardingFlow';
 
 const rootReducer = combineReducers({
   routing: routingReducer,

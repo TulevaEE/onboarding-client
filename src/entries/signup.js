@@ -6,16 +6,20 @@ import { Provider as TranslationProvider } from 'retranslate';
 import { Provider as ReduxProvider } from 'react-redux';
 import mixpanel from 'mixpanel-browser';
 import MixpanelProvider from 'react-mixpanel';
+import { reducer as formReducer } from 'redux-form';
 
-import translations from '../components/translations';
-import '../components/inline-login-index.scss';
+import translations from './components/translations';
+import './components/inline-login-index.scss';
 
-import { reducer as loginReducer } from '../components/login';
-import InlineLoginPage from '../components/login/inlineLogin/inlineLoginPage';
-import { initializeConfiguration } from '../components/config/config';
+import { reducer as loginReducer } from './components/login';
+import { reducer as accountReducer } from './components/account';
+import InlineSignUp from './components/newUserFlow/inlineSignUp';
+import { initializeConfiguration } from './components/config/config';
 
 const rootReducer = combineReducers({
   login: loginReducer,
+  account: accountReducer,
+  form: formReducer,
 });
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose; // eslint-disable-line
@@ -38,9 +42,9 @@ render(
   <MixpanelProvider mixpanel={mixpanel}>
     <TranslationProvider messages={translations} language={getLanguage()} fallbackLanguage="et">
       <ReduxProvider store={store}>
-        <InlineLoginPage />
+        <InlineSignUp />
       </ReduxProvider>
     </TranslationProvider>
   </MixpanelProvider>,
-  document.getElementById('inline-login'),
+  document.getElementById('inline-signup'),
 );
