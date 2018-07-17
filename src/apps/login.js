@@ -7,12 +7,12 @@ import { Provider as ReduxProvider } from 'react-redux';
 import mixpanel from 'mixpanel-browser';
 import MixpanelProvider from 'react-mixpanel';
 
-import translations from '../translations';
-import '../inline-login-index.scss';
+import translations from '../components/translations';
+import '../components/inline-login-index.scss';
 
-import { reducer as loginReducer } from '../login';
-import InlineLoginPage from '../login/inlineLogin/inlineLoginPage';
-import { initializeConfiguration } from '../config/config';
+import { reducer as loginReducer } from '../components/login';
+import InlineLoginPage from '../components/login/inlineLogin/inlineLoginPage';
+import { initializeConfiguration } from '../components/config/config';
 
 const rootReducer = combineReducers({
   login: loginReducer,
