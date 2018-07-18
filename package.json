@@ -6,6 +6,8 @@
     "array.prototype.find": "^2.0.4",
     "bootstrap": "^4.1.2",
     "downloadjs": "^1.4.7",
+    "express": "^4.16.3",
+    "express-http-proxy": "^1.2.0",
     "hwcrypto-js": "git://github.com/ErkoRisthein/hwcrypto.js.git#0.0.14",
     "i": "^0.3.6",
     "mixpanel-browser": "^2.22.4",
@@ -32,6 +34,8 @@
     "retranslate": "^0.4.0"
   },
   "scripts": {
+    "prestart": "npm run build-onboarding",
+    "start": "NODE_ENV=production node server",
     "precommit": "lint-staged",
     "build-onboarding": "APP_NAME=onboarding npm run build-app",
     "build-signup": "APP_NAME=signup npm run build-app",
@@ -43,7 +47,7 @@
     "build": "npm-run-all build-css build-js",
     "build-css": "node-sass-chokidar --include-path ./src --include-path ./node_modules src/ -o src/",
     "build-js": "react-app-rewired build",
-    "start": "npm-run-all -p watch-css start-js",
+    "develop": "npm-run-all -p watch-css start-js",
     "watch-css": "npm run build-css && node-sass-chokidar --include-path ./src --include-path ./node_modules src/ -o src/ --watch --recursive",
     "test": "npm run build-css && react-app-rewired test --env=jsdom",
     "start-js": "react-app-rewired start",
