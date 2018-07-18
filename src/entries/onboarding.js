@@ -32,6 +32,7 @@ import { reducer as routerReducer, router } from './components/router';
 import Quiz from './components/quiz/Quiz';
 import { refreshToken } from './components/login/actions';
 
+import './common/polyfills';
 import App from './components/app';
 import AccountPage, {
   reducer as accountReducer,

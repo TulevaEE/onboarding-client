@@ -10,6 +10,7 @@ import MixpanelProvider from 'react-mixpanel';
 import translations from './components/translations';
 import './components/inline-login-index.css';
 
+import './common/polyfills';
 import { reducer as loginReducer } from './components/login';
 import InlineLoginPage from './components/login/inlineLogin/inlineLoginPage';
 import { initializeConfiguration } from './components/config/config';

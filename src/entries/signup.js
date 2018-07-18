@@ -11,6 +11,7 @@ import { reducer as formReducer } from 'redux-form';
 import translations from './components/translations';
 import './components/inline-login-index.css';
 
+import './common/polyfills';
 import { reducer as loginReducer } from './components/login';
 import { reducer as accountReducer } from './components/account';
 import InlineSignUp from './components/newUserFlow/inlineSignUp';
