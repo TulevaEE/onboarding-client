@@ -44,6 +44,7 @@ import Steps, {
   ConfirmMandate,
   Success,
 } from './components/onboardingFlow';
+import registerServiceWorker from './common/registerServiceWorker';
 
 const rootReducer = combineReducers({
   routing: routingReducer,
@@ -225,3 +226,5 @@ render(
   </MixpanelProvider>,
   document.getElementById('root'),
 );
+
+registerServiceWorker();
