@@ -34,7 +34,7 @@
     "retranslate": "^0.4.0"
   },
   "scripts": {
-    "prestart": "npm run build-onboarding",
+    "heroku-postbuild": "npm run build-onboarding",
     "start": "NODE_ENV=production node server",
     "precommit": "lint-staged",
     "build-onboarding": "APP_NAME=onboarding npm run build-app",
