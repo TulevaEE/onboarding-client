@@ -21,83 +21,89 @@ export const AccountPage = ({
   loadingPendingExchanges,
   saveUser,
   error,
-}) => (
-  <Fragment>
-    <div className="mt-5">
-      {memberNumber ? (
-        <Message params={{ memberNumber }}>account.member.statement</Message>
-      ) : (
-        <span>
-          <Message>account.non.member.statement</Message>{' '}
-          <a className="btn btn-link p-0 border-0" href="https://tuleva.ee/#inline-signup-anchor">
-            <Message>login.join.tuleva</Message>
-          </a>
-        </span>
-      )}{' '}
-      {initialCapital ? (
-        <Message params={{ initialCapital: initialCapital.amount }}>
-          account.initial-capital.statement
-        </Message>
-      ) : (
-        ''
-      )}
-      <div>
-        {currentBalanceFunds && currentBalanceFunds.length === 0 ? (
-          <Message>account.second.pillar.missing</Message>
+}) => {
+  const pendingExchangesSection = loadingPendingExchanges ? (
+    <Loader className="align-middle mt-5" />
+  ) : (
+    pendingExchanges.length > 0 && (
+      <div className="mt-5">
+        <p className="mb-4 lead">
+          <Message>pending.exchanges.lead</Message>
+        </p>
+        <PendingExchangesTable pendingExchanges={pendingExchanges} />
+      </div>
+    )
+  );
+
+  return (
+    <Fragment>
+      <div className="mt-5">
+        {memberNumber ? (
+          <Message params={{ memberNumber }}>account.member.statement</Message>
+        ) : (
+          <span>
+            <Message>account.non.member.statement</Message>{' '}
+            <a className="btn btn-link p-0 border-0" href="https://tuleva.ee/#inline-signup-anchor">
+              <Message>login.join.tuleva</Message>
+            </a>
+          </span>
+        )}{' '}
+        {initialCapital ? (
+          <Message params={{ initialCapital: initialCapital.amount }}>
+            account.initial-capital.statement
+          </Message>
         ) : (
           ''
         )}
+        <div>
+          {currentBalanceFunds && currentBalanceFunds.length === 0 ? (
+            <Message>account.second.pillar.missing</Message>
+          ) : (
+            ''
+          )}
+        </div>
       </div>
-    </div>
 
-    {conversion && conversion.transfersComplete && conversion.selectionComplete ? (
-      <div className="mt-5">
-        <Message>account.converted.user.statement</Message>
+      {conversion && conversion.transfersComplete && conversion.selectionComplete ? (
+        <div className="mt-5">
+          <Message>account.converted.user.statement</Message>
+        </div>
+      ) : (
+        ''
+      )}
+      {error ? <ErrorMessage errors={error.body} /> : ''}
+
+      <div className="row mt-5">
+        <div className="col-md-6">
+          <Message className="mb-4 lead">select.sources.current.status</Message>
+        </div>
+        {currentBalanceFunds &&
+          currentBalanceFunds.length > 0 && (
+            <div className="col-md-6 text-md-right">
+              <Link className="btn btn-primary mb-3" to="/steps/select-sources">
+                <Message>change.my.pension.fund</Message>
+              </Link>
+            </div>
+          )}
       </div>
-    ) : (
-      ''
-    )}
-    {error ? <ErrorMessage errors={error.body} /> : ''}
 
-    <div className="row mt-5">
-      <div className="col-md-6">
-        <Message className="mb-4 lead">select.sources.current.status</Message>
-      </div>
-      {currentBalanceFunds &&
-        currentBalanceFunds.length > 0 && (
-          <div className="col-md-6 text-md-right">
-            <Link className="btn btn-primary mb-3" to="/steps/select-sources">
-              <Message>change.my.pension.fund</Message>
-            </Link>
-          </div>
-        )}
-    </div>
-
-    {loadingCurrentBalance ? (
-      <Loader className="align-middle" />
-    ) : (
-      <PensionFundTable funds={currentBalanceFunds} />
-    )}
-
-    <div className="mt-5">
-      <p className="mb-4 lead">
-        <Message>pending.exchanges.lead</Message>
-      </p>
-      {loadingPendingExchanges ? (
+      {loadingCurrentBalance ? (
         <Loader className="align-middle" />
       ) : (
-        <PendingExchangesTable pendingExchanges={pendingExchanges} />
+        <PensionFundTable funds={currentBalanceFunds} />
       )}
-    </div>
 
-    <div className="mt-5">
-      <p className="mb-4 lead">
-        <Message>update.user.details.title</Message>
-      </p>
-      <UpdateUserForm onSubmit={saveUser} />
-    </div>
-  </Fragment>
-);
+      {pendingExchangesSection}
+
+      <div className="mt-5">
+        <p className="mb-4 lead">
+          <Message>update.user.details.title</Message>
+        </p>
+        <UpdateUserForm onSubmit={saveUser} />
+      </div>
+    </Fragment>
+  );
+};
 
 const noop = () => null;
 

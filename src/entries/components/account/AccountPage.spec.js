@@ -90,15 +90,24 @@ describe('Current balance', () => {
     expect(component.contains(<Loader className="align-middle" />)).toBe(true);
   });
 
-  it('renders pending mandates', () => {
-    props.pendingExchanges = {};
-    expect(component.contains(<PendingExchangesTable />)).toBe(true);
+  it('renders loader when pending exchanges are still loading', () => {
+    component.setProps({ loadingPendingExchanges: true });
+    expect(pendingExchangesLoader().exists()).toBe(true);
   });
 
-  it('renders loader when pending exchanges is still loading', () => {
-    const loadingPendingExchanges = true;
-    component.setProps({ loadingPendingExchanges });
-    expect(component.contains(<Loader className="align-middle" />)).toBe(true);
+  it('does not render pending exchanges when they are still loading', () => {
+    component.setProps({ loadingPendingExchanges: true });
+    expect(pendingExchangesTable().exists()).toBe(false);
+  });
+
+  it('does not render pending exchanges when none exist', () => {
+    component.setProps({ pendingExchanges: [] });
+    expect(pendingExchangesTable().exists()).toBe(false);
+  });
+
+  it('renders pending exchanges when at least one exists', () => {
+    component.setProps({ pendingExchanges: [{}] });
+    expect(pendingExchangesTable().exists()).toBe(true);
   });
 
   it('shows update user form', () => {
@@ -149,4 +158,12 @@ describe('Current balance', () => {
       ),
     ).toBe(true);
   });
+
+  function pendingExchangesTable() {
+    return component.find(PendingExchangesTable);
+  }
+
+  function pendingExchangesLoader() {
+    return component.find(Loader).filter('.mt-5');
+  }
 });
