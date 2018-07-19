@@ -334,22 +334,6 @@ describe('api', () => {
     });
   });
 
-  it('can get comparison', () => {
-    mockHttp.get = jest.fn(() => Promise.resolve());
-    const monthlyWage = 1000;
-    const returnRate = 0.05;
-    const token = 'a token';
-    return api.getComparisonForSalaryAndRateWithToken(monthlyWage, returnRate, token).then(() =>
-      expect(mockHttp.get).toHaveBeenCalledWith(
-        `/v1/comparisons?monthlyWage=${monthlyWage}&returnRate=${returnRate}&isTulevaMember=false`,
-        undefined,
-        {
-          Authorization: `Bearer ${token}`,
-        },
-      ),
-    );
-  });
-
   it('can get user conversion', () => {
     mockHttp.get = jest.fn(() => Promise.resolve());
     const token = 'a token';

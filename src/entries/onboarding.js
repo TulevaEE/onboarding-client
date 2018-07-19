@@ -26,10 +26,7 @@ import TermsOfUse from './components/termsOfUse';
 import NonMember from './components/newUserFlow/nonMember';
 import { reducer as exchangeReducer, actions as exchangeActions } from './components/exchange';
 import trackingReducer from './components/tracking';
-import { reducer as comparisonReducer } from './components/comparison';
-import { reducer as quizReducer, actions as quizActions } from './components/quiz';
 import { reducer as routerReducer, router } from './components/router';
-import Quiz from './components/quiz/Quiz';
 import { refreshToken } from './components/login/actions';
 
 import './common/polyfills';
@@ -50,11 +47,9 @@ const rootReducer = combineReducers({
   routing: routingReducer,
   login: loginReducer,
   exchange: exchangeReducer, // exchage of funds
-  comparison: comparisonReducer,
   account: accountReducer,
   tracking: trackingReducer,
   form: formReducer,
-  quiz: quizReducer,
   router: routerReducer,
 });
 
@@ -112,9 +107,6 @@ function applyRouting(nextState) {
   store.dispatch(loginActions.mapUrlQueryParamsToState(nextState.location.query));
   store.dispatch(loginActions.handleIdCardLogin(nextState.location.query));
   store.dispatch(exchangeActions.mapUrlQueryParamsToState(nextState.location.query));
-  if (quizActions.isRouteToQuiz(nextState.location)) {
-    store.dispatch(quizActions.routeToQuiz());
-  }
   if (router.isRouteToAccount(nextState.location)) {
     store.dispatch(router.routeToAccount());
   }
@@ -201,8 +193,6 @@ render(
             <Route path="/login" component={LoginPage} />
             <Route path="/terms-of-use" component={TermsOfUse} />
             <Route path="/" component={requireAuthentication(App)} onEnter={initApp}>
-              <Route path="/quiz" component={Quiz} />
-
               <Route path="/steps">
                 <Route path="non-member" component={NonMember} />
               </Route>

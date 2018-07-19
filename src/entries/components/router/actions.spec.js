@@ -10,8 +10,6 @@ describe('Routing actions', () => {
     state = {};
     state.login = {};
     state.login.user = {};
-    state.quiz = {};
-    state.quiz.routeToQuiz = false;
     state.exchange = {};
     state.exchange.shortFlow = false;
     state.router = {};
@@ -107,17 +105,6 @@ describe('Routing actions', () => {
 
     expect(dispatch).toHaveBeenCalledTimes(1);
     expect(dispatch).toHaveBeenCalledWith(push('/steps/select-sources'));
-  });
-
-  it('can route to quiz', () => {
-    state.login = {};
-    state.quiz.routeToQuiz = true;
-
-    const action = createBoundAction(actions.selectRouteForState);
-    action();
-
-    expect(dispatch).toHaveBeenCalledTimes(1);
-    expect(dispatch).toHaveBeenCalledWith(push('/quiz'));
   });
 
   it('can route to account', () => {
