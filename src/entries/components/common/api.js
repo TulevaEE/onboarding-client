@@ -168,21 +168,6 @@ export function createUserWithToken(user, token) {
   }).then(savedUser => savedUser);
 }
 
-export function getComparisonForSalaryAndRateWithToken(
-  monthlyWage,
-  returnRate,
-  token,
-  isTulevaMember = false,
-) {
-  return get(
-    getEndpoint(
-      `/v1/comparisons?monthlyWage=${monthlyWage}&returnRate=${returnRate}&isTulevaMember=${isTulevaMember}`,
-    ),
-    undefined,
-    { Authorization: `Bearer ${token}` },
-  );
-}
-
 export function getUserConversionWithToken(token) {
   return get(getEndpoint('/v1/me/conversion'), undefined, {
     Authorization: `Bearer ${token}`,

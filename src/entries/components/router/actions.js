@@ -46,11 +46,6 @@ export function selectRouteForState() {
       return;
     }
 
-    if (getState().quiz.routeToQuiz === true) {
-      dispatch(push('/quiz'));
-      return;
-    }
-
     if (getState().router.routeToAccount === true) {
       dispatch(push('/account'));
       return;

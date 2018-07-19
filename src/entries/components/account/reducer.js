@@ -15,7 +15,7 @@ const initialState = {
   updateUserSuccess: false,
 };
 
-export default function comparisonReducer(state = initialState, action) {
+export default function accountReducer(state = initialState, action) {
   switch (action.type) {
     case GET_INITIAL_CAPITAL_START:
       return {
