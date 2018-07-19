@@ -60,14 +60,6 @@ export const AccountPage = ({
     ) : (
       ''
     )}
-    <div className="row mt-5">
-      <div className="col-6">
-        <p className="mb-4 lead">
-          <Message>update.user.details.title</Message>
-        </p>
-        <UpdateUserForm onSubmit={saveUser} />
-      </div>
-    </div>
     {error ? <ErrorMessage errors={error.body} /> : ''}
     <div className="row mt-5">
       <div className="col-md-6">
@@ -102,6 +94,12 @@ export const AccountPage = ({
           <PendingExchangesTable pendingExchanges={pendingExchanges} />
         )}
       </div>
+    </div>
+    <div className="mt-5">
+      <p className="mb-4 lead">
+        <Message>update.user.details.title</Message>
+      </p>
+      <UpdateUserForm onSubmit={saveUser} />
     </div>
   </div>
 );
