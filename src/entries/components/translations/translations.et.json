@@ -247,10 +247,10 @@
   "new.user.flow.new.user.alternative.you.can.still.join" : "Võid astuda liikmeks kui soovid Tuleva ideed toetada ja oma häälega sellest märku anda",
   "inline.login.cta": "Liitun Tulevaga",
   "inline.login.email": "E-mail",
-  "update.user.details.title": "Uuenda oma isikuandmeid",
+  "update.user.details.title": "Sinu kontaktandmed",
   "update.user.save": "Salvesta",
   "update.user.thanks": "Tänud!",
-  "update.user.success.message": " Sinu isikuandmed on uuendatud.",
+  "update.user.success.message": " Sinu kontaktandmed on uuendatud.",
   "account.second.pillar.missing": "Sa ei ole II sambaga liitunud. Millised võimalused sul tulevikus on? 1. Valitsus plaanib tulevikus II samba liitumiseks uuesti avada - siis saad otsustada, kas soovid liituda. 2. Tulevas otsime ka muid võimalusi, kuidas oma tuleviku jaoks soodsalt raha koguda.",
   "pension.registry.connection.exception": "Ei saa ühendust Eesti väärtpaberite keskregistriga, palun proovi hetke pärast uuesti.",
   "change.my.pension.fund": "Vaheta pensionifondi"

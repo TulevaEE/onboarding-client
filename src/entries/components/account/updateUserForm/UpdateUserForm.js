@@ -24,32 +24,40 @@ export const UpdateUserForm = ({
           <Message>update.user.success.message</Message>
         </div>
       )}
-      <div className="form-group">
-        <Field
-          component={renderField}
-          type="email"
-          name="email"
-          placeholder={translate('new.user.flow.signup.email')}
-          validate={[requiredField, emailValidator]}
-        />
-      </div>
-      <div className="form-group">
-        <Field
-          component={renderField}
-          type="number"
-          name="phoneNumber"
-          placeholder={translate('new.user.flow.signup.phoneNumber')}
-        />
-      </div>
-      <div className={`form-group ${error ? 'has-danger' : ''}`}>
-        {error && <div className="form-control-feedback mb-3">{error}</div>}
-        <button
-          type="submit"
-          disabled={invalid || submitting}
-          className={'btn btn-primary mb-2 mr-2'}
-        >
-          <Message>update.user.save</Message>
-        </button>
+      <div className="row">
+        <div className="col-md-4">
+          <div className="form-group">
+            <Field
+              component={renderField}
+              type="email"
+              name="email"
+              placeholder={translate('new.user.flow.signup.email')}
+              validate={[requiredField, emailValidator]}
+            />
+          </div>
+        </div>
+        <div className="col-md-4">
+          <div className="form-group">
+            <Field
+              component={renderField}
+              type="number"
+              name="phoneNumber"
+              placeholder={translate('new.user.flow.signup.phoneNumber')}
+            />
+          </div>
+        </div>
+        <div className="col-md-4">
+          <div className={`form-group ${error ? 'has-danger' : ''}`}>
+            {error && <div className="form-control-feedback mb-3">{error}</div>}
+            <button
+              type="submit"
+              disabled={invalid || submitting}
+              className={'btn btn-primary btn-block mb-2 mr-2'}
+            >
+              <Message>update.user.save</Message>
+            </button>
+          </div>
+        </div>
       </div>
     </form>
   </div>
