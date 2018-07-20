@@ -21,7 +21,6 @@ describe('Current balance', () => {
   let props;
 
   beforeEach(() => {
-    window.localStorage = { getItem: item => item === 'showReturnComparison' };
     getReturnComparisonStartDateOptions.mockReturnValue([{}, {}]);
     props = {};
     component = shallow(<AccountPage {...props} />);
