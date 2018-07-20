@@ -394,4 +394,16 @@ describe('api', () => {
       );
     });
   });
+
+  it('can get return comparison with a token', async () => {
+    expect.assertions(2);
+    mockHttp.get = jest.fn(() => Promise.resolve({ actualReturnPercentage: 0.0123 }));
+
+    const comparison = await api.getReturnComparisonWithToken('a-token');
+
+    expect(comparison).toEqual({ actualReturnPercentage: 0.0123 });
+    expect(mockHttp.get).toHaveBeenCalledWith('/v1/fund-comparison', undefined, {
+      Authorization: 'Bearer a-token',
+    });
+  });
 });

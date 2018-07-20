@@ -8,12 +8,14 @@ import { AccountPage } from './AccountPage';
 import PensionFundTable from './../onboardingFlow/selectSources/pensionFundTable';
 import PendingExchangesTable from './pendingExchangeTable';
 import UpdateUserForm from './updateUserForm';
+import ReturnComparison from '../returnComparison';
 
 describe('Current balance', () => {
   let component;
   let props;
 
   beforeEach(() => {
+    window.localStorage = { getItem: item => item === 'showReturnComparison' };
     props = {};
     component = shallow(<AccountPage {...props} />);
   });
@@ -110,6 +112,25 @@ describe('Current balance', () => {
     expect(pendingExchangesTable().exists()).toBe(true);
   });
 
+  it('renders loader when return comparison is loading', () => {
+    component.setProps({ loadingReturnComparison: true });
+    expect(returnComparisonLoader().exists()).toBe(true);
+  });
+
+  it('does not render return comparison when it is loading', () => {
+    component.setProps({ loadingReturnComparison: true });
+    expect(returnComparison().exists()).toBe(false);
+  });
+
+  it('does not render return comparison when there is an error', () => {
+    component.setProps({ returnComparisonError: {} });
+    expect(returnComparison().exists()).toBe(false);
+  });
+
+  it('renders return comparison when there is no error', () => {
+    expect(returnComparison().exists()).toBe(true);
+  });
+
   it('shows update user form', () => {
     const saveUser = () => null;
     component.setProps({ saveUser });
@@ -164,6 +185,14 @@ describe('Current balance', () => {
   }
 
   function pendingExchangesLoader() {
+    return component.find(Loader).filter('.mt-5');
+  }
+
+  function returnComparison() {
+    return component.find(ReturnComparison);
+  }
+
+  function returnComparisonLoader() {
     return component.find(Loader).filter('.mt-5');
   }
 });

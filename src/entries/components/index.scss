@@ -108,3 +108,14 @@ hr {
     border-color: $green;
   }
 }
+
+.card {
+  margin-right: -$grid-gutter-width-base/2;
+  margin-left: -$grid-gutter-width-base/2;
+  border-radius: 8px;
+
+  &-primary {
+    border-color: $blue-light;
+    background-color: $very-light-blue;
+  }
+}

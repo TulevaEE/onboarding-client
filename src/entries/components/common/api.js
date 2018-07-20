@@ -185,3 +185,9 @@ export function getPendingExchangesWithToken(token) {
     Authorization: `Bearer ${token}`,
   });
 }
+
+export function getReturnComparisonWithToken(token) {
+  return get(getEndpoint('/v1/fund-comparison'), undefined, {
+    Authorization: `Bearer ${token}`,
+  });
+}
