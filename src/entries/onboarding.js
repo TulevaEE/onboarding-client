@@ -152,7 +152,7 @@ function getReturnComparisonData() {
       returnComparison: { loading, actualPercentage },
     } = store.getState();
     if (login.token && !(actualPercentage !== null || loading)) {
-      store.dispatch(returnComparisonActions.getReturnComparison());
+      store.dispatch(returnComparisonActions.getReturnComparisonForStartDate(null));
     }
   }
 }

@@ -256,5 +256,11 @@
   "returnComparison.title": "Your II pillar personal rate of return",
   "returnComparison.actual": "Your II pillar personal rate of return",
   "returnComparison.estonian": "Estonian average",
-  "returnComparison.market": "World market return"
+  "returnComparison.market": "World market return",
+  "returnComparison.explanationLinkText": "What do these numbers mean?",
+  "returnComparison.period.all": "From the beginning",
+  "returnComparison.period.fiveYears": "5 years",
+  "returnComparison.period.threeYears": "3 years",
+  "returnComparison.period.oneYear": "1 year",
+  "returnComparison.period.thisYear": "This year"
 }

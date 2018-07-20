@@ -1,32 +1,35 @@
 import { mockStore } from '../../../test/utils';
-import { getReturnComparison } from './actions';
-import { getReturnComparisonWithToken } from '../common/api';
+import { getReturnComparisonForStartDate } from './actions';
+import { getReturnComparisonForStartDateWithToken } from '../common/api';
 import {
   GET_RETURN_COMPARISON_START,
   GET_RETURN_COMPARISON_SUCCESS,
   GET_RETURN_COMPARISON_ERROR,
 } from './constants';
 
-jest.mock('../common/api', () => ({ getReturnComparisonWithToken: jest.fn() }));
+jest.mock('../common/api', () => ({ getReturnComparisonForStartDateWithToken: jest.fn() }));
 
 describe('Return comparison actions', () => {
   describe('getting return comparison', () => {
     it('dispatches start action when fetching starts', async () => {
       const store = mockStore();
 
-      await store.dispatch(getReturnComparison());
+      await store.dispatch(getReturnComparisonForStartDate('2015-10-03'));
 
       const actions = store.getActions();
       expect(actions).toContainEqual({ type: GET_RETURN_COMPARISON_START });
     });
 
-    it('gets comparison with token from state', async () => {
+    it('gets comparison with date and token from state', async () => {
       const store = mockStoreWithToken('a-token');
       mockAPIResponse(Promise.resolve({}));
 
-      await store.dispatch(getReturnComparison());
+      await store.dispatch(getReturnComparisonForStartDate('2015-10-03'));
 
-      expect(getReturnComparisonWithToken).toHaveBeenCalledWith('a-token');
+      expect(getReturnComparisonForStartDateWithToken).toHaveBeenCalledWith(
+        '2015-10-03',
+        'a-token',
+      );
     });
 
     it('dispatches success action with percentages if fetching succeeds', async () => {
@@ -39,7 +42,7 @@ describe('Return comparison actions', () => {
         }),
       );
 
-      await store.dispatch(getReturnComparison());
+      await store.dispatch(getReturnComparisonForStartDate('2015-10-03'));
 
       const actions = store.getActions();
       expect(actions).toContainEqual({
@@ -54,7 +57,7 @@ describe('Return comparison actions', () => {
       const store = mockStoreWithToken();
       mockAPIResponse(Promise.reject({ message: 'An error' }));
 
-      await store.dispatch(getReturnComparison());
+      await store.dispatch(getReturnComparisonForStartDate('2015-10-03'));
 
       const actions = store.getActions();
       expect(actions).toContainEqual({
@@ -69,6 +72,6 @@ describe('Return comparison actions', () => {
   }
 
   function mockAPIResponse(response) {
-    getReturnComparisonWithToken.mockReturnValue(response);
+    getReturnComparisonForStartDateWithToken.mockReturnValue(response);
   }
 });
