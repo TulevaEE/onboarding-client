@@ -8,6 +8,7 @@ import { Link } from 'react-router';
 import { Loader, ErrorMessage } from '../common';
 import PensionFundTable from './../onboardingFlow/selectSources/pensionFundTable';
 import PendingExchangesTable from './pendingExchangeTable';
+import ReturnComparison from '../returnComparison';
 import UpdateUserForm from './updateUserForm';
 import { updateUser } from '../common/user/actions';
 
@@ -19,6 +20,9 @@ export const AccountPage = ({
   conversion,
   pendingExchanges,
   loadingPendingExchanges,
+  returnComparison,
+  loadingReturnComparison,
+  returnComparisonError,
   saveUser,
   error,
 }) => {
@@ -31,6 +35,23 @@ export const AccountPage = ({
           <Message>pending.exchanges.lead</Message>
         </p>
         <PendingExchangesTable pendingExchanges={pendingExchanges} />
+      </div>
+    )
+  );
+
+  const returnComparisonSection = loadingReturnComparison ? (
+    <Loader className="align-middle mt-5" />
+  ) : (
+    !returnComparisonError && (
+      <div className="mt-5">
+        <p className="mb-4 lead">
+          <Message>returnComparison.title</Message>
+        </p>
+        <ReturnComparison
+          actualPercentage={returnComparison.actualPercentage}
+          estonianPercentage={returnComparison.estonianPercentage}
+          marketPercentage={returnComparison.marketPercentage}
+        />
       </div>
     )
   );
@@ -94,6 +115,7 @@ export const AccountPage = ({
       )}
 
       {pendingExchangesSection}
+      {JSON.parse(window.localStorage.getItem('showReturnComparison')) && returnComparisonSection}
 
       <div className="mt-5">
         <p className="mb-4 lead">
@@ -112,6 +134,9 @@ AccountPage.defaultProps = {
   loadingCurrentBalance: false,
   pendingExchanges: [],
   loadingPendingExchanges: false,
+  returnComparison: {},
+  returnComparisonError: null,
+  loadingReturnComparison: false,
   initialCapital: {},
   memberNumber: null,
   conversion: {},
@@ -124,6 +149,13 @@ AccountPage.propTypes = {
   loadingCurrentBalance: Types.bool,
   pendingExchanges: Types.arrayOf(Types.shape({})),
   loadingPendingExchanges: Types.bool,
+  returnComparison: Types.shape({
+    actualPercentage: Types.number,
+    estonianPercentage: Types.number,
+    marketPercentage: Types.number,
+  }),
+  returnComparisonError: Types.shape({}),
+  loadingReturnComparison: Types.bool,
   initialCapital: Types.shape({}),
   memberNumber: Types.number,
   conversion: Types.shape({}),
@@ -136,6 +168,9 @@ const mapStateToProps = state => ({
   loadingCurrentBalance: state.exchange.loadingSourceFunds,
   pendingExchanges: state.exchange.pendingExchanges,
   loadingPendingExchanges: state.exchange.loadingPendingExchanges,
+  returnComparison: state.returnComparison,
+  loadingReturnComparison: state.returnComparison.loading,
+  returnComparisonError: state.returnComparison.error,
   initialCapital: state.account.initialCapital,
   memberNumber: (state.login.user || {}).memberNumber,
   conversion: state.login.userConversion,

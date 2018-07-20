@@ -227,5 +227,9 @@
   "update.user.success.message": " Sinu kontaktandmed on uuendatud.",
   "account.second.pillar.missing": "Sa ei ole II sambaga liitunud. Millised võimalused sul tulevikus on? 1. Valitsus plaanib tulevikus II samba liitumiseks uuesti avada - siis saad otsustada, kas soovid liituda. 2. Tulevas otsime ka muid võimalusi, kuidas oma tuleviku jaoks soodsalt raha koguda.",
   "pension.registry.connection.exception": "Ei saa ühendust Eesti väärtpaberite keskregistriga, palun proovi hetke pärast uuesti.",
-  "change.my.pension.fund": "Vaheta pensionifondi"
+  "change.my.pension.fund": "Vaheta pensionifondi",
+  "returnComparison.title": "Sinu II samba pensionivara tootlus",
+  "returnComparison.actual": "Sinu II samba tootlus",
+  "returnComparison.estonian": "Eesti keskmine",
+  "returnComparison.market": "Maailma keskmine"
 }

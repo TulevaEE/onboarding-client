@@ -35,6 +35,10 @@ import AccountPage, {
   reducer as accountReducer,
   actions as accountActions,
 } from './components/account';
+import {
+  actions as returnComparisonActions,
+  reducer as returnComparisonReducer,
+} from './components/returnComparison';
 import Steps, {
   SelectSources,
   TransferFutureCapital,
@@ -48,6 +52,7 @@ const rootReducer = combineReducers({
   login: loginReducer,
   exchange: exchangeReducer, // exchage of funds
   account: accountReducer,
+  returnComparison: returnComparisonReducer,
   tracking: trackingReducer,
   form: formReducer,
   router: routerReducer,
@@ -140,10 +145,23 @@ function getPendingExchangesData() {
   }
 }
 
+function getReturnComparisonData() {
+  if (JSON.parse(window.localStorage.getItem('showReturnComparison'))) {
+    const {
+      login,
+      returnComparison: { loading, actualPercentage },
+    } = store.getState();
+    if (login.token && !(actualPercentage !== null || loading)) {
+      store.dispatch(returnComparisonActions.getReturnComparison());
+    }
+  }
+}
+
 function getDataForAccount() {
   getSourceAndTargetFundsData();
   getInitialCapitalData();
   getPendingExchangesData();
+  getReturnComparisonData();
 }
 
 function applyLanguage() {
