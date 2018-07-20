@@ -2,7 +2,8 @@ import React, { Component, Fragment } from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Message, WithTranslations } from 'retranslate';
+import { Message } from 'retranslate';
+// import { Message, WithTranslations } from 'retranslate';
 import { Link } from 'react-router';
 
 import { Loader, ErrorMessage } from '../common';
@@ -10,7 +11,7 @@ import PensionFundTable from './../onboardingFlow/selectSources/pensionFundTable
 import PendingExchangesTable from './pendingExchangeTable';
 import ReturnComparison, { actions as returnComparisonActions } from '../returnComparison';
 import getReturnComparisonStartDateOptions from '../returnComparison/options';
-import Select from './Select';
+// import Select from './Select';
 import UpdateUserForm from './updateUserForm';
 import { updateUser } from '../common/user/actions';
 
@@ -51,7 +52,7 @@ export class AccountPage extends Component {
       saveUser,
       error,
     } = this.props;
-    const { returnComparisonStartDate, options } = this.state;
+    // const { returnComparisonStartDate, options } = this.state;
 
     const pendingExchangesSection = loadingPendingExchanges ? (
       <Loader className="align-middle mt-5" />
@@ -74,7 +75,7 @@ export class AccountPage extends Component {
               <Message>returnComparison.title</Message>
             </p>
           </div>
-          <div className="col-md-4 text-md-right">
+          {/* <div className="col-md-4 text-md-right">
             <WithTranslations>
               {({ translate }) => (
                 <Select
@@ -84,7 +85,7 @@ export class AccountPage extends Component {
                 />
               )}
             </WithTranslations>
-          </div>
+          </div> */}
         </div>
 
         <ReturnComparison
