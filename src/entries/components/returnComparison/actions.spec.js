@@ -34,8 +34,8 @@ describe('Return comparison actions', () => {
       mockAPIResponse(
         Promise.resolve({
           actualReturnPercentage: 0.0123,
-          estonianReturnPercentage: 0.0456,
-          marketReturnPercentage: 0.0789,
+          estonianAverageReturnPercentage: 0.0456,
+          marketAverageReturnPercentage: 0.0789,
         }),
       );
 

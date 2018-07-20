@@ -11,8 +11,8 @@ export function getReturnComparison() {
     try {
       const {
         actualReturnPercentage: actualPercentage,
-        estonianReturnPercentage: estonianPercentage,
-        marketReturnPercentage: marketPercentage,
+        estonianAverageReturnPercentage: estonianPercentage,
+        marketAverageReturnPercentage: marketPercentage,
       } = await getReturnComparisonWithToken(getState().login.token);
       dispatch({
         type: GET_RETURN_COMPARISON_SUCCESS,
