@@ -146,14 +146,12 @@ function getPendingExchangesData() {
 }
 
 function getReturnComparisonData() {
-  if (JSON.parse(window.localStorage.getItem('showReturnComparison'))) {
-    const {
-      login,
-      returnComparison: { loading, actualPercentage },
-    } = store.getState();
-    if (login.token && !(actualPercentage !== null || loading)) {
-      store.dispatch(returnComparisonActions.getReturnComparisonForStartDate(null));
-    }
+  const {
+    login,
+    returnComparison: { loading, actualPercentage },
+  } = store.getState();
+  if (login.token && !(actualPercentage !== null || loading)) {
+    store.dispatch(returnComparisonActions.getReturnComparisonForStartDate(null));
   }
 }
 

@@ -158,7 +158,7 @@ export class AccountPage extends Component {
         )}
 
         {pendingExchangesSection}
-        {JSON.parse(window.localStorage.getItem('showReturnComparison')) && returnComparisonSection}
+        {returnComparisonSection}
 
         <div className="mt-5">
           <p className="mb-4 lead">
