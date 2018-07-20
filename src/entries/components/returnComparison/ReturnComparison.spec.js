@@ -2,6 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import ReturnComparison from '.';
+import { Loader } from '../common';
 
 describe('Return comparison', () => {
   let component;
@@ -11,11 +12,31 @@ describe('Return comparison', () => {
     );
   });
 
+  it('shows loader when loading', () => {
+    expect(loader().exists()).toBe(false);
+    component.setProps({ loading: true });
+    expect(loader().exists()).toBe(true);
+  });
+
+  it('does not show content when loading', () => {
+    expect(content().exists()).toBe(true);
+    component.setProps({ loading: true });
+    expect(content().exists()).toBe(false);
+  });
+
   it('has formatted percentages for existing and - for not existing returns', () => {
     expect(actualPercentage()).toBe('1.2%');
     expect(estonianPercentage()).toBe('-');
     expect(marketPercentage()).toBe('3.5%');
   });
+
+  function loader() {
+    return component.find(Loader);
+  }
+
+  function content() {
+    return component.find('.row');
+  }
 
   function actualPercentage() {
     return returnPercentage(0);

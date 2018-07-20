@@ -395,14 +395,14 @@ describe('api', () => {
     });
   });
 
-  it('can get return comparison with a token', async () => {
+  it('can get return comparison with start date and token', async () => {
     expect.assertions(2);
     mockHttp.get = jest.fn(() => Promise.resolve({ actualReturnPercentage: 0.0123 }));
 
-    const comparison = await api.getReturnComparisonWithToken('a-token');
+    const comparison = await api.getReturnComparisonForStartDateWithToken('2016-01-01', 'a-token');
 
     expect(comparison).toEqual({ actualReturnPercentage: 0.0123 });
-    expect(mockHttp.get).toHaveBeenCalledWith('/v1/fund-comparison', undefined, {
+    expect(mockHttp.get).toHaveBeenCalledWith('/v1/fund-comparison?from=2016-01-01', undefined, {
       Authorization: 'Bearer a-token',
     });
   });

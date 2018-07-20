@@ -3,9 +3,9 @@ import {
   GET_RETURN_COMPARISON_SUCCESS,
   GET_RETURN_COMPARISON_ERROR,
 } from './constants';
-import { getReturnComparisonWithToken } from '../common/api';
+import { getReturnComparisonForStartDateWithToken } from '../common/api';
 
-export function getReturnComparison() {
+export function getReturnComparisonForStartDate(date) {
   return async (dispatch, getState) => {
     dispatch({ type: GET_RETURN_COMPARISON_START });
     try {
@@ -13,7 +13,7 @@ export function getReturnComparison() {
         actualReturnPercentage: actualPercentage,
         estonianAverageReturnPercentage: estonianPercentage,
         marketAverageReturnPercentage: marketPercentage,
-      } = await getReturnComparisonWithToken(getState().login.token);
+      } = await getReturnComparisonForStartDateWithToken(date, getState().login.token);
       dispatch({
         type: GET_RETURN_COMPARISON_SUCCESS,
         actualPercentage,

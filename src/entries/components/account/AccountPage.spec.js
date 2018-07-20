@@ -1,7 +1,8 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import { shallow, mount } from 'enzyme';
 import { Message } from 'retranslate';
 import { Link } from 'react-router';
+import { Provider } from 'react-redux';
 
 import { Loader, ErrorMessage } from '../common';
 import { AccountPage } from './AccountPage';
@@ -9,6 +10,11 @@ import PensionFundTable from './../onboardingFlow/selectSources/pensionFundTable
 import PendingExchangesTable from './pendingExchangeTable';
 import UpdateUserForm from './updateUserForm';
 import ReturnComparison from '../returnComparison';
+import Select from './Select';
+import { mockStore } from '../../../test/utils';
+import getReturnComparisonStartDateOptions from '../returnComparison/options';
+
+jest.mock('../returnComparison/options', () => jest.fn());
 
 describe('Current balance', () => {
   let component;
@@ -16,6 +22,7 @@ describe('Current balance', () => {
 
   beforeEach(() => {
     window.localStorage = { getItem: item => item === 'showReturnComparison' };
+    getReturnComparisonStartDateOptions.mockReturnValue([{}, {}]);
     props = {};
     component = shallow(<AccountPage {...props} />);
   });
@@ -112,14 +119,11 @@ describe('Current balance', () => {
     expect(pendingExchangesTable().exists()).toBe(true);
   });
 
-  it('renders loader when return comparison is loading', () => {
+  it('passes return comparison whether it is loading', () => {
+    component.setProps({ loadingReturnComparison: false });
+    expect(returnComparison().prop('loading')).toBe(false);
     component.setProps({ loadingReturnComparison: true });
-    expect(returnComparisonLoader().exists()).toBe(true);
-  });
-
-  it('does not render return comparison when it is loading', () => {
-    component.setProps({ loadingReturnComparison: true });
-    expect(returnComparison().exists()).toBe(false);
+    expect(returnComparison().prop('loading')).toBe(true);
   });
 
   it('does not render return comparison when there is an error', () => {
@@ -129,6 +133,47 @@ describe('Current balance', () => {
 
   it('renders return comparison when there is no error', () => {
     expect(returnComparison().exists()).toBe(true);
+  });
+
+  it('passes options to return comparison select', () => {
+    getReturnComparisonStartDateOptions.mockReturnValue([
+      { value: '2002-01-01', label: 'Since the beginning' },
+      { value: '2005-10-03', label: '5 years' },
+    ]);
+
+    component = mountWithProvider(<AccountPage />);
+
+    expect(returnComparisonSelect().prop('options')).toEqual([
+      { value: '2002-01-01', label: 'Since the beginning' },
+      { value: '2005-10-03', label: '5 years' },
+    ]);
+  });
+
+  it('passes first return comparison option value to return comparison select by default', () => {
+    getReturnComparisonStartDateOptions.mockReturnValue([
+      { value: '2002-01-01', label: 'Since the beginning' },
+      { value: '2005-10-03', label: '5 years' },
+    ]);
+
+    component = mountWithProvider(<AccountPage />);
+
+    expect(returnComparisonSelect().prop('selected')).toEqual('2002-01-01');
+  });
+
+  it('executes callback on return comparison select change', () => {
+    getReturnComparisonStartDateOptions.mockReturnValue([
+      { value: '2002-01-01', label: 'Since the beginning' },
+      { value: '2005-10-03', label: '5 years' },
+    ]);
+
+    const getReturnComparisonForStartDate = jest.fn();
+
+    component = mountWithProvider(
+      <AccountPage getReturnComparisonForStartDate={getReturnComparisonForStartDate} />,
+    );
+    returnComparisonSelect().simulate('change', '2005-10-03');
+
+    expect(getReturnComparisonForStartDate).toBeCalled();
   });
 
   it('shows update user form', () => {
@@ -192,7 +237,13 @@ describe('Current balance', () => {
     return component.find(ReturnComparison);
   }
 
-  function returnComparisonLoader() {
-    return component.find(Loader).filter('.mt-5');
+  function returnComparisonSelect() {
+    return component.find(Select);
+  }
+
+  function mountWithProvider(renderComponent) {
+    return mount(
+      <Provider store={mockStore({ login: {}, account: {} })}>{renderComponent}</Provider>,
+    );
   }
 });
