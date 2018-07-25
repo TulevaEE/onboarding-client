@@ -45,7 +45,7 @@ import Steps, {
   ConfirmMandate,
   Success,
 } from './components/onboardingFlow';
-import registerServiceWorker from './common/registerServiceWorker';
+import { unregister as unregisterServiceWorker } from './common/registerServiceWorker';
 
 const rootReducer = combineReducers({
   routing: routingReducer,
@@ -233,4 +233,4 @@ render(
   document.getElementById('root'),
 );
 
-registerServiceWorker();
+unregisterServiceWorker();
