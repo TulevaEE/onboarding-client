@@ -1,6 +1,6 @@
 {
 
-  "login.title": "We are imporoving our app today and while you can see your pension account statement and personal rate of return here, you cannot change your pension fund.",
+  "login.title": "By logging in you can see your pension account statement and personal rate of return. You can also change your pension fund.",
   "login.mobile.id": "Enter with mobile-ID",
   "login.id.card": "Enter with ID-card",
   "login.id.card.start.failed": "Please check that your ID card reader is connected and try again.",
