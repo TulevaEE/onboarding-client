@@ -1,6 +1,6 @@
 {
 
-  "login.title": "Sisse logides näed oma pensionikonto seisu ja tootlust ning saad soovi korral pensionifondi vahetada.",
+  "login.title": "Teeme täna veebirakenduses parandusi ja hetkel näed küll oma konto seisu aga fondi vahetada ei saa. Proovi homme uuesti!",
   "login.mobile.id": "Mobiil-ID",
   "login.id.card": "ID-kaart",
   "login.id.card.start.failed": "Palun kontrolli, et ID kaart on lugejas ja lugeja ühendatud, ning ID kaardiga signeerimise plugin töötab. Vajadusel tee veebilehitsejale restart ja proovi uuesti.",
