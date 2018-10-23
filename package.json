@@ -47,6 +47,7 @@
     "build-css": "node-sass-chokidar --include-path ./src --include-path ./node_modules src/ -o src/",
     "build-js": "react-app-rewired build",
     "develop": "npm-run-all -p watch-css start-js",
+    "develop-production": "HTTPS=true HOST=local.tuleva.ee npm run develop",
     "watch-css": "npm run build-css && node-sass-chokidar --include-path ./src --include-path ./node_modules src/ -o src/ --watch --recursive",
     "test": "npm run build-css && react-app-rewired test --env=jsdom",
     "start-js": "react-app-rewired start",
