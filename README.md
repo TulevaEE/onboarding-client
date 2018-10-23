@@ -25,6 +25,12 @@ npm test
 
 [`onboarding-service`](https://github.com/TulevaEE/onboarding-service) is expected to run on port 9000.
 
+### Development against the production service (https://onboarding-service.tuleva.ee)
+
+1. Point the proxy server to production in `package.json`: `"proxy": "https://onboarding-service.tuleva.ee"`
+2. Add `127.0.0.1 local.tuleva.ee` to `/etc/hosts` (`sudo nano /etc/hosts`)
+3. `npm run develop-production`
+
 ### Deployment
 
 Updating the inline widget is manual, so the bundles need to be created locally, uploaded to the Zone FTP server, and the URLs in [`wordpress-theme`](https://github.com/TulevaEE/wordpress-theme) updated.
