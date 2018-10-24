@@ -99,7 +99,7 @@ describe('Select sources step', () => {
   it('selects all funds when clicking on the full selection radio', () => {
     const onSelect = jest.fn();
     const sourceFunds = [{ isin: 'a' }, { isin: 'b' }];
-    const targetFunds = [{ isin: 'c' }];
+    const targetFunds = [{ isin: 'c', fundManager: { name: 'Tuleva' } }];
     const fullSelection = [
       { sourceFundIsin: 'a', targetFundIsin: 'c', percentage: 1 },
       { sourceFundIsin: 'b', targetFundIsin: 'c', percentage: 1 },
@@ -116,8 +116,8 @@ describe('Select sources step', () => {
 
   it('when selecting all funds, skip inter fund transfer', () => {
     const onSelect = jest.fn();
-    const sourceFunds = [{ isin: 'c' }, { isin: 'b' }];
-    const targetFunds = [{ isin: 'c' }];
+    const sourceFunds = [{ isin: 'c', fundManager: { name: 'Tuleva' } }, { isin: 'b' }];
+    const targetFunds = [{ isin: 'c', fundManager: { name: 'Tuleva' } }];
     const fullSelection = [{ sourceFundIsin: 'b', targetFundIsin: 'c', percentage: 1 }];
     component.setProps({ sourceFunds, targetFunds, onSelect });
     expect(onSelect).not.toHaveBeenCalled();
@@ -131,8 +131,8 @@ describe('Select sources step', () => {
 
   it('when selecting all funds and the default fund (first target fund) is the only source fund, dont skip it', () => {
     const onSelect = jest.fn();
-    const sourceFunds = [{ isin: 'c' }];
-    const targetFunds = [{ isin: 'c' }, { isin: 'b' }];
+    const sourceFunds = [{ isin: 'c', fundManager: { name: 'Tuleva' } }];
+    const targetFunds = [{ isin: 'c', fundManager: { name: 'Tuleva' } }, { isin: 'b' }];
     const fullSelection = [{ sourceFundIsin: 'c', targetFundIsin: 'c', percentage: 1 }];
     component.setProps({ sourceFunds, targetFunds, onSelect });
     expect(onSelect).not.toHaveBeenCalled();

@@ -59,11 +59,15 @@ export const SelectSources = ({
   if (loadingSourceFunds || loadingTargetFunds) {
     return <Loader className="align-middle" />;
   }
-  const defaultTargetFund = targetFunds && targetFunds.length ? targetFunds[0] : null;
   const fullSelectionActive = !!sourceSelection.length && !sourceSelectionExact;
   const noneSelectionActive = !sourceSelection.length && !sourceSelectionExact;
   const valid = selectionsValid(sourceSelection);
-  const tulevaTargetFunds = targetFunds.filter(fund => (fund.fundManager || {}).name === 'Tuleva');
+  const tulevaTargetFunds =
+    targetFunds &&
+    targetFunds.length &&
+    targetFunds.filter(fund => (fund.fundManager || {}).name === 'Tuleva');
+  const defaultTargetFund =
+    tulevaTargetFunds && tulevaTargetFunds.length ? tulevaTargetFunds[0] : null;
   return (
     <div>
       <div className="row justify-content-around align-items-center">
@@ -155,7 +159,7 @@ export const SelectSources = ({
       <button
         id="nextStep"
         className={`btn btn-primary mt-5 ${!valid ? 'disabled' : ''}`}
-        onClick={onNextStep}
+        onClick={valid && onNextStep}
       >
         <Message>steps.next</Message>
       </button>

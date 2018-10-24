@@ -15,18 +15,12 @@ export function isRouteToAccount(location) {
 
 function isSelectionComplete(getState) {
   const userConversion = getState().login.userConversion;
-  if (userConversion.selectionComplete) {
-    return true;
-  }
-  return false;
+  return !!(userConversion && userConversion.selectionComplete);
 }
 
 function isTransfersComplete(getState) {
   const userConversion = getState().login.userConversion;
-  if (userConversion.transfersComplete) {
-    return true;
-  }
-  return false;
+  return !!(userConversion && userConversion.transfersComplete);
 }
 
 function isFullyConverted(getState) {

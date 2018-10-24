@@ -14,7 +14,8 @@ function createRowAdder({ sourceFunds, targetFunds, selections, onChange }) {
     onChange(
       selections.concat({
         sourceFundIsin: sourceFunds[0].isin,
-        targetFundIsin: targetFunds[0].isin,
+        targetFundIsin: targetFunds.filter(fund => (fund.fundManager || {}).name === 'Tuleva')[0]
+          .isin,
         percentage: 1,
       }),
     );
