@@ -17,7 +17,7 @@ describe('Return comparison start date options', () => {
       { value: '2005-10-03', label: 'returnComparison.period.fiveYears' },
       { value: '2007-10-03', label: 'returnComparison.period.threeYears' },
       { value: '2009-10-03', label: 'returnComparison.period.oneYear' },
-      { value: '2010-01-01', label: 'returnComparison.period.thisYear' },
+      // { value: '2010-01-01', label: 'returnComparison.period.thisYear' },
     ]);
   });
 });
