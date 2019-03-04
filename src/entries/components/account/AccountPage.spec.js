@@ -5,7 +5,7 @@ import { Link } from 'react-router';
 import { Provider } from 'react-redux';
 
 import { Loader, ErrorMessage } from '../common';
-import { AccountPage } from './AccountPage';
+import { AccountPage, TOTAL_CAPITAL } from './AccountPage';
 import PensionFundTable from './../onboardingFlow/selectSources/pensionFundTable';
 import PendingExchangesTable from './pendingExchangeTable';
 import UpdateUserForm from './updateUserForm';
@@ -54,19 +54,15 @@ describe('Current balance', () => {
 
     expect(
       component.contains(
-        <Message params={{ initialCapital: initialCapital.amount }}>
+        <Message
+          params={{ initialCapital: (TOTAL_CAPITAL * initialCapital.ownershipFraction).toFixed(2) }}
+        >
           account.initial-capital.statement
         </Message>,
       ),
     ).toBe(true);
     component.setProps({ initialCapital: null });
-    expect(
-      component.contains(
-        <Message params={{ initialCapital: initialCapital.amount }}>
-          account.initial-capital.statement
-        </Message>,
-      ),
-    ).toBe(false);
+    expect(component.contains('account.initial-capital.statement')).toBe(false);
   });
 
   it('renders no second pillar message', () => {
@@ -182,7 +178,7 @@ describe('Current balance', () => {
   });
 
   it('renders error', () => {
-    const error = { body: 'aww no' };
+    const error = { body: Error('aww no') };
     const funds = [{ aFund: true }];
 
     component.setProps({ error, funds });

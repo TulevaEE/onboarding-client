@@ -16,6 +16,8 @@ import { updateUser } from '../common/user/actions';
 
 const noop = () => null;
 
+export const TOTAL_CAPITAL = 3182975;
+
 export class AccountPage extends Component {
   constructor(props) {
     super(props);
@@ -113,7 +115,11 @@ export class AccountPage extends Component {
             </span>
           )}{' '}
           {initialCapital ? (
-            <Message params={{ initialCapital: initialCapital.amount }}>
+            <Message
+              params={{
+                initialCapital: (TOTAL_CAPITAL * initialCapital.ownershipFraction).toFixed(2),
+              }}
+            >
               account.initial-capital.statement
             </Message>
           ) : (
