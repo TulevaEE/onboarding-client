@@ -71,6 +71,6 @@
       "git add"
     ]
   },
-  "//": "http://localhost:9000",
-  "proxy": "https://onboarding-service.tuleva.ee"
+  "proxy": "http://localhost:9000",
+  "//": "https://onboarding-service.tuleva.ee"
 }
