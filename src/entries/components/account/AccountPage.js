@@ -16,7 +16,7 @@ import { updateUser } from '../common/user/actions';
 
 const noop = () => null;
 
-export const TOTAL_CAPITAL = 3182975;
+export const TOTAL_CAPITAL = 3329280;
 
 export class AccountPage extends Component {
   constructor(props) {
