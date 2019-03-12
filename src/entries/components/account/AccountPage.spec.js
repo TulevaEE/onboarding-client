@@ -188,7 +188,7 @@ describe('Current balance', () => {
 
   it('renders CTA to non members', () => {
     const cta = (
-      <a className="btn btn-link p-0 border-0" href="https://tuleva.ee/#inline-signup-anchor">
+      <a className="btn btn-link p-0 border-0" href="https://tuleva.ee/tulundusyhistu/">
         <Message>login.join.tuleva</Message>
       </a>
     );
