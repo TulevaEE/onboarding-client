@@ -108,7 +108,7 @@ export class AccountPage extends Component {
               <Message>account.non.member.statement</Message>{' '}
               <a
                 className="btn btn-link p-0 border-0"
-                href="https://tuleva.ee/#inline-signup-anchor"
+                href="https://tuleva.ee/tulundusyhistu/"
               >
                 <Message>login.join.tuleva</Message>
               </a>
