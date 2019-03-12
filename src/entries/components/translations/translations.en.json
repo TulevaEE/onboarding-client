@@ -208,7 +208,7 @@
   "header.my.account": "My account",
   "account.member.statement": "You are Tuleva member no. {{memberNumber}}.",
   "account.non.member.statement": "You are not a member of Tuleva yet.",
-  "account.initial-capital.statement": "Your member capital value as of 28.02.2019 is {{initialCapital}}€.",
+  "account.initial-capital.statement": "Your initial member capital was {{initialCapital}}€. Your member capital value as of 28.02.2019 is {{currentCapital}}€.",
   "account.converted.user.statement": "You have successfully filled an application to transfer future payments and current fund units to Tuleva.",
   "new.user.flow.new.user.total.fund.value": "Your current second pillar total savings are ",
   "new.user.flow.new.user.active.fund.name": "Your active pension fund is ",

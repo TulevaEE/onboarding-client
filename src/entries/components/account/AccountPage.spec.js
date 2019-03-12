@@ -49,13 +49,16 @@ describe('Current balance', () => {
   });
 
   it('renders initial capital, only if it is present', () => {
-    const initialCapital = { amount: 1200, currency: 'EUR' };
+    const initialCapital = { amount: 1200, currency: 'EUR', ownershipFraction: 0.0000001 };
     component.setProps({ initialCapital });
 
     expect(
       component.contains(
         <Message
-          params={{ initialCapital: (TOTAL_CAPITAL * initialCapital.ownershipFraction).toFixed(2) }}
+          params={{
+            initialCapital: initialCapital.amount,
+            currentCapital: (TOTAL_CAPITAL * initialCapital.ownershipFraction).toFixed(2),
+          }}
         >
           account.initial-capital.statement
         </Message>,

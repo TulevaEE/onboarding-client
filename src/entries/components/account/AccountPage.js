@@ -114,7 +114,8 @@ export class AccountPage extends Component {
           {initialCapital ? (
             <Message
               params={{
-                initialCapital: (TOTAL_CAPITAL * initialCapital.ownershipFraction).toFixed(2),
+                initialCapital: initialCapital.amount,
+                currentCapital: (TOTAL_CAPITAL * initialCapital.ownershipFraction).toFixed(2),
               }}
             >
               account.initial-capital.statement
