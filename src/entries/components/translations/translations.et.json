@@ -234,6 +234,7 @@
   "returnComparison.market": "Maailma keskmine",
   "returnComparison.explanationLinkText": "Mida need numbrid näitavad?",
   "returnComparison.period.all": "Kogumise algusest",
+  "returnComparison.period.tenYears": "10 aastat",
   "returnComparison.period.fiveYears": "5 aastat",
   "returnComparison.period.threeYears": "3 aastat",
   "returnComparison.period.oneYear": "1 aasta",

@@ -259,6 +259,7 @@
   "returnComparison.market": "World market return",
   "returnComparison.explanationLinkText": "What do these numbers mean?",
   "returnComparison.period.all": "From the beginning",
+  "returnComparison.period.tenYears": "10 years",
   "returnComparison.period.fiveYears": "5 years",
   "returnComparison.period.threeYears": "3 years",
   "returnComparison.period.oneYear": "1 year",
