@@ -3,7 +3,7 @@ import getOptions from './options';
 describe('Return comparison start date options', () => {
   let dateNowSpy;
   beforeAll(() => {
-    dateNowSpy = jest.spyOn(Date, 'now').mockImplementation(() => new Date('2010-10-03'));
+    dateNowSpy = jest.spyOn(Date, 'now').mockImplementation(() => new Date('2015-10-03'));
   });
   afterAll(() => {
     dateNowSpy.mockRestore();
@@ -14,9 +14,10 @@ describe('Return comparison start date options', () => {
 
     expect(options).toEqual([
       { value: '2002-01-01', label: 'returnComparison.period.all' },
-      { value: '2005-10-03', label: 'returnComparison.period.fiveYears' },
-      { value: '2007-10-03', label: 'returnComparison.period.threeYears' },
-      { value: '2009-10-03', label: 'returnComparison.period.oneYear' },
+      { value: '2005-10-03', label: 'returnComparison.period.tenYears' },
+      { value: '2010-10-03', label: 'returnComparison.period.fiveYears' },
+      { value: '2012-10-03', label: 'returnComparison.period.threeYears' },
+      { value: '2014-10-03', label: 'returnComparison.period.oneYear' },
       // { value: '2010-01-01', label: 'returnComparison.period.thisYear' },
     ]);
   });
