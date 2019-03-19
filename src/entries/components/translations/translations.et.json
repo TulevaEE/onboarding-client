@@ -183,7 +183,7 @@
   "header.my.account": "Minu konto",
   "account.member.statement": "Oled Tuleva liige nr. {{memberNumber}}.",
   "account.non.member.statement": "Veel 31. märtsini on võimalus saada ühistu liikmeks ehk kaasomanikuks, makstes liitumistasu 100€. 1. aprillist tõuseb liitumistasu 125 eurole.",
-  "account.initial-capital.statement": "Panustasid liikmekapitali {{initialCapital}}€. Sinu liikmekapitali väärtus 28.02.2019 seisuga on {{currentCapital}}€.",
+  "account.initial-capital.statement": "Panustasid liikmekapitali {{initialCapital}}€. Sinu liikmekapitali väärtus 28.02.2019 seisuga on {{currentCapital}}€. Tuleva liikmekapital kokku on 3 329 280€.",
   "account.converted.user.statement": "Avaldus maksete ümber suunamiseks ja olemasolevate osakute ümber vahetamiseks Tuleva pensionifondi on tehtud.",
   "new.user.flow.new.user.total.fund.value": "Pensionikeskuse andmetel on sinu II sambasse tänaseks kogunenud ",
   "new.user.flow.new.user.active.fund.name": "Sinu aktiivne pensionifond on ",
