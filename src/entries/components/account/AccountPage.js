@@ -119,7 +119,10 @@ export class AccountPage extends Component {
               }}
             >
               account.initial-capital.statement
-            </Message>
+            </Message>{' '}
+              <a className="btn btn-link p-0 border-0" href=" https://tuleva.ee/liikmetele/mis-on-liikmekapital/">
+                <Message>what.is.member.capital</Message>
+              </a>
           ) : (
             ''
           )}
