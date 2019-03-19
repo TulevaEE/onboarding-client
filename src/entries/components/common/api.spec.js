@@ -26,7 +26,8 @@ describe('api', () => {
       expect(givenControlCode).toBe(controlCode);
       expect(mockHttp.post).toHaveBeenCalledTimes(1);
       expect(mockHttp.post).toHaveBeenCalledWith('/authenticate', {
-        phoneNumber,
+        value: phoneNumber,
+        type: 'MOBILE_ID',
       });
     });
   });
@@ -44,7 +45,8 @@ describe('api', () => {
       expect(givenControlCode).toBe(controlCode);
       expect(mockHttp.post).toHaveBeenCalledTimes(1);
       expect(mockHttp.post).toHaveBeenCalledWith('/authenticate', {
-        identityCode,
+        value: identityCode,
+        type: 'SMART_ID',
       });
     });
   });
