@@ -16,6 +16,9 @@ export const LoginForm = ({
   phoneNumber,
   onPhoneNumberChange,
   onPhoneNumberSubmit,
+  identityCode,
+  onIdCodeChange,
+  onIdCodeSubmit,
   onAuthenticateWithIdCard,
 }) => (
   <div className="row mt-4 pt-4 pb-4 justify-content-center login-form">
@@ -49,6 +52,32 @@ export const LoginForm = ({
           <Message>login.or</Message>
         </span>
       </div>
+      <form onSubmit={runWithDefaultPrevention(() => onIdCodeSubmit(identityCode))}>
+        <div className="form-group">
+          <input
+            id="smart-id-code"
+            type="number"
+            value={identityCode}
+            onChange={event => onIdCodeChange(event.target.value)}
+            className="form-control form-control-lg"
+            placeholder={translate('login.id.code')}
+          />
+        </div>
+        <div className="form-group">
+          <input
+            id="smart-id-submit"
+            type="submit"
+            className="btn btn-primary btn-block btn-lg"
+            disabled={!identityCode}
+            value={translate('login.smart.id')}
+          />
+        </div>
+      </form>
+      <div className="login-form__break mt-3 mb-3">
+        <span className="ml-2 mr-2">
+          <Message>login.or</Message>
+        </span>
+      </div>
       <div>
         <button className="btn btn-primary btn-block btn-lg" onClick={onAuthenticateWithIdCard}>
           <Message>login.id.card</Message>
@@ -66,9 +95,12 @@ const noop = () => null;
 LoginForm.defaultProps = {
   onPhoneNumberChange: noop,
   onPhoneNumberSubmit: noop,
+  onIdCodeChange: noop,
+  onIdCodeSubmit: noop,
   onAuthenticateWithIdCard: noop,
 
   phoneNumber: '',
+  identityCode: '',
 };
 
 LoginForm.propTypes = {
@@ -76,9 +108,12 @@ LoginForm.propTypes = {
 
   onPhoneNumberChange: Types.func,
   onPhoneNumberSubmit: Types.func,
+  onIdCodeChange: Types.func,
+  onIdCodeSubmit: Types.func,
   onAuthenticateWithIdCard: Types.func,
 
   phoneNumber: Types.string,
+  identityCode: Types.string,
 };
 
 export default withTranslations(LoginForm);

@@ -22,6 +22,7 @@ import {
   USE_REDIRECT_LOGIN,
   LOG_OUT,
   QUERY_PARAMETERS,
+  CHANGE_ID_CODE,
 } from './constants';
 
 import { getGlobalErrorCode } from '../common/errorMessage';
@@ -38,6 +39,7 @@ const loginMethod = (window.localStorage && localStorage.getItem(LOGIN_METHOD_ST
 
 const defaultState = {
   phoneNumber: '',
+  identityCode: '',
   controlCode: null,
   loadingAuthentication: false,
   token,
@@ -68,6 +70,8 @@ export default function loginReducer(state = defaultState, action) {
   switch (action.type) {
     case CHANGE_PHONE_NUMBER:
       return { ...state, phoneNumber: action.phoneNumber };
+    case CHANGE_ID_CODE:
+      return { ...state, identityCode: action.identityCode };
     case CHANGE_EMAIL:
       return { ...state, email: action.email };
     case MOBILE_AUTHENTICATION_START:
@@ -88,14 +92,14 @@ export default function loginReducer(state = defaultState, action) {
       };
 
     case MOBILE_AUTHENTICATION_SUCCESS:
-      updateLocalStorage(action, 'mobileId');
+      updateLocalStorage(action, action.method);
 
       return {
         // reset all state so page is clean when entered again.
         ...state,
         token: action.tokens.accessToken,
         refreshToken: action.tokens.refreshToken,
-        loginMethod: 'mobileId',
+        loginMethod: action.method,
         loadingAuthentication: false,
         controlCode: null,
         error: null,

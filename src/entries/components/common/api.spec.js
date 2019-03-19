@@ -18,7 +18,7 @@ describe('api', () => {
     const controlCode = '123123123';
     mockHttp.post.mockImplementationOnce(() =>
       Promise.resolve({
-        mobileIdChallengeCode: controlCode,
+        challengeCode: controlCode,
       }),
     );
     expect(mockHttp.post).not.toHaveBeenCalled();
@@ -27,6 +27,24 @@ describe('api', () => {
       expect(mockHttp.post).toHaveBeenCalledTimes(1);
       expect(mockHttp.post).toHaveBeenCalledWith('/authenticate', {
         phoneNumber,
+      });
+    });
+  });
+
+  it('can authenticate with identity code', () => {
+    const identityCode = '1223445567';
+    const controlCode = '123123123';
+    mockHttp.post.mockImplementationOnce(() =>
+      Promise.resolve({
+        challengeCode: controlCode,
+      }),
+    );
+    expect(mockHttp.post).not.toHaveBeenCalled();
+    return api.authenticateWithIdCode(identityCode).then(givenControlCode => {
+      expect(givenControlCode).toBe(controlCode);
+      expect(mockHttp.post).toHaveBeenCalledTimes(1);
+      expect(mockHttp.post).toHaveBeenCalledWith('/authenticate', {
+        identityCode,
       });
     });
   });

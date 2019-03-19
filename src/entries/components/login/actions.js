@@ -30,6 +30,7 @@ import {
   USE_REDIRECT_LOGIN,
   LOG_OUT,
   QUERY_PARAMETERS,
+  CHANGE_ID_CODE,
 } from './constants';
 
 import { DISABLE_SHORT_FLOW } from '../exchange/constants';
@@ -43,6 +44,10 @@ let timeout;
 
 export function changePhoneNumber(phoneNumber) {
   return { type: CHANGE_PHONE_NUMBER, phoneNumber };
+}
+
+export function changeIdCode(identityCode) {
+  return { type: CHANGE_ID_CODE, identityCode };
 }
 
 export function changeEmail(email) {
@@ -127,7 +132,7 @@ function getMobileIdTokens() {
         .then(tokens => {
           if (tokens.accessToken) {
             // authentication complete
-            dispatch({ type: MOBILE_AUTHENTICATION_SUCCESS, tokens });
+            dispatch({ type: MOBILE_AUTHENTICATION_SUCCESS, tokens, method: 'mobileId' });
             dispatch(handleLogin());
           } else if (getState().login.loadingAuthentication) {
             // authentication not yet completed
@@ -147,6 +152,42 @@ export function authenticateWithPhoneNumber(phoneNumber) {
       .then(controlCode => {
         dispatch({ type: MOBILE_AUTHENTICATION_START_SUCCESS, controlCode });
         dispatch(getMobileIdTokens());
+      })
+      .catch(error => dispatch({ type: MOBILE_AUTHENTICATION_START_ERROR, error }));
+  };
+}
+
+function getSmartIdTokens() {
+  return (dispatch, getState) => {
+    if (timeout && process.env.NODE_ENV !== 'test') {
+      clearTimeout(timeout);
+    }
+    timeout = setTimeout(() => {
+      api
+        .getSmartIdTokens()
+        .then(tokens => {
+          if (tokens.accessToken) {
+            // authentication complete
+            dispatch({ type: MOBILE_AUTHENTICATION_SUCCESS, tokens, method: 'smartId' });
+            dispatch(handleLogin());
+          } else if (getState().login.loadingAuthentication) {
+            // authentication not yet completed
+            dispatch(getSmartIdTokens()); // poll again
+          }
+        })
+        .catch(error => dispatch({ type: MOBILE_AUTHENTICATION_ERROR, error }));
+    }, POLL_DELAY);
+  };
+}
+
+export function authenticateWithIdCode(identityCode) {
+  return dispatch => {
+    dispatch({ type: MOBILE_AUTHENTICATION_START });
+    return api
+      .authenticateWithIdCode(identityCode)
+      .then(controlCode => {
+        dispatch({ type: MOBILE_AUTHENTICATION_START_SUCCESS, controlCode });
+        dispatch(getSmartIdTokens());
       })
       .catch(error => dispatch({ type: MOBILE_AUTHENTICATION_START_ERROR, error }));
   };

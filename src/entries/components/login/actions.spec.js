@@ -190,6 +190,7 @@ describe('Login actions', () => {
         expect(dispatch).toHaveBeenCalledWith({
           type: MOBILE_AUTHENTICATION_SUCCESS,
           tokens,
+          method: 'mobileId',
         });
         expect(dispatch).toHaveBeenLastCalledWith(push('/'));
       });
