@@ -23,6 +23,7 @@ import {
   USE_REDIRECT_LOGIN,
   LOG_OUT,
   QUERY_PARAMETERS,
+  CHANGE_ID_CODE,
 } from './constants';
 
 describe('Login reducer', () => {
@@ -30,6 +31,12 @@ describe('Login reducer', () => {
     const phoneNumber = 'a phone number';
     const action = { type: CHANGE_PHONE_NUMBER, phoneNumber };
     expect(loginReducer(undefined, action).phoneNumber).toBe(phoneNumber);
+  });
+
+  it('changes identity code', () => {
+    const identityCode = 'identitycode';
+    const action = { type: CHANGE_ID_CODE, identityCode };
+    expect(loginReducer(undefined, action).identityCode).toBe(identityCode);
   });
 
   it('changes email', () => {
@@ -65,7 +72,7 @@ describe('Login reducer', () => {
 
   it('sets the tokens when mobile authentication succeeds', () => {
     const tokens = { accessToken: 'token', refreshToken: 'refresh' };
-    const action = { type: MOBILE_AUTHENTICATION_SUCCESS, tokens };
+    const action = { type: MOBILE_AUTHENTICATION_SUCCESS, tokens, method: 'mobileId' };
     const newState = loginReducer(undefined, action);
     expect(newState.token).toBe('token');
     expect(newState.refreshToken).toBe('refresh');

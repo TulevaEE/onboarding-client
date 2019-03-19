@@ -2,9 +2,11 @@
 
   "login.title": "By logging in you can see your pension account statement and personal rate of return. You can also change your pension fund.",
   "login.mobile.id": "Enter with mobile-ID",
+  "login.smart.id": "Enter with Smart-ID",
   "login.id.card": "Enter with ID-card",
   "login.id.card.start.failed": "Please check that your ID card reader is connected and try again.",
   "login.phone.number": "Phone number",
+  "login.id.code": "Identity code",
   "login.enter": "Log in",
   "login.control.code": "Check to see that the control code matches the sms you received:",
   "login.stop": "Cancel",

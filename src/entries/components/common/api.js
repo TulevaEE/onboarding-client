@@ -25,8 +25,14 @@ function transformFundBalance(fundBalance) {
 }
 
 export function authenticateWithPhoneNumber(phoneNumber) {
-  return post(getEndpoint('/authenticate'), { phoneNumber }).then(
-    ({ mobileIdChallengeCode }) => mobileIdChallengeCode,
+  return post(getEndpoint('/authenticate'), { value: phoneNumber, type: 'MOBILE_ID' }).then(
+    ({ challengeCode }) => challengeCode,
+  );
+}
+
+export function authenticateWithIdCode(identityCode) {
+  return post(getEndpoint('/authenticate'), { value: identityCode, type: 'SMART_ID' }).then(
+    ({ challengeCode }) => challengeCode,
   );
 }
 
@@ -73,6 +79,10 @@ export function refreshTokenWith(refreshToken) {
 
 export function getMobileIdTokens() {
   return getTokensWithGrantType('mobile_id');
+}
+
+export function getSmartIdTokens() {
+  return getTokensWithGrantType('smart_id');
 }
 
 export function getIdCardTokens() {
