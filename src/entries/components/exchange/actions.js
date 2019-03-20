@@ -13,6 +13,8 @@ import {
   saveMandateWithToken,
   downloadMandatePreviewWithIdAndToken,
   getPendingExchangesWithToken,
+  getSmartIdSignatureChallengeCodeForMandateIdWithToken,
+  getSmartIdSignatureStatusForMandateIdWithToken,
 } from '../common/api';
 import {
   CHANGE_AGREEMENT_TO_TERMS,
@@ -124,6 +126,29 @@ function pollForMandateSignatureWithMandateId(mandateId) {
   };
 }
 
+function pollForMandateSignatureWithMandateIdUsingSmartId(mandateId) {
+  return (dispatch, getState) => {
+    if (timeout && process.env.NODE_ENV !== 'test') {
+      clearTimeout(timeout);
+    }
+    timeout = setTimeout(() => {
+      getSmartIdSignatureStatusForMandateIdWithToken(mandateId, getState().login.token)
+        .then(statusCode => {
+          if (statusCode === SIGNING_IN_PROGRESS_STATUS) {
+            dispatch(pollForMandateSignatureWithMandateIdUsingSmartId(mandateId));
+          } else {
+            dispatch({
+              type: SIGN_MANDATE_SUCCESS,
+              signedMandateId: mandateId,
+            });
+            dispatch(push('/steps/success'));
+          }
+        })
+        .catch(error => dispatch({ type: SIGN_MANDATE_ERROR, error }));
+    }, POLL_DELAY);
+  };
+}
+
 function handleSaveMandateError(dispatch, error) {
   if (error.status === 400) {
     dispatch({ type: SIGN_MANDATE_INVALID_ERROR, error });
@@ -157,6 +182,26 @@ export function signMandateWithMobileId(mandate) {
       .then(controlCode => {
         dispatch({ type: SIGN_MANDATE_MOBILE_ID_START_SUCCESS, controlCode });
         dispatch(pollForMandateSignatureWithMandateId(mandateId));
+      })
+      .catch(error => {
+        handleSaveMandateError(dispatch, error);
+      });
+  };
+}
+
+export function signMandateWithSmartId(mandate) {
+  return (dispatch, getState) => {
+    dispatch({ type: SIGN_MANDATE_MOBILE_ID_START });
+    const token = getState().login.token;
+    let mandateId;
+    return saveMandateWithToken(mandate, token)
+      .then(({ id }) => {
+        mandateId = id;
+        return getSmartIdSignatureChallengeCodeForMandateIdWithToken(mandateId, token);
+      })
+      .then(controlCode => {
+        dispatch({ type: SIGN_MANDATE_MOBILE_ID_START_SUCCESS, controlCode });
+        dispatch(pollForMandateSignatureWithMandateIdUsingSmartId(mandateId));
       })
       .catch(error => {
         handleSaveMandateError(dispatch, error);
@@ -258,8 +303,11 @@ export function signMandateWithIdCard(mandate) {
 export function signMandate(mandate) {
   return (dispatch, getState) => {
     const loggedInWithMobileId = getState().login.loginMethod === 'mobileId';
+    const loggedInWithSmartId = getState().login.loginMethod === 'smartId';
     if (loggedInWithMobileId) {
       return dispatch(signMandateWithMobileId(mandate));
+    } else if (loggedInWithSmartId) {
+      return dispatch(signMandateWithSmartId(mandate));
     }
     return dispatch(signMandateWithIdCard(mandate));
   };

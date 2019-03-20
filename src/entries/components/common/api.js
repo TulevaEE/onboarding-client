@@ -138,6 +138,18 @@ export function getMobileIdSignatureStatusForMandateIdWithToken(mandateId, token
   }).then(({ statusCode }) => statusCode);
 }
 
+export function getSmartIdSignatureChallengeCodeForMandateIdWithToken(mandateId, token) {
+  return put(getEndpoint(`/v1/mandates/${mandateId}/signature/smartId`), undefined, {
+    Authorization: `Bearer ${token}`,
+  }).then(({ challengeCode }) => challengeCode);
+}
+
+export function getSmartIdSignatureStatusForMandateIdWithToken(mandateId, token) {
+  return get(getEndpoint(`/v1/mandates/${mandateId}/signature/smartId/status`), undefined, {
+    Authorization: `Bearer ${token}`,
+  }).then(({ statusCode }) => statusCode);
+}
+
 export function getIdCardSignatureHashForMandateIdWithCertificateHexAndToken(
   mandateId,
   certificateHex,
