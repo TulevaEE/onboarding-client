@@ -2,9 +2,11 @@
 
   "login.title": "Sisse logides näed oma pensionikonto seisu ja tootlust ning saad soovi korral pensionifondi vahetada.",
   "login.mobile.id": "Mobiil-ID",
+  "login.smart.id": "Smart-ID",
   "login.id.card": "ID-kaart",
   "login.id.card.start.failed": "Palun kontrolli, et ID kaart on lugejas ja lugeja ühendatud, ning ID kaardiga signeerimise plugin töötab. Vajadusel tee veebilehitsejale restart ja proovi uuesti.",
   "login.phone.number": "Telefoninumber",
+  "login.id.code": "Isikukood",
   "login.enter": "Sisenen",
   "login.control.code": "Kontrolli, et sinu telefonile saabunud kontrollkood oleks järgmine:",
   "login.stop": "Katkesta",

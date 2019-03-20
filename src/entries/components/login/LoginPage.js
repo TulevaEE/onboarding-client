@@ -14,14 +14,19 @@ import {
   authenticateWithPhoneNumber,
   cancelMobileAuthentication,
   authenticateWithIdCard,
+  changeIdCode,
+  authenticateWithIdCode,
 } from './actions';
 
 export const LoginPage = ({
   onPhoneNumberSubmit,
   onPhoneNumberChange,
   onCancelMobileAuthentication,
+  onIdCodeChange,
+  onIdCodeSubmit,
   onAuthenticateWithIdCard,
   phoneNumber,
+  identityCode,
   controlCode,
   loadingAuthentication,
   loadingUserConversion,
@@ -43,6 +48,9 @@ export const LoginPage = ({
                 onPhoneNumberSubmit={onPhoneNumberSubmit}
                 onPhoneNumberChange={onPhoneNumberChange}
                 phoneNumber={phoneNumber}
+                onIdCodeSubmit={onIdCodeSubmit}
+                onIdCodeChange={onIdCodeChange}
+                identityCode={identityCode}
                 onAuthenticateWithIdCard={onAuthenticateWithIdCard}
               />
             ) : (
@@ -82,9 +90,12 @@ LoginPage.defaultProps = {
   onPhoneNumberChange: noop,
   onPhoneNumberSubmit: noop,
   onCancelMobileAuthentication: noop,
+  onIdCodeChange: noop,
+  onIdCodeSubmit: noop,
   onAuthenticateWithIdCard: noop,
 
   phoneNumber: '',
+  identityCode: '',
   controlCode: '',
   loadingAuthentication: false,
   loadingUserConversion: false,
@@ -96,9 +107,12 @@ LoginPage.propTypes = {
   onPhoneNumberChange: Types.func,
   onPhoneNumberSubmit: Types.func,
   onCancelMobileAuthentication: Types.func,
+  onIdCodeChange: Types.func,
+  onIdCodeSubmit: Types.func,
   onAuthenticateWithIdCard: Types.func,
 
   phoneNumber: Types.string,
+  identityCode: Types.string,
   controlCode: Types.string,
   loadingAuthentication: Types.bool,
   loadingUserConversion: Types.bool,
@@ -107,6 +121,7 @@ LoginPage.propTypes = {
 
 const mapStateToProps = state => ({
   phoneNumber: state.login.phoneNumber,
+  identityCode: state.login.identityCode,
   controlCode: state.login.controlCode,
   loadingAuthentication: state.login.loadingAuthentication,
   loadingUserConversion: state.login.loadingUserConversion,
@@ -119,6 +134,8 @@ const mapDispatchToProps = dispatch =>
       onPhoneNumberChange: changePhoneNumber,
       onPhoneNumberSubmit: authenticateWithPhoneNumber,
       onCancelMobileAuthentication: cancelMobileAuthentication,
+      onIdCodeChange: changeIdCode,
+      onIdCodeSubmit: authenticateWithIdCode,
       onAuthenticateWithIdCard: authenticateWithIdCard,
     },
     dispatch,

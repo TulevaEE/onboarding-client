@@ -36,9 +36,26 @@ describe('Login form', () => {
     component.setProps({ phoneNumber, onPhoneNumberSubmit });
 
     expect(onPhoneNumberSubmit).not.toHaveBeenCalled();
-    component.find('form').simulate('submit', { preventDefault: () => true });
+    component
+      .find('form')
+      .first()
+      .simulate('submit', { preventDefault: () => true });
     expect(onPhoneNumberSubmit).toHaveBeenCalledTimes(1);
     expect(onPhoneNumberSubmit).toHaveBeenCalledWith(phoneNumber);
+  });
+
+  it('can submit identity code', () => {
+    const identityCode = 'number';
+    const onIdCodeSubmit = jest.fn();
+    component.setProps({ identityCode, onIdCodeSubmit });
+
+    expect(onIdCodeSubmit).not.toHaveBeenCalled();
+    component
+      .find('form')
+      .last()
+      .simulate('submit', { preventDefault: () => true });
+    expect(onIdCodeSubmit).toHaveBeenCalledTimes(1);
+    expect(onIdCodeSubmit).toHaveBeenCalledWith(identityCode);
   });
 
   it('can log in with id card', () => {
