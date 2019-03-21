@@ -8,7 +8,7 @@ import { UPDATE_USER_SUCCESS } from '../common/user/constants';
 
 import { LOG_OUT } from '../login/constants';
 
-const initialState = {
+export const initialState = {
   initialCapital: null,
   loadingInitialCapital: false,
   error: null,
@@ -41,10 +41,7 @@ export default function accountReducer(state = initialState, action) {
         updateUserSuccess: true,
       };
     case LOG_OUT:
-      return {
-        ...state,
-        updateUserSuccess: false,
-      };
+      return initialState;
     default:
       return state;
   }

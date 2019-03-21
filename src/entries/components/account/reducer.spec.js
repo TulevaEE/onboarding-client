@@ -8,7 +8,7 @@ import { UPDATE_USER_SUCCESS } from '../common/user/constants';
 
 import { LOG_OUT } from '../login/constants';
 
-import accountReducer from './reducer';
+import accountReducer, { initialState } from './reducer';
 
 describe('Account reducer', () => {
   it('starts loading when starting to get initial capital', () => {
@@ -44,11 +44,11 @@ describe('Account reducer', () => {
     expect(newState.updateUserSuccess).toBe(true);
   });
 
-  it('correctly removes the update user success message on logout', () => {
+  it('correctly removes the state on logout', () => {
     const action = { type: LOG_OUT };
 
     const newState = accountReducer({ updateUserSuccess: true }, action);
 
-    expect(newState.updateUserSuccess).toBe(false);
+    expect(newState).toEqual(initialState);
   });
 });
