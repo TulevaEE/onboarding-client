@@ -104,6 +104,7 @@ export default function loginReducer(state = defaultState, action) {
         controlCode: null,
         error: null,
         phoneNumber: '',
+        identityCode: '',
       };
     case ID_CARD_AUTHENTICATION_ERROR:
     case MOBILE_AUTHENTICATION_ERROR:
