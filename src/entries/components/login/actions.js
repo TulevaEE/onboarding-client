@@ -108,10 +108,11 @@ export function handleLoginCookies() {
       refreshToken: getCookie(LOGIN_COOKIE_REFRESH_TOKEN_NAME),
     };
     if (tokens.accessToken && tokens.refreshToken) {
-      if (getCookie(LOGIN_COOKIE_METHOD_NAME) === 'mobileId') {
-        dispatch({ type: MOBILE_AUTHENTICATION_SUCCESS, tokens });
+      const loginMethod = getCookie(LOGIN_COOKIE_METHOD_NAME);
+      if (loginMethod === 'mobileId' || loginMethod === 'smartId') {
+        dispatch({ type: MOBILE_AUTHENTICATION_SUCCESS, tokens, method: loginMethod });
         dispatch(push('/'));
-      } else if (getCookie(LOGIN_COOKIE_METHOD_NAME) === 'idCard') {
+      } else if (loginMethod === 'idCard') {
         dispatch({ type: ID_CARD_AUTHENTICATION_SUCCESS, tokens });
         dispatch(push('/'));
       } else {
