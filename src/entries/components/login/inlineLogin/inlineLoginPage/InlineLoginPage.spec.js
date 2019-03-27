@@ -17,8 +17,11 @@ describe('Login page', () => {
   it('renders a login form', () => {
     const formProps = {
       phoneNumber: 'number',
+      identityCode: 'idCode',
       onPhoneNumberChange: jest.fn(),
       onPhoneNumberSubmit: jest.fn(),
+      onIdCodeSubmit: jest.fn(),
+      onIdCodeChange: jest.fn(),
       onAuthenticateWithIdCard: jest.fn(),
     };
     component.setProps(formProps);
@@ -52,8 +55,11 @@ describe('Login page', () => {
     const errorDescription = 'oh no something broke yo';
     const formProps = {
       phoneNumber: 'number',
+      identityCode: 'idCode',
       onPhoneNumberChange: jest.fn(),
       onPhoneNumberSubmit: jest.fn(),
+      onIdCodeSubmit: jest.fn(),
+      onIdCodeChange: jest.fn(),
       onAuthenticateWithIdCard: jest.fn(),
     };
     const authProps = {
