@@ -62,6 +62,7 @@ describe('Login actions', () => {
   beforeEach(() => {
     mockDispatch();
     mockApi.authenticateWithPhoneNumber = () => Promise.reject();
+    mockApi.authenticateWithIdCode = () => Promise.reject();
     mockApi.getMobileIdTokens = () => Promise.reject();
     mockApi.getIdCardTokens = () => Promise.reject();
     mockHttp.resetStatisticsIdentification = jest.fn();
@@ -436,6 +437,15 @@ describe('Login actions', () => {
     expect(dispatch).toHaveBeenCalledWith({ type: USE_REDIRECT_LOGIN });
     expect(dispatch).toHaveBeenCalledWith({
       type: ID_CARD_AUTHENTICATION_START,
+    });
+  });
+
+  it('can handle redirect login with smart id', () => {
+    const useRedirectLoginWithIdCode = createBoundAction(actions.useRedirectLoginWithIdCode);
+    useRedirectLoginWithIdCode('38501020455');
+    expect(dispatch).toHaveBeenCalledWith({ type: USE_REDIRECT_LOGIN });
+    expect(dispatch).toHaveBeenCalledWith({
+      type: MOBILE_AUTHENTICATION_START,
     });
   });
 

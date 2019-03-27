@@ -348,3 +348,10 @@ export function useRedirectLoginWithIdCard() {
     dispatch(authenticateWithIdCard());
   };
 }
+
+export function useRedirectLoginWithIdCode(identityCode) {
+  return dispatch => {
+    dispatch(useRedirectLogin());
+    dispatch(authenticateWithIdCode(identityCode));
+  };
+}

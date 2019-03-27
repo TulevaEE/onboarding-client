@@ -22,6 +22,9 @@ export class InlineLoginForm extends Component {
       phoneNumber,
       onPhoneNumberChange,
       onPhoneNumberSubmit,
+      identityCode,
+      onIdCodeChange,
+      onIdCodeSubmit,
       onAuthenticateWithIdCard,
     } = this.props;
 
@@ -50,10 +53,35 @@ export class InlineLoginForm extends Component {
               value={translate('login.mobile.id')}
             />
           </div>
+
           <div className="col-sm-4">
             <button className="btn btn-primary btn-block btn-lg" onClick={onAuthenticateWithIdCard}>
               <Message>login.id.card</Message>
             </button>
+          </div>
+        </form>
+        <form
+          className="row form-group"
+          onSubmit={runWithDefaultPrevention(() => onIdCodeSubmit(identityCode))}
+        >
+          <div className="col-sm-4">
+            <input
+              id="smart-id-code"
+              type="number"
+              value={identityCode}
+              onChange={event => onIdCodeChange(event.target.value)}
+              className="form-control form-control-lg input-lg"
+              placeholder={translate('login.id.code')}
+            />
+          </div>
+          <div className="col-sm-4">
+            <input
+              id="smart-id-submit"
+              type="submit"
+              className="btn btn-primary btn-block btn-lg"
+              disabled={!identityCode}
+              value={translate('login.smart.id')}
+            />
           </div>
         </form>
         <div className="form-group text-center">
@@ -69,9 +97,12 @@ const noop = () => null;
 InlineLoginForm.defaultProps = {
   onPhoneNumberChange: noop,
   onPhoneNumberSubmit: noop,
+  onIdCodeChange: noop,
+  onIdCodeSubmit: noop,
   onAuthenticateWithIdCard: noop,
 
   phoneNumber: '',
+  identityCode: '',
 };
 
 InlineLoginForm.propTypes = {
@@ -79,9 +110,12 @@ InlineLoginForm.propTypes = {
 
   onPhoneNumberChange: Types.func,
   onPhoneNumberSubmit: Types.func,
+  onIdCodeChange: Types.func,
+  onIdCodeSubmit: Types.func,
   onAuthenticateWithIdCard: Types.func,
 
   phoneNumber: Types.string,
+  identityCode: Types.string,
 };
 
 export default withTranslations(InlineLoginForm);

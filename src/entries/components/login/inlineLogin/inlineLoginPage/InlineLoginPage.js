@@ -15,6 +15,8 @@ import {
   useRedirectLoginWithPhoneNumber,
   cancelMobileAuthentication,
   useRedirectLoginWithIdCard,
+  changeIdCode,
+  useRedirectLoginWithIdCode,
 } from '../../actions';
 
 export class InlineLoginPage extends Component {
@@ -28,42 +30,42 @@ export class InlineLoginPage extends Component {
       onPhoneNumberSubmit,
       onPhoneNumberChange,
       onCancelMobileAuthentication,
+      onIdCodeChange,
+      onIdCodeSubmit,
       onAuthenticateWithIdCard,
       phoneNumber,
+      identityCode,
       controlCode,
       loadingAuthentication,
+      loadingUserConversion,
       errorDescription,
     } = this.props;
 
     return (
       <div>
-        <div className="row form-group">
-          <div>
-            {errorDescription ? <ErrorAlert description={errorDescription} /> : ''}
-            {!loadingAuthentication && !controlCode ? (
-              <LoginForm
-                onPhoneNumberSubmit={onPhoneNumberSubmit}
-                onPhoneNumberChange={onPhoneNumberChange}
-                phoneNumber={phoneNumber}
-                onAuthenticateWithIdCard={onAuthenticateWithIdCard}
-              />
-            ) : (
-              ''
-            )}
-            {!errorDescription && (loadingAuthentication || controlCode) ? (
-              <AuthenticationLoader
-                onCancel={onCancelMobileAuthentication}
-                controlCode={controlCode}
-              />
-            ) : (
-              ''
-            )}
-            <div className="mt-3 small mb-3 text-center">
-              <a href="/terms-of-use" target="_blank" rel="noopener noreferrer">
-                <Message>login.terms.link</Message>
-              </a>
-            </div>
-          </div>
+        {errorDescription ? <ErrorAlert description={errorDescription} /> : ''}
+        {!loadingAuthentication && !controlCode && !loadingUserConversion ? (
+          <LoginForm
+            onPhoneNumberSubmit={onPhoneNumberSubmit}
+            onPhoneNumberChange={onPhoneNumberChange}
+            phoneNumber={phoneNumber}
+            onIdCodeSubmit={onIdCodeSubmit}
+            onIdCodeChange={onIdCodeChange}
+            identityCode={identityCode}
+            onAuthenticateWithIdCard={onAuthenticateWithIdCard}
+          />
+        ) : (
+          ''
+        )}
+        {!errorDescription && (loadingAuthentication || controlCode || loadingUserConversion) ? (
+          <AuthenticationLoader onCancel={onCancelMobileAuthentication} controlCode={controlCode} />
+        ) : (
+          ''
+        )}
+        <div className="mt-3 small mb-3 text-center">
+          <a href="/terms-of-use" target="_blank" rel="noopener noreferrer">
+            <Message>login.terms.link</Message>
+          </a>
         </div>
         <div className="row mt-3">
           <div className="col-lg-12 text-center">
@@ -82,11 +84,15 @@ InlineLoginPage.defaultProps = {
   onPhoneNumberChange: noop,
   onPhoneNumberSubmit: noop,
   onCancelMobileAuthentication: noop,
+  onIdCodeChange: noop,
+  onIdCodeSubmit: noop,
   onAuthenticateWithIdCard: noop,
 
   phoneNumber: '',
+  identityCode: '',
   controlCode: '',
   loadingAuthentication: false,
+  loadingUserConversion: false,
   successful: false,
   errorDescription: '',
 };
@@ -95,19 +101,25 @@ InlineLoginPage.propTypes = {
   onPhoneNumberChange: Types.func,
   onPhoneNumberSubmit: Types.func,
   onCancelMobileAuthentication: Types.func,
+  onIdCodeChange: Types.func,
+  onIdCodeSubmit: Types.func,
   onAuthenticateWithIdCard: Types.func,
 
   phoneNumber: Types.string,
+  identityCode: Types.string,
   controlCode: Types.string,
   loadingAuthentication: Types.bool,
+  loadingUserConversion: Types.bool,
   errorDescription: Types.string,
 };
 
 const mapStateToProps = state => ({
   phoneNumber: state.login.phoneNumber,
+  identityCode: state.login.identityCode,
   controlCode: state.login.controlCode,
   loadingAuthentication: state.login.loadingAuthentication,
-  errorDescription: state.login.error,
+  loadingUserConversion: state.login.loadingUserConversion,
+  errorDescription: state.login.error || state.login.userConversionError,
   successful: !!state.login.token, // not used right now
 });
 const mapDispatchToProps = dispatch =>
@@ -116,6 +128,8 @@ const mapDispatchToProps = dispatch =>
       onPhoneNumberChange: changePhoneNumber,
       onPhoneNumberSubmit: useRedirectLoginWithPhoneNumber,
       onCancelMobileAuthentication: cancelMobileAuthentication,
+      onIdCodeChange: changeIdCode,
+      onIdCodeSubmit: useRedirectLoginWithIdCode,
       onAuthenticateWithIdCard: useRedirectLoginWithIdCard,
     },
     dispatch,
