@@ -8,6 +8,7 @@ export default function getOptions() {
   const tenYearsAgo = format(moment().subtract(10, 'years'));
   const fiveYearsAgo = format(moment().subtract(5, 'years'));
   const threeYearsAgo = format(moment().subtract(3, 'years'));
+  const twoYearsAgo = format(moment().subtract(2, 'years'));
   const oneYearAgo = format(moment().subtract(1, 'year'));
   // const thisYear = format(moment().startOf('year'));
 
@@ -16,6 +17,7 @@ export default function getOptions() {
     { value: tenYearsAgo, label: 'returnComparison.period.tenYears' },
     { value: fiveYearsAgo, label: 'returnComparison.period.fiveYears' },
     { value: threeYearsAgo, label: 'returnComparison.period.threeYears' },
+    { value: twoYearsAgo, label: 'returnComparison.period.twoYears' },
     { value: oneYearAgo, label: 'returnComparison.period.oneYear' },
     // { value: thisYear, label: 'returnComparison.period.thisYear' },
   ];

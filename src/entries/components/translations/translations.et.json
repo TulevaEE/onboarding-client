@@ -239,6 +239,7 @@
   "returnComparison.period.tenYears": "10 aastat",
   "returnComparison.period.fiveYears": "5 aastat",
   "returnComparison.period.threeYears": "3 aastat",
+  "returnComparison.period.twoYears": "2 aastat",
   "returnComparison.period.oneYear": "1 aasta",
   "returnComparison.period.thisYear": "Käesolev aasta"
 }
