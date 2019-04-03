@@ -185,7 +185,7 @@
   "header.my.account": "Minu konto",
   "account.member.statement": "Oled Tuleva liige nr. {{memberNumber}}.",
   "account.non.member.statement": "Sa ei ole veel Tuleva ühistu liige. Ühistu liikmeks ehk kaasomanikuks saad astuda siin:",
-  "account.initial-capital.statement": "Panustasid vabatahtliku panusena liikmekapitali {{initialCapital}}€. Sinu liikmekapitali kontol on 28.02.2019 seisuga {{currentCapital}}€. Tuleva liikmekapital kokku (kõigi liikmete kapitalikontode summa) on 3 329 280€.",
+  "account.initial-capital.statement": "Panustasid vabatahtliku panusena liikmekapitali {{initialCapital}}€. Sinu liikmekapitali kontol on 31.03.2019 seisuga {{currentCapital}}€. Tuleva liikmekapital kokku (kõigi liikmete kapitalikontode summa) on 3 388 309€.",
   "account.converted.user.statement": "Avaldus maksete ümber suunamiseks ja olemasolevate osakute ümber vahetamiseks Tuleva pensionifondi on tehtud.",
   "new.user.flow.new.user.total.fund.value": "Pensionikeskuse andmetel on sinu II sambasse tänaseks kogunenud ",
   "new.user.flow.new.user.active.fund.name": "Sinu aktiivne pensionifond on ",
