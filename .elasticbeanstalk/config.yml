@@ -1,0 +1,20 @@
+branch-defaults:
+  master:
+    environment: onboarding-client
+environment-defaults:
+  onboarding-client:
+    branch: null
+    repository: null
+global:
+  application_name: onboarding-client
+  default_ec2_keyname: DevOps
+  default_platform: arn:aws:elasticbeanstalk:eu-central-1::platform/Node.js running
+    on 64bit Amazon Linux/4.8.2
+  default_region: eu-central-1
+  include_git_submodules: true
+  instance_profile: null
+  platform_name: null
+  platform_version: null
+  profile: tuleva
+  sc: git
+  workspace_type: Application

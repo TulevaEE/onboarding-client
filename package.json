@@ -35,6 +35,7 @@
   "scripts": {
     "heroku-postbuild": "npm run build-onboarding",
     "start": "NODE_ENV=production node server",
+    "prestart": "npm run build-onboarding",
     "precommit": "lint-staged",
     "build-onboarding": "APP_NAME=onboarding npm run build-app",
     "build-signup": "APP_NAME=signup npm run build-app",

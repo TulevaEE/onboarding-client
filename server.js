@@ -30,5 +30,5 @@ app.get(
 
 app.get('*', (request, response) => response.sendFile(path.join(__dirname, 'build', 'index.html')));
 
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 8081;
 app.listen(port, () => console.log(`Static server running on ${port}`)); // eslint-disable-line
