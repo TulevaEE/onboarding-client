@@ -24,13 +24,16 @@ jobs:
           command: npm test
   deploy:
     docker:
-      - image: buildpack-deps:trusty
+      - image: meetfrank/circleci-node-awsebcli:latest
     steps:
       - checkout
       - run:
-          name: Deploy master to Heroku
+          name: Upgrade awsebcli
           command: |
-            git push https://heroku:$HEROKU_API_KEY@git.heroku.com/tuleva-onboarding-client.git master
+            sudo pip install awsebcli --upgrade
+      - deploy:
+          name: Deploy master to Production
+          command: eb deploy onboarding-client --label ${CIRCLE_SHA1} --timeout 20
 
 workflows:
   version: 2
@@ -43,7 +46,7 @@ workflows:
       - deploy:
           requires:
             - test
-          context: heroku-deployment
+          context: elastic-beanstalk-deployment
           filters:
             branches:
               only: master
