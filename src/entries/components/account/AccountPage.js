@@ -145,14 +145,13 @@ export class AccountPage extends Component {
           <div className="col-md-6">
             <Message className="mb-4 lead">select.sources.current.status</Message>
           </div>
-          {currentBalanceFunds &&
-            currentBalanceFunds.length > 0 && (
-              <div className="col-md-6 text-md-right">
-                <Link className="btn btn-primary mb-3" to="/steps/select-sources">
-                  <Message>change.my.pension.fund</Message>
-                </Link>
-              </div>
-            )}
+          {currentBalanceFunds && currentBalanceFunds.length > 0 && (
+            <div className="col-md-6 text-md-right">
+              <Link className="btn btn-primary mb-3" to="/steps/select-sources">
+                <Message>change.my.pension.fund</Message>
+              </Link>
+            </div>
+          )}
         </div>
 
         {loadingCurrentBalance ? (

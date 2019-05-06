@@ -32,7 +32,8 @@ export const Success = ({
             <Message>success.your.payments</Message>
             <b>
               <Message>success.your.payments.next.payment</Message>
-            </b>.
+            </b>
+            .
           </p>
         ) : (
           ''
@@ -42,7 +43,8 @@ export const Success = ({
             <Message>success.shares.switched</Message>
             <b>
               <Message>success.shares.switched.when</Message>
-            </b>.
+            </b>
+            .
           </p>
         ) : (
           ''

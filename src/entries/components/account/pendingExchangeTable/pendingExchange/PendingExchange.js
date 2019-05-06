@@ -12,8 +12,7 @@ const PendingExchange = ({ amount, date, sourceFund, targetFund }) => (
     </div>
     <div className="col-12 col-sm">
       <Message>
-        {new Date(date).getFullYear()}-
-        {`0${new Date(date).getMonth() + 1}`.slice(-2)}-
+        {new Date(date).getFullYear()}-{`0${new Date(date).getMonth() + 1}`.slice(-2)}-
         {`0${new Date(date).getDate()}`.slice(-2)}
       </Message>
     </div>

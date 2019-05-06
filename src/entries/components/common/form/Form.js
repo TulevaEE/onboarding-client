@@ -31,12 +31,11 @@ export const renderField = ({ input, type, placeholder, disabled, meta: { touche
         disabled={disabled}
         className="form-control"
       />
-      {touched &&
-        error && (
-          <div className="form-control-feedback">
-            <Message>{`new.user.flow.signup.error.${error}`}</Message>
-          </div>
-        )}
+      {touched && error && (
+        <div className="form-control-feedback">
+          <Message>{`new.user.flow.signup.error.${error}`}</Message>
+        </div>
+      )}
     </div>
   </div>
 );
