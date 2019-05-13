@@ -26,9 +26,109 @@ describe('Current balance', () => {
     component = shallow(<AccountPage {...props} />);
   });
 
-  it('renders the current balance', () => {
+  describe('when current balance funds exist', () => {
+    const currentBalanceFunds = [
+      {
+        fund: {
+          id: 1,
+          fundManager: { id: 1, name: 'Tuleva' },
+          isin: 'EE3600109435',
+          name: 'Tuleva Maailma Aktsiate Pensionifond',
+          managementFeeRate: 0.0034,
+        },
+        value: 14818.92591924,
+        currency: 'EUR',
+        pillar: 2,
+        activeContributions: true,
+      },
+    ];
+    beforeEach(() => {
+      component.setProps({ currentBalanceFunds });
+    });
+
+    it('renders the current balance', () => {
+      expect(component.find(PensionFundTable).exists()).toBe(true);
+    });
+
+    it('renders loader when current balance is still loading', () => {
+      component.setProps({ loadingCurrentBalance: true });
+      expect(component.contains(<Loader className="align-middle" />)).toBe(true);
+    });
+
+    it('renders loader when pending exchanges are still loading', () => {
+      component.setProps({ loadingPendingExchanges: true });
+      expect(pendingExchangesLoader().exists()).toBe(true);
+    });
+
+    it('renders pending exchanges when at least one exists', () => {
+      component.setProps({ pendingExchanges: [{}] });
+      expect(pendingExchangesTable().exists()).toBe(true);
+    });
+
+    it('renders return comparison when there is no error', () => {
+      expect(returnComparison().exists()).toBe(true);
+    });
+
+    it('passes options to return comparison select', () => {
+      getReturnComparisonStartDateOptions.mockReturnValue([
+        { value: '2002-01-01', label: 'Since the beginning' },
+        { value: '2005-10-03', label: '5 years' },
+      ]);
+
+      component = mountWithProvider(
+        <AccountPage {...props} currentBalanceFunds={currentBalanceFunds} />,
+      );
+
+      expect(returnComparisonSelect().prop('options')).toEqual([
+        { value: '2002-01-01', label: 'Since the beginning' },
+        { value: '2005-10-03', label: '5 years' },
+      ]);
+    });
+
+    it('passes return comparison whether it is loading', () => {
+      component.setProps({ loadingReturnComparison: false });
+      expect(returnComparison().prop('loading')).toBe(false);
+      component.setProps({ loadingReturnComparison: true });
+      expect(returnComparison().prop('loading')).toBe(true);
+    });
+
+    it('passes first return comparison option value to return comparison select by default', () => {
+      getReturnComparisonStartDateOptions.mockReturnValue([
+        { value: '2002-01-01', label: 'Since the beginning' },
+        { value: '2005-10-03', label: '5 years' },
+      ]);
+
+      component = mountWithProvider(
+        <AccountPage {...props} currentBalanceFunds={currentBalanceFunds} />,
+      );
+
+      expect(returnComparisonSelect().prop('selected')).toEqual('2002-01-01');
+    });
+
+    it('executes callback on return comparison select change', () => {
+      getReturnComparisonStartDateOptions.mockReturnValue([
+        { value: '2002-01-01', label: 'Since the beginning' },
+        { value: '2005-10-03', label: '5 years' },
+      ]);
+
+      const getReturnComparisonForStartDate = jest.fn();
+
+      component = mountWithProvider(
+        <AccountPage
+          getReturnComparisonForStartDate={getReturnComparisonForStartDate}
+          {...props}
+          currentBalanceFunds={currentBalanceFunds}
+        />,
+      );
+      returnComparisonSelect().simulate('change', '2005-10-03');
+
+      expect(getReturnComparisonForStartDate).toBeCalled();
+    });
+  });
+
+  it('does not render the current balance if currentBalanceFunds is empty ', () => {
     props.currentBalanceFunds = {};
-    expect(component.contains(<PensionFundTable />)).toBe(true);
+    expect(component.contains(<PensionFundTable />)).toBe(false);
   });
 
   it('renders converted user statement only when user is fully converted', () => {
@@ -91,15 +191,15 @@ describe('Current balance', () => {
     expect(component.contains(<Message>account.non.member.statement</Message>)).toBe(true);
   });
 
-  it('renders loader when current balance is still loading', () => {
+  it('Does not render loader when currentBalanceFunds is empty', () => {
     const loadingCurrentBalance = true;
     component.setProps({ loadingCurrentBalance });
-    expect(component.contains(<Loader className="align-middle" />)).toBe(true);
+    expect(component.contains(<Loader className="align-middle" />)).toBe(false);
   });
 
-  it('renders loader when pending exchanges are still loading', () => {
+  it('does not render loader to show pending exchanges are still loading in case currentBalanceFunds is empty ', () => {
     component.setProps({ loadingPendingExchanges: true });
-    expect(pendingExchangesLoader().exists()).toBe(true);
+    expect(pendingExchangesLoader().exists()).toBe(false);
   });
 
   it('does not render pending exchanges when they are still loading', () => {
@@ -114,14 +214,7 @@ describe('Current balance', () => {
 
   it('renders pending exchanges when at least one exists', () => {
     component.setProps({ pendingExchanges: [{}] });
-    expect(pendingExchangesTable().exists()).toBe(true);
-  });
-
-  it('passes return comparison whether it is loading', () => {
-    component.setProps({ loadingReturnComparison: false });
-    expect(returnComparison().prop('loading')).toBe(false);
-    component.setProps({ loadingReturnComparison: true });
-    expect(returnComparison().prop('loading')).toBe(true);
+    expect(pendingExchangesTable().exists()).toBe(false);
   });
 
   it('does not render return comparison when there is an error', () => {
@@ -129,49 +222,8 @@ describe('Current balance', () => {
     expect(returnComparison().exists()).toBe(false);
   });
 
-  it('renders return comparison when there is no error', () => {
-    expect(returnComparison().exists()).toBe(true);
-  });
-
-  it('passes options to return comparison select', () => {
-    getReturnComparisonStartDateOptions.mockReturnValue([
-      { value: '2002-01-01', label: 'Since the beginning' },
-      { value: '2005-10-03', label: '5 years' },
-    ]);
-
-    component = mountWithProvider(<AccountPage />);
-
-    expect(returnComparisonSelect().prop('options')).toEqual([
-      { value: '2002-01-01', label: 'Since the beginning' },
-      { value: '2005-10-03', label: '5 years' },
-    ]);
-  });
-
-  it('passes first return comparison option value to return comparison select by default', () => {
-    getReturnComparisonStartDateOptions.mockReturnValue([
-      { value: '2002-01-01', label: 'Since the beginning' },
-      { value: '2005-10-03', label: '5 years' },
-    ]);
-
-    component = mountWithProvider(<AccountPage />);
-
-    expect(returnComparisonSelect().prop('selected')).toEqual('2002-01-01');
-  });
-
-  it('executes callback on return comparison select change', () => {
-    getReturnComparisonStartDateOptions.mockReturnValue([
-      { value: '2002-01-01', label: 'Since the beginning' },
-      { value: '2005-10-03', label: '5 years' },
-    ]);
-
-    const getReturnComparisonForStartDate = jest.fn();
-
-    component = mountWithProvider(
-      <AccountPage getReturnComparisonForStartDate={getReturnComparisonForStartDate} />,
-    );
-    returnComparisonSelect().simulate('change', '2005-10-03');
-
-    expect(getReturnComparisonForStartDate).toBeCalled();
+  it('Does not render return comparison when there is no error in case currentBalanceFunds is empty ', () => {
+    expect(returnComparison().exists()).toBe(false);
   });
 
   it('shows update user form', () => {
