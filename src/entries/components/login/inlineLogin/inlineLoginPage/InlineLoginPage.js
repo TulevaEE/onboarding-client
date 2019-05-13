@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { Message, withTranslations } from 'retranslate';
 import FacebookProvider, { Like } from 'react-facebook';
 
-import './InlineLoginPage.css';
+import './InlineLoginPage.scss';
 
 import { AuthenticationLoader, ErrorAlert } from '../../../common';
 import LoginForm from '../inlineLoginForm';

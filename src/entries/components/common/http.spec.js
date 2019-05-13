@@ -24,7 +24,7 @@ describe('http', () => {
     fetch = jest.fn();
     mockUuid.mockImplementation(() => 'fake uuid');
     global.window.fetch = fetch;
-    global.window.localStorage = new class {
+    global.window.localStorage = new (class {
       constructor() {
         this.items = {};
       }
@@ -36,7 +36,7 @@ describe('http', () => {
       getItem(name) {
         return this.items[name];
       }
-    }();
+    })();
   });
 
   afterEach(() => {

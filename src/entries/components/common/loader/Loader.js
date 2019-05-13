@@ -1,7 +1,7 @@
 import React from 'react';
 import { PropTypes as Types } from 'prop-types';
 
-import './Loader.css';
+import './Loader.scss';
 
 const Loader = ({ className }) => (
   <div className={`loader ${className}`}>

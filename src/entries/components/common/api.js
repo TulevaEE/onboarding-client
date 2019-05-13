@@ -51,9 +51,9 @@ function getTokensWithGrantType(grantType) {
     },
     { Authorization: 'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ=' },
   )
-    .then(({ access_token, refresh_token }) => ({
-      accessToken: access_token,
-      refreshToken: refresh_token,
+    .then(({ access_token: accessToken, refresh_token: refreshToken }) => ({
+      accessToken,
+      refreshToken,
     }))
     .catch(error => {
       if (error.error !== 'AUTHENTICATION_NOT_COMPLETE') {
@@ -71,9 +71,9 @@ export function refreshTokenWith(refreshToken) {
       refresh_token: refreshToken,
     },
     { Authorization: 'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ=' },
-  ).then(({ access_token, refresh_token }) => ({
-    accessToken: access_token,
-    refreshToken: refresh_token,
+  ).then(({ access_token: accessToken, refresh_token: refreshTokenFromResponse }) => ({
+    accessToken,
+    refreshToken: refreshTokenFromResponse,
   }));
 }
 

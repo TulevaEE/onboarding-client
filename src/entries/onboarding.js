@@ -1,3 +1,4 @@
+import 'react-app-polyfill/ie11';
 import React, { Fragment } from 'react';
 import { render } from 'react-dom';
 import config from 'react-global-configuration';
@@ -18,7 +19,7 @@ import GoogleAnalytics from 'react-ga';
 
 import { initializeConfiguration, updateLanguage } from './components/config/config';
 import translations from './components/translations';
-import './components/index.css';
+import './components/index.scss';
 
 import requireAuthentication from './components/requireAuthentication';
 import LoginPage, { reducer as loginReducer, actions as loginActions } from './components/login';

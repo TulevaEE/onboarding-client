@@ -2,7 +2,7 @@ import React from 'react';
 import { PropTypes as Types } from 'prop-types';
 import ReactTooltip from 'react-tooltip';
 
-import './InfoTooltip.css';
+import './InfoTooltip.scss';
 import infoImage from './info.svg';
 
 const InfoTooltip = ({ children, name }) => (

@@ -19,7 +19,7 @@ import {
 import { routeBackFromMandateConfirmation } from '../../router/actions';
 import MandateNotFilledAlert from './mandateNotFilledAlert';
 import FundTransferTable from './fundTransferTable';
-import './ConfirmMandate.css';
+import './ConfirmMandate.scss';
 
 function joinDuplicateSelections(selections) {
   return selections.reduce((currentRoutes, selection) => {

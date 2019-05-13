@@ -1,3 +1,4 @@
+import 'react-app-polyfill/ie11';
 import React from 'react';
 import { render } from 'react-dom';
 import { createStore, combineReducers, compose, applyMiddleware } from 'redux';
@@ -8,7 +9,7 @@ import mixpanel from 'mixpanel-browser';
 import MixpanelProvider from 'react-mixpanel';
 
 import translations from './components/translations';
-import './components/inline-login-index.css';
+import './components/inline-login-index.scss';
 
 import './common/polyfills';
 import { reducer as loginReducer } from './components/login';

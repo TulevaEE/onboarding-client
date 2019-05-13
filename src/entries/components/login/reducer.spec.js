@@ -20,7 +20,7 @@ import {
   GET_USER_CONVERSION_ERROR,
   TOKEN_REFRESH_SUCCESS,
   TOKEN_REFRESH_ERROR,
-  USE_REDIRECT_LOGIN,
+  SET_LOGIN_TO_REDIRECT,
   LOG_OUT,
   QUERY_PARAMETERS,
   CHANGE_ID_CODE,
@@ -242,7 +242,7 @@ describe('Login reducer', () => {
   });
 
   it('can switch to redirect login ', () => {
-    const newState = loginReducer(undefined, { type: USE_REDIRECT_LOGIN });
+    const newState = loginReducer(undefined, { type: SET_LOGIN_TO_REDIRECT });
     expect(newState.redirectLogin).toBe(true);
   });
 });

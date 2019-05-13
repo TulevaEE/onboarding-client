@@ -2,7 +2,7 @@ import React from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { Message } from 'retranslate';
 
-import './ErrorMessage.css';
+import './ErrorMessage.scss';
 
 const noop = () => null;
 

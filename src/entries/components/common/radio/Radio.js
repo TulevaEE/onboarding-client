@@ -1,7 +1,7 @@
 import React from 'react';
 import { PropTypes as Types } from 'prop-types';
 
-import './Radio.css';
+import './Radio.scss';
 /* eslint-disable jsx-a11y/label-has-for */
 const Radio = ({ children, onSelect, selected, name, className }) => (
   <label
