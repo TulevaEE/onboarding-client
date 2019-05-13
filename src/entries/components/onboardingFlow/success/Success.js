@@ -24,7 +24,7 @@ export const Success = ({
         <h2 className="text-center mt-3">
           <Message>success.done</Message>
         </h2>
-        <button className="btn btn-secondary text-center" onClick={onDownloadMandate}>
+        <button type="button" className="btn btn-secondary text-center" onClick={onDownloadMandate}>
           <Message>success.download.mandate</Message>
         </button>
         {userContributingFuturePayments ? (

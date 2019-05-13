@@ -1,3 +1,1 @@
-import FundExchangeRow from './FundExchangeRow';
-
-export default FundExchangeRow;
+export { default } from './FundExchangeRow';

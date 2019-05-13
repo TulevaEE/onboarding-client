@@ -1,3 +1,1 @@
-import InlineLoginForm from './InlineLoginForm';
-
-export default InlineLoginForm;
+export { default } from './InlineLoginForm';

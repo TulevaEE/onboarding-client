@@ -1,9 +1,11 @@
+/* eslint-disable react/no-array-index-key */
+
 import React from 'react';
 import { Message } from 'retranslate';
 
 import { logo } from '../common';
 
-export const TermsOfUse = () => (
+const TermsOfUse = () => (
   <div className="container pt-5">
     <div className="row">
       <div className="col-lg-12 text-center">

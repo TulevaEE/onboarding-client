@@ -58,6 +58,7 @@ export const FundExchangeRow = ({
               })
             }
           />
+          {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
           <label htmlFor={randomId} className="tv-percentage-selector__addon">
             %
           </label>

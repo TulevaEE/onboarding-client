@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import { Message } from 'retranslate';
 
 import AuthenticationLoader from './AuthenticationLoader';
-import { Loader } from '../../common';
+import { Loader } from '..';
 
 describe('Authenticaion loader', () => {
   let component;

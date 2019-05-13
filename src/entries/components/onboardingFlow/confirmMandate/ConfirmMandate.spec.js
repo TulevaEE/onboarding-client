@@ -88,7 +88,7 @@ describe('Confirm mandate step', () => {
     });
     expect(
       component.contains(
-        <button className="btn btn-secondary mb-2" onClick={onPreviousStep}>
+        <button type="button" className="btn btn-secondary mb-2" onClick={onPreviousStep}>
           <Message>steps.previous</Message>
         </button>,
       ),
@@ -107,7 +107,7 @@ describe('Confirm mandate step', () => {
     });
     expect(
       component.contains(
-        <button className="btn btn-secondary mb-2" onClick={onExitShortFlow}>
+        <button type="button" className="btn btn-secondary mb-2" onClick={onExitShortFlow}>
           <Message>confirm.mandate.exit.short.flow</Message>
         </button>,
       ),

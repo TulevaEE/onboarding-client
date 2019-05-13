@@ -18,6 +18,7 @@ const TargetFundSelector = ({
     {targetFunds.map(fund => (
       <div key={fund.isin} className="col-12 col-sm mb-3 mr-2 p-0">
         <button
+          type="button"
           className={`
               tv-target-fund p-4 text-left mb-2
               ${selectedTargetFundIsin === fund.isin ? 'tv-target-fund--active' : ''}

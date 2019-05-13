@@ -1,3 +1,1 @@
-import ErrorAlert from './ErrorAlert';
-
-export default ErrorAlert;
+export { default } from './ErrorAlert';

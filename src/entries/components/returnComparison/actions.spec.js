@@ -55,7 +55,7 @@ describe('Return comparison actions', () => {
 
     it('dispatches error action with error if fetching fails', async () => {
       const store = mockStoreWithToken();
-      mockAPIResponse(Promise.reject({ message: 'An error' }));
+      mockAPIResponse(Promise.reject(new Error({ message: 'An error' })));
 
       await store.dispatch(getReturnComparisonForStartDate('2015-10-03'));
 

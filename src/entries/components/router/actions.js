@@ -14,12 +14,12 @@ export function isRouteToAccount(location) {
 }
 
 function isSelectionComplete(getState) {
-  const userConversion = getState().login.userConversion;
+  const { userConversion } = getState().login;
   return !!(userConversion && userConversion.selectionComplete);
 }
 
 function isTransfersComplete(getState) {
-  const userConversion = getState().login.userConversion;
+  const { userConversion } = getState().login;
   return !!(userConversion && userConversion.transfersComplete);
 }
 

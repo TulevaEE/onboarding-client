@@ -80,7 +80,7 @@ export function changeAgreementToTerms(agreement) {
 export function downloadMandate() {
   return (dispatch, getState) => {
     const mandateId = getState().exchange.signedMandateId;
-    const token = getState().login.token;
+    const { token } = getState().login;
     if (mandateId && token) {
       return downloadMandateWithIdAndToken(mandateId, token).then(file =>
         download(file, 'Tuleva_avaldus.bdoc', 'application/bdoc'),
@@ -159,7 +159,7 @@ function handleSaveMandateError(dispatch, error) {
 
 export function previewMandate(mandate) {
   return (dispatch, getState) => {
-    const token = getState().login.token;
+    const { token } = getState().login;
     return saveMandateWithToken(mandate, token)
       .then(({ id }) => downloadMandatePreviewWithIdAndToken(id, token))
       .then(file => download(file, 'Tuleva_avaldus_eelvaade.zip', 'application/zip'))
@@ -172,7 +172,7 @@ export function previewMandate(mandate) {
 export function signMandateWithMobileId(mandate) {
   return (dispatch, getState) => {
     dispatch({ type: SIGN_MANDATE_MOBILE_ID_START });
-    const token = getState().login.token;
+    const { token } = getState().login;
     let mandateId;
     return saveMandateWithToken(mandate, token)
       .then(({ id }) => {
@@ -192,7 +192,7 @@ export function signMandateWithMobileId(mandate) {
 export function signMandateWithSmartId(mandate) {
   return (dispatch, getState) => {
     dispatch({ type: SIGN_MANDATE_MOBILE_ID_START });
-    const token = getState().login.token;
+    const { token } = getState().login;
     let mandateId;
     return saveMandateWithToken(mandate, token)
       .then(({ id }) => {
@@ -262,7 +262,7 @@ function signIdCardSignatureHashWithCertificateForMandateId(hash, certificate, m
 export function signMandateWithIdCard(mandate) {
   return (dispatch, getState) => {
     dispatch({ type: SIGN_MANDATE_ID_CARD_START });
-    const token = getState().login.token;
+    const { token } = getState().login;
     let mandateId;
     let certificate;
 
@@ -306,7 +306,8 @@ export function signMandate(mandate) {
     const loggedInWithSmartId = getState().login.loginMethod === 'smartId';
     if (loggedInWithMobileId) {
       return dispatch(signMandateWithMobileId(mandate));
-    } else if (loggedInWithSmartId) {
+    }
+    if (loggedInWithSmartId) {
       return dispatch(signMandateWithSmartId(mandate));
     }
     return dispatch(signMandateWithIdCard(mandate));

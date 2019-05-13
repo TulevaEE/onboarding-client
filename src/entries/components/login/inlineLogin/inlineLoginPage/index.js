@@ -1,3 +1,1 @@
-import InlineLoginPage from './InlineLoginPage';
-
-export default InlineLoginPage;
+export { default } from './InlineLoginPage';

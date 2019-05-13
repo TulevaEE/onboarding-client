@@ -93,7 +93,6 @@ InlineLoginPage.defaultProps = {
   controlCode: '',
   loadingAuthentication: false,
   loadingUserConversion: false,
-  successful: false,
   errorDescription: '',
 };
 
@@ -120,7 +119,6 @@ const mapStateToProps = state => ({
   loadingAuthentication: state.login.loadingAuthentication,
   loadingUserConversion: state.login.loadingUserConversion,
   errorDescription: state.login.error || state.login.userConversionError,
-  successful: !!state.login.token, // not used right now
 });
 const mapDispatchToProps = dispatch =>
   bindActionCreators(

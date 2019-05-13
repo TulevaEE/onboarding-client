@@ -1,3 +1,1 @@
-import TransferFutureCapital from './TransferFutureCapital';
-
-export default TransferFutureCapital;
+export { default } from './TransferFutureCapital';

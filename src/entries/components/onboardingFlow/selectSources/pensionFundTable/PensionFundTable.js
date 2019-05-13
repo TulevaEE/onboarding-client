@@ -29,8 +29,8 @@ const PensionFundTable = ({ funds }) => {
       ))}
       <FundRow
         price={totalPrice}
-        currency={'EUR'} // hardcoded until there are more currencies
-        name={'select.sources.total'}
+        currency="EUR" // hardcoded until there are more currencies
+        name="select.sources.total"
         highlighted
       />
       <div className="mt-2">

@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 import React from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { Message } from 'retranslate';
@@ -69,6 +70,7 @@ const ExactFundSelector = ({ selections, sourceFunds, targetFunds, onChange }) =
       </div>
       <div className="col">
         <button
+          type="button"
           className="btn btn-secondary btn-sm float-right"
           onClick={createRowAdder({
             sourceFunds,

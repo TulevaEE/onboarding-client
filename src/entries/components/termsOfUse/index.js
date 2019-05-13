@@ -1,3 +1,1 @@
-import TermsOfUse from './TermsOfUse';
-
-export default TermsOfUse;
+export { default } from './TermsOfUse';

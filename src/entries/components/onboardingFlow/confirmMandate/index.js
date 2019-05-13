@@ -1,3 +1,1 @@
-import ConfirmMandate from './ConfirmMandate';
-
-export default ConfirmMandate;
+export { default } from './ConfirmMandate';

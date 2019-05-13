@@ -6,7 +6,7 @@ import { Provider } from 'react-redux';
 
 import { Loader, ErrorMessage } from '../common';
 import { AccountPage, TOTAL_CAPITAL } from './AccountPage';
-import PensionFundTable from './../onboardingFlow/selectSources/pensionFundTable';
+import PensionFundTable from '../onboardingFlow/selectSources/pensionFundTable';
 import PendingExchangesTable from './pendingExchangeTable';
 import UpdateUserForm from './updateUserForm';
 import ReturnComparison from '../returnComparison';

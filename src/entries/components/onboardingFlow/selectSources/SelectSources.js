@@ -157,6 +157,7 @@ export const SelectSources = ({
       </Radio>
 
       <button
+        type="button"
         id="nextStep"
         className={`btn btn-primary mt-5 ${!valid ? 'disabled' : ''}`}
         onClick={valid && onNextStep}

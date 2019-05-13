@@ -1,3 +1,5 @@
+/* eslint-disable react/no-array-index-key */
+
 import React from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { Message } from 'retranslate';
@@ -24,7 +26,7 @@ const ErrorMessage = ({ errors, onCancel, overlayed }) => {
             ))}
         </div>
         {onCancel !== noop ? (
-          <button className="btn btn-secondary mt-4" onClick={onCancel}>
+          <button type="button" className="btn btn-secondary mt-4" onClick={onCancel}>
             <Message>error.message.close</Message>
           </button>
         ) : (

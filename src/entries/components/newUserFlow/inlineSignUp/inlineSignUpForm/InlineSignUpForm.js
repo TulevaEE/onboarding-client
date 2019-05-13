@@ -36,6 +36,7 @@ export const InlineSignUpForm = ({
   <div>
     <form id="register-form" onSubmit={handleSubmit}>
       <div className="form-group mb-2">
+        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
         <label htmlFor="register-form-email">
           <Message>new.user.flow.signup.email</Message>
         </label>
@@ -49,6 +50,7 @@ export const InlineSignUpForm = ({
         />
       </div>
       <div className="form-group mb-2">
+        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
         <label htmlFor="register-form-personalCode">
           <Message>new.user.flow.signup.personalCode</Message>
         </label>
@@ -62,6 +64,7 @@ export const InlineSignUpForm = ({
         />
       </div>
       <div className="form-group mb-2">
+        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
         <label htmlFor="register-form-phoneNumber">
           <Message>new.user.flow.signup.phoneNumber</Message>
         </label>
@@ -96,7 +99,7 @@ export const InlineSignUpForm = ({
         <button
           type="submit"
           disabled={invalid || submitting}
-          className={'btn btn-primary btn-lg btn-block'}
+          className="btn btn-primary btn-lg btn-block"
         >
           <Message>new.user.flow.signup.submit</Message>
         </button>
