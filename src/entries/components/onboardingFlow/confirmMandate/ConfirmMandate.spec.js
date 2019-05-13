@@ -14,7 +14,17 @@ describe('Confirm mandate step', () => {
   let component;
 
   beforeEach(() => {
-    component = shallow(<ConfirmMandate />);
+    component = shallow(
+      <ConfirmMandate
+        exchange={{
+          loadingSourceFunds: false,
+          loadingTargetFunds: false,
+          sourceSelection: [],
+          selectedFutureContributionsFundIsin: null,
+          agreedToTerms: false,
+        }}
+      />,
+    );
   });
 
   it('renders a loader if it is loading the user or funds', () => {
