@@ -1,7 +1,7 @@
 import React from 'react';
 import { PropTypes as Types } from 'prop-types';
 
-import './StepTitle.css';
+import './StepTitle.scss';
 
 const StepTitle = ({ children, number, active, completed }) => (
   <div className="tv-step">

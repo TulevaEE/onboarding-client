@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Message } from 'retranslate';
 
-import './LoginPage.css';
+import './LoginPage.scss';
 
 import { logo, AuthenticationLoader, ErrorAlert } from '../common';
 import LoginForm from './loginForm';

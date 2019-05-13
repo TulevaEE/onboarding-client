@@ -2,7 +2,7 @@ import React from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { Message, withTranslations } from 'retranslate';
 
-import './LoginForm.css';
+import './LoginForm.scss';
 
 function runWithDefaultPrevention(fn) {
   return event => {

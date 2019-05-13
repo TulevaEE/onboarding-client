@@ -8,7 +8,7 @@ import FacebookProvider, { Share } from 'react-facebook';
 
 import { downloadMandate } from '../../exchange/actions';
 import successImage from './success.svg';
-import './Success.css';
+import './Success.scss';
 
 export const Success = ({
   userContributingFuturePayments,
