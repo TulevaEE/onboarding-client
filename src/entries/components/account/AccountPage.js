@@ -141,29 +141,28 @@ export class AccountPage extends Component {
           ''
         )}
         {error ? <ErrorMessage errors={error.body} /> : ''}
-
-        <div className="row mt-5">
-          <div className="col-md-6">
-            <Message className="mb-4 lead">select.sources.current.status</Message>
-          </div>
-          {currentBalanceFunds && currentBalanceFunds.length > 0 && (
-            <div className="col-md-6 text-md-right">
-              <Link className="btn btn-primary mb-3" to="/steps/select-sources">
-                <Message>change.my.pension.fund</Message>
-              </Link>
+        {currentBalanceFunds && currentBalanceFunds.length > 0 && (
+          <Fragment>
+            <div className="row mt-5">
+              <div className="col-md-6">
+                <Message className="mb-4 lead">select.sources.current.status</Message>
+              </div>
+              <div className="col-md-6 text-md-right">
+                <Link className="btn btn-primary mb-3" to="/steps/select-sources">
+                  <Message>change.my.pension.fund</Message>
+                </Link>
+              </div>
             </div>
-          )}
-        </div>
+            {loadingCurrentBalance ? (
+              <Loader className="align-middle" />
+            ) : (
+              <PensionFundTable funds={currentBalanceFunds} />
+            )}
 
-        {loadingCurrentBalance ? (
-          <Loader className="align-middle" />
-        ) : (
-          <PensionFundTable funds={currentBalanceFunds} />
+            {pendingExchangesSection}
+            {returnComparisonSection}
+          </Fragment>
         )}
-
-        {pendingExchangesSection}
-        {returnComparisonSection}
-
         <div className="mt-5">
           <p className="mb-4 lead">
             <Message>update.user.details.title</Message>
