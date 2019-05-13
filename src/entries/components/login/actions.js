@@ -1,6 +1,6 @@
 /* eslint-disable no-useless-escape */
 
-import Raven from 'raven-js';
+import * as Sentry from '@sentry/browser';
 import { push } from 'react-router-redux';
 import config from 'react-global-configuration';
 
@@ -278,7 +278,9 @@ export function getUser() {
       .getUserWithToken(getState().login.token)
       .then(user => {
         if (process.env.NODE_ENV === 'production') {
-          Raven.setUserContext({ id: user.id });
+          Sentry.configureScope(scope => {
+            scope.setUser({ id: user.id });
+          });
         }
         dispatch(checkShortFlowEligibility(user));
         dispatch({ type: GET_USER_SUCCESS, user });
@@ -321,7 +323,9 @@ export function refreshToken() {
 
 export function logOut() {
   if (process.env.NODE_ENV === 'production') {
-    Raven.setUserContext(); // unauthenticate
+    Sentry.configureScope(scope => {
+      scope.clear();
+    });
   }
   http.resetStatisticsIdentification();
   return { type: LOG_OUT };
