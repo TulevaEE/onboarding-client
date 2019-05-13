@@ -24,7 +24,7 @@ import {
   TOKEN_REFRESH_SUCCESS,
   TOKEN_REFRESH_ERROR,
   QUERY_PARAMETERS,
-  USE_REDIRECT_LOGIN,
+  SET_LOGIN_TO_REDIRECT,
   LOG_OUT,
 } from './constants';
 
@@ -415,8 +415,8 @@ describe('Login actions', () => {
   });
 
   it('can handle redirect login', () => {
-    expect(actions.useRedirectLogin()).toEqual({
-      type: USE_REDIRECT_LOGIN,
+    expect(actions.setLoginToRedirect()).toEqual({
+      type: SET_LOGIN_TO_REDIRECT,
     });
   });
 
@@ -425,7 +425,7 @@ describe('Login actions', () => {
       actions.useRedirectLoginWithPhoneNumber,
     );
     useRedirectLoginWithPhoneNumber(123);
-    expect(dispatch).toHaveBeenCalledWith({ type: USE_REDIRECT_LOGIN });
+    expect(dispatch).toHaveBeenCalledWith({ type: SET_LOGIN_TO_REDIRECT });
     expect(dispatch).toHaveBeenCalledWith({
       type: MOBILE_AUTHENTICATION_START,
     });
@@ -434,7 +434,7 @@ describe('Login actions', () => {
   it('can handle redirect login with id card', () => {
     const useRedirectLoginWithIdCard = createBoundAction(actions.useRedirectLoginWithIdCard);
     useRedirectLoginWithIdCard();
-    expect(dispatch).toHaveBeenCalledWith({ type: USE_REDIRECT_LOGIN });
+    expect(dispatch).toHaveBeenCalledWith({ type: SET_LOGIN_TO_REDIRECT });
     expect(dispatch).toHaveBeenCalledWith({
       type: ID_CARD_AUTHENTICATION_START,
     });
@@ -443,7 +443,7 @@ describe('Login actions', () => {
   it('can handle redirect login with smart id', () => {
     const useRedirectLoginWithIdCode = createBoundAction(actions.useRedirectLoginWithIdCode);
     useRedirectLoginWithIdCode('38501020455');
-    expect(dispatch).toHaveBeenCalledWith({ type: USE_REDIRECT_LOGIN });
+    expect(dispatch).toHaveBeenCalledWith({ type: SET_LOGIN_TO_REDIRECT });
     expect(dispatch).toHaveBeenCalledWith({
       type: MOBILE_AUTHENTICATION_START,
     });

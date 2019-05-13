@@ -19,7 +19,7 @@ import {
   GET_USER_CONVERSION_ERROR,
   TOKEN_REFRESH_SUCCESS,
   TOKEN_REFRESH_ERROR,
-  USE_REDIRECT_LOGIN,
+  SET_LOGIN_TO_REDIRECT,
   LOG_OUT,
   QUERY_PARAMETERS,
   CHANGE_ID_CODE,
@@ -192,7 +192,7 @@ export default function loginReducer(state = defaultState, action) {
         loadingUserConversion: false,
         userConversionError: getGlobalErrorCode(action.error.body),
       };
-    case USE_REDIRECT_LOGIN:
+    case SET_LOGIN_TO_REDIRECT:
       return {
         ...state,
         redirectLogin: true,

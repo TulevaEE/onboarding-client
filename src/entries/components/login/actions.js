@@ -27,7 +27,7 @@ import {
   TOKEN_REFRESH_START,
   TOKEN_REFRESH_SUCCESS,
   TOKEN_REFRESH_ERROR,
-  USE_REDIRECT_LOGIN,
+  SET_LOGIN_TO_REDIRECT,
   LOG_OUT,
   QUERY_PARAMETERS,
   CHANGE_ID_CODE,
@@ -331,27 +331,27 @@ export function mapUrlQueryParamsToState(query) {
   return { type: QUERY_PARAMETERS, query };
 }
 
-export function useRedirectLogin() {
-  return { type: USE_REDIRECT_LOGIN };
+export function setLoginToRedirect() {
+  return { type: SET_LOGIN_TO_REDIRECT };
 }
 
 export function useRedirectLoginWithPhoneNumber(phoneNumber) {
   return dispatch => {
-    dispatch(useRedirectLogin());
+    dispatch(setLoginToRedirect());
     dispatch(authenticateWithPhoneNumber(phoneNumber));
   };
 }
 
 export function useRedirectLoginWithIdCard() {
   return dispatch => {
-    dispatch(useRedirectLogin());
+    dispatch(setLoginToRedirect());
     dispatch(authenticateWithIdCard());
   };
 }
 
 export function useRedirectLoginWithIdCode(identityCode) {
   return dispatch => {
-    dispatch(useRedirectLogin());
+    dispatch(setLoginToRedirect());
     dispatch(authenticateWithIdCode(identityCode));
   };
 }
