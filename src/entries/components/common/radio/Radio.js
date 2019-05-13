@@ -2,12 +2,12 @@ import React from 'react';
 import { PropTypes as Types } from 'prop-types';
 
 import './Radio.scss';
-/* eslint-disable jsx-a11y/label-has-for */
+
 const Radio = ({ children, onSelect, selected, name, className }) => (
   <label
     className={`tv-radio p-4 mb-0 px-col ${selected ? 'tv-radio--selected' : ''} ${className}`}
+    htmlFor={name}
   >
-    {/* eslint-enable jsx-a11y/label-has-for */}
     <div className="row mb-0">
       <div className="col col-auto pr-0">
         <input

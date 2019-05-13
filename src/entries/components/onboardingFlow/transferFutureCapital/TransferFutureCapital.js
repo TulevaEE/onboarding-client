@@ -123,7 +123,6 @@ const noop = () => null;
 TransferFutureCapital.defaultProps = {
   selectedFutureContributionsFundIsin: null,
   onSelectFutureCapitalFund: noop,
-  sourceFunds: [],
   targetFunds: [],
   loadingTargetFunds: false,
   activeSourceFund: null,

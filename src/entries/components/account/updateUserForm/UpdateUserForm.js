@@ -52,7 +52,7 @@ export const UpdateUserForm = ({
             <button
               type="submit"
               disabled={invalid || submitting}
-              className={'btn btn-primary btn-block mb-2 mr-2'}
+              className="btn btn-primary btn-block mb-2 mr-2"
             >
               <Message>update.user.save</Message>
             </button>

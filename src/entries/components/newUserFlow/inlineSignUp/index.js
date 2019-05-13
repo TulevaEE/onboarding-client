@@ -1,3 +1,1 @@
-import InlineSignUp from './InlineSignUp';
-
-export default InlineSignUp;
+export { default } from './InlineSignUp';

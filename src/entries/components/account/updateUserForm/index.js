@@ -1,3 +1,1 @@
-import UpdateUserForm from './UpdateUserForm';
-
-export default UpdateUserForm;
+export { default } from './UpdateUserForm';

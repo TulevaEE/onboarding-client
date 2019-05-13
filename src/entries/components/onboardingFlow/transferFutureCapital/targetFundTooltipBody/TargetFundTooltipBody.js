@@ -65,10 +65,6 @@ const TargetFundTooltipBody = ({ targetFundIsin }) => {
   );
 };
 
-TargetFundTooltipBody.defaultProps = {
-  targetFundIsin: '',
-};
-
 TargetFundTooltipBody.propTypes = {
   targetFundIsin: Types.string.isRequired,
 };

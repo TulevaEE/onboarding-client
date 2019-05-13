@@ -55,7 +55,11 @@ export class InlineLoginForm extends Component {
           </div>
 
           <div className="col-sm-4">
-            <button className="btn btn-primary btn-block btn-lg" onClick={onAuthenticateWithIdCard}>
+            <button
+              type="button"
+              className="btn btn-primary btn-block btn-lg"
+              onClick={onAuthenticateWithIdCard}
+            >
               <Message>login.id.card</Message>
             </button>
           </div>

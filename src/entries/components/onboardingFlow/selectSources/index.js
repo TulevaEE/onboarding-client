@@ -1,3 +1,1 @@
-import SelectSources from './SelectSources';
-
-export default SelectSources;
+export { default } from './SelectSources';

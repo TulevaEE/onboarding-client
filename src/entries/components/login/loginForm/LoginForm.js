@@ -79,7 +79,11 @@ export const LoginForm = ({
         </span>
       </div>
       <div>
-        <button className="btn btn-primary btn-block btn-lg" onClick={onAuthenticateWithIdCard}>
+        <button
+          type="button"
+          className="btn btn-primary btn-block btn-lg"
+          onClick={onAuthenticateWithIdCard}
+        >
           <Message>login.id.card</Message>
         </button>
       </div>

@@ -220,7 +220,8 @@ export default function loginReducer(state = defaultState, action) {
           ...state,
           disableRouter: true,
         };
-      } else if (action.query.disableRouter === 'false') {
+      }
+      if (action.query.disableRouter === 'false') {
         return {
           ...state,
           disableRouter: false,

@@ -196,6 +196,7 @@ export const ConfirmMandate = ({
       )}
       <div className="mt-5">
         <button
+          type="button"
           id="sign"
           className="btn btn-primary mb-2 mr-2"
           disabled={!canSignMandate}
@@ -203,15 +204,20 @@ export const ConfirmMandate = ({
         >
           <Message>confirm.mandate.sign</Message>
         </button>
-        <button id="preview" className="btn btn-secondary mb-2 mr-2" onClick={startPreviewMandate}>
+        <button
+          type="button"
+          id="preview"
+          className="btn btn-secondary mb-2 mr-2"
+          onClick={startPreviewMandate}
+        >
           <Message>confirm.mandate.preview</Message>
         </button>
         {isShortFlowActive ? (
-          <button className="btn btn-secondary mb-2" onClick={onExitShortFlow}>
+          <button type="button" className="btn btn-secondary mb-2" onClick={onExitShortFlow}>
             <Message>confirm.mandate.exit.short.flow</Message>
           </button>
         ) : (
-          <button className="btn btn-secondary mb-2" onClick={onPreviousStep}>
+          <button type="button" className="btn btn-secondary mb-2" onClick={onPreviousStep}>
             <Message>steps.previous</Message>
           </button>
         )}
@@ -223,15 +229,6 @@ export const ConfirmMandate = ({
 const noop = () => null;
 
 ConfirmMandate.defaultProps = {
-  user: {},
-  loadingUser: false,
-  exchange: {
-    loadingSourceFunds: false,
-    loadingTargetFunds: false,
-    sourceSelection: [],
-    selectedFutureContributionsFundIsin: null,
-    agreedToTerms: false,
-  },
   isShortFlowActive: false,
   onPreviewMandate: noop,
   onSignMandate: noop,

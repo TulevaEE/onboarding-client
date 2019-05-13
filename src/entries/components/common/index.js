@@ -4,7 +4,7 @@ import * as utilsModule from './utils';
 import logoModule from './logo.svg';
 import LoaderModule from './loader';
 import RadioModule from './radio';
-import AuthenticationLoaderModule from './authenticationLoader';
+import AuthenticationLoaderModule from './authenticationLoader'; // eslint-disable-line import/no-cycle
 import ErrorMessageModule from './errorMessage';
 import InfoTooltipModule from './infoTooltip';
 import ErrorAlertModule from './errorAlert';

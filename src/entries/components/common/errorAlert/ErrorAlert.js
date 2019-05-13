@@ -5,9 +5,11 @@ import { Message } from 'retranslate';
 export const ID_CARD_LOGIN_START_FAILED_ERROR = 'ID_CARD_LOGIN_START_FAILED';
 const NOT_JOINED_ERROR_DESCRIPTION = 'INVALID_USER_CREDENTIALS';
 
-export class ErrorAlert extends Component {
+class ErrorAlert extends Component {
   errorMessage() {
-    if (this.props.description === NOT_JOINED_ERROR_DESCRIPTION) {
+    const { description } = this.props;
+
+    if (description === NOT_JOINED_ERROR_DESCRIPTION) {
       return (
         <div>
           <Message>login.error.invalid.user.credentials</Message>
@@ -17,7 +19,8 @@ export class ErrorAlert extends Component {
           </a>
         </div>
       );
-    } else if (this.props.description === ID_CARD_LOGIN_START_FAILED_ERROR) {
+    }
+    if (description === ID_CARD_LOGIN_START_FAILED_ERROR) {
       return (
         <div>
           <Message>login.id.card.start.failed</Message>

@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import FacebookProvider, { Like } from 'react-facebook';
 import { InlineLoginPage } from './InlineLoginPage';
 import { AuthenticationLoader, ErrorAlert } from '../../../common';
-import InlineLoginForm from './../inlineLoginForm';
+import InlineLoginForm from '../inlineLoginForm';
 
 describe('Login page', () => {
   let props;

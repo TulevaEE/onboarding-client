@@ -18,7 +18,7 @@ const Header = ({ user: { name } = {}, loading, onLogout }) => (
       ) : (
         <div>
           {name}&ensp;&middot;&ensp;
-          <button className="btn btn-link p-0 border-0" onClick={onLogout}>
+          <button type="button" className="btn btn-link p-0 border-0" onClick={onLogout}>
             <Message>log.out</Message>
           </button>
           <br />

@@ -2,7 +2,7 @@ import React from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { Message } from 'retranslate';
 
-import { Loader } from '../../common';
+import { Loader } from '..'; // eslint-disable-line import/no-cycle
 import './AuthenticationLoader.scss';
 
 const AuthenticationLoader = ({ controlCode, onCancel, overlayed, message }) => {
@@ -30,7 +30,7 @@ const AuthenticationLoader = ({ controlCode, onCancel, overlayed, message }) => 
           ''
         )}
         {controlCode ? (
-          <button className="btn btn-secondary mt-4" onClick={onCancel}>
+          <button type="button" className="btn btn-secondary mt-4" onClick={onCancel}>
             <Message>login.stop</Message>
           </button>
         ) : (

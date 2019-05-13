@@ -23,7 +23,8 @@ function createCustomHeaders() {
 function transformResponse(response) {
   if (response.ok && response.status < 400) {
     return response.json();
-  } else if (response.status >= 400) {
+  }
+  if (response.status >= 400) {
     return response.json().then(data => {
       const error = {};
       error.status = response.status;

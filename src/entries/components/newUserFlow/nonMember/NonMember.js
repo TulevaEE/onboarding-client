@@ -1,7 +1,7 @@
 import React from 'react';
 import { Message } from 'retranslate';
 
-export const NonMember = () => (
+const NonMember = () => (
   <div>
     <div className="mb-4">
       <p className="mb-4 mt-5 lead">
