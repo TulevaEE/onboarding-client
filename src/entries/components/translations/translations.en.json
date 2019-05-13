@@ -1,6 +1,8 @@
 {
-
   "login.title": "By logging in you can see your pension account statement and personal rate of return. You can also change your pension fund.",
+  "login.title.thirdPillar.withExchange": "You want to change your III pillar pension fund and make a monthly contribution of {{monthlyContribution}} euros",
+  "login.title.thirdPillar.withoutExchange": "You want to select  III pillar pension fund and make a monthly contribution of {{monthlyContribution}} euros",
+  "login.subtitle.thirdPillar": "Log in and confirm your application with digital signature",
   "login.mobile.id": "Enter with mobile-ID",
   "login.smart.id": "Enter with Smart-ID",
   "login.id.card": "Enter with ID-card",

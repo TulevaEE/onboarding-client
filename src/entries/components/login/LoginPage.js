@@ -31,6 +31,8 @@ export const LoginPage = ({
   loadingAuthentication,
   loadingUserConversion,
   errorDescription,
+  monthlyThirdPillarContribution,
+  exchangeExistingThirdPillarUnits,
 }) => (
   <div className="login-page">
     <div className="container pt-5">
@@ -52,6 +54,8 @@ export const LoginPage = ({
                 onIdCodeChange={onIdCodeChange}
                 identityCode={identityCode}
                 onAuthenticateWithIdCard={onAuthenticateWithIdCard}
+                monthlyThirdPillarContribution={monthlyThirdPillarContribution}
+                exchangeExistingThirdPillarUnits={exchangeExistingThirdPillarUnits}
               />
             ) : (
               ''
@@ -100,6 +104,8 @@ LoginPage.defaultProps = {
   loadingAuthentication: false,
   loadingUserConversion: false,
   errorDescription: '',
+  monthlyThirdPillarContribution: null,
+  exchangeExistingThirdPillarUnits: false,
 };
 
 LoginPage.propTypes = {
@@ -116,6 +122,8 @@ LoginPage.propTypes = {
   loadingAuthentication: Types.bool,
   loadingUserConversion: Types.bool,
   errorDescription: Types.string,
+  monthlyThirdPillarContribution: Types.number,
+  exchangeExistingThirdPillarUnits: Types.bool,
 };
 
 const mapStateToProps = state => ({
@@ -125,6 +133,8 @@ const mapStateToProps = state => ({
   loadingAuthentication: state.login.loadingAuthentication,
   loadingUserConversion: state.login.loadingUserConversion,
   errorDescription: state.login.error || state.login.userConversionError,
+  monthlyThirdPillarContribution: state.thirdPillar.monthlyContribution,
+  exchangeExistingThirdPillarUnits: state.thirdPillar.exchangeExistingUnits,
 });
 const mapDispatchToProps = dispatch =>
   bindActionCreators(

@@ -1,6 +1,8 @@
 {
-
   "login.title": "Sisse logides näed oma pensionikonto seisu ja tootlust ning saad soovi korral pensionifondi vahetada.",
+  "login.title.thirdPillar.withExchange": "Soovid oma III samba fondiosakud vahetada ning teha III sambasse sissemakse {{monthlyContribution}} eurot kuus",
+  "login.title.thirdPillar.withoutExchange": "Soovid valida III samba pensionifondi ning teha III sambasse sissemakse {{monthlyContribution}} eurot kuus",
+  "login.subtitle.thirdPillar": "Logi sisse ja kinnita avaldus oma digiallkirjaga",
   "login.mobile.id": "Mobiil-ID",
   "login.smart.id": "Smart-ID",
   "login.id.card": "ID-kaart",

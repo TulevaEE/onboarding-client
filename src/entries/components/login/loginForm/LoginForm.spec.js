@@ -1,5 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
+import { Message } from 'retranslate';
 
 import { LoginForm } from './LoginForm';
 
@@ -10,6 +11,54 @@ describe('Login form', () => {
   beforeEach(() => {
     props = { translations: { translate: () => '' } };
     component = shallow(<LoginForm {...props} />);
+  });
+
+  it('shows only the default title when no monthly contribution', () => {
+    const componentHas = key => component.contains(<Message>{key}</Message>);
+
+    expect(componentHas('login.title')).toBe(true);
+    expect(componentHas('login.title.thirdPillar.withExchange', { monthlyContribution: 500 })).toBe(
+      false,
+    );
+    expect(
+      componentHas('login.title.thirdPillar.withoutExchange', { monthlyContribution: 500 }),
+    ).toBe(false);
+    expect(componentHas('login.subtitle.thirdPillar')).toBe(false);
+  });
+
+  it('shows the third pillar with exchange title and with subtitle when monthly contribution exists and exchange is requested', () => {
+    component.setProps({
+      monthlyThirdPillarContribution: 500,
+      exchangeExistingThirdPillarUnits: true,
+    });
+
+    const componentHas = (key, params) =>
+      component.contains(<Message params={params}>{key}</Message>);
+
+    expect(componentHas('login.title')).toBe(false);
+    expect(componentHas('login.title.thirdPillar.withExchange', { monthlyContribution: 500 })).toBe(
+      true,
+    );
+    expect(
+      componentHas('login.title.thirdPillar.withoutExchange', { monthlyContribution: 500 }),
+    ).toBe(false);
+    expect(componentHas('login.subtitle.thirdPillar')).toBe(true);
+  });
+
+  it('shows the third pillar with no exchange title and with subtitle when monthly contribution exists and no exchange is requested', () => {
+    component.setProps({ monthlyThirdPillarContribution: 500 });
+
+    const componentHas = (key, params) =>
+      component.contains(<Message params={params}>{key}</Message>);
+
+    expect(componentHas('login.title')).toBe(false);
+    expect(componentHas('login.title.thirdPillar.withExchange', { monthlyContribution: 500 })).toBe(
+      false,
+    );
+    expect(
+      componentHas('login.title.thirdPillar.withoutExchange', { monthlyContribution: 500 }),
+    ).toBe(true);
+    expect(componentHas('login.subtitle.thirdPillar')).toBe(true);
   });
 
   it('changes value of phone number when typed into input', () => {
