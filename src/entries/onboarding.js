@@ -26,6 +26,10 @@ import LoginPage, { reducer as loginReducer, actions as loginActions } from './c
 import TermsOfUse from './components/termsOfUse';
 import NonMember from './components/newUserFlow/nonMember';
 import { reducer as exchangeReducer, actions as exchangeActions } from './components/exchange';
+import {
+  reducer as thirdPillarReducer,
+  actions as thirdPillarActions,
+} from './components/thirdPillar';
 import trackingReducer from './components/tracking';
 import { reducer as routerReducer, router } from './components/router';
 import { refreshToken } from './components/login/actions';
@@ -54,6 +58,7 @@ const rootReducer = combineReducers({
   exchange: exchangeReducer, // exchage of funds
   account: accountReducer,
   returnComparison: returnComparisonReducer,
+  thirdPillar: thirdPillarReducer,
   tracking: trackingReducer,
   form: formReducer,
   router: routerReducer,
@@ -113,6 +118,7 @@ function applyRouting(nextState) {
   store.dispatch(loginActions.mapUrlQueryParamsToState(nextState.location.query));
   store.dispatch(loginActions.handleIdCardLogin(nextState.location.query));
   store.dispatch(exchangeActions.mapUrlQueryParamsToState(nextState.location.query));
+  store.dispatch(thirdPillarActions.mapUrlQueryParamsToState(nextState.location.query));
   if (router.isRouteToAccount(nextState.location)) {
     store.dispatch(router.routeToAccount());
   }

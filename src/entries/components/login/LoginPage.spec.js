@@ -23,6 +23,8 @@ describe('Login page', () => {
       onIdCodeSubmit: jest.fn(),
       onIdCodeChange: jest.fn(),
       onAuthenticateWithIdCard: jest.fn(),
+      monthlyThirdPillarContribution: 500,
+      exchangeExistingThirdPillarUnits: true,
     };
     component.setProps(formProps);
     expect(component.contains(<LoginForm {...formProps} />)).toBe(true);
@@ -80,6 +82,8 @@ describe('Login page', () => {
       onIdCodeSubmit: jest.fn(),
       onIdCodeChange: jest.fn(),
       onAuthenticateWithIdCard: jest.fn(),
+      monthlyThirdPillarContribution: 500,
+      exchangeExistingThirdPillarUnits: true,
     };
     const authProps = {
       controlCode: null,
