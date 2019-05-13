@@ -151,12 +151,14 @@ describe('Login reducer', () => {
   });
 
   it('stops loading and saves the error if getting the user fails', () => {
-    const error = { body: { errors: [{ code: 'oh no!' }] } };
+    const errorMessage = 'oh no!';
+    const error = { body: { errors: [{ code: errorMessage }] } };
 
     const newState = loginReducer({ loadingUser: true }, { type: GET_USER_ERROR, error });
 
-    expect(newState.userError).toBe('oh no!');
+    expect(newState.userError).toBe(errorMessage);
     expect(newState.loadingUser).toBe(false);
+    expect(newState.error).toBe(errorMessage);
   });
 
   it('removes token and login method flag when you log out', () => {
@@ -193,15 +195,17 @@ describe('Login reducer', () => {
   });
 
   it('stops loading and saves the error if getting the user conversion fails', () => {
-    const error = { body: { errors: [{ code: 'oh no!' }] } };
+    const errorMessage = 'error!';
+    const error = { body: { errors: [{ code: errorMessage }] } };
 
     const newState = loginReducer(
       { loadingUserConversion: true },
       { type: GET_USER_CONVERSION_ERROR, error },
     );
 
-    expect(newState.userConversionError).toBe('oh no!');
+    expect(newState.userConversionError).toBe(errorMessage);
     expect(newState.loadingUserConversion).toBe(false);
+    expect(newState.error).toBe(errorMessage);
   });
 
   it('can refresh token', () => {

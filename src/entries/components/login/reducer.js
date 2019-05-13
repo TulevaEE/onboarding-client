@@ -171,6 +171,7 @@ export default function loginReducer(state = defaultState, action) {
         ...state,
         loadingUser: false,
         userError: getGlobalErrorCode(action.error.body),
+        error: getGlobalErrorCode(action.error.body),
       };
 
     case GET_USER_CONVERSION_START:
@@ -191,6 +192,7 @@ export default function loginReducer(state = defaultState, action) {
         ...state,
         loadingUserConversion: false,
         userConversionError: getGlobalErrorCode(action.error.body),
+        error: getGlobalErrorCode(action.error.body),
       };
     case SET_LOGIN_TO_REDIRECT:
       return {

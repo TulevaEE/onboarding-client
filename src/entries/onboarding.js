@@ -92,7 +92,10 @@ function getSourceAndTargetFundsData() {
 
 function getUserAndConversionData(nextState) {
   const { login } = store.getState();
-  if (
+
+  if (login.userConversionError || login.userError) {
+    store.dispatch(loginActions.logOut());
+  } else if (
     login.token &&
     (!(login.user || login.loadingUser) || !(login.userConversion || login.loadingUserConversion))
   ) {
@@ -124,6 +127,7 @@ function getDataForApp(nextState) {
 }
 
 function initApp(nextState, replace, callback) {
+  console.log('initApp');
   getDataForApp(nextState).then(() => callback());
 }
 
