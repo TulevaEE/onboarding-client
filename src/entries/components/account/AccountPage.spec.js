@@ -26,7 +26,7 @@ describe('Current balance', () => {
     component = shallow(<AccountPage {...props} />);
   });
 
-  describe('When current balance funds exist', function() {
+  describe('when current balance funds exist', () => {
     const currentBalanceFunds = [
       {
         fund: {
@@ -51,8 +51,7 @@ describe('Current balance', () => {
     });
 
     it('renders loader when current balance is still loading', () => {
-      const loadingCurrentBalance = true;
-      component.setProps({ loadingCurrentBalance });
+      component.setProps({ loadingCurrentBalance: true });
       expect(component.contains(<Loader className="align-middle" />)).toBe(true);
     });
 
@@ -127,7 +126,7 @@ describe('Current balance', () => {
     });
   });
 
-  it('Does not renders the current balance if currentBalanceFunds is empty ', () => {
+  it('does not render the current balance if currentBalanceFunds is empty ', () => {
     props.currentBalanceFunds = {};
     expect(component.contains(<PensionFundTable />)).toBe(false);
   });
