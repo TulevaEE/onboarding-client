@@ -123,9 +123,7 @@ describe('api', () => {
   });
 
   it('gives no token in authentication check if error is auth not completed', () => {
-    mockHttp.postForm = jest.fn(() =>
-      Promise.reject(new Error({ error: 'AUTHENTICATION_NOT_COMPLETE' })),
-    );
+    mockHttp.postForm = jest.fn(() => Promise.reject({ error: 'AUTHENTICATION_NOT_COMPLETE' }));
     return api.getMobileIdTokens().then(token => expect(token).toBeFalsy());
   });
 
