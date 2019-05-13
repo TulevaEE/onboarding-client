@@ -8,8 +8,10 @@ export default function thirdPillarReducer(state = initialState, action) {
     case QUERY_PARAMETERS:
       return {
         ...state,
-        monthlyContribution: parseInt(query.monthlyThirdPillarContribution, 10) || null,
-        exchangeExistingUnits: query.exchangeExistingThirdPillarUnits === 'true',
+        monthlyContribution:
+          parseInt(query.monthlyThirdPillarContribution, 10) || state.monthlyContribution || null,
+        exchangeExistingUnits:
+          query.exchangeExistingThirdPillarUnits === 'true' || state.exchangeExistingUnits,
       };
     default:
       return state;

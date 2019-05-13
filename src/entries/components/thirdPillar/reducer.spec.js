@@ -56,4 +56,23 @@ describe('Third pillar reducer', () => {
 
     expect(state).toEqual({ ...initialState, exchangeExistingUnits: false });
   });
+
+  it('keeps the values in store when no query parameters', () => {
+    const state = reducer(
+      {
+        monthlyContribution: 500,
+        exchangeExistingUnits: true,
+      },
+      {
+        type: QUERY_PARAMETERS,
+        query: {},
+      },
+    );
+
+    expect(state).toEqual({
+      ...initialState,
+      monthlyContribution: 500,
+      exchangeExistingUnits: true,
+    });
+  });
 });
