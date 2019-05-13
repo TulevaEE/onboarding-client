@@ -127,7 +127,6 @@ function getDataForApp(nextState) {
 }
 
 function initApp(nextState, replace, callback) {
-  console.log('initApp');
   getDataForApp(nextState).then(() => callback());
 }
 
