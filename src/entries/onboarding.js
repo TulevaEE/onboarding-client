@@ -1,3 +1,4 @@
+import 'react-app-polyfill/ie11';
 import React, { Fragment } from 'react';
 import { render } from 'react-dom';
 import config from 'react-global-configuration';

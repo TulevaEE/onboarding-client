@@ -17,12 +17,11 @@ const renderField = ({ input, type, placeholder, disabled, meta: { touched, erro
         disabled={disabled}
         className="form-control"
       />
-      {touched &&
-        error && (
-          <div className="help-block">
-            <Message>{`new.user.flow.signup.error.${error}`}</Message>
-          </div>
-        )}
+      {touched && error && (
+        <div className="help-block">
+          <Message>{`new.user.flow.signup.error.${error}`}</Message>
+        </div>
+      )}
     </div>
   </div>
 );
