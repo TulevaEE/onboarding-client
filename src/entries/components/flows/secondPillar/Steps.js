@@ -11,7 +11,7 @@ import StepTitle from './stepTitle';
 const orderedStepNames = ['select-sources', 'transfer-future-capital', 'confirm-mandate'];
 
 // this component wraps all steps and renders the top and bottom areas.
-export const Steps = ({ children, stepName, userFirstName, isNewMember, shortFlow }) => {
+export const Steps = ({ children, stepName, isNewMember, shortFlow }) => {
   const stepIndex = orderedStepNames.indexOf(stepName);
   const beforeSteps = orderedStepNames.slice(0, stepIndex);
   const currentStep = orderedStepNames[stepIndex];
@@ -23,11 +23,8 @@ export const Steps = ({ children, stepName, userFirstName, isNewMember, shortFlo
     <div className="row">
       <div className="col px-0">
         {// show welcome when in first step
-        stepIndex === 0 ? (
+        stepIndex === 0 && (
           <div className="px-col mt-5">
-            <p className="lead">
-              <Message params={{ name: userFirstName }}>steps.welcome</Message>
-            </p>
             {isNewMember ? (
               <p className="lead">
                 <Message>steps.intro.new.member</Message>
@@ -38,8 +35,6 @@ export const Steps = ({ children, stepName, userFirstName, isNewMember, shortFlo
               </p>
             )}
           </div>
-        ) : (
-          ''
         )}
         <div className="tv-steps mt-5">
           {shortFlow ? (
@@ -74,14 +69,12 @@ export const Steps = ({ children, stepName, userFirstName, isNewMember, shortFlo
 Steps.defaultProps = {
   children: null,
   stepName: null,
-  userFirstName: '',
   isNewMember: false,
   shortFlow: true,
 };
 
 Steps.propTypes = {
   stepName: Types.string,
-  userFirstName: Types.string,
   children: Types.oneOfType([Types.node, Types.arrayOf(Types.node)]),
   isNewMember: Types.bool,
   shortFlow: Types.bool,
@@ -89,7 +82,6 @@ Steps.propTypes = {
 
 const mapStateToProps = state => ({
   stepName: state.routing.locationBeforeTransitions.pathname.split('/').pop(),
-  userFirstName: (state.login.user || {}).firstName,
   isNewMember: state.exchange.isNewMember,
   shortFlow: state.exchange.shortFlow,
 });
