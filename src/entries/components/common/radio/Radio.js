@@ -3,10 +3,10 @@ import { PropTypes as Types } from 'prop-types';
 
 import './Radio.scss';
 
-const Radio = ({ children, onSelect, selected, name, className }) => (
+const Radio = ({ children, onSelect, selected, name, className, id }) => (
   <label
     className={`tv-radio p-4 mb-0 px-col ${selected ? 'tv-radio--selected' : ''} ${className}`}
-    htmlFor={name}
+    htmlFor={id}
   >
     <div className="row mb-0">
       <div className="col col-auto pr-0">
@@ -14,6 +14,7 @@ const Radio = ({ children, onSelect, selected, name, className }) => (
           type="radio"
           className="sr-only"
           name={name}
+          id={id}
           checked={selected}
           onChange={() => !selected && onSelect(!selected)}
         />
@@ -46,6 +47,7 @@ Radio.propTypes = {
   selected: Types.bool,
   name: Types.string.isRequired,
   className: Types.string,
+  id: Types.string.isRequired,
 };
 
 export default Radio;

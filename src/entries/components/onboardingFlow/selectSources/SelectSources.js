@@ -82,6 +82,7 @@ export const SelectSources = ({
       </div>
       <Radio
         name="tv-select-sources-type"
+        id="tv-select-sources-type-all"
         selected={fullSelectionActive}
         onSelect={() => onSelect(selectAllWithTarget(sourceFunds, defaultTargetFund), false)}
       >
@@ -117,6 +118,7 @@ export const SelectSources = ({
       </Radio>
       <Radio
         name="tv-select-sources-type"
+        id="tv-select-sources-type-some"
         className="mt-3"
         selected={sourceSelectionExact}
         onSelect={() => onSelect(sourceSelection, true)}
@@ -140,6 +142,7 @@ export const SelectSources = ({
       </Radio>
       <Radio
         name="tv-select-sources-type"
+        id="tv-select-sources-type-none"
         className="mt-3"
         selected={noneSelectionActive}
         onSelect={() => onSelect([], false)}

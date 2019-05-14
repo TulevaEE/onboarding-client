@@ -7,7 +7,7 @@ describe('Radio', () => {
   let component;
 
   beforeEach(() => {
-    component = shallow(<Radio name="test-radio" />);
+    component = shallow(<Radio name="test-radio" id="an-id" />);
   });
 
   it('renders a hidden input that keeps and changes state', () => {
@@ -58,5 +58,11 @@ describe('Radio', () => {
     const children = <div>I am a child yo</div>;
     component.setProps({ children });
     expect(component.contains(children)).toBe(true);
+  });
+
+  it('adds passed id to input and as label for to allow selecting radio on label click', () => {
+    component.setProps({ id: 'an-id' });
+    expect(component.find('input').prop('id')).toBe('an-id');
+    expect(component.find('label').prop('htmlFor')).toBe('an-id');
   });
 });

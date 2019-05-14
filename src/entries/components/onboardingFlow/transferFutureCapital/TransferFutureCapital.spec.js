@@ -70,6 +70,23 @@ describe('Transfer future capital step', () => {
     ).toEqual(<Message>transfer.future.capital.no</Message>);
   });
 
+  it('has unique id-s based on isin or none for option radios', () => {
+    const targetFunds = [
+      { isin: 'AAA', name: 'A', fundManager: { name: 'Tuleva' } },
+      { isin: 'BBB', name: 'B', fundManager: { name: 'Tuleva' } },
+      { isin: 'CCC', name: 'C', fundManager: { name: 'some random bank' } },
+    ];
+    component.setProps({ targetFunds });
+
+    const ids = component.find(Radio).map(radio => radio.prop('id'));
+
+    expect(ids).toEqual([
+      'tv-transfer-future-capital-AAA',
+      'tv-transfer-future-capital-BBB',
+      'tv-transfer-future-capital-none',
+    ]);
+  });
+
   it('can choose where you want to transfer future capital', () => {
     const targetFunds = [
       { isin: 'AAA', name: 'A', fundManager: { name: 'Tuleva' } },

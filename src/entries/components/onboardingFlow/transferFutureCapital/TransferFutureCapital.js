@@ -57,6 +57,7 @@ export const TransferFutureCapital = ({
       {tulevaTargetFunds.map(fund => (
         <Radio
           key={fund.isin}
+          id={`tv-transfer-future-capital-${fund.isin}`}
           name="tv-transfer-future-capital"
           selected={fund.isin === selectedFutureContributionsFundIsin}
           className="mt-4"
@@ -73,6 +74,7 @@ export const TransferFutureCapital = ({
 
       <Radio
         name="tv-transfer-future-capital"
+        id="tv-transfer-future-capital-none"
         selected={!selectedFutureContributionsFundIsin}
         className="mt-4"
         onSelect={() => onSelectFutureCapitalFund(null)}
