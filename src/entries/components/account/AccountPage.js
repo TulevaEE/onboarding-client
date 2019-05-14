@@ -148,7 +148,7 @@ export class AccountPage extends Component {
                 <Message className="mb-4 lead">select.sources.current.status</Message>
               </div>
               <div className="col-md-6 text-md-right">
-                <Link className="btn btn-primary mb-3" to="/steps/select-sources">
+                <Link className="btn btn-primary mb-3" to="/2nd-pillar-flow/select-sources">
                   <Message>change.my.pension.fund</Message>
                 </Link>
               </div>

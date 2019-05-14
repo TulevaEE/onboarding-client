@@ -291,7 +291,7 @@ describe('Exchange actions', () => {
           type: SIGN_MANDATE_SUCCESS,
           signedMandateId: 'id',
         });
-        expect(dispatch).toHaveBeenCalledWith(push('/steps/success'));
+        expect(dispatch).toHaveBeenCalledWith(push('/2nd-pillar-flow/success'));
       });
   });
 
@@ -384,7 +384,7 @@ describe('Exchange actions', () => {
           type: SIGN_MANDATE_SUCCESS,
           signedMandateId: 'id',
         });
-        expect(dispatch).toHaveBeenCalledWith(push('/steps/success'));
+        expect(dispatch).toHaveBeenCalledWith(push('/2nd-pillar-flow/success'));
       });
   });
 

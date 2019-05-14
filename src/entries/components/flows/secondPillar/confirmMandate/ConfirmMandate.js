@@ -91,7 +91,7 @@ function getMandate(exchange) {
 export function exitShortFlow() {
   return dispatch => {
     dispatch(disableShortFlow());
-    dispatch(push('/steps/select-sources'));
+    dispatch(push('/2nd-pillar-flow/select-sources'));
   };
 }
 

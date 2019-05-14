@@ -219,11 +219,11 @@ render(
             <Route path="/login" component={LoginPage} />
             <Route path="/terms-of-use" component={TermsOfUse} />
             <Route path="/" component={requireAuthentication(App)} onEnter={initApp}>
-              <Route path="/steps">
+              <Route path="/2nd-pillar-flow">
                 <Route path="non-member" component={NonMember} />
               </Route>
 
-              <Route path="steps" component={SecondPillarFlow}>
+              <Route path="2nd-pillar-flow" component={SecondPillarFlow}>
                 <Route path="select-sources" component={SelectSources} onEnter={scrollToTop} />
                 <Route
                   path="transfer-future-capital"
@@ -232,7 +232,7 @@ render(
                 />
                 <Route path="confirm-mandate" component={ConfirmMandate} onEnter={scrollToTop} />
               </Route>
-              <Route path="/steps/success" component={Success} />
+              <Route path="/2nd-pillar-flow/success" component={Success} />
               <Route path="/account" component={AccountPage} onEnter={getDataForAccount} />
             </Route>
           </Fragment>

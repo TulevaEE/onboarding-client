@@ -13,7 +13,7 @@ const DEFAULT_CONF_PRODUCTION = {
   mixpanelKey: 'ff49493de3c6ed27e198e6b15063b60f',
   applicationUrl: 'https://pension.tuleva.ee',
   newUserPaymentRedirectBaseUrl:
-    'https://payment.maksekeskus.ee/pay/1/link.html?shopId=8c1a6c0a-2467-4166-ab47-006ddbf38b06&amount=125&return_url=https://onboarding-service.tuleva.ee/notifications/payments&return_method=POST&cancel_url=https://pension.tuleva.ee/steps/payment&cancel_method=GET&notification_url=https://onboarding-service.tuleva.ee/notifications/payments&notification_method=POST',
+    'https://payment.maksekeskus.ee/pay/1/link.html?shopId=8c1a6c0a-2467-4166-ab47-006ddbf38b06&amount=125&return_url=https://onboarding-service.tuleva.ee/notifications/payments&return_method=POST&cancel_url=https://pension.tuleva.ee/2nd-pillar-flow/payment&cancel_method=GET&notification_url=https://onboarding-service.tuleva.ee/notifications/payments&notification_method=POST',
   clientCredentialsAccessToken: '06377792-6045-40dc-9324-d8ede3d27b3a',
   language: 'et',
 };

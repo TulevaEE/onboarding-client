@@ -21,14 +21,14 @@ describe('Transfer future capital step', () => {
   it('has buttons to the previous and next pages', () => {
     expect(
       component.contains(
-        <Link className="btn btn-primary mb-2 mr-2" to="/steps/confirm-mandate">
+        <Link className="btn btn-primary mb-2 mr-2" to="/2nd-pillar-flow/confirm-mandate">
           <Message>steps.next</Message>
         </Link>,
       ),
     ).toBe(true);
     expect(
       component.contains(
-        <Link className="btn btn-secondary mb-2" to="/steps/select-sources">
+        <Link className="btn btn-secondary mb-2" to="/2nd-pillar-flow/select-sources">
           <Message>steps.previous</Message>
         </Link>,
       ),

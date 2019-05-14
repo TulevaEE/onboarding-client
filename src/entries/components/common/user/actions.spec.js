@@ -47,7 +47,7 @@ describe('newUserFlow actions', () => {
         type: UPDATE_USER_SUCCESS,
         newUser,
       });
-      expect(dispatch).toHaveBeenCalledWith(push('/steps/payment'));
+      expect(dispatch).toHaveBeenCalledWith(push('/2nd-pillar-flow/payment'));
     });
   });
 

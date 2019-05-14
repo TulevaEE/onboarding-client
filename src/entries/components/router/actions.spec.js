@@ -74,7 +74,7 @@ describe('Routing actions', () => {
     action();
 
     expect(dispatch).toHaveBeenCalledTimes(1);
-    expect(dispatch).toHaveBeenCalledWith(push('/steps/transfer-future-capital'));
+    expect(dispatch).toHaveBeenCalledWith(push('/2nd-pillar-flow/transfer-future-capital'));
   });
 
   it('routes forward from source selection step, skiping contributions fund selection, on simple flow', () => {
@@ -84,7 +84,7 @@ describe('Routing actions', () => {
     action();
 
     expect(dispatch).toHaveBeenCalledTimes(1);
-    expect(dispatch).toHaveBeenCalledWith(push('/steps/confirm-mandate'));
+    expect(dispatch).toHaveBeenCalledWith(push('/2nd-pillar-flow/confirm-mandate'));
   });
 
   it('routes back from source selection step on advanced flow', () => {
@@ -94,7 +94,7 @@ describe('Routing actions', () => {
     action();
 
     expect(dispatch).toHaveBeenCalledTimes(1);
-    expect(dispatch).toHaveBeenCalledWith(push('/steps/transfer-future-capital'));
+    expect(dispatch).toHaveBeenCalledWith(push('/2nd-pillar-flow/transfer-future-capital'));
   });
 
   it('routes back from source selection step, skiping contributions fund selection, on simple flow', () => {
@@ -104,7 +104,7 @@ describe('Routing actions', () => {
     action();
 
     expect(dispatch).toHaveBeenCalledTimes(1);
-    expect(dispatch).toHaveBeenCalledWith(push('/steps/select-sources'));
+    expect(dispatch).toHaveBeenCalledWith(push('/2nd-pillar-flow/select-sources'));
   });
 
   it('can route to account', () => {
