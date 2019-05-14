@@ -50,9 +50,9 @@ export function selectRouteForState() {
     } else if (isFullyConverted(getState)) {
       dispatch(push('/account'));
     } else if (getState().exchange.shortFlow === true) {
-      dispatch(push('/steps/confirm-mandate'));
+      dispatch(push('/account'));
     } else {
-      dispatch(push('/steps/select-sources'));
+      dispatch(push('/account'));
     }
   };
 }

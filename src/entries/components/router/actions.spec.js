@@ -40,7 +40,7 @@ describe('Routing actions', () => {
     action();
 
     expect(dispatch).toHaveBeenCalledTimes(1);
-    expect(dispatch).toHaveBeenCalledWith(push('/steps/select-sources'));
+    expect(dispatch).toHaveBeenCalledWith(push('/account'));
   });
 
   it('can perform routing for fully converted members', () => {
@@ -132,7 +132,7 @@ describe('Routing actions', () => {
     action();
 
     expect(dispatch).toHaveBeenCalledTimes(1);
-    expect(dispatch).toHaveBeenCalledWith(push('/steps/confirm-mandate'));
+    expect(dispatch).toHaveBeenCalledWith(push('/account'));
   });
 
   it('can disable router', () => {
