@@ -49,7 +49,7 @@ import SecondPillarFlow, {
   TransferFutureCapital,
   ConfirmMandate,
   Success,
-} from './components/secondPillarFlow';
+} from './components/flows/secondPillar';
 import { unregister as unregisterServiceWorker } from './common/registerServiceWorker';
 
 const rootReducer = combineReducers({

@@ -2,8 +2,8 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Message } from 'retranslate';
 
-const mockUtils = jest.genMockFromModule('../../../../common/utils');
-jest.mock('../../../../common/utils', () => mockUtils);
+const mockUtils = jest.genMockFromModule('../../../../../common/utils');
+jest.mock('../../../../../common/utils', () => mockUtils);
 
 const FundRow = require('./FundRow').default;
 

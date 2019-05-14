@@ -6,9 +6,9 @@ import { push } from 'react-router-redux';
 import { ConfirmMandate, exitShortFlow } from './ConfirmMandate';
 import FundTransferTable from './fundTransferTable';
 import MandateNotFilledAlert from './mandateNotFilledAlert';
-import { Loader, AuthenticationLoader, ErrorMessage } from '../../common';
+import { Loader, AuthenticationLoader, ErrorMessage } from '../../../common';
 
-import { disableShortFlow } from '../../exchange/actions';
+import { disableShortFlow } from '../../../exchange/actions';
 
 describe('Confirm mandate step', () => {
   let component;

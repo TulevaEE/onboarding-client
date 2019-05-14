@@ -2,7 +2,7 @@ import React from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { Message } from 'retranslate';
 
-import { InfoTooltip } from '../../../common';
+import { InfoTooltip } from '../../../../common';
 import TargetFundTooltipBody from '../../transferFutureCapital/targetFundTooltipBody';
 
 import './TargetFundSelector.scss';

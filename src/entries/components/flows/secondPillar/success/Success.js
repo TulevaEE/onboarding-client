@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import FacebookProvider, { Share } from 'react-facebook';
 
-import { downloadMandate } from '../../exchange/actions';
+import { downloadMandate } from '../../../exchange/actions';
 import successImage from './success.svg';
 import './Success.scss';
 
