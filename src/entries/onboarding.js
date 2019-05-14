@@ -44,12 +44,12 @@ import {
   actions as returnComparisonActions,
   reducer as returnComparisonReducer,
 } from './components/returnComparison';
-import Steps, {
+import SecondPillarFlow, {
   SelectSources,
   TransferFutureCapital,
   ConfirmMandate,
   Success,
-} from './components/onboardingFlow';
+} from './components/secondPillarFlow';
 import { unregister as unregisterServiceWorker } from './common/registerServiceWorker';
 
 const rootReducer = combineReducers({
@@ -223,7 +223,7 @@ render(
                 <Route path="non-member" component={NonMember} />
               </Route>
 
-              <Route path="steps" component={Steps}>
+              <Route path="steps" component={SecondPillarFlow}>
                 <Route path="select-sources" component={SelectSources} onEnter={scrollToTop} />
                 <Route
                   path="transfer-future-capital"
