@@ -108,24 +108,11 @@ describe('Steps', () => {
     ).toBe(true);
   });
 
-  it("renders an intro with the user's name if they are on the first step", () => {
-    const name = 'name';
-    component.setProps({ stepName: 'select-target-fund', userFirstName: name }); // not first step
-    expect(component.contains(<Message params={{ name }}>steps.welcome</Message>)).toBe(false);
-    expect(component.contains(<Message>steps.intro</Message>)).toBe(false);
-    component.setProps({ stepName: 'select-sources' }); // first step
-    expect(component.contains(<Message params={{ name }}>steps.welcome</Message>)).toBe(true);
-    expect(component.contains(<Message>steps.intro</Message>)).toBe(true);
-  });
-
   it('renders a different into message if a new member is on the first step', () => {
-    const name = 'name';
     component.setProps({
       stepName: 'select-sources',
-      userFirstName: name,
       isNewMember: true,
     });
-    expect(component.contains(<Message params={{ name }}>steps.welcome</Message>)).toBe(true);
     expect(component.contains(<Message>steps.intro.new.member</Message>)).toBe(true);
   });
 
