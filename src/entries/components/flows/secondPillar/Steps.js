@@ -52,7 +52,7 @@ export const Steps = ({ children, stepName, isNewMember, shortFlow }) => {
             </Fragment>
           )}
           <div className="pb-5 px-col">{children}</div>
-          {stepIndex !== orderedStepNames.length - 1 ? <hr className="mb-4" /> : ''}
+          {stepIndex !== orderedStepNames.length - 1 && <hr className="mb-4" />}
           {afterSteps.map((afterStep, index) => (
             <StepTitle key={afterStep} number={index + 1 + stepIndex + 1}>
               <Message>{`steps.${afterStep}`}</Message>
