@@ -143,28 +143,35 @@ describe('api', () => {
     const pensionFunds = [
       {
         fund: {
-          name: 'name',
-          isin: 'AA123123123123',
-          managementFeeRate: 0.005,
-          fundManager: {
-            name: 'manager',
-          },
+          id: 8,
+          fundManager: { id: 1, name: 'Tuleva' },
+          isin: 'EE3600109435',
+          name: 'Tuleva Maailma Aktsiate Pensionifond',
+          pillar: 2,
+          managementFeeRate: 0.0034,
+          ongoingChargesFigure: 0.0047,
+          status: 'ACTIVE',
         },
+        value: 10285.578286,
+        currency: 'EUR',
+        pillar: 2,
         activeContributions: false,
-        value: 100,
       },
       {
         fund: {
-          name: 'name 2',
-          isin: 'AA123123123124',
+          id: 5,
+          fundManager: { id: 2, name: 'Tuleva' },
+          isin: 'EE3600109443',
+          name: 'Tuleva Maailma Võlakirjade Pensionifond',
+          pillar: 2,
           managementFeeRate: 0.0039,
-          fundManager: {
-            name: 'manager',
-          },
+          ongoingChargesFigure: 0.0045,
+          status: 'ACTIVE',
         },
-        activeContributions: true,
-        value: 200,
+        value: 9939.16235298,
         currency: 'GBP',
+        pillar: 2,
+        activeContributions: true,
       },
     ];
     const token = 'token';
@@ -172,22 +179,24 @@ describe('api', () => {
     return api.getSourceFundsWithToken(token).then(givenPensionFunds => {
       expect(givenPensionFunds).toEqual([
         {
-          name: 'name',
-          isin: 'AA123123123123',
-          managementFeePercent: '0.5',
+          name: 'Tuleva Maailma Aktsiate Pensionifond',
+          isin: 'EE3600109435',
+          managementFeePercent: '0.34',
           activeFund: false,
-          price: 100,
+          price: 10285.578286,
           currency: 'EUR',
-          managerName: 'manager',
+          managerName: 'Tuleva',
+          pillar: 2,
         },
         {
-          name: 'name 2',
-          isin: 'AA123123123124',
+          name: 'Tuleva Maailma Võlakirjade Pensionifond',
+          isin: 'EE3600109443',
           managementFeePercent: '0.39',
           activeFund: true,
-          price: 200,
+          price: 9939.16235298,
           currency: 'GBP',
-          managerName: 'manager',
+          managerName: 'Tuleva',
+          pillar: 2,
         },
       ]);
       expect(mockHttp.get).toHaveBeenCalledWith('/v1/pension-account-statement', undefined, {

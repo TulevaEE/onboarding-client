@@ -126,17 +126,19 @@ export default function exchangeReducer(state = initialState, action) {
     case GET_SOURCE_FUNDS_START:
       return { ...state, loadingSourceFunds: true, error: null };
     case GET_SOURCE_FUNDS_SUCCESS:
+      // eslint-disable-next-line no-case-declarations
+      const sourceFunds = action.sourceFunds.filter(fund => fund.pillar === 2);
       return {
         ...state,
         loadingSourceFunds: false,
-        sourceFunds: action.sourceFunds,
+        sourceFunds,
         // we do not know if source or target funds get here first, so we check if we can
         // calculate the default source selection and they have not yet been calculated in
         // both the target and source fund arrival
         sourceSelection:
           state.targetFunds && !isSourceSelectionDone(state.sourceSelection)
             ? createFullDefaultSourceSelection({
-                sourceFunds: action.sourceFunds,
+                sourceFunds,
                 targetFunds: state.targetFunds,
               })
             : state.sourceSelection,
@@ -158,12 +160,14 @@ export default function exchangeReducer(state = initialState, action) {
     case GET_TARGET_FUNDS_START:
       return { ...state, loadingTargetFunds: true, error: null };
     case GET_TARGET_FUNDS_SUCCESS:
+      // eslint-disable-next-line no-case-declarations
+      const targetFunds = action.targetFunds.filter(fund => fund.pillar === 2);
       return {
         ...state,
         loadingTargetFunds: false,
-        targetFunds: action.targetFunds,
+        targetFunds,
         selectedFutureContributionsFundIsin: selectDefaultContributionsFund(
-          action.targetFunds,
+          targetFunds,
           state.sourceFunds,
         ),
         // we do not know if source or target funds get here first, so we check if we can
