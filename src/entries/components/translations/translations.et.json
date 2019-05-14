@@ -1,5 +1,5 @@
 {
-  "login.title": "Sisse logides näed oma pensionikonto seisu ja tootlust ning saad soovi korral pensionifondi vahetada.",
+  "login.title": "Sel nädalal võib käimasoleva III samba valmisoleku tööde tõttu tulla ette vigu, mida me jooksvalt kohe parandame. Vabandame!",
   "login.title.thirdPillar.withExchange": "Soovid oma III samba fondiosakud vahetada ning teha III sambasse sissemakse {{monthlyContribution}} eurot kuus",
   "login.title.thirdPillar.withoutExchange": "Soovid valida III samba pensionifondi ning teha III sambasse sissemakse {{monthlyContribution}} eurot kuus",
   "login.subtitle.thirdPillar": "Logi sisse ja kinnita avaldus oma digiallkirjaga",
