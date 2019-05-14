@@ -21,7 +21,7 @@ jobs:
           key: dependency-cache-{{ checksum "package-lock.json" }}
       - run:
           name: Run tests
-          command: npm test
+          command: npm test -- --maxWorkers=2
   deploy:
     docker:
       - image: meetfrank/circleci-node-awsebcli:latest
