@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { connect } from 'react-redux';
 import { Message } from 'retranslate';
@@ -42,20 +42,21 @@ export const Steps = ({ children, stepName, userFirstName, isNewMember, shortFlo
           ''
         )}
         <div className="tv-steps mt-5">
-          {!shortFlow &&
-            beforeSteps.map((beforeStep, index) => (
-              <StepTitle key={beforeStep} number={index + 1} completed>
-                <Message>{`steps.${beforeStep}`}</Message>
-              </StepTitle>
-            ))}
           {shortFlow ? (
             <StepTitle active>
               <Message>{`steps.${currentStep}`}</Message>
             </StepTitle>
           ) : (
-            <StepTitle number={stepIndex + 1} active>
-              <Message>{`steps.${currentStep}`}</Message>
-            </StepTitle>
+            <Fragment>
+              {beforeSteps.map((beforeStep, index) => (
+                <StepTitle key={beforeStep} number={index + 1} completed>
+                  <Message>{`steps.${beforeStep}`}</Message>
+                </StepTitle>
+              ))}
+              <StepTitle number={stepIndex + 1} active>
+                <Message>{`steps.${currentStep}`}</Message>
+              </StepTitle>
+            </Fragment>
           )}
           <div className="pb-5 px-col">{children}</div>
           {stepIndex !== orderedStepNames.length - 1 ? <hr className="mb-4" /> : ''}
