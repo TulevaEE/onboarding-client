@@ -129,7 +129,7 @@ describe('Confirm mandate step', () => {
     exitShortFlow()(dispatch);
     expect(dispatch).toHaveBeenCalledTimes(2);
     expect(dispatch).toHaveBeenCalledWith(disableShortFlow());
-    expect(dispatch).toHaveBeenCalledWith(push('/steps/select-sources'));
+    expect(dispatch).toHaveBeenCalledWith(push('/2nd-pillar-flow/select-sources'));
   });
 
   it('does not show the funds table if you are not transferring funds', () => {

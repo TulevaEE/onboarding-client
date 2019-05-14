@@ -33,7 +33,7 @@ function updateUserAndPush(user, route) {
 }
 
 export function registerUser(user) {
-  return updateUserAndPush(user, '/steps/payment');
+  return updateUserAndPush(user, '/2nd-pillar-flow/payment');
 }
 
 export function updateUser(user) {

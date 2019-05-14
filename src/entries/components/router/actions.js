@@ -65,9 +65,9 @@ function isSkippingFutureCapitalStepNecessary(getState) {
 export function routeForwardFromSourceSelection() {
   return (dispatch, getState) => {
     if (isSkippingFutureCapitalStepNecessary(getState)) {
-      dispatch(push('/steps/confirm-mandate'));
+      dispatch(push('/2nd-pillar-flow/confirm-mandate'));
     } else {
-      dispatch(push('/steps/transfer-future-capital'));
+      dispatch(push('/2nd-pillar-flow/transfer-future-capital'));
     }
   };
 }
@@ -75,9 +75,9 @@ export function routeForwardFromSourceSelection() {
 export function routeBackFromMandateConfirmation() {
   return (dispatch, getState) => {
     if (isSkippingFutureCapitalStepNecessary(getState)) {
-      dispatch(push('/steps/select-sources'));
+      dispatch(push('/2nd-pillar-flow/select-sources'));
     } else {
-      dispatch(push('/steps/transfer-future-capital'));
+      dispatch(push('/2nd-pillar-flow/transfer-future-capital'));
     }
   };
 }

@@ -260,7 +260,7 @@ describe('Current balance', () => {
 
     expect(
       component.contains(
-        <Link className="btn btn-primary mb-3" to="/steps/select-sources">
+        <Link className="btn btn-primary mb-3" to="/2nd-pillar-flow/select-sources">
           <Message>change.my.pension.fund</Message>
         </Link>,
       ),
@@ -268,7 +268,7 @@ describe('Current balance', () => {
     component.setProps({ currentBalanceFunds: [{ sourcefund: true }] });
     expect(
       component.contains(
-        <Link className="btn btn-primary mb-3" to="/steps/select-sources">
+        <Link className="btn btn-primary mb-3" to="/2nd-pillar-flow/select-sources">
           <Message>change.my.pension.fund</Message>
         </Link>,
       ),

@@ -118,7 +118,7 @@ function pollForMandateSignatureWithMandateId(mandateId) {
               type: SIGN_MANDATE_SUCCESS,
               signedMandateId: mandateId,
             });
-            dispatch(push('/steps/success'));
+            dispatch(push('/2nd-pillar-flow/success'));
           }
         })
         .catch(error => dispatch({ type: SIGN_MANDATE_ERROR, error }));
@@ -141,7 +141,7 @@ function pollForMandateSignatureWithMandateIdUsingSmartId(mandateId) {
               type: SIGN_MANDATE_SUCCESS,
               signedMandateId: mandateId,
             });
-            dispatch(push('/steps/success'));
+            dispatch(push('/2nd-pillar-flow/success'));
           }
         })
         .catch(error => dispatch({ type: SIGN_MANDATE_ERROR, error }));
@@ -226,7 +226,7 @@ function pollForMandateSignatureWithMandateIdAndSignedHash(mandateId, signedHash
               type: SIGN_MANDATE_SUCCESS,
               signedMandateId: mandateId,
             });
-            dispatch(push('/steps/success'));
+            dispatch(push('/2nd-pillar-flow/success'));
           } else if (statusCode === SIGNING_IN_PROGRESS_STATUS) {
             dispatch(pollForMandateSignatureWithMandateIdAndSignedHash(mandateId, signedHash));
           } else {
