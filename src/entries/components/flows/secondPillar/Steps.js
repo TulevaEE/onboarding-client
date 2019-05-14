@@ -25,15 +25,13 @@ export const Steps = ({ children, stepName, isNewMember, shortFlow }) => {
         {// show welcome when in first step
         stepIndex === 0 && (
           <div className="px-col mt-5">
-            {isNewMember ? (
-              <p className="lead">
+            <p className="lead">
+              {isNewMember ? (
                 <Message>steps.intro.new.member</Message>
-              </p>
-            ) : (
-              <p className="lead">
+              ) : (
                 <Message>steps.intro</Message>
-              </p>
-            )}
+              )}
+            </p>
           </div>
         )}
         <div className="tv-steps mt-5">
