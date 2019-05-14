@@ -6,6 +6,12 @@
 
 [![CircleCI](https://circleci.com/gh/TulevaEE/onboarding-client/tree/master.svg?style=shield)](https://circleci.com/gh/TulevaEE/onboarding-client/tree/master)
 
+## Prerequisites
+
+- Git
+- Node.js and NPM
+- WebStorm, IntelliJ or your IDE of preference
+
 ## Development
 
 To develop the onboarding app:
