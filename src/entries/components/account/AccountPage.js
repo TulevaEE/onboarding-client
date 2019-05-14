@@ -6,7 +6,7 @@ import { Message, WithTranslations } from 'retranslate';
 import { Link } from 'react-router';
 
 import { Loader, ErrorMessage } from '../common';
-import PensionFundTable from '../secondPillarFlow/selectSources/pensionFundTable';
+import PensionFundTable from '../flows/secondPillar/selectSources/pensionFundTable';
 import PendingExchangesTable from './pendingExchangeTable';
 import ReturnComparison, { actions as returnComparisonActions } from '../returnComparison';
 import getReturnComparisonStartDateOptions from '../returnComparison/options';

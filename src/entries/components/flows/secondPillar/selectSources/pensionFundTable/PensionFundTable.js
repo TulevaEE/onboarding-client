@@ -5,7 +5,7 @@ import { Message } from 'retranslate';
 import FundRow from './fundRow';
 
 import './PensionFundTable.scss';
-import { getTotalFundValue } from '../../../common/utils';
+import { getTotalFundValue } from '../../../../common/utils';
 
 const PensionFundTable = ({ funds }) => {
   const totalPrice = getTotalFundValue(funds);

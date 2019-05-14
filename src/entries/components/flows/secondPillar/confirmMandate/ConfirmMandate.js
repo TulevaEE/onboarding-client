@@ -5,7 +5,7 @@ import { Message } from 'retranslate';
 import { connect } from 'react-redux';
 import { push } from 'react-router-redux';
 
-import { Loader, AuthenticationLoader, ErrorMessage, utils } from '../../common';
+import { Loader, AuthenticationLoader, ErrorMessage, utils } from '../../../common';
 
 import {
   previewMandate,
@@ -14,9 +14,9 @@ import {
   changeAgreementToTerms,
   closeErrorMessages,
   disableShortFlow,
-} from '../../exchange/actions';
+} from '../../../exchange/actions';
 
-import { routeBackFromMandateConfirmation } from '../../router/actions';
+import { routeBackFromMandateConfirmation } from '../../../router/actions';
 import MandateNotFilledAlert from './mandateNotFilledAlert';
 import FundTransferTable from './fundTransferTable';
 import './ConfirmMandate.scss';

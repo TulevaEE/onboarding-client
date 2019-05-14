@@ -5,9 +5,9 @@ import { connect } from 'react-redux';
 import { Message, withTranslations } from 'retranslate';
 import { Link } from 'react-router';
 
-import { Radio, Loader, InfoTooltip, utils } from '../../common';
+import { Radio, Loader, InfoTooltip, utils } from '../../../common';
 import TargetFundTooltipBody from './targetFundTooltipBody';
-import { selectFutureContributionsFund } from '../../exchange/actions';
+import { selectFutureContributionsFund } from '../../../exchange/actions';
 
 const fundSelectStyles = {
   fontSize: '140%',

@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import { Message } from 'retranslate';
 import { Link } from 'react-router';
 
-import { Radio } from '../../common';
+import { Radio } from '../../../common';
 import { TransferFutureCapital } from './TransferFutureCapital';
 
 describe('Transfer future capital step', () => {

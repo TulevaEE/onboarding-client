@@ -2,7 +2,7 @@ import React from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { Message } from 'retranslate';
 
-import { formatAmountForCurrency } from '../../../../common/utils';
+import { formatAmountForCurrency } from '../../../../../common/utils';
 
 const FundRow = ({ price, currency, name, highlighted, active }) => {
   const displayName = <Message>{name}</Message>;

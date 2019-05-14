@@ -4,9 +4,9 @@ import { Message } from 'retranslate';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import { routeForwardFromSourceSelection } from '../../router/actions';
-import { selectExchangeSources } from '../../exchange/actions';
-import { Loader, Radio, ErrorMessage } from '../../common';
+import { routeForwardFromSourceSelection } from '../../../router/actions';
+import { selectExchangeSources } from '../../../exchange/actions';
+import { Loader, Radio, ErrorMessage } from '../../../common';
 import PensionFundTable from './pensionFundTable';
 import TargetFundSelector from './targetFundSelector';
 import ExactFundSelector from './exactFundSelector';
