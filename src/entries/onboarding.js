@@ -210,6 +210,12 @@ function trackPageView() {
   }
 }
 
+const secondPillarFlowSteps = [
+  { path: 'select-sources', component: SelectSources },
+  { path: 'transfer-future-capital', component: TransferFutureCapital },
+  { path: 'confirm-mandate', component: ConfirmMandate },
+];
+
 render(
   <MixpanelProvider mixpanel={mixpanel}>
     <TranslationProvider messages={translations} language={applyLanguage()} fallbackLanguage="et">
@@ -224,13 +230,9 @@ render(
               </Route>
 
               <Route path="2nd-pillar-flow" component={SecondPillarFlow}>
-                <Route path="select-sources" component={SelectSources} onEnter={scrollToTop} />
-                <Route
-                  path="transfer-future-capital"
-                  component={TransferFutureCapital}
-                  onEnter={scrollToTop}
-                />
-                <Route path="confirm-mandate" component={ConfirmMandate} onEnter={scrollToTop} />
+                {secondPillarFlowSteps.map(({ path, component }) => (
+                  <Route path={path} component={component} onEnter={scrollToTop} />
+                ))}
               </Route>
               <Route path="/2nd-pillar-flow/success" component={Success} />
               <Route path="/account" component={AccountPage} onEnter={getDataForAccount} />
