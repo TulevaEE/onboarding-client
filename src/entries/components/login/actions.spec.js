@@ -23,7 +23,6 @@ import {
   TOKEN_REFRESH_START,
   TOKEN_REFRESH_SUCCESS,
   TOKEN_REFRESH_ERROR,
-  QUERY_PARAMETERS,
   SET_LOGIN_TO_REDIRECT,
   LOG_OUT,
 } from './constants';
@@ -403,14 +402,6 @@ describe('Login actions', () => {
         type: TOKEN_REFRESH_ERROR,
         error,
       });
-    });
-  });
-
-  it('can handle query parameters', () => {
-    const query = 'AAA';
-    expect(actions.mapUrlQueryParamsToState(query)).toEqual({
-      type: QUERY_PARAMETERS,
-      query,
     });
   });
 

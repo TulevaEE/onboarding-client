@@ -35,7 +35,7 @@ import { reducer as routerReducer, router } from './components/router';
 import { refreshToken } from './components/login/actions';
 
 import './common/polyfills';
-import App from './components/app';
+import LoggedInApp from './components/app';
 import AccountPage, {
   reducer as accountReducer,
   actions as accountActions,
@@ -215,7 +215,7 @@ const secondPillarFlowSteps = [
   { path: 'confirm-mandate', component: ConfirmMandate },
 ];
 
-render(
+const App = () => (
   <MixpanelProvider mixpanel={mixpanel}>
     <TranslationProvider messages={translations} language={applyLanguage()} fallbackLanguage="et">
       <ReduxProvider store={store}>
@@ -223,7 +223,7 @@ render(
           <Fragment>
             <Route path="/login" component={LoginPage} />
             <Route path="/terms-of-use" component={TermsOfUse} />
-            <Route path="/" component={requireAuthentication(App)} onEnter={initApp}>
+            <Route path="/" component={requireAuthentication(LoggedInApp)} onEnter={initApp}>
               <Route path="/2nd-pillar-flow">
                 <Route path="non-member" component={NonMember} />
               </Route>
@@ -240,8 +240,9 @@ render(
         </Router>
       </ReduxProvider>
     </TranslationProvider>
-  </MixpanelProvider>,
-  document.getElementById('root'),
+  </MixpanelProvider>
 );
+
+render(<App />, document.getElementById('root'));
 
 unregisterServiceWorker();

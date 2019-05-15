@@ -36,10 +36,6 @@ function isUserLoaded(getState) {
 
 export function selectRouteForState() {
   return (dispatch, getState) => {
-    if (getState().login.disableRouter === true) {
-      return;
-    }
-
     if (getState().router.routeToAccount === true) {
       dispatch(push('/account'));
       return;

@@ -40,5 +40,3 @@ export const LOG_OUT = withPrefix('LOG_OUT');
 export const SET_LOGIN_TO_REDIRECT = withPrefix('SET_LOGIN_TO_REDIRECT');
 
 export const CHANGE_EMAIL = withPrefix('CHANGE_EMAIL');
-
-export const QUERY_PARAMETERS = withPrefix('QUERY_PARAMETERS');

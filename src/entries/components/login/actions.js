@@ -29,7 +29,6 @@ import {
   TOKEN_REFRESH_ERROR,
   SET_LOGIN_TO_REDIRECT,
   LOG_OUT,
-  QUERY_PARAMETERS,
   CHANGE_ID_CODE,
 } from './constants';
 
@@ -329,10 +328,6 @@ export function logOut() {
   }
   http.resetStatisticsIdentification();
   return { type: LOG_OUT };
-}
-
-export function mapUrlQueryParamsToState(query) {
-  return { type: QUERY_PARAMETERS, query };
 }
 
 export function setLoginToRedirect() {
