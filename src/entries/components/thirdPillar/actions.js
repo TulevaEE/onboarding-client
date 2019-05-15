@@ -1,5 +1,5 @@
 import { QUERY_PARAMETERS } from './constants';
 
-export function mapUrlQueryParamsToState(query) {
+export function addDataFromQueryParams(query) {
   return { type: QUERY_PARAMETERS, query };
 }

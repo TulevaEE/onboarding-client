@@ -1,11 +1,5 @@
 import { push } from 'react-router-redux';
 
-import { ROUTE_TO_ACCOUNT } from './constants';
-
-export function routeToAccount() {
-  return { type: ROUTE_TO_ACCOUNT };
-}
-
 function isSelectionComplete(getState) {
   const { userConversion } = getState().login;
   return !!(userConversion && userConversion.selectionComplete);
@@ -29,11 +23,6 @@ function isUserLoaded(getState) {
 
 export function selectRouteForState() {
   return (dispatch, getState) => {
-    if (getState().router.routeToAccount === true) {
-      dispatch(push('/account'));
-      return;
-    }
-
     if (!isUserLoaded(getState)) {
       dispatch(push('/')); // load user
     } else if (isFullyConverted(getState)) {

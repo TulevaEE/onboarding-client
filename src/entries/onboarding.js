@@ -107,7 +107,7 @@ async function getUserAndConversionData() {
 
 function applyRouting(nextState) {
   store.dispatch(loginActions.handleIdCardLogin(nextState.location.query));
-  store.dispatch(thirdPillarActions.mapUrlQueryParamsToState(nextState.location.query));
+  store.dispatch(thirdPillarActions.addDataFromQueryParams(nextState.location.query));
 }
 
 function getDataForApp(nextState) {
