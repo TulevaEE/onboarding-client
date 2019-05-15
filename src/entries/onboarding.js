@@ -32,7 +32,6 @@ import {
 } from './components/thirdPillar';
 import trackingReducer from './components/tracking';
 import { reducer as routerReducer, router } from './components/router';
-import { refreshToken } from './components/login/actions';
 
 import './common/polyfills';
 import LoggedInApp from './components/app';
@@ -72,13 +71,6 @@ const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk, r
 
 const history = syncHistoryWithStore(browserHistory, store);
 
-function refreshTokenIfNeeded(query) {
-  if (query.isNewMember === 'true') {
-    return store.dispatch(refreshToken());
-  }
-  return Promise.resolve();
-}
-
 function getSourceAndTargetFundsData() {
   const { login, exchange } = store.getState();
   if (
@@ -95,7 +87,7 @@ function getSourceAndTargetFundsData() {
   }
 }
 
-async function getUserAndConversionData(nextState) {
+async function getUserAndConversionData() {
   const { login } = store.getState();
 
   if (login.userConversionError || login.userError) {
@@ -104,7 +96,6 @@ async function getUserAndConversionData(nextState) {
     login.token &&
     (!(login.user || login.loadingUser) || !(login.userConversion || login.loadingUserConversion))
   ) {
-    await refreshTokenIfNeeded(nextState.location.query);
     await Promise.all([
       store.dispatch(loginActions.getUserConversion()),
       store.dispatch(loginActions.getUser()),

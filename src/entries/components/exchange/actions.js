@@ -37,7 +37,6 @@ import {
   SIGN_MANDATE_START_ERROR,
   SIGN_MANDATE_SUCCESS,
   NO_SIGN_MANDATE_ERROR,
-  QUERY_PARAMETERS,
   GET_PENDING_EXCHANGES_START,
   GET_PENDING_EXCHANGES_SUCCESS,
   GET_PENDING_EXCHANGES_ERROR,
@@ -323,10 +322,6 @@ export function cancelSigningMandate() {
 
 export function closeErrorMessages() {
   return { type: NO_SIGN_MANDATE_ERROR };
-}
-
-export function mapUrlQueryParamsToState(query) {
-  return { type: QUERY_PARAMETERS, query };
 }
 
 export function getPendingExchanges() {

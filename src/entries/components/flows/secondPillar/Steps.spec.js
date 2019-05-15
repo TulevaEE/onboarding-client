@@ -108,14 +108,6 @@ describe('Steps', () => {
     ).toBe(true);
   });
 
-  it('renders a different into message if a new member is on the first step', () => {
-    component.setProps({
-      stepName: 'select-sources',
-      isNewMember: true,
-    });
-    expect(component.contains(<Message>steps.intro.new.member</Message>)).toBe(true);
-  });
-
   it('renders a vertical line in the bottom for all but the last step', () => {
     ['select-sources', 'select-target-fund', 'transfer-future-capital'].forEach(stepName => {
       component.setProps({ stepName });
