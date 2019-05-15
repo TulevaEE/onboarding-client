@@ -17,6 +17,7 @@ import mixpanel from 'mixpanel-browser';
 import MixpanelProvider from 'react-mixpanel';
 import GoogleAnalytics from 'react-ga';
 
+import { getQueryParams } from './utils';
 import { initializeConfiguration, updateLanguage } from './components/config/config';
 import translations from './components/translations';
 import './components/index.scss';
@@ -105,18 +106,19 @@ async function getUserAndConversionData() {
   return Promise.resolve();
 }
 
-function applyRouting(nextState) {
-  store.dispatch(loginActions.handleIdCardLogin(nextState.location.query));
-  store.dispatch(thirdPillarActions.addDataFromQueryParams(nextState.location.query));
+function applyRouting() {
+  const queryParams = getQueryParams();
+  store.dispatch(loginActions.handleIdCardLogin(queryParams));
+  store.dispatch(thirdPillarActions.addDataFromQueryParams(queryParams));
 }
 
-function getDataForApp(nextState) {
-  applyRouting(nextState);
-  return getUserAndConversionData(nextState);
+function getDataForApp() {
+  applyRouting();
+  return getUserAndConversionData();
 }
 
 async function initApp(nextState, replace, callback) {
-  await getDataForApp(nextState);
+  await getDataForApp();
   callback();
 }
 
