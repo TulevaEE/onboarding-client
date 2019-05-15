@@ -32,7 +32,6 @@ import {
   actions as thirdPillarActions,
 } from './components/thirdPillar';
 import trackingReducer from './components/tracking';
-import { actions as routerActions } from './components/router';
 
 import './common/polyfills';
 import LoggedInApp from './components/LoggedInApp';
@@ -71,54 +70,10 @@ const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk, r
 
 const history = syncHistoryWithStore(browserHistory, store);
 
-function getSourceAndTargetFundsData() {
-  const { login, exchange } = store.getState();
-  if (
-    login.token &&
-    !(
-      exchange.sourceFunds ||
-      exchange.loadingSourceFunds ||
-      exchange.targetFunds ||
-      exchange.loadingTargetFunds
-    )
-  ) {
-    store.dispatch(exchangeActions.getSourceFunds());
-    store.dispatch(exchangeActions.getTargetFunds());
-  }
-}
-
-async function getUserAndConversionData() {
-  const { login } = store.getState();
-
-  if (login.userConversionError || login.userError) {
-    store.dispatch(loginActions.logOut());
-  } else if (
-    login.token &&
-    (!(login.user || login.loadingUser) || !(login.userConversion || login.loadingUserConversion))
-  ) {
-    await Promise.all([
-      store.dispatch(loginActions.getUserConversion()),
-      store.dispatch(loginActions.getUser()),
-    ]);
-    await getSourceAndTargetFundsData();
-    await store.dispatch(routerActions.selectRouteForState());
-  }
-  return Promise.resolve();
-}
-
 function applyRouting() {
   const queryParams = getQueryParams();
   store.dispatch(loginActions.handleIdCardLogin(queryParams));
   store.dispatch(thirdPillarActions.addDataFromQueryParams(queryParams));
-}
-
-function getDataForApp() {
-  return getUserAndConversionData();
-}
-
-async function initApp(nextState, replace, callback) {
-  await getDataForApp();
-  callback();
 }
 
 function getInitialCapitalData() {
@@ -151,7 +106,6 @@ function getReturnComparisonData() {
 }
 
 function getDataForAccount() {
-  getSourceAndTargetFundsData();
   getInitialCapitalData();
   getPendingExchangesData();
   getReturnComparisonData();
@@ -219,7 +173,7 @@ class App extends Component {
               <Fragment>
                 <Route path="/login" component={LoginPage} />
                 <Route path="/terms-of-use" component={TermsOfUse} />
-                <Route path="/" component={requireAuthentication(LoggedInApp)} onEnter={initApp}>
+                <Route path="/" component={requireAuthentication(LoggedInApp)}>
                   <Route path="/2nd-pillar-flow">
                     <Route path="non-member" component={NonMember} />
                   </Route>
