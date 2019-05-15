@@ -95,7 +95,7 @@ function getSourceAndTargetFundsData() {
   }
 }
 
-function getUserAndConversionData(nextState) {
+async function getUserAndConversionData(nextState) {
   const { login } = store.getState();
 
   if (login.userConversionError || login.userError) {
@@ -104,15 +104,13 @@ function getUserAndConversionData(nextState) {
     login.token &&
     (!(login.user || login.loadingUser) || !(login.userConversion || login.loadingUserConversion))
   ) {
-    return refreshTokenIfNeeded(nextState.location.query).then(() =>
-      Promise.all([
-        store.dispatch(loginActions.getUserConversion()),
-        store.dispatch(loginActions.getUser()),
-      ]).then(() => {
-        getSourceAndTargetFundsData();
-        store.dispatch(router.selectRouteForState());
-      }),
-    );
+    await refreshTokenIfNeeded(nextState.location.query);
+    await Promise.all([
+      store.dispatch(loginActions.getUserConversion()),
+      store.dispatch(loginActions.getUser()),
+    ]);
+    await getSourceAndTargetFundsData();
+    await store.dispatch(router.selectRouteForState());
   }
   return Promise.resolve();
 }
@@ -132,8 +130,9 @@ function getDataForApp(nextState) {
   return getUserAndConversionData(nextState);
 }
 
-function initApp(nextState, replace, callback) {
-  getDataForApp(nextState).then(() => callback());
+async function initApp(nextState, replace, callback) {
+  await getDataForApp(nextState);
+  callback();
 }
 
 function getInitialCapitalData() {
