@@ -35,7 +35,7 @@ import trackingReducer from './components/tracking';
 import { actions as routerActions } from './components/router';
 
 import './common/polyfills';
-import LoggedInApp from './components/app';
+import LoggedInApp from './components/LoggedInApp';
 import AccountPage, {
   reducer as accountReducer,
   actions as accountActions,
