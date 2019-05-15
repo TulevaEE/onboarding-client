@@ -11,7 +11,7 @@ import StepTitle from './stepTitle';
 const orderedStepNames = ['select-sources', 'transfer-future-capital', 'confirm-mandate'];
 
 // this component wraps all steps and renders the top and bottom areas.
-export const Steps = ({ children, stepName, isNewMember, shortFlow }) => {
+export const Steps = ({ children, stepName, shortFlow }) => {
   const stepIndex = orderedStepNames.indexOf(stepName);
   const beforeSteps = orderedStepNames.slice(0, stepIndex);
   const currentStep = orderedStepNames[stepIndex];
@@ -26,11 +26,7 @@ export const Steps = ({ children, stepName, isNewMember, shortFlow }) => {
         stepIndex === 0 && (
           <div className="px-col mt-5">
             <p className="lead">
-              {isNewMember ? (
-                <Message>steps.intro.new.member</Message>
-              ) : (
-                <Message>steps.intro</Message>
-              )}
+              <Message>steps.intro</Message>
             </p>
           </div>
         )}
@@ -67,20 +63,17 @@ export const Steps = ({ children, stepName, isNewMember, shortFlow }) => {
 Steps.defaultProps = {
   children: null,
   stepName: null,
-  isNewMember: false,
   shortFlow: true,
 };
 
 Steps.propTypes = {
   stepName: Types.string,
   children: Types.oneOfType([Types.node, Types.arrayOf(Types.node)]),
-  isNewMember: Types.bool,
   shortFlow: Types.bool,
 };
 
 const mapStateToProps = state => ({
   stepName: state.routing.locationBeforeTransitions.pathname.split('/').pop(),
-  isNewMember: state.exchange.isNewMember,
   shortFlow: state.exchange.shortFlow,
 });
 

@@ -23,7 +23,6 @@ import {
   GET_PENDING_EXCHANGES_START,
   GET_PENDING_EXCHANGES_SUCCESS,
   GET_PENDING_EXCHANGES_ERROR,
-  QUERY_PARAMETERS,
   DISABLE_SHORT_FLOW,
 } from './constants';
 
@@ -264,11 +263,6 @@ export default function exchangeReducer(state = initialState, action) {
         ...state,
         loadingPendingExchanges: false,
         error: action.error,
-      };
-    case QUERY_PARAMETERS:
-      return {
-        ...state,
-        isNewMember: action.query.isNewMember === 'true',
       };
     case DISABLE_SHORT_FLOW:
       return {
