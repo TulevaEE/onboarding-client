@@ -6,13 +6,6 @@ export function routeToAccount() {
   return { type: ROUTE_TO_ACCOUNT };
 }
 
-export function isRouteToAccount(location) {
-  if (location.pathname === '/account') {
-    return true;
-  }
-  return false;
-}
-
 function isSelectionComplete(getState) {
   const { userConversion } = getState().login;
   return !!(userConversion && userConversion.selectionComplete);
