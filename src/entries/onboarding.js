@@ -1,5 +1,5 @@
 import 'react-app-polyfill/ie11';
-import React, { Fragment } from 'react';
+import React, { Component, Fragment } from 'react';
 import { render } from 'react-dom';
 import config from 'react-global-configuration';
 import { createStore, combineReducers, compose, applyMiddleware } from 'redux';
@@ -113,7 +113,6 @@ function applyRouting() {
 }
 
 function getDataForApp() {
-  applyRouting();
   return getUserAndConversionData();
 }
 
@@ -202,33 +201,45 @@ const secondPillarFlowSteps = [
   { path: 'confirm-mandate', component: ConfirmMandate },
 ];
 
-const App = () => (
-  <MixpanelProvider mixpanel={mixpanel}>
-    <TranslationProvider messages={translations} language={applyLanguage()} fallbackLanguage="et">
-      <ReduxProvider store={store}>
-        <Router onUpdate={trackPageView} history={history}>
-          <Fragment>
-            <Route path="/login" component={LoginPage} />
-            <Route path="/terms-of-use" component={TermsOfUse} />
-            <Route path="/" component={requireAuthentication(LoggedInApp)} onEnter={initApp}>
-              <Route path="/2nd-pillar-flow">
-                <Route path="non-member" component={NonMember} />
-              </Route>
+class App extends Component {
+  componentDidMount() {
+    applyRouting();
+  }
 
-              <Route path="2nd-pillar-flow" component={SecondPillarFlow}>
-                {secondPillarFlowSteps.map(({ path, component }) => (
-                  <Route path={path} component={component} onEnter={scrollToTop} />
-                ))}
-              </Route>
-              <Route path="/2nd-pillar-flow/success" component={Success} />
-              <Route path="/account" component={AccountPage} onEnter={getDataForAccount} />
-            </Route>
-          </Fragment>
-        </Router>
-      </ReduxProvider>
-    </TranslationProvider>
-  </MixpanelProvider>
-);
+  render() {
+    return (
+      <MixpanelProvider mixpanel={mixpanel}>
+        <TranslationProvider
+          messages={translations}
+          language={applyLanguage()}
+          fallbackLanguage="et"
+        >
+          <ReduxProvider store={store}>
+            <Router onUpdate={trackPageView} history={history}>
+              <Fragment>
+                <Route path="/login" component={LoginPage} />
+                <Route path="/terms-of-use" component={TermsOfUse} />
+                <Route path="/" component={requireAuthentication(LoggedInApp)} onEnter={initApp}>
+                  <Route path="/2nd-pillar-flow">
+                    <Route path="non-member" component={NonMember} />
+                  </Route>
+
+                  <Route path="2nd-pillar-flow" component={SecondPillarFlow}>
+                    {secondPillarFlowSteps.map(({ path, component }) => (
+                      <Route path={path} component={component} onEnter={scrollToTop} />
+                    ))}
+                  </Route>
+                  <Route path="/2nd-pillar-flow/success" component={Success} />
+                  <Route path="/account" component={AccountPage} onEnter={getDataForAccount} />
+                </Route>
+              </Fragment>
+            </Router>
+          </ReduxProvider>
+        </TranslationProvider>
+      </MixpanelProvider>
+    );
+  }
+}
 
 render(<App />, document.getElementById('root'));
 
