@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { App } from './LoggedInApp';
+import { LoggedInApp } from './LoggedInApp';
 import Header from './header';
 import Footer from './footer';
 
@@ -9,7 +9,7 @@ describe('App', () => {
   let component;
 
   beforeEach(() => {
-    component = shallow(<App />);
+    component = shallow(<LoggedInApp />);
   });
 
   it('renders children given to it', () => {
