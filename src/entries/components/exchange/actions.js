@@ -1,4 +1,4 @@
-import { push } from 'react-router-redux';
+import { push } from 'connected-react-router';
 import download from 'downloadjs';
 import hwcrypto from 'hwcrypto-js';
 

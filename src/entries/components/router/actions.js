@@ -1,4 +1,4 @@
-import { push } from 'react-router-redux';
+import { push } from 'connected-react-router';
 
 function isSelectionComplete(getState) {
   const { userConversion } = getState().login;

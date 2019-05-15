@@ -1,22 +1,27 @@
 import React from 'react';
+import { Route } from 'react-router-dom';
 import { shallow } from 'enzyme';
 
 import { LoggedInApp } from './LoggedInApp';
 import Header from './header';
 import Footer from './footer';
+import AccountPage from '../account';
 
-describe('App', () => {
+describe('LoggedInApp', () => {
   let component;
 
   beforeEach(() => {
     component = shallow(<LoggedInApp />);
   });
 
-  it.skip('renders children given to it', () => {
-    const children = <div>we are the children</div>;
-    expect(component.text()).not.toContain('we are the children');
-    component.setProps({ children });
-    expect(component.text()).toContain('we are the children');
+  it('has account page when user and conversion data exist', () => {
+    const hasAccountPage = () =>
+      component.containsMatchingElement(<Route path="/account" component={AccountPage} />);
+
+    component.setProps({ userAndConversionDataExists: false });
+    expect(hasAccountPage()).toBe(false);
+    component.setProps({ userAndConversionDataExists: true });
+    expect(hasAccountPage()).toBe(true);
   });
 
   it('passes props to the header when loading', () => {

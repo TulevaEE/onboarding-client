@@ -1,4 +1,4 @@
-import { push } from 'react-router-redux';
+import { push } from 'connected-react-router';
 
 const actions = require('./actions'); // need to use require because of jest mocks being weird
 

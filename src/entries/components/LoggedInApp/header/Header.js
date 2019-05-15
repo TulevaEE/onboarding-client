@@ -1,6 +1,6 @@
 import React from 'react';
 import { PropTypes as Types } from 'prop-types';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import { Message } from 'retranslate';
 
 import { logo, Loader } from '../../common';

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { push } from 'react-router-redux';
+import { push } from 'connected-react-router';
 import { actions as loginActions } from '../login';
 
 function getDisplayName(WrappedComponent) {

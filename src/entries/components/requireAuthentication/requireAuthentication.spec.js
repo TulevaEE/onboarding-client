@@ -2,7 +2,7 @@ import React from 'react';
 import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
 import { createStore, combineReducers } from 'redux';
-import { push } from 'react-router-redux';
+import { push } from 'connected-react-router';
 
 import requireAuthentication from './requireAuthentication';
 import { actions as loginActions } from '../login';

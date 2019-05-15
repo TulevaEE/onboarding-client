@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Message } from 'retranslate';
-import { push } from 'react-router-redux';
+import { push } from 'connected-react-router';
 
 import { ConfirmMandate, exitShortFlow } from './ConfirmMandate';
 import FundTransferTable from './fundTransferTable';

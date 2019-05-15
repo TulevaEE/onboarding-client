@@ -1,7 +1,7 @@
 /* eslint-disable no-useless-escape */
 
 import * as Sentry from '@sentry/browser';
-import { push } from 'react-router-redux';
+import { push } from 'connected-react-router';
 import config from 'react-global-configuration';
 
 import {
