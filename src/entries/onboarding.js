@@ -31,7 +31,7 @@ import {
   actions as thirdPillarActions,
 } from './components/thirdPillar';
 import trackingReducer from './components/tracking';
-import { reducer as routerReducer, router } from './components/router';
+import { actions as routerActions } from './components/router';
 
 import './common/polyfills';
 import LoggedInApp from './components/app';
@@ -60,7 +60,6 @@ const rootReducer = combineReducers({
   thirdPillar: thirdPillarReducer,
   tracking: trackingReducer,
   form: formReducer,
-  router: routerReducer,
 });
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose; // eslint-disable-line
@@ -101,7 +100,7 @@ async function getUserAndConversionData() {
       store.dispatch(loginActions.getUser()),
     ]);
     await getSourceAndTargetFundsData();
-    await store.dispatch(router.selectRouteForState());
+    await store.dispatch(routerActions.selectRouteForState());
   }
   return Promise.resolve();
 }
@@ -109,9 +108,6 @@ async function getUserAndConversionData() {
 function applyRouting(nextState) {
   store.dispatch(loginActions.handleIdCardLogin(nextState.location.query));
   store.dispatch(thirdPillarActions.mapUrlQueryParamsToState(nextState.location.query));
-  if (router.isRouteToAccount(nextState.location)) {
-    store.dispatch(router.routeToAccount());
-  }
 }
 
 function getDataForApp(nextState) {
