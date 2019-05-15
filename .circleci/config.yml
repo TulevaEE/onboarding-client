@@ -21,7 +21,10 @@ jobs:
           key: dependency-cache-{{ checksum "package-lock.json" }}
       - run:
           name: Run tests
-          command: npm test -- --maxWorkers=2
+          command: npm test:ci -- --maxWorkers=2
+      - run:
+          name: Upload coverage report
+          command: bash <(curl -s https://codecov.io/bash)
   deploy:
     docker:
       - image: meetfrank/circleci-node-awsebcli:latest

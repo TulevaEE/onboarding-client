@@ -56,6 +56,7 @@
     "develop": "react-scripts start",
     "develop-production": "HTTPS=true HOST=local.tuleva.ee npm run develop",
     "develop-production-win": "set HTTPS=true&&set HOST=local.tuleva.ee&&npm run develop",
+    "test:ci": "react-scripts test --coverage",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -70,6 +71,12 @@
     "prettier": "^1.17.0",
     "react-test-renderer": "^16.4.1",
     "redux-mock-store": "^1.5.3"
+  },
+  "jest": {
+    "coverageReporters": [
+      "lcov",
+      "text"
+    ]
   },
   "lint-staged": {
     "src/**/*.js": [
