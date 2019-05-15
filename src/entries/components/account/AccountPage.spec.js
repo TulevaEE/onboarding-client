@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow, mount } from 'enzyme';
 import { Message } from 'retranslate';
-import { Link } from 'react-router';
+import { BrowserRouter, Link } from 'react-router-dom';
 import { Provider } from 'react-redux';
 
 import { Loader, ErrorMessage } from '../common';
@@ -293,7 +293,9 @@ describe('Current balance', () => {
 
   function mountWithProvider(renderComponent) {
     return mount(
-      <Provider store={mockStore({ login: {}, account: {} })}>{renderComponent}</Provider>,
+      <Provider store={mockStore({ login: {}, account: {} })}>
+        <BrowserRouter>{renderComponent}</BrowserRouter>
+      </Provider>,
     );
   }
 });

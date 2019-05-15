@@ -1,3 +1,3 @@
 import trackingReducer from './reducer';
 
-export default trackingReducer;
+export const reducer = trackingReducer;

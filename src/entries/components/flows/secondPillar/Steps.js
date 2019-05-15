@@ -73,7 +73,7 @@ Steps.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  stepName: state.routing.locationBeforeTransitions.pathname.split('/').pop(),
+  stepName: state.router.locationBeforeTransitions.pathname.split('/').pop(),
   shortFlow: state.exchange.shortFlow,
 });
 

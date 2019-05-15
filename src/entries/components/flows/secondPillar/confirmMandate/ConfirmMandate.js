@@ -3,7 +3,7 @@ import { PropTypes as Types } from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { Message } from 'retranslate';
 import { connect } from 'react-redux';
-import { push } from 'react-router-redux';
+import { push } from 'connected-react-router';
 
 import { Loader, AuthenticationLoader, ErrorMessage, utils } from '../../../common';
 

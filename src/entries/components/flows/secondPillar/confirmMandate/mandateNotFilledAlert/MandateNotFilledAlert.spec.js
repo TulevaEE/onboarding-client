@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Message } from 'retranslate';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 
 import MandateNotFilledAlert from './MandateNotFilledAlert';
 
