@@ -21,7 +21,6 @@ import {
   TOKEN_REFRESH_ERROR,
   SET_LOGIN_TO_REDIRECT,
   LOG_OUT,
-  QUERY_PARAMETERS,
   CHANGE_ID_CODE,
 } from './constants';
 
@@ -52,7 +51,6 @@ const defaultState = {
   userConversion: null,
   loadingUserConversion: false,
   userConversionError: null,
-  disableRouter: false,
   redirectLogin: false,
   email: null,
 };
@@ -215,21 +213,6 @@ export default function loginReducer(state = defaultState, action) {
         loadingUser: false,
         userConversionError: null,
       };
-
-    case QUERY_PARAMETERS:
-      if (action.query.disableRouter === 'true') {
-        return {
-          ...state,
-          disableRouter: true,
-        };
-      }
-      if (action.query.disableRouter === 'false') {
-        return {
-          ...state,
-          disableRouter: false,
-        };
-      }
-      return state;
 
     default:
       return state;

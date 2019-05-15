@@ -22,7 +22,6 @@ import {
   TOKEN_REFRESH_ERROR,
   SET_LOGIN_TO_REDIRECT,
   LOG_OUT,
-  QUERY_PARAMETERS,
   CHANGE_ID_CODE,
 } from './constants';
 
@@ -237,12 +236,6 @@ describe('Login reducer', () => {
     expect(newState.token).toBe(null);
     expect(newState.refreshToken).toBe(null);
     expect(newState.error).toBe('oh noes');
-  });
-
-  it('maps query parameters', () => {
-    const query = { disableRouter: 'true' };
-    const newState = loginReducer(undefined, { type: QUERY_PARAMETERS, query });
-    expect(newState.disableRouter).toBe(true);
   });
 
   it('can switch to redirect login ', () => {
