@@ -26,7 +26,7 @@ import requireAuthentication from './components/requireAuthentication';
 import LoginPage, { reducer as loginReducer, actions as loginActions } from './components/login';
 import TermsOfUse from './components/termsOfUse';
 import NonMember from './components/newUserFlow/nonMember';
-import { reducer as exchangeReducer, actions as exchangeActions } from './components/exchange';
+import { reducer as exchangeReducer } from './components/exchange';
 import {
   reducer as thirdPillarReducer,
   actions as thirdPillarActions,
@@ -35,14 +35,8 @@ import trackingReducer from './components/tracking';
 
 import './common/polyfills';
 import LoggedInApp from './components/LoggedInApp';
-import AccountPage, {
-  reducer as accountReducer,
-  actions as accountActions,
-} from './components/account';
-import {
-  actions as returnComparisonActions,
-  reducer as returnComparisonReducer,
-} from './components/returnComparison';
+import AccountPage, { reducer as accountReducer } from './components/account';
+import { reducer as returnComparisonReducer } from './components/returnComparison';
 import SecondPillarFlow, {
   SelectSources,
   TransferFutureCapital,
@@ -74,41 +68,6 @@ function applyRouting() {
   const queryParams = getQueryParams();
   store.dispatch(loginActions.handleIdCardLogin(queryParams));
   store.dispatch(thirdPillarActions.addDataFromQueryParams(queryParams));
-}
-
-function getInitialCapitalData() {
-  const { login, account } = store.getState();
-  if (
-    login.token &&
-    login.user &&
-    login.user.memberNumber &&
-    !(account.initialCapital || account.loadingInitialCapital)
-  ) {
-    store.dispatch(accountActions.getInitialCapital());
-  }
-}
-
-function getPendingExchangesData() {
-  const { login, exchange } = store.getState();
-  if (login.token && !(exchange.pendingExchanges || exchange.loadingPendingExchanges)) {
-    store.dispatch(exchangeActions.getPendingExchanges());
-  }
-}
-
-function getReturnComparisonData() {
-  const {
-    login,
-    returnComparison: { loading, actualPercentage },
-  } = store.getState();
-  if (login.token && !(actualPercentage !== null || loading)) {
-    store.dispatch(returnComparisonActions.getReturnComparisonForStartDate(null));
-  }
-}
-
-function getDataForAccount() {
-  getInitialCapitalData();
-  getPendingExchangesData();
-  getReturnComparisonData();
 }
 
 function applyLanguage() {
@@ -184,7 +143,7 @@ class App extends Component {
                     ))}
                   </Route>
                   <Route path="/2nd-pillar-flow/success" component={Success} />
-                  <Route path="/account" component={AccountPage} onEnter={getDataForAccount} />
+                  <Route path="/account" component={AccountPage} />
                 </Route>
               </Fragment>
             </Router>
