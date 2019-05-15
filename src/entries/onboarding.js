@@ -107,9 +107,7 @@ async function getUserAndConversionData() {
 }
 
 function applyRouting(nextState) {
-  store.dispatch(loginActions.mapUrlQueryParamsToState(nextState.location.query));
   store.dispatch(loginActions.handleIdCardLogin(nextState.location.query));
-  store.dispatch(exchangeActions.mapUrlQueryParamsToState(nextState.location.query));
   store.dispatch(thirdPillarActions.mapUrlQueryParamsToState(nextState.location.query));
   if (router.isRouteToAccount(nextState.location)) {
     store.dispatch(router.routeToAccount());
