@@ -71,6 +71,12 @@ GoogleAnalytics.initialize('UA-76855836-1', {
   },
 });
 
+history.listen(() => {
+  if (process.env.NODE_ENV === 'production') {
+    GoogleAnalytics.pageview(window.location.href);
+  }
+});
+
 class App extends Component {
   componentDidMount() {
     applyRouting();
@@ -87,7 +93,6 @@ class App extends Component {
           <ReduxProvider store={store}>
             <ConnectedRouter history={history}>
               <Switch>
-                {/* TODO: Re-add tracking */}
                 <Route path="/login" component={LoginPage} />
                 <Route path="/terms-of-use" component={TermsOfUse} />
                 <Route exact path="" component={requireAuthentication(LoggedInApp)} />
