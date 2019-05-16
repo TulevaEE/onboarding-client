@@ -37,7 +37,11 @@ const FundsOverviewTable = ({ funds }) => {
           groupedPillars.map(({ pillar, contributions, value }) => (
             <tr key={pillar}>
               <td>
-                <Message>overview.summary.table.data.pillar.2</Message>
+                {pillar === '2' ? (
+                  <Message>overview.title.pillar.2</Message>
+                ) : (
+                  <Message>overview.title.pillar.3</Message>
+                )}
               </td>
               <td>{formatAmountForCurrency(contributions)}</td>
               <td className={value - contributions >= 0 ? 'profit-positive' : 'profit-negative'}>
