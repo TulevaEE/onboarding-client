@@ -24,9 +24,11 @@ const PensionFundTable = ({ funds }) => {
           </div>
            */}
       </div>
-      {funds.map(({ currency, price, name, isin, activeFund }) => (
-        <FundRow key={isin} price={price} name={name} currency={currency} active={activeFund} />
-      ))}
+      {funds &&
+        funds.length &&
+        funds.map(({ currency, price, name, isin, activeFund }) => (
+          <FundRow key={isin} price={price} name={name} currency={currency} active={activeFund} />
+        ))}
       <FundRow
         price={totalPrice}
         currency="EUR" // hardcoded until there are more currencies
