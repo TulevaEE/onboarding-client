@@ -5,6 +5,7 @@
 1. Inline login widget (used [here](https://tuleva.ee/liikme-kinnitus))
 
 [![CircleCI](https://circleci.com/gh/TulevaEE/onboarding-client/tree/master.svg?style=shield)](https://circleci.com/gh/TulevaEE/onboarding-client/tree/master)
+[![codecov](https://codecov.io/gh/TulevaEE/onboarding-client/branch/master/graph/badge.svg)](https://codecov.io/gh/TulevaEE/onboarding-client)
 
 ## Prerequisites
 
