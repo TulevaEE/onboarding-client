@@ -2,13 +2,14 @@ import React, { PureComponent } from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Route } from 'react-router-dom';
+import { Route, Redirect, Switch } from 'react-router-dom';
 
 import { actions as loginActions } from '../login';
 import { actions as routerActions } from '../router';
 import { actions as exchangeActions } from '../exchange';
 import Header from './header';
 import AccountPage from '../account';
+import SecondPillarFlow from '../flows/secondPillar';
 import Footer from './footer';
 
 export class LoggedInApp extends PureComponent {
@@ -52,8 +53,11 @@ export class LoggedInApp extends PureComponent {
         <div className="row justify-content-center">
           <div className="col-lg-10">
             <Header user={user} loading={loading} onLogout={onLogout} />
-            {userAndConversionDataExists && <Route path="/account" component={AccountPage} />}
-            {/* TODO: Re-add second pillar flow */}
+            <Switch>
+              {userAndConversionDataExists && <Route path="/account" component={AccountPage} />}
+              <Route path="/2nd-pillar-flow" component={SecondPillarFlow} />
+              <Redirect exact path="/" to="/account" />
+            </Switch>
             <Footer />
           </div>
         </div>

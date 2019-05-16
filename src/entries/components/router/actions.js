@@ -1,19 +1,5 @@
 import { push } from 'connected-react-router';
 
-function isSelectionComplete(getState) {
-  const { userConversion } = getState().login;
-  return !!(userConversion && userConversion.selectionComplete);
-}
-
-function isTransfersComplete(getState) {
-  const { userConversion } = getState().login;
-  return !!(userConversion && userConversion.transfersComplete);
-}
-
-function isFullyConverted(getState) {
-  return isSelectionComplete(getState) && isTransfersComplete(getState);
-}
-
 function isUserLoaded(getState) {
   if (getState().login.user) {
     return true;
@@ -25,12 +11,6 @@ export function selectRouteForState() {
   return (dispatch, getState) => {
     if (!isUserLoaded(getState)) {
       dispatch(push('/')); // load user
-    } else if (isFullyConverted(getState)) {
-      dispatch(push('/account'));
-    } else if (getState().exchange.shortFlow === true) {
-      dispatch(push('/account'));
-    } else {
-      dispatch(push('/account'));
     }
   };
 }
