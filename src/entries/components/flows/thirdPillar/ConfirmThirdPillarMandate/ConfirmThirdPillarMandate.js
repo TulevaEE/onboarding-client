@@ -1,15 +1,39 @@
-import React from 'react';
-
+import React, { Fragment } from 'react';
+import Types from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { Message } from 'retranslate';
 
-const ConfirmThirdPillarMandate = () => <div>[placeholder]</div>;
+export const ConfirmThirdPillarMandate = ({ selectedFutureContributionsFund }) => (
+  <Fragment>
+    {selectedFutureContributionsFund && <Message>confirmThirdPillarMandate.intro</Message>}
 
-ConfirmThirdPillarMandate.propTypes = {};
+    {selectedFutureContributionsFund && (
+      <Fragment>
+        <div className="mt-4">
+          <Message>confirmThirdPillarMandate.contribution</Message>
 
-ConfirmThirdPillarMandate.defaultProps = {};
+          <div>
+            <b className="highlight">{selectedFutureContributionsFund.name}</b>
+          </div>
+        </div>
+      </Fragment>
+    )}
+  </Fragment>
+);
+
+ConfirmThirdPillarMandate.propTypes = {
+  selectedFutureContributionsFund: Types.shape({ name: Types.string }),
+};
+
+ConfirmThirdPillarMandate.defaultProps = {
+  selectedFutureContributionsFund: null,
+};
 
 const mapStateToProps = state => ({
+  selectedFutureContributionsFund: state.thirdPillar.targetFunds.find(
+    fund => fund.isin === state.thirdPillar.selectedFutureContributionsFundIsin,
+  ),
   monthlyContribution: state.thirdPillar.monthlyContribution,
   exchangeExistingUnits: state.thirdPillar.exchangeExistingUnits,
 });
