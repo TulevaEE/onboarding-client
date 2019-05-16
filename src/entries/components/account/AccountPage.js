@@ -6,7 +6,7 @@ import { Message, WithTranslations } from 'retranslate';
 import { Link } from 'react-router-dom';
 
 import { Loader, ErrorMessage } from '../common';
-import PensionFundTable from '../flows/secondPillar/selectSources/pensionFundTable';
+import PensionFundTable from '../flows/secondPillar/SelectSources/pensionFundTable';
 import PendingExchangesTable from './pendingExchangeTable';
 import ReturnComparison, { actions as returnComparisonActions } from '../returnComparison';
 import getReturnComparisonStartDateOptions from '../returnComparison/options';
@@ -176,7 +176,7 @@ export class AccountPage extends Component {
                 <Message className="mb-4 lead">select.sources.current.status</Message>
               </div>
               <div className="col-md-6 text-md-right">
-                <Link className="btn btn-primary mb-3" to="/2nd-pillar-flow/select-sources">
+                <Link className="btn btn-primary mb-3" to="/2nd-pillar-flow">
                   <Message>change.my.pension.fund</Message>
                 </Link>
               </div>

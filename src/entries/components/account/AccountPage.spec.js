@@ -6,7 +6,7 @@ import { Provider } from 'react-redux';
 
 import { Loader, ErrorMessage } from '../common';
 import { AccountPage, TOTAL_CAPITAL } from './AccountPage';
-import PensionFundTable from '../flows/secondPillar/selectSources/pensionFundTable';
+import PensionFundTable from '../flows/secondPillar/SelectSources/pensionFundTable';
 import PendingExchangesTable from './pendingExchangeTable';
 import UpdateUserForm from './updateUserForm';
 import ReturnComparison from '../returnComparison';
@@ -260,7 +260,7 @@ describe('Current balance', () => {
 
     expect(
       component.contains(
-        <Link className="btn btn-primary mb-3" to="/2nd-pillar-flow/select-sources">
+        <Link className="btn btn-primary mb-3" to="/2nd-pillar-flow">
           <Message>change.my.pension.fund</Message>
         </Link>,
       ),
@@ -268,7 +268,7 @@ describe('Current balance', () => {
     component.setProps({ currentBalanceFunds: [{ sourcefund: true }] });
     expect(
       component.contains(
-        <Link className="btn btn-primary mb-3" to="/2nd-pillar-flow/select-sources">
+        <Link className="btn btn-primary mb-3" to="/2nd-pillar-flow">
           <Message>change.my.pension.fund</Message>
         </Link>,
       ),
