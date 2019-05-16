@@ -242,6 +242,8 @@
   "returnComparison.period.thisYear": "Käesolev aasta",
 
   "thirdPillarFlow.steps.setup.title": "Sisesta, kui palju soovid koguma hakata",
+  "thirdPillarFlow.steps.confirmMandate.title": "Kinnita avalduse sisu",
+
   "thirdPillarFlowSetup.monthlyContributionLabel": "Igakuine sissemakse",
   "thirdPillarFlowSetup.exchangeExistingUnitsLabel": "Soovin kogunenud III samba osakud üle tuua",
   "thirdPillarFlowSetup.buttonText": "Edasi"

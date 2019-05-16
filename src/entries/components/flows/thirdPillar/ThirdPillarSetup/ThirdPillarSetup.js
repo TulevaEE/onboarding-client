@@ -10,6 +10,7 @@ import { actions as thirdPillarActions } from '../../../thirdPillar';
 export const ThirdPillarSetup = ({
   monthlyContribution,
   onMonthlyContributionChange,
+  sourceFunds,
   exchangeExistingUnits,
   onExchangeExistingUnitsChange,
   nextPath,
@@ -30,22 +31,24 @@ export const ThirdPillarSetup = ({
       />
     </div>
 
-    <label
-      className="custom-control custom-checkbox mt-3"
-      htmlFor="exchange-existing-units-checkbox"
-    >
-      <input
-        checked={exchangeExistingUnits}
-        onChange={() => onExchangeExistingUnitsChange(!exchangeExistingUnits)}
-        type="checkbox"
-        className="custom-control-input"
-        id="exchange-existing-units-checkbox"
-      />
-      <span className="custom-control-indicator" />
-      <div className="custom-control-description">
-        <Message>thirdPillarFlowSetup.exchangeExistingUnitsLabel</Message>
-      </div>
-    </label>
+    {sourceFunds.length > 0 && (
+      <label
+        className="custom-control custom-checkbox mt-3"
+        htmlFor="exchange-existing-units-checkbox"
+      >
+        <input
+          checked={exchangeExistingUnits}
+          onChange={() => onExchangeExistingUnitsChange(!exchangeExistingUnits)}
+          type="checkbox"
+          className="custom-control-input"
+          id="exchange-existing-units-checkbox"
+        />
+        <span className="custom-control-indicator" />
+        <div className="custom-control-description">
+          <Message>thirdPillarFlowSetup.exchangeExistingUnitsLabel</Message>
+        </div>
+      </label>
+    )}
 
     <div>
       <Link to={nextPath}>
@@ -60,6 +63,7 @@ export const ThirdPillarSetup = ({
 ThirdPillarSetup.propTypes = {
   monthlyContribution: Types.number,
   onMonthlyContributionChange: Types.func,
+  sourceFunds: Types.arrayOf(Types.shape()),
   exchangeExistingUnits: Types.bool,
   onExchangeExistingUnitsChange: Types.func,
   nextPath: Types.string,
@@ -70,6 +74,7 @@ const noop = () => {};
 ThirdPillarSetup.defaultProps = {
   monthlyContribution: null,
   onMonthlyContributionChange: noop,
+  sourceFunds: [],
   exchangeExistingUnits: false,
   onExchangeExistingUnitsChange: noop,
   nextPath: '',
@@ -78,6 +83,7 @@ ThirdPillarSetup.defaultProps = {
 const mapStateToProps = state => ({
   monthlyContribution: state.thirdPillar.monthlyContribution,
   exchangeExistingUnits: state.thirdPillar.exchangeExistingUnits,
+  sourceFunds: state.thirdPillar.sourceFunds,
 });
 
 const mapDispatchToProps = dispatch =>

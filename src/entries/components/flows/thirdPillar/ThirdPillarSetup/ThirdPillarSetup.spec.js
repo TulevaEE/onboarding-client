@@ -27,7 +27,17 @@ describe('ThirdPillarSetup', () => {
     expect(onMonthlyContributionChange).toBeCalledWith(1);
   });
 
-  it('has exchange existing units checkbox', () => {
+  it('has exchange existing units checkbox when more than one source fund', () => {
+    const hasCheckbox = () => exchangeExistingUnitsCheckbox().exists();
+
+    expect(hasCheckbox()).toBe(false);
+    component.setProps({ sourceFunds: [{ isin: 'EE123' }] });
+    expect(hasCheckbox()).toBe(true);
+  });
+
+  it('sets exchange existing units checkbox value based on passed prop', () => {
+    component.setProps({ sourceFunds: [{ isin: 'EE123' }] });
+
     const checked = () => exchangeExistingUnitsCheckbox().prop('checked');
 
     expect(checked()).toBe(false);
@@ -36,6 +46,8 @@ describe('ThirdPillarSetup', () => {
   });
 
   it('calls change handler on exchange existing units change', () => {
+    component.setProps({ sourceFunds: [{ isin: 'EE123' }] });
+
     const onExchangeExistingUnitsChange = jest.fn();
     component.setProps({ onExchangeExistingUnitsChange });
 
