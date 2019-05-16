@@ -246,5 +246,8 @@
 
   "thirdPillarFlowSetup.monthlyContributionLabel": "Igakuine sissemakse",
   "thirdPillarFlowSetup.exchangeExistingUnitsLabel": "Soovin kogunenud III samba osakud üle tuua",
-  "thirdPillarFlowSetup.buttonText": "Edasi"
+  "thirdPillarFlowSetup.buttonText": "Edasi",
+
+  "confirmThirdPillarMandate.intro": "Avaldust allkirjastades kinnitad, et:",
+  "confirmThirdPillarMandate.contribution": "soovid hakata tegema vabatahtliku kogumispensioni sissemakseid fondi:"
 }
