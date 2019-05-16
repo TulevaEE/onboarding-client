@@ -5,7 +5,7 @@ import {
 } from './constants';
 import initialState from './initialState';
 import reducer from './reducer';
-import { GET_SOURCE_FUNDS_SUCCESS } from '../exchange/constants';
+import { GET_SOURCE_FUNDS_SUCCESS, GET_TARGET_FUNDS_SUCCESS } from '../exchange/constants';
 
 describe('Third pillar reducer', () => {
   it('saves monthly contribution as a number when monthlyContribution is in query params and parsable as a number', () => {
@@ -150,6 +150,18 @@ describe('Third pillar reducer', () => {
       ...initialState,
       sourceFunds: [],
       exchangeExistingUnits: false,
+    });
+  });
+
+  it('updates target funds to include only lhv index plus fund on success', () => {
+    const state = reducer(undefined, {
+      type: GET_TARGET_FUNDS_SUCCESS,
+      targetFunds: [{ isin: 'EE123', pillar: 3 }, { isin: 'EE3600109419', pillar: 3 }],
+    });
+
+    expect(state).toEqual({
+      ...initialState,
+      targetFunds: [{ isin: 'EE3600109419', pillar: 3 }],
     });
   });
 });
