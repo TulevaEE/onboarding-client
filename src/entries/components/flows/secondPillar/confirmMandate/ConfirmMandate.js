@@ -3,7 +3,6 @@ import { PropTypes as Types } from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { Message } from 'retranslate';
 import { connect } from 'react-redux';
-import { push } from 'connected-react-router';
 
 import { Loader, AuthenticationLoader, ErrorMessage, utils } from '../../../common';
 
@@ -13,7 +12,6 @@ import {
   cancelSigningMandate,
   changeAgreementToTerms,
   closeErrorMessages,
-  disableShortFlow,
 } from '../../../exchange/actions';
 
 import { routeBackFromMandateConfirmation } from '../../../router/actions';
@@ -88,23 +86,14 @@ function getMandate(exchange) {
   };
 }
 
-export function exitShortFlow() {
-  return dispatch => {
-    dispatch(disableShortFlow());
-    dispatch(push('/2nd-pillar-flow/select-sources'));
-  };
-}
-
 export const ConfirmMandate = ({
   exchange,
-  isShortFlowActive,
   onPreviewMandate,
   onSignMandate,
   onCancelSigningMandate,
   onChangeAgreementToTerms,
   onCloseErrorMessages,
   onPreviousStep,
-  onExitShortFlow,
 }) => {
   if (exchange.loadingSourceFunds || exchange.loadingTargetFunds) {
     return <Loader className="align-middle" />;
@@ -212,15 +201,9 @@ export const ConfirmMandate = ({
         >
           <Message>confirm.mandate.preview</Message>
         </button>
-        {isShortFlowActive ? (
-          <button type="button" className="btn btn-secondary mb-2" onClick={onExitShortFlow}>
-            <Message>confirm.mandate.exit.short.flow</Message>
-          </button>
-        ) : (
-          <button type="button" className="btn btn-secondary mb-2" onClick={onPreviousStep}>
-            <Message>steps.previous</Message>
-          </button>
-        )}
+        <button type="button" className="btn btn-secondary mb-2" onClick={onPreviousStep}>
+          <Message>steps.previous</Message>
+        </button>
       </div>
     </div>
   );
@@ -229,14 +212,12 @@ export const ConfirmMandate = ({
 const noop = () => null;
 
 ConfirmMandate.defaultProps = {
-  isShortFlowActive: false,
   onPreviewMandate: noop,
   onSignMandate: noop,
   onCancelSigningMandate: noop,
   onChangeAgreementToTerms: noop,
   onCloseErrorMessages: noop,
   onPreviousStep: noop,
-  onExitShortFlow: noop,
 };
 
 ConfirmMandate.propTypes = {
@@ -247,19 +228,16 @@ ConfirmMandate.propTypes = {
     selectedFutureContributionsFundIsin: Types.string,
     agreedToTerms: Types.bool,
   }).isRequired,
-  isShortFlowActive: Types.bool,
   onPreviewMandate: Types.func,
   onSignMandate: Types.func,
   onCancelSigningMandate: Types.func,
   onChangeAgreementToTerms: Types.func,
   onCloseErrorMessages: Types.func,
   onPreviousStep: Types.func,
-  onExitShortFlow: Types.func,
 };
 
 const mapStateToProps = state => ({
   exchange: state.exchange,
-  isShortFlowActive: state.exchange.shortFlow,
 });
 
 const mapDispatchToProps = dispatch =>
@@ -271,7 +249,6 @@ const mapDispatchToProps = dispatch =>
       onCancelSigningMandate: cancelSigningMandate,
       onCloseErrorMessages: closeErrorMessages,
       onPreviousStep: routeBackFromMandateConfirmation,
-      onExitShortFlow: exitShortFlow,
     },
     dispatch,
   );
