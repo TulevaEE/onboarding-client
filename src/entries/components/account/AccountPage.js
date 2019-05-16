@@ -166,12 +166,7 @@ export class AccountPage extends Component {
           <Fragment>
             <div className="row mt-5">
               <div className="col-md-6">
-                <Message className="mb-4 lead">select.sources.current.status</Message>
-              </div>
-              <div className="col-md-6 text-md-right">
-                <Link className="btn btn-primary mb-3" to="/2nd-pillar-flow">
-                  <Message>change.my.pension.fund</Message>
-                </Link>
+                <Message className="mb-4 lead">overview.summary.title</Message>
               </div>
             </div>
 
@@ -180,6 +175,17 @@ export class AccountPage extends Component {
             ) : (
               <FundsOverviewTable funds={currentBalanceFunds} />
             )}
+
+            <div className="row mt-5">
+              <div className="col-md-6">
+                <Message className="mb-4 lead">select.sources.current.status</Message>
+              </div>
+              <div className="col-md-6 text-md-right">
+                <Link className="btn btn-primary mb-3" to="/2nd-pillar-flow">
+                  <Message>change.my.pension.fund</Message>
+                </Link>
+              </div>
+            </div>
 
             {loadingCurrentBalance ? (
               <Loader className="align-middle" />

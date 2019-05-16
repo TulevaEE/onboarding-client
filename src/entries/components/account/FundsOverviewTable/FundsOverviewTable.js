@@ -1,59 +1,61 @@
 import React from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { Message } from 'retranslate';
-import FundRow from './FundRow';
+
 import './FundsOverviewTable.scss';
-import { getTotalFundValue } from '../../common/utils';
-import { getSumOfPillars } from './fundCalculations';
+import { formatAmountForCurrency } from '../../common/utils';
+import { calculateTotals, getSumOfPillars } from './fundCalculations';
+import Table from '../../common/table/Table';
 
 const FundsOverviewTable = ({ funds }) => {
-  const sumOfPillars = getSumOfPillars(funds);
-
-  console.log(JSON.stringify(funds));
-  console.log('----- Some -----');
-  console.log(JSON.stringify(sumOfPillars));
-
-  const totalPrice = getTotalFundValue(funds);
+  const groupedPillars = getSumOfPillars(funds);
+  const totalsOfPillars = calculateTotals(groupedPillars);
+  // console.log(JSON.stringify(funds));
+  // console.log('----- Some -----');
+  // console.log(JSON.stringify(groupedPillars));
 
   return (
-    <div>
-      <div className="row tv-table__header py-2">
-        <div className="col-12 col-sm">
-          <Message>select.sources.overview.title</Message>
-        </div>
-        <div className="col-12 col-sm text-sm-right">
-          <Message>select.sources.value</Message>
-        </div>
-        {/*
-          <div className="col-12 col-sm text-sm-right">
-            <Message>select.sources.fees</Message>
-          </div>
-           */}
-      </div>
-      {JSON.stringify(sumOfPillars)}
-      {/* { */}
-      {/*  summedByPillar.forEach((value, key) => ( */}
-      {/*      <div>Help {key}</div> */}
-      {/*    ) */}
-      {/*  ) */}
-      {/* } */}
-
-      <FundRow
-        price={totalPrice}
-        currency="EUR" // hardcoded until there are more currencies
-        name="select.sources.total"
-        highlighted
-      />
-
-      <br />
-      <br />
-
-      <div className="mt-2">
-        <small className="text-muted">
-          <Message>select.sources.active.fund</Message>
-        </small>
-      </div>
-    </div>
+    <Table>
+      <thead>
+        <tr>
+          <th>
+            <Message>overview.summary.table.header.instrument</Message>
+          </th>
+          <th>
+            <Message>overview.summary.table.header.contributions</Message>
+          </th>
+          <th>
+            <Message>overview.summary.table.header.profit</Message>
+          </th>
+          <th>
+            <Message>overview.summary.table.header.value</Message>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {groupedPillars &&
+          groupedPillars.map(({ pillar, contributions, value }) => (
+            <tr key={pillar}>
+              <td>
+                <Message>overview.summary.table.data.pillar.2</Message>
+              </td>
+              <td>{formatAmountForCurrency(contributions)}</td>
+              <td className={value - contributions >= 0 ? 'profit-positive' : 'profit-negative'}>
+                {formatAmountForCurrency(value - contributions)}
+              </td>
+              <td>{formatAmountForCurrency(value)}</td>
+            </tr>
+          ))}
+      </tbody>
+      <tfoot>
+        <tr>
+          <td>Kokku</td>
+          <td>{formatAmountForCurrency(totalsOfPillars.contributions)}</td>
+          <td>{formatAmountForCurrency(totalsOfPillars.profit)}</td>
+          <td>{formatAmountForCurrency(totalsOfPillars.value)}</td>
+        </tr>
+      </tfoot>
+    </Table>
   );
 };
 
