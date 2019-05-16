@@ -3,16 +3,13 @@ import { PropTypes as Types } from 'prop-types';
 import { Message } from 'retranslate';
 
 import './FundsOverviewTable.scss';
-import { formatAmountForCurrency } from '../../common/utils';
+import { formatAmountForCurrency, getProfitClassName } from '../../common/utils';
 import { calculateTotals, getSumOfPillars } from './fundCalculations';
 import Table from '../../common/table/Table';
 
 const FundsOverviewTable = ({ funds }) => {
   const groupedPillars = getSumOfPillars(funds);
   const totalsOfPillars = calculateTotals(groupedPillars);
-  // console.log(JSON.stringify(funds));
-  // console.log('----- Some -----');
-  // console.log(JSON.stringify(groupedPillars));
 
   return (
     <Table>
@@ -55,7 +52,9 @@ const FundsOverviewTable = ({ funds }) => {
         <tr>
           <td>Kokku</td>
           <td>{formatAmountForCurrency(totalsOfPillars.contributions)}</td>
-          <td>{formatAmountForCurrency(totalsOfPillars.profit)}</td>
+          <td className={getProfitClassName(totalsOfPillars.profit)}>
+            {formatAmountForCurrency(totalsOfPillars.profit)}
+          </td>
           <td>{formatAmountForCurrency(totalsOfPillars.value)}</td>
         </tr>
       </tfoot>

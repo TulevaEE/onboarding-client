@@ -16,6 +16,7 @@ import UpdateUserForm from './updateUserForm';
 import { updateUser } from '../common/user/actions';
 import { actions as accountActions } from '.';
 import { actions as exchangeActions } from '../exchange';
+import FundDetailsTable from './FundDetailsTable';
 
 const noop = () => null;
 
@@ -166,7 +167,7 @@ export class AccountPage extends Component {
           <Fragment>
             <div className="row mt-5">
               <div className="col-md-6">
-                <Message className="mb-4 lead">overview.summary.title</Message>
+                <Message className="mb-4  h3">overview.summary.title</Message>
               </div>
             </div>
 
@@ -174,6 +175,24 @@ export class AccountPage extends Component {
               <Loader className="align-middle" />
             ) : (
               <FundsOverviewTable funds={currentBalanceFunds} />
+            )}
+
+            <div className="row mt-5">
+              <div className="col-md-6">
+                <Message className="mb-4 h3">overview.details.title</Message>
+              </div>
+            </div>
+
+            {loadingCurrentBalance ? (
+              <Loader className="align-middle" />
+            ) : (
+              <FundDetailsTable allFunds={currentBalanceFunds} pillar={2} />
+            )}
+
+            {loadingCurrentBalance ? (
+              <Loader className="align-middle" />
+            ) : (
+              <FundDetailsTable allFunds={currentBalanceFunds} pillar={3} />
             )}
 
             <div className="row mt-5">
@@ -186,7 +205,11 @@ export class AccountPage extends Component {
                 </Link>
               </div>
             </div>
-
+            <div className="mt-2">
+              <small className="text-muted">
+                <Message>select.sources.active.fund</Message>
+              </small>
+            </div>
             {loadingCurrentBalance ? (
               <Loader className="align-middle" />
             ) : (
