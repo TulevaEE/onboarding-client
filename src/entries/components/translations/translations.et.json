@@ -239,5 +239,10 @@
   "returnComparison.period.threeYears": "3 aastat",
   "returnComparison.period.twoYears": "2 aastat",
   "returnComparison.period.oneYear": "1 aasta",
-  "returnComparison.period.thisYear": "Käesolev aasta"
+  "returnComparison.period.thisYear": "Käesolev aasta",
+
+  "thirdPillarFlow.steps.setup.title": "Sisesta, kui palju soovid koguma hakata",
+  "thirdPillarFlowSetup.monthlyContributionLabel": "Igakuine sissemakse",
+  "thirdPillarFlowSetup.exchangeExistingUnitsLabel": "Soovin kogunenud III samba osakud üle tuua",
+  "thirdPillarFlowSetup.buttonText": "Edasi"
 }

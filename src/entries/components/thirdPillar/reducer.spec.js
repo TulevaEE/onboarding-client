@@ -1,4 +1,8 @@
-import { QUERY_PARAMETERS } from './constants';
+import {
+  QUERY_PARAMETERS,
+  CHANGE_MONTHLY_CONTRIBUTION,
+  CHANGE_EXCHANGE_EXISTING_UNITS,
+} from './constants';
 import initialState from './initialState';
 import reducer from './reducer';
 
@@ -66,6 +70,44 @@ describe('Third pillar reducer', () => {
       {
         type: QUERY_PARAMETERS,
         query: {},
+      },
+    );
+
+    expect(state).toEqual({
+      ...initialState,
+      monthlyContribution: 500,
+      exchangeExistingUnits: true,
+    });
+  });
+
+  it('updates monthly contribution', () => {
+    const state = reducer(
+      {
+        monthlyContribution: 500,
+        exchangeExistingUnits: false,
+      },
+      {
+        type: CHANGE_MONTHLY_CONTRIBUTION,
+        monthlyContribution: 1000,
+      },
+    );
+
+    expect(state).toEqual({
+      ...initialState,
+      monthlyContribution: 1000,
+      exchangeExistingUnits: false,
+    });
+  });
+
+  it('updates whether should exchange existing units', () => {
+    const state = reducer(
+      {
+        monthlyContribution: 500,
+        exchangeExistingUnits: false,
+      },
+      {
+        type: CHANGE_EXCHANGE_EXISTING_UNITS,
+        exchangeExistingUnits: true,
       },
     );
 
