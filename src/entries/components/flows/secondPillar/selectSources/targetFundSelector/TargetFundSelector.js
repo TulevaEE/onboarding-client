@@ -3,10 +3,10 @@ import { PropTypes as Types } from 'prop-types';
 import { Message } from 'retranslate';
 
 import { InfoTooltip } from '../../../../common';
-import TargetFundTooltipBody from '../../TransferFutureCapital/targetFundTooltipBody';
+import TargetFundTooltipBody from '../../transferFutureCapital/targetFundTooltipBody';
 
-import './TargetFundSelector.scss'; // eslint-disable-line import/no-unresolved
-import checkImage from '../../Success/success.svg';
+import './TargetFundSelector.scss';
+import checkImage from '../../success/success.svg';
 
 const TargetFundSelector = ({
   targetFunds,
