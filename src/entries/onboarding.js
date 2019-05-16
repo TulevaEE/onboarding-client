@@ -78,8 +78,9 @@ history.listen(() => {
 });
 
 class App extends Component {
-  componentDidMount() {
+  constructor() {
     applyRouting();
+    super();
   }
 
   render() {
