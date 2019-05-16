@@ -1,68 +1,41 @@
 import 'react-app-polyfill/ie11';
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { render } from 'react-dom';
 import config from 'react-global-configuration';
-import { createStore, combineReducers, compose, applyMiddleware } from 'redux';
+import { createBrowserHistory } from 'history';
+import { createStore, compose, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
-import { reducer as formReducer } from 'redux-form';
 import { Provider as TranslationProvider } from 'retranslate';
 import { Provider as ReduxProvider } from 'react-redux';
-import { Router, Route, browserHistory } from 'react-router';
-import {
-  routerReducer as routingReducer,
-  routerMiddleware,
-  syncHistoryWithStore,
-} from 'react-router-redux';
+import { Switch, Route } from 'react-router-dom';
+import { routerMiddleware, ConnectedRouter } from 'connected-react-router';
 import mixpanel from 'mixpanel-browser';
 import MixpanelProvider from 'react-mixpanel';
 import GoogleAnalytics from 'react-ga';
 
+import createRootReducer from './reducers';
 import { getQueryParams } from './utils';
 import { initializeConfiguration, updateLanguage } from './components/config/config';
 import translations from './components/translations';
 import './components/index.scss';
 
 import requireAuthentication from './components/requireAuthentication';
-import LoginPage, { reducer as loginReducer, actions as loginActions } from './components/login';
+import LoginPage, { actions as loginActions } from './components/login';
 import TermsOfUse from './components/termsOfUse';
-import NonMember from './components/newUserFlow/nonMember';
-import { reducer as exchangeReducer } from './components/exchange';
-import {
-  reducer as thirdPillarReducer,
-  actions as thirdPillarActions,
-} from './components/thirdPillar';
-import trackingReducer from './components/tracking';
+import { actions as thirdPillarActions } from './components/thirdPillar';
 
 import './common/polyfills';
 import LoggedInApp from './components/LoggedInApp';
-import AccountPage, { reducer as accountReducer } from './components/account';
-import { reducer as returnComparisonReducer } from './components/returnComparison';
-import SecondPillarFlow, {
-  SelectSources,
-  TransferFutureCapital,
-  ConfirmMandate,
-  Success,
-} from './components/flows/secondPillar';
 import { unregister as unregisterServiceWorker } from './common/registerServiceWorker';
 
-const rootReducer = combineReducers({
-  routing: routingReducer,
-  login: loginReducer,
-  exchange: exchangeReducer, // exchage of funds
-  account: accountReducer,
-  returnComparison: returnComparisonReducer,
-  thirdPillar: thirdPillarReducer,
-  tracking: trackingReducer,
-  form: formReducer,
-});
+const history = createBrowserHistory();
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose; // eslint-disable-line
 
-const routingMiddleware = routerMiddleware(browserHistory);
-
-const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk, routingMiddleware)));
-
-const history = syncHistoryWithStore(browserHistory, store);
+const store = createStore(
+  createRootReducer(history),
+  composeEnhancers(applyMiddleware(routerMiddleware(history), thunk)),
+);
 
 function applyRouting() {
   const queryParams = getQueryParams();
@@ -84,10 +57,6 @@ function applyLanguage() {
   return language;
 }
 
-function scrollToTop() {
-  window.scrollTo(0, 0);
-}
-
 initializeConfiguration();
 
 window.config = config; // for debug only
@@ -102,21 +71,16 @@ GoogleAnalytics.initialize('UA-76855836-1', {
   },
 });
 
-function trackPageView() {
+history.listen(() => {
   if (process.env.NODE_ENV === 'production') {
     GoogleAnalytics.pageview(window.location.href);
   }
-}
-
-const secondPillarFlowSteps = [
-  { path: 'select-sources', component: SelectSources },
-  { path: 'transfer-future-capital', component: TransferFutureCapital },
-  { path: 'confirm-mandate', component: ConfirmMandate },
-];
+});
 
 class App extends Component {
-  componentDidMount() {
+  constructor(props) {
     applyRouting();
+    super(props);
   }
 
   render() {
@@ -128,25 +92,13 @@ class App extends Component {
           fallbackLanguage="et"
         >
           <ReduxProvider store={store}>
-            <Router onUpdate={trackPageView} history={history}>
-              <Fragment>
+            <ConnectedRouter history={history}>
+              <Switch>
                 <Route path="/login" component={LoginPage} />
                 <Route path="/terms-of-use" component={TermsOfUse} />
-                <Route path="/" component={requireAuthentication(LoggedInApp)}>
-                  <Route path="/2nd-pillar-flow">
-                    <Route path="non-member" component={NonMember} />
-                  </Route>
-
-                  <Route path="2nd-pillar-flow" component={SecondPillarFlow}>
-                    {secondPillarFlowSteps.map(({ path, component }) => (
-                      <Route path={path} component={component} onEnter={scrollToTop} />
-                    ))}
-                  </Route>
-                  <Route path="/2nd-pillar-flow/success" component={Success} />
-                  <Route path="/account" component={AccountPage} />
-                </Route>
-              </Fragment>
-            </Router>
+                <Route exact path="" component={requireAuthentication(LoggedInApp)} />
+              </Switch>
+            </ConnectedRouter>
           </ReduxProvider>
         </TranslationProvider>
       </MixpanelProvider>

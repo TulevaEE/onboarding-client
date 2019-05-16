@@ -1,4 +1,4 @@
-import { push } from 'react-router-redux';
+import { push } from 'connected-react-router';
 
 const actions = require('./actions'); // need to use require because of jest mocks being weird
 
@@ -11,7 +11,6 @@ describe('Routing actions', () => {
     state.login = {};
     state.login.user = {};
     state.exchange = {};
-    state.exchange.shortFlow = false;
     state.router = {};
     dispatch = jest.fn(action => {
       if (typeof action === 'function') {
@@ -26,34 +25,6 @@ describe('Routing actions', () => {
 
   beforeEach(() => {
     mockDispatch();
-  });
-
-  it('can perform routing for members who have not completed transfers', () => {
-    state.login.user.memberNumber = 123;
-    state.login.userConversion = {
-      transfersComplete: false,
-      selectionComplete: true,
-    };
-
-    const action = createBoundAction(actions.selectRouteForState);
-    action();
-
-    expect(dispatch).toHaveBeenCalledTimes(1);
-    expect(dispatch).toHaveBeenCalledWith(push('/account'));
-  });
-
-  it('can perform routing for fully converted members', () => {
-    state.login.user.memberNumber = 123;
-    state.login.userConversion = {
-      transfersComplete: true,
-      selectionComplete: true,
-    };
-
-    const action = createBoundAction(actions.selectRouteForState);
-    action();
-
-    expect(dispatch).toHaveBeenCalledTimes(1);
-    expect(dispatch).toHaveBeenCalledWith(push('/account'));
   });
 
   it('can perform routing when user is not loaded', () => {
@@ -104,22 +75,5 @@ describe('Routing actions', () => {
 
     expect(dispatch).toHaveBeenCalledTimes(1);
     expect(dispatch).toHaveBeenCalledWith(push('/2nd-pillar-flow/select-sources'));
-  });
-
-  it('can route to short flow', () => {
-    state.login = {};
-    state.login.user = {};
-    state.login.user.memberNumber = 123;
-    state.login.userConversion = {
-      transfersComplete: false,
-      selectionComplete: true,
-    };
-    state.exchange.shortFlow = true;
-
-    const action = createBoundAction(actions.selectRouteForState);
-    action();
-
-    expect(dispatch).toHaveBeenCalledTimes(1);
-    expect(dispatch).toHaveBeenCalledWith(push('/account'));
   });
 });

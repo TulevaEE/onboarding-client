@@ -1,7 +1,7 @@
 /* eslint-disable no-useless-escape */
 
 import * as Sentry from '@sentry/browser';
-import { push } from 'react-router-redux';
+import { push } from 'connected-react-router';
 import config from 'react-global-configuration';
 
 import {
@@ -31,8 +31,6 @@ import {
   LOG_OUT,
   CHANGE_ID_CODE,
 } from './constants';
-
-import { DISABLE_SHORT_FLOW } from '../exchange/constants';
 
 import { api, http } from '../common';
 
@@ -262,14 +260,6 @@ export function cancelMobileAuthentication() {
   return { type: MOBILE_AUTHENTICATION_CANCEL };
 }
 
-function checkShortFlowEligibility(user) {
-  return dispatch => {
-    if (user.age >= 55) {
-      dispatch({ type: DISABLE_SHORT_FLOW });
-    }
-  };
-}
-
 export function getUser() {
   return (dispatch, getState) => {
     dispatch({ type: GET_USER_START });
@@ -281,7 +271,6 @@ export function getUser() {
             scope.setUser({ id: user.id });
           });
         }
-        dispatch(checkShortFlowEligibility(user));
         dispatch({ type: GET_USER_SUCCESS, user });
       })
       .catch(error => {

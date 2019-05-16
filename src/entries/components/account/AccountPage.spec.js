@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow, mount } from 'enzyme';
 import { Message } from 'retranslate';
-import { Link } from 'react-router';
+import { BrowserRouter, Link } from 'react-router-dom';
 import { Provider } from 'react-redux';
 
 import { Loader, ErrorMessage } from '../common';
@@ -265,7 +265,7 @@ describe('Current balance', () => {
 
     expect(
       component.contains(
-        <Link className="btn btn-primary mb-3" to="/2nd-pillar-flow/select-sources">
+        <Link className="btn btn-primary mb-3" to="/2nd-pillar-flow">
           <Message>change.my.pension.fund</Message>
         </Link>,
       ),
@@ -273,7 +273,7 @@ describe('Current balance', () => {
     component.setProps({ currentBalanceFunds: [{ sourcefund: true }] });
     expect(
       component.contains(
-        <Link className="btn btn-primary mb-3" to="/2nd-pillar-flow/select-sources">
+        <Link className="btn btn-primary mb-3" to="/2nd-pillar-flow">
           <Message>change.my.pension.fund</Message>
         </Link>,
       ),
@@ -298,7 +298,9 @@ describe('Current balance', () => {
 
   function mountWithProvider(renderComponent) {
     return mount(
-      <Provider store={mockStore({ login: {}, account: {} })}>{renderComponent}</Provider>,
+      <Provider store={mockStore({ login: {}, account: {} })}>
+        <BrowserRouter>{renderComponent}</BrowserRouter>
+      </Provider>,
     );
   }
 });

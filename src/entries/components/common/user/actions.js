@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign,no-underscore-dangle */
-import { push } from 'react-router-redux';
+import { push } from 'connected-react-router';
 import { SubmissionError } from 'redux-form';
 import config from 'react-global-configuration';
 

@@ -1,5 +1,5 @@
 {
-  "login.title": "Sel nädalal võib käimasoleva III samba valmisoleku tööde tõttu tulla ette vigu, mida me jooksvalt kohe parandame. Vabandame!",
+  "login.title": "Sel nädalal võib III samba arendustööde tõttu tulla ette vigu, mida me jooksvalt kohe parandame. Vabandame!",
   "login.title.thirdPillar.withExchange": "Soovid oma III samba fondiosakud vahetada ning teha III sambasse sissemakse {{monthlyContribution}} eurot kuus",
   "login.title.thirdPillar.withoutExchange": "Soovid valida III samba pensionifondi ning teha III sambasse sissemakse {{monthlyContribution}} eurot kuus",
   "login.subtitle.thirdPillar": "Logi sisse ja kinnita avaldus oma digiallkirjaga",
@@ -25,7 +25,6 @@
   "steps.next": "Järgmine samm",
   "steps.previous": "Eelmine samm",
   "steps.select-sources": "Vaheta olemasolevad osakud",
-  "steps.select-target-fund": "Vali Tuleva pensionifond",
   "steps.transfer-future-capital": "Suuna edasised maksed",
   "steps.confirm-mandate": "Kinnita avalduse sisu",
   "select.sources.pension.fund": "Pensionifond",
@@ -104,13 +103,12 @@
   "confirm.mandate.preview": "Eelvaade",
   "confirm.mandate.agree.to.terms": "Kinnitan, et mul on olnud võimalik tutvuda kõigi registreeritud kohustuslike pensionifondide tingimuste ja emissiooniprospektidega ning nõustun minu valitud pensionifondi(de) tingimustega. Vajutades nupule “allkirjasta ja saada”, saadan digiallkirjastatud avalduse otse registripidajale.",
   "confirm.mandate.pension.centre": "Pensionikeskuse",
-  "confirm.mandate.view.info": " lehel saad võrrelda kõigi Eesti pensionifondide valitsemistasusid ja tutvuda fondide tingimuste ja prospektidega. Eelvaate nupu abil saad avaldused alla laadida ning soovi korral ise registripidajale saata. Allkirjasta ja saada nupu abil saadab Tuleva veebirakendus allkirjastatud avalduse sinu nimel kohe registripidajale.",
+  "confirm.mandate.view.info": " lehel saad võrrelda kõigi Eesti pensionifondide valitsemistasusid ja tutvuda fondide tingimuste ja prospektidega. Allkirjasta ja saada nupu abil saadab Tuleva veebirakendus allkirjastatud avalduse sinu nimel kohe registripidajale.",
   "confirm.mandate.not.filled.understand": "Kas saime õigesti aru, et sa ei soovi oma II samba pensioni osas mingeid muutusi teha?",
   "confirm.mandate.not.filled.cheapest": "Tuleva liikmed saavad ühistust kõige rohkem kasu, kui nad toovad kõik kogunenud pensionivara ja tulevased maksed ühistu pensionifondi.",
   "confirm.mandate.not.filled.help": "Kuidas saame sulle abiks olla?",
   "confirm.mandate.not.filled.look.again": "Vaatan valikuid uuesti",
   "confirm.mandate.not.filled.thinking": "Kaalun veel. Praegu abi ei vaja! ",
-  "confirm.mandate.exit.short.flow": "Vali muu fond",
   "footer.name": "Tuleva Fondid AS",
   "footer.address": "Telliskivi 60, Tallinn, 10412",
   "footer.email": "tuleva@tuleva.ee",
@@ -119,7 +117,7 @@
   "success.done": "Avaldus esitatud",
   "success.your.payments": "Sinu maksed suunatakse valitud pensionifondi ",
   "success.your.payments.next.payment": "alates järgmisest maksest",
-  "success.shares.switched": "Kui sa soovisid olemasolevad osakud vahetada, siis need vahetatakse ",
+  "success.shares.switched": "Kui sa soovisid olemasolevad osakud vahetada, siis osakute vahetus jõustub",
   "success.shares.switched.when": "2. septembril 2019",
   "success.download.mandate": "Lae alla",
   "success.view.profile.title": "Vaata oma kontoseisu ja kui oled Tuleva liige, siis näed ka oma liikmekapitali seisu",
@@ -245,5 +243,12 @@
   "returnComparison.period.threeYears": "3 aastat",
   "returnComparison.period.twoYears": "2 aastat",
   "returnComparison.period.oneYear": "1 aasta",
-  "returnComparison.period.thisYear": "Käesolev aasta"
+  "returnComparison.period.thisYear": "Käesolev aasta",
+
+  "thirdPillarFlow.steps.setup.title": "Sisesta, kui palju soovid koguma hakata",
+  "thirdPillarFlow.steps.confirmMandate.title": "Kinnita avalduse sisu",
+
+  "thirdPillarFlowSetup.monthlyContributionLabel": "Igakuine sissemakse",
+  "thirdPillarFlowSetup.exchangeExistingUnitsLabel": "Soovin kogunenud III samba osakud üle tuua",
+  "thirdPillarFlowSetup.buttonText": "Edasi"
 }

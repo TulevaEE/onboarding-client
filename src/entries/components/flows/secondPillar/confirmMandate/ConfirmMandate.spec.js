@@ -1,14 +1,11 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Message } from 'retranslate';
-import { push } from 'react-router-redux';
 
-import { ConfirmMandate, exitShortFlow } from './ConfirmMandate';
+import { ConfirmMandate } from './ConfirmMandate';
 import FundTransferTable from './fundTransferTable';
 import MandateNotFilledAlert from './mandateNotFilledAlert';
 import { Loader, AuthenticationLoader, ErrorMessage } from '../../../common';
-
-import { disableShortFlow } from '../../../exchange/actions';
 
 describe('Confirm mandate step', () => {
   let component;
@@ -103,33 +100,6 @@ describe('Confirm mandate step', () => {
         </button>,
       ),
     ).toBe(true);
-  });
-
-  it('has a button to exit the short flow', () => {
-    const onExitShortFlow = jest.fn();
-    component.setProps({
-      exchange: {
-        sourceSelection: [],
-        selectedFutureContributionsFundIsin: 'asd',
-      },
-      onExitShortFlow,
-      isShortFlowActive: true,
-    });
-    expect(
-      component.contains(
-        <button type="button" className="btn btn-secondary mb-2" onClick={onExitShortFlow}>
-          <Message>confirm.mandate.exit.short.flow</Message>
-        </button>,
-      ),
-    ).toBe(true);
-  });
-
-  it('can exit the short flow', () => {
-    const dispatch = jest.fn();
-    exitShortFlow()(dispatch);
-    expect(dispatch).toHaveBeenCalledTimes(2);
-    expect(dispatch).toHaveBeenCalledWith(disableShortFlow());
-    expect(dispatch).toHaveBeenCalledWith(push('/2nd-pillar-flow/select-sources'));
   });
 
   it('does not show the funds table if you are not transferring funds', () => {

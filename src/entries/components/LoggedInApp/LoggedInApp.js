@@ -2,11 +2,15 @@ import React, { PureComponent } from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { Route, Redirect, Switch } from 'react-router-dom';
 
 import { actions as loginActions } from '../login';
 import { actions as routerActions } from '../router';
 import { actions as exchangeActions } from '../exchange';
 import Header from './header';
+import AccountPage from '../account';
+import SecondPillarFlow from '../flows/secondPillar';
+import ThirdPillarFlow from '../flows/thirdPillar';
 import Footer from './footer';
 
 export class LoggedInApp extends PureComponent {
@@ -43,14 +47,19 @@ export class LoggedInApp extends PureComponent {
   }
 
   render() {
-    const { user, loading, onLogout, children, userAndConversionDataExists } = this.props;
+    const { user, loading, onLogout, userAndConversionDataExists } = this.props;
 
     return (
       <div className="container mt-4">
         <div className="row justify-content-center">
           <div className="col-lg-10">
             <Header user={user} loading={loading} onLogout={onLogout} />
-            {userAndConversionDataExists && children}
+            <Switch>
+              {userAndConversionDataExists && <Route path="/account" component={AccountPage} />}
+              <Route path="/2nd-pillar-flow" component={SecondPillarFlow} />
+              <Route path="/3rd-pillar-flow" component={ThirdPillarFlow} />
+              <Redirect exact path="/" to="/account" />
+            </Switch>
             <Footer />
           </div>
         </div>
@@ -62,8 +71,6 @@ export class LoggedInApp extends PureComponent {
 const noop = () => null;
 
 LoggedInApp.defaultProps = {
-  children: null,
-
   user: null,
   hasError: false,
   loading: false,
@@ -80,8 +87,6 @@ LoggedInApp.defaultProps = {
 };
 
 LoggedInApp.propTypes = {
-  children: Types.oneOfType([Types.node, Types.arrayOf(Types.node)]),
-
   user: Types.shape({ name: Types.string }),
   hasError: Types.bool,
   loading: Types.bool,

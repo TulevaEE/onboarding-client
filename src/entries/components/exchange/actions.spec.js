@@ -1,4 +1,4 @@
-import { push } from 'react-router-redux';
+import { push } from 'connected-react-router';
 
 import {
   GET_SOURCE_FUNDS_START,
@@ -21,7 +21,6 @@ import {
   GET_PENDING_EXCHANGES_ERROR,
   CHANGE_AGREEMENT_TO_TERMS,
   NO_SIGN_MANDATE_ERROR,
-  DISABLE_SHORT_FLOW,
 } from './constants';
 
 jest.useFakeTimers();
@@ -449,11 +448,5 @@ describe('Exchange actions', () => {
         error,
       }),
     );
-  });
-});
-
-it('can disable short flow', () => {
-  expect(actions.disableShortFlow()).toEqual({
-    type: DISABLE_SHORT_FLOW,
   });
 });

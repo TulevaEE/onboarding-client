@@ -3,7 +3,7 @@ import { PropTypes as Types } from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Message, WithTranslations } from 'retranslate';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 
 import { Loader, ErrorMessage } from '../common';
 import PensionFundTable from '../flows/secondPillar/selectSources/pensionFundTable';
@@ -171,6 +171,11 @@ export class AccountPage extends Component {
           ''
         )}
         {error ? <ErrorMessage errors={error.body} /> : ''}
+        {localStorage.getItem('thirdPillar') && (
+          <div className="mt-3">
+            <Link to="/3rd-pillar-flow">Esita III samba vahetusavaldus</Link>
+          </div>
+        )}
         {currentBalanceFunds && currentBalanceFunds.length > 0 && (
           <Fragment>
             <div className="row mt-5">
@@ -178,7 +183,7 @@ export class AccountPage extends Component {
                 <Message className="mb-4 lead">select.sources.current.status</Message>
               </div>
               <div className="col-md-6 text-md-right">
-                <Link className="btn btn-primary mb-3" to="/2nd-pillar-flow/select-sources">
+                <Link className="btn btn-primary mb-3" to="/2nd-pillar-flow">
                   <Message>change.my.pension.fund</Message>
                 </Link>
               </div>

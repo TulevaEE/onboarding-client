@@ -22,7 +22,6 @@ import {
   GET_PENDING_EXCHANGES_ERROR,
   CHANGE_AGREEMENT_TO_TERMS,
   NO_SIGN_MANDATE_ERROR,
-  DISABLE_SHORT_FLOW,
 } from './constants';
 
 import { LOG_OUT } from '../login/constants';
@@ -513,10 +512,5 @@ describe('Exchange reducer', () => {
 
     expect(newState.error).toBe(error);
     expect(newState.loadingPendingExchanges).toBe(false);
-  });
-
-  it('can disable short flow', () => {
-    const newState = exchangeReducer({ shortFlow: true }, { type: DISABLE_SHORT_FLOW });
-    expect(newState.shortFlow).toBe(false);
   });
 });

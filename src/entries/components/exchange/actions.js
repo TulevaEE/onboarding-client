@@ -1,4 +1,4 @@
-import { push } from 'react-router-redux';
+import { push } from 'connected-react-router';
 import download from 'downloadjs';
 import hwcrypto from 'hwcrypto-js';
 
@@ -40,7 +40,6 @@ import {
   GET_PENDING_EXCHANGES_START,
   GET_PENDING_EXCHANGES_SUCCESS,
   GET_PENDING_EXCHANGES_ERROR,
-  DISABLE_SHORT_FLOW,
 } from './constants';
 
 const POLL_DELAY = 1000;
@@ -333,8 +332,4 @@ export function getPendingExchanges() {
       })
       .catch(error => dispatch({ type: GET_PENDING_EXCHANGES_ERROR, error }));
   };
-}
-
-export function disableShortFlow() {
-  return { type: DISABLE_SHORT_FLOW };
 }

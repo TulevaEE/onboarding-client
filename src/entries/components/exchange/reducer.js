@@ -23,7 +23,6 @@ import {
   GET_PENDING_EXCHANGES_START,
   GET_PENDING_EXCHANGES_SUCCESS,
   GET_PENDING_EXCHANGES_ERROR,
-  DISABLE_SHORT_FLOW,
 } from './constants';
 
 import { LOG_OUT } from '../login/constants';
@@ -47,8 +46,6 @@ const initialState = {
 
   loadingPendingExchanges: false,
   pendingExchanges: null,
-
-  shortFlow: true,
 };
 
 function getCurrentCompanyFunds(targetFunds) {
@@ -263,11 +260,6 @@ export default function exchangeReducer(state = initialState, action) {
         ...state,
         loadingPendingExchanges: false,
         error: action.error,
-      };
-    case DISABLE_SHORT_FLOW:
-      return {
-        ...state,
-        shortFlow: false,
       };
     default:
       return state;

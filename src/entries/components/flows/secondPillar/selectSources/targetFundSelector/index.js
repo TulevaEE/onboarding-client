@@ -1,3 +1,1 @@
-import TargetFundSelector from './TargetFundSelector';
-
-export default TargetFundSelector;
+export { default } from './TargetFundSelector';

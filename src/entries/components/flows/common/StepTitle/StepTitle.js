@@ -1,23 +1,22 @@
 import React from 'react';
 import { PropTypes as Types } from 'prop-types';
+import classNames from 'classnames';
 
 import './StepTitle.scss';
 
 const StepTitle = ({ children, number, active, completed }) => (
   <div className="tv-step">
     <div
-      className={`
-        tv-step__title mb-4
-        ${active ? 'tv-step__title--active mb-5' : ''}
-        ${completed ? 'tv-step__title--completed' : ''}`}
+      className={classNames('tv-step__title', 'mb-4', {
+        'tv-step__title--active mb-5': active,
+        'tv-step__title--completed': completed,
+      })}
     >
-      {number ? (
+      {number && (
         <span className="tv-step__number ml-2 mr-3">
-          {!completed && !active ? <span className="text-regular">{number}</span> : ''}
-          {!completed && active ? <b>{number}</b> : ''}
+          {!completed && !active && <span className="text-regular">{number}</span>}
+          {!completed && active && <b>{number}</b>}
         </span>
-      ) : (
-        ''
       )}
       <span className={`mr-2 ${active ? 'h2' : 'text-muted'}`}>{children}</span>
     </div>
