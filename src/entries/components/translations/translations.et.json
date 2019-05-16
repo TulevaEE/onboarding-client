@@ -27,6 +27,7 @@
   "steps.select-sources": "Vaheta olemasolevad osakud",
   "steps.transfer-future-capital": "Suuna edasised maksed",
   "steps.confirm-mandate": "Kinnita avalduse sisu",
+  "select.sources.overview.title": "Ülevaade",
   "select.sources.pension.fund": "Pensionifond",
   "select.sources.value": "Osakute väärtus",
   "select.sources.fees": "Teenustasu kulu",

@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 
 import { Loader, ErrorMessage } from '../common';
 import PensionFundTable from '../flows/secondPillar/selectSources/pensionFundTable';
+import FundsOverviewTable from './FundsOverviewTable';
 import PendingExchangesTable from './pendingExchangeTable';
 import ReturnComparison, { actions as returnComparisonActions } from '../returnComparison';
 import getReturnComparisonStartDateOptions from '../returnComparison/options';
@@ -173,6 +174,13 @@ export class AccountPage extends Component {
                 </Link>
               </div>
             </div>
+
+            {loadingCurrentBalance ? (
+              <Loader className="align-middle" />
+            ) : (
+              <FundsOverviewTable funds={currentBalanceFunds} />
+            )}
+
             {loadingCurrentBalance ? (
               <Loader className="align-middle" />
             ) : (

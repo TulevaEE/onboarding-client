@@ -30,3 +30,16 @@ export function formatLargeAmountForCurrency(amount = 0) {
 export function getTotalFundValue(funds) {
   return (funds || []).reduce((sum, { price }) => sum + price, 0);
 }
+
+export function groupBy(list, key) {
+  const map = new Map();
+  list.forEach(item => {
+    const collection = map.get(item[key]);
+    if (!collection) {
+      map.set(item[key], [item]);
+    } else {
+      collection.push(item);
+    }
+  });
+  return map;
+}

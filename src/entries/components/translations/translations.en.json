@@ -27,6 +27,7 @@
   "steps.select-sources": "Transfer your pension to Tuleva",
   "steps.transfer-future-capital": "Direct future fund contributions",
   "steps.confirm-mandate": "Confirm mandate",
+  "select.sources.overview.title": "Overview of Funds",
   "select.sources.pension.fund": "Pension fund",
   "select.sources.value": "Value of fund units",
   "select.sources.fees": "Total fees paid",
