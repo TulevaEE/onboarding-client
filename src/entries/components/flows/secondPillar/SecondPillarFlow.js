@@ -1,10 +1,10 @@
 import React from 'react';
 import { Message } from 'retranslate';
 
-import SelectSources from './SelectSources';
-import TransferFutureCapital from './TransferFutureCapital';
-import ConfirmMandate from './ConfirmMandate';
-import Success from './Success';
+import SelectSources from './selectSources';
+import TransferFutureCapital from './transferFutureCapital';
+import ConfirmMandate from './confirmMandate';
+import Success from './success';
 import Flow from '../common/Flow'; // eslint-disable-line import/no-named-as-default
 
 const introMessage = <Message>steps.intro</Message>;
