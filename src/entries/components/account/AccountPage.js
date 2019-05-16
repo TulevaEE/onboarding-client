@@ -8,6 +8,7 @@ import { Link } from 'react-router';
 import { Loader, ErrorMessage } from '../common';
 import PensionFundTable from '../flows/secondPillar/selectSources/pensionFundTable';
 import PendingExchangesTable from './pendingExchangeTable';
+import StatusBox from '../statusBox';
 import ReturnComparison, { actions as returnComparisonActions } from '../returnComparison';
 import getReturnComparisonStartDateOptions from '../returnComparison/options';
 import Select from './Select';
@@ -130,6 +131,7 @@ export class AccountPage extends Component {
     return (
       <Fragment>
         <div className="mt-5">
+          <StatusBox />
           {memberNumber ? (
             <Message params={{ memberNumber }}>account.member.statement</Message>
           ) : (
