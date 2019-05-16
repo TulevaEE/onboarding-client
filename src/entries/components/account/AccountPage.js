@@ -169,6 +169,11 @@ export class AccountPage extends Component {
           ''
         )}
         {error ? <ErrorMessage errors={error.body} /> : ''}
+        {localStorage.getItem('thirdPillar') && (
+          <div className="mt-3">
+            <Link to="/3rd-pillar-flow">Esita III samba vahetusavaldus</Link>
+          </div>
+        )}
         {currentBalanceFunds && currentBalanceFunds.length > 0 && (
           <Fragment>
             <div className="row mt-5">

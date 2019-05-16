@@ -10,6 +10,7 @@ import { actions as exchangeActions } from '../exchange';
 import Header from './header';
 import AccountPage from '../account';
 import SecondPillarFlow from '../flows/secondPillar';
+import ThirdPillarFlow from '../flows/thirdPillar';
 import Footer from './footer';
 
 export class LoggedInApp extends PureComponent {
@@ -56,6 +57,7 @@ export class LoggedInApp extends PureComponent {
             <Switch>
               {userAndConversionDataExists && <Route path="/account" component={AccountPage} />}
               <Route path="/2nd-pillar-flow" component={SecondPillarFlow} />
+              <Route path="/3rd-pillar-flow" component={ThirdPillarFlow} />
               <Redirect exact path="/" to="/account" />
             </Switch>
             <Footer />
