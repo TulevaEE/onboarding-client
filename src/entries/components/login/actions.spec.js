@@ -27,8 +27,6 @@ import {
   LOG_OUT,
 } from './constants';
 
-import { DISABLE_SHORT_FLOW } from '../exchange/constants';
-
 import { ID_CARD_LOGIN_START_FAILED_ERROR } from '../common/errorAlert/ErrorAlert';
 
 jest.useFakeTimers();
@@ -437,29 +435,6 @@ describe('Login actions', () => {
     expect(dispatch).toHaveBeenCalledWith({ type: SET_LOGIN_TO_REDIRECT });
     expect(dispatch).toHaveBeenCalledWith({
       type: MOBILE_AUTHENTICATION_START,
-    });
-  });
-
-  it('can check short flow eligibility', () => {
-    state.login.token = 'token';
-    const user = { iAmAUser: true, age: 55 };
-    mockApi.getUserWithToken = jest.fn(() => {
-      expect(dispatch).toHaveBeenCalledTimes(1);
-      expect(dispatch).toHaveBeenCalledWith({ type: GET_USER_START });
-      dispatch.mockClear();
-      return Promise.resolve(user);
-    });
-    const getUser = createBoundAction(actions.getUser);
-    expect(dispatch).not.toHaveBeenCalled();
-    return getUser().then(() => {
-      expect(dispatch).toHaveBeenCalledTimes(3);
-      expect(dispatch).toHaveBeenCalledWith({
-        type: DISABLE_SHORT_FLOW,
-      });
-      expect(dispatch).toHaveBeenCalledWith({
-        type: GET_USER_SUCCESS,
-        user,
-      });
     });
   });
 });

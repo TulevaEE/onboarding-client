@@ -11,7 +11,6 @@ describe('Routing actions', () => {
     state.login = {};
     state.login.user = {};
     state.exchange = {};
-    state.exchange.shortFlow = false;
     state.router = {};
     dispatch = jest.fn(action => {
       if (typeof action === 'function') {
