@@ -2,10 +2,16 @@
 
 import React, { Fragment } from 'react';
 
-const retranslate = jest.genMockFromModule('retranslate');
-
-retranslate.Message = ({ children }) => <Fragment>{children}</Fragment>;
-retranslate.WithTranslations = ({ children }) => children({ translate: key => key });
-retranslate.withTranslations = component => () => <component />;
-
-module.exports = retranslate;
+module.exports = {
+  Message: ({ children, dangerouslyTranslateInnerHTML, params = {} }) => (
+    <Fragment>
+      {children || dangerouslyTranslateInnerHTML}
+      {Object.keys(params).map(key => (
+        <Fragment key={key}>{params[key]}</Fragment>
+      ))}
+    </Fragment>
+  ),
+  WithTranslations: ({ children }) => children({ translate: key => key }),
+  withTranslations: component => () => <component />,
+  Provider: ({ children }) => children,
+};
