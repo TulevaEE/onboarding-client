@@ -1,5 +1,5 @@
 import React from 'react';
-import { PropTypes as Types } from 'prop-types';
+import Types from 'prop-types';
 
 import './Table.scss';
 
