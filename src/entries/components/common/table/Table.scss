@@ -1,0 +1,36 @@
+.table-container {
+  width: 100%;
+}
+
+.table {
+  width: auto !important;
+  max-width: none !important;
+  margin-right: -15px;
+  margin-left: -15px;
+}
+
+.table th {
+  font-weight: normal;
+  font-size: 0.8em;
+  background-color: #fafafa;
+  border-top-width: 1px;
+  border-top-style: solid;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-color: #d8d8d8;
+  white-space: nowrap;
+}
+
+.table tbody {
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-color: #d8d8d8;
+}
+
+.table td:last-child, .table th:last-child {
+  text-align: right;
+}
+
+.table td:nth-last-child(2) {
+  width: 100%;
+}
