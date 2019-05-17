@@ -263,6 +263,7 @@
   "account.second.pillar.missing": "You have not joined the II pillar. What are your options? 1. Those born 1970 or later can join again II pillar from 01.01.2020 onwards. 2. Tuleva will launch soon III pillar pension fund, where you can contribute.",
   "pension.registry.connection.exception": "Couldn't connect to the Estonian Pension Registry, please try again.",
   "change.my.pension.fund": "Change pension fund",
+  "change.my.pension.fund.third.pillar": "Change III pillar",
   "returnComparison.title": "Your II pillar personal rate of return",
   "returnComparison.actual": "Your II pillar personal rate of return",
   "returnComparison.estonian": "Estonian average",
