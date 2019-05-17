@@ -20,6 +20,82 @@ import FundDetailsTable from './FundDetailsTable';
 const noop = () => null;
 
 export class AccountPage extends Component {
+  static memberCapital(initialCapital) {
+    return (
+      <Fragment>
+        <div>
+          <Message
+            params={{
+              amount: String(initialCapital.capitalPayment),
+            }}
+          >
+            member.capital.capital.payment
+          </Message>
+        </div>
+        <div>
+          <Message
+            params={{
+              amount: String(initialCapital.profit),
+            }}
+          >
+            member.capital.profit
+          </Message>
+        </div>
+        <div>
+          <Message
+            params={{
+              amount: String(initialCapital.membershipBonus),
+            }}
+          >
+            member.capital.member.bonus
+          </Message>
+        </div>
+        <div>
+          {initialCapital.workCompensation ? (
+            <Message
+              params={{
+                amount: String(initialCapital.workCompensation),
+              }}
+            >
+              member.capital.work.compensation
+            </Message>
+          ) : (
+            ''
+          )}
+        </div>
+        <div>
+          {initialCapital.unvestedWorkCompensation ? (
+            <Message
+              params={{
+                amount: String(initialCapital.unvestedWorkCompensation),
+              }}
+            >
+              member.capital.unvested.work.compensation
+            </Message>
+          ) : (
+            ''
+          )}
+        </div>
+        <div>
+          <b>
+            <Message
+              params={{
+                amount:
+                  initialCapital.capitalPayment +
+                  initialCapital.membershipBonus +
+                  initialCapital.profit +
+                  initialCapital.unvestedWorkCompensation +
+                  initialCapital.workCompensation,
+              }}
+            >
+              member.capital.total
+            </Message>
+          </b>
+        </div>
+      </Fragment>
+    );
+  }
+
   constructor(props) {
     super(props);
 
@@ -220,82 +296,6 @@ export class AccountPage extends Component {
             <Message>update.user.details.title</Message>
           </p>
           <UpdateUserForm onSubmit={saveUser} />
-        </div>
-      </Fragment>
-    );
-  }
-
-  static memberCapital(initialCapital) {
-    return (
-      <Fragment>
-        <div>
-          <Message
-            params={{
-              amount: String(initialCapital.capitalPayment),
-            }}
-          >
-            member.capital.capital.payment
-          </Message>
-        </div>
-        <div>
-          <Message
-            params={{
-              amount: String(initialCapital.profit),
-            }}
-          >
-            member.capital.profit
-          </Message>
-        </div>
-        <div>
-          <Message
-            params={{
-              amount: String(initialCapital.membershipBonus),
-            }}
-          >
-            member.capital.member.bonus
-          </Message>
-        </div>
-        <div>
-          {initialCapital.workCompensation ? (
-            <Message
-              params={{
-                amount: String(initialCapital.workCompensation),
-              }}
-            >
-              member.capital.work.compensation
-            </Message>
-          ) : (
-            ''
-          )}
-        </div>
-        <div>
-          {initialCapital.unvestedWorkCompensation ? (
-            <Message
-              params={{
-                amount: String(initialCapital.unvestedWorkCompensation),
-              }}
-            >
-              member.capital.unvested.work.compensation
-            </Message>
-          ) : (
-            ''
-          )}
-        </div>
-        <div>
-          <b>
-            <Message
-              params={{
-                amount:
-                  initialCapital.capitalPayment +
-                  initialCapital.membershipBonus +
-                  initialCapital.profit +
-                  initialCapital.unvestedWorkCompensation +
-                  initialCapital.workCompensation,
-              }}
-            >
-              member.capital.total
-            </Message>
-          </b>
         </div>
       </Fragment>
     );

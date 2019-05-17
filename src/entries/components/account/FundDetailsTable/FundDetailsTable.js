@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { PropTypes as Types } from 'prop-types';
 import { Message } from 'retranslate';
 import './FundDetails.scss';
-import { getProfitClassName, formatAmountForCurrency } from '../../common/utils';
+import { formatAmountForCurrency } from '../../common/utils';
 import { calculateTotals } from './fundCalculations';
 import Table from '../../common/table/Table';
 
@@ -39,12 +39,6 @@ const FundDetailsTable = ({ allFunds, pillar }) => {
                 <Message>overview.table.header.instrument</Message>
               </th>
               <th>
-                <Message>overview.table.header.contributions</Message>
-              </th>
-              <th>
-                <Message>overview.table.header.profit</Message>
-              </th>
-              <th>
                 <Message>overview.table.header.value</Message>
               </th>
             </tr>
@@ -54,10 +48,6 @@ const FundDetailsTable = ({ allFunds, pillar }) => {
               funds.map(fund => (
                 <tr key={fund.isin}>
                   <td>{fund.name + (fund.activeFund ? '*' : '')}</td>
-                  <td>{formatAmountForCurrency(fund.contributionSum)}</td>
-                  <td className={getProfitClassName(fund.price - fund.contributionSum)}>
-                    {formatAmountForCurrency(fund.price - fund.contributionSum)}
-                  </td>
                   <td>{formatAmountForCurrency(fund.price)}</td>
                 </tr>
               ))}
@@ -66,10 +56,6 @@ const FundDetailsTable = ({ allFunds, pillar }) => {
             <tr>
               <td>
                 <Message>overview.total</Message>
-              </td>
-              <td>{formatAmountForCurrency(totalsOfPillars.contributions)}</td>
-              <td className={getProfitClassName(totalsOfPillars.profit)}>
-                {formatAmountForCurrency(totalsOfPillars.profit)}
               </td>
               <td>{formatAmountForCurrency(totalsOfPillars.value)}</td>
             </tr>
