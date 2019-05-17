@@ -26,8 +26,8 @@ describe('Pension fund table', () => {
 
   it('renders a fund row for every fund', () => {
     const funds = [
-      { name: 'fund 1', isin: 'isin 1', price: 1, currency: 'EUR' },
-      { name: 'fund 2', isin: 'isin 2', price: 2, currency: 'EUR' },
+      { name: 'fund 1', isin: 'isin 1', price: 1, currency: 'EUR', pillar: 2 },
+      { name: 'fund 2', isin: 'isin 2', price: 2, currency: 'EUR', pillar: 2 },
     ];
     component.setProps({ funds });
     expect(
@@ -50,8 +50,8 @@ describe('Pension fund table', () => {
 
   it('renders a fundrow for totals', () => {
     const funds = [
-      { name: 'fund 1', isin: 'isin 1', price: 1, currency: 'EUR' },
-      { name: 'fund 2', isin: 'isin 2', price: 2, currency: 'EUR' },
+      { name: 'fund 1', isin: 'isin 1', price: 1, currency: 'EUR', pillar: 2 },
+      { name: 'fund 2', isin: 'isin 2', price: 2, currency: 'EUR', pillar: 2 },
     ];
     component.setProps({ funds });
     expect(

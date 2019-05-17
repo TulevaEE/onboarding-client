@@ -30,3 +30,7 @@ export function formatLargeAmountForCurrency(amount = 0) {
 export function getTotalFundValue(funds) {
   return (funds || []).reduce((sum, { price }) => sum + price, 0);
 }
+
+export function getProfitClassName(profit) {
+  return profit >= 0 ? 'profit-positive' : 'profit-negative';
+}
