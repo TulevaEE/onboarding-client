@@ -1,4 +1,5 @@
 import React, { Fragment } from 'react';
+import { Link } from 'react-router-dom';
 import { PropTypes as Types } from 'prop-types';
 import { Message } from 'retranslate';
 import './FundDetails.scss';
@@ -22,7 +23,13 @@ const FundDetailsTable = ({ allFunds, pillar }) => {
         <div className="row col-md-6 mt-5">
           <Message className="mb-2 lead h5">{titleKeysForPillars[pillar]}</Message>
         </div>
-
+        {pillar === 2 && (
+          <div className="col-md-6 text-md-right">
+            <Link className="btn btn-primary mb-3" to="/2nd-pillar-flow">
+              <Message>change.my.pension.fund</Message>
+            </Link>
+          </div>
+        )}
         <Table>
           <thead>
             <tr>
