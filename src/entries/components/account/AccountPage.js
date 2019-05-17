@@ -19,6 +19,82 @@ import { actions as exchangeActions } from '../exchange';
 const noop = () => null;
 
 export class AccountPage extends Component {
+  static memberCapital(initialCapital) {
+    return (
+      <Fragment>
+        <div>
+          <Message
+            params={{
+              amount: String(initialCapital.capitalPayment),
+            }}
+          >
+            member.capital.capital.payment
+          </Message>
+        </div>
+        <div>
+          <Message
+            params={{
+              amount: String(initialCapital.profit),
+            }}
+          >
+            member.capital.profit
+          </Message>
+        </div>
+        <div>
+          <Message
+            params={{
+              amount: String(initialCapital.membershipBonus),
+            }}
+          >
+            member.capital.member.bonus
+          </Message>
+        </div>
+        <div>
+          {initialCapital.workCompensation ? (
+            <Message
+              params={{
+                amount: String(initialCapital.workCompensation),
+              }}
+            >
+              member.capital.work.compensation
+            </Message>
+          ) : (
+            ''
+          )}
+        </div>
+        <div>
+          {initialCapital.unvestedWorkCompensation ? (
+            <Message
+              params={{
+                amount: String(initialCapital.unvestedWorkCompensation),
+              }}
+            >
+              member.capital.unvested.work.compensation
+            </Message>
+          ) : (
+            ''
+          )}
+        </div>
+        <div>
+          <b>
+            <Message
+              params={{
+                amount:
+                  initialCapital.capitalPayment +
+                  initialCapital.membershipBonus +
+                  initialCapital.profit +
+                  initialCapital.unvestedWorkCompensation +
+                  initialCapital.workCompensation,
+              }}
+            >
+              member.capital.total
+            </Message>
+          </b>
+        </div>
+      </Fragment>
+    );
+  }
+
   constructor(props) {
     super(props);
 
@@ -164,10 +240,13 @@ export class AccountPage extends Component {
         {currentBalanceFunds && currentBalanceFunds.length > 0 && (
           <Fragment>
             <div className="row mt-5">
-              <div className="col-md-6">
+              <div className="col-md-4">
                 <Message className="mb-4 lead">select.sources.current.status</Message>
               </div>
-              <div className="col-md-6 text-md-right">
+              <div className="col-md-8 text-md-right">
+                <Link className="btn btn-primary mb-3 mr-2" to="/3rd-pillar-flow">
+                  <Message>change.my.pension.fund.third.pillar</Message>
+                </Link>
                 <Link className="btn btn-primary mb-3" to="/2nd-pillar-flow">
                   <Message>change.my.pension.fund</Message>
                 </Link>
@@ -183,18 +262,16 @@ export class AccountPage extends Component {
           </Fragment>
         )}
         <div>
-
-            <div className="mt-5">
-                <p className="mb-4 lead">
-                    <Message>member.capital</Message>
-                </p>
-              {(loadingCapital || !initialCapital)? (
-                  <Loader className="align-middle" />
-              ) : (
-                  AccountPage.memberCapital(initialCapital)
-              )}
-            </div>
-
+          <div className="mt-5">
+            <p className="mb-4 lead">
+              <Message>member.capital</Message>
+            </p>
+            {loadingCapital || !initialCapital ? (
+              <Loader className="align-middle" />
+            ) : (
+              AccountPage.memberCapital(initialCapital)
+            )}
+          </div>
         </div>
         <div className="mt-5">
           <p className="mb-4 lead">
@@ -205,81 +282,6 @@ export class AccountPage extends Component {
       </Fragment>
     );
   }
-
-    static memberCapital(initialCapital) {
-        return <Fragment>
-            <div>
-                <Message
-                    params={{
-                        amount: String(initialCapital.capitalPayment)
-                    }}
-                >
-                    member.capital.capital.payment
-                </Message>
-            </div>
-            <div>
-                <Message
-                    params={{
-                        amount: String(initialCapital.profit)
-                    }}
-                >
-                    member.capital.profit
-                </Message>
-            </div>
-            <div>
-                <Message
-                    params={{
-                        amount: String(initialCapital.membershipBonus)
-                    }}
-                >
-                    member.capital.member.bonus
-                </Message>
-            </div>
-            <div>
-                {initialCapital.workCompensation ? (
-                    <Message
-                        params={{
-                            amount: String(initialCapital.workCompensation)
-                        }}
-                    >
-                        member.capital.work.compensation
-                    </Message>
-                ) : (
-                    ''
-                )}
-            </div>
-            <div>
-                {initialCapital.unvestedWorkCompensation ? (
-                    <Message
-                        params={{
-                            amount: String(initialCapital.unvestedWorkCompensation)
-                        }}
-                    >
-                        member.capital.unvested.work.compensation
-                    </Message>
-                ) : (
-                    ''
-                )}
-            </div>
-            <div>
-                <b>
-                    <Message
-                        params={{
-                            amount: (
-                                initialCapital.capitalPayment +
-                                initialCapital.membershipBonus +
-                                initialCapital.profit +
-                                initialCapital.unvestedWorkCompensation +
-                                initialCapital.workCompensation
-                            )
-                        }}
-                    >
-                        member.capital.total
-                    </Message>
-                </b>
-            </div>
-        </Fragment>;
-    }
 }
 
 AccountPage.propTypes = {
