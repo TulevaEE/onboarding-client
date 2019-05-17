@@ -5,7 +5,11 @@ import {
   CHANGE_AGREEMENT_TO_TERMS,
 } from './constants';
 import initialState from './initialState';
-import { GET_SOURCE_FUNDS_SUCCESS, GET_TARGET_FUNDS_SUCCESS } from '../exchange/constants';
+import {
+  GET_SOURCE_FUNDS_SUCCESS,
+  GET_TARGET_FUNDS_SUCCESS,
+  SIGN_MANDATE_SUCCESS,
+} from '../exchange/constants';
 
 export default function thirdPillarReducer(state = initialState, action) {
   const { type, query, monthlyContribution } = action;
@@ -39,6 +43,11 @@ export default function thirdPillarReducer(state = initialState, action) {
       return {
         ...state,
         agreedToTerms: action.agreedToTerms,
+      };
+    case SIGN_MANDATE_SUCCESS:
+      return {
+        ...state,
+        signedMandateId: action.signedMandateId,
       };
     default:
       return state;
