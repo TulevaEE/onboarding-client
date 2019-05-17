@@ -242,6 +242,7 @@
 
   "thirdPillarFlow.steps.setup.title": "Sisesta, kui palju soovid koguma hakata",
   "thirdPillarFlow.steps.confirmMandate.title": "Kinnita avalduse sisu",
+  "thirdPillarFlow.steps.payment.title": "Maksa",
 
   "thirdPillarFlowSetup.monthlyContributionLabel": "Igakuine sissemakse",
   "thirdPillarFlowSetup.exchangeExistingUnitsLabel": "Soovin kogunenud III samba osakud üle tuua",
@@ -267,5 +268,15 @@
   "member.capital.member.bonus": "Kogunenud liikmeboonus: {{amount}}€",
   "member.capital.work.compensation": "Tööpanus: {{amount}}€",
   "member.capital.unvested.work.compensation": "Broneeritud tööpanus: {{amount}}€",
-  "member.capital.total": "Kokku: {{amount}}€"
+  "member.capital.total": "Kokku: {{amount}}€",
+
+  "thirdPillarPayment.title": "Avaldus esitatud!",
+  "thirdPillarPayment.description": "Nüüd logi sisse oma internetipanka ning {{ emphasized }}.",
+  "thirdPillarPayment.descriptionEphasized": "tee sissemakse oma III samba kontole",
+  "thirdPillarPayment.accountName": "Makse saaja",
+  "thirdPillarPayment.accountNumber": "Arve number",
+  "thirdPillarPayment.amount": "Summa",
+  "thirdPillarPayment.details": "Makse selgitus",
+  "thirdPillarPayment.reference": "Viitenumber",
+  "thirdPillarPayment.pensionAccountNumber": "SINU PENSIONIKONTO NUMBER"
 }
