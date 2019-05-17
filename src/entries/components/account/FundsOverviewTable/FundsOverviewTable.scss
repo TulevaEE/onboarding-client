@@ -1,0 +1,17 @@
+@import "../../variables";
+
+.tv-table__header {
+  font-size: 0.8em;
+  background-color: $gray-washed;
+  border-top-width: 1px;
+  border-top-style: solid;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-color: $gray-mid;
+}
+
+.tv-table__row {
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-color: $gray-mid;
+}

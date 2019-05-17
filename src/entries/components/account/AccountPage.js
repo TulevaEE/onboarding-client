@@ -6,7 +6,7 @@ import { Message, WithTranslations } from 'retranslate';
 import { Link } from 'react-router-dom';
 
 import { Loader, ErrorMessage } from '../common';
-import PensionFundTable from '../flows/secondPillar/selectSources/pensionFundTable';
+import FundsOverviewTable from './FundsOverviewTable';
 import PendingExchangesTable from './pendingExchangeTable';
 import StatusBox from './statusBox';
 import ReturnComparison, { actions as returnComparisonActions } from '../returnComparison';
@@ -16,6 +16,7 @@ import UpdateUserForm from './updateUserForm';
 import { updateUser } from '../common/user/actions';
 import { actions as accountActions } from '.';
 import { actions as exchangeActions } from '../exchange';
+import FundDetailsTable from './FundDetailsTable';
 
 const noop = () => null;
 
@@ -248,25 +249,42 @@ export class AccountPage extends Component {
         {currentBalanceFunds && currentBalanceFunds.length > 0 && (
           <Fragment>
             <div className="row mt-5">
-              <div className="col-md-4">
-                <Message className="mb-4 lead">select.sources.current.status</Message>
-              </div>
-              <div className="col-md-8 text-md-right">
-                <Link className="btn btn-primary mb-3 mr-2" to="/3rd-pillar-flow">
-                  <Message>change.my.pension.fund.third.pillar</Message>
-                </Link>
-                <Link className="btn btn-primary mb-3" to="/2nd-pillar-flow">
-                  <Message>change.my.pension.fund</Message>
-                </Link>
+              <div className="col-md-6">
+                <Message className="mb-4 h3">overview.summary.title</Message>
               </div>
             </div>
+
             {loadingCurrentBalance ? (
               <Loader className="align-middle" />
             ) : (
-              <PensionFundTable funds={currentBalanceFunds} />
+              <FundsOverviewTable funds={currentBalanceFunds} />
             )}
+
             {pendingExchangesSection}
             {returnComparisonSection}
+
+            <div className="row mt-3">
+              <div className="col-md-6 mt-5">
+                <Message className="mb-4 h3">overview.details.title</Message>
+              </div>
+            </div>
+
+            {loadingCurrentBalance ? (
+              <Loader className="align-middle" />
+            ) : (
+              <FundDetailsTable allFunds={currentBalanceFunds} pillar={2} />
+            )}
+
+            {loadingCurrentBalance ? (
+              <Loader className="align-middle" />
+            ) : (
+              <FundDetailsTable allFunds={currentBalanceFunds} pillar={3} />
+            )}
+            <div className="mt-2">
+              <small className="text-muted">
+                <Message>overview.active.fund</Message>
+              </small>
+            </div>
           </Fragment>
         )}
         <div>

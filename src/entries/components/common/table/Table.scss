@@ -1,0 +1,56 @@
+.table-container {
+  width: 100%;
+}
+
+.table {
+  width: auto !important;
+  max-width: none !important;
+  margin-right: -15px;
+  margin-left: -15px;
+  margin-bottom: 15px;
+}
+
+.table th {
+  text-transform: uppercase;
+  font-weight: bolder;
+  font-size: 0.8em;
+  background-color: #fafafa;
+  border-top-width: 1px;
+  border-top-style: solid;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-color: #d8d8d8;
+  white-space: nowrap;
+  color: darkgray;
+}
+
+.table tbody {
+  border-bottom-width: 2px;
+  border-bottom-style: solid;
+  border-color: #d8d8d8;
+}
+
+.table tfoot td:last-child, .table tfoot td:first-child {
+  font-weight: bold;
+}
+
+.table td, .table th {
+  text-align: right;
+}
+
+.table td.profit-positive {
+  color: green;
+}
+
+.table td.profit-negative {
+  color: red;
+}
+
+
+.table td:first-child, .table th:first-child {
+  text-align: left;
+}
+
+.table td:first-child {
+  width: 100%;
+}
