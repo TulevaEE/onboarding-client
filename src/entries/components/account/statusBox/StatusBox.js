@@ -27,7 +27,11 @@ const StatusBox = ({ currentBalanceFunds, memberNumber, age }) => {
   const joinTuleva3 = joinTuleva(thirdPillarData);
   // has any non-tuleva managers
 
-  const tulevaData = [];
+  const isTulevaMember = memberNumber != null;
+
+  const tulevaData = isTulevaMember
+    ? [<Message params={{ memberNumber }}>account.member.statement</Message>]
+    : [];
 
   return (
     <Fragment>
@@ -50,7 +54,7 @@ const StatusBox = ({ currentBalanceFunds, memberNumber, age }) => {
       <div className="card card-secondary p-4">
         <StatusBoxRow
           ok={!joinTuleva2 && !joinTulevaSoon}
-          showAction={joinTuleva2 || joinTulevaSoon}
+          showAction
           name={<Message>account.status.choice.pillar.second</Message>}
           lines={secondPillarData.map(({ name }) => name)}
         >
@@ -75,23 +79,26 @@ const StatusBox = ({ currentBalanceFunds, memberNumber, age }) => {
           name={<Message>account.status.choice.pillar.third</Message>}
           lines={thirdPillarData.map(({ name }) => name)}
         >
-          <Link to="/3rd-pillar-flow">
-            <Message>account.status.choice.join.tuleva.3</Message>
-          </Link>
+          {joinTuleva3 && (
+            <Link to="/3rd-pillar-flow">
+              <Message>account.status.choice.join.tuleva.3</Message>
+            </Link>
+          )}
         </StatusBoxRow>
 
         <StatusBoxRow
-          ok={memberNumber}
-          showAction={!memberNumber}
-          last
+          ok={isTulevaMember}
+          showAction
           name={<Message>account.status.choice.tuleva</Message>}
-          lines={tulevaData.map(({ name }) => name)}
+          lines={tulevaData}
         >
-          <span>
-            <a className="btn btn-link p-0 border-0" href="https://tuleva.ee/tulundusyhistu/">
-              <Message>account.status.choice.join.tuleva</Message>
-            </a>
-          </span>
+          {!isTulevaMember && (
+            <span>
+              <a className="btn btn-link p-0 border-0" href="https://tuleva.ee/tulundusyhistu/">
+                <Message>account.status.choice.join.tuleva</Message>
+              </a>
+            </span>
+          )}
         </StatusBoxRow>
       </div>
     </Fragment>

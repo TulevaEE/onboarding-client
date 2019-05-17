@@ -71,17 +71,35 @@ describe('Status Box', () => {
 
   // TODO some in tuleva III
   // TODO all in tuleva III
-  it('renders join Tuleva III pillar when III pillars not all in Tuleva', () => {
+  it('renders join Tuleva III pillar when III pillars none in Tuleva', () => {
     expect(component.contains(to3rdPillarFlow)).toBe(true);
+  });
+
+  it('renders join Tuleva III pillar when III pillars not all in Tuleva', () => {
+    const currentBalanceFunds = [
+      { fund: { managerName: 'NotTuleva' }, activeFund: true, pillar: 3 },
+      { fund: { managerName: 'Tuleva' }, activeFund: true, pillar: 3 },
+    ];
+
+    component.setProps({ currentBalanceFunds });
+    expect(component.contains(to3rdPillarFlow)).toBe(true);
+  });
+
+  it('wont render join Tuleva III pillar when III pillars  all in Tuleva', () => {
+    const currentBalanceFunds = [{ fund: { managerName: 'Tuleva' }, activeFund: true, pillar: 3 }];
+
+    component.setProps({ currentBalanceFunds });
+    expect(component.contains(to3rdPillarFlow)).toBe(false);
   });
 
   it('renders become Tuleva member when not member', () => {
     expect(component.contains(toMemberFlow)).toBe(true);
   });
 
-  it('wont renders become Tuleva member when member', () => {
+  it('wont render become Tuleva member when member', () => {
     component.setProps({ memberNumber: 123 });
-    expect(component.contains(toMemberFlow)).toBe(true);
+    // expect(component.debug()).toBe(false);
+    expect(component.contains(toMemberFlow)).toBe(false);
   });
 
   function mountWithProvider(renderComponent) {

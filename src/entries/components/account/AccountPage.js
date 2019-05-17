@@ -136,6 +136,7 @@ export class AccountPage extends Component {
             currentBalanceFunds={currentBalanceFunds}
             age={age}
             memberNumber={memberNumber}
+            loading={loadingCurrentBalance}
           />
           {memberNumber ? (
             <Message params={{ memberNumber }}>account.member.statement</Message>
