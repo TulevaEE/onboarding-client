@@ -23,7 +23,9 @@ const FundTransferTable = ({ selections }) => (
         <div className="col-12 col-sm-2">{selection.percentage * 100}%</div>
         <div className="col-12 col-sm">
           <b className="highlight">
-            <Message>{`target.funds.${selection.targetFundIsin}.title`}</Message>
+            {selection.targetFundName || (
+              <Message>{`target.funds.${selection.targetFundIsin}.title`}</Message>
+            )}
           </b>
         </div>
       </div>

@@ -198,7 +198,7 @@ export function getUserConversionWithToken(token) {
 }
 
 export function getInitialCapitalWithToken(token) {
-  return get(getEndpoint('/v1/me/initial-capital'), undefined, {
+  return get(getEndpoint('/v1/me/capital'), undefined, {
     Authorization: `Bearer ${token}`,
   });
 }

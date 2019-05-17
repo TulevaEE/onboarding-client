@@ -208,7 +208,6 @@
   "header.my.account": "My account",
   "account.member.statement": "You are Tuleva member no. {{memberNumber}}.",
   "account.non.member.statement": "You are not a member of Tuleva commercial association yet. Become a member and co-owner here:",
-  "account.initial-capital.statement": "Your initial member capital was {{initialCapital}}€. Your member capital value as of 30.04.2019 is {{currentCapital}}€.",
   "account.converted.user.statement": "You have successfully filled an application to transfer future payments and current fund units to Tuleva.",
   "account.status.choices": "Your choices",
   "account.status.choice.pillar.second": "II pillar",
@@ -282,6 +281,7 @@
 
   "confirmThirdPillarMandate.intro": "By signing I confirm that:",
   "confirmThirdPillarMandate.contribution": "I wish to transfer my supplementary pension fund contributions to:",
+  "confirmThirdPillarMandate.exchangeExistingUnits": "I wish to exchange current fund units for:",
 
   "thirdPillarAgreement.termsConfirmation": "I confirm that I have had the chance to view all {{ link }}, I agree to the terms of my chosen pension fund(s) and understand the risks that accompany the acquisition of supplementary pension fund units. By clicking “sign and send“ a digitally signed application will be sent to the register.",
   "thirdPillarAgreement.linkText": "supplementary pension funds’ terms and prospectuses",
@@ -291,5 +291,14 @@
 
   "confirmThirdPillarMandate.sign": "Sign and send mandate",
   "confirmThirdPillarMandate.preview": "Preview",
-  "confirmThirdPillarMandate.back": "Previous step"
+  "confirmThirdPillarMandate.back": "Previous step",
+
+  "member.capital": "Member capital",
+  "member.capital.capital.payment": "Capital payment: {{amount}}€",
+  "member.capital.profit": "Investment profit: {{amount}}€",
+  "member.capital.member.bonus": "Membership bonus: {{amount}}€",
+  "member.capital.work.compensation": "Work compensation: {{amount}}€",
+  "member.capital.unvested.work.compensation": "Unvested work compensation: {{amount}}€",
+  "member.capital.total": "Total: {{amount}}€"
+
 }

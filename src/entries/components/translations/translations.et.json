@@ -183,7 +183,6 @@
   "header.my.account": "Minu konto",
   "account.member.statement": "Oled Tuleva liige nr. {{memberNumber}}.",
   "account.non.member.statement": "Sa ei ole veel Tuleva ühistu liige. Ühistu liikmeks ehk kaasomanikuks saad astuda siin:",
-  "account.initial-capital.statement": "Panustasid vabatahtliku panusena liikmekapitali {{initialCapital}}€. Sinu liikmekapitali kontol on 30.04.2019 seisuga {{currentCapital}}€. Tuleva liikmekapital kokku (kõigi liikmete kapitalikontode summa) on 3 475 072€.",
   "account.converted.user.statement": "Avaldus maksete ümber suunamiseks ja olemasolevate osakute ümber vahetamiseks Tuleva pensionifondi on tehtud.",
   "account.status.choices": "Sinu valikud",
   "account.status.choice.pillar.second": "II sammas",
@@ -258,6 +257,7 @@
 
   "confirmThirdPillarMandate.intro": "Avaldust allkirjastades kinnitad, et:",
   "confirmThirdPillarMandate.contribution": "soovid hakata tegema vabatahtliku kogumispensioni sissemakseid fondi:",
+  "confirmThirdPillarMandate.exchangeExistingUnits": "soovid vahetada olemasolevad osakud järgmiselt:",
 
   "thirdPillarAgreement.termsConfirmation": "Kinnitan, et mul on olnud võimalik tutvuda kõigi registreeritud {{ link }}, nõustun minu valitud pensionifondi(de) tingimustega ning mõistan vabatahtliku pensionifondi osakute omandamisega kaasnevaid riske.",
   "thirdPillarAgreement.linkText": "vabatahtlike pensionifondide tingimuste ja emissiooniprospektidega",
@@ -267,5 +267,13 @@
 
   "confirmThirdPillarMandate.sign": "Allkirjasta ja saada",
   "confirmThirdPillarMandate.preview": "Eelvaade",
-  "confirmThirdPillarMandate.back": "Eelmine samm"
+  "confirmThirdPillarMandate.back": "Eelmine samm",
+
+  "member.capital": "Liikmekapital",
+  "member.capital.capital.payment": "Panus liikmekapitali: {{amount}}€",
+  "member.capital.profit": "Teenitud investeerimiskasum: {{amount}}€",
+  "member.capital.member.bonus": "Kogunenud liikmeboonus: {{amount}}€",
+  "member.capital.work.compensation": "Tööpanus: {{amount}}€",
+  "member.capital.unvested.work.compensation": "Broneeritud tööpanus: {{amount}}€",
+  "member.capital.total": "Kokku: {{amount}}€"
 }

@@ -21,6 +21,14 @@ describe('Current balance', () => {
   let component;
   let props;
 
+  const capital = {
+    "membershipBonus":10,
+    "capitalPayment":1000,
+    "unvestedWorkCompensation":1000,
+    "workCompensation":1000,
+    "profit":0.1
+  };
+
   beforeEach(() => {
     getReturnComparisonStartDateOptions.mockReturnValue([{}, {}]);
     props = {};
@@ -43,8 +51,12 @@ describe('Current balance', () => {
         activeContributions: true,
       },
     ];
+
     beforeEach(() => {
-      component.setProps({ currentBalanceFunds });
+      component.setProps({
+        currentBalanceFunds,
+        loadingCapital: true, initialCapital: capital
+      });
     });
 
     it('renders the status box', () => {
@@ -153,30 +165,7 @@ describe('Current balance', () => {
     expect(component.contains(<Message>account.converted.user.statement</Message>)).toBe(false);
   });
 
-  it('renders initial capital, only if it is present', () => {
-    const initialCapital = { amount: 1200, currency: 'EUR', ownershipFraction: 0.0000001 };
-    component.setProps({ initialCapital });
-
-    expect(
-      component.contains(
-        <Message
-          params={{
-            initialCapital: initialCapital.amount,
-            currentCapital: (TOTAL_CAPITAL * initialCapital.ownershipFraction).toFixed(2),
-          }}
-        >
-          account.initial-capital.statement
-        </Message>,
-      ),
-    ).toBe(true);
-    component.setProps({ initialCapital: null });
-    expect(component.contains('account.initial-capital.statement')).toBe(false);
-  });
-
   it('renders no second pillar message', () => {
-    const initialCapital = { currentBalanceFunds: [] };
-    component.setProps({ initialCapital });
-
     expect(component.contains(<Message>account.second.pillar.missing</Message>)).toBe(true);
     component.setProps({ currentBalanceFunds: [{ sourcefund: true }] });
     expect(component.contains(<Message>account.second.pillar.missing</Message>)).toBe(false);
@@ -260,9 +249,6 @@ describe('Current balance', () => {
   });
 
   it('renders change pension fund button', () => {
-    const initialCapital = { currentBalanceFunds: [] };
-    component.setProps({ initialCapital });
-
     expect(
       component.contains(
         <Link className="btn btn-primary mb-3" to="/2nd-pillar-flow">

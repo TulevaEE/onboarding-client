@@ -6,7 +6,11 @@ import {
 } from './constants';
 import initialState from './initialState';
 import reducer from './reducer';
-import { GET_SOURCE_FUNDS_SUCCESS, GET_TARGET_FUNDS_SUCCESS } from '../exchange/constants';
+import {
+  GET_SOURCE_FUNDS_SUCCESS,
+  GET_TARGET_FUNDS_SUCCESS,
+  SIGN_MANDATE_SUCCESS,
+} from '../exchange/constants';
 
 describe('Third pillar reducer', () => {
   it('saves monthly contribution as a number when monthlyContribution is in query params and parsable as a number', () => {
@@ -179,6 +183,18 @@ describe('Third pillar reducer', () => {
     expect(state).toEqual({
       ...initialState,
       agreedToTerms: true,
+    });
+  });
+
+  it('updates signed mandate id', () => {
+    const state = reducer(undefined, {
+      type: SIGN_MANDATE_SUCCESS,
+      signedMandateId: 123,
+    });
+
+    expect(state).toEqual({
+      ...initialState,
+      signedMandateId: 123,
     });
   });
 });
