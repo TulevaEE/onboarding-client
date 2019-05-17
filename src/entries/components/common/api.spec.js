@@ -435,4 +435,27 @@ describe('api', () => {
       Authorization: 'Bearer a-token',
     });
   });
+
+  it('can create an aml check', () => {
+    const token = 'a token';
+
+    mockHttp.post = jest.fn(() =>
+      Promise.resolve({
+        type: 'TYPE',
+        success: true,
+      }),
+    );
+    expect(mockHttp.post).not.toHaveBeenCalled();
+    return api.createAmlCheck('TYPE', true, token).then(check => {
+      expect(check.type).toBe('TYPE');
+      expect(mockHttp.post).toHaveBeenCalledTimes(1);
+      expect(mockHttp.post).toHaveBeenCalledWith(
+        '/v1/amlchecks',
+        { type: 'TYPE', success: true },
+        {
+          Authorization: `Bearer ${token}`,
+        },
+      );
+    });
+  });
 });

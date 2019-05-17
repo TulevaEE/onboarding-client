@@ -3,27 +3,32 @@ import download from 'downloadjs';
 import hwcrypto from 'hwcrypto-js';
 
 import {
+  createAmlCheck,
+  downloadMandatePreviewWithIdAndToken,
   downloadMandateWithIdAndToken,
   getIdCardSignatureHashForMandateIdWithCertificateHexAndToken,
   getIdCardSignatureStatusForMandateIdWithSignedHashAndToken,
   getMobileIdSignatureChallengeCodeForMandateIdWithToken,
   getMobileIdSignatureStatusForMandateIdWithToken,
-  getSourceFundsWithToken,
-  getTargetFundsWithToken,
-  saveMandateWithToken,
-  downloadMandatePreviewWithIdAndToken,
   getPendingExchangesWithToken,
   getSmartIdSignatureChallengeCodeForMandateIdWithToken,
   getSmartIdSignatureStatusForMandateIdWithToken,
+  getSourceFundsWithToken,
+  getTargetFundsWithToken,
+  saveMandateWithToken,
 } from '../common/api';
 import {
   CHANGE_AGREEMENT_TO_TERMS,
+  GET_PENDING_EXCHANGES_ERROR,
+  GET_PENDING_EXCHANGES_START,
+  GET_PENDING_EXCHANGES_SUCCESS,
   GET_SOURCE_FUNDS_ERROR,
   GET_SOURCE_FUNDS_START,
   GET_SOURCE_FUNDS_SUCCESS,
   GET_TARGET_FUNDS_ERROR,
   GET_TARGET_FUNDS_START,
   GET_TARGET_FUNDS_SUCCESS,
+  NO_SIGN_MANDATE_ERROR,
   SELECT_EXCHANGE_SOURCES,
   SELECT_TARGET_FUND,
   SIGN_MANDATE_ERROR,
@@ -36,10 +41,6 @@ import {
   SIGN_MANDATE_MOBILE_ID_START_SUCCESS,
   SIGN_MANDATE_START_ERROR,
   SIGN_MANDATE_SUCCESS,
-  NO_SIGN_MANDATE_ERROR,
-  GET_PENDING_EXCHANGES_START,
-  GET_PENDING_EXCHANGES_SUCCESS,
-  GET_PENDING_EXCHANGES_ERROR,
 } from './constants';
 
 const POLL_DELAY = 1000;
@@ -306,17 +307,30 @@ export function signMandateWithIdCard(mandate) {
   };
 }
 
-export function signMandate(mandate) {
+export function signMandate(mandate, isResident, isPoliticallyExposed) {
   return (dispatch, getState) => {
     const loggedInWithMobileId = getState().login.loginMethod === 'mobileId';
     const loggedInWithSmartId = getState().login.loginMethod === 'smartId';
-    if (loggedInWithMobileId) {
-      return dispatch(signMandateWithMobileId(mandate));
-    }
-    if (loggedInWithSmartId) {
-      return dispatch(signMandateWithSmartId(mandate));
-    }
-    return dispatch(signMandateWithIdCard(mandate));
+    return createAmlCheck('RESIDENCY_MANUAL', isResident, getState().login.token)
+      .then(() => {
+        return createAmlCheck(
+          'POLITICALLY_EXPOSED_PERSON',
+          !isPoliticallyExposed,
+          getState().login.token,
+        );
+      })
+      .then(() => {
+        if (loggedInWithMobileId) {
+          return dispatch(signMandateWithMobileId(mandate));
+        }
+        if (loggedInWithSmartId) {
+          return dispatch(signMandateWithSmartId(mandate));
+        }
+        return dispatch(signMandateWithIdCard(mandate));
+      })
+      .catch(error => {
+        handleSaveMandateError(dispatch, error);
+      });
   };
 }
 
