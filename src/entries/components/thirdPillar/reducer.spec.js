@@ -3,6 +3,8 @@ import {
   CHANGE_MONTHLY_CONTRIBUTION,
   CHANGE_EXCHANGE_EXISTING_UNITS,
   CHANGE_AGREEMENT_TO_TERMS,
+  CHANGE_POLITICALLY_EXPOSED,
+  CHANGE_RESIDENCY,
 } from './constants';
 import initialState from './initialState';
 import reducer from './reducer';
@@ -183,6 +185,30 @@ describe('Third pillar reducer', () => {
     expect(state).toEqual({
       ...initialState,
       agreedToTerms: true,
+    });
+  });
+
+  it('updates politically exposed', () => {
+    const state = reducer(undefined, {
+      type: CHANGE_POLITICALLY_EXPOSED,
+      isPoliticallyExposed: true,
+    });
+
+    expect(state).toEqual({
+      ...initialState,
+      isPoliticallyExposed: true,
+    });
+  });
+
+  it('updates residency', () => {
+    const state = reducer(undefined, {
+      type: CHANGE_RESIDENCY,
+      isResident: true,
+    });
+
+    expect(state).toEqual({
+      ...initialState,
+      isResident: true,
     });
   });
 
