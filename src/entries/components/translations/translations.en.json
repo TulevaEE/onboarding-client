@@ -267,6 +267,7 @@
 
   "thirdPillarFlow.steps.setup.title": "Insert your monthly contribution",
   "thirdPillarFlow.steps.confirmMandate.title": "Confirm mandate",
+  "thirdPillarFlow.steps.payment.title": "Pay",
 
   "thirdPillarFlowSetup.monthlyContributionLabel": "Monthly contribution",
   "thirdPillarFlowSetup.exchangeExistingUnitsLabel": "I wish to exchange existing III pillar funds",
@@ -292,6 +293,15 @@
   "member.capital.member.bonus": "Membership bonus: {{amount}}€",
   "member.capital.work.compensation": "Work compensation: {{amount}}€",
   "member.capital.unvested.work.compensation": "Unvested work compensation: {{amount}}€",
-  "member.capital.total": "Total: {{amount}}€"
+  "member.capital.total": "Total: {{amount}}€",
 
+  "thirdPillarPayment.title": "Application finished!",
+  "thirdPillarPayment.description": "Now log into your internet bank and {{ emphasized }}.",
+  "thirdPillarPayment.descriptionEphasized": "make a payment into your pension account",
+  "thirdPillarPayment.accountName": "Pay to",
+  "thirdPillarPayment.accountNumber": "Account number",
+  "thirdPillarPayment.amount": "Amount",
+  "thirdPillarPayment.details": "Payment details",
+  "thirdPillarPayment.reference": "Reference",
+  "thirdPillarPayment.pensionAccountNumber": "YOUR PENSION ACCOUNT NUMBER"
 }

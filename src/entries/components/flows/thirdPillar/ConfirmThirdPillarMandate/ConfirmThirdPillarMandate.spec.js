@@ -17,6 +17,15 @@ describe('ConfirmThirdPillarMandate', () => {
     );
   });
 
+  it('redirects to next path only when signed mandate id exists', () => {
+    component.setProps({ nextPath: '/next-path' });
+    const redirects = () => component.contains(<Redirect to="/next-path" />);
+
+    expect(redirects()).toBe(false);
+    component.setProps({ signedMandateId: 123 });
+    expect(redirects()).toBe(true);
+  });
+
   it('redirects to previous path only when no monthly contribution', () => {
     component.setProps({ previousPath: '/a-path' });
     const redirects = () => component.contains(<Redirect to="/a-path" />);

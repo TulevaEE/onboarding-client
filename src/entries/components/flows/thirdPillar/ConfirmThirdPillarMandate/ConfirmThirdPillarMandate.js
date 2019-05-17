@@ -11,6 +11,8 @@ import FundTransferTable from '../../secondPillar/confirmMandate/fundTransferTab
 
 export const ConfirmThirdPillarMandate = ({
   previousPath,
+  nextPath,
+  signedMandateId,
   monthlyContribution,
   exchangeExistingUnits,
   sourceFunds,
@@ -20,6 +22,7 @@ export const ConfirmThirdPillarMandate = ({
   onPreview,
 }) => (
   <Fragment>
+    {signedMandateId && <Redirect to={nextPath} />}
     {(!monthlyContribution || !selectedFutureContributionsFund) && <Redirect to={previousPath} />}
 
     <Message>confirmThirdPillarMandate.intro</Message>
@@ -99,7 +102,9 @@ const fundType = Types.shape({ isin: Types.string, name: Types.string });
 
 ConfirmThirdPillarMandate.propTypes = {
   previousPath: Types.string,
+  nextPath: Types.string,
 
+  signedMandateId: Types.number,
   monthlyContribution: Types.number,
   exchangeExistingUnits: Types.bool,
   sourceFunds: Types.arrayOf(fundType),
@@ -111,7 +116,9 @@ ConfirmThirdPillarMandate.propTypes = {
 
 ConfirmThirdPillarMandate.defaultProps = {
   previousPath: '',
+  nextPath: '',
 
+  signedMandateId: null,
   monthlyContribution: null,
   exchangeExistingUnits: null,
   sourceFunds: [],
@@ -122,6 +129,7 @@ ConfirmThirdPillarMandate.defaultProps = {
 };
 
 const mapStateToProps = state => ({
+  signedMandateId: state.thirdPillar.signedMandateId,
   selectedFutureContributionsFund: state.thirdPillar.targetFunds.find(
     fund => fund.isin === state.thirdPillar.selectedFutureContributionsFundIsin,
   ),
