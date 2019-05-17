@@ -14,7 +14,7 @@ const steps = [
   },
   {
     path: 'confirm-mandate',
-    Component: () => <ConfirmThirdPillarMandate nextPath={`${flowPath}/success`} />,
+    Component: () => <ConfirmThirdPillarMandate previousPath={`${flowPath}/setup`} />,
     title: <Message>thirdPillarFlow.steps.confirmMandate.title</Message>,
   },
 ];
