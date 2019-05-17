@@ -55,7 +55,9 @@ export function getSourceFunds() {
     return getSourceFundsWithToken(getState().login.token)
       .then(sourceFunds => {
         if (sourceFunds.length === 0) {
-          dispatch(push('/account'));
+          if (window.useHackySecondPillarRoutePushesInActions) {
+            dispatch(push('/account'));
+          }
         }
         dispatch({ type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds });
       })
@@ -116,7 +118,9 @@ function pollForMandateSignatureWithMandateId(mandateId) {
               type: SIGN_MANDATE_SUCCESS,
               signedMandateId: mandateId,
             });
-            dispatch(push('/2nd-pillar-flow/success'));
+            if (window.useHackySecondPillarRoutePushesInActions) {
+              dispatch(push('/2nd-pillar-flow/success'));
+            }
           }
         })
         .catch(error => dispatch({ type: SIGN_MANDATE_ERROR, error }));
@@ -139,7 +143,9 @@ function pollForMandateSignatureWithMandateIdUsingSmartId(mandateId) {
               type: SIGN_MANDATE_SUCCESS,
               signedMandateId: mandateId,
             });
-            dispatch(push('/2nd-pillar-flow/success'));
+            if (window.useHackySecondPillarRoutePushesInActions) {
+              dispatch(push('/2nd-pillar-flow/success'));
+            }
           }
         })
         .catch(error => dispatch({ type: SIGN_MANDATE_ERROR, error }));
@@ -224,7 +230,9 @@ function pollForMandateSignatureWithMandateIdAndSignedHash(mandateId, signedHash
               type: SIGN_MANDATE_SUCCESS,
               signedMandateId: mandateId,
             });
-            dispatch(push('/2nd-pillar-flow/success'));
+            if (window.useHackySecondPillarRoutePushesInActions) {
+              dispatch(push('/2nd-pillar-flow/success'));
+            }
           } else if (statusCode === SIGNING_IN_PROGRESS_STATUS) {
             dispatch(pollForMandateSignatureWithMandateIdAndSignedHash(mandateId, signedHash));
           } else {

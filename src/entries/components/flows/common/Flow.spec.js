@@ -18,8 +18,9 @@ const FourthComponent = () => <div>Fourth</div>;
 
 describe('Flow', () => {
   let component;
+  let steps;
   beforeEach(() => {
-    const steps = [
+    steps = [
       {
         path: 'first-step',
         Component: FirstComponent,
@@ -41,6 +42,12 @@ describe('Flow', () => {
       },
     ];
     component = shallow(<Flow name="SOME_FLOW" flowPath="/a-flow" steps={steps} />);
+  });
+
+  it('sets window.useHackySecondPillarRoutePushesInActions to whether flow name is SECOND_PILLAR on mount', () => {
+    expect(window.useHackySecondPillarRoutePushesInActions).toBe(false);
+    component = shallow(<Flow name="SECOND_PILLAR" flowPath="/a-flow" steps={steps} />);
+    expect(window.useHackySecondPillarRoutePushesInActions).toBe(true);
   });
 
   it('sends a mixpanel event on every render with flow name and step path', () => {
