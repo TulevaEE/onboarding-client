@@ -19,10 +19,17 @@ describe('ThirdPillarPayment', () => {
     expect(redirects()).toBe(false);
   });
 
-  it('redirects to previous path only when no signed mandate id', () => {
+  it('has monthly contribution', () => {
     const monthlyContribution = () => component.find('[data-test-id="monthly-contribution"]');
 
     component.setProps({ monthlyContribution: 1000 });
     expect(monthlyContribution().text()).toBe('1000 EUR');
+  });
+
+  it('has pension account number', () => {
+    const pensionAccountNumber = () => component.find('[data-test-id="pension-account-number"]');
+
+    component.setProps({ pensionAccountNumber: '987' });
+    expect(pensionAccountNumber().text()).toBe('987');
   });
 });
