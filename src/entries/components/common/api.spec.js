@@ -373,11 +373,11 @@ describe('api', () => {
     );
   });
 
-  it('can get user initial capital', () => {
+  it('can get user capital', () => {
     mockHttp.get = jest.fn(() => Promise.resolve());
     const token = 'a token';
     return api.getInitialCapitalWithToken(token).then(() =>
-      expect(mockHttp.get).toHaveBeenCalledWith('/v1/me/initial-capital', undefined, {
+      expect(mockHttp.get).toHaveBeenCalledWith('/v1/me/capital', undefined, {
         Authorization: `Bearer ${token}`,
       }),
     );

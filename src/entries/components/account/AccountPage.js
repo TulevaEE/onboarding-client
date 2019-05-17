@@ -18,8 +18,6 @@ import { actions as exchangeActions } from '../exchange';
 
 const noop = () => null;
 
-export const TOTAL_CAPITAL = 3475072;
-
 export class AccountPage extends Component {
   constructor(props) {
     super(props);
@@ -71,6 +69,7 @@ export class AccountPage extends Component {
       currentBalanceFunds,
       loadingCurrentBalance,
       initialCapital,
+      loadingCapital,
       memberNumber,
       conversion,
       pendingExchanges,
@@ -140,18 +139,6 @@ export class AccountPage extends Component {
               </a>
             </span>
           )}{' '}
-          {initialCapital ? (
-            <Message
-              params={{
-                initialCapital: initialCapital.amount,
-                currentCapital: (TOTAL_CAPITAL * initialCapital.ownershipFraction).toFixed(2),
-              }}
-            >
-              account.initial-capital.statement
-            </Message>
-          ) : (
-            ''
-          )}
           <div>
             {currentBalanceFunds && currentBalanceFunds.length === 0 ? (
               <Message>account.second.pillar.missing</Message>
@@ -191,11 +178,24 @@ export class AccountPage extends Component {
             ) : (
               <PensionFundTable funds={currentBalanceFunds} />
             )}
-
             {pendingExchangesSection}
             {returnComparisonSection}
           </Fragment>
         )}
+        <div>
+
+            <div className="mt-5">
+                <p className="mb-4 lead">
+                    <Message>member.capital</Message>
+                </p>
+              {(loadingCapital || !initialCapital)? (
+                  <Loader className="align-middle" />
+              ) : (
+                  AccountPage.memberCapital(initialCapital)
+              )}
+            </div>
+
+        </div>
         <div className="mt-5">
           <p className="mb-4 lead">
             <Message>update.user.details.title</Message>
@@ -205,6 +205,81 @@ export class AccountPage extends Component {
       </Fragment>
     );
   }
+
+    static memberCapital(initialCapital) {
+        return <Fragment>
+            <div>
+                <Message
+                    params={{
+                        amount: String(initialCapital.capitalPayment)
+                    }}
+                >
+                    member.capital.capital.payment
+                </Message>
+            </div>
+            <div>
+                <Message
+                    params={{
+                        amount: String(initialCapital.profit)
+                    }}
+                >
+                    member.capital.profit
+                </Message>
+            </div>
+            <div>
+                <Message
+                    params={{
+                        amount: String(initialCapital.membershipBonus)
+                    }}
+                >
+                    member.capital.member.bonus
+                </Message>
+            </div>
+            <div>
+                {initialCapital.workCompensation ? (
+                    <Message
+                        params={{
+                            amount: String(initialCapital.workCompensation)
+                        }}
+                    >
+                        member.capital.work.compensation
+                    </Message>
+                ) : (
+                    ''
+                )}
+            </div>
+            <div>
+                {initialCapital.unvestedWorkCompensation ? (
+                    <Message
+                        params={{
+                            amount: String(initialCapital.unvestedWorkCompensation)
+                        }}
+                    >
+                        member.capital.unvested.work.compensation
+                    </Message>
+                ) : (
+                    ''
+                )}
+            </div>
+            <div>
+                <b>
+                    <Message
+                        params={{
+                            amount: (
+                                initialCapital.capitalPayment +
+                                initialCapital.membershipBonus +
+                                initialCapital.profit +
+                                initialCapital.unvestedWorkCompensation +
+                                initialCapital.workCompensation
+                            )
+                        }}
+                    >
+                        member.capital.total
+                    </Message>
+                </b>
+            </div>
+        </Fragment>;
+    }
 }
 
 AccountPage.propTypes = {
@@ -227,6 +302,7 @@ AccountPage.propTypes = {
   shouldGetInitialCapital: Types.bool,
   onGetInitialCapital: Types.func,
   initialCapital: Types.shape({}),
+  loadingCapital: Types.bool,
   memberNumber: Types.number,
   conversion: Types.shape({}),
   saveUser: Types.func,
@@ -249,6 +325,7 @@ AccountPage.defaultProps = {
   shouldGetInitialCapital: true,
   onGetInitialCapital: noop,
   initialCapital: {},
+  loadingCapital: false,
   memberNumber: null,
   conversion: {},
   error: null,
@@ -275,6 +352,7 @@ const mapStateToProps = state => ({
     state.login.user.memberNumber &&
     !(state.account.initialCapital || state.account.loadingInitialCapital),
   initialCapital: state.account.initialCapital,
+  loadingCapital: state.account.loadingInitialCapital,
   memberNumber: (state.login.user || {}).memberNumber,
   conversion: state.login.userConversion,
   error: state.exchange.error,
