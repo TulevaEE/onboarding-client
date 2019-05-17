@@ -17,7 +17,7 @@ const StatusBox = ({ currentBalanceFunds, memberNumber, age, loading }) => {
 
   const secondPillarData = currentBalanceFunds.filter(({ pillar }) => pillar === 2);
 
-  const joinTulevaSoon = age && age >= 55;
+  const joinTulevaSoon = age >= 49;
   const joinTuleva2 = joinTuleva(secondPillarData);
 
   const isTulevaMember = memberNumber != null;
