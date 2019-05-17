@@ -4,6 +4,7 @@ import { shallow } from 'enzyme';
 import { Message } from 'retranslate';
 
 import { ConfirmThirdPillarMandate } from './ConfirmThirdPillarMandate';
+import FundTransferTable from '../../secondPillar/confirmMandate/fundTransferTable';
 
 describe('ConfirmThirdPillarMandate', () => {
   let component;
@@ -82,6 +83,38 @@ describe('ConfirmThirdPillarMandate', () => {
       fundTransferExchanges: [],
       futureContributionFundIsin: 'EE123',
     });
+  });
+
+  it('has exchange existing funds text and exchange table only when should exchange existing funds', () => {
+    const hasText = () =>
+      component.contains(<Message>confirmThirdPillarMandate.exchangeExistingUnits</Message>);
+    const exchangeTable = () => component.find(FundTransferTable);
+
+    expect(hasText()).toBe(false);
+    expect(exchangeTable().exists()).toBe(false);
+    component.setProps({
+      exchangeExistingUnits: true,
+      sourceFunds: [{ isin: 'EE123', name: 'First fund' }, { isin: 'EE456', name: 'Second fund' }],
+      selectedFutureContributionsFund: { isin: 'EE789', name: 'Third fund' },
+    });
+    expect(hasText()).toBe(true);
+    expect(exchangeTable().exists()).toBe(true);
+    expect(exchangeTable().prop('selections')).toEqual([
+      {
+        sourceFundIsin: 'EE123',
+        sourceFundName: 'First fund',
+        targetFundIsin: 'EE789',
+        targetFundName: 'Third fund',
+        percentage: 100,
+      },
+      {
+        sourceFundIsin: 'EE456',
+        sourceFundName: 'Second fund',
+        targetFundIsin: 'EE789',
+        targetFundName: 'Third fund',
+        percentage: 100,
+      },
+    ]);
   });
 
   const signButton = () => component.find('button').at(0);
