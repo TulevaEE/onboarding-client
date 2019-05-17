@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow, mount } from 'enzyme';
 import { Message } from 'retranslate';
-import { BrowserRouter, Link } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 
 import { Loader, ErrorMessage } from '../common';
@@ -243,24 +243,6 @@ describe('Current balance', () => {
     const memberNumber = 123;
     component.setProps({ memberNumber });
     expect(component.contains(cta)).toBe(false);
-  });
-
-  it('renders change pension fund button', () => {
-    expect(
-      component.contains(
-        <Link className="btn btn-primary mb-3" to="/2nd-pillar-flow">
-          <Message>change.my.pension.fund</Message>
-        </Link>,
-      ),
-    ).toBe(false);
-    component.setProps({ currentBalanceFunds: [{ sourcefund: true }] });
-    expect(
-      component.contains(
-        <Link className="btn btn-primary mb-3" to="/2nd-pillar-flow">
-          <Message>change.my.pension.fund</Message>
-        </Link>,
-      ),
-    ).toBe(true);
   });
 
   function pendingExchangesTable() {
