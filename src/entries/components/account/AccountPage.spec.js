@@ -1,11 +1,11 @@
 import React from 'react';
 import { shallow, mount } from 'enzyme';
 import { Message } from 'retranslate';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, Link } from 'react-router-dom';
 import { Provider } from 'react-redux';
 
 import { Loader, ErrorMessage } from '../common';
-import { AccountPage } from './AccountPage';
+import { AccountPage, TOTAL_CAPITAL } from './AccountPage';
 import StatusBox from './statusBox';
 import PensionFundTable from '../flows/secondPillar/selectSources/pensionFundTable';
 import PendingExchangesTable from './pendingExchangeTable';
@@ -14,7 +14,6 @@ import ReturnComparison from '../returnComparison';
 import Select from './Select';
 import { mockStore } from '../../../test/utils';
 import getReturnComparisonStartDateOptions from '../returnComparison/options';
-import FundsOverviewTable from './FundsOverviewTable';
 
 jest.mock('../returnComparison/options', () => jest.fn());
 
@@ -23,11 +22,11 @@ describe('Current balance', () => {
   let props;
 
   const capital = {
-    membershipBonus: 10,
-    capitalPayment: 1000,
-    unvestedWorkCompensation: 1000,
-    workCompensation: 1000,
-    profit: 0.1,
+    "membershipBonus":10,
+    "capitalPayment":1000,
+    "unvestedWorkCompensation":1000,
+    "workCompensation":1000,
+    "profit":0.1
   };
 
   beforeEach(() => {
@@ -56,8 +55,7 @@ describe('Current balance', () => {
     beforeEach(() => {
       component.setProps({
         currentBalanceFunds,
-        loadingCapital: true,
-        initialCapital: capital,
+        loadingCapital: true, initialCapital: capital
       });
     });
 
@@ -65,8 +63,8 @@ describe('Current balance', () => {
       expect(component.find(StatusBox).exists()).toBe(true);
     });
 
-    it('renders the fund overview table', () => {
-      expect(component.find(FundsOverviewTable).exists()).toBe(true);
+    it('renders the current balance', () => {
+      expect(component.find(PensionFundTable).exists()).toBe(true);
     });
 
     it('renders loader when current balance is still loading', () => {
@@ -248,6 +246,24 @@ describe('Current balance', () => {
     const memberNumber = 123;
     component.setProps({ memberNumber });
     expect(component.contains(cta)).toBe(false);
+  });
+
+  it('renders change pension fund button', () => {
+    expect(
+      component.contains(
+        <Link className="btn btn-primary mb-3" to="/2nd-pillar-flow">
+          <Message>change.my.pension.fund</Message>
+        </Link>,
+      ),
+    ).toBe(false);
+    component.setProps({ currentBalanceFunds: [{ sourcefund: true }] });
+    expect(
+      component.contains(
+        <Link className="btn btn-primary mb-3" to="/2nd-pillar-flow">
+          <Message>change.my.pension.fund</Message>
+        </Link>,
+      ),
+    ).toBe(true);
   });
 
   function pendingExchangesTable() {
