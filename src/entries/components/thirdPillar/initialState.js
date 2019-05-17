@@ -1,7 +1,9 @@
+const LHV_INDEX_PLUS_ISIN = 'EE3600109419';
+
 export default {
   monthlyContribution: null,
   sourceFunds: [],
   targetFunds: [],
-  selectedFutureContributionsFundIsin: 'EE3600109419',
+  selectedFutureContributionsFundIsin: LHV_INDEX_PLUS_ISIN,
   exchangeExistingUnits: false,
 };
