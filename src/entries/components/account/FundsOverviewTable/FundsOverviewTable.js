@@ -3,7 +3,7 @@ import Types from 'prop-types';
 import { Message } from 'retranslate';
 
 import './FundsOverviewTable.scss';
-import { formatAmountForCurrency, getProfitClassName } from '../../common/utils';
+import { formatAmountForCurrency } from '../../common/utils';
 import { calculateTotals, getSumOfPillars } from './fundCalculations';
 import Table from '../../common/table/Table';
 
@@ -23,26 +23,16 @@ const FundsOverviewTable = ({ funds }) => {
             <Message>overview.table.header.instrument</Message>
           </th>
           <th>
-            <Message>overview.table.header.contributions</Message>
-          </th>
-          <th>
-            <Message>overview.table.header.profit</Message>
-          </th>
-          <th>
             <Message>overview.table.header.value</Message>
           </th>
         </tr>
       </thead>
       <tbody>
         {groupedPillars &&
-          groupedPillars.map(({ pillar, contributions, value }) => (
+          groupedPillars.map(({ pillar, value }) => (
             <tr key={pillar}>
               <td>
                 <Message className="mb-2 lead h5">{titleKeysForPillars[pillar]}</Message>
-              </td>
-              <td>{formatAmountForCurrency(contributions)}</td>
-              <td className={getProfitClassName(value - contributions)}>
-                {formatAmountForCurrency(value - contributions)}
               </td>
               <td>{formatAmountForCurrency(value)}</td>
             </tr>
@@ -52,10 +42,6 @@ const FundsOverviewTable = ({ funds }) => {
         <tr>
           <td>
             <Message>overview.total</Message>
-          </td>
-          <td>{formatAmountForCurrency(totalsOfPillars.contributions)}</td>
-          <td className={getProfitClassName(totalsOfPillars.profit)}>
-            {formatAmountForCurrency(totalsOfPillars.profit)}
           </td>
           <td>{formatAmountForCurrency(totalsOfPillars.value)}</td>
         </tr>
