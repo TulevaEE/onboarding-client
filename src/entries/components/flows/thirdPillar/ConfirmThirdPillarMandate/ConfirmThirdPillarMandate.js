@@ -20,6 +20,8 @@ export const ConfirmThirdPillarMandate = ({
   sourceFunds,
   selectedFutureContributionsFund,
   agreedToTerms,
+  isResident,
+  isPoliticallyExposed,
   onSign,
   onPreview,
 }) => (
@@ -64,7 +66,7 @@ export const ConfirmThirdPillarMandate = ({
       <button
         type="button"
         className="btn btn-primary mb-2 mr-2"
-        disabled={!agreedToTerms}
+        disabled={!agreedToTerms || isResident === null || isPoliticallyExposed === null}
         onClick={() => {
           onSign(getMandate(sourceFunds, selectedFutureContributionsFund));
         }}
@@ -128,6 +130,8 @@ ConfirmThirdPillarMandate.propTypes = {
   sourceFunds: Types.arrayOf(fundType),
   selectedFutureContributionsFund: fundType,
   agreedToTerms: Types.bool,
+  isResident: Types.bool,
+  isPoliticallyExposed: Types.bool,
   onSign: Types.func,
   onPreview: Types.func,
 };
@@ -142,6 +146,8 @@ ConfirmThirdPillarMandate.defaultProps = {
   sourceFunds: [],
   selectedFutureContributionsFund: null,
   agreedToTerms: false,
+  isResident: null,
+  isPoliticallyExposed: null,
   onSign: () => {},
   onPreview: () => {},
 };
@@ -152,6 +158,8 @@ const mapStateToProps = state => ({
     fund => fund.isin === state.thirdPillar.selectedFutureContributionsFundIsin,
   ),
   agreedToTerms: state.thirdPillar.agreedToTerms,
+  isResident: state.thirdPillar.isResident,
+  isPoliticallyExposed: state.thirdPillar.isPoliticallyExposed,
   monthlyContribution: state.thirdPillar.monthlyContribution,
   sourceFunds: state.thirdPillar.sourceFunds,
   exchangeExistingUnits: state.thirdPillar.exchangeExistingUnits,
