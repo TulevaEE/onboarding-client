@@ -8,8 +8,7 @@ import './PensionFundTable.scss';
 import { getTotalFundValue } from '../../../../common/utils';
 
 const PensionFundTable = ({ funds }) => {
-  const filteredFunds = funds != null && funds.filter(fund => fund.pillar === 2);
-  const totalPrice = getTotalFundValue(filteredFunds);
+  const totalPrice = getTotalFundValue(funds);
   return (
     <div>
       <div className="row tv-table__header py-2">
@@ -25,9 +24,9 @@ const PensionFundTable = ({ funds }) => {
           </div>
            */}
       </div>
-      {filteredFunds &&
-        filteredFunds.length &&
-        filteredFunds.map(({ currency, price, name, isin, activeFund }) => (
+      {funds &&
+        funds.length &&
+        funds.map(({ currency, price, name, isin, activeFund }) => (
           <FundRow key={isin} price={price} name={name} currency={currency} active={activeFund} />
         ))}
       <FundRow
@@ -58,7 +57,6 @@ PensionFundTable.propTypes = {
       manager: Types.string,
       isin: Types.string,
       activeFund: Types.bool,
-      pillar: Types.number,
     }),
   ),
 };
