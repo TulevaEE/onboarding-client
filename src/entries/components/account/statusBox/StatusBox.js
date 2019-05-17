@@ -6,7 +6,7 @@ import { bindActionCreators } from 'redux';
 import { Link } from 'react-router-dom';
 import StatusBoxRow from './statusBoxRow';
 
-const StatusBox = ({ currentBalanceFunds, memberNumber, age }) => {
+const StatusBox = ({ currentBalanceFunds, memberNumber, age, loading }) => {
   const managedByTuleva = funds => {
     return funds.filter(fund => fund.managerName === 'Tuleva');
   };
@@ -17,7 +17,7 @@ const StatusBox = ({ currentBalanceFunds, memberNumber, age }) => {
 
   const secondPillarData = currentBalanceFunds.filter(({ pillar }) => pillar === 2);
 
-  const joinTulevaSoon = age >= 55;
+  const joinTulevaSoon = age && age >= 55;
   const joinTuleva2 = joinTuleva(secondPillarData);
 
   const isTulevaMember = memberNumber != null;
@@ -41,7 +41,7 @@ const StatusBox = ({ currentBalanceFunds, memberNumber, age }) => {
       <div className="card card-secondary p-4">
         <StatusBoxRow
           ok={!joinTuleva2 && !joinTulevaSoon}
-          showAction
+          showAction={!loading}
           name={<Message>account.status.choice.pillar.second</Message>}
           lines={secondPillarData.map(({ name }) => name)}
         >
@@ -63,7 +63,7 @@ const StatusBox = ({ currentBalanceFunds, memberNumber, age }) => {
         <StatusBoxRow
           last
           ok={isTulevaMember}
-          showAction
+          showAction={!loading}
           name={<Message>account.status.choice.tuleva</Message>}
           lines={tulevaData}
         >
@@ -76,6 +76,7 @@ const StatusBox = ({ currentBalanceFunds, memberNumber, age }) => {
           )}
         </StatusBoxRow>
       </div>
+      <br />
     </Fragment>
   );
 };
@@ -84,12 +85,14 @@ StatusBox.defaultProps = {
   age: null,
   currentBalanceFunds: [],
   memberNumber: null,
+  loading: null,
 };
 
 StatusBox.propTypes = {
   currentBalanceFunds: Types.arrayOf(Types.object),
   memberNumber: Types.number,
   age: Types.number,
+  loading: Types.bool,
 };
 
 const mapStateToProps = state => ({

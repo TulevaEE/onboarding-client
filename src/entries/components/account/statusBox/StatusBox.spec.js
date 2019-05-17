@@ -32,13 +32,13 @@ describe('Status Box', () => {
 
   const pillar2ComingSoon = <Message>account.status.choice.1970.coming.soon</Message>;
 
-  // it('wont render pillar II  coming soon for 54 and below', () => {
-  //   component.setProps({ age: 54 });
-  //   expect(component.contains(pillar2ComingSoon)).toBe(false);
-  // });
+  it('wont render pillar II  coming soon for 54 and below', () => {
+    component.setProps({ age: 54 });
+    expect(component.contains(pillar2ComingSoon)).toBe(false);
+  });
 
   it('renders pillar II  coming soon for 55 and over', () => {
-    component.setProps({ age: 55 });
+    component.setProps({ age: 56 });
     expect(component.contains(pillar2ComingSoon)).toBe(true);
   });
 
