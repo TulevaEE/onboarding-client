@@ -2,6 +2,7 @@ import {
   QUERY_PARAMETERS,
   CHANGE_MONTHLY_CONTRIBUTION,
   CHANGE_EXCHANGE_EXISTING_UNITS,
+  CHANGE_AGREEMENT_TO_TERMS,
 } from './constants';
 import initialState from './initialState';
 import { GET_SOURCE_FUNDS_SUCCESS, GET_TARGET_FUNDS_SUCCESS } from '../exchange/constants';
@@ -24,7 +25,7 @@ export default function thirdPillarReducer(state = initialState, action) {
       return { ...state, exchangeExistingUnits: action.exchangeExistingUnits };
     case GET_SOURCE_FUNDS_SUCCESS:
       // eslint-disable-next-line no-case-declarations
-      const sourceFunds = action.sourceFunds.filter(fund => fund.pillar === 3);
+      const sourceFunds = action.sourceFunds.filter(isThirdPillar);
       // eslint-disable-next-line no-case-declarations
       const exchangeExistingUnits = sourceFunds.length === 0 ? false : state.exchangeExistingUnits;
 
@@ -32,13 +33,18 @@ export default function thirdPillarReducer(state = initialState, action) {
     case GET_TARGET_FUNDS_SUCCESS:
       return {
         ...state,
-        targetFunds: action.targetFunds.filter(isLhvIndexPlusFund),
+        targetFunds: action.targetFunds.filter(isThirdPillar),
+      };
+    case CHANGE_AGREEMENT_TO_TERMS:
+      return {
+        ...state,
+        agreedToTerms: action.agreedToTerms,
       };
     default:
       return state;
   }
 }
 
-function isLhvIndexPlusFund(fund) {
-  return fund.isin === 'EE3600109419';
+function isThirdPillar(fund) {
+  return fund.pillar === 3;
 }

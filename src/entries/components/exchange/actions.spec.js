@@ -36,6 +36,14 @@ jest.mock('hwcrypto-js', () => mockHwcrypto);
 const actions = require('./actions'); // need to use require because of jest mocks being weird
 
 describe('Exchange actions', () => {
+  beforeEach(() => {
+    global.window.useHackySecondPillarRoutePushesInActions = true;
+  });
+
+  afterEach(() => {
+    delete global.window.useHackySecondPillarRoutePushesInActions;
+  });
+
   let dispatch;
   let state;
 

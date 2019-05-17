@@ -254,5 +254,18 @@
 
   "thirdPillarFlowSetup.monthlyContributionLabel": "Igakuine sissemakse",
   "thirdPillarFlowSetup.exchangeExistingUnitsLabel": "Soovin kogunenud III samba osakud üle tuua",
-  "thirdPillarFlowSetup.buttonText": "Edasi"
+  "thirdPillarFlowSetup.buttonText": "Järgmine samm",
+
+  "confirmThirdPillarMandate.intro": "Avaldust allkirjastades kinnitad, et:",
+  "confirmThirdPillarMandate.contribution": "soovid hakata tegema vabatahtliku kogumispensioni sissemakseid fondi:",
+
+  "thirdPillarAgreement.termsConfirmation": "Kinnitan, et mul on olnud võimalik tutvuda kõigi registreeritud {{ link }}, nõustun minu valitud pensionifondi(de) tingimustega ning mõistan vabatahtliku pensionifondi osakute omandamisega kaasnevaid riske.",
+  "thirdPillarAgreement.linkText": "vabatahtlike pensionifondide tingimuste ja emissiooniprospektidega",
+  "thirdPillarAgreement.ageDependentRecommendationConfirmation": "Olen lugenud alljärgnevat soovitust.",
+  "thirdPillarAgreement.signingExplanation": "Vajutades nupule “allkirjasta ja saada”, saadan digiallkirjastatud avalduse otse registripidajale.",
+  "thirdPillarAgreement.ageDependentRecommendation": "Märkasime, et Sul on pensionini jäänud 10 või vähem aastat. Tuleva Vabatahtlik Pensionifond investeerib 100% aktsiatesse, pensioniea lähenedes on soovitatav lühiajaliste turukõikumiste mõju vähendamiseks osaku hinnale osa varast investeerida madalama riskiga võlakirjafondi. Küsimuste korral helista Tuleva numbril 644 5100 või kirjuta tuleva@tuleva.ee.",
+
+  "confirmThirdPillarMandate.sign": "Allkirjasta ja saada",
+  "confirmThirdPillarMandate.preview": "Eelvaade",
+  "confirmThirdPillarMandate.back": "Eelmine samm"
 }
