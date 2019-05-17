@@ -282,6 +282,5 @@
   "thirdPillarPayment.accountNumber": "Arve number",
   "thirdPillarPayment.amount": "Summa",
   "thirdPillarPayment.details": "Makse selgitus",
-  "thirdPillarPayment.reference": "Viitenumber",
-  "thirdPillarPayment.pensionAccountNumber": "SINU PENSIONIKONTO NUMBER"
+  "thirdPillarPayment.reference": "Viitenumber"
 }

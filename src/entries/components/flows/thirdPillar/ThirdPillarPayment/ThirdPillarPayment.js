@@ -5,7 +5,12 @@ import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import { Message } from 'retranslate';
 
-export const ThirdPillarPayment = ({ previousPath, signedMandateId, monthlyContribution }) => (
+export const ThirdPillarPayment = ({
+  previousPath,
+  signedMandateId,
+  monthlyContribution,
+  pensionAccountNumber,
+}) => (
   <Fragment>
     {!signedMandateId && <Redirect to={previousPath} />}
 
@@ -42,9 +47,7 @@ export const ThirdPillarPayment = ({ previousPath, signedMandateId, monthlyContr
     </div>
     <div>
       <Message>thirdPillarPayment.reference</Message>:{' '}
-      <b>
-        <Message>thirdPillarPayment.pensionAccountNumber</Message>
-      </b>
+      <b data-test-id="pension-account-number">{pensionAccountNumber}</b>
     </div>
   </Fragment>
 );
@@ -54,6 +57,7 @@ ThirdPillarPayment.propTypes = {
 
   signedMandateId: Types.number,
   monthlyContribution: Types.number,
+  pensionAccountNumber: Types.string,
 };
 
 ThirdPillarPayment.defaultProps = {
@@ -61,11 +65,13 @@ ThirdPillarPayment.defaultProps = {
 
   signedMandateId: null,
   monthlyContribution: null,
+  pensionAccountNumber: null,
 };
 
 const mapStateToProps = state => ({
   signedMandateId: state.thirdPillar.signedMandateId,
   monthlyContribution: state.thirdPillar.monthlyContribution,
+  pensionAccountNumber: state.login.user ? state.login.user.pensionAccountNumber : null,
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({}, dispatch);

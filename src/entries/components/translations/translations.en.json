@@ -307,6 +307,5 @@
   "thirdPillarPayment.accountNumber": "Account number",
   "thirdPillarPayment.amount": "Amount",
   "thirdPillarPayment.details": "Payment details",
-  "thirdPillarPayment.reference": "Reference",
-  "thirdPillarPayment.pensionAccountNumber": "YOUR PENSION ACCOUNT NUMBER"
+  "thirdPillarPayment.reference": "Reference"
 }
