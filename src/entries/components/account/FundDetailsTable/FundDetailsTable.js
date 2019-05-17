@@ -31,6 +31,13 @@ const FundDetailsTable = ({ allFunds, pillar }) => {
               </Link>
             </div>
           )}
+          {pillar === 3 && (
+            <div className="col-md-6 mt-5 text-md-right">
+              <Link className="btn btn-primary mb-3" to="/3rd-pillar-flow">
+                <Message>change.my.pension.fund.third.pillar</Message>
+              </Link>
+            </div>
+          )}
         </div>
         <Table>
           <thead>
