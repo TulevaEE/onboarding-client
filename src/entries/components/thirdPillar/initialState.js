@@ -7,4 +7,5 @@ export default {
   selectedFutureContributionsFundIsin: LHV_INDEX_PLUS_ISIN,
   exchangeExistingUnits: false,
   agreedToTerms: false,
+  signedMandateId: null,
 };
