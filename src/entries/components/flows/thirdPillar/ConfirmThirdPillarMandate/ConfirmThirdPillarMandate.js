@@ -65,7 +65,7 @@ export const ConfirmThirdPillarMandate = ({
         className="btn btn-primary mb-2 mr-2"
         disabled={!agreedToTerms}
         onClick={() => {
-          onSign(getMandate([], selectedFutureContributionsFund.isin));
+          onSign(getMandate(sourceFunds, selectedFutureContributionsFund));
         }}
       >
         <Message>confirmThirdPillarMandate.sign</Message>
@@ -75,7 +75,7 @@ export const ConfirmThirdPillarMandate = ({
         type="button"
         className="btn btn-secondary mb-2 mr-2"
         onClick={() => {
-          onPreview(getMandate([], selectedFutureContributionsFund.isin));
+          onPreview(getMandate(sourceFunds, selectedFutureContributionsFund));
         }}
       >
         <Message>confirmThirdPillarMandate.preview</Message>
@@ -90,8 +90,15 @@ export const ConfirmThirdPillarMandate = ({
   </Fragment>
 );
 
-function getMandate(fundTransferExchanges, futureContributionFundIsin) {
-  return { fundTransferExchanges, futureContributionFundIsin };
+function getMandate(sourceFunds, targetFund) {
+  return {
+    fundTransferExchanges: sourceFunds.map(sourceFund => ({
+      amount: 1,
+      sourceFundIsin: sourceFund.isin,
+      targetFundIsin: targetFund.isin,
+    })),
+    futureContributionFundIsin: targetFund.isin,
+  };
 }
 
 function createSelectionsFromFundsToFund(sourceFunds, targetFund) {
@@ -100,7 +107,7 @@ function createSelectionsFromFundsToFund(sourceFunds, targetFund) {
     sourceFundName: sourceFund.name,
     targetFundIsin: targetFund.isin,
     targetFundName: targetFund.name,
-    percentage: 100,
+    percentage: 1,
   }));
 }
 

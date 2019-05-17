@@ -67,30 +67,38 @@ describe('ConfirmThirdPillarMandate', () => {
   it('gets mandate preview on preview button click', () => {
     const onPreview = jest.fn();
     component.setProps({
-      selectedFutureContributionsFund: { isin: 'EE123' },
+      sourceFunds: [{ isin: 'EE123', name: 'First fund' }, { isin: 'EE456', name: 'Second fund' }],
+      selectedFutureContributionsFund: { isin: 'EE789', name: 'Third fund' },
       onPreview,
     });
 
     expect(onPreview).not.toBeCalled();
     previewButton().simulate('click');
     expect(onPreview).toBeCalledWith({
-      fundTransferExchanges: [],
-      futureContributionFundIsin: 'EE123',
+      fundTransferExchanges: [
+        { amount: 1, sourceFundIsin: 'EE123', targetFundIsin: 'EE789' },
+        { amount: 1, sourceFundIsin: 'EE456', targetFundIsin: 'EE789' },
+      ],
+      futureContributionFundIsin: 'EE789',
     });
   });
 
   it('signs mandate on sign button click', () => {
     const onSign = jest.fn();
     component.setProps({
-      selectedFutureContributionsFund: { isin: 'EE123' },
+      sourceFunds: [{ isin: 'EE123', name: 'First fund' }, { isin: 'EE456', name: 'Second fund' }],
+      selectedFutureContributionsFund: { isin: 'EE789', name: 'Third fund' },
       onSign,
     });
 
     expect(onSign).not.toBeCalled();
     signButton().simulate('click');
     expect(onSign).toBeCalledWith({
-      fundTransferExchanges: [],
-      futureContributionFundIsin: 'EE123',
+      fundTransferExchanges: [
+        { amount: 1, sourceFundIsin: 'EE123', targetFundIsin: 'EE789' },
+        { amount: 1, sourceFundIsin: 'EE456', targetFundIsin: 'EE789' },
+      ],
+      futureContributionFundIsin: 'EE789',
     });
   });
 
@@ -114,14 +122,14 @@ describe('ConfirmThirdPillarMandate', () => {
         sourceFundName: 'First fund',
         targetFundIsin: 'EE789',
         targetFundName: 'Third fund',
-        percentage: 100,
+        percentage: 1,
       },
       {
         sourceFundIsin: 'EE456',
         sourceFundName: 'Second fund',
         targetFundIsin: 'EE789',
         targetFundName: 'Third fund',
-        percentage: 100,
+        percentage: 1,
       },
     ]);
   });
