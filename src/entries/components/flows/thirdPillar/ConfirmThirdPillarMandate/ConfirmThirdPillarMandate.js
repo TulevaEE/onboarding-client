@@ -55,9 +55,10 @@ export const ConfirmThirdPillarMandate = ({
 
     <ThirdPillarTermsAgreement />
 
-    <PoliticallyExposedPersonAgreement />
-
-    <ResidencyAgreement />
+    <div className="mt-2">
+      <PoliticallyExposedPersonAgreement />
+      <ResidencyAgreement />
+    </div>
 
     <div className="mt-5">
       <button

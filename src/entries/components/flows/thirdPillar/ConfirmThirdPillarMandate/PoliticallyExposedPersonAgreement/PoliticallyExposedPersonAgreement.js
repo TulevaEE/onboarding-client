@@ -13,7 +13,6 @@ export const PoliticallyExposedPersonAgreement = ({
   return (
     <div
       id="pep-radio-container"
-      className="mt-5"
       onChange={event => onPoliticallyExposedChange(event.target.value === 'true')}
     >
       <label className="custom-control custom-radio" htmlFor="third-pillar-pep-radio">

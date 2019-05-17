@@ -13,7 +13,6 @@ export const ResidencyAgreement = ({ isResident, onResidentChange }) => {
       onChange={event => {
         onResidentChange(event.target.value === 'true');
       }}
-      className="mt-5"
     >
       <label className="custom-control custom-radio" htmlFor="third-pillar-resident-radio">
         <input
