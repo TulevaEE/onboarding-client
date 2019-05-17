@@ -33,7 +33,7 @@ StatusBoxRow.defaultProps = {
 
 StatusBoxRow.propTypes = {
   name: Types.oneOfType([Types.node, Types.string]),
-  lines: Types.arrayOf(Types.object),
+  lines: Types.arrayOf(Types.oneOfType([Types.node, Types.string, Types.string])),
   showAction: Types.bool,
   ok: Types.bool,
   children: Types.node,
