@@ -53,4 +53,21 @@ describe('ConfirmThirdPillarMandate', () => {
     component.setProps({ previousPath: '/a-path' });
     expect(component.find(Link).prop('to')).toBe('/a-path');
   });
+
+  it('gets mandate preview on preview button click', () => {
+    const onPreview = jest.fn();
+    component.setProps({
+      selectedFutureContributionsFund: { isin: 'EE123' },
+      onPreview,
+    });
+
+    expect(onPreview).not.toBeCalled();
+    previewButton().simulate('click');
+    expect(onPreview).toBeCalledWith({
+      fundTransferExchanges: [],
+      futureContributionFundIsin: 'EE123',
+    });
+  });
+
+  const previewButton = () => component.find('button').at(1);
 });

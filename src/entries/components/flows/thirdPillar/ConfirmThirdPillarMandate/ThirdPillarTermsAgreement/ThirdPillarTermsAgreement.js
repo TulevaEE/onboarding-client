@@ -81,7 +81,7 @@ ThirdPillarTermsAgreement.defaultProps = {
 
 const mapStateToProps = state => ({
   agreed: state.thirdPillar.agreedToTerms,
-  age: state.login.user.age,
+  age: state.login.user ? state.login.user.age : null,
 });
 
 const mapDispatchToProps = dispatch =>

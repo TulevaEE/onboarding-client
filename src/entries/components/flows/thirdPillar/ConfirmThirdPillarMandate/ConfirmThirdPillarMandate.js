@@ -6,12 +6,14 @@ import { Link, Redirect } from 'react-router-dom';
 import { Message } from 'retranslate';
 
 import ThirdPillarTermsAgreement from './ThirdPillarTermsAgreement';
+import { actions as exchangeActions } from '../../../exchange';
 
 export const ConfirmThirdPillarMandate = ({
   previousPath,
   monthlyContribution,
   selectedFutureContributionsFund,
   agreedToTerms,
+  onPreview,
 }) => (
   <Fragment>
     {(!monthlyContribution || !selectedFutureContributionsFund) && <Redirect to={previousPath} />}
@@ -46,7 +48,7 @@ export const ConfirmThirdPillarMandate = ({
         type="button"
         className="btn btn-secondary mb-2 mr-2"
         onClick={() => {
-          alert('See funktsionaalsus pole hetkel kättesaadav.');
+          onPreview(getMandate([], selectedFutureContributionsFund.isin));
         }}
       >
         <Message>confirmThirdPillarMandate.preview</Message>
@@ -61,12 +63,17 @@ export const ConfirmThirdPillarMandate = ({
   </Fragment>
 );
 
+function getMandate(fundTransferExchanges, futureContributionFundIsin) {
+  return { fundTransferExchanges, futureContributionFundIsin };
+}
+
 ConfirmThirdPillarMandate.propTypes = {
   previousPath: Types.string,
 
   monthlyContribution: Types.number,
   selectedFutureContributionsFund: Types.shape({ name: Types.string }),
   agreedToTerms: Types.bool,
+  onPreview: Types.func,
 };
 
 ConfirmThirdPillarMandate.defaultProps = {
@@ -75,6 +82,7 @@ ConfirmThirdPillarMandate.defaultProps = {
   monthlyContribution: null,
   selectedFutureContributionsFund: null,
   agreedToTerms: false,
+  onPreview: () => {},
 };
 
 const mapStateToProps = state => ({
@@ -86,7 +94,14 @@ const mapStateToProps = state => ({
   exchangeExistingUnits: state.thirdPillar.exchangeExistingUnits,
 });
 
-const mapDispatchToProps = dispatch => bindActionCreators({}, dispatch);
+const mapDispatchToProps = dispatch =>
+  bindActionCreators(
+    {
+      onPreview: exchangeActions.previewMandate,
+      onSign: exchangeActions.signMandate,
+    },
+    dispatch,
+  );
 
 export default connect(
   mapStateToProps,
