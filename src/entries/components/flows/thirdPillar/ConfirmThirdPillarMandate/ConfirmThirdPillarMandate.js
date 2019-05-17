@@ -13,6 +13,7 @@ export const ConfirmThirdPillarMandate = ({
   monthlyContribution,
   selectedFutureContributionsFund,
   agreedToTerms,
+  onSign,
   onPreview,
 }) => (
   <Fragment>
@@ -38,7 +39,7 @@ export const ConfirmThirdPillarMandate = ({
         className="btn btn-primary mb-2 mr-2"
         disabled={!agreedToTerms}
         onClick={() => {
-          alert('See funktsionaalsus pole hetkel kättesaadav.');
+          onSign(getMandate([], selectedFutureContributionsFund.isin));
         }}
       >
         <Message>confirmThirdPillarMandate.sign</Message>
@@ -73,6 +74,7 @@ ConfirmThirdPillarMandate.propTypes = {
   monthlyContribution: Types.number,
   selectedFutureContributionsFund: Types.shape({ name: Types.string }),
   agreedToTerms: Types.bool,
+  onSign: Types.func,
   onPreview: Types.func,
 };
 
@@ -82,6 +84,7 @@ ConfirmThirdPillarMandate.defaultProps = {
   monthlyContribution: null,
   selectedFutureContributionsFund: null,
   agreedToTerms: false,
+  onSign: () => {},
   onPreview: () => {},
 };
 
@@ -97,8 +100,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
-      onPreview: exchangeActions.previewMandate,
       onSign: exchangeActions.signMandate,
+      onPreview: exchangeActions.previewMandate,
     },
     dispatch,
   );

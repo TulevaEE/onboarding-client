@@ -69,5 +69,21 @@ describe('ConfirmThirdPillarMandate', () => {
     });
   });
 
+  it('signs mandate on sign button click', () => {
+    const onSign = jest.fn();
+    component.setProps({
+      selectedFutureContributionsFund: { isin: 'EE123' },
+      onSign,
+    });
+
+    expect(onSign).not.toBeCalled();
+    signButton().simulate('click');
+    expect(onSign).toBeCalledWith({
+      fundTransferExchanges: [],
+      futureContributionFundIsin: 'EE123',
+    });
+  });
+
+  const signButton = () => component.find('button').at(0);
   const previewButton = () => component.find('button').at(1);
 });
