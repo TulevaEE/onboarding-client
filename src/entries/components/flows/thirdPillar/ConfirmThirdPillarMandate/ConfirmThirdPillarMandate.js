@@ -9,15 +9,13 @@ export const ConfirmThirdPillarMandate = ({ selectedFutureContributionsFund }) =
     {selectedFutureContributionsFund && <Message>confirmThirdPillarMandate.intro</Message>}
 
     {selectedFutureContributionsFund && (
-      <Fragment>
-        <div className="mt-4">
-          <Message>confirmThirdPillarMandate.contribution</Message>
+      <div className="mt-4">
+        <Message>confirmThirdPillarMandate.contribution</Message>
 
-          <div>
-            <b className="highlight">{selectedFutureContributionsFund.name}</b>
-          </div>
+        <div>
+          <b className="highlight">{selectedFutureContributionsFund.name}</b>
         </div>
-      </Fragment>
+      </div>
     )}
   </Fragment>
 );
