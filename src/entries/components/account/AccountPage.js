@@ -81,6 +81,7 @@ export class AccountPage extends Component {
       returnComparisonError,
       saveUser,
       error,
+      age,
     } = this.props;
     const { returnComparisonStartDate, options } = this.state;
 
@@ -131,7 +132,11 @@ export class AccountPage extends Component {
     return (
       <Fragment>
         <div className="mt-5">
-          <StatusBox currentBalanceFunds={currentBalanceFunds} />
+          <StatusBox
+            currentBalanceFunds={currentBalanceFunds}
+            age={age}
+            memberNumber={memberNumber}
+          />
           {memberNumber ? (
             <Message params={{ memberNumber }}>account.member.statement</Message>
           ) : (
@@ -230,6 +235,7 @@ AccountPage.propTypes = {
   onGetInitialCapital: Types.func,
   initialCapital: Types.shape({}),
   memberNumber: Types.number,
+  age: Types.number,
   conversion: Types.shape({}),
   saveUser: Types.func,
   error: Types.shape({}),
@@ -252,6 +258,7 @@ AccountPage.defaultProps = {
   onGetInitialCapital: noop,
   initialCapital: {},
   memberNumber: null,
+  age: null,
   conversion: {},
   error: null,
   saveUser: noop,
@@ -280,6 +287,7 @@ const mapStateToProps = state => ({
   memberNumber: (state.login.user || {}).memberNumber,
   conversion: state.login.userConversion,
   error: state.exchange.error,
+  age: (state.login.user || {}).age,
 });
 const mapDispatchToProps = dispatch =>
   bindActionCreators(

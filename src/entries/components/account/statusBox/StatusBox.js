@@ -3,16 +3,29 @@ import { Message } from 'retranslate';
 import { PropTypes as Types } from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { Link } from 'react-router-dom';
 import StatusBoxRow from './statusBoxRow';
 
-const StatusBox = ({ currentBalanceFunds }) => {
-  const secondPillarData = currentBalanceFunds.filter(
-    ({ activeFund, pillar }) => activeFund === true && pillar === 2,
-  );
+const StatusBox = ({ currentBalanceFunds, memberNumber, age }) => {
+  const managedByTuleva = funds => {
+    return funds.filter(fund => fund.managerName === 'Tuleva');
+  };
+
+  const joinTuleva = funds => {
+    return funds.length === 0 || funds.length !== managedByTuleva(funds).length;
+  };
+
+  const secondPillarData = currentBalanceFunds.filter(({ pillar }) => pillar === 2);
+
+  const joinTuleva2 = joinTuleva(secondPillarData);
+  const joinTulevaSoon = age >= 55;
 
   const thirdPillarData = currentBalanceFunds.filter(
     ({ activeFund, pillar }) => activeFund === true && pillar === 3,
   );
+
+  const joinTuleva3 = joinTuleva(thirdPillarData);
+  // has any non-tuleva managers
 
   const tulevaData = [];
 
@@ -27,38 +40,58 @@ const StatusBox = ({ currentBalanceFunds }) => {
           </div>
         </div>
       </div>
-
+      {joinTulevaSoon && (
+        <span>
+          <a className="btn btn-link p-0 border-0" href="https://tuleva.ee/tulundusyhistu/">
+            <Message>account.status.choice.1970.coming.soon</Message>
+          </a>
+        </span>
+      )}
       <div className="card card-secondary p-4">
         <StatusBoxRow
-          ok={false}
+          ok={!joinTuleva2 && !joinTulevaSoon}
+          showAction={joinTuleva2 || joinTulevaSoon}
           name={<Message>account.status.choice.pillar.second</Message>}
           lines={secondPillarData.map(({ name }) => name)}
         >
-          <button type="submit" className="btn btn-secondary btn-link mb-2 mr-2">
-            nupp siia
-          </button>
+          {joinTuleva2 && !joinTulevaSoon && (
+            <Link to="/2nd-pillar-flow">
+              <Message>account.status.choice.join.tuleva.2</Message>
+            </Link>
+          )}
+
+          {joinTulevaSoon && (
+            <span>
+              <a className="btn btn-link p-0 border-0" href="https://tuleva.ee/tulundusyhistu/">
+                <Message>account.status.choice.1970.coming.soon</Message>
+              </a>
+            </span>
+          )}
         </StatusBoxRow>
 
         <StatusBoxRow
-          ok={false}
+          ok={!joinTuleva3}
           showAction
           name={<Message>account.status.choice.pillar.third</Message>}
           lines={thirdPillarData.map(({ name }) => name)}
         >
-          <button type="submit" className="btn btn-secondary btn-link mb-2 mr-2">
-            nupp siia
-          </button>
+          <Link to="/3rd-pillar-flow">
+            <Message>account.status.choice.join.tuleva.3</Message>
+          </Link>
         </StatusBoxRow>
 
         <StatusBoxRow
-          ok
-          showAction
+          ok={memberNumber}
+          showAction={!memberNumber}
+          last
           name={<Message>account.status.choice.tuleva</Message>}
           lines={tulevaData.map(({ name }) => name)}
         >
-          <button type="submit" className="btn btn-secondary btn-link mb-2 mr-2">
-            nupp siia
-          </button>
+          <span>
+            <a className="btn btn-link p-0 border-0" href="https://tuleva.ee/tulundusyhistu/">
+              <Message>account.status.choice.join.tuleva</Message>
+            </a>
+          </span>
         </StatusBoxRow>
       </div>
     </Fragment>
@@ -66,13 +99,15 @@ const StatusBox = ({ currentBalanceFunds }) => {
 };
 
 StatusBox.defaultProps = {
-  // age: null,
+  age: null,
   currentBalanceFunds: [],
+  memberNumber: null,
 };
 
 StatusBox.propTypes = {
   currentBalanceFunds: Types.arrayOf(Types.object),
-  // age: Types.number,
+  memberNumber: Types.number,
+  age: Types.number,
 };
 
 const mapStateToProps = state => ({

@@ -2,7 +2,7 @@ import React from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { Message } from 'retranslate';
 
-const StatusBoxRow = ({ name, lines, showAction, ok, children }) => {
+const StatusBoxRow = ({ name, lines, showAction, ok, children, last }) => {
   const displayName = <Message>{name}</Message>;
   const formattedLines = (
     <ul>
@@ -12,7 +12,7 @@ const StatusBoxRow = ({ name, lines, showAction, ok, children }) => {
     </ul>
   );
   return (
-    <div className="row tv-table__row py-2">
+    <div className={`row  py-2 ${!last ? 'tv-table__row' : ''}`}>
       <div className="col-12 col-sm">
         {ok ? '✔' : '🗙'} <b>{displayName}</b>
         {formattedLines}
@@ -28,6 +28,7 @@ StatusBoxRow.defaultProps = {
   showAction: false,
   ok: false,
   children: null,
+  last: false,
 };
 
 StatusBoxRow.propTypes = {
@@ -36,6 +37,7 @@ StatusBoxRow.propTypes = {
   showAction: Types.bool,
   ok: Types.bool,
   children: Types.node,
+  last: Types.bool,
 };
 
 export default StatusBoxRow;
