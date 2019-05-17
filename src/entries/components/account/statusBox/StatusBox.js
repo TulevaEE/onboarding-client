@@ -17,15 +17,8 @@ const StatusBox = ({ currentBalanceFunds, memberNumber, age }) => {
 
   const secondPillarData = currentBalanceFunds.filter(({ pillar }) => pillar === 2);
 
-  const joinTuleva2 = joinTuleva(secondPillarData);
   const joinTulevaSoon = age >= 55;
-
-  const thirdPillarData = currentBalanceFunds.filter(
-    ({ activeFund, pillar }) => activeFund === true && pillar === 3,
-  );
-
-  const joinTuleva3 = joinTuleva(thirdPillarData);
-  // has any non-tuleva managers
+  const joinTuleva2 = joinTuleva(secondPillarData);
 
   const isTulevaMember = memberNumber != null;
 
@@ -44,13 +37,7 @@ const StatusBox = ({ currentBalanceFunds, memberNumber, age }) => {
           </div>
         </div>
       </div>
-      {joinTulevaSoon && (
-        <span>
-          <a className="btn btn-link p-0 border-0" href="https://tuleva.ee/tulundusyhistu/">
-            <Message>account.status.choice.1970.coming.soon</Message>
-          </a>
-        </span>
-      )}
+
       <div className="card card-secondary p-4">
         <StatusBoxRow
           ok={!joinTuleva2 && !joinTulevaSoon}
@@ -74,19 +61,7 @@ const StatusBox = ({ currentBalanceFunds, memberNumber, age }) => {
         </StatusBoxRow>
 
         <StatusBoxRow
-          ok={!joinTuleva3}
-          showAction
-          name={<Message>account.status.choice.pillar.third</Message>}
-          lines={thirdPillarData.map(({ name }) => name)}
-        >
-          {joinTuleva3 && (
-            <Link to="/3rd-pillar-flow">
-              <Message>account.status.choice.join.tuleva.3</Message>
-            </Link>
-          )}
-        </StatusBoxRow>
-
-        <StatusBoxRow
+          last
           ok={isTulevaMember}
           showAction
           name={<Message>account.status.choice.tuleva</Message>}
