@@ -9,7 +9,6 @@ describe('Fund calculations', () => {
     ];
 
     const result = getSumOfPillars(funds);
-    console.log(result);
 
     expect(result).toEqual([
       { pillar: '2', contributions: 2000, value: 3000 },
@@ -17,19 +16,18 @@ describe('Fund calculations', () => {
     ]);
   });
 
-  it('sum of contribution', () => {
+  it('calculate totals', () => {
     const funds = [
       { pillar: '2', contributions: 111.11, value: 222.08 },
       { pillar: '3', contributions: 111.11, value: 111.01 },
     ];
 
     const result = calculateTotals(funds);
-    console.log(result);
 
     expect(result).toEqual({
       contributions: 222.22,
       value: 333.09000000000003,
-      profit: 110.87000000000002,
+      profit: 110.87000000000003,
     });
   });
 });

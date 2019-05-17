@@ -1,15 +1,9 @@
+import { sumBy } from 'lodash';
+
 export function calculateTotals(input) {
   return {
-    contributions: input.reduce(function(prev, cur) {
-      return prev + cur.contributionSum;
-    }, 0),
-
-    value: input.reduce(function(prev, cur) {
-      return prev + cur.price;
-    }, 0),
-
-    profit: input.reduce(function(prev, cur) {
-      return prev + (cur.price - cur.contributionSum);
-    }, 0),
+    contributions: sumBy(input, 'contributionSum'),
+    value: sumBy(input, 'price'),
+    profit: sumBy(input, 'price') - sumBy(input, 'contributionSum'),
   };
 }

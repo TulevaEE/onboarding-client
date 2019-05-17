@@ -6,7 +6,6 @@ import { Message, WithTranslations } from 'retranslate';
 import { Link } from 'react-router-dom';
 
 import { Loader, ErrorMessage } from '../common';
-import PensionFundTable from '../flows/secondPillar/selectSources/pensionFundTable';
 import FundsOverviewTable from './FundsOverviewTable';
 import PendingExchangesTable from './pendingExchangeTable';
 import ReturnComparison, { actions as returnComparisonActions } from '../returnComparison';
@@ -167,7 +166,7 @@ export class AccountPage extends Component {
           <Fragment>
             <div className="row mt-5">
               <div className="col-md-6">
-                <Message className="mb-4  h3">overview.summary.title</Message>
+                <Message className="mb-4 h3">overview.summary.title</Message>
               </div>
             </div>
 
@@ -177,8 +176,11 @@ export class AccountPage extends Component {
               <FundsOverviewTable funds={currentBalanceFunds} />
             )}
 
-            <div className="row mt-5  mt-3">
-              <div className="col-md-6">
+            {pendingExchangesSection}
+            {returnComparisonSection}
+
+            <div className="row mt-3">
+              <div className="col-md-6 mt-5">
                 <Message className="mb-4 h3">overview.details.title</Message>
               </div>
             </div>
@@ -196,42 +198,22 @@ export class AccountPage extends Component {
             )}
             <div className="mt-2">
               <small className="text-muted">
-                <Message>select.sources.active.fund</Message>
+                <Message>overview.active.fund</Message>
               </small>
             </div>
-
-            <div className="row mt-5">
-              <div className="col-md-6">
-                <Message className="mb-4 lead">select.sources.current.status</Message>
-              </div>
-              <div className="col-md-6 text-md-right">
-                <Link className="btn btn-primary mb-3" to="/2nd-pillar-flow">
-                  <Message>change.my.pension.fund</Message>
-                </Link>
-              </div>
-            </div>
-            {loadingCurrentBalance ? (
-              <Loader className="align-middle" />
-            ) : (
-              <PensionFundTable funds={currentBalanceFunds} />
-            )}
-            {pendingExchangesSection}
-            {returnComparisonSection}
           </Fragment>
         )}
         <div>
-
-            <div className="mt-5">
-                <p className="mb-4 lead">
-                    <Message>member.capital</Message>
-                </p>
-              {(loadingCapital || !initialCapital)? (
-                  <Loader className="align-middle" />
-              ) : (
-                  AccountPage.memberCapital(initialCapital)
-              )}
-            </div>
-
+          <div className="mt-5">
+            <p className="mb-4 lead">
+              <Message>member.capital</Message>
+            </p>
+            {loadingCapital || !initialCapital ? (
+              <Loader className="align-middle" />
+            ) : (
+              AccountPage.memberCapital(initialCapital)
+            )}
+          </div>
         </div>
         <div className="mt-5">
           <p className="mb-4 lead">
@@ -243,80 +225,81 @@ export class AccountPage extends Component {
     );
   }
 
-    static memberCapital(initialCapital) {
-        return <Fragment>
-            <div>
-                <Message
-                    params={{
-                        amount: String(initialCapital.capitalPayment)
-                    }}
-                >
-                    member.capital.capital.payment
-                </Message>
-            </div>
-            <div>
-                <Message
-                    params={{
-                        amount: String(initialCapital.profit)
-                    }}
-                >
-                    member.capital.profit
-                </Message>
-            </div>
-            <div>
-                <Message
-                    params={{
-                        amount: String(initialCapital.membershipBonus)
-                    }}
-                >
-                    member.capital.member.bonus
-                </Message>
-            </div>
-            <div>
-                {initialCapital.workCompensation ? (
-                    <Message
-                        params={{
-                            amount: String(initialCapital.workCompensation)
-                        }}
-                    >
-                        member.capital.work.compensation
-                    </Message>
-                ) : (
-                    ''
-                )}
-            </div>
-            <div>
-                {initialCapital.unvestedWorkCompensation ? (
-                    <Message
-                        params={{
-                            amount: String(initialCapital.unvestedWorkCompensation)
-                        }}
-                    >
-                        member.capital.unvested.work.compensation
-                    </Message>
-                ) : (
-                    ''
-                )}
-            </div>
-            <div>
-                <b>
-                    <Message
-                        params={{
-                            amount: (
-                                initialCapital.capitalPayment +
-                                initialCapital.membershipBonus +
-                                initialCapital.profit +
-                                initialCapital.unvestedWorkCompensation +
-                                initialCapital.workCompensation
-                            )
-                        }}
-                    >
-                        member.capital.total
-                    </Message>
-                </b>
-            </div>
-        </Fragment>;
-    }
+  static memberCapital(initialCapital) {
+    return (
+      <Fragment>
+        <div>
+          <Message
+            params={{
+              amount: String(initialCapital.capitalPayment),
+            }}
+          >
+            member.capital.capital.payment
+          </Message>
+        </div>
+        <div>
+          <Message
+            params={{
+              amount: String(initialCapital.profit),
+            }}
+          >
+            member.capital.profit
+          </Message>
+        </div>
+        <div>
+          <Message
+            params={{
+              amount: String(initialCapital.membershipBonus),
+            }}
+          >
+            member.capital.member.bonus
+          </Message>
+        </div>
+        <div>
+          {initialCapital.workCompensation ? (
+            <Message
+              params={{
+                amount: String(initialCapital.workCompensation),
+              }}
+            >
+              member.capital.work.compensation
+            </Message>
+          ) : (
+            ''
+          )}
+        </div>
+        <div>
+          {initialCapital.unvestedWorkCompensation ? (
+            <Message
+              params={{
+                amount: String(initialCapital.unvestedWorkCompensation),
+              }}
+            >
+              member.capital.unvested.work.compensation
+            </Message>
+          ) : (
+            ''
+          )}
+        </div>
+        <div>
+          <b>
+            <Message
+              params={{
+                amount:
+                  initialCapital.capitalPayment +
+                  initialCapital.membershipBonus +
+                  initialCapital.profit +
+                  initialCapital.unvestedWorkCompensation +
+                  initialCapital.workCompensation,
+              }}
+            >
+              member.capital.total
+            </Message>
+          </b>
+        </div>
+      </Fragment>
+    );
+  }
 }
 
 AccountPage.propTypes = {

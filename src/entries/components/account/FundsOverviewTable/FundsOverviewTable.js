@@ -1,5 +1,5 @@
 import React from 'react';
-import { PropTypes as Types } from 'prop-types';
+import Types from 'prop-types';
 import { Message } from 'retranslate';
 
 import './FundsOverviewTable.scss';
@@ -10,22 +10,26 @@ import Table from '../../common/table/Table';
 const FundsOverviewTable = ({ funds }) => {
   const groupedPillars = getSumOfPillars(funds);
   const totalsOfPillars = calculateTotals(groupedPillars);
+  const titleKeysForPillars = {
+    2: 'overview.title.pillar.2',
+    3: 'overview.title.pillar.3',
+  };
 
   return (
     <Table>
       <thead>
         <tr>
           <th>
-            <Message>overview.summary.table.header.instrument</Message>
+            <Message>overview.table.header.instrument</Message>
           </th>
           <th>
-            <Message>overview.summary.table.header.contributions</Message>
+            <Message>overview.table.header.contributions</Message>
           </th>
           <th>
-            <Message>overview.summary.table.header.profit</Message>
+            <Message>overview.table.header.profit</Message>
           </th>
           <th>
-            <Message>overview.summary.table.header.value</Message>
+            <Message>overview.table.header.value</Message>
           </th>
         </tr>
       </thead>
@@ -34,14 +38,10 @@ const FundsOverviewTable = ({ funds }) => {
           groupedPillars.map(({ pillar, contributions, value }) => (
             <tr key={pillar}>
               <td>
-                {pillar === '2' ? (
-                  <Message>overview.title.pillar.2</Message>
-                ) : (
-                  <Message>overview.title.pillar.3</Message>
-                )}
+                <Message className="mb-2 lead h5">{titleKeysForPillars[pillar]}</Message>
               </td>
               <td>{formatAmountForCurrency(contributions)}</td>
-              <td className={value - contributions >= 0 ? 'profit-positive' : 'profit-negative'}>
+              <td className={getProfitClassName(value - contributions)}>
                 {formatAmountForCurrency(value - contributions)}
               </td>
               <td>{formatAmountForCurrency(value)}</td>
@@ -50,7 +50,9 @@ const FundsOverviewTable = ({ funds }) => {
       </tbody>
       <tfoot>
         <tr>
-          <td>Kokku</td>
+          <td>
+            <Message>overview.total</Message>
+          </td>
           <td>{formatAmountForCurrency(totalsOfPillars.contributions)}</td>
           <td className={getProfitClassName(totalsOfPillars.profit)}>
             {formatAmountForCurrency(totalsOfPillars.profit)}
