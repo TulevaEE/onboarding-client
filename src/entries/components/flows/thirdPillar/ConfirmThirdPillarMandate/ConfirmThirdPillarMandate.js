@@ -93,23 +93,27 @@ export const ConfirmThirdPillarMandate = ({
 
 function getMandate(sourceFunds, targetFund) {
   return {
-    fundTransferExchanges: sourceFunds.map(sourceFund => ({
-      amount: 1,
-      sourceFundIsin: sourceFund.isin,
-      targetFundIsin: targetFund.isin,
-    })),
+    fundTransferExchanges: sourceFunds
+      .map(sourceFund => ({
+        amount: 1,
+        sourceFundIsin: sourceFund.isin,
+        targetFundIsin: targetFund.isin,
+      }))
+      .filter(({ sourceFundIsin, targetFundIsin }) => sourceFundIsin !== targetFundIsin),
     futureContributionFundIsin: targetFund.isin,
   };
 }
 
 function createSelectionsFromFundsToFund(sourceFunds, targetFund) {
-  return sourceFunds.map(sourceFund => ({
-    sourceFundIsin: sourceFund.isin,
-    sourceFundName: sourceFund.name,
-    targetFundIsin: targetFund.isin,
-    targetFundName: targetFund.name,
-    percentage: 1,
-  }));
+  return sourceFunds
+    .map(sourceFund => ({
+      sourceFundIsin: sourceFund.isin,
+      sourceFundName: sourceFund.name,
+      targetFundIsin: targetFund.isin,
+      targetFundName: targetFund.name,
+      percentage: 1,
+    }))
+    .filter(({ sourceFundIsin, targetFundIsin }) => sourceFundIsin !== targetFundIsin);
 }
 
 const fundType = Types.shape({ isin: Types.string, name: Types.string });
