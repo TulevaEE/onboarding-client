@@ -6,8 +6,10 @@ import { Link, Redirect } from 'react-router-dom';
 import { Message } from 'retranslate';
 
 import ThirdPillarTermsAgreement from './ThirdPillarTermsAgreement';
+import PoliticallyExposedPersonAgreement from './PoliticallyExposedPersonAgreement';
 import { actions as exchangeActions } from '../../../exchange';
 import FundTransferTable from '../../secondPillar/confirmMandate/fundTransferTable';
+import ResidencyAgreement from './ResidencyAgreement';
 
 export const ConfirmThirdPillarMandate = ({
   previousPath,
@@ -52,6 +54,10 @@ export const ConfirmThirdPillarMandate = ({
     )}
 
     <ThirdPillarTermsAgreement />
+
+    <PoliticallyExposedPersonAgreement />
+
+    <ResidencyAgreement />
 
     <div className="mt-5">
       <button

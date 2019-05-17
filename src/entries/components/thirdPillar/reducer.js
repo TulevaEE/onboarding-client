@@ -3,6 +3,8 @@ import {
   CHANGE_MONTHLY_CONTRIBUTION,
   CHANGE_EXCHANGE_EXISTING_UNITS,
   CHANGE_AGREEMENT_TO_TERMS,
+  CHANGE_POLITICALLY_EXPOSED,
+  CHANGE_RESIDENCY,
 } from './constants';
 import initialState from './initialState';
 import {
@@ -43,6 +45,16 @@ export default function thirdPillarReducer(state = initialState, action) {
       return {
         ...state,
         agreedToTerms: action.agreedToTerms,
+      };
+    case CHANGE_POLITICALLY_EXPOSED:
+      return {
+        ...state,
+        isPoliticallyExposed: action.isPoliticallyExposed,
+      };
+    case CHANGE_RESIDENCY:
+      return {
+        ...state,
+        isResident: action.isResident,
       };
     case SIGN_MANDATE_SUCCESS:
       return {

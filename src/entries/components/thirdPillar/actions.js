@@ -3,6 +3,8 @@ import {
   CHANGE_MONTHLY_CONTRIBUTION,
   CHANGE_EXCHANGE_EXISTING_UNITS,
   CHANGE_AGREEMENT_TO_TERMS,
+  CHANGE_RESIDENCY,
+  CHANGE_POLITICALLY_EXPOSED,
 } from './constants';
 
 export function addDataFromQueryParams(query) {
@@ -19,4 +21,12 @@ export function changeExchangeExistingUnits(exchangeExistingUnits) {
 
 export function changeAgreementToTerms(agreedToTerms) {
   return { type: CHANGE_AGREEMENT_TO_TERMS, agreedToTerms };
+}
+
+export function changeIsPoliticallyExposed(isPoliticallyExposed) {
+  return { type: CHANGE_POLITICALLY_EXPOSED, isPoliticallyExposed };
+}
+
+export function changeIsResident(isResident) {
+  return { type: CHANGE_RESIDENCY, isResident };
 }

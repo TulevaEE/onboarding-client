@@ -253,6 +253,11 @@
   "confirmThirdPillarMandate.exchangeExistingUnits": "soovid vahetada olemasolevad osakud järgmiselt:",
 
   "thirdPillarAgreement.termsConfirmation": "Kinnitan, et mul on olnud võimalik tutvuda kõigi registreeritud {{ link }}, nõustun minu valitud pensionifondi(de) tingimustega ning mõistan vabatahtliku pensionifondi osakute omandamisega kaasnevaid riske.",
+  "thirdPillarAgreement.isPep": "Kinnitan, et olen riikliku taustaga isik.",
+  "thirdPillarAgreement.isNotPep": "Kinnitan, et ma ei ole riikliku taustaga isik.",
+  "thirdPillarAgreement.pepTooltip": "Riikliku taustaga isik on füüsiline isik, kes täidab või on täitnud avaliku võimu olulisi ülesandeid, sealhulgas riigipea, valitsusjuht, minister ning ase- või abiminister, parlamendiliige või parlamendiga sarnase seadusandliku organi liige, erakonna juhtorgani liige, ülemkohtu ja riigikohtu liige, riigikontrolli ja keskpanga nõukogu liige, suursaadik, asjur ja kaitsejõudude kõrgem ohvitser, riigi äriühingu juhatuse ja haldus- või järelevalveorgani liige, rahvusvahelise organisatsiooni juht, juhi asetäitja ja juhtorgani liige või samaväärseid ülesandeid täitev isik, kes ei ole kesk- või alamastme ametniku staatuses..",
+  "thirdPillarAgreement.isResident": "Olen praegu või olen varem olnud Eesti resident.",
+  "thirdPillarAgreement.isNotResident": "Ei ole Eesti resident.",
   "thirdPillarAgreement.linkText": "vabatahtlike pensionifondide tingimuste ja emissiooniprospektidega",
   "thirdPillarAgreement.ageDependentRecommendationConfirmation": "Olen lugenud alljärgnevat soovitust.",
   "thirdPillarAgreement.signingExplanation": "Vajutades nupule “allkirjasta ja saada”, saadan digiallkirjastatud avalduse otse registripidajale.",
