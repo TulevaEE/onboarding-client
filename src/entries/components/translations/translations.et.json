@@ -249,6 +249,7 @@
 
   "confirmThirdPillarMandate.intro": "Avaldust allkirjastades kinnitad, et:",
   "confirmThirdPillarMandate.contribution": "soovid hakata tegema vabatahtliku kogumispensioni sissemakseid fondi:",
+  "confirmThirdPillarMandate.exchangeExistingUnits": "soovid vahetada olemasolevad osakud järgmiselt:",
 
   "thirdPillarAgreement.termsConfirmation": "Kinnitan, et mul on olnud võimalik tutvuda kõigi registreeritud {{ link }}, nõustun minu valitud pensionifondi(de) tingimustega ning mõistan vabatahtliku pensionifondi osakute omandamisega kaasnevaid riske.",
   "thirdPillarAgreement.linkText": "vabatahtlike pensionifondide tingimuste ja emissiooniprospektidega",

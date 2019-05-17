@@ -274,6 +274,7 @@
 
   "confirmThirdPillarMandate.intro": "By signing I confirm that:",
   "confirmThirdPillarMandate.contribution": "I wish to transfer my supplementary pension fund contributions to:",
+  "confirmThirdPillarMandate.exchangeExistingUnits": "I wish to exchange current fund units for:",
 
   "thirdPillarAgreement.termsConfirmation": "I confirm that I have had the chance to view all {{ link }}, I agree to the terms of my chosen pension fund(s) and understand the risks that accompany the acquisition of supplementary pension fund units. By clicking “sign and send“ a digitally signed application will be sent to the register.",
   "thirdPillarAgreement.linkText": "supplementary pension funds’ terms and prospectuses",

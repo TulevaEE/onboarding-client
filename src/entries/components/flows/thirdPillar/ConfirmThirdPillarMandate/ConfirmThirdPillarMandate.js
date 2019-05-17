@@ -7,10 +7,13 @@ import { Message } from 'retranslate';
 
 import ThirdPillarTermsAgreement from './ThirdPillarTermsAgreement';
 import { actions as exchangeActions } from '../../../exchange';
+import FundTransferTable from '../../secondPillar/confirmMandate/fundTransferTable';
 
 export const ConfirmThirdPillarMandate = ({
   previousPath,
   monthlyContribution,
+  exchangeExistingUnits,
+  sourceFunds,
   selectedFutureContributionsFund,
   agreedToTerms,
   onSign,
@@ -27,6 +30,20 @@ export const ConfirmThirdPillarMandate = ({
 
         <div>
           <b className="highlight">{selectedFutureContributionsFund.name}</b>
+        </div>
+      </div>
+    )}
+
+    {exchangeExistingUnits && (
+      <div className="mt-4">
+        <Message>confirmThirdPillarMandate.exchangeExistingUnits</Message>
+        <div className="mt-4">
+          <FundTransferTable
+            selections={createSelectionsFromFundsToFund(
+              sourceFunds,
+              selectedFutureContributionsFund,
+            )}
+          />
         </div>
       </div>
     )}
@@ -68,11 +85,25 @@ function getMandate(fundTransferExchanges, futureContributionFundIsin) {
   return { fundTransferExchanges, futureContributionFundIsin };
 }
 
+function createSelectionsFromFundsToFund(sourceFunds, targetFund) {
+  return sourceFunds.map(sourceFund => ({
+    sourceFundIsin: sourceFund.isin,
+    sourceFundName: sourceFund.name,
+    targetFundIsin: targetFund.isin,
+    targetFundName: targetFund.name,
+    percentage: 100,
+  }));
+}
+
+const fundType = Types.shape({ isin: Types.string, name: Types.string });
+
 ConfirmThirdPillarMandate.propTypes = {
   previousPath: Types.string,
 
   monthlyContribution: Types.number,
-  selectedFutureContributionsFund: Types.shape({ name: Types.string }),
+  exchangeExistingUnits: Types.bool,
+  sourceFunds: Types.arrayOf(fundType),
+  selectedFutureContributionsFund: fundType,
   agreedToTerms: Types.bool,
   onSign: Types.func,
   onPreview: Types.func,
@@ -82,6 +113,8 @@ ConfirmThirdPillarMandate.defaultProps = {
   previousPath: '',
 
   monthlyContribution: null,
+  exchangeExistingUnits: null,
+  sourceFunds: [],
   selectedFutureContributionsFund: null,
   agreedToTerms: false,
   onSign: () => {},
@@ -94,6 +127,7 @@ const mapStateToProps = state => ({
   ),
   agreedToTerms: state.thirdPillar.agreedToTerms,
   monthlyContribution: state.thirdPillar.monthlyContribution,
+  sourceFunds: state.thirdPillar.sourceFunds,
   exchangeExistingUnits: state.thirdPillar.exchangeExistingUnits,
 });
 
