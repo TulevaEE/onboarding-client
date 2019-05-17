@@ -177,7 +177,7 @@ export class AccountPage extends Component {
               <FundsOverviewTable funds={currentBalanceFunds} />
             )}
 
-            <div className="row mt-5">
+            <div className="row mt-5  mt-3">
               <div className="col-md-6">
                 <Message className="mb-4 h3">overview.details.title</Message>
               </div>
@@ -194,6 +194,11 @@ export class AccountPage extends Component {
             ) : (
               <FundDetailsTable allFunds={currentBalanceFunds} pillar={3} />
             )}
+            <div className="mt-2">
+              <small className="text-muted">
+                <Message>select.sources.active.fund</Message>
+              </small>
+            </div>
 
             <div className="row mt-5">
               <div className="col-md-6">
@@ -204,11 +209,6 @@ export class AccountPage extends Component {
                   <Message>change.my.pension.fund</Message>
                 </Link>
               </div>
-            </div>
-            <div className="mt-2">
-              <small className="text-muted">
-                <Message>select.sources.active.fund</Message>
-              </small>
             </div>
             {loadingCurrentBalance ? (
               <Loader className="align-middle" />

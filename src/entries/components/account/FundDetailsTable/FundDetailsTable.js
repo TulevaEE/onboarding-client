@@ -3,20 +3,19 @@ import { PropTypes as Types } from 'prop-types';
 import { Message } from 'retranslate';
 import './FundDetails.scss';
 import { getProfitClassName, formatAmountForCurrency } from '../../common/utils';
-import { calculateTotals, getSumOfPillars } from './fundCalculations';
+import { calculateTotals } from './fundCalculations';
 import Table from '../../common/table/Table';
 
 const FundDetailsTable = ({ allFunds, pillar }) => {
   const funds = allFunds.filter(fund => fund.pillar === pillar);
-  const groupedPillars = getSumOfPillars(funds);
-  const totalsOfPillars = calculateTotals(groupedPillars);
+  const totalsOfPillars = calculateTotals(funds);
 
   if (funds === undefined || funds.length === 0) {
     return <div />;
   }
   return (
     <Fragment>
-      <div className="row col-md-6 mt-4">
+      <div className="row col-md-6 mt-5">
         {pillar === 2 ? (
           <Message className="mb-4 lead h5">overview.title.pillar.2</Message>
         ) : (
