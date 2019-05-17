@@ -30,7 +30,7 @@ describe('Current balance', () => {
 
   beforeEach(() => {
     getReturnComparisonStartDateOptions.mockReturnValue([{}, {}]);
-    props = {loadingCapital: false};
+    props = {};
     component = shallow(<AccountPage {...props} />);
   });
 
