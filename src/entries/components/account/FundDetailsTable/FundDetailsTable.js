@@ -20,16 +20,18 @@ const FundDetailsTable = ({ allFunds, pillar }) => {
     funds &&
     funds.length > 0 && (
       <Fragment>
-        <div className="row col-md-6 mt-5">
-          <Message className="mb-2 lead h5">{titleKeysForPillars[pillar]}</Message>
-        </div>
-        {pillar === 2 && (
-          <div className="col-md-6 text-md-right">
-            <Link className="btn btn-primary mb-3" to="/2nd-pillar-flow">
-              <Message>change.my.pension.fund</Message>
-            </Link>
+        <div className="row">
+          <div className="col-md-6 mt-5">
+            <Message className="mb-2 lead h5">{titleKeysForPillars[pillar]}</Message>
           </div>
-        )}
+          {pillar === 2 && (
+            <div className="col-md-6 mt-5 text-md-right">
+              <Link className="btn btn-primary mb-3" to="/2nd-pillar-flow">
+                <Message>change.my.pension.fund</Message>
+              </Link>
+            </div>
+          )}
+        </div>
         <Table>
           <thead>
             <tr>
