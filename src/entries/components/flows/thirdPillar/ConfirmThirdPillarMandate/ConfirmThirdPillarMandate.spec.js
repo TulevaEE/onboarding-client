@@ -90,6 +90,8 @@ describe('ConfirmThirdPillarMandate', () => {
   it('signs mandate on sign button click', () => {
     const onSign = jest.fn();
     component.setProps({
+      isResident: true,
+      isPoliticallyExposed: true,
       sourceFunds: [
         { isin: 'EE123', name: 'First fund' },
         { isin: 'EE456', name: 'Second fund' },
@@ -101,13 +103,17 @@ describe('ConfirmThirdPillarMandate', () => {
 
     expect(onSign).not.toBeCalled();
     signButton().simulate('click');
-    expect(onSign).toBeCalledWith({
-      fundTransferExchanges: [
-        { amount: 1, sourceFundIsin: 'EE123', targetFundIsin: 'EE789' },
-        { amount: 1, sourceFundIsin: 'EE456', targetFundIsin: 'EE789' },
-      ],
-      futureContributionFundIsin: 'EE789',
-    });
+    expect(onSign).toBeCalledWith(
+      {
+        fundTransferExchanges: [
+          { amount: 1, sourceFundIsin: 'EE123', targetFundIsin: 'EE789' },
+          { amount: 1, sourceFundIsin: 'EE456', targetFundIsin: 'EE789' },
+        ],
+        futureContributionFundIsin: 'EE789',
+      },
+      true,
+      true,
+    );
   });
 
   it('has exchange existing funds text and exchange table only when should exchange existing funds', () => {

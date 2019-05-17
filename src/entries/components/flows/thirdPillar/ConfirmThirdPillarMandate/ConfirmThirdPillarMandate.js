@@ -68,7 +68,11 @@ export const ConfirmThirdPillarMandate = ({
         className="btn btn-primary mb-2 mr-2"
         disabled={!agreedToTerms || isResident === null || isPoliticallyExposed === null}
         onClick={() => {
-          onSign(getMandate(sourceFunds, selectedFutureContributionsFund));
+          onSign(
+            getMandate(sourceFunds, selectedFutureContributionsFund),
+            isResident,
+            isPoliticallyExposed,
+          );
         }}
       >
         <Message>confirmThirdPillarMandate.sign</Message>
