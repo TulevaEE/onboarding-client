@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import { Loader, ErrorMessage } from '../common';
 import FundsOverviewTable from './FundsOverviewTable';
 import PendingExchangesTable from './pendingExchangeTable';
+import StatusBox from './statusBox';
 import ReturnComparison, { actions as returnComparisonActions } from '../returnComparison';
 import getReturnComparisonStartDateOptions from '../returnComparison/options';
 import Select from './Select';
@@ -156,6 +157,7 @@ export class AccountPage extends Component {
       returnComparisonError,
       saveUser,
       error,
+      age,
     } = this.props;
     const { returnComparisonStartDate, options } = this.state;
 
@@ -206,6 +208,12 @@ export class AccountPage extends Component {
     return (
       <Fragment>
         <div className="mt-5">
+          <StatusBox
+            currentBalanceFunds={currentBalanceFunds}
+            age={age}
+            memberNumber={memberNumber}
+            loading={loadingCurrentBalance}
+          />
           {memberNumber ? (
             <Message params={{ memberNumber }}>account.member.statement</Message>
           ) : (
@@ -324,6 +332,7 @@ AccountPage.propTypes = {
   initialCapital: Types.shape({}),
   loadingCapital: Types.bool,
   memberNumber: Types.number,
+  age: Types.number,
   conversion: Types.shape({}),
   saveUser: Types.func,
   error: Types.shape({}),
@@ -347,6 +356,7 @@ AccountPage.defaultProps = {
   initialCapital: {},
   loadingCapital: false,
   memberNumber: null,
+  age: null,
   conversion: {},
   error: null,
   saveUser: noop,
@@ -376,6 +386,7 @@ const mapStateToProps = state => ({
   memberNumber: (state.login.user || {}).memberNumber,
   conversion: state.login.userConversion,
   error: state.exchange.error,
+  age: (state.login.user || {}).age,
 });
 const mapDispatchToProps = dispatch =>
   bindActionCreators(

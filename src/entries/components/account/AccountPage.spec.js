@@ -6,6 +6,7 @@ import { Provider } from 'react-redux';
 
 import { Loader, ErrorMessage } from '../common';
 import { AccountPage } from './AccountPage';
+import StatusBox from './statusBox';
 import PensionFundTable from '../flows/secondPillar/selectSources/pensionFundTable';
 import PendingExchangesTable from './pendingExchangeTable';
 import UpdateUserForm from './updateUserForm';
@@ -58,6 +59,10 @@ describe('Current balance', () => {
         loadingCapital: true,
         initialCapital: capital,
       });
+    });
+
+    it('renders the status box', () => {
+      expect(component.find(StatusBox).exists()).toBe(true);
     });
 
     it('renders the fund overview table', () => {
