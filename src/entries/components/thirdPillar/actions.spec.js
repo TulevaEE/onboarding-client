@@ -3,11 +3,13 @@ import {
   addDataFromQueryParams,
   changeMonthlyContribution,
   changeExchangeExistingUnits,
+  changeAgreementToTerms,
 } from './actions';
 import {
   QUERY_PARAMETERS,
   CHANGE_MONTHLY_CONTRIBUTION,
   CHANGE_EXCHANGE_EXISTING_UNITS,
+  CHANGE_AGREEMENT_TO_TERMS,
 } from './constants';
 
 describe('Third pillar actions', () => {
@@ -44,6 +46,18 @@ describe('Third pillar actions', () => {
     expect(actions).toContainEqual({
       type: CHANGE_EXCHANGE_EXISTING_UNITS,
       exchangeExistingUnits: true,
+    });
+  });
+
+  it('dispatches agreement to terms change action', async () => {
+    const store = mockStore();
+
+    await store.dispatch(changeAgreementToTerms(true));
+
+    const actions = store.getActions();
+    expect(actions).toContainEqual({
+      type: CHANGE_AGREEMENT_TO_TERMS,
+      agreedToTerms: true,
     });
   });
 });

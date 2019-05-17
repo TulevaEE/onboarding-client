@@ -2,6 +2,7 @@ import {
   QUERY_PARAMETERS,
   CHANGE_MONTHLY_CONTRIBUTION,
   CHANGE_EXCHANGE_EXISTING_UNITS,
+  CHANGE_AGREEMENT_TO_TERMS,
 } from './constants';
 import initialState from './initialState';
 import { GET_SOURCE_FUNDS_SUCCESS, GET_TARGET_FUNDS_SUCCESS } from '../exchange/constants';
@@ -33,6 +34,11 @@ export default function thirdPillarReducer(state = initialState, action) {
       return {
         ...state,
         targetFunds: action.targetFunds.filter(isThirdPillar),
+      };
+    case CHANGE_AGREEMENT_TO_TERMS:
+      return {
+        ...state,
+        agreedToTerms: action.agreedToTerms,
       };
     default:
       return state;

@@ -6,4 +6,5 @@ export default {
   targetFunds: [],
   selectedFutureContributionsFundIsin: LHV_INDEX_PLUS_ISIN,
   exchangeExistingUnits: false,
+  agreedToTerms: false,
 };

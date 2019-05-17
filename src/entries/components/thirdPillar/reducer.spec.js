@@ -2,6 +2,7 @@ import {
   QUERY_PARAMETERS,
   CHANGE_MONTHLY_CONTRIBUTION,
   CHANGE_EXCHANGE_EXISTING_UNITS,
+  CHANGE_AGREEMENT_TO_TERMS,
 } from './constants';
 import initialState from './initialState';
 import reducer from './reducer';
@@ -166,6 +167,18 @@ describe('Third pillar reducer', () => {
     expect(state).toEqual({
       ...initialState,
       targetFunds: [{ isin: 'EE123', pillar: 3 }, { isin: 'EE789', pillar: 3 }],
+    });
+  });
+
+  it('updates term agreement', () => {
+    const state = reducer(undefined, {
+      type: CHANGE_AGREEMENT_TO_TERMS,
+      agreedToTerms: true,
+    });
+
+    expect(state).toEqual({
+      ...initialState,
+      agreedToTerms: true,
     });
   });
 });
