@@ -308,12 +308,12 @@ export function signMandate(mandate) {
     const loggedInWithMobileId = getState().login.loginMethod === 'mobileId';
     const loggedInWithSmartId = getState().login.loginMethod === 'smartId';
     if (loggedInWithMobileId) {
-      return dispatch(signMandateWithMobileId(mandate));
+      dispatch(signMandateWithMobileId(mandate));
+    } else if (loggedInWithSmartId) {
+      dispatch(signMandateWithSmartId(mandate));
+    } else {
+      dispatch(signMandateWithIdCard(mandate));
     }
-    if (loggedInWithSmartId) {
-      return dispatch(signMandateWithSmartId(mandate));
-    }
-    return dispatch(signMandateWithIdCard(mandate));
   };
 }
 
