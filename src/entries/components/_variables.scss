@@ -24,6 +24,7 @@ $blue-washed: #ebf7ff;
 $orange: #FF4800;
 $yellow: #FCE228;
 $green: #51c26c;
+$red: #FF0000;
 $gray-mid: #d8d8d8;
 $gray-washed: #fafafa;
 $very-light-gray: rgba(48, 48, 48, 0.32);
@@ -87,3 +88,5 @@ $screen-lg-max:              ($screen-xl-min - 1) !default;
 	@content;
   }
 }
+
+$fa-font-path: "~font-awesome/fonts";
