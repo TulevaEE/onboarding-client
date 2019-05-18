@@ -173,14 +173,6 @@ describe('Current balance', () => {
     expect(component.contains(<Message>account.second.pillar.missing</Message>)).toBe(false);
   });
 
-  it('renders member number', () => {
-    const memberNumber = 123;
-    component.setProps({ memberNumber });
-    expect(
-      component.contains(<Message params={{ memberNumber }}>account.member.statement</Message>),
-    ).toBe(true);
-  });
-
   it('renders alternative text when user is not a member yet', () => {
     const memberNumber = null;
     component.setProps({ memberNumber });

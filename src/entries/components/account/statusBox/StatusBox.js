@@ -38,7 +38,7 @@ const StatusBox = ({ currentBalanceFunds, memberNumber, age, loading }) => {
         </div>
       </div>
 
-      <div className="card card-secondary p-4">
+      <div className="card card-secondary">
         <StatusBoxRow
           ok={!joinTuleva2 && !joinTulevaSoon}
           showAction={!loading}

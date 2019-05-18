@@ -4,7 +4,7 @@ import { Message } from 'retranslate';
 import './StatusBoxRow.scss';
 
 const CheckMark = ({ checked }) => (
-  <div className="status-box-row pt-1">{checked ? '✔' : '🗙'} </div>
+  <div className={`ml-3 mr-2 fa${checked ? ' fa-check' : ' fa-times'}`} />
 );
 CheckMark.defaultProps = {
   checked: false,
@@ -30,17 +30,17 @@ const StatusBoxRow = ({ name, lines, showAction, ok, children, last }) => {
     </ul>
   );
   return (
-    <div className={`row  py-2 ${!last ? 'tv-table__row' : ''}`}>
-      <div className="media">
+    <div className={`d-flex py-2 ${!last ? 'tv-table__row' : ''}`}>
+      <div className="d-flex flex-column justify-content-center">
         <CheckMark checked={ok} />
-        <div className="media-body">
-          <div className="mt-0 pt-1 pl-2">
-            <b>{displayName}</b>
-          </div>
-          {formattedLines}
-        </div>
       </div>
-      <div className="col-12 col-sm text-sm-right">{showAction && children ? children : ''}</div>
+      <div className="d-flex flex-column justify-content-center">
+        <div className="mt-0 pt-1 pl-2">
+          <b>{displayName}</b>
+        </div>
+        {formattedLines}
+        <div className="col-12 col-sm text-sm-right">{showAction && children ? children : ''}</div>
+      </div>
     </div>
   );
 };

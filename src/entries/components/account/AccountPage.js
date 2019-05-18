@@ -214,9 +214,7 @@ export class AccountPage extends Component {
             memberNumber={memberNumber}
             loading={loadingCurrentBalance}
           />
-          {memberNumber ? (
-            <Message params={{ memberNumber }}>account.member.statement</Message>
-          ) : (
+          {memberNumber !== null || (
             <span>
               <Message>account.non.member.statement</Message>{' '}
               <a className="btn btn-link p-0 border-0" href="https://tuleva.ee/tulundusyhistu/">
