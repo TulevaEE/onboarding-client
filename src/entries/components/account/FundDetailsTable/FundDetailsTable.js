@@ -21,23 +21,23 @@ const FundDetailsTable = ({ allFunds, pillar }) => {
     funds.length > 0 && (
       <Fragment>
         <div className="row">
-          <div className="col-md-6 mt-5">
+          <div className="col-md-6 mb-2 mt-4">
             <Message className="mb-2 lead h5">{titleKeysForPillars[pillar]}</Message>
           </div>
           {pillar === 2 && (
-            <div className="col-md-6 mt-5 text-md-right">
-              <Link className="btn btn-primary mb-3" to="/2nd-pillar-flow">
+            <div className="col-md-6 mb-1 mt-2 text-md-right">
+              <Link className="btn btn-primary" to="/2nd-pillar-flow">
                 <Message>change.my.pension.fund</Message>
               </Link>
             </div>
           )}
-          {pillar === 3 && (
-            <div className="col-md-6 mt-5 text-md-right">
-              <Link className="btn btn-primary mb-3" to="/3rd-pillar-flow">
-                <Message>change.my.pension.fund.third.pillar</Message>
-              </Link>
-            </div>
-          )}
+          {/* {pillar === 3 && ( */}
+          {/*  <div className="col-md-6 text-md-right"> */}
+          {/*    <Link className="btn btn-primary mb-3" to="/3rd-pillar-flow"> */}
+          {/*      <Message>change.my.pension.fund.third.pillar</Message> */}
+          {/*    </Link> */}
+          {/*  </div> */}
+          {/* )} */}
         </div>
         <Table>
           <thead>

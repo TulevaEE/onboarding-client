@@ -6,7 +6,6 @@ import { Provider } from 'react-redux';
 
 import { Loader, ErrorMessage } from '../common';
 import { AccountPage } from './AccountPage';
-import StatusBox from './statusBox';
 import PensionFundTable from '../flows/secondPillar/selectSources/pensionFundTable';
 import PendingExchangesTable from './pendingExchangeTable';
 import UpdateUserForm from './updateUserForm';
@@ -14,7 +13,6 @@ import ReturnComparison from '../returnComparison';
 import Select from './Select';
 import { mockStore } from '../../../test/utils';
 import getReturnComparisonStartDateOptions from '../returnComparison/options';
-import FundsOverviewTable from './FundsOverviewTable';
 
 jest.mock('../returnComparison/options', () => jest.fn());
 
@@ -61,13 +59,9 @@ describe('Current balance', () => {
       });
     });
 
-    it('renders the status box', () => {
-      expect(component.find(StatusBox).exists()).toBe(true);
-    });
-
-    it('renders the fund overview table', () => {
-      expect(component.find(FundsOverviewTable).exists()).toBe(true);
-    });
+    // it('renders the status box', () => {
+    //   expect(component.find(StatusBox).exists()).toBe(true);
+    // });
 
     it('renders loader when current balance is still loading', () => {
       component.setProps({ loadingCurrentBalance: true });
@@ -145,7 +139,7 @@ describe('Current balance', () => {
     });
   });
 
-  it('does not render the current balance if currentBalanceFunds is empty ', () => {
+  it('does not render the current balance if currentBalanceFunds is empty', () => {
     props.currentBalanceFunds = {};
     expect(component.contains(<PensionFundTable />)).toBe(false);
   });
@@ -179,15 +173,15 @@ describe('Current balance', () => {
     expect(component.contains(<Message>account.non.member.statement</Message>)).toBe(true);
   });
 
-  it('Does not render loader when currentBalanceFunds is empty', () => {
+  it('renders loader when current balance is still loading', () => {
     const loadingCurrentBalance = true;
     component.setProps({ loadingCurrentBalance });
-    expect(component.contains(<Loader className="align-middle" />)).toBe(false);
+    expect(component.contains(<Loader className="align-middle" />)).toBe(true);
   });
 
-  it('does not render loader to show pending exchanges are still loading in case currentBalanceFunds is empty ', () => {
+  it('renders loader when pending exchanges are still loading', () => {
     component.setProps({ loadingPendingExchanges: true });
-    expect(pendingExchangesLoader().exists()).toBe(false);
+    expect(pendingExchangesLoader().exists()).toBe(true);
   });
 
   it('does not render pending exchanges when they are still loading', () => {
@@ -202,7 +196,7 @@ describe('Current balance', () => {
 
   it('renders pending exchanges when at least one exists', () => {
     component.setProps({ pendingExchanges: [{}] });
-    expect(pendingExchangesTable().exists()).toBe(false);
+    expect(pendingExchangesTable().exists()).toBe(true);
   });
 
   it('does not render return comparison when there is an error', () => {
@@ -210,8 +204,8 @@ describe('Current balance', () => {
     expect(returnComparison().exists()).toBe(false);
   });
 
-  it('Does not render return comparison when there is no error in case currentBalanceFunds is empty ', () => {
-    expect(returnComparison().exists()).toBe(false);
+  it('renders return comparison when there is no error', () => {
+    expect(returnComparison().exists()).toBe(true);
   });
 
   it('shows update user form', () => {

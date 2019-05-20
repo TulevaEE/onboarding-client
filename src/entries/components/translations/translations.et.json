@@ -289,12 +289,11 @@
   "confirmThirdPillarMandate.back": "Eelmine samm",
 
   "member.capital": "Liikmekapital",
-  "member.capital.capital.payment": "Panus liikmekapitali: {{amount}}€",
-  "member.capital.profit": "Teenitud investeerimiskasum: {{amount}}€",
-  "member.capital.member.bonus": "Kogunenud liikmeboonus: {{amount}}€",
-  "member.capital.work.compensation": "Tööpanus: {{amount}}€",
-  "member.capital.unvested.work.compensation": "Broneeritud tööpanus: {{amount}}€",
-  "member.capital.total": "Kokku: {{amount}}€",
+  "member.capital.capital.payment": "Panus liikmekapitali",
+  "member.capital.profit": "Teenitud investeerimiskasum",
+  "member.capital.member.bonus": "Kogunenud liikmeboonus",
+  "member.capital.work.compensation": "Tööpanus",
+  "member.capital.unvested.work.compensation": "Broneeritud tööpanus",
 
   "thirdPillarPayment.title": "Avaldus esitatud!",
   "thirdPillarPayment.description": "Nüüd logi sisse oma internetipanka ning {{ emphasized }}.",

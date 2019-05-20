@@ -3,12 +3,9 @@ import { PropTypes as Types } from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Message, WithTranslations } from 'retranslate';
-import { Link } from 'react-router-dom';
 
 import { Loader, ErrorMessage } from '../common';
-import FundsOverviewTable from './FundsOverviewTable';
 import PendingExchangesTable from './pendingExchangeTable';
-import StatusBox from './statusBox';
 import ReturnComparison, { actions as returnComparisonActions } from '../returnComparison';
 import getReturnComparisonStartDateOptions from '../returnComparison/options';
 import Select from './Select';
@@ -17,83 +14,78 @@ import { updateUser } from '../common/user/actions';
 import { actions as accountActions } from '.';
 import { actions as exchangeActions } from '../exchange';
 import FundDetailsTable from './FundDetailsTable';
+import Table from '../common/table';
+import { formatAmountForCurrency } from '../common/utils';
 
 const noop = () => null;
 
 export class AccountPage extends Component {
   static memberCapital(initialCapital) {
     return (
-      <Fragment>
-        <div>
-          <Message
-            params={{
-              amount: String(initialCapital.capitalPayment),
-            }}
-          >
-            member.capital.capital.payment
-          </Message>
-        </div>
-        <div>
-          <Message
-            params={{
-              amount: String(initialCapital.profit),
-            }}
-          >
-            member.capital.profit
-          </Message>
-        </div>
-        <div>
-          <Message
-            params={{
-              amount: String(initialCapital.membershipBonus),
-            }}
-          >
-            member.capital.member.bonus
-          </Message>
-        </div>
-        <div>
+      <Table>
+        <thead>
+          <tr>
+            <th>
+              <Message>overview.table.header.instrument</Message>
+            </th>
+            <th>
+              <Message>overview.table.header.value</Message>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <Message>member.capital.capital.payment</Message>
+            </td>
+            <td>{formatAmountForCurrency(initialCapital.capitalPayment)}</td>
+          </tr>
+          <tr>
+            <td>
+              <Message>member.capital.profit</Message>
+            </td>
+            <td>{formatAmountForCurrency(initialCapital.profit)}</td>
+          </tr>
+          <tr>
+            <td>
+              <Message>member.capital.member.bonus</Message>
+            </td>
+            <td>{formatAmountForCurrency(initialCapital.membershipBonus)}</td>
+          </tr>
           {initialCapital.workCompensation ? (
-            <Message
-              params={{
-                amount: String(initialCapital.workCompensation),
-              }}
-            >
-              member.capital.work.compensation
-            </Message>
-          ) : (
-            ''
-          )}
-        </div>
-        <div>
+            <tr>
+              <td>
+                <Message>member.capital.work.compensation</Message>
+              </td>
+              <td>{formatAmountForCurrency(initialCapital.workCompensation)}</td>
+            </tr>
+          ) : null}
           {initialCapital.unvestedWorkCompensation ? (
-            <Message
-              params={{
-                amount: String(initialCapital.unvestedWorkCompensation),
-              }}
-            >
-              member.capital.unvested.work.compensation
-            </Message>
-          ) : (
-            ''
-          )}
-        </div>
-        <div>
-          <b>
-            <Message
-              params={{
-                amount:
-                  initialCapital.capitalPayment +
+            <tr>
+              <td>
+                <Message>member.capital.unvested.work.compensation</Message>
+              </td>
+              <td>{formatAmountForCurrency(initialCapital.unvestedWorkCompensation)}</td>
+            </tr>
+          ) : null}
+        </tbody>
+        <tfoot>
+          <tr>
+            <td>
+              <Message>overview.total</Message>
+            </td>
+            <td>
+              {formatAmountForCurrency(
+                initialCapital.capitalPayment +
                   initialCapital.membershipBonus +
                   initialCapital.profit +
                   initialCapital.unvestedWorkCompensation +
                   initialCapital.workCompensation,
-              }}
-            >
-              member.capital.total
-            </Message>
-          </b>
-        </div>
-      </Fragment>
+              )}
+            </td>
+          </tr>
+        </tfoot>
+      </Table>
     );
   }
 
@@ -157,7 +149,7 @@ export class AccountPage extends Component {
       returnComparisonError,
       saveUser,
       error,
-      age,
+      // age,
     } = this.props;
     const { returnComparisonStartDate, options } = this.state;
 
@@ -208,12 +200,12 @@ export class AccountPage extends Component {
     return (
       <Fragment>
         <div className="mt-5">
-          <StatusBox
-            currentBalanceFunds={currentBalanceFunds}
-            age={age}
-            memberNumber={memberNumber}
-            loading={loadingCurrentBalance}
-          />
+          {/* <StatusBox */}
+          {/*  currentBalanceFunds={currentBalanceFunds} */}
+          {/*  age={age} */}
+          {/*  memberNumber={memberNumber} */}
+          {/*  loading={loadingCurrentBalance} */}
+          {/* /> */}
           {memberNumber !== null || (
             <span>
               <Message>account.non.member.statement</Message>{' '}
@@ -239,52 +231,24 @@ export class AccountPage extends Component {
           ''
         )}
         {error ? <ErrorMessage errors={error.body} /> : ''}
-        {localStorage.getItem('thirdPillar') && (
-          <div className="mt-3">
-            <Link to="/3rd-pillar-flow">Esita III samba vahetusavaldus</Link>
+
+        <div className="row mt-5">
+          <div className="col-md-6 mb-4 lead">
+            <Message>overview.summary.title</Message>
           </div>
-        )}
+        </div>
+        {loadingCurrentBalance && <Loader className="align-middle" />}
         {currentBalanceFunds && currentBalanceFunds.length > 0 && (
           <Fragment>
-            <div className="row mt-5">
-              <div className="col-md-6">
-                <Message className="mb-4 h3">overview.summary.title</Message>
-              </div>
-            </div>
-
-            {loadingCurrentBalance ? (
-              <Loader className="align-middle" />
-            ) : (
-              <FundsOverviewTable funds={currentBalanceFunds} />
-            )}
-
-            {pendingExchangesSection}
-            {returnComparisonSection}
-
-            <div className="row mt-3">
-              <div className="col-md-6 mt-5">
-                <Message className="mb-4 h3">overview.details.title</Message>
-              </div>
-            </div>
-
-            {loadingCurrentBalance ? (
-              <Loader className="align-middle" />
-            ) : (
-              <FundDetailsTable allFunds={currentBalanceFunds} pillar={2} />
-            )}
-
-            {loadingCurrentBalance ? (
-              <Loader className="align-middle" />
-            ) : (
-              <FundDetailsTable allFunds={currentBalanceFunds} pillar={3} />
-            )}
-            <div className="mt-2">
-              <small className="text-muted">
-                <Message>overview.active.fund</Message>
-              </small>
-            </div>
+            <FundDetailsTable allFunds={currentBalanceFunds} pillar={2} />
+            <small className="text-muted">
+              <Message>overview.active.fund</Message>
+            </small>
+            <FundDetailsTable allFunds={currentBalanceFunds} pillar={3} />
           </Fragment>
         )}
+        {pendingExchangesSection}
+        {returnComparisonSection}
         <div>
           <div className="mt-5">
             <p className="mb-4 lead">
@@ -330,7 +294,7 @@ AccountPage.propTypes = {
   initialCapital: Types.shape({}),
   loadingCapital: Types.bool,
   memberNumber: Types.number,
-  age: Types.number,
+  // age: Types.number,
   conversion: Types.shape({}),
   saveUser: Types.func,
   error: Types.shape({}),
@@ -354,14 +318,14 @@ AccountPage.defaultProps = {
   initialCapital: {},
   loadingCapital: false,
   memberNumber: null,
-  age: null,
+  // age: null,
   conversion: {},
   error: null,
   saveUser: noop,
 };
 
 const mapStateToProps = state => ({
-  currentBalanceFunds: state.exchange.sourceFunds !== null ? state.exchange.sourceFunds : [],
+  currentBalanceFunds: state.exchange.sourceFunds,
   loadingCurrentBalance: state.exchange.loadingSourceFunds,
   shouldGetPendingExchanges:
     state.login.token &&
@@ -384,7 +348,7 @@ const mapStateToProps = state => ({
   memberNumber: (state.login.user || {}).memberNumber,
   conversion: state.login.userConversion,
   error: state.exchange.error,
-  age: (state.login.user || {}).age,
+  // age: (state.login.user || {}).age,
 });
 const mapDispatchToProps = dispatch =>
   bindActionCreators(

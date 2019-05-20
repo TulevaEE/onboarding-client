@@ -313,12 +313,11 @@
   "confirmThirdPillarMandate.back": "Previous step",
 
   "member.capital": "Member capital",
-  "member.capital.capital.payment": "Capital payment: {{amount}}€",
-  "member.capital.profit": "Investment profit: {{amount}}€",
-  "member.capital.member.bonus": "Membership bonus: {{amount}}€",
-  "member.capital.work.compensation": "Work compensation: {{amount}}€",
-  "member.capital.unvested.work.compensation": "Unvested work compensation: {{amount}}€",
-  "member.capital.total": "Total: {{amount}}€",
+  "member.capital.capital.payment": "Capital payment",
+  "member.capital.profit": "Investment profit",
+  "member.capital.member.bonus": "Membership bonus",
+  "member.capital.work.compensation": "Work compensation",
+  "member.capital.unvested.work.compensation": "Unvested work compensation",
 
   "thirdPillarPayment.title": "Application finished!",
   "thirdPillarPayment.description": "Now log into your internet bank and {{ emphasized }}.",
