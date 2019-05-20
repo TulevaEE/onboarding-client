@@ -62,7 +62,7 @@ describe('Utils', () => {
     });
 
     it('has a thousands separator', () => {
-      expect(formatAmountForCurrency(12345678.9, 'EUR')).toBe('12 345 678.90 €');
+      expect(formatAmountForCurrency(12345678.9, 'EUR')).toBe('12 345 678.90 €');
     });
   });
 });

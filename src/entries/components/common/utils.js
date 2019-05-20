@@ -20,10 +20,10 @@ export function createClamper(lowerLimit = 0, upperLimit = 10) {
 }
 
 export function formatAmountForCurrency(amount = 0) {
-  return `${amount.toLocaleString('fr-CH', {
-    style: 'currency',
-    currency: 'EUR',
-  })}`; // hardcoded euro until more currencies.
+  return `${amount
+    .toFixed(2)
+    .toString()
+    .replace(/\B(?=(\d{3})+(?!\d))/g, '\u00A0')}\u00A0€`;
 }
 
 export function formatLargeAmountForCurrency(amount = 0) {
