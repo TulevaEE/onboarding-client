@@ -40,7 +40,7 @@ export const Success = ({
         )}
         {userHasTransferredFunds ? (
           <p>
-            <Message>success.shares.switched</Message>
+            <Message>success.shares.switched</Message>{' '}
             <b>
               <Message>success.shares.switched.when</Message>
             </b>
