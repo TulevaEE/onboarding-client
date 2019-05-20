@@ -31,11 +31,14 @@ export default function thirdPillarReducer(state = initialState, action) {
       return { ...state, exchangeExistingUnits: action.exchangeExistingUnits };
     case GET_SOURCE_FUNDS_SUCCESS:
       // eslint-disable-next-line no-case-declarations
-      const sourceFunds = action.sourceFunds.filter(isThirdPillar);
+      const exchangeableSourceFunds = action.sourceFunds
+        .filter(isThirdPillar)
+        .filter(fund => fund.isin !== state.selectedFutureContributionsFundIsin); // TODO: change source funds on selected change
       // eslint-disable-next-line no-case-declarations
-      const exchangeExistingUnits = sourceFunds.length === 0 ? false : state.exchangeExistingUnits;
+      const exchangeExistingUnits =
+        exchangeableSourceFunds.length === 0 ? false : state.exchangeExistingUnits;
 
-      return { ...state, sourceFunds, exchangeExistingUnits };
+      return { ...state, exchangeableSourceFunds, exchangeExistingUnits };
     case GET_TARGET_FUNDS_SUCCESS:
       return {
         ...state,

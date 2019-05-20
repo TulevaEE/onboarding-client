@@ -17,7 +17,7 @@ export const ConfirmThirdPillarMandate = ({
   signedMandateId,
   monthlyContribution,
   exchangeExistingUnits,
-  sourceFunds,
+  exchangeableSourceFunds,
   selectedFutureContributionsFund,
   agreedToTerms,
   isResident,
@@ -47,7 +47,7 @@ export const ConfirmThirdPillarMandate = ({
         <div className="mt-4">
           <FundTransferTable
             selections={createSelectionsFromFundsToFund(
-              sourceFunds,
+              exchangeableSourceFunds,
               selectedFutureContributionsFund,
             )}
           />
@@ -69,7 +69,7 @@ export const ConfirmThirdPillarMandate = ({
         disabled={!agreedToTerms || isResident === null || isPoliticallyExposed === null}
         onClick={() => {
           onSign(
-            getMandate(sourceFunds, selectedFutureContributionsFund),
+            getMandate(exchangeableSourceFunds, selectedFutureContributionsFund),
             isResident,
             isPoliticallyExposed,
           );
@@ -82,7 +82,7 @@ export const ConfirmThirdPillarMandate = ({
         type="button"
         className="btn btn-secondary mb-2 mr-2"
         onClick={() => {
-          onPreview(getMandate(sourceFunds, selectedFutureContributionsFund));
+          onPreview(getMandate(exchangeableSourceFunds, selectedFutureContributionsFund));
         }}
       >
         <Message>confirmThirdPillarMandate.preview</Message>
@@ -99,27 +99,23 @@ export const ConfirmThirdPillarMandate = ({
 
 function getMandate(sourceFunds, targetFund) {
   return {
-    fundTransferExchanges: sourceFunds
-      .map(sourceFund => ({
-        amount: 1,
-        sourceFundIsin: sourceFund.isin,
-        targetFundIsin: targetFund.isin,
-      }))
-      .filter(({ sourceFundIsin, targetFundIsin }) => sourceFundIsin !== targetFundIsin),
+    fundTransferExchanges: sourceFunds.map(sourceFund => ({
+      amount: 1,
+      sourceFundIsin: sourceFund.isin,
+      targetFundIsin: targetFund.isin,
+    })),
     futureContributionFundIsin: targetFund.isin,
   };
 }
 
 function createSelectionsFromFundsToFund(sourceFunds, targetFund) {
-  return sourceFunds
-    .map(sourceFund => ({
-      sourceFundIsin: sourceFund.isin,
-      sourceFundName: sourceFund.name,
-      targetFundIsin: targetFund.isin,
-      targetFundName: targetFund.name,
-      percentage: 1,
-    }))
-    .filter(({ sourceFundIsin, targetFundIsin }) => sourceFundIsin !== targetFundIsin);
+  return sourceFunds.map(sourceFund => ({
+    sourceFundIsin: sourceFund.isin,
+    sourceFundName: sourceFund.name,
+    targetFundIsin: targetFund.isin,
+    targetFundName: targetFund.name,
+    percentage: 1,
+  }));
 }
 
 const fundType = Types.shape({ isin: Types.string, name: Types.string });
@@ -131,7 +127,7 @@ ConfirmThirdPillarMandate.propTypes = {
   signedMandateId: Types.number,
   monthlyContribution: Types.number,
   exchangeExistingUnits: Types.bool,
-  sourceFunds: Types.arrayOf(fundType),
+  exchangeableSourceFunds: Types.arrayOf(fundType),
   selectedFutureContributionsFund: fundType,
   agreedToTerms: Types.bool,
   isResident: Types.bool,
@@ -147,7 +143,7 @@ ConfirmThirdPillarMandate.defaultProps = {
   signedMandateId: null,
   monthlyContribution: null,
   exchangeExistingUnits: null,
-  sourceFunds: [],
+  exchangeableSourceFunds: [],
   selectedFutureContributionsFund: null,
   agreedToTerms: false,
   isResident: null,
@@ -165,7 +161,7 @@ const mapStateToProps = state => ({
   isResident: state.thirdPillar.isResident,
   isPoliticallyExposed: state.thirdPillar.isPoliticallyExposed,
   monthlyContribution: state.thirdPillar.monthlyContribution,
-  sourceFunds: state.thirdPillar.sourceFunds,
+  exchangeableSourceFunds: state.thirdPillar.exchangeableSourceFunds,
   exchangeExistingUnits: state.thirdPillar.exchangeExistingUnits,
 });
 

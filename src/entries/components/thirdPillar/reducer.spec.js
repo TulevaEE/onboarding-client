@@ -125,8 +125,13 @@ describe('Third pillar reducer', () => {
     });
   });
 
-  it('updates source funds with third pillar funds on success', () => {
-    const state = reducer(undefined, {
+  it('updates source funds with exchangeable third pillar funds on success', () => {
+    const oldState = {
+      ...initialState,
+      selectedFutureContributionsFundIsin: 'EE789',
+    };
+
+    const state = reducer(oldState, {
       type: GET_SOURCE_FUNDS_SUCCESS,
       sourceFunds: [
         { isin: 'EE123', pillar: 3 },
@@ -136,26 +141,29 @@ describe('Third pillar reducer', () => {
     });
 
     expect(state).toEqual({
-      ...initialState,
-      sourceFunds: [{ isin: 'EE123', pillar: 3 }, { isin: 'EE789', pillar: 3 }],
+      ...oldState,
+      exchangeableSourceFunds: [{ isin: 'EE123', pillar: 3 }],
     });
   });
 
-  it('sets exchange existing units to false when no third pillar source funds', () => {
-    const state = reducer(
-      {
-        ...initialState,
-        exchangeExistingUnits: true,
-      },
-      {
-        type: GET_SOURCE_FUNDS_SUCCESS,
-        sourceFunds: [{ isin: 'EE123', pillar: 2 }, { isin: 'EE456', pillar: 2 }],
-      },
-    );
+  it('sets exchange existing units to false when no exchangeable third pillar source funds', () => {
+    const oldState = {
+      ...initialState,
+      exchangeExistingUnits: true,
+      selectedFutureContributionsFundIsin: 'EE789',
+    };
+
+    const state = reducer(oldState, {
+      type: GET_SOURCE_FUNDS_SUCCESS,
+      sourceFunds: [
+        { isin: 'EE123', pillar: 2 },
+        { isin: 'EE456', pillar: 2 },
+        { isin: 'EE789', pillar: 3 },
+      ],
+    });
 
     expect(state).toEqual({
-      ...initialState,
-      sourceFunds: [],
+      ...oldState,
       exchangeExistingUnits: false,
     });
   });
