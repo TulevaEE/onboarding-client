@@ -10,7 +10,7 @@ import { actions as thirdPillarActions } from '../../../thirdPillar';
 export const ThirdPillarSetup = ({
   monthlyContribution,
   onMonthlyContributionChange,
-  sourceFunds,
+  exchangeableSourceFunds,
   exchangeExistingUnits,
   onExchangeExistingUnitsChange,
   nextPath,
@@ -31,7 +31,7 @@ export const ThirdPillarSetup = ({
       />
     </div>
 
-    {sourceFunds.length > 0 && (
+    {exchangeableSourceFunds.length > 0 && (
       <label
         className="custom-control custom-checkbox mt-3"
         htmlFor="exchange-existing-units-checkbox"
@@ -63,7 +63,7 @@ export const ThirdPillarSetup = ({
 ThirdPillarSetup.propTypes = {
   monthlyContribution: Types.number,
   onMonthlyContributionChange: Types.func,
-  sourceFunds: Types.arrayOf(Types.shape()),
+  exchangeableSourceFunds: Types.arrayOf(Types.shape()),
   exchangeExistingUnits: Types.bool,
   onExchangeExistingUnitsChange: Types.func,
   nextPath: Types.string,
@@ -74,7 +74,7 @@ const noop = () => {};
 ThirdPillarSetup.defaultProps = {
   monthlyContribution: null,
   onMonthlyContributionChange: noop,
-  sourceFunds: [],
+  exchangeableSourceFunds: [],
   exchangeExistingUnits: false,
   onExchangeExistingUnitsChange: noop,
   nextPath: '',
@@ -83,7 +83,7 @@ ThirdPillarSetup.defaultProps = {
 const mapStateToProps = state => ({
   monthlyContribution: state.thirdPillar.monthlyContribution,
   exchangeExistingUnits: state.thirdPillar.exchangeExistingUnits,
-  sourceFunds: state.thirdPillar.sourceFunds,
+  exchangeableSourceFunds: state.thirdPillar.exchangeableSourceFunds,
 });
 
 const mapDispatchToProps = dispatch =>
