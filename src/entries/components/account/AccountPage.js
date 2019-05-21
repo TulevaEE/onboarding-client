@@ -136,7 +136,8 @@ export class AccountPage extends Component {
 
   render() {
     const {
-      currentBalanceFunds,
+      secondPillarSourceFunds,
+      thirdPillarSourceFunds,
       loadingCurrentBalance,
       initialCapital,
       loadingCapital,
@@ -215,7 +216,7 @@ export class AccountPage extends Component {
             </span>
           )}{' '}
           <div>
-            {currentBalanceFunds && currentBalanceFunds.length === 0 ? (
+            {secondPillarSourceFunds && secondPillarSourceFunds.length === 0 ? (
               <Message>account.second.pillar.missing</Message>
             ) : (
               ''
@@ -238,14 +239,16 @@ export class AccountPage extends Component {
           </div>
         </div>
         {loadingCurrentBalance && <Loader className="align-middle" />}
-        {currentBalanceFunds && currentBalanceFunds.length > 0 && (
+        {secondPillarSourceFunds && secondPillarSourceFunds.length > 0 && (
           <Fragment>
-            <FundDetailsTable allFunds={currentBalanceFunds} pillar={2} />
+            <FundDetailsTable allFunds={secondPillarSourceFunds} pillar={2} />
             <small className="text-muted">
               <Message>overview.active.fund</Message>
             </small>
-            <FundDetailsTable allFunds={currentBalanceFunds} pillar={3} />
           </Fragment>
+        )}
+        {thirdPillarSourceFunds && thirdPillarSourceFunds.length > 0 && (
+          <FundDetailsTable allFunds={thirdPillarSourceFunds} pillar={3} />
         )}
         {pendingExchangesSection}
         {returnComparisonSection}
@@ -273,7 +276,8 @@ export class AccountPage extends Component {
 }
 
 AccountPage.propTypes = {
-  currentBalanceFunds: Types.arrayOf(Types.shape({})),
+  secondPillarSourceFunds: Types.arrayOf(Types.shape({})),
+  thirdPillarSourceFunds: Types.arrayOf(Types.shape({})),
   loadingCurrentBalance: Types.bool,
   shouldGetPendingExchanges: Types.bool,
   onGetPendingExchanges: Types.func,
@@ -301,7 +305,8 @@ AccountPage.propTypes = {
 };
 
 AccountPage.defaultProps = {
-  currentBalanceFunds: [],
+  secondPillarSourceFunds: [],
+  thirdPillarSourceFunds: [],
   loadingCurrentBalance: false,
   shouldGetPendingExchanges: true,
   onGetPendingExchanges: noop,
@@ -325,7 +330,8 @@ AccountPage.defaultProps = {
 };
 
 const mapStateToProps = state => ({
-  currentBalanceFunds: state.exchange.sourceFunds,
+  secondPillarSourceFunds: state.exchange.sourceFunds,
+  thirdPillarSourceFunds: state.thirdPillar.sourceFunds,
   loadingCurrentBalance: state.exchange.loadingSourceFunds,
   shouldGetPendingExchanges:
     state.login.token &&

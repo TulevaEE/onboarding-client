@@ -6,13 +6,13 @@ import { Provider } from 'react-redux';
 
 import { Loader, ErrorMessage } from '../common';
 import { AccountPage } from './AccountPage';
-import PensionFundTable from '../flows/secondPillar/selectSources/pensionFundTable';
 import PendingExchangesTable from './pendingExchangeTable';
 import UpdateUserForm from './updateUserForm';
 import ReturnComparison from '../returnComparison';
 import Select from './Select';
 import { mockStore } from '../../../test/utils';
 import getReturnComparisonStartDateOptions from '../returnComparison/options';
+import FundDetailsTable from './FundDetailsTable';
 
 jest.mock('../returnComparison/options', () => jest.fn());
 
@@ -34,8 +34,8 @@ describe('Current balance', () => {
     component = shallow(<AccountPage {...props} />);
   });
 
-  describe('when current balance funds exist', () => {
-    const currentBalanceFunds = [
+  describe('when 2nd and 3rd pillar source funds exist', () => {
+    const secondPillarSourceFunds = [
       {
         fund: {
           id: 1,
@@ -50,10 +50,26 @@ describe('Current balance', () => {
         activeContributions: true,
       },
     ];
+    const thirdPillarSourceFunds = [
+      {
+        fund: {
+          id: 1,
+          fundManager: { id: 1, name: 'Tuleva' },
+          isin: 'EE3600109435',
+          name: 'Tuleva Vabatahtlik Pensionifond',
+          managementFeeRate: 0.0034,
+        },
+        value: 11818.92591924,
+        currency: 'EUR',
+        pillar: 3,
+        activeContributions: true,
+      },
+    ];
 
     beforeEach(() => {
       component.setProps({
-        currentBalanceFunds,
+        secondPillarSourceFunds,
+        thirdPillarSourceFunds,
         loadingCapital: true,
         initialCapital: capital,
       });
@@ -89,7 +105,7 @@ describe('Current balance', () => {
       ]);
 
       component = mountWithProvider(
-        <AccountPage {...props} currentBalanceFunds={currentBalanceFunds} />,
+        <AccountPage {...props} secondPillarSourceFunds={secondPillarSourceFunds} />,
       );
 
       expect(returnComparisonSelect().prop('options')).toEqual([
@@ -112,7 +128,7 @@ describe('Current balance', () => {
       ]);
 
       component = mountWithProvider(
-        <AccountPage {...props} currentBalanceFunds={currentBalanceFunds} />,
+        <AccountPage {...props} secondPillarSourceFunds={secondPillarSourceFunds} />,
       );
 
       expect(returnComparisonSelect().prop('selected')).toEqual('2002-01-01');
@@ -130,18 +146,21 @@ describe('Current balance', () => {
         <AccountPage
           getReturnComparisonForStartDate={getReturnComparisonForStartDate}
           {...props}
-          currentBalanceFunds={currentBalanceFunds}
+          secondPillarSourceFunds={secondPillarSourceFunds}
         />,
       );
       returnComparisonSelect().simulate('change', '2005-10-03');
 
       expect(getReturnComparisonForStartDate).toBeCalled();
     });
+
+    it('renders the 2nd and 3rd pillar balance tables', () => {
+      expect(fundDetailsTable()).toHaveLength(2);
+    });
   });
 
-  it('does not render the current balance if currentBalanceFunds is empty', () => {
-    props.currentBalanceFunds = {};
-    expect(component.contains(<PensionFundTable />)).toBe(false);
+  it('does not render any pillar balances when there are no source funds', () => {
+    expect(fundDetailsTable().exists()).toBe(false);
   });
 
   it('renders converted user statement only when user is fully converted', () => {
@@ -163,7 +182,7 @@ describe('Current balance', () => {
 
   it('renders no second pillar message', () => {
     expect(component.contains(<Message>account.second.pillar.missing</Message>)).toBe(true);
-    component.setProps({ currentBalanceFunds: [{ sourcefund: true }] });
+    component.setProps({ secondPillarSourceFunds: [{ sourcefund: true }] });
     expect(component.contains(<Message>account.second.pillar.missing</Message>)).toBe(false);
   });
 
@@ -250,6 +269,10 @@ describe('Current balance', () => {
 
   function returnComparisonSelect() {
     return component.find(Select);
+  }
+
+  function fundDetailsTable() {
+    return component.find(FundDetailsTable);
   }
 
   function mountWithProvider(renderComponent) {

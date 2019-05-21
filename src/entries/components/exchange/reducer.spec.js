@@ -189,7 +189,6 @@ describe('Exchange reducer', () => {
     const newState = exchangeReducer({ loadingTargetFunds: true }, action);
     expect(newState.targetFunds).toEqual(targetFunds);
     expect(newState.loadingTargetFunds).toBe(false);
-    // expect(newState.selectedFutureContributionsFundIsin).toEqual(targetFunds[0].isin);
   });
 
   it('defaults contributions fund to null when source funds not present', () => {
@@ -328,6 +327,32 @@ describe('Exchange reducer', () => {
     expect(state.sourceSelection).toEqual(expectedFullSelection);
     const stateOtherWay = [targetFundsAction, sourceFundsAction].reduce(exchangeReducer);
     expect(stateOtherWay.sourceSelection).toEqual(expectedFullSelection);
+  });
+
+  it('filters out 2nd pillar source funds', () => {
+    const secondPillarFund = { name: 'name', isin: 'isin', pillar: 2 };
+    const thirdPillarFund = { name: 'name', isin: 'isin', pillar: 3 };
+    const sourceFunds = [secondPillarFund, thirdPillarFund];
+    const action = { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds };
+
+    const newState = exchangeReducer({ loadingSourceFunds: true }, action);
+
+    expect(newState.loadingSourceFunds).toBe(false);
+    expect(newState.sourceFunds).toEqual([secondPillarFund]);
+  });
+
+  it('filters out 2nd pillar target funds', () => {
+    const secondPillarFund = { isin: 'asd', fundManager: { name: 'Tuleva' }, pillar: 2 };
+    const anotherSecondPillarFund = { isin: 'hjk', fundManager: { name: 'B' }, pillar: 2 };
+    const thirdPillarFund = { isin: 'dfg', fundManager: { name: 'A' }, pillar: 3 };
+
+    const targetFunds = [secondPillarFund, anotherSecondPillarFund, thirdPillarFund];
+    const action = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
+
+    const newState = exchangeReducer({ loadingTargetFunds: true }, action);
+
+    expect(newState.targetFunds).toEqual([secondPillarFund, anotherSecondPillarFund]);
+    expect(newState.loadingTargetFunds).toBe(false);
   });
 
   it('stops loading and saves the error when getting target funds fails', () => {
