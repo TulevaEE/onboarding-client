@@ -1,21 +1,7 @@
-import uuid from 'uuid/v4';
 import config from 'react-global-configuration';
-
-export function resetStatisticsIdentification() {
-  localStorage.setItem('statisticsId', uuid());
-}
-
-function getStatisticsId() {
-  // Generate a random id to gather statistics without tying to a specific person.
-  if (!localStorage.getItem('statisticsId')) {
-    resetStatisticsIdentification();
-  }
-  return localStorage.getItem('statisticsId');
-}
 
 function createCustomHeaders() {
   return {
-    'x-statistics-identifier': getStatisticsId(),
     'Accept-Language': config.get('language'),
   };
 }

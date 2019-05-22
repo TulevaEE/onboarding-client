@@ -62,7 +62,6 @@ describe('Login actions', () => {
     mockApi.authenticateWithIdCode = () => Promise.reject();
     mockApi.getMobileIdTokens = () => Promise.reject();
     mockApi.getIdCardTokens = () => Promise.reject();
-    mockHttp.resetStatisticsIdentification = jest.fn();
   });
 
   afterEach(() => {
@@ -327,9 +326,7 @@ describe('Login actions', () => {
   });
 
   it('can log you out', () => {
-    expect(mockHttp.resetStatisticsIdentification).not.toHaveBeenCalled();
     expect(actions.logOut()).toEqual({ type: LOG_OUT });
-    expect(mockHttp.resetStatisticsIdentification).toHaveBeenCalledTimes(1);
   });
 
   it('can get user conversion', () => {
