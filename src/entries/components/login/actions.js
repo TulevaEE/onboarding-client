@@ -32,7 +32,7 @@ import {
   CHANGE_ID_CODE,
 } from './constants';
 
-import { api, http } from '../common';
+import { api } from '../common';
 
 import { ID_CARD_LOGIN_START_FAILED_ERROR } from '../common/errorAlert/ErrorAlert';
 
@@ -315,7 +315,6 @@ export function logOut() {
       scope.clear();
     });
   }
-  http.resetStatisticsIdentification();
   return { type: LOG_OUT };
 }
 

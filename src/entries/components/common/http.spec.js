@@ -3,15 +3,7 @@ import config from 'react-global-configuration';
 const mockUuid = jest.genMockFromModule('uuid/v4');
 jest.mock('uuid/v4', () => mockUuid);
 
-const {
-  get,
-  post,
-  postForm,
-  patch,
-  downloadFile,
-  simpleFetch,
-  resetStatisticsIdentification,
-} = require('./http');
+const { get, post, postForm, patch, downloadFile, simpleFetch } = require('./http');
 
 describe('http', () => {
   let originalFetch;
@@ -94,7 +86,6 @@ describe('http', () => {
     const headers = {
       thing: 'hello',
       another: 5,
-      'x-statistics-identifier': 'fake uuid',
       'Accept-Language': 'en',
     };
     return downloadFile('https://example.com', headers).then(givenValue => {
@@ -105,27 +96,6 @@ describe('http', () => {
       expect(options.method).toEqual('GET');
       expect(options.headers).toEqual(headers);
     });
-  });
-
-  it('sends statistics and can reset them', () => {
-    fetch.mockReturnValue(fakeSuccessfulResponseWithValue());
-    return get('')
-      .then(() => {
-        expect(fetch.mock.calls[0][1].headers['x-statistics-identifier']).toBe('fake uuid');
-        expect(window.localStorage.getItem('statisticsId')).toBe('fake uuid');
-        mockUuid.mockImplementation(() => 'fake uuid 2');
-        return get('');
-      })
-      .then(() => {
-        expect(fetch.mock.calls[1][1].headers['x-statistics-identifier']).toBe('fake uuid');
-        expect(window.localStorage.getItem('statisticsId')).toBe('fake uuid');
-        resetStatisticsIdentification();
-        return get('');
-      })
-      .then(() => {
-        expect(fetch.mock.calls[2][1].headers['x-statistics-identifier']).toBe('fake uuid 2');
-        expect(window.localStorage.getItem('statisticsId')).toBe('fake uuid 2');
-      });
   });
 
   it('can add headers to request', () => {
