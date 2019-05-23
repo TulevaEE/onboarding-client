@@ -1,5 +1,5 @@
 {
-  "login.title": "Due to IT works for our III pillar fund, our web app might show errors. We are fixing them as they come up. Apologies!",
+  "login.title": "By logging in you can see your pension account statement and can switch your pension fund.",
   "login.title.thirdPillar.withExchange": "You want to change your III pillar pension fund and make a monthly contribution of {{monthlyContribution}} euros",
   "login.title.thirdPillar.withoutExchange": "You want to select  III pillar pension fund and make a monthly contribution of {{monthlyContribution}} euros",
   "login.subtitle.thirdPillar": "Log in and confirm your application with digital signature",
