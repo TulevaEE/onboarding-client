@@ -21,16 +21,32 @@ export function length11(value) {
   return value && value.length === 11 ? undefined : 'field.length';
 }
 
-export const renderField = ({ input, type, placeholder, disabled, meta: { touched, error } }) => (
+export const renderField = ({
+  input,
+  type,
+  placeholder,
+  disabled,
+  id,
+  meta: { touched, error },
+  children,
+}) => (
   <div>
     <div className={`form-group ${touched && error ? 'has-danger' : ''}`}>
-      <input
-        {...input}
-        type={type}
-        placeholder={placeholder}
-        disabled={disabled}
-        className="form-control"
-      />
+      {type !== 'select' && (
+        <input
+          {...input}
+          type={type}
+          placeholder={placeholder}
+          disabled={disabled}
+          id={id}
+          className="form-control"
+        />
+      )}
+      {type === 'select' && (
+        <select {...input} disabled={disabled} id={id} className="form-control">
+          {children}
+        </select>
+      )}
       {touched && error && (
         <div className="form-control-feedback">
           <Message>{`new.user.flow.signup.error.${error}`}</Message>
@@ -46,6 +62,8 @@ renderField.defaultProps = {
   type: 'text',
   placeholder: '',
   disabled: '',
+  id: '',
+  children: null,
 };
 
 renderField.propTypes = {
@@ -54,4 +72,6 @@ renderField.propTypes = {
   type: Types.string,
   placeholder: Types.string,
   disabled: Types.string,
+  id: Types.string,
+  children: Types.arrayOf(Types.shape()),
 };

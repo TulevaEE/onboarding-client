@@ -252,18 +252,19 @@ export class AccountPage extends Component {
         )}
         {pendingExchangesSection}
         {returnComparisonSection}
-        <div>
-          <div className="mt-5">
-            <p className="mb-4 lead">
-              <Message>member.capital</Message>
-            </p>
-            {loadingCapital || !initialCapital ? (
-              <Loader className="align-middle" />
-            ) : (
-              AccountPage.memberCapital(initialCapital)
-            )}
+        {loadingCapital || initialCapital ? (
+          <div>
+            <div className="mt-5">
+              <p className="mb-4 lead">
+                <Message>member.capital</Message>
+              </p>
+              {loadingCapital && <Loader className="align-middle" />}
+              {initialCapital && AccountPage.memberCapital(initialCapital)}
+            </div>
           </div>
-        </div>
+        ) : (
+          ''
+        )}
         <div className="mt-5">
           <p className="mb-4 lead">
             <Message>update.user.details.title</Message>
