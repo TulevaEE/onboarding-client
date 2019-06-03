@@ -350,8 +350,8 @@ const mapStateToProps = state => ({
     state.login.user &&
     state.login.user.memberNumber &&
     !(state.account.initialCapital || state.account.loadingInitialCapital),
-  initialCapital: state.account.initialCapital,
-  loadingCapital: state.account.loadingInitialCapital,
+  initialCapital: false, // state.account.initialCapital,
+  loadingCapital: false, // state.account.loadingInitialCapital,
   memberNumber: (state.login.user || {}).memberNumber,
   conversion: state.login.userConversion,
   error: state.exchange.error,
