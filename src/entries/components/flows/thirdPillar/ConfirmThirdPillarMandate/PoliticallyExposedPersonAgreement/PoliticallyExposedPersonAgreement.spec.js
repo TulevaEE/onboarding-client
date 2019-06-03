@@ -1,6 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
+import { Message } from 'retranslate';
 import { PoliticallyExposedPersonAgreement } from './PoliticallyExposedPersonAgreement';
 
 describe('PoliticallyExposedPersonAgreement', () => {
@@ -26,5 +27,10 @@ describe('PoliticallyExposedPersonAgreement', () => {
     expect(mock).toBeCalledWith(true);
     component.find('#pep-radio-container').simulate('change', { target: { value: 'false' } });
     expect(mock).toBeCalledWith(false);
+  });
+
+  it('has pep tooltip', () => {
+    const hasTooltip = () => component.contains(<Message>thirdPillarAgreement.pepTooltip</Message>);
+    expect(hasTooltip()).toBe(true);
   });
 });
