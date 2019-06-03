@@ -1,26 +1,27 @@
 import { push } from 'connected-react-router';
 
 import {
+  CHANGE_AGREEMENT_TO_TERMS,
+  GET_PENDING_EXCHANGES_ERROR,
+  GET_PENDING_EXCHANGES_START,
+  GET_PENDING_EXCHANGES_SUCCESS,
+  GET_SOURCE_FUNDS_ERROR,
   GET_SOURCE_FUNDS_START,
   GET_SOURCE_FUNDS_SUCCESS,
-  GET_SOURCE_FUNDS_ERROR,
-  SELECT_EXCHANGE_SOURCES,
+  GET_TARGET_FUNDS_ERROR,
   GET_TARGET_FUNDS_START,
   GET_TARGET_FUNDS_SUCCESS,
-  GET_TARGET_FUNDS_ERROR,
+  NO_SIGN_MANDATE_ERROR,
+  SELECT_EXCHANGE_SOURCES,
   SELECT_TARGET_FUND,
+  SIGN_MANDATE_ERROR,
+  SIGN_MANDATE_ID_CARD_START,
+  SIGN_MANDATE_INVALID_ERROR,
+  SIGN_MANDATE_MOBILE_ID_CANCEL,
   SIGN_MANDATE_MOBILE_ID_START,
   SIGN_MANDATE_MOBILE_ID_START_SUCCESS,
   SIGN_MANDATE_START_ERROR,
-  SIGN_MANDATE_INVALID_ERROR,
   SIGN_MANDATE_SUCCESS,
-  SIGN_MANDATE_ERROR,
-  SIGN_MANDATE_MOBILE_ID_CANCEL,
-  GET_PENDING_EXCHANGES_START,
-  GET_PENDING_EXCHANGES_SUCCESS,
-  GET_PENDING_EXCHANGES_ERROR,
-  CHANGE_AGREEMENT_TO_TERMS,
-  NO_SIGN_MANDATE_ERROR,
 } from './constants';
 
 jest.useFakeTimers();
@@ -456,5 +457,49 @@ describe('Exchange actions', () => {
         error,
       }),
     );
+  });
+
+  it('defaults to id card signing', () => {
+    const mandate = { id: 'id' };
+    const signMandate = createBoundAction(actions.signMandate);
+    return signMandate(mandate).then(() =>
+      expect(dispatch).toHaveBeenCalledWith({
+        type: SIGN_MANDATE_ID_CARD_START,
+      }),
+    );
+  });
+
+  it('starts mobile id signing if logged in with mobile id', () => {
+    state.login.loginMethod = 'mobileId';
+    const mandate = { id: 'id' };
+    const signMandate = createBoundAction(actions.signMandate);
+    return signMandate(mandate).then(() =>
+      expect(dispatch).toHaveBeenCalledWith({
+        type: SIGN_MANDATE_MOBILE_ID_START,
+      }),
+    );
+  });
+
+  it('starts smart id signing if logged in with smart id', () => {
+    state.login.loginMethod = 'smartId';
+    const mandate = { id: 'id' };
+    const signMandate = createBoundAction(actions.signMandate);
+    return signMandate(mandate).then(() =>
+      expect(dispatch).toHaveBeenCalledWith({
+        type: SIGN_MANDATE_MOBILE_ID_START,
+      }),
+    );
+  });
+
+  it('creates aml checks if needed', () => {
+    const mandate = { id: 'id' };
+    mockApi.createAmlCheck = jest.fn(() => Promise.resolve('{"success":true}'));
+    const signMandate = createBoundAction(actions.signMandate);
+    return signMandate(mandate, true, true).then(() => {
+      expect(dispatch).toHaveBeenCalledWith({
+        type: SIGN_MANDATE_ID_CARD_START,
+      });
+      expect(mockApi.createAmlCheck).toHaveBeenCalledTimes(2);
+    });
   });
 });
