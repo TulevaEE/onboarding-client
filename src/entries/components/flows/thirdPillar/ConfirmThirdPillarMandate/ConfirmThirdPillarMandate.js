@@ -10,6 +10,7 @@ import PoliticallyExposedPersonAgreement from './PoliticallyExposedPersonAgreeme
 import { actions as exchangeActions } from '../../../exchange';
 import FundTransferTable from '../../secondPillar/confirmMandate/fundTransferTable';
 import ResidencyAgreement from './ResidencyAgreement';
+import { AuthenticationLoader, ErrorMessage } from '../../../common';
 
 export const ConfirmThirdPillarMandate = ({
   previousPath,
@@ -24,10 +25,25 @@ export const ConfirmThirdPillarMandate = ({
   isPoliticallyExposed,
   onSign,
   onPreview,
+  onCancelSigningMandate,
+  onCloseErrorMessages,
+  loadingMandate,
+  mandateSigningControlCode,
+  mandateSigningError,
 }) => (
   <Fragment>
     {signedMandateId && <Redirect to={nextPath} />}
     {(!monthlyContribution || !selectedFutureContributionsFund) && <Redirect to={previousPath} />}
+
+    {loadingMandate || mandateSigningControlCode ? (
+      <AuthenticationLoader
+        controlCode={mandateSigningControlCode}
+        onCancel={onCancelSigningMandate}
+        overlayed
+      />
+    ) : (
+      ''
+    )}
 
     <Message>confirmThirdPillarMandate.intro</Message>
 
@@ -61,6 +77,12 @@ export const ConfirmThirdPillarMandate = ({
       <PoliticallyExposedPersonAgreement />
       <ResidencyAgreement />
     </div>
+
+    {mandateSigningError ? (
+      <ErrorMessage errors={mandateSigningError.body} onCancel={onCloseErrorMessages} overlayed />
+    ) : (
+      ''
+    )}
 
     <div className="mt-5">
       <button
@@ -124,6 +146,9 @@ ConfirmThirdPillarMandate.propTypes = {
   previousPath: Types.string,
   nextPath: Types.string,
 
+  loadingMandate: Types.bool,
+  mandateSigningControlCode: Types.string,
+  mandateSigningError: Types.string,
   signedMandateId: Types.number,
   monthlyContribution: Types.number,
   exchangeExistingUnits: Types.bool,
@@ -134,12 +159,17 @@ ConfirmThirdPillarMandate.propTypes = {
   isPoliticallyExposed: Types.bool,
   onSign: Types.func,
   onPreview: Types.func,
+  onCancelSigningMandate: Types.func,
+  onCloseErrorMessages: Types.func,
 };
 
 ConfirmThirdPillarMandate.defaultProps = {
   previousPath: '',
   nextPath: '',
 
+  loadingMandate: false,
+  mandateSigningControlCode: null,
+  mandateSigningError: null,
   signedMandateId: null,
   monthlyContribution: null,
   exchangeExistingUnits: null,
@@ -150,9 +180,14 @@ ConfirmThirdPillarMandate.defaultProps = {
   isPoliticallyExposed: null,
   onSign: () => {},
   onPreview: () => {},
+  onCancelSigningMandate: () => {},
+  onCloseErrorMessages: () => {},
 };
 
 const mapStateToProps = state => ({
+  loadingMandate: state.exchange.loadingMandate,
+  mandateSigningControlCode: state.exchange.mandateSigningControlCode,
+  mandateSigningError: state.exchange.mandateSigningError,
   signedMandateId: state.thirdPillar.signedMandateId,
   selectedFutureContributionsFund: state.thirdPillar.targetFunds.find(
     fund => fund.isin === state.thirdPillar.selectedFutureContributionsFundIsin,
@@ -170,6 +205,8 @@ const mapDispatchToProps = dispatch =>
     {
       onSign: exchangeActions.signMandate,
       onPreview: exchangeActions.previewMandate,
+      onCancelSigningMandate: exchangeActions.cancelSigningMandate,
+      onCloseErrorMessages: exchangeActions.closeErrorMessages,
     },
     dispatch,
   );
