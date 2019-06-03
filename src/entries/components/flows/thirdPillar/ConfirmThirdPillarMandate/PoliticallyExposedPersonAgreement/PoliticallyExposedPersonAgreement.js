@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { Message } from 'retranslate';
 
 import { actions as thirdPillarActions } from '../../../../thirdPillar';
+import { InfoTooltip } from '../../../../common';
 
 export const PoliticallyExposedPersonAgreement = ({
   isPoliticallyExposed,
@@ -29,6 +30,11 @@ export const PoliticallyExposedPersonAgreement = ({
 
         <div className="custom-control-description">
           <Message>thirdPillarAgreement.isNotPep</Message>
+          <InfoTooltip name="pep-tooltip">
+            <div className="content">
+              <Message>thirdPillarAgreement.pepTooltip</Message>
+            </div>
+          </InfoTooltip>
         </div>
       </label>
 
