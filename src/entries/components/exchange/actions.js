@@ -311,14 +311,17 @@ export function signMandate(mandate, isResident, isPoliticallyExposed) {
   return (dispatch, getState) => {
     const loggedInWithMobileId = getState().login.loginMethod === 'mobileId';
     const loggedInWithSmartId = getState().login.loginMethod === 'smartId';
-    return createAmlCheck('RESIDENCY_MANUAL', isResident, getState().login.token)
-      .then(() => {
+    let promise = Promise.resolve();
+    if (isResident !== undefined) {
+      promise = createAmlCheck('RESIDENCY_MANUAL', isResident, getState().login.token).then(() => {
         return createAmlCheck(
           'POLITICALLY_EXPOSED_PERSON',
           !isPoliticallyExposed,
           getState().login.token,
         );
-      })
+      });
+    }
+    return promise
       .then(() => {
         if (loggedInWithMobileId) {
           return dispatch(signMandateWithMobileId(mandate));

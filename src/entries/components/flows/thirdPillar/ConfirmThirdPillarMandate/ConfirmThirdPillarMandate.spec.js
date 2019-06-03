@@ -5,6 +5,7 @@ import { Message } from 'retranslate';
 
 import { ConfirmThirdPillarMandate } from './ConfirmThirdPillarMandate';
 import FundTransferTable from '../../secondPillar/confirmMandate/fundTransferTable';
+import { AuthenticationLoader } from '../../../common';
 
 describe('ConfirmThirdPillarMandate', () => {
   let component;
@@ -147,6 +148,38 @@ describe('ConfirmThirdPillarMandate', () => {
         percentage: 1,
       },
     ]);
+  });
+
+  it('renders an overlayed authentication loader when you are signing the mandate', () => {
+    const onCancelSigningMandate = jest.fn();
+    component.setProps({
+      onCancelSigningMandate,
+    });
+    const hasAuthLoader = () => !!component.find(AuthenticationLoader).length;
+    expect(hasAuthLoader()).toBe(false);
+    component.setProps({
+      mandateSigningControlCode: null,
+      loadingMandate: true,
+    });
+    expect(hasAuthLoader()).toBe(true);
+  });
+
+  it('renders the authentication loader with a control code', () => {
+    component.setProps({
+      mandateSigningControlCode: '1337',
+    });
+    expect(component.find(AuthenticationLoader).prop('controlCode')).toBe('1337');
+  });
+
+  it('can cancel signing the mandate', () => {
+    const onCancelSigningMandate = jest.fn();
+    component.setProps({
+      mandateSigningControlCode: '1337',
+      onCancelSigningMandate,
+    });
+    expect(onCancelSigningMandate).not.toHaveBeenCalled();
+    component.find(AuthenticationLoader).simulate('cancel');
+    expect(onCancelSigningMandate).toHaveBeenCalledTimes(1);
   });
 
   const signButton = () => component.find('button').at(0);
