@@ -36,15 +36,6 @@ describe('ConfirmThirdPillarMandate', () => {
     expect(redirects()).toBe(true);
   });
 
-  it('redirects to previous path only when no selected future contributions fund', () => {
-    component.setProps({ previousPath: '/a-path' });
-    const redirects = () => component.contains(<Redirect to="/a-path" />);
-
-    expect(redirects()).toBe(false);
-    component.setProps({ selectedFutureContributionsFund: null });
-    expect(redirects()).toBe(true);
-  });
-
   it('has future contributions fund name and message only when future contributions fund is selected', () => {
     const hasMessage = () =>
       component.contains(<Message>confirmThirdPillarMandate.contribution</Message>);

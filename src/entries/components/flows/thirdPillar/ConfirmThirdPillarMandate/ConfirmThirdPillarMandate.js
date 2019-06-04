@@ -33,8 +33,7 @@ export const ConfirmThirdPillarMandate = ({
 }) => (
   <Fragment>
     {signedMandateId && <Redirect to={nextPath} />}
-    {(!monthlyContribution || !selectedFutureContributionsFund) && <Redirect to={previousPath} />}
-
+    {!monthlyContribution && <Redirect to={previousPath} />}
     {loadingMandate || mandateSigningControlCode ? (
       <AuthenticationLoader
         controlCode={mandateSigningControlCode}
