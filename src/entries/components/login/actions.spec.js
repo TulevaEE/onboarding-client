@@ -1,5 +1,3 @@
-import { push } from 'connected-react-router';
-
 import {
   CHANGE_PHONE_NUMBER,
   CHANGE_EMAIL,
@@ -170,7 +168,7 @@ describe('Login actions', () => {
     });
   });
 
-  it('starts polling until succeeds when authenticating with a phone number and redirects', () => {
+  it('starts polling until succeeds when authenticating with a phone number', () => {
     const tokens = { accessToken: 'token' };
     mockApi.authenticateWithPhoneNumber = jest.fn(() => Promise.resolve('1337'));
     mockApi.getMobileIdTokens = jest.fn(() => Promise.resolve(null));
@@ -189,7 +187,6 @@ describe('Login actions', () => {
           tokens,
           method: 'mobileId',
         });
-        expect(dispatch).toHaveBeenLastCalledWith(push('/'));
       });
   });
 
@@ -217,7 +214,7 @@ describe('Login actions', () => {
       });
   });
 
-  it('starts polling until succeeds when authenticating with id card and redirects', () => {
+  it('starts polling until succeeds when authenticating with id card', () => {
     const tokens = { accessToken: 'token' };
     mockApi.authenticateWithIdCard = jest.fn(() => Promise.resolve());
     mockApi.getIdCardTokens = jest.fn(() => Promise.resolve(null));
@@ -235,7 +232,6 @@ describe('Login actions', () => {
           type: ID_CARD_AUTHENTICATION_SUCCESS,
           tokens,
         });
-        expect(dispatch).toHaveBeenLastCalledWith(push('/'));
       });
   });
 
