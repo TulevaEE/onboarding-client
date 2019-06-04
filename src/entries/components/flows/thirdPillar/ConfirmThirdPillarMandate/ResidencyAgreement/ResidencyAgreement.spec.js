@@ -1,6 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
+import { Message } from 'retranslate';
 import { ResidencyAgreement } from './ResidencyAgreement';
 
 describe('ResidencyAgreement', () => {
@@ -26,5 +27,11 @@ describe('ResidencyAgreement', () => {
     expect(mock).toBeCalledWith(true);
     component.find('#residency-radio-container').simulate('change', { target: { value: 'false' } });
     expect(mock).toBeCalledWith(false);
+  });
+
+  it('has resident tooltip', () => {
+    const hasTooltip = () =>
+      component.contains(<Message>thirdPillarAgreement.residentTooltip</Message>);
+    expect(hasTooltip()).toBe(true);
   });
 });
