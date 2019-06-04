@@ -19,7 +19,7 @@ import { initializeConfiguration, updateLanguage } from './components/config/con
 import translations from './components/translations';
 import './components/index.scss';
 
-import requireAuthentication from './components/requireAuthentication';
+import PrivateRoute from './PrivateRoute';
 import LoginPage, { actions as loginActions } from './components/login';
 import TermsOfUse from './components/termsOfUse';
 import { actions as thirdPillarActions } from './components/thirdPillar';
@@ -96,7 +96,7 @@ class App extends Component {
               <Switch>
                 <Route path="/login" component={LoginPage} />
                 <Route path="/terms-of-use" component={TermsOfUse} />
-                <Route exact path="" component={requireAuthentication(LoggedInApp)} />
+                <PrivateRoute exact path="" component={LoggedInApp} />
               </Switch>
             </ConnectedRouter>
           </ReduxProvider>

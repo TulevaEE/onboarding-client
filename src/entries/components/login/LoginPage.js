@@ -1,5 +1,6 @@
 import React from 'react';
 import { PropTypes as Types } from 'prop-types';
+import { Redirect, withRouter } from 'react-router-dom';
 import FacebookProvider, { Like } from 'react-facebook';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -19,6 +20,7 @@ import {
 } from './actions';
 
 export const LoginPage = ({
+  isAuthenticated,
   onPhoneNumberSubmit,
   onPhoneNumberChange,
   onCancelMobileAuthentication,
@@ -33,60 +35,64 @@ export const LoginPage = ({
   errorDescription,
   monthlyThirdPillarContribution,
   exchangeExistingThirdPillarUnits,
-}) => (
-  <div className="login-page">
-    <div className="container pt-5">
-      <div className="row">
-        <div className="col-lg-12 text-center">
-          <img src={logo} alt="Tuleva" className="img-responsive brand-logo mb-3 pb-3 mt-2" />
+  location,
+}) =>
+  isAuthenticated ? (
+    <Redirect to={location.state && location.state.from ? location.state.from : ''} />
+  ) : (
+    <div className="login-page">
+      <div className="container pt-5">
+        <div className="row">
+          <div className="col-lg-12 text-center">
+            <img src={logo} alt="Tuleva" className="img-responsive brand-logo mb-3 pb-3 mt-2" />
+          </div>
         </div>
-      </div>
-      <div className="row">
-        <div className="col-lg-10 offset-lg-1 col-sm-12 offset-sm-0 text-center">
-          <div className="col-lg-6 offset-lg-3 col-md-8 offset-md-2 col-sm-12">
-            {errorDescription ? <ErrorAlert description={errorDescription} /> : ''}
-            {!loadingAuthentication && !controlCode && !loadingUserConversion ? (
-              <LoginForm
-                onPhoneNumberSubmit={onPhoneNumberSubmit}
-                onPhoneNumberChange={onPhoneNumberChange}
-                phoneNumber={phoneNumber}
-                onIdCodeSubmit={onIdCodeSubmit}
-                onIdCodeChange={onIdCodeChange}
-                identityCode={identityCode}
-                onAuthenticateWithIdCard={onAuthenticateWithIdCard}
-                monthlyThirdPillarContribution={monthlyThirdPillarContribution}
-                exchangeExistingThirdPillarUnits={exchangeExistingThirdPillarUnits}
-              />
-            ) : (
-              ''
-            )}
-            {!errorDescription &&
-            (loadingAuthentication || controlCode || loadingUserConversion) ? (
-              <AuthenticationLoader
-                onCancel={onCancelMobileAuthentication}
-                controlCode={controlCode}
-              />
-            ) : (
-              ''
-            )}
-            <div className="mt-3 small mb-3">
-              <a href="/terms-of-use" target="_blank" rel="noopener noreferrer">
-                <Message>login.terms.link</Message>
-              </a>
+        <div className="row">
+          <div className="col-lg-10 offset-lg-1 col-sm-12 offset-sm-0 text-center">
+            <div className="col-lg-6 offset-lg-3 col-md-8 offset-md-2 col-sm-12">
+              {errorDescription ? <ErrorAlert description={errorDescription} /> : ''}
+              {!loadingAuthentication && !controlCode && !loadingUserConversion ? (
+                <LoginForm
+                  onPhoneNumberSubmit={onPhoneNumberSubmit}
+                  onPhoneNumberChange={onPhoneNumberChange}
+                  phoneNumber={phoneNumber}
+                  onIdCodeSubmit={onIdCodeSubmit}
+                  onIdCodeChange={onIdCodeChange}
+                  identityCode={identityCode}
+                  onAuthenticateWithIdCard={onAuthenticateWithIdCard}
+                  monthlyThirdPillarContribution={monthlyThirdPillarContribution}
+                  exchangeExistingThirdPillarUnits={exchangeExistingThirdPillarUnits}
+                />
+              ) : (
+                ''
+              )}
+              {!errorDescription &&
+              (loadingAuthentication || controlCode || loadingUserConversion) ? (
+                <AuthenticationLoader
+                  onCancel={onCancelMobileAuthentication}
+                  controlCode={controlCode}
+                />
+              ) : (
+                ''
+              )}
+              <div className="mt-3 small mb-3">
+                <a href="/terms-of-use" target="_blank" rel="noopener noreferrer">
+                  <Message>login.terms.link</Message>
+                </a>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div className="row">
-        <div className="col-lg-12 text-center fb-widget">
-          <FacebookProvider appId="1939240566313354">
-            <Like href="http://www.facebook.com/Tuleva.ee" colorScheme="dark" showFaces />
-          </FacebookProvider>
+        <div className="row">
+          <div className="col-lg-12 text-center fb-widget">
+            <FacebookProvider appId="1939240566313354">
+              <Like href="http://www.facebook.com/Tuleva.ee" colorScheme="dark" showFaces />
+            </FacebookProvider>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-);
+  );
 
 const noop = () => null;
 
@@ -98,6 +104,7 @@ LoginPage.defaultProps = {
   onIdCodeSubmit: noop,
   onAuthenticateWithIdCard: noop,
 
+  isAuthenticated: false,
   phoneNumber: '',
   identityCode: '',
   controlCode: '',
@@ -106,6 +113,8 @@ LoginPage.defaultProps = {
   errorDescription: '',
   monthlyThirdPillarContribution: null,
   exchangeExistingThirdPillarUnits: false,
+
+  location: { state: { from: '' } },
 };
 
 LoginPage.propTypes = {
@@ -116,6 +125,7 @@ LoginPage.propTypes = {
   onIdCodeSubmit: Types.func,
   onAuthenticateWithIdCard: Types.func,
 
+  isAuthenticated: Types.bool,
   phoneNumber: Types.string,
   identityCode: Types.string,
   controlCode: Types.string,
@@ -124,9 +134,12 @@ LoginPage.propTypes = {
   errorDescription: Types.string,
   monthlyThirdPillarContribution: Types.number,
   exchangeExistingThirdPillarUnits: Types.bool,
+
+  location: Types.shape({ state: { from: Types.string } }),
 };
 
 const mapStateToProps = state => ({
+  isAuthenticated: !!state.login.token,
   phoneNumber: state.login.phoneNumber,
   identityCode: state.login.identityCode,
   controlCode: state.login.controlCode,
@@ -154,4 +167,4 @@ const withRedux = connect(
   mapDispatchToProps,
 );
 
-export default withRedux(LoginPage);
+export default withRouter(withRedux(LoginPage));
