@@ -1,7 +1,6 @@
 /* eslint-disable no-useless-escape */
 
 import * as Sentry from '@sentry/browser';
-import { push } from 'connected-react-router';
 import config from 'react-global-configuration';
 
 import {
@@ -76,8 +75,6 @@ function handleLogin() {
     if (getState().login.redirectLogin) {
       setLoginCookies(getState);
       window.location = config.get('applicationUrl');
-    } else {
-      dispatch(push('/'));
     }
   };
 }
@@ -108,10 +105,8 @@ export function handleLoginCookies() {
       const loginMethod = getCookie(LOGIN_COOKIE_METHOD_NAME);
       if (loginMethod === 'mobileId' || loginMethod === 'smartId') {
         dispatch({ type: MOBILE_AUTHENTICATION_SUCCESS, tokens, method: loginMethod });
-        dispatch(push('/'));
       } else if (loginMethod === 'idCard') {
         dispatch({ type: ID_CARD_AUTHENTICATION_SUCCESS, tokens });
-        dispatch(push('/'));
       } else {
         throw new Error('Login method not recognized.');
       }
