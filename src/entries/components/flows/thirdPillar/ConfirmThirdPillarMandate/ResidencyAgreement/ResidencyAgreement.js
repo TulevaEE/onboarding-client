@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { Message } from 'retranslate';
 
 import { actions as thirdPillarActions } from '../../../../thirdPillar';
+import { InfoTooltip } from '../../../../common';
 
 export const ResidencyAgreement = ({ isResident, onResidentChange }) => {
   return (
@@ -28,6 +29,11 @@ export const ResidencyAgreement = ({ isResident, onResidentChange }) => {
 
         <div className="custom-control-description">
           <Message>thirdPillarAgreement.isResident</Message>
+          <InfoTooltip name="resident-tooltip">
+            <div className="content">
+              <Message>thirdPillarAgreement.residentTooltip</Message>
+            </div>
+          </InfoTooltip>
         </div>
       </label>
 
