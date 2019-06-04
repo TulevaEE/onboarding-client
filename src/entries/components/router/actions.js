@@ -1,10 +1,7 @@
 import { push } from 'connected-react-router';
 
 function isUserLoaded(getState) {
-  if (getState().login.user) {
-    return true;
-  }
-  return false;
+  return !!getState().login.user;
 }
 
 export function selectRouteForState() {
