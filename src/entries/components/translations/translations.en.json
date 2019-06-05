@@ -290,6 +290,7 @@
   "returnComparison.period.thisYear": "This year",
 
   "thirdPillarFlow.steps.setup.title": "Insert your monthly contribution",
+  "thirdPillarFlow.steps.address.title": "Insert your contact details",
   "thirdPillarFlow.steps.confirmMandate.title": "Confirm mandate",
   "thirdPillarFlow.steps.payment.title": "Pay",
 
@@ -315,7 +316,7 @@
 
   "confirmThirdPillarMandate.sign": "Sign and send mandate",
   "confirmThirdPillarMandate.preview": "Preview",
-  "confirmThirdPillarMandate.back": "Previous step",
+  "confirmThirdPillarMandate.back": "Go back",
 
   "member.capital": "Member capital",
   "member.capital.capital.payment": "Capital payment",

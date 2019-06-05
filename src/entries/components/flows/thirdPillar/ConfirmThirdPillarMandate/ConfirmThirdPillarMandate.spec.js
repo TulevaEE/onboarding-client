@@ -5,7 +5,7 @@ import { Message } from 'retranslate';
 
 import { ConfirmThirdPillarMandate } from './ConfirmThirdPillarMandate';
 import FundTransferTable from '../../secondPillar/confirmMandate/fundTransferTable';
-import { AuthenticationLoader } from '../../../common';
+import { AuthenticationLoader, Loader } from '../../../common';
 
 describe('ConfirmThirdPillarMandate', () => {
   let component;
@@ -27,13 +27,13 @@ describe('ConfirmThirdPillarMandate', () => {
     expect(redirects()).toBe(true);
   });
 
-  it('redirects to previous path only when no monthly contribution', () => {
+  it('redirects to previous path only when no address', () => {
     component.setProps({ previousPath: '/a-path' });
     const redirects = () => component.contains(<Redirect to="/a-path" />);
 
-    expect(redirects()).toBe(false);
-    component.setProps({ monthlyContribution: null });
     expect(redirects()).toBe(true);
+    component.setProps({ isAddressFilled: true });
+    expect(redirects()).toBe(false);
   });
 
   it('has future contributions fund name and message only when future contributions fund is selected', () => {
@@ -171,6 +171,16 @@ describe('ConfirmThirdPillarMandate', () => {
     expect(onCancelSigningMandate).not.toHaveBeenCalled();
     component.find(AuthenticationLoader).simulate('cancel');
     expect(onCancelSigningMandate).toHaveBeenCalledTimes(1);
+  });
+
+  it('renders the loader when loading source funds', () => {
+    component.setProps({ loadingSourceFunds: true });
+    expect(component.find(Loader).length).toBe(1);
+  });
+
+  it('does not render the loader when source funds are loaded', () => {
+    component.setProps({ loadingSourceFunds: false });
+    expect(component.find(Loader).length).toBe(0);
   });
 
   const signButton = () => component.find('button').at(0);

@@ -10,19 +10,21 @@ import PoliticallyExposedPersonAgreement from './PoliticallyExposedPersonAgreeme
 import { actions as exchangeActions } from '../../../exchange';
 import FundTransferTable from '../../secondPillar/confirmMandate/fundTransferTable';
 import ResidencyAgreement from './ResidencyAgreement';
-import { AuthenticationLoader, ErrorMessage } from '../../../common';
+import { AuthenticationLoader, ErrorMessage, Loader } from '../../../common';
+import { hasAddress } from '../../../common/user/address';
 
 export const ConfirmThirdPillarMandate = ({
   previousPath,
   nextPath,
   signedMandateId,
-  monthlyContribution,
   exchangeExistingUnits,
   exchangeableSourceFunds,
   selectedFutureContributionsFund,
   agreedToTerms,
   isResident,
   isPoliticallyExposed,
+  loadingSourceFunds,
+  isAddressFilled,
   onSign,
   onPreview,
   onCancelSigningMandate,
@@ -33,7 +35,7 @@ export const ConfirmThirdPillarMandate = ({
 }) => (
   <Fragment>
     {signedMandateId && <Redirect to={nextPath} />}
-    {!monthlyContribution && <Redirect to={previousPath} />}
+    {!isAddressFilled && <Redirect to={previousPath} />}
     {loadingMandate || mandateSigningControlCode ? (
       <AuthenticationLoader
         controlCode={mandateSigningControlCode}
@@ -55,8 +57,8 @@ export const ConfirmThirdPillarMandate = ({
         </div>
       </div>
     )}
-
-    {exchangeExistingUnits && (
+    {loadingSourceFunds && <Loader className="align-middle" />}
+    {exchangeExistingUnits && !loadingSourceFunds && (
       <div className="mt-4">
         <Message>confirmThirdPillarMandate.exchangeExistingUnits</Message>
         <div className="mt-4">
@@ -149,13 +151,14 @@ ConfirmThirdPillarMandate.propTypes = {
   mandateSigningControlCode: Types.string,
   mandateSigningError: Types.string,
   signedMandateId: Types.number,
-  monthlyContribution: Types.number,
   exchangeExistingUnits: Types.bool,
   exchangeableSourceFunds: Types.arrayOf(fundType),
   selectedFutureContributionsFund: fundType,
   agreedToTerms: Types.bool,
   isResident: Types.bool,
   isPoliticallyExposed: Types.bool,
+  loadingSourceFunds: Types.bool,
+  isAddressFilled: Types.bool,
   onSign: Types.func,
   onPreview: Types.func,
   onCancelSigningMandate: Types.func,
@@ -170,13 +173,14 @@ ConfirmThirdPillarMandate.defaultProps = {
   mandateSigningControlCode: null,
   mandateSigningError: null,
   signedMandateId: null,
-  monthlyContribution: null,
   exchangeExistingUnits: null,
   exchangeableSourceFunds: [],
   selectedFutureContributionsFund: null,
   agreedToTerms: false,
   isResident: null,
   isPoliticallyExposed: null,
+  loadingSourceFunds: false,
+  isAddressFilled: false,
   onSign: () => {},
   onPreview: () => {},
   onCancelSigningMandate: () => {},
@@ -194,9 +198,10 @@ const mapStateToProps = state => ({
   agreedToTerms: state.thirdPillar.agreedToTerms,
   isResident: state.thirdPillar.isResident,
   isPoliticallyExposed: state.thirdPillar.isPoliticallyExposed,
-  monthlyContribution: state.thirdPillar.monthlyContribution,
   exchangeableSourceFunds: state.thirdPillar.exchangeableSourceFunds,
   exchangeExistingUnits: state.thirdPillar.exchangeExistingUnits,
+  loadingSourceFunds: state.thirdPillar.loadingSourceFunds,
+  isAddressFilled: !state.login.user || hasAddress(state.login.user),
 });
 
 const mapDispatchToProps = dispatch =>

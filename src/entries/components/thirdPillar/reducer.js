@@ -8,6 +8,7 @@ import {
 } from './constants';
 import initialState from './initialState';
 import {
+  GET_SOURCE_FUNDS_START,
   GET_SOURCE_FUNDS_SUCCESS,
   GET_TARGET_FUNDS_SUCCESS,
   SIGN_MANDATE_SUCCESS,
@@ -29,6 +30,8 @@ export default function thirdPillarReducer(state = initialState, action) {
       return { ...state, monthlyContribution };
     case CHANGE_EXCHANGE_EXISTING_UNITS:
       return { ...state, exchangeExistingUnits: action.exchangeExistingUnits };
+    case GET_SOURCE_FUNDS_START:
+      return { ...state, loadingSourceFunds: true };
     case GET_SOURCE_FUNDS_SUCCESS:
       // eslint-disable-next-line no-case-declarations
       const sourceFunds = action.sourceFunds.filter(fund => fund.pillar === 3);
@@ -42,7 +45,13 @@ export default function thirdPillarReducer(state = initialState, action) {
       const exchangeExistingUnits =
         exchangeableSourceFunds.length === 0 ? false : state.exchangeExistingUnits;
 
-      return { ...state, sourceFunds, exchangeableSourceFunds, exchangeExistingUnits };
+      return {
+        ...state,
+        sourceFunds,
+        exchangeableSourceFunds,
+        exchangeExistingUnits,
+        loadingSourceFunds: false,
+      };
     case GET_TARGET_FUNDS_SUCCESS:
       return {
         ...state,

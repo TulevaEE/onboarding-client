@@ -1,0 +1,1 @@
+export { hasAddress } from './addressSelector';

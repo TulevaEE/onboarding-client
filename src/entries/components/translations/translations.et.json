@@ -266,6 +266,7 @@
   "returnComparison.period.thisYear": "Käesolev aasta",
 
   "thirdPillarFlow.steps.setup.title": "Sisesta, kui palju soovid koguma hakata",
+  "thirdPillarFlow.steps.address.title": "Sisesta oma kontaktandmed",
   "thirdPillarFlow.steps.confirmMandate.title": "Kinnita avalduse sisu",
   "thirdPillarFlow.steps.payment.title": "Maksa",
 
@@ -291,7 +292,7 @@
 
   "confirmThirdPillarMandate.sign": "Allkirjasta ja saada",
   "confirmThirdPillarMandate.preview": "Eelvaade",
-  "confirmThirdPillarMandate.back": "Eelmine samm",
+  "confirmThirdPillarMandate.back": "Algusesse tagasi",
 
   "member.capital": "Liikmekapital",
   "member.capital.capital.payment": "Panus liikmekapitali",
