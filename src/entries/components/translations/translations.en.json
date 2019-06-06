@@ -332,5 +332,10 @@
   "thirdPillarPayment.accountNumber": "Account number",
   "thirdPillarPayment.amount": "Amount",
   "thirdPillarPayment.details": "Payment details",
-  "thirdPillarPayment.reference": "Reference"
+  "thirdPillarPayment.reference": "Reference",
+  "thirdPillarPayment.paymentButton": "Payment made",
+
+  "thirdPillarSuccess.done": "All done",
+  "thirdPillarSuccess.message": "Check your pension account. Tuleva members see also their member capital.",
+  "thirdPillarSuccess.button": "My account"
 }

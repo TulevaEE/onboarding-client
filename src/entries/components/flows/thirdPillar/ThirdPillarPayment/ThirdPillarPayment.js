@@ -2,11 +2,12 @@ import React, { Fragment } from 'react';
 import Types from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Redirect } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import { Message } from 'retranslate';
 
 export const ThirdPillarPayment = ({
   previousPath,
+  nextPath,
   signedMandateId,
   monthlyContribution,
   pensionAccountNumber,
@@ -49,11 +50,20 @@ export const ThirdPillarPayment = ({
       <Message>thirdPillarPayment.reference</Message>:{' '}
       <b data-test-id="pension-account-number">{pensionAccountNumber}</b>
     </div>
+
+    <div>
+      <Link to={nextPath}>
+        <button type="button" className="btn btn-primary mt-4">
+          <Message>thirdPillarPayment.paymentButton</Message>
+        </button>
+      </Link>
+    </div>
   </Fragment>
 );
 
 ThirdPillarPayment.propTypes = {
   previousPath: Types.string,
+  nextPath: Types.string,
 
   signedMandateId: Types.number,
   monthlyContribution: Types.number,
@@ -62,6 +72,7 @@ ThirdPillarPayment.propTypes = {
 
 ThirdPillarPayment.defaultProps = {
   previousPath: '',
+  nextPath: '',
 
   signedMandateId: null,
   monthlyContribution: null,
