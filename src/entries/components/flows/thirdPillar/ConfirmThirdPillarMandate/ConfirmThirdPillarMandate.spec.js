@@ -59,6 +59,7 @@ describe('ConfirmThirdPillarMandate', () => {
   it('gets mandate preview on preview button click', () => {
     const onPreview = jest.fn();
     component.setProps({
+      exchangeExistingUnits: true,
       exchangeableSourceFunds: [
         { isin: 'EE123', name: 'First fund' },
         { isin: 'EE456', name: 'Second fund' },
@@ -83,6 +84,7 @@ describe('ConfirmThirdPillarMandate', () => {
     component.setProps({
       isResident: true,
       isPoliticallyExposed: true,
+      exchangeExistingUnits: true,
       exchangeableSourceFunds: [
         { isin: 'EE123', name: 'First fund' },
         { isin: 'EE456', name: 'Second fund' },

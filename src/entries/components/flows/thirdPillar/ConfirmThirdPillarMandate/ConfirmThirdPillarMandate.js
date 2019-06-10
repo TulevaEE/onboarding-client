@@ -92,7 +92,11 @@ export const ConfirmThirdPillarMandate = ({
         disabled={!agreedToTerms || isResident === null || isPoliticallyExposed === null}
         onClick={() => {
           onSign(
-            getMandate(exchangeableSourceFunds, selectedFutureContributionsFund),
+            getMandate(
+              exchangeExistingUnits,
+              exchangeableSourceFunds,
+              selectedFutureContributionsFund,
+            ),
             isResident,
             isPoliticallyExposed,
           );
@@ -105,7 +109,13 @@ export const ConfirmThirdPillarMandate = ({
         type="button"
         className="btn btn-secondary mb-2 mr-2"
         onClick={() => {
-          onPreview(getMandate(exchangeableSourceFunds, selectedFutureContributionsFund));
+          onPreview(
+            getMandate(
+              exchangeExistingUnits,
+              exchangeableSourceFunds,
+              selectedFutureContributionsFund,
+            ),
+          );
         }}
       >
         <Message>confirmThirdPillarMandate.preview</Message>
@@ -120,13 +130,15 @@ export const ConfirmThirdPillarMandate = ({
   </Fragment>
 );
 
-function getMandate(sourceFunds, targetFund) {
+function getMandate(exchangeExistingUnits, sourceFunds, targetFund) {
   return {
-    fundTransferExchanges: sourceFunds.map(sourceFund => ({
-      amount: 1,
-      sourceFundIsin: sourceFund.isin,
-      targetFundIsin: targetFund.isin,
-    })),
+    fundTransferExchanges: exchangeExistingUnits
+      ? sourceFunds.map(sourceFund => ({
+          amount: 1,
+          sourceFundIsin: sourceFund.isin,
+          targetFundIsin: targetFund.isin,
+        }))
+      : [],
     futureContributionFundIsin: targetFund.isin,
   };
 }
