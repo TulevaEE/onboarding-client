@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Redirect } from 'react-router-dom';
 import UpdateUserForm from '../../../account/updateUserForm';
-import { updateUser } from '../../../common/user/actions';
+import { saveUserToState } from '../../../common/user/actions';
 import { hasAddress } from '../../../common/user/address';
 
 export const ThirdPillarAddress = ({
@@ -49,7 +49,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
-      saveUser: updateUser,
+      saveUser: saveUserToState,
     },
     dispatch,
   );

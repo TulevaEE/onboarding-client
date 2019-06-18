@@ -5,6 +5,7 @@ import config from 'react-global-configuration';
 
 import { createUserWithToken, updateUserWithToken } from '../api';
 import { UPDATE_USER_START, UPDATE_USER_SUCCESS, UPDATE_USER_ERROR } from './constants';
+import { GET_USER_SUCCESS } from '../../login/constants';
 
 function toFieldErrors(errorResponse) {
   return errorResponse.body.errors.reduce((totalErrors, currentError) => {
@@ -38,6 +39,12 @@ export function registerUser(user) {
 
 export function updateUser(user) {
   return updateUserAndPush(user, '/account');
+}
+
+export function saveUserToState(user) {
+  return dispatch => {
+    dispatch({ type: GET_USER_SUCCESS, user });
+  };
 }
 
 export function createUser(user) {
