@@ -25,6 +25,7 @@ import {
 } from './constants';
 
 import { getGlobalErrorCode } from '../common/errorMessage';
+import { UPDATE_USER_SUCCESS } from '../common/user/constants';
 
 const TOKEN_STORAGE_KEY = 'accessToken';
 const REFRESH_TOKEN_STORAGE_KEY = 'refreshToken';
@@ -170,6 +171,12 @@ export default function loginReducer(state = defaultState, action) {
         loadingUser: false,
         userError: getGlobalErrorCode(action.error.body),
         error: getGlobalErrorCode(action.error.body),
+      };
+
+    case UPDATE_USER_SUCCESS:
+      return {
+        ...state,
+        user: action.newUser,
       };
 
     case GET_USER_CONVERSION_START:

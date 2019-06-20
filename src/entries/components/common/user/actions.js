@@ -1,5 +1,4 @@
 /* eslint-disable no-param-reassign,no-underscore-dangle */
-import { push } from 'connected-react-router';
 import { SubmissionError } from 'redux-form';
 import config from 'react-global-configuration';
 
@@ -18,27 +17,18 @@ function toFieldErrors(errorResponse) {
   }, {});
 }
 
-function updateUserAndPush(user, route) {
+export function updateUser(user) {
   return (dispatch, getState) => {
     dispatch({ type: UPDATE_USER_START });
     return updateUserWithToken(user, getState().login.token)
       .then(newUser => {
         dispatch({ type: UPDATE_USER_SUCCESS, newUser });
-        dispatch(push(route));
       })
       .catch(errorResponse => {
         dispatch({ type: UPDATE_USER_ERROR, errorResponse });
         throw new SubmissionError(toFieldErrors(errorResponse));
       });
   };
-}
-
-export function registerUser(user) {
-  return updateUserAndPush(user, '/2nd-pillar-flow/payment');
-}
-
-export function updateUser(user) {
-  return updateUserAndPush(user, '/account');
 }
 
 export function saveUserToState(user) {

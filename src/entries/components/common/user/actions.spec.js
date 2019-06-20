@@ -1,4 +1,3 @@
-import { push } from 'connected-react-router';
 import { SubmissionError } from 'redux-form';
 import config from 'react-global-configuration';
 
@@ -32,7 +31,7 @@ describe('newUserFlow actions', () => {
     mockDispatch();
   });
 
-  it('can register a new user', () => {
+  it('can update a new user', () => {
     const newUser = { firstName: 'Erko' };
     mockApi.updateUserWithToken = jest.fn(() => {
       expect(dispatch).toHaveBeenCalledTimes(1);
@@ -40,27 +39,26 @@ describe('newUserFlow actions', () => {
       dispatch.mockClear();
       return Promise.resolve(newUser);
     });
-    const registerUser = createBoundAction(actions.registerUser);
+    const updateUser = createBoundAction(actions.updateUser);
     expect(dispatch).not.toHaveBeenCalled();
-    return registerUser(newUser).then(() => {
-      expect(dispatch).toHaveBeenCalledTimes(2);
+    return updateUser(newUser).then(() => {
+      expect(dispatch).toHaveBeenCalledTimes(1);
       expect(dispatch).toHaveBeenCalledWith({
         type: UPDATE_USER_SUCCESS,
         newUser,
       });
-      expect(dispatch).toHaveBeenCalledWith(push('/2nd-pillar-flow/payment'));
     });
   });
 
-  it('can handle errors when registering a new user', () => {
+  it('can handle errors when updating a user', () => {
     const error = {
       body: { errors: [{ path: 'personalCode', code: 'invalid' }] },
     };
     mockApi.updateUserWithToken = jest.fn(() => Promise.reject(error));
-    const registerUser = createBoundAction(actions.registerUser);
+    const updateUser = createBoundAction(actions.updateUser);
     expect(dispatch).not.toHaveBeenCalled();
 
-    return registerUser()
+    return updateUser()
       .then(() =>
         expect(dispatch).toHaveBeenCalledWith({
           type: UPDATE_USER_ERROR,
@@ -80,9 +78,9 @@ describe('newUserFlow actions', () => {
       dispatch.mockClear();
       return Promise.resolve(newUser);
     });
-    const registerUser = createBoundAction(actions.createUser);
+    const createUser = createBoundAction(actions.createUser);
     expect(dispatch).not.toHaveBeenCalled();
-    return registerUser(newUser).then(() => {
+    return createUser(newUser).then(() => {
       expect(dispatch).toHaveBeenCalledTimes(1);
       expect(dispatch).toHaveBeenCalledWith({
         type: UPDATE_USER_SUCCESS,

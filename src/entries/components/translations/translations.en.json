@@ -327,7 +327,7 @@
 
   "thirdPillarPayment.title": "Application finished!",
   "thirdPillarPayment.description": "Now log into your internet bank and {{ emphasized }}.",
-  "thirdPillarPayment.descriptionEphasized": "make a payment into your pension account",
+  "thirdPillarPayment.descriptionEmphasized": "make a payment into your pension account",
   "thirdPillarPayment.accountName": "Pay to",
   "thirdPillarPayment.accountNumber": "Account number",
   "thirdPillarPayment.amount": "Amount",

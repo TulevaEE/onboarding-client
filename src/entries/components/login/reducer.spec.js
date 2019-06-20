@@ -24,6 +24,7 @@ import {
   LOG_OUT,
   CHANGE_ID_CODE,
 } from './constants';
+import { UPDATE_USER_SUCCESS } from '../common/user/constants';
 
 describe('Login reducer', () => {
   it('changes phone number', () => {
@@ -158,6 +159,12 @@ describe('Login reducer', () => {
     expect(newState.userError).toBe(errorMessage);
     expect(newState.loadingUser).toBe(false);
     expect(newState.error).toBe(errorMessage);
+  });
+
+  it('saves updated user to state', () => {
+    const newUser = { hello: 'world' };
+    const newState = loginReducer({}, { type: UPDATE_USER_SUCCESS, newUser });
+    expect(newState.user).toBe(newUser);
   });
 
   it('removes token and login method flag when you log out', () => {

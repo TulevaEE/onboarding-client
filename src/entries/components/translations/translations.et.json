@@ -303,7 +303,7 @@
 
   "thirdPillarPayment.title": "Avaldus esitatud!",
   "thirdPillarPayment.description": "Nüüd logi sisse oma internetipanka ning {{ emphasized }}.",
-  "thirdPillarPayment.descriptionEphasized": "tee sissemakse oma III samba kontole",
+  "thirdPillarPayment.descriptionEmphasized": "tee sissemakse oma III samba kontole",
   "thirdPillarPayment.accountName": "Makse saaja",
   "thirdPillarPayment.accountNumber": "Arve number",
   "thirdPillarPayment.amount": "Summa",
