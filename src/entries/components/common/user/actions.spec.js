@@ -2,7 +2,6 @@ import { SubmissionError } from 'redux-form';
 import config from 'react-global-configuration';
 
 import { UPDATE_USER_START, UPDATE_USER_SUCCESS, UPDATE_USER_ERROR } from './constants';
-import { GET_USER_SUCCESS } from '../../login/constants';
 
 const mockApi = jest.genMockFromModule('../api');
 jest.mock('../api', () => mockApi);
@@ -107,15 +106,5 @@ describe('newUserFlow actions', () => {
       .catch(givenError =>
         expect(givenError).toEqual(new SubmissionError({ personalCode: 'invalid' })),
       );
-  });
-
-  it('updates state with user data', () => {
-    const user = { firstName: 'Erko' };
-    const saveUserToState = createBoundAction(actions.saveUserToState);
-
-    saveUserToState(user);
-
-    expect(dispatch).toHaveBeenCalledTimes(1);
-    expect(dispatch).toHaveBeenCalledWith({ type: GET_USER_SUCCESS, user });
   });
 });

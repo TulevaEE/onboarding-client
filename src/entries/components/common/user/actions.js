@@ -4,7 +4,6 @@ import config from 'react-global-configuration';
 
 import { createUserWithToken, updateUserWithToken } from '../api';
 import { UPDATE_USER_START, UPDATE_USER_SUCCESS, UPDATE_USER_ERROR } from './constants';
-import { GET_USER_SUCCESS } from '../../login/constants';
 
 function toFieldErrors(errorResponse) {
   return errorResponse.body.errors.reduce((totalErrors, currentError) => {
@@ -15,6 +14,14 @@ function toFieldErrors(errorResponse) {
     }
     return totalErrors;
   }, {});
+}
+
+export function updateUserEmailAndPhone(user) {
+  return dispatch => {
+    return dispatch(updateUser({ email: user.email, phoneNumber: user.phoneNumber })).then(() => {
+      dispatch({ type: UPDATE_USER_SUCCESS, newUser: user });
+    });
+  };
 }
 
 export function updateUser(user) {
@@ -28,12 +35,6 @@ export function updateUser(user) {
         dispatch({ type: UPDATE_USER_ERROR, errorResponse });
         throw new SubmissionError(toFieldErrors(errorResponse));
       });
-  };
-}
-
-export function saveUserToState(user) {
-  return dispatch => {
-    dispatch({ type: GET_USER_SUCCESS, user });
   };
 }
 
