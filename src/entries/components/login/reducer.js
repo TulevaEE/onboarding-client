@@ -37,7 +37,7 @@ const refreshToken =
   (window.localStorage && localStorage.getItem(REFRESH_TOKEN_STORAGE_KEY)) || null;
 const loginMethod = (window.localStorage && localStorage.getItem(LOGIN_METHOD_STORAGE_KEY)) || null;
 
-const defaultState = {
+export const initialState = {
   phoneNumber: '',
   identityCode: '',
   controlCode: null,
@@ -65,7 +65,7 @@ function updateLocalStorage(action, loginMethodUsed) {
     }
   }
 }
-export default function loginReducer(state = defaultState, action) {
+export default function loginReducer(state = initialState, action) {
   switch (action.type) {
     case CHANGE_PHONE_NUMBER:
       return { ...state, phoneNumber: action.phoneNumber };
@@ -211,15 +211,7 @@ export default function loginReducer(state = defaultState, action) {
         localStorage.removeItem(REFRESH_TOKEN_STORAGE_KEY);
         localStorage.removeItem(LOGIN_METHOD_STORAGE_KEY);
       }
-      return {
-        ...state,
-        token: null,
-        refreshToken: null,
-        user: null,
-        loginMethod: null,
-        loadingUser: false,
-        userConversionError: null,
-      };
+      return initialState;
 
     default:
       return state;

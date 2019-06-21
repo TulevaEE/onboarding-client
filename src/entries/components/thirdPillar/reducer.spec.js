@@ -14,6 +14,7 @@ import {
   GET_TARGET_FUNDS_SUCCESS,
   SIGN_MANDATE_SUCCESS,
 } from '../exchange/constants';
+import { LOG_OUT } from '../login/constants';
 
 describe('Third pillar reducer', () => {
   it('saves monthly contribution as a number when monthlyContribution is in query params and parsable as a number', () => {
@@ -241,5 +242,10 @@ describe('Third pillar reducer', () => {
       ...initialState,
       signedMandateId: 123,
     });
+  });
+
+  it('sets state to initialState on logout', () => {
+    const state = reducer(undefined, { type: LOG_OUT });
+    expect(state).toEqual(initialState);
   });
 });

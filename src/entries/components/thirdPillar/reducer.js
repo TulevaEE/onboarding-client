@@ -14,6 +14,7 @@ import {
   GET_TARGET_FUNDS_SUCCESS,
   SIGN_MANDATE_SUCCESS,
 } from '../exchange/constants';
+import { LOG_OUT } from '../login/constants';
 
 export default function thirdPillarReducer(state = initialState, action) {
   const { type, query, monthlyContribution } = action;
@@ -80,6 +81,8 @@ export default function thirdPillarReducer(state = initialState, action) {
         ...state,
         signedMandateId: action.signedMandateId,
       };
+    case LOG_OUT:
+      return initialState;
     default:
       return state;
   }

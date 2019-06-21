@@ -1,4 +1,4 @@
-import loginReducer from './reducer';
+import loginReducer, { initialState } from './reducer';
 import {
   CHANGE_PHONE_NUMBER,
   CHANGE_EMAIL,
@@ -168,16 +168,9 @@ describe('Login reducer', () => {
   });
 
   it('removes token and login method flag when you log out', () => {
-    const newState = loginReducer(
-      { token: 'token', refreshToken: 'refresh', loginMethod: 'mobileId' },
-      { type: LOG_OUT },
-    );
-    expect(newState.token).toBe(null);
-    expect(newState.refreshToken).toBe(null);
-    expect(newState.loginMethod).toBe(null);
-    expect(newState.loadingUser).toBe(false);
-    expect(newState.userConversionError).toBe(null);
-    expect(newState.user).toBe(null);
+    const newState = loginReducer(undefined, { type: LOG_OUT });
+
+    expect(newState).toBe(initialState);
   });
 
   it('starts loading when starting to get the user conversion', () => {

@@ -3,8 +3,9 @@ import {
   GET_RETURN_COMPARISON_SUCCESS,
   GET_RETURN_COMPARISON_ERROR,
 } from './constants';
+import { LOG_OUT } from '../login/constants';
 
-const initialState = {
+export const initialState = {
   loading: false,
   actualPercentage: null,
   estonianPercentage: null,
@@ -32,6 +33,8 @@ export default function returnComparisonReducer(state = initialState, action) {
         loading: false,
         error: action.error,
       };
+    case LOG_OUT:
+      return initialState;
     default:
       return state;
   }

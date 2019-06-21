@@ -3,14 +3,8 @@ import {
   GET_RETURN_COMPARISON_SUCCESS,
   GET_RETURN_COMPARISON_ERROR,
 } from './constants';
-import reducer from './reducer';
-
-const initialState = {
-  loading: false,
-  actualPercentage: null,
-  estonianPercentage: null,
-  marketPercentage: null,
-};
+import reducer, { initialState } from './reducer';
+import { LOG_OUT } from '../login/constants';
 
 describe('Return comparison reducer', () => {
   it('starts loading when starting to get return comparison', () => {
@@ -42,5 +36,11 @@ describe('Return comparison reducer', () => {
     });
 
     expect(state).toEqual({ ...initialState, error: { message: 'An error' } });
+  });
+
+  it('clears state on logout', () => {
+    const state = reducer(undefined, { type: LOG_OUT });
+
+    expect(state).toEqual(initialState);
   });
 });
