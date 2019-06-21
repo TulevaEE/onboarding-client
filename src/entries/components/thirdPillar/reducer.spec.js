@@ -9,6 +9,7 @@ import {
 import initialState from './initialState';
 import reducer from './reducer';
 import {
+  GET_SOURCE_FUNDS_ERROR,
   GET_SOURCE_FUNDS_SUCCESS,
   GET_TARGET_FUNDS_SUCCESS,
   SIGN_MANDATE_SUCCESS,
@@ -163,6 +164,18 @@ describe('Third pillar reducer', () => {
       ...oldState,
       sourceFunds: [thirdPillarFund],
       exchangeExistingUnits: false,
+    });
+  });
+
+  it('stops loading source funds on error', () => {
+    const oldState = { ...initialState, loadingSourceFunds: true };
+    const error = new Error('oh noes');
+    const state = reducer(oldState, { type: GET_SOURCE_FUNDS_ERROR, error });
+
+    expect(state).toEqual({
+      ...oldState,
+      loadingSourceFunds: false,
+      error,
     });
   });
 
