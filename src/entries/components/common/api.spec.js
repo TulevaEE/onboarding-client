@@ -443,15 +443,16 @@ describe('api', () => {
       Promise.resolve({
         type: 'TYPE',
         success: true,
+        metadata: {},
       }),
     );
     expect(mockHttp.post).not.toHaveBeenCalled();
-    return api.createAmlCheck('TYPE', true, token).then(check => {
+    return api.createAmlCheck('TYPE', true, {}, token).then(check => {
       expect(check.type).toBe('TYPE');
       expect(mockHttp.post).toHaveBeenCalledTimes(1);
       expect(mockHttp.post).toHaveBeenCalledWith(
         '/v1/amlchecks',
-        { type: 'TYPE', success: true },
+        { type: 'TYPE', success: true, metadata: {} },
         {
           Authorization: `Bearer ${token}`,
         },
