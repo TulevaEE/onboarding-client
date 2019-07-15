@@ -82,8 +82,6 @@ describe('ConfirmThirdPillarMandate', () => {
   it('signs mandate on sign button click', () => {
     const onSign = jest.fn();
     component.setProps({
-      isResident: true,
-      isPoliticallyExposed: true,
       exchangeExistingUnits: true,
       exchangeableSourceFunds: [
         { isin: 'EE123', name: 'First fund' },
@@ -91,6 +89,9 @@ describe('ConfirmThirdPillarMandate', () => {
       ],
       selectedFutureContributionsFund: { isin: 'EE789', name: 'Third fund' },
       onSign,
+      isResident: true,
+      isPoliticallyExposed: true,
+      occupation: 'PRIVATE_SECTOR',
     });
 
     expect(onSign).not.toBeCalled();
@@ -103,8 +104,7 @@ describe('ConfirmThirdPillarMandate', () => {
         ],
         futureContributionFundIsin: 'EE789',
       },
-      true,
-      true,
+      { isPoliticallyExposed: true, isResident: true, occupation: 'PRIVATE_SECTOR' },
     );
   });
 
