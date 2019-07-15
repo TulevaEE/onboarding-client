@@ -220,10 +220,10 @@ export function getReturnComparisonForStartDateWithToken(startDate, token) {
   );
 }
 
-export function createAmlCheck(type, success, token) {
+export function createAmlCheck(type, success, metadata, token) {
   return post(
     getEndpoint('/v1/amlchecks'),
-    { type, success },
+    { type, success, metadata },
     {
       Authorization: `Bearer ${token}`,
     },

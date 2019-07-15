@@ -313,6 +313,13 @@
   "thirdPillarAgreement.ageDependentRecommendationConfirmation": "I have read the recommendation below.",
   "thirdPillarAgreement.signingExplanation": "By clicking “sign and send“ a digitally signed application will be sent to the register.",
   "thirdPillarAgreement.ageDependentRecommendation": "We have noticed that your statutory retirement age is in less than 10 years. Tuleva Voluntary Pension fund invests 100% in shares. As retirement age approaches, in order to reduce the impact of short-term market fluctuations, it is advisable to switch part of your funds into lower risk bond fund. In case of questions, please call Tuleva on 644 5100 or write to us tuleva@tuleva.ee.",
+  "thirdPillarAgreement.occupation": "Occupation: ",
+  "thirdPillarAgreement.occupation.privateSector": "Private sector",
+  "thirdPillarAgreement.occupation.publicSector": "Public sector",
+  "thirdPillarAgreement.occupation.entrepreneur": "Entrepreneur",
+  "thirdPillarAgreement.occupation.student": "Student",
+  "thirdPillarAgreement.occupation.retired": "Retired",
+  "thirdPillarAgreement.occupation.unemployed": "Unemployed",
 
   "confirmThirdPillarMandate.sign": "Sign and send mandate",
   "confirmThirdPillarMandate.preview": "Preview",

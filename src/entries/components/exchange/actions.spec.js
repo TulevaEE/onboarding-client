@@ -493,13 +493,18 @@ describe('Exchange actions', () => {
 
   it('creates aml checks if needed', () => {
     const mandate = { id: 'id' };
+    const amlChecks = {
+      isPoliticallyExposed: true,
+      isResident: true,
+      occupation: 'PRIVATE_SECTOR',
+    };
     mockApi.createAmlCheck = jest.fn(() => Promise.resolve('{"success":true}'));
     const signMandate = createBoundAction(actions.signMandate);
-    return signMandate(mandate, true, true).then(() => {
+    return signMandate(mandate, amlChecks).then(() => {
       expect(dispatch).toHaveBeenCalledWith({
         type: SIGN_MANDATE_ID_CARD_START,
       });
-      expect(mockApi.createAmlCheck).toHaveBeenCalledTimes(2);
+      expect(mockApi.createAmlCheck).toHaveBeenCalledTimes(3);
     });
   });
 });

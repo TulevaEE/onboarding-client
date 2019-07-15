@@ -307,19 +307,29 @@ export function signMandateWithIdCard(mandate) {
   };
 }
 
-export function signMandate(mandate, isResident, isPoliticallyExposed) {
+export function signMandate(mandate, amlChecks) {
   return (dispatch, getState) => {
     const loggedInWithMobileId = getState().login.loginMethod === 'mobileId';
     const loggedInWithSmartId = getState().login.loginMethod === 'smartId';
     let promise = Promise.resolve();
-    if (isResident !== undefined) {
-      promise = createAmlCheck('RESIDENCY_MANUAL', isResident, getState().login.token).then(() => {
-        return createAmlCheck(
-          'POLITICALLY_EXPOSED_PERSON',
-          !isPoliticallyExposed,
-          getState().login.token,
-        );
-      });
+    if (amlChecks !== undefined) {
+      promise = createAmlCheck('RESIDENCY_MANUAL', amlChecks.isResident, {}, getState().login.token)
+        .then(() => {
+          return createAmlCheck(
+            'POLITICALLY_EXPOSED_PERSON',
+            !amlChecks.isPoliticallyExposed,
+            {},
+            getState().login.token,
+          );
+        })
+        .then(() => {
+          return createAmlCheck(
+            'OCCUPATION',
+            !!amlChecks.occupation,
+            { occupation: amlChecks.occupation },
+            getState().login.token,
+          );
+        });
     }
     return promise
       .then(() => {
