@@ -5,6 +5,7 @@ import {
   CHANGE_AGREEMENT_TO_TERMS,
   CHANGE_RESIDENCY,
   CHANGE_POLITICALLY_EXPOSED,
+  CHANGE_OCCUPATION,
 } from './constants';
 
 export function addDataFromQueryParams(query) {
@@ -29,4 +30,8 @@ export function changeIsPoliticallyExposed(isPoliticallyExposed) {
 
 export function changeIsResident(isResident) {
   return { type: CHANGE_RESIDENCY, isResident };
+}
+
+export function changeOccupation(occupation) {
+  return { type: CHANGE_OCCUPATION, occupation };
 }

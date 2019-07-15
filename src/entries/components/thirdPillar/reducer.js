@@ -5,6 +5,7 @@ import {
   CHANGE_AGREEMENT_TO_TERMS,
   CHANGE_POLITICALLY_EXPOSED,
   CHANGE_RESIDENCY,
+  CHANGE_OCCUPATION,
 } from './constants';
 import initialState from './initialState';
 import {
@@ -75,6 +76,11 @@ export default function thirdPillarReducer(state = initialState, action) {
       return {
         ...state,
         isResident: action.isResident,
+      };
+    case CHANGE_OCCUPATION:
+      return {
+        ...state,
+        occupation: action.occupation,
       };
     case SIGN_MANDATE_SUCCESS:
       return {

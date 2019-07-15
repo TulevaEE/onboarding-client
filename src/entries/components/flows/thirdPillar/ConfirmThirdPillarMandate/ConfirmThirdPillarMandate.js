@@ -12,6 +12,7 @@ import FundTransferTable from '../../secondPillar/confirmMandate/fundTransferTab
 import ResidencyAgreement from './ResidencyAgreement';
 import { AuthenticationLoader, ErrorMessage, Loader } from '../../../common';
 import { hasAddress } from '../../../common/user/address';
+import OccupationAgreement from './OccupationAgreement';
 
 export const ConfirmThirdPillarMandate = ({
   previousPath,
@@ -23,6 +24,7 @@ export const ConfirmThirdPillarMandate = ({
   agreedToTerms,
   isResident,
   isPoliticallyExposed,
+  occupation,
   loadingSourceFunds,
   isAddressFilled,
   onSign,
@@ -77,6 +79,7 @@ export const ConfirmThirdPillarMandate = ({
     <div className="mt-2">
       <PoliticallyExposedPersonAgreement />
       <ResidencyAgreement />
+      <OccupationAgreement />
     </div>
 
     {mandateSigningError ? (
@@ -89,7 +92,9 @@ export const ConfirmThirdPillarMandate = ({
       <button
         type="button"
         className="btn btn-primary mb-2 mr-2"
-        disabled={!agreedToTerms || isResident === null || isPoliticallyExposed === null}
+        disabled={
+          !agreedToTerms || isResident === null || isPoliticallyExposed === null || !occupation
+        }
         onClick={() => {
           onSign(
             getMandate(
@@ -97,8 +102,7 @@ export const ConfirmThirdPillarMandate = ({
               exchangeableSourceFunds,
               selectedFutureContributionsFund,
             ),
-            isResident,
-            isPoliticallyExposed,
+            { isResident, isPoliticallyExposed, occupation },
           );
         }}
       >
@@ -169,6 +173,7 @@ ConfirmThirdPillarMandate.propTypes = {
   agreedToTerms: Types.bool,
   isResident: Types.bool,
   isPoliticallyExposed: Types.bool,
+  occupation: Types.string,
   loadingSourceFunds: Types.bool,
   isAddressFilled: Types.bool,
   onSign: Types.func,
@@ -191,6 +196,7 @@ ConfirmThirdPillarMandate.defaultProps = {
   agreedToTerms: false,
   isResident: null,
   isPoliticallyExposed: null,
+  occupation: null,
   loadingSourceFunds: false,
   isAddressFilled: false,
   onSign: () => {},
@@ -210,6 +216,7 @@ const mapStateToProps = state => ({
   agreedToTerms: state.thirdPillar.agreedToTerms,
   isResident: state.thirdPillar.isResident,
   isPoliticallyExposed: state.thirdPillar.isPoliticallyExposed,
+  occupation: state.thirdPillar.occupation,
   exchangeableSourceFunds: state.thirdPillar.exchangeableSourceFunds,
   exchangeExistingUnits: state.thirdPillar.exchangeExistingUnits,
   loadingSourceFunds: state.thirdPillar.loadingSourceFunds,
