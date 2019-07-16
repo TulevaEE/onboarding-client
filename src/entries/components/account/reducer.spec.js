@@ -4,7 +4,7 @@ import {
   GET_INITIAL_CAPITAL_ERROR,
 } from './constants';
 
-import { UPDATE_USER_SUCCESS } from '../common/user/constants';
+import { UPDATE_USER_SUCCESS, USER_UPDATED } from '../common/user/constants';
 
 import { LOG_OUT } from '../login/constants';
 
@@ -42,6 +42,14 @@ describe('Account reducer', () => {
     const newState = accountReducer({ updateUserSuccess: false }, action);
 
     expect(newState.updateUserSuccess).toBe(true);
+  });
+
+  it('removes user update success from state', () => {
+    const action = { type: USER_UPDATED };
+
+    const newState = accountReducer({ updateUserSuccess: true }, action);
+
+    expect(newState.updateUserSuccess).toBe(false);
   });
 
   it('correctly removes the state on logout', () => {

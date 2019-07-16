@@ -4,7 +4,7 @@ import {
   GET_INITIAL_CAPITAL_ERROR,
 } from './constants';
 
-import { UPDATE_USER_SUCCESS } from '../common/user/constants';
+import { UPDATE_USER_SUCCESS, USER_UPDATED } from '../common/user/constants';
 
 import { LOG_OUT } from '../login/constants';
 
@@ -39,6 +39,11 @@ export default function accountReducer(state = initialState, action) {
       return {
         ...state,
         updateUserSuccess: true,
+      };
+    case USER_UPDATED:
+      return {
+        ...state,
+        updateUserSuccess: false,
       };
     case LOG_OUT:
       return initialState;

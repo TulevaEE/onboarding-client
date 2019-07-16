@@ -4,12 +4,13 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import { Message } from 'retranslate';
-import { updateUser } from '../../../common/user/actions';
+import { updateUser, userUpdated } from '../../../common/user/actions';
 
 export class ThirdPillarPayment extends Component {
   async componentDidMount() {
-    const { saveUser, user } = this.props;
+    const { user, saveUser, userSaved } = this.props;
     await saveUser(user);
+    await userSaved();
   }
 
   render() {
@@ -84,6 +85,7 @@ ThirdPillarPayment.propTypes = {
   user: Types.shape({}),
 
   saveUser: Types.func,
+  userSaved: Types.func,
 };
 
 ThirdPillarPayment.defaultProps = {
@@ -96,6 +98,7 @@ ThirdPillarPayment.defaultProps = {
   user: {},
 
   saveUser: noop,
+  userSaved: noop,
 };
 
 const mapStateToProps = state => ({
@@ -109,6 +112,7 @@ const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
       saveUser: updateUser,
+      userSaved: userUpdated,
     },
     dispatch,
   );
