@@ -30,25 +30,10 @@ describe('Confirm mandate step', () => {
     const expectComponentNotToBeLoader = () =>
       expect(component.at(0).getElement(0)).not.toEqual(<Loader className="align-middle" />);
 
-    component.setProps({ exchange: { loadingSourceFunds: true } });
+    component.setProps({ loading: true });
     expectComponentToBeLoader();
 
-    component.setProps({
-      exchange: {
-        loadingSourceFunds: false,
-        loadingTargetFunds: true,
-        sourceSelection: [],
-      },
-    });
-    expectComponentToBeLoader();
-
-    component.setProps({
-      exchange: {
-        loadingSourceFunds: false,
-        loadingTargetFunds: false,
-        sourceSelection: [],
-      },
-    });
+    component.setProps({ loading: false });
     expectComponentNotToBeLoader();
   });
 

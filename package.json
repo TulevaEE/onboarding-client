@@ -93,8 +93,8 @@
       "pre-commit": "lint-staged"
     }
   },
-  "proxy": "http://localhost:9000",
-  "//": "https://onboarding-service.tuleva.ee",
+  "//": "http://localhost:9000",
+  "proxy": "https://onboarding-service.tuleva.ee",
   "browserslist": [
     ">0.2%",
     "not dead",

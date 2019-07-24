@@ -88,6 +88,7 @@ function getMandate(exchange) {
 
 export const ConfirmMandate = ({
   exchange,
+  loading,
   onPreviewMandate,
   onSignMandate,
   onCancelSigningMandate,
@@ -95,7 +96,7 @@ export const ConfirmMandate = ({
   onCloseErrorMessages,
   onPreviousStep,
 }) => {
-  if (exchange.loadingSourceFunds || exchange.loadingTargetFunds) {
+  if (loading) {
     return <Loader className="align-middle" />;
   }
   if (exchange.error) {
@@ -212,6 +213,7 @@ export const ConfirmMandate = ({
 const noop = () => null;
 
 ConfirmMandate.defaultProps = {
+  loading: false,
   onPreviewMandate: noop,
   onSignMandate: noop,
   onCancelSigningMandate: noop,
@@ -228,6 +230,7 @@ ConfirmMandate.propTypes = {
     selectedFutureContributionsFundIsin: Types.string,
     agreedToTerms: Types.bool,
   }).isRequired,
+  loading: Types.bool,
   onPreviewMandate: Types.func,
   onSignMandate: Types.func,
   onCancelSigningMandate: Types.func,
@@ -238,6 +241,11 @@ ConfirmMandate.propTypes = {
 
 const mapStateToProps = state => ({
   exchange: state.exchange,
+  loading:
+    state.login.loadingUser ||
+    state.login.loadingUserConversion ||
+    state.exchange.loadingSourceFunds ||
+    state.exchange.loadingTargetFunds,
 });
 
 const mapDispatchToProps = dispatch =>
