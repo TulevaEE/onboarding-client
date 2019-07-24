@@ -211,7 +211,12 @@ export default function loginReducer(state = initialState, action) {
         localStorage.removeItem(REFRESH_TOKEN_STORAGE_KEY);
         localStorage.removeItem(LOGIN_METHOD_STORAGE_KEY);
       }
-      return initialState;
+      return {
+        ...initialState,
+        token: null,
+        refreshToken: null,
+        loginMethod: null,
+      };
 
     default:
       return state;

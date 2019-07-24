@@ -170,7 +170,7 @@ describe('Login reducer', () => {
   it('removes token and login method flag when you log out', () => {
     const newState = loginReducer(undefined, { type: LOG_OUT });
 
-    expect(newState).toBe(initialState);
+    expect(newState).toEqual(initialState);
   });
 
   it('starts loading when starting to get the user conversion', () => {
