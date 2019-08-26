@@ -45,16 +45,16 @@ export class AccountPage extends Component {
 
   getData() {
     const {
-      shouldGetInitialCapital,
-      onGetInitialCapital,
+      shouldGetMemberCapital,
+      onGetMemberCapital,
       shouldGetPendingExchanges,
       onGetPendingExchanges,
       shouldGetReturnComparison,
       onGetReturnComparison,
     } = this.props;
 
-    if (shouldGetInitialCapital) {
-      onGetInitialCapital();
+    if (shouldGetMemberCapital) {
+      onGetMemberCapital();
     }
     if (shouldGetPendingExchanges) {
       onGetPendingExchanges();
@@ -69,7 +69,7 @@ export class AccountPage extends Component {
       secondPillarSourceFunds,
       thirdPillarSourceFunds,
       loadingCurrentBalance,
-      initialCapital,
+      memberCapital,
       loadingCapital,
       memberNumber,
       conversion,
@@ -182,14 +182,14 @@ export class AccountPage extends Component {
         )}
         {pendingExchangesSection}
         {returnComparisonSection}
-        {loadingCapital || initialCapital ? (
+        {loadingCapital || memberCapital ? (
           <div>
             <div className="mt-5">
               <p className="mb-4 lead">
                 <Message>member.capital</Message>
               </p>
               {loadingCapital && <Loader className="align-middle" />}
-              {initialCapital && <MemberCapital value={initialCapital} />}
+              {memberCapital && <MemberCapital value={memberCapital} />}
             </div>
           </div>
         ) : (
@@ -224,9 +224,9 @@ AccountPage.propTypes = {
   onGetReturnComparison: Types.func,
   loadingReturnComparison: Types.bool,
   getReturnComparisonForStartDate: Types.func,
-  shouldGetInitialCapital: Types.bool,
-  onGetInitialCapital: Types.func,
-  initialCapital: Types.shape({}),
+  shouldGetMemberCapital: Types.bool,
+  onGetMemberCapital: Types.func,
+  memberCapital: Types.shape({}),
   loadingCapital: Types.bool,
   memberNumber: Types.number,
   // age: Types.number,
@@ -254,9 +254,9 @@ AccountPage.defaultProps = {
   returnComparisonError: null,
   loadingReturnComparison: false,
   getReturnComparisonForStartDate: noop,
-  shouldGetInitialCapital: true,
-  onGetInitialCapital: noop,
-  initialCapital: {},
+  shouldGetMemberCapital: true,
+  onGetMemberCapital: noop,
+  memberCapital: {},
   loadingCapital: false,
   memberNumber: null,
   // age: null,
@@ -283,12 +283,12 @@ const mapStateToProps = state => ({
   returnComparison: state.returnComparison,
   loadingReturnComparison: state.returnComparison.loading,
   returnComparisonError: state.returnComparison.error,
-  shouldGetInitialCapital:
+  shouldGetMemberCapital:
     state.login.token &&
     state.login.user &&
     state.login.user.memberNumber &&
     !(state.account.initialCapital || state.account.loadingInitialCapital),
-  initialCapital: state.account.initialCapital,
+  memberCapital: state.account.initialCapital,
   loadingCapital: state.account.loadingInitialCapital,
   memberNumber: (state.login.user || {}).memberNumber,
   conversion: state.login.userConversion,
@@ -300,7 +300,7 @@ const mapDispatchToProps = dispatch =>
     {
       saveUser: updateUser,
       getReturnComparisonForStartDate: returnComparisonActions.getReturnComparisonForStartDate,
-      onGetInitialCapital: accountActions.getInitialCapital,
+      onGetMemberCapital: accountActions.getInitialCapital,
       onGetPendingExchanges: exchangeActions.getPendingExchanges,
       onGetReturnComparison: returnComparisonActions.getReturnComparisonForStartDate,
     },
