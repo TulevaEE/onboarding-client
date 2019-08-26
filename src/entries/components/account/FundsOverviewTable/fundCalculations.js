@@ -11,13 +11,13 @@ export function calculateTotals(input) {
 export function getSumOfPillars(input) {
   return chain(input)
     .groupBy('pillar')
-    .map(function(v, i) {
+    .map((v, i) => {
       return {
         pillar: i,
-        contributions: v.reduce(function(prev, cur) {
+        contributions: v.reduce((prev, cur) => {
           return prev + cur.contributionSum;
         }, 0),
-        value: v.reduce(function(prev, cur) {
+        value: v.reduce((prev, cur) => {
           return prev + cur.price;
         }, 0),
       };
