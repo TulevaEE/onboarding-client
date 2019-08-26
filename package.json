@@ -34,7 +34,7 @@
     "react-global-configuration": "^1.2.1",
     "react-mixpanel": "0.0.11",
     "react-redux": "^6.0.1",
-    "react-router-dom": "4.4.0-beta.7",
+    "react-router-dom": "5.0.1",
     "react-scripts": "^3.1.1",
     "react-tooltip": "^3.6.1",
     "redux": "^4.0.4",
