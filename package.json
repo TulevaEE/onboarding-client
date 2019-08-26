@@ -58,8 +58,8 @@
     "develop": "react-scripts start",
     "develop-production": "HTTPS=true HOST=local.tuleva.ee npm run develop",
     "develop-production-win": "set HTTPS=true&&set HOST=local.tuleva.ee&&npm run develop",
-    "test:ci": "react-scripts test --coverage",
-    "test": "react-scripts test",
+    "lint": "eslint src/",
+    "test": "react-scripts test --coverage",
     "eject": "react-scripts eject"
   },
   "devDependencies": {
@@ -83,7 +83,7 @@
     ]
   },
   "lint-staged": {
-    "src/**/*.js": [
+    "*.js": [
       "eslint --fix",
       "git add"
     ]

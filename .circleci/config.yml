@@ -20,8 +20,11 @@ jobs:
       - restore_cache:
           key: dependency-cache-{{ checksum "package-lock.json" }}
       - run:
+          name: Lint
+          command: npm run lint
+      - run:
           name: Run tests
-          command: npm run test:ci -- --maxWorkers=2
+          command: npm test -- --maxWorkers=2
       - run:
           name: Upload coverage report
           command: bash <(curl -s https://codecov.io/bash)
