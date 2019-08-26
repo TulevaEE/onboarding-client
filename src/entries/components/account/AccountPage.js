@@ -14,81 +14,11 @@ import { updateUser } from '../common/user/actions';
 import { actions as accountActions } from '.';
 import { actions as exchangeActions } from '../exchange';
 import FundDetailsTable from './FundDetailsTable';
-import Table from '../common/table';
-import { formatAmountForCurrency } from '../common/utils';
+import MemberCapital from './MemberCapital/MemberCapital';
 
 const noop = () => null;
 
 export class AccountPage extends Component {
-  static memberCapital(initialCapital) {
-    return (
-      <Table>
-        <thead>
-          <tr>
-            <th>
-              <Message>overview.table.header.instrument</Message>
-            </th>
-            <th>
-              <Message>overview.table.header.value</Message>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              <Message>member.capital.capital.payment</Message>
-            </td>
-            <td>{formatAmountForCurrency(initialCapital.capitalPayment)}</td>
-          </tr>
-          <tr>
-            <td>
-              <Message>member.capital.profit</Message>
-            </td>
-            <td>{formatAmountForCurrency(initialCapital.profit)}</td>
-          </tr>
-          <tr>
-            <td>
-              <Message>member.capital.member.bonus</Message>
-            </td>
-            <td>{formatAmountForCurrency(initialCapital.membershipBonus)}</td>
-          </tr>
-          {initialCapital.workCompensation ? (
-            <tr>
-              <td>
-                <Message>member.capital.work.compensation</Message>
-              </td>
-              <td>{formatAmountForCurrency(initialCapital.workCompensation)}</td>
-            </tr>
-          ) : null}
-          {initialCapital.unvestedWorkCompensation ? (
-            <tr>
-              <td>
-                <Message>member.capital.unvested.work.compensation</Message>
-              </td>
-              <td>{formatAmountForCurrency(initialCapital.unvestedWorkCompensation)}</td>
-            </tr>
-          ) : null}
-        </tbody>
-        <tfoot>
-          <tr>
-            <td>
-              <Message>overview.total</Message>
-            </td>
-            <td>
-              {formatAmountForCurrency(
-                initialCapital.capitalPayment +
-                  initialCapital.membershipBonus +
-                  initialCapital.profit +
-                  initialCapital.unvestedWorkCompensation +
-                  initialCapital.workCompensation,
-              )}
-            </td>
-          </tr>
-        </tfoot>
-      </Table>
-    );
-  }
-
   constructor(props) {
     super(props);
 
@@ -259,7 +189,7 @@ export class AccountPage extends Component {
                 <Message>member.capital</Message>
               </p>
               {loadingCapital && <Loader className="align-middle" />}
-              {initialCapital && AccountPage.memberCapital(initialCapital)}
+              {initialCapital && <MemberCapital value={initialCapital} />}
             </div>
           </div>
         ) : (
