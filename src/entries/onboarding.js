@@ -26,7 +26,6 @@ import { actions as thirdPillarActions } from './components/thirdPillar';
 
 import './common/polyfills';
 import LoggedInApp from './components/LoggedInApp';
-import { unregister as unregisterServiceWorker } from './common/registerServiceWorker';
 
 const history = createBrowserHistory();
 
@@ -107,5 +106,3 @@ class App extends Component {
 }
 
 render(<App />, document.getElementById('root'));
-
-unregisterServiceWorker();
