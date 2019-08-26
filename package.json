@@ -20,7 +20,7 @@
     "font-awesome": "^4.7.0",
     "history": "^4.9.0",
     "hwcrypto-js": "git://github.com/ErkoRisthein/hwcrypto.js.git#0.0.14",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.13",
     "mixpanel-browser": "^2.22.4",
     "moment": "^2.22.2",
     "node-sass": "^4.12.0",
