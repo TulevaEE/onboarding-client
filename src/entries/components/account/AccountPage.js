@@ -300,9 +300,14 @@ AccountPage.propTypes = {
   loadingCapital: Types.bool,
   memberNumber: Types.number,
   // age: Types.number,
-  conversion: Types.shape({}),
+  conversion: Types.shape({
+    transfersComplete: Types.bool,
+    selectionComplete: Types.bool,
+  }),
   saveUser: Types.func,
-  error: Types.shape({}),
+  error: Types.shape({
+    body: Types.string,
+  }),
 };
 
 AccountPage.defaultProps = {
@@ -325,7 +330,10 @@ AccountPage.defaultProps = {
   loadingCapital: false,
   memberNumber: null,
   // age: null,
-  conversion: {},
+  conversion: {
+    transfersComplete: false,
+    selectionComplete: false,
+  },
   error: null,
   saveUser: noop,
 };

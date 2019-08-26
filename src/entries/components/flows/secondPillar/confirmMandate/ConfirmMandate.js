@@ -224,10 +224,16 @@ ConfirmMandate.defaultProps = {
 
 ConfirmMandate.propTypes = {
   exchange: Types.shape({
+    error: Types.shape({ body: Types.string }),
     loadingSourceFunds: Types.bool,
     loadingTargetFunds: Types.bool,
+    sourceFunds: Types.arrayOf(Types.shape({})),
+    targetFunds: Types.arrayOf(Types.shape({})),
     sourceSelection: Types.arrayOf(Types.shape({})),
     selectedFutureContributionsFundIsin: Types.string,
+    loadingMandate: Types.bool,
+    mandateSigningControlCode: Types.string,
+    mandateSigningError: Types.shape({ body: Types.string }),
     agreedToTerms: Types.bool,
   }).isRequired,
   loading: Types.bool,

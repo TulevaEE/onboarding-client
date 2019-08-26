@@ -136,7 +136,7 @@ TransferFutureCapital.propTypes = {
   onSelectFutureCapitalFund: Types.func,
   targetFunds: Types.arrayOf(Types.shape({})),
   loadingTargetFunds: Types.bool,
-  activeSourceFund: Types.shape({}),
+  activeSourceFund: Types.shape({ name: Types.string, managementFeePercent: Types.number }),
   isUserConverted: Types.bool,
   translations: Types.shape({
     translate: Types.func.isRequired,

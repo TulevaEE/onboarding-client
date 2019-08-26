@@ -25,15 +25,19 @@ const PendingExchange = ({ amount, date, sourceFund, targetFund }) => (
 PendingExchange.defaultProps = {
   amount: 0,
   date: null,
-  sourceFund: null,
-  targetFund: null,
+  sourceFund: {},
+  targetFund: {},
 };
 
 PendingExchange.propTypes = {
   amount: Types.number,
   date: Types.string,
-  sourceFund: Types.shape({}),
-  targetFund: Types.shape({}),
+  sourceFund: Types.shape({
+    name: Types.string,
+  }),
+  targetFund: Types.shape({
+    name: Types.string,
+  }),
 };
 
 export default PendingExchange;

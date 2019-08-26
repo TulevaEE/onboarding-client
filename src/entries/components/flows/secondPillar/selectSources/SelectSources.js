@@ -188,14 +188,14 @@ SelectSources.defaultProps = {
 
 SelectSources.propTypes = {
   recommendedFundIsin: Types.string,
-  sourceSelection: Types.arrayOf(Types.shape({})),
+  sourceSelection: Types.arrayOf(Types.shape({ targetFundIsin: Types.string })),
   sourceSelectionExact: Types.bool,
   sourceFunds: Types.arrayOf(Types.shape({})),
   targetFunds: Types.arrayOf(Types.shape({})),
   loadingSourceFunds: Types.bool,
   loadingTargetFunds: Types.bool,
   onSelect: Types.func,
-  error: Types.shape({}),
+  error: Types.shape({ body: Types.string }),
   onNextStep: Types.func,
 };
 
