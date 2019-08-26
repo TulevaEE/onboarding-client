@@ -252,7 +252,7 @@ describe('Confirm mandate step', () => {
     });
     expect(
       component.contains(
-        <>
+        <label className="custom-control-label" htmlFor="agree-to-terms-checkbox">
           <Message>confirm.mandate.agree.to.terms</Message>
           <div className="mt-2">
             <small className="text-muted">
@@ -266,9 +266,9 @@ describe('Confirm mandate step', () => {
               <Message>confirm.mandate.view.info</Message>
             </small>
           </div>
-        </>,
+        </label>,
       ),
-    ).toBe(true);
+    ).toEqual(true);
   });
 
   it('can preview mandate', () => {
