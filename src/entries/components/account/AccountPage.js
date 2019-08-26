@@ -14,81 +14,11 @@ import { updateUser } from '../common/user/actions';
 import { actions as accountActions } from '.';
 import { actions as exchangeActions } from '../exchange';
 import FundDetailsTable from './FundDetailsTable';
-import Table from '../common/table';
-import { formatAmountForCurrency } from '../common/utils';
+import MemberCapital from './MemberCapital/MemberCapital';
 
 const noop = () => null;
 
 export class AccountPage extends Component {
-  static memberCapital(initialCapital) {
-    return (
-      <Table>
-        <thead>
-          <tr>
-            <th>
-              <Message>overview.table.header.instrument</Message>
-            </th>
-            <th>
-              <Message>overview.table.header.value</Message>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              <Message>member.capital.capital.payment</Message>
-            </td>
-            <td>{formatAmountForCurrency(initialCapital.capitalPayment)}</td>
-          </tr>
-          <tr>
-            <td>
-              <Message>member.capital.profit</Message>
-            </td>
-            <td>{formatAmountForCurrency(initialCapital.profit)}</td>
-          </tr>
-          <tr>
-            <td>
-              <Message>member.capital.member.bonus</Message>
-            </td>
-            <td>{formatAmountForCurrency(initialCapital.membershipBonus)}</td>
-          </tr>
-          {initialCapital.workCompensation ? (
-            <tr>
-              <td>
-                <Message>member.capital.work.compensation</Message>
-              </td>
-              <td>{formatAmountForCurrency(initialCapital.workCompensation)}</td>
-            </tr>
-          ) : null}
-          {initialCapital.unvestedWorkCompensation ? (
-            <tr>
-              <td>
-                <Message>member.capital.unvested.work.compensation</Message>
-              </td>
-              <td>{formatAmountForCurrency(initialCapital.unvestedWorkCompensation)}</td>
-            </tr>
-          ) : null}
-        </tbody>
-        <tfoot>
-          <tr>
-            <td>
-              <Message>overview.total</Message>
-            </td>
-            <td>
-              {formatAmountForCurrency(
-                initialCapital.capitalPayment +
-                  initialCapital.membershipBonus +
-                  initialCapital.profit +
-                  initialCapital.unvestedWorkCompensation +
-                  initialCapital.workCompensation,
-              )}
-            </td>
-          </tr>
-        </tfoot>
-      </Table>
-    );
-  }
-
   constructor(props) {
     super(props);
 
@@ -115,16 +45,16 @@ export class AccountPage extends Component {
 
   getData() {
     const {
-      shouldGetInitialCapital,
-      onGetInitialCapital,
+      shouldGetMemberCapital,
+      onGetMemberCapital,
       shouldGetPendingExchanges,
       onGetPendingExchanges,
       shouldGetReturnComparison,
       onGetReturnComparison,
     } = this.props;
 
-    if (shouldGetInitialCapital) {
-      onGetInitialCapital();
+    if (shouldGetMemberCapital) {
+      onGetMemberCapital();
     }
     if (shouldGetPendingExchanges) {
       onGetPendingExchanges();
@@ -139,7 +69,7 @@ export class AccountPage extends Component {
       secondPillarSourceFunds,
       thirdPillarSourceFunds,
       loadingCurrentBalance,
-      initialCapital,
+      memberCapital,
       loadingCapital,
       memberNumber,
       conversion,
@@ -252,14 +182,14 @@ export class AccountPage extends Component {
         )}
         {pendingExchangesSection}
         {returnComparisonSection}
-        {loadingCapital || initialCapital ? (
+        {loadingCapital || memberCapital ? (
           <div>
             <div className="mt-5">
               <p className="mb-4 lead">
                 <Message>member.capital</Message>
               </p>
               {loadingCapital && <Loader className="align-middle" />}
-              {initialCapital && AccountPage.memberCapital(initialCapital)}
+              {memberCapital && <MemberCapital value={memberCapital} />}
             </div>
           </div>
         ) : (
@@ -294,9 +224,9 @@ AccountPage.propTypes = {
   onGetReturnComparison: Types.func,
   loadingReturnComparison: Types.bool,
   getReturnComparisonForStartDate: Types.func,
-  shouldGetInitialCapital: Types.bool,
-  onGetInitialCapital: Types.func,
-  initialCapital: Types.shape({}),
+  shouldGetMemberCapital: Types.bool,
+  onGetMemberCapital: Types.func,
+  memberCapital: Types.shape({}),
   loadingCapital: Types.bool,
   memberNumber: Types.number,
   // age: Types.number,
@@ -324,9 +254,9 @@ AccountPage.defaultProps = {
   returnComparisonError: null,
   loadingReturnComparison: false,
   getReturnComparisonForStartDate: noop,
-  shouldGetInitialCapital: true,
-  onGetInitialCapital: noop,
-  initialCapital: {},
+  shouldGetMemberCapital: true,
+  onGetMemberCapital: noop,
+  memberCapital: {},
   loadingCapital: false,
   memberNumber: null,
   // age: null,
@@ -353,12 +283,12 @@ const mapStateToProps = state => ({
   returnComparison: state.returnComparison,
   loadingReturnComparison: state.returnComparison.loading,
   returnComparisonError: state.returnComparison.error,
-  shouldGetInitialCapital:
+  shouldGetMemberCapital:
     state.login.token &&
     state.login.user &&
     state.login.user.memberNumber &&
     !(state.account.initialCapital || state.account.loadingInitialCapital),
-  initialCapital: state.account.initialCapital,
+  memberCapital: state.account.initialCapital,
   loadingCapital: state.account.loadingInitialCapital,
   memberNumber: (state.login.user || {}).memberNumber,
   conversion: state.login.userConversion,
@@ -370,7 +300,7 @@ const mapDispatchToProps = dispatch =>
     {
       saveUser: updateUser,
       getReturnComparisonForStartDate: returnComparisonActions.getReturnComparisonForStartDate,
-      onGetInitialCapital: accountActions.getInitialCapital,
+      onGetMemberCapital: accountActions.getInitialCapital,
       onGetPendingExchanges: exchangeActions.getPendingExchanges,
       onGetReturnComparison: returnComparisonActions.getReturnComparisonForStartDate,
     },
