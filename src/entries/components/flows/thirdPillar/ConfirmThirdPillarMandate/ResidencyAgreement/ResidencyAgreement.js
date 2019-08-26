@@ -15,7 +15,7 @@ export const ResidencyAgreement = ({ isResident, onResidentChange }) => {
         onResidentChange(event.target.value === 'true');
       }}
     >
-      <label className="custom-control custom-radio" htmlFor="third-pillar-resident-radio">
+      <div className="custom-control custom-radio">
         <input
           defaultChecked={isResident}
           value="true"
@@ -25,19 +25,17 @@ export const ResidencyAgreement = ({ isResident, onResidentChange }) => {
           id="third-pillar-resident-radio"
         />
 
-        <span className="custom-control-indicator" />
-
-        <div className="custom-control-description">
+        <label className="custom-control-label" htmlFor="third-pillar-resident-radio">
           <Message>thirdPillarAgreement.isResident</Message>
           <InfoTooltip name="resident-tooltip">
             <div className="content">
               <Message>thirdPillarAgreement.residentTooltip</Message>
             </div>
           </InfoTooltip>
-        </div>
-      </label>
+        </label>
+      </div>
 
-      <label className="custom-control custom-radio" htmlFor="third-pillar-not-resident-radio">
+      <div className="custom-control custom-radio">
         <input
           value="false"
           type="radio"
@@ -46,12 +44,10 @@ export const ResidencyAgreement = ({ isResident, onResidentChange }) => {
           id="third-pillar-not-resident-radio"
         />
 
-        <span className="custom-control-indicator" />
-
-        <div className="custom-control-description">
+        <label className="custom-control-label" htmlFor="third-pillar-not-resident-radio">
           <Message>thirdPillarAgreement.isNotResident</Message>
-        </div>
-      </label>
+        </label>
+      </div>
     </div>
   );
 };

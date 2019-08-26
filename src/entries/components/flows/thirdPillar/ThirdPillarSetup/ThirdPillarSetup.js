@@ -32,10 +32,7 @@ export const ThirdPillarSetup = ({
     </div>
 
     {exchangeableSourceFunds.length > 0 && (
-      <label
-        className="custom-control custom-checkbox mt-3"
-        htmlFor="exchange-existing-units-checkbox"
-      >
+      <div className="custom-control custom-checkbox mt-3">
         <input
           checked={exchangeExistingUnits}
           onChange={() => onExchangeExistingUnitsChange(!exchangeExistingUnits)}
@@ -43,11 +40,11 @@ export const ThirdPillarSetup = ({
           className="custom-control-input"
           id="exchange-existing-units-checkbox"
         />
-        <span className="custom-control-indicator" />
-        <div className="custom-control-description">
+
+        <label className="custom-control-label" htmlFor="exchange-existing-units-checkbox">
           <Message>thirdPillarFlowSetup.exchangeExistingUnitsLabel</Message>
-        </div>
-      </label>
+        </label>
+      </div>
     )}
 
     <div>

@@ -13,7 +13,7 @@ export const ThirdPillarTermsAgreement = ({ age, agreed, onAgreementChange }) =>
 
   return (
     <div className="mt-5">
-      <label className="custom-control custom-checkbox" htmlFor="third-pillar-terms-checkbox">
+      <div className="custom-control custom-checkbox">
         <input
           checked={agreed}
           onChange={() => onAgreementChange(!agreed)}
@@ -22,9 +22,7 @@ export const ThirdPillarTermsAgreement = ({ age, agreed, onAgreementChange }) =>
           id="third-pillar-terms-checkbox"
         />
 
-        <span className="custom-control-indicator" />
-
-        <div className="custom-control-description">
+        <label className="custom-control-label" htmlFor="third-pillar-terms-checkbox">
           <Message
             params={{
               link: (
@@ -61,8 +59,8 @@ export const ThirdPillarTermsAgreement = ({ age, agreed, onAgreementChange }) =>
               </small>
             </div>
           )}
-        </div>
-      </label>
+        </label>
+      </div>
     </div>
   );
 };

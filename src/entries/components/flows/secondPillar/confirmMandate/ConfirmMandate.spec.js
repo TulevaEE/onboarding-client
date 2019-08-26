@@ -252,7 +252,7 @@ describe('Confirm mandate step', () => {
     });
     expect(
       component.contains(
-        <div className="custom-control-description">
+        <>
           <Message>confirm.mandate.agree.to.terms</Message>
           <div className="mt-2">
             <small className="text-muted">
@@ -266,7 +266,7 @@ describe('Confirm mandate step', () => {
               <Message>confirm.mandate.view.info</Message>
             </small>
           </div>
-        </div>,
+        </>,
       ),
     ).toBe(true);
   });

@@ -149,7 +149,7 @@ export const ConfirmMandate = ({
         ''
       )}
       <div className="mt-5">
-        <label className="custom-control custom-checkbox" htmlFor="agree-to-terms-checkbox">
+        <div className="custom-control custom-checkbox">
           <input
             checked={exchange.agreedToTerms}
             onChange={() => onChangeAgreementToTerms(!exchange.agreedToTerms)}
@@ -157,8 +157,7 @@ export const ConfirmMandate = ({
             className="custom-control-input"
             id="agree-to-terms-checkbox"
           />
-          <span className="custom-control-indicator" />
-          <div className="custom-control-description">
+          <label className="custom-control-label" htmlFor="agree-to-terms-checkbox">
             <Message>confirm.mandate.agree.to.terms</Message>
             <div className="mt-2">
               <small className="text-muted">
@@ -172,8 +171,8 @@ export const ConfirmMandate = ({
                 <Message>confirm.mandate.view.info</Message>
               </small>
             </div>
-          </div>
-        </label>
+          </label>
+        </div>
       </div>
       {exchange.mandateSigningError ? (
         <ErrorMessage

@@ -16,7 +16,7 @@ export const PoliticallyExposedPersonAgreement = ({
       id="pep-radio-container"
       onChange={event => onPoliticallyExposedChange(event.target.value === 'true')}
     >
-      <label className="custom-control custom-radio" htmlFor="third-pillar-not-pep-radio">
+      <div className="custom-control custom-radio">
         <input
           defaultChecked={false}
           value="false"
@@ -26,19 +26,17 @@ export const PoliticallyExposedPersonAgreement = ({
           id="third-pillar-not-pep-radio"
         />
 
-        <span className="custom-control-indicator" />
-
-        <div className="custom-control-description">
+        <label className="custom-control-label" htmlFor="third-pillar-not-pep-radio">
           <Message>thirdPillarAgreement.isNotPep</Message>
           <InfoTooltip name="pep-tooltip">
             <div className="content">
               <Message>thirdPillarAgreement.pepTooltip</Message>
             </div>
           </InfoTooltip>
-        </div>
-      </label>
+        </label>
+      </div>
 
-      <label className="custom-control custom-radio" htmlFor="third-pillar-pep-radio">
+      <div className="custom-control custom-radio">
         <input
           defaultChecked={isPoliticallyExposed}
           value="true"
@@ -48,12 +46,10 @@ export const PoliticallyExposedPersonAgreement = ({
           id="third-pillar-pep-radio"
         />
 
-        <span className="custom-control-indicator" />
-
-        <div className="custom-control-description">
+        <label className="custom-control-label" htmlFor="third-pillar-pep-radio">
           <Message>thirdPillarAgreement.isPep</Message>
-        </div>
-      </label>
+        </label>
+      </div>
     </div>
   );
 };
