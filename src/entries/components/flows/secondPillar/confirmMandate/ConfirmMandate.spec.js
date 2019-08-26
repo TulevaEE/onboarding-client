@@ -57,9 +57,7 @@ describe('Confirm mandate step', () => {
         <div className="mt-4">
           <Message>confirm.mandate.future.contribution</Message>
           <b className="highlight">
-            <Message>{`target.funds.${
-              exchange.selectedFutureContributionsFundIsin
-            }.title`}</Message>
+            <Message>{`target.funds.${exchange.selectedFutureContributionsFundIsin}.title`}</Message>
           </b>
         </div>,
       ),
