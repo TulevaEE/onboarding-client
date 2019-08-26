@@ -49,10 +49,10 @@ workflows:
       - test:
           requires:
             - build
-      # - deploy:
-      #     requires:
-      #       - test
-      #     context: elastic-beanstalk-deployment
-      #     filters:
-      #       branches:
-      #         only: master
+      - deploy:
+          requires:
+            - test
+          context: elastic-beanstalk-deployment
+          filters:
+            branches:
+              only: master
