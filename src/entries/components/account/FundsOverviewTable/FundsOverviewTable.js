@@ -5,7 +5,7 @@ import { Message } from 'retranslate';
 import './FundsOverviewTable.scss';
 import { formatAmountForCurrency } from '../../common/utils';
 import { calculateTotals, getSumOfPillars } from './fundCalculations';
-import Table from '../../common/table/Table';
+import { LegacyTable } from '../../common/table';
 
 const FundsOverviewTable = ({ funds }) => {
   const groupedPillars = getSumOfPillars(funds);
@@ -16,7 +16,7 @@ const FundsOverviewTable = ({ funds }) => {
   };
 
   return (
-    <Table>
+    <LegacyTable>
       <thead>
         <tr>
           <th>
@@ -46,7 +46,7 @@ const FundsOverviewTable = ({ funds }) => {
           <td>{formatAmountForCurrency(totalsOfPillars.value)}</td>
         </tr>
       </tfoot>
-    </Table>
+    </LegacyTable>
   );
 };
 

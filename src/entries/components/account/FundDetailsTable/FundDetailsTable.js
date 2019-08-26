@@ -5,7 +5,7 @@ import { Message } from 'retranslate';
 import './FundDetails.scss';
 import { formatAmountForCurrency } from '../../common/utils';
 import { calculateTotals } from './fundCalculations';
-import Table from '../../common/table/Table';
+import { LegacyTable } from '../../common/table';
 
 const FundDetailsTable = ({ allFunds, pillar }) => {
   const funds = allFunds.filter(fund => fund.pillar === pillar);
@@ -39,7 +39,7 @@ const FundDetailsTable = ({ allFunds, pillar }) => {
           {/*  </div> */}
           {/* )} */}
         </div>
-        <Table>
+        <LegacyTable>
           <thead>
             <tr>
               <th>
@@ -67,7 +67,7 @@ const FundDetailsTable = ({ allFunds, pillar }) => {
               <td>{formatAmountForCurrency(totalsOfPillars.value)}</td>
             </tr>
           </tfoot>
-        </Table>
+        </LegacyTable>
       </Fragment>
     )
   );
