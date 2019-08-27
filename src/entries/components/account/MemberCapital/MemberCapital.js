@@ -10,12 +10,12 @@ const MemberCapital = ({
 }) => {
   const columns = [
     {
-      title: <Message>overview.table.header.instrument</Message>,
-      dataIndex: 'instrument',
-      footer: <Message>overview.total</Message>,
+      title: <Message>memberCapital.columns.source.title</Message>,
+      dataIndex: 'source',
+      footer: <Message>memberCapital.columns.source.total</Message>,
     },
     {
-      title: <Message>overview.table.header.value</Message>,
+      title: <Message>memberCapital.columns.value.title</Message>,
       dataIndex: 'value',
       footer: (
         <Euro
@@ -29,17 +29,17 @@ const MemberCapital = ({
 
   const dataSource = [
     {
-      instrument: <Message>member.capital.capital.payment</Message>,
+      source: <Message>memberCapital.source.capitalPayment</Message>,
       value: <Euro amount={capitalPayment} />,
       key: 'payment',
     },
     {
-      instrument: <Message>member.capital.profit</Message>,
+      source: <Message>memberCapital.source.profit</Message>,
       value: <Euro amount={profit} />,
       key: 'profit',
     },
     {
-      instrument: <Message>member.capital.member.bonus</Message>,
+      source: <Message>memberCapital.source.membershipBonus</Message>,
       value: <Euro amount={membershipBonus} />,
       key: 'bonus',
     },
@@ -47,7 +47,7 @@ const MemberCapital = ({
 
   if (workCompensation) {
     dataSource.push({
-      instrument: <Message>member.capital.work.compensation</Message>,
+      source: <Message>memberCapital.source.workCompensation</Message>,
       value: <Euro amount={workCompensation} />,
       key: 'work',
     });
@@ -55,7 +55,7 @@ const MemberCapital = ({
 
   if (unvestedWorkCompensation) {
     dataSource.push({
-      instrument: <Message>member.capital.unvested.work.compensation</Message>,
+      source: <Message>memberCapital.source.unvestedWorkCompensation</Message>,
       value: <Euro amount={unvestedWorkCompensation} />,
       key: 'unvestedWork',
     });
