@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import Types from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -22,7 +22,7 @@ export class ThirdPillarPayment extends Component {
       pensionAccountNumber,
     } = this.props;
     return (
-      <Fragment>
+      <>
         {!signedMandateId && <Redirect to={previousPath} />}
 
         <h2 className="mt-3">
@@ -68,7 +68,7 @@ export class ThirdPillarPayment extends Component {
             </button>
           </Link>
         </div>
-      </Fragment>
+      </>
     );
   }
 }

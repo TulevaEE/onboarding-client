@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { PropTypes as Types } from 'prop-types';
 import { Message } from 'retranslate';
@@ -19,7 +19,7 @@ const FundDetailsTable = ({ allFunds, pillar }) => {
   return (
     funds &&
     funds.length > 0 && (
-      <Fragment>
+      <>
         <div className="row">
           <div className="col-md-6 mb-2 mt-4">
             <Message className="mb-2 lead h5">{titleKeysForPillars[pillar]}</Message>
@@ -68,7 +68,7 @@ const FundDetailsTable = ({ allFunds, pillar }) => {
             </tr>
           </tfoot>
         </LegacyTable>
-      </Fragment>
+      </>
     )
   );
 };

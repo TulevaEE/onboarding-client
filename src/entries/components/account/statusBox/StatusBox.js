@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { Message } from 'retranslate';
 import { PropTypes as Types } from 'prop-types';
 import { connect } from 'react-redux';
@@ -27,7 +27,7 @@ const StatusBox = ({ currentBalanceFunds, memberNumber, age, loading }) => {
     : [];
 
   return (
-    <Fragment>
+    <>
       <div className="row ">
         <div className="col-12">
           <div className="px-col mb-4">
@@ -77,7 +77,7 @@ const StatusBox = ({ currentBalanceFunds, memberNumber, age, loading }) => {
         </StatusBoxRow>
       </div>
       <br />
-    </Fragment>
+    </>
   );
 };
 

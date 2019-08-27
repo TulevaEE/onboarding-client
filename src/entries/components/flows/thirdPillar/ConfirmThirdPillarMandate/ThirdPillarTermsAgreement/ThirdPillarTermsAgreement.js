@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import Types from 'prop-types';
 import { Message, WithTranslations } from 'retranslate';
 import { bindActionCreators } from 'redux';
@@ -47,9 +47,9 @@ export const ThirdPillarTermsAgreement = ({ age, agreed, onAgreementChange }) =>
             thirdPillarAgreement.termsConfirmation
           </Message>{' '}
           {showAgeDependentRecommendation && (
-            <Fragment>
+            <>
               <Message>thirdPillarAgreement.ageDependentRecommendationConfirmation</Message>{' '}
-            </Fragment>
+            </>
           )}
           <Message>thirdPillarAgreement.signingExplanation</Message>
           {showAgeDependentRecommendation && (
