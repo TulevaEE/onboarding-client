@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { Message, withTranslations } from 'retranslate';
 
@@ -27,7 +27,7 @@ export const LoginForm = ({
     <div className="col-lg-9">
       <div className="mt-2 mb-4">
         {monthlyThirdPillarContribution ? (
-          <Fragment>
+          <>
             <h3 className="mb-4">
               {exchangeExistingThirdPillarUnits ? (
                 <Message params={{ monthlyContribution: monthlyThirdPillarContribution }}>
@@ -43,7 +43,7 @@ export const LoginForm = ({
             <h3>
               <Message>login.subtitle.thirdPillar</Message>
             </h3>
-          </Fragment>
+          </>
         ) : (
           <h3>
             <Message>login.title</Message>

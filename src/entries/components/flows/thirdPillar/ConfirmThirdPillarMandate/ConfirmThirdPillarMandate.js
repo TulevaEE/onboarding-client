@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import Types from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -35,7 +35,7 @@ export const ConfirmThirdPillarMandate = ({
   mandateSigningControlCode,
   mandateSigningError,
 }) => (
-  <Fragment>
+  <>
     {signedMandateId && <Redirect to={nextPath} />}
     {!isAddressFilled && <Redirect to={previousPath} />}
     {loadingMandate || mandateSigningControlCode ? (
@@ -131,7 +131,7 @@ export const ConfirmThirdPillarMandate = ({
         </button>
       </Link>
     </div>
-  </Fragment>
+  </>
 );
 
 function getMandate(exchangeExistingUnits, sourceFunds, targetFund) {

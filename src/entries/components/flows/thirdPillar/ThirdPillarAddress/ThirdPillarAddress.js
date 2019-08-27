@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -14,11 +14,11 @@ export const ThirdPillarAddress = ({
   monthlyContribution,
   saveUser,
 }) => (
-  <Fragment>
+  <>
     {!monthlyContribution && <Redirect to={previousPath} />}
     {isAddressFilled && <Redirect to={nextPath} />}
     <UpdateUserForm onSubmit={saveUser} />
-  </Fragment>
+  </>
 );
 
 const noop = () => null;

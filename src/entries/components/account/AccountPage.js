@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -129,7 +129,7 @@ export class AccountPage extends Component {
     );
 
     return (
-      <Fragment>
+      <>
         <div className="mt-5">
           {/* <StatusBox */}
           {/*  currentBalanceFunds={currentBalanceFunds} */}
@@ -170,12 +170,12 @@ export class AccountPage extends Component {
         </div>
         {loadingCurrentBalance && <Loader className="align-middle" />}
         {secondPillarSourceFunds && secondPillarSourceFunds.length > 0 && (
-          <Fragment>
+          <>
             <FundDetailsTable allFunds={secondPillarSourceFunds} pillar={2} />
             <small className="text-muted">
               <Message>overview.active.fund</Message>
             </small>
-          </Fragment>
+          </>
         )}
         {thirdPillarSourceFunds && thirdPillarSourceFunds.length > 0 && (
           <FundDetailsTable allFunds={thirdPillarSourceFunds} pillar={3} />
@@ -201,7 +201,7 @@ export class AccountPage extends Component {
           </p>
           <UpdateUserForm onSubmit={saveUser} />
         </div>
-      </Fragment>
+      </>
     );
   }
 }

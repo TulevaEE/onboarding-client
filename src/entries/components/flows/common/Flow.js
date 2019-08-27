@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import Types from 'prop-types';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -40,7 +40,7 @@ export class Flow extends Component {
             </div>
           )}
           <div className="tv-steps mt-5">
-            <Fragment>
+            <>
               {beforeSteps.map(({ path, title }, index) => (
                 <StepTitle key={path} number={index + 1} completed>
                   {title}
@@ -51,7 +51,7 @@ export class Flow extends Component {
                   {currentStepTitle}
                 </StepTitle>
               )}
-            </Fragment>
+            </>
 
             <div className="pb-5 px-col">
               <Switch>
