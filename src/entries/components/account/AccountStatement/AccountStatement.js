@@ -9,19 +9,19 @@ import Euro from '../../common/Euro';
 const AccountStatement = ({ funds }) => {
   const columns = [
     {
-      title: <Message>overview.table.header.instrument</Message>,
-      dataIndex: 'name',
-      footer: <Message>overview.total</Message>,
+      title: <Message>accountStatement.columns.fund.title</Message>,
+      dataIndex: 'fund',
+      footer: <Message>accountStatement.columns.fund.footer</Message>,
     },
     {
-      title: <Message>overview.table.header.value</Message>,
+      title: <Message>accountStatement.columns.value.title</Message>,
       dataIndex: 'value',
       footer: <Euro amount={getTotalValueOfFunds(funds)} />,
     },
   ];
 
   const dataSource = funds.map(({ isin, name, activeFund: isActive, price: value }) => ({
-    name: `${name}${isActive ? '*' : ''}`,
+    fund: `${name}${isActive ? '*' : ''}`,
     value: <Euro amount={value} />,
     key: isin,
   }));
@@ -31,7 +31,7 @@ const AccountStatement = ({ funds }) => {
       <Table columns={columns} dataSource={dataSource}></Table>
 
       <small className="text-muted">
-        <Message>overview.active.fund</Message>
+        <Message>accountStatement.activeFundNotice</Message>
       </small>
     </>
   );

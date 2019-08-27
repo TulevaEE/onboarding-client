@@ -19,9 +19,9 @@ describe('Account statement', () => {
       />,
     );
 
-    const names = tableProp('dataSource').map(({ name }) => name);
+    const funds = tableProp('dataSource').map(({ fund }) => fund);
 
-    expect(names).toEqual(['A', 'B*', 'C']);
+    expect(funds).toEqual(['A', 'B*', 'C']);
   });
 
   it('passes total as value column footer', () => {

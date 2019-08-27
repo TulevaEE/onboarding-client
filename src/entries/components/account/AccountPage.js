@@ -166,7 +166,7 @@ export class AccountPage extends Component {
 
         <div className="row mt-5">
           <div className="col-md-6 mb-4 lead">
-            <Message>overview.summary.title</Message>
+            <Message>accountStatement.heading</Message>
           </div>
         </div>
         {loadingCurrentBalance && <Loader className="align-middle" />}
@@ -174,7 +174,7 @@ export class AccountPage extends Component {
           <>
             <div className="row">
               <div className="col-md-6 mb-2 mt-4">
-                <Message className="mb-2 lead h5">overview.title.pillar.2</Message>
+                <Message className="mb-2 lead h5">accountStatement.secondPillar.heading</Message>
               </div>
 
               <div className="col-md-6 mb-1 mt-2 text-md-right">
@@ -191,7 +191,7 @@ export class AccountPage extends Component {
           <>
             <div className="row">
               <div className="col-md-6 mb-2 mt-4">
-                <Message className="mb-2 lead h5">overview.title.pillar.3</Message>
+                <Message className="mb-2 lead h5">accountStatement.thirdPillar.heading</Message>
               </div>
             </div>
             <AccountStatement funds={thirdPillarSourceFunds} />
@@ -204,7 +204,7 @@ export class AccountPage extends Component {
           <div>
             <div className="mt-5">
               <p className="mb-4 lead">
-                <Message>member.capital</Message>
+                <Message>memberCapital.heading</Message>
               </p>
               {loadingCapital && <Loader className="align-middle" />}
               {memberCapital && <MemberCapital value={memberCapital} />}
