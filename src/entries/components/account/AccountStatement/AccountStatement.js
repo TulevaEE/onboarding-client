@@ -16,13 +16,11 @@ const AccountStatement = ({ funds }) => {
     {
       title: <Message>accountStatement.columns.contributions.title</Message>,
       dataIndex: 'contributions',
-      footer: <Euro amount={sumBy(funds, 'contributionSum')} />,
       hideOnMobile: true,
     },
     {
       title: <Message>accountStatement.columns.profit.title</Message>,
       dataIndex: 'profit',
-      footer: <Euro amount={sumBy(funds, 'profit')} />,
       hideOnMobile: true,
     },
     {
