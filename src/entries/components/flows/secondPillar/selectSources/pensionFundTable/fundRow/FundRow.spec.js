@@ -1,9 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Message } from 'retranslate';
-
-const mockUtils = jest.genMockFromModule('../../../../../common/utils');
-jest.mock('../../../../../common/utils', () => mockUtils);
+import Euro from '../../../../../common/Euro';
 
 const FundRow = require('./FundRow').default;
 
@@ -11,7 +9,6 @@ describe('Fund row', () => {
   let component;
 
   beforeEach(() => {
-    mockUtils.formatAmountForCurrency = (amount, currency) => `formatted(${amount}, ${currency})`;
     component = shallow(<FundRow />);
   });
 
@@ -42,13 +39,9 @@ describe('Fund row', () => {
   });
 
   it('renders the formatted value of the fund', () => {
-    component.setProps({ price: 1234.56, currency: 'EUR' });
-    expect(component.text()).toContain('formatted(1234.56, EUR)');
-    expect(
-      component.findWhere(
-        node => node.type() === 'div' && node.text() === 'formatted(1234.56, EUR)',
-      ).length,
-    ).toBe(1);
+    component.setProps({ price: 1234.56 });
+    expect(hasElementWithAmount(1234.56)).toBe(true);
+    expect(isElementWithAmountHighlighted(1234.56)).toBe(false);
   });
 
   it('adds a star to the name of an active fund row', () => {
@@ -58,11 +51,13 @@ describe('Fund row', () => {
   });
 
   it('renders the formatted value of a fund, highlighted if component is highlighted', () => {
-    component.setProps({ price: 1234.56, currency: 'EUR', highlighted: true });
-    expect(component.text()).toContain('formatted(1234.56, EUR)');
-    expect(
-      component.findWhere(node => node.type() === 'b' && node.text() === 'formatted(1234.56, EUR)')
-        .length,
-    ).toBe(1);
+    component.setProps({ price: 1234.56, highlighted: true });
+    expect(hasElementWithAmount(1234.56)).toBe(true);
+    expect(isElementWithAmountHighlighted(1234.56)).toBe(true);
   });
+
+  const hasElementWithAmount = amount =>
+    component.containsMatchingElement(<Euro amount={amount} />);
+  const isElementWithAmountHighlighted = amount =>
+    component.find('b').containsMatchingElement(<Euro amount={amount} />);
 });

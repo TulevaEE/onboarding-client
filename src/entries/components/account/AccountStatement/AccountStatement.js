@@ -3,8 +3,8 @@ import Types from 'prop-types';
 import { Message } from 'retranslate';
 import sumBy from 'lodash/sumBy';
 
-import { formatAmountForCurrency } from '../../common/utils';
 import Table from '../../common/table';
+import Euro from '../../common/Euro';
 
 const AccountStatement = ({ funds }) => {
   const columns = [
@@ -16,13 +16,13 @@ const AccountStatement = ({ funds }) => {
     {
       title: <Message>overview.table.header.value</Message>,
       dataIndex: 'value',
-      footer: formatAmountForCurrency(getTotalValueOfFunds(funds)),
+      footer: <Euro amount={getTotalValueOfFunds(funds)} />,
     },
   ];
 
   const dataSource = funds.map(({ isin, name, activeFund: isActive, price: value }) => ({
     name: `${name}${isActive ? '*' : ''}`,
-    value: formatAmountForCurrency(value),
+    value: <Euro amount={value} />,
     key: isin,
   }));
 
