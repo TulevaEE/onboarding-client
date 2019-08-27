@@ -12,7 +12,7 @@ import ReturnComparison from '../returnComparison';
 import Select from './Select';
 import { mockStore } from '../../../test/utils';
 import getReturnComparisonStartDateOptions from '../returnComparison/options';
-import FundDetailsTable from './FundDetailsTable';
+import AccountStatement from './AccountStatement';
 
 jest.mock('../returnComparison/options', () => jest.fn());
 
@@ -154,13 +154,13 @@ describe('Current balance', () => {
       expect(getReturnComparisonForStartDate).toBeCalled();
     });
 
-    it('renders the 2nd and 3rd pillar balance tables', () => {
-      expect(fundDetailsTable()).toHaveLength(2);
+    it('renders the 2nd and 3rd pillar account statements', () => {
+      expect(accountStatement()).toHaveLength(2);
     });
   });
 
-  it('does not render any pillar balances when there are no source funds', () => {
-    expect(fundDetailsTable().exists()).toBe(false);
+  it('does not render any account statements when there are no source funds', () => {
+    expect(accountStatement().exists()).toBe(false);
   });
 
   it('renders converted user statement only when user is fully converted', () => {
@@ -271,8 +271,8 @@ describe('Current balance', () => {
     return component.find(Select);
   }
 
-  function fundDetailsTable() {
-    return component.find(FundDetailsTable);
+  function accountStatement() {
+    return component.find(AccountStatement);
   }
 
   function mountWithProvider(renderComponent) {

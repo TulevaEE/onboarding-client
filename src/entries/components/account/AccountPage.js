@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { Message, WithTranslations } from 'retranslate';
 
 import { Loader, ErrorMessage } from '../common';
@@ -13,8 +14,8 @@ import UpdateUserForm from './updateUserForm';
 import { updateUser } from '../common/user/actions';
 import { actions as accountActions } from '.';
 import { actions as exchangeActions } from '../exchange';
-import FundDetailsTable from './FundDetailsTable';
-import MemberCapital from './MemberCapital/MemberCapital';
+import AccountStatement from './AccountStatement';
+import MemberCapital from './MemberCapital';
 
 const noop = () => null;
 
@@ -171,15 +172,32 @@ export class AccountPage extends Component {
         {loadingCurrentBalance && <Loader className="align-middle" />}
         {secondPillarSourceFunds && secondPillarSourceFunds.length > 0 && (
           <>
-            <FundDetailsTable allFunds={secondPillarSourceFunds} pillar={2} />
-            <small className="text-muted">
-              <Message>overview.active.fund</Message>
-            </small>
+            <div className="row">
+              <div className="col-md-6 mb-2 mt-4">
+                <Message className="mb-2 lead h5">overview.title.pillar.2</Message>
+              </div>
+
+              <div className="col-md-6 mb-1 mt-2 text-md-right">
+                <Link className="btn btn-primary" to="/2nd-pillar-flow">
+                  <Message>change.my.pension.fund</Message>
+                </Link>
+              </div>
+            </div>
+            <AccountStatement funds={secondPillarSourceFunds} />
           </>
         )}
+
         {thirdPillarSourceFunds && thirdPillarSourceFunds.length > 0 && (
-          <FundDetailsTable allFunds={thirdPillarSourceFunds} pillar={3} />
+          <>
+            <div className="row">
+              <div className="col-md-6 mb-2 mt-4">
+                <Message className="mb-2 lead h5">overview.title.pillar.3</Message>
+              </div>
+            </div>
+            <AccountStatement funds={thirdPillarSourceFunds} />
+          </>
         )}
+
         {pendingExchangesSection}
         {returnComparisonSection}
         {loadingCapital || memberCapital ? (
