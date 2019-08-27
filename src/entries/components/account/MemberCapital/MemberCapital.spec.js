@@ -3,10 +3,7 @@ import { shallow } from 'enzyme';
 import MemberCapital from '.';
 
 import Table from '../../common/table';
-
-jest.mock('../../common/utils', () => ({
-  formatAmountForCurrency: value => value,
-}));
+import Euro from '../../common/Euro';
 
 describe('Member capital', () => {
   const alwaysExistingKeys = ['payment', 'profit', 'bonus'];
@@ -43,7 +40,7 @@ describe('Member capital', () => {
       />,
     );
 
-    expect(component.find(Table).prop('columns')[1].footer).toBe(11111);
+    expect(component.find(Table).prop('columns')[1].footer).toEqual(<Euro amount={11111} />);
   });
 
   const passedDataKeys = () =>

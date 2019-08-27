@@ -3,10 +3,7 @@ import { shallow } from 'enzyme';
 import AccountStatement from '.';
 
 import Table from '../../common/table';
-
-jest.mock('../../common/utils', () => ({
-  formatAmountForCurrency: value => value,
-}));
+import Euro from '../../common/Euro';
 
 describe('Account statement', () => {
   let component;
@@ -40,7 +37,7 @@ describe('Account statement', () => {
 
     const { footer } = tableProp('columns')[1];
 
-    expect(footer).toBe(111);
+    expect(footer).toEqual(<Euro amount={111} />);
   });
 
   const tableProp = name => component.find(Table).prop(name);

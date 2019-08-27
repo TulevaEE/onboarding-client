@@ -2,11 +2,11 @@ import React from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { Message } from 'retranslate';
 
-import { formatAmountForCurrency } from '../../../../../common/utils';
+import Euro from '../../../../../common/Euro';
 
-const FundRow = ({ price, currency, name, highlighted, active }) => {
+const FundRow = ({ price, name, highlighted, active }) => {
   const displayName = <Message>{name}</Message>;
-  const displayPrice = formatAmountForCurrency(price, currency);
+  const displayPrice = <Euro amount={price} />;
   return (
     <div className="row tv-table__row py-2">
       <div className="col-12 col-sm">
@@ -25,7 +25,6 @@ const FundRow = ({ price, currency, name, highlighted, active }) => {
 
 FundRow.defaultProps = {
   price: 0,
-  currency: 'EUR',
   name: '',
   highlighted: false,
   active: false,
@@ -33,7 +32,6 @@ FundRow.defaultProps = {
 
 FundRow.propTypes = {
   price: Types.number,
-  currency: Types.string,
   name: Types.oneOfType([Types.node, Types.string]),
   highlighted: Types.bool,
   active: Types.bool,

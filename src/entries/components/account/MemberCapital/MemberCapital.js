@@ -2,8 +2,8 @@ import React from 'react';
 import Types from 'prop-types';
 import { Message } from 'retranslate';
 
-import { formatAmountForCurrency } from '../../common/utils';
 import Table from '../../common/table';
+import Euro from '../../common/Euro';
 
 const MemberCapital = ({
   value: { capitalPayment, profit, membershipBonus, workCompensation, unvestedWorkCompensation },
@@ -17,8 +17,12 @@ const MemberCapital = ({
     {
       title: <Message>overview.table.header.value</Message>,
       dataIndex: 'value',
-      footer: formatAmountForCurrency(
-        capitalPayment + membershipBonus + profit + unvestedWorkCompensation + workCompensation,
+      footer: (
+        <Euro
+          amount={
+            capitalPayment + membershipBonus + profit + unvestedWorkCompensation + workCompensation
+          }
+        />
       ),
     },
   ];
@@ -26,17 +30,17 @@ const MemberCapital = ({
   const dataSource = [
     {
       instrument: <Message>member.capital.capital.payment</Message>,
-      value: formatAmountForCurrency(capitalPayment),
+      value: <Euro amount={capitalPayment} />,
       key: 'payment',
     },
     {
       instrument: <Message>member.capital.profit</Message>,
-      value: formatAmountForCurrency(profit),
+      value: <Euro amount={profit} />,
       key: 'profit',
     },
     {
       instrument: <Message>member.capital.member.bonus</Message>,
-      value: formatAmountForCurrency(membershipBonus),
+      value: <Euro amount={membershipBonus} />,
       key: 'bonus',
     },
   ];
@@ -44,7 +48,7 @@ const MemberCapital = ({
   if (workCompensation) {
     dataSource.push({
       instrument: <Message>member.capital.work.compensation</Message>,
-      value: formatAmountForCurrency(workCompensation),
+      value: <Euro amount={workCompensation} />,
       key: 'work',
     });
   }
@@ -52,7 +56,7 @@ const MemberCapital = ({
   if (unvestedWorkCompensation) {
     dataSource.push({
       instrument: <Message>member.capital.unvested.work.compensation</Message>,
-      value: formatAmountForCurrency(unvestedWorkCompensation),
+      value: <Euro amount={unvestedWorkCompensation} />,
       key: 'unvestedWork',
     });
   }
