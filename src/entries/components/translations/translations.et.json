@@ -52,6 +52,8 @@
   "accountStatement.secondPillar.heading": "II Sammas",
   "accountStatement.thirdPillar.heading": "III Sammas",
   "accountStatement.columns.fund.title": "Pensionifond",
+  "accountStatement.columns.contributions.title": "Sissemaksed",
+  "accountStatement.columns.profit.title": "Tulu",
   "accountStatement.columns.value.title": "Väärtus",
   "accountStatement.columns.fund.footer": "Kokku",
   "accountStatement.activeFundNotice": "* - siia lähevad igakuised maksed",

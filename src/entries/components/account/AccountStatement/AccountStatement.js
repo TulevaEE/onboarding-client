@@ -14,17 +14,33 @@ const AccountStatement = ({ funds }) => {
       footer: <Message>accountStatement.columns.fund.footer</Message>,
     },
     {
+      title: <Message>accountStatement.columns.contributions.title</Message>,
+      dataIndex: 'contributions',
+      footer: <Euro amount={sumBy(funds, 'contributionSum')} />,
+      hideOnMobile: true,
+    },
+    {
+      title: <Message>accountStatement.columns.profit.title</Message>,
+      dataIndex: 'profit',
+      footer: <Euro amount={sumBy(funds, 'profit')} />,
+      hideOnMobile: true,
+    },
+    {
       title: <Message>accountStatement.columns.value.title</Message>,
       dataIndex: 'value',
-      footer: <Euro amount={getTotalValueOfFunds(funds)} />,
+      footer: <Euro amount={sumBy(funds, 'price')} />,
     },
   ];
 
-  const dataSource = funds.map(({ isin, name, activeFund: isActive, price: value }) => ({
-    fund: `${name}${isActive ? '*' : ''}`,
-    value: <Euro amount={value} />,
-    key: isin,
-  }));
+  const dataSource = funds.map(
+    ({ isin, name, activeFund: isActive, contributionSum, profit, price: value }) => ({
+      fund: `${name}${isActive ? '*' : ''}`,
+      contributions: <Euro amount={contributionSum} />,
+      profit: <Euro amount={profit} />,
+      value: <Euro amount={value} />,
+      key: isin,
+    }),
+  );
 
   return (
     <>
@@ -37,16 +53,14 @@ const AccountStatement = ({ funds }) => {
   );
 };
 
-function getTotalValueOfFunds(funds) {
-  return sumBy(funds, 'price');
-}
-
 AccountStatement.propTypes = {
   funds: Types.arrayOf(
     Types.shape({
       isin: Types.string.isRequired,
       name: Types.string.isRequired,
       activeFund: Types.bool,
+      contributionSum: Types.number,
+      profit: Types.number,
       price: Types.number,
     }),
   ).isRequired,

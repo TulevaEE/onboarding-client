@@ -3,21 +3,27 @@ import Types from 'prop-types';
 
 import './Table.scss';
 
+const HIDDEN_ON_MOBILE_CELL_CLASS = 'd-none d-sm-table-cell';
+
 const Table = ({ columns, dataSource }) => (
   <div className="table-container">
     <table className="table">
       <thead>
         <tr>
-          {columns.map(({ dataIndex, title }) => (
-            <th key={dataIndex}>{title}</th>
+          {columns.map(({ dataIndex, title, hideOnMobile }) => (
+            <th key={dataIndex} className={getClass(hideOnMobile)}>
+              {title}
+            </th>
           ))}
         </tr>
       </thead>
       <tbody>
         {dataSource.map(({ key, ...data }) => (
           <tr key={key}>
-            {columns.map(({ dataIndex }) => (
-              <td key={dataIndex}>{data[dataIndex]}</td>
+            {columns.map(({ dataIndex, hideOnMobile }) => (
+              <td key={dataIndex} className={getClass(hideOnMobile)}>
+                {data[dataIndex]}
+              </td>
             ))}
           </tr>
         ))}
@@ -25,8 +31,10 @@ const Table = ({ columns, dataSource }) => (
       {columns.some(({ footer }) => !!footer) && (
         <tfoot>
           <tr>
-            {columns.map(({ dataIndex, footer }) => (
-              <td key={dataIndex}>{footer}</td>
+            {columns.map(({ dataIndex, footer, hideOnMobile }) => (
+              <td key={dataIndex} className={getClass(hideOnMobile)}>
+                {footer}
+              </td>
             ))}
           </tr>
         </tfoot>
@@ -34,6 +42,10 @@ const Table = ({ columns, dataSource }) => (
     </table>
   </div>
 );
+
+function getClass(hideOnMobile) {
+  return hideOnMobile ? HIDDEN_ON_MOBILE_CELL_CLASS : undefined;
+}
 
 Table.propTypes = {
   columns: Types.arrayOf(
