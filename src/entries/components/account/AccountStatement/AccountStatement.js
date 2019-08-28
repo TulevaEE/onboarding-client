@@ -5,6 +5,7 @@ import sumBy from 'lodash/sumBy';
 
 import Table from '../../common/table';
 import Euro from '../../common/Euro';
+import Percentage from '../../common/Percentage';
 
 const AccountStatement = ({ funds }) => {
   const columns = [
@@ -12,6 +13,11 @@ const AccountStatement = ({ funds }) => {
       title: <Message>accountStatement.columns.fund.title</Message>,
       dataIndex: 'fund',
       footer: <Message>accountStatement.columns.fund.footer</Message>,
+    },
+    {
+      title: <Message>accountStatement.columns.fees.title</Message>,
+      dataIndex: 'fees',
+      hideOnMobile: true,
     },
     {
       title: <Message>accountStatement.columns.contributions.title</Message>,
@@ -31,8 +37,17 @@ const AccountStatement = ({ funds }) => {
   ];
 
   const dataSource = funds.map(
-    ({ isin, name, activeFund: isActive, contributionSum, profit, price: value }) => ({
+    ({
+      isin,
+      name,
+      activeFund: isActive,
+      ongoingChargesFigure,
+      contributionSum,
+      profit,
+      price: value,
+    }) => ({
       fund: `${name}${isActive ? '*' : ''}`,
+      fees: <Percentage value={ongoingChargesFigure} />,
       contributions: <Euro amount={contributionSum} />,
       profit: <Euro amount={profit} />,
       value: <Euro amount={value} />,
