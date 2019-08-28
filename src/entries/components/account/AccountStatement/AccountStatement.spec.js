@@ -35,7 +35,7 @@ describe('Account statement', () => {
       />,
     );
 
-    const { footer } = tableProp('columns')[3];
+    const { footer } = tableProp('columns')[4];
 
     expect(footer).toEqual(<Euro amount={333} />);
   });

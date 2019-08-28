@@ -53,6 +53,7 @@
   "accountStatement.secondPillar.heading": "II Pillar",
   "accountStatement.thirdPillar.heading": "III Pillar",
   "accountStatement.columns.fund.title": "Pension fund",
+  "accountStatement.columns.fees.title": "Fees",
   "accountStatement.columns.contributions.title": "Contributions",
   "accountStatement.columns.profit.title": "Profit",
   "accountStatement.columns.value.title": "Value",

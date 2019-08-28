@@ -22,6 +22,7 @@ function transformFundBalance(fundBalance) {
     managerName: fundBalance.fund.fundManager.name,
     managementFeePercent: (fundBalance.fund.managementFeeRate * 100).toFixed(2).replace(/0+$/, ''),
     pillar: fundBalance.pillar,
+    ongoingChargesFigure: fundBalance.fund.ongoingChargesFigure,
     contributionSum: fundBalance.contributionSum,
     profit: fundBalance.profit,
   };
