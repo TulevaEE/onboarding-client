@@ -34,6 +34,7 @@ jest.mock('../common/api', () => mockApi);
 jest.mock('downloadjs', () => mockDownload);
 jest.mock('hwcrypto-js', () => mockHwcrypto);
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const actions = require('./actions'); // need to use require because of jest mocks being weird
 
 describe('Exchange actions', () => {

@@ -54,6 +54,7 @@ it('can track getting user', () => {
     id: user.id,
   });
   expect(mixpanel.people.set).toHaveBeenCalledTimes(1);
+  /* eslint-disable @typescript-eslint/camelcase */
   expect(mixpanel.people.set).toHaveBeenCalledWith({
     id: user.id,
     distinct_id: user.id,
@@ -62,6 +63,7 @@ it('can track getting user', () => {
     $first_name: user.firstName,
     $last_name: user.lastName,
   });
+  /* eslint-enable @typescript-eslint/camelcase */
   expect(mixpanel.identify).toHaveBeenCalledTimes(1);
   expect(mixpanel.identify).toHaveBeenCalledWith(user.id);
 });

@@ -6,6 +6,7 @@ import { UPDATE_USER_START, UPDATE_USER_SUCCESS, UPDATE_USER_ERROR } from './con
 const mockApi = jest.genMockFromModule('../api');
 jest.mock('../api', () => mockApi);
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const actions = require('./actions');
 
 describe('newUserFlow actions', () => {

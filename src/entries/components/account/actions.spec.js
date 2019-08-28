@@ -7,6 +7,7 @@ import {
 const mockApi = jest.genMockFromModule('../common/api');
 jest.mock('../common/api', () => mockApi);
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const actions = require('./actions'); // need to use require because of jest mocks being weird
 
 describe('Account actions', () => {

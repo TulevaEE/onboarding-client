@@ -32,6 +32,7 @@ import { UPDATE_USER_SUCCESS } from '../common/user/constants';
 function identifyUserForTracking(user) {
   mixpanel.identify(user.id);
 
+  /* eslint-disable @typescript-eslint/camelcase */
   mixpanel.people.set({
     id: user.id,
     distinct_id: user.id,
@@ -40,6 +41,7 @@ function identifyUserForTracking(user) {
     member_number: user.memberNumber,
     age: user.age,
   });
+  /* eslint-enable @typescript-eslint/camelcase */
 }
 
 const initialState = {};
