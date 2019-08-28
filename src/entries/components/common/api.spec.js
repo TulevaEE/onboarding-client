@@ -195,6 +195,7 @@ describe('api', () => {
           currency: 'EUR',
           managerName: 'Tuleva',
           pillar: 2,
+          ongoingChargesFigure: 0.0047,
         },
         {
           name: 'Tuleva Maailma Võlakirjade Pensionifond',
@@ -205,6 +206,7 @@ describe('api', () => {
           currency: 'GBP',
           managerName: 'Tuleva',
           pillar: 2,
+          ongoingChargesFigure: 0.0045,
         },
       ]);
       expect(mockHttp.get).toHaveBeenCalledWith('/v1/pension-account-statement', undefined, {
