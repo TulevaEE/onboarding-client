@@ -3,6 +3,7 @@ import config from 'react-global-configuration';
 const mockUuid = jest.genMockFromModule('uuid/v4');
 jest.mock('uuid/v4', () => mockUuid);
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { get, post, postForm, patch, downloadFile, simpleFetch } = require('./http');
 
 describe('http', () => {

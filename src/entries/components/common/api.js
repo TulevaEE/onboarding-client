@@ -49,8 +49,10 @@ function getTokensWithGrantType(grantType) {
   return postForm(
     getEndpoint('/oauth/token'),
     {
+      /* eslint-disable @typescript-eslint/camelcase */
       grant_type: grantType,
       client_id: 'onboarding-client',
+      /* eslint-enable @typescript-eslint/camelcase */
     },
     { Authorization: 'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ=' },
   )
@@ -70,8 +72,10 @@ export function refreshTokenWith(refreshToken) {
   return postForm(
     getEndpoint('/oauth/token'),
     {
+      /* eslint-disable @typescript-eslint/camelcase */
       grant_type: 'refresh_token',
       refresh_token: refreshToken,
+      /* eslint-enable @typescript-eslint/camelcase */
     },
     { Authorization: 'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ=' },
   ).then(({ access_token: accessToken, refresh_token: refreshTokenFromResponse }) => ({

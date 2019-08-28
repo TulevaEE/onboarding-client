@@ -80,6 +80,7 @@ describe('Login reducer', () => {
   });
 
   it('sets the error when mobile authentication fails', () => {
+    // eslint-disable-next-line @typescript-eslint/camelcase
     const error = { body: { error_description: 'oh no' } };
     const action = { type: MOBILE_AUTHENTICATION_ERROR, error };
 
@@ -125,6 +126,7 @@ describe('Login reducer', () => {
   });
 
   it('sets the error when mobile authentication fails', () => {
+    // eslint-disable-next-line @typescript-eslint/camelcase
     const error = { body: { error_description: 'oh noes!!1' } };
     const action = { type: ID_CARD_AUTHENTICATION_ERROR, error };
 
@@ -226,6 +228,7 @@ describe('Login reducer', () => {
 
   it('handles errors on token refresh', () => {
     const oldState = { token: 'old_token', refreshToken: 'old_refresh_token' };
+    // eslint-disable-next-line @typescript-eslint/camelcase
     const error = { body: { error_description: 'oh noes' } };
 
     const newState = loginReducer(oldState, {

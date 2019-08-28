@@ -1,6 +1,7 @@
 const mockHttp = jest.genMockFromModule('../common/http');
 jest.mock('../common/http', () => mockHttp);
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { api } = require('.'); // need to use require because of jest mocks being weird
 
 describe('api', () => {
@@ -69,8 +70,10 @@ describe('api', () => {
   it('can get a mobile id token', () => {
     mockHttp.postForm = jest.fn(() =>
       Promise.resolve({
+        /* eslint-disable @typescript-eslint/camelcase */
         access_token: 'mobile_id_token',
         refresh_token: 'mobile_id_refresh_token',
+        /* eslint-enable @typescript-eslint/camelcase */
       }),
     );
     expect(mockHttp.postForm).not.toHaveBeenCalled();
@@ -81,8 +84,10 @@ describe('api', () => {
       expect(mockHttp.postForm).toHaveBeenCalledWith(
         '/oauth/token',
         {
+          /* eslint-disable @typescript-eslint/camelcase */
           client_id: 'onboarding-client',
           grant_type: 'mobile_id',
+          /* eslint-enable @typescript-eslint/camelcase */
         },
         {
           Authorization: 'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ=',
@@ -93,6 +98,7 @@ describe('api', () => {
 
   it('can get an id card token', () => {
     mockHttp.postForm = jest.fn(() =>
+      // eslint-disable-next-line @typescript-eslint/camelcase
       Promise.resolve({ access_token: 'token', refresh_token: 'refresh' }),
     );
     expect(mockHttp.postForm).not.toHaveBeenCalled();
@@ -103,8 +109,10 @@ describe('api', () => {
       expect(mockHttp.postForm).toHaveBeenCalledWith(
         '/oauth/token',
         {
+          /* eslint-disable @typescript-eslint/camelcase */
           client_id: 'onboarding-client',
           grant_type: 'id_card',
+          /* eslint-enable @typescript-eslint/camelcase */
         },
         {
           Authorization: 'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ=',
@@ -386,8 +394,10 @@ describe('api', () => {
   it('can refresh token', () => {
     mockHttp.postForm = jest.fn(() =>
       Promise.resolve({
+        /* eslint-disable @typescript-eslint/camelcase */
         access_token: 'new_token',
         refresh_token: 'new_refresh_token',
+        /* eslint-enable @typescript-eslint/camelcase */
       }),
     );
     expect(mockHttp.postForm).not.toHaveBeenCalled();
@@ -398,8 +408,10 @@ describe('api', () => {
       expect(mockHttp.postForm).toHaveBeenCalledWith(
         '/oauth/token',
         {
+          /* eslint-disable @typescript-eslint/camelcase */
           grant_type: 'refresh_token',
           refresh_token: 'old_refresh_token',
+          /* eslint-enable @typescript-eslint/camelcase */
         },
         {
           Authorization: 'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ=',
