@@ -34,9 +34,9 @@ function urlEncodeParameters(params) {
     .join('&');
 }
 
-export function get(url, params = {}, headers = {}) {
+export async function get(url, params = {}, headers = {}) {
   const urlParameters = urlEncodeParameters(params);
-  return fetch(`${url}${urlParameters ? `?${urlParameters}` : ''}`, {
+  const response = await fetch(`${url}${urlParameters ? `?${urlParameters}` : ''}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
@@ -46,21 +46,23 @@ export function get(url, params = {}, headers = {}) {
     mode: 'cors',
     credentials: 'include',
     cache: 'default',
-  }).then(transformResponse);
+  });
+  return transformResponse(response);
 }
 
-export function downloadFile(url, headers = {}) {
-  return fetch(url, {
+export async function downloadFile(url, headers = {}) {
+  const response = await fetch(url, {
     headers: { ...headers, ...createCustomHeaders() },
     method: 'GET',
     credentials: 'include',
     mode: 'cors',
     cache: 'default',
-  }).then(transformFileResponse);
+  });
+  return transformFileResponse(response);
 }
 
-export function post(url, params = {}, headers = {}) {
-  return fetch(url, {
+export async function post(url, params = {}, headers = {}) {
+  const response = await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
@@ -71,12 +73,14 @@ export function post(url, params = {}, headers = {}) {
     credentials: 'include',
     mode: 'cors',
     cache: 'default',
-  }).then(transformResponse);
+  });
+
+  return transformResponse(response);
 }
 
 // TODO: write tests for this
-export function put(url, params = {}, headers = {}) {
-  return fetch(url, {
+export async function put(url, params = {}, headers = {}) {
+  const response = await fetch(url, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
@@ -87,11 +91,12 @@ export function put(url, params = {}, headers = {}) {
     credentials: 'include',
     mode: 'cors',
     cache: 'default',
-  }).then(transformResponse);
+  });
+  return transformResponse(response);
 }
 
-export function patch(url, params = {}, headers = {}) {
-  return fetch(url, {
+export async function patch(url, params = {}, headers = {}) {
+  const response = await fetch(url, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
@@ -102,12 +107,14 @@ export function patch(url, params = {}, headers = {}) {
     credentials: 'include',
     mode: 'cors',
     cache: 'default',
-  }).then(transformResponse);
+  });
+
+  return transformResponse(response);
 }
 
-export function postForm(url, params = {}, headers = {}) {
+export async function postForm(url, params = {}, headers = {}) {
   const body = urlEncodeParameters(params);
-  return fetch(url, {
+  const response = await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
@@ -118,11 +125,12 @@ export function postForm(url, params = {}, headers = {}) {
     credentials: 'include',
     mode: 'cors',
     cache: 'default',
-  }).then(transformResponse);
+  });
+  return transformResponse(response);
 }
 
-export function simpleFetch(method, url) {
-  return fetch(url, {
+export async function simpleFetch(method, url) {
+  const response = await fetch(url, {
     method,
     headers: {
       'Content-Type': 'text/plain', // for Firefox CORS:
@@ -131,5 +139,6 @@ export function simpleFetch(method, url) {
     mode: 'cors',
     credentials: 'include',
     cache: 'default',
-  }).then(transformResponse);
+  });
+  return transformResponse(response);
 }
