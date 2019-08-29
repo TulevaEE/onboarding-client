@@ -1,18 +1,18 @@
 import config from 'react-global-configuration';
 
-function createCustomHeaders() {
+function createCustomHeaders(): Record<string, string> {
   return {
     'Accept-Language': config.get('language'),
   };
 }
 
-function transformResponse(response) {
+function transformResponse(response: Response): Promise<Response> {
   if (response.ok && response.status < 400) {
     return response.json();
   }
   if (response.status >= 400) {
     return response.json().then(data => {
-      const error = {};
+      const error: { status?: number; body?: any } = {};
       error.status = response.status;
       error.body = data;
       throw error;
@@ -21,20 +21,20 @@ function transformResponse(response) {
   throw response;
 }
 
-function transformFileResponse(response) {
+function transformFileResponse(response: Response): Promise<Blob> {
   if (response.ok && response.status < 400) {
     return response.blob();
   }
   throw response;
 }
 
-function urlEncodeParameters(params) {
+function urlEncodeParameters(params: Record<string, string>): string {
   return Object.keys(params)
     .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
     .join('&');
 }
 
-export async function get(url, params = {}, headers = {}) {
+export async function get(url: string, params = {}, headers = {}): Promise<any> {
   const urlParameters = urlEncodeParameters(params);
   const response = await fetch(`${url}${urlParameters ? `?${urlParameters}` : ''}`, {
     method: 'GET',
@@ -50,7 +50,7 @@ export async function get(url, params = {}, headers = {}) {
   return transformResponse(response);
 }
 
-export async function downloadFile(url, headers = {}) {
+export async function downloadFile(url: string, headers = {}): Promise<any> {
   const response = await fetch(url, {
     headers: { ...headers, ...createCustomHeaders() },
     method: 'GET',
@@ -61,7 +61,7 @@ export async function downloadFile(url, headers = {}) {
   return transformFileResponse(response);
 }
 
-export async function post(url, params = {}, headers = {}) {
+export async function post(url: string, params = {}, headers = {}): Promise<any> {
   const response = await fetch(url, {
     method: 'POST',
     headers: {
@@ -79,7 +79,7 @@ export async function post(url, params = {}, headers = {}) {
 }
 
 // TODO: write tests for this
-export async function put(url, params = {}, headers = {}) {
+export async function put(url: string, params = {}, headers = {}): Promise<any> {
   const response = await fetch(url, {
     method: 'PUT',
     headers: {
@@ -95,7 +95,7 @@ export async function put(url, params = {}, headers = {}) {
   return transformResponse(response);
 }
 
-export async function patch(url, params = {}, headers = {}) {
+export async function patch(url: string, params = {}, headers = {}): Promise<any> {
   const response = await fetch(url, {
     method: 'PATCH',
     headers: {
@@ -112,7 +112,7 @@ export async function patch(url, params = {}, headers = {}) {
   return transformResponse(response);
 }
 
-export async function postForm(url, params = {}, headers = {}) {
+export async function postForm(url: string, params = {}, headers = {}): Promise<any> {
   const body = urlEncodeParameters(params);
   const response = await fetch(url, {
     method: 'POST',
@@ -129,7 +129,7 @@ export async function postForm(url, params = {}, headers = {}) {
   return transformResponse(response);
 }
 
-export async function simpleFetch(method, url) {
+export async function simpleFetch(method: string, url: string): Promise<any> {
   const response = await fetch(url, {
     method,
     headers: {
