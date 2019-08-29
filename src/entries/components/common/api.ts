@@ -2,7 +2,7 @@ import config from 'react-global-configuration';
 import { downloadFile, get, post, postForm, put, patch, simpleFetch } from './http';
 
 const API_URI = '/api';
-function getEndpoint(endpoint) {
+function getEndpoint(endpoint: string): string {
   // in production, we proxy through a proxy endpoint at /proxy.
   // in development, we proxy through webpack dev server without the prefix.
   if (process.env.NODE_ENV === 'production') {
@@ -12,7 +12,7 @@ function getEndpoint(endpoint) {
   return endpoint;
 }
 
-function transformFundBalance(fundBalance) {
+function transformFundBalance(fundBalance: Record<string, any>): Record<string, any> {
   return {
     isin: fundBalance.fund.isin,
     price: fundBalance.value,
@@ -28,7 +28,7 @@ function transformFundBalance(fundBalance) {
   };
 }
 
-export async function authenticateWithPhoneNumber(phoneNumber) {
+export async function authenticateWithPhoneNumber(phoneNumber: string): Promise<any> {
   const { challengeCode } = await post(getEndpoint('/authenticate'), {
     value: phoneNumber,
     type: 'MOBILE_ID',
@@ -36,7 +36,7 @@ export async function authenticateWithPhoneNumber(phoneNumber) {
   return challengeCode;
 }
 
-export async function authenticateWithIdCode(identityCode) {
+export async function authenticateWithIdCode(identityCode: string): Promise<any> {
   const { challengeCode } = await post(getEndpoint('/authenticate'), {
     value: identityCode,
     type: 'SMART_ID',
@@ -44,13 +44,13 @@ export async function authenticateWithIdCode(identityCode) {
   return challengeCode;
 }
 
-export async function authenticateWithIdCard() {
+export async function authenticateWithIdCard(): Promise<any> {
   await simpleFetch('GET', 'https://id.tuleva.ee/'); // http://stackoverflow.com/a/16818527
   const { success } = await simpleFetch('POST', 'https://id.tuleva.ee/idLogin');
   return success;
 }
 
-async function getTokensWithGrantType(grantType) {
+async function getTokensWithGrantType(grantType: string): Promise<any> {
   try {
     const { access_token: accessToken, refresh_token: refreshToken } = await postForm(
       getEndpoint('/oauth/token'),
@@ -72,7 +72,7 @@ async function getTokensWithGrantType(grantType) {
   }
 }
 
-export async function refreshTokenWith(refreshToken) {
+export async function refreshTokenWith(refreshToken: string): Promise<any> {
   const { access_token: accessToken, refresh_token: refreshTokenFromResponse } = await postForm(
     getEndpoint('/oauth/token'),
     {
@@ -87,57 +87,63 @@ export async function refreshTokenWith(refreshToken) {
   return { accessToken, refreshToken: refreshTokenFromResponse };
 }
 
-export function getMobileIdTokens() {
+export function getMobileIdTokens(): Promise<any> {
   return getTokensWithGrantType('mobile_id');
 }
 
-export function getSmartIdTokens() {
+export function getSmartIdTokens(): Promise<any> {
   return getTokensWithGrantType('smart_id');
 }
 
-export function getIdCardTokens() {
+export function getIdCardTokens(): Promise<any> {
   return getTokensWithGrantType('id_card');
 }
 
-export function downloadMandatePreviewWithIdAndToken(mandateId, token) {
+export function downloadMandatePreviewWithIdAndToken(
+  mandateId: string,
+  token: string,
+): Promise<any> {
   return downloadFile(getEndpoint(`/v1/mandates/${mandateId}/file/preview`), {
     Authorization: `Bearer ${token}`,
   });
 }
 
-export function downloadMandateWithIdAndToken(mandateId, token) {
+export function downloadMandateWithIdAndToken(mandateId: string, token: string): Promise<any> {
   return downloadFile(getEndpoint(`/v1/mandates/${mandateId}/file`), {
     Authorization: `Bearer ${token}`,
   });
 }
 
-export function getUserWithToken(token) {
+export function getUserWithToken(token: string): Promise<any> {
   return get(getEndpoint('/v1/me'), undefined, {
     Authorization: `Bearer ${token}`,
   });
 }
 
-export async function getSourceFundsWithToken(token) {
+export async function getSourceFundsWithToken(token: string): Promise<any> {
   const funds = await get(getEndpoint('/v1/pension-account-statement'), undefined, {
     Authorization: `Bearer ${token}`,
   });
   return funds.map(transformFundBalance);
 }
 
-export function getTargetFundsWithToken(token) {
+export function getTargetFundsWithToken(token: string): Promise<any> {
   return get(getEndpoint('/v1/funds'), undefined, {
     Authorization: `Bearer ${token}`,
   });
 }
 
 // TODO: test after demo
-export function saveMandateWithToken(mandate, token) {
+export function saveMandateWithToken(mandate: string, token: string): Promise<any> {
   return post(getEndpoint('/v1/mandates'), mandate, {
     Authorization: `Bearer ${token}`,
   });
 }
 
-export async function getMobileIdSignatureChallengeCodeForMandateIdWithToken(mandateId, token) {
+export async function getMobileIdSignatureChallengeCodeForMandateIdWithToken(
+  mandateId: string,
+  token: string,
+): Promise<any> {
   const { mobileIdChallengeCode } = await put(
     getEndpoint(`/v1/mandates/${mandateId}/signature/mobileId`),
     undefined,
@@ -148,7 +154,10 @@ export async function getMobileIdSignatureChallengeCodeForMandateIdWithToken(man
   return mobileIdChallengeCode;
 }
 
-export async function getMobileIdSignatureStatusForMandateIdWithToken(mandateId, token) {
+export async function getMobileIdSignatureStatusForMandateIdWithToken(
+  mandateId: string,
+  token: string,
+): Promise<any> {
   const { statusCode } = await get(
     getEndpoint(`/v1/mandates/${mandateId}/signature/mobileId/status`),
     undefined,
@@ -159,7 +168,10 @@ export async function getMobileIdSignatureStatusForMandateIdWithToken(mandateId,
   return statusCode;
 }
 
-export async function getSmartIdSignatureChallengeCodeForMandateIdWithToken(mandateId, token) {
+export async function getSmartIdSignatureChallengeCodeForMandateIdWithToken(
+  mandateId: string,
+  token: string,
+): Promise<any> {
   const { challengeCode } = await put(
     getEndpoint(`/v1/mandates/${mandateId}/signature/smartId`),
     undefined,
@@ -170,7 +182,10 @@ export async function getSmartIdSignatureChallengeCodeForMandateIdWithToken(mand
   return challengeCode;
 }
 
-export async function getSmartIdSignatureStatusForMandateIdWithToken(mandateId, token) {
+export async function getSmartIdSignatureStatusForMandateIdWithToken(
+  mandateId: string,
+  token: string,
+): Promise<any> {
   const { statusCode } = await get(
     getEndpoint(`/v1/mandates/${mandateId}/signature/smartId/status`),
     undefined,
@@ -182,10 +197,10 @@ export async function getSmartIdSignatureStatusForMandateIdWithToken(mandateId, 
 }
 
 export async function getIdCardSignatureHashForMandateIdWithCertificateHexAndToken(
-  mandateId,
-  certificateHex,
-  token,
-) {
+  mandateId: string,
+  certificateHex: string,
+  token: string,
+): Promise<any> {
   const { hash } = await put(
     getEndpoint(`/v1/mandates/${mandateId}/signature/idCard`),
     { clientCertificate: certificateHex },
@@ -197,10 +212,10 @@ export async function getIdCardSignatureHashForMandateIdWithCertificateHexAndTok
 }
 
 export async function getIdCardSignatureStatusForMandateIdWithSignedHashAndToken(
-  mandateId,
-  signedHash,
-  token,
-) {
+  mandateId: string,
+  signedHash: string,
+  token: string,
+): Promise<any> {
   const { statusCode } = await put(
     getEndpoint(`/v1/mandates/${mandateId}/signature/idCard/status`),
     { signedHash },
@@ -211,37 +226,40 @@ export async function getIdCardSignatureStatusForMandateIdWithSignedHashAndToken
   return statusCode;
 }
 
-export function updateUserWithToken(user, token) {
+export function updateUserWithToken(user: string, token: string): Promise<any> {
   return patch(getEndpoint('/v1/me'), user, {
     Authorization: `Bearer ${token}`,
   });
 }
 
-export function createUserWithToken(user, token) {
+export function createUserWithToken(user: string, token: string): Promise<any> {
   return post(getEndpoint('/v1/users'), user, {
     Authorization: `Bearer ${token}`,
   });
 }
 
-export function getUserConversionWithToken(token) {
+export function getUserConversionWithToken(token: string): Promise<any> {
   return get(getEndpoint('/v1/me/conversion'), undefined, {
     Authorization: `Bearer ${token}`,
   });
 }
 
-export function getInitialCapitalWithToken(token) {
+export function getInitialCapitalWithToken(token: string): Promise<any> {
   return get(getEndpoint('/v1/me/capital'), undefined, {
     Authorization: `Bearer ${token}`,
   });
 }
 
-export function getPendingExchangesWithToken(token) {
+export function getPendingExchangesWithToken(token: string): Promise<any> {
   return get(getEndpoint('/v1/transfer-exchanges?status=PENDING'), undefined, {
     Authorization: `Bearer ${token}`,
   });
 }
 
-export function getReturnComparisonForStartDateWithToken(startDate, token) {
+export function getReturnComparisonForStartDateWithToken(
+  startDate: string,
+  token: string,
+): Promise<any> {
   return get(
     getEndpoint(`/v1/fund-comparison${startDate ? `?from=${startDate}` : ''}`),
     undefined,
@@ -251,7 +269,12 @@ export function getReturnComparisonForStartDateWithToken(startDate, token) {
   );
 }
 
-export function createAmlCheck(type, success, metadata, token) {
+export function createAmlCheck(
+  type: string,
+  success: string,
+  metadata: string,
+  token: string,
+): Promise<any> {
   return post(
     getEndpoint('/v1/amlchecks'),
     { type, success, metadata },
