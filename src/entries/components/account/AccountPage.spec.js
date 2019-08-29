@@ -6,14 +6,14 @@ import { Loader, ErrorMessage } from '../common';
 import { AccountPage } from './AccountPage';
 import PendingExchangesTable from './pendingExchangeTable';
 import UpdateUserForm from './updateUserForm';
-import ReturnComparison from '../returnComparison/ReturnComparison';
-import ReturnComparisonDateSelect from '../returnComparison/ReturnComparisonDateSelect';
-import { getReturnComparison } from '../returnComparison/api';
-import getReturnComparisonDateOptions from '../returnComparison/options';
+import ReturnComparison from './ReturnComparison';
+import ReturnComparisonDateSelect from './ReturnComparisonDateSelect';
+import { getReturnComparison } from './ReturnComparison/api';
+import getReturnComparisonDateOptions from './ReturnComparison/options';
 import AccountStatement from './AccountStatement';
 
-jest.mock('../returnComparison/options', () => jest.fn());
-jest.mock('../returnComparison/api', () => ({ getReturnComparison: jest.fn() }));
+jest.mock('./ReturnComparison/options', () => jest.fn());
+jest.mock('./ReturnComparison/api', () => ({ getReturnComparison: jest.fn() }));
 
 describe('Current balance', () => {
   let component;
