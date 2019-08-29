@@ -28,49 +28,52 @@ function transformFundBalance(fundBalance) {
   };
 }
 
-export function authenticateWithPhoneNumber(phoneNumber) {
-  return post(getEndpoint('/authenticate'), { value: phoneNumber, type: 'MOBILE_ID' }).then(
-    ({ challengeCode }) => challengeCode,
-  );
+export async function authenticateWithPhoneNumber(phoneNumber) {
+  const { challengeCode } = await post(getEndpoint('/authenticate'), {
+    value: phoneNumber,
+    type: 'MOBILE_ID',
+  });
+  return challengeCode;
 }
 
-export function authenticateWithIdCode(identityCode) {
-  return post(getEndpoint('/authenticate'), { value: identityCode, type: 'SMART_ID' }).then(
-    ({ challengeCode }) => challengeCode,
-  );
+export async function authenticateWithIdCode(identityCode) {
+  const { challengeCode } = await post(getEndpoint('/authenticate'), {
+    value: identityCode,
+    type: 'SMART_ID',
+  });
+  return challengeCode;
 }
 
-export function authenticateWithIdCard() {
-  return simpleFetch('GET', 'https://id.tuleva.ee/') // http://stackoverflow.com/a/16818527
-    .then(() => simpleFetch('POST', 'https://id.tuleva.ee/idLogin'))
-    .then(({ success }) => success);
+export async function authenticateWithIdCard() {
+  await simpleFetch('GET', 'https://id.tuleva.ee/'); // http://stackoverflow.com/a/16818527
+  const { success } = await simpleFetch('POST', 'https://id.tuleva.ee/idLogin');
+  return success;
 }
 
-function getTokensWithGrantType(grantType) {
-  return postForm(
-    getEndpoint('/oauth/token'),
-    {
-      /* eslint-disable @typescript-eslint/camelcase */
-      grant_type: grantType,
-      client_id: 'onboarding-client',
-      /* eslint-enable @typescript-eslint/camelcase */
-    },
-    { Authorization: 'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ=' },
-  )
-    .then(({ access_token: accessToken, refresh_token: refreshToken }) => ({
-      accessToken,
-      refreshToken,
-    }))
-    .catch(error => {
-      if (error.error !== 'AUTHENTICATION_NOT_COMPLETE') {
-        throw error;
-      }
-      return null;
-    });
+async function getTokensWithGrantType(grantType) {
+  try {
+    const { access_token: accessToken, refresh_token: refreshToken } = await postForm(
+      getEndpoint('/oauth/token'),
+      {
+        /* eslint-disable @typescript-eslint/camelcase */
+        grant_type: grantType,
+        client_id: 'onboarding-client',
+        /* eslint-enable @typescript-eslint/camelcase */
+      },
+      { Authorization: 'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ=' },
+    );
+
+    return { accessToken, refreshToken };
+  } catch (error) {
+    if (error.error !== 'AUTHENTICATION_NOT_COMPLETE') {
+      throw error;
+    }
+    return null;
+  }
 }
 
-export function refreshTokenWith(refreshToken) {
-  return postForm(
+export async function refreshTokenWith(refreshToken) {
+  const { access_token: accessToken, refresh_token: refreshTokenFromResponse } = await postForm(
     getEndpoint('/oauth/token'),
     {
       /* eslint-disable @typescript-eslint/camelcase */
@@ -79,10 +82,9 @@ export function refreshTokenWith(refreshToken) {
       /* eslint-enable @typescript-eslint/camelcase */
     },
     { Authorization: 'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ=' },
-  ).then(({ access_token: accessToken, refresh_token: refreshTokenFromResponse }) => ({
-    accessToken,
-    refreshToken: refreshTokenFromResponse,
-  }));
+  );
+
+  return { accessToken, refreshToken: refreshTokenFromResponse };
 }
 
 export function getMobileIdTokens() {
@@ -115,10 +117,11 @@ export function getUserWithToken(token) {
   });
 }
 
-export function getSourceFundsWithToken(token) {
-  return get(getEndpoint('/v1/pension-account-statement'), undefined, {
+export async function getSourceFundsWithToken(token) {
+  const funds = await get(getEndpoint('/v1/pension-account-statement'), undefined, {
     Authorization: `Bearer ${token}`,
-  }).then(funds => funds.map(transformFundBalance));
+  });
+  return funds.map(transformFundBalance);
 }
 
 export function getTargetFundsWithToken(token) {
@@ -134,68 +137,90 @@ export function saveMandateWithToken(mandate, token) {
   });
 }
 
-export function getMobileIdSignatureChallengeCodeForMandateIdWithToken(mandateId, token) {
-  return put(getEndpoint(`/v1/mandates/${mandateId}/signature/mobileId`), undefined, {
-    Authorization: `Bearer ${token}`,
-  }).then(({ mobileIdChallengeCode }) => mobileIdChallengeCode);
+export async function getMobileIdSignatureChallengeCodeForMandateIdWithToken(mandateId, token) {
+  const { mobileIdChallengeCode } = await put(
+    getEndpoint(`/v1/mandates/${mandateId}/signature/mobileId`),
+    undefined,
+    {
+      Authorization: `Bearer ${token}`,
+    },
+  );
+  return mobileIdChallengeCode;
 }
 
-export function getMobileIdSignatureStatusForMandateIdWithToken(mandateId, token) {
-  return get(getEndpoint(`/v1/mandates/${mandateId}/signature/mobileId/status`), undefined, {
-    Authorization: `Bearer ${token}`,
-  }).then(({ statusCode }) => statusCode);
+export async function getMobileIdSignatureStatusForMandateIdWithToken(mandateId, token) {
+  const { statusCode } = await get(
+    getEndpoint(`/v1/mandates/${mandateId}/signature/mobileId/status`),
+    undefined,
+    {
+      Authorization: `Bearer ${token}`,
+    },
+  );
+  return statusCode;
 }
 
-export function getSmartIdSignatureChallengeCodeForMandateIdWithToken(mandateId, token) {
-  return put(getEndpoint(`/v1/mandates/${mandateId}/signature/smartId`), undefined, {
-    Authorization: `Bearer ${token}`,
-  }).then(({ challengeCode }) => challengeCode);
+export async function getSmartIdSignatureChallengeCodeForMandateIdWithToken(mandateId, token) {
+  const { challengeCode } = await put(
+    getEndpoint(`/v1/mandates/${mandateId}/signature/smartId`),
+    undefined,
+    {
+      Authorization: `Bearer ${token}`,
+    },
+  );
+  return challengeCode;
 }
 
-export function getSmartIdSignatureStatusForMandateIdWithToken(mandateId, token) {
-  return get(getEndpoint(`/v1/mandates/${mandateId}/signature/smartId/status`), undefined, {
-    Authorization: `Bearer ${token}`,
-  }).then(({ statusCode }) => statusCode);
+export async function getSmartIdSignatureStatusForMandateIdWithToken(mandateId, token) {
+  const { statusCode } = await get(
+    getEndpoint(`/v1/mandates/${mandateId}/signature/smartId/status`),
+    undefined,
+    {
+      Authorization: `Bearer ${token}`,
+    },
+  );
+  return statusCode;
 }
 
-export function getIdCardSignatureHashForMandateIdWithCertificateHexAndToken(
+export async function getIdCardSignatureHashForMandateIdWithCertificateHexAndToken(
   mandateId,
   certificateHex,
   token,
 ) {
-  return put(
+  const { hash } = await put(
     getEndpoint(`/v1/mandates/${mandateId}/signature/idCard`),
     { clientCertificate: certificateHex },
     {
       Authorization: `Bearer ${token}`,
     },
-  ).then(({ hash }) => hash);
+  );
+  return hash;
 }
 
-export function getIdCardSignatureStatusForMandateIdWithSignedHashAndToken(
+export async function getIdCardSignatureStatusForMandateIdWithSignedHashAndToken(
   mandateId,
   signedHash,
   token,
 ) {
-  return put(
+  const { statusCode } = await put(
     getEndpoint(`/v1/mandates/${mandateId}/signature/idCard/status`),
     { signedHash },
     {
       Authorization: `Bearer ${token}`,
     },
-  ).then(({ statusCode }) => statusCode);
+  );
+  return statusCode;
 }
 
 export function updateUserWithToken(user, token) {
   return patch(getEndpoint('/v1/me'), user, {
     Authorization: `Bearer ${token}`,
-  }).then(savedUser => savedUser);
+  });
 }
 
 export function createUserWithToken(user, token) {
   return post(getEndpoint('/v1/users'), user, {
     Authorization: `Bearer ${token}`,
-  }).then(savedUser => savedUser);
+  });
 }
 
 export function getUserConversionWithToken(token) {
