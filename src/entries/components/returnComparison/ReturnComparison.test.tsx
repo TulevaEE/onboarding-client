@@ -1,11 +1,11 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import { shallow, ShallowWrapper } from 'enzyme';
 
 import ReturnComparison from '.';
 import { Loader } from '../common';
 
 describe('Return comparison', () => {
-  let component;
+  let component: ShallowWrapper;
   beforeEach(() => {
     component = shallow(
       <ReturnComparison actualPercentage={0.012345} marketPercentage={0.03456789} />,
@@ -30,31 +30,15 @@ describe('Return comparison', () => {
     expect(marketPercentage()).toBe('3.5%');
   });
 
-  function loader() {
-    return component.find(Loader);
-  }
-
-  function content() {
-    return component.find('.row');
-  }
-
-  function actualPercentage() {
-    return returnPercentage(0);
-  }
-
-  function estonianPercentage() {
-    return returnPercentage(1);
-  }
-
-  function marketPercentage() {
-    return returnPercentage(2);
-  }
-
-  function returnPercentage(index) {
-    return component
+  const loader = (): ShallowWrapper<any> => component.find(Loader);
+  const content = (): ShallowWrapper<any> => component.find('.row');
+  const actualPercentage = (): string => returnPercentage(0);
+  const estonianPercentage = (): string => returnPercentage(1);
+  const marketPercentage = (): string => returnPercentage(2);
+  const returnPercentage = (index: number): string =>
+    component
       .find('.col-sm-4')
       .at(index)
       .find('.h2')
       .text();
-  }
 });

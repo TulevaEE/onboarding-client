@@ -1,12 +1,26 @@
-import React from 'react';
-import Types from 'prop-types';
+import React, { FC } from 'react';
 import { Message } from 'retranslate';
 
 import { Loader } from '../common';
 
-const formatPercentage = percentage => (percentage ? `${(percentage * 100).toFixed(1)}%` : '-');
+type NullableNumber = number | null;
 
-const ReturnComparison = ({ loading, actualPercentage, estonianPercentage, marketPercentage }) => (
+const formatPercentage = (percentage: NullableNumber): string =>
+  percentage ? `${(percentage * 100).toFixed(1)}%` : '-';
+
+interface ReturnComparisonProps {
+  loading?: boolean;
+  actualPercentage?: NullableNumber;
+  estonianPercentage?: NullableNumber;
+  marketPercentage?: NullableNumber;
+}
+
+const ReturnComparison: FC<ReturnComparisonProps> = ({
+  loading = false,
+  actualPercentage = null,
+  estonianPercentage = null,
+  marketPercentage = null,
+}) => (
   <div className="card card-primary p-4">
     {loading ? (
       <Loader className="align-middle mt-2" />
@@ -38,19 +52,5 @@ const ReturnComparison = ({ loading, actualPercentage, estonianPercentage, marke
     </div>
   </div>
 );
-
-ReturnComparison.propTypes = {
-  loading: Types.bool,
-  actualPercentage: Types.number,
-  estonianPercentage: Types.number,
-  marketPercentage: Types.number,
-};
-
-ReturnComparison.defaultProps = {
-  loading: false,
-  actualPercentage: null,
-  estonianPercentage: null,
-  marketPercentage: null,
-};
 
 export default ReturnComparison;
