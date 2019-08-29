@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { Message } from 'retranslate';
 
-import { Loader } from '../common';
+import { Loader } from '../../common';
 
 type NullableNumber = number | null;
 

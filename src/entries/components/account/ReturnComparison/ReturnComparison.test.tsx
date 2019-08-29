@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 
 import ReturnComparison from '.';
-import { Loader } from '../common';
+import { Loader } from '../../common';
 
 describe('Return comparison', () => {
   let component: ShallowWrapper;

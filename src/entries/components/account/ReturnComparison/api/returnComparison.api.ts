@@ -1,4 +1,4 @@
-import { get } from '../../common/http';
+import { get } from '../../../common/http';
 
 enum Key {
   SECOND_PILLAR = 'SECOND_PILLAR',

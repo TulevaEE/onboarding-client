@@ -1,7 +1,7 @@
 import { getReturnComparison } from '.';
-import { get } from '../../common/http';
+import { get } from '../../../common/http';
 
-jest.mock('../../common/http', () => ({
+jest.mock('../../../common/http', () => ({
   get: jest.fn(),
 }));
 

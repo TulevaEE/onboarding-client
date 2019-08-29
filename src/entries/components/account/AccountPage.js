@@ -7,10 +7,10 @@ import { Message } from 'retranslate';
 
 import { Loader, ErrorMessage } from '../common';
 import PendingExchangesTable from './pendingExchangeTable';
-import ReturnComparison from '../returnComparison/ReturnComparison';
-import ReturnComparisonDateSelect from '../returnComparison/ReturnComparisonDateSelect';
-import { getReturnComparison } from '../returnComparison/api';
-import getReturnComparisonDateOptions from '../returnComparison/options';
+import ReturnComparison from './ReturnComparison';
+import ReturnComparisonDateSelect from './ReturnComparisonDateSelect';
+import { getReturnComparison } from './ReturnComparison/api';
+import getReturnComparisonDateOptions from './ReturnComparison/options';
 import UpdateUserForm from './updateUserForm';
 import { updateUser } from '../common/user/actions';
 import { actions as accountActions } from '.';
