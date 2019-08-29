@@ -3,13 +3,14 @@ import { PropTypes as Types } from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Message, WithTranslations } from 'retranslate';
+import { Message } from 'retranslate';
 
 import { Loader, ErrorMessage } from '../common';
 import PendingExchangesTable from './pendingExchangeTable';
-import ReturnComparison, { actions as returnComparisonActions } from '../returnComparison';
-import getReturnComparisonStartDateOptions from '../returnComparison/options';
-import Select from './Select';
+import ReturnComparison from '../returnComparison/ReturnComparison';
+import ReturnComparisonDateSelect from '../returnComparison/ReturnComparisonDateSelect';
+import { getReturnComparison } from '../returnComparison/api';
+import getReturnComparisonDateOptions from '../returnComparison/options';
 import UpdateUserForm from './updateUserForm';
 import { updateUser } from '../common/user/actions';
 import { actions as accountActions } from '.';
@@ -23,25 +24,19 @@ export class AccountPage extends Component {
   constructor(props) {
     super(props);
 
-    const options = getReturnComparisonStartDateOptions();
-    const returnComparisonStartDate = options[0].value;
+    const returnComparisonDateOptions = getReturnComparisonDateOptions();
+    const returnComparisonDate = returnComparisonDateOptions[0].value;
 
     this.state = {
-      options,
-      returnComparisonStartDate,
+      returnComparisonDateOptions,
+      returnComparisonDate,
+      returnComparisonLoading: false,
+      returnComparison: null,
     };
-
-    this.onReturnComparisonStartDateChange = this.onReturnComparisonStartDateChange.bind(this);
   }
 
   componentDidMount() {
     this.getData();
-  }
-
-  onReturnComparisonStartDateChange(date) {
-    const { getReturnComparisonForStartDate } = this.props;
-    getReturnComparisonForStartDate(date);
-    this.setState({ returnComparisonStartDate: date });
   }
 
   getData() {
@@ -50,8 +45,7 @@ export class AccountPage extends Component {
       onGetMemberCapital,
       shouldGetPendingExchanges,
       onGetPendingExchanges,
-      shouldGetReturnComparison,
-      onGetReturnComparison,
+      token,
     } = this.props;
 
     if (shouldGetMemberCapital) {
@@ -60,8 +54,23 @@ export class AccountPage extends Component {
     if (shouldGetPendingExchanges) {
       onGetPendingExchanges();
     }
-    if (shouldGetReturnComparison) {
-      onGetReturnComparison(null);
+    if (token) {
+      this.getReturnComparison();
+    }
+  }
+
+  async getReturnComparison() {
+    const { token } = this.props;
+    const { returnComparisonDate } = this.state;
+
+    this.setState({ returnComparisonLoading: true });
+    try {
+      const returnComparison = await getReturnComparison(returnComparisonDate, token);
+      this.setState({ returnComparison });
+    } catch (ignored) {
+      this.setState({ returnComparison: null });
+    } finally {
+      this.setState({ returnComparisonLoading: false });
     }
   }
 
@@ -76,14 +85,15 @@ export class AccountPage extends Component {
       conversion,
       pendingExchanges,
       loadingPendingExchanges,
-      returnComparison,
-      loadingReturnComparison,
-      returnComparisonError,
       saveUser,
       error,
-      // age,
     } = this.props;
-    const { returnComparisonStartDate, options } = this.state;
+    const {
+      returnComparisonDateOptions,
+      returnComparisonDate,
+      returnComparison,
+      returnComparisonLoading,
+    } = this.state;
 
     const pendingExchangesSection = loadingPendingExchanges ? (
       <Loader className="align-middle mt-5" />
@@ -99,8 +109,8 @@ export class AccountPage extends Component {
       )
     );
 
-    const returnComparisonSection = !returnComparisonError && (
-      <div className="mt-5">
+    const returnComparisonSection = !!returnComparison && (
+      <div className="mt-5" data-test-id="return-comparison-section">
         <div className="row mb-2">
           <div className="col-md-8">
             <p className="mt-1 lead">
@@ -108,23 +118,23 @@ export class AccountPage extends Component {
             </p>
           </div>
           <div className="col-md-4 text-md-right">
-            <WithTranslations>
-              {({ translate }) => (
-                <Select
-                  options={options.map(option => ({ ...option, label: translate(option.label) }))}
-                  selected={returnComparisonStartDate}
-                  onChange={this.onReturnComparisonStartDateChange}
-                />
-              )}
-            </WithTranslations>
+            <ReturnComparisonDateSelect
+              options={returnComparisonDateOptions}
+              selectedDate={returnComparisonDate}
+              onChange={date => {
+                this.setState({ returnComparisonDate: date }, () => {
+                  this.getReturnComparison();
+                });
+              }}
+            />
           </div>
         </div>
 
         <ReturnComparison
-          actualPercentage={returnComparison.actualPercentage}
-          estonianPercentage={returnComparison.estonianPercentage}
-          marketPercentage={returnComparison.marketPercentage}
-          loading={loadingReturnComparison}
+          personal={returnComparison.personal}
+          pensionFund={returnComparison.pensionFund}
+          index={returnComparison.index}
+          loading={returnComparisonLoading}
         />
       </div>
     );
@@ -237,17 +247,11 @@ AccountPage.propTypes = {
     estonianPercentage: Types.number,
     marketPercentage: Types.number,
   }),
-  returnComparisonError: Types.shape({}),
-  shouldGetReturnComparison: Types.bool,
-  onGetReturnComparison: Types.func,
-  loadingReturnComparison: Types.bool,
-  getReturnComparisonForStartDate: Types.func,
   shouldGetMemberCapital: Types.bool,
   onGetMemberCapital: Types.func,
   memberCapital: Types.shape({}),
   loadingCapital: Types.bool,
   memberNumber: Types.number,
-  // age: Types.number,
   conversion: Types.shape({
     transfersComplete: Types.bool,
     selectionComplete: Types.bool,
@@ -266,12 +270,7 @@ AccountPage.defaultProps = {
   onGetPendingExchanges: noop,
   pendingExchanges: [],
   loadingPendingExchanges: false,
-  shouldGetReturnComparison: true,
-  onGetReturnComparison: noop,
   returnComparison: {},
-  returnComparisonError: null,
-  loadingReturnComparison: false,
-  getReturnComparisonForStartDate: noop,
   shouldGetMemberCapital: true,
   onGetMemberCapital: noop,
   memberCapital: {},
@@ -295,12 +294,6 @@ const mapStateToProps = state => ({
     !(state.exchange.pendingExchanges || state.exchange.loadingPendingExchanges),
   pendingExchanges: state.exchange.pendingExchanges,
   loadingPendingExchanges: state.exchange.loadingPendingExchanges,
-  shouldGetReturnComparison:
-    state.login.token &&
-    !(state.returnComparison.actualPercentage !== null || state.returnComparison.loading),
-  returnComparison: state.returnComparison,
-  loadingReturnComparison: state.returnComparison.loading,
-  returnComparisonError: state.returnComparison.error,
   shouldGetMemberCapital:
     state.login.token &&
     state.login.user &&
@@ -311,16 +304,14 @@ const mapStateToProps = state => ({
   memberNumber: (state.login.user || {}).memberNumber,
   conversion: state.login.userConversion,
   error: state.exchange.error,
-  // age: (state.login.user || {}).age,
+  token: state.login.token,
 });
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
       saveUser: updateUser,
-      getReturnComparisonForStartDate: returnComparisonActions.getReturnComparisonForStartDate,
       onGetMemberCapital: accountActions.getInitialCapital,
       onGetPendingExchanges: exchangeActions.getPendingExchanges,
-      onGetReturnComparison: returnComparisonActions.getReturnComparisonForStartDate,
     },
     dispatch,
   );

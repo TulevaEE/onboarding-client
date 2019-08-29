@@ -10,16 +10,16 @@ const formatPercentage = (percentage: NullableNumber): string =>
 
 interface ReturnComparisonProps {
   loading?: boolean;
-  actualPercentage?: NullableNumber;
-  estonianPercentage?: NullableNumber;
-  marketPercentage?: NullableNumber;
+  personal?: NullableNumber;
+  pensionFund?: NullableNumber;
+  index?: NullableNumber;
 }
 
 const ReturnComparison: FC<ReturnComparisonProps> = ({
   loading = false,
-  actualPercentage = null,
-  estonianPercentage = null,
-  marketPercentage = null,
+  personal = null,
+  pensionFund = null,
+  index = null,
 }) => (
   <div className="card card-primary p-4">
     {loading ? (
@@ -28,15 +28,15 @@ const ReturnComparison: FC<ReturnComparisonProps> = ({
       <div className="row">
         <div className="col-sm-4 text-center">
           <Message>returnComparison.actual</Message>
-          <div className="h2 text-success mt-2">{formatPercentage(actualPercentage)}</div>
+          <div className="h2 text-success mt-2">{formatPercentage(personal)}</div>
         </div>
         <div className="col-sm-4 text-center">
           <Message>returnComparison.estonian</Message>
-          <div className="h2 mt-2">{formatPercentage(estonianPercentage)}</div>
+          <div className="h2 mt-2">{formatPercentage(pensionFund)}</div>
         </div>
         <div className="col-sm-4 text-center">
           <Message>returnComparison.market</Message>
-          <div className="h2 text-primary mt-2">{formatPercentage(marketPercentage)}</div>
+          <div className="h2 text-primary mt-2">{formatPercentage(index)}</div>
         </div>
       </div>
     )}

@@ -1,6 +1,3 @@
-import ReturnComparison from './ReturnComparison';
-import * as actions from './actions';
-import reducer from './reducer';
-
-export default ReturnComparison;
-export { actions, reducer };
+export { default } from './ReturnComparison';
+export { default as ReturnComparisonDateSelect } from './ReturnComparisonDateSelect';
+export * from './api';

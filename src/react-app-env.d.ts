@@ -7,5 +7,6 @@ declare module 'retranslate' {
     params?: Record<string, React.ReactNode>;
   }
 
+  export const withTranslations: (component: React.FC<any>) => React.Component;
   export const Message: React.FC<MessageProps>;
 }
