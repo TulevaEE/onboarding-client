@@ -1,4 +1,7 @@
+import axios, { AxiosResponse } from 'axios';
 import config from 'react-global-configuration';
+
+axios.defaults.withCredentials = true;
 
 function createCustomHeaders(): Record<string, string> {
   return {
@@ -34,20 +37,20 @@ function urlEncodeParameters(params: Record<string, string>): string {
     .join('&');
 }
 
-export async function get(url: string, params = {}, headers = {}): Promise<any> {
-  const urlParameters = urlEncodeParameters(params);
-  const response = await fetch(`${url}${urlParameters ? `?${urlParameters}` : ''}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
-      ...headers,
-      ...createCustomHeaders(),
-    },
-    mode: 'cors',
-    credentials: 'include',
-    cache: 'default',
-  });
-  return transformResponse(response);
+export async function get(url: string, params = {}, headers = {}): Promise<AxiosResponse['data']> {
+  try {
+    const response = await axios.get(url, {
+      params,
+      headers: { ...headers, ...createCustomHeaders() },
+    });
+    return response.data;
+  } catch (error) {
+    // eslint-disable-next-line no-throw-literal
+    throw {
+      status: error.response.status,
+      body: error.response.data,
+    };
+  }
 }
 
 export async function downloadFile(url: string, headers = {}): Promise<any> {
