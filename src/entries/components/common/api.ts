@@ -256,19 +256,6 @@ export function getPendingExchangesWithToken(token: string): Promise<any> {
   });
 }
 
-export function getReturnComparisonForStartDateWithToken(
-  startDate: string,
-  token: string,
-): Promise<any> {
-  return get(
-    getEndpoint(`/v1/fund-comparison${startDate ? `?from=${startDate}` : ''}`),
-    undefined,
-    {
-      Authorization: `Bearer ${token}`,
-    },
-  );
-}
-
 export function createAmlCheck(
   type: string,
   success: string,

@@ -7,9 +7,7 @@ import { Loader } from '../common';
 describe('Return comparison', () => {
   let component: ShallowWrapper;
   beforeEach(() => {
-    component = shallow(
-      <ReturnComparison actualPercentage={0.012345} marketPercentage={0.03456789} />,
-    );
+    component = shallow(<ReturnComparison personal={0.012345} index={0.03456789} />);
   });
 
   it('shows loader when loading', () => {
@@ -25,20 +23,20 @@ describe('Return comparison', () => {
   });
 
   it('has formatted percentages for existing and - for not existing returns', () => {
-    expect(actualPercentage()).toBe('1.2%');
-    expect(estonianPercentage()).toBe('-');
-    expect(marketPercentage()).toBe('3.5%');
+    expect(personal()).toBe('1.2%');
+    expect(pensionFund()).toBe('-');
+    expect(index()).toBe('3.5%');
   });
 
   const loader = (): ShallowWrapper<any> => component.find(Loader);
   const content = (): ShallowWrapper<any> => component.find('.row');
-  const actualPercentage = (): string => returnPercentage(0);
-  const estonianPercentage = (): string => returnPercentage(1);
-  const marketPercentage = (): string => returnPercentage(2);
-  const returnPercentage = (index: number): string =>
+  const personal = (): string => returnValue(0);
+  const pensionFund = (): string => returnValue(1);
+  const index = (): string => returnValue(2);
+  const returnValue = (i: number): string =>
     component
       .find('.col-sm-4')
-      .at(index)
+      .at(i)
       .find('.h2')
       .text();
 });
