@@ -4,6 +4,7 @@ import { Message } from 'retranslate';
 import getFromDateOptions from './options';
 import Select from './Select';
 import { getReturnComparison, Key } from './api';
+import fundIsinsWithAvailableData from './fundIsinsWithAvailableData.json';
 
 type NullableNumber = number | null;
 
@@ -21,6 +22,7 @@ interface State {
   fromDateOptions: Option[];
   fromDate: string;
   selectedPersonalKey: Key;
+  selectedPensionFundKey: Key | string;
   personalReturn: NullableNumber;
   pensionFundReturn: NullableNumber;
   indexReturn: NullableNumber;
@@ -37,6 +39,7 @@ export default class ReturnComparison extends Component<Props, State> {
     fromDate: getFromDateOptions()[0].value,
     loading: false,
     selectedPersonalKey: Key.SECOND_PILLAR,
+    selectedPensionFundKey: Key.EPI,
     personalReturn: null,
     pensionFundReturn: null,
     indexReturn: null,
@@ -52,7 +55,7 @@ export default class ReturnComparison extends Component<Props, State> {
 
   async loadReturns(): Promise<any> {
     const { token } = this.props;
-    const { fromDate, selectedPersonalKey } = this.state;
+    const { fromDate, selectedPersonalKey, selectedPensionFundKey } = this.state;
 
     this.setState({ loading: true });
     try {
@@ -60,7 +63,11 @@ export default class ReturnComparison extends Component<Props, State> {
         personal: personalReturn,
         pensionFund: pensionFundReturn,
         index: indexReturn,
-      } = await getReturnComparison(fromDate, { personalKey: selectedPersonalKey }, token);
+      } = await getReturnComparison(
+        fromDate,
+        { personalKey: selectedPersonalKey, pensionFundKey: selectedPensionFundKey },
+        token,
+      );
       this.setState({ personalReturn, pensionFundReturn, indexReturn });
     } catch (ignored) {
       this.setState({ personalReturn: null, pensionFundReturn: null, indexReturn: null });
@@ -75,6 +82,7 @@ export default class ReturnComparison extends Component<Props, State> {
       fromDateOptions,
       fromDate,
       selectedPersonalKey,
+      selectedPensionFundKey,
       personalReturn,
       pensionFundReturn,
       indexReturn,
@@ -122,9 +130,19 @@ export default class ReturnComparison extends Component<Props, State> {
             </div>
             <div className="col-sm-4 text-center">
               <Select
-                options={[{ value: Key.EPI, label: 'returnComparison.pensionFund' }]}
-                selected={Key.EPI}
-                disabled
+                options={[
+                  { value: Key.EPI, label: 'returnComparison.pensionFund' },
+                  ...fundIsinsWithAvailableData.map(isin => ({
+                    value: isin,
+                    label: isin,
+                  })),
+                ]}
+                selected={selectedPensionFundKey}
+                onChange={(key: Key): void => {
+                  this.setState({ selectedPensionFundKey: key }, () => {
+                    this.loadReturns();
+                  });
+                }}
               />
               <div className="h2 mt-2">
                 {loading ? LOADER : formatPercentage(pensionFundReturn)}

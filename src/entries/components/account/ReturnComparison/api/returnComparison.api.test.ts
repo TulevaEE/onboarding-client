@@ -12,10 +12,14 @@ describe('Return comparison API', () => {
     (get as jest.Mock).mockResolvedValueOnce({ returns: [] });
 
     expect(get).not.toHaveBeenCalled();
-    await getReturnComparison('2019-02-28', { personalKey: Key.THIRD_PILLAR }, 'a-token');
+    await getReturnComparison(
+      '2019-02-28',
+      { personalKey: Key.THIRD_PILLAR, pensionFundKey: 'EE12345' },
+      'a-token',
+    );
     expect(get).toHaveBeenCalledWith(
       '/transformed/v1/returns',
-      { from: '2019-02-28', keys: [Key.THIRD_PILLAR, Key.EPI, Key.MARKET] },
+      { from: '2019-02-28', keys: [Key.THIRD_PILLAR, 'EE12345', Key.MARKET] },
       { Authorization: 'Bearer a-token' },
     );
   });
@@ -30,7 +34,11 @@ describe('Return comparison API', () => {
       ],
     });
 
-    const comparison = await getReturnComparison('', { personalKey: Key.THIRD_PILLAR }, '');
+    const comparison = await getReturnComparison(
+      '',
+      { personalKey: Key.THIRD_PILLAR, pensionFundKey: Key.EPI },
+      '',
+    );
     expect(comparison).toStrictEqual({
       personal: 0.0436,
       pensionFund: 0.0228,
@@ -44,7 +52,11 @@ describe('Return comparison API', () => {
       returns: [{ key: 'EPI', value: 0.0228 }],
     });
 
-    const comparison = await getReturnComparison('', { personalKey: Key.THIRD_PILLAR }, '');
+    const comparison = await getReturnComparison(
+      '',
+      { personalKey: Key.THIRD_PILLAR, pensionFundKey: Key.EPI },
+      '',
+    );
     expect(comparison).toStrictEqual({
       personal: null,
       pensionFund: 0.0228,
