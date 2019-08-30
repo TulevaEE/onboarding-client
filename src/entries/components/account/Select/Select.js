@@ -1,7 +1,8 @@
 import React from 'react';
 import Types from 'prop-types';
+import { withTranslations } from 'retranslate';
 
-const Select = ({ options, selected, onChange }) => (
+export const Select = ({ options, selected, onChange, translations: { translate } }) => (
   <select
     className="custom-select"
     onChange={event => onChange(event.target.value)}
@@ -9,7 +10,7 @@ const Select = ({ options, selected, onChange }) => (
   >
     {options.map(({ value, label }) => (
       <option value={value} key={label}>
-        {label}
+        {translate(label)}
       </option>
     ))}
   </select>
@@ -21,4 +22,4 @@ Select.propTypes = {
   onChange: Types.func.isRequired,
 };
 
-export default Select;
+export default withTranslations(Select);

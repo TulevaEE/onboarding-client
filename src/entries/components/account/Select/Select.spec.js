@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import Select from '.';
+import { Select } from './Select';
 
 describe('Select', () => {
   let component;
@@ -17,6 +17,7 @@ describe('Select', () => {
         ]}
         selected={1}
         onChange={onChange}
+        translations={{ translate: jest.fn() }}
       />,
     );
   });
@@ -30,8 +31,15 @@ describe('Select', () => {
     expect(options().map(option => option.prop('value'))).toEqual([1, 2, 3]);
   });
 
-  it('has option labels', () => {
-    expect(options().map(option => option.text())).toEqual(['One', 'Two', 'Three']);
+  it('has translated option labels', () => {
+    const translate = jest.fn().mockImplementation(key => `translated ${key}`);
+    component.setProps({ translations: { translate } });
+
+    expect(options().map(option => option.text())).toEqual([
+      'translated One',
+      'translated Two',
+      'translated Three',
+    ]);
   });
 
   it('executes callback with value on change', () => {
