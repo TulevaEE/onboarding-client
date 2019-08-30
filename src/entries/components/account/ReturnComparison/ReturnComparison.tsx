@@ -3,13 +3,9 @@ import { Message } from 'retranslate';
 
 import getFromDateOptions from './options';
 import Select from './Select';
-import { getReturnComparison } from './api';
-import { Loader } from '../../common';
+import { getReturnComparison, Key } from './api';
 
 type NullableNumber = number | null;
-
-const formatPercentage = (percentage: NullableNumber): string =>
-  percentage ? `${(percentage * 100).toFixed(1)}%` : '-';
 
 interface Option {
   value: any;
@@ -24,16 +20,23 @@ interface State {
   loading: boolean;
   fromDateOptions: Option[];
   fromDate: string;
+  selectedPersonalKey: Key;
   personalReturn: NullableNumber;
   pensionFundReturn: NullableNumber;
   indexReturn: NullableNumber;
 }
+
+const formatPercentage = (percentage: NullableNumber): string =>
+  percentage ? `${(percentage * 100).toFixed(1)}%` : '-';
+
+const LOADER = '...';
 
 export default class ReturnComparison extends Component<Props, State> {
   state = {
     fromDateOptions: getFromDateOptions(),
     fromDate: getFromDateOptions()[0].value,
     loading: false,
+    selectedPersonalKey: Key.SECOND_PILLAR,
     personalReturn: null,
     pensionFundReturn: null,
     indexReturn: null,
@@ -49,7 +52,7 @@ export default class ReturnComparison extends Component<Props, State> {
 
   async loadReturns(): Promise<any> {
     const { token } = this.props;
-    const { fromDate } = this.state;
+    const { fromDate, selectedPersonalKey } = this.state;
 
     this.setState({ loading: true });
     try {
@@ -57,7 +60,7 @@ export default class ReturnComparison extends Component<Props, State> {
         personal: personalReturn,
         pensionFund: pensionFundReturn,
         index: indexReturn,
-      } = await getReturnComparison(fromDate, token);
+      } = await getReturnComparison(fromDate, { personalKey: selectedPersonalKey }, token);
       this.setState({ personalReturn, pensionFundReturn, indexReturn });
     } catch (ignored) {
       this.setState({ personalReturn: null, pensionFundReturn: null, indexReturn: null });
@@ -71,6 +74,7 @@ export default class ReturnComparison extends Component<Props, State> {
       loading,
       fromDateOptions,
       fromDate,
+      selectedPersonalKey,
       personalReturn,
       pensionFundReturn,
       indexReturn,
@@ -98,24 +102,45 @@ export default class ReturnComparison extends Component<Props, State> {
         </div>
 
         <div className="card card-primary p-4">
-          {loading ? (
-            <Loader className="align-middle mt-2" />
-          ) : (
-            <div className="row">
-              <div className="col-sm-4 text-center">
-                <Message>returnComparison.personal.secondPillar</Message>
-                <div className="h2 text-success mt-2">{formatPercentage(personalReturn)}</div>
-              </div>
-              <div className="col-sm-4 text-center">
-                <Message>returnComparison.pensionFund</Message>
-                <div className="h2 mt-2">{formatPercentage(pensionFundReturn)}</div>
-              </div>
-              <div className="col-sm-4 text-center">
-                <Message>returnComparison.index</Message>
-                <div className="h2 text-primary mt-2">{formatPercentage(indexReturn)}</div>
+          <div className="row">
+            <div className="col-sm-4 text-center">
+              <Select
+                options={[
+                  { value: Key.SECOND_PILLAR, label: 'returnComparison.personal.secondPillar' },
+                  { value: Key.THIRD_PILLAR, label: 'returnComparison.personal.thirdPillar' },
+                ]}
+                selected={selectedPersonalKey}
+                onChange={(key: Key): void => {
+                  this.setState({ selectedPersonalKey: key }, () => {
+                    this.loadReturns();
+                  });
+                }}
+              />
+              <div className="h2 text-success mt-2">
+                {loading ? LOADER : formatPercentage(personalReturn)}
               </div>
             </div>
-          )}
+            <div className="col-sm-4 text-center">
+              <Select
+                options={[{ value: Key.EPI, label: 'returnComparison.pensionFund' }]}
+                selected={Key.EPI}
+                disabled
+              />
+              <div className="h2 mt-2">
+                {loading ? LOADER : formatPercentage(pensionFundReturn)}
+              </div>
+            </div>
+            <div className="col-sm-4 text-center">
+              <Select
+                options={[{ value: Key.MARKET, label: 'returnComparison.index' }]}
+                selected={Key.MARKET}
+                disabled
+              />
+              <div className="h2 text-primary mt-2">
+                {loading ? LOADER : formatPercentage(indexReturn)}
+              </div>
+            </div>
+          </div>
 
           <div className="text-center mt-2">
             <a

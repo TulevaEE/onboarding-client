@@ -1,8 +1,9 @@
 import { get } from '../../../common/http';
 import { getEndpoint } from '../../../common/api';
 
-enum Key {
+export enum Key {
   SECOND_PILLAR = 'SECOND_PILLAR',
+  THIRD_PILLAR = 'THIRD_PILLAR',
   EPI = 'EPI',
   MARKET = 'MARKET',
 }
@@ -28,18 +29,18 @@ interface ReturnComparison {
   index: NullableNumber;
 }
 
-export async function getReturnComparison(date: string, token: string): Promise<ReturnComparison> {
-  const { returns } = await getReturns(date, token);
+export async function getReturnComparison(
+  date: string,
+  { personalKey }: { personalKey: Key },
+  token: string,
+): Promise<ReturnComparison> {
+  const { returns } = await getReturns(date, [personalKey, Key.EPI, Key.MARKET], token);
 
-  const personal = getReturnByKey(Key.SECOND_PILLAR, returns);
+  const personal = getReturnByKey(personalKey, returns);
   const pensionFund = getReturnByKey(Key.EPI, returns);
   const index = getReturnByKey(Key.MARKET, returns);
 
-  return {
-    personal,
-    pensionFund,
-    index,
-  };
+  return { personal, pensionFund, index };
 }
 
 function getReturnByKey(key: string, returns: Return[]): NullableNumber {
@@ -48,8 +49,8 @@ function getReturnByKey(key: string, returns: Return[]): NullableNumber {
   return returnForKey ? returnForKey.value : null;
 }
 
-function getReturns(startDate: string, token: string): Promise<ReturnsResponse> {
-  const params = { from: startDate };
+function getReturns(startDate: string, keys: Key[], token: string): Promise<ReturnsResponse> {
+  const params = { from: startDate, keys };
   const headers = { Authorization: `Bearer ${token}` };
 
   return get(getEndpoint('/v1/returns'), params, headers);
