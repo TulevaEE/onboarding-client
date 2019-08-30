@@ -55,13 +55,17 @@ const AccountStatement = ({ funds }) => {
     }),
   );
 
+  const showActiveFundNotice = funds.some(({ activeFund }) => activeFund);
+
   return (
     <>
       <Table columns={columns} dataSource={dataSource}></Table>
 
-      <small className="text-muted">
-        <Message>accountStatement.activeFundNotice</Message>
-      </small>
+      {showActiveFundNotice && (
+        <small className="text-muted">
+          <Message>accountStatement.activeFundNotice</Message>
+        </small>
+      )}
     </>
   );
 };
