@@ -8,9 +8,6 @@ import { Message } from 'retranslate';
 import { Loader, ErrorMessage } from '../common';
 import PendingExchangesTable from './pendingExchangeTable';
 import ReturnComparison from './ReturnComparison';
-import Select from './Select';
-import { getReturnComparison } from './ReturnComparison/api';
-import getReturnComparisonDateOptions from './ReturnComparison/options';
 import UpdateUserForm from './updateUserForm';
 import { updateUser } from '../common/user/actions';
 import { actions as accountActions } from '.';
@@ -21,20 +18,6 @@ import MemberCapital from './MemberCapital';
 const noop = () => null;
 
 export class AccountPage extends Component {
-  constructor(props) {
-    super(props);
-
-    const returnComparisonDateOptions = getReturnComparisonDateOptions();
-    const returnComparisonDate = returnComparisonDateOptions[0].value;
-
-    this.state = {
-      returnComparisonDateOptions,
-      returnComparisonDate,
-      returnComparisonLoading: false,
-      returnComparison: null,
-    };
-  }
-
   componentDidMount() {
     this.getData();
   }
@@ -45,7 +28,6 @@ export class AccountPage extends Component {
       onGetMemberCapital,
       shouldGetPendingExchanges,
       onGetPendingExchanges,
-      token,
     } = this.props;
 
     if (shouldGetMemberCapital) {
@@ -53,24 +35,6 @@ export class AccountPage extends Component {
     }
     if (shouldGetPendingExchanges) {
       onGetPendingExchanges();
-    }
-    if (token) {
-      this.getReturnComparison();
-    }
-  }
-
-  async getReturnComparison() {
-    const { token } = this.props;
-    const { returnComparisonDate } = this.state;
-
-    this.setState({ returnComparisonLoading: true });
-    try {
-      const returnComparison = await getReturnComparison(returnComparisonDate, token);
-      this.setState({ returnComparison });
-    } catch (ignored) {
-      this.setState({ returnComparison: null });
-    } finally {
-      this.setState({ returnComparisonLoading: false });
     }
   }
 
@@ -87,13 +51,8 @@ export class AccountPage extends Component {
       loadingPendingExchanges,
       saveUser,
       error,
+      token,
     } = this.props;
-    const {
-      returnComparisonDateOptions,
-      returnComparisonDate,
-      returnComparison,
-      returnComparisonLoading,
-    } = this.state;
 
     const pendingExchangesSection = loadingPendingExchanges ? (
       <Loader className="align-middle mt-5" />
@@ -107,36 +66,6 @@ export class AccountPage extends Component {
           <PendingExchangesTable pendingExchanges={pendingExchanges} />
         </div>
       )
-    );
-
-    const returnComparisonSection = !!returnComparison && (
-      <div className="mt-5" data-test-id="return-comparison-section">
-        <div className="row mb-2">
-          <div className="col-md-8">
-            <p className="mt-1 lead">
-              <Message>returnComparison.title</Message>
-            </p>
-          </div>
-          <div className="col-md-4 text-md-right">
-            <Select
-              options={returnComparisonDateOptions}
-              selected={returnComparisonDate}
-              onChange={date => {
-                this.setState({ returnComparisonDate: date }, () => {
-                  this.getReturnComparison();
-                });
-              }}
-            />
-          </div>
-        </div>
-
-        <ReturnComparison
-          personal={returnComparison.personal}
-          pensionFund={returnComparison.pensionFund}
-          index={returnComparison.index}
-          loading={returnComparisonLoading}
-        />
-      </div>
     );
 
     return (
@@ -209,7 +138,7 @@ export class AccountPage extends Component {
         )}
 
         {pendingExchangesSection}
-        {returnComparisonSection}
+        <ReturnComparison token={token} />
         {loadingCapital || memberCapital ? (
           <div>
             <div className="mt-5">
@@ -242,11 +171,6 @@ AccountPage.propTypes = {
   onGetPendingExchanges: Types.func,
   pendingExchanges: Types.arrayOf(Types.shape({})),
   loadingPendingExchanges: Types.bool,
-  returnComparison: Types.shape({
-    actualPercentage: Types.number,
-    estonianPercentage: Types.number,
-    marketPercentage: Types.number,
-  }),
   shouldGetMemberCapital: Types.bool,
   onGetMemberCapital: Types.func,
   memberCapital: Types.shape({}),
@@ -270,7 +194,6 @@ AccountPage.defaultProps = {
   onGetPendingExchanges: noop,
   pendingExchanges: [],
   loadingPendingExchanges: false,
-  returnComparison: {},
   shouldGetMemberCapital: true,
   onGetMemberCapital: noop,
   memberCapital: {},
