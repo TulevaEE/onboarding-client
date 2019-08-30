@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-const startDate = '2002-01-01';
+const startDate = '2003-01-07';
 
 const format = momentDate => momentDate.format('YYYY-MM-DD');
 

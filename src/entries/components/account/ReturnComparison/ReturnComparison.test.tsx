@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 
-import ReturnComparison from '.';
+import { ReturnComparison } from './ReturnComparison';
 import { getReturnComparison, Key } from './api';
 import getFromDateOptions from './options';
 import Select from './Select';

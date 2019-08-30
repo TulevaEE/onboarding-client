@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import { Message } from 'retranslate';
+import { connect } from 'react-redux';
 
 import getFromDateOptions from './options';
 import Select from './Select';
 import { getReturnComparison, Key } from './api';
 import fundIsinsWithAvailableData from './fundIsinsWithAvailableData.json';
+import convertFundsToFundNameMap from './convertFundsToFundNameMap';
 
 type NullableNumber = number | null;
 
@@ -34,7 +36,7 @@ const formatPercentage = (percentage: NullableNumber): string =>
 
 const LOADER = '...';
 
-export default class ReturnComparison extends Component<Props, State> {
+export class ReturnComparison extends Component<Props, State> {
   state = {
     fromDateOptions: getFromDateOptions(),
     fromDate: getFromDateOptions()[0].value,
@@ -176,3 +178,10 @@ export default class ReturnComparison extends Component<Props, State> {
     );
   }
 }
+
+const mapStateToProps = (state: Record<string, any>): Record<string, any> => ({
+  token: state.login.token,
+  fundNameMap: convertFundsToFundNameMap(state.exchange.targetFunds),
+});
+
+export default connect(mapStateToProps)(ReturnComparison);
