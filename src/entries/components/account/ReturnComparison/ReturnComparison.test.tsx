@@ -20,7 +20,7 @@ describe('Return comparison', () => {
     expect(getReturnComparison).not.toHaveBeenCalled();
   });
 
-  it('gets returns for first option date, second pillar, and epi with token', () => {
+  it('gets returns for first option date, second pillar, epi, and market with token', () => {
     (getFromDateOptions as jest.Mock).mockReturnValue([
       { value: '2002-28-02', label: aLabel() },
       ...someReturnComparisonOptions(),
@@ -30,7 +30,7 @@ describe('Return comparison', () => {
     shallow(<ReturnComparison token="a-token" fundNameMap={{}} />);
     expect(getReturnComparison).toHaveBeenCalledWith(
       '2002-28-02',
-      { personalKey: Key.SECOND_PILLAR, pensionFundKey: Key.EPI },
+      { personalKey: Key.SECOND_PILLAR, pensionFundKey: Key.EPI, indexKey: Key.MARKET },
       'a-token',
     );
   });
@@ -60,7 +60,11 @@ describe('Return comparison', () => {
     personalReturnSelect(component).simulate('change', Key.THIRD_PILLAR);
     expect(getReturnComparison).toHaveBeenCalledWith(
       expect.any(String),
-      { personalKey: Key.THIRD_PILLAR, pensionFundKey: expect.any(String) },
+      {
+        personalKey: Key.THIRD_PILLAR,
+        pensionFundKey: expect.any(String),
+        indexKey: expect.any(String),
+      },
       'a-token',
     );
   });
@@ -74,7 +78,29 @@ describe('Return comparison', () => {
     pensionFundSelect(component).simulate('change', 'EE987654');
     expect(getReturnComparison).toHaveBeenCalledWith(
       expect.any(String),
-      { personalKey: expect.any(String), pensionFundKey: 'EE987654' },
+      {
+        personalKey: expect.any(String),
+        pensionFundKey: 'EE987654',
+        indexKey: expect.any(String),
+      },
+      'a-token',
+    );
+  });
+
+  it('gets returns on index change with key', async () => {
+    const component = shallow(<ReturnComparison token="a-token" fundNameMap={{}} />);
+    await flushPromises();
+    (getReturnComparison as jest.Mock).mockClear();
+
+    expect(getReturnComparison).not.toHaveBeenCalled();
+    indexSelect(component).simulate('change', Key.CPI);
+    expect(getReturnComparison).toHaveBeenCalledWith(
+      expect.any(String),
+      {
+        personalKey: expect.any(String),
+        pensionFundKey: expect.any(String),
+        indexKey: Key.CPI,
+      },
       'a-token',
     );
   });
@@ -139,6 +165,7 @@ describe('Return comparison', () => {
   const dateSelect = (c): ShallowWrapper => select(c).at(0);
   const personalReturnSelect = (c): ShallowWrapper => select(c).at(1);
   const pensionFundSelect = (c): ShallowWrapper => select(c).at(2);
+  const indexSelect = (c): ShallowWrapper => select(c).at(3);
   const someReturnComparisonOptions = (): { value: string; label: string }[] => [
     { value: '2015-03-10', label: 'A date' },
     { value: '2020-10-03', label: 'Another date' },
@@ -150,7 +177,6 @@ describe('Return comparison', () => {
   const personalReturn = (c): string => returns(c, 0).text();
   const pensionFundReturn = (c): string => returns(c, 1).text();
   const indexReturn = (c): string => returns(c, 2).text();
-  const aPensionFundKey = (): string => 'EE123456';
   const flushPromises = (): Promise<any> =>
     new Promise((resolve): void => {
       process.nextTick((): void => {

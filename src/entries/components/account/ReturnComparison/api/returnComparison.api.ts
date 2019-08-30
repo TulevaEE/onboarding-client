@@ -6,6 +6,7 @@ export enum Key {
   THIRD_PILLAR = 'THIRD_PILLAR',
   EPI = 'EPI',
   MARKET = 'MARKET',
+  CPI = 'CPI',
 }
 
 type ReturnType = 'PERSONAL' | 'FUND' | 'INDEX';
@@ -31,14 +32,18 @@ interface ReturnComparison {
 
 export async function getReturnComparison(
   date: string,
-  { personalKey, pensionFundKey }: { personalKey: Key; pensionFundKey: Key | string },
+  {
+    personalKey,
+    pensionFundKey,
+    indexKey,
+  }: { personalKey: Key; pensionFundKey: Key | string; indexKey: Key },
   token: string,
 ): Promise<ReturnComparison> {
-  const { returns } = await getReturns(date, [personalKey, pensionFundKey, Key.MARKET], token);
+  const { returns } = await getReturns(date, [personalKey, pensionFundKey, indexKey], token);
 
   const personal = getReturnByKey(personalKey, returns);
   const pensionFund = getReturnByKey(pensionFundKey, returns);
-  const index = getReturnByKey(Key.MARKET, returns);
+  const index = getReturnByKey(indexKey, returns);
 
   return { personal, pensionFund, index };
 }

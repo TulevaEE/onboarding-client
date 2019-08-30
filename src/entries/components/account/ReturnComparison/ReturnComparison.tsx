@@ -26,6 +26,7 @@ interface State {
   fromDate: string;
   selectedPersonalKey: Key;
   selectedPensionFundKey: Key | string;
+  selectedIndexKey: Key;
   personalReturn: NullableNumber;
   pensionFundReturn: NullableNumber;
   indexReturn: NullableNumber;
@@ -43,6 +44,7 @@ export class ReturnComparison extends Component<Props, State> {
     loading: false,
     selectedPersonalKey: Key.SECOND_PILLAR,
     selectedPensionFundKey: Key.EPI,
+    selectedIndexKey: Key.MARKET,
     personalReturn: null,
     pensionFundReturn: null,
     indexReturn: null,
@@ -58,7 +60,7 @@ export class ReturnComparison extends Component<Props, State> {
 
   async loadReturns(): Promise<any> {
     const { token } = this.props;
-    const { fromDate, selectedPersonalKey, selectedPensionFundKey } = this.state;
+    const { fromDate, selectedPersonalKey, selectedPensionFundKey, selectedIndexKey } = this.state;
 
     this.setState({ loading: true });
     try {
@@ -68,7 +70,11 @@ export class ReturnComparison extends Component<Props, State> {
         index: indexReturn,
       } = await getReturnComparison(
         fromDate,
-        { personalKey: selectedPersonalKey, pensionFundKey: selectedPensionFundKey },
+        {
+          personalKey: selectedPersonalKey,
+          pensionFundKey: selectedPensionFundKey,
+          indexKey: selectedIndexKey,
+        },
         token,
       );
       this.setState({ personalReturn, pensionFundReturn, indexReturn });
@@ -87,6 +93,7 @@ export class ReturnComparison extends Component<Props, State> {
       fromDate,
       selectedPersonalKey,
       selectedPensionFundKey,
+      selectedIndexKey,
       personalReturn,
       pensionFundReturn,
       indexReturn,
@@ -154,9 +161,16 @@ export class ReturnComparison extends Component<Props, State> {
             </div>
             <div className="col-sm-4 text-center">
               <Select
-                options={[{ value: Key.MARKET, label: 'returnComparison.index' }]}
-                selected={Key.MARKET}
-                disabled
+                options={[
+                  { value: Key.MARKET, label: 'returnComparison.index.market' },
+                  { value: Key.CPI, label: 'returnComparison.index.cpi' },
+                ]}
+                selected={selectedIndexKey}
+                onChange={(key: Key): void => {
+                  this.setState({ selectedIndexKey: key }, () => {
+                    this.loadReturns();
+                  });
+                }}
               />
               <div className="h2 text-primary mt-2">
                 {loading ? LOADER : formatPercentage(indexReturn)}
