@@ -27,15 +27,15 @@ const ReturnComparison: FC<ReturnComparisonProps> = ({
     ) : (
       <div className="row">
         <div className="col-sm-4 text-center">
-          <Message>returnComparison.actual</Message>
+          <Message>returnComparison.personal.secondPillar</Message>
           <div className="h2 text-success mt-2">{formatPercentage(personal)}</div>
         </div>
         <div className="col-sm-4 text-center">
-          <Message>returnComparison.estonian</Message>
+          <Message>returnComparison.pensionFund</Message>
           <div className="h2 mt-2">{formatPercentage(pensionFund)}</div>
         </div>
         <div className="col-sm-4 text-center">
-          <Message>returnComparison.market</Message>
+          <Message>returnComparison.index</Message>
           <div className="h2 text-primary mt-2">{formatPercentage(index)}</div>
         </div>
       </div>
