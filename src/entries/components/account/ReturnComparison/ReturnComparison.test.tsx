@@ -11,6 +11,7 @@ jest.mock('./api', () => ({
   getReturnComparison: jest.fn(),
 }));
 jest.mock('./options', () => jest.fn());
+jest.mock('./fundIsinsWithAvailableData.json', () => ['EE123456', 'EE987654']);
 
 describe('Return comparison', () => {
   it('does not get returns when no token', () => {
@@ -19,7 +20,7 @@ describe('Return comparison', () => {
     expect(getReturnComparison).not.toHaveBeenCalled();
   });
 
-  it('gets returns for first option date and second pillar with token', () => {
+  it('gets returns for first option date, second pillar, and epi with token', () => {
     (getFromDateOptions as jest.Mock).mockReturnValue([
       { value: '2002-28-02', label: aLabel() },
       ...someReturnComparisonOptions(),
@@ -29,7 +30,7 @@ describe('Return comparison', () => {
     shallow(<ReturnComparison token="a-token" />);
     expect(getReturnComparison).toHaveBeenCalledWith(
       '2002-28-02',
-      { personalKey: Key.SECOND_PILLAR },
+      { personalKey: Key.SECOND_PILLAR, pensionFundKey: Key.EPI },
       'a-token',
     );
   });
@@ -59,9 +60,33 @@ describe('Return comparison', () => {
     personalReturnSelect(component).simulate('change', Key.THIRD_PILLAR);
     expect(getReturnComparison).toHaveBeenCalledWith(
       expect.any(String),
-      { personalKey: Key.THIRD_PILLAR },
+      { personalKey: Key.THIRD_PILLAR, pensionFundKey: expect.any(String) },
       'a-token',
     );
+  });
+
+  it('gets returns on pension fund change with key', async () => {
+    const component = shallow(<ReturnComparison token="a-token" />);
+    await flushPromises();
+    (getReturnComparison as jest.Mock).mockClear();
+
+    expect(getReturnComparison).not.toHaveBeenCalled();
+    pensionFundSelect(component).simulate('change', 'EE987654');
+    expect(getReturnComparison).toHaveBeenCalledWith(
+      expect.any(String),
+      { personalKey: expect.any(String), pensionFundKey: 'EE987654' },
+      'a-token',
+    );
+  });
+
+  it('has transformed hardcoded pension fund isins and epi as pension fund select options', async () => {
+    const component = shallow(<ReturnComparison token={aToken()} />);
+
+    expect(pensionFundSelect(component).prop('options')).toStrictEqual([
+      { label: 'returnComparison.pensionFund', value: Key.EPI },
+      { label: 'EE123456', value: 'EE123456' },
+      { label: 'EE987654', value: 'EE987654' },
+    ]);
   });
 
   it('shows returns as - after failed retrieval', async () => {
@@ -110,6 +135,7 @@ describe('Return comparison', () => {
   const select = (c): ShallowWrapper => c.find(Select);
   const dateSelect = (c): ShallowWrapper => select(c).at(0);
   const personalReturnSelect = (c): ShallowWrapper => select(c).at(1);
+  const pensionFundSelect = (c): ShallowWrapper => select(c).at(2);
   const someReturnComparisonOptions = (): { value: string; label: string }[] => [
     { value: '2015-03-10', label: 'A date' },
     { value: '2020-10-03', label: 'Another date' },
@@ -121,6 +147,7 @@ describe('Return comparison', () => {
   const personalReturn = (c): string => returns(c, 0).text();
   const pensionFundReturn = (c): string => returns(c, 1).text();
   const indexReturn = (c): string => returns(c, 2).text();
+  const aPensionFundKey = (): string => 'EE123456';
   const flushPromises = (): Promise<any> =>
     new Promise((resolve): void => {
       process.nextTick((): void => {

@@ -31,13 +31,13 @@ interface ReturnComparison {
 
 export async function getReturnComparison(
   date: string,
-  { personalKey }: { personalKey: Key },
+  { personalKey, pensionFundKey }: { personalKey: Key; pensionFundKey: Key | string },
   token: string,
 ): Promise<ReturnComparison> {
-  const { returns } = await getReturns(date, [personalKey, Key.EPI, Key.MARKET], token);
+  const { returns } = await getReturns(date, [personalKey, pensionFundKey, Key.MARKET], token);
 
   const personal = getReturnByKey(personalKey, returns);
-  const pensionFund = getReturnByKey(Key.EPI, returns);
+  const pensionFund = getReturnByKey(pensionFundKey, returns);
   const index = getReturnByKey(Key.MARKET, returns);
 
   return { personal, pensionFund, index };
@@ -49,7 +49,11 @@ function getReturnByKey(key: string, returns: Return[]): NullableNumber {
   return returnForKey ? returnForKey.value : null;
 }
 
-function getReturns(startDate: string, keys: Key[], token: string): Promise<ReturnsResponse> {
+function getReturns(
+  startDate: string,
+  keys: (Key | string)[],
+  token: string,
+): Promise<ReturnsResponse> {
   const params = { from: startDate, keys };
   const headers = { Authorization: `Bearer ${token}` };
 
