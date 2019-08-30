@@ -135,7 +135,7 @@ export class ReturnComparison extends Component<Props, State> {
                   });
                 }}
               />
-              <div className="h2 text-success mt-2">
+              <div className="h2 text-success my-4">
                 {loading ? LOADER : formatPercentage(personalReturn)}
               </div>
             </div>
@@ -155,7 +155,7 @@ export class ReturnComparison extends Component<Props, State> {
                   });
                 }}
               />
-              <div className="h2 mt-2">
+              <div className="h2 my-4">
                 {loading ? LOADER : formatPercentage(pensionFundReturn)}
               </div>
             </div>
@@ -172,7 +172,7 @@ export class ReturnComparison extends Component<Props, State> {
                   });
                 }}
               />
-              <div className="h2 text-primary mt-2">
+              <div className="h2 text-primary my-4">
                 {loading ? LOADER : formatPercentage(indexReturn)}
               </div>
             </div>
