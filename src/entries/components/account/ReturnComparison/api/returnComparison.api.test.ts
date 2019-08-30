@@ -1,18 +1,19 @@
 import { getReturnComparison } from '.';
 import { get } from '../../../common/http';
+import { getEndpoint } from '../../../common/api';
 
-jest.mock('../../../common/http', () => ({
-  get: jest.fn(),
-}));
+jest.mock('../../../common/http', () => ({ get: jest.fn() }));
+jest.mock('../../../common/api', () => ({ getEndpoint: jest.fn() }));
 
 describe('Return comparison API', () => {
-  it('calls the returns endpoint with date as param and token in header', async () => {
+  it('calls the transformed returns endpoint with date as param and token in header', async () => {
+    (getEndpoint as jest.Mock).mockImplementationOnce(url => `/transformed${url}`);
     (get as jest.Mock).mockResolvedValueOnce({ returns: [] });
 
     expect(get).not.toHaveBeenCalled();
     await getReturnComparison('2019-02-28', 'a-token');
     expect(get).toHaveBeenCalledWith(
-      '/v1/returns',
+      '/transformed/v1/returns',
       { from: '2019-02-28' },
       { Authorization: 'Bearer a-token' },
     );
