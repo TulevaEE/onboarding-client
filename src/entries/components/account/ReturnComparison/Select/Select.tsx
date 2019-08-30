@@ -11,6 +11,7 @@ interface SelectProps {
   selected: any;
   onChange: (...args: any[]) => void;
   translations: { translate: (label: string) => {} };
+  disabled?: boolean;
 }
 
 export const Select: FC<SelectProps> = ({
@@ -18,11 +19,13 @@ export const Select: FC<SelectProps> = ({
   selected,
   onChange,
   translations: { translate },
+  disabled = false,
 }) => (
   <select
     className="custom-select"
     onChange={(event): void => onChange(event.target.value)}
     value={selected}
+    disabled={disabled}
   >
     {options.map(({ value, label }) => (
       <option value={value} key={label}>
