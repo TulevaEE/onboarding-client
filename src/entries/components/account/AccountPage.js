@@ -14,6 +14,7 @@ import { actions as accountActions } from '.';
 import { actions as exchangeActions } from '../exchange';
 import AccountStatement from './AccountStatement';
 import MemberCapital from './MemberCapital';
+import convertFundsToFundNameMap from './convertFundsToFundNameMap';
 
 const noop = () => null;
 
@@ -52,6 +53,7 @@ export class AccountPage extends Component {
       saveUser,
       error,
       token,
+      funds,
     } = this.props;
 
     const pendingExchangesSection = loadingPendingExchanges ? (
@@ -138,7 +140,9 @@ export class AccountPage extends Component {
         )}
 
         {pendingExchangesSection}
-        <ReturnComparison token={token} />
+
+        <ReturnComparison token={token} fundNameMap={convertFundsToFundNameMap(funds)} />
+
         {loadingCapital || memberCapital ? (
           <div>
             <div className="mt-5">
@@ -184,6 +188,7 @@ AccountPage.propTypes = {
   error: Types.shape({
     body: Types.string,
   }),
+  funds: Types.arrayOf(Types.shape({})),
 };
 
 AccountPage.defaultProps = {
@@ -206,6 +211,7 @@ AccountPage.defaultProps = {
   },
   error: null,
   saveUser: noop,
+  funds: [],
 };
 
 const mapStateToProps = state => ({
@@ -228,6 +234,7 @@ const mapStateToProps = state => ({
   conversion: state.login.userConversion,
   error: state.exchange.error,
   token: state.login.token,
+  funds: state.exchange.targetFunds,
 });
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
