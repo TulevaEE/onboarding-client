@@ -6,14 +6,7 @@ import { Loader, ErrorMessage } from '../common';
 import { AccountPage } from './AccountPage';
 import PendingExchangesTable from './pendingExchangeTable';
 import UpdateUserForm from './updateUserForm';
-import ReturnComparison from './ReturnComparison';
-import Select from './Select';
-import { getReturnComparison } from './ReturnComparison/api';
-import getReturnComparisonDateOptions from './ReturnComparison/options';
 import AccountStatement from './AccountStatement';
-
-jest.mock('./ReturnComparison/options', () => jest.fn());
-jest.mock('./ReturnComparison/api', () => ({ getReturnComparison: jest.fn() }));
 
 describe('Current balance', () => {
   let component;
@@ -28,95 +21,8 @@ describe('Current balance', () => {
   };
 
   beforeEach(() => {
-    getReturnComparisonDateOptions.mockReturnValue([{}, {}]);
     props = {};
     component = shallow(<AccountPage {...props} />);
-  });
-
-  describe('return comparison', () => {
-    it('does not get return comparison when no token', () => {
-      component = shallow(<AccountPage token={undefined} />);
-
-      expect(getReturnComparison).not.toHaveBeenCalled();
-    });
-
-    it('gets return comparison for first option date', () => {
-      getReturnComparisonDateOptions.mockReturnValueOnce([
-        { value: '2002-28-02', label: 'Beginning' },
-        ...someReturnComparisonOptions(),
-      ]);
-
-      expect(getReturnComparison).not.toHaveBeenCalled();
-      component = shallow(<AccountPage token="a-token" />);
-      expect(getReturnComparison).toHaveBeenCalledWith('2002-28-02', 'a-token');
-    });
-
-    it('does not show return comparison section by default', () => {
-      component = shallow(<AccountPage />);
-
-      expect(returnComparisonSection(component).exists()).toBe(false);
-    });
-
-    it('shows return comparison section only after successful retrieval', async () => {
-      getReturnComparison.mockResolvedValueOnce({});
-      component = shallow(<AccountPage token={aToken()} />);
-
-      expect(returnComparisonSection(component).exists()).toBe(false);
-      await flushPromises();
-      expect(returnComparisonSection(component).exists()).toBe(true);
-    });
-
-    it('retrieves return comparison on date change', async () => {
-      getReturnComparison.mockResolvedValueOnce({});
-      component = shallow(<AccountPage token="a-token" />);
-
-      await flushPromises();
-      getReturnComparison.mockClear();
-      expect(getReturnComparison).not.toHaveBeenCalled();
-
-      select(component).simulate('change', '2020-06-25');
-      expect(getReturnComparison).toHaveBeenCalledWith('2020-06-25', 'a-token');
-    });
-
-    it('hides return comparison section after failed retrieval', async () => {
-      getReturnComparison.mockResolvedValueOnce({});
-      component = shallow(<AccountPage token={aToken()} />);
-
-      await flushPromises();
-      expect(returnComparisonSection(component).exists()).toBe(true);
-
-      getReturnComparison.mockRejectedValueOnce({});
-      select(component).simulate('change', aDate());
-      await flushPromises();
-      expect(returnComparisonSection(component).exists()).toBe(false);
-    });
-
-    it('shows return comparison as loading while retrieving', async () => {
-      getReturnComparison.mockResolvedValueOnce({});
-      getReturnComparisonDateOptions.mockReturnValue(someReturnComparisonOptions());
-      component = shallow(<AccountPage token={aToken()} />);
-      await flushPromises();
-
-      getReturnComparison.mockResolvedValueOnce({});
-      select(component).simulate('change', aDate());
-
-      expect(returnComparison(component).prop('loading')).toBe(true);
-      await flushPromises();
-      expect(returnComparison(component).prop('loading')).toBe(false);
-    });
-
-    it('passes first return comparison date to select by default', async () => {
-      getReturnComparison.mockResolvedValueOnce({});
-      getReturnComparisonDateOptions.mockReturnValue([
-        { value: '2002-01-01', label: aLabel() },
-        ...someReturnComparisonOptions(),
-      ]);
-
-      component = shallow(<AccountPage token={aToken()} />);
-      await flushPromises();
-
-      expect(select(component).prop('selected')).toEqual('2002-01-01');
-    });
   });
 
   describe('when 2nd and 3rd pillar source funds exist', () => {
@@ -271,17 +177,6 @@ describe('Current balance', () => {
     expect(component.contains(cta)).toBe(false);
   });
 
-  const returnComparisonSection = c => c.find('[data-test-id="return-comparison-section"]');
-  const returnComparison = c => c.find(ReturnComparison);
-  const select = c => c.find(Select);
-  const someReturnComparisonOptions = () => [
-    { value: '2015-03-10', label: 'A date' },
-    { value: '2020-10-03', label: 'Another date' },
-  ];
-  const aDate = () => '2020-06-25';
-  const aToken = () => 'a-token';
-  const aLabel = () => 'a label';
-
   function pendingExchangesTable() {
     return component.find(PendingExchangesTable);
   }
@@ -292,13 +187,5 @@ describe('Current balance', () => {
 
   function accountStatement() {
     return component.find(AccountStatement);
-  }
-
-  function flushPromises() {
-    return new Promise(resolve => {
-      process.nextTick(() => {
-        resolve();
-      });
-    });
   }
 });
