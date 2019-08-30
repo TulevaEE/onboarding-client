@@ -16,7 +16,7 @@ jest.mock('./fundIsinsWithAvailableData.json', () => ['EE123456', 'EE987654']);
 describe('Return comparison', () => {
   it('does not get returns when no token', () => {
     (getFromDateOptions as jest.Mock).mockReturnValue(someReturnComparisonOptions());
-    shallow(<ReturnComparison token={undefined} />);
+    shallow(<ReturnComparison token={undefined} fundNameMap={{}} />);
     expect(getReturnComparison).not.toHaveBeenCalled();
   });
 
@@ -27,7 +27,7 @@ describe('Return comparison', () => {
     ]);
 
     expect(getReturnComparison).not.toHaveBeenCalled();
-    shallow(<ReturnComparison token="a-token" />);
+    shallow(<ReturnComparison token="a-token" fundNameMap={{}} />);
     expect(getReturnComparison).toHaveBeenCalledWith(
       '2002-28-02',
       { personalKey: Key.SECOND_PILLAR, pensionFundKey: Key.EPI },
@@ -38,7 +38,7 @@ describe('Return comparison', () => {
   it('gets returns on date change with date', async () => {
     (getFromDateOptions as jest.Mock).mockReturnValue(someReturnComparisonOptions());
     (getReturnComparison as jest.Mock).mockResolvedValueOnce({});
-    const component = shallow(<ReturnComparison token="a-token" />);
+    const component = shallow(<ReturnComparison token="a-token" fundNameMap={{}} />);
 
     await flushPromises();
     (getReturnComparison as jest.Mock).mockClear();
@@ -51,7 +51,7 @@ describe('Return comparison', () => {
   it('gets returns on personal pillar change with pillar', async () => {
     (getFromDateOptions as jest.Mock).mockReturnValue(someReturnComparisonOptions());
     (getReturnComparison as jest.Mock).mockResolvedValueOnce({});
-    const component = shallow(<ReturnComparison token="a-token" />);
+    const component = shallow(<ReturnComparison token="a-token" fundNameMap={{}} />);
 
     await flushPromises();
     (getReturnComparison as jest.Mock).mockClear();
@@ -66,7 +66,7 @@ describe('Return comparison', () => {
   });
 
   it('gets returns on pension fund change with key', async () => {
-    const component = shallow(<ReturnComparison token="a-token" />);
+    const component = shallow(<ReturnComparison token="a-token" fundNameMap={{}} />);
     await flushPromises();
     (getReturnComparison as jest.Mock).mockClear();
 
@@ -80,19 +80,22 @@ describe('Return comparison', () => {
   });
 
   it('has transformed hardcoded pension fund isins and epi as pension fund select options', async () => {
-    const component = shallow(<ReturnComparison token={aToken()} />);
+    const fundNameMap = {
+      EE987654: 'Existing fund name',
+    };
+    const component = shallow(<ReturnComparison token={aToken()} fundNameMap={fundNameMap} />);
 
-    expect(pensionFundSelect(component).prop('options')).toStrictEqual([
+    expect(pensionFundSelect(component).prop('options')).toEqual([
       { label: 'returnComparison.pensionFund', value: Key.EPI },
       { label: 'EE123456', value: 'EE123456' },
-      { label: 'EE987654', value: 'EE987654' },
+      { label: 'Existing fund name', value: 'EE987654' },
     ]);
   });
 
   it('shows returns as - after failed retrieval', async () => {
     (getFromDateOptions as jest.Mock).mockReturnValue(someReturnComparisonOptions());
     (getReturnComparison as jest.Mock).mockResolvedValueOnce({});
-    const component = shallow(<ReturnComparison token={aToken()} />);
+    const component = shallow(<ReturnComparison token={aToken()} fundNameMap={{}} />);
 
     await flushPromises();
 
@@ -108,7 +111,7 @@ describe('Return comparison', () => {
   it('shows ... for returns while getting returns', async () => {
     (getFromDateOptions as jest.Mock).mockReturnValue(someReturnComparisonOptions());
     (getReturnComparison as jest.Mock).mockResolvedValueOnce({});
-    const component = shallow(<ReturnComparison token={aToken()} />);
+    const component = shallow(<ReturnComparison token={aToken()} fundNameMap={{}} />);
     await flushPromises();
 
     (getReturnComparison as jest.Mock).mockResolvedValueOnce({});
@@ -126,7 +129,7 @@ describe('Return comparison', () => {
     ]);
     (getReturnComparison as jest.Mock).mockResolvedValueOnce({});
 
-    const component = shallow(<ReturnComparison token={aToken()} />);
+    const component = shallow(<ReturnComparison token={aToken()} fundNameMap={{}} />);
     await flushPromises();
 
     expect(dateSelect(component).prop('selected')).toEqual('2002-01-01');

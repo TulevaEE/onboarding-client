@@ -15,6 +15,7 @@ interface Option {
 
 interface Props {
   token: string;
+  fundNameMap: Record<string, string>;
 }
 
 interface State {
@@ -77,6 +78,7 @@ export default class ReturnComparison extends Component<Props, State> {
   }
 
   render(): JSX.Element {
+    const { fundNameMap } = this.props;
     const {
       loading,
       fromDateOptions,
@@ -134,7 +136,7 @@ export default class ReturnComparison extends Component<Props, State> {
                   { value: Key.EPI, label: 'returnComparison.pensionFund' },
                   ...fundIsinsWithAvailableData.map(isin => ({
                     value: isin,
-                    label: isin,
+                    label: fundNameMap[isin] || isin,
                   })),
                 ]}
                 selected={selectedPensionFundKey}
