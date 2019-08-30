@@ -1,4 +1,5 @@
 import { get } from '../../../common/http';
+import { getEndpoint } from '../../../common/api';
 
 enum Key {
   SECOND_PILLAR = 'SECOND_PILLAR',
@@ -51,5 +52,5 @@ function getReturns(startDate: string, token: string): Promise<ReturnsResponse> 
   const params = { from: startDate };
   const headers = { Authorization: `Bearer ${token}` };
 
-  return get('/v1/returns', params, headers);
+  return get(getEndpoint('/v1/returns'), params, headers);
 }
