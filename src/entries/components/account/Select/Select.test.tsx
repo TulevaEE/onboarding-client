@@ -1,5 +1,5 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import { shallow, ShallowWrapper } from 'enzyme';
 
 import { Select } from './Select';
 
@@ -48,11 +48,6 @@ describe('Select', () => {
     expect(onChange).toBeCalledWith(3);
   });
 
-  function select() {
-    return component.find('select');
-  }
-
-  function options() {
-    return component.find('option');
-  }
+  const select = (): ShallowWrapper<HTMLSelectElement> => component.find('select');
+  const options = (): ShallowWrapper<HTMLOptionElement> => component.find('option');
 });
