@@ -8,7 +8,7 @@ import { Message } from 'retranslate';
 import { Loader, ErrorMessage } from '../common';
 import PendingExchangesTable from './pendingExchangeTable';
 import ReturnComparison from './ReturnComparison';
-import ReturnComparisonDateSelect from './ReturnComparisonDateSelect';
+import Select from './Select';
 import { getReturnComparison } from './ReturnComparison/api';
 import getReturnComparisonDateOptions from './ReturnComparison/options';
 import UpdateUserForm from './updateUserForm';
@@ -118,9 +118,9 @@ export class AccountPage extends Component {
             </p>
           </div>
           <div className="col-md-4 text-md-right">
-            <ReturnComparisonDateSelect
+            <Select
               options={returnComparisonDateOptions}
-              selectedDate={returnComparisonDate}
+              selected={returnComparisonDate}
               onChange={date => {
                 this.setState({ returnComparisonDate: date }, () => {
                   this.getReturnComparison();

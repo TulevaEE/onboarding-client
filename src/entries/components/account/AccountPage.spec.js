@@ -7,7 +7,7 @@ import { AccountPage } from './AccountPage';
 import PendingExchangesTable from './pendingExchangeTable';
 import UpdateUserForm from './updateUserForm';
 import ReturnComparison from './ReturnComparison';
-import ReturnComparisonDateSelect from './ReturnComparisonDateSelect';
+import Select from './Select';
 import { getReturnComparison } from './ReturnComparison/api';
 import getReturnComparisonDateOptions from './ReturnComparison/options';
 import AccountStatement from './AccountStatement';
@@ -74,7 +74,7 @@ describe('Current balance', () => {
       getReturnComparison.mockClear();
       expect(getReturnComparison).not.toHaveBeenCalled();
 
-      returnComparisonDateSelect(component).simulate('change', '2020-06-25');
+      select(component).simulate('change', '2020-06-25');
       expect(getReturnComparison).toHaveBeenCalledWith('2020-06-25', 'a-token');
     });
 
@@ -86,7 +86,7 @@ describe('Current balance', () => {
       expect(returnComparisonSection(component).exists()).toBe(true);
 
       getReturnComparison.mockRejectedValueOnce({});
-      returnComparisonDateSelect(component).simulate('change', aDate());
+      select(component).simulate('change', aDate());
       await flushPromises();
       expect(returnComparisonSection(component).exists()).toBe(false);
     });
@@ -98,7 +98,7 @@ describe('Current balance', () => {
       await flushPromises();
 
       getReturnComparison.mockResolvedValueOnce({});
-      returnComparisonDateSelect(component).simulate('change', aDate());
+      select(component).simulate('change', aDate());
 
       expect(returnComparison(component).prop('loading')).toBe(true);
       await flushPromises();
@@ -115,7 +115,7 @@ describe('Current balance', () => {
       component = shallow(<AccountPage token={aToken()} />);
       await flushPromises();
 
-      expect(returnComparisonDateSelect(component).prop('selectedDate')).toEqual('2002-01-01');
+      expect(select(component).prop('selected')).toEqual('2002-01-01');
     });
   });
 
@@ -273,7 +273,7 @@ describe('Current balance', () => {
 
   const returnComparisonSection = c => c.find('[data-test-id="return-comparison-section"]');
   const returnComparison = c => c.find(ReturnComparison);
-  const returnComparisonDateSelect = c => c.find(ReturnComparisonDateSelect);
+  const select = c => c.find(Select);
   const someReturnComparisonOptions = () => [
     { value: '2015-03-10', label: 'A date' },
     { value: '2020-10-03', label: 'Another date' },
