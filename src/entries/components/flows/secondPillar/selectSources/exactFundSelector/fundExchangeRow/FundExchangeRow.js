@@ -49,7 +49,7 @@ export const FundExchangeRow = ({
             className="form-control pr-0"
             min="0"
             max="100"
-            value={selection.percentage * 100}
+            value={(selection.percentage * 100).toFixed()}
             type="number"
             onChange={({ target: { value } }) =>
               onChange({

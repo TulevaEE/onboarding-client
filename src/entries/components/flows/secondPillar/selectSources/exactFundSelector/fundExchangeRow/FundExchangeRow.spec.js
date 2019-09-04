@@ -150,7 +150,18 @@ describe('Fund exchange row', () => {
       percentage,
     };
     component.setProps({ selection });
-    expect(component.find('input').prop('value')).toBe(50);
+    expect(component.find('input').prop('value')).toBe('50');
+  });
+
+  it('can parse 7 percent', () => {
+    const percentage = 0.07;
+    const selection = {
+      sourceFundIsin: 'source isin 3',
+      targetFundIsin: 'target isin 3',
+      percentage,
+    };
+    component.setProps({ selection });
+    expect(component.find('input').prop('value')).toBe('7');
   });
 
   it('can change the percentage', () => {
