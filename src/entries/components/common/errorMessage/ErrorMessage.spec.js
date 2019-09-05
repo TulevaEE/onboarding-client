@@ -7,7 +7,12 @@ import ErrorMessage, { getGlobalErrorCode } from './ErrorMessage';
 describe('Error message', () => {
   let component;
   let props;
-  let errors = { errors: [{ code: 'some.code' }, { code: 'some.other.code' }] };
+  let errors = {
+    errors: [
+      { code: 'some.code', message: 'some message' },
+      { code: 'some.other.code', message: 'some other message' },
+    ],
+  };
 
   beforeEach(() => {
     component = shallow(<ErrorMessage {...props} />);
@@ -18,11 +23,10 @@ describe('Error message', () => {
     expect(component.contains(<Message>error.messages.intro</Message>)).toBe(true);
   });
 
-  it('shows an error messages', () => {
-    errors = { errors: [{ code: 'some.code' }, { code: 'some.other.code' }] };
-
+  it('shows error codes and messages', () => {
     errors.errors.forEach(error => {
-      expect(component.contains(error.code.toString())).toBe(true);
+      expect(component.contains(error.code)).toBe(true);
+      expect(component.contains(error.message)).toBe(true);
     });
   });
 

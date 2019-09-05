@@ -21,7 +21,9 @@ const ErrorMessage = ({ errors, onCancel, overlayed }) => {
           {errors.errors &&
             errors.errors.map((error, index) => (
               <p key={index}>
-                <Message>{error.code}</Message>
+                <Message>
+                  {error.code}: {error.message}
+                </Message>
               </p>
             ))}
         </div>
