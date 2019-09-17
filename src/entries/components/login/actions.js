@@ -269,7 +269,7 @@ export function getUser() {
         dispatch({ type: GET_USER_SUCCESS, user });
       })
       .catch(error => {
-        if (error.status === 401) {
+        if (error.status === 401 || error.status === 502) {
           dispatch({ type: LOG_OUT });
         } else {
           dispatch({ type: GET_USER_ERROR, error });
