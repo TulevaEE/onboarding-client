@@ -6,6 +6,7 @@ import {
   changeAgreementToTerms,
   changeIsPoliticallyExposed,
   changeIsResident,
+  selectThirdPillarSources,
 } from './actions';
 import {
   QUERY_PARAMETERS,
@@ -14,13 +15,20 @@ import {
   CHANGE_AGREEMENT_TO_TERMS,
   CHANGE_POLITICALLY_EXPOSED,
   CHANGE_RESIDENCY,
+  SELECT_THIRD_PILLAR_SOURCES,
 } from './constants';
+import { SELECT_EXCHANGE_SOURCES } from '../exchange/constants';
 
 describe('Third pillar actions', () => {
   it('dispatches query parameters action when mapping query params to state', async () => {
     const store = mockStore();
 
-    await store.dispatch(addDataFromQueryParams({ aKey: 'aValue', anotherKey: 'anotherValue' }));
+    await store.dispatch(
+      addDataFromQueryParams({
+        aKey: 'aValue',
+        anotherKey: 'anotherValue',
+      }),
+    );
 
     const actions = store.getActions();
     expect(actions).toContainEqual({
@@ -87,5 +95,18 @@ describe('Third pillar actions', () => {
       type: CHANGE_RESIDENCY,
       isResident: true,
     });
+  });
+});
+
+it('can select third pillar sources', () => {
+  const exchangeExistingUnits = true;
+  const selectedFutureContributionsFundIsin = 'EE234';
+
+  expect(
+    selectThirdPillarSources(exchangeExistingUnits, selectedFutureContributionsFundIsin),
+  ).toEqual({
+    type: SELECT_THIRD_PILLAR_SOURCES,
+    exchangeExistingUnits,
+    selectedFutureContributionsFundIsin,
   });
 });

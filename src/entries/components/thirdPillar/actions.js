@@ -1,11 +1,12 @@
 import {
-  QUERY_PARAMETERS,
-  CHANGE_MONTHLY_CONTRIBUTION,
-  CHANGE_EXCHANGE_EXISTING_UNITS,
   CHANGE_AGREEMENT_TO_TERMS,
-  CHANGE_RESIDENCY,
-  CHANGE_POLITICALLY_EXPOSED,
+  CHANGE_EXCHANGE_EXISTING_UNITS,
+  CHANGE_MONTHLY_CONTRIBUTION,
   CHANGE_OCCUPATION,
+  CHANGE_POLITICALLY_EXPOSED,
+  CHANGE_RESIDENCY,
+  QUERY_PARAMETERS,
+  SELECT_THIRD_PILLAR_SOURCES,
 } from './constants';
 
 export function addDataFromQueryParams(query) {
@@ -34,4 +35,15 @@ export function changeIsResident(isResident) {
 
 export function changeOccupation(occupation) {
   return { type: CHANGE_OCCUPATION, occupation };
+}
+
+export function selectThirdPillarSources(
+  exchangeExistingUnits,
+  selectedFutureContributionsFundIsin = '',
+) {
+  return {
+    type: SELECT_THIRD_PILLAR_SOURCES,
+    exchangeExistingUnits,
+    selectedFutureContributionsFundIsin,
+  };
 }

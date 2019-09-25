@@ -97,6 +97,8 @@
   "target.funds.EE3600098448.title": "Luminor B Pensionifond",
   "target.funds.EE3600098430.title": "Luminor A Pensionifond",
   "target.funds.EE3600109476.title": "LHV Pensionifond Eesti",
+  "target.funds.EE3600109419.title": "LHV Pensionifond Indeks Pluss",
+  "target.funds.EE3600109419.description": "100% aktsiatesse investeeriv fond - sobib, kui soovid saavutada parimat võimalikku tootlust pika aja vältel ja sind ei löö rivist välja turu lühiajalised kõikumised.",
   "target.funds.EE3600109435.tooltip.title": "Tuleva Maailma Aktsiate Pensionifond",
   "target.funds.EE3600109435.tooltip.investment.1": "iShares Developed World ex-Tobacco Index Fund — 8%",
   "target.funds.EE3600109435.tooltip.investment.2": "iShares Developed World Index Fund — 28%",
@@ -280,6 +282,7 @@
   "returnComparison.period.thisYear": "Käesolev aasta",
 
   "thirdPillarFlow.steps.setup.title": "Sisesta, kui palju soovid koguma hakata",
+  "thirdPillarFlow.steps.selectSources.title": "Too III pensionisammas Tulevasse",
   "thirdPillarFlow.steps.address.title": "Sisesta oma kontaktandmed",
   "thirdPillarFlow.steps.confirmMandate.title": "Kinnita avalduse sisu",
   "thirdPillarFlow.steps.payment.title": "Maksa",
@@ -287,6 +290,16 @@
   "thirdPillarFlowSetup.monthlyContributionLabel": "Igakuine sissemakse",
   "thirdPillarFlowSetup.exchangeExistingUnitsLabel": "Soovin kogunenud III samba osakud üle tuua",
   "thirdPillarFlowSetup.buttonText": "Järgmine samm",
+
+  "thirdPillarFlowSelectSources.title": "Sul on tänaseks III samba pensionifondidesse kogunenud",
+  "thirdPillarFlowSelectSources.selectAll.title": "Toon kogu III samba Tulevasse",
+  "thirdPillarFlowSelectSources.selectAll.subtitle": "Suunad valitud fondi uued maksed ja vahetad kogunenud osakud. Kogud pensioni päris oma pensionifondis ja säästad teenustasudelt.",
+  "thirdPillarFlowSelectSources.cost": "Mis fondivahetus maksab?",
+  "thirdPillarFlowSelectSources.futureContributions.title": "Toon ainult uued maksed Tulevasse",
+  "thirdPillarFlowSelectSources.futureContributions.subtitle": "Sinu seni kogutud osakud jäävad vanasse pensionifondi ja uued sissemaksed hakkavad minema Tuleva III Samba Pensionifondi.",
+
+  "thirdPillarFlowSelectSources.other.title": "Muud valikud",
+  "thirdPillarFlowSelectSources.other.subtitle": "Kui soovid valida mõnda muud pensionifondi või üle tuua kogunenud pensionifondi ainult osaliselt, siis palun logi sisse oma internetipanka või pensionikeskusesse. Meie veebileht pole jõudnud veel neid valikuid teha.",
 
   "confirmThirdPillarMandate.intro": "Avaldust allkirjastades kinnitad, et:",
   "confirmThirdPillarMandate.contribution": "soovid hakata tegema vabatahtliku kogumispensioni sissemakseid fondi:",

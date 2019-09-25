@@ -60,7 +60,7 @@ export const ConfirmThirdPillarMandate = ({
       </div>
     )}
     {loadingSourceFunds && <Loader className="align-middle" />}
-    {exchangeExistingUnits && !loadingSourceFunds && (
+    {exchangeExistingUnits && !loadingSourceFunds && !!exchangeableSourceFunds.length && (
       <div className="mt-4">
         <Message>confirmThirdPillarMandate.exchangeExistingUnits</Message>
         <div className="mt-4">

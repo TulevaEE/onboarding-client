@@ -6,8 +6,9 @@ import {
   CHANGE_POLITICALLY_EXPOSED,
   CHANGE_RESIDENCY,
   CHANGE_OCCUPATION,
+  SELECT_THIRD_PILLAR_SOURCES,
 } from './constants';
-import initialState from './initialState';
+import initialState, { LHV_INDEX_PLUS_ISIN } from './initialState';
 import {
   GET_SOURCE_FUNDS_ERROR,
   GET_SOURCE_FUNDS_START,
@@ -60,7 +61,7 @@ export default function thirdPillarReducer(state = initialState, action) {
     case GET_TARGET_FUNDS_SUCCESS:
       return {
         ...state,
-        targetFunds: action.targetFunds.filter(isThirdPillar),
+        targetFunds: action.targetFunds.filter(isThirdPillar).filter(isTuleva),
       };
     case CHANGE_AGREEMENT_TO_TERMS:
       return {
@@ -87,6 +88,12 @@ export default function thirdPillarReducer(state = initialState, action) {
         ...state,
         signedMandateId: action.signedMandateId,
       };
+    case SELECT_THIRD_PILLAR_SOURCES:
+      return {
+        ...state,
+        exchangeExistingUnits: action.exchangeExistingUnits,
+        selectedFutureContributionsFundIsin: action.selectedFutureContributionsFundIsin,
+      };
     case LOG_OUT:
       return initialState;
     default:
@@ -94,6 +101,7 @@ export default function thirdPillarReducer(state = initialState, action) {
   }
 }
 
-function isThirdPillar(fund) {
-  return fund.pillar === 3;
-}
+const isThirdPillar = fund => fund.pillar === 3;
+
+const isTuleva = fund =>
+  (fund.fundManager || {}).name === 'Tuleva' || fund.isin === LHV_INDEX_PLUS_ISIN; // temporary fund

@@ -1,4 +1,4 @@
-const LHV_INDEX_PLUS_ISIN = 'EE3600109419';
+export const LHV_INDEX_PLUS_ISIN = 'EE3600109419';
 
 export default {
   monthlyContribution: null,

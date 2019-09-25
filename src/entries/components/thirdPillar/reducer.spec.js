@@ -5,6 +5,7 @@ import {
   CHANGE_AGREEMENT_TO_TERMS,
   CHANGE_POLITICALLY_EXPOSED,
   CHANGE_RESIDENCY,
+  SELECT_THIRD_PILLAR_SOURCES,
 } from './constants';
 import initialState from './initialState';
 import reducer from './reducer';
@@ -180,11 +181,11 @@ describe('Third pillar reducer', () => {
     });
   });
 
-  it('updates target funds with third pillar funds on success', () => {
+  it('updates target funds with Tuleva third pillar funds on success', () => {
     const state = reducer(undefined, {
       type: GET_TARGET_FUNDS_SUCCESS,
       targetFunds: [
-        { isin: 'EE123', pillar: 3 },
+        { isin: 'EE123', pillar: 3, fundManager: { name: 'Tuleva' } },
         { isin: 'EE456', pillar: 2 },
         { isin: 'EE789', pillar: 3 },
       ],
@@ -192,7 +193,7 @@ describe('Third pillar reducer', () => {
 
     expect(state).toEqual({
       ...initialState,
-      targetFunds: [{ isin: 'EE123', pillar: 3 }, { isin: 'EE789', pillar: 3 }],
+      targetFunds: [{ isin: 'EE123', pillar: 3, fundManager: { name: 'Tuleva' } }],
     });
   });
 
@@ -248,4 +249,17 @@ describe('Third pillar reducer', () => {
     const state = reducer(undefined, { type: LOG_OUT });
     expect(state).toEqual(initialState);
   });
+});
+
+it('can can select some third pillar sources', () => {
+  const action = {
+    type: SELECT_THIRD_PILLAR_SOURCES,
+    exchangeExistingUnits: true,
+    selectedFutureContributionsFundIsin: 'EE123',
+  };
+
+  const state = reducer(undefined, action);
+
+  expect(state.exchangeExistingUnits).toEqual(true);
+  expect(state.selectedFutureContributionsFundIsin).toBe('EE123');
 });

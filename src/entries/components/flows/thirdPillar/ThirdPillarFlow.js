@@ -2,6 +2,7 @@ import React from 'react';
 import { Message } from 'retranslate';
 
 import ThirdPillarSetup from './ThirdPillarSetup';
+import ThirdPillarSelectSources from './ThirdPillarSelectSources';
 import ThirdPillarAddress from './ThirdPillarAddress';
 import ConfirmThirdPillarMandate from './ConfirmThirdPillarMandate';
 import ThirdPillarPayment from './ThirdPillarPayment';
@@ -12,8 +13,13 @@ const flowPath = '/3rd-pillar-flow';
 const steps = [
   {
     path: 'setup',
-    Component: () => <ThirdPillarSetup nextPath={`${flowPath}/address`} />,
+    Component: () => <ThirdPillarSetup nextPath={`${flowPath}/select-sources`} />,
     title: <Message>thirdPillarFlow.steps.setup.title</Message>,
+  },
+  {
+    path: 'select-sources',
+    Component: () => <ThirdPillarSelectSources nextPath={`${flowPath}/address`} />,
+    title: <Message>thirdPillarFlow.steps.selectSources.title</Message>,
   },
   {
     path: 'address',
