@@ -70,66 +70,6 @@ describe('Third pillar select sources step', () => {
     expect(onSelect).toHaveBeenCalledWith(true, 'EE123');
   });
 
-  it('sets the no selection radio as selected only when no funds selected', () => {
-    const noneSelectionRadio = () => component.find(Radio).last();
-    component.setProps({
-      exchangeExistingUnits: false,
-      futureContributionsFundIsin: '',
-    });
-    expect(noneSelectionRadio().prop('selected')).toBe(true);
-
-    component.setProps({ exchangeExistingUnits: true });
-    expect(noneSelectionRadio().prop('selected')).toBe(false);
-
-    component.setProps({ futureContributionsFundIsin: '' });
-    expect(noneSelectionRadio().prop('selected')).toBe(false);
-  });
-
-  it('shows subtitle for no funds only when it is selected', () => {
-    const noneSelectionRadio = () => component.find(Radio).last();
-    component.setProps({
-      exchangeExistingUnits: false,
-      futureContributionsFundIsin: '',
-    });
-
-    expect(noneSelectionRadio().prop('selected')).toBe(true);
-    expect(component.contains(<Message>thirdPillarFlowSelectSources.other.subtitle</Message>)).toBe(
-      true,
-    );
-
-    component.setProps({
-      exchangeExistingUnits: true,
-      futureContributionsFundIsin: '',
-    });
-
-    expect(noneSelectionRadio().prop('selected')).toBe(false);
-    expect(component.contains(<Message>thirdPillarFlowSelectSources.other.subtitle</Message>)).toBe(
-      false,
-    );
-  });
-
-  it('selects no funds when clicking on the no selection radio', () => {
-    const onSelect = jest.fn();
-    component.setProps({ onSelect });
-
-    component
-      .find(Radio)
-      .last()
-      .simulate('select');
-
-    expect(onSelect).toHaveBeenCalledTimes(1);
-    expect(onSelect).toHaveBeenCalledWith(false, '');
-  });
-
-  it('shows the subtitle for exact fund selection when selection is exact', () => {
-    const subtitleRendered = () =>
-      component.contains(<Message>thirdPillarFlowSelectSources.other.subtitle</Message>);
-    component.setProps({ futureContributionsFundIsin: 'EE123' });
-    expect(subtitleRendered()).toBe(false);
-    component.setProps({ futureContributionsFundIsin: '' });
-    expect(subtitleRendered()).toBe(true);
-  });
-
   it('passes the recommended fund isin forward to the target fund selector', () => {
     const recommendedFundIsin = 'asd';
     component.setProps({

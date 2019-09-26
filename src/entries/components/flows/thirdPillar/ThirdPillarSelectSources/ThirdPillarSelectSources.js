@@ -33,7 +33,6 @@ export const ThirdPillarSelectSources = ({
   }
   const fullSelectionActive = !!exchangeExistingUnits && !!futureContributionsFundIsin;
   const someSelectionActive = !exchangeExistingUnits && !!futureContributionsFundIsin;
-  const noneSelectionActive = !exchangeExistingUnits && !futureContributionsFundIsin;
   const isValid = exchangeExistingUnits || futureContributionsFundIsin;
   const defaultTargetFund = targetFunds && targetFunds.length ? targetFunds[0] : null;
   return (
@@ -90,24 +89,6 @@ export const ThirdPillarSelectSources = ({
         {someSelectionActive ? (
           <div className="mt-3">
             <Message>thirdPillarFlowSelectSources.futureContributions.subtitle</Message>
-          </div>
-        ) : (
-          ''
-        )}
-      </Radio>
-      <Radio
-        name="tv-select-sources-type"
-        id="tv-select-sources-type-none"
-        className="mt-3"
-        selected={noneSelectionActive}
-        onSelect={() => onSelect(false, '')}
-      >
-        <p className="m-0">
-          <Message>thirdPillarFlowSelectSources.other.title</Message>
-        </p>
-        {noneSelectionActive ? (
-          <div className="mt-2 tv-select-sources-type-none-subtitle">
-            <Message>thirdPillarFlowSelectSources.other.subtitle</Message>
           </div>
         ) : (
           ''
