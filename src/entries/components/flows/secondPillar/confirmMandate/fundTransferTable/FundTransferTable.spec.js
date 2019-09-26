@@ -36,12 +36,14 @@ describe('Fund transfer table', () => {
         sourceFundIsin: 'source 1',
         targetFundIsin: 'target 1',
         sourceFundName: 'a',
+        targetFundName: 'c',
       },
       {
         percentage: 1,
         sourceFundIsin: 'source 2',
         targetFundIsin: 'target 2',
         sourceFundName: 'b',
+        targetFundName: 'd',
       },
     ];
     component.setProps({ selections });
@@ -52,9 +54,7 @@ describe('Fund transfer table', () => {
             <div className="col-12 col-sm">{selection.sourceFundName}</div>
             <div className="col-12 col-sm-2">{selection.percentage * 100}%</div>
             <div className="col-12 col-sm">
-              <b className="highlight">
-                <Message>{`target.funds.${selection.targetFundIsin}.title`}</Message>
-              </b>
+              <b className="highlight">{selection.targetFundName}</b>
             </div>
           </div>,
         ),

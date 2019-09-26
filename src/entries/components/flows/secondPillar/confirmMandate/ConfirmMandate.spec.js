@@ -51,14 +51,13 @@ describe('Confirm mandate step', () => {
       selectedFutureContributionsFundIsin: 'test isin',
       sourceSelection: [],
     };
-    component.setProps({ exchange });
+    const selectedFutureContributionsFund = { name: 'test name' };
+    component.setProps({ exchange, selectedFutureContributionsFund });
     expect(
       component.contains(
         <div className="mt-4">
           <Message>confirm.mandate.future.contribution</Message>
-          <b className="highlight">
-            <Message>{`target.funds.${exchange.selectedFutureContributionsFundIsin}.title`}</Message>
-          </b>
+          <b className="highlight">test name</b>
         </div>,
       ),
     ).toBe(true);
@@ -104,19 +103,22 @@ describe('Confirm mandate step', () => {
       { percentage: 1, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
     ];
     const sourceFunds = [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }];
-    component.setProps({ exchange: { sourceSelection, sourceFunds } });
+    const targetFunds = [{ isin: 'target 1', name: 'c' }, { isin: 'target 2', name: 'd' }];
+    component.setProps({ exchange: { sourceSelection, sourceFunds, targetFunds } });
     expect(component.find(FundTransferTable).prop('selections')).toEqual([
       {
         percentage: 0.5,
         sourceFundIsin: 'source 1',
         targetFundIsin: 'target 1',
         sourceFundName: 'a',
+        targetFundName: 'c',
       },
       {
         percentage: 1,
         sourceFundIsin: 'source 2',
         targetFundIsin: 'target 2',
         sourceFundName: 'b',
+        targetFundName: 'd',
       },
     ]);
     expect(component.contains(<Message>confirm.mandate.switch.sources</Message>)).toBe(true);
@@ -162,6 +164,7 @@ describe('Confirm mandate step', () => {
         },
       ],
       sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
+      targetFunds: [{ isin: 'target 1', name: 'c' }, { isin: 'target 2', name: 'd' }],
     };
     component.setProps({ exchange });
     expect(component.find(FundTransferTable).prop('selections')).toEqual([
@@ -170,18 +173,21 @@ describe('Confirm mandate step', () => {
         sourceFundIsin: 'source 1',
         targetFundIsin: 'target 1',
         sourceFundName: 'a',
+        targetFundName: 'c',
       },
       {
         percentage: 0.4,
         sourceFundIsin: 'source 1',
         targetFundIsin: 'target 2',
         sourceFundName: 'a',
+        targetFundName: 'd',
       },
       {
         percentage: 0.9,
         sourceFundIsin: 'source 2',
         targetFundIsin: 'target 2',
         sourceFundName: 'b',
+        targetFundName: 'd',
       },
     ]);
   });
@@ -245,6 +251,7 @@ describe('Confirm mandate step', () => {
           },
         ],
         sourceFunds: [{ isin: 'source 1', name: 'a' }],
+        targetFunds: [{ isin: 'target 1', name: 'c' }],
         selectedFutureContributionsFundIsin: 'asd',
       },
     });
@@ -294,6 +301,11 @@ describe('Confirm mandate step', () => {
         { isin: 'source 2', name: 'b' },
         { isin: 'source 3', name: 'c', price: 0 },
       ],
+      targetFunds: [
+        { isin: 'target 1', name: 'c' },
+        { isin: 'target 2', name: 'd' },
+        { isin: 'target 3', name: 'c' },
+      ],
       selectedFutureContributionsFundIsin: 'target 1',
       agreedToTerms: true,
     };
@@ -310,7 +322,7 @@ describe('Confirm mandate step', () => {
     });
   });
 
-  it('can start signing the mandate with a future capital fund', () => {
+  it('can start signing the mandate with a future contribution fund', () => {
     const onSignMandate = jest.fn();
     const exchange = {
       sourceSelection: [
@@ -335,6 +347,11 @@ describe('Confirm mandate step', () => {
         { isin: 'source 2', name: 'b' },
         { isin: 'source 3', name: 'c', price: 0 },
       ],
+      targetFunds: [
+        { isin: 'target 1', name: 'c' },
+        { isin: 'target 2', name: 'd' },
+        { isin: 'target 3', name: 'c' },
+      ],
       selectedFutureContributionsFundIsin: 'target 1',
       agreedToTerms: true,
     };
@@ -351,7 +368,7 @@ describe('Confirm mandate step', () => {
     });
   });
 
-  it('can start signing the mandate with a future capital fund', () => {
+  it('can start signing the mandate without a future contribution fund', () => {
     const onSignMandate = jest.fn();
     const exchange = {
       sourceSelection: [
@@ -367,6 +384,7 @@ describe('Confirm mandate step', () => {
         },
       ],
       sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
+      targetFunds: [{ isin: 'target 1', name: 'c' }, { isin: 'target 2', name: 'd' }],
       selectedFutureContributionsFundIsin: null,
       agreedToTerms: true,
     };
@@ -398,6 +416,7 @@ describe('Confirm mandate step', () => {
         },
       ],
       sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
+      targetFunds: [{ isin: 'target 1', name: 'c' }, { isin: 'target 2', name: 'd' }],
       selectedFutureContributionsFundIsin: null,
       agreedToTerms: false,
     };
@@ -423,6 +442,7 @@ describe('Confirm mandate step', () => {
         },
       ],
       sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
+      targetFunds: [{ isin: 'target 1', name: 'c' }, { isin: 'target 2', name: 'd' }],
       selectedFutureContributionsFundIsin: null,
       agreedToTerms: false,
     };
@@ -448,6 +468,7 @@ describe('Confirm mandate step', () => {
         },
       ],
       sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
+      targetFunds: [{ isin: 'target 1', name: 'c' }, { isin: 'target 2', name: 'd' }],
       selectedFutureContributionsFundIsin: null,
       agreedToTerms: false,
     };
@@ -480,6 +501,7 @@ describe('Confirm mandate step', () => {
         },
       ],
       sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
+      targetFunds: [{ isin: 'target 1', name: 'c' }, { isin: 'target 2', name: 'd' }],
       selectedFutureContributionsFundIsin: null,
       agreedToTerms: false,
     };
@@ -503,6 +525,7 @@ describe('Confirm mandate step', () => {
         },
       ],
       sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
+      targetFunds: [{ isin: 'target 1', name: 'c' }, { isin: 'target 2', name: 'd' }],
       selectedFutureContributionsFundIsin: null,
       agreedToTerms: false,
     };
@@ -528,6 +551,7 @@ describe('Confirm mandate step', () => {
         },
       ],
       sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
+      targetFunds: [{ isin: 'target 1', name: 'c' }, { isin: 'target 2', name: 'd' }],
       selectedFutureContributionsFundIsin: null,
       error,
     };

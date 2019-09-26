@@ -49,7 +49,7 @@ export const TransferFutureCapital = ({
         </option>
         {sortedTargetFunds.map(fund => (
           <option value={fund.isin} key={fund.isin}>
-            {translate(`target.funds.${fund.isin}.title`)}
+            {fund.name}
           </option>
         ))}
       </select>
@@ -64,7 +64,7 @@ export const TransferFutureCapital = ({
           onSelect={() => onSelectFutureCapitalFund(fund.isin)}
         >
           <h3 className="m-0">
-            <Message>{`transfer.future.capital.${fund.isin}.fund`}</Message>
+            {fund.name}
             <InfoTooltip name={fund.isin}>
               <TargetFundTooltipBody targetFundIsin={fund.isin} />
             </InfoTooltip>

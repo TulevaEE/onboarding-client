@@ -75,7 +75,7 @@ export const FundExchangeRow = ({
           >
             {sortedTargetFunds.map(fund => (
               <option key={fund.isin} value={fund.isin}>
-                {translate(`target.funds.${fund.isin}.title`)}
+                {fund.name}
               </option>
             ))}
           </select>

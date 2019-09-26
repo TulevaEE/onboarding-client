@@ -59,18 +59,18 @@ function aggregateSelections(selections) {
   return normalizeAndGetSelections(routes);
 }
 
-function attachNames(selections, sourceFunds) {
+function attachNames(selections, sourceFunds, targetFunds) {
   return selections.map(selection => ({
     ...selection,
     sourceFundName: utils.findWhere(sourceFunds, ({ isin }) => isin === selection.sourceFundIsin)
+      .name,
+    targetFundName: utils.findWhere(targetFunds, ({ isin }) => isin === selection.targetFundIsin)
       .name,
   }));
 }
 
 function isFundPriceZero(sourceFunds, isinToMatch) {
-  const funds = utils.findWhere(sourceFunds, ({ isin }) => isin === isinToMatch).price === 0;
-
-  return funds;
+  return utils.findWhere(sourceFunds, ({ isin }) => isin === isinToMatch).price === 0;
 }
 
 function getMandate(exchange) {
@@ -88,6 +88,7 @@ function getMandate(exchange) {
 
 export const ConfirmMandate = ({
   exchange,
+  selectedFutureContributionsFund,
   loading,
   onPreviewMandate,
   onSignMandate,
@@ -103,7 +104,11 @@ export const ConfirmMandate = ({
     return <ErrorMessage errors={exchange.error.body} onCancel={onCloseErrorMessages} overlayed />;
   }
   const aggregatedSelections = aggregateSelections(exchange.sourceSelection);
-  const aggregatedSelectionsWithNames = attachNames(aggregatedSelections, exchange.sourceFunds);
+  const aggregatedSelectionsWithNames = attachNames(
+    aggregatedSelections,
+    exchange.sourceFunds,
+    exchange.targetFunds,
+  );
   const hasFilledFlow = aggregatedSelections.length || exchange.selectedFutureContributionsFundIsin;
   if (!hasFilledFlow) {
     return <MandateNotFilledAlert />;
@@ -129,11 +134,7 @@ export const ConfirmMandate = ({
       {exchange.selectedFutureContributionsFundIsin ? (
         <div className="mt-4">
           <Message>confirm.mandate.future.contribution</Message>
-          <b className="highlight">
-            <Message>
-              {`target.funds.${exchange.selectedFutureContributionsFundIsin}.title`}
-            </Message>
-          </b>
+          <b className="highlight">{selectedFutureContributionsFund.name}</b>
         </div>
       ) : (
         ''
@@ -213,6 +214,7 @@ const noop = () => null;
 
 ConfirmMandate.defaultProps = {
   loading: false,
+  selectedFutureContributionsFund: {},
   onPreviewMandate: noop,
   onSignMandate: noop,
   onCancelSigningMandate: noop,
@@ -235,6 +237,7 @@ ConfirmMandate.propTypes = {
     mandateSigningError: Types.shape({ body: Types.string }),
     agreedToTerms: Types.bool,
   }).isRequired,
+  selectedFutureContributionsFund: Types.shape({ isin: Types.string, name: Types.string }),
   loading: Types.bool,
   onPreviewMandate: Types.func,
   onSignMandate: Types.func,
@@ -246,6 +249,9 @@ ConfirmMandate.propTypes = {
 
 const mapStateToProps = state => ({
   exchange: state.exchange,
+  selectedFutureContributionsFund: (state.exchange.targetFunds || []).find(
+    fund => fund.isin === state.exchange.selectedFutureContributionsFundIsin,
+  ),
   loading:
     state.login.loadingUser ||
     state.login.loadingUserConversion ||

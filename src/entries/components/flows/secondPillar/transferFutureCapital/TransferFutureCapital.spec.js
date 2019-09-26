@@ -49,17 +49,15 @@ describe('Transfer future capital step', () => {
         .find(Radio)
         .at(0)
         .childAt(0)
-        .childAt(0)
-        .get(0),
-    ).toEqual(<Message>transfer.future.capital.AAA.fund</Message>);
+        .text(),
+    ).toEqual('A<InfoTooltip />');
     expect(
       component
         .find(Radio)
         .at(1)
         .childAt(0)
-        .childAt(0)
-        .get(0),
-    ).toEqual(<Message>transfer.future.capital.BBB.fund</Message>);
+        .text(),
+    ).toEqual('B<InfoTooltip />');
     expect(
       component
         .find(Radio)

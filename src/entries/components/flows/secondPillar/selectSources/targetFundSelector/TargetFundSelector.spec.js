@@ -12,12 +12,16 @@ describe('Target fund selector', () => {
   });
 
   it('renders a target fund selector button for every target fund', () => {
-    const targetFunds = [{ isin: '123' }, { isin: '456' }, { isin: '789' }];
+    const targetFunds = [
+      { isin: '123', name: 'A' },
+      { isin: '456', name: 'B' },
+      { isin: '789', name: 'C' },
+    ];
     component.setProps({ targetFunds });
     expect(component.find('button').length).toBe(3);
-    targetFunds.forEach(({ isin }) => {
-      expect(component.contains(<Message>{`target.funds.${isin}.title`}</Message>)).toBe(true);
-      expect(component.contains(<Message>{`target.funds.${isin}.description`}</Message>)).toBe(
+    targetFunds.forEach(fund => {
+      expect(component.contains(fund.name)).toBe(true);
+      expect(component.contains(<Message>{`target.funds.${fund.isin}.description`}</Message>)).toBe(
         true,
       );
       // TODO: add test for terms link once we have the links.

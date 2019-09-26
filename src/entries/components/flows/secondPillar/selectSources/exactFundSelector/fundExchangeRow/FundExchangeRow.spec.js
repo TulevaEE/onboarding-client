@@ -58,11 +58,7 @@ describe('Fund exchange row', () => {
   it('shows all target funds as options', () => {
     component.setProps({ targetFunds });
     targetFunds.forEach(fund =>
-      expect(
-        component.contains(
-          <option value={fund.isin}>{`translated:target.funds.${fund.isin}.title`}</option>,
-        ),
-      ).toBe(true),
+      expect(component.contains(<option value={fund.isin}>{fund.name}</option>)).toBe(true),
     );
   });
 
