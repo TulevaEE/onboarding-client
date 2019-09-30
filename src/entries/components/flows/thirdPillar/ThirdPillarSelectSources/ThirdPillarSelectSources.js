@@ -4,7 +4,7 @@ import { Message } from 'retranslate';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import { Loader, Radio, ErrorMessage } from '../../../common';
 import { selectThirdPillarSources } from '../../../thirdPillar/actions';
 import { LHV_INDEX_PLUS_ISIN } from '../../../thirdPillar/initialState';
@@ -21,6 +21,7 @@ export const ThirdPillarSelectSources = ({
   loadingTargetFunds,
   sourceFunds,
   targetFunds,
+  exchangeableSourceFunds,
   error,
   onSelect,
   nextPath,
@@ -37,6 +38,7 @@ export const ThirdPillarSelectSources = ({
   const defaultTargetFund = targetFunds && targetFunds.length ? targetFunds[0] : null;
   return (
     <div>
+      {!loadingSourceFunds && !exchangeableSourceFunds.length && <Redirect to={nextPath} />}
       <div className="row justify-content-around align-items-center">
         <div className="col-12">
           <div className="px-col mb-4">
@@ -118,6 +120,7 @@ ThirdPillarSelectSources.defaultProps = {
   targetFunds: [],
   loadingSourceFunds: false,
   loadingTargetFunds: false,
+  exchangeableSourceFunds: [],
   onSelect: noop,
   error: null,
   nextPath: '',
@@ -132,6 +135,7 @@ ThirdPillarSelectSources.propTypes = {
   loadingSourceFunds: Types.bool,
   loadingTargetFunds: Types.bool,
   error: Types.shape({ body: Types.string }),
+  exchangeableSourceFunds: Types.arrayOf(Types.shape({})),
   onSelect: Types.func,
   nextPath: Types.string,
 };
@@ -139,6 +143,7 @@ ThirdPillarSelectSources.propTypes = {
 const mapStateToProps = state => ({
   recommendedFundIsin: (state.login.user || {}).age < 55 ? LHV_INDEX_PLUS_ISIN : '',
   exchangeExistingUnits: state.thirdPillar.exchangeExistingUnits,
+  exchangeableSourceFunds: state.thirdPillar.exchangeableSourceFunds,
   futureContributionsFundIsin: state.thirdPillar.selectedFutureContributionsFundIsin,
   sourceFunds: state.thirdPillar.sourceFunds,
   targetFunds: state.thirdPillar.targetFunds,

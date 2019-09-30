@@ -1,7 +1,7 @@
 import React from 'react';
 import Types from 'prop-types';
 import { bindActionCreators } from 'redux';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Message } from 'retranslate';
 
@@ -14,8 +14,10 @@ export const ThirdPillarSetup = ({
   exchangeExistingUnits,
   onExchangeExistingUnitsChange,
   nextPath,
+  hasPensionAccount,
 }) => (
   <div>
+    {hasPensionAccount && <Redirect to={nextPath} />}
     <div className="form-group">
       <label htmlFor="monthly-contribution">
         <Message>thirdPillarFlowSetup.monthlyContributionLabel</Message>
@@ -64,6 +66,7 @@ ThirdPillarSetup.propTypes = {
   exchangeExistingUnits: Types.bool,
   onExchangeExistingUnitsChange: Types.func,
   nextPath: Types.string,
+  hasPensionAccount: Types.bool,
 };
 
 const noop = () => {};
@@ -75,12 +78,18 @@ ThirdPillarSetup.defaultProps = {
   exchangeExistingUnits: false,
   onExchangeExistingUnitsChange: noop,
   nextPath: '',
+  hasPensionAccount: false,
 };
 
 const mapStateToProps = state => ({
   monthlyContribution: state.thirdPillar.monthlyContribution,
   exchangeExistingUnits: state.thirdPillar.exchangeExistingUnits,
   exchangeableSourceFunds: state.thirdPillar.exchangeableSourceFunds,
+  hasPensionAccount: !!(
+    state.login.token &&
+    state.login.user &&
+    state.login.user.pensionAccountNumber
+  ),
 });
 
 const mapDispatchToProps = dispatch =>
