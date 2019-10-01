@@ -54,19 +54,10 @@ describe('Third pillar reducer', () => {
     expect(state).toEqual({ ...initialState, exchangeExistingUnits: true });
   });
 
-  it('saves that existing units should not be exchanged when exchangeExistingUnits is any other string in query params', () => {
+  it('saves that existing units should not be exchanged when exchangeExistingUnits is false in query params', () => {
     const state = reducer(undefined, {
       type: QUERY_PARAMETERS,
-      query: { exchangeExistingUnits: 'false' },
-    });
-
-    expect(state).toEqual({ ...initialState, exchangeExistingUnits: false });
-  });
-
-  it('saves that existing units should not be exchanged when exchangeExistingUnits is not in query params', () => {
-    const state = reducer(undefined, {
-      type: QUERY_PARAMETERS,
-      query: {},
+      query: { exchangeExistingThirdPillarUnits: 'false' },
     });
 
     expect(state).toEqual({ ...initialState, exchangeExistingUnits: false });
@@ -145,6 +136,7 @@ describe('Third pillar reducer', () => {
     expect(state).toEqual({
       ...oldState,
       sourceFunds: [thirdPillarFund, anotherThirdPillarFund],
+      exchangeExistingUnits: true,
       exchangeableSourceFunds: [{ isin: 'EE123', pillar: 3 }],
     });
   });
@@ -165,6 +157,7 @@ describe('Third pillar reducer', () => {
     expect(state).toEqual({
       ...oldState,
       sourceFunds: [thirdPillarFund],
+      exchangeableSourceFunds: [],
       exchangeExistingUnits: false,
     });
   });

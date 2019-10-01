@@ -28,7 +28,12 @@ export default function thirdPillarReducer(state = initialState, action) {
         monthlyContribution:
           parseInt(query.monthlyThirdPillarContribution, 10) || state.monthlyContribution || null,
         exchangeExistingUnits:
-          query.exchangeExistingThirdPillarUnits === 'true' || state.exchangeExistingUnits,
+          // eslint-disable-next-line no-nested-ternary
+          query.exchangeExistingThirdPillarUnits === 'true'
+            ? true
+            : query.exchangeExistingThirdPillarUnits === 'false'
+            ? false
+            : state.exchangeExistingUnits,
       };
     case CHANGE_MONTHLY_CONTRIBUTION:
       return { ...state, monthlyContribution };

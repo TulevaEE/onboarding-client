@@ -33,7 +33,7 @@ export const ThirdPillarSetup = ({
       />
     </div>
 
-    {exchangeableSourceFunds.length > 0 && (
+    {exchangeableSourceFunds && exchangeableSourceFunds.length > 0 && (
       <div className="custom-control custom-checkbox mt-3">
         <input
           checked={exchangeExistingUnits}
@@ -74,7 +74,7 @@ const noop = () => {};
 ThirdPillarSetup.defaultProps = {
   monthlyContribution: null,
   onMonthlyContributionChange: noop,
-  exchangeableSourceFunds: [],
+  exchangeableSourceFunds: null,
   exchangeExistingUnits: false,
   onExchangeExistingUnitsChange: noop,
   nextPath: '',

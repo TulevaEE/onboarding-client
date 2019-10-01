@@ -13,16 +13,6 @@ describe('ThirdPillarAddress', () => {
     component = shallow(<ThirdPillarAddress />);
   });
 
-  it('redirects to previous path only when no monthly contribution', () => {
-    component.setProps({ previousPath: '/a-path' });
-    const redirects = () => component.contains(<Redirect to="/a-path" />);
-
-    component.setProps({ monthlyContribution: 123 });
-    expect(redirects()).toBe(false);
-    component.setProps({ monthlyContribution: null });
-    expect(redirects()).toBe(true);
-  });
-
   it('redirects to next path only when address is already filled', () => {
     component.setProps({ nextPath: '/next-path' });
     const redirects = () => component.contains(<Redirect to="/next-path" />);

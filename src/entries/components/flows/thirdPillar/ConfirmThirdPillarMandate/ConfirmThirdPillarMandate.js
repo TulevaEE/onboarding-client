@@ -60,19 +60,23 @@ export const ConfirmThirdPillarMandate = ({
       </div>
     )}
     {loadingSourceFunds && <Loader className="align-middle" />}
-    {exchangeExistingUnits && !loadingSourceFunds && !!exchangeableSourceFunds.length && (
-      <div className="mt-4">
-        <Message>confirmThirdPillarMandate.exchangeExistingUnits</Message>
+    {exchangeExistingUnits &&
+      !loadingSourceFunds &&
+      exchangeableSourceFunds &&
+      !!exchangeableSourceFunds.length &&
+      selectedFutureContributionsFund && (
         <div className="mt-4">
-          <FundTransferTable
-            selections={createSelectionsFromFundsToFund(
-              exchangeableSourceFunds,
-              selectedFutureContributionsFund,
-            )}
-          />
+          <Message>confirmThirdPillarMandate.exchangeExistingUnits</Message>
+          <div className="mt-4">
+            <FundTransferTable
+              selections={createSelectionsFromFundsToFund(
+                exchangeableSourceFunds,
+                selectedFutureContributionsFund,
+              )}
+            />
+          </div>
         </div>
-      </div>
-    )}
+      )}
 
     <ThirdPillarTermsAgreement />
 
@@ -191,7 +195,7 @@ ConfirmThirdPillarMandate.defaultProps = {
   mandateSigningError: null,
   signedMandateId: null,
   exchangeExistingUnits: null,
-  exchangeableSourceFunds: [],
+  exchangeableSourceFunds: null,
   selectedFutureContributionsFund: null,
   agreedToTerms: false,
   isResident: null,

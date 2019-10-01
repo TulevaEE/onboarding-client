@@ -38,7 +38,9 @@ export const ThirdPillarSelectSources = ({
   const defaultTargetFund = targetFunds && targetFunds.length ? targetFunds[0] : null;
   return (
     <div>
-      {!loadingSourceFunds && !exchangeableSourceFunds.length && <Redirect to={nextPath} />}
+      {!loadingSourceFunds && exchangeableSourceFunds && !exchangeableSourceFunds.length && (
+        <Redirect to={nextPath} />
+      )}
       <div className="row justify-content-around align-items-center">
         <div className="col-12">
           <div className="px-col mb-4">
@@ -120,7 +122,7 @@ ThirdPillarSelectSources.defaultProps = {
   targetFunds: [],
   loadingSourceFunds: false,
   loadingTargetFunds: false,
-  exchangeableSourceFunds: [],
+  exchangeableSourceFunds: null,
   onSelect: noop,
   error: null,
   nextPath: '',
