@@ -310,7 +310,8 @@
   "thirdPillarPayment.amount": "Summa",
   "thirdPillarPayment.details": "Makse selgitus",
   "thirdPillarPayment.reference": "Viitenumber",
-  "thirdPillarPayment.paymentButton": "Makse tehtud",
+  "thirdPillarPayment.paymentButton": "Tegin makse ära",
+  "thirdPillarPayment.recurringPaymentButton": "Tegin püsimakse",
 
   "thirdPillarSuccess.done": "Kõik tehtud",
   "thirdPillarSuccess.message": "Vaata oma kontoseisu ja kui oled Tuleva liige, siis näed ka oma liikmekapitali seisu.",

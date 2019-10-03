@@ -5,12 +5,15 @@ import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import { Message } from 'retranslate';
 import { updateUser, userUpdated } from '../../../common/user/actions';
+import { changeMonthlyContribution } from '../../../thirdPillar/actions';
 
 export class ThirdPillarPayment extends Component {
   async componentDidMount() {
     const { user, saveUser, userSaved } = this.props;
-    await saveUser(user);
-    await userSaved();
+    if (user) {
+      await saveUser(user);
+      await userSaved();
+    }
   }
 
   render() {
@@ -20,6 +23,7 @@ export class ThirdPillarPayment extends Component {
       signedMandateId,
       monthlyContribution,
       pensionAccountNumber,
+      onMonthlyContributionChange,
     } = this.props;
     return (
       <>
@@ -50,21 +54,48 @@ export class ThirdPillarPayment extends Component {
           <Message>thirdPillarPayment.accountNumber</Message>: <b>EE362200221067235244</b>
         </div>
         <div>
-          <Message>thirdPillarPayment.amount</Message>:{' '}
-          <b data-test-id="monthly-contribution">{monthlyContribution} EUR</b>
-        </div>
-        <div>
           <Message>thirdPillarPayment.details</Message>: <b>30101119828</b>
         </div>
         <div>
           <Message>thirdPillarPayment.reference</Message>:{' '}
           <b data-test-id="pension-account-number">{pensionAccountNumber}</b>
         </div>
+        <div className="form-inline">
+          <div className="form-group">
+            <label htmlFor="monthly-contribution">
+              <Message>thirdPillarPayment.amount</Message>:{' '}
+            </label>
+            <div className="input-group m-sm-2">
+              <input
+                id="monthly-contribution"
+                type="number"
+                value={monthlyContribution || ''}
+                onChange={event => {
+                  onMonthlyContributionChange(parseInt(event.target.value, 10));
+                }}
+                placeholder="100"
+                className="form-control"
+              />
+              <div className="input-group-append">
+                <span className="input-group-text">EUR</span>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <div>
           <Link to={nextPath}>
-            <button type="button" className="btn btn-primary mt-4">
+            <button
+              type="button"
+              className="btn btn-primary mt-4 mr-2"
+              disabled={!monthlyContribution}
+            >
               <Message>thirdPillarPayment.paymentButton</Message>
+            </button>
+          </Link>
+          <Link to={nextPath}>
+            <button type="button" className="btn btn-primary mt-4" disabled={!monthlyContribution}>
+              <Message>thirdPillarPayment.recurringPaymentButton</Message>
             </button>
           </Link>
         </div>
@@ -86,6 +117,7 @@ ThirdPillarPayment.propTypes = {
 
   saveUser: Types.func,
   userSaved: Types.func,
+  onMonthlyContributionChange: Types.func,
 };
 
 ThirdPillarPayment.defaultProps = {
@@ -99,6 +131,7 @@ ThirdPillarPayment.defaultProps = {
 
   saveUser: noop,
   userSaved: noop,
+  onMonthlyContributionChange: noop,
 };
 
 const mapStateToProps = state => ({
@@ -113,6 +146,7 @@ const mapDispatchToProps = dispatch =>
     {
       saveUser: updateUser,
       userSaved: userUpdated,
+      onMonthlyContributionChange: changeMonthlyContribution,
     },
     dispatch,
   );

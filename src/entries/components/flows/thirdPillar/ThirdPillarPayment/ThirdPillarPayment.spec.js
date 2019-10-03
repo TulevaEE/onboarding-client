@@ -19,17 +19,49 @@ describe('ThirdPillarPayment', () => {
     expect(redirects()).toBe(false);
   });
 
-  it('has monthly contribution', () => {
-    const monthlyContribution = () => component.find('[data-test-id="monthly-contribution"]');
-
-    component.setProps({ monthlyContribution: 1000 });
-    expect(monthlyContribution().text()).toBe('1000 EUR');
-  });
-
   it('has pension account number', () => {
     const pensionAccountNumber = () => component.find('[data-test-id="pension-account-number"]');
 
     component.setProps({ pensionAccountNumber: '987' });
     expect(pensionAccountNumber().text()).toBe('987');
   });
+
+  it('has monthly contribution', () => {
+    const value = () => contributionInput().prop('value');
+
+    expect(value()).toBe('');
+    component.setProps({ monthlyContribution: 1 });
+    expect(value()).toBe(1);
+  });
+
+  it('calls change handler on monthly contribution change', () => {
+    const onMonthlyContributionChange = jest.fn();
+    component.setProps({ onMonthlyContributionChange });
+
+    expect(onMonthlyContributionChange).not.toBeCalled();
+    contributionInput().simulate('change', { target: { value: '1' } });
+    expect(onMonthlyContributionChange).toBeCalledWith(1);
+  });
+
+  it('disables buttons when no monthly contribution', () => {
+    const firstButtonIsDisabled = () =>
+      component
+        .find('button')
+        .first()
+        .prop('disabled');
+
+    const secondButtonIsDisabled = () =>
+      component
+        .find('button')
+        .last()
+        .prop('disabled');
+
+    expect(firstButtonIsDisabled()).toBe(true);
+    expect(secondButtonIsDisabled()).toBe(true);
+    component.setProps({ monthlyContribution: 1 });
+    expect(firstButtonIsDisabled()).toBe(false);
+    expect(secondButtonIsDisabled()).toBe(false);
+  });
+
+  const contributionInput = () => component.find('#monthly-contribution');
 });
