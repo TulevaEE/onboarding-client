@@ -25,6 +25,9 @@ export const OccupationAgreement = ({ onOccupationChange, translations: { transl
           <option value="PUBLIC_SECTOR">
             {translate('thirdPillarAgreement.occupation.publicSector')}
           </option>
+          <option value="THIRD_SECTOR">
+            {translate('thirdPillarAgreement.occupation.thirdSector')}
+          </option>
           <option value="ENTREPRENEUR">
             {translate('thirdPillarAgreement.occupation.entrepreneur')}
           </option>
