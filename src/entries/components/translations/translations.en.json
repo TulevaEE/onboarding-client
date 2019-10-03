@@ -279,13 +279,11 @@
   "returnComparison.period.oneYear": "1 year",
   "returnComparison.period.thisYear": "This year",
 
-  "thirdPillarFlow.steps.setup.title": "Insert your monthly contribution",
+  "thirdPillarFlow.steps.setup.title": "Open III pillar account",
   "thirdPillarFlow.steps.address.title": "Insert your contact details",
   "thirdPillarFlow.steps.confirmMandate.title": "Confirm mandate",
   "thirdPillarFlow.steps.payment.title": "Pay",
 
-  "thirdPillarFlowSetup.monthlyContributionLabel": "Monthly contribution",
-  "thirdPillarFlowSetup.exchangeExistingUnitsLabel": "I wish to exchange existing III pillar funds",
   "thirdPillarFlowSetup.buttonText": "Next step",
 
   "confirmThirdPillarMandate.intro": "By signing I confirm that:",
