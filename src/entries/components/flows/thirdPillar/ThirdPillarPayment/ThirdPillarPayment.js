@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import { Message } from 'retranslate';
 import { updateUser, userUpdated } from '../../../common/user/actions';
-import { changeMonthlyContribution } from '../../../thirdPillar/actions';
+import { changeMonthlyContribution, thirdPillarStatistics } from '../../../thirdPillar/actions';
 
 export class ThirdPillarPayment extends Component {
   async componentDidMount() {
@@ -24,6 +24,7 @@ export class ThirdPillarPayment extends Component {
       monthlyContribution,
       pensionAccountNumber,
       onMonthlyContributionChange,
+      onSubmit,
     } = this.props;
     return (
       <>
@@ -88,14 +89,24 @@ export class ThirdPillarPayment extends Component {
             <button
               type="button"
               className="btn btn-primary mt-4 mr-2"
+              onClick={() => {
+                onSubmit({ mandateId: signedMandateId, recurringPayment: monthlyContribution });
+              }}
               disabled={!monthlyContribution}
             >
-              <Message>thirdPillarPayment.paymentButton</Message>
+              <Message>thirdPillarPayment.recurringPaymentButton</Message>
             </button>
           </Link>
           <Link to={nextPath}>
-            <button type="button" className="btn btn-primary mt-4" disabled={!monthlyContribution}>
-              <Message>thirdPillarPayment.recurringPaymentButton</Message>
+            <button
+              type="button"
+              className="btn btn-primary mt-4"
+              onClick={() => {
+                onSubmit({ mandateId: signedMandateId, singlePayment: monthlyContribution });
+              }}
+              disabled={!monthlyContribution}
+            >
+              <Message>thirdPillarPayment.paymentButton</Message>
             </button>
           </Link>
         </div>
@@ -118,6 +129,7 @@ ThirdPillarPayment.propTypes = {
   saveUser: Types.func,
   userSaved: Types.func,
   onMonthlyContributionChange: Types.func,
+  onSubmit: Types.func,
 };
 
 ThirdPillarPayment.defaultProps = {
@@ -132,6 +144,7 @@ ThirdPillarPayment.defaultProps = {
   saveUser: noop,
   userSaved: noop,
   onMonthlyContributionChange: noop,
+  onSubmit: noop,
 };
 
 const mapStateToProps = state => ({
@@ -147,6 +160,7 @@ const mapDispatchToProps = dispatch =>
       saveUser: updateUser,
       userSaved: userUpdated,
       onMonthlyContributionChange: changeMonthlyContribution,
+      onSubmit: thirdPillarStatistics,
     },
     dispatch,
   );

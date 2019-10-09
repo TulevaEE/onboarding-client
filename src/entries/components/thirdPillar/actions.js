@@ -7,7 +7,9 @@ import {
   CHANGE_RESIDENCY,
   QUERY_PARAMETERS,
   SELECT_THIRD_PILLAR_SOURCES,
+  THIRD_PILLAR_STATISTICS,
 } from './constants';
+import { postThirdPillarStatistics } from '../common/api';
 
 export function addDataFromQueryParams(query) {
   return { type: QUERY_PARAMETERS, query };
@@ -35,6 +37,16 @@ export function changeIsResident(isResident) {
 
 export function changeOccupation(occupation) {
   return { type: CHANGE_OCCUPATION, occupation };
+}
+
+export function thirdPillarStatistics(statistics) {
+  return (dispatch, getState) => {
+    return postThirdPillarStatistics(statistics, getState().login.token).then(
+      returnedStatistics => {
+        dispatch({ type: THIRD_PILLAR_STATISTICS, statistics: returnedStatistics });
+      },
+    );
+  };
 }
 
 export function selectThirdPillarSources(

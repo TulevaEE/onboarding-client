@@ -7,6 +7,7 @@ import {
   CHANGE_RESIDENCY,
   CHANGE_OCCUPATION,
   SELECT_THIRD_PILLAR_SOURCES,
+  THIRD_PILLAR_STATISTICS,
 } from './constants';
 import initialState, { LHV_INDEX_PLUS_ISIN } from './initialState';
 import {
@@ -98,6 +99,11 @@ export default function thirdPillarReducer(state = initialState, action) {
         ...state,
         exchangeExistingUnits: action.exchangeExistingUnits,
         selectedFutureContributionsFundIsin: action.selectedFutureContributionsFundIsin,
+      };
+    case THIRD_PILLAR_STATISTICS:
+      return {
+        ...state,
+        statistics: action.statistics,
       };
     case LOG_OUT:
       return initialState;

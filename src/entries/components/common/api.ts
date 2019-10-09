@@ -133,7 +133,6 @@ export function getTargetFundsWithToken(token: string): Promise<any> {
   });
 }
 
-// TODO: test after demo
 export function saveMandateWithToken(mandate: string, token: string): Promise<any> {
   return post(getEndpoint('/v1/mandates'), mandate, {
     Authorization: `Bearer ${token}`,
@@ -269,4 +268,20 @@ export function createAmlCheck(
       Authorization: `Bearer ${token}`,
     },
   );
+}
+
+export function postThirdPillarStatistics(
+  statistics: ThirdPillarStatistics,
+  token: string,
+): Promise<ThirdPillarStatistics> {
+  return post(getEndpoint('/v1/statistics'), statistics, {
+    Authorization: `Bearer ${token}`,
+  });
+}
+
+interface ThirdPillarStatistics {
+  id?: number;
+  mandateId: number;
+  singlePayment?: number;
+  recurringPayment?: number;
 }

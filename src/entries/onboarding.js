@@ -29,7 +29,7 @@ import LoggedInApp from './components/LoggedInApp';
 
 const history = createBrowserHistory();
 
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose; // eslint-disable-line
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({ trace: true, traceLimit: 25 }) || compose; // eslint-disable-line
 
 const store = createStore(
   createRootReducer(history),

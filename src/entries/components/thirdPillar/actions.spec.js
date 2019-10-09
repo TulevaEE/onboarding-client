@@ -1,37 +1,56 @@
 import { mockStore } from '../../../test/utils';
 import {
-  addDataFromQueryParams,
-  changeMonthlyContribution,
-  changeExchangeExistingUnits,
-  changeAgreementToTerms,
-  changeIsPoliticallyExposed,
-  changeIsResident,
-  selectThirdPillarSources,
-} from './actions';
-import {
-  QUERY_PARAMETERS,
-  CHANGE_MONTHLY_CONTRIBUTION,
-  CHANGE_EXCHANGE_EXISTING_UNITS,
   CHANGE_AGREEMENT_TO_TERMS,
+  CHANGE_EXCHANGE_EXISTING_UNITS,
+  CHANGE_MONTHLY_CONTRIBUTION,
   CHANGE_POLITICALLY_EXPOSED,
   CHANGE_RESIDENCY,
+  QUERY_PARAMETERS,
   SELECT_THIRD_PILLAR_SOURCES,
+  THIRD_PILLAR_STATISTICS,
 } from './constants';
-import { SELECT_EXCHANGE_SOURCES } from '../exchange/constants';
+
+jest.useFakeTimers();
+
+const mockApi = jest.genMockFromModule('../common/api');
+
+jest.mock('../common/api', () => mockApi);
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const actions = require('./actions'); // need to use require because of jest mocks being weird
 
 describe('Third pillar actions', () => {
+  let dispatch;
+  let state;
+
+  function createBoundAction(action) {
+    return (...args) => action(...args)(dispatch, () => state);
+  }
+
+  function mockDispatch() {
+    state = { login: { token: 'token' }, exchange: {} };
+    dispatch = jest.fn(action => {
+      if (typeof action === 'function') {
+        action(dispatch, () => state);
+      }
+    });
+  }
+
+  beforeEach(() => {
+    mockDispatch();
+  });
+
   it('dispatches query parameters action when mapping query params to state', async () => {
     const store = mockStore();
 
     await store.dispatch(
-      addDataFromQueryParams({
+      actions.addDataFromQueryParams({
         aKey: 'aValue',
         anotherKey: 'anotherValue',
       }),
     );
 
-    const actions = store.getActions();
-    expect(actions).toContainEqual({
+    expect(store.getActions()).toContainEqual({
       type: QUERY_PARAMETERS,
       query: { aKey: 'aValue', anotherKey: 'anotherValue' },
     });
@@ -40,10 +59,9 @@ describe('Third pillar actions', () => {
   it('dispatches monthly contribution change action', async () => {
     const store = mockStore();
 
-    await store.dispatch(changeMonthlyContribution(1000));
+    await store.dispatch(actions.changeMonthlyContribution(1000));
 
-    const actions = store.getActions();
-    expect(actions).toContainEqual({
+    expect(store.getActions()).toContainEqual({
       type: CHANGE_MONTHLY_CONTRIBUTION,
       monthlyContribution: 1000,
     });
@@ -52,10 +70,9 @@ describe('Third pillar actions', () => {
   it('dispatches exchange existing units change action', async () => {
     const store = mockStore();
 
-    await store.dispatch(changeExchangeExistingUnits(true));
+    await store.dispatch(actions.changeExchangeExistingUnits(true));
 
-    const actions = store.getActions();
-    expect(actions).toContainEqual({
+    expect(store.getActions()).toContainEqual({
       type: CHANGE_EXCHANGE_EXISTING_UNITS,
       exchangeExistingUnits: true,
     });
@@ -64,10 +81,9 @@ describe('Third pillar actions', () => {
   it('dispatches agreement to terms change action', async () => {
     const store = mockStore();
 
-    await store.dispatch(changeAgreementToTerms(true));
+    await store.dispatch(actions.changeAgreementToTerms(true));
 
-    const actions = store.getActions();
-    expect(actions).toContainEqual({
+    expect(store.getActions()).toContainEqual({
       type: CHANGE_AGREEMENT_TO_TERMS,
       agreedToTerms: true,
     });
@@ -76,10 +92,9 @@ describe('Third pillar actions', () => {
   it('dispatches politically exposed change action', async () => {
     const store = mockStore();
 
-    await store.dispatch(changeIsPoliticallyExposed(true));
+    await store.dispatch(actions.changeIsPoliticallyExposed(true));
 
-    const actions = store.getActions();
-    expect(actions).toContainEqual({
+    expect(store.getActions()).toContainEqual({
       type: CHANGE_POLITICALLY_EXPOSED,
       isPoliticallyExposed: true,
     });
@@ -88,25 +103,44 @@ describe('Third pillar actions', () => {
   it('dispatches residency change action', async () => {
     const store = mockStore();
 
-    await store.dispatch(changeIsResident(true));
+    await store.dispatch(actions.changeIsResident(true));
 
-    const actions = store.getActions();
-    expect(actions).toContainEqual({
+    expect(store.getActions()).toContainEqual({
       type: CHANGE_RESIDENCY,
       isResident: true,
     });
   });
-});
 
-it('can select third pillar sources', () => {
-  const exchangeExistingUnits = true;
-  const selectedFutureContributionsFundIsin = 'EE234';
+  it('can select third pillar sources', () => {
+    const exchangeExistingUnits = true;
+    const selectedFutureContributionsFundIsin = 'EE234';
 
-  expect(
-    selectThirdPillarSources(exchangeExistingUnits, selectedFutureContributionsFundIsin),
-  ).toEqual({
-    type: SELECT_THIRD_PILLAR_SOURCES,
-    exchangeExistingUnits,
-    selectedFutureContributionsFundIsin,
+    expect(
+      actions.selectThirdPillarSources(exchangeExistingUnits, selectedFutureContributionsFundIsin),
+    ).toEqual({
+      type: SELECT_THIRD_PILLAR_SOURCES,
+      exchangeExistingUnits,
+      selectedFutureContributionsFundIsin,
+    });
+  });
+
+  it('can get pending exchanges', () => {
+    const statistics = {
+      mandateId: 543,
+      singlePayment: 100,
+    };
+
+    mockApi.postThirdPillarStatistics = jest.fn(() => {
+      return Promise.resolve(statistics);
+    });
+    const thirdPillarStatistics = createBoundAction(actions.thirdPillarStatistics);
+
+    return thirdPillarStatistics(statistics).then(() => {
+      expect(dispatch).toHaveBeenCalledWith({
+        type: THIRD_PILLAR_STATISTICS,
+        statistics,
+      });
+      expect(dispatch).toHaveBeenCalledTimes(1);
+    });
   });
 });

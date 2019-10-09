@@ -63,5 +63,31 @@ describe('ThirdPillarPayment', () => {
     expect(secondButtonIsDisabled()).toBe(false);
   });
 
+  it('posts third pillar statistics on button clicks', () => {
+    const onSubmit = jest.fn();
+    const signedMandateId = 654;
+    const monthlyContribution = 100;
+
+    component.setProps({
+      signedMandateId,
+      monthlyContribution,
+      onSubmit,
+    });
+
+    singlePaymentButton().simulate('click');
+    expect(onSubmit).toBeCalledWith({
+      mandateId: signedMandateId,
+      singlePayment: monthlyContribution,
+    });
+
+    recurringPaymentButton().simulate('click');
+    expect(onSubmit).toBeCalledWith({
+      mandateId: signedMandateId,
+      recurringPayment: monthlyContribution,
+    });
+  });
+
   const contributionInput = () => component.find('#monthly-contribution');
+  const recurringPaymentButton = () => component.find('button').at(0);
+  const singlePaymentButton = () => component.find('button').at(1);
 });
