@@ -79,7 +79,7 @@
   "target.funds.EE3600109419.description": "",
 
   "target.funds.EE3600001707.title": "Tuleva III Pillar Pension Fund",
-  "target.funds.EE3600001707.description": "",
+  "target.funds.EE3600001707.description": "Fund invests 100% into stocks. This suits you if you want to have best long-term performance and you are not afraid of short-term fluctuations.",
 
   "target.funds.EE3600109435.tooltip.title": "Tuleva World Stocks Pension Fund",
   "target.funds.EE3600109435.tooltip.investment.1": "iShares Developed World ex-Tobacco Index Fund — 8%",
@@ -288,21 +288,21 @@
   "returnComparison.period.thisYear": "This year",
 
   "thirdPillarFlow.steps.setup.title": "Open III pillar account",
-  "thirdPillarFlow.steps.selectSources.title": "",
+  "thirdPillarFlow.steps.selectSources.title": "Transfer your III pillar to Tuleva",
   "thirdPillarFlow.steps.address.title": "Insert your contact details",
   "thirdPillarFlow.steps.confirmMandate.title": "Confirm mandate",
   "thirdPillarFlow.steps.payment.title": "Pay",
 
-  "thirdPillarFlowSetup.text": "",
-  "thirdPillarFlowSetup.subtext": "",
+  "thirdPillarFlowSetup.text": "This account is in pensions registry, does not cost anything nor brings any obligations to do anything.",
+  "thirdPillarFlowSetup.subtext": "Selection mandate activates your pension account and until you decide otherwise, directs your future contributions to selected pension fund.",
   "thirdPillarFlowSetup.buttonText": "Next step",
 
-  "thirdPillarFlowSelectSources.title": "",
-  "thirdPillarFlowSelectSources.selectAll.title": "",
-  "thirdPillarFlowSelectSources.selectAll.subtitle": "",
-  "thirdPillarFlowSelectSources.cost": "",
-  "thirdPillarFlowSelectSources.futureContributions.title": "",
-  "thirdPillarFlowSelectSources.futureContributions.subtitle": "",
+  "thirdPillarFlowSelectSources.title": "You have accumulated into your III pillar",
+  "thirdPillarFlowSelectSources.selectAll.title": "Bring all III pillar to Tuleva",
+  "thirdPillarFlowSelectSources.selectAll.subtitle": "You direct all future payments and exchange exiting units into Tuleva fund. You will accumulate your pension in a fund that is truly yours and has low fees.",
+  "thirdPillarFlowSelectSources.cost": "How much does the switch cost?",
+  "thirdPillarFlowSelectSources.futureContributions.title": "I'll direct only future payments to Tuleva",
+  "thirdPillarFlowSelectSources.futureContributions.subtitle": "Your existing fund units will stay in the old pension fund and new contributions will go to Tuleva III Pillar Pension Fund.",
 
   "confirmThirdPillarMandate.intro": "By signing I confirm that:",
   "confirmThirdPillarMandate.contribution": "I wish to transfer my supplementary pension fund contributions to:",
