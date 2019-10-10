@@ -315,7 +315,7 @@
   "thirdPillarPayment.amount": "Summa",
   "thirdPillarPayment.details": "Makse selgitus",
   "thirdPillarPayment.reference": "Viitenumber",
-  "thirdPillarPayment.paymentButton": "Tegin makse ära",
+  "thirdPillarPayment.paymentButton": "Tegin ühekordse makse",
   "thirdPillarPayment.recurringPaymentButton": "Tegin püsimakse",
 
   "thirdPillarSuccess.done": "Kõik tehtud",
