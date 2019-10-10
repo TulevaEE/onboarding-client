@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Message } from 'retranslate';
 
 import { logo, Loader } from '../../common';
+import LanguageSwitcher from './languageSwitcher';
 
 const Header = ({ user: { name } = {}, loading, onLogout }) => (
   <div className="row">
@@ -16,16 +17,19 @@ const Header = ({ user: { name } = {}, loading, onLogout }) => (
       {loading || !name ? (
         <Loader className="align-right" />
       ) : (
-        <div>
-          {name}&ensp;&middot;&ensp;
+        <span>
+          {name}
+          &ensp;&middot;&ensp;
           <button type="button" className="btn btn-link p-0 border-0" onClick={onLogout}>
             <Message>log.out</Message>
           </button>
           <br />
+          <LanguageSwitcher />
+          &ensp;&middot;&ensp;
           <Link className="btn btn-link p-0 border-0" to="/account">
             <Message>header.my.account</Message>
           </Link>
-        </div>
+        </span>
       )}
     </div>
     <div className="col-12 my-3 px-0">

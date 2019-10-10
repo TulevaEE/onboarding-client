@@ -5,6 +5,7 @@ import { Message } from 'retranslate';
 
 import { logo, Loader } from '../../common';
 import Header from './Header';
+import LanguageSwitcher from './languageSwitcher';
 
 describe('Header', () => {
   let component;
@@ -63,5 +64,10 @@ describe('Header', () => {
         .at(0)
         .getElement(0),
     ).toEqual(<Message>header.my.account</Message>);
+  });
+
+  it('renders the language switcher', () => {
+    component.setProps({ loading: false, user: { name: 'name' } });
+    expect(component.contains(<LanguageSwitcher />)).toBe(true);
   });
 });
