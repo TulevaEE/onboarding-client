@@ -71,8 +71,13 @@
 
   "target.funds.EE3600109435.title": "Tuleva World Stocks Pension Fund",
   "target.funds.EE3600109435.description": "Agressive fund - this fund is best for you if you wish to maximise returns and you are not scared by short term market fluctuations.",
+
   "target.funds.EE3600109443.title": "Tuleva World Bonds Pension Fund",
   "target.funds.EE3600109443.description": "Conservative fund - this fund is best for you if you only have a few years left until retirement or you are willing to accept lower returns in the name of less risk.",
+
+  "target.funds.EE3600109419.title": "LHV Pension Fund Index Plus",
+  "target.funds.EE3600109419.description": "",
+
   "target.funds.EE3600109435.tooltip.title": "Tuleva World Stocks Pension Fund",
   "target.funds.EE3600109435.tooltip.investment.1": "iShares Developed World ex-Tobacco Index Fund — 8%",
   "target.funds.EE3600109435.tooltip.investment.2": "iShares Developed World Index Fund — 28%",
@@ -280,11 +285,21 @@
   "returnComparison.period.thisYear": "This year",
 
   "thirdPillarFlow.steps.setup.title": "Open III pillar account",
+  "thirdPillarFlow.steps.selectSources.title": "",
   "thirdPillarFlow.steps.address.title": "Insert your contact details",
   "thirdPillarFlow.steps.confirmMandate.title": "Confirm mandate",
   "thirdPillarFlow.steps.payment.title": "Pay",
 
+  "thirdPillarFlowSetup.text": "",
+  "thirdPillarFlowSetup.subtext": "",
   "thirdPillarFlowSetup.buttonText": "Next step",
+
+  "thirdPillarFlowSelectSources.title": "",
+  "thirdPillarFlowSelectSources.selectAll.title": "",
+  "thirdPillarFlowSelectSources.selectAll.subtitle": "",
+  "thirdPillarFlowSelectSources.cost": "",
+  "thirdPillarFlowSelectSources.futureContributions.title": "",
+  "thirdPillarFlowSelectSources.futureContributions.subtitle": "",
 
   "confirmThirdPillarMandate.intro": "By signing I confirm that:",
   "confirmThirdPillarMandate.contribution": "I wish to transfer my supplementary pension fund contributions to:",
