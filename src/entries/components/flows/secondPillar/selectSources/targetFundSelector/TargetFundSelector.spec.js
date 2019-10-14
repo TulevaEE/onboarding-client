@@ -2,13 +2,14 @@ import React from 'react';
 import { Message } from 'retranslate';
 import { shallow } from 'enzyme';
 
-import TargetFundSelector from './TargetFundSelector';
+import { TargetFundSelector } from './TargetFundSelector';
 
 describe('Target fund selector', () => {
   let component;
 
   beforeEach(() => {
-    component = shallow(<TargetFundSelector />);
+    const props = { translations: { translate: key => key } };
+    component = shallow(<TargetFundSelector {...props} />);
   });
 
   it('renders a target fund selector button for every target fund', () => {
@@ -93,12 +94,12 @@ describe('Target fund selector', () => {
         .find('a.tv-target-fund__terms-link')
         .at(0)
         .prop('href'),
-    ).toEqual('https://tuleva.ee/fondid/');
+    ).toEqual('target.funds.123.terms.link');
     expect(
       component
         .find('a.tv-target-fund__terms-link')
         .at(1)
         .prop('href'),
-    ).toEqual('https://tuleva.ee/fondid/');
+    ).toEqual('target.funds.456.terms.link');
   });
 });

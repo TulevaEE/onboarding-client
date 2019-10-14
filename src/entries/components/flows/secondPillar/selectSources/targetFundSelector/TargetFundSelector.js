@@ -1,6 +1,6 @@
 import React from 'react';
 import { PropTypes as Types } from 'prop-types';
-import { Message } from 'retranslate';
+import { Message, withTranslations } from 'retranslate';
 
 import { InfoTooltip } from '../../../../common';
 import TargetFundTooltipBody from '../../transferFutureCapital/targetFundTooltipBody';
@@ -8,11 +8,12 @@ import TargetFundTooltipBody from '../../transferFutureCapital/targetFundTooltip
 import './TargetFundSelector.scss';
 import checkImage from '../../success/success.svg';
 
-const TargetFundSelector = ({
+export const TargetFundSelector = ({
   targetFunds,
   onSelectFund,
   selectedTargetFundIsin,
   recommendedFundIsin,
+  translations: { translate },
 }) => (
   <div className="row mx-0 mt-2 tv-target-fund__container">
     {targetFunds.map(fund => (
@@ -47,7 +48,7 @@ const TargetFundSelector = ({
               </div>
               <a
                 className="tv-target-fund__terms-link"
-                href="https://tuleva.ee/fondid/"
+                href={translate(`target.funds.${fund.isin}.terms.link`)}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -82,4 +83,4 @@ TargetFundSelector.propTypes = {
   recommendedFundIsin: Types.string,
 };
 
-export default TargetFundSelector;
+export default withTranslations(TargetFundSelector);
