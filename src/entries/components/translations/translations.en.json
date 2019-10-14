@@ -1,5 +1,5 @@
 {
-  "login.title": "By logging in you will see your member capital and pension account overview and can change your pension fund selection.",
+  "login.title": "Log in to your pension account.",
   "login.title.thirdPillar.withExchange": "You want to change your III pillar pension fund and make a monthly contribution of {{monthlyContribution}} euros",
   "login.title.thirdPillar.withoutExchange": "You want to select  III pillar pension fund and make a monthly contribution of {{monthlyContribution}} euros",
   "login.subtitle.thirdPillar": "Log in and confirm your application with digital signature",
