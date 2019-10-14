@@ -58,6 +58,11 @@ describe('ConfirmThirdPillarMandate', () => {
 
   it('gets mandate preview on preview button click', () => {
     const onPreview = jest.fn();
+    const amlProps = {
+      isResident: true,
+      isPoliticallyExposed: true,
+      occupation: 'PRIVATE_SECTOR',
+    };
     component.setProps({
       exchangeExistingUnits: true,
       exchangeableSourceFunds: [
@@ -66,21 +71,30 @@ describe('ConfirmThirdPillarMandate', () => {
       ],
       selectedFutureContributionsFund: { isin: 'EE789', name: 'Third fund' },
       onPreview,
+      ...amlProps,
     });
 
     expect(onPreview).not.toBeCalled();
     previewButton().simulate('click');
-    expect(onPreview).toBeCalledWith({
-      fundTransferExchanges: [
-        { amount: 1, sourceFundIsin: 'EE123', targetFundIsin: 'EE789' },
-        { amount: 1, sourceFundIsin: 'EE456', targetFundIsin: 'EE789' },
-      ],
-      futureContributionFundIsin: 'EE789',
-    });
+    expect(onPreview).toBeCalledWith(
+      {
+        fundTransferExchanges: [
+          { amount: 1, sourceFundIsin: 'EE123', targetFundIsin: 'EE789' },
+          { amount: 1, sourceFundIsin: 'EE456', targetFundIsin: 'EE789' },
+        ],
+        futureContributionFundIsin: 'EE789',
+      },
+      amlProps,
+    );
   });
 
   it('signs mandate on sign button click', () => {
     const onSign = jest.fn();
+    const amlProps = {
+      isResident: true,
+      isPoliticallyExposed: true,
+      occupation: 'PRIVATE_SECTOR',
+    };
     component.setProps({
       exchangeExistingUnits: true,
       exchangeableSourceFunds: [
@@ -89,9 +103,7 @@ describe('ConfirmThirdPillarMandate', () => {
       ],
       selectedFutureContributionsFund: { isin: 'EE789', name: 'Third fund' },
       onSign,
-      isResident: true,
-      isPoliticallyExposed: true,
-      occupation: 'PRIVATE_SECTOR',
+      ...amlProps,
     });
 
     expect(onSign).not.toBeCalled();
@@ -104,7 +116,7 @@ describe('ConfirmThirdPillarMandate', () => {
         ],
         futureContributionFundIsin: 'EE789',
       },
-      { isPoliticallyExposed: true, isResident: true, occupation: 'PRIVATE_SECTOR' },
+      amlProps,
     );
   });
 

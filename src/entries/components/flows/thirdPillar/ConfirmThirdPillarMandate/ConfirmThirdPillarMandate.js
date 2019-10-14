@@ -34,109 +34,113 @@ export const ConfirmThirdPillarMandate = ({
   loadingMandate,
   mandateSigningControlCode,
   mandateSigningError,
-}) => (
-  <>
-    {signedMandateId && <Redirect to={nextPath} />}
-    {!isAddressFilled && <Redirect to={previousPath} />}
-    {loadingMandate || mandateSigningControlCode ? (
-      <AuthenticationLoader
-        controlCode={mandateSigningControlCode}
-        onCancel={onCancelSigningMandate}
-        overlayed
-      />
-    ) : (
-      ''
-    )}
+}) => {
+  const buttonDisabled =
+    !agreedToTerms || isResident === null || isPoliticallyExposed === null || !occupation;
+  return (
+    <>
+      {signedMandateId && <Redirect to={nextPath} />}
+      {!isAddressFilled && <Redirect to={previousPath} />}
+      {loadingMandate || mandateSigningControlCode ? (
+        <AuthenticationLoader
+          controlCode={mandateSigningControlCode}
+          onCancel={onCancelSigningMandate}
+          overlayed
+        />
+      ) : (
+        ''
+      )}
 
-    <Message>confirmThirdPillarMandate.intro</Message>
+      <Message>confirmThirdPillarMandate.intro</Message>
 
-    {selectedFutureContributionsFund && (
-      <div className="mt-4">
-        <Message>confirmThirdPillarMandate.contribution</Message>
-
-        <div>
-          <b className="highlight">{selectedFutureContributionsFund.name}</b>
-        </div>
-      </div>
-    )}
-    {loadingSourceFunds && <Loader className="align-middle" />}
-    {exchangeExistingUnits &&
-      !loadingSourceFunds &&
-      exchangeableSourceFunds &&
-      !!exchangeableSourceFunds.length &&
-      selectedFutureContributionsFund && (
+      {selectedFutureContributionsFund && (
         <div className="mt-4">
-          <Message>confirmThirdPillarMandate.exchangeExistingUnits</Message>
-          <div className="mt-4">
-            <FundTransferTable
-              selections={createSelectionsFromFundsToFund(
-                exchangeableSourceFunds,
-                selectedFutureContributionsFund,
-              )}
-            />
+          <Message>confirmThirdPillarMandate.contribution</Message>
+
+          <div>
+            <b className="highlight">{selectedFutureContributionsFund.name}</b>
           </div>
         </div>
       )}
+      {loadingSourceFunds && <Loader className="align-middle" />}
+      {exchangeExistingUnits &&
+        !loadingSourceFunds &&
+        exchangeableSourceFunds &&
+        !!exchangeableSourceFunds.length &&
+        selectedFutureContributionsFund && (
+          <div className="mt-4">
+            <Message>confirmThirdPillarMandate.exchangeExistingUnits</Message>
+            <div className="mt-4">
+              <FundTransferTable
+                selections={createSelectionsFromFundsToFund(
+                  exchangeableSourceFunds,
+                  selectedFutureContributionsFund,
+                )}
+              />
+            </div>
+          </div>
+        )}
 
-    <ThirdPillarTermsAgreement />
+      <ThirdPillarTermsAgreement />
 
-    <div className="mt-2">
-      <PoliticallyExposedPersonAgreement />
-      <ResidencyAgreement />
-      <OccupationAgreement />
-    </div>
+      <div className="mt-2">
+        <PoliticallyExposedPersonAgreement />
+        <ResidencyAgreement />
+        <OccupationAgreement />
+      </div>
 
-    {mandateSigningError ? (
-      <ErrorMessage errors={mandateSigningError.body} onCancel={onCloseErrorMessages} overlayed />
-    ) : (
-      ''
-    )}
+      {mandateSigningError ? (
+        <ErrorMessage errors={mandateSigningError.body} onCancel={onCloseErrorMessages} overlayed />
+      ) : (
+        ''
+      )}
 
-    <div className="mt-5">
-      <button
-        type="button"
-        className="btn btn-primary mb-2 mr-2"
-        disabled={
-          !agreedToTerms || isResident === null || isPoliticallyExposed === null || !occupation
-        }
-        onClick={() => {
-          onSign(
-            getMandate(
-              exchangeExistingUnits,
-              exchangeableSourceFunds,
-              selectedFutureContributionsFund,
-            ),
-            { isResident, isPoliticallyExposed, occupation },
-          );
-        }}
-      >
-        <Message>confirmThirdPillarMandate.sign</Message>
-      </button>
-
-      <button
-        type="button"
-        className="btn btn-secondary mb-2 mr-2"
-        onClick={() => {
-          onPreview(
-            getMandate(
-              exchangeExistingUnits,
-              exchangeableSourceFunds,
-              selectedFutureContributionsFund,
-            ),
-          );
-        }}
-      >
-        <Message>confirmThirdPillarMandate.preview</Message>
-      </button>
-
-      <Link to={previousPath}>
-        <button type="button" className="btn btn-secondary mb-2">
-          <Message>confirmThirdPillarMandate.back</Message>
+      <div className="mt-5">
+        <button
+          type="button"
+          className="btn btn-primary mb-2 mr-2"
+          disabled={buttonDisabled}
+          onClick={() => {
+            onSign(
+              getMandate(
+                exchangeExistingUnits,
+                exchangeableSourceFunds,
+                selectedFutureContributionsFund,
+              ),
+              { isResident, isPoliticallyExposed, occupation },
+            );
+          }}
+        >
+          <Message>confirmThirdPillarMandate.sign</Message>
         </button>
-      </Link>
-    </div>
-  </>
-);
+
+        <button
+          type="button"
+          className="btn btn-secondary mb-2 mr-2"
+          disabled={buttonDisabled}
+          onClick={() => {
+            onPreview(
+              getMandate(
+                exchangeExistingUnits,
+                exchangeableSourceFunds,
+                selectedFutureContributionsFund,
+              ),
+              { isResident, isPoliticallyExposed, occupation },
+            );
+          }}
+        >
+          <Message>confirmThirdPillarMandate.preview</Message>
+        </button>
+
+        <Link to={previousPath}>
+          <button type="button" className="btn btn-secondary mb-2">
+            <Message>confirmThirdPillarMandate.back</Message>
+          </button>
+        </Link>
+      </div>
+    </>
+  );
+};
 
 function getMandate(exchangeExistingUnits, sourceFunds, targetFund) {
   return {
