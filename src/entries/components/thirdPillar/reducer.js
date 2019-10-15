@@ -49,6 +49,7 @@ export default function thirdPillarReducer(state = initialState, action) {
       // eslint-disable-next-line no-case-declarations
       const exchangeableSourceFunds = action.sourceFunds
         .filter(isThirdPillar)
+        .filter(fund => fund.value > 0)
         .filter(fund => fund.isin !== state.selectedFutureContributionsFundIsin); // TODO: change source funds on selected change
 
       // eslint-disable-next-line no-case-declarations
