@@ -29,9 +29,6 @@ export const ThirdPillarSelectSources = ({
   if (error) {
     return <ErrorMessage errors={error.body} />;
   }
-  if (loadingSourceFunds || loadingTargetFunds) {
-    return <Loader className="align-middle" />;
-  }
   const fullSelectionActive = !!exchangeExistingUnits && !!futureContributionsFundIsin;
   const someSelectionActive = !exchangeExistingUnits && !!futureContributionsFundIsin;
   const isValid = exchangeExistingUnits || futureContributionsFundIsin;
@@ -47,7 +44,10 @@ export const ThirdPillarSelectSources = ({
             <p className="mb-4 lead">
               <Message>thirdPillarFlowSelectSources.title</Message>
             </p>
-            <PensionFundTable funds={sourceFunds} />
+            {(loadingSourceFunds || !sourceFunds.length) && <Loader className="align-middle" />}
+            {!loadingSourceFunds && !!sourceFunds.length && (
+              <PensionFundTable funds={sourceFunds} />
+            )}
           </div>
         </div>
       </div>
@@ -70,11 +70,16 @@ export const ThirdPillarSelectSources = ({
             >
               <Message>thirdPillarFlowSelectSources.cost</Message>
             </a>
-            <TargetFundSelector
-              targetFunds={targetFunds}
-              onSelectFund={targetFund => onSelect(true, targetFund.isin)}
-              recommendedFundIsin={recommendedFundIsin}
-            />
+            {(loadingTargetFunds || !targetFunds.length) && (
+              <Loader className="align-middle mt-4" />
+            )}
+            {!loadingTargetFunds && !!targetFunds.length && (
+              <TargetFundSelector
+                targetFunds={targetFunds}
+                onSelectFund={targetFund => onSelect(true, targetFund.isin)}
+                recommendedFundIsin={recommendedFundIsin}
+              />
+            )}
           </div>
         ) : (
           ''

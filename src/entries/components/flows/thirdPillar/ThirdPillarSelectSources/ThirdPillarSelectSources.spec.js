@@ -14,23 +14,19 @@ describe('Third pillar select sources step', () => {
     component = shallow(<ThirdPillarSelectSources />);
   });
 
-  it('renders a loader when loading source or target funds', () => {
-    component.setProps({ loadingSourceFunds: true });
-    expect(component.get(0)).toEqual(<Loader className="align-middle" />);
-    component.setProps({ loadingSourceFunds: false, loadingTargetFunds: true });
-    expect(component.get(0)).toEqual(<Loader className="align-middle" />);
-  });
-
-  it('does not render a loader when funds loaded', () => {
-    component.setProps({
-      loadingSourceFunds: false,
-      loadingTargetFunds: false,
-    });
-    expect(component.get(0)).not.toEqual(<Loader className="align-middle" />);
-  });
-
   it('renders a title', () => {
     expect(component.contains(<Message>thirdPillarFlowSelectSources.title</Message>)).toBe(true);
+  });
+
+  it('renders a loader when no source funds available', () => {
+    component.setProps({ loadingSourceFunds: false, sourceFunds: [] });
+    expect(component.contains(<Loader className="align-middle" />)).toBe(true);
+
+    component.setProps({ loadingSourceFunds: true, sourceFunds: [] });
+    expect(component.contains(<Loader className="align-middle" />)).toBe(true);
+
+    component.setProps({ loadingSourceFunds: false, sourceFunds: [{ fund: true }] });
+    expect(component.contains(<Loader className="align-middle" />)).toBe(false);
   });
 
   it('renders a pension fund table with given funds', () => {
@@ -70,12 +66,39 @@ describe('Third pillar select sources step', () => {
     expect(onSelect).toHaveBeenCalledWith(true, 'EE123');
   });
 
+  it('renders a loader when no target funds available', () => {
+    component.setProps({
+      exchangeExistingUnits: true,
+      futureContributionsFundIsin: 'EE123',
+      loadingTargetFunds: false,
+      targetFunds: [],
+    });
+    expect(component.contains(<Loader className="align-middle mt-4" />)).toBe(true);
+
+    component.setProps({
+      exchangeExistingUnits: true,
+      futureContributionsFundIsin: 'EE123',
+      loadingTargetFunds: true,
+      targetFunds: [],
+    });
+    expect(component.contains(<Loader className="align-middle mt-4" />)).toBe(true);
+
+    component.setProps({
+      exchangeExistingUnits: true,
+      futureContributionsFundIsin: 'EE123',
+      loadingTargetFunds: false,
+      targetFunds: [{ fund: true }],
+    });
+    expect(component.contains(<Loader className="align-middle mt-4" />)).toBe(false);
+  });
+
   it('passes the recommended fund isin forward to the target fund selector', () => {
     const recommendedFundIsin = 'asd';
     component.setProps({
       exchangeExistingUnits: true,
       futureContributionsFundIsin: 'EE123',
       recommendedFundIsin,
+      targetFunds: [{ fund: true }],
     });
     expect(component.find(TargetFundSelector).prop('recommendedFundIsin')).toBe(
       recommendedFundIsin,
