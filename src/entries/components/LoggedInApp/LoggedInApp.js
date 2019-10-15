@@ -104,7 +104,7 @@ LoggedInApp.propTypes = {
 
 const mapStateToProps = state => ({
   user: {
-    name: `${(state.login.user || {}).firstName} ${(state.login.user || {}).lastName}`,
+    name: [(state.login.user || {}).firstName, (state.login.user || {}).lastName].join(' ').trim(),
   },
   hasError: !!(state.login.userConversionError || state.login.userError),
   loading: state.login.loadingUser || state.login.loadingUserConversion,
