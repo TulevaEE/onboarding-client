@@ -9,7 +9,7 @@ import {
   SELECT_THIRD_PILLAR_SOURCES,
   THIRD_PILLAR_STATISTICS,
 } from './constants';
-import initialState from './initialState';
+import initialState, { EXIT_RESTRICTED_FUND } from './initialState';
 import {
   GET_SOURCE_FUNDS_ERROR,
   GET_SOURCE_FUNDS_START,
@@ -50,6 +50,7 @@ export default function thirdPillarReducer(state = initialState, action) {
       const exchangeableSourceFunds = action.sourceFunds
         .filter(isThirdPillar)
         .filter(fund => fund.price > 0)
+        .filter(fund => fund.isin !== EXIT_RESTRICTED_FUND)
         .filter(fund => fund.isin !== state.selectedFutureContributionsFundIsin); // TODO: change source funds on selected change
 
       // eslint-disable-next-line no-case-declarations

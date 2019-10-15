@@ -1,14 +1,14 @@
 import {
-  QUERY_PARAMETERS,
-  CHANGE_MONTHLY_CONTRIBUTION,
-  CHANGE_EXCHANGE_EXISTING_UNITS,
   CHANGE_AGREEMENT_TO_TERMS,
+  CHANGE_EXCHANGE_EXISTING_UNITS,
+  CHANGE_MONTHLY_CONTRIBUTION,
   CHANGE_POLITICALLY_EXPOSED,
   CHANGE_RESIDENCY,
+  QUERY_PARAMETERS,
   SELECT_THIRD_PILLAR_SOURCES,
   THIRD_PILLAR_STATISTICS,
 } from './constants';
-import initialState from './initialState';
+import initialState, { EXIT_RESTRICTED_FUND } from './initialState';
 import reducer from './reducer';
 import {
   GET_SOURCE_FUNDS_ERROR,
@@ -159,6 +159,24 @@ describe('Third pillar reducer', () => {
     expect(state).toEqual({
       ...oldState,
       sourceFunds: [thirdPillarFund],
+      exchangeableSourceFunds: [],
+      exchangeExistingUnits: false,
+    });
+  });
+
+  it('filters out exit restricted funds', () => {
+    const oldState = {
+      ...initialState,
+      exchangeExistingUnits: true,
+      selectedFutureContributionsFundIsin: 'EE789',
+    };
+    const sourceFunds = [{ isin: EXIT_RESTRICTED_FUND, pillar: 3, price: 100 }];
+
+    const state = reducer(oldState, { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds });
+
+    expect(state).toEqual({
+      ...oldState,
+      sourceFunds,
       exchangeableSourceFunds: [],
       exchangeExistingUnits: false,
     });
