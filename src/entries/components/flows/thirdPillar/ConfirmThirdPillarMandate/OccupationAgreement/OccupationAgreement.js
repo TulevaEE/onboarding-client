@@ -6,11 +6,15 @@ import { connect } from 'react-redux';
 import { Message, withTranslations } from 'retranslate';
 import { actions as thirdPillarActions } from '../../../../thirdPillar';
 
-export const OccupationAgreement = ({ onOccupationChange, translations: { translate } }) => {
+export const OccupationAgreement = ({
+  onOccupationChange,
+  translations: { translate },
+  className,
+}) => {
   return (
     <div
       id="occupation-agreement"
-      className="form-inline"
+      className={`form-inline ${className}`}
       onChange={event => onOccupationChange(event.target.value)}
     >
       <div className="form-group">

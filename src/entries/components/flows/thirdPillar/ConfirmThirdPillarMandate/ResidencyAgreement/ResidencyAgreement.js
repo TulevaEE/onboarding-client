@@ -7,13 +7,14 @@ import { Message } from 'retranslate';
 import { actions as thirdPillarActions } from '../../../../thirdPillar';
 import { InfoTooltip } from '../../../../common';
 
-export const ResidencyAgreement = ({ isResident, onResidentChange }) => {
+export const ResidencyAgreement = ({ isResident, onResidentChange, className }) => {
   return (
     <div
       id="residency-radio-container"
       onChange={event => {
         onResidentChange(event.target.value === 'true');
       }}
+      className={className}
     >
       <div className="custom-control custom-radio">
         <input

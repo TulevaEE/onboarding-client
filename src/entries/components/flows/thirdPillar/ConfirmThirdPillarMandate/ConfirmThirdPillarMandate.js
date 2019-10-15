@@ -83,11 +83,9 @@ export const ConfirmThirdPillarMandate = ({
 
       <ThirdPillarTermsAgreement />
 
-      <div className="mt-2">
-        <PoliticallyExposedPersonAgreement />
-        <ResidencyAgreement />
-        <OccupationAgreement />
-      </div>
+      <PoliticallyExposedPersonAgreement className="mt-3" />
+      <ResidencyAgreement className="mt-3" />
+      <OccupationAgreement className="mt-3" />
 
       {mandateSigningError ? (
         <ErrorMessage errors={mandateSigningError.body} onCancel={onCloseErrorMessages} overlayed />

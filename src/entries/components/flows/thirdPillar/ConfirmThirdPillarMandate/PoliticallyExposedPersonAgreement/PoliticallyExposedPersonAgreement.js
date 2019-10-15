@@ -10,11 +10,13 @@ import { InfoTooltip } from '../../../../common';
 export const PoliticallyExposedPersonAgreement = ({
   isPoliticallyExposed,
   onPoliticallyExposedChange,
+  className,
 }) => {
   return (
     <div
       id="pep-radio-container"
       onChange={event => onPoliticallyExposedChange(event.target.value === 'true')}
+      className={className}
     >
       <div className="custom-control custom-radio">
         <input
