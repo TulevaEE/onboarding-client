@@ -1,15 +1,15 @@
 import {
-  QUERY_PARAMETERS,
-  CHANGE_MONTHLY_CONTRIBUTION,
-  CHANGE_EXCHANGE_EXISTING_UNITS,
   CHANGE_AGREEMENT_TO_TERMS,
+  CHANGE_EXCHANGE_EXISTING_UNITS,
+  CHANGE_MONTHLY_CONTRIBUTION,
+  CHANGE_OCCUPATION,
   CHANGE_POLITICALLY_EXPOSED,
   CHANGE_RESIDENCY,
-  CHANGE_OCCUPATION,
+  QUERY_PARAMETERS,
   SELECT_THIRD_PILLAR_SOURCES,
   THIRD_PILLAR_STATISTICS,
 } from './constants';
-import initialState, { LHV_INDEX_PLUS_ISIN } from './initialState';
+import initialState from './initialState';
 import {
   GET_SOURCE_FUNDS_ERROR,
   GET_SOURCE_FUNDS_START,
@@ -114,5 +114,4 @@ export default function thirdPillarReducer(state = initialState, action) {
 
 const isThirdPillar = fund => fund.pillar === 3;
 
-const isTuleva = fund =>
-  (fund.fundManager || {}).name === 'Tuleva' || fund.isin === LHV_INDEX_PLUS_ISIN; // temporary fund
+const isTuleva = fund => (fund.fundManager || {}).name === 'Tuleva';

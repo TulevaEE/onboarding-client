@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import { Loader, Radio, ErrorMessage } from '../../../common';
 import { selectThirdPillarSources } from '../../../thirdPillar/actions';
-import { LHV_INDEX_PLUS_ISIN } from '../../../thirdPillar/initialState';
+import { TULEVA_3RD_PILLAR_FUND_ISIN } from '../../../thirdPillar/initialState';
 
 // TODO: don't import from 2nd pillar flow
 import PensionFundTable from '../../secondPillar/selectSources/pensionFundTable';
@@ -143,7 +143,7 @@ ThirdPillarSelectSources.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  recommendedFundIsin: (state.login.user || {}).age < 55 ? LHV_INDEX_PLUS_ISIN : '',
+  recommendedFundIsin: (state.login.user || {}).age < 55 ? TULEVA_3RD_PILLAR_FUND_ISIN : '',
   exchangeExistingUnits: state.thirdPillar.exchangeExistingUnits,
   exchangeableSourceFunds: state.thirdPillar.exchangeableSourceFunds,
   futureContributionsFundIsin: state.thirdPillar.selectedFutureContributionsFundIsin,
