@@ -1,6 +1,7 @@
 export const hasAddress = user => {
-  const { address } = user;
+  const { email, address } = user;
   return !!(
+    email &&
     address &&
     address.street &&
     address.postalCode &&
