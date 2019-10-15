@@ -105,17 +105,6 @@ describe('Third pillar select sources step', () => {
     );
   });
 
-  it('renders error', () => {
-    const error = { body: 'aww no' };
-    const funds = [{ aFund: true }];
-
-    component.setProps({ error, funds });
-
-    expect(component.contains(<ErrorMessage errors={error.body} />)).toBe(true);
-    expect(component.contains(<Loader className="align-middle" />)).toBe(false);
-    expect(component.contains(<PensionFundTable funds={funds} />)).toBe(false);
-  });
-
   it('renders info about cost and reference link', () => {
     component.setProps({
       exchangeExistingUnits: true,

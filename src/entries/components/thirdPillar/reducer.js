@@ -65,7 +65,12 @@ export default function thirdPillarReducer(state = initialState, action) {
         loadingSourceFunds: false,
       };
     case GET_SOURCE_FUNDS_ERROR:
-      return { ...state, loadingSourceFunds: false, error: action.error };
+      return {
+        ...state,
+        loadingSourceFunds: false,
+        error: action.error,
+        exchangeableSourceFunds: [],
+      };
     case GET_TARGET_FUNDS_SUCCESS:
       return {
         ...state,

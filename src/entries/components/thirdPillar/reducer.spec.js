@@ -191,6 +191,7 @@ describe('Third pillar reducer', () => {
       ...oldState,
       loadingSourceFunds: false,
       error,
+      exchangeableSourceFunds: [],
     });
   });
 

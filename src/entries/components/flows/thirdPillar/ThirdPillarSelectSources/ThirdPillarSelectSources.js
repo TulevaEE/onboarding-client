@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
 import { Link, Redirect } from 'react-router-dom';
-import { Loader, Radio, ErrorMessage } from '../../../common';
+import { Loader, Radio } from '../../../common';
 import { selectThirdPillarSources } from '../../../thirdPillar/actions';
 import { TULEVA_3RD_PILLAR_FUND_ISIN } from '../../../thirdPillar/initialState';
 
@@ -22,13 +22,9 @@ export const ThirdPillarSelectSources = ({
   sourceFunds,
   targetFunds,
   exchangeableSourceFunds,
-  error,
   onSelect,
   nextPath,
 }) => {
-  if (error) {
-    return <ErrorMessage errors={error.body} />;
-  }
   const fullSelectionActive = !!exchangeExistingUnits && !!futureContributionsFundIsin;
   const someSelectionActive = !exchangeExistingUnits && !!futureContributionsFundIsin;
   const isValid = exchangeExistingUnits || futureContributionsFundIsin;
@@ -129,7 +125,6 @@ ThirdPillarSelectSources.defaultProps = {
   loadingTargetFunds: false,
   exchangeableSourceFunds: null,
   onSelect: noop,
-  error: null,
   nextPath: '',
 };
 
@@ -141,7 +136,6 @@ ThirdPillarSelectSources.propTypes = {
   targetFunds: Types.arrayOf(Types.shape({})),
   loadingSourceFunds: Types.bool,
   loadingTargetFunds: Types.bool,
-  error: Types.shape({ body: Types.string }),
   exchangeableSourceFunds: Types.arrayOf(Types.shape({})),
   onSelect: Types.func,
   nextPath: Types.string,
@@ -156,7 +150,6 @@ const mapStateToProps = state => ({
   targetFunds: state.thirdPillar.targetFunds,
   loadingSourceFunds: state.thirdPillar.loadingSourceFunds,
   loadingTargetFunds: state.thirdPillar.loadingTargetFunds,
-  error: state.exchange.error,
 });
 
 const mapDispatchToProps = dispatch =>

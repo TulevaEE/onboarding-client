@@ -14,4 +14,5 @@ export default {
   isPoliticallyExposed: null,
   signedMandateId: null,
   statistics: {},
+  error: null,
 };
