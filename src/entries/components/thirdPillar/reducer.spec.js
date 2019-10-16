@@ -128,16 +128,16 @@ describe('Third pillar reducer', () => {
 
     const thirdPillarFund = { isin: 'EE123', pillar: 3, price: 100 };
     const secondPillarFund = { isin: 'EE456', pillar: 2, price: 100 };
-    const anotherThirdPillarFund = { isin: 'EE789', pillar: 3, price: 100 };
+    const tulevaThirdPillarFund = { isin: 'EE789', pillar: 3, price: 100 };
     const zeroThirdPillarFund = { isin: 'EE789', pillar: 3, price: 0 };
     const state = reducer(oldState, {
       type: GET_SOURCE_FUNDS_SUCCESS,
-      sourceFunds: [thirdPillarFund, secondPillarFund, anotherThirdPillarFund, zeroThirdPillarFund],
+      sourceFunds: [thirdPillarFund, secondPillarFund, tulevaThirdPillarFund, zeroThirdPillarFund],
     });
 
     expect(state).toEqual({
       ...oldState,
-      sourceFunds: [thirdPillarFund, anotherThirdPillarFund, zeroThirdPillarFund],
+      sourceFunds: [thirdPillarFund, tulevaThirdPillarFund],
       exchangeExistingUnits: true,
       exchangeableSourceFunds: [thirdPillarFund],
     });
