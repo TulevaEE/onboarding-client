@@ -131,6 +131,12 @@ export class AccountPage extends Component {
               <div className="col-md-6 mb-2 mt-4">
                 <Message className="mb-2 lead h5">accountStatement.thirdPillar.heading</Message>
               </div>
+
+              <div className="col-md-6 mb-1 mt-2 text-md-right">
+                <Link className="btn btn-primary" to="/3rd-pillar-flow">
+                  <Message>change.my.pension.fund.third.pillar</Message>
+                </Link>
+              </div>
             </div>
             <AccountStatement funds={thirdPillarSourceFunds} />
           </>
