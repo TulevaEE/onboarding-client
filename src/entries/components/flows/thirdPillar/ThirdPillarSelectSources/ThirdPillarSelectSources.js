@@ -41,8 +41,8 @@ export const ThirdPillarSelectSources = ({
               <Message>thirdPillarFlowSelectSources.title</Message>
             </p>
             {(loadingSourceFunds || !sourceFunds.length) && <Loader className="align-middle" />}
-            {!loadingSourceFunds && !!sourceFunds.length && (
-              <PensionFundTable funds={sourceFunds} />
+            {!loadingSourceFunds && exchangeableSourceFunds && !!exchangeableSourceFunds.length && (
+              <PensionFundTable funds={exchangeableSourceFunds} />
             )}
           </div>
         </div>
