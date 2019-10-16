@@ -41,7 +41,7 @@ export class AccountPage extends Component {
   render() {
     const {
       secondPillarSourceFunds,
-      // thirdPillarSourceFunds,
+      thirdPillarSourceFunds,
       loadingCurrentBalance,
       memberCapital,
       loadingCapital,
@@ -125,16 +125,16 @@ export class AccountPage extends Component {
           </>
         )}
 
-        {/* {thirdPillarSourceFunds && thirdPillarSourceFunds.length > 0 && ( */}
-        {/*  <> */}
-        {/*    <div className="row"> */}
-        {/*      <div className="col-md-6 mb-2 mt-4"> */}
-        {/*        <Message className="mb-2 lead h5">accountStatement.thirdPillar.heading</Message> */}
-        {/*      </div> */}
-        {/*    </div> */}
-        {/*    <AccountStatement funds={thirdPillarSourceFunds} /> */}
-        {/*  </> */}
-        {/* )} */}
+        {thirdPillarSourceFunds && thirdPillarSourceFunds.length > 0 && (
+          <>
+            <div className="row">
+              <div className="col-md-6 mb-2 mt-4">
+                <Message className="mb-2 lead h5">accountStatement.thirdPillar.heading</Message>
+              </div>
+            </div>
+            <AccountStatement funds={thirdPillarSourceFunds} />
+          </>
+        )}
 
         {pendingExchangesSection}
 
@@ -166,7 +166,7 @@ export class AccountPage extends Component {
 
 AccountPage.propTypes = {
   secondPillarSourceFunds: Types.arrayOf(Types.shape({})),
-  // thirdPillarSourceFunds: Types.arrayOf(Types.shape({})),
+  thirdPillarSourceFunds: Types.arrayOf(Types.shape({})),
   loadingCurrentBalance: Types.bool,
   shouldGetPendingExchanges: Types.bool,
   onGetPendingExchanges: Types.func,
@@ -189,7 +189,7 @@ AccountPage.propTypes = {
 
 AccountPage.defaultProps = {
   secondPillarSourceFunds: [],
-  // thirdPillarSourceFunds: [],
+  thirdPillarSourceFunds: [],
   loadingCurrentBalance: false,
   shouldGetPendingExchanges: true,
   onGetPendingExchanges: noop,
@@ -200,7 +200,6 @@ AccountPage.defaultProps = {
   memberCapital: {},
   loadingCapital: false,
   memberNumber: null,
-  // age: null,
   conversion: {
     transfersComplete: false,
     selectionComplete: false,
@@ -211,7 +210,7 @@ AccountPage.defaultProps = {
 
 const mapStateToProps = state => ({
   secondPillarSourceFunds: state.exchange.sourceFunds,
-  // thirdPillarSourceFunds: state.thirdPillar.sourceFunds,
+  thirdPillarSourceFunds: state.thirdPillar.sourceFunds,
   loadingCurrentBalance: state.exchange.loadingSourceFunds,
   shouldGetPendingExchanges:
     state.login.token &&
