@@ -28,16 +28,37 @@ describe('Account statement', () => {
     component = shallow(
       <AccountStatement
         funds={[
-          { isin: 'A1', name: 'A', contributionSum: 0, profit: 0, price: 300 },
-          { isin: 'B2', name: 'B', contributionSum: 0, profit: 0, price: 30 },
-          { isin: 'C3', name: 'C', contributionSum: 0, profit: 0, price: 3 },
+          {
+            isin: 'A1',
+            name: 'A',
+            contributionSum: 0,
+            profit: 0,
+            price: 3000,
+            unavailablePrice: 1,
+          },
+          {
+            isin: 'B2',
+            name: 'B',
+            contributionSum: 0,
+            profit: 0,
+            price: 300,
+            unavailablePrice: 1,
+          },
+          {
+            isin: 'C3',
+            name: 'C',
+            contributionSum: 0,
+            profit: 0,
+            price: 30,
+            unavailablePrice: 1,
+          },
         ]}
       />,
     );
 
     const { footer } = tableProp('columns')[4];
 
-    expect(footer).toEqual(<Euro amount={333} />);
+    expect(footer).toEqual(<Euro amount={3333} />);
   });
 
   it('shows active fund notice only if there is an active fund', () => {

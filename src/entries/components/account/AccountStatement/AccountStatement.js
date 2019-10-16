@@ -32,7 +32,13 @@ const AccountStatement = ({ funds }) => {
     {
       title: <Message>accountStatement.columns.value.title</Message>,
       dataIndex: 'value',
-      footer: <Euro amount={sumBy(funds, 'price')} />,
+      footer: (
+        <Euro
+          amount={sumBy(funds, fund => {
+            return fund.price + fund.unavailablePrice;
+          })}
+        />
+      ),
     },
   ];
 
@@ -45,12 +51,13 @@ const AccountStatement = ({ funds }) => {
       contributionSum,
       profit,
       price: value,
+      unavailablePrice: unavailableValue,
     }) => ({
       fund: `${name}${isActive ? '*' : ''}`,
       fees: <Percentage value={ongoingChargesFigure} />,
       contributions: <Euro amount={contributionSum} />,
       profit: <Euro amount={profit} />,
-      value: <Euro amount={value} />,
+      value: <Euro amount={value + unavailableValue} />,
       key: isin,
     }),
   );
@@ -79,6 +86,7 @@ AccountStatement.propTypes = {
       contributionSum: Types.number,
       profit: Types.number,
       price: Types.number,
+      unavailablePrice: Types.number,
     }),
   ).isRequired,
 };

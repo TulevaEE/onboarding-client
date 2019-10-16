@@ -16,6 +16,7 @@ function transformFundBalance(fundBalance: Record<string, any>): Record<string, 
   return {
     isin: fundBalance.fund.isin,
     price: fundBalance.value,
+    unavailablePrice: fundBalance.unavailableValue,
     activeFund: fundBalance.activeContributions,
     currency: fundBalance.currency || 'EUR',
     name: fundBalance.fund.name,
