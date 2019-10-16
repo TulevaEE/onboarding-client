@@ -90,8 +90,8 @@ describe('Current balance', () => {
     });
   });
 
-  it('does not render any account statements when there are no source funds', () => {
-    expect(accountStatement().exists()).toBe(false);
+  it('renders only 3rd pillar account statement when there are no source funds', () => {
+    expect(accountStatement()).toHaveLength(1);
   });
 
   it('renders converted user statement only when user is fully converted', () => {

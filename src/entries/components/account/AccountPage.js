@@ -125,7 +125,7 @@ export class AccountPage extends Component {
           </>
         )}
 
-        {thirdPillarSourceFunds && thirdPillarSourceFunds.length > 0 && (
+        {!loadingCurrentBalance && (
           <>
             <div className="row">
               <div className="col-md-6 mb-2 mt-4">
