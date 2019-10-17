@@ -25,7 +25,7 @@ describe('Error message', () => {
 
   it('shows error codes and messages', () => {
     errors.errors.forEach(error => {
-      expect(component.contains(error.code)).toBe(true);
+      expect(component.contains(<Message>{error.code}</Message>)).toBe(true);
       expect(component.contains(error.message)).toBe(true);
     });
   });
