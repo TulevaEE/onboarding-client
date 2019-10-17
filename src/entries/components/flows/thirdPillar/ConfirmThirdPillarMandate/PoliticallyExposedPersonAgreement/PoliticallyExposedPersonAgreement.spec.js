@@ -11,22 +11,24 @@ describe('PoliticallyExposedPersonAgreement', () => {
   });
 
   it('has default radio checked only when initial state is true', () => {
-    const checked = () => component.find('#third-pillar-pep-radio').prop('defaultChecked');
+    const checked = () => component.find('#third-pillar-not-pep-checkbox').prop('checked');
 
     expect(checked()).toBe(false);
-    component.setProps({ isPoliticallyExposed: true });
-    expect(checked()).toBe(true);
     component.setProps({ isPoliticallyExposed: false });
+    expect(checked()).toBe(true);
+    component.setProps({ isPoliticallyExposed: true });
     expect(checked()).toBe(false);
   });
 
   it('submits when checked', () => {
     const mock = jest.fn();
     component.setProps({ onPoliticallyExposedChange: mock });
-    component.find('#pep-radio-container').simulate('change', { target: { value: 'true' } });
-    expect(mock).toBeCalledWith(true);
-    component.find('#pep-radio-container').simulate('change', { target: { value: 'false' } });
+
+    component.find('input').simulate('change', { target: { checked: true } });
     expect(mock).toBeCalledWith(false);
+
+    component.find('input').simulate('change', { target: { checked: false } });
+    expect(mock).toBeCalledWith(true);
   });
 
   it('has pep tooltip', () => {

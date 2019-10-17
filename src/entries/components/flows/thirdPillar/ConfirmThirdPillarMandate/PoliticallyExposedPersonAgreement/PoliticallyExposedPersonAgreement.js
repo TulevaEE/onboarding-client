@@ -13,43 +13,24 @@ export const PoliticallyExposedPersonAgreement = ({
   className,
 }) => {
   return (
-    <div
-      id="pep-radio-container"
-      onChange={event => onPoliticallyExposedChange(event.target.value === 'true')}
-      className={className}
-    >
-      <div className="custom-control custom-radio">
+    <div className={className}>
+      <div className="custom-control custom-checkbox">
         <input
-          defaultChecked={false}
-          value="false"
-          type="radio"
+          checked={isPoliticallyExposed === false}
+          onChange={e => onPoliticallyExposedChange(!e.target.checked)}
+          type="checkbox"
           name="pep"
           className="custom-control-input"
-          id="third-pillar-not-pep-radio"
+          id="third-pillar-not-pep-checkbox"
         />
 
-        <label className="custom-control-label" htmlFor="third-pillar-not-pep-radio">
+        <label className="custom-control-label" htmlFor="third-pillar-not-pep-checkbox">
           <Message>thirdPillarAgreement.isNotPep</Message>
           <InfoTooltip name="pep-tooltip">
             <div className="content">
               <Message>thirdPillarAgreement.pepTooltip</Message>
             </div>
           </InfoTooltip>
-        </label>
-      </div>
-
-      <div className="custom-control custom-radio">
-        <input
-          defaultChecked={isPoliticallyExposed}
-          value="true"
-          type="radio"
-          name="pep"
-          className="custom-control-input"
-          id="third-pillar-pep-radio"
-        />
-
-        <label className="custom-control-label" htmlFor="third-pillar-pep-radio">
-          <Message>thirdPillarAgreement.isPep</Message>
         </label>
       </div>
     </div>
@@ -62,7 +43,7 @@ PoliticallyExposedPersonAgreement.propTypes = {
 };
 
 PoliticallyExposedPersonAgreement.defaultProps = {
-  isPoliticallyExposed: false,
+  isPoliticallyExposed: null,
   onPoliticallyExposedChange: () => {},
 };
 

@@ -9,44 +9,24 @@ import { InfoTooltip } from '../../../../common';
 
 export const ResidencyAgreement = ({ isResident, onResidentChange, className }) => {
   return (
-    <div
-      id="residency-radio-container"
-      onChange={event => {
-        onResidentChange(event.target.value === 'true');
-      }}
-      className={className}
-    >
-      <div className="custom-control custom-radio">
+    <div className={className}>
+      <div className="custom-control custom-checkbox">
         <input
-          defaultChecked={isResident}
-          value="true"
-          type="radio"
+          checked={!!isResident}
+          onChange={e => onResidentChange(e.target.checked)}
+          type="checkbox"
           name="resident"
           className="custom-control-input"
-          id="third-pillar-resident-radio"
+          id="third-pillar-resident-checkbox"
         />
 
-        <label className="custom-control-label" htmlFor="third-pillar-resident-radio">
+        <label className="custom-control-label" htmlFor="third-pillar-resident-checkbox">
           <Message>thirdPillarAgreement.isResident</Message>
           <InfoTooltip name="resident-tooltip">
             <div className="content">
               <Message>thirdPillarAgreement.residentTooltip</Message>
             </div>
           </InfoTooltip>
-        </label>
-      </div>
-
-      <div className="custom-control custom-radio">
-        <input
-          value="false"
-          type="radio"
-          name="resident"
-          className="custom-control-input"
-          id="third-pillar-not-resident-radio"
-        />
-
-        <label className="custom-control-label" htmlFor="third-pillar-not-resident-radio">
-          <Message>thirdPillarAgreement.isNotResident</Message>
         </label>
       </div>
     </div>
@@ -59,7 +39,7 @@ ResidencyAgreement.propTypes = {
 };
 
 ResidencyAgreement.defaultProps = {
-  isResident: false,
+  isResident: null,
   onResidentChange: () => {},
 };
 
