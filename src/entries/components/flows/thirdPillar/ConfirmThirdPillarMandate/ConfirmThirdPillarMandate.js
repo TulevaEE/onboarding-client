@@ -35,8 +35,7 @@ export const ConfirmThirdPillarMandate = ({
   mandateSigningControlCode,
   mandateSigningError,
 }) => {
-  const buttonDisabled =
-    !agreedToTerms || isResident === null || isPoliticallyExposed === null || !occupation;
+  const buttonDisabled = !agreedToTerms || !isResident || isPoliticallyExposed || !occupation;
   return (
     <>
       {signedMandateId && <Redirect to={nextPath} />}
