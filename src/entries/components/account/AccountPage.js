@@ -138,7 +138,9 @@ export class AccountPage extends Component {
                 </Link>
               </div>
             </div>
-            <AccountStatement funds={thirdPillarSourceFunds} />
+            {thirdPillarSourceFunds && thirdPillarSourceFunds.length > 0 && (
+              <AccountStatement funds={thirdPillarSourceFunds} />
+            )}
           </>
         )}
 

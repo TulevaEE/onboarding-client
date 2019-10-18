@@ -126,18 +126,26 @@ describe('Third pillar reducer', () => {
       selectedFutureContributionsFundIsin: 'EE789',
     };
 
-    const thirdPillarFund = { isin: 'EE123', pillar: 3, price: 100 };
-    const secondPillarFund = { isin: 'EE456', pillar: 2, price: 100 };
-    const tulevaThirdPillarFund = { isin: 'EE789', pillar: 3, price: 100 };
-    const zeroThirdPillarFund = { isin: 'EE789', pillar: 3, price: 0 };
+    const thirdPillarFund = { isin: 'EE123', pillar: 3, price: 100, unavailablePrice: 0 };
+    const secondPillarFund = { isin: 'EE456', pillar: 2, price: 100, unavailablePrice: 0 };
+    const tulevaThirdPillarFund = { isin: 'EE789', pillar: 3, price: 100, unavailablePrice: 0 };
+    const movedThirdPillarFund = { isin: 'EE789', pillar: 3, price: 0, unavailablePrice: 100 };
+    const zeroThirdPillarFund = { isin: 'EE789', pillar: 3, price: 0, unavailablePrice: 0 };
+
     const state = reducer(oldState, {
       type: GET_SOURCE_FUNDS_SUCCESS,
-      sourceFunds: [thirdPillarFund, secondPillarFund, tulevaThirdPillarFund, zeroThirdPillarFund],
+      sourceFunds: [
+        thirdPillarFund,
+        secondPillarFund,
+        tulevaThirdPillarFund,
+        movedThirdPillarFund,
+        zeroThirdPillarFund,
+      ],
     });
 
     expect(state).toEqual({
       ...oldState,
-      sourceFunds: [thirdPillarFund, tulevaThirdPillarFund, zeroThirdPillarFund],
+      sourceFunds: [thirdPillarFund, tulevaThirdPillarFund, movedThirdPillarFund],
       exchangeExistingUnits: true,
       exchangeableSourceFunds: [thirdPillarFund],
     });
@@ -149,9 +157,9 @@ describe('Third pillar reducer', () => {
       exchangeExistingUnits: true,
       selectedFutureContributionsFundIsin: 'EE789',
     };
-    const secondPillarFund = { isin: 'EE123', pillar: 2, price: 100 };
-    const anotherSecondPillarFund = { isin: 'EE456', pillar: 2, price: 100 };
-    const thirdPillarFund = { isin: 'EE789', pillar: 3, price: 100 };
+    const secondPillarFund = { isin: 'EE123', pillar: 2, price: 100, unavailablePrice: 0 };
+    const anotherSecondPillarFund = { isin: 'EE456', pillar: 2, price: 100, unavailablePrice: 0 };
+    const thirdPillarFund = { isin: 'EE789', pillar: 3, price: 100, unavailablePrice: 0 };
     const sourceFunds = [secondPillarFund, anotherSecondPillarFund, thirdPillarFund];
 
     const state = reducer(oldState, { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds });
@@ -170,7 +178,9 @@ describe('Third pillar reducer', () => {
       exchangeExistingUnits: true,
       selectedFutureContributionsFundIsin: 'EE789',
     };
-    const sourceFunds = [{ isin: EXIT_RESTRICTED_FUND, pillar: 3, price: 100 }];
+    const sourceFunds = [
+      { isin: EXIT_RESTRICTED_FUND, pillar: 3, price: 100, unavailablePrice: 0 },
+    ];
 
     const state = reducer(oldState, { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds });
 
