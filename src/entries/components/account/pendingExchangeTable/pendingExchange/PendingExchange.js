@@ -1,24 +1,22 @@
 import React from 'react';
 import { PropTypes as Types } from 'prop-types';
-import { Message } from 'retranslate';
+
+function getAmount(amount, sourceFund, targetFund) {
+  if (sourceFund.pillar === 2 && targetFund.pillar === 2) {
+    return `${Math.round(amount * 100)}%`;
+  }
+  return amount;
+}
 
 const PendingExchange = ({ amount, date, sourceFund, targetFund }) => (
   <div className="row tv-table__row py-2">
+    <div className="col-12 col-sm">{sourceFund.name}</div>
+    <div className="col-12 col-sm">{targetFund.name}</div>
     <div className="col-12 col-sm">
-      <Message>{sourceFund.name}</Message>
+      {new Date(date).getFullYear()}-{`0${new Date(date).getMonth() + 1}`.slice(-2)}-
+      {`0${new Date(date).getDate()}`.slice(-2)}
     </div>
-    <div className="col-12 col-sm">
-      <Message>{targetFund.name}</Message>
-    </div>
-    <div className="col-12 col-sm">
-      <Message>
-        {new Date(date).getFullYear()}-{`0${new Date(date).getMonth() + 1}`.slice(-2)}-
-        {`0${new Date(date).getDate()}`.slice(-2)}
-      </Message>
-    </div>
-    <div className="col-12 col-sm text-sm-right">
-      <Message>{Math.round(amount * 100)}</Message>%
-    </div>
+    <div className="col-12 col-sm text-sm-right">{getAmount(amount, sourceFund, targetFund)}</div>
   </div>
 );
 

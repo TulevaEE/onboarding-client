@@ -1,6 +1,5 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Message } from 'retranslate';
 
 const mockUtils = jest.genMockFromModule('../../../common/utils');
 jest.mock('../../../common/utils', () => mockUtils);
@@ -20,7 +19,7 @@ describe('Pending exchange', () => {
     const sourceFund = { name: 'i am a name', id: '123' };
     const targetFund = { name: 'i am a name', id: '123' };
     component.setProps({ sourceFund, targetFund });
-    const displayName = <Message>i am a name</Message>;
+    const displayName = 'i am a name';
     expect(component.contains(displayName)).toBe(true);
   });
 
@@ -28,7 +27,7 @@ describe('Pending exchange', () => {
     const sourceFund = { name: 'i am a name', id: '123' };
     const targetFund = { name: 'i am a name2', id: '123' };
     component.setProps({ sourceFund, targetFund });
-    const displayName = <Message>i am a name2</Message>;
+    const displayName = 'i am a name2';
     expect(component.contains(displayName)).toBe(true);
   });
 });
