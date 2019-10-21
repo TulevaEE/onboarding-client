@@ -74,7 +74,7 @@ export class ThirdPillarPayment extends Component {
                 onChange={event => {
                   onMonthlyContributionChange(parseInt(event.target.value, 10));
                 }}
-                placeholder="100"
+                placeholder="150"
                 className="form-control"
               />
               <div className="input-group-append">

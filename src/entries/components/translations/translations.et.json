@@ -246,7 +246,7 @@
   "update.user.success.message": "Sinu kontaktandmed on uuendatud.",
   "account.second.pillar.missing": "Sa ei ole II sambaga liitunud. Millised võimalused sul tulevikus on? 1. 1970 ja hiljem sündinud saavad alates 1.01.2020 II sambaga uuesti liituda. 2. Hakka koguma Tuleva III Samba Pensionifondi.",
   "pension.registry.connection.exception": "Ei saa ühendust Eesti väärtpaberite keskregistriga, palun proovi hetke pärast uuesti.",
-  "change.my.pension.fund": "Vaheta pensionifondi",
+  "change.my.pension.fund": "Vaheta II samba fondi",
   "change.my.pension.fund.third.pillar": "Vaheta III samba fondi",
   "returnComparison.title": "Sinu pensionivara tootlus",
   "returnComparison.personal.secondPillar": "Sinu II sammas",
