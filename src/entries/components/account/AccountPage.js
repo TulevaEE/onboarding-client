@@ -46,7 +46,6 @@ export class AccountPage extends Component {
       memberCapital,
       loadingCapital,
       memberNumber,
-      conversion,
       pendingExchanges,
       loadingPendingExchanges,
       saveUser,
@@ -93,13 +92,6 @@ export class AccountPage extends Component {
           </div>
         </div>
 
-        {conversion && conversion.transfersComplete && conversion.selectionComplete ? (
-          <div className="mt-5">
-            <Message>account.converted.user.statement</Message>
-          </div>
-        ) : (
-          ''
-        )}
         {error ? <ErrorMessage errors={error.body} /> : ''}
 
         <div className="row mt-5">
@@ -185,10 +177,6 @@ AccountPage.propTypes = {
   memberCapital: Types.shape({}),
   loadingCapital: Types.bool,
   memberNumber: Types.number,
-  conversion: Types.shape({
-    transfersComplete: Types.bool,
-    selectionComplete: Types.bool,
-  }),
   saveUser: Types.func,
   error: Types.shape({
     body: Types.string,
@@ -208,10 +196,6 @@ AccountPage.defaultProps = {
   memberCapital: {},
   loadingCapital: false,
   memberNumber: null,
-  conversion: {
-    transfersComplete: false,
-    selectionComplete: false,
-  },
   error: null,
   saveUser: noop,
 };
@@ -233,7 +217,6 @@ const mapStateToProps = state => ({
   memberCapital: state.account.initialCapital,
   loadingCapital: state.account.loadingInitialCapital,
   memberNumber: (state.login.user || {}).memberNumber,
-  conversion: state.login.userConversion,
   error: state.exchange.error,
   token: state.login.token,
 });

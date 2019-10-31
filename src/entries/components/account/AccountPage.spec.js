@@ -94,23 +94,6 @@ describe('Current balance', () => {
     expect(accountStatement().exists()).toBe(false);
   });
 
-  it('renders converted user statement only when user is fully converted', () => {
-    let conversion = { transfersComplete: true, selectionComplete: true };
-    component.setProps({ conversion });
-
-    expect(component.contains(<Message>account.converted.user.statement</Message>)).toBe(true);
-
-    conversion = { transfersComplete: false, selectionComplete: true };
-    component.setProps({ conversion });
-
-    expect(component.contains(<Message>account.converted.user.statement</Message>)).toBe(false);
-
-    conversion = { transfersComplete: true, selectionComplete: false };
-    component.setProps({ conversion });
-
-    expect(component.contains(<Message>account.converted.user.statement</Message>)).toBe(false);
-  });
-
   it('renders no second pillar message', () => {
     expect(component.contains(<Message>account.second.pillar.missing</Message>)).toBe(true);
     component.setProps({ secondPillarSourceFunds: [{ sourcefund: true }] });

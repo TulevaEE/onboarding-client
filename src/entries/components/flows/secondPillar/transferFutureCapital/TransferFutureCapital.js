@@ -151,7 +151,7 @@ const mapStateToProps = state => ({
     state.exchange.sourceFunds || [],
     element => element.activeFund,
   ),
-  isUserConverted: state.login.userConversion.selectionComplete,
+  isUserConverted: state.login.userConversion.secondPillar.selectionComplete,
 });
 
 const mapDispatchToProps = dispatch =>
