@@ -2,29 +2,30 @@ import React from 'react';
 import { Message } from 'retranslate';
 import { PropTypes as Types } from 'prop-types';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import { Link } from 'react-router-dom';
 import StatusBoxRow from './statusBoxRow';
 
-const StatusBox = ({ currentBalanceFunds, memberNumber, age, loading }) => {
-  const managedByTuleva = funds => {
-    return funds.filter(fund => fund.managerName === 'Tuleva');
-  };
-
-  const joinTuleva = funds => {
-    return funds.length === 0 || funds.length !== managedByTuleva(funds).length;
-  };
-
-  const secondPillarData = currentBalanceFunds.filter(({ pillar }) => pillar === 2);
-
+export const StatusBox = ({
+  conversion,
+  memberNumber,
+  age,
+  loading,
+  secondPillarFunds,
+  thirdPillarFunds,
+}) => {
   const joinTulevaSoon = age >= 49;
-  const joinTuleva2 = joinTuleva(secondPillarData);
+  const joinTuleva2 = !(
+    conversion.secondPillar.selectionComplete && conversion.secondPillar.transfersComplete
+  );
+  const joinTuleva3 = !(
+    conversion.thirdPillar.selectionComplete && conversion.thirdPillar.transfersComplete
+  );
 
   const isTulevaMember = memberNumber != null;
 
   const tulevaData = isTulevaMember
     ? [<Message params={{ memberNumber }}>account.member.statement</Message>]
-    : [];
+    : [<Message>account.non.member.statement</Message>];
 
   return (
     <>
@@ -43,20 +44,33 @@ const StatusBox = ({ currentBalanceFunds, memberNumber, age, loading }) => {
           ok={!joinTuleva2 && !joinTulevaSoon}
           showAction={!loading}
           name={<Message>account.status.choice.pillar.second</Message>}
-          lines={secondPillarData.map(({ name }) => name)}
+          lines={secondPillarFunds.filter(fund => fund.activeFund).map(({ name }) => name)}
         >
           {joinTuleva2 && !joinTulevaSoon && (
-            <Link to="/2nd-pillar-flow">
+            <Link to="/2nd-pillar-flow" className="btn btn-light">
               <Message>account.status.choice.join.tuleva.2</Message>
             </Link>
           )}
 
           {joinTulevaSoon && (
             <span>
-              <a className="btn btn-link p-0 border-0" href="https://tuleva.ee/tulundusyhistu/">
+              <a className="btn btn-light" href="https://tuleva.ee/tulundusyhistu/">
                 <Message>account.status.choice.1970.coming.soon</Message>
               </a>
             </span>
+          )}
+        </StatusBoxRow>
+
+        <StatusBoxRow
+          ok={!joinTuleva3}
+          showAction={!loading}
+          name={<Message>account.status.choice.pillar.third</Message>}
+          lines={thirdPillarFunds.filter(fund => fund.activeFund).map(({ name }) => name)}
+        >
+          {joinTuleva3 && (
+            <Link to="/3rd-pillar-flow" className="btn btn-light">
+              <Message>account.status.choice.join.tuleva.3</Message>
+            </Link>
           )}
         </StatusBoxRow>
 
@@ -69,7 +83,7 @@ const StatusBox = ({ currentBalanceFunds, memberNumber, age, loading }) => {
         >
           {!isTulevaMember && (
             <span>
-              <a className="btn btn-link p-0 border-0" href="https://tuleva.ee/tulundusyhistu/">
+              <a className="btn btn-light" href="https://tuleva.ee/tulundusyhistu/">
                 <Message>account.status.choice.join.tuleva</Message>
               </a>
             </span>
@@ -82,27 +96,30 @@ const StatusBox = ({ currentBalanceFunds, memberNumber, age, loading }) => {
 };
 
 StatusBox.defaultProps = {
-  age: null,
-  currentBalanceFunds: [],
   memberNumber: null,
-  loading: null,
+  age: null,
+  conversion: {},
+  loading: false,
+  secondPillarFunds: [],
+  thirdPillarFunds: [],
 };
 
 StatusBox.propTypes = {
-  currentBalanceFunds: Types.arrayOf(Types.object),
   memberNumber: Types.number,
   age: Types.number,
+  conversion: Types.shape({}),
   loading: Types.bool,
+  secondPillarFunds: Types.arrayOf(Types.shape({})),
+  thirdPillarFunds: Types.arrayOf(Types.shape({})),
 };
 
 const mapStateToProps = state => ({
-  ...state,
+  memberNumber: (state.login.user || {}).memberNumber,
+  age: (state.login.user || {}).age,
+  conversion: state.login.userConversion,
+  loading: state.login.loadingUserConversion,
+  secondPillarFunds: state.exchange.sourceFunds,
+  thirdPillarFunds: state.thirdPillar.sourceFunds,
 });
 
-const mapDispatchToProps = dispatch => bindActionCreators({}, dispatch);
-const withRedux = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-);
-
-export default withRedux(StatusBox);
+export default connect(mapStateToProps)(StatusBox);

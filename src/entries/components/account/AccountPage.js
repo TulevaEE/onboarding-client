@@ -14,6 +14,7 @@ import { actions as accountActions } from '.';
 import { actions as exchangeActions } from '../exchange';
 import AccountStatement from './AccountStatement';
 import MemberCapital from './MemberCapital';
+import StatusBox from './statusBox';
 
 const noop = () => null;
 
@@ -45,7 +46,6 @@ export class AccountPage extends Component {
       loadingCurrentBalance,
       memberCapital,
       loadingCapital,
-      memberNumber,
       pendingExchanges,
       loadingPendingExchanges,
       saveUser,
@@ -69,20 +69,7 @@ export class AccountPage extends Component {
     return (
       <>
         <div className="mt-5">
-          {/* <StatusBox */}
-          {/*  currentBalanceFunds={currentBalanceFunds} */}
-          {/*  age={age} */}
-          {/*  memberNumber={memberNumber} */}
-          {/*  loading={loadingCurrentBalance} */}
-          {/* /> */}
-          {memberNumber !== null || (
-            <span>
-              <Message>account.non.member.statement</Message>{' '}
-              <a className="btn btn-link p-0 border-0" href="https://tuleva.ee/tulundusyhistu/">
-                <Message>login.join.tuleva</Message>
-              </a>
-            </span>
-          )}{' '}
+          {secondPillarSourceFunds && secondPillarSourceFunds.length > 0 && <StatusBox />}
           <div>
             {secondPillarSourceFunds && secondPillarSourceFunds.length === 0 ? (
               <Message>account.second.pillar.missing</Message>
@@ -176,7 +163,6 @@ AccountPage.propTypes = {
   onGetMemberCapital: Types.func,
   memberCapital: Types.shape({}),
   loadingCapital: Types.bool,
-  memberNumber: Types.number,
   saveUser: Types.func,
   error: Types.shape({
     body: Types.string,
@@ -195,7 +181,6 @@ AccountPage.defaultProps = {
   onGetMemberCapital: noop,
   memberCapital: {},
   loadingCapital: false,
-  memberNumber: null,
   error: null,
   saveUser: noop,
 };
@@ -216,7 +201,6 @@ const mapStateToProps = state => ({
     !(state.account.initialCapital || state.account.loadingInitialCapital),
   memberCapital: state.account.initialCapital,
   loadingCapital: state.account.loadingInitialCapital,
-  memberNumber: (state.login.user || {}).memberNumber,
   error: state.exchange.error,
   token: state.login.token,
 });

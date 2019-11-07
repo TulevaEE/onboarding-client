@@ -30,16 +30,20 @@ const StatusBoxRow = ({ name, lines, showAction, ok, children, last }) => {
     </ul>
   );
   return (
-    <div className={`d-flex py-2 ${!last ? 'tv-table__row' : ''}`}>
-      <div className="d-flex flex-column justify-content-center">
-        <CheckMark checked={ok} />
-      </div>
-      <div className="d-flex flex-column justify-content-center">
-        <div className="mt-0 pt-1 pl-2">
-          <b>{displayName}</b>
+    <div className={`d-flex justify-content-between py-2 ${!last ? 'tv-table__row' : ''}`}>
+      <div className="d-flex">
+        <div className="d-flex flex-column justify-content-center">
+          <CheckMark checked={ok} />
         </div>
-        {formattedLines}
-        <div className="col-12 col-sm text-sm-right">{showAction && children ? children : ''}</div>
+        <div className="d-flex flex-column justify-content-center">
+          <div className="mt-0 pt-1 pl-2">
+            <b>{displayName}</b>
+          </div>
+          {formattedLines}
+        </div>
+      </div>
+      <div className="d-flex flex-column justify-content-center mx-3 text-nowrap">
+        {showAction && children ? children : ''}
       </div>
     </div>
   );

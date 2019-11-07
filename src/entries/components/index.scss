@@ -81,6 +81,12 @@ small {
   padding-right: 32px;
 }
 
+.btn-light {
+  color: $blue;
+  border: 1px solid $gray-mid;
+  background: white;
+}
+
 .brand-logo {
   max-width: 150px;
 }

@@ -100,12 +100,6 @@ describe('Current balance', () => {
     expect(component.contains(<Message>account.second.pillar.missing</Message>)).toBe(false);
   });
 
-  it('renders alternative text when user is not a member yet', () => {
-    const memberNumber = null;
-    component.setProps({ memberNumber });
-    expect(component.contains(<Message>account.non.member.statement</Message>)).toBe(true);
-  });
-
   it('renders loader when current balance is still loading', () => {
     const loadingCurrentBalance = true;
     component.setProps({ loadingCurrentBalance });
@@ -145,19 +139,6 @@ describe('Current balance', () => {
     component.setProps({ error, funds });
 
     expect(component.contains(<ErrorMessage errors={error.body} />)).toBe(true);
-  });
-
-  it('renders CTA to non members', () => {
-    const cta = (
-      <a className="btn btn-link p-0 border-0" href="https://tuleva.ee/tulundusyhistu/">
-        <Message>login.join.tuleva</Message>
-      </a>
-    );
-    expect(component.contains(cta)).toBe(true);
-
-    const memberNumber = 123;
-    component.setProps({ memberNumber });
-    expect(component.contains(cta)).toBe(false);
   });
 
   function pendingExchangesTable() {

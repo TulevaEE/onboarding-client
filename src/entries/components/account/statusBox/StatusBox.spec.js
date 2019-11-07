@@ -2,23 +2,19 @@ import React from 'react';
 import { mount } from 'enzyme';
 import { Message } from 'retranslate';
 import { Provider } from 'react-redux';
-import { BrowserRouter, Link } from 'react-router-dom';
-import StatusBox from './StatusBox';
+import { BrowserRouter } from 'react-router-dom';
+import { StatusBox } from './StatusBox';
 import { mockStore } from '../../../../test/utils';
 
 describe('Status Box', () => {
   let component;
   let props;
 
-  const to2ndPillarFlow = (
-    <Link to="/2nd-pillar-flow">
-      <Message>account.status.choice.join.tuleva.2</Message>
-    </Link>
-  );
+  const to2ndPillarFlow = <Message>account.status.choice.join.tuleva.2</Message>;
   const toMemberFlow = <Message>account.status.choice.join.tuleva</Message>;
 
   beforeEach(() => {
-    props = { currentBalanceFunds: [] };
+    props = { conversion: { secondPillar: {}, thirdPillar: {} } };
     component = mountWithProvider(<StatusBox {...props} />);
   });
 
@@ -26,25 +22,25 @@ describe('Status Box', () => {
     expect(component.contains(<Message>account.status.choices</Message>)).toBe(true);
   });
 
-  it('renders pillar II  title', () => {
+  it('renders 2nd pillar cta', () => {
     expect(component.contains(to2ndPillarFlow)).toBe(true);
   });
 
   const pillar2ComingSoon = <Message>account.status.choice.1970.coming.soon</Message>;
 
-  it('wont render pillar II  coming soon for 48 and below', () => {
+  it('wont render pillar II coming soon for 48 and below', () => {
     component.setProps({ age: 48 });
     expect(component.contains(to2ndPillarFlow)).toBe(true);
     expect(component.contains(pillar2ComingSoon)).toBe(false);
   });
 
-  it('renders pillar II  coming soon for 49 and over', () => {
+  it('renders pillar II coming soon for 49 and over', () => {
     component.setProps({ age: 50 });
     expect(component.contains(pillar2ComingSoon)).toBe(false);
     expect(component.contains(to2ndPillarFlow)).toBe(true);
   });
 
-  it('renders Tuleva  title', () => {
+  it('renders Tuleva title', () => {
     expect(component.contains(<Message>account.status.choice.tuleva</Message>)).toBe(true);
   });
 
