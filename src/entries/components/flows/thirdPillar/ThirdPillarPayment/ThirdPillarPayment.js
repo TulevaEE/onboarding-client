@@ -23,12 +23,14 @@ export class ThirdPillarPayment extends Component {
       signedMandateId,
       monthlyContribution,
       pensionAccountNumber,
+      isUserConverted,
       onMonthlyContributionChange,
       onSubmit,
     } = this.props;
     return (
       <>
-        {!signedMandateId && <Redirect to={previousPath} />}
+        {!signedMandateId && !isUserConverted && <Redirect to={previousPath} />}
+        {isUserConverted && <Redirect to={nextPath} />}
 
         <h2 className="mt-3">
           <Message>thirdPillarPayment.title</Message>
@@ -125,6 +127,7 @@ ThirdPillarPayment.propTypes = {
   monthlyContribution: Types.number,
   pensionAccountNumber: Types.string,
   user: Types.shape({}),
+  isUserConverted: Types.bool,
 
   saveUser: Types.func,
   userSaved: Types.func,
@@ -139,6 +142,7 @@ ThirdPillarPayment.defaultProps = {
   signedMandateId: null,
   monthlyContribution: null,
   pensionAccountNumber: null,
+  isUserConverted: false,
   user: {},
 
   saveUser: noop,
@@ -152,6 +156,10 @@ const mapStateToProps = state => ({
   monthlyContribution: state.thirdPillar.monthlyContribution,
   pensionAccountNumber: state.login.user ? state.login.user.pensionAccountNumber : null,
   user: state.login.user,
+  isUserConverted:
+    state.thirdPillar.exchangeableSourceFunds &&
+    !state.thirdPillar.exchangeableSourceFunds.length &&
+    state.login.userConversion.thirdPillar.selectionComplete,
 });
 
 const mapDispatchToProps = dispatch =>

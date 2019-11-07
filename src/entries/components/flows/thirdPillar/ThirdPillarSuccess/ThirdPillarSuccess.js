@@ -1,6 +1,5 @@
 import React from 'react';
 import { Message } from 'retranslate';
-import { Link } from 'react-router-dom';
 import successImage from './success.svg';
 import './ThirdPillarSuccess.scss';
 
@@ -17,9 +16,9 @@ export const ThirdPillarSuccess = () => (
         <p className="mt-5">
           <Message>thirdPillarSuccess.message</Message>
         </p>
-        <Link className="btn btn-primary mt-4 profile-link" to="/account">
+        <a className="btn btn-primary mt-4 profile-link" href="/account">
           <Message>thirdPillarSuccess.button</Message>
-        </Link>
+        </a>
       </div>
     </div>
   </div>

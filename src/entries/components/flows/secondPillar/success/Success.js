@@ -3,7 +3,6 @@ import { PropTypes as Types } from 'prop-types';
 import { Message } from 'retranslate';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 import FacebookProvider, { Share } from 'react-facebook';
 
 import { downloadMandate } from '../../../exchange/actions';
@@ -68,9 +67,9 @@ export const Success = ({
       <h2 className="mt-5">
         <Message>success.view.profile.title</Message>
       </h2>
-      <Link className="btn btn-primary mt-4 profile-link" to="/account">
+      <a className="btn btn-primary mt-4 profile-link" href="/account">
         <Message>success.view.profile.title.button</Message>
-      </Link>
+      </a>
     </div>
   </div>
 );

@@ -1,7 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Message } from 'retranslate';
-import { Link } from 'react-router-dom';
 
 import { ThirdPillarSuccess } from './ThirdPillarSuccess';
 
@@ -17,9 +16,9 @@ describe('Third pillar success step', () => {
     expect(component.contains(<Message>thirdPillarSuccess.message</Message>)).toBe(true);
     expect(
       component.contains(
-        <Link className="btn btn-primary mt-4 profile-link" to="/account">
+        <a className="btn btn-primary mt-4 profile-link" href="/account">
           <Message>thirdPillarSuccess.button</Message>
-        </Link>,
+        </a>,
       ),
     ).toBe(true);
   });

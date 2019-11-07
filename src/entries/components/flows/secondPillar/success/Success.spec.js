@@ -1,7 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Message } from 'retranslate';
-import { Link } from 'react-router-dom';
 import FacebookProvider, { Share } from 'react-facebook';
 
 import { Success } from './Success';
@@ -19,9 +18,9 @@ describe('Success step', () => {
     expect(component.contains(<Message>success.view.profile.title.button</Message>)).toBe(true);
     expect(
       component.contains(
-        <Link className="btn btn-primary mt-4 profile-link" to="/account">
+        <a className="btn btn-primary mt-4 profile-link" href="/account">
           <Message>success.view.profile.title.button</Message>
-        </Link>,
+        </a>,
       ),
     ).toBe(true);
     expect(component.contains(<Message>success.your.payments</Message>)).toBe(false);

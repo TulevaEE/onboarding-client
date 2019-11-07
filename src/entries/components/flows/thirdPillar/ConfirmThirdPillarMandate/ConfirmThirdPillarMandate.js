@@ -27,6 +27,7 @@ export const ConfirmThirdPillarMandate = ({
   occupation,
   loadingSourceFunds,
   isAddressFilled,
+  isUserConverted,
   onSign,
   onPreview,
   onCancelSigningMandate,
@@ -38,6 +39,7 @@ export const ConfirmThirdPillarMandate = ({
   const buttonDisabled = !agreedToTerms || !isResident || isPoliticallyExposed || !occupation;
   return (
     <>
+      {isUserConverted && <Redirect to={nextPath} />}
       {signedMandateId && <Redirect to={nextPath} />}
       {!isAddressFilled && <Redirect to={previousPath} />}
       {loadingMandate || mandateSigningControlCode ? (
@@ -181,6 +183,7 @@ ConfirmThirdPillarMandate.propTypes = {
   occupation: Types.string,
   loadingSourceFunds: Types.bool,
   isAddressFilled: Types.bool,
+  isUserConverted: Types.bool,
   onSign: Types.func,
   onPreview: Types.func,
   onCancelSigningMandate: Types.func,
@@ -204,6 +207,7 @@ ConfirmThirdPillarMandate.defaultProps = {
   occupation: null,
   loadingSourceFunds: false,
   isAddressFilled: false,
+  isUserConverted: false,
   onSign: () => {},
   onPreview: () => {},
   onCancelSigningMandate: () => {},
@@ -226,6 +230,10 @@ const mapStateToProps = state => ({
   exchangeExistingUnits: state.thirdPillar.exchangeExistingUnits,
   loadingSourceFunds: state.thirdPillar.loadingSourceFunds,
   isAddressFilled: !state.login.user || hasAddress(state.login.user),
+  isUserConverted:
+    state.thirdPillar.exchangeableSourceFunds &&
+    !state.thirdPillar.exchangeableSourceFunds.length &&
+    state.login.userConversion.thirdPillar.selectionComplete,
 });
 
 const mapDispatchToProps = dispatch =>
