@@ -319,7 +319,7 @@
   "thirdPillarPayment.paymentButton": "Tegin ühekordse makse",
   "thirdPillarPayment.recurringPaymentButton": "Tegin püsimakse",
 
-  "thirdPillarSuccess.done": "Kõik tehtud",
-  "thirdPillarSuccess.message": "Vaata oma kontoseisu ja kui oled Tuleva liige, siis näed ka oma liikmekapitali seisu.",
+  "thirdPillarSuccess.done": "Kõik tehtud!",
+  "thirdPillarSuccess.message": "Vaata oma kontoseisu. Kui oled Tuleva ühistu liige, siis näed ka oma liikmekapitali seisu. Kui tegid sissemakse, siis uued osakud jõuavad sinu pensionikontole järgmise tööpäeva lõpuks.",
   "thirdPillarSuccess.button": "Minu konto"
 }
