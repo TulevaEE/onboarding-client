@@ -342,7 +342,7 @@
   "thirdPillarPayment.reference": "Reference",
   "thirdPillarPayment.paymentButton": "Payment made",
 
-  "thirdPillarSuccess.done": "All done",
-  "thirdPillarSuccess.message": "Check your pension account. Tuleva members see also their member capital.",
+  "thirdPillarSuccess.done": "All done!",
+  "thirdPillarSuccess.message": "Check your pension account. Tuleva members see also their member capital. Your new contribution will appear on your pension account by the end of the next working day.",
   "thirdPillarSuccess.button": "My account"
 }
