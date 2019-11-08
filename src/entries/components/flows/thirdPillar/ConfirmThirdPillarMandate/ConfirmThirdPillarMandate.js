@@ -234,8 +234,7 @@ const mapStateToProps = state => ({
     state.thirdPillar.exchangeableSourceFunds &&
     !state.thirdPillar.exchangeableSourceFunds.length &&
     state.login.userConversion &&
-    state.login.userConversion.thirdPillar.selectionComplete &&
-    state.login.userConversion.thirdPillar.transfersComplete,
+    state.login.userConversion.thirdPillar.selectionComplete,
 });
 
 const mapDispatchToProps = dispatch =>
