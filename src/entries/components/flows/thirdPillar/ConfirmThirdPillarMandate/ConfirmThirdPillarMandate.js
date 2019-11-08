@@ -233,7 +233,9 @@ const mapStateToProps = state => ({
   isUserConverted:
     state.thirdPillar.exchangeableSourceFunds &&
     !state.thirdPillar.exchangeableSourceFunds.length &&
-    state.login.userConversion.thirdPillar.selectionComplete,
+    state.login.userConversion &&
+    state.login.userConversion.thirdPillar.selectionComplete &&
+    state.login.userConversion.thirdPillar.transfersComplete,
 });
 
 const mapDispatchToProps = dispatch =>
