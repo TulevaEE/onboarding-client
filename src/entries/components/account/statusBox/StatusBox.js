@@ -8,12 +8,10 @@ import StatusBoxRow from './statusBoxRow';
 export const StatusBox = ({
   conversion,
   memberNumber,
-  age,
   loading,
   secondPillarFunds,
   thirdPillarFunds,
 }) => {
-  const joinTulevaSoon = age >= 49;
   const joinTuleva2 = !(
     conversion.secondPillar.selectionComplete && conversion.secondPillar.transfersComplete
   );
@@ -41,23 +39,15 @@ export const StatusBox = ({
 
       <div className="card card-secondary">
         <StatusBoxRow
-          ok={!joinTuleva2 && !joinTulevaSoon}
+          ok={!joinTuleva2}
           showAction={!loading}
           name={<Message>account.status.choice.pillar.second</Message>}
           lines={secondPillarFunds.filter(fund => fund.activeFund).map(({ name }) => name)}
         >
-          {joinTuleva2 && !joinTulevaSoon && (
+          {joinTuleva2 && (
             <Link to="/2nd-pillar-flow" className="btn btn-light">
               <Message>account.status.choice.join.tuleva.2</Message>
             </Link>
-          )}
-
-          {joinTulevaSoon && (
-            <span>
-              <a className="btn btn-light" href="https://tuleva.ee/tulundusyhistu/">
-                <Message>account.status.choice.1970.coming.soon</Message>
-              </a>
-            </span>
           )}
         </StatusBoxRow>
 
@@ -97,7 +87,6 @@ export const StatusBox = ({
 
 StatusBox.defaultProps = {
   memberNumber: null,
-  age: null,
   conversion: {},
   loading: false,
   secondPillarFunds: [],
@@ -106,7 +95,6 @@ StatusBox.defaultProps = {
 
 StatusBox.propTypes = {
   memberNumber: Types.number,
-  age: Types.number,
   conversion: Types.shape({}),
   loading: Types.bool,
   secondPillarFunds: Types.arrayOf(Types.shape({})),
@@ -115,7 +103,6 @@ StatusBox.propTypes = {
 
 const mapStateToProps = state => ({
   memberNumber: (state.login.user || {}).memberNumber,
-  age: (state.login.user || {}).age,
   conversion: state.login.userConversion,
   loading: state.login.loadingUserConversion,
   secondPillarFunds: state.exchange.sourceFunds,
