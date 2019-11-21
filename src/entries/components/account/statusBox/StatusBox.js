@@ -27,13 +27,9 @@ export const StatusBox = ({
 
   return (
     <>
-      <div className="row ">
-        <div className="col-12">
-          <div className="px-col mb-4">
-            <p className="mb-4 lead">
-              <Message>account.status.choices</Message>
-            </p>
-          </div>
+      <div className="row">
+        <div className="col-md-6 mb-4 lead">
+          <Message>account.status.choices</Message>
         </div>
       </div>
 
@@ -80,7 +76,14 @@ export const StatusBox = ({
           )}
         </StatusBoxRow>
       </div>
-      <br />
+      <div className="mt-3">
+        <small className="text-muted">
+          <Message
+            params={{ contribution: conversion.thirdPillar.yearToDateContribution }}
+            dangerouslyTranslateInnerHTML="account.status.yearToDateContribution"
+          />
+        </small>
+      </div>
     </>
   );
 };
