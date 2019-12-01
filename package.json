@@ -17,7 +17,7 @@
     "axios": "^0.19.0",
     "bootstrap": "4.3.1",
     "classnames": "^2.2.6",
-    "connected-react-router": "6.5.2",
+    "connected-react-router": "6.6.1",
     "downloadjs": "^1.4.7",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-jsx-a11y": "^6.2.3",
