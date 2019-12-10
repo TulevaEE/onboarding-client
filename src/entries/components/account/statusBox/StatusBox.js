@@ -79,7 +79,9 @@ export const StatusBox = ({
       <div className="mt-3">
         <small className="text-muted">
           <Message
-            params={{ contribution: conversion.thirdPillar.yearToDateContribution }}
+            params={{
+              contribution: (conversion.thirdPillar.yearToDateContribution || 0).toString(),
+            }}
             dangerouslyTranslateInnerHTML="account.status.yearToDateContribution"
           />
         </small>
