@@ -88,7 +88,8 @@ describe('Confirm mandate step', () => {
     const sourceSelection = [
       { percentage: 0, sourceFundIsin: 'source 1', targetFundIsin: 'target 2' },
     ];
-    component.setProps({ exchange: { sourceSelection } });
+    const sourceFunds = [{ isin: 'source 1', name: 'a' }];
+    component.setProps({ exchange: { sourceSelection, sourceFunds } });
     expect(component.contains(<Message>confirm.mandate.switch.sources</Message>)).toBe(false);
     expect(!!component.find(FundTransferTable).length).toBe(false);
   });

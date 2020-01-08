@@ -103,7 +103,11 @@ export const ConfirmMandate = ({
   if (exchange.error) {
     return <ErrorMessage errors={exchange.error.body} onCancel={onCloseErrorMessages} overlayed />;
   }
-  const aggregatedSelections = aggregateSelections(exchange.sourceSelection);
+  const aggregatedSelections = aggregateSelections(
+    exchange.sourceSelection.filter(
+      selection => isFundPriceZero(exchange.sourceFunds, selection.sourceFundIsin) !== true,
+    ),
+  );
   const aggregatedSelectionsWithNames = attachNames(
     aggregatedSelections,
     exchange.sourceFunds,

@@ -233,10 +233,10 @@ describe('Exchange reducer', () => {
     expect(state.selectedFutureContributionsFundIsin).toEqual(targetFunds[1].isin);
   });
 
-  it('defaults future contributions fund to null when some current company target fund is currently active', () => {
+  it('defaults future contributions fund to null when the same company target fund is currently active', () => {
     const sourceFunds = [
-      { name: 'name', isin: 'isin1', pillar: 2 },
-      { name: 'name', isin: 'isin2', activeFund: true, pillar: 2 },
+      { name: 'name', isin: 'isin1', activeFund: true, pillar: 2 },
+      { name: 'name', isin: 'isin2', pillar: 2 },
     ];
     const sourceFundsAction = { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds };
     const targetFunds = [

@@ -72,41 +72,30 @@ function createFullDefaultSourceSelection({ sourceFunds, targetFunds }) {
     }));
 }
 
-function isContributionsFundAlreadyActive(state, isinToCompareTo) {
+function isContributionsFundAlreadyActive(sourceFunds, isinToCompareTo) {
   return (
-    state.sourceFunds &&
-    !!state.sourceFunds.find(
-      sourceFund => sourceFund.activeFund && sourceFund.isin === isinToCompareTo,
-    )
+    sourceFunds &&
+    !!sourceFunds.find(sourceFund => sourceFund.activeFund && sourceFund.isin === isinToCompareTo)
   );
 }
 
 function getContributionFundIsin(action, state) {
   if (!action.sourceSelectionExact && action.sourceSelection.length > 0) {
     const futureContributionsFundCandidate = action.sourceSelection[0].targetFundIsin;
-    return isContributionsFundAlreadyActive(state, futureContributionsFundCandidate)
+    return isContributionsFundAlreadyActive(state.sourceFunds, futureContributionsFundCandidate)
       ? null
       : futureContributionsFundCandidate;
   }
   return state.selectedFutureContributionsFundIsin;
 }
 
-function getActiveSourceFund(sourceFunds) {
-  return sourceFunds.find(sourceFund => sourceFund.activeFund);
-}
-
 function selectDefaultContributionsFund(targetFunds, sourceFunds) {
   const currentCompanyFunds = getCurrentCompanyFunds(targetFunds);
   if (sourceFunds && targetFunds) {
-    const activeSourceFund = getActiveSourceFund(sourceFunds);
-
-    const isSomeCurrentCompanyFundAlreadyActive =
-      activeSourceFund && currentCompanyFunds.find(tf => tf.isin === activeSourceFund.isin) != null;
-
-    if (isSomeCurrentCompanyFundAlreadyActive) {
-      return null;
-    }
-    return currentCompanyFunds[0].isin;
+    const futureContributionsFundCandidate = currentCompanyFunds[0].isin;
+    return isContributionsFundAlreadyActive(sourceFunds, futureContributionsFundCandidate)
+      ? null
+      : futureContributionsFundCandidate;
   }
   return null;
 }
@@ -183,7 +172,7 @@ export default function exchangeReducer(state = initialState, action) {
       return {
         ...state,
         selectedFutureContributionsFundIsin: isContributionsFundAlreadyActive(
-          state,
+          state.sourceFunds,
           action.targetFundIsin,
         )
           ? null
