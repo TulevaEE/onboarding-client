@@ -20,6 +20,13 @@ jobs:
             - run:
                 name: Download dependencies
                 command: npm ci
+            - run:
+                name: Build
+                command: npm run build
+      - persist_to_workspace:
+          root: *workspace_root
+          paths:
+            - build
   test:
     executor:
       name: node/default
@@ -37,13 +44,6 @@ jobs:
             - run:
                 name: Upload coverage report
                 command: bash <(curl -s https://codecov.io/bash)
-            - run:
-                name: Build
-                command: npm run build
-      - persist_to_workspace:
-          root: *workspace_root
-          paths:
-            - build
   deploy:
     executor: awsebcli/default
     steps:
