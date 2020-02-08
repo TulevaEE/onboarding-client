@@ -1,42 +1,40 @@
-version: 2
+version: 2.1
+orbs:
+  awsebcli: sbc-orbs/awsebcli@0.0.3
+  node: circleci/node@1.1.6
 jobs:
   build:
-    docker:
-      - image: circleci/node:10-browsers
+    executor:
+      name: node/default
+      tag: '10.4'
     steps:
       - checkout
-      - run:
-          name: Download dependencies
-          command: npm ci
-      - save_cache:
-          key: dependency-cache-{{ checksum "package-lock.json" }}
-          paths:
-            - node_modules
+      - node/with-cache:
+          steps:
+            - run:
+                name: Download dependencies
+                command: npm ci
   test:
-    docker:
-      - image: circleci/node:10-browsers
+    executor:
+      name: node/default
+      tag: '10.4'
     steps:
       - checkout
-      - restore_cache:
-          key: dependency-cache-{{ checksum "package-lock.json" }}
-      - run:
-          name: Lint
-          command: npm run lint
-      - run:
-          name: Run tests
-          command: npm test -- --maxWorkers=2
-      - run:
-          name: Upload coverage report
-          command: bash <(curl -s https://codecov.io/bash)
+      - node/with-cache:
+          steps:
+            - run:
+                name: Lint
+                command: npm run lint
+            - run:
+                name: Run tests
+                command: npm test -- --maxWorkers=2
+            - run:
+                name: Upload coverage report
+                command: bash <(curl -s https://codecov.io/bash)
   deploy:
-    docker:
-      - image: meetfrank/circleci-node-awsebcli:latest
+    executor: awsebcli/default
     steps:
       - checkout
-      - run:
-          name: Upgrade awsebcli
-          command: |
-            sudo pip install awsebcli --upgrade
       - deploy:
           name: Deploy master to Production
           command: eb deploy onboarding-client --label ${CIRCLE_SHA1} --timeout 20
