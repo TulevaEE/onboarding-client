@@ -24,6 +24,11 @@ jobs:
             - run:
                 name: Build
                 command: npm run build
+            - run:
+                name: Copy assets
+                command: |
+                  set -exu
+                  mv build /tmp/workspace
       - persist_to_workspace:
           root: *workspace_root
           paths:
@@ -34,7 +39,6 @@ jobs:
       tag: '10.4'
     steps:
       - checkout
-      - *attach_workspace
       - node/with-cache:
           steps:
             - run:
@@ -56,7 +60,7 @@ jobs:
           command: eb deploy onboarding-client --label ${CIRCLE_SHA1} --timeout 20
       - run:
           name: Deploy master to S3
-          command: aws s3 cp build s3://pension.tuleva.ee --recursive
+          command: aws s3 cp /tmp/workspace/build s3://pension.tuleva.ee --recursive
 
 workflows:
   version: 2
