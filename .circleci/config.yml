@@ -31,13 +31,19 @@ jobs:
             - run:
                 name: Upload coverage report
                 command: bash <(curl -s https://codecov.io/bash)
+            - run:
+                name: Build
+                command: npm run build
   deploy:
     executor: awsebcli/default
     steps:
       - checkout
-      - deploy:
+      - run:
           name: Deploy master to Production
           command: eb deploy onboarding-client --label ${CIRCLE_SHA1} --timeout 20
+      - run:
+          name: Deploy master to S3
+          command: aws s3 cp build s3://pension.tuleva.ee --recursive
 
 workflows:
   version: 2
