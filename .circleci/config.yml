@@ -4,7 +4,7 @@ orbs:
   node: circleci/node@1.1.6
 references:
   workspace_root: &workspace_root
-    /home/circleci/project
+    /tmp/workspace
   attach_workspace: &attach_workspace
     attach_workspace:
       at: *workspace_root
@@ -14,6 +14,7 @@ jobs:
       name: node/default
       tag: '10.4'
     steps:
+      - *attach_workspace
       - checkout
       - node/with-cache:
           steps:
@@ -33,6 +34,7 @@ jobs:
       tag: '10.4'
     steps:
       - checkout
+      - *attach_workspace
       - node/with-cache:
           steps:
             - run:
@@ -47,8 +49,8 @@ jobs:
   deploy:
     executor: awsebcli/default
     steps:
-      - *attach_workspace
       - checkout
+      - *attach_workspace
       - run:
           name: Deploy master to Production
           command: eb deploy onboarding-client --label ${CIRCLE_SHA1} --timeout 20
