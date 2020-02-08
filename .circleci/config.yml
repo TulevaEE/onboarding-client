@@ -55,6 +55,7 @@ jobs:
     steps:
       - checkout
       - *attach_workspace
+      - awsebcli/install
       - run:
           name: Deploy master to Production
           command: eb deploy onboarding-client --label ${CIRCLE_SHA1} --timeout 20
