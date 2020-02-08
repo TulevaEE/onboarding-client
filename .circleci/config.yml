@@ -2,6 +2,12 @@ version: 2.1
 orbs:
   awsebcli: sbc-orbs/awsebcli@0.0.3
   node: circleci/node@1.1.6
+references:
+  workspace_root: &workspace_root
+    /tmp/workspace
+  attach_workspace: &attach_workspace
+    attach_workspace:
+      at: *workspace_root
 jobs:
   build:
     executor:
@@ -34,9 +40,14 @@ jobs:
             - run:
                 name: Build
                 command: npm run build
+      - persist_to_workspace:
+          root: *workspace_root
+          paths:
+            - build
   deploy:
     executor: awsebcli/default
     steps:
+      - *attach_workspace
       - checkout
       - run:
           name: Deploy master to Production
