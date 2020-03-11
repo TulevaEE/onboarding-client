@@ -24,7 +24,8 @@ function transformFundBalance(fundBalance: Record<string, any>): Record<string, 
     managementFeePercent: (fundBalance.fund.managementFeeRate * 100).toFixed(2).replace(/0+$/, ''),
     pillar: fundBalance.pillar,
     ongoingChargesFigure: fundBalance.fund.ongoingChargesFigure,
-    contributionSum: fundBalance.contributionSum,
+    contributions: fundBalance.contributions,
+    subtractions: fundBalance.subtractions,
     profit: fundBalance.profit,
   };
 }

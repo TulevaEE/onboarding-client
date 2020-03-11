@@ -12,9 +12,17 @@ describe('Account statement', () => {
     component = shallow(
       <AccountStatement
         funds={[
-          { isin: 'A1', name: 'A', contributionSum: 0, profit: 0, price: 100 },
-          { isin: 'B2', name: 'B', contributionSum: 0, profit: 0, price: 10, activeFund: true },
-          { isin: 'C3', name: 'C', contributionSum: 0, profit: 0, price: 1 },
+          { isin: 'A1', name: 'A', contributions: 0, subtractions: 0, profit: 0, price: 100 },
+          {
+            isin: 'B2',
+            name: 'B',
+            contributions: 0,
+            subtractions: 0,
+            profit: 0,
+            price: 10,
+            activeFund: true,
+          },
+          { isin: 'C3', name: 'C', contributions: 0, subtractions: 0, profit: 0, price: 1 },
         ]}
       />,
     );
@@ -31,7 +39,8 @@ describe('Account statement', () => {
           {
             isin: 'A1',
             name: 'A',
-            contributionSum: 0,
+            contributions: 0,
+            subtractions: 0,
             profit: 0,
             price: 3000,
             unavailablePrice: 1,
@@ -39,7 +48,8 @@ describe('Account statement', () => {
           {
             isin: 'B2',
             name: 'B',
-            contributionSum: 0,
+            contributions: 0,
+            subtractions: 0,
             profit: 0,
             price: 300,
             unavailablePrice: 1,
@@ -47,7 +57,8 @@ describe('Account statement', () => {
           {
             isin: 'C3',
             name: 'C',
-            contributionSum: 0,
+            contributions: 0,
+            subtractions: 0,
             profit: 0,
             price: 30,
             unavailablePrice: 1,
@@ -56,7 +67,7 @@ describe('Account statement', () => {
       />,
     );
 
-    const { footer } = tableProp('columns')[4];
+    const { footer } = tableProp('columns')[5];
 
     expect(footer).toEqual(<Euro amount={3333} />);
   });
@@ -65,9 +76,9 @@ describe('Account statement', () => {
     component = shallow(
       <AccountStatement
         funds={[
-          { isin: 'A1', name: 'A', contributionSum: 0, profit: 0, price: 0 },
-          { isin: 'B2', name: 'B', contributionSum: 0, profit: 0, price: 0 },
-          { isin: 'C3', name: 'C', contributionSum: 0, profit: 0, price: 0 },
+          { isin: 'A1', name: 'A', contributions: 0, subtractions: 0, profit: 0, price: 0 },
+          { isin: 'B2', name: 'B', contributions: 0, subtractions: 0, profit: 0, price: 0 },
+          { isin: 'C3', name: 'C', contributions: 0, subtractions: 0, profit: 0, price: 0 },
         ]}
       />,
     );
@@ -77,9 +88,17 @@ describe('Account statement', () => {
     component = shallow(
       <AccountStatement
         funds={[
-          { isin: 'A1', name: 'A', contributionSum: 0, profit: 0, price: 0 },
-          { isin: 'B2', name: 'B', contributionSum: 0, profit: 0, price: 0, activeFund: true },
-          { isin: 'C3', name: 'C', contributionSum: 0, profit: 0, price: 0 },
+          { isin: 'A1', name: 'A', contributions: 0, subtractions: 0, profit: 0, price: 0 },
+          {
+            isin: 'B2',
+            name: 'B',
+            contributions: 0,
+            subtractions: 0,
+            profit: 0,
+            price: 0,
+            activeFund: true,
+          },
+          { isin: 'C3', name: 'C', contributions: 0, subtractions: 0, profit: 0, price: 0 },
         ]}
       />,
     );

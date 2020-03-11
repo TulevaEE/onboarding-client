@@ -54,6 +54,7 @@
   "accountStatement.columns.fund.title": "Pension fund",
   "accountStatement.columns.fees.title": "Fees",
   "accountStatement.columns.contributions.title": "Contributions",
+  "accountStatement.columns.subtractions.title": "Subtractions",
   "accountStatement.columns.profit.title": "Profit",
   "accountStatement.columns.value.title": "Value",
   "accountStatement.columns.fund.footer": "Total",
