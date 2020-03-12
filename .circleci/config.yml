@@ -57,9 +57,6 @@ jobs:
       - *attach_workspace
       - awsebcli/install
       - run:
-          name: Deploy master to Production
-          command: eb deploy onboarding-client --label ${CIRCLE_SHA1} --timeout 20
-      - run:
           name: Deploy master to S3
           command: aws s3 cp /tmp/workspace/build s3://pension.tuleva.ee --recursive
 
