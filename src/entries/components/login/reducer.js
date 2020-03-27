@@ -22,6 +22,7 @@ import {
   SET_LOGIN_TO_REDIRECT,
   LOG_OUT,
   CHANGE_ID_CODE,
+  CHANGE_MID_SSID_NUMBER,
 } from './constants';
 
 import { getGlobalErrorCode } from '../common/errorMessage';
@@ -69,6 +70,8 @@ export default function loginReducer(state = initialState, action) {
   switch (action.type) {
     case CHANGE_PHONE_NUMBER:
       return { ...state, phoneNumber: action.phoneNumber };
+    case CHANGE_MID_SSID_NUMBER:
+      return { ...state, midIdentityCode: action.midIdentityCode };
     case CHANGE_ID_CODE:
       return { ...state, identityCode: action.identityCode };
     case CHANGE_EMAIL:

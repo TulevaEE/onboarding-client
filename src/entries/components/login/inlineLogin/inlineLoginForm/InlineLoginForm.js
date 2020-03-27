@@ -20,7 +20,9 @@ export class InlineLoginForm extends Component {
     const {
       translations: { translate },
       phoneNumber,
+      midIdentityCode,
       onPhoneNumberChange,
+      onMidSSCodeChange,
       onPhoneNumberSubmit,
       identityCode,
       onIdCodeChange,
@@ -32,7 +34,9 @@ export class InlineLoginForm extends Component {
       <div>
         <form
           className="row form-group"
-          onSubmit={runWithDefaultPrevention(() => onPhoneNumberSubmit(phoneNumber))}
+          onSubmit={runWithDefaultPrevention(() =>
+            onPhoneNumberSubmit(phoneNumber, midIdentityCode),
+          )}
         >
           <div className="col-sm-4">
             <input
@@ -46,10 +50,20 @@ export class InlineLoginForm extends Component {
           </div>
           <div className="col-sm-4">
             <input
+              id="mobile-ssid-code"
+              type="number"
+              value={midIdentityCode}
+              onChange={event => onMidSSCodeChange(event.target.value)}
+              className="form-control form-control-lg input-lg"
+              placeholder={translate('login.id.code')}
+            />
+          </div>
+          <div className="col-sm-4">
+            <input
               id="mobile-id-submit"
               type="submit"
               className="btn btn-primary btn-block btn-lg"
-              disabled={!phoneNumber}
+              disabled={!phoneNumber || !midIdentityCode}
               value={translate('login.mobile.id')}
             />
           </div>
@@ -100,11 +114,12 @@ const noop = () => null;
 
 InlineLoginForm.defaultProps = {
   onPhoneNumberChange: noop,
+  onMidSSCodeChange: noop,
   onPhoneNumberSubmit: noop,
   onIdCodeChange: noop,
   onIdCodeSubmit: noop,
   onAuthenticateWithIdCard: noop,
-
+  midIdentityCode: '',
   phoneNumber: '',
   identityCode: '',
 };
@@ -113,12 +128,14 @@ InlineLoginForm.propTypes = {
   translations: Types.shape({ translate: Types.func.isRequired }).isRequired,
 
   onPhoneNumberChange: Types.func,
+  onMidSSCodeChange: Types.func,
   onPhoneNumberSubmit: Types.func,
   onIdCodeChange: Types.func,
   onIdCodeSubmit: Types.func,
   onAuthenticateWithIdCard: Types.func,
 
   phoneNumber: Types.string,
+  midIdentityCode: Types.string,
   identityCode: Types.string,
 };
 

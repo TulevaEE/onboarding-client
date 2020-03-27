@@ -12,6 +12,7 @@ import { AuthenticationLoader, ErrorAlert } from '../../../common';
 import LoginForm from '../inlineLoginForm';
 import {
   changePhoneNumber,
+  changeMidSSCode,
   useRedirectLoginWithPhoneNumber,
   cancelMobileAuthentication,
   useRedirectLoginWithIdCard,
@@ -29,11 +30,13 @@ export class InlineLoginPage extends Component {
     const {
       onPhoneNumberSubmit,
       onPhoneNumberChange,
+      onMidSSCodeChange,
       onCancelMobileAuthentication,
       onIdCodeChange,
       onIdCodeSubmit,
       onAuthenticateWithIdCard,
       phoneNumber,
+      midIdentityCode,
       identityCode,
       controlCode,
       loadingAuthentication,
@@ -48,7 +51,9 @@ export class InlineLoginPage extends Component {
           <LoginForm
             onPhoneNumberSubmit={onPhoneNumberSubmit}
             onPhoneNumberChange={onPhoneNumberChange}
+            onMidSSCodeChange={onMidSSCodeChange}
             phoneNumber={phoneNumber}
+            midIdentityCode={midIdentityCode}
             onIdCodeSubmit={onIdCodeSubmit}
             onIdCodeChange={onIdCodeChange}
             identityCode={identityCode}
@@ -82,6 +87,7 @@ const noop = () => null;
 
 InlineLoginPage.defaultProps = {
   onPhoneNumberChange: noop,
+  onMidSSCodeChange: noop,
   onPhoneNumberSubmit: noop,
   onCancelMobileAuthentication: noop,
   onIdCodeChange: noop,
@@ -89,6 +95,7 @@ InlineLoginPage.defaultProps = {
   onAuthenticateWithIdCard: noop,
 
   phoneNumber: '',
+  midIdentityCode: '',
   identityCode: '',
   controlCode: '',
   loadingAuthentication: false,
@@ -98,6 +105,7 @@ InlineLoginPage.defaultProps = {
 
 InlineLoginPage.propTypes = {
   onPhoneNumberChange: Types.func,
+  onMidSSCodeChange: Types.func,
   onPhoneNumberSubmit: Types.func,
   onCancelMobileAuthentication: Types.func,
   onIdCodeChange: Types.func,
@@ -105,6 +113,7 @@ InlineLoginPage.propTypes = {
   onAuthenticateWithIdCard: Types.func,
 
   phoneNumber: Types.string,
+  midIdentityCode: Types.string,
   identityCode: Types.string,
   controlCode: Types.string,
   loadingAuthentication: Types.bool,
@@ -114,6 +123,7 @@ InlineLoginPage.propTypes = {
 
 const mapStateToProps = state => ({
   phoneNumber: state.login.phoneNumber,
+  midIdentityCode: state.login.midIdentityCode,
   identityCode: state.login.identityCode,
   controlCode: state.login.controlCode,
   loadingAuthentication: state.login.loadingAuthentication,
@@ -124,6 +134,7 @@ const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
       onPhoneNumberChange: changePhoneNumber,
+      onMidSSCodeChange: changeMidSSCode,
       onPhoneNumberSubmit: useRedirectLoginWithPhoneNumber,
       onCancelMobileAuthentication: cancelMobileAuthentication,
       onIdCodeChange: changeIdCode,

@@ -2,6 +2,7 @@ const withPrefix = name => `@login/${name}`;
 
 export const CHANGE_PHONE_NUMBER = withPrefix('CHANGE_PHONE_NUMBER');
 export const CHANGE_ID_CODE = withPrefix('CHANGE_ID_CODE');
+export const CHANGE_MID_SSID_NUMBER = withPrefix('CHANGE_MID_SSID_NUMBER');
 
 // START gets control code, then we start polling.
 export const MOBILE_AUTHENTICATION_START = withPrefix('MOBILE_AUTHENTICATION_START');

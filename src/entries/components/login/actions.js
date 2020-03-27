@@ -5,6 +5,7 @@ import config from 'react-global-configuration';
 
 import {
   CHANGE_PHONE_NUMBER,
+  CHANGE_MID_SSID_NUMBER,
   CHANGE_EMAIL,
   MOBILE_AUTHENTICATION_START,
   MOBILE_AUTHENTICATION_START_SUCCESS,
@@ -40,6 +41,10 @@ let timeout;
 
 export function changePhoneNumber(phoneNumber) {
   return { type: CHANGE_PHONE_NUMBER, phoneNumber };
+}
+
+export function changeMidSSCode(midIdentityCode) {
+  return { type: CHANGE_MID_SSID_NUMBER, midIdentityCode };
 }
 
 export function changeIdCode(identityCode) {
@@ -137,11 +142,11 @@ function getMobileIdTokens() {
   };
 }
 
-export function authenticateWithPhoneNumber(phoneNumber) {
+export function authenticateWithPhoneNumber(phoneNumber, midIdentityCode) {
   return dispatch => {
     dispatch({ type: MOBILE_AUTHENTICATION_START });
     return api
-      .authenticateWithPhoneNumber(phoneNumber)
+      .authenticateWithPhoneNumber(phoneNumber, midIdentityCode)
       .then(controlCode => {
         dispatch({ type: MOBILE_AUTHENTICATION_START_SUCCESS, controlCode });
         dispatch(getMobileIdTokens());
@@ -317,10 +322,10 @@ export function setLoginToRedirect() {
   return { type: SET_LOGIN_TO_REDIRECT };
 }
 
-export function useRedirectLoginWithPhoneNumber(phoneNumber) {
+export function useRedirectLoginWithPhoneNumber(phoneNumber, midIdentityCode) {
   return dispatch => {
     dispatch(setLoginToRedirect());
-    dispatch(authenticateWithPhoneNumber(phoneNumber));
+    dispatch(authenticateWithPhoneNumber(phoneNumber, midIdentityCode));
   };
 }
 

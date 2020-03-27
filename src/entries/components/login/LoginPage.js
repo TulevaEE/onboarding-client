@@ -12,6 +12,7 @@ import { logo, AuthenticationLoader, ErrorAlert } from '../common';
 import LoginForm from './loginForm';
 import {
   changePhoneNumber,
+  changeMidSSCode,
   authenticateWithPhoneNumber,
   cancelMobileAuthentication,
   authenticateWithIdCard,
@@ -23,11 +24,13 @@ export const LoginPage = ({
   isAuthenticated,
   onPhoneNumberSubmit,
   onPhoneNumberChange,
+  onMidSSCodeChange,
   onCancelMobileAuthentication,
   onIdCodeChange,
   onIdCodeSubmit,
   onAuthenticateWithIdCard,
   phoneNumber,
+  midIdentityCode,
   identityCode,
   controlCode,
   loadingAuthentication,
@@ -55,7 +58,9 @@ export const LoginPage = ({
                 <LoginForm
                   onPhoneNumberSubmit={onPhoneNumberSubmit}
                   onPhoneNumberChange={onPhoneNumberChange}
+                  onMidSSCodeChange={onMidSSCodeChange}
                   phoneNumber={phoneNumber}
+                  midIdentityCode={midIdentityCode}
                   onIdCodeSubmit={onIdCodeSubmit}
                   onIdCodeChange={onIdCodeChange}
                   identityCode={identityCode}
@@ -98,6 +103,7 @@ const noop = () => null;
 
 LoginPage.defaultProps = {
   onPhoneNumberChange: noop,
+  onMidSSCodeChange: noop,
   onPhoneNumberSubmit: noop,
   onCancelMobileAuthentication: noop,
   onIdCodeChange: noop,
@@ -106,6 +112,7 @@ LoginPage.defaultProps = {
 
   isAuthenticated: false,
   phoneNumber: '',
+  midIdentityCode: '',
   identityCode: '',
   controlCode: '',
   loadingAuthentication: false,
@@ -119,6 +126,7 @@ LoginPage.defaultProps = {
 
 LoginPage.propTypes = {
   onPhoneNumberChange: Types.func,
+  onMidSSCodeChange: Types.func,
   onPhoneNumberSubmit: Types.func,
   onCancelMobileAuthentication: Types.func,
   onIdCodeChange: Types.func,
@@ -127,6 +135,7 @@ LoginPage.propTypes = {
 
   isAuthenticated: Types.bool,
   phoneNumber: Types.string,
+  midIdentityCode: Types.string,
   identityCode: Types.string,
   controlCode: Types.string,
   loadingAuthentication: Types.bool,
@@ -141,6 +150,7 @@ LoginPage.propTypes = {
 const mapStateToProps = state => ({
   isAuthenticated: !!state.login.token,
   phoneNumber: state.login.phoneNumber,
+  midIdentityCode: state.login.midIdentityCode,
   identityCode: state.login.identityCode,
   controlCode: state.login.controlCode,
   loadingAuthentication: state.login.loadingAuthentication,
@@ -153,6 +163,7 @@ const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
       onPhoneNumberChange: changePhoneNumber,
+      onMidSSCodeChange: changeMidSSCode,
       onPhoneNumberSubmit: authenticateWithPhoneNumber,
       onCancelMobileAuthentication: cancelMobileAuthentication,
       onIdCodeChange: changeIdCode,

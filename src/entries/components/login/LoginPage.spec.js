@@ -17,8 +17,10 @@ describe('Login page', () => {
   it('renders a login form if no actions have not been taken', () => {
     const formProps = {
       phoneNumber: 'number',
+      midIdentityCode: 'number',
       identityCode: 'code',
       onPhoneNumberChange: jest.fn(),
+      onMidSSCodeChange: jest.fn(),
       onPhoneNumberSubmit: jest.fn(),
       onIdCodeSubmit: jest.fn(),
       onIdCodeChange: jest.fn(),
@@ -76,8 +78,10 @@ describe('Login page', () => {
     const errorDescription = 'oh no something broke yo';
     const formProps = {
       phoneNumber: 'number',
+      midIdentityCode: 'number',
       identityCode: 'idCode',
       onPhoneNumberChange: jest.fn(),
+      onMidSSCodeChange: jest.fn(),
       onPhoneNumberSubmit: jest.fn(),
       onIdCodeSubmit: jest.fn(),
       onIdCodeChange: jest.fn(),

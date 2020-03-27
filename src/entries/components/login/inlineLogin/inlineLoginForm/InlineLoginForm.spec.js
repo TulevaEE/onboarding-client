@@ -26,14 +26,22 @@ describe('Inline login form', () => {
   it('sets phone number submit button to disabled when no phone number present', () => {
     const submitButtonDisabled = () => !!component.find('input#mobile-id-submit').prop('disabled');
     expect(submitButtonDisabled()).toBe(true);
-    component.setProps({ phoneNumber: 'number' });
-    expect(submitButtonDisabled()).toBe(false);
+    component.setProps({ midIdentityCode: 'number' });
+    expect(submitButtonDisabled()).toBe(true);
   });
 
-  it('can submit a phone number', () => {
+  it('sets phone number submit button to disabled when no identity code present', () => {
+    const submitButtonDisabled = () => !!component.find('input#mobile-id-submit').prop('disabled');
+    expect(submitButtonDisabled()).toBe(true);
+    component.setProps({ phoneNumber: 'number' });
+    expect(submitButtonDisabled()).toBe(true);
+  });
+
+  it('can submit a phone number and identity code', () => {
     const phoneNumber = 'number';
+    const midIdentityCode = 'number';
     const onPhoneNumberSubmit = jest.fn();
-    component.setProps({ phoneNumber, onPhoneNumberSubmit });
+    component.setProps({ phoneNumber, midIdentityCode, onPhoneNumberSubmit });
 
     expect(onPhoneNumberSubmit).not.toHaveBeenCalled();
     component
@@ -41,7 +49,7 @@ describe('Inline login form', () => {
       .first()
       .simulate('submit', { preventDefault: () => true });
     expect(onPhoneNumberSubmit).toHaveBeenCalledTimes(1);
-    expect(onPhoneNumberSubmit).toHaveBeenCalledWith(phoneNumber);
+    expect(onPhoneNumberSubmit).toHaveBeenCalledWith(phoneNumber, midIdentityCode);
   });
 
   it('can submit identity code', () => {
