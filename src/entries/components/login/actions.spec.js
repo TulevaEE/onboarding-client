@@ -23,6 +23,7 @@ import {
   TOKEN_REFRESH_ERROR,
   SET_LOGIN_TO_REDIRECT,
   LOG_OUT,
+  CHANGE_MID_SSID_NUMBER,
 } from './constants';
 
 import { ID_CARD_LOGIN_START_FAILED_ERROR } from '../common/errorAlert/ErrorAlert';
@@ -65,6 +66,15 @@ describe('Login actions', () => {
 
   afterEach(() => {
     jest.runOnlyPendingTimers();
+  });
+
+  it('can change mobile identity code', () => {
+    const midIdentityCode = '50001018865';
+    const action = actions.changeMidSSCode(midIdentityCode);
+    expect(action).toEqual({
+      midIdentityCode,
+      type: CHANGE_MID_SSID_NUMBER,
+    });
   });
 
   it('can change phone number', () => {
