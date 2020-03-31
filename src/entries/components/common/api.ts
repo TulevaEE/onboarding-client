@@ -30,21 +30,21 @@ function transformFundBalance(fundBalance: Record<string, any>): Record<string, 
   };
 }
 
-export async function authenticateWithPhoneNumber(
+export async function authenticateWithMobileId(
   phoneNumber: string,
-  midIdentityCode: string,
+  personalCode: string,
 ): Promise<any> {
   const { challengeCode } = await post(getEndpoint('/authenticate'), {
-    value: phoneNumber,
-    socialSecurityId: midIdentityCode,
+    phoneNumber,
+    personalCode,
     type: 'MOBILE_ID',
   });
   return challengeCode;
 }
 
-export async function authenticateWithIdCode(identityCode: string): Promise<any> {
+export async function authenticateWithIdCode(personalCode: string): Promise<any> {
   const { challengeCode } = await post(getEndpoint('/authenticate'), {
-    value: identityCode,
+    personalCode,
     type: 'SMART_ID',
   });
   return challengeCode;

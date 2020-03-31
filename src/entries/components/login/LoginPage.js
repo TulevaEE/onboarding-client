@@ -12,26 +12,23 @@ import { logo, AuthenticationLoader, ErrorAlert } from '../common';
 import LoginForm from './loginForm';
 import {
   changePhoneNumber,
-  changeMidSSCode,
-  authenticateWithPhoneNumber,
+  changePersonalCode,
+  authenticateWithMobileId,
   cancelMobileAuthentication,
   authenticateWithIdCard,
-  changeIdCode,
   authenticateWithIdCode,
 } from './actions';
 
 export const LoginPage = ({
   isAuthenticated,
-  onPhoneNumberSubmit,
+  onMobileIdSubmit,
   onPhoneNumberChange,
-  onMidSSCodeChange,
+  onPersonalCodeChange,
   onCancelMobileAuthentication,
-  onIdCodeChange,
   onIdCodeSubmit,
   onAuthenticateWithIdCard,
   phoneNumber,
-  midIdentityCode,
-  identityCode,
+  personalCode,
   controlCode,
   loadingAuthentication,
   loadingUserConversion,
@@ -56,14 +53,12 @@ export const LoginPage = ({
               {errorDescription ? <ErrorAlert description={errorDescription} /> : ''}
               {!loadingAuthentication && !controlCode && !loadingUserConversion ? (
                 <LoginForm
-                  onPhoneNumberSubmit={onPhoneNumberSubmit}
+                  onMobileIdSubmit={onMobileIdSubmit}
                   onPhoneNumberChange={onPhoneNumberChange}
-                  onMidSSCodeChange={onMidSSCodeChange}
+                  onPersonalCodeChange={onPersonalCodeChange}
                   phoneNumber={phoneNumber}
-                  midIdentityCode={midIdentityCode}
+                  personalCode={personalCode}
                   onIdCodeSubmit={onIdCodeSubmit}
-                  onIdCodeChange={onIdCodeChange}
-                  identityCode={identityCode}
                   onAuthenticateWithIdCard={onAuthenticateWithIdCard}
                   monthlyThirdPillarContribution={monthlyThirdPillarContribution}
                   exchangeExistingThirdPillarUnits={exchangeExistingThirdPillarUnits}
@@ -103,17 +98,15 @@ const noop = () => null;
 
 LoginPage.defaultProps = {
   onPhoneNumberChange: noop,
-  onMidSSCodeChange: noop,
-  onPhoneNumberSubmit: noop,
+  onPersonalCodeChange: noop,
+  onMobileIdSubmit: noop,
   onCancelMobileAuthentication: noop,
-  onIdCodeChange: noop,
   onIdCodeSubmit: noop,
   onAuthenticateWithIdCard: noop,
 
   isAuthenticated: false,
   phoneNumber: '',
-  midIdentityCode: '',
-  identityCode: '',
+  personalCode: '',
   controlCode: '',
   loadingAuthentication: false,
   loadingUserConversion: false,
@@ -126,17 +119,15 @@ LoginPage.defaultProps = {
 
 LoginPage.propTypes = {
   onPhoneNumberChange: Types.func,
-  onMidSSCodeChange: Types.func,
-  onPhoneNumberSubmit: Types.func,
+  onPersonalCodeChange: Types.func,
+  onMobileIdSubmit: Types.func,
   onCancelMobileAuthentication: Types.func,
-  onIdCodeChange: Types.func,
   onIdCodeSubmit: Types.func,
   onAuthenticateWithIdCard: Types.func,
 
   isAuthenticated: Types.bool,
   phoneNumber: Types.string,
-  midIdentityCode: Types.string,
-  identityCode: Types.string,
+  personalCode: Types.string,
   controlCode: Types.string,
   loadingAuthentication: Types.bool,
   loadingUserConversion: Types.bool,
@@ -150,8 +141,7 @@ LoginPage.propTypes = {
 const mapStateToProps = state => ({
   isAuthenticated: !!state.login.token,
   phoneNumber: state.login.phoneNumber,
-  midIdentityCode: state.login.midIdentityCode,
-  identityCode: state.login.identityCode,
+  personalCode: state.login.personalCode,
   controlCode: state.login.controlCode,
   loadingAuthentication: state.login.loadingAuthentication,
   loadingUserConversion: state.login.loadingUserConversion,
@@ -163,10 +153,9 @@ const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
       onPhoneNumberChange: changePhoneNumber,
-      onMidSSCodeChange: changeMidSSCode,
-      onPhoneNumberSubmit: authenticateWithPhoneNumber,
+      onPersonalCodeChange: changePersonalCode,
+      onMobileIdSubmit: authenticateWithMobileId,
       onCancelMobileAuthentication: cancelMobileAuthentication,
-      onIdCodeChange: changeIdCode,
       onIdCodeSubmit: authenticateWithIdCode,
       onAuthenticateWithIdCard: authenticateWithIdCard,
     },

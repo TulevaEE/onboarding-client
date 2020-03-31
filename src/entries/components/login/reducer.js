@@ -21,8 +21,7 @@ import {
   TOKEN_REFRESH_ERROR,
   SET_LOGIN_TO_REDIRECT,
   LOG_OUT,
-  CHANGE_ID_CODE,
-  CHANGE_MID_SSID_NUMBER,
+  CHANGE_PERSONAL_CODE,
 } from './constants';
 
 import { getGlobalErrorCode } from '../common/errorMessage';
@@ -40,7 +39,7 @@ const loginMethod = (window.localStorage && localStorage.getItem(LOGIN_METHOD_ST
 
 export const initialState = {
   phoneNumber: '',
-  identityCode: '',
+  personalCode: '',
   controlCode: null,
   loadingAuthentication: false,
   token,
@@ -70,10 +69,8 @@ export default function loginReducer(state = initialState, action) {
   switch (action.type) {
     case CHANGE_PHONE_NUMBER:
       return { ...state, phoneNumber: action.phoneNumber };
-    case CHANGE_MID_SSID_NUMBER:
-      return { ...state, midIdentityCode: action.midIdentityCode };
-    case CHANGE_ID_CODE:
-      return { ...state, identityCode: action.identityCode };
+    case CHANGE_PERSONAL_CODE:
+      return { ...state, personalCode: action.personalCode };
     case CHANGE_EMAIL:
       return { ...state, email: action.email };
     case MOBILE_AUTHENTICATION_START:
@@ -106,7 +103,7 @@ export default function loginReducer(state = initialState, action) {
         controlCode: null,
         error: null,
         phoneNumber: '',
-        identityCode: '',
+        personalCode: '',
       };
     case ID_CARD_AUTHENTICATION_ERROR:
     case MOBILE_AUTHENTICATION_ERROR:

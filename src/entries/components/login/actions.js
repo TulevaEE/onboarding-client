@@ -5,7 +5,7 @@ import config from 'react-global-configuration';
 
 import {
   CHANGE_PHONE_NUMBER,
-  CHANGE_MID_SSID_NUMBER,
+  CHANGE_PERSONAL_CODE,
   CHANGE_EMAIL,
   MOBILE_AUTHENTICATION_START,
   MOBILE_AUTHENTICATION_START_SUCCESS,
@@ -29,7 +29,6 @@ import {
   TOKEN_REFRESH_ERROR,
   SET_LOGIN_TO_REDIRECT,
   LOG_OUT,
-  CHANGE_ID_CODE,
 } from './constants';
 
 import { api } from '../common';
@@ -43,12 +42,8 @@ export function changePhoneNumber(phoneNumber) {
   return { type: CHANGE_PHONE_NUMBER, phoneNumber };
 }
 
-export function changeMidSSCode(midIdentityCode) {
-  return { type: CHANGE_MID_SSID_NUMBER, midIdentityCode };
-}
-
-export function changeIdCode(identityCode) {
-  return { type: CHANGE_ID_CODE, identityCode };
+export function changePersonalCode(personalCode) {
+  return { type: CHANGE_PERSONAL_CODE, personalCode };
 }
 
 export function changeEmail(email) {
@@ -142,11 +137,11 @@ function getMobileIdTokens() {
   };
 }
 
-export function authenticateWithPhoneNumber(phoneNumber, midIdentityCode) {
+export function authenticateWithMobileId(phoneNumber, personalCode) {
   return dispatch => {
     dispatch({ type: MOBILE_AUTHENTICATION_START });
     return api
-      .authenticateWithPhoneNumber(phoneNumber, midIdentityCode)
+      .authenticateWithMobileId(phoneNumber, personalCode)
       .then(controlCode => {
         dispatch({ type: MOBILE_AUTHENTICATION_START_SUCCESS, controlCode });
         dispatch(getMobileIdTokens());
@@ -178,11 +173,11 @@ function getSmartIdTokens() {
   };
 }
 
-export function authenticateWithIdCode(identityCode) {
+export function authenticateWithIdCode(personalCode) {
   return dispatch => {
     dispatch({ type: MOBILE_AUTHENTICATION_START });
     return api
-      .authenticateWithIdCode(identityCode)
+      .authenticateWithIdCode(personalCode)
       .then(controlCode => {
         dispatch({ type: MOBILE_AUTHENTICATION_START_SUCCESS, controlCode });
         dispatch(getSmartIdTokens());
@@ -322,10 +317,10 @@ export function setLoginToRedirect() {
   return { type: SET_LOGIN_TO_REDIRECT };
 }
 
-export function useRedirectLoginWithPhoneNumber(phoneNumber, midIdentityCode) {
+export function useRedirectLoginWithPhoneNumber(phoneNumber, personalCode) {
   return dispatch => {
     dispatch(setLoginToRedirect());
-    dispatch(authenticateWithPhoneNumber(phoneNumber, midIdentityCode));
+    dispatch(authenticateWithMobileId(phoneNumber, personalCode));
   };
 }
 
@@ -336,9 +331,9 @@ export function useRedirectLoginWithIdCard() {
   };
 }
 
-export function useRedirectLoginWithIdCode(identityCode) {
+export function useRedirectLoginWithIdCode(personalCode) {
   return dispatch => {
     dispatch(setLoginToRedirect());
-    dispatch(authenticateWithIdCode(identityCode));
+    dispatch(authenticateWithIdCode(personalCode));
   };
 }

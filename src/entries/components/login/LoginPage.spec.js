@@ -17,13 +17,11 @@ describe('Login page', () => {
   it('renders a login form if no actions have not been taken', () => {
     const formProps = {
       phoneNumber: 'number',
-      midIdentityCode: 'number',
-      identityCode: 'code',
+      personalCode: 'code',
       onPhoneNumberChange: jest.fn(),
-      onMidSSCodeChange: jest.fn(),
-      onPhoneNumberSubmit: jest.fn(),
+      onPersonalCodeChange: jest.fn(),
+      onMobileIdSubmit: jest.fn(),
       onIdCodeSubmit: jest.fn(),
-      onIdCodeChange: jest.fn(),
       onAuthenticateWithIdCard: jest.fn(),
       monthlyThirdPillarContribution: 500,
       exchangeExistingThirdPillarUnits: true,
@@ -78,13 +76,11 @@ describe('Login page', () => {
     const errorDescription = 'oh no something broke yo';
     const formProps = {
       phoneNumber: 'number',
-      midIdentityCode: 'number',
-      identityCode: 'idCode',
+      personalCode: 'idCode',
       onPhoneNumberChange: jest.fn(),
-      onMidSSCodeChange: jest.fn(),
-      onPhoneNumberSubmit: jest.fn(),
+      onPersonalCodeChange: jest.fn(),
+      onMobileIdSubmit: jest.fn(),
       onIdCodeSubmit: jest.fn(),
-      onIdCodeChange: jest.fn(),
       onAuthenticateWithIdCard: jest.fn(),
       monthlyThirdPillarContribution: 500,
       exchangeExistingThirdPillarUnits: true,

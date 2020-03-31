@@ -75,7 +75,7 @@ describe('Login form', () => {
   it('sets phone number submit button to disabled when no phone number present', () => {
     const submitButtonDisabled = () => !!component.find('input#mobile-id-submit').prop('disabled');
     expect(submitButtonDisabled()).toBe(true);
-    component.setProps({ midIdentityCode: 'number' });
+    component.setProps({ personalCode: 'number' });
     expect(submitButtonDisabled()).toBe(true);
   });
 
@@ -89,30 +89,30 @@ describe('Login form', () => {
   it('sets phone number submit button to enabled when both identity code and phone number are present', () => {
     const submitButtonDisabled = () => !!component.find('input#mobile-id-submit').prop('disabled');
     expect(submitButtonDisabled()).toBe(true);
-    component.setProps({ midIdentityCode: 'number' });
+    component.setProps({ personalCode: 'number' });
     component.setProps({ phoneNumber: 'number' });
     expect(submitButtonDisabled()).toBe(false);
   });
 
   it('can submit a phone number and identity code', () => {
     const phoneNumber = 'number';
-    const midIdentityCode = 'number';
-    const onPhoneNumberSubmit = jest.fn();
-    component.setProps({ phoneNumber, midIdentityCode, onPhoneNumberSubmit });
+    const personalCode = 'number';
+    const onMobileIdSubmit = jest.fn();
+    component.setProps({ phoneNumber, personalCode, onMobileIdSubmit });
 
-    expect(onPhoneNumberSubmit).not.toHaveBeenCalled();
+    expect(onMobileIdSubmit).not.toHaveBeenCalled();
     component
       .find('form')
       .first()
       .simulate('submit', { preventDefault: () => true });
-    expect(onPhoneNumberSubmit).toHaveBeenCalledTimes(1);
-    expect(onPhoneNumberSubmit).toHaveBeenCalledWith(phoneNumber, midIdentityCode);
+    expect(onMobileIdSubmit).toHaveBeenCalledTimes(1);
+    expect(onMobileIdSubmit).toHaveBeenCalledWith(phoneNumber, personalCode);
   });
 
   it('can submit identity code', () => {
-    const identityCode = 'number';
+    const personalCode = 'number';
     const onIdCodeSubmit = jest.fn();
-    component.setProps({ identityCode, onIdCodeSubmit });
+    component.setProps({ personalCode, onIdCodeSubmit });
 
     expect(onIdCodeSubmit).not.toHaveBeenCalled();
     component
@@ -120,7 +120,7 @@ describe('Login form', () => {
       .last()
       .simulate('submit', { preventDefault: () => true });
     expect(onIdCodeSubmit).toHaveBeenCalledTimes(1);
-    expect(onIdCodeSubmit).toHaveBeenCalledWith(identityCode);
+    expect(onIdCodeSubmit).toHaveBeenCalledWith(personalCode);
   });
 
   it('can log in with id card', () => {

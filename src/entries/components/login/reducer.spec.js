@@ -22,7 +22,7 @@ import {
   TOKEN_REFRESH_ERROR,
   SET_LOGIN_TO_REDIRECT,
   LOG_OUT,
-  CHANGE_ID_CODE,
+  CHANGE_PERSONAL_CODE,
 } from './constants';
 import { UPDATE_USER_SUCCESS } from '../common/user/constants';
 
@@ -34,9 +34,9 @@ describe('Login reducer', () => {
   });
 
   it('changes identity code', () => {
-    const identityCode = 'identitycode';
-    const action = { type: CHANGE_ID_CODE, identityCode };
-    expect(loginReducer(undefined, action).identityCode).toBe(identityCode);
+    const personalCode = 'personalCode';
+    const action = { type: CHANGE_PERSONAL_CODE, personalCode };
+    expect(loginReducer(undefined, action).personalCode).toBe(personalCode);
   });
 
   it('changes email', () => {
