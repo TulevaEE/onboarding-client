@@ -3,6 +3,7 @@ import { PropTypes as Types } from 'prop-types';
 import { Message, withTranslations } from 'retranslate';
 
 import './LoginForm.scss';
+import LoginTabs from './LoginTabs';
 
 function runWithDefaultPrevention(fn) {
   return event => {
@@ -14,10 +15,10 @@ function runWithDefaultPrevention(fn) {
 export const LoginForm = ({
   translations: { translate },
   phoneNumber,
+  personalCode,
   onPhoneNumberChange,
-  onPhoneNumberSubmit,
-  identityCode,
-  onIdCodeChange,
+  onPersonalCodeChange,
+  onMobileIdSubmit,
   onIdCodeSubmit,
   onAuthenticateWithIdCard,
   monthlyThirdPillarContribution,
@@ -30,11 +31,19 @@ export const LoginForm = ({
           <>
             <h3 className="mb-4">
               {exchangeExistingThirdPillarUnits ? (
-                <Message params={{ monthlyContribution: monthlyThirdPillarContribution }}>
+                <Message
+                  params={{
+                    monthlyContribution: monthlyThirdPillarContribution,
+                  }}
+                >
                   login.title.thirdPillar.withExchange
                 </Message>
               ) : (
-                <Message params={{ monthlyContribution: monthlyThirdPillarContribution }}>
+                <Message
+                  params={{
+                    monthlyContribution: monthlyThirdPillarContribution,
+                  }}
+                >
                   login.title.thirdPillar.withoutExchange
                 </Message>
               )}
@@ -50,68 +59,77 @@ export const LoginForm = ({
           </h3>
         )}
       </div>
-
-      <form onSubmit={runWithDefaultPrevention(() => onPhoneNumberSubmit(phoneNumber))}>
-        <div className="form-group">
-          <input
-            id="mobile-id-number"
-            type="tel"
-            value={phoneNumber}
-            onChange={event => onPhoneNumberChange(event.target.value)}
-            className="form-control form-control-lg"
-            placeholder={translate('login.phone.number')}
-          />
+      <LoginTabs>
+        <div label="login.smart.id" hideOnMobile="false">
+          <form onSubmit={runWithDefaultPrevention(() => onIdCodeSubmit(personalCode))}>
+            <div className="form-group">
+              <input
+                id="smart-id-code"
+                type="number"
+                value={personalCode}
+                onChange={event => onPersonalCodeChange(event.target.value)}
+                className="form-control form-control-lg"
+                placeholder={translate('login.id.code')}
+              />
+            </div>
+            <div className="form-group">
+              <input
+                id="smart-id-submit"
+                type="submit"
+                className="btn btn-primary btn-block btn-lg"
+                disabled={!personalCode}
+                value={translate('login.enter')}
+              />
+            </div>
+          </form>
         </div>
-        <div className="form-group">
-          <input
-            id="mobile-id-submit"
-            type="submit"
-            className="btn btn-primary btn-block btn-lg"
-            disabled={!phoneNumber}
-            value={translate('login.mobile.id')}
-          />
+        <div label="login.mobile.id" hideOnMobile="false">
+          <form
+            onSubmit={runWithDefaultPrevention(() => onMobileIdSubmit(phoneNumber, personalCode))}
+          >
+            <div className="form-group">
+              <input
+                id="mobile-id-number"
+                type="tel"
+                value={phoneNumber}
+                onChange={event => onPhoneNumberChange(event.target.value)}
+                className="form-control form-control-lg"
+                placeholder={translate('login.phone.number')}
+              />
+            </div>
+            <div className="form-group">
+              <input
+                id="mobile-ssid-code"
+                type="number"
+                value={personalCode}
+                onChange={event => onPersonalCodeChange(event.target.value)}
+                className="form-control form-control-lg"
+                placeholder={translate('login.id.code')}
+              />
+            </div>
+            <div className="form-group">
+              <input
+                id="mobile-id-submit"
+                type="submit"
+                className="btn btn-primary btn-block btn-lg"
+                disabled={!phoneNumber || !personalCode}
+                value={translate('login.enter')}
+              />
+            </div>
+          </form>
         </div>
-      </form>
-      <div className="login-form__break mt-3 mb-3">
-        <span className="ml-2 mr-2">
-          <Message>login.or</Message>
-        </span>
-      </div>
-      <form onSubmit={runWithDefaultPrevention(() => onIdCodeSubmit(identityCode))}>
-        <div className="form-group">
-          <input
-            id="smart-id-code"
-            type="number"
-            value={identityCode}
-            onChange={event => onIdCodeChange(event.target.value)}
-            className="form-control form-control-lg"
-            placeholder={translate('login.id.code')}
-          />
+        <div label="login.id.card" hideOnMobile="true">
+          <div>
+            <button
+              type="button"
+              className="btn btn-primary btn-block btn-lg"
+              onClick={onAuthenticateWithIdCard}
+            >
+              <Message>login.enter</Message>
+            </button>
+          </div>
         </div>
-        <div className="form-group">
-          <input
-            id="smart-id-submit"
-            type="submit"
-            className="btn btn-primary btn-block btn-lg"
-            disabled={!identityCode}
-            value={translate('login.smart.id')}
-          />
-        </div>
-      </form>
-      <div className="login-form__break mt-3 mb-3">
-        <span className="ml-2 mr-2">
-          <Message>login.or</Message>
-        </span>
-      </div>
-      <div>
-        <button
-          type="button"
-          className="btn btn-primary btn-block btn-lg"
-          onClick={onAuthenticateWithIdCard}
-        >
-          <Message>login.id.card</Message>
-        </button>
-      </div>
+      </LoginTabs>
     </div>
     <div className="col-lg-9 mt-4">
       <Message>login.permission.note</Message>
@@ -123,13 +141,13 @@ const noop = () => null;
 
 LoginForm.defaultProps = {
   onPhoneNumberChange: noop,
-  onPhoneNumberSubmit: noop,
-  onIdCodeChange: noop,
+  onPersonalCodeChange: noop,
+  onMobileIdSubmit: noop,
   onIdCodeSubmit: noop,
   onAuthenticateWithIdCard: noop,
 
   phoneNumber: '',
-  identityCode: '',
+  personalCode: '',
   monthlyThirdPillarContribution: null,
   exchangeExistingThirdPillarUnits: false,
 };
@@ -138,13 +156,13 @@ LoginForm.propTypes = {
   translations: Types.shape({ translate: Types.func.isRequired }).isRequired,
 
   onPhoneNumberChange: Types.func,
-  onPhoneNumberSubmit: Types.func,
-  onIdCodeChange: Types.func,
+  onPersonalCodeChange: Types.func,
+  onMobileIdSubmit: Types.func,
   onIdCodeSubmit: Types.func,
   onAuthenticateWithIdCard: Types.func,
 
   phoneNumber: Types.string,
-  identityCode: Types.string,
+  personalCode: Types.string,
   monthlyThirdPillarContribution: Types.number,
   exchangeExistingThirdPillarUnits: Types.bool,
 };

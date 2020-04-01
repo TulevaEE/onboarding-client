@@ -14,8 +14,9 @@ describe('api', () => {
     mockHttp.simpleFetch = jest.fn();
   });
 
-  it('can authenticate with a phone number', () => {
+  it('can authenticate with mobile id', () => {
     const phoneNumber = '1234567';
+    const personalCode = '123456789';
     const controlCode = '123123123';
     mockHttp.post.mockImplementationOnce(() =>
       Promise.resolve({
@@ -23,18 +24,19 @@ describe('api', () => {
       }),
     );
     expect(mockHttp.post).not.toHaveBeenCalled();
-    return api.authenticateWithPhoneNumber(phoneNumber).then(givenControlCode => {
+    return api.authenticateWithMobileId(phoneNumber, personalCode).then(givenControlCode => {
       expect(givenControlCode).toBe(controlCode);
       expect(mockHttp.post).toHaveBeenCalledTimes(1);
       expect(mockHttp.post).toHaveBeenCalledWith('/authenticate', {
-        value: phoneNumber,
+        phoneNumber,
+        personalCode,
         type: 'MOBILE_ID',
       });
     });
   });
 
   it('can authenticate with identity code', () => {
-    const identityCode = '1223445567';
+    const personalCode = '1223445567';
     const controlCode = '123123123';
     mockHttp.post.mockImplementationOnce(() =>
       Promise.resolve({
@@ -42,11 +44,11 @@ describe('api', () => {
       }),
     );
     expect(mockHttp.post).not.toHaveBeenCalled();
-    return api.authenticateWithIdCode(identityCode).then(givenControlCode => {
+    return api.authenticateWithIdCode(personalCode).then(givenControlCode => {
       expect(givenControlCode).toBe(controlCode);
       expect(mockHttp.post).toHaveBeenCalledTimes(1);
       expect(mockHttp.post).toHaveBeenCalledWith('/authenticate', {
-        value: identityCode,
+        personalCode,
         type: 'SMART_ID',
       });
     });

@@ -9,7 +9,7 @@
   "login.id.card.start.failed": "Palun kontrolli, et ID kaart on lugejas ja lugeja ühendatud, ning ID kaardiga signeerimise plugin töötab. Vajadusel tee veebilehitsejale restart ja proovi uuesti.",
   "login.phone.number": "Telefoninumber",
   "login.id.code": "Isikukood",
-  "login.enter": "Sisenen",
+  "login.enter": "Sisene",
   "login.control.code": "Kontrolli, et sinu telefonile saabunud kontrollkood oleks järgmine:",
   "login.stop": "Katkesta",
   "login.error.invalid.user.credentials": "Sa pole veel Tuleva liige.",
