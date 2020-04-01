@@ -27,10 +27,16 @@ class LoginTabs extends Component {
       <div className="tabs">
         <ol className="tab-list">
           {children.map(child => {
-            const { label } = child.props;
+            const { label, hideOnMobile } = child.props;
 
             return (
-              <LoginTab activeTab={activeTab} key={label} label={label} onClick={onClickTabItem} />
+              <LoginTab
+                activeTab={activeTab}
+                key={label}
+                label={label}
+                onClick={onClickTabItem}
+                hideOnMobile={hideOnMobile}
+              />
             );
           })}
         </ol>

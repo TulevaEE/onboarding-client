@@ -60,7 +60,30 @@ export const LoginForm = ({
         )}
       </div>
       <LoginTabs>
-        <div label="login.mobile.id">
+        <div label="login.smart.id" hideOnMobile="false">
+          <form onSubmit={runWithDefaultPrevention(() => onIdCodeSubmit(personalCode))}>
+            <div className="form-group">
+              <input
+                id="smart-id-code"
+                type="number"
+                value={personalCode}
+                onChange={event => onPersonalCodeChange(event.target.value)}
+                className="form-control form-control-lg"
+                placeholder={translate('login.id.code')}
+              />
+            </div>
+            <div className="form-group">
+              <input
+                id="smart-id-submit"
+                type="submit"
+                className="btn btn-primary btn-block btn-lg"
+                disabled={!personalCode}
+                value={translate('login.enter')}
+              />
+            </div>
+          </form>
+        </div>
+        <div label="login.mobile.id" hideOnMobile="false">
           <form
             onSubmit={runWithDefaultPrevention(() => onMobileIdSubmit(phoneNumber, personalCode))}
           >
@@ -95,30 +118,7 @@ export const LoginForm = ({
             </div>
           </form>
         </div>
-        <div label="login.smart.id">
-          <form onSubmit={runWithDefaultPrevention(() => onIdCodeSubmit(personalCode))}>
-            <div className="form-group">
-              <input
-                id="smart-id-code"
-                type="number"
-                value={personalCode}
-                onChange={event => onPersonalCodeChange(event.target.value)}
-                className="form-control form-control-lg"
-                placeholder={translate('login.id.code')}
-              />
-            </div>
-            <div className="form-group">
-              <input
-                id="smart-id-submit"
-                type="submit"
-                className="btn btn-primary btn-block btn-lg"
-                disabled={!personalCode}
-                value={translate('login.enter')}
-              />
-            </div>
-          </form>
-        </div>
-        <div label="login.id.card">
+        <div label="login.id.card" hideOnMobile="true">
           <div>
             <button
               type="button"

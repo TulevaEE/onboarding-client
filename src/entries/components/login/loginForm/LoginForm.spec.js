@@ -103,7 +103,7 @@ describe('Login form', () => {
     expect(onMobileIdSubmit).not.toHaveBeenCalled();
     component
       .find('form')
-      .first()
+      .last()
       .simulate('submit', { preventDefault: () => true });
     expect(onMobileIdSubmit).toHaveBeenCalledTimes(1);
     expect(onMobileIdSubmit).toHaveBeenCalledWith(phoneNumber, personalCode);
@@ -117,7 +117,7 @@ describe('Login form', () => {
     expect(onIdCodeSubmit).not.toHaveBeenCalled();
     component
       .find('form')
-      .last()
+      .first()
       .simulate('submit', { preventDefault: () => true });
     expect(onIdCodeSubmit).toHaveBeenCalledTimes(1);
     expect(onIdCodeSubmit).toHaveBeenCalledWith(personalCode);

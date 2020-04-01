@@ -22,8 +22,11 @@
   padding-left: 0;
 }
 
+
+
 .tab-list-item {
-  width: 33%;
+  width: 33.33%;
+  max-width: 100%;
   display: inline-block;
   list-style: none;
   margin-bottom: -1px;
@@ -39,6 +42,10 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+
+@include mobile {
+  .tab-list-item { width: 50%; }
 }
 
 .tab-list-item:focus {
