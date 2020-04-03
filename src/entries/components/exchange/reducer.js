@@ -101,7 +101,7 @@ function selectDefaultContributionsFund(targetFunds, sourceFunds) {
 }
 
 function isSourceSelectionDone(sourceSelection) {
-  return sourceSelection ? sourceSelection.length > 0 : false;
+  return sourceSelection && sourceSelection.length > 0;
 }
 
 export default function exchangeReducer(state = initialState, action) {

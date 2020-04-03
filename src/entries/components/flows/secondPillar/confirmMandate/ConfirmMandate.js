@@ -62,10 +62,12 @@ function aggregateSelections(selections) {
 function attachNames(selections, sourceFunds, targetFunds) {
   return selections.map(selection => ({
     ...selection,
-    sourceFundName: utils.findWhere(sourceFunds, ({ isin }) => isin === selection.sourceFundIsin)
-      .name,
-    targetFundName: utils.findWhere(targetFunds, ({ isin }) => isin === selection.targetFundIsin)
-      .name,
+    sourceFundName: (
+      utils.findWhere(sourceFunds, ({ isin }) => isin === selection.sourceFundIsin) || {}
+    ).name,
+    targetFundName: (
+      utils.findWhere(targetFunds, ({ isin }) => isin === selection.targetFundIsin) || {}
+    ).name,
   }));
 }
 
