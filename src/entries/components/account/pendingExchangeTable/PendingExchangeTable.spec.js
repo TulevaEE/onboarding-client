@@ -31,14 +31,14 @@ describe('Pending exchange table', () => {
       {
         amount: 1,
         date: '2017-05-22T21:00:00Z',
-        sourceFund: { name: 'i am a name 1', id: '121' },
-        targetFund: { name: 'i am a name 2', id: '122' },
+        sourceFund: { name: 'i am a name 1', isin: '121' },
+        targetFund: { name: 'i am a name 2', isin: '122' },
       },
       {
         amount: 0.4,
         date: '2017-02-22T21:00:00Z',
-        sourceFund: { name: 'i am a name 3', id: '123' },
-        targetFund: { name: 'i am a name 4', id: '124' },
+        sourceFund: { name: 'i am a name 3', isin: '123' },
+        targetFund: { name: 'i am a name 4', isin: '124' },
       },
     ];
     component.setProps({ pendingExchanges });

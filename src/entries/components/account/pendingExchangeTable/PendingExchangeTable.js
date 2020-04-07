@@ -24,7 +24,7 @@ const PendingExchangeTable = ({ pendingExchanges }) => (
     </div>
     {pendingExchanges.map(({ amount, date, sourceFund, targetFund }) => (
       <PendingExchange
-        key={sourceFund.id + targetFund.id + date}
+        key={sourceFund.isin + targetFund.isin + date}
         amount={amount}
         date={date}
         sourceFund={sourceFund}

@@ -64,7 +64,7 @@ export const LoginForm = ({
           <form onSubmit={runWithDefaultPrevention(() => onIdCodeSubmit(personalCode))}>
             <div className="form-group">
               <input
-                id="smart-id-code"
+                id="smart-id-personal-code"
                 type="number"
                 value={personalCode}
                 onChange={event => onPersonalCodeChange(event.target.value)}
@@ -89,22 +89,22 @@ export const LoginForm = ({
           >
             <div className="form-group">
               <input
+                id="mobile-id-personal-code"
+                type="number"
+                value={personalCode}
+                onChange={event => onPersonalCodeChange(event.target.value)}
+                className="form-control form-control-lg"
+                placeholder={translate('login.id.code')}
+              />
+            </div>
+            <div className="form-group">
+              <input
                 id="mobile-id-number"
                 type="tel"
                 value={phoneNumber}
                 onChange={event => onPhoneNumberChange(event.target.value)}
                 className="form-control form-control-lg"
                 placeholder={translate('login.phone.number')}
-              />
-            </div>
-            <div className="form-group">
-              <input
-                id="mobile-ssid-code"
-                type="number"
-                value={personalCode}
-                onChange={event => onPersonalCodeChange(event.target.value)}
-                className="form-control form-control-lg"
-                placeholder={translate('login.id.code')}
               />
             </div>
             <div className="form-group">
