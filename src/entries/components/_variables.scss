@@ -82,14 +82,6 @@ $screen-lg-max:              ($screen-xl-min - 1) !default;
   }
 }
 
-// TODO: put someplace else
-@mixin mobileSmall {
-  // mobile <= 480px
-  @media (max-width: #{$screen-xs-min}) {
-	@content;
-  }
-}
-
 @mixin not-mobile {
   // not-mobile > 768px
   @media (min-width: #{$screen-sm-min}) {

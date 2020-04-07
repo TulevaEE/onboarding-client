@@ -44,7 +44,7 @@
   user-select: none;
 }
 
-@include mobileSmall {
+@include mobile {
   .tab-list-item { width: 50%; }
 }
 

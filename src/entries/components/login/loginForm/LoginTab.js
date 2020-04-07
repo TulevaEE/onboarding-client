@@ -28,7 +28,7 @@ class LoginTab extends Component {
     }
 
     if (hideOnMobile === 'true') {
-      className += ' d-none d-sm-table-cell';
+      className += ' d-none d-md-table-cell';
     }
 
     return (
