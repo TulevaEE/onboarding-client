@@ -22,6 +22,7 @@ import {
   GET_PENDING_EXCHANGES_ERROR,
   CHANGE_AGREEMENT_TO_TERMS,
   NO_SIGN_MANDATE_ERROR,
+  SIGN_MANDATE_IN_PROGRESS,
 } from './constants';
 
 import { LOG_OUT } from '../login/constants';
@@ -410,6 +411,22 @@ describe('Exchange reducer', () => {
   it('stops loading mandate and saves control code when starting to sign with mobile id succeeds', () => {
     const controlCode = 'control code';
     const action = { type: SIGN_MANDATE_MOBILE_ID_START_SUCCESS, controlCode };
+    const newState = exchangeReducer({ mandateSigningControlCode: true }, action);
+    expect(newState.mandateSigningControlCode).toBe(controlCode);
+    expect(newState.loadingMandate).toBe(false);
+  });
+
+  it('keeps on loading mandate when no challenge code', () => {
+    const controlCode = null;
+    const action = { type: SIGN_MANDATE_MOBILE_ID_START_SUCCESS, controlCode };
+    const newState = exchangeReducer({ mandateSigningControlCode: true }, action);
+    expect(newState.mandateSigningControlCode).toBe(controlCode);
+    expect(newState.loadingMandate).toBe(true);
+  });
+
+  it('stops loading mandate and saves control code when it becomes available', () => {
+    const controlCode = 'control code';
+    const action = { type: SIGN_MANDATE_IN_PROGRESS, controlCode };
     const newState = exchangeReducer({ mandateSigningControlCode: true }, action);
     expect(newState.mandateSigningControlCode).toBe(controlCode);
     expect(newState.loadingMandate).toBe(false);

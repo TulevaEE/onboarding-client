@@ -41,6 +41,7 @@ import {
   SIGN_MANDATE_MOBILE_ID_START_SUCCESS,
   SIGN_MANDATE_START_ERROR,
   SIGN_MANDATE_SUCCESS,
+  SIGN_MANDATE_IN_PROGRESS,
 } from './constants';
 
 const POLL_DELAY = 1000;
@@ -111,8 +112,12 @@ function pollForMandateSignatureWithMandateId(mandateId) {
     }
     timeout = setTimeout(() => {
       getMobileIdSignatureStatusForMandateIdWithToken(mandateId, getState().login.token)
-        .then(statusCode => {
-          if (statusCode === SIGNING_IN_PROGRESS_STATUS) {
+        .then(status => {
+          if (status.statusCode === SIGNING_IN_PROGRESS_STATUS) {
+            dispatch({
+              type: SIGN_MANDATE_IN_PROGRESS,
+              controlCode: status.challengeCode,
+            });
             dispatch(pollForMandateSignatureWithMandateId(mandateId));
           } else {
             dispatch({
@@ -136,8 +141,12 @@ function pollForMandateSignatureWithMandateIdUsingSmartId(mandateId) {
     }
     timeout = setTimeout(() => {
       getSmartIdSignatureStatusForMandateIdWithToken(mandateId, getState().login.token)
-        .then(statusCode => {
-          if (statusCode === SIGNING_IN_PROGRESS_STATUS) {
+        .then(status => {
+          if (status.statusCode === SIGNING_IN_PROGRESS_STATUS) {
+            dispatch({
+              type: SIGN_MANDATE_IN_PROGRESS,
+              controlCode: status.challengeCode,
+            });
             dispatch(pollForMandateSignatureWithMandateIdUsingSmartId(mandateId));
           } else {
             dispatch({
