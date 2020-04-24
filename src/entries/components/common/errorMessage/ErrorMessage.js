@@ -62,7 +62,10 @@ ErrorMessage.propTypes = {
 };
 
 export function getGlobalErrorCode(errors) {
-  return (((errors || {}).errors || []).find(error => !error.path) || {}).code;
+  const globalErrorCode = (((errors || {}).errors || []).find(error => !error.path) || {}).code;
+  const firstLocalErrorCode = (((errors || {}).errors || [])[0] || {}).code;
+
+  return globalErrorCode || firstLocalErrorCode;
 }
 
 export default ErrorMessage;
