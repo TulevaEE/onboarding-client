@@ -252,14 +252,14 @@ describe('api', () => {
   });
 
   it('can get a mobile id signature challenge code', () => {
-    mockHttp.put = jest.fn(() => Promise.resolve({ mobileIdChallengeCode: 7777 }));
+    mockHttp.put = jest.fn(() => Promise.resolve({ challengeCode: 7777 }));
     expect(mockHttp.put).not.toHaveBeenCalled();
     const mandateId = '123';
     const token = 'a token';
     return api
       .getMobileIdSignatureChallengeCodeForMandateIdWithToken(mandateId, token)
-      .then(mobileIdChallengeCode => {
-        expect(mobileIdChallengeCode).toBe(7777);
+      .then(challengeCode => {
+        expect(challengeCode).toBe(7777);
         expect(mockHttp.put).toHaveBeenCalledTimes(1);
         expect(mockHttp.put).toHaveBeenCalledWith(
           '/v1/mandates/123/signature/mobileId',
@@ -272,23 +272,57 @@ describe('api', () => {
   });
 
   it('can get a mobile id signature status', () => {
-    mockHttp.get = jest.fn(() => Promise.resolve({ statusCode: 'SIGNATURE' }));
+    mockHttp.get = jest.fn(() => Promise.resolve({ statusCode: 'SIGNATURE', challengeCode: 1234 }));
     expect(mockHttp.get).not.toHaveBeenCalled();
     const mandateId = '123';
     const token = 'a token';
+    return api.getMobileIdSignatureStatusForMandateIdWithToken(mandateId, token).then(status => {
+      expect(status.statusCode).toBe('SIGNATURE');
+      expect(status.challengeCode).toBe(1234);
+      expect(mockHttp.get).toHaveBeenCalledTimes(1);
+      expect(mockHttp.get).toHaveBeenCalledWith(
+        '/v1/mandates/123/signature/mobileId/status',
+        undefined,
+        {
+          Authorization: `Bearer ${token}`,
+        },
+      );
+    });
+  });
+
+  it('can start smart id signing', () => {
+    mockHttp.put = jest.fn(() => Promise.resolve({ challengeCode: null }));
+    expect(mockHttp.put).not.toHaveBeenCalled();
+    const mandateId = '123';
+    const token = 'a token';
     return api
-      .getMobileIdSignatureStatusForMandateIdWithToken(mandateId, token)
-      .then(statusCode => {
-        expect(statusCode).toBe('SIGNATURE');
-        expect(mockHttp.get).toHaveBeenCalledTimes(1);
-        expect(mockHttp.get).toHaveBeenCalledWith(
-          '/v1/mandates/123/signature/mobileId/status',
-          undefined,
-          {
-            Authorization: `Bearer ${token}`,
-          },
-        );
+      .getSmartIdSignatureChallengeCodeForMandateIdWithToken(mandateId, token)
+      .then(challengeCode => {
+        expect(challengeCode).toBe(null);
+        expect(mockHttp.put).toHaveBeenCalledTimes(1);
+        expect(mockHttp.put).toHaveBeenCalledWith('/v1/mandates/123/signature/smartId', undefined, {
+          Authorization: `Bearer ${token}`,
+        });
       });
+  });
+
+  it('can get a smart id signature status', () => {
+    mockHttp.get = jest.fn(() => Promise.resolve({ statusCode: 'SIGNATURE', challengeCode: 1234 }));
+    expect(mockHttp.get).not.toHaveBeenCalled();
+    const mandateId = '123';
+    const token = 'a token';
+    return api.getMobileIdSignatureStatusForMandateIdWithToken(mandateId, token).then(status => {
+      expect(status.statusCode).toBe('SIGNATURE');
+      expect(status.challengeCode).toBe(1234);
+      expect(mockHttp.get).toHaveBeenCalledTimes(1);
+      expect(mockHttp.get).toHaveBeenCalledWith(
+        '/v1/mandates/123/signature/mobileId/status',
+        undefined,
+        {
+          Authorization: `Bearer ${token}`,
+        },
+      );
+    });
   });
 
   it('can get an id card hash to be signed', () => {
