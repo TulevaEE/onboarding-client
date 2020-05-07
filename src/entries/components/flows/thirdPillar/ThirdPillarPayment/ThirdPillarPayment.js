@@ -30,7 +30,7 @@ export class ThirdPillarPayment extends Component {
     return (
       <>
         {!signedMandateId && !isUserConverted && <Redirect to={previousPath} />}
-        {isUserConverted && <Redirect to={nextPath} />}
+        {/* {isUserConverted && <Redirect to={nextPath} />} */}
 
         <h2 className="mt-3">
           <Message>thirdPillarPayment.title</Message>
