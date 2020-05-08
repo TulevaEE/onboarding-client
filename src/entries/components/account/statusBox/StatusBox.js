@@ -19,6 +19,11 @@ export const StatusBox = ({
     conversion.thirdPillar.selectionComplete && conversion.thirdPillar.transfersComplete
   );
 
+  const payTuleva3 =
+    conversion.thirdPillar.selectionComplete &&
+    conversion.thirdPillar.transfersComplete &&
+    !conversion.thirdPillar.paymentComplete;
+
   const isTulevaMember = memberNumber != null;
 
   const tulevaData = isTulevaMember
@@ -53,6 +58,12 @@ export const StatusBox = ({
           name={<Message>account.status.choice.pillar.third</Message>}
           lines={thirdPillarFunds.filter(fund => fund.activeFund).map(({ name }) => name)}
         >
+          {payTuleva3 && (
+            <Link to="/3rd-pillar-flow/payment" className="btn btn-light">
+              <Message>account.status.choice.pay.tuleva.3</Message>
+            </Link>
+          )}
+
           {joinTuleva3 && (
             <Link to="/3rd-pillar-flow" className="btn btn-light">
               <Message>account.status.choice.join.tuleva.3</Message>
