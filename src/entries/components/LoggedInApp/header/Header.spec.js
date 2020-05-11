@@ -17,7 +17,7 @@ describe('Header', () => {
   it('shows a header logo with a link', () => {
     expect(
       component.contains(
-        <a href="//tuleva.ee" target="_blank" rel="noopener noreferrer">
+        <a href="/" rel="noopener noreferrer">
           <img src={logo} alt="Tuleva" className="img-responsive brand-logo" />
         </a>,
       ),
