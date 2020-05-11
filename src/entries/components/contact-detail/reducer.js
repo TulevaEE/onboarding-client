@@ -1,7 +1,6 @@
 import { UPDATE_USER_SUCCESS, USER_UPDATED } from '../common/user/constants';
 
 export const initialState = {
-  error: null,
   updateUserSuccess: false,
 };
 

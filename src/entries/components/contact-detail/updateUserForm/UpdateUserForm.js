@@ -463,7 +463,7 @@ const selector = formValueSelector('updateUser');
 
 const mapStateToProps = state => ({
   initialValues: state.login.user ? { ...state.login.user } : null,
-  updateUserSuccess: state.account.updateUserSuccess,
+  updateUserSuccess: state.contactDetail.updateUserSuccess,
   isCountryEstonia: selector(state, 'address.countryCode') === 'EE',
 });
 

@@ -15,12 +15,14 @@ import './components/inline-login-index.scss';
 import './common/polyfills';
 import { reducer as loginReducer } from './components/login';
 import { reducer as accountReducer } from './components/account';
+import { reducer as contactDetailReducer } from './components/contact-detail';
 import InlineSignUp from './components/newUserFlow/inlineSignUp';
 import { initializeConfiguration } from './components/config/config';
 
 const rootReducer = combineReducers({
   login: loginReducer,
   account: accountReducer,
+  contactDetail: contactDetailReducer,
   form: formReducer,
 });
 

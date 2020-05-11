@@ -2,7 +2,7 @@ import { UPDATE_USER_SUCCESS, USER_UPDATED } from '../common/user/constants';
 
 import accountReducer from './reducer';
 
-describe('Account reducer', () => {
+describe('Contact detail reducer', () => {
   it('correctly sets user update success to state', () => {
     const action = { type: UPDATE_USER_SUCCESS };
 

@@ -37,7 +37,7 @@ describe('Account reducer', () => {
   it('correctly removes the state on logout', () => {
     const action = { type: LOG_OUT };
 
-    const newState = accountReducer({ updateUserSuccess: true }, action);
+    const newState = accountReducer({}, action);
 
     expect(newState).toEqual(initialState);
   });
