@@ -231,6 +231,8 @@
   "account.status.choice.pay.tuleva.3": "Make payment",
   "account.status.choice.join.tuleva": "Become a member",
   "account.status.yearToDateContribution": "You have contributed {{contribution}} euros to third pillar this year. <a href='//tuleva.ee/en/iii-pillar/' target='_blank' rel='noopener noreferrer'>Click here</a> to find out how to calculate your maximum contribution for this year.",
+  "account.greeting": "Hi",
+  "account.update.contact": "Update contact details",
   "new.user.flow.new.user.total.fund.value": "Your current second pillar total savings are ",
   "new.user.flow.new.user.active.fund.name": "Your active pension fund is ",
   "new.user.flow.new.user.old.fund.fees": "In your current fund you will pay a total of ",

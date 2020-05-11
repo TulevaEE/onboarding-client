@@ -4,15 +4,12 @@ import {
   GET_INITIAL_CAPITAL_ERROR,
 } from './constants';
 
-import { UPDATE_USER_SUCCESS, USER_UPDATED } from '../common/user/constants';
-
 import { LOG_OUT } from '../login/constants';
 
 export const initialState = {
   initialCapital: null,
   loadingInitialCapital: false,
   error: null,
-  updateUserSuccess: false,
 };
 
 export default function accountReducer(state = initialState, action) {
@@ -34,16 +31,6 @@ export default function accountReducer(state = initialState, action) {
         ...state,
         loadingInitialCapital: false,
         error: action.error,
-      };
-    case UPDATE_USER_SUCCESS:
-      return {
-        ...state,
-        updateUserSuccess: true,
-      };
-    case USER_UPDATED:
-      return {
-        ...state,
-        updateUserSuccess: false,
       };
     case LOG_OUT:
       return initialState;

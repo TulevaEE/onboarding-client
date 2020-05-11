@@ -5,8 +5,8 @@ import { Message } from 'retranslate';
 import { Loader, ErrorMessage } from '../common';
 import { AccountPage } from './AccountPage';
 import PendingExchangesTable from './pendingExchangeTable';
-import UpdateUserForm from './updateUserForm';
 import AccountStatement from './AccountStatement';
+import GreetingBar from './GreetingBar';
 
 describe('Current balance', () => {
   let component;
@@ -70,6 +70,10 @@ describe('Current balance', () => {
     //   expect(component.find(StatusBox).exists()).toBe(true);
     // });
 
+    it('renders greeting message', () => {
+      expect(component.contains(<GreetingBar />)).toBe(true);
+    });
+
     it('renders loader when current balance is still loading', () => {
       component.setProps({ loadingCurrentBalance: true });
       expect(component.contains(<Loader className="align-middle" />)).toBe(true);
@@ -124,12 +128,6 @@ describe('Current balance', () => {
   it('renders pending exchanges when at least one exists', () => {
     component.setProps({ pendingExchanges: [{}] });
     expect(pendingExchangesTable().exists()).toBe(true);
-  });
-
-  it('shows update user form', () => {
-    const saveUser = () => null;
-    component.setProps({ saveUser });
-    expect(component.contains(<UpdateUserForm onSubmit={saveUser} />)).toBe(true);
   });
 
   it('renders error', () => {

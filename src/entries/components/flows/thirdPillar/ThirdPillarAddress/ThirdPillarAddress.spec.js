@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 
 import { Redirect } from 'react-router-dom';
 import { ThirdPillarAddress } from './ThirdPillarAddress';
-import UpdateUserForm from '../../../account/updateUserForm';
+import UpdateUserForm from '../../../contact-detail/updateUserForm';
 
 const noop = () => null;
 
