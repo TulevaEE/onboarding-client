@@ -8,7 +8,7 @@ import { updateUser } from '../common/user/actions';
 
 const noop = () => null;
 
-export class ContactDetailPage extends Component {
+export class ContactDetailsPage extends Component {
   componentDidMount() {}
 
   render() {
@@ -25,11 +25,11 @@ export class ContactDetailPage extends Component {
   }
 }
 
-ContactDetailPage.propTypes = {
+ContactDetailsPage.propTypes = {
   saveUser: Types.func,
 };
 
-ContactDetailPage.defaultProps = {
+ContactDetailsPage.defaultProps = {
   saveUser: noop,
 };
 
@@ -46,4 +46,4 @@ const withRedux = connect(
   mapDispatchToProps,
 );
 
-export default withRedux(ContactDetailPage);
+export default withRedux(ContactDetailsPage);

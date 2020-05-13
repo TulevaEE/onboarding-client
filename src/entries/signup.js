@@ -15,7 +15,7 @@ import './components/inline-login-index.scss';
 import './common/polyfills';
 import { reducer as loginReducer } from './components/login';
 import { reducer as accountReducer } from './components/account';
-import { reducer as contactDetailReducer } from './components/contact-detail';
+import { reducer as contactDetailReducer } from './components/contact-details';
 import InlineSignUp from './components/newUserFlow/inlineSignUp';
 import { initializeConfiguration } from './components/config/config';
 

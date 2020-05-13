@@ -12,7 +12,7 @@ import AccountPage from '../account';
 import SecondPillarFlow from '../flows/secondPillar';
 import ThirdPillarFlow from '../flows/thirdPillar';
 import Footer from './footer';
-import ContactDetailPage from '../contact-detail';
+import ContactDetailPage from '../contact-details';
 
 export class LoggedInApp extends PureComponent {
   async componentDidMount() {
