@@ -8,13 +8,12 @@ import { Message } from 'retranslate';
 import { Loader, ErrorMessage } from '../common';
 import PendingExchangesTable from './pendingExchangeTable';
 import ReturnComparison from './ReturnComparison';
-import UpdateUserForm from './updateUserForm';
-import { updateUser } from '../common/user/actions';
 import { actions as accountActions } from '.';
 import { actions as exchangeActions } from '../exchange';
 import AccountStatement from './AccountStatement';
 import MemberCapital from './MemberCapital';
 import StatusBox from './statusBox';
+import GreetingBar from './GreetingBar';
 
 const noop = () => null;
 
@@ -48,7 +47,6 @@ export class AccountPage extends Component {
       loadingCapital,
       pendingExchanges,
       loadingPendingExchanges,
-      saveUser,
       error,
     } = this.props;
 
@@ -68,6 +66,9 @@ export class AccountPage extends Component {
 
     return (
       <>
+        <div className="row mt-5">
+          <GreetingBar />
+        </div>
         <div className="mt-5">
           {secondPillarSourceFunds && secondPillarSourceFunds.length > 0 && <StatusBox />}
           <div>
@@ -80,12 +81,6 @@ export class AccountPage extends Component {
         </div>
 
         {error ? <ErrorMessage errors={error.body} /> : ''}
-
-        <div className="row mt-5">
-          <div className="col-md-6 mb-4 lead">
-            <Message>accountStatement.heading</Message>
-          </div>
-        </div>
         {loadingCurrentBalance && <Loader className="align-middle" />}
         {secondPillarSourceFunds && secondPillarSourceFunds.length > 0 && (
           <>
@@ -140,18 +135,13 @@ export class AccountPage extends Component {
         ) : (
           ''
         )}
-        <div className="mt-5">
-          <p className="mb-4 lead">
-            <Message>update.user.details.title</Message>
-          </p>
-          <UpdateUserForm onSubmit={saveUser} />
-        </div>
       </>
     );
   }
 }
 
 AccountPage.propTypes = {
+  user: Types.shape({}),
   secondPillarSourceFunds: Types.arrayOf(Types.shape({})),
   thirdPillarSourceFunds: Types.arrayOf(Types.shape({})),
   loadingCurrentBalance: Types.bool,
@@ -163,13 +153,13 @@ AccountPage.propTypes = {
   onGetMemberCapital: Types.func,
   memberCapital: Types.shape({}),
   loadingCapital: Types.bool,
-  saveUser: Types.func,
   error: Types.shape({
     body: Types.string,
   }),
 };
 
 AccountPage.defaultProps = {
+  user: {},
   secondPillarSourceFunds: [],
   thirdPillarSourceFunds: [],
   loadingCurrentBalance: false,
@@ -182,7 +172,6 @@ AccountPage.defaultProps = {
   memberCapital: {},
   loadingCapital: false,
   error: null,
-  saveUser: noop,
 };
 
 const mapStateToProps = state => ({
@@ -207,7 +196,6 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
-      saveUser: updateUser,
       onGetMemberCapital: accountActions.getInitialCapital,
       onGetPendingExchanges: exchangeActions.getPendingExchanges,
     },

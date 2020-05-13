@@ -3,7 +3,7 @@ import { PropTypes as Types } from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Redirect } from 'react-router-dom';
-import UpdateUserForm from '../../../account/updateUserForm';
+import UpdateUserForm from '../../../contact-details/updateUserForm';
 import { updateUserEmailAndPhone } from '../../../common/user/actions';
 import { hasAddress } from '../../../common/user/address';
 

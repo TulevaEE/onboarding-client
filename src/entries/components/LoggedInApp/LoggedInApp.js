@@ -12,6 +12,7 @@ import AccountPage from '../account';
 import SecondPillarFlow from '../flows/secondPillar';
 import ThirdPillarFlow from '../flows/thirdPillar';
 import Footer from './footer';
+import ContactDetailPage from '../contact-details';
 
 export class LoggedInApp extends PureComponent {
   async componentDidMount() {
@@ -56,6 +57,7 @@ export class LoggedInApp extends PureComponent {
             <Header user={user} loading={loading} onLogout={onLogout} />
             <Switch>
               {userDataExists && <Route path="/account" component={AccountPage} />}
+              <Route path="/contact-detail" component={ContactDetailPage} />
               <Route path="/2nd-pillar-flow" component={SecondPillarFlow} />
               <Route path="/3rd-pillar-flow" component={ThirdPillarFlow} />
               <Redirect exact path="/" to="/account" />
