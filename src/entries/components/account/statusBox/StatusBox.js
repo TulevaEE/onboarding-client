@@ -91,7 +91,7 @@ export const StatusBox = ({
         <small className="text-muted">
           <Message
             params={{
-              contribution: (conversion.thirdPillar.yearToDateContribution || 0).toString(),
+              contribution: (conversion.thirdPillar.contribution.yearToDate || 0).toString(),
             }}
             dangerouslyTranslateInnerHTML="account.status.yearToDateContribution"
           />
