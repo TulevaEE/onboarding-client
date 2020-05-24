@@ -14,6 +14,7 @@ import AccountStatement from './AccountStatement';
 import MemberCapital from './MemberCapital';
 import StatusBox from './statusBox';
 import GreetingBar from './GreetingBar';
+import AccountSummary from './AccountSummary';
 
 const noop = () => null;
 
@@ -79,6 +80,18 @@ export class AccountPage extends Component {
             )}
           </div>
         </div>
+
+        {secondPillarSourceFunds && thirdPillarSourceFunds && (
+          <div className="mt-5">
+            <p className="mb-4 lead">
+              <Message>accountSummary.heading</Message>
+            </p>
+            <AccountSummary
+              secondPillarSourceFunds={secondPillarSourceFunds}
+              thirdPillarSourceFunds={thirdPillarSourceFunds}
+            />
+          </div>
+        )}
 
         {error ? <ErrorMessage errors={error.body} /> : ''}
         {loadingCurrentBalance && <Loader className="align-middle" />}
@@ -154,7 +167,7 @@ AccountPage.propTypes = {
   memberCapital: Types.shape({}),
   loadingCapital: Types.bool,
   error: Types.shape({
-    body: Types.string,
+    body: Types.object,
   }),
 };
 
