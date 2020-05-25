@@ -11,10 +11,12 @@ export class GreetingBar extends Component {
     return (
       <>
         <div className="col-md-auto mb-1 mt-2 lead">
-          <Message>account.greeting</Message>, {user.firstName} {user.lastName}
+          <Message>account.greeting</Message>, {user.firstName} {user.lastName}!
         </div>
         <div className="col mb-1 mt-2 text-md-right">
-          {user.email} · {user.phoneNumber}
+          {user.email}
+          {user.email && user.phoneNumber && <span className="mx-1"> · </span>}
+          <span className="mr-2">{user.phoneNumber} </span>
           <Link className="btn btn-light" to="/contact-detail">
             <Message>account.update.contact</Message>
           </Link>

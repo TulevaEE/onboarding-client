@@ -149,28 +149,23 @@ export async function getMobileIdSignatureChallengeCodeForMandateIdWithToken(
   mandateId: string,
   token: string,
 ): Promise<any> {
-  const { mobileIdChallengeCode } = await put(
+  const { challengeCode } = await put(
     getEndpoint(`/v1/mandates/${mandateId}/signature/mobileId`),
     undefined,
     {
       Authorization: `Bearer ${token}`,
     },
   );
-  return mobileIdChallengeCode;
+  return challengeCode;
 }
 
 export async function getMobileIdSignatureStatusForMandateIdWithToken(
   mandateId: string,
   token: string,
 ): Promise<any> {
-  const { statusCode } = await get(
-    getEndpoint(`/v1/mandates/${mandateId}/signature/mobileId/status`),
-    undefined,
-    {
-      Authorization: `Bearer ${token}`,
-    },
-  );
-  return statusCode;
+  return get(getEndpoint(`/v1/mandates/${mandateId}/signature/mobileId/status`), undefined, {
+    Authorization: `Bearer ${token}`,
+  });
 }
 
 export async function getSmartIdSignatureChallengeCodeForMandateIdWithToken(
@@ -191,14 +186,9 @@ export async function getSmartIdSignatureStatusForMandateIdWithToken(
   mandateId: string,
   token: string,
 ): Promise<any> {
-  const { statusCode } = await get(
-    getEndpoint(`/v1/mandates/${mandateId}/signature/smartId/status`),
-    undefined,
-    {
-      Authorization: `Bearer ${token}`,
-    },
-  );
-  return statusCode;
+  return get(getEndpoint(`/v1/mandates/${mandateId}/signature/smartId/status`), undefined, {
+    Authorization: `Bearer ${token}`,
+  });
 }
 
 export async function getIdCardSignatureHashForMandateIdWithCertificateHexAndToken(
