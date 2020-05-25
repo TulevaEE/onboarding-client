@@ -57,11 +57,16 @@ describe('Current balance', () => {
         activeContributions: true,
       },
     ];
+    const conversion = {
+      secondPillar: { contribution: { total: 0 } },
+      thirdPillar: { contribution: { total: 0 } },
+    };
 
     beforeEach(() => {
       component.setProps({
         secondPillarSourceFunds,
         thirdPillarSourceFunds,
+        conversion,
         loadingCapital: true,
         initialCapital: capital,
       });

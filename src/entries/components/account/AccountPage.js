@@ -43,6 +43,7 @@ export class AccountPage extends Component {
     const {
       secondPillarSourceFunds,
       thirdPillarSourceFunds,
+      conversion,
       loadingCurrentBalance,
       memberCapital,
       loadingCapital,
@@ -81,12 +82,14 @@ export class AccountPage extends Component {
           </div>
         </div>
 
-        {secondPillarSourceFunds && thirdPillarSourceFunds && (
+        {secondPillarSourceFunds && thirdPillarSourceFunds && conversion && (
           <div className="mt-5">
             <p className="mb-4 lead">
               <Message>accountSummary.heading</Message>
             </p>
             <AccountSummary
+              secondPillarTotal={conversion.secondPillar.contribution.total}
+              thirdPillarTotal={conversion.thirdPillar.contribution.total}
               secondPillarSourceFunds={secondPillarSourceFunds}
               thirdPillarSourceFunds={thirdPillarSourceFunds}
             />
@@ -190,6 +193,7 @@ AccountPage.defaultProps = {
 const mapStateToProps = state => ({
   secondPillarSourceFunds: state.exchange.sourceFunds,
   thirdPillarSourceFunds: state.thirdPillar.sourceFunds,
+  conversion: state.login.userConversion,
   loadingCurrentBalance: state.exchange.loadingSourceFunds,
   shouldGetPendingExchanges:
     state.login.token &&

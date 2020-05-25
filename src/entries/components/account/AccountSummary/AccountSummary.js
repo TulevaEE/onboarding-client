@@ -6,25 +6,36 @@ import sumBy from 'lodash/sumBy';
 import Table from '../../common/table';
 import Euro from '../../common/Euro';
 
-const AccountSummary = ({ secondPillarSourceFunds, thirdPillarSourceFunds }) => {
-  const getPillarSummary = (pillarLabel, funds) => {
+const AccountSummary = ({
+  secondPillarTotal,
+  thirdPillarTotal,
+  secondPillarSourceFunds,
+  thirdPillarSourceFunds,
+}) => {
+  const getPillarSummary = (pillarLabel, contributions, funds) => {
+    const value = sumBy(funds, fund => {
+      return fund.price + fund.unavailablePrice;
+    });
+
     return {
       pillar: pillarLabel,
-      contributions: sumBy(funds, fund => {
-        return fund.contributions - fund.subtractions;
-      }),
-      profit: sumBy(funds, fund => {
-        return fund.profit;
-      }),
-      value: sumBy(funds, fund => {
-        return fund.price + fund.unavailablePrice;
-      }),
+      contributions,
+      profit: value - contributions,
+      value,
     };
   };
 
   const summary = [
-    getPillarSummary('accountStatement.secondPillar.heading', secondPillarSourceFunds),
-    getPillarSummary('accountStatement.thirdPillar.heading', thirdPillarSourceFunds),
+    getPillarSummary(
+      'accountStatement.secondPillar.heading',
+      secondPillarTotal,
+      secondPillarSourceFunds,
+    ),
+    getPillarSummary(
+      'accountStatement.thirdPillar.heading',
+      thirdPillarTotal,
+      thirdPillarSourceFunds,
+    ),
   ];
 
   const columns = [
@@ -76,6 +87,8 @@ const AccountSummary = ({ secondPillarSourceFunds, thirdPillarSourceFunds }) => 
 };
 
 AccountSummary.propTypes = {
+  secondPillarTotal: Types.number.isRequired,
+  thirdPillarTotal: Types.number.isRequired,
   secondPillarSourceFunds: Types.arrayOf(
     Types.shape({
       activeFund: Types.bool,

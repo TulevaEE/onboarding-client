@@ -11,6 +11,8 @@ describe('Account summary', () => {
   it('passes summary for each pillar as data source', () => {
     component = shallow(
       <AccountSummary
+        secondPillarTotal={3}
+        thirdPillarTotal={104}
         secondPillarSourceFunds={[
           {
             isin: 'A1',
@@ -83,12 +85,12 @@ describe('Account summary', () => {
     expect(dataSource[1].contributions).toEqual(<Euro amount={104} />);
     expect(dataSource[0].profit).toEqual(
       <span className="text-success">
-        <Euro amount={2} />
+        <Euro amount={111} />
       </span>,
     );
     expect(dataSource[1].profit).toEqual(
       <span className="text-success">
-        <Euro amount={22} />
+        <Euro amount={32} />
       </span>,
     );
     expect(dataSource[0].value).toEqual(<Euro amount={114} />);
@@ -98,6 +100,8 @@ describe('Account summary', () => {
   it('passes total as each column footer', () => {
     component = shallow(
       <AccountSummary
+        secondPillarTotal={1400}
+        thirdPillarTotal={1400}
         secondPillarSourceFunds={[
           {
             isin: 'A1',
@@ -166,7 +170,7 @@ describe('Account summary', () => {
     expect(contributionFooter).toEqual(<Euro amount={2800} />);
     expect(profitFooter).toEqual(
       <span className="text-success">
-        <Euro amount={200} />
+        <Euro amount={3866} />
       </span>,
     );
     expect(valueFooter).toEqual(<Euro amount={6666} />);
