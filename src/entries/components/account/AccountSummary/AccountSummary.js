@@ -40,30 +40,18 @@ const AccountSummary = ({
 
   const columns = [
     {
-      title: (
-        <span className="text-uppercase">
-          <Message>accountSummary.columns.pillar.title</Message>
-        </span>
-      ),
+      title: <Message>accountSummary.columns.pillar.title</Message>,
       dataIndex: 'pillar',
       footer: <Message>accountSummary.columns.pillar.footer</Message>,
     },
     {
-      title: (
-        <span className="text-uppercase">
-          <Message>accountSummary.columns.contributions</Message>
-        </span>
-      ),
+      title: <Message>accountSummary.columns.contributions</Message>,
       dataIndex: 'contributions',
       hideOnMobile: true,
       footer: <Euro amount={sumBy(summary, summaryItem => summaryItem.contributions)} />,
     },
     {
-      title: (
-        <span className="text-uppercase">
-          <Message>accountSummary.columns.profit</Message>
-        </span>
-      ),
+      title: <Message>accountSummary.columns.profit</Message>,
       dataIndex: 'profit',
       hideOnMobile: true,
       footer: (
@@ -73,11 +61,7 @@ const AccountSummary = ({
       ),
     },
     {
-      title: (
-        <span className="text-uppercase">
-          <Message>accountSummary.columns.value</Message>
-        </span>
-      ),
+      title: <Message>accountSummary.columns.value</Message>,
       dataIndex: 'value',
       footer: <Euro amount={sumBy(summary, summaryItem => summaryItem.value)} />,
     },
