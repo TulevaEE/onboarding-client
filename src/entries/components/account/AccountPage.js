@@ -82,7 +82,7 @@ export class AccountPage extends Component {
           </div>
         </div>
 
-        {secondPillarSourceFunds && thirdPillarSourceFunds && conversion && (
+        {false && secondPillarSourceFunds && thirdPillarSourceFunds && conversion && (
           <div className="mt-5">
             <p className="mb-4 lead">
               <Message>accountSummary.heading</Message>
