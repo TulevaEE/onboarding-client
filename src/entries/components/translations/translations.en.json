@@ -48,6 +48,12 @@
   "select.sources.select.none.subtitle": "The next step allows you to direct your future contributions.",
   "select.sources.select.all.recommended": "We recommend this fund based on your current age",
 
+  "accountSummary.heading": "Your pension summary",
+  "accountSummary.columns.pillar.title": "Pillar",
+  "accountSummary.columns.pillar.footer": "Total",
+  "accountSummary.columns.contributions": "Contributions",
+  "accountSummary.columns.profit": "Profit",
+  "accountSummary.columns.value": "Value",
   "accountStatement.heading": "Your Funds Overview",
   "accountStatement.secondPillar.heading": "II Pillar",
   "accountStatement.thirdPillar.heading": "III Pillar",

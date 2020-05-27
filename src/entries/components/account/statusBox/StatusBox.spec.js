@@ -16,7 +16,9 @@ describe('Status Box', () => {
   const toMemberFlow = <Message>account.status.choice.join.tuleva</Message>;
 
   beforeEach(() => {
-    props = { conversion: { secondPillar: {}, thirdPillar: {} } };
+    props = {
+      conversion: { secondPillar: { contribution: {} }, thirdPillar: { contribution: {} } },
+    };
     component = mountWithProvider(<StatusBox {...props} />);
   });
 
@@ -57,8 +59,13 @@ describe('Status Box', () => {
   it('renders pay Tuleva III pillar when III pillars not paid in Tuleva', () => {
     props = {
       conversion: {
-        secondPillar: {},
-        thirdPillar: { selectionComplete: true, transfersComplete: true, paymentComplete: false },
+        secondPillar: { contribution: {} },
+        thirdPillar: {
+          selectionComplete: true,
+          transfersComplete: true,
+          paymentComplete: false,
+          contribution: {},
+        },
       },
     };
 

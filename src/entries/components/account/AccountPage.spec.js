@@ -7,6 +7,7 @@ import { AccountPage } from './AccountPage';
 import PendingExchangesTable from './pendingExchangeTable';
 import AccountStatement from './AccountStatement';
 import GreetingBar from './GreetingBar';
+import AccountSummary from './AccountSummary';
 
 describe('Current balance', () => {
   let component;
@@ -56,11 +57,16 @@ describe('Current balance', () => {
         activeContributions: true,
       },
     ];
+    const conversion = {
+      secondPillar: { contribution: { total: 0 } },
+      thirdPillar: { contribution: { total: 0 } },
+    };
 
     beforeEach(() => {
       component.setProps({
         secondPillarSourceFunds,
         thirdPillarSourceFunds,
+        conversion,
         loadingCapital: true,
         initialCapital: capital,
       });
@@ -92,10 +98,18 @@ describe('Current balance', () => {
     it('renders the 2nd and 3rd pillar account statements', () => {
       expect(accountStatement()).toHaveLength(2);
     });
+    it('renders account summary table', () => {
+      expect(accountSummary()).toHaveLength(1);
+    });
   });
 
   it('does not render any account statements when there are no source funds', () => {
     expect(accountStatement().exists()).toBe(false);
+  });
+
+  it('does not render any account summary table when there are no source funds', () => {
+    component.setProps({ secondPillarSourceFunds: null, thirdPillarSourceFunds: null });
+    expect(accountSummary().exists()).toBe(false);
   });
 
   it('renders no second pillar message', () => {
@@ -149,5 +163,9 @@ describe('Current balance', () => {
 
   function accountStatement() {
     return component.find(AccountStatement);
+  }
+
+  function accountSummary() {
+    return component.find(AccountSummary);
   }
 });
