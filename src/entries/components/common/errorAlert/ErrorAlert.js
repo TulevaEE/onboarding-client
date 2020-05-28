@@ -4,6 +4,7 @@ import { Message } from 'retranslate';
 
 export const ID_CARD_LOGIN_START_FAILED_ERROR = 'ID_CARD_LOGIN_START_FAILED';
 const NOT_JOINED_ERROR_DESCRIPTION = 'INVALID_USER_CREDENTIALS';
+const INVALID_PERSONAL_CODE = 'ValidPersonalCode';
 
 class ErrorAlert extends Component {
   errorMessage() {
@@ -20,6 +21,7 @@ class ErrorAlert extends Component {
         </div>
       );
     }
+
     if (description === ID_CARD_LOGIN_START_FAILED_ERROR) {
       return (
         <div>
@@ -27,6 +29,15 @@ class ErrorAlert extends Component {
         </div>
       );
     }
+
+    if (description === INVALID_PERSONAL_CODE) {
+      return (
+        <div>
+          <Message>login.invalid.personal.code</Message>
+        </div>
+      );
+    }
+
     return <Message>login.error.generic</Message>;
   }
 
