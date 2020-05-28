@@ -21,6 +21,11 @@ describe('Error alert', () => {
     expect(component.contains(<Message>login.error.generic</Message>)).toBe(false);
   });
 
+  it('does not display a generic message when invalid personal code was provided', () => {
+    component.setProps({ description: 'ValidPersonalCode' });
+    expect(component.contains(<Message>login.error.generic</Message>)).toBe(false);
+  });
+
   it('shows a call to action with a link to join tuleva when user has not joined tuleva', () => {
     component.setProps({ description: 'INVALID_USER_CREDENTIALS' });
     expect(
