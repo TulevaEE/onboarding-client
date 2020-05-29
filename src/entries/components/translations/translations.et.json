@@ -7,6 +7,7 @@
   "login.smart.id": "Smart‑ID",
   "login.id.card": "ID‑kaart",
   "login.id.card.start.failed": "Palun kontrolli, et ID kaart on lugejas ja lugeja ühendatud, ning ID kaardiga signeerimise plugin töötab. Vajadusel tee veebilehitsejale restart ja proovi uuesti.",
+  "login.invalid.personal.code": "Vale isikukood",
   "login.phone.number": "Telefoninumber",
   "login.id.code": "Isikukood",
   "login.enter": "Sisene",
