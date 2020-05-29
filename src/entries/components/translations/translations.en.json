@@ -7,7 +7,7 @@
   "login.smart.id": "Smart-ID",
   "login.id.card": "ID-card",
   "login.id.card.start.failed": "Please check that your ID card reader is connected and try again.",
-  "login.invalid.personal.code": "Invalid personal code",
+  "login.invalid.personal.code": "Oops, invalid personal code. Please try again.",
   "login.phone.number": "Phone number",
   "login.id.code": "Identity code",
   "login.enter": "Log in",
