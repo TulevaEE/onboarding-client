@@ -91,12 +91,12 @@ describe('Account summary', () => {
 
     expect(dataSource[0].profit).toEqual(
       <span className="text-success">
-        <Euro amount={111} />
+        <Euro amount={112} />
       </span>,
     );
     expect(dataSource[1].profit).toEqual(
       <span className="text-success">
-        <Euro amount={32} />
+        <Euro amount={34} />
       </span>,
     );
     expect(dataSource[0].value).toEqual(<Euro amount={114} />);
@@ -180,7 +180,7 @@ describe('Account summary', () => {
     expect(contributionFooter).toEqual(<Euro amount={2800} />);
     expect(profitFooter).toEqual(
       <span className="text-success">
-        <Euro amount={3866} />
+        <Euro amount={3869} />
       </span>,
     );
     expect(valueFooter).toEqual(<Euro amount={6666} />);
