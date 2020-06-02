@@ -11,8 +11,10 @@ describe('Account summary', () => {
   it('passes summary for each pillar as data source', () => {
     component = shallow(
       <AccountSummary
-        secondPillarTotal={3}
-        thirdPillarTotal={104}
+        secondPillarContributions={3}
+        secondPillarSubtractions={1}
+        thirdPillarContributions={104}
+        thirdPillarSubtractions={2}
         secondPillarSourceFunds={[
           {
             isin: 'A1',
@@ -82,7 +84,11 @@ describe('Account summary', () => {
     expect(dataSource[0].pillar).toEqual(<Message>accountStatement.secondPillar.heading</Message>);
     expect(dataSource[1].pillar).toEqual(<Message>accountStatement.thirdPillar.heading</Message>);
     expect(dataSource[0].contributions).toEqual(<Euro amount={3} />);
+    expect(dataSource[0].subtractions).toEqual(<Euro amount={1} />);
+
     expect(dataSource[1].contributions).toEqual(<Euro amount={104} />);
+    expect(dataSource[1].subtractions).toEqual(<Euro amount={2} />);
+
     expect(dataSource[0].profit).toEqual(
       <span className="text-success">
         <Euro amount={111} />
@@ -100,8 +106,10 @@ describe('Account summary', () => {
   it('passes total as each column footer', () => {
     component = shallow(
       <AccountSummary
-        secondPillarTotal={1400}
-        thirdPillarTotal={1400}
+        secondPillarContributions={1400}
+        secondPillarSubtractions={1}
+        thirdPillarContributions={1400}
+        thirdPillarSubtractions={2}
         secondPillarSourceFunds={[
           {
             isin: 'A1',
@@ -163,10 +171,12 @@ describe('Account summary', () => {
       />,
     );
 
-    const { footer: valueFooter } = tableProp('columns')[3];
-    const { footer: profitFooter } = tableProp('columns')[2];
+    const { footer: valueFooter } = tableProp('columns')[4];
+    const { footer: profitFooter } = tableProp('columns')[3];
+    const { footer: subtractionFooter } = tableProp('columns')[2];
     const { footer: contributionFooter } = tableProp('columns')[1];
 
+    expect(subtractionFooter).toEqual(<Euro amount={3} />);
     expect(contributionFooter).toEqual(<Euro amount={2800} />);
     expect(profitFooter).toEqual(
       <span className="text-success">

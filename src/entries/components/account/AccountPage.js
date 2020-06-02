@@ -82,24 +82,32 @@ export class AccountPage extends Component {
           </div>
         </div>
 
-        {false && secondPillarSourceFunds && thirdPillarSourceFunds && conversion && (
+        {error ? <ErrorMessage errors={error.body} /> : ''}
+        {loadingCurrentBalance && <Loader className="align-middle" />}
+
+        {secondPillarSourceFunds && thirdPillarSourceFunds && conversion && (
           <div className="mt-5">
             <p className="mb-4 lead">
               <Message>accountSummary.heading</Message>
             </p>
             <AccountSummary
-              secondPillarTotal={conversion.secondPillar.contribution.total}
-              thirdPillarTotal={conversion.thirdPillar.contribution.total}
+              secondPillarContributions={conversion.secondPillar.contribution.total}
+              secondPillarSubtractions={conversion.secondPillar.subtraction.total}
+              thirdPillarContributions={conversion.thirdPillar.contribution.total}
+              thirdPillarSubtractions={conversion.thirdPillar.subtraction.total}
               secondPillarSourceFunds={secondPillarSourceFunds}
               thirdPillarSourceFunds={thirdPillarSourceFunds}
             />
           </div>
         )}
 
-        {error ? <ErrorMessage errors={error.body} /> : ''}
-        {loadingCurrentBalance && <Loader className="align-middle" />}
+        <ReturnComparison />
+
         {secondPillarSourceFunds && secondPillarSourceFunds.length > 0 && (
-          <>
+          <div className="mt-5">
+            <p className="mb-4 lead">
+              <Message>accountStatement.heading</Message>
+            </p>
             <div className="row">
               <div className="col-md-6 mb-2 mt-4">
                 <Message className="mb-2 lead h5">accountStatement.secondPillar.heading</Message>
@@ -112,7 +120,7 @@ export class AccountPage extends Component {
               </div>
             </div>
             <AccountStatement funds={secondPillarSourceFunds} />
-          </>
+          </div>
         )}
 
         {!loadingCurrentBalance && (
@@ -135,8 +143,6 @@ export class AccountPage extends Component {
         )}
 
         {pendingExchangesSection}
-
-        <ReturnComparison />
 
         {loadingCapital || memberCapital ? (
           <div>

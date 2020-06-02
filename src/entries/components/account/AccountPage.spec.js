@@ -59,8 +59,8 @@ describe('Current balance', () => {
       },
     ];
     const conversion = {
-      secondPillar: { contribution: { total: 0 } },
-      thirdPillar: { contribution: { total: 0 } },
+      secondPillar: { contribution: { total: 0 }, subtraction: { total: 0 } },
+      thirdPillar: { contribution: { total: 0 }, subtraction: { total: 0 } },
     };
 
     beforeEach(() => {
@@ -100,19 +100,19 @@ describe('Current balance', () => {
       expect(accountStatement()).toHaveLength(2);
     });
 
-    // it('renders account summary table', () => {
-    //   expect(accountSummary()).toHaveLength(1);
-    // });
+    it('renders account summary table', () => {
+      expect(accountSummary()).toHaveLength(1);
+    });
   });
 
   it('does not render any account statements when there are no source funds', () => {
     expect(accountStatement().exists()).toBe(false);
   });
 
-  // it('does not render any account summary table when there are no source funds', () => {
-  //   component.setProps({ secondPillarSourceFunds: null, thirdPillarSourceFunds: null });
-  //   expect(accountSummary().exists()).toBe(false);
-  // });
+  it('does not render any account summary table when there are no source funds', () => {
+    component.setProps({ secondPillarSourceFunds: null, thirdPillarSourceFunds: null });
+    expect(accountSummary().exists()).toBe(false);
+  });
 
   it('renders no second pillar message', () => {
     expect(component.contains(<Message>account.second.pillar.missing</Message>)).toBe(true);

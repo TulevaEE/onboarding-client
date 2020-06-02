@@ -20,21 +20,6 @@ const AccountStatement = ({ funds }) => {
       hideOnMobile: true,
     },
     {
-      title: <Message>accountStatement.columns.contributions.title</Message>,
-      dataIndex: 'contributions',
-      hideOnMobile: true,
-    },
-    {
-      title: <Message>accountStatement.columns.subtractions.title</Message>,
-      dataIndex: 'subtractions',
-      hideOnMobile: true,
-    },
-    {
-      title: <Message>accountStatement.columns.profit.title</Message>,
-      dataIndex: 'profit',
-      hideOnMobile: true,
-    },
-    {
       title: <Message>accountStatement.columns.value.title</Message>,
       dataIndex: 'value',
       footer: (
@@ -53,17 +38,11 @@ const AccountStatement = ({ funds }) => {
       name,
       activeFund: isActive,
       ongoingChargesFigure,
-      contributions,
-      subtractions,
-      profit,
       price: value,
       unavailablePrice: unavailableValue,
     }) => ({
       fund: `${name}${isActive ? '*' : ''}`,
       fees: <Percentage value={ongoingChargesFigure} />,
-      contributions: <Euro amount={contributions} />,
-      subtractions: <Euro amount={subtractions} />,
-      profit: <Euro amount={profit} />,
       value: <Euro amount={value + unavailableValue} />,
       key: isin,
     }),

@@ -53,9 +53,11 @@
   "accountSummary.columns.pillar.title": "Pillar",
   "accountSummary.columns.pillar.footer": "Total",
   "accountSummary.columns.contributions": "Contributions",
+  "accountSummary.columns.subtractions": "Subtractions",
   "accountSummary.columns.profit": "Profit",
   "accountSummary.columns.value": "Value",
-  "accountStatement.heading": "Your Funds Overview",
+
+  "accountStatement.heading": "Portfolio Details",
   "accountStatement.secondPillar.heading": "II Pillar",
   "accountStatement.thirdPillar.heading": "III Pillar",
   "accountStatement.columns.fund.title": "Pension fund",

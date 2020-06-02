@@ -7,12 +7,15 @@ import Table from '../../common/table';
 import Euro from '../../common/Euro';
 
 const AccountSummary = ({
-  secondPillarTotal,
-  thirdPillarTotal,
+  secondPillarContributions,
+  secondPillarSubtractions,
   secondPillarSourceFunds,
+
+  thirdPillarContributions,
+  thirdPillarSubtractions,
   thirdPillarSourceFunds,
 }) => {
-  const getPillarSummary = (pillarLabel, contributions, funds) => {
+  const getPillarSummary = (pillarLabel, contributions, subtractions, funds) => {
     const value = sumBy(funds, fund => {
       return fund.price + fund.unavailablePrice;
     });
@@ -20,6 +23,7 @@ const AccountSummary = ({
     return {
       pillar: pillarLabel,
       contributions,
+      subtractions,
       profit: value - contributions,
       value,
     };
@@ -28,12 +32,14 @@ const AccountSummary = ({
   const summary = [
     getPillarSummary(
       'accountStatement.secondPillar.heading',
-      secondPillarTotal,
+      secondPillarContributions,
+      secondPillarSubtractions,
       secondPillarSourceFunds,
     ),
     getPillarSummary(
       'accountStatement.thirdPillar.heading',
-      thirdPillarTotal,
+      thirdPillarContributions,
+      thirdPillarSubtractions,
       thirdPillarSourceFunds,
     ),
   ];
@@ -49,6 +55,12 @@ const AccountSummary = ({
       dataIndex: 'contributions',
       hideOnMobile: true,
       footer: <Euro amount={sumBy(summary, summaryItem => summaryItem.contributions)} />,
+    },
+    {
+      title: <Message>accountSummary.columns.subtractions</Message>,
+      dataIndex: 'subtractions',
+      hideOnMobile: true,
+      footer: <Euro amount={sumBy(summary, summaryItem => summaryItem.subtractions)} />,
     },
     {
       title: <Message>accountSummary.columns.profit</Message>,
@@ -67,9 +79,10 @@ const AccountSummary = ({
     },
   ];
 
-  const dataSource = summary.map(({ pillar, contributions, profit, value }) => ({
+  const dataSource = summary.map(({ pillar, contributions, subtractions, profit, value }) => ({
     pillar: <Message>{pillar}</Message>,
     contributions: <Euro amount={contributions} />,
+    subtractions: <Euro amount={subtractions} />,
     profit: (
       <span className="text-success">
         <Euro amount={profit} />
@@ -87,8 +100,10 @@ const AccountSummary = ({
 };
 
 AccountSummary.propTypes = {
-  secondPillarTotal: Types.number.isRequired,
-  thirdPillarTotal: Types.number.isRequired,
+  secondPillarContributions: Types.number.isRequired,
+  secondPillarSubtractions: Types.number.isRequired,
+  thirdPillarContributions: Types.number.isRequired,
+  thirdPillarSubtractions: Types.number.isRequired,
   secondPillarSourceFunds: Types.arrayOf(
     Types.shape({
       activeFund: Types.bool,
