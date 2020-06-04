@@ -24,7 +24,7 @@ const AccountSummary = ({
       pillar: pillarLabel,
       contributions,
       subtractions,
-      profit: value - contributions + subtractions,
+      profit: value - contributions - subtractions,
       value,
     };
   };
