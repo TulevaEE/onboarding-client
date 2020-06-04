@@ -41,6 +41,9 @@ export function changeOccupation(occupation) {
 
 export function thirdPillarStatistics(statistics) {
   return (dispatch, getState) => {
+    if (statistics.mandateId == null) {
+      return Promise.resolve();
+    }
     return postThirdPillarStatistics(statistics, getState().login.token).then(
       returnedStatistics => {
         dispatch({ type: THIRD_PILLAR_STATISTICS, statistics: returnedStatistics });

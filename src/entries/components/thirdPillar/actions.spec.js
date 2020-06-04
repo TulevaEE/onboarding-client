@@ -124,7 +124,7 @@ describe('Third pillar actions', () => {
     });
   });
 
-  it('can get pending exchanges', () => {
+  it('can post third pillar statistics', () => {
     const statistics = {
       mandateId: 543,
       singlePayment: 100,
@@ -141,6 +141,19 @@ describe('Third pillar actions', () => {
         statistics,
       });
       expect(dispatch).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it('will not  post third pillar statistics on empty mandate id', () => {
+    const statistics = {
+      mandateId: null,
+      singlePayment: 100,
+    };
+
+    const thirdPillarStatistics = createBoundAction(actions.thirdPillarStatistics);
+
+    return thirdPillarStatistics(statistics).then(() => {
+      expect(dispatch).not.toHaveBeenCalled();
     });
   });
 });
