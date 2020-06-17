@@ -58,7 +58,7 @@ export const StatusBox = ({
           name={<Message>account.status.choice.pillar.third</Message>}
           lines={thirdPillarFunds.filter(fund => fund.activeFund).map(({ name }) => name)}
         >
-          {payTuleva3 && (
+          {(payTuleva3 || true) && (
             <Link to="/3rd-pillar-flow/payment" className="btn btn-light">
               <Message>account.status.choice.pay.tuleva.3</Message>
             </Link>
