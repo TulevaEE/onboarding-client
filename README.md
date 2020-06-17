@@ -36,6 +36,7 @@ npm test
 
 1. Point the proxy server to production in `package.json`: `"proxy": "https://onboarding-service.tuleva.ee"`
 1. `npm run develop-production`
+1. If chrome won't open the page due to a certificate error, type: `thisisunsafe`
 
 ### Deployment
 

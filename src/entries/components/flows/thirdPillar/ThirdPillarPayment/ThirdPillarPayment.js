@@ -49,19 +49,41 @@ export class ThirdPillarPayment extends Component {
           </Message>
         </p>
 
-        <div>
-          <Message>thirdPillarPayment.accountName</Message>: <b>Pensionikeskus AS</b>
-        </div>
-        <div>
-          <Message>thirdPillarPayment.accountNumber</Message>: <b>EE362200221067235244</b>
-        </div>
-        <div>
-          <Message>thirdPillarPayment.details</Message>: <b>30101119828</b>
-        </div>
-        <div>
-          <Message>thirdPillarPayment.reference</Message>:{' '}
-          <b data-test-id="pension-account-number">{pensionAccountNumber}</b>
-        </div>
+        <table>
+          <tr>
+            <td>
+              <Message>thirdPillarPayment.accountName</Message>:{' '}
+            </td>
+            <td>
+              <b>Pensionikeskus AS</b>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <Message>thirdPillarPayment.accountNumber</Message>:{' '}
+            </td>
+            <td>
+              <b>EE362200221067235244</b>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <Message>thirdPillarPayment.details</Message>:{' '}
+            </td>
+            <td>
+              <b>30101119828</b>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <Message>thirdPillarPayment.reference</Message>:{' '}
+            </td>
+            <td>
+              <b data-test-id="pension-account-number">{pensionAccountNumber}</b>
+            </td>
+          </tr>
+        </table>
+
         <div className="form-inline">
           <div className="form-group">
             <label htmlFor="monthly-contribution">
