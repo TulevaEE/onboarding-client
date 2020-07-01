@@ -39,7 +39,7 @@
     "react-app-polyfill": "^1.0.2",
     "react-dom": "16.9.0",
     "react-facebook": "^5.0.3",
-    "react-ga": "^2.6.0",
+    "react-ga": "^3.0.0",
     "react-global-configuration": "^1.2.1",
     "react-mixpanel": "0.0.11",
     "react-redux": "6.0.1",
