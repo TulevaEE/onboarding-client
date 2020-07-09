@@ -44,7 +44,7 @@ export class ReturnComparison extends Component<Props, State> {
     loading: false,
     selectedPersonalKey: Key.SECOND_PILLAR,
     selectedPensionFundKey: Key.EPI,
-    selectedIndexKey: Key.MARKET,
+    selectedIndexKey: Key.UNION_STOCK_INDEX,
     personalReturn: null,
     pensionFundReturn: null,
     indexReturn: null,
@@ -162,7 +162,7 @@ export class ReturnComparison extends Component<Props, State> {
             <div className="col-sm-4 text-center">
               <Select
                 options={[
-                  { value: Key.MARKET, label: 'returnComparison.index.market' },
+                  { value: Key.UNION_STOCK_INDEX, label: 'returnComparison.index.unionStockIndex' },
                   { value: Key.CPI, label: 'returnComparison.index.cpi' },
                 ]}
                 selected={selectedIndexKey}

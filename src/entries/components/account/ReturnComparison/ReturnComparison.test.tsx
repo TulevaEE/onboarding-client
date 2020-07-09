@@ -20,7 +20,7 @@ describe('Return comparison', () => {
     expect(getReturnComparison).not.toHaveBeenCalled();
   });
 
-  it('gets returns for first option date, second pillar, epi, and market with token', () => {
+  it('gets returns for first option date, second pillar, epi, and union stock index with token', () => {
     (getFromDateOptions as jest.Mock).mockReturnValue([
       { value: '2002-28-02', label: aLabel() },
       ...someReturnComparisonOptions(),
@@ -30,7 +30,7 @@ describe('Return comparison', () => {
     shallow(<ReturnComparison token="a-token" fundNameMap={{}} />);
     expect(getReturnComparison).toHaveBeenCalledWith(
       '2002-28-02',
-      { personalKey: Key.SECOND_PILLAR, pensionFundKey: Key.EPI, indexKey: Key.MARKET },
+      { personalKey: Key.SECOND_PILLAR, pensionFundKey: Key.EPI, indexKey: Key.UNION_STOCK_INDEX },
       'a-token',
     );
   });
