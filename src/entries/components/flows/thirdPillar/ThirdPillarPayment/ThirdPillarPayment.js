@@ -84,7 +84,7 @@ export class ThirdPillarPayment extends Component {
           </tr>
         </table>
 
-        <div className="form-inline">
+        {/* <div className="form-inline">
           <div className="form-group">
             <label htmlFor="monthly-contribution">
               <Message>thirdPillarPayment.amount</Message>:{' '}
@@ -132,7 +132,7 @@ export class ThirdPillarPayment extends Component {
               <Message>thirdPillarPayment.paymentButton</Message>
             </button>
           </Link>
-        </div>
+        </div> */}
       </>
     );
   }
