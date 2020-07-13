@@ -147,13 +147,13 @@ export default function exchangeReducer(state = initialState, action) {
       return { ...state, loadingTargetFunds: true, error: null };
     case GET_TARGET_FUNDS_SUCCESS:
       // eslint-disable-next-line no-case-declarations
-      const targetFunds = action.targetFunds.filter(fund => fund.pillar === 2);
+      const secondPillarTargetFunds = action.targetFunds.filter(fund => fund.pillar === 2);
       return {
         ...state,
         loadingTargetFunds: false,
-        targetFunds,
+        targetFunds: secondPillarTargetFunds,
         selectedFutureContributionsFundIsin: selectDefaultContributionsFund(
-          targetFunds,
+          secondPillarTargetFunds,
           state.sourceFunds,
         ),
         // we do not know if source or target funds get here first, so we check if we can
@@ -163,7 +163,7 @@ export default function exchangeReducer(state = initialState, action) {
           state.sourceFunds && !isSourceSelectionDone(state.sourceSelection)
             ? createFullDefaultSourceSelection({
                 sourceFunds: state.sourceFunds,
-                targetFunds: action.targetFunds,
+                targetFunds: secondPillarTargetFunds,
               })
             : state.sourceSelection,
       };

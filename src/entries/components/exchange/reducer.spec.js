@@ -234,6 +234,27 @@ describe('Exchange reducer', () => {
     expect(state.selectedFutureContributionsFundIsin).toEqual(targetFunds[1].isin);
   });
 
+  it('defaults future contributions fund to 2nd pillar funds only', () => {
+    const sourceFunds = [{ name: 'name', isin: 'source1', price: 1 }];
+    const sourceFundsAction = { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds };
+    const targetFunds = [
+      {
+        name: 'name',
+        isin: 'wrongtarget',
+        fundManager: { name: 'Random company fund' },
+        pillar: 2,
+      },
+      { name: 'name', isin: '3rdpillartarget', fundManager: { name: 'Tuleva' }, pillar: 3 },
+      { name: 'name', isin: 'target1', fundManager: { name: 'Tuleva' }, pillar: 2 },
+      { name: 'name', isin: 'target2', fundManager: { name: 'Tuleva' }, pillar: 2 },
+    ];
+    const targetFundsAction = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
+    const state = [sourceFundsAction, targetFundsAction].reduce(exchangeReducer);
+    expect(state.sourceSelection).toEqual([
+      { sourceFundIsin: 'source1', targetFundIsin: 'target1', percentage: 1 },
+    ]);
+  });
+
   it('defaults future contributions fund to null when the same company target fund is currently active', () => {
     const sourceFunds = [
       { name: 'name', isin: 'isin1', activeFund: true, pillar: 2 },
