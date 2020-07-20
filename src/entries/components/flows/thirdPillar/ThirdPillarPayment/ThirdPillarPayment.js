@@ -5,7 +5,6 @@ import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import { Message } from 'retranslate';
 import { updateUser, userUpdated } from '../../../common/user/actions';
-import { changeMonthlyContribution, thirdPillarStatistics } from '../../../thirdPillar/actions';
 
 export class ThirdPillarPayment extends Component {
   async componentDidMount() {
@@ -21,11 +20,8 @@ export class ThirdPillarPayment extends Component {
       previousPath,
       nextPath,
       signedMandateId,
-      monthlyContribution,
       pensionAccountNumber,
       isUserConverted,
-      onMonthlyContributionChange,
-      onSubmit,
     } = this.props;
     return (
       <>
@@ -84,55 +80,13 @@ export class ThirdPillarPayment extends Component {
           </tr>
         </table>
 
-        {/* <div className="form-inline">
-          <div className="form-group">
-            <label htmlFor="monthly-contribution">
-              <Message>thirdPillarPayment.amount</Message>:{' '}
-            </label>
-            <div className="input-group m-sm-2">
-              <input
-                id="monthly-contribution"
-                type="number"
-                value={monthlyContribution || ''}
-                onChange={event => {
-                  onMonthlyContributionChange(parseInt(event.target.value, 10));
-                }}
-                placeholder="150"
-                className="form-control"
-              />
-              <div className="input-group-append">
-                <span className="input-group-text">EUR</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <div>
           <Link to={nextPath}>
-            <button
-              type="button"
-              className="btn btn-primary mt-4 mr-2"
-              onClick={() => {
-                onSubmit({ mandateId: signedMandateId, recurringPayment: monthlyContribution });
-              }}
-              disabled={!monthlyContribution}
-            >
-              <Message>thirdPillarPayment.recurringPaymentButton</Message>
-            </button>
-          </Link>
-          <Link to={nextPath}>
-            <button
-              type="button"
-              className="btn btn-primary mt-4"
-              onClick={() => {
-                onSubmit({ mandateId: signedMandateId, singlePayment: monthlyContribution });
-              }}
-              disabled={!monthlyContribution}
-            >
+            <button type="button" className="btn btn-primary mt-4">
               <Message>thirdPillarPayment.paymentButton</Message>
             </button>
           </Link>
-        </div> */}
+        </div>
       </>
     );
   }
@@ -145,15 +99,12 @@ ThirdPillarPayment.propTypes = {
   nextPath: Types.string,
 
   signedMandateId: Types.number,
-  monthlyContribution: Types.number,
   pensionAccountNumber: Types.string,
   user: Types.shape({}),
   isUserConverted: Types.bool,
 
   saveUser: Types.func,
   userSaved: Types.func,
-  onMonthlyContributionChange: Types.func,
-  onSubmit: Types.func,
 };
 
 ThirdPillarPayment.defaultProps = {
@@ -161,20 +112,16 @@ ThirdPillarPayment.defaultProps = {
   nextPath: '',
 
   signedMandateId: null,
-  monthlyContribution: null,
   pensionAccountNumber: null,
   isUserConverted: false,
   user: {},
 
   saveUser: noop,
   userSaved: noop,
-  onMonthlyContributionChange: noop,
-  onSubmit: noop,
 };
 
 const mapStateToProps = state => ({
   signedMandateId: state.thirdPillar.signedMandateId,
-  monthlyContribution: state.thirdPillar.monthlyContribution,
   pensionAccountNumber: state.login.user ? state.login.user.pensionAccountNumber : null,
   user: state.login.user,
   isUserConverted:
@@ -189,8 +136,6 @@ const mapDispatchToProps = dispatch =>
     {
       saveUser: updateUser,
       userSaved: userUpdated,
-      onMonthlyContributionChange: changeMonthlyContribution,
-      onSubmit: thirdPillarStatistics,
     },
     dispatch,
   );
