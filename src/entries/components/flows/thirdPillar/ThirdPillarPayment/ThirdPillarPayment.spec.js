@@ -1,7 +1,8 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Redirect } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 
+import { Message } from 'retranslate';
 import { ThirdPillarPayment } from './ThirdPillarPayment';
 
 describe('ThirdPillarPayment', () => {
@@ -24,5 +25,18 @@ describe('ThirdPillarPayment', () => {
 
     component.setProps({ pensionAccountNumber: '987' });
     expect(pensionAccountNumber().text()).toBe('987');
+  });
+
+  it('links to next path', () => {
+    component.setProps({ nextPath: '/next-path' });
+    expect(
+      component.contains(
+        <Link to="/next-path">
+          <button type="button" className="btn btn-primary mt-4">
+            <Message>thirdPillarPayment.paymentButton</Message>
+          </button>
+        </Link>,
+      ),
+    ).toBe(true);
   });
 });
