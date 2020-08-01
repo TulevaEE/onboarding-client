@@ -23,7 +23,7 @@
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-react": "^7.14.3",
     "express": "^4.17.1",
-    "express-http-proxy": "^1.2.0",
+    "express-http-proxy": "^1.6.2",
     "font-awesome": "^4.7.0",
     "history": "^4.9.0",
     "hwcrypto-js": "git://github.com/ErkoRisthein/hwcrypto.js.git#0.0.14",
