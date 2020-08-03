@@ -81,6 +81,11 @@ export const FundExchangeRow = ({
           </select>
         </div>
       </div>
+      <div>
+        <div className="removeButton">
+          <button type="button"></button>
+        </div>
+      </div>
     </div>
   );
 };
