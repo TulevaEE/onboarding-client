@@ -1,6 +1,7 @@
 @import "~bootstrap/scss/functions";
 @import "~bootstrap/scss/variables";
 @import "~bootstrap/scss/mixins/breakpoints";
+@import "../../../../../variables";
 
 .tv-percentage-selector {
   max-width: 100%;
@@ -31,6 +32,19 @@
 }
 
 .removeButton {
-  margin-right: 30px;
-  margin-top: 15px;
+  margin-right: 15px;
+  margin-top: 12px;
+}
+
+.fa.fa-times {
+  color: $red;
+}
+
+.buttonStyle {
+  background-color: Transparent;
+  background-repeat: no-repeat;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+  outline: none;
 }
