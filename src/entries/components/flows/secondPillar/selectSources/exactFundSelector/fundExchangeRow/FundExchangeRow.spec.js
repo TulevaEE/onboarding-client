@@ -216,4 +216,19 @@ describe('Fund exchange row', () => {
       targetFundIsin: 'target isin 3',
     });
   });
+
+  it('can remove the current row', () => {
+    const onChange = jest.fn();
+    const selection = {
+      sourceFundIsin: 'source isin 1',
+      percentage: 1,
+      targetFundIsin: 'target isin 1',
+    };
+    component.setProps({ onChange, selection, sourceFunds, targetFunds });
+
+    component.find('button').simulate('click');
+
+    expect(onChange).toHaveBeenCalledWith(null);
+    expect(onChange).toHaveBeenCalledTimes(1);
+  });
 });
