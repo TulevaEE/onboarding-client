@@ -82,11 +82,9 @@ export const FundExchangeRow = ({
         </div>
       </div>
       <div>
-        <div className="removeButton">
-          <button type="button" className="buttonStyle">
-            <div className="ml-3 mr-2 fa fa-times" />
-          </button>
-        </div>
+        <button type="button" className="removeButton" onClick={() => onChange(null)}>
+          <div className="ml-3 mr-2 fa fa-times" />
+        </button>
       </div>
     </div>
   );

@@ -7,7 +7,11 @@ import FundExchangeRow from './fundExchangeRow';
 
 function createSelectionChangeHandler(index, selections, onChange) {
   return newSelection =>
-    onChange([...selections.slice(0, index), newSelection, ...selections.slice(index + 1)]);
+    onChange([
+      ...selections.slice(0, index),
+      ...(newSelection ? [newSelection] : []),
+      ...selections.slice(index + 1),
+    ]);
 }
 
 function createRowAdder({ sourceFunds, targetFunds, selections, onChange }) {
@@ -60,7 +64,7 @@ const ExactFundSelector = ({ selections, sourceFunds, targetFunds, onChange }) =
       <div className="col">
         <small>
           <a
-            href="//www.pensionikeskus.ee/ii-sammas/fondid/fonditasude-vordlused/"
+            href="//www.pensionikeskus.ee/ii-sammas/fondid/fondide-tasud/fonditasude-vordlused/"
             target="_blank"
             rel="noopener noreferrer"
           >
