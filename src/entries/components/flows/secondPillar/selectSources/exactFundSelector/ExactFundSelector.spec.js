@@ -86,7 +86,7 @@ describe('Exact fund selector', () => {
     expect(
       component.contains(
         <a
-          href="//www.pensionikeskus.ee/ii-sammas/fondid/fonditasude-vordlused/"
+          href="//www.pensionikeskus.ee/ii-sammas/fondid/fondide-tasud/fonditasude-vordlused/"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -114,18 +114,18 @@ describe('Exact fund selector', () => {
 
   it('can delete rows', () => {
     const onChange = jest.fn();
-    component.setProps({ selections, sourceFunds, targetFunds, onChange });
-    expect(onChange).not.toHaveBeenCalled();
-    component.find('button').simulate('click');
-    expect(onChange).toHaveBeenCalledTimes(1);
+    component.setProps({ selections, onChange });
+
+    component
+      .find(FundExchangeRow)
+      .at(1)
+      .simulate('change', null);
+
     expect(onChange).toHaveBeenCalledWith([
-      ...selections,
-      {
-        sourceFundIsin: sourceFunds[0].isin,
-        targetFundIsin: targetFunds[0].isin,
-        percentage: 1,
-      },
+      selections[0],
+      // selections[1] deleted
+      selections[2],
     ]);
-    component.find('button').simulate('click');
+    expect(onChange).toHaveBeenCalledTimes(1);
   });
 });
