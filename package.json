@@ -15,7 +15,7 @@
     "@types/react-router-dom": "^4.3.5",
     "array.prototype.find": "^2.1.0",
     "axios": "^0.19.0",
-    "bootstrap": "4.3.1",
+    "bootstrap": "4.5.2",
     "classnames": "^2.2.6",
     "connected-react-router": "6.5.2",
     "downloadjs": "^1.4.7",
