@@ -5,7 +5,7 @@
 
 .tv-percentage-selector {
   max-width: 100%;
-  @include media-breakpoint-up(sm) {
+  @include media-breakpoint-up(md) {
     max-width: 100px;
   }
   position: relative;
@@ -36,12 +36,11 @@
 }
 
 .removeButton {
-  margin-right: 15px;
-  margin-top: 12px;
-  background-color: Transparent;
+  background-color: transparent;
   background-repeat: no-repeat;
   border: none;
   cursor: pointer;
   overflow: hidden;
-  outline: none;
+  padding: 6px 9px;
+  margin: 0;
 }

@@ -29,27 +29,28 @@ function createRowAdder({ sourceFunds, targetFunds, selections, onChange }) {
 const ExactFundSelector = ({ selections, sourceFunds, targetFunds, onChange }) => (
   <div>
     <div className="row mt-4">
-      <div className="col-12 col-sm-5">
+      <div className="col-12 col-md">
         <small>
           <b>
             <Message>select.sources.select.some.source</Message>
           </b>
         </small>
       </div>
-      <div className="col-12 col-sm">
+      <div className="col-12 col-md-2">
         <small>
           <b>
             <Message>select.sources.select.some.percentage</Message>
           </b>
         </small>
       </div>
-      <div className="col-12 col-sm-5">
+      <div className="col-12 col-md">
         <small>
           <b>
             <Message>select.sources.select.some.target</Message>
           </b>
         </small>
       </div>
+      <div className="col-12 col-md-1" />
     </div>
     {selections.map((selection, index) => (
       <FundExchangeRow
