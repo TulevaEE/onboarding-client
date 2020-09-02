@@ -7,7 +7,11 @@ import FundExchangeRow from './fundExchangeRow';
 
 function createSelectionChangeHandler(index, selections, onChange) {
   return newSelection =>
-    onChange([...selections.slice(0, index), newSelection, ...selections.slice(index + 1)]);
+    onChange([
+      ...selections.slice(0, index),
+      ...(newSelection ? [newSelection] : []),
+      ...selections.slice(index + 1),
+    ]);
 }
 
 function createRowAdder({ sourceFunds, targetFunds, selections, onChange }) {
@@ -25,27 +29,28 @@ function createRowAdder({ sourceFunds, targetFunds, selections, onChange }) {
 const ExactFundSelector = ({ selections, sourceFunds, targetFunds, onChange }) => (
   <div>
     <div className="row mt-4">
-      <div className="col-12 col-sm-5">
+      <div className="col-12 col-md">
         <small>
           <b>
             <Message>select.sources.select.some.source</Message>
           </b>
         </small>
       </div>
-      <div className="col-12 col-sm">
+      <div className="col-12 col-md-2">
         <small>
           <b>
             <Message>select.sources.select.some.percentage</Message>
           </b>
         </small>
       </div>
-      <div className="col-12 col-sm-5">
+      <div className="col-12 col-md">
         <small>
           <b>
             <Message>select.sources.select.some.target</Message>
           </b>
         </small>
       </div>
+      <div className="col-12 col-md-1" />
     </div>
     {selections.map((selection, index) => (
       <FundExchangeRow
@@ -60,7 +65,7 @@ const ExactFundSelector = ({ selections, sourceFunds, targetFunds, onChange }) =
       <div className="col">
         <small>
           <a
-            href="//www.pensionikeskus.ee/ii-sammas/fondid/fonditasude-vordlused/"
+            href="//www.pensionikeskus.ee/ii-sammas/fondid/fondide-tasud/fonditasude-vordlused/"
             target="_blank"
             rel="noopener noreferrer"
           >

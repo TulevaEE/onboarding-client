@@ -25,7 +25,7 @@ export const FundExchangeRow = ({
     .sort((fund1, fund2) => fund1.name.localeCompare(fund2.name));
   return (
     <div className="row">
-      <div className="col-12 col-sm-5 mt-2">
+      <div className="col-12 col-md mt-2">
         <div className="input-group">
           <select
             className="custom-select"
@@ -42,7 +42,7 @@ export const FundExchangeRow = ({
           </select>
         </div>
       </div>
-      <div className="col-12 col-sm mt-2">
+      <div className="col-12 col-md-2 mt-2">
         <div className="input-group tv-percentage-selector">
           <input
             id={randomId}
@@ -64,7 +64,7 @@ export const FundExchangeRow = ({
           </label>
         </div>
       </div>
-      <div className="col-12 col-sm-5 mt-2">
+      <div className="col-12 col-md mt-2">
         <div className="input-group">
           <select
             className="custom-select"
@@ -80,6 +80,11 @@ export const FundExchangeRow = ({
             ))}
           </select>
         </div>
+      </div>
+      <div className="col-12 col-md-1 mt-2 d-flex flex-column justify-content-center">
+        <button type="button" className="removeButton" onClick={() => onChange(null)}>
+          <span className="fa fa-times" />
+        </button>
       </div>
     </div>
   );

@@ -86,7 +86,7 @@ describe('Exact fund selector', () => {
     expect(
       component.contains(
         <a
-          href="//www.pensionikeskus.ee/ii-sammas/fondid/fonditasude-vordlused/"
+          href="//www.pensionikeskus.ee/ii-sammas/fondid/fondide-tasud/fonditasude-vordlused/"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -110,5 +110,22 @@ describe('Exact fund selector', () => {
         percentage: 1,
       },
     ]);
+  });
+
+  it('can delete rows', () => {
+    const onChange = jest.fn();
+    component.setProps({ selections, onChange });
+
+    component
+      .find(FundExchangeRow)
+      .at(1)
+      .simulate('change', null);
+
+    expect(onChange).toHaveBeenCalledWith([
+      selections[0],
+      // selections[1] deleted
+      selections[2],
+    ]);
+    expect(onChange).toHaveBeenCalledTimes(1);
   });
 });
