@@ -14,6 +14,8 @@ const AccountSummary = ({
   thirdPillarContributions,
   thirdPillarSubtractions,
   thirdPillarSourceFunds,
+
+  memberCapital,
 }) => {
   const getPillarSummary = (pillarLabel, contributions, subtractions, funds) => {
     const value = sumBy(funds, fund => {
@@ -42,6 +44,16 @@ const AccountSummary = ({
       thirdPillarSubtractions,
       thirdPillarSourceFunds,
     ),
+    {
+      pillar: 'memberCapital.heading',
+      contributions:
+        memberCapital.capitalPayment +
+        memberCapital.unvestedWorkCompensation +
+        memberCapital.workCompensation,
+      subtractions: 0, // ?
+      profit: memberCapital.profit + memberCapital.membershipBonus,
+      value: memberCapital.total,
+    },
   ];
 
   const columns = [
@@ -124,6 +136,14 @@ AccountSummary.propTypes = {
       unavailablePrice: Types.number,
     }),
   ).isRequired,
+  memberCapital: Types.shape({
+    capitalPayment: Types.number,
+    unvestedWorkCompensation: Types.number,
+    workCompensation: Types.number,
+    membershipBonus: Types.number,
+    profit: Types.number,
+    total: Types.number,
+  }).isRequired,
 };
 
 export default AccountSummary;

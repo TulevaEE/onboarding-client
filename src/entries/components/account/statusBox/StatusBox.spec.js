@@ -11,7 +11,6 @@ describe('Status Box', () => {
   let props;
 
   const to2ndPillarFlow = <Message>account.status.choice.join.tuleva.2</Message>;
-  const to3ndPillarFlow = <Message>account.status.choice.join.tuleva.3</Message>;
   const pay3ndPillarFlow = <Message>account.status.choice.pay.tuleva.3</Message>;
   const toMemberFlow = <Message>account.status.choice.join.tuleva</Message>;
 
@@ -52,29 +51,8 @@ describe('Status Box', () => {
     expect(component.contains(to2ndPillarFlow)).toBe(true);
   });
 
-  it('renders join Tuleva III pillar when III pillars not all in Tuleva', () => {
-    expect(component.contains(to3ndPillarFlow)).toBe(true);
-  });
-
-  it('renders pay Tuleva III pillar when III pillars not paid in Tuleva', () => {
-    props = {
-      conversion: {
-        secondPillar: { contribution: {} },
-        thirdPillar: {
-          selectionComplete: true,
-          transfersComplete: true,
-          paymentComplete: false,
-          contribution: {},
-        },
-      },
-    };
-
-    component = mountWithProvider(<StatusBox {...props} />);
+  it('always renders pay Tuleva III pillar', () => {
     expect(component.contains(pay3ndPillarFlow)).toBe(true);
-  });
-
-  xit('wont render pay Tuleva III pillar when III pillars not all in Tuleva', () => {
-    expect(component.contains(pay3ndPillarFlow)).toBe(false);
   });
 
   it('renders join Tuleva II pillar when II pillars some in Tuleva', () => {

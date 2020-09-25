@@ -6,7 +6,14 @@ import Table from '../../common/table';
 import Euro from '../../common/Euro';
 
 const MemberCapital = ({
-  value: { capitalPayment, profit, membershipBonus, workCompensation, unvestedWorkCompensation },
+  value: {
+    capitalPayment,
+    profit,
+    membershipBonus,
+    workCompensation,
+    unvestedWorkCompensation,
+    total,
+  },
 }) => {
   const columns = [
     {
@@ -17,13 +24,7 @@ const MemberCapital = ({
     {
       title: <Message>memberCapital.columns.value.title</Message>,
       dataIndex: 'value',
-      footer: (
-        <Euro
-          amount={
-            capitalPayment + membershipBonus + profit + unvestedWorkCompensation + workCompensation
-          }
-        />
-      ),
+      footer: <Euro amount={total} />,
     },
   ];
 
@@ -71,6 +72,7 @@ MemberCapital.propTypes = {
     membershipBonus: Types.number,
     workCompensation: Types.number,
     unvestedWorkCompensation: Types.number,
+    total: Types.number,
   }),
 };
 
@@ -81,6 +83,7 @@ MemberCapital.defaultProps = {
     membershipBonus: 0,
     workCompensation: 0,
     unvestedWorkCompensation: 0,
+    total: 0,
   },
 };
 

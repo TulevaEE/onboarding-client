@@ -15,14 +15,12 @@ export const StatusBox = ({
   const joinTuleva2 = !(
     conversion.secondPillar.selectionComplete && conversion.secondPillar.transfersComplete
   );
-  const joinTuleva3 = !(
-    conversion.thirdPillar.selectionComplete && conversion.thirdPillar.transfersComplete
-  );
 
-  const payTuleva3 =
+  const payTuleva3 = !(
     conversion.thirdPillar.selectionComplete &&
     conversion.thirdPillar.transfersComplete &&
-    !conversion.thirdPillar.paymentComplete;
+    conversion.thirdPillar.paymentComplete
+  );
 
   const isTulevaMember = memberNumber != null;
 
@@ -53,22 +51,14 @@ export const StatusBox = ({
         </StatusBoxRow>
 
         <StatusBoxRow
-          ok={!joinTuleva3}
+          ok={!payTuleva3}
           showAction={!loading}
           name={<Message>account.status.choice.pillar.third</Message>}
           lines={thirdPillarFunds.filter(fund => fund.activeFund).map(({ name }) => name)}
         >
-          {(payTuleva3 || true) && (
-            <Link to="/3rd-pillar-flow/payment" className="btn btn-light">
-              <Message>account.status.choice.pay.tuleva.3</Message>
-            </Link>
-          )}
-
-          {joinTuleva3 && (
-            <Link to="/3rd-pillar-flow" className="btn btn-light">
-              <Message>account.status.choice.join.tuleva.3</Message>
-            </Link>
-          )}
+          <Link to="/3rd-pillar-flow" className="btn btn-light">
+            <Message>account.status.choice.pay.tuleva.3</Message>
+          </Link>
         </StatusBoxRow>
 
         <StatusBoxRow

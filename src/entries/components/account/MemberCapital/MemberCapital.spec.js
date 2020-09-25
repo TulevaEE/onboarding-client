@@ -27,18 +27,8 @@ describe('Member capital', () => {
     expect(passedDataKeys()).toStrictEqual([...alwaysExistingKeys, 'unvestedWork']);
   });
 
-  it('passes sum of capital as column footer', () => {
-    component = shallow(
-      <MemberCapital
-        value={{
-          capitalPayment: 10000,
-          profit: 1000,
-          membershipBonus: 100,
-          workCompensation: 10,
-          unvestedWorkCompensation: 1,
-        }}
-      />,
-    );
+  it('passes total sum of capital as column footer', () => {
+    component = shallow(<MemberCapital value={{ total: 11111 }} />);
 
     expect(component.find(Table).prop('columns')[1].footer).toEqual(<Euro amount={11111} />);
   });

@@ -16,13 +16,17 @@ describe('Account reducer', () => {
     expect(newState.loadingInitialCapital).toBe(true);
   });
 
-  it('stops loading and saves initial capital on getting initial capital success', () => {
-    const initialCapital = [{ amount: 2115.95, currency: 'EUR' }];
-    const action = { type: GET_INITIAL_CAPITAL_SUCCESS, initialCapital };
-    const newState = accountReducer({ loadingInitialCapital: true }, action);
-    expect(newState.loadingInitialCapital).toBe(false);
-    expect(newState.initialCapital).toBe(initialCapital);
-  });
+  it(
+    'stops loading, saves initial capital and calcualtes the total on getting initial' +
+      ' capital success',
+    () => {
+      const initialCapital = { capitalPayment: 1, membershipBonus: 1 };
+      const action = { type: GET_INITIAL_CAPITAL_SUCCESS, initialCapital };
+      const newState = accountReducer({ loadingInitialCapital: true }, action);
+      expect(newState.loadingInitialCapital).toBe(false);
+      expect(newState.initialCapital).toEqual({ ...initialCapital, total: 2 });
+    },
+  );
 
   it('stops loading and saves error on getting initial capital failure', () => {
     const error = { body: { errors: [{ code: 'oh no' }] } };

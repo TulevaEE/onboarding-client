@@ -236,7 +236,6 @@
   "account.status.choice.pillar.third": "III pillar",
   "account.status.choice.tuleva": "Tuleva mutual company",
   "account.status.choice.join.tuleva.2": "Change fund",
-  "account.status.choice.join.tuleva.3": "Change fund",
   "account.status.choice.pay.tuleva.3": "Make payment",
   "account.status.choice.join.tuleva": "Become a member",
   "account.status.yearToDateContribution": "You have contributed {{contribution}} euros to third pillar this year. <a href='//tuleva.ee/en/iii-pillar/' target='_blank' rel='noopener noreferrer'>Click here</a> to find out how to calculate your maximum contribution for this year.",

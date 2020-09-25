@@ -75,19 +75,32 @@ describe('Account summary', () => {
             unavailablePrice: 0,
           },
         ]}
+        memberCapital={{
+          capitalPayment: 1,
+          unvestedWorkCompensation: 1,
+          workCompensation: 1,
+          membershipBonus: 1,
+          profit: 2,
+          total: 6,
+        }}
       />,
     );
 
     const dataSource = tableProp('dataSource');
 
-    expect(dataSource).toHaveLength(2);
+    expect(dataSource).toHaveLength(3);
     expect(dataSource[0].pillar).toEqual(<Message>accountStatement.secondPillar.heading</Message>);
     expect(dataSource[1].pillar).toEqual(<Message>accountStatement.thirdPillar.heading</Message>);
+    expect(dataSource[2].pillar).toEqual(<Message>memberCapital.heading</Message>);
+
     expect(dataSource[0].contributions).toEqual(<Euro amount={3} />);
     expect(dataSource[0].subtractions).toEqual(<Euro amount={-1} />);
 
     expect(dataSource[1].contributions).toEqual(<Euro amount={104} />);
     expect(dataSource[1].subtractions).toEqual(<Euro amount={-2} />);
+
+    expect(dataSource[2].contributions).toEqual(<Euro amount={3} />);
+    expect(dataSource[2].subtractions).toEqual(<Euro amount={0} />);
 
     expect(dataSource[0].profit).toEqual(
       <span className="text-success">
@@ -99,8 +112,14 @@ describe('Account summary', () => {
         <Euro amount={34} />
       </span>,
     );
+    expect(dataSource[2].profit).toEqual(
+      <span className="text-success">
+        <Euro amount={3} />
+      </span>,
+    );
     expect(dataSource[0].value).toEqual(<Euro amount={114} />);
     expect(dataSource[1].value).toEqual(<Euro amount={136} />);
+    expect(dataSource[2].value).toEqual(<Euro amount={6} />);
   });
 
   it('passes total as each column footer', () => {
@@ -168,6 +187,14 @@ describe('Account summary', () => {
             unavailablePrice: 1,
           },
         ]}
+        memberCapital={{
+          capitalPayment: 1,
+          unvestedWorkCompensation: 1,
+          workCompensation: 1,
+          membershipBonus: 1,
+          profit: 2,
+          total: 6,
+        }}
       />,
     );
 
@@ -177,13 +204,13 @@ describe('Account summary', () => {
     const { footer: contributionFooter } = tableProp('columns')[1];
 
     expect(subtractionFooter).toEqual(<Euro amount={-3} />);
-    expect(contributionFooter).toEqual(<Euro amount={2800} />);
+    expect(contributionFooter).toEqual(<Euro amount={2803} />);
     expect(profitFooter).toEqual(
       <span className="text-success">
-        <Euro amount={3869} />
+        <Euro amount={3872} />
       </span>,
     );
-    expect(valueFooter).toEqual(<Euro amount={6666} />);
+    expect(valueFooter).toEqual(<Euro amount={6672} />);
   });
 
   const tableProp = name => component.find(Table).prop(name);

@@ -49,7 +49,7 @@
   "select.sources.select.none.subtitle": "Järgmise sammuga saad suunata edasised maksed.",
   "select.sources.select.all.recommended": "Alla 55-aastastele sobib see fond.",
 
-  "accountSummary.heading": "Sinu pensionvara koondseis",
+  "accountSummary.heading": "Sinu pensionivara koondseis",
   "accountSummary.columns.pillar.title": "Pensionivara",
   "accountSummary.columns.pillar.footer": "Kokku",
   "accountSummary.columns.contributions": "Sissemaksed",
@@ -211,7 +211,6 @@
   "account.status.choice.pillar.third": "III sammas",
   "account.status.choice.tuleva": "Tuleva ühistu",
   "account.status.choice.join.tuleva.2": "Vaheta fondi",
-  "account.status.choice.join.tuleva.3": "Vaheta fondi",
   "account.status.choice.pay.tuleva.3": "Maksa sisse",
   "account.status.choice.join.tuleva": "Astu liikmeks",
   "account.status.yearToDateContribution": "Oled sel aastal maksnud III samba pensionifondi {{contribution}} eurot. <a href='https://tuleva.ee/soovitused/kui-palju-raha-kolmas-sammas/' target='_blank' rel='noopener noreferrer'>Vaata siit</a>, kuidas välja arvutada oma selle aasta maksimaalne sissemakse.",
