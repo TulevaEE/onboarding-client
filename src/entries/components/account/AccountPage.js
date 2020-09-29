@@ -85,7 +85,7 @@ export class AccountPage extends Component {
         {error ? <ErrorMessage errors={error.body} /> : ''}
         {loadingCurrentBalance && <Loader className="align-middle" />}
 
-        {secondPillarSourceFunds && thirdPillarSourceFunds && conversion && memberCapital && (
+        {secondPillarSourceFunds && thirdPillarSourceFunds && conversion && (
           <div className="mt-5">
             <p className="mb-4 lead">
               <Message>accountSummary.heading</Message>

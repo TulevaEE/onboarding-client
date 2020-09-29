@@ -44,7 +44,10 @@ const AccountSummary = ({
       thirdPillarSubtractions,
       thirdPillarSourceFunds,
     ),
-    {
+  ];
+
+  if (memberCapital) {
+    summary.push({
       pillar: 'memberCapital.heading',
       contributions:
         memberCapital.capitalPayment +
@@ -53,8 +56,8 @@ const AccountSummary = ({
       subtractions: 0, // ?
       profit: memberCapital.profit + memberCapital.membershipBonus,
       value: memberCapital.total,
-    },
-  ];
+    });
+  }
 
   const columns = [
     {
