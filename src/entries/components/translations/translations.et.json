@@ -67,7 +67,8 @@
   "accountStatement.columns.profit.title": "Tulu",
   "accountStatement.columns.value.title": "Väärtus",
   "accountStatement.columns.fund.footer": "Kokku",
-  "accountStatement.activeFundNotice": "* - siia lähevad igakuised maksed",
+  "accountStatement.secondPillar.activeFundNotice": "* - siia lähevad igakuised maksed. NB! Oktoobris on võimalik esitada avaldus II samba sissemaksete peatamiseks kuni 2021. aasta augustini. Loe täpsemalt, <a href='https://tuleva.ee/seadusandlus/riik-peatab-ii-samba-sissemaksed/' target='_blank' rel='noopener noreferrer'>mida II samba peatamine sulle tähendab ning kas ja kuidas avaldust esitada</a>.",
+  "accountStatement.thirdPillar.activeFundNotice": "* - siia lähevad igakuised maksed",
 
   "memberCapital.heading": "Liikmekapital",
   "memberCapital.columns.source.title": "Allikas",

@@ -49,6 +49,7 @@ const AccountStatement = ({ funds }) => {
   );
 
   const showActiveFundNotice = funds.some(({ activeFund }) => activeFund);
+  const fundPillar = funds.every(({ pillar }) => pillar === 2) ? 'secondPillar' : 'thirdPillar';
 
   return (
     <>
@@ -56,7 +57,9 @@ const AccountStatement = ({ funds }) => {
 
       {showActiveFundNotice && (
         <small className="text-muted">
-          <Message>accountStatement.activeFundNotice</Message>
+          <Message
+            dangerouslyTranslateInnerHTML={`accountStatement.${fundPillar}.activeFundNotice`}
+          />
         </small>
       )}
     </>
