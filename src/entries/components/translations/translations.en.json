@@ -67,7 +67,8 @@
   "accountStatement.columns.profit.title": "Profit",
   "accountStatement.columns.value.title": "Value",
   "accountStatement.columns.fund.footer": "Total",
-  "accountStatement.activeFundNotice": "* - currently active fund",
+  "accountStatement.secondPillar.activeFundNotice": "* - currently active fund. NB! In October you can submit an application to suspend your contributions to 2nd pillar until August 2021. Read more about this and <a href='https://tuleva.ee/seadusandlus/riik-peatab-ii-samba-sissemaksed/' target='_blank' rel='noopener noreferrer'>how to submit an application on Pensionikeskus website</a>.",
+  "accountStatement.thirdPillar.activeFundNotice": "* - currently active fund",
 
   "memberCapital.heading": "Member capital",
   "memberCapital.columns.source.title": "Source",
