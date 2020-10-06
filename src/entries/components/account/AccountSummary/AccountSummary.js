@@ -5,6 +5,7 @@ import sumBy from 'lodash/sumBy';
 
 import Table from '../../common/table';
 import Euro from '../../common/Euro';
+import { getProfitClassName } from '../../common/utils';
 
 const AccountSummary = ({
   secondPillarContributions,
@@ -59,6 +60,8 @@ const AccountSummary = ({
     });
   }
 
+  const summaryItemProfit = sumBy(summary, summaryItem => summaryItem.profit);
+
   const columns = [
     {
       title: <Message>accountSummary.columns.pillar.title</Message>,
@@ -82,8 +85,8 @@ const AccountSummary = ({
       dataIndex: 'profit',
       hideOnMobile: true,
       footer: (
-        <span className="text-success">
-          <Euro amount={sumBy(summary, summaryItem => summaryItem.profit)} />
+        <span className={getProfitClassName(summaryItemProfit)}>
+          <Euro amount={summaryItemProfit} />
         </span>
       ),
     },
@@ -99,7 +102,7 @@ const AccountSummary = ({
     contributions: <Euro amount={contributions} />,
     subtractions: <Euro amount={subtractions} />,
     profit: (
-      <span className="text-success">
+      <span className={getProfitClassName(profit)}>
         <Euro amount={profit} />
       </span>
     ),
