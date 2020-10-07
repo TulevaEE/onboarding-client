@@ -51,9 +51,9 @@ describe('Account summary', () => {
             name: 'A',
             contributions: 100,
             subtractions: 0,
-            profit: 20,
+            profit: -50,
             unavailablePrice: 0,
-            price: 120,
+            price: 50,
           },
           {
             isin: 'B2',
@@ -108,8 +108,8 @@ describe('Account summary', () => {
       </span>,
     );
     expect(dataSource[1].profit).toEqual(
-      <span className="text-success">
-        <Euro amount={34} />
+      <span className="text-danger">
+        <Euro amount={-36} />
       </span>,
     );
     expect(dataSource[2].profit).toEqual(
@@ -118,7 +118,7 @@ describe('Account summary', () => {
       </span>,
     );
     expect(dataSource[0].value).toEqual(<Euro amount={114} />);
-    expect(dataSource[1].value).toEqual(<Euro amount={136} />);
+    expect(dataSource[1].value).toEqual(<Euro amount={66} />);
     expect(dataSource[2].value).toEqual(<Euro amount={6} />);
   });
 

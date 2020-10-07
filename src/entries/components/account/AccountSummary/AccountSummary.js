@@ -3,9 +3,8 @@ import { PropTypes as Types } from 'prop-types';
 import { Message } from 'retranslate';
 import sumBy from 'lodash/sumBy';
 
-import Table from '../../common/table';
+import Table, { getProfitClassName } from '../../common/table';
 import Euro from '../../common/Euro';
-import { getProfitClassName } from '../../common/utils';
 
 const AccountSummary = ({
   secondPillarContributions,

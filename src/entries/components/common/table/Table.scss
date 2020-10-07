@@ -1,5 +1,3 @@
-@import '../../variables';
-
 .table-container {
   width: 100%;
 }
@@ -38,14 +36,6 @@
 
 .table td, .table th {
   text-align: right;
-}
-
-.table td span.profit-positive {
-  color: $green;
-}
-
-.table td span.profit-negative {
-  color: $red;
 }
 
 .table td:first-child, .table th:first-child {
