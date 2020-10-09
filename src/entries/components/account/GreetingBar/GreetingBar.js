@@ -17,7 +17,7 @@ export class GreetingBar extends Component {
           {user.email}
           {user.email && user.phoneNumber && <span className="mx-1"> · </span>}
           <span className="mr-2">{user.phoneNumber} </span>
-          <Link className="btn btn-light" to="/contact-detail">
+          <Link className="btn btn-light" to="/contact-details">
             <Message>account.update.contact</Message>
           </Link>
         </div>

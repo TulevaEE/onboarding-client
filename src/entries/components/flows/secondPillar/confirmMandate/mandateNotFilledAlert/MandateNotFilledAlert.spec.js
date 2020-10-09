@@ -31,7 +31,7 @@ describe('Confirm mandate step', () => {
   it('renders a link to the first step to start again', () => {
     expect(
       component.contains(
-        <Link to="/2nd-pillar-flow/select-sources">
+        <Link to="/2nd-pillar-flow">
           <Message>confirm.mandate.not.filled.look.again</Message>
         </Link>,
       ),

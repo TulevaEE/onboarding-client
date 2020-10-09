@@ -3,7 +3,7 @@ import { Message } from 'retranslate';
 
 import ThirdPillarSetup from './ThirdPillarSetup';
 import ThirdPillarSelectSources from './ThirdPillarSelectSources';
-import ThirdPillarAddress from './ThirdPillarAddress';
+import AddressStep from '../common/AddressStep';
 import ConfirmThirdPillarMandate from './ConfirmThirdPillarMandate';
 import ThirdPillarPayment from './ThirdPillarPayment';
 import Flow from '../common/Flow'; // eslint-disable-line import/no-named-as-default
@@ -23,7 +23,9 @@ const steps = [
   },
   {
     path: 'address',
-    Component: () => <ThirdPillarAddress nextPath={`${flowPath}/confirm-mandate`} />,
+    Component: () => (
+      <AddressStep nextPath={`${flowPath}/confirm-mandate`} updateOnlyEmailAndPhone />
+    ),
     title: <Message>thirdPillarFlow.steps.address.title</Message>,
   },
   {

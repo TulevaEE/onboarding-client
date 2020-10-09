@@ -2,6 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Message } from 'retranslate';
 
+import { Link } from 'react-router-dom';
 import { ConfirmMandate } from './ConfirmMandate';
 import FundTransferTable from './fundTransferTable';
 import MandateNotFilledAlert from './mandateNotFilledAlert';
@@ -66,7 +67,7 @@ describe('Confirm mandate step', () => {
     expect(component.contains(<Message>confirm.mandate.future.contribution</Message>)).toBe(false);
   });
 
-  it('has a button to the previous step', () => {
+  it('has a back button', () => {
     const onPreviousStep = jest.fn();
     component.setProps({
       exchange: {
@@ -77,9 +78,11 @@ describe('Confirm mandate step', () => {
     });
     expect(
       component.contains(
-        <button type="button" className="btn btn-secondary mb-2" onClick={onPreviousStep}>
-          <Message>steps.previous</Message>
-        </button>,
+        <Link to="/2nd-pillar-flow">
+          <button type="button" className="btn btn-secondary mb-2">
+            <Message>steps.previous</Message>
+          </button>
+        </Link>,
       ),
     ).toBe(true);
   });
