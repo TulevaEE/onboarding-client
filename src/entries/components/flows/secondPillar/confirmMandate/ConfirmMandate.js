@@ -3,6 +3,7 @@ import { PropTypes as Types } from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { Message } from 'retranslate';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 
 import { Loader, AuthenticationLoader, ErrorMessage, utils } from '../../../common';
 
@@ -14,7 +15,6 @@ import {
   closeErrorMessages,
 } from '../../../exchange/actions';
 
-import { routeBackFromMandateConfirmation } from '../../../router/actions';
 import MandateNotFilledAlert from './mandateNotFilledAlert';
 import FundTransferTable from './fundTransferTable';
 import './ConfirmMandate.scss';
@@ -97,7 +97,6 @@ export const ConfirmMandate = ({
   onCancelSigningMandate,
   onChangeAgreementToTerms,
   onCloseErrorMessages,
-  onPreviousStep,
 }) => {
   if (loading) {
     return <Loader className="align-middle" />;
@@ -208,9 +207,11 @@ export const ConfirmMandate = ({
         >
           <Message>confirm.mandate.preview</Message>
         </button>
-        <button type="button" className="btn btn-secondary mb-2" onClick={onPreviousStep}>
-          <Message>steps.previous</Message>
-        </button>
+        <Link to="/2nd-pillar-flow">
+          <button type="button" className="btn btn-secondary mb-2">
+            <Message>steps.previous</Message>
+          </button>
+        </Link>
       </div>
     </div>
   );
@@ -226,7 +227,6 @@ ConfirmMandate.defaultProps = {
   onCancelSigningMandate: noop,
   onChangeAgreementToTerms: noop,
   onCloseErrorMessages: noop,
-  onPreviousStep: noop,
 };
 
 ConfirmMandate.propTypes = {
@@ -250,7 +250,6 @@ ConfirmMandate.propTypes = {
   onCancelSigningMandate: Types.func,
   onChangeAgreementToTerms: Types.func,
   onCloseErrorMessages: Types.func,
-  onPreviousStep: Types.func,
 };
 
 const mapStateToProps = state => ({
@@ -273,7 +272,6 @@ const mapDispatchToProps = dispatch =>
       onChangeAgreementToTerms: changeAgreementToTerms,
       onCancelSigningMandate: cancelSigningMandate,
       onCloseErrorMessages: closeErrorMessages,
-      onPreviousStep: routeBackFromMandateConfirmation,
     },
     dispatch,
   );

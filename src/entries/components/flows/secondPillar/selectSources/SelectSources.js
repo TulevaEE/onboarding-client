@@ -4,7 +4,7 @@ import { Message } from 'retranslate';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import { routeForwardFromSourceSelection } from '../../../router/actions';
+import { Link } from 'react-router-dom';
 import { selectExchangeSources } from '../../../exchange/actions';
 import { Loader, Radio, ErrorMessage } from '../../../common';
 import PensionFundTable from './pensionFundTable';
@@ -23,22 +23,22 @@ function selectAllWithTarget(sourceFunds, targetFund) {
 
 function selectionsValid(selections) {
   const sourceFundPercentages = {};
-  let valid = true;
+  let isValid = true;
   selections.forEach(selection => {
     if (!sourceFundPercentages[selection.sourceFundIsin]) {
       sourceFundPercentages[selection.sourceFundIsin] = 0;
     }
     sourceFundPercentages[selection.sourceFundIsin] += selection.percentage;
     if (sourceFundPercentages[selection.sourceFundIsin] > 1) {
-      valid = false;
+      isValid = false;
     }
 
     if (selection.sourceFundIsin === selection.targetFundIsin) {
-      valid = false;
+      isValid = false;
     }
   });
 
-  return valid;
+  return isValid;
 }
 
 export const SelectSources = ({
@@ -51,7 +51,7 @@ export const SelectSources = ({
   onSelect,
   sourceSelectionExact,
   error,
-  onNextStep,
+  nextPath,
 }) => {
   if (error) {
     return <ErrorMessage errors={error.body} />;
@@ -61,7 +61,7 @@ export const SelectSources = ({
   }
   const fullSelectionActive = !!sourceSelection.length && !sourceSelectionExact;
   const noneSelectionActive = !sourceSelection.length && !sourceSelectionExact;
-  const valid = selectionsValid(sourceSelection);
+  const isValid = selectionsValid(sourceSelection);
   const tulevaTargetFunds =
     targetFunds &&
     targetFunds.length &&
@@ -159,14 +159,11 @@ export const SelectSources = ({
         )}
       </Radio>
 
-      <button
-        type="button"
-        id="nextStep"
-        className={`btn btn-primary mt-5 ${!valid ? 'disabled' : ''}`}
-        onClick={valid && onNextStep}
-      >
-        <Message>steps.next</Message>
-      </button>
+      <Link id="nextStep" to={isValid ? nextPath : '#'}>
+        <button type="button" className={`btn btn-primary mt-5 ${!isValid ? 'disabled' : ''}`}>
+          <Message>steps.next</Message>
+        </button>
+      </Link>
     </div>
   );
 };
@@ -183,7 +180,6 @@ SelectSources.defaultProps = {
   sourceSelectionExact: false,
   onSelect: noop,
   error: null,
-  onNextStep: noop,
 };
 
 SelectSources.propTypes = {
@@ -196,7 +192,7 @@ SelectSources.propTypes = {
   loadingTargetFunds: Types.bool,
   onSelect: Types.func,
   error: Types.shape({ body: Types.string }),
-  onNextStep: Types.func,
+  nextPath: Types.string.isRequired,
 };
 
 const mapStateToProps = state => ({
@@ -214,7 +210,6 @@ const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
       onSelect: selectExchangeSources,
-      onNextStep: routeForwardFromSourceSelection,
     },
     dispatch,
   );

@@ -18,18 +18,25 @@ describe('Transfer future capital step', () => {
     expect(component.contains(<Message>transfer.future.capital.intro.choose</Message>)).toBe(true);
   });
 
-  it('has buttons to the previous and next pages', () => {
+  it('has button to the previous step', () => {
+    const previousPath = 'previous-path';
+    component.setProps({ previousPath });
     expect(
       component.contains(
-        <Link className="btn btn-primary mb-2 mr-2" to="/2nd-pillar-flow/confirm-mandate">
-          <Message>steps.next</Message>
+        <Link className="btn btn-secondary mb-2" to={previousPath}>
+          <Message>steps.previous</Message>
         </Link>,
       ),
     ).toBe(true);
+  });
+
+  it('has button to the next step', () => {
+    const nextPath = 'next-path';
+    component.setProps({ nextPath });
     expect(
       component.contains(
-        <Link className="btn btn-secondary mb-2" to="/2nd-pillar-flow/select-sources">
-          <Message>steps.previous</Message>
+        <Link className="btn btn-primary mb-2 mr-2" to={nextPath}>
+          <Message>steps.next</Message>
         </Link>,
       ),
     ).toBe(true);

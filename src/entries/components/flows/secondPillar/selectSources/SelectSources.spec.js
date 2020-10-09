@@ -41,12 +41,12 @@ describe('Select sources step', () => {
   });
 
   it('renders a button to the next step', () => {
-    const onNextStep = jest.fn();
-    component.setProps({ onNextStep });
-    expect(component.find('#nextStep').prop('onClick')).toBe(onNextStep);
+    const nextPath = '/next-path';
+    component.setProps({ nextPath });
+    expect(component.find('#nextStep').prop('to')).toBe(nextPath);
     expect(
       component
-        .find('#nextStep')
+        .find('#nextStep button')
         .children()
         .at(0)
         .getElement(0),
@@ -57,25 +57,25 @@ describe('Select sources step', () => {
     component.setProps({
       sourceSelection: [{ sourceFundIsin: 'a', percentage: 1 }],
     });
-    expect(component.find('#nextStep').prop('className')).not.toContain('disabled');
+    expect(component.find('#nextStep button').prop('className')).not.toContain('disabled');
     component.setProps({
       sourceSelection: [
         { sourceFundIsin: 'a', percentage: 1 },
         { sourceFundIsin: 'a', percentage: 1 },
       ],
     });
-    expect(component.find('#nextStep').prop('className')).toContain('disabled');
+    expect(component.find('#nextStep button').prop('className')).toContain('disabled');
   });
 
   it('disables the next step button if selection is invalid due to inter fund transfer', () => {
     component.setProps({
       sourceSelection: [{ sourceFundIsin: 'a', targetFundIsin: 'b', percentage: 1 }],
     });
-    expect(component.find('#nextStep').prop('className')).not.toContain('disabled');
+    expect(component.find('#nextStep button').prop('className')).not.toContain('disabled');
     component.setProps({
       sourceSelection: [{ sourceFundIsin: 'a', targetFundIsin: 'a', percentage: 1 }],
     });
-    expect(component.find('#nextStep').prop('className')).toContain('disabled');
+    expect(component.find('#nextStep button').prop('className')).toContain('disabled');
   });
 
   it('sets the full selection radio as selected only when all funds selected', () => {

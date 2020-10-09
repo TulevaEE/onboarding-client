@@ -3,7 +3,7 @@ import { PropTypes as Types } from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Message, withTranslations } from 'retranslate';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 
 import { Radio, Loader, InfoTooltip, utils } from '../../../common';
 import TargetFundTooltipBody from './targetFundTooltipBody';
@@ -14,6 +14,10 @@ const fundSelectStyles = {
   height: '140%',
 };
 
+function isSkippingStepNecessary(sourceSelectionExact, sourceSelection) {
+  return !sourceSelectionExact && sourceSelection.length > 0;
+}
+
 export const TransferFutureCapital = ({
   selectedFutureContributionsFundIsin,
   onSelectFutureCapitalFund,
@@ -21,17 +25,21 @@ export const TransferFutureCapital = ({
   loadingTargetFunds,
   activeSourceFund,
   isUserConverted,
+  sourceSelection,
+  sourceSelectionExact,
   translations: { translate },
+  previousPath,
+  nextPath,
 }) => {
-  if (loadingTargetFunds) {
-    return <Loader className="align-middle" />;
-  }
   const tulevaTargetFunds = targetFunds.filter(fund => (fund.fundManager || {}).name === 'Tuleva');
   const sortedTargetFunds = targetFunds
     .slice()
     .sort((fund1, fund2) => fund1.name.localeCompare(fund2.name));
+
   return (
     <div>
+      {isSkippingStepNecessary(sourceSelectionExact, sourceSelection) && <Redirect to={nextPath} />}
+      {loadingTargetFunds && <Loader className="align-middle" />}
       <div className="px-col">
         <p className="lead m-0">
           <Message>transfer.future.capital.intro.choose</Message>
@@ -109,10 +117,10 @@ export const TransferFutureCapital = ({
         )}
       </Radio>
       <div className="mt-5">
-        <Link className="btn btn-primary mb-2 mr-2" to="/2nd-pillar-flow/confirm-mandate">
+        <Link className="btn btn-primary mb-2 mr-2" to={nextPath}>
           <Message>steps.next</Message>
         </Link>
-        <Link className="btn btn-secondary mb-2" to="/2nd-pillar-flow/select-sources">
+        <Link className="btn btn-secondary mb-2" to={previousPath}>
           <Message>steps.previous</Message>
         </Link>
       </div>
@@ -120,27 +128,29 @@ export const TransferFutureCapital = ({
   );
 };
 
-const noop = () => null;
-
 TransferFutureCapital.defaultProps = {
   selectedFutureContributionsFundIsin: null,
-  onSelectFutureCapitalFund: noop,
   targetFunds: [],
   loadingTargetFunds: false,
   activeSourceFund: null,
   isUserConverted: false,
+  sourceSelection: [],
+  sourceSelectionExact: false,
 };
 
 TransferFutureCapital.propTypes = {
   selectedFutureContributionsFundIsin: Types.string,
-  onSelectFutureCapitalFund: Types.func,
   targetFunds: Types.arrayOf(Types.shape({})),
   loadingTargetFunds: Types.bool,
   activeSourceFund: Types.shape({ name: Types.string, managementFeePercent: Types.number }),
   isUserConverted: Types.bool,
+  sourceSelection: Types.arrayOf(Types.shape({ targetFundIsin: Types.string })),
+  sourceSelectionExact: Types.bool,
   translations: Types.shape({
     translate: Types.func.isRequired,
   }).isRequired,
+  previousPath: Types.string.isRequired,
+  nextPath: Types.string.isRequired,
 };
 
 const mapStateToProps = state => ({
@@ -151,6 +161,8 @@ const mapStateToProps = state => ({
     state.exchange.sourceFunds || [],
     element => element.activeFund,
   ),
+  sourceSelection: state.exchange.sourceSelection,
+  sourceSelectionExact: state.exchange.sourceSelectionExact,
   isUserConverted: state.login.userConversion.secondPillar.selectionComplete,
 });
 

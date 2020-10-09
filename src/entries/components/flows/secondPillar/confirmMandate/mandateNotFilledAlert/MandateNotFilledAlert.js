@@ -15,7 +15,7 @@ const MandateNotFilledAlert = () => (
     </p>
     <ul>
       <li>
-        <Link to="/2nd-pillar-flow/select-sources">
+        <Link to="/2nd-pillar-flow">
           <Message>confirm.mandate.not.filled.look.again</Message>
         </Link>
       </li>

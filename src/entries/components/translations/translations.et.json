@@ -27,6 +27,7 @@
   "steps.previous": "Eelmine samm",
   "steps.select-sources": "Vaheta olemasolevad osakud",
   "steps.transfer-future-capital": "Suuna edasised maksed",
+  "steps.address": "Sisesta oma kontaktandmed",
   "steps.confirm-mandate": "Kinnita avalduse sisu",
   "select.sources.overview.title": "Ülevaade",
   "select.sources.pension.fund": "Pensionifond",

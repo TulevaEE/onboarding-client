@@ -4,41 +4,52 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Redirect } from 'react-router-dom';
 import UpdateUserForm from '../../../contact-details/updateUserForm';
-import { updateUserEmailAndPhone } from '../../../common/user/actions';
+import { updateUser, updateUserEmailAndPhone } from '../../../common/user/actions';
 import { hasAddress } from '../../../common/user/address';
 
-export const ThirdPillarAddress = ({ nextPath, isAddressFilled, saveUser }) => (
+export const AddressStep = ({
+  nextPath,
+  isAddressFilled,
+  updateOnlyEmailAndPhone,
+  updateFullUser,
+  updateEmailAndPhone,
+}) => (
   <>
     {isAddressFilled && <Redirect to={nextPath} />}
-    <UpdateUserForm onSubmit={saveUser} />
+    <UpdateUserForm
+      onSubmit={user =>
+        updateOnlyEmailAndPhone ? updateEmailAndPhone(user) : updateFullUser(user)
+      }
+    />
   </>
 );
 
 const noop = () => null;
 
-ThirdPillarAddress.propTypes = {
-  nextPath: Types.string,
+AddressStep.propTypes = {
+  nextPath: Types.string.isRequired,
   isAddressFilled: Types.bool,
-  saveUser: Types.func,
+  updateEmailAndPhone: Types.func,
+  updateFullUser: Types.func,
 };
 
-ThirdPillarAddress.defaultProps = {
-  nextPath: '',
+AddressStep.defaultProps = {
   isAddressFilled: false,
-  saveUser: noop,
+  updateEmailAndPhone: noop,
+  updateFullUser: noop,
 };
 
 const mapStateToProps = state => {
   return {
     isAddressFilled: state.login.user && hasAddress(state.login.user),
-    monthlyContribution: state.thirdPillar.monthlyContribution,
   };
 };
 
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
-      saveUser: updateUserEmailAndPhone,
+      updateEmailAndPhone: updateUserEmailAndPhone,
+      updateFullUser: updateUser,
     },
     dispatch,
   );
@@ -48,4 +59,4 @@ const withRedux = connect(
   mapDispatchToProps,
 );
 
-export default withRedux(ThirdPillarAddress);
+export default withRedux(AddressStep);
