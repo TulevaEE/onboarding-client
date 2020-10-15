@@ -47,6 +47,10 @@ function getClass(hideOnMobile) {
   return hideOnMobile ? HIDDEN_ON_MOBILE_CELL_CLASS : undefined;
 }
 
+export function getProfitClassName(profit) {
+  return profit >= 0 ? 'text-success' : 'text-danger';
+}
+
 Table.propTypes = {
   columns: Types.arrayOf(
     Types.shape({
@@ -63,3 +67,5 @@ Table.propTypes = {
 };
 
 export default Table;
+
+
