@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import { Message } from 'retranslate';
 import { Link } from 'react-router-dom';
 
-import { Radio } from '../../../common';
+import { Loader, Radio } from '../../../common';
 import { TransferFutureCapital } from './TransferFutureCapital';
 
 describe('Transfer future capital step', () => {
@@ -12,6 +12,11 @@ describe('Transfer future capital step', () => {
   beforeEach(() => {
     const props = { translations: { translate: () => '' } };
     component = shallow(<TransferFutureCapital {...props} />);
+  });
+
+  it('renders a loader when loading', () => {
+    component.setProps({ loading: true });
+    expect(component.contains(<Loader className="align-middle" />)).toBe(true);
   });
 
   it('shows an intro', () => {

@@ -93,26 +93,6 @@ describe('Exchange actions', () => {
       });
     });
 
-    it('redirects to account page when no source funds detected', () => {
-      const sourceFunds = [];
-      mockApi.getSourceFundsWithToken = jest.fn(() => {
-        expect(dispatch).toHaveBeenCalledTimes(1);
-        expect(dispatch).toHaveBeenCalledWith({ type: GET_SOURCE_FUNDS_START });
-        dispatch.mockClear();
-        return Promise.resolve(sourceFunds);
-      });
-      const getSourceFunds = createBoundAction(actions.getSourceFunds);
-      expect(dispatch).not.toHaveBeenCalled();
-      return getSourceFunds().then(() => {
-        expect(dispatch).toHaveBeenCalledTimes(2);
-        expect(dispatch).toHaveBeenCalledWith(push('/account'));
-        expect(dispatch).toHaveBeenCalledWith({
-          type: GET_SOURCE_FUNDS_SUCCESS,
-          sourceFunds,
-        });
-      });
-    });
-
     it('can handle errors when getting pension funds', () => {
       const error = new Error('oh no!');
       mockApi.getSourceFundsWithToken = jest.fn(() => Promise.reject(error));

@@ -2,6 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Message } from 'retranslate';
 
+import { Redirect } from 'react-router-dom';
 import { Loader, Radio, ErrorMessage } from '../../../common';
 import PensionFundTable from './pensionFundTable';
 import ExactFundSelector from './exactFundSelector';
@@ -28,6 +29,15 @@ describe('Select sources step', () => {
       loadingTargetFunds: false,
     });
     expect(component.get(0)).not.toEqual(<Loader className="align-middle" />);
+  });
+
+  it('redirects to next path only when no source funds', () => {
+    component.setProps({ nextPath: '/next-path', sourceFunds: [] });
+    const redirects = () => component.contains(<Redirect to="/next-path" />);
+
+    expect(redirects()).toBe(true);
+    component.setProps({ sourceFunds: [{ isin: 'a' }] });
+    expect(redirects()).toBe(false);
   });
 
   it('renders a title', () => {

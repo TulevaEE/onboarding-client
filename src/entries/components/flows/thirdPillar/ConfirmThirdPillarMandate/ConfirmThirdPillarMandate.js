@@ -200,7 +200,7 @@ ConfirmThirdPillarMandate.defaultProps = {
   signedMandateId: null,
   exchangeExistingUnits: null,
   exchangeableSourceFunds: null,
-  selectedFutureContributionsFund: null,
+  selectedFutureContributionsFund: {},
   agreedToTerms: false,
   isResident: null,
   isPoliticallyExposed: null,

@@ -28,7 +28,7 @@ export const ThirdPillarSelectSources = ({
   const fullSelectionActive = !!exchangeExistingUnits && !!futureContributionsFundIsin;
   const someSelectionActive = !exchangeExistingUnits && !!futureContributionsFundIsin;
   const isValid = exchangeExistingUnits || futureContributionsFundIsin;
-  const defaultTargetFund = targetFunds && targetFunds.length ? targetFunds[0] : null;
+  const defaultTargetFund = targetFunds && targetFunds.length ? targetFunds[0] : {};
   return (
     <div>
       {!loadingSourceFunds && exchangeableSourceFunds && !exchangeableSourceFunds.length && (

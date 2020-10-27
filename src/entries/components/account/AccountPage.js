@@ -71,16 +71,7 @@ export class AccountPage extends Component {
         <div className="row mt-5">
           <GreetingBar />
         </div>
-        <div className="mt-5">
-          {secondPillarSourceFunds && secondPillarSourceFunds.length > 0 && <StatusBox />}
-          <div>
-            {secondPillarSourceFunds && secondPillarSourceFunds.length === 0 ? (
-              <Message>account.second.pillar.missing</Message>
-            ) : (
-              ''
-            )}
-          </div>
-        </div>
+        <div className="mt-5">{secondPillarSourceFunds && conversion && <StatusBox />}</div>
 
         {error ? <ErrorMessage errors={error.body} /> : ''}
         {loadingCurrentBalance && <Loader className="align-middle" />}
@@ -104,7 +95,7 @@ export class AccountPage extends Component {
 
         <ReturnComparison />
 
-        {secondPillarSourceFunds && secondPillarSourceFunds.length > 0 && (
+        {!loadingCurrentBalance && (
           <div className="mt-5">
             <p className="mb-4 lead">
               <Message>accountStatement.heading</Message>
@@ -120,7 +111,9 @@ export class AccountPage extends Component {
                 </Link>
               </div>
             </div>
-            <AccountStatement funds={secondPillarSourceFunds} />
+            {secondPillarSourceFunds && secondPillarSourceFunds.length > 0 && (
+              <AccountStatement funds={secondPillarSourceFunds} />
+            )}
           </div>
         )}
 

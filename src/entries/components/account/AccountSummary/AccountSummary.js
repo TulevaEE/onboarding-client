@@ -116,6 +116,10 @@ const AccountSummary = ({
   );
 };
 
+AccountSummary.defaultProps = {
+  memberCapital: {},
+};
+
 AccountSummary.propTypes = {
   secondPillarContributions: Types.number.isRequired,
   secondPillarSubtractions: Types.number.isRequired,
@@ -148,7 +152,7 @@ AccountSummary.propTypes = {
     membershipBonus: Types.number,
     profit: Types.number,
     total: Types.number,
-  }).isRequired,
+  }),
 };
 
 export default AccountSummary;
