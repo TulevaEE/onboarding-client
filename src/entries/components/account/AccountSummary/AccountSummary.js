@@ -5,7 +5,6 @@ import sumBy from 'lodash/sumBy';
 
 import Table, { getProfitClassName } from '../../common/table';
 import Euro from '../../common/Euro';
-import MemberCapital from '../MemberCapital';
 
 const AccountSummary = ({
   secondPillarContributions,

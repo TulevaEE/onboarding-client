@@ -80,11 +80,6 @@ describe('Current balance', () => {
       expect(component.contains(<GreetingBar />)).toBe(true);
     });
 
-    it('renders loader when current balance is still loading', () => {
-      component.setProps({ loadingCurrentBalance: true });
-      expect(component.contains(<Loader className="align-middle" />)).toBe(true);
-    });
-
     it('renders loader when pending exchanges are still loading', () => {
       component.setProps({ loadingPendingExchanges: true });
       expect(pendingExchangesLoader().exists()).toBe(true);
