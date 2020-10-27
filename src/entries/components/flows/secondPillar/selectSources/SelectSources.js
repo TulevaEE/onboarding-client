@@ -4,7 +4,7 @@ import { Message } from 'retranslate';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import { selectExchangeSources } from '../../../exchange/actions';
 import { Loader, Radio, ErrorMessage } from '../../../common';
 import PensionFundTable from './pensionFundTable';
@@ -70,6 +70,7 @@ export const SelectSources = ({
     tulevaTargetFunds && tulevaTargetFunds.length ? tulevaTargetFunds[0] : null;
   return (
     <div>
+      {sourceFunds && !sourceFunds.length && <Redirect to={nextPath} />}
       <div className="row justify-content-around align-items-center">
         <div className="col-12">
           <div className="px-col mb-4">

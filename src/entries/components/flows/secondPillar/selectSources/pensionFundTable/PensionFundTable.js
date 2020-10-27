@@ -25,7 +25,7 @@ const PensionFundTable = ({ funds }) => {
            */}
       </div>
       {funds &&
-        funds.length &&
+        funds.length > 0 &&
         funds.map(({ currency, price, name, isin, activeFund }) => (
           <FundRow key={isin} price={price} name={name} currency={currency} active={activeFund} />
         ))}

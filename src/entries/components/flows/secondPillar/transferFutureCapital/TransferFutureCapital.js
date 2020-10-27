@@ -22,7 +22,7 @@ export const TransferFutureCapital = ({
   selectedFutureContributionsFundIsin,
   onSelectFutureCapitalFund,
   targetFunds,
-  loadingTargetFunds,
+  loading,
   activeSourceFund,
   isUserConverted,
   sourceSelection,
@@ -31,6 +31,9 @@ export const TransferFutureCapital = ({
   previousPath,
   nextPath,
 }) => {
+  if (loading) {
+    return <Loader className="align-middle" />;
+  }
   const tulevaTargetFunds = targetFunds.filter(fund => (fund.fundManager || {}).name === 'Tuleva');
   const sortedTargetFunds = targetFunds
     .slice()
@@ -39,7 +42,6 @@ export const TransferFutureCapital = ({
   return (
     <div>
       {isSkippingStepNecessary(sourceSelectionExact, sourceSelection) && <Redirect to={nextPath} />}
-      {loadingTargetFunds && <Loader className="align-middle" />}
       <div className="px-col">
         <p className="lead m-0">
           <Message>transfer.future.capital.intro.choose</Message>
@@ -131,7 +133,7 @@ export const TransferFutureCapital = ({
 TransferFutureCapital.defaultProps = {
   selectedFutureContributionsFundIsin: null,
   targetFunds: [],
-  loadingTargetFunds: false,
+  loading: false,
   activeSourceFund: null,
   isUserConverted: false,
   sourceSelection: [],
@@ -141,8 +143,8 @@ TransferFutureCapital.defaultProps = {
 TransferFutureCapital.propTypes = {
   selectedFutureContributionsFundIsin: Types.string,
   targetFunds: Types.arrayOf(Types.shape({})),
-  loadingTargetFunds: Types.bool,
-  activeSourceFund: Types.shape({ name: Types.string, managementFeePercent: Types.number }),
+  loading: Types.bool,
+  activeSourceFund: Types.shape({ name: Types.string, managementFeePercent: Types.string }),
   isUserConverted: Types.bool,
   sourceSelection: Types.arrayOf(Types.shape({ targetFundIsin: Types.string })),
   sourceSelectionExact: Types.bool,
@@ -155,15 +157,20 @@ TransferFutureCapital.propTypes = {
 
 const mapStateToProps = state => ({
   selectedFutureContributionsFundIsin: state.exchange.selectedFutureContributionsFundIsin,
-  targetFunds: state.exchange.targetFunds,
-  loadingTargetFunds: state.exchange.loadingTargetFunds,
+  targetFunds: state.exchange.targetFunds || [],
+  loading:
+    state.login.loadingUser ||
+    state.login.loadingUserConversion ||
+    state.exchange.loadingSourceFunds ||
+    state.exchange.loadingTargetFunds,
   activeSourceFund: utils.findWhere(
     state.exchange.sourceFunds || [],
     element => element.activeFund,
   ),
   sourceSelection: state.exchange.sourceSelection,
   sourceSelectionExact: state.exchange.sourceSelectionExact,
-  isUserConverted: state.login.userConversion.secondPillar.selectionComplete,
+  isUserConverted:
+    state.login.userConversion && state.login.userConversion.secondPillar.selectionComplete,
 });
 
 const mapDispatchToProps = dispatch =>

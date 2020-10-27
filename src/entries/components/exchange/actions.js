@@ -56,11 +56,6 @@ export function getSourceFunds() {
     dispatch({ type: GET_SOURCE_FUNDS_START });
     return getSourceFundsWithToken(getState().login.token)
       .then(sourceFunds => {
-        if (sourceFunds.length === 0) {
-          if (window.useHackySecondPillarRoutePushesInActions) {
-            dispatch(push('/account'));
-          }
-        }
         dispatch({ type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds });
       })
       .catch(error => dispatch({ type: GET_SOURCE_FUNDS_ERROR, error }));

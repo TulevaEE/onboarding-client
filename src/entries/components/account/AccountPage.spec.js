@@ -1,8 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Message } from 'retranslate';
 
-import { Loader, ErrorMessage } from '../common';
+import { ErrorMessage, Loader } from '../common';
 import { AccountPage } from './AccountPage';
 import PendingExchangesTable from './pendingExchangeTable';
 import AccountStatement from './AccountStatement';
@@ -112,12 +111,6 @@ describe('Current balance', () => {
   it('does not render any account summary table when there are no source funds', () => {
     component.setProps({ secondPillarSourceFunds: null, thirdPillarSourceFunds: null });
     expect(accountSummary().exists()).toBe(false);
-  });
-
-  it('renders no second pillar message', () => {
-    expect(component.contains(<Message>account.second.pillar.missing</Message>)).toBe(true);
-    component.setProps({ secondPillarSourceFunds: [{ sourcefund: true }] });
-    expect(component.contains(<Message>account.second.pillar.missing</Message>)).toBe(false);
   });
 
   it('renders loader when current balance is still loading', () => {
