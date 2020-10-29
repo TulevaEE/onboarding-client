@@ -28,6 +28,14 @@ export const StatusBox = ({
     ? [<Message params={{ memberNumber }}>account.member.statement</Message>]
     : [<Message>account.non.member.statement</Message>];
 
+  const activeSecondPillarFunds = secondPillarFunds
+    .filter(fund => fund.activeFund)
+    .map(({ name }) => name);
+
+  const thirdPillarActiveFunds = thirdPillarFunds
+    .filter(fund => fund.activeFund)
+    .map(({ name }) => name);
+
   return (
     <>
       <div className="row">
@@ -41,7 +49,11 @@ export const StatusBox = ({
           ok={!joinTuleva2}
           showAction={!loading}
           name={<Message>account.status.choice.pillar.second</Message>}
-          lines={secondPillarFunds.filter(fund => fund.activeFund).map(({ name }) => name)}
+          lines={
+            activeSecondPillarFunds.length > 0
+              ? activeSecondPillarFunds
+              : [<Message>account.status.choice.pillar.second.missing</Message>]
+          }
         >
           {joinTuleva2 && (
             <Link to="/2nd-pillar-flow" className="btn btn-light">
@@ -54,7 +66,7 @@ export const StatusBox = ({
           ok={!payTuleva3}
           showAction={!loading}
           name={<Message>account.status.choice.pillar.third</Message>}
-          lines={thirdPillarFunds.filter(fund => fund.activeFund).map(({ name }) => name)}
+          lines={thirdPillarActiveFunds}
         >
           <Link to="/3rd-pillar-flow" className="btn btn-light">
             <Message>account.status.choice.pay.tuleva.3</Message>
