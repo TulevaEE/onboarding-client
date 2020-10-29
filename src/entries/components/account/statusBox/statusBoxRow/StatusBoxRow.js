@@ -17,12 +17,12 @@ CheckMark.propTypes = {
 const StatusBoxRow = ({ name, lines, showAction, ok, children, last }) => {
   const displayName = <Message>{name}</Message>;
   const formattedLines = (
-    <ul className="status-box-row">
+    <ul>
       {lines &&
         lines.length > 0 &&
         lines.map(line => {
           return (
-            <li className="status-box-row pl-2" key={line}>
+            <li className="pl-2" key={line}>
               {line}
             </li>
           );
@@ -30,7 +30,11 @@ const StatusBoxRow = ({ name, lines, showAction, ok, children, last }) => {
     </ul>
   );
   return (
-    <div className={`d-flex justify-content-between py-2 ${!last ? 'tv-table__row' : ''}`}>
+    <div
+      className={`d-flex justify-content-between py-2 status-box-row ${
+        !last ? 'tv-table__row' : ''
+      }`}
+    >
       <div className="d-flex">
         <div className="d-flex flex-column justify-content-center">
           <CheckMark checked={ok} />

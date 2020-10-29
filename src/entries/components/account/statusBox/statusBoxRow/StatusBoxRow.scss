@@ -1,12 +1,16 @@
 @import "../../../variables";
 
-li.status-box-row {
+.status-box-row li {
   list-style: none;
 }
 
-ul.status-box-row {
+.status-box-row ul {
   padding: 0;
   margin-bottom: 0;
+}
+
+.status-box-row .btn {
+  min-width: 161px;
 }
 
 .fa.fa-check {
