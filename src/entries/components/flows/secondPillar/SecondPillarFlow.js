@@ -35,7 +35,9 @@ const steps = [
   },
   {
     path: 'confirm-mandate',
-    Component: () => <ConfirmMandate nextPath={`${flowPath}/success`} />,
+    Component: () => (
+      <ConfirmMandate previousPath={`${flowPath}/address`} nextPath={`${flowPath}/success`} />
+    ),
     title: <Message>steps.confirm-mandate</Message>,
   },
   {

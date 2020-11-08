@@ -27,6 +27,7 @@ export const ConfirmThirdPillarMandate = ({
   occupation,
   loadingSourceFunds,
   isAddressFilled,
+  address,
   isUserConverted,
   onSign,
   onPreview,
@@ -123,6 +124,7 @@ export const ConfirmThirdPillarMandate = ({
                 exchangeExistingUnits,
                 exchangeableSourceFunds,
                 selectedFutureContributionsFund,
+                address,
               ),
               { isResident, isPoliticallyExposed, occupation },
             );
@@ -141,7 +143,7 @@ export const ConfirmThirdPillarMandate = ({
   );
 };
 
-function getMandate(exchangeExistingUnits, sourceFunds, targetFund) {
+function getMandate(exchangeExistingUnits, sourceFunds, targetFund, address) {
   return {
     fundTransferExchanges: exchangeExistingUnits
       ? sourceFunds.map(sourceFund => ({
@@ -151,6 +153,7 @@ function getMandate(exchangeExistingUnits, sourceFunds, targetFund) {
         }))
       : [],
     futureContributionFundIsin: targetFund.isin,
+    address,
   };
 }
 
@@ -183,6 +186,7 @@ ConfirmThirdPillarMandate.propTypes = {
   occupation: Types.string,
   loadingSourceFunds: Types.bool,
   isAddressFilled: Types.bool,
+  address: Types.shape({}),
   isUserConverted: Types.bool,
   onSign: Types.func,
   onPreview: Types.func,
@@ -207,6 +211,7 @@ ConfirmThirdPillarMandate.defaultProps = {
   occupation: null,
   loadingSourceFunds: false,
   isAddressFilled: false,
+  address: {},
   isUserConverted: false,
   onSign: () => {},
   onPreview: () => {},
@@ -230,6 +235,7 @@ const mapStateToProps = state => ({
   exchangeExistingUnits: state.thirdPillar.exchangeExistingUnits,
   loadingSourceFunds: state.thirdPillar.loadingSourceFunds,
   isAddressFilled: !state.login.user || hasAddress(state.login.user),
+  address: (state.login.user || {}).address,
   isUserConverted:
     state.thirdPillar.exchangeableSourceFunds &&
     !state.thirdPillar.exchangeableSourceFunds.length &&

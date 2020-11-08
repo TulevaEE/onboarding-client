@@ -3,7 +3,7 @@ import { PropTypes as Types } from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { Message } from 'retranslate';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 
 import { Loader, AuthenticationLoader, ErrorMessage, utils } from '../../../common';
 
@@ -18,6 +18,7 @@ import {
 import MandateNotFilledAlert from './mandateNotFilledAlert';
 import FundTransferTable from './fundTransferTable';
 import './ConfirmMandate.scss';
+import { hasAddress } from '../../../common/user/address';
 
 function joinDuplicateSelections(selections) {
   return selections.reduce((currentRoutes, selection) => {
@@ -75,7 +76,7 @@ function isFundPriceZero(sourceFunds, isinToMatch) {
   return utils.findWhere(sourceFunds, ({ isin }) => isin === isinToMatch).price === 0;
 }
 
-function getMandate(exchange) {
+function getMandate(exchange, address) {
   return {
     fundTransferExchanges: exchange.sourceSelection
       .filter(selection => isFundPriceZero(exchange.sourceFunds, selection.sourceFundIsin) !== true)
@@ -85,13 +86,17 @@ function getMandate(exchange) {
         targetFundIsin: selection.targetFundIsin,
       })),
     futureContributionFundIsin: exchange.selectedFutureContributionsFundIsin,
+    address,
   };
 }
 
 export const ConfirmMandate = ({
   exchange,
   selectedFutureContributionsFund,
+  address,
+  isAddressFilled,
   loading,
+  previousPath,
   onPreviewMandate,
   onSignMandate,
   onCancelSigningMandate,
@@ -121,11 +126,13 @@ export const ConfirmMandate = ({
   const canSignMandate = exchange.agreedToTerms && hasFilledFlow;
   // TODO: extract into a function
   const startPreviewMandate = () => {
-    onPreviewMandate(getMandate(exchange));
+    onPreviewMandate(getMandate(exchange, address));
   };
-  const startSigningMandate = () => canSignMandate && onSignMandate(getMandate(exchange));
+  const startSigningMandate = () => canSignMandate && onSignMandate(getMandate(exchange, address));
   return (
     <div className="px-col">
+      {!isAddressFilled && <Redirect to={previousPath} />}
+
       {exchange.loadingMandate || exchange.mandateSigningControlCode ? (
         <AuthenticationLoader
           controlCode={exchange.mandateSigningControlCode}
@@ -135,6 +142,7 @@ export const ConfirmMandate = ({
       ) : (
         ''
       )}
+
       <Message>confirm.mandate.intro</Message>
       {exchange.selectedFutureContributionsFundIsin ? (
         <div className="mt-4">
@@ -222,6 +230,8 @@ const noop = () => null;
 ConfirmMandate.defaultProps = {
   loading: false,
   selectedFutureContributionsFund: {},
+  address: {},
+  isAddressFilled: false,
   onPreviewMandate: noop,
   onSignMandate: noop,
   onCancelSigningMandate: noop,
@@ -244,6 +254,8 @@ ConfirmMandate.propTypes = {
     agreedToTerms: Types.bool,
   }).isRequired,
   selectedFutureContributionsFund: Types.shape({ isin: Types.string, name: Types.string }),
+  address: Types.shape({}),
+  isAddressFilled: Types.bool,
   loading: Types.bool,
   onPreviewMandate: Types.func,
   onSignMandate: Types.func,
@@ -257,6 +269,8 @@ const mapStateToProps = state => ({
   selectedFutureContributionsFund: (state.exchange.targetFunds || []).find(
     fund => fund.isin === state.exchange.selectedFutureContributionsFundIsin,
   ),
+  address: (state.login.user || {}).address,
+  isAddressFilled: !state.login.user || hasAddress(state.login.user),
   loading:
     state.login.loadingUser ||
     state.login.loadingUserConversion ||
