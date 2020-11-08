@@ -28,7 +28,9 @@ const steps = [
   },
   {
     path: 'address',
-    Component: () => <AddressStep nextPath={`${flowPath}/confirm-mandate`} />,
+    Component: () => (
+      <AddressStep nextPath={`${flowPath}/confirm-mandate`} updateOnlyEmailAndPhone />
+    ),
     title: <Message>steps.address</Message>,
   },
   {
@@ -38,7 +40,7 @@ const steps = [
   },
   {
     path: 'success',
-    Component: Success,
+    Component: () => <Success previousPath={`${flowPath}/confirm-mandate`} />,
   },
 ];
 

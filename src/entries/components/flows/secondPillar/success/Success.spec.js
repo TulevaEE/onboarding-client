@@ -2,6 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Message } from 'retranslate';
 import FacebookProvider, { Share } from 'react-facebook';
+import { Redirect } from 'react-router-dom';
 
 import { Success } from './Success';
 
@@ -10,6 +11,15 @@ describe('Success step', () => {
 
   beforeEach(() => {
     component = shallow(<Success />);
+  });
+
+  it('redirects to previous path only when no signed mandate id', () => {
+    component.setProps({ previousPath: '/previous-path' });
+    const redirects = () => component.contains(<Redirect to="/previous-path" />);
+
+    expect(redirects()).toBe(true);
+    component.setProps({ signedMandateId: 123 });
+    expect(redirects()).toBe(false);
   });
 
   it('shows the user default success message and profile button', () => {
