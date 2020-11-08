@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Message } from 'retranslate';
 
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import { ConfirmMandate } from './ConfirmMandate';
 import FundTransferTable from './fundTransferTable';
 import MandateNotFilledAlert from './mandateNotFilledAlert';
@@ -23,6 +23,18 @@ describe('Confirm mandate step', () => {
         }}
       />,
     );
+  });
+
+  it('redirects to previous path only when no address', () => {
+    component.setProps({
+      previousPath: '/a-path',
+      exchange: { sourceSelection: [], selectedFutureContributionsFundIsin: 'EE123' },
+    });
+    const redirects = () => component.contains(<Redirect to="/a-path" />);
+
+    expect(redirects()).toBe(true);
+    component.setProps({ isAddressFilled: true });
+    expect(redirects()).toBe(false);
   });
 
   it('renders a loader if it is loading the user or funds', () => {
@@ -313,7 +325,8 @@ describe('Confirm mandate step', () => {
       selectedFutureContributionsFundIsin: 'target 1',
       agreedToTerms: true,
     };
-    component.setProps({ onPreviewMandate, exchange });
+    const address = { street: 'Telliskivi 60' };
+    component.setProps({ onPreviewMandate, exchange, address });
     expect(onPreviewMandate).not.toHaveBeenCalled();
     component.find('button#preview').simulate('click');
     expect(onPreviewMandate).toHaveBeenCalledTimes(1);
@@ -323,6 +336,7 @@ describe('Confirm mandate step', () => {
         { amount: 1, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
       ],
       futureContributionFundIsin: 'target 1',
+      address,
     });
   });
 
@@ -359,7 +373,8 @@ describe('Confirm mandate step', () => {
       selectedFutureContributionsFundIsin: 'target 1',
       agreedToTerms: true,
     };
-    component.setProps({ onSignMandate, exchange });
+    const address = { street: 'Telliskivi 60' };
+    component.setProps({ onSignMandate, exchange, address });
     expect(onSignMandate).not.toHaveBeenCalled();
     component.find('button#sign').simulate('click');
     expect(onSignMandate).toHaveBeenCalledTimes(1);
@@ -369,6 +384,7 @@ describe('Confirm mandate step', () => {
         { amount: 1, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
       ],
       futureContributionFundIsin: 'target 1',
+      address,
     });
   });
 
@@ -392,7 +408,8 @@ describe('Confirm mandate step', () => {
       selectedFutureContributionsFundIsin: null,
       agreedToTerms: true,
     };
-    component.setProps({ onSignMandate, exchange });
+    const address = { street: 'Telliskivi 60' };
+    component.setProps({ onSignMandate, exchange, address });
     expect(onSignMandate).not.toHaveBeenCalled();
     component.find('button#sign').simulate('click');
     expect(onSignMandate).toHaveBeenCalledTimes(1);
@@ -402,6 +419,7 @@ describe('Confirm mandate step', () => {
         { amount: 1, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
       ],
       futureContributionFundIsin: null,
+      address,
     });
   });
 
