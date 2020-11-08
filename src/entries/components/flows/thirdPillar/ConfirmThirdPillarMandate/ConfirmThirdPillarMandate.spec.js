@@ -63,6 +63,7 @@ describe('ConfirmThirdPillarMandate', () => {
       isPoliticallyExposed: true,
       occupation: 'PRIVATE_SECTOR',
     };
+    const address = { street: 'Telliskivi 60' };
     component.setProps({
       exchangeExistingUnits: true,
       exchangeableSourceFunds: [
@@ -71,6 +72,7 @@ describe('ConfirmThirdPillarMandate', () => {
       ],
       selectedFutureContributionsFund: { isin: 'EE789', name: 'Third fund' },
       onPreview,
+      address,
       ...amlProps,
     });
 
@@ -83,6 +85,7 @@ describe('ConfirmThirdPillarMandate', () => {
           { amount: 1, sourceFundIsin: 'EE456', targetFundIsin: 'EE789' },
         ],
         futureContributionFundIsin: 'EE789',
+        address,
       },
       amlProps,
     );
@@ -95,6 +98,7 @@ describe('ConfirmThirdPillarMandate', () => {
       isPoliticallyExposed: true,
       occupation: 'PRIVATE_SECTOR',
     };
+    const address = { street: 'Telliskivi 60' };
     component.setProps({
       exchangeExistingUnits: true,
       exchangeableSourceFunds: [
@@ -103,6 +107,7 @@ describe('ConfirmThirdPillarMandate', () => {
       ],
       selectedFutureContributionsFund: { isin: 'EE789', name: 'Third fund' },
       onSign,
+      address,
       ...amlProps,
     });
 
@@ -115,6 +120,7 @@ describe('ConfirmThirdPillarMandate', () => {
           { amount: 1, sourceFundIsin: 'EE456', targetFundIsin: 'EE789' },
         ],
         futureContributionFundIsin: 'EE789',
+        address,
       },
       amlProps,
     );

@@ -106,6 +106,7 @@ export const ConfirmThirdPillarMandate = ({
                 exchangeExistingUnits,
                 exchangeableSourceFunds,
                 selectedFutureContributionsFund,
+                address,
               ),
               { isResident, isPoliticallyExposed, occupation },
             );
