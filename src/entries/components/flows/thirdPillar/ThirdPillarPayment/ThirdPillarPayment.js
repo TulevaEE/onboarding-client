@@ -51,7 +51,7 @@ export class ThirdPillarPayment extends Component {
               <Message>thirdPillarPayment.accountName</Message>:{' '}
             </td>
             <td>
-              <b>Pensionikeskus AS</b>
+              <b>AS Pensionikeskus</b>
             </td>
           </tr>
           <tr>
@@ -59,7 +59,11 @@ export class ThirdPillarPayment extends Component {
               <Message>thirdPillarPayment.accountNumber</Message>:{' '}
             </td>
             <td>
-              <b>EE362200221067235244</b>
+              <b>EE362200221067235244</b> - Swedbank
+              <br />
+              <b>EE141010220263146225</b> - SEB
+              <br />
+              <b>EE961700017004379157</b> - Luminor
             </td>
           </tr>
           <tr>
