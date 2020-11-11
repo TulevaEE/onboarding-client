@@ -55,7 +55,7 @@ export class ThirdPillarPayment extends Component {
             </td>
           </tr>
           <tr>
-            <td>
+            <td className="align-top">
               <Message>thirdPillarPayment.accountNumber</Message>:{' '}
             </td>
             <td>
