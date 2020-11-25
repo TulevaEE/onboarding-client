@@ -8,6 +8,7 @@ import { reducer as account } from './components/account';
 import { reducer as contactDetails } from './components/contact-details';
 import { reducer as thirdPillar } from './components/thirdPillar';
 import { reducer as tracking } from './components/tracking';
+import { reducer as aml } from './components/aml';
 
 export default history =>
   combineReducers({
@@ -19,4 +20,5 @@ export default history =>
     tracking,
     contactDetails,
     form,
+    aml,
   });

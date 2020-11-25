@@ -498,6 +498,18 @@ describe('api', () => {
     });
   });
 
+  it('can get missing aml checks with a token', () => {
+    const missingAmlChecks = [{ type: 'CONTACT_DETAILS', success: false }];
+    const token = 'token';
+    mockHttp.get = jest.fn(() => Promise.resolve(missingAmlChecks));
+    return api.getMissingAmlChecks(token).then(checks => {
+      expect(checks).toEqual(missingAmlChecks);
+      expect(mockHttp.get).toHaveBeenCalledWith('/v1/amlchecks', undefined, {
+        Authorization: `Bearer ${token}`,
+      });
+    });
+  });
+
   it('can post third pillar statistics', () => {
     const token = 'a token';
     const statistics = {

@@ -59,6 +59,7 @@ describe('Exchange actions', () => {
       if (typeof action === 'function') {
         action(dispatch, () => state);
       }
+      return Promise.resolve();
     });
   }
 
