@@ -18,7 +18,7 @@ import {
 import MandateNotFilledAlert from './mandateNotFilledAlert';
 import FundTransferTable from './fundTransferTable';
 import './ConfirmMandate.scss';
-import { hasAddress } from '../../../common/user/address';
+import { hasAddress as isAddressFilled } from '../../../common/user/address';
 
 function joinDuplicateSelections(selections) {
   return selections.reduce((currentRoutes, selection) => {
@@ -94,7 +94,7 @@ export const ConfirmMandate = ({
   exchange,
   selectedFutureContributionsFund,
   address,
-  isAddressFilled,
+  hasAddress,
   loading,
   previousPath,
   onPreviewMandate,
@@ -131,7 +131,7 @@ export const ConfirmMandate = ({
   const startSigningMandate = () => canSignMandate && onSignMandate(getMandate(exchange, address));
   return (
     <div className="px-col">
-      {!isAddressFilled && <Redirect to={previousPath} />}
+      {!hasAddress && <Redirect to={previousPath} />}
 
       {exchange.loadingMandate || exchange.mandateSigningControlCode ? (
         <AuthenticationLoader
@@ -231,7 +231,7 @@ ConfirmMandate.defaultProps = {
   loading: false,
   selectedFutureContributionsFund: {},
   address: {},
-  isAddressFilled: false,
+  hasAddress: false,
   onPreviewMandate: noop,
   onSignMandate: noop,
   onCancelSigningMandate: noop,
@@ -255,7 +255,7 @@ ConfirmMandate.propTypes = {
   }).isRequired,
   selectedFutureContributionsFund: Types.shape({ isin: Types.string, name: Types.string }),
   address: Types.shape({}),
-  isAddressFilled: Types.bool,
+  hasAddress: Types.bool,
   loading: Types.bool,
   onPreviewMandate: Types.func,
   onSignMandate: Types.func,
@@ -270,7 +270,7 @@ const mapStateToProps = state => ({
     fund => fund.isin === state.exchange.selectedFutureContributionsFundIsin,
   ),
   address: (state.login.user || {}).address,
-  isAddressFilled: !state.login.user || hasAddress(state.login.user),
+  hasAddress: !state.login.user || isAddressFilled(state.login.user),
   loading:
     state.login.loadingUser ||
     state.login.loadingUserConversion ||

@@ -3,7 +3,6 @@ import download from 'downloadjs';
 import hwcrypto from 'hwcrypto-js';
 
 import {
-  createAmlCheck,
   downloadMandatePreviewWithIdAndToken,
   downloadMandateWithIdAndToken,
   getIdCardSignatureHashForMandateIdWithCertificateHexAndToken,
@@ -43,6 +42,7 @@ import {
   SIGN_MANDATE_SUCCESS,
   SIGN_MANDATE_IN_PROGRESS,
 } from './constants';
+import { actions as amlActions } from '../aml';
 
 const POLL_DELAY = 1000;
 
@@ -169,7 +169,7 @@ function handleSaveMandateError(dispatch, error) {
 export function previewMandate(mandate, amlChecks) {
   return (dispatch, getState) => {
     const { token } = getState().login;
-    return createAmlChecks(amlChecks, getState)
+    return dispatch(amlActions.createAmlChecks(amlChecks))
       .then(() => saveMandateWithToken(mandate, token))
       .then(({ id }) => downloadMandatePreviewWithIdAndToken(id, token))
       .then(file => download(file, 'Tuleva_avaldus_eelvaade.zip', 'application/zip'))
@@ -312,35 +312,11 @@ export function signMandateWithIdCard(mandate) {
   };
 }
 
-function createAmlChecks(amlChecks, getState) {
-  let promise = Promise.resolve();
-  if (amlChecks !== undefined) {
-    promise = createAmlCheck('RESIDENCY_MANUAL', amlChecks.isResident, {}, getState().login.token)
-      .then(() => {
-        return createAmlCheck(
-          'POLITICALLY_EXPOSED_PERSON',
-          !amlChecks.isPoliticallyExposed,
-          {},
-          getState().login.token,
-        );
-      })
-      .then(() => {
-        return createAmlCheck(
-          'OCCUPATION',
-          !!amlChecks.occupation,
-          { occupation: amlChecks.occupation },
-          getState().login.token,
-        );
-      });
-  }
-  return promise;
-}
-
 export function signMandate(mandate, amlChecks) {
   return (dispatch, getState) => {
     const loggedInWithMobileId = getState().login.loginMethod === 'mobileId';
     const loggedInWithSmartId = getState().login.loginMethod === 'smartId';
-    return createAmlChecks(amlChecks, getState)
+    return dispatch(amlActions.createAmlChecks(amlChecks))
       .then(() => {
         if (loggedInWithMobileId) {
           return dispatch(signMandateWithMobileId(mandate));

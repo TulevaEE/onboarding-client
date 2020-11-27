@@ -2,10 +2,9 @@ import React, { PureComponent } from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Route, Redirect, Switch } from 'react-router-dom';
+import { Redirect, Route, Switch } from 'react-router-dom';
 
 import { actions as loginActions } from '../login';
-import { actions as routerActions } from '../router';
 import { actions as exchangeActions } from '../exchange';
 import Header from './header';
 import AccountPage from '../account';
@@ -13,6 +12,8 @@ import SecondPillarFlow from '../flows/secondPillar';
 import ThirdPillarFlow from '../flows/thirdPillar';
 import Footer from './footer';
 import ContactDetailsPage from '../contact-details';
+import { AmlPage } from '../aml/AmlPage';
+import { actions as amlActions } from '../aml';
 
 export class LoggedInApp extends PureComponent {
   async componentDidMount() {
@@ -22,19 +23,18 @@ export class LoggedInApp extends PureComponent {
   async getUserAndConversionData() {
     const {
       hasError,
-      shouldLoadUserAndConversionData,
+      shouldLoadAllUserData,
       onLogout,
       onGetUserConversion,
       onGetUser,
-      onSelectRouteForState,
+      onGetAmlChecks,
     } = this.props;
 
     if (hasError) {
       onLogout();
-    } else if (shouldLoadUserAndConversionData) {
-      await Promise.all([onGetUserConversion(), onGetUser()]);
+    } else if (shouldLoadAllUserData) {
+      await Promise.all([onGetUserConversion(), onGetUser(), onGetAmlChecks()]);
       await this.getSourceAndTargetFundsData();
-      await onSelectRouteForState();
     }
   }
 
@@ -57,6 +57,7 @@ export class LoggedInApp extends PureComponent {
             <Header user={user} loading={loading} onLogout={onLogout} />
             <Switch>
               {userDataExists && <Route path="/account" component={AccountPage} />}
+              <Route path="/aml" component={AmlPage} />
               <Route path="/contact-details" component={ContactDetailsPage} />
               <Route path="/2nd-pillar-flow" component={SecondPillarFlow} />
               <Route path="/3rd-pillar-flow" component={ThirdPillarFlow} />
@@ -77,15 +78,15 @@ LoggedInApp.defaultProps = {
   hasError: false,
   loading: false,
   userDataExists: false,
-  shouldLoadUserAndConversionData: false,
+  shouldLoadAllUserData: false,
   shouldLoadSourceAndTargetFunds: false,
 
   onLogout: noop,
   onGetUserConversion: noop,
   onGetUser: noop,
-  onSelectRouteForState: noop,
   onGetSourceFunds: noop,
   onGetTargetFunds: noop,
+  onGetAmlChecks: noop,
 };
 
 LoggedInApp.propTypes = {
@@ -93,15 +94,15 @@ LoggedInApp.propTypes = {
   hasError: Types.bool,
   loading: Types.bool,
   userDataExists: Types.bool,
-  shouldLoadUserAndConversionData: Types.bool,
+  shouldLoadAllUserData: Types.bool,
   shouldLoadSourceAndTargetFunds: Types.bool,
 
   onLogout: Types.func,
   onGetUserConversion: Types.func,
   onGetUser: Types.func,
-  onSelectRouteForState: Types.func,
   onGetSourceFunds: Types.func,
   onGetTargetFunds: Types.func,
+  onGetAmlChecks: Types.func,
 };
 
 const mapStateToProps = state => ({
@@ -111,10 +112,11 @@ const mapStateToProps = state => ({
   hasError: !!(state.login.userConversionError || state.login.userError),
   loading: state.login.loadingUser || state.login.loadingUserConversion,
   userDataExists: !!state.login.user,
-  shouldLoadUserAndConversionData:
+  shouldLoadAllUserData:
     state.login.token &&
     (!(state.login.user || state.login.loadingUser) ||
-      !(state.login.userConversion || state.login.loadingUserConversion)),
+      !(state.login.userConversion || state.login.loadingUserConversion) ||
+      !(state.aml.missingAmlChecks || state.aml.loading)),
   shouldLoadSourceAndTargetFunds:
     state.login.token &&
     !(
@@ -131,9 +133,9 @@ const mapDispatchToProps = dispatch =>
       onLogout: loginActions.logOut,
       onGetUserConversion: loginActions.getUserConversion,
       onGetUser: loginActions.getUser,
-      onSelectRouteForState: routerActions.selectRouteForState,
       onGetSourceFunds: exchangeActions.getSourceFunds,
       onGetTargetFunds: exchangeActions.getTargetFunds,
+      onGetAmlChecks: amlActions.getAmlChecks,
     },
     dispatch,
   );

@@ -253,8 +253,8 @@ export function getPendingExchangesWithToken(token: string): Promise<any> {
 
 export function createAmlCheck(
   type: string,
-  success: string,
-  metadata: string,
+  success: boolean,
+  metadata: object,
   token: string,
 ): Promise<any> {
   return post(
@@ -264,6 +264,12 @@ export function createAmlCheck(
       Authorization: `Bearer ${token}`,
     },
   );
+}
+
+export function getMissingAmlChecks(token: string): Promise<any> {
+  return get(getEndpoint('/v1/amlchecks'), undefined, {
+    Authorization: `Bearer ${token}`,
+  });
 }
 
 export function postThirdPillarStatistics(

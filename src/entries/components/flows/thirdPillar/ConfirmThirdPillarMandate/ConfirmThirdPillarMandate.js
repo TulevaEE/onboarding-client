@@ -11,8 +11,9 @@ import { actions as exchangeActions } from '../../../exchange';
 import FundTransferTable from '../../secondPillar/confirmMandate/fundTransferTable';
 import ResidencyAgreement from './ResidencyAgreement';
 import { AuthenticationLoader, ErrorMessage, Loader } from '../../../common';
-import { hasAddress } from '../../../common/user/address';
+import { hasAddress as isAddressFilled } from '../../../common/user/address';
 import OccupationAgreement from './OccupationAgreement';
+import { hasContactDetailsAmlCheck as isContactDetailsAmlCheckPassed } from '../../../aml';
 
 export const ConfirmThirdPillarMandate = ({
   previousPath,
@@ -26,8 +27,9 @@ export const ConfirmThirdPillarMandate = ({
   isPoliticallyExposed,
   occupation,
   loadingSourceFunds,
-  isAddressFilled,
   address,
+  hasAddress,
+  hasContactDetailsAmlCheck,
   isUserConverted,
   onSign,
   onPreview,
@@ -42,7 +44,7 @@ export const ConfirmThirdPillarMandate = ({
     <>
       {isUserConverted && <Redirect to={nextPath} />}
       {signedMandateId && <Redirect to={nextPath} />}
-      {!isAddressFilled && <Redirect to={previousPath} />}
+      {(!hasAddress || !hasContactDetailsAmlCheck) && <Redirect to={previousPath} />}
       {loadingMandate || mandateSigningControlCode ? (
         <AuthenticationLoader
           controlCode={mandateSigningControlCode}
@@ -186,8 +188,9 @@ ConfirmThirdPillarMandate.propTypes = {
   isPoliticallyExposed: Types.bool,
   occupation: Types.string,
   loadingSourceFunds: Types.bool,
-  isAddressFilled: Types.bool,
   address: Types.shape({}),
+  hasAddress: Types.bool,
+  hasContactDetailsAmlCheck: Types.bool,
   isUserConverted: Types.bool,
   onSign: Types.func,
   onPreview: Types.func,
@@ -211,7 +214,8 @@ ConfirmThirdPillarMandate.defaultProps = {
   isPoliticallyExposed: null,
   occupation: null,
   loadingSourceFunds: false,
-  isAddressFilled: false,
+  hasAddress: false,
+  hasContactDetailsAmlCheck: false,
   address: {},
   isUserConverted: false,
   onSign: () => {},
@@ -235,8 +239,9 @@ const mapStateToProps = state => ({
   exchangeableSourceFunds: state.thirdPillar.exchangeableSourceFunds,
   exchangeExistingUnits: state.thirdPillar.exchangeExistingUnits,
   loadingSourceFunds: state.thirdPillar.loadingSourceFunds,
-  isAddressFilled: !state.login.user || hasAddress(state.login.user),
   address: (state.login.user || {}).address,
+  hasAddress: !state.login.user || isAddressFilled(state.login.user),
+  hasContactDetailsAmlCheck: isContactDetailsAmlCheckPassed(state.aml.missingAmlChecks),
   isUserConverted:
     state.thirdPillar.exchangeableSourceFunds &&
     !state.thirdPillar.exchangeableSourceFunds.length &&

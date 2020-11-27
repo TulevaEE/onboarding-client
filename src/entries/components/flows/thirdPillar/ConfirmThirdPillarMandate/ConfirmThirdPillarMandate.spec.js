@@ -27,12 +27,12 @@ describe('ConfirmThirdPillarMandate', () => {
     expect(redirects()).toBe(true);
   });
 
-  it('redirects to previous path only when no address', () => {
+  it('redirects to previous path only when no address or no aml check', () => {
     component.setProps({ previousPath: '/a-path' });
     const redirects = () => component.contains(<Redirect to="/a-path" />);
 
     expect(redirects()).toBe(true);
-    component.setProps({ isAddressFilled: true });
+    component.setProps({ hasAddress: true, hasContactDetailsAmlCheck: true });
     expect(redirects()).toBe(false);
   });
 
