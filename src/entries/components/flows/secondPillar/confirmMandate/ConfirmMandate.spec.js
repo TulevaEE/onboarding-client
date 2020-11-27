@@ -33,7 +33,7 @@ describe('Confirm mandate step', () => {
     const redirects = () => component.contains(<Redirect to="/a-path" />);
 
     expect(redirects()).toBe(true);
-    component.setProps({ isAddressFilled: true });
+    component.setProps({ hasAddress: true });
     expect(redirects()).toBe(false);
   });
 

@@ -41,7 +41,6 @@ describe('AML actions', () => {
     const createAmlChecks = createBoundAction(actions.createAmlChecks);
     return createAmlChecks(amlChecks).then(() => {
       expect(mockApi.createAmlCheck).toHaveBeenCalledTimes(3);
-      expect(mockApi.getMissingAmlChecks).toHaveBeenCalledTimes(1);
     });
   });
 

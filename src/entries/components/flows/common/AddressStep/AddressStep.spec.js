@@ -8,16 +8,26 @@ import UpdateUserForm from '../../../contact-details/updateUserForm';
 describe('AddressStep', () => {
   let component;
   beforeEach(() => {
-    component = shallow(<AddressStep />);
+    component = shallow(<AddressStep nextPath="/next-path" pillar={2} />);
   });
 
-  it('redirects to next path only when address is already filled', () => {
-    component.setProps({ nextPath: '/next-path' });
-    const redirects = () => component.contains(<Redirect to="/next-path" />);
+  const redirects = () => component.contains(<Redirect to="/next-path" />);
 
-    component.setProps({ isAddressFilled: false });
+  it('redirects to next path only when address is already filled in 2nd pillar', () => {
+    component.setProps({ pillar: 2, hasAddress: false });
     expect(redirects()).toBe(false);
-    component.setProps({ isAddressFilled: true });
+    component.setProps({ pillar: 2, hasAddress: true });
+    expect(redirects()).toBe(true);
+  });
+
+  it('redirects to next path only when address is already filled and aml check passed in 3rd pillar', () => {
+    component.setProps({ pillar: 3, hasAddress: false, hasContactDetailsAmlCheck: false });
+    expect(redirects()).toBe(false);
+    component.setProps({ pillar: 3, hasAddress: false, hasContactDetailsAmlCheck: true });
+    expect(redirects()).toBe(false);
+    component.setProps({ pillar: 3, hasAddress: true, hasContactDetailsAmlCheck: false });
+    expect(redirects()).toBe(false);
+    component.setProps({ pillar: 3, hasAddress: true, hasContactDetailsAmlCheck: true });
     expect(redirects()).toBe(true);
   });
 

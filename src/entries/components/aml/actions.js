@@ -25,9 +25,6 @@ export function createAmlChecks(amlChecks) {
             { occupation: amlChecks.occupation },
             getState().login.token,
           );
-        })
-        .then(() => {
-          dispatch(getAmlChecks());
         });
     }
     return promise;

@@ -23,16 +23,17 @@ export class LoggedInApp extends PureComponent {
   async getUserAndConversionData() {
     const {
       hasError,
-      shouldLoadUserAndConversionData,
+      shouldLoadAllUserData,
       onLogout,
       onGetUserConversion,
       onGetUser,
+      onGetAmlChecks,
     } = this.props;
 
     if (hasError) {
       onLogout();
-    } else if (shouldLoadUserAndConversionData) {
-      await Promise.all([onGetUserConversion(), onGetUser()]);
+    } else if (shouldLoadAllUserData) {
+      await Promise.all([onGetUserConversion(), onGetUser(), onGetAmlChecks()]);
       await this.getSourceAndTargetFundsData();
     }
   }
@@ -77,7 +78,7 @@ LoggedInApp.defaultProps = {
   hasError: false,
   loading: false,
   userDataExists: false,
-  shouldLoadUserAndConversionData: false,
+  shouldLoadAllUserData: false,
   shouldLoadSourceAndTargetFunds: false,
 
   onLogout: noop,
@@ -85,6 +86,7 @@ LoggedInApp.defaultProps = {
   onGetUser: noop,
   onGetSourceFunds: noop,
   onGetTargetFunds: noop,
+  onGetAmlChecks: noop,
 };
 
 LoggedInApp.propTypes = {
@@ -92,7 +94,7 @@ LoggedInApp.propTypes = {
   hasError: Types.bool,
   loading: Types.bool,
   userDataExists: Types.bool,
-  shouldLoadUserAndConversionData: Types.bool,
+  shouldLoadAllUserData: Types.bool,
   shouldLoadSourceAndTargetFunds: Types.bool,
 
   onLogout: Types.func,
@@ -100,6 +102,7 @@ LoggedInApp.propTypes = {
   onGetUser: Types.func,
   onGetSourceFunds: Types.func,
   onGetTargetFunds: Types.func,
+  onGetAmlChecks: Types.func,
 };
 
 const mapStateToProps = state => ({
@@ -109,10 +112,11 @@ const mapStateToProps = state => ({
   hasError: !!(state.login.userConversionError || state.login.userError),
   loading: state.login.loadingUser || state.login.loadingUserConversion,
   userDataExists: !!state.login.user,
-  shouldLoadUserAndConversionData:
+  shouldLoadAllUserData:
     state.login.token &&
     (!(state.login.user || state.login.loadingUser) ||
-      !(state.login.userConversion || state.login.loadingUserConversion)),
+      !(state.login.userConversion || state.login.loadingUserConversion) ||
+      !(state.aml.missingAmlChecks || state.aml.loading)),
   shouldLoadSourceAndTargetFunds:
     state.login.token &&
     !(

@@ -29,7 +29,7 @@ const steps = [
   {
     path: 'address',
     Component: () => (
-      <AddressStep nextPath={`${flowPath}/confirm-mandate`} updateOnlyEmailAndPhone />
+      <AddressStep nextPath={`${flowPath}/confirm-mandate`} updateOnlyEmailAndPhone pillar={2} />
     ),
     title: <Message>steps.address</Message>,
   },
