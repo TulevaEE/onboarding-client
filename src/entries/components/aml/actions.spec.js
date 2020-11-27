@@ -1,4 +1,8 @@
-import { GET_MISSING_AML_CHECKS_START, GET_MISSING_AML_CHECKS_SUCCESS } from './constants';
+import {
+  GET_MISSING_AML_CHECKS_ERROR,
+  GET_MISSING_AML_CHECKS_START,
+  GET_MISSING_AML_CHECKS_SUCCESS,
+} from './constants';
 
 const mockApi = jest.genMockFromModule('../common/api');
 
@@ -52,14 +56,30 @@ describe('AML actions', () => {
       dispatch.mockClear();
       return Promise.resolve(missingAmlChecks);
     });
-    const getSourceFunds = createBoundAction(actions.getAmlChecks);
+    const getAmlChecks = createBoundAction(actions.getAmlChecks);
     expect(dispatch).not.toHaveBeenCalled();
-    return getSourceFunds().then(() => {
+    return getAmlChecks().then(() => {
       expect(dispatch).toHaveBeenCalledTimes(1);
       expect(dispatch).toHaveBeenCalledWith({
         type: GET_MISSING_AML_CHECKS_SUCCESS,
         missingAmlChecks,
       });
     });
+  });
+
+  it('can handle errors when getting missing aml checks', () => {
+    const error = {
+      body: { errors: [{ code: 'oopsie' }] },
+    };
+    mockApi.getMissingAmlChecks = jest.fn(() => Promise.reject(error));
+    const getAmlChecks = createBoundAction(actions.getAmlChecks);
+    expect(dispatch).not.toHaveBeenCalled();
+
+    return getAmlChecks().then(() =>
+      expect(dispatch).toHaveBeenCalledWith({
+        type: GET_MISSING_AML_CHECKS_ERROR,
+        error,
+      }),
+    );
   });
 });
