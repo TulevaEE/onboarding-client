@@ -4,6 +4,7 @@ import {
   GET_MISSING_AML_CHECKS_START,
   GET_MISSING_AML_CHECKS_SUCCESS,
 } from './constants';
+import { UPDATE_USER_SUCCESS } from '../common/user/constants';
 
 describe('AML reducer', () => {
   it('starts loading when getting aml checks', () => {
@@ -33,5 +34,15 @@ describe('AML reducer', () => {
     expect(newState.error).toBe(error);
     expect(newState.loading).toBe(false);
     expect(newState.missingAmlChecks).toBe(null);
+  });
+
+  it('removes missing contact details check after updating user', () => {
+    const user = {};
+    const missingAmlChecks = [{ type: 'CONTACT_DETAILS', success: false }];
+    const action = { type: UPDATE_USER_SUCCESS, user };
+
+    const newState = amlReducer({ ...initialState, missingAmlChecks }, action);
+
+    expect(newState.missingAmlChecks).toEqual([]);
   });
 });
