@@ -1,5 +1,8 @@
 import amlReducer, { initialState } from './reducer';
 import {
+  CHANGE_POLITICALLY_EXPOSED,
+  CHANGE_RESIDENCY,
+  CHANGE_OCCUPATION,
   GET_MISSING_AML_CHECKS_ERROR,
   GET_MISSING_AML_CHECKS_START,
   GET_MISSING_AML_CHECKS_SUCCESS,
@@ -7,6 +10,42 @@ import {
 import { UPDATE_USER_SUCCESS } from '../common/user/constants';
 
 describe('AML reducer', () => {
+  it('updates politically exposed', () => {
+    const state = amlReducer(undefined, {
+      type: CHANGE_POLITICALLY_EXPOSED,
+      isPoliticallyExposed: true,
+    });
+
+    expect(state).toEqual({
+      ...initialState,
+      isPoliticallyExposed: true,
+    });
+  });
+
+  it('updates residency', () => {
+    const state = amlReducer(undefined, {
+      type: CHANGE_RESIDENCY,
+      isResident: true,
+    });
+
+    expect(state).toEqual({
+      ...initialState,
+      isResident: true,
+    });
+  });
+
+  it('updates occupation', () => {
+    const state = amlReducer(undefined, {
+      type: CHANGE_OCCUPATION,
+      occupation: 'PUBLIC_SECTOR',
+    });
+
+    expect(state).toEqual({
+      ...initialState,
+      occupation: 'PUBLIC_SECTOR',
+    });
+  });
+
   it('starts loading when getting aml checks', () => {
     const newState = amlReducer(initialState, {
       type: GET_MISSING_AML_CHECKS_START,

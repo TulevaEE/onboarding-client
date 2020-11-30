@@ -11,7 +11,7 @@ describe('PoliticallyExposedPersonAgreement', () => {
   });
 
   it('has default radio checked only when initial state is true', () => {
-    const checked = () => component.find('#third-pillar-not-pep-checkbox').prop('checked');
+    const checked = () => component.find('#aml-not-pep-checkbox').prop('checked');
 
     expect(checked()).toBe(false);
     component.setProps({ isPoliticallyExposed: false });
@@ -32,7 +32,7 @@ describe('PoliticallyExposedPersonAgreement', () => {
   });
 
   it('has pep tooltip', () => {
-    const hasTooltip = () => component.contains(<Message>thirdPillarAgreement.pepTooltip</Message>);
+    const hasTooltip = () => component.contains(<Message>aml.pepTooltip</Message>);
     expect(hasTooltip()).toBe(true);
   });
 });

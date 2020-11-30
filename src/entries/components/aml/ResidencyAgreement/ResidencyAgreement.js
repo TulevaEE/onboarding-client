@@ -4,8 +4,8 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Message } from 'retranslate';
 
-import { actions as thirdPillarActions } from '../../../../thirdPillar';
-import { InfoTooltip } from '../../../../common';
+import { changeIsResident } from '../actions';
+import { InfoTooltip } from '../../common';
 
 export const ResidencyAgreement = ({ isResident, onResidentChange, className }) => {
   return (
@@ -17,14 +17,14 @@ export const ResidencyAgreement = ({ isResident, onResidentChange, className }) 
           type="checkbox"
           name="resident"
           className="custom-control-input"
-          id="third-pillar-resident-checkbox"
+          id="aml-resident-checkbox"
         />
 
-        <label className="custom-control-label" htmlFor="third-pillar-resident-checkbox">
-          <Message>thirdPillarAgreement.isResident</Message>
+        <label className="custom-control-label" htmlFor="aml-resident-checkbox">
+          <Message>aml.isResident</Message>
           <InfoTooltip name="resident-tooltip">
             <div className="content">
-              <Message>thirdPillarAgreement.residentTooltip</Message>
+              <Message>aml.residentTooltip</Message>
             </div>
           </InfoTooltip>
         </label>
@@ -44,13 +44,13 @@ ResidencyAgreement.defaultProps = {
 };
 
 const mapStateToProps = state => ({
-  isResident: state.thirdPillar.isResident,
+  isResident: state.aml.isResident,
 });
 
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
-      onResidentChange: thirdPillarActions.changeIsResident,
+      onResidentChange: changeIsResident,
     },
     dispatch,
   );

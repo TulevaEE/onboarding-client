@@ -4,8 +4,8 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Message } from 'retranslate';
 
-import { actions as thirdPillarActions } from '../../../../thirdPillar';
-import { InfoTooltip } from '../../../../common';
+import { changeIsPoliticallyExposed } from '../actions';
+import { InfoTooltip } from '../../common';
 
 export const PoliticallyExposedPersonAgreement = ({
   isPoliticallyExposed,
@@ -21,14 +21,14 @@ export const PoliticallyExposedPersonAgreement = ({
           type="checkbox"
           name="pep"
           className="custom-control-input"
-          id="third-pillar-not-pep-checkbox"
+          id="aml-not-pep-checkbox"
         />
 
-        <label className="custom-control-label" htmlFor="third-pillar-not-pep-checkbox">
-          <Message>thirdPillarAgreement.isNotPep</Message>
+        <label className="custom-control-label" htmlFor="aml-not-pep-checkbox">
+          <Message>aml.isNotPep</Message>
           <InfoTooltip name="pep-tooltip">
             <div className="content">
-              <Message>thirdPillarAgreement.pepTooltip</Message>
+              <Message>aml.pepTooltip</Message>
             </div>
           </InfoTooltip>
         </label>
@@ -48,13 +48,13 @@ PoliticallyExposedPersonAgreement.defaultProps = {
 };
 
 const mapStateToProps = state => ({
-  isPoliticallyExposed: state.thirdPillar.isPoliticallyExposed,
+  isPoliticallyExposed: state.aml.isPoliticallyExposed,
 });
 
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
-      onPoliticallyExposedChange: thirdPillarActions.changeIsPoliticallyExposed,
+      onPoliticallyExposedChange: changeIsPoliticallyExposed,
     },
     dispatch,
   );

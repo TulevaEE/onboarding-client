@@ -24,4 +24,10 @@ describe('UpdateUserForm', () => {
     component.setProps({ updateUserSuccess });
     expect(component.contains(<Message>update.user.success.message</Message>)).toBe(true);
   });
+
+  it('renders children given to it', () => {
+    const children = <div>child</div>;
+    component.setProps({ children });
+    expect(component.contains(children)).toBe(true);
+  });
 });

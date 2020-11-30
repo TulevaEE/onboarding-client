@@ -1,4 +1,7 @@
 import {
+  CHANGE_POLITICALLY_EXPOSED,
+  CHANGE_RESIDENCY,
+  CHANGE_OCCUPATION,
   GET_MISSING_AML_CHECKS_START,
   GET_MISSING_AML_CHECKS_SUCCESS,
   GET_MISSING_AML_CHECKS_ERROR,
@@ -13,6 +16,21 @@ export const initialState = {
 
 export default function amlReducer(state = initialState, action) {
   switch (action.type) {
+    case CHANGE_POLITICALLY_EXPOSED:
+      return {
+        ...state,
+        isPoliticallyExposed: action.isPoliticallyExposed,
+      };
+    case CHANGE_RESIDENCY:
+      return {
+        ...state,
+        isResident: action.isResident,
+      };
+    case CHANGE_OCCUPATION:
+      return {
+        ...state,
+        occupation: action.occupation,
+      };
     case GET_MISSING_AML_CHECKS_START:
       return { ...state, loading: true, error: null };
     case GET_MISSING_AML_CHECKS_SUCCESS:

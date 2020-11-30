@@ -1,8 +1,12 @@
 import {
+  CHANGE_OCCUPATION,
+  CHANGE_POLITICALLY_EXPOSED,
+  CHANGE_RESIDENCY,
   GET_MISSING_AML_CHECKS_ERROR,
   GET_MISSING_AML_CHECKS_START,
   GET_MISSING_AML_CHECKS_SUCCESS,
 } from './constants';
+import { mockStore } from '../../../test/utils';
 
 const mockApi = jest.genMockFromModule('../common/api');
 
@@ -32,6 +36,39 @@ describe('AML actions', () => {
 
   beforeEach(() => {
     mockDispatch();
+  });
+
+  it('dispatches politically exposed change action', async () => {
+    const store = mockStore();
+
+    await store.dispatch(actions.changeIsPoliticallyExposed(true));
+
+    expect(store.getActions()).toContainEqual({
+      type: CHANGE_POLITICALLY_EXPOSED,
+      isPoliticallyExposed: true,
+    });
+  });
+
+  it('dispatches residency change action', async () => {
+    const store = mockStore();
+
+    await store.dispatch(actions.changeIsResident(true));
+
+    expect(store.getActions()).toContainEqual({
+      type: CHANGE_RESIDENCY,
+      isResident: true,
+    });
+  });
+
+  it('dispatches occupation change action', async () => {
+    const store = mockStore();
+
+    await store.dispatch(actions.changeOccupation('PUBLIC_SECTOR'));
+
+    expect(store.getActions()).toContainEqual({
+      type: CHANGE_OCCUPATION,
+      occupation: 'PUBLIC_SECTOR',
+    });
   });
 
   it('creates aml checks if needed', () => {

@@ -13,6 +13,6 @@ describe('AML Page', () => {
   it('shows update user form', () => {
     const saveUser = () => null;
     component.setProps({ saveUser });
-    expect(component.contains(<UpdateUserForm onSubmit={saveUser} />)).toBe(true);
+    expect(component.find(UpdateUserForm).length).toBe(1);
   });
 });

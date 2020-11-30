@@ -5,6 +5,9 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import UpdateUserForm from '../contact-details/updateUserForm';
 import { updateUser } from '../common/user/actions';
+import PoliticallyExposedPersonAgreement from './PoliticallyExposedPersonAgreement';
+import ResidencyAgreement from './ResidencyAgreement';
+import OccupationAgreement from './OccupationAgreement';
 
 const noop = () => null;
 
@@ -19,7 +22,12 @@ export class AmlPage extends Component {
         <p className="mb-4 lead">
           <Message>update.user.details.title</Message>
         </p>
-        <UpdateUserForm onSubmit={saveUser} />
+        <UpdateUserForm onSubmit={saveUser}>
+          <p className="mt-4 mb-3 lead">Lisaandmed</p>
+          <OccupationAgreement className="mt-3" />
+          <PoliticallyExposedPersonAgreement className="mt-3" />
+          <ResidencyAgreement className="mt-3 mb-4" />
+        </UpdateUserForm>
       </div>
     );
   }

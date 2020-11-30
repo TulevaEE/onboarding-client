@@ -1,9 +1,24 @@
 import { createAmlCheck, getMissingAmlChecks } from '../common/api';
 import {
+  CHANGE_OCCUPATION,
+  CHANGE_POLITICALLY_EXPOSED,
+  CHANGE_RESIDENCY,
   GET_MISSING_AML_CHECKS_ERROR,
   GET_MISSING_AML_CHECKS_START,
   GET_MISSING_AML_CHECKS_SUCCESS,
 } from './constants';
+
+export function changeIsPoliticallyExposed(isPoliticallyExposed) {
+  return { type: CHANGE_POLITICALLY_EXPOSED, isPoliticallyExposed };
+}
+
+export function changeIsResident(isResident) {
+  return { type: CHANGE_RESIDENCY, isResident };
+}
+
+export function changeOccupation(occupation) {
+  return { type: CHANGE_OCCUPATION, occupation };
+}
 
 export function createAmlChecks(amlChecks) {
   return (dispatch, getState) => {
