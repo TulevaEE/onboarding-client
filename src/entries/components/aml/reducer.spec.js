@@ -11,7 +11,7 @@ import { UPDATE_USER_SUCCESS } from '../common/user/constants';
 
 describe('AML reducer', () => {
   it('updates politically exposed', () => {
-    const state = amlReducer(undefined, {
+    const state = amlReducer(initialState, {
       type: CHANGE_POLITICALLY_EXPOSED,
       isPoliticallyExposed: true,
     });
@@ -23,7 +23,7 @@ describe('AML reducer', () => {
   });
 
   it('updates residency', () => {
-    const state = amlReducer(undefined, {
+    const state = amlReducer(initialState, {
       type: CHANGE_RESIDENCY,
       isResident: true,
     });
@@ -35,7 +35,7 @@ describe('AML reducer', () => {
   });
 
   it('updates occupation', () => {
-    const state = amlReducer(undefined, {
+    const state = amlReducer(initialState, {
       type: CHANGE_OCCUPATION,
       occupation: 'PUBLIC_SECTOR',
     });

@@ -9,6 +9,9 @@ import {
 import { UPDATE_USER_SUCCESS } from '../common/user/constants';
 
 export const initialState = {
+  isPoliticallyExposed: null,
+  isResident: null,
+  occupation: null,
   loading: false,
   error: null,
   missingAmlChecks: null,
