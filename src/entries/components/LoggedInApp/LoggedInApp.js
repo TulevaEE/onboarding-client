@@ -12,8 +12,7 @@ import SecondPillarFlow from '../flows/secondPillar';
 import ThirdPillarFlow from '../flows/thirdPillar';
 import Footer from './footer';
 import ContactDetailsPage from '../contact-details';
-import { AmlPage } from '../aml/AmlPage';
-import { actions as amlActions } from '../aml';
+import AmlPage, { actions as amlActions } from '../aml';
 
 export class LoggedInApp extends PureComponent {
   async componentDidMount() {

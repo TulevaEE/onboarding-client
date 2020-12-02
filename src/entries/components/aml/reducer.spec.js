@@ -6,6 +6,9 @@ import {
   GET_MISSING_AML_CHECKS_ERROR,
   GET_MISSING_AML_CHECKS_START,
   GET_MISSING_AML_CHECKS_SUCCESS,
+  CREATE_AML_CHECKS_START,
+  CREATE_AML_CHECKS_SUCCESS,
+  CREATE_AML_CHECKS_ERROR,
 } from './constants';
 import { UPDATE_USER_SUCCESS } from '../common/user/constants';
 
@@ -73,6 +76,35 @@ describe('AML reducer', () => {
     expect(newState.error).toBe(error);
     expect(newState.loading).toBe(false);
     expect(newState.missingAmlChecks).toBe(null);
+  });
+
+  it('starts loading when creating aml checks', () => {
+    const newState = amlReducer(initialState, { type: CREATE_AML_CHECKS_START });
+
+    expect(newState.loading).toBe(true);
+    expect(newState.error).toBe(null);
+    expect(newState.createAmlChecksSuccess).toBe(null);
+  });
+
+  it('stops loading and saves success flag when successfully created aml cehcks', () => {
+    const action = { type: CREATE_AML_CHECKS_SUCCESS };
+
+    const newState = amlReducer({ ...initialState, loading: true }, action);
+
+    expect(newState.loading).toBe(false);
+    expect(newState.error).toBe(null);
+    expect(newState.createAmlChecksSuccess).toEqual(true);
+  });
+
+  it('stops loading and saves the error when getting missing aml checks fails', () => {
+    const error = { body: { errors: [{ code: 'oh no' }] } };
+    const action = { type: CREATE_AML_CHECKS_ERROR, error };
+
+    const newState = amlReducer({ ...initialState, loading: true }, action);
+
+    expect(newState.error).toBe(error);
+    expect(newState.loading).toBe(false);
+    expect(newState.createAmlChecksSuccess).toBe(false);
   });
 
   it('removes missing contact details check after updating user', () => {

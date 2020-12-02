@@ -3,10 +3,14 @@ import {
   CHANGE_OCCUPATION,
   CHANGE_POLITICALLY_EXPOSED,
   CHANGE_RESIDENCY,
-  GET_MISSING_AML_CHECKS_ERROR,
+  CREATE_AML_CHECKS_START,
+  CREATE_AML_CHECKS_SUCCESS,
+  CREATE_AML_CHECKS_ERROR,
   GET_MISSING_AML_CHECKS_START,
   GET_MISSING_AML_CHECKS_SUCCESS,
+  GET_MISSING_AML_CHECKS_ERROR,
 } from './constants';
+import * as userActions from '../common/user/actions';
 
 export function changeIsPoliticallyExposed(isPoliticallyExposed) {
   return { type: CHANGE_POLITICALLY_EXPOSED, isPoliticallyExposed };
@@ -24,6 +28,7 @@ export function createAmlChecks(amlChecks) {
   return (dispatch, getState) => {
     let promise = Promise.resolve();
     if (amlChecks !== undefined) {
+      dispatch({ type: CREATE_AML_CHECKS_START });
       promise = createAmlCheck('RESIDENCY_MANUAL', amlChecks.isResident, {}, getState().login.token)
         .then(() => {
           return createAmlCheck(
@@ -40,7 +45,11 @@ export function createAmlChecks(amlChecks) {
             { occupation: amlChecks.occupation },
             getState().login.token,
           );
-        });
+        })
+        .then(() => {
+          dispatch({ type: CREATE_AML_CHECKS_SUCCESS });
+        })
+        .catch(error => dispatch({ type: CREATE_AML_CHECKS_ERROR }));
     }
     return promise;
   };
@@ -54,5 +63,13 @@ export function getAmlChecks() {
         dispatch({ type: GET_MISSING_AML_CHECKS_SUCCESS, missingAmlChecks });
       })
       .catch(error => dispatch({ type: GET_MISSING_AML_CHECKS_ERROR, error }));
+  };
+}
+
+export function updateUserAndAml(user) {
+  return (dispatch, getState) => {
+    return dispatch(userActions.updateUser(user)).then(() => {
+      return dispatch(createAmlChecks(getState().aml));
+    });
   };
 }

@@ -77,8 +77,7 @@ describe('AML actions', () => {
       isResident: true,
       occupation: 'PRIVATE_SECTOR',
     };
-    mockApi.createAmlCheck = jest.fn(() => Promise.resolve());
-    mockApi.getMissingAmlChecks = jest.fn(() => Promise.resolve());
+    mockApi.createAmlCheck = jest.fn().mockImplementation(() => Promise.resolve());
     const createAmlChecks = createBoundAction(actions.createAmlChecks);
     return createAmlChecks(amlChecks).then(() => {
       expect(mockApi.createAmlCheck).toHaveBeenCalledTimes(3);
@@ -118,5 +117,21 @@ describe('AML actions', () => {
         error,
       }),
     );
+  });
+
+  it('updates user together with aml checks', () => {
+    state.aml = {
+      isPoliticallyExposed: false,
+      isResident: true,
+      occupation: 'PRIVATE_SECTOR',
+    };
+    const user = { amUser: true };
+    mockApi.updateUserWithToken = jest.fn(() => Promise.resolve());
+    mockApi.createAmlCheck = jest.fn(() => Promise.resolve());
+    const updateUserAndAml = createBoundAction(actions.updateUserAndAml);
+    return updateUserAndAml(user).then(() => {
+      expect(mockApi.updateUserWithToken).toHaveBeenCalled();
+      expect(mockApi.createAmlCheck).toHaveBeenCalled();
+    });
   });
 });
