@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Message } from 'retranslate';
 import { PropTypes as Types } from 'prop-types';
 import { bindActionCreators } from 'redux';
@@ -8,22 +8,16 @@ import { updateUser } from '../common/user/actions';
 
 const noop = () => null;
 
-export class ContactDetailsPage extends Component {
-  componentDidMount() {}
-
-  render() {
-    const { saveUser } = this.props;
-
-    return (
-      <div className="mt-5">
-        <p className="mb-4 lead">
-          <Message>update.user.details.title</Message>
-        </p>
-        <UpdateUserForm onSubmit={saveUser} />
-      </div>
-    );
-  }
-}
+export const ContactDetailsPage = ({ saveUser }) => {
+  return (
+    <div className="mt-5">
+      <p className="mb-4 lead">
+        <Message>update.user.details.title</Message>
+      </p>
+      <UpdateUserForm onSubmit={saveUser} />
+    </div>
+  );
+};
 
 ContactDetailsPage.propTypes = {
   saveUser: Types.func,

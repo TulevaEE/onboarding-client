@@ -13,6 +13,7 @@ export const UpdateUserForm = ({
   submitting,
   error,
   isCountryEstonia,
+  children,
   translations: { translate },
 }) => (
   <div>
@@ -420,6 +421,7 @@ export const UpdateUserForm = ({
               </Field>
             </div>
           )}
+          {children}
           <div className={`form-group ${error ? 'has-danger' : ''}`}>
             {error && <div className="form-control-feedback mb-3">{error}</div>}
             <button

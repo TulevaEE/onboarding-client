@@ -2,9 +2,6 @@ import {
   CHANGE_AGREEMENT_TO_TERMS,
   CHANGE_EXCHANGE_EXISTING_UNITS,
   CHANGE_MONTHLY_CONTRIBUTION,
-  CHANGE_OCCUPATION,
-  CHANGE_POLITICALLY_EXPOSED,
-  CHANGE_RESIDENCY,
   QUERY_PARAMETERS,
   SELECT_THIRD_PILLAR_SOURCES,
   THIRD_PILLAR_STATISTICS,
@@ -81,21 +78,6 @@ export default function thirdPillarReducer(state = initialState, action) {
       return {
         ...state,
         agreedToTerms: action.agreedToTerms,
-      };
-    case CHANGE_POLITICALLY_EXPOSED:
-      return {
-        ...state,
-        isPoliticallyExposed: action.isPoliticallyExposed,
-      };
-    case CHANGE_RESIDENCY:
-      return {
-        ...state,
-        isResident: action.isResident,
-      };
-    case CHANGE_OCCUPATION:
-      return {
-        ...state,
-        occupation: action.occupation,
       };
     case SIGN_MANDATE_SUCCESS:
       return {

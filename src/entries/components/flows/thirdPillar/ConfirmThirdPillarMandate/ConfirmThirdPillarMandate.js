@@ -5,14 +5,15 @@ import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import { Message } from 'retranslate';
 
+import { reduxForm } from 'redux-form';
 import ThirdPillarTermsAgreement from './ThirdPillarTermsAgreement';
-import PoliticallyExposedPersonAgreement from './PoliticallyExposedPersonAgreement';
+import PoliticallyExposedPersonAgreement from '../../../aml/PoliticallyExposedPersonAgreement';
 import { actions as exchangeActions } from '../../../exchange';
 import FundTransferTable from '../../secondPillar/confirmMandate/fundTransferTable';
-import ResidencyAgreement from './ResidencyAgreement';
+import ResidencyAgreement from '../../../aml/ResidencyAgreement';
 import { AuthenticationLoader, ErrorMessage, Loader } from '../../../common';
 import { hasAddress as isAddressFilled } from '../../../common/user/address';
-import OccupationAgreement from './OccupationAgreement';
+import OccupationAgreement from '../../../aml/OccupationAgreement';
 import { hasContactDetailsAmlCheck as isContactDetailsAmlCheckPassed } from '../../../aml';
 
 export const ConfirmThirdPillarMandate = ({
@@ -89,7 +90,7 @@ export const ConfirmThirdPillarMandate = ({
 
       <PoliticallyExposedPersonAgreement className="mt-3" />
       <ResidencyAgreement className="mt-3" />
-      <OccupationAgreement className="mt-3" />
+      <OccupationAgreement className="col-md-5 mt-3 px-0" />
 
       {mandateSigningError ? (
         <ErrorMessage errors={mandateSigningError.body} onCancel={onCloseErrorMessages} overlayed />
@@ -233,9 +234,9 @@ const mapStateToProps = state => ({
     fund => fund.isin === state.thirdPillar.selectedFutureContributionsFundIsin,
   ),
   agreedToTerms: state.thirdPillar.agreedToTerms,
-  isResident: state.thirdPillar.isResident,
-  isPoliticallyExposed: state.thirdPillar.isPoliticallyExposed,
-  occupation: state.thirdPillar.occupation,
+  isResident: state.aml.isResident,
+  isPoliticallyExposed: state.aml.isPoliticallyExposed,
+  occupation: state.aml.occupation,
   exchangeableSourceFunds: state.thirdPillar.exchangeableSourceFunds,
   exchangeExistingUnits: state.thirdPillar.exchangeExistingUnits,
   loadingSourceFunds: state.thirdPillar.loadingSourceFunds,
@@ -260,7 +261,9 @@ const mapDispatchToProps = dispatch =>
     dispatch,
   );
 
+const wrapped = reduxForm({ form: 'confirmThirdPillarMandate' })(ConfirmThirdPillarMandate);
+
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(ConfirmThirdPillarMandate);
+)(wrapped);

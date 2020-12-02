@@ -10,8 +10,6 @@ export default {
   selectedFutureContributionsFundIsin: TULEVA_3RD_PILLAR_FUND_ISIN,
   exchangeExistingUnits: true,
   agreedToTerms: false,
-  isResident: null,
-  isPoliticallyExposed: null,
   signedMandateId: null,
   statistics: {},
   error: null,

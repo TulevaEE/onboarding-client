@@ -3,8 +3,6 @@ import {
   CHANGE_AGREEMENT_TO_TERMS,
   CHANGE_EXCHANGE_EXISTING_UNITS,
   CHANGE_MONTHLY_CONTRIBUTION,
-  CHANGE_POLITICALLY_EXPOSED,
-  CHANGE_RESIDENCY,
   QUERY_PARAMETERS,
   SELECT_THIRD_PILLAR_SOURCES,
   THIRD_PILLAR_STATISTICS,
@@ -86,28 +84,6 @@ describe('Third pillar actions', () => {
     expect(store.getActions()).toContainEqual({
       type: CHANGE_AGREEMENT_TO_TERMS,
       agreedToTerms: true,
-    });
-  });
-
-  it('dispatches politically exposed change action', async () => {
-    const store = mockStore();
-
-    await store.dispatch(actions.changeIsPoliticallyExposed(true));
-
-    expect(store.getActions()).toContainEqual({
-      type: CHANGE_POLITICALLY_EXPOSED,
-      isPoliticallyExposed: true,
-    });
-  });
-
-  it('dispatches residency change action', async () => {
-    const store = mockStore();
-
-    await store.dispatch(actions.changeIsResident(true));
-
-    expect(store.getActions()).toContainEqual({
-      type: CHANGE_RESIDENCY,
-      isResident: true,
     });
   });
 

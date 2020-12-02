@@ -1,48 +1,67 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Message } from 'retranslate';
 import { PropTypes as Types } from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
 import UpdateUserForm from '../contact-details/updateUserForm';
-import { updateUser } from '../common/user/actions';
+import PoliticallyExposedPersonAgreement from './PoliticallyExposedPersonAgreement';
+import ResidencyAgreement from './ResidencyAgreement';
+import OccupationAgreement from './OccupationAgreement';
+import { updateUserAndAml } from './actions';
 
 const noop = () => null;
 
-export class AmlPage extends Component {
-  componentDidMount() {}
-
-  render() {
-    const { saveUser } = this.props;
-
-    return (
-      <div className="mt-5">
-        <p className="mb-4 lead">
-          <Message>update.user.details.title</Message>
+export const AmlPage = ({ save, updateUserSuccess, createAmlChecksSuccess, location }) => {
+  return (
+    <div className="mt-5">
+      {updateUserSuccess && createAmlChecksSuccess && (
+        <Redirect to={location.state && location.state.from ? location.state.from : ''} />
+      )}
+      <p className="mb-4 lead">
+        <Message>update.user.details.title</Message>
+      </p>
+      <UpdateUserForm onSubmit={save}>
+        <p className="mt-4 mb-3 lead">
+          <Message>aml.extraDetails</Message>
         </p>
-        <UpdateUserForm onSubmit={saveUser} />
-      </div>
-    );
-  }
-}
+        <OccupationAgreement className="mt-3" />
+        <PoliticallyExposedPersonAgreement className="mt-3" />
+        <ResidencyAgreement className="mt-3 mb-4" />
+      </UpdateUserForm>
+    </div>
+  );
+};
 
 AmlPage.propTypes = {
-  saveUser: Types.func,
+  updateUserSuccess: Types.bool,
+  createAmlChecksSuccess: Types.bool,
+  save: Types.func,
+  location: Types.shape({ state: { from: Types.string } }),
 };
 
 AmlPage.defaultProps = {
-  saveUser: noop,
+  updateUserSuccess: false,
+  createAmlChecksSuccess: false,
+  location: { state: { from: '' } },
+  save: noop,
 };
+
+const mapStateToProps = state => ({
+  updateUserSuccess: state.contactDetails.updateUserSuccess,
+  createAmlChecksSuccess: state.aml.createAmlChecksSuccess,
+});
 
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
-      saveUser: updateUser,
+      save: updateUserAndAml,
     },
     dispatch,
   );
 
 const withRedux = connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps,
 );
 

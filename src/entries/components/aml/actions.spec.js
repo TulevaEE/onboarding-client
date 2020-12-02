@@ -1,8 +1,12 @@
 import {
+  CHANGE_OCCUPATION,
+  CHANGE_POLITICALLY_EXPOSED,
+  CHANGE_RESIDENCY,
   GET_MISSING_AML_CHECKS_ERROR,
   GET_MISSING_AML_CHECKS_START,
   GET_MISSING_AML_CHECKS_SUCCESS,
 } from './constants';
+import { mockStore } from '../../../test/utils';
 
 const mockApi = jest.genMockFromModule('../common/api');
 
@@ -34,6 +38,39 @@ describe('AML actions', () => {
     mockDispatch();
   });
 
+  it('dispatches politically exposed change action', async () => {
+    const store = mockStore();
+
+    await store.dispatch(actions.changeIsPoliticallyExposed(true));
+
+    expect(store.getActions()).toContainEqual({
+      type: CHANGE_POLITICALLY_EXPOSED,
+      isPoliticallyExposed: true,
+    });
+  });
+
+  it('dispatches residency change action', async () => {
+    const store = mockStore();
+
+    await store.dispatch(actions.changeIsResident(true));
+
+    expect(store.getActions()).toContainEqual({
+      type: CHANGE_RESIDENCY,
+      isResident: true,
+    });
+  });
+
+  it('dispatches occupation change action', async () => {
+    const store = mockStore();
+
+    await store.dispatch(actions.changeOccupation('PUBLIC_SECTOR'));
+
+    expect(store.getActions()).toContainEqual({
+      type: CHANGE_OCCUPATION,
+      occupation: 'PUBLIC_SECTOR',
+    });
+  });
+
   it('creates aml checks if needed', () => {
     const amlChecks = {
       isPoliticallyExposed: true,
@@ -41,7 +78,6 @@ describe('AML actions', () => {
       occupation: 'PRIVATE_SECTOR',
     };
     mockApi.createAmlCheck = jest.fn(() => Promise.resolve());
-    mockApi.getMissingAmlChecks = jest.fn(() => Promise.resolve());
     const createAmlChecks = createBoundAction(actions.createAmlChecks);
     return createAmlChecks(amlChecks).then(() => {
       expect(mockApi.createAmlCheck).toHaveBeenCalledTimes(3);
@@ -81,5 +117,21 @@ describe('AML actions', () => {
         error,
       }),
     );
+  });
+
+  it('updates user together with aml checks', () => {
+    state.aml = {
+      isPoliticallyExposed: false,
+      isResident: true,
+      occupation: 'PRIVATE_SECTOR',
+    };
+    const user = { amUser: true };
+    mockApi.updateUserWithToken = jest.fn(() => Promise.resolve());
+    mockApi.createAmlCheck = jest.fn(() => Promise.resolve());
+    const updateUserAndAml = createBoundAction(actions.updateUserAndAml);
+    return updateUserAndAml(user).then(() => {
+      expect(mockApi.updateUserWithToken).toHaveBeenCalled();
+      expect(mockApi.createAmlCheck).toHaveBeenCalled();
+    });
   });
 });

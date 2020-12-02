@@ -3,9 +3,11 @@ import Types from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Message } from 'retranslate';
+import { Field } from 'redux-form';
 
-import { actions as thirdPillarActions } from '../../../../thirdPillar';
-import { InfoTooltip } from '../../../../common';
+import { changeIsPoliticallyExposed } from '../actions';
+import { InfoTooltip } from '../../common';
+import { requiredField } from '../../common/form';
 
 export const PoliticallyExposedPersonAgreement = ({
   isPoliticallyExposed,
@@ -15,20 +17,21 @@ export const PoliticallyExposedPersonAgreement = ({
   return (
     <div className={className}>
       <div className="custom-control custom-checkbox">
-        <input
+        <Field
           checked={isPoliticallyExposed === false}
           onChange={e => onPoliticallyExposedChange(!e.target.checked)}
+          component="input"
           type="checkbox"
-          name="pep"
+          name="aml.isNotPoliticallyExposed"
+          id="aml-not-pep-checkbox"
           className="custom-control-input"
-          id="third-pillar-not-pep-checkbox"
+          validate={[requiredField]}
         />
-
-        <label className="custom-control-label" htmlFor="third-pillar-not-pep-checkbox">
-          <Message>thirdPillarAgreement.isNotPep</Message>
+        <label className="custom-control-label" htmlFor="aml-not-pep-checkbox">
+          <Message>aml.isNotPep</Message>
           <InfoTooltip name="pep-tooltip">
             <div className="content">
-              <Message>thirdPillarAgreement.pepTooltip</Message>
+              <Message>aml.pepTooltip</Message>
             </div>
           </InfoTooltip>
         </label>
@@ -48,13 +51,13 @@ PoliticallyExposedPersonAgreement.defaultProps = {
 };
 
 const mapStateToProps = state => ({
-  isPoliticallyExposed: state.thirdPillar.isPoliticallyExposed,
+  isPoliticallyExposed: state.aml.isPoliticallyExposed,
 });
 
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
-      onPoliticallyExposedChange: thirdPillarActions.changeIsPoliticallyExposed,
+      onPoliticallyExposedChange: changeIsPoliticallyExposed,
     },
     dispatch,
   );

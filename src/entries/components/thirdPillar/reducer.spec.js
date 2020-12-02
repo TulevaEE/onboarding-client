@@ -2,8 +2,6 @@ import {
   CHANGE_AGREEMENT_TO_TERMS,
   CHANGE_EXCHANGE_EXISTING_UNITS,
   CHANGE_MONTHLY_CONTRIBUTION,
-  CHANGE_POLITICALLY_EXPOSED,
-  CHANGE_RESIDENCY,
   QUERY_PARAMETERS,
   SELECT_THIRD_PILLAR_SOURCES,
   THIRD_PILLAR_STATISTICS,
@@ -243,30 +241,6 @@ describe('Third pillar reducer', () => {
     expect(state).toEqual({
       ...initialState,
       agreedToTerms: true,
-    });
-  });
-
-  it('updates politically exposed', () => {
-    const state = reducer(undefined, {
-      type: CHANGE_POLITICALLY_EXPOSED,
-      isPoliticallyExposed: true,
-    });
-
-    expect(state).toEqual({
-      ...initialState,
-      isPoliticallyExposed: true,
-    });
-  });
-
-  it('updates residency', () => {
-    const state = reducer(undefined, {
-      type: CHANGE_RESIDENCY,
-      isResident: true,
-    });
-
-    expect(state).toEqual({
-      ...initialState,
-      isResident: true,
     });
   });
 
