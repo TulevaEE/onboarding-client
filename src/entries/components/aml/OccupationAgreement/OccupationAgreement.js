@@ -9,6 +9,7 @@ import { changeOccupation } from '../actions';
 import { renderField, requiredField } from '../../common/form';
 
 export const OccupationAgreement = ({
+  occupation,
   onOccupationChange,
   translations: { translate },
   className,
@@ -30,6 +31,7 @@ export const OccupationAgreement = ({
             name="aml.occupation"
             validate={[requiredField]}
             id="occupation"
+            override={{ value: occupation }}
           >
             <option />
             <option value="PRIVATE_SECTOR">{translate('aml.occupation.privateSector')}</option>
@@ -47,6 +49,7 @@ export const OccupationAgreement = ({
 };
 
 OccupationAgreement.propTypes = {
+  occupation: Types.string,
   onOccupationChange: Types.func,
   translations: Types.shape({
     translate: Types.func.isRequired,
@@ -54,6 +57,7 @@ OccupationAgreement.propTypes = {
 };
 
 OccupationAgreement.defaultProps = {
+  occupation: null,
   onOccupationChange: () => {},
 };
 

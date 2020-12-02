@@ -27,6 +27,7 @@ export const renderField = ({
   placeholder,
   disabled,
   id,
+  override,
   meta: { touched, error },
   children,
 }) => (
@@ -39,11 +40,12 @@ export const renderField = ({
           placeholder={placeholder}
           disabled={disabled}
           id={id}
+          {...override}
           className="form-control"
         />
       )}
       {type === 'select' && (
-        <select {...input} disabled={disabled} id={id} className="form-control">
+        <select {...input} disabled={disabled} id={id} className="form-control" {...override}>
           {children}
         </select>
       )}
@@ -63,6 +65,7 @@ renderField.defaultProps = {
   placeholder: '',
   disabled: '',
   id: '',
+  override: {},
   children: null,
 };
 
@@ -73,5 +76,6 @@ renderField.propTypes = {
   placeholder: Types.string,
   disabled: Types.string,
   id: Types.string,
+  override: Types.shape(),
   children: Types.arrayOf(Types.shape()),
 };
