@@ -77,7 +77,7 @@ describe('AML actions', () => {
       isResident: true,
       occupation: 'PRIVATE_SECTOR',
     };
-    mockApi.createAmlCheck = jest.fn().mockImplementation(() => Promise.resolve());
+    mockApi.createAmlCheck = jest.fn(() => Promise.resolve());
     const createAmlChecks = createBoundAction(actions.createAmlChecks);
     return createAmlChecks(amlChecks).then(() => {
       expect(mockApi.createAmlCheck).toHaveBeenCalledTimes(3);
