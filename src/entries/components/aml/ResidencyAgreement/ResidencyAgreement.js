@@ -4,20 +4,24 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Message } from 'retranslate';
 
+import { Field } from 'redux-form';
 import { changeIsResident } from '../actions';
 import { InfoTooltip } from '../../common';
+import { requiredField } from '../../common/form';
 
 export const ResidencyAgreement = ({ isResident, onResidentChange, className }) => {
   return (
     <div className={className}>
       <div className="custom-control custom-checkbox">
-        <input
+        <Field
           checked={!!isResident}
           onChange={e => onResidentChange(e.target.checked)}
+          component="input"
           type="checkbox"
-          name="resident"
-          className="custom-control-input"
+          name="aml.isResident"
           id="aml-resident-checkbox"
+          className="custom-control-input"
+          validate={[requiredField]}
         />
 
         <label className="custom-control-label" htmlFor="aml-resident-checkbox">

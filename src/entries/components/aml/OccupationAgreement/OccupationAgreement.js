@@ -4,7 +4,9 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
 import { Message, withTranslations } from 'retranslate';
+import { Field } from 'redux-form';
 import { changeOccupation } from '../actions';
+import { renderField, requiredField } from '../../common/form';
 
 export const OccupationAgreement = ({
   onOccupationChange,
@@ -22,7 +24,13 @@ export const OccupationAgreement = ({
           <Message>aml.occupation</Message>
         </label>
         <div className="form-group">
-          <select className="form-control" name="occupation" id="occupation">
+          <Field
+            component={renderField}
+            type="select"
+            name="aml.occupation"
+            validate={[requiredField]}
+            id="occupation"
+          >
             <option />
             <option value="PRIVATE_SECTOR">{translate('aml.occupation.privateSector')}</option>
             <option value="PUBLIC_SECTOR">{translate('aml.occupation.publicSector')}</option>
@@ -31,7 +39,7 @@ export const OccupationAgreement = ({
             <option value="STUDENT">{translate('aml.occupation.student')}</option>
             <option value="RETIRED">{translate('aml.occupation.retired')}</option>
             <option value="UNEMPLOYED">{translate('aml.occupation.unemployed')}</option>
-          </select>
+          </Field>
         </div>
       </div>
     </div>

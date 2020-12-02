@@ -24,10 +24,10 @@ describe('ResidencyAgreement', () => {
     const mock = jest.fn();
     component.setProps({ onResidentChange: mock });
 
-    component.find('input').simulate('change', { target: { checked: true } });
+    component.find('Field').simulate('change', { target: { checked: true } });
     expect(mock).toBeCalledWith(true);
 
-    component.find('input').simulate('change', { target: { checked: false } });
+    component.find('Field').simulate('change', { target: { checked: false } });
     expect(mock).toBeCalledWith(false);
   });
 

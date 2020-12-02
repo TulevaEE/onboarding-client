@@ -24,10 +24,10 @@ describe('PoliticallyExposedPersonAgreement', () => {
     const mock = jest.fn();
     component.setProps({ onPoliticallyExposedChange: mock });
 
-    component.find('input').simulate('change', { target: { checked: true } });
+    component.find('Field').simulate('change', { target: { checked: true } });
     expect(mock).toBeCalledWith(false);
 
-    component.find('input').simulate('change', { target: { checked: false } });
+    component.find('Field').simulate('change', { target: { checked: false } });
     expect(mock).toBeCalledWith(true);
   });
 

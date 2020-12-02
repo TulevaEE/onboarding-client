@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import { Message } from 'retranslate';
 
+import { reduxForm } from 'redux-form';
 import ThirdPillarTermsAgreement from './ThirdPillarTermsAgreement';
 import PoliticallyExposedPersonAgreement from '../../../aml/PoliticallyExposedPersonAgreement';
 import { actions as exchangeActions } from '../../../exchange';
@@ -260,7 +261,9 @@ const mapDispatchToProps = dispatch =>
     dispatch,
   );
 
+const wrapped = reduxForm({ form: 'confirmThirdPillarMandate' })(ConfirmThirdPillarMandate);
+
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(ConfirmThirdPillarMandate);
+)(wrapped);

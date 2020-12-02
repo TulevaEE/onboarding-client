@@ -3,9 +3,11 @@ import Types from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Message } from 'retranslate';
+import { Field } from 'redux-form';
 
 import { changeIsPoliticallyExposed } from '../actions';
 import { InfoTooltip } from '../../common';
+import { requiredField } from '../../common/form';
 
 export const PoliticallyExposedPersonAgreement = ({
   isPoliticallyExposed,
@@ -15,15 +17,16 @@ export const PoliticallyExposedPersonAgreement = ({
   return (
     <div className={className}>
       <div className="custom-control custom-checkbox">
-        <input
+        <Field
           checked={isPoliticallyExposed === false}
           onChange={e => onPoliticallyExposedChange(!e.target.checked)}
+          component="input"
           type="checkbox"
-          name="pep"
-          className="custom-control-input"
+          name="aml.isNotPoliticallyExposed"
           id="aml-not-pep-checkbox"
+          className="custom-control-input"
+          validate={[requiredField]}
         />
-
         <label className="custom-control-label" htmlFor="aml-not-pep-checkbox">
           <Message>aml.isNotPep</Message>
           <InfoTooltip name="pep-tooltip">
