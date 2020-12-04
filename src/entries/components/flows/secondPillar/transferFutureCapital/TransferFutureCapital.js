@@ -8,6 +8,7 @@ import { Link, Redirect } from 'react-router-dom';
 import { Radio, Loader, InfoTooltip, utils } from '../../../common';
 import TargetFundTooltipBody from './targetFundTooltipBody';
 import { selectFutureContributionsFund } from '../../../exchange/actions';
+import { isTuleva } from '../../../common/utils';
 
 const fundSelectStyles = {
   fontSize: '140%',
@@ -34,7 +35,7 @@ export const TransferFutureCapital = ({
   if (loading) {
     return <Loader className="align-middle" />;
   }
-  const tulevaTargetFunds = targetFunds.filter(fund => (fund.fundManager || {}).name === 'Tuleva');
+  const tulevaTargetFunds = targetFunds.filter(fund => isTuleva(fund));
   const sortedTargetFunds = targetFunds
     .slice()
     .sort((fund1, fund2) => fund1.name.localeCompare(fund2.name));

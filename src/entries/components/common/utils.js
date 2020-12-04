@@ -33,3 +33,7 @@ export function formatLargeAmountForCurrency(amount = 0) {
 export function getTotalFundValue(funds) {
   return (funds || []).reduce((sum, { price }) => sum + price, 0);
 }
+
+export const isThirdPillar = fund => fund.pillar === 3;
+
+export const isTuleva = fund => (fund.fundManager || {}).name === 'Tuleva';

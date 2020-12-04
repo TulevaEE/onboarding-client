@@ -31,20 +31,29 @@ export function createAmlChecks(amlChecks) {
       dispatch({ type: CREATE_AML_CHECKS_START });
       promise = createAmlCheck('RESIDENCY_MANUAL', amlChecks.isResident, {}, getState().login.token)
         .then(() => {
-          return createAmlCheck(
-            'POLITICALLY_EXPOSED_PERSON',
-            !amlChecks.isPoliticallyExposed,
-            {},
-            getState().login.token,
+          return (
+            amlChecks.isPoliticallyExposed != null &&
+            createAmlCheck(
+              'POLITICALLY_EXPOSED_PERSON',
+              amlChecks.isPoliticallyExposed === false,
+              {},
+              getState().login.token,
+            )
           );
         })
         .then(() => {
-          return createAmlCheck(
-            'OCCUPATION',
-            !!amlChecks.occupation,
-            { occupation: amlChecks.occupation },
-            getState().login.token,
+          return (
+            amlChecks.occupation != null &&
+            createAmlCheck(
+              'OCCUPATION',
+              !!amlChecks.occupation,
+              { occupation: amlChecks.occupation },
+              getState().login.token,
+            )
           );
+        })
+        .then(() => {
+          dispatch(getAmlChecks());
         })
         .then(() => {
           dispatch({ type: CREATE_AML_CHECKS_SUCCESS });

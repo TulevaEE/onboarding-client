@@ -15,6 +15,7 @@ import {
   SIGN_MANDATE_SUCCESS,
 } from '../exchange/constants';
 import { LOG_OUT } from '../login/constants';
+import { isThirdPillar, isTuleva } from '../common/utils';
 
 export default function thirdPillarReducer(state = initialState, action) {
   const { type, query, monthlyContribution } = action;
@@ -101,7 +102,3 @@ export default function thirdPillarReducer(state = initialState, action) {
       return state;
   }
 }
-
-const isThirdPillar = fund => fund.pillar === 3;
-
-const isTuleva = fund => (fund.fundManager || {}).name === 'Tuleva';
