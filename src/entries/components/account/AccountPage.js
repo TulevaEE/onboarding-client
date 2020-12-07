@@ -226,7 +226,8 @@ const mapStateToProps = state => ({
     state.aml.missingAmlChecks &&
     state.aml.missingAmlChecks.length > 0 &&
     !state.aml.createAmlChecksSuccess &&
-    state.thirdPillar.sourceFunds.any(fund => isTuleva(fund)),
+    state.thirdPillar.sourceFunds &&
+    state.thirdPillar.sourceFunds.some(fund => isTuleva(fund)),
 });
 const mapDispatchToProps = dispatch =>
   bindActionCreators(

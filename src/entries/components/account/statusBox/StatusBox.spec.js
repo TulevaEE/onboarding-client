@@ -50,8 +50,8 @@ describe('Status Box', () => {
 
   it('renders join Tuleva II pillar when II pillars some in Tuleva', () => {
     const secondPillarFunds = [
-      { fund: { managerName: 'NotTuleva' }, activeFund: true, pillar: 2 },
-      { fund: { managerName: 'Tuleva' }, activeFund: true, pillar: 2 },
+      { fundManager: { name: 'NotTuleva' }, activeFund: true, pillar: 2 },
+      { fundManager: { name: 'Tuleva' }, activeFund: true, pillar: 2 },
     ];
 
     component.setProps({ secondPillarFunds });

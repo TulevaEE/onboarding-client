@@ -18,6 +18,7 @@ export const initialState = {
   loading: false,
   error: null,
   missingAmlChecks: null,
+  createAmlChecksSuccess: null,
 };
 
 export default function amlReducer(state = initialState, action) {
