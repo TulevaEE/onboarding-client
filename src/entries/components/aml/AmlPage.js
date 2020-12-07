@@ -5,7 +5,6 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import UpdateUserForm from '../contact-details/updateUserForm';
-import PoliticallyExposedPersonAgreement from './PoliticallyExposedPersonAgreement';
 import ResidencyAgreement from './ResidencyAgreement';
 import OccupationAgreement from './OccupationAgreement';
 import { updateUserAndAml } from './actions';
@@ -18,6 +17,9 @@ export const AmlPage = ({ save, updateUserSuccess, createAmlChecksSuccess, locat
       {updateUserSuccess && createAmlChecksSuccess && (
         <Redirect to={location.state && location.state.from ? location.state.from : ''} />
       )}
+      <p>
+        <Message>aml.updateContactDetails</Message>
+      </p>
       <p className="mb-4 lead">
         <Message>update.user.details.title</Message>
       </p>
@@ -26,7 +28,6 @@ export const AmlPage = ({ save, updateUserSuccess, createAmlChecksSuccess, locat
           <Message>aml.extraDetails</Message>
         </p>
         <OccupationAgreement className="mt-3" />
-        <PoliticallyExposedPersonAgreement className="mt-3" />
         <ResidencyAgreement className="mt-3 mb-4" />
       </UpdateUserForm>
     </div>

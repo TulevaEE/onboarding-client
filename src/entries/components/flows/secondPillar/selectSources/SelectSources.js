@@ -10,6 +10,7 @@ import { Loader, Radio, ErrorMessage } from '../../../common';
 import PensionFundTable from './pensionFundTable';
 import TargetFundSelector from './targetFundSelector';
 import ExactFundSelector from './exactFundSelector';
+import { isTuleva } from '../../../common/utils';
 
 function selectAllWithTarget(sourceFunds, targetFund) {
   return sourceFunds
@@ -63,9 +64,7 @@ export const SelectSources = ({
   const noneSelectionActive = !sourceSelection.length && !sourceSelectionExact;
   const isValid = selectionsValid(sourceSelection);
   const tulevaTargetFunds =
-    targetFunds &&
-    targetFunds.length &&
-    targetFunds.filter(fund => (fund.fundManager || {}).name === 'Tuleva');
+    targetFunds && targetFunds.length && targetFunds.filter(fund => isTuleva(fund));
   const defaultTargetFund =
     tulevaTargetFunds && tulevaTargetFunds.length ? tulevaTargetFunds[0] : null;
   return (

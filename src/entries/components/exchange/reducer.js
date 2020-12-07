@@ -27,6 +27,7 @@ import {
 } from './constants';
 
 import { LOG_OUT } from '../login/constants';
+import { isTuleva } from '../common/utils';
 
 const initialState = {
   loadingPensionData: true,
@@ -53,7 +54,7 @@ function getCurrentCompanyFunds(targetFunds) {
   if (!targetFunds) {
     return [];
   }
-  const currentCompanyFunds = targetFunds.filter(fund => fund.fundManager.name === 'Tuleva');
+  const currentCompanyFunds = targetFunds.filter(fund => isTuleva(fund));
   if (currentCompanyFunds.length === 0) {
     throw new Error('Could not find current company funds in target funds');
   }

@@ -14,6 +14,9 @@ import Footer from './footer';
 import ContactDetailsPage from '../contact-details';
 import AmlPage, { actions as amlActions } from '../aml';
 
+export const ACCOUNT_PATH = '/account';
+export const AML_PATH = '/aml';
+
 export class LoggedInApp extends PureComponent {
   async componentDidMount() {
     await this.getUserAndConversionData();
@@ -55,12 +58,12 @@ export class LoggedInApp extends PureComponent {
           <div className="col-lg-10">
             <Header user={user} loading={loading} onLogout={onLogout} />
             <Switch>
-              {userDataExists && <Route path="/account" component={AccountPage} />}
-              <Route path="/aml" component={AmlPage} />
+              {userDataExists && <Route path={ACCOUNT_PATH} component={AccountPage} />}
+              <Route path={AML_PATH} component={AmlPage} />
               <Route path="/contact-details" component={ContactDetailsPage} />
               <Route path="/2nd-pillar-flow" component={SecondPillarFlow} />
               <Route path="/3rd-pillar-flow" component={ThirdPillarFlow} />
-              <Redirect exact path="/" to="/account" />
+              <Redirect exact path="/" to={ACCOUNT_PATH} />
             </Switch>
             <Footer />
           </div>

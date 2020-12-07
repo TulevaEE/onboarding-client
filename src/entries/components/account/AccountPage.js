@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import { Message } from 'retranslate';
 
 import { Loader, ErrorMessage } from '../common';
@@ -15,6 +15,8 @@ import MemberCapital from './MemberCapital';
 import StatusBox from './statusBox';
 import GreetingBar from './GreetingBar';
 import AccountSummary from './AccountSummary';
+import { ACCOUNT_PATH, AML_PATH } from '../LoggedInApp';
+import { isTuleva } from '../common/utils';
 
 const noop = () => null;
 
@@ -50,6 +52,7 @@ export class AccountPage extends Component {
       pendingExchanges,
       loadingPendingExchanges,
       error,
+      shouldRedirectToAml,
     } = this.props;
 
     const pendingExchangesSection = loadingPendingExchanges ? (
@@ -68,6 +71,14 @@ export class AccountPage extends Component {
 
     return (
       <>
+        {shouldRedirectToAml && (
+          <Redirect
+            to={{
+              pathname: AML_PATH,
+              state: { from: ACCOUNT_PATH },
+            }}
+          />
+        )}
         <div className="row mt-5">
           <GreetingBar />
         </div>
@@ -172,6 +183,7 @@ AccountPage.propTypes = {
   error: Types.shape({
     body: Types.object,
   }),
+  shouldRedirectToAml: Types.bool,
 };
 
 AccountPage.defaultProps = {
@@ -188,6 +200,7 @@ AccountPage.defaultProps = {
   memberCapital: {},
   loadingCapital: false,
   error: null,
+  shouldRedirectToAml: false,
 };
 
 const mapStateToProps = state => ({
@@ -209,6 +222,12 @@ const mapStateToProps = state => ({
   loadingCapital: state.account.loadingInitialCapital,
   error: state.exchange.error,
   token: state.login.token,
+  shouldRedirectToAml:
+    state.aml.missingAmlChecks &&
+    state.aml.missingAmlChecks.length > 0 &&
+    !state.aml.createAmlChecksSuccess &&
+    state.thirdPillar.sourceFunds &&
+    state.thirdPillar.sourceFunds.some(fund => isTuleva(fund)),
 });
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
