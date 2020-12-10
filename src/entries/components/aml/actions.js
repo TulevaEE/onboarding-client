@@ -53,9 +53,6 @@ export function createAmlChecks(amlChecks) {
           );
         })
         .then(() => {
-          dispatch(getAmlChecks());
-        })
-        .then(() => {
           dispatch({ type: CREATE_AML_CHECKS_SUCCESS });
         })
         .catch(error => dispatch({ type: CREATE_AML_CHECKS_ERROR }));
@@ -77,8 +74,12 @@ export function getAmlChecks() {
 
 export function updateUserAndAml(user) {
   return (dispatch, getState) => {
-    return dispatch(userActions.updateUser(user)).then(() => {
-      return dispatch(createAmlChecks(getState().aml));
-    });
+    return dispatch(userActions.updateUser(user))
+      .then(() => {
+        return dispatch(createAmlChecks(getState().aml));
+      })
+      .then(() => {
+        dispatch(getAmlChecks());
+      });
   };
 }

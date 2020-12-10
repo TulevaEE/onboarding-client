@@ -39,7 +39,7 @@ export function thirdPillarStatistics(statistics) {
 
 export function selectThirdPillarSources(
   exchangeExistingUnits,
-  selectedFutureContributionsFundIsin = '',
+  selectedFutureContributionsFundIsin,
 ) {
   return {
     type: SELECT_THIRD_PILLAR_SOURCES,

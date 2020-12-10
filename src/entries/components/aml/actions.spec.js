@@ -128,10 +128,12 @@ describe('AML actions', () => {
     const user = { amUser: true };
     mockApi.updateUserWithToken = jest.fn(() => Promise.resolve());
     mockApi.createAmlCheck = jest.fn(() => Promise.resolve());
+    mockApi.getMissingAmlChecks = jest.fn(() => Promise.resolve());
     const updateUserAndAml = createBoundAction(actions.updateUserAndAml);
     return updateUserAndAml(user).then(() => {
       expect(mockApi.updateUserWithToken).toHaveBeenCalled();
       expect(mockApi.createAmlCheck).toHaveBeenCalled();
+      expect(mockApi.getMissingAmlChecks).toHaveBeenCalled();
     });
   });
 });
