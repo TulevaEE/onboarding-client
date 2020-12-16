@@ -20,16 +20,17 @@ describe('Return comparison', () => {
     expect(getReturnComparison).not.toHaveBeenCalled();
   });
 
-  it('gets returns for first option date, second pillar, epi, and union stock index with token', () => {
+  it('gets returns for middle option date, second pillar, epi, and union stock index with token', () => {
     (getFromDateOptions as jest.Mock).mockReturnValue([
-      { value: '2002-28-02', label: aLabel() },
-      ...someReturnComparisonOptions(),
+      { value: '2001-01-01', label: aLabel() },
+      { value: '2002-01-01', label: aLabel() },
+      { value: '2003-01-01', label: aLabel() },
     ]);
 
     expect(getReturnComparison).not.toHaveBeenCalled();
     shallow(<ReturnComparison token="a-token" fundNameMap={{}} />);
     expect(getReturnComparison).toHaveBeenCalledWith(
-      '2002-28-02',
+      '2002-01-01',
       { personalKey: Key.SECOND_PILLAR, pensionFundKey: Key.EPI, indexKey: Key.UNION_STOCK_INDEX },
       'a-token',
     );
@@ -148,10 +149,11 @@ describe('Return comparison', () => {
     expect(indexReturn(component)).toBe('...');
   });
 
-  it('passes first from date to select by default', async () => {
+  it('passes middle date to select by default', async () => {
     (getFromDateOptions as jest.Mock).mockReturnValue([
+      { value: '2001-01-01', label: aLabel() },
       { value: '2002-01-01', label: aLabel() },
-      ...someReturnComparisonOptions(),
+      { value: '2003-01-01', label: aLabel() },
     ]);
     (getReturnComparison as jest.Mock).mockResolvedValueOnce({});
 

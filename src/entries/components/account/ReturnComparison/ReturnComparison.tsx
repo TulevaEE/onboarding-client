@@ -40,7 +40,7 @@ const LOADER = '...';
 export class ReturnComparison extends Component<Props, State> {
   state = {
     fromDateOptions: getFromDateOptions(),
-    fromDate: getFromDateOptions()[0].value,
+    fromDate: getFromDateOptions()[Math.floor(getFromDateOptions().length / 2)].value,
     loading: false,
     selectedPersonalKey: Key.SECOND_PILLAR,
     selectedPensionFundKey: Key.EPI,
