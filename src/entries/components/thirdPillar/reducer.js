@@ -11,6 +11,8 @@ import {
   GET_SOURCE_FUNDS_ERROR,
   GET_SOURCE_FUNDS_START,
   GET_SOURCE_FUNDS_SUCCESS,
+  GET_TARGET_FUNDS_ERROR,
+  GET_TARGET_FUNDS_START,
   GET_TARGET_FUNDS_SUCCESS,
   SIGN_MANDATE_SUCCESS,
 } from '../exchange/constants';
@@ -70,11 +72,17 @@ export default function thirdPillarReducer(state = initialState, action) {
         error: action.error,
         exchangeableSourceFunds: [],
       };
+    case GET_TARGET_FUNDS_START:
+      return { ...state, loadingTargetFunds: true, error: null };
     case GET_TARGET_FUNDS_SUCCESS:
       return {
         ...state,
         targetFunds: action.targetFunds.filter(isThirdPillar).filter(isTuleva),
+        loadingTargetFunds: false,
+        error: null,
       };
+    case GET_TARGET_FUNDS_ERROR:
+      return { ...state, loadingTargetFunds: false, error: action.error };
     case CHANGE_AGREEMENT_TO_TERMS:
       return {
         ...state,

@@ -28,6 +28,7 @@ export const ConfirmThirdPillarMandate = ({
   isPoliticallyExposed,
   occupation,
   loadingSourceFunds,
+  loadingTargetFunds,
   address,
   hasAddress,
   hasContactDetailsAmlCheck,
@@ -68,9 +69,10 @@ export const ConfirmThirdPillarMandate = ({
           </div>
         </div>
       )}
-      {loadingSourceFunds && <Loader className="align-middle" />}
+      {(loadingSourceFunds || loadingTargetFunds) && <Loader className="align-middle" />}
       {exchangeExistingUnits &&
         !loadingSourceFunds &&
+        !loadingTargetFunds &&
         exchangeableSourceFunds &&
         !!exchangeableSourceFunds.length &&
         selectedFutureContributionsFund && (
@@ -190,6 +192,7 @@ ConfirmThirdPillarMandate.propTypes = {
   isPoliticallyExposed: Types.bool,
   occupation: Types.string,
   loadingSourceFunds: Types.bool,
+  loadingTargetFunds: Types.bool,
   address: Types.shape({}),
   hasAddress: Types.bool,
   hasContactDetailsAmlCheck: Types.bool,
@@ -216,6 +219,7 @@ ConfirmThirdPillarMandate.defaultProps = {
   isPoliticallyExposed: null,
   occupation: null,
   loadingSourceFunds: false,
+  loadingTargetFunds: false,
   hasAddress: false,
   hasContactDetailsAmlCheck: false,
   address: {},
@@ -241,6 +245,7 @@ const mapStateToProps = state => ({
   exchangeableSourceFunds: state.thirdPillar.exchangeableSourceFunds,
   exchangeExistingUnits: state.thirdPillar.exchangeExistingUnits,
   loadingSourceFunds: state.thirdPillar.loadingSourceFunds,
+  loadingTargetFunds: state.thirdPillar.loadingTargetFunds,
   address: (state.login.user || {}).address,
   hasAddress: !state.login.user || isAddressFilled(state.login.user),
   hasContactDetailsAmlCheck: isContactDetailsAmlCheckPassed(state.aml.missingAmlChecks),

@@ -11,6 +11,8 @@ import reducer from './reducer';
 import {
   GET_SOURCE_FUNDS_ERROR,
   GET_SOURCE_FUNDS_SUCCESS,
+  GET_TARGET_FUNDS_ERROR,
+  GET_TARGET_FUNDS_START,
   GET_TARGET_FUNDS_SUCCESS,
   SIGN_MANDATE_SUCCESS,
 } from '../exchange/constants';
@@ -260,32 +262,46 @@ describe('Third pillar reducer', () => {
     const state = reducer(undefined, { type: LOG_OUT });
     expect(state).toEqual(initialState);
   });
-});
 
-it('can can select some third pillar sources', () => {
-  const action = {
-    type: SELECT_THIRD_PILLAR_SOURCES,
-    exchangeExistingUnits: true,
-    selectedFutureContributionsFundIsin: 'EE123',
-  };
+  it('can can select some third pillar sources', () => {
+    const action = {
+      type: SELECT_THIRD_PILLAR_SOURCES,
+      exchangeExistingUnits: true,
+      selectedFutureContributionsFundIsin: 'EE123',
+    };
 
-  const state = reducer(undefined, action);
+    const state = reducer(undefined, action);
 
-  expect(state.exchangeExistingUnits).toEqual(true);
-  expect(state.selectedFutureContributionsFundIsin).toBe('EE123');
-});
+    expect(state.exchangeExistingUnits).toEqual(true);
+    expect(state.selectedFutureContributionsFundIsin).toBe('EE123');
+  });
 
-it('can post third pillar statistics', () => {
-  const statistics = {
-    mandateId: 543,
-    singlePayment: 100,
-  };
-  const action = {
-    type: THIRD_PILLAR_STATISTICS,
-    statistics,
-  };
+  it('can post third pillar statistics', () => {
+    const statistics = {
+      mandateId: 543,
+      singlePayment: 100,
+    };
+    const action = {
+      type: THIRD_PILLAR_STATISTICS,
+      statistics,
+    };
 
-  const state = reducer(undefined, action);
+    const state = reducer(undefined, action);
 
-  expect(state.statistics).toEqual(statistics);
+    expect(state.statistics).toEqual(statistics);
+  });
+
+  it('starts loading when getting target funds', () => {
+    const action = { type: GET_TARGET_FUNDS_START };
+    expect(reducer(undefined, action).loadingTargetFunds).toBe(true);
+  });
+
+  it('stops loading and saves the error when getting target funds fails', () => {
+    const error = { body: { errors: [{ code: 'oh no!' }] } };
+    const action = { type: GET_TARGET_FUNDS_ERROR, error };
+
+    const newState = reducer({ loadingTargetFunds: true }, action);
+    expect(newState.error).toEqual(error);
+    expect(newState.loadingTargetFunds).toBe(false);
+  });
 });

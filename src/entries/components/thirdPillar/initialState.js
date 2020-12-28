@@ -5,6 +5,7 @@ export default {
   monthlyContribution: null,
   sourceFunds: [],
   loadingSourceFunds: false,
+  loadingTargetFunds: false,
   exchangeableSourceFunds: null,
   targetFunds: [],
   selectedFutureContributionsFundIsin: TULEVA_3RD_PILLAR_FUND_ISIN,
