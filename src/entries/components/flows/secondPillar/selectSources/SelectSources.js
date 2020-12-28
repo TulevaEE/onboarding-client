@@ -94,7 +94,7 @@ export const SelectSources = ({
             <Message>select.sources.select.all.subtitle</Message>
 
             <a
-              href="//www.pensionikeskus.ee/ii-sammas/fondid/fonditasude-vordlused/"
+              href="//www.pensionikeskus.ee/ii-sammas/kohustuslikud-pensionifondid/fonditasude-vordlus/"
               target="_blank"
               rel="noopener noreferrer"
             >

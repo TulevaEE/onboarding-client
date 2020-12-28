@@ -113,7 +113,7 @@ describe('Third pillar select sources step', () => {
     expect(
       component.contains(
         <a
-          href="//www.pensionikeskus.ee/iii-sammas/vabatahtlikud-pensionifondid/fonditasude-vordlus-pensioni-iii-sammas/"
+          href="//www.pensionikeskus.ee/iii-sammas/vabatahtlikud-fondid/fonditasude-vordlus/"
           target="_blank"
           rel="noopener noreferrer"
         >

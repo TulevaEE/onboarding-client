@@ -178,7 +178,7 @@ export const ConfirmMandate = ({
                 <a
                   target="_blank"
                   rel="noopener noreferrer"
-                  href="//www.pensionikeskus.ee/ii-sammas/fondid/fondide-tasud/fonditasude-vordlused/"
+                  href="//www.pensionikeskus.ee/ii-sammas/kohustuslikud-pensionifondid/fonditasude-vordlus/"
                 >
                   <Message>confirm.mandate.pension.centre</Message>
                 </a>

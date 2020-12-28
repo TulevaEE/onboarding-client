@@ -32,7 +32,7 @@ export const ThirdPillarTermsAgreement = ({ age, agreed, onAgreementChange }) =>
                       href={
                         language === 'en'
                           ? 'https://www.pensionikeskus.ee/en/iii-pillar/supplementary-pension-funds/'
-                          : 'https://www.pensionikeskus.ee/iii-sammas/vabatahtlikud-pensionifondid/'
+                          : 'https://www.pensionikeskus.ee/iii-sammas/vabatahtlikud-fondid/'
                       }
                       target="_blank"
                       rel="noopener noreferrer"

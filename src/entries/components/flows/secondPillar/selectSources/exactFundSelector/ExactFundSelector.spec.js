@@ -86,7 +86,7 @@ describe('Exact fund selector', () => {
     expect(
       component.contains(
         <a
-          href="//www.pensionikeskus.ee/ii-sammas/fondid/fondide-tasud/fonditasude-vordlused/"
+          href="//www.pensionikeskus.ee/ii-sammas/kohustuslikud-pensionifondid/fonditasude-vordlus/"
           target="_blank"
           rel="noopener noreferrer"
         >

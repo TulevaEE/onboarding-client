@@ -300,7 +300,7 @@ describe('Select sources step', () => {
     expect(
       component.contains(
         <a
-          href="//www.pensionikeskus.ee/ii-sammas/fondid/fonditasude-vordlused/"
+          href="//www.pensionikeskus.ee/ii-sammas/kohustuslikud-pensionifondid/fonditasude-vordlus/"
           target="_blank"
           rel="noopener noreferrer"
         >
