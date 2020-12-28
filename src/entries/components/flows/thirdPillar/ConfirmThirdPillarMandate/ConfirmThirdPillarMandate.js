@@ -15,6 +15,7 @@ import { AuthenticationLoader, ErrorMessage, Loader } from '../../../common';
 import { hasAddress as isAddressFilled } from '../../../common/user/address';
 import OccupationAgreement from '../../../aml/OccupationAgreement';
 import { hasContactDetailsAmlCheck as isContactDetailsAmlCheckPassed } from '../../../aml';
+import { TULEVA_3RD_PILLAR_FUND_ISIN } from '../../../thirdPillar/initialState';
 
 export const ConfirmThirdPillarMandate = ({
   previousPath,
@@ -213,7 +214,7 @@ ConfirmThirdPillarMandate.defaultProps = {
   signedMandateId: null,
   exchangeExistingUnits: null,
   exchangeableSourceFunds: null,
-  selectedFutureContributionsFund: {},
+  selectedFutureContributionsFund: { isin: TULEVA_3RD_PILLAR_FUND_ISIN },
   agreedToTerms: false,
   isResident: null,
   isPoliticallyExposed: null,
