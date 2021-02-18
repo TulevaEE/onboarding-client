@@ -3,41 +3,34 @@ import { shallow, ShallowWrapper } from 'enzyme';
 
 import { ReturnComparison } from './ReturnComparison';
 import { getReturnComparison, Key } from './api';
-import getFromDateOptions from './options';
 import Select from './Select';
 
 jest.mock('./api', () => ({
   ...jest.requireActual('./api'),
   getReturnComparison: jest.fn(),
 }));
-jest.mock('./options', () => jest.fn());
+jest.mock('moment', () => {
+  return () => jest.requireActual('moment')('2020-01-01T00:00:00.000Z');
+});
 jest.mock('./fundIsinsWithAvailableData.json', () => ['EE123456', 'EE987654']);
 
 describe('Return comparison', () => {
   it('does not get returns when no token', () => {
-    (getFromDateOptions as jest.Mock).mockReturnValue(someReturnComparisonOptions());
     shallow(<ReturnComparison token={undefined} fundNameMap={{}} />);
     expect(getReturnComparison).not.toHaveBeenCalled();
   });
 
   it('gets returns for middle option date, second pillar, epi, and union stock index with token', () => {
-    (getFromDateOptions as jest.Mock).mockReturnValue([
-      { value: '2001-01-01', label: aLabel() },
-      { value: '2002-01-01', label: aLabel() },
-      { value: '2003-01-01', label: aLabel() },
-    ]);
-
     expect(getReturnComparison).not.toHaveBeenCalled();
     shallow(<ReturnComparison token="a-token" fundNameMap={{}} />);
     expect(getReturnComparison).toHaveBeenCalledWith(
-      '2002-01-01',
+      '2017-01-01',
       { personalKey: Key.SECOND_PILLAR, pensionFundKey: Key.EPI, indexKey: Key.UNION_STOCK_INDEX },
       'a-token',
     );
   });
 
   it('gets returns on date change with date', async () => {
-    (getFromDateOptions as jest.Mock).mockReturnValue(someReturnComparisonOptions());
     (getReturnComparison as jest.Mock).mockResolvedValueOnce({});
     const component = shallow(<ReturnComparison token="a-token" fundNameMap={{}} />);
 
@@ -50,7 +43,6 @@ describe('Return comparison', () => {
   });
 
   it('gets returns on personal pillar change with pillar', async () => {
-    (getFromDateOptions as jest.Mock).mockReturnValue(someReturnComparisonOptions());
     (getReturnComparison as jest.Mock).mockResolvedValueOnce({});
     const component = shallow(<ReturnComparison token="a-token" fundNameMap={{}} />);
 
@@ -120,7 +112,6 @@ describe('Return comparison', () => {
   });
 
   it('shows returns as - after failed retrieval', async () => {
-    (getFromDateOptions as jest.Mock).mockReturnValue(someReturnComparisonOptions());
     (getReturnComparison as jest.Mock).mockResolvedValueOnce({});
     const component = shallow(<ReturnComparison token={aToken()} fundNameMap={{}} />);
 
@@ -136,7 +127,6 @@ describe('Return comparison', () => {
   });
 
   it('shows ... for returns while getting returns', async () => {
-    (getFromDateOptions as jest.Mock).mockReturnValue(someReturnComparisonOptions());
     (getReturnComparison as jest.Mock).mockResolvedValueOnce({});
     const component = shallow(<ReturnComparison token={aToken()} fundNameMap={{}} />);
     await flushPromises();
@@ -150,17 +140,12 @@ describe('Return comparison', () => {
   });
 
   it('passes middle date to select by default', async () => {
-    (getFromDateOptions as jest.Mock).mockReturnValue([
-      { value: '2001-01-01', label: aLabel() },
-      { value: '2002-01-01', label: aLabel() },
-      { value: '2003-01-01', label: aLabel() },
-    ]);
     (getReturnComparison as jest.Mock).mockResolvedValueOnce({});
 
     const component = shallow(<ReturnComparison token={aToken()} fundNameMap={{}} />);
     await flushPromises();
 
-    expect(dateSelect(component).prop('selected')).toEqual('2002-01-01');
+    expect(dateSelect(component).prop('selected')).toEqual('2017-01-01');
   });
 
   const select = (c): ShallowWrapper => c.find(Select);
@@ -168,13 +153,8 @@ describe('Return comparison', () => {
   const personalReturnSelect = (c): ShallowWrapper => select(c).at(1);
   const pensionFundSelect = (c): ShallowWrapper => select(c).at(2);
   const indexSelect = (c): ShallowWrapper => select(c).at(3);
-  const someReturnComparisonOptions = (): { value: string; label: string }[] => [
-    { value: '2015-03-10', label: 'A date' },
-    { value: '2020-10-03', label: 'Another date' },
-  ];
   const aDate = (): string => '2020-06-25';
   const aToken = (): string => 'a-token';
-  const aLabel = (): string => 'a label';
   const returns = (c, index): ShallowWrapper => c.find('.h2').at(index);
   const personalReturn = (c): string => returns(c, 0).text();
   const pensionFundReturn = (c): string => returns(c, 1).text();

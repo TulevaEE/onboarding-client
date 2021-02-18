@@ -28,8 +28,6 @@ import {
 
 import { ID_CARD_LOGIN_START_FAILED_ERROR } from '../common/errorAlert/ErrorAlert';
 
-jest.useFakeTimers();
-
 const mockHttp = jest.genMockFromModule('../common/http');
 jest.mock('../common/http', () => mockHttp);
 
@@ -57,6 +55,7 @@ describe('Login actions', () => {
   }
 
   beforeEach(() => {
+    jest.useFakeTimers();
     mockDispatch();
     mockApi.authenticateWithMobileId = () => Promise.reject();
     mockApi.authenticateWithIdCode = () => Promise.reject();
@@ -435,6 +434,9 @@ describe('Login actions', () => {
   });
 
   it('can handle redirect login with id card', () => {
+    mockApi.authenticateWithIdCard = jest.fn(() => {
+      return Promise.resolve();
+    });
     const useRedirectLoginWithIdCard = createBoundAction(actions.useRedirectLoginWithIdCard);
     useRedirectLoginWithIdCard();
     expect(dispatch).toHaveBeenCalledWith({ type: SET_LOGIN_TO_REDIRECT });

@@ -10,7 +10,7 @@ interface SelectProps {
   options: Option[];
   selected: any;
   onChange: (...args: any[]) => void;
-  translations: { translate: (label: string) => {} };
+  translations: { translate: (label: string) => '' };
   disabled?: boolean;
 }
 

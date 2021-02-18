@@ -24,8 +24,6 @@ import {
   SIGN_MANDATE_SUCCESS,
 } from './constants';
 
-jest.useFakeTimers();
-
 const mockApi = jest.genMockFromModule('../common/api');
 const mockDownload = jest.fn();
 const mockHwcrypto = jest.genMockFromModule('hwcrypto-js');
@@ -64,6 +62,7 @@ describe('Exchange actions', () => {
   }
 
   beforeEach(() => {
+    jest.useFakeTimers();
     mockDispatch();
   });
 
@@ -333,7 +332,7 @@ describe('Exchange actions', () => {
     });
   });
 
-  it('starts polling until succeeds when signing the mandate with id card', () => {
+  it('starts polling until succeeds when signing the mandate with id card', async () => {
     state.login.token = 'token';
 
     const mandate = { id: 'id' };
@@ -474,7 +473,12 @@ describe('Exchange actions', () => {
   });
 
   it('creates aml checks if needed', () => {
+    state.login.loginMethod = 'mobileId';
     const mandate = { id: 'id' };
+    mockApi.saveMandateWithToken = jest.fn(() => Promise.resolve(mandate));
+    mockApi.getMobileIdSignatureStatusForMandateIdWithToken = jest.fn(() =>
+      Promise.resolve('SIGNATURE'),
+    );
     const amlChecks = {
       isPoliticallyExposed: true,
       isResident: true,
@@ -484,7 +488,7 @@ describe('Exchange actions', () => {
     const signMandate = createBoundAction(actions.signMandate);
     return signMandate(mandate, amlChecks).then(() => {
       expect(dispatch).toHaveBeenCalledWith({
-        type: SIGN_MANDATE_ID_CARD_START,
+        type: SIGN_MANDATE_MOBILE_ID_START,
       });
       expect(mockApi.createAmlCheck).toHaveBeenCalledTimes(3);
     });

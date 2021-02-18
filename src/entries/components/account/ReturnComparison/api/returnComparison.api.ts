@@ -1,6 +1,7 @@
 import { get } from '../../../common/http';
 import { getEndpoint } from '../../../common/api';
 
+// eslint-disable-next-line no-shadow
 export enum Key {
   SECOND_PILLAR = 'SECOND_PILLAR',
   THIRD_PILLAR = 'THIRD_PILLAR',

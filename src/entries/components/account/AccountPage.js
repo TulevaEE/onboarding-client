@@ -181,7 +181,7 @@ AccountPage.propTypes = {
   memberCapital: Types.shape({}),
   loadingCapital: Types.bool,
   error: Types.shape({
-    body: Types.object,
+    body: Types.shape({}),
   }),
   shouldRedirectToAml: Types.bool,
 };

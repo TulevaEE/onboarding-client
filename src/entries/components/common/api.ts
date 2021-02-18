@@ -61,10 +61,8 @@ async function getTokensWithGrantType(grantType: string): Promise<any> {
     const { access_token: accessToken, refresh_token: refreshToken } = await postForm(
       getEndpoint('/oauth/token'),
       {
-        /* eslint-disable @typescript-eslint/camelcase */
         grant_type: grantType,
         client_id: 'onboarding-client',
-        /* eslint-enable @typescript-eslint/camelcase */
       },
       { Authorization: 'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ=' },
     );
@@ -82,10 +80,8 @@ export async function refreshTokenWith(refreshToken: string): Promise<any> {
   const { access_token: accessToken, refresh_token: refreshTokenFromResponse } = await postForm(
     getEndpoint('/oauth/token'),
     {
-      /* eslint-disable @typescript-eslint/camelcase */
       grant_type: 'refresh_token',
       refresh_token: refreshToken,
-      /* eslint-enable @typescript-eslint/camelcase */
     },
     { Authorization: 'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ=' },
   );
@@ -254,7 +250,7 @@ export function getPendingExchangesWithToken(token: string): Promise<any> {
 export function createAmlCheck(
   type: string,
   success: boolean,
-  metadata: object,
+  metadata: Record<string, unknown>,
   token: string,
 ): Promise<any> {
   return post(

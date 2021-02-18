@@ -1,18 +1,12 @@
-import getOptions from './options';
+import { dateOptions } from './ReturnComparison';
+
+jest.mock('moment', () => {
+  return () => jest.requireActual('moment')('2015-10-03T00:00:00.000Z');
+});
 
 describe('Return comparison start date options', () => {
-  let dateNowSpy;
-  beforeAll(() => {
-    dateNowSpy = jest.spyOn(Date, 'now').mockImplementation(() => new Date('2015-10-03'));
-  });
-  afterAll(() => {
-    dateNowSpy.mockRestore();
-  });
-
   it('has start dates in correct format', () => {
-    const options = getOptions();
-
-    expect(options).toEqual([
+    expect(dateOptions).toEqual([
       { value: '2003-01-07', label: 'returnComparison.period.all' },
       { value: '2005-10-03', label: 'returnComparison.period.tenYears' },
       { value: '2010-10-03', label: 'returnComparison.period.fiveYears' },

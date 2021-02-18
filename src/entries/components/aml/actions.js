@@ -26,38 +26,37 @@ export function changeOccupation(occupation) {
 
 export function createAmlChecks(amlChecks) {
   return (dispatch, getState) => {
-    let promise = Promise.resolve();
-    if (amlChecks !== undefined) {
-      dispatch({ type: CREATE_AML_CHECKS_START });
-      promise = createAmlCheck('RESIDENCY_MANUAL', amlChecks.isResident, {}, getState().login.token)
-        .then(() => {
-          return (
-            amlChecks.isPoliticallyExposed != null &&
-            createAmlCheck(
-              'POLITICALLY_EXPOSED_PERSON',
-              amlChecks.isPoliticallyExposed === false,
-              {},
-              getState().login.token,
-            )
-          );
-        })
-        .then(() => {
-          return (
-            amlChecks.occupation != null &&
-            createAmlCheck(
-              'OCCUPATION',
-              !!amlChecks.occupation,
-              { occupation: amlChecks.occupation },
-              getState().login.token,
-            )
-          );
-        })
-        .then(() => {
-          dispatch({ type: CREATE_AML_CHECKS_SUCCESS });
-        })
-        .catch(error => dispatch({ type: CREATE_AML_CHECKS_ERROR }));
+    if (amlChecks === undefined) {
+      return Promise.resolve();
     }
-    return promise;
+    dispatch({ type: CREATE_AML_CHECKS_START });
+    return createAmlCheck('RESIDENCY_MANUAL', amlChecks.isResident, {}, getState().login.token)
+      .then(() => {
+        return (
+          amlChecks.isPoliticallyExposed != null &&
+          createAmlCheck(
+            'POLITICALLY_EXPOSED_PERSON',
+            amlChecks.isPoliticallyExposed === false,
+            {},
+            getState().login.token,
+          )
+        );
+      })
+      .then(() => {
+        return (
+          amlChecks.occupation != null &&
+          createAmlCheck(
+            'OCCUPATION',
+            !!amlChecks.occupation,
+            { occupation: amlChecks.occupation },
+            getState().login.token,
+          )
+        );
+      })
+      .then(() => {
+        dispatch({ type: CREATE_AML_CHECKS_SUCCESS });
+      })
+      .catch(error => dispatch({ type: CREATE_AML_CHECKS_ERROR }));
   };
 }
 

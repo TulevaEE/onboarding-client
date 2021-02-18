@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Message } from 'retranslate';
 import { connect } from 'react-redux';
 
-import getFromDateOptions from './options';
+import moment from 'moment';
 import Select from './Select';
 import { getReturnComparison, Key } from './api';
 import fundIsinsWithAvailableData from './fundIsinsWithAvailableData.json';
@@ -37,10 +37,29 @@ const formatPercentage = (percentage: NullableNumber): string =>
 
 const LOADER = '...';
 
+const startDate = '2003-01-07';
+
+const format = (momentDate: any) => momentDate.format('YYYY-MM-DD');
+
+const tenYearsAgo = format(moment().subtract(10, 'years'));
+const fiveYearsAgo = format(moment().subtract(5, 'years'));
+const threeYearsAgo = format(moment().subtract(3, 'years'));
+const twoYearsAgo = format(moment().subtract(2, 'years'));
+const oneYearAgo = format(moment().subtract(1, 'year'));
+
+export const dateOptions = [
+  { value: startDate, label: 'returnComparison.period.all' },
+  { value: tenYearsAgo, label: 'returnComparison.period.tenYears' },
+  { value: fiveYearsAgo, label: 'returnComparison.period.fiveYears' },
+  { value: threeYearsAgo, label: 'returnComparison.period.threeYears' },
+  { value: twoYearsAgo, label: 'returnComparison.period.twoYears' },
+  { value: oneYearAgo, label: 'returnComparison.period.oneYear' },
+];
+
 export class ReturnComparison extends Component<Props, State> {
   state = {
-    fromDateOptions: getFromDateOptions(),
-    fromDate: getFromDateOptions()[Math.floor(getFromDateOptions().length / 2)].value,
+    fromDateOptions: dateOptions,
+    fromDate: dateOptions[Math.floor(dateOptions.length / 2)].value,
     loading: false,
     selectedPersonalKey: Key.SECOND_PILLAR,
     selectedPensionFundKey: Key.EPI,
