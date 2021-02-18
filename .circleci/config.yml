@@ -10,9 +10,8 @@ references:
       at: *workspace_root
 jobs:
   build:
-    executor:
-      name: node/default
-      tag: '13.14'
+    docker:
+      - image: cimg/python:3.9-node
     steps:
       - *attach_workspace
       - checkout
@@ -30,9 +29,8 @@ jobs:
           paths:
             - build
   test:
-    executor:
-      name: node/default
-      tag: '13.14'
+    docker:
+      - image: cimg/python:3.9-node
     steps:
       - checkout
       - run:
