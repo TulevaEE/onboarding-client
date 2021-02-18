@@ -45,7 +45,7 @@
     "react-redux": "6.0.1",
     "react-router-dom": "5.0.1",
     "react-scripts": "^4.0.2",
-    "react-tooltip": "^3.11.0",
+    "react-tooltip": "^4.2.14",
     "redux": "^4.0.4",
     "redux-form": "^8.2.6",
     "redux-thunk": "^2.3.0",
