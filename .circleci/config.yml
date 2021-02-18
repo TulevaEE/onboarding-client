@@ -1,7 +1,7 @@
 version: 2.1
 orbs:
-  awsebcli: sbc-orbs/awsebcli@0.0.3
-  node: circleci/node@1.1.6
+  aws-cli: circleci/aws-cli@1.4.0
+  node: circleci/node@4.1.0
 references:
   workspace_root: &workspace_root
     /tmp/workspace
@@ -12,23 +12,19 @@ jobs:
   build:
     executor:
       name: node/default
-      tag: '10.4'
+      tag: '13.14'
     steps:
       - *attach_workspace
       - checkout
-      - node/with-cache:
-          steps:
-            - run:
-                name: Download dependencies
-                command: npm ci
-            - run:
-                name: Build
-                command: npm run build
-            - run:
-                name: Copy assets
-                command: |
-                  set -exu
-                  mv build /tmp/workspace
+      - node/install-packages
+      - run:
+          name: Build
+          command: npm run build
+      - run:
+          name: Copy assets
+          command: |
+            set -exu
+            mv build /tmp/workspace
       - persist_to_workspace:
           root: *workspace_root
           paths:
@@ -36,26 +32,23 @@ jobs:
   test:
     executor:
       name: node/default
-      tag: '10.4'
+      tag: '13.14'
     steps:
       - checkout
-      - node/with-cache:
-          steps:
-            - run:
-                name: Lint
-                command: npm run lint
-            - run:
-                name: Run tests
-                command: npm test -- --maxWorkers=2
-            - run:
-                name: Upload coverage report
-                command: bash <(curl -s https://codecov.io/bash)
+      - run:
+          name: Lint
+          command: npm run lint
+      - run:
+          name: Run tests
+          command: npm test -- --maxWorkers=2
+      - run:
+          name: Upload coverage report
+          command: bash <(curl -s https://codecov.io/bash)
   deploy:
-    executor: awsebcli/default
+    executor: aws-cli/default
     steps:
       - checkout
       - *attach_workspace
-      - awsebcli/install
       - run:
           name: Deploy master to S3
           command: aws s3 cp /tmp/workspace/build s3://pension.tuleva.ee --recursive
@@ -71,7 +64,6 @@ workflows:
       - deploy:
           requires:
             - test
-          context: elastic-beanstalk-deployment
           filters:
             branches:
               only: master
