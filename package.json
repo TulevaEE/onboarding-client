@@ -77,7 +77,7 @@
     "enzyme-adapter-react-16": "^1.14.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-config-prettier": "^4.3.0",
-    "eslint-plugin-prettier": "^3.1.0",
+    "eslint-plugin-prettier": "^3.3.1",
     "husky": "^2.7.0",
     "lint-staged": "^8.2.1",
     "prettier": "1.18.2",
