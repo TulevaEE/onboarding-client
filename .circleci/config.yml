@@ -66,6 +66,7 @@ workflows:
       - deploy:
           requires:
             - test
+          context: elastic-beanstalk-deployment
           filters:
             branches:
               only: master
