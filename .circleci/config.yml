@@ -35,6 +35,7 @@ jobs:
       tag: '13.14'
     steps:
       - checkout
+      - node/install-packages
       - run:
           name: Lint
           command: npm run lint
