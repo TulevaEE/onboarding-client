@@ -50,6 +50,7 @@ jobs:
     steps:
       - checkout
       - *attach_workspace
+      - aws-cli/setup
       - run:
           name: Deploy master to S3
           command: aws s3 cp /tmp/workspace/build s3://pension.tuleva.ee --recursive
