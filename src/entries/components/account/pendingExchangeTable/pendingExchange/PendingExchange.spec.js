@@ -1,10 +1,10 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
+import PendingExchange from './PendingExchange';
+
 const mockUtils = jest.genMockFromModule('../../../common/utils');
 jest.mock('../../../common/utils', () => mockUtils);
-
-const PendingExchange = require('./PendingExchange').default;
 
 describe('Pending exchange', () => {
   let component;

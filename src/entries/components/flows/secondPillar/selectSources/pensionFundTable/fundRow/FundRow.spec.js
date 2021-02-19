@@ -2,8 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Message } from 'retranslate';
 import Euro from '../../../../../common/Euro';
-
-const FundRow = require('./FundRow').default;
+import FundRow from './FundRow';
 
 describe('Fund row', () => {
   let component;
