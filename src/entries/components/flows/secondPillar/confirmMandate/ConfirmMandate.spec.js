@@ -28,7 +28,10 @@ describe('Confirm mandate step', () => {
   it('redirects to previous path only when no address', () => {
     component.setProps({
       previousPath: '/a-path',
-      exchange: { sourceSelection: [], selectedFutureContributionsFundIsin: 'EE123' },
+      exchange: {
+        sourceSelection: [],
+        selectedFutureContributionsFundIsin: 'EE123',
+      },
     });
     const redirects = () => component.contains(<Redirect to="/a-path" />);
 
@@ -120,7 +123,9 @@ describe('Confirm mandate step', () => {
     ];
     const sourceFunds = [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }];
     const targetFunds = [{ isin: 'target 1', name: 'c' }, { isin: 'target 2', name: 'd' }];
-    component.setProps({ exchange: { sourceSelection, sourceFunds, targetFunds } });
+    component.setProps({
+      exchange: { sourceSelection, sourceFunds, targetFunds },
+    });
     expect(component.find(FundTransferTable).prop('selections')).toEqual([
       {
         percentage: 0.5,

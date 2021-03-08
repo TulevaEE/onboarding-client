@@ -17,7 +17,10 @@ describe('Status Box Row', () => {
   });
 
   it('renders action button if row status not ok', () => {
-    component.setProps({ showAction: true, children: <Message>do next</Message> });
+    component.setProps({
+      showAction: true,
+      children: <Message>do next</Message>,
+    });
     expect(component.contains(<Message>do next</Message>)).toBe(true);
   });
 

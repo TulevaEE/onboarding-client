@@ -30,12 +30,20 @@ describe('Exact fund selector', () => {
       },
     ];
     sourceFunds = [
-      { isin: 'source isin 1', name: 'source name 1', fundManager: { name: 'Tuleva' } },
+      {
+        isin: 'source isin 1',
+        name: 'source name 1',
+        fundManager: { name: 'Tuleva' },
+      },
       { isin: 'source isin 2', name: 'source name 2' },
       { isin: 'source isin 3', name: 'source name 3' },
     ];
     targetFunds = [
-      { isin: 'target isin 1', name: 'target name 1', fundManager: { name: 'Tuleva' } },
+      {
+        isin: 'target isin 1',
+        name: 'target name 1',
+        fundManager: { name: 'Tuleva' },
+      },
       { isin: 'target isin 2', name: 'target name 2' },
       { isin: 'target isin 3', name: 'target name 3' },
     ];

@@ -56,7 +56,7 @@ export function createAmlChecks(amlChecks) {
       .then(() => {
         dispatch({ type: CREATE_AML_CHECKS_SUCCESS });
       })
-      .catch(error => dispatch({ type: CREATE_AML_CHECKS_ERROR }));
+      .catch(error => dispatch({ type: CREATE_AML_CHECKS_ERROR, error }));
   };
 }
 

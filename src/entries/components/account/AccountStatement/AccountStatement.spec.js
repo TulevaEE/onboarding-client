@@ -12,7 +12,14 @@ describe('Account statement', () => {
     component = shallow(
       <AccountStatement
         funds={[
-          { isin: 'A1', name: 'A', contributions: 0, subtractions: 0, profit: 0, price: 100 },
+          {
+            isin: 'A1',
+            name: 'A',
+            contributions: 0,
+            subtractions: 0,
+            profit: 0,
+            price: 100,
+          },
           {
             isin: 'B2',
             name: 'B',
@@ -22,7 +29,14 @@ describe('Account statement', () => {
             price: 10,
             activeFund: true,
           },
-          { isin: 'C3', name: 'C', contributions: 0, subtractions: 0, profit: 0, price: 1 },
+          {
+            isin: 'C3',
+            name: 'C',
+            contributions: 0,
+            subtractions: 0,
+            profit: 0,
+            price: 1,
+          },
         ]}
       />,
     );
@@ -76,9 +90,30 @@ describe('Account statement', () => {
     component = shallow(
       <AccountStatement
         funds={[
-          { isin: 'A1', name: 'A', contributions: 0, subtractions: 0, profit: 0, price: 0 },
-          { isin: 'B2', name: 'B', contributions: 0, subtractions: 0, profit: 0, price: 0 },
-          { isin: 'C3', name: 'C', contributions: 0, subtractions: 0, profit: 0, price: 0 },
+          {
+            isin: 'A1',
+            name: 'A',
+            contributions: 0,
+            subtractions: 0,
+            profit: 0,
+            price: 0,
+          },
+          {
+            isin: 'B2',
+            name: 'B',
+            contributions: 0,
+            subtractions: 0,
+            profit: 0,
+            price: 0,
+          },
+          {
+            isin: 'C3',
+            name: 'C',
+            contributions: 0,
+            subtractions: 0,
+            profit: 0,
+            price: 0,
+          },
         ]}
       />,
     );
@@ -88,7 +123,14 @@ describe('Account statement', () => {
     component = shallow(
       <AccountStatement
         funds={[
-          { isin: 'A1', name: 'A', contributions: 0, subtractions: 0, profit: 0, price: 0 },
+          {
+            isin: 'A1',
+            name: 'A',
+            contributions: 0,
+            subtractions: 0,
+            profit: 0,
+            price: 0,
+          },
           {
             isin: 'B2',
             name: 'B',
@@ -98,7 +140,14 @@ describe('Account statement', () => {
             price: 0,
             activeFund: true,
           },
-          { isin: 'C3', name: 'C', contributions: 0, subtractions: 0, profit: 0, price: 0 },
+          {
+            isin: 'C3',
+            name: 'C',
+            contributions: 0,
+            subtractions: 0,
+            profit: 0,
+            price: 0,
+          },
         ]}
       />,
     );

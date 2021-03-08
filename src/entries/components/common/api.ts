@@ -64,7 +64,9 @@ async function getTokensWithGrantType(grantType: string): Promise<any> {
         grant_type: grantType,
         client_id: 'onboarding-client',
       },
-      { Authorization: 'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ=' },
+      {
+        Authorization: 'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ=',
+      },
     );
 
     return { accessToken, refreshToken };

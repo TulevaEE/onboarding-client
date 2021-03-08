@@ -104,7 +104,10 @@ describe('Current balance', () => {
   });
 
   it('does not render any account summary table when there are no source funds', () => {
-    component.setProps({ secondPillarSourceFunds: null, thirdPillarSourceFunds: null });
+    component.setProps({
+      secondPillarSourceFunds: null,
+      thirdPillarSourceFunds: null,
+    });
     expect(accountSummary().exists()).toBe(false);
   });
 

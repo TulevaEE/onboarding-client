@@ -52,7 +52,12 @@ export default function amlReducer(state = initialState, action) {
       return { ...state, loading: false, error: action.error };
 
     case CREATE_AML_CHECKS_START:
-      return { ...state, loading: true, error: null, createAmlChecksSuccess: null };
+      return {
+        ...state,
+        loading: true,
+        error: null,
+        createAmlChecksSuccess: null,
+      };
     case CREATE_AML_CHECKS_SUCCESS:
       return {
         ...state,
@@ -61,7 +66,12 @@ export default function amlReducer(state = initialState, action) {
         createAmlChecksSuccess: true,
       };
     case CREATE_AML_CHECKS_ERROR:
-      return { ...state, loading: false, createAmlChecksSuccess: false, error: action.error };
+      return {
+        ...state,
+        loading: false,
+        createAmlChecksSuccess: false,
+        error: action.error,
+      };
 
     case UPDATE_USER_SUCCESS:
       return {

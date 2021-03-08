@@ -113,7 +113,9 @@ describe('http', () => {
 
   it('throws if request fails', async () => {
     expect.assertions(1);
-    axios.get.mockRejectedValueOnce({ response: { status: 400, data: { some: 'data' } } });
+    axios.get.mockRejectedValueOnce({
+      response: { status: 400, data: { some: 'data' } },
+    });
 
     try {
       await get(anUrl());

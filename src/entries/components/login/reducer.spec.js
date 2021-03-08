@@ -72,7 +72,11 @@ describe('Login reducer', () => {
 
   it('sets the tokens when mobile authentication succeeds', () => {
     const tokens = { accessToken: 'token', refreshToken: 'refresh' };
-    const action = { type: MOBILE_AUTHENTICATION_SUCCESS, tokens, method: 'mobileId' };
+    const action = {
+      type: MOBILE_AUTHENTICATION_SUCCESS,
+      tokens,
+      method: 'mobileId',
+    };
     const newState = loginReducer(undefined, action);
     expect(newState.token).toBe('token');
     expect(newState.refreshToken).toBe('refresh');

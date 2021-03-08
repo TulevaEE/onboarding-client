@@ -31,7 +31,10 @@ export function thirdPillarStatistics(statistics) {
     }
     return postThirdPillarStatistics(statistics, getState().login.token).then(
       returnedStatistics => {
-        dispatch({ type: THIRD_PILLAR_STATISTICS, statistics: returnedStatistics });
+        dispatch({
+          type: THIRD_PILLAR_STATISTICS,
+          statistics: returnedStatistics,
+        });
       },
     );
   };

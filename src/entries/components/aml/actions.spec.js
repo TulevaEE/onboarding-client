@@ -88,7 +88,9 @@ describe('AML actions', () => {
     const missingAmlChecks = [{ type: 'CONTACT_DETAILS', success: false }];
     mockApi.getMissingAmlChecks = jest.fn(() => {
       expect(dispatch).toHaveBeenCalledTimes(1);
-      expect(dispatch).toHaveBeenCalledWith({ type: GET_MISSING_AML_CHECKS_START });
+      expect(dispatch).toHaveBeenCalledWith({
+        type: GET_MISSING_AML_CHECKS_START,
+      });
       dispatch.mockClear();
       return Promise.resolve(missingAmlChecks);
     });

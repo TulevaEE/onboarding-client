@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Message } from 'retranslate';
 import { connect } from 'react-redux';
 
-import moment from 'moment';
+import moment, { Moment } from 'moment';
 import Select from './Select';
 import { getReturnComparison, Key } from './api';
 import fundIsinsWithAvailableData from './fundIsinsWithAvailableData.json';
@@ -39,7 +39,7 @@ const LOADER = '...';
 
 const startDate = '2003-01-07';
 
-const format = (momentDate: any) => momentDate.format('YYYY-MM-DD');
+const format = (momentDate: Moment) => momentDate.format('YYYY-MM-DD');
 
 const tenYearsAgo = format(moment().subtract(10, 'years'));
 const fiveYearsAgo = format(moment().subtract(5, 'years'));
@@ -98,7 +98,11 @@ export class ReturnComparison extends Component<Props, State> {
       );
       this.setState({ personalReturn, pensionFundReturn, indexReturn });
     } catch (ignored) {
-      this.setState({ personalReturn: null, pensionFundReturn: null, indexReturn: null });
+      this.setState({
+        personalReturn: null,
+        pensionFundReturn: null,
+        indexReturn: null,
+      });
     } finally {
       this.setState({ loading: false });
     }
@@ -144,7 +148,10 @@ export class ReturnComparison extends Component<Props, State> {
             <div className="col-sm-4 text-center">
               <Select
                 options={[
-                  { value: Key.SECOND_PILLAR, label: 'returnComparison.personal.secondPillar' },
+                  {
+                    value: Key.SECOND_PILLAR,
+                    label: 'returnComparison.personal.secondPillar',
+                  },
                   // { value: Key.THIRD_PILLAR, label: 'returnComparison.personal.thirdPillar' },
                 ]}
                 selected={selectedPersonalKey}
@@ -181,7 +188,10 @@ export class ReturnComparison extends Component<Props, State> {
             <div className="col-sm-4 text-center">
               <Select
                 options={[
-                  { value: Key.UNION_STOCK_INDEX, label: 'returnComparison.index.unionStockIndex' },
+                  {
+                    value: Key.UNION_STOCK_INDEX,
+                    label: 'returnComparison.index.unionStockIndex',
+                  },
                   { value: Key.CPI, label: 'returnComparison.index.cpi' },
                 ]}
                 selected={selectedIndexKey}
