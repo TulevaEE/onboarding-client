@@ -28,5 +28,11 @@ module.exports = {
         '@typescript-eslint/explicit-module-boundary-types': 1, // should only be used once file is renamed to actual typescript
       },
     },
+    {
+      files: ['**/*.d.ts', '**/*.test.tsx', '**/*.test.ts'],
+      rules: {
+        '@typescript-eslint/no-explicit-any': 0, // fine in tests
+      },
+    },
   ],
 };

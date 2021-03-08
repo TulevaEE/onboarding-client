@@ -47,18 +47,6 @@ describe('http', () => {
     });
   }
 
-  function fakeUnsuccessfulResponseWithValue(value) {
-    return Promise.resolve({
-      status: 400,
-      json: () => Promise.resolve(value),
-      blob: () => Promise.resolve(value),
-    });
-  }
-
-  function fail() {
-    expect(0).toBe(1);
-  }
-
   it('gets json from url', async () => {
     axios.get.mockResolvedValueOnce({ data: { some: 'data' } });
 

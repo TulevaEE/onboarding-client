@@ -1,6 +1,9 @@
 import config from 'react-global-configuration';
 import { downloadFile, get, post, postForm, put, patch, simpleFetch } from './http';
 
+// TODO: type API responses
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 const API_URI = '/api';
 export function getEndpoint(endpoint: string): string {
   // in production, we proxy through a proxy endpoint at /proxy.
@@ -269,6 +272,8 @@ export function getMissingAmlChecks(token: string): Promise<any> {
     Authorization: `Bearer ${token}`,
   });
 }
+
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 export function postThirdPillarStatistics(
   statistics: ThirdPillarStatistics,

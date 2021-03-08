@@ -2,14 +2,14 @@ import React, { FC } from 'react';
 import { withTranslations } from 'retranslate';
 
 interface Option {
-  value: any;
+  value: string;
   label: string;
 }
 
 interface SelectProps {
   options: Option[];
-  selected: any;
-  onChange: (...args: any[]) => void;
+  selected: string;
+  onChange: (...args: string[]) => void;
   translations: { translate: (label: string) => '' };
   disabled?: boolean;
 }

@@ -11,7 +11,7 @@ import convertFundsToFundNameMap from './convertFundsToFundNameMap';
 type NullableNumber = number | null;
 
 interface Option {
-  value: any;
+  value: string;
   label: string;
 }
 
@@ -77,7 +77,7 @@ export class ReturnComparison extends Component<Props, State> {
     }
   }
 
-  async loadReturns(): Promise<any> {
+  async loadReturns(): Promise<void> {
     const { token } = this.props;
     const { fromDate, selectedPersonalKey, selectedPensionFundKey, selectedIndexKey } = this.state;
 
@@ -222,7 +222,10 @@ export class ReturnComparison extends Component<Props, State> {
   }
 }
 
-const mapStateToProps = (state: Record<string, any>): Record<string, any> => ({
+const mapStateToProps = (state: {
+  login: { token: string };
+  exchange: { targetFunds: Record<string, string>[] };
+}): { token: string; fundNameMap: Record<string, string> } => ({
   token: state.login.token,
   fundNameMap: convertFundsToFundNameMap(state.exchange.targetFunds),
 });
