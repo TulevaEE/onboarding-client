@@ -12,6 +12,7 @@ import { routerMiddleware, ConnectedRouter } from 'connected-react-router';
 import mixpanel from 'mixpanel-browser';
 import MixpanelProvider from 'react-mixpanel';
 import GoogleAnalytics from 'react-ga';
+import { QueryClient, QueryClientProvider } from 'react-query';
 
 import createRootReducer from './reducers';
 import { getQueryParams } from './utils';
@@ -41,6 +42,8 @@ const store = createStore(
   createRootReducer(history),
   composeEnhancers(applyMiddleware(routerMiddleware(history), thunk)),
 );
+
+const queryClient = new QueryClient();
 
 function applyRouting() {
   const queryParams = getQueryParams();
@@ -96,15 +99,17 @@ class App extends Component {
           language={applyLanguage()}
           fallbackLanguage="et"
         >
-          <ReduxProvider store={store}>
-            <ConnectedRouter history={history}>
-              <Switch>
-                <Route path="/login" component={LoginPage} />
-                <Route path="/terms-of-use" component={TermsOfUse} />
-                <PrivateRoute exact path="" component={LoggedInApp} />
-              </Switch>
-            </ConnectedRouter>
-          </ReduxProvider>
+          <QueryClientProvider queryClient={queryClient}>
+            <ReduxProvider store={store}>
+              <ConnectedRouter history={history}>
+                <Switch>
+                  <Route path="/login" component={LoginPage} />
+                  <Route path="/terms-of-use" component={TermsOfUse} />
+                  <PrivateRoute exact path="" component={LoggedInApp} />
+                </Switch>
+              </ConnectedRouter>
+            </ReduxProvider>
+          </QueryClientProvider>
         </TranslationProvider>
       </MixpanelProvider>
     );

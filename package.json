@@ -34,6 +34,7 @@
     "react-ga": "^2.6.0",
     "react-global-configuration": "^1.4.1",
     "react-mixpanel": "0.0.11",
+    "react-query": "^3.12.1",
     "react-redux": "6.0.1",
     "react-router-dom": "5.0.1",
     "react-scripts": "^4.0.2",
@@ -101,8 +102,8 @@
       "pre-commit": "lint-staged"
     }
   },
-  "proxy": "http://localhost:9000",
-  "//": "https://onboarding-service.tuleva.ee",
+  "//": "http://localhost:9000",
+  "proxy": "https://onboarding-service.tuleva.ee",
   "browserslist": [
     ">0.2%",
     "not dead",
