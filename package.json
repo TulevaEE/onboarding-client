@@ -46,7 +46,6 @@
     "uuid": "^3.3.3"
   },
   "scripts": {
-    "heroku-postbuild": "npm run build-onboarding",
     "start": "NODE_ENV=production node server",
     "prestart": "npm run build-onboarding",
     "build-onboarding": "APP_NAME=onboarding npm run build-app",
