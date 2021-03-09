@@ -1,3 +1,5 @@
+@import '../../variables';
+
 .table-container {
   width: 100%;
 }
@@ -14,12 +16,12 @@
   text-transform: uppercase;
   font-weight: bolder;
   font-size: 0.8em;
-  background-color: #fafafa;
+  background-color: $gray-washed;
   border-top-width: 1px;
   border-top-style: solid;
   border-bottom-width: 1px;
   border-bottom-style: solid;
-  border-color: #d8d8d8;
+  border-color: $gray-mid;
   white-space: nowrap;
   color: darkgray;
 }
@@ -27,18 +29,21 @@
 .table tbody {
   border-bottom-width: 2px;
   border-bottom-style: solid;
-  border-color: #d8d8d8;
+  border-color: $gray-mid;
 }
 
-.table tfoot td:last-child, .table tfoot td:first-child {
+.table tfoot td:last-child,
+.table tfoot td:first-child {
   font-weight: bold;
 }
 
-.table td, .table th {
+.table td,
+.table th {
   text-align: right;
 }
 
-.table td:first-child, .table th:first-child {
+.table td:first-child,
+.table th:first-child {
   text-align: left;
 }
 

@@ -99,17 +99,15 @@ class App extends Component {
           language={applyLanguage()}
           fallbackLanguage="et"
         >
-          <QueryClientProvider queryClient={queryClient}>
-            <ReduxProvider store={store}>
-              <ConnectedRouter history={history}>
-                <Switch>
-                  <Route path="/login" component={LoginPage} />
-                  <Route path="/terms-of-use" component={TermsOfUse} />
-                  <PrivateRoute exact path="" component={LoggedInApp} />
-                </Switch>
-              </ConnectedRouter>
-            </ReduxProvider>
-          </QueryClientProvider>
+          <ReduxProvider store={store}>
+            <ConnectedRouter history={history}>
+              <Switch>
+                <Route path="/login" component={LoginPage} />
+                <Route path="/terms-of-use" component={TermsOfUse} />
+                <PrivateRoute exact path="" component={LoggedInApp} />
+              </Switch>
+            </ConnectedRouter>
+          </ReduxProvider>
         </TranslationProvider>
       </MixpanelProvider>
     );

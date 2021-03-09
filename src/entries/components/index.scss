@@ -2,11 +2,10 @@
  * Here we lay out base styles, like typography and bootstrap customization.
  */
 
-@import "./fonts/index.scss";
-@import "variables";
-@import "~bootstrap/scss/bootstrap.scss";
-@import "~font-awesome/scss/font-awesome.scss";
-
+@import './fonts/index.scss';
+@import 'variables';
+@import '~bootstrap/scss/bootstrap.scss';
+@import '~font-awesome/scss/font-awesome.scss';
 
 /**
  * Element overrides
@@ -25,25 +24,29 @@ button {
   font-family: $font-family-sans-serif;
 }
 
-h1, .h1 {
+h1,
+.h1 {
   font-size: 2em;
   font-weight: 400;
   color: $text-primary;
 }
 
-h2, .h2 {
+h2,
+.h2 {
   font-size: 1.5em;
   font-weight: 500;
   color: $text-primary;
 }
 
-h3, .h3 {
+h3,
+.h3 {
   font-size: 1.25em;
   font-weight: 500;
   color: $text-primary;
 }
 
-p, .p {
+p,
+.p {
   line-height: 1.44;
   font-size: 1em;
   font-weight: normal;
@@ -55,7 +58,7 @@ p, .p {
 }
 
 small {
-  font-size: 0.875em;
+  font-size: $font-size-small;
   color: $text-primary;
 }
 
