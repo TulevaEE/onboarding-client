@@ -30,7 +30,7 @@
     "react": "^17.0.1",
     "react-app-polyfill": "^1.0.2",
     "react-dom": "^17.0.1",
-    "react-facebook": "^5.0.3",
+    "react-facebook": "^8.1.4",
     "react-ga": "^2.6.0",
     "react-global-configuration": "^1.4.1",
     "react-mixpanel": "0.0.11",
