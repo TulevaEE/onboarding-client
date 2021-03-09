@@ -6,6 +6,7 @@ import {
   Application,
   ApplicationType,
   EarlyWithdrawalApplication,
+  StopContributionsApplication,
   WithdrawalApplication,
 } from '../../common/api';
 
@@ -42,8 +43,9 @@ const ApplicationCard: React.FunctionComponent<{ application: Application }> = (
       return <EarlyWithdrawalCard application={application} />;
     case ApplicationType.WITHDRAWAL:
       return <WithdrawalCard application={application} />;
-    case ApplicationType.EXCHANGE:
     case ApplicationType.STOP_CONTRIBUTIONS:
+      return <StopContributionsCard application={application} />;
+    case ApplicationType.EXCHANGE:
     case ApplicationType.RESUME_CONTRIBUTIONS:
     default:
       return <></>;
@@ -56,14 +58,8 @@ const EarlyWithdrawalCard: React.FunctionComponent<{ application: EarlyWithdrawa
   application,
 }) => (
   <BaseApplicationCard
-    header={
-      <div style={{ display: 'flex' }}>
-        <b className="mr-3">
-          <Message>applications.type.earlyWithdrawal.title</Message>
-        </b>
-        {moment(application.creationTime).format('DD.MM.YYYY')}
-      </div>
-    }
+    title={<Message>applications.type.earlyWithdrawal.title</Message>}
+    creationTime={application.creationTime}
   >
     <DefinitionList
       definitions={[
@@ -84,24 +80,40 @@ const WithdrawalCard: React.FunctionComponent<{ application: WithdrawalApplicati
   application,
 }) => (
   <BaseApplicationCard
-    header={
-      <div style={{ display: 'flex' }}>
-        <b className="mr-3">
-          <Message>applications.type.earlyWithdrawal.title</Message>
-        </b>
-        {moment(application.creationTime).format('DD.MM.YYYY')}
-      </div>
-    }
+    title={<Message>applications.type.withdrawal.title</Message>}
+    creationTime={application.creationTime}
   >
     <DefinitionList
       definitions={[
         {
-          key: <Message>applications.type.earlyWithdrawal.time</Message>,
+          key: <Message>applications.type.withdrawal.time</Message>,
           value: moment(application.details.withdrawalTime).format('MM.YYYY'),
         },
         {
           key: <Message>applications.type.earlyWithdrawal.account</Message>,
           value: application.details.depositAccountIBAN,
+        },
+      ]}
+    />
+  </BaseApplicationCard>
+);
+
+const StopContributionsCard: React.FunctionComponent<{
+  application: StopContributionsApplication;
+}> = ({ application }) => (
+  <BaseApplicationCard
+    title={<Message>applications.type.stopContributions.title</Message>}
+    creationTime={application.creationTime}
+  >
+    <DefinitionList
+      definitions={[
+        {
+          key: <Message>applications.type.stopContributions.time</Message>,
+          value: moment(application.details.stopTime).format('DD.MM.YYYY'),
+        },
+        {
+          key: <Message>applications.type.stopContributions.resumeTime</Message>,
+          value: moment(application.details.earliestResumeTime).format('DD.MM.YYYY'),
         },
       ]}
     />
@@ -123,13 +135,17 @@ const DefinitionList: React.FunctionComponent<{
 );
 
 const BaseApplicationCard: React.FunctionComponent<{
-  header: React.ReactNode;
+  title: React.ReactNode;
+  creationTime: string;
   children: React.ReactNode;
-}> = ({ header, children }) => {
+}> = ({ title, creationTime, children }) => {
   return (
     <div className={styles.card}>
       <div className={styles.header}>
-        {header}
+        <div className="d-flex">
+          <b className="mr-3">{title}</b>
+          {moment(creationTime).format('DD.MM.YYYY')}
+        </div>
         <button type="button" className="btn btn-light d-none d-md-block ml-2">
           <Message>applications.cancel</Message>
         </button>
