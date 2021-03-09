@@ -25,7 +25,10 @@ describe('Third pillar select sources step', () => {
     component.setProps({ loadingSourceFunds: true, sourceFunds: [] });
     expect(component.contains(<Loader className="align-middle" />)).toBe(true);
 
-    component.setProps({ loadingSourceFunds: false, sourceFunds: [{ fund: true }] });
+    component.setProps({
+      loadingSourceFunds: false,
+      sourceFunds: [{ fund: true }],
+    });
     expect(component.contains(<Loader className="align-middle" />)).toBe(false);
   });
 
@@ -43,7 +46,10 @@ describe('Third pillar select sources step', () => {
     });
     expect(fullSelectionRadio().prop('selected')).toBe(true);
 
-    component.setProps({ exchangeExistingUnits: false, futureContributionsFundIsin: 'EE123' });
+    component.setProps({
+      exchangeExistingUnits: false,
+      futureContributionsFundIsin: 'EE123',
+    });
     expect(fullSelectionRadio().prop('selected')).toBe(false);
 
     component.setProps({

@@ -79,7 +79,9 @@ describe('AML reducer', () => {
   });
 
   it('starts loading when creating aml checks', () => {
-    const newState = amlReducer(initialState, { type: CREATE_AML_CHECKS_START });
+    const newState = amlReducer(initialState, {
+      type: CREATE_AML_CHECKS_START,
+    });
 
     expect(newState.loading).toBe(true);
     expect(newState.error).toBe(null);

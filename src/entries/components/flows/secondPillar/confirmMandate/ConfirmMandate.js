@@ -253,7 +253,10 @@ ConfirmMandate.propTypes = {
     mandateSigningError: Types.shape({ body: Types.string }),
     agreedToTerms: Types.bool,
   }).isRequired,
-  selectedFutureContributionsFund: Types.shape({ isin: Types.string, name: Types.string }),
+  selectedFutureContributionsFund: Types.shape({
+    isin: Types.string,
+    name: Types.string,
+  }),
   address: Types.shape({}),
   hasAddress: Types.bool,
   loading: Types.bool,

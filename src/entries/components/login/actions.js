@@ -104,7 +104,11 @@ export function handleLoginCookies() {
     if (tokens.accessToken && tokens.refreshToken) {
       const loginMethod = getCookie(LOGIN_COOKIE_METHOD_NAME);
       if (loginMethod === 'mobileId' || loginMethod === 'smartId') {
-        dispatch({ type: MOBILE_AUTHENTICATION_SUCCESS, tokens, method: loginMethod });
+        dispatch({
+          type: MOBILE_AUTHENTICATION_SUCCESS,
+          tokens,
+          method: loginMethod,
+        });
       } else if (loginMethod === 'idCard') {
         dispatch({ type: ID_CARD_AUTHENTICATION_SUCCESS, tokens });
       } else {
@@ -125,7 +129,11 @@ function getMobileIdTokens() {
         .then(tokens => {
           if (tokens.accessToken) {
             // authentication complete
-            dispatch({ type: MOBILE_AUTHENTICATION_SUCCESS, tokens, method: 'mobileId' });
+            dispatch({
+              type: MOBILE_AUTHENTICATION_SUCCESS,
+              tokens,
+              method: 'mobileId',
+            });
             dispatch(handleLogin());
           } else if (getState().login.loadingAuthentication) {
             // authentication not yet completed
@@ -161,7 +169,11 @@ function getSmartIdTokens() {
         .then(tokens => {
           if (tokens.accessToken) {
             // authentication complete
-            dispatch({ type: MOBILE_AUTHENTICATION_SUCCESS, tokens, method: 'smartId' });
+            dispatch({
+              type: MOBILE_AUTHENTICATION_SUCCESS,
+              tokens,
+              method: 'smartId',
+            });
             dispatch(handleLogin());
           } else if (getState().login.loadingAuthentication) {
             // authentication not yet completed

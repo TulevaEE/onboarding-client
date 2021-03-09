@@ -13,7 +13,10 @@ describe('Status Box', () => {
 
   beforeEach(() => {
     props = {
-      conversion: { secondPillar: { contribution: {} }, thirdPillar: { contribution: {} } },
+      conversion: {
+        secondPillar: { contribution: {} },
+        thirdPillar: { contribution: {} },
+      },
     };
     component = shallow(<StatusBox {...props} />);
   });

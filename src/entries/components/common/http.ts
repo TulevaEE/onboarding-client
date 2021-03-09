@@ -3,6 +3,8 @@ import config from 'react-global-configuration';
 
 axios.defaults.withCredentials = true;
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 function createCustomHeaders(): Record<string, string> {
   return {
     'Accept-Language': config.get('language'),
@@ -145,3 +147,5 @@ export async function simpleFetch(method: string, url: string): Promise<any> {
   });
   return transformResponse(response);
 }
+
+/* eslint-enable @typescript-eslint/no-explicit-any */

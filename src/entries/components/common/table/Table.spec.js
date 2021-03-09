@@ -64,7 +64,12 @@ describe('Table', () => {
     component = shallow(
       <Table
         columns={[
-          { title: 'Flower', dataIndex: 'flower', footer: 'power', hideOnMobile: true },
+          {
+            title: 'Flower',
+            dataIndex: 'flower',
+            footer: 'power',
+            hideOnMobile: true,
+          },
           { title: 'Color', dataIndex: 'color', footer: 'rainbow' },
         ]}
         dataSource={[

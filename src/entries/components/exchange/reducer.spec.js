@@ -225,9 +225,24 @@ describe('Exchange reducer', () => {
     ];
     const sourceFundsAction = { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds };
     const targetFunds = [
-      { name: 'name', isin: 'isin0', fundManager: { name: 'Random company fund' }, pillar: 2 },
-      { name: 'name', isin: 'isin1', fundManager: { name: 'Tuleva' }, pillar: 2 },
-      { name: 'name', isin: 'isin2', fundManager: { name: 'Tuleva' }, pillar: 2 },
+      {
+        name: 'name',
+        isin: 'isin0',
+        fundManager: { name: 'Random company fund' },
+        pillar: 2,
+      },
+      {
+        name: 'name',
+        isin: 'isin1',
+        fundManager: { name: 'Tuleva' },
+        pillar: 2,
+      },
+      {
+        name: 'name',
+        isin: 'isin2',
+        fundManager: { name: 'Tuleva' },
+        pillar: 2,
+      },
     ];
     const targetFundsAction = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
     const state = [sourceFundsAction, targetFundsAction].reduce(exchangeReducer);
@@ -244,9 +259,24 @@ describe('Exchange reducer', () => {
         fundManager: { name: 'Random company fund' },
         pillar: 2,
       },
-      { name: 'name', isin: '3rdpillartarget', fundManager: { name: 'Tuleva' }, pillar: 3 },
-      { name: 'name', isin: 'target1', fundManager: { name: 'Tuleva' }, pillar: 2 },
-      { name: 'name', isin: 'target2', fundManager: { name: 'Tuleva' }, pillar: 2 },
+      {
+        name: 'name',
+        isin: '3rdpillartarget',
+        fundManager: { name: 'Tuleva' },
+        pillar: 3,
+      },
+      {
+        name: 'name',
+        isin: 'target1',
+        fundManager: { name: 'Tuleva' },
+        pillar: 2,
+      },
+      {
+        name: 'name',
+        isin: 'target2',
+        fundManager: { name: 'Tuleva' },
+        pillar: 2,
+      },
     ];
     const targetFundsAction = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
     const state = [sourceFundsAction, targetFundsAction].reduce(exchangeReducer);
@@ -262,8 +292,18 @@ describe('Exchange reducer', () => {
     ];
     const sourceFundsAction = { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds };
     const targetFunds = [
-      { name: 'name', isin: 'isin1', fundManager: { name: 'Tuleva' }, pillar: 2 },
-      { name: 'name', isin: 'isin2', fundManager: { name: 'Tuleva' }, pillar: 2 },
+      {
+        name: 'name',
+        isin: 'isin1',
+        fundManager: { name: 'Tuleva' },
+        pillar: 2,
+      },
+      {
+        name: 'name',
+        isin: 'isin2',
+        fundManager: { name: 'Tuleva' },
+        pillar: 2,
+      },
     ];
     const targetFundsAction = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
     const state = [sourceFundsAction, targetFundsAction].reduce(exchangeReducer);
@@ -282,8 +322,18 @@ describe('Exchange reducer', () => {
     ];
     const sourceFundsAction = { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds };
     const targetFunds = [
-      { name: 'name', isin: 'target', fundManager: { name: 'Tuleva' }, pillar: 2 },
-      { name: 'name', isin: 'target 2', fundManager: { name: 'Tuleva' }, pillar: 2 },
+      {
+        name: 'name',
+        isin: 'target',
+        fundManager: { name: 'Tuleva' },
+        pillar: 2,
+      },
+      {
+        name: 'name',
+        isin: 'target 2',
+        fundManager: { name: 'Tuleva' },
+        pillar: 2,
+      },
     ];
     const targetFundsAction = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
     const state = [sourceFundsAction, targetFundsAction].reduce(exchangeReducer);
@@ -305,8 +355,18 @@ describe('Exchange reducer', () => {
     ];
     const sourceFundsAction = { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds };
     const targetFunds = [
-      { name: 'name', isin: 'target', fundManager: { name: 'Tuleva' }, pillar: 2 },
-      { name: 'name', isin: 'target 2', fundManager: { name: 'Tuleva' }, pillar: 2 },
+      {
+        name: 'name',
+        isin: 'target',
+        fundManager: { name: 'Tuleva' },
+        pillar: 2,
+      },
+      {
+        name: 'name',
+        isin: 'target 2',
+        fundManager: { name: 'Tuleva' },
+        pillar: 2,
+      },
     ];
     const targetFundsAction = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
     const state = [sourceFundsAction, targetFundsAction].reduce(exchangeReducer);
@@ -364,9 +424,21 @@ describe('Exchange reducer', () => {
   });
 
   it('filters out 2nd pillar target funds', () => {
-    const secondPillarFund = { isin: 'asd', fundManager: { name: 'Tuleva' }, pillar: 2 };
-    const anotherSecondPillarFund = { isin: 'hjk', fundManager: { name: 'B' }, pillar: 2 };
-    const thirdPillarFund = { isin: 'dfg', fundManager: { name: 'A' }, pillar: 3 };
+    const secondPillarFund = {
+      isin: 'asd',
+      fundManager: { name: 'Tuleva' },
+      pillar: 2,
+    };
+    const anotherSecondPillarFund = {
+      isin: 'hjk',
+      fundManager: { name: 'B' },
+      pillar: 2,
+    };
+    const thirdPillarFund = {
+      isin: 'dfg',
+      fundManager: { name: 'A' },
+      pillar: 3,
+    };
 
     const targetFunds = [secondPillarFund, anotherSecondPillarFund, thirdPillarFund];
     const action = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };

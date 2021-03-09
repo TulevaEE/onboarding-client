@@ -8,7 +8,12 @@ describe('Greeting bar', () => {
 
   beforeEach(() => {
     props = {
-      user: { firstName: 'first', lastName: 'last', email: 'email', phoneNumber: 'phoneNumber' },
+      user: {
+        firstName: 'first',
+        lastName: 'last',
+        email: 'email',
+        phoneNumber: 'phoneNumber',
+      },
     };
     component = shallow(<GreetingBar {...props} />);
   });

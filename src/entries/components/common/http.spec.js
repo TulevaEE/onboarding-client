@@ -47,18 +47,6 @@ describe('http', () => {
     });
   }
 
-  function fakeUnsuccessfulResponseWithValue(value) {
-    return Promise.resolve({
-      status: 400,
-      json: () => Promise.resolve(value),
-      blob: () => Promise.resolve(value),
-    });
-  }
-
-  function fail() {
-    expect(0).toBe(1);
-  }
-
   it('gets json from url', async () => {
     axios.get.mockResolvedValueOnce({ data: { some: 'data' } });
 
@@ -113,7 +101,9 @@ describe('http', () => {
 
   it('throws if request fails', async () => {
     expect.assertions(1);
-    axios.get.mockRejectedValueOnce({ response: { status: 400, data: { some: 'data' } } });
+    axios.get.mockRejectedValueOnce({
+      response: { status: 400, data: { some: 'data' } },
+    });
 
     try {
       await get(anUrl());

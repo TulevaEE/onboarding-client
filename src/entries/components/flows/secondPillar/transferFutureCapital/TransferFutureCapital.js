@@ -145,7 +145,10 @@ TransferFutureCapital.propTypes = {
   selectedFutureContributionsFundIsin: Types.string,
   targetFunds: Types.arrayOf(Types.shape({})),
   loading: Types.bool,
-  activeSourceFund: Types.shape({ name: Types.string, managementFeePercent: Types.string }),
+  activeSourceFund: Types.shape({
+    name: Types.string,
+    managementFeePercent: Types.string,
+  }),
   isUserConverted: Types.bool,
   sourceSelection: Types.arrayOf(Types.shape({ targetFundIsin: Types.string })),
   sourceSelectionExact: Types.bool,

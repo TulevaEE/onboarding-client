@@ -1,20 +1,12 @@
 import React from 'react';
 import { PropTypes as Types } from 'prop-types';
-import { withTranslations } from 'retranslate';
 
 import { createClamper } from '../../../../../common/utils';
 import './FundExchangeRow.scss';
 
 const clampFromZeroToHundred = createClamper(0, 100);
 
-export const FundExchangeRow = ({
-  // exporting without translations for testing purposes
-  sourceFunds,
-  targetFunds,
-  onChange,
-  selection,
-  translations: { translate },
-}) => {
+export const FundExchangeRow = ({ sourceFunds, targetFunds, onChange, selection }) => {
   const randomString = (Math.random() + 1).toString(36).substring(7);
   const randomId = `tv-percentage-selector-${randomString}`;
   const sortedSourceFunds = sourceFunds
@@ -118,9 +110,6 @@ FundExchangeRow.propTypes = {
     }),
   ),
   onChange: Types.func,
-  translations: Types.shape({
-    translate: Types.func.isRequired,
-  }).isRequired,
 };
 
-export default withTranslations(FundExchangeRow);
+export default FundExchangeRow;

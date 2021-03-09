@@ -17,11 +17,15 @@ describe('Login form', () => {
     const componentHas = key => component.contains(<Message>{key}</Message>);
 
     expect(componentHas('login.title')).toBe(true);
-    expect(componentHas('login.title.thirdPillar.withExchange', { monthlyContribution: 500 })).toBe(
-      false,
-    );
     expect(
-      componentHas('login.title.thirdPillar.withoutExchange', { monthlyContribution: 500 }),
+      componentHas('login.title.thirdPillar.withExchange', {
+        monthlyContribution: 500,
+      }),
+    ).toBe(false);
+    expect(
+      componentHas('login.title.thirdPillar.withoutExchange', {
+        monthlyContribution: 500,
+      }),
     ).toBe(false);
     expect(componentHas('login.subtitle.thirdPillar')).toBe(false);
   });
@@ -36,11 +40,15 @@ describe('Login form', () => {
       component.contains(<Message params={params}>{key}</Message>);
 
     expect(componentHas('login.title')).toBe(false);
-    expect(componentHas('login.title.thirdPillar.withExchange', { monthlyContribution: 500 })).toBe(
-      true,
-    );
     expect(
-      componentHas('login.title.thirdPillar.withoutExchange', { monthlyContribution: 500 }),
+      componentHas('login.title.thirdPillar.withExchange', {
+        monthlyContribution: 500,
+      }),
+    ).toBe(true);
+    expect(
+      componentHas('login.title.thirdPillar.withoutExchange', {
+        monthlyContribution: 500,
+      }),
     ).toBe(false);
     expect(componentHas('login.subtitle.thirdPillar')).toBe(true);
   });
@@ -52,11 +60,15 @@ describe('Login form', () => {
       component.contains(<Message params={params}>{key}</Message>);
 
     expect(componentHas('login.title')).toBe(false);
-    expect(componentHas('login.title.thirdPillar.withExchange', { monthlyContribution: 500 })).toBe(
-      false,
-    );
     expect(
-      componentHas('login.title.thirdPillar.withoutExchange', { monthlyContribution: 500 }),
+      componentHas('login.title.thirdPillar.withExchange', {
+        monthlyContribution: 500,
+      }),
+    ).toBe(false);
+    expect(
+      componentHas('login.title.thirdPillar.withoutExchange', {
+        monthlyContribution: 500,
+      }),
     ).toBe(true);
     expect(componentHas('login.subtitle.thirdPillar')).toBe(true);
   });

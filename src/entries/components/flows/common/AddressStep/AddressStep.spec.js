@@ -21,13 +21,29 @@ describe('AddressStep', () => {
   });
 
   it('redirects to next path only when address is already filled and aml check passed in 3rd pillar', () => {
-    component.setProps({ pillar: 3, hasAddress: false, hasContactDetailsAmlCheck: false });
+    component.setProps({
+      pillar: 3,
+      hasAddress: false,
+      hasContactDetailsAmlCheck: false,
+    });
     expect(redirects()).toBe(false);
-    component.setProps({ pillar: 3, hasAddress: false, hasContactDetailsAmlCheck: true });
+    component.setProps({
+      pillar: 3,
+      hasAddress: false,
+      hasContactDetailsAmlCheck: true,
+    });
     expect(redirects()).toBe(false);
-    component.setProps({ pillar: 3, hasAddress: true, hasContactDetailsAmlCheck: false });
+    component.setProps({
+      pillar: 3,
+      hasAddress: true,
+      hasContactDetailsAmlCheck: false,
+    });
     expect(redirects()).toBe(false);
-    component.setProps({ pillar: 3, hasAddress: true, hasContactDetailsAmlCheck: true });
+    component.setProps({
+      pillar: 3,
+      hasAddress: true,
+      hasContactDetailsAmlCheck: true,
+    });
     expect(redirects()).toBe(true);
   });
 
@@ -48,7 +64,11 @@ describe('AddressStep', () => {
     const updateOnlyEmailAndPhone = true;
     const updateFullUser = jest.fn();
     const updateEmailAndPhone = jest.fn();
-    component.setProps({ updateOnlyEmailAndPhone, updateEmailAndPhone, updateFullUser });
+    component.setProps({
+      updateOnlyEmailAndPhone,
+      updateEmailAndPhone,
+      updateFullUser,
+    });
     expect(component.find(UpdateUserForm).exists()).toBe(true);
 
     component.find(UpdateUserForm).simulate('submit', user);
