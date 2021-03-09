@@ -1,0 +1,7 @@
+coverage:
+  status:
+    patch:
+      default:
+        target: auto
+        threshold: 60%
+        base: auto
