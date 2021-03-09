@@ -35,7 +35,7 @@ export const TransferFutureCapital = ({
   if (loading) {
     return <Loader className="align-middle" />;
   }
-  const tulevaTargetFunds = targetFunds.filter(fund => isTuleva(fund));
+  const tulevaTargetFunds = targetFunds.filter((fund) => isTuleva(fund));
   const sortedTargetFunds = targetFunds
     .slice()
     .sort((fund1, fund2) => fund1.name.localeCompare(fund2.name));
@@ -52,20 +52,20 @@ export const TransferFutureCapital = ({
       <select
         style={fundSelectStyles}
         className="custom-select mt-4"
-        onChange={event => onSelectFutureCapitalFund(event.target.value)}
+        onChange={(event) => onSelectFutureCapitalFund(event.target.value)}
         value={selectedFutureContributionsFundIsin || ''}
       >
         <option value="1" hidden="hidden">
           {translate('transfer.future.capital.other.fund')}
         </option>
-        {sortedTargetFunds.map(fund => (
+        {sortedTargetFunds.map((fund) => (
           <option value={fund.isin} key={fund.isin}>
             {fund.name}
           </option>
         ))}
       </select>
 
-      {tulevaTargetFunds.map(fund => (
+      {tulevaTargetFunds.map((fund) => (
         <Radio
           key={fund.isin}
           id={`tv-transfer-future-capital-${fund.isin}`}
@@ -159,7 +159,7 @@ TransferFutureCapital.propTypes = {
   nextPath: Types.string.isRequired,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   selectedFutureContributionsFundIsin: state.exchange.selectedFutureContributionsFundIsin,
   targetFunds: state.exchange.targetFunds || [],
   loading:
@@ -169,7 +169,7 @@ const mapStateToProps = state => ({
     state.exchange.loadingTargetFunds,
   activeSourceFund: utils.findWhere(
     state.exchange.sourceFunds || [],
-    element => element.activeFund,
+    (element) => element.activeFund,
   ),
   sourceSelection: state.exchange.sourceSelection,
   sourceSelectionExact: state.exchange.sourceSelectionExact,
@@ -177,7 +177,7 @@ const mapStateToProps = state => ({
     state.login.userConversion && state.login.userConversion.secondPillar.selectionComplete,
 });
 
-const mapDispatchToProps = dispatch =>
+const mapDispatchToProps = (dispatch) =>
   bindActionCreators(
     {
       onSelectFutureCapitalFund: selectFutureContributionsFund,
@@ -187,9 +187,6 @@ const mapDispatchToProps = dispatch =>
 
 const translatedTransferFutureCapital = withTranslations(TransferFutureCapital);
 
-const connectToRedux = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-);
+const connectToRedux = connect(mapStateToProps, mapDispatchToProps);
 
 export default connectToRedux(translatedTransferFutureCapital);

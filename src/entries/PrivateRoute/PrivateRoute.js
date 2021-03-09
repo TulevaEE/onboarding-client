@@ -33,7 +33,7 @@ PrivateRoute.defaultProps = {
   isAuthenticated: false,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   isAuthenticated: !!state.login.token,
 });
 

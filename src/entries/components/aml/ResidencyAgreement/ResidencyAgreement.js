@@ -15,7 +15,7 @@ export const ResidencyAgreement = ({ isResident, onResidentChange, className }) 
       <div className="custom-control custom-checkbox">
         <Field
           checked={!!isResident}
-          onChange={e => onResidentChange(e.target.checked)}
+          onChange={(e) => onResidentChange(e.target.checked)}
           component="input"
           type="checkbox"
           name="aml.isResident"
@@ -47,11 +47,11 @@ ResidencyAgreement.defaultProps = {
   onResidentChange: () => {},
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   isResident: state.aml.isResident,
 });
 
-const mapDispatchToProps = dispatch =>
+const mapDispatchToProps = (dispatch) =>
   bindActionCreators(
     {
       onResidentChange: changeIsResident,
@@ -59,7 +59,4 @@ const mapDispatchToProps = dispatch =>
     dispatch,
   );
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(ResidencyAgreement);
+export default connect(mapStateToProps, mapDispatchToProps)(ResidencyAgreement);

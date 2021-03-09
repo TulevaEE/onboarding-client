@@ -56,28 +56,11 @@ describe('Transfer future capital step', () => {
     const loadingTargetFunds = false;
     component.setProps({ targetFunds, loadingTargetFunds });
     expect(component.find(Radio).length).toBe(3);
-    expect(
-      component
-        .find(Radio)
-        .at(0)
-        .childAt(0)
-        .text(),
-    ).toEqual('A<InfoTooltip />');
-    expect(
-      component
-        .find(Radio)
-        .at(1)
-        .childAt(0)
-        .text(),
-    ).toEqual('B<InfoTooltip />');
-    expect(
-      component
-        .find(Radio)
-        .at(2)
-        .childAt(0)
-        .childAt(0)
-        .get(0),
-    ).toEqual(<Message>transfer.future.capital.no</Message>);
+    expect(component.find(Radio).at(0).childAt(0).text()).toEqual('A<InfoTooltip />');
+    expect(component.find(Radio).at(1).childAt(0).text()).toEqual('B<InfoTooltip />');
+    expect(component.find(Radio).at(2).childAt(0).childAt(0).get(0)).toEqual(
+      <Message>transfer.future.capital.no</Message>,
+    );
   });
 
   it('has unique id-s based on isin or none for option radios', () => {
@@ -88,7 +71,7 @@ describe('Transfer future capital step', () => {
     ];
     component.setProps({ targetFunds });
 
-    const ids = component.find(Radio).map(radio => radio.prop('id'));
+    const ids = component.find(Radio).map((radio) => radio.prop('id'));
 
     expect(ids).toEqual([
       'tv-transfer-future-capital-AAA',
@@ -111,20 +94,12 @@ describe('Transfer future capital step', () => {
       selectedFutureContributionsFundIsin,
     });
 
-    const radioAtIndexSelected = index =>
-      component
-        .find(Radio)
-        .at(index)
-        .prop('selected');
+    const radioAtIndexSelected = (index) => component.find(Radio).at(index).prop('selected');
     expect(radioAtIndexSelected(0)).toBe(true);
     expect(radioAtIndexSelected(1)).toBe(false);
     expect(radioAtIndexSelected(2)).toBe(false);
 
-    const selectRadioAtIndex = index =>
-      component
-        .find(Radio)
-        .at(index)
-        .prop('onSelect')();
+    const selectRadioAtIndex = (index) => component.find(Radio).at(index).prop('onSelect')();
     const onSelectFutureCapitalFund = jest.fn();
     component.setProps({ onSelectFutureCapitalFund });
 
@@ -154,19 +129,11 @@ describe('Transfer future capital step', () => {
         selectedFutureContributionsFundIsin: null,
       });
 
-      const radioAtIndexSelected = index =>
-        component
-          .find(Radio)
-          .at(index)
-          .prop('selected');
+      const radioAtIndexSelected = (index) => component.find(Radio).at(index).prop('selected');
       expect(radioAtIndexSelected(2)).toBe(true);
 
       const noFutureConributionsTitleInBold = () =>
-        component
-          .find(Radio)
-          .at(2)
-          .find('p')
-          .hasClass('text-bold');
+        component.find(Radio).at(2).find('p').hasClass('text-bold');
 
       expect(noFutureConributionsTitleInBold()).toBe(true);
 
@@ -184,7 +151,10 @@ describe('Transfer future capital step', () => {
         name: 'bla',
         managementFeePercent: 0.5,
       };
-      const targetFunds = [{ isin: 'AAA', name: 'A' }, { isin: 'BBB', name: 'B' }];
+      const targetFunds = [
+        { isin: 'AAA', name: 'A' },
+        { isin: 'BBB', name: 'B' },
+      ];
       const loadingTargetFunds = false;
       const selectedFutureContributionsFundIsin = null;
 
@@ -223,7 +193,10 @@ describe('Transfer future capital step', () => {
         name: 'bla',
         managementFeePercent: 0.5,
       };
-      const targetFunds = [{ isin: 'AAA', name: 'A' }, { isin: 'BBB', name: 'B' }];
+      const targetFunds = [
+        { isin: 'AAA', name: 'A' },
+        { isin: 'BBB', name: 'B' },
+      ];
       const loadingTargetFunds = false;
       const selectedFutureContributionsFundIsin = null;
 
@@ -265,30 +238,10 @@ describe('Transfer future capital step', () => {
     ];
     const loadingTargetFunds = false;
     component.setProps({ targetFunds, loadingTargetFunds });
-    expect(
-      component
-        .find('option')
-        .at(0)
-        .prop('value'),
-    ).toBe('1');
-    expect(
-      component
-        .find('option')
-        .at(1)
-        .prop('value'),
-    ).toBe('AAA');
-    expect(
-      component
-        .find('option')
-        .at(2)
-        .prop('value'),
-    ).toBe('BBB');
-    expect(
-      component
-        .find('option')
-        .at(3)
-        .prop('value'),
-    ).toBe('CCC');
+    expect(component.find('option').at(0).prop('value')).toBe('1');
+    expect(component.find('option').at(1).prop('value')).toBe('AAA');
+    expect(component.find('option').at(2).prop('value')).toBe('BBB');
+    expect(component.find('option').at(3).prop('value')).toBe('CCC');
     expect(component.find('option').length).toBe(4);
   });
 });

@@ -8,7 +8,7 @@ jest.mock('../../../common/api', () => ({ getEndpoint: jest.fn() }));
 
 describe('Return comparison API', () => {
   it('calls the transformed returns endpoint with date and keys as params and token in header', async () => {
-    (getEndpoint as jest.Mock).mockImplementationOnce(url => `/transformed${url}`);
+    (getEndpoint as jest.Mock).mockImplementationOnce((url) => `/transformed${url}`);
     (get as jest.Mock).mockResolvedValueOnce({ returns: [] });
 
     expect(get).not.toHaveBeenCalled();

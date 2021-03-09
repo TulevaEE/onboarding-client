@@ -155,6 +155,6 @@ describe('Account statement', () => {
     expect(activeFundNotice().exists()).toBe(true);
   });
 
-  const tableProp = name => component.find(Table).prop(name);
+  const tableProp = (name) => component.find(Table).prop(name);
   const activeFundNotice = () => component.find('small');
 });

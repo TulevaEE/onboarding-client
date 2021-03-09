@@ -77,7 +77,7 @@ export default function amlReducer(state = initialState, action) {
       return {
         ...state,
         missingAmlChecks: state.missingAmlChecks
-          ? state.missingAmlChecks.filter(check => check.type !== 'CONTACT_DETAILS')
+          ? state.missingAmlChecks.filter((check) => check.type !== 'CONTACT_DETAILS')
           : null,
       };
     default:

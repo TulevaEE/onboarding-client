@@ -8,7 +8,7 @@ describe('Target fund selector', () => {
   let component;
 
   beforeEach(() => {
-    const props = { translations: { translate: key => key } };
+    const props = { translations: { translate: (key) => key } };
     component = shallow(<TargetFundSelector {...props} />);
   });
 
@@ -20,7 +20,7 @@ describe('Target fund selector', () => {
     ];
     component.setProps({ targetFunds });
     expect(component.find('button').length).toBe(3);
-    targetFunds.forEach(fund => {
+    targetFunds.forEach((fund) => {
       expect(component.contains(fund.name)).toBe(true);
       expect(component.contains(<Message>{`target.funds.${fund.isin}.description`}</Message>)).toBe(
         true,
@@ -33,24 +33,9 @@ describe('Target fund selector', () => {
     const selectedTargetFundIsin = '456';
     const targetFunds = [{ isin: '123' }, { isin: '456' }, { isin: '789' }];
     component.setProps({ targetFunds, selectedTargetFundIsin });
-    expect(
-      component
-        .find('button')
-        .first()
-        .hasClass('tv-target-fund--active'),
-    ).toBe(false);
-    expect(
-      component
-        .find('button')
-        .at(1)
-        .hasClass('tv-target-fund--active'),
-    ).toBe(true);
-    expect(
-      component
-        .find('button')
-        .last()
-        .hasClass('tv-target-fund--active'),
-    ).toBe(false);
+    expect(component.find('button').first().hasClass('tv-target-fund--active')).toBe(false);
+    expect(component.find('button').at(1).hasClass('tv-target-fund--active')).toBe(true);
+    expect(component.find('button').last().hasClass('tv-target-fund--active')).toBe(false);
   });
 
   it('can select a target fund', () => {
@@ -58,10 +43,7 @@ describe('Target fund selector', () => {
     const targetFunds = [{ isin: '123' }, { isin: '456' }, { isin: '789' }];
     component.setProps({ targetFunds, onSelectFund });
     expect(onSelectFund).not.toHaveBeenCalled();
-    component
-      .find('button')
-      .last()
-      .simulate('click');
+    component.find('button').last().simulate('click');
     expect(onSelectFund).toHaveBeenCalledTimes(1);
     expect(onSelectFund).toHaveBeenCalledWith(targetFunds[2]);
   });
@@ -71,7 +53,7 @@ describe('Target fund selector', () => {
     const recommendedFundIsin = '456';
     component.setProps({ targetFunds, recommendedFundIsin });
 
-    const fundWithIndexIsRecommended = index =>
+    const fundWithIndexIsRecommended = (index) =>
       !!component
         .find('button')
         .at(index)
@@ -89,17 +71,11 @@ describe('Target fund selector', () => {
     const targetFunds = [{ isin: '123' }, { isin: '456' }];
     component.setProps({ targetFunds, onSelectFund });
 
-    expect(
-      component
-        .find('a.tv-target-fund__terms-link')
-        .at(0)
-        .prop('href'),
-    ).toEqual('target.funds.123.terms.link');
-    expect(
-      component
-        .find('a.tv-target-fund__terms-link')
-        .at(1)
-        .prop('href'),
-    ).toEqual('target.funds.456.terms.link');
+    expect(component.find('a.tv-target-fund__terms-link').at(0).prop('href')).toEqual(
+      'target.funds.123.terms.link',
+    );
+    expect(component.find('a.tv-target-fund__terms-link').at(1).prop('href')).toEqual(
+      'target.funds.456.terms.link',
+    );
   });
 });

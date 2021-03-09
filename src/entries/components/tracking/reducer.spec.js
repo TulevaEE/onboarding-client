@@ -170,7 +170,7 @@ it('can track simple events', () => {
     UPDATE_USER_SUCCESS,
   ];
 
-  events.forEach(event => {
+  events.forEach((event) => {
     const action = { type: event };
     trackingReducer(undefined, action);
     expect(mixpanel.track).toHaveBeenCalledWith(getActionType(event));

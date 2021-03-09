@@ -96,12 +96,12 @@ Success.propTypes = {
   onDownloadMandate: Types.func,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   signedMandateId: state.exchange.signedMandateId,
   userContributingFuturePayments: !!state.exchange.selectedFutureContributionsFundIsin,
   userHasTransferredFunds: !!state.exchange.sourceSelection,
 });
-const mapDispatchToProps = dispatch =>
+const mapDispatchToProps = (dispatch) =>
   bindActionCreators(
     {
       onDownloadMandate: downloadMandate,
@@ -109,9 +109,6 @@ const mapDispatchToProps = dispatch =>
     dispatch,
   );
 
-const connectToRedux = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-);
+const connectToRedux = connect(mapStateToProps, mapDispatchToProps);
 
 export default connectToRedux(Success);

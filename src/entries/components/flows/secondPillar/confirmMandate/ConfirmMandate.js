@@ -37,8 +37,8 @@ function joinDuplicateSelections(selections) {
 function normalizeAndGetSelections(routes) {
   const selections = [];
   const clampBetweenOneAndZero = utils.createClamper(0, 1);
-  Object.keys(routes).forEach(sourceFundIsin =>
-    Object.keys(routes[sourceFundIsin]).forEach(targetFundIsin => {
+  Object.keys(routes).forEach((sourceFundIsin) =>
+    Object.keys(routes[sourceFundIsin]).forEach((targetFundIsin) => {
       const percentage = clampBetweenOneAndZero(routes[sourceFundIsin][targetFundIsin]);
       if (percentage) {
         // we do not need to show empty rows.
@@ -61,7 +61,7 @@ function aggregateSelections(selections) {
 }
 
 function attachNames(selections, sourceFunds, targetFunds) {
-  return selections.map(selection => ({
+  return selections.map((selection) => ({
     ...selection,
     sourceFundName: (
       utils.findWhere(sourceFunds, ({ isin }) => isin === selection.sourceFundIsin) || {}
@@ -79,8 +79,10 @@ function isFundPriceZero(sourceFunds, isinToMatch) {
 function getMandate(exchange, address) {
   return {
     fundTransferExchanges: exchange.sourceSelection
-      .filter(selection => isFundPriceZero(exchange.sourceFunds, selection.sourceFundIsin) !== true)
-      .map(selection => ({
+      .filter(
+        (selection) => isFundPriceZero(exchange.sourceFunds, selection.sourceFundIsin) !== true,
+      )
+      .map((selection) => ({
         amount: selection.percentage,
         sourceFundIsin: selection.sourceFundIsin,
         targetFundIsin: selection.targetFundIsin,
@@ -111,7 +113,7 @@ export const ConfirmMandate = ({
   }
   const aggregatedSelections = aggregateSelections(
     exchange.sourceSelection.filter(
-      selection => isFundPriceZero(exchange.sourceFunds, selection.sourceFundIsin) !== true,
+      (selection) => isFundPriceZero(exchange.sourceFunds, selection.sourceFundIsin) !== true,
     ),
   );
   const aggregatedSelectionsWithNames = attachNames(
@@ -267,10 +269,10 @@ ConfirmMandate.propTypes = {
   onCloseErrorMessages: Types.func,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   exchange: state.exchange,
   selectedFutureContributionsFund: (state.exchange.targetFunds || []).find(
-    fund => fund.isin === state.exchange.selectedFutureContributionsFundIsin,
+    (fund) => fund.isin === state.exchange.selectedFutureContributionsFundIsin,
   ),
   address: (state.login.user || {}).address,
   hasAddress: !state.login.user || isAddressFilled(state.login.user),
@@ -281,7 +283,7 @@ const mapStateToProps = state => ({
     state.exchange.loadingTargetFunds,
 });
 
-const mapDispatchToProps = dispatch =>
+const mapDispatchToProps = (dispatch) =>
   bindActionCreators(
     {
       onPreviewMandate: previewMandate,
@@ -293,9 +295,6 @@ const mapDispatchToProps = dispatch =>
     dispatch,
   );
 
-const connectToRedux = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-);
+const connectToRedux = connect(mapStateToProps, mapDispatchToProps);
 
 export default connectToRedux(ConfirmMandate);

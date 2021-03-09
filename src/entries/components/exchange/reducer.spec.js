@@ -481,7 +481,7 @@ describe('Exchange reducer', () => {
   });
 
   it('can change the agreement to the terms of use', () => {
-    [true, false].forEach(agreement =>
+    [true, false].forEach((agreement) =>
       expect(
         exchangeReducer(undefined, {
           type: CHANGE_AGREEMENT_TO_TERMS,

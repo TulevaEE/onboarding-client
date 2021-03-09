@@ -83,16 +83,13 @@ function getCookie(name) {
   const value = `; ${document.cookie}`;
   const parts = value.split(`; ${name}=`);
   if (parts.length === 2) {
-    return parts
-      .pop()
-      .split(';')
-      .shift();
+    return parts.pop().split(';').shift();
   }
   return null;
 }
 
 export function handleLoginCookies() {
-  return dispatch => {
+  return (dispatch) => {
     const email = getCookie(LOGIN_COOKIE_EMAIL_NAME);
     if (email) {
       dispatch(changeEmail(email));
@@ -126,7 +123,7 @@ function getMobileIdTokens() {
     timeout = setTimeout(() => {
       api
         .getMobileIdTokens()
-        .then(tokens => {
+        .then((tokens) => {
           if (tokens.accessToken) {
             // authentication complete
             dispatch({
@@ -140,21 +137,21 @@ function getMobileIdTokens() {
             dispatch(getMobileIdTokens()); // poll again
           }
         })
-        .catch(error => dispatch({ type: MOBILE_AUTHENTICATION_ERROR, error }));
+        .catch((error) => dispatch({ type: MOBILE_AUTHENTICATION_ERROR, error }));
     }, POLL_DELAY);
   };
 }
 
 export function authenticateWithMobileId(phoneNumber, personalCode) {
-  return dispatch => {
+  return (dispatch) => {
     dispatch({ type: MOBILE_AUTHENTICATION_START });
     return api
       .authenticateWithMobileId(phoneNumber, personalCode)
-      .then(controlCode => {
+      .then((controlCode) => {
         dispatch({ type: MOBILE_AUTHENTICATION_START_SUCCESS, controlCode });
         dispatch(getMobileIdTokens());
       })
-      .catch(error => dispatch({ type: MOBILE_AUTHENTICATION_START_ERROR, error }));
+      .catch((error) => dispatch({ type: MOBILE_AUTHENTICATION_START_ERROR, error }));
   };
 }
 
@@ -166,7 +163,7 @@ function getSmartIdTokens() {
     timeout = setTimeout(() => {
       api
         .getSmartIdTokens()
-        .then(tokens => {
+        .then((tokens) => {
           if (tokens.accessToken) {
             // authentication complete
             dispatch({
@@ -180,21 +177,21 @@ function getSmartIdTokens() {
             dispatch(getSmartIdTokens()); // poll again
           }
         })
-        .catch(error => dispatch({ type: MOBILE_AUTHENTICATION_ERROR, error }));
+        .catch((error) => dispatch({ type: MOBILE_AUTHENTICATION_ERROR, error }));
     }, POLL_DELAY);
   };
 }
 
 export function authenticateWithIdCode(personalCode) {
-  return dispatch => {
+  return (dispatch) => {
     dispatch({ type: MOBILE_AUTHENTICATION_START });
     return api
       .authenticateWithIdCode(personalCode)
-      .then(controlCode => {
+      .then((controlCode) => {
         dispatch({ type: MOBILE_AUTHENTICATION_START_SUCCESS, controlCode });
         dispatch(getSmartIdTokens());
       })
-      .catch(error => dispatch({ type: MOBILE_AUTHENTICATION_START_ERROR, error }));
+      .catch((error) => dispatch({ type: MOBILE_AUTHENTICATION_START_ERROR, error }));
   };
 }
 
@@ -206,7 +203,7 @@ function getIdCardTokens() {
     timeout = setTimeout(() => {
       api
         .getIdCardTokens()
-        .then(tokens => {
+        .then((tokens) => {
           if (tokens.accessToken) {
             // authentication complete
             dispatch({ type: ID_CARD_AUTHENTICATION_SUCCESS, tokens });
@@ -216,7 +213,7 @@ function getIdCardTokens() {
             dispatch(getIdCardTokens()); // poll again
           }
         })
-        .catch(error => dispatch({ type: ID_CARD_AUTHENTICATION_ERROR, error }));
+        .catch((error) => dispatch({ type: ID_CARD_AUTHENTICATION_ERROR, error }));
     }, POLL_DELAY);
   };
 }
@@ -232,7 +229,7 @@ function safariSpecialHandlingIdCardAuth() {
 
 export function authenticateWithIdCard() {
   safariSpecialHandlingIdCardAuth();
-  return dispatch => {
+  return (dispatch) => {
     dispatch({ type: ID_CARD_AUTHENTICATION_START });
     return api
       .authenticateWithIdCard()
@@ -251,7 +248,7 @@ export function authenticateWithIdCard() {
 
 export function handleIdCardLogin(query) {
   if (query.login === 'idCard') {
-    return dispatch => {
+    return (dispatch) => {
       dispatch({ type: ID_CARD_AUTHENTICATION_START });
       dispatch({ type: ID_CARD_AUTHENTICATION_START_SUCCESS });
       return dispatch(getIdCardTokens());
@@ -272,15 +269,15 @@ export function getUser() {
     dispatch({ type: GET_USER_START });
     return api
       .getUserWithToken(getState().login.token)
-      .then(user => {
+      .then((user) => {
         if (process.env.NODE_ENV === 'production') {
-          Sentry.configureScope(scope => {
+          Sentry.configureScope((scope) => {
             scope.setUser({ id: user.id });
           });
         }
         dispatch({ type: GET_USER_SUCCESS, user });
       })
-      .catch(error => {
+      .catch((error) => {
         if (error.status === 401 || error.status === 502) {
           dispatch({ type: LOG_OUT });
         } else {
@@ -295,10 +292,10 @@ export function getUserConversion() {
     dispatch({ type: GET_USER_CONVERSION_START });
     return api
       .getUserConversionWithToken(getState().login.token)
-      .then(userConversion => {
+      .then((userConversion) => {
         dispatch({ type: GET_USER_CONVERSION_SUCCESS, userConversion });
       })
-      .catch(error => {
+      .catch((error) => {
         dispatch({ type: GET_USER_CONVERSION_ERROR, error });
       });
   };
@@ -309,16 +306,16 @@ export function refreshToken() {
     dispatch({ type: TOKEN_REFRESH_START });
     return api
       .refreshTokenWith(getState().login.refreshToken)
-      .then(tokens => {
+      .then((tokens) => {
         dispatch({ type: TOKEN_REFRESH_SUCCESS, tokens });
       })
-      .catch(error => dispatch({ type: TOKEN_REFRESH_ERROR, error }));
+      .catch((error) => dispatch({ type: TOKEN_REFRESH_ERROR, error }));
   };
 }
 
 export function logOut() {
   if (process.env.NODE_ENV === 'production') {
-    Sentry.configureScope(scope => {
+    Sentry.configureScope((scope) => {
       scope.clear();
     });
   }
@@ -330,21 +327,21 @@ export function setLoginToRedirect() {
 }
 
 export function useRedirectLoginWithPhoneNumber(phoneNumber, personalCode) {
-  return dispatch => {
+  return (dispatch) => {
     dispatch(setLoginToRedirect());
     dispatch(authenticateWithMobileId(phoneNumber, personalCode));
   };
 }
 
 export function useRedirectLoginWithIdCard() {
-  return dispatch => {
+  return (dispatch) => {
     dispatch(setLoginToRedirect());
     dispatch(authenticateWithIdCard());
   };
 }
 
 export function useRedirectLoginWithIdCode(personalCode) {
-  return dispatch => {
+  return (dispatch) => {
     dispatch(setLoginToRedirect());
     dispatch(authenticateWithIdCode(personalCode));
   };

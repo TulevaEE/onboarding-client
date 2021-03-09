@@ -20,12 +20,17 @@ module.exports = {
     '@typescript-eslint/no-empty-function': 0, // we use it
     '@typescript-eslint/explicit-module-boundary-types': 0, // should only be used once file is renamed to actual typescript
     'import/extensions': [1, 'never'],
+    'fp/no-mutation': "off",
+    'react/jsx-props-no-spreading': 'off',
+    'react/static-property-placement': 'off'
   },
   overrides: [
     {
       files: ['**/*.ts', '**/*.tsx'],
       rules: {
         '@typescript-eslint/explicit-module-boundary-types': 1, // should only be used once file is renamed to actual typescript
+        'no-shadow': 'off', // https://stackoverflow.com/questions/63961803/eslint-says-all-enums-in-typescript-app-are-already-declared-in-the-upper-scope
+        '@typescript-eslint/no-shadow': ['error'],
       },
     },
     {

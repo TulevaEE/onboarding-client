@@ -26,7 +26,7 @@ export class AddressStep extends Component {
       <>
         {shouldSkipAddressStep() && <Redirect to={nextPath} />}
         <UpdateUserForm
-          onSubmit={user =>
+          onSubmit={(user) =>
             updateOnlyEmailAndPhone ? updateEmailAndPhone(user) : updateFullUser(user)
           }
         />
@@ -53,14 +53,14 @@ AddressStep.defaultProps = {
   updateFullUser: noop,
 };
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     hasAddress: state.login.user && isAddressFilled(state.login.user),
     hasContactDetailsAmlCheck: isContactDetailsAmlCheckPassed(state.aml.missingAmlChecks),
   };
 };
 
-const mapDispatchToProps = dispatch =>
+const mapDispatchToProps = (dispatch) =>
   bindActionCreators(
     {
       updateEmailAndPhone: updateUserEmailAndPhone,
@@ -69,9 +69,6 @@ const mapDispatchToProps = dispatch =>
     dispatch,
   );
 
-const withRedux = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-);
+const withRedux = connect(mapStateToProps, mapDispatchToProps);
 
 export default withRedux(AddressStep);

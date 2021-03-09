@@ -12,7 +12,7 @@ class LoginTabs extends Component {
     activeTab: this.props.children[0].props.label,
   };
 
-  onClickTabItem = tab => {
+  onClickTabItem = (tab) => {
     this.setState({ activeTab: tab });
   };
 
@@ -26,7 +26,7 @@ class LoginTabs extends Component {
     return (
       <div className="tabs">
         <ol className="tab-list">
-          {children.map(child => {
+          {children.map((child) => {
             const { label, hideOnMobile } = child.props;
 
             return (
@@ -41,7 +41,7 @@ class LoginTabs extends Component {
           })}
         </ol>
         <div className="tab-content">
-          {children.map(child => {
+          {children.map((child) => {
             if (child.props.label !== activeTab) {
               return undefined;
             }

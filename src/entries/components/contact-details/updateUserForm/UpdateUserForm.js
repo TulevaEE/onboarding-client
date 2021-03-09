@@ -91,7 +91,9 @@ export const UpdateUserForm = ({
               id="update-user-form-country"
               validate={[requiredField]}
             >
-              <option />
+              <option value="" disabled hidden>
+                {translate('select')}
+              </option>
               <option value="AF">Afghanistan</option>
               <option value="AX">Åland Islands</option>
               <option value="AL">Albania</option>
@@ -355,7 +357,9 @@ export const UpdateUserForm = ({
                 id="update-user-form-district"
                 validate={[requiredField]}
               >
-                <option />
+                <option value="" disabled hidden>
+                  {translate('select')}
+                </option>
                 <option value="1060">Abja-Paluoja linn</option>
                 <option value="1301">Antsla linn</option>
                 <option value="0170">Elva linn</option>
@@ -463,16 +467,13 @@ const reduxSignUpForm = reduxForm({ form: 'updateUser' })(UpdateUserForm);
 const translatedForm = withTranslations(reduxSignUpForm);
 const selector = formValueSelector('updateUser');
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   initialValues: state.login.user ? { ...state.login.user } : null,
   updateUserSuccess: state.contactDetails.updateUserSuccess,
   isCountryEstonia: selector(state, 'address.countryCode') === 'EE',
 });
 
-const connectToRedux = connect(
-  mapStateToProps,
-  null,
-);
+const connectToRedux = connect(mapStateToProps, null);
 
 const prefilledForm = connectToRedux(translatedForm);
 

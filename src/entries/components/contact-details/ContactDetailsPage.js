@@ -27,7 +27,7 @@ ContactDetailsPage.defaultProps = {
   saveUser: noop,
 };
 
-const mapDispatchToProps = dispatch =>
+const mapDispatchToProps = (dispatch) =>
   bindActionCreators(
     {
       saveUser: updateUser,
@@ -35,9 +35,6 @@ const mapDispatchToProps = dispatch =>
     dispatch,
   );
 
-const withRedux = connect(
-  null,
-  mapDispatchToProps,
-);
+const withRedux = connect(null, mapDispatchToProps);
 
 export default withRedux(ContactDetailsPage);

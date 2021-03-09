@@ -50,6 +50,8 @@
   "select.sources.select.none.subtitle": "Järgmise sammuga saad suunata edasised maksed.",
   "select.sources.select.all.recommended": "Alla 55-aastastele sobib see fond.",
 
+  "select": "Vali",
+
   "accountSummary.heading": "Sinu pensionivara koondseis",
   "accountSummary.columns.pillar.title": "Pensionivara",
   "accountSummary.columns.pillar.footer": "Kokku",

@@ -1,4 +1,4 @@
-const withPrefix = name => `@aml/${name}`;
+const withPrefix = (name) => `@aml/${name}`;
 
 export const CHANGE_POLITICALLY_EXPOSED = withPrefix('CHANGE_POLITICALLY_EXPOSED');
 export const CHANGE_RESIDENCY = withPrefix('CHANGE_RESIDENCY');

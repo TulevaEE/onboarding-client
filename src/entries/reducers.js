@@ -10,7 +10,7 @@ import { reducer as thirdPillar } from './components/thirdPillar';
 import { reducer as tracking } from './components/tracking';
 import { reducer as aml } from './components/aml';
 
-export default history =>
+export default (history) =>
   combineReducers({
     router: connectRouter(history),
     login,

@@ -1,4 +1,4 @@
-const withPrefix = name => `@login/${name}`;
+const withPrefix = (name) => `@login/${name}`;
 
 export const CHANGE_PHONE_NUMBER = withPrefix('CHANGE_PHONE_NUMBER');
 export const CHANGE_PERSONAL_CODE = withPrefix('CHANGE_PERSONAL_CODE');

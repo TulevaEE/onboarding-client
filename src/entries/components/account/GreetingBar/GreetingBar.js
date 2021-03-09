@@ -26,7 +26,7 @@ export class GreetingBar extends Component {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   user: state.login.user,
 });
 

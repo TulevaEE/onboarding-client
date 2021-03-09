@@ -15,7 +15,7 @@ import { isTuleva } from '../../../common/utils';
 function selectAllWithTarget(sourceFunds, targetFund) {
   return sourceFunds
     .filter((fund, index, list) => list.length === 1 || fund.isin !== targetFund.isin)
-    .map(fund => ({
+    .map((fund) => ({
       sourceFundIsin: fund.isin,
       targetFundIsin: targetFund.isin,
       percentage: 1,
@@ -25,7 +25,7 @@ function selectAllWithTarget(sourceFunds, targetFund) {
 function selectionsValid(selections) {
   const sourceFundPercentages = {};
   let isValid = true;
-  selections.forEach(selection => {
+  selections.forEach((selection) => {
     if (!sourceFundPercentages[selection.sourceFundIsin]) {
       sourceFundPercentages[selection.sourceFundIsin] = 0;
     }
@@ -64,7 +64,7 @@ export const SelectSources = ({
   const noneSelectionActive = !sourceSelection.length && !sourceSelectionExact;
   const isValid = selectionsValid(sourceSelection);
   const tulevaTargetFunds =
-    targetFunds && targetFunds.length && targetFunds.filter(fund => isTuleva(fund));
+    targetFunds && targetFunds.length && targetFunds.filter((fund) => isTuleva(fund));
   const defaultTargetFund =
     tulevaTargetFunds && tulevaTargetFunds.length ? tulevaTargetFunds[0] : null;
   return (
@@ -105,7 +105,7 @@ export const SelectSources = ({
             </div>
             <TargetFundSelector
               targetFunds={tulevaTargetFunds}
-              onSelectFund={targetFund =>
+              onSelectFund={(targetFund) =>
                 onSelect(selectAllWithTarget(sourceFunds, targetFund), false)
               }
               selectedTargetFundIsin={sourceSelection[0].targetFundIsin}
@@ -133,7 +133,7 @@ export const SelectSources = ({
               selections={sourceSelection}
               sourceFunds={sourceFunds}
               targetFunds={targetFunds}
-              onChange={selection => onSelect(selection, true)}
+              onChange={(selection) => onSelect(selection, true)}
             />
           </div>
         ) : (
@@ -195,7 +195,7 @@ SelectSources.propTypes = {
   nextPath: Types.string.isRequired,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   recommendedFundIsin: (state.login.user || {}).age < 55 ? 'EE3600109435' : '',
   sourceSelection: state.exchange.sourceSelection,
   sourceSelectionExact: state.exchange.sourceSelectionExact,
@@ -206,7 +206,7 @@ const mapStateToProps = state => ({
   error: state.exchange.error,
 });
 
-const mapDispatchToProps = dispatch =>
+const mapDispatchToProps = (dispatch) =>
   bindActionCreators(
     {
       onSelect: selectExchangeSources,
@@ -214,9 +214,6 @@ const mapDispatchToProps = dispatch =>
     dispatch,
   );
 
-const connectToRedux = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-);
+const connectToRedux = connect(mapStateToProps, mapDispatchToProps);
 
 export default connectToRedux(SelectSources);

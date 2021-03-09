@@ -20,7 +20,7 @@ const StatusBoxRow = ({ name, lines, showAction, ok, children, last }) => {
     <ul>
       {lines &&
         lines.length > 0 &&
-        lines.map(line => {
+        lines.map((line) => {
           return (
             <li className="pl-2" key={line}>
               {line}

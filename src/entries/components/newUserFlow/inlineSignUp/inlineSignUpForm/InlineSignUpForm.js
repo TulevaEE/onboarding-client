@@ -128,14 +128,11 @@ InlineSignUpForm.propTypes = {
 const reduxInlineSignUpForm = reduxForm({ form: 'signUp' })(InlineSignUpForm);
 const translatedForm = withTranslations(reduxInlineSignUpForm);
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   initialValues: state.login.user ? { ...state.login.user } : null,
 });
 
-const connectToRedux = connect(
-  mapStateToProps,
-  null,
-);
+const connectToRedux = connect(mapStateToProps, null);
 
 const prefilledForm = connectToRedux(translatedForm);
 

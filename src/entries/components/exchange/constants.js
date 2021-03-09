@@ -1,4 +1,4 @@
-const withPrefix = name => `@exchange/${name}`;
+const withPrefix = (name) => `@exchange/${name}`;
 
 export const LOAD_PENSION_DATA_SUCCESS = withPrefix('LOAD_PENSION_DATA_SUCCESS');
 

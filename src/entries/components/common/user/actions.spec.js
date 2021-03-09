@@ -19,7 +19,7 @@ describe('newUserFlow actions', () => {
 
   function mockDispatch() {
     state = { login: { token: 'token' }, exchange: {} };
-    dispatch = jest.fn(action => {
+    dispatch = jest.fn((action) => {
       if (typeof action === 'function') {
         action(dispatch, () => state);
       }
@@ -65,7 +65,7 @@ describe('newUserFlow actions', () => {
           error,
         }),
       )
-      .catch(givenError =>
+      .catch((givenError) =>
         expect(givenError).toEqual(new SubmissionError({ personalCode: 'invalid' })),
       );
   });
@@ -104,7 +104,7 @@ describe('newUserFlow actions', () => {
           error,
         }),
       )
-      .catch(givenError =>
+      .catch((givenError) =>
         expect(givenError).toEqual(new SubmissionError({ personalCode: 'invalid' })),
       );
   });

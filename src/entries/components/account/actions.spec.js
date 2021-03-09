@@ -20,7 +20,7 @@ describe('Account actions', () => {
 
   function mockDispatch() {
     state = { login: { token: 'token' }, initialCapital: {} };
-    dispatch = jest.fn(action => {
+    dispatch = jest.fn((action) => {
       if (typeof action === 'function') {
         action(dispatch, () => state);
       }

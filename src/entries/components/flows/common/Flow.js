@@ -18,7 +18,7 @@ export class Flow extends Component {
   render() {
     const { name, steps, flowPath, lastPartOfPath, introMessage } = this.props;
 
-    const stepPaths = steps.map(step => step.path);
+    const stepPaths = steps.map((step) => step.path);
     const isStepPath = stepPaths.indexOf(lastPartOfPath) !== -1;
     const stepIndex = isStepPath ? stepPaths.indexOf(lastPartOfPath) : 0;
     const beforeSteps = steps.slice(0, stepIndex);
@@ -99,7 +99,7 @@ Flow.defaultProps = {
   lastPartOfPath: null,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   lastPartOfPath: state.router.location.pathname.split('/').pop(),
 });
 

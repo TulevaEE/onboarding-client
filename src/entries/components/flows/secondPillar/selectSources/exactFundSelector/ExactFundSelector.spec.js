@@ -60,11 +60,7 @@ describe('Exact fund selector', () => {
     component.setProps({ selections, sourceFunds, targetFunds });
 
     selections.forEach((row, index) => {
-      const rowComponentProp = name =>
-        component
-          .find(FundExchangeRow)
-          .at(index)
-          .prop(name);
+      const rowComponentProp = (name) => component.find(FundExchangeRow).at(index).prop(name);
       expect(rowComponentProp('sourceFunds')).toBe(sourceFunds);
       expect(rowComponentProp('targetFunds')).toBe(targetFunds);
       expect(rowComponentProp('selection')).toBe(row);
@@ -82,10 +78,7 @@ describe('Exact fund selector', () => {
     component.setProps({ selections, onChange });
 
     expect(onChange).not.toHaveBeenCalled();
-    component
-      .find(FundExchangeRow)
-      .at(1)
-      .simulate('change', newSecondSelection);
+    component.find(FundExchangeRow).at(1).simulate('change', newSecondSelection);
     expect(onChange).toHaveBeenCalledTimes(1);
     expect(onChange).toHaveBeenCalledWith(expectedSelectionsAfterChange);
   });
@@ -124,10 +117,7 @@ describe('Exact fund selector', () => {
     const onChange = jest.fn();
     component.setProps({ selections, onChange });
 
-    component
-      .find(FundExchangeRow)
-      .at(1)
-      .simulate('change', null);
+    component.find(FundExchangeRow).at(1).simulate('change', null);
 
     expect(onChange).toHaveBeenCalledWith([
       selections[0],

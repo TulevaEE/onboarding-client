@@ -15,26 +15,14 @@ describe('Fund row', () => {
     component.setProps({ name: 'i am a name' });
     const displayName = <Message>i am a name</Message>;
     expect(component.contains(displayName)).toBe(true);
-    expect(
-      component
-        .find(Message)
-        .first()
-        .parent()
-        .is('b'),
-    ).toBe(false);
+    expect(component.find(Message).first().parent().is('b')).toBe(false);
   });
 
   it("renders the fund's name highlighted if component is highlighted", () => {
     component.setProps({ name: 'i am a highlighted name', highlighted: true });
     const displayName = <Message>i am a highlighted name</Message>;
     expect(component.contains(displayName)).toBe(true);
-    expect(
-      component
-        .find(Message)
-        .first()
-        .parent()
-        .is('b'),
-    ).toBe(true);
+    expect(component.find(Message).first().parent().is('b')).toBe(true);
   });
 
   it('renders the formatted value of the fund', () => {
@@ -55,8 +43,8 @@ describe('Fund row', () => {
     expect(isElementWithAmountHighlighted(1234.56)).toBe(true);
   });
 
-  const hasElementWithAmount = amount =>
+  const hasElementWithAmount = (amount) =>
     component.containsMatchingElement(<Euro amount={amount} />);
-  const isElementWithAmountHighlighted = amount =>
+  const isElementWithAmountHighlighted = (amount) =>
     component.find('b').containsMatchingElement(<Euro amount={amount} />);
 });

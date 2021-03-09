@@ -54,7 +54,7 @@ function getCurrentCompanyFunds(targetFunds) {
   if (!targetFunds) {
     return [];
   }
-  const currentCompanyFunds = targetFunds.filter(fund => isTuleva(fund));
+  const currentCompanyFunds = targetFunds.filter((fund) => isTuleva(fund));
   if (currentCompanyFunds.length === 0) {
     throw new Error('Could not find current company funds in target funds');
   }
@@ -65,8 +65,8 @@ function getCurrentCompanyFunds(targetFunds) {
 function createFullDefaultSourceSelection({ sourceFunds, targetFunds }) {
   const currentCompanyFunds = getCurrentCompanyFunds(targetFunds);
   return sourceFunds
-    .filter(fund => currentCompanyFunds.map(tf => tf.isin).indexOf(fund.isin) === -1)
-    .filter(fund => fund.price > 0)
+    .filter((fund) => currentCompanyFunds.map((tf) => tf.isin).indexOf(fund.isin) === -1)
+    .filter((fund) => fund.price > 0)
     .map(({ isin }) => ({
       sourceFundIsin: isin,
       targetFundIsin: currentCompanyFunds[0].isin,
@@ -77,7 +77,7 @@ function createFullDefaultSourceSelection({ sourceFunds, targetFunds }) {
 function isContributionsFundAlreadyActive(sourceFunds, isinToCompareTo) {
   return (
     sourceFunds &&
-    !!sourceFunds.find(sourceFund => sourceFund.activeFund && sourceFund.isin === isinToCompareTo)
+    !!sourceFunds.find((sourceFund) => sourceFund.activeFund && sourceFund.isin === isinToCompareTo)
   );
 }
 
@@ -114,7 +114,7 @@ export default function exchangeReducer(state = initialState, action) {
       return { ...state, loadingSourceFunds: true, error: null };
     case GET_SOURCE_FUNDS_SUCCESS:
       // eslint-disable-next-line no-case-declarations
-      const sourceFunds = action.sourceFunds.filter(fund => fund.pillar === 2);
+      const sourceFunds = action.sourceFunds.filter((fund) => fund.pillar === 2);
       return {
         ...state,
         loadingSourceFunds: false,
@@ -148,7 +148,7 @@ export default function exchangeReducer(state = initialState, action) {
       return { ...state, loadingTargetFunds: true, error: null };
     case GET_TARGET_FUNDS_SUCCESS:
       // eslint-disable-next-line no-case-declarations
-      const secondPillarTargetFunds = action.targetFunds.filter(fund => fund.pillar === 2);
+      const secondPillarTargetFunds = action.targetFunds.filter((fund) => fund.pillar === 2);
       return {
         ...state,
         loadingTargetFunds: false,

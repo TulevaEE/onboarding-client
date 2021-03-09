@@ -15,6 +15,7 @@ import MemberCapital from './MemberCapital';
 import StatusBox from './statusBox';
 import GreetingBar from './GreetingBar';
 import AccountSummary from './AccountSummary';
+import { ApplicationSection } from './ApplicationSection/ApplicationSection';
 import { ACCOUNT_PATH, AML_PATH } from '../LoggedInApp';
 import { isTuleva } from '../common/utils';
 
@@ -105,6 +106,8 @@ export class AccountPage extends Component {
         )}
 
         <ReturnComparison />
+
+        <ApplicationSection />
 
         {!loadingCurrentBalance && (
           <div className="mt-5">
@@ -203,7 +206,7 @@ AccountPage.defaultProps = {
   shouldRedirectToAml: false,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   secondPillarSourceFunds: state.exchange.sourceFunds,
   thirdPillarSourceFunds: state.thirdPillar.sourceFunds,
   conversion: state.login.userConversion,
@@ -227,9 +230,9 @@ const mapStateToProps = state => ({
     state.aml.missingAmlChecks.length > 0 &&
     !state.aml.createAmlChecksSuccess &&
     state.thirdPillar.sourceFunds &&
-    state.thirdPillar.sourceFunds.some(fund => isTuleva(fund)),
+    state.thirdPillar.sourceFunds.some((fund) => isTuleva(fund)),
 });
-const mapDispatchToProps = dispatch =>
+const mapDispatchToProps = (dispatch) =>
   bindActionCreators(
     {
       onGetMemberCapital: accountActions.getInitialCapital,
@@ -238,9 +241,6 @@ const mapDispatchToProps = dispatch =>
     dispatch,
   );
 
-const withRedux = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-);
+const withRedux = connect(mapStateToProps, mapDispatchToProps);
 
 export default withRedux(AccountPage);

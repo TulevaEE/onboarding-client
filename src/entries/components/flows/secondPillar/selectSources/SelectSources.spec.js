@@ -54,13 +54,9 @@ describe('Select sources step', () => {
     const nextPath = '/next-path';
     component.setProps({ nextPath });
     expect(component.find('#nextStep').prop('to')).toBe(nextPath);
-    expect(
-      component
-        .find('#nextStep button')
-        .children()
-        .at(0)
-        .getElement(0),
-    ).toEqual(<Message>steps.next</Message>);
+    expect(component.find('#nextStep button').children().at(0).getElement(0)).toEqual(
+      <Message>steps.next</Message>,
+    );
   });
 
   it('disables the next step button if selection is invalid', () => {
@@ -92,7 +88,10 @@ describe('Select sources step', () => {
     const fullSelectionRadio = () => component.find(Radio).first();
     component.setProps({
       sourceSelectionExact: false,
-      sourceSelection: [{ name: 'a', percentage: 1 }, { name: 'b', percentage: 1 }],
+      sourceSelection: [
+        { name: 'a', percentage: 1 },
+        { name: 'b', percentage: 1 },
+      ],
     });
     expect(fullSelectionRadio().prop('selected')).toBe(true);
 
@@ -116,10 +115,7 @@ describe('Select sources step', () => {
     ];
     component.setProps({ sourceFunds, targetFunds, onSelect });
     expect(onSelect).not.toHaveBeenCalled();
-    component
-      .find(Radio)
-      .first()
-      .simulate('select');
+    component.find(Radio).first().simulate('select');
     expect(onSelect).toHaveBeenCalledTimes(1);
     expect(onSelect).toHaveBeenCalledWith(fullSelection, false);
   });
@@ -131,10 +127,7 @@ describe('Select sources step', () => {
     const fullSelection = [{ sourceFundIsin: 'b', targetFundIsin: 'c', percentage: 1 }];
     component.setProps({ sourceFunds, targetFunds, onSelect });
     expect(onSelect).not.toHaveBeenCalled();
-    component
-      .find(Radio)
-      .first()
-      .simulate('select');
+    component.find(Radio).first().simulate('select');
     expect(onSelect).toHaveBeenCalledTimes(1);
     expect(onSelect).toHaveBeenCalledWith(fullSelection, false);
   });
@@ -146,10 +139,7 @@ describe('Select sources step', () => {
     const fullSelection = [{ sourceFundIsin: 'c', targetFundIsin: 'c', percentage: 1 }];
     component.setProps({ sourceFunds, targetFunds, onSelect });
     expect(onSelect).not.toHaveBeenCalled();
-    component
-      .find(Radio)
-      .first()
-      .simulate('select');
+    component.find(Radio).first().simulate('select');
     expect(onSelect).toHaveBeenCalledTimes(1);
     expect(onSelect).toHaveBeenCalledWith(fullSelection, false);
   });
@@ -167,7 +157,10 @@ describe('Select sources step', () => {
 
     component.setProps({
       sourceSelectionExact: false,
-      sourceSelection: [{ name: 'a', percentage: 0.5 }, { name: 'b', percentage: 1 }],
+      sourceSelection: [
+        { name: 'a', percentage: 0.5 },
+        { name: 'b', percentage: 1 },
+      ],
     });
     expect(noneSelectionRadio().prop('selected')).toBe(false);
   });
@@ -184,7 +177,10 @@ describe('Select sources step', () => {
 
     component.setProps({
       sourceSelectionExact: false,
-      sourceSelection: [{ name: 'a', percentage: 0.5 }, { name: 'b', percentage: 1 }],
+      sourceSelection: [
+        { name: 'a', percentage: 0.5 },
+        { name: 'b', percentage: 1 },
+      ],
     });
 
     expect(noneSelectionRadio().prop('selected')).toBe(false);
@@ -196,10 +192,7 @@ describe('Select sources step', () => {
     const sourceFunds = [{ isin: 'a' }, { isin: 'b' }];
     component.setProps({ sourceFunds, onSelect });
     expect(onSelect).not.toHaveBeenCalled();
-    component
-      .find(Radio)
-      .last()
-      .simulate('select');
+    component.find(Radio).last().simulate('select');
     expect(onSelect).toHaveBeenCalledTimes(1);
     expect(onSelect).toHaveBeenCalledWith([], false);
   });
@@ -242,7 +235,7 @@ describe('Select sources step', () => {
       sourceFunds,
       targetFunds,
     });
-    const selectorProp = name => component.find(ExactFundSelector).prop(name);
+    const selectorProp = (name) => component.find(ExactFundSelector).prop(name);
     expect(selectorProp('selections')).toBe(sourceSelection);
     expect(selectorProp('sourceFunds')).toBe(sourceFunds);
     expect(selectorProp('targetFunds')).toBe(targetFunds);
@@ -251,7 +244,10 @@ describe('Select sources step', () => {
   it('selects exact funds when the selector tells it to', () => {
     const onSelect = jest.fn();
     component.setProps({ onSelect, sourceSelectionExact: true });
-    const selection = [{ name: 'a', percentage: 0.7 }, { name: 'b', percentage: 0.8 }];
+    const selection = [
+      { name: 'a', percentage: 0.7 },
+      { name: 'b', percentage: 0.8 },
+    ];
     expect(onSelect).not.toHaveBeenCalled();
     component.find(ExactFundSelector).simulate('change', selection);
     expect(onSelect).toHaveBeenCalledTimes(1);

@@ -50,7 +50,7 @@ export async function getReturnComparison(
 }
 
 function getReturnByKey(key: string, returns: Return[]): NullableNumber {
-  const returnForKey = returns.find(ret => ret.key === key);
+  const returnForKey = returns.find((ret) => ret.key === key);
 
   return returnForKey ? returnForKey.value : null;
 }

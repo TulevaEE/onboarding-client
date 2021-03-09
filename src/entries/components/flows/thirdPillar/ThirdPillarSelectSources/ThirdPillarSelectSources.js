@@ -72,7 +72,7 @@ export const ThirdPillarSelectSources = ({
             {!loadingTargetFunds && !!targetFunds.length && (
               <TargetFundSelector
                 targetFunds={targetFunds}
-                onSelectFund={targetFund => onSelect(true, targetFund.isin)}
+                onSelectFund={(targetFund) => onSelect(true, targetFund.isin)}
                 recommendedFundIsin={recommendedFundIsin}
               />
             )}
@@ -141,7 +141,7 @@ ThirdPillarSelectSources.propTypes = {
   nextPath: Types.string,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   recommendedFundIsin: (state.login.user || {}).age < 55 ? TULEVA_3RD_PILLAR_FUND_ISIN : '',
   exchangeExistingUnits: state.thirdPillar.exchangeExistingUnits,
   exchangeableSourceFunds: state.thirdPillar.exchangeableSourceFunds,
@@ -152,7 +152,7 @@ const mapStateToProps = state => ({
   loadingTargetFunds: state.thirdPillar.loadingTargetFunds,
 });
 
-const mapDispatchToProps = dispatch =>
+const mapDispatchToProps = (dispatch) =>
   bindActionCreators(
     {
       onSelect: selectThirdPillarSources,
@@ -160,9 +160,6 @@ const mapDispatchToProps = dispatch =>
     dispatch,
   );
 
-const connectToRedux = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-);
+const connectToRedux = connect(mapStateToProps, mapDispatchToProps);
 
 export default connectToRedux(ThirdPillarSelectSources);

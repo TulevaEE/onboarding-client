@@ -99,7 +99,7 @@ ThirdPillarPayment.defaultProps = {
   isUserConverted: false,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   signedMandateId: state.thirdPillar.signedMandateId,
   pensionAccountNumber: state.login.user ? state.login.user.pensionAccountNumber : null,
   isUserConverted:

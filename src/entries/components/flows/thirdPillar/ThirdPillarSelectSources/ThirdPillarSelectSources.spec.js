@@ -64,10 +64,7 @@ describe('Third pillar select sources step', () => {
     const targetFunds = [{ isin: 'EE123', fundManager: { name: 'Tuleva' } }];
     component.setProps({ targetFunds, onSelect });
     expect(onSelect).not.toHaveBeenCalled();
-    component
-      .find(Radio)
-      .first()
-      .simulate('select');
+    component.find(Radio).first().simulate('select');
     expect(onSelect).toHaveBeenCalledTimes(1);
     expect(onSelect).toHaveBeenCalledWith(true, 'EE123');
   });

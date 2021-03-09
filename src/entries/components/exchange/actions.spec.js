@@ -57,7 +57,7 @@ describe('Exchange actions', () => {
 
   function mockDispatch() {
     state = { login: { token: 'token' }, exchange: {} };
-    dispatch = jest.fn(action => {
+    dispatch = jest.fn((action) => {
       if (typeof action === 'function') {
         action(dispatch, () => state);
       }
@@ -154,7 +154,7 @@ describe('Exchange actions', () => {
   });
 
   it('can change agreement to terms', () => {
-    [true, false].forEach(agreement =>
+    [true, false].forEach((agreement) =>
       expect(actions.changeAgreementToTerms(agreement)).toEqual({
         type: CHANGE_AGREEMENT_TO_TERMS,
         agreement,
