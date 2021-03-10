@@ -33,9 +33,7 @@ export const OccupationAgreement = ({
             id="occupation"
             override={{ value: occupation }}
           >
-            <option value="" disabled hidden>
-              {translate('select')}
-            </option>
+            <option value="">{translate('select')}</option>
             <option value="PRIVATE_SECTOR">{translate('aml.occupation.privateSector')}</option>
             <option value="PUBLIC_SECTOR">{translate('aml.occupation.publicSector')}</option>
             <option value="THIRD_SECTOR">{translate('aml.occupation.thirdSector')}</option>

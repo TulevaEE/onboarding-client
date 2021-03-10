@@ -91,9 +91,7 @@ export const UpdateUserForm = ({
               id="update-user-form-country"
               validate={[requiredField]}
             >
-              <option value="" disabled hidden>
-                {translate('select')}
-              </option>
+              <option value="">{translate('select')}</option>
               <option value="AF">Afghanistan</option>
               <option value="AX">Åland Islands</option>
               <option value="AL">Albania</option>
@@ -357,9 +355,7 @@ export const UpdateUserForm = ({
                 id="update-user-form-district"
                 validate={[requiredField]}
               >
-                <option value="" disabled hidden>
-                  {translate('select')}
-                </option>
+                <option value="">{translate('select')}</option>
                 <option value="1060">Abja-Paluoja linn</option>
                 <option value="1301">Antsla linn</option>
                 <option value="0170">Elva linn</option>
