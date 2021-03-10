@@ -36,7 +36,8 @@ $padding: 15px;
 
 .definitions {
   margin: 0;
-  columns: 2;
+  display: flex;
+  flex-direction: row;
 
   dt {
     font-size: $font-size-small;
@@ -48,10 +49,39 @@ $padding: 15px;
   }
 
   @include mobile {
-    columns: unset;
+    flex-direction: column;
+  }
+}
 
-    dd + dt {
-      margin-top: 18px;
+.group {
+  margin-left: 18px;
+  flex-grow: 1;
+
+  &:first-child {
+    margin-left: 0px;
+  }
+
+  @include mobile {
+    margin-top: 18px;
+    margin-left: 0px;
+
+    &:first-child {
+      margin-top: 0px;
     }
   }
+}
+
+.innerGroup {
+  display: flex;
+  flex-direction: row;
+  margin-top: 18px;
+
+  &:first-child {
+    margin-top: 0px;
+  }
+}
+
+.rightGroup {
+  margin-left: auto;
+  text-align: right;
 }

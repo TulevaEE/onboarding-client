@@ -38,6 +38,17 @@ export function usePendingApplications(): Application[] {
             },
             amount: 0.01,
           },
+          {
+            targetFund: {
+              fundManager: { id: 5, name: 'Tuleva' },
+              isin: 'EE3600109442',
+              name: 'Tuleva GME Pensionifond 💎🙌',
+              managementFeeRate: 0.0034,
+              pillar: 2,
+              ongoingChargesFigure: 0.0046,
+            },
+            amount: 0.01,
+          },
         ],
       },
     },

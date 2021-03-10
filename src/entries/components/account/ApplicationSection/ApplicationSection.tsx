@@ -1,11 +1,14 @@
 import React, { Fragment } from 'react';
 import { Message } from 'retranslate';
 import moment from 'moment';
+import classNames from 'classnames';
 import styles from './ApplicationSection.module.scss';
 import {
   Application,
   ApplicationType,
   EarlyWithdrawalApplication,
+  ExchangeApplication,
+  ResumeContributionsApplication,
   StopContributionsApplication,
   WithdrawalApplication,
 } from '../../common/api';
@@ -45,14 +48,41 @@ const ApplicationCard: React.FunctionComponent<{ application: Application }> = (
       return <WithdrawalCard application={application} />;
     case ApplicationType.STOP_CONTRIBUTIONS:
       return <StopContributionsCard application={application} />;
-    case ApplicationType.EXCHANGE:
     case ApplicationType.RESUME_CONTRIBUTIONS:
+      return <ResumeContributionsCard application={application} />;
+    case ApplicationType.EXCHANGE:
+      return <ExchangeApplicationCard application={application} />;
     default:
       return <></>;
   }
 };
 
 // TODO: gotta refactor
+const ExchangeApplicationCard: React.FunctionComponent<{ application: ExchangeApplication }> = ({
+  application,
+}) => (
+  <BaseApplicationCard
+    title={<Message>applications.type.exchange.title</Message>}
+    creationTime={application.creationTime}
+  >
+    <DefinitionList
+      definitions={[
+        {
+          key: <Message>applications.type.exchange.sourceFund</Message>,
+          value: application.details.sourceFund.name,
+        },
+        application.details.exchanges.map(({ targetFund: { name }, amount }) => [
+          { key: <Message>applications.type.exchange.targetFund</Message>, value: name },
+          {
+            key: <Message>applications.type.exchange.amount</Message>,
+            value: amount * 100,
+            alignRight: true,
+          },
+        ]),
+      ]}
+    />
+  </BaseApplicationCard>
+);
 
 const EarlyWithdrawalCard: React.FunctionComponent<{ application: EarlyWithdrawalApplication }> = ({
   application,
@@ -120,19 +150,70 @@ const StopContributionsCard: React.FunctionComponent<{
   </BaseApplicationCard>
 );
 
+const ResumeContributionsCard: React.FunctionComponent<{
+  application: ResumeContributionsApplication;
+}> = ({ application }) => (
+  <BaseApplicationCard
+    title={<Message>applications.type.resumeContributions.title</Message>}
+    creationTime={application.creationTime}
+  >
+    <DefinitionList
+      definitions={[
+        {
+          key: <Message>applications.type.resumeContributions.time</Message>,
+          value: moment(application.details.resumeTime).format('DD.MM.YYYY'),
+        },
+      ]}
+    />
+  </BaseApplicationCard>
+);
+
 const DefinitionList: React.FunctionComponent<{
-  definitions: { key: React.ReactNode; value: React.ReactNode }[];
+  definitions: (Definition | Definition[] | Definition[][])[];
 }> = ({ definitions }) => (
   <dl className={styles.definitions}>
-    {definitions.map(({ key, value }, index) => (
+    {definitions.map((definition, index) => (
       // eslint-disable-next-line react/no-array-index-key
-      <Fragment key={index}>
-        <dt>{key}</dt>
-        <dd>{value}</dd>
-      </Fragment>
+      <div key={index} className={styles.group}>
+        {Array.isArray(definition) ? (
+          (definition as (Definition | Definition[])[]).map((innerDefinition, innerIndex) => (
+            // eslint-disable-next-line react/no-array-index-key
+            <div className={styles.innerGroup} key={innerIndex}>
+              {Array.isArray(innerDefinition) ? (
+                innerDefinition.map(({ key, value, alignRight }, thirdLevelIndex) => (
+                  <div
+                    // eslint-disable-next-line react/no-array-index-key
+                    key={thirdLevelIndex}
+                    className={classNames(alignRight && styles.rightGroup)}
+                  >
+                    <dt>{key}</dt>
+                    <dd>{value}</dd>
+                  </div>
+                ))
+              ) : (
+                <>
+                  <dt>{innerDefinition.key}</dt>
+                  <dd>{innerDefinition.value}</dd>
+                </>
+              )}
+            </div>
+          ))
+        ) : (
+          <>
+            <dt>{definition.key}</dt>
+            <dd>{definition.value}</dd>
+          </>
+        )}
+      </div>
     ))}
   </dl>
 );
+
+interface Definition {
+  key: React.ReactNode;
+  value: React.ReactNode;
+  alignRight?: boolean;
+}
 
 const BaseApplicationCard: React.FunctionComponent<{
   title: React.ReactNode;
@@ -146,16 +227,18 @@ const BaseApplicationCard: React.FunctionComponent<{
           <b className="mr-3">{title}</b>
           {moment(creationTime).format('DD.MM.YYYY')}
         </div>
-        <button type="button" className="btn btn-light d-none d-md-block ml-2">
+        {/* <button type="button" className="btn btn-light d-none d-md-block ml-2">
           <Message>applications.cancel</Message>
         </button>
+        */}
       </div>
       <div className={styles.content}>{children}</div>
-      <div className={`${styles.footer} d-md-none`}>
+      {/* <div className={`${styles.footer} d-md-none`}>
         <button type="button" className="btn btn-light">
           <Message>applications.cancel</Message>
         </button>
       </div>
+      */}
     </div>
   );
 };
