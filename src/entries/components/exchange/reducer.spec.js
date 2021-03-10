@@ -17,9 +17,6 @@ import {
   SIGN_MANDATE_SUCCESS,
   SIGN_MANDATE_ERROR,
   SIGN_MANDATE_MOBILE_ID_CANCEL,
-  GET_PENDING_EXCHANGES_START,
-  GET_PENDING_EXCHANGES_SUCCESS,
-  GET_PENDING_EXCHANGES_ERROR,
   CHANGE_AGREEMENT_TO_TERMS,
   NO_SIGN_MANDATE_ERROR,
   SIGN_MANDATE_IN_PROGRESS,
@@ -622,30 +619,5 @@ describe('Exchange reducer', () => {
     expect(newState.mandateSigningError).toBe(null);
     expect(newState.signedMandateId).toBe(false);
     expect(newState.agreedToTerms).toBe(false);
-  });
-
-  it('starts loading when starting to get initial capital', () => {
-    const newState = exchangeReducer(undefined, {
-      type: GET_PENDING_EXCHANGES_START,
-    });
-    expect(newState.loadingPendingExchanges).toBe(true);
-  });
-
-  it('stops loading and saves initial capital on getting initial capital success', () => {
-    const pendingExchanges = [{ status: 'PENDING' }];
-    const action = { type: GET_PENDING_EXCHANGES_SUCCESS, pendingExchanges };
-    const newState = exchangeReducer({ loadingPendingExchanges: true }, action);
-    expect(newState.loadingPendingExchanges).toBe(false);
-    expect(newState.pendingExchanges).toBe(pendingExchanges);
-  });
-
-  it('stops loading and saves error on getting initial capital failure', () => {
-    const error = { body: { errors: [{ code: 'oh no' }] } };
-    const action = { type: GET_PENDING_EXCHANGES_ERROR, error };
-
-    const newState = exchangeReducer({ loadingPendingExchanges: true }, action);
-
-    expect(newState.error).toBe(error);
-    expect(newState.loadingPendingExchanges).toBe(false);
   });
 });

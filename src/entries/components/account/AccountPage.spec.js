@@ -3,7 +3,6 @@ import { shallow } from 'enzyme';
 
 import { ErrorMessage, Loader } from '../common';
 import { AccountPage } from './AccountPage';
-import PendingExchangesTable from './pendingExchangeTable';
 import AccountStatement from './AccountStatement';
 import GreetingBar from './GreetingBar';
 import AccountSummary from './AccountSummary';
@@ -80,16 +79,6 @@ describe('Current balance', () => {
       expect(component.contains(<GreetingBar />)).toBe(true);
     });
 
-    it('renders loader when pending exchanges are still loading', () => {
-      component.setProps({ loadingPendingExchanges: true });
-      expect(pendingExchangesLoader().exists()).toBe(true);
-    });
-
-    it('renders pending exchanges when at least one exists', () => {
-      component.setProps({ pendingExchanges: [{}] });
-      expect(pendingExchangesTable().exists()).toBe(true);
-    });
-
     it('renders the 2nd and 3rd pillar account statements', () => {
       expect(accountStatement()).toHaveLength(2);
     });
@@ -117,26 +106,6 @@ describe('Current balance', () => {
     expect(component.contains(<Loader className="align-middle" />)).toBe(true);
   });
 
-  it('renders loader when pending exchanges are still loading', () => {
-    component.setProps({ loadingPendingExchanges: true });
-    expect(pendingExchangesLoader().exists()).toBe(true);
-  });
-
-  it('does not render pending exchanges when they are still loading', () => {
-    component.setProps({ loadingPendingExchanges: true });
-    expect(pendingExchangesTable().exists()).toBe(false);
-  });
-
-  it('does not render pending exchanges when none exist', () => {
-    component.setProps({ pendingExchanges: [] });
-    expect(pendingExchangesTable().exists()).toBe(false);
-  });
-
-  it('renders pending exchanges when at least one exists', () => {
-    component.setProps({ pendingExchanges: [{}] });
-    expect(pendingExchangesTable().exists()).toBe(true);
-  });
-
   it('renders error', () => {
     const error = { body: Error('aww no') };
     const funds = [{ aFund: true }];
@@ -145,14 +114,6 @@ describe('Current balance', () => {
 
     expect(component.contains(<ErrorMessage errors={error.body} />)).toBe(true);
   });
-
-  function pendingExchangesTable() {
-    return component.find(PendingExchangesTable);
-  }
-
-  function pendingExchangesLoader() {
-    return component.find(Loader).filter('.mt-5');
-  }
 
   function accountStatement() {
     return component.find(AccountStatement);

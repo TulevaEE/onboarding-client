@@ -9,7 +9,6 @@ import {
   getIdCardSignatureStatusForMandateIdWithSignedHashAndToken,
   getMobileIdSignatureChallengeCodeForMandateIdWithToken,
   getMobileIdSignatureStatusForMandateIdWithToken,
-  getPendingExchangesWithToken,
   getSmartIdSignatureChallengeCodeForMandateIdWithToken,
   getSmartIdSignatureStatusForMandateIdWithToken,
   getSourceFundsWithToken,
@@ -18,9 +17,6 @@ import {
 } from '../common/api';
 import {
   CHANGE_AGREEMENT_TO_TERMS,
-  GET_PENDING_EXCHANGES_ERROR,
-  GET_PENDING_EXCHANGES_START,
-  GET_PENDING_EXCHANGES_SUCCESS,
   GET_SOURCE_FUNDS_ERROR,
   GET_SOURCE_FUNDS_START,
   GET_SOURCE_FUNDS_SUCCESS,
@@ -341,15 +337,4 @@ export function cancelSigningMandate() {
 
 export function closeErrorMessages() {
   return { type: NO_SIGN_MANDATE_ERROR };
-}
-
-export function getPendingExchanges() {
-  return (dispatch, getState) => {
-    dispatch({ type: GET_PENDING_EXCHANGES_START });
-    return getPendingExchangesWithToken(getState().login.token)
-      .then((pendingExchanges) => {
-        dispatch({ type: GET_PENDING_EXCHANGES_SUCCESS, pendingExchanges });
-      })
-      .catch((error) => dispatch({ type: GET_PENDING_EXCHANGES_ERROR, error }));
-  };
 }

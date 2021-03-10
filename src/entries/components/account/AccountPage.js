@@ -6,10 +6,8 @@ import { Link, Redirect } from 'react-router-dom';
 import { Message } from 'retranslate';
 
 import { Loader, ErrorMessage } from '../common';
-import PendingExchangesTable from './pendingExchangeTable';
 import ReturnComparison from './ReturnComparison';
 import { actions as accountActions } from '.';
-import { actions as exchangeActions } from '../exchange';
 import AccountStatement from './AccountStatement';
 import MemberCapital from './MemberCapital';
 import StatusBox from './statusBox';
@@ -27,18 +25,10 @@ export class AccountPage extends Component {
   }
 
   getData() {
-    const {
-      shouldGetMemberCapital,
-      onGetMemberCapital,
-      shouldGetPendingExchanges,
-      onGetPendingExchanges,
-    } = this.props;
+    const { shouldGetMemberCapital, onGetMemberCapital } = this.props;
 
     if (shouldGetMemberCapital) {
       onGetMemberCapital();
-    }
-    if (shouldGetPendingExchanges) {
-      onGetPendingExchanges();
     }
   }
 
@@ -50,25 +40,9 @@ export class AccountPage extends Component {
       loadingCurrentBalance,
       memberCapital,
       loadingCapital,
-      pendingExchanges,
-      loadingPendingExchanges,
       error,
       shouldRedirectToAml,
     } = this.props;
-
-    const pendingExchangesSection = loadingPendingExchanges ? (
-      <Loader className="align-middle mt-5" />
-    ) : (
-      pendingExchanges &&
-      pendingExchanges.length > 0 && (
-        <div className="mt-5">
-          <p className="mb-4 lead">
-            <Message>pending.exchanges.lead</Message>
-          </p>
-          <PendingExchangesTable pendingExchanges={pendingExchanges} />
-        </div>
-      )
-    );
 
     return (
       <>
@@ -150,8 +124,6 @@ export class AccountPage extends Component {
           </>
         )}
 
-        {pendingExchangesSection}
-
         {loadingCapital || memberCapital ? (
           <div>
             <div className="mt-5">
@@ -175,10 +147,6 @@ AccountPage.propTypes = {
   secondPillarSourceFunds: Types.arrayOf(Types.shape({})),
   thirdPillarSourceFunds: Types.arrayOf(Types.shape({})),
   loadingCurrentBalance: Types.bool,
-  shouldGetPendingExchanges: Types.bool,
-  onGetPendingExchanges: Types.func,
-  pendingExchanges: Types.arrayOf(Types.shape({})),
-  loadingPendingExchanges: Types.bool,
   shouldGetMemberCapital: Types.bool,
   onGetMemberCapital: Types.func,
   memberCapital: Types.shape({}),
@@ -194,10 +162,6 @@ AccountPage.defaultProps = {
   secondPillarSourceFunds: [],
   thirdPillarSourceFunds: [],
   loadingCurrentBalance: false,
-  shouldGetPendingExchanges: true,
-  onGetPendingExchanges: noop,
-  pendingExchanges: [],
-  loadingPendingExchanges: false,
   shouldGetMemberCapital: true,
   onGetMemberCapital: noop,
   memberCapital: {},
@@ -211,11 +175,6 @@ const mapStateToProps = (state) => ({
   thirdPillarSourceFunds: state.thirdPillar.sourceFunds,
   conversion: state.login.userConversion,
   loadingCurrentBalance: state.exchange.loadingSourceFunds,
-  shouldGetPendingExchanges:
-    state.login.token &&
-    !(state.exchange.pendingExchanges || state.exchange.loadingPendingExchanges),
-  pendingExchanges: state.exchange.pendingExchanges,
-  loadingPendingExchanges: state.exchange.loadingPendingExchanges,
   shouldGetMemberCapital:
     state.login.token &&
     state.login.user &&
@@ -236,7 +195,6 @@ const mapDispatchToProps = (dispatch) =>
   bindActionCreators(
     {
       onGetMemberCapital: accountActions.getInitialCapital,
-      onGetPendingExchanges: exchangeActions.getPendingExchanges,
     },
     dispatch,
   );

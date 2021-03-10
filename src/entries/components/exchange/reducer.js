@@ -21,9 +21,6 @@ import {
   SIGN_MANDATE_SUCCESS,
   SIGN_MANDATE_ERROR,
   NO_SIGN_MANDATE_ERROR,
-  GET_PENDING_EXCHANGES_START,
-  GET_PENDING_EXCHANGES_SUCCESS,
-  GET_PENDING_EXCHANGES_ERROR,
 } from './constants';
 
 import { LOG_OUT } from '../login/constants';
@@ -45,9 +42,6 @@ const initialState = {
   mandateSigningError: null,
   signedMandateId: false,
   agreedToTerms: false,
-
-  loadingPendingExchanges: false,
-  pendingExchanges: null,
 };
 
 function getCurrentCompanyFunds(targetFunds) {
@@ -234,24 +228,6 @@ export default function exchangeReducer(state = initialState, action) {
       return {
         ...state,
         mandateSigningError: null,
-      };
-    case GET_PENDING_EXCHANGES_START:
-      return {
-        ...state,
-        loadingPendingExchanges: true,
-        error: null,
-      };
-    case GET_PENDING_EXCHANGES_SUCCESS:
-      return {
-        ...state,
-        loadingPendingExchanges: false,
-        pendingExchanges: action.pendingExchanges,
-      };
-    case GET_PENDING_EXCHANGES_ERROR:
-      return {
-        ...state,
-        loadingPendingExchanges: false,
-        error: action.error,
       };
     default:
       return state;

@@ -240,12 +240,6 @@ export function getInitialCapitalWithToken(token: string): Promise<any> {
   });
 }
 
-export function getPendingExchangesWithToken(token: string): Promise<any> {
-  return get(getEndpoint('/v1/transfer-exchanges?status=PENDING'), undefined, {
-    Authorization: `Bearer ${token}`,
-  });
-}
-
 export function createAmlCheck(
   type: string,
   success: boolean,
