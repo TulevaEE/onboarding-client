@@ -134,12 +134,6 @@ export async function getSourceFundsWithToken(token: string): Promise<any> {
   return funds.map(transformFundBalance);
 }
 
-export function getTargetFundsWithToken(token: string): Promise<any> {
-  return get(getEndpoint('/v1/funds'), undefined, {
-    Authorization: `Bearer ${token}`,
-  });
-}
-
 export function saveMandateWithToken(mandate: string, token: string): Promise<any> {
   return post(getEndpoint('/v1/mandates'), mandate, {
     Authorization: `Bearer ${token}`,
@@ -275,6 +269,12 @@ export function getMissingAmlChecks(token: string): Promise<any> {
 
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
+export function getFunds(token: string): Promise<Fund[]> {
+  return get(getEndpoint('/v1/funds'), undefined, {
+    Authorization: `Bearer ${token}`,
+  });
+}
+
 export function postThirdPillarStatistics(
   statistics: ThirdPillarStatistics,
   token: string,
@@ -302,18 +302,18 @@ export function getPendingApplications(token: string): Promise<Application[]> {
 }
 
 export type Application =
-  | ExchangeApplication
+  | TransferApplication
   | StopContributionsApplication
   | ResumeContributionsApplication
   | EarlyWithdrawalApplication
   | WithdrawalApplication;
 
-export type ExchangeApplication = BaseApplication<
-  ApplicationType.EXCHANGE,
+export type TransferApplication = BaseApplication<
+  ApplicationType.TRANSFER,
   {
-    sourceFund: Fund;
+    sourceFund: string;
     exchanges: {
-      targetFund: Fund;
+      targetFund: string;
       amount: number;
     }[];
   }
@@ -351,7 +351,7 @@ export type WithdrawalApplication = BaseApplication<
 >;
 
 export enum ApplicationType {
-  EXCHANGE = 'EXCHANGE',
+  TRANSFER = 'TRANSFER',
   STOP_CONTRIBUTIONS = 'STOP_CONTRIBUTIONS',
   RESUME_CONTRIBUTIONS = 'RESUME_CONTRIBUTIONS',
   EARLY_WITHDRAWAL = 'EARLY_WITHDRAWAL',

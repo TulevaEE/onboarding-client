@@ -13,7 +13,7 @@ import {
   getSmartIdSignatureChallengeCodeForMandateIdWithToken,
   getSmartIdSignatureStatusForMandateIdWithToken,
   getSourceFundsWithToken,
-  getTargetFundsWithToken,
+  getFunds,
   saveMandateWithToken,
 } from '../common/api';
 import {
@@ -90,7 +90,7 @@ export function downloadMandate() {
 export function getTargetFunds() {
   return (dispatch, getState) => {
     dispatch({ type: GET_TARGET_FUNDS_START });
-    return getTargetFundsWithToken(getState().login.token)
+    return getFunds(getState().login.token)
       .then((targetFunds) => dispatch({ type: GET_TARGET_FUNDS_SUCCESS, targetFunds }))
       .catch((error) => dispatch({ type: GET_TARGET_FUNDS_ERROR, error }));
   };

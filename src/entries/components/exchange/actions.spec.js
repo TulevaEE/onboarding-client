@@ -125,7 +125,7 @@ describe('Exchange actions', () => {
 
   it('can get target funds', async () => {
     const targetFunds = [{ iAmPensionFunds: true }];
-    mockApi.getTargetFundsWithToken = jest.fn(() => {
+    mockApi.getFunds = jest.fn(() => {
       expect(dispatch).toHaveBeenCalledTimes(1);
       expect(dispatch).toHaveBeenCalledWith({ type: GET_TARGET_FUNDS_START });
       dispatch.mockClear();
@@ -143,7 +143,7 @@ describe('Exchange actions', () => {
 
   it('can handle errors when getting target funds', async () => {
     const error = new Error('oh no!');
-    mockApi.getTargetFundsWithToken = jest.fn(() => Promise.reject(error));
+    mockApi.getFunds = jest.fn(() => Promise.reject(error));
     const getTargetFunds = createBoundAction(actions.getTargetFunds);
     expect(dispatch).not.toHaveBeenCalled();
     await getTargetFunds();

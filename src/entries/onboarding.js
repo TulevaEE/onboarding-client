@@ -94,21 +94,23 @@ class App extends Component {
   render() {
     return (
       <MixpanelProvider mixpanel={mixpanel}>
-        <TranslationProvider
-          messages={translations}
-          language={applyLanguage()}
-          fallbackLanguage="et"
-        >
-          <ReduxProvider store={store}>
-            <ConnectedRouter history={history}>
-              <Switch>
-                <Route path="/login" component={LoginPage} />
-                <Route path="/terms-of-use" component={TermsOfUse} />
-                <PrivateRoute exact path="" component={LoggedInApp} />
-              </Switch>
-            </ConnectedRouter>
-          </ReduxProvider>
-        </TranslationProvider>
+        <QueryClientProvider client={queryClient}>
+          <TranslationProvider
+            messages={translations}
+            language={applyLanguage()}
+            fallbackLanguage="et"
+          >
+            <ReduxProvider store={store}>
+              <ConnectedRouter history={history}>
+                <Switch>
+                  <Route path="/login" component={LoginPage} />
+                  <Route path="/terms-of-use" component={TermsOfUse} />
+                  <PrivateRoute exact path="" component={LoggedInApp} />
+                </Switch>
+              </ConnectedRouter>
+            </ReduxProvider>
+          </TranslationProvider>
+        </QueryClientProvider>
       </MixpanelProvider>
     );
   }

@@ -4,16 +4,15 @@ import { Message } from 'retranslate';
 import { DefinitionList } from './DefinitionList';
 import styles from './ApplicationCards.module.scss';
 import {
-  Application,
   ApplicationType,
   EarlyWithdrawalApplication,
-  ExchangeApplication,
   ResumeContributionsApplication,
   StopContributionsApplication,
   WithdrawalApplication,
 } from '../../common/api';
+import { EnrichedApplication, EnrichedTransferApplication } from '../../common/apiHooks';
 
-export const ApplicationCard: React.FunctionComponent<{ application: Application }> = ({
+export const ApplicationCard: React.FunctionComponent<{ application: EnrichedApplication }> = ({
   application,
 }) => {
   switch (application.type) {
@@ -25,16 +24,16 @@ export const ApplicationCard: React.FunctionComponent<{ application: Application
       return <StopContributionsCard application={application} />;
     case ApplicationType.RESUME_CONTRIBUTIONS:
       return <ResumeContributionsCard application={application} />;
-    case ApplicationType.EXCHANGE:
-      return <ExchangeApplicationCard application={application} />;
+    case ApplicationType.TRANSFER:
+      return <TransferApplicationCard application={application} />;
     default:
       return <></>;
   }
 };
 
-const ExchangeApplicationCard: React.FunctionComponent<{ application: ExchangeApplication }> = ({
-  application,
-}) => (
+const TransferApplicationCard: React.FunctionComponent<{
+  application: EnrichedTransferApplication;
+}> = ({ application }) => (
   <BaseApplicationCard
     title={<Message>applications.type.exchange.title</Message>}
     creationTime={application.creationTime}
@@ -42,13 +41,13 @@ const ExchangeApplicationCard: React.FunctionComponent<{ application: ExchangeAp
     <DefinitionList
       definitions={[
         {
-          key: <Message>applications.type.exchange.sourceFund</Message>,
+          key: <Message>applications.type.transfer.sourceFund</Message>,
           value: application.details.sourceFund.name,
         },
-        application.details.exchanges.map(({ targetFund: { name }, amount }) => [
-          { key: <Message>applications.type.exchange.targetFund</Message>, value: name },
+        (application.details.exchanges || []).map(({ targetFund: { name }, amount }) => [
+          { key: <Message>applications.type.transfer.targetFund</Message>, value: name },
           {
-            key: <Message>applications.type.exchange.amount</Message>,
+            key: <Message>applications.type.transfer.amount</Message>,
             value: amount * 100,
             alignRight: true,
           },
