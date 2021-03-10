@@ -4,15 +4,16 @@ import { Message } from 'retranslate';
 import { DefinitionList } from './DefinitionList';
 import styles from './ApplicationCards.module.scss';
 import {
+  Application,
   ApplicationType,
   EarlyWithdrawalApplication,
   ResumeContributionsApplication,
   StopContributionsApplication,
+  TransferApplication,
   WithdrawalApplication,
 } from '../../common/api';
-import { EnrichedApplication, EnrichedTransferApplication } from '../../common/apiHooks';
 
-export const ApplicationCard: React.FunctionComponent<{ application: EnrichedApplication }> = ({
+export const ApplicationCard: React.FunctionComponent<{ application: Application }> = ({
   application,
 }) => {
   switch (application.type) {
@@ -32,10 +33,10 @@ export const ApplicationCard: React.FunctionComponent<{ application: EnrichedApp
 };
 
 const TransferApplicationCard: React.FunctionComponent<{
-  application: EnrichedTransferApplication;
+  application: TransferApplication;
 }> = ({ application }) => (
   <BaseApplicationCard
-    title={<Message>applications.type.exchange.title</Message>}
+    title={<Message>applications.type.transfer.title</Message>}
     creationTime={application.creationTime}
   >
     <DefinitionList
@@ -44,11 +45,11 @@ const TransferApplicationCard: React.FunctionComponent<{
           key: <Message>applications.type.transfer.sourceFund</Message>,
           value: application.details.sourceFund.name,
         },
-        (application.details.exchanges || []).map(({ targetFund: { name }, amount }) => [
+        application.details.exchanges.map(({ targetFund: { name }, amount }) => [
           { key: <Message>applications.type.transfer.targetFund</Message>, value: name },
           {
             key: <Message>applications.type.transfer.amount</Message>,
-            value: amount * 100,
+            value: `${amount * 100}%`,
             alignRight: true,
           },
         ]),

@@ -311,9 +311,9 @@ export type Application =
 export type TransferApplication = BaseApplication<
   ApplicationType.TRANSFER,
   {
-    sourceFund: string;
+    sourceFund: Fund;
     exchanges: {
-      targetFund: string;
+      targetFund: Fund;
       amount: number;
     }[];
   }

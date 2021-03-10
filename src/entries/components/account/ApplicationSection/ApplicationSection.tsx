@@ -5,7 +5,7 @@ import { usePendingApplications } from '../../common/apiHooks';
 import { ApplicationCard } from './ApplicationCards';
 
 export const ApplicationSection: React.FunctionComponent = () => {
-  const applications = usePendingApplications();
+  const { data: applications } = usePendingApplications();
   return applications && applications.length ? (
     <section className="mt-5">
       <h2 className="mb-4 lead">
