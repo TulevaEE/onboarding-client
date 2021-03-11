@@ -1,6 +1,7 @@
 import React from 'react';
 import moment from 'moment';
 import { Message } from 'retranslate';
+import { Link } from 'react-router-dom';
 import { DefinitionList } from './DefinitionList';
 import styles from './ApplicationCards.module.scss';
 import {
@@ -11,22 +12,23 @@ import {
   StopContributionsApplication,
   TransferApplication,
   WithdrawalApplication,
-} from '../../common/api';
+} from '../../common/apiModels';
 
-export const ApplicationCard: React.FunctionComponent<{ application: Application }> = ({
-  application,
-}) => {
+export const ApplicationCard: React.FunctionComponent<{
+  application: Application;
+  allowedActions?: ApplicationAction[];
+}> = ({ application, allowedActions = [] }) => {
   switch (application.type) {
     case ApplicationType.EARLY_WITHDRAWAL:
-      return <EarlyWithdrawalCard application={application} />;
+      return <EarlyWithdrawalCard application={application} allowedActions={allowedActions} />;
     case ApplicationType.WITHDRAWAL:
-      return <WithdrawalCard application={application} />;
+      return <WithdrawalCard application={application} allowedActions={allowedActions} />;
     case ApplicationType.STOP_CONTRIBUTIONS:
-      return <StopContributionsCard application={application} />;
+      return <StopContributionsCard application={application} allowedActions={allowedActions} />;
     case ApplicationType.RESUME_CONTRIBUTIONS:
-      return <ResumeContributionsCard application={application} />;
+      return <ResumeContributionsCard application={application} allowedActions={allowedActions} />;
     case ApplicationType.TRANSFER:
-      return <TransferApplicationCard application={application} />;
+      return <TransferApplicationCard application={application} allowedActions={allowedActions} />;
     default:
       return <></>;
   }
@@ -34,10 +36,12 @@ export const ApplicationCard: React.FunctionComponent<{ application: Application
 
 const TransferApplicationCard: React.FunctionComponent<{
   application: TransferApplication;
-}> = ({ application }) => (
+  allowedActions: ApplicationAction[];
+}> = ({ application, allowedActions }) => (
   <BaseApplicationCard
+    application={application}
+    allowedActions={allowedActions}
     title={<Message>applications.type.transfer.title</Message>}
-    creationTime={application.creationTime}
   >
     <DefinitionList
       definitions={[
@@ -58,12 +62,15 @@ const TransferApplicationCard: React.FunctionComponent<{
   </BaseApplicationCard>
 );
 
-const EarlyWithdrawalCard: React.FunctionComponent<{ application: EarlyWithdrawalApplication }> = ({
-  application,
-}) => (
+const EarlyWithdrawalCard: React.FunctionComponent<{
+  application: EarlyWithdrawalApplication;
+
+  allowedActions: ApplicationAction[];
+}> = ({ application, allowedActions }) => (
   <BaseApplicationCard
+    allowedActions={allowedActions}
+    application={application}
     title={<Message>applications.type.earlyWithdrawal.title</Message>}
-    creationTime={application.creationTime}
   >
     <DefinitionList
       definitions={[
@@ -80,12 +87,14 @@ const EarlyWithdrawalCard: React.FunctionComponent<{ application: EarlyWithdrawa
   </BaseApplicationCard>
 );
 
-const WithdrawalCard: React.FunctionComponent<{ application: WithdrawalApplication }> = ({
-  application,
-}) => (
+const WithdrawalCard: React.FunctionComponent<{
+  application: WithdrawalApplication;
+  allowedActions: ApplicationAction[];
+}> = ({ application, allowedActions }) => (
   <BaseApplicationCard
+    allowedActions={allowedActions}
+    application={application}
     title={<Message>applications.type.withdrawal.title</Message>}
-    creationTime={application.creationTime}
   >
     <DefinitionList
       definitions={[
@@ -104,10 +113,12 @@ const WithdrawalCard: React.FunctionComponent<{ application: WithdrawalApplicati
 
 const StopContributionsCard: React.FunctionComponent<{
   application: StopContributionsApplication;
-}> = ({ application }) => (
+  allowedActions: ApplicationAction[];
+}> = ({ application, allowedActions }) => (
   <BaseApplicationCard
+    allowedActions={allowedActions}
+    application={application}
     title={<Message>applications.type.stopContributions.title</Message>}
-    creationTime={application.creationTime}
   >
     <DefinitionList
       definitions={[
@@ -126,10 +137,12 @@ const StopContributionsCard: React.FunctionComponent<{
 
 const ResumeContributionsCard: React.FunctionComponent<{
   application: ResumeContributionsApplication;
-}> = ({ application }) => (
+  allowedActions: ApplicationAction[];
+}> = ({ application, allowedActions }) => (
   <BaseApplicationCard
+    allowedActions={allowedActions}
+    application={application}
     title={<Message>applications.type.resumeContributions.title</Message>}
-    creationTime={application.creationTime}
   >
     <DefinitionList
       definitions={[
@@ -144,29 +157,39 @@ const ResumeContributionsCard: React.FunctionComponent<{
 
 const BaseApplicationCard: React.FunctionComponent<{
   title: React.ReactNode;
-  creationTime: string;
+  application: Application;
   children: React.ReactNode;
-}> = ({ title, creationTime, children }) => {
+  allowedActions: ApplicationAction[];
+}> = ({ application, title, children, allowedActions }) => {
+  const cancellationUrl = `/applications/${application.id}/cancellation`;
   return (
     <div className={styles.card}>
       <div className={styles.header}>
         <div className="d-flex">
           <b className="mr-3">{title}</b>
-          {formatDate(creationTime)}
+          {formatDate(application.creationTime)}
         </div>
-        <button type="button" className="btn btn-light d-none d-md-block ml-2">
-          <Message>applications.cancel</Message>
-        </button>
+        {allowedActions.includes(ApplicationAction.CANCEL) && (
+          <Link to={cancellationUrl} className="btn btn-light d-none d-md-block ml-2">
+            <Message>applications.cancel</Message>
+          </Link>
+        )}
       </div>
       <div className={styles.content}>{children}</div>
-      <div className={`${styles.footer} d-md-none`}>
-        <button type="button" className="btn btn-light">
-          <Message>applications.cancel</Message>
-        </button>
-      </div>
+      {allowedActions.includes(ApplicationAction.CANCEL) && (
+        <div className={`${styles.footer} d-md-none`}>
+          <Link to={cancellationUrl} className="btn btn-light">
+            <Message>applications.cancel</Message>
+          </Link>
+        </div>
+      )}
     </div>
   );
 };
+
+export enum ApplicationAction {
+  CANCEL = 'CANCEL',
+}
 
 function formatDate(date: string): string {
   return moment(date).format('DD.MM.YYYY');

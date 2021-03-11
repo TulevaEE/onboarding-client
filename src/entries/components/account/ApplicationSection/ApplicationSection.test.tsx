@@ -3,11 +3,12 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { render as testRender, waitFor, screen } from '@testing-library/react';
 import { useSelector } from 'react-redux';
+import { MemoryRouter } from 'react-router-dom';
 import config from 'react-global-configuration';
 import { QueryClient, QueryClientProvider } from 'react-query';
 
 import { ApplicationSection } from './ApplicationSection';
-import { ApplicationStatus, ApplicationType } from '../../common/api';
+import { ApplicationStatus, ApplicationType } from '../../common/apiModels';
 
 jest.mock('react-global-configuration');
 jest.mock('react-redux');
@@ -20,9 +21,11 @@ describe('Application section', () => {
   function render() {
     const queryClient = new QueryClient();
     testRender(
-      <QueryClientProvider client={queryClient}>
-        <ApplicationSection />
-      </QueryClientProvider>,
+      <MemoryRouter>
+        <QueryClientProvider client={queryClient}>
+          <ApplicationSection />
+        </QueryClientProvider>
+      </MemoryRouter>,
     );
   }
   beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
@@ -150,7 +153,7 @@ describe('Application section', () => {
     });
   }
 
-  function mockApplications(applications) {
+  function mockApplications(applications: any[]) {
     server.use(
       rest.get('http://localhost/v1/applications', (req, res, ctx) => {
         if (req.headers.get('Authorization') !== 'Bearer mock token') {

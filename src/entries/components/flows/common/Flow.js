@@ -56,7 +56,7 @@ export class Flow extends Component {
             <div className="pb-5 px-col">
               <Switch>
                 <Route path={`${flowPath}/${currentStepPath}`} component={StepComponent} />
-                <Redirect path={`${flowPath}`} to={`${flowPath}/${currentStepPath}`} />
+                <Redirect exact path={`${flowPath}`} to={`${flowPath}/${currentStepPath}`} />
               </Switch>
             </div>
             {!isLastStep && <hr className="mb-4" />}

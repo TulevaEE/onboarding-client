@@ -2,7 +2,7 @@ import React from 'react';
 import { Message } from 'retranslate';
 
 import { usePendingApplications } from '../../common/apiHooks';
-import { ApplicationCard } from './ApplicationCards';
+import { ApplicationAction, ApplicationCard } from './ApplicationCards';
 
 export const ApplicationSection: React.FunctionComponent = () => {
   const { data: applications } = usePendingApplications();
@@ -12,7 +12,11 @@ export const ApplicationSection: React.FunctionComponent = () => {
         <Message>applications.title</Message>
       </h2>
       {applications.map((application) => (
-        <ApplicationCard key={application.id} application={application} />
+        <ApplicationCard
+          key={application.id}
+          application={application}
+          allowedActions={[ApplicationAction.CANCEL]}
+        />
       ))}
       <div className="mt-2">
         <small className="text-muted">

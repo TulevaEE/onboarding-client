@@ -10,6 +10,10 @@ import Header from './header';
 import AccountPage from '../account';
 import SecondPillarFlow from '../flows/secondPillar';
 import ThirdPillarFlow from '../flows/thirdPillar';
+import {
+  CancellationFlow,
+  flowPath as cancellationFlowPath,
+} from '../flows/cancellation/CancellationFlow';
 import Footer from './footer';
 import ContactDetailsPage from '../contact-details';
 import AmlPage, { actions as amlActions } from '../aml';
@@ -63,6 +67,7 @@ export class LoggedInApp extends PureComponent {
               <Route path="/contact-details" component={ContactDetailsPage} />
               <Route path="/2nd-pillar-flow" component={SecondPillarFlow} />
               <Route path="/3rd-pillar-flow" component={ThirdPillarFlow} />
+              <Route path={cancellationFlowPath} component={CancellationFlow} />
               <Redirect exact path="/" to={ACCOUNT_PATH} />
             </Switch>
             <Footer />
