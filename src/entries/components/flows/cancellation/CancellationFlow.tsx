@@ -1,6 +1,6 @@
 import React from 'react';
 import { Message } from 'retranslate';
-import { Flow } from '../common/Flow';
+import Flow from '../common/Flow'; // eslint-disable-line import/no-named-as-default
 import { CancellationSuccess } from './CancellationSuccess';
 import { ConfirmCancellation } from './ConfirmCancellation';
 
