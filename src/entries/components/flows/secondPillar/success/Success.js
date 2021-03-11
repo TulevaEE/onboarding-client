@@ -4,7 +4,6 @@ import { Message } from 'retranslate';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
-import FacebookProvider, { Share } from 'react-facebook';
 
 import { downloadMandate } from '../../../exchange/actions';
 import successImage from './success.svg';
@@ -52,21 +51,6 @@ export const Success = ({
         ) : (
           ''
         )}
-
-        <br />
-        <p className="text-center">
-          <b>
-            <Message>success.share.message</Message>
-          </b>
-        </p>
-
-        <FacebookProvider appId="1939240566313354">
-          <Share href="https://tuleva.ee/fondid/">
-            <button className="btn btn-primary mt-3" type="button">
-              <Message>success.share.cta</Message>
-            </button>
-          </Share>
-        </FacebookProvider>
       </div>
       <h2 className="mt-5">
         <Message>success.view.profile.title</Message>

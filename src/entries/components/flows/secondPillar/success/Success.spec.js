@@ -1,7 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Message } from 'retranslate';
-import FacebookProvider, { Share } from 'react-facebook';
 import { Redirect } from 'react-router-dom';
 
 import { Success } from './Success';
@@ -70,31 +69,5 @@ describe('Success step', () => {
     expect(onDownloadMandate).not.toHaveBeenCalled();
     component.find('button').first().simulate('click');
     expect(onDownloadMandate).toHaveBeenCalledTimes(1);
-  });
-
-  it('shows facebook share message', () => {
-    expect(
-      component.contains(
-        <p className="text-center">
-          <b>
-            <Message>success.share.message</Message>
-          </b>
-        </p>,
-      ),
-    ).toBe(true);
-  });
-
-  it('shows facebook share button', () => {
-    expect(
-      component.contains(
-        <FacebookProvider appId="1939240566313354">
-          <Share href="https://tuleva.ee/fondid/">
-            <button className="btn btn-primary mt-3" type="button">
-              <Message>success.share.cta</Message>
-            </button>
-          </Share>
-        </FacebookProvider>,
-      ),
-    ).toBe(true);
   });
 });
