@@ -1,4 +1,4 @@
-const withPrefix = name => `@exchange/${name}`;
+const withPrefix = (name) => `@exchange/${name}`;
 
 export const LOAD_PENSION_DATA_SUCCESS = withPrefix('LOAD_PENSION_DATA_SUCCESS');
 
@@ -34,7 +34,3 @@ export const SIGN_MANDATE_ID_CARD_SIGN_HASH_SUCCESS = withPrefix(
 export const CHANGE_AGREEMENT_TO_TERMS = withPrefix('CHANGE_AGREEMENT_TO_TERMS');
 
 export const NO_SIGN_MANDATE_ERROR = withPrefix('NO_SIGN_MANDATE_ERROR');
-
-export const GET_PENDING_EXCHANGES_START = withPrefix('GET_PENDING_EXCHANGES_START');
-export const GET_PENDING_EXCHANGES_SUCCESS = withPrefix('GET_PENDING_EXCHANGES_SUCCESS');
-export const GET_PENDING_EXCHANGES_ERROR = withPrefix('GET_PENDING_EXCHANGES_ERROR');

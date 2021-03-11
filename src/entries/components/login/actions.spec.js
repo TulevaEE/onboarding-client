@@ -47,7 +47,7 @@ describe('Login actions', () => {
 
   function mockDispatch() {
     state = { login: {} };
-    dispatch = jest.fn(action => {
+    dispatch = jest.fn((action) => {
       if (typeof action === 'function') {
         action(dispatch, () => state);
       }

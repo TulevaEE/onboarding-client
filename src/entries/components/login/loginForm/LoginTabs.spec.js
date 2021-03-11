@@ -8,19 +8,15 @@ describe('Login Tabs', () => {
   beforeEach(() => {
     component = shallow(
       <LoginTabs>
-        <div label="Smart ID"></div>
-        <div label="Mobile ID"></div>
-        <div label="Id Card"></div>
+        <div label="Smart ID" />
+        <div label="Mobile ID" />
+        <div label="Id Card" />
       </LoginTabs>,
     );
   });
 
   it('should make first tab active', () => {
-    const activeItem = component
-      .find('ol')
-      .children()
-      .first()
-      .prop('activeTab');
+    const activeItem = component.find('ol').children().first().prop('activeTab');
     expect(activeItem).toBe('Smart ID');
   });
 });

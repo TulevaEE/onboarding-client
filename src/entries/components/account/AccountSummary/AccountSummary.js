@@ -18,7 +18,7 @@ const AccountSummary = ({
   memberCapital,
 }) => {
   const getPillarSummary = (pillarLabel, contributions, subtractions, funds) => {
-    const value = sumBy(funds, fund => {
+    const value = sumBy(funds, (fund) => {
       return fund.price + fund.unavailablePrice;
     });
 
@@ -59,7 +59,7 @@ const AccountSummary = ({
     });
   }
 
-  const summaryItemProfit = sumBy(summary, summaryItem => summaryItem.profit);
+  const summaryItemProfit = sumBy(summary, (summaryItem) => summaryItem.profit);
 
   const columns = [
     {
@@ -71,13 +71,13 @@ const AccountSummary = ({
       title: <Message>accountSummary.columns.contributions</Message>,
       dataIndex: 'contributions',
       hideOnMobile: true,
-      footer: <Euro amount={sumBy(summary, summaryItem => summaryItem.contributions)} />,
+      footer: <Euro amount={sumBy(summary, (summaryItem) => summaryItem.contributions)} />,
     },
     {
       title: <Message>accountSummary.columns.subtractions</Message>,
       dataIndex: 'subtractions',
       hideOnMobile: true,
-      footer: <Euro amount={sumBy(summary, summaryItem => summaryItem.subtractions)} />,
+      footer: <Euro amount={sumBy(summary, (summaryItem) => summaryItem.subtractions)} />,
     },
     {
       title: <Message>accountSummary.columns.profit</Message>,
@@ -92,7 +92,7 @@ const AccountSummary = ({
     {
       title: <Message>accountSummary.columns.value</Message>,
       dataIndex: 'value',
-      footer: <Euro amount={sumBy(summary, summaryItem => summaryItem.value)} />,
+      footer: <Euro amount={sumBy(summary, (summaryItem) => summaryItem.value)} />,
     },
   ];
 

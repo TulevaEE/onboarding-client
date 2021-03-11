@@ -18,7 +18,7 @@ export const OccupationAgreement = ({
     <div
       id="occupation-agreement"
       className={`${className}`}
-      onChange={event => onOccupationChange(event.target.value)}
+      onChange={(event) => onOccupationChange(event.target.value)}
     >
       <div className="form-group">
         <label htmlFor="occupation">
@@ -33,7 +33,7 @@ export const OccupationAgreement = ({
             id="occupation"
             override={{ value: occupation }}
           >
-            <option />
+            <option value="">{translate('select')}</option>
             <option value="PRIVATE_SECTOR">{translate('aml.occupation.privateSector')}</option>
             <option value="PUBLIC_SECTOR">{translate('aml.occupation.publicSector')}</option>
             <option value="THIRD_SECTOR">{translate('aml.occupation.thirdSector')}</option>
@@ -61,11 +61,11 @@ OccupationAgreement.defaultProps = {
   onOccupationChange: () => {},
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   occupation: state.aml.occupation,
 });
 
-const mapDispatchToProps = dispatch =>
+const mapDispatchToProps = (dispatch) =>
   bindActionCreators(
     {
       onOccupationChange: changeOccupation,
@@ -73,7 +73,4 @@ const mapDispatchToProps = dispatch =>
     dispatch,
   );
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslations(OccupationAgreement));
+export default connect(mapStateToProps, mapDispatchToProps)(withTranslations(OccupationAgreement));

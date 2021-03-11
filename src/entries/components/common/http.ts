@@ -16,7 +16,7 @@ function transformResponse(response: Response): Promise<Response> {
     return response.json();
   }
   if (response.status >= 400) {
-    return response.json().then(data => {
+    return response.json().then((data) => {
       const error: { status?: number; body?: any } = {};
       error.status = response.status;
       error.body = data;
@@ -35,7 +35,7 @@ function transformFileResponse(response: Response): Promise<Blob> {
 
 function urlEncodeParameters(params: Record<string, string>): string {
   return Object.keys(params)
-    .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
+    .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
     .join('&');
 }
 

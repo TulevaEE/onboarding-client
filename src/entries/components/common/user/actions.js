@@ -22,7 +22,7 @@ function toFieldErrors(errorResponse) {
 }
 
 export function updateUserEmailAndPhone(user) {
-  return dispatch => {
+  return (dispatch) => {
     return dispatch(
       updateUser({
         email: user.email,
@@ -38,10 +38,10 @@ export function updateUser(user) {
   return (dispatch, getState) => {
     dispatch({ type: UPDATE_USER_START });
     return updateUserWithToken(user, getState().login.token)
-      .then(newUser => {
+      .then((newUser) => {
         dispatch({ type: UPDATE_USER_SUCCESS, newUser });
       })
-      .catch(errorResponse => {
+      .catch((errorResponse) => {
         dispatch({ type: UPDATE_USER_ERROR, errorResponse });
         throw new SubmissionError(toFieldErrors(errorResponse));
       });
@@ -49,21 +49,21 @@ export function updateUser(user) {
 }
 
 export function userUpdated() {
-  return dispatch => {
+  return (dispatch) => {
     dispatch({ type: USER_UPDATED });
   };
 }
 
 export function createUser(user) {
-  return dispatch => {
+  return (dispatch) => {
     dispatch({ type: UPDATE_USER_START });
     return createUserWithToken(user, config.get('clientCredentialsAccessToken'))
-      .then(newUser => {
+      .then((newUser) => {
         dispatch({ type: UPDATE_USER_SUCCESS, newUser });
         const paymentUrl = `${config.get('newUserPaymentRedirectBaseUrl')}&reference=${newUser.id}`;
         window.location = paymentUrl;
       })
-      .catch(errorResponse => {
+      .catch((errorResponse) => {
         dispatch({ type: UPDATE_USER_ERROR, errorResponse });
         throw new SubmissionError(toFieldErrors(errorResponse));
       });

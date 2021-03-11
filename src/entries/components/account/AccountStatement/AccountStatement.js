@@ -24,7 +24,7 @@ const AccountStatement = ({ funds }) => {
       dataIndex: 'value',
       footer: (
         <Euro
-          amount={sumBy(funds, fund => {
+          amount={sumBy(funds, (fund) => {
             return fund.price + fund.unavailablePrice;
           })}
         />

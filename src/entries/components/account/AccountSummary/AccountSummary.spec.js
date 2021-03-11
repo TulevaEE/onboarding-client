@@ -213,5 +213,5 @@ describe('Account summary', () => {
     expect(valueFooter).toEqual(<Euro amount={6672} />);
   });
 
-  const tableProp = name => component.find(Table).prop(name);
+  const tableProp = (name) => component.find(Table).prop(name);
 });

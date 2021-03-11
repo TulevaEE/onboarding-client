@@ -7,7 +7,10 @@ describe('Table', () => {
   it('renders column titles in header', () => {
     component = shallow(
       <Table
-        columns={[{ title: 'Flower', dataIndex: 'flower' }, { title: 'Color', dataIndex: 'color' }]}
+        columns={[
+          { title: 'Flower', dataIndex: 'flower' },
+          { title: 'Color', dataIndex: 'color' },
+        ]}
         dataSource={[]}
       />,
     );
@@ -18,7 +21,10 @@ describe('Table', () => {
   it('renders data rows in body', () => {
     component = shallow(
       <Table
-        columns={[{ title: 'Flower', dataIndex: 'flower' }, { title: 'Color', dataIndex: 'color' }]}
+        columns={[
+          { title: 'Flower', dataIndex: 'flower' },
+          { title: 'Color', dataIndex: 'color' },
+        ]}
         dataSource={[
           { flower: 'rose', color: 'red', key: 'rose' },
           { flower: 'violet', color: 'blue', key: 'violet' },
@@ -52,7 +58,10 @@ describe('Table', () => {
   it('does not render footer when no column footers exist', () => {
     component = shallow(
       <Table
-        columns={[{ title: 'Flower', dataIndex: 'flower' }, { title: 'Color', dataIndex: 'color' }]}
+        columns={[
+          { title: 'Flower', dataIndex: 'flower' },
+          { title: 'Color', dataIndex: 'color' },
+        ]}
         dataSource={[]}
       />,
     );
@@ -91,23 +100,19 @@ describe('Table', () => {
     expect(footCellIsHidden(1)).toBe(false);
   });
 
-  const isHiddenOnMobile = node => node.hasClass('d-none d-sm-table-cell');
+  const isHiddenOnMobile = (node) => node.hasClass('d-none d-sm-table-cell');
 
   const headCells = () => component.find('thead tr th');
-  const titles = () => headCells().map(node => node.text());
+  const titles = () => headCells().map((node) => node.text());
   const rows = () => component.find('tbody tr');
-  const headCellIsHidden = index => isHiddenOnMobile(headCells().at(index));
+  const headCellIsHidden = (index) => isHiddenOnMobile(headCells().at(index));
 
-  const bodyCell = (rowIndex, cellIndex) =>
-    rows()
-      .at(rowIndex)
-      .find('td')
-      .at(cellIndex);
+  const bodyCell = (rowIndex, cellIndex) => rows().at(rowIndex).find('td').at(cellIndex);
   const bodyCellIsHidden = (rowIndex, cellIndex) => isHiddenOnMobile(bodyCell(rowIndex, cellIndex));
   const textInBodyCell = (rowIndex, cellIndex) => bodyCell(rowIndex, cellIndex).text();
 
   const foot = () => component.find('tfoot');
   const footCells = () => foot().find('tr td');
-  const footers = () => footCells().map(node => node.text());
-  const footCellIsHidden = index => isHiddenOnMobile(footCells().at(index));
+  const footers = () => footCells().map((node) => node.text());
+  const footCellIsHidden = (index) => isHiddenOnMobile(footCells().at(index));
 });

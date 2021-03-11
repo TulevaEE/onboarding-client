@@ -134,12 +134,6 @@ export async function getSourceFundsWithToken(token: string): Promise<any> {
   return funds.map(transformFundBalance);
 }
 
-export function getTargetFundsWithToken(token: string): Promise<any> {
-  return get(getEndpoint('/v1/funds'), undefined, {
-    Authorization: `Bearer ${token}`,
-  });
-}
-
 export function saveMandateWithToken(mandate: string, token: string): Promise<any> {
   return post(getEndpoint('/v1/mandates'), mandate, {
     Authorization: `Bearer ${token}`,
@@ -246,12 +240,6 @@ export function getInitialCapitalWithToken(token: string): Promise<any> {
   });
 }
 
-export function getPendingExchangesWithToken(token: string): Promise<any> {
-  return get(getEndpoint('/v1/transfer-exchanges?status=PENDING'), undefined, {
-    Authorization: `Bearer ${token}`,
-  });
-}
-
 export function createAmlCheck(
   type: string,
   success: boolean,
@@ -275,6 +263,12 @@ export function getMissingAmlChecks(token: string): Promise<any> {
 
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
+export function getFunds(token: string): Promise<Fund[]> {
+  return get(getEndpoint('/v1/funds'), undefined, {
+    Authorization: `Bearer ${token}`,
+  });
+}
+
 export function postThirdPillarStatistics(
   statistics: ThirdPillarStatistics,
   token: string,
@@ -289,4 +283,100 @@ interface ThirdPillarStatistics {
   mandateId: number;
   singlePayment?: number;
   recurringPayment?: number;
+}
+
+export function getPendingApplications(token: string): Promise<Application[]> {
+  return get(
+    getEndpoint('/v1/applications'),
+    { status: 'PENDING' },
+    {
+      Authorization: `Bearer ${token}`,
+    },
+  );
+}
+
+export type Application =
+  | TransferApplication
+  | StopContributionsApplication
+  | ResumeContributionsApplication
+  | EarlyWithdrawalApplication
+  | WithdrawalApplication;
+
+export type TransferApplication = BaseApplication<
+  ApplicationType.TRANSFER,
+  {
+    sourceFund: Fund;
+    exchanges: {
+      targetFund: Fund;
+      amount: number;
+    }[];
+  }
+>;
+
+export type StopContributionsApplication = BaseApplication<
+  ApplicationType.STOP_CONTRIBUTIONS,
+  {
+    stopTime: string;
+    earliestResumeTime: string;
+  }
+>;
+
+export type ResumeContributionsApplication = BaseApplication<
+  ApplicationType.RESUME_CONTRIBUTIONS,
+  {
+    resumeTime: string;
+  }
+>;
+
+export type EarlyWithdrawalApplication = BaseApplication<
+  ApplicationType.EARLY_WITHDRAWAL,
+  {
+    withdrawalTime: string;
+    depositAccountIBAN: string;
+  }
+>;
+
+export type WithdrawalApplication = BaseApplication<
+  ApplicationType.WITHDRAWAL,
+  {
+    withdrawalTime: string;
+    depositAccountIBAN: string;
+  }
+>;
+
+export enum ApplicationType {
+  TRANSFER = 'TRANSFER',
+  STOP_CONTRIBUTIONS = 'STOP_CONTRIBUTIONS',
+  RESUME_CONTRIBUTIONS = 'RESUME_CONTRIBUTIONS',
+  EARLY_WITHDRAWAL = 'EARLY_WITHDRAWAL',
+  WITHDRAWAL = 'WITHDRAWAL',
+}
+
+export enum ApplicationStatus {
+  PENDING = 'PENDING',
+  COMPLETE = 'COMPLETE',
+  FAILED = 'FAILED',
+}
+
+export interface BaseApplication<Type extends ApplicationType, Details> {
+  id: number;
+  status: ApplicationStatus;
+  creationTime: string;
+
+  type: Type;
+  details: Details;
+}
+
+export interface Fund {
+  isin: string;
+  name: string;
+  pillar: number;
+  managementFeeRate: number;
+  ongoingChargesFigure: number;
+  fundManager: FundManager;
+}
+
+export interface FundManager {
+  id: number;
+  name: string;
 }

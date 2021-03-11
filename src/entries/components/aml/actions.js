@@ -56,7 +56,7 @@ export function createAmlChecks(amlChecks) {
       .then(() => {
         dispatch({ type: CREATE_AML_CHECKS_SUCCESS });
       })
-      .catch(error => dispatch({ type: CREATE_AML_CHECKS_ERROR, error }));
+      .catch((error) => dispatch({ type: CREATE_AML_CHECKS_ERROR, error }));
   };
 }
 
@@ -64,10 +64,10 @@ export function getAmlChecks() {
   return (dispatch, getState) => {
     dispatch({ type: GET_MISSING_AML_CHECKS_START });
     return getMissingAmlChecks(getState().login.token)
-      .then(missingAmlChecks => {
+      .then((missingAmlChecks) => {
         dispatch({ type: GET_MISSING_AML_CHECKS_SUCCESS, missingAmlChecks });
       })
-      .catch(error => dispatch({ type: GET_MISSING_AML_CHECKS_ERROR, error }));
+      .catch((error) => dispatch({ type: GET_MISSING_AML_CHECKS_ERROR, error }));
   };
 }
 

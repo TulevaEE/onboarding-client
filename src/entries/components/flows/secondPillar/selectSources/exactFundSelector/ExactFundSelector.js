@@ -7,7 +7,7 @@ import FundExchangeRow from './fundExchangeRow';
 import { isTuleva } from '../../../../common/utils';
 
 function createSelectionChangeHandler(index, selections, onChange) {
-  return newSelection =>
+  return (newSelection) =>
     onChange([
       ...selections.slice(0, index),
       ...(newSelection ? [newSelection] : []),
@@ -20,7 +20,7 @@ function createRowAdder({ sourceFunds, targetFunds, selections, onChange }) {
     onChange(
       selections.concat({
         sourceFundIsin: sourceFunds[0].isin,
-        targetFundIsin: targetFunds.filter(fund => isTuleva(fund))[0].isin,
+        targetFundIsin: targetFunds.filter((fund) => isTuleva(fund))[0].isin,
         percentage: 1,
       }),
     );

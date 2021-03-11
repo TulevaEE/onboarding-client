@@ -29,11 +29,11 @@ export const StatusBox = ({
     : [<Message>account.non.member.statement</Message>];
 
   const activeSecondPillarFunds = secondPillarFunds
-    .filter(fund => fund.activeFund)
+    .filter((fund) => fund.activeFund)
     .map(({ name }) => name);
 
   const thirdPillarActiveFunds = thirdPillarFunds
-    .filter(fund => fund.activeFund)
+    .filter((fund) => fund.activeFund)
     .map(({ name }) => name);
 
   return (
@@ -119,7 +119,7 @@ StatusBox.propTypes = {
   thirdPillarFunds: Types.arrayOf(Types.shape({})),
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   memberNumber: (state.login.user || {}).memberNumber,
   conversion: state.login.userConversion,
   loading: state.login.loadingUserConversion,

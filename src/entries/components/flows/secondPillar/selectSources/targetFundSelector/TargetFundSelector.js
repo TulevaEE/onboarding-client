@@ -16,7 +16,7 @@ export const TargetFundSelector = ({
   translations: { translate },
 }) => (
   <div className="row mx-0 mt-2 tv-target-fund__container">
-    {targetFunds.map(fund => (
+    {targetFunds.map((fund) => (
       <div key={fund.isin} className="col-12 col-sm mb-3 mr-2 p-0">
         <button
           type="button"

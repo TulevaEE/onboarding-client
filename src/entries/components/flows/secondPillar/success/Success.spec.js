@@ -68,10 +68,7 @@ describe('Success step', () => {
     const onDownloadMandate = jest.fn();
     component.setProps({ onDownloadMandate });
     expect(onDownloadMandate).not.toHaveBeenCalled();
-    component
-      .find('button')
-      .first()
-      .simulate('click');
+    component.find('button').first().simulate('click');
     expect(onDownloadMandate).toHaveBeenCalledTimes(1);
   });
 

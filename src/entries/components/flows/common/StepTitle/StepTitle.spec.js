@@ -13,11 +13,7 @@ describe('Step title', () => {
   it('renders children given to it as muted text', () => {
     const children = <div id="test-child">I am a child.</div>;
     component.setProps({ children });
-    const childClass = () =>
-      component
-        .find('div#test-child')
-        .parent()
-        .prop('className');
+    const childClass = () => component.find('div#test-child').parent().prop('className');
     expect(childClass()).not.toContain('h2');
     expect(childClass()).toContain('text-muted');
     expect(component.contains(children)).toBe(true);
@@ -26,11 +22,7 @@ describe('Step title', () => {
   it('renders children given to it as a heading when active', () => {
     const children = <div id="test-child">I am a child.</div>;
     component.setProps({ children, active: true });
-    const childClass = () =>
-      component
-        .find('div#test-child')
-        .parent()
-        .prop('className');
+    const childClass = () => component.find('div#test-child').parent().prop('className');
     expect(childClass()).toContain('h2');
     expect(childClass()).not.toContain('text-muted');
     expect(component.contains(children)).toBe(true);

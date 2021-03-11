@@ -107,7 +107,7 @@ LoggedInApp.propTypes = {
   onGetAmlChecks: Types.func,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   user: {
     name: [(state.login.user || {}).firstName, (state.login.user || {}).lastName].join(' ').trim(),
   },
@@ -129,7 +129,7 @@ const mapStateToProps = state => ({
     ),
 });
 
-const mapDispatchToProps = dispatch =>
+const mapDispatchToProps = (dispatch) =>
   bindActionCreators(
     {
       onLogout: loginActions.logOut,
@@ -142,9 +142,6 @@ const mapDispatchToProps = dispatch =>
     dispatch,
   );
 
-const connectToRedux = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-);
+const connectToRedux = connect(mapStateToProps, mapDispatchToProps);
 
 export default connectToRedux(LoggedInApp);

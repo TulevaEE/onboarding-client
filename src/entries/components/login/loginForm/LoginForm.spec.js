@@ -14,7 +14,7 @@ describe('Login form', () => {
   });
 
   it('shows only the default title when no monthly contribution', () => {
-    const componentHas = key => component.contains(<Message>{key}</Message>);
+    const componentHas = (key) => component.contains(<Message>{key}</Message>);
 
     expect(componentHas('login.title')).toBe(true);
     expect(

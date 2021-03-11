@@ -9,18 +9,14 @@ import {
   getIdCardSignatureStatusForMandateIdWithSignedHashAndToken,
   getMobileIdSignatureChallengeCodeForMandateIdWithToken,
   getMobileIdSignatureStatusForMandateIdWithToken,
-  getPendingExchangesWithToken,
   getSmartIdSignatureChallengeCodeForMandateIdWithToken,
   getSmartIdSignatureStatusForMandateIdWithToken,
   getSourceFundsWithToken,
-  getTargetFundsWithToken,
+  getFunds,
   saveMandateWithToken,
 } from '../common/api';
 import {
   CHANGE_AGREEMENT_TO_TERMS,
-  GET_PENDING_EXCHANGES_ERROR,
-  GET_PENDING_EXCHANGES_START,
-  GET_PENDING_EXCHANGES_SUCCESS,
   GET_SOURCE_FUNDS_ERROR,
   GET_SOURCE_FUNDS_START,
   GET_SOURCE_FUNDS_SUCCESS,
@@ -55,10 +51,10 @@ export function getSourceFunds() {
   return (dispatch, getState) => {
     dispatch({ type: GET_SOURCE_FUNDS_START });
     return getSourceFundsWithToken(getState().login.token)
-      .then(sourceFunds => {
+      .then((sourceFunds) => {
         dispatch({ type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds });
       })
-      .catch(error => dispatch({ type: GET_SOURCE_FUNDS_ERROR, error }));
+      .catch((error) => dispatch({ type: GET_SOURCE_FUNDS_ERROR, error }));
   };
 }
 
@@ -79,7 +75,7 @@ export function downloadMandate() {
     const mandateId = getState().exchange.signedMandateId;
     const { token } = getState().login;
     if (mandateId && token) {
-      return downloadMandateWithIdAndToken(mandateId, token).then(file =>
+      return downloadMandateWithIdAndToken(mandateId, token).then((file) =>
         download(file, 'Tuleva_avaldus.bdoc', 'application/bdoc'),
       );
     }
@@ -90,9 +86,9 @@ export function downloadMandate() {
 export function getTargetFunds() {
   return (dispatch, getState) => {
     dispatch({ type: GET_TARGET_FUNDS_START });
-    return getTargetFundsWithToken(getState().login.token)
-      .then(targetFunds => dispatch({ type: GET_TARGET_FUNDS_SUCCESS, targetFunds }))
-      .catch(error => dispatch({ type: GET_TARGET_FUNDS_ERROR, error }));
+    return getFunds(getState().login.token)
+      .then((targetFunds) => dispatch({ type: GET_TARGET_FUNDS_SUCCESS, targetFunds }))
+      .catch((error) => dispatch({ type: GET_TARGET_FUNDS_ERROR, error }));
   };
 }
 
@@ -107,7 +103,7 @@ function pollForMandateSignatureWithMandateId(mandateId) {
     }
     timeout = setTimeout(() => {
       getMobileIdSignatureStatusForMandateIdWithToken(mandateId, getState().login.token)
-        .then(status => {
+        .then((status) => {
           if (status.statusCode === SIGNING_IN_PROGRESS_STATUS) {
             dispatch({
               type: SIGN_MANDATE_IN_PROGRESS,
@@ -124,7 +120,7 @@ function pollForMandateSignatureWithMandateId(mandateId) {
             }
           }
         })
-        .catch(error => dispatch({ type: SIGN_MANDATE_ERROR, error }));
+        .catch((error) => dispatch({ type: SIGN_MANDATE_ERROR, error }));
     }, POLL_DELAY);
   };
 }
@@ -136,7 +132,7 @@ function pollForMandateSignatureWithMandateIdUsingSmartId(mandateId) {
     }
     timeout = setTimeout(() => {
       getSmartIdSignatureStatusForMandateIdWithToken(mandateId, getState().login.token)
-        .then(status => {
+        .then((status) => {
           if (status.statusCode === SIGNING_IN_PROGRESS_STATUS) {
             dispatch({
               type: SIGN_MANDATE_IN_PROGRESS,
@@ -153,7 +149,7 @@ function pollForMandateSignatureWithMandateIdUsingSmartId(mandateId) {
             }
           }
         })
-        .catch(error => dispatch({ type: SIGN_MANDATE_ERROR, error }));
+        .catch((error) => dispatch({ type: SIGN_MANDATE_ERROR, error }));
     }, POLL_DELAY);
   };
 }
@@ -172,8 +168,8 @@ export function previewMandate(mandate, amlChecks) {
     return dispatch(amlActions.createAmlChecks(amlChecks))
       .then(() => saveMandateWithToken(mandate, token))
       .then(({ id }) => downloadMandatePreviewWithIdAndToken(id, token))
-      .then(file => download(file, 'Tuleva_avaldus_eelvaade.zip', 'application/zip'))
-      .catch(error => {
+      .then((file) => download(file, 'Tuleva_avaldus_eelvaade.zip', 'application/zip'))
+      .catch((error) => {
         handleSaveMandateError(dispatch, error);
       });
   };
@@ -189,11 +185,11 @@ export function signMandateWithMobileId(mandate) {
         mandateId = id;
         return getMobileIdSignatureChallengeCodeForMandateIdWithToken(mandateId, token);
       })
-      .then(controlCode => {
+      .then((controlCode) => {
         dispatch({ type: SIGN_MANDATE_MOBILE_ID_START_SUCCESS, controlCode });
         dispatch(pollForMandateSignatureWithMandateId(mandateId));
       })
-      .catch(error => {
+      .catch((error) => {
         handleSaveMandateError(dispatch, error);
       });
   };
@@ -209,11 +205,11 @@ export function signMandateWithSmartId(mandate) {
         mandateId = id;
         return getSmartIdSignatureChallengeCodeForMandateIdWithToken(mandateId, token);
       })
-      .then(controlCode => {
+      .then((controlCode) => {
         dispatch({ type: SIGN_MANDATE_MOBILE_ID_START_SUCCESS, controlCode });
         dispatch(pollForMandateSignatureWithMandateIdUsingSmartId(mandateId));
       })
-      .catch(error => {
+      .catch((error) => {
         handleSaveMandateError(dispatch, error);
       });
   };
@@ -230,7 +226,7 @@ function pollForMandateSignatureWithMandateIdAndSignedHash(mandateId, signedHash
         signedHash,
         getState().login.token,
       )
-        .then(statusCode => {
+        .then((statusCode) => {
           if (statusCode === SIGNATURE_DONE_STATUS) {
             dispatch({
               type: SIGN_MANDATE_SUCCESS,
@@ -245,28 +241,28 @@ function pollForMandateSignatureWithMandateIdAndSignedHash(mandateId, signedHash
             dispatch({ type: SIGN_MANDATE_ERROR, statusCode });
           }
         })
-        .catch(error => dispatch({ type: SIGN_MANDATE_ERROR, error }));
+        .catch((error) => dispatch({ type: SIGN_MANDATE_ERROR, error }));
     }, POLL_DELAY);
   };
 }
 
 function signIdCardSignatureHashWithCertificateForMandateId(hash, certificate, mandateId) {
-  return dispatch =>
+  return (dispatch) =>
     hwcrypto
       .sign(certificate, { type: 'SHA-256', hex: hash }, { lang: 'en' })
       .then(
-        signature => {
+        (signature) => {
           dispatch({ type: SIGN_MANDATE_ID_CARD_SIGN_HASH_SUCCESS });
           return signature.hex;
         },
-        error => {
+        (error) => {
           dispatch({ type: SIGN_MANDATE_ERROR, error });
         },
       )
-      .then(signedHash => {
+      .then((signedHash) => {
         dispatch(pollForMandateSignatureWithMandateIdAndSignedHash(mandateId, signedHash));
       })
-      .catch(error => {
+      .catch((error) => {
         handleSaveMandateError(dispatch, error);
       });
 }
@@ -281,7 +277,7 @@ export function signMandateWithIdCard(mandate) {
     return hwcrypto
       .getCertificate({ lang: 'en' })
       .then(
-        cert => {
+        (cert) => {
           certificate = cert;
         },
         () => {
@@ -301,11 +297,11 @@ export function signMandateWithIdCard(mandate) {
           token,
         );
       })
-      .then(hash => {
+      .then((hash) => {
         dispatch({ type: SIGN_MANDATE_ID_CARD_START_SUCCESS });
         dispatch(signIdCardSignatureHashWithCertificateForMandateId(hash, certificate, mandateId));
       })
-      .catch(error => {
+      .catch((error) => {
         dispatch({ type: SIGN_MANDATE_START_ERROR, error });
         throw error;
       });
@@ -326,7 +322,7 @@ export function signMandate(mandate, amlChecks) {
         }
         return dispatch(signMandateWithIdCard(mandate));
       })
-      .catch(error => {
+      .catch((error) => {
         handleSaveMandateError(dispatch, error);
       });
   };
@@ -341,15 +337,4 @@ export function cancelSigningMandate() {
 
 export function closeErrorMessages() {
   return { type: NO_SIGN_MANDATE_ERROR };
-}
-
-export function getPendingExchanges() {
-  return (dispatch, getState) => {
-    dispatch({ type: GET_PENDING_EXCHANGES_START });
-    return getPendingExchangesWithToken(getState().login.token)
-      .then(pendingExchanges => {
-        dispatch({ type: GET_PENDING_EXCHANGES_SUCCESS, pendingExchanges });
-      })
-      .catch(error => dispatch({ type: GET_PENDING_EXCHANGES_ERROR, error }));
-  };
 }

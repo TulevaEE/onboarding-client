@@ -10,14 +10,16 @@ function getDisplayName(WrappedComponent) {
 }
 
 // higher order component which will redirect to login if tried to go to without auth.
-const requireAuthentication = WrappedComponent => {
+const requireAuthentication = (WrappedComponent) => {
   class AuthenticatedComponent extends Component {
-    componentWillMount() {
+    // eslint-disable-next-line camelcase
+    UNSAFE_componentWillMount() {
       const { authenticated } = this.props;
       this.checkAuthenticatedAndRedirect(authenticated);
     }
 
-    componentWillReceiveProps(nextProps) {
+    // eslint-disable-next-line camelcase
+    UNSAFE_componentWillReceiveProps(nextProps) {
       this.checkAuthenticatedAndRedirect(nextProps.authenticated);
     }
 
@@ -46,11 +48,11 @@ const requireAuthentication = WrappedComponent => {
 
   AuthenticatedComponent.displayName = `requireAuthentication(${getDisplayName(WrappedComponent)})`;
 
-  const mapStateToProps = state => ({
+  const mapStateToProps = (state) => ({
     authenticated: !!state.login.token,
   });
 
-  const mapDispatchToProps = dispatch =>
+  const mapDispatchToProps = (dispatch) =>
     bindActionCreators(
       {
         redirectToLogin: () => push('/login'),
@@ -59,10 +61,7 @@ const requireAuthentication = WrappedComponent => {
       dispatch,
     );
 
-  const connectToRedux = connect(
-    mapStateToProps,
-    mapDispatchToProps,
-  );
+  const connectToRedux = connect(mapStateToProps, mapDispatchToProps);
   return connectToRedux(AuthenticatedComponent);
 };
 

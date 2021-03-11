@@ -50,6 +50,8 @@
   "select.sources.select.none.subtitle": "The next step allows you to direct your future contributions.",
   "select.sources.select.all.recommended": "We recommend this fund based on your current age",
 
+  "select": "Select",
+
   "accountSummary.heading": "Your pension summary",
   "accountSummary.columns.pillar.title": "Pillar",
   "accountSummary.columns.pillar.footer": "Total",
@@ -361,5 +363,24 @@
 
   "thirdPillarSuccess.done": "All done!",
   "thirdPillarSuccess.message": "Check your pension account. Tuleva members see also their member capital. Your new contribution will appear on your pension account by the end of the next working day.",
-  "thirdPillarSuccess.button": "My account"
+  "thirdPillarSuccess.button": "My account",
+
+  "applications.title": "Your existing applications",
+  "applications.cancel": "Cancel application",
+  "applications.footer": "You can see the history of all your applications on the Pensionikeskus website.",
+  "applications.type.transfer.title": "Fund transfer application",
+  "applications.type.transfer.sourceFund": "Source fund",
+  "applications.type.transfer.targetFund": "Target fund",
+  "applications.type.transfer.amount": "Amount",
+  "applications.type.stopContributions.title": "Second pillar contribution stopping application",
+  "applications.type.stopContributions.time": "Contributions will stop",
+  "applications.type.stopContributions.resumeTime": "Possibility to resume contributions",
+  "applications.type.resumeContributions.title": "Second pillar contribution resuming application",
+  "applications.type.resumeContributions.time": "Contributions will resume",
+  "applications.type.earlyWithdrawal.title": "Second pillar early withdrawal application",
+  "applications.type.earlyWithdrawal.time": "Withdrawal month",
+  "applications.type.earlyWithdrawal.account": "Bank account",
+  "applications.type.withdrawal.title": "Second pillar withdrawal application",
+  "applications.type.withdrawal.time": "Withdrawal month",
+  "applications.type.withdrawal.account": "Bank account"
 }

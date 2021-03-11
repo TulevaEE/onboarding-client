@@ -1,4 +1,4 @@
-const isTruthy = value => !!value;
+const isTruthy = (value) => !!value;
 
 const NOT_FOUND_ITEM_CONSTANT = {}; // using this as a secret comparison reference.
 
@@ -16,7 +16,7 @@ export function findWhere(list = [], predicate = isTruthy) {
 }
 
 export function createClamper(lowerLimit = 0, upperLimit = 10) {
-  return value => Math.max(Math.min(value, upperLimit), lowerLimit);
+  return (value) => Math.max(Math.min(value, upperLimit), lowerLimit);
 }
 
 export function formatAmountForCurrency(amount = 0) {
@@ -34,6 +34,6 @@ export function getTotalFundValue(funds) {
   return (funds || []).reduce((sum, { price }) => sum + price, 0);
 }
 
-export const isThirdPillar = fund => fund.pillar === 3;
+export const isThirdPillar = (fund) => fund.pillar === 3;
 
-export const isTuleva = fund => (fund.fundManager || {}).name === 'Tuleva';
+export const isTuleva = (fund) => (fund.fundManager || {}).name === 'Tuleva';

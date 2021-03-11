@@ -48,12 +48,12 @@ AmlPage.defaultProps = {
   save: noop,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   updateUserSuccess: state.contactDetails.updateUserSuccess,
   createAmlChecksSuccess: state.aml.createAmlChecksSuccess,
 });
 
-const mapDispatchToProps = dispatch =>
+const mapDispatchToProps = (dispatch) =>
   bindActionCreators(
     {
       save: updateUserAndAml,
@@ -61,9 +61,6 @@ const mapDispatchToProps = dispatch =>
     dispatch,
   );
 
-const withRedux = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-);
+const withRedux = connect(mapStateToProps, mapDispatchToProps);
 
 export default withRedux(AmlPage);

@@ -47,7 +47,7 @@ describe('Fund transfer table', () => {
       },
     ];
     component.setProps({ selections });
-    selections.forEach(selection =>
+    selections.forEach((selection) =>
       expect(
         component.contains(
           <div className="row tv-table__row py-2">

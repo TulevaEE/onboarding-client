@@ -85,14 +85,14 @@ describe('Flow', () => {
 
   it('has completed step titles with numbers and titles', () => {
     const completedTitles = () =>
-      component.find(StepTitle).filterWhere(title => title.prop('completed'));
+      component.find(StepTitle).filterWhere((title) => title.prop('completed'));
 
     component.setProps({ lastPartOfPath: 'first-step' });
     expect(completedTitles()).toHaveLength(0);
 
     component.setProps({ lastPartOfPath: 'third-step' });
-    expect(completedTitles().map(title => title.prop('number'))).toEqual([1, 2]);
-    expect(completedTitles().map(title => title.prop('children'))).toEqual([
+    expect(completedTitles().map((title) => title.prop('number'))).toEqual([1, 2]);
+    expect(completedTitles().map((title) => title.prop('children'))).toEqual([
       <Message>first.title</Message>,
       <Message>second.title</Message>,
     ]);
@@ -101,7 +101,7 @@ describe('Flow', () => {
   it('has current step title with number and title', () => {
     component.setProps({ lastPartOfPath: 'third-step' });
 
-    const activeTitle = component.find(StepTitle).filterWhere(title => title.prop('active'));
+    const activeTitle = component.find(StepTitle).filterWhere((title) => title.prop('active'));
 
     expect(activeTitle).toHaveLength(1);
     expect(activeTitle.prop('number')).toBe(3);
@@ -139,11 +139,11 @@ describe('Flow', () => {
     const afterTitles = () =>
       component
         .find(StepTitle)
-        .filterWhere(title => !title.prop('completed') && !title.prop('active'));
+        .filterWhere((title) => !title.prop('completed') && !title.prop('active'));
 
     component.setProps({ lastPartOfPath: 'second-step' });
-    expect(afterTitles().map(title => title.prop('number'))).toEqual([3]);
-    expect(afterTitles().map(title => title.prop('children'))).toEqual([
+    expect(afterTitles().map((title) => title.prop('number'))).toEqual([3]);
+    expect(afterTitles().map((title) => title.prop('children'))).toEqual([
       <Message>third.title</Message>,
     ]);
 

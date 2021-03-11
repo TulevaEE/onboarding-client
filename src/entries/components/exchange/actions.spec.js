@@ -2,9 +2,6 @@ import { push } from 'connected-react-router';
 
 import {
   CHANGE_AGREEMENT_TO_TERMS,
-  GET_PENDING_EXCHANGES_ERROR,
-  GET_PENDING_EXCHANGES_START,
-  GET_PENDING_EXCHANGES_SUCCESS,
   GET_SOURCE_FUNDS_ERROR,
   GET_SOURCE_FUNDS_START,
   GET_SOURCE_FUNDS_SUCCESS,
@@ -57,7 +54,7 @@ describe('Exchange actions', () => {
 
   function mockDispatch() {
     state = { login: { token: 'token' }, exchange: {} };
-    dispatch = jest.fn(action => {
+    dispatch = jest.fn((action) => {
       if (typeof action === 'function') {
         action(dispatch, () => state);
       }
@@ -125,7 +122,7 @@ describe('Exchange actions', () => {
 
   it('can get target funds', async () => {
     const targetFunds = [{ iAmPensionFunds: true }];
-    mockApi.getTargetFundsWithToken = jest.fn(() => {
+    mockApi.getFunds = jest.fn(() => {
       expect(dispatch).toHaveBeenCalledTimes(1);
       expect(dispatch).toHaveBeenCalledWith({ type: GET_TARGET_FUNDS_START });
       dispatch.mockClear();
@@ -143,7 +140,7 @@ describe('Exchange actions', () => {
 
   it('can handle errors when getting target funds', async () => {
     const error = new Error('oh no!');
-    mockApi.getTargetFundsWithToken = jest.fn(() => Promise.reject(error));
+    mockApi.getFunds = jest.fn(() => Promise.reject(error));
     const getTargetFunds = createBoundAction(actions.getTargetFunds);
     expect(dispatch).not.toHaveBeenCalled();
     await getTargetFunds();
@@ -154,7 +151,7 @@ describe('Exchange actions', () => {
   });
 
   it('can change agreement to terms', () => {
-    [true, false].forEach(agreement =>
+    [true, false].forEach((agreement) =>
       expect(actions.changeAgreementToTerms(agreement)).toEqual({
         type: CHANGE_AGREEMENT_TO_TERMS,
         agreement,
@@ -393,38 +390,6 @@ describe('Exchange actions', () => {
   it('can close error messages', () => {
     expect(actions.closeErrorMessages()).toEqual({
       type: NO_SIGN_MANDATE_ERROR,
-    });
-  });
-
-  it('can get pending exchanges', async () => {
-    const pendingExchanges = [{ pendingExchanges: true }];
-    mockApi.getPendingExchangesWithToken = jest.fn(() => {
-      expect(dispatch).toHaveBeenCalledTimes(1);
-      expect(dispatch).toHaveBeenCalledWith({
-        type: GET_PENDING_EXCHANGES_START,
-      });
-      dispatch.mockClear();
-      return Promise.resolve(pendingExchanges);
-    });
-    const getPendingExchanges = createBoundAction(actions.getPendingExchanges);
-    expect(dispatch).not.toHaveBeenCalled();
-    await getPendingExchanges();
-    expect(dispatch).toHaveBeenCalledTimes(1);
-    expect(dispatch).toHaveBeenCalledWith({
-      type: GET_PENDING_EXCHANGES_SUCCESS,
-      pendingExchanges,
-    });
-  });
-
-  it('can handle errors when getting pending exchanges', async () => {
-    const error = new Error('oh no!');
-    mockApi.getPendingExchangesWithToken = jest.fn(() => Promise.reject(error));
-    const getPendingExchanges = createBoundAction(actions.getPendingExchanges);
-    expect(dispatch).not.toHaveBeenCalled();
-    await getPendingExchanges();
-    expect(dispatch).toHaveBeenCalledWith({
-      type: GET_PENDING_EXCHANGES_ERROR,
-      error,
     });
   });
 

@@ -169,7 +169,7 @@ export class ReturnComparison extends Component<Props, State> {
               <Select
                 options={[
                   { value: Key.EPI, label: 'returnComparison.pensionFund' },
-                  ...fundIsinsWithAvailableData.map(isin => ({
+                  ...fundIsinsWithAvailableData.map((isin) => ({
                     value: isin,
                     label: fundNameMap[isin] || isin,
                   })),

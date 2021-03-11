@@ -154,7 +154,7 @@ export const ConfirmThirdPillarMandate = ({
 function getMandate(exchangeExistingUnits, sourceFunds, targetFund, address) {
   return {
     fundTransferExchanges: exchangeExistingUnits
-      ? sourceFunds.map(sourceFund => ({
+      ? sourceFunds.map((sourceFund) => ({
           amount: 1,
           sourceFundIsin: sourceFund.isin,
           targetFundIsin: targetFund.isin,
@@ -166,7 +166,7 @@ function getMandate(exchangeExistingUnits, sourceFunds, targetFund, address) {
 }
 
 function createSelectionsFromFundsToFund(sourceFunds, targetFund) {
-  return sourceFunds.map(sourceFund => ({
+  return sourceFunds.map((sourceFund) => ({
     sourceFundIsin: sourceFund.isin,
     sourceFundName: sourceFund.name,
     targetFundIsin: targetFund.isin,
@@ -231,13 +231,13 @@ ConfirmThirdPillarMandate.defaultProps = {
   onCloseErrorMessages: () => {},
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   loadingMandate: state.exchange.loadingMandate,
   mandateSigningControlCode: state.exchange.mandateSigningControlCode,
   mandateSigningError: state.exchange.mandateSigningError,
   signedMandateId: state.thirdPillar.signedMandateId,
   selectedFutureContributionsFund: state.thirdPillar.targetFunds.find(
-    fund => fund.isin === state.thirdPillar.selectedFutureContributionsFundIsin,
+    (fund) => fund.isin === state.thirdPillar.selectedFutureContributionsFundIsin,
   ),
   agreedToTerms: state.thirdPillar.agreedToTerms,
   isResident: state.aml.isResident,
@@ -257,7 +257,7 @@ const mapStateToProps = state => ({
     state.login.userConversion.thirdPillar.selectionComplete,
 });
 
-const mapDispatchToProps = dispatch =>
+const mapDispatchToProps = (dispatch) =>
   bindActionCreators(
     {
       onSign: exchangeActions.signMandate,
@@ -270,7 +270,4 @@ const mapDispatchToProps = dispatch =>
 
 const wrapped = reduxForm({ form: 'confirmThirdPillarMandate' })(ConfirmThirdPillarMandate);
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(wrapped);
+export default connect(mapStateToProps, mapDispatchToProps)(wrapped);

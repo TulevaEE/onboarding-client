@@ -28,14 +28,14 @@ describe('Select', () => {
   });
 
   it('has option values', () => {
-    expect(options().map(option => option.prop('value'))).toEqual([1, 2, 3]);
+    expect(options().map((option) => option.prop('value'))).toEqual([1, 2, 3]);
   });
 
   it('has translated option labels', () => {
-    const translate = jest.fn().mockImplementation(key => `translated ${key}`);
+    const translate = jest.fn().mockImplementation((key) => `translated ${key}`);
     component.setProps({ translations: { translate } });
 
-    expect(options().map(option => option.text())).toEqual([
+    expect(options().map((option) => option.text())).toEqual([
       'translated One',
       'translated Two',
       'translated Three',

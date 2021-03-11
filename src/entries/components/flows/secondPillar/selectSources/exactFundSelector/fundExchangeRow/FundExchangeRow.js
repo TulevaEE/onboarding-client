@@ -26,7 +26,7 @@ export const FundExchangeRow = ({ sourceFunds, targetFunds, onChange, selection 
               onChange({ ...selection, sourceFundIsin })
             }
           >
-            {sortedSourceFunds.map(fund => (
+            {sortedSourceFunds.map((fund) => (
               <option key={fund.isin} value={fund.isin}>
                 {fund.name}
               </option>
@@ -65,7 +65,7 @@ export const FundExchangeRow = ({ sourceFunds, targetFunds, onChange, selection 
               onChange({ ...selection, targetFundIsin })
             }
           >
-            {sortedTargetFunds.map(fund => (
+            {sortedTargetFunds.map((fund) => (
               <option key={fund.isin} value={fund.isin}>
                 {fund.name}
               </option>

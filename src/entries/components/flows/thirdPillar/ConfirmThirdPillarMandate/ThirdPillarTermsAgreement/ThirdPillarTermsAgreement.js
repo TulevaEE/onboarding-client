@@ -77,12 +77,12 @@ ThirdPillarTermsAgreement.defaultProps = {
   onAgreementChange: () => {},
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   agreed: state.thirdPillar.agreedToTerms,
   age: state.login.user ? state.login.user.age : null,
 });
 
-const mapDispatchToProps = dispatch =>
+const mapDispatchToProps = (dispatch) =>
   bindActionCreators(
     {
       onAgreementChange: thirdPillarActions.changeAgreementToTerms,
@@ -90,7 +90,4 @@ const mapDispatchToProps = dispatch =>
     dispatch,
   );
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(ThirdPillarTermsAgreement);
+export default connect(mapStateToProps, mapDispatchToProps)(ThirdPillarTermsAgreement);

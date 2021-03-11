@@ -6,7 +6,7 @@ import './LoginForm.scss';
 import LoginTabs from './LoginTabs';
 
 function runWithDefaultPrevention(fn) {
-  return event => {
+  return (event) => {
     event.preventDefault();
     fn();
   };
@@ -67,7 +67,7 @@ export const LoginForm = ({
                 id="smart-id-personal-code"
                 type="number"
                 value={personalCode}
-                onChange={event => onPersonalCodeChange(event.target.value)}
+                onChange={(event) => onPersonalCodeChange(event.target.value)}
                 className="form-control form-control-lg"
                 placeholder={translate('login.id.code')}
               />
@@ -92,7 +92,7 @@ export const LoginForm = ({
                 id="mobile-id-personal-code"
                 type="number"
                 value={personalCode}
-                onChange={event => onPersonalCodeChange(event.target.value)}
+                onChange={(event) => onPersonalCodeChange(event.target.value)}
                 className="form-control form-control-lg"
                 placeholder={translate('login.id.code')}
               />
@@ -102,7 +102,7 @@ export const LoginForm = ({
                 id="mobile-id-number"
                 type="tel"
                 value={phoneNumber}
-                onChange={event => onPhoneNumberChange(event.target.value)}
+                onChange={(event) => onPhoneNumberChange(event.target.value)}
                 className="form-control form-control-lg"
                 placeholder={translate('login.phone.number')}
               />

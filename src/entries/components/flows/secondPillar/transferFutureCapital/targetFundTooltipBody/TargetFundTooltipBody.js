@@ -55,7 +55,7 @@ const TargetFundTooltipBody = ({ targetFundIsin }) => {
         className="diagram"
       />
       <ul className="mt-4">
-        {getTooltipBodyData(targetFundIsin).funds.map(item => (
+        {getTooltipBodyData(targetFundIsin).funds.map((item) => (
           <li key={item}>
             <Message>{item}</Message>
           </li>

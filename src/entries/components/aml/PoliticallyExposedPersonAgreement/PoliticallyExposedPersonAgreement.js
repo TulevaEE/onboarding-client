@@ -19,7 +19,7 @@ export const PoliticallyExposedPersonAgreement = ({
       <div className="custom-control custom-checkbox">
         <Field
           checked={isPoliticallyExposed === false}
-          onChange={e => onPoliticallyExposedChange(!e.target.checked)}
+          onChange={(e) => onPoliticallyExposedChange(!e.target.checked)}
           component="input"
           type="checkbox"
           name="aml.isNotPoliticallyExposed"
@@ -50,11 +50,11 @@ PoliticallyExposedPersonAgreement.defaultProps = {
   onPoliticallyExposedChange: () => {},
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   isPoliticallyExposed: state.aml.isPoliticallyExposed,
 });
 
-const mapDispatchToProps = dispatch =>
+const mapDispatchToProps = (dispatch) =>
   bindActionCreators(
     {
       onPoliticallyExposedChange: changeIsPoliticallyExposed,
@@ -62,7 +62,4 @@ const mapDispatchToProps = dispatch =>
     dispatch,
   );
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(PoliticallyExposedPersonAgreement);
+export default connect(mapStateToProps, mapDispatchToProps)(PoliticallyExposedPersonAgreement);

@@ -1,5 +1,5 @@
 import React from 'react';
-import FacebookProvider, { Like } from 'react-facebook';
+import { FacebookProvider, Like } from 'react-facebook';
 import { shallow } from 'enzyme';
 import { LoginPage } from './LoginPage';
 import { AuthenticationLoader, ErrorAlert } from '../common';

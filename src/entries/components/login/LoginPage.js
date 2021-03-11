@@ -1,7 +1,7 @@
 import React from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { Redirect, withRouter } from 'react-router-dom';
-import FacebookProvider, { Like } from 'react-facebook';
+import { FacebookProvider, Like } from 'react-facebook';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Message } from 'retranslate';
@@ -138,7 +138,7 @@ LoginPage.propTypes = {
   location: Types.shape({ state: { from: Types.string } }),
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   isAuthenticated: !!state.login.token,
   phoneNumber: state.login.phoneNumber,
   personalCode: state.login.personalCode,
@@ -149,7 +149,7 @@ const mapStateToProps = state => ({
   monthlyThirdPillarContribution: state.thirdPillar.monthlyContribution,
   exchangeExistingThirdPillarUnits: state.thirdPillar.exchangeExistingUnits,
 });
-const mapDispatchToProps = dispatch =>
+const mapDispatchToProps = (dispatch) =>
   bindActionCreators(
     {
       onPhoneNumberChange: changePhoneNumber,
@@ -162,9 +162,6 @@ const mapDispatchToProps = dispatch =>
     dispatch,
   );
 
-const withRedux = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-);
+const withRedux = connect(mapStateToProps, mapDispatchToProps);
 
 export default withRouter(withRedux(LoginPage));

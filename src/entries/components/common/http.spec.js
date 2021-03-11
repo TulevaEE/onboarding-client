@@ -75,7 +75,7 @@ describe('http', () => {
       another: 5,
       'Accept-Language': 'en',
     };
-    return downloadFile('https://example.com', headers).then(givenValue => {
+    return downloadFile('https://example.com', headers).then((givenValue) => {
       expect(givenValue).toEqual(value);
       const url = fetch.mock.calls[0][0];
       expect(url).toEqual('https://example.com');
@@ -118,7 +118,7 @@ describe('http', () => {
   it('can post some data', () => {
     const value = { thisIsTheReturnValue: true };
     fetch.mockReturnValueOnce(fakeSuccessfulResponseWithValue(value));
-    return post('https://example.com', { thisIsTheBody: true }).then(givenValue => {
+    return post('https://example.com', { thisIsTheBody: true }).then((givenValue) => {
       expect(givenValue).toEqual(value);
       const url = fetch.mock.calls[0][0];
       expect(url).toEqual('https://example.com');
@@ -134,7 +134,7 @@ describe('http', () => {
     return postForm('https://example.com', {
       thisIsTheBody: true,
       yes: 'no',
-    }).then(givenValue => {
+    }).then((givenValue) => {
       expect(givenValue).toEqual(value);
       const url = fetch.mock.calls[0][0];
       expect(url).toEqual('https://example.com');
@@ -148,7 +148,7 @@ describe('http', () => {
   it('can patch some data', () => {
     const value = { thisIsTheReturnValue: true };
     fetch.mockReturnValueOnce(fakeSuccessfulResponseWithValue(value));
-    return patch('https://example.com', { thisIsTheBody: true }).then(givenValue => {
+    return patch('https://example.com', { thisIsTheBody: true }).then((givenValue) => {
       expect(givenValue).toEqual(value);
       const url = fetch.mock.calls[0][0];
       expect(url).toEqual('https://example.com');
@@ -161,7 +161,7 @@ describe('http', () => {
   it('can send a simple fetch request', () => {
     const someResponse = {};
     fetch.mockReturnValueOnce(fakeSuccessfulResponseWithValue(someResponse));
-    return simpleFetch('GET', 'https://id.tuleva.ee').then(response => {
+    return simpleFetch('GET', 'https://id.tuleva.ee').then((response) => {
       expect(response).toEqual(someResponse);
       const url = fetch.mock.calls[0][0];
       expect(url).toEqual('https://id.tuleva.ee');

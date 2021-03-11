@@ -1,0 +1,35 @@
+@import '../../variables';
+
+$padding: 15px;
+
+.card {
+  width: auto !important;
+  max-width: none !important;
+  margin-right: -$padding;
+  margin-left: -$padding;
+  margin-bottom: $padding;
+  border: 1px solid $very-light-gray;
+  border-radius: 0.25rem;
+  overflow: hidden;
+}
+
+.header {
+  padding: $padding 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid $very-light-gray;
+}
+
+.content {
+  background-color: $gray-washed;
+  padding: $padding 18px;
+}
+
+.footer {
+  padding: $padding 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top: 1px solid $very-light-gray;
+}

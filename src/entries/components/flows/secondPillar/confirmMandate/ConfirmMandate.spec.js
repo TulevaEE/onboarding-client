@@ -121,8 +121,14 @@ describe('Confirm mandate step', () => {
       },
       { percentage: 1, sourceFundIsin: 'source 2', targetFundIsin: 'target 2' },
     ];
-    const sourceFunds = [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }];
-    const targetFunds = [{ isin: 'target 1', name: 'c' }, { isin: 'target 2', name: 'd' }];
+    const sourceFunds = [
+      { isin: 'source 1', name: 'a' },
+      { isin: 'source 2', name: 'b' },
+    ];
+    const targetFunds = [
+      { isin: 'target 1', name: 'c' },
+      { isin: 'target 2', name: 'd' },
+    ];
     component.setProps({
       exchange: { sourceSelection, sourceFunds, targetFunds },
     });
@@ -184,8 +190,14 @@ describe('Confirm mandate step', () => {
           targetFundIsin: 'target 2',
         },
       ],
-      sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
-      targetFunds: [{ isin: 'target 1', name: 'c' }, { isin: 'target 2', name: 'd' }],
+      sourceFunds: [
+        { isin: 'source 1', name: 'a' },
+        { isin: 'source 2', name: 'b' },
+      ],
+      targetFunds: [
+        { isin: 'target 1', name: 'c' },
+        { isin: 'target 2', name: 'd' },
+      ],
     };
     component.setProps({ exchange });
     expect(component.find(FundTransferTable).prop('selections')).toEqual([
@@ -408,8 +420,14 @@ describe('Confirm mandate step', () => {
           targetFundIsin: 'target 2',
         },
       ],
-      sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
-      targetFunds: [{ isin: 'target 1', name: 'c' }, { isin: 'target 2', name: 'd' }],
+      sourceFunds: [
+        { isin: 'source 1', name: 'a' },
+        { isin: 'source 2', name: 'b' },
+      ],
+      targetFunds: [
+        { isin: 'target 1', name: 'c' },
+        { isin: 'target 2', name: 'd' },
+      ],
       selectedFutureContributionsFundIsin: null,
       agreedToTerms: true,
     };
@@ -442,8 +460,14 @@ describe('Confirm mandate step', () => {
           targetFundIsin: 'target 2',
         },
       ],
-      sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
-      targetFunds: [{ isin: 'target 1', name: 'c' }, { isin: 'target 2', name: 'd' }],
+      sourceFunds: [
+        { isin: 'source 1', name: 'a' },
+        { isin: 'source 2', name: 'b' },
+      ],
+      targetFunds: [
+        { isin: 'target 1', name: 'c' },
+        { isin: 'target 2', name: 'd' },
+      ],
       selectedFutureContributionsFundIsin: null,
       agreedToTerms: false,
     };
@@ -468,8 +492,14 @@ describe('Confirm mandate step', () => {
           targetFundIsin: 'target 2',
         },
       ],
-      sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
-      targetFunds: [{ isin: 'target 1', name: 'c' }, { isin: 'target 2', name: 'd' }],
+      sourceFunds: [
+        { isin: 'source 1', name: 'a' },
+        { isin: 'source 2', name: 'b' },
+      ],
+      targetFunds: [
+        { isin: 'target 1', name: 'c' },
+        { isin: 'target 2', name: 'd' },
+      ],
       selectedFutureContributionsFundIsin: null,
       agreedToTerms: false,
     };
@@ -494,8 +524,14 @@ describe('Confirm mandate step', () => {
           targetFundIsin: 'target 2',
         },
       ],
-      sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
-      targetFunds: [{ isin: 'target 1', name: 'c' }, { isin: 'target 2', name: 'd' }],
+      sourceFunds: [
+        { isin: 'source 1', name: 'a' },
+        { isin: 'source 2', name: 'b' },
+      ],
+      targetFunds: [
+        { isin: 'target 1', name: 'c' },
+        { isin: 'target 2', name: 'd' },
+      ],
       selectedFutureContributionsFundIsin: null,
       agreedToTerms: false,
     };
@@ -527,8 +563,14 @@ describe('Confirm mandate step', () => {
           targetFundIsin: 'target 2',
         },
       ],
-      sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
-      targetFunds: [{ isin: 'target 1', name: 'c' }, { isin: 'target 2', name: 'd' }],
+      sourceFunds: [
+        { isin: 'source 1', name: 'a' },
+        { isin: 'source 2', name: 'b' },
+      ],
+      targetFunds: [
+        { isin: 'target 1', name: 'c' },
+        { isin: 'target 2', name: 'd' },
+      ],
       selectedFutureContributionsFundIsin: null,
       agreedToTerms: false,
     };
@@ -551,8 +593,14 @@ describe('Confirm mandate step', () => {
           targetFundIsin: 'target 2',
         },
       ],
-      sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
-      targetFunds: [{ isin: 'target 1', name: 'c' }, { isin: 'target 2', name: 'd' }],
+      sourceFunds: [
+        { isin: 'source 1', name: 'a' },
+        { isin: 'source 2', name: 'b' },
+      ],
+      targetFunds: [
+        { isin: 'target 1', name: 'c' },
+        { isin: 'target 2', name: 'd' },
+      ],
       selectedFutureContributionsFundIsin: null,
       agreedToTerms: false,
     };
@@ -577,8 +625,14 @@ describe('Confirm mandate step', () => {
           targetFundIsin: 'target 2',
         },
       ],
-      sourceFunds: [{ isin: 'source 1', name: 'a' }, { isin: 'source 2', name: 'b' }],
-      targetFunds: [{ isin: 'target 1', name: 'c' }, { isin: 'target 2', name: 'd' }],
+      sourceFunds: [
+        { isin: 'source 1', name: 'a' },
+        { isin: 'source 2', name: 'b' },
+      ],
+      targetFunds: [
+        { isin: 'target 1', name: 'c' },
+        { isin: 'target 2', name: 'd' },
+      ],
       selectedFutureContributionsFundIsin: null,
       error,
     };

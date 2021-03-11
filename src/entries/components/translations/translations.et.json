@@ -50,6 +50,8 @@
   "select.sources.select.none.subtitle": "Järgmise sammuga saad suunata edasised maksed.",
   "select.sources.select.all.recommended": "Alla 55-aastastele sobib see fond.",
 
+  "select": "Vali",
+
   "accountSummary.heading": "Sinu pensionivara koondseis",
   "accountSummary.columns.pillar.title": "Pensionivara",
   "accountSummary.columns.pillar.footer": "Kokku",
@@ -337,5 +339,24 @@
 
   "thirdPillarSuccess.done": "Kõik tehtud!",
   "thirdPillarSuccess.message": "Vaata oma kontoseisu. Kui oled Tuleva ühistu liige, siis näed ka oma liikmekapitali seisu. Kui tegid sissemakse, siis uued osakud jõuavad sinu pensionikontole järgmise tööpäeva lõpuks.",
-  "thirdPillarSuccess.button": "Minu konto"
+  "thirdPillarSuccess.button": "Minu konto",
+
+  "applications.title": "Sinu ootel olevad avaldused",
+  "applications.cancel": "Tühista avaldus",
+  "applications.footer": "Kõikide oma avalduste ajalugu näed Pensionikeskuse lehelt.",
+  "applications.type.transfer.title": "Osakute vahetamise avaldus",
+  "applications.type.transfer.sourceFund": "Lähtefond",
+  "applications.type.transfer.targetFund": "Sihtfond",
+  "applications.type.transfer.amount": "Maht",
+  "applications.type.stopContributions.title": "II samba maksete lõpetamise avaldus",
+  "applications.type.stopContributions.time": "Maksed peatuvad alates",
+  "applications.type.stopContributions.resumeTime": "Maksete taastamise võimalus",
+  "applications.type.resumeContributions.title": "II samba maksete uuesti alustamise avaldus",
+  "applications.type.resumeContributions.time": "Maksed algavad alates",
+  "applications.type.earlyWithdrawal.title": "II samba enneaegse väljavõtmise avaldus",
+  "applications.type.earlyWithdrawal.time": "Väljamakse kuu",
+  "applications.type.earlyWithdrawal.account": "Pangakonto",
+  "applications.type.withdrawal.title": "II samba väljavõtmise avaldus",
+  "applications.type.withdrawal.time": "Väljamakse kuu",
+  "applications.type.withdrawal.account": "Pangakonto"
 }
