@@ -7,7 +7,7 @@ import AccountStatement from './AccountStatement';
 import GreetingBar from './GreetingBar';
 import AccountSummary from './AccountSummary';
 import StatusBox from './statusBox';
-import { ApplicationSecton } from './ApplicationSection/ApplicationSection';
+import { ApplicationSection } from './ApplicationSection/ApplicationSection';
 
 describe('Account page', () => {
   let component;
@@ -125,7 +125,7 @@ describe('Account page', () => {
   }
 
   function applicationSection() {
-    return component.find(ApplicationSecton);
+    return component.find(ApplicationSection);
   }
 
   function accountSummary() {
