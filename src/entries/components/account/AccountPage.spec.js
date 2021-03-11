@@ -7,8 +7,9 @@ import AccountStatement from './AccountStatement';
 import GreetingBar from './GreetingBar';
 import AccountSummary from './AccountSummary';
 import StatusBox from './statusBox';
+import { ApplicationSecton } from './ApplicationSection/ApplicationSection';
 
-describe('Current balance', () => {
+describe('Account page', () => {
   let component;
   let props;
 
@@ -88,6 +89,10 @@ describe('Current balance', () => {
     });
   });
 
+  it('renders an application section', () => {
+    expect(applicationSection().exists()).toBe(true);
+  });
+
   it('does not render any account statements when there are no source funds', () => {
     expect(accountStatement().exists()).toBe(false);
   });
@@ -117,6 +122,10 @@ describe('Current balance', () => {
 
   function accountStatement() {
     return component.find(AccountStatement);
+  }
+
+  function applicationSection() {
+    return component.find(ApplicationSecton);
   }
 
   function accountSummary() {
