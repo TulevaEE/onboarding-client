@@ -154,18 +154,16 @@ const BaseApplicationCard: React.FunctionComponent<{
           <b className="mr-3">{title}</b>
           {formatDate(creationTime)}
         </div>
-        {/* <button type="button" className="btn btn-light d-none d-md-block ml-2">
+        <button type="button" className="btn btn-light d-none d-md-block ml-2">
           <Message>applications.cancel</Message>
         </button>
-        */}
       </div>
       <div className={styles.content}>{children}</div>
-      {/* <div className={`${styles.footer} d-md-none`}>
+      <div className={`${styles.footer} d-md-none`}>
         <button type="button" className="btn btn-light">
           <Message>applications.cancel</Message>
         </button>
       </div>
-      */}
     </div>
   );
 };
