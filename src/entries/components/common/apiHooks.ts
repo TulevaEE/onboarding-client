@@ -1,7 +1,7 @@
 import { useQuery, UseQueryResult } from 'react-query';
 import { useSelector } from 'react-redux';
 
-import { Application, getPendingApplications, getFunds, Fund } from './api';
+import { Application, getPendingApplications } from './api';
 
 function useTokenOrFail(): string {
   const token = useSelector<{ login: { token?: string } }, string | null>(
@@ -11,11 +11,6 @@ function useTokenOrFail(): string {
     throw new Error('Tried to use token without the user being signed up');
   }
   return token;
-}
-
-export function useFunds(): UseQueryResult<Fund[]> {
-  const token = useTokenOrFail();
-  return useQuery('funds', () => getFunds(token));
 }
 
 export function usePendingApplications(): UseQueryResult<Application[]> {
