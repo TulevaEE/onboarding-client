@@ -32,13 +32,7 @@ export const ConfirmCancellation: React.FunctionComponent = () => {
   }
 
   if (signedMandateId) {
-    return (
-      <Redirect
-        to={`/applications/${applicationId}/cancellation/success?mandateId=${encodeURIComponent(
-          signedMandateId,
-        )}`}
-      />
-    );
+    return <Redirect to={`/applications/${applicationId}/cancellation/success`} />;
   }
 
   return (

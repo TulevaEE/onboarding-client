@@ -5,6 +5,7 @@ import { waitFor, screen, fireEvent, act } from '@testing-library/react';
 import { Route, Switch } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
 
+import download from 'downloadjs';
 import { CancellationFlow, flowPath } from './CancellationFlow';
 import { ApplicationStatus, ApplicationType } from '../../common/apiModels';
 import { initializeConfiguration } from '../../config/config';
@@ -13,9 +14,11 @@ import {
   cancellationBackend,
   smartIdSigningBackend,
   mandatePreviewBackend,
+  mandateDownloadBackend,
 } from '../../../../test/backend';
 
 jest.mock('mixpanel-browser', () => ({ track: jest.fn() }));
+jest.mock('downloadjs');
 
 describe('When a user is cancelling an application', () => {
   const server = setupServer();
@@ -76,14 +79,17 @@ describe('When a user is cancelling an application', () => {
 
   test('a preview can be downloaded of the cancellation mandate', async () => {
     cancellationBackend(server);
-    const previewBackend = mandatePreviewBackend(server);
+    mandatePreviewBackend(server);
     expect(await screen.findByText('applications.type.earlyWithdrawal.title')).toBeInTheDocument();
 
-    expect(previewBackend.previewDownloaded).toBe(false);
+    expect(download).not.toHaveBeenCalledWith();
     fireEvent.click(screen.getByText('confirm.mandate.preview'));
-
     await waitFor(() => {
-      expect(previewBackend.previewDownloaded).toBe(true);
+      expect(download).toHaveBeenCalledWith(
+        expect.any(Blob),
+        'Tuleva_avaldus_eelvaade.zip',
+        'application/zip',
+      );
     });
   });
 
@@ -104,6 +110,32 @@ describe('When a user is cancelling an application', () => {
     fireEvent.click(screen.getByText('cancellation.flow.success.back'));
     await waitFor(() => {
       expect(screen.getByText(/Mock account page/)).toBeInTheDocument();
+    });
+  });
+
+  test('the success screen lets you download the signed mandate', async () => {
+    cancellationBackend(server);
+    smartIdSigningBackend(server);
+    mandateDownloadBackend(server);
+    expect(await screen.findByText('applications.type.earlyWithdrawal.title')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('confirm.mandate.sign'));
+
+    await waitFor(
+      () => {
+        expect(screen.getByText('cancellation.flow.success.title')).toBeInTheDocument();
+      },
+      { timeout: 1500 },
+    );
+
+    expect(download).not.toHaveBeenCalledWith();
+    fireEvent.click(screen.getByText('cancellation.flow.success.download'));
+    await waitFor(() => {
+      expect(download).toHaveBeenCalledWith(
+        expect.any(Blob),
+        'Tuleva_avaldus.bdoc',
+        'application/bdoc',
+      );
     });
   });
 
