@@ -7,10 +7,9 @@ import {
   GET_MISSING_AML_CHECKS_SUCCESS,
 } from './constants';
 import { mockStore } from '../../../test/utils';
+import * as mockApi from '../common/api';
 
-const mockApi = jest.genMockFromModule('../common/api');
-
-jest.mock('../common/api', () => mockApi);
+jest.mock('../common/api');
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const actions = require('./actions'); // need to use require because of jest mocks being weird

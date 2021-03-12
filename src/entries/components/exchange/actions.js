@@ -127,7 +127,7 @@ function pollForMandateSignatureWithMandateId(mandateId) {
 
 function pollForMandateSignatureWithMandateIdUsingSmartId(mandateId) {
   return (dispatch, getState) => {
-    if (timeout && process.env.NODE_ENV !== 'test') {
+    if (timeout) {
       clearTimeout(timeout);
     }
     timeout = setTimeout(() => {

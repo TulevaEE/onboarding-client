@@ -1,9 +1,9 @@
 import React from 'react';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { render as testRender, waitFor, screen } from '@testing-library/react';
+import { render as testRender, waitFor, screen, fireEvent } from '@testing-library/react';
 import { useSelector } from 'react-redux';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, Route } from 'react-router-dom';
 import config from 'react-global-configuration';
 import { QueryClient, QueryClientProvider } from 'react-query';
 
@@ -24,6 +24,7 @@ describe('Application section', () => {
       <MemoryRouter>
         <QueryClientProvider client={queryClient}>
           <ApplicationSection />
+          <Route path="/applications/:id/cancellation">Test cancellation route</Route>
         </QueryClientProvider>
       </MemoryRouter>,
     );
@@ -145,6 +146,21 @@ describe('Application section', () => {
     expect(await screen.findByText('applications.type.earlyWithdrawal.title')).toBeInTheDocument();
     expect(screen.getByText('applications.type.transfer.title')).toBeInTheDocument();
     expect(screen.queryByText('applications.type.stopContributions.title')).toBeNull();
+  });
+
+  it('has a link to cancel an application', async () => {
+    mockApplications([testApplications.earlyWithdrawal]);
+    render();
+    const cancelButton = (await screen.findAllByText('applications.cancel'))[0];
+    expect(cancelButton).toBeInTheDocument();
+
+    expect(screen.queryByText('Test cancellation route')).toBeNull();
+
+    fireEvent.click(cancelButton);
+
+    await waitFor(() => {
+      expect(screen.queryByText('Test cancellation route')).toBeInTheDocument();
+    });
   });
 
   function waitForRequestToFinish() {

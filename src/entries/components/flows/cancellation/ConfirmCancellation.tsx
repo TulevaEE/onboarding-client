@@ -1,23 +1,20 @@
 import React, { useEffect } from 'react';
-import { useHistory, useLocation, useParams } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useHistory, useParams } from 'react-router-dom';
 import { Message } from 'retranslate';
-import { Mandate } from '../../common/apiModels';
-import { cancelSigningMandate, previewMandate, signMandate } from '../../exchange/actions';
-import { useApplication, useApplicationCancellation } from '../../common/apiHooks';
+import { useApplication } from '../../common/apiHooks';
 import { AuthenticationLoader } from '../../common';
 import Loader from '../../common/loader';
 import { ApplicationCard } from '../../account/ApplicationSection/ApplicationCards';
-import { getSmartIdSignatureChallengeCodeForMandateIdWithToken } from '../../common/api';
+import { useCancellationPreview, useCancellationWithSigning } from './cancellationHooks';
 
-export const ConfirmCancellation: React.FunctionComponent<any> = () => {
+export const ConfirmCancellation: React.FunctionComponent = () => {
   const applicationId = useApplicationIdFromUrl();
   const { isLoading, data: application } = useApplication(applicationId);
   const {
     cancelApplication,
     cancelSigning,
     loading: signing,
-    controlCode,
+    challengeCode,
     signedMandateId,
   } = useCancellationWithSigning();
   const { downloadPreview } = useCancellationPreview();
@@ -47,8 +44,8 @@ export const ConfirmCancellation: React.FunctionComponent<any> = () => {
 
   return (
     <>
-      {(signing || controlCode) && (
-        <AuthenticationLoader controlCode={controlCode} onCancel={cancelSigning} overlayed />
+      {(signing || challengeCode) && (
+        <AuthenticationLoader controlCode={challengeCode} onCancel={cancelSigning} overlayed />
       )}
       <p>
         <Message>cancellation.flow.confirm.content</Message>
@@ -79,85 +76,4 @@ export const ConfirmCancellation: React.FunctionComponent<any> = () => {
 function useApplicationIdFromUrl(): number {
   const { applicationId } = useParams<{ applicationId: string }>();
   return parseInt(applicationId, 10);
-}
-
-function useCancellationWithSigning() {
-  const mutation = useApplicationCancellation();
-  const signing = useMandateSigning();
-
-  async function cancelApplication(applicationId: number) {
-    const cancellation = await mutation.mutateAsync(applicationId);
-    signing.sign({ id: cancellation.mandateId });
-  }
-
-  function cancelSigning() {
-    signing.cancel();
-  }
-
-  return {
-    cancelApplication,
-    cancelSigning,
-    signedMandateId: signing.signedMandateId,
-    loading: mutation.isLoading || signing.loading,
-    controlCode: signing.controlCode,
-  };
-}
-
-function useCancellationPreview() {
-  const mutation = useApplicationCancellation();
-  const preview = useMandatePreview();
-
-  async function downloadPreview(applicationId: number) {
-    const cancellation = await mutation.mutateAsync(applicationId);
-    preview.downloadPreview({ id: cancellation.mandateId });
-  }
-
-  return {
-    downloadPreview,
-  };
-}
-
-function useMandateSigning() {
-  const { controlCode, loading, signedMandateId } = useSelector<
-    {
-      exchange: {
-        loadingMandate: boolean;
-        mandateSigningControlCode: string | null;
-        signedMandateId: number;
-      };
-    },
-    { controlCode: string | null; loading: boolean; signedMandateId: number }
-  >(({ exchange }) => ({
-    controlCode: exchange.mandateSigningControlCode,
-    loading: exchange.loadingMandate,
-    signedMandateId: exchange.signedMandateId,
-  }));
-  const dispatch = useDispatch();
-
-  function sign(mandate: Mandate) {
-    dispatch(signMandate(mandate));
-  }
-
-  function cancel() {
-    dispatch(cancelSigningMandate());
-  }
-
-  return {
-    sign,
-    cancel,
-    loading,
-    signedMandateId,
-    controlCode,
-  };
-}
-
-function useMandatePreview() {
-  const dispatch = useDispatch();
-  function downloadPreview(mandate: Mandate) {
-    dispatch(previewMandate(mandate));
-  }
-
-  return {
-    downloadPreview,
-  };
 }

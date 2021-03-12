@@ -20,9 +20,9 @@ module.exports = {
     '@typescript-eslint/no-empty-function': 0, // we use it
     '@typescript-eslint/explicit-module-boundary-types': 0, // should only be used once file is renamed to actual typescript
     'import/extensions': [1, 'never'],
-    'fp/no-mutation': "off",
+    'fp/no-mutation': 'off',
     'react/jsx-props-no-spreading': 'off',
-    'react/static-property-placement': 'off'
+    'react/static-property-placement': 'off',
   },
   overrides: [
     {
@@ -34,9 +34,16 @@ module.exports = {
       },
     },
     {
-      files: ['**/*.d.ts', '**/*.test.tsx', '**/*.test.ts'],
+      files: [
+        '**/*.d.ts',
+        '**/*.test.tsx',
+        '**/*.test.ts',
+        'src/test/**/*.ts',
+        'src/test/**/*.tsx',
+      ],
       rules: {
         '@typescript-eslint/no-explicit-any': 0, // fine in tests
+        'import/no-extraneous-dependencies': 0, // devdependencies
       },
     },
   ],
