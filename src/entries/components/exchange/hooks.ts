@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { Mandate } from '../common/apiModels';
-import { cancelSigningMandate, previewMandate, signMandate } from './actions';
+import { cancelSigningMandate, downloadMandate, previewMandate, signMandate } from './actions';
 
 export function useMandateSigning(): {
   sign: (mandate: Mandate) => void;
@@ -52,5 +52,18 @@ export function useMandatePreview(): {
 
   return {
     downloadPreview,
+  };
+}
+
+export function useSignedMandateDownload(): {
+  download: () => void;
+} {
+  const dispatch = useDispatch();
+  function download() {
+    dispatch(downloadMandate());
+  }
+
+  return {
+    download,
   };
 }

@@ -345,7 +345,7 @@
 
   "applications.title": "Sinu ootel olevad avaldused",
   "applications.cancel": "Tühista avaldus",
-  "applications.footer": "Kõikide oma avalduste ajalugu näed Pensionikeskuse lehelt.",
+  "applications.footer": "Avalduse tühistamine on tasuta. Kõikide oma avalduste ajalugu näed Pensionikeskuse lehelt.",
   "applications.type.transfer.title": "Osakute vahetamise avaldus",
   "applications.type.transfer.sourceFund": "Lähtefond",
   "applications.type.transfer.targetFund": "Sihtfond",

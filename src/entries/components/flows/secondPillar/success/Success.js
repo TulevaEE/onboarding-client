@@ -4,7 +4,7 @@ import { Message } from 'retranslate';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
-import { SuccessNotice } from '../../common/SuccessNotice';
+import { SuccessNotice } from '../../common/SuccessNotice/SuccessNotice';
 
 import { downloadMandate } from '../../../exchange/actions';
 

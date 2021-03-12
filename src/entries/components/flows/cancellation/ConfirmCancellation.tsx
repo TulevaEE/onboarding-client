@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import React from 'react';
+import { Redirect, useParams } from 'react-router-dom';
 import { Message } from 'retranslate';
 import { useApplication } from '../../common/apiHooks';
 import { AuthenticationLoader } from '../../common';
@@ -18,7 +18,6 @@ export const ConfirmCancellation: React.FunctionComponent = () => {
     signedMandateId,
   } = useCancellationWithSigning();
   const { downloadPreview } = useCancellationPreview();
-  const { push } = useHistory();
 
   function confirmCancellation() {
     cancelApplication(applicationId);
@@ -28,18 +27,12 @@ export const ConfirmCancellation: React.FunctionComponent = () => {
     downloadPreview(applicationId);
   }
 
-  useEffect(() => {
-    if (signedMandateId) {
-      push(
-        `/applications/${applicationId}/cancellation/success?mandateId=${encodeURIComponent(
-          signedMandateId,
-        )}`,
-      );
-    }
-  }, [signedMandateId]);
-
   if (isLoading || !application) {
     return <Loader className="align-middle" />;
+  }
+
+  if (signedMandateId) {
+    return <Redirect to={`/applications/${applicationId}/cancellation/success`} />;
   }
 
   return (

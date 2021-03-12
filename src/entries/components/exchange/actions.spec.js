@@ -450,7 +450,7 @@ describe('Exchange actions', () => {
     const signMandate = createBoundAction(actions.signMandate);
     mockApi.saveMandateWithToken = jest.fn(() => Promise.resolve(mandate));
     mockApi.getSmartIdSignatureStatusForMandateIdWithToken = jest.fn(() =>
-      Promise.reject(new Error('oh no')),
+      Promise.reject(new Error('Stop polling')),
     );
     await signMandate(mandate);
     expect(mockApi.saveMandateWithToken).not.toHaveBeenCalled();
@@ -462,7 +462,7 @@ describe('Exchange actions', () => {
     const signMandate = createBoundAction(actions.signMandate);
     mockApi.saveMandateWithToken = jest.fn(() => Promise.resolve(mandate));
     mockApi.getMobileIdSignatureStatusForMandateIdWithToken = jest.fn(() =>
-      Promise.reject(new Error('oh no')),
+      Promise.reject(new Error('Stop polling')),
     );
     await signMandate(mandate);
     expect(mockApi.saveMandateWithToken).not.toHaveBeenCalled();
@@ -478,7 +478,7 @@ describe('Exchange actions', () => {
     global.hwcrypto = mockHwcrypto;
     mockHwcrypto.getCertificate = jest.fn(() => Promise.resolve(certificate));
     mockApi.getIdCardSignatureHashForMandateIdWithCertificateHexAndToken = jest.fn(() =>
-      Promise.reject(new Error('oh no')),
+      Promise.reject(new Error('Stop polling')),
     );
     await signMandate(mandate);
     expect(mockApi.saveMandateWithToken).not.toHaveBeenCalled();

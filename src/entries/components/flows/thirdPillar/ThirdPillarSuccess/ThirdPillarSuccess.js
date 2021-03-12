@@ -1,6 +1,6 @@
 import React from 'react';
 import { Message } from 'retranslate';
-import { SuccessNotice } from '../../common/SuccessNotice';
+import { SuccessNotice } from '../../common/SuccessNotice/SuccessNotice';
 
 export const ThirdPillarSuccess = () => (
   <div className="row">
