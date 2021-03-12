@@ -82,7 +82,7 @@ describe('When a user is cancelling an application', () => {
     mandatePreviewBackend(server);
     expect(await screen.findByText('applications.type.earlyWithdrawal.title')).toBeInTheDocument();
 
-    expect(download).not.toHaveBeenCalledWith();
+    expect(download).not.toHaveBeenCalled();
     fireEvent.click(screen.getByText('confirm.mandate.preview'));
     await waitFor(() => {
       expect(download).toHaveBeenCalledWith(
@@ -128,7 +128,7 @@ describe('When a user is cancelling an application', () => {
       { timeout: 1500 },
     );
 
-    expect(download).not.toHaveBeenCalledWith();
+    expect(download).not.toHaveBeenCalled();
     fireEvent.click(screen.getByText('cancellation.flow.success.download'));
     await waitFor(() => {
       expect(download).toHaveBeenCalledWith(
