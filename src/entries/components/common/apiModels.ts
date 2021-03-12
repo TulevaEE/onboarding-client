@@ -72,6 +72,7 @@ export interface BaseApplication<Type extends ApplicationType, Details> {
   id: number;
   status: ApplicationStatus;
   creationTime: string;
+  cancellationDeadline: string;
 
   type: Type;
   details: Details;

@@ -162,6 +162,12 @@ const BaseApplicationCard: React.FunctionComponent<{
   allowedActions: ApplicationAction[];
 }> = ({ application, title, children, allowedActions }) => {
   const cancellationUrl = `/applications/${application.id}/cancellation`;
+  const isBeforeCancellationDeadline = moment().isSameOrBefore(
+    moment(application.cancellationDeadline, 'YYYY-MM-DD'),
+    'day',
+  );
+  const canCancel =
+    isBeforeCancellationDeadline && allowedActions.includes(ApplicationAction.CANCEL);
   return (
     <div className={styles.card}>
       <div className={styles.header}>
@@ -169,14 +175,14 @@ const BaseApplicationCard: React.FunctionComponent<{
           <b className="mr-3">{title}</b>
           {formatDate(application.creationTime)}
         </div>
-        {allowedActions.includes(ApplicationAction.CANCEL) && (
+        {canCancel && (
           <Link to={cancellationUrl} className="btn btn-light d-none d-md-block ml-2">
             <Message>applications.cancel</Message>
           </Link>
         )}
       </div>
       <div className={styles.content}>{children}</div>
-      {allowedActions.includes(ApplicationAction.CANCEL) && (
+      {canCancel && (
         <div className={`${styles.footer} d-md-none`}>
           <Link to={cancellationUrl} className="btn btn-light">
             <Message>applications.cancel</Message>
