@@ -136,4 +136,20 @@ describe('Status Box', () => {
       await screen.findByText('account.status.choice.pillar.second.withdraw.cancel'),
     ).toBeInTheDocument();
   });
+
+  it('renders pending withdrawal button when user has a pending withdrawal even when they do not have Tuleva II pillar', async () => {
+    const secondPillar = {
+      selectionComplete: false,
+      transfersComplete: false,
+      paymentComplete: false,
+      pendingWithdrawal: true,
+      subtraction: { yearToDate: 0, total: 0 },
+      contribution: { yearToDate: 0, total: 0 },
+    };
+    const conversion = { ...props.conversion, secondPillar };
+    renderComponent(<StatusBox {...props} conversion={conversion} />);
+    expect(
+      await screen.findByText('account.status.choice.pillar.second.withdraw.cancel'),
+    ).toBeInTheDocument();
+  });
 });

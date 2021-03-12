@@ -55,17 +55,17 @@ const SecondPillarButton: React.FunctionComponent<{
   joinTuleva2: boolean;
   pendingWithdrawal: Application | undefined;
 }> = ({ joinTuleva2, pendingWithdrawal }) => {
-  if (joinTuleva2) {
-    return (
-      <Link to="/2nd-pillar-flow" className="btn btn-light">
-        <Message>account.status.choice.join.tuleva.2</Message>
-      </Link>
-    );
-  }
   if (pendingWithdrawal) {
     return (
       <Link to={`/applications/${pendingWithdrawal.id}/cancellation`} className="btn btn-light">
         <Message>account.status.choice.pillar.second.withdraw.cancel</Message>
+      </Link>
+    );
+  }
+  if (joinTuleva2) {
+    return (
+      <Link to="/2nd-pillar-flow" className="btn btn-light">
+        <Message>account.status.choice.join.tuleva.2</Message>
       </Link>
     );
   }
