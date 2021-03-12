@@ -7,30 +7,48 @@
 [![CircleCI](https://circleci.com/gh/TulevaEE/onboarding-client/tree/master.svg?style=shield)](https://circleci.com/gh/TulevaEE/onboarding-client/tree/master)
 [![codecov](https://codecov.io/gh/TulevaEE/onboarding-client/branch/master/graph/badge.svg)](https://codecov.io/gh/TulevaEE/onboarding-client)
 
+## Tech evolution
+
+Originally, this repo was built using js, redux and enzyme for testing. Over the years react has grown, rendering some of these tehcnologies less useful. This architecture has shown itself to be overcomplicated and the current tests to not give as much value as they could. Thus, whenever you are working on new functionality in this repo, try to do the following:
+
+- Convert files you touch to typescript, this can be easily done as typescript and js can be used interchangably in this repo
+- Try to not use redux, or if you need to use it try to keep it far away from your code in a generic hook, use simple hooks for logic and [React Query](https://react-query.tanstack.com/) for async data fetching boilerplate
+- Use react testing library and msw for tests and try to mock as little as possible, building tests to imitate how a user would use your application. See the `src/flows/CancellationFlow` for an example of how to incrementally move to this structure while reusing previous redux code.
+
 ## Prerequisites
 
 - Git
 - Node.js and NPM
-- WebStorm, IntelliJ or your IDE of preference
 
 ## Development
 
 To develop the onboarding app:
 
 1. Install dependencies
+
 ```
 npm install
 ```
+
 2. Run the local server
+
 ```
 npm run develop
 ```
+
+Or alternatively, when running against production, switch the `proxy` field in `package.json` against the production server, and run:
+
+```
+npm run develop-production
+```
+
 3. Run tests
+
 ```
 npm test
 ```
 
-[`onboarding-service`](https://github.com/TulevaEE/onboarding-service) is expected to run on port 9000.
+[`onboarding-service`](https://github.com/TulevaEE/onboarding-service) is expected to run on port 9000 when not running against production.
 
 ### Development against the production service (https://onboarding-service.tuleva.ee)
 
@@ -42,4 +60,4 @@ npm test
 
 Updating the inline widget is manual, so the bundles need to be created locally, uploaded to the Zone FTP server, and the URLs in [`wordpress-theme`](https://github.com/TulevaEE/wordpress-theme) updated.
 
-The onboarding client itself is deployed to Heroku on `master` push (through [CircleCI](https://circleci.com/gh/TulevaEE/onboarding-client)). The server then builds the static files using Webpack and starts a content server (`server.js`) serving those files and proxying the API.
+The onboarding client itself is deployed to AWS on `master` push (through [CircleCI](https://circleci.com/gh/TulevaEE/onboarding-client)).

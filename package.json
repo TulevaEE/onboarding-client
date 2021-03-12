@@ -10,8 +10,6 @@
     "classnames": "^2.2.6",
     "connected-react-router": "^6.9.1",
     "downloadjs": "^1.4.7",
-    "express": "^4.17.1",
-    "express-http-proxy": "^1.2.0",
     "font-awesome": "^4.7.0",
     "history": "^4.9.0",
     "hwcrypto-js": "git://github.com/ErkoRisthein/hwcrypto.js.git#0.0.14",
@@ -43,8 +41,6 @@
     "uuid": "^3.3.3"
   },
   "scripts": {
-    "start": "NODE_ENV=production node server",
-    "prestart": "npm run build-onboarding",
     "build-onboarding": "APP_NAME=onboarding npm run build-app",
     "build-signup": "APP_NAME=signup npm run build-app",
     "build-login": "APP_NAME=login npm run build-app",
