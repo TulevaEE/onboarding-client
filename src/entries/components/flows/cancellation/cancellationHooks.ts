@@ -4,6 +4,7 @@ import { useMandatePreview, useMandateSigning } from '../../exchange/hooks';
 export function useCancellationWithSigning(): {
   cancelApplication: (applicationId: number) => void;
   cancelSigning: () => void;
+  cancellationMandateId: number | null;
   signedMandateId: number | null;
   loading: boolean;
   challengeCode: string | null;
@@ -23,6 +24,7 @@ export function useCancellationWithSigning(): {
   return {
     cancelApplication,
     cancelSigning,
+    cancellationMandateId: mutation.data?.mandateId || null,
     signedMandateId: signing.signedMandateId,
     loading: mutation.isLoading || signing.loading,
     challengeCode: signing.challengeCode,
