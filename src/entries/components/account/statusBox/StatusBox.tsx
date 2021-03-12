@@ -1,16 +1,47 @@
 import React from 'react';
 import { Message } from 'retranslate';
-import { PropTypes as Types } from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import StatusBoxRow from './statusBoxRow';
+import { StatusBoxRow } from './statusBoxRow/StatusBoxRow';
 
-export const StatusBox = ({
+interface UserConversion {
+  secondPillar: Conversion;
+  thirdPillar: Conversion;
+}
+
+interface Amount {
+  yearToDate: number;
+  total: number;
+}
+
+interface Conversion {
+  selectionComplete: boolean;
+  transfersComplete: boolean;
+  paymentComplete: boolean;
+  pendingWithdrawal: boolean;
+  contribution: Amount;
+  subtraction: Amount;
+}
+
+interface Fund {
+  activeFund: string;
+  name: string;
+}
+
+interface StatusBoxType {
+  memberNumber: number | null;
+  conversion: UserConversion;
+  loading: boolean;
+  secondPillarFunds: Fund[];
+  thirdPillarFunds: Fund[];
+}
+
+export const StatusBox: React.FunctionComponent<StatusBoxType> = ({
   conversion,
-  memberNumber,
-  loading,
-  secondPillarFunds,
-  thirdPillarFunds,
+  memberNumber = null,
+  loading = false,
+  secondPillarFunds = [],
+  thirdPillarFunds = [],
 }) => {
   const joinTuleva2 = !(
     conversion.secondPillar.selectionComplete && conversion.secondPillar.transfersComplete
@@ -103,23 +134,15 @@ export const StatusBox = ({
   );
 };
 
-StatusBox.defaultProps = {
-  memberNumber: null,
-  conversion: {},
-  loading: false,
-  secondPillarFunds: [],
-  thirdPillarFunds: [],
-};
-
-StatusBox.propTypes = {
-  memberNumber: Types.number,
-  conversion: Types.shape({}),
-  loading: Types.bool,
-  secondPillarFunds: Types.arrayOf(Types.shape({})),
-  thirdPillarFunds: Types.arrayOf(Types.shape({})),
-};
-
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state: {
+  login: {
+    userConversion: UserConversion;
+    loadingUserConversion: boolean;
+    user: { memberNumber: number };
+  };
+  exchange: { sourceFunds: Fund[] };
+  thirdPillar: { sourceFunds: Fund[] };
+}) => ({
   memberNumber: (state.login.user || {}).memberNumber,
   conversion: state.login.userConversion,
   loading: state.login.loadingUserConversion,

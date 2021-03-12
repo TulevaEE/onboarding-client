@@ -4,7 +4,7 @@ import { Message } from 'retranslate';
 import { StatusBox } from './StatusBox';
 
 describe('Status Box', () => {
-  let component;
+  let component: any;
   let props;
 
   const to2ndPillarFlow = <Message>account.status.choice.join.tuleva.2</Message>;
@@ -13,10 +13,29 @@ describe('Status Box', () => {
 
   beforeEach(() => {
     props = {
+      memberNumber: null,
+      loading: false,
+      thirdPillar: null,
       conversion: {
-        secondPillar: { contribution: {} },
-        thirdPillar: { contribution: {} },
+        secondPillar: {
+          selectionComplete: false,
+          transfersComplete: false,
+          paymentComplete: false,
+          pendingWithdrawal: false,
+          subtraction: { yearToDate: 0, total: 0 },
+          contribution: { yearToDate: 0, total: 0 },
+        },
+        thirdPillar: {
+          selectionComplete: false,
+          transfersComplete: false,
+          paymentComplete: false,
+          pendingWithdrawal: false,
+          contribution: { yearToDate: 0, total: 0 },
+          subtraction: { yearToDate: 0, total: 0 },
+        },
       },
+      secondPillarFunds: [],
+      thirdPillarFunds: [],
     };
     component = shallow(<StatusBox {...props} />);
   });

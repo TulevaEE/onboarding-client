@@ -23,6 +23,7 @@ module.exports = {
     'fp/no-mutation': 'off',
     'react/jsx-props-no-spreading': 'off',
     'react/static-property-placement': 'off',
+    'react/no-array-index-key': 'off',
   },
   overrides: [
     {

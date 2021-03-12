@@ -1,10 +1,10 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Message } from 'retranslate';
-import StatusBoxRow from './StatusBoxRow';
+import { StatusBoxRow } from './StatusBoxRow';
 
 describe('Status Box Row', () => {
-  let component;
+  let component: any;
 
   beforeEach(() => {
     component = shallow(<StatusBoxRow />);
