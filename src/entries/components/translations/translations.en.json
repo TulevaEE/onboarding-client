@@ -238,6 +238,8 @@
   "account.status.choices": "Your choices",
   "account.status.choice.pillar.second": "II pillar",
   "account.status.choice.pillar.second.missing": " No II pillar",
+  "account.status.choice.pillar.second.withdraw": "You are leaving II pillar",
+  "account.status.choice.pillar.second.withdraw.cancel": "Cancel application",
   "account.status.choice.pillar.third": "III pillar",
   "account.status.choice.tuleva": "Tuleva",
   "account.status.choice.join.tuleva.2": "Edit",
