@@ -3,6 +3,8 @@ import { Message } from 'retranslate';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { StatusBoxRow } from './statusBoxRow/StatusBoxRow';
+import { usePendingApplications } from '../../common/apiHooks';
+import { Application, ApplicationType } from '../../common/apiModels';
 
 interface UserConversion {
   secondPillar: Conversion;
@@ -24,8 +26,10 @@ interface Conversion {
 }
 
 interface Fund {
-  activeFund: string;
+  fundManager: { name: string };
+  activeFund: boolean;
   name: string;
+  pillar: number;
 }
 
 interface StatusBoxType {
@@ -36,6 +40,38 @@ interface StatusBoxType {
   thirdPillarFunds: Fund[];
 }
 
+function usePendingWithdrawalApplication(): Application | undefined {
+  const { data: applications } = usePendingApplications();
+
+  return applications?.find((application) => {
+    return (
+      application.type === ApplicationType.WITHDRAWAL ||
+      application.type === ApplicationType.EARLY_WITHDRAWAL
+    );
+  });
+}
+
+const SecondPillarButton: React.FunctionComponent<{
+  joinTuleva2: boolean;
+  pendingWithdrawal: Application | undefined;
+}> = ({ joinTuleva2, pendingWithdrawal }) => {
+  if (joinTuleva2) {
+    return (
+      <Link to="/2nd-pillar-flow" className="btn btn-light">
+        <Message>account.status.choice.join.tuleva.2</Message>
+      </Link>
+    );
+  }
+  if (pendingWithdrawal) {
+    return (
+      <Link to={`/applications/${pendingWithdrawal.id}/cancellation`} className="btn btn-light">
+        <Message>account.status.choice.pillar.second.withdraw.cancel</Message>
+      </Link>
+    );
+  }
+  return <></>;
+};
+
 export const StatusBox: React.FunctionComponent<StatusBoxType> = ({
   conversion,
   memberNumber = null,
@@ -43,9 +79,13 @@ export const StatusBox: React.FunctionComponent<StatusBoxType> = ({
   secondPillarFunds = [],
   thirdPillarFunds = [],
 }) => {
+  const pendingWithdrawal = usePendingWithdrawalApplication();
+
   const joinTuleva2 = !(
     conversion.secondPillar.selectionComplete && conversion.secondPillar.transfersComplete
   );
+
+  const hasPendingWithdrawal = conversion.secondPillar.pendingWithdrawal;
 
   const payTuleva3 = !(
     conversion.thirdPillar.selectionComplete &&
@@ -67,6 +107,13 @@ export const StatusBox: React.FunctionComponent<StatusBoxType> = ({
     .filter((fund) => fund.activeFund)
     .map(({ name }) => name);
 
+  const secondPillarData =
+    activeSecondPillarFunds.length > 0
+      ? activeSecondPillarFunds
+      : [<Message>account.status.choice.pillar.second.missing</Message>];
+
+  const pendingWithdrawalData = [<Message>account.status.choice.pillar.second.withdraw</Message>];
+
   return (
     <>
       <div className="row">
@@ -77,20 +124,12 @@ export const StatusBox: React.FunctionComponent<StatusBoxType> = ({
 
       <div className="card card-secondary">
         <StatusBoxRow
-          ok={!joinTuleva2}
+          ok={!joinTuleva2 && !hasPendingWithdrawal}
           showAction={!loading}
           name={<Message>account.status.choice.pillar.second</Message>}
-          lines={
-            activeSecondPillarFunds.length > 0
-              ? activeSecondPillarFunds
-              : [<Message>account.status.choice.pillar.second.missing</Message>]
-          }
+          lines={hasPendingWithdrawal ? pendingWithdrawalData : secondPillarData}
         >
-          {joinTuleva2 && (
-            <Link to="/2nd-pillar-flow" className="btn btn-light">
-              <Message>account.status.choice.join.tuleva.2</Message>
-            </Link>
-          )}
+          <SecondPillarButton joinTuleva2={joinTuleva2} pendingWithdrawal={pendingWithdrawal} />
         </StatusBoxRow>
 
         <StatusBoxRow
