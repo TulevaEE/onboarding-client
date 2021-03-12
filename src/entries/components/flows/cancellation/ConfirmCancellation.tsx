@@ -16,6 +16,7 @@ export const ConfirmCancellation: React.FunctionComponent = () => {
     loading: signing,
     challengeCode,
     signedMandateId,
+    cancellationMandateId,
   } = useCancellationWithSigning();
   const { downloadPreview } = useCancellationPreview();
 
@@ -31,7 +32,7 @@ export const ConfirmCancellation: React.FunctionComponent = () => {
     return <Loader className="align-middle" />;
   }
 
-  if (signedMandateId) {
+  if (signedMandateId && signedMandateId === cancellationMandateId) {
     return <Redirect to={`/applications/${applicationId}/cancellation/success`} />;
   }
 
