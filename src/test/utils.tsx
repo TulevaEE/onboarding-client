@@ -17,13 +17,16 @@ export function renderWrapped(
   history = createMemoryHistory(),
   store = createDefaultStore(history as any),
 ): RenderResult {
-  return render(
+  const wrapper = (component: React.ReactNode) => (
     <ReduxProvider store={store}>
       <QueryClientProvider client={new QueryClient()}>
-        <ConnectedRouter history={history}>{children}</ConnectedRouter>
+        <ConnectedRouter history={history}>{component}</ConnectedRouter>
       </QueryClientProvider>
-    </ReduxProvider>,
+    </ReduxProvider>
   );
+  const rendered = render(wrapper(children));
+  const rerender = (component: React.ReactNode) => rendered.rerender(wrapper(component));
+  return { ...rendered, rerender };
 }
 
 export function createDefaultStore(history: History): Store {

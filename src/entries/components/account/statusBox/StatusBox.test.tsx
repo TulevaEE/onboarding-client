@@ -1,86 +1,139 @@
 import React from 'react';
-import { shallow } from 'enzyme';
-import { Message } from 'retranslate';
+import { setupServer } from 'msw/node';
+import { createMemoryHistory, History } from 'history';
+import { screen } from '@testing-library/react';
+import { rest } from 'msw';
+import { createDefaultStore, login, renderWrapped } from '../../../../test/utils';
+import { initializeConfiguration } from '../../config/config';
 import { StatusBox } from './StatusBox';
+import { ApplicationStatus, ApplicationType } from '../../common/apiModels';
+
+jest.mock('mixpanel-browser', () => ({ track: jest.fn() }));
 
 describe('Status Box', () => {
-  let component: any;
-  let props;
+  const server = setupServer();
+  let history: History;
+  let renderComponent: (ui: React.ReactElement) => void;
 
-  const to2ndPillarFlow = <Message>account.status.choice.join.tuleva.2</Message>;
-  const pay3ndPillarFlow = <Message>account.status.choice.pay.tuleva.3</Message>;
-  const toMemberFlow = <Message>account.status.choice.join.tuleva</Message>;
+  function testApplication() {
+    return {
+      id: 123,
+      type: ApplicationType.EARLY_WITHDRAWAL,
+      status: ApplicationStatus.PENDING,
+      creationTime: new Date('December 17, 1995 03:24:00').toISOString(),
+      details: {
+        withdrawalTime: new Date('January 2, 1995 03:24:00').toISOString(),
+        depositAccountIBAN: 'EE123123123',
+      },
+    };
+  }
+
+  const props = {
+    memberNumber: null,
+    loading: false,
+    thirdPillar: null,
+    conversion: {
+      secondPillar: {
+        selectionComplete: false,
+        transfersComplete: false,
+        paymentComplete: false,
+        pendingWithdrawal: false,
+        subtraction: { yearToDate: 0, total: 0 },
+        contribution: { yearToDate: 0, total: 0 },
+      },
+      thirdPillar: {
+        selectionComplete: false,
+        transfersComplete: false,
+        paymentComplete: false,
+        pendingWithdrawal: false,
+        contribution: { yearToDate: 0, total: 0 },
+        subtraction: { yearToDate: 0, total: 0 },
+      },
+    },
+    secondPillarFunds: [],
+    thirdPillarFunds: [],
+  };
+
+  function render() {
+    history = createMemoryHistory();
+    const store = createDefaultStore(history as any);
+    login(store);
+
+    const { rerender } = renderWrapped(<StatusBox {...props} />, history as any, store);
+    renderComponent = rerender;
+  }
+  beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+  afterEach(() => server.resetHandlers());
+  afterAll(() => server.close());
 
   beforeEach(() => {
-    props = {
-      memberNumber: null,
-      loading: false,
-      thirdPillar: null,
-      conversion: {
-        secondPillar: {
-          selectionComplete: false,
-          transfersComplete: false,
-          paymentComplete: false,
-          pendingWithdrawal: false,
-          subtraction: { yearToDate: 0, total: 0 },
-          contribution: { yearToDate: 0, total: 0 },
-        },
-        thirdPillar: {
-          selectionComplete: false,
-          transfersComplete: false,
-          paymentComplete: false,
-          pendingWithdrawal: false,
-          contribution: { yearToDate: 0, total: 0 },
-          subtraction: { yearToDate: 0, total: 0 },
-        },
-      },
-      secondPillarFunds: [],
-      thirdPillarFunds: [],
-    };
-    component = shallow(<StatusBox {...props} />);
+    initializeConfiguration();
+    server.use(
+      rest.get('http://localhost/v1/applications', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.json([testApplication()]));
+      }),
+    );
+    render();
   });
 
-  it('renders status box title', () => {
-    expect(component.contains(<Message>account.status.choices</Message>)).toBe(true);
+  const to2ndPillarFlow = 'account.status.choice.join.tuleva.2';
+  const pay3ndPillarFlow = 'account.status.choice.pay.tuleva.3';
+  const toMemberFlow = 'account.status.choice.join.tuleva';
+
+  it('renders status box title', async () => {
+    expect(await screen.findByText('account.status.choices')).toBeInTheDocument();
   });
 
-  it('renders 2nd pillar cta', () => {
-    expect(component.contains(to2ndPillarFlow)).toBe(true);
+  it('renders 2nd pillar cta', async () => {
+    expect(await screen.findByText(to2ndPillarFlow)).toBeInTheDocument();
   });
 
-  const pillar2ComingSoon = <Message>account.status.choice.1970.coming.soon</Message>;
-
-  it('wont render pillar II coming soon for 48 and below', () => {
-    component.setProps({ age: 48 });
-    expect(component.contains(to2ndPillarFlow)).toBe(true);
-    expect(component.contains(pillar2ComingSoon)).toBe(false);
+  it('always renders pay Tuleva III pillar', async () => {
+    expect(await screen.findByText(pay3ndPillarFlow)).toBeInTheDocument();
   });
 
-  it('renders pillar II coming soon for 49 and over', () => {
-    component.setProps({ age: 50 });
-    expect(component.contains(pillar2ComingSoon)).toBe(false);
-    expect(component.contains(to2ndPillarFlow)).toBe(true);
-  });
-
-  it('renders join Tuleva II pillar when II pillars not all in Tuleva', () => {
-    expect(component.contains(to2ndPillarFlow)).toBe(true);
-  });
-
-  it('always renders pay Tuleva III pillar', () => {
-    expect(component.contains(pay3ndPillarFlow)).toBe(true);
-  });
-
-  it('renders join Tuleva II pillar when II pillars some in Tuleva', () => {
+  it('renders join Tuleva II pillar when II pillars some in Tuleva', async () => {
     const secondPillarFunds = [
-      { fundManager: { name: 'NotTuleva' }, activeFund: true, pillar: 2 },
-      { fundManager: { name: 'Tuleva' }, activeFund: true, pillar: 2 },
+      { fundManager: { name: 'NotTuleva' }, activeFund: true, pillar: 2, name: 'Fond 1' },
+      { fundManager: { name: 'Tuleva' }, activeFund: true, pillar: 2, name: 'Fond 2' },
     ];
-
-    component.setProps({ secondPillarFunds });
-    expect(component.contains(<Message>account.status.choice.join.tuleva.2</Message>)).toBe(true);
+    renderComponent(<StatusBox {...props} secondPillarFunds={secondPillarFunds} />);
+    expect(await screen.findByText('account.status.choice.join.tuleva.2')).toBeInTheDocument();
   });
 
-  it('renders become Tuleva member when not member', () => {
-    expect(component.contains(toMemberFlow)).toBe(true);
+  it('renders become Tuleva member when not member', async () => {
+    expect(await screen.findByText(toMemberFlow)).toBeInTheDocument();
+  });
+
+  it('renders pending withdrawal text when user has a pending withdrawal', async () => {
+    const secondPillar = {
+      selectionComplete: false,
+      transfersComplete: false,
+      paymentComplete: false,
+      pendingWithdrawal: true,
+      subtraction: { yearToDate: 0, total: 0 },
+      contribution: { yearToDate: 0, total: 0 },
+    };
+    const conversion = { ...props.conversion, secondPillar };
+    renderComponent(<StatusBox {...props} conversion={conversion} />);
+    expect(
+      await screen.findByText('account.status.choice.pillar.second.withdraw'),
+    ).toBeInTheDocument();
+  });
+
+  it('renders pending withdrawal button when user has a pending withdrawal', async () => {
+    const secondPillar = {
+      selectionComplete: true,
+      transfersComplete: true,
+      paymentComplete: true,
+      pendingWithdrawal: true,
+      subtraction: { yearToDate: 0, total: 0 },
+      contribution: { yearToDate: 0, total: 0 },
+    };
+    const conversion = { ...props.conversion, secondPillar };
+    renderComponent(<StatusBox {...props} conversion={conversion} />);
+    expect(
+      await screen.findByText('account.status.choice.pillar.second.withdraw.cancel'),
+    ).toBeInTheDocument();
   });
 });
