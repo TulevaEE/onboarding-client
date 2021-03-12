@@ -18,6 +18,14 @@ const DEFAULT_CONF_PRODUCTION = {
   language: 'et',
 };
 
+const DEFAULT_CONF_TEST = {
+  mixpanelKey: undefined,
+  applicationUrl: 'http://localhost',
+  newUserPaymentRedirectBaseUrl: undefined,
+  clientCredentialsAccessToken: undefined,
+  language: 'en',
+};
+
 export function initializeConfiguration() {
   if (process.env.NODE_ENV === 'development') {
     config.set(DEFAULT_CONF_DEV, { freeze: false });
@@ -25,6 +33,10 @@ export function initializeConfiguration() {
 
   if (process.env.NODE_ENV === 'production') {
     config.set(DEFAULT_CONF_PRODUCTION, { freeze: false });
+  }
+
+  if (process.env.NODE_ENV === 'test') {
+    config.set(DEFAULT_CONF_TEST, { freeze: false });
   }
 }
 

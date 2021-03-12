@@ -7,12 +7,11 @@ import {
   SELECT_THIRD_PILLAR_SOURCES,
   THIRD_PILLAR_STATISTICS,
 } from './constants';
+import * as mockApi from '../common/api';
 
 jest.useFakeTimers();
 
-const mockApi = jest.genMockFromModule('../common/api');
-
-jest.mock('../common/api', () => mockApi);
+jest.mock('../common/api');
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const actions = require('./actions'); // need to use require because of jest mocks being weird

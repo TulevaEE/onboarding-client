@@ -98,7 +98,7 @@ export function selectFutureContributionsFund(targetFundIsin) {
 
 function pollForMandateSignatureWithMandateId(mandateId) {
   return (dispatch, getState) => {
-    if (timeout && process.env.NODE_ENV !== 'test') {
+    if (timeout) {
       clearTimeout(timeout);
     }
     timeout = setTimeout(() => {
@@ -127,7 +127,7 @@ function pollForMandateSignatureWithMandateId(mandateId) {
 
 function pollForMandateSignatureWithMandateIdUsingSmartId(mandateId) {
   return (dispatch, getState) => {
-    if (timeout && process.env.NODE_ENV !== 'test') {
+    if (timeout) {
       clearTimeout(timeout);
     }
     timeout = setTimeout(() => {
@@ -155,7 +155,7 @@ function pollForMandateSignatureWithMandateIdUsingSmartId(mandateId) {
 }
 
 function handleSaveMandateError(dispatch, error) {
-  if (error.status === 400) {
+  if (error?.status === 400) {
     dispatch({ type: SIGN_MANDATE_INVALID_ERROR, error });
   } else {
     dispatch({ type: SIGN_MANDATE_START_ERROR, error });
@@ -166,7 +166,7 @@ export function previewMandate(mandate, amlChecks) {
   return (dispatch, getState) => {
     const { token } = getState().login;
     return dispatch(amlActions.createAmlChecks(amlChecks))
-      .then(() => saveMandateWithToken(mandate, token))
+      .then(() => saveOrRetrieveExistingMandate(mandate, token))
       .then(({ id }) => downloadMandatePreviewWithIdAndToken(id, token))
       .then((file) => download(file, 'Tuleva_avaldus_eelvaade.zip', 'application/zip'))
       .catch((error) => {
@@ -180,7 +180,7 @@ export function signMandateWithMobileId(mandate) {
     dispatch({ type: SIGN_MANDATE_MOBILE_ID_START });
     const { token } = getState().login;
     let mandateId;
-    return saveMandateWithToken(mandate, token)
+    return saveOrRetrieveExistingMandate(mandate, token)
       .then(({ id }) => {
         mandateId = id;
         return getMobileIdSignatureChallengeCodeForMandateIdWithToken(mandateId, token);
@@ -200,7 +200,7 @@ export function signMandateWithSmartId(mandate) {
     dispatch({ type: SIGN_MANDATE_MOBILE_ID_START });
     const { token } = getState().login;
     let mandateId;
-    return saveMandateWithToken(mandate, token)
+    return saveOrRetrieveExistingMandate(mandate, token)
       .then(({ id }) => {
         mandateId = id;
         return getSmartIdSignatureChallengeCodeForMandateIdWithToken(mandateId, token);
@@ -217,7 +217,7 @@ export function signMandateWithSmartId(mandate) {
 
 function pollForMandateSignatureWithMandateIdAndSignedHash(mandateId, signedHash) {
   return (dispatch, getState) => {
-    if (timeout && process.env.NODE_ENV !== 'test') {
+    if (timeout) {
       clearTimeout(timeout);
     }
     timeout = setTimeout(() => {
@@ -267,6 +267,13 @@ function signIdCardSignatureHashWithCertificateForMandateId(hash, certificate, m
       });
 }
 
+function saveOrRetrieveExistingMandate(mandate, token) {
+  if (typeof mandate === 'object' && mandate.id) {
+    return Promise.resolve(mandate);
+  }
+  return saveMandateWithToken(mandate, token);
+}
+
 export function signMandateWithIdCard(mandate) {
   return (dispatch, getState) => {
     dispatch({ type: SIGN_MANDATE_ID_CARD_START });
@@ -285,10 +292,9 @@ export function signMandateWithIdCard(mandate) {
             body: { errors: [{ code: 'id.card.signing.error' }] },
           };
           dispatch({ type: SIGN_MANDATE_START_ERROR, error });
-          throw error;
         },
       )
-      .then(() => saveMandateWithToken(mandate, token))
+      .then(() => saveOrRetrieveExistingMandate(mandate, token))
       .then(({ id }) => {
         mandateId = id;
         return getIdCardSignatureHashForMandateIdWithCertificateHexAndToken(
@@ -303,7 +309,6 @@ export function signMandateWithIdCard(mandate) {
       })
       .catch((error) => {
         dispatch({ type: SIGN_MANDATE_START_ERROR, error });
-        throw error;
       });
   };
 }

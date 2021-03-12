@@ -69,15 +69,17 @@ initializeConfiguration();
 
 window.config = config; // for debug only
 
-mixpanel.init(config.get('mixpanelKey'));
+if (process.env.NODE_ENV !== 'test') {
+  mixpanel.init(config.get('mixpanelKey'));
 
-GoogleAnalytics.initialize('UA-76855836-1', {
-  debug: false,
-  titleCase: false,
-  gaOptions: {
-    alwaysSendReferrer: true,
-  },
-});
+  GoogleAnalytics.initialize('UA-76855836-1', {
+    debug: false,
+    titleCase: false,
+    gaOptions: {
+      alwaysSendReferrer: true,
+    },
+  });
+}
 
 history.listen(() => {
   if (process.env.NODE_ENV === 'production') {
@@ -85,7 +87,7 @@ history.listen(() => {
   }
 });
 
-class App extends Component {
+export class App extends Component {
   constructor(props) {
     applyRouting();
     super(props);

@@ -1,4 +1,5 @@
 import config from 'react-global-configuration';
+import { Fund, Application, ThirdPillarStatistics, CancellationMandate } from './apiModels';
 import { downloadFile, get, post, postForm, put, patch, simpleFetch } from './http';
 
 // TODO: type API responses
@@ -278,13 +279,6 @@ export function postThirdPillarStatistics(
   });
 }
 
-interface ThirdPillarStatistics {
-  id?: number;
-  mandateId: number;
-  singlePayment?: number;
-  recurringPayment?: number;
-}
-
 export function getPendingApplications(token: string): Promise<Application[]> {
   return get(
     getEndpoint('/v1/applications'),
@@ -295,88 +289,15 @@ export function getPendingApplications(token: string): Promise<Application[]> {
   );
 }
 
-export type Application =
-  | TransferApplication
-  | StopContributionsApplication
-  | ResumeContributionsApplication
-  | EarlyWithdrawalApplication
-  | WithdrawalApplication;
-
-export type TransferApplication = BaseApplication<
-  ApplicationType.TRANSFER,
-  {
-    sourceFund: Fund;
-    exchanges: {
-      targetFund: Fund;
-      amount: number;
-    }[];
-  }
->;
-
-export type StopContributionsApplication = BaseApplication<
-  ApplicationType.STOP_CONTRIBUTIONS,
-  {
-    stopTime: string;
-    earliestResumeTime: string;
-  }
->;
-
-export type ResumeContributionsApplication = BaseApplication<
-  ApplicationType.RESUME_CONTRIBUTIONS,
-  {
-    resumeTime: string;
-  }
->;
-
-export type EarlyWithdrawalApplication = BaseApplication<
-  ApplicationType.EARLY_WITHDRAWAL,
-  {
-    withdrawalTime: string;
-    depositAccountIBAN: string;
-  }
->;
-
-export type WithdrawalApplication = BaseApplication<
-  ApplicationType.WITHDRAWAL,
-  {
-    withdrawalTime: string;
-    depositAccountIBAN: string;
-  }
->;
-
-export enum ApplicationType {
-  TRANSFER = 'TRANSFER',
-  STOP_CONTRIBUTIONS = 'STOP_CONTRIBUTIONS',
-  RESUME_CONTRIBUTIONS = 'RESUME_CONTRIBUTIONS',
-  EARLY_WITHDRAWAL = 'EARLY_WITHDRAWAL',
-  WITHDRAWAL = 'WITHDRAWAL',
-}
-
-export enum ApplicationStatus {
-  PENDING = 'PENDING',
-  COMPLETE = 'COMPLETE',
-  FAILED = 'FAILED',
-}
-
-export interface BaseApplication<Type extends ApplicationType, Details> {
-  id: number;
-  status: ApplicationStatus;
-  creationTime: string;
-
-  type: Type;
-  details: Details;
-}
-
-export interface Fund {
-  isin: string;
-  name: string;
-  pillar: number;
-  managementFeeRate: number;
-  ongoingChargesFigure: number;
-  fundManager: FundManager;
-}
-
-export interface FundManager {
-  id: number;
-  name: string;
+export function createApplicationCancellation(
+  applicationId: number,
+  token: string,
+): Promise<CancellationMandate> {
+  return post(
+    getEndpoint(`/v1/applications/${applicationId}/cancellations`),
+    {},
+    {
+      Authorization: `Bearer ${token}`,
+    },
+  );
 }

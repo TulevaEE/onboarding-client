@@ -358,5 +358,11 @@
   "applications.type.earlyWithdrawal.account": "Pangakonto",
   "applications.type.withdrawal.title": "II samba väljavõtmise avaldus",
   "applications.type.withdrawal.time": "Väljamakse kuu",
-  "applications.type.withdrawal.account": "Pangakonto"
+  "applications.type.withdrawal.account": "Pangakonto",
+
+  "cancellation.flow.confirm.title": "Kinnita avalduse tühistamine",
+  "cancellation.flow.confirm.content": "Avaldust allkirjastades kinnitad, et soovid tühistada järgmise avalduse:",
+  "cancellation.flow.success.title": "Avaldus tühistatud",
+  "cancellation.flow.success.download": "Lae alla",
+  "cancellation.flow.success.back": "Tagasi kontole"
 }

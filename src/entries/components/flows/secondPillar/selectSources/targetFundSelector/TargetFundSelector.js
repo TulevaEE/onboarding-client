@@ -6,7 +6,7 @@ import { InfoTooltip } from '../../../../common';
 import TargetFundTooltipBody from '../../transferFutureCapital/targetFundTooltipBody';
 
 import './TargetFundSelector.scss';
-import checkImage from '../../success/success.svg';
+import checkImage from '../../../common/success.svg';
 
 export const TargetFundSelector = ({
   targetFunds,

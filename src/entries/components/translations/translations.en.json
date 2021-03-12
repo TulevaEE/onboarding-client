@@ -382,5 +382,11 @@
   "applications.type.earlyWithdrawal.account": "Bank account",
   "applications.type.withdrawal.title": "Second pillar withdrawal application",
   "applications.type.withdrawal.time": "Withdrawal month",
-  "applications.type.withdrawal.account": "Bank account"
+  "applications.type.withdrawal.account": "Bank account",
+
+  "cancellation.flow.confirm.title": "Confirm cancelling application",
+  "cancellation.flow.confirm.content": "By signing you confirm that you would like to cancel following application:",
+  "cancellation.flow.success.title": "Application cancelled",
+  "cancellation.flow.success.download": "Download",
+  "cancellation.flow.success.back": "Back to account"
 }

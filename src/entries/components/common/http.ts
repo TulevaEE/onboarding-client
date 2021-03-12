@@ -49,8 +49,8 @@ export async function get(url: string, params = {}, headers = {}): Promise<Axios
   } catch (error) {
     // eslint-disable-next-line no-throw-literal
     throw {
-      status: error.response.status,
-      body: error.response.data,
+      status: error.response?.status,
+      body: error.response?.data,
     };
   }
 }

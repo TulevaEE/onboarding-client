@@ -4,10 +4,9 @@ import { Message } from 'retranslate';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
+import { SuccessNotice } from '../../common/SuccessNotice';
 
 import { downloadMandate } from '../../../exchange/actions';
-import successImage from './success.svg';
-import './Success.scss';
 
 export const Success = ({
   previousPath,
@@ -19,10 +18,7 @@ export const Success = ({
   <div className="row">
     {!signedMandateId && <Redirect to={previousPath} />}
     <div className="col-12 mt-5 px-0">
-      <div className="alert alert-success text-center pt-5 pb-5">
-        <div className="tv-success__container">
-          <img src={successImage} alt="Success" className="tv-success__check" />
-        </div>
+      <SuccessNotice>
         <h2 className="text-center mt-3">
           <Message>success.done</Message>
         </h2>
@@ -51,7 +47,7 @@ export const Success = ({
         ) : (
           ''
         )}
-      </div>
+      </SuccessNotice>
       <h2 className="mt-5">
         <Message>success.view.profile.title</Message>
       </h2>

@@ -1,13 +1,14 @@
 import React from 'react';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { render as testRender, waitFor, screen } from '@testing-library/react';
+import { render as testRender, waitFor, screen, fireEvent } from '@testing-library/react';
 import { useSelector } from 'react-redux';
+import { MemoryRouter, Route } from 'react-router-dom';
 import config from 'react-global-configuration';
 import { QueryClient, QueryClientProvider } from 'react-query';
 
 import { ApplicationSection } from './ApplicationSection';
-import { ApplicationStatus, ApplicationType } from '../../common/api';
+import { ApplicationStatus, ApplicationType } from '../../common/apiModels';
 
 jest.mock('react-global-configuration');
 jest.mock('react-redux');
@@ -20,9 +21,12 @@ describe('Application section', () => {
   function render() {
     const queryClient = new QueryClient();
     testRender(
-      <QueryClientProvider client={queryClient}>
-        <ApplicationSection />
-      </QueryClientProvider>,
+      <MemoryRouter>
+        <QueryClientProvider client={queryClient}>
+          <ApplicationSection />
+          <Route path="/applications/:id/cancellation">Test cancellation route</Route>
+        </QueryClientProvider>
+      </MemoryRouter>,
     );
   }
   beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
@@ -144,13 +148,28 @@ describe('Application section', () => {
     expect(screen.queryByText('applications.type.stopContributions.title')).toBeNull();
   });
 
+  it('has a link to cancel an application', async () => {
+    mockApplications([testApplications.earlyWithdrawal]);
+    render();
+    const cancelButton = (await screen.findAllByText('applications.cancel'))[0];
+    expect(cancelButton).toBeInTheDocument();
+
+    expect(screen.queryByText('Test cancellation route')).toBeNull();
+
+    fireEvent.click(cancelButton);
+
+    await waitFor(() => {
+      expect(screen.queryByText('Test cancellation route')).toBeInTheDocument();
+    });
+  });
+
   function waitForRequestToFinish() {
     return new Promise((resolve) => {
       server.on('request:end', () => setTimeout(resolve, 50));
     });
   }
 
-  function mockApplications(applications) {
+  function mockApplications(applications: any[]) {
     server.use(
       rest.get('http://localhost/v1/applications', (req, res, ctx) => {
         if (req.headers.get('Authorization') !== 'Bearer mock token') {
