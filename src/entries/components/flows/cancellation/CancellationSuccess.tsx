@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Message } from 'retranslate';
-import { SuccessNotice } from '../common/SuccessNotice';
+import { SuccessNotice } from '../common/SuccessNotice/SuccessNotice';
 
 export const CancellationSuccess: React.FunctionComponent<unknown> = () => (
   <div className="row">
