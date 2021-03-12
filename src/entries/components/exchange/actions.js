@@ -155,7 +155,7 @@ function pollForMandateSignatureWithMandateIdUsingSmartId(mandateId) {
 }
 
 function handleSaveMandateError(dispatch, error) {
-  if (error.status === 400) {
+  if (error?.status === 400) {
     dispatch({ type: SIGN_MANDATE_INVALID_ERROR, error });
   } else {
     dispatch({ type: SIGN_MANDATE_START_ERROR, error });
@@ -217,7 +217,7 @@ export function signMandateWithSmartId(mandate) {
 
 function pollForMandateSignatureWithMandateIdAndSignedHash(mandateId, signedHash) {
   return (dispatch, getState) => {
-    if (timeout && process.env.NODE_ENV !== 'test') {
+    if (timeout) {
       clearTimeout(timeout);
     }
     timeout = setTimeout(() => {
@@ -292,7 +292,6 @@ export function signMandateWithIdCard(mandate) {
             body: { errors: [{ code: 'id.card.signing.error' }] },
           };
           dispatch({ type: SIGN_MANDATE_START_ERROR, error });
-          throw error;
         },
       )
       .then(() => saveOrRetrieveExistingMandate(mandate, token))
@@ -310,7 +309,6 @@ export function signMandateWithIdCard(mandate) {
       })
       .catch((error) => {
         dispatch({ type: SIGN_MANDATE_START_ERROR, error });
-        throw error;
       });
   };
 }

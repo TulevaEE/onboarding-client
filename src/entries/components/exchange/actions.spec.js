@@ -456,7 +456,6 @@ describe('Exchange actions', () => {
     expect(mockApi.saveMandateWithToken).not.toHaveBeenCalled();
   });
 
-  /*
   it('does not create new mandate if one is already provided when signing with mobile id', async () => {
     const mandate = { id: 'id' };
     state.login.loginMethod = 'mobileId';
@@ -468,13 +467,20 @@ describe('Exchange actions', () => {
     await signMandate(mandate);
     expect(mockApi.saveMandateWithToken).not.toHaveBeenCalled();
   });
+
   it('does not create new mandate if one is already provided when signing with id card', async () => {
     const mandate = { id: 'id' };
     state.login.loginMethod = 'idCard';
     const signMandate = createBoundAction(actions.signMandate);
     mockApi.saveMandateWithToken = jest.fn(() => Promise.resolve(mandate));
-    mockHwcrypto.sign = jest.fn(() => Promise.reject(new Error('oh no')));
+
+    const certificate = { hex: 'certificate' };
+    global.hwcrypto = mockHwcrypto;
+    mockHwcrypto.getCertificate = jest.fn(() => Promise.resolve(certificate));
+    mockApi.getIdCardSignatureHashForMandateIdWithCertificateHexAndToken = jest.fn(() =>
+      Promise.reject(new Error('oh no')),
+    );
     await signMandate(mandate);
     expect(mockApi.saveMandateWithToken).not.toHaveBeenCalled();
-  }); */
+  });
 });

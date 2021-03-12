@@ -6,7 +6,6 @@ import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import { SuccessNotice } from '../../common/SuccessNotice';
 
-
 import { downloadMandate } from '../../../exchange/actions';
 
 export const Success = ({
