@@ -1,28 +1,27 @@
 import React from 'react';
-import { PropTypes as Types } from 'prop-types';
 import { Message } from 'retranslate';
 import './StatusBoxRow.scss';
 
-const CheckMark = ({ checked }) => (
+const CheckMark: React.FunctionComponent<{ checked: boolean }> = ({ checked = false }) => (
   <div className={`ml-3 mr-2 fa${checked ? ' fa-check' : ' fa-times'}`} />
 );
-CheckMark.defaultProps = {
-  checked: false,
-};
 
-CheckMark.propTypes = {
-  checked: Types.bool,
-};
-
-const StatusBoxRow = ({ name, lines, showAction, ok, children, last }) => {
+export const StatusBoxRow: React.FunctionComponent<{
+  name?: React.ReactNode;
+  lines?: React.ReactNode[];
+  showAction?: boolean;
+  ok?: boolean;
+  last?: boolean;
+  children?: React.ReactNode;
+}> = ({ name = '', lines = [], showAction = false, ok = false, children = '', last = false }) => {
   const displayName = <Message>{name}</Message>;
   const formattedLines = (
     <ul>
       {lines &&
         lines.length > 0 &&
-        lines.map((line) => {
+        lines.map((line, i) => {
           return (
-            <li className="pl-2" key={line}>
+            <li className="pl-2" key={i}>
               {line}
             </li>
           );
@@ -52,23 +51,3 @@ const StatusBoxRow = ({ name, lines, showAction, ok, children, last }) => {
     </div>
   );
 };
-
-StatusBoxRow.defaultProps = {
-  name: '',
-  lines: [],
-  showAction: false,
-  ok: false,
-  children: null,
-  last: false,
-};
-
-StatusBoxRow.propTypes = {
-  name: Types.oneOfType([Types.node, Types.string]),
-  lines: Types.arrayOf(Types.oneOfType([Types.node, Types.string, Types.string])),
-  showAction: Types.bool,
-  ok: Types.bool,
-  children: Types.node,
-  last: Types.bool,
-};
-
-export default StatusBoxRow;
