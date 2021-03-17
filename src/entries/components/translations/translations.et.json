@@ -70,7 +70,7 @@
   "accountStatement.columns.profit.title": "Tulu",
   "accountStatement.columns.value.title": "Väärtus",
   "accountStatement.columns.fund.footer": "Kokku",
-  "accountStatement.secondPillar.activeFundNotice": "* - siia lähevad igakuised maksed.",
+  "accountStatement.secondPillar.activeFundNotice": "* - siia lähevad igakuised maksed. Teisest sambast väljumise avalduse saad teha pensionikeskus.ee lehel.",
   "accountStatement.thirdPillar.activeFundNotice": "* - siia lähevad igakuised maksed",
 
   "memberCapital.heading": "Liikmekapital",
