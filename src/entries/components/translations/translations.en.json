@@ -70,7 +70,7 @@
   "accountStatement.columns.profit.title": "Profit",
   "accountStatement.columns.value.title": "Value",
   "accountStatement.columns.fund.footer": "Total",
-  "accountStatement.secondPillar.activeFundNotice": "* - currently active fund.",
+  "accountStatement.secondPillar.activeFundNotice": "* - currently active fund. If you want to submit II pillar withdrawal application, go to pensionikeskus.ee",
   "accountStatement.thirdPillar.activeFundNotice": "* - currently active fund",
 
   "memberCapital.heading": "Member capital",
