@@ -29,6 +29,7 @@ describe('Application section', () => {
       </MemoryRouter>,
     );
   }
+
   beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
   afterEach(() => server.resetHandlers());
   afterAll(() => server.close());
@@ -163,12 +164,11 @@ describe('Application section', () => {
     });
   });
 
-  it('shows the ability to cancel on the same day of the deadline', async () => {
-    const currentDay = new Date();
+  it('shows the ability to cancel before the deadline', async () => {
+    const date = new Date();
+    date.setMonth(date.getMonth() + 1);
     const application = getTestApplications().transfer;
-    application.cancellationDeadline = `${currentDay.getFullYear()}-${
-      currentDay.getMonth() + 1
-    }-${currentDay.getDate()}`;
+    application.cancellationDeadline = date.toISOString();
     mockApplications([application]);
     render();
 
@@ -178,9 +178,10 @@ describe('Application section', () => {
   });
 
   it('does not let you cancel after the deadline', async () => {
-    const currentDay = new Date();
+    const date = new Date();
+    date.setFullYear(1995);
     const application = getTestApplications().transfer;
-    application.cancellationDeadline = `${currentDay.getFullYear()}-${currentDay.getMonth()}-${currentDay.getDate()}`;
+    application.cancellationDeadline = date.toISOString();
     mockApplications([application]);
     render();
 
@@ -220,7 +221,7 @@ function getTestApplications() {
       type: ApplicationType.TRANSFER,
       status: ApplicationStatus.PENDING,
       creationTime: new Date('December 17, 1995 03:24:00').toISOString(),
-      cancellationDeadline: '3000-01-01',
+      cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
       details: {
         sourceFund: {
           fundManager: { id: 5, name: 'Tuleva' },
@@ -261,7 +262,7 @@ function getTestApplications() {
       type: ApplicationType.EARLY_WITHDRAWAL,
       status: ApplicationStatus.PENDING,
       creationTime: new Date('December 17, 1995 03:24:00').toISOString(),
-      cancellationDeadline: '3000-01-01',
+      cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
       details: {
         withdrawalTime: new Date('January 2, 1995 03:24:00').toISOString(),
         depositAccountIBAN: 'EE123123123',
@@ -272,7 +273,7 @@ function getTestApplications() {
       type: ApplicationType.WITHDRAWAL,
       status: ApplicationStatus.PENDING,
       creationTime: new Date('December 17, 1995 03:24:00').toISOString(),
-      cancellationDeadline: '3000-01-01',
+      cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
       details: {
         withdrawalTime: new Date('January 2, 1995 03:24:00').toISOString(),
         depositAccountIBAN: 'EE123123123',
@@ -283,7 +284,7 @@ function getTestApplications() {
       type: ApplicationType.STOP_CONTRIBUTIONS,
       status: ApplicationStatus.PENDING,
       creationTime: new Date('December 17, 1995 03:24:00').toISOString(),
-      cancellationDeadline: '3000-01-01',
+      cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
       details: {
         stopTime: new Date('December 18, 1995 03:24:00').toISOString(),
         earliestResumeTime: new Date('December 19, 1995 03:24:00').toISOString(),
@@ -294,7 +295,7 @@ function getTestApplications() {
       type: ApplicationType.RESUME_CONTRIBUTIONS,
       status: ApplicationStatus.PENDING,
       creationTime: new Date('December 17, 1995 03:24:00').toISOString(),
-      cancellationDeadline: '3000-01-01',
+      cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
       details: {
         resumeTime: new Date('December 18, 1995 03:24:00').toISOString(),
       },
