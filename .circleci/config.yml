@@ -55,9 +55,55 @@ jobs:
           name: Deploy master to S3
           command: aws s3 cp /tmp/workspace/build s3://pension.tuleva.ee --recursive
 
+  build-staging:
+    executor:
+      name: node/default
+      tag: '13.14'
+    steps:
+      - *attach_workspace
+      - checkout
+      - node/install-packages
+      - run:
+          name: Build Staging
+          command: npm run build:staging
+      - run:
+          name: Copy assets
+          command: |
+            set -exu
+            mv build /tmp/workspace
+      - persist_to_workspace:
+          root: *workspace_root
+          paths:
+            - build
+  test-staging:
+    executor:
+      name: node/default
+      tag: '13.14'
+    steps:
+      - checkout
+      - node/install-packages
+      - run:
+          name: Lint staging
+          command: npm run lint
+      - run:
+          name: Run tests staging
+          command: npm test -- --maxWorkers=2
+      - run:
+          name: Upload coverage report
+          command: bash <(curl -s https://codecov.io/bash)
+  deploy-staging:
+    executor: aws-cli/default
+    steps:
+      - checkout
+      - *attach_workspace
+      - aws-cli/setup
+      - run:
+          name: Deploy master to S3 staging
+          command: aws s3 cp /tmp/workspace/build s3://staging.tuleva.ee --recursive
+
 workflows:
   version: 2
-  build-test-and-deploy:
+  onboarding-client-production:
     jobs:
       - build
       - test:
@@ -66,6 +112,20 @@ workflows:
       - deploy:
           requires:
             - test
+          context: elastic-beanstalk-deployment
+          filters:
+            branches:
+              only: master
+
+  onboarding-client-staging:
+    jobs:
+      - build-staging
+      - test-staging:
+          requires:
+            - build-staging
+      - deploy-staging:
+          requires:
+            - test-staging
           context: elastic-beanstalk-deployment
           filters:
             branches:

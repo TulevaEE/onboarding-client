@@ -18,6 +18,15 @@ const DEFAULT_CONF_PRODUCTION = {
   language: 'et',
 };
 
+const DEFAULT_CONF_STAGING = {
+  mixpanelKey: undefined,
+  applicationUrl: 'https://staging.tuleva.ee',
+  newUserPaymentRedirectBaseUrl:
+    'https://payment-test.maksekeskus.ee/pay/1/link.html?shopId=322a5e5e-37ee-45b1-8961-ebd00e84e209&amount=125',
+  clientCredentialsAccessToken: '6b338ba2-805c-4300-9341-b38bb4ad34a9',
+  language: 'et',
+};
+
 const DEFAULT_CONF_TEST = {
   mixpanelKey: undefined,
   applicationUrl: 'http://localhost',
@@ -35,6 +44,10 @@ export function initializeConfiguration() {
     config.set(DEFAULT_CONF_PRODUCTION, { freeze: false });
   }
 
+  if (process.env.REACT_APP_ENV === 'staging') {
+    config.set(DEFAULT_CONF_STAGING, { freeze: false });
+  }
+
   if (process.env.NODE_ENV === 'test') {
     config.set(DEFAULT_CONF_TEST, { freeze: false });
   }
@@ -47,5 +60,9 @@ export function updateLanguage(language) {
 
   if (process.env.NODE_ENV === 'production') {
     config.set({ ...DEFAULT_CONF_PRODUCTION, language }, { freeze: false });
+  }
+
+  if (process.env.REACT_APP_ENV === 'staging') {
+    config.set({ ...DEFAULT_CONF_STAGING, language }, { freeze: false });
   }
 }
