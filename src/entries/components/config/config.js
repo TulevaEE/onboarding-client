@@ -19,7 +19,7 @@ const DEFAULT_CONF_PRODUCTION = {
 };
 
 const DEFAULT_CONF_STAGING = {
-  mixpanelKey: undefined,
+  mixpanelKey: 'be355b17352ad6b4660ae595cd65ce61',
   applicationUrl: 'https://staging.tuleva.ee',
   newUserPaymentRedirectBaseUrl:
     'https://payment-test.maksekeskus.ee/pay/1/link.html?shopId=322a5e5e-37ee-45b1-8961-ebd00e84e209&amount=125',
