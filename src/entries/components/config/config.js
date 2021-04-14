@@ -7,6 +7,7 @@ const DEFAULT_CONF_DEV = {
     'https://payment-test.maksekeskus.ee/pay/1/link.html?shopId=322a5e5e-37ee-45b1-8961-ebd00e84e209&amount=125',
   clientCredentialsAccessToken: '6b338ba2-805c-4300-9341-b38bb4ad34a9',
   language: 'et',
+  idCardUrl: 'https://id.tuleva.ee',
 };
 
 const DEFAULT_CONF_PRODUCTION = {
@@ -16,6 +17,7 @@ const DEFAULT_CONF_PRODUCTION = {
     'https://payment.maksekeskus.ee/pay/1/link.html?shopId=8c1a6c0a-2467-4166-ab47-006ddbf38b06&amount=125&return_url=https://onboarding-service.tuleva.ee/notifications/payments&return_method=POST&cancel_url=https://pension.tuleva.ee/2nd-pillar-flow/payment&cancel_method=GET&notification_url=https://onboarding-service.tuleva.ee/notifications/payments&notification_method=POST',
   clientCredentialsAccessToken: '705e26c1-9316-47f2-94b8-a5c6b0dfb566',
   language: 'et',
+  idCardUrl: 'https://id.tuleva.ee',
 };
 
 const DEFAULT_CONF_STAGING = {
@@ -25,6 +27,7 @@ const DEFAULT_CONF_STAGING = {
     'https://payment-test.maksekeskus.ee/pay/1/link.html?shopId=322a5e5e-37ee-45b1-8961-ebd00e84e209&amount=125',
   clientCredentialsAccessToken: '6b338ba2-805c-4300-9341-b38bb4ad34a9',
   language: 'et',
+  idCardUrl: 'https://id-staging.tuleva.ee',
 };
 
 const DEFAULT_CONF_TEST = {
@@ -33,6 +36,7 @@ const DEFAULT_CONF_TEST = {
   newUserPaymentRedirectBaseUrl: undefined,
   clientCredentialsAccessToken: undefined,
   language: 'en',
+  idCardUrl: 'https://id.tuleva.ee',
 };
 
 export function initializeConfiguration() {

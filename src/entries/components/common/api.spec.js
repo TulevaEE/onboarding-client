@@ -1,3 +1,5 @@
+import config from 'react-global-configuration';
+
 const mockHttp = jest.genMockFromModule('../common/http');
 jest.mock('../common/http', () => mockHttp);
 
@@ -12,6 +14,7 @@ describe('api', () => {
     mockHttp.put = jest.fn();
     mockHttp.patch = jest.fn();
     mockHttp.simpleFetch = jest.fn();
+    config.set({ idCardUrl: 'https://id.tuleva.ee' }, { freeze: false });
   });
 
   it('can authenticate with mobile id', () => {
@@ -64,7 +67,7 @@ describe('api', () => {
     return api.authenticateWithIdCard().then((success) => {
       expect(success).toBe(true);
       expect(mockHttp.simpleFetch).toHaveBeenCalledTimes(2);
-      expect(mockHttp.simpleFetch).toHaveBeenCalledWith('GET', 'https://id.tuleva.ee/');
+      expect(mockHttp.simpleFetch).toHaveBeenCalledWith('GET', 'https://id.tuleva.ee');
       expect(mockHttp.simpleFetch).toHaveBeenCalledWith('POST', 'https://id.tuleva.ee/idLogin');
     });
   });

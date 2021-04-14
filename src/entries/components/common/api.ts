@@ -55,8 +55,8 @@ export async function authenticateWithIdCode(personalCode: string): Promise<any>
 }
 
 export async function authenticateWithIdCard(): Promise<any> {
-  await simpleFetch('GET', 'https://id.tuleva.ee/'); // http://stackoverflow.com/a/16818527
-  const { success } = await simpleFetch('POST', 'https://id.tuleva.ee/idLogin');
+  await simpleFetch('GET', config.get('idCardUrl')); // http://stackoverflow.com/a/16818527
+  const { success } = await simpleFetch('POST', `${config.get('idCardUrl')}/idLogin`);
   return success;
 }
 

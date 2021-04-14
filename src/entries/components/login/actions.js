@@ -223,7 +223,7 @@ function safariSpecialHandlingIdCardAuth() {
   // so we have to do a full page reload
   const isSafari = !!navigator.userAgent.match(/Version\/[\d\.]+.*Safari/);
   if (isSafari) {
-    window.location = 'https://id.tuleva.ee/idLogin';
+    window.location = `${config.get('idCardUrl')}/idLogin`;
   }
 }
 
