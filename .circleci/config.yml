@@ -42,9 +42,6 @@ jobs:
       - run:
           name: Run tests
           command: npm test -- --maxWorkers=2
-      - run:
-          name: Upload coverage report
-          command: bash <(curl -s https://codecov.io/bash)
   deploy:
     executor: aws-cli/default
     steps:
@@ -88,9 +85,6 @@ jobs:
       - run:
           name: Run tests staging
           command: npm test -- --maxWorkers=2
-      - run:
-          name: Upload coverage report
-          command: bash <(curl -s https://codecov.io/bash)
   deploy-staging:
     executor: aws-cli/default
     steps:
@@ -112,7 +106,7 @@ workflows:
       - deploy:
           requires:
             - test
-          context: elastic-beanstalk-deployment
+          context: aws
           filters:
             branches:
               only: master
@@ -126,7 +120,7 @@ workflows:
       - deploy-staging:
           requires:
             - test-staging
-          context: elastic-beanstalk-deployment
+          context: aws
           filters:
             branches:
               only: master
