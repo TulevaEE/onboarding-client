@@ -17,6 +17,7 @@ import {
 import Footer from './footer';
 import ContactDetailsPage from '../contact-details';
 import AmlPage, { actions as amlActions } from '../aml';
+import SignUpPage from '../newUserFlow';
 
 export const ACCOUNT_PATH = '/account';
 export const AML_PATH = '/aml';
@@ -64,6 +65,7 @@ export class LoggedInApp extends PureComponent {
             <Switch>
               {userDataExists && <Route path={ACCOUNT_PATH} component={AccountPage} />}
               <Route path={AML_PATH} component={AmlPage} />
+              <Route path="/join" component={SignUpPage} />
               <Route path="/contact-details" component={ContactDetailsPage} />
               <Route path="/2nd-pillar-flow" component={SecondPillarFlow} />
               <Route path="/3rd-pillar-flow" component={ThirdPillarFlow} />

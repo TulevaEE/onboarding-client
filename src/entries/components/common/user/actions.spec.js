@@ -72,13 +72,13 @@ describe('newUserFlow actions', () => {
 
   it('can create a new user', () => {
     const newUser = { firstName: 'Jordan' };
-    mockApi.createUserWithToken = jest.fn(() => {
+    mockApi.updateUserWithToken = jest.fn(() => {
       expect(dispatch).toHaveBeenCalledTimes(1);
       expect(dispatch).toHaveBeenCalledWith({ type: UPDATE_USER_START });
       dispatch.mockClear();
       return Promise.resolve(newUser);
     });
-    const createUser = createBoundAction(actions.createUser);
+    const createUser = createBoundAction(actions.createNewMember);
     expect(dispatch).not.toHaveBeenCalled();
     return createUser(newUser).then(() => {
       expect(dispatch).toHaveBeenCalledTimes(1);
@@ -93,8 +93,8 @@ describe('newUserFlow actions', () => {
     const error = {
       body: { errors: [{ path: 'personalCode', code: 'invalid' }] },
     };
-    mockApi.createUserWithToken = jest.fn(() => Promise.reject(error));
-    const registerUser = createBoundAction(actions.createUser);
+    mockApi.updateUserWithToken = jest.fn(() => Promise.reject(error));
+    const registerUser = createBoundAction(actions.createNewMember);
     expect(dispatch).not.toHaveBeenCalled();
 
     return registerUser()
@@ -104,8 +104,6 @@ describe('newUserFlow actions', () => {
           error,
         }),
       )
-      .catch((givenError) =>
-        expect(givenError).toEqual(new SubmissionError({ personalCode: 'invalid' })),
-      );
+      .catch((givenError) => expect(givenError).toEqual(new SubmissionError({ email: 'invalid' })));
   });
 });

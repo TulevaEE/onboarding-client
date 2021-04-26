@@ -151,11 +151,9 @@ export const StatusBox: React.FunctionComponent<StatusBoxType> = ({
           lines={tulevaData}
         >
           {!isTulevaMember && (
-            <span>
-              <a className="btn btn-light" href="https://tuleva.ee/tulundusyhistu/">
-                <Message>account.status.choice.join.tuleva</Message>
-              </a>
-            </span>
+            <Link to="/join" className="btn btn-light">
+              <Message>account.status.choice.join.tuleva</Message>
+            </Link>
           )}
         </StatusBoxRow>
       </div>
