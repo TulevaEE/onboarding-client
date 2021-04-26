@@ -99,3 +99,11 @@ export interface CancellationMandate {
 export interface Mandate {
   id: number;
 }
+
+export interface User {
+  personalCode: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+}

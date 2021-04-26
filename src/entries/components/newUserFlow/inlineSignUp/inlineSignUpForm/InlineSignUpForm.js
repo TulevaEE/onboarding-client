@@ -5,7 +5,7 @@ import { PropTypes as Types } from 'prop-types';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
 import { Message, withTranslations } from 'retranslate';
-import { requiredField, length11, emailValidator } from '../../../common/form';
+import { requiredField, emailValidator } from '../../../common/form';
 
 const renderField = ({ input, type, placeholder, disabled, meta: { touched, error } }) => (
   <div>
@@ -36,7 +36,6 @@ export const InlineSignUpForm = ({
   <div>
     <form id="register-form" onSubmit={handleSubmit}>
       <div className="form-group mb-2">
-        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
         <label htmlFor="register-form-email">
           <Message>new.user.flow.signup.email</Message>
         </label>
@@ -50,21 +49,6 @@ export const InlineSignUpForm = ({
         />
       </div>
       <div className="form-group mb-2">
-        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-        <label htmlFor="register-form-personalCode">
-          <Message>new.user.flow.signup.personalCode</Message>
-        </label>
-        <Field
-          component={renderField}
-          type="text"
-          name="personalCode"
-          id="register-form-personalCode"
-          placeholder={translate('new.user.flow.signup.personalCode')}
-          validate={[requiredField, length11]}
-        />
-      </div>
-      <div className="form-group mb-2">
-        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
         <label htmlFor="register-form-phoneNumber">
           <Message>new.user.flow.signup.phoneNumber</Message>
         </label>
@@ -76,7 +60,7 @@ export const InlineSignUpForm = ({
           placeholder={translate('new.user.flow.signup.phoneNumber')}
         />
       </div>
-      <div className="form-check checkbox mb-2">
+      <div className="mb-2">
         <span className="custom-control-indicator" />
         <div className="custom-control-description">
           <Message>new.user.flow.signup.tos.start</Message>
@@ -125,8 +109,7 @@ InlineSignUpForm.propTypes = {
   translations: Types.shape({ translate: Types.func.isRequired }).isRequired,
 };
 
-const reduxInlineSignUpForm = reduxForm({ form: 'signUp' })(InlineSignUpForm);
-const translatedForm = withTranslations(reduxInlineSignUpForm);
+const reduxInlineSignUpForm = reduxForm({ form: 'signUp' })(withTranslations(InlineSignUpForm));
 
 const mapStateToProps = (state) => ({
   initialValues: state.login.user ? { ...state.login.user } : null,
@@ -134,6 +117,6 @@ const mapStateToProps = (state) => ({
 
 const connectToRedux = connect(mapStateToProps, null);
 
-const prefilledForm = connectToRedux(translatedForm);
+const prefilledForm = connectToRedux(reduxInlineSignUpForm);
 
 export default prefilledForm;

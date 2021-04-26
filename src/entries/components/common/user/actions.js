@@ -2,7 +2,7 @@
 import { SubmissionError } from 'redux-form';
 import config from 'react-global-configuration';
 
-import { createUserWithToken, updateUserWithToken } from '../api';
+import { updateUserWithToken } from '../api';
 import {
   UPDATE_USER_START,
   UPDATE_USER_SUCCESS,
@@ -54,10 +54,10 @@ export function userUpdated() {
   };
 }
 
-export function createUser(user) {
-  return (dispatch) => {
+export function createNewMember(user) {
+  return (dispatch, getState) => {
     dispatch({ type: UPDATE_USER_START });
-    return createUserWithToken(user, config.get('clientCredentialsAccessToken'))
+    return updateUserWithToken(user, getState().login.token)
       .then((newUser) => {
         dispatch({ type: UPDATE_USER_SUCCESS, newUser });
         const paymentUrl = `${config.get('newUserPaymentRedirectBaseUrl')}&reference=${newUser.id}`;

@@ -386,25 +386,6 @@ describe('api', () => {
     });
   });
 
-  it('can create a new user', () => {
-    const user = { firstName: 'Jordan' };
-    const token = 'a token';
-
-    mockHttp.post = jest.fn(() =>
-      Promise.resolve({
-        firstName: user.firstName,
-      }),
-    );
-    expect(mockHttp.post).not.toHaveBeenCalled();
-    return api.createUserWithToken(user, token).then((createdUser) => {
-      expect(createdUser.firstName).toBe(user.firstName);
-      expect(mockHttp.post).toHaveBeenCalledTimes(1);
-      expect(mockHttp.post).toHaveBeenCalledWith('/v1/users', user, {
-        Authorization: `Bearer ${token}`,
-      });
-    });
-  });
-
   it('can get user conversion', () => {
     mockHttp.get = jest.fn(() => Promise.resolve());
     const token = 'a token';

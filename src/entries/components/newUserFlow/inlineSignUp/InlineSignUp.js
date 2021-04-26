@@ -6,7 +6,7 @@ import mixpanel from 'mixpanel-browser';
 import MixpanelProvider from 'react-mixpanel';
 import config from 'react-global-configuration';
 
-import { createUser } from '../../common/user/actions';
+import { createNewMember } from '../../common/user/actions';
 import { initializeConfiguration } from '../../config/config';
 
 import InlineSignUpForm from './inlineSignUpForm';
@@ -32,7 +32,7 @@ InlineSignUp.propTypes = {
 
 const onCreateUser = (user) => (dispatch) => {
   mixpanel.track('INLINE_SIGNUP_CREATE_USER', user);
-  return dispatch(createUser(user));
+  return dispatch(createNewMember(user));
 };
 
 const mapDispatchToProps = (dispatch) =>

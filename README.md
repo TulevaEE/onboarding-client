@@ -1,8 +1,6 @@
 # :chart_with_upwards_trend: Onboarding client
 
 1. Client for [Tuleva onboarding](https://pension.tuleva.ee)
-1. Inline signup widget (used [here](https://tuleva.ee/tulundusyhistu/#inline-signup-anchor))
-1. Inline login widget (used [here](https://tuleva.ee/liikme-kinnitus))
 
 [![CircleCI](https://circleci.com/gh/TulevaEE/onboarding-client/tree/master.svg?style=shield)](https://circleci.com/gh/TulevaEE/onboarding-client/tree/master)
 [![codecov](https://codecov.io/gh/TulevaEE/onboarding-client/branch/master/graph/badge.svg)](https://codecov.io/gh/TulevaEE/onboarding-client)

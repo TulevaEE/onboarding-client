@@ -1,5 +1,5 @@
 import config from 'react-global-configuration';
-import { Fund, Application, ThirdPillarStatistics, CancellationMandate } from './apiModels';
+import { Fund, Application, ThirdPillarStatistics, CancellationMandate, User } from './apiModels';
 import { downloadFile, get, post, postForm, put, patch, simpleFetch } from './http';
 
 // TODO: type API responses
@@ -217,14 +217,8 @@ export async function getIdCardSignatureStatusForMandateIdWithSignedHashAndToken
   return statusCode;
 }
 
-export function updateUserWithToken(user: string, token: string): Promise<any> {
+export function updateUserWithToken(user: User, token: string): Promise<any> {
   return patch(getEndpoint('/v1/me'), user, {
-    Authorization: `Bearer ${token}`,
-  });
-}
-
-export function createUserWithToken(user: string, token: string): Promise<any> {
-  return post(getEndpoint('/v1/users'), user, {
     Authorization: `Bearer ${token}`,
   });
 }
