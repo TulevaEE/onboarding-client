@@ -59,7 +59,7 @@
     "format": "eslint --ext .js,.ts,.jsx,.tsx src/ --fix"
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "^5.11.9",
+    "@testing-library/jest-dom": "^5.12.0",
     "@testing-library/react": "^11.2.5",
     "@transferwise/eslint-config": "^6.1.0",
     "@types/classnames": "^2.2.11",
