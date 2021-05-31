@@ -44,7 +44,7 @@
     "build-onboarding": "APP_NAME=onboarding npm run build-app",
     "build-signup": "APP_NAME=signup npm run build-app",
     "build-login": "APP_NAME=login npm run build-app",
-    "build-app": "npm-run-all backup-index create-index-for-app build restore-index",
+    "build-app": "INLINE_RUNTIME_CHUNK=false npm-run-all backup-index create-index-for-app build restore-index",
     "backup-index": "mv src/index.js src/index.js.backup",
     "create-index-for-app": "echo \"import './entries/$APP_NAME';\" > src/index.js",
     "restore-index": "mv src/index.js.backup src/index.js",
