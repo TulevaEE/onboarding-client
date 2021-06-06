@@ -57,10 +57,11 @@ export class AccountPage extends Component {
         <div className="row mt-5">
           <GreetingBar />
         </div>
-        <div className="mt-5">{secondPillarSourceFunds && conversion && <StatusBox />}</div>
+        <div className="mt-5">
+          <StatusBox />
+        </div>
 
         {error && error.body ? <ErrorMessage errors={error.body} /> : ''}
-        {loadingCurrentBalance && <Loader className="align-middle" />}
 
         {secondPillarSourceFunds && thirdPillarSourceFunds && conversion && (
           <div className="mt-5">

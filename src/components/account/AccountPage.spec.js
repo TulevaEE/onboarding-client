@@ -105,12 +105,6 @@ describe('Account page', () => {
     expect(accountSummary().exists()).toBe(false);
   });
 
-  it('renders loader when current balance is still loading', () => {
-    const loadingCurrentBalance = true;
-    component.setProps({ loadingCurrentBalance });
-    expect(component.contains(<Loader className="align-middle" />)).toBe(true);
-  });
-
   it('renders error', () => {
     const error = { body: Error('aww no') };
     const funds = [{ aFund: true }];
