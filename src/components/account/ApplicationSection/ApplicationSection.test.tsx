@@ -1,7 +1,8 @@
 import React from 'react';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { render as testRender, waitFor, screen, fireEvent } from '@testing-library/react';
+import { render as testRender, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { useSelector } from 'react-redux';
 import { MemoryRouter, Route } from 'react-router-dom';
 import config from 'react-global-configuration';
@@ -45,7 +46,7 @@ describe('Application section', () => {
     mockApplications([]);
     render();
     await waitForRequestToFinish();
-    expect(screen.queryByText('applications.title')).toBeNull();
+    expect(screen.queryByText('applications.title')).not.toBeInTheDocument();
   });
 
   it('does not render at all when there has been an error fetching', async () => {
@@ -56,7 +57,7 @@ describe('Application section', () => {
     );
     render();
     await waitForRequestToFinish();
-    expect(screen.queryByText('applications.title')).toBeNull();
+    expect(screen.queryByText('applications.title')).not.toBeInTheDocument();
   });
 
   it('renders the title when there are pending applications', async () => {
@@ -146,7 +147,7 @@ describe('Application section', () => {
     render();
     expect(await screen.findByText('applications.type.earlyWithdrawal.title')).toBeInTheDocument();
     expect(screen.getByText('applications.type.transfer.title')).toBeInTheDocument();
-    expect(screen.queryByText('applications.type.stopContributions.title')).toBeNull();
+    expect(screen.queryByText('applications.type.stopContributions.title')).not.toBeInTheDocument();
   });
 
   it('has a link to cancel an application', async () => {
@@ -155,13 +156,11 @@ describe('Application section', () => {
     const cancelButton = (await screen.findAllByText('applications.cancel'))[0];
     expect(cancelButton).toBeInTheDocument();
 
-    expect(screen.queryByText('Test cancellation route')).toBeNull();
+    expect(screen.queryByText('Test cancellation route')).not.toBeInTheDocument();
 
-    fireEvent.click(cancelButton);
+    userEvent.click(cancelButton);
 
-    await waitFor(() => {
-      expect(screen.queryByText('Test cancellation route')).toBeInTheDocument();
-    });
+    await screen.findByText('Test cancellation route');
   });
 
   it('shows the ability to cancel before the deadline', async () => {
@@ -174,7 +173,7 @@ describe('Application section', () => {
 
     await waitForRequestToFinish();
 
-    expect(screen.queryAllByText('applications.cancel')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('applications.cancel')[0]).toBeInTheDocument();
   });
 
   it('does not let you cancel after the deadline', async () => {
@@ -187,7 +186,7 @@ describe('Application section', () => {
 
     await waitForRequestToFinish();
 
-    expect(screen.queryByText('applications.cancel')).toBeNull();
+    expect(screen.queryByText('applications.cancel')).not.toBeInTheDocument();
   });
 
   function waitForRequestToFinish() {

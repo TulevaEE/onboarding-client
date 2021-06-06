@@ -4,6 +4,8 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'prettier/@typescript-eslint',
     'plugin:import/typescript',
+    'plugin:jest-dom/recommended',
+    'plugin:testing-library/react',
   ],
   rules: {
     'import/no-extraneous-dependencies': [
@@ -24,6 +26,12 @@ module.exports = {
     'react/jsx-props-no-spreading': 'off',
     'react/static-property-placement': 'off',
     'react/no-array-index-key': 'off',
+    'testing-library/no-await-sync-events': 'error',
+    'testing-library/no-wait-for-multiple-assertions': 'error',
+    'testing-library/prefer-explicit-assert': 'error',
+    'testing-library/prefer-presence-queries': 'error',
+    'testing-library/prefer-user-event': 'error',
+    'testing-library/prefer-wait-for': 'error',
   },
   overrides: [
     {
