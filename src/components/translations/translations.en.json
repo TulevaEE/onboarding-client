@@ -353,7 +353,7 @@
 
   "thirdPillarPayment.title": "Payment instructions",
   "thirdPillarPayment.description": "Make a payment {{ emphasized }}.",
-  "thirdPillarPayment.descriptionEmphasized": "in your internet bank with following details:",
+  "thirdPillarPayment.descriptionEmphasized": "in your internet bank to the following details:",
   "thirdPillarPayment.accountName": "Pay to",
   "thirdPillarPayment.accountNumber": "Account number",
   "thirdPillarPayment.amount": "Amount",
