@@ -4,9 +4,9 @@ import { screen, within } from '@testing-library/react';
 import { Route } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
 // eslint-disable-next-line import/no-named-as-default
-import { initializeConfiguration } from '../components/config/config';
-import LoggedInApp from '../components/LoggedInApp';
-import { createDefaultStore, login, renderWrapped } from '../test/utils';
+import { initializeConfiguration } from '../config/config';
+import LoggedInApp from '../LoggedInApp';
+import { createDefaultStore, login, renderWrapped } from '../../test/utils';
 import {
   userBackend,
   userConversionBackend,
@@ -16,7 +16,7 @@ import {
   returnsBackend,
   userCapitalBackend,
   applicationsBackend,
-} from '../test/backend';
+} from '../../test/backend';
 
 jest.unmock('retranslate');
 
