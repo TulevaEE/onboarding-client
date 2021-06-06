@@ -88,6 +88,9 @@ const StatusBoxLoader: React.FunctionComponent = () => {
           <Shimmer height={52} />
         </div>
       </div>
+      <div className="mt-4">
+        <Shimmer height={16} />
+      </div>
     </>
   );
 };

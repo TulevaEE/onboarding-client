@@ -5,6 +5,24 @@ import sumBy from 'lodash/sumBy';
 
 import Table, { getProfitClassName } from '../../common/table';
 import Euro from '../../common/Euro';
+import { Shimmer } from '../../common/shimmer/Shimmer';
+
+export const AccountSummaryLoader = () => {
+  return (
+    <div>
+      <Shimmer height={26} />
+      <div className="mt-4">
+        <Shimmer height={26} />
+      </div>
+      <div className="mt-4">
+        <Shimmer height={26} />
+      </div>
+      <div className="mt-4">
+        <Shimmer height={26} />
+      </div>
+    </div>
+  );
+};
 
 const AccountSummary = ({
   secondPillarContributions,
