@@ -339,7 +339,9 @@ describe('Login actions', () => {
   });
 
   it('can log you out', () => {
-    expect(actions.logOut()).toEqual({ type: LOG_OUT });
+    mockApi.logout = jest.fn(() => Promise.resolve());
+    const logout = createBoundAction(actions.logOut);
+    return logout().then(() => expect(dispatch).toHaveBeenCalledWith({ type: LOG_OUT }));
   });
 
   it('can get user conversion', () => {

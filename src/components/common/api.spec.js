@@ -72,6 +72,19 @@ describe('api', () => {
     });
   });
 
+  it('can logout', () => {
+    const token = 'token';
+    mockHttp.get = jest.fn(() => Promise.resolve());
+    return api.logout(token).then(() => {
+      expect(mockHttp.get).toHaveBeenCalledTimes(1);
+      expect(mockHttp.get).toHaveBeenCalledWith(
+        '/v1/logout',
+        {},
+        { Authorization: 'Bearer token' },
+      );
+    });
+  });
+
   it('can get a mobile id token', () => {
     mockHttp.postForm = jest.fn(() =>
       Promise.resolve({

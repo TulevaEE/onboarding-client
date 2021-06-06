@@ -296,12 +296,16 @@ export function getUserConversion() {
 }
 
 export function logOut() {
-  if (process.env.NODE_ENV === 'production') {
-    Sentry.configureScope((scope) => {
-      scope.clear();
+  return (dispatch, getState) => {
+    if (process.env.NODE_ENV === 'production') {
+      Sentry.configureScope((scope) => {
+        scope.clear();
+      });
+    }
+    return api.logout(getState().login.token).then(() => {
+      dispatch({ type: LOG_OUT });
     });
-  }
-  return { type: LOG_OUT };
+  };
 }
 
 export function setLoginToRedirect() {

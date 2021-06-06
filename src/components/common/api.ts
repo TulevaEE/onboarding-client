@@ -60,6 +60,16 @@ export async function authenticateWithIdCard(): Promise<any> {
   return success;
 }
 
+export function logout(token: string): Promise<any> {
+  return get(
+    getEndpoint('/v1/logout'),
+    {},
+    {
+      Authorization: `Bearer ${token}`,
+    },
+  );
+}
+
 async function getTokensWithGrantType(grantType: string): Promise<any> {
   try {
     const { access_token: accessToken } = await postForm(
