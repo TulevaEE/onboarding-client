@@ -1,5 +1,6 @@
 import { rest } from 'msw';
 import { SetupServerApi } from 'msw/node';
+import queryString from 'qs';
 
 export function cancellationBackend(
   server: SetupServerApi,
@@ -59,6 +60,7 @@ export function mandatePreviewBackend(
 
 export function smartIdSigningBackend(
   server: SetupServerApi,
+  options: { challengeCode?: string } = {},
 ): {
   mandateSigned: boolean;
 } {
@@ -71,13 +73,144 @@ export function smartIdSigningBackend(
         return res(ctx.status(401), ctx.json({ error: 'not authenticated correctly' }));
       }
       backend.mandateSigned = true;
-      return res(ctx.status(200), ctx.json({ challengeCode: '9876' }));
+      return res(ctx.status(200), ctx.json({ challengeCode: options.challengeCode || '9876' }));
     }),
     rest.get('http://localhost/v1/mandates/1/signature/smartId/status', (req, res, ctx) => {
       if (req.headers.get('Authorization') !== 'Bearer mock token') {
         return res(ctx.status(401), ctx.json({ error: 'not authenticated correctly' }));
       }
       return res(ctx.status(200), ctx.json({ statusCode: 'SIGNATURE' }));
+    }),
+  );
+  return backend;
+}
+
+export function smartIdAuthenticationBackend(
+  server: SetupServerApi,
+  options: { challengeCode?: string; identityCode?: string } = {},
+): { resolvePolling: () => void } {
+  let pollingResolved = false;
+
+  server.use(
+    rest.post('http://localhost/authenticate', (req, res, ctx) => {
+      if (
+        req.body.type !== 'SMART_ID' ||
+        (options.identityCode && req.body.personalCode !== options.identityCode)
+      ) {
+        return res(ctx.status(401), ctx.json({ error: 'wrong method or id code' }));
+      }
+      return res(ctx.status(200), ctx.json({ challengeCode: options.challengeCode || '9876' }));
+    }),
+    rest.post('http://localhost/oauth/token', (req, res, ctx) => {
+      const body = queryString.parse(req.body);
+      if (
+        body.grant_type !== 'smart_id' ||
+        body.client_id !== 'onboarding-client' ||
+        req.headers.get('Authorization') !==
+          'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ='
+      ) {
+        return res(
+          ctx.status(401),
+          ctx.json({ error: 'wrong grant type, client id or basic auth' }),
+        );
+      }
+
+      if (!pollingResolved) {
+        return res(ctx.status(200), ctx.json({ error: 'AUTHENTICATION_NOT_COMPLETE' }));
+      }
+
+      return res(
+        ctx.status(200),
+        ctx.json({ access_token: 'mock token', refresh_token: 'mock refresh token' }),
+      );
+    }),
+  );
+  return {
+    resolvePolling() {
+      pollingResolved = true;
+    },
+  };
+}
+
+export function mobileIdAuthenticationBackend(
+  server: SetupServerApi,
+  options: { challengeCode?: string; identityCode?: string; phoneNumber?: string } = {},
+): { resolvePolling: () => void } {
+  let pollingResolved = false;
+
+  server.use(
+    rest.post('http://localhost/authenticate', (req, res, ctx) => {
+      if (
+        req.body.type !== 'MOBILE_ID' ||
+        (options.identityCode && req.body.personalCode !== options.identityCode) ||
+        (options.phoneNumber && req.body.phoneNumber !== options.phoneNumber)
+      ) {
+        return res(ctx.status(401), ctx.json({ error: 'wrong method, id code or number' }));
+      }
+      return res(ctx.status(200), ctx.json({ challengeCode: options.challengeCode || '9876' }));
+    }),
+    rest.post('http://localhost/oauth/token', (req, res, ctx) => {
+      const body = queryString.parse(req.body);
+      if (
+        body.grant_type !== 'mobile_id' ||
+        body.client_id !== 'onboarding-client' ||
+        req.headers.get('Authorization') !==
+          'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ='
+      ) {
+        return res(
+          ctx.status(401),
+          ctx.json({ error: 'wrong grant type, client id or basic auth' }),
+        );
+      }
+
+      if (!pollingResolved) {
+        return res(ctx.status(200), ctx.json({ error: 'AUTHENTICATION_NOT_COMPLETE' }));
+      }
+
+      return res(
+        ctx.status(200),
+        ctx.json({ access_token: 'mock token', refresh_token: 'mock refresh token' }),
+      );
+    }),
+  );
+  return {
+    resolvePolling() {
+      pollingResolved = true;
+    },
+  };
+}
+
+export function idCardAuthenticationBackend(
+  server: SetupServerApi,
+): { authenticatedWithIdCard: boolean; acceptedCertificate: boolean } {
+  const backend = { authenticatedWithIdCard: false, acceptedCertificate: false };
+  server.use(
+    rest.get('https://id.tuleva.ee', (req, res, ctx) => {
+      backend.acceptedCertificate = true;
+      return res(ctx.status(200), ctx.json({ success: true }));
+    }),
+    rest.post('https://id.tuleva.ee/idLogin', (req, res, ctx) => {
+      backend.authenticatedWithIdCard = true;
+      return res(ctx.status(200), ctx.json({ success: true }));
+    }),
+    rest.post('http://localhost/oauth/token', (req, res, ctx) => {
+      const body = queryString.parse(req.body);
+      if (
+        body.grant_type !== 'id_card' ||
+        body.client_id !== 'onboarding-client' ||
+        req.headers.get('Authorization') !==
+          'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ='
+      ) {
+        return res(
+          ctx.status(401),
+          ctx.json({ error: 'wrong grant type, client id or basic auth' }),
+        );
+      }
+
+      return res(
+        ctx.status(200),
+        ctx.json({ access_token: 'mock token', refresh_token: 'mock refresh token' }),
+      );
     }),
   );
   return backend;
