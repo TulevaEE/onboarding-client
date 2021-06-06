@@ -6,7 +6,7 @@ import {
   GET_MISSING_AML_CHECKS_START,
   GET_MISSING_AML_CHECKS_SUCCESS,
 } from './constants';
-import { mockStore } from '../../../test/utils';
+import { mockStore } from '../../test/utils';
 import * as mockApi from '../common/api';
 
 jest.mock('../common/api');

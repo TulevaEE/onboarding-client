@@ -3,7 +3,7 @@ import { setupServer } from 'msw/node';
 import { createMemoryHistory, History } from 'history';
 import { screen } from '@testing-library/react';
 import { rest } from 'msw';
-import { createDefaultStore, login, renderWrapped } from '../../../../test/utils';
+import { createDefaultStore, login, renderWrapped } from '../../../test/utils';
 import { initializeConfiguration } from '../../config/config';
 import { StatusBox } from './StatusBox';
 import { ApplicationStatus, ApplicationType } from '../../common/apiModels';

@@ -7,8 +7,8 @@ import { ConnectedRouter, routerMiddleware } from 'connected-react-router';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import React from 'react';
 import { render, RenderResult } from '@testing-library/react';
-import { MOBILE_AUTHENTICATION_SUCCESS } from '../entries/components/login/constants';
-import createRootReducer from '../entries/reducers';
+import { MOBILE_AUTHENTICATION_SUCCESS } from '../components/login/constants';
+import createRootReducer from '../reducers';
 
 export const mockStore = configureMockStore([thunk]);
 
