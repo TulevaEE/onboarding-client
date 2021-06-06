@@ -28,9 +28,9 @@ export function renderWrapped(
       </ReduxProvider>
     </TranslationProvider>
   );
-  const rendered = render(wrapper(children));
-  const rerender = (component: React.ReactNode) => rendered.rerender(wrapper(component));
-  return { ...rendered, rerender };
+  const view = render(wrapper(children));
+  const rerender = (component: React.ReactNode) => view.rerender(wrapper(component));
+  return { ...view, rerender };
 }
 
 export function createDefaultStore(history: History): Store {
@@ -45,7 +45,6 @@ export function login(store: Store, method = 'smartId', token = 'mock token'): v
     type: MOBILE_AUTHENTICATION_SUCCESS,
     tokens: {
       accessToken: token,
-      refreshToken: 'mock refresh token',
     },
     method,
   });

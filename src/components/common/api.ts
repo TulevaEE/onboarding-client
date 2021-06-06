@@ -60,9 +60,19 @@ export async function authenticateWithIdCard(): Promise<any> {
   return success;
 }
 
+export function logout(token: string): Promise<any> {
+  return get(
+    getEndpoint('/v1/logout'),
+    {},
+    {
+      Authorization: `Bearer ${token}`,
+    },
+  );
+}
+
 async function getTokensWithGrantType(grantType: string): Promise<any> {
   try {
-    const { access_token: accessToken, refresh_token: refreshToken } = await postForm(
+    const { access_token: accessToken } = await postForm(
       getEndpoint('/oauth/token'),
       {
         grant_type: grantType,
@@ -73,26 +83,13 @@ async function getTokensWithGrantType(grantType: string): Promise<any> {
       },
     );
 
-    return { accessToken, refreshToken };
+    return { accessToken };
   } catch (error) {
     if (error.error !== 'AUTHENTICATION_NOT_COMPLETE') {
       throw error;
     }
     return null;
   }
-}
-
-export async function refreshTokenWith(refreshToken: string): Promise<any> {
-  const { access_token: accessToken, refresh_token: refreshTokenFromResponse } = await postForm(
-    getEndpoint('/oauth/token'),
-    {
-      grant_type: 'refresh_token',
-      refresh_token: refreshToken,
-    },
-    { Authorization: 'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ=' },
-  );
-
-  return { accessToken, refreshToken: refreshTokenFromResponse };
 }
 
 export function getMobileIdTokens(): Promise<any> {

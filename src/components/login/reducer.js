@@ -17,8 +17,6 @@ import {
   GET_USER_CONVERSION_START,
   GET_USER_CONVERSION_SUCCESS,
   GET_USER_CONVERSION_ERROR,
-  TOKEN_REFRESH_SUCCESS,
-  TOKEN_REFRESH_ERROR,
   SET_LOGIN_TO_REDIRECT,
   LOG_OUT,
   CHANGE_PERSONAL_CODE,
@@ -28,14 +26,12 @@ import { getGlobalErrorCode } from '../common/errorMessage';
 import { UPDATE_USER_SUCCESS } from '../common/user/constants';
 
 const TOKEN_STORAGE_KEY = 'accessToken';
-const REFRESH_TOKEN_STORAGE_KEY = 'refreshToken';
 const LOGIN_METHOD_STORAGE_KEY = 'loginMethod';
 
 // get saved token if it's there
-const token = (window.localStorage && localStorage.getItem(TOKEN_STORAGE_KEY)) || null;
-const refreshToken =
-  (window.localStorage && localStorage.getItem(REFRESH_TOKEN_STORAGE_KEY)) || null;
-const loginMethod = (window.localStorage && localStorage.getItem(LOGIN_METHOD_STORAGE_KEY)) || null;
+const token = (window.sessionStorage && sessionStorage.getItem(TOKEN_STORAGE_KEY)) || null;
+const loginMethod =
+  (window.sessionStorage && sessionStorage.getItem(LOGIN_METHOD_STORAGE_KEY)) || null;
 
 export const initialState = {
   phoneNumber: '',
@@ -43,7 +39,6 @@ export const initialState = {
   controlCode: null,
   loadingAuthentication: false,
   token,
-  refreshToken,
   loginMethod,
   error: null,
   user: null,
@@ -56,12 +51,11 @@ export const initialState = {
   email: null,
 };
 
-function updateLocalStorage(action, loginMethodUsed) {
-  if (window.localStorage) {
-    localStorage.setItem(TOKEN_STORAGE_KEY, action.tokens.accessToken);
-    localStorage.setItem(REFRESH_TOKEN_STORAGE_KEY, action.tokens.refreshToken);
+function updateSessionStorage(action, loginMethodUsed) {
+  if (window.sessionStorage) {
+    sessionStorage.setItem(TOKEN_STORAGE_KEY, action.tokens.accessToken);
     if (loginMethodUsed) {
-      localStorage.setItem(LOGIN_METHOD_STORAGE_KEY, loginMethodUsed);
+      sessionStorage.setItem(LOGIN_METHOD_STORAGE_KEY, loginMethodUsed);
     }
   }
 }
@@ -91,13 +85,12 @@ export default function loginReducer(state = initialState, action) {
       };
 
     case MOBILE_AUTHENTICATION_SUCCESS:
-      updateLocalStorage(action, action.method);
+      updateSessionStorage(action, action.method);
 
       return {
         // reset all state so page is clean when entered again.
         ...state,
         token: action.tokens.accessToken,
-        refreshToken: action.tokens.refreshToken,
         loginMethod: action.method,
         loadingAuthentication: false,
         controlCode: null,
@@ -128,32 +121,14 @@ export default function loginReducer(state = initialState, action) {
       return { ...state, loadingAuthentication: true, error: null };
 
     case ID_CARD_AUTHENTICATION_SUCCESS:
-      updateLocalStorage(action, 'idCard');
+      updateSessionStorage(action, 'idCard');
       return {
         // reset all state so page is clean when entered again.
         ...state,
         token: action.tokens.accessToken,
-        refreshToken: action.tokens.refreshToken,
         loadingAuthentication: false,
         loginMethod: 'idCard',
         error: null,
-      };
-
-    case TOKEN_REFRESH_SUCCESS:
-      updateLocalStorage(action);
-      return {
-        ...state,
-        token: action.tokens.accessToken,
-        refreshToken: action.tokens.refreshToken,
-        error: null,
-      };
-
-    case TOKEN_REFRESH_ERROR:
-      return {
-        ...state,
-        token: null,
-        refreshToken: null,
-        error: (action.error.body || {}).error_description,
       };
 
     case GET_USER_START:
@@ -206,15 +181,13 @@ export default function loginReducer(state = initialState, action) {
       };
 
     case LOG_OUT:
-      if (window.localStorage) {
-        localStorage.removeItem(TOKEN_STORAGE_KEY);
-        localStorage.removeItem(REFRESH_TOKEN_STORAGE_KEY);
-        localStorage.removeItem(LOGIN_METHOD_STORAGE_KEY);
+      if (window.sessionStorage) {
+        sessionStorage.removeItem(TOKEN_STORAGE_KEY);
+        sessionStorage.removeItem(LOGIN_METHOD_STORAGE_KEY);
       }
       return {
         ...initialState,
         token: null,
-        refreshToken: null,
         loginMethod: null,
       };
 

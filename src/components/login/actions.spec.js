@@ -18,9 +18,6 @@ import {
   GET_USER_CONVERSION_START,
   GET_USER_CONVERSION_SUCCESS,
   GET_USER_CONVERSION_ERROR,
-  TOKEN_REFRESH_START,
-  TOKEN_REFRESH_SUCCESS,
-  TOKEN_REFRESH_ERROR,
   SET_LOGIN_TO_REDIRECT,
   LOG_OUT,
   CHANGE_PERSONAL_CODE,
@@ -342,7 +339,9 @@ describe('Login actions', () => {
   });
 
   it('can log you out', () => {
-    expect(actions.logOut()).toEqual({ type: LOG_OUT });
+    mockApi.logout = jest.fn(() => Promise.resolve());
+    const logout = createBoundAction(actions.logOut);
+    return logout().then(() => expect(dispatch).toHaveBeenCalledWith({ type: LOG_OUT }));
   });
 
   it('can get user conversion', () => {
@@ -378,42 +377,6 @@ describe('Login actions', () => {
         error,
       }),
     );
-  });
-
-  it('can refresh a token', () => {
-    state.login.refreshToken = 'old_refresh_token';
-    const tokens = { accessToken: 'access', refreshToken: 'refresh' };
-    mockApi.refreshTokenWith = jest.fn(() => {
-      expect(dispatch).toHaveBeenCalledTimes(1);
-      expect(dispatch).toHaveBeenCalledWith({ type: TOKEN_REFRESH_START });
-      dispatch.mockClear();
-      return Promise.resolve(tokens);
-    });
-
-    const refreshToken = createBoundAction(actions.refreshToken);
-    expect(dispatch).not.toHaveBeenCalled();
-
-    return refreshToken().then(() => {
-      expect(dispatch).toHaveBeenCalledWith({
-        type: TOKEN_REFRESH_SUCCESS,
-        tokens,
-      });
-    });
-  });
-
-  it('can handle refresh token errors', () => {
-    const error = new Error('awww noes');
-    mockApi.refreshTokenWith = jest.fn(() => Promise.reject(error));
-
-    const refreshToken = createBoundAction(actions.refreshToken);
-    expect(dispatch).not.toHaveBeenCalled();
-
-    return refreshToken().then(() => {
-      expect(dispatch).toHaveBeenCalledWith({
-        type: TOKEN_REFRESH_ERROR,
-        error,
-      });
-    });
   });
 
   it('can handle redirect login', () => {

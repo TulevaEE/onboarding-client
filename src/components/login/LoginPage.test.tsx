@@ -18,6 +18,7 @@ import {
 
 jest.mock('mixpanel-browser', () => ({ track: jest.fn() }));
 jest.unmock('retranslate');
+
 describe('When a user is logging in', () => {
   const server = setupServer();
   let history: History;
