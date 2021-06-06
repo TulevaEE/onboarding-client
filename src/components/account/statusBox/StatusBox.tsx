@@ -135,11 +135,11 @@ export const StatusBox: React.FunctionComponent<StatusBoxType> = ({
     ? [<Message params={{ memberNumber }}>account.member.statement</Message>]
     : [<Message>account.non.member.statement</Message>];
 
-  const activeSecondPillarFunds = (secondPillarFunds || [])
+  const activeSecondPillarFunds = secondPillarFunds
     .filter((fund) => fund.activeFund)
     .map(({ name }) => name);
 
-  const thirdPillarActiveFunds = (thirdPillarFunds || [])
+  const thirdPillarActiveFunds = thirdPillarFunds
     .filter((fund) => fund.activeFund)
     .map(({ name }) => name);
 
