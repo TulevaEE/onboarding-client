@@ -177,7 +177,9 @@ function getSmartIdTokens() {
             dispatch(getSmartIdTokens()); // poll again
           }
         })
-        .catch((error) => dispatch({ type: MOBILE_AUTHENTICATION_ERROR, error }));
+        .catch((error) => {
+          dispatch({ type: MOBILE_AUTHENTICATION_ERROR, error });
+        });
     }, POLL_DELAY);
   };
 }
