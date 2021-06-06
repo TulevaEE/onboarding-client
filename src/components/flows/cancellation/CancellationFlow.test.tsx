@@ -18,7 +18,6 @@ import {
   mandateDownloadBackend,
 } from '../../../test/backend';
 
-jest.mock('mixpanel-browser', () => ({ track: jest.fn() }));
 jest.mock('downloadjs');
 jest.unmock('retranslate');
 

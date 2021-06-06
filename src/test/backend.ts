@@ -215,3 +215,190 @@ export function idCardAuthenticationBackend(
   );
   return backend;
 }
+
+export function userBackend(server: SetupServerApi): void {
+  server.use(
+    rest.get('http://localhost/v1/me', (req, res, ctx) => {
+      return res(
+        ctx.json({
+          id: 123,
+          personalCode: '39001011234',
+          firstName: 'John',
+          lastName: 'Doe',
+          email: 'john.doe@example.com',
+          phoneNumber: '55667788',
+          memberNumber: 987,
+          pensionAccountNumber: '9876543210',
+          address: {
+            street: 'Telliskivi 60a',
+            districtCode: '0011',
+            postalCode: '10101',
+            countryCode: 'EE',
+          },
+          secondPillarActive: true,
+          thirdPillarActive: true,
+          age: 30,
+        }),
+      );
+    }),
+  );
+}
+
+export function userConversionBackend(server: SetupServerApi): void {
+  server.use(
+    rest.get('http://localhost/v1/me/conversion', (req, res, ctx) => {
+      return res(
+        ctx.json({
+          secondPillar: {
+            transfersComplete: true,
+            selectionComplete: true,
+            pendingWithdrawal: false,
+            paymentComplete: null,
+            contribution: { total: 12345.67, yearToDate: 111.11 },
+            subtraction: { total: 0.0, yearToDate: 0.0 },
+          },
+          thirdPillar: {
+            transfersComplete: true,
+            selectionComplete: true,
+            pendingWithdrawal: false,
+            paymentComplete: true,
+            contribution: { total: 9876.54, yearToDate: 999.99 },
+            subtraction: { total: 0.0, yearToDate: 0.0 },
+          },
+        }),
+      );
+    }),
+  );
+}
+
+export function amlChecksBackend(server: SetupServerApi): void {
+  server.use(
+    rest.get('http://localhost/v1/amlchecks', (req, res, ctx) => {
+      return res(ctx.json([]));
+    }),
+  );
+}
+
+export function pensionAccountStatementBackend(server: SetupServerApi): void {
+  server.use(
+    rest.get('http://localhost/v1/pension-account-statement', (req, res, ctx) => {
+      return res(
+        ctx.json([
+          {
+            fund: {
+              fundManager: { id: 5, name: 'Tuleva' },
+              isin: 'EE3600109435',
+              name: 'Tuleva Maailma Aktsiate Pensionifond',
+              managementFeeRate: 0.0034,
+              pillar: 2,
+              ongoingChargesFigure: 0.0039,
+              status: 'ACTIVE',
+            },
+            value: 15000.0,
+            unavailableValue: 0,
+            currency: 'EUR',
+            pillar: 2,
+            activeContributions: true,
+            contributions: 12345.67,
+            subtractions: 0,
+            contributionSum: 12345.67,
+            profit: 2654.33,
+          },
+          {
+            fund: {
+              fundManager: { id: 5, name: 'Tuleva' },
+              isin: 'EE3600001707',
+              name: 'Tuleva III Samba Pensionifond',
+              managementFeeRate: 0.003,
+              pillar: 3,
+              ongoingChargesFigure: 0.0043,
+              status: 'ACTIVE',
+            },
+            value: 5699.36,
+            unavailableValue: 0,
+            currency: 'EUR',
+            pillar: 3,
+            activeContributions: true,
+            contributions: 9876.54,
+            subtractions: 0,
+            contributionSum: 9876.54,
+            profit: -1876.54,
+          },
+        ]),
+      );
+    }),
+  );
+}
+
+export function fundsBackend(server: SetupServerApi): void {
+  server.use(
+    rest.get('http://localhost/v1/funds', (req, res, ctx) => {
+      return res(
+        ctx.json([
+          {
+            fundManager: { id: 5, name: 'Tuleva' },
+            isin: 'EE3600001707',
+            name: 'Tuleva III Samba Pensionifond',
+            managementFeeRate: 0.003,
+            nav: 0.7813,
+            volume: 47975601.7201,
+            pillar: 3,
+            ongoingChargesFigure: 0.0043,
+            status: 'ACTIVE',
+            peopleCount: 0,
+            shortName: '',
+          },
+          {
+            fundManager: { id: 5, name: 'Tuleva' },
+            isin: 'EE3600109435',
+            name: 'Tuleva Maailma Aktsiate Pensionifond',
+            managementFeeRate: 0.0034,
+            nav: 0.87831,
+            volume: 253616160.18811,
+            pillar: 2,
+            ongoingChargesFigure: 0.0039,
+            status: 'ACTIVE',
+            peopleCount: 24485,
+            shortName: 'TUK75',
+          },
+        ]),
+      );
+    }),
+  );
+}
+
+export function returnsBackend(server: SetupServerApi): void {
+  server.use(
+    rest.get('http://localhost/v1/returns', (req, res, ctx) => {
+      return res(ctx.json({ from: '2018-06-06', returns: [] })); // TODO: Add returns
+    }),
+  );
+}
+
+export function userCapitalBackend(server: SetupServerApi): void {
+  server.use(
+    rest.get('http://localhost/v1/me/capital', (req, res, ctx) => {
+      return res(
+        ctx.json({
+          membershipBonus: 1.23,
+          capitalPayment: 1000.0,
+          unvestedWorkCompensation: 0,
+          workCompensation: 0,
+          profit: -123.45,
+        }),
+      );
+    }),
+  );
+}
+
+export function applicationsBackend(server: SetupServerApi): void {
+  server.use(
+    rest.get('http://localhost/v1/applications', (req, res, ctx) => {
+      return res(ctx.json([]));
+    }),
+  );
+}
+
+type DeepPartial<T> = {
+  [P in keyof T]?: DeepPartial<T[P]>;
+};
