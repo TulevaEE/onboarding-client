@@ -9,13 +9,13 @@ import download from 'downloadjs';
 import { CancellationFlow, flowPath } from './CancellationFlow';
 import { ApplicationStatus, ApplicationType } from '../../common/apiModels';
 import { initializeConfiguration } from '../../config/config';
-import { createDefaultStore, login, renderWrapped } from '../../../../test/utils';
+import { createDefaultStore, login, renderWrapped } from '../../../test/utils';
 import {
   cancellationBackend,
   smartIdSigningBackend,
   mandatePreviewBackend,
   mandateDownloadBackend,
-} from '../../../../test/backend';
+} from '../../../test/backend';
 
 jest.mock('mixpanel-browser', () => ({ track: jest.fn() }));
 jest.mock('downloadjs');

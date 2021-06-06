@@ -1,4 +1,4 @@
-import { mockStore } from '../../../test/utils';
+import { mockStore } from '../../test/utils';
 import {
   CHANGE_AGREEMENT_TO_TERMS,
   CHANGE_EXCHANGE_EXISTING_UNITS,
