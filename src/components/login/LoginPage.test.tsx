@@ -10,7 +10,11 @@ import { initializeConfiguration } from '../config/config';
 
 // eslint-disable-next-line import/no-named-as-default
 import LoginPage, { loginPath } from './LoginPage';
-import { smartIdAuthenticationBackend } from '../../test/backend';
+import {
+  smartIdAuthenticationBackend,
+  mobileIdAuthenticationBackend,
+  idCardAuthenticationBackend,
+} from '../../test/backend';
 
 jest.mock('mixpanel-browser', () => ({ track: jest.fn() }));
 jest.unmock('retranslate');
@@ -54,5 +58,39 @@ describe('When a user is logging in', () => {
     expect(
       await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
     ).toBeInTheDocument();
+  });
+
+  test('they can sign in with mobile id, showing the security code', async () => {
+    const identityCode = '396112341234';
+    const phoneNumber = '+372123456789';
+    const backend = mobileIdAuthenticationBackend(server, {
+      challengeCode: '4321',
+      identityCode,
+      phoneNumber,
+    });
+    expect(await screen.findByText('Log in')).toBeInTheDocument();
+    userEvent.click(screen.getByText(/Mobile-ID/gi));
+    userEvent.type(screen.getByPlaceholderText(/Identity code/gi), identityCode);
+    userEvent.type(screen.getByPlaceholderText(/Phone number/gi), phoneNumber);
+    userEvent.click(screen.getByText(/Log in$/gi));
+    expect(await screen.findByText('4321')).toBeInTheDocument();
+    backend.resolvePolling();
+    expect(
+      await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
+    ).toBeInTheDocument();
+  });
+
+  test('they can sign in with id card', async () => {
+    const backend = idCardAuthenticationBackend(server);
+    expect(backend.acceptedCertificate).toBeFalsy();
+    expect(backend.authenticatedWithIdCard).toBeFalsy();
+    expect(await screen.findByText('Log in')).toBeInTheDocument();
+    userEvent.click(screen.getByText(/ID-card/gi));
+    userEvent.click(screen.getByText(/Log in$/gi));
+    expect(
+      await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
+    ).toBeInTheDocument();
+    expect(backend.acceptedCertificate).toBeTruthy();
+    expect(backend.authenticatedWithIdCard).toBeTruthy();
   });
 });
