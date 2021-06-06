@@ -22,7 +22,11 @@ import {
   SIGN_MANDATE_IN_PROGRESS,
 } from './constants';
 
-import { LOG_OUT } from '../login/constants';
+import {
+  ID_CARD_AUTHENTICATION_SUCCESS,
+  LOG_OUT,
+  MOBILE_AUTHENTICATION_SUCCESS,
+} from '../login/constants';
 
 describe('Exchange reducer', () => {
   it('finishes loading pension data', () => {
@@ -584,40 +588,42 @@ describe('Exchange reducer', () => {
     expect(newState.mandateSigningError).toBe(null);
   });
 
-  it('reverts to initial state when log out', () => {
-    const action = { type: LOG_OUT };
-    const newState = exchangeReducer(
-      {
-        sourceFunds: [{ sourceFund: true }],
-        loadingSourceFunds: true,
-        sourceSelection: '123',
-        sourceSelectionExact: true,
-        targetFunds: [],
-        loadingTargetFunds: true,
-        selectedFutureContributionsFundIsin: '123',
-        error: '123',
-        loadingMandate: true,
-        mandateSigningControlCode: '123',
-        mandateSigningError: '123',
-        signedMandateId: 123,
-        agreedToTerms: true,
-      },
-      action,
-    );
+  it('reverts to initial state when logging out or logging in', () => {
+    [LOG_OUT, MOBILE_AUTHENTICATION_SUCCESS, ID_CARD_AUTHENTICATION_SUCCESS].forEach((type) => {
+      const action = { type };
+      const newState = exchangeReducer(
+        {
+          sourceFunds: [{ sourceFund: true }],
+          loadingSourceFunds: true,
+          sourceSelection: '123',
+          sourceSelectionExact: true,
+          targetFunds: [],
+          loadingTargetFunds: true,
+          selectedFutureContributionsFundIsin: '123',
+          error: '123',
+          loadingMandate: true,
+          mandateSigningControlCode: '123',
+          mandateSigningError: '123',
+          signedMandateId: 123,
+          agreedToTerms: true,
+        },
+        action,
+      );
 
-    expect(newState.sourceFunds).toBe(null);
-    expect(newState.loadingSourceFunds).toBe(false);
-    expect(newState.sourceSelection).toHaveLength(0);
-    expect(newState.sourceSelectionExact).toBe(false);
-    expect(newState.targetFunds).toBe(null);
-    expect(newState.loadingTargetFunds).toBe(false);
-    expect(newState.selectedFutureContributionsFundIsin).toBe(null);
-    expect(newState.error).toBe(null);
+      expect(newState.sourceFunds).toBe(null);
+      expect(newState.loadingSourceFunds).toBe(false);
+      expect(newState.sourceSelection).toHaveLength(0);
+      expect(newState.sourceSelectionExact).toBe(false);
+      expect(newState.targetFunds).toBe(null);
+      expect(newState.loadingTargetFunds).toBe(false);
+      expect(newState.selectedFutureContributionsFundIsin).toBe(null);
+      expect(newState.error).toBe(null);
 
-    expect(newState.loadingMandate).toBe(false);
-    expect(newState.mandateSigningControlCode).toBe(null);
-    expect(newState.mandateSigningError).toBe(null);
-    expect(newState.signedMandateId).toBe(false);
-    expect(newState.agreedToTerms).toBe(false);
+      expect(newState.loadingMandate).toBe(false);
+      expect(newState.mandateSigningControlCode).toBe(null);
+      expect(newState.mandateSigningError).toBe(null);
+      expect(newState.signedMandateId).toBe(false);
+      expect(newState.agreedToTerms).toBe(false);
+    });
   });
 });
