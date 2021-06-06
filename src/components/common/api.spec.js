@@ -76,13 +76,11 @@ describe('api', () => {
     mockHttp.postForm = jest.fn(() =>
       Promise.resolve({
         access_token: 'mobile_id_token',
-        refresh_token: 'mobile_id_refresh_token',
       }),
     );
     expect(mockHttp.postForm).not.toHaveBeenCalled();
     return api.getMobileIdTokens().then((token) => {
       expect(token.accessToken).toBe('mobile_id_token');
-      expect(token.refreshToken).toBe('mobile_id_refresh_token');
       expect(mockHttp.postForm).toHaveBeenCalledTimes(1);
       expect(mockHttp.postForm).toHaveBeenCalledWith(
         '/oauth/token',
@@ -98,13 +96,10 @@ describe('api', () => {
   });
 
   it('can get an id card token', () => {
-    mockHttp.postForm = jest.fn(() =>
-      Promise.resolve({ access_token: 'token', refresh_token: 'refresh' }),
-    );
+    mockHttp.postForm = jest.fn(() => Promise.resolve({ access_token: 'token' }));
     expect(mockHttp.postForm).not.toHaveBeenCalled();
     return api.getIdCardTokens().then((token) => {
       expect(token.accessToken).toBe('token');
-      expect(token.refreshToken).toBe('refresh');
       expect(mockHttp.postForm).toHaveBeenCalledTimes(1);
       expect(mockHttp.postForm).toHaveBeenCalledWith(
         '/oauth/token',
@@ -404,31 +399,6 @@ describe('api', () => {
         Authorization: `Bearer ${token}`,
       }),
     );
-  });
-
-  it('can refresh token', () => {
-    mockHttp.postForm = jest.fn(() =>
-      Promise.resolve({
-        access_token: 'new_token',
-        refresh_token: 'new_refresh_token',
-      }),
-    );
-    expect(mockHttp.postForm).not.toHaveBeenCalled();
-    return api.refreshTokenWith('old_refresh_token').then((token) => {
-      expect(token.accessToken).toBe('new_token');
-      expect(token.refreshToken).toBe('new_refresh_token');
-      expect(mockHttp.postForm).toHaveBeenCalledTimes(1);
-      expect(mockHttp.postForm).toHaveBeenCalledWith(
-        '/oauth/token',
-        {
-          grant_type: 'refresh_token',
-          refresh_token: 'old_refresh_token',
-        },
-        {
-          Authorization: 'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ=',
-        },
-      );
-    });
   });
 
   it('can create an aml check', () => {
