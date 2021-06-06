@@ -17,8 +17,6 @@ import {
   GET_USER_CONVERSION_START,
   GET_USER_CONVERSION_SUCCESS,
   GET_USER_CONVERSION_ERROR,
-  TOKEN_REFRESH_SUCCESS,
-  TOKEN_REFRESH_ERROR,
   SET_LOGIN_TO_REDIRECT,
   LOG_OUT,
   CHANGE_PERSONAL_CODE,
@@ -28,13 +26,10 @@ import { getGlobalErrorCode } from '../common/errorMessage';
 import { UPDATE_USER_SUCCESS } from '../common/user/constants';
 
 const TOKEN_STORAGE_KEY = 'accessToken';
-const REFRESH_TOKEN_STORAGE_KEY = 'refreshToken';
 const LOGIN_METHOD_STORAGE_KEY = 'loginMethod';
 
 // get saved token if it's there
 const token = (window.sessionStorage && sessionStorage.getItem(TOKEN_STORAGE_KEY)) || null;
-const refreshToken =
-  (window.sessionStorage && sessionStorage.getItem(REFRESH_TOKEN_STORAGE_KEY)) || null;
 const loginMethod =
   (window.sessionStorage && sessionStorage.getItem(LOGIN_METHOD_STORAGE_KEY)) || null;
 
@@ -44,7 +39,6 @@ export const initialState = {
   controlCode: null,
   loadingAuthentication: false,
   token,
-  refreshToken,
   loginMethod,
   error: null,
   user: null,
@@ -60,7 +54,6 @@ export const initialState = {
 function updateSessionStorage(action, loginMethodUsed) {
   if (window.sessionStorage) {
     sessionStorage.setItem(TOKEN_STORAGE_KEY, action.tokens.accessToken);
-    sessionStorage.setItem(REFRESH_TOKEN_STORAGE_KEY, action.tokens.refreshToken);
     if (loginMethodUsed) {
       sessionStorage.setItem(LOGIN_METHOD_STORAGE_KEY, loginMethodUsed);
     }
@@ -98,7 +91,6 @@ export default function loginReducer(state = initialState, action) {
         // reset all state so page is clean when entered again.
         ...state,
         token: action.tokens.accessToken,
-        refreshToken: action.tokens.refreshToken,
         loginMethod: action.method,
         loadingAuthentication: false,
         controlCode: null,
@@ -134,27 +126,9 @@ export default function loginReducer(state = initialState, action) {
         // reset all state so page is clean when entered again.
         ...state,
         token: action.tokens.accessToken,
-        refreshToken: action.tokens.refreshToken,
         loadingAuthentication: false,
         loginMethod: 'idCard',
         error: null,
-      };
-
-    case TOKEN_REFRESH_SUCCESS:
-      updateSessionStorage(action);
-      return {
-        ...state,
-        token: action.tokens.accessToken,
-        refreshToken: action.tokens.refreshToken,
-        error: null,
-      };
-
-    case TOKEN_REFRESH_ERROR:
-      return {
-        ...state,
-        token: null,
-        refreshToken: null,
-        error: (action.error.body || {}).error_description,
       };
 
     case GET_USER_START:
@@ -209,13 +183,11 @@ export default function loginReducer(state = initialState, action) {
     case LOG_OUT:
       if (window.sessionStorage) {
         sessionStorage.removeItem(TOKEN_STORAGE_KEY);
-        sessionStorage.removeItem(REFRESH_TOKEN_STORAGE_KEY);
         sessionStorage.removeItem(LOGIN_METHOD_STORAGE_KEY);
       }
       return {
         ...initialState,
         token: null,
-        refreshToken: null,
         loginMethod: null,
       };
 

@@ -45,7 +45,6 @@ export function login(store: Store, method = 'smartId', token = 'mock token'): v
     type: MOBILE_AUTHENTICATION_SUCCESS,
     tokens: {
       accessToken: token,
-      refreshToken: 'mock refresh token',
     },
     method,
   });

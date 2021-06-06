@@ -24,9 +24,6 @@ import {
   GET_USER_CONVERSION_START,
   GET_USER_CONVERSION_SUCCESS,
   GET_USER_CONVERSION_ERROR,
-  TOKEN_REFRESH_START,
-  TOKEN_REFRESH_SUCCESS,
-  TOKEN_REFRESH_ERROR,
   SET_LOGIN_TO_REDIRECT,
   LOG_OUT,
 } from './constants';
@@ -51,7 +48,6 @@ export function changeEmail(email) {
 }
 
 const LOGIN_COOKIE_TOKEN_NAME = 'token';
-const LOGIN_COOKIE_REFRESH_TOKEN_NAME = 'refreshToken';
 const LOGIN_COOKIE_EMAIL_NAME = 'email';
 const LOGIN_COOKIE_METHOD_NAME = 'loginMethod';
 
@@ -65,7 +61,6 @@ function setCookie(name, value) {
 
 function setLoginCookies(getState) {
   setCookie(LOGIN_COOKIE_TOKEN_NAME, getState().login.token);
-  setCookie(LOGIN_COOKIE_REFRESH_TOKEN_NAME, getState().login.refreshToken);
   setCookie(LOGIN_COOKIE_EMAIL_NAME, getState().login.email);
   setCookie(LOGIN_COOKIE_METHOD_NAME, getState().login.loginMethod);
 }
@@ -96,9 +91,8 @@ export function handleLoginCookies() {
     }
     const tokens = {
       accessToken: getCookie(LOGIN_COOKIE_TOKEN_NAME),
-      refreshToken: getCookie(LOGIN_COOKIE_REFRESH_TOKEN_NAME),
     };
-    if (tokens.accessToken && tokens.refreshToken) {
+    if (tokens.accessToken) {
       const loginMethod = getCookie(LOGIN_COOKIE_METHOD_NAME);
       if (loginMethod === 'mobileId' || loginMethod === 'smartId') {
         dispatch({
@@ -298,18 +292,6 @@ export function getUserConversion() {
       .catch((error) => {
         dispatch({ type: GET_USER_CONVERSION_ERROR, error });
       });
-  };
-}
-
-export function refreshToken() {
-  return (dispatch, getState) => {
-    dispatch({ type: TOKEN_REFRESH_START });
-    return api
-      .refreshTokenWith(getState().login.refreshToken)
-      .then((tokens) => {
-        dispatch({ type: TOKEN_REFRESH_SUCCESS, tokens });
-      })
-      .catch((error) => dispatch({ type: TOKEN_REFRESH_ERROR, error }));
   };
 }
 

@@ -31,10 +31,6 @@ export const GET_USER_CONVERSION_START = withPrefix('GET_USER_CONVERSION_START')
 export const GET_USER_CONVERSION_SUCCESS = withPrefix('GET_USER_CONVERSION_SUCCESS');
 export const GET_USER_CONVERSION_ERROR = withPrefix('GET_USER_CONVERSION_ERROR');
 
-export const TOKEN_REFRESH_START = withPrefix('TOKEN_REFRESH_START');
-export const TOKEN_REFRESH_SUCCESS = withPrefix('TOKEN_REFRESH_SUCCESS');
-export const TOKEN_REFRESH_ERROR = withPrefix('TOKEN_REFRESH_ERROR');
-
 export const LOG_OUT = withPrefix('LOG_OUT');
 
 export const SET_LOGIN_TO_REDIRECT = withPrefix('SET_LOGIN_TO_REDIRECT');
