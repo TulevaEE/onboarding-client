@@ -21,7 +21,7 @@ import { AccountSummaryLoader } from './AccountSummary/AccountSummary';
 const noop = () => null;
 
 export class AccountPage extends Component {
-  componentDidMount() {
+  componentDidUpdate() {
     this.getData();
   }
 
