@@ -67,8 +67,8 @@ test('pension summary table is shown', async () => {
   const secondPillarRow = getRow('II Pillar');
   expect(within(secondPillarRow).getByText('12 345.67 €')).toBeInTheDocument();
   expect(within(secondPillarRow).getByText('0.00 €')).toBeInTheDocument();
-  expect(within(secondPillarRow).getByText('2 654.33 €')).toBeInTheDocument();
-  expect(within(secondPillarRow).getByText('15 000.00 €')).toBeInTheDocument();
+  expect(within(secondPillarRow).getByText('102 654.33 €')).toBeInTheDocument();
+  expect(within(secondPillarRow).getByText('115 000.00 €')).toBeInTheDocument();
 
   const thirdPillarRow = getRow('III Pillar');
   expect(within(thirdPillarRow).getByText('9 876.54 €')).toBeInTheDocument();
@@ -85,6 +85,6 @@ test('pension summary table is shown', async () => {
   const totalRow = getRow('Total');
   expect(within(totalRow).getByText('23 222.21 €')).toBeInTheDocument();
   expect(within(totalRow).getByText('0.00 €')).toBeInTheDocument();
-  expect(within(totalRow).getByText('-1 645.07 €')).toBeInTheDocument();
-  expect(within(totalRow).getByText('21 577.14 €')).toBeInTheDocument();
+  expect(within(totalRow).getByText('98 354.93 €')).toBeInTheDocument();
+  expect(within(totalRow).getByText('121 577.14 €')).toBeInTheDocument();
 });
