@@ -7,10 +7,6 @@ import mixpanel from 'mixpanel-browser';
 import { Flow } from './Flow';
 import StepTitle from './StepTitle';
 
-jest.mock('mixpanel-browser', () => ({
-  track: jest.fn(),
-}));
-
 const FirstComponent = () => <div>First</div>;
 const SecondComponent = () => <div>Second</div>;
 const ThirdComponent = () => <div>Third</div>;

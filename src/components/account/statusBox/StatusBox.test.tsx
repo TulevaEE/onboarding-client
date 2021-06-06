@@ -8,7 +8,6 @@ import { initializeConfiguration } from '../../config/config';
 import { StatusBox } from './StatusBox';
 import { ApplicationStatus, ApplicationType } from '../../common/apiModels';
 
-jest.mock('mixpanel-browser', () => ({ track: jest.fn() }));
 jest.unmock('retranslate');
 
 describe('Status Box', () => {
