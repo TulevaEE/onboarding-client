@@ -32,10 +32,11 @@ const REFRESH_TOKEN_STORAGE_KEY = 'refreshToken';
 const LOGIN_METHOD_STORAGE_KEY = 'loginMethod';
 
 // get saved token if it's there
-const token = (window.localStorage && localStorage.getItem(TOKEN_STORAGE_KEY)) || null;
+const token = (window.sessionStorage && sessionStorage.getItem(TOKEN_STORAGE_KEY)) || null;
 const refreshToken =
-  (window.localStorage && localStorage.getItem(REFRESH_TOKEN_STORAGE_KEY)) || null;
-const loginMethod = (window.localStorage && localStorage.getItem(LOGIN_METHOD_STORAGE_KEY)) || null;
+  (window.sessionStorage && sessionStorage.getItem(REFRESH_TOKEN_STORAGE_KEY)) || null;
+const loginMethod =
+  (window.sessionStorage && sessionStorage.getItem(LOGIN_METHOD_STORAGE_KEY)) || null;
 
 export const initialState = {
   phoneNumber: '',
@@ -56,12 +57,12 @@ export const initialState = {
   email: null,
 };
 
-function updateLocalStorage(action, loginMethodUsed) {
-  if (window.localStorage) {
-    localStorage.setItem(TOKEN_STORAGE_KEY, action.tokens.accessToken);
-    localStorage.setItem(REFRESH_TOKEN_STORAGE_KEY, action.tokens.refreshToken);
+function updateSessionStorage(action, loginMethodUsed) {
+  if (window.sessionStorage) {
+    sessionStorage.setItem(TOKEN_STORAGE_KEY, action.tokens.accessToken);
+    sessionStorage.setItem(REFRESH_TOKEN_STORAGE_KEY, action.tokens.refreshToken);
     if (loginMethodUsed) {
-      localStorage.setItem(LOGIN_METHOD_STORAGE_KEY, loginMethodUsed);
+      sessionStorage.setItem(LOGIN_METHOD_STORAGE_KEY, loginMethodUsed);
     }
   }
 }
@@ -91,7 +92,7 @@ export default function loginReducer(state = initialState, action) {
       };
 
     case MOBILE_AUTHENTICATION_SUCCESS:
-      updateLocalStorage(action, action.method);
+      updateSessionStorage(action, action.method);
 
       return {
         // reset all state so page is clean when entered again.
@@ -128,7 +129,7 @@ export default function loginReducer(state = initialState, action) {
       return { ...state, loadingAuthentication: true, error: null };
 
     case ID_CARD_AUTHENTICATION_SUCCESS:
-      updateLocalStorage(action, 'idCard');
+      updateSessionStorage(action, 'idCard');
       return {
         // reset all state so page is clean when entered again.
         ...state,
@@ -140,7 +141,7 @@ export default function loginReducer(state = initialState, action) {
       };
 
     case TOKEN_REFRESH_SUCCESS:
-      updateLocalStorage(action);
+      updateSessionStorage(action);
       return {
         ...state,
         token: action.tokens.accessToken,
@@ -206,10 +207,10 @@ export default function loginReducer(state = initialState, action) {
       };
 
     case LOG_OUT:
-      if (window.localStorage) {
-        localStorage.removeItem(TOKEN_STORAGE_KEY);
-        localStorage.removeItem(REFRESH_TOKEN_STORAGE_KEY);
-        localStorage.removeItem(LOGIN_METHOD_STORAGE_KEY);
+      if (window.sessionStorage) {
+        sessionStorage.removeItem(TOKEN_STORAGE_KEY);
+        sessionStorage.removeItem(REFRESH_TOKEN_STORAGE_KEY);
+        sessionStorage.removeItem(LOGIN_METHOD_STORAGE_KEY);
       }
       return {
         ...initialState,
