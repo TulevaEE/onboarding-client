@@ -50,6 +50,8 @@ export const ThirdPillarPayment = ({
           <br />
           <b>EE141010220263146225</b> - SEB
           <br />
+          <b>EE547700771002908125</b> - LHV
+          <br />
           <b>EE961700017004379157</b> - Luminor
         </td>
       </tr>
@@ -70,6 +72,11 @@ export const ThirdPillarPayment = ({
         </td>
       </tr>
     </table>
+
+<p className="mt-3">
+              <Message>thirdPillarPayment.paymentQuestion</Message>
+    </p>
+
 
     <div>
       <Link to={nextPath}>
