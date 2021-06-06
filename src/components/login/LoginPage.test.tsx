@@ -16,7 +16,6 @@ import {
   idCardAuthenticationBackend,
 } from '../../test/backend';
 
-jest.mock('mixpanel-browser', () => ({ track: jest.fn() }));
 jest.unmock('retranslate');
 
 describe('When a user is logging in', () => {
