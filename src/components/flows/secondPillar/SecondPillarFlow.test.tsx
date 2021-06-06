@@ -1,10 +1,11 @@
 import React from 'react';
 import { setupServer } from 'msw/node';
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Route } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
 // eslint-disable-next-line import/no-named-as-default
+import { rest } from 'msw';
 import { initializeConfiguration } from '../../config/config';
 import LoggedInApp from '../../LoggedInApp';
 import { createDefaultStore, login, renderWrapped } from '../../../test/utils';
@@ -17,6 +18,7 @@ import {
   returnsBackend,
   userCapitalBackend,
   applicationsBackend,
+  smartIdSigningBackend,
 } from '../../../test/backend';
 
 jest.unmock('retranslate');
@@ -53,8 +55,33 @@ beforeEach(async () => {
   history.push('/2nd-pillar-flow');
 });
 
-test('user data is shown', async () => {
+test('2nd pillar flow allows moving all external pension to main Tuleva pension fund', async () => {
   await screen.findByText('Transfer my pension to Tuleva');
 
-  // TODO: Add tests for typical use case (whole 2nd pillar from external fund to Tuleva)
-});
+  userEvent.click(screen.getByRole('button', { name: 'Next step' }));
+
+  const selectionSentence = await screen.findByText(/I wish to transfer future fund payments to:/i);
+  expect(
+    within(selectionSentence).getByText('Tuleva World Stocks Pension Fund'),
+  ).toBeInTheDocument();
+
+  const signButton = screen.getByRole('button', { name: 'Sign and send mandate' });
+  expect(signButton).toBeDisabled();
+
+  const confirmationCheckbox = screen.getByRole('checkbox', { name: /I confirm/i });
+  userEvent.click(confirmationCheckbox);
+  expect(signButton).toBeEnabled();
+
+  server.use(
+    rest.post('http://localhost/v1/mandates', (req, res, ctx) => {
+      return res(ctx.json({ id: 1 }));
+    }),
+  );
+  smartIdSigningBackend(server);
+
+  userEvent.click(signButton);
+
+  await screen.findByRole('heading', { name: 'Application finished' }, { timeout: 10_000 });
+
+  // TODO: Consider testing mandate download
+}, 20_000);

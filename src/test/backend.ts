@@ -288,7 +288,7 @@ export function pensionAccountStatementBackend(server: SetupServerApi): void {
             fund: {
               fundManager: { id: 5, name: 'Tuleva' },
               isin: 'EE3600109435',
-              name: 'Tuleva Maailma Aktsiate Pensionifond',
+              name: 'Tuleva World Stocks Pension Fund',
               managementFeeRate: 0.0034,
               pillar: 2,
               ongoingChargesFigure: 0.0039,
@@ -388,7 +388,7 @@ export function fundsBackend(server: SetupServerApi): void {
           {
             fundManager: { id: 5, name: 'Tuleva' },
             isin: 'EE3600109435',
-            name: 'Tuleva Maailma Aktsiate Pensionifond',
+            name: 'Tuleva World Stocks Pension Fund',
             managementFeeRate: 0.0034,
             nav: 0.87831,
             volume: 253616160.18811,
