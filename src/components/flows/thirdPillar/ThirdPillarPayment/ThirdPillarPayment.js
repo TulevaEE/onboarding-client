@@ -73,10 +73,9 @@ export const ThirdPillarPayment = ({
       </tr>
     </table>
 
-<p className="mt-3">
-              <Message>thirdPillarPayment.paymentQuestion</Message>
+    <p className="mt-3">
+      <Message>thirdPillarPayment.paymentQuestion</Message>
     </p>
-
 
     <div>
       <Link to={nextPath}>
