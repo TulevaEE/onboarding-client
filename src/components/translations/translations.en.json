@@ -351,7 +351,7 @@
   "confirmThirdPillarMandate.preview": "Preview",
   "confirmThirdPillarMandate.back": "Go back",
 
-  "thirdPillarPayment.title": "How to pay?",
+  "thirdPillarPayment.title": "Payment instructions",
   "thirdPillarPayment.description": "Make a payment {{ emphasized }}.",
   "thirdPillarPayment.descriptionEmphasized": "in your internet bank with following details:",
   "thirdPillarPayment.accountName": "Pay to",
