@@ -96,6 +96,8 @@ export const LoginPage = ({
 
 const noop = () => null;
 
+export const loginPath = '/login';
+
 LoginPage.defaultProps = {
   onPhoneNumberChange: noop,
   onPersonalCodeChange: noop,

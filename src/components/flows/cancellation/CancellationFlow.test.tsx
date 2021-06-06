@@ -19,6 +19,7 @@ import {
 
 jest.mock('mixpanel-browser', () => ({ track: jest.fn() }));
 jest.mock('downloadjs');
+jest.unmock('retranslate');
 
 describe('When a user is cancelling an application', () => {
   const server = setupServer();
@@ -56,20 +57,24 @@ describe('When a user is cancelling an application', () => {
   });
 
   test('the application being cancelled is shown', async () => {
-    expect(await screen.findByText('applications.type.earlyWithdrawal.title')).toBeInTheDocument();
+    expect(
+      await screen.findByText('Second pillar early withdrawal application'),
+    ).toBeInTheDocument();
     expect(screen.getByText(testApplication().details.depositAccountIBAN)).toBeInTheDocument();
 
     // no cancellation button shown in the card
-    expect(screen.queryByText('applications.cancel')).toBeNull();
+    expect(screen.queryByText('Cancel application')).toBeNull();
   });
 
   test('a cancellation mandate can be created and signed', async () => {
     const cancellation = cancellationBackend(server);
     smartIdSigningBackend(server);
-    expect(await screen.findByText('applications.type.earlyWithdrawal.title')).toBeInTheDocument();
+    expect(
+      await screen.findByText('Second pillar early withdrawal application'),
+    ).toBeInTheDocument();
 
     expect(cancellation.cancellationCreated).toBe(false);
-    fireEvent.click(screen.getByText('confirm.mandate.sign'));
+    fireEvent.click(screen.getByText('Sign and send mandate'));
 
     await waitFor(() => {
       expect(screen.getByText('9876')).toBeInTheDocument(); // signing code is shown
@@ -80,10 +85,12 @@ describe('When a user is cancelling an application', () => {
   test('a preview can be downloaded of the cancellation mandate', async () => {
     cancellationBackend(server);
     mandatePreviewBackend(server);
-    expect(await screen.findByText('applications.type.earlyWithdrawal.title')).toBeInTheDocument();
+    expect(
+      await screen.findByText('Second pillar early withdrawal application'),
+    ).toBeInTheDocument();
 
     expect(download).not.toHaveBeenCalled();
-    fireEvent.click(screen.getByText('confirm.mandate.preview'));
+    fireEvent.click(screen.getByText('Preview'));
     await waitFor(() => {
       expect(download).toHaveBeenCalledWith(
         expect.any(Blob),
@@ -96,18 +103,20 @@ describe('When a user is cancelling an application', () => {
   test('a success screen is shown that lets the user navigate back', async () => {
     cancellationBackend(server);
     smartIdSigningBackend(server);
-    expect(await screen.findByText('applications.type.earlyWithdrawal.title')).toBeInTheDocument();
+    expect(
+      await screen.findByText('Second pillar early withdrawal application'),
+    ).toBeInTheDocument();
 
-    fireEvent.click(screen.getByText('confirm.mandate.sign'));
+    fireEvent.click(screen.getByText('Sign and send mandate'));
 
     await waitFor(
       () => {
-        expect(screen.getByText('cancellation.flow.success.title')).toBeInTheDocument();
+        expect(screen.getByText('Application cancelled')).toBeInTheDocument();
       },
       { timeout: 1500 },
     );
 
-    fireEvent.click(screen.getByText('cancellation.flow.success.back'));
+    fireEvent.click(screen.getByText('Back to account'));
     await waitFor(() => {
       expect(screen.getByText(/Mock account page/)).toBeInTheDocument();
     });
@@ -117,19 +126,21 @@ describe('When a user is cancelling an application', () => {
     cancellationBackend(server);
     smartIdSigningBackend(server);
     mandateDownloadBackend(server);
-    expect(await screen.findByText('applications.type.earlyWithdrawal.title')).toBeInTheDocument();
+    expect(
+      await screen.findByText('Second pillar early withdrawal application'),
+    ).toBeInTheDocument();
 
-    fireEvent.click(screen.getByText('confirm.mandate.sign'));
+    fireEvent.click(screen.getByText('Sign and send mandate'));
 
     await waitFor(
       () => {
-        expect(screen.getByText('cancellation.flow.success.title')).toBeInTheDocument();
+        expect(screen.getByText('Application cancelled')).toBeInTheDocument();
       },
       { timeout: 1500 },
     );
 
     expect(download).not.toHaveBeenCalled();
-    fireEvent.click(screen.getByText('cancellation.flow.success.download'));
+    fireEvent.click(screen.getByText('Download'));
     await waitFor(() => {
       expect(download).toHaveBeenCalledWith(
         expect.any(Blob),
