@@ -26,7 +26,7 @@ class LoginTabs extends Component {
     return (
       <div className="tabs">
         <ol className="tab-list">
-          {children.map((child) => {
+          {React.Children.map(children, (child) => {
             const { label, hideOnMobile } = child.props;
 
             return (
@@ -41,7 +41,7 @@ class LoginTabs extends Component {
           })}
         </ol>
         <div className="tab-content">
-          {children.map((child) => {
+          {React.Children.map(children, (child) => {
             if (child.props.label !== activeTab) {
               return undefined;
             }

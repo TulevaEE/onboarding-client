@@ -7,6 +7,8 @@ import { ConnectedRouter, routerMiddleware } from 'connected-react-router';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import React from 'react';
 import { render, RenderResult } from '@testing-library/react';
+import { TranslationProvider } from 'retranslate';
+import englishMessages from '../components/translations';
 import { MOBILE_AUTHENTICATION_SUCCESS } from '../components/login/constants';
 import createRootReducer from '../reducers';
 
@@ -18,11 +20,13 @@ export function renderWrapped(
   store = createDefaultStore(history as any),
 ): RenderResult {
   const wrapper = (component: React.ReactNode) => (
-    <ReduxProvider store={store}>
-      <QueryClientProvider client={new QueryClient()}>
-        <ConnectedRouter history={history}>{component}</ConnectedRouter>
-      </QueryClientProvider>
-    </ReduxProvider>
+    <TranslationProvider language="en" messages={englishMessages}>
+      <ReduxProvider store={store}>
+        <QueryClientProvider client={new QueryClient()}>
+          <ConnectedRouter history={history}>{component}</ConnectedRouter>
+        </QueryClientProvider>
+      </ReduxProvider>
+    </TranslationProvider>
   );
   const rendered = render(wrapper(children));
   const rerender = (component: React.ReactNode) => rendered.rerender(wrapper(component));

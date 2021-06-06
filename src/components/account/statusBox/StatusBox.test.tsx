@@ -9,6 +9,7 @@ import { StatusBox } from './StatusBox';
 import { ApplicationStatus, ApplicationType } from '../../common/apiModels';
 
 jest.mock('mixpanel-browser', () => ({ track: jest.fn() }));
+jest.unmock('retranslate');
 
 describe('Status Box', () => {
   const server = setupServer();
@@ -76,12 +77,12 @@ describe('Status Box', () => {
     render();
   });
 
-  const to2ndPillarFlow = 'account.status.choice.join.tuleva.2';
-  const pay3ndPillarFlow = 'account.status.choice.pay.tuleva.3';
-  const toMemberFlow = 'account.status.choice.join.tuleva';
+  const to2ndPillarFlow = 'Edit';
+  const pay3ndPillarFlow = 'Make payment';
+  const toMemberFlow = 'Sign up';
 
   it('renders status box title', async () => {
-    expect(await screen.findByText('account.status.choices')).toBeInTheDocument();
+    expect(await screen.findByText('Your choices')).toBeInTheDocument();
   });
 
   it('renders 2nd pillar cta', async () => {
@@ -98,7 +99,7 @@ describe('Status Box', () => {
       { fundManager: { name: 'Tuleva' }, activeFund: true, pillar: 2, name: 'Fond 2' },
     ];
     renderComponent(<StatusBox {...props} secondPillarFunds={secondPillarFunds} />);
-    expect(await screen.findByText('account.status.choice.join.tuleva.2')).toBeInTheDocument();
+    expect(await screen.findByText('Edit')).toBeInTheDocument();
   });
 
   it('renders become Tuleva member when not member', async () => {
@@ -116,9 +117,7 @@ describe('Status Box', () => {
     };
     const conversion = { ...props.conversion, secondPillar };
     renderComponent(<StatusBox {...props} conversion={conversion} />);
-    expect(
-      await screen.findByText('account.status.choice.pillar.second.withdraw'),
-    ).toBeInTheDocument();
+    expect(await screen.findByText('You are leaving II pillar')).toBeInTheDocument();
   });
 
   it('renders pending withdrawal button when user has a pending withdrawal', async () => {
@@ -132,9 +131,7 @@ describe('Status Box', () => {
     };
     const conversion = { ...props.conversion, secondPillar };
     renderComponent(<StatusBox {...props} conversion={conversion} />);
-    expect(
-      await screen.findByText('account.status.choice.pillar.second.withdraw.cancel'),
-    ).toBeInTheDocument();
+    expect(await screen.findByText('Cancel application')).toBeInTheDocument();
   });
 
   it('renders pending withdrawal button when user has a pending withdrawal even when they do not have Tuleva II pillar', async () => {
@@ -148,8 +145,6 @@ describe('Status Box', () => {
     };
     const conversion = { ...props.conversion, secondPillar };
     renderComponent(<StatusBox {...props} conversion={conversion} />);
-    expect(
-      await screen.findByText('account.status.choice.pillar.second.withdraw.cancel'),
-    ).toBeInTheDocument();
+    expect(await screen.findByText('Cancel application')).toBeInTheDocument();
   });
 });

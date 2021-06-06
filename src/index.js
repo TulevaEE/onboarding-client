@@ -27,6 +27,7 @@ import { actions as thirdPillarActions } from './components/thirdPillar';
 
 import './polyfills';
 import LoggedInApp from './components/LoggedInApp';
+import { loginPath } from './components/login/LoginPage';
 
 const history = createBrowserHistory();
 
@@ -105,7 +106,7 @@ export class App extends Component {
             <ReduxProvider store={store}>
               <ConnectedRouter history={history}>
                 <Switch>
-                  <Route path="/login" component={LoginPage} />
+                  <Route path={loginPath} component={LoginPage} />
                   <Route path="/terms-of-use" component={TermsOfUse} />
                   <PrivateRoute exact path="" component={LoggedInApp} />
                 </Switch>
