@@ -25,7 +25,7 @@ import LoginPage, { actions as loginActions } from './components/login';
 import TermsOfUse from './components/termsOfUse';
 import { actions as thirdPillarActions } from './components/thirdPillar';
 
-import './common/polyfills';
+import './polyfills';
 import LoggedInApp from './components/LoggedInApp';
 
 const history = createBrowserHistory();
