@@ -60,7 +60,9 @@ test('user data is shown', async () => {
 
 test('pension summary table is shown', async () => {
   // eslint-disable-next-line testing-library/no-node-access
-  const summarySection = (await screen.findByText('Your pension summary')).parentElement;
+  const summarySection = screen.getByText('Your pension summary').parentElement;
+
+  await within(summarySection).findByRole('cell', { name: 'Member capital' });
   // eslint-disable-next-line testing-library/no-node-access
   const getRow = (name: string) => within(summarySection).getByRole('cell', { name }).parentElement;
 

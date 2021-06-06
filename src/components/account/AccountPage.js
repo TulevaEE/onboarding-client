@@ -16,11 +16,12 @@ import AccountSummary from './AccountSummary';
 import { ApplicationSection } from './ApplicationSection/ApplicationSection';
 import { ACCOUNT_PATH, AML_PATH } from '../LoggedInApp';
 import { isTuleva } from '../common/utils';
+import { AccountSummaryLoader } from './AccountSummary/AccountSummary';
 
 const noop = () => null;
 
 export class AccountPage extends Component {
-  componentDidMount() {
+  componentDidUpdate() {
     this.getData();
   }
 
@@ -57,16 +58,17 @@ export class AccountPage extends Component {
         <div className="row mt-5">
           <GreetingBar />
         </div>
-        <div className="mt-5">{secondPillarSourceFunds && conversion && <StatusBox />}</div>
+        <div className="mt-5">
+          <StatusBox />
+        </div>
 
         {error && error.body ? <ErrorMessage errors={error.body} /> : ''}
-        {loadingCurrentBalance && <Loader className="align-middle" />}
 
-        {secondPillarSourceFunds && thirdPillarSourceFunds && conversion && (
-          <div className="mt-5">
-            <p className="mb-4 lead">
-              <Message>accountSummary.heading</Message>
-            </p>
+        <div className="mt-5">
+          <p className="mb-4 lead">
+            <Message>accountSummary.heading</Message>
+          </p>
+          {secondPillarSourceFunds && thirdPillarSourceFunds && conversion ? (
             <AccountSummary
               secondPillarContributions={conversion.secondPillar.contribution.total}
               secondPillarSubtractions={conversion.secondPillar.subtraction.total}
@@ -76,8 +78,10 @@ export class AccountPage extends Component {
               secondPillarSourceFunds={secondPillarSourceFunds}
               thirdPillarSourceFunds={thirdPillarSourceFunds}
             />
-          </div>
-        )}
+          ) : (
+            <AccountSummaryLoader />
+          )}
+        </div>
 
         <ReturnComparison />
 

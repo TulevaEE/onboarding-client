@@ -55,7 +55,7 @@ export class LoggedInApp extends PureComponent {
   }
 
   render() {
-    const { user, loading, onLogout, userDataExists } = this.props;
+    const { user, loading, onLogout } = this.props;
 
     return (
       <div className="container mt-4">
@@ -63,7 +63,7 @@ export class LoggedInApp extends PureComponent {
           <div className="col-lg-10">
             <Header user={user} loading={loading} onLogout={onLogout} />
             <Switch>
-              {userDataExists && <Route path={ACCOUNT_PATH} component={AccountPage} />}
+              <Route path={ACCOUNT_PATH} component={AccountPage} />
               <Route path={AML_PATH} component={AmlPage} />
               <Route path="/join" component={SignUpPage} />
               <Route path="/contact-details" component={ContactDetailsPage} />
@@ -86,7 +86,6 @@ LoggedInApp.defaultProps = {
   user: null,
   hasError: false,
   loading: false,
-  userDataExists: false,
   shouldLoadAllUserData: false,
   shouldLoadSourceAndTargetFunds: false,
 
@@ -102,7 +101,6 @@ LoggedInApp.propTypes = {
   user: Types.shape({ name: Types.string }),
   hasError: Types.bool,
   loading: Types.bool,
-  userDataExists: Types.bool,
   shouldLoadAllUserData: Types.bool,
   shouldLoadSourceAndTargetFunds: Types.bool,
 
@@ -120,7 +118,6 @@ const mapStateToProps = (state) => ({
   },
   hasError: !!(state.login.userConversionError || state.login.userError),
   loading: state.login.loadingUser || state.login.loadingUserConversion,
-  userDataExists: !!state.login.user,
   shouldLoadAllUserData:
     state.login.token &&
     (!(state.login.user || state.login.loadingUser) ||

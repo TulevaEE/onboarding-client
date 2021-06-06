@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { StatusBoxRow } from './statusBoxRow/StatusBoxRow';
 import { usePendingApplications } from '../../common/apiHooks';
+import { Shimmer } from '../../common/shimmer/Shimmer';
 import { Application, ApplicationType } from '../../common/apiModels';
 
 interface UserConversion {
@@ -34,7 +35,7 @@ interface Fund {
 
 interface StatusBoxType {
   memberNumber: number | null;
-  conversion: UserConversion;
+  conversion?: UserConversion;
   loading: boolean;
   secondPillarFunds: Fund[];
   thirdPillarFunds: Fund[];
@@ -72,6 +73,38 @@ const SecondPillarButton: React.FunctionComponent<{
   return <></>;
 };
 
+const StatusBoxLoader: React.FunctionComponent = () => {
+  return (
+    <>
+      <StatusBoxTitle />
+      <div className="card card-secondary">
+        <div className="d-flex p-2 status-box-row tv-table__row">
+          <Shimmer height={52} />
+        </div>
+        <div className="d-flex p-2 status-box-row tv-table__row">
+          <Shimmer height={52} />
+        </div>
+        <div className="d-flex p-2 status-box-row">
+          <Shimmer height={52} />
+        </div>
+      </div>
+      <div className="mt-4">
+        <Shimmer height={16} />
+      </div>
+    </>
+  );
+};
+
+const StatusBoxTitle: React.FunctionComponent = () => {
+  return (
+    <div className="row">
+      <div className="col-md-6 mb-4 lead">
+        <Message>account.status.choices</Message>
+      </div>
+    </div>
+  );
+};
+
 export const StatusBox: React.FunctionComponent<StatusBoxType> = ({
   conversion,
   memberNumber = null,
@@ -79,6 +112,9 @@ export const StatusBox: React.FunctionComponent<StatusBoxType> = ({
   secondPillarFunds = [],
   thirdPillarFunds = [],
 }) => {
+  if (!conversion || !secondPillarFunds || !thirdPillarFunds) {
+    return <StatusBoxLoader />;
+  }
   const pendingWithdrawal = usePendingWithdrawalApplication();
 
   const joinTuleva2 = !(
@@ -116,11 +152,7 @@ export const StatusBox: React.FunctionComponent<StatusBoxType> = ({
 
   return (
     <>
-      <div className="row">
-        <div className="col-md-6 mb-4 lead">
-          <Message>account.status.choices</Message>
-        </div>
-      </div>
+      <StatusBoxTitle />
 
       <div className="card card-secondary">
         <StatusBoxRow
