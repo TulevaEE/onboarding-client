@@ -3,8 +3,7 @@ orbs:
   aws-cli: circleci/aws-cli@1.4.0
   node: circleci/node@4.1.0
 references:
-  workspace_root: &workspace_root
-    /tmp/workspace
+  workspace_root: &workspace_root /tmp/workspace
   attach_workspace: &attach_workspace
     attach_workspace:
       at: *workspace_root
@@ -52,49 +51,6 @@ jobs:
           name: Deploy master to S3
           command: aws s3 cp /tmp/workspace/build s3://pension.tuleva.ee --recursive
 
-  build-staging:
-    executor:
-      name: node/default
-      tag: '13.14'
-    steps:
-      - *attach_workspace
-      - checkout
-      - node/install-packages
-      - run:
-          name: Build Staging
-          command: npm run build:staging
-      - run:
-          name: Copy assets
-          command: |
-            set -exu
-            mv build /tmp/workspace
-      - persist_to_workspace:
-          root: *workspace_root
-          paths:
-            - build
-  test-staging:
-    executor:
-      name: node/default
-      tag: '13.14'
-    steps:
-      - checkout
-      - node/install-packages
-      - run:
-          name: Lint staging
-          command: npm run lint
-      - run:
-          name: Run tests staging
-          command: npm test -- --maxWorkers=2
-  deploy-staging:
-    executor: aws-cli/default
-    steps:
-      - checkout
-      - *attach_workspace
-      - aws-cli/setup
-      - run:
-          name: Deploy master to S3 staging
-          command: aws s3 cp /tmp/workspace/build s3://staging.tuleva.ee --recursive
-
 workflows:
   version: 2
   onboarding-client-production:
@@ -106,20 +62,6 @@ workflows:
       - deploy:
           requires:
             - test
-          context: aws
-          filters:
-            branches:
-              only: master
-
-  onboarding-client-staging:
-    jobs:
-      - build-staging
-      - test-staging:
-          requires:
-            - build-staging
-      - deploy-staging:
-          requires:
-            - test-staging
           context: aws
           filters:
             branches:
