@@ -22,7 +22,7 @@ describe('Status Box', () => {
       status: ApplicationStatus.PENDING,
       creationTime: new Date('December 17, 1995 03:24:00').toISOString(),
       details: {
-        withdrawalTime: new Date('January 2, 1995 03:24:00').toISOString(),
+        fulfillmentDate: new Date('January 2, 1995 03:24:00').toISOString(),
         depositAccountIBAN: 'EE123123123',
       },
     };

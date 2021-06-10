@@ -41,16 +41,18 @@ export type ResumeContributionsApplication = BaseApplication<
 export type EarlyWithdrawalApplication = BaseApplication<
   ApplicationType.EARLY_WITHDRAWAL,
   {
-    withdrawalTime: string;
     depositAccountIBAN: string;
+    cancellationDeadline: string;
+    fulfillmentDate: string;
   }
 >;
 
 export type WithdrawalApplication = BaseApplication<
   ApplicationType.WITHDRAWAL,
   {
-    withdrawalTime: string;
     depositAccountIBAN: string;
+    cancellationDeadline: string;
+    fulfillmentDate: string;
   }
 >;
 

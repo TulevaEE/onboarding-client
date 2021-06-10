@@ -76,7 +76,7 @@ const EarlyWithdrawalCard: React.FunctionComponent<{
       definitions={[
         {
           key: <Message>applications.type.earlyWithdrawal.time</Message>,
-          value: formatMonth(application.details.withdrawalTime),
+          value: formatMonth(application.details.fulfillmentDate),
         },
         {
           key: <Message>applications.type.earlyWithdrawal.account</Message>,
@@ -100,7 +100,7 @@ const WithdrawalCard: React.FunctionComponent<{
       definitions={[
         {
           key: <Message>applications.type.withdrawal.time</Message>,
-          value: formatMonth(application.details.withdrawalTime),
+          value: formatMonth(application.details.fulfillmentDate),
         },
         {
           key: <Message>applications.type.earlyWithdrawal.account</Message>,

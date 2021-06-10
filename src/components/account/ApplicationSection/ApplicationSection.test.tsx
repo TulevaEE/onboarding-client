@@ -122,8 +122,8 @@ describe('Application section', () => {
     const formattedCreationTime = '17.12.1995';
     expect(screen.getByText(formattedCreationTime)).toBeInTheDocument();
 
-    const formattedWithdrawalTime = '01.1995';
-    expect(screen.getByText(formattedWithdrawalTime)).toBeInTheDocument();
+    const formattedFulfillmentDate = '01.1995';
+    expect(screen.getByText(formattedFulfillmentDate)).toBeInTheDocument();
 
     expect(screen.getByText(application.details.depositAccountIBAN)).toBeInTheDocument();
   });
@@ -136,8 +136,8 @@ describe('Application section', () => {
     const formattedCreationTime = '17.12.1995';
     expect(screen.getByText(formattedCreationTime)).toBeInTheDocument();
 
-    const formattedWithdrawalTime = '01.1995';
-    expect(screen.getByText(formattedWithdrawalTime)).toBeInTheDocument();
+    const formattedFulfillmentDate = '01.1995';
+    expect(screen.getByText(formattedFulfillmentDate)).toBeInTheDocument();
 
     expect(screen.getByText(application.details.depositAccountIBAN)).toBeInTheDocument();
   });
@@ -263,7 +263,7 @@ function getTestApplications() {
       creationTime: new Date('December 17, 1995 03:24:00').toISOString(),
       cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
       details: {
-        withdrawalTime: new Date('January 2, 1995 03:24:00').toISOString(),
+        fulfillmentDate: new Date('January 2, 1995 03:24:00').toISOString(),
         depositAccountIBAN: 'EE123123123',
       },
     },
@@ -274,7 +274,7 @@ function getTestApplications() {
       creationTime: new Date('December 17, 1995 03:24:00').toISOString(),
       cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
       details: {
-        withdrawalTime: new Date('January 2, 1995 03:24:00').toISOString(),
+        fulfillmentDate: new Date('January 2, 1995 03:24:00').toISOString(),
         depositAccountIBAN: 'EE123123123',
       },
     },
