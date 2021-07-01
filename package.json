@@ -71,7 +71,7 @@
     "@wojtekmaj/enzyme-adapter-react-17": "^0.4.1",
     "enzyme": "^3.11.0",
     "eslint-plugin-fp": "^2.3.0",
-    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-import": "^2.23.4",
     "eslint-plugin-jest-dom": "^3.9.0",
     "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-prettier": "^3.3.1",
