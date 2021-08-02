@@ -53,7 +53,7 @@ const TransferApplicationCard: React.FunctionComponent<{
           { key: <Message>applications.type.transfer.targetFund</Message>, value: name },
           {
             key: <Message>applications.type.transfer.amount</Message>,
-            value: application.details.sourceFund.pillar === 3 ? `${amount}` : `${amount * 100}%`,
+            value: application.details.sourceFund.pillar === 3 ? amount : `${amount * 100}%`,
             alignRight: true,
           },
         ]),
