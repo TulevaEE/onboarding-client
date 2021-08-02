@@ -13,6 +13,7 @@ import {
   TransferApplication,
   WithdrawalApplication,
 } from '../../common/apiModels';
+import Percentage from '../../common/Percentage';
 
 export const ApplicationCard: React.FunctionComponent<{
   application: Application;
@@ -53,7 +54,8 @@ const TransferApplicationCard: React.FunctionComponent<{
           { key: <Message>applications.type.transfer.targetFund</Message>, value: name },
           {
             key: <Message>applications.type.transfer.amount</Message>,
-            value: `${amount * 100}%`,
+            value:
+              application.details.sourceFund.pillar === 3 ? amount : <Percentage value={amount} />,
             alignRight: true,
           },
         ]),
