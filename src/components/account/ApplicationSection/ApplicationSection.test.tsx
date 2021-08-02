@@ -61,13 +61,13 @@ describe('Application section', () => {
   });
 
   it('renders the title when there are pending applications', async () => {
-    mockApplications([testApplications.transfer]);
+    mockApplications([testApplications.transfer2Pillar]);
     render();
     expect(await screen.findByText('applications.title')).toBeInTheDocument();
   });
 
-  it('renders transfer applications successfully', async () => {
-    const application = testApplications.transfer;
+  it('renders 2. pillar transfer applications successfully', async () => {
+    const application = testApplications.transfer2Pillar;
     mockApplications([application]);
     render();
 
@@ -82,6 +82,21 @@ describe('Application section', () => {
     expect(screen.getByText(secondExchangeAmount)).toBeInTheDocument();
     expect(screen.getByText(application.details.exchanges[0].targetFund.name)).toBeInTheDocument();
     expect(screen.getByText(application.details.exchanges[1].targetFund.name)).toBeInTheDocument();
+  });
+
+  it('renders 3. pillar transfer applications successfully', async () => {
+    const application = testApplications.transfer3Pillar;
+    mockApplications([application]);
+    render();
+
+    expect(await screen.findByText('applications.type.transfer.title')).toBeInTheDocument();
+    expect(screen.getByText(application.details.sourceFund.name)).toBeInTheDocument();
+    const formattedCreationTime = '02.08.2021';
+    expect(screen.getByText(formattedCreationTime)).toBeInTheDocument();
+
+    const exchangeAmount = '1310.247';
+    expect(screen.getByText(exchangeAmount)).toBeInTheDocument();
+    expect(screen.getByText(application.details.exchanges[0].targetFund.name)).toBeInTheDocument();
   });
 
   it('renders stop contributions applications successfully', async () => {
@@ -143,7 +158,7 @@ describe('Application section', () => {
   });
 
   it('renders multiple applications successfully', async () => {
-    mockApplications([testApplications.earlyWithdrawal, testApplications.transfer]);
+    mockApplications([testApplications.earlyWithdrawal, testApplications.transfer2Pillar]);
     render();
     expect(await screen.findByText('applications.type.earlyWithdrawal.title')).toBeInTheDocument();
     expect(screen.getByText('applications.type.transfer.title')).toBeInTheDocument();
@@ -166,7 +181,7 @@ describe('Application section', () => {
   it('shows the ability to cancel before the deadline', async () => {
     const date = new Date();
     date.setMonth(date.getMonth() + 1);
-    const application = getTestApplications().transfer;
+    const application = getTestApplications().transfer2Pillar;
     application.cancellationDeadline = date.toISOString();
     mockApplications([application]);
     render();
@@ -179,7 +194,7 @@ describe('Application section', () => {
   it('does not let you cancel after the deadline', async () => {
     const date = new Date();
     date.setFullYear(1995);
-    const application = getTestApplications().transfer;
+    const application = getTestApplications().transfer2Pillar;
     application.cancellationDeadline = date.toISOString();
     mockApplications([application]);
     render();
@@ -215,7 +230,7 @@ describe('Application section', () => {
 
 function getTestApplications() {
   return {
-    transfer: {
+    transfer2Pillar: {
       id: 1234,
       type: ApplicationType.TRANSFER,
       status: ApplicationStatus.PENDING,
@@ -254,6 +269,57 @@ function getTestApplications() {
             amount: 0.02,
           },
         ],
+      },
+    },
+    transfer3Pillar: {
+      id: 3832579,
+      creationTime: '2021-08-01T21:00:00Z',
+      type: 'TRANSFER',
+      status: 'PENDING',
+      details: {
+        sourceFund: {
+          fundManager: {
+            id: 3,
+            name: 'Swedbank',
+          },
+          isin: 'EE3600071049',
+          name: 'Swedbank Pensionifond V3 (Aktsiastrateegia)',
+          managementFeeRate: 0.014,
+          pillar: 3,
+          ongoingChargesFigure: 0.0175,
+          status: 'ACTIVE',
+        },
+        exchanges: [
+          {
+            sourceFund: {
+              fundManager: {
+                id: 3,
+                name: 'Swedbank',
+              },
+              isin: 'EE3600071049',
+              name: 'Swedbank Pensionifond V3 (Aktsiastrateegia)',
+              managementFeeRate: 0.014,
+              pillar: 3,
+              ongoingChargesFigure: 0.0175,
+              status: 'ACTIVE',
+            },
+            targetFund: {
+              fundManager: {
+                id: 1,
+                name: 'Tuleva',
+              },
+              isin: 'EE3600001707',
+              name: 'Tuleva III Samba Pensionifond',
+              managementFeeRate: 0.003,
+              pillar: 3,
+              ongoingChargesFigure: 0.0049,
+              status: 'ACTIVE',
+            },
+            amount: 1310.247,
+          },
+        ],
+        cancellationDeadline: '2021-11-30T21:59:59.999999999Z',
+        fulfillmentDate: '2022-01-03',
       },
     },
     earlyWithdrawal: {
