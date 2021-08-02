@@ -91,7 +91,7 @@ describe('Application section', () => {
 
     expect(await screen.findByText('applications.type.transfer.title')).toBeInTheDocument();
     expect(screen.getByText(application.details.sourceFund.name)).toBeInTheDocument();
-    const formattedCreationTime = '02.08.2021';
+    const formattedCreationTime = '01.08.2021';
     expect(screen.getByText(formattedCreationTime)).toBeInTheDocument();
 
     const exchangeAmount = '1310.247';
@@ -273,7 +273,7 @@ function getTestApplications() {
     },
     transfer3Pillar: {
       id: 3832579,
-      creationTime: '2021-08-01T21:00:00Z',
+      creationTime: '2021-08-01T14:00:00Z',
       type: 'TRANSFER',
       status: 'PENDING',
       details: {
