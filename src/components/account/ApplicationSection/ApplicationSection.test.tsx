@@ -77,7 +77,7 @@ describe('Application section', () => {
     expect(screen.getByText(formattedCreationTime)).toBeInTheDocument();
 
     const firstExchangeAmount = '1%';
-    const secondExchangeAmount = '2%';
+    const secondExchangeAmount = '2.5%';
     expect(screen.getByText(firstExchangeAmount)).toBeInTheDocument();
     expect(screen.getByText(secondExchangeAmount)).toBeInTheDocument();
     expect(screen.getByText(application.details.exchanges[0].targetFund.name)).toBeInTheDocument();
@@ -266,7 +266,7 @@ function getTestApplications() {
               pillar: 2,
               ongoingChargesFigure: 0.0046,
             },
-            amount: 0.02,
+            amount: 0.025,
           },
         ],
       },
