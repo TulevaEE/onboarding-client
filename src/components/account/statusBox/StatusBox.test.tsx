@@ -77,7 +77,7 @@ describe('Status Box', () => {
   });
 
   const to2ndPillarFlow = 'Edit';
-  const pay3ndPillarFlow = 'Make payment';
+  const pay3ndPillarFlow = 'Make a payment';
   const toMemberFlow = 'Sign up';
 
   it('renders status box title', async () => {
