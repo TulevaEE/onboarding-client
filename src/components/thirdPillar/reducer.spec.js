@@ -170,7 +170,12 @@ describe('Third pillar reducer', () => {
 
     expect(state).toEqual({
       ...oldState,
-      sourceFunds: [thirdPillarFund, tulevaThirdPillarFund, movedThirdPillarFund],
+      sourceFunds: [
+        thirdPillarFund,
+        tulevaThirdPillarFund,
+        movedThirdPillarFund,
+        zeroThirdPillarFund,
+      ],
       exchangeExistingUnits: true,
       exchangeableSourceFunds: [thirdPillarFund],
     });

@@ -80,19 +80,6 @@ export interface BaseApplication<Type extends ApplicationType, Details> {
   details: Details;
 }
 
-export interface AccountStatementRow {
-  fund: Fund;
-  value: number;
-  unavailableValue: number;
-  currency: string;
-  pillar: 2 | 3;
-  activeContributions: boolean;
-  contributions: number;
-  subtractions: number;
-  contributionSum: number;
-  profit: number;
-}
-
 export interface Fund {
   isin: string;
   name: string;
