@@ -22,25 +22,20 @@ function toFieldErrors(errorResponse) {
 }
 
 export function updateUserEmailAndPhone(user) {
-  return (dispatch) => {
-    return dispatch(
+  return (dispatch) =>
+    dispatch(
       updateUser({
         email: user.email,
         phoneNumber: user.phoneNumber,
       }),
-    ).then(() => {
-      dispatch({ type: UPDATE_USER_SUCCESS, newUser: user });
-    });
-  };
+    ).then(() => dispatch({ type: UPDATE_USER_SUCCESS, newUser: user }));
 }
 
 export function updateUser(user) {
   return (dispatch, getState) => {
     dispatch({ type: UPDATE_USER_START });
     return updateUserWithToken(user, getState().login.token)
-      .then((newUser) => {
-        dispatch({ type: UPDATE_USER_SUCCESS, newUser });
-      })
+      .then((newUser) => dispatch({ type: UPDATE_USER_SUCCESS, newUser }))
       .catch((errorResponse) => {
         dispatch({ type: UPDATE_USER_ERROR, errorResponse });
         throw new SubmissionError(toFieldErrors(errorResponse));
@@ -49,9 +44,7 @@ export function updateUser(user) {
 }
 
 export function userUpdated() {
-  return (dispatch) => {
-    dispatch({ type: USER_UPDATED });
-  };
+  return (dispatch) => dispatch({ type: USER_UPDATED });
 }
 
 export function createNewMember(user) {
