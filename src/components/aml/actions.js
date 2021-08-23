@@ -31,31 +31,27 @@ export function createAmlChecks(amlChecks) {
     }
     dispatch({ type: CREATE_AML_CHECKS_START });
     return createAmlCheck('RESIDENCY_MANUAL', amlChecks.isResident, {}, getState().login.token)
-      .then(() => {
-        return (
+      .then(
+        () =>
           amlChecks.isPoliticallyExposed != null &&
           createAmlCheck(
             'POLITICALLY_EXPOSED_PERSON',
             amlChecks.isPoliticallyExposed === false,
             {},
             getState().login.token,
-          )
-        );
-      })
-      .then(() => {
-        return (
+          ),
+      )
+      .then(
+        () =>
           amlChecks.occupation != null &&
           createAmlCheck(
             'OCCUPATION',
             !!amlChecks.occupation,
             { occupation: amlChecks.occupation },
             getState().login.token,
-          )
-        );
-      })
-      .then(() => {
-        dispatch({ type: CREATE_AML_CHECKS_SUCCESS });
-      })
+          ),
+      )
+      .then(() => dispatch({ type: CREATE_AML_CHECKS_SUCCESS }))
       .catch((error) => dispatch({ type: CREATE_AML_CHECKS_ERROR, error }));
   };
 }
@@ -64,21 +60,16 @@ export function getAmlChecks() {
   return (dispatch, getState) => {
     dispatch({ type: GET_MISSING_AML_CHECKS_START });
     return getMissingAmlChecks(getState().login.token)
-      .then((missingAmlChecks) => {
-        dispatch({ type: GET_MISSING_AML_CHECKS_SUCCESS, missingAmlChecks });
-      })
+      .then((missingAmlChecks) =>
+        dispatch({ type: GET_MISSING_AML_CHECKS_SUCCESS, missingAmlChecks }),
+      )
       .catch((error) => dispatch({ type: GET_MISSING_AML_CHECKS_ERROR, error }));
   };
 }
 
 export function updateUserAndAml(user) {
-  return (dispatch, getState) => {
-    return dispatch(userActions.updateUser(user))
-      .then(() => {
-        return dispatch(createAmlChecks(getState().aml));
-      })
-      .then(() => {
-        dispatch(getAmlChecks());
-      });
-  };
+  return (dispatch, getState) =>
+    dispatch(userActions.updateUser(user))
+      .then(() => dispatch(createAmlChecks(getState().aml)))
+      .then(() => dispatch(getAmlChecks()));
 }
