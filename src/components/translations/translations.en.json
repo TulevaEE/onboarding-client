@@ -194,7 +194,6 @@
   "new.user.flow.back": "Back",
   "new.user.flow.signup.error.required.field": "This field is required",
   "new.user.flow.signup.error.invalid.email": "The e-mail does not match the standards",
-  "new.user.flow.signup.error.field.length": "Personal code should be 11 digits long",
   "new.user.flow.signup.error.UserAlreadyAMemberException": "Unable to sign up with these credentials.",
   "new.user.flow.signup.error.ValidPersonalCode": "Please check your personal code",
   "new.user.flow.payment.title": "Membership fee",
