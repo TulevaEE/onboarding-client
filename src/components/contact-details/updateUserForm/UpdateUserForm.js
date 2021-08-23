@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Field, formValueSelector, reduxForm } from 'redux-form';
 import { Message, withTranslations } from 'retranslate';
 
-import { requiredField, emailValidator, renderField } from '../../common/form';
+import { emailValidator, renderField, requiredField } from '../../common/form';
 
 export const UpdateUserForm = ({
   handleSubmit,
@@ -469,8 +469,4 @@ const mapStateToProps = (state) => ({
   isCountryEstonia: selector(state, 'address.countryCode') === 'EE',
 });
 
-const connectToRedux = connect(mapStateToProps, null);
-
-const prefilledForm = connectToRedux(translatedForm);
-
-export default prefilledForm;
+export default connect(mapStateToProps, null)(translatedForm);
