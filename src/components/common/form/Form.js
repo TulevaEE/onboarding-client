@@ -17,10 +17,6 @@ export function requiredField(value) {
   return value ? undefined : 'required.field';
 }
 
-export function length11(value) {
-  return value && value.length === 11 ? undefined : 'field.length';
-}
-
 export const renderField = ({
   input,
   type,
