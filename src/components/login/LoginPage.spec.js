@@ -100,7 +100,7 @@ describe('Login page', () => {
     expect(
       component.contains(
         <FacebookProvider appId="1939240566313354">
-          <Like href="http://www.facebook.com/Tuleva.ee" colorScheme="dark" showFaces />
+          <Like href="https://www.facebook.com/Tuleva.ee" colorScheme="dark" showFaces />
         </FacebookProvider>,
       ),
     ).toBe(true);
