@@ -4,6 +4,7 @@ import { Message, useTranslations } from 'retranslate';
 
 import './LoginForm.scss';
 import LoginTabs from './LoginTabs';
+import { Maintenance } from '../Maintenance';
 
 function runWithDefaultPrevention(fn) {
   return (event) => {
@@ -25,19 +26,30 @@ export const LoginForm = ({
 }) => {
   return (
     <div className="row mt-4 pt-4 pb-4 justify-content-center login-form">
-      {renderLoginForm(
-        monthlyThirdPillarContribution,
-        exchangeExistingThirdPillarUnits,
-        onIdCodeSubmit,
-        personalCode,
-        onPersonalCodeChange,
-        onMobileIdSubmit,
-        phoneNumber,
-        onPhoneNumberChange,
-        onAuthenticateWithIdCard,
+      {isMaintenanceWindow() ? (
+        <Maintenance />
+      ) : (
+        renderLoginForm(
+          monthlyThirdPillarContribution,
+          exchangeExistingThirdPillarUnits,
+          onIdCodeSubmit,
+          personalCode,
+          onPersonalCodeChange,
+          onMobileIdSubmit,
+          phoneNumber,
+          onPhoneNumberChange,
+          onAuthenticateWithIdCard,
+        )
       )}
     </div>
   );
+};
+
+const isMaintenanceWindow = () => {
+  const currentTime = new Date();
+  const maintenanceStart = new Date('September 1, 2021 12:00:00');
+  const maintenanceEnd = new Date('September 1, 2021 16:00:00');
+  return currentTime >= maintenanceStart && currentTime <= maintenanceEnd;
 };
 
 const renderLoginForm = (

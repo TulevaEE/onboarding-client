@@ -3,14 +3,16 @@ import { shallow } from 'enzyme';
 import { Message } from 'retranslate';
 
 import { LoginForm } from './LoginForm';
+import { Maintenance } from '../Maintenance';
 
 describe('Login form', () => {
-  let props;
   let component;
 
   beforeEach(() => {
-    props = { translations: { translate: () => '' } };
-    component = shallow(<LoginForm {...props} />);
+    jest.useFakeTimers('modern');
+    jest.setSystemTime(new Date('August 10, 2021 10:36:00'));
+
+    component = shallow(<LoginForm {...{ translations: { translate: () => '' } }} />);
   });
 
   it('shows only the default title when no monthly contribution', () => {
@@ -142,5 +144,16 @@ describe('Login form', () => {
     expect(onAuthenticateWithIdCard).not.toHaveBeenCalled();
     component.find('button').simulate('click');
     expect(onAuthenticateWithIdCard).toHaveBeenCalledTimes(1);
+  });
+
+  describe('when time within maintenance window', () => {
+    beforeEach(() => {
+      jest.setSystemTime(new Date('September 1, 2021 12:36:00'));
+      component = shallow(<LoginForm {...{ translations: { translate: () => '' } }} />);
+    });
+
+    it('shows the maintenance component', () => {
+      expect(component.contains(<Maintenance />)).toBe(true);
+    });
   });
 });
