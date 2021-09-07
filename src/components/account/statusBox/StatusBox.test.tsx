@@ -76,7 +76,7 @@ describe('Status Box', () => {
     render();
   });
 
-  const to2ndPillarFlow = 'Edit';
+  const to2ndPillarFlow = 'Pick Tuleva';
   const pay3ndPillarFlow = 'Make a payment';
   const toMemberFlow = 'Sign up';
 
@@ -98,7 +98,7 @@ describe('Status Box', () => {
       { fundManager: { name: 'Tuleva' }, activeFund: true, pillar: 2, name: 'Fond 2' },
     ];
     renderComponent(<StatusBox {...props} secondPillarFunds={secondPillarFunds} />);
-    expect(await screen.findByText('Edit')).toBeInTheDocument();
+    expect(await screen.findByText(to2ndPillarFlow)).toBeInTheDocument();
   });
 
   it('renders become Tuleva member when not member', async () => {

@@ -242,7 +242,7 @@
   "account.status.choice.pillar.second.withdraw.cancel": "Cancel application",
   "account.status.choice.pillar.third": "III pillar",
   "account.status.choice.tuleva": "Tuleva",
-  "account.status.choice.join.tuleva.2": "Edit",
+  "account.status.choice.join.tuleva.2": "Pick Tuleva",
   "account.status.choice.pay.tuleva.3": "Make a payment",
   "account.status.choice.join.tuleva": "Sign up",
   "account.status.yearToDateContribution": "You have contributed {{contribution}} euros to third pillar this year. <a href='//tuleva.ee/en/iii-pillar/' target='_blank' rel='noopener noreferrer'>Click here</a> to find out how to calculate your maximum contribution for this year.",
