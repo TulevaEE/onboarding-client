@@ -52,27 +52,6 @@ function usePendingWithdrawalApplication(): Application | undefined {
   });
 }
 
-const SecondPillarButton: React.FunctionComponent<{
-  joinTuleva2: boolean;
-  pendingWithdrawal: Application | undefined;
-}> = ({ joinTuleva2, pendingWithdrawal }) => {
-  if (pendingWithdrawal) {
-    return (
-      <Link to={`/applications/${pendingWithdrawal.id}/cancellation`} className="btn btn-light">
-        <Message>account.status.choice.pillar.second.withdraw.cancel</Message>
-      </Link>
-    );
-  }
-  if (joinTuleva2) {
-    return (
-      <Link to="/2nd-pillar-flow" className="btn btn-light">
-        <Message>account.status.choice.join.tuleva.2</Message>
-      </Link>
-    );
-  }
-  return <></>;
-};
-
 const StatusBoxLoader: React.FunctionComponent = () => {
   return (
     <>
@@ -115,13 +94,6 @@ export const StatusBox: React.FunctionComponent<StatusBoxType> = ({
   if (!conversion || !secondPillarFunds || !thirdPillarFunds) {
     return <StatusBoxLoader />;
   }
-  const pendingWithdrawal = usePendingWithdrawalApplication();
-
-  const joinTuleva2 = !(
-    conversion.secondPillar.selectionComplete && conversion.secondPillar.transfersComplete
-  );
-
-  const hasPendingWithdrawal = conversion.secondPillar.pendingWithdrawal;
 
   const payTuleva3 = !(
     conversion.thirdPillar.selectionComplete &&
@@ -135,34 +107,16 @@ export const StatusBox: React.FunctionComponent<StatusBoxType> = ({
     ? [<Message params={{ memberNumber }}>account.member.statement</Message>]
     : [<Message>account.non.member.statement</Message>];
 
-  const activeSecondPillarFunds = secondPillarFunds
-    .filter((fund) => fund.activeFund)
-    .map(({ name }) => name);
-
   const thirdPillarActiveFunds = thirdPillarFunds
     .filter((fund) => fund.activeFund)
     .map(({ name }) => name);
-
-  const secondPillarData =
-    activeSecondPillarFunds.length > 0
-      ? activeSecondPillarFunds
-      : [<Message>account.status.choice.pillar.second.missing</Message>];
-
-  const pendingWithdrawalData = [<Message>account.status.choice.pillar.second.withdraw</Message>];
 
   return (
     <>
       <StatusBoxTitle />
 
       <div className="card card-secondary">
-        <StatusBoxRow
-          ok={!joinTuleva2 && !hasPendingWithdrawal}
-          showAction={!loading}
-          name={<Message>account.status.choice.pillar.second</Message>}
-          lines={hasPendingWithdrawal ? pendingWithdrawalData : secondPillarData}
-        >
-          <SecondPillarButton joinTuleva2={joinTuleva2} pendingWithdrawal={pendingWithdrawal} />
-        </StatusBoxRow>
+        {renderSecondPillarFlow(conversion.secondPillar, secondPillarFunds, loading)}
 
         <StatusBoxRow
           ok={!payTuleva3}
@@ -201,6 +155,59 @@ export const StatusBox: React.FunctionComponent<StatusBoxType> = ({
       </div>
     </>
   );
+};
+
+const renderSecondPillarFlow = (
+  secondPillar: Conversion,
+  secondPillarFunds: Fund[],
+  loading: boolean,
+) => {
+  const joinTuleva2 = !(secondPillar.selectionComplete && secondPillar.transfersComplete);
+
+  const activeSecondPillarFunds = secondPillarFunds
+    .filter((fund) => fund.activeFund)
+    .map(({ name }) => name);
+
+  const secondPillarData =
+    activeSecondPillarFunds.length > 0
+      ? activeSecondPillarFunds
+      : [<Message>account.status.choice.pillar.second.missing</Message>];
+
+  const hasPendingWithdrawal = secondPillar.pendingWithdrawal;
+  const pendingWithdrawalData = [<Message>account.status.choice.pillar.second.withdraw</Message>];
+  const pendingWithdrawal = usePendingWithdrawalApplication();
+
+  return (
+    <StatusBoxRow
+      ok={!joinTuleva2 && !hasPendingWithdrawal}
+      showAction={!loading}
+      name={<Message>account.status.choice.pillar.second</Message>}
+      lines={hasPendingWithdrawal ? pendingWithdrawalData : secondPillarData}
+    >
+      <SecondPillarButton joinTuleva2={joinTuleva2} pendingWithdrawal={pendingWithdrawal} />
+    </StatusBoxRow>
+  );
+};
+
+const SecondPillarButton: React.FunctionComponent<{
+  joinTuleva2: boolean;
+  pendingWithdrawal: Application | undefined;
+}> = ({ joinTuleva2, pendingWithdrawal }) => {
+  if (pendingWithdrawal) {
+    return (
+      <Link to={`/applications/${pendingWithdrawal.id}/cancellation`} className="btn btn-light">
+        <Message>account.status.choice.pillar.second.withdraw.cancel</Message>
+      </Link>
+    );
+  }
+  if (joinTuleva2) {
+    return (
+      <Link to="/2nd-pillar-flow" className="btn btn-light">
+        <Message>account.status.choice.join.tuleva.2</Message>
+      </Link>
+    );
+  }
+  return <></>;
 };
 
 const mapStateToProps = (state: {
