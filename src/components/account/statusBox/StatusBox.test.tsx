@@ -76,74 +76,49 @@ describe('Status Box', () => {
     render();
   });
 
-  const to2ndPillarFlow = 'Pick Tuleva';
-  const pay3ndPillarFlow = 'Make a payment';
-  const toMemberFlow = 'Sign up';
-
   it('renders status box title', async () => {
     expect(await screen.findByText('Your choices')).toBeInTheDocument();
   });
 
-  it('renders 2nd pillar cta', async () => {
-    expect(await screen.findByText(to2ndPillarFlow)).toBeInTheDocument();
+  it('renders 2nd pillar joining cta when funds not present', async () => {
+    expect(await screen.findByText('Pick Tuleva')).toBeInTheDocument();
+  });
+
+  describe('when tuleva fund active', () => {
+    beforeEach(() => {
+      props.secondPillarFunds = [
+        { fundManager: { name: 'NotTuleva' }, activeFund: false, pillar: 2, name: 'Fond 1' },
+        { fundManager: { name: 'Tuleva' }, activeFund: true, pillar: 2, name: 'Fond 2' },
+      ] as any;
+      props.conversion.secondPillar.selectionComplete = true;
+    });
+
+    it('renders 2nd pillar transfer cta when transfers not complete', async () => {
+      renderComponent(<StatusBox {...props} />);
+      expect(await screen.findByText('Switch fund')).toBeInTheDocument();
+      expect(await screen.findByText('You have several pension funds')).toBeInTheDocument();
+    });
+
+    it('renders pending withdrawal cta when user has a pending withdrawal', async () => {
+      props.conversion.secondPillar.pendingWithdrawal = true;
+      renderComponent(<StatusBox {...props} />);
+      expect(await screen.findByText('You are leaving II pillar')).toBeInTheDocument();
+      expect(await screen.findByText('Cancel application')).toBeInTheDocument();
+    });
+  });
+
+  it('renders pending withdrawal cta when user has a pending withdrawal even when they do not have Tuleva II pillar', async () => {
+    props.conversion.secondPillar.pendingWithdrawal = true;
+    renderComponent(<StatusBox {...props} />);
+    expect(await screen.findByText('You are leaving II pillar')).toBeInTheDocument();
+    expect(await screen.findByText('Cancel application')).toBeInTheDocument();
   });
 
   it('always renders pay Tuleva III pillar', async () => {
-    expect(await screen.findByText(pay3ndPillarFlow)).toBeInTheDocument();
-  });
-
-  it('renders join Tuleva II pillar when II pillars some in Tuleva', async () => {
-    const secondPillarFunds = [
-      { fundManager: { name: 'NotTuleva' }, activeFund: true, pillar: 2, name: 'Fond 1' },
-      { fundManager: { name: 'Tuleva' }, activeFund: true, pillar: 2, name: 'Fond 2' },
-    ];
-    renderComponent(<StatusBox {...props} secondPillarFunds={secondPillarFunds} />);
-    expect(await screen.findByText(to2ndPillarFlow)).toBeInTheDocument();
+    expect(await screen.findByText('Make a payment')).toBeInTheDocument();
   });
 
   it('renders become Tuleva member when not member', async () => {
-    expect(await screen.findByText(toMemberFlow)).toBeInTheDocument();
-  });
-
-  it('renders pending withdrawal text when user has a pending withdrawal', async () => {
-    const secondPillar = {
-      selectionComplete: false,
-      transfersComplete: false,
-      paymentComplete: false,
-      pendingWithdrawal: true,
-      subtraction: { yearToDate: 0, total: 0 },
-      contribution: { yearToDate: 0, total: 0 },
-    };
-    const conversion = { ...props.conversion, secondPillar };
-    renderComponent(<StatusBox {...props} conversion={conversion} />);
-    expect(await screen.findByText('You are leaving II pillar')).toBeInTheDocument();
-  });
-
-  it('renders pending withdrawal button when user has a pending withdrawal', async () => {
-    const secondPillar = {
-      selectionComplete: true,
-      transfersComplete: true,
-      paymentComplete: true,
-      pendingWithdrawal: true,
-      subtraction: { yearToDate: 0, total: 0 },
-      contribution: { yearToDate: 0, total: 0 },
-    };
-    const conversion = { ...props.conversion, secondPillar };
-    renderComponent(<StatusBox {...props} conversion={conversion} />);
-    expect(await screen.findByText('Cancel application')).toBeInTheDocument();
-  });
-
-  it('renders pending withdrawal button when user has a pending withdrawal even when they do not have Tuleva II pillar', async () => {
-    const secondPillar = {
-      selectionComplete: false,
-      transfersComplete: false,
-      paymentComplete: false,
-      pendingWithdrawal: true,
-      subtraction: { yearToDate: 0, total: 0 },
-      contribution: { yearToDate: 0, total: 0 },
-    };
-    const conversion = { ...props.conversion, secondPillar };
-    renderComponent(<StatusBox {...props} conversion={conversion} />);
-    expect(await screen.findByText('Cancel application')).toBeInTheDocument();
+    expect(await screen.findByText('Sign up')).toBeInTheDocument();
   });
 });
