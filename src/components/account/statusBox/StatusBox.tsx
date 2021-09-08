@@ -195,7 +195,7 @@ const renderSecondPillarFlow = (
         lines={[<Message>account.status.choice.pillar.second.transferIncomplete</Message>]}
       >
         <Link to="/2nd-pillar-flow" className="btn btn-light">
-          <Message>account.status.choice.join.tuleva.2</Message>
+          <Message>account.status.choice.transfer.tuleva.2</Message>
         </Link>
       </StatusBoxRow>
     );
