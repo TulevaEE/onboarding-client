@@ -215,6 +215,7 @@
   "account.status.choice.pillar.second.missing": " Sul pole II sammast",
   "account.status.choice.pillar.second.withdraw": "Sa oled lahkumas II sambast",
   "account.status.choice.pillar.second.withdraw.cancel": "Tühista avaldus",
+  "account.status.choice.pillar.second.transferIncomplete": "Sa kogud täna mitmes erinevas pensionifondis",
   "account.status.choice.pillar.third": "III sammas",
   "account.status.choice.tuleva": "Tuleva ühistu",
   "account.status.choice.join.tuleva.2": "Vali Tuleva",
