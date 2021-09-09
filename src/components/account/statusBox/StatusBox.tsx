@@ -201,7 +201,14 @@ const renderSecondPillarFlow = (
     );
   }
 
-  return <StatusBoxRow ok showAction={!loading} lines={[activeFund.name]} />;
+  return (
+    <StatusBoxRow
+      ok
+      name={<Message>account.status.choice.pillar.second</Message>}
+      showAction={!loading}
+      lines={[activeFund.name]}
+    />
+  );
 };
 
 const usePendingWithdrawalApplication = (): Application | undefined =>
