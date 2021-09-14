@@ -286,7 +286,7 @@
   "thirdPillarFlow.steps.selectSources.title": "Too III pensionisammas Tulevasse",
   "thirdPillarFlow.steps.address.title": "Sisesta oma kontaktandmed",
   "thirdPillarFlow.steps.confirmMandate.title": "Kinnita avalduse sisu",
-  "thirdPillarFlow.steps.payment.title": "Maksa",
+  "thirdPillarFlow.steps.payment.title": "Sissemakse info",
 
   "thirdPillarFlowSetup.text": "See on tasuta, asub pensionikeskuses ja ei kohusta sind millekski.",
   "thirdPillarFlowSetup.subtext": "Valikuavaldus aktiveerib pensionikonto ning seni kuni sa pole määranud teisiti, suunab su edasised sissemaksed valitud fondi.",

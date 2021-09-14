@@ -311,7 +311,7 @@
   "thirdPillarFlow.steps.selectSources.title": "Transfer your III pillar to Tuleva",
   "thirdPillarFlow.steps.address.title": "Insert your contact details",
   "thirdPillarFlow.steps.confirmMandate.title": "Confirm mandate",
-  "thirdPillarFlow.steps.payment.title": "Pay",
+  "thirdPillarFlow.steps.payment.title": "Payment details",
 
   "thirdPillarFlowSetup.text": "This account is in pensions registry, does not cost anything nor brings any obligations to do anything.",
   "thirdPillarFlowSetup.subtext": "Selection mandate activates your pension account and until you decide otherwise, directs your future contributions to selected pension fund.",
