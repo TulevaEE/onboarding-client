@@ -438,10 +438,8 @@ export const UpdateUserForm = ({
   </div>
 );
 
-const noop = () => null;
-
 UpdateUserForm.defaultProps = {
-  handleSubmit: noop,
+  handleSubmit: () => null,
   invalid: true,
   submitting: false,
   error: '',
@@ -467,6 +465,7 @@ const mapStateToProps = (state) => ({
   initialValues: state.login.user ? { ...state.login.user } : null,
   updateUserSuccess: state.contactDetails.updateUserSuccess,
   isCountryEstonia: selector(state, 'address.countryCode') === 'EE',
+  submitting: state.contactDetails.submitting,
 });
 
 export default connect(mapStateToProps, null)(translatedForm);
