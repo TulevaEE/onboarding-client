@@ -56,8 +56,8 @@ describe('Transfer future capital step', () => {
     const loadingTargetFunds = false;
     component.setProps({ targetFunds, loadingTargetFunds });
     expect(component.find(Radio).length).toBe(3);
-    expect(component.find(Radio).at(0).childAt(0).text()).toEqual('A<InfoTooltip />');
-    expect(component.find(Radio).at(1).childAt(0).text()).toEqual('B<InfoTooltip />');
+    expect(component.find(Radio).at(0).childAt(0).text()).toEqual('A');
+    expect(component.find(Radio).at(1).childAt(0).text()).toEqual('B');
     expect(component.find(Radio).at(2).childAt(0).childAt(0).get(0)).toEqual(
       <Message>transfer.future.capital.no</Message>,
     );

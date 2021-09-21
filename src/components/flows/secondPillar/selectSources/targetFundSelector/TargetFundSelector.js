@@ -2,9 +2,6 @@ import React from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { Message, withTranslations } from 'retranslate';
 
-import { InfoTooltip } from '../../../../common';
-import TargetFundTooltipBody from '../../transferFutureCapital/targetFundTooltipBody';
-
 import './TargetFundSelector.scss';
 import checkImage from '../../../common/SuccessNotice/success.svg';
 
@@ -38,9 +35,6 @@ export const TargetFundSelector = ({
           <div className="tv-target-fund__inner-container">
             <div className="mb-2">
               <b>{fund.name}</b>
-              <InfoTooltip name={fund.isin}>
-                <TargetFundTooltipBody targetFundIsin={fund.isin} />
-              </InfoTooltip>
             </div>
             <small>
               <div className="mb-2">
