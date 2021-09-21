@@ -5,8 +5,7 @@ import { connect } from 'react-redux';
 import { Message, withTranslations } from 'retranslate';
 import { Link, Redirect } from 'react-router-dom';
 
-import { Radio, Loader, InfoTooltip, utils } from '../../../common';
-import TargetFundTooltipBody from './targetFundTooltipBody';
+import { Radio, Loader, utils } from '../../../common';
 import { selectFutureContributionsFund } from '../../../exchange/actions';
 import { isTuleva } from '../../../common/utils';
 
@@ -74,12 +73,7 @@ export const TransferFutureCapital = ({
           className="mt-4"
           onSelect={() => onSelectFutureCapitalFund(fund.isin)}
         >
-          <h3 className="m-0">
-            {fund.name}
-            <InfoTooltip name={fund.isin}>
-              <TargetFundTooltipBody targetFundIsin={fund.isin} />
-            </InfoTooltip>
-          </h3>
+          <h3 className="m-0">{fund.name}</h3>
         </Radio>
       ))}
 
