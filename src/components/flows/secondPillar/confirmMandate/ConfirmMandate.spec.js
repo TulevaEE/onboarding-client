@@ -93,9 +93,9 @@ describe('Confirm mandate step', () => {
     });
     expect(
       component.contains(
-        <Link to="/2nd-pillar-flow">
+        <Link to="/2nd-pillar-flow/select-sources">
           <button type="button" className="btn btn-secondary mb-2">
-            <Message>steps.previous</Message>
+            <Message>confirm.mandate.back</Message>
           </button>
         </Link>,
       ),
