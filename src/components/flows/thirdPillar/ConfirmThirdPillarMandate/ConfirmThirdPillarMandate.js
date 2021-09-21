@@ -119,7 +119,7 @@ export const ConfirmThirdPillarMandate = ({
             );
           }}
         >
-          <Message>confirmThirdPillarMandate.sign</Message>
+          <Message>confirm.mandate.sign</Message>
         </button>
 
         <button
@@ -138,12 +138,12 @@ export const ConfirmThirdPillarMandate = ({
             );
           }}
         >
-          <Message>confirmThirdPillarMandate.preview</Message>
+          <Message>confirm.mandate.preview</Message>
         </button>
 
         <Link to={previousPath}>
           <button type="button" className="btn btn-secondary mb-2">
-            <Message>confirmThirdPillarMandate.back</Message>
+            <Message>confirm.mandate.back</Message>
           </button>
         </Link>
       </div>

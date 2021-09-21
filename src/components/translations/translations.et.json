@@ -123,6 +123,7 @@
   "confirm.mandate.future.fund": "Uus pensionifond",
   "confirm.mandate.sign": "Allkirjasta ja saada",
   "confirm.mandate.preview": "Eelvaade",
+  "confirm.mandate.back": "Algusesse tagasi",
   "confirm.mandate.agree.to.terms": "Kinnitan, et mul on olnud võimalik tutvuda kõigi registreeritud kohustuslike pensionifondide tingimuste ja emissiooniprospektidega ning nõustun minu valitud pensionifondi(de) tingimustega. Vajutades nupule “allkirjasta ja saada”, saadan digiallkirjastatud avalduse otse registripidajale.",
   "confirm.mandate.pension.centre": "Pensionikeskuse",
   "confirm.mandate.view.info": " lehel saad võrrelda kõigi Eesti pensionifondide tasusid ja tutvuda fondide tingimuste ja prospektidega. Allkirjasta ja saada nupu abil saadab Tuleva veebirakendus allkirjastatud avalduse sinu nimel kohe registripidajale.",
@@ -323,10 +324,6 @@
   "aml.occupation.student": "Õpilane või üliõpilane",
   "aml.occupation.retired": "Pensionär",
   "aml.occupation.unemployed": "Hetkel ei tööta",
-
-  "confirmThirdPillarMandate.sign": "Allkirjasta ja saada",
-  "confirmThirdPillarMandate.preview": "Eelvaade",
-  "confirmThirdPillarMandate.back": "Algusesse tagasi",
 
   "thirdPillarPayment.title": "Kolmanda samba sissemakse info",
   "thirdPillarPayment.description": "Tee {{ emphasized }}.",
