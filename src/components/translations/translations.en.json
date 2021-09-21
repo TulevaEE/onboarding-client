@@ -123,6 +123,7 @@
   "confirm.mandate.future.fund": "New pension fund",
   "confirm.mandate.sign": "Sign and send mandate",
   "confirm.mandate.preview": "Preview",
+  "confirm.mandate.back": "Go back",
   "confirm.mandate.agree.to.terms": "I confirm that I have had the chance to view all fund prospectuses. By clicking “sign“ a digitally signed application will be sent to the register.",
   "confirm.mandate.pension.centre": "On the Pension Centre ",
   "confirm.mandate.view.info": " web page you can compare the fees and prospectuses of all registered pension funds. By clicking sign and send, Tuleva web application will forward the signed application on your behalf to the registry.",
@@ -348,10 +349,6 @@
   "aml.occupation.student": "Student",
   "aml.occupation.retired": "Retired",
   "aml.occupation.unemployed": "Unemployed",
-
-  "confirmThirdPillarMandate.sign": "Sign and send mandate",
-  "confirmThirdPillarMandate.preview": "Preview",
-  "confirmThirdPillarMandate.back": "Go back",
 
   "thirdPillarPayment.title": "Payment instructions",
   "thirdPillarPayment.description": "Make a payment {{ emphasized }}.",
