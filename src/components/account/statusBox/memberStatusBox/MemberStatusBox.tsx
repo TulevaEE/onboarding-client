@@ -6,7 +6,7 @@ import { StatusBoxRow } from '../statusBoxRow/StatusBoxRow';
 
 interface Props {
   loading: boolean;
-  memberNumber: number;
+  memberNumber: number | null;
 }
 
 export const MemberStatusBox: React.FunctionComponent<Props> = ({
@@ -35,12 +35,14 @@ export const MemberStatusBox: React.FunctionComponent<Props> = ({
   );
 };
 
-const mapStateToProps = (state: {
+type State = {
   login: {
     loadingUserConversion: boolean;
     user: { memberNumber: number };
   };
-}) => ({
+};
+
+const mapStateToProps = (state: State) => ({
   memberNumber: (state.login.user || {}).memberNumber,
   loading: state.login.loadingUserConversion,
 });
