@@ -8,20 +8,21 @@ import { StatusBoxTitle } from './StatusBoxTitle';
 import ThirdPillarStatusBox from './thirdPillarStatusBox';
 import MemberStatusBox from './memberStatusBox';
 
-interface StatusBoxType {
+interface Props {
   conversion?: UserConversion;
-  secondPillarFunds: Fund[];
-  thirdPillarFunds: Fund[];
+  secondPillarFunds?: Fund[];
+  thirdPillarFunds?: Fund[];
 }
 
-export const StatusBox: React.FunctionComponent<StatusBoxType> = ({
+export const StatusBox: React.FunctionComponent<Props> = ({
   conversion,
-  secondPillarFunds = [],
-  thirdPillarFunds = [],
+  secondPillarFunds,
+  thirdPillarFunds,
 }) => {
   if (!conversion || !secondPillarFunds || !thirdPillarFunds) {
     return <StatusBoxLoader />;
   }
+  const thirdPillarContribution = conversion.thirdPillar.contribution.yearToDate || 0;
   return (
     <>
       <StatusBoxTitle />
@@ -35,9 +36,7 @@ export const StatusBox: React.FunctionComponent<StatusBoxType> = ({
       <div className="mt-3">
         <small className="text-muted">
           <Message
-            params={{
-              contribution: (conversion.thirdPillar.contribution.yearToDate || 0).toString(),
-            }}
+            params={{ contribution: thirdPillarContribution.toString() }}
             dangerouslyTranslateInnerHTML="account.status.yearToDateContribution"
           />
         </small>
@@ -46,13 +45,16 @@ export const StatusBox: React.FunctionComponent<StatusBoxType> = ({
   );
 };
 
-const mapStateToProps = (state: {
+// TODO: Extract into a common shared type
+type State = {
   login: {
     userConversion: UserConversion;
   };
   exchange: { sourceFunds: Fund[] };
   thirdPillar: { sourceFunds: Fund[] };
-}) => ({
+};
+
+const mapStateToProps = (state: State) => ({
   conversion: state.login.userConversion,
   secondPillarFunds: state.exchange.sourceFunds,
   thirdPillarFunds: state.thirdPillar.sourceFunds,
