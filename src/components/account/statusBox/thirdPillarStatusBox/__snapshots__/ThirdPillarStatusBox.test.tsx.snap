@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ThirdPillarStatusBox renders the success flow 1`] = `
+<StatusBoxRow
+  lines={
+    Array [
+      "Aktiivne Fond",
+    ]
+  }
+  name={
+    <Message>
+      account.status.choice.pillar.third
+    </Message>
+  }
+  ok={true}
+  showAction={true}
+>
+  <Link
+    className="btn btn-light"
+    to="/3rd-pillar-flow"
+  >
+    <Message>
+      account.status.choice.pay.tuleva.3
+    </Message>
+  </Link>
+</StatusBoxRow>
+`;
