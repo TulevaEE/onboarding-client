@@ -7,6 +7,7 @@ import SecondPillarStatusBox from './secondPillarStatusBox';
 import { Fund, UserConversion } from './types';
 import { StatusBoxLoader } from './StatusBoxLoader';
 import { StatusBoxTitle } from './StatusBoxTitle';
+import ThirdPillarStatusBox from './thirdPillarStatusBox';
 
 interface StatusBoxType {
   memberNumber: number | null;
@@ -26,22 +27,10 @@ export const StatusBox: React.FunctionComponent<StatusBoxType> = ({
   if (!conversion || !secondPillarFunds || !thirdPillarFunds) {
     return <StatusBoxLoader />;
   }
-
-  const payTuleva3 = !(
-    conversion.thirdPillar.selectionComplete &&
-    conversion.thirdPillar.transfersComplete &&
-    conversion.thirdPillar.paymentComplete
-  );
-
   const isTulevaMember = memberNumber != null;
-
   const tulevaData = isTulevaMember
     ? [<Message params={{ memberNumber }}>account.member.statement</Message>]
     : [<Message>account.non.member.statement</Message>];
-
-  const thirdPillarActiveFunds = thirdPillarFunds
-    .filter((fund) => fund.activeFund)
-    .map(({ name }) => name);
 
   return (
     <>
@@ -49,17 +38,7 @@ export const StatusBox: React.FunctionComponent<StatusBoxType> = ({
 
       <div className="card card-secondary">
         <SecondPillarStatusBox />
-
-        <StatusBoxRow
-          ok={!payTuleva3}
-          showAction={!loading}
-          name={<Message>account.status.choice.pillar.third</Message>}
-          lines={thirdPillarActiveFunds}
-        >
-          <Link to="/3rd-pillar-flow" className="btn btn-light">
-            <Message>account.status.choice.pay.tuleva.3</Message>
-          </Link>
-        </StatusBoxRow>
+        <ThirdPillarStatusBox />
 
         <StatusBoxRow
           last

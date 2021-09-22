@@ -7,13 +7,13 @@ import { usePendingApplications } from '../../../common/apiHooks';
 import { Application, ApplicationType } from '../../../common/apiModels';
 import { Fund, UserConversion } from '../types';
 
-interface SecondPillarStatusBoxType {
+interface Props {
   conversion: UserConversion;
   loading: boolean;
   secondPillarFunds: Fund[];
 }
 
-export const SecondPillarStatusBox: React.FunctionComponent<SecondPillarStatusBoxType> = ({
+export const SecondPillarStatusBox: React.FunctionComponent<Props> = ({
   conversion,
   loading = false,
   secondPillarFunds = [],
