@@ -1,0 +1,32 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Status Box renders all subcomponents when present 1`] = `
+<Fragment>
+  <StatusBoxTitle />
+  <div
+    className="card card-secondary"
+  >
+    <Connect(SecondPillarStatusBox) />
+    <Connect(ThirdPillarStatusBox) />
+    <Connect(MemberStatusBox) />
+  </div>
+  <div
+    className="mt-3"
+  >
+    <small
+      className="text-muted"
+    >
+      <Message
+        dangerouslyTranslateInnerHTML="account.status.yearToDateContribution"
+        params={
+          Object {
+            "contribution": "300",
+          }
+        }
+      />
+    </small>
+  </div>
+</Fragment>
+`;
+
+exports[`Status Box shows only a loader when some props missing 1`] = `<StatusBoxLoader />`;
