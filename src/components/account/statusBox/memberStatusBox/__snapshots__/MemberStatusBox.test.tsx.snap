@@ -1,0 +1,56 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MemberStatusBox offers to join when not member 1`] = `
+<StatusBoxRow
+  last={true}
+  lines={
+    Array [
+      <Message>
+        account.non.member.statement
+      </Message>,
+    ]
+  }
+  name={
+    <Message>
+      account.status.choice.tuleva
+    </Message>
+  }
+  ok={false}
+  showAction={false}
+>
+  <Link
+    className="btn btn-light"
+    to="/join"
+  >
+    <Message>
+      account.status.choice.join.tuleva
+    </Message>
+  </Link>
+</StatusBoxRow>
+`;
+
+exports[`MemberStatusBox renders the full component 1`] = `
+<StatusBoxRow
+  last={true}
+  lines={
+    Array [
+      <Message
+        params={
+          Object {
+            "memberNumber": 123,
+          }
+        }
+      >
+        account.member.statement
+      </Message>,
+    ]
+  }
+  name={
+    <Message>
+      account.status.choice.tuleva
+    </Message>
+  }
+  ok={true}
+  showAction={true}
+/>
+`;
