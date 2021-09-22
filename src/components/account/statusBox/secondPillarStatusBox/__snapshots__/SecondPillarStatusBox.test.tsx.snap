@@ -1,0 +1,97 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SecondPillarStatusBox renders the choice flow when fund selection incomplete 1`] = `
+<StatusBoxRow
+  lines={
+    Array [
+      "Aktiivne Fond",
+    ]
+  }
+  name={
+    <Message>
+      account.status.choice.pillar.second
+    </Message>
+  }
+  showAction={false}
+>
+  <Link
+    className="btn btn-light"
+    to="/2nd-pillar-flow"
+  >
+    <Message>
+      account.status.choice.join.tuleva.2
+    </Message>
+  </Link>
+</StatusBoxRow>
+`;
+
+exports[`SecondPillarStatusBox renders the success flow 1`] = `
+<StatusBoxRow
+  lines={
+    Array [
+      "Aktiivne Fond",
+    ]
+  }
+  name={
+    <Message>
+      account.status.choice.pillar.second
+    </Message>
+  }
+  ok={true}
+  showAction={true}
+/>
+`;
+
+exports[`SecondPillarStatusBox renders the transfer flow when fund transfers incomplete 1`] = `
+<StatusBoxRow
+  lines={
+    Array [
+      <Message>
+        account.status.choice.pillar.second.transferIncomplete
+      </Message>,
+    ]
+  }
+  name={
+    <Message>
+      account.status.choice.pillar.second
+    </Message>
+  }
+  showAction={false}
+>
+  <Link
+    className="btn btn-light"
+    to="/2nd-pillar-flow"
+  >
+    <Message>
+      account.status.choice.transfer.tuleva.2
+    </Message>
+  </Link>
+</StatusBoxRow>
+`;
+
+exports[`SecondPillarStatusBox renders the withdrawal flow when withdrawal is in progress 1`] = `
+<StatusBoxRow
+  lines={
+    Array [
+      <Message>
+        account.status.choice.pillar.second.withdraw
+      </Message>,
+    ]
+  }
+  name={
+    <Message>
+      account.status.choice.pillar.second
+    </Message>
+  }
+  showAction={false}
+>
+  <Link
+    className="btn btn-light"
+    to="/applications/undefined/cancellation"
+  >
+    <Message>
+      account.status.choice.pillar.second.withdraw.cancel
+    </Message>
+  </Link>
+</StatusBoxRow>
+`;
