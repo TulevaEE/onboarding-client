@@ -1,5 +1,5 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import { shallow, ShallowWrapper } from 'enzyme';
 import { SecondPillarStatusBox } from './SecondPillarStatusBox';
 import { StatusBoxRow } from '../statusBoxRow/StatusBoxRow';
 import { activeSecondPillar, completeSecondPillarconversion } from '../fixtures';
@@ -10,12 +10,16 @@ jest.mock('../../../common/apiHooks', () => ({
 }));
 
 describe('SecondPillarStatusBox', () => {
+  let component: ShallowWrapper;
   const props = {
     conversion: completeSecondPillarconversion,
     loading: false,
     secondPillarFunds: [activeSecondPillar],
   };
-  const component = shallow(<SecondPillarStatusBox {...props} />);
+
+  beforeEach(() => {
+    component = shallow(<SecondPillarStatusBox {...props} />);
+  });
 
   it('renders the success flow', () => {
     expect(component).toMatchSnapshot();
