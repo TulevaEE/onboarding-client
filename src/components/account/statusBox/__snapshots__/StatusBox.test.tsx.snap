@@ -20,7 +20,7 @@ exports[`Status Box renders all subcomponents when present 1`] = `
         dangerouslyTranslateInnerHTML="account.status.yearToDateContribution"
         params={
           Object {
-            "contribution": "300",
+            "contribution": "2500",
           }
         }
       />
