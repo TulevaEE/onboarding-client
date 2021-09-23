@@ -218,6 +218,8 @@
   "account.status.choice.pillar.second.withdraw.cancel": "Tühista avaldus",
   "account.status.choice.pillar.second.transferIncomplete": "Sa kogud täna mitmes erinevas pensionifondis",
   "account.status.choice.pillar.third": "III sammas",
+  "account.status.choice.pillar.third.missing.action": "Ava III sammas",
+  "account.status.choice.pillar.third.missing.label": "Sul pole III sammas veel avatud",
   "account.status.choice.tuleva": "Tuleva ühistu",
   "account.status.choice.join.tuleva.2": "Vali Tuleva",
   "account.status.choice.transfer.tuleva.2": "Vaheta fondi",
@@ -333,7 +335,7 @@
   "thirdPillarPayment.amount": "Summa",
   "thirdPillarPayment.details": "Makse selgitus",
   "thirdPillarPayment.reference": "Viitenumber",
-  "thirdPillarPayment.paymentQuestion": "Kas tegid makse ära?", 
+  "thirdPillarPayment.paymentQuestion": "Kas tegid makse ära?",
   "thirdPillarPayment.paymentButton": "Jah!",
   "thirdPillarPayment.recurringPaymentButton": "Tegin püsimakse",
 
