@@ -23,8 +23,6 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
     conversion.thirdPillar.transfersComplete &&
     conversion.thirdPillar.paymentComplete
   );
-  const activeFunds = sourceFunds.filter((fund) => fund.activeFund).map(({ name }) => name);
-
   if (!pillarActive) {
     return (
       <StatusBoxRow
@@ -39,12 +37,27 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
     );
   }
 
+  const activeFund = sourceFunds.find((fund) => fund.activeFund)?.name;
+  if (!conversion.thirdPillar.selectionComplete) {
+    return (
+      <StatusBoxRow
+        showAction={!loading}
+        name={<Message>account.status.choice.pillar.third</Message>}
+        lines={[activeFund]}
+      >
+        <Link to="/3rd-pillar-flow" className="btn btn-light">
+          <Message>account.status.choice.pillar.third.inactive.action</Message>
+        </Link>
+      </StatusBoxRow>
+    );
+  }
+
   return (
     <StatusBoxRow
       ok={!payTuleva3}
       showAction={!loading}
       name={<Message>account.status.choice.pillar.third</Message>}
-      lines={activeFunds}
+      lines={[activeFund]}
     >
       <Link to="/3rd-pillar-flow" className="btn btn-light">
         <Message>account.status.choice.pay.tuleva.3</Message>
@@ -57,7 +70,7 @@ type State = {
   login: {
     userConversion: UserConversion;
     loadingUserConversion: boolean;
-    user: { isThirdPillarActive: boolean };
+    user: { thirdPillarActive: boolean };
   };
   thirdPillar: { sourceFunds: SourceFund[] };
 };
@@ -66,7 +79,7 @@ const mapStateToProps = (state: State) => ({
   conversion: state.login.userConversion,
   loading: state.login.loadingUserConversion,
   sourceFunds: state.thirdPillar.sourceFunds,
-  pillarActive: state.login.user.isThirdPillarActive,
+  pillarActive: state.login.user.thirdPillarActive,
 });
 
 export default connect(mapStateToProps)(ThirdPillarStatusBox);

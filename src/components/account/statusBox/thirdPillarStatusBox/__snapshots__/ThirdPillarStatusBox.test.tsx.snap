@@ -1,6 +1,33 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ThirdPillarStatusBox renders the open third pillar flow when user has no pillar active 1`] = `
+exports[`ThirdPillarStatusBox renders the "open third pillar" flow when user has no pillar active 1`] = `
+<StatusBoxRow
+  lines={
+    Array [
+      <Message>
+        account.status.choice.pillar.third.missing.label
+      </Message>,
+    ]
+  }
+  name={
+    <Message>
+      account.status.choice.pillar.third
+    </Message>
+  }
+  showAction={false}
+>
+  <Link
+    className="btn btn-light"
+    to="/3rd-pillar-flow"
+  >
+    <Message>
+      account.status.choice.pillar.third.missing.action
+    </Message>
+  </Link>
+</StatusBoxRow>
+`;
+
+exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when user has some other fund manager 1`] = `
 <StatusBoxRow
   lines={
     Array [

@@ -245,6 +245,7 @@
   "account.status.choice.pillar.third": "III pillar",
   "account.status.choice.pillar.third.missing.action": "Open III pillar",
   "account.status.choice.pillar.third.missing.label": "You have not started your 3rd pillar yet",
+  "account.status.choice.pillar.third.inactive.action": "Pick Tuleva",
   "account.status.choice.tuleva": "Tuleva",
   "account.status.choice.join.tuleva.2": "Pick Tuleva",
   "account.status.choice.transfer.tuleva.2": "Switch fund",
