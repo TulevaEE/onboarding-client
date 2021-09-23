@@ -42,4 +42,13 @@ describe('ThirdPillarStatusBox', () => {
     });
     expect(component).toMatchSnapshot();
   });
+
+  it('renders the "payment incomplete" flow when funds have not transferred yet', () => {
+    component.setProps({
+      conversion: {
+        thirdPillar: { paymentComplete: false, transfersComplete: true, selectionComplete: true },
+      },
+    });
+    expect(component).toMatchSnapshot();
+  });
 });
