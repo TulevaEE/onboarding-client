@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { StatusBox } from './StatusBox';
-import { Fund } from './types';
+import { SourceFund } from '../../common/apiModels';
 
 jest.unmock('retranslate');
 
@@ -24,8 +24,8 @@ describe('Status Box', () => {
       subtraction: { yearToDate: 0, total: 0 },
     },
   };
-  const secondPillarFunds: Fund[] = [];
-  const thirdPillarFunds: Fund[] = [];
+  const secondPillarFunds: SourceFund[] = [];
+  const thirdPillarFunds: SourceFund[] = [];
   const props = { conversion, secondPillarFunds, thirdPillarFunds };
   const component = shallow(<StatusBox {...props} />);
 

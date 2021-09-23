@@ -4,13 +4,17 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { StatusBoxRow } from '../statusBoxRow/StatusBoxRow';
 import { usePendingApplications } from '../../../common/apiHooks';
-import { Application, ApplicationType } from '../../../common/apiModels';
-import { Fund, UserConversion } from '../types';
+import {
+  Application,
+  ApplicationType,
+  SourceFund,
+  UserConversion,
+} from '../../../common/apiModels';
 
 interface Props {
   conversion: UserConversion;
   loading: boolean;
-  secondPillarFunds: Fund[];
+  secondPillarFunds: SourceFund[];
 }
 
 export const SecondPillarStatusBox: React.FunctionComponent<Props> = ({
@@ -91,7 +95,7 @@ const mapStateToProps = (state: {
     userConversion: UserConversion;
     loadingUserConversion: boolean;
   };
-  exchange: { sourceFunds: Fund[] };
+  exchange: { sourceFunds: SourceFund[] };
 }) => ({
   conversion: state.login.userConversion,
   loading: state.login.loadingUserConversion,

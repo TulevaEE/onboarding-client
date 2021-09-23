@@ -1,5 +1,12 @@
 import config from 'react-global-configuration';
-import { Fund, Application, ThirdPillarStatistics, CancellationMandate, User } from './apiModels';
+import {
+  Fund,
+  Application,
+  ThirdPillarStatistics,
+  CancellationMandate,
+  User,
+  SourceFund,
+} from './apiModels';
 import { downloadFile, get, post, postForm, put, patch, simpleFetch } from './http';
 
 // TODO: type API responses
@@ -16,7 +23,7 @@ export function getEndpoint(endpoint: string): string {
   return endpoint;
 }
 
-function transformFundBalance(fundBalance: Record<string, any>): Record<string, any> {
+function transformFundBalance(fundBalance: Record<string, any>): SourceFund {
   return {
     isin: fundBalance.fund.isin,
     price: fundBalance.value,
@@ -125,7 +132,7 @@ export function getUserWithToken(token: string): Promise<any> {
   });
 }
 
-export async function getSourceFundsWithToken(token: string): Promise<any> {
+export async function getSourceFundsWithToken(token: string): Promise<SourceFund[]> {
   const funds = await get(getEndpoint('/v1/pension-account-statement'), undefined, {
     Authorization: `Bearer ${token}`,
   });

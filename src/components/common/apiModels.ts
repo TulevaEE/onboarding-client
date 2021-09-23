@@ -90,6 +90,22 @@ export interface Fund {
   status: 'ACTIVE';
 }
 
+export interface SourceFund {
+  fundManager: { name: string };
+  activeFund: boolean;
+  name: string;
+  pillar: number;
+  managementFeePercent: string;
+  isin: string;
+  price: number;
+  unavailablePrice: number;
+  currency: string;
+  ongoingChargesFigure: number;
+  contributions: number;
+  subtractions: number;
+  profit: number;
+}
+
 export interface FundManager {
   id: number;
   name: string;
@@ -109,4 +125,23 @@ export interface User {
   lastName: string;
   email: string;
   phoneNumber: string;
+}
+
+export interface UserConversion {
+  secondPillar: Conversion;
+  thirdPillar: Conversion;
+}
+
+export interface Amount {
+  yearToDate: number;
+  total: number;
+}
+
+export interface Conversion {
+  selectionComplete: boolean;
+  transfersComplete: boolean;
+  paymentComplete: boolean;
+  pendingWithdrawal: boolean;
+  contribution: Amount;
+  subtraction: Amount;
 }

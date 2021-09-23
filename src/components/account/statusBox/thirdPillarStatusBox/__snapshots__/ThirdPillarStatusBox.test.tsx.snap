@@ -4,7 +4,7 @@ exports[`ThirdPillarStatusBox renders the success flow 1`] = `
 <StatusBoxRow
   lines={
     Array [
-      "Aktiivne Fond",
+      "Tuleva III Samba Pensionifond",
     ]
   }
   name={
