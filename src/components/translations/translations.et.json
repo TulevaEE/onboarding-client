@@ -220,6 +220,7 @@
   "account.status.choice.pillar.third": "III sammas",
   "account.status.choice.pillar.third.missing.action": "Ava III sammas",
   "account.status.choice.pillar.third.missing.label": "Sul pole III sammas veel avatud",
+  "account.status.choice.pillar.third.inactive.action": "Vali Tuleva",
   "account.status.choice.tuleva": "Tuleva ühistu",
   "account.status.choice.join.tuleva.2": "Vali Tuleva",
   "account.status.choice.transfer.tuleva.2": "Vaheta fondi",

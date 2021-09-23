@@ -22,8 +22,13 @@ describe('ThirdPillarStatusBox', () => {
     expect(component.find(StatusBoxRow).prop('showAction')).toBeFalsy();
   });
 
-  it('renders the open third pillar flow when user has no pillar active', () => {
+  it('renders the "open third pillar" flow when user has no pillar active', () => {
     component.setProps({ pillarActive: false });
+    expect(component).toMatchSnapshot();
+  });
+
+  it('renders the "pick tuleva" flow when user has some other fund manager', () => {
+    component.setProps({ conversion: { thirdPillar: { selectionComplete: false } } });
     expect(component).toMatchSnapshot();
   });
 });
