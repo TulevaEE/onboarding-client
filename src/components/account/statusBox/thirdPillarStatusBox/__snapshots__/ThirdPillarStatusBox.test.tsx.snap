@@ -126,7 +126,7 @@ exports[`ThirdPillarStatusBox renders the success flow 1`] = `
     to="/3rd-pillar-flow"
   >
     <Message>
-      account.status.choice.pay.tuleva.3
+      account.status.choice.pillar.third.success.action
     </Message>
   </Link>
 </StatusBoxRow>
