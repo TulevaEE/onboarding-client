@@ -14,7 +14,7 @@ exports[`ThirdPillarStatusBox renders the "open third pillar" flow when user has
       account.status.choice.pillar.third
     </Message>
   }
-  showAction={false}
+  showAction={true}
 >
   <Link
     className="btn btn-light"
@@ -31,8 +31,33 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when user has some 
 <StatusBoxRow
   lines={
     Array [
+      "Tuleva III Samba Pensionifond",
+    ]
+  }
+  name={
+    <Message>
+      account.status.choice.pillar.third
+    </Message>
+  }
+  showAction={true}
+>
+  <Link
+    className="btn btn-light"
+    to="/3rd-pillar-flow"
+  >
+    <Message>
+      account.status.choice.pillar.third.inactive.action
+    </Message>
+  </Link>
+</StatusBoxRow>
+`;
+
+exports[`ThirdPillarStatusBox renders the "transfer incomplete" flow when user has several funds 1`] = `
+<StatusBoxRow
+  lines={
+    Array [
       <Message>
-        account.status.choice.pillar.third.missing.label
+        account.status.choice.pillar.third.transferIncomplete.label
       </Message>,
     ]
   }
@@ -41,14 +66,14 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when user has some 
       account.status.choice.pillar.third
     </Message>
   }
-  showAction={false}
+  showAction={true}
 >
   <Link
     className="btn btn-light"
     to="/3rd-pillar-flow"
   >
     <Message>
-      account.status.choice.pillar.third.missing.action
+      account.status.choice.pillar.third.transferIncomplete.action
     </Message>
   </Link>
 </StatusBoxRow>

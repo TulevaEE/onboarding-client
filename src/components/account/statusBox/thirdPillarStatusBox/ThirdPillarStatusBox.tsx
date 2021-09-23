@@ -52,6 +52,20 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
     );
   }
 
+  if (!conversion.thirdPillar.transfersComplete) {
+    return (
+      <StatusBoxRow
+        showAction={!loading}
+        name={<Message>account.status.choice.pillar.third</Message>}
+        lines={[<Message>account.status.choice.pillar.third.transferIncomplete.label</Message>]}
+      >
+        <Link to="/3rd-pillar-flow" className="btn btn-light">
+          <Message>account.status.choice.pillar.third.transferIncomplete.action</Message>
+        </Link>
+      </StatusBoxRow>
+    );
+  }
+
   return (
     <StatusBoxRow
       ok={!payTuleva3}
