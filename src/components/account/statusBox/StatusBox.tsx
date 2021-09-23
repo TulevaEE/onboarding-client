@@ -2,16 +2,16 @@ import React from 'react';
 import { Message } from 'retranslate';
 import { connect } from 'react-redux';
 import SecondPillarStatusBox from './secondPillarStatusBox';
-import { Fund, UserConversion } from './types';
 import { StatusBoxLoader } from './StatusBoxLoader';
 import { StatusBoxTitle } from './StatusBoxTitle';
 import ThirdPillarStatusBox from './thirdPillarStatusBox';
 import MemberStatusBox from './memberStatusBox';
+import { SourceFund, UserConversion } from '../../common/apiModels';
 
 interface Props {
   conversion?: UserConversion;
-  secondPillarFunds?: Fund[];
-  thirdPillarFunds?: Fund[];
+  secondPillarFunds?: SourceFund[];
+  thirdPillarFunds?: SourceFund[];
 }
 
 export const StatusBox: React.FunctionComponent<Props> = ({
@@ -50,8 +50,8 @@ type State = {
   login: {
     userConversion: UserConversion;
   };
-  exchange: { sourceFunds: Fund[] };
-  thirdPillar: { sourceFunds: Fund[] };
+  exchange: { sourceFunds: SourceFund[] };
+  thirdPillar: { sourceFunds: SourceFund[] };
 };
 
 const mapStateToProps = (state: State) => ({

@@ -4,7 +4,7 @@ exports[`SecondPillarStatusBox renders the choice flow when fund selection incom
 <StatusBoxRow
   lines={
     Array [
-      "Aktiivne Fond",
+      "Tuleva III Samba Pensionifond",
     ]
   }
   name={
@@ -29,7 +29,7 @@ exports[`SecondPillarStatusBox renders the success flow 1`] = `
 <StatusBoxRow
   lines={
     Array [
-      "Aktiivne Fond",
+      "Tuleva III Samba Pensionifond",
     ]
   }
   name={

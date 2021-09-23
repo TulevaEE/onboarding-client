@@ -2,6 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { SecondPillarStatusBox } from './SecondPillarStatusBox';
 import { StatusBoxRow } from '../statusBoxRow/StatusBoxRow';
+import { activeSecondPillar, completeSecondPillarconversion } from '../fixtures';
 
 // TODO: Figure out a cleaner way to mock applications from the hook
 jest.mock('../../../common/apiHooks', () => ({
@@ -9,28 +10,11 @@ jest.mock('../../../common/apiHooks', () => ({
 }));
 
 describe('SecondPillarStatusBox', () => {
-  const conversion = {
-    secondPillar: {
-      selectionComplete: true,
-      transfersComplete: true,
-      paymentComplete: false,
-      pendingWithdrawal: false,
-      contribution: { yearToDate: 200, total: 250 },
-      subtraction: { yearToDate: 0, total: 0 },
-    },
-    thirdPillar: {
-      selectionComplete: false,
-      transfersComplete: false,
-      paymentComplete: false,
-      pendingWithdrawal: false,
-      contribution: { yearToDate: 300, total: 450 },
-      subtraction: { yearToDate: 0, total: 0 },
-    },
+  const props = {
+    conversion: completeSecondPillarconversion,
+    loading: false,
+    secondPillarFunds: [activeSecondPillar],
   };
-  const secondPillarFunds = [
-    { activeFund: true, name: 'Aktiivne Fond', fundManager: { name: 'Toivo' }, pillar: 2 },
-  ];
-  const props = { conversion, loading: false, secondPillarFunds };
   const component = shallow(<SecondPillarStatusBox {...props} />);
 
   it('renders the success flow', () => {

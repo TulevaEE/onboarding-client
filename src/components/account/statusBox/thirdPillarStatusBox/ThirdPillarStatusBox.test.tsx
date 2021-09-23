@@ -2,30 +2,14 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { ThirdPillarStatusBox } from './ThirdPillarStatusBox';
 import { StatusBoxRow } from '../statusBoxRow/StatusBoxRow';
+import { activeThirdPillar, completeThirdPillarconversion } from '../fixtures';
 
 describe('ThirdPillarStatusBox', () => {
-  const conversion = {
-    secondPillar: {
-      selectionComplete: false,
-      transfersComplete: false,
-      paymentComplete: false,
-      pendingWithdrawal: false,
-      contribution: { yearToDate: 200, total: 250 },
-      subtraction: { yearToDate: 0, total: 0 },
-    },
-    thirdPillar: {
-      selectionComplete: true,
-      transfersComplete: true,
-      paymentComplete: true,
-      pendingWithdrawal: false,
-      contribution: { yearToDate: 300, total: 450 },
-      subtraction: { yearToDate: 0, total: 0 },
-    },
+  const props = {
+    conversion: completeThirdPillarconversion,
+    loading: false,
+    thirdPillarFunds: [activeThirdPillar],
   };
-  const thirdPillarFunds = [
-    { activeFund: true, name: 'Aktiivne Fond', fundManager: { name: 'Toivo' }, pillar: 3 },
-  ];
-  const props = { conversion, loading: false, thirdPillarFunds };
   const component = shallow(<ThirdPillarStatusBox {...props} />);
 
   it('renders the success flow', () => {

@@ -3,12 +3,12 @@ import { Message } from 'retranslate';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { StatusBoxRow } from '../statusBoxRow/StatusBoxRow';
-import { Fund, UserConversion } from '../types';
+import { SourceFund, UserConversion } from '../../../common/apiModels';
 
 interface Props {
   conversion: UserConversion;
   loading: boolean;
-  thirdPillarFunds: Fund[];
+  thirdPillarFunds: SourceFund[];
 }
 
 export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
@@ -39,13 +39,15 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
   );
 };
 
-const mapStateToProps = (state: {
+type State = {
   login: {
     userConversion: UserConversion;
     loadingUserConversion: boolean;
   };
-  thirdPillar: { sourceFunds: Fund[] };
-}) => ({
+  thirdPillar: { sourceFunds: SourceFund[] };
+};
+
+const mapStateToProps = (state: State) => ({
   conversion: state.login.userConversion,
   loading: state.login.loadingUserConversion,
   thirdPillarFunds: state.thirdPillar.sourceFunds,
