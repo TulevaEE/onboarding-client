@@ -8,7 +8,8 @@ describe('ThirdPillarStatusBox', () => {
   const props = {
     conversion: completeThirdPillarconversion,
     loading: false,
-    thirdPillarFunds: [activeThirdPillar],
+    sourceFunds: [activeThirdPillar],
+    pillarActive: true,
   };
   const component = shallow(<ThirdPillarStatusBox {...props} />);
 
@@ -21,8 +22,8 @@ describe('ThirdPillarStatusBox', () => {
     expect(component.find(StatusBoxRow).prop('showAction')).toBeFalsy();
   });
 
-  it('does not render status box OK when not fully converted', () => {
-    component.setProps({ conversion: { thirdPillar: { selectionComplete: false } } });
-    expect(component.find(StatusBoxRow).prop('ok')).toBeFalsy();
+  it('renders the open third pillar flow when user has no pillar active', () => {
+    component.setProps({ pillarActive: false });
+    expect(component).toMatchSnapshot();
   });
 });
