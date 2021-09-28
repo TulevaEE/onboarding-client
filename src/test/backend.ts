@@ -439,3 +439,11 @@ export function applicationsBackend(server: SetupServerApi): void {
 type DeepPartial<T> = {
   [P in keyof T]?: DeepPartial<T[P]>;
 };
+
+export function mandateCreateConfirmPageEventBackend(server: SetupServerApi): void {
+  server.use(
+    rest.post('http://localhost/v1/mandates/createConfirmPageEvent', (req, res, ctx) => {
+      return res(ctx.json(true));
+    }),
+  );
+}

@@ -19,6 +19,7 @@ import {
   userCapitalBackend,
   applicationsBackend,
   smartIdSigningBackend,
+  mandateCreateConfirmPageEventBackend,
 } from '../../../test/backend';
 
 jest.unmock('retranslate');
@@ -49,6 +50,7 @@ beforeEach(async () => {
   returnsBackend(server);
   userCapitalBackend(server);
   applicationsBackend(server);
+  mandateCreateConfirmPageEventBackend(server);
 
   render();
 
