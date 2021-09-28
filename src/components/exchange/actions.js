@@ -14,6 +14,7 @@ import {
   getSourceFundsWithToken,
   getFunds,
   saveMandateWithToken,
+  createMandateConfirmPageEvent,
 } from '../common/api';
 import {
   CHANGE_AGREEMENT_TO_TERMS,
@@ -343,3 +344,7 @@ export function cancelSigningMandate() {
 export function closeErrorMessages() {
   return { type: NO_SIGN_MANDATE_ERROR };
 }
+
+export const createConfirmPageEvent = ({ pillar }) => (dispatch, getState) => {
+  return createMandateConfirmPageEvent(pillar, getState().login.token);
+};
