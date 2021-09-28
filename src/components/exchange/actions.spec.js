@@ -483,4 +483,12 @@ describe('Exchange actions', () => {
     await signMandate(mandate);
     expect(mockApi.saveMandateWithToken).not.toHaveBeenCalled();
   });
+
+  it('calls createMandateConfirmPageEvent correctly', async () => {
+    mockApi.createMandateConfirmPageEvent = jest.fn(() => Promise.resolve(true));
+    const pillar = 3;
+
+    await createBoundAction(actions.createConfirmPageEvent)({ pillar });
+    expect(mockApi.createMandateConfirmPageEvent).toHaveBeenCalledWith(pillar, 'token');
+  });
 });
