@@ -9,12 +9,18 @@ import config from 'react-global-configuration';
 import { QueryClient, QueryClientProvider } from 'react-query';
 
 import { ApplicationSection } from './ApplicationSection';
-import { ApplicationStatus, ApplicationType } from '../../common/apiModels';
+import {
+  earlyWithdrawal,
+  resumeContributions,
+  stopContributions,
+  transfer2Pillar,
+  transfer3Pillar,
+  transferPIK,
+  withdrawal,
+} from './fixtures';
 
 jest.mock('react-global-configuration');
 jest.mock('react-redux');
-
-const testApplications = getTestApplications();
 
 describe('Application section', () => {
   const server = setupServer();
@@ -61,13 +67,13 @@ describe('Application section', () => {
   });
 
   it('renders the title when there are pending applications', async () => {
-    mockApplications([testApplications.transfer2Pillar]);
+    mockApplications([transfer2Pillar]);
     render();
     expect(await screen.findByText('applications.title')).toBeInTheDocument();
   });
 
   it('renders 2. pillar transfer applications successfully', async () => {
-    const application = testApplications.transfer2Pillar;
+    const application = transfer2Pillar;
     mockApplications([application]);
     render();
 
@@ -85,7 +91,7 @@ describe('Application section', () => {
   });
 
   it('renders PIK transfer applications successfully', async () => {
-    const application = testApplications.transferPIK;
+    const application = transferPIK;
     mockApplications([application]);
     render();
 
@@ -102,7 +108,7 @@ describe('Application section', () => {
   });
 
   it('renders 3. pillar transfer applications successfully', async () => {
-    const application = testApplications.transfer3Pillar;
+    const application = transfer3Pillar;
     mockApplications([application]);
     render();
 
@@ -117,7 +123,7 @@ describe('Application section', () => {
   });
 
   it('renders stop contributions applications successfully', async () => {
-    const application = testApplications.stopContributions;
+    const application = stopContributions;
     mockApplications([application]);
     render();
     expect(
@@ -133,7 +139,7 @@ describe('Application section', () => {
   });
 
   it('renders resume contributions applications successfully', async () => {
-    const application = testApplications.resumeContributions;
+    const application = resumeContributions;
     mockApplications([application]);
     render();
     expect(
@@ -147,7 +153,7 @@ describe('Application section', () => {
   });
 
   it('renders early withdrawal applications successfully', async () => {
-    const application = testApplications.earlyWithdrawal;
+    const application = earlyWithdrawal;
     mockApplications([application]);
     render();
     expect(await screen.findByText('applications.type.earlyWithdrawal.title')).toBeInTheDocument();
@@ -161,7 +167,7 @@ describe('Application section', () => {
   });
 
   it('renders withdrawal applications successfully', async () => {
-    const application = testApplications.withdrawal;
+    const application = withdrawal;
     mockApplications([application]);
     render();
     expect(await screen.findByText('applications.type.withdrawal.title')).toBeInTheDocument();
@@ -175,7 +181,7 @@ describe('Application section', () => {
   });
 
   it('renders multiple applications successfully', async () => {
-    mockApplications([testApplications.earlyWithdrawal, testApplications.transfer2Pillar]);
+    mockApplications([earlyWithdrawal, transfer2Pillar]);
     render();
     expect(await screen.findByText('applications.type.earlyWithdrawal.title')).toBeInTheDocument();
     expect(screen.getByText('applications.type.transfer.title')).toBeInTheDocument();
@@ -183,7 +189,7 @@ describe('Application section', () => {
   });
 
   it('has a link to cancel an application', async () => {
-    mockApplications([testApplications.earlyWithdrawal]);
+    mockApplications([earlyWithdrawal]);
     render();
     const cancelButton = (await screen.findAllByText('applications.cancel'))[0];
     expect(cancelButton).toBeInTheDocument();
@@ -198,7 +204,7 @@ describe('Application section', () => {
   it('shows the ability to cancel before the deadline', async () => {
     const date = new Date();
     date.setMonth(date.getMonth() + 1);
-    const application = getTestApplications().transfer2Pillar;
+    const application = transfer2Pillar;
     application.cancellationDeadline = date.toISOString();
     mockApplications([application]);
     render();
@@ -211,7 +217,7 @@ describe('Application section', () => {
   it('does not let you cancel after the deadline', async () => {
     const date = new Date();
     date.setFullYear(1995);
-    const application = getTestApplications().transfer2Pillar;
+    const application = transfer2Pillar;
     application.cancellationDeadline = date.toISOString();
     mockApplications([application]);
     render();
@@ -244,166 +250,3 @@ describe('Application section', () => {
     );
   }
 });
-
-function getTestApplications() {
-  return {
-    transfer2Pillar: {
-      id: 1234,
-      type: ApplicationType.TRANSFER,
-      status: ApplicationStatus.PENDING,
-      creationTime: new Date('December 17, 1995 03:24:00').toISOString(),
-      cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
-      details: {
-        sourceFund: {
-          fundManager: { id: 5, name: 'Tuleva' },
-          isin: 'EE3600109435',
-          name: 'Tuleva Maailma Aktsiate Pensionifond',
-          managementFeeRate: 0.0034,
-          pillar: 2,
-          ongoingChargesFigure: 0.0042,
-        },
-        exchanges: [
-          {
-            targetFund: {
-              fundManager: { id: 6, name: 'Swedbank' },
-              isin: 'EE3600109443',
-              name: 'Swedbank I',
-              managementFeeRate: 0.0034,
-              pillar: 2,
-              ongoingChargesFigure: 0.0046,
-            },
-            amount: 0.01,
-          },
-          {
-            targetFund: {
-              fundManager: { id: 6, name: 'Swedbank' },
-              isin: 'EE3600109442',
-              name: 'Swedbank II',
-              managementFeeRate: 0.0034,
-              pillar: 2,
-              ongoingChargesFigure: 0.0046,
-            },
-            amount: 0.025,
-          },
-        ],
-      },
-    },
-    transferPIK: {
-      id: 1234,
-      type: ApplicationType.TRANSFER,
-      status: ApplicationStatus.PENDING,
-      creationTime: new Date('December 17, 1995 03:24:00').toISOString(),
-      cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
-      details: {
-        sourceFund: {
-          fundManager: { id: 5, name: 'Tuleva' },
-          isin: 'EE3600109435',
-          name: 'Tuleva Maailma Aktsiate Pensionifond',
-          managementFeeRate: 0.0034,
-          pillar: 2,
-          ongoingChargesFigure: 0.0042,
-        },
-        exchanges: [
-          {
-            targetPik: 'EE356001123409443',
-            amount: 1,
-          },
-        ],
-      },
-    },
-    transfer3Pillar: {
-      id: 3832579,
-      creationTime: '2021-08-01T14:00:00Z',
-      type: 'TRANSFER',
-      status: 'PENDING',
-      details: {
-        sourceFund: {
-          fundManager: {
-            id: 3,
-            name: 'Swedbank',
-          },
-          isin: 'EE3600071049',
-          name: 'Swedbank Pensionifond V3 (Aktsiastrateegia)',
-          managementFeeRate: 0.014,
-          pillar: 3,
-          ongoingChargesFigure: 0.0175,
-          status: 'ACTIVE',
-        },
-        exchanges: [
-          {
-            sourceFund: {
-              fundManager: {
-                id: 3,
-                name: 'Swedbank',
-              },
-              isin: 'EE3600071049',
-              name: 'Swedbank Pensionifond V3 (Aktsiastrateegia)',
-              managementFeeRate: 0.014,
-              pillar: 3,
-              ongoingChargesFigure: 0.0175,
-              status: 'ACTIVE',
-            },
-            targetFund: {
-              fundManager: {
-                id: 1,
-                name: 'Tuleva',
-              },
-              isin: 'EE3600001707',
-              name: 'Tuleva III Samba Pensionifond',
-              managementFeeRate: 0.003,
-              pillar: 3,
-              ongoingChargesFigure: 0.0049,
-              status: 'ACTIVE',
-            },
-            amount: 1310.247,
-          },
-        ],
-        cancellationDeadline: '2021-11-30T21:59:59.999999999Z',
-        fulfillmentDate: '2022-01-03',
-      },
-    },
-    earlyWithdrawal: {
-      id: 123,
-      type: ApplicationType.EARLY_WITHDRAWAL,
-      status: ApplicationStatus.PENDING,
-      creationTime: new Date('December 17, 1995 03:24:00').toISOString(),
-      cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
-      details: {
-        fulfillmentDate: new Date('January 2, 1995 03:24:00').toISOString(),
-        depositAccountIBAN: 'EE123123123',
-      },
-    },
-    withdrawal: {
-      id: 123,
-      type: ApplicationType.WITHDRAWAL,
-      status: ApplicationStatus.PENDING,
-      creationTime: new Date('December 17, 1995 03:24:00').toISOString(),
-      cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
-      details: {
-        fulfillmentDate: new Date('January 2, 1995 03:24:00').toISOString(),
-        depositAccountIBAN: 'EE123123123',
-      },
-    },
-    stopContributions: {
-      id: 123,
-      type: ApplicationType.STOP_CONTRIBUTIONS,
-      status: ApplicationStatus.PENDING,
-      creationTime: new Date('December 17, 1995 03:24:00').toISOString(),
-      cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
-      details: {
-        stopTime: new Date('December 18, 1995 03:24:00').toISOString(),
-        earliestResumeTime: new Date('December 19, 1995 03:24:00').toISOString(),
-      },
-    },
-    resumeContributions: {
-      id: 123,
-      type: ApplicationType.RESUME_CONTRIBUTIONS,
-      status: ApplicationStatus.PENDING,
-      creationTime: new Date('December 17, 1995 03:24:00').toISOString(),
-      cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
-      details: {
-        resumeTime: new Date('December 18, 1995 03:24:00').toISOString(),
-      },
-    },
-  };
-}
