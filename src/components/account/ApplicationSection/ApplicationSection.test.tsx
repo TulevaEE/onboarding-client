@@ -84,6 +84,23 @@ describe('Application section', () => {
     expect(screen.getByText(application.details.exchanges[1].targetFund.name)).toBeInTheDocument();
   });
 
+  it('renders PIK transfer applications successfully', async () => {
+    const application = testApplications.transferPIK;
+    mockApplications([application]);
+    render();
+
+    expect(await screen.findByText('applications.type.transfer.title')).toBeInTheDocument();
+    expect(screen.getByText(application.details.sourceFund.name)).toBeInTheDocument();
+    const formattedCreationTime = '17.12.1995';
+    expect(screen.getByText(formattedCreationTime)).toBeInTheDocument();
+
+    const exchangeAmount = '100%';
+    expect(screen.getByText(exchangeAmount)).toBeInTheDocument();
+
+    const pikLabel = `${application.details.exchanges[0].targetPik} (PIK)`;
+    expect(screen.getByText(pikLabel)).toBeInTheDocument();
+  });
+
   it('renders 3. pillar transfer applications successfully', async () => {
     const application = testApplications.transfer3Pillar;
     mockApplications([application]);
@@ -267,6 +284,29 @@ function getTestApplications() {
               ongoingChargesFigure: 0.0046,
             },
             amount: 0.025,
+          },
+        ],
+      },
+    },
+    transferPIK: {
+      id: 1234,
+      type: ApplicationType.TRANSFER,
+      status: ApplicationStatus.PENDING,
+      creationTime: new Date('December 17, 1995 03:24:00').toISOString(),
+      cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
+      details: {
+        sourceFund: {
+          fundManager: { id: 5, name: 'Tuleva' },
+          isin: 'EE3600109435',
+          name: 'Tuleva Maailma Aktsiate Pensionifond',
+          managementFeeRate: 0.0034,
+          pillar: 2,
+          ongoingChargesFigure: 0.0042,
+        },
+        exchanges: [
+          {
+            targetPik: 'EE356001123409443',
+            amount: 1,
           },
         ],
       },

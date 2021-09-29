@@ -17,7 +17,8 @@ export type TransferApplication = BaseApplication<
   {
     sourceFund: Fund;
     exchanges: {
-      targetFund: Fund;
+      targetFund: Fund | null;
+      targetPik: string | null;
       amount: number;
     }[];
   }

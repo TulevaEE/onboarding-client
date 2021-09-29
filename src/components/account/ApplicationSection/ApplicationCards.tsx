@@ -50,8 +50,11 @@ const TransferApplicationCard: React.FunctionComponent<{
           key: <Message>applications.type.transfer.sourceFund</Message>,
           value: application.details.sourceFund && application.details.sourceFund.name,
         },
-        application.details.exchanges.map(({ targetFund: { name }, amount }) => [
-          { key: <Message>applications.type.transfer.targetFund</Message>, value: name },
+        application.details.exchanges.map(({ targetFund, targetPik, amount }) => [
+          {
+            key: <Message>applications.type.transfer.targetFund</Message>,
+            value: targetFund?.name || `${targetPik} (PIK)`,
+          },
           {
             key: <Message>applications.type.transfer.amount</Message>,
             value:
