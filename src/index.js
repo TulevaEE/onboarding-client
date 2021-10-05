@@ -11,7 +11,7 @@ import { Switch, Route } from 'react-router-dom';
 import { routerMiddleware, ConnectedRouter } from 'connected-react-router';
 import mixpanel from 'mixpanel-browser';
 import MixpanelProvider from 'react-mixpanel';
-import GoogleAnalytics from 'react-ga';
+import GoogleAnalytics from 'react-ga4';
 import { QueryClient, QueryClientProvider } from 'react-query';
 
 import createRootReducer from './reducers';
