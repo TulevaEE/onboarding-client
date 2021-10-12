@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react';
-
+import React from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { Message } from 'retranslate';
@@ -14,7 +13,6 @@ import {
   cancelSigningMandate,
   changeAgreementToTerms,
   closeErrorMessages,
-  createConfirmPageEvent,
 } from '../../../exchange/actions';
 
 import MandateNotFilledAlert from './mandateNotFilledAlert';
@@ -106,10 +104,7 @@ export const ConfirmMandate = ({
   onCancelSigningMandate,
   onChangeAgreementToTerms,
   onCloseErrorMessages,
-  onPageLoad,
 }) => {
-  useEffect(() => onPageLoad({ pillar: 2 }));
-
   if (loading) {
     return <Loader className="align-middle" />;
   }
@@ -244,7 +239,6 @@ ConfirmMandate.defaultProps = {
   onCancelSigningMandate: noop,
   onChangeAgreementToTerms: noop,
   onCloseErrorMessages: noop,
-  onPageLoad: noop,
 };
 
 ConfirmMandate.propTypes = {
@@ -273,7 +267,6 @@ ConfirmMandate.propTypes = {
   onCancelSigningMandate: Types.func,
   onChangeAgreementToTerms: Types.func,
   onCloseErrorMessages: Types.func,
-  onPageLoad: Types.func,
 };
 
 const mapStateToProps = (state) => ({
@@ -298,7 +291,6 @@ const mapDispatchToProps = (dispatch) =>
       onChangeAgreementToTerms: changeAgreementToTerms,
       onCancelSigningMandate: cancelSigningMandate,
       onCloseErrorMessages: closeErrorMessages,
-      onPageLoad: createConfirmPageEvent,
     },
     dispatch,
   );

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import Types from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -41,10 +41,7 @@ export const ConfirmThirdPillarMandate = ({
   loadingMandate,
   mandateSigningControlCode,
   mandateSigningError,
-  onPageLoad,
 }) => {
-  useEffect(() => onPageLoad({ pillar: 3 }));
-
   const buttonDisabled =
     !agreedToTerms || !isResident || !(isPoliticallyExposed === false) || !occupation;
   return (
@@ -205,7 +202,6 @@ ConfirmThirdPillarMandate.propTypes = {
   onPreview: Types.func,
   onCancelSigningMandate: Types.func,
   onCloseErrorMessages: Types.func,
-  onPageLoad: Types.func,
 };
 
 ConfirmThirdPillarMandate.defaultProps = {
@@ -233,7 +229,6 @@ ConfirmThirdPillarMandate.defaultProps = {
   onPreview: () => {},
   onCancelSigningMandate: () => {},
   onCloseErrorMessages: () => {},
-  onPageLoad: () => {},
 };
 
 const mapStateToProps = (state) => ({
@@ -269,7 +264,6 @@ const mapDispatchToProps = (dispatch) =>
       onPreview: exchangeActions.previewMandate,
       onCancelSigningMandate: exchangeActions.cancelSigningMandate,
       onCloseErrorMessages: exchangeActions.closeErrorMessages,
-      onPageLoad: exchangeActions.createConfirmPageEvent,
     },
     dispatch,
   );
