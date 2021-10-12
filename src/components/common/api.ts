@@ -145,15 +145,6 @@ export function saveMandateWithToken(mandate: string, token: string): Promise<an
   });
 }
 
-export const createMandateConfirmPageEvent = (pillar: number, token: string): Promise<any> =>
-  post(
-    getEndpoint(`/v1/mandates/createConfirmPageEvent?pillar=${pillar}`),
-    {},
-    {
-      Authorization: `Bearer ${token}`,
-    },
-  );
-
 export async function getMobileIdSignatureChallengeCodeForMandateIdWithToken(
   mandateId: string,
   token: string,
