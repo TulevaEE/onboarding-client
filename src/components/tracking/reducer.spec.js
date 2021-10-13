@@ -4,31 +4,31 @@ import mixpanel from 'mixpanel-browser';
 import trackingReducer from './reducer';
 
 import {
-  SELECT_EXCHANGE_SOURCES,
-  GET_TARGET_FUNDS_ERROR,
-  SELECT_TARGET_FUND,
   CHANGE_AGREEMENT_TO_TERMS,
-  SIGN_MANDATE_MOBILE_ID_START,
-  SIGN_MANDATE_MOBILE_ID_START_SUCCESS,
-  SIGN_MANDATE_MOBILE_ID_CANCEL,
-  SIGN_MANDATE_SMART_ID_START,
-  SIGN_MANDATE_SMART_ID_START_SUCCESS,
+  GET_TARGET_FUNDS_ERROR,
+  SELECT_EXCHANGE_SOURCES,
+  SELECT_TARGET_FUND,
+  SIGN_MANDATE_ERROR,
   SIGN_MANDATE_ID_CARD_START,
   SIGN_MANDATE_ID_CARD_START_SUCCESS,
+  SIGN_MANDATE_MOBILE_ID_CANCEL,
+  SIGN_MANDATE_MOBILE_ID_START,
+  SIGN_MANDATE_MOBILE_ID_START_SUCCESS,
+  SIGN_MANDATE_SMART_ID_START,
+  SIGN_MANDATE_SMART_ID_START_SUCCESS,
   SIGN_MANDATE_START_ERROR,
   SIGN_MANDATE_SUCCESS,
-  SIGN_MANDATE_ERROR,
 } from '../exchange/constants';
 
 import {
+  GET_USER_CONVERSION_SUCCESS,
+  GET_USER_ERROR,
+  GET_USER_SUCCESS,
+  ID_CARD_AUTHENTICATION_START,
+  ID_CARD_AUTHENTICATION_SUCCESS,
   LOG_OUT,
   MOBILE_AUTHENTICATION_START,
   MOBILE_AUTHENTICATION_SUCCESS,
-  ID_CARD_AUTHENTICATION_START,
-  ID_CARD_AUTHENTICATION_SUCCESS,
-  GET_USER_SUCCESS,
-  GET_USER_ERROR,
-  GET_USER_CONVERSION_SUCCESS,
 } from '../login/constants';
 
 import { UPDATE_USER_SUCCESS } from '../common/user/constants';
@@ -145,14 +145,14 @@ it('can track conversion information', () => {
 });
 
 it('can track location changes', () => {
-  const payload = { pathname: 'newPath' };
+  const payload = { location: { pathname: 'newPath' } };
   const action = { type: LOCATION_CHANGE, payload };
 
   trackingReducer(undefined, action);
 
   expect(mixpanel.track).toHaveBeenCalledTimes(1);
   expect(mixpanel.track).toHaveBeenCalledWith(getActionType(LOCATION_CHANGE), {
-    path: payload.pathname,
+    path: 'newPath',
   });
 });
 

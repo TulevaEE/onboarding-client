@@ -103,7 +103,7 @@ export default function trackingReducer(state = initialState, action) {
       return state;
     case LOCATION_CHANGE:
       try {
-        mixpanel.track(actionType, { path: action.payload.pathname });
+        mixpanel.track(actionType, { path: action.payload.location.pathname });
       } catch (e) {
         noop(e); // do nothing when mixpanel is not initialized
       }
