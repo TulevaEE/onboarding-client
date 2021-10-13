@@ -10,7 +10,6 @@ import { Provider as ReduxProvider } from 'react-redux';
 import { Switch, Route } from 'react-router-dom';
 import { routerMiddleware, ConnectedRouter } from 'connected-react-router';
 import mixpanel from 'mixpanel-browser';
-import MixpanelProvider from 'react-mixpanel';
 import GoogleAnalytics from 'react-ga4';
 import { QueryClient, QueryClientProvider } from 'react-query';
 
@@ -97,25 +96,23 @@ export class App extends Component {
 
   render() {
     return (
-      <MixpanelProvider mixpanel={mixpanel}>
-        <QueryClientProvider client={queryClient}>
-          <TranslationProvider
-            messages={translations}
-            language={applyLanguage()}
-            fallbackLanguage="et"
-          >
-            <ReduxProvider store={store}>
-              <ConnectedRouter history={history}>
-                <Switch>
-                  <Route path={loginPath} component={LoginPage} />
-                  <Route path="/terms-of-use" component={TermsOfUse} />
-                  <PrivateRoute exact path="" component={LoggedInApp} />
-                </Switch>
-              </ConnectedRouter>
-            </ReduxProvider>
-          </TranslationProvider>
-        </QueryClientProvider>
-      </MixpanelProvider>
+      <QueryClientProvider client={queryClient}>
+        <TranslationProvider
+          messages={translations}
+          language={applyLanguage()}
+          fallbackLanguage="et"
+        >
+          <ReduxProvider store={store}>
+            <ConnectedRouter history={history}>
+              <Switch>
+                <Route path={loginPath} component={LoginPage} />
+                <Route path="/terms-of-use" component={TermsOfUse} />
+                <PrivateRoute exact path="" component={LoggedInApp} />
+              </Switch>
+            </ConnectedRouter>
+          </ReduxProvider>
+        </TranslationProvider>
+      </QueryClientProvider>
     );
   }
 }

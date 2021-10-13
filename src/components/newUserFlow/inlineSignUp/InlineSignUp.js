@@ -3,7 +3,6 @@ import { PropTypes as Types } from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import mixpanel from 'mixpanel-browser';
-import MixpanelProvider from 'react-mixpanel';
 import config from 'react-global-configuration';
 
 import { createNewMember } from '../../common/user/actions';
@@ -14,11 +13,7 @@ import InlineSignUpForm from './inlineSignUpForm';
 initializeConfiguration();
 mixpanel.init(config.get('mixpanelKey'));
 
-export const InlineSignUp = ({ saveUser }) => (
-  <MixpanelProvider mixpanel={mixpanel}>
-    <InlineSignUpForm onSubmit={saveUser} />
-  </MixpanelProvider>
-);
+export const InlineSignUp = ({ saveUser }) => <InlineSignUpForm onSubmit={saveUser} />;
 
 const noop = () => null;
 
