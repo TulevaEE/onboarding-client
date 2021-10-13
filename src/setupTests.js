@@ -7,6 +7,7 @@ jest.mock('retranslate', () => jest.requireActual('../__mocks__/retranslate'));
 jest.mock('mixpanel-browser', () => ({
   identify: jest.fn(),
   track: jest.fn(),
+  register: jest.fn(),
   people: { set: jest.fn() },
 }));
 
