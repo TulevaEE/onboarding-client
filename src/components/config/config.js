@@ -1,7 +1,7 @@
 import config from 'react-global-configuration';
 
 const DEFAULT_CONF_DEV = {
-  mixpanelKey: 'be355b17352ad6b4660ae595cd65ce61',
+  mixpanelKey: 'b91ad1c0f37637f1129f3c713d91d3ad',
   applicationUrl: 'http://localhost:3000',
   newUserPaymentRedirectBaseUrl:
     'https://payment.test.maksekeskus.ee/pay/1/link.html?shopId=322a5e5e-37ee-45b1-8961-ebd00e84e209&amount=125',
