@@ -39,6 +39,7 @@ function getActionType(actionType) {
 
 beforeEach(() => {
   mixpanel.track = jest.fn();
+  mixpanel.register = jest.fn();
 });
 
 it('can track getting user', () => {
@@ -137,11 +138,11 @@ it('can track conversion information', () => {
 
   trackingReducer(undefined, action);
 
-  expect(mixpanel.track).toHaveBeenCalledTimes(1);
   expect(mixpanel.track).toHaveBeenCalledWith(
     getActionType(GET_USER_CONVERSION_SUCCESS),
     userConversion,
   );
+  expect(mixpanel.register).toHaveBeenCalledWith({ conversion: userConversion });
 });
 
 it('can track location changes', () => {
