@@ -34,6 +34,8 @@ import {
   SIGN_MANDATE_MOBILE_ID_CANCEL,
   SIGN_MANDATE_MOBILE_ID_START,
   SIGN_MANDATE_MOBILE_ID_START_SUCCESS,
+  SIGN_MANDATE_SMART_ID_START,
+  SIGN_MANDATE_SMART_ID_START_SUCCESS,
   SIGN_MANDATE_START_ERROR,
   SIGN_MANDATE_SUCCESS,
   SIGN_MANDATE_IN_PROGRESS,
@@ -197,7 +199,7 @@ export function signMandateWithMobileId(mandate) {
 
 export function signMandateWithSmartId(mandate) {
   return (dispatch, getState) => {
-    dispatch({ type: SIGN_MANDATE_MOBILE_ID_START });
+    dispatch({ type: SIGN_MANDATE_SMART_ID_START });
     const { token } = getState().login;
     let mandateId;
     return saveOrRetrieveExistingMandate(mandate, token)
@@ -206,7 +208,7 @@ export function signMandateWithSmartId(mandate) {
         return getSmartIdSignatureChallengeCodeForMandateIdWithToken(mandateId, token);
       })
       .then((controlCode) => {
-        dispatch({ type: SIGN_MANDATE_MOBILE_ID_START_SUCCESS, controlCode });
+        dispatch({ type: SIGN_MANDATE_SMART_ID_START_SUCCESS, controlCode });
         dispatch(pollForMandateSignatureWithMandateIdUsingSmartId(mandateId));
       })
       .catch((error) => {

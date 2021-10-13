@@ -11,6 +11,8 @@ import {
   SELECT_TARGET_FUND,
   SIGN_MANDATE_MOBILE_ID_START,
   SIGN_MANDATE_MOBILE_ID_START_SUCCESS,
+  SIGN_MANDATE_SMART_ID_START,
+  SIGN_MANDATE_SMART_ID_START_SUCCESS,
   SIGN_MANDATE_ID_CARD_START,
   SIGN_MANDATE_START_ERROR,
   SIGN_MANDATE_INVALID_ERROR,
@@ -497,6 +499,11 @@ describe('Exchange reducer', () => {
     expect(exchangeReducer(undefined, action).loadingMandate).toBe(true);
   });
 
+  it('starts loading mandate when starting to sign mandate with smart id', () => {
+    const action = { type: SIGN_MANDATE_SMART_ID_START };
+    expect(exchangeReducer(undefined, action).loadingMandate).toBe(true);
+  });
+
   it('starts loading mandate when starting to sign mandate with id card', () => {
     const action = { type: SIGN_MANDATE_ID_CARD_START };
     expect(exchangeReducer(undefined, action).loadingMandate).toBe(true);
@@ -505,6 +512,14 @@ describe('Exchange reducer', () => {
   it('stops loading mandate and saves control code when starting to sign with mobile id succeeds', () => {
     const controlCode = 'control code';
     const action = { type: SIGN_MANDATE_MOBILE_ID_START_SUCCESS, controlCode };
+    const newState = exchangeReducer({ mandateSigningControlCode: true }, action);
+    expect(newState.mandateSigningControlCode).toBe(controlCode);
+    expect(newState.loadingMandate).toBe(false);
+  });
+
+  it('stops loading mandate and saves control code when starting to sign with smart id succeeds', () => {
+    const controlCode = 'control code';
+    const action = { type: SIGN_MANDATE_SMART_ID_START_SUCCESS, controlCode };
     const newState = exchangeReducer({ mandateSigningControlCode: true }, action);
     expect(newState.mandateSigningControlCode).toBe(controlCode);
     expect(newState.loadingMandate).toBe(false);

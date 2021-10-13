@@ -17,6 +17,7 @@ import {
   SIGN_MANDATE_MOBILE_ID_CANCEL,
   SIGN_MANDATE_MOBILE_ID_START,
   SIGN_MANDATE_MOBILE_ID_START_SUCCESS,
+  SIGN_MANDATE_SMART_ID_START,
   SIGN_MANDATE_START_ERROR,
   SIGN_MANDATE_SUCCESS,
 } from './constants';
@@ -420,7 +421,7 @@ describe('Exchange actions', () => {
     mockApi.saveMandateWithToken = jest.fn(() => Promise.reject(new Error()));
     await signMandate({});
     expect(dispatch).toHaveBeenCalledWith({
-      type: SIGN_MANDATE_MOBILE_ID_START,
+      type: SIGN_MANDATE_SMART_ID_START,
     });
   });
 
