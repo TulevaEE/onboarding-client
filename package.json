@@ -11,7 +11,7 @@
     "connected-react-router": "^6.9.1",
     "downloadjs": "^1.4.7",
     "font-awesome": "^4.7.0",
-    "history": "^4.9.0",
+    "history": "^5.0.1",
     "hwcrypto-js": "git://github.com/ErkoRisthein/hwcrypto.js.git#0.0.14",
     "lodash": "^4.17.20",
     "mixpanel-browser": "^2.41.0",
