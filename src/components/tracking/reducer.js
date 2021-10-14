@@ -81,7 +81,7 @@ export default function trackingReducer(state = initialState, action) {
       });
       return state;
     case GET_USER_CONVERSION_SUCCESS:
-      mixpanel.track(actionType, action.userConversion);
+      mixpanel.track(actionType);
       mixpanel.register({ conversion: action.userConversion });
       return state;
     case LOG_OUT:
