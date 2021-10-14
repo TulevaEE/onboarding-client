@@ -138,10 +138,7 @@ it('can track conversion information', () => {
 
   trackingReducer(undefined, action);
 
-  expect(mixpanel.track).toHaveBeenCalledWith(
-    getActionType(GET_USER_CONVERSION_SUCCESS),
-    userConversion,
-  );
+  expect(mixpanel.track).toHaveBeenCalledWith(getActionType(GET_USER_CONVERSION_SUCCESS));
   expect(mixpanel.register).toHaveBeenCalledWith({ conversion: userConversion });
 });
 
