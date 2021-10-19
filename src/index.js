@@ -83,8 +83,7 @@ if (process.env.NODE_ENV !== 'test') {
 
 history.listen(() => {
   if (process.env.NODE_ENV === 'production') {
-    const path = history.location.pathname;
-    GoogleAnalytics.send({ hitType: 'pageview', page: path, title: path });
+    GoogleAnalytics.pageview(window.location.href);
   }
 });
 
