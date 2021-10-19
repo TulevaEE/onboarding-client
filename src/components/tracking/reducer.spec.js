@@ -140,6 +140,7 @@ it('can track conversion information', () => {
 
   expect(mixpanel.track).toHaveBeenCalledWith(getActionType(GET_USER_CONVERSION_SUCCESS));
   expect(mixpanel.register).toHaveBeenCalledWith({ conversion: userConversion });
+  expect(mixpanel.people.set).toHaveBeenCalledWith({ conversion: userConversion });
 });
 
 it('can track location changes', () => {
