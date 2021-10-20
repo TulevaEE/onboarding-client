@@ -81,9 +81,9 @@ export default function trackingReducer(state = initialState, action) {
       });
       return state;
     case GET_USER_CONVERSION_SUCCESS:
-      mixpanel.track(actionType);
       mixpanel.register({ conversion: action.userConversion });
       mixpanel.people.set({ conversion: action.userConversion });
+      mixpanel.track(actionType);
       return state;
     case LOG_OUT:
     case MOBILE_AUTHENTICATION_START:
