@@ -33,7 +33,7 @@
     "react-tooltip": "4.2.17",
     "redux": "^4.0.4",
     "redux-form": "^8.3.7",
-    "redux-thunk": "^2.3.0",
+    "redux-thunk": "^2.4.0",
     "retranslate": "^1.2.0",
     "sass": "^1.43.4",
     "typescript": "^3.6.2",
