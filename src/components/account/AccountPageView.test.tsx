@@ -3,7 +3,6 @@ import { setupServer } from 'msw/node';
 import { screen, within } from '@testing-library/react';
 import { Route } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
-// eslint-disable-next-line import/no-named-as-default
 import { initializeConfiguration } from '../config/config';
 import LoggedInApp from '../LoggedInApp';
 import { createDefaultStore, login, renderWrapped } from '../../test/utils';
@@ -23,7 +22,7 @@ jest.unmock('retranslate');
 const server = setupServer();
 let history: History;
 
-function render() {
+function initializeComponent() {
   history = createMemoryHistory();
   const store = createDefaultStore(history as any);
   login(store);
@@ -47,13 +46,13 @@ beforeEach(() => {
   userCapitalBackend(server);
   applicationsBackend(server);
 
-  render();
+  initializeComponent();
 
   history.push('/account');
 });
 
 test('user data is shown', async () => {
-  await screen.findByText('Hi, John Doe!');
+  expect(await screen.findByText('Hi, John Doe!')).toBeInTheDocument();
   expect(screen.getByText('john.doe@example.com')).toBeInTheDocument();
   expect(screen.getByText('55667788')).toBeInTheDocument();
 });
@@ -62,7 +61,9 @@ test('pension summary table is shown', async () => {
   // eslint-disable-next-line testing-library/no-node-access
   const summarySection = screen.getByText('Your pension summary').parentElement;
 
-  await within(summarySection).findByRole('cell', { name: 'Member capital' });
+  expect(
+    await within(summarySection).findByRole('cell', { name: 'Member capital' }),
+  ).toBeInTheDocument();
   // eslint-disable-next-line testing-library/no-node-access
   const getRow = (name: string) => within(summarySection).getByRole('cell', { name }).parentElement;
 

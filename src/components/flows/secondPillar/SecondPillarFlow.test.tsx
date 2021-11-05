@@ -26,7 +26,7 @@ jest.unmock('retranslate');
 const server = setupServer();
 let history: History;
 
-function render() {
+function initializeComponent() {
   history = createMemoryHistory();
   const store = createDefaultStore(history as any);
   login(store);
@@ -50,13 +50,13 @@ beforeEach(async () => {
   userCapitalBackend(server);
   applicationsBackend(server);
 
-  render();
+  initializeComponent();
 
   history.push('/2nd-pillar-flow');
 });
 
 test('2nd pillar flow allows moving all external pension to main Tuleva pension fund', async () => {
-  await screen.findByText('Transfer my pension to Tuleva');
+  expect(await screen.findByText('Transfer my pension to Tuleva')).toBeInTheDocument();
 
   userEvent.click(screen.getByRole('button', { name: 'Next step' }));
 
@@ -81,7 +81,9 @@ test('2nd pillar flow allows moving all external pension to main Tuleva pension 
 
   userEvent.click(signButton);
 
-  await screen.findByRole('heading', { name: 'Application finished' }, { timeout: 10_000 });
+  expect(
+    await screen.findByRole('heading', { name: 'Application finished' }, { timeout: 10_000 }),
+  ).toBeInTheDocument();
 
   // TODO: Consider testing mandate download
 }, 20_000);

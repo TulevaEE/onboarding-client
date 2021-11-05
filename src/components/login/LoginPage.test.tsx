@@ -22,7 +22,7 @@ describe('When a user is logging in', () => {
   const server = setupServer();
   let history: History;
 
-  function render() {
+  function initializeComponent() {
     history = createMemoryHistory();
     const store = createDefaultStore(history as any);
 
@@ -37,7 +37,7 @@ describe('When a user is logging in', () => {
   }
   beforeEach(() => {
     initializeConfiguration();
-    render();
+    initializeComponent();
     act(() => {
       history.push('/login');
     });

@@ -25,7 +25,7 @@ describe('When a user is cancelling an application', () => {
   const server = setupServer();
   let history: History;
 
-  function render() {
+  function initializeComponent() {
     history = createMemoryHistory();
     const store = createDefaultStore(history as any);
     login(store);
@@ -50,7 +50,7 @@ describe('When a user is cancelling an application', () => {
         return res(ctx.status(200), ctx.json([testApplication()]));
       }),
     );
-    render();
+    initializeComponent();
     act(() => {
       history.push('/applications/123/cancellation');
     });

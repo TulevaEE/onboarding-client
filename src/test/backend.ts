@@ -22,21 +22,16 @@ export function cancellationBackend(
   return backend;
 }
 
-export function mandateDownloadBackend(server: SetupServerApi) {
-  const backend = {
-    mandateDownloaded: false,
-  };
+export const mandateDownloadBackend = (server: SetupServerApi): void => {
   server.use(
     rest.get('http://localhost/v1/mandates/1/file', async (req, res, ctx) => {
       if (req.headers.get('Authorization') !== 'Bearer mock token') {
         return res(ctx.status(401), ctx.json({ error: 'not authenticated correctly' }));
       }
-      backend.mandateDownloaded = true;
       return res(ctx.status(200), ctx.text('fake mandate'));
     }),
   );
-  return backend;
-}
+};
 
 export function mandatePreviewBackend(
   server: SetupServerApi,
