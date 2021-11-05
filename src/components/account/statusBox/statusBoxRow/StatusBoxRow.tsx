@@ -51,3 +51,5 @@ export const StatusBoxRow: React.FunctionComponent<{
     </div>
   );
 };
+
+export default StatusBoxRow;

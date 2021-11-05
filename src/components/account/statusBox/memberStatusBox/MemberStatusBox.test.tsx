@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { MemberStatusBox } from './MemberStatusBox';
-import { StatusBoxRow } from '../statusBoxRow/StatusBoxRow';
+import StatusBoxRow from '../statusBoxRow';
 
 describe('MemberStatusBox', () => {
   const loading = false;
