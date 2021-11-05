@@ -2,7 +2,7 @@ import React from 'react';
 import { Message } from 'retranslate';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { StatusBoxRow } from '../statusBoxRow/StatusBoxRow';
+import StatusBoxRow from '../statusBoxRow';
 import { SourceFund, UserConversion } from '../../../common/apiModels';
 
 interface Props {

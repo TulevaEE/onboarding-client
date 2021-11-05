@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 import { ThirdPillarStatusBox } from './ThirdPillarStatusBox';
-import { StatusBoxRow } from '../statusBoxRow/StatusBoxRow';
+import StatusBoxRow from '../statusBoxRow';
 import { activeThirdPillar, completeThirdPillarconversion } from '../fixtures';
 
 describe('ThirdPillarStatusBox', () => {

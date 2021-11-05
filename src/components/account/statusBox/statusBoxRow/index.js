@@ -1,3 +1,1 @@
-import StatusBoxRow from './StatusBoxRow';
-
-export default StatusBoxRow;
+export { default } from './StatusBoxRow';

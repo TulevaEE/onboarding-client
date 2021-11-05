@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 import { SecondPillarStatusBox } from './SecondPillarStatusBox';
-import { StatusBoxRow } from '../statusBoxRow/StatusBoxRow';
+import StatusBoxRow from '../statusBoxRow';
 import { activeSecondPillar, completeSecondPillarconversion } from '../fixtures';
 
 // TODO: Figure out a cleaner way to mock applications from the hook
