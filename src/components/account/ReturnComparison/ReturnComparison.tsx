@@ -155,8 +155,8 @@ export class ReturnComparison extends Component<Props, State> {
                   // { value: Key.THIRD_PILLAR, label: 'returnComparison.personal.thirdPillar' },
                 ]}
                 selected={selectedPersonalKey}
-                onChange={(key: Key): void => {
-                  this.setState({ selectedPersonalKey: key }, () => {
+                onChange={(key: string) => {
+                  this.setState({ selectedPersonalKey: Key[key as keyof typeof Key] }, () => {
                     this.loadReturns();
                   });
                 }}
@@ -175,7 +175,7 @@ export class ReturnComparison extends Component<Props, State> {
                   })),
                 ]}
                 selected={selectedPensionFundKey}
-                onChange={(key: Key): void => {
+                onChange={(key: string) => {
                   this.setState({ selectedPensionFundKey: key }, () => {
                     this.loadReturns();
                   });
@@ -195,8 +195,8 @@ export class ReturnComparison extends Component<Props, State> {
                   { value: Key.CPI, label: 'returnComparison.index.cpi' },
                 ]}
                 selected={selectedIndexKey}
-                onChange={(key: Key): void => {
-                  this.setState({ selectedIndexKey: key }, () => {
+                onChange={(key: string) => {
+                  this.setState({ selectedIndexKey: Key[key as keyof typeof Key] }, () => {
                     this.loadReturns();
                   });
                 }}
