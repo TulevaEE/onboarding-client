@@ -3,7 +3,7 @@ import { Message } from 'retranslate';
 import { connect } from 'react-redux';
 
 import moment, { Moment } from 'moment';
-import Select from './Select';
+import Select from './select';
 import { getReturnComparison, Key } from './api';
 import fundIsinsWithAvailableData from './fundIsinsWithAvailableData.json';
 import convertFundsToFundNameMap from './convertFundsToFundNameMap';
