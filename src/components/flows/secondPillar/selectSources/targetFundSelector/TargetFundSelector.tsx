@@ -1,15 +1,23 @@
 import React from 'react';
-import { PropTypes as Types } from 'prop-types';
-import { Message, withTranslations } from 'retranslate';
+import { Message, Translations, withTranslations } from 'retranslate';
 
 import './TargetFundSelector.scss';
 import checkImage from '../../../common/SuccessNotice/success.svg';
+import { Fund } from '../../../../common/apiModels';
 
-export const TargetFundSelector = ({
-  targetFunds,
+type Props = {
+  targetFunds: Fund[];
+  onSelectFund: (fund: Fund) => void;
+  selectedTargetFundIsin: string;
+  recommendedFundIsin: string;
+  translations: Translations;
+};
+
+export const TargetFundSelector: React.FunctionComponent<Props> = ({
+  targetFunds = [],
   onSelectFund,
-  selectedTargetFundIsin,
-  recommendedFundIsin,
+  selectedTargetFundIsin = '',
+  recommendedFundIsin = '',
   translations: { translate },
 }) => (
   <div className="row mx-0 mt-2 tv-target-fund__container">
@@ -60,21 +68,5 @@ export const TargetFundSelector = ({
     ))}
   </div>
 );
-
-const noop = () => null;
-
-TargetFundSelector.defaultProps = {
-  targetFunds: [],
-  onSelectFund: noop,
-  selectedTargetFundIsin: '',
-  recommendedFundIsin: '',
-};
-
-TargetFundSelector.propTypes = {
-  targetFunds: Types.arrayOf(Types.shape({ isin: Types.string.isRequired })),
-  onSelectFund: Types.func,
-  selectedTargetFundIsin: Types.string,
-  recommendedFundIsin: Types.string,
-};
 
 export default withTranslations(TargetFundSelector);
