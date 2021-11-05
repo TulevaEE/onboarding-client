@@ -91,7 +91,7 @@ async function getTokensWithGrantType(grantType: string): Promise<any> {
     );
 
     return { accessToken };
-  } catch (error) {
+  } catch (error: any) {
     if (error.error !== 'AUTHENTICATION_NOT_COMPLETE') {
       throw error;
     }

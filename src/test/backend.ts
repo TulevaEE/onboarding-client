@@ -1,4 +1,4 @@
-import { rest } from 'msw';
+import { DefaultRequestMultipartBody, rest } from 'msw';
 import { SetupServerApi } from 'msw/node';
 import queryString from 'qs';
 
@@ -93,16 +93,18 @@ export function smartIdAuthenticationBackend(
 
   server.use(
     rest.post('http://localhost/authenticate', (req, res, ctx) => {
+      const body = req.body as DefaultRequestMultipartBody;
       if (
-        req.body.type !== 'SMART_ID' ||
-        (options.identityCode && req.body.personalCode !== options.identityCode)
+        body.type !== 'SMART_ID' ||
+        (options.identityCode && body.personalCode !== options.identityCode)
       ) {
         return res(ctx.status(401), ctx.json({ error: 'wrong method or id code' }));
       }
       return res(ctx.status(200), ctx.json({ challengeCode: options.challengeCode || '9876' }));
     }),
+
     rest.post('http://localhost/oauth/token', (req, res, ctx) => {
-      const body = queryString.parse(req.body);
+      const body = queryString.parse(req.body as string);
       if (
         body.grant_type !== 'smart_id' ||
         body.client_id !== 'onboarding-client' ||
@@ -140,17 +142,19 @@ export function mobileIdAuthenticationBackend(
 
   server.use(
     rest.post('http://localhost/authenticate', (req, res, ctx) => {
+      const body = req.body as DefaultRequestMultipartBody;
       if (
-        req.body.type !== 'MOBILE_ID' ||
-        (options.identityCode && req.body.personalCode !== options.identityCode) ||
-        (options.phoneNumber && req.body.phoneNumber !== options.phoneNumber)
+        body.type !== 'MOBILE_ID' ||
+        (options.identityCode && body.personalCode !== options.identityCode) ||
+        (options.phoneNumber && body.phoneNumber !== options.phoneNumber)
       ) {
         return res(ctx.status(401), ctx.json({ error: 'wrong method, id code or number' }));
       }
       return res(ctx.status(200), ctx.json({ challengeCode: options.challengeCode || '9876' }));
     }),
+
     rest.post('http://localhost/oauth/token', (req, res, ctx) => {
-      const body = queryString.parse(req.body);
+      const body = queryString.parse(req.body as string);
       if (
         body.grant_type !== 'mobile_id' ||
         body.client_id !== 'onboarding-client' ||
@@ -194,7 +198,7 @@ export function idCardAuthenticationBackend(
       return res(ctx.status(200), ctx.json({ success: true }));
     }),
     rest.post('http://localhost/oauth/token', (req, res, ctx) => {
-      const body = queryString.parse(req.body);
+      const body = queryString.parse(req.body as string);
       if (
         body.grant_type !== 'id_card' ||
         body.client_id !== 'onboarding-client' ||
@@ -435,7 +439,3 @@ export function applicationsBackend(server: SetupServerApi): void {
     }),
   );
 }
-
-type DeepPartial<T> = {
-  [P in keyof T]?: DeepPartial<T[P]>;
-};
