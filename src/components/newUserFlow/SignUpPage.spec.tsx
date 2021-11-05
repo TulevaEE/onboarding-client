@@ -1,5 +1,5 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import { shallow, ShallowWrapper } from 'enzyme';
 
 import { Redirect } from 'react-router-dom';
 import { SignUpPage } from './SignUpPage';
@@ -7,7 +7,7 @@ import { ACCOUNT_PATH } from '../LoggedInApp';
 import InlineSignUpForm from './inlineSignUp/inlineSignUpForm';
 
 describe('Sign up page', () => {
-  let component: any;
+  let component: ShallowWrapper;
 
   beforeEach(() => {
     component = shallow(<SignUpPage isMember saveUser={() => {}} />);

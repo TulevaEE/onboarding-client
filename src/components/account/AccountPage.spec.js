@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { ErrorMessage, Loader } from '../common';
+import { ErrorMessage } from '../common';
 import { AccountPage } from './AccountPage';
 import AccountStatement from './AccountStatement';
 import GreetingBar from './GreetingBar';

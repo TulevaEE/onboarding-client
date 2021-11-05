@@ -198,7 +198,7 @@ describe('Application section', () => {
 
     userEvent.click(cancelButton);
 
-    await screen.findByText('Test cancellation route');
+    expect(await screen.findByText('Test cancellation route')).toBeInTheDocument();
   });
 
   it('shows the ability to cancel before the deadline', async () => {
