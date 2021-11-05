@@ -3,6 +3,14 @@ import { shallow, ShallowWrapper } from 'enzyme';
 
 import { Select } from './Select';
 
+jest.mock('retranslate', () => {
+  return {
+    useTranslations: () => ({
+      translate: jest.fn().mockImplementation((key) => `translated ${key}`),
+    }),
+  };
+});
+
 describe('Select', () => {
   let component;
   let onChange;
@@ -32,9 +40,6 @@ describe('Select', () => {
   });
 
   it('has translated option labels', () => {
-    const translate = jest.fn().mockImplementation((key) => `translated ${key}`);
-    component.setProps({ translations: { translate } });
-
     expect(options().map((option) => option.text())).toEqual([
       'translated One',
       'translated Two',
