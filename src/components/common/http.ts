@@ -46,7 +46,7 @@ export async function get(url: string, params = {}, headers = {}): Promise<Axios
       headers: { ...headers, ...createCustomHeaders() },
     });
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     // eslint-disable-next-line no-throw-literal
     throw {
       status: error.response?.status,

@@ -12,7 +12,7 @@ describe('Login form', () => {
     jest.useFakeTimers('modern');
     jest.setSystemTime(new Date('August 10, 2021 10:36:00'));
 
-    component = shallow(<LoginForm {...{ translations: { translate: () => '' } }} />);
+    component = shallow(<LoginForm />);
   });
 
   it('shows only the default title when no monthly contribution', () => {
