@@ -3,7 +3,7 @@ import { shallow, ShallowWrapper } from 'enzyme';
 
 import { ReturnComparison } from './ReturnComparison';
 import { getReturnComparison, Key } from './api';
-import Select from './Select';
+import Select from './select';
 
 jest.mock('./api', () => ({
   ...jest.requireActual('./api'),
