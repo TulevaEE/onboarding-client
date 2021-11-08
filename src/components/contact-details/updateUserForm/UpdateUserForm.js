@@ -422,8 +422,12 @@ export const UpdateUserForm = ({
             </div>
           )}
           {children}
-          <div className={`form-group ${error ? 'has-danger' : ''}`}>
-            {error && <div className="form-control-feedback mb-3">{error}</div>}
+          <div className={`form-group ${error ? 'text-danger' : ''}`}>
+            {error && (
+              <div className="mb-3">
+                <Message>{error}</Message>
+              </div>
+            )}
             <button
               type="submit"
               disabled={invalid || submitting}
