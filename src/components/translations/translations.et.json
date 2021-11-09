@@ -196,6 +196,7 @@
   "new.user.flow.back": "Tagasi",
   "new.user.flow.signup.error.required.field": "See väli on kohustuslik",
   "new.user.flow.signup.error.invalid.email": "E-mail ei vasta standardile",
+  "new.user.flow.signup.error.email.duplicate": "E-mail on juba kasutuses",
   "new.user.flow.signup.error.UserAlreadyAMemberException": "Selliste andmetega ei saa liikmeks registreeruda.",
   "new.user.flow.signup.error.ValidPersonalCode": "Palun kontrolli isikukoodi",
   "new.user.flow.payment.title": "Liitumistasu",
