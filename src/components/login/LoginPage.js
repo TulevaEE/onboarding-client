@@ -4,7 +4,6 @@ import { Redirect, withRouter } from 'react-router-dom';
 import { FacebookProvider, Like } from 'react-facebook';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Message } from 'retranslate';
 
 import './LoginPage.scss';
 
