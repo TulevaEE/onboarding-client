@@ -89,7 +89,7 @@ const renderLoginForm = (
       )}
     </div>
     <div className="col-lg-9 mt-4">
-      <Message>login.permission.note</Message>
+      <Message dangerouslyTranslateInnerHTML="login.permission.note" />
     </div>
   </>
 );
