@@ -121,11 +121,14 @@ export interface Mandate {
 }
 
 export interface User {
+  id: number;
   personalCode: string;
   firstName: string;
   lastName: string;
   email: string;
   phoneNumber: string;
+  memberNumber: number;
+  age: number;
 }
 
 export interface UserConversion {

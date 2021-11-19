@@ -6,6 +6,7 @@ import {
   CancellationMandate,
   User,
   SourceFund,
+  UserConversion,
 } from './apiModels';
 import { downloadFile, get, post, postForm, put, patch, simpleFetch } from './http';
 
@@ -221,13 +222,13 @@ export async function getIdCardSignatureStatusForMandateIdWithSignedHashAndToken
   return statusCode;
 }
 
-export function updateUserWithToken(user: User, token: string): Promise<any> {
+export function updateUserWithToken(user: User, token: string): Promise<User> {
   return patch(getEndpoint('/v1/me'), user, {
     Authorization: `Bearer ${token}`,
   });
 }
 
-export function getUserConversionWithToken(token: string): Promise<any> {
+export function getUserConversionWithToken(token: string): Promise<UserConversion> {
   return get(getEndpoint('/v1/me/conversion'), undefined, {
     Authorization: `Bearer ${token}`,
   });
