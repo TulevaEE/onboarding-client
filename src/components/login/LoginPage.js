@@ -75,13 +75,11 @@ export const LoginPage = ({
                 ''
               )}
             </div>
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-lg-12 text-center fb-widget">
-            <FacebookProvider appId="1939240566313354">
-              <Like href="https://www.facebook.com/Tuleva.ee" colorScheme="dark" showFaces />
-            </FacebookProvider>
+            <div className="col-lg-6 offset-lg-3 col-md-8 offset-md-2 col-sm-12 fb-widget mt-3">
+              <FacebookProvider appId="1939240566313354">
+                <Like href="https://www.facebook.com/Tuleva.ee" colorScheme="dark" showFaces />
+              </FacebookProvider>
+            </div>
           </div>
         </div>
       </div>
