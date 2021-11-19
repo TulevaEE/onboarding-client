@@ -2,6 +2,7 @@ import { LOCATION_CHANGE } from 'connected-react-router';
 
 import mixpanel from 'mixpanel-browser';
 
+import _ from 'lodash';
 import {
   SELECT_EXCHANGE_SOURCES,
   GET_TARGET_FUNDS_ERROR,
@@ -45,6 +46,19 @@ function identifyUserForTracking(user) {
   });
 }
 
+const sanitizedConversion = (conversion) =>
+  _.pick(conversion, [
+    'selectionComplete',
+    'transfersComplete',
+    'paymentComplete',
+    'pendindWithdrawal',
+  ]);
+
+const sanitizedUserConversion = (userConversion) => ({
+  secondPillar: sanitizedConversion(userConversion.secondPillar),
+  thirdPillar: sanitizedConversion(userConversion.thirdPillar),
+});
+
 const initialState = {};
 
 const noop = () => null;
@@ -81,8 +95,8 @@ export default function trackingReducer(state = initialState, action) {
       });
       return state;
     case GET_USER_CONVERSION_SUCCESS:
-      mixpanel.register({ conversion: action.userConversion });
-      mixpanel.people.set({ conversion: action.userConversion });
+      mixpanel.register(sanitizedUserConversion(action.userConversion));
+      mixpanel.people.set(sanitizedUserConversion(action.userConversion));
       mixpanel.track(actionType);
       return state;
     case LOG_OUT:

@@ -133,14 +133,21 @@ it('can track sign mandate start errors', () => {
 });
 
 it('can track conversion information', () => {
-  const userConversion = {};
+  const userConversion = {
+    secondPillar: { selectionComplete: true, contribution: { total: 1000 } },
+    thirdPillar: { transfersComplete: true, contribution: { total: 3000 } },
+  };
+  const sanitizedUserConversion = {
+    secondPillar: { selectionComplete: true },
+    thirdPillar: { transfersComplete: true },
+  };
   const action = { type: GET_USER_CONVERSION_SUCCESS, userConversion };
 
   trackingReducer(undefined, action);
 
   expect(mixpanel.track).toHaveBeenCalledWith(getActionType(GET_USER_CONVERSION_SUCCESS));
-  expect(mixpanel.register).toHaveBeenCalledWith({ conversion: userConversion });
-  expect(mixpanel.people.set).toHaveBeenCalledWith({ conversion: userConversion });
+  expect(mixpanel.register).toHaveBeenCalledWith(sanitizedUserConversion);
+  expect(mixpanel.people.set).toHaveBeenCalledWith(sanitizedUserConversion);
 });
 
 it('can track location changes', () => {
