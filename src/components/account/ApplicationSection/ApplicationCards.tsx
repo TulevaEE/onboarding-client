@@ -168,7 +168,7 @@ const BaseApplicationCard: React.FunctionComponent<{
 }> = ({ application, title, children, allowedActions }) => {
   const cancellationUrl = `/applications/${application.id}/cancellation`;
   const isBeforeCancellationDeadline = moment().isSameOrBefore(
-    moment(application.cancellationDeadline),
+    moment(application.details.cancellationDeadline),
     'day',
   );
   const canCancel =

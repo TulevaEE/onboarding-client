@@ -5,8 +5,8 @@ export const transfer2Pillar = {
   type: ApplicationType.TRANSFER,
   status: ApplicationStatus.PENDING,
   creationTime: new Date('December 17, 1995 03:24:00').toISOString(),
-  cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
   details: {
+    cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
     sourceFund: {
       fundManager: { id: 5, name: 'Tuleva' },
       isin: 'EE3600109435',
@@ -47,8 +47,8 @@ export const transferPIK = {
   type: ApplicationType.TRANSFER,
   status: ApplicationStatus.PENDING,
   creationTime: new Date('December 17, 1995 03:24:00').toISOString(),
-  cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
   details: {
+    cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
     sourceFund: {
       fundManager: { id: 5, name: 'Tuleva' },
       isin: 'EE3600109435',
@@ -123,8 +123,8 @@ export const earlyWithdrawal = {
   type: ApplicationType.EARLY_WITHDRAWAL,
   status: ApplicationStatus.PENDING,
   creationTime: new Date('December 17, 1995 03:24:00').toISOString(),
-  cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
   details: {
+    cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
     fulfillmentDate: new Date('January 2, 1995 03:24:00').toISOString(),
     depositAccountIBAN: 'EE123123123',
   },
@@ -135,8 +135,8 @@ export const withdrawal = {
   type: ApplicationType.WITHDRAWAL,
   status: ApplicationStatus.PENDING,
   creationTime: new Date('December 17, 1995 03:24:00').toISOString(),
-  cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
   details: {
+    cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
     fulfillmentDate: new Date('January 2, 1995 03:24:00').toISOString(),
     depositAccountIBAN: 'EE123123123',
   },
@@ -147,8 +147,8 @@ export const stopContributions = {
   type: ApplicationType.STOP_CONTRIBUTIONS,
   status: ApplicationStatus.PENDING,
   creationTime: new Date('December 17, 1995 03:24:00').toISOString(),
-  cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
   details: {
+    cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
     stopTime: new Date('December 18, 1995 03:24:00').toISOString(),
     earliestResumeTime: new Date('December 19, 1995 03:24:00').toISOString(),
   },
@@ -159,8 +159,8 @@ export const resumeContributions = {
   type: ApplicationType.RESUME_CONTRIBUTIONS,
   status: ApplicationStatus.PENDING,
   creationTime: new Date('December 17, 1995 03:24:00').toISOString(),
-  cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
   details: {
+    cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
     resumeTime: new Date('December 18, 1995 03:24:00').toISOString(),
   },
 };

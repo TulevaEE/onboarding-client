@@ -21,6 +21,7 @@ export type TransferApplication = BaseApplication<
       targetPik: string | null;
       amount: number;
     }[];
+    cancellationDeadline: string;
   }
 >;
 
@@ -29,6 +30,7 @@ export type StopContributionsApplication = BaseApplication<
   {
     stopTime: string;
     earliestResumeTime: string;
+    cancellationDeadline: string;
   }
 >;
 
@@ -36,6 +38,7 @@ export type ResumeContributionsApplication = BaseApplication<
   ApplicationType.RESUME_CONTRIBUTIONS,
   {
     resumeTime: string;
+    cancellationDeadline: string;
   }
 >;
 
@@ -75,7 +78,6 @@ export interface BaseApplication<Type extends ApplicationType, Details> {
   id: number;
   status: ApplicationStatus;
   creationTime: string;
-  cancellationDeadline: string;
 
   type: Type;
   details: Details;
