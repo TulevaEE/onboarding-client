@@ -205,7 +205,7 @@ describe('Application section', () => {
     const date = new Date();
     date.setMonth(date.getMonth() + 1);
     const application = transfer2Pillar;
-    application.cancellationDeadline = date.toISOString();
+    application.details.cancellationDeadline = date.toISOString();
     mockApplications([application]);
     render();
 
@@ -218,7 +218,7 @@ describe('Application section', () => {
     const date = new Date();
     date.setFullYear(1995);
     const application = transfer2Pillar;
-    application.cancellationDeadline = date.toISOString();
+    application.details.cancellationDeadline = date.toISOString();
     mockApplications([application]);
     render();
 
