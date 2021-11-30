@@ -140,7 +140,7 @@
   "success.your.payments": "Your future contributions will be directed to your selected pension fund ",
   "success.your.payments.next.payment": "starting from the next payment.",
   "success.shares.switched": "In case you wished to transfer your current fund units, the transfer will be executed on ",
-  "success.shares.switched.when": "January 3rd, 2022",
+  "success.shares.switched.when": "the first working day following {{transferDate}}",
   "success.download.mandate": "Download",
   "success.view.profile.title": "Check your pension account. Tuleva members see also their member capital.",
   "success.view.profile.title.button": "My account",

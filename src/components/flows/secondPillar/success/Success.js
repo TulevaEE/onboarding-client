@@ -7,6 +7,7 @@ import { Redirect } from 'react-router-dom';
 import { SuccessNotice } from '../../common/SuccessNotice/SuccessNotice';
 
 import { downloadMandate } from '../../../exchange/actions';
+import secondPillarTransferDate from '../secondPillarTransferDate';
 
 export const Success = ({
   previousPath,
@@ -40,7 +41,13 @@ export const Success = ({
           <p>
             <Message>success.shares.switched</Message>{' '}
             <b>
-              <Message>success.shares.switched.when</Message>
+              <Message
+                params={{
+                  transferDate: secondPillarTransferDate().toLocaleDateString('et'),
+                }}
+              >
+                success.shares.switched.when
+              </Message>
             </b>
             .
           </p>
