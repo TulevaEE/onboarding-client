@@ -4,6 +4,7 @@ import { Message } from 'retranslate';
 import { Redirect } from 'react-router-dom';
 
 import { Success } from './Success';
+import secondPillarTransferDate from '../secondPillarTransferDate';
 
 describe('Success step', () => {
   let component;
@@ -47,7 +48,17 @@ describe('Success step', () => {
   it('show message for switched funds only', () => {
     component.setProps({ userHasTransferredFunds: true });
     expect(component.contains(<Message>success.shares.switched</Message>)).toBe(true);
-    expect(component.contains(<Message>success.shares.switched.when</Message>)).toBe(true);
+    expect(
+      component.contains(
+        <Message
+          params={{
+            transferDate: secondPillarTransferDate().toLocaleDateString('et'),
+          }}
+        >
+          success.shares.switched.when
+        </Message>,
+      ),
+    ).toBe(true);
     expect(component.contains(<Message>success.your.payments</Message>)).toBe(false);
     expect(component.contains(<Message>success.your.payments.next.payment</Message>)).toBe(false);
   });
@@ -60,7 +71,17 @@ describe('Success step', () => {
     expect(component.contains(<Message>success.your.payments</Message>)).toBe(true);
     expect(component.contains(<Message>success.your.payments.next.payment</Message>)).toBe(true);
     expect(component.contains(<Message>success.shares.switched</Message>)).toBe(true);
-    expect(component.contains(<Message>success.shares.switched.when</Message>)).toBe(true);
+    expect(
+      component.contains(
+        <Message
+          params={{
+            transferDate: secondPillarTransferDate().toLocaleDateString('et'),
+          }}
+        >
+          success.shares.switched.when
+        </Message>,
+      ),
+    ).toBe(true);
   });
 
   it('can download a mandate', () => {
