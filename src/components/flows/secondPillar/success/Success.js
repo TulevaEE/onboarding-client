@@ -43,7 +43,7 @@ export const Success = ({
             <b>
               <Message
                 params={{
-                  transferDate: secondPillarTransferDate().toLocaleDateString('et'),
+                  transferDate: secondPillarTransferDate().format('DD.MM.YYYY'),
                 }}
               >
                 success.shares.switched.when

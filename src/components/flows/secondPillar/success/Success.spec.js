@@ -4,7 +4,6 @@ import { Message } from 'retranslate';
 import { Redirect } from 'react-router-dom';
 
 import { Success } from './Success';
-import secondPillarTransferDate from '../secondPillarTransferDate';
 
 describe('Success step', () => {
   let component;
@@ -46,17 +45,13 @@ describe('Success step', () => {
   });
 
   it('show message for switched funds only', () => {
+    Date.now = jest.fn().mockReturnValue(new Date('2021-11-30'));
     component.setProps({ userHasTransferredFunds: true });
+
     expect(component.contains(<Message>success.shares.switched</Message>)).toBe(true);
     expect(
       component.contains(
-        <Message
-          params={{
-            transferDate: secondPillarTransferDate().toLocaleDateString('et'),
-          }}
-        >
-          success.shares.switched.when
-        </Message>,
+        <Message params={{ transferDate: '01.01.2022' }}>success.shares.switched.when</Message>,
       ),
     ).toBe(true);
     expect(component.contains(<Message>success.your.payments</Message>)).toBe(false);
@@ -64,22 +59,18 @@ describe('Success step', () => {
   });
 
   it('show message both future contributions and switched funds', () => {
+    Date.now = jest.fn().mockReturnValue(new Date('2021-11-30'));
     component.setProps({
       userContributingFuturePayments: true,
       userHasTransferredFunds: true,
     });
+
     expect(component.contains(<Message>success.your.payments</Message>)).toBe(true);
     expect(component.contains(<Message>success.your.payments.next.payment</Message>)).toBe(true);
     expect(component.contains(<Message>success.shares.switched</Message>)).toBe(true);
     expect(
       component.contains(
-        <Message
-          params={{
-            transferDate: secondPillarTransferDate().toLocaleDateString('et'),
-          }}
-        >
-          success.shares.switched.when
-        </Message>,
+        <Message params={{ transferDate: '01.01.2022' }}>success.shares.switched.when</Message>,
       ),
     ).toBe(true);
   });
