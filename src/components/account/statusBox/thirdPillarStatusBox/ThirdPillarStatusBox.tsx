@@ -80,7 +80,18 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
       ok
       showAction={!loading}
       name={<Message>account.status.choice.pillar.third</Message>}
-      lines={[activeFund]}
+      lines={[
+        activeFund,
+        <small className="text-muted">
+          <Message
+            params={{
+              contribution: <b>{conversion.thirdPillar.contribution.yearToDate || 0}</b>,
+            }}
+          >
+            account.status.yearToDateContribution
+          </Message>
+        </small>,
+      ]}
     >
       <Link to="/3rd-pillar-flow" className="btn btn-light">
         <Message>account.status.choice.pillar.third.success.action</Message>

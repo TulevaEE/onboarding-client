@@ -111,6 +111,21 @@ exports[`ThirdPillarStatusBox renders the success flow 1`] = `
   lines={
     Array [
       "Tuleva III Samba Pensionifond",
+      <small
+        className="text-muted"
+      >
+        <Message
+          params={
+            Object {
+              "contribution": <b>
+                2500
+              </b>,
+            }
+          }
+        >
+          account.status.yearToDateContribution
+        </Message>
+      </small>,
     ]
   }
   name={
