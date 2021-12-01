@@ -10,22 +10,6 @@ exports[`Status Box renders all subcomponents when present 1`] = `
     <Connect(ThirdPillarStatusBox) />
     <Connect(MemberStatusBox) />
   </div>
-  <div
-    className="mt-3"
-  >
-    <small
-      className="text-muted"
-    >
-      <Message
-        dangerouslyTranslateInnerHTML="account.status.yearToDateContribution"
-        params={
-          Object {
-            "contribution": "2500",
-          }
-        }
-      />
-    </small>
-  </div>
 </Fragment>
 `;
 
