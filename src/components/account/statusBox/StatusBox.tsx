@@ -1,5 +1,4 @@
 import React from 'react';
-import { Message } from 'retranslate';
 import { connect } from 'react-redux';
 import SecondPillarStatusBox from './secondPillarStatusBox';
 import { StatusBoxLoader } from './StatusBoxLoader';
@@ -22,7 +21,6 @@ export const StatusBox: React.FunctionComponent<Props> = ({
   if (!conversion || !secondPillarFunds || !thirdPillarFunds) {
     return <StatusBoxLoader />;
   }
-  const thirdPillarContribution = conversion.thirdPillar.contribution.yearToDate || 0;
   return (
     <>
       <StatusBoxTitle />
@@ -31,15 +29,6 @@ export const StatusBox: React.FunctionComponent<Props> = ({
         <SecondPillarStatusBox />
         <ThirdPillarStatusBox />
         <MemberStatusBox />
-      </div>
-
-      <div className="mt-3">
-        <small className="text-muted">
-          <Message
-            params={{ contribution: thirdPillarContribution.toString() }}
-            dangerouslyTranslateInnerHTML="account.status.yearToDateContribution"
-          />
-        </small>
       </div>
     </>
   );
