@@ -32,13 +32,21 @@ describe('ThirdPillarStatusBox', () => {
   });
 
   it('renders the "pick tuleva" flow when user has some other fund manager', () => {
-    component.setProps({ conversion: { thirdPillar: { selectionComplete: false } } });
+    component.setProps({
+      conversion: { thirdPillar: { selectionComplete: false, contribution: { yearToDate: 20 } } },
+    });
     expect(component).toMatchSnapshot();
   });
 
   it('renders the "transfer incomplete" flow when user has several funds', () => {
     component.setProps({
-      conversion: { thirdPillar: { transfersComplete: false, selectionComplete: true } },
+      conversion: {
+        thirdPillar: {
+          transfersComplete: false,
+          selectionComplete: true,
+          contribution: { yearToDate: 20 },
+        },
+      },
     });
     expect(component).toMatchSnapshot();
   });
@@ -46,7 +54,12 @@ describe('ThirdPillarStatusBox', () => {
   it('renders the "payment incomplete" flow when funds have not transferred yet', () => {
     component.setProps({
       conversion: {
-        thirdPillar: { paymentComplete: false, transfersComplete: true, selectionComplete: true },
+        thirdPillar: {
+          paymentComplete: false,
+          transfersComplete: true,
+          selectionComplete: true,
+          contribution: { yearToDate: 20 },
+        },
       },
     });
     expect(component).toMatchSnapshot();

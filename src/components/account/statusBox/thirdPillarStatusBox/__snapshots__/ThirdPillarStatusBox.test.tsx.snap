@@ -34,6 +34,21 @@ exports[`ThirdPillarStatusBox renders the "payment incomplete" flow when funds h
       <Message>
         account.status.choice.pillar.third.paymentIncomplete.label
       </Message>,
+      <small
+        className="text-muted"
+      >
+        <Message
+          params={
+            Object {
+              "contribution": <b>
+                20
+              </b>,
+            }
+          }
+        >
+          account.status.yearToDateContribution
+        </Message>
+      </small>,
     ]
   }
   name={
@@ -59,6 +74,21 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when user has some 
   lines={
     Array [
       "Tuleva III Samba Pensionifond",
+      <small
+        className="text-muted"
+      >
+        <Message
+          params={
+            Object {
+              "contribution": <b>
+                20
+              </b>,
+            }
+          }
+        >
+          account.status.yearToDateContribution
+        </Message>
+      </small>,
     ]
   }
   name={
@@ -86,6 +116,21 @@ exports[`ThirdPillarStatusBox renders the "transfer incomplete" flow when user h
       <Message>
         account.status.choice.pillar.third.transferIncomplete.label
       </Message>,
+      <small
+        className="text-muted"
+      >
+        <Message
+          params={
+            Object {
+              "contribution": <b>
+                20
+              </b>,
+            }
+          }
+        >
+          account.status.yearToDateContribution
+        </Message>
+      </small>,
     ]
   }
   name={
