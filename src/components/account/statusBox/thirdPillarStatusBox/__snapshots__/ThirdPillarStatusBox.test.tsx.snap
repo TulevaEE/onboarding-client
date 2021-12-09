@@ -31,9 +31,18 @@ exports[`ThirdPillarStatusBox renders the "payment incomplete" flow when funds h
 <StatusBoxRow
   lines={
     Array [
-      <Message>
-        account.status.choice.pillar.third.paymentIncomplete.label
-      </Message>,
+      <React.Fragment>
+        <Message>
+          account.status.choice.pillar.third.paymentIncomplete.label
+        </Message>
+        <InfoTooltip
+          name="third-pillar-tooltip"
+        >
+          <Message>
+            account.status.choice.pillar.third.paymentInfo
+          </Message>
+        </InfoTooltip>
+      </React.Fragment>,
       <small
         className="text-muted"
       >
@@ -48,13 +57,6 @@ exports[`ThirdPillarStatusBox renders the "payment incomplete" flow when funds h
         >
           account.status.yearToDateContribution
         </Message>
-        <InfoTooltip
-          name="third-pillar-tooltip"
-        >
-          <Message>
-            account.status.choice.pillar.third.paymentInfo
-          </Message>
-        </InfoTooltip>
       </small>,
     ]
   }
@@ -95,13 +97,6 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when user has some 
         >
           account.status.yearToDateContribution
         </Message>
-        <InfoTooltip
-          name="third-pillar-tooltip"
-        >
-          <Message>
-            account.status.choice.pillar.third.paymentInfo
-          </Message>
-        </InfoTooltip>
       </small>,
     ]
   }
@@ -144,13 +139,6 @@ exports[`ThirdPillarStatusBox renders the "transfer incomplete" flow when user h
         >
           account.status.yearToDateContribution
         </Message>
-        <InfoTooltip
-          name="third-pillar-tooltip"
-        >
-          <Message>
-            account.status.choice.pillar.third.paymentInfo
-          </Message>
-        </InfoTooltip>
       </small>,
     ]
   }
@@ -191,13 +179,6 @@ exports[`ThirdPillarStatusBox renders the success flow 1`] = `
         >
           account.status.yearToDateContribution
         </Message>
-        <InfoTooltip
-          name="third-pillar-tooltip"
-        >
-          <Message>
-            account.status.choice.pillar.third.paymentInfo
-          </Message>
-        </InfoTooltip>
       </small>,
     ]
   }

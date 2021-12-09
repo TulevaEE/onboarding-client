@@ -71,7 +71,12 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
         showAction={!loading}
         name={<Message>account.status.choice.pillar.third</Message>}
         lines={[
-          <Message>account.status.choice.pillar.third.paymentIncomplete.label</Message>,
+          <>
+            <Message>account.status.choice.pillar.third.paymentIncomplete.label</Message>
+            <InfoTooltip name="third-pillar-tooltip">
+              <Message>account.status.choice.pillar.third.paymentInfo</Message>
+            </InfoTooltip>
+          </>,
           getPaidThisYearRow(conversion),
         ]}
       >
@@ -105,10 +110,6 @@ const getPaidThisYearRow = (conversion: UserConversion) => (
     >
       account.status.yearToDateContribution
     </Message>
-
-    <InfoTooltip name="third-pillar-tooltip">
-      <Message>account.status.choice.pillar.third.paymentInfo</Message>
-    </InfoTooltip>
   </small>
 );
 
