@@ -31,23 +31,8 @@ describe('UpdateUserForm', () => {
     expect(component.contains(children)).toBe(true);
   });
 
-  it('disables submit button when form invalid', () => {
-    component.setProps({ invalid: true });
+  it('disables submit button when submitting already in progress', () => {
+    component.setProps({ submitting: true });
     expect(component.find('button').prop('disabled')).toBe(true);
-  });
-
-  describe('when form valid', () => {
-    beforeEach(() => {
-      component.setProps({ invalid: false });
-    });
-
-    it('enables the submit button', () => {
-      expect(component.find('button').prop('disabled')).toBe(false);
-    });
-
-    it('disables submit button when submitting already in progress', () => {
-      component.setProps({ submitting: true });
-      expect(component.find('button').prop('disabled')).toBe(true);
-    });
   });
 });

@@ -9,7 +9,6 @@ import { emailValidator, renderField, requiredField } from '../../common/form';
 export const UpdateUserForm = ({
   handleSubmit,
   updateUserSuccess,
-  invalid,
   submitting,
   error,
   isCountryEstonia,
@@ -430,7 +429,7 @@ export const UpdateUserForm = ({
             )}
             <button
               type="submit"
-              disabled={invalid || submitting}
+              disabled={submitting}
               className="btn btn-primary btn-block mb-2 mr-2"
             >
               <Message>update.user.save</Message>
@@ -444,7 +443,6 @@ export const UpdateUserForm = ({
 
 UpdateUserForm.defaultProps = {
   handleSubmit: () => null,
-  invalid: true,
   submitting: false,
   error: '',
   updateUserSuccess: false,
@@ -453,7 +451,6 @@ UpdateUserForm.defaultProps = {
 
 UpdateUserForm.propTypes = {
   handleSubmit: Types.func,
-  invalid: Types.bool,
   submitting: Types.bool,
   error: Types.string,
   translations: Types.shape({ translate: Types.func.isRequired }).isRequired,
