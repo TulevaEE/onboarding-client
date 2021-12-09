@@ -28,7 +28,7 @@ export const renderField = ({
   children,
 }) => (
   <div>
-    <div className={`form-group ${touched && error ? 'has-danger' : ''}`}>
+    <div className={`form-group ${touched && error ? 'text-danger' : ''}`}>
       {type !== 'select' && (
         <input
           {...input}
@@ -45,11 +45,7 @@ export const renderField = ({
           {children}
         </select>
       )}
-      {touched && error && (
-        <div className="form-control-feedback">
-          <Message>{`new.user.flow.signup.error.${error}`}</Message>
-        </div>
-      )}
+      {touched && error && <Message>{`new.user.flow.signup.error.${error}`}</Message>}
     </div>
   </div>
 );
