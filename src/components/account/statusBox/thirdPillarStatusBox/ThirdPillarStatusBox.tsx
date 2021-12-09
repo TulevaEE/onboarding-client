@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import StatusBoxRow from '../statusBoxRow';
 import { SourceFund, UserConversion } from '../../../common/apiModels';
+import { InfoTooltip } from '../../../common';
 
 interface Props {
   conversion: UserConversion;
@@ -104,6 +105,10 @@ const getPaidThisYearRow = (conversion: UserConversion) => (
     >
       account.status.yearToDateContribution
     </Message>
+
+    <InfoTooltip name="third-pillar-tooltip">
+      <Message>account.status.choice.pillar.third.paymentInfo</Message>
+    </InfoTooltip>
   </small>
 );
 
