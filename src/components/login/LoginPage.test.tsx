@@ -46,7 +46,7 @@ describe('When a user is logging in', () => {
   afterEach(() => server.resetHandlers());
   afterAll(() => server.close());
 
-  xtest('they can sign in with smart id, showing the security code', async () => {
+  test('they can sign in with smart id, showing the security code', async () => {
     const identityCode = '396112341234';
     const backend = smartIdAuthenticationBackend(server, { challengeCode: '1928', identityCode });
     expect(await screen.findByText('Log in')).toBeInTheDocument();
@@ -60,7 +60,7 @@ describe('When a user is logging in', () => {
     ).toBeInTheDocument();
   });
 
-  xtest('they can sign in with mobile id, showing the security code', async () => {
+  test('they can sign in with mobile id, showing the security code', async () => {
     const identityCode = '396112341234';
     const phoneNumber = '+372123456789';
     const backend = mobileIdAuthenticationBackend(server, {
@@ -80,7 +80,7 @@ describe('When a user is logging in', () => {
     ).toBeInTheDocument();
   });
 
-  xtest('they can sign in with id card', async () => {
+  test('they can sign in with id card', async () => {
     const backend = idCardAuthenticationBackend(server);
     expect(backend.acceptedCertificate).toBeFalsy();
     expect(backend.authenticatedWithIdCard).toBeFalsy();
