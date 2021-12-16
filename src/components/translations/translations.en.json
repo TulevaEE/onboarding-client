@@ -20,7 +20,7 @@
   "login.permission.note": "By logging in you are giving Tuleva permission to request your pension account information from tne Estonian Central Securities Depository and agreeing to the <a href='https://tuleva.ee/wp-content/uploads/2021/11/Tuleva-privaatsuspoliitika-ja-veebilehe-kasutustingimused-11.11.2021.pdf'>privacy policy</a>.",
   "login.not.member": "You aren't a member of Tuleva yet?",
   "login.apply.link": "Fill out a membership application",
-  "login.epis_maintenance": "Pensions registry is having technical difficulties. During that time you cannot access your pension account neither through us nor through your internet bank. Please return in a few hours.",
+  "login.epis_maintenance": "The Estonian Funded Pension Registry is undergoing maintenance from 20:00 - 23:30. During this time you cannot access your pension account neither through us nor through your internet bank. Please return after the maintenance window.",
   "log.out": "Log out",
   "steps.intro": "By becoming a member of Tuleva you have made it possible to create our very own pension funds! Now is the time to transfer your funds.",
   "steps.next": "Next step",
