@@ -315,9 +315,9 @@
   "returnComparison.period.oneYear": "1 year",
   "returnComparison.period.thisYear": "This year",
 
-  "thirdPillarFlow.steps.setup.title": "Open III pillar account",
-  "thirdPillarFlow.steps.selectSources.title": "Transfer your III pillar to Tuleva",
-  "thirdPillarFlow.steps.address.title": "Insert your contact details",
+  "thirdPillarFlow.steps.setup.title": "Open a III pillar account",
+  "thirdPillarFlow.steps.selectSources.title": "Start saving in Tuleva",
+  "thirdPillarFlow.steps.address.title": "Enter your contact details",
   "thirdPillarFlow.steps.confirmMandate.title": "Confirm mandate",
   "thirdPillarFlow.steps.payment.title": "Payment details",
 
