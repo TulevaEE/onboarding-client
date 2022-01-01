@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@sentry/browser": "^6.14.0",
+    "@sentry/browser": "^6.16.1",
     "array.prototype.find": "^2.1.2",
     "axios": "^0.24.0",
     "bootstrap": "4.3.1",
