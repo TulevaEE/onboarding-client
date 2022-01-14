@@ -20,7 +20,7 @@
   "login.permission.note": "Sisenedes annad ühekordse loa küsida pensioniregistrist sinu andmed ja nõustud Tuleva <a href='https://tuleva.ee/wp-content/uploads/2021/11/Tuleva-privaatsuspoliitika-ja-veebilehe-kasutustingimused-11.11.2021.pdf'>privaatsuspoliitikaga</a>.",
   "login.not.member": "Sa pole veel Tuleva liige?",
   "login.apply.link": "Täida liitumisavaldus",
-  "login.epis_maintenance": "Pensionikeskus ei vasta 20:00 - 23:30 päringutele. Sel ajal ei saa ei meie ega oma internetipanga kaudu oma pensionikonto seisu vaadata ega avaldusi esitada. Palun naasta peale hooldusakna lõppu.",
+  "login.epis_maintenance": "Pensionikeskus ei vasta hetkel päringutele. Sel ajal ei saa ei meie ega oma internetipanga kaudu oma pensionikonto seisu vaadata ega avaldusi esitada. Palume uuesti proovida mõne aja pärast.",
   "log.out": "Logi välja",
   "steps.intro": "Tuleva liikmena saad kõige rohkem Tulevast kasu, kui tood kogu pensioni koos tulevaste maksetega Tuleva pensionifondi. Kui soovid valikuid muuta, siis saad seda teha allpool.",
   "steps.next": "Järgmine samm",
