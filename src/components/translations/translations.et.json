@@ -152,7 +152,7 @@
   "account.current.balance.total": "Kokku",
   "account.active.fund.title": "Minu aktiivne pensionifond",
   "account.contact.info.title": "Minu kontaktandmed",
-  "error.messages.intro": "Leitud järgnevad vead",
+  "error.messages.intro": "Esines viga. Palun proovige uuesti või võtke meiega ühendust!",
   "error.message.close": "Sulge",
   "id.card.signing.error": "Ei leidnud ID kaarti/lugejat või on sertifikaadid aegunud.",
   "mandate.processing.error.epis.already.active.contributions.fund": "Valitud fond on juba aktiivne",
