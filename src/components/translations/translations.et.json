@@ -58,7 +58,7 @@
   "accountSummary.columns.contributions": "Sissemaksed",
   "accountSummary.columns.subtractions": "Väljamaksed",
   "accountSummary.columns.profit": "Tulu",
-  "accountSummary.columns.value": "Väärtus",
+  "accountSummary.columns.value": "Osakute väärtus",
 
   "accountStatement.heading": "Portfell detailsemalt",
   "accountStatement.secondPillar.heading": "II Sammas",
@@ -68,7 +68,7 @@
   "accountStatement.columns.contributions.title": "Sissemaksed",
   "accountStatement.columns.subtractions.title": "Väljamaksed",
   "accountStatement.columns.profit.title": "Tulu",
-  "accountStatement.columns.value.title": "Väärtus",
+  "accountStatement.columns.value.title": "Osakute väärtus",
   "accountStatement.columns.fund.footer": "Kokku",
   "accountStatement.secondPillar.activeFundNotice": "* - siia lähevad igakuised maksed. Teisest sambast väljumise avalduse saad teha pensionikeskus.ee lehel.",
   "accountStatement.thirdPillar.activeFundNotice": "* - siia lähevad igakuised maksed",

@@ -58,7 +58,7 @@
   "accountSummary.columns.contributions": "Contributions",
   "accountSummary.columns.subtractions": "Subtractions",
   "accountSummary.columns.profit": "Profit",
-  "accountSummary.columns.value": "Value",
+  "accountSummary.columns.value": "Value of fund units",
 
   "accountStatement.heading": "Portfolio Details",
   "accountStatement.secondPillar.heading": "II Pillar",
@@ -68,7 +68,7 @@
   "accountStatement.columns.contributions.title": "Contributions",
   "accountStatement.columns.subtractions.title": "Subtractions",
   "accountStatement.columns.profit.title": "Profit",
-  "accountStatement.columns.value.title": "Value",
+  "accountStatement.columns.value.title": "Value of fund units",
   "accountStatement.columns.fund.footer": "Total",
   "accountStatement.secondPillar.activeFundNotice": "* - currently active fund. If you want to submit II pillar withdrawal application, go to pensionikeskus.ee",
   "accountStatement.thirdPillar.activeFundNotice": "* - currently active fund",
