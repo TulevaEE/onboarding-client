@@ -41,6 +41,8 @@ jobs:
       - run:
           name: Run tests
           command: npm test -- --maxWorkers=2
+      - store_test_results:
+          path: ./test-results.json
   deploy:
     executor: aws-cli/default
     steps:

@@ -46,7 +46,7 @@
     "develop-production": "HTTPS=true HOST=local.tuleva.ee npm run develop",
     "develop-production-win": "set HTTPS=true&&set HOST=local.tuleva.ee&&npm run develop",
     "lint": "eslint --ext .js,.ts,.jsx,.tsx src/",
-    "test": "react-scripts test --coverage",
+    "test": "react-scripts test --coverage --json --outputFile=test-results.json",
     "eject": "react-scripts eject",
     "format": "eslint --ext .js,.ts,.jsx,.tsx src/ --fix"
   },
