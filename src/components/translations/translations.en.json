@@ -37,7 +37,7 @@
   "select.sources.current.status": "Your pension account overview",
   "select.sources.total": "Total",
   "select.sources.select.all": "Transfer my pension to Tuleva",
-  "select.sources.select.all.subtitle": "This is the easiest option, you will be making payments into your very own pension fund and saving money on fees. ",
+  "select.sources.select.all.subtitle": "Your future contributions will be directed to Tuleva and your existing funds will be transferred. Your portfolio will benefit from Tuleva's <a href='https://www.pensionikeskus.ee/en/ii-pillar/funds-fees/fund-fees-comparison/'>low fees<a>. The transfer is free of charge.",
   "select.sources.select.all.choose": "Pick a fund:",
   "select.sources.select.some": "Exchange only some current fund units.",
   "select.sources.select.some.subtitle": "If you wish to make specific changes, make them here:",
@@ -326,9 +326,9 @@
   "thirdPillarFlowSetup.buttonText": "Next step",
 
   "thirdPillarFlowSelectSources.title": "Your available III pillar units",
-  "thirdPillarFlowSelectSources.selectAll.title": "Bring all III pillar to Tuleva",
-  "thirdPillarFlowSelectSources.selectAll.subtitle": "You direct all future payments and exchange exiting units into Tuleva fund. You will accumulate your pension in a fund that is truly yours and has low fees.",
-  "thirdPillarFlowSelectSources.cost": "How much does the switch cost?",
+  "thirdPillarFlowSelectSources.selectAll.title": "Transfer your III pillar fund contents to Tuleva",
+  "thirdPillarFlowSelectSources.selectAll.subtitle": "Your future contributions will be directed to Tuleva and your existing funds will be transferred. Your portfolio will benefit from Tuleva's <a href='https://www.pensionikeskus.ee/en/statistics/iii-pillar/suppl-funded-pension-daily-statistics/'>low fees<a>. The transfer is free of charge.",
+  "thirdPillarFlowSelectSources.insurance_info": "NB! Here are instructions to transfer funds <a href='https://tuleva.ee/iii-sammas-kindlustusleping/'>from your insurance provider</a> (in Estonian).",
   "thirdPillarFlowSelectSources.futureContributions.title": "I'll direct only future payments to Tuleva",
   "thirdPillarFlowSelectSources.futureContributions.subtitle": "Your existing fund units will stay in the old pension fund and new contributions will go to Tuleva III Pillar Pension Fund.",
 
