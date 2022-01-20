@@ -302,7 +302,7 @@
 
   "thirdPillarFlowSelectSources.title": "Sinu III samba vabad osakud",
   "thirdPillarFlowSelectSources.selectAll.title": "Toon kogu III samba fondi vara Tulevasse",
-  "thirdPillarFlowSelectSources.selectAll.subtitle": "Kogud edaspidi Tulevas ja tood üle ka varem III samba fondi kogutud vara. Tuleva soodsad tasud rakenduvad kogu portfellile.",
+  "thirdPillarFlowSelectSources.selectAll.subtitle": "Kogud edaspidi Tulevas ja tood üle ka varem III samba fondi kogutud vara. Tuleva <a href='https://www.pensionikeskus.ee/statistika/iii-sammas/taiendava-kogumispensioni-statistika/'>soodsad tasud<a> rakenduvad kogu portfellile.",
   "thirdPillarFlowSelectSources.cost": "Mis fondivahetus maksab?",
   "thirdPillarFlowSelectSources.insurance_info": "NB! Siin on <a href='https://tuleva.ee/iii-sammas-kindlustusleping/'>juhised kindlustuslepingust vara üle toomiseks.</a>",
   "thirdPillarFlowSelectSources.futureContributions.title": "Toon ainult uued maksed Tulevasse",

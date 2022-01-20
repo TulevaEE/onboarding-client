@@ -107,22 +107,4 @@ describe('Third pillar select sources step', () => {
       recommendedFundIsin,
     );
   });
-
-  it('renders info about cost and reference link', () => {
-    component.setProps({
-      exchangeExistingUnits: true,
-      futureContributionsFundIsin: 'EE123',
-    });
-    expect(
-      component.contains(
-        <a
-          href="//www.pensionikeskus.ee/iii-sammas/vabatahtlikud-fondid/fonditasude-vordlus/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Message>thirdPillarFlowSelectSources.cost</Message>
-        </a>,
-      ),
-    ).toBe(true);
-  });
 });

@@ -58,14 +58,7 @@ export const ThirdPillarSelectSources = ({
         </h3>
         {fullSelectionActive ? (
           <div className="mt-3">
-            <Message>thirdPillarFlowSelectSources.selectAll.subtitle</Message>{' '}
-            <a
-              href="//www.pensionikeskus.ee/iii-sammas/vabatahtlikud-fondid/fonditasude-vordlus/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Message>thirdPillarFlowSelectSources.cost</Message>
-            </a>
+            <Message dangerouslyTranslateInnerHTML="thirdPillarFlowSelectSources.selectAll.subtitle" />
             <br />
             <br />
             <Message dangerouslyTranslateInnerHTML="thirdPillarFlowSelectSources.insurance_info" />
