@@ -91,15 +91,8 @@ export const SelectSources = ({
         </h3>
         {fullSelectionActive ? (
           <div className="mt-3">
-            <Message>select.sources.select.all.subtitle</Message>
+            <Message dangerouslyTranslateInnerHTML="select.sources.select.all.subtitle" />
 
-            <a
-              href="//www.pensionikeskus.ee/ii-sammas/kohustuslikud-pensionifondid/fonditasude-vordlus/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Message>select.sources.select.some.cost</Message>
-            </a>
             <div className="mt-4">
               <Message className="pt-2">select.sources.select.all.choose</Message>
             </div>
