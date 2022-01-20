@@ -83,20 +83,6 @@ describe('Exact fund selector', () => {
     expect(onChange).toHaveBeenCalledWith(expectedSelectionsAfterChange);
   });
 
-  it('renders info about cost and reference link', () => {
-    expect(
-      component.contains(
-        <a
-          href="//www.pensionikeskus.ee/ii-sammas/kohustuslikud-pensionifondid/fonditasude-vordlus/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Message>select.sources.select.some.cost</Message>
-        </a>,
-      ),
-    ).toBe(true);
-  });
-
   it('can add rows', () => {
     const onChange = jest.fn();
     component.setProps({ selections, sourceFunds, targetFunds, onChange });
