@@ -330,7 +330,7 @@
   "thirdPillarFlowSelectSources.selectAll.subtitle": "Your future contributions will be directed to Tuleva and your existing funds will be transferred. Your portfolio will benefit from Tuleva's <a href='https://www.pensionikeskus.ee/en/statistics/iii-pillar/suppl-funded-pension-daily-statistics/'>low fees<a>. The transfer is free of charge.",
   "thirdPillarFlowSelectSources.insurance_info": "NB! Here are instructions to transfer funds <a href='https://tuleva.ee/iii-sammas-kindlustusleping/'>from your insurance provider</a> (in Estonian).",
   "thirdPillarFlowSelectSources.futureContributions.title": "I'll direct only future payments to Tuleva",
-  "thirdPillarFlowSelectSources.futureContributions.subtitle": "Your existing fund units will stay in the old pension fund and new contributions will go to Tuleva III Pillar Pension Fund.",
+  "thirdPillarFlowSelectSources.futureContributions.subtitle": "Your existing fund units will remain in your current fund and new contributions will be directed to the Tuleva III Pillar Pension Fund.",
 
   "confirmThirdPillarMandate.intro": "By signing I confirm that:",
   "confirmThirdPillarMandate.contribution": "I wish to transfer my supplementary pension fund contributions to:",
