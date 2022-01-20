@@ -301,11 +301,12 @@
   "thirdPillarFlowSetup.buttonText": "Järgmine samm",
 
   "thirdPillarFlowSelectSources.title": "Sinu III samba vabad osakud",
-  "thirdPillarFlowSelectSources.selectAll.title": "Toon kogu III samba Tulevasse",
-  "thirdPillarFlowSelectSources.selectAll.subtitle": "Suunad valitud fondi uued maksed ja vahetad kogunenud osakud. Kogud pensioni päris oma pensionifondis ja säästad teenustasudelt.",
+  "thirdPillarFlowSelectSources.selectAll.title": "Toon kogu III samba fondi vara Tulevasse",
+  "thirdPillarFlowSelectSources.selectAll.subtitle": "Kogud edaspidi Tulevas ja tood üle ka varem III samba fondi kogutud vara. Tuleva soodsad tasud rakenduvad kogu portfellile.",
   "thirdPillarFlowSelectSources.cost": "Mis fondivahetus maksab?",
+  "thirdPillarFlowSelectSources.insurance_info": "NB! Siin on <a href='https://tuleva.ee/iii-sammas-kindlustusleping/'>juhised kindlustuslepingust vara üle toomiseks.</a>",
   "thirdPillarFlowSelectSources.futureContributions.title": "Toon ainult uued maksed Tulevasse",
-  "thirdPillarFlowSelectSources.futureContributions.subtitle": "Sinu seni kogutud osakud jäävad vanasse pensionifondi ja uued sissemaksed hakkavad minema Tuleva III Samba Pensionifondi.",
+  "thirdPillarFlowSelectSources.futureContributions.subtitle": "Kogud edaspidi Tulevas. Varem kogutud varale rakenduvad sinu vana fondi tasud.",
 
   "confirmThirdPillarMandate.intro": "Avaldust allkirjastades kinnitad, et:",
   "confirmThirdPillarMandate.contribution": "soovid hakata tegema vabatahtliku kogumispensioni sissemakseid fondi:",

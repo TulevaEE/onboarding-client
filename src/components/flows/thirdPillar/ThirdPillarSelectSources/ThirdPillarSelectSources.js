@@ -66,6 +66,9 @@ export const ThirdPillarSelectSources = ({
             >
               <Message>thirdPillarFlowSelectSources.cost</Message>
             </a>
+            <br />
+            <br />
+            <Message dangerouslyTranslateInnerHTML="thirdPillarFlowSelectSources.insurance_info" />
             {(loadingTargetFunds || !targetFunds.length) && (
               <Loader className="align-middle mt-4" />
             )}
