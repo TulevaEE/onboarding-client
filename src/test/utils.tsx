@@ -8,7 +8,8 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import React from 'react';
 import { render, RenderResult } from '@testing-library/react';
 import { TranslationProvider } from 'retranslate';
-import englishMessages from '../components/translations';
+import { IntlProvider } from 'react-intl';
+import translations from '../components/translations';
 import { MOBILE_AUTHENTICATION_SUCCESS } from '../components/login/constants';
 import createRootReducer from '../reducers';
 
@@ -20,13 +21,15 @@ export function renderWrapped(
   store = createDefaultStore(history as any),
 ): RenderResult {
   const wrapper = (component: React.ReactNode) => (
-    <TranslationProvider language="en" messages={englishMessages} fallbackLanguage="et">
-      <ReduxProvider store={store}>
-        <QueryClientProvider client={new QueryClient()}>
-          <ConnectedRouter history={history}>{component}</ConnectedRouter>
-        </QueryClientProvider>
-      </ReduxProvider>
-    </TranslationProvider>
+    <IntlProvider locale="en" messages={translations.en} defaultLocale="et">
+      <TranslationProvider language="en" messages={translations} fallbackLanguage="et">
+        <ReduxProvider store={store}>
+          <QueryClientProvider client={new QueryClient()}>
+            <ConnectedRouter history={history}>{component}</ConnectedRouter>
+          </QueryClientProvider>
+        </ReduxProvider>
+      </TranslationProvider>
+    </IntlProvider>
   );
   const view = render(wrapper(children));
   const rerender = (component: React.ReactNode) => view.rerender(wrapper(component));
