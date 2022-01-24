@@ -1,5 +1,5 @@
 import React from 'react';
-import { Message } from 'retranslate';
+import { FormattedMessage } from 'react-intl';
 import { PropTypes as Types } from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -12,7 +12,7 @@ export const ContactDetailsPage = ({ saveUser }) => {
   return (
     <div className="mt-5">
       <p className="mb-4 lead">
-        <Message>update.user.details.title</Message>
+        <FormattedMessage id="update.user.details.title" />
       </p>
       <UpdateUserForm onSubmit={saveUser} />
     </div>
