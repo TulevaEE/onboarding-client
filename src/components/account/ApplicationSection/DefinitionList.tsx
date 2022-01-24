@@ -1,6 +1,13 @@
 import React from 'react';
 import classNames from 'classnames';
+import { FormattedMessage } from 'react-intl';
 import styles from './DefinitionList.module.scss';
+
+export interface Definition {
+  key: string;
+  value: React.ReactNode;
+  alignRight?: boolean;
+}
 
 export const DefinitionList: React.FunctionComponent<{
   definitions: (Definition | Definition[] | Definition[][])[];
@@ -8,42 +15,35 @@ export const DefinitionList: React.FunctionComponent<{
   <dl className={styles.definitions}>
     {definitions.map((definition, index) => (
       <div key={index} className={styles.group}>
-        {Array.isArray(definition) ? (
-          (definition as (Definition | Definition[])[]).map((innerDefinition, innerIndex) => (
-            <div className={styles.innerGroup} key={innerIndex}>
-              {Array.isArray(innerDefinition) ? (
-                innerDefinition.map(({ key, value, alignRight }, thirdLevelIndex) => (
-                  <div
-                    key={thirdLevelIndex}
-                    className={classNames(alignRight && styles.rightGroup)}
-                  >
-                    <dt>{key}</dt>
-                    <dd>{value}</dd>
-                  </div>
-                ))
-              ) : (
-                <>
-                  <dt>{innerDefinition.key}</dt>
-                  <dd>{innerDefinition.value}</dd>
-                </>
-              )}
-            </div>
-          ))
-        ) : (
-          <>
-            <dt>{definition.key}</dt>
-            <dd>{definition.value}</dd>
-          </>
-        )}
+        {Array.isArray(definition)
+          ? renderDefinitions(definition)
+          : renderSingleDefinition(definition)}
       </div>
     ))}
   </dl>
 );
 
-/* eslint-enable react/no-array-index-key */
+const renderDefinitions = (definition: Definition[] | Definition[][]) =>
+  definition.map((innerDefinition, index) => (
+    <div className={styles.innerGroup} key={index}>
+      {Array.isArray(innerDefinition)
+        ? renderSecondLevelDefinitions(innerDefinition)
+        : renderSingleDefinition(innerDefinition)}
+    </div>
+  ));
 
-export interface Definition {
-  key: React.ReactNode;
-  value: React.ReactNode;
-  alignRight?: boolean;
-}
+const renderSecondLevelDefinitions = (definition: Definition[]) =>
+  definition.map((innerDefinition: Definition, index) => (
+    <div key={index} className={classNames(innerDefinition.alignRight && styles.rightGroup)}>
+      {renderSingleDefinition(innerDefinition)}
+    </div>
+  ));
+
+const renderSingleDefinition = (definition: Definition) => (
+  <>
+    <dt>
+      <FormattedMessage id={definition.key} />
+    </dt>
+    <dd>{definition.value}</dd>
+  </>
+);

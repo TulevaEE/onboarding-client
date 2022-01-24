@@ -47,16 +47,16 @@ const TransferApplicationCard: React.FunctionComponent<{
     <DefinitionList
       definitions={[
         {
-          key: <FormattedMessage id="applications.type.transfer.sourceFund" />,
+          key: 'applications.type.transfer.sourceFund',
           value: application.details.sourceFund && application.details.sourceFund.name,
         },
         application.details.exchanges.map(({ targetFund, targetPik, amount }) => [
           {
-            key: <FormattedMessage id="applications.type.transfer.targetFund" />,
+            key: 'applications.type.transfer.targetFund',
             value: targetFund?.name || `${targetPik} (PIK)`,
           },
           {
-            key: <FormattedMessage id="applications.type.transfer.amount" />,
+            key: 'applications.type.transfer.amount',
             value:
               application.details.sourceFund.pillar === 3 ? amount : <Percentage value={amount} />,
             alignRight: true,
@@ -80,11 +80,11 @@ const EarlyWithdrawalCard: React.FunctionComponent<{
     <DefinitionList
       definitions={[
         {
-          key: <FormattedMessage id="applications.type.earlyWithdrawal.time" />,
+          key: 'applications.type.earlyWithdrawal.time',
           value: formatMonth(application.details.fulfillmentDate),
         },
         {
-          key: <FormattedMessage id="applications.type.earlyWithdrawal.account" />,
+          key: 'applications.type.earlyWithdrawal.account',
           value: application.details.depositAccountIBAN,
         },
       ]}
@@ -104,11 +104,11 @@ const WithdrawalCard: React.FunctionComponent<{
     <DefinitionList
       definitions={[
         {
-          key: <FormattedMessage id="applications.type.withdrawal.time" />,
+          key: 'applications.type.withdrawal.time',
           value: formatMonth(application.details.fulfillmentDate),
         },
         {
-          key: <FormattedMessage id="applications.type.earlyWithdrawal.account" />,
+          key: 'applications.type.earlyWithdrawal.account',
           value: application.details.depositAccountIBAN,
         },
       ]}
@@ -128,11 +128,11 @@ const StopContributionsCard: React.FunctionComponent<{
     <DefinitionList
       definitions={[
         {
-          key: <FormattedMessage id="applications.type.stopContributions.time" />,
+          key: 'applications.type.stopContributions.time',
           value: formatDate(application.details.stopTime),
         },
         {
-          key: <FormattedMessage id="applications.type.stopContributions.resumeTime" />,
+          key: 'applications.type.stopContributions.resumeTime',
           value: formatDate(application.details.earliestResumeTime),
         },
       ]}
@@ -152,7 +152,7 @@ const ResumeContributionsCard: React.FunctionComponent<{
     <DefinitionList
       definitions={[
         {
-          key: <FormattedMessage id="applications.type.resumeContributions.time" />,
+          key: 'applications.type.resumeContributions.time',
           value: formatDate(application.details.resumeTime),
         },
       ]}
@@ -182,12 +182,14 @@ const BaseApplicationCard: React.FunctionComponent<{
           </b>
           {formatDate(application.creationTime)}
         </div>
+
         {canCancel && (
           <Link to={cancellationUrl} className="btn btn-light d-none d-md-block ml-2">
             <FormattedMessage id="applications.cancel" />
           </Link>
         )}
       </div>
+
       <div className={styles.content}>{children}</div>
       {canCancel && (
         <div className={`${styles.footer} d-md-none`}>
