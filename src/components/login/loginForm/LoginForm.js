@@ -233,7 +233,7 @@ const renderIdCard = (onAuthenticateWithIdCard) => (
         className="btn btn-primary btn-block btn-lg"
         onClick={onAuthenticateWithIdCard}
       >
-        <FormattedMessage>login.enter</FormattedMessage>
+        <FormattedMessage id="login.enter" />
       </button>
     </div>
   </div>
