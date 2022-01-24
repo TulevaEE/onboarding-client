@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Message } from 'retranslate';
+import { FormattedMessage } from 'react-intl';
 import AccountSummary from '.';
 import Table from '../../common/table';
 import Euro from '../../common/Euro';
@@ -89,9 +89,13 @@ describe('Account summary', () => {
     const dataSource = tableProp('dataSource');
 
     expect(dataSource).toHaveLength(3);
-    expect(dataSource[0].pillar).toEqual(<Message>accountStatement.secondPillar.heading</Message>);
-    expect(dataSource[1].pillar).toEqual(<Message>accountStatement.thirdPillar.heading</Message>);
-    expect(dataSource[2].pillar).toEqual(<Message>memberCapital.heading</Message>);
+    expect(dataSource[0].pillar).toEqual(
+      <FormattedMessage id="accountStatement.secondPillar.heading" />,
+    );
+    expect(dataSource[1].pillar).toEqual(
+      <FormattedMessage id="accountStatement.thirdPillar.heading" />,
+    );
+    expect(dataSource[2].pillar).toEqual(<FormattedMessage id="memberCapital.heading" />);
 
     expect(dataSource[0].contributions).toEqual(<Euro amount={3} />);
     expect(dataSource[0].subtractions).toEqual(<Euro amount={-1} />);
