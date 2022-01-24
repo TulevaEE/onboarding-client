@@ -1,8 +1,8 @@
 import React from 'react';
 import { PropTypes as Types } from 'prop-types';
-import { Message } from 'retranslate';
 import sumBy from 'lodash/sumBy';
 
+import { FormattedMessage } from 'react-intl';
 import Table, { getProfitClassName } from '../../common/table';
 import Euro from '../../common/Euro';
 import { Shimmer } from '../../common/shimmer/Shimmer';
@@ -81,24 +81,24 @@ const AccountSummary = ({
 
   const columns = [
     {
-      title: <Message>accountSummary.columns.pillar.title</Message>,
+      title: <FormattedMessage id="accountSummary.columns.pillar.title" />,
       dataIndex: 'pillar',
-      footer: <Message>accountSummary.columns.pillar.footer</Message>,
+      footer: <FormattedMessage id="accountSummary.columns.pillar.footer" />,
     },
     {
-      title: <Message>accountSummary.columns.contributions</Message>,
+      title: <FormattedMessage id="accountSummary.columns.contributions" />,
       dataIndex: 'contributions',
       hideOnMobile: true,
       footer: <Euro amount={sumBy(summary, (summaryItem) => summaryItem.contributions)} />,
     },
     {
-      title: <Message>accountSummary.columns.subtractions</Message>,
+      title: <FormattedMessage id="accountSummary.columns.subtractions" />,
       dataIndex: 'subtractions',
       hideOnMobile: true,
       footer: <Euro amount={sumBy(summary, (summaryItem) => summaryItem.subtractions)} />,
     },
     {
-      title: <Message>accountSummary.columns.profit</Message>,
+      title: <FormattedMessage id="accountSummary.columns.profit" />,
       dataIndex: 'profit',
       hideOnMobile: true,
       footer: (
@@ -108,14 +108,14 @@ const AccountSummary = ({
       ),
     },
     {
-      title: <Message>accountSummary.columns.value</Message>,
+      title: <FormattedMessage id="accountSummary.columns.value" />,
       dataIndex: 'value',
       footer: <Euro amount={sumBy(summary, (summaryItem) => summaryItem.value)} />,
     },
   ];
 
   const dataSource = summary.map(({ pillar, contributions, subtractions, profit, value }) => ({
-    pillar: <Message>{pillar}</Message>,
+    pillar: <FormattedMessage id={pillar} />,
     contributions: <Euro amount={contributions} />,
     subtractions: <Euro amount={subtractions} />,
     profit: (
