@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Message } from 'retranslate';
 
+import { FormattedMessage } from 'react-intl';
 import { LoginForm } from './LoginForm';
 import { Maintenance } from '../Maintenance';
 
@@ -16,7 +16,7 @@ describe('Login form', () => {
   });
 
   it('shows only the default title when no monthly contribution', () => {
-    const componentHas = (key) => component.contains(<Message>{key}</Message>);
+    const componentHas = (key) => component.contains(<FormattedMessage id={key} />);
 
     expect(componentHas('login.title')).toBe(true);
     expect(
@@ -39,7 +39,7 @@ describe('Login form', () => {
     });
 
     const componentHas = (key, params) =>
-      component.contains(<Message params={params}>{key}</Message>);
+      component.contains(<FormattedMessage id={key} values={params} />);
 
     expect(componentHas('login.title')).toBe(false);
     expect(
@@ -59,7 +59,7 @@ describe('Login form', () => {
     component.setProps({ monthlyThirdPillarContribution: 500 });
 
     const componentHas = (key, params) =>
-      component.contains(<Message params={params}>{key}</Message>);
+      component.contains(<FormattedMessage id={key} values={params} />);
 
     expect(componentHas('login.title')).toBe(false);
     expect(
