@@ -2,8 +2,6 @@ import React from 'react';
 import classNames from 'classnames';
 import styles from './DefinitionList.module.scss';
 
-/* eslint-disable react/no-array-index-key */
-
 export const DefinitionList: React.FunctionComponent<{
   definitions: (Definition | Definition[] | Definition[][])[];
 }> = ({ definitions }) => (

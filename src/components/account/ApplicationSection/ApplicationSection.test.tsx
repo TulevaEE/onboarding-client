@@ -1,13 +1,14 @@
 import React from 'react';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { render as testRender, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useSelector } from 'react-redux';
 import { MemoryRouter, Route } from 'react-router-dom';
 import config from 'react-global-configuration';
 import { QueryClient, QueryClientProvider } from 'react-query';
 
+import { IntlProvider } from 'react-intl';
 import { ApplicationSection } from './ApplicationSection';
 import {
   earlyWithdrawal,
@@ -25,15 +26,16 @@ jest.mock('react-redux');
 describe('Application section', () => {
   const server = setupServer();
 
-  function render() {
-    const queryClient = new QueryClient();
-    testRender(
-      <MemoryRouter>
-        <QueryClientProvider client={queryClient}>
-          <ApplicationSection />
-          <Route path="/applications/:id/cancellation">Test cancellation route</Route>
-        </QueryClientProvider>
-      </MemoryRouter>,
+  function initializeComponent() {
+    render(
+      <IntlProvider locale="en">
+        <MemoryRouter>
+          <QueryClientProvider client={new QueryClient()}>
+            <ApplicationSection />
+            <Route path="/applications/:id/cancellation">Test cancellation route</Route>
+          </QueryClientProvider>
+        </MemoryRouter>
+      </IntlProvider>,
     );
   }
 
@@ -45,12 +47,12 @@ describe('Application section', () => {
     (useSelector as any).mockImplementation((selector) =>
       selector({ login: { token: 'mock token' } }),
     );
-    (config.get as any).mockImplementation((key) => (key === 'language' ? 'en' : null));
+    (config.get as any).mockImplementation((key: string) => (key === 'language' ? 'en' : null));
   });
 
   it('does not render at all when no pending applications are found', async () => {
     mockApplications([]);
-    render();
+    initializeComponent();
     await waitForRequestToFinish();
     expect(screen.queryByText('applications.title')).not.toBeInTheDocument();
   });
@@ -61,21 +63,21 @@ describe('Application section', () => {
         return res(ctx.status(500), ctx.json({ error: 'oh no' }));
       }),
     );
-    render();
+    initializeComponent();
     await waitForRequestToFinish();
     expect(screen.queryByText('applications.title')).not.toBeInTheDocument();
   });
 
   it('renders the title when there are pending applications', async () => {
     mockApplications([transfer2Pillar]);
-    render();
+    initializeComponent();
     expect(await screen.findByText('applications.title')).toBeInTheDocument();
   });
 
   it('renders 2. pillar transfer applications successfully', async () => {
     const application = transfer2Pillar;
     mockApplications([application]);
-    render();
+    initializeComponent();
 
     expect(await screen.findByText('applications.type.transfer.title')).toBeInTheDocument();
     expect(screen.getByText(application.details.sourceFund.name)).toBeInTheDocument();
@@ -93,7 +95,7 @@ describe('Application section', () => {
   it('renders PIK transfer applications successfully', async () => {
     const application = transferPIK;
     mockApplications([application]);
-    render();
+    initializeComponent();
 
     expect(await screen.findByText('applications.type.transfer.title')).toBeInTheDocument();
     expect(screen.getByText(application.details.sourceFund.name)).toBeInTheDocument();
@@ -110,7 +112,7 @@ describe('Application section', () => {
   it('renders 3. pillar transfer applications successfully', async () => {
     const application = transfer3Pillar;
     mockApplications([application]);
-    render();
+    initializeComponent();
 
     expect(await screen.findByText('applications.type.transfer.title')).toBeInTheDocument();
     expect(screen.getByText(application.details.sourceFund.name)).toBeInTheDocument();
@@ -125,7 +127,7 @@ describe('Application section', () => {
   it('renders stop contributions applications successfully', async () => {
     const application = stopContributions;
     mockApplications([application]);
-    render();
+    initializeComponent();
     expect(
       await screen.findByText('applications.type.stopContributions.title'),
     ).toBeInTheDocument();
@@ -141,7 +143,7 @@ describe('Application section', () => {
   it('renders resume contributions applications successfully', async () => {
     const application = resumeContributions;
     mockApplications([application]);
-    render();
+    initializeComponent();
     expect(
       await screen.findByText('applications.type.resumeContributions.title'),
     ).toBeInTheDocument();
@@ -155,7 +157,7 @@ describe('Application section', () => {
   it('renders early withdrawal applications successfully', async () => {
     const application = earlyWithdrawal;
     mockApplications([application]);
-    render();
+    initializeComponent();
     expect(await screen.findByText('applications.type.earlyWithdrawal.title')).toBeInTheDocument();
     const formattedCreationTime = '17.12.1995';
     expect(screen.getByText(formattedCreationTime)).toBeInTheDocument();
@@ -169,7 +171,7 @@ describe('Application section', () => {
   it('renders withdrawal applications successfully', async () => {
     const application = withdrawal;
     mockApplications([application]);
-    render();
+    initializeComponent();
     expect(await screen.findByText('applications.type.withdrawal.title')).toBeInTheDocument();
     const formattedCreationTime = '17.12.1995';
     expect(screen.getByText(formattedCreationTime)).toBeInTheDocument();
@@ -182,7 +184,7 @@ describe('Application section', () => {
 
   it('renders multiple applications successfully', async () => {
     mockApplications([earlyWithdrawal, transfer2Pillar]);
-    render();
+    initializeComponent();
     expect(await screen.findByText('applications.type.earlyWithdrawal.title')).toBeInTheDocument();
     expect(screen.getByText('applications.type.transfer.title')).toBeInTheDocument();
     expect(screen.queryByText('applications.type.stopContributions.title')).not.toBeInTheDocument();
@@ -190,7 +192,7 @@ describe('Application section', () => {
 
   it('has a link to cancel an application', async () => {
     mockApplications([earlyWithdrawal]);
-    render();
+    initializeComponent();
     const cancelButton = (await screen.findAllByText('applications.cancel'))[0];
     expect(cancelButton).toBeInTheDocument();
 
@@ -207,7 +209,7 @@ describe('Application section', () => {
     const application = transfer2Pillar;
     application.details.cancellationDeadline = date.toISOString();
     mockApplications([application]);
-    render();
+    initializeComponent();
 
     await waitForRequestToFinish();
 
@@ -220,7 +222,7 @@ describe('Application section', () => {
     const application = transfer2Pillar;
     application.details.cancellationDeadline = date.toISOString();
     mockApplications([application]);
-    render();
+    initializeComponent();
 
     await waitForRequestToFinish();
 

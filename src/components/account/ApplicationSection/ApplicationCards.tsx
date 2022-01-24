@@ -1,7 +1,7 @@
 import React from 'react';
 import moment from 'moment';
-import { Message } from 'retranslate';
 import { Link } from 'react-router-dom';
+import { FormattedMessage } from 'react-intl';
 import { DefinitionList } from './DefinitionList';
 import styles from './ApplicationCards.module.scss';
 import {
@@ -42,21 +42,21 @@ const TransferApplicationCard: React.FunctionComponent<{
   <BaseApplicationCard
     application={application}
     allowedActions={allowedActions}
-    title={<Message>applications.type.transfer.title</Message>}
+    titleKey="applications.type.transfer.title"
   >
     <DefinitionList
       definitions={[
         {
-          key: <Message>applications.type.transfer.sourceFund</Message>,
+          key: <FormattedMessage id="applications.type.transfer.sourceFund" />,
           value: application.details.sourceFund && application.details.sourceFund.name,
         },
         application.details.exchanges.map(({ targetFund, targetPik, amount }) => [
           {
-            key: <Message>applications.type.transfer.targetFund</Message>,
+            key: <FormattedMessage id="applications.type.transfer.targetFund" />,
             value: targetFund?.name || `${targetPik} (PIK)`,
           },
           {
-            key: <Message>applications.type.transfer.amount</Message>,
+            key: <FormattedMessage id="applications.type.transfer.amount" />,
             value:
               application.details.sourceFund.pillar === 3 ? amount : <Percentage value={amount} />,
             alignRight: true,
@@ -75,16 +75,16 @@ const EarlyWithdrawalCard: React.FunctionComponent<{
   <BaseApplicationCard
     allowedActions={allowedActions}
     application={application}
-    title={<Message>applications.type.earlyWithdrawal.title</Message>}
+    titleKey="applications.type.earlyWithdrawal.title"
   >
     <DefinitionList
       definitions={[
         {
-          key: <Message>applications.type.earlyWithdrawal.time</Message>,
+          key: <FormattedMessage id="applications.type.earlyWithdrawal.time" />,
           value: formatMonth(application.details.fulfillmentDate),
         },
         {
-          key: <Message>applications.type.earlyWithdrawal.account</Message>,
+          key: <FormattedMessage id="applications.type.earlyWithdrawal.account" />,
           value: application.details.depositAccountIBAN,
         },
       ]}
@@ -99,16 +99,16 @@ const WithdrawalCard: React.FunctionComponent<{
   <BaseApplicationCard
     allowedActions={allowedActions}
     application={application}
-    title={<Message>applications.type.withdrawal.title</Message>}
+    titleKey="applications.type.withdrawal.title"
   >
     <DefinitionList
       definitions={[
         {
-          key: <Message>applications.type.withdrawal.time</Message>,
+          key: <FormattedMessage id="applications.type.withdrawal.time" />,
           value: formatMonth(application.details.fulfillmentDate),
         },
         {
-          key: <Message>applications.type.earlyWithdrawal.account</Message>,
+          key: <FormattedMessage id="applications.type.earlyWithdrawal.account" />,
           value: application.details.depositAccountIBAN,
         },
       ]}
@@ -123,16 +123,16 @@ const StopContributionsCard: React.FunctionComponent<{
   <BaseApplicationCard
     allowedActions={allowedActions}
     application={application}
-    title={<Message>applications.type.stopContributions.title</Message>}
+    titleKey="applications.type.stopContributions.title"
   >
     <DefinitionList
       definitions={[
         {
-          key: <Message>applications.type.stopContributions.time</Message>,
+          key: <FormattedMessage id="applications.type.stopContributions.time" />,
           value: formatDate(application.details.stopTime),
         },
         {
-          key: <Message>applications.type.stopContributions.resumeTime</Message>,
+          key: <FormattedMessage id="applications.type.stopContributions.resumeTime" />,
           value: formatDate(application.details.earliestResumeTime),
         },
       ]}
@@ -147,12 +147,12 @@ const ResumeContributionsCard: React.FunctionComponent<{
   <BaseApplicationCard
     allowedActions={allowedActions}
     application={application}
-    title={<Message>applications.type.resumeContributions.title</Message>}
+    titleKey="applications.type.resumeContributions.title"
   >
     <DefinitionList
       definitions={[
         {
-          key: <Message>applications.type.resumeContributions.time</Message>,
+          key: <FormattedMessage id="applications.type.resumeContributions.time" />,
           value: formatDate(application.details.resumeTime),
         },
       ]}
@@ -161,11 +161,11 @@ const ResumeContributionsCard: React.FunctionComponent<{
 );
 
 const BaseApplicationCard: React.FunctionComponent<{
-  title: React.ReactNode;
+  titleKey: string;
   application: Application;
   children: React.ReactNode;
   allowedActions: ApplicationAction[];
-}> = ({ application, title, children, allowedActions }) => {
+}> = ({ application, titleKey, children, allowedActions }) => {
   const cancellationUrl = `/applications/${application.id}/cancellation`;
   const isBeforeCancellationDeadline = moment().isSameOrBefore(
     moment(application.details.cancellationDeadline),
@@ -177,12 +177,14 @@ const BaseApplicationCard: React.FunctionComponent<{
     <div className={styles.card}>
       <div className={styles.header}>
         <div className="d-flex">
-          <b className="mr-3">{title}</b>
+          <b className="mr-3">
+            <FormattedMessage id={titleKey} />
+          </b>
           {formatDate(application.creationTime)}
         </div>
         {canCancel && (
           <Link to={cancellationUrl} className="btn btn-light d-none d-md-block ml-2">
-            <Message>applications.cancel</Message>
+            <FormattedMessage id="applications.cancel" />
           </Link>
         )}
       </div>
@@ -190,7 +192,7 @@ const BaseApplicationCard: React.FunctionComponent<{
       {canCancel && (
         <div className={`${styles.footer} d-md-none`}>
           <Link to={cancellationUrl} className="btn btn-light">
-            <Message>applications.cancel</Message>
+            <FormattedMessage id="applications.cancel" />
           </Link>
         </div>
       )}
