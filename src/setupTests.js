@@ -4,6 +4,19 @@ import '@testing-library/jest-dom'; // eslint-disable-line import/no-extraneous-
 
 // necessary due to https://github.com/facebook/create-react-app/issues/7539
 jest.mock('retranslate', () => jest.requireActual('../__mocks__/retranslate'));
+
+jest.mock('react-intl', () => {
+  const reactIntl = jest.requireActual('react-intl');
+  const intl = reactIntl.createIntl({
+    locale: 'en',
+  });
+
+  return {
+    ...reactIntl,
+    useIntl: () => intl,
+  };
+});
+
 jest.mock('mixpanel-browser', () => ({
   identify: jest.fn(),
   track: jest.fn(),
