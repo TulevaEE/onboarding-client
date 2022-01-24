@@ -1,6 +1,6 @@
 import React from 'react';
 import Types from 'prop-types';
-import { Message } from 'retranslate';
+import { FormattedMessage } from 'react-intl';
 import sumBy from 'lodash/sumBy';
 
 import Table from '../../common/table';
@@ -10,17 +10,17 @@ import Percentage from '../../common/Percentage';
 const AccountStatement = ({ funds }) => {
   const columns = [
     {
-      title: <Message>accountStatement.columns.fund.title</Message>,
+      title: <FormattedMessage id="accountStatement.columns.fund.title" />,
       dataIndex: 'fund',
-      footer: <Message>accountStatement.columns.fund.footer</Message>,
+      footer: <FormattedMessage id="accountStatement.columns.fund.footer" />,
     },
     {
-      title: <Message>accountStatement.columns.fees.title</Message>,
+      title: <FormattedMessage id="accountStatement.columns.fees.title" />,
       dataIndex: 'fees',
       hideOnMobile: true,
     },
     {
-      title: <Message>accountStatement.columns.value.title</Message>,
+      title: <FormattedMessage id="accountStatement.columns.value.title" />,
       dataIndex: 'value',
       footer: (
         <Euro
@@ -48,9 +48,7 @@ const AccountStatement = ({ funds }) => {
 
       {showActiveFundNotice && (
         <small className="text-muted">
-          <Message
-            dangerouslyTranslateInnerHTML={`accountStatement.${fundPillar}.activeFundNotice`}
-          />
+          <FormattedMessage id={`accountStatement.${fundPillar}.activeFundNotice`} />
         </small>
       )}
     </>
