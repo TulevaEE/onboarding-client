@@ -1,7 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Message } from 'retranslate';
-
+import { FormattedMessage } from 'react-intl';
 import { UpdateUserForm } from './UpdateUserForm';
 
 describe('UpdateUserForm', () => {
@@ -18,11 +17,11 @@ describe('UpdateUserForm', () => {
   });
 
   it('renders success message', () => {
-    expect(component.contains(<Message>update.user.success.message</Message>)).toBe(false);
+    expect(component.contains(<FormattedMessage id="update.user.success.message" />)).toBe(false);
 
     const updateUserSuccess = true;
     component.setProps({ updateUserSuccess });
-    expect(component.contains(<Message>update.user.success.message</Message>)).toBe(true);
+    expect(component.contains(<FormattedMessage id="update.user.success.message" />)).toBe(true);
   });
 
   it('renders children given to it', () => {
