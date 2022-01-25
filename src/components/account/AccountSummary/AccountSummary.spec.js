@@ -89,13 +89,13 @@ describe('Account summary', () => {
     const dataSource = tableProp('dataSource');
 
     expect(dataSource).toHaveLength(3);
-    expect(dataSource[0].pillar).toEqual(
+    expect(dataSource[0].pillarLabel).toEqual(
       <FormattedMessage id="accountStatement.secondPillar.heading" />,
     );
-    expect(dataSource[1].pillar).toEqual(
+    expect(dataSource[1].pillarLabel).toEqual(
       <FormattedMessage id="accountStatement.thirdPillar.heading" />,
     );
-    expect(dataSource[2].pillar).toEqual(<FormattedMessage id="memberCapital.heading" />);
+    expect(dataSource[2].pillarLabel).toEqual(<FormattedMessage id="memberCapital.heading" />);
 
     expect(dataSource[0].contributions).toEqual(<Euro amount={3} />);
     expect(dataSource[0].subtractions).toEqual(<Euro amount={-1} />);
