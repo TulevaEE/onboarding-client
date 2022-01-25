@@ -41,7 +41,7 @@ const AccountSummary = ({
     });
 
     return {
-      pillar: pillarLabel,
+      pillarLabel,
       contributions,
       subtractions,
       profit: value - contributions - subtractions,
@@ -66,7 +66,7 @@ const AccountSummary = ({
 
   if (memberCapital) {
     summary.push({
-      pillar: 'memberCapital.heading',
+      pillarLabel: 'memberCapital.heading',
       contributions:
         memberCapital.capitalPayment +
         memberCapital.unvestedWorkCompensation +
@@ -82,7 +82,7 @@ const AccountSummary = ({
   const columns = [
     {
       title: <FormattedMessage id="accountSummary.columns.pillar.title" />,
-      dataIndex: 'pillar',
+      dataIndex: 'pillarLabel',
       footer: <FormattedMessage id="accountSummary.columns.pillar.footer" />,
     },
     {
@@ -114,8 +114,8 @@ const AccountSummary = ({
     },
   ];
 
-  const dataSource = summary.map(({ pillar, contributions, subtractions, profit, value }) => ({
-    pillar: <FormattedMessage id={pillar} />,
+  const dataSource = summary.map(({ pillarLabel, contributions, subtractions, profit, value }) => ({
+    pillarLabel: <FormattedMessage id={pillarLabel} />,
     contributions: <Euro amount={contributions} />,
     subtractions: <Euro amount={subtractions} />,
     profit: (
@@ -124,7 +124,7 @@ const AccountSummary = ({
       </span>
     ),
     value: <Euro amount={value} />,
-    key: pillar,
+    key: pillarLabel,
   }));
 
   return (
