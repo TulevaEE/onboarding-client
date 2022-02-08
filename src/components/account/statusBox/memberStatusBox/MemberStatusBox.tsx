@@ -1,5 +1,5 @@
 import React from 'react';
-import { Message } from 'retranslate';
+import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import StatusBoxRow from '../statusBoxRow';
@@ -15,20 +15,20 @@ export const MemberStatusBox: React.FunctionComponent<Props> = ({
 }) => {
   const isTulevaMember = memberNumber != null;
   const tulevaData = isTulevaMember
-    ? [<Message params={{ memberNumber }}>account.member.statement</Message>]
-    : [<Message>account.non.member.statement</Message>];
+    ? [<FormattedMessage id="account.member.statement" values={{ memberNumber }} />]
+    : [<FormattedMessage id="account.non.member.statement" />];
 
   return (
     <StatusBoxRow
       last
       ok={isTulevaMember}
       showAction={!loading}
-      name={<Message>account.status.choice.tuleva</Message>}
+      name={<FormattedMessage id="account.status.choice.tuleva" />}
       lines={tulevaData}
     >
       {!isTulevaMember && (
         <Link to="/join" className="btn btn-light">
-          <Message>account.status.choice.join.tuleva</Message>
+          <FormattedMessage id="account.status.choice.join.tuleva" />
         </Link>
       )}
     </StatusBoxRow>
