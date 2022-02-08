@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { Message } from 'retranslate';
+import { FormattedMessage } from 'react-intl';
 import { PoliticallyExposedPersonAgreement } from './PoliticallyExposedPersonAgreement';
 
 describe('PoliticallyExposedPersonAgreement', () => {
@@ -32,7 +32,7 @@ describe('PoliticallyExposedPersonAgreement', () => {
   });
 
   it('has pep tooltip', () => {
-    const hasTooltip = () => component.contains(<Message>aml.pepTooltip</Message>);
+    const hasTooltip = () => component.contains(<FormattedMessage id="aml.pepTooltip" />);
     expect(hasTooltip()).toBe(true);
   });
 });
