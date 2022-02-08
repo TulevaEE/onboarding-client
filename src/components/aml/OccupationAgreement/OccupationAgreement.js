@@ -3,17 +3,14 @@ import Types from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import { Message, withTranslations } from 'retranslate';
 import { Field } from 'redux-form';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { changeOccupation } from '../actions';
 import { renderField, requiredField } from '../../common/form';
 
-export const OccupationAgreement = ({
-  occupation,
-  onOccupationChange,
-  translations: { translate },
-  className,
-}) => {
+export const OccupationAgreement = ({ occupation, onOccupationChange, className }) => {
+  const { formatMessage } = useIntl();
+
   return (
     <div
       id="occupation-agreement"
@@ -22,7 +19,7 @@ export const OccupationAgreement = ({
     >
       <div className="form-group">
         <label htmlFor="occupation">
-          <Message>aml.occupation</Message>
+          <FormattedMessage id="aml.occupation" />
         </label>
         <div className="form-group">
           <Field
@@ -33,14 +30,22 @@ export const OccupationAgreement = ({
             id="occupation"
             override={{ value: occupation }}
           >
-            <option value="">{translate('select')}</option>
-            <option value="PRIVATE_SECTOR">{translate('aml.occupation.privateSector')}</option>
-            <option value="PUBLIC_SECTOR">{translate('aml.occupation.publicSector')}</option>
-            <option value="THIRD_SECTOR">{translate('aml.occupation.thirdSector')}</option>
-            <option value="ENTREPRENEUR">{translate('aml.occupation.entrepreneur')}</option>
-            <option value="STUDENT">{translate('aml.occupation.student')}</option>
-            <option value="RETIRED">{translate('aml.occupation.retired')}</option>
-            <option value="UNEMPLOYED">{translate('aml.occupation.unemployed')}</option>
+            <option value="">{formatMessage({ id: 'select' })}</option>
+            <option value="PRIVATE_SECTOR">
+              {formatMessage({ id: 'aml.occupation.privateSector' })}
+            </option>
+            <option value="PUBLIC_SECTOR">
+              {formatMessage({ id: 'aml.occupation.publicSector' })}
+            </option>
+            <option value="THIRD_SECTOR">
+              {formatMessage({ id: 'aml.occupation.thirdSector' })}
+            </option>
+            <option value="ENTREPRENEUR">
+              {formatMessage({ id: 'aml.occupation.entrepreneur' })}
+            </option>
+            <option value="STUDENT">{formatMessage({ id: 'aml.occupation.student' })}</option>
+            <option value="RETIRED">{formatMessage({ id: 'aml.occupation.retired' })}</option>
+            <option value="UNEMPLOYED">{formatMessage({ id: 'aml.occupation.unemployed' })}</option>
           </Field>
         </div>
       </div>
@@ -73,4 +78,4 @@ const mapDispatchToProps = (dispatch) =>
     dispatch,
   );
 
-export default connect(mapStateToProps, mapDispatchToProps)(withTranslations(OccupationAgreement));
+export default connect(mapStateToProps, mapDispatchToProps)(OccupationAgreement);
