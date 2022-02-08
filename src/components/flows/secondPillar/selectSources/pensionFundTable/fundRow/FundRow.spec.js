@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Message } from 'retranslate';
+import { FormattedMessage } from 'react-intl';
 import Euro from '../../../../../common/Euro';
 import FundRow from './FundRow';
 
@@ -13,16 +13,16 @@ describe('Fund row', () => {
 
   it("renders the fund's name", () => {
     component.setProps({ name: 'i am a name' });
-    const displayName = <Message>i am a name</Message>;
+    const displayName = <FormattedMessage id="i am a name" />;
     expect(component.contains(displayName)).toBe(true);
-    expect(component.find(Message).first().parent().is('b')).toBe(false);
+    expect(component.find(FormattedMessage).first().parent().is('b')).toBe(false);
   });
 
   it("renders the fund's name highlighted if component is highlighted", () => {
     component.setProps({ name: 'i am a highlighted name', highlighted: true });
-    const displayName = <Message>i am a highlighted name</Message>;
+    const displayName = <FormattedMessage id="i am a highlighted name" />;
     expect(component.contains(displayName)).toBe(true);
-    expect(component.find(Message).first().parent().is('b')).toBe(true);
+    expect(component.find(FormattedMessage).first().parent().is('b')).toBe(true);
   });
 
   it('renders the formatted value of the fund', () => {
