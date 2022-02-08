@@ -1,5 +1,4 @@
 import React from 'react';
-import { Message } from 'retranslate';
 import './StatusBoxRow.scss';
 
 const CheckMark: React.FunctionComponent<{ checked: boolean }> = ({ checked = false }) => (
@@ -14,7 +13,6 @@ export const StatusBoxRow: React.FunctionComponent<{
   last?: boolean;
   children?: React.ReactNode;
 }> = ({ name = '', lines = [], showAction = false, ok = false, children = '', last = false }) => {
-  const displayName = <Message>{name}</Message>;
   const formattedLines = (
     <ul>
       {lines &&
@@ -40,7 +38,7 @@ export const StatusBoxRow: React.FunctionComponent<{
         </div>
         <div className="d-flex flex-column justify-content-center">
           <div className="mt-0 pt-1 pl-2">
-            <b>{displayName}</b>
+            <b>{name}</b>
           </div>
           {formattedLines}
         </div>
