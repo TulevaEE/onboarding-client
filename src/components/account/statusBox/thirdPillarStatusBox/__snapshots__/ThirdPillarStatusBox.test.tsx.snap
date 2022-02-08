@@ -4,15 +4,15 @@ exports[`ThirdPillarStatusBox renders the "open third pillar" flow when user has
 <StatusBoxRow
   lines={
     Array [
-      <Message>
-        account.status.choice.pillar.third.missing.label
-      </Message>,
+      <Memo(MemoizedFormattedMessage)
+        id="account.status.choice.pillar.third.missing.label"
+      />,
     ]
   }
   name={
-    <Message>
-      account.status.choice.pillar.third
-    </Message>
+    <Memo(MemoizedFormattedMessage)
+      id="account.status.choice.pillar.third"
+    />
   }
   showAction={true}
 >
@@ -20,9 +20,9 @@ exports[`ThirdPillarStatusBox renders the "open third pillar" flow when user has
     className="btn btn-light"
     to="/3rd-pillar-flow"
   >
-    <Message>
-      account.status.choice.pillar.third.missing.action
-    </Message>
+    <MemoizedFormattedMessage
+      id="account.status.choice.pillar.third.missing.action"
+    />
   </Link>
 </StatusBoxRow>
 `;
@@ -32,38 +32,37 @@ exports[`ThirdPillarStatusBox renders the "payment incomplete" flow when funds h
   lines={
     Array [
       <React.Fragment>
-        <Message>
-          account.status.choice.pillar.third.paymentIncomplete.label
-        </Message>
+        <Memo(MemoizedFormattedMessage)
+          id="account.status.choice.pillar.third.paymentIncomplete.label"
+        />
         <InfoTooltip
           name="third-pillar-tooltip"
         >
-          <Message>
-            account.status.choice.pillar.third.paymentInfo
-          </Message>
+          <Memo(MemoizedFormattedMessage)
+            id="account.status.choice.pillar.third.paymentInfo"
+          />
         </InfoTooltip>
       </React.Fragment>,
       <small
         className="text-muted"
       >
-        <Message
-          params={
+        <Memo(MemoizedFormattedMessage)
+          id="account.status.yearToDateContribution"
+          values={
             Object {
               "contribution": <b>
                 20
               </b>,
             }
           }
-        >
-          account.status.yearToDateContribution
-        </Message>
+        />
       </small>,
     ]
   }
   name={
-    <Message>
-      account.status.choice.pillar.third
-    </Message>
+    <Memo(MemoizedFormattedMessage)
+      id="account.status.choice.pillar.third"
+    />
   }
   showAction={true}
 >
@@ -71,9 +70,9 @@ exports[`ThirdPillarStatusBox renders the "payment incomplete" flow when funds h
     className="btn btn-light"
     to="/3rd-pillar-flow"
   >
-    <Message>
-      account.status.choice.pillar.third.success.action
-    </Message>
+    <MemoizedFormattedMessage
+      id="account.status.choice.pillar.third.success.action"
+    />
   </Link>
 </StatusBoxRow>
 `;
@@ -86,24 +85,23 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when user has some 
       <small
         className="text-muted"
       >
-        <Message
-          params={
+        <Memo(MemoizedFormattedMessage)
+          id="account.status.yearToDateContribution"
+          values={
             Object {
               "contribution": <b>
                 20
               </b>,
             }
           }
-        >
-          account.status.yearToDateContribution
-        </Message>
+        />
       </small>,
     ]
   }
   name={
-    <Message>
-      account.status.choice.pillar.third
-    </Message>
+    <Memo(MemoizedFormattedMessage)
+      id="account.status.choice.pillar.third"
+    />
   }
   showAction={true}
 >
@@ -111,9 +109,9 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when user has some 
     className="btn btn-light"
     to="/3rd-pillar-flow"
   >
-    <Message>
-      account.status.choice.pillar.third.inactive.action
-    </Message>
+    <MemoizedFormattedMessage
+      id="account.status.choice.pillar.third.inactive.action"
+    />
   </Link>
 </StatusBoxRow>
 `;
@@ -122,30 +120,29 @@ exports[`ThirdPillarStatusBox renders the "transfer incomplete" flow when user h
 <StatusBoxRow
   lines={
     Array [
-      <Message>
-        account.status.choice.pillar.third.transferIncomplete.label
-      </Message>,
+      <Memo(MemoizedFormattedMessage)
+        id="account.status.choice.pillar.third.transferIncomplete.label"
+      />,
       <small
         className="text-muted"
       >
-        <Message
-          params={
+        <Memo(MemoizedFormattedMessage)
+          id="account.status.yearToDateContribution"
+          values={
             Object {
               "contribution": <b>
                 20
               </b>,
             }
           }
-        >
-          account.status.yearToDateContribution
-        </Message>
+        />
       </small>,
     ]
   }
   name={
-    <Message>
-      account.status.choice.pillar.third
-    </Message>
+    <Memo(MemoizedFormattedMessage)
+      id="account.status.choice.pillar.third"
+    />
   }
   showAction={true}
 >
@@ -153,9 +150,9 @@ exports[`ThirdPillarStatusBox renders the "transfer incomplete" flow when user h
     className="btn btn-light"
     to="/3rd-pillar-flow"
   >
-    <Message>
-      account.status.choice.pillar.third.transferIncomplete.action
-    </Message>
+    <MemoizedFormattedMessage
+      id="account.status.choice.pillar.third.transferIncomplete.action"
+    />
   </Link>
 </StatusBoxRow>
 `;
@@ -168,24 +165,23 @@ exports[`ThirdPillarStatusBox renders the success flow 1`] = `
       <small
         className="text-muted"
       >
-        <Message
-          params={
+        <Memo(MemoizedFormattedMessage)
+          id="account.status.yearToDateContribution"
+          values={
             Object {
               "contribution": <b>
                 2500
               </b>,
             }
           }
-        >
-          account.status.yearToDateContribution
-        </Message>
+        />
       </small>,
     ]
   }
   name={
-    <Message>
-      account.status.choice.pillar.third
-    </Message>
+    <Memo(MemoizedFormattedMessage)
+      id="account.status.choice.pillar.third"
+    />
   }
   ok={true}
   showAction={true}
@@ -194,9 +190,9 @@ exports[`ThirdPillarStatusBox renders the success flow 1`] = `
     className="btn btn-light"
     to="/3rd-pillar-flow"
   >
-    <Message>
-      account.status.choice.pillar.third.success.action
-    </Message>
+    <MemoizedFormattedMessage
+      id="account.status.choice.pillar.third.success.action"
+    />
   </Link>
 </StatusBoxRow>
 `;
