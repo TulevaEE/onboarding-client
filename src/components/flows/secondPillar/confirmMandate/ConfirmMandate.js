@@ -1,10 +1,10 @@
 import React from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { bindActionCreators } from 'redux';
-import { Message } from 'retranslate';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 
+import { FormattedMessage } from 'react-intl';
 import { Loader, AuthenticationLoader, ErrorMessage, utils } from '../../../common';
 
 import {
@@ -145,10 +145,10 @@ export const ConfirmMandate = ({
         ''
       )}
 
-      <Message>confirm.mandate.intro</Message>
+      <FormattedMessage id="confirm.mandate.intro" />
       {exchange.selectedFutureContributionsFundIsin ? (
         <div className="mt-4">
-          <Message>confirm.mandate.future.contribution</Message>
+          <FormattedMessage id="confirm.mandate.future.contribution" />
           <b className="highlight">{selectedFutureContributionsFund.name}</b>
         </div>
       ) : (
@@ -156,7 +156,7 @@ export const ConfirmMandate = ({
       )}
       {aggregatedSelections.length ? (
         <div className="mt-4">
-          <Message>confirm.mandate.switch.sources</Message>
+          <FormattedMessage id="confirm.mandate.switch.sources" />
           <div className="mt-4">
             <FundTransferTable selections={aggregatedSelectionsWithNames} />
           </div>
@@ -174,7 +174,7 @@ export const ConfirmMandate = ({
             id="agree-to-terms-checkbox"
           />
           <label className="custom-control-label" htmlFor="agree-to-terms-checkbox">
-            <Message>confirm.mandate.agree.to.terms</Message>
+            <FormattedMessage id="confirm.mandate.agree.to.terms" />
             <div className="mt-2">
               <small className="text-muted">
                 <a
@@ -182,9 +182,9 @@ export const ConfirmMandate = ({
                   rel="noopener noreferrer"
                   href="//www.pensionikeskus.ee/ii-sammas/kohustuslikud-pensionifondid/fonditasude-vordlus/"
                 >
-                  <Message>confirm.mandate.pension.centre</Message>
+                  <FormattedMessage id="confirm.mandate.pension.centre" />
                 </a>
-                <Message>confirm.mandate.view.info</Message>
+                <FormattedMessage id="confirm.mandate.view.info" />
               </small>
             </div>
           </label>
@@ -207,7 +207,7 @@ export const ConfirmMandate = ({
           disabled={!canSignMandate}
           onClick={startSigningMandate}
         >
-          <Message>confirm.mandate.sign</Message>
+          <FormattedMessage id="confirm.mandate.sign" />
         </button>
         <button
           type="button"
@@ -215,11 +215,11 @@ export const ConfirmMandate = ({
           className="btn btn-secondary mb-2 mr-2"
           onClick={startPreviewMandate}
         >
-          <Message>confirm.mandate.preview</Message>
+          <FormattedMessage id="confirm.mandate.preview" />
         </button>
         <Link to="/2nd-pillar-flow/select-sources">
           <button type="button" className="btn btn-secondary mb-2">
-            <Message>confirm.mandate.back</Message>
+            <FormattedMessage id="confirm.mandate.back" />
           </button>
         </Link>
       </div>

@@ -3,6 +3,7 @@ import { shallow } from 'enzyme';
 import { Message } from 'retranslate';
 
 import { Link, Redirect } from 'react-router-dom';
+import { FormattedMessage } from 'react-intl';
 import { ConfirmMandate } from './ConfirmMandate';
 import FundTransferTable from './fundTransferTable';
 import MandateNotFilledAlert from './mandateNotFilledAlert';
@@ -59,7 +60,7 @@ describe('Confirm mandate step', () => {
       selectedFutureContributionsFundIsin: 'asd',
     };
     component.setProps({ exchange });
-    expect(component.contains(<Message>confirm.mandate.intro</Message>)).toBe(true);
+    expect(component.contains(<FormattedMessage id="confirm.mandate.intro" />)).toBe(true);
   });
 
   it('shows the future contribution fund if one is given', () => {
@@ -72,14 +73,16 @@ describe('Confirm mandate step', () => {
     expect(
       component.contains(
         <div className="mt-4">
-          <Message>confirm.mandate.future.contribution</Message>
+          <FormattedMessage id="confirm.mandate.future.contribution" />
           <b className="highlight">test name</b>
         </div>,
       ),
     ).toBe(true);
     exchange.selectedFutureContributionsFundIsin = null;
     component.setProps({ exchange });
-    expect(component.contains(<Message>confirm.mandate.future.contribution</Message>)).toBe(false);
+    expect(component.contains(<FormattedMessage id="confirm.mandate.future.contribution" />)).toBe(
+      false,
+    );
   });
 
   it('has a back button', () => {
@@ -95,7 +98,7 @@ describe('Confirm mandate step', () => {
       component.contains(
         <Link to="/2nd-pillar-flow/select-sources">
           <button type="button" className="btn btn-secondary mb-2">
-            <Message>confirm.mandate.back</Message>
+            <FormattedMessage id="confirm.mandate.back" />
           </button>
         </Link>,
       ),
@@ -108,7 +111,9 @@ describe('Confirm mandate step', () => {
     ];
     const sourceFunds = [{ isin: 'source 1', name: 'a' }];
     component.setProps({ exchange: { sourceSelection, sourceFunds } });
-    expect(component.contains(<Message>confirm.mandate.switch.sources</Message>)).toBe(false);
+    expect(component.contains(<FormattedMessage id="confirm.mandate.switch.sources" />)).toBe(
+      false,
+    );
     expect(!!component.find(FundTransferTable).length).toBe(false);
   });
 
@@ -148,7 +153,7 @@ describe('Confirm mandate step', () => {
         targetFundName: 'd',
       },
     ]);
-    expect(component.contains(<Message>confirm.mandate.switch.sources</Message>)).toBe(true);
+    expect(component.contains(<FormattedMessage id="confirm.mandate.switch.sources" />)).toBe(true);
   });
 
   it('aggregates selections for showing funds', () => {
@@ -291,7 +296,7 @@ describe('Confirm mandate step', () => {
     expect(
       component.contains(
         <label className="custom-control-label" htmlFor="agree-to-terms-checkbox">
-          <Message>confirm.mandate.agree.to.terms</Message>
+          <FormattedMessage id="confirm.mandate.agree.to.terms" />
           <div className="mt-2">
             <small className="text-muted">
               <a
@@ -299,9 +304,9 @@ describe('Confirm mandate step', () => {
                 rel="noopener noreferrer"
                 href="//www.pensionikeskus.ee/ii-sammas/kohustuslikud-pensionifondid/fonditasude-vordlus/"
               >
-                <Message>confirm.mandate.pension.centre</Message>
+                <FormattedMessage id="confirm.mandate.pension.centre" />
               </a>
-              <Message>confirm.mandate.view.info</Message>
+              <FormattedMessage id="confirm.mandate.view.info" />
             </small>
           </div>
         </label>,
