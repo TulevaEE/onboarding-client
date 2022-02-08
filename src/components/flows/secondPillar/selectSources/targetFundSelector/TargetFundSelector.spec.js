@@ -1,8 +1,14 @@
 import React from 'react';
-import { Message } from 'retranslate';
 import { shallow } from 'enzyme';
 
+import { FormattedMessage, FormattedRelativeTime } from 'react-intl';
 import { TargetFundSelector } from './TargetFundSelector';
+
+jest.mock('react-intl', () => ({
+  useIntl: () => ({
+    formatMessage: ({ id }) => id,
+  }),
+}));
 
 describe('Target fund selector', () => {
   let component;
@@ -22,9 +28,9 @@ describe('Target fund selector', () => {
     expect(component.find('button').length).toBe(3);
     targetFunds.forEach((fund) => {
       expect(component.contains(fund.name)).toBe(true);
-      expect(component.contains(<Message>{`target.funds.${fund.isin}.description`}</Message>)).toBe(
-        true,
-      );
+      expect(
+        component.contains(<FormattedMessage id={`target.funds.${fund.isin}.description`} />),
+      ).toBe(true);
       // TODO: add test for terms link once we have the links.
     });
   });
@@ -50,20 +56,17 @@ describe('Target fund selector', () => {
 
   it('shows that the recommended fund is recommended', () => {
     const targetFunds = [{ isin: '123' }, { isin: '456' }, { isin: '789' }];
-    const recommendedFundIsin = '456';
+    let recommendedFundIsin = '456';
     component.setProps({ targetFunds, recommendedFundIsin });
+    expect(
+      component.contains(<FormattedMessage id="select.sources.select.all.recommended" />),
+    ).toBe(true);
 
-    const fundWithIndexIsRecommended = (index) =>
-      !!component
-        .find('button')
-        .at(index)
-        .parent()
-        .html()
-        .includes('select.sources.select.all.recommended');
-
-    expect(fundWithIndexIsRecommended(0)).toBe(false);
-    expect(fundWithIndexIsRecommended(1)).toBe(true);
-    expect(fundWithIndexIsRecommended(2)).toBe(false);
+    recommendedFundIsin = '555';
+    component.setProps({ targetFunds, recommendedFundIsin });
+    expect(
+      component.contains(<FormattedMessage id="select.sources.select.all.recommended" />),
+    ).toBe(false);
   });
 
   it('has terms links for every fund', () => {
