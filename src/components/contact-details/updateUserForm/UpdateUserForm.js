@@ -456,7 +456,6 @@ UpdateUserForm.propTypes = {
   handleSubmit: Types.func,
   submitting: Types.bool,
   error: Types.string,
-  translations: Types.shape({ translate: Types.func.isRequired }).isRequired,
   updateUserSuccess: Types.bool,
   isCountryEstonia: Types.bool,
 };
