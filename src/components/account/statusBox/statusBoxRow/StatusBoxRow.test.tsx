@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Message } from 'retranslate';
+import { FormattedMessage } from 'react-intl';
 import { StatusBoxRow } from './StatusBoxRow';
 
 describe('Status Box Row', () => {
@@ -11,17 +11,15 @@ describe('Status Box Row', () => {
   });
 
   it('renders the name', () => {
-    component.setProps({ name: 'i am a name' });
-    const displayName = <Message>i am a name</Message>;
+    const displayName = <FormattedMessage id="i am a name" />;
+    component.setProps({ name: displayName });
     expect(component.contains(displayName)).toBe(true);
   });
 
   it('renders action button if row status not ok', () => {
-    component.setProps({
-      showAction: true,
-      children: <Message>do next</Message>,
-    });
-    expect(component.contains(<Message>do next</Message>)).toBe(true);
+    const action = <FormattedMessage id="do next" />;
+    component.setProps({ showAction: true, children: action });
+    expect(component.contains(action)).toBe(true);
   });
 
   it('renders given lines of text', () => {
