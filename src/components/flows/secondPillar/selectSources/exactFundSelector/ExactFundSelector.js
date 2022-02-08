@@ -1,7 +1,7 @@
 /* eslint-disable react/no-array-index-key */
 import React from 'react';
 import { PropTypes as Types } from 'prop-types';
-import { Message } from 'retranslate';
+import { FormattedMessage } from 'react-intl';
 
 import FundExchangeRow from './fundExchangeRow';
 import { isTuleva } from '../../../../common/utils';
@@ -32,21 +32,21 @@ const ExactFundSelector = ({ selections, sourceFunds, targetFunds, onChange }) =
       <div className="col-12 col-md">
         <small>
           <b>
-            <Message>select.sources.select.some.source</Message>
+            <FormattedMessage id="select.sources.select.some.source" />
           </b>
         </small>
       </div>
       <div className="col-12 col-md-2">
         <small>
           <b>
-            <Message>select.sources.select.some.percentage</Message>
+            <FormattedMessage id="select.sources.select.some.percentage" />
           </b>
         </small>
       </div>
       <div className="col-12 col-md">
         <small>
           <b>
-            <Message>select.sources.select.some.target</Message>
+            <FormattedMessage id="select.sources.select.some.target" />
           </b>
         </small>
       </div>
@@ -64,7 +64,7 @@ const ExactFundSelector = ({ selections, sourceFunds, targetFunds, onChange }) =
     <div className="row mt-2">
       <div className="col">
         <small>
-          <Message>select.sources.select.some.cost</Message>
+          <FormattedMessage id="select.sources.select.some.cost" />
         </small>
       </div>
       <div className="col">
@@ -78,7 +78,7 @@ const ExactFundSelector = ({ selections, sourceFunds, targetFunds, onChange }) =
             onChange,
           })}
         >
-          <Message>select.sources.select.some.add</Message>
+          <FormattedMessage id="select.sources.select.some.add" />
         </button>
       </div>
     </div>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Message } from 'retranslate';
 
+import { FormattedMessage } from 'react-intl';
 import FundExchangeRow from './fundExchangeRow';
 import ExactFundSelector from './ExactFundSelector';
 
@@ -51,9 +51,15 @@ describe('Exact fund selector', () => {
   });
 
   it('renders a header for the selection table', () => {
-    expect(component.contains(<Message>select.sources.select.some.source</Message>)).toBe(true);
-    expect(component.contains(<Message>select.sources.select.some.percentage</Message>)).toBe(true);
-    expect(component.contains(<Message>select.sources.select.some.target</Message>)).toBe(true);
+    expect(component.contains(<FormattedMessage id="select.sources.select.some.source" />)).toBe(
+      true,
+    );
+    expect(
+      component.contains(<FormattedMessage id="select.sources.select.some.percentage" />),
+    ).toBe(true);
+    expect(component.contains(<FormattedMessage id="select.sources.select.some.target" />)).toBe(
+      true,
+    );
   });
 
   it('renders a table row with selectors for every fund', () => {
