@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Message } from 'retranslate';
+import { FormattedMessage } from 'react-intl';
 import { useSignedMandateDownload } from '../../exchange/hooks';
 import { SuccessNotice } from '../common/SuccessNotice/SuccessNotice';
 
@@ -12,14 +12,14 @@ export const CancellationSuccess: React.FunctionComponent<unknown> = () => {
       <div className="col-12 mt-5 px-0">
         <SuccessNotice>
           <h2 className="text-center mt-3">
-            <Message>cancellation.flow.success.title</Message>
+            <FormattedMessage id="cancellation.flow.success.title" />
           </h2>
           <button type="button" className="btn btn-secondary text-center" onClick={download}>
-            <Message>cancellation.flow.success.download</Message>
+            <FormattedMessage id="cancellation.flow.success.download" />
           </button>
         </SuccessNotice>
         <Link className="btn btn-primary mt-4 profile-link" to="/account">
-          <Message>cancellation.flow.success.back</Message>
+          <FormattedMessage id="cancellation.flow.success.back" />
         </Link>
       </div>
     </div>
