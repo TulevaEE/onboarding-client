@@ -1,6 +1,5 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Message } from 'retranslate';
 
 import { Link, Redirect } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
