@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Message } from 'retranslate';
+import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Shimmer } from '../../common/shimmer/Shimmer';
@@ -19,14 +19,14 @@ export class GreetingBar extends Component {
     return (
       <>
         <div className="col-md-auto mb-1 mt-2 lead">
-          <Message>account.greeting</Message>, {user.firstName} {user.lastName}!
+          <FormattedMessage id="account.greeting" />, {user.firstName} {user.lastName}!
         </div>
         <div className="col mb-1 mt-2 text-md-right">
           {user.email}
           {user.email && user.phoneNumber && <span className="mx-1"> · </span>}
           <span className="mr-2">{user.phoneNumber} </span>
           <Link className="btn btn-light" to="/contact-details">
-            <Message>account.update.contact</Message>
+            <FormattedMessage id="account.update.contact" />
           </Link>
         </div>
       </>
