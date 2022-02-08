@@ -8,9 +8,9 @@ exports[`SecondPillarStatusBox renders the choice flow when fund selection incom
     ]
   }
   name={
-    <Message>
-      account.status.choice.pillar.second
-    </Message>
+    <Memo(MemoizedFormattedMessage)
+      id="account.status.choice.pillar.second"
+    />
   }
   showAction={true}
 >
@@ -18,9 +18,9 @@ exports[`SecondPillarStatusBox renders the choice flow when fund selection incom
     className="btn btn-light"
     to="/2nd-pillar-flow"
   >
-    <Message>
-      account.status.choice.join.tuleva.2
-    </Message>
+    <MemoizedFormattedMessage
+      id="account.status.choice.join.tuleva.2"
+    />
   </Link>
 </StatusBoxRow>
 `;
@@ -33,9 +33,9 @@ exports[`SecondPillarStatusBox renders the success flow 1`] = `
     ]
   }
   name={
-    <Message>
-      account.status.choice.pillar.second
-    </Message>
+    <Memo(MemoizedFormattedMessage)
+      id="account.status.choice.pillar.second"
+    />
   }
   ok={true}
   showAction={true}
@@ -46,15 +46,15 @@ exports[`SecondPillarStatusBox renders the transfer flow when fund transfers inc
 <StatusBoxRow
   lines={
     Array [
-      <Message>
-        account.status.choice.pillar.second.transferIncomplete
-      </Message>,
+      <Memo(MemoizedFormattedMessage)
+        id="account.status.choice.pillar.second.transferIncomplete"
+      />,
     ]
   }
   name={
-    <Message>
-      account.status.choice.pillar.second
-    </Message>
+    <Memo(MemoizedFormattedMessage)
+      id="account.status.choice.pillar.second"
+    />
   }
   showAction={true}
 >
@@ -62,9 +62,9 @@ exports[`SecondPillarStatusBox renders the transfer flow when fund transfers inc
     className="btn btn-light"
     to="/2nd-pillar-flow"
   >
-    <Message>
-      account.status.choice.transfer.tuleva.2
-    </Message>
+    <MemoizedFormattedMessage
+      id="account.status.choice.transfer.tuleva.2"
+    />
   </Link>
 </StatusBoxRow>
 `;
@@ -73,15 +73,15 @@ exports[`SecondPillarStatusBox renders the withdrawal flow when withdrawal is in
 <StatusBoxRow
   lines={
     Array [
-      <Message>
-        account.status.choice.pillar.second.withdraw
-      </Message>,
+      <Memo(MemoizedFormattedMessage)
+        id="account.status.choice.pillar.second.withdraw"
+      />,
     ]
   }
   name={
-    <Message>
-      account.status.choice.pillar.second
-    </Message>
+    <Memo(MemoizedFormattedMessage)
+      id="account.status.choice.pillar.second"
+    />
   }
   showAction={true}
 >
@@ -89,9 +89,9 @@ exports[`SecondPillarStatusBox renders the withdrawal flow when withdrawal is in
     className="btn btn-light"
     to="/applications/undefined/cancellation"
   >
-    <Message>
-      account.status.choice.pillar.second.withdraw.cancel
-    </Message>
+    <MemoizedFormattedMessage
+      id="account.status.choice.pillar.second.withdraw.cancel"
+    />
   </Link>
 </StatusBoxRow>
 `;
