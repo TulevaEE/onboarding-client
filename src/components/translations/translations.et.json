@@ -208,7 +208,7 @@
   "smart.id.technical.error": "Smart ID süsteemi viga",
   "id.card.signature.session.not.found": "Id kaardi sessioon on aegunud, palun logi uuesti sisse.",
   "header.my.account": "Minu konto",
-  "account.member.statement": "Oled Tuleva liige nr. {{memberNumber}}",
+  "account.member.statement": "Oled Tuleva liige nr. {memberNumber}",
   "account.non.member.statement": "Sa ei ole veel liige",
   "account.converted.user.statement": "Avaldus maksete ümber suunamiseks ja olemasolevate osakute ümber vahetamiseks Tuleva pensionifondi on tehtud.",
   "account.status.choices": "Sinu valikud",

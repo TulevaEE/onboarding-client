@@ -233,7 +233,7 @@
   "Swedbank Pensionifond K4 (Aktsiastrateegia)": "Swedbank Pension Fund K4 (Equity Strategy)",
   "Swedbank Pensionifond K90-99 (Elutsükli strateegia)": "Swedbank Pension Fund K90-99 (Life-cycle Strategy)",
   "header.my.account": "My account",
-  "account.member.statement": "You are Tuleva member no. {{memberNumber}}",
+  "account.member.statement": "You are Tuleva member no. {memberNumber}",
   "account.non.member.statement": "Not a member",
   "account.converted.user.statement": "You have successfully filled an application to transfer future payments and current fund units to Tuleva.",
   "account.status.choices": "Your choices",
