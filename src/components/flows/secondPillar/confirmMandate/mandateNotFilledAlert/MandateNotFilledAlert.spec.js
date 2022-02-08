@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Message } from 'retranslate';
 import { Link } from 'react-router-dom';
+import { FormattedMessage } from 'react-intl';
 
 import MandateNotFilledAlert from './MandateNotFilledAlert';
 
@@ -16,13 +16,13 @@ describe('Confirm mandate step', () => {
     expect(
       component.contains([
         <p>
-          <Message>confirm.mandate.not.filled.understand</Message>
+          <FormattedMessage id="confirm.mandate.not.filled.understand" />
         </p>,
         <p>
-          <Message>confirm.mandate.not.filled.cheapest</Message>
+          <FormattedMessage id="confirm.mandate.not.filled.cheapest" />
         </p>,
         <p>
-          <Message>confirm.mandate.not.filled.help</Message>
+          <FormattedMessage id="confirm.mandate.not.filled.help" />
         </p>,
       ]),
     ).toBe(true);
@@ -32,7 +32,7 @@ describe('Confirm mandate step', () => {
     expect(
       component.contains(
         <Link to="/2nd-pillar-flow/select-sources">
-          <Message>confirm.mandate.not.filled.look.again</Message>
+          <FormattedMessage id="confirm.mandate.not.filled.look.again" />
         </Link>,
       ),
     ).toBe(true);
@@ -42,7 +42,7 @@ describe('Confirm mandate step', () => {
     expect(
       component.contains(
         <Link to="/account">
-          <Message>confirm.mandate.not.filled.thinking</Message>
+          <FormattedMessage id="confirm.mandate.not.filled.thinking" />
         </Link>,
       ),
     ).toBe(true);

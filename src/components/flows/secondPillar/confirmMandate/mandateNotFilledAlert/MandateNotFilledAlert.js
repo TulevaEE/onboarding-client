@@ -1,31 +1,29 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Message } from 'retranslate';
+import { FormattedMessage } from 'react-intl';
 
-const MandateNotFilledAlert = () => (
+export default () => (
   <div className="col">
     <p>
-      <Message>confirm.mandate.not.filled.understand</Message>
+      <FormattedMessage id="confirm.mandate.not.filled.understand" />
     </p>
     <p>
-      <Message>confirm.mandate.not.filled.cheapest</Message>
+      <FormattedMessage id="confirm.mandate.not.filled.cheapest" />
     </p>
     <p>
-      <Message>confirm.mandate.not.filled.help</Message>
+      <FormattedMessage id="confirm.mandate.not.filled.help" />
     </p>
     <ul>
       <li>
         <Link to="/2nd-pillar-flow/select-sources">
-          <Message>confirm.mandate.not.filled.look.again</Message>
+          <FormattedMessage id="confirm.mandate.not.filled.look.again" />
         </Link>
       </li>
       <li>
         <Link to="/account">
-          <Message>confirm.mandate.not.filled.thinking</Message>
+          <FormattedMessage id="confirm.mandate.not.filled.thinking" />
         </Link>
       </li>
     </ul>
   </div>
 );
-
-export default MandateNotFilledAlert;
