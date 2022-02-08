@@ -3,9 +3,9 @@ import { PropTypes as Types } from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
-import { Message } from 'retranslate';
+import { FormattedMessage } from 'react-intl';
 
-import { Loader, ErrorMessage } from '../common';
+import { ErrorMessage, Loader } from '../common';
 import ReturnComparison from './ReturnComparison';
 import { actions as accountActions } from '.';
 import AccountStatement from './AccountStatement';
@@ -66,7 +66,7 @@ export class AccountPage extends Component {
 
         <div className="mt-5">
           <p className="mb-4 lead">
-            <Message>accountSummary.heading</Message>
+            <FormattedMessage id="accountSummary.heading" />
           </p>
           {secondPillarSourceFunds && thirdPillarSourceFunds && conversion ? (
             <AccountSummary
@@ -90,16 +90,16 @@ export class AccountPage extends Component {
         {!loadingCurrentBalance && (
           <div className="mt-5">
             <p className="mb-4 lead">
-              <Message>accountStatement.heading</Message>
+              <FormattedMessage id="accountStatement.heading" />
             </p>
             <div className="row">
               <div className="col-md-6 mb-2 mt-4">
-                <Message className="mb-2 lead h5">accountStatement.secondPillar.heading</Message>
+                <FormattedMessage id="accountStatement.secondPillar.heading" />
               </div>
 
               <div className="col-md-6 mb-1 mt-2 text-md-right">
                 <Link className="btn btn-primary" to="/2nd-pillar-flow">
-                  <Message>change.my.pension.fund</Message>
+                  <FormattedMessage id="change.my.pension.fund" />
                 </Link>
               </div>
             </div>
@@ -113,12 +113,12 @@ export class AccountPage extends Component {
           <>
             <div className="row">
               <div className="col-md-6 mb-2 mt-4">
-                <Message className="mb-2 lead h5">accountStatement.thirdPillar.heading</Message>
+                <FormattedMessage id="accountStatement.thirdPillar.heading" />
               </div>
 
               <div className="col-md-6 mb-1 mt-2 text-md-right">
                 <Link className="btn btn-primary" to="/3rd-pillar-flow">
-                  <Message>change.my.pension.fund.third.pillar</Message>
+                  <FormattedMessage id="change.my.pension.fund.third.pillar" />
                 </Link>
               </div>
             </div>
@@ -132,7 +132,7 @@ export class AccountPage extends Component {
           <div>
             <div className="mt-5">
               <p className="mb-4 lead">
-                <Message>memberCapital.heading</Message>
+                <FormattedMessage id="memberCapital.heading" />
               </p>
               {loadingCapital && <Loader className="align-middle" />}
               {memberCapital && <MemberCapital value={memberCapital} />}
