@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { PropTypes as Types } from 'prop-types';
-import { Message } from 'retranslate';
+import { FormattedMessage } from 'react-intl';
 
 export const ID_CARD_LOGIN_START_FAILED_ERROR = 'ID_CARD_LOGIN_START_FAILED';
 const NOT_JOINED_ERROR_DESCRIPTION = 'INVALID_USER_CREDENTIALS';
@@ -10,13 +10,14 @@ class ErrorAlert extends Component {
   errorMessage() {
     const { description } = this.props;
 
+    // TODO: Check and remove legacy logic. It should not be needed after moving to ID authentication.
     if (description === NOT_JOINED_ERROR_DESCRIPTION) {
       return (
         <div>
-          <Message>login.error.invalid.user.credentials</Message>
+          <FormattedMessage id="login.error.invalid.user.credentials" />
           <br />
           <a href="//tuleva.ee/#liitu">
-            <Message>login.join.tuleva</Message>
+            <FormattedMessage id="login.join.tuleva" />
           </a>
         </div>
       );
@@ -25,7 +26,7 @@ class ErrorAlert extends Component {
     if (description === ID_CARD_LOGIN_START_FAILED_ERROR) {
       return (
         <div>
-          <Message>login.id.card.start.failed</Message>
+          <FormattedMessage id="login.id.card.start.failed" />
         </div>
       );
     }
@@ -33,12 +34,12 @@ class ErrorAlert extends Component {
     if (description === INVALID_PERSONAL_CODE) {
       return (
         <div>
-          <Message>login.invalid.personal.code</Message>
+          <FormattedMessage id="login.invalid.personal.code" />
         </div>
       );
     }
 
-    return <Message>login.error.generic</Message>;
+    return <FormattedMessage id="login.error.generic" />;
   }
 
   render() {
