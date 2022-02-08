@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Message } from 'retranslate';
+import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
 
 import moment, { Moment } from 'moment';
@@ -127,7 +127,7 @@ export class ReturnComparison extends Component<Props, State> {
         <div className="row mb-2">
           <div className="col-md-8">
             <p className="mt-1 lead">
-              <Message>returnComparison.title</Message>
+              <FormattedMessage id="returnComparison.title" />
             </p>
           </div>
           <div className="col-md-4 text-md-right">
@@ -213,7 +213,7 @@ export class ReturnComparison extends Component<Props, State> {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <Message>returnComparison.explanationLinkText</Message>
+              <FormattedMessage id="returnComparison.explanationLinkText" />
             </a>
           </div>
         </div>
