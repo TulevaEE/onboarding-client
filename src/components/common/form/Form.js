@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { PropTypes as Types } from 'prop-types';
-import { Message } from 'retranslate';
+import { FormattedMessage } from 'react-intl';
 
 export function emailValidator(value) {
   return value &&
@@ -45,7 +45,7 @@ export const renderField = ({
           {children}
         </select>
       )}
-      {touched && error && <Message>{`new.user.flow.signup.error.${error}`}</Message>}
+      {touched && error && <FormattedMessage id={`new.user.flow.signup.error.${error}`} />}
     </div>
   </div>
 );
