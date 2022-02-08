@@ -2,6 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Message } from 'retranslate';
 
+import { FormattedMessage } from 'react-intl';
 import ErrorMessage, { getGlobalErrorCode } from './ErrorMessage';
 
 describe('Error message', () => {
@@ -20,20 +21,20 @@ describe('Error message', () => {
   });
 
   it('shows intro text', () => {
-    expect(component.contains(<Message>error.messages.intro</Message>)).toBe(true);
+    expect(component.contains(<FormattedMessage id="error.messages.intro" />)).toBe(true);
   });
 
   it('shows error codes and messages', () => {
     errors.errors.forEach((error) => {
-      expect(component.contains(<Message>{error.code}</Message>)).toBe(true);
+      expect(component.contains(<FormattedMessage id={error.code} />)).toBe(true);
       expect(component.contains(error.message)).toBe(true);
     });
   });
 
   it('shows close button when onCancel is set', () => {
-    expect(component.contains(<Message>error.message.close</Message>)).not.toBe(true);
+    expect(component.contains(<FormattedMessage id="error.message.close" />)).not.toBe(true);
     component.setProps({ onCancel: jest.fn() });
-    expect(component.contains(<Message>error.message.close</Message>)).toBe(true);
+    expect(component.contains(<FormattedMessage id="error.message.close" />)).toBe(true);
   });
 
   it('renders as a modal when it is overlayed', () => {
