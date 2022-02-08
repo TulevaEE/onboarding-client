@@ -1,6 +1,6 @@
 import React from 'react';
 import Types from 'prop-types';
-import { Message } from 'retranslate';
+import { FormattedMessage } from 'react-intl';
 
 import Table from '../../common/table';
 import Euro from '../../common/Euro';
@@ -17,12 +17,12 @@ const MemberCapital = ({
 }) => {
   const columns = [
     {
-      title: <Message>memberCapital.columns.source.title</Message>,
+      title: <FormattedMessage id="memberCapital.columns.source.title" />,
       dataIndex: 'source',
-      footer: <Message>memberCapital.columns.source.total</Message>,
+      footer: <FormattedMessage id="memberCapital.columns.source.total" />,
     },
     {
-      title: <Message>memberCapital.columns.value.title</Message>,
+      title: <FormattedMessage id="memberCapital.columns.value.title" />,
       dataIndex: 'value',
       footer: <Euro amount={total} />,
     },
@@ -30,17 +30,17 @@ const MemberCapital = ({
 
   const dataSource = [
     {
-      source: <Message>memberCapital.source.capitalPayment</Message>,
+      source: <FormattedMessage id="memberCapital.source.capitalPayment" />,
       value: <Euro amount={capitalPayment} />,
       key: 'payment',
     },
     {
-      source: <Message>memberCapital.source.profit</Message>,
+      source: <FormattedMessage id="memberCapital.source.profit" />,
       value: <Euro amount={profit} />,
       key: 'profit',
     },
     {
-      source: <Message>memberCapital.source.membershipBonus</Message>,
+      source: <FormattedMessage id="memberCapital.source.membershipBonus" />,
       value: <Euro amount={membershipBonus} />,
       key: 'bonus',
     },
@@ -48,7 +48,7 @@ const MemberCapital = ({
 
   if (workCompensation) {
     dataSource.push({
-      source: <Message>memberCapital.source.workCompensation</Message>,
+      source: <FormattedMessage id="memberCapital.source.workCompensation" />,
       value: <Euro amount={workCompensation} />,
       key: 'work',
     });
@@ -56,7 +56,7 @@ const MemberCapital = ({
 
   if (unvestedWorkCompensation) {
     dataSource.push({
-      source: <Message>memberCapital.source.unvestedWorkCompensation</Message>,
+      source: <FormattedMessage id="memberCapital.source.unvestedWorkCompensation" />,
       value: <Euro amount={unvestedWorkCompensation} />,
       key: 'unvestedWork',
     });
