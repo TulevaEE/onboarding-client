@@ -2,9 +2,9 @@ import React from 'react';
 import Types from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Message } from 'retranslate';
 
 import { Field } from 'redux-form';
+import { FormattedMessage } from 'react-intl';
 import { changeIsResident } from '../actions';
 import { InfoTooltip } from '../../common';
 import { requiredField } from '../../common/form';
@@ -28,10 +28,10 @@ export const ResidencyAgreement = ({ isResident, onResidentChange, className }) 
           className={`custom-control-label ${!isResident ? 'text-danger' : ''}`}
           htmlFor="aml-resident-checkbox"
         >
-          <Message>aml.isResident</Message>
+          <FormattedMessage id="aml.isResident" />
           <InfoTooltip name="resident-tooltip">
             <div className="content">
-              <Message>aml.residentTooltip</Message>
+              <FormattedMessage id="aml.residentTooltip" />
             </div>
           </InfoTooltip>
         </label>

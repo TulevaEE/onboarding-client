@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { Message } from 'retranslate';
+import { FormattedMessage } from 'react-intl';
 import { ResidencyAgreement } from './ResidencyAgreement';
 
 describe('ResidencyAgreement', () => {
@@ -32,7 +32,7 @@ describe('ResidencyAgreement', () => {
   });
 
   it('has resident tooltip', () => {
-    const hasTooltip = () => component.contains(<Message>aml.residentTooltip</Message>);
+    const hasTooltip = () => component.contains(<FormattedMessage id="aml.residentTooltip" />);
     expect(hasTooltip()).toBe(true);
   });
 });
