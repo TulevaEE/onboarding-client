@@ -7,9 +7,9 @@ exports[`StatusBoxLoader renders correctly 1`] = `
   <div
     className="col-md-6 mb-4 lead"
   >
-    <Message>
-      account.status.choices
-    </Message>
+    <MemoizedFormattedMessage
+      id="account.status.choices"
+    />
   </div>
 </div>
 `;
