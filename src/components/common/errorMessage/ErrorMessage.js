@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { PropTypes as Types } from 'prop-types';
-import { Message } from 'retranslate';
+import { FormattedMessage } from 'react-intl';
 
 import './ErrorMessage.scss';
 
@@ -15,19 +15,19 @@ const ErrorMessage = ({ errors, onCancel, overlayed }) => {
         <div>
           <p>
             <b>
-              <Message>error.messages.intro</Message>
+              <FormattedMessage id="error.messages.intro" />
             </b>
           </p>
           {errors.errors &&
             errors.errors.map((error, index) => (
               <p key={index}>
-                <Message>{error.code}</Message> {error.message}
+                <FormattedMessage id={error.code} /> {error.message}
               </p>
             ))}
         </div>
         {onCancel !== noop ? (
           <button type="button" className="btn btn-secondary mt-4" onClick={onCancel}>
-            <Message>error.message.close</Message>
+            <FormattedMessage id="error.message.close" />
           </button>
         ) : (
           ''
