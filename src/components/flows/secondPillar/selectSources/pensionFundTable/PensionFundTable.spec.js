@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Message } from 'retranslate';
+import { FormattedMessage } from 'react-intl';
 
 import PensionFundTable from './PensionFundTable';
 import FundRow from './fundRow';
@@ -14,10 +14,7 @@ describe('Pension fund table', () => {
 
   it('renders a table header', () => {
     const headerFields = () => component.find('div.tv-table__header').children();
-    const headerField = (index) => headerFields().at(index).childAt(0).get(0);
-    expect(headerFields().length).toBe(2);
-    expect(headerField(0)).toEqual(<Message>select.sources.pension.fund</Message>);
-    expect(headerField(1)).toEqual(<Message>select.sources.value</Message>);
+    expect(headerFields()).toMatchSnapshot();
   });
 
   it('renders a fund row for every fund', () => {
@@ -35,7 +32,7 @@ describe('Pension fund table', () => {
   });
 
   it('renders a tiny legend under the table', () => {
-    expect(component.contains(<Message>select.sources.active.fund</Message>)).toBe(true);
+    expect(component.contains(<FormattedMessage id="select.sources.active.fund" />)).toBe(true);
   });
 
   it('renders a fundrow for totals', () => {
