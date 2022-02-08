@@ -2,19 +2,19 @@
 import React from 'react';
 import { PropTypes as Types } from 'prop-types';
 
-import { Message } from 'retranslate';
+import { FormattedMessage } from 'react-intl';
 
 const FundTransferTable = ({ selections }) => (
   <div>
     <div className="row tv-table__header py-2">
       <div className="col-12 col-sm">
-        <Message>confirm.mandate.current.fund</Message>
+        <FormattedMessage id="confirm.mandate.current.fund" />
       </div>
       <div className="col-12 col-sm-2">
-        <Message>confirm.mandate.percentage</Message>
+        <FormattedMessage id="confirm.mandate.percentage" />
       </div>
       <div className="col-12 col-sm">
-        <Message>confirm.mandate.future.fund</Message>
+        <FormattedMessage id="confirm.mandate.future.fund" />
       </div>
     </div>
     {selections.map((selection, index) => (
