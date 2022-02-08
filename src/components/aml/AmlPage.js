@@ -1,9 +1,9 @@
 import React from 'react';
-import { Message } from 'retranslate';
 import { PropTypes as Types } from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
+import { FormattedMessage } from 'react-intl';
 import UpdateUserForm from '../contact-details/updateUserForm';
 import ResidencyAgreement from './ResidencyAgreement';
 import OccupationAgreement from './OccupationAgreement';
@@ -18,14 +18,14 @@ export const AmlPage = ({ save, updateUserSuccess, createAmlChecksSuccess, locat
         <Redirect to={location.state && location.state.from ? location.state.from : ''} />
       )}
       <p>
-        <Message>aml.updateContactDetails</Message>
+        <FormattedMessage id="aml.updateContactDetails" />
       </p>
       <p className="mb-4 lead">
-        <Message>update.user.details.title</Message>
+        <FormattedMessage id="update.user.details.title" />
       </p>
       <UpdateUserForm onSubmit={save}>
         <p className="mt-4 mb-3 lead">
-          <Message>aml.extraDetails</Message>
+          <FormattedMessage id="aml.extraDetails" />
         </p>
         <OccupationAgreement className="mt-3" />
         <ResidencyAgreement className="mt-3 mb-4" />
