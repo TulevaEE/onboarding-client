@@ -1,6 +1,6 @@
 import React from 'react';
 import { PropTypes as Types } from 'prop-types';
-import { Message } from 'retranslate';
+import { FormattedMessage } from 'react-intl';
 
 import FundRow from './fundRow';
 
@@ -13,16 +13,11 @@ const PensionFundTable = ({ funds }) => {
     <div>
       <div className="row tv-table__header py-2">
         <div className="col-12 col-sm">
-          <Message>select.sources.pension.fund</Message>
+          <FormattedMessage id="select.sources.pension.fund" />
         </div>
         <div className="col-12 col-sm text-sm-right">
-          <Message>select.sources.value</Message>
+          <FormattedMessage id="select.sources.value" />
         </div>
-        {/*
-          <div className="col-12 col-sm text-sm-right">
-            <Message>select.sources.fees</Message>
-          </div>
-           */}
       </div>
       {funds &&
         funds.length > 0 &&
@@ -37,7 +32,7 @@ const PensionFundTable = ({ funds }) => {
       />
       <div className="mt-2">
         <small className="text-muted">
-          <Message>select.sources.active.fund</Message>
+          <FormattedMessage id="select.sources.active.fund" />
         </small>
       </div>
     </div>

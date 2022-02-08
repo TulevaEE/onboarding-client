@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Pension fund table renders a table header 1`] = `
+Array [
+  <div
+    className="col-12 col-sm"
+  >
+    <MemoizedFormattedMessage
+      id="select.sources.pension.fund"
+    />
+  </div>,
+  <div
+    className="col-12 col-sm text-sm-right"
+  >
+    <MemoizedFormattedMessage
+      id="select.sources.value"
+    />
+  </div>,
+]
+`;
