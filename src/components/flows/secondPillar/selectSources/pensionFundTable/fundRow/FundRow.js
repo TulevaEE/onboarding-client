@@ -1,11 +1,11 @@
 import React from 'react';
 import { PropTypes as Types } from 'prop-types';
-import { Message } from 'retranslate';
 
+import { FormattedMessage } from 'react-intl';
 import Euro from '../../../../../common/Euro';
 
 const FundRow = ({ price, name, highlighted, active }) => {
-  const displayName = <Message>{name}</Message>;
+  const displayName = <FormattedMessage id={name} />;
   const displayPrice = <Euro amount={price} />;
   return (
     <div className="row tv-table__row py-2">
@@ -16,9 +16,6 @@ const FundRow = ({ price, name, highlighted, active }) => {
       <div className="col-12 col-sm text-sm-right">
         {highlighted ? <b>{displayPrice}</b> : displayPrice}
       </div>
-      {/*
-        <div className="col-12 col-sm text-sm-right">TODO</div>
-         */}
     </div>
   );
 };
