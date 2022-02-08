@@ -1,5 +1,5 @@
 import React from 'react';
-import { Message } from 'retranslate';
+import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import StatusBoxRow from '../statusBoxRow';
@@ -28,11 +28,11 @@ export const SecondPillarStatusBox: React.FunctionComponent<Props> = ({
     return (
       <StatusBoxRow
         showAction={!loading}
-        name={<Message>account.status.choice.pillar.second</Message>}
-        lines={[<Message>account.status.choice.pillar.second.withdraw</Message>]}
+        name={<FormattedMessage id="account.status.choice.pillar.second" />}
+        lines={[<FormattedMessage id="account.status.choice.pillar.second.withdraw" />]}
       >
         <Link to={`/applications/${pendingWithdrawal.id}/cancellation`} className="btn btn-light">
-          <Message>account.status.choice.pillar.second.withdraw.cancel</Message>
+          <FormattedMessage id="account.status.choice.pillar.second.withdraw.cancel" />
         </Link>
       </StatusBoxRow>
     );
@@ -43,17 +43,17 @@ export const SecondPillarStatusBox: React.FunctionComponent<Props> = ({
     const statusMessage = activeFund ? (
       activeFund.name
     ) : (
-      <Message>account.status.choice.pillar.second.missing</Message>
+      <FormattedMessage id="account.status.choice.pillar.second.missing" />
     );
 
     return (
       <StatusBoxRow
         showAction={!loading}
-        name={<Message>account.status.choice.pillar.second</Message>}
+        name={<FormattedMessage id="account.status.choice.pillar.second" />}
         lines={[statusMessage]}
       >
         <Link to="/2nd-pillar-flow" className="btn btn-light">
-          <Message>account.status.choice.join.tuleva.2</Message>
+          <FormattedMessage id="account.status.choice.join.tuleva.2" />
         </Link>
       </StatusBoxRow>
     );
@@ -63,11 +63,11 @@ export const SecondPillarStatusBox: React.FunctionComponent<Props> = ({
     return (
       <StatusBoxRow
         showAction={!loading}
-        name={<Message>account.status.choice.pillar.second</Message>}
-        lines={[<Message>account.status.choice.pillar.second.transferIncomplete</Message>]}
+        name={<FormattedMessage id="account.status.choice.pillar.second" />}
+        lines={[<FormattedMessage id="account.status.choice.pillar.second.transferIncomplete" />]}
       >
         <Link to="/2nd-pillar-flow" className="btn btn-light">
-          <Message>account.status.choice.transfer.tuleva.2</Message>
+          <FormattedMessage id="account.status.choice.transfer.tuleva.2" />
         </Link>
       </StatusBoxRow>
     );
@@ -76,7 +76,7 @@ export const SecondPillarStatusBox: React.FunctionComponent<Props> = ({
   return (
     <StatusBoxRow
       ok
-      name={<Message>account.status.choice.pillar.second</Message>}
+      name={<FormattedMessage id="account.status.choice.pillar.second" />}
       showAction={!loading}
       lines={[activeFund.name]}
     />
