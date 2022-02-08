@@ -1,5 +1,5 @@
 import React from 'react';
-import { Message } from 'retranslate';
+import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import StatusBoxRow from '../statusBoxRow';
@@ -23,11 +23,11 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
     return (
       <StatusBoxRow
         showAction={!loading}
-        name={<Message>account.status.choice.pillar.third</Message>}
-        lines={[<Message>account.status.choice.pillar.third.missing.label</Message>]}
+        name={<FormattedMessage id="account.status.choice.pillar.third" />}
+        lines={[<FormattedMessage id="account.status.choice.pillar.third.missing.label" />]}
       >
         <Link to="/3rd-pillar-flow" className="btn btn-light">
-          <Message>account.status.choice.pillar.third.missing.action</Message>
+          <FormattedMessage id="account.status.choice.pillar.third.missing.action" />
         </Link>
       </StatusBoxRow>
     );
@@ -38,11 +38,11 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
     return (
       <StatusBoxRow
         showAction={!loading}
-        name={<Message>account.status.choice.pillar.third</Message>}
+        name={<FormattedMessage id="account.status.choice.pillar.third" />}
         lines={[activeFund, getPaidThisYearRow(conversion)]}
       >
         <Link to="/3rd-pillar-flow" className="btn btn-light">
-          <Message>account.status.choice.pillar.third.inactive.action</Message>
+          <FormattedMessage id="account.status.choice.pillar.third.inactive.action" />
         </Link>
       </StatusBoxRow>
     );
@@ -52,14 +52,14 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
     return (
       <StatusBoxRow
         showAction={!loading}
-        name={<Message>account.status.choice.pillar.third</Message>}
+        name={<FormattedMessage id="account.status.choice.pillar.third" />}
         lines={[
-          <Message>account.status.choice.pillar.third.transferIncomplete.label</Message>,
+          <FormattedMessage id="account.status.choice.pillar.third.transferIncomplete.label" />,
           getPaidThisYearRow(conversion),
         ]}
       >
         <Link to="/3rd-pillar-flow" className="btn btn-light">
-          <Message>account.status.choice.pillar.third.transferIncomplete.action</Message>
+          <FormattedMessage id="account.status.choice.pillar.third.transferIncomplete.action" />
         </Link>
       </StatusBoxRow>
     );
@@ -69,19 +69,19 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
     return (
       <StatusBoxRow
         showAction={!loading}
-        name={<Message>account.status.choice.pillar.third</Message>}
+        name={<FormattedMessage id="account.status.choice.pillar.third" />}
         lines={[
           <>
-            <Message>account.status.choice.pillar.third.paymentIncomplete.label</Message>
+            <FormattedMessage id="account.status.choice.pillar.third.paymentIncomplete.label" />
             <InfoTooltip name="third-pillar-tooltip">
-              <Message>account.status.choice.pillar.third.paymentInfo</Message>
+              <FormattedMessage id="account.status.choice.pillar.third.paymentInfo" />
             </InfoTooltip>
           </>,
           getPaidThisYearRow(conversion),
         ]}
       >
         <Link to="/3rd-pillar-flow" className="btn btn-light">
-          <Message>account.status.choice.pillar.third.success.action</Message>
+          <FormattedMessage id="account.status.choice.pillar.third.success.action" />
         </Link>
       </StatusBoxRow>
     );
@@ -91,11 +91,11 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
     <StatusBoxRow
       ok
       showAction={!loading}
-      name={<Message>account.status.choice.pillar.third</Message>}
+      name={<FormattedMessage id="account.status.choice.pillar.third" />}
       lines={[activeFund, getPaidThisYearRow(conversion)]}
     >
       <Link to="/3rd-pillar-flow" className="btn btn-light">
-        <Message>account.status.choice.pillar.third.success.action</Message>
+        <FormattedMessage id="account.status.choice.pillar.third.success.action" />
       </Link>
     </StatusBoxRow>
   );
@@ -103,13 +103,10 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
 
 const getPaidThisYearRow = (conversion: UserConversion) => (
   <small className="text-muted">
-    <Message
-      params={{
-        contribution: <b>{conversion.thirdPillar.contribution.yearToDate || 0}</b>,
-      }}
-    >
-      account.status.yearToDateContribution
-    </Message>
+    <FormattedMessage
+      id="account.status.yearToDateContribution"
+      values={{ contribution: <b>{conversion.thirdPillar.contribution.yearToDate || 0}</b> }}
+    />
   </small>
 );
 

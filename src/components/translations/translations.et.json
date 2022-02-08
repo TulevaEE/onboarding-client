@@ -231,7 +231,7 @@
   "account.status.choice.transfer.tuleva.2": "Vaheta fondi",
   "account.status.choice.pay.tuleva.3": "Maksa sisse",
   "account.status.choice.join.tuleva": "Astu liikmeks",
-  "account.status.yearToDateContribution": "Oled sel aastal maksnud III samba pensionifondi {{contribution}} eurot.",
+  "account.status.yearToDateContribution": "Oled sel aastal maksnud III samba pensionifondi {contribution} eurot.",
   "account.greeting": "Tere",
   "account.update.contact": "Uuenda kontaktandmeid",
   "new.user.flow.new.user.total.fund.value": "Pensionikeskuse andmetel on sinu II sambasse tänaseks kogunenud ",
