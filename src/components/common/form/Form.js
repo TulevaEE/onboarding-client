@@ -1,12 +1,10 @@
-/* eslint-disable no-useless-escape */
-
 import React from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 
 export function emailValidator(value) {
   return value &&
-    !/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()\.,;\s@\"]+\.{0,1})+[^<>()\.,;:\s@\"]{2,})$/.test(
+    !/^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>().,;\s@"]+\.?)+[^<>().,;:\s@"]{2,})$/.test(
       value,
     )
     ? 'invalid.email'
