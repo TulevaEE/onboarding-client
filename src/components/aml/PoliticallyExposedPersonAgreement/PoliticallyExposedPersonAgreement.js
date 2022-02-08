@@ -2,9 +2,9 @@ import React from 'react';
 import Types from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Message } from 'retranslate';
 import { Field } from 'redux-form';
 
+import { FormattedMessage } from 'react-intl';
 import { changeIsPoliticallyExposed } from '../actions';
 import { InfoTooltip } from '../../common';
 import { requiredField } from '../../common/form';
@@ -28,10 +28,10 @@ export const PoliticallyExposedPersonAgreement = ({
           validate={[requiredField]}
         />
         <label className="custom-control-label" htmlFor="aml-not-pep-checkbox">
-          <Message>aml.isNotPep</Message>
+          <FormattedMessage id="aml.isNotPep" />
           <InfoTooltip name="pep-tooltip">
             <div className="content">
-              <Message>aml.pepTooltip</Message>
+              <FormattedMessage id="aml.pepTooltip" />
             </div>
           </InfoTooltip>
         </label>
