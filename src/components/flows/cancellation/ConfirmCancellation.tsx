@@ -1,6 +1,6 @@
 import React from 'react';
 import { Redirect, useParams } from 'react-router-dom';
-import { Message } from 'retranslate';
+import { FormattedMessage } from 'react-intl';
 import { useApplication } from '../../common/apiHooks';
 import { AuthenticationLoader } from '../../common';
 import Loader from '../../common/loader';
@@ -42,7 +42,7 @@ export const ConfirmCancellation: React.FunctionComponent = () => {
         <AuthenticationLoader controlCode={challengeCode} onCancel={cancelSigning} overlayed />
       )}
       <p>
-        <Message>cancellation.flow.confirm.content</Message>
+        <FormattedMessage id="cancellation.flow.confirm.content" />
       </p>
       <ApplicationCard application={application} />
       <div className="mt-5">
@@ -52,7 +52,7 @@ export const ConfirmCancellation: React.FunctionComponent = () => {
           className="btn btn-primary mb-2 mr-2"
           onClick={confirmCancellation}
         >
-          <Message>confirm.mandate.sign</Message>
+          <FormattedMessage id="confirm.mandate.sign" />
         </button>
         <button
           type="button"
@@ -60,7 +60,7 @@ export const ConfirmCancellation: React.FunctionComponent = () => {
           className="btn btn-secondary mb-2 mr-2"
           onClick={previewCancellation}
         >
-          <Message>confirm.mandate.preview</Message>
+          <FormattedMessage id="confirm.mandate.preview" />
         </button>
       </div>
     </>

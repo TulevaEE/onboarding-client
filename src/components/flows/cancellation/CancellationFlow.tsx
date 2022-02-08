@@ -1,5 +1,5 @@
 import React from 'react';
-import { Message } from 'retranslate';
+import { FormattedMessage } from 'react-intl';
 import Flow from '../common/Flow'; // eslint-disable-line import/no-named-as-default
 import { CancellationSuccess } from './CancellationSuccess';
 import { ConfirmCancellation } from './ConfirmCancellation';
@@ -9,7 +9,7 @@ const steps = [
   {
     path: 'confirm',
     Component: ConfirmCancellation,
-    title: <Message>cancellation.flow.confirm.title</Message>,
+    title: <FormattedMessage id="cancellation.flow.confirm.title" />,
   },
   {
     path: 'success',
