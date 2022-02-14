@@ -1,8 +1,8 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Message } from 'retranslate';
 import { Redirect } from 'react-router-dom';
 
+import { FormattedMessage } from 'react-intl';
 import { Success } from './Success';
 
 describe('Success step', () => {
@@ -22,40 +22,49 @@ describe('Success step', () => {
   });
 
   it('shows the user default success message and profile button', () => {
-    expect(component.contains(<Message>success.done</Message>)).toBe(true);
-    expect(component.contains(<Message>success.view.profile.title</Message>)).toBe(true);
-    expect(component.contains(<Message>success.view.profile.title.button</Message>)).toBe(true);
+    expect(component.contains(<FormattedMessage id="success.done" />)).toBe(true);
+    expect(component.contains(<FormattedMessage id="success.view.profile.title" />)).toBe(true);
+    expect(component.contains(<FormattedMessage id="success.view.profile.title.button" />)).toBe(
+      true,
+    );
     expect(
       component.contains(
         <a className="btn btn-primary mt-4 profile-link" href="/account">
-          <Message>success.view.profile.title.button</Message>
+          <FormattedMessage id="success.view.profile.title.button" />
         </a>,
       ),
     ).toBe(true);
-    expect(component.contains(<Message>success.your.payments</Message>)).toBe(false);
-    expect(component.contains(<Message>success.shares.switched</Message>)).toBe(false);
+    expect(component.contains(<FormattedMessage id="success.your.payments" />)).toBe(false);
+    expect(component.contains(<FormattedMessage id="success.shares.switched" />)).toBe(false);
   });
 
   it('show message for future contributions only', () => {
     component.setProps({ userContributingFuturePayments: true });
-    expect(component.contains(<Message>success.your.payments</Message>)).toBe(true);
-    expect(component.contains(<Message>success.your.payments.next.payment</Message>)).toBe(true);
-    expect(component.contains(<Message>success.shares.switched</Message>)).toBe(false);
-    expect(component.contains(<Message>success.shares.switched.when</Message>)).toBe(false);
+    expect(component.contains(<FormattedMessage id="success.your.payments" />)).toBe(true);
+    expect(component.contains(<FormattedMessage id="success.your.payments.next.payment" />)).toBe(
+      true,
+    );
+    expect(component.contains(<FormattedMessage id="success.shares.switched" />)).toBe(false);
+    expect(component.contains(<FormattedMessage id="success.shares.switched.when" />)).toBe(false);
   });
 
   it('show message for switched funds only', () => {
     Date.now = jest.fn().mockReturnValue(new Date('2021-11-30'));
     component.setProps({ userHasTransferredFunds: true });
 
-    expect(component.contains(<Message>success.shares.switched</Message>)).toBe(true);
+    expect(component.contains(<FormattedMessage id="success.shares.switched" />)).toBe(true);
     expect(
       component.contains(
-        <Message params={{ transferDate: '01.01.2022' }}>success.shares.switched.when</Message>,
+        <FormattedMessage
+          id="success.shares.switched.when"
+          values={{ transferDate: '01.01.2022' }}
+        />,
       ),
     ).toBe(true);
-    expect(component.contains(<Message>success.your.payments</Message>)).toBe(false);
-    expect(component.contains(<Message>success.your.payments.next.payment</Message>)).toBe(false);
+    expect(component.contains(<FormattedMessage id="success.your.payments" />)).toBe(false);
+    expect(component.contains(<FormattedMessage id="success.your.payments.next.payment" />)).toBe(
+      false,
+    );
   });
 
   it('show message both future contributions and switched funds', () => {
@@ -65,12 +74,17 @@ describe('Success step', () => {
       userHasTransferredFunds: true,
     });
 
-    expect(component.contains(<Message>success.your.payments</Message>)).toBe(true);
-    expect(component.contains(<Message>success.your.payments.next.payment</Message>)).toBe(true);
-    expect(component.contains(<Message>success.shares.switched</Message>)).toBe(true);
+    expect(component.contains(<FormattedMessage id="success.your.payments" />)).toBe(true);
+    expect(component.contains(<FormattedMessage id="success.your.payments.next.payment" />)).toBe(
+      true,
+    );
+    expect(component.contains(<FormattedMessage id="success.shares.switched" />)).toBe(true);
     expect(
       component.contains(
-        <Message params={{ transferDate: '01.01.2022' }}>success.shares.switched.when</Message>,
+        <FormattedMessage
+          id="success.shares.switched.when"
+          values={{ transferDate: '01.01.2022' }}
+        />,
       ),
     ).toBe(true);
   });

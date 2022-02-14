@@ -1,9 +1,9 @@
 import React from 'react';
 import { PropTypes as Types } from 'prop-types';
-import { Message } from 'retranslate';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
+import { FormattedMessage } from 'react-intl';
 import { SuccessNotice } from '../../common/SuccessNotice/SuccessNotice';
 
 import { downloadMandate } from '../../../exchange/actions';
@@ -21,16 +21,16 @@ export const Success = ({
     <div className="col-12 mt-5 px-0">
       <SuccessNotice>
         <h2 className="text-center mt-3">
-          <Message>success.done</Message>
+          <FormattedMessage id="success.done" />
         </h2>
         <button type="button" className="btn btn-secondary text-center" onClick={onDownloadMandate}>
-          <Message>success.download.mandate</Message>
+          <FormattedMessage id="success.download.mandate" />
         </button>
         {userContributingFuturePayments ? (
           <p className="mt-4">
-            <Message>success.your.payments</Message>
+            <FormattedMessage id="success.your.payments" />
             <b>
-              <Message>success.your.payments.next.payment</Message>
+              <FormattedMessage id="success.your.payments.next.payment" />
             </b>
             .
           </p>
@@ -39,15 +39,14 @@ export const Success = ({
         )}
         {userHasTransferredFunds ? (
           <p>
-            <Message>success.shares.switched</Message>{' '}
+            <FormattedMessage id="success.shares.switched" />{' '}
             <b>
-              <Message
-                params={{
+              <FormattedMessage
+                id="success.shares.switched.when"
+                values={{
                   transferDate: secondPillarTransferDate().format('DD.MM.YYYY'),
                 }}
-              >
-                success.shares.switched.when
-              </Message>
+              />
             </b>
             .
           </p>
@@ -56,10 +55,10 @@ export const Success = ({
         )}
       </SuccessNotice>
       <h2 className="mt-5">
-        <Message>success.view.profile.title</Message>
+        <FormattedMessage id="success.view.profile.title" />
       </h2>
       <a className="btn btn-primary mt-4 profile-link" href="/account">
-        <Message>success.view.profile.title.button</Message>
+        <FormattedMessage id="success.view.profile.title.button" />
       </a>
     </div>
   </div>
