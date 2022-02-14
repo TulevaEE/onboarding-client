@@ -2,10 +2,10 @@ import React from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Message, withTranslations } from 'retranslate';
 import { Link, Redirect } from 'react-router-dom';
 
-import { Radio, Loader, utils } from '../../../common';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { Loader, Radio, utils } from '../../../common';
 import { selectFutureContributionsFund } from '../../../exchange/actions';
 import { isTuleva } from '../../../common/utils';
 
@@ -27,10 +27,11 @@ export const TransferFutureCapital = ({
   isUserConverted,
   sourceSelection,
   sourceSelectionExact,
-  translations: { translate },
   previousPath,
   nextPath,
 }) => {
+  const { formatMessage } = useIntl();
+
   if (loading) {
     return <Loader className="align-middle" />;
   }
@@ -44,7 +45,7 @@ export const TransferFutureCapital = ({
       {isSkippingStepNecessary(sourceSelectionExact, sourceSelection) && <Redirect to={nextPath} />}
       <div className="px-col">
         <p className="lead m-0">
-          <Message>transfer.future.capital.intro.choose</Message>
+          <FormattedMessage id="transfer.future.capital.intro.choose" />
         </p>
       </div>
 
@@ -55,7 +56,7 @@ export const TransferFutureCapital = ({
         value={selectedFutureContributionsFundIsin || ''}
       >
         <option value="1" hidden="hidden">
-          {translate('transfer.future.capital.other.fund')}
+          {formatMessage({ id: 'transfer.future.capital.other.fund' })}
         </option>
         {sortedTargetFunds.map((fund) => (
           <option value={fund.isin} key={fund.isin}>
@@ -85,29 +86,21 @@ export const TransferFutureCapital = ({
         onSelect={() => onSelectFutureCapitalFund(null)}
       >
         <p className={`m-0 ${!selectedFutureContributionsFundIsin ? 'text-bold' : ''}`}>
-          <Message>transfer.future.capital.no</Message>
+          <FormattedMessage id="transfer.future.capital.no" />
         </p>
         {!selectedFutureContributionsFundIsin && activeSourceFund ? (
           <p className="mb-0 mt-2">
-            {isUserConverted ? (
-              <Message
-                params={{
-                  currentFundName: activeSourceFund.name,
-                  currentFundManagementFee: activeSourceFund.managementFeePercent,
-                }}
-              >
-                transfer.future.capital.no.already.converted.subtitle
-              </Message>
-            ) : (
-              <Message
-                params={{
-                  currentFundName: activeSourceFund.name,
-                  currentFundManagementFee: activeSourceFund.managementFeePercent,
-                }}
-              >
-                transfer.future.capital.no.subtitle
-              </Message>
-            )}
+            <FormattedMessage
+              id={
+                isUserConverted
+                  ? 'transfer.future.capital.no.already.converted.subtitle'
+                  : 'transfer.future.capital.no.subtitle'
+              }
+              values={{
+                currentFundName: activeSourceFund.name,
+                currentFundManagementFee: activeSourceFund.managementFeePercent,
+              }}
+            />
           </p>
         ) : (
           ''
@@ -115,10 +108,10 @@ export const TransferFutureCapital = ({
       </Radio>
       <div className="mt-5">
         <Link className="btn btn-primary mb-2 mr-2" to={nextPath}>
-          <Message>steps.next</Message>
+          <FormattedMessage id="steps.next" />
         </Link>
         <Link className="btn btn-secondary mb-2" to={previousPath}>
-          <Message>steps.previous</Message>
+          <FormattedMessage id="steps.previous" />
         </Link>
       </div>
     </div>
@@ -146,9 +139,6 @@ TransferFutureCapital.propTypes = {
   isUserConverted: Types.bool,
   sourceSelection: Types.arrayOf(Types.shape({ targetFundIsin: Types.string })),
   sourceSelectionExact: Types.bool,
-  translations: Types.shape({
-    translate: Types.func.isRequired,
-  }).isRequired,
   previousPath: Types.string.isRequired,
   nextPath: Types.string.isRequired,
 };
@@ -179,8 +169,4 @@ const mapDispatchToProps = (dispatch) =>
     dispatch,
   );
 
-const translatedTransferFutureCapital = withTranslations(TransferFutureCapital);
-
-const connectToRedux = connect(mapStateToProps, mapDispatchToProps);
-
-export default connectToRedux(translatedTransferFutureCapital);
+export default connect(mapStateToProps, mapDispatchToProps)(TransferFutureCapital);
