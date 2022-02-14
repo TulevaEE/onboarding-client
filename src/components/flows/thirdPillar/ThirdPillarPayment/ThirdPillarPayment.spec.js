@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Link, Redirect } from 'react-router-dom';
 
-import { Message } from 'retranslate';
+import { FormattedMessage } from 'react-intl';
 import { ThirdPillarPayment } from './ThirdPillarPayment';
 
 describe('ThirdPillarPayment', () => {
@@ -33,7 +33,7 @@ describe('ThirdPillarPayment', () => {
       component.contains(
         <Link to="/next-path">
           <button type="button" className="btn btn-primary mt-4">
-            <Message>thirdPillarPayment.paymentButton</Message>
+            <FormattedMessage id="thirdPillarPayment.paymentButton" />
           </button>
         </Link>,
       ),

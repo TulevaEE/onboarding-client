@@ -360,8 +360,7 @@
   "aml.occupation.unemployed": "Unemployed",
 
   "thirdPillarPayment.title": "Payment instructions",
-  "thirdPillarPayment.description": "Make a payment {{ emphasized }}.",
-  "thirdPillarPayment.descriptionEmphasized": "in your internet bank to the following details:",
+  "thirdPillarPayment.description": "Make a payment <b>in your internet bank to the following details:</b>",
   "thirdPillarPayment.accountName": "Pay to",
   "thirdPillarPayment.accountNumber": "Account number",
   "thirdPillarPayment.amount": "Amount",
