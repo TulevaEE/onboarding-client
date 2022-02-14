@@ -1,6 +1,6 @@
 import React from 'react';
-import { Message } from 'retranslate';
 
+import { FormattedMessage } from 'react-intl';
 import ThirdPillarSetup from './ThirdPillarSetup';
 import ThirdPillarSelectSources from './ThirdPillarSelectSources';
 import AddressStep from '../common/AddressStep';
@@ -14,19 +14,19 @@ const steps = [
   {
     path: 'setup',
     Component: () => <ThirdPillarSetup nextPath={`${flowPath}/select-sources`} />,
-    title: <Message>thirdPillarFlow.steps.setup.title</Message>,
+    title: <FormattedMessage id="thirdPillarFlow.steps.setup.title" />,
   },
   {
     path: 'select-sources',
     Component: () => <ThirdPillarSelectSources nextPath={`${flowPath}/address`} />,
-    title: <Message>thirdPillarFlow.steps.selectSources.title</Message>,
+    title: <FormattedMessage id="thirdPillarFlow.steps.selectSources.title" />,
   },
   {
     path: 'address',
     Component: () => (
       <AddressStep nextPath={`${flowPath}/confirm-mandate`} updateOnlyEmailAndPhone pillar={3} />
     ),
-    title: <Message>thirdPillarFlow.steps.address.title</Message>,
+    title: <FormattedMessage id="thirdPillarFlow.steps.address.title" />,
   },
   {
     path: 'confirm-mandate',
@@ -36,7 +36,7 @@ const steps = [
         nextPath={`${flowPath}/payment`}
       />
     ),
-    title: <Message>thirdPillarFlow.steps.confirmMandate.title</Message>,
+    title: <FormattedMessage id="thirdPillarFlow.steps.confirmMandate.title" />,
   },
   {
     path: 'payment',
@@ -46,7 +46,7 @@ const steps = [
         nextPath={`${flowPath}/success`}
       />
     ),
-    title: <Message>thirdPillarFlow.steps.payment.title</Message>,
+    title: <FormattedMessage id="thirdPillarFlow.steps.payment.title" />,
   },
   {
     path: 'success',
@@ -54,6 +54,4 @@ const steps = [
   },
 ];
 
-const ThirdPillarFlow = () => <Flow name="THIRD_PILLAR" flowPath={flowPath} steps={steps} />;
-
-export default ThirdPillarFlow;
+export default () => <Flow name="THIRD_PILLAR" flowPath={flowPath} steps={steps} />;
