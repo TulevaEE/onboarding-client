@@ -19,7 +19,6 @@ import {
 } from '../../../test/backend';
 
 jest.mock('downloadjs');
-jest.unmock('retranslate');
 
 describe('When a user is cancelling an application', () => {
   const server = setupServer();

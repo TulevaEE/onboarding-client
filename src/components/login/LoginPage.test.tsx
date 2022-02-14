@@ -16,7 +16,6 @@ import {
   idCardAuthenticationBackend,
 } from '../../test/backend';
 
-jest.unmock('retranslate');
 jest.unmock('react-intl');
 
 describe('When a user is logging in', () => {

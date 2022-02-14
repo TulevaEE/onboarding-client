@@ -21,8 +21,6 @@ import {
   smartIdSigningBackend,
 } from '../../../test/backend';
 
-jest.unmock('retranslate');
-
 const server = setupServer();
 let history: History;
 

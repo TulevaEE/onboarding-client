@@ -6,7 +6,6 @@ import { createBrowserHistory } from 'history';
 import { createStore, compose, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import { IntlProvider } from 'react-intl';
-import { Provider as TranslationProvider } from 'retranslate';
 import { Provider as ReduxProvider } from 'react-redux';
 import { Switch, Route } from 'react-router-dom';
 import { routerMiddleware, ConnectedRouter } from 'connected-react-router';
@@ -99,16 +98,14 @@ export class App extends Component {
     return (
       <QueryClientProvider client={queryClient}>
         <IntlProvider messages={translations[locale]} locale={locale} defaultLocale="et">
-          <TranslationProvider messages={translations} language={locale} fallbackLanguage="et">
-            <ReduxProvider store={store}>
-              <ConnectedRouter history={history}>
-                <Switch>
-                  <Route path={loginPath} component={LoginPage} />
-                  <PrivateRoute exact path="" component={LoggedInApp} />
-                </Switch>
-              </ConnectedRouter>
-            </ReduxProvider>
-          </TranslationProvider>
+          <ReduxProvider store={store}>
+            <ConnectedRouter history={history}>
+              <Switch>
+                <Route path={loginPath} component={LoginPage} />
+                <PrivateRoute exact path="" component={LoggedInApp} />
+              </Switch>
+            </ConnectedRouter>
+          </ReduxProvider>
         </IntlProvider>
       </QueryClientProvider>
     );
