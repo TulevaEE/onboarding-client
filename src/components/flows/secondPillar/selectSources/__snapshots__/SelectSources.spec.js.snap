@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Select sources step renders a button to the next step 1`] = `
+<FormattedMessage
+  id="steps.next"
+/>
+`;

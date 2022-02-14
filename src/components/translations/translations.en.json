@@ -18,7 +18,7 @@
   "login.join.tuleva": "Join!",
   "login.or": "or",
   "login.permission.note": "By logging in you are giving Tuleva permission to request your pension account information from tne Estonian Central Securities Depository and agreeing to the <a>privacy policy</a>.",
-  "login.permission.url": "https://tuleva.ee/wp-content/uploads/2021/11/Tuleva-privaatsuspoliitika-ja-veebilehe-kasutustingimused-11.11.2021.pdf",
+  "login.permission.note.url": "https://tuleva.ee/wp-content/uploads/2021/11/Tuleva-privaatsuspoliitika-ja-veebilehe-kasutustingimused-11.11.2021.pdf",
   "login.not.member": "You aren't a member of Tuleva yet?",
   "login.apply.link": "Fill out a membership application",
   "login.epis_maintenance": "The Estonian Funded Pension Registry is undergoing maintenance. During this time you cannot access your pension account neither through us nor through your internet bank. Please try again soon.",
@@ -38,7 +38,8 @@
   "select.sources.current.status": "Your pension account overview",
   "select.sources.total": "Total",
   "select.sources.select.all": "Transfer my pension to Tuleva",
-  "select.sources.select.all.subtitle": "Your future contributions will be directed to Tuleva and your existing funds will be transferred. Your portfolio will benefit from Tuleva's <a href='https://www.pensionikeskus.ee/en/ii-pillar/funds-fees/fund-fees-comparison/'>low fees<a>. The transfer is free of charge.",
+  "select.sources.select.all.subtitle": "Your future contributions will be directed to Tuleva and your existing funds will be transferred. Your portfolio will benefit from Tuleva's <a>low fees</a>. The transfer is free of charge.",
+  "select.sources.select.all.subtitle.link": "https://www.pensionikeskus.ee/en/ii-pillar/funds-fees/fund-fees-comparison/",
   "select.sources.select.all.choose": "Pick a fund:",
   "select.sources.select.some": "Exchange only some current fund units.",
   "select.sources.select.some.subtitle": "If you wish to make specific changes, make them here:",
@@ -49,7 +50,7 @@
   "select.sources.select.some.target": "New fund",
   "select.sources.select.none": "Skip this step.",
   "select.sources.select.none.subtitle": "The next step allows you to direct your future contributions.",
-  "select.sources.select.all.recommended": "We recommend this fund based on your current age",
+  "select.sources.select.all.recommended": "We recommend this fund based on your current age.",
 
   "select": "Select",
 
@@ -328,7 +329,7 @@
 
   "thirdPillarFlowSelectSources.title": "Your available III pillar units",
   "thirdPillarFlowSelectSources.selectAll.title": "Transfer your III pillar fund contents to Tuleva",
-  "thirdPillarFlowSelectSources.selectAll.subtitle": "Your future contributions will be directed to Tuleva and your existing funds will be transferred. Your portfolio will benefit from Tuleva's <a href='https://www.pensionikeskus.ee/en/statistics/iii-pillar/suppl-funded-pension-daily-statistics/'>low fees<a>. The transfer is free of charge.",
+  "thirdPillarFlowSelectSources.selectAll.subtitle": "Your future contributions will be directed to Tuleva and your existing funds will be transferred. Your portfolio will benefit from Tuleva's <a href='https://www.pensionikeskus.ee/en/statistics/iii-pillar/suppl-funded-pension-daily-statistics/'>low fees</a>. The transfer is free of charge.",
   "thirdPillarFlowSelectSources.insurance_info": "NB! Here are instructions to transfer funds <a href='https://tuleva.ee/iii-sammas-kindlustusleping/'>from your insurance provider</a> (in Estonian).",
   "thirdPillarFlowSelectSources.futureContributions.title": "I'll direct only future payments to Tuleva",
   "thirdPillarFlowSelectSources.futureContributions.subtitle": "Your existing fund units will remain in your current fund and new contributions will be directed to the Tuleva III Pillar Pension Fund.",
