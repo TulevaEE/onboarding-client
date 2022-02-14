@@ -1,14 +1,16 @@
 import React from 'react';
 import Types from 'prop-types';
-import { Message, WithTranslations } from 'retranslate';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
+import { FormattedMessage, useIntl } from 'react-intl';
 import { actions as thirdPillarActions } from '../../../../thirdPillar';
 
 const RECOMMENDATION_AGE = 55;
 
 export const ThirdPillarTermsAgreement = ({ age, agreed, onAgreementChange }) => {
+  const { formatMessage } = useIntl();
+
   const showAgeDependentRecommendation = age && age >= RECOMMENDATION_AGE;
 
   return (
@@ -23,39 +25,26 @@ export const ThirdPillarTermsAgreement = ({ age, agreed, onAgreementChange }) =>
         />
 
         <label className="custom-control-label" htmlFor="third-pillar-terms-checkbox">
-          <Message
-            params={{
-              link: (
-                <WithTranslations>
-                  {({ language }) => (
-                    <a
-                      href={
-                        language === 'en'
-                          ? 'https://www.pensionikeskus.ee/en/iii-pillar/supplementary-pension-funds/'
-                          : 'https://www.pensionikeskus.ee/iii-sammas/vabatahtlikud-fondid/'
-                      }
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Message>thirdPillarAgreement.linkText</Message>
-                    </a>
-                  )}
-                </WithTranslations>
+          <FormattedMessage
+            id="thirdPillarAgreement.termsConfirmation"
+            values={{
+              a: (chunks) => (
+                <a href={formatMessage({ id: 'thirdPillarAgreement.termsConfirmation.link' })}>
+                  {chunks}
+                </a>
               ),
             }}
-          >
-            thirdPillarAgreement.termsConfirmation
-          </Message>{' '}
+          />{' '}
           {showAgeDependentRecommendation && (
             <>
-              <Message>thirdPillarAgreement.ageDependentRecommendationConfirmation</Message>{' '}
+              <FormattedMessage id="thirdPillarAgreement.ageDependentRecommendationConfirmation" />{' '}
             </>
           )}
-          <Message>thirdPillarAgreement.signingExplanation</Message>
+          <FormattedMessage id="thirdPillarAgreement.signingExplanation" />
           {showAgeDependentRecommendation && (
             <div className="mt-2">
               <small className="text-muted">
-                <Message>thirdPillarAgreement.ageDependentRecommendation</Message>
+                <FormattedMessage id="thirdPillarAgreement.ageDependentRecommendation" />
               </small>
             </div>
           )}
