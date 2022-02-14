@@ -1,5 +1,5 @@
 import React from 'react';
-import { Message } from 'retranslate';
+import { FormattedMessage } from 'react-intl';
 
 const Separator = () => <span className="mx-2">·</span>;
 
@@ -11,16 +11,16 @@ const Footer = () => (
     <div className="col-12 text-center mb-4">
       <small className="text-muted">
         <b>
-          <Message>footer.name</Message>
+          <FormattedMessage id="footer.name" />
         </b>
         <Separator />
-        <Message>footer.address</Message>
+        <FormattedMessage id="footer.address" />
         <Separator />
-        <Message>footer.email</Message>
+        <FormattedMessage id="footer.email" />
         <Separator />
-        <Message>footer.phone.number</Message>
+        <FormattedMessage id="footer.phone.number" />
         <Separator />
-        <Message>footer.registration.code</Message>
+        <FormattedMessage id="footer.registration.code" />
       </small>
     </div>
   </div>
