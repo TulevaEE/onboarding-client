@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Message } from 'retranslate';
 
+import { FormattedMessage } from 'react-intl';
 import { Loader, Radio } from '../../../common';
 import PensionFundTable from '../../secondPillar/selectSources/pensionFundTable';
 import TargetFundSelector from '../../secondPillar/selectSources/targetFundSelector';
@@ -15,7 +15,9 @@ describe('Third pillar select sources step', () => {
   });
 
   it('renders a title', () => {
-    expect(component.contains(<Message>thirdPillarFlowSelectSources.title</Message>)).toBe(true);
+    expect(component.contains(<FormattedMessage id="thirdPillarFlowSelectSources.title" />)).toBe(
+      true,
+    );
   });
 
   it('renders a loader when no source funds available', () => {
