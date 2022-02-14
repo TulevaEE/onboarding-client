@@ -1,8 +1,8 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Message } from 'retranslate';
 import { Link } from 'react-router-dom';
 
+import { FormattedMessage } from 'react-intl';
 import { Loader, Radio } from '../../../common';
 import { TransferFutureCapital } from './TransferFutureCapital';
 
@@ -10,8 +10,7 @@ describe('Transfer future capital step', () => {
   let component;
 
   beforeEach(() => {
-    const props = { translations: { translate: () => '' } };
-    component = shallow(<TransferFutureCapital {...props} />);
+    component = shallow(<TransferFutureCapital />);
   });
 
   it('renders a loader when loading', () => {
@@ -20,7 +19,9 @@ describe('Transfer future capital step', () => {
   });
 
   it('shows an intro', () => {
-    expect(component.contains(<Message>transfer.future.capital.intro.choose</Message>)).toBe(true);
+    expect(component.contains(<FormattedMessage id="transfer.future.capital.intro.choose" />)).toBe(
+      true,
+    );
   });
 
   it('has button to the previous step', () => {
@@ -29,7 +30,7 @@ describe('Transfer future capital step', () => {
     expect(
       component.contains(
         <Link className="btn btn-secondary mb-2" to={previousPath}>
-          <Message>steps.previous</Message>
+          <FormattedMessage id="steps.previous" />
         </Link>,
       ),
     ).toBe(true);
@@ -41,7 +42,7 @@ describe('Transfer future capital step', () => {
     expect(
       component.contains(
         <Link className="btn btn-primary mb-2 mr-2" to={nextPath}>
-          <Message>steps.next</Message>
+          <FormattedMessage id="steps.next" />
         </Link>,
       ),
     ).toBe(true);
@@ -56,11 +57,7 @@ describe('Transfer future capital step', () => {
     const loadingTargetFunds = false;
     component.setProps({ targetFunds, loadingTargetFunds });
     expect(component.find(Radio).length).toBe(3);
-    expect(component.find(Radio).at(0).childAt(0).text()).toEqual('A');
-    expect(component.find(Radio).at(1).childAt(0).text()).toEqual('B');
-    expect(component.find(Radio).at(2).childAt(0).childAt(0).get(0)).toEqual(
-      <Message>transfer.future.capital.no</Message>,
-    );
+    expect(component).toMatchSnapshot();
   });
 
   it('has unique id-s based on isin or none for option radios', () => {
@@ -159,14 +156,13 @@ describe('Transfer future capital step', () => {
       const selectedFutureContributionsFundIsin = null;
 
       const activeFundMessage = (
-        <Message
-          params={{
+        <FormattedMessage
+          id="transfer.future.capital.no.subtitle"
+          values={{
             currentFundName: activeSourceFund.name,
             currentFundManagementFee: activeSourceFund.managementFeePercent,
           }}
-        >
-          transfer.future.capital.no.subtitle
-        </Message>
+        />
       );
 
       component.setProps({
@@ -201,14 +197,13 @@ describe('Transfer future capital step', () => {
       const selectedFutureContributionsFundIsin = null;
 
       const activeFundMessage = (
-        <Message
-          params={{
+        <FormattedMessage
+          id="transfer.future.capital.no.subtitle"
+          values={{
             currentFundName: activeSourceFund.name,
             currentFundManagementFee: activeSourceFund.managementFeePercent,
           }}
-        >
-          transfer.future.capital.no.subtitle
-        </Message>
+        />
       );
 
       component.setProps({
