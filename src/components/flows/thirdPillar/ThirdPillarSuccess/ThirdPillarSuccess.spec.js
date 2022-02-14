@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Message } from 'retranslate';
 
+import { FormattedMessage } from 'react-intl';
 import { ThirdPillarSuccess } from './ThirdPillarSuccess';
 
 describe('Third pillar success step', () => {
@@ -12,12 +12,12 @@ describe('Third pillar success step', () => {
   });
 
   it('shows the user default success message and profile button', () => {
-    expect(component.contains(<Message>thirdPillarSuccess.done</Message>)).toBe(true);
-    expect(component.contains(<Message>thirdPillarSuccess.message</Message>)).toBe(true);
+    expect(component.contains(<FormattedMessage id="thirdPillarSuccess.done" />)).toBe(true);
+    expect(component.contains(<FormattedMessage id="thirdPillarSuccess.message" />)).toBe(true);
     expect(
       component.contains(
         <a className="btn btn-primary mt-4 profile-link" href="/account">
-          <Message>thirdPillarSuccess.button</Message>
+          <FormattedMessage id="thirdPillarSuccess.button" />
         </a>,
       ),
     ).toBe(true);

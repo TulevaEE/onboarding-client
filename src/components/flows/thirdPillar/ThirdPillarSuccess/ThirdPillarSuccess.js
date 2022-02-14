@@ -1,5 +1,5 @@
 import React from 'react';
-import { Message } from 'retranslate';
+import { FormattedMessage } from 'react-intl';
 import { SuccessNotice } from '../../common/SuccessNotice/SuccessNotice';
 
 export const ThirdPillarSuccess = () => (
@@ -7,13 +7,13 @@ export const ThirdPillarSuccess = () => (
     <div className="col-12 px-0">
       <SuccessNotice>
         <h2 className="text-center mt-3">
-          <Message>thirdPillarSuccess.done</Message>
+          <FormattedMessage id="thirdPillarSuccess.done" />
         </h2>
         <p className="mt-5">
-          <Message>thirdPillarSuccess.message</Message>
+          <FormattedMessage id="thirdPillarSuccess.message" />
         </p>
         <a className="btn btn-primary mt-4 profile-link" href="/account">
-          <Message>thirdPillarSuccess.button</Message>
+          <FormattedMessage id="thirdPillarSuccess.button" />
         </a>
       </SuccessNotice>
     </div>
