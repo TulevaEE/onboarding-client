@@ -2,21 +2,21 @@ import React from 'react';
 import Types from 'prop-types';
 import { Link, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { Message } from 'retranslate';
+import { FormattedMessage } from 'react-intl';
 
 export const ThirdPillarSetup = ({ nextPath, isThirdPillarActive }) => (
   <div>
     {isThirdPillarActive && <Redirect to={nextPath} />}
     <p>
-      <Message>thirdPillarFlowSetup.text</Message>
+      <FormattedMessage id="thirdPillarFlowSetup.text" />
     </p>
     <p>
-      <Message>thirdPillarFlowSetup.subtext</Message>
+      <FormattedMessage id="thirdPillarFlowSetup.subtext" />
     </p>
     <div>
       <Link to={nextPath}>
         <button type="button" className="btn btn-primary mt-2">
-          <Message>thirdPillarFlowSetup.buttonText</Message>
+          <FormattedMessage id="thirdPillarFlowSetup.buttonText" />
         </button>
       </Link>
     </div>
