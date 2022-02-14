@@ -338,8 +338,8 @@
   "confirmThirdPillarMandate.contribution": "I wish to transfer my supplementary pension fund contributions to:",
   "confirmThirdPillarMandate.exchangeExistingUnits": "I wish to exchange current fund units for:",
 
-  "thirdPillarAgreement.termsConfirmation": "I confirm that I have had the chance to view all {{ link }}, I agree to the terms of my chosen pension fund(s) and understand the risks that accompany the acquisition of supplementary pension fund units.",
-  "thirdPillarAgreement.linkText": "supplementary pension funds’ terms and prospectuses",
+  "thirdPillarAgreement.termsConfirmation": "I confirm that I have had the chance to view all <a>supplementary pension funds’ terms and prospectuses</a>, I agree to the terms of my chosen pension fund(s) and understand the risks that accompany the acquisition of supplementary pension fund units.",
+  "thirdPillarAgreement.termsConfirmation.link": "https://www.pensionikeskus.ee/en/iii-pillar/supplementary-pension-funds/",
   "thirdPillarAgreement.ageDependentRecommendationConfirmation": "I have read the recommendation below.",
   "thirdPillarAgreement.signingExplanation": "By clicking “sign and send“ a digitally signed application will be sent to the register.*",
   "thirdPillarAgreement.ageDependentRecommendation": "We have noticed that your statutory retirement age is in less than 10 years. Tuleva Voluntary Pension fund invests 100% in shares. As retirement age approaches, in order to reduce the impact of short-term market fluctuations, it is advisable to switch part of your funds into lower risk bond fund. In case of questions, please call Tuleva on 644 5100 or write to us tuleva@tuleva.ee.",

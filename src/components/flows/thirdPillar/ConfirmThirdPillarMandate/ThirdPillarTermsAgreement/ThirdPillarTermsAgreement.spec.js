@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Message } from 'retranslate';
 
+import { FormattedMessage } from 'react-intl';
 import { ThirdPillarTermsAgreement } from './ThirdPillarTermsAgreement';
 
 describe('ThirdPillarTermsAgreement', () => {
@@ -33,7 +33,7 @@ describe('ThirdPillarTermsAgreement', () => {
   it('has age-dependent recommendation confirmation only when above age threshold', () => {
     const hasConfirmation = () =>
       component.contains(
-        <Message>thirdPillarAgreement.ageDependentRecommendationConfirmation</Message>,
+        <FormattedMessage id="thirdPillarAgreement.ageDependentRecommendationConfirmation" />,
       );
 
     expect(hasConfirmation()).toBe(false);
@@ -43,14 +43,12 @@ describe('ThirdPillarTermsAgreement', () => {
 
   it('has age-dependent recommendation only when above age threshold', () => {
     const hasConfirmation = () =>
-      component.contains(<Message>thirdPillarAgreement.ageDependentRecommendation</Message>);
+      component.contains(<FormattedMessage id="thirdPillarAgreement.ageDependentRecommendation" />);
 
     expect(hasConfirmation()).toBe(false);
     component.setProps({ age: 55 });
     expect(hasConfirmation()).toBe(true);
   });
 
-  function checkbox() {
-    return component.find('#third-pillar-terms-checkbox');
-  }
+  const checkbox = () => component.find('#third-pillar-terms-checkbox');
 });
