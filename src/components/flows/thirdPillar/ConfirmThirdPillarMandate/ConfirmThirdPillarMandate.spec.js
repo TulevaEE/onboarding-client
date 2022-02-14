@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link, Redirect } from 'react-router-dom';
 import { shallow } from 'enzyme';
-import { Message } from 'retranslate';
 
+import { FormattedMessage } from 'react-intl';
 import { ConfirmThirdPillarMandate } from './ConfirmThirdPillarMandate';
 import FundTransferTable from '../../secondPillar/confirmMandate/fundTransferTable';
 import { AuthenticationLoader, Loader } from '../../../common';
@@ -38,7 +38,7 @@ describe('ConfirmThirdPillarMandate', () => {
 
   it('has future contributions fund name and message only when future contributions fund is selected', () => {
     const hasMessage = () =>
-      component.contains(<Message>confirmThirdPillarMandate.contribution</Message>);
+      component.contains(<FormattedMessage id="confirmThirdPillarMandate.contribution" />);
     const hasFundName = () => component.contains(<b className="highlight">A pension fund</b>);
 
     component.setProps({ selectedFutureContributionsFund: null });
@@ -128,7 +128,7 @@ describe('ConfirmThirdPillarMandate', () => {
 
   it('has exchange existing funds text and exchange table only when should exchange existing funds', () => {
     const hasText = () =>
-      component.contains(<Message>confirmThirdPillarMandate.exchangeExistingUnits</Message>);
+      component.contains(<FormattedMessage id="confirmThirdPillarMandate.exchangeExistingUnits" />);
     const exchangeTable = () => component.find(FundTransferTable);
 
     expect(hasText()).toBe(false);

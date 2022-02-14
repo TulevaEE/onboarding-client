@@ -3,9 +3,9 @@ import Types from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
-import { Message } from 'retranslate';
 
 import { reduxForm } from 'redux-form';
+import { FormattedMessage } from 'react-intl';
 import ThirdPillarTermsAgreement from './ThirdPillarTermsAgreement';
 import PoliticallyExposedPersonAgreement from '../../../aml/PoliticallyExposedPersonAgreement';
 import { actions as exchangeActions } from '../../../exchange';
@@ -59,11 +59,11 @@ export const ConfirmThirdPillarMandate = ({
         ''
       )}
 
-      <Message>confirmThirdPillarMandate.intro</Message>
+      <FormattedMessage id="confirmThirdPillarMandate.intro" />
 
       {selectedFutureContributionsFund && (
         <div className="mt-4">
-          <Message>confirmThirdPillarMandate.contribution</Message>
+          <FormattedMessage id="confirmThirdPillarMandate.contribution" />
 
           <div>
             <b className="highlight">{selectedFutureContributionsFund.name}</b>
@@ -78,7 +78,7 @@ export const ConfirmThirdPillarMandate = ({
         !!exchangeableSourceFunds.length &&
         selectedFutureContributionsFund && (
           <div className="mt-4">
-            <Message>confirmThirdPillarMandate.exchangeExistingUnits</Message>
+            <FormattedMessage id="confirmThirdPillarMandate.exchangeExistingUnits" />
             <div className="mt-4">
               <FundTransferTable
                 selections={createSelectionsFromFundsToFund(
@@ -119,7 +119,7 @@ export const ConfirmThirdPillarMandate = ({
             );
           }}
         >
-          <Message>confirm.mandate.sign</Message>
+          <FormattedMessage id="confirm.mandate.sign" />
         </button>
 
         <button
@@ -138,12 +138,12 @@ export const ConfirmThirdPillarMandate = ({
             );
           }}
         >
-          <Message>confirm.mandate.preview</Message>
+          <FormattedMessage id="confirm.mandate.preview" />
         </button>
 
         <Link to={previousPath}>
           <button type="button" className="btn btn-secondary mb-2">
-            <Message>confirm.mandate.back</Message>
+            <FormattedMessage id="confirm.mandate.back" />
           </button>
         </Link>
       </div>
