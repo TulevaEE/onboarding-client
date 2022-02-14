@@ -1,6 +1,5 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Message } from 'retranslate';
 
 import { FormattedMessage } from 'react-intl';
 import ErrorMessage, { getGlobalErrorCode } from './ErrorMessage';
