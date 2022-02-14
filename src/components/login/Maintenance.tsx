@@ -1,12 +1,12 @@
 import React from 'react';
-import { Message } from 'retranslate';
+import { FormattedMessage } from 'react-intl';
 
 export const Maintenance: React.FC = () => (
   <>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <div className="material-icons">build</div>
     <div>
-      <Message>login.epis_maintenance</Message>
+      <FormattedMessage id="login.epis_maintenance" />
     </div>
   </>
 );

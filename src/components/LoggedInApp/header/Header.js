@@ -1,8 +1,8 @@
 import React from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { Link } from 'react-router-dom';
-import { Message } from 'retranslate';
 
+import { FormattedMessage } from 'react-intl';
 import { logo, Loader } from '../../common';
 import LanguageSwitcher from './languageSwitcher';
 
@@ -21,13 +21,13 @@ const Header = ({ user: { name } = {}, loading, onLogout }) => (
           {name}
           &ensp;&middot;&ensp;
           <button type="button" className="btn btn-link p-0 border-0" onClick={onLogout}>
-            <Message>log.out</Message>
+            <FormattedMessage id="log.out" />
           </button>
           <br />
           <LanguageSwitcher />
           &ensp;&middot;&ensp;
           <Link className="btn btn-link p-0 border-0" to="/account">
-            <Message>header.my.account</Message>
+            <FormattedMessage id="header.my.account" />
           </Link>
         </span>
       )}
