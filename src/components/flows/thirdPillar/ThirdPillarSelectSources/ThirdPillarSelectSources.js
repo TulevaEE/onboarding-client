@@ -1,10 +1,10 @@
 import React from 'react';
 import { PropTypes as Types } from 'prop-types';
-import { Message } from 'retranslate';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
 import { Link, Redirect } from 'react-router-dom';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { Loader, Radio } from '../../../common';
 import { selectThirdPillarSources } from '../../../thirdPillar/actions';
 import { TULEVA_3RD_PILLAR_FUND_ISIN } from '../../../thirdPillar/initialState';
@@ -25,10 +25,13 @@ export const ThirdPillarSelectSources = ({
   onSelect,
   nextPath,
 }) => {
+  const { formatMessage } = useIntl();
+
   const fullSelectionActive = !!exchangeExistingUnits && !!futureContributionsFundIsin;
   const someSelectionActive = !exchangeExistingUnits && !!futureContributionsFundIsin;
   const isValid = exchangeExistingUnits || futureContributionsFundIsin;
   const defaultTargetFund = targetFunds && targetFunds.length ? targetFunds[0] : {};
+
   return (
     <div>
       {!loadingSourceFunds && exchangeableSourceFunds && !exchangeableSourceFunds.length && (
@@ -38,7 +41,7 @@ export const ThirdPillarSelectSources = ({
         <div className="col-12">
           <div className="px-col mb-4">
             <p className="mb-4 lead">
-              <Message>thirdPillarFlowSelectSources.title</Message>
+              <FormattedMessage id="thirdPillarFlowSelectSources.title" />
             </p>
             {(loadingSourceFunds || !sourceFunds.length) && <Loader className="align-middle" />}
             {!loadingSourceFunds && exchangeableSourceFunds && !!exchangeableSourceFunds.length && (
@@ -54,14 +57,43 @@ export const ThirdPillarSelectSources = ({
         onSelect={() => onSelect(true, defaultTargetFund.isin)}
       >
         <h3 className="m-0">
-          <Message>thirdPillarFlowSelectSources.selectAll.title</Message>
+          <FormattedMessage id="thirdPillarFlowSelectSources.selectAll.title" />
         </h3>
         {fullSelectionActive ? (
           <div className="mt-3">
-            <Message dangerouslyTranslateInnerHTML="thirdPillarFlowSelectSources.selectAll.subtitle" />
+            <FormattedMessage
+              id="thirdPillarFlowSelectSources.selectAll.subtitle"
+              values={{
+                a: (chunks) => (
+                  <a
+                    href={formatMessage({
+                      id: 'thirdPillarFlowSelectSources.selectAll.subtitle.link',
+                    })}
+                  >
+                    {chunks}
+                  </a>
+                ),
+              }}
+            />
+
             <br />
             <br />
-            <Message dangerouslyTranslateInnerHTML="thirdPillarFlowSelectSources.insurance_info" />
+
+            <FormattedMessage
+              id="thirdPillarFlowSelectSources.insurance_info"
+              values={{
+                a: (chunks) => (
+                  <a
+                    href={formatMessage({
+                      id: 'thirdPillarFlowSelectSources.insurance_info.link',
+                    })}
+                  >
+                    {chunks}
+                  </a>
+                ),
+              }}
+            />
+
             {(loadingTargetFunds || !targetFunds.length) && (
               <Loader className="align-middle mt-4" />
             )}
@@ -85,11 +117,11 @@ export const ThirdPillarSelectSources = ({
         onSelect={() => onSelect(false, defaultTargetFund.isin)}
       >
         <h3 className="m-0">
-          <Message>thirdPillarFlowSelectSources.futureContributions.title</Message>
+          <FormattedMessage id="thirdPillarFlowSelectSources.futureContributions.title" />
         </h3>
         {someSelectionActive ? (
           <div className="mt-3">
-            <Message>thirdPillarFlowSelectSources.futureContributions.subtitle</Message>
+            <FormattedMessage id="thirdPillarFlowSelectSources.futureContributions.subtitle" />
           </div>
         ) : (
           ''
@@ -102,7 +134,7 @@ export const ThirdPillarSelectSources = ({
           id="nextStep"
           className={`btn btn-primary mt-5 ${!isValid ? 'disabled' : ''}`}
         >
-          <Message>steps.next</Message>
+          <FormattedMessage id="steps.next" />
         </button>
       </Link>
     </div>
@@ -156,6 +188,4 @@ const mapDispatchToProps = (dispatch) =>
     dispatch,
   );
 
-const connectToRedux = connect(mapStateToProps, mapDispatchToProps);
-
-export default connectToRedux(ThirdPillarSelectSources);
+export default connect(mapStateToProps, mapDispatchToProps)(ThirdPillarSelectSources);
