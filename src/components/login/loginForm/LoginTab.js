@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Message } from 'retranslate';
+import { FormattedMessage } from 'react-intl';
 
 class LoginTab extends Component {
   static propTypes = {
@@ -33,7 +33,7 @@ class LoginTab extends Component {
 
     return (
       <button type="button" className={className} onClick={onClick}>
-        <Message>{label}</Message>
+        <FormattedMessage id={label} />
       </button>
     );
   }
