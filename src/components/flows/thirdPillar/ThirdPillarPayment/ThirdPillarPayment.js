@@ -2,8 +2,8 @@ import React, { useEffect } from 'react';
 import Types from 'prop-types';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
-import { Message } from 'retranslate';
 import { bindActionCreators } from 'redux';
+import { FormattedMessage } from 'react-intl';
 import { getUser } from '../../../login/actions';
 
 export const ThirdPillarPayment = ({
@@ -25,27 +25,20 @@ export const ThirdPillarPayment = ({
       {!signedMandateId && !isUserConverted && <Redirect to={previousPath} />}
 
       <h2 className="mt-3">
-        <Message>thirdPillarPayment.title</Message>
+        <FormattedMessage id="thirdPillarPayment.title" />
       </h2>
 
       <p className="mt-3">
-        <Message
-          params={{
-            emphasized: (
-              <b>
-                <Message>thirdPillarPayment.descriptionEmphasized</Message>
-              </b>
-            ),
-          }}
-        >
-          thirdPillarPayment.description
-        </Message>
+        <FormattedMessage
+          id="thirdPillarPayment.description"
+          values={{ b: (chunks) => <b>{chunks}</b> }}
+        />
       </p>
 
       <table>
         <tr>
           <td>
-            <Message>thirdPillarPayment.accountName</Message>:{' '}
+            <FormattedMessage id="thirdPillarPayment.accountName" />:{' '}
           </td>
           <td>
             <b>AS Pensionikeskus</b>
@@ -53,7 +46,7 @@ export const ThirdPillarPayment = ({
         </tr>
         <tr>
           <td className="align-top">
-            <Message>thirdPillarPayment.accountNumber</Message>:{' '}
+            <FormattedMessage id="thirdPillarPayment.accountNumber" />:{' '}
           </td>
           <td>
             <b>EE362200221067235244</b> - Swedbank
@@ -67,7 +60,7 @@ export const ThirdPillarPayment = ({
         </tr>
         <tr>
           <td>
-            <Message>thirdPillarPayment.details</Message>:{' '}
+            <FormattedMessage id="thirdPillarPayment.details" />:{' '}
           </td>
           <td>
             <b>30101119828</b>
@@ -75,7 +68,7 @@ export const ThirdPillarPayment = ({
         </tr>
         <tr>
           <td>
-            <Message>thirdPillarPayment.reference</Message>:{' '}
+            <FormattedMessage id="thirdPillarPayment.reference" />:{' '}
           </td>
           <td>
             <b data-test-id="pension-account-number">{pensionAccountNumber}</b>
@@ -84,13 +77,13 @@ export const ThirdPillarPayment = ({
       </table>
 
       <p className="mt-3">
-        <Message>thirdPillarPayment.paymentQuestion</Message>
+        <FormattedMessage id="thirdPillarPayment.paymentQuestion" />
       </p>
 
       <div>
         <Link to={nextPath}>
           <button type="button" className="btn btn-primary mt-4">
-            <Message>thirdPillarPayment.paymentButton</Message>
+            <FormattedMessage id="thirdPillarPayment.paymentButton" />
           </button>
         </Link>
       </div>
