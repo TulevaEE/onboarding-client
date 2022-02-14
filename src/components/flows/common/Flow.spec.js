@@ -1,9 +1,9 @@
 import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
 import { shallow } from 'enzyme';
-import { Message } from 'retranslate';
 import mixpanel from 'mixpanel-browser';
 
+import { FormattedMessage } from 'react-intl';
 import { Flow } from './Flow';
 import StepTitle from './StepTitle';
 
@@ -20,17 +20,17 @@ describe('Flow', () => {
       {
         path: 'first-step',
         Component: FirstComponent,
-        title: <Message>first.title</Message>,
+        title: <FormattedMessage id="first.title" />,
       },
       {
         path: 'second-step',
         Component: SecondComponent,
-        title: <Message>second.title</Message>,
+        title: <FormattedMessage id="second.title" />,
       },
       {
         path: 'third-step',
         Component: ThirdComponent,
-        title: <Message>third.title</Message>,
+        title: <FormattedMessage id="third.title" />,
       },
       {
         path: 'fourth-step',
@@ -62,7 +62,7 @@ describe('Flow', () => {
   });
 
   it('has intro message when passed and on first step', () => {
-    const introMessage = <Message>steps.intro</Message>;
+    const introMessage = <FormattedMessage id="steps.intro" />;
 
     const hasIntro = () => component.contains(introMessage);
 
@@ -89,8 +89,8 @@ describe('Flow', () => {
     component.setProps({ lastPartOfPath: 'third-step' });
     expect(completedTitles().map((title) => title.prop('number'))).toEqual([1, 2]);
     expect(completedTitles().map((title) => title.prop('children'))).toEqual([
-      <Message>first.title</Message>,
-      <Message>second.title</Message>,
+      <FormattedMessage id="first.title" />,
+      <FormattedMessage id="second.title" />,
     ]);
   });
 
@@ -101,7 +101,7 @@ describe('Flow', () => {
 
     expect(activeTitle).toHaveLength(1);
     expect(activeTitle.prop('number')).toBe(3);
-    expect(activeTitle.prop('children')).toEqual(<Message>third.title</Message>);
+    expect(activeTitle.prop('children')).toEqual(<FormattedMessage id="third.title" />);
   });
 
   it('has component for current path', () => {
@@ -140,7 +140,7 @@ describe('Flow', () => {
     component.setProps({ lastPartOfPath: 'second-step' });
     expect(afterTitles().map((title) => title.prop('number'))).toEqual([3]);
     expect(afterTitles().map((title) => title.prop('children'))).toEqual([
-      <Message>third.title</Message>,
+      <FormattedMessage id="third.title" />,
     ]);
 
     component.setProps({ lastPartOfPath: 'fourth-step' });
