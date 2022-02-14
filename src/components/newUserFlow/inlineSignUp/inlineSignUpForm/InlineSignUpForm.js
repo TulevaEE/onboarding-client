@@ -1,11 +1,9 @@
-/* eslint-disable react/prop-types */
-
 import React from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
-import { Message, withTranslations } from 'retranslate';
-import { requiredField, emailValidator } from '../../../common/form';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { emailValidator, requiredField } from '../../../common/form';
 
 const renderField = ({ input, type, placeholder, disabled, meta: { touched, error } }) => (
   <div>
@@ -19,78 +17,76 @@ const renderField = ({ input, type, placeholder, disabled, meta: { touched, erro
       />
       {touched && error && (
         <div className="help-block">
-          <Message>{`new.user.flow.signup.error.${error}`}</Message>
+          <FormattedMessage id={`new.user.flow.signup.error.${error}`} />
         </div>
       )}
     </div>
   </div>
 );
 
-export const InlineSignUpForm = ({
-  handleSubmit,
-  invalid,
-  submitting,
-  error,
-  translations: { translate },
-}) => (
-  <div>
-    <form id="register-form" onSubmit={handleSubmit}>
-      <div className="form-group mb-2">
-        <label htmlFor="register-form-email">
-          <Message>new.user.flow.signup.email</Message>
-        </label>
-        <Field
-          component={renderField}
-          type="email"
-          name="email"
-          id="register-form-email"
-          placeholder={translate('new.user.flow.signup.email')}
-          validate={[requiredField, emailValidator]}
-        />
-      </div>
-      <div className="form-group mb-2">
-        <label htmlFor="register-form-phoneNumber">
-          <Message>new.user.flow.signup.phoneNumber</Message>
-        </label>
-        <Field
-          component={renderField}
-          type="text"
-          name="phoneNumber"
-          id="register-form-phoneNumber"
-          placeholder={translate('new.user.flow.signup.phoneNumber')}
-        />
-      </div>
-      <div className="mb-2">
-        <span className="custom-control-indicator" />
-        <div className="custom-control-description">
-          <Message>new.user.flow.signup.tos.start</Message>
-          <a
-            href="https://tuleva.ee/wp-content/uploads/2017/10/P%C3%B5hikiri-Tulundus%C3%BChistu-Tuleva.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Message>new.user.flow.signup.tos.statute</Message>
-          </a>
-          <Message>new.user.flow.signup.tos.end</Message>
+export const InlineSignUpForm = ({ handleSubmit, invalid, submitting, error }) => {
+  const { formatMessage } = useIntl();
+
+  return (
+    <div>
+      <form id="register-form" onSubmit={handleSubmit}>
+        <div className="form-group mb-2">
+          <label htmlFor="register-form-email">
+            <FormattedMessage id="new.user.flow.signup.email" />
+          </label>
+          <Field
+            component={renderField}
+            type="email"
+            name="email"
+            id="register-form-email"
+            placeholder={formatMessage({ id: 'new.user.flow.signup.email' })}
+            validate={[requiredField, emailValidator]}
+          />
         </div>
-      </div>
-      <div>
-        {error && (
-          <div className="alert alert-danger mb-2" role="alert">
-            <Message>{`new.user.flow.signup.error.${error}`}</Message>
+        <div className="form-group mb-2">
+          <label htmlFor="register-form-phoneNumber">
+            <FormattedMessage id="new.user.flow.signup.phoneNumber" />
+          </label>
+          <Field
+            component={renderField}
+            type="text"
+            name="phoneNumber"
+            id="register-form-phoneNumber"
+            placeholder={formatMessage({ id: 'new.user.flow.signup.phoneNumber' })}
+          />
+        </div>
+        <div className="mb-2">
+          <span className="custom-control-indicator" />
+          <div className="custom-control-description">
+            <FormattedMessage id="new.user.flow.signup.tos.start" />
+            <a
+              href="https://tuleva.ee/wp-content/uploads/2017/10/P%C3%B5hikiri-Tulundus%C3%BChistu-Tuleva.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <FormattedMessage id="new.user.flow.signup.tos.statute" />
+            </a>
+            <FormattedMessage id="new.user.flow.signup.tos.end" />
           </div>
-        )}
-        <button
-          type="submit"
-          disabled={invalid || submitting}
-          className="btn btn-primary btn-lg btn-block"
-        >
-          <Message>new.user.flow.signup.submit</Message>
-        </button>
-      </div>
-    </form>
-  </div>
-);
+        </div>
+        <div>
+          {error && (
+            <div className="alert alert-danger mb-2" role="alert">
+              <FormattedMessage id={`new.user.flow.signup.error.${error}`} />
+            </div>
+          )}
+          <button
+            type="submit"
+            disabled={invalid || submitting}
+            className="btn btn-primary btn-lg btn-block"
+          >
+            <FormattedMessage id="new.user.flow.signup.submit" />
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+};
 
 const noop = () => null;
 
@@ -106,17 +102,10 @@ InlineSignUpForm.propTypes = {
   invalid: Types.bool,
   submitting: Types.bool,
   error: Types.string,
-  translations: Types.shape({ translate: Types.func.isRequired }).isRequired,
 };
-
-const reduxInlineSignUpForm = reduxForm({ form: 'signUp' })(withTranslations(InlineSignUpForm));
 
 const mapStateToProps = (state) => ({
   initialValues: state.login.user ? { ...state.login.user } : null,
 });
 
-const connectToRedux = connect(mapStateToProps, null);
-
-const prefilledForm = connectToRedux(reduxInlineSignUpForm);
-
-export default prefilledForm;
+export default connect(mapStateToProps, null)(reduxForm({ form: 'signUp' })(InlineSignUpForm));

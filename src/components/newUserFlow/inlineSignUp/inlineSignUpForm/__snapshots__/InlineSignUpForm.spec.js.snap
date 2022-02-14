@@ -1,0 +1,90 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`InlineSignUpForm renders component 1`] = `
+<div>
+  <form
+    id="register-form"
+    onSubmit={[Function]}
+  >
+    <div
+      className="form-group mb-2"
+    >
+      <label
+        htmlFor="register-form-email"
+      >
+        <MemoizedFormattedMessage
+          id="new.user.flow.signup.email"
+        />
+      </label>
+      <Field
+        component={[Function]}
+        id="register-form-email"
+        name="email"
+        placeholder="new.user.flow.signup.email"
+        type="email"
+        validate={
+          Array [
+            [Function],
+            [Function],
+          ]
+        }
+      />
+    </div>
+    <div
+      className="form-group mb-2"
+    >
+      <label
+        htmlFor="register-form-phoneNumber"
+      >
+        <MemoizedFormattedMessage
+          id="new.user.flow.signup.phoneNumber"
+        />
+      </label>
+      <Field
+        component={[Function]}
+        id="register-form-phoneNumber"
+        name="phoneNumber"
+        placeholder="new.user.flow.signup.phoneNumber"
+        type="text"
+      />
+    </div>
+    <div
+      className="mb-2"
+    >
+      <span
+        className="custom-control-indicator"
+      />
+      <div
+        className="custom-control-description"
+      >
+        <MemoizedFormattedMessage
+          id="new.user.flow.signup.tos.start"
+        />
+        <a
+          href="https://tuleva.ee/wp-content/uploads/2017/10/P%C3%B5hikiri-Tulundus%C3%BChistu-Tuleva.pdf"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <MemoizedFormattedMessage
+            id="new.user.flow.signup.tos.statute"
+          />
+        </a>
+        <MemoizedFormattedMessage
+          id="new.user.flow.signup.tos.end"
+        />
+      </div>
+    </div>
+    <div>
+      <button
+        className="btn btn-primary btn-lg btn-block"
+        disabled={true}
+        type="submit"
+      >
+        <MemoizedFormattedMessage
+          id="new.user.flow.signup.submit"
+        />
+      </button>
+    </div>
+  </form>
+</div>
+`;

@@ -5,15 +5,13 @@ import { InlineSignUpForm } from './InlineSignUpForm';
 
 describe('InlineSignUpForm', () => {
   let component;
-  let props;
 
   beforeEach(() => {
-    props = { translations: { translate: () => '' } };
-    component = shallow(<InlineSignUpForm {...props} />);
+    component = shallow(<InlineSignUpForm />);
   });
 
   it('renders component', () => {
-    expect(component);
+    expect(component).toMatchSnapshot();
   });
 
   it('has correct statute link', () => {
