@@ -1,8 +1,8 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Message } from 'retranslate';
 
 import { Redirect } from 'react-router-dom';
+import { FormattedMessage } from 'react-intl';
 import { Loader, Radio, ErrorMessage } from '../../../common';
 import PensionFundTable from './pensionFundTable';
 import ExactFundSelector from './exactFundSelector';
@@ -41,7 +41,7 @@ describe('Select sources step', () => {
   });
 
   it('renders a title', () => {
-    expect(component.contains(<Message>select.sources.current.status</Message>)).toBe(true);
+    expect(component.contains(<FormattedMessage id="select.sources.current.status" />)).toBe(true);
   });
 
   it('renders a pension fund table with given funds', () => {
@@ -54,9 +54,7 @@ describe('Select sources step', () => {
     const nextPath = '/next-path';
     component.setProps({ nextPath });
     expect(component.find('#nextStep').prop('to')).toBe(nextPath);
-    expect(component.find('#nextStep button').children().at(0).getElement(0)).toEqual(
-      <Message>steps.next</Message>,
-    );
+    expect(component.find('#nextStep button').children().at(0).getElement(0)).toMatchSnapshot();
   });
 
   it('disables the next step button if selection is invalid', () => {
@@ -173,7 +171,9 @@ describe('Select sources step', () => {
     });
 
     expect(noneSelectionRadio().prop('selected')).toBe(true);
-    expect(component.contains(<Message>select.sources.select.none.subtitle</Message>)).toBe(true);
+    expect(component.contains(<FormattedMessage id="select.sources.select.none.subtitle" />)).toBe(
+      true,
+    );
 
     component.setProps({
       sourceSelectionExact: false,
@@ -184,7 +184,9 @@ describe('Select sources step', () => {
     });
 
     expect(noneSelectionRadio().prop('selected')).toBe(false);
-    expect(component.contains(<Message>select.sources.select.none.subtitle</Message>)).toBe(false);
+    expect(component.contains(<FormattedMessage id="select.sources.select.none.subtitle" />)).toBe(
+      false,
+    );
   });
 
   it('selects no funds when clicking on the no selection radio', () => {
@@ -215,7 +217,7 @@ describe('Select sources step', () => {
 
   it('shows the subtitle for exact fund selection when selection is exact', () => {
     const subtitleRendered = () =>
-      component.contains(<Message>select.sources.select.some.subtitle</Message>);
+      component.contains(<FormattedMessage id="select.sources.select.some.subtitle" />);
     component.setProps({ sourceSelectionExact: false });
     expect(subtitleRendered()).toBe(false);
     component.setProps({ sourceSelectionExact: true });

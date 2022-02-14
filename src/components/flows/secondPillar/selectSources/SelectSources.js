@@ -1,10 +1,10 @@
 import React from 'react';
 import { PropTypes as Types } from 'prop-types';
-import { Message } from 'retranslate';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
 import { Link, Redirect } from 'react-router-dom';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { selectExchangeSources } from '../../../exchange/actions';
 import { Loader, Radio, ErrorMessage } from '../../../common';
 import PensionFundTable from './pensionFundTable';
@@ -54,6 +54,8 @@ export const SelectSources = ({
   error,
   nextPath,
 }) => {
+  const { formatMessage } = useIntl();
+
   if (error) {
     return <ErrorMessage errors={error.body} />;
   }
@@ -67,6 +69,7 @@ export const SelectSources = ({
     targetFunds && targetFunds.length && targetFunds.filter((fund) => isTuleva(fund));
   const defaultTargetFund =
     tulevaTargetFunds && tulevaTargetFunds.length ? tulevaTargetFunds[0] : null;
+
   return (
     <div>
       {sourceFunds && !sourceFunds.length && <Redirect to={nextPath} />}
@@ -74,7 +77,7 @@ export const SelectSources = ({
         <div className="col-12">
           <div className="px-col mb-4">
             <p className="mb-4 lead">
-              <Message>select.sources.current.status</Message>
+              <FormattedMessage id="select.sources.current.status" />
             </p>
             <PensionFundTable funds={sourceFunds} />
           </div>
@@ -87,14 +90,23 @@ export const SelectSources = ({
         onSelect={() => onSelect(selectAllWithTarget(sourceFunds, defaultTargetFund), false)}
       >
         <h3 className="m-0">
-          <Message>select.sources.select.all</Message>
+          <FormattedMessage id="select.sources.select.all" />
         </h3>
         {fullSelectionActive ? (
           <div className="mt-3">
-            <Message dangerouslyTranslateInnerHTML="select.sources.select.all.subtitle" />
+            <FormattedMessage
+              id="select.sources.select.all.subtitle"
+              values={{
+                a: (chunks) => (
+                  <a href={formatMessage({ id: 'select.sources.select.all.subtitle.link' })}>
+                    {chunks}
+                  </a>
+                ),
+              }}
+            />
 
             <div className="mt-4">
-              <Message className="pt-2">select.sources.select.all.choose</Message>
+              <FormattedMessage id="select.sources.select.all.choose" className="pt-2" />
             </div>
             <TargetFundSelector
               targetFunds={tulevaTargetFunds}
@@ -117,11 +129,11 @@ export const SelectSources = ({
         onSelect={() => onSelect(sourceSelection, true)}
       >
         <h3 className="m-0">
-          <Message>select.sources.select.some</Message>
+          <FormattedMessage id="select.sources.select.some" />
         </h3>
         {sourceSelectionExact ? (
           <div className="mt-3">
-            <Message>select.sources.select.some.subtitle</Message>
+            <FormattedMessage id="select.sources.select.some.subtitle" />
             <ExactFundSelector
               selections={sourceSelection}
               sourceFunds={sourceFunds}
@@ -141,11 +153,11 @@ export const SelectSources = ({
         onSelect={() => onSelect([], false)}
       >
         <p className="m-0">
-          <Message>select.sources.select.none</Message>
+          <FormattedMessage id="select.sources.select.none" />
         </p>
         {noneSelectionActive ? (
           <div className="mt-2 tv-select-sources-type-none-subtitle">
-            <Message>select.sources.select.none.subtitle</Message>
+            <FormattedMessage id="select.sources.select.none.subtitle" />
           </div>
         ) : (
           ''
@@ -154,7 +166,7 @@ export const SelectSources = ({
 
       <Link id="nextStep" to={isValid ? nextPath : '#'}>
         <button type="button" className={`btn btn-primary mt-5 ${!isValid ? 'disabled' : ''}`}>
-          <Message>steps.next</Message>
+          <FormattedMessage id="steps.next" />
         </button>
       </Link>
     </div>

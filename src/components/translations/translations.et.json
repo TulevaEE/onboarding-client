@@ -38,7 +38,8 @@
   "select.sources.current.status": "Sinu pensionivara seis täna",
   "select.sources.total": "Kokku",
   "select.sources.select.all": "Toon kogu II samba Tulevasse",
-  "select.sources.select.all.subtitle": "Kogud edaspidi Tulevas ja tood üle ka varem II sambasse kogutud vara. Tuleva <a href='https://www.pensionikeskus.ee/ii-sammas/kohustuslikud-pensionifondid/fonditasude-vordlus/'>soodsad tasud<a> rakenduvad kogu portfellile. Fondivahetus on tasuta.",
+  "select.sources.select.all.subtitle": "Kogud edaspidi Tulevas ja tood üle ka varem II sambasse kogutud vara. Tuleva <a>soodsad tasud</a> rakenduvad kogu portfellile. Fondivahetus on tasuta.",
+  "select.sources.select.all.subtitle.link": "https://www.pensionikeskus.ee/ii-sammas/kohustuslikud-pensionifondid/fonditasude-vordlus/",
   "select.sources.select.all.choose": "Vali fond:",
   "select.sources.select.some": "Toon pensioni valikuliselt üle",
   "select.sources.select.some.subtitle": "Kui soovid osakuid mitme fondi vahel jagada, täpsusta valikut:",
@@ -303,7 +304,7 @@
 
   "thirdPillarFlowSelectSources.title": "Sinu III samba vabad osakud",
   "thirdPillarFlowSelectSources.selectAll.title": "Toon kogu III samba fondi vara Tulevasse",
-  "thirdPillarFlowSelectSources.selectAll.subtitle": "Kogud edaspidi Tulevas ja tood üle ka varem III samba fondi kogutud vara. Tuleva <a href='https://www.pensionikeskus.ee/statistika/iii-sammas/taiendava-kogumispensioni-statistika/'>soodsad tasud<a> rakenduvad kogu portfellile.",
+  "thirdPillarFlowSelectSources.selectAll.subtitle": "Kogud edaspidi Tulevas ja tood üle ka varem III samba fondi kogutud vara. Tuleva <a href='https://www.pensionikeskus.ee/statistika/iii-sammas/taiendava-kogumispensioni-statistika/'>soodsad tasud</a> rakenduvad kogu portfellile.",
   "thirdPillarFlowSelectSources.cost": "Mis fondivahetus maksab?",
   "thirdPillarFlowSelectSources.insurance_info": "NB! Siin on <a href='https://tuleva.ee/iii-sammas-kindlustusleping/'>juhised kindlustuslepingust vara üle toomiseks.</a>",
   "thirdPillarFlowSelectSources.futureContributions.title": "Toon ainult uued maksed Tulevasse",
