@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { useTranslations } from 'retranslate';
+import { useIntl } from 'react-intl';
 
 interface Option {
   value: string;
@@ -14,7 +14,7 @@ interface SelectProps {
 }
 
 export const Select: FC<SelectProps> = ({ options, selected, onChange, disabled = false }) => {
-  const { translate } = useTranslations();
+  const { formatMessage } = useIntl();
 
   return (
     <select
@@ -25,7 +25,7 @@ export const Select: FC<SelectProps> = ({ options, selected, onChange, disabled 
     >
       {options.map(({ value, label }) => (
         <option value={value} key={label}>
-          {translate(label)}
+          {formatMessage({ id: label })}
         </option>
       ))}
     </select>

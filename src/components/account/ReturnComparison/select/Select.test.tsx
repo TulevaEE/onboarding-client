@@ -3,13 +3,11 @@ import { shallow, ShallowWrapper } from 'enzyme';
 
 import { Select } from './Select';
 
-jest.mock('retranslate', () => {
-  return {
-    useTranslations: () => ({
-      translate: jest.fn().mockImplementation((key) => `translated ${key}`),
-    }),
-  };
-});
+jest.mock('react-intl', () => ({
+  useIntl: () => ({
+    formatMessage: jest.fn().mockImplementation(({ id }) => `translated ${id}`),
+  }),
+}));
 
 describe('Select', () => {
   let component;
