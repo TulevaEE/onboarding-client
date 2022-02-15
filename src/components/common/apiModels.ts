@@ -1,10 +1,3 @@
-export interface ThirdPillarStatistics {
-  id?: number;
-  mandateId: number;
-  singlePayment?: number;
-  recurringPayment?: number;
-}
-
 export type Application =
   | TransferApplication
   | StopContributionsApplication

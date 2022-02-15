@@ -12,6 +12,5 @@ export default {
   exchangeExistingUnits: true,
   agreedToTerms: false,
   signedMandateId: null,
-  statistics: {},
   error: null,
 };

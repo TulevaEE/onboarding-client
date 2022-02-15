@@ -4,7 +4,6 @@ import {
   CHANGE_MONTHLY_CONTRIBUTION,
   QUERY_PARAMETERS,
   SELECT_THIRD_PILLAR_SOURCES,
-  THIRD_PILLAR_STATISTICS,
 } from './constants';
 import initialState, { EXIT_RESTRICTED_FUND } from './initialState';
 import reducer from './reducer';
@@ -325,21 +324,6 @@ describe('Third pillar reducer', () => {
 
     expect(state.exchangeExistingUnits).toEqual(true);
     expect(state.selectedFutureContributionsFundIsin).toBe('EE123');
-  });
-
-  it('can post third pillar statistics', () => {
-    const statistics = {
-      mandateId: 543,
-      singlePayment: 100,
-    };
-    const action = {
-      type: THIRD_PILLAR_STATISTICS,
-      statistics,
-    };
-
-    const state = reducer(undefined, action);
-
-    expect(state.statistics).toEqual(statistics);
   });
 
   it('starts loading when getting target funds', () => {

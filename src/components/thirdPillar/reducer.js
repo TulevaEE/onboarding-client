@@ -4,7 +4,6 @@ import {
   CHANGE_MONTHLY_CONTRIBUTION,
   QUERY_PARAMETERS,
   SELECT_THIRD_PILLAR_SOURCES,
-  THIRD_PILLAR_STATISTICS,
 } from './constants';
 import initialState, { EXIT_RESTRICTED_FUND } from './initialState';
 import {
@@ -96,11 +95,6 @@ export default function thirdPillarReducer(state = initialState, action) {
         ...state,
         exchangeExistingUnits: action.exchangeExistingUnits,
         selectedFutureContributionsFundIsin: action.selectedFutureContributionsFundIsin,
-      };
-    case THIRD_PILLAR_STATISTICS:
-      return {
-        ...state,
-        statistics: action.statistics,
       };
     case LOG_OUT:
       return initialState;
