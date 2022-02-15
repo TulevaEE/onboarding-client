@@ -6,6 +6,8 @@ import {
   User,
   SourceFund,
   UserConversion,
+  InitialCapital,
+  AmlCheck,
 } from './apiModels';
 import { downloadFile, get, post, postForm, put, patch, simpleFetch } from './http';
 
@@ -221,6 +223,8 @@ export async function getIdCardSignatureStatusForMandateIdWithSignedHashAndToken
   return statusCode;
 }
 
+/* eslint-enable @typescript-eslint/no-explicit-any */
+
 export function updateUserWithToken(user: User, token: string): Promise<User> {
   return patch(getEndpoint('/v1/me'), user, {
     Authorization: `Bearer ${token}`,
@@ -233,7 +237,7 @@ export function getUserConversionWithToken(token: string): Promise<UserConversio
   });
 }
 
-export function getInitialCapitalWithToken(token: string): Promise<any> {
+export function getInitialCapitalWithToken(token: string): Promise<InitialCapital> {
   return get(getEndpoint('/v1/me/capital'), undefined, {
     Authorization: `Bearer ${token}`,
   });
@@ -244,7 +248,7 @@ export function createAmlCheck(
   success: boolean,
   metadata: Record<string, unknown>,
   token: string,
-): Promise<any> {
+): Promise<AmlCheck> {
   return post(
     getEndpoint('/v1/amlchecks'),
     { type, success, metadata },
@@ -254,13 +258,11 @@ export function createAmlCheck(
   );
 }
 
-export function getMissingAmlChecks(token: string): Promise<any> {
+export function getMissingAmlChecks(token: string): Promise<AmlCheck[]> {
   return get(getEndpoint('/v1/amlchecks'), undefined, {
     Authorization: `Bearer ${token}`,
   });
 }
-
-/* eslint-enable @typescript-eslint/no-explicit-any */
 
 export function getFunds(token: string): Promise<Fund[]> {
   return get(getEndpoint('/v1/funds'), undefined, {
