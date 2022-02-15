@@ -115,6 +115,13 @@ export interface Mandate {
   id: number;
 }
 
+interface Address {
+  street: string;
+  districtCode: string;
+  postalCode: string;
+  countryCode: string;
+}
+
 export interface User {
   id: number;
   personalCode: string;
@@ -123,6 +130,10 @@ export interface User {
   email: string;
   phoneNumber: string;
   memberNumber: number;
+  pensionAccountNumber: string;
+  address: Address;
+  secondPillarActive: boolean;
+  thirdPillarActive: boolean;
   age: number;
 }
 
@@ -143,4 +154,21 @@ export interface Conversion {
   pendingWithdrawal: boolean;
   contribution: Amount;
   subtraction: Amount;
+}
+
+export interface InitialCapital {
+  membershipBonus: number;
+  capitalPayment: number;
+  unvestedWorkCompensation: number;
+  workCompensation: number;
+  profit: number;
+}
+
+export interface AmlCheck {
+  type: string;
+  success: boolean;
+}
+
+export interface HttpError {
+  body: { errors: [{ code: string }] };
 }
