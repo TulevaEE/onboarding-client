@@ -50,10 +50,7 @@ describe('Header', () => {
   it('renders my account button', () => {
     const onLogout = jest.fn();
     component.setProps({ loading: false, onLogout, user: { name: 'name' } });
-    expect(component.find(Link).at(0).prop('to')).toBe('/account');
-    expect(component.find(Link).at(0).children().at(0).getElement(0)).toEqual(
-      <FormattedMessage id="header.my.account" />,
-    );
+    expect(component.find(Link).at(0)).toMatchSnapshot();
   });
 
   it('renders the language switcher', () => {
