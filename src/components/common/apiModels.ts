@@ -131,6 +131,7 @@ export interface User {
   phoneNumber: string;
   memberNumber: number;
   pensionAccountNumber: string;
+  secondPillarPikNumber: string;
   address: Address;
   secondPillarActive: boolean;
   thirdPillarActive: boolean;

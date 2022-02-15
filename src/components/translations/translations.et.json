@@ -218,6 +218,7 @@
   "account.status.choice.pillar.second.withdraw": "Sa oled lahkumas II sambast",
   "account.status.choice.pillar.second.withdraw.cancel": "Tühista avaldus",
   "account.status.choice.pillar.second.transferIncomplete": "Sa kogud täna mitmes erinevas pensionifondis",
+  "account.status.choice.pillar.second.pik": "Pensioni investeerimiskonto: {secondPillarPikNumber}",
   "account.status.choice.pillar.third": "III sammas",
   "account.status.choice.pillar.third.missing.action": "Ava III sammas",
   "account.status.choice.pillar.third.missing.label": "Sul pole III sammas veel avatud",
