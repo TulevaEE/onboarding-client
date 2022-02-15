@@ -5,7 +5,6 @@ import {
   CHANGE_MONTHLY_CONTRIBUTION,
   QUERY_PARAMETERS,
   SELECT_THIRD_PILLAR_SOURCES,
-  THIRD_PILLAR_STATISTICS,
 } from './constants';
 import * as mockApi from '../common/api';
 
@@ -96,39 +95,6 @@ describe('Third pillar actions', () => {
       type: SELECT_THIRD_PILLAR_SOURCES,
       exchangeExistingUnits,
       selectedFutureContributionsFundIsin,
-    });
-  });
-
-  it('can post third pillar statistics', () => {
-    const statistics = {
-      mandateId: 543,
-      singlePayment: 100,
-    };
-
-    mockApi.postThirdPillarStatistics = jest.fn(() => {
-      return Promise.resolve(statistics);
-    });
-    const thirdPillarStatistics = createBoundAction(actions.thirdPillarStatistics);
-
-    return thirdPillarStatistics(statistics).then(() => {
-      expect(dispatch).toHaveBeenCalledWith({
-        type: THIRD_PILLAR_STATISTICS,
-        statistics,
-      });
-      expect(dispatch).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  it('will not  post third pillar statistics on empty mandate id', () => {
-    const statistics = {
-      mandateId: null,
-      singlePayment: 100,
-    };
-
-    const thirdPillarStatistics = createBoundAction(actions.thirdPillarStatistics);
-
-    return thirdPillarStatistics(statistics).then(() => {
-      expect(dispatch).not.toHaveBeenCalled();
     });
   });
 });

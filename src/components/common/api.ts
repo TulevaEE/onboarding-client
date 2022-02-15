@@ -2,7 +2,6 @@ import config from 'react-global-configuration';
 import {
   Fund,
   Application,
-  ThirdPillarStatistics,
   CancellationMandate,
   User,
   SourceFund,
@@ -265,15 +264,6 @@ export function getMissingAmlChecks(token: string): Promise<any> {
 
 export function getFunds(token: string): Promise<Fund[]> {
   return get(getEndpoint('/v1/funds'), undefined, {
-    Authorization: `Bearer ${token}`,
-  });
-}
-
-export function postThirdPillarStatistics(
-  statistics: ThirdPillarStatistics,
-  token: string,
-): Promise<ThirdPillarStatistics> {
-  return post(getEndpoint('/v1/statistics'), statistics, {
     Authorization: `Bearer ${token}`,
   });
 }

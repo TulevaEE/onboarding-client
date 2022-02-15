@@ -449,27 +449,4 @@ describe('api', () => {
       });
     });
   });
-
-  it('can post third pillar statistics', () => {
-    const token = 'a token';
-    const statistics = {
-      mandateId: 543,
-      singlePayment: 100,
-    };
-
-    const returnedStatistics = {
-      id: 654,
-      mandateId: statistics.mandateId,
-      singlePayment: statistics.singlePayment,
-    };
-    mockHttp.post = jest.fn(() => Promise.resolve(returnedStatistics));
-
-    return api.postThirdPillarStatistics(statistics, token).then((stats) => {
-      expect(stats).toBe(returnedStatistics);
-      expect(mockHttp.post).toHaveBeenCalledWith('/v1/statistics', statistics, {
-        Authorization: `Bearer ${token}`,
-      });
-      expect(mockHttp.post).toHaveBeenCalledTimes(1);
-    });
-  });
 });
