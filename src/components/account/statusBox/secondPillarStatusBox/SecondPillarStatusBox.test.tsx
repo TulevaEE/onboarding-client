@@ -12,9 +12,10 @@ jest.mock('../../../common/apiHooks', () => ({
 describe('SecondPillarStatusBox', () => {
   let component: ShallowWrapper;
   const props = {
-    conversion: completeSecondPillarconversion,
     loading: false,
+    secondPillar: completeSecondPillarconversion.secondPillar,
     secondPillarFunds: [activeSecondPillar],
+    secondPillarPikNumber: null,
   };
 
   beforeEach(() => {
@@ -31,19 +32,24 @@ describe('SecondPillarStatusBox', () => {
   });
 
   it('renders the withdrawal flow when withdrawal is in progress', () => {
-    component.setProps({ conversion: { secondPillar: { pendingWithdrawal: true } } });
+    component.setProps({ secondPillar: { pendingWithdrawal: true } });
     expect(component).toMatchSnapshot();
   });
 
   it('renders the choice flow when fund selection incomplete', () => {
-    component.setProps({ conversion: { secondPillar: { selectionComplete: false } } });
+    component.setProps({ secondPillar: { selectionComplete: false } });
     expect(component).toMatchSnapshot();
   });
 
   it('renders the transfer flow when fund transfers incomplete', () => {
     component.setProps({
-      conversion: { secondPillar: { transfersComplete: false, selectionComplete: true } },
+      secondPillar: { transfersComplete: false, selectionComplete: true },
     });
+    expect(component).toMatchSnapshot();
+  });
+
+  it('renders the PIK flow when fund PIK number present', () => {
+    component.setProps({ secondPillarPikNumber: 'EE1234567' });
     expect(component).toMatchSnapshot();
   });
 });

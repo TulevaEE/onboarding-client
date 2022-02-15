@@ -4,27 +4,25 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import StatusBoxRow from '../statusBoxRow';
 import { usePendingApplications } from '../../../common/apiHooks';
-import {
-  Application,
-  ApplicationType,
-  SourceFund,
-  UserConversion,
-} from '../../../common/apiModels';
+import { Application, ApplicationType, Conversion, SourceFund } from '../../../common/apiModels';
+import { State } from '../../../../types';
 
 interface Props {
-  conversion: UserConversion;
   loading: boolean;
+  secondPillar: Conversion;
   secondPillarFunds: SourceFund[];
+  secondPillarPikNumber: string;
 }
 
-export const SecondPillarStatusBox: React.FunctionComponent<Props> = ({
-  conversion,
-  loading = false,
-  secondPillarFunds = [],
-}) => {
+export const SecondPillarStatusBox: React.FC<Props> = ({
+  loading,
+  secondPillar,
+  secondPillarFunds,
+  secondPillarPikNumber,
+}: Props) => {
   const pendingWithdrawal = usePendingWithdrawalApplication();
 
-  if (conversion.secondPillar.pendingWithdrawal && pendingWithdrawal) {
+  if (secondPillar.pendingWithdrawal && pendingWithdrawal) {
     return (
       <StatusBoxRow
         showAction={!loading}
@@ -38,8 +36,23 @@ export const SecondPillarStatusBox: React.FunctionComponent<Props> = ({
     );
   }
 
+  if (secondPillarPikNumber) {
+    return (
+      <StatusBoxRow
+        showAction={!loading}
+        name={<FormattedMessage id="account.status.choice.pillar.second" />}
+        lines={[
+          <FormattedMessage
+            id="account.status.choice.pillar.second.pik"
+            values={{ secondPillarPikNumber }}
+          />,
+        ]}
+      />
+    );
+  }
+
   const activeFund = secondPillarFunds.find((fund) => fund.activeFund);
-  if (!conversion.secondPillar.selectionComplete || !activeFund) {
+  if (!secondPillar.selectionComplete || !activeFund) {
     const statusMessage = activeFund ? (
       activeFund.name
     ) : (
@@ -59,7 +72,7 @@ export const SecondPillarStatusBox: React.FunctionComponent<Props> = ({
     );
   }
 
-  if (!conversion.secondPillar.transfersComplete) {
+  if (!secondPillar.transfersComplete) {
     return (
       <StatusBoxRow
         showAction={!loading}
@@ -90,16 +103,11 @@ const usePendingWithdrawalApplication = (): Application | undefined =>
       application.type === ApplicationType.EARLY_WITHDRAWAL,
   );
 
-const mapStateToProps = (state: {
-  login: {
-    userConversion: UserConversion;
-    loadingUserConversion: boolean;
-  };
-  exchange: { sourceFunds: SourceFund[] };
-}) => ({
-  conversion: state.login.userConversion,
+const mapStateToProps = (state: State) => ({
   loading: state.login.loadingUserConversion,
+  secondPillar: state.login.userConversion.secondPillar,
   secondPillarFunds: state.exchange.sourceFunds,
+  secondPillarPikNumber: state.login.user.secondPillarPikNumber,
 });
 
 export default connect(mapStateToProps)(SecondPillarStatusBox);

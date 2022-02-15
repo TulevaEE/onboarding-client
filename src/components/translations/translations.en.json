@@ -243,6 +243,7 @@
   "account.status.choice.pillar.second.withdraw": "You are leaving II pillar",
   "account.status.choice.pillar.second.withdraw.cancel": "Cancel application",
   "account.status.choice.pillar.second.transferIncomplete": "You have several pension funds",
+  "account.status.choice.pillar.second.pik": "Pension investment account: {secondPillarPikNumber}",
   "account.status.choice.pillar.third": "III pillar",
   "account.status.choice.pillar.third.missing.action": "Open III pillar",
   "account.status.choice.pillar.third.missing.label": "You have not started your 3rd pillar yet",
