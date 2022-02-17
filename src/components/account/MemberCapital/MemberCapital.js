@@ -1,6 +1,6 @@
 import React from 'react';
 import Types from 'prop-types';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import Table from '../../common/table';
 import Euro from '../../common/Euro';
@@ -15,6 +15,8 @@ const MemberCapital = ({
     total,
   },
 }) => {
+  const { formatMessage } = useIntl();
+
   const columns = [
     {
       title: <FormattedMessage id="memberCapital.columns.source.title" />,
@@ -40,7 +42,22 @@ const MemberCapital = ({
       key: 'profit',
     },
     {
-      source: <FormattedMessage id="memberCapital.source.membershipBonus" />,
+      source: (
+        <FormattedMessage
+          id="memberCapital.source.membershipBonus"
+          values={{
+            a: (chunks) => (
+              <a
+                target="_blank"
+                rel="noreferrer"
+                href={formatMessage({ id: 'memberCapital.source.membershipBonus.link' })}
+              >
+                {chunks}
+              </a>
+            ),
+          }}
+        />
+      ),
       value: <Euro amount={membershipBonus} />,
       key: 'bonus',
     },
