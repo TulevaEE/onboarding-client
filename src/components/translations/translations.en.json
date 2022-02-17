@@ -81,7 +81,8 @@
   "memberCapital.columns.value.title": "Value",
   "memberCapital.source.capitalPayment": "Capital payment",
   "memberCapital.source.profit": "Investment profit",
-  "memberCapital.source.membershipBonus": "Membership bonus",
+  "memberCapital.source.membershipBonus": "<a>Membership bonus</a>",
+  "memberCapital.source.membershipBonus.link": "https://tuleva.ee/liikmetele/mis-on-liikmeboonus/",
   "memberCapital.source.workCompensation": "Work compensation",
   "memberCapital.source.unvestedWorkCompensation": "Unvested work compensation",
 
