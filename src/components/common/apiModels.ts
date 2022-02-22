@@ -83,7 +83,27 @@ export interface Fund {
   managementFeeRate: number;
   ongoingChargesFigure: number;
   fundManager: FundManager;
-  status: 'ACTIVE';
+  status: FundStatus;
+}
+
+enum FundStatus {
+  ACTIVE = 'ACTIVE',
+  LIQUIDATED = 'LIQUIDATED',
+  SUSPENDED = 'SUSPENDED',
+  CONTRIBUTIONS_FORBIDDEN = 'CONTRIBUTIONS_FORBIDDEN',
+  PAYOUTS_FORBIDDEN = 'PAYOUTS_FORBIDDEN',
+}
+
+export interface FundBalance {
+  fund: Fund;
+  value: number;
+  unavailableValue: number;
+  currency: string;
+  pillar: number;
+  activeContributions: boolean;
+  contributions: number;
+  subtractions: number;
+  profit: number;
 }
 
 export interface SourceFund {
@@ -172,4 +192,25 @@ export interface AmlCheck {
 
 export interface HttpError {
   body: { errors: [{ code: string }] };
+}
+
+export interface Token {
+  accessToken: string;
+}
+
+export interface MobileSignatureResponse {
+  challengeCode: string;
+}
+
+export interface MobileSignatureStatusResponse {
+  statusCode: string;
+  challengeCode: string;
+}
+
+export interface IdCardSignatureResponse {
+  hash: string;
+}
+
+export interface IdCardSignatureStatusResponse {
+  statusCode: string;
 }
