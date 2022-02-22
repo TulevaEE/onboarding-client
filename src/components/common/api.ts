@@ -8,11 +8,15 @@ import {
   UserConversion,
   InitialCapital,
   AmlCheck,
+  Token,
+  FundBalance,
+  Mandate,
+  MobileSignatureResponse,
+  MobileSignatureStatusResponse,
+  IdCardSignatureResponse,
+  IdCardSignatureStatusResponse,
 } from './apiModels';
 import { downloadFile, get, post, postForm, put, patch, simpleFetch } from './http';
-
-// TODO: type API responses
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 const API_URI = '/api';
 export function getEndpoint(endpoint: string): string {
@@ -25,28 +29,10 @@ export function getEndpoint(endpoint: string): string {
   return endpoint;
 }
 
-function transformFundBalance(fundBalance: Record<string, any>): SourceFund {
-  return {
-    isin: fundBalance.fund.isin,
-    price: fundBalance.value,
-    unavailablePrice: fundBalance.unavailableValue,
-    activeFund: fundBalance.activeContributions,
-    currency: fundBalance.currency || 'EUR',
-    name: fundBalance.fund.name,
-    fundManager: fundBalance.fund.fundManager,
-    managementFeePercent: (fundBalance.fund.managementFeeRate * 100).toFixed(2).replace(/0+$/, ''),
-    pillar: fundBalance.pillar,
-    ongoingChargesFigure: fundBalance.fund.ongoingChargesFigure,
-    contributions: fundBalance.contributions,
-    subtractions: fundBalance.subtractions,
-    profit: fundBalance.profit,
-  };
-}
-
 export async function authenticateWithMobileId(
   phoneNumber: string,
   personalCode: string,
-): Promise<any> {
+): Promise<string> {
   const { challengeCode } = await post(getEndpoint('/authenticate'), {
     phoneNumber,
     personalCode,
@@ -55,7 +41,7 @@ export async function authenticateWithMobileId(
   return challengeCode;
 }
 
-export async function authenticateWithIdCode(personalCode: string): Promise<any> {
+export async function authenticateWithIdCode(personalCode: string): Promise<string> {
   const { challengeCode } = await post(getEndpoint('/authenticate'), {
     personalCode,
     type: 'SMART_ID',
@@ -63,13 +49,13 @@ export async function authenticateWithIdCode(personalCode: string): Promise<any>
   return challengeCode;
 }
 
-export async function authenticateWithIdCard(): Promise<any> {
+export async function authenticateWithIdCard(): Promise<boolean> {
   await simpleFetch('GET', config.get('idCardUrl')); // http://stackoverflow.com/a/16818527
   const { success } = await simpleFetch('POST', `${config.get('idCardUrl')}/idLogin`);
   return success;
 }
 
-export function logout(token: string): Promise<any> {
+export function logout(token: string): Promise<void> {
   return get(
     getEndpoint('/v1/logout'),
     {},
@@ -79,7 +65,7 @@ export function logout(token: string): Promise<any> {
   );
 }
 
-async function getTokensWithGrantType(grantType: string): Promise<any> {
+async function getTokensWithGrantType(grantType: string): Promise<Token | null> {
   try {
     const { access_token: accessToken } = await postForm(
       getEndpoint('/oauth/token'),
@@ -93,6 +79,7 @@ async function getTokensWithGrantType(grantType: string): Promise<any> {
     );
 
     return { accessToken };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error.error !== 'AUTHENTICATION_NOT_COMPLETE') {
       throw error;
@@ -101,34 +88,34 @@ async function getTokensWithGrantType(grantType: string): Promise<any> {
   }
 }
 
-export function getMobileIdTokens(): Promise<any> {
+export function getMobileIdTokens(): Promise<Token | null> {
   return getTokensWithGrantType('mobile_id');
 }
 
-export function getSmartIdTokens(): Promise<any> {
+export function getSmartIdTokens(): Promise<Token | null> {
   return getTokensWithGrantType('smart_id');
 }
 
-export function getIdCardTokens(): Promise<any> {
+export function getIdCardTokens(): Promise<Token | null> {
   return getTokensWithGrantType('id_card');
 }
 
 export function downloadMandatePreviewWithIdAndToken(
   mandateId: string,
   token: string,
-): Promise<any> {
+): Promise<Blob> {
   return downloadFile(getEndpoint(`/v1/mandates/${mandateId}/file/preview`), {
     Authorization: `Bearer ${token}`,
   });
 }
 
-export function downloadMandateWithIdAndToken(mandateId: string, token: string): Promise<any> {
+export function downloadMandateWithIdAndToken(mandateId: string, token: string): Promise<Blob> {
   return downloadFile(getEndpoint(`/v1/mandates/${mandateId}/file`), {
     Authorization: `Bearer ${token}`,
   });
 }
 
-export function getUserWithToken(token: string): Promise<any> {
+export function getUserWithToken(token: string): Promise<User> {
   return get(getEndpoint('/v1/me'), undefined, {
     Authorization: `Bearer ${token}`,
   });
@@ -141,7 +128,23 @@ export async function getSourceFundsWithToken(token: string): Promise<SourceFund
   return funds.map(transformFundBalance);
 }
 
-export function saveMandateWithToken(mandate: string, token: string): Promise<any> {
+const transformFundBalance = (fundBalance: FundBalance): SourceFund => ({
+  isin: fundBalance.fund.isin,
+  price: fundBalance.value,
+  unavailablePrice: fundBalance.unavailableValue,
+  activeFund: fundBalance.activeContributions,
+  currency: fundBalance.currency || 'EUR',
+  name: fundBalance.fund.name,
+  fundManager: fundBalance.fund.fundManager,
+  managementFeePercent: (fundBalance.fund.managementFeeRate * 100).toFixed(2).replace(/0+$/, ''),
+  pillar: fundBalance.pillar,
+  ongoingChargesFigure: fundBalance.fund.ongoingChargesFigure,
+  contributions: fundBalance.contributions,
+  subtractions: fundBalance.subtractions,
+  profit: fundBalance.profit,
+});
+
+export function saveMandateWithToken(mandate: string, token: string): Promise<Mandate> {
   return post(getEndpoint('/v1/mandates'), mandate, {
     Authorization: `Bearer ${token}`,
   });
@@ -150,7 +153,7 @@ export function saveMandateWithToken(mandate: string, token: string): Promise<an
 export async function getMobileIdSignatureChallengeCodeForMandateIdWithToken(
   mandateId: string,
   token: string,
-): Promise<any> {
+): Promise<MobileSignatureResponse> {
   const { challengeCode } = await put(
     getEndpoint(`/v1/mandates/${mandateId}/signature/mobileId`),
     undefined,
@@ -164,7 +167,7 @@ export async function getMobileIdSignatureChallengeCodeForMandateIdWithToken(
 export async function getMobileIdSignatureStatusForMandateIdWithToken(
   mandateId: string,
   token: string,
-): Promise<any> {
+): Promise<MobileSignatureStatusResponse> {
   return get(getEndpoint(`/v1/mandates/${mandateId}/signature/mobileId/status`), undefined, {
     Authorization: `Bearer ${token}`,
   });
@@ -173,7 +176,7 @@ export async function getMobileIdSignatureStatusForMandateIdWithToken(
 export async function getSmartIdSignatureChallengeCodeForMandateIdWithToken(
   mandateId: string,
   token: string,
-): Promise<any> {
+): Promise<MobileSignatureResponse> {
   const { challengeCode } = await put(
     getEndpoint(`/v1/mandates/${mandateId}/signature/smartId`),
     undefined,
@@ -187,7 +190,7 @@ export async function getSmartIdSignatureChallengeCodeForMandateIdWithToken(
 export async function getSmartIdSignatureStatusForMandateIdWithToken(
   mandateId: string,
   token: string,
-): Promise<any> {
+): Promise<MobileSignatureStatusResponse> {
   return get(getEndpoint(`/v1/mandates/${mandateId}/signature/smartId/status`), undefined, {
     Authorization: `Bearer ${token}`,
   });
@@ -197,7 +200,7 @@ export async function getIdCardSignatureHashForMandateIdWithCertificateHexAndTok
   mandateId: string,
   certificateHex: string,
   token: string,
-): Promise<any> {
+): Promise<IdCardSignatureResponse> {
   const { hash } = await put(
     getEndpoint(`/v1/mandates/${mandateId}/signature/idCard`),
     { clientCertificate: certificateHex },
@@ -212,7 +215,7 @@ export async function getIdCardSignatureStatusForMandateIdWithSignedHashAndToken
   mandateId: string,
   signedHash: string,
   token: string,
-): Promise<any> {
+): Promise<IdCardSignatureStatusResponse> {
   const { statusCode } = await put(
     getEndpoint(`/v1/mandates/${mandateId}/signature/idCard/status`),
     { signedHash },
@@ -222,8 +225,6 @@ export async function getIdCardSignatureStatusForMandateIdWithSignedHashAndToken
   );
   return statusCode;
 }
-
-/* eslint-enable @typescript-eslint/no-explicit-any */
 
 export function updateUserWithToken(user: User, token: string): Promise<User> {
   return patch(getEndpoint('/v1/me'), user, {
