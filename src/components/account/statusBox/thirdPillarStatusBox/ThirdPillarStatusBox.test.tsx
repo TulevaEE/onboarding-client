@@ -43,6 +43,7 @@ describe('ThirdPillarStatusBox', () => {
       conversion: {
         transfersComplete: false,
         selectionComplete: true,
+        contribution: { yearToDate: 20 },
       },
     });
     expect(component).toMatchSnapshot();
