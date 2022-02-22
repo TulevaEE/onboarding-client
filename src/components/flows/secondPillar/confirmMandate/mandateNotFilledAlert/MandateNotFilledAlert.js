@@ -15,12 +15,12 @@ export default () => (
     </p>
     <ul>
       <li>
-        <Link to="/2nd-pillar-flow/select-sources">
+        <Link to="/2nd-pillar-flow/select-sources#mandateNotFilled">
           <FormattedMessage id="confirm.mandate.not.filled.look.again" />
         </Link>
       </li>
       <li>
-        <Link to="/account">
+        <Link to="/account#mandateNotFilled">
           <FormattedMessage id="confirm.mandate.not.filled.thinking" />
         </Link>
       </li>
