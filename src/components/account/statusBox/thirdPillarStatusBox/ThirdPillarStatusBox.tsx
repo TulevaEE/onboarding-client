@@ -66,7 +66,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
     );
   }
 
-  if (!conversion.paymentComplete) {
+  if (!conversion.paymentComplete && conversion.contribution.total === 0) {
     return (
       <StatusBoxRow
         showAction={!loading}

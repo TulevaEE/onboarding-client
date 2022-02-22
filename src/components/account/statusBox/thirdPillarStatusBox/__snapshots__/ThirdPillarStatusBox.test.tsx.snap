@@ -51,7 +51,7 @@ exports[`ThirdPillarStatusBox renders the "payment incomplete" flow when funds h
           values={
             Object {
               "contribution": <b>
-                20
+                0
               </b>,
             }
           }
