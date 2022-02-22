@@ -1,8 +1,8 @@
-import { Fund, HttpError } from '../common/apiModels';
+import { Fund, HttpError, SourceFund } from '../common/apiModels';
 
 export type ThirdPillar = {
   monthlyContribution: number;
-  sourceFunds: Fund[];
+  sourceFunds: SourceFund[];
   loadingSourceFunds: boolean;
   loadingTargetFunds: boolean;
   exchangeableSourceFunds: Fund[];

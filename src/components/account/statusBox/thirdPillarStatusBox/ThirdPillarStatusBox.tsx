@@ -3,11 +3,12 @@ import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import StatusBoxRow from '../statusBoxRow';
-import { SourceFund, UserConversion } from '../../../common/apiModels';
+import { Conversion, SourceFund } from '../../../common/apiModels';
 import { InfoTooltip } from '../../../common';
+import { State } from '../../../../types';
 
 interface Props {
-  conversion: UserConversion;
+  conversion: Conversion;
   loading: boolean;
   sourceFunds: SourceFund[];
   pillarActive: boolean;
@@ -34,7 +35,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
   }
 
   const activeFund = sourceFunds.find((fund) => fund.activeFund)?.name;
-  if (!conversion.thirdPillar.selectionComplete) {
+  if (!conversion.selectionComplete) {
     return (
       <StatusBoxRow
         showAction={!loading}
@@ -48,7 +49,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
     );
   }
 
-  if (!conversion.thirdPillar.transfersComplete) {
+  if (!conversion.transfersComplete) {
     return (
       <StatusBoxRow
         showAction={!loading}
@@ -65,7 +66,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
     );
   }
 
-  if (!conversion.thirdPillar.paymentComplete) {
+  if (!conversion.paymentComplete) {
     return (
       <StatusBoxRow
         showAction={!loading}
@@ -101,26 +102,17 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
   );
 };
 
-const getPaidThisYearRow = (conversion: UserConversion) => (
+const getPaidThisYearRow = (conversion: Conversion) => (
   <small className="text-muted">
     <FormattedMessage
       id="account.status.yearToDateContribution"
-      values={{ contribution: <b>{conversion.thirdPillar.contribution.yearToDate || 0}</b> }}
+      values={{ contribution: <b>{conversion.contribution.yearToDate || 0}</b> }}
     />
   </small>
 );
 
-type State = {
-  login: {
-    userConversion: UserConversion;
-    loadingUserConversion: boolean;
-    user: { thirdPillarActive: boolean };
-  };
-  thirdPillar: { sourceFunds: SourceFund[] };
-};
-
 const mapStateToProps = (state: State) => ({
-  conversion: state.login.userConversion,
+  conversion: state.login.userConversion.thirdPillar,
   loading: state.login.loadingUserConversion,
   sourceFunds: state.thirdPillar.sourceFunds,
   pillarActive: state.login.user.thirdPillarActive,
