@@ -7,7 +7,7 @@ import { activeThirdPillar, completeThirdPillarconversion } from '../fixtures';
 describe('ThirdPillarStatusBox', () => {
   let component: ShallowWrapper;
   const props = {
-    conversion: completeThirdPillarconversion,
+    conversion: completeThirdPillarconversion.thirdPillar,
     loading: false,
     sourceFunds: [activeThirdPillar],
     pillarActive: true,
@@ -33,7 +33,7 @@ describe('ThirdPillarStatusBox', () => {
 
   it('renders the "pick tuleva" flow when user has some other fund manager', () => {
     component.setProps({
-      conversion: { thirdPillar: { selectionComplete: false, contribution: { yearToDate: 20 } } },
+      conversion: { selectionComplete: false, contribution: { yearToDate: 20 } },
     });
     expect(component).toMatchSnapshot();
   });
@@ -41,11 +41,9 @@ describe('ThirdPillarStatusBox', () => {
   it('renders the "transfer incomplete" flow when user has several funds', () => {
     component.setProps({
       conversion: {
-        thirdPillar: {
-          transfersComplete: false,
-          selectionComplete: true,
-          contribution: { yearToDate: 20 },
-        },
+        transfersComplete: false,
+        selectionComplete: true,
+        contribution: { yearToDate: 20 },
       },
     });
     expect(component).toMatchSnapshot();
@@ -54,12 +52,10 @@ describe('ThirdPillarStatusBox', () => {
   it('renders the "payment incomplete" flow when funds have not transferred yet', () => {
     component.setProps({
       conversion: {
-        thirdPillar: {
-          paymentComplete: false,
-          transfersComplete: true,
-          selectionComplete: true,
-          contribution: { yearToDate: 20 },
-        },
+        paymentComplete: false,
+        transfersComplete: true,
+        selectionComplete: true,
+        contribution: { yearToDate: 20 },
       },
     });
     expect(component).toMatchSnapshot();
