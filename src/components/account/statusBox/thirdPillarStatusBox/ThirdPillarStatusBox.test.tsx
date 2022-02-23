@@ -52,7 +52,6 @@ describe('ThirdPillarStatusBox', () => {
   it('renders the "payment incomplete" flow when funds have not transferred yet', () => {
     component.setProps({
       conversion: {
-        paymentComplete: false,
         transfersComplete: true,
         selectionComplete: true,
         contribution: { total: 0 },
