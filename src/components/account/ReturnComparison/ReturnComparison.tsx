@@ -59,7 +59,7 @@ export const dateOptions = [
 export class ReturnComparison extends Component<Props, State> {
   state = {
     fromDateOptions: dateOptions,
-    fromDate: dateOptions[Math.floor(dateOptions.length / 2)].value,
+    fromDate: fiveYearsAgo,
     loading: false,
     selectedPersonalKey: Key.SECOND_PILLAR,
     selectedPensionFundKey: Key.EPI,
