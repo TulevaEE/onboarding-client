@@ -14,5 +14,3 @@ export function getInitialCapital() {
       .catch((error) => dispatch({ type: GET_INITIAL_CAPITAL_ERROR, error }));
   };
 }
-
-export default getInitialCapitalWithToken;
