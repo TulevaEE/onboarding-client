@@ -56,9 +56,6 @@ export const OccupationAgreement = ({ occupation, onOccupationChange, className 
 OccupationAgreement.propTypes = {
   occupation: Types.string,
   onOccupationChange: Types.func,
-  translations: Types.shape({
-    translate: Types.func.isRequired,
-  }).isRequired,
 };
 
 OccupationAgreement.defaultProps = {

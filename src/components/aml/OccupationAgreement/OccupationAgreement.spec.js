@@ -5,9 +5,9 @@ import { OccupationAgreement } from './OccupationAgreement';
 
 describe('OccupationAgreement', () => {
   let component;
+
   beforeEach(() => {
-    const props = { translations: { translate: () => '' } };
-    component = shallow(<OccupationAgreement {...props} />);
+    component = shallow(<OccupationAgreement />);
   });
 
   it('submits when changed', () => {
