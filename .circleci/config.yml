@@ -2,6 +2,7 @@ version: 2.1
 orbs:
   aws-cli: circleci/aws-cli@1.4.0
   node: circleci/node@4.7.0
+  codecov: codecov/codecov@3.2.2
 references:
   workspace_root: &workspace_root /tmp/workspace
   attach_workspace: &attach_workspace
@@ -43,6 +44,7 @@ jobs:
           command: npm test -- --maxWorkers=2
       - store_test_results:
           path: ./test-results.json
+      - codecov/upload
   deploy:
     executor: aws-cli/default
     steps:
