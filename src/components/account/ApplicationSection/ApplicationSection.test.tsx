@@ -203,6 +203,13 @@ describe('Application section', () => {
     expect(await screen.findByText('Test cancellation route')).toBeInTheDocument();
   });
 
+  it('does not allow cancelling of third pillar transfers', async () => {
+    mockApplications([transfer3Pillar]);
+    initializeComponent();
+    const cancelButton = screen.queryByText('applications.cancel');
+    expect(cancelButton).not.toBeInTheDocument();
+  });
+
   it('shows the ability to cancel before the deadline', async () => {
     const date = new Date();
     date.setMonth(date.getMonth() + 1);
