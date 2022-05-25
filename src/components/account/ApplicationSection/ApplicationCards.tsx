@@ -38,34 +38,40 @@ export const ApplicationCard: React.FunctionComponent<{
 const TransferApplicationCard: React.FunctionComponent<{
   application: TransferApplication;
   allowedActions: ApplicationAction[];
-}> = ({ application, allowedActions }) => (
-  <BaseApplicationCard
-    application={application}
-    allowedActions={allowedActions}
-    titleKey="applications.type.transfer.title"
-  >
-    <DefinitionList
-      definitions={[
-        {
-          key: 'applications.type.transfer.sourceFund',
-          value: application.details.sourceFund && application.details.sourceFund.name,
-        },
-        application.details.exchanges.map(({ targetFund, targetPik, amount }) => [
+}> = ({ application, allowedActions }) => {
+  const isThirdPillarTransfer = application.details.sourceFund.pillar === 3;
+  const transferActions = isThirdPillarTransfer
+    ? allowedActions.filter((action) => action !== ApplicationAction.CANCEL)
+    : allowedActions;
+
+  return (
+    <BaseApplicationCard
+      application={application}
+      allowedActions={transferActions}
+      titleKey="applications.type.transfer.title"
+    >
+      <DefinitionList
+        definitions={[
           {
-            key: 'applications.type.transfer.targetFund',
-            value: targetFund?.name || `${targetPik} (PIK)`,
+            key: 'applications.type.transfer.sourceFund',
+            value: application.details.sourceFund && application.details.sourceFund.name,
           },
-          {
-            key: 'applications.type.transfer.amount',
-            value:
-              application.details.sourceFund.pillar === 3 ? amount : <Percentage value={amount} />,
-            alignRight: true,
-          },
-        ]),
-      ]}
-    />
-  </BaseApplicationCard>
-);
+          application.details.exchanges.map(({ targetFund, targetPik, amount }) => [
+            {
+              key: 'applications.type.transfer.targetFund',
+              value: targetFund?.name || `${targetPik} (PIK)`,
+            },
+            {
+              key: 'applications.type.transfer.amount',
+              value: isThirdPillarTransfer ? amount : <Percentage value={amount} />,
+              alignRight: true,
+            },
+          ]),
+        ]}
+      />
+    </BaseApplicationCard>
+  );
+};
 
 const EarlyWithdrawalCard: React.FunctionComponent<{
   application: EarlyWithdrawalApplication;
