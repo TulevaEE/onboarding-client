@@ -209,7 +209,7 @@ export class ReturnComparison extends Component<Props, State> {
 
           <div className="text-center mt-2">
             <a
-              href="https://docs.google.com/document/d/1tKHNIUmQjPpO8cmZUOcVbWZR1yBZfuZnUNUDmxs9T4A"
+              href="https://tuleva.ee/mida-need-numbrid-naitavad/"
               target="_blank"
               rel="noopener noreferrer"
             >
