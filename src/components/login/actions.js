@@ -111,9 +111,6 @@ export function handleLoginCookies() {
 
 function getMobileIdTokens() {
   return (dispatch, getState) => {
-    if (timeout && process.env.NODE_ENV !== 'test') {
-      clearTimeout(timeout);
-    }
     timeout = setTimeout(() => {
       api
         .getMobileIdTokens()
@@ -151,9 +148,6 @@ export function authenticateWithMobileId(phoneNumber, personalCode) {
 
 function getSmartIdTokens() {
   return (dispatch, getState) => {
-    if (timeout && process.env.NODE_ENV !== 'test') {
-      clearTimeout(timeout);
-    }
     timeout = setTimeout(() => {
       api
         .getSmartIdTokens()
@@ -193,9 +187,6 @@ export function authenticateWithIdCode(personalCode) {
 
 function getIdCardTokens() {
   return (dispatch, getState) => {
-    if (timeout && process.env.NODE_ENV !== 'test') {
-      clearTimeout(timeout);
-    }
     timeout = setTimeout(() => {
       api
         .getIdCardTokens()
