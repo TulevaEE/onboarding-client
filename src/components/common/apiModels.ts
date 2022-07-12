@@ -79,12 +79,14 @@ export interface BaseApplication<Type extends ApplicationType, Details> {
 export interface Fund {
   isin: string;
   name: string;
-  pillar: number;
+  pillar: Pillar;
   managementFeeRate: number;
   ongoingChargesFigure: number;
   fundManager: FundManager;
   status: FundStatus;
 }
+
+export type Pillar = 2|3;
 
 enum FundStatus {
   ACTIVE = 'ACTIVE',
@@ -99,7 +101,6 @@ export interface FundBalance {
   value: number;
   unavailableValue: number;
   currency: string;
-  pillar: number;
   activeContributions: boolean;
   contributions: number;
   subtractions: number;
@@ -110,7 +111,7 @@ export interface SourceFund {
   fundManager: FundManager;
   activeFund: boolean;
   name: string;
-  pillar: number;
+  pillar: Pillar;
   managementFeePercent: string;
   isin: string;
   price: number;
