@@ -157,8 +157,7 @@ describe('api', () => {
     const pensionFunds = [
       {
         fund: {
-          id: 8,
-          fundManager: { id: 1, name: 'Tuleva' },
+          fundManager: { name: 'Tuleva' },
           isin: 'EE3600109435',
           name: 'Tuleva Maailma Aktsiate Pensionifond',
           pillar: 2,
@@ -173,8 +172,7 @@ describe('api', () => {
       },
       {
         fund: {
-          id: 5,
-          fundManager: { id: 2, name: 'Tuleva' },
+          fundManager: { name: 'Tuleva' },
           isin: 'EE3600109443',
           name: 'Tuleva Maailma Võlakirjade Pensionifond',
           pillar: 2,
@@ -199,7 +197,7 @@ describe('api', () => {
           activeFund: false,
           price: 10285.578286,
           currency: 'EUR',
-          fundManager: { id: 1, name: 'Tuleva' },
+          fundManager: { name: 'Tuleva' },
           pillar: 2,
           ongoingChargesFigure: 0.0047,
         },
@@ -210,7 +208,7 @@ describe('api', () => {
           activeFund: true,
           price: 9939.16235298,
           currency: 'GBP',
-          fundManager: { id: 2, name: 'Tuleva' },
+          fundManager: { name: 'Tuleva' },
           pillar: 2,
           ongoingChargesFigure: 0.0045,
         },

@@ -285,7 +285,7 @@ export function pensionAccountStatementBackend(server: SetupServerApi): void {
         ctx.json([
           {
             fund: {
-              fundManager: { id: 5, name: 'Tuleva' },
+              fundManager: { name: 'Tuleva' },
               isin: 'EE3600109435',
               name: 'Tuleva World Stocks Pension Fund',
               managementFeeRate: 0.0034,
@@ -300,12 +300,11 @@ export function pensionAccountStatementBackend(server: SetupServerApi): void {
             activeContributions: false,
             contributions: 12345.67,
             subtractions: 0,
-            contributionSum: 12345.67,
             profit: 2654.33,
           },
           {
             fund: {
-              fundManager: { id: 2, name: 'Swedbank' },
+              fundManager: { name: 'Swedbank' },
               isin: 'EE3600019758',
               name: 'Swedbank Pension Fund K60',
               managementFeeRate: 0.0083,
@@ -324,12 +323,11 @@ export function pensionAccountStatementBackend(server: SetupServerApi): void {
             activeContributions: true,
             contributions: 112233.44,
             subtractions: 0,
-            contributionSum: 112233.44,
             profit: -12233.44,
           },
           {
             fund: {
-              fundManager: { id: 5, name: 'Tuleva' },
+              fundManager: { name: 'Tuleva' },
               isin: 'EE3600001707',
               name: 'Tuleva III Samba Pensionifond',
               managementFeeRate: 0.003,
@@ -344,7 +342,6 @@ export function pensionAccountStatementBackend(server: SetupServerApi): void {
             activeContributions: true,
             contributions: 9876.54,
             subtractions: 0,
-            contributionSum: 9876.54,
             profit: -1876.54,
           },
         ]),
@@ -359,7 +356,7 @@ export function fundsBackend(server: SetupServerApi): void {
       return res(
         ctx.json([
           {
-            fundManager: { id: 5, name: 'Tuleva' },
+            fundManager: { name: 'Tuleva' },
             isin: 'EE3600001707',
             name: 'Tuleva III Samba Pensionifond',
             managementFeeRate: 0.003,
@@ -372,7 +369,7 @@ export function fundsBackend(server: SetupServerApi): void {
             shortName: '',
           },
           {
-            fundManager: { id: 2, name: 'Swedbank' },
+            fundManager: { name: 'Swedbank' },
             isin: 'EE3600019758',
             name: 'Swedbank Pension Fund K60',
             managementFeeRate: 0.0083,
@@ -385,7 +382,7 @@ export function fundsBackend(server: SetupServerApi): void {
             shortName: 'SWK50',
           },
           {
-            fundManager: { id: 5, name: 'Tuleva' },
+            fundManager: { name: 'Tuleva' },
             isin: 'EE3600109435',
             name: 'Tuleva World Stocks Pension Fund',
             managementFeeRate: 0.0034,

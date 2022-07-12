@@ -107,7 +107,7 @@ export interface FundBalance {
 }
 
 export interface SourceFund {
-  fundManager: { name: string };
+  fundManager: FundManager;
   activeFund: boolean;
   name: string;
   pillar: number;
@@ -123,7 +123,6 @@ export interface SourceFund {
 }
 
 export interface FundManager {
-  id: number;
   name: string;
 }
 

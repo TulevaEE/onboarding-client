@@ -30,8 +30,7 @@ describe('Account page', () => {
     const secondPillarSourceFunds = [
       {
         fund: {
-          id: 1,
-          fundManager: { id: 1, name: 'Tuleva' },
+          fundManager: { name: 'Tuleva' },
           isin: 'EE3600109435',
           name: 'Tuleva Maailma Aktsiate Pensionifond',
           managementFeeRate: 0.0034,
@@ -45,8 +44,7 @@ describe('Account page', () => {
     const thirdPillarSourceFunds = [
       {
         fund: {
-          id: 1,
-          fundManager: { id: 1, name: 'Tuleva' },
+          fundManager: { name: 'Tuleva' },
           isin: 'EE3600109435',
           name: 'Tuleva Vabatahtlik Pensionifond',
           managementFeeRate: 0.0034,

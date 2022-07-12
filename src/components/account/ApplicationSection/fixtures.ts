@@ -8,7 +8,7 @@ export const transfer2Pillar = {
   details: {
     cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
     sourceFund: {
-      fundManager: { id: 5, name: 'Tuleva' },
+      fundManager: { name: 'Tuleva' },
       isin: 'EE3600109435',
       name: 'Tuleva Maailma Aktsiate Pensionifond',
       managementFeeRate: 0.0034,
@@ -18,7 +18,7 @@ export const transfer2Pillar = {
     exchanges: [
       {
         targetFund: {
-          fundManager: { id: 6, name: 'Swedbank' },
+          fundManager: { name: 'Swedbank' },
           isin: 'EE3600109443',
           name: 'Swedbank I',
           managementFeeRate: 0.0034,
@@ -29,7 +29,7 @@ export const transfer2Pillar = {
       },
       {
         targetFund: {
-          fundManager: { id: 6, name: 'Swedbank' },
+          fundManager: { name: 'Swedbank' },
           isin: 'EE3600109442',
           name: 'Swedbank II',
           managementFeeRate: 0.0034,
@@ -50,7 +50,7 @@ export const transferPIK = {
   details: {
     cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
     sourceFund: {
-      fundManager: { id: 5, name: 'Tuleva' },
+      fundManager: { name: 'Tuleva' },
       isin: 'EE3600109435',
       name: 'Tuleva Maailma Aktsiate Pensionifond',
       managementFeeRate: 0.0034,
@@ -73,10 +73,7 @@ export const transfer3Pillar = {
   status: 'PENDING',
   details: {
     sourceFund: {
-      fundManager: {
-        id: 3,
-        name: 'Swedbank',
-      },
+      fundManager: { name: 'Swedbank' },
       isin: 'EE3600071049',
       name: 'Swedbank Pensionifond V3 (Aktsiastrateegia)',
       managementFeeRate: 0.014,
@@ -87,10 +84,7 @@ export const transfer3Pillar = {
     exchanges: [
       {
         sourceFund: {
-          fundManager: {
-            id: 3,
-            name: 'Swedbank',
-          },
+          fundManager: { name: 'Swedbank' },
           isin: 'EE3600071049',
           name: 'Swedbank Pensionifond V3 (Aktsiastrateegia)',
           managementFeeRate: 0.014,
@@ -99,10 +93,7 @@ export const transfer3Pillar = {
           status: 'ACTIVE',
         },
         targetFund: {
-          fundManager: {
-            id: 1,
-            name: 'Tuleva',
-          },
+          fundManager: { name: 'Tuleva' },
           isin: 'EE3600001707',
           name: 'Tuleva III Samba Pensionifond',
           managementFeeRate: 0.003,
