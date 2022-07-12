@@ -28,7 +28,7 @@ export const StatusBoxRow: React.FunctionComponent<{
   );
   return (
     <div
-      className={`d-flex justify-content-between py-2 status-box-row ${
+      className={`d-flex flex-sm-row flex-column justify-content-between py-2 status-box-row ${
         !last ? 'tv-table__row' : ''
       }`}
     >
@@ -43,7 +43,7 @@ export const StatusBoxRow: React.FunctionComponent<{
           {formattedLines}
         </div>
       </div>
-      <div className="d-flex flex-column justify-content-center mx-3 text-nowrap">
+      <div className="d-flex flex-column justify-content-center my-2 mx-3 text-nowrap">
         {showAction && children ? children : ''}
       </div>
     </div>
