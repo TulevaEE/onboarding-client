@@ -96,9 +96,8 @@
     ]
   },
   "lint-staged": {
-    "*.{js,ts,jsx,tsx}": [
-      "eslint --fix",
-      "git add"
+    "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
+      "prettier --write"
     ]
   },
   "husky": {

@@ -86,7 +86,7 @@ export interface Fund {
   status: FundStatus;
 }
 
-export type Pillar = 2|3;
+export type Pillar = 2 | 3;
 
 enum FundStatus {
   ACTIVE = 'ACTIVE',
