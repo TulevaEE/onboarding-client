@@ -15,7 +15,7 @@ export class Flow extends Component {
   }
 
   render() {
-    const { name, steps, flowPath, lastPartOfPath, introMessage } = this.props;
+    const { steps, flowPath, lastPartOfPath, introMessage } = this.props;
 
     const stepPaths = steps.map((step) => step.path);
     const isStepPath = stepPaths.indexOf(lastPartOfPath) !== -1;
