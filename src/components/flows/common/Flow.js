@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import Types from 'prop-types';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
-import mixpanel from 'mixpanel-browser';
 
 import StepTitle from './StepTitle';
 
@@ -28,8 +27,6 @@ export class Flow extends Component {
     const currentStepTitle = currentStep.title;
     const StepComponent = currentStep.Component;
     const isLastStep = stepIndex === steps.length - 1;
-
-    mixpanel.track(`${name}_${currentStepPath}`);
 
     return (
       <div className="row">
