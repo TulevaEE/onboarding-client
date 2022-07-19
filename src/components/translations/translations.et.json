@@ -227,7 +227,7 @@
   "account.status.choice.pillar.third.transferIncomplete.action": "Vaheta fondi",
   "account.status.choice.pillar.third.transferIncomplete.label": "Sa kogud täna mitmes erinevas pensionifondis",
   "account.status.choice.pillar.third.paymentIncomplete.label": "Sinu sissemakse pole veel fondi jõudnud",
-  "account.status.choice.pillar.third.success.action": "Tee sissemakse",
+  "account.status.choice.pillar.third.success.action": "Makserekvisiidid",
   "account.status.choice.pillar.third.paymentInfo": "Fondiosakud jõuavad sinu kolmanda samba kontole ühe tööpäeva möödudes makse teostamisest. \n Kui teed makse reede pärastlõunal või nädalavahetusel, jõuavad osakud sinu kontole teisipäeva õhtuks.",
   "account.status.choice.tuleva": "Tuleva ühistu",
   "account.status.choice.join.tuleva.2": "Vali Tuleva",
