@@ -14,11 +14,4 @@ jest.mock('react-intl', () => {
   };
 });
 
-jest.mock('mixpanel-browser', () => ({
-  identify: jest.fn(),
-  track: jest.fn(),
-  register: jest.fn(),
-  people: { set: jest.fn() },
-}));
-
 configure({ adapter: new Adapter() });

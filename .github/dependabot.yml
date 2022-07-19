@@ -73,10 +73,6 @@ updates:
   - dependency-name: react
     versions:
     - 16.14.0
-  - dependency-name: mixpanel-browser
-    versions:
-    - 2.40.0
-    - 2.41.0
   - dependency-name: redux-form
     versions:
     - 8.3.7

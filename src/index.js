@@ -9,7 +9,6 @@ import { IntlProvider } from 'react-intl';
 import { Provider as ReduxProvider } from 'react-redux';
 import { Switch, Route } from 'react-router-dom';
 import { routerMiddleware, ConnectedRouter } from 'connected-react-router';
-import mixpanel from 'mixpanel-browser';
 import GoogleAnalytics from 'react-ga4';
 import { QueryClient, QueryClientProvider } from 'react-query';
 
@@ -69,8 +68,6 @@ initializeConfiguration();
 window.config = config; // for debug only
 
 if (process.env.NODE_ENV !== 'test') {
-  mixpanel.init(config.get('mixpanelKey'));
-
   GoogleAnalytics.initialize('UA-76855836-1', {
     debug: false,
     titleCase: false,

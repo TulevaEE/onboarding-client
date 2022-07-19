@@ -2,8 +2,6 @@ import React from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import mixpanel from 'mixpanel-browser';
-import config from 'react-global-configuration';
 
 import { createNewMember } from '../../common/user/actions';
 import { initializeConfiguration } from '../../config/config';
@@ -11,7 +9,6 @@ import { initializeConfiguration } from '../../config/config';
 import InlineSignUpForm from './inlineSignUpForm';
 
 initializeConfiguration();
-mixpanel.init(config.get('mixpanelKey'));
 
 export const InlineSignUp = ({ saveUser }) => <InlineSignUpForm onSubmit={saveUser} />;
 
@@ -26,7 +23,6 @@ InlineSignUp.propTypes = {
 };
 
 const onCreateUser = (user) => (dispatch) => {
-  mixpanel.track('INLINE_SIGNUP_CREATE_USER', user);
   return dispatch(createNewMember(user));
 };
 

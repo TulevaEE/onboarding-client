@@ -1,7 +1,6 @@
 import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
 import { shallow } from 'enzyme';
-import mixpanel from 'mixpanel-browser';
 
 import { FormattedMessage } from 'react-intl';
 import { Flow } from './Flow';
@@ -44,21 +43,6 @@ describe('Flow', () => {
     expect(window.useHackySecondPillarRoutePushesInActions).toBe(false);
     component = shallow(<Flow name="SECOND_PILLAR" flowPath="/a-flow" steps={steps} />);
     expect(window.useHackySecondPillarRoutePushesInActions).toBe(true);
-  });
-
-  it('sends a mixpanel event on every render with flow name and step path', () => {
-    jest.resetAllMocks();
-
-    expect(mixpanel.track).not.toBeCalled();
-
-    component.setProps({ lastPartOfPath: 'not-a-step-path' });
-    expect(mixpanel.track).toBeCalledWith('SOME_FLOW_first-step');
-
-    component.setProps({ lastPartOfPath: 'first-step' });
-    expect(mixpanel.track).toBeCalledWith('SOME_FLOW_first-step');
-
-    component.setProps({ lastPartOfPath: 'second-step' });
-    expect(mixpanel.track).toBeCalledWith('SOME_FLOW_second-step');
   });
 
   it('has intro message when passed and on first step', () => {
