@@ -52,7 +52,7 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^5.15.0",
     "@testing-library/react": "^12.1.2",
-    "@testing-library/user-event": "^13.5.0",
+    "@testing-library/user-event": "^14.3.0",
     "@transferwise/eslint-config": "^6.1.0",
     "@types/classnames": "^2.2.11",
     "@types/enzyme": "^3.10.10",
