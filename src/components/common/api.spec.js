@@ -451,12 +451,12 @@ describe('api', () => {
   it('can create tracked event', () => {
     const token = 'a token';
     const type = 'PAGE_VIEW';
-    const data = { path: '/account' }
+    const data = { path: '/account' };
 
     mockHttp.post = jest.fn(() =>
       Promise.resolve({
         type: 'PAGE_VIEW',
-        data: data,
+        data,
       }),
     );
     expect(mockHttp.post).not.toHaveBeenCalled();
@@ -466,12 +466,11 @@ describe('api', () => {
       expect(mockHttp.post).toHaveBeenCalledTimes(1);
       expect(mockHttp.post).toHaveBeenCalledWith(
         '/v1/t',
-        { type: type, data: data },
+        { type: type, data },
         {
           Authorization: `Bearer ${token}`,
         },
       );
     });
   });
-
 });
