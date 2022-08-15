@@ -79,12 +79,14 @@ if (process.env.NODE_ENV !== 'test') {
   });
 }
 
+const noop = () => null;
+
 history.listen(() => {
   createTrackedEvent(
     'PAGE_VIEW',
     { path: window.location.href },
     store.getState().login.token,
-  ).catch((_) => null);
+  ).catch(noop);
 
   if (process.env.NODE_ENV === 'production') {
     GoogleAnalytics.pageview(window.location.href);
