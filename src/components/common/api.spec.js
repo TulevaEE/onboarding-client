@@ -466,7 +466,7 @@ describe('api', () => {
       expect(mockHttp.post).toHaveBeenCalledTimes(1);
       expect(mockHttp.post).toHaveBeenCalledWith(
         '/v1/t',
-        {type, data },
+        { type, data },
         {
           Authorization: `Bearer ${token}`,
         },
