@@ -301,6 +301,7 @@ export function createTrackedEvent(
   data: Record<string, unknown>,
   token: string,
 ): Promise<any> {
+  console.log('CREATE TRACK EVENT');
   return post(
     getEndpoint('/v1/t'),
     { type, data },

@@ -26,6 +26,8 @@ import './polyfills';
 import LoggedInApp from './components/LoggedInApp';
 import { loginPath } from './components/login/LoginPage';
 
+import { createTrackedEvent } from './components/common/api';
+
 const history = createBrowserHistory();
 
 const composeEnhancers =
@@ -78,6 +80,12 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 history.listen(() => {
+  createTrackedEvent(
+    'PAGE_VIEW',
+    { path: window.location.href },
+    store.getState().login.token,
+  ).catch((_) => null);
+
   if (process.env.NODE_ENV === 'production') {
     GoogleAnalytics.pageview(window.location.href);
   }
