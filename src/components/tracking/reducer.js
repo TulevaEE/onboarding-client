@@ -1,5 +1,5 @@
 import { LOCATION_CHANGE } from 'connected-react-router';
-import { trackEvent } from "./actions";
+import { trackEvent } from './actions';
 
 import {
   SELECT_EXCHANGE_SOURCES,
