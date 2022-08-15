@@ -447,4 +447,31 @@ describe('api', () => {
       });
     });
   });
+
+  it('can create tracked event', () => {
+    const token = 'a token';
+    const type = 'PAGE_VIEW';
+    const data = { path: '/account' }
+
+    mockHttp.post = jest.fn(() =>
+      Promise.resolve({
+        type: 'PAGE_VIEW',
+        data: data,
+      }),
+    );
+    expect(mockHttp.post).not.toHaveBeenCalled();
+    return api.createTrackedEvent(type, data, token).then((event) => {
+      expect(event.type).toBe(type);
+      expect(event.data).toBe(data);
+      expect(mockHttp.post).toHaveBeenCalledTimes(1);
+      expect(mockHttp.post).toHaveBeenCalledWith(
+        '/v1/t',
+        { type: type, data: data },
+        {
+          Authorization: `Bearer ${token}`,
+        },
+      );
+    });
+  });
+
 });
