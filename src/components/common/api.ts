@@ -293,3 +293,17 @@ export function createApplicationCancellation(
     },
   );
 }
+
+export function createTrackedEvent(
+  type: string,
+  data: Record<string, unknown>,
+  token: string,
+): Promise<Object> {
+  return post(
+    getEndpoint('/v1/t'),
+    { type, data },
+    {
+      Authorization: `Bearer ${token}`,
+    },
+  );
+}
