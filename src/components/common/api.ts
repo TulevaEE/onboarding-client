@@ -294,11 +294,13 @@ export function createApplicationCancellation(
   );
 }
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 export function createTrackedEvent(
   type: string,
   data: Record<string, unknown>,
   token: string,
-): Promise<Object> {
+): Promise<any> {
   return post(
     getEndpoint('/v1/t'),
     { type, data },

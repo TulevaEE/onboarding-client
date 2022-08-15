@@ -3,8 +3,8 @@ import { createTrackedEvent } from '../common/api';
 import {
   CREATE_TRACKED_EVENT_START,
   CREATE_TRACKED_EVENT_SUCCESS,
-  CREATE_TRACKED_EVENT_ERROR
-} from "./constants";
+  CREATE_TRACKED_EVENT_ERROR,
+} from './constants';
 
 export function trackEvent(type, data) {
   return (dispatch, getState) => {
