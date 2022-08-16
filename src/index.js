@@ -84,7 +84,7 @@ const noop = () => null;
 history.listen(() => {
   createTrackedEvent(
     'PAGE_VIEW',
-    { path: window.location.href },
+    { path: window.location.pathname },
     store.getState().login.token,
   ).catch(noop);
 
