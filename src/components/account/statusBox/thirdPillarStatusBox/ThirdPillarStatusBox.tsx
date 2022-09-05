@@ -6,6 +6,7 @@ import StatusBoxRow from '../statusBoxRow';
 import { Conversion, SourceFund } from '../../../common/apiModels';
 import { InfoTooltip } from '../../../common';
 import { State } from '../../../../types';
+import ThirdPillarPaymentsThisYear from './ThirdPillarYarToDateContribution';
 
 interface Props {
   conversion: Conversion;
@@ -40,7 +41,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
       <StatusBoxRow
         showAction={!loading}
         name={<FormattedMessage id="account.status.choice.pillar.third" />}
-        lines={[activeFund, getPaidThisYearRow(conversion)]}
+        lines={[activeFund, <ThirdPillarPaymentsThisYear />]}
       >
         <Link to="/3rd-pillar-flow" className="btn btn-light">
           <FormattedMessage id="account.status.choice.pillar.third.inactive.action" />
@@ -56,7 +57,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
         name={<FormattedMessage id="account.status.choice.pillar.third" />}
         lines={[
           <FormattedMessage id="account.status.choice.pillar.third.transferIncomplete.label" />,
-          getPaidThisYearRow(conversion),
+          <ThirdPillarPaymentsThisYear />,
         ]}
       >
         <Link to="/3rd-pillar-flow" className="btn btn-light">
@@ -78,7 +79,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
               <FormattedMessage id="account.status.choice.pillar.third.paymentInfo" />
             </InfoTooltip>
           </>,
-          getPaidThisYearRow(conversion),
+          <ThirdPillarPaymentsThisYear />,
         ]}
       >
         <Link to="/3rd-pillar-flow" className="btn btn-light">
@@ -93,7 +94,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
       ok
       showAction={!loading}
       name={<FormattedMessage id="account.status.choice.pillar.third" />}
-      lines={[activeFund, getPaidThisYearRow(conversion)]}
+      lines={[activeFund, <ThirdPillarPaymentsThisYear />]}
     >
       <Link to="/3rd-pillar-flow" className="btn btn-light">
         <FormattedMessage id="account.status.choice.pillar.third.success.action" />
@@ -101,15 +102,6 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
     </StatusBoxRow>
   );
 };
-
-const getPaidThisYearRow = (conversion: Conversion) => (
-  <small className="text-muted">
-    <FormattedMessage
-      id="account.status.yearToDateContribution"
-      values={{ contribution: <b>{conversion.contribution.yearToDate || 0}</b> }}
-    />
-  </small>
-);
 
 const mapStateToProps = (state: State) => ({
   conversion: state.login.userConversion.thirdPillar,

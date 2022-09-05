@@ -17,7 +17,7 @@ exports[`StatusBoxLoader renders correctly 1`] = `
       className="d-flex p-2 status-box-row tv-table__row"
     >
       <Shimmer
-        height={52}
+        height={76}
       />
     </div>
     <div
@@ -27,13 +27,6 @@ exports[`StatusBoxLoader renders correctly 1`] = `
         height={52}
       />
     </div>
-  </div>
-  <div
-    className="mt-4"
-  >
-    <Shimmer
-      height={16}
-    />
   </div>
 </Fragment>
 `;

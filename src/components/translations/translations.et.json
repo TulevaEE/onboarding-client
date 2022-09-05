@@ -339,7 +339,6 @@
   "aml.occupation.retired": "Pensionär",
   "aml.occupation.unemployed": "Hetkel ei tööta",
 
-  "thirdPillarPayment.title": "Kolmanda samba sissemakse info",
   "thirdPillarPayment.description": "Tee <b>oma internetipangas järgmiste rekvisiitidega makse:</b>",
   "thirdPillarPayment.accountName": "Makse saaja",
   "thirdPillarPayment.accountNumber": "Arve number",
@@ -349,6 +348,9 @@
   "thirdPillarPayment.paymentQuestion": "Kas tegid makse ära?",
   "thirdPillarPayment.paymentButton": "Jah!",
   "thirdPillarPayment.recurringPaymentButton": "Tegin püsimakse",
+  "thirdPillarPayment.singlePayment": "Ühekordne sissemakse",
+  "thirdPillarPayment.recurringPayment": "Igakuine püsimakse",
+  "thirdPillarPayment.makePayment": "Tee makse",
 
   "thirdPillarSuccess.done": "Kõik tehtud!",
   "thirdPillarSuccess.message": "Vaata oma kontoseisu. Kui tegid sissemakse, siis uued osakud jõuavad sinu pensionikontole järgmise tööpäeva lõpuks. Saatsime sissemakse tegemise rekvisiidid sulle ka e-kirjaga - kasuta neid alati kui soovid oma kolmandasse sambasse juurde maksta.",
