@@ -43,7 +43,7 @@ exports[`ThirdPillarStatusBox renders the "payment incomplete" flow when funds h
           />
         </InfoTooltip>
       </React.Fragment>,
-      <Memo(Connect(ThirdPillarYarToDateContribution)) />,
+      <Memo(Connect(ThirdPillarYearToDateContribution)) />,
     ]
   }
   name={
@@ -69,7 +69,7 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when user has some 
   lines={
     Array [
       "Tuleva III Samba Pensionifond",
-      <Memo(Connect(ThirdPillarYarToDateContribution)) />,
+      <Memo(Connect(ThirdPillarYearToDateContribution)) />,
     ]
   }
   name={
@@ -97,7 +97,7 @@ exports[`ThirdPillarStatusBox renders the "transfer incomplete" flow when user h
       <Memo(MemoizedFormattedMessage)
         id="account.status.choice.pillar.third.transferIncomplete.label"
       />,
-      <Memo(Connect(ThirdPillarYarToDateContribution)) />,
+      <Memo(Connect(ThirdPillarYearToDateContribution)) />,
     ]
   }
   name={
@@ -123,7 +123,7 @@ exports[`ThirdPillarStatusBox renders the success flow 1`] = `
   lines={
     Array [
       "Tuleva III Samba Pensionifond",
-      <Memo(Connect(ThirdPillarYarToDateContribution)) />,
+      <Memo(Connect(ThirdPillarYearToDateContribution)) />,
     ]
   }
   name={

@@ -6,7 +6,7 @@ import StatusBoxRow from '../statusBoxRow';
 import { Conversion, SourceFund } from '../../../common/apiModels';
 import { InfoTooltip } from '../../../common';
 import { State } from '../../../../types';
-import ThirdPillarPaymentsThisYear from './ThirdPillarYarToDateContribution';
+import ThirdPillarPaymentsThisYear from './ThirdPillarYearToDateContribution';
 
 interface Props {
   conversion: Conversion;

@@ -10,7 +10,7 @@ interface Props {
   className?: string;
 }
 
-export const ThirdPillarYarToDateContribution: React.FunctionComponent<Props> = ({
+export const ThirdPillarYearToDateContribution: React.FunctionComponent<Props> = ({
   conversion,
   className,
 }) => {
@@ -33,4 +33,4 @@ const mapStateToProps = (state: State) => ({
   conversion: state.login.userConversion && state.login.userConversion.thirdPillar,
 });
 
-export default connect(mapStateToProps)(ThirdPillarYarToDateContribution);
+export default connect(mapStateToProps)(ThirdPillarYearToDateContribution);

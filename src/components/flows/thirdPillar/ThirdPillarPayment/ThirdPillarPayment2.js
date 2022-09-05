@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { Radio } from '../../../common';
-import ThirdPillarPaymentsThisYear from '../../../account/statusBox/thirdPillarStatusBox/ThirdPillarYarToDateContribution';
+import ThirdPillarPaymentsThisYear from '../../../account/statusBox/thirdPillarStatusBox/ThirdPillarYearToDateContribution';
 
 export const ThirdPillarPayment2 = ({
   previousPath,
