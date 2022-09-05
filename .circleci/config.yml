@@ -1,8 +1,8 @@
 version: 2.1
 orbs:
-  aws-cli: circleci/aws-cli@1.4.0
-  node: circleci/node@4.7.0
-  codecov: codecov/codecov@3.2.2
+  aws-cli: circleci/aws-cli@3.1.1
+  node: circleci/node@5.0.2
+  codecov: codecov/codecov@3.2.3
 references:
   workspace_root: &workspace_root /tmp/workspace
   attach_workspace: &attach_workspace

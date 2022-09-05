@@ -11,14 +11,11 @@ export const StatusBoxLoader: React.FunctionComponent = () => {
           <Shimmer height={52} />
         </div>
         <div className="d-flex p-2 status-box-row tv-table__row">
-          <Shimmer height={52} />
+          <Shimmer height={76} />
         </div>
         <div className="d-flex p-2 status-box-row">
           <Shimmer height={52} />
         </div>
-      </div>
-      <div className="mt-4">
-        <Shimmer height={16} />
       </div>
     </>
   );
