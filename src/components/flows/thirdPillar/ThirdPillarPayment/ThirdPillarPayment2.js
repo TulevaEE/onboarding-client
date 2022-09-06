@@ -18,7 +18,8 @@ export const ThirdPillarPayment2 = ({
   const [paymentBank, setPaymentBank] = useState('');
 
   const onPayment = (amount, bank) => {
-    // console.log(amount, bank);
+    // eslint-disable-next-line no-console
+    console.log(amount, bank);
   };
 
   return (
