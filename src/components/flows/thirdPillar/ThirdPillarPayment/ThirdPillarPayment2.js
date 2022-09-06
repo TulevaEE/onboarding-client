@@ -18,7 +18,7 @@ export const ThirdPillarPayment2 = ({
   const [paymentBank, setPaymentBank] = useState('');
 
   const onPayment = (amount, bank) => {
-    console.log(amount, bank);
+    // console.log(amount, bank);
   };
 
   return (
@@ -244,6 +244,4 @@ const mapStateToProps = (state) => ({
     state.login.userConversion.thirdPillar.selectionComplete,
 });
 
-const withRedux = connect(mapStateToProps);
-
-export default withRedux(ThirdPillarPayment2);
+export default connect(mapStateToProps)(ThirdPillarPayment2);
