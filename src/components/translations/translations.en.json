@@ -372,6 +372,13 @@
   "thirdPillarPayment.reference": "Reference",
   "thirdPillarPayment.paymentQuestion": "Did you make a payment?",
   "thirdPillarPayment.paymentButton": "Yes",
+  "thirdPillarPayment.singlePayment": "Single payment",
+  "thirdPillarPayment.recurringPayment": "Recurring payment",
+  "thirdPillarPayment.makePayment": "Make payment",
+  "thirdPillarPayment.paymentAmount": "What is the payment amount?",
+  "thirdPillarPayment.paymentType": "What is the type of payment?",
+  "thirdPillarPayment.paymentBank": "Choose your payment bank:",
+  "thirdPillarPayment.otherBank": "Other bank",
 
   "thirdPillarSuccess.done": "All done!",
   "thirdPillarSuccess.message": "Check your pension account. Your new contribution will appear on your pension account by the end of the next working day. We have also sent payment details to you by e-mail - use them whenever you want to make additional contributions to your third pillar.",

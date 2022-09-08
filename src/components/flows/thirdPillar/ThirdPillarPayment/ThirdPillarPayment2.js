@@ -5,6 +5,7 @@ import { Link, Redirect } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { Radio } from '../../../common';
 import ThirdPillarPaymentsThisYear from '../../../account/statusBox/thirdPillarStatusBox/ThirdPillarYearToDateContribution';
+import './ThirdPillarPayment2.scss';
 
 export const ThirdPillarPayment2 = ({
   previousPath,
@@ -26,7 +27,9 @@ export const ThirdPillarPayment2 = ({
     <>
       {false && !signedMandateId && !isUserConverted && <Redirect to={previousPath} />}
 
-      <b>Millist tüüpi makset soovid teha?</b>
+      <b>
+        <FormattedMessage id="thirdPillarPayment.paymentType" />
+      </b>
 
       <Radio
         name="payment-type"
@@ -59,78 +62,134 @@ export const ThirdPillarPayment2 = ({
       {paymentType === 'SINGLE' && (
         <div>
           <div className="mt-5">
-            <b>Kui suures summas soovid sissemakset teha?</b>
+            <b>
+              <FormattedMessage id="thirdPillarPayment.paymentAmount" />
+            </b>
           </div>
-          <ThirdPillarPaymentsThisYear />
 
           <div className="form-inline">
-            <div className="form-group">
-              <div className="input-group mt-2">
-                <input
-                  id="monthly-contribution"
-                  type="number"
-                  placeholder="200"
-                  className="form-control"
-                  min="0"
-                  value={paymentAmount}
-                  onChange={(event) => setPaymentAmount(event.target.value)}
-                  onWheel={(event) => event.currentTarget.blur()}
-                />
-                <div className="input-group-append">
-                  <span className="input-group-text">&euro;</span>
-                </div>
+            <div className="input-group input-group-lg mt-2">
+              <input
+                id="monthly-contribution"
+                type="number"
+                placeholder="200"
+                className="form-control form-control-lg"
+                min="0"
+                value={paymentAmount}
+                onChange={(event) => setPaymentAmount(event.target.value)}
+                onWheel={(event) => event.currentTarget.blur()}
+              />
+              <div className="input-group-append">
+                <span className="input-group-text">&euro;</span>
               </div>
             </div>
           </div>
 
-          <div className="mt-5">
-            <b>Vali pank, kust soovid makset teha:</b>
+          <div className="mt-2">
+            <ThirdPillarPaymentsThisYear />
           </div>
 
-          <div className="btn-group btn-group-toggle mt-2" data-toggle="buttons">
-            <label
-              className={`btn btn-light ${paymentBank === 'SWEDBANK' ? 'active' : ''}`}
-              onClick={() => {
-                setPaymentBank('SWEDBANK');
-              }}
-            >
-              <input type="radio" name="banks" id="swedbank" checked={paymentBank === 'SWEDBANK'} />{' '}
-              Swedbank
-            </label>
-            <label
-              className={`btn btn-light ${paymentBank === 'SEB' ? 'active' : ''}`}
-              onClick={() => {
-                setPaymentBank('SEB');
-              }}
-            >
-              <input type="radio" name="banks" id="seb" checked={paymentBank === 'SEB'} /> SEB
-            </label>
-            <label
-              className={`btn btn-light ${paymentBank === 'LHV' ? 'active' : ''}`}
-              onClick={() => {
-                setPaymentBank('LHV');
-              }}
-            >
-              <input type="radio" name="banks" id="lhv" checked={paymentBank === 'LHV'} /> LHV
-            </label>
-            <label
-              className={`btn btn-light ${paymentBank === 'LUMINOR' ? 'active' : ''}`}
-              onClick={() => {
-                setPaymentBank('LUMINOR');
-              }}
-            >
-              <input type="radio" name="banks" id="luminor" checked={paymentBank === 'LUMINOR'} />{' '}
-              Luminor
-            </label>
-            <label
-              className={`btn btn-light ${paymentBank === 'OTHER' ? 'active' : ''}`}
-              onClick={() => {
-                setPaymentBank('OTHER');
-              }}
-            >
-              <input type="radio" name="banks" id="other" checked={paymentBank === 'OTHER'} />{' '}
-              Muu&nbsp;pank
-            </label>
+          <div className="mt-5">
+            <b>
+              <FormattedMessage id="thirdPillarPayment.paymentBank" />
+            </b>
+          </div>
+
+          <div className="mt-2">
+            <div className="btn-group-toggle d-inline-block mt-2 mr-2">
+              <label
+                className={`btn btn-light btn-payment text-nowrap ${
+                  paymentBank === 'SWEDBANK' ? 'active' : ''
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="banks"
+                  id="swedbank"
+                  checked={paymentBank === 'SWEDBANK'}
+                  onChange={() => {
+                    setPaymentBank('SWEDBANK');
+                  }}
+                />
+                Swedbank
+              </label>
+            </div>
+
+            <div className="btn-group-toggle d-inline-block mt-2 mr-2">
+              <label
+                className={`btn btn-light btn-payment text-nowrap ${
+                  paymentBank === 'SEB' ? 'active' : ''
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="banks"
+                  id="seb"
+                  checked={paymentBank === 'SEB'}
+                  onChange={() => {
+                    setPaymentBank('SEB');
+                  }}
+                />
+                SEB
+              </label>
+            </div>
+
+            <div className="btn-group-toggle d-inline-block mt-2 mr-2">
+              <label
+                className={`btn btn-light btn-payment text-nowrap ${
+                  paymentBank === 'LHV' ? 'active' : ''
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="banks"
+                  id="lhv"
+                  checked={paymentBank === 'LHV'}
+                  onChange={() => {
+                    setPaymentBank('LHV');
+                  }}
+                />
+                LHV
+              </label>
+            </div>
+
+            <div className="btn-group-toggle d-inline-block mt-2 mr-2">
+              <label
+                className={`btn btn-light btn-payment text-nowrap ${
+                  paymentBank === 'LUMINOR' ? 'active' : ''
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="banks"
+                  id="luminor"
+                  checked={paymentBank === 'LUMINOR'}
+                  onChange={() => {
+                    setPaymentBank('Luminor');
+                  }}
+                />
+                Luminor
+              </label>
+            </div>
+
+            <div className="btn-group-toggle d-inline-block mt-2 mr-2">
+              <label
+                className={`btn btn-light btn-payment text-nowrap ${
+                  paymentBank === 'OTHER' ? 'active' : ''
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="banks"
+                  id="other"
+                  checked={paymentBank === 'OTHER'}
+                  onChange={() => {
+                    setPaymentBank('OTHER');
+                  }}
+                />
+                <FormattedMessage id="thirdPillarPayment.otherBank" />
+              </label>
+            </div>
           </div>
 
           {paymentBank !== 'OTHER' && paymentType === 'SINGLE' && (
@@ -164,7 +223,8 @@ export const ThirdPillarPayment2 = ({
           <table>
             <tr>
               <td>
-                <FormattedMessage id="thirdPillarPayment.accountName" />:{' '}
+                <FormattedMessage id="thirdPillarPayment.accountName" />
+                :&nbsp;
               </td>
               <td>
                 <b>AS Pensionikeskus</b>
@@ -172,7 +232,8 @@ export const ThirdPillarPayment2 = ({
             </tr>
             <tr>
               <td className="align-top">
-                <FormattedMessage id="thirdPillarPayment.accountNumber" />:{' '}
+                <FormattedMessage id="thirdPillarPayment.accountNumber" />
+                :&nbsp;
               </td>
               <td>
                 <b>EE362200221067235244</b> - Swedbank
@@ -186,7 +247,8 @@ export const ThirdPillarPayment2 = ({
             </tr>
             <tr>
               <td>
-                <FormattedMessage id="thirdPillarPayment.details" />:{' '}
+                <FormattedMessage id="thirdPillarPayment.details" />
+                :&nbsp;
               </td>
               <td>
                 <b>30101119828</b>
@@ -194,7 +256,8 @@ export const ThirdPillarPayment2 = ({
             </tr>
             <tr>
               <td>
-                <FormattedMessage id="thirdPillarPayment.reference" />:{' '}
+                <FormattedMessage id="thirdPillarPayment.reference" />
+                :&nbsp;
               </td>
               <td>
                 <b data-test-id="pension-account-number">{pensionAccountNumber}</b>
@@ -202,7 +265,13 @@ export const ThirdPillarPayment2 = ({
             </tr>
           </table>
 
-          <p className="mt-5">
+          {(paymentBank === 'OTHER' || paymentType === 'RECURRING') && (
+            <div className="mt-4">
+              <ThirdPillarPaymentsThisYear />
+            </div>
+          )}
+
+          <p className="mt-4">
             <FormattedMessage id="thirdPillarPayment.paymentQuestion" />
           </p>
 
