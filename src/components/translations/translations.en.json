@@ -363,8 +363,10 @@
   "aml.occupation.retired": "Retired",
   "aml.occupation.unemployed": "Unemployed",
 
-  "thirdPillarPayment.title": "Payment instructions",
+  "thirdPillarPayment.title": "Payment instructions for Tuleva III pillar pension fund",
   "thirdPillarPayment.description": "Make a payment <b>in your internet bank to the following details:</b>",
+  "thirdPillarPayment.singlePaymentDescription": "Make a payment <b>in your internet bank:</b>",
+  "thirdPillarPayment.recurringPaymentDescription": "Setup a recurring payment <b>in your internet bank:</b>",
   "thirdPillarPayment.accountName": "Pay to",
   "thirdPillarPayment.accountNumber": "Account number",
   "thirdPillarPayment.amount": "Amount",

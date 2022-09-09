@@ -339,8 +339,10 @@
   "aml.occupation.retired": "Pensionär",
   "aml.occupation.unemployed": "Hetkel ei tööta",
 
-  "thirdPillarPayment.title": "Kolmanda samba sissemakse info",
+  "thirdPillarPayment.title": "Sissemakse Tuleva III samba pensionifondi",
   "thirdPillarPayment.description": "Tee <b>oma internetipangas järgmiste rekvisiitidega makse:</b>",
+  "thirdPillarPayment.singlePaymentDescription": "Tee <b>oma internetipangas makse:</b>",
+  "thirdPillarPayment.recurringPaymentDescription": "Sõlmi <b>oma internetipangas püsikorralduse leping:</b>",
   "thirdPillarPayment.accountName": "Makse saaja",
   "thirdPillarPayment.accountNumber": "Arve number",
   "thirdPillarPayment.amount": "Summa",
