@@ -1,24 +1,27 @@
 import React, { useState } from 'react';
-import Types from 'prop-types';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { Radio } from '../../../common';
 import ThirdPillarPaymentsThisYear from '../../../account/statusBox/thirdPillarStatusBox/ThirdPillarYearToDateContribution';
 import './ThirdPillarPayment2.scss';
+import { BankButton } from './BankButton';
+import { State } from '../../../../types';
 
-export const ThirdPillarPayment2 = ({
-  previousPath,
-  nextPath,
-  signedMandateId,
-  pensionAccountNumber,
-  isUserConverted,
-}) => {
+export const ThirdPillarPayment2: React.FunctionComponent<{
+  previousPath: string;
+  nextPath: string;
+  signedMandateId: number;
+  pensionAccountNumber: string;
+  isUserConverted: boolean;
+}> = ({ previousPath, nextPath, signedMandateId, pensionAccountNumber, isUserConverted }) => {
+  const { formatMessage } = useIntl();
+
   const [paymentType, setPaymentType] = useState('SINGLE');
-  const [paymentAmount, setPaymentAmount] = useState('');
+  const [paymentAmount, setPaymentAmount] = useState<number | undefined>(undefined);
   const [paymentBank, setPaymentBank] = useState('');
 
-  const onPayment = (amount, bank) => {
+  const onPayment = (amount: number | undefined, bank: string): void => {
     // eslint-disable-next-line no-console
     console.log(amount, bank);
   };
@@ -27,9 +30,15 @@ export const ThirdPillarPayment2 = ({
     <>
       {false && !signedMandateId && !isUserConverted && <Redirect to={previousPath} />}
 
-      <b>
-        <FormattedMessage id="thirdPillarPayment.paymentType" />
-      </b>
+      <h2 className="mt-3">
+        <FormattedMessage id="thirdPillarPayment.title" />
+      </h2>
+
+      <div className="mt-5">
+        <b>
+          <FormattedMessage id="thirdPillarPayment.paymentType" />
+        </b>
+      </div>
 
       <Radio
         name="payment-type"
@@ -76,7 +85,7 @@ export const ThirdPillarPayment2 = ({
                 className="form-control form-control-lg"
                 min="0"
                 value={paymentAmount}
-                onChange={(event) => setPaymentAmount(event.target.value)}
+                onChange={(event) => setPaymentAmount(event.target.valueAsNumber)}
                 onWheel={(event) => event.currentTarget.blur()}
               />
               <div className="input-group-append">
@@ -96,109 +105,45 @@ export const ThirdPillarPayment2 = ({
           </div>
 
           <div className="mt-2">
-            <div className="btn-group-toggle d-inline-block mt-2 mr-2">
-              <label
-                className={`btn btn-light btn-payment text-nowrap ${
-                  paymentBank === 'SWEDBANK' ? 'active' : ''
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="banks"
-                  id="swedbank"
-                  checked={paymentBank === 'SWEDBANK'}
-                  onChange={() => {
-                    setPaymentBank('SWEDBANK');
-                  }}
-                />
-                Swedbank
-              </label>
-            </div>
-
-            <div className="btn-group-toggle d-inline-block mt-2 mr-2">
-              <label
-                className={`btn btn-light btn-payment text-nowrap ${
-                  paymentBank === 'SEB' ? 'active' : ''
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="banks"
-                  id="seb"
-                  checked={paymentBank === 'SEB'}
-                  onChange={() => {
-                    setPaymentBank('SEB');
-                  }}
-                />
-                SEB
-              </label>
-            </div>
-
-            <div className="btn-group-toggle d-inline-block mt-2 mr-2">
-              <label
-                className={`btn btn-light btn-payment text-nowrap ${
-                  paymentBank === 'LHV' ? 'active' : ''
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="banks"
-                  id="lhv"
-                  checked={paymentBank === 'LHV'}
-                  onChange={() => {
-                    setPaymentBank('LHV');
-                  }}
-                />
-                LHV
-              </label>
-            </div>
-
-            <div className="btn-group-toggle d-inline-block mt-2 mr-2">
-              <label
-                className={`btn btn-light btn-payment text-nowrap ${
-                  paymentBank === 'LUMINOR' ? 'active' : ''
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="banks"
-                  id="luminor"
-                  checked={paymentBank === 'LUMINOR'}
-                  onChange={() => {
-                    setPaymentBank('Luminor');
-                  }}
-                />
-                Luminor
-              </label>
-            </div>
-
-            <div className="btn-group-toggle d-inline-block mt-2 mr-2">
-              <label
-                className={`btn btn-light btn-payment text-nowrap ${
-                  paymentBank === 'OTHER' ? 'active' : ''
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="banks"
-                  id="other"
-                  checked={paymentBank === 'OTHER'}
-                  onChange={() => {
-                    setPaymentBank('OTHER');
-                  }}
-                />
-                <FormattedMessage id="thirdPillarPayment.otherBank" />
-              </label>
-            </div>
+            <BankButton
+              bankKey="swedbank"
+              bankName="Swedbank"
+              paymentBank={paymentBank}
+              setPaymentBank={setPaymentBank}
+            />
+            <BankButton
+              bankKey="seb"
+              bankName="SEB"
+              paymentBank={paymentBank}
+              setPaymentBank={setPaymentBank}
+            />
+            <BankButton
+              bankKey="lhv"
+              bankName="LHV"
+              paymentBank={paymentBank}
+              setPaymentBank={setPaymentBank}
+            />
+            <BankButton
+              bankKey="luminor"
+              bankName="Luminor"
+              paymentBank={paymentBank}
+              setPaymentBank={setPaymentBank}
+            />
+            <BankButton
+              bankKey="other"
+              bankName={formatMessage({ id: 'thirdPillarPayment.otherBank' })}
+              paymentBank={paymentBank}
+              setPaymentBank={setPaymentBank}
+            />
           </div>
 
-          {paymentBank !== 'OTHER' && paymentType === 'SINGLE' && (
+          {paymentBank !== 'other' && paymentType === 'SINGLE' && (
             <div className="mt-5">
               <button
                 type="button"
                 className="btn btn-primary"
                 disabled={
-                  !paymentBank || paymentBank === 'OTHER' || !paymentAmount || paymentAmount <= 0
+                  !paymentBank || paymentBank === 'other' || !paymentAmount || paymentAmount <= 0
                 }
                 onClick={() => {
                   onPayment(paymentAmount, paymentBank);
@@ -211,13 +156,20 @@ export const ThirdPillarPayment2 = ({
         </div>
       )}
 
-      {(paymentBank === 'OTHER' || paymentType === 'RECURRING') && (
+      {(paymentBank === 'other' || paymentType === 'RECURRING') && (
         <div className="mt-4">
           <p>
-            <FormattedMessage
-              id="thirdPillarPayment.description"
-              values={{ b: (chunks) => <b>{chunks}</b> }}
-            />
+            {paymentType === 'RECURRING' ? (
+              <FormattedMessage
+                id="thirdPillarPayment.recurringPaymentDescription"
+                values={{ b: (chunks: string) => <b>{chunks}</b> }}
+              />
+            ) : (
+              <FormattedMessage
+                id="thirdPillarPayment.singlePaymentDescription"
+                values={{ b: (chunks: string) => <b>{chunks}</b> }}
+              />
+            )}
           </p>
 
           <table>
@@ -236,13 +188,19 @@ export const ThirdPillarPayment2 = ({
                 :&nbsp;
               </td>
               <td>
-                <b>EE362200221067235244</b> - Swedbank
-                <br />
-                <b>EE141010220263146225</b> - SEB
-                <br />
-                <b>EE547700771002908125</b> - LHV
-                <br />
-                <b>EE961700017004379157</b> - Luminor
+                <b>EE362200221067235244</b>
+                {paymentType === 'RECURRING' && (
+                  <span>
+                    {' '}
+                    - Swedbank
+                    <br />
+                    <b>EE141010220263146225</b> - SEB
+                    <br />
+                    <b>EE547700771002908125</b> - LHV
+                    <br />
+                    <b>EE961700017004379157</b> - Luminor
+                  </span>
+                )}
               </td>
             </tr>
             <tr>
@@ -265,11 +223,9 @@ export const ThirdPillarPayment2 = ({
             </tr>
           </table>
 
-          {(paymentBank === 'OTHER' || paymentType === 'RECURRING') && (
-            <div className="mt-4">
-              <ThirdPillarPaymentsThisYear />
-            </div>
-          )}
+          <div className="mt-4">
+            <ThirdPillarPaymentsThisYear />
+          </div>
 
           <p className="mt-4">
             <FormattedMessage id="thirdPillarPayment.paymentQuestion" />
@@ -286,25 +242,7 @@ export const ThirdPillarPayment2 = ({
   );
 };
 
-ThirdPillarPayment2.propTypes = {
-  previousPath: Types.string,
-  nextPath: Types.string,
-
-  signedMandateId: Types.number,
-  pensionAccountNumber: Types.string,
-  isUserConverted: Types.bool,
-};
-
-ThirdPillarPayment2.defaultProps = {
-  previousPath: '',
-  nextPath: '',
-
-  signedMandateId: null,
-  pensionAccountNumber: null,
-  isUserConverted: false,
-};
-
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state: State) => ({
   signedMandateId: state.thirdPillar.signedMandateId,
   pensionAccountNumber: state.login.user && state.login.user.pensionAccountNumber,
   isUserConverted:

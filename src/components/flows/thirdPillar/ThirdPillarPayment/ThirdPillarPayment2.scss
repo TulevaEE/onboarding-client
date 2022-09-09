@@ -1,3 +1,61 @@
+@import "../../../variables";
+
 .btn-payment {
-  min-width: 140px;
+  min-width: 143.25px;
+}
+
+.btn.btn-swedbank, .btn.btn-swedbank:hover {
+  background-color: white;
+  border-color: #ee7023;
+  color: #ee7023;
+}
+
+.btn.btn-swedbank:not(:disabled):not(.disabled):active, .btn.btn-swedbank:not(:disabled):not(.disabled).active {
+  background-color: #ee7023;
+  border-color: #ee7023;
+  color: white;
+}
+
+.btn.btn-seb, .btn.btn-seb:hover {
+  background-color: white;
+  border-color: #47b102;
+  color: #47b102;
+}
+
+.btn.btn-seb:not(:disabled):not(.disabled):active, .btn.btn-seb:not(:disabled):not(.disabled).active {
+  background-color: #5dcb15;
+  border-color: #5dcb15;
+  color: white;
+}
+
+.btn.btn-lhv, .btn.btn-lhv:hover {
+  background-color: white;
+  border-color: #2a2c2e;
+  color: #2a2c2e;
+}
+
+.btn.btn-lhv:not(:disabled):not(.disabled):active, .btn.btn-lhv:not(:disabled):not(.disabled).active {
+  background-color: #2a2c2e;
+  border-color: #2a2c2e;
+  color: white;
+}
+
+.btn.btn-luminor, .btn.btn-luminor:hover {
+  background-color: white;
+  border-color: #481335;
+  color: #481335;
+}
+
+.btn.btn-luminor:not(:disabled):not(.disabled):active, .btn.btn-luminor:not(:disabled):not(.disabled).active {
+  background-color: #481335;
+  border-color: #481335;
+  color: white;
+}
+
+
+
+.btn.btn-other:not(:disabled):not(.disabled):active, .btn.btn-other:not(:disabled):not(.disabled).active {
+  background-color: $blue;
+  border-color: $blue;
+  color: white;
 }
