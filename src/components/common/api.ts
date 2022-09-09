@@ -15,6 +15,7 @@ import {
   MobileSignatureStatusResponse,
   IdCardSignatureResponse,
   IdCardSignatureStatusResponse,
+  Payment,
 } from './apiModels';
 import { downloadFile, get, post, postForm, put, patch, simpleFetch } from './http';
 
@@ -287,6 +288,16 @@ export function createApplicationCancellation(
 ): Promise<CancellationMandate> {
   return post(
     getEndpoint(`/v1/applications/${applicationId}/cancellations`),
+    {},
+    {
+      Authorization: `Bearer ${token}`,
+    },
+  );
+}
+
+export function createPayment(payment: Payment, token: string): Promise<Payment> {
+  return post(
+    getEndpoint(`/v1/payments`),
     {},
     {
       Authorization: `Bearer ${token}`,

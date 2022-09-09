@@ -1,8 +1,8 @@
 import { useMutation, UseMutationResult, useQuery, UseQueryResult } from 'react-query';
 import { useSelector } from 'react-redux';
 
-import { createApplicationCancellation, getPendingApplications } from './api';
-import { Application, CancellationMandate } from './apiModels';
+import { createApplicationCancellation, createPayment, getPendingApplications } from './api';
+import { Application, CancellationMandate, Payment } from './apiModels';
 
 function useTokenOrFail(): string {
   const token = useSelector<{ login: { token?: string } }, string | null>(
@@ -38,4 +38,9 @@ export function useApplication(id: number): UseQueryResult<Application | null> {
     ...result,
     data: result.data ? result.data.find((application) => application.id === id) || null : null,
   } as UseQueryResult<Application | null>;
+}
+
+export function usePayment(): UseMutationResult<Payment, unknown, Payment> {
+  const token = useTokenOrFail();
+  return useMutation((payment: Payment) => createPayment(payment, token));
 }

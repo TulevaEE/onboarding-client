@@ -7,6 +7,8 @@ import ThirdPillarPaymentsThisYear from '../../../account/statusBox/thirdPillarS
 import './ThirdPillarPayment2.scss';
 import { BankButton } from './BankButton';
 import { State } from '../../../../types';
+import { usePayment } from '../../../common/apiHooks';
+import { Payment } from '../../../common/apiModels';
 
 export const ThirdPillarPayment2: React.FunctionComponent<{
   previousPath: string;
@@ -21,9 +23,12 @@ export const ThirdPillarPayment2: React.FunctionComponent<{
   const [paymentAmount, setPaymentAmount] = useState<number | undefined>(undefined);
   const [paymentBank, setPaymentBank] = useState('');
 
-  const onPayment = (amount: number | undefined, bank: string): void => {
+  const mutation = usePayment();
+
+  const onPayment = (payment: Payment): void => {
     // eslint-disable-next-line no-console
-    console.log(amount, bank);
+    console.log(payment);
+    mutation.mutate(payment);
   };
 
   return (
@@ -146,7 +151,8 @@ export const ThirdPillarPayment2: React.FunctionComponent<{
                   !paymentBank || paymentBank === 'other' || !paymentAmount || paymentAmount <= 0
                 }
                 onClick={() => {
-                  onPayment(paymentAmount, paymentBank);
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                  onPayment({ amount: paymentAmount!, currency: 'EUR', bank: paymentBank });
                 }}
               >
                 <FormattedMessage id="thirdPillarPayment.makePayment" />
