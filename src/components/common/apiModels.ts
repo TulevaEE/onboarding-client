@@ -214,3 +214,9 @@ export interface IdCardSignatureResponse {
 export interface IdCardSignatureStatusResponse {
   statusCode: string;
 }
+
+export interface Payment {
+  amount: number;
+  currency: string;
+  bank: string;
+}
