@@ -2,13 +2,12 @@ import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import { FormattedMessage, useIntl } from 'react-intl';
+import config from 'react-global-configuration';
 import { Radio } from '../../../common';
 import ThirdPillarPaymentsThisYear from '../../../account/statusBox/thirdPillarStatusBox/ThirdPillarYearToDateContribution';
 import './ThirdPillarPayment2.scss';
 import { BankButton } from './BankButton';
 import { State } from '../../../../types';
-import { usePayment } from '../../../common/apiHooks';
-import { Payment } from '../../../common/apiModels';
 
 export const ThirdPillarPayment2: React.FunctionComponent<{
   previousPath: string;
@@ -20,16 +19,8 @@ export const ThirdPillarPayment2: React.FunctionComponent<{
   const { formatMessage } = useIntl();
 
   const [paymentType, setPaymentType] = useState('SINGLE');
-  const [paymentAmount, setPaymentAmount] = useState<number | undefined>(undefined);
+  const [paymentAmount, setPaymentAmount] = useState<string | undefined>(undefined);
   const [paymentBank, setPaymentBank] = useState('');
-
-  const mutation = usePayment();
-
-  const onPayment = (payment: Payment): void => {
-    // eslint-disable-next-line no-console
-    console.log(payment);
-    mutation.mutate(payment);
-  };
 
   return (
     <>
@@ -88,9 +79,18 @@ export const ThirdPillarPayment2: React.FunctionComponent<{
                 type="number"
                 placeholder="200"
                 className="form-control form-control-lg"
-                min="0"
+                min="0.00"
+                step="0.01"
                 value={paymentAmount}
-                onChange={(event) => setPaymentAmount(event.target.valueAsNumber)}
+                onChange={(event) => {
+                  console.log(
+                    'onChange',
+                    event.target.value,
+                    event.target.valueAsNumber,
+                    parseFloat(event.target.value),
+                  );
+                  setPaymentAmount(event.target.value);
+                }}
                 onWheel={(event) => event.currentTarget.blur()}
               />
               <div className="input-group-append">
@@ -101,6 +101,17 @@ export const ThirdPillarPayment2: React.FunctionComponent<{
 
           <div className="mt-2">
             <ThirdPillarPaymentsThisYear />
+            <div>
+              <small className="text-muted">
+                <a
+                  href="//tuleva.ee/vastused/kolmanda-samba-kysimused/"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <FormattedMessage id="thirdPillarPayment.singlePaymentHowMuch" />
+                </a>
+              </small>
+            </div>
           </div>
 
           <div className="mt-5">
@@ -144,19 +155,24 @@ export const ThirdPillarPayment2: React.FunctionComponent<{
 
           {paymentBank !== 'other' && paymentType === 'SINGLE' && (
             <div className="mt-5">
-              <button
-                type="button"
-                className="btn btn-primary"
-                disabled={
-                  !paymentBank || paymentBank === 'other' || !paymentAmount || paymentAmount <= 0
-                }
-                onClick={() => {
-                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                  onPayment({ amount: paymentAmount!, currency: 'EUR', bank: paymentBank });
-                }}
+              <a
+                href={`${config.get(
+                  'applicationUrl',
+                )}/payments/link?amount=${paymentAmount}&currency=EUR&bank=${paymentBank}`}
               >
-                <FormattedMessage id="thirdPillarPayment.makePayment" />
-              </button>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  disabled={
+                    !paymentBank ||
+                    paymentBank === 'other' ||
+                    !paymentAmount ||
+                    Number(paymentAmount) <= 0
+                  }
+                >
+                  <FormattedMessage id="thirdPillarPayment.makePayment" />
+                </button>
+              </a>
             </div>
           )}
         </div>
@@ -211,30 +227,74 @@ export const ThirdPillarPayment2: React.FunctionComponent<{
             </tr>
             <tr>
               <td>
-                <FormattedMessage id="thirdPillarPayment.details" />
-                :&nbsp;
+                <FormattedMessage id="thirdPillarPayment.description" />
+                :&nbsp;&nbsp;&nbsp;&nbsp;
               </td>
               <td>
-                <b>30101119828</b>
+                <b>
+                  30101119828
+                  {paymentType === 'SINGLE' && <span>,PK:{pensionAccountNumber}</span>}
+                </b>
               </td>
             </tr>
-            <tr>
-              <td>
-                <FormattedMessage id="thirdPillarPayment.reference" />
-                :&nbsp;
-              </td>
-              <td>
-                <b data-test-id="pension-account-number">{pensionAccountNumber}</b>
-              </td>
-            </tr>
+            {paymentType === 'RECURRING' && (
+              <tr>
+                <td>
+                  <FormattedMessage id="thirdPillarPayment.reference" />
+                  :&nbsp;
+                </td>
+                <td>
+                  <b data-test-id="pension-account-number">{pensionAccountNumber}</b>
+                </td>
+              </tr>
+            )}
+            {paymentType === 'SINGLE' && paymentAmount && Number(paymentAmount) > 0 && (
+              <tr>
+                <td>
+                  <FormattedMessage id="thirdPillarPayment.amount" />
+                  :&nbsp;
+                </td>
+                <td>
+                  <b>{Number(paymentAmount).toFixed(2)} EUR</b>
+                </td>
+              </tr>
+            )}
           </table>
 
-          <div className="mt-4">
-            <ThirdPillarPaymentsThisYear />
-          </div>
+          {paymentType === 'RECURRING' && (
+            <div className="mt-4">
+              <ThirdPillarPaymentsThisYear />
+              <div>
+                <small className="text-muted">
+                  <a
+                    href="//tuleva.ee/vastused/kolmanda-samba-kysimused/"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <FormattedMessage id="thirdPillarPayment.recurringPaymentHowTo" />
+                  </a>
+                </small>
+              </div>
+              <div>
+                <small className="text-muted">
+                  <a
+                    href="//tuleva.ee/vastused/kolmanda-samba-kysimused/"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <FormattedMessage id="thirdPillarPayment.recurringPaymentHowMuch" />
+                  </a>
+                </small>
+              </div>
+            </div>
+          )}
 
           <p className="mt-4">
-            <FormattedMessage id="thirdPillarPayment.paymentQuestion" />
+            {paymentType === 'RECURRING' ? (
+              <FormattedMessage id="thirdPillarPayment.recurringPaymentQuestion" />
+            ) : (
+              <FormattedMessage id="thirdPillarPayment.paymentQuestion" />
+            )}
           </p>
 
           <Link to={nextPath}>

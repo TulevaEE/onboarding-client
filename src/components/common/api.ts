@@ -1,23 +1,22 @@
 import config from 'react-global-configuration';
 import {
-  Fund,
+  AmlCheck,
   Application,
   CancellationMandate,
-  User,
-  SourceFund,
-  UserConversion,
-  InitialCapital,
-  AmlCheck,
-  Token,
+  Fund,
   FundBalance,
+  IdCardSignatureResponse,
+  IdCardSignatureStatusResponse,
+  InitialCapital,
   Mandate,
   MobileSignatureResponse,
   MobileSignatureStatusResponse,
-  IdCardSignatureResponse,
-  IdCardSignatureStatusResponse,
-  Payment,
+  SourceFund,
+  Token,
+  User,
+  UserConversion,
 } from './apiModels';
-import { downloadFile, get, post, postForm, put, patch, simpleFetch } from './http';
+import { downloadFile, get, patch, post, postForm, put, simpleFetch } from './http';
 
 const API_URI = '/api';
 export function getEndpoint(endpoint: string): string {
@@ -295,18 +294,7 @@ export function createApplicationCancellation(
   );
 }
 
-export function createPayment(payment: Payment, token: string): Promise<Payment> {
-  return post(
-    getEndpoint(`/v1/payments`),
-    {},
-    {
-      Authorization: `Bearer ${token}`,
-    },
-  );
-}
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 export function createTrackedEvent(
   type: string,
   data: Record<string, unknown>,
