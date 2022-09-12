@@ -82,15 +82,7 @@ export const ThirdPillarPayment2: React.FunctionComponent<{
                 min="0.00"
                 step="0.01"
                 value={paymentAmount}
-                onChange={(event) => {
-                  console.log(
-                    'onChange',
-                    event.target.value,
-                    event.target.valueAsNumber,
-                    parseFloat(event.target.value),
-                  );
-                  setPaymentAmount(event.target.value);
-                }}
+                onChange={(event) => setPaymentAmount(event.target.value)}
                 onWheel={(event) => event.currentTarget.blur()}
               />
               <div className="input-group-append">
