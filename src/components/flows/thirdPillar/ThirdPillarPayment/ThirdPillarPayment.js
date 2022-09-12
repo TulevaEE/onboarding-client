@@ -30,7 +30,7 @@ export const ThirdPillarPayment = ({
 
       <p className="mt-3">
         <FormattedMessage
-          id="thirdPillarPayment.description"
+          id="thirdPillarPayment.subtitle"
           values={{ b: (chunks) => <b>{chunks}</b> }}
         />
       </p>
@@ -60,7 +60,7 @@ export const ThirdPillarPayment = ({
         </tr>
         <tr>
           <td>
-            <FormattedMessage id="thirdPillarPayment.details" />:{' '}
+            <FormattedMessage id="thirdPillarPayment.description" />:{' '}
           </td>
           <td>
             <b>30101119828</b>
