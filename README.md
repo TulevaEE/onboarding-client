@@ -16,7 +16,11 @@ Originally, this repo was built using js, redux and enzyme for testing. Over the
 ## Prerequisites
 
 - Git
-- Node.js and NPM
+- Node.js LTS (16.17.0) and NPM (8.15.0)
+
+Easiest way to get a specific version of Nodejs (or almost anything really) is to use [asdf](https://asdf-vm.com)
+- *asdf plugin add nodejs*
+- *asdf install nodejs*
 
 ## Development
 
@@ -59,3 +63,11 @@ npm test
 Updating the inline widget is manual, so the bundles need to be created locally, uploaded to the Zone FTP server, and the URLs in [`wordpress-theme`](https://github.com/TulevaEE/wordpress-theme) updated.
 
 The onboarding client itself is deployed to AWS on `master` push (through [CircleCI](https://circleci.com/gh/TulevaEE/onboarding-client)).
+
+## Updating Nodejs
+
+We stay on the LTS version of Nodejs. When that changes, the version can be updated by:
+
+- Updating the version in `package.json` *engines* property (set the upper limit to the next major version).
+- Updating the version in `.circleci/config` tag *node/default* value to make the CI pipeline use the right version.
+- Updating the version in `.tool-versions` (used by [asdf](https://asdf-vm.com))
