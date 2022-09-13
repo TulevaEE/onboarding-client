@@ -12,7 +12,7 @@ jobs:
   build:
     executor:
       name: node/default
-      tag: '16.9'
+      tag: '16.17'
     steps:
       - *attach_workspace
       - checkout
@@ -32,7 +32,7 @@ jobs:
   test:
     executor:
       name: node/default
-      tag: '16.9'
+      tag: '16.17'
     steps:
       - checkout
       - node/install-packages
@@ -54,6 +54,21 @@ jobs:
       - run:
           name: Deploy master to S3
           command: aws s3 cp /tmp/workspace/build s3://pension.tuleva.ee --recursive
+  notify-sentry-deploy:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - run:
+          name: Create release and notify Sentry of deploy
+          command: |
+            curl -sL https://sentry.io/get-cli/ | bash
+            export SENTRY_RELEASE=$(sentry-cli releases propose-version)
+            sentry-cli releases new -p $SENTRY_PROJECT $SENTRY_RELEASE
+            sentry-cli releases set-commits $SENTRY_RELEASE --auto
+            sentry-cli releases files $SENTRY_RELEASE upload-sourcemaps build
+            sentry-cli releases finalize $SENTRY_RELEASE
+            sentry-cli releases deploys $SENTRY_RELEASE new -e $SENTRY_ENVIRONMENT
 
 workflows:
   version: 2
@@ -67,6 +82,13 @@ workflows:
           requires:
             - test
           context: aws
+          filters:
+            branches:
+              only: master
+      - notify-sentry-deploy:
+          requires:
+            - deploy
+          context: sentry
           filters:
             branches:
               only: master

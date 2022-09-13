@@ -9,7 +9,6 @@ const isProduction = process.env.NODE_ENV === 'production';
 if (isProduction) {
   Sentry.init({
     dsn: 'https://cfcb0c4bb8cb4264942f80ca1eb78c49@sentry.io/146907',
-    release: process.env.HEROKU_SLUG_COMMIT,
     environment: process.env.NODE_ENV,
   });
 
