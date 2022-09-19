@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import { FormattedMessage, useIntl } from 'react-intl';
-import config from 'react-global-configuration';
 import { Radio } from '../../../common';
 import ThirdPillarPaymentsThisYear from '../../../account/statusBox/thirdPillarStatusBox/ThirdPillarYearToDateContribution';
 import './ThirdPillarPayment2.scss';
 import { BankButton } from './BankButton';
 import { State } from '../../../../types';
+import { redirectToPayment } from '../../../common/api';
 
 export const ThirdPillarPayment2: React.FunctionComponent<{
   previousPath: string;
@@ -15,11 +15,19 @@ export const ThirdPillarPayment2: React.FunctionComponent<{
   signedMandateId: number;
   pensionAccountNumber: string;
   isUserConverted: boolean;
-}> = ({ previousPath, nextPath, signedMandateId, pensionAccountNumber, isUserConverted }) => {
+  token: string;
+}> = ({
+  previousPath,
+  nextPath,
+  signedMandateId,
+  pensionAccountNumber,
+  isUserConverted,
+  token,
+}) => {
   const { formatMessage } = useIntl();
 
   const [paymentType, setPaymentType] = useState('SINGLE');
-  const [paymentAmount, setPaymentAmount] = useState<string | undefined>(undefined);
+  const [paymentAmount, setPaymentAmount] = useState<string>('');
   const [paymentBank, setPaymentBank] = useState('');
 
   return (
@@ -77,7 +85,7 @@ export const ThirdPillarPayment2: React.FunctionComponent<{
               <input
                 id="monthly-contribution"
                 type="number"
-                placeholder="200"
+                placeholder="250"
                 className="form-control form-control-lg"
                 min="0.00"
                 step="0.01"
@@ -147,24 +155,28 @@ export const ThirdPillarPayment2: React.FunctionComponent<{
 
           {paymentBank !== 'other' && paymentType === 'SINGLE' && (
             <div className="mt-5">
-              <a
-                href={`${config.get(
-                  'applicationUrl',
-                )}/payments/link?amount=${paymentAmount}&currency=EUR&bank=${paymentBank}`}
+              <button
+                type="button"
+                className="btn btn-primary"
+                disabled={
+                  !paymentBank ||
+                  paymentBank === 'other' ||
+                  !paymentAmount ||
+                  Number(paymentAmount) <= 0
+                }
+                onClick={() => {
+                  redirectToPayment(
+                    {
+                      amount: Number(paymentAmount),
+                      currency: 'EUR',
+                      bank: paymentBank.toUpperCase(),
+                    },
+                    token,
+                  );
+                }}
               >
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  disabled={
-                    !paymentBank ||
-                    paymentBank === 'other' ||
-                    !paymentAmount ||
-                    Number(paymentAmount) <= 0
-                  }
-                >
-                  <FormattedMessage id="thirdPillarPayment.makePayment" />
-                </button>
-              </a>
+                <FormattedMessage id="thirdPillarPayment.makePayment" />
+              </button>
             </div>
           )}
         </div>
@@ -308,6 +320,7 @@ const mapStateToProps = (state: State) => ({
     !state.thirdPillar.exchangeableSourceFunds.length &&
     state.login.userConversion &&
     state.login.userConversion.thirdPillar.selectionComplete,
+  token: state.login.token,
 });
 
 export default connect(mapStateToProps)(ThirdPillarPayment2);

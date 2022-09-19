@@ -11,6 +11,7 @@ import {
   Mandate,
   MobileSignatureResponse,
   MobileSignatureStatusResponse,
+  Payment,
   SourceFund,
   Token,
   User,
@@ -307,4 +308,12 @@ export function createTrackedEvent(
       Authorization: `Bearer ${token}`,
     },
   );
+}
+
+export function redirectToPayment(payment: Payment, token: string): void {
+  get(getEndpoint('/v1/payments/link'), payment, {
+    Authorization: `Bearer ${token}`,
+  }).then((paymentLink) => {
+    window.location = paymentLink.url;
+  });
 }
