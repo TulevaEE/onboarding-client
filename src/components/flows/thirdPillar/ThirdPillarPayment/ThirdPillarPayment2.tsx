@@ -74,30 +74,29 @@ export const ThirdPillarPayment2: React.FunctionComponent<{
 
       {paymentType === 'SINGLE' && (
         <div>
-          <div className="mt-5">
+          <label className="mt-5" htmlFor="monthly-contribution">
             <b>
               <FormattedMessage id="thirdPillarPayment.paymentAmount" />
             </b>
-          </div>
-
-          <div className="form-inline">
-            <div className="input-group input-group-lg mt-2">
-              <input
-                id="monthly-contribution"
-                type="number"
-                placeholder="250"
-                className="form-control form-control-lg"
-                min="0.00"
-                step="0.01"
-                value={paymentAmount}
-                onChange={(event) => setPaymentAmount(event.target.value)}
-                onWheel={(event) => event.currentTarget.blur()}
-              />
-              <div className="input-group-append">
-                <span className="input-group-text">&euro;</span>
+            <div className="form-inline">
+              <div className="input-group input-group-lg mt-2">
+                <input
+                  id="monthly-contribution"
+                  type="number"
+                  placeholder="250"
+                  className="form-control form-control-lg"
+                  min="0.00"
+                  step="0.01"
+                  value={paymentAmount}
+                  onChange={(event) => setPaymentAmount(event.target.value)}
+                  onWheel={(event) => event.currentTarget.blur()}
+                />
+                <div className="input-group-append">
+                  <span className="input-group-text">&euro;</span>
+                </div>
               </div>
             </div>
-          </div>
+          </label>
 
           <div className="mt-2">
             <ThirdPillarPaymentsThisYear />
@@ -199,70 +198,72 @@ export const ThirdPillarPayment2: React.FunctionComponent<{
           </p>
 
           <table>
-            <tr>
-              <td>
-                <FormattedMessage id="thirdPillarPayment.accountName" />
-                :&nbsp;
-              </td>
-              <td>
-                <b>AS Pensionikeskus</b>
-              </td>
-            </tr>
-            <tr>
-              <td className="align-top">
-                <FormattedMessage id="thirdPillarPayment.accountNumber" />
-                :&nbsp;
-              </td>
-              <td>
-                <b>EE362200221067235244</b>
-                {paymentType === 'RECURRING' && (
-                  <span>
-                    {' '}
-                    - Swedbank
-                    <br />
-                    <b>EE141010220263146225</b> - SEB
-                    <br />
-                    <b>EE547700771002908125</b> - LHV
-                    <br />
-                    <b>EE961700017004379157</b> - Luminor
-                  </span>
-                )}
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <FormattedMessage id="thirdPillarPayment.description" />
-                :&nbsp;&nbsp;&nbsp;&nbsp;
-              </td>
-              <td>
-                <b>
-                  30101119828
-                  {paymentType === 'SINGLE' && <span>,PK:{pensionAccountNumber}</span>}
-                </b>
-              </td>
-            </tr>
-            {paymentType === 'RECURRING' && (
+            <tbody>
               <tr>
                 <td>
-                  <FormattedMessage id="thirdPillarPayment.reference" />
+                  <FormattedMessage id="thirdPillarPayment.accountName" />
                   :&nbsp;
                 </td>
                 <td>
-                  <b data-test-id="pension-account-number">{pensionAccountNumber}</b>
+                  <b>AS Pensionikeskus</b>
                 </td>
               </tr>
-            )}
-            {paymentType === 'SINGLE' && paymentAmount && Number(paymentAmount) > 0 && (
               <tr>
-                <td>
-                  <FormattedMessage id="thirdPillarPayment.amount" />
+                <td className="align-top">
+                  <FormattedMessage id="thirdPillarPayment.accountNumber" />
                   :&nbsp;
                 </td>
                 <td>
-                  <b>{Number(paymentAmount).toFixed(2)} EUR</b>
+                  <b>EE362200221067235244</b>
+                  {paymentType === 'RECURRING' && (
+                    <span>
+                      {' '}
+                      - Swedbank
+                      <br />
+                      <b>EE141010220263146225</b> - SEB
+                      <br />
+                      <b>EE547700771002908125</b> - LHV
+                      <br />
+                      <b>EE961700017004379157</b> - Luminor
+                    </span>
+                  )}
                 </td>
               </tr>
-            )}
+              <tr>
+                <td>
+                  <FormattedMessage id="thirdPillarPayment.description" />
+                  :&nbsp;&nbsp;&nbsp;&nbsp;
+                </td>
+                <td>
+                  <b>
+                    30101119828
+                    {paymentType === 'SINGLE' && <span>,PK:{pensionAccountNumber}</span>}
+                  </b>
+                </td>
+              </tr>
+              {paymentType === 'RECURRING' ? (
+                <tr>
+                  <td>
+                    <FormattedMessage id="thirdPillarPayment.reference" />
+                    :&nbsp;
+                  </td>
+                  <td>
+                    <b data-test-id="pension-account-number">{pensionAccountNumber}</b>
+                  </td>
+                </tr>
+              ) : null}
+              {paymentType === 'SINGLE' && paymentAmount && Number(paymentAmount) > 0 ? (
+                <tr>
+                  <td>
+                    <FormattedMessage id="thirdPillarPayment.amount" />
+                    :&nbsp;
+                  </td>
+                  <td>
+                    <b>{Number(paymentAmount).toFixed(2)} EUR</b>
+                  </td>
+                </tr>
+              ) : null}
+            </tbody>
           </table>
 
           {paymentType === 'RECURRING' && (

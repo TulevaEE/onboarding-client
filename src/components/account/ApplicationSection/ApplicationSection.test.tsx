@@ -28,7 +28,15 @@ describe('Application section', () => {
 
   function initializeComponent() {
     render(
-      <IntlProvider locale="en">
+      <IntlProvider
+        locale="en"
+        onError={(err) => {
+          if (err.code === 'MISSING_TRANSLATION') {
+            return;
+          }
+          throw err;
+        }}
+      >
         <MemoryRouter>
           <QueryClientProvider client={new QueryClient()}>
             <ApplicationSection />

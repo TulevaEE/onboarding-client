@@ -6,6 +6,12 @@ jest.mock('react-intl', () => {
   const reactIntl = jest.requireActual('react-intl');
   const intl = reactIntl.createIntl({
     locale: 'en',
+    onError: (err) => {
+      if (err.code === 'MISSING_TRANSLATION') {
+        return;
+      }
+      throw err;
+    },
   });
 
   return {

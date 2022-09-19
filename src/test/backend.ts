@@ -366,7 +366,7 @@ export function fundsBackend(server: SetupServerApi): void {
             ongoingChargesFigure: 0.0043,
             status: 'ACTIVE',
             peopleCount: 0,
-            shortName: '',
+            shortName: 'TUV100',
           },
           {
             fundManager: { name: 'Swedbank' },
@@ -428,6 +428,18 @@ export function applicationsBackend(server: SetupServerApi): void {
   server.use(
     rest.get('http://localhost/v1/applications', (req, res, ctx) => {
       return res(ctx.json([]));
+    }),
+  );
+}
+
+export function paymentLinkBackend(server: SetupServerApi): void {
+  server.use(
+    rest.get('http://localhost/v1/payments/link', (req, res, ctx) => {
+      return res(
+        ctx.json({
+          url: 'https://sandbox-payments.montonio.com?payment_token=example.jwt.token',
+        }),
+      );
     }),
   );
 }

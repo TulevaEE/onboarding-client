@@ -27,6 +27,10 @@ export function getEndpoint(endpoint: string): string {
     const API_BASEPATH = config && config.get('applicationUrl') ? config.get('applicationUrl') : '';
     return `${API_BASEPATH}${API_URI}${endpoint}`;
   }
+  if (process.env.NODE_ENV === 'test') {
+    const API_BASEPATH = config && config.get('applicationUrl') ? config.get('applicationUrl') : '';
+    return `${API_BASEPATH}${endpoint}`;
+  }
   return endpoint;
 }
 

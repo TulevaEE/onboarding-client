@@ -20,7 +20,17 @@ export function renderWrapped(
   store = createDefaultStore(history as any),
 ): RenderResult {
   const wrapper = (component: React.ReactNode) => (
-    <IntlProvider locale="en" messages={translations.en} defaultLocale="et">
+    <IntlProvider
+      locale="en"
+      messages={translations.en}
+      defaultLocale="et"
+      onError={(err) => {
+        if (err.code === 'MISSING_TRANSLATION') {
+          return;
+        }
+        throw err;
+      }}
+    >
       <ReduxProvider store={store}>
         <QueryClientProvider client={new QueryClient()}>
           <ConnectedRouter history={history}>{component}</ConnectedRouter>
