@@ -18,7 +18,7 @@ export const ThirdPillarPayment2: React.FunctionComponent<{
   token: string;
 }> = ({
   previousPath,
-  nextPath,
+  nextPath = '/3rd-pillar-flow/success',
   signedMandateId,
   pensionAccountNumber,
   isUserConverted,
@@ -248,7 +248,7 @@ export const ThirdPillarPayment2: React.FunctionComponent<{
                     :&nbsp;
                   </td>
                   <td>
-                    <b data-test-id="pension-account-number">{pensionAccountNumber}</b>
+                    <b>{pensionAccountNumber}</b>
                   </td>
                 </tr>
               ) : null}

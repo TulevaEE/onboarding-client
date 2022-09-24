@@ -8,13 +8,15 @@ import { createDefaultStore, login, renderWrapped } from '../../../../test/utils
 import { initializeConfiguration } from '../../../config/config';
 import {
   amlChecksBackend,
+  applicationsBackend,
   fundsBackend,
   paymentLinkBackend,
   pensionAccountStatementBackend,
+  returnsBackend,
   userBackend,
   userConversionBackend,
 } from '../../../../test/backend';
-import { ThirdPillarPayment2 } from './ThirdPillarPayment2';
+import LoggedInApp from '../../../LoggedInApp';
 
 describe('When a user is making a third pillar payment', () => {
   const server = setupServer();
@@ -32,7 +34,7 @@ describe('When a user is making a third pillar payment', () => {
     const store = createDefaultStore(history as any);
     login(store);
 
-    renderWrapped(<Route path="" component={ThirdPillarPayment2} />, history as any, store);
+    renderWrapped(<Route path="" component={LoggedInApp} />, history as any, store);
   }
   beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
   afterEach(() => server.resetHandlers());
@@ -47,6 +49,8 @@ describe('When a user is making a third pillar payment', () => {
     pensionAccountStatementBackend(server);
     fundsBackend(server);
     paymentLinkBackend(server);
+    applicationsBackend(server);
+    returnsBackend(server);
 
     initializeComponent();
 
@@ -58,8 +62,8 @@ describe('When a user is making a third pillar payment', () => {
       await screen.findByText('Payment instructions for Tuleva III pillar pension fund'),
     ).toBeInTheDocument();
 
-    // no cancellation button shown in the card
-    expect(screen.queryByText('Cancel application')).not.toBeInTheDocument();
+    const paymentButton = screen.getByRole('button', { name: 'Make payment' });
+    expect(paymentButton).toBeDisabled();
   });
 
   test('can fill in amount', async () => {
@@ -78,7 +82,7 @@ describe('When a user is making a third pillar payment', () => {
     expect(bankButton.value).toBe('on');
   });
 
-  test('can start payment', async () => {
+  test('can start a one time payment', async () => {
     const amountInput = screen.getByLabelText('What is the payment amount?', {
       exact: false,
     });
@@ -95,5 +99,21 @@ describe('When a user is making a third pillar payment', () => {
       ),
     );
     await waitFor(() => expect(windowLocation).toHaveBeenCalledTimes(1));
+  });
+
+  test('can see recurring payment details', async () => {
+    const recurringPayment = screen.getByLabelText('Recurring payment');
+
+    userEvent.click(recurringPayment);
+
+    expect(screen.getByText('Account number:')).toBeInTheDocument();
+    expect(screen.getByText('EE362200221067235244')).toBeInTheDocument();
+    expect(screen.getByText('EE141010220263146225')).toBeInTheDocument();
+    expect(screen.getByText('EE547700771002908125')).toBeInTheDocument();
+    expect(screen.getByText('EE961700017004379157')).toBeInTheDocument();
+    expect(screen.getByText('Payment description:')).toBeInTheDocument();
+    expect(screen.getByText('30101119828')).toBeInTheDocument();
+    expect(screen.getByText('Payment reference:')).toBeInTheDocument();
+    expect(await screen.findByText('9876543210')).toBeInTheDocument();
   });
 });
