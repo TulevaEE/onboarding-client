@@ -318,6 +318,6 @@ export function redirectToPayment(payment: Payment, token: string): void {
   get(getEndpoint('/v1/payments/link'), payment, {
     Authorization: `Bearer ${token}`,
   }).then((paymentLink) => {
-    window.location = paymentLink.url;
+    window.location.replace(paymentLink.url);
   });
 }

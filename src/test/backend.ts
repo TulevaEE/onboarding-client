@@ -437,7 +437,11 @@ export function paymentLinkBackend(server: SetupServerApi): void {
     rest.get('http://localhost/v1/payments/link', (req, res, ctx) => {
       return res(
         ctx.json({
-          url: 'https://sandbox-payments.montonio.com?payment_token=example.jwt.token',
+          url:
+            `https://sandbox-payments.montonio.com?payment_token=example.jwt.token.with` +
+            `.${req.url.searchParams.get('amount')}` +
+            `.${req.url.searchParams.get('currency')}` +
+            `.${req.url.searchParams.get('bank')}`,
         }),
       );
     }),

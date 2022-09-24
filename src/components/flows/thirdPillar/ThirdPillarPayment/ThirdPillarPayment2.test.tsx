@@ -1,6 +1,6 @@
 import React from 'react';
 import { setupServer } from 'msw/node';
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { Route } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
 import userEvent from '@testing-library/user-event';
@@ -19,7 +19,13 @@ import { ThirdPillarPayment2 } from './ThirdPillarPayment2';
 describe('When a user is making a third pillar payment', () => {
   const server = setupServer();
   let history: History;
-  // Create a mock of the window.location.replace function
+
+  const windowLocation = jest.fn();
+  Object.defineProperty(window, 'location', {
+    value: {
+      replace: windowLocation,
+    },
+  });
 
   function initializeComponent() {
     history = createMemoryHistory();
@@ -82,5 +88,12 @@ describe('When a user is making a third pillar payment', () => {
     userEvent.type(amountInput, '23');
     userEvent.click(bankButton);
     userEvent.click(paymentButton);
+
+    await waitFor(() =>
+      expect(windowLocation).toHaveBeenCalledWith(
+        'https://sandbox-payments.montonio.com?payment_token=example.jwt.token.with.23.EUR.SWEDBANK',
+      ),
+    );
+    await waitFor(() => expect(windowLocation).toHaveBeenCalledTimes(1));
   });
 });
