@@ -20,7 +20,7 @@ exports[`InlineSignUpForm renders component 1`] = `
         component={[Function]}
         id="register-form-email"
         name="email"
-        placeholder="new.user.flow.signup.email"
+        placeholder="Email*"
         type="email"
         validate={
           Array [
@@ -44,7 +44,7 @@ exports[`InlineSignUpForm renders component 1`] = `
         component={[Function]}
         id="register-form-phoneNumber"
         name="phoneNumber"
-        placeholder="new.user.flow.signup.phoneNumber"
+        placeholder="Phone number"
         type="text"
       />
     </div>

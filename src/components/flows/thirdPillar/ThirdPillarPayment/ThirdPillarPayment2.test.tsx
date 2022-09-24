@@ -62,50 +62,37 @@ describe('When a user is making a third pillar payment', () => {
       await screen.findByText('Payment instructions for Tuleva III pillar pension fund'),
     ).toBeInTheDocument();
 
-    const paymentButton = screen.getByRole('button', { name: 'Make payment' });
-    expect(paymentButton).toBeDisabled();
+    expect(makePaymentButton()).toBeDisabled();
   });
 
   test('can fill in amount', async () => {
-    const amountInput: HTMLInputElement = screen.getByLabelText('What is the payment amount?', {
-      exact: false,
-    });
-    userEvent.type(amountInput, '23');
-    expect(amountInput.value).toBe('23');
+    userEvent.type(amountInput(), '23');
+    expect(amountInput().value).toBe('23');
   });
 
   test('can select bank', async () => {
-    const bankButton: HTMLInputElement = screen.getByLabelText('Swedbank');
-
-    userEvent.click(bankButton);
-
-    expect(bankButton.value).toBe('on');
+    userEvent.click(swedbankButton());
+    expect(swedbankButton().value).toBe('on');
   });
 
   test('can start a one time payment', async () => {
-    const amountInput = screen.getByLabelText('What is the payment amount?', {
-      exact: false,
-    });
-    const bankButton = screen.getByLabelText('Swedbank');
-    const paymentButton = screen.getByRole('button', { name: 'Make payment' });
-
-    userEvent.type(amountInput, '23');
-    userEvent.click(bankButton);
-    userEvent.click(paymentButton);
+    userEvent.type(amountInput(), '23');
+    userEvent.click(swedbankButton());
+    userEvent.click(makePaymentButton());
 
     await waitFor(() =>
       expect(windowLocation).toHaveBeenCalledWith(
         'https://sandbox-payments.montonio.com?payment_token=example.jwt.token.with.23.EUR.SWEDBANK',
       ),
     );
-    await waitFor(() => expect(windowLocation).toHaveBeenCalledTimes(1));
+    expect(windowLocation).toHaveBeenCalledTimes(1);
   });
 
   test('can see recurring payment details', async () => {
-    const recurringPayment = screen.getByLabelText('Recurring payment');
+    userEvent.click(recurringPaymentOption());
 
-    userEvent.click(recurringPayment);
-
+    expect(screen.getByText('Pay to:')).toBeInTheDocument();
+    expect(screen.getByText('AS Pensionikeskus')).toBeInTheDocument();
     expect(screen.getByText('Account number:')).toBeInTheDocument();
     expect(screen.getByText('EE362200221067235244')).toBeInTheDocument();
     expect(screen.getByText('EE141010220263146225')).toBeInTheDocument();
@@ -116,4 +103,69 @@ describe('When a user is making a third pillar payment', () => {
     expect(screen.getByText('Payment reference:')).toBeInTheDocument();
     expect(await screen.findByText('9876543210')).toBeInTheDocument();
   });
+
+  test('can click Yes after seeing recurring payment details', async () => {
+    userEvent.click(recurringPaymentOption());
+    userEvent.click(yesButton());
+
+    expect(screen.getByText('All done!')).toBeInTheDocument();
+  });
+
+  test('can see Other bank payment details', async () => {
+    userEvent.click(otherBankButton());
+
+    expect(screen.getByText('Pay to:')).toBeInTheDocument();
+    expect(screen.getByText('AS Pensionikeskus')).toBeInTheDocument();
+    expect(screen.getByText('Account number:')).toBeInTheDocument();
+    expect(screen.getByText('EE362200221067235244')).toBeInTheDocument();
+    expect(screen.queryByText('EE141010220263146225')).not.toBeInTheDocument();
+    expect(screen.queryByText('EE547700771002908125')).not.toBeInTheDocument();
+    expect(screen.queryByText('EE961700017004379157')).not.toBeInTheDocument();
+    expect(screen.getByText('Payment description:')).toBeInTheDocument();
+    expect(
+      await screen.findByText('30101119828', {
+        exact: false,
+      }),
+    ).toHaveTextContent('30101119828,PK:9876543210');
+    expect(screen.queryByText('Payment reference:')).not.toBeInTheDocument();
+    expect(screen.queryByText('9876543210')).not.toBeInTheDocument();
+  });
+
+  test('can click Yes after seeing Other bank payment details', async () => {
+    userEvent.click(otherBankButton());
+    userEvent.click(yesButton());
+
+    expect(screen.getByText('All done!')).toBeInTheDocument();
+  });
+
+  test('can switch between Single and Recurring payment', async () => {
+    userEvent.click(recurringPaymentOption());
+    expect(queryAmountInput()).not.toBeInTheDocument();
+    expect(querySwedbankButton()).not.toBeInTheDocument();
+    expect(queryOtherBankButton()).not.toBeInTheDocument();
+
+    userEvent.click(singlePaymentOption());
+    expect(amountInput()).toBeInTheDocument();
+    expect(swedbankButton()).toBeInTheDocument();
+    expect(otherBankButton()).toBeInTheDocument();
+  });
+
+  const singlePaymentOption = () => screen.getByLabelText('Single payment');
+  const recurringPaymentOption = () => screen.getByLabelText('Recurring payment');
+  const amountInput: () => HTMLInputElement = () =>
+    screen.getByLabelText('What is the payment amount?', {
+      exact: false,
+    });
+  const queryAmountInput = () =>
+    screen.queryByLabelText('What is the payment amount?', {
+      exact: false,
+    });
+  const swedbankButton: () => HTMLInputElement = () => screen.getByLabelText('Swedbank');
+  const querySwedbankButton = () => screen.queryByLabelText('Swedbank');
+
+  const otherBankButton = () => screen.getByLabelText('Other bank');
+  const queryOtherBankButton = () => screen.queryByLabelText('Other bank');
+
+  const makePaymentButton = () => screen.getByRole('button', { name: 'Make payment' });
+  const yesButton = () => screen.getByRole('button', { name: 'Yes' });
 });

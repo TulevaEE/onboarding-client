@@ -28,7 +28,7 @@ exports[`Transfer future capital step has three options if you want to transfer 
       hidden="hidden"
       value="1"
     >
-      transfer.future.capital.other.fund
+      Select a pension fund
     </option>
     <option
       key="AAA"
