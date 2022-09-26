@@ -152,7 +152,7 @@ export class ReturnComparison extends Component<Props, State> {
                     value: Key.SECOND_PILLAR,
                     label: 'returnComparison.personal.secondPillar',
                   },
-                  // { value: Key.THIRD_PILLAR, label: 'returnComparison.personal.thirdPillar' },
+                  { value: Key.THIRD_PILLAR, label: 'returnComparison.personal.thirdPillar' },
                 ]}
                 selected={selectedPersonalKey}
                 onChange={(key: string) => {
