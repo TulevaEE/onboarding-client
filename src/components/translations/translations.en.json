@@ -323,7 +323,7 @@
   "thirdPillarFlow.steps.selectSources.title": "Start saving in Tuleva",
   "thirdPillarFlow.steps.address.title": "Enter your contact details",
   "thirdPillarFlow.steps.confirmMandate.title": "Confirm mandate",
-  "thirdPillarFlow.steps.payment.title": "Payment details",
+  "thirdPillarFlow.steps.payment.title": "Make a payment",
 
   "thirdPillarFlowSetup.text": "This account is in pensions registry, does not cost anything nor brings any obligations to do anything.",
   "thirdPillarFlowSetup.subtext": "Selection mandate activates your pension account and until you decide otherwise, directs your future contributions to selected pension fund.",
@@ -387,7 +387,7 @@
   "thirdPillarPayment.recurringPaymentHowTo": "How to set up a recurring payment?",
 
   "thirdPillarSuccess.done": "All done!",
-  "thirdPillarSuccess.message": "Check your pension account. Your new contribution will appear on your pension account by the end of the next working day. We have also sent payment details to you by e-mail - use them whenever you want to make additional contributions to your third pillar.",
+  "thirdPillarSuccess.message": "Check your pension account. Your new contribution will appear on your pension account by the end of the next working day.",
   "thirdPillarSuccess.button": "My account",
 
   "applications.title": "Your existing applications",
