@@ -31,7 +31,7 @@
     "react-global-configuration": "^1.4.1",
     "react-intl": "^5.25.1",
     "react-query": "^3.31.0",
-    "react-redux": "^7.2.6",
+    "react-redux": "^8.0.4",
     "react-router-dom": "^5.3.0",
     "react-scripts": "^4.0.2",
     "react-tooltip": "4.2.17",
