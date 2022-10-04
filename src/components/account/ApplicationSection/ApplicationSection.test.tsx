@@ -12,6 +12,7 @@ import { IntlProvider } from 'react-intl';
 import { ApplicationSection } from './ApplicationSection';
 import {
   earlyWithdrawal,
+  payment,
   resumeContributions,
   stopContributions,
   transfer2Pillar,
@@ -52,7 +53,7 @@ describe('Application section', () => {
   afterAll(() => server.close());
 
   beforeEach(() => {
-    (useSelector as any).mockImplementation((selector) =>
+    (useSelector as any).mockImplementation((selector: any) =>
       selector({ login: { token: 'mock token' } }),
     );
     (config.get as any).mockImplementation((key: string) => (key === 'language' ? 'en' : null));
@@ -242,6 +243,19 @@ describe('Application section', () => {
     await waitForRequestToFinish();
 
     expect(screen.queryByText('applications.cancel')).not.toBeInTheDocument();
+  });
+
+  it('renders payment applications successfully', async () => {
+    const application = payment;
+    mockApplications([application]);
+    initializeComponent();
+    const formattedCreationTime = '04.10.2022';
+
+    expect(await screen.findByText('applications.type.payment.title')).toBeInTheDocument();
+    expect(screen.getByText(formattedCreationTime)).toBeInTheDocument();
+    expect(screen.getByText('applications.type.payment.status.pending')).toBeInTheDocument();
+    expect(screen.getByText(application.details.targetFund.name)).toBeInTheDocument();
+    expect(screen.getByText(`${application.details.amount} €`)).toBeInTheDocument();
   });
 
   function waitForRequestToFinish() {

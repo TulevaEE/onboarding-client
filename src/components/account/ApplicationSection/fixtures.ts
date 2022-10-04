@@ -68,9 +68,9 @@ export const transferPIK = {
 
 export const transfer3Pillar = {
   id: 3832579,
+  type: ApplicationType.TRANSFER,
+  status: ApplicationStatus.PENDING,
   creationTime: '2021-08-01T14:00:00Z',
-  type: 'TRANSFER',
-  status: 'PENDING',
   details: {
     sourceFund: {
       fundManager: { name: 'Swedbank' },
@@ -153,5 +153,27 @@ export const resumeContributions = {
   details: {
     cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
     resumeTime: new Date('December 18, 1995 03:24:00').toISOString(),
+  },
+};
+
+export const payment = {
+  id: 15,
+  type: ApplicationType.PAYMENT,
+  status: ApplicationStatus.PENDING,
+  creationTime: '2022-10-04T13:22:24.215230Z',
+  details: {
+    amount: 12.34,
+    currency: 'EUR',
+    targetFund: {
+      fundManager: {
+        name: 'Tuleva',
+      },
+      isin: 'EE3600001707',
+      name: 'Tuleva III Samba Pensionifond',
+      managementFeeRate: 0.0023,
+      pillar: 3,
+      ongoingChargesFigure: 0.0035,
+      status: 'ACTIVE',
+    },
   },
 };

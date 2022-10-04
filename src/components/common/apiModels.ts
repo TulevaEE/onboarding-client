@@ -3,7 +3,17 @@ export type Application =
   | StopContributionsApplication
   | ResumeContributionsApplication
   | EarlyWithdrawalApplication
-  | WithdrawalApplication;
+  | WithdrawalApplication
+  | PaymentApplication;
+
+export type PaymentApplication = BaseApplication<
+  ApplicationType.PAYMENT,
+  {
+    amount: number;
+    currency: Currency;
+    targetFund: Fund;
+  }
+>;
 
 export type TransferApplication = BaseApplication<
   ApplicationType.TRANSFER,
@@ -59,6 +69,7 @@ export enum ApplicationType {
   RESUME_CONTRIBUTIONS = 'RESUME_CONTRIBUTIONS',
   EARLY_WITHDRAWAL = 'EARLY_WITHDRAWAL',
   WITHDRAWAL = 'WITHDRAWAL',
+  PAYMENT = 'PAYMENT',
 }
 
 export enum ApplicationStatus {

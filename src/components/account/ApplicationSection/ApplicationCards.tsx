@@ -8,12 +8,14 @@ import {
   Application,
   ApplicationType,
   EarlyWithdrawalApplication,
+  PaymentApplication,
   ResumeContributionsApplication,
   StopContributionsApplication,
   TransferApplication,
   WithdrawalApplication,
 } from '../../common/apiModels';
 import Percentage from '../../common/Percentage';
+import Euro from '../../common/Euro';
 
 export const ApplicationCard: React.FunctionComponent<{
   application: Application;
@@ -30,9 +32,46 @@ export const ApplicationCard: React.FunctionComponent<{
       return <ResumeContributionsCard application={application} allowedActions={allowedActions} />;
     case ApplicationType.TRANSFER:
       return <TransferApplicationCard application={application} allowedActions={allowedActions} />;
+    case ApplicationType.PAYMENT:
+      return <PaymentApplicationCard application={application} allowedActions={allowedActions} />;
     default:
       return <></>;
   }
+};
+
+const PaymentApplicationCard: React.FunctionComponent<{
+  application: PaymentApplication;
+  allowedActions: ApplicationAction[];
+}> = ({ application, allowedActions }) => {
+  return (
+    <BaseApplicationCard
+      application={application}
+      allowedActions={[]}
+      titleKey="applications.type.payment.title"
+    >
+      <DefinitionList
+        definitions={[
+          {
+            key: 'applications.type.payment.status',
+            value: <FormattedMessage id="applications.type.payment.status.pending" />,
+          },
+          [
+            [
+              {
+                key: 'applications.type.payment.targetFund',
+                value: application.details.targetFund.name,
+              },
+              {
+                key: 'applications.type.payment.amount',
+                value: <Euro amount={application.details.amount} />,
+                alignRight: true,
+              },
+            ],
+          ],
+        ]}
+      />
+    </BaseApplicationCard>
+  );
 };
 
 const TransferApplicationCard: React.FunctionComponent<{
@@ -174,11 +213,11 @@ const BaseApplicationCard: React.FunctionComponent<{
 }> = ({ application, titleKey, children, allowedActions }) => {
   const cancellationUrl = `/applications/${application.id}/cancellation`;
   const isBeforeCancellationDeadline = moment().isSameOrBefore(
-    moment(application.details.cancellationDeadline),
+    moment((application.details as any).cancellationDeadline),
     'day',
   );
   const canCancel =
-    isBeforeCancellationDeadline && allowedActions.includes(ApplicationAction.CANCEL);
+    allowedActions.includes(ApplicationAction.CANCEL) && isBeforeCancellationDeadline;
   return (
     <div className={styles.card}>
       <div className={styles.header}>

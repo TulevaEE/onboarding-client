@@ -11,13 +11,17 @@ export const ApplicationSection: React.FunctionComponent = () => {
       <h2 className="mb-4 lead">
         <FormattedMessage id="applications.title" />
       </h2>
-      {applications.map((application) => (
-        <ApplicationCard
-          key={application.id}
-          application={application}
-          allowedActions={[ApplicationAction.CANCEL]}
-        />
-      ))}
+      {applications
+        .sort((application1, application2) =>
+          application2.creationTime.localeCompare(application1.creationTime),
+        )
+        .map((application) => (
+          <ApplicationCard
+            key={application.id}
+            application={application}
+            allowedActions={[ApplicationAction.CANCEL]}
+          />
+        ))}
       <div className="mt-2">
         <small className="text-muted">
           <FormattedMessage id="applications.footer" />
