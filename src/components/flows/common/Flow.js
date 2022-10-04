@@ -52,7 +52,7 @@ export class Flow extends Component {
 
             <div className="pb-5 px-col">
               <Switch>
-                <Route path={`${flowPath}/${currentStepPath}`} component={StepComponent} />
+                <Route path={`${flowPath}/${currentStepPath}`} render={StepComponent} />
                 <Redirect exact path={`${flowPath}`} to={`${flowPath}/${currentStepPath}`} />
               </Switch>
             </div>

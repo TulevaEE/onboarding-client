@@ -6,6 +6,7 @@ import { FormattedMessage } from 'react-intl';
 
 export const ThirdPillarSetup = ({ nextPath, isThirdPillarActive }) => (
   <div>
+    isThirdPillarActive: {isThirdPillarActive}
     {isThirdPillarActive && <Redirect to={nextPath} />}
     <p>
       <FormattedMessage id="thirdPillarFlowSetup.text" />

@@ -94,7 +94,7 @@ describe('Flow', () => {
     const route = component.find(Route);
 
     expect(route.prop('path')).toBe('/a-flow/third-step');
-    expect(route.prop('component')).toBe(ThirdComponent);
+    expect(route.prop('render')).toBe(ThirdComponent);
   });
 
   it('redirects from path root to step path', () => {

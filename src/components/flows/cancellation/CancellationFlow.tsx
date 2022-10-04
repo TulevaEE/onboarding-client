@@ -8,12 +8,12 @@ export const flowPath = '/applications/:applicationId/cancellation';
 const steps = [
   {
     path: 'confirm',
-    Component: ConfirmCancellation,
+    Component: () => <ConfirmCancellation />,
     title: <FormattedMessage id="cancellation.flow.confirm.title" />,
   },
   {
     path: 'success',
-    Component: CancellationSuccess,
+    Component: () => <CancellationSuccess />,
   },
 ];
 

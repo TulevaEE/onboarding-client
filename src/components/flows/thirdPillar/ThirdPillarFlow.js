@@ -50,7 +50,7 @@ const steps = [
   },
   {
     path: 'success',
-    Component: ThirdPillarSuccess,
+    Component: () => <ThirdPillarSuccess />,
   },
 ];
 

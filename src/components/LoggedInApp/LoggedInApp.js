@@ -18,7 +18,6 @@ import Footer from './footer';
 import ContactDetailsPage from '../contact-details';
 import AmlPage, { actions as amlActions } from '../aml';
 import SignUpPage from '../newUserFlow';
-import NewThirdPillarPayment from '../flows/thirdPillar/ThirdPillarPayment/ThirdPillarPayment2';
 
 export const ACCOUNT_PATH = '/account';
 export const AML_PATH = '/aml';
@@ -70,7 +69,6 @@ export class LoggedInApp extends PureComponent {
               <Route path="/contact-details" component={ContactDetailsPage} />
               <Route path="/2nd-pillar-flow" component={SecondPillarFlow} />
               <Route path="/3rd-pillar-flow" component={ThirdPillarFlow} />
-              <Route path="/payment" component={NewThirdPillarPayment} />
               <Route path={cancellationFlowPath} component={CancellationFlow} />
               <Redirect exact path="/" to={ACCOUNT_PATH} />
             </Switch>

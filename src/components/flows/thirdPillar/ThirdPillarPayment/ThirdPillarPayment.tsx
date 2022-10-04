@@ -4,12 +4,12 @@ import { Link, Redirect } from 'react-router-dom';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Radio } from '../../../common';
 import ThirdPillarPaymentsThisYear from '../../../account/statusBox/thirdPillarStatusBox/ThirdPillarYearToDateContribution';
-import './ThirdPillarPayment2.scss';
+import './ThirdPillarPayment.scss';
 import { BankButton } from './BankButton';
 import { State } from '../../../../types';
 import { redirectToPayment } from '../../../common/api';
 
-export const ThirdPillarPayment2: React.FunctionComponent<{
+export const ThirdPillarPayment: React.FunctionComponent<{
   previousPath: string;
   nextPath: string;
   signedMandateId: number;
@@ -18,7 +18,7 @@ export const ThirdPillarPayment2: React.FunctionComponent<{
   token: string;
 }> = ({
   previousPath,
-  nextPath = '/3rd-pillar-flow/success',
+  nextPath,
   signedMandateId,
   pensionAccountNumber,
   isUserConverted,
@@ -32,7 +32,7 @@ export const ThirdPillarPayment2: React.FunctionComponent<{
 
   return (
     <>
-      {false && !signedMandateId && !isUserConverted && <Redirect to={previousPath} />}
+      {!signedMandateId && !isUserConverted && <Redirect to={previousPath} />}
 
       <h2 className="mt-3">
         <FormattedMessage id="thirdPillarPayment.title" />
@@ -324,4 +324,4 @@ const mapStateToProps = (state: State) => ({
   token: state.login.token,
 });
 
-export default connect(mapStateToProps)(ThirdPillarPayment2);
+export default connect(mapStateToProps)(ThirdPillarPayment);
