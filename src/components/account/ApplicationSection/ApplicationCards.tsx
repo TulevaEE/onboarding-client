@@ -33,7 +33,7 @@ export const ApplicationCard: React.FunctionComponent<{
     case ApplicationType.TRANSFER:
       return <TransferApplicationCard application={application} allowedActions={allowedActions} />;
     case ApplicationType.PAYMENT:
-      return <PaymentApplicationCard application={application} allowedActions={allowedActions} />;
+      return <PaymentApplicationCard application={application} />;
     default:
       return <></>;
   }
@@ -41,8 +41,7 @@ export const ApplicationCard: React.FunctionComponent<{
 
 const PaymentApplicationCard: React.FunctionComponent<{
   application: PaymentApplication;
-  allowedActions: ApplicationAction[];
-}> = ({ application, allowedActions }) => {
+}> = ({ application }) => {
   return (
     <BaseApplicationCard
       application={application}
@@ -213,7 +212,11 @@ const BaseApplicationCard: React.FunctionComponent<{
 }> = ({ application, titleKey, children, allowedActions }) => {
   const cancellationUrl = `/applications/${application.id}/cancellation`;
   const isBeforeCancellationDeadline = moment().isSameOrBefore(
-    moment((application.details as any).cancellationDeadline),
+    moment(
+      (application.details as {
+        cancellationDeadline: string;
+      }).cancellationDeadline,
+    ),
     'day',
   );
   const canCancel =
