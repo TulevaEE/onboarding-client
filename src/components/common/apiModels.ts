@@ -231,7 +231,20 @@ export interface IdCardSignatureStatusResponse {
 export interface Payment {
   amount: number;
   currency: Currency;
-  bank: string;
+  type: PaymentType;
+  bank: Bank;
 }
 
 export type Currency = 'EUR';
+
+export enum PaymentType {
+  SINGLE = 'SINGLE',
+  RECURRING = 'RECURRING',
+}
+
+export enum Bank {
+  SWEDBANK = 'SWEDBANK',
+  LHV = 'LHV',
+  SEB = 'SEB',
+  LUMINOR = 'LUMINOR',
+}

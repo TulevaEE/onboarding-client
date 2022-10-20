@@ -12,6 +12,7 @@ import {
   MobileSignatureResponse,
   MobileSignatureStatusResponse,
   Payment,
+  PaymentType,
   SourceFund,
   Token,
   User,
@@ -20,6 +21,7 @@ import {
 import { downloadFile, get, patch, post, postForm, put, simpleFetch } from './http';
 
 const API_URI = '/api';
+
 export function getEndpoint(endpoint: string): string {
   // in production, we proxy through a proxy endpoint at /proxy.
   // in development, we proxy through webpack dev server without the prefix.
@@ -318,6 +320,10 @@ export function redirectToPayment(payment: Payment, token: string): void {
   get(getEndpoint('/v1/payments/link'), payment, {
     Authorization: `Bearer ${token}`,
   }).then((paymentLink) => {
-    window.location.replace(paymentLink.url);
+    if (payment.type === PaymentType.RECURRING) {
+      window.open(paymentLink.url, '_blank');
+    } else {
+      window.location.replace(paymentLink.url);
+    }
   });
 }
