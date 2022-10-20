@@ -387,7 +387,6 @@
 
   "applications.title": "Your pending transactions",
   "applications.cancel": "Cancel application",
-  "applications.footer": "Cancelling applications is free of charge. You can see all your applications history on Pensionikeskus' website.",
   "applications.type.payment.title": "Third pillar contribution",
   "applications.type.payment.status": "Status",
   "applications.type.payment.status.pending": "On its way to Pensionikeskus",

@@ -22,11 +22,6 @@ export const ApplicationSection: React.FunctionComponent = () => {
             allowedActions={[ApplicationAction.CANCEL]}
           />
         ))}
-      <div className="mt-2">
-        <small className="text-muted">
-          <FormattedMessage id="applications.footer" />
-        </small>
-      </div>
     </section>
   ) : (
     <></>

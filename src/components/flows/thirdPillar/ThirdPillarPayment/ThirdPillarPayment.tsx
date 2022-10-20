@@ -74,16 +74,16 @@ export const ThirdPillarPayment: React.FunctionComponent<{
 
       {paymentType === 'SINGLE' && (
         <div>
-          <label className="mt-5" htmlFor="monthly-contribution">
+          <label className="mt-5" htmlFor="payment-amount">
             <b>
               <FormattedMessage id="thirdPillarPayment.paymentAmount" />
             </b>
             <div className="form-inline">
               <div className="input-group input-group-lg mt-2">
                 <input
-                  id="monthly-contribution"
+                  id="payment-amount"
                   type="number"
-                  placeholder="250"
+                  placeholder="1000"
                   className="form-control form-control-lg"
                   min="0.00"
                   step="0.01"
