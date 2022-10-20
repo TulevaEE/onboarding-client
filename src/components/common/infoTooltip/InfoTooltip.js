@@ -5,8 +5,8 @@ import ReactTooltip from 'react-tooltip';
 import './InfoTooltip.scss';
 import infoImage from './info.svg';
 
-const InfoTooltip = ({ children, name }) => (
-  <span className="info-tooltip">
+const InfoTooltip = ({ children, name, className = '' }) => (
+  <span className={`info-tooltip ${className}`}>
     <img
       data-tip
       data-for={name}
