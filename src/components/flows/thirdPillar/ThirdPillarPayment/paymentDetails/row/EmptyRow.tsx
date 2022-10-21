@@ -1,7 +1,9 @@
 import React from 'react';
 
-export const EmptyRow = () => (
-  <tr>
-    <td colSpan={3}>&nbsp;</td>
-  </tr>
-);
+export function EmptyRow(): React.ReactNode {
+  return (
+    <tr>
+      <td colSpan={3}>&nbsp;</td>
+    </tr>
+  );
+}
