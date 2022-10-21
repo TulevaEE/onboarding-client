@@ -24,7 +24,7 @@ describe('InfoTooltip', () => {
     const image = () => component.find('img.info-tooltip__image');
     expect(image().prop('data-for')).toBe('test-tooltip');
     expect(image().prop('data-tip')).toBeTruthy();
-    expect(image().prop('alt')).toBe('Information');
+    expect(image().prop('alt')).toBe('');
     expect(image().prop('src')).toBeTruthy();
   });
 
