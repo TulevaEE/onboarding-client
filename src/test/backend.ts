@@ -418,6 +418,8 @@ export function userCapitalBackend(server: SetupServerApi): void {
           unvestedWorkCompensation: 0,
           workCompensation: 0,
           profit: -123.45,
+          total: 1.23 + 1000.0 - 123.45,
+          currency: 'EUR',
         }),
       );
     }),

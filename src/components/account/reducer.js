@@ -24,10 +24,7 @@ export default function accountReducer(state = initialState, action) {
       return {
         ...state,
         loadingInitialCapital: false,
-        initialCapital: {
-          ...action.initialCapital,
-          total: Object.values(action.initialCapital).reduce((a, b) => a + b),
-        },
+        initialCapital: action.initialCapital,
       };
     case GET_INITIAL_CAPITAL_ERROR:
       return {

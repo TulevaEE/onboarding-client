@@ -194,6 +194,8 @@ export interface InitialCapital {
   unvestedWorkCompensation: number;
   workCompensation: number;
   profit: number;
+  total: number;
+  currency: Currency;
 }
 
 export interface AmlCheck {

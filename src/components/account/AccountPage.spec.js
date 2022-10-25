@@ -19,6 +19,8 @@ describe('Account page', () => {
     unvestedWorkCompensation: 1000,
     workCompensation: 1000,
     profit: 0.1,
+    total: 10 + 1000 + 1000 + 1000 + 0.1,
+    currency: 'EUR',
   };
 
   beforeEach(() => {

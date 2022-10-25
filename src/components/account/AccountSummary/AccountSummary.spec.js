@@ -82,6 +82,7 @@ describe('Account summary', () => {
           membershipBonus: 1,
           profit: 2,
           total: 6,
+          currency: 'EUR',
         }}
       />,
     );
@@ -198,6 +199,7 @@ describe('Account summary', () => {
           membershipBonus: 1,
           profit: 2,
           total: 6,
+          currency: 'EUR',
         }}
       />,
     );

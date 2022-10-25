@@ -90,6 +90,7 @@ MemberCapital.propTypes = {
     workCompensation: Types.number,
     unvestedWorkCompensation: Types.number,
     total: Types.number,
+    currency: Types.string,
   }),
 };
 
@@ -101,6 +102,7 @@ MemberCapital.defaultProps = {
     workCompensation: 0,
     unvestedWorkCompensation: 0,
     total: 0,
+    currency: 'EUR',
   },
 };
 
