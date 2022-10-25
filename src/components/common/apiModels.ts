@@ -191,7 +191,6 @@ export interface Conversion {
 export interface InitialCapital {
   membershipBonus: number;
   capitalPayment: number;
-  currency: string;
   unvestedWorkCompensation: number;
   workCompensation: number;
   profit: number;
