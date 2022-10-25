@@ -5,14 +5,11 @@ import { AccountNumberRow } from './row/AccountNumberRow';
 import { PaymentAmountRow } from './row/PaymentAmountRow';
 import { PaymentDescriptionRow } from './row/PaymentDescriptionRow';
 import { PaymentReferenceRow } from './row/PaymentReferenceRow';
-import { EmptyRow } from './row/EmptyRow';
-import { TextRow } from './row/TextRow';
-import { tenthDayOfMonth, today } from '../PaymentDate';
 
 export const LhvRecurringPaymentDetails: React.FunctionComponent<{
-  paymentAmount: string;
+  amount: string;
   pensionAccountNumber: string;
-}> = ({ paymentAmount, pensionAccountNumber }) => (
+}> = ({ amount, pensionAccountNumber }) => (
   <table>
     <tbody>
       <AccountNameRow>
@@ -21,7 +18,7 @@ export const LhvRecurringPaymentDetails: React.FunctionComponent<{
       <AccountNumberRow bank="lhv">
         <FormattedMessage id="thirdPillarPayment.beneficiaryAccountNumber" />
       </AccountNumberRow>
-      <PaymentAmountRow paymentAmount={paymentAmount}>
+      <PaymentAmountRow amount={amount}>
         <FormattedMessage id="thirdPillarPayment.amount" />
         <FormattedMessage id="thirdPillarPayment.fixedAmount" />
       </PaymentAmountRow>
@@ -32,20 +29,20 @@ export const LhvRecurringPaymentDetails: React.FunctionComponent<{
         <FormattedMessage id="thirdPillarPayment.referenceNo" />
       </PaymentReferenceRow>
 
-      <EmptyRow />
+      {/* <EmptyRow /> */}
 
-      <TextRow>
-        <FormattedMessage id="thirdPillarPayment.contractStart" />
-        {today()}
-      </TextRow>
-      <TextRow>
-        <FormattedMessage id="thirdPillarPayment.paymentFrequency" />
-        <FormattedMessage id="thirdPillarPayment.monthly2" />
-      </TextRow>
-      <TextRow>
-        <FormattedMessage id="thirdPillarPayment.firstPayment" />
-        {tenthDayOfMonth()}
-      </TextRow>
+      {/* <TextRow> */}
+      {/*  <FormattedMessage id="thirdPillarPayment.contractStart" /> */}
+      {/*  {today()} */}
+      {/* </TextRow> */}
+      {/* <TextRow> */}
+      {/*  <FormattedMessage id="thirdPillarPayment.paymentFrequency" /> */}
+      {/*  <FormattedMessage id="thirdPillarPayment.monthly2" /> */}
+      {/* </TextRow> */}
+      {/* <TextRow> */}
+      {/*  <FormattedMessage id="thirdPillarPayment.firstPayment" /> */}
+      {/*  {tenthDayOfMonth()} */}
+      {/* </TextRow> */}
     </tbody>
   </table>
 );

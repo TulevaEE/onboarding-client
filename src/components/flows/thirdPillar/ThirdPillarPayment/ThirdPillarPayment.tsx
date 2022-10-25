@@ -159,27 +159,25 @@ export const ThirdPillarPayment: React.FunctionComponent<{
             />
           </p>
 
-          {paymentBank === 'swedbank' && (
-            <SwedbankRecurringPaymentDetails paymentAmount={paymentAmount} />
-          )}
+          {paymentBank === 'swedbank' && <SwedbankRecurringPaymentDetails amount={paymentAmount} />}
 
           {paymentBank === 'seb' && (
             <SebRecurringPaymentDetails
-              paymentAmount={paymentAmount}
+              amount={paymentAmount}
               pensionAccountNumber={pensionAccountNumber}
             />
           )}
 
           {paymentBank === 'lhv' && (
             <LhvRecurringPaymentDetails
-              paymentAmount={paymentAmount}
+              amount={paymentAmount}
               pensionAccountNumber={pensionAccountNumber}
             />
           )}
 
           {paymentBank === 'luminor' && (
             <LuminorRecurringPaymentDetails
-              paymentAmount={paymentAmount}
+              amount={paymentAmount}
               pensionAccountNumber={pensionAccountNumber}
             />
           )}
@@ -187,7 +185,7 @@ export const ThirdPillarPayment: React.FunctionComponent<{
           {paymentBank === 'other' && (
             <OtherBankPaymentDetails
               pensionAccountNumber={pensionAccountNumber}
-              paymentAmount={paymentAmount}
+              amount={paymentAmount}
             />
           )}
         </div>
@@ -202,7 +200,7 @@ export const ThirdPillarPayment: React.FunctionComponent<{
           </p>
           <OtherBankPaymentDetails
             pensionAccountNumber={pensionAccountNumber}
-            paymentAmount={paymentAmount}
+            amount={paymentAmount}
           />
         </div>
       )}

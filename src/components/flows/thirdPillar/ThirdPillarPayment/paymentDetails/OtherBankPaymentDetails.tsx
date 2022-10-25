@@ -6,9 +6,9 @@ import { PaymentDescriptionRow } from './row/PaymentDescriptionRow';
 import { PaymentAmountRow } from './row/PaymentAmountRow';
 
 export const OtherBankPaymentDetails: React.FunctionComponent<{
-  paymentAmount: string;
+  amount: string;
   pensionAccountNumber: string;
-}> = ({ paymentAmount, pensionAccountNumber }) => (
+}> = ({ amount, pensionAccountNumber }) => (
   <table>
     <tbody>
       <AccountNameRow>
@@ -20,7 +20,7 @@ export const OtherBankPaymentDetails: React.FunctionComponent<{
       <PaymentDescriptionRow bank="other" pensionAccountNumber={pensionAccountNumber}>
         <FormattedMessage id="thirdPillarPayment.paymentDescription" />
       </PaymentDescriptionRow>
-      <PaymentAmountRow paymentAmount={paymentAmount}>
+      <PaymentAmountRow amount={amount}>
         <FormattedMessage id="thirdPillarPayment.amount" />
         {null}
       </PaymentAmountRow>

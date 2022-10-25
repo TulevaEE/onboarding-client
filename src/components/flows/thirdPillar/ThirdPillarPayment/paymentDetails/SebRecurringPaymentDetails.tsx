@@ -5,13 +5,11 @@ import { AccountNumberRow } from './row/AccountNumberRow';
 import { PaymentAmountRow } from './row/PaymentAmountRow';
 import { PaymentDescriptionRow } from './row/PaymentDescriptionRow';
 import { PaymentReferenceRow } from './row/PaymentReferenceRow';
-import { TextRow } from './row/TextRow';
-import { tenthDayOfMonth } from '../PaymentDate';
 
 export const SebRecurringPaymentDetails: React.FunctionComponent<{
-  paymentAmount: string;
+  amount: string;
   pensionAccountNumber: string;
-}> = ({ paymentAmount, pensionAccountNumber }) => (
+}> = ({ amount, pensionAccountNumber }) => (
   <table>
     <tbody>
       <AccountNameRow>
@@ -20,7 +18,7 @@ export const SebRecurringPaymentDetails: React.FunctionComponent<{
       <AccountNumberRow bank="seb">
         <FormattedMessage id="thirdPillarPayment.beneficiaryAccount" />
       </AccountNumberRow>
-      <PaymentAmountRow paymentAmount={paymentAmount}>
+      <PaymentAmountRow amount={amount}>
         <FormattedMessage id="thirdPillarPayment.amount" />
         {null}
       </PaymentAmountRow>
@@ -30,14 +28,14 @@ export const SebRecurringPaymentDetails: React.FunctionComponent<{
       <PaymentReferenceRow pensionAccountNumber={pensionAccountNumber}>
         <FormattedMessage id="thirdPillarPayment.referenceNumber" />
       </PaymentReferenceRow>
-      <TextRow>
-        <FormattedMessage id="thirdPillarPayment.frequencyOfPayment" />
-        <FormattedMessage id="thirdPillarPayment.onceAMonth" />
-      </TextRow>
-      <TextRow>
-        <FormattedMessage id="thirdPillarPayment.firstPaymentDate2" />
-        {tenthDayOfMonth()}
-      </TextRow>
+      {/* <TextRow> */}
+      {/*  <FormattedMessage id="thirdPillarPayment.frequencyOfPayment" /> */}
+      {/*  <FormattedMessage id="thirdPillarPayment.onceAMonth" /> */}
+      {/* </TextRow> */}
+      {/* <TextRow> */}
+      {/*  <FormattedMessage id="thirdPillarPayment.firstPaymentDate2" /> */}
+      {/*  {tenthDayOfMonth()} */}
+      {/* </TextRow> */}
     </tbody>
   </table>
 );

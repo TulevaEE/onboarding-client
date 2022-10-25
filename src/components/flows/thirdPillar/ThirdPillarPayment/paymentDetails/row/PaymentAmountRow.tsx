@@ -1,11 +1,11 @@
 import React from 'react';
 
 export const PaymentAmountRow: React.FunctionComponent<{
-  paymentAmount: string;
+  amount: string;
   children: React.ReactNode[];
-}> = ({ paymentAmount, children }) => (
+}> = ({ amount, children }) => (
   <>
-    {paymentAmount && Number(paymentAmount) > 0 ? (
+    {amount && Number(amount) > 0 ? (
       <tr>
         <td className="align-top text-right">{children[0]}:</td>
         <td className="align-bottom pl-2">
@@ -15,7 +15,7 @@ export const PaymentAmountRow: React.FunctionComponent<{
               <br />
             </>
           )}
-          <b>{Number(paymentAmount).toFixed(2)} EUR</b>
+          <b>{Number(amount).toFixed(2)} EUR</b>
         </td>
       </tr>
     ) : null}
