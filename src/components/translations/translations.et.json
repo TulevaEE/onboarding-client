@@ -385,7 +385,7 @@
   "thirdPillarPayment.paymentDescription": "Makse selgitus",
   "thirdPillarPayment.reference": "Viitenumber",
   "thirdPillarPayment.paymentQuestion": "Kas tegid makse ära?",
-  "thirdPillarPayment.recurringPaymentQuestion": "Kas sõlmisid püsikorralduse lepingu ära?",
+  "thirdPillarPayment.recurringPaymentQuestion": "Kas tegid püsikorralduse ära?",
   "thirdPillarPayment.yesButton": "Jah",
   "thirdPillarPayment.singlePayment": "Ühekordne sissemakse",
   "thirdPillarPayment.recurringPayment": "Igakuine püsimakse",

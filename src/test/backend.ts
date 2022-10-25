@@ -437,6 +437,17 @@ export function applicationsBackend(server: SetupServerApi): void {
 export function paymentLinkBackend(server: SetupServerApi): void {
   server.use(
     rest.get('http://localhost/v1/payments/link', (req, res, ctx) => {
+      if (req.url.searchParams.get('type') === 'RECURRING') {
+        return res(
+          ctx.json({
+            url:
+              `https://${req.url.searchParams.get('bank')}.EE` +
+              `/${req.url.searchParams.get('type')}` +
+              `.${req.url.searchParams.get('amount')}` +
+              `.${req.url.searchParams.get('currency')}`,
+          }),
+        );
+      }
       return res(
         ctx.json({
           url:
