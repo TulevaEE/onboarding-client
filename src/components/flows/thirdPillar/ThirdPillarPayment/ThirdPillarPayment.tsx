@@ -9,12 +9,6 @@ import { BankButton } from './BankButton';
 import { State } from '../../../../types';
 import { redirectToPayment } from '../../../common/api';
 import { Bank, PaymentType } from '../../../common/apiModels';
-import { PaymentAmountInput } from './PaymentAmountInput';
-import { SwedbankRecurringPaymentDetails } from './paymentDetails/SwedbankRecurringPaymentDetails';
-import { SebRecurringPaymentDetails } from './paymentDetails/SebRecurringPaymentDetails';
-import { LhvRecurringPaymentDetails } from './paymentDetails/LhvRecurringPaymentDetails';
-import { LuminorRecurringPaymentDetails } from './paymentDetails/LuminorRecurringPaymentDetails';
-import { OtherBankPaymentDetails } from './paymentDetails/OtherBankPaymentDetails';
 
 export const ThirdPillarPayment: React.FunctionComponent<{
   previousPath: string;
@@ -33,9 +27,9 @@ export const ThirdPillarPayment: React.FunctionComponent<{
 }) => {
   const { formatMessage } = useIntl();
 
-  const [paymentType, setPaymentType] = useState<PaymentType>(PaymentType.SINGLE);
+  const [paymentType, setPaymentType] = useState('SINGLE');
   const [paymentAmount, setPaymentAmount] = useState<string>('');
-  const [paymentBank, setPaymentBank] = useState<string>('');
+  const [paymentBank, setPaymentBank] = useState('');
 
   return (
     <>
@@ -55,9 +49,9 @@ export const ThirdPillarPayment: React.FunctionComponent<{
         name="payment-type"
         id="payment-type-single"
         className="mt-3 p-3"
-        selected={paymentType === PaymentType.SINGLE}
+        selected={paymentType === 'SINGLE'}
         onSelect={() => {
-          setPaymentType(PaymentType.SINGLE);
+          setPaymentType('SINGLE');
         }}
       >
         <p className="m-0">
@@ -69,9 +63,9 @@ export const ThirdPillarPayment: React.FunctionComponent<{
         name="payment-type"
         id="payment-type-recurring"
         className="mt-3"
-        selected={paymentType === PaymentType.RECURRING}
+        selected={paymentType === 'RECURRING'}
         onSelect={() => {
-          setPaymentType(PaymentType.RECURRING);
+          setPaymentType('RECURRING');
         }}
       >
         <p className="m-0">
@@ -79,135 +73,231 @@ export const ThirdPillarPayment: React.FunctionComponent<{
         </p>
       </Radio>
 
-      <PaymentAmountInput
-        paymentType={paymentType}
-        value={paymentAmount}
-        onChange={(event) => setPaymentAmount(event.target.value)}
-        onWheel={(event) => event.currentTarget.blur()}
-      />
-
-      <div className="mt-2 payment-amount-input-footer">
-        <ThirdPillarPaymentsThisYear />
+      {paymentType === 'SINGLE' && (
         <div>
-          <small className="text-muted">
-            <a
-              href="//tuleva.ee/vastused/kolmanda-samba-kysimused/"
-              target="_blank"
-              rel="noreferrer"
-            >
-              {paymentType === PaymentType.SINGLE && (
-                <FormattedMessage id="thirdPillarPayment.singlePaymentHowMuch" />
-              )}
-              {paymentType === PaymentType.RECURRING && (
-                <FormattedMessage id="thirdPillarPayment.recurringPaymentHowMuch" />
-              )}
-            </a>
-          </small>
-        </div>
-      </div>
+          <label className="mt-5" htmlFor="payment-amount">
+            <b>
+              <FormattedMessage id="thirdPillarPayment.singlePaymentAmount" />
+            </b>
+            <div className="form-inline">
+              <div className="input-group input-group-lg mt-2">
+                <input
+                  id="payment-amount"
+                  type="number"
+                  placeholder="1000"
+                  className="form-control form-control-lg"
+                  min="0.00"
+                  step="0.01"
+                  value={paymentAmount}
+                  onChange={(event) => setPaymentAmount(event.target.value)}
+                  onWheel={(event) => event.currentTarget.blur()}
+                />
+                <div className="input-group-append">
+                  <span className="input-group-text">&euro;</span>
+                </div>
+              </div>
+            </div>
+          </label>
 
-      <div className="mt-5 payment-bank-title">
-        <b>
-          {paymentType === PaymentType.SINGLE && (
-            <FormattedMessage id="thirdPillarPayment.singlePaymentBank" />
-          )}
-          {paymentType === PaymentType.RECURRING && (
-            <FormattedMessage id="thirdPillarPayment.recurringPaymentBank" />
-          )}
-        </b>
-      </div>
+          <div className="mt-2">
+            <ThirdPillarPaymentsThisYear />
+            <div>
+              <small className="text-muted">
+                <a
+                  href="//tuleva.ee/vastused/kolmanda-samba-kysimused/"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <FormattedMessage id="thirdPillarPayment.singlePaymentHowMuch" />
+                </a>
+              </small>
+            </div>
+          </div>
 
-      <div className="mt-2 payment-banks">
-        <BankButton
-          bankKey="swedbank"
-          bankName="Swedbank"
-          paymentBank={paymentBank}
-          setPaymentBank={setPaymentBank}
-        />
-        <BankButton
-          bankKey="seb"
-          bankName="SEB"
-          paymentBank={paymentBank}
-          setPaymentBank={setPaymentBank}
-        />
-        <BankButton
-          bankKey="lhv"
-          bankName="LHV"
-          paymentBank={paymentBank}
-          setPaymentBank={setPaymentBank}
-        />
-        <BankButton
-          bankKey="luminor"
-          bankName="Luminor"
-          paymentBank={paymentBank}
-          setPaymentBank={setPaymentBank}
-        />
-        <BankButton
-          bankKey="other"
-          bankName={formatMessage({ id: 'thirdPillarPayment.otherBank' })}
-          paymentBank={paymentBank}
-          setPaymentBank={setPaymentBank}
-        />
-      </div>
+          <div className="mt-5">
+            <b>
+              <FormattedMessage id="thirdPillarPayment.singlePaymentBank" />
+            </b>
+          </div>
 
-      {paymentType === PaymentType.RECURRING && paymentBank && (
-        <div className="mt-4 recurring-payment-details">
-          <p>
-            <FormattedMessage
-              id={`thirdPillarPayment.recurringPaymentDescription.${paymentBank}`}
-              values={{ b: (chunks: string) => <b>{chunks}</b> }}
+          <div className="mt-2">
+            <BankButton
+              bankKey="swedbank"
+              bankName="Swedbank"
+              paymentBank={paymentBank}
+              setPaymentBank={setPaymentBank}
             />
-          </p>
-
-          {paymentBank === 'swedbank' && <SwedbankRecurringPaymentDetails amount={paymentAmount} />}
-
-          {paymentBank === 'seb' && (
-            <SebRecurringPaymentDetails
-              amount={paymentAmount}
-              pensionAccountNumber={pensionAccountNumber}
+            <BankButton
+              bankKey="seb"
+              bankName="SEB"
+              paymentBank={paymentBank}
+              setPaymentBank={setPaymentBank}
             />
+            <BankButton
+              bankKey="lhv"
+              bankName="LHV"
+              paymentBank={paymentBank}
+              setPaymentBank={setPaymentBank}
+            />
+            <BankButton
+              bankKey="luminor"
+              bankName="Luminor"
+              paymentBank={paymentBank}
+              setPaymentBank={setPaymentBank}
+            />
+            <BankButton
+              bankKey="other"
+              bankName={formatMessage({ id: 'thirdPillarPayment.otherBank' })}
+              paymentBank={paymentBank}
+              setPaymentBank={setPaymentBank}
+            />
+          </div>
+
+          {paymentBank !== 'other' && paymentType === 'SINGLE' && (
+            <div className="mt-5">
+              <button
+                type="button"
+                className="btn btn-primary"
+                disabled={
+                  !paymentBank ||
+                  paymentBank === 'other' ||
+                  !paymentAmount ||
+                  Number(paymentAmount) <= 0
+                }
+                onClick={() => {
+                  redirectToPayment(
+                    {
+                      amount: Number(paymentAmount),
+                      currency: 'EUR',
+                      type: paymentType as PaymentType,
+                      bank: paymentBank.toUpperCase() as Bank,
+                    },
+                    token,
+                  );
+                }}
+              >
+                <FormattedMessage id="thirdPillarPayment.makePayment" />
+              </button>
+            </div>
           )}
-
-          {paymentBank === 'lhv' && (
-            <LhvRecurringPaymentDetails
-              amount={paymentAmount}
-              pensionAccountNumber={pensionAccountNumber}
-            />
-          )}
-
-          {paymentBank === 'luminor' && (
-            <LuminorRecurringPaymentDetails
-              amount={paymentAmount}
-              pensionAccountNumber={pensionAccountNumber}
-            />
-          )}
-
-          {paymentBank === 'other' && (
-            <OtherBankPaymentDetails
-              pensionAccountNumber={pensionAccountNumber}
-              amount={paymentAmount}
-            />
-          )}
-        </div>
-      )}
-      {paymentType === PaymentType.SINGLE && paymentBank === 'other' && (
-        <div className="mt-4 other-bank-payment-details">
-          <p>
-            <FormattedMessage
-              id="thirdPillarPayment.singlePaymentDescription"
-              values={{ b: (chunks: string) => <b>{chunks}</b> }}
-            />
-          </p>
-          <OtherBankPaymentDetails
-            pensionAccountNumber={pensionAccountNumber}
-            amount={paymentAmount}
-          />
         </div>
       )}
-      {paymentBank === 'other' && (
-        <div className="mt-4 yes-button">
+
+      {(paymentBank === 'other' || paymentType === 'RECURRING') && (
+        <div className="mt-4">
           <p>
-            {paymentType === PaymentType.RECURRING ? (
+            {paymentType === 'RECURRING' ? (
+              <FormattedMessage
+                id="thirdPillarPayment.recurringPaymentDescription.other"
+                values={{ b: (chunks: string) => <b>{chunks}</b> }}
+              />
+            ) : (
+              <FormattedMessage
+                id="thirdPillarPayment.singlePaymentDescription"
+                values={{ b: (chunks: string) => <b>{chunks}</b> }}
+              />
+            )}
+          </p>
+
+          <table>
+            <tbody>
+              <tr>
+                <td>
+                  <FormattedMessage id="thirdPillarPayment.accountName" />
+                  :&nbsp;
+                </td>
+                <td>
+                  <b>AS Pensionikeskus</b>
+                </td>
+              </tr>
+              <tr>
+                <td className="align-top">
+                  <FormattedMessage id="thirdPillarPayment.accountNumber" />
+                  :&nbsp;
+                </td>
+                <td>
+                  <b>EE362200221067235244</b>
+                  {paymentType === 'RECURRING' && (
+                    <span>
+                      {' '}
+                      - Swedbank
+                      <br />
+                      <b>EE141010220263146225</b> - SEB
+                      <br />
+                      <b>EE547700771002908125</b> - LHV
+                      <br />
+                      <b>EE961700017004379157</b> - Luminor
+                    </span>
+                  )}
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <FormattedMessage id="thirdPillarPayment.paymentDescription" />
+                  :&nbsp;&nbsp;&nbsp;&nbsp;
+                </td>
+                <td>
+                  <b>
+                    30101119828
+                    {paymentType === 'SINGLE' && <span>,PK:{pensionAccountNumber}</span>}
+                  </b>
+                </td>
+              </tr>
+              {paymentType === 'RECURRING' ? (
+                <tr>
+                  <td>
+                    <FormattedMessage id="thirdPillarPayment.reference" />
+                    :&nbsp;
+                  </td>
+                  <td>
+                    <b>{pensionAccountNumber}</b>
+                  </td>
+                </tr>
+              ) : null}
+              {paymentType === 'SINGLE' && paymentAmount && Number(paymentAmount) > 0 ? (
+                <tr>
+                  <td>
+                    <FormattedMessage id="thirdPillarPayment.amount" />
+                    :&nbsp;
+                  </td>
+                  <td>
+                    <b>{Number(paymentAmount).toFixed(2)} EUR</b>
+                  </td>
+                </tr>
+              ) : null}
+            </tbody>
+          </table>
+
+          {paymentType === 'RECURRING' && (
+            <div className="mt-4">
+              <ThirdPillarPaymentsThisYear />
+              <div>
+                <small className="text-muted">
+                  <a
+                    href="//tuleva.ee/vastused/kolmanda-samba-kysimused/"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <FormattedMessage id="thirdPillarPayment.recurringPaymentHowTo" />
+                  </a>
+                </small>
+              </div>
+              <div>
+                <small className="text-muted">
+                  <a
+                    href="//tuleva.ee/vastused/kolmanda-samba-kysimused/"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <FormattedMessage id="thirdPillarPayment.recurringPaymentHowMuch" />
+                  </a>
+                </small>
+              </div>
+            </div>
+          )}
+
+          <p className="mt-4">
+            {paymentType === 'RECURRING' ? (
               <FormattedMessage id="thirdPillarPayment.recurringPaymentQuestion" />
             ) : (
               <FormattedMessage id="thirdPillarPayment.paymentQuestion" />
@@ -219,48 +309,6 @@ export const ThirdPillarPayment: React.FunctionComponent<{
               <FormattedMessage id="thirdPillarPayment.yesButton" />
             </button>
           </Link>
-        </div>
-      )}
-      {paymentBank !== 'other' && (
-        <div className="mt-4 payment-button">
-          <button
-            type="button"
-            className="btn btn-primary"
-            disabled={
-              !paymentBank ||
-              paymentBank === 'other' ||
-              !paymentAmount ||
-              Number(paymentAmount) <= 0
-            }
-            onClick={() => {
-              redirectToPayment(
-                {
-                  amount: Number(paymentAmount),
-                  currency: 'EUR',
-                  type: paymentType,
-                  bank: paymentBank.toUpperCase() as Bank,
-                },
-                token,
-              );
-            }}
-          >
-            {paymentType === PaymentType.SINGLE && (
-              <FormattedMessage id="thirdPillarPayment.makePayment" />
-            )}
-            {paymentType === PaymentType.RECURRING && (
-              <FormattedMessage id="thirdPillarPayment.setupRecurringPayment" />
-            )}
-          </button>
-          <div className="mt-2">
-            <small className="text-muted">
-              {paymentType === PaymentType.SINGLE && (
-                <FormattedMessage id="thirdPillarPayment.freeSinglePayment" />
-              )}
-              {paymentType === PaymentType.RECURRING && (
-                <FormattedMessage id="thirdPillarPayment.freeRecurringPayment" />
-              )}
-            </small>
-          </div>
         </div>
       )}
     </>
@@ -277,4 +325,5 @@ const mapStateToProps = (state: State) => ({
     state.login.userConversion.thirdPillar.selectionComplete,
   token: state.login.token,
 });
+
 export default connect(mapStateToProps)(ThirdPillarPayment);
