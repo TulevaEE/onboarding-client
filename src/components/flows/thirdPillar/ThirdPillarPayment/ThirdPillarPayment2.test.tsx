@@ -29,6 +29,9 @@ describe('When a user is making a third pillar payment', () => {
     },
   });
 
+  const windowOpen = jest.spyOn(window, 'open');
+  windowOpen.mockImplementation(jest.fn());
+
   function initializeComponent() {
     history = createMemoryHistory();
     const store = createDefaultStore(history as any);
@@ -55,7 +58,7 @@ describe('When a user is making a third pillar payment', () => {
 
     initializeComponent();
 
-    history.push('/3rd-pillar-flow/payment');
+    history.push('/payment');
   });
 
   test('payment page is being shown', async () => {
@@ -73,47 +76,72 @@ describe('When a user is making a third pillar payment', () => {
   });
 
   test('can select bank', async () => {
-    const swedButton = await swedbankButton();
-    userEvent.click(swedButton);
-    expect(swedButton.value).toBe('on');
+    const lhvBank = await lhvButton();
+    userEvent.click(lhvBank);
+    expect(lhvBank.value).toBe('on');
   });
 
   test('can start a one time payment', async () => {
     const amount = await amountInput();
-    const swedbank = await swedbankButton();
+    const lhvBank = await lhvButton();
     const makePayment = await makePaymentButton();
     userEvent.type(amount, '23');
-    userEvent.click(swedbank);
+    userEvent.click(lhvBank);
     userEvent.click(makePayment);
 
     await waitFor(() =>
       expect(windowLocation).toHaveBeenCalledWith(
-        'https://sandbox-payments.montonio.com?payment_token=example.jwt.token.with.23.EUR.SWEDBANK',
+        'https://sandbox-payments.montonio.com?payment_token=example.jwt.token.with.23.EUR.LHV',
       ),
     );
     expect(windowLocation).toHaveBeenCalledTimes(1);
   });
 
-  test('can see recurring payment details', async () => {
+  test('can start a recurring payment', async () => {
     const recurringPayment = await recurringPaymentOption();
+    const amount = await amountInput();
+    const lhvBank = await lhvButton();
     userEvent.click(recurringPayment);
+    userEvent.type(amount, '34');
+    userEvent.click(lhvBank);
 
-    expect(await screen.findByText('Pay to:')).toBeInTheDocument();
-    expect(await screen.findByText('AS Pensionikeskus')).toBeInTheDocument();
-    expect(await screen.findByText('Account number:')).toBeInTheDocument();
-    expect(await screen.findByText('EE362200221067235244')).toBeInTheDocument();
-    expect(await screen.findByText('EE141010220263146225')).toBeInTheDocument();
-    expect(await screen.findByText('EE547700771002908125')).toBeInTheDocument();
-    expect(await screen.findByText('EE961700017004379157')).toBeInTheDocument();
-    expect(await screen.findByText('Payment description:')).toBeInTheDocument();
-    expect(await screen.findByText('30101119828')).toBeInTheDocument();
-    expect(await screen.findByText('Payment reference:')).toBeInTheDocument();
-    expect(await screen.findByText('9876543210')).toBeInTheDocument();
+    const setupStandingOrder = await setupStandingOrderButton();
+    userEvent.click(setupStandingOrder);
+
+    await waitFor(() =>
+      expect(windowOpen).toHaveBeenCalledWith('https://LHV.EE/RECURRING.34.EUR', '_blank'),
+    );
+    expect(windowOpen).toHaveBeenCalledTimes(1);
   });
 
-  test('can click Yes after seeing recurring payment details', async () => {
+  test('can see recurring payment details', async () => {
     const recurringPayment = await recurringPaymentOption();
+    const lhvBank = await lhvButton();
     userEvent.click(recurringPayment);
+    userEvent.click(lhvBank);
+
+    // eslint-disable-next-line testing-library/no-debugging-utils
+    screen.debug(undefined, Infinity);
+
+    expect(await screen.findByText("Beneficiary's name:")).toBeInTheDocument();
+    expect(screen.getByText('AS Pensionikeskus')).toBeInTheDocument();
+    expect(screen.getByText("Beneficiary's account no:")).toBeInTheDocument();
+    expect(screen.getByText('EE547700771002908125')).toBeInTheDocument();
+    expect(screen.getByText('Payment description:')).toBeInTheDocument();
+    expect(screen.getByText('30101119828')).toBeInTheDocument();
+    expect(screen.getByText('Reference no:')).toBeInTheDocument();
+    expect(screen.getByText('9876543210')).toBeInTheDocument();
+  });
+
+  test('can click Yes after seeing other banks recurring payment details', async () => {
+    const recurringPayment = await recurringPaymentOption();
+    const amount = await amountInput();
+    const otherBank = await otherBankButton();
+
+    userEvent.click(recurringPayment);
+    userEvent.type(amount, '34');
+    userEvent.click(otherBank);
+
     const yes = await yesButton();
     userEvent.click(yes);
 
@@ -125,15 +153,15 @@ describe('When a user is making a third pillar payment', () => {
     userEvent.click(otherBank);
 
     expect(await screen.findByText('Pay to:')).toBeInTheDocument();
-    expect(await screen.findByText('AS Pensionikeskus')).toBeInTheDocument();
-    expect(await screen.findByText('Account number:')).toBeInTheDocument();
-    expect(await screen.findByText('EE362200221067235244')).toBeInTheDocument();
+    expect(screen.getByText('AS Pensionikeskus')).toBeInTheDocument();
+    expect(screen.getByText('Account number:')).toBeInTheDocument();
+    expect(screen.getByText('EE362200221067235244')).toBeInTheDocument();
     expect(screen.queryByText('EE141010220263146225')).not.toBeInTheDocument();
     expect(screen.queryByText('EE547700771002908125')).not.toBeInTheDocument();
     expect(screen.queryByText('EE961700017004379157')).not.toBeInTheDocument();
-    expect(await screen.findByText('Payment description:')).toBeInTheDocument();
+    expect(screen.getByText('Payment description:')).toBeInTheDocument();
     expect(
-      await screen.findByText('30101119828', {
+      screen.getByText('30101119828', {
         exact: false,
       }),
     ).toHaveTextContent('30101119828,PK:9876543210');
@@ -152,16 +180,16 @@ describe('When a user is making a third pillar payment', () => {
 
   test('can switch between Single and Recurring payment', async () => {
     const recurringPayment = await recurringPaymentOption();
+    const lhvBank = await lhvButton();
     userEvent.click(recurringPayment);
-    expect(queryAmountInput()).not.toBeInTheDocument();
-    expect(querySwedbankButton()).not.toBeInTheDocument();
-    expect(queryOtherBankButton()).not.toBeInTheDocument();
+    userEvent.click(lhvBank);
+    expect(queryMakePaymentButton()).not.toBeInTheDocument();
+    expect(await setupStandingOrderButton()).toBeInTheDocument();
 
     const singlePayment = await singlePaymentOption();
     userEvent.click(singlePayment);
-    expect(await amountInput()).toBeInTheDocument();
-    expect(await swedbankButton()).toBeInTheDocument();
-    expect(await otherBankButton()).toBeInTheDocument();
+    expect(querySetupStandingOrderButton()).not.toBeInTheDocument();
+    expect(await makePaymentButton()).toBeInTheDocument();
   });
 
   const singlePaymentOption = async () => screen.findByLabelText('Single payment');
@@ -170,17 +198,17 @@ describe('When a user is making a third pillar payment', () => {
     screen.findByLabelText('What is the payment amount?', {
       exact: false,
     });
-  const queryAmountInput = () =>
-    screen.queryByLabelText('What is the payment amount?', {
-      exact: false,
-    });
-  const swedbankButton: () => Promise<HTMLInputElement> = async () =>
-    screen.findByLabelText('Swedbank');
-  const querySwedbankButton = () => screen.queryByLabelText('Swedbank');
+  const lhvButton: () => Promise<HTMLInputElement> = async () => screen.findByLabelText('LHV');
 
   const otherBankButton = async () => screen.findByLabelText('Other bank');
-  const queryOtherBankButton = () => screen.queryByLabelText('Other bank');
 
   const makePaymentButton = async () => screen.findByRole('button', { name: 'Make payment' });
+  const queryMakePaymentButton = () => screen.queryByRole('button', { name: 'Make payment' });
+
+  const setupStandingOrderButton = async () =>
+    screen.findByRole('button', { name: 'Set up standing order' });
+  const querySetupStandingOrderButton = () =>
+    screen.queryByRole('button', { name: 'Set up standing order' });
+
   const yesButton = async () => screen.findByRole('button', { name: 'Yes' });
 });
