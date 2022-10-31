@@ -338,8 +338,8 @@
   "thirdPillarPayment.singlePaymentDescription": "Logi sisse <b>oma internetipanka</b> ja tee oma III samba pensionikontole sissemakse:",
   "thirdPillarPayment.recurringPaymentDescription.swedbank": "Vajuta siia nupule ning logi selle kaudu oma Swedbanki internetipanka.{br}Vali sissemakse fondi <b>\"vastavalt valikuavaldusele\"</b>, sisesta uuesti <b>summa</b>, <b>esimese sissemakse kuupäev</b> ning <b>kinnita</b> makse.",
   "thirdPillarPayment.recurringPaymentDescription.seb": "Vajuta siia nupule ning logi selle kaudu oma SEB internetipanka.{br}Vali <b>pangakonto</b>, <b>esimese makse kuupäev</b> ning <b>kinnita</b> makse.",
-  "thirdPillarPayment.recurringPaymentDescription.lhv": "Vajuta siia nupule ja logi selle kaudu oma LHV panga kontole.{br}Veendu, et oled valinud oma <b>personaalse konto</b>, vali <b>esimese makse</b> kuupäev ja <b>kinnita</b> makse.",
-  "thirdPillarPayment.recurringPaymentDescription.luminor": "Logi sisse <b>Luminori internetipanka</b> ja lisa uus <b>püsikorraldus</b> järgmiste andmetega:",
+  "thirdPillarPayment.recurringPaymentDescription.lhv": "Vajuta siia nupule ning logi selle kaudu oma LHV internetipanka.{br}Veendu, et oled valinud oma <b>personaalse konto</b>, vali <b>esimese makse</b> kuupäev ja <b>kinnita</b> makse.",
+  "thirdPillarPayment.recurringPaymentDescription.luminor": "Vajuta siia nupule ning logi selle kaudu oma Luminori internetipanka ja lisa uus <b>püsikorraldus</b> järgmiste andmetega:",
   "thirdPillarPayment.recurringPaymentDescription.other": "Logi sisse <b>oma internetipanka</b> ja tee oma III samba sissemakseteks uus <b>püsikorraldus</b> järgmiste andmetega:",
 
   "thirdPillarPayment.fund": "Teen sissemakse fondi",
