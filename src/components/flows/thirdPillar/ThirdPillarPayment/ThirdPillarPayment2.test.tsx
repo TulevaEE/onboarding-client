@@ -116,21 +116,19 @@ describe('When a user is making a third pillar payment', () => {
 
   test('can see recurring payment details', async () => {
     const recurringPayment = await recurringPaymentOption();
-    const lhvBank = await lhvButton();
+    const lhvBank = await otherBankButton();
     userEvent.click(recurringPayment);
     userEvent.click(lhvBank);
 
     // eslint-disable-next-line testing-library/no-debugging-utils
     screen.debug(undefined, Infinity);
 
-    expect(await screen.findByText("Beneficiary's name:")).toBeInTheDocument();
+    expect(await screen.findByText('Pay to:')).toBeInTheDocument();
     expect(screen.getByText('AS Pensionikeskus')).toBeInTheDocument();
-    expect(screen.getByText("Beneficiary's account no:")).toBeInTheDocument();
-    expect(screen.getByText('EE547700771002908125')).toBeInTheDocument();
+    expect(screen.getByText('Account number:')).toBeInTheDocument();
+    expect(screen.getByText('EE362200221067235244')).toBeInTheDocument();
     expect(screen.getByText('Payment description:')).toBeInTheDocument();
-    expect(screen.getByText('30101119828')).toBeInTheDocument();
-    expect(screen.getByText('Reference no:')).toBeInTheDocument();
-    expect(screen.getByText('9876543210')).toBeInTheDocument();
+    expect(screen.getByText('30101119828,PK:9876543210')).toBeInTheDocument();
   });
 
   test('can click Yes after seeing other banks recurring payment details', async () => {

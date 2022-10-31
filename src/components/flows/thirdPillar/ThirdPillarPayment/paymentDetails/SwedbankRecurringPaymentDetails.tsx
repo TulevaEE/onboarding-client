@@ -16,10 +16,10 @@ export const SwedbankRecurringPaymentDetails: React.FunctionComponent<{
         <FormattedMessage id="thirdPillarPayment.amount" />
         {null}
       </PaymentAmountRow>
-      <TextRow>
-        <FormattedMessage id="thirdPillarPayment.purchaseRegularity" />
-        <FormattedMessage id="thirdPillarPayment.regularPayments" />
-      </TextRow>
+      {/* <TextRow> */}
+      {/*  <FormattedMessage id="thirdPillarPayment.purchaseRegularity" /> */}
+      {/*  <FormattedMessage id="thirdPillarPayment.regularPayments" /> */}
+      {/* </TextRow> */}
       {/* <TextRow> */}
       {/*  <FormattedMessage id="thirdPillarPayment.orderFrequency" /> */}
       {/*  <FormattedMessage id="thirdPillarPayment.monthly" /> */}

@@ -155,25 +155,28 @@ export const ThirdPillarPayment2: React.FunctionComponent<{
           <p>
             <FormattedMessage
               id={`thirdPillarPayment.recurringPaymentDescription.${paymentBank}`}
-              values={{ b: (chunks: string) => <b>{chunks}</b> }}
+              values={{
+                b: (chunks: string) => <b>{chunks}</b>,
+                br: <br />,
+              }}
             />
           </p>
 
-          {paymentBank === 'swedbank' && <SwedbankRecurringPaymentDetails amount={paymentAmount} />}
+          {/* {paymentBank === 'swedbank' && <SwedbankRecurringPaymentDetails amount={paymentAmount} />} */}
 
-          {paymentBank === 'seb' && (
-            <SebRecurringPaymentDetails
-              amount={paymentAmount}
-              pensionAccountNumber={pensionAccountNumber}
-            />
-          )}
+          {/* {paymentBank === 'seb' && ( */}
+          {/*  <SebRecurringPaymentDetails */}
+          {/*    amount={paymentAmount} */}
+          {/*    pensionAccountNumber={pensionAccountNumber} */}
+          {/*  /> */}
+          {/* )} */}
 
-          {paymentBank === 'lhv' && (
-            <LhvRecurringPaymentDetails
-              amount={paymentAmount}
-              pensionAccountNumber={pensionAccountNumber}
-            />
-          )}
+          {/* {paymentBank === 'lhv' && ( */}
+          {/*  <LhvRecurringPaymentDetails */}
+          {/*    amount={paymentAmount} */}
+          {/*    pensionAccountNumber={pensionAccountNumber} */}
+          {/*  /> */}
+          {/* )} */}
 
           {paymentBank === 'luminor' && (
             <LuminorRecurringPaymentDetails
@@ -254,10 +257,20 @@ export const ThirdPillarPayment2: React.FunctionComponent<{
           <div className="mt-2">
             <small className="text-muted">
               {paymentType === PaymentType.SINGLE && (
-                <FormattedMessage id="thirdPillarPayment.freeSinglePayment" />
+                <FormattedMessage
+                  id="thirdPillarPayment.freeSinglePayment"
+                  values={{
+                    b: (chunks: string) => <b>{chunks}</b>,
+                  }}
+                />
               )}
               {paymentType === PaymentType.RECURRING && (
-                <FormattedMessage id="thirdPillarPayment.freeRecurringPayment" />
+                <FormattedMessage
+                  id="thirdPillarPayment.freeRecurringPayment"
+                  values={{
+                    b: (chunks: string) => <b>{chunks}</b>,
+                  }}
+                />
               )}
             </small>
           </div>
