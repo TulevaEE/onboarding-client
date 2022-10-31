@@ -139,12 +139,12 @@ export const ThirdPillarPayment: React.FunctionComponent<{
               paymentBank={paymentBank}
               setPaymentBank={setPaymentBank}
             />
-            {/* <BankButton */}
-            {/*  bankKey="luminor" */}
-            {/*  bankName="Luminor" */}
-            {/*  paymentBank={paymentBank} */}
-            {/*  setPaymentBank={setPaymentBank} */}
-            {/* /> */}
+            <BankButton
+              bankKey="luminor"
+              bankName="Luminor"
+              paymentBank={paymentBank}
+              setPaymentBank={setPaymentBank}
+            />
             <BankButton
               bankKey="other"
               bankName={formatMessage({ id: 'thirdPillarPayment.otherBank' })}
