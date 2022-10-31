@@ -10,9 +10,6 @@ import { State } from '../../../../types';
 import { redirectToPayment } from '../../../common/api';
 import { Bank, PaymentType } from '../../../common/apiModels';
 import { PaymentAmountInput } from './PaymentAmountInput';
-import { SwedbankRecurringPaymentDetails } from './paymentDetails/SwedbankRecurringPaymentDetails';
-import { SebRecurringPaymentDetails } from './paymentDetails/SebRecurringPaymentDetails';
-import { LhvRecurringPaymentDetails } from './paymentDetails/LhvRecurringPaymentDetails';
 import { LuminorRecurringPaymentDetails } from './paymentDetails/LuminorRecurringPaymentDetails';
 import { OtherBankPaymentDetails } from './paymentDetails/OtherBankPaymentDetails';
 
