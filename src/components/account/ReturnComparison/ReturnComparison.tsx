@@ -30,6 +30,7 @@ interface State {
   personalReturn: NullableNumber;
   pensionFundReturn: NullableNumber;
   indexReturn: NullableNumber;
+  notEnoughHistory: boolean;
 }
 
 const formatPercentage = (percentage: NullableNumber): string =>
@@ -67,6 +68,7 @@ export class ReturnComparison extends Component<Props, State> {
     personalReturn: null,
     pensionFundReturn: null,
     indexReturn: null,
+    notEnoughHistory: false,
   };
 
   componentDidMount(): void {
@@ -87,6 +89,7 @@ export class ReturnComparison extends Component<Props, State> {
         personal: personalReturn,
         pensionFund: pensionFundReturn,
         index: indexReturn,
+        notEnoughHistory,
       } = await getReturnComparison(
         fromDate,
         {
@@ -96,7 +99,7 @@ export class ReturnComparison extends Component<Props, State> {
         },
         token,
       );
-      this.setState({ personalReturn, pensionFundReturn, indexReturn });
+      this.setState({ personalReturn, pensionFundReturn, indexReturn, notEnoughHistory });
     } catch (ignored) {
       this.setState({
         personalReturn: null,
@@ -120,6 +123,7 @@ export class ReturnComparison extends Component<Props, State> {
       personalReturn,
       pensionFundReturn,
       indexReturn,
+      notEnoughHistory,
     } = this.state;
 
     return (
@@ -206,6 +210,12 @@ export class ReturnComparison extends Component<Props, State> {
               </div>
             </div>
           </div>
+
+          {notEnoughHistory && (
+            <div className="text-center mt-2 alert alert-danger">
+              <FormattedMessage id="returnComparison.notEnoughHistory" />
+            </div>
+          )}
 
           <div className="text-center mt-2">
             <a

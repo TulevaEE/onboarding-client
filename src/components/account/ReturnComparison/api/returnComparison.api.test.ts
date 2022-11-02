@@ -27,6 +27,7 @@ describe('Return comparison API', () => {
   it('returns return comparison object with passed personal pillar, pension fund, and index values', async () => {
     (get as jest.Mock).mockResolvedValueOnce({
       from: '',
+      notEnoughHistory: false,
       returns: [
         { key: Key.CPI, value: 0.0686 },
         { key: 'EE123456', value: 0.0228 },
@@ -43,12 +44,14 @@ describe('Return comparison API', () => {
       personal: 0.0436,
       pensionFund: 0.0228,
       index: 0.0686,
+      notEnoughHistory: false,
     });
   });
 
   it('returns return comparison object with null values when respective keys are not found', async () => {
     (get as jest.Mock).mockResolvedValueOnce({
       from: '',
+      notEnoughHistory: false,
       returns: [{ key: 'EPI', value: 0.0228 }],
     });
 
@@ -58,9 +61,31 @@ describe('Return comparison API', () => {
       '',
     );
     expect(comparison).toStrictEqual({
+      notEnoughHistory: false,
       personal: null,
       pensionFund: 0.0228,
       index: null,
     });
   });
+
+  it('returns return comparison object with null values when there is not enough history', async () => {
+    (get as jest.Mock).mockResolvedValueOnce({
+      from: '',
+      notEnoughHistory: true,
+      returns: null,
+    });
+
+    const comparison = await getReturnComparison(
+      '',
+      { personalKey: Key.THIRD_PILLAR, pensionFundKey: Key.EPI, indexKey: Key.CPI },
+      '',
+    );
+    expect(comparison).toStrictEqual({
+      notEnoughHistory: true,
+      personal: null,
+      pensionFund: 0.0228,
+      index: null,
+    });
+  });
+
 });
