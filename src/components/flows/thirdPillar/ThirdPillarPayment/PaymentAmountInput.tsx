@@ -22,7 +22,7 @@ export const PaymentAmountInput: React.FunctionComponent<{
         <input
           id="payment-amount"
           type="number"
-          placeholder={paymentType === PaymentType.SINGLE ? '6000' : '500'}
+          placeholder={paymentType === PaymentType.SINGLE ? '1000' : '100'}
           className="form-control form-control-lg"
           min="0.00"
           step="0.01"

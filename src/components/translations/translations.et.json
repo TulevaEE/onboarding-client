@@ -408,7 +408,7 @@
   "thirdPillarPayment.accountNumber.seb": "Pensionikeskuse SEB kontonumber",
   "thirdPillarPayment.accountNumber.lhv": "Pensionikeskuse LHV kontonumber",
   "thirdPillarPayment.accountNumber.luminor": "Pensionikeskuse Luminori kontonumber",
-  "thirdPillarPayment.processingCode": "III sammast tähistav töötluskood",
+  "thirdPillarPayment.processingCode": "III sammast tähistav töötluskood, mis on alati samasugune",
   "thirdPillarPayment.processingCodeAndPensionAccountNumber": "III sammast tähistav töötluskood ja sinu personaalne pensionikonto number",
   "thirdPillarPayment.pensionAccountNumber": "Sinu personaalne pensionikonto number",
 
