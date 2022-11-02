@@ -20,6 +20,7 @@ interface Return {
 
 interface ReturnsResponse {
   from: string;
+  notEnoughHistory: boolean;
   returns: Return[];
 }
 
@@ -29,6 +30,7 @@ interface ReturnComparison {
   personal: NullableNumber;
   pensionFund: NullableNumber;
   index: NullableNumber;
+  notEnoughHistory: boolean;
 }
 
 export async function getReturnComparison(
@@ -40,13 +42,21 @@ export async function getReturnComparison(
   }: { personalKey: Key; pensionFundKey: Key | string; indexKey: Key },
   token: string,
 ): Promise<ReturnComparison> {
-  const { returns } = await getReturns(date, [personalKey, pensionFundKey, indexKey], token);
+  const { notEnoughHistory, returns } = await getReturns(
+    date,
+    [personalKey, pensionFundKey, indexKey],
+    token,
+  );
+
+  if (notEnoughHistory) {
+    return { personal: null, pensionFund: null, index: null, notEnoughHistory: true };
+  }
 
   const personal = getReturnByKey(personalKey, returns);
   const pensionFund = getReturnByKey(pensionFundKey, returns);
   const index = getReturnByKey(indexKey, returns);
 
-  return { personal, pensionFund, index };
+  return { personal, pensionFund, index, notEnoughHistory };
 }
 
 function getReturnByKey(key: string, returns: Return[]): NullableNumber {

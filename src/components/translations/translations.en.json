@@ -305,6 +305,7 @@
   "returnComparison.index.unionStockIndex": "World market return",
   "returnComparison.index.cpi": "Inflation",
   "returnComparison.explanationLinkText": "What do these numbers mean? (in Estonian)",
+  "returnComparison.notEnoughHistory": "Can not calculate returns when there's less than a year of worth of investments.",
   "returnComparison.period.all": "From the beginning",
   "returnComparison.period.tenYears": "10 years",
   "returnComparison.period.fiveYears": "5 years",
