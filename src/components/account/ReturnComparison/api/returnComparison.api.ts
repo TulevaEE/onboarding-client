@@ -48,10 +48,6 @@ export async function getReturnComparison(
     token,
   );
 
-  if (notEnoughHistory) {
-    return { personal: null, pensionFund: null, index: null, notEnoughHistory: true };
-  }
-
   const personal = getReturnByKey(personalKey, returns);
   const pensionFund = getReturnByKey(pensionFundKey, returns);
   const index = getReturnByKey(indexKey, returns);
@@ -60,7 +56,7 @@ export async function getReturnComparison(
 }
 
 function getReturnByKey(key: string, returns: Return[]): NullableNumber {
-  const returnForKey = returns.find((ret) => ret.key === key);
+  const returnForKey = returns?.find((ret) => ret.key === key);
 
   return returnForKey ? returnForKey.value : null;
 }

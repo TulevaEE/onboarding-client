@@ -83,7 +83,7 @@ describe('Return comparison API', () => {
     expect(comparison).toStrictEqual({
       notEnoughHistory: true,
       personal: null,
-      pensionFund: 0.0228,
+      pensionFund: null,
       index: null,
     });
   });
