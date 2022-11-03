@@ -4,6 +4,7 @@ import { shallow, ShallowWrapper } from 'enzyme';
 import { ReturnComparison } from './ReturnComparison';
 import { getReturnComparison, Key } from './api';
 import Select from './select';
+import {FormattedMessage} from "react-intl";
 
 jest.mock('./api', () => ({
   ...jest.requireActual('./api'),
@@ -137,6 +138,50 @@ describe('Return comparison', () => {
     expect(personalReturn(component)).toBe('...');
     expect(pensionFundReturn(component)).toBe('...');
     expect(indexReturn(component)).toBe('...');
+  });
+
+  it('shows returns as formatted percentages and no error messages', async () => {
+    const returns = {
+      personal: 0.1,
+      pensionFund: 0.111,
+      index: 0.122,
+      notEnoughHistory: false,
+    };
+
+    (getReturnComparison as jest.Mock).mockResolvedValueOnce({});
+    const component = shallow(<ReturnComparison token={aToken()} fundNameMap={{}} />);
+    await flushPromises();
+
+    (getReturnComparison as jest.Mock).mockResolvedValueOnce(returns);
+    dateSelect(component).simulate('change', aDate());
+    await flushPromises();
+
+    expect(personalReturn(component)).toBe('10.0%');
+    expect(pensionFundReturn(component)).toBe('11.1%');
+    expect(indexReturn(component)).toBe('12.2%');
+    expect(component.contains(<FormattedMessage id="returnComparison.notEnoughHistory" />)).toBe(false);
+  });
+
+  it('shows an error message and returns as - after getting not enough history response', async () => {
+    (getReturnComparison as jest.Mock).mockResolvedValueOnce({});
+    const component = shallow(<ReturnComparison token={aToken()} fundNameMap={{}} />);
+
+    await flushPromises();
+
+    (getReturnComparison as jest.Mock).mockResolvedValueOnce({
+      personal: null,
+      pensionFund: null,
+      index: null,
+      notEnoughHistory: true,
+    });
+    // (getReturnComparison as jest.Mock).mockRejectedValueOnce({});
+    dateSelect(component).simulate('change', aDate());
+    await flushPromises();
+
+    expect(personalReturn(component)).toBe('-');
+    expect(pensionFundReturn(component)).toBe('-');
+    expect(indexReturn(component)).toBe('-');
+    expect(component.contains(<FormattedMessage id="returnComparison.notEnoughHistory" />)).toBe(true);
   });
 
   it('passes five years ago select by default', async () => {
