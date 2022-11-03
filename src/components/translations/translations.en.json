@@ -257,7 +257,6 @@
   "account.status.choice.tuleva": "Tuleva",
   "account.status.choice.join.tuleva.2": "Pick Tuleva",
   "account.status.choice.transfer.tuleva.2": "Switch fund",
-  "account.status.choice.pay.tuleva.3": "Make a payment",
   "account.status.choice.join.tuleva": "Sign up",
   "account.status.yearToDateContribution": "You have contributed {contribution} euros to your third pillar this year.",
   "account.greeting": "Hi",

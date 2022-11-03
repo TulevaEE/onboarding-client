@@ -54,7 +54,7 @@ exports[`ThirdPillarStatusBox renders the "payment incomplete" flow when funds h
   showAction={true}
 >
   <Link
-    className="btn btn-light"
+    className="btn btn-primary"
     to="/3rd-pillar-flow"
   >
     <MemoizedFormattedMessage
@@ -135,7 +135,7 @@ exports[`ThirdPillarStatusBox renders the success flow 1`] = `
   showAction={true}
 >
   <Link
-    className="btn btn-light"
+    className="btn btn-primary"
     to="/3rd-pillar-flow"
   >
     <MemoizedFormattedMessage

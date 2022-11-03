@@ -82,7 +82,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
           <ThirdPillarPaymentsThisYear />,
         ]}
       >
-        <Link to="/3rd-pillar-flow" className="btn btn-light">
+        <Link to="/3rd-pillar-flow" className="btn btn-primary">
           <FormattedMessage id="account.status.choice.pillar.third.success.action" />
         </Link>
       </StatusBoxRow>
@@ -96,7 +96,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
       name={<FormattedMessage id="account.status.choice.pillar.third" />}
       lines={[activeFund, <ThirdPillarPaymentsThisYear />]}
     >
-      <Link to="/3rd-pillar-flow" className="btn btn-light">
+      <Link to="/3rd-pillar-flow" className="btn btn-primary">
         <FormattedMessage id="account.status.choice.pillar.third.success.action" />
       </Link>
     </StatusBoxRow>
