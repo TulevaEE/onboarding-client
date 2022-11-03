@@ -2,7 +2,6 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { ChoiceApplicationRow } from './row/ChoiceApplicationRow';
 import { PaymentAmountRow } from './row/PaymentAmountRow';
-import { TextRow } from './row/TextRow';
 
 export const SwedbankRecurringPaymentDetails: React.FunctionComponent<{
   amount: string;

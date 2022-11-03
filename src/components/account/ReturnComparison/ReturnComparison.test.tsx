@@ -1,10 +1,10 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
+import { FormattedMessage } from 'react-intl';
 
 import { ReturnComparison } from './ReturnComparison';
 import { getReturnComparison, Key } from './api';
 import Select from './select';
-import {FormattedMessage} from "react-intl";
 
 jest.mock('./api', () => ({
   ...jest.requireActual('./api'),
@@ -159,7 +159,9 @@ describe('Return comparison', () => {
     expect(personalReturn(component)).toBe('10.0%');
     expect(pensionFundReturn(component)).toBe('11.1%');
     expect(indexReturn(component)).toBe('12.2%');
-    expect(component.contains(<FormattedMessage id="returnComparison.notEnoughHistory" />)).toBe(false);
+    expect(component.contains(<FormattedMessage id="returnComparison.notEnoughHistory" />)).toBe(
+      false,
+    );
   });
 
   it('shows an error message and returns as - after getting not enough history response', async () => {
@@ -181,7 +183,9 @@ describe('Return comparison', () => {
     expect(personalReturn(component)).toBe('-');
     expect(pensionFundReturn(component)).toBe('-');
     expect(indexReturn(component)).toBe('-');
-    expect(component.contains(<FormattedMessage id="returnComparison.notEnoughHistory" />)).toBe(true);
+    expect(component.contains(<FormattedMessage id="returnComparison.notEnoughHistory" />)).toBe(
+      true,
+    );
   });
 
   it('passes five years ago select by default', async () => {
