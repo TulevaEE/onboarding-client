@@ -87,5 +87,4 @@ describe('Return comparison API', () => {
       index: null,
     });
   });
-
 });

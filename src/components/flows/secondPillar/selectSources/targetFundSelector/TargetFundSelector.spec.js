@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { FormattedMessage, FormattedRelativeTime } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { TargetFundSelector } from './TargetFundSelector';
 
 jest.mock('react-intl', () => ({

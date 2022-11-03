@@ -2,7 +2,6 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Link } from 'react-router-dom';
 
-import { FormattedMessage } from 'react-intl';
 import { logo, Loader } from '../../common';
 import Header from './Header';
 import LanguageSwitcher from './languageSwitcher';

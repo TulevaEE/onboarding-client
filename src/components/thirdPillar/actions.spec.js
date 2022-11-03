@@ -6,7 +6,6 @@ import {
   QUERY_PARAMETERS,
   SELECT_THIRD_PILLAR_SOURCES,
 } from './constants';
-import * as mockApi from '../common/api';
 
 jest.useFakeTimers();
 
@@ -18,10 +17,6 @@ const actions = require('./actions'); // need to use require because of jest moc
 describe('Third pillar actions', () => {
   let dispatch;
   let state;
-
-  function createBoundAction(action) {
-    return (...args) => action(...args)(dispatch, () => state);
-  }
 
   function mockDispatch() {
     state = { login: { token: 'token' }, exchange: {} };
