@@ -200,14 +200,14 @@ describe('Return comparison', () => {
   const select = (c): ShallowWrapper => c.find(Select);
   const dateSelect = (c): ShallowWrapper => select(c).at(0);
   const personalReturnSelect = (c): ShallowWrapper => select(c).at(1);
-  const pensionFundSelect = (c): ShallowWrapper => select(c).at(2);
-  const indexSelect = (c): ShallowWrapper => select(c).at(3);
+  const pensionFundSelect = (c): ShallowWrapper => select(c).at(3);
+  const indexSelect = (c): ShallowWrapper => select(c).at(2);
   const aDate = (): string => '2020-06-25';
   const aToken = (): string => 'a-token';
   const returns = (c, index): ShallowWrapper => c.find('.h2').at(index);
   const personalReturn = (c): string => returns(c, 0).text();
-  const pensionFundReturn = (c): string => returns(c, 1).text();
-  const indexReturn = (c): string => returns(c, 2).text();
+  const pensionFundReturn = (c): string => returns(c, 2).text();
+  const indexReturn = (c): string => returns(c, 1).text();
   const flushPromises = (): Promise<any> =>
     new Promise((resolve): void => {
       process.nextTick((): void => {

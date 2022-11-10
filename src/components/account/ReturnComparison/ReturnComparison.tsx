@@ -172,26 +172,6 @@ export class ReturnComparison extends Component<Props, State> {
             <div className="col-sm-4 text-center">
               <Select
                 options={[
-                  { value: Key.EPI, label: 'returnComparison.pensionFund' },
-                  ...fundIsinsWithAvailableData.map((isin) => ({
-                    value: isin,
-                    label: fundNameMap[isin] || isin,
-                  })),
-                ]}
-                selected={selectedPensionFundKey}
-                onChange={(key: string) => {
-                  this.setState({ selectedPensionFundKey: key }, () => {
-                    this.loadReturns();
-                  });
-                }}
-              />
-              <div className="h2 my-4">
-                {loading ? LOADER : formatPercentage(pensionFundReturn)}
-              </div>
-            </div>
-            <div className="col-sm-4 text-center">
-              <Select
-                options={[
                   {
                     value: Key.UNION_STOCK_INDEX,
                     label: 'returnComparison.index.unionStockIndex',
@@ -207,6 +187,26 @@ export class ReturnComparison extends Component<Props, State> {
               />
               <div className="h2 text-primary my-4">
                 {loading ? LOADER : formatPercentage(indexReturn)}
+              </div>
+            </div>
+            <div className="col-sm-4 text-center">
+              <Select
+                options={[
+                  { value: Key.EPI, label: 'returnComparison.pensionFund' },
+                  ...fundIsinsWithAvailableData.map((isin) => ({
+                    value: isin,
+                    label: fundNameMap[isin] || isin,
+                  })),
+                ]}
+                selected={selectedPensionFundKey}
+                onChange={(key: string) => {
+                  this.setState({ selectedPensionFundKey: key }, () => {
+                    this.loadReturns();
+                  });
+                }}
+              />
+              <div className="h2 my-4">
+                {loading ? LOADER : formatPercentage(pensionFundReturn)}
               </div>
             </div>
           </div>
