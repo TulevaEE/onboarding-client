@@ -2,6 +2,7 @@ import config from 'react-global-configuration';
 import {
   AmlCheck,
   Application,
+  Authentication,
   CancellationMandate,
   Fund,
   FundBalance,
@@ -48,12 +49,12 @@ export async function authenticateWithMobileId(
   return challengeCode;
 }
 
-export async function authenticateWithIdCode(personalCode: string): Promise<string> {
-  const { challengeCode } = await post(getEndpoint('/authenticate'), {
+export async function authenticateWithIdCode(personalCode: string): Promise<Authentication> {
+  const { challengeCode, authenticationHash } = await post(getEndpoint('/authenticate'), {
     personalCode,
     type: 'SMART_ID',
   });
-  return challengeCode;
+  return { challengeCode, authenticationHash };
 }
 
 export async function authenticateWithIdCard(): Promise<boolean> {
@@ -72,13 +73,17 @@ export function logout(token: string): Promise<void> {
   );
 }
 
-async function getTokensWithGrantType(grantType: string): Promise<Token | null> {
+async function getTokensWithGrantType(
+  grantType: string,
+  extraParameters: Record<string, string> = {},
+): Promise<Token | null> {
   try {
     const { access_token: accessToken } = await postForm(
       getEndpoint('/oauth/token'),
       {
         grant_type: grantType,
         client_id: 'onboarding-client',
+        ...extraParameters,
       },
       {
         Authorization: 'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ=',
@@ -99,8 +104,8 @@ export function getMobileIdTokens(): Promise<Token | null> {
   return getTokensWithGrantType('mobile_id');
 }
 
-export function getSmartIdTokens(): Promise<Token | null> {
-  return getTokensWithGrantType('smart_id');
+export function getSmartIdTokens(authenticationHash: string): Promise<Token | null> {
+  return getTokensWithGrantType('smart_id', { authenticationHash });
 }
 
 export function getIdCardTokens(): Promise<Token | null> {

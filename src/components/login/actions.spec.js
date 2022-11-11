@@ -55,8 +55,10 @@ describe('Login actions', () => {
     jest.useFakeTimers();
     mockDispatch();
     mockApi.authenticateWithMobileId = () => Promise.reject();
+    mockApi.authenticateWithSmartId = () => Promise.reject();
     mockApi.authenticateWithIdCode = () => Promise.reject();
     mockApi.getMobileIdTokens = () => Promise.reject();
+    mockApi.getSmartIdTokens = () => Promise.reject();
     mockApi.getIdCardTokens = () => Promise.reject();
   });
 
@@ -217,6 +219,30 @@ describe('Login actions', () => {
         expect(dispatch).toHaveBeenCalledWith({
           type: MOBILE_AUTHENTICATION_ERROR,
           error,
+        });
+      });
+  });
+
+  it('starts polling until succeeds when authenticating with smart id', () => {
+    const tokens = { accessToken: 'token' };
+    mockApi.authenticateWithIdCode = jest.fn(() =>
+      Promise.resolve({ challengeCode: '1337', authenticationHash: '123456' }),
+    );
+    mockApi.getSmartIdTokens = jest.fn(() => Promise.resolve(null));
+    const authenticateWithSmartId = createBoundAction(actions.authenticateWithIdCode);
+    return authenticateWithSmartId('50001018865')
+      .then(() => {
+        dispatch.mockClear();
+        mockApi.getSmartIdTokens = jest.fn(() => Promise.resolve(tokens));
+        jest.runOnlyPendingTimers();
+        expect(dispatch).not.toHaveBeenCalled();
+        expect(mockApi.getSmartIdTokens).toHaveBeenCalled();
+      })
+      .then(() => {
+        expect(dispatch).toHaveBeenCalledWith({
+          type: MOBILE_AUTHENTICATION_SUCCESS,
+          tokens,
+          method: 'smartId',
         });
       });
   });

@@ -41,20 +41,25 @@ describe('api', () => {
   it('can authenticate with identity code', () => {
     const personalCode = '1223445567';
     const controlCode = '123123123';
+    const authenticationHashCode = '12312333123';
     mockHttp.post.mockImplementationOnce(() =>
       Promise.resolve({
         challengeCode: controlCode,
+        authenticationHash: authenticationHashCode,
       }),
     );
     expect(mockHttp.post).not.toHaveBeenCalled();
-    return api.authenticateWithIdCode(personalCode).then((givenControlCode) => {
-      expect(givenControlCode).toBe(controlCode);
-      expect(mockHttp.post).toHaveBeenCalledTimes(1);
-      expect(mockHttp.post).toHaveBeenCalledWith('/authenticate', {
-        personalCode,
-        type: 'SMART_ID',
+    return api
+      .authenticateWithIdCode(personalCode)
+      .then(({ challengeCode, authenticationHash }) => {
+        expect(challengeCode).toBe(controlCode);
+        expect(authenticationHash).toBe(authenticationHashCode);
+        expect(mockHttp.post).toHaveBeenCalledTimes(1);
+        expect(mockHttp.post).toHaveBeenCalledWith('/authenticate', {
+          personalCode,
+          type: 'SMART_ID',
+        });
       });
-    });
   });
 
   it('can authenticate with id card', () => {
@@ -100,6 +105,31 @@ describe('api', () => {
         {
           client_id: 'onboarding-client',
           grant_type: 'mobile_id',
+        },
+        {
+          Authorization: 'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ=',
+        },
+      );
+    });
+  });
+
+  it('can get a smart id token', () => {
+    mockHttp.postForm = jest.fn(() =>
+      Promise.resolve({
+        access_token: 'smart_id_token',
+      }),
+    );
+    const authenticationHash = '12345';
+    expect(mockHttp.postForm).not.toHaveBeenCalled();
+    return api.getSmartIdTokens(authenticationHash).then((token) => {
+      expect(token.accessToken).toBe('smart_id_token');
+      expect(mockHttp.postForm).toHaveBeenCalledTimes(1);
+      expect(mockHttp.postForm).toHaveBeenCalledWith(
+        '/oauth/token',
+        {
+          client_id: 'onboarding-client',
+          grant_type: 'smart_id',
+          authenticationHash,
         },
         {
           Authorization: 'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ=',
