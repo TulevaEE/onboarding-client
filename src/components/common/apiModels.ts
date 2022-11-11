@@ -248,3 +248,8 @@ export enum Bank {
   SEB = 'SEB',
   LUMINOR = 'LUMINOR',
 }
+
+export interface Authentication {
+  authenticationHash: string;
+  challengeCode: string;
+}

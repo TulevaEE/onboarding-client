@@ -146,11 +146,11 @@ export function authenticateWithMobileId(phoneNumber, personalCode) {
   };
 }
 
-function getSmartIdTokens() {
+function getSmartIdTokens(authenticationHash) {
   return (dispatch, getState) => {
     timeout = setTimeout(() => {
       api
-        .getSmartIdTokens()
+        .getSmartIdTokens(authenticationHash)
         .then((tokens) => {
           if (tokens.accessToken) {
             // authentication complete
@@ -162,7 +162,7 @@ function getSmartIdTokens() {
             dispatch(handleLogin());
           } else if (getState().login.loadingAuthentication) {
             // authentication not yet completed
-            dispatch(getSmartIdTokens()); // poll again
+            dispatch(getSmartIdTokens(authenticationHash)); // poll again
           }
         })
         .catch((error) => {
@@ -177,9 +177,12 @@ export function authenticateWithIdCode(personalCode) {
     dispatch({ type: MOBILE_AUTHENTICATION_START });
     return api
       .authenticateWithIdCode(personalCode)
-      .then((controlCode) => {
-        dispatch({ type: MOBILE_AUTHENTICATION_START_SUCCESS, controlCode });
-        dispatch(getSmartIdTokens());
+      .then((authentication) => {
+        dispatch({
+          type: MOBILE_AUTHENTICATION_START_SUCCESS,
+          controlCode: authentication.challengeCode,
+        });
+        dispatch(getSmartIdTokens(authentication.authenticationHash));
       })
       .catch((error) => dispatch({ type: MOBILE_AUTHENTICATION_START_ERROR, error }));
   };
