@@ -15,7 +15,9 @@ type ReturnType = 'PERSONAL' | 'FUND' | 'INDEX';
 interface Return {
   type: ReturnType;
   key: string;
-  value: number;
+  rate: number;
+  amount: number;
+  currency: string;
 }
 
 interface ReturnsResponse {
@@ -24,12 +26,15 @@ interface ReturnsResponse {
   returns: Return[];
 }
 
-type NullableNumber = number | null;
+export interface ReturnRateAndAmount {
+  rate: number;
+  amount: number;
+}
 
 interface ReturnComparison {
-  personal: NullableNumber;
-  pensionFund: NullableNumber;
-  index: NullableNumber;
+  personal: ReturnRateAndAmount | null;
+  pensionFund: ReturnRateAndAmount | null;
+  index: ReturnRateAndAmount | null;
   notEnoughHistory: boolean;
 }
 
@@ -55,10 +60,10 @@ export async function getReturnComparison(
   return { personal, pensionFund, index, notEnoughHistory };
 }
 
-function getReturnByKey(key: string, returns: Return[]): NullableNumber {
+function getReturnByKey(key: string, returns: Return[]): ReturnRateAndAmount | null {
   const returnForKey = returns?.find((ret) => ret.key === key);
 
-  return returnForKey ? returnForKey.value : null;
+  return returnForKey ? { rate: returnForKey.rate, amount: returnForKey.amount } : null;
 }
 
 function getReturns(

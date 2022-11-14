@@ -4,11 +4,14 @@ import { connect } from 'react-redux';
 
 import moment, { Moment } from 'moment';
 import Select from './select';
-import { getReturnComparison, Key } from './api';
+import { getReturnComparison, Key, ReturnRateAndAmount } from './api';
 import fundIsinsWithAvailableData from './fundIsinsWithAvailableData.json';
 import convertFundsToFundNameMap from './convertFundsToFundNameMap';
 
-type NullableNumber = number | null;
+enum PresentationUnit {
+  CURRENCY = 'CURRENCY',
+  PERCENTAGE = 'PERCENTAGE',
+}
 
 interface Option {
   value: string;
@@ -27,14 +30,25 @@ interface State {
   selectedPersonalKey: Key;
   selectedPensionFundKey: Key | string;
   selectedIndexKey: Key;
-  personalReturn: NullableNumber;
-  pensionFundReturn: NullableNumber;
-  indexReturn: NullableNumber;
+  personalReturn: ReturnRateAndAmount | null;
+  pensionFundReturn: ReturnRateAndAmount | null;
+  indexReturn: ReturnRateAndAmount | null;
   notEnoughHistory: boolean;
+  presentationUnit: PresentationUnit;
 }
 
-const formatPercentage = (percentage: NullableNumber): string =>
-  percentage ? `${(percentage * 100).toFixed(1)}%` : '-';
+const formatReturn = (
+  returnRateAndAmount: ReturnRateAndAmount | null,
+  presentationUnit: PresentationUnit,
+): string => {
+  if (returnRateAndAmount) {
+    if (presentationUnit === PresentationUnit.PERCENTAGE) {
+      return `${(returnRateAndAmount.rate * 100).toFixed(1)}%`;
+    }
+    return `€ ${returnRateAndAmount.amount.toFixed(1)}`;
+  }
+  return '-';
+};
 
 const LOADER = '...';
 
@@ -69,6 +83,7 @@ export class ReturnComparison extends Component<Props, State> {
     pensionFundReturn: null,
     indexReturn: null,
     notEnoughHistory: false,
+    presentationUnit: PresentationUnit.PERCENTAGE,
   };
 
   componentDidMount(): void {
@@ -111,6 +126,15 @@ export class ReturnComparison extends Component<Props, State> {
     }
   }
 
+  switchPresentationUnit(): void {
+    const { presentationUnit } = this.state;
+    if (presentationUnit === PresentationUnit.PERCENTAGE) {
+      this.setState({ presentationUnit: PresentationUnit.CURRENCY });
+    } else {
+      this.setState({ presentationUnit: PresentationUnit.PERCENTAGE });
+    }
+  }
+
   render(): JSX.Element {
     const { fundNameMap } = this.props;
     const {
@@ -124,15 +148,29 @@ export class ReturnComparison extends Component<Props, State> {
       pensionFundReturn,
       indexReturn,
       notEnoughHistory,
+      presentationUnit,
     } = this.state;
 
     return (
       <div className="mt-5">
         <div className="row mb-2">
-          <div className="col-md-8">
+          <div className="col-md-4">
             <p className="mt-1 lead">
               <FormattedMessage id="returnComparison.title" />
             </p>
+          </div>
+          <div className="col-md-4 text-md-right">
+            <button
+              type="button"
+              className="btn btn-light"
+              onClick={() => this.switchPresentationUnit()}
+            >
+              {presentationUnit === PresentationUnit.PERCENTAGE ? (
+                <FormattedMessage id="returnComparison.show.in.eur" />
+              ) : (
+                <FormattedMessage id="returnComparison.show.in.percentage" />
+              )}
+            </button>
           </div>
           <div className="col-md-4 text-md-right">
             <Select
@@ -166,7 +204,7 @@ export class ReturnComparison extends Component<Props, State> {
                 }}
               />
               <div className="h2 text-success my-4">
-                {loading ? LOADER : formatPercentage(personalReturn)}
+                {loading ? LOADER : formatReturn(personalReturn, presentationUnit)}
               </div>
             </div>
             <div className="col-sm-4 text-center">
@@ -186,7 +224,7 @@ export class ReturnComparison extends Component<Props, State> {
                 }}
               />
               <div className="h2 text-primary my-4">
-                {loading ? LOADER : formatPercentage(indexReturn)}
+                {loading ? LOADER : formatReturn(indexReturn, presentationUnit)}
               </div>
             </div>
             <div className="col-sm-4 text-center">
@@ -206,7 +244,7 @@ export class ReturnComparison extends Component<Props, State> {
                 }}
               />
               <div className="h2 my-4">
-                {loading ? LOADER : formatPercentage(pensionFundReturn)}
+                {loading ? LOADER : formatReturn(pensionFundReturn, presentationUnit)}
               </div>
             </div>
           </div>

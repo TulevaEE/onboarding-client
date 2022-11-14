@@ -29,9 +29,9 @@ describe('Return comparison API', () => {
       from: '',
       notEnoughHistory: false,
       returns: [
-        { key: Key.CPI, value: 0.0686 },
-        { key: 'EE123456', value: 0.0228 },
-        { key: Key.THIRD_PILLAR, value: 0.0436 },
+        { key: Key.CPI, rate: 0.0686, amount: 224.23 },
+        { key: 'EE123456', rate: 0.0228, amount: 883.45 },
+        { key: Key.THIRD_PILLAR, rate: 0.0436, amount: 997.12 },
       ],
     });
 
@@ -41,9 +41,9 @@ describe('Return comparison API', () => {
       '',
     );
     expect(comparison).toStrictEqual({
-      personal: 0.0436,
-      pensionFund: 0.0228,
-      index: 0.0686,
+      personal: { rate: 0.0436, amount: 997.12 },
+      pensionFund: { rate: 0.0228, amount: 883.45 },
+      index: { rate: 0.0686, amount: 224.23 },
       notEnoughHistory: false,
     });
   });
@@ -52,7 +52,7 @@ describe('Return comparison API', () => {
     (get as jest.Mock).mockResolvedValueOnce({
       from: '',
       notEnoughHistory: false,
-      returns: [{ key: 'EPI', value: 0.0228 }],
+      returns: [{ key: 'EPI', rate: 0.0228, amount: 220.204 }],
     });
 
     const comparison = await getReturnComparison(
@@ -63,7 +63,7 @@ describe('Return comparison API', () => {
     expect(comparison).toStrictEqual({
       notEnoughHistory: false,
       personal: null,
-      pensionFund: 0.0228,
+      pensionFund: { rate: 0.0228, amount: 220.204 },
       index: null,
     });
   });
