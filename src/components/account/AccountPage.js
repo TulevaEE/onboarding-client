@@ -111,7 +111,7 @@ export class AccountPage extends Component {
 
         {!loadingCurrentBalance && (
           <>
-            <div className="row">
+            <div className="row mt-4">
               <div className="col-md-6 mb-2 mt-4">
                 <FormattedMessage id="accountStatement.thirdPillar.heading" />
               </div>
