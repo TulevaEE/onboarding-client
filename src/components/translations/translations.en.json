@@ -299,6 +299,8 @@
   "change.my.pension.fund": "Change II pillar fund",
   "change.my.pension.fund.third.pillar": "Change III pillar fund",
   "returnComparison.title": "Your personal rate of return",
+  "returnComparison.show.in.eur": "Show in euros",
+  "returnComparison.show.in.percentage": "Show in percentage",
   "returnComparison.personal.secondPillar": "Your II pillar",
   "returnComparison.personal.thirdPillar": "Your III pillar",
   "returnComparison.pensionFund": "Estonian average",

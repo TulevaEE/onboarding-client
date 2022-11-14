@@ -142,9 +142,9 @@ describe('Return comparison', () => {
 
   it('shows returns as formatted percentages and no error messages', async () => {
     const returns = {
-      personal: 0.1,
-      pensionFund: 0.111,
-      index: 0.122,
+      personal: { rate: 0.1, amount: 1000.1033 },
+      pensionFund: { rate: 0.111, amount: 1111.0123 },
+      index: { rate: 0.122, amount: 1222.1232 },
       notEnoughHistory: false,
     };
 
@@ -162,6 +162,42 @@ describe('Return comparison', () => {
     expect(component.contains(<FormattedMessage id="returnComparison.notEnoughHistory" />)).toBe(
       false,
     );
+  });
+
+  it('shows returns in euros when a unit change button is clicked', async () => {
+    const returns = {
+      personal: { rate: 0.1, amount: 1000.10323 },
+      pensionFund: { rate: 0.111, amount: 1131.0142442 },
+      index: { rate: 0.122, amount: 1222.1224 },
+      notEnoughHistory: false,
+    };
+
+    (getReturnComparison as jest.Mock).mockResolvedValueOnce({});
+    const component = shallow(<ReturnComparison token={aToken()} fundNameMap={{}} />);
+    await flushPromises();
+
+    (getReturnComparison as jest.Mock).mockResolvedValueOnce(returns);
+    dateSelect(component).simulate('change', aDate());
+    await flushPromises();
+
+    expect(personalReturn(component)).toBe('10.0%');
+    expect(pensionFundReturn(component)).toBe('11.1%');
+    expect(indexReturn(component)).toBe('12.2%');
+    expect(component.contains(<FormattedMessage id="returnComparison.notEnoughHistory" />)).toBe(
+      false,
+    );
+    expect(component.contains(<FormattedMessage id="returnComparison.show.in.eur" />)).toBe(true);
+    expect(component.contains(<FormattedMessage id="returnComparison.show.in.percentage" />)).toBe(
+      false,
+    );
+    unitButton(component).simulate('click');
+    expect(component.contains(<FormattedMessage id="returnComparison.show.in.eur" />)).toBe(false);
+    expect(component.contains(<FormattedMessage id="returnComparison.show.in.percentage" />)).toBe(
+      true,
+    );
+    expect(personalReturn(component)).toBe('€ 1000.1');
+    expect(pensionFundReturn(component)).toBe('€ 1131.0');
+    expect(indexReturn(component)).toBe('€ 1222.1');
   });
 
   it('shows an error message and returns as - after getting not enough history response', async () => {
@@ -197,6 +233,7 @@ describe('Return comparison', () => {
     expect(dateSelect(component).prop('selected')).toEqual('2015-01-01');
   });
 
+  const unitButton = (c): ShallowWrapper => c.find('button');
   const select = (c): ShallowWrapper => c.find(Select);
   const dateSelect = (c): ShallowWrapper => select(c).at(0);
   const personalReturnSelect = (c): ShallowWrapper => select(c).at(1);
