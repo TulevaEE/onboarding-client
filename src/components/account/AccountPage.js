@@ -98,7 +98,7 @@ export class AccountPage extends Component {
               </div>
 
               <div className="col-md-6 mb-1 mt-2 text-md-right">
-                <Link className="btn btn-primary" to="/2nd-pillar-flow">
+                <Link className="btn btn-light" to="/2nd-pillar-flow">
                   <FormattedMessage id="change.my.pension.fund" />
                 </Link>
               </div>
@@ -117,7 +117,7 @@ export class AccountPage extends Component {
               </div>
 
               <div className="col-md-6 mb-1 mt-2 text-md-right">
-                <Link className="btn btn-primary" to="/3rd-pillar-flow">
+                <Link className="btn btn-light" to="/3rd-pillar-flow">
                   <FormattedMessage id="change.my.pension.fund.third.pillar" />
                 </Link>
               </div>
