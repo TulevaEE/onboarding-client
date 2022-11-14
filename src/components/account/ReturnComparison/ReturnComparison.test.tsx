@@ -5,6 +5,7 @@ import { FormattedMessage } from 'react-intl';
 import { ReturnComparison } from './ReturnComparison';
 import { getReturnComparison, Key } from './api';
 import Select from './select';
+import Euro from '../../common/Euro';
 
 jest.mock('./api', () => ({
   ...jest.requireActual('./api'),
@@ -195,9 +196,9 @@ describe('Return comparison', () => {
     expect(component.contains(<FormattedMessage id="returnComparison.show.in.percentage" />)).toBe(
       true,
     );
-    expect(personalReturn(component)).toBe('€ 1000.1');
-    expect(pensionFundReturn(component)).toBe('€ 1131.0');
-    expect(indexReturn(component)).toBe('€ 1222.1');
+    expect(component.contains(<Euro amount={1000.10323} />)).toBe(true);
+    expect(component.contains(<Euro amount={1131.0142442} />)).toBe(true);
+    expect(component.contains(<Euro amount={1222.1224} />)).toBe(true);
   });
 
   it('shows an error message and returns as - after getting not enough history response', async () => {

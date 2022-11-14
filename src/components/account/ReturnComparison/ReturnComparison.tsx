@@ -7,6 +7,7 @@ import Select from './select';
 import { getReturnComparison, Key, ReturnRateAndAmount } from './api';
 import fundIsinsWithAvailableData from './fundIsinsWithAvailableData.json';
 import convertFundsToFundNameMap from './convertFundsToFundNameMap';
+import Euro from '../../common/Euro';
 
 enum PresentationUnit {
   CURRENCY = 'CURRENCY',
@@ -40,14 +41,14 @@ interface State {
 const formatReturn = (
   returnRateAndAmount: ReturnRateAndAmount | null,
   presentationUnit: PresentationUnit,
-): string => {
+): JSX.Element => {
   if (returnRateAndAmount) {
     if (presentationUnit === PresentationUnit.PERCENTAGE) {
-      return `${(returnRateAndAmount.rate * 100).toFixed(1)}%`;
+      return <span>{(returnRateAndAmount.rate * 100).toFixed(1)}%</span>;
     }
-    return `€ ${returnRateAndAmount.amount.toFixed(1)}`;
+    return <Euro amount={returnRateAndAmount.amount} />;
   }
-  return '-';
+  return <span>-</span>;
 };
 
 const LOADER = '...';
