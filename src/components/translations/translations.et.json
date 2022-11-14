@@ -73,7 +73,7 @@
   "accountStatement.columns.value.title": "Osakute väärtus",
   "accountStatement.columns.fund.footer": "Kokku",
   "accountStatement.secondPillar.activeFundNotice": "* - siia lähevad igakuised maksed. Teisest sambast väljumise avalduse saad teha pensionikeskus.ee lehel.",
-  "accountStatement.thirdPillar.activeFundNotice": "* - siia lähevad igakuised maksed",
+  "accountStatement.thirdPillar.activeFundNotice": "* - siia lähevad igakuised maksed. Kolmandast sambast väljamakse avalduse saad teha pensionikeskus.ee lehel.",
 
   "memberCapital.heading": "Liikmekapital",
   "memberCapital.columns.source.title": "Allikas",

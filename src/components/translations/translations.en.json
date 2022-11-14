@@ -73,7 +73,7 @@
   "accountStatement.columns.value.title": "Value of fund units",
   "accountStatement.columns.fund.footer": "Total",
   "accountStatement.secondPillar.activeFundNotice": "* - currently active fund. If you want to submit II pillar withdrawal application, go to pensionikeskus.ee",
-  "accountStatement.thirdPillar.activeFundNotice": "* - currently active fund",
+  "accountStatement.thirdPillar.activeFundNotice": "* - currently active fund. If you want to submit a III pillar withdrawal application, go to pensionikeskus.ee",
 
   "memberCapital.heading": "Member capital",
   "memberCapital.columns.source.title": "Source",
