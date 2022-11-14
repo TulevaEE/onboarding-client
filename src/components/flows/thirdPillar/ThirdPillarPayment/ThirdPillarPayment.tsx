@@ -12,6 +12,9 @@ import { Bank, PaymentType } from '../../../common/apiModels';
 import { PaymentAmountInput } from './PaymentAmountInput';
 import { LuminorRecurringPaymentDetails } from './paymentDetails/LuminorRecurringPaymentDetails';
 import { OtherBankPaymentDetails } from './paymentDetails/OtherBankPaymentDetails';
+import { SwedbankRecurringPaymentDetails } from './paymentDetails/SwedbankRecurringPaymentDetails';
+import { SebRecurringPaymentDetails } from './paymentDetails/SebRecurringPaymentDetails';
+import { LhvRecurringPaymentDetails } from './paymentDetails/LhvRecurringPaymentDetails';
 
 export const ThirdPillarPayment: React.FunctionComponent<{
   previousPath: string;
@@ -148,32 +151,12 @@ export const ThirdPillarPayment: React.FunctionComponent<{
       </div>
 
       {paymentType === PaymentType.RECURRING && paymentBank && (
-        <div className="mt-4 recurring-payment-details">
-          <p>
-            <FormattedMessage
-              id={`thirdPillarPayment.recurringPaymentDescription.${paymentBank}`}
-              values={{
-                b: (chunks: string) => <b>{chunks}</b>,
-                br: <br />,
-              }}
-            />
-          </p>
+        <>
+          {paymentBank === 'swedbank' && <SwedbankRecurringPaymentDetails amount={paymentAmount} />}
 
-          {/* {paymentBank === 'swedbank' && <SwedbankRecurringPaymentDetails amount={paymentAmount} />} */}
+          {paymentBank === 'seb' && <SebRecurringPaymentDetails />}
 
-          {/* {paymentBank === 'seb' && ( */}
-          {/*  <SebRecurringPaymentDetails */}
-          {/*    amount={paymentAmount} */}
-          {/*    pensionAccountNumber={pensionAccountNumber} */}
-          {/*  /> */}
-          {/* )} */}
-
-          {/* {paymentBank === 'lhv' && ( */}
-          {/*  <LhvRecurringPaymentDetails */}
-          {/*    amount={paymentAmount} */}
-          {/*    pensionAccountNumber={pensionAccountNumber} */}
-          {/*  /> */}
-          {/* )} */}
+          {paymentBank === 'lhv' && <LhvRecurringPaymentDetails />}
 
           {paymentBank === 'luminor' && (
             <LuminorRecurringPaymentDetails
@@ -188,7 +171,7 @@ export const ThirdPillarPayment: React.FunctionComponent<{
               amount={paymentAmount}
             />
           )}
-        </div>
+        </>
       )}
       {paymentType === PaymentType.SINGLE && paymentBank === 'other' && (
         <div className="mt-4 other-bank-payment-details">

@@ -53,9 +53,31 @@
 }
 
 
-
 .btn.btn-other:not(:disabled):not(.disabled):active, .btn.btn-other:not(:disabled):not(.disabled).active {
   background-color: $blue;
   border-color: $blue;
   color: white;
+}
+
+.recurring-payment-details {
+  border: 1px solid $gray-mid;
+  border-radius: 8px;
+}
+
+.payment-details-table {
+  background-color: $blue-washed;
+  border-radius: 4px;
+  display: table;
+
+  table {
+
+    tr td {
+      padding: 0.75rem;
+      border-bottom: 1px solid $gray-mid;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+  }
 }

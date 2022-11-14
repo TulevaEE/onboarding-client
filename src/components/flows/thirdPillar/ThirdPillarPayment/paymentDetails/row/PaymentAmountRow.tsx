@@ -17,6 +17,7 @@ export const PaymentAmountRow: React.FunctionComponent<{
           )}
           <b>{Number(amount).toFixed(2)} EUR</b>
         </td>
+        <td className="d-none d-sm-table-cell" />
       </tr>
     ) : null}
   </>
