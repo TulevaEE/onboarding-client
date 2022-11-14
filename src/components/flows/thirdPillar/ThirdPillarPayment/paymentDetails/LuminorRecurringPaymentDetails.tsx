@@ -10,43 +10,55 @@ export const LuminorRecurringPaymentDetails: React.FunctionComponent<{
   amount: string;
   pensionAccountNumber: string;
 }> = ({ amount, pensionAccountNumber }) => (
-  <table>
-    <tbody>
-      <AccountNameRow>
-        <FormattedMessage id="thirdPillarPayment.beneficiaryName" />
-      </AccountNameRow>
-      <PaymentAmountRow amount={amount}>
-        <FormattedMessage id="thirdPillarPayment.amountInEur" />
-        {null}
-      </PaymentAmountRow>
-      {/* <TextRow> */}
-      {/*  <FormattedMessage id="thirdPillarPayment.selectFrequency" /> */}
-      {/*  <FormattedMessage id="thirdPillarPayment.onceAMonth2" /> */}
-      {/* </TextRow> */}
-      {/* <TextRow> */}
-      {/*  <FormattedMessage id="thirdPillarPayment.startDate" /> */}
-      {/*  {tenthDayOfMonth()} */}
-      {/* </TextRow> */}
-      {/* <TextRow> */}
-      {/*  <FormattedMessage id="thirdPillarPayment.untilDate" /> */}
-      {/*  <FormattedMessage id="thirdPillarPayment.indefinitely" /> */}
-      {/* </TextRow> */}
-
-      {/* <EmptyRow /> */}
-
-      <AccountNumberRow bank="luminor">
-        <FormattedMessage id="thirdPillarPayment.accountNumber" />
-      </AccountNumberRow>
-      <PaymentDescriptionRow>
-        <FormattedMessage id="thirdPillarPayment.description" />
-      </PaymentDescriptionRow>
-      <PaymentReferenceRow pensionAccountNumber={pensionAccountNumber}>
-        <FormattedMessage id="thirdPillarPayment.reference" />
-      </PaymentReferenceRow>
-      {/* <TextRow> */}
-      {/*  <FormattedMessage id="thirdPillarPayment.standingOrderName" /> */}
-      {/*  <FormattedMessage id="thirdPillarPayment.thirdPillar" /> */}
-      {/* </TextRow> */}
-    </tbody>
-  </table>
+  <div className="mt-4 recurring-payment-details p-4">
+    <h3>
+      <FormattedMessage id="thirdPillarPayment.recurringPayment.luminor" />
+    </h3>
+    <div className="d-sm-flex py-2">
+      <span className="flex-shrink-0 tv-step__number mr-3">
+        <b>1</b>
+      </span>
+      <span className="flex-grow-1 align-self-center">
+        <FormattedMessage id="thirdPillarPayment.recurringPayment.luminor.login" />
+      </span>
+    </div>
+    <div className="d-sm-flex py-2">
+      <span className="flex-shrink-0 tv-step__number mr-3">
+        <b>2</b>
+      </span>
+      <span className="flex-grow-1 align-self-center">
+        <FormattedMessage id="thirdPillarPayment.recurringPayment.luminor.form" />
+        <div className="mt-2 p-4 payment-details-table">
+          <table>
+            <tbody>
+              <AccountNameRow>
+                <FormattedMessage id="thirdPillarPayment.beneficiaryName" />
+              </AccountNameRow>
+              <PaymentAmountRow amount={amount}>
+                <FormattedMessage id="thirdPillarPayment.amountInEur" />
+                {null}
+              </PaymentAmountRow>
+              <AccountNumberRow bank="luminor">
+                <FormattedMessage id="thirdPillarPayment.accountNumber" />
+              </AccountNumberRow>
+              <PaymentDescriptionRow>
+                <FormattedMessage id="thirdPillarPayment.description" />
+              </PaymentDescriptionRow>
+              <PaymentReferenceRow pensionAccountNumber={pensionAccountNumber}>
+                <FormattedMessage id="thirdPillarPayment.reference" />
+              </PaymentReferenceRow>
+            </tbody>
+          </table>
+        </div>
+      </span>
+    </div>
+    <div className="d-sm-flex py-2">
+      <span className="flex-shrink-0 tv-step__number mr-3">
+        <b>3</b>
+      </span>
+      <span className="flex-grow-1 align-self-center">
+        <FormattedMessage id="thirdPillarPayment.recurringPayment.finalStep" />
+      </span>
+    </div>
+  </div>
 );
