@@ -166,7 +166,11 @@ function getSmartIdTokens(authenticationHash) {
           }
         })
         .catch((error) => {
-          dispatch({ type: MOBILE_AUTHENTICATION_ERROR, error });
+          if (error.message === 'Load failed') {
+            dispatch(getSmartIdTokens(authenticationHash)); // poll again
+          } else {
+            dispatch({ type: MOBILE_AUTHENTICATION_ERROR, error });
+          }
         });
     }, POLL_DELAY);
   };
