@@ -256,16 +256,15 @@ export class ReturnComparison extends Component<Props, State> {
               <FormattedMessage id="returnComparison.notEnoughHistory" />
             </div>
           )}
-
-          <div className="text-center mt-2">
-            <a
-              href="https://tuleva.ee/mida-need-numbrid-naitavad/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <FormattedMessage id="returnComparison.explanationLinkText" />
-            </a>
-          </div>
+        </div>
+        <div className="text-right mt-2">
+          <a
+            href="https://tuleva.ee/mida-need-numbrid-naitavad/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FormattedMessage id="returnComparison.explanationLinkText" />
+          </a>
         </div>
       </div>
     );
