@@ -191,7 +191,13 @@ describe('Return comparison', () => {
     expect(component.contains(<FormattedMessage id="returnComparison.show.in.percentage" />)).toBe(
       false,
     );
+
+    expect(component.contains(<Euro amount={1000.10323} />)).toBe(false);
+    expect(component.contains(<Euro amount={1131.0142442} />)).toBe(false);
+    expect(component.contains(<Euro amount={1222.1224} />)).toBe(false);
+
     unitButton(component).simulate('click');
+
     expect(component.contains(<FormattedMessage id="returnComparison.show.in.eur" />)).toBe(false);
     expect(component.contains(<FormattedMessage id="returnComparison.show.in.percentage" />)).toBe(
       true,
