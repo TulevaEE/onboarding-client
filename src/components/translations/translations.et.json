@@ -282,6 +282,7 @@
   "returnComparison.index.unionStockIndex": "Maailma keskmine",
   "returnComparison.index.cpi": "Inflatsioon",
   "returnComparison.explanationLinkText": "Mida need numbrid näitavad?",
+  "returnComparison.returnNotice": "Tuleva pensionifondide tootlus ei jää kunagi kaugele maha maailma väärtpaberiturgude keskmisest.",
   "returnComparison.notEnoughHistory": "Alla aasta pikkuse kogumise korral ei saa tootlust arvutada.",
   "returnComparison.period.all": "Kogumise algusest",
   "returnComparison.period.tenYears": "10 aastat",
