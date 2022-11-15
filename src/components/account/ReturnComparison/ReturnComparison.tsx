@@ -8,6 +8,7 @@ import { getReturnComparison, Key, ReturnRateAndAmount } from './api';
 import fundIsinsWithAvailableData from './fundIsinsWithAvailableData.json';
 import convertFundsToFundNameMap from './convertFundsToFundNameMap';
 import Euro from '../../common/Euro';
+import './ReturnComparison.scss';
 
 enum PresentationUnit {
   CURRENCY = 'CURRENCY',
@@ -160,7 +161,7 @@ export class ReturnComparison extends Component<Props, State> {
               <FormattedMessage id="returnComparison.title" />
             </p>
           </div>
-          <div className="col-md-4 text-md-right">
+          <div className="col-md-4 text-md-right presentation-unit-switch">
             <button
               type="button"
               className="btn btn-light"
