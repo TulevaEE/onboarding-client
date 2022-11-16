@@ -53,7 +53,7 @@ export const SwedbankRecurringPaymentDetails: React.FunctionComponent<{
         <b>3</b>
       </span>
       <span className="flex-grow-1 align-self-center">
-        <FormattedMessage id="thirdPillarPayment.recurringPayment.finalStep" />
+        <FormattedMessage id="thirdPillarPayment.RECURRING.finalStep" />
       </span>
     </div>
   </div>

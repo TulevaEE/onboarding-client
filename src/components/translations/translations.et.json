@@ -338,12 +338,6 @@
   "aml.occupation.unemployed": "Hetkel ei tööta",
 
   "thirdPillarPayment.title": "Sissemakse Tuleva III samba pensionifondi",
-  "thirdPillarPayment.singlePaymentDescription": "Logi sisse <b>oma internetipanka</b> ja tee oma III samba pensionikontole sissemakse:",
-  "thirdPillarPayment.recurringPaymentDescription.swedbank": "Vajuta siia nupule ning logi selle kaudu oma Swedbanki internetipanka.{br}Vali sissemakse fondi <b>\"vastavalt valikuavaldusele\"</b>, sisesta uuesti <b>summa</b>, <b>esimese sissemakse kuupäev</b> ning <b>kinnita</b> makse.",
-  "thirdPillarPayment.recurringPaymentDescription.seb": "Vajuta siia nupule ning logi selle kaudu oma SEB internetipanka.{br}Vali <b>pangakonto</b>, <b>esimese makse kuupäev</b> ning <b>kinnita</b> makse.",
-  "thirdPillarPayment.recurringPaymentDescription.lhv": "Vajuta siia nupule ning logi selle kaudu oma LHV internetipanka.{br}Veendu, et oled valinud oma <b>personaalse konto</b>, vali <b>esimese makse</b> kuupäev ja <b>kinnita</b> makse.",
-  "thirdPillarPayment.recurringPaymentDescription.luminor": "Vajuta siia nupule ning logi selle kaudu oma Luminori internetipanka ja lisa uus <b>püsikorraldus</b> järgmiste andmetega:",
-  "thirdPillarPayment.recurringPaymentDescription.other": "Logi sisse <b>oma internetipanka</b> ja tee oma III samba sissemakseteks uus <b>püsikorraldus</b> järgmiste andmetega:",
 
   "thirdPillarPayment.recurringPayment.swedbank": "Püsimakse juhend Swedbankis",
   "thirdPillarPayment.recurringPayment.swedbank.login": "Vajuta allolevat nuppu ning logi sisse Swedbanki internetipanka.",
@@ -375,9 +369,15 @@
   "thirdPillarPayment.amountInEur": "Summa eurodes",
   "thirdPillarPayment.description": "Selgitus",
 
-  "thirdPillarPayment.recurringPayment.other": "Püsimakse juhend teistes pankades",
-  "thirdPillarPayment.recurringPayment.other.login": "Logi sisse oma internetipanka.",
-  "thirdPillarPayment.recurringPayment.other.form": "Lisa uus püsikorraldus järgmiste andmetega ja kinnita makse:",
+  "thirdPillarPayment.RECURRING.other": "Püsimakse juhend teistes pankades",
+  "thirdPillarPayment.RECURRING.other.login": "Logi sisse oma internetipanka.",
+  "thirdPillarPayment.RECURRING.other.form": "Lisa uus püsikorraldus järgmiste andmetega ja kinnita makse:",
+  "thirdPillarPayment.RECURRING.finalStep": "Sinu valitud päeval tehakse iga kuu sissemakse Tuleva III Samba Pensionifondi.",
+  "thirdPillarPayment.SINGLE.other": "Ühekordse makse juhend teistes pankades",
+  "thirdPillarPayment.SINGLE.other.login": "Logi sisse oma internetipanka.",
+  "thirdPillarPayment.SINGLE.other.form": "Tee uus makse järgmiste andmetega ja kinnita makse:",
+  "thirdPillarPayment.SINGLE.finalStep": "Sinu sissemakse jõuab kahe tööpäeva jooksul Tuleva III Samba Pensionifondi.",
+
   "thirdPillarPayment.accountName": "Makse saaja",
   "thirdPillarPayment.accountNumber": "Kontonumber",
   "thirdPillarPayment.amount": "Summa",
@@ -385,7 +385,7 @@
   "thirdPillarPayment.reference": "Viitenumber",
   "thirdPillarPayment.paymentQuestion": "Kas tegid makse ära?",
   "thirdPillarPayment.recurringPaymentQuestion": "Kas tegid püsikorralduse ära?",
-  "thirdPillarPayment.yesButton": "Jah",
+  "thirdPillarPayment.backToAccountPage": "Tagasi avalehele",
   "thirdPillarPayment.singlePayment": "Ühekordne sissemakse",
   "thirdPillarPayment.recurringPayment": "Igakuine püsimakse",
   "thirdPillarPayment.freeSinglePayment": "Sissemakse tegemine on <b>tasuta</b>.",
@@ -410,8 +410,6 @@
   "thirdPillarPayment.processingCode": "III sammast tähistav töötluskood, mis on alati samasugune",
   "thirdPillarPayment.processingCodeAndPensionAccountNumber": "III sammast tähistav töötluskood ja sinu personaalne pensionikonto number",
   "thirdPillarPayment.pensionAccountNumber": "Sinu personaalne pensionikonto number",
-
-  "thirdPillarPayment.recurringPayment.finalStep": "Sinu valitud kuupäeval tehakse iga kuu sissemakse Tuleva III Samba Pensionifondi.",
 
   "thirdPillarSuccess.done": "Kõik tehtud!",
   "thirdPillarSuccess.message": "Vaata oma kontoseisu. Kui tegid sissemakse, siis uued osakud jõuavad sinu pensionikontole järgmise tööpäeva lõpuks.",

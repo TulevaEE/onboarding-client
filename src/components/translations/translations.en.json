@@ -362,12 +362,6 @@
   "aml.occupation.unemployed": "Unemployed",
 
   "thirdPillarPayment.title": "Payment instructions for Tuleva III pillar pension fund",
-  "thirdPillarPayment.singlePaymentDescription": "Log in to <b>your internet bank</b> and make a payment to the following details:",
-  "thirdPillarPayment.recurringPaymentDescription.swedbank": "Log in to <b>Swedbank internet bank</b> and set up a <b>regular payments</b> into your third pillar:",
-  "thirdPillarPayment.recurringPaymentDescription.seb": "Log in to <b>SEB internet bank</b> and set up a <b>standing order</b>:",
-  "thirdPillarPayment.recurringPaymentDescription.lhv": "Log in to <b>LHV internet bank</b> and add a <b>standing order</b>:",
-  "thirdPillarPayment.recurringPaymentDescription.luminor": "Log in to <b>Luminor internet bank</b> and add a new <b>standing order</b> with the following details:",
-  "thirdPillarPayment.recurringPaymentDescription.other": "Log in to <b>your internet bank</b> and set up a <b>recurring payment</b> with the following details:",
 
   "thirdPillarPayment.recurringPayment.swedbank": "How to set up a recurring payment in Swedbank",
   "thirdPillarPayment.recurringPayment.swedbank.login": "Click the button below and log into your Swedbank internet bank.",
@@ -399,9 +393,15 @@
   "thirdPillarPayment.amountInEur": "Amount in EUR",
   "thirdPillarPayment.description": "Description",
 
-  "thirdPillarPayment.recurringPayment.other": "How to set up a recurring payment in another bank",
-  "thirdPillarPayment.recurringPayment.other.login": "Log in to your internet bank.",
-  "thirdPillarPayment.recurringPayment.other.form": "Set up a recurring payment with the following details:",
+  "thirdPillarPayment.RECURRING.other": "How to set up a recurring payment in another bank",
+  "thirdPillarPayment.RECURRING.other.login": "Log in to your internet bank.",
+  "thirdPillarPayment.RECURRING.other.form": "Set up a recurring payment with the following details:",
+  "thirdPillarPayment.RECURRING.finalStep": "Every month, a payment will be automatically made into Tuleva III Pillar Pension Fund.",
+  "thirdPillarPayment.SINGLE.other": "How to make a payment in another bank",
+  "thirdPillarPayment.SINGLE.other.login": "Log in to your internet bank.",
+  "thirdPillarPayment.SINGLE.other.form": "Make a new payment with the following details:",
+  "thirdPillarPayment.SINGLE.finalStep": "Your fund units will appear on your third pillar account in 2 business days.",
+
   "thirdPillarPayment.accountName": "Pay to",
   "thirdPillarPayment.accountNumber": "Account number",
   "thirdPillarPayment.amount": "Amount",
@@ -409,7 +409,7 @@
   "thirdPillarPayment.reference": "Payment reference",
   "thirdPillarPayment.paymentQuestion": "Did you make a payment?",
   "thirdPillarPayment.recurringPaymentQuestion": "Did you set up a recurring payment?",
-  "thirdPillarPayment.yesButton": "Yes",
+  "thirdPillarPayment.backToAccountPage": "Back to account page",
   "thirdPillarPayment.singlePayment": "Single payment",
   "thirdPillarPayment.recurringPayment": "Recurring payment",
   "thirdPillarPayment.freeSinglePayment": "Making payments is <b>free of charge</b>.",
@@ -434,9 +434,6 @@
   "thirdPillarPayment.processingCode": "III pillar processing code",
   "thirdPillarPayment.processingCodeAndPensionAccountNumber": "III pillar processing code and your pension account number",
   "thirdPillarPayment.pensionAccountNumber": "Your pension account number",
-
-  "thirdPillarPayment.recurringPayment.finalStep": "Every month, a payment will be automatically made into Tuleva III Pillar Pension Fund.",
-
 
   "thirdPillarSuccess.done": "All done!",
   "thirdPillarSuccess.message": "Check your pension account. Your new contribution will appear on your pension account by the end of the next working day.",
