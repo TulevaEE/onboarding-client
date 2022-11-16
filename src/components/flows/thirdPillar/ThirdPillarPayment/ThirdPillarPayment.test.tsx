@@ -105,8 +105,8 @@ describe('When a user is making a third pillar payment', () => {
     userEvent.type(amount, '34');
     userEvent.click(lhvBank);
 
-    const setupStandingOrder = await setupStandingOrderButton();
-    userEvent.click(setupStandingOrder);
+    const logIntoInternetBank = await logIntoInternetBankButton();
+    userEvent.click(logIntoInternetBank);
 
     await waitFor(() =>
       expect(windowOpen).toHaveBeenCalledWith('https://LHV.EE/RECURRING.34.EUR', '_blank'),
@@ -120,18 +120,15 @@ describe('When a user is making a third pillar payment', () => {
     userEvent.click(recurringPayment);
     userEvent.click(lhvBank);
 
-    // eslint-disable-next-line testing-library/no-debugging-utils
-    screen.debug(undefined, Infinity);
-
     expect(await screen.findByText('Pay to:')).toBeInTheDocument();
     expect(screen.getByText('AS Pensionikeskus')).toBeInTheDocument();
     expect(screen.getByText('Account number:')).toBeInTheDocument();
     expect(screen.getByText('EE362200221067235244')).toBeInTheDocument();
     expect(screen.getByText('Payment description:')).toBeInTheDocument();
-    expect(screen.getByText('30101119828,PK:9876543210')).toBeInTheDocument();
+    expect(screen.getByText('30101119828, PK:9876543210')).toBeInTheDocument();
   });
 
-  test('can click Yes after seeing other banks recurring payment details', async () => {
+  test('can go back to account page after seeing other banks recurring payment details', async () => {
     const recurringPayment = await recurringPaymentOption();
     const amount = await amountInput();
     const otherBank = await otherBankButton();
@@ -139,11 +136,10 @@ describe('When a user is making a third pillar payment', () => {
     userEvent.click(recurringPayment);
     userEvent.type(amount, '34');
     userEvent.click(otherBank);
+    const backToAccountPage = await backToAccountPageButton();
+    userEvent.click(backToAccountPage);
 
-    const yes = await yesButton();
-    userEvent.click(yes);
-
-    expect(await screen.findByText('All done!')).toBeInTheDocument();
+    expect(await screen.findByText('Hi, John Doe!')).toBeInTheDocument();
   });
 
   test('can see Other bank payment details', async () => {
@@ -162,31 +158,36 @@ describe('When a user is making a third pillar payment', () => {
       screen.getByText('30101119828', {
         exact: false,
       }),
-    ).toHaveTextContent('30101119828,PK:9876543210');
+    ).toHaveTextContent('30101119828, PK:9876543210');
     expect(screen.queryByText('Payment reference:')).not.toBeInTheDocument();
     expect(screen.queryByText('9876543210')).not.toBeInTheDocument();
   });
 
-  test('can click Yes after seeing Other bank payment details', async () => {
+  test('can go back to account page after seeing the other bank payment details', async () => {
+    const amount = await amountInput();
+    userEvent.type(amount, '34');
     const otherBank = await otherBankButton();
     userEvent.click(otherBank);
-    const yes = await yesButton();
-    userEvent.click(yes);
+    const backToAccountPage = await backToAccountPageButton();
+    userEvent.click(backToAccountPage);
 
-    expect(await screen.findByText('All done!')).toBeInTheDocument();
+    expect(await screen.findByText('Hi, John Doe!')).toBeInTheDocument();
   });
 
   test('can switch between Single and Recurring payment', async () => {
     const recurringPayment = await recurringPaymentOption();
+    const amount = await amountInput();
     const lhvBank = await lhvButton();
     userEvent.click(recurringPayment);
+    userEvent.type(amount, '34');
     userEvent.click(lhvBank);
     expect(queryMakePaymentButton()).not.toBeInTheDocument();
-    expect(await setupStandingOrderButton()).toBeInTheDocument();
+    expect(await logIntoInternetBankButton()).toBeInTheDocument();
+    expect(await backToAccountPageButton()).toBeInTheDocument();
 
     const singlePayment = await singlePaymentOption();
     userEvent.click(singlePayment);
-    expect(querySetupStandingOrderButton()).not.toBeInTheDocument();
+    expect(queryLogIntoInternetBankButton()).not.toBeInTheDocument();
     expect(await makePaymentButton()).toBeInTheDocument();
   });
 
@@ -203,10 +204,11 @@ describe('When a user is making a third pillar payment', () => {
   const makePaymentButton = async () => screen.findByRole('button', { name: 'Make payment' });
   const queryMakePaymentButton = () => screen.queryByRole('button', { name: 'Make payment' });
 
-  const setupStandingOrderButton = async () =>
-    screen.findByRole('button', { name: 'Set up standing order' });
-  const querySetupStandingOrderButton = () =>
-    screen.queryByRole('button', { name: 'Set up standing order' });
+  const logIntoInternetBankButton = async () =>
+    screen.findByRole('button', { name: 'Log into internet bank' });
+  const queryLogIntoInternetBankButton = () =>
+    screen.queryByRole('button', { name: 'Log into internet bank' });
 
-  const yesButton = async () => screen.findByRole('button', { name: 'Yes' });
+  const backToAccountPageButton = async () =>
+    screen.findByRole('button', { name: 'Back to account page' });
 });

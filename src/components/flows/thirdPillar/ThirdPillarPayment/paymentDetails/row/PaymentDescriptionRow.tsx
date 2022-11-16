@@ -12,7 +12,7 @@ export const PaymentDescriptionRow: React.FunctionComponent<{
     <td className="align-bottom pl-2">
       <b>
         {bank !== 'other' && <span>30101119828</span>}
-        {bank === 'other' && <span>30101119828,PK:{pensionAccountNumber}</span>}
+        {bank === 'other' && <span>30101119828, PK:{pensionAccountNumber}</span>}
       </b>
     </td>
     <td className="pl-2 d-none d-sm-block">

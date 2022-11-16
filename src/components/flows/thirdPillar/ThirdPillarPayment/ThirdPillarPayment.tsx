@@ -18,24 +18,19 @@ import { LhvRecurringPaymentDetails } from './paymentDetails/LhvRecurringPayment
 
 export const ThirdPillarPayment: React.FunctionComponent<{
   previousPath: string;
-  nextPath: string;
   signedMandateId: number;
   pensionAccountNumber: string;
   isUserConverted: boolean;
   token: string;
-}> = ({
-  previousPath,
-  nextPath,
-  signedMandateId,
-  pensionAccountNumber,
-  isUserConverted,
-  token,
-}) => {
+}> = ({ previousPath, signedMandateId, pensionAccountNumber, isUserConverted, token }) => {
   const { formatMessage } = useIntl();
 
   const [paymentType, setPaymentType] = useState<PaymentType>(PaymentType.SINGLE);
   const [paymentAmount, setPaymentAmount] = useState<string>('');
   const [paymentBank, setPaymentBank] = useState<string>('');
+
+  const isDisabled = () =>
+    !paymentBank || paymentBank === 'other' || !paymentAmount || Number(paymentAmount) <= 0;
 
   return (
     <>
@@ -169,23 +164,17 @@ export const ThirdPillarPayment: React.FunctionComponent<{
             <OtherBankPaymentDetails
               pensionAccountNumber={pensionAccountNumber}
               amount={paymentAmount}
+              paymentType={PaymentType.RECURRING}
             />
           )}
         </>
       )}
       {paymentType === PaymentType.SINGLE && paymentBank === 'other' && (
-        <div className="mt-4 other-bank-payment-details">
-          <p>
-            <FormattedMessage
-              id="thirdPillarPayment.singlePaymentDescription"
-              values={{ b: (chunks: string) => <b>{chunks}</b> }}
-            />
-          </p>
-          <OtherBankPaymentDetails
-            pensionAccountNumber={pensionAccountNumber}
-            amount={paymentAmount}
-          />
-        </div>
+        <OtherBankPaymentDetails
+          pensionAccountNumber={pensionAccountNumber}
+          amount={paymentAmount}
+          paymentType={PaymentType.SINGLE}
+        />
       )}
       {paymentBank === 'other' && (
         <div className="mt-4 yes-button">
@@ -197,64 +186,75 @@ export const ThirdPillarPayment: React.FunctionComponent<{
             )}
           </p>
 
-          <Link to={nextPath}>
-            <button type="button" className="btn btn-primary">
-              <FormattedMessage id="thirdPillarPayment.yesButton" />
+          <Link to="/account">
+            <button type="button" className="btn btn-light">
+              <FormattedMessage id="thirdPillarPayment.backToAccountPage" />
             </button>
           </Link>
         </div>
       )}
       {paymentBank !== 'other' && (
-        <div className="mt-4 payment-button">
-          <button
-            type="button"
-            className="btn btn-primary"
-            disabled={
-              !paymentBank ||
-              paymentBank === 'other' ||
-              !paymentAmount ||
-              Number(paymentAmount) <= 0
-            }
-            onClick={() => {
-              redirectToPayment(
-                {
-                  amount: Number(paymentAmount),
-                  currency: 'EUR',
-                  type: paymentType,
-                  bank: paymentBank.toUpperCase() as Bank,
-                },
-                token,
-              );
-            }}
-          >
-            {paymentType === PaymentType.SINGLE && (
-              <FormattedMessage id="thirdPillarPayment.makePayment" />
+        <>
+          <div className="d-flex flex-wrap align-items-start">
+            <div className="mr-auto">
+              <button
+                type="button"
+                className="btn btn-primary payment-button text-nowrap mt-4"
+                disabled={isDisabled()}
+                onClick={() => {
+                  redirectToPayment(
+                    {
+                      amount: Number(paymentAmount),
+                      currency: 'EUR',
+                      type: paymentType,
+                      bank: paymentBank.toUpperCase() as Bank,
+                    },
+                    token,
+                  );
+                }}
+              >
+                {paymentType === PaymentType.SINGLE && (
+                  <FormattedMessage id="thirdPillarPayment.makePayment" />
+                )}
+                {paymentType === PaymentType.RECURRING && (
+                  <FormattedMessage id="thirdPillarPayment.setupRecurringPayment" />
+                )}
+              </button>
+              <div className="mt-2">
+                <small className="text-muted">
+                  {paymentType === PaymentType.SINGLE && (
+                    <FormattedMessage
+                      id="thirdPillarPayment.freeSinglePayment"
+                      values={{
+                        b: (chunks: string) => <b>{chunks}</b>,
+                      }}
+                    />
+                  )}
+                  {paymentType === PaymentType.RECURRING && (
+                    <FormattedMessage
+                      id="thirdPillarPayment.freeRecurringPayment"
+                      values={{
+                        b: (chunks: string) => <b>{chunks}</b>,
+                      }}
+                    />
+                  )}
+                </small>
+              </div>
+            </div>
+            {paymentType === PaymentType.RECURRING && !isDisabled() && (
+              <div className="d-flex flex-wrap align-items-center">
+                <span className="mr-2 mt-4">
+                  <FormattedMessage id="thirdPillarPayment.recurringPaymentQuestion" />
+                </span>
+                <Link to="/account">
+                  <button type="button" className="btn btn-light text-nowrap mt-4">
+                    <FormattedMessage id="thirdPillarPayment.backToAccountPage" />
+                  </button>
+                </Link>
+              </div>
             )}
-            {paymentType === PaymentType.RECURRING && (
-              <FormattedMessage id="thirdPillarPayment.setupRecurringPayment" />
-            )}
-          </button>
-          <div className="mt-2">
-            <small className="text-muted">
-              {paymentType === PaymentType.SINGLE && (
-                <FormattedMessage
-                  id="thirdPillarPayment.freeSinglePayment"
-                  values={{
-                    b: (chunks: string) => <b>{chunks}</b>,
-                  }}
-                />
-              )}
-              {paymentType === PaymentType.RECURRING && (
-                <FormattedMessage
-                  id="thirdPillarPayment.freeRecurringPayment"
-                  values={{
-                    b: (chunks: string) => <b>{chunks}</b>,
-                  }}
-                />
-              )}
-            </small>
           </div>
-        </div>
+        </>
       )}
     </>
   );
