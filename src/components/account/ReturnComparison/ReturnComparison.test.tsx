@@ -5,7 +5,6 @@ import { FormattedMessage } from 'react-intl';
 import { ReturnComparison } from './ReturnComparison';
 import { getReturnComparison, Key } from './api';
 import Select from './select';
-import Euro from '../../common/Euro';
 
 jest.mock('./api', () => ({
   ...jest.requireActual('./api'),
@@ -124,8 +123,8 @@ describe('Return comparison', () => {
     await flushPromises();
 
     expect(personalReturn(component)).toBe('-');
-    expect(pensionFundReturn(component)).toBe('-');
     expect(indexReturn(component)).toBe('-');
+    expect(pensionFundReturn(component)).toBe('-');
   });
 
   it('shows ... for returns while getting returns', async () => {
@@ -137,15 +136,15 @@ describe('Return comparison', () => {
     dateSelect(component).simulate('change', aDate());
 
     expect(personalReturn(component)).toBe('...');
-    expect(pensionFundReturn(component)).toBe('...');
     expect(indexReturn(component)).toBe('...');
+    expect(pensionFundReturn(component)).toBe('...');
   });
 
   it('shows returns as formatted percentages and no error messages', async () => {
     const returns = {
       personal: { rate: 0.1, amount: 1000.1033 },
-      pensionFund: { rate: 0.111, amount: 1111.0123 },
       index: { rate: 0.122, amount: 1222.1232 },
+      pensionFund: { rate: 0.111, amount: 1111.0123 },
       notEnoughHistory: false,
     };
 
@@ -158,53 +157,11 @@ describe('Return comparison', () => {
     await flushPromises();
 
     expect(personalReturn(component)).toBe('10.0%');
-    expect(pensionFundReturn(component)).toBe('11.1%');
     expect(indexReturn(component)).toBe('12.2%');
+    expect(pensionFundReturn(component)).toBe('11.1%');
     expect(component.contains(<FormattedMessage id="returnComparison.notEnoughHistory" />)).toBe(
       false,
     );
-  });
-
-  it('shows returns in euros when a unit change button is clicked', async () => {
-    const returns = {
-      personal: { rate: 0.1, amount: 1000.10323 },
-      pensionFund: { rate: 0.111, amount: 1131.0142442 },
-      index: { rate: 0.122, amount: 1222.1224 },
-      notEnoughHistory: false,
-    };
-
-    (getReturnComparison as jest.Mock).mockResolvedValueOnce({});
-    const component = shallow(<ReturnComparison token={aToken()} fundNameMap={{}} />);
-    await flushPromises();
-
-    (getReturnComparison as jest.Mock).mockResolvedValueOnce(returns);
-    dateSelect(component).simulate('change', aDate());
-    await flushPromises();
-
-    expect(personalReturn(component)).toBe('10.0%');
-    expect(pensionFundReturn(component)).toBe('11.1%');
-    expect(indexReturn(component)).toBe('12.2%');
-    expect(component.contains(<FormattedMessage id="returnComparison.notEnoughHistory" />)).toBe(
-      false,
-    );
-    expect(component.contains(<FormattedMessage id="returnComparison.show.in.eur" />)).toBe(true);
-    expect(component.contains(<FormattedMessage id="returnComparison.show.in.percentage" />)).toBe(
-      false,
-    );
-
-    expect(component.contains(<Euro amount={1000.10323} />)).toBe(false);
-    expect(component.contains(<Euro amount={1131.0142442} />)).toBe(false);
-    expect(component.contains(<Euro amount={1222.1224} />)).toBe(false);
-
-    unitButton(component).simulate('click');
-
-    expect(component.contains(<FormattedMessage id="returnComparison.show.in.eur" />)).toBe(false);
-    expect(component.contains(<FormattedMessage id="returnComparison.show.in.percentage" />)).toBe(
-      true,
-    );
-    expect(component.contains(<Euro amount={1000.10323} />)).toBe(true);
-    expect(component.contains(<Euro amount={1131.0142442} />)).toBe(true);
-    expect(component.contains(<Euro amount={1222.1224} />)).toBe(true);
   });
 
   it('shows an error message and returns as - after getting not enough history response', async () => {
@@ -215,17 +172,16 @@ describe('Return comparison', () => {
 
     (getReturnComparison as jest.Mock).mockResolvedValueOnce({
       personal: null,
-      pensionFund: null,
       index: null,
+      pensionFund: null,
       notEnoughHistory: true,
     });
-    // (getReturnComparison as jest.Mock).mockRejectedValueOnce({});
     dateSelect(component).simulate('change', aDate());
     await flushPromises();
 
     expect(personalReturn(component)).toBe('-');
-    expect(pensionFundReturn(component)).toBe('-');
     expect(indexReturn(component)).toBe('-');
+    expect(pensionFundReturn(component)).toBe('-');
     expect(component.contains(<FormattedMessage id="returnComparison.notEnoughHistory" />)).toBe(
       true,
     );
@@ -244,14 +200,14 @@ describe('Return comparison', () => {
   const select = (c): ShallowWrapper => c.find(Select);
   const dateSelect = (c): ShallowWrapper => select(c).at(0);
   const personalReturnSelect = (c): ShallowWrapper => select(c).at(1);
-  const pensionFundSelect = (c): ShallowWrapper => select(c).at(3);
   const indexSelect = (c): ShallowWrapper => select(c).at(2);
+  const pensionFundSelect = (c): ShallowWrapper => select(c).at(3);
   const aDate = (): string => '2020-06-25';
   const aToken = (): string => 'a-token';
   const returns = (c, index): ShallowWrapper => c.find('.h2').at(index);
   const personalReturn = (c): string => returns(c, 0).text();
-  const pensionFundReturn = (c): string => returns(c, 2).text();
   const indexReturn = (c): string => returns(c, 1).text();
+  const pensionFundReturn = (c): string => returns(c, 2).text();
   const flushPromises = (): Promise<any> =>
     new Promise((resolve): void => {
       process.nextTick((): void => {

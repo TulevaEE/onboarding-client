@@ -8,7 +8,6 @@ import { getReturnComparison, Key, ReturnRateAndAmount } from './api';
 import fundIsinsWithAvailableData from './fundIsinsWithAvailableData.json';
 import convertFundsToFundNameMap from './convertFundsToFundNameMap';
 import Euro from '../../common/Euro';
-import './ReturnComparison.scss';
 
 enum PresentationUnit {
   CURRENCY = 'CURRENCY',
@@ -36,7 +35,6 @@ interface State {
   pensionFundReturn: ReturnRateAndAmount | null;
   indexReturn: ReturnRateAndAmount | null;
   notEnoughHistory: boolean;
-  presentationUnit: PresentationUnit;
 }
 
 const formatReturn = (
@@ -85,7 +83,6 @@ export class ReturnComparison extends Component<Props, State> {
     pensionFundReturn: null,
     indexReturn: null,
     notEnoughHistory: false,
-    presentationUnit: PresentationUnit.PERCENTAGE,
   };
 
   componentDidMount(): void {
@@ -128,15 +125,6 @@ export class ReturnComparison extends Component<Props, State> {
     }
   }
 
-  switchPresentationUnit(): void {
-    const { presentationUnit } = this.state;
-    if (presentationUnit === PresentationUnit.PERCENTAGE) {
-      this.setState({ presentationUnit: PresentationUnit.CURRENCY });
-    } else {
-      this.setState({ presentationUnit: PresentationUnit.PERCENTAGE });
-    }
-  }
-
   render(): JSX.Element {
     const { fundNameMap } = this.props;
     const {
@@ -150,29 +138,15 @@ export class ReturnComparison extends Component<Props, State> {
       pensionFundReturn,
       indexReturn,
       notEnoughHistory,
-      presentationUnit,
     } = this.state;
 
     return (
       <div className="mt-5">
         <div className="row mb-2">
-          <div className="col-md-4">
+          <div className="col-md-8">
             <p className="mt-1 lead">
               <FormattedMessage id="returnComparison.title" />
             </p>
-          </div>
-          <div className="col-md-4 text-md-right presentation-unit-switch">
-            <button
-              type="button"
-              className="btn btn-light"
-              onClick={() => this.switchPresentationUnit()}
-            >
-              {presentationUnit === PresentationUnit.PERCENTAGE ? (
-                <FormattedMessage id="returnComparison.show.in.eur" />
-              ) : (
-                <FormattedMessage id="returnComparison.show.in.percentage" />
-              )}
-            </button>
           </div>
           <div className="col-md-4 text-md-right">
             <Select
@@ -205,8 +179,13 @@ export class ReturnComparison extends Component<Props, State> {
                   });
                 }}
               />
-              <div className="h2 text-success my-4">
-                {loading ? LOADER : formatReturn(personalReturn, presentationUnit)}
+              <div className="my-4">
+                <div className="h2 text-success m-0">
+                  {loading ? LOADER : formatReturn(personalReturn, PresentationUnit.PERCENTAGE)}
+                </div>
+                <small className="text-muted">
+                  {loading ? LOADER : formatReturn(personalReturn, PresentationUnit.CURRENCY)}
+                </small>
               </div>
             </div>
             <div className="col-sm-4 text-center">
@@ -225,8 +204,13 @@ export class ReturnComparison extends Component<Props, State> {
                   });
                 }}
               />
-              <div className="h2 text-primary my-4">
-                {loading ? LOADER : formatReturn(indexReturn, presentationUnit)}
+              <div className="my-4">
+                <div className="h2 text-primary m-0">
+                  {loading ? LOADER : formatReturn(indexReturn, PresentationUnit.PERCENTAGE)}
+                </div>
+                <small className="text-muted">
+                  {loading ? LOADER : formatReturn(indexReturn, PresentationUnit.CURRENCY)}
+                </small>
               </div>
             </div>
             <div className="col-sm-4 text-center">
@@ -245,8 +229,13 @@ export class ReturnComparison extends Component<Props, State> {
                   });
                 }}
               />
-              <div className="h2 my-4">
-                {loading ? LOADER : formatReturn(pensionFundReturn, presentationUnit)}
+              <div className="my-4">
+                <div className="h2 m-0">
+                  {loading ? LOADER : formatReturn(pensionFundReturn, PresentationUnit.PERCENTAGE)}
+                </div>
+                <small className="text-muted">
+                  {loading ? LOADER : formatReturn(pensionFundReturn, PresentationUnit.CURRENCY)}
+                </small>
               </div>
             </div>
           </div>
