@@ -36,17 +36,17 @@ const ExactFundSelector = ({ selections, sourceFunds, targetFunds, onChange }) =
           </b>
         </small>
       </div>
-      <div className="col-12 col-md-2">
-        <small>
-          <b>
-            <FormattedMessage id="select.sources.select.some.percentage" />
-          </b>
-        </small>
-      </div>
       <div className="col-12 col-md">
         <small>
           <b>
             <FormattedMessage id="select.sources.select.some.target" />
+          </b>
+        </small>
+      </div>
+      <div className="col-12 col-md-2">
+        <small>
+          <b>
+            <FormattedMessage id="select.sources.select.some.percentage" />
           </b>
         </small>
       </div>
@@ -61,16 +61,16 @@ const ExactFundSelector = ({ selections, sourceFunds, targetFunds, onChange }) =
         onChange={createSelectionChangeHandler(index, selections, onChange)}
       />
     ))}
-    <div className="row mt-2">
+    <div className="row mt-4">
       <div className="col">
-        <small>
+        <small className="text-muted">
           <FormattedMessage id="select.sources.select.some.cost" />
         </small>
       </div>
       <div className="col">
         <button
           type="button"
-          className="btn btn-secondary btn-sm float-right"
+          className="btn btn-primary btn-sm float-right"
           onClick={createRowAdder({
             sourceFunds,
             targetFunds,

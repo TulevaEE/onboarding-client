@@ -96,17 +96,4 @@ describe('Third pillar select sources step', () => {
     });
     expect(component.contains(<Loader className="align-middle mt-4" />)).toBe(false);
   });
-
-  it('passes the recommended fund isin forward to the target fund selector', () => {
-    const recommendedFundIsin = 'asd';
-    component.setProps({
-      exchangeExistingUnits: true,
-      futureContributionsFundIsin: 'EE123',
-      recommendedFundIsin,
-      targetFunds: [{ fund: true }],
-    });
-    expect(component.find(TargetFundSelector).prop('recommendedFundIsin')).toBe(
-      recommendedFundIsin,
-    );
-  });
 });

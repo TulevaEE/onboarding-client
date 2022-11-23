@@ -64,10 +64,7 @@ export const ConfirmThirdPillarMandate = ({
       {selectedFutureContributionsFund && (
         <div className="mt-4">
           <FormattedMessage id="confirmThirdPillarMandate.contribution" />
-
-          <div>
-            <b className="highlight">{selectedFutureContributionsFund.name}</b>
-          </div>
+          <b className="highlight">{selectedFutureContributionsFund.name}</b>
         </div>
       )}
       {(loadingSourceFunds || loadingTargetFunds) && <Loader className="align-middle" />}

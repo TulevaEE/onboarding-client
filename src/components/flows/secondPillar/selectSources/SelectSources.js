@@ -4,9 +4,9 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
 import { Link, Redirect } from 'react-router-dom';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { selectExchangeSources } from '../../../exchange/actions';
-import { Loader, Radio, ErrorMessage } from '../../../common';
+import { ErrorMessage, Loader, Radio } from '../../../common';
 import PensionFundTable from './pensionFundTable';
 import TargetFundSelector from './targetFundSelector';
 import ExactFundSelector from './exactFundSelector';
@@ -54,8 +54,6 @@ export const SelectSources = ({
   error,
   nextPath,
 }) => {
-  const { formatMessage } = useIntl();
-
   if (error) {
     return <ErrorMessage errors={error.body} />;
   }
@@ -94,16 +92,7 @@ export const SelectSources = ({
         </h3>
         {fullSelectionActive ? (
           <div className="mt-3">
-            <FormattedMessage
-              id="select.sources.select.all.subtitle"
-              values={{
-                a: (chunks) => (
-                  <a href={formatMessage({ id: 'select.sources.select.all.subtitle.link' })}>
-                    {chunks}
-                  </a>
-                ),
-              }}
-            />
+            <FormattedMessage id="select.sources.select.all.subtitle" />
 
             <div className="mt-4">
               <FormattedMessage id="select.sources.select.all.choose" className="pt-2" />

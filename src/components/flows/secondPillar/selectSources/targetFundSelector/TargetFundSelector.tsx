@@ -62,7 +62,9 @@ export const TargetFundSelector: React.FunctionComponent<Props> = ({
           </button>
 
           {recommendedFundIsin === fund.isin ? (
-            <FormattedMessage id="select.sources.select.all.recommended" />
+            <small className="text-muted">
+              <FormattedMessage id="select.sources.select.all.recommended" />
+            </small>
           ) : (
             ''
           )}
