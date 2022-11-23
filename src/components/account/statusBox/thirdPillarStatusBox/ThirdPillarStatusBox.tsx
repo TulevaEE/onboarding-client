@@ -28,7 +28,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
         name={<FormattedMessage id="account.status.choice.pillar.third" />}
         lines={[<FormattedMessage id="account.status.choice.pillar.third.missing.label" />]}
       >
-        <Link to="/3rd-pillar-flow" className="btn btn-light">
+        <Link to="/3rd-pillar-flow" className="btn btn-primary">
           <FormattedMessage id="account.status.choice.pillar.third.missing.action" />
         </Link>
       </StatusBoxRow>
@@ -43,7 +43,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
         name={<FormattedMessage id="account.status.choice.pillar.third" />}
         lines={[activeFund, <ThirdPillarPaymentsThisYear />]}
       >
-        <Link to="/3rd-pillar-flow" className="btn btn-light">
+        <Link to="/3rd-pillar-flow" className="btn btn-primary">
           <FormattedMessage id="account.status.choice.pillar.third.inactive.action" />
         </Link>
       </StatusBoxRow>
@@ -60,7 +60,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
           <ThirdPillarPaymentsThisYear />,
         ]}
       >
-        <Link to="/3rd-pillar-flow" className="btn btn-light">
+        <Link to="/3rd-pillar-flow" className="btn btn-primary">
           <FormattedMessage id="account.status.choice.pillar.third.transferIncomplete.action" />
         </Link>
       </StatusBoxRow>

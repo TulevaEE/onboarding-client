@@ -38,7 +38,7 @@ exports[`SecondPillarStatusBox renders the choice flow when fund selection incom
   showAction={true}
 >
   <Link
-    className="btn btn-light"
+    className="btn btn-primary"
     to="/2nd-pillar-flow"
   >
     <MemoizedFormattedMessage
@@ -82,7 +82,7 @@ exports[`SecondPillarStatusBox renders the transfer flow when fund transfers inc
   showAction={true}
 >
   <Link
-    className="btn btn-light"
+    className="btn btn-primary"
     to="/2nd-pillar-flow"
   >
     <MemoizedFormattedMessage
@@ -109,7 +109,7 @@ exports[`SecondPillarStatusBox renders the withdrawal flow when withdrawal is in
   showAction={true}
 >
   <Link
-    className="btn btn-light"
+    className="btn btn-primary"
     to="/applications/undefined/cancellation"
   >
     <MemoizedFormattedMessage

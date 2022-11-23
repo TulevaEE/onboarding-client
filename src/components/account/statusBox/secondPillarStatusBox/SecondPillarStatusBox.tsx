@@ -29,7 +29,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
         name={<FormattedMessage id="account.status.choice.pillar.second" />}
         lines={[<FormattedMessage id="account.status.choice.pillar.second.withdraw" />]}
       >
-        <Link to={`/applications/${pendingWithdrawal.id}/cancellation`} className="btn btn-light">
+        <Link to={`/applications/${pendingWithdrawal.id}/cancellation`} className="btn btn-primary">
           <FormattedMessage id="account.status.choice.pillar.second.withdraw.cancel" />
         </Link>
       </StatusBoxRow>
@@ -65,7 +65,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
         name={<FormattedMessage id="account.status.choice.pillar.second" />}
         lines={[statusMessage]}
       >
-        <Link to="/2nd-pillar-flow" className="btn btn-light">
+        <Link to="/2nd-pillar-flow" className="btn btn-primary">
           <FormattedMessage id="account.status.choice.join.tuleva.2" />
         </Link>
       </StatusBoxRow>
@@ -79,7 +79,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
         name={<FormattedMessage id="account.status.choice.pillar.second" />}
         lines={[<FormattedMessage id="account.status.choice.pillar.second.transferIncomplete" />]}
       >
-        <Link to="/2nd-pillar-flow" className="btn btn-light">
+        <Link to="/2nd-pillar-flow" className="btn btn-primary">
           <FormattedMessage id="account.status.choice.transfer.tuleva.2" />
         </Link>
       </StatusBoxRow>

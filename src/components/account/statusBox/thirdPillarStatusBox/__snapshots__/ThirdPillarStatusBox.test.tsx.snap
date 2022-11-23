@@ -17,7 +17,7 @@ exports[`ThirdPillarStatusBox renders the "open third pillar" flow when user has
   showAction={true}
 >
   <Link
-    className="btn btn-light"
+    className="btn btn-primary"
     to="/3rd-pillar-flow"
   >
     <MemoizedFormattedMessage
@@ -80,7 +80,7 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when user has some 
   showAction={true}
 >
   <Link
-    className="btn btn-light"
+    className="btn btn-primary"
     to="/3rd-pillar-flow"
   >
     <MemoizedFormattedMessage
@@ -108,7 +108,7 @@ exports[`ThirdPillarStatusBox renders the "transfer incomplete" flow when user h
   showAction={true}
 >
   <Link
-    className="btn btn-light"
+    className="btn btn-primary"
     to="/3rd-pillar-flow"
   >
     <MemoizedFormattedMessage
