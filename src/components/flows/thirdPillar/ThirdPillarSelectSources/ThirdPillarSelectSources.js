@@ -7,14 +7,12 @@ import { Link, Redirect } from 'react-router-dom';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Loader, Radio } from '../../../common';
 import { selectThirdPillarSources } from '../../../thirdPillar/actions';
-import { TULEVA_3RD_PILLAR_FUND_ISIN } from '../../../thirdPillar/initialState';
 
 // TODO: don't import from 2nd pillar flow
 import PensionFundTable from '../../secondPillar/selectSources/pensionFundTable';
 import TargetFundSelector from '../../secondPillar/selectSources/targetFundSelector';
 
 export const ThirdPillarSelectSources = ({
-  recommendedFundIsin,
   exchangeExistingUnits,
   futureContributionsFundIsin,
   loadingSourceFunds,
@@ -61,20 +59,7 @@ export const ThirdPillarSelectSources = ({
         </h3>
         {fullSelectionActive ? (
           <div className="mt-3">
-            <FormattedMessage
-              id="thirdPillarFlowSelectSources.selectAll.subtitle"
-              values={{
-                a: (chunks) => (
-                  <a
-                    href={formatMessage({
-                      id: 'thirdPillarFlowSelectSources.selectAll.subtitle.link',
-                    })}
-                  >
-                    {chunks}
-                  </a>
-                ),
-              }}
-            />
+            <FormattedMessage id="thirdPillarFlowSelectSources.selectAll.subtitle" />
 
             <br />
             <br />
@@ -87,6 +72,8 @@ export const ThirdPillarSelectSources = ({
                     href={formatMessage({
                       id: 'thirdPillarFlowSelectSources.insurance_info.link',
                     })}
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
                     {chunks}
                   </a>
@@ -101,7 +88,6 @@ export const ThirdPillarSelectSources = ({
               <TargetFundSelector
                 targetFunds={targetFunds}
                 onSelectFund={(targetFund) => onSelect(true, targetFund.isin)}
-                recommendedFundIsin={recommendedFundIsin}
               />
             )}
           </div>
@@ -144,7 +130,6 @@ export const ThirdPillarSelectSources = ({
 const noop = () => null;
 
 ThirdPillarSelectSources.defaultProps = {
-  recommendedFundIsin: '',
   exchangeExistingUnits: false,
   futureContributionsFundIsin: '',
   sourceFunds: [],
@@ -157,7 +142,6 @@ ThirdPillarSelectSources.defaultProps = {
 };
 
 ThirdPillarSelectSources.propTypes = {
-  recommendedFundIsin: Types.string,
   exchangeExistingUnits: Types.bool,
   futureContributionsFundIsin: Types.string,
   sourceFunds: Types.arrayOf(Types.shape({})),
@@ -170,7 +154,6 @@ ThirdPillarSelectSources.propTypes = {
 };
 
 const mapStateToProps = (state) => ({
-  recommendedFundIsin: (state.login.user || {}).age < 55 ? TULEVA_3RD_PILLAR_FUND_ISIN : '',
   exchangeExistingUnits: state.thirdPillar.exchangeExistingUnits,
   exchangeableSourceFunds: state.thirdPillar.exchangeableSourceFunds,
   futureContributionsFundIsin: state.thirdPillar.selectedFutureContributionsFundIsin,

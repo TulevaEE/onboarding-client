@@ -34,6 +34,23 @@ export const FundExchangeRow = ({ sourceFunds, targetFunds, onChange, selection 
           </select>
         </div>
       </div>
+      <div className="col-12 col-md mt-2">
+        <div className="input-group">
+          <select
+            className="custom-select"
+            value={selection.targetFundIsin}
+            onChange={({ target: { value: targetFundIsin } }) =>
+              onChange({ ...selection, targetFundIsin })
+            }
+          >
+            {sortedTargetFunds.map((fund) => (
+              <option key={fund.isin} value={fund.isin}>
+                {fund.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
       <div className="col-12 col-md-2 mt-2">
         <div className="input-group tv-percentage-selector">
           <input
@@ -54,23 +71,6 @@ export const FundExchangeRow = ({ sourceFunds, targetFunds, onChange, selection 
           <label htmlFor={randomId} className="tv-percentage-selector__addon">
             %
           </label>
-        </div>
-      </div>
-      <div className="col-12 col-md mt-2">
-        <div className="input-group">
-          <select
-            className="custom-select"
-            value={selection.targetFundIsin}
-            onChange={({ target: { value: targetFundIsin } }) =>
-              onChange({ ...selection, targetFundIsin })
-            }
-          >
-            {sortedTargetFunds.map((fund) => (
-              <option key={fund.isin} value={fund.isin}>
-                {fund.name}
-              </option>
-            ))}
-          </select>
         </div>
       </div>
       <div className="col-12 col-md-1 mt-2 d-flex flex-column justify-content-center">
