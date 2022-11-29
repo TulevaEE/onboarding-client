@@ -47,8 +47,8 @@
   "select.sources.select.some.source": "Praegune fond",
   "select.sources.select.some.percentage": "Osakaal",
   "select.sources.select.some.target": "Uus fond",
-  "select.sources.select.none": "Jätan selle sammu vahele",
-  "select.sources.select.none.subtitle": "Järgmise sammuga saad suunata ainult edasised maksed soovitud fondi.",
+  "select.sources.select.none": "Suunan ainult edasised maksed",
+  "select.sources.select.none.subtitle": "Jätan selle sammu vahele",
   "select.sources.select.all.recommended": "Alla 55-aastastele sobib see fond.",
 
   "select": "Vali",
