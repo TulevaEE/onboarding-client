@@ -322,13 +322,22 @@ export function createTrackedEvent(
 }
 
 export function redirectToPayment(payment: Payment, token: string): void {
+  const wndw = getWindow(payment.type);
   get(getEndpoint('/v1/payments/link'), payment, {
     Authorization: `Bearer ${token}`,
   }).then((paymentLink) => {
-    if (payment.type === PaymentType.RECURRING) {
-      window.open(paymentLink.url, '_blank');
-    } else {
-      window.location.replace(paymentLink.url);
-    }
+    wndw.location.replace(paymentLink.url);
   });
+}
+
+function getWindow(paymentType: PaymentType): Window {
+  if (paymentType === PaymentType.SINGLE) {
+    return window;
+  }
+  const newWindow = window.open('', '_blank');
+  if (newWindow == null) {
+    return window;
+  }
+  newWindow.document.write('Loading...');
+  return newWindow;
 }

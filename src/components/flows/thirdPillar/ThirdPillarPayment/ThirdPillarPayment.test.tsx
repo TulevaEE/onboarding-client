@@ -29,9 +29,6 @@ describe('When a user is making a third pillar payment', () => {
     },
   });
 
-  const windowOpen = jest.spyOn(window, 'open');
-  windowOpen.mockImplementation(jest.fn());
-
   function initializeComponent() {
     history = createMemoryHistory();
     const store = createDefaultStore(history as any);
@@ -109,9 +106,9 @@ describe('When a user is making a third pillar payment', () => {
     userEvent.click(logIntoInternetBank);
 
     await waitFor(() =>
-      expect(windowOpen).toHaveBeenCalledWith('https://LHV.EE/RECURRING.34.EUR', '_blank'),
+      expect(windowLocation).toHaveBeenCalledWith('https://LHV.EE/RECURRING.34.EUR'),
     );
-    expect(windowOpen).toHaveBeenCalledTimes(1);
+    expect(windowLocation).toHaveBeenCalledTimes(1);
   });
 
   test('can see recurring payment details', async () => {
