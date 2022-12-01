@@ -81,13 +81,17 @@ if (process.env.NODE_ENV !== 'test') {
 
 const noop = () => null;
 
-history.listen(() => {
+function trackPageView() {
   createTrackedEvent(
     'PAGE_VIEW',
     { path: window.location.pathname.replace(/\/+$/g, '') },
     store.getState().login.token,
   ).catch(noop);
+}
 
+trackPageView();
+history.listen(() => {
+  trackPageView();
   if (process.env.NODE_ENV === 'production') {
     GoogleAnalytics.pageview(window.location.href);
   }
