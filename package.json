@@ -7,7 +7,7 @@
     "node": ">=16.17.0 <17"
   },
   "dependencies": {
-    "@sentry/browser": "^7.12.1",
+    "@sentry/browser": "^7.22.0",
     "array.prototype.find": "^2.1.2",
     "axios": "^0.24.0",
     "bootstrap": "4.3.1",
