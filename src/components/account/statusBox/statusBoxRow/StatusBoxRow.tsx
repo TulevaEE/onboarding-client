@@ -1,8 +1,16 @@
 import React from 'react';
 import './StatusBoxRow.scss';
 
-const CheckMark: React.FunctionComponent<{ checked: boolean }> = ({ checked = false }) => (
-  <div className={`ml-3 mr-2 fa${checked ? ' fa-check' : ' fa-times'}`} />
+const CheckMark: React.FunctionComponent<{
+  checked?: boolean;
+  warning?: boolean;
+  error?: boolean;
+}> = ({ checked = false, warning = false, error = false }) => (
+  <div
+    className={`ml-3 mr-2 fa${checked ? ' fa-check' : ''}${error ? ' fa-times' : ''}${
+      warning ? ' fa-exclamation-triangle' : ''
+    }`}
+  />
 );
 
 export const StatusBoxRow: React.FunctionComponent<{
@@ -10,9 +18,20 @@ export const StatusBoxRow: React.FunctionComponent<{
   lines?: React.ReactNode[];
   showAction?: boolean;
   ok?: boolean;
+  warning?: boolean;
+  error?: boolean;
   last?: boolean;
   children?: React.ReactNode;
-}> = ({ name = '', lines = [], showAction = false, ok = false, children = '', last = false }) => {
+}> = ({
+  name = '',
+  lines = [],
+  showAction = false,
+  ok = false,
+  warning = false,
+  error = false,
+  children = '',
+  last = false,
+}) => {
   const formattedLines = (
     <ul>
       {lines &&
@@ -34,7 +53,7 @@ export const StatusBoxRow: React.FunctionComponent<{
     >
       <div className="d-flex">
         <div className="d-flex flex-column justify-content-center">
-          <CheckMark checked={ok} />
+          <CheckMark checked={ok} warning={warning} error={error} />
         </div>
         <div className="d-flex flex-column justify-content-center">
           <div className="mt-0 pt-1 pl-2">

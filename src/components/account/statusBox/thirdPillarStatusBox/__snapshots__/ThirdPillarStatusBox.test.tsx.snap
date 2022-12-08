@@ -2,6 +2,7 @@
 
 exports[`ThirdPillarStatusBox renders the "open third pillar" flow when user has no pillar active 1`] = `
 <StatusBoxRow
+  error={true}
   lines={
     Array [
       <Memo(MemoizedFormattedMessage)
@@ -29,6 +30,7 @@ exports[`ThirdPillarStatusBox renders the "open third pillar" flow when user has
 
 exports[`ThirdPillarStatusBox renders the "payment incomplete" flow when funds have not transferred yet 1`] = `
 <StatusBoxRow
+  error={true}
   lines={
     Array [
       <React.Fragment>
@@ -66,9 +68,10 @@ exports[`ThirdPillarStatusBox renders the "payment incomplete" flow when funds h
 
 exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when user has some other fund manager 1`] = `
 <StatusBoxRow
+  error={true}
   lines={
     Array [
-      "Tuleva III Samba Pensionifond",
+      "Tuleva III Samba Pensionifond",
       <Memo(Connect(ThirdPillarYearToDateContribution)) />,
     ]
   }
@@ -92,6 +95,7 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when user has some 
 
 exports[`ThirdPillarStatusBox renders the "transfer incomplete" flow when user has several funds 1`] = `
 <StatusBoxRow
+  error={true}
   lines={
     Array [
       <Memo(MemoizedFormattedMessage)
@@ -122,7 +126,7 @@ exports[`ThirdPillarStatusBox renders the success flow 1`] = `
 <StatusBoxRow
   lines={
     Array [
-      "Tuleva III Samba Pensionifond",
+      "Tuleva III Samba Pensionifond",
       <Memo(Connect(ThirdPillarYearToDateContribution)) />,
     ]
   }
