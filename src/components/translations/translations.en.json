@@ -410,7 +410,7 @@
   "thirdPillarPayment.backToAccountPage": "Back to account page",
   "thirdPillarPayment.singlePayment": "Single payment",
   "thirdPillarPayment.recurringPayment": "Recurring payment",
-  "thirdPillarPayment.freeSinglePayment": "Making payments is <b>free of charge</b>.",
+  "thirdPillarPayment.freeSinglePayment": "Making payments is <b>free of charge</b>. Make sure your bank transaction limits are high enough.",
   "thirdPillarPayment.freeRecurringPayment": "Setting up a standing order is <b>free of charge</b>. You can change your standing order in your internet bank at any time.",
   "thirdPillarPayment.makePayment": "Make payment",
   "thirdPillarPayment.setupRecurringPayment": "Log into internet bank",
