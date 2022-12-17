@@ -85,11 +85,7 @@ export const ThirdPillarPayment: React.FunctionComponent<{
         <ThirdPillarPaymentsThisYear />
         <div>
           <small className="text-muted">
-            <a
-              href="//tuleva.ee/vastused/kolmanda-samba-kysimused/"
-              target="_blank"
-              rel="noreferrer"
-            >
+            <a href="//tuleva.ee/iii-sammas/" target="_blank" rel="noreferrer">
               {paymentType === PaymentType.SINGLE && (
                 <FormattedMessage id="thirdPillarPayment.singlePaymentHowMuch" />
               )}
