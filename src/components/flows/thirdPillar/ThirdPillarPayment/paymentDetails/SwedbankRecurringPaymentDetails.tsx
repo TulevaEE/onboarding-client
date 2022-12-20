@@ -1,6 +1,6 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import { ChoiceApplicationRow } from './row/ChoiceApplicationRow';
+import { FundRow } from './row/FundRow';
 import { PaymentAmountRow } from './row/PaymentAmountRow';
 import { TextRow } from './row/TextRow';
 
@@ -28,9 +28,9 @@ export const SwedbankRecurringPaymentDetails: React.FunctionComponent<{
         <div className="mt-2 p-4 payment-details-table">
           <table>
             <tbody>
-              <ChoiceApplicationRow>
+              <FundRow>
                 <FormattedMessage id="thirdPillarPayment.fund" />
-              </ChoiceApplicationRow>
+              </FundRow>
               <TextRow>
                 <FormattedMessage id="thirdPillarPayment.account" />
                 <FormattedMessage id="thirdPillarPayment.chooseAccount" />

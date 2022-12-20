@@ -122,7 +122,7 @@ describe('When a user is making a third pillar payment', () => {
     expect(screen.getByText('Account number:')).toBeInTheDocument();
     expect(screen.getByText('EE362200221067235244')).toBeInTheDocument();
     expect(screen.getByText('Payment description:')).toBeInTheDocument();
-    expect(screen.getByText('30101119828, PK:9876543210')).toBeInTheDocument();
+    expect(screen.getByText('30101119828, PK:9876543210, EE3600001707')).toBeInTheDocument();
   });
 
   test('can go back to account page after seeing other banks recurring payment details', async () => {
@@ -155,7 +155,7 @@ describe('When a user is making a third pillar payment', () => {
       screen.getByText('30101119828', {
         exact: false,
       }),
-    ).toHaveTextContent('30101119828, PK:9876543210');
+    ).toHaveTextContent('30101119828, PK:9876543210, EE3600001707');
     expect(screen.queryByText('Payment reference:')).not.toBeInTheDocument();
     expect(screen.queryByText('9876543210')).not.toBeInTheDocument();
   });

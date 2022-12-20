@@ -365,10 +365,9 @@
   "thirdPillarPayment.recurringPayment.swedbank.login": "Click the button below and log into your Swedbank internet bank.",
   "thirdPillarPayment.recurringPayment.swedbank.form": "The standing order form is pre-filled with your data. Check the following fields and confirm the order:",
   "thirdPillarPayment.fund": "Choose fund for payment",
-  "thirdPillarPayment.choiceApplication": "According to the choice application",
+  "thirdPillarPayment.tuleva3rdPillarFund": "Tuleva III Pillar Pension Fund",
   "thirdPillarPayment.account": "Account",
   "thirdPillarPayment.chooseAccount": "Choose account",
-  "thirdPillarPayment.choiceApplicationInfo": "Today, according to your choice application, your choice is 100% Tuleva III Pillar Pension Fund. If you ever happen to change your mind and submit a new choice application, then your future recurring payments will be automatically made into your new fund of choice. No need to separately change your recurring payment.",
   "thirdPillarPayment.firstPaymentDate": "Date of first payment",
   "thirdPillarPayment.yourPaymentDate": "Pick a date",
 
@@ -429,8 +428,8 @@
   "thirdPillarPayment.accountNumber.seb": "Estonian Pension Registry's SEB account number",
   "thirdPillarPayment.accountNumber.lhv": "Estonian Pension Registry's LHV account number",
   "thirdPillarPayment.accountNumber.luminor": "Estonian Pension Registry's Luminor account number",
-  "thirdPillarPayment.processingCode": "III pillar processing code",
-  "thirdPillarPayment.processingCodeAndPensionAccountNumber": "III pillar processing code and your pension account number",
+  "thirdPillarPayment.processingCode": "III pillar processing code and Tuleva III Pillar Pension Fund ISIN",
+  "thirdPillarPayment.processingCodeAndPensionAccountNumber": "III pillar processing code, your pension account number and Tuleva III Pillar Pension Fund ISIN",
   "thirdPillarPayment.pensionAccountNumber": "Your pension account number",
 
   "thirdPillarSuccess.done": "All done!",
