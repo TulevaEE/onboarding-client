@@ -341,10 +341,9 @@
   "thirdPillarPayment.recurringPayment.swedbank.login": "Vajuta allolevat nuppu ning logi sisse Swedbanki internetipanka.",
   "thirdPillarPayment.recurringPayment.swedbank.form": "Kontrolli üle järgnevad väljad ning kinnita makse:",
   "thirdPillarPayment.fund": "Teen sissemakse fondi",
-  "thirdPillarPayment.choiceApplication": "Vastavalt valikuavaldusele",
+  "thirdPillarPayment.tuleva3rdPillarFund": "Tuleva III Samba Pensionifond",
   "thirdPillarPayment.account": "Konto",
   "thirdPillarPayment.chooseAccount": "Vali sobiv konto",
-  "thirdPillarPayment.choiceApplicationInfo": "Vastavalt valikuavaldusele on täna sinu valik 100% Tuleva III Samba Pensionifond. Kui peaksid tulevikus meelt muutma ja tegema uue valikuavalduse mujale fondi, siis sinu püsimaksed hakkavad automaatselt minema teise fondi, ilma et peaksid püsimakset eraldi muutma.",
   "thirdPillarPayment.firstPaymentDate": "Esimese sissemakse kuupäev",
   "thirdPillarPayment.yourPaymentDate": "Vali sobiv kuupäev",
 
@@ -405,8 +404,8 @@
   "thirdPillarPayment.accountNumber.seb": "Pensionikeskuse SEB kontonumber",
   "thirdPillarPayment.accountNumber.lhv": "Pensionikeskuse LHV kontonumber",
   "thirdPillarPayment.accountNumber.luminor": "Pensionikeskuse Luminori kontonumber",
-  "thirdPillarPayment.processingCode": "III sammast tähistav töötluskood, mis on alati samasugune",
-  "thirdPillarPayment.processingCodeAndPensionAccountNumber": "III sammast tähistav töötluskood ja sinu personaalne pensionikonto number",
+  "thirdPillarPayment.processingCode": "III sammast tähistav töötluskood, mis on alati samasugune ja Tuleva III Samba Pensionifondi ISIN",
+  "thirdPillarPayment.processingCodeAndPensionAccountNumber": "III sammast tähistav töötluskood, sinu personaalne pensionikonto number ja Tuleva III Samba Pensionifondi ISIN",
   "thirdPillarPayment.pensionAccountNumber": "Sinu personaalne pensionikonto number",
 
   "thirdPillarSuccess.done": "Kõik tehtud!",
