@@ -206,6 +206,5 @@ describe('When a user is making a third pillar payment', () => {
   const queryLogIntoInternetBankButton = () =>
     screen.queryByRole('button', { name: 'Log into internet bank' });
 
-  const backToAccountPageButton = async () =>
-    screen.findByRole('button', { name: 'Back to account page' });
+  const backToAccountPageButton = async () => screen.findByText('Back to account page');
 });

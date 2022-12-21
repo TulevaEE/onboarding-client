@@ -237,11 +237,9 @@ export const Payment: React.FunctionComponent<{
                 <span className="mr-2 mt-4">
                   <FormattedMessage id="thirdPillarPayment.recurringPaymentQuestion" />
                 </span>
-                <Link to="/account">
-                  <button type="button" className="btn btn-light text-nowrap mt-4">
-                    <FormattedMessage id="thirdPillarPayment.backToAccountPage" />
-                  </button>
-                </Link>
+                <a className="btn btn-light text-nowrap mt-4" href="/account">
+                  <FormattedMessage id="thirdPillarPayment.backToAccountPage" />
+                </a>
               </div>
             )}
           </div>
