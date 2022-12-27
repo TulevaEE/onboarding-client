@@ -2,12 +2,12 @@ import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 import { ThirdPillarStatusBox } from './ThirdPillarStatusBox';
 import StatusBoxRow from '../statusBoxRow';
-import { activeThirdPillar, completeThirdPillarconversion } from '../fixtures';
+import { activeThirdPillar, completeThirdPillarConversion } from '../fixtures';
 
 describe('ThirdPillarStatusBox', () => {
   let component: ShallowWrapper;
   const props = {
-    conversion: completeThirdPillarconversion.thirdPillar,
+    conversion: completeThirdPillarConversion.thirdPillar,
     loading: false,
     sourceFunds: [activeThirdPillar],
     pillarActive: true,
@@ -33,7 +33,11 @@ describe('ThirdPillarStatusBox', () => {
 
   it('renders the "pick tuleva" flow when user has some other fund manager', () => {
     component.setProps({
-      conversion: { selectionComplete: false, contribution: { yearToDate: 20 } },
+      conversion: {
+        selectionPartial: false,
+        selectionComplete: false,
+        contribution: { yearToDate: 20 },
+      },
     });
     expect(component).toMatchSnapshot();
   });
@@ -42,7 +46,9 @@ describe('ThirdPillarStatusBox', () => {
     component.setProps({
       conversion: {
         transfersComplete: false,
+        transfersPartial: false,
         selectionComplete: true,
+        selectionPartial: true,
         contribution: { yearToDate: 20 },
       },
     });
@@ -53,8 +59,10 @@ describe('ThirdPillarStatusBox', () => {
     component.setProps({
       conversion: {
         transfersComplete: true,
+        transfersPartial: true,
         selectionComplete: true,
-        contribution: { total: 0 },
+        selectionPartial: true,
+        contribution: { total: 0, yearToDate: 0 },
       },
     });
     expect(component).toMatchSnapshot();
