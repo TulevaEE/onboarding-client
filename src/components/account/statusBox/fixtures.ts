@@ -1,9 +1,11 @@
-import { SourceFund } from '../../common/apiModels';
+import { SourceFund, UserConversion } from '../../common/apiModels';
 
-export const incompleteConversion = {
+export const incompleteConversion: UserConversion = {
   secondPillar: {
     selectionComplete: false,
+    selectionPartial: false,
     transfersComplete: false,
+    transfersPartial: false,
     paymentComplete: false,
     pendingWithdrawal: false,
     contribution: { yearToDate: 200, total: 250 },
@@ -11,7 +13,9 @@ export const incompleteConversion = {
   },
   thirdPillar: {
     selectionComplete: false,
+    selectionPartial: false,
     transfersComplete: false,
+    transfersPartial: false,
     paymentComplete: false,
     pendingWithdrawal: false,
     contribution: { yearToDate: 300, total: 450 },
@@ -19,10 +23,12 @@ export const incompleteConversion = {
   },
 };
 
-export const completeConversion = {
+export const completeConversion: UserConversion = {
   secondPillar: {
     selectionComplete: true,
+    selectionPartial: true,
     transfersComplete: true,
+    transfersPartial: true,
     paymentComplete: true,
     pendingWithdrawal: false,
     contribution: { yearToDate: 560, total: 20600 },
@@ -30,7 +36,9 @@ export const completeConversion = {
   },
   thirdPillar: {
     selectionComplete: true,
+    selectionPartial: true,
     transfersComplete: true,
+    transfersPartial: true,
     paymentComplete: true,
     pendingWithdrawal: false,
     contribution: { yearToDate: 2500, total: 37000 },
@@ -38,10 +46,12 @@ export const completeConversion = {
   },
 };
 
-export const completeThirdPillarconversion = {
+export const completeThirdPillarConversion: UserConversion = {
   secondPillar: {
     selectionComplete: false,
+    selectionPartial: false,
     transfersComplete: false,
+    transfersPartial: false,
     paymentComplete: false,
     pendingWithdrawal: false,
     contribution: { yearToDate: 560, total: 20600 },
@@ -49,7 +59,9 @@ export const completeThirdPillarconversion = {
   },
   thirdPillar: {
     selectionComplete: true,
+    selectionPartial: true,
     transfersComplete: true,
+    transfersPartial: true,
     paymentComplete: true,
     pendingWithdrawal: false,
     contribution: { yearToDate: 2500, total: 37000 },
@@ -57,10 +69,12 @@ export const completeThirdPillarconversion = {
   },
 };
 
-export const completeSecondPillarconversion = {
+export const completeSecondPillarConversion: UserConversion = {
   secondPillar: {
     selectionComplete: true,
+    selectionPartial: true,
     transfersComplete: true,
+    transfersPartial: true,
     paymentComplete: true,
     pendingWithdrawal: false,
     contribution: { yearToDate: 2500, total: 37000 },
@@ -68,7 +82,9 @@ export const completeSecondPillarconversion = {
   },
   thirdPillar: {
     selectionComplete: false,
+    selectionPartial: false,
     transfersComplete: false,
+    transfersPartial: false,
     paymentComplete: false,
     pendingWithdrawal: false,
     contribution: { yearToDate: 560, total: 20600 },

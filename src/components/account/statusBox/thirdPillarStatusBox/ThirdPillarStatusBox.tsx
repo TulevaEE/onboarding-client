@@ -40,7 +40,8 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
     .filter((fund) => fund.activeFund)
     .map(({ name }) => name.replaceAll(' ', '\u00a0'))
     .join(', ');
-  if (!conversion.selectionComplete) {
+
+  if (!conversion.selectionPartial) {
     return (
       <StatusBoxRow
         error
@@ -55,10 +56,14 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
     );
   }
 
-  if (!conversion.transfersComplete) {
+  if (
+    !conversion.transfersPartial ||
+    !conversion.selectionComplete ||
+    !conversion.transfersComplete
+  ) {
     return (
       <StatusBoxRow
-        error
+        warning
         showAction={!loading}
         name={<FormattedMessage id="account.status.choice.pillar.third" />}
         lines={[
@@ -66,14 +71,14 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
           <ThirdPillarPaymentsThisYear />,
         ]}
       >
-        <Link to="/3rd-pillar-flow" className="btn btn-primary">
-          <FormattedMessage id="account.status.choice.pillar.third.transferIncomplete.action" />
+        <Link to="/3rd-pillar-payment" className="btn btn-primary">
+          <FormattedMessage id="account.status.choice.pillar.third.success.action" />
         </Link>
       </StatusBoxRow>
     );
   }
 
-  if (conversion.contribution.total === 0) {
+  if (conversion.contribution.yearToDate === 0) {
     return (
       <StatusBoxRow
         error
@@ -89,7 +94,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
           <ThirdPillarPaymentsThisYear />,
         ]}
       >
-        <Link to="/3rd-pillar-flow" className="btn btn-primary">
+        <Link to="/3rd-pillar-payment" className="btn btn-primary">
           <FormattedMessage id="account.status.choice.pillar.third.success.action" />
         </Link>
       </StatusBoxRow>
@@ -103,7 +108,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
       name={<FormattedMessage id="account.status.choice.pillar.third" />}
       lines={[activeFunds, <ThirdPillarPaymentsThisYear />]}
     >
-      <Link to="/3rd-pillar-flow" className="btn btn-primary">
+      <Link to="/3rd-pillar-payment" className="btn btn-primary">
         <FormattedMessage id="account.status.choice.pillar.third.success.action" />
       </Link>
     </StatusBoxRow>

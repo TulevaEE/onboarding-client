@@ -181,7 +181,9 @@ export interface Amount {
 
 export interface Conversion {
   selectionComplete: boolean;
+  selectionPartial: boolean;
   transfersComplete: boolean;
+  transfersPartial: boolean;
   paymentComplete: boolean;
   pendingWithdrawal: boolean;
   contribution: Amount;
