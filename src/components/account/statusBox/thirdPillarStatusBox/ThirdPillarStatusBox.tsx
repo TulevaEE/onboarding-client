@@ -41,7 +41,8 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
     .map(({ name }) => name.replaceAll(' ', '\u00a0'))
     .join(', ');
 
-  if (!conversion.selectionPartial) {
+  const isPartiallyConverted = conversion.selectionPartial || conversion.transfersPartial;
+  if (!isPartiallyConverted) {
     return (
       <StatusBoxRow
         error
@@ -57,6 +58,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
   }
 
   if (
+    !conversion.selectionPartial ||
     !conversion.transfersPartial ||
     !conversion.selectionComplete ||
     !conversion.transfersComplete

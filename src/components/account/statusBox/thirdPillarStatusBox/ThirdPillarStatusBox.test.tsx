@@ -42,6 +42,26 @@ describe('ThirdPillarStatusBox', () => {
     expect(component).toMatchSnapshot();
   });
 
+  it('renders the "pick tuleva" flow when partially converted with selection', () => {
+    component.setProps({
+      conversion: {
+        selectionPartial: true,
+        contribution: { yearToDate: 20 },
+      },
+    });
+    expect(component).toMatchSnapshot();
+  });
+
+  it('renders the "pick tuleva" flow when partially converted with transfer', () => {
+    component.setProps({
+      conversion: {
+        transferPartial: true,
+        contribution: { yearToDate: 20 },
+      },
+    });
+    expect(component).toMatchSnapshot();
+  });
+
   it('renders the "transfer incomplete" flow when user has several funds', () => {
     component.setProps({
       conversion: {
