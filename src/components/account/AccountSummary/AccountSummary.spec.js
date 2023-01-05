@@ -113,7 +113,7 @@ describe('Account summary', () => {
       </span>,
     );
     expect(dataSource[1].profit).toEqual(
-      <span className="text-danger">
+      <span>
         <Euro amount={-36} />
       </span>,
     );
