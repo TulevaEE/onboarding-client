@@ -14,6 +14,7 @@ describe('ThirdPillarStatusBox', () => {
   };
 
   beforeEach(() => {
+    jest.useFakeTimers();
     component = shallow(<ThirdPillarStatusBox {...props} />);
   });
 
@@ -62,6 +63,19 @@ describe('ThirdPillarStatusBox', () => {
     expect(component).toMatchSnapshot();
   });
 
+  it('renders the "pick tuleva" flow when partially converted with transfer', () => {
+    component.setProps({
+      conversion: {
+        transfersComplete: true,
+        transfersPartial: true,
+        selectionComplete: true,
+        selectionPartial: true,
+        contribution: { yearToDate: 20 },
+      },
+    });
+    expect(component).toMatchSnapshot();
+  });
+
   it('renders the "transfer incomplete" flow when user has several funds', () => {
     component.setProps({
       conversion: {
@@ -75,7 +89,8 @@ describe('ThirdPillarStatusBox', () => {
     expect(component).toMatchSnapshot();
   });
 
-  it('renders the "payment incomplete" flow when funds have not transferred yet', () => {
+  it('renders the success flow when funds have not transferred yet but its only january', () => {
+    jest.useFakeTimers('modern').setSystemTime(new Date('2023-01-24T00:00:00'));
     component.setProps({
       conversion: {
         transfersComplete: true,
@@ -83,6 +98,34 @@ describe('ThirdPillarStatusBox', () => {
         selectionComplete: true,
         selectionPartial: true,
         contribution: { total: 0, yearToDate: 0 },
+      },
+    });
+    expect(component).toMatchSnapshot();
+  });
+
+  it('renders the "payment incomplete" flow when funds have not transferred yet and date between feb-nov', () => {
+    jest.useFakeTimers('modern').setSystemTime(new Date('2023-02-24T00:00:00'));
+    component.setProps({
+      conversion: {
+        transfersComplete: true,
+        transfersPartial: true,
+        selectionComplete: true,
+        selectionPartial: true,
+        contribution: { total: 0, yearToDate: 0 },
+      },
+    });
+    expect(component).toMatchSnapshot();
+  });
+
+  it('renders the december flow when date in december', () => {
+    jest.useFakeTimers('modern').setSystemTime(new Date('2023-12-24T00:00:00'));
+    component.setProps({
+      conversion: {
+        transfersComplete: true,
+        transfersPartial: true,
+        selectionComplete: true,
+        selectionPartial: true,
+        contribution: { yearToDate: 0 },
       },
     });
     expect(component).toMatchSnapshot();

@@ -252,6 +252,7 @@
   "account.status.choice.pillar.third.transferIncomplete.label": "You have several pension funds",
   "account.status.choice.pillar.third.paymentIncomplete.label": "Your contributions have not reached the fund yet",
   "account.status.choice.pillar.third.paymentInfo": "Note that fund units appear on your third pillar account by the end of the next working day. If you paid on Friday after 4pm or on the weekend, the units will appear on your account by Tuesday afternoon.",
+  "account.status.choice.pillar.third.paymentDeadline": "The deadline for this year's III pillar contribution is <b>December 28 at 15:59</b>.",
   "account.status.choice.pillar.third.success.action": "Make a payment",
   "account.status.choice.tuleva": "Tuleva",
   "account.status.choice.join.tuleva.2": "Pick Tuleva",
