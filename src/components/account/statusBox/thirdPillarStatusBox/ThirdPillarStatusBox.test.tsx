@@ -37,7 +37,7 @@ describe('ThirdPillarStatusBox', () => {
       conversion: {
         selectionPartial: false,
         selectionComplete: false,
-        contribution: { yearToDate: 20 },
+        contribution: { yearToDate: 20, total: 20 },
       },
     });
     expect(component).toMatchSnapshot();
@@ -47,7 +47,7 @@ describe('ThirdPillarStatusBox', () => {
     component.setProps({
       conversion: {
         selectionPartial: true,
-        contribution: { yearToDate: 20 },
+        contribution: { yearToDate: 20, total: 20 },
       },
     });
     expect(component).toMatchSnapshot();
@@ -57,7 +57,7 @@ describe('ThirdPillarStatusBox', () => {
     component.setProps({
       conversion: {
         transferPartial: true,
-        contribution: { yearToDate: 20 },
+        contribution: { yearToDate: 20, total: 20 },
       },
     });
     expect(component).toMatchSnapshot();
@@ -70,7 +70,7 @@ describe('ThirdPillarStatusBox', () => {
         transfersPartial: true,
         selectionComplete: true,
         selectionPartial: true,
-        contribution: { yearToDate: 20 },
+        contribution: { yearToDate: 20, total: 20 },
       },
     });
     expect(component).toMatchSnapshot();
@@ -83,7 +83,20 @@ describe('ThirdPillarStatusBox', () => {
         transfersPartial: false,
         selectionComplete: true,
         selectionPartial: true,
-        contribution: { yearToDate: 20 },
+        contribution: { yearToDate: 20, total: 20 },
+      },
+    });
+    expect(component).toMatchSnapshot();
+  });
+
+  it('renders the "payment incomplete" flow when no funds have ever been transferred', () => {
+    component.setProps({
+      conversion: {
+        transfersComplete: true,
+        transfersPartial: true,
+        selectionComplete: true,
+        selectionPartial: true,
+        contribution: { yearToDate: 0, total: 0 },
       },
     });
     expect(component).toMatchSnapshot();
@@ -97,7 +110,7 @@ describe('ThirdPillarStatusBox', () => {
         transfersPartial: true,
         selectionComplete: true,
         selectionPartial: true,
-        contribution: { total: 0, yearToDate: 0 },
+        contribution: { yearToDate: 0, total: 20 },
       },
     });
     expect(component).toMatchSnapshot();
@@ -111,7 +124,7 @@ describe('ThirdPillarStatusBox', () => {
         transfersPartial: true,
         selectionComplete: true,
         selectionPartial: true,
-        contribution: { total: 0, yearToDate: 0 },
+        contribution: { yearToDate: 0, total: 20 },
       },
     });
     expect(component).toMatchSnapshot();
@@ -125,7 +138,7 @@ describe('ThirdPillarStatusBox', () => {
         transfersPartial: true,
         selectionComplete: true,
         selectionPartial: true,
-        contribution: { yearToDate: 0 },
+        contribution: { yearToDate: 0, total: 20 },
       },
     });
     expect(component).toMatchSnapshot();

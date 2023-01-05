@@ -66,6 +66,44 @@ exports[`ThirdPillarStatusBox renders the "payment incomplete" flow when funds h
 </StatusBoxRow>
 `;
 
+exports[`ThirdPillarStatusBox renders the "payment incomplete" flow when no funds have ever been transferred 1`] = `
+<StatusBoxRow
+  error={true}
+  lines={
+    Array [
+      <React.Fragment>
+        <Memo(MemoizedFormattedMessage)
+          id="account.status.choice.pillar.third.paymentIncomplete.label"
+        />
+        <InfoTooltip
+          name="third-pillar-tooltip"
+        >
+          <Memo(MemoizedFormattedMessage)
+            id="account.status.choice.pillar.third.paymentInfo"
+          />
+        </InfoTooltip>
+      </React.Fragment>,
+      <Memo(Connect(ThirdPillarYearToDateContribution)) />,
+    ]
+  }
+  name={
+    <Memo(MemoizedFormattedMessage)
+      id="account.status.choice.pillar.third"
+    />
+  }
+  showAction={true}
+>
+  <Link
+    className="btn btn-primary"
+    to="/3rd-pillar-payment"
+  >
+    <MemoizedFormattedMessage
+      id="account.status.choice.pillar.third.success.action"
+    />
+  </Link>
+</StatusBoxRow>
+`;
+
 exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when partially converted with selection 1`] = `
 <StatusBoxRow
   lines={

@@ -84,6 +84,29 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
     );
   }
 
+  if (conversion.contribution.total === 0) {
+    return (
+      <StatusBoxRow
+        error
+        showAction={!loading}
+        name={<FormattedMessage id="account.status.choice.pillar.third" />}
+        lines={[
+          <>
+            <FormattedMessage id="account.status.choice.pillar.third.paymentIncomplete.label" />
+            <InfoTooltip name="third-pillar-tooltip">
+              <FormattedMessage id="account.status.choice.pillar.third.paymentInfo" />
+            </InfoTooltip>
+          </>,
+          <ThirdPillarPaymentsThisYear />,
+        ]}
+      >
+        <Link to="/3rd-pillar-payment" className="btn btn-primary">
+          <FormattedMessage id="account.status.choice.pillar.third.success.action" />
+        </Link>
+      </StatusBoxRow>
+    );
+  }
+
   if (conversion.contribution.yearToDate === 0 && isFebruaryToNovember) {
     return (
       <StatusBoxRow
