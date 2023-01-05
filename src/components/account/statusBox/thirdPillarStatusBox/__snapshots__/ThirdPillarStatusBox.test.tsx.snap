@@ -28,9 +28,8 @@ exports[`ThirdPillarStatusBox renders the "open third pillar" flow when user has
 </StatusBoxRow>
 `;
 
-exports[`ThirdPillarStatusBox renders the "payment incomplete" flow when funds have not transferred yet 1`] = `
+exports[`ThirdPillarStatusBox renders the "payment incomplete" flow when funds have not transferred yet and date between feb-nov 1`] = `
 <StatusBoxRow
-  error={true}
   lines={
     Array [
       <React.Fragment>
@@ -54,6 +53,7 @@ exports[`ThirdPillarStatusBox renders the "payment incomplete" flow when funds h
     />
   }
   showAction={true}
+  warning={true}
 >
   <Link
     className="btn btn-primary"
@@ -122,6 +122,33 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when partially conv
 </StatusBoxRow>
 `;
 
+exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when partially converted with transfer 2`] = `
+<StatusBoxRow
+  lines={
+    Array [
+      "Tuleva III Samba Pensionifond",
+      <Memo(Connect(ThirdPillarYearToDateContribution)) />,
+    ]
+  }
+  name={
+    <Memo(MemoizedFormattedMessage)
+      id="account.status.choice.pillar.third"
+    />
+  }
+  ok={true}
+  showAction={true}
+>
+  <Link
+    className="btn btn-primary"
+    to="/3rd-pillar-payment"
+  >
+    <MemoizedFormattedMessage
+      id="account.status.choice.pillar.third.success.action"
+    />
+  </Link>
+</StatusBoxRow>
+`;
+
 exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when user has some other fund manager 1`] = `
 <StatusBoxRow
   error={true}
@@ -178,7 +205,68 @@ exports[`ThirdPillarStatusBox renders the "transfer incomplete" flow when user h
 </StatusBoxRow>
 `;
 
+exports[`ThirdPillarStatusBox renders the december flow when date in december 1`] = `
+<StatusBoxRow
+  error={true}
+  lines={
+    Array [
+      <Memo(MemoizedFormattedMessage)
+        id="account.status.choice.pillar.third.paymentDeadline"
+        values={
+          Object {
+            "b": [Function],
+          }
+        }
+      />,
+      <Memo(Connect(ThirdPillarYearToDateContribution)) />,
+    ]
+  }
+  name={
+    <Memo(MemoizedFormattedMessage)
+      id="account.status.choice.pillar.third"
+    />
+  }
+  showAction={true}
+>
+  <Link
+    className="btn btn-primary"
+    to="/3rd-pillar-payment"
+  >
+    <MemoizedFormattedMessage
+      id="account.status.choice.pillar.third.success.action"
+    />
+  </Link>
+</StatusBoxRow>
+`;
+
 exports[`ThirdPillarStatusBox renders the success flow 1`] = `
+<StatusBoxRow
+  lines={
+    Array [
+      "Tuleva III Samba Pensionifond",
+      <Memo(Connect(ThirdPillarYearToDateContribution)) />,
+    ]
+  }
+  name={
+    <Memo(MemoizedFormattedMessage)
+      id="account.status.choice.pillar.third"
+    />
+  }
+  ok={true}
+  showAction={true}
+>
+  <Link
+    className="btn btn-primary"
+    to="/3rd-pillar-payment"
+  >
+    <MemoizedFormattedMessage
+      id="account.status.choice.pillar.third.success.action"
+    />
+  </Link>
+</StatusBoxRow>
+`;
+
+exports[`ThirdPillarStatusBox renders the success flow when funds have not transferred yet but its only january 1`] = `
 <StatusBoxRow
   lines={
     Array [

@@ -41,6 +41,10 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
     .map(({ name }) => name.replaceAll(' ', '\u00a0'))
     .join(', ');
 
+  const month = new Date().getMonth();
+  const isDecember = month === 11;
+  const isFebruaryToNovember = month > 0 && month < 11;
+
   const isPartiallyConverted = conversion.selectionPartial || conversion.transfersPartial;
   if (!isPartiallyConverted) {
     return (
@@ -80,10 +84,10 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
     );
   }
 
-  if (conversion.contribution.yearToDate === 0) {
+  if (conversion.contribution.yearToDate === 0 && isFebruaryToNovember) {
     return (
       <StatusBoxRow
-        error
+        warning
         showAction={!loading}
         name={<FormattedMessage id="account.status.choice.pillar.third" />}
         lines={[
@@ -93,6 +97,29 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
               <FormattedMessage id="account.status.choice.pillar.third.paymentInfo" />
             </InfoTooltip>
           </>,
+          <ThirdPillarPaymentsThisYear />,
+        ]}
+      >
+        <Link to="/3rd-pillar-payment" className="btn btn-primary">
+          <FormattedMessage id="account.status.choice.pillar.third.success.action" />
+        </Link>
+      </StatusBoxRow>
+    );
+  }
+
+  if (conversion.contribution.yearToDate === 0 && isDecember) {
+    return (
+      <StatusBoxRow
+        error
+        showAction={!loading}
+        name={<FormattedMessage id="account.status.choice.pillar.third" />}
+        lines={[
+          <FormattedMessage
+            id="account.status.choice.pillar.third.paymentDeadline"
+            values={{
+              b: (chunks: string) => <b className="highlight text-nowrap">{chunks}</b>,
+            }}
+          />,
           <ThirdPillarPaymentsThisYear />,
         ]}
       >
