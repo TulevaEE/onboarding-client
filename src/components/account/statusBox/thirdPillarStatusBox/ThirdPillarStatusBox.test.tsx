@@ -14,7 +14,7 @@ describe('ThirdPillarStatusBox', () => {
   };
 
   beforeEach(() => {
-    jest.useFakeTimers();
+    jest.useFakeTimers('modern');
     component = shallow(<ThirdPillarStatusBox {...props} />);
   });
 
@@ -90,7 +90,7 @@ describe('ThirdPillarStatusBox', () => {
   });
 
   it('renders the success flow when funds have not transferred yet but its only january', () => {
-    jest.useFakeTimers('modern').setSystemTime(new Date('2023-01-24T00:00:00'));
+    jest.setSystemTime(new Date('2023-01-24T00:00:00'));
     component.setProps({
       conversion: {
         transfersComplete: true,
@@ -104,7 +104,7 @@ describe('ThirdPillarStatusBox', () => {
   });
 
   it('renders the "payment incomplete" flow when funds have not transferred yet and date between feb-nov', () => {
-    jest.useFakeTimers('modern').setSystemTime(new Date('2023-02-24T00:00:00'));
+    jest.setSystemTime(new Date('2023-02-24T00:00:00'));
     component.setProps({
       conversion: {
         transfersComplete: true,
@@ -118,7 +118,7 @@ describe('ThirdPillarStatusBox', () => {
   });
 
   it('renders the december flow when date in december', () => {
-    jest.useFakeTimers('modern').setSystemTime(new Date('2023-12-24T00:00:00'));
+    jest.setSystemTime(new Date('2023-12-24T00:00:00'));
     component.setProps({
       conversion: {
         transfersComplete: true,
