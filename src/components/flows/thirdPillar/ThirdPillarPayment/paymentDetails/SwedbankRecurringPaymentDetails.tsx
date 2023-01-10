@@ -53,6 +53,19 @@ export const SwedbankRecurringPaymentDetails: React.FunctionComponent<{
         <b>3</b>
       </span>
       <span className="flex-grow-1 align-self-center">
+        <FormattedMessage
+          id="thirdPillarPayment.RECURRING.swedbank.extraStep"
+          values={{
+            b: (chunks: string) => <b>{chunks}</b>,
+          }}
+        />
+      </span>
+    </div>
+    <div className="d-sm-flex py-2">
+      <span className="flex-shrink-0 tv-step__number mr-3">
+        <b>4</b>
+      </span>
+      <span className="flex-grow-1 align-self-center">
         <FormattedMessage id="thirdPillarPayment.RECURRING.finalStep" />
       </span>
     </div>

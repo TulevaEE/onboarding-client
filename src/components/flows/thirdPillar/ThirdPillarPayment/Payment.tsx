@@ -168,15 +168,7 @@ export const Payment: React.FunctionComponent<{
         />
       )}
       {paymentBank === 'other' && (
-        <div className="mt-4 yes-button">
-          <p>
-            {paymentType === PaymentType.RECURRING ? (
-              <FormattedMessage id="thirdPillarPayment.recurringPaymentQuestion" />
-            ) : (
-              <FormattedMessage id="thirdPillarPayment.paymentQuestion" />
-            )}
-          </p>
-
+        <div className="mt-4">
           <Link to="/account">
             <button type="button" className="btn btn-light">
               <FormattedMessage id="thirdPillarPayment.backToAccountPage" />
