@@ -24,10 +24,7 @@ export const ResidencyAgreement = ({ isResident, onResidentChange, className }) 
           validate={[requiredField]}
         />
 
-        <label
-          className={`custom-control-label ${!isResident ? 'text-danger' : ''}`}
-          htmlFor="aml-resident-checkbox"
-        >
+        <label className="custom-control-label" htmlFor="aml-resident-checkbox">
           <FormattedMessage id="aml.isResident" />
           <InfoTooltip name="resident-tooltip">
             <div className="content">
