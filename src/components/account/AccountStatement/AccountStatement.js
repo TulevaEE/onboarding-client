@@ -8,6 +8,16 @@ import Euro from '../../common/Euro';
 import Percentage from '../../common/Percentage';
 
 const AccountStatement = ({ funds }) => {
+  const valueSum = sumBy(funds, (fund) => {
+    return fund.price + fund.unavailablePrice;
+  });
+
+  const weightedAverageFee = funds.reduce(
+    (accumulator, fund) =>
+      accumulator + ((fund.price + fund.unavailablePrice) * fund.ongoingChargesFigure) / valueSum,
+    0,
+  );
+
   const columns = [
     {
       title: <FormattedMessage id="accountStatement.columns.fund.title" />,
@@ -17,18 +27,13 @@ const AccountStatement = ({ funds }) => {
     {
       title: <FormattedMessage id="accountStatement.columns.fees.title" />,
       dataIndex: 'fees',
+      footer: <Percentage value={weightedAverageFee} />,
       hideOnMobile: true,
     },
     {
       title: <FormattedMessage id="accountStatement.columns.value.title" />,
       dataIndex: 'value',
-      footer: (
-        <Euro
-          amount={sumBy(funds, (fund) => {
-            return fund.price + fund.unavailablePrice;
-          })}
-        />
-      ),
+      footer: <Euro amount={valueSum} />,
     },
   ];
 

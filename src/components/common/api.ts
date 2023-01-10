@@ -334,7 +334,7 @@ function getWindow(paymentType: PaymentType): Window {
   if (paymentType === PaymentType.SINGLE) {
     return window;
   }
-  const newWindow = window.open('', '_blank');
+  const newWindow = window.open('', '_blank'); // this might be blocked by popup blockers
   if (newWindow == null) {
     return window;
   }
