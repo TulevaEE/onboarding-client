@@ -56,9 +56,9 @@ describe('Utils', () => {
 
   describe('formatAmountForCurrency', () => {
     it('gives a fixed number with a euro sign after it', () => {
-      expect(formatAmountForCurrency(123.456, 'EUR')).toBe('123.46 €');
-      expect(formatAmountForCurrency(0.000456, 'EUR')).toBe('0.00 €');
-      expect(formatAmountForCurrency(5, 'GBP')).toBe('5.00 €');
+      expect(formatAmountForCurrency(123.456)).toBe('123.46 €');
+      expect(formatAmountForCurrency(0.000456)).toBe('0.00 €');
+      expect(formatAmountForCurrency(5)).toBe('5.00 €');
     });
 
     it('handles no arguments', () => {
@@ -66,7 +66,11 @@ describe('Utils', () => {
     });
 
     it('has a thousands separator', () => {
-      expect(formatAmountForCurrency(12345678.9, 'EUR')).toBe('12 345 678.90 €');
+      expect(formatAmountForCurrency(12345678.9)).toBe('12 345 678.90 €');
+    });
+
+    it('can format with less fractional digits', () => {
+      expect(formatAmountForCurrency(12345678.97, 0)).toBe('12 345 679 €');
     });
   });
 });

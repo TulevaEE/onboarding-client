@@ -7,6 +7,7 @@ import { Conversion, SourceFund } from '../../../common/apiModels';
 import { InfoTooltip } from '../../../common';
 import { State } from '../../../../types';
 import ThirdPillarPaymentsThisYear from './ThirdPillarYearToDateContribution';
+import { getWeightedAverageFee } from '../../AccountStatement/fundSelector';
 
 interface Props {
   conversion: Conversion;
@@ -42,14 +43,36 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
     .join(', ');
 
   const month = new Date().getMonth();
-  const isDecember = month === 11;
   const isFebruaryToNovember = month > 0 && month < 11;
+  const isDecember = month === 11;
+
+  const weightedAverageFee = getWeightedAverageFee(sourceFunds);
 
   const isPartiallyConverted = conversion.selectionPartial || conversion.transfersPartial;
   if (!isPartiallyConverted) {
+    if (weightedAverageFee > 0.005) {
+      return (
+        <StatusBoxRow
+          error
+          showAction={!loading}
+          name={<FormattedMessage id="account.status.choice.pillar.third" />}
+          lines={[
+            <>
+              <FormattedMessage id="account.status.choice.pillar.third.highCost.label" />:{' '}
+              {activeFunds}
+            </>,
+            <ThirdPillarPaymentsThisYear />,
+          ]}
+        >
+          <Link to="/3rd-pillar-flow" className="btn btn-primary">
+            <FormattedMessage id="account.status.choice.pillar.third.inactive.action" />
+          </Link>
+        </StatusBoxRow>
+      );
+    }
     return (
       <StatusBoxRow
-        error
+        warning
         showAction={!loading}
         name={<FormattedMessage id="account.status.choice.pillar.third" />}
         lines={[activeFunds, <ThirdPillarPaymentsThisYear />]}
@@ -61,12 +84,8 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
     );
   }
 
-  if (
-    !conversion.selectionPartial ||
-    !conversion.transfersPartial ||
-    !conversion.selectionComplete ||
-    !conversion.transfersComplete
-  ) {
+  const isFullyConverted = conversion.selectionComplete && conversion.transfersComplete;
+  if (!isFullyConverted) {
     return (
       <StatusBoxRow
         warning
@@ -158,7 +177,12 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
       ok
       showAction={!loading}
       name={<FormattedMessage id="account.status.choice.pillar.third" />}
-      lines={[activeFunds, <ThirdPillarPaymentsThisYear />]}
+      lines={[
+        <>
+          <FormattedMessage id="account.status.choice.pillar.third.lowCost.label" />: {activeFunds}
+        </>,
+        <ThirdPillarPaymentsThisYear />,
+      ]}
     >
       <Link to="/3rd-pillar-payment" className="btn btn-primary">
         <FormattedMessage id="account.status.choice.pillar.third.success.action" />

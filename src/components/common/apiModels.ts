@@ -123,7 +123,7 @@ export interface SourceFund {
   activeFund: boolean;
   name: string;
   pillar: Pillar;
-  managementFeePercent: string;
+  managementFeePercent: number;
   isin: string;
   price: number;
   unavailablePrice: number;

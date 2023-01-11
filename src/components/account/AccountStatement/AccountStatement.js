@@ -1,22 +1,15 @@
 import React from 'react';
 import Types from 'prop-types';
 import { FormattedMessage } from 'react-intl';
-import sumBy from 'lodash/sumBy';
 
 import Table from '../../common/table';
 import Euro from '../../common/Euro';
 import Percentage from '../../common/Percentage';
+import { getValueSum, getWeightedAverageFee } from './fundSelector';
 
 const AccountStatement = ({ funds }) => {
-  const valueSum = sumBy(funds, (fund) => {
-    return fund.price + fund.unavailablePrice;
-  });
-
-  const weightedAverageFee = funds.reduce(
-    (accumulator, fund) =>
-      accumulator + ((fund.price + fund.unavailablePrice) * fund.ongoingChargesFigure) / valueSum,
-    0,
-  );
+  const valueSum = getValueSum(funds);
+  const weightedAverageFee = getWeightedAverageFee(funds);
 
   const columns = [
     {

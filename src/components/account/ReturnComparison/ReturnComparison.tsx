@@ -45,7 +45,7 @@ const formatReturn = (
     if (presentationUnit === PresentationUnit.PERCENTAGE) {
       return <span>{(returnRateAndAmount.rate * 100).toFixed(1)}%</span>;
     }
-    return <Euro amount={returnRateAndAmount.amount} />;
+    return <Euro amount={returnRateAndAmount.amount} fractionDigits={0} />;
   }
   return <span>-</span>;
 };

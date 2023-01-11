@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 import { ThirdPillarStatusBox } from './ThirdPillarStatusBox';
 import StatusBoxRow from '../statusBoxRow';
-import { activeThirdPillar, completeThirdPillarConversion } from '../fixtures';
+import { activeThirdPillar, completeThirdPillarConversion, highCostThirdPillar } from '../fixtures';
 
 describe('ThirdPillarStatusBox', () => {
   let component: ShallowWrapper;
@@ -140,6 +140,17 @@ describe('ThirdPillarStatusBox', () => {
         selectionPartial: true,
         contribution: { yearToDate: 0, total: 20 },
       },
+    });
+    expect(component).toMatchSnapshot();
+  });
+
+  it('renders the "pick tuleva" flow with error when in high cost fund', () => {
+    component.setProps({
+      conversion: {
+        transferPartial: true,
+        contribution: { yearToDate: 20, total: 20 },
+      },
+      sourceFunds: [highCostThirdPillar],
     });
     expect(component).toMatchSnapshot();
   });

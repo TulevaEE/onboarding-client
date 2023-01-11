@@ -19,9 +19,9 @@ export function createClamper(lowerLimit = 0, upperLimit = 10) {
   return (value) => Math.max(Math.min(value, upperLimit), lowerLimit);
 }
 
-export function formatAmountForCurrency(amount = 0) {
+export function formatAmountForCurrency(amount = 0, fractionDigits = 2) {
   return `${amount
-    .toFixed(2)
+    .toFixed(fractionDigits)
     .toString()
     .replace(/\B(?=(\d{3})+(?!\d))/g, '\u00A0')}\u00A0€`;
 }

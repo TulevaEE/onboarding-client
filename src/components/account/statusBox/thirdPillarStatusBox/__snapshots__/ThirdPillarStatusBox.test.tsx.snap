@@ -135,7 +135,6 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when partially conv
 
 exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when partially converted with transfer 1`] = `
 <StatusBoxRow
-  error={true}
   lines={
     Array [
       "Tuleva III Samba Pensionifond",
@@ -148,6 +147,7 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when partially conv
     />
   }
   showAction={true}
+  warning={true}
 >
   <Link
     className="btn btn-primary"
@@ -164,7 +164,13 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when partially conv
 <StatusBoxRow
   lines={
     Array [
-      "Tuleva III Samba Pensionifond",
+      <React.Fragment>
+        <Memo(MemoizedFormattedMessage)
+          id="account.status.choice.pillar.third.lowCost.label"
+        />
+        : 
+        Tuleva III Samba Pensionifond
+      </React.Fragment>,
       <Memo(Connect(ThirdPillarYearToDateContribution)) />,
     ]
   }
@@ -189,10 +195,44 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when partially conv
 
 exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when user has some other fund manager 1`] = `
 <StatusBoxRow
-  error={true}
   lines={
     Array [
       "Tuleva III Samba Pensionifond",
+      <Memo(Connect(ThirdPillarYearToDateContribution)) />,
+    ]
+  }
+  name={
+    <Memo(MemoizedFormattedMessage)
+      id="account.status.choice.pillar.third"
+    />
+  }
+  showAction={true}
+  warning={true}
+>
+  <Link
+    className="btn btn-primary"
+    to="/3rd-pillar-flow"
+  >
+    <MemoizedFormattedMessage
+      id="account.status.choice.pillar.third.inactive.action"
+    />
+  </Link>
+</StatusBoxRow>
+`;
+
+exports[`ThirdPillarStatusBox renders the "pick tuleva" flow with error when in high cost fund 1`] = `
+<StatusBoxRow
+  error={true}
+  lines={
+    Array [
+      <React.Fragment>
+        <Memo(MemoizedFormattedMessage)
+          id="account.status.choice.pillar.third.highCost.label"
+        />
+        :
+         
+        LHV High Cost Fund
+      </React.Fragment>,
       <Memo(Connect(ThirdPillarYearToDateContribution)) />,
     ]
   }
@@ -281,7 +321,13 @@ exports[`ThirdPillarStatusBox renders the success flow 1`] = `
 <StatusBoxRow
   lines={
     Array [
-      "Tuleva III Samba Pensionifond",
+      <React.Fragment>
+        <Memo(MemoizedFormattedMessage)
+          id="account.status.choice.pillar.third.lowCost.label"
+        />
+        : 
+        Tuleva III Samba Pensionifond
+      </React.Fragment>,
       <Memo(Connect(ThirdPillarYearToDateContribution)) />,
     ]
   }
@@ -308,7 +354,13 @@ exports[`ThirdPillarStatusBox renders the success flow when funds have not trans
 <StatusBoxRow
   lines={
     Array [
-      "Tuleva III Samba Pensionifond",
+      <React.Fragment>
+        <Memo(MemoizedFormattedMessage)
+          id="account.status.choice.pillar.third.lowCost.label"
+        />
+        : 
+        Tuleva III Samba Pensionifond
+      </React.Fragment>,
       <Memo(Connect(ThirdPillarYearToDateContribution)) />,
     ]
   }
