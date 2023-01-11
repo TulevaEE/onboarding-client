@@ -148,7 +148,7 @@ const transformFundBalance = (fundBalance: FundBalance): SourceFund => ({
   currency: fundBalance.currency || 'EUR',
   name: fundBalance.fund.name,
   fundManager: fundBalance.fund.fundManager,
-  managementFeePercent: (fundBalance.fund.managementFeeRate * 100).toFixed(2).replace(/0+$/, ''),
+  managementFeePercent: +(fundBalance.fund.managementFeeRate * 100).toFixed(2).replace(/0+$/, ''),
   pillar: fundBalance.fund.pillar,
   ongoingChargesFigure: fundBalance.fund.ongoingChargesFigure,
   contributions: fundBalance.contributions,

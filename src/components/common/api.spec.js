@@ -223,7 +223,7 @@ describe('api', () => {
         {
           name: 'Tuleva Maailma Aktsiate Pensionifond',
           isin: 'EE3600109435',
-          managementFeePercent: '0.34',
+          managementFeePercent: 0.34,
           activeFund: false,
           price: 10285.578286,
           currency: 'EUR',
@@ -234,7 +234,7 @@ describe('api', () => {
         {
           name: 'Tuleva Maailma Võlakirjade Pensionifond',
           isin: 'EE3600109443',
-          managementFeePercent: '0.39',
+          managementFeePercent: 0.39,
           activeFund: true,
           price: 9939.16235298,
           currency: 'GBP',
