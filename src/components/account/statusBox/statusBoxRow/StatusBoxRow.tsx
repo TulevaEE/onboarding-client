@@ -7,7 +7,7 @@ const CheckMark: React.FunctionComponent<{
   error?: boolean;
 }> = ({ checked = false, warning = false, error = false }) => (
   <div
-    className={`ml-3 mr-2 fa${checked ? ' fa-check' : ''}${error ? ' fa-times' : ''}${
+    className={`ml-3 mr-2 fa fa-fw${checked ? ' fa-check' : ''}${error ? ' fa-times' : ''}${
       warning ? ' fa-exclamation-triangle' : ''
     }`}
   />
