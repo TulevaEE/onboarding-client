@@ -48,7 +48,7 @@ function getClass(hideOnMobile) {
 }
 
 export function getProfitClassName(profit) {
-  return profit >= 0 ? 'text-success' : undefined;
+  return profit > 0 ? 'text-success' : undefined;
 }
 
 Table.propTypes = {
