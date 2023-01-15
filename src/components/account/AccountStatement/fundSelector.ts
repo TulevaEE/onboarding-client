@@ -9,6 +9,9 @@ export function getValueSum(funds: SourceFund[]): number {
 
 export function getWeightedAverageFee(funds: SourceFund[]): number {
   const valueSum = getValueSum(funds);
+  if (valueSum <= 0) {
+    return 0;
+  }
   return funds.reduce(
     (accumulator, fund) =>
       accumulator + ((fund.price + fund.unavailablePrice) * fund.ongoingChargesFigure) / valueSum,
