@@ -30,12 +30,15 @@ const AccountStatement = ({ funds }) => {
     },
   ];
 
-  const dataSource = funds.map((fund) => ({
-    fund: `${fund.name}${fund.activeFund ? '*' : ''}`,
-    fees: <Percentage value={fund.ongoingChargesFigure} />,
-    value: <Euro amount={fund.price + fund.unavailablePrice} />,
-    key: fund.isin,
-  }));
+  const dataSource = funds.map((fund) => {
+    const className = fund.price + fund.unavailablePrice === 0 ? 'text-muted' : undefined;
+    return {
+      fund: <span className={className}>{`${fund.name}${fund.activeFund ? '*' : ''}`}</span>,
+      fees: <Percentage className={className} value={fund.ongoingChargesFigure} />,
+      value: <Euro className={className} amount={fund.price + fund.unavailablePrice} />,
+      key: fund.isin,
+    };
+  });
 
   const showActiveFundNotice = funds.some(({ activeFund }) => activeFund);
   const fundPillar = funds.every(({ pillar }) => pillar === 2) ? 'secondPillar' : 'thirdPillar';

@@ -2,10 +2,13 @@ import React, { FC } from 'react';
 
 interface PercentageProps {
   value: number;
+  className?: string;
 }
 
-const Percentage: FC<PercentageProps> = ({ value }) => (
-  <span className={value === 0 ? 'text-muted' : undefined}>{formatPercentage(value)}</span>
+const Percentage: FC<PercentageProps> = ({ value, className }) => (
+  <span className={`${className || ''}${value === 0 ? ' text-muted' : ''}`}>
+    {formatPercentage(value)}
+  </span>
 );
 
 function formatPercentage(value: number): string {
