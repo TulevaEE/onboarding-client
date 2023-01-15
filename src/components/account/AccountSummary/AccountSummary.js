@@ -77,7 +77,9 @@ const AccountSummary = ({
     });
   }
 
-  const summaryItemProfit = sumBy(summary, (summaryItem) => summaryItem.profit);
+  const contributionsSum = sumBy(summary, (summaryItem) => summaryItem.contributions);
+  const subtractionsSum = sumBy(summary, (summaryItem) => summaryItem.subtractions);
+  const profitSum = sumBy(summary, (summaryItem) => summaryItem.profit);
 
   const columns = [
     {
@@ -85,25 +87,33 @@ const AccountSummary = ({
       dataIndex: 'pillarLabel',
       footer: <FormattedMessage id="accountSummary.columns.pillar.footer" />,
     },
-    {
-      title: <FormattedMessage id="accountSummary.columns.contributions" />,
-      dataIndex: 'contributions',
-      hideOnMobile: true,
-      footer: <Euro amount={sumBy(summary, (summaryItem) => summaryItem.contributions)} />,
-    },
-    {
-      title: <FormattedMessage id="accountSummary.columns.subtractions" />,
-      dataIndex: 'subtractions',
-      hideOnMobile: true,
-      footer: <Euro amount={sumBy(summary, (summaryItem) => summaryItem.subtractions)} />,
-    },
+    ...(contributionsSum === 0
+      ? []
+      : [
+          {
+            title: <FormattedMessage id="accountSummary.columns.contributions" />,
+            dataIndex: 'contributions',
+            hideOnMobile: true,
+            footer: <Euro amount={contributionsSum} />,
+          },
+        ]),
+    ...(subtractionsSum === 0
+      ? []
+      : [
+          {
+            title: <FormattedMessage id="accountSummary.columns.subtractions" />,
+            dataIndex: 'subtractions',
+            hideOnMobile: true,
+            footer: <Euro amount={subtractionsSum} />,
+          },
+        ]),
     {
       title: <FormattedMessage id="accountSummary.columns.profit" />,
       dataIndex: 'profit',
       hideOnMobile: true,
       footer: (
-        <span className={getProfitClassName(summaryItemProfit)}>
-          <Euro amount={summaryItemProfit} />
+        <span className={getProfitClassName(profitSum)}>
+          <Euro amount={profitSum} />
         </span>
       ),
     },

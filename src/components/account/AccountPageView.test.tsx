@@ -56,36 +56,37 @@ test('user data is shown', async () => {
 });
 
 test('pension summary table is shown', async () => {
-  // eslint-disable-next-line testing-library/no-node-access
-  const summarySection = screen.getByText('Your pension summary').parentElement;
+  // eslint-disable-next-line testing-library/no-node-access,@typescript-eslint/no-non-null-assertion
+  const summarySection = screen.getByText('Your pension summary').parentElement!;
 
   expect(
     await within(summarySection).findByRole('cell', { name: 'Member capital' }),
   ).toBeInTheDocument();
-  // eslint-disable-next-line testing-library/no-node-access
-  const getRow = (name: string) => within(summarySection).getByRole('cell', { name }).parentElement;
+  const getRow = (name: string) =>
+    // eslint-disable-next-line testing-library/no-node-access,@typescript-eslint/no-non-null-assertion
+    within(summarySection).getByRole('cell', { name }).parentElement!;
 
   const secondPillarRow = getRow('II Pillar');
   expect(within(secondPillarRow).getByText('12 345.67 €')).toBeInTheDocument();
-  expect(within(secondPillarRow).getByText('0.00 €')).toBeInTheDocument();
+  expect(within(secondPillarRow).queryByText('0.00 €')).not.toBeInTheDocument();
   expect(within(secondPillarRow).getByText('102 654.33 €')).toBeInTheDocument();
   expect(within(secondPillarRow).getByText('115 000.00 €')).toBeInTheDocument();
 
   const thirdPillarRow = getRow('III Pillar');
   expect(within(thirdPillarRow).getByText('9 876.54 €')).toBeInTheDocument();
-  expect(within(thirdPillarRow).getByText('0.00 €')).toBeInTheDocument();
+  expect(within(thirdPillarRow).queryByText('0.00 €')).not.toBeInTheDocument();
   expect(within(thirdPillarRow).getByText('-4 177.18 €')).toBeInTheDocument();
   expect(within(thirdPillarRow).getByText('5 699.36 €')).toBeInTheDocument();
 
   const memberCapitalRow = getRow('Member capital');
   expect(within(memberCapitalRow).getByText('1 000.00 €')).toBeInTheDocument();
-  expect(within(memberCapitalRow).getByText('0.00 €')).toBeInTheDocument();
+  expect(within(memberCapitalRow).queryByText('0.00 €')).not.toBeInTheDocument();
   expect(within(memberCapitalRow).getByText('-122.22 €')).toBeInTheDocument();
   expect(within(memberCapitalRow).getByText('877.78 €')).toBeInTheDocument();
 
   const totalRow = getRow('Total');
   expect(within(totalRow).getByText('23 222.21 €')).toBeInTheDocument();
-  expect(within(totalRow).getByText('0.00 €')).toBeInTheDocument();
+  expect(within(totalRow).queryByText('0.00 €')).not.toBeInTheDocument();
   expect(within(totalRow).getByText('98 354.93 €')).toBeInTheDocument();
   expect(within(totalRow).getByText('121 577.14 €')).toBeInTheDocument();
 });
