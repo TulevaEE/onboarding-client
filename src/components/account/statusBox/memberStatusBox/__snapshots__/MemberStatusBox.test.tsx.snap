@@ -17,6 +17,7 @@ exports[`MemberStatusBox offers to join when not member 1`] = `
   }
   ok={false}
   showAction={false}
+  warning={true}
 >
   <Link
     className="btn btn-light"
@@ -51,5 +52,6 @@ exports[`MemberStatusBox renders the full component 1`] = `
   }
   ok={true}
   showAction={true}
+  warning={false}
 />
 `;

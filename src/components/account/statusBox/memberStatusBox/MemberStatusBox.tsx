@@ -22,6 +22,7 @@ export const MemberStatusBox: React.FunctionComponent<Props> = ({
     <StatusBoxRow
       last
       ok={isTulevaMember}
+      warning={!isTulevaMember}
       showAction={!loading}
       name={<FormattedMessage id="account.status.choice.tuleva" />}
       lines={tulevaData}

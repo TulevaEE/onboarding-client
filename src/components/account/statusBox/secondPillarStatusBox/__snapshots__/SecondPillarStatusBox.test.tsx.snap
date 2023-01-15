@@ -25,6 +25,7 @@ exports[`SecondPillarStatusBox renders the PIK flow when fund PIK number present
 
 exports[`SecondPillarStatusBox renders the choice flow when fund selection incomplete 1`] = `
 <StatusBoxRow
+  error={true}
   lines={
     Array [
       "Tuleva III Samba Pensionifond",
@@ -67,6 +68,7 @@ exports[`SecondPillarStatusBox renders the success flow 1`] = `
 
 exports[`SecondPillarStatusBox renders the transfer flow when fund transfers incomplete 1`] = `
 <StatusBoxRow
+  error={true}
   lines={
     Array [
       <Memo(MemoizedFormattedMessage)
@@ -94,6 +96,7 @@ exports[`SecondPillarStatusBox renders the transfer flow when fund transfers inc
 
 exports[`SecondPillarStatusBox renders the withdrawal flow when withdrawal is in progress 1`] = `
 <StatusBoxRow
+  error={true}
   lines={
     Array [
       <Memo(MemoizedFormattedMessage)

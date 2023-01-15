@@ -25,6 +25,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
   if (secondPillar.pendingWithdrawal && pendingWithdrawal) {
     return (
       <StatusBoxRow
+        error
         showAction={!loading}
         name={<FormattedMessage id="account.status.choice.pillar.second" />}
         lines={[<FormattedMessage id="account.status.choice.pillar.second.withdraw" />]}
@@ -61,6 +62,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
 
     return (
       <StatusBoxRow
+        error
         showAction={!loading}
         name={<FormattedMessage id="account.status.choice.pillar.second" />}
         lines={[statusMessage]}
@@ -75,6 +77,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
   if (!secondPillar.transfersComplete) {
     return (
       <StatusBoxRow
+        error
         showAction={!loading}
         name={<FormattedMessage id="account.status.choice.pillar.second" />}
         lines={[<FormattedMessage id="account.status.choice.pillar.second.transferIncomplete" />]}
