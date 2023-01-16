@@ -4,8 +4,8 @@ import { FormattedMessage } from 'react-intl';
 
 import Table from '../../common/table';
 import Euro from '../../common/Euro';
-import Percentage from '../../common/Percentage';
 import { getValueSum, getWeightedAverageFee } from './fundSelector';
+import { Fees } from '../../common/Percentage/Fees';
 
 const AccountStatement = ({ funds }) => {
   const valueSum = getValueSum(funds);
@@ -20,7 +20,7 @@ const AccountStatement = ({ funds }) => {
     {
       title: <FormattedMessage id="accountStatement.columns.fees.title" />,
       dataIndex: 'fees',
-      footer: weightedAverageFee <= 0 ? <></> : <Percentage value={weightedAverageFee} />,
+      footer: <Fees value={weightedAverageFee} />,
       hideOnMobile: true,
     },
     {
@@ -31,10 +31,11 @@ const AccountStatement = ({ funds }) => {
   ];
 
   const dataSource = funds.map((fund) => {
-    const className = fund.price + fund.unavailablePrice === 0 ? 'text-muted' : undefined;
+    const className =
+      !fund.activeFund && fund.price + fund.unavailablePrice === 0 ? 'text-muted' : undefined;
     return {
       fund: <span className={className}>{`${fund.name}${fund.activeFund ? '*' : ''}`}</span>,
-      fees: <Percentage className={className} value={fund.ongoingChargesFigure} />,
+      fees: <Fees className={className} value={fund.ongoingChargesFigure} />,
       value: <Euro className={className} amount={fund.price + fund.unavailablePrice} />,
       key: fund.isin,
     };

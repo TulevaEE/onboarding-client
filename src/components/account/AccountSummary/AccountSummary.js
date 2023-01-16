@@ -6,8 +6,8 @@ import { FormattedMessage } from 'react-intl';
 import Table, { getProfitClassName } from '../../common/table';
 import Euro from '../../common/Euro';
 import { Shimmer } from '../../common/shimmer/Shimmer';
-import Percentage from '../../common/Percentage';
 import { getValueSum, getWeightedAverageFee } from '../AccountStatement/fundSelector';
+import { Fees } from '../../common/Percentage/Fees';
 
 export const AccountSummaryLoader = () => {
   return (
@@ -104,8 +104,7 @@ const AccountSummary = ({
     {
       title: <FormattedMessage id="accountSummary.columns.fees" />,
       dataIndex: 'fees',
-      footer:
-        pillarWeightedAverageFee <= 0 ? <></> : <Percentage value={pillarWeightedAverageFee} />,
+      footer: <Fees value={pillarWeightedAverageFee} />,
       hideOnMobile: true,
     },
     ...(contributionsSum === 0
@@ -148,7 +147,7 @@ const AccountSummary = ({
   const dataSource = summary.map(
     ({ pillarLabel, fees, contributions, subtractions, profit, value }) => ({
       pillarLabel: <FormattedMessage id={pillarLabel} />,
-      fees: fees <= 0 ? <></> : <Percentage value={fees} />,
+      fees: <Fees value={fees} />,
       contributions: <Euro amount={contributions} />,
       subtractions: <Euro amount={subtractions} />,
       profit: (
