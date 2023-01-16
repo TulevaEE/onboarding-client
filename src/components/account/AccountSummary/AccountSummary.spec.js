@@ -138,6 +138,7 @@ describe('Account summary', () => {
           {
             isin: 'A1',
             name: 'A',
+            ongoingChargesFigure: 0.005,
             contributions: 2800,
             subtractions: 0,
             profit: 200,
@@ -147,6 +148,7 @@ describe('Account summary', () => {
           {
             isin: 'B2',
             name: 'B',
+            ongoingChargesFigure: 0.005,
             contributions: 0,
             subtractions: 0,
             profit: 0,
@@ -156,6 +158,7 @@ describe('Account summary', () => {
           {
             isin: 'C3',
             name: 'C',
+            ongoingChargesFigure: 0.005,
             contributions: 0,
             subtractions: 0,
             profit: 0,
@@ -167,6 +170,7 @@ describe('Account summary', () => {
           {
             isin: 'A1',
             name: 'A',
+            ongoingChargesFigure: 0.005,
             contributions: 0,
             subtractions: 0,
             profit: 0,
@@ -176,6 +180,7 @@ describe('Account summary', () => {
           {
             isin: 'B2',
             name: 'B',
+            ongoingChargesFigure: 0.005,
             contributions: 0,
             subtractions: 0,
             profit: 0,
@@ -185,6 +190,7 @@ describe('Account summary', () => {
           {
             isin: 'C3',
             name: 'C',
+            ongoingChargesFigure: 0.005,
             contributions: 0,
             subtractions: 0,
             profit: 0,
@@ -204,13 +210,15 @@ describe('Account summary', () => {
       />,
     );
 
-    const { footer: valueFooter } = tableProp('columns')[4];
-    const { footer: profitFooter } = tableProp('columns')[3];
-    const { footer: subtractionFooter } = tableProp('columns')[2];
-    const { footer: contributionFooter } = tableProp('columns')[1];
+    const { footer: feesFooter } = tableProp('columns')[1];
+    const { footer: contributionFooter } = tableProp('columns')[2];
+    const { footer: subtractionFooter } = tableProp('columns')[3];
+    const { footer: profitFooter } = tableProp('columns')[4];
+    const { footer: valueFooter } = tableProp('columns')[5];
 
-    expect(subtractionFooter).toEqual(<Euro amount={-3} />);
+    expect(feesFooter.props.value).toBeCloseTo(0.005);
     expect(contributionFooter).toEqual(<Euro amount={2803} />);
+    expect(subtractionFooter).toEqual(<Euro amount={-3} />);
     expect(profitFooter).toEqual(
       <span className="text-success">
         <Euro amount={3872} />

@@ -8,6 +8,7 @@ import { InfoTooltip } from '../../../common';
 import { State } from '../../../../types';
 import ThirdPillarPaymentsThisYear from './ThirdPillarYearToDateContribution';
 import { getWeightedAverageFee } from '../../AccountStatement/fundSelector';
+import { formatPercentage } from '../../../common/Percentage/Percentage';
 
 interface Props {
   conversion: Conversion;
@@ -39,7 +40,10 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
 
   const activeFunds = sourceFunds
     .filter((fund) => fund.activeFund)
-    .map(({ name }) => name.replaceAll(' ', '\u00a0'))
+    .map(
+      ({ name, ongoingChargesFigure }) =>
+        `${name.replaceAll(' ', '\u00a0')} (${formatPercentage(ongoingChargesFigure)})`,
+    )
     .join(', ');
 
   const month = new Date().getMonth();
@@ -71,12 +75,17 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
     }
     return (
       <StatusBoxRow
-        warning
+        ok
         showAction={!loading}
         name={<FormattedMessage id="account.status.choice.pillar.third" />}
-        lines={[activeFunds, <ThirdPillarPaymentsThisYear />]}
+        lines={[
+          <>
+            <FormattedMessage id="account.status.choice.lowFee.label" />: {activeFunds}
+          </>,
+          <ThirdPillarPaymentsThisYear />,
+        ]}
       >
-        <Link to="/3rd-pillar-flow" className="btn btn-primary">
+        <Link to="/3rd-pillar-flow" className="btn btn-secondary">
           <FormattedMessage id="account.status.choice.pillar.third.inactive.action" />
         </Link>
       </StatusBoxRow>
@@ -178,7 +187,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
       name={<FormattedMessage id="account.status.choice.pillar.third" />}
       lines={[
         <>
-          <FormattedMessage id="account.status.choice.lowFee.label" />: {activeFunds}
+          <FormattedMessage id="account.status.choice.lowFee.index.label" />: {activeFunds}
         </>,
         <ThirdPillarPaymentsThisYear />,
       ]}

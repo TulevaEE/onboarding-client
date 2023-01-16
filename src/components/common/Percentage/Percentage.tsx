@@ -11,7 +11,7 @@ const Percentage: FC<PercentageProps> = ({ value, className }) => (
   </span>
 );
 
-function formatPercentage(value: number): string {
+export function formatPercentage(value: number): string {
   return `${Number((value * 100).toFixed(2))}%`;
 }
 
