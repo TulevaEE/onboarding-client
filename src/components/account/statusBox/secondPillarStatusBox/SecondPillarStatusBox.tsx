@@ -66,7 +66,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
     );
   }
   const weightedAverageFee = getWeightedAverageFee(secondPillarFunds);
-  const activeFund = secondPillarFunds.find((fund) => fund.activeFund)!;
+  const activeFund = secondPillarFunds.find((fund) => fund.activeFund);
   function ActiveFund() {
     return (
       <>
