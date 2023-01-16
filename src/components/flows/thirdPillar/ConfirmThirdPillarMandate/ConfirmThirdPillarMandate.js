@@ -63,7 +63,7 @@ export const ConfirmThirdPillarMandate = ({
 
       {selectedFutureContributionsFund && (
         <div className="mt-4">
-          <FormattedMessage id="confirmThirdPillarMandate.contribution" />
+          <FormattedMessage id="confirmThirdPillarMandate.contribution" />{' '}
           <b className="highlight">{selectedFutureContributionsFund.name}</b>
         </div>
       )}

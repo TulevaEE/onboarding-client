@@ -35,7 +35,7 @@ const AccountStatement = ({ funds }) => {
       !fund.activeFund && fund.price + fund.unavailablePrice === 0 ? 'text-muted' : undefined;
     return {
       fund: <span className={className}>{`${fund.name}${fund.activeFund ? '*' : ''}`}</span>,
-      fees: <Fees className={className} value={fund.ongoingChargesFigure} />,
+      fees: <Fees value={fund.ongoingChargesFigure} />,
       value: <Euro className={className} amount={fund.price + fund.unavailablePrice} />,
       key: fund.isin,
     };
