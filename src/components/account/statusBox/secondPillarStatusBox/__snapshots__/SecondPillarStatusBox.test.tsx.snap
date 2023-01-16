@@ -9,8 +9,29 @@ exports[`SecondPillarStatusBox renders high fee message when in high fee fund an
         <Memo(MemoizedFormattedMessage)
           id="account.status.choice.highFee.label"
         />
-        : 
-        <ActiveFund />
+        :
+         
+        <ActiveFund
+          fund={
+            Object {
+              "activeFund": true,
+              "contributions": 500,
+              "currency": "EUR",
+              "fundManager": Object {
+                "name": "LHV",
+              },
+              "isin": "EE432432",
+              "managementFeePercent": 0.015,
+              "name": "LHV High Cost Fund II",
+              "ongoingChargesFigure": 0.0156,
+              "pillar": 2,
+              "price": 23,
+              "profit": 500,
+              "subtractions": 0,
+              "unavailablePrice": 0,
+            }
+          }
+        />
       </React.Fragment>,
     ]
   }
@@ -82,8 +103,29 @@ exports[`SecondPillarStatusBox renders the choice flow when fund selection incom
         <Memo(MemoizedFormattedMessage)
           id="account.status.choice.lowFee.label"
         />
-        : 
-        <ActiveFund />
+        :
+         
+        <ActiveFund
+          fund={
+            Object {
+              "activeFund": true,
+              "contributions": 500,
+              "currency": "EUR",
+              "fundManager": Object {
+                "name": "Tuleva",
+              },
+              "isin": "EE000123",
+              "managementFeePercent": 0.003,
+              "name": "Tuleva II Samba Pensionifond",
+              "ongoingChargesFigure": 0.0049,
+              "pillar": 2,
+              "price": 23,
+              "profit": 500,
+              "subtractions": 0,
+              "unavailablePrice": 0,
+            }
+          }
+        />
       </React.Fragment>,
     ]
   }
@@ -114,8 +156,29 @@ exports[`SecondPillarStatusBox renders the success flow 1`] = `
         <Memo(MemoizedFormattedMessage)
           id="account.status.choice.lowFee.index.label"
         />
-        : 
-        <ActiveFund />
+        :
+         
+        <ActiveFund
+          fund={
+            Object {
+              "activeFund": true,
+              "contributions": 500,
+              "currency": "EUR",
+              "fundManager": Object {
+                "name": "Tuleva",
+              },
+              "isin": "EE000123",
+              "managementFeePercent": 0.003,
+              "name": "Tuleva II Samba Pensionifond",
+              "ongoingChargesFigure": 0.0049,
+              "pillar": 2,
+              "price": 23,
+              "profit": 500,
+              "subtractions": 0,
+              "unavailablePrice": 0,
+            }
+          }
+        />
       </React.Fragment>,
     ]
   }

@@ -24,7 +24,9 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
   secondPillarPikNumber,
   secondPillarActive,
 }: Props) => {
-  if (!secondPillarActive) {
+  const activeFund = secondPillarFunds.find((fund) => fund.activeFund);
+
+  if (!secondPillarActive || !activeFund) {
     return (
       <StatusBoxRow
         error
@@ -66,15 +68,12 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
     );
   }
   const weightedAverageFee = getWeightedAverageFee(secondPillarFunds);
-  const activeFund = secondPillarFunds.find((fund) => fund.activeFund);
-  function ActiveFund() {
-    return (
-      <>
-        {activeFund.name.replaceAll(' ', '\u00a0')} (
-        <Percentage value={activeFund.ongoingChargesFigure} />)
-      </>
-    );
-  }
+  const ActiveFund = ({ fund }: { fund: SourceFund }) => (
+    <>
+      {fund.name.replaceAll(' ', '\u00a0')} (
+      <Percentage value={fund.ongoingChargesFigure} />)
+    </>
+  );
 
   const isPartiallyConverted = conversion.selectionPartial || conversion.transfersPartial;
   if (!isPartiallyConverted) {
@@ -86,7 +85,8 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
           name={<FormattedMessage id="account.status.choice.pillar.second" />}
           lines={[
             <>
-              <FormattedMessage id="account.status.choice.highFee.label" />: <ActiveFund />
+              <FormattedMessage id="account.status.choice.highFee.label" />:{' '}
+              <ActiveFund fund={activeFund} />
             </>,
           ]}
         >
@@ -103,7 +103,8 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
         name={<FormattedMessage id="account.status.choice.pillar.second" />}
         lines={[
           <>
-            <FormattedMessage id="account.status.choice.lowFee.label" />: <ActiveFund />
+            <FormattedMessage id="account.status.choice.lowFee.label" />:{' '}
+            <ActiveFund fund={activeFund} />
           </>,
         ]}
       >
@@ -137,7 +138,8 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
       showAction={!loading}
       lines={[
         <>
-          <FormattedMessage id="account.status.choice.lowFee.index.label" />: <ActiveFund />
+          <FormattedMessage id="account.status.choice.lowFee.index.label" />:{' '}
+          <ActiveFund fund={activeFund} />
         </>,
       ]}
     />
