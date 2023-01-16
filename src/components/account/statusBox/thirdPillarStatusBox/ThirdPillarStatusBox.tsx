@@ -14,16 +14,16 @@ interface Props {
   conversion: Conversion;
   loading: boolean;
   sourceFunds: SourceFund[];
-  pillarActive: boolean;
+  thirdPillarActive: boolean;
 }
 
 export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
   conversion,
   loading = false,
   sourceFunds = [],
-  pillarActive,
+  thirdPillarActive,
 }) => {
-  if (!pillarActive) {
+  if (!thirdPillarActive) {
     return (
       <StatusBoxRow
         error
@@ -85,7 +85,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
           <ThirdPillarPaymentsThisYear />,
         ]}
       >
-        <Link to="/3rd-pillar-flow" className="btn btn-secondary">
+        <Link to="/3rd-pillar-flow" className="btn btn-light">
           <FormattedMessage id="account.status.choice.pillar.third.inactive.action" />
         </Link>
       </StatusBoxRow>
@@ -203,7 +203,7 @@ const mapStateToProps = (state: State) => ({
   conversion: state.login.userConversion.thirdPillar,
   loading: state.login.loadingUserConversion,
   sourceFunds: state.thirdPillar.sourceFunds,
-  pillarActive: state.login.user.thirdPillarActive,
+  thirdPillarActive: state.login.user.thirdPillarActive,
 });
 
 export default connect(mapStateToProps)(ThirdPillarStatusBox);

@@ -1,5 +1,56 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`SecondPillarStatusBox renders high fee message when in high fee fund and no partial conversion 1`] = `
+<StatusBoxRow
+  error={true}
+  lines={
+    Array [
+      <React.Fragment>
+        <Memo(MemoizedFormattedMessage)
+          id="account.status.choice.highFee.label"
+        />
+        : 
+        <ActiveFund />
+      </React.Fragment>,
+    ]
+  }
+  name={
+    <Memo(MemoizedFormattedMessage)
+      id="account.status.choice.pillar.second"
+    />
+  }
+  showAction={true}
+>
+  <Link
+    className="btn btn-primary"
+    to="/2nd-pillar-flow"
+  >
+    <MemoizedFormattedMessage
+      id="account.status.choice.join.tuleva.2"
+    />
+  </Link>
+</StatusBoxRow>
+`;
+
+exports[`SecondPillarStatusBox renders no 2nd pillar flow when no second pillar 1`] = `
+<StatusBoxRow
+  error={true}
+  lines={
+    Array [
+      <Memo(MemoizedFormattedMessage)
+        id="account.status.choice.pillar.second.missing.label"
+      />,
+    ]
+  }
+  name={
+    <Memo(MemoizedFormattedMessage)
+      id="account.status.choice.pillar.second"
+    />
+  }
+  showAction={true}
+/>
+`;
+
 exports[`SecondPillarStatusBox renders the PIK flow when fund PIK number present 1`] = `
 <StatusBoxRow
   lines={
@@ -25,10 +76,15 @@ exports[`SecondPillarStatusBox renders the PIK flow when fund PIK number present
 
 exports[`SecondPillarStatusBox renders the choice flow when fund selection incomplete 1`] = `
 <StatusBoxRow
-  error={true}
   lines={
     Array [
-      "Tuleva III Samba Pensionifond",
+      <React.Fragment>
+        <Memo(MemoizedFormattedMessage)
+          id="account.status.choice.lowFee.label"
+        />
+        : 
+        <ActiveFund />
+      </React.Fragment>,
     ]
   }
   name={
@@ -36,10 +92,11 @@ exports[`SecondPillarStatusBox renders the choice flow when fund selection incom
       id="account.status.choice.pillar.second"
     />
   }
+  ok={true}
   showAction={true}
 >
   <Link
-    className="btn btn-primary"
+    className="btn btn-light"
     to="/2nd-pillar-flow"
   >
     <MemoizedFormattedMessage
@@ -53,7 +110,13 @@ exports[`SecondPillarStatusBox renders the success flow 1`] = `
 <StatusBoxRow
   lines={
     Array [
-      "Tuleva III Samba Pensionifond",
+      <React.Fragment>
+        <Memo(MemoizedFormattedMessage)
+          id="account.status.choice.lowFee.index.label"
+        />
+        : 
+        <ActiveFund />
+      </React.Fragment>,
     ]
   }
   name={

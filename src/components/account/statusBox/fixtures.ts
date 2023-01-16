@@ -94,11 +94,11 @@ export const completeSecondPillarConversion: UserConversion = {
 
 export const activeSecondPillar: SourceFund = {
   activeFund: true,
-  name: 'Tuleva III Samba Pensionifond',
+  name: 'Tuleva II Samba Pensionifond',
   fundManager: { name: 'Tuleva' },
-  pillar: 3,
+  pillar: 2,
   managementFeePercent: 0.003,
-  isin: 'EE3600001707',
+  isin: 'EE000123',
   price: 23,
   unavailablePrice: 0,
   currency: 'EUR',
@@ -124,13 +124,29 @@ export const activeThirdPillar: SourceFund = {
   profit: 500,
 };
 
-export const highCostThirdPillar: SourceFund = {
+export const highFeeThirdPillar: SourceFund = {
   activeFund: true,
-  name: 'LHV High Cost Fund',
+  name: 'LHV High Cost Fund III',
   fundManager: { name: 'LHV' },
   pillar: 3,
   managementFeePercent: 0.015,
   isin: 'EE1234567',
+  price: 23,
+  unavailablePrice: 0,
+  currency: 'EUR',
+  ongoingChargesFigure: 0.0156,
+  contributions: 500,
+  subtractions: 0,
+  profit: 500,
+};
+
+export const highFeeSecondPillar: SourceFund = {
+  activeFund: true,
+  name: 'LHV High Cost Fund II',
+  fundManager: { name: 'LHV' },
+  pillar: 2,
+  managementFeePercent: 0.015,
+  isin: 'EE432432',
   price: 23,
   unavailablePrice: 0,
   currency: 'EUR',

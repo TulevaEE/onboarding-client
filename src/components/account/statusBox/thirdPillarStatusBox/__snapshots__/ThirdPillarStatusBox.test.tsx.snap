@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ThirdPillarStatusBox renders the "open third pillar" flow when user has no pillar active 1`] = `
+exports[`ThirdPillarStatusBox renders the "open third pillar" flow when user has no third pillar active 1`] = `
 <StatusBoxRow
   error={true}
   lines={
@@ -156,7 +156,7 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when partially conv
   showAction={true}
 >
   <Link
-    className="btn btn-secondary"
+    className="btn btn-light"
     to="/3rd-pillar-flow"
   >
     <MemoizedFormattedMessage
@@ -222,7 +222,7 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when user has some 
   showAction={true}
 >
   <Link
-    className="btn btn-secondary"
+    className="btn btn-light"
     to="/3rd-pillar-flow"
   >
     <MemoizedFormattedMessage
@@ -242,7 +242,7 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow with error when in 
           id="account.status.choice.highFee.label"
         />
         : 
-        LHV High Cost Fund (1.56%)
+        LHV High Cost Fund III (1.56%)
       </React.Fragment>,
       <Memo(Connect(ThirdPillarYearToDateContribution)) />,
     ]

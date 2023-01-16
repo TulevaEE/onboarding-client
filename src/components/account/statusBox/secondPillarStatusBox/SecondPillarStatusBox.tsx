@@ -6,23 +6,37 @@ import StatusBoxRow from '../statusBoxRow';
 import { usePendingApplications } from '../../../common/apiHooks';
 import { Application, ApplicationType, Conversion, SourceFund } from '../../../common/apiModels';
 import { State } from '../../../../types';
+import Percentage from '../../../common/Percentage/Percentage';
+import { getWeightedAverageFee } from '../../AccountStatement/fundSelector';
 
 interface Props {
   loading: boolean;
-  secondPillar: Conversion;
+  conversion: Conversion;
   secondPillarFunds: SourceFund[];
   secondPillarPikNumber: string;
+  secondPillarActive: boolean;
 }
 
 export const SecondPillarStatusBox: React.FC<Props> = ({
   loading,
-  secondPillar,
+  conversion,
   secondPillarFunds,
   secondPillarPikNumber,
+  secondPillarActive,
 }: Props) => {
-  const pendingWithdrawal = usePendingWithdrawalApplication();
+  if (!secondPillarActive) {
+    return (
+      <StatusBoxRow
+        error
+        showAction={!loading}
+        name={<FormattedMessage id="account.status.choice.pillar.second" />}
+        lines={[<FormattedMessage id="account.status.choice.pillar.second.missing.label" />]}
+      />
+    );
+  }
 
-  if (secondPillar.pendingWithdrawal && pendingWithdrawal) {
+  const pendingWithdrawal = usePendingWithdrawalApplication();
+  if (conversion.pendingWithdrawal && pendingWithdrawal) {
     return (
       <StatusBoxRow
         error
@@ -51,30 +65,57 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
       />
     );
   }
-
-  const activeFund = secondPillarFunds.find((fund) => fund.activeFund);
-  if (!secondPillar.selectionComplete || !activeFund) {
-    const statusMessage = activeFund ? (
-      activeFund.name
-    ) : (
-      <FormattedMessage id="account.status.choice.pillar.second.missing" />
+  const weightedAverageFee = getWeightedAverageFee(secondPillarFunds);
+  const activeFund = secondPillarFunds.find((fund) => fund.activeFund)!;
+  function ActiveFund() {
+    return (
+      <>
+        {activeFund.name.replaceAll(' ', '\u00a0')} (
+        <Percentage value={activeFund.ongoingChargesFigure} />)
+      </>
     );
+  }
 
+  const isPartiallyConverted = conversion.selectionPartial || conversion.transfersPartial;
+  if (!isPartiallyConverted) {
+    if (weightedAverageFee > 0.005) {
+      return (
+        <StatusBoxRow
+          error
+          showAction={!loading}
+          name={<FormattedMessage id="account.status.choice.pillar.second" />}
+          lines={[
+            <>
+              <FormattedMessage id="account.status.choice.highFee.label" />: <ActiveFund />
+            </>,
+          ]}
+        >
+          <Link to="/2nd-pillar-flow" className="btn btn-primary">
+            <FormattedMessage id="account.status.choice.join.tuleva.2" />
+          </Link>
+        </StatusBoxRow>
+      );
+    }
     return (
       <StatusBoxRow
-        error
+        ok
         showAction={!loading}
         name={<FormattedMessage id="account.status.choice.pillar.second" />}
-        lines={[statusMessage]}
+        lines={[
+          <>
+            <FormattedMessage id="account.status.choice.lowFee.label" />: <ActiveFund />
+          </>,
+        ]}
       >
-        <Link to="/2nd-pillar-flow" className="btn btn-primary">
+        <Link to="/2nd-pillar-flow" className="btn btn-light">
           <FormattedMessage id="account.status.choice.join.tuleva.2" />
         </Link>
       </StatusBoxRow>
     );
   }
 
-  if (!secondPillar.transfersComplete) {
+  const isFullyConverted = conversion.selectionComplete && conversion.transfersComplete;
+  if (!isFullyConverted) {
     return (
       <StatusBoxRow
         error
@@ -94,7 +135,11 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
       ok
       name={<FormattedMessage id="account.status.choice.pillar.second" />}
       showAction={!loading}
-      lines={[activeFund.name]}
+      lines={[
+        <>
+          <FormattedMessage id="account.status.choice.lowFee.index.label" />: <ActiveFund />
+        </>,
+      ]}
     />
   );
 };
@@ -108,9 +153,10 @@ const usePendingWithdrawalApplication = (): Application | undefined =>
 
 const mapStateToProps = (state: State) => ({
   loading: state.login.loadingUserConversion,
-  secondPillar: state.login.userConversion.secondPillar,
+  conversion: state.login.userConversion.secondPillar,
   secondPillarFunds: state.exchange.sourceFunds,
   secondPillarPikNumber: state.login.user.secondPillarPikNumber,
+  secondPillarActive: state.login.user.secondPillarActive,
 });
 
 export default connect(mapStateToProps)(SecondPillarStatusBox);

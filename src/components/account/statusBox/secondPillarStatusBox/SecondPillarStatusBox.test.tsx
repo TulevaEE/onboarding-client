@@ -2,7 +2,11 @@ import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 import { SecondPillarStatusBox } from './SecondPillarStatusBox';
 import StatusBoxRow from '../statusBoxRow';
-import { activeSecondPillar, completeSecondPillarConversion } from '../fixtures';
+import {
+  activeSecondPillar,
+  completeSecondPillarConversion,
+  highFeeSecondPillar,
+} from '../fixtures';
 
 // TODO: Figure out a cleaner way to mock applications from the hook
 jest.mock('../../../common/apiHooks', () => ({
@@ -13,9 +17,10 @@ describe('SecondPillarStatusBox', () => {
   let component: ShallowWrapper;
   const props = {
     loading: false,
-    secondPillar: completeSecondPillarConversion.secondPillar,
+    conversion: completeSecondPillarConversion.secondPillar,
     secondPillarFunds: [activeSecondPillar],
     secondPillarPikNumber: null,
+    secondPillarActive: true,
   };
 
   beforeEach(() => {
@@ -26,24 +31,47 @@ describe('SecondPillarStatusBox', () => {
     expect(component).toMatchSnapshot();
   });
 
+  it('renders no 2nd pillar flow when no second pillar', () => {
+    component.setProps({ secondPillarActive: false });
+    expect(component).toMatchSnapshot();
+  });
+
   it('does not show action when still loading', () => {
     component.setProps({ loading: true });
     expect(component.find(StatusBoxRow).prop('showAction')).toBeFalsy();
   });
 
   it('renders the withdrawal flow when withdrawal is in progress', () => {
-    component.setProps({ secondPillar: { pendingWithdrawal: true } });
+    component.setProps({ conversion: { pendingWithdrawal: true } });
     expect(component).toMatchSnapshot();
   });
 
   it('renders the choice flow when fund selection incomplete', () => {
-    component.setProps({ secondPillar: { selectionComplete: false } });
+    component.setProps({ conversion: { selectionPartial: false, selectionComplete: false } });
+    expect(component).toMatchSnapshot();
+  });
+
+  it('renders high fee message when in high fee fund and no partial conversion', () => {
+    component.setProps({
+      conversion: {
+        transfersPartial: false,
+        transfersComplete: false,
+        selectionPartial: false,
+        selectionComplete: false,
+      },
+      secondPillarFunds: [highFeeSecondPillar],
+    });
     expect(component).toMatchSnapshot();
   });
 
   it('renders the transfer flow when fund transfers incomplete', () => {
     component.setProps({
-      secondPillar: { transfersComplete: false, selectionComplete: true },
+      conversion: {
+        transfersPartial: false,
+        transfersComplete: false,
+        selectionPartial: true,
+        selectionComplete: true,
+      },
     });
     expect(component).toMatchSnapshot();
   });

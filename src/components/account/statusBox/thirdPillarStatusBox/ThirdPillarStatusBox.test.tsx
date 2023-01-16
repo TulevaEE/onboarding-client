@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 import { ThirdPillarStatusBox } from './ThirdPillarStatusBox';
 import StatusBoxRow from '../statusBoxRow';
-import { activeThirdPillar, completeThirdPillarConversion, highCostThirdPillar } from '../fixtures';
+import { activeThirdPillar, completeThirdPillarConversion, highFeeThirdPillar } from '../fixtures';
 
 describe('ThirdPillarStatusBox', () => {
   let component: ShallowWrapper;
@@ -10,7 +10,7 @@ describe('ThirdPillarStatusBox', () => {
     conversion: completeThirdPillarConversion.thirdPillar,
     loading: false,
     sourceFunds: [activeThirdPillar],
-    pillarActive: true,
+    thirdPillarActive: true,
   };
 
   beforeEach(() => {
@@ -27,8 +27,8 @@ describe('ThirdPillarStatusBox', () => {
     expect(component.find(StatusBoxRow).prop('showAction')).toBeFalsy();
   });
 
-  it('renders the "open third pillar" flow when user has no pillar active', () => {
-    component.setProps({ pillarActive: false });
+  it('renders the "open third pillar" flow when user has no third pillar active', () => {
+    component.setProps({ thirdPillarActive: false });
     expect(component).toMatchSnapshot();
   });
 
@@ -150,7 +150,7 @@ describe('ThirdPillarStatusBox', () => {
         transferPartial: true,
         contribution: { yearToDate: 20, total: 20 },
       },
-      sourceFunds: [highCostThirdPillar],
+      sourceFunds: [highFeeThirdPillar],
     });
     expect(component).toMatchSnapshot();
   });
