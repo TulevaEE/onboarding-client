@@ -166,7 +166,7 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when partially conv
     Array [
       <React.Fragment>
         <Memo(MemoizedFormattedMessage)
-          id="account.status.choice.pillar.third.lowCost.label"
+          id="account.status.choice.lowFee.label"
         />
         : 
         Tuleva III Samba Pensionifond
@@ -227,10 +227,9 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow with error when in 
     Array [
       <React.Fragment>
         <Memo(MemoizedFormattedMessage)
-          id="account.status.choice.pillar.third.highCost.label"
+          id="account.status.choice.highFee.label"
         />
-        :
-         
+        : 
         LHV High Cost Fund
       </React.Fragment>,
       <Memo(Connect(ThirdPillarYearToDateContribution)) />,
@@ -323,7 +322,7 @@ exports[`ThirdPillarStatusBox renders the success flow 1`] = `
     Array [
       <React.Fragment>
         <Memo(MemoizedFormattedMessage)
-          id="account.status.choice.pillar.third.lowCost.label"
+          id="account.status.choice.lowFee.label"
         />
         : 
         Tuleva III Samba Pensionifond
@@ -356,7 +355,7 @@ exports[`ThirdPillarStatusBox renders the success flow when funds have not trans
     Array [
       <React.Fragment>
         <Memo(MemoizedFormattedMessage)
-          id="account.status.choice.pillar.third.lowCost.label"
+          id="account.status.choice.lowFee.label"
         />
         : 
         Tuleva III Samba Pensionifond
