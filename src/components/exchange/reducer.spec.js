@@ -46,7 +46,9 @@ describe('Exchange reducer', () => {
   });
 
   it('stops loading and saves funds when getting pension funds succeeded', () => {
-    const sourceFunds = [{ name: 'name', isin: 'isin', pillar: 2 }];
+    const sourceFunds = [
+      { name: 'name', isin: 'isin', pillar: 2, price: 200, unavailablePrice: 0 },
+    ];
     const action = { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds };
     const newState = exchangeReducer({ loadingSourceFunds: true }, action);
     expect(newState.loadingSourceFunds).toBe(false);
@@ -132,6 +134,8 @@ describe('Exchange reducer', () => {
         {
           isin: activeFundIsin,
           activeFund: true,
+          price: 1,
+          unavailablePrice: 0,
         },
       ],
     };
@@ -157,6 +161,8 @@ describe('Exchange reducer', () => {
         {
           isin: targetFundIsin,
           activeFund: false,
+          price: 1,
+          unavailablePrice: 0,
         },
       ],
     };
@@ -212,8 +218,8 @@ describe('Exchange reducer', () => {
 
   it('defaults contributions fund to null when target funds not present', () => {
     const sourceFunds = [
-      { name: 'name', isin: 'source', pillar: 2 },
-      { name: 'name', isin: 'source 2', pillar: 2 },
+      { name: 'name', isin: 'source', pillar: 2, price: 1, unavailablePrice: 0 },
+      { name: 'name', isin: 'source 2', pillar: 2, price: 1, unavailablePrice: 0 },
     ];
     const sourceFundsAction = { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds };
     const newState = exchangeReducer({}, sourceFundsAction);
@@ -222,9 +228,15 @@ describe('Exchange reducer', () => {
 
   it('defaults future contributions fund to first current company target fund when no target fund is currently active', () => {
     const sourceFunds = [
-      { name: 'name', isin: 'isin1' },
-      { name: 'name', isin: 'isin2' },
-      { name: 'other random active fund', isin: 'source 3', activeFund: true },
+      { name: 'name', isin: 'isin1', price: 1, unavailablePrice: 0 },
+      { name: 'name', isin: 'isin2', price: 1, unavailablePrice: 0 },
+      {
+        name: 'other random active fund',
+        isin: 'source 3',
+        activeFund: true,
+        price: 1,
+        unavailablePrice: 0,
+      },
     ];
     const sourceFundsAction = { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds };
     const targetFunds = [
@@ -253,7 +265,7 @@ describe('Exchange reducer', () => {
   });
 
   it('defaults future contributions fund to 2nd pillar funds only', () => {
-    const sourceFunds = [{ name: 'name', isin: 'source1', price: 1 }];
+    const sourceFunds = [{ name: 'name', isin: 'source1', price: 1, unavailablePrice: 0 }];
     const sourceFundsAction = { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds };
     const targetFunds = [
       {
@@ -320,8 +332,8 @@ describe('Exchange reducer', () => {
     ];
 
     const sourceFunds = [
-      { name: 'name', isin: 'source', price: 100, pillar: 2 },
-      { name: 'name', isin: 'source 2', price: 100, pillar: 2 },
+      { name: 'name', isin: 'source', price: 100, unavailablePrice: 0, pillar: 2 },
+      { name: 'name', isin: 'source 2', price: 100, unavailablePrice: 0, pillar: 2 },
     ];
     const sourceFundsAction = { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds };
     const targetFunds = [
@@ -352,9 +364,9 @@ describe('Exchange reducer', () => {
     ];
 
     const sourceFunds = [
-      { name: 'name', isin: 'source', price: 100, pillar: 2 },
+      { name: 'name', isin: 'source', price: 100, unavailablePrice: 0, pillar: 2 },
       { name: 'name', isin: 'source 2', pillar: 2 },
-      { name: 'name', isin: 'source 3', price: 100, pillar: 2 },
+      { name: 'name', isin: 'source 3', price: 100, unavailablePrice: 0, pillar: 2 },
     ];
     const sourceFundsAction = { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds };
     const targetFunds = [
@@ -388,9 +400,9 @@ describe('Exchange reducer', () => {
     ];
 
     const sourceFunds = [
-      { name: 'name', isin: 'source', price: 100, pillar: 2 },
-      { name: 'name', isin: 'thissourcewillbeskipped', price: 100, pillar: 2 },
-      { name: 'name', isin: 'willbeskippedaswell', price: 100, pillar: 2 },
+      { name: 'name', isin: 'source', price: 100, unavailablePrice: 0, pillar: 2 },
+      { name: 'name', isin: 'thissourcewillbeskipped', price: 100, unavailablePrice: 0, pillar: 2 },
+      { name: 'name', isin: 'willbeskippedaswell', price: 100, unavailablePrice: 0, pillar: 2 },
     ];
     const sourceFundsAction = { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds };
     const targetFunds = [
@@ -415,8 +427,20 @@ describe('Exchange reducer', () => {
   });
 
   it('filters out 2nd pillar source funds', () => {
-    const secondPillarFund = { name: 'name', isin: 'isin', pillar: 2 };
-    const thirdPillarFund = { name: 'name', isin: 'isin', pillar: 3 };
+    const secondPillarFund = {
+      name: 'name',
+      isin: 'isin',
+      pillar: 2,
+      price: 200,
+      unavailablePrice: 0,
+    };
+    const thirdPillarFund = {
+      name: 'name',
+      isin: 'isin',
+      pillar: 3,
+      price: 300,
+      unavailablePrice: 0,
+    };
     const sourceFunds = [secondPillarFund, thirdPillarFund];
     const action = { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds };
 

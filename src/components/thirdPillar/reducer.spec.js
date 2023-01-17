@@ -122,7 +122,7 @@ describe('Third pillar reducer', () => {
   it('updates source funds with exchangeable third pillar funds on success', () => {
     const oldState = {
       ...initialState,
-      selectedFutureContributionsFundIsin: 'EE789',
+      selectedFutureContributionsFundIsin: 'EE456',
     };
 
     const thirdPillarFund = {
@@ -132,25 +132,25 @@ describe('Third pillar reducer', () => {
       unavailablePrice: 0,
     };
     const secondPillarFund = {
-      isin: 'EE456',
+      isin: 'EE234',
       pillar: 2,
       price: 100,
       unavailablePrice: 0,
     };
     const tulevaThirdPillarFund = {
-      isin: 'EE789',
+      isin: 'EE456',
       pillar: 3,
       price: 100,
       unavailablePrice: 0,
     };
     const movedThirdPillarFund = {
-      isin: 'EE789',
+      isin: 'EE567',
       pillar: 3,
       price: 0,
       unavailablePrice: 100,
     };
     const zeroThirdPillarFund = {
-      isin: 'EE789',
+      isin: 'EE678',
       pillar: 3,
       price: 0,
       unavailablePrice: 0,
@@ -169,12 +169,7 @@ describe('Third pillar reducer', () => {
 
     expect(state).toEqual({
       ...oldState,
-      sourceFunds: [
-        thirdPillarFund,
-        tulevaThirdPillarFund,
-        movedThirdPillarFund,
-        zeroThirdPillarFund,
-      ],
+      sourceFunds: [thirdPillarFund, tulevaThirdPillarFund, movedThirdPillarFund],
       exchangeExistingUnits: true,
       exchangeableSourceFunds: [thirdPillarFund],
     });
@@ -205,7 +200,7 @@ describe('Third pillar reducer', () => {
       unavailablePrice: 0,
     };
     const activeThirdPillarFund = {
-      isin: 'EE789',
+      isin: 'EE890',
       pillar: 3,
       price: 0,
       unavailablePrice: 0,

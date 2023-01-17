@@ -114,7 +114,11 @@ export default function exchangeReducer(state = initialState, action) {
       return { ...state, loadingSourceFunds: true, error: null };
     case GET_SOURCE_FUNDS_SUCCESS:
       // eslint-disable-next-line no-case-declarations
-      const sourceFunds = action.sourceFunds.filter((fund) => fund.pillar === 2);
+      const sourceFunds = action.sourceFunds
+        .filter((fund) => fund.pillar === 2)
+        .filter(
+          (fund) => fund.price + fund.unavailablePrice > 0 || fund.activeFund || isTuleva(fund),
+        );
       return {
         ...state,
         loadingSourceFunds: false,
