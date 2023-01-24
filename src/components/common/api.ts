@@ -16,6 +16,7 @@ import {
   PaymentType,
   SourceFund,
   Token,
+  Transaction,
   User,
   UserConversion,
 } from './apiModels';
@@ -291,6 +292,12 @@ export function getPendingApplications(token: string): Promise<Application[]> {
       Authorization: `Bearer ${token}`,
     },
   );
+}
+
+export function getTransactions(token: string): Promise<Transaction[]> {
+  return get(getEndpoint('/v1/transactions'), undefined, {
+    Authorization: `Bearer ${token}`,
+  });
 }
 
 export function createApplicationCancellation(

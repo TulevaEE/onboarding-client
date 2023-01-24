@@ -255,3 +255,10 @@ export interface Authentication {
   authenticationHash: string;
   challengeCode: string;
 }
+
+export interface Transaction {
+  amount: number;
+  currency: Currency;
+  time: string;
+  isin: string;
+}

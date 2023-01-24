@@ -90,7 +90,7 @@ describe('Application section', () => {
 
     expect(await screen.findByText('applications.type.transfer.title')).toBeInTheDocument();
     expect(screen.getByText(application.details.sourceFund.name)).toBeInTheDocument();
-    const formattedCreationTime = '17.12.1995';
+    const formattedCreationTime = 'December 17, 1995';
     expect(screen.getByText(formattedCreationTime)).toBeInTheDocument();
 
     const firstExchangeAmount = '1%';
@@ -108,7 +108,7 @@ describe('Application section', () => {
 
     expect(await screen.findByText('applications.type.transfer.title')).toBeInTheDocument();
     expect(screen.getByText(application.details.sourceFund.name)).toBeInTheDocument();
-    const formattedCreationTime = '17.12.1995';
+    const formattedCreationTime = 'December 17, 1995';
     expect(screen.getByText(formattedCreationTime)).toBeInTheDocument();
 
     const exchangeAmount = '100%';
@@ -125,7 +125,7 @@ describe('Application section', () => {
 
     expect(await screen.findByText('applications.type.transfer.title')).toBeInTheDocument();
     expect(screen.getByText(application.details.sourceFund.name)).toBeInTheDocument();
-    const formattedCreationTime = '01.08.2021';
+    const formattedCreationTime = 'August 1, 2021';
     expect(screen.getByText(formattedCreationTime)).toBeInTheDocument();
 
     const exchangeAmount = '1310.247';
@@ -140,11 +140,11 @@ describe('Application section', () => {
     expect(
       await screen.findByText('applications.type.stopContributions.title'),
     ).toBeInTheDocument();
-    const formattedCreationTime = '17.12.1995';
+    const formattedCreationTime = 'December 17, 1995';
     expect(screen.getByText(formattedCreationTime)).toBeInTheDocument();
 
-    const formattedStopTime = '18.12.1995';
-    const formattedEarliestResumeTime = '19.12.1995';
+    const formattedStopTime = 'December 18, 1995';
+    const formattedEarliestResumeTime = 'December 19, 1995';
     expect(screen.getByText(formattedStopTime)).toBeInTheDocument();
     expect(screen.getByText(formattedEarliestResumeTime)).toBeInTheDocument();
   });
@@ -156,10 +156,10 @@ describe('Application section', () => {
     expect(
       await screen.findByText('applications.type.resumeContributions.title'),
     ).toBeInTheDocument();
-    const formattedCreationTime = '17.12.1995';
+    const formattedCreationTime = 'December 17, 1995';
     expect(screen.getByText(formattedCreationTime)).toBeInTheDocument();
 
-    const formattedResumeTime = '18.12.1995';
+    const formattedResumeTime = 'December 18, 1995';
     expect(screen.getByText(formattedResumeTime)).toBeInTheDocument();
   });
 
@@ -168,10 +168,10 @@ describe('Application section', () => {
     mockApplications([application]);
     initializeComponent();
     expect(await screen.findByText('applications.type.earlyWithdrawal.title')).toBeInTheDocument();
-    const formattedCreationTime = '17.12.1995';
+    const formattedCreationTime = 'December 17, 1995';
     expect(screen.getByText(formattedCreationTime)).toBeInTheDocument();
 
-    const formattedFulfillmentDate = '01.1995';
+    const formattedFulfillmentDate = 'January 2, 1995';
     expect(screen.getByText(formattedFulfillmentDate)).toBeInTheDocument();
 
     expect(screen.getByText(application.details.depositAccountIBAN)).toBeInTheDocument();
@@ -182,10 +182,10 @@ describe('Application section', () => {
     mockApplications([application]);
     initializeComponent();
     expect(await screen.findByText('applications.type.withdrawal.title')).toBeInTheDocument();
-    const formattedCreationTime = '17.12.1995';
+    const formattedCreationTime = 'December 17, 1995';
     expect(screen.getByText(formattedCreationTime)).toBeInTheDocument();
 
-    const formattedFulfillmentDate = '01.1995';
+    const formattedFulfillmentDate = 'January 2, 1995';
     expect(screen.getByText(formattedFulfillmentDate)).toBeInTheDocument();
 
     expect(screen.getByText(application.details.depositAccountIBAN)).toBeInTheDocument();
@@ -249,7 +249,7 @@ describe('Application section', () => {
     const application = payment;
     mockApplications([application]);
     initializeComponent();
-    const formattedCreationTime = '04.10.2022';
+    const formattedCreationTime = 'October 4, 2022';
 
     expect(await screen.findByText('applications.type.payment.title')).toBeInTheDocument();
     expect(screen.getByText(formattedCreationTime)).toBeInTheDocument();

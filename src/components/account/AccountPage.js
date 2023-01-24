@@ -17,6 +17,7 @@ import { ApplicationSection } from './ApplicationSection/ApplicationSection';
 import { ACCOUNT_PATH, AML_PATH } from '../LoggedInApp';
 import { isTuleva } from '../common/utils';
 import { AccountSummaryLoader } from './AccountSummary/AccountSummary';
+import { TransactionSection } from './TransactionSection/TransactionSection';
 
 const noop = () => null;
 
@@ -55,7 +56,7 @@ export class AccountPage extends Component {
             }}
           />
         )}
-        <div className="row mt-5">
+        <div className="mt-5">
           <GreetingBar />
         </div>
         <div className="mt-5">
@@ -87,21 +88,20 @@ export class AccountPage extends Component {
 
         <ApplicationSection />
 
+        <TransactionSection limit={3} />
+
         {!loadingCurrentBalance && (
           <div className="mt-5">
             <p className="mb-4 lead">
               <FormattedMessage id="accountStatement.heading" />
             </p>
-            <div className="row">
-              <div className="col-md-6 mb-2 mt-4">
+            <div className="d-flex flex-sm-row flex-column align-items-sm-end justify-content-between">
+              <div className="mb-3">
                 <FormattedMessage id="accountStatement.secondPillar.heading" />
               </div>
-
-              <div className="col-md-6 mb-1 mt-2 text-md-right">
-                <Link className="btn btn-light" to="/2nd-pillar-flow">
-                  <FormattedMessage id="change.my.pension.fund" />
-                </Link>
-              </div>
+              <Link className="btn btn-light mb-3" to="/2nd-pillar-flow">
+                <FormattedMessage id="change.my.pension.fund" />
+              </Link>
             </div>
             {secondPillarSourceFunds && secondPillarSourceFunds.length > 0 && (
               <AccountStatement funds={secondPillarSourceFunds} />
@@ -111,16 +111,13 @@ export class AccountPage extends Component {
 
         {!loadingCurrentBalance && (
           <>
-            <div className="row mt-4">
-              <div className="col-md-6 mb-2 mt-4">
+            <div className="mt-4 d-flex flex-sm-row flex-column align-items-sm-end justify-content-between">
+              <div className="mb-3">
                 <FormattedMessage id="accountStatement.thirdPillar.heading" />
               </div>
-
-              <div className="col-md-6 mb-1 mt-2 text-md-right">
-                <Link className="btn btn-light" to="/3rd-pillar-flow">
-                  <FormattedMessage id="change.my.pension.fund.third.pillar" />
-                </Link>
-              </div>
+              <Link className="btn btn-light mb-3" to="/3rd-pillar-flow">
+                <FormattedMessage id="change.my.pension.fund.third.pillar" />
+              </Link>
             </div>
             {thirdPillarSourceFunds && thirdPillarSourceFunds.length > 0 && (
               <AccountStatement funds={thirdPillarSourceFunds} />

@@ -60,7 +60,7 @@ test('pension summary table is shown', async () => {
   const summarySection = screen.getByText('Your pension summary').parentElement!;
 
   expect(
-    await within(summarySection).findByRole('cell', { name: 'Member capital' }),
+    await within(summarySection).findByRole('cell', { name: 'Your member capital' }),
   ).toBeInTheDocument();
   const getRow = (name: string) =>
     // eslint-disable-next-line testing-library/no-node-access,@typescript-eslint/no-non-null-assertion
@@ -78,7 +78,7 @@ test('pension summary table is shown', async () => {
   expect(within(thirdPillarRow).getByText('-4 177.18 €')).toBeInTheDocument();
   expect(within(thirdPillarRow).getByText('5 699.36 €')).toBeInTheDocument();
 
-  const memberCapitalRow = getRow('Member capital');
+  const memberCapitalRow = getRow('Your member capital');
   expect(within(memberCapitalRow).getByText('1 000.00 €')).toBeInTheDocument();
   expect(within(memberCapitalRow).queryByText('0.00 €')).not.toBeInTheDocument();
   expect(within(memberCapitalRow).getByText('-122.22 €')).toBeInTheDocument();

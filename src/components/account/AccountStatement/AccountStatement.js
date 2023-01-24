@@ -18,6 +18,7 @@ const AccountStatement = ({ funds }) => {
       title: <FormattedMessage id="accountStatement.columns.fund.title" />,
       dataIndex: 'fund',
       footer: <FormattedMessage id="accountStatement.columns.fund.footer" />,
+      width100: true,
     },
     {
       title: <FormattedMessage id="accountStatement.columns.fees.title" />,

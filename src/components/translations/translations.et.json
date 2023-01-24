@@ -62,7 +62,7 @@
   "accountSummary.columns.profit": "Tulu",
   "accountSummary.columns.value": "Osakute väärtus",
 
-  "accountStatement.heading": "Portfell detailsemalt",
+  "accountStatement.heading": "Sinu portfell detailsemalt",
   "accountStatement.secondPillar.heading": "II Sammas",
   "accountStatement.thirdPillar.heading": "III Sammas",
   "accountStatement.columns.fund.title": "Pensionifond",
@@ -76,7 +76,7 @@
   "accountStatement.secondPillar.activeFundNotice": "* - siia lähevad igakuised maksed. II sambast väljumise avalduse saad teha pensionikeskus.ee lehel.",
   "accountStatement.thirdPillar.activeFundNotice": "* - siia lähevad igakuised maksed. III sambast väljamakse avalduse saad teha pensionikeskus.ee lehel.",
 
-  "memberCapital.heading": "Liikmekapital",
+  "memberCapital.heading": "Sinu liikmekapital",
   "memberCapital.columns.source.title": "Allikas",
   "memberCapital.columns.source.total": "Kokku",
   "memberCapital.columns.value.title": "Väärtus",
@@ -442,6 +442,14 @@
   "applications.type.withdrawal.title": "II samba väljavõtmise avaldus",
   "applications.type.withdrawal.time": "Väljamakse kuu",
   "applications.type.withdrawal.account": "Pangakonto",
+
+  "transactions.title": "Sinu sisse- ja väljamaksed",
+  "transactions.columns.fund.title": "Pensionifond",
+  "transactions.columns.date.title": "Kuupäev",
+  "transactions.columns.pillar.title": "Sammas",
+  "transactions.columns.amount.title": "Summa",
+  "transactions.seeAll": "Vaata kõiki",
+  "transactions.backToAccountPage": "Tagasi avalehele",
 
   "cancellation.flow.confirm.title": "Kinnita avalduse tühistamine",
   "cancellation.flow.confirm.content": "Avaldust allkirjastades kinnitad, et soovid tühistada järgmise avalduse:",

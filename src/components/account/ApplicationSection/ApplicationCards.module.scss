@@ -29,7 +29,6 @@ $padding: 15px;
 .footer {
   padding: $padding 18px;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
   border-top: 1px solid $very-light-gray;
 }

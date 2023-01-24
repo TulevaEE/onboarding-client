@@ -22,6 +22,7 @@ const MemberCapital = ({
       title: <FormattedMessage id="memberCapital.columns.source.title" />,
       dataIndex: 'source',
       footer: <FormattedMessage id="memberCapital.columns.source.total" />,
+      width100: true,
     },
     {
       title: <FormattedMessage id="memberCapital.columns.value.title" />,

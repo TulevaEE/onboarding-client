@@ -3,7 +3,7 @@ import { PropTypes as Types } from 'prop-types';
 import sumBy from 'lodash/sumBy';
 
 import { FormattedMessage } from 'react-intl';
-import Table, { getProfitClassName } from '../../common/table';
+import Table from '../../common/table';
 import Euro from '../../common/Euro';
 import { Shimmer } from '../../common/shimmer/Shimmer';
 import { getValueSum, getWeightedAverageFee } from '../AccountStatement/fundSelector';
@@ -100,6 +100,7 @@ const AccountSummary = ({
       title: <FormattedMessage id="accountSummary.columns.pillar.title" />,
       dataIndex: 'pillarLabel',
       footer: <FormattedMessage id="accountSummary.columns.pillar.footer" />,
+      width100: true,
     },
     {
       title: <FormattedMessage id="accountSummary.columns.fees" />,
@@ -131,11 +132,7 @@ const AccountSummary = ({
       title: <FormattedMessage id="accountSummary.columns.profit" />,
       dataIndex: 'profit',
       hideOnMobile: true,
-      footer: (
-        <span className={getProfitClassName(profitSum)}>
-          <Euro amount={profitSum} />
-        </span>
-      ),
+      footer: <Euro amount={profitSum} />,
     },
     {
       title: <FormattedMessage id="accountSummary.columns.value" />,
@@ -150,11 +147,7 @@ const AccountSummary = ({
       fees: <Fees value={fees} />,
       contributions: <Euro amount={contributions} />,
       subtractions: <Euro amount={subtractions} />,
-      profit: (
-        <span className={getProfitClassName(profit)}>
-          <Euro amount={profit} />
-        </span>
-      ),
+      profit: <Euro amount={profit} />,
       value: <Euro amount={value} />,
       key: pillarLabel,
     }),

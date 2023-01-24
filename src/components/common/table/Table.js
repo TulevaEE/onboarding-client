@@ -3,15 +3,13 @@ import Types from 'prop-types';
 
 import './Table.scss';
 
-const HIDDEN_ON_MOBILE_CELL_CLASS = 'd-none d-sm-table-cell';
-
 const Table = ({ columns, dataSource }) => (
   <div className="table-container">
     <table className="table">
       <thead>
         <tr>
           {columns.map(({ dataIndex, title, hideOnMobile }) => (
-            <th key={dataIndex} className={getClass(hideOnMobile)}>
+            <th key={dataIndex} className={getMobileClass(hideOnMobile)}>
               {title}
             </th>
           ))}
@@ -20,8 +18,13 @@ const Table = ({ columns, dataSource }) => (
       <tbody>
         {dataSource.map(({ key, ...data }) => (
           <tr key={key}>
-            {columns.map(({ dataIndex, hideOnMobile }) => (
-              <td key={dataIndex} className={getClass(hideOnMobile)}>
+            {columns.map(({ dataIndex, hideOnMobile, width100, align }) => (
+              <td
+                key={dataIndex}
+                className={`${getAlignClass(align)} ${getWidthClass(width100)} ${getMobileClass(
+                  hideOnMobile,
+                )}`}
+              >
                 {data[dataIndex]}
               </td>
             ))}
@@ -32,7 +35,7 @@ const Table = ({ columns, dataSource }) => (
         <tfoot>
           <tr>
             {columns.map(({ dataIndex, footer, hideOnMobile }) => (
-              <td key={dataIndex} className={getClass(hideOnMobile)}>
+              <td key={dataIndex} className={getMobileClass(hideOnMobile)}>
                 {footer}
               </td>
             ))}
@@ -43,8 +46,23 @@ const Table = ({ columns, dataSource }) => (
   </div>
 );
 
-function getClass(hideOnMobile) {
+function getMobileClass(hideOnMobile) {
+  const HIDDEN_ON_MOBILE_CELL_CLASS = 'd-none d-sm-table-cell';
   return hideOnMobile ? HIDDEN_ON_MOBILE_CELL_CLASS : undefined;
+}
+
+function getAlignClass(align) {
+  if (align === 'left') {
+    return 'text-left';
+  }
+  if (align === 'right') {
+    return 'text-right';
+  }
+  return '';
+}
+
+function getWidthClass(width100) {
+  return width100 ? 'w-100' : '';
 }
 
 export function getProfitClassName(profit) {

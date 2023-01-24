@@ -1,8 +1,13 @@
 import { useMutation, UseMutationResult, useQuery, UseQueryResult } from 'react-query';
 import { useSelector } from 'react-redux';
 
-import { createApplicationCancellation, getPendingApplications } from './api';
-import { Application, CancellationMandate } from './apiModels';
+import {
+  createApplicationCancellation,
+  getFunds,
+  getPendingApplications,
+  getTransactions,
+} from './api';
+import { Application, CancellationMandate, Fund, Transaction } from './apiModels';
 
 function useTokenOrFail(): string {
   const token = useSelector<{ login: { token?: string } }, string | null>(
@@ -17,6 +22,16 @@ function useTokenOrFail(): string {
 export function usePendingApplications(): UseQueryResult<Application[]> {
   const token = useTokenOrFail();
   return useQuery('pendingApplications', () => getPendingApplications(token));
+}
+
+export function useTransactions(): UseQueryResult<Transaction[]> {
+  const token = useTokenOrFail();
+  return useQuery('transactions', () => getTransactions(token));
+}
+
+export function useFunds(): UseQueryResult<Fund[]> {
+  const token = useTokenOrFail();
+  return useQuery('funds', () => getFunds(token));
 }
 
 export function useApplicationCancellation(): UseMutationResult<

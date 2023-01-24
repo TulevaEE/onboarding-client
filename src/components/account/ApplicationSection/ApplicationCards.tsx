@@ -125,7 +125,7 @@ const EarlyWithdrawalCard: React.FunctionComponent<{
       definitions={[
         {
           key: 'applications.type.earlyWithdrawal.time',
-          value: formatMonth(application.details.fulfillmentDate),
+          value: formatDate(application.details.fulfillmentDate),
         },
         {
           key: 'applications.type.earlyWithdrawal.account',
@@ -149,7 +149,7 @@ const WithdrawalCard: React.FunctionComponent<{
       definitions={[
         {
           key: 'applications.type.withdrawal.time',
-          value: formatMonth(application.details.fulfillmentDate),
+          value: formatDate(application.details.fulfillmentDate),
         },
         {
           key: 'applications.type.earlyWithdrawal.account',
@@ -255,9 +255,6 @@ export enum ApplicationAction {
 }
 
 function formatDate(date: string): string {
-  return moment(date).format('DD.MM.YYYY');
-}
-
-function formatMonth(date: string): string {
-  return moment(date).format('MM.YYYY');
+  const format = moment.localeData().longDateFormat('LL');
+  return moment(date).format(format);
 }

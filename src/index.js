@@ -3,14 +3,16 @@ import React, { Component } from 'react';
 import { render } from 'react-dom';
 import config from 'react-global-configuration';
 import { createBrowserHistory } from 'history';
-import { createStore, compose, applyMiddleware } from 'redux';
+import { applyMiddleware, compose, createStore } from 'redux';
 import thunk from 'redux-thunk';
 import { IntlProvider } from 'react-intl';
 import { Provider as ReduxProvider } from 'react-redux';
-import { Switch, Route } from 'react-router-dom';
-import { routerMiddleware, ConnectedRouter } from 'connected-react-router';
+import { Route, Switch } from 'react-router-dom';
+import { ConnectedRouter, routerMiddleware } from 'connected-react-router';
 import GoogleAnalytics from 'react-ga4';
 import { QueryClient, QueryClientProvider } from 'react-query';
+import moment from 'moment';
+import 'moment/locale/et';
 
 import createRootReducer from './reducers';
 import { getQueryParams } from './utils';
@@ -61,6 +63,7 @@ function applyLanguage() {
     language = 'en';
   }
   updateLanguage(language);
+  moment.locale(language);
 
   return language;
 }

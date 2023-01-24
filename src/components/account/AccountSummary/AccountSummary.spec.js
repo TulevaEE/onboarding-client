@@ -107,21 +107,9 @@ describe('Account summary', () => {
     expect(dataSource[2].contributions).toEqual(<Euro amount={3} />);
     expect(dataSource[2].subtractions).toEqual(<Euro amount={0} />);
 
-    expect(dataSource[0].profit).toEqual(
-      <span className="text-success">
-        <Euro amount={112} />
-      </span>,
-    );
-    expect(dataSource[1].profit).toEqual(
-      <span>
-        <Euro amount={-36} />
-      </span>,
-    );
-    expect(dataSource[2].profit).toEqual(
-      <span className="text-success">
-        <Euro amount={3} />
-      </span>,
-    );
+    expect(dataSource[0].profit).toEqual(<Euro amount={112} />);
+    expect(dataSource[1].profit).toEqual(<Euro amount={-36} />);
+    expect(dataSource[2].profit).toEqual(<Euro amount={3} />);
     expect(dataSource[0].value).toEqual(<Euro amount={114} />);
     expect(dataSource[1].value).toEqual(<Euro amount={66} />);
     expect(dataSource[2].value).toEqual(<Euro amount={6} />);
@@ -219,11 +207,7 @@ describe('Account summary', () => {
     expect(feesFooter.props.value).toBeCloseTo(0.005);
     expect(contributionFooter).toEqual(<Euro amount={2803} />);
     expect(subtractionFooter).toEqual(<Euro amount={-3} />);
-    expect(profitFooter).toEqual(
-      <span className="text-success">
-        <Euro amount={3872} />
-      </span>,
-    );
+    expect(profitFooter).toEqual(<Euro amount={3872} />);
     expect(valueFooter).toEqual(<Euro amount={6672} />);
   });
 
