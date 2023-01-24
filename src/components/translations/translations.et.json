@@ -72,6 +72,7 @@
   "accountStatement.columns.profit.title": "Tulu",
   "accountStatement.columns.value.title": "Osakute väärtus",
   "accountStatement.columns.fund.footer": "Kokku",
+  "accountStatement.columns.fund.muted.prefix": "Võrdlus tasudes: ",
   "accountStatement.secondPillar.activeFundNotice": "* - siia lähevad igakuised maksed. II sambast väljumise avalduse saad teha pensionikeskus.ee lehel.",
   "accountStatement.thirdPillar.activeFundNotice": "* - siia lähevad igakuised maksed. III sambast väljamakse avalduse saad teha pensionikeskus.ee lehel.",
 

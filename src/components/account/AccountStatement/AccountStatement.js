@@ -1,6 +1,6 @@
 import React from 'react';
 import Types from 'prop-types';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import Table from '../../common/table';
 import Euro from '../../common/Euro';
@@ -8,6 +8,8 @@ import { getValueSum, getWeightedAverageFee } from './fundSelector';
 import { Fees } from '../../common/Percentage/Fees';
 
 const AccountStatement = ({ funds }) => {
+  const { formatMessage } = useIntl();
+
   const valueSum = getValueSum(funds);
   const weightedAverageFee = getWeightedAverageFee(funds);
 
@@ -31,12 +33,20 @@ const AccountStatement = ({ funds }) => {
   ];
 
   const dataSource = funds.map((fund) => {
-    const className =
-      !fund.activeFund && fund.price + fund.unavailablePrice === 0 ? 'text-muted' : undefined;
+    const isMuted = !fund.activeFund && fund.price + fund.unavailablePrice === 0;
+    const className = isMuted ? 'text-muted' : undefined;
+    const prefix = isMuted
+      ? formatMessage({ id: 'accountStatement.columns.fund.muted.prefix' })
+      : '';
+    const suffix = fund.activeFund ? '*' : '';
     return {
-      fund: <span className={className}>{`${fund.name}${fund.activeFund ? '*' : ''}`}</span>,
+      fund: <span className={className}>{`${prefix}${fund.name}${suffix}`}</span>,
       fees: <Fees value={fund.ongoingChargesFigure} />,
-      value: <Euro className={className} amount={fund.price + fund.unavailablePrice} />,
+      value: isMuted ? (
+        <></>
+      ) : (
+        <Euro className={className} amount={fund.price + fund.unavailablePrice} />
+      ),
       key: fund.isin,
     };
   });
