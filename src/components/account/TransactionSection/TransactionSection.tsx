@@ -71,14 +71,27 @@ export const TransactionSection: React.FunctionComponent<{
 
   let dataSource = fundTransactions
     .sort((transaction1, transaction2) => transaction2.time.localeCompare(transaction1.time))
-    .map((transaction) => {
+    .flatMap((transaction, index) => {
+      const previousTransaction = fundTransactions[index - 1];
+      const previousYear = new Date(previousTransaction?.time || '9999-12-31').getUTCFullYear();
+      const currentYear = new Date(transaction.time).getUTCFullYear();
       const date = formatDate(transaction.time);
-      return {
-        date: <span className="text-nowrap">{date}</span>,
-        fund: transaction.fundName,
-        amount: <Euro amount={transaction.amount} />,
-        key: transaction.time,
-      };
+      return [
+        ...(!limit && previousYear > currentYear
+          ? [
+              {
+                date: <strong>{currentYear}</strong>,
+                key: currentYear.toString(),
+              },
+            ]
+          : []),
+        {
+          date: <span className="text-nowrap">{date}</span>,
+          fund: transaction.fundName,
+          amount: <Euro amount={transaction.amount} />,
+          key: transaction.time,
+        },
+      ];
     });
 
   if (limit) {
@@ -107,6 +120,6 @@ export const TransactionSection: React.FunctionComponent<{
 };
 
 function formatDate(date: string): string {
-  const format = moment.localeData().longDateFormat('LL');
+  const format = moment.locale() === 'et' ? 'D. MMMM' : 'MMMM D';
   return moment(date).format(format);
 }
