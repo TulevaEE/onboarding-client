@@ -9,7 +9,7 @@ interface Props {
 }
 
 const Euro: FC<Props> = ({ amount, fractionDigits = 2, className }) => (
-  <span className={`${className || ''}${amount === 0 ? ' text-muted' : ''}`}>
+  <span className={`${className || ''} ${amount === 0 ? 'text-muted' : ''} text-nowrap`}>
     {formatAmountForCurrency(amount, fractionDigits)}
   </span>
 );

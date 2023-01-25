@@ -20,7 +20,7 @@ import AmlPage, { actions as amlActions } from '../aml';
 import SignUpPage from '../newUserFlow';
 // eslint-disable-next-line import/no-named-as-default
 import Payment from '../flows/thirdPillar/ThirdPillarPayment/Payment';
-import { TransactionSection } from '../account/TransactionSection/TransactionSection';
+import { TransactionPage } from '../account/TransactionSection/TransactionPage';
 
 export const ACCOUNT_PATH = '/account';
 export const AML_PATH = '/aml';
@@ -73,7 +73,7 @@ export class LoggedInApp extends PureComponent {
               <Route path="/2nd-pillar-flow" component={SecondPillarFlow} />
               <Route path="/3rd-pillar-flow" component={ThirdPillarFlow} />
               <Route path="/3rd-pillar-payment" component={Payment} />
-              <Route path="/transactions" component={TransactionSection} />
+              <Route path="/transactions" component={TransactionPage} />
               <Route path={cancellationFlowPath} component={CancellationFlow} />
               <Redirect exact path="/" to={ACCOUNT_PATH} />
             </Switch>
