@@ -56,7 +56,7 @@ export class AccountPage extends Component {
             }}
           />
         )}
-        <div className="mt-5">
+        <div className="row mt-5">
           <GreetingBar />
         </div>
         <div className="mt-5">
