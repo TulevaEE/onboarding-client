@@ -37,15 +37,13 @@
   font-weight: bold;
 }
 
-.table td {
+.table td,
+.table th {
   text-align: right;
 }
 
-.table td:first-child {
+.table td:first-child,
+.table th:first-child {
   text-align: left;
-}
-
-th:last-child {
-  text-align: right;
 }
 

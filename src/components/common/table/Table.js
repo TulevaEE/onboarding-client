@@ -8,8 +8,11 @@ const Table = ({ columns, dataSource }) => (
     <table className="table">
       <thead>
         <tr>
-          {columns.map(({ dataIndex, title, hideOnMobile }) => (
-            <th key={dataIndex} className={getMobileClass(hideOnMobile)}>
+          {columns.map(({ dataIndex, title, hideOnMobile, align }) => (
+            <th
+              key={dataIndex}
+              className={`${getAlignClass(align)} ${getMobileClass(hideOnMobile)}`}
+            >
               {title}
             </th>
           ))}
