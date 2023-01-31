@@ -184,7 +184,7 @@ export class ReturnComparison extends Component<Props, State> {
                   {loading ? LOADER : formatReturn(personalReturn, PresentationUnit.PERCENTAGE)}
                 </div>
                 <small className="text-muted">
-                  {loading ? LOADER : formatReturn(personalReturn, PresentationUnit.CURRENCY)}
+                  {loading ? <>&nbsp;</> : formatReturn(personalReturn, PresentationUnit.CURRENCY)}
                 </small>
               </div>
             </div>
@@ -209,7 +209,7 @@ export class ReturnComparison extends Component<Props, State> {
                   {loading ? LOADER : formatReturn(indexReturn, PresentationUnit.PERCENTAGE)}
                 </div>
                 <small className="text-muted">
-                  {loading ? LOADER : formatReturn(indexReturn, PresentationUnit.CURRENCY)}
+                  {loading ? <>&nbsp;</> : formatReturn(indexReturn, PresentationUnit.CURRENCY)}
                 </small>
               </div>
             </div>
@@ -234,7 +234,11 @@ export class ReturnComparison extends Component<Props, State> {
                   {loading ? LOADER : formatReturn(pensionFundReturn, PresentationUnit.PERCENTAGE)}
                 </div>
                 <small className="text-muted">
-                  {loading ? LOADER : formatReturn(pensionFundReturn, PresentationUnit.CURRENCY)}
+                  {loading ? (
+                    <>&nbsp;</>
+                  ) : (
+                    formatReturn(pensionFundReturn, PresentationUnit.CURRENCY)
+                  )}
                 </small>
               </div>
             </div>
