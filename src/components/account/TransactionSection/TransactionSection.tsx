@@ -72,6 +72,8 @@ export const TransactionSection: React.FunctionComponent<{
     .sort((transaction1, transaction2) => transaction2.time.localeCompare(transaction1.time))
     .flatMap((transaction, index) => {
       const previousTransaction = fundTransactions[index - 1];
+      const isFirstTransaction = index === 0;
+      const bold = isFirstTransaction ? 'text-bold' : '';
       const previousYear = new Date(previousTransaction?.time || '9999-12-31').getUTCFullYear();
       const currentYear = new Date(transaction.time).getUTCFullYear();
       const date = formatDate(transaction.time);
@@ -85,9 +87,9 @@ export const TransactionSection: React.FunctionComponent<{
             ]
           : []),
         {
-          date: <span className="text-nowrap">{date}</span>,
-          fund: transaction.fundName,
-          amount: <Euro amount={transaction.amount} />,
+          date: <span className={`${bold} text-nowrap`}>{date}</span>,
+          fund: <span className={bold}>{transaction.fundName}</span>,
+          amount: <Euro className={bold} amount={transaction.amount} />,
           key: transaction.time,
         },
       ];
