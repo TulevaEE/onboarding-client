@@ -259,7 +259,7 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow with error when in 
     to="/3rd-pillar-flow"
   >
     <MemoizedFormattedMessage
-      id="account.status.choice.pillar.third.inactive.action"
+      id="account.status.choice.choose.low.fees"
     />
   </Link>
 </StatusBoxRow>

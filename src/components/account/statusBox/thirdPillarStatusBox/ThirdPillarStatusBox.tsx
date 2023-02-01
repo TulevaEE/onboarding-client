@@ -68,7 +68,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
           ]}
         >
           <Link to="/3rd-pillar-flow" className="btn btn-primary">
-            <FormattedMessage id="account.status.choice.pillar.third.inactive.action" />
+            <FormattedMessage id="account.status.choice.choose.low.fees" />
           </Link>
         </StatusBoxRow>
       );

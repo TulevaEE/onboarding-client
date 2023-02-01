@@ -91,7 +91,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
           ]}
         >
           <Link to="/2nd-pillar-flow" className="btn btn-primary">
-            <FormattedMessage id="account.status.choice.join.tuleva.2" />
+            <FormattedMessage id="account.status.choice.choose.low.fees" />
           </Link>
         </StatusBoxRow>
       );

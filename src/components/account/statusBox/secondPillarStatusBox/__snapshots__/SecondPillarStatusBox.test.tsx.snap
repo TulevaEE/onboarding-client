@@ -47,7 +47,7 @@ exports[`SecondPillarStatusBox renders high fee message when in high fee fund an
     to="/2nd-pillar-flow"
   >
     <MemoizedFormattedMessage
-      id="account.status.choice.join.tuleva.2"
+      id="account.status.choice.choose.low.fees"
     />
   </Link>
 </StatusBoxRow>
