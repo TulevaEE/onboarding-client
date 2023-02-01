@@ -53,7 +53,6 @@ export const TransactionSection: React.FunctionComponent<{
       title: <FormattedMessage id="transactions.columns.date.title" />,
       dataIndex: 'date',
       align: 'right',
-      hideOnMobile: true,
       ...(!limit && { footer: <FormattedMessage id="transactions.columns.date.footer" /> }),
     },
     {
