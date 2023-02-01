@@ -6,7 +6,6 @@ import StatusBoxRow from '../statusBoxRow';
 import { usePendingApplications } from '../../../common/apiHooks';
 import { Application, ApplicationType, Conversion, SourceFund } from '../../../common/apiModels';
 import { State } from '../../../../types';
-import Percentage from '../../../common/Percentage/Percentage';
 import { getWeightedAverageFee } from '../../AccountStatement/fundSelector';
 
 interface Props {
@@ -68,12 +67,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
     );
   }
   const weightedAverageFee = getWeightedAverageFee(secondPillarFunds);
-  const ActiveFund = ({ fund }: { fund: SourceFund }) => (
-    <>
-      {fund.name.replaceAll(' ', '\u00a0')} (
-      <Percentage value={fund.ongoingChargesFigure} />)
-    </>
-  );
+  const getFundName = (fund: SourceFund) => fund.name.replaceAll(' ', '\u00a0');
 
   const isPartiallyConverted = conversion.selectionPartial || conversion.transfersPartial;
   if (!isPartiallyConverted) {
@@ -86,7 +80,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
           lines={[
             <>
               <FormattedMessage id="account.status.choice.highFee.label" />:{' '}
-              <ActiveFund fund={activeFund} />
+              {getFundName(activeFund)}
             </>,
           ]}
         >
@@ -103,8 +97,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
         name={<FormattedMessage id="account.status.choice.pillar.second" />}
         lines={[
           <>
-            <FormattedMessage id="account.status.choice.lowFee.label" />:{' '}
-            <ActiveFund fund={activeFund} />
+            <FormattedMessage id="account.status.choice.lowFee.label" />: {getFundName(activeFund)}
           </>,
         ]}
       >
@@ -139,7 +132,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
       lines={[
         <>
           <FormattedMessage id="account.status.choice.lowFee.index.label" />:{' '}
-          <ActiveFund fund={activeFund} />
+          {getFundName(activeFund)}
         </>,
       ]}
     />

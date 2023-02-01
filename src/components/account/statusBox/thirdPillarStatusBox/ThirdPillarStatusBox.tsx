@@ -8,7 +8,6 @@ import { InfoTooltip } from '../../../common';
 import { State } from '../../../../types';
 import ThirdPillarPaymentsThisYear from './ThirdPillarYearToDateContribution';
 import { getWeightedAverageFee } from '../../AccountStatement/fundSelector';
-import { formatPercentage } from '../../../common/Percentage/Percentage';
 
 interface Props {
   conversion: Conversion;
@@ -40,10 +39,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
 
   const activeFunds = sourceFunds
     .filter((fund) => fund.activeFund)
-    .map(
-      ({ name, ongoingChargesFigure }) =>
-        `${name.replaceAll(' ', '\u00a0')} (${formatPercentage(ongoingChargesFigure)})`,
-    )
+    .map(({ name }) => name.replaceAll(' ', '\u00a0'))
     .join(', ');
 
   const month = new Date().getMonth();

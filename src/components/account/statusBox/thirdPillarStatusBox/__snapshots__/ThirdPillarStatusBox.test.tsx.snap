@@ -142,7 +142,7 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when partially conv
           id="account.status.choice.lowFee.label"
         />
         : 
-        Tuleva III Samba Pensionifond (0.49%)
+        Tuleva III Samba Pensionifond
       </React.Fragment>,
       <Memo(Connect(ThirdPillarYearToDateContribution)) />,
     ]
@@ -175,7 +175,7 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when partially conv
           id="account.status.choice.lowFee.index.label"
         />
         : 
-        Tuleva III Samba Pensionifond (0.49%)
+        Tuleva III Samba Pensionifond
       </React.Fragment>,
       <Memo(Connect(ThirdPillarYearToDateContribution)) />,
     ]
@@ -208,7 +208,7 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when user has some 
           id="account.status.choice.lowFee.label"
         />
         : 
-        Tuleva III Samba Pensionifond (0.49%)
+        Tuleva III Samba Pensionifond
       </React.Fragment>,
       <Memo(Connect(ThirdPillarYearToDateContribution)) />,
     ]
@@ -242,7 +242,7 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow with error when in 
           id="account.status.choice.highFee.label"
         />
         : 
-        LHV High Cost Fund III (1.56%)
+        LHV High Cost Fund III
       </React.Fragment>,
       <Memo(Connect(ThirdPillarYearToDateContribution)) />,
     ]
@@ -337,7 +337,7 @@ exports[`ThirdPillarStatusBox renders the success flow 1`] = `
           id="account.status.choice.lowFee.index.label"
         />
         : 
-        Tuleva III Samba Pensionifond (0.49%)
+        Tuleva III Samba Pensionifond
       </React.Fragment>,
       <Memo(Connect(ThirdPillarYearToDateContribution)) />,
     ]
@@ -370,7 +370,7 @@ exports[`ThirdPillarStatusBox renders the success flow when funds have not trans
           id="account.status.choice.lowFee.index.label"
         />
         : 
-        Tuleva III Samba Pensionifond (0.49%)
+        Tuleva III Samba Pensionifond
       </React.Fragment>,
       <Memo(Connect(ThirdPillarYearToDateContribution)) />,
     ]
