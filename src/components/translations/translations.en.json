@@ -1,7 +1,8 @@
 {
   "login.title": "Log in to your pension account.",
+  "login.subtitle": "Anyone can log in. Even if you are not yet in Tuleva.",
   "login.title.thirdPillar.withExchange": "You want to change your III pillar pension fund and make a monthly contribution of {monthlyContribution} euros",
-  "login.title.thirdPillar.withoutExchange": "You want to select  III pillar pension fund and make a monthly contribution of {monthlyContribution} euros",
+  "login.title.thirdPillar.withoutExchange": "You want to select III pillar pension fund and make a monthly contribution of {monthlyContribution} euros",
   "login.subtitle.thirdPillar": "Log in and confirm your application with digital signature",
   "login.mobile.id": "Mobile-ID",
   "login.smart.id": "Smart-ID",

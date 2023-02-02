@@ -75,9 +75,14 @@ const renderLoginForm = (
               monthlyThirdPillarContribution,
             )
           ) : (
-            <h3>
-              <FormattedMessage id="login.title" />
-            </h3>
+            <>
+              <h3>
+                <FormattedMessage id="login.title" />
+              </h3>
+              <span className="text-muted">
+                <FormattedMessage id="login.subtitle" />
+              </span>
+            </>
           )}
         </div>
 
