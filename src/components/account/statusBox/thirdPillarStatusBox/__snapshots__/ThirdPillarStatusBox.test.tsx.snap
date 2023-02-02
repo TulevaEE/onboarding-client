@@ -241,8 +241,6 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow with error when in 
         <Memo(MemoizedFormattedMessage)
           id="account.status.choice.highFee.label"
         />
-        : 
-        LHV High Cost Fund III
       </React.Fragment>,
       <Memo(Connect(ThirdPillarYearToDateContribution)) />,
     ]

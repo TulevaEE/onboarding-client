@@ -58,7 +58,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
           name={<FormattedMessage id="account.status.choice.pillar.third" />}
           lines={[
             <>
-              <FormattedMessage id="account.status.choice.highFee.label" />: {activeFunds}
+              <FormattedMessage id="account.status.choice.highFee.label" />
             </>,
             <ThirdPillarPaymentsThisYear />,
           ]}

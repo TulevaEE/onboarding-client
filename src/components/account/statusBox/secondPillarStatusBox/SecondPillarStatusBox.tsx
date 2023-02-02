@@ -79,8 +79,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
           name={<FormattedMessage id="account.status.choice.pillar.second" />}
           lines={[
             <>
-              <FormattedMessage id="account.status.choice.highFee.label" />:{' '}
-              {getFundName(activeFund)}
+              <FormattedMessage id="account.status.choice.highFee.label" />
             </>,
           ]}
         >

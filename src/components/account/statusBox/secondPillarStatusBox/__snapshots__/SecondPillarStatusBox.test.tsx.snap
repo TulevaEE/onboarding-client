@@ -9,9 +9,6 @@ exports[`SecondPillarStatusBox renders high fee message when in high fee fund an
         <Memo(MemoizedFormattedMessage)
           id="account.status.choice.highFee.label"
         />
-        :
-         
-        LHV High Cost Fund II
       </React.Fragment>,
     ]
   }
