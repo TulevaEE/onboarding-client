@@ -68,12 +68,17 @@ export const TransactionSection: React.FunctionComponent<{
     },
   ];
 
+  let firstSecondPillarTransactionIndex = Number.MAX_SAFE_INTEGER;
+
   let dataSource = fundTransactions
     .sort((transaction1, transaction2) => transaction2.time.localeCompare(transaction1.time))
     .flatMap((transaction, index) => {
       const previousTransaction = fundTransactions[index - 1];
-      const isFirstTransaction = index === 0;
-      const bold = isFirstTransaction ? 'text-bold' : '';
+      if (transaction.pillar === 2 && index < firstSecondPillarTransactionIndex) {
+        firstSecondPillarTransactionIndex = index;
+      }
+      const isFirstSecondPillarTransaction = firstSecondPillarTransactionIndex === index;
+      const bold = isFirstSecondPillarTransaction ? 'text-bold' : '';
       const previousYear = new Date(previousTransaction?.time || '9999-12-31').getUTCFullYear();
       const currentYear = new Date(transaction.time).getUTCFullYear();
       const date = formatDate(transaction.time);
