@@ -105,7 +105,7 @@ const AccountSummary = ({
     {
       title: <FormattedMessage id="accountSummary.columns.fees" />,
       dataIndex: 'fees',
-      footer: <Fees value={pillarWeightedAverageFee} />,
+      footer: <Fees className="text-bold" value={pillarWeightedAverageFee} />,
       hideOnMobile: true,
     },
     ...(contributionsSum === 0

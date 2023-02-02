@@ -23,7 +23,7 @@ const AccountStatement = ({ funds }) => {
     {
       title: <FormattedMessage id="accountStatement.columns.fees.title" />,
       dataIndex: 'fees',
-      footer: <Fees value={weightedAverageFee} />,
+      footer: <Fees className="text-bold" value={weightedAverageFee} />,
       hideOnMobile: true,
     },
     {
