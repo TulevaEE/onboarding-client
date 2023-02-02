@@ -1,5 +1,5 @@
 {
-  "login.title": "Rakendus on praegu suure huvi tõttu ülekoormatud. Palun proovige mõne aja pärast uuesti.",
+  "login.title": "Logi sisse oma pensionikontole.",
   "login.subtitle": "Sisse logida saab igaüks. Ka need, kes veel Tulevas ei kogu.",
   "login.title.thirdPillar.withExchange": "Soovid oma III samba fondiosakud vahetada ning teha III sambasse sissemakse {monthlyContribution} eurot kuus",
   "login.title.thirdPillar.withoutExchange": "Soovid valida III samba pensionifondi ning teha III sambasse sissemakse {monthlyContribution} eurot kuus",
