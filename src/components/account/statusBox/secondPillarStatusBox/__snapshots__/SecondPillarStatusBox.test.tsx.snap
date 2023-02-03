@@ -9,6 +9,13 @@ exports[`SecondPillarStatusBox renders high fee message when in high fee fund an
         <Memo(MemoizedFormattedMessage)
           id="account.status.choice.highFee.label"
         />
+        <InfoTooltip
+          name="second-pillar-tooltip"
+        >
+          <Memo(MemoizedFormattedMessage)
+            id="account.status.choice.highFee.description"
+          />
+        </InfoTooltip>
       </React.Fragment>,
     ]
   }
@@ -80,8 +87,13 @@ exports[`SecondPillarStatusBox renders the choice flow when fund selection incom
         <Memo(MemoizedFormattedMessage)
           id="account.status.choice.lowFee.label"
         />
-        : 
-        Tuleva II Samba Pensionifond
+        <InfoTooltip
+          name="second-pillar-tooltip"
+        >
+          <Memo(MemoizedFormattedMessage)
+            id="account.status.choice.lowFee.description"
+          />
+        </InfoTooltip>
       </React.Fragment>,
     ]
   }
@@ -112,9 +124,13 @@ exports[`SecondPillarStatusBox renders the success flow 1`] = `
         <Memo(MemoizedFormattedMessage)
           id="account.status.choice.lowFee.index.label"
         />
-        :
-         
-        Tuleva II Samba Pensionifond
+        <InfoTooltip
+          name="second-pillar-tooltip"
+        >
+          <Memo(MemoizedFormattedMessage)
+            id="account.status.choice.lowFee.description"
+          />
+        </InfoTooltip>
       </React.Fragment>,
     ]
   }

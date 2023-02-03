@@ -7,6 +7,7 @@ import { usePendingApplications } from '../../../common/apiHooks';
 import { Application, ApplicationType, Conversion, SourceFund } from '../../../common/apiModels';
 import { State } from '../../../../types';
 import { getWeightedAverageFee } from '../../AccountStatement/fundSelector';
+import InfoTooltip from '../../../common/infoTooltip';
 
 interface Props {
   loading: boolean;
@@ -67,7 +68,6 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
     );
   }
   const weightedAverageFee = getWeightedAverageFee(secondPillarFunds);
-  const getFundName = (fund: SourceFund) => fund.name.replaceAll(' ', '\u00a0');
 
   const isPartiallyConverted = conversion.selectionPartial || conversion.transfersPartial;
   if (!isPartiallyConverted) {
@@ -80,6 +80,9 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
           lines={[
             <>
               <FormattedMessage id="account.status.choice.highFee.label" />
+              <InfoTooltip name="second-pillar-tooltip">
+                <FormattedMessage id="account.status.choice.highFee.description" />
+              </InfoTooltip>
             </>,
           ]}
         >
@@ -96,7 +99,10 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
         name={<FormattedMessage id="account.status.choice.pillar.second" />}
         lines={[
           <>
-            <FormattedMessage id="account.status.choice.lowFee.label" />: {getFundName(activeFund)}
+            <FormattedMessage id="account.status.choice.lowFee.label" />
+            <InfoTooltip name="second-pillar-tooltip">
+              <FormattedMessage id="account.status.choice.lowFee.description" />
+            </InfoTooltip>
           </>,
         ]}
       >
@@ -130,8 +136,10 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
       showAction={!loading}
       lines={[
         <>
-          <FormattedMessage id="account.status.choice.lowFee.index.label" />:{' '}
-          {getFundName(activeFund)}
+          <FormattedMessage id="account.status.choice.lowFee.index.label" />
+          <InfoTooltip name="second-pillar-tooltip">
+            <FormattedMessage id="account.status.choice.lowFee.description" />
+          </InfoTooltip>
         </>,
       ]}
     />

@@ -141,8 +141,13 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when partially conv
         <Memo(MemoizedFormattedMessage)
           id="account.status.choice.lowFee.label"
         />
-        : 
-        Tuleva III Samba Pensionifond
+        <InfoTooltip
+          name="third-pillar-tooltip"
+        >
+          <Memo(MemoizedFormattedMessage)
+            id="account.status.choice.lowFee.description"
+          />
+        </InfoTooltip>
       </React.Fragment>,
       <Memo(Connect(ThirdPillarYearToDateContribution)) />,
     ]
@@ -174,8 +179,13 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when partially conv
         <Memo(MemoizedFormattedMessage)
           id="account.status.choice.lowFee.index.label"
         />
-        : 
-        Tuleva III Samba Pensionifond
+        <InfoTooltip
+          name="third-pillar-tooltip"
+        >
+          <Memo(MemoizedFormattedMessage)
+            id="account.status.choice.lowFee.description"
+          />
+        </InfoTooltip>
       </React.Fragment>,
       <Memo(Connect(ThirdPillarYearToDateContribution)) />,
     ]
@@ -207,8 +217,13 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when user has some 
         <Memo(MemoizedFormattedMessage)
           id="account.status.choice.lowFee.label"
         />
-        : 
-        Tuleva III Samba Pensionifond
+        <InfoTooltip
+          name="third-pillar-tooltip"
+        >
+          <Memo(MemoizedFormattedMessage)
+            id="account.status.choice.lowFee.description"
+          />
+        </InfoTooltip>
       </React.Fragment>,
       <Memo(Connect(ThirdPillarYearToDateContribution)) />,
     ]
@@ -241,6 +256,13 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow with error when in 
         <Memo(MemoizedFormattedMessage)
           id="account.status.choice.highFee.label"
         />
+        <InfoTooltip
+          name="third-pillar-tooltip"
+        >
+          <Memo(MemoizedFormattedMessage)
+            id="account.status.choice.highFee.description"
+          />
+        </InfoTooltip>
       </React.Fragment>,
       <Memo(Connect(ThirdPillarYearToDateContribution)) />,
     ]
@@ -334,8 +356,13 @@ exports[`ThirdPillarStatusBox renders the success flow 1`] = `
         <Memo(MemoizedFormattedMessage)
           id="account.status.choice.lowFee.index.label"
         />
-        : 
-        Tuleva III Samba Pensionifond
+        <InfoTooltip
+          name="third-pillar-tooltip"
+        >
+          <Memo(MemoizedFormattedMessage)
+            id="account.status.choice.lowFee.description"
+          />
+        </InfoTooltip>
       </React.Fragment>,
       <Memo(Connect(ThirdPillarYearToDateContribution)) />,
     ]
@@ -367,8 +394,13 @@ exports[`ThirdPillarStatusBox renders the success flow when funds have not trans
         <Memo(MemoizedFormattedMessage)
           id="account.status.choice.lowFee.index.label"
         />
-        : 
-        Tuleva III Samba Pensionifond
+        <InfoTooltip
+          name="third-pillar-tooltip"
+        >
+          <Memo(MemoizedFormattedMessage)
+            id="account.status.choice.lowFee.description"
+          />
+        </InfoTooltip>
       </React.Fragment>,
       <Memo(Connect(ThirdPillarYearToDateContribution)) />,
     ]

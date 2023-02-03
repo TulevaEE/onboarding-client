@@ -37,11 +37,6 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
     );
   }
 
-  const activeFunds = sourceFunds
-    .filter((fund) => fund.activeFund)
-    .map(({ name }) => name.replaceAll(' ', '\u00a0'))
-    .join(', ');
-
   const month = new Date().getMonth();
   const isFebruaryToNovember = month > 0 && month < 11;
   const isDecember = month === 11;
@@ -59,6 +54,9 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
           lines={[
             <>
               <FormattedMessage id="account.status.choice.highFee.label" />
+              <InfoTooltip name="third-pillar-tooltip">
+                <FormattedMessage id="account.status.choice.highFee.description" />
+              </InfoTooltip>
             </>,
             <ThirdPillarPaymentsThisYear />,
           ]}
@@ -76,7 +74,10 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
         name={<FormattedMessage id="account.status.choice.pillar.third" />}
         lines={[
           <>
-            <FormattedMessage id="account.status.choice.lowFee.label" />: {activeFunds}
+            <FormattedMessage id="account.status.choice.lowFee.label" />
+            <InfoTooltip name="third-pillar-tooltip">
+              <FormattedMessage id="account.status.choice.lowFee.description" />
+            </InfoTooltip>
           </>,
           <ThirdPillarPaymentsThisYear />,
         ]}
@@ -183,7 +184,10 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
       name={<FormattedMessage id="account.status.choice.pillar.third" />}
       lines={[
         <>
-          <FormattedMessage id="account.status.choice.lowFee.index.label" />: {activeFunds}
+          <FormattedMessage id="account.status.choice.lowFee.index.label" />
+          <InfoTooltip name="third-pillar-tooltip">
+            <FormattedMessage id="account.status.choice.lowFee.description" />
+          </InfoTooltip>
         </>,
         <ThirdPillarPaymentsThisYear />,
       ]}
