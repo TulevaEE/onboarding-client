@@ -180,7 +180,7 @@ export class ReturnComparison extends Component<Props, State> {
                 }}
               />
               <div className="my-4">
-                <div className="h2 text-success m-0">
+                <div className="h2 text-primary m-0">
                   {loading ? LOADER : formatReturn(personalReturn, PresentationUnit.PERCENTAGE)}
                 </div>
                 <small className="text-muted">
@@ -205,7 +205,7 @@ export class ReturnComparison extends Component<Props, State> {
                 }}
               />
               <div className="my-4">
-                <div className="h2 text-primary m-0">
+                <div className="h2 text-success m-0">
                   {loading ? LOADER : formatReturn(indexReturn, PresentationUnit.PERCENTAGE)}
                 </div>
                 <small className="text-muted">
@@ -230,7 +230,7 @@ export class ReturnComparison extends Component<Props, State> {
                 }}
               />
               <div className="my-4">
-                <div className="h2 m-0">
+                <div className="h2 text-danger m-0">
                   {loading ? LOADER : formatReturn(pensionFundReturn, PresentationUnit.PERCENTAGE)}
                 </div>
                 <small className="text-muted">
