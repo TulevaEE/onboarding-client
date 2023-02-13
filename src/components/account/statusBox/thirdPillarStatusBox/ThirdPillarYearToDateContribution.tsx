@@ -22,7 +22,9 @@ export const ThirdPillarYearToDateContribution: React.FunctionComponent<Props> =
       <FormattedMessage
         id="account.status.yearToDateContribution"
         values={{
-          contribution: <b>{conversion.contribution.yearToDate || 0} &euro;</b>,
+          contribution: (
+            <b className="text-nowrap">{conversion.contribution.yearToDate || 0} &euro;</b>
+          ),
         }}
       />
     </small>
