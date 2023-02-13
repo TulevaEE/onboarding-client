@@ -8,8 +8,8 @@ export const incompleteConversion: UserConversion = {
     transfersPartial: false,
     paymentComplete: false,
     pendingWithdrawal: false,
-    contribution: { yearToDate: 200, total: 250 },
-    subtraction: { yearToDate: 0, total: 0 },
+    contribution: { yearToDate: 200, lastYear: 40, total: 250 },
+    subtraction: { yearToDate: 0, lastYear: 0, total: 0 },
   },
   thirdPillar: {
     selectionComplete: false,
@@ -18,8 +18,8 @@ export const incompleteConversion: UserConversion = {
     transfersPartial: false,
     paymentComplete: false,
     pendingWithdrawal: false,
-    contribution: { yearToDate: 300, total: 450 },
-    subtraction: { yearToDate: 0, total: 0 },
+    contribution: { yearToDate: 300, lastYear: 50, total: 450 },
+    subtraction: { yearToDate: 0, lastYear: 0, total: 0 },
   },
 };
 
@@ -31,8 +31,8 @@ export const completeConversion: UserConversion = {
     transfersPartial: true,
     paymentComplete: true,
     pendingWithdrawal: false,
-    contribution: { yearToDate: 560, total: 20600 },
-    subtraction: { yearToDate: 0, total: 0 },
+    contribution: { yearToDate: 560, lastYear: 100, total: 20600 },
+    subtraction: { yearToDate: 0, lastYear: 0, total: 0 },
   },
   thirdPillar: {
     selectionComplete: true,
@@ -41,8 +41,8 @@ export const completeConversion: UserConversion = {
     transfersPartial: true,
     paymentComplete: true,
     pendingWithdrawal: false,
-    contribution: { yearToDate: 2500, total: 37000 },
-    subtraction: { yearToDate: 0, total: 0 },
+    contribution: { yearToDate: 2500, lastYear: 1000, total: 37000 },
+    subtraction: { yearToDate: 0, lastYear: 0, total: 0 },
   },
 };
 
@@ -54,8 +54,8 @@ export const completeThirdPillarConversion: UserConversion = {
     transfersPartial: false,
     paymentComplete: false,
     pendingWithdrawal: false,
-    contribution: { yearToDate: 560, total: 20600 },
-    subtraction: { yearToDate: 0, total: 0 },
+    contribution: { yearToDate: 560, lastYear: 100, total: 20600 },
+    subtraction: { yearToDate: 0, lastYear: 0, total: 0 },
   },
   thirdPillar: {
     selectionComplete: true,
@@ -64,8 +64,8 @@ export const completeThirdPillarConversion: UserConversion = {
     transfersPartial: true,
     paymentComplete: true,
     pendingWithdrawal: false,
-    contribution: { yearToDate: 2500, total: 37000 },
-    subtraction: { yearToDate: 0, total: 0 },
+    contribution: { yearToDate: 2500, lastYear: 1000, total: 37000 },
+    subtraction: { yearToDate: 0, lastYear: 0, total: 0 },
   },
 };
 
@@ -77,8 +77,8 @@ export const completeSecondPillarConversion: UserConversion = {
     transfersPartial: true,
     paymentComplete: true,
     pendingWithdrawal: false,
-    contribution: { yearToDate: 2500, total: 37000 },
-    subtraction: { yearToDate: 0, total: 0 },
+    contribution: { yearToDate: 2500, lastYear: 100, total: 37000 },
+    subtraction: { yearToDate: 0, lastYear: 0, total: 0 },
   },
   thirdPillar: {
     selectionComplete: false,
@@ -87,8 +87,8 @@ export const completeSecondPillarConversion: UserConversion = {
     transfersPartial: false,
     paymentComplete: false,
     pendingWithdrawal: false,
-    contribution: { yearToDate: 560, total: 20600 },
-    subtraction: { yearToDate: 0, total: 0 },
+    contribution: { yearToDate: 560, lastYear: 100, total: 20600 },
+    subtraction: { yearToDate: 0, lastYear: 0, total: 0 },
   },
 };
 

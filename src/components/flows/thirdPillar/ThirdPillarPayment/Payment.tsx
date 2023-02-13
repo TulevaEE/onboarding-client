@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Radio } from '../../../common';
-import ThirdPillarPaymentsThisYear from '../../../account/statusBox/thirdPillarStatusBox/ThirdPillarYearToDateContribution';
+import ThirdPillarPaymentsAmount from '../../../account/statusBox/thirdPillarStatusBox/ThirdPillarContributionAmount';
 import './ThirdPillarPayment.scss';
 import { BankButton } from './BankButton';
 import { State } from '../../../../types';
@@ -76,8 +76,8 @@ export const Payment: React.FunctionComponent<{
         onWheel={(event) => event.currentTarget.blur()}
       />
 
-      <div className="mt-2 payment-amount-input-footer">
-        <ThirdPillarPaymentsThisYear />
+      <div className="payment-amount-input-footer">
+        <ThirdPillarPaymentsAmount />
         <div>
           <small className="text-muted">
             <a href="//tuleva.ee/iii-sammas/" target="_blank" rel="noreferrer">

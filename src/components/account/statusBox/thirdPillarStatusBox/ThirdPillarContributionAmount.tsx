@@ -10,7 +10,7 @@ interface Props {
   className?: string;
 }
 
-export const ThirdPillarYearToDateContribution: React.FunctionComponent<Props> = ({
+export const ThirdPillarContributionAmount: React.FunctionComponent<Props> = ({
   conversion,
   className,
 }) => {
@@ -20,10 +20,13 @@ export const ThirdPillarYearToDateContribution: React.FunctionComponent<Props> =
   return (
     <small className={`text-muted ${className}`}>
       <FormattedMessage
-        id="account.status.yearToDateContribution"
+        id="account.status.contributionAmount"
         values={{
-          contribution: (
+          thisYearContribution: (
             <b className="text-nowrap">{conversion.contribution.yearToDate || 0} &euro;</b>
+          ),
+          lastYearContribution: (
+            <b className="text-nowrap">{conversion.contribution.lastYear || 0} &euro;</b>
           ),
         }}
       />
@@ -35,4 +38,4 @@ const mapStateToProps = (state: State) => ({
   conversion: state.login.userConversion && state.login.userConversion.thirdPillar,
 });
 
-export default connect(mapStateToProps)(ThirdPillarYearToDateContribution);
+export default connect(mapStateToProps)(ThirdPillarContributionAmount);

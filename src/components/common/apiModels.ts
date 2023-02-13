@@ -176,6 +176,7 @@ export interface UserConversion {
 
 export interface Amount {
   yearToDate: number;
+  lastYear: number;
   total: number;
 }
 
