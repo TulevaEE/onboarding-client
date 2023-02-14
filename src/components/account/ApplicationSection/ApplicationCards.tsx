@@ -101,7 +101,11 @@ const TransferApplicationCard: React.FunctionComponent<{
             },
             {
               key: 'applications.type.transfer.amount',
-              value: isThirdPillarTransfer ? amount : <Percentage value={amount} />,
+              value: isThirdPillarTransfer ? (
+                amount
+              ) : (
+                <Percentage value={amount} stripTrailingZeros />
+              ),
               alignRight: true,
             },
           ]),

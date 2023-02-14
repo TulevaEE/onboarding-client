@@ -198,13 +198,15 @@ describe('Account summary', () => {
       />,
     );
 
-    const { footer: feesFooter } = tableProp('columns')[1];
-    const { footer: contributionFooter } = tableProp('columns')[2];
-    const { footer: subtractionFooter } = tableProp('columns')[3];
-    const { footer: profitFooter } = tableProp('columns')[4];
-    const { footer: valueFooter } = tableProp('columns')[5];
+    const { footer: feesPercentFooter } = tableProp('columns')[1];
+    const { footer: feesEuroFooter } = tableProp('columns')[2];
+    const { footer: contributionFooter } = tableProp('columns')[3];
+    const { footer: subtractionFooter } = tableProp('columns')[4];
+    const { footer: profitFooter } = tableProp('columns')[5];
+    const { footer: valueFooter } = tableProp('columns')[6];
 
-    expect(feesFooter.props.value).toBeCloseTo(0.005);
+    expect(feesPercentFooter.props.value).toBeCloseTo(0.005);
+    expect(feesEuroFooter.props.amount).toBeCloseTo(33.33);
     expect(contributionFooter).toEqual(<Euro amount={2803} />);
     expect(subtractionFooter).toEqual(<Euro amount={-3} />);
     expect(profitFooter).toEqual(<Euro amount={3872} />);

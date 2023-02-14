@@ -22,8 +22,10 @@
   border-bottom-width: 1px;
   border-bottom-style: solid;
   border-color: $gray-mid;
-  white-space: nowrap;
   color: darkgray;
+  @include not-mobile {
+    white-space: nowrap;
+  }
 }
 
 .table tbody {

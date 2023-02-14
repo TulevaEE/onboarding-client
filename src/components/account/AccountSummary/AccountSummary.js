@@ -39,11 +39,13 @@ const AccountSummary = ({
 }) => {
   const getPillarSummary = (pillarLabel, contributions, subtractions, funds) => {
     const value = getValueSum(funds);
-    const fees = getWeightedAverageFee(funds);
+    const feesPercent = getWeightedAverageFee(funds);
+    const feesEuro = feesPercent * value;
 
     return {
       pillarLabel,
-      fees,
+      feesPercent,
+      feesEuro,
       contributions,
       subtractions,
       profit: value - contributions - subtractions,
@@ -66,20 +68,22 @@ const AccountSummary = ({
     ),
   ];
 
-  const pillarValueSum = sumBy(summary, (summaryItem) => summaryItem.value);
-  const pillarWeightedAverageFee =
-    pillarValueSum <= 0
+  const secondAndThirdPillarValueSum = sumBy(summary, (summaryItem) => summaryItem.value);
+  const weightedAverageFee =
+    secondAndThirdPillarValueSum <= 0
       ? 0
       : summary.reduce(
           (accumulator, summaryItem) =>
-            accumulator + (summaryItem.fees * summaryItem.value) / pillarValueSum,
+            accumulator +
+            (summaryItem.feesPercent * summaryItem.value) / secondAndThirdPillarValueSum,
           0,
         );
 
   if (memberCapital) {
     summary.push({
       pillarLabel: 'memberCapital.heading',
-      fees: 0,
+      feesPercent: 0,
+      feesEuro: 0,
       contributions:
         memberCapital.capitalPayment +
         memberCapital.unvestedWorkCompensation +
@@ -90,6 +94,7 @@ const AccountSummary = ({
     });
   }
 
+  const feesEuroSum = sumBy(summary, (summaryItem) => summaryItem.feesEuro);
   const contributionsSum = sumBy(summary, (summaryItem) => summaryItem.contributions);
   const subtractionsSum = sumBy(summary, (summaryItem) => summaryItem.subtractions);
   const profitSum = sumBy(summary, (summaryItem) => summaryItem.profit);
@@ -103,9 +108,24 @@ const AccountSummary = ({
       width100: true,
     },
     {
-      title: <FormattedMessage id="accountSummary.columns.fees" />,
-      dataIndex: 'fees',
-      footer: <Fees className="text-bold" value={pillarWeightedAverageFee} />,
+      title: (
+        <>
+          <FormattedMessage id="accountSummary.columns.fees" />
+          &nbsp;%
+        </>
+      ),
+      dataIndex: 'feesPercent',
+      footer: <Fees className="text-bold" value={weightedAverageFee} />,
+    },
+    {
+      title: (
+        <>
+          <FormattedMessage id="accountSummary.columns.fees" />
+          &nbsp;€
+        </>
+      ),
+      dataIndex: 'feesEuro',
+      footer: <Euro className="text-muted" amount={feesEuroSum} />,
       hideOnMobile: true,
     },
     ...(contributionsSum === 0
@@ -142,9 +162,10 @@ const AccountSummary = ({
   ];
 
   const dataSource = summary.map(
-    ({ pillarLabel, fees, contributions, subtractions, profit, value }) => ({
+    ({ pillarLabel, feesPercent, feesEuro, contributions, subtractions, profit, value }) => ({
       pillarLabel: <FormattedMessage id={pillarLabel} />,
-      fees: <Fees value={fees} />,
+      feesPercent: <Fees value={feesPercent} />,
+      feesEuro: feesEuro ? <Euro className="text-muted" amount={feesEuro} /> : <></>,
       contributions: <Euro amount={contributions} />,
       subtractions: <Euro amount={subtractions} />,
       profit: <Euro amount={profit} />,

@@ -11,9 +11,16 @@ describe('Percentage', () => {
     expect(string).toBe('0.45%');
   });
 
-  it('removes trailing zeroes', () => {
+  it('always shows 2 fraction digits', () => {
     const value = Number('0.00400');
     const string = shallow(<Percentage value={value} />).text();
+
+    expect(string).toBe('0.40%');
+  });
+
+  it('strips trailing zeros', () => {
+    const value = Number('0.00400');
+    const string = shallow(<Percentage value={value} stripTrailingZeros />).text();
 
     expect(string).toBe('0.4%');
   });

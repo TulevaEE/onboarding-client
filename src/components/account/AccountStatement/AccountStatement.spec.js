@@ -19,6 +19,8 @@ describe('Account statement', () => {
             subtractions: 0,
             profit: 0,
             price: 100,
+            unavailablePrice: 0,
+            ongoingChargesFigure: 0,
           },
           {
             isin: 'B2',
@@ -27,6 +29,8 @@ describe('Account statement', () => {
             subtractions: 0,
             profit: 0,
             price: 10,
+            unavailablePrice: 0,
+            ongoingChargesFigure: 0,
             activeFund: true,
           },
           {
@@ -36,6 +40,8 @@ describe('Account statement', () => {
             subtractions: 0,
             profit: 0,
             price: 1,
+            unavailablePrice: 0,
+            ongoingChargesFigure: 0,
           },
         ]}
       />,
@@ -58,6 +64,7 @@ describe('Account statement', () => {
             profit: 0,
             price: 3000,
             unavailablePrice: 1,
+            ongoingChargesFigure: 0.002,
           },
           {
             isin: 'B2',
@@ -67,6 +74,7 @@ describe('Account statement', () => {
             profit: 0,
             price: 300,
             unavailablePrice: 1,
+            ongoingChargesFigure: 0.002,
           },
           {
             isin: 'C3',
@@ -76,14 +84,15 @@ describe('Account statement', () => {
             profit: 0,
             price: 30,
             unavailablePrice: 1,
+            ongoingChargesFigure: 0.002,
           },
         ]}
       />,
     );
 
-    const { footer } = tableProp('columns')[2];
+    const { footer } = tableProp('columns')[3];
 
-    expect(footer).toEqual(<Euro amount={3333} />);
+    expect(footer).toEqual(<Euro className="text-bold" amount={3333} />);
   });
 
   it('shows active fund notice only if there is an active fund', () => {
@@ -97,6 +106,8 @@ describe('Account statement', () => {
             subtractions: 0,
             profit: 0,
             price: 0,
+            unavailablePrice: 0,
+            ongoingChargesFigure: 0,
           },
           {
             isin: 'B2',
@@ -105,6 +116,8 @@ describe('Account statement', () => {
             subtractions: 0,
             profit: 0,
             price: 0,
+            unavailablePrice: 0,
+            ongoingChargesFigure: 0,
           },
           {
             isin: 'C3',
@@ -113,6 +126,8 @@ describe('Account statement', () => {
             subtractions: 0,
             profit: 0,
             price: 0,
+            unavailablePrice: 0,
+            ongoingChargesFigure: 0,
           },
         ]}
       />,
@@ -130,6 +145,8 @@ describe('Account statement', () => {
             subtractions: 0,
             profit: 0,
             price: 0,
+            unavailablePrice: 0,
+            ongoingChargesFigure: 0,
           },
           {
             isin: 'B2',
@@ -138,6 +155,8 @@ describe('Account statement', () => {
             subtractions: 0,
             profit: 0,
             price: 0,
+            unavailablePrice: 0,
+            ongoingChargesFigure: 0,
             activeFund: true,
           },
           {
@@ -147,6 +166,8 @@ describe('Account statement', () => {
             subtractions: 0,
             profit: 0,
             price: 0,
+            unavailablePrice: 0,
+            ongoingChargesFigure: 0,
           },
         ]}
       />,

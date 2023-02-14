@@ -2,6 +2,7 @@ import React from 'react';
 import Types from 'prop-types';
 import { FormattedMessage, useIntl } from 'react-intl';
 
+import { sortBy } from 'lodash';
 import Table from '../../common/table';
 import Euro from '../../common/Euro';
 import { getValueSum, getWeightedAverageFee } from './fundSelector';
@@ -21,20 +22,41 @@ const AccountStatement = ({ funds }) => {
       width100: true,
     },
     {
-      title: <FormattedMessage id="accountStatement.columns.fees.title" />,
-      dataIndex: 'fees',
+      title: (
+        <>
+          <FormattedMessage id="accountStatement.columns.fees.title" />
+          &nbsp;%
+        </>
+      ),
+      dataIndex: 'feesPercent',
       footer: <Fees className="text-bold" value={weightedAverageFee} />,
+    },
+    {
+      title: (
+        <>
+          <FormattedMessage id="accountStatement.columns.fees.title" />
+          &nbsp;€
+        </>
+      ),
+      dataIndex: 'feesEuro',
+      footer: <Euro className="text-muted" amount={weightedAverageFee * valueSum} />,
       hideOnMobile: true,
     },
     {
       title: <FormattedMessage id="accountStatement.columns.value.title" />,
       dataIndex: 'value',
-      footer: <Euro amount={valueSum} />,
+      footer: <Euro className="text-bold" amount={valueSum} />,
     },
   ];
 
-  const dataSource = funds.map((fund) => {
-    const isMuted = !fund.activeFund && fund.price + fund.unavailablePrice === 0;
+  const sortedFunds = sortBy(funds, [
+    (fund) => fund.price + fund.unavailablePrice,
+    (fund) => fund.activeFund,
+  ]).reverse();
+
+  const dataSource = sortedFunds.map((fund) => {
+    const fundValue = fund.price + fund.unavailablePrice;
+    const isMuted = !fund.activeFund && fundValue === 0;
     const className = isMuted ? 'text-muted' : undefined;
     const prefix = isMuted
       ? formatMessage({ id: 'accountStatement.columns.fund.muted.prefix' })
@@ -42,12 +64,13 @@ const AccountStatement = ({ funds }) => {
     const suffix = fund.activeFund ? '*' : '';
     return {
       fund: <span className={className}>{`${prefix}${fund.name}${suffix}`}</span>,
-      fees: <Fees value={fund.ongoingChargesFigure} />,
-      value: isMuted ? (
+      feesPercent: <Fees value={fund.ongoingChargesFigure} />,
+      feesEuro: isMuted ? (
         <></>
       ) : (
-        <Euro className={className} amount={fund.price + fund.unavailablePrice} />
+        <Euro className="text-muted" amount={fund.ongoingChargesFigure * fundValue} />
       ),
+      value: isMuted ? <></> : <Euro className={className} amount={fundValue} />,
       key: fund.isin,
     };
   });
