@@ -99,7 +99,7 @@ export interface Fund {
 
 export type Pillar = 2 | 3;
 
-enum FundStatus {
+export enum FundStatus {
   ACTIVE = 'ACTIVE',
   LIQUIDATED = 'LIQUIDATED',
   SUSPENDED = 'SUSPENDED',
