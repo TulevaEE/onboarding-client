@@ -232,7 +232,7 @@ const BaseApplicationCard: React.FunctionComponent<{
           <b className="mr-3">
             <FormattedMessage id={titleKey} />
           </b>
-          {formatDate(application.creationTime)}
+          <span className="text-nowrap">{formatDate(application.creationTime)}</span>
         </div>
 
         {canCancel && (

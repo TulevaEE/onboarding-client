@@ -3,9 +3,8 @@ import { shallow } from 'enzyme';
 
 import { FormattedMessage } from 'react-intl';
 import { Loader, Radio } from '../../../common';
-import PensionFundTable from '../../secondPillar/selectSources/pensionFundTable';
-import TargetFundSelector from '../../secondPillar/selectSources/targetFundSelector';
 import { ThirdPillarSelectSources } from './ThirdPillarSelectSources';
+import AccountStatement from '../../../account/AccountStatement';
 
 describe('Third pillar select sources step', () => {
   let component;
@@ -37,7 +36,7 @@ describe('Third pillar select sources step', () => {
   it('renders a pension fund table with given funds', () => {
     const exchangeableSourceFunds = [{ iAmAFund: true }, { iAmAlsoAFund: true }];
     component.setProps({ exchangeableSourceFunds });
-    expect(component.contains(<PensionFundTable funds={exchangeableSourceFunds} />)).toBe(true);
+    expect(component.contains(<AccountStatement funds={exchangeableSourceFunds} />)).toBe(true);
   });
 
   it('sets the full selection radio as selected only when all funds selected', () => {

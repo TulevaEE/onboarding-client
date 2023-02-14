@@ -7,10 +7,10 @@ import { Link, Redirect } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { selectExchangeSources } from '../../../exchange/actions';
 import { ErrorMessage, Loader, Radio } from '../../../common';
-import PensionFundTable from './pensionFundTable';
 import TargetFundSelector from './targetFundSelector';
 import ExactFundSelector from './exactFundSelector';
 import { isTuleva } from '../../../common/utils';
+import AccountStatement from '../../../account/AccountStatement';
 
 function selectAllWithTarget(sourceFunds, targetFund) {
   return sourceFunds
@@ -77,7 +77,7 @@ export const SelectSources = ({
             <p className="mb-4 lead">
               <FormattedMessage id="select.sources.current.status" />
             </p>
-            <PensionFundTable funds={sourceFunds} />
+            <AccountStatement funds={sourceFunds} />
           </div>
         </div>
       </div>

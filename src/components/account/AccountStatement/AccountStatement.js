@@ -7,8 +7,12 @@ import Table from '../../common/table';
 import Euro from '../../common/Euro';
 import { getValueSum, getWeightedAverageFee } from './fundSelector';
 import { Fees } from '../../common/Percentage/Fees';
+import { Shimmer } from '../../common/shimmer/Shimmer';
 
 const AccountStatement = ({ funds }) => {
+  if (!funds) {
+    return <Shimmer height={26} />;
+  }
   const { formatMessage } = useIntl();
 
   const valueSum = getValueSum(funds);

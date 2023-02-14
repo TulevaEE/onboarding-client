@@ -4,6 +4,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import './TargetFundSelector.scss';
 import checkImage from '../../../common/SuccessNotice/success.svg';
 import { Fund } from '../../../../common/apiModels';
+import { Fees } from '../../../../common/Percentage/Fees';
 
 type Props = {
   targetFunds: Fund[];
@@ -46,6 +47,10 @@ export const TargetFundSelector: React.FunctionComponent<Props> = ({
                 <b>{fund.name}</b>
               </div>
               <small>
+                <div className="mb-2">
+                  <FormattedMessage id="target.funds.fees" />:{' '}
+                  <Fees className="text-bold" value={fund.ongoingChargesFigure} />
+                </div>
                 <div className="mb-2">
                   <FormattedMessage id={`target.funds.${fund.isin}.description`} />
                 </div>

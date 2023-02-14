@@ -1,6 +1,7 @@
 /* eslint-disable react/no-array-index-key */
 import React from 'react';
 import { PropTypes as Types } from 'prop-types';
+import './FundTransferTable.scss';
 
 import { FormattedMessage } from 'react-intl';
 

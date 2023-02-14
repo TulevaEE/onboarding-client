@@ -3,11 +3,11 @@ import { shallow } from 'enzyme';
 
 import { Redirect } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
-import { Loader, Radio, ErrorMessage } from '../../../common';
-import PensionFundTable from './pensionFundTable';
+import { ErrorMessage, Loader, Radio } from '../../../common';
 import ExactFundSelector from './exactFundSelector';
 import TargetFundSelector from './targetFundSelector';
 import { SelectSources } from './SelectSources';
+import AccountStatement from '../../../account/AccountStatement';
 
 describe('Select sources step', () => {
   let component;
@@ -47,7 +47,7 @@ describe('Select sources step', () => {
   it('renders a pension fund table with given funds', () => {
     const sourceFunds = [{ iAmAFund: true }, { iAmAlsoAFund: true }];
     component.setProps({ sourceFunds });
-    expect(component.contains(<PensionFundTable funds={sourceFunds} />)).toBe(true);
+    expect(component.contains(<AccountStatement funds={sourceFunds} />)).toBe(true);
   });
 
   it('renders a button to the next step', () => {
@@ -73,11 +73,23 @@ describe('Select sources step', () => {
 
   it('disables the next step button if selection is invalid due to inter fund transfer', () => {
     component.setProps({
-      sourceSelection: [{ sourceFundIsin: 'a', targetFundIsin: 'b', percentage: 1 }],
+      sourceSelection: [
+        {
+          sourceFundIsin: 'a',
+          targetFundIsin: 'b',
+          percentage: 1,
+        },
+      ],
     });
     expect(component.find('#nextStep button').prop('className')).not.toContain('disabled');
     component.setProps({
-      sourceSelection: [{ sourceFundIsin: 'a', targetFundIsin: 'a', percentage: 1 }],
+      sourceSelection: [
+        {
+          sourceFundIsin: 'a',
+          targetFundIsin: 'a',
+          percentage: 1,
+        },
+      ],
     });
     expect(component.find('#nextStep button').prop('className')).toContain('disabled');
   });
@@ -122,7 +134,13 @@ describe('Select sources step', () => {
     const onSelect = jest.fn();
     const sourceFunds = [{ isin: 'c', fundManager: { name: 'Tuleva' } }, { isin: 'b' }];
     const targetFunds = [{ isin: 'c', fundManager: { name: 'Tuleva' } }];
-    const fullSelection = [{ sourceFundIsin: 'b', targetFundIsin: 'c', percentage: 1 }];
+    const fullSelection = [
+      {
+        sourceFundIsin: 'b',
+        targetFundIsin: 'c',
+        percentage: 1,
+      },
+    ];
     component.setProps({ sourceFunds, targetFunds, onSelect });
     expect(onSelect).not.toHaveBeenCalled();
     component.find(Radio).first().simulate('select');
@@ -134,7 +152,13 @@ describe('Select sources step', () => {
     const onSelect = jest.fn();
     const sourceFunds = [{ isin: 'c', fundManager: { name: 'Tuleva' } }];
     const targetFunds = [{ isin: 'c', fundManager: { name: 'Tuleva' } }, { isin: 'b' }];
-    const fullSelection = [{ sourceFundIsin: 'c', targetFundIsin: 'c', percentage: 1 }];
+    const fullSelection = [
+      {
+        sourceFundIsin: 'c',
+        targetFundIsin: 'c',
+        percentage: 1,
+      },
+    ];
     component.setProps({ sourceFunds, targetFunds, onSelect });
     expect(onSelect).not.toHaveBeenCalled();
     component.find(Radio).first().simulate('select');
@@ -288,6 +312,6 @@ describe('Select sources step', () => {
 
     expect(component.contains(<ErrorMessage errors={error.body} />)).toBe(true);
     expect(component.contains(<Loader className="align-middle" />)).toBe(false);
-    expect(component.contains(<PensionFundTable funds={funds} />)).toBe(false);
+    expect(component.contains(<AccountStatement funds={funds} />)).toBe(false);
   });
 });

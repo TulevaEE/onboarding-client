@@ -7,9 +7,9 @@ import { Link, Redirect } from 'react-router-dom';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Loader, Radio } from '../../../common';
 import { selectThirdPillarSources } from '../../../thirdPillar/actions';
+import AccountStatement from '../../../account/AccountStatement';
 
 // TODO: don't import from 2nd pillar flow
-import PensionFundTable from '../../secondPillar/selectSources/pensionFundTable';
 import TargetFundSelector from '../../secondPillar/selectSources/targetFundSelector';
 
 export const ThirdPillarSelectSources = ({
@@ -43,7 +43,7 @@ export const ThirdPillarSelectSources = ({
             </p>
             {(loadingSourceFunds || !sourceFunds.length) && <Loader className="align-middle" />}
             {!loadingSourceFunds && exchangeableSourceFunds && !!exchangeableSourceFunds.length && (
-              <PensionFundTable funds={exchangeableSourceFunds} />
+              <AccountStatement funds={exchangeableSourceFunds} />
             )}
           </div>
         </div>

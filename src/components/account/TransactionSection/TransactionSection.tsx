@@ -12,7 +12,7 @@ import { Shimmer } from '../../common/shimmer/Shimmer';
 export const TransactionSection: React.FunctionComponent<{
   limit?: number;
   pillar?: number;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }> = ({ limit, pillar, children }) => {
   const { data: transactions } = useTransactions();
   const { data: funds } = useFunds();
