@@ -217,10 +217,12 @@ export class ReturnComparison extends Component<Props, State> {
               <Select
                 options={[
                   { value: Key.EPI, label: 'returnComparison.pensionFund' },
-                  ...fundIsinsWithAvailableData.map((isin) => ({
-                    value: isin,
-                    label: fundNameMap[isin] || isin,
-                  })),
+                  ...fundIsinsWithAvailableData
+                    .map((isin) => ({
+                      value: isin,
+                      label: fundNameMap[isin] || isin,
+                    }))
+                    .sort((option1, option2) => option1.label.localeCompare(option2.label)),
                 ]}
                 selected={selectedPensionFundKey}
                 onChange={(key: string) => {
