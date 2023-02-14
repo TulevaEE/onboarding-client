@@ -262,7 +262,7 @@
   "account.status.choice.highFee.description": "Your portfolio weighted average cost is above 0.5% per year",
   "account.status.choice.lowFee.label": "You are in a low cost fund",
   "account.status.choice.lowFee.description": "Your portfolio weighted average cost is below 0.5% per year",
-  "account.status.choice.lowFee.index.label": "You are in a low cost index fund",
+  "account.status.choice.lowFee.index.label": "You are in a Tuleva low cost index fund",
   "account.status.choice.tuleva": "Tuleva",
   "account.status.choice.choose.low.fees": "Choose low fees",
   "account.status.choice.join.tuleva.2": "Choose Tuleva",

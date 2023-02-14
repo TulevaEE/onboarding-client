@@ -237,7 +237,7 @@
   "account.status.choice.highFee.description": "Sinu fondide kaalutud keskmine tasu on üle 0.5% aastas",
   "account.status.choice.lowFee.label": "Sa kogud madala tasuga fondis",
   "account.status.choice.lowFee.description": "Sinu fondide kaalutud keskmine tasu on alla 0.5% aastas",
-  "account.status.choice.lowFee.index.label": "Sa kogud madala tasuga indeksifondis",
+  "account.status.choice.lowFee.index.label": "Sa kogud Tuleva madala tasuga indeksifondis",
   "account.status.choice.tuleva": "Tuleva ühistu",
   "account.status.choice.choose.low.fees": "Vali madalad tasud",
   "account.status.choice.join.tuleva.2": "Vali Tuleva",
