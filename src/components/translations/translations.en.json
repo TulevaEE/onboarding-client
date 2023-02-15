@@ -323,6 +323,8 @@
   "returnComparison.returnNotice.link": "https://tuleva.ee/en/recommendations/what-return-expect/",
   "returnComparison.notEnoughHistory": "Can not calculate returns when there's less than a year of worth of investments.",
   "returnComparison.period.all": "From the beginning",
+  "returnComparison.period.twentyYears": "20 years",
+  "returnComparison.period.fifteenYears": "15 years",
   "returnComparison.period.tenYears": "10 years",
   "returnComparison.period.fiveYears": "5 years",
   "returnComparison.period.threeYears": "3 years",

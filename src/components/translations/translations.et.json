@@ -298,6 +298,8 @@
   "returnComparison.returnNotice.link": "https://tuleva.ee/analuusid/millist-tootlust-on-tulevas-oodata/",
   "returnComparison.notEnoughHistory": "Alla aasta pikkuse kogumise korral ei saa tootlust arvutada.",
   "returnComparison.period.all": "Kogumise algusest",
+  "returnComparison.period.twentyYears": "20 aastat",
+  "returnComparison.period.fifteenYears": "15 aastat",
   "returnComparison.period.tenYears": "10 aastat",
   "returnComparison.period.fiveYears": "5 aastat",
   "returnComparison.period.threeYears": "3 aastat",

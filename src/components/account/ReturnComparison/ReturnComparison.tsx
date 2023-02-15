@@ -56,6 +56,8 @@ const startDate = '2003-01-07';
 
 const format = (momentDate: Moment) => momentDate.format('YYYY-MM-DD');
 
+const twentyYearsAgo = format(moment().subtract(20, 'years'));
+const fifteenYearsAgo = format(moment().subtract(15, 'years'));
 const tenYearsAgo = format(moment().subtract(10, 'years'));
 const fiveYearsAgo = format(moment().subtract(5, 'years'));
 const threeYearsAgo = format(moment().subtract(3, 'years'));
@@ -64,6 +66,8 @@ const oneYearAgo = format(moment().subtract(1, 'year'));
 
 export const dateOptions = [
   { value: startDate, label: 'returnComparison.period.all' },
+  { value: twentyYearsAgo, label: 'returnComparison.period.twentyYears' },
+  { value: fifteenYearsAgo, label: 'returnComparison.period.fifteenYears' },
   { value: tenYearsAgo, label: 'returnComparison.period.tenYears' },
   { value: fiveYearsAgo, label: 'returnComparison.period.fiveYears' },
   { value: threeYearsAgo, label: 'returnComparison.period.threeYears' },
