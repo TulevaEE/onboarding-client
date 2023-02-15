@@ -177,6 +177,24 @@ const AccountSummary = ({
   return (
     <>
       <Table columns={columns} dataSource={dataSource} />
+      <div className="text-center">
+        <small className="text-muted">
+          <FormattedMessage
+            id="accountSummary.disclaimer"
+            values={{
+              a: (chunks) => (
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href="//tuleva.ee/vastused/pensionifondide-tasud/"
+                >
+                  {chunks}
+                </a>
+              ),
+            }}
+          />
+        </small>
+      </div>
     </>
   );
 };

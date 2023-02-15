@@ -62,6 +62,7 @@
   "accountSummary.columns.subtractions": "Withdrawals",
   "accountSummary.columns.profit": "Profit",
   "accountSummary.columns.value": "Value of fund units",
+  "accountSummary.disclaimer": "Low fees <a>predict</a> higher long-term returns.",
 
   "accountStatement.heading": "Your portfolio details",
   "accountStatement.secondPillar.heading": "II Pillar",
@@ -318,7 +319,8 @@
   "returnComparison.index.unionStockIndex": "World market return",
   "returnComparison.index.cpi": "Estonian inflation",
   "returnComparison.explanationLinkText": "What do these numbers mean? (in Estonian)",
-  "returnComparison.returnNotice": "Tuleva pension funds’ performance will never lag far behind the average of the world securities markets.",
+  "returnComparison.returnNotice": "Tuleva pension funds’ <a>return</a> will never lag far behind the average of the world securities markets.",
+  "returnComparison.returnNotice.link": "https://tuleva.ee/en/recommendations/what-return-expect/",
   "returnComparison.notEnoughHistory": "Can not calculate returns when there's less than a year of worth of investments.",
   "returnComparison.period.all": "From the beginning",
   "returnComparison.period.tenYears": "10 years",

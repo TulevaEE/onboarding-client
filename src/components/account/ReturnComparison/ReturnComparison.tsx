@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, injectIntl, WrappedComponentProps } from 'react-intl';
 import { connect } from 'react-redux';
 
 import moment, { Moment } from 'moment';
@@ -19,7 +19,7 @@ interface Option {
   label: string;
 }
 
-interface Props {
+interface Props extends WrappedComponentProps {
   token: string;
   fundNameMap: Record<string, string>;
 }
@@ -126,7 +126,8 @@ export class ReturnComparison extends Component<Props, State> {
   }
 
   render(): JSX.Element {
-    const { fundNameMap } = this.props;
+    const { fundNameMap, intl } = this.props;
+
     const {
       loading,
       fromDateOptions,
@@ -263,7 +264,20 @@ export class ReturnComparison extends Component<Props, State> {
         </div>
         <div className="mt-2 text-center">
           <small className="text-muted">
-            <FormattedMessage id="returnComparison.returnNotice" />
+            <FormattedMessage
+              id="returnComparison.returnNotice"
+              values={{
+                a: (chunks: string) => (
+                  <a
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href={intl.formatMessage({ id: 'returnComparison.returnNotice.link' })}
+                  >
+                    {chunks}
+                  </a>
+                ),
+              }}
+            />
           </small>
         </div>
       </div>
@@ -279,4 +293,4 @@ const mapStateToProps = (state: {
   fundNameMap: convertFundsToFundNameMap(state.exchange.targetFunds),
 });
 
-export default connect(mapStateToProps)(ReturnComparison);
+export default connect(mapStateToProps)(injectIntl(ReturnComparison));
