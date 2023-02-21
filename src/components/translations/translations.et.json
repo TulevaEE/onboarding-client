@@ -452,9 +452,9 @@
   "applications.type.withdrawal.time": "Väljamakse kuu",
   "applications.type.withdrawal.account": "Pangakonto",
 
-  "transactions.title": "Sinu viimased maksed",
-  "transactions.title.2nd": "Sinu II samba maksed",
-  "transactions.title.3rd": "Sinu III samba maksed",
+  "transactions.title": "Sinu viimased tehingud",
+  "transactions.title.2nd": "Sinu II samba tehingud",
+  "transactions.title.3rd": "Sinu III samba tehingud",
   "transactions.columns.fund.title": "Pensionifond",
   "transactions.columns.date.title": "Kuupäev",
   "transactions.columns.date.footer": "Kokku",
