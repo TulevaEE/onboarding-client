@@ -16,7 +16,8 @@ const AccountStatement = ({ funds }) => {
   const { formatMessage } = useIntl();
 
   const valueSum = getValueSum(funds);
-  const weightedAverageFee = getWeightedAverageFee(funds);
+
+  const weightedAverageFee = valueSum <= 0 ? 0 : getWeightedAverageFee(funds);
 
   const columns = [
     {
@@ -35,17 +36,21 @@ const AccountStatement = ({ funds }) => {
       dataIndex: 'feesPercent',
       footer: <Fees className="text-bold" value={weightedAverageFee} />,
     },
-    {
-      title: (
-        <>
-          <FormattedMessage id="accountStatement.columns.fees.title" />
-          &nbsp;€
-        </>
-      ),
-      dataIndex: 'feesEuro',
-      footer: <Euro className="text-muted" amount={weightedAverageFee * valueSum} />,
-      hideOnMobile: true,
-    },
+    ...(weightedAverageFee * valueSum === 0
+      ? []
+      : [
+          {
+            title: (
+              <>
+                <FormattedMessage id="accountStatement.columns.fees.title" />
+                &nbsp;€
+              </>
+            ),
+            dataIndex: 'feesEuro',
+            footer: <Euro className="text-muted" amount={weightedAverageFee * valueSum} />,
+            hideOnMobile: true,
+          },
+        ]),
     {
       title: <FormattedMessage id="accountStatement.columns.value.title" />,
       dataIndex: 'value',

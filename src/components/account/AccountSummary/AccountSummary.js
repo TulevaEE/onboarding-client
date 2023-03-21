@@ -107,27 +107,35 @@ const AccountSummary = ({
       footer: <FormattedMessage id="accountSummary.columns.pillar.footer" />,
       width100: true,
     },
-    {
-      title: (
-        <>
-          <FormattedMessage id="accountSummary.columns.fees" />
-          &nbsp;%
-        </>
-      ),
-      dataIndex: 'feesPercent',
-      footer: <Fees className="text-bold" value={weightedAverageFee} />,
-    },
-    {
-      title: (
-        <>
-          <FormattedMessage id="accountSummary.columns.fees" />
-          &nbsp;€
-        </>
-      ),
-      dataIndex: 'feesEuro',
-      footer: <Euro className="text-muted" amount={feesEuroSum} />,
-      hideOnMobile: true,
-    },
+    ...(weightedAverageFee === 0
+      ? []
+      : [
+          {
+            title: (
+              <>
+                <FormattedMessage id="accountSummary.columns.fees" />
+                &nbsp;%
+              </>
+            ),
+            dataIndex: 'feesPercent',
+            footer: <Fees className="text-bold" value={weightedAverageFee} />,
+          },
+        ]),
+    ...(feesEuroSum === 0
+      ? []
+      : [
+          {
+            title: (
+              <>
+                <FormattedMessage id="accountSummary.columns.fees" />
+                &nbsp;€
+              </>
+            ),
+            dataIndex: 'feesEuro',
+            footer: <Euro className="text-muted" amount={feesEuroSum} />,
+            hideOnMobile: true,
+          },
+        ]),
     ...(contributionsSum === 0
       ? []
       : [

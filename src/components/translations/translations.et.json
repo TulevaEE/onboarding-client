@@ -386,7 +386,7 @@
   "thirdPillarPayment.RECURRING.other.login": "Logi sisse oma internetipanka.",
   "thirdPillarPayment.RECURRING.other.form": "Lisa uus püsikorraldus järgmiste andmetega ja kinnita makse:",
   "thirdPillarPayment.RECURRING.finalStep": "Sinu valitud päeval tehakse iga kuu sissemakse Tuleva III Samba Pensionifondi.",
-  "thirdPillarPayment.RECURRING.swedbank.extraStep": "Vali menüüst <b>Pension ➜ III sammas ➜ Fondi valimine ➜ Regulaarsed maksed kolmandasse sambasse</b> ja veendu, et sinu püsimakse sai korrektselt seadistatud.",
+  "thirdPillarPayment.RECURRING.swedbank.extraStep": "Vali menüüst <b>Pension → III sammas → Fondi valimine → Regulaarsed maksed kolmandasse sambasse</b> ja veendu, et sinu püsimakse sai korrektselt seadistatud.",
 
   "thirdPillarPayment.SINGLE.other": "Ühekordse makse juhend teistes pankades",
   "thirdPillarPayment.SINGLE.other.login": "Logi sisse oma internetipanka.",

@@ -410,7 +410,7 @@
   "thirdPillarPayment.RECURRING.other.login": "Log in to your internet bank.",
   "thirdPillarPayment.RECURRING.other.form": "Set up a recurring payment with the following details:",
   "thirdPillarPayment.RECURRING.finalStep": "Every month, a payment will be automatically made into Tuleva III Pillar Pension Fund.",
-  "thirdPillarPayment.RECURRING.swedbank.extraStep": "Select from the menu <b>Pension ➜ III pillar ➜ Selecting a fund ➜ Pension third pillar regular payments</b> and make sure your recurring payment was set up correctly.",
+  "thirdPillarPayment.RECURRING.swedbank.extraStep": "Select from the menu <b>Pension → III pillar → Selecting a fund → Pension third pillar regular payments</b> and make sure your recurring payment was set up correctly.",
   "thirdPillarPayment.SINGLE.other": "How to make a payment in another bank",
   "thirdPillarPayment.SINGLE.other.login": "Log in to your internet bank.",
   "thirdPillarPayment.SINGLE.other.form": "Make a new payment with the following details:",
