@@ -1,0 +1,8 @@
+@import '../../../variables';
+
+.container {
+  //main component inherits attributes from alert class, so redefining some of them here
+  border-color: #E0E0E0 !important;
+  border-width: 1px !important;
+  background-color: white !important;
+}
