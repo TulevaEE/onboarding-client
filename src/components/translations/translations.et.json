@@ -425,9 +425,14 @@
   "thirdPillarPayment.processingCodeAndPensionAccountNumber": "III sammast tähistav töötluskood, sinu personaalne pensionikonto number ja Tuleva III Samba Pensionifondi ISIN",
   "thirdPillarPayment.pensionAccountNumber": "Sinu personaalne pensionikonto number",
 
-  "thirdPillarSuccess.done": "Kõik tehtud!",
-  "thirdPillarSuccess.message": "Vaata oma kontoseisu. Kui tegid sissemakse, siis uued osakud jõuavad sinu pensionikontole järgmise tööpäeva lõpuks.",
-  "thirdPillarSuccess.button": "Minu konto",
+  "thirdPillarSuccess.done": "Sissemakse tehtud",
+  "thirdPillarSuccess.message": "Makse jõuab fondi 2 tööpäeva jooksul.",
+  "thirdPillarSuccess.notice.header": "Tasudeks makstud eurod tootlust ei teeni",
+  "thirdPillarSuccess.notice.description": "Kogud II sammast kõrge tasuga fondis ({currentFundFee}% aastas). Sel aastal maksad tasudeks {currentFundFeeAmount}€, Tuleva fondis maksaksid {ourFundFeeAmount}€. Säästaksid {savingsAmount}€ aastas, mis teenib sulle täiendavalt tulu.",
+  "thirdPillarSuccess.button.account": "Minu konto",
+  "thirdPillarSuccess.button": "Vaata lähemalt",
+  "thirdPillarSuccess.ourFund": "Tuleva Maailma Aktsiate pensionifond",
+  "thirdPillarSuccess.currentFund": "Sinu valitud pensionifond",
 
   "applications.title": "Sinu ootel olevad tehingud",
   "applications.cancel": "Tühista avaldus",

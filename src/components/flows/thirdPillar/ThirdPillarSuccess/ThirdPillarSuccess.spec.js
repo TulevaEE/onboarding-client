@@ -6,17 +6,108 @@ import { ThirdPillarSuccess } from './ThirdPillarSuccess';
 
 describe('Third pillar success step', () => {
   let component;
+  const conversion = {
+    secondPillar: { contribution: { total: 0 }, subtraction: { total: 0 } },
+    thirdPillar: { contribution: { total: 0 }, subtraction: { total: 0 } },
+  };
+
+  const secondPillarSourceFundsLowFee = [
+    {
+      isin: 'EE3600109435',
+      name: 'Our Fund',
+      ongoingChargesFigure: 0.004,
+      contributions: 1,
+      subtractions: 0,
+      profit: 0,
+      unavailablePrice: 0,
+      price: 100,
+    },
+    {
+      isin: 'B2',
+      name: 'B',
+      ongoingChargesFigure: 0.001,
+      contributions: 0,
+      subtractions: 0,
+      profit: 0,
+      unavailablePrice: 0,
+      price: 10,
+      activeFund: true,
+    },
+  ];
+  const secondPillarSourceFundsHighFee = [
+    {
+      isin: 'EE3600109435',
+      name: 'Our Fund',
+      ongoingChargesFigure: 0.004,
+      contributions: 1,
+      subtractions: 0,
+      profit: 0,
+      unavailablePrice: 0,
+      price: 100,
+    },
+    {
+      isin: 'B2',
+      name: 'B',
+      ongoingChargesFigure: 0.1,
+      contributions: 10,
+      subtractions: 0,
+      profit: 0,
+      unavailablePrice: 0,
+      price: 10,
+      activeFund: true,
+    },
+  ];
 
   beforeEach(() => {
-    component = shallow(<ThirdPillarSuccess />);
+    const props = {
+      conversion,
+      secondPillarSourceFunds: secondPillarSourceFundsLowFee,
+    };
+    component = shallow(<ThirdPillarSuccess {...props} />);
   });
 
   it('shows the user default success message and profile button', () => {
     expect(component.contains(<FormattedMessage id="thirdPillarSuccess.done" />)).toBe(true);
     expect(component.contains(<FormattedMessage id="thirdPillarSuccess.message" />)).toBe(true);
+
     expect(
       component.contains(
         <a className="btn btn-primary mt-4 profile-link" href="/account">
+          <FormattedMessage id="thirdPillarSuccess.button.account" />
+        </a>,
+      ),
+    ).toBe(true);
+  });
+
+  it('shows the user a high fee success message and cta button', () => {
+    component.setProps({
+      secondPillarSourceFunds: secondPillarSourceFundsHighFee,
+    });
+
+    expect(component.contains(<FormattedMessage id="thirdPillarSuccess.done" />)).toBe(true);
+    expect(component.contains(<FormattedMessage id="thirdPillarSuccess.message" />)).toBe(true);
+    expect(component.contains(<FormattedMessage id="thirdPillarSuccess.notice.header" />)).toBe(
+      true,
+    );
+    expect(component.contains(<FormattedMessage id="thirdPillarSuccess.ourFund" />)).toBe(true);
+    expect(component.contains(<FormattedMessage id="thirdPillarSuccess.currentFund" />)).toBe(true);
+    expect(
+      component.contains(
+        <FormattedMessage
+          id="thirdPillarSuccess.notice.description"
+          values={{
+            currentFundFee: 10,
+            currentFundFeeAmount: 1,
+            ourFundFeeAmount: 0,
+            savingsAmount: 1,
+          }}
+        />,
+      ),
+    ).toBe(true);
+
+    expect(
+      component.contains(
+        <a className="btn btn-primary mt-4 profile-link" href="/2nd-pillar-flow">
           <FormattedMessage id="thirdPillarSuccess.button" />
         </a>,
       ),
