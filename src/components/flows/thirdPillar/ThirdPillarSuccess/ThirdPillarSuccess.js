@@ -37,7 +37,6 @@ export const ThirdPillarSuccess = ({
   }
   const valueSum = getValueSum(secondPillarSourceFunds);
   const weightedAverageFee = valueSum <= 0 ? 0 : getWeightedAverageFee(secondPillarSourceFunds);
-
   if (weightedAverageFee < 0.005) {
     return ThirdPillarSuccessDefault();
   }
@@ -73,7 +72,7 @@ export const ThirdPillarSuccess = ({
           </h2>
           <div>
             <div className="row d-flex justify-content-center align-items-end mt-5">
-              <div className="col-md-2">
+              <div className="col-md-2 col-5">
                 <div
                   className={styles.leftcolumn}
                   style={{
@@ -83,8 +82,8 @@ export const ThirdPillarSuccess = ({
                   <Euro amount={ourFundAmount} />
                 </div>
               </div>
-              <div className="col-md-2" />
-              <div className="col-md-2">
+              <div className="col-md-2 col-1" />
+              <div className="col-md-2 col-5">
                 <div
                   className={styles.rightcolumn}
                   style={{
@@ -96,13 +95,13 @@ export const ThirdPillarSuccess = ({
               </div>
             </div>
             <div className="row d-flex justify-content-center align-items-end my-3">
-              <div className="col-md-2">
+              <div className="col-md-2 col-5">
                 <small className="text-muted">
                   <FormattedMessage id="thirdPillarSuccess.ourFund" />
                 </small>
               </div>
-              <div className="col-md-2" />
-              <div className="col-md-2">
+              <div className="col-md-2 col-1" />
+              <div className="col-md-2 col-5">
                 <small className="text-muted">
                   <FormattedMessage id="thirdPillarSuccess.currentFund" />
                 </small>
@@ -136,7 +135,7 @@ ThirdPillarSuccess.defaultProps = {
 
 const mapStateToProps = (state) => ({
   secondPillarSourceFunds: state.exchange.sourceFunds,
-  secondPillarTotalContributionAmount: state.login.userConversion.secondPillar.contribution.total,
+  secondPillarTotalContributionAmount: state.login.userConversion?.secondPillar.contribution.total,
 });
 const mapDispatchToProps = (dispatch) => bindActionCreators({}, dispatch);
 
