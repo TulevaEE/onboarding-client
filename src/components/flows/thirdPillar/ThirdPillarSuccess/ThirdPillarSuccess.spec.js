@@ -39,7 +39,7 @@ describe('Third pillar success step', () => {
       subtractions: 0,
       profit: 0,
       unavailablePrice: 0,
-      price: 100,
+      price: 1000000,
     },
     {
       isin: 'B2',
@@ -49,7 +49,7 @@ describe('Third pillar success step', () => {
       subtractions: 0,
       profit: 0,
       unavailablePrice: 0,
-      price: 10,
+      price: 100000,
       activeFund: true,
     },
   ];
@@ -86,16 +86,15 @@ describe('Third pillar success step', () => {
     );
     expect(component.contains(<FormattedMessage id="thirdPillarSuccess.ourFund" />)).toBe(true);
     expect(component.contains(<FormattedMessage id="thirdPillarSuccess.currentFund" />)).toBe(true);
-
     expect(
       component.contains(
         <FormattedMessage
           id="thirdPillarSuccess.notice.description"
           values={{
             currentFundFee: 10,
-            currentFundFeeAmount: 1,
-            ourFundFeeAmount: 0.44,
-            savingsAmount: 0.56,
+            currentFundFeeAmount: 10000,
+            ourFundFeeAmount: 400,
+            savingsAmount: 9600,
           }}
         />,
       ),
