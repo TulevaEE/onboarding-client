@@ -41,16 +41,16 @@ export const ThirdPillarSuccess = ({ secondPillarSourceFunds }) => {
   if (weightedAverageFee < 0.005) {
     return ThirdPillarSuccessDefault();
   }
-  const selectedFund = secondPillarSourceFunds.find(({ activeFund }) => activeFund);
+  const currentFund = secondPillarSourceFunds.find(({ activeFund }) => activeFund);
   const ourFund = secondPillarSourceFunds.find(({ isin }) => isin === ourFundIsin);
-  const currentFundValue = selectedFund.price + selectedFund.unavailablePrice;
+  const currentFundValue = currentFund.price + currentFund.unavailablePrice;
   const ourFundAmount = ourFund.ongoingChargesFigure * secondPillarTotalContributionAmount;
-  const currentFundAmount = selectedFund.ongoingChargesFigure * currentFundValue;
+  const currentFundAmount = currentFund.ongoingChargesFigure * currentFundValue;
   const maxAmount = Math.max(ourFundAmount, currentFundAmount);
   const ourFundHeight = (ourFundAmount / maxAmount) * maximumFundColumnHeight;
   const currentFundHeight = (currentFundAmount / maxAmount) * maximumFundColumnHeight;
-  const currentFundFee = Math.round(selectedFund.ongoingChargesFigure * 10000) / 100;
-  const currentFundFeeAmount = currentFundValue * selectedFund.ongoingChargesFigure;
+  const currentFundFee = Math.round(currentFund.ongoingChargesFigure * 10000) / 100;
+  const currentFundFeeAmount = currentFundValue * currentFund.ongoingChargesFigure;
   const ourFundFeeAmount =
     Math.round(secondPillarTotalContributionAmount * ourFund.ongoingChargesFigure * 100) / 100;
   const savingsAmount = currentFundFeeAmount - ourFundFeeAmount;
