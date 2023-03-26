@@ -28,29 +28,29 @@ const ThirdPillarSuccessDefault = () => (
   </div>
 );
 
-export const ThirdPillarSuccess = ({
-  secondPillarSourceFunds,
-  secondPillarTotalContributionAmount,
-}) => {
+export const ThirdPillarSuccess = ({ secondPillarSourceFunds }) => {
+  const ourFundIsin = 'EE3600109435';
+  const maximumFundColumnHeight = 150;
+
   if (!secondPillarSourceFunds) {
     return <Shimmer height={26} />;
   }
-  const valueSum = getValueSum(secondPillarSourceFunds);
-  const weightedAverageFee = valueSum <= 0 ? 0 : getWeightedAverageFee(secondPillarSourceFunds);
+  const secondPillarTotalContributionAmount = getValueSum(secondPillarSourceFunds);
+  const weightedAverageFee =
+    secondPillarTotalContributionAmount <= 0 ? 0 : getWeightedAverageFee(secondPillarSourceFunds);
   if (weightedAverageFee < 0.005) {
     return ThirdPillarSuccessDefault();
   }
-  const funds = secondPillarSourceFunds;
-  const selectedFund = funds.find(({ activeFund }) => activeFund);
-  const ourFund = funds.find(({ isin }) => isin === 'EE3600109435');
-  const fundValue = selectedFund.price + selectedFund.unavailablePrice;
+  const selectedFund = secondPillarSourceFunds.find(({ activeFund }) => activeFund);
+  const ourFund = secondPillarSourceFunds.find(({ isin }) => isin === ourFundIsin);
+  const currentFundValue = selectedFund.price + selectedFund.unavailablePrice;
   const ourFundAmount = ourFund.ongoingChargesFigure * secondPillarTotalContributionAmount;
-  const currentFundAmount = selectedFund.ongoingChargesFigure * fundValue;
+  const currentFundAmount = selectedFund.ongoingChargesFigure * currentFundValue;
   const maxAmount = Math.max(ourFundAmount, currentFundAmount);
-  const ourFundHeight = (ourFundAmount / maxAmount) * 150;
-  const currentFundHeight = (currentFundAmount / maxAmount) * 150;
+  const ourFundHeight = (ourFundAmount / maxAmount) * maximumFundColumnHeight;
+  const currentFundHeight = (currentFundAmount / maxAmount) * maximumFundColumnHeight;
   const currentFundFee = Math.round(selectedFund.ongoingChargesFigure * 10000) / 100;
-  const currentFundFeeAmount = fundValue * selectedFund.ongoingChargesFigure;
+  const currentFundFeeAmount = currentFundValue * selectedFund.ongoingChargesFigure;
   const ourFundFeeAmount =
     Math.round(secondPillarTotalContributionAmount * ourFund.ongoingChargesFigure * 100) / 100;
   const savingsAmount = currentFundFeeAmount - ourFundFeeAmount;
@@ -125,17 +125,14 @@ export const ThirdPillarSuccess = ({
 
 ThirdPillarSuccess.propTypes = {
   secondPillarSourceFunds: Types.arrayOf(Types.shape({})),
-  secondPillarTotalContributionAmount: Types.number,
 };
 
 ThirdPillarSuccess.defaultProps = {
   secondPillarSourceFunds: [],
-  secondPillarTotalContributionAmount: 0,
 };
 
 const mapStateToProps = (state) => ({
   secondPillarSourceFunds: state.exchange.sourceFunds,
-  secondPillarTotalContributionAmount: state.login.userConversion?.secondPillar.contribution.total,
 });
 const mapDispatchToProps = (dispatch) => bindActionCreators({}, dispatch);
 

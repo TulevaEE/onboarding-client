@@ -6,10 +6,6 @@ import { ThirdPillarSuccess } from './ThirdPillarSuccess';
 
 describe('Third pillar success step', () => {
   let component;
-  const conversion = {
-    secondPillar: { contribution: { total: 0 }, subtraction: { total: 0 } },
-    thirdPillar: { contribution: { total: 0 }, subtraction: { total: 0 } },
-  };
 
   const secondPillarSourceFundsLowFee = [
     {
@@ -60,7 +56,6 @@ describe('Third pillar success step', () => {
 
   beforeEach(() => {
     const props = {
-      conversion,
       secondPillarSourceFunds: secondPillarSourceFundsLowFee,
     };
     component = shallow(<ThirdPillarSuccess {...props} />);
@@ -91,6 +86,7 @@ describe('Third pillar success step', () => {
     );
     expect(component.contains(<FormattedMessage id="thirdPillarSuccess.ourFund" />)).toBe(true);
     expect(component.contains(<FormattedMessage id="thirdPillarSuccess.currentFund" />)).toBe(true);
+
     expect(
       component.contains(
         <FormattedMessage
@@ -98,8 +94,8 @@ describe('Third pillar success step', () => {
           values={{
             currentFundFee: 10,
             currentFundFeeAmount: 1,
-            ourFundFeeAmount: 0,
-            savingsAmount: 1,
+            ourFundFeeAmount: 0.44,
+            savingsAmount: 0.56,
           }}
         />,
       ),
