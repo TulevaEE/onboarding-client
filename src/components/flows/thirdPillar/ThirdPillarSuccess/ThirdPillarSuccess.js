@@ -31,6 +31,7 @@ const ThirdPillarSuccessDefault = () => (
 export const ThirdPillarSuccess = ({ secondPillarSourceFunds }) => {
   const ourFundIsin = 'EE3600109435';
   const maximumFundColumnHeight = 150;
+  const tooHighAverageAumFee = 0.005;
 
   if (!secondPillarSourceFunds) {
     return <Shimmer height={26} />;
@@ -38,7 +39,7 @@ export const ThirdPillarSuccess = ({ secondPillarSourceFunds }) => {
   const secondPillarTotalContributionAmount = getValueSum(secondPillarSourceFunds);
   const weightedAverageFee =
     secondPillarTotalContributionAmount <= 0 ? 0 : getWeightedAverageFee(secondPillarSourceFunds);
-  if (weightedAverageFee < 0.005) {
+  if (weightedAverageFee < tooHighAverageAumFee) {
     return ThirdPillarSuccessDefault();
   }
   const currentFund = secondPillarSourceFunds.find(({ activeFund }) => activeFund);
