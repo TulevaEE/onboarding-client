@@ -451,11 +451,11 @@
   "thirdPillarSuccess.done": "Payment done",
   "thirdPillarSuccess.message": "Payment will reach the fund within 2 working days.",
   "thirdPillarSuccess.notice.header": "Tasudeks makstud eurod tootlust ei teeni",
-  "thirdPillarSuccess.notice.description": "You have selected a high fee II pillar fund ({currentFundFee}% per year). This year, you will pay {currentFundFeeAmount}€ for fees. With Tuleva fund you would pay {ourFundFeeAmount}€. Saving {savingsAmount}€ per year, which would earn additional income.",
+  "thirdPillarSuccess.notice.description": "You have selected a high fee II pillar funds ({currentFundsFee}% per year). This year, you will pay {currentFundsFeeAmount}€ for fees. With Tuleva fund you would pay {ourFundFeeAmount}€. Saving {savingsAmount}€ per year, which would earn additional income.",
   "thirdPillarSuccess.button.account": "My account",
   "thirdPillarSuccess.button": "Learn more",
   "thirdPillarSuccess.ourFund": "Tuleva World Stocks Pension Fund",
-  "thirdPillarSuccess.currentFund": "Your selected pension fund",
+  "thirdPillarSuccess.currentFund": "Your selected pension funds",
 
   "applications.title": "Your pending transactions",
   "applications.cancel": "Cancel application",

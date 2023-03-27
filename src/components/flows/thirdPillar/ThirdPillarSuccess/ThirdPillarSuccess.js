@@ -8,7 +8,6 @@ import { Notice } from '../../common/Notice/Notice';
 import styles from './ThirdPillarSuccess.module.scss';
 import { Shimmer } from '../../../common/shimmer/Shimmer';
 import { getValueSum, getWeightedAverageFee } from '../../../account/AccountStatement/fundSelector';
-import Euro from '../../../common/Euro';
 
 const ThirdPillarSuccessDefault = () => (
   <div className="row">
@@ -32,6 +31,7 @@ export const ThirdPillarSuccess = ({ secondPillarSourceFunds }) => {
   const ourFundIsin = 'EE3600109435';
   const maximumFundColumnHeight = 150;
   const tooHighAverageAumFee = 0.005;
+  // const tooHighAverageAumFee = 0.003;
 
   if (!secondPillarSourceFunds) {
     return <Shimmer height={26} />;
@@ -39,22 +39,23 @@ export const ThirdPillarSuccess = ({ secondPillarSourceFunds }) => {
   const secondPillarTotalContributionAmount = getValueSum(secondPillarSourceFunds);
   const weightedAverageFee =
     secondPillarTotalContributionAmount <= 0 ? 0 : getWeightedAverageFee(secondPillarSourceFunds);
+  // const weightedAverageFee = 0.008;
   if (weightedAverageFee < tooHighAverageAumFee) {
     return ThirdPillarSuccessDefault();
   }
-  const currentFund = secondPillarSourceFunds.find(({ activeFund }) => activeFund);
-  const ourFund = secondPillarSourceFunds.find(({ isin }) => isin === ourFundIsin);
-  const currentFundValue = currentFund.price + currentFund.unavailablePrice;
-  const ourFundAmount = ourFund.ongoingChargesFigure * currentFundValue;
-  const currentFundAmount = currentFund.ongoingChargesFigure * currentFundValue;
 
-  const maxAmount = Math.max(ourFundAmount, currentFundAmount);
-  const ourFundHeight = (ourFundAmount / maxAmount) * maximumFundColumnHeight;
-  const currentFundHeight = (currentFundAmount / maxAmount) * maximumFundColumnHeight;
-  const currentFundFee = Math.round(currentFund.ongoingChargesFigure * 10000) / 100;
-  const currentFundFeeAmount = currentFundValue * currentFund.ongoingChargesFigure;
-  const ourFundFeeAmount = Math.round(currentFundValue * ourFund.ongoingChargesFigure * 100) / 100;
-  const savingsAmount = currentFundFeeAmount - ourFundFeeAmount;
+  const ourFund = secondPillarSourceFunds.find(({ isin }) => isin === ourFundIsin);
+  const ourFundFeeAmount = Math.round(
+    ourFund.ongoingChargesFigure * secondPillarTotalContributionAmount,
+  );
+  const currentFundsFeeAmount = Math.round(
+    weightedAverageFee * secondPillarTotalContributionAmount,
+  );
+  const maxAmount = Math.max(ourFundFeeAmount, currentFundsFeeAmount);
+  const ourFundHeight = (ourFundFeeAmount / maxAmount) * maximumFundColumnHeight;
+  const currentFundsHeight = (currentFundsFeeAmount / maxAmount) * maximumFundColumnHeight;
+  const currentFundsFee = Math.round(weightedAverageFee * 10000) / 100;
+  const savingsAmount = currentFundsFeeAmount - ourFundFeeAmount;
 
   return (
     <div className="row">
@@ -80,7 +81,7 @@ export const ThirdPillarSuccess = ({ secondPillarSourceFunds }) => {
                     height: ourFundHeight,
                   }}
                 >
-                  <Euro amount={ourFundAmount} />
+                  <div className={styles.columncontent}>{ourFundFeeAmount}€</div>
                 </div>
               </div>
               <div className="col-md-2 col-1" />
@@ -88,21 +89,21 @@ export const ThirdPillarSuccess = ({ secondPillarSourceFunds }) => {
                 <div
                   className={styles.rightcolumn}
                   style={{
-                    height: currentFundHeight,
+                    height: currentFundsHeight,
                   }}
                 >
-                  <Euro amount={currentFundAmount} />
+                  <div className={styles.columncontent}>{currentFundsFeeAmount}€</div>
                 </div>
               </div>
             </div>
             <div className="row d-flex justify-content-center align-items-end my-3">
-              <div className="col-md-2 col-5">
+              <div className="col-md-3 col-5">
                 <small className="text-muted">
                   <FormattedMessage id="thirdPillarSuccess.ourFund" />
                 </small>
               </div>
-              <div className="col-md-2 col-1" />
-              <div className="col-md-2 col-5">
+              <div className="col-md-1 col-1" />
+              <div className="col-md-3 col-5">
                 <small className="text-muted">
                   <FormattedMessage id="thirdPillarSuccess.currentFund" />
                 </small>
@@ -112,7 +113,7 @@ export const ThirdPillarSuccess = ({ secondPillarSourceFunds }) => {
           <p className="mt-5">
             <FormattedMessage
               id="thirdPillarSuccess.notice.description"
-              values={{ currentFundFee, currentFundFeeAmount, ourFundFeeAmount, savingsAmount }}
+              values={{ currentFundsFee, currentFundsFeeAmount, ourFundFeeAmount, savingsAmount }}
             />
           </p>
           <a className="btn btn-primary mt-4 profile-link" href="/2nd-pillar-flow">

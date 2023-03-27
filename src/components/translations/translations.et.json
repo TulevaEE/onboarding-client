@@ -428,11 +428,11 @@
   "thirdPillarSuccess.done": "Sissemakse tehtud",
   "thirdPillarSuccess.message": "Makse jõuab fondi 2 tööpäeva jooksul.",
   "thirdPillarSuccess.notice.header": "Tasudeks makstud eurod tootlust ei teeni",
-  "thirdPillarSuccess.notice.description": "Kogud II sammast kõrge tasuga fondis ({currentFundFee}% aastas). Sel aastal maksad tasudeks {currentFundFeeAmount}€, Tuleva fondis maksaksid {ourFundFeeAmount}€. Säästaksid {savingsAmount}€ aastas, mis teenib sulle täiendavalt tulu.",
+  "thirdPillarSuccess.notice.description": "Kogud II sammast kõrge tasuga fondides ({currentFundsFee}% aastas). Sel aastal maksad tasudeks {currentFundsFeeAmount}€, Tuleva fondis maksaksid {ourFundFeeAmount}€. Säästaksid {savingsAmount}€ aastas, mis teenib sulle täiendavalt tulu.",
   "thirdPillarSuccess.button.account": "Minu konto",
   "thirdPillarSuccess.button": "Vaata lähemalt",
   "thirdPillarSuccess.ourFund": "Tuleva Maailma Aktsiate pensionifond",
-  "thirdPillarSuccess.currentFund": "Sinu valitud pensionifond",
+  "thirdPillarSuccess.currentFund": "Sinu valitud pensionifondid",
 
   "applications.title": "Sinu ootel olevad tehingud",
   "applications.cancel": "Tühista avaldus",

@@ -3,9 +3,23 @@
 .leftcolumn {
   background-color: #0078FF3D;
   color: #002F63;
+  border-radius: 4px;
+  display: flex;
+  height: 100%;
 }
 
 .rightcolumn {
   background-color: #002F63;
   color: #FFFFFF;
+  border-radius: 4px;
+  display: flex;
+  height: 100%;
+}
+
+.columncontent {
+  display: inline-block;
+  align-self: flex-end;
+  width: 100%;
+  font-size: 24px;
+  padding-bottom: 8px;
 }

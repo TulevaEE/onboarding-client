@@ -39,7 +39,7 @@ describe('Third pillar success step', () => {
       subtractions: 0,
       profit: 0,
       unavailablePrice: 0,
-      price: 1000000,
+      price: 0,
     },
     {
       isin: 'B2',
@@ -91,8 +91,8 @@ describe('Third pillar success step', () => {
         <FormattedMessage
           id="thirdPillarSuccess.notice.description"
           values={{
-            currentFundFee: 10,
-            currentFundFeeAmount: 10000,
+            currentFundsFee: 10,
+            currentFundsFeeAmount: 10000,
             ourFundFeeAmount: 400,
             savingsAmount: 9600,
           }}
