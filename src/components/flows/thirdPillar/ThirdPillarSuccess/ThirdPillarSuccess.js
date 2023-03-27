@@ -31,7 +31,6 @@ export const ThirdPillarSuccess = ({ secondPillarSourceFunds }) => {
   const ourFundIsin = 'EE3600109435';
   const maximumFundColumnHeight = 150;
   const tooHighAverageAumFee = 0.005;
-  // const tooHighAverageAumFee = 0.003;
 
   if (!secondPillarSourceFunds) {
     return <Shimmer height={26} />;
@@ -39,7 +38,7 @@ export const ThirdPillarSuccess = ({ secondPillarSourceFunds }) => {
   const secondPillarTotalContributionAmount = getValueSum(secondPillarSourceFunds);
   const weightedAverageFee =
     secondPillarTotalContributionAmount <= 0 ? 0 : getWeightedAverageFee(secondPillarSourceFunds);
-  // const weightedAverageFee = 0.008;
+
   if (weightedAverageFee < tooHighAverageAumFee) {
     return ThirdPillarSuccessDefault();
   }
@@ -96,7 +95,7 @@ export const ThirdPillarSuccess = ({ secondPillarSourceFunds }) => {
                 </div>
               </div>
             </div>
-            <div className="row d-flex justify-content-center align-items-end my-3">
+            <div className="row d-flex justify-content-center align-items-start my-3">
               <div className="col-md-3 col-5">
                 <small className="text-muted">
                   <FormattedMessage id="thirdPillarSuccess.ourFund" />
