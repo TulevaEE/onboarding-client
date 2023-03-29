@@ -118,7 +118,7 @@ const AccountSummary = ({
               </>
             ),
             dataIndex: 'feesPercent',
-            footer: <Fees className="text-bold" value={weightedAverageFee} />,
+            footer: <Fees value={weightedAverageFee} />,
           },
         ]),
     ...(feesEuroSum === 0

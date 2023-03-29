@@ -34,7 +34,7 @@ const AccountStatement = ({ funds }) => {
         </>
       ),
       dataIndex: 'feesPercent',
-      footer: <Fees className="text-bold" value={weightedAverageFee} />,
+      footer: <Fees value={weightedAverageFee} />,
     },
     ...(weightedAverageFee * valueSum === 0
       ? []
