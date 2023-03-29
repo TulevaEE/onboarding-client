@@ -132,7 +132,7 @@ const AccountSummary = ({
               </>
             ),
             dataIndex: 'feesEuro',
-            footer: <Euro className="text-muted" amount={feesEuroSum} />,
+            footer: <Euro className="text-muted" amount={-feesEuroSum} />,
             hideOnMobile: true,
           },
         ]),
@@ -173,7 +173,7 @@ const AccountSummary = ({
     ({ pillarLabel, feesPercent, feesEuro, contributions, subtractions, profit, value }) => ({
       pillarLabel: <FormattedMessage id={pillarLabel} />,
       feesPercent: <Fees value={feesPercent} />,
-      feesEuro: feesEuro ? <Euro className="text-muted" amount={feesEuro} /> : <></>,
+      feesEuro: feesEuro ? <Euro className="text-muted" amount={-feesEuro} /> : <></>,
       contributions: <Euro amount={contributions} />,
       subtractions: <Euro amount={subtractions} />,
       profit: <Euro amount={profit} />,

@@ -47,7 +47,7 @@ const AccountStatement = ({ funds }) => {
               </>
             ),
             dataIndex: 'feesEuro',
-            footer: <Euro className="text-muted" amount={weightedAverageFee * valueSum} />,
+            footer: <Euro className="text-muted" amount={-(weightedAverageFee * valueSum)} />,
             hideOnMobile: true,
           },
         ]),
@@ -77,7 +77,7 @@ const AccountStatement = ({ funds }) => {
       feesEuro: isMuted ? (
         <></>
       ) : (
-        <Euro className="text-muted" amount={fund.ongoingChargesFigure * fundValue} />
+        <Euro className="text-muted" amount={-(fund.ongoingChargesFigure * fundValue)} />
       ),
       value: isMuted ? <></> : <Euro className={className} amount={fundValue} />,
       key: fund.isin,
