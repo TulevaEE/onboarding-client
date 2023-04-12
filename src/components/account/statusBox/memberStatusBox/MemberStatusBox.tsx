@@ -3,6 +3,7 @@ import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import StatusBoxRow from '../statusBoxRow';
+import { InfoTooltip } from '../../../common';
 
 interface Props {
   loading: boolean;
@@ -16,7 +17,14 @@ export const MemberStatusBox: React.FunctionComponent<Props> = ({
   const isTulevaMember = memberNumber != null;
   const tulevaData = isTulevaMember
     ? [<FormattedMessage id="account.member.statement" values={{ memberNumber }} />]
-    : [<FormattedMessage id="account.non.member.statement" />];
+    : [
+        <>
+          <FormattedMessage id="account.non.member.statement" />
+          <InfoTooltip name="member-tooltip">
+            <FormattedMessage id="account.non.member.info" />
+          </InfoTooltip>
+        </>,
+      ];
 
   return (
     <StatusBoxRow

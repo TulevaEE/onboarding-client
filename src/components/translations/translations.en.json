@@ -240,7 +240,8 @@
   "Swedbank Pensionifond K90-99 (Elutsükli strateegia)": "Swedbank Pension Fund K90-99 (Life-cycle Strategy)",
   "header.my.account": "My account",
   "account.member.statement": "You are Tuleva member no. {memberNumber} and are earning a 0.05% annual membership bonus",
-  "account.non.member.statement": "Not a member",
+  "account.non.member.statement": "Not a member and not earning any membership bonus",
+  "account.non.member.info": "Tuleva members earn a 0.05% annual membership bonus",
   "account.converted.user.statement": "You have successfully filled an application to transfer future payments and current fund units to Tuleva.",
   "account.status.choices": "Your choices",
   "account.status.choice.pillar.second": "II pillar",
@@ -490,6 +491,8 @@
   "transactions.columns.amount.title": "Amount",
   "transactions.seeAll": "See all",
   "transactions.backToAccountPage": "Back to account page",
+  "transactions.workplace": "Workplace",
+  "transactions.personal": "Person",
 
   "cancellation.flow.confirm.title": "Confirm cancelling application",
   "cancellation.flow.confirm.content": "By signing you confirm that you would like to cancel following application:",

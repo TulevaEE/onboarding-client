@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 import moment from 'moment/moment';
 import sumBy from 'lodash/sumBy';
@@ -8,12 +8,14 @@ import { useFunds, useTransactions } from '../../common/apiHooks';
 import Table from '../../common/table';
 import Euro from '../../common/Euro';
 import { Shimmer } from '../../common/shimmer/Shimmer';
+import { TransactionType } from '../../common/apiModels';
 
 export const TransactionSection: React.FunctionComponent<{
   limit?: number;
   pillar?: number;
   children?: React.ReactNode;
 }> = ({ limit, pillar, children }) => {
+  const intl = useIntl();
   const { data: transactions } = useTransactions();
   const { data: funds } = useFunds();
 
@@ -56,6 +58,10 @@ export const TransactionSection: React.FunctionComponent<{
       ...(!limit && { footer: <FormattedMessage id="transactions.columns.date.footer" /> }),
     },
     {
+      title: <></>,
+      dataIndex: 'type',
+    },
+    {
       title: <FormattedMessage id="transactions.columns.fund.title" />,
       dataIndex: 'fund',
       width100: true,
@@ -85,6 +91,18 @@ export const TransactionSection: React.FunctionComponent<{
             ]
           : []),
         {
+          type:
+            transaction.type === TransactionType.CONTRIBUTION_CASH_WORKPLACE ? (
+              <span
+                className="fa fa-briefcase text-muted"
+                title={intl.formatMessage({ id: 'transactions.workplace' })}
+              />
+            ) : (
+              <span
+                className="fa fa-user-o text-muted"
+                title={intl.formatMessage({ id: 'transactions.personal' })}
+              />
+            ),
           date: <span className="text-nowrap">{date}</span>,
           fund: <span>{transaction.fundName}</span>,
           amount: <Euro amount={transaction.amount} />,

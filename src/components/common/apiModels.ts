@@ -262,4 +262,11 @@ export interface Transaction {
   currency: Currency;
   time: string;
   isin: string;
+  type: TransactionType;
+}
+
+export enum TransactionType {
+  CONTRIBUTION_CASH = 'CONTRIBUTION_CASH',
+  CONTRIBUTION_CASH_WORKPLACE = 'CONTRIBUTION_CASH_WORKPLACE',
+  SUBTRACTION = 'SUBTRACTION',
 }
