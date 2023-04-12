@@ -5,9 +5,18 @@ exports[`MemberStatusBox offers to join when not member 1`] = `
   last={true}
   lines={
     Array [
-      <Memo(MemoizedFormattedMessage)
-        id="account.non.member.statement"
-      />,
+      <React.Fragment>
+        <Memo(MemoizedFormattedMessage)
+          id="account.non.member.statement"
+        />
+        <InfoTooltip
+          name="member-tooltip"
+        >
+          <Memo(MemoizedFormattedMessage)
+            id="account.non.member.info"
+          />
+        </InfoTooltip>
+      </React.Fragment>,
     ]
   }
   name={
