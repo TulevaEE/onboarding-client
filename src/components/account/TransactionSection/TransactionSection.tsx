@@ -121,15 +121,9 @@ export const TransactionSection: React.FunctionComponent<{
         <h2 className="mb-4 lead">{children || <FormattedMessage id="transactions.title" />}</h2>
         <div>
           {limit ? (
-            <>
-              <Link to="/transactions">
-                <FormattedMessage id="transactions.seeAll" />
-              </Link>
-              <span className="mx-2">·</span>
-              <Link to="/contributions">
-                <FormattedMessage id="contributions.seeAll" />
-              </Link>
-            </>
+            <Link to="/transactions">
+              <FormattedMessage id="transactions.seeAll" />
+            </Link>
           ) : (
             <Link to="/account">
               <FormattedMessage id="transactions.backToAccountPage" />
