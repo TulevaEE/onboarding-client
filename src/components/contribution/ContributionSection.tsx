@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 import moment from 'moment/moment';
 import sumBy from 'lodash/sumBy';
@@ -14,7 +14,6 @@ export const ContributionSection: React.FunctionComponent<{
   pillar?: number;
   children?: React.ReactNode;
 }> = ({ limit, pillar, children }) => {
-  const intl = useIntl();
   const { data: contributions } = useContributions();
 
   if (!contributions) {
