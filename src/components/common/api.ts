@@ -4,6 +4,7 @@ import {
   Application,
   Authentication,
   CancellationMandate,
+  Contribution,
   Fund,
   FundBalance,
   IdCardSignatureResponse,
@@ -296,6 +297,12 @@ export function getPendingApplications(token: string): Promise<Application[]> {
 
 export function getTransactions(token: string): Promise<Transaction[]> {
   return get(getEndpoint('/v1/transactions'), undefined, {
+    Authorization: `Bearer ${token}`,
+  });
+}
+
+export function getContributions(token: string): Promise<Contribution[]> {
+  return get(getEndpoint('/v1/contributions'), undefined, {
     Authorization: `Bearer ${token}`,
   });
 }

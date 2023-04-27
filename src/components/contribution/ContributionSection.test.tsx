@@ -8,14 +8,14 @@ import config from 'react-global-configuration';
 import { QueryClient, QueryClientProvider } from 'react-query';
 
 import { IntlProvider } from 'react-intl';
-import { TransactionSection } from './TransactionSection';
+import { ContributionSection } from './ContributionSection';
 import { contribution } from './fixtures';
-import { fundsBackend } from '../../../test/backend';
+import { fundsBackend } from '../../test/backend';
 
 jest.mock('react-global-configuration');
 jest.mock('react-redux');
 
-describe('Transaction section', () => {
+describe('Contribution section', () => {
   const server = setupServer();
 
   function initializeComponent() {
@@ -31,7 +31,7 @@ describe('Transaction section', () => {
       >
         <MemoryRouter>
           <QueryClientProvider client={new QueryClient()}>
-            <TransactionSection />
+            <ContributionSection />
           </QueryClientProvider>
         </MemoryRouter>
       </IntlProvider>,
@@ -50,28 +50,28 @@ describe('Transaction section', () => {
     fundsBackend(server);
   });
 
-  it('does not render at all when there are no transactions', async () => {
-    mockTransactions([]);
+  it('does not render at all when there are no contributions', async () => {
+    mockContributions([]);
     initializeComponent();
     await waitForRequestToFinish();
-    expect(screen.queryByText('transactions.title')).not.toBeInTheDocument();
+    expect(screen.queryByText('contributions.title')).not.toBeInTheDocument();
   });
 
   it('does not render at all when there has been an error fetching', async () => {
     server.use(
-      rest.get('http://localhost/v1/transactions', (req, res, ctx) => {
+      rest.get('http://localhost/v1/contributions', (req, res, ctx) => {
         return res(ctx.status(500), ctx.json({ error: 'oh no' }));
       }),
     );
     initializeComponent();
     await waitForRequestToFinish();
-    expect(screen.queryByText('transactions.title')).not.toBeInTheDocument();
+    expect(screen.queryByText('contributions.title')).not.toBeInTheDocument();
   });
 
-  it('renders the title when there are transactions', async () => {
-    mockTransactions([contribution]);
+  it('renders the title when there are contributions', async () => {
+    mockContributions([contribution]);
     initializeComponent();
-    expect(await screen.findByText('transactions.title')).toBeInTheDocument();
+    expect(await screen.findByText('contributions.title')).toBeInTheDocument();
   });
 
   function waitForRequestToFinish() {
@@ -80,13 +80,13 @@ describe('Transaction section', () => {
     });
   }
 
-  function mockTransactions(transactions: any[]) {
+  function mockContributions(contributions: any[]) {
     server.use(
-      rest.get('http://localhost/v1/transactions', (req, res, ctx) => {
+      rest.get('http://localhost/v1/contributions', (req, res, ctx) => {
         if (req.headers.get('Authorization') !== 'Bearer mock token') {
           return res(ctx.status(401), ctx.json({ error: 'not authenticated correctly' }));
         }
-        return res(ctx.status(200), ctx.json(transactions));
+        return res(ctx.status(200), ctx.json(contributions));
       }),
     );
   }

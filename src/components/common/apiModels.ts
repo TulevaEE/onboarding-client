@@ -270,3 +270,11 @@ export enum TransactionType {
   CONTRIBUTION_CASH_WORKPLACE = 'CONTRIBUTION_CASH_WORKPLACE',
   SUBTRACTION = 'SUBTRACTION',
 }
+
+export interface Contribution {
+  time: string;
+  sender: string;
+  amount: number;
+  currency: Currency;
+  pillar: Pillar;
+}

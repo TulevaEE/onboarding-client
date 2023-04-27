@@ -3,11 +3,12 @@ import { useSelector } from 'react-redux';
 
 import {
   createApplicationCancellation,
+  getContributions,
   getFunds,
   getPendingApplications,
   getTransactions,
 } from './api';
-import { Application, CancellationMandate, Fund, Transaction } from './apiModels';
+import { Application, CancellationMandate, Contribution, Fund, Transaction } from './apiModels';
 
 function useTokenOrFail(): string {
   const token = useSelector<{ login: { token?: string } }, string | null>(
@@ -27,6 +28,11 @@ export function usePendingApplications(): UseQueryResult<Application[]> {
 export function useTransactions(): UseQueryResult<Transaction[]> {
   const token = useTokenOrFail();
   return useQuery('transactions', () => getTransactions(token));
+}
+
+export function useContributions(): UseQueryResult<Contribution[]> {
+  const token = useTokenOrFail();
+  return useQuery('contributions', () => getContributions(token));
 }
 
 export function useFunds(): UseQueryResult<Fund[]> {
