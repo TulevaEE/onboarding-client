@@ -11,6 +11,7 @@ describe('Return comparison start date options', () => {
       { value: '2005-10-03', label: 'returnComparison.period.twentyYears' },
       { value: '2010-10-03', label: 'returnComparison.period.fifteenYears' },
       { value: '2015-10-03', label: 'returnComparison.period.tenYears' },
+      { value: '2019-10-03', label: 'returnComparison.period.sixYears' },
       { value: '2020-10-03', label: 'returnComparison.period.fiveYears' },
       { value: '2022-10-03', label: 'returnComparison.period.threeYears' },
       { value: '2023-10-03', label: 'returnComparison.period.twoYears' },
