@@ -353,6 +353,8 @@
   "aml.occupation.unemployed": "Hetkel ei tööta",
 
   "thirdPillarPayment.title": "Sissemakse Tuleva III samba pensionifondi",
+  "thirdPillarPayment.giftTitle": "\uD83C\uDF81 Kingitus lähedasele - sissemakse tema Tuleva III Samba Pensionifondi",
+  "thirdPillarPayment.giftDescription": "Kas teadsid, et III samba saad tööle panna mitte ainult enda tuleviku tarbeks, vaid ka oma kõige kallimate inimeste jaoks? {br} Jah, sissemakseid on võimalik teha ka teise inimese III sambasse.",
 
   "thirdPillarPayment.recurringPayment.swedbank": "Püsimakse juhend Swedbankis",
   "thirdPillarPayment.recurringPayment.swedbank.login": "Vajuta allolevat nuppu ning logi sisse Swedbanki internetipanka.",
@@ -407,8 +409,10 @@
   "thirdPillarPayment.freeRecurringPayment": "Püsikorralduse tegemine on <b>tasuta</b>. Püsikorraldust saad igal ajal oma internetipangas muuta.",
   "thirdPillarPayment.makePayment": "Tee makse",
   "thirdPillarPayment.setupRecurringPayment": "Sisene internetipanka",
+  "thirdPillarPayment.giftRecipient": "Kellele soovid kingituse teha?",
   "thirdPillarPayment.singlePaymentAmount": "Kui suures summas soovid sissemakset teha?",
   "thirdPillarPayment.recurringPaymentAmount": "Kui suures summas soovid püsimakset teha?",
+  "thirdPillarPayment.giftPaymentAmount": "Kui suures summas soovid kingituse teha?",
   "thirdPillarPayment.perMonth": " kuus",
   "thirdPillarPayment.paymentType": "Millist tüüpi makset soovid teha?",
   "thirdPillarPayment.singlePaymentBank": "Vali pank, kust soovid makset teha:",
@@ -422,8 +426,7 @@
   "thirdPillarPayment.accountNumber.seb": "Pensionikeskuse SEB kontonumber",
   "thirdPillarPayment.accountNumber.lhv": "Pensionikeskuse LHV kontonumber",
   "thirdPillarPayment.accountNumber.luminor": "Pensionikeskuse Luminori kontonumber",
-  "thirdPillarPayment.processingCode": "III sammast tähistav töötluskood, mis on alati samasugune ja Tuleva III Samba Pensionifondi ISIN",
-  "thirdPillarPayment.processingCodeAndPensionAccountNumber": "III sammast tähistav töötluskood, sinu personaalne pensionikonto number ja Tuleva III Samba Pensionifondi ISIN",
+  "thirdPillarPayment.processingCodeAndPersonalCode": "III sammast tähistav töötluskood, isikukood ja Tuleva III Samba Pensionifondi ISIN",
   "thirdPillarPayment.pensionAccountNumber": "Sinu personaalne pensionikonto number",
 
   "thirdPillarSuccess.done": "Sissemakse tehtud",
@@ -439,7 +442,7 @@
   "applications.cancel": "Tühista avaldus",
   "applications.type.payment.title": "Sissemakse III samba fondi",
   "applications.type.payment.status": "Staatus",
-  "applications.type.payment.status.pending": "Teel Pensionikeskuse kontole",
+  "applications.type.payment.status.pending": "Teel pensionikontole",
   "applications.type.payment.targetFund": "Sihtfond",
   "applications.type.payment.amount": "Summa",
   "applications.type.transfer.title": "Osakute vahetamise avaldus",

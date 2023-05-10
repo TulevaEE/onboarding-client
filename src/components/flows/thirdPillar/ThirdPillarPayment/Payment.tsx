@@ -17,9 +17,9 @@ import { SebRecurringPaymentDetails } from './paymentDetails/SebRecurringPayment
 import { LhvRecurringPaymentDetails } from './paymentDetails/LhvRecurringPaymentDetails';
 
 export const Payment: React.FunctionComponent<{
-  pensionAccountNumber: string;
+  personalCode: string;
   token: string;
-}> = ({ pensionAccountNumber, token }) => {
+}> = ({ personalCode, token }) => {
   const { formatMessage } = useIntl();
 
   const [paymentType, setPaymentType] = useState<PaymentType>(PaymentType.SINGLE);
@@ -74,6 +74,7 @@ export const Payment: React.FunctionComponent<{
         value={paymentAmount}
         onChange={(event) => setPaymentAmount(event.target.value)}
         onWheel={(event) => event.currentTarget.blur()}
+        className="mt-5"
       />
 
       <div className="payment-amount-input-footer">
@@ -145,15 +146,12 @@ export const Payment: React.FunctionComponent<{
           {paymentBank === 'lhv' && <LhvRecurringPaymentDetails />}
 
           {paymentBank === 'luminor' && (
-            <LuminorRecurringPaymentDetails
-              amount={paymentAmount}
-              pensionAccountNumber={pensionAccountNumber}
-            />
+            <LuminorRecurringPaymentDetails amount={paymentAmount} personalCode={personalCode} />
           )}
 
           {paymentBank === 'other' && (
             <OtherBankPaymentDetails
-              pensionAccountNumber={pensionAccountNumber}
+              personalCode={personalCode}
               amount={paymentAmount}
               paymentType={PaymentType.RECURRING}
             />
@@ -162,7 +160,7 @@ export const Payment: React.FunctionComponent<{
       )}
       {paymentType === PaymentType.SINGLE && paymentBank === 'other' && (
         <OtherBankPaymentDetails
-          pensionAccountNumber={pensionAccountNumber}
+          personalCode={personalCode}
           amount={paymentAmount}
           paymentType={PaymentType.SINGLE}
         />
@@ -187,6 +185,7 @@ export const Payment: React.FunctionComponent<{
                 onClick={() => {
                   redirectToPayment(
                     {
+                      recipientPersonalCode: personalCode,
                       amount: Number(paymentAmount),
                       currency: 'EUR',
                       type: paymentType,
@@ -242,7 +241,7 @@ export const Payment: React.FunctionComponent<{
 };
 
 const mapStateToProps = (state: State) => ({
-  pensionAccountNumber: state.login.user && state.login.user.pensionAccountNumber,
+  personalCode: state.login.user && state.login.user.personalCode,
   token: state.login.token,
 });
 export default connect(mapStateToProps)(Payment);

@@ -345,7 +345,7 @@ export function redirectToPayment(payment: Payment, token: string): void {
 }
 
 function getWindow(paymentType: PaymentType): Window {
-  if (paymentType === PaymentType.SINGLE) {
+  if (paymentType !== PaymentType.RECURRING) {
     return window;
   }
   const newWindow = window.open('', '_blank'); // this might be blocked by popup blockers

@@ -232,6 +232,7 @@ export interface IdCardSignatureStatusResponse {
 }
 
 export interface Payment {
+  recipientPersonalCode: string;
   amount: number;
   currency: Currency;
   type: PaymentType;
@@ -243,6 +244,7 @@ export type Currency = 'EUR';
 export enum PaymentType {
   SINGLE = 'SINGLE',
   RECURRING = 'RECURRING',
+  GIFT = 'GIFT',
 }
 
 export enum Bank {

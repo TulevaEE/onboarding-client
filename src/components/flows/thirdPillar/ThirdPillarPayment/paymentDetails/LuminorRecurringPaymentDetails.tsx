@@ -4,12 +4,11 @@ import { AccountNameRow } from './row/AccountNameRow';
 import { PaymentAmountRow } from './row/PaymentAmountRow';
 import { AccountNumberRow } from './row/AccountNumberRow';
 import { PaymentDescriptionRow } from './row/PaymentDescriptionRow';
-import { PaymentReferenceRow } from './row/PaymentReferenceRow';
 
 export const LuminorRecurringPaymentDetails: React.FunctionComponent<{
   amount: string;
-  pensionAccountNumber: string;
-}> = ({ amount, pensionAccountNumber }) => (
+  personalCode: string;
+}> = ({ amount, personalCode }) => (
   <div className="mt-4 recurring-payment-details p-4">
     <h3>
       <FormattedMessage id="thirdPillarPayment.recurringPayment.luminor" />
@@ -41,12 +40,9 @@ export const LuminorRecurringPaymentDetails: React.FunctionComponent<{
               <AccountNumberRow bank="luminor">
                 <FormattedMessage id="thirdPillarPayment.accountNumber" />
               </AccountNumberRow>
-              <PaymentDescriptionRow>
+              <PaymentDescriptionRow personalCode={personalCode}>
                 <FormattedMessage id="thirdPillarPayment.description" />
               </PaymentDescriptionRow>
-              <PaymentReferenceRow pensionAccountNumber={pensionAccountNumber}>
-                <FormattedMessage id="thirdPillarPayment.reference" />
-              </PaymentReferenceRow>
             </tbody>
           </table>
         </div>
