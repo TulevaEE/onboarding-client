@@ -55,12 +55,14 @@ describe('When a user is making a third pillar payment', () => {
 
     initializeComponent();
 
-    history.push('/3rd-pillar-flow/payment');
+    history.push('/3rd-pillar-gift');
   });
 
-  test('payment page is being shown', async () => {
+  test('gift page is being shown', async () => {
     expect(
-      await screen.findByText('Payment instructions for Tuleva III pillar pension fund'),
+      await screen.findByText(
+        '🎁 A gift to a loved one - a contribution to their Tuleva III Pillar Pension Fund',
+      ),
     ).toBeInTheDocument();
     const makePayment = await makePaymentButton();
     expect(makePayment).toBeDisabled();
@@ -79,9 +81,11 @@ describe('When a user is making a third pillar payment', () => {
   });
 
   test('can start a one time payment', async () => {
+    const personalCode = await personalCodeInput();
     const amount = await amountInput();
     const lhvBank = await lhvButton();
     const makePayment = await makePaymentButton();
+    userEvent.type(personalCode, '49001011238');
     userEvent.type(amount, '23');
     userEvent.click(lhvBank);
     userEvent.click(makePayment);
@@ -94,53 +98,12 @@ describe('When a user is making a third pillar payment', () => {
     expect(windowLocation).toHaveBeenCalledTimes(1);
   });
 
-  test('can start a recurring payment', async () => {
-    const recurringPayment = await recurringPaymentOption();
-    const amount = await amountInput();
-    const lhvBank = await lhvButton();
-    userEvent.click(recurringPayment);
-    userEvent.type(amount, '34');
-    userEvent.click(lhvBank);
-
-    const logIntoInternetBank = await logIntoInternetBankButton();
-    userEvent.click(logIntoInternetBank);
-
-    await waitFor(() =>
-      expect(windowLocation).toHaveBeenCalledWith('https://LHV.EE/RECURRING.34.EUR'),
-    );
-    expect(windowLocation).toHaveBeenCalledTimes(1);
-  });
-
-  test('can see recurring payment details', async () => {
-    const recurringPayment = await recurringPaymentOption();
-    const lhvBank = await otherBankButton();
-    userEvent.click(recurringPayment);
-    userEvent.click(lhvBank);
-
-    expect(await screen.findByText('Pay to:')).toBeInTheDocument();
-    expect(screen.getByText('AS Pensionikeskus')).toBeInTheDocument();
-    expect(screen.getByText('Account number:')).toBeInTheDocument();
-    expect(screen.getByText('EE362200221067235244')).toBeInTheDocument();
-    expect(screen.getByText('Payment description:')).toBeInTheDocument();
-    expect(screen.getByText('30101119828, IK:39001011234, EE3600001707')).toBeInTheDocument();
-  });
-
-  test('can go back to account page after seeing other banks recurring payment details', async () => {
-    const recurringPayment = await recurringPaymentOption();
-    const amount = await amountInput();
-    const otherBank = await otherBankButton();
-
-    userEvent.click(recurringPayment);
-    userEvent.type(amount, '34');
-    userEvent.click(otherBank);
-    const backToAccountPage = await backToAccountPageButton();
-    userEvent.click(backToAccountPage);
-
-    expect(await screen.findByText('Hi, John Doe!')).toBeInTheDocument();
-  });
-
   test('can see Other bank payment details', async () => {
+    const personalCode = await personalCodeInput();
+    const amount = await amountInput();
     const otherBank = await otherBankButton();
+    userEvent.type(personalCode, '49001011238');
+    userEvent.type(amount, '23');
     userEvent.click(otherBank);
 
     expect(await screen.findByText('Pay to:')).toBeInTheDocument();
@@ -155,12 +118,14 @@ describe('When a user is making a third pillar payment', () => {
       screen.getByText('30101119828', {
         exact: false,
       }),
-    ).toHaveTextContent('30101119828, IK:39001011234, EE3600001707');
+    ).toHaveTextContent('30101119828, IK:49001011238, EE3600001707');
     expect(screen.queryByText('Payment reference:')).not.toBeInTheDocument();
     expect(screen.queryByText('9876543210')).not.toBeInTheDocument();
   });
 
   test('can go back to account page after seeing the other bank payment details', async () => {
+    const personalCode = await personalCodeInput();
+    userEvent.type(personalCode, '49001011238');
     const amount = await amountInput();
     userEvent.type(amount, '34');
     const otherBank = await otherBankButton();
@@ -171,27 +136,12 @@ describe('When a user is making a third pillar payment', () => {
     expect(await screen.findByText('Hi, John Doe!')).toBeInTheDocument();
   });
 
-  test('can switch between Single and Recurring payment', async () => {
-    const recurringPayment = await recurringPaymentOption();
-    const amount = await amountInput();
-    const lhvBank = await lhvButton();
-    userEvent.click(recurringPayment);
-    userEvent.type(amount, '34');
-    userEvent.click(lhvBank);
-    expect(queryMakePaymentButton()).not.toBeInTheDocument();
-    expect(await logIntoInternetBankButton()).toBeInTheDocument();
-    expect(await backToAccountPageButton()).toBeInTheDocument();
-
-    const singlePayment = await singlePaymentOption();
-    userEvent.click(singlePayment);
-    expect(queryLogIntoInternetBankButton()).not.toBeInTheDocument();
-    expect(await makePaymentButton()).toBeInTheDocument();
-  });
-
-  const singlePaymentOption = async () => screen.findByLabelText('Single payment');
-  const recurringPaymentOption = async () => screen.findByLabelText('Recurring payment');
+  const personalCodeInput: () => Promise<HTMLInputElement> = async () =>
+    screen.findByLabelText('Who should receive the gift?', {
+      exact: false,
+    });
   const amountInput: () => Promise<HTMLInputElement> = async () =>
-    screen.findByLabelText('What is the payment amount?', {
+    screen.findByLabelText('What is the gift payment amount?', {
       exact: false,
     });
   const lhvButton: () => Promise<HTMLInputElement> = async () => screen.findByLabelText('LHV');
