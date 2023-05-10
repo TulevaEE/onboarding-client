@@ -22,6 +22,8 @@ import SignUpPage from '../newUserFlow';
 import Payment from '../flows/thirdPillar/ThirdPillarPayment/Payment';
 import { TransactionPage } from '../account/TransactionSection/TransactionPage';
 import { ContributionPage } from '../contribution/ContributionPage';
+import Gift from '../flows/thirdPillar/ThirdPillarPayment/ThirdPillarGift';
+import ThirdPillarSuccess from '../flows/thirdPillar/ThirdPillarSuccess';
 
 export const ACCOUNT_PATH = '/account';
 export const AML_PATH = '/aml';
@@ -74,6 +76,8 @@ export class LoggedInApp extends PureComponent {
               <Route path="/2nd-pillar-flow" component={SecondPillarFlow} />
               <Route path="/3rd-pillar-flow" component={ThirdPillarFlow} />
               <Route path="/3rd-pillar-payment" component={Payment} />
+              <Route path="/3rd-pillar-success" component={ThirdPillarSuccess} />
+              <Route path="/3rd-pillar-gift" component={Gift} />
               <Route path="/transactions" component={TransactionPage} />
               <Route path="/contributions" component={ContributionPage} />
               <Route path={cancellationFlowPath} component={CancellationFlow} />

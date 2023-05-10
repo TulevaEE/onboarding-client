@@ -5,7 +5,8 @@ export const BankButton: React.FunctionComponent<{
   bankName: string;
   paymentBank: string;
   setPaymentBank: (paymentBank: string) => void;
-}> = ({ bankKey, bankName, paymentBank, setPaymentBank }) => {
+  disabled?: boolean;
+}> = ({ bankKey, bankName, paymentBank, setPaymentBank, disabled = false }) => {
   return (
     <div className="btn-group-toggle d-inline-block mt-2 mr-2">
       <label
@@ -21,6 +22,7 @@ export const BankButton: React.FunctionComponent<{
           onChange={() => {
             setPaymentBank(bankKey);
           }}
+          disabled={disabled}
         />
         {bankName}
       </label>

@@ -10,7 +10,7 @@ import { Shimmer } from '../../../common/shimmer/Shimmer';
 import { getValueSum, getWeightedAverageFee } from '../../../account/AccountStatement/fundSelector';
 
 const ThirdPillarSuccessDefault = () => (
-  <div className="row">
+  <div className="row mt-5">
     <div className="col-12 px-0">
       <SuccessNotice>
         <h2 className="text-center mt-3">
@@ -39,7 +39,7 @@ export const ThirdPillarSuccess = ({ secondPillarSourceFunds }) => {
   const weightedAverageFee =
     secondPillarTotalContributionAmount <= 0 ? 0 : getWeightedAverageFee(secondPillarSourceFunds);
 
-  if (weightedAverageFee < tooHighAverageAumFee) {
+  if (weightedAverageFee <= tooHighAverageAumFee) {
     return ThirdPillarSuccessDefault();
   }
 
@@ -57,7 +57,7 @@ export const ThirdPillarSuccess = ({ secondPillarSourceFunds }) => {
   const savingsAmount = currentFundsFeeAmount - ourFundFeeAmount;
 
   return (
-    <div className="row">
+    <div className="row mt-5">
       <div className="col-12 px-0">
         <SuccessNotice>
           <h2 className="text-center mt-3">
@@ -80,7 +80,7 @@ export const ThirdPillarSuccess = ({ secondPillarSourceFunds }) => {
                     height: ourFundHeight,
                   }}
                 >
-                  <div className={styles.columncontent}>{ourFundFeeAmount}€</div>
+                  <div className={styles.columncontent}>{ourFundFeeAmount}&nbsp;€</div>
                 </div>
               </div>
               <div className="col-md-2 col-1" />
@@ -91,7 +91,7 @@ export const ThirdPillarSuccess = ({ secondPillarSourceFunds }) => {
                     height: currentFundsHeight,
                   }}
                 >
-                  <div className={styles.columncontent}>{currentFundsFeeAmount}€</div>
+                  <div className={styles.columncontent}>{currentFundsFeeAmount}&nbsp;€</div>
                 </div>
               </div>
             </div>

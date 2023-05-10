@@ -7,8 +7,9 @@ export const PaymentAmountInput: React.FunctionComponent<{
   value: string;
   onChange: ChangeEventHandler<HTMLInputElement>;
   onWheel: WheelEventHandler<HTMLInputElement>;
-}> = ({ paymentType, value, onChange, onWheel }) => (
-  <label className="mt-5" htmlFor="payment-amount">
+  className?: string;
+}> = ({ paymentType, value, onChange, onWheel, className = '' }) => (
+  <label className={className} htmlFor="payment-amount">
     <b>
       {paymentType === PaymentType.SINGLE && (
         <FormattedMessage id="thirdPillarPayment.singlePaymentAmount" />
@@ -16,13 +17,16 @@ export const PaymentAmountInput: React.FunctionComponent<{
       {paymentType === PaymentType.RECURRING && (
         <FormattedMessage id="thirdPillarPayment.recurringPaymentAmount" />
       )}
+      {paymentType === PaymentType.GIFT && (
+        <FormattedMessage id="thirdPillarPayment.giftPaymentAmount" />
+      )}
     </b>
     <div className="form-inline">
       <div className="input-group input-group-lg mt-2">
         <input
           id="payment-amount"
           type="number"
-          placeholder={paymentType === PaymentType.SINGLE ? '1000' : '100'}
+          placeholder={paymentType === PaymentType.RECURRING ? '100' : '1000'}
           className="form-control form-control-lg"
           min="0.00"
           step="0.01"

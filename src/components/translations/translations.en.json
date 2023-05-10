@@ -377,6 +377,8 @@
   "aml.occupation.unemployed": "Unemployed",
 
   "thirdPillarPayment.title": "Payment instructions for Tuleva III pillar pension fund",
+  "thirdPillarPayment.giftTitle": "\uD83C\uDF81 A gift to a loved one - a contribution to their Tuleva III Pillar Pension Fund",
+  "thirdPillarPayment.giftDescription": "Did you know that you can put the III pillar to work for your loved ones? Yes, it is also possible to make contributions to another person's III pillar.",
 
   "thirdPillarPayment.recurringPayment.swedbank": "How to set up a recurring payment in Swedbank",
   "thirdPillarPayment.recurringPayment.swedbank.login": "Click the button below and log into your Swedbank internet bank.",
@@ -430,8 +432,10 @@
   "thirdPillarPayment.freeRecurringPayment": "Setting up a standing order is <b>free of charge</b>. You can change your standing order in your internet bank at any time.",
   "thirdPillarPayment.makePayment": "Make payment",
   "thirdPillarPayment.setupRecurringPayment": "Log into internet bank",
+  "thirdPillarPayment.giftRecipient": "Who should receive the gift?",
   "thirdPillarPayment.singlePaymentAmount": "What is the payment amount?",
   "thirdPillarPayment.recurringPaymentAmount": "What is the recurring payment amount?",
+  "thirdPillarPayment.giftPaymentAmount": "What is the gift payment amount?",
   "thirdPillarPayment.perMonth": "/month",
   "thirdPillarPayment.paymentType": "What is the type of payment?",
   "thirdPillarPayment.singlePaymentBank": "Choose your payment bank:",
@@ -445,8 +449,7 @@
   "thirdPillarPayment.accountNumber.seb": "Estonian Pension Registry's SEB account number",
   "thirdPillarPayment.accountNumber.lhv": "Estonian Pension Registry's LHV account number",
   "thirdPillarPayment.accountNumber.luminor": "Estonian Pension Registry's Luminor account number",
-  "thirdPillarPayment.processingCode": "III pillar processing code and Tuleva III Pillar Pension Fund ISIN",
-  "thirdPillarPayment.processingCodeAndPensionAccountNumber": "III pillar processing code, your pension account number and Tuleva III Pillar Pension Fund ISIN",
+  "thirdPillarPayment.processingCodeAndPersonalCode": "III pillar processing code, personal code and Tuleva III Pillar Pension Fund ISIN",
   "thirdPillarPayment.pensionAccountNumber": "Your pension account number",
 
   "thirdPillarSuccess.done": "Payment done",

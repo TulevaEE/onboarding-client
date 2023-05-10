@@ -8,9 +8,9 @@ import { PaymentType } from '../../../../common/apiModels';
 
 export const OtherBankPaymentDetails: React.FunctionComponent<{
   amount: string;
-  pensionAccountNumber: string;
+  personalCode: string;
   paymentType: PaymentType;
-}> = ({ amount, pensionAccountNumber, paymentType }) => (
+}> = ({ amount, personalCode, paymentType }) => (
   <div className="mt-4 recurring-payment-details p-4">
     <h3>
       <FormattedMessage id={`thirdPillarPayment.${paymentType}.other`} />
@@ -38,7 +38,7 @@ export const OtherBankPaymentDetails: React.FunctionComponent<{
               <AccountNumberRow bank="swedbank">
                 <FormattedMessage id="thirdPillarPayment.accountNumber" />
               </AccountNumberRow>
-              <PaymentDescriptionRow bank="other" pensionAccountNumber={pensionAccountNumber}>
+              <PaymentDescriptionRow personalCode={personalCode}>
                 <FormattedMessage id="thirdPillarPayment.paymentDescription" />
               </PaymentDescriptionRow>
               <PaymentAmountRow amount={amount}>
