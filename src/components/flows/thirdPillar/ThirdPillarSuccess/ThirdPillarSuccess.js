@@ -7,7 +7,7 @@ import { SuccessNotice } from '../../common/SuccessNotice/SuccessNotice';
 import { Notice } from '../../common/Notice/Notice';
 import styles from './ThirdPillarSuccess.module.scss';
 import { Shimmer } from '../../../common/shimmer/Shimmer';
-import { getValueSum, getWeightedAverageFee } from '../../../account/AccountStatement/fundSelector';
+import { getValueSum } from '../../../account/AccountStatement/fundSelector';
 
 const ThirdPillarSuccessDefault = () => (
   <div className="row mt-5">
@@ -27,7 +27,7 @@ const ThirdPillarSuccessDefault = () => (
   </div>
 );
 
-export const ThirdPillarSuccess = ({ secondPillarSourceFunds }) => {
+export const ThirdPillarSuccess = ({ secondPillarSourceFunds, weightedAverageFee }) => {
   const ourFundIsin = 'EE3600109435';
   const maximumFundColumnHeight = 150;
   const tooHighAverageAumFee = 0.005;
@@ -36,8 +36,6 @@ export const ThirdPillarSuccess = ({ secondPillarSourceFunds }) => {
     return <Shimmer height={26} />;
   }
   const secondPillarTotalContributionAmount = getValueSum(secondPillarSourceFunds);
-  const weightedAverageFee =
-    secondPillarTotalContributionAmount <= 0 ? 0 : getWeightedAverageFee(secondPillarSourceFunds);
 
   if (weightedAverageFee <= tooHighAverageAumFee) {
     return ThirdPillarSuccessDefault();
@@ -126,14 +124,17 @@ export const ThirdPillarSuccess = ({ secondPillarSourceFunds }) => {
 
 ThirdPillarSuccess.propTypes = {
   secondPillarSourceFunds: Types.arrayOf(Types.shape({})),
+  weightedAverageFee: Types.number,
 };
 
 ThirdPillarSuccess.defaultProps = {
   secondPillarSourceFunds: [],
+  weightedAverageFee: 0,
 };
 
 const mapStateToProps = (state) => ({
   secondPillarSourceFunds: state.exchange.sourceFunds,
+  weightedAverageFee: state.login.userConversion?.weightedAverageFee,
 });
 const mapDispatchToProps = (dispatch) => bindActionCreators({}, dispatch);
 

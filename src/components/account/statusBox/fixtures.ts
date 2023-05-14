@@ -1,6 +1,7 @@
 import { SourceFund, UserConversion } from '../../common/apiModels';
 
 export const incompleteConversion: UserConversion = {
+  weightedAverageFee: 0.004,
   secondPillar: {
     selectionComplete: false,
     selectionPartial: false,
@@ -24,6 +25,7 @@ export const incompleteConversion: UserConversion = {
 };
 
 export const completeConversion: UserConversion = {
+  weightedAverageFee: 0.004,
   secondPillar: {
     selectionComplete: true,
     selectionPartial: true,
@@ -47,6 +49,7 @@ export const completeConversion: UserConversion = {
 };
 
 export const completeThirdPillarConversion: UserConversion = {
+  weightedAverageFee: 0.004,
   secondPillar: {
     selectionComplete: false,
     selectionPartial: false,
@@ -70,6 +73,7 @@ export const completeThirdPillarConversion: UserConversion = {
 };
 
 export const completeSecondPillarConversion: UserConversion = {
+  weightedAverageFee: 0.004,
   secondPillar: {
     selectionComplete: true,
     selectionPartial: true,

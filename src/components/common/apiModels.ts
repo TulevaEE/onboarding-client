@@ -172,6 +172,7 @@ export interface User {
 export interface UserConversion {
   secondPillar: Conversion;
   thirdPillar: Conversion;
+  weightedAverageFee: number;
 }
 
 export interface Amount {

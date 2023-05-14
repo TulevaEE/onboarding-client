@@ -57,6 +57,7 @@ describe('Third pillar success step', () => {
   beforeEach(() => {
     const props = {
       secondPillarSourceFunds: secondPillarSourceFundsLowFee,
+      weightedAverageFee: 0.0049,
     };
     component = shallow(<ThirdPillarSuccess {...props} />);
   });
@@ -77,6 +78,7 @@ describe('Third pillar success step', () => {
   it('shows the user a high fee success message and cta button', () => {
     component.setProps({
       secondPillarSourceFunds: secondPillarSourceFundsHighFee,
+      weightedAverageFee: 0.0051,
     });
 
     expect(component.contains(<FormattedMessage id="thirdPillarSuccess.done" />)).toBe(true);
@@ -86,15 +88,16 @@ describe('Third pillar success step', () => {
     );
     expect(component.contains(<FormattedMessage id="thirdPillarSuccess.ourFund" />)).toBe(true);
     expect(component.contains(<FormattedMessage id="thirdPillarSuccess.currentFund" />)).toBe(true);
+
     expect(
       component.contains(
         <FormattedMessage
           id="thirdPillarSuccess.notice.description"
           values={{
-            currentFundsFee: 10,
-            currentFundsFeeAmount: 10000,
+            currentFundsFee: 0.51,
+            currentFundsFeeAmount: 510,
             ourFundFeeAmount: 400,
-            savingsAmount: 9600,
+            savingsAmount: 110,
           }}
         />,
       ),
