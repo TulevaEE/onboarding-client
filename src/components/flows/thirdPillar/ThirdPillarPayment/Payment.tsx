@@ -27,7 +27,11 @@ export const Payment: React.FunctionComponent<{
   const [paymentBank, setPaymentBank] = useState<string>('');
 
   const isDisabled = () =>
-    !paymentBank || paymentBank === 'other' || !paymentAmount || Number(paymentAmount) <= 0;
+    !personalCode ||
+    !paymentBank ||
+    paymentBank === 'other' ||
+    !paymentAmount ||
+    Number(paymentAmount) <= 0;
 
   return (
     <>
