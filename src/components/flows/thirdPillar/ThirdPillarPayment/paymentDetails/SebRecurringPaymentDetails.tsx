@@ -3,16 +3,16 @@ import { FormattedMessage } from 'react-intl';
 import { TextRow } from './row/TextRow';
 
 export const SebRecurringPaymentDetails: React.FunctionComponent = () => (
-  <div className="mt-4 recurring-payment-details p-4">
+  <div className="mt-4 payment-details p-4">
     <h3>
-      <FormattedMessage id="thirdPillarPayment.recurringPayment.seb" />
+      <FormattedMessage id="thirdPillarPayment.RECURRING.seb" />
     </h3>
     <div className="d-sm-flex py-2">
       <span className="flex-shrink-0 tv-step__number mr-3">
         <b>1</b>
       </span>
       <span className="flex-grow-1 align-self-center">
-        <FormattedMessage id="thirdPillarPayment.recurringPayment.seb.login" />
+        <FormattedMessage id="thirdPillarPayment.RECURRING.seb.login" />
       </span>
     </div>
     <div className="d-sm-flex py-2">
@@ -20,7 +20,7 @@ export const SebRecurringPaymentDetails: React.FunctionComponent = () => (
         <b>2</b>
       </span>
       <span className="flex-grow-1 align-self-center">
-        <FormattedMessage id="thirdPillarPayment.recurringPayment.seb.form" />
+        <FormattedMessage id="thirdPillarPayment.RECURRING.seb.form" />
         <div className="mt-2 p-4 payment-details-table">
           <table>
             <tbody>

@@ -7,16 +7,16 @@ import { TextRow } from './row/TextRow';
 export const SwedbankRecurringPaymentDetails: React.FunctionComponent<{
   amount: string;
 }> = ({ amount }) => (
-  <div className="mt-4 recurring-payment-details p-4">
+  <div className="mt-4 payment-details p-4">
     <h3>
-      <FormattedMessage id="thirdPillarPayment.recurringPayment.swedbank" />
+      <FormattedMessage id="thirdPillarPayment.RECURRING.swedbank" />
     </h3>
     <div className="d-sm-flex py-2">
       <span className="flex-shrink-0 tv-step__number mr-3">
         <b>1</b>
       </span>
       <span className="flex-grow-1 align-self-center">
-        <FormattedMessage id="thirdPillarPayment.recurringPayment.swedbank.login" />
+        <FormattedMessage id="thirdPillarPayment.RECURRING.swedbank.login" />
       </span>
     </div>
     <div className="d-sm-flex py-2">
@@ -24,7 +24,7 @@ export const SwedbankRecurringPaymentDetails: React.FunctionComponent<{
         <b>2</b>
       </span>
       <span className="flex-grow-1 align-self-center">
-        <FormattedMessage id="thirdPillarPayment.recurringPayment.swedbank.form" />
+        <FormattedMessage id="thirdPillarPayment.RECURRING.swedbank.form" />
         <div className="mt-2 p-4 payment-details-table">
           <table>
             <tbody>

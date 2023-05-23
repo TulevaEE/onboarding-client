@@ -245,6 +245,7 @@ export type Currency = 'EUR';
 export enum PaymentType {
   SINGLE = 'SINGLE',
   RECURRING = 'RECURRING',
+  EMPLOYER = 'EMPLOYER',
   GIFT = 'GIFT',
 }
 
