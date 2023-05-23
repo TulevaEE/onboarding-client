@@ -11,7 +11,7 @@ export const OtherBankPaymentDetails: React.FunctionComponent<{
   personalCode: string;
   paymentType: PaymentType;
 }> = ({ amount, personalCode, paymentType }) => (
-  <div className="mt-4 recurring-payment-details p-4">
+  <div className="mt-4 payment-details p-4">
     <h3>
       <FormattedMessage id={`thirdPillarPayment.${paymentType}.other`} />
     </h3>
