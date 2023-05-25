@@ -15,14 +15,12 @@ import { OtherBankPaymentDetails } from './paymentDetails/OtherBankPaymentDetail
 import { SwedbankRecurringPaymentDetails } from './paymentDetails/SwedbankRecurringPaymentDetails';
 import { SebRecurringPaymentDetails } from './paymentDetails/SebRecurringPaymentDetails';
 import { LhvRecurringPaymentDetails } from './paymentDetails/LhvRecurringPaymentDetails';
-import { EmployerPaymentDetails } from './paymentDetails/EmployerPaymentDetails';
+import EmployerPayment from './paymentDetails/EmployerPaymentDetails';
 
 export const Payment: React.FunctionComponent<{
   personalCode: string;
-  pensionAccountNumber: string;
-  fullName: string;
   token: string;
-}> = ({ personalCode, pensionAccountNumber, fullName, token }) => {
+}> = ({ personalCode, token }) => {
   const { formatMessage } = useIntl();
 
   const [paymentType, setPaymentType] = useState<PaymentType>(PaymentType.SINGLE);
@@ -72,19 +70,21 @@ export const Payment: React.FunctionComponent<{
           <FormattedMessage id="thirdPillarPayment.RECURRING" />
         </p>
       </Radio>
-      <Radio
-        name="payment-type"
-        id="payment-type-employer"
-        className="mt-3"
-        selected={paymentType === PaymentType.EMPLOYER}
-        onSelect={() => {
-          setPaymentType(PaymentType.EMPLOYER);
-        }}
-      >
-        <p className="m-0">
-          <FormattedMessage id="thirdPillarPayment.EMPLOYER" />
-        </p>
-      </Radio>
+      {false && (
+        <Radio
+          name="payment-type"
+          id="payment-type-employer"
+          className="mt-3"
+          selected={paymentType === PaymentType.EMPLOYER}
+          onSelect={() => {
+            setPaymentType(PaymentType.EMPLOYER);
+          }}
+        >
+          <p className="m-0">
+            <FormattedMessage id="thirdPillarPayment.EMPLOYER" />
+          </p>
+        </Radio>
+      )}
       {(paymentType === PaymentType.SINGLE || paymentType === PaymentType.RECURRING) && (
         <>
           <PaymentAmountInput
@@ -265,7 +265,7 @@ export const Payment: React.FunctionComponent<{
       )}
       {paymentType === PaymentType.EMPLOYER && (
         <>
-          <EmployerPaymentDetails pensionAccountNumber={pensionAccountNumber} fullName={fullName} />
+          <EmployerPayment />
           <a className="btn btn-light text-nowrap mt-4" href="/account">
             <FormattedMessage id="thirdPillarPayment.backToAccountPage" />
           </a>
@@ -277,8 +277,6 @@ export const Payment: React.FunctionComponent<{
 
 const mapStateToProps = (state: State) => ({
   personalCode: state.login.user && state.login.user.personalCode,
-  pensionAccountNumber: state.login.user && state.login.user.pensionAccountNumber,
-  fullName: state.login.user && `${state.login.user.firstName} ${state.login.user.lastName}`,
   token: state.login.token,
 });
 export default connect(mapStateToProps)(Payment);
