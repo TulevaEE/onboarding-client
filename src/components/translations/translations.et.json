@@ -430,6 +430,18 @@
   "thirdPillarPayment.processingCodeAndPersonalCode": "III sammast tähistav töötluskood, isikukood ja Tuleva III Samba Pensionifondi ISIN",
   "thirdPillarPayment.pensionAccountNumber": "Sinu personaalne pensionikonto number",
 
+  "thirdPillarPayment.EMPLOYER.title": "Avaldus tööandjale otse palgast III sambasse maksmiseks",
+  "thirdPillarPayment.EMPLOYER.form": "Salvesta avalduse blankett",
+  "thirdPillarPayment.EMPLOYER.formFields": "Täida avalduse väljad:",
+  "thirdPillarPayment.EMPLOYER.employerName": "Tööandja nimi",
+  "thirdPillarPayment.EMPLOYER.employerName.description": "Sinu tööandja nimi",
+  "thirdPillarPayment.EMPLOYER.percent": "Protsent brutopalgast",
+  "thirdPillarPayment.EMPLOYER.percent.description": "Protsent sinu brutopalgast",
+  "thirdPillarPayment.EMPLOYER.pensionAccountNumber": "Sinu pensionikonto number",
+  "thirdPillarPayment.EMPLOYER.fullName": "Ees- ja perekonnanimi",
+  "thirdPillarPayment.EMPLOYER.digitalSignature": "Digiallkirjasta avaldus ja saada e-kirjaga oma tööandja raamatupidajale.",
+  "thirdPillarPayment.EMPLOYER.salaryPayment": "Iga palgapäev tehakse automaatne sissemakse sinu III sambasse.",
+
   "thirdPillarSuccess.done": "Sissemakse tehtud",
   "thirdPillarSuccess.message": "Makse jõuab fondi 2 tööpäeva jooksul.",
   "thirdPillarSuccess.notice.header": "Tasudeks makstud eurod tootlust ei teeni",

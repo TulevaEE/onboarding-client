@@ -453,6 +453,18 @@
   "thirdPillarPayment.processingCodeAndPersonalCode": "III pillar processing code, personal code and Tuleva III Pillar Pension Fund ISIN",
   "thirdPillarPayment.pensionAccountNumber": "Your pension account number",
 
+  "thirdPillarPayment.EMPLOYER.title": "Application to the employer to pay directly from the salary to III pillar",
+  "thirdPillarPayment.EMPLOYER.form": "Save the application form",
+  "thirdPillarPayment.EMPLOYER.formFields": "Fill in the fields:",
+  "thirdPillarPayment.EMPLOYER.employerName": "Employer name",
+  "thirdPillarPayment.EMPLOYER.employerName.description": "Your employer name",
+  "thirdPillarPayment.EMPLOYER.percent": "Percentage of gross salary",
+  "thirdPillarPayment.EMPLOYER.percent.description": "A percentage of your gross salary",
+  "thirdPillarPayment.EMPLOYER.pensionAccountNumber": "Your pension account number",
+  "thirdPillarPayment.EMPLOYER.fullName": "First and last name",
+  "thirdPillarPayment.EMPLOYER.digitalSignature": "Digitally sign the application and e-mail it to your employer's accountant.",
+  "thirdPillarPayment.EMPLOYER.salaryPayment": "Every payday, an automatic contribution is made to your III pillar.",
+
   "thirdPillarSuccess.done": "Payment done",
   "thirdPillarSuccess.message": "Payment will reach the fund within 2 working days.",
   "thirdPillarSuccess.notice.header": "Tasudeks makstud eurod tootlust ei teeni",
