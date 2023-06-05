@@ -1,8 +1,4 @@
 import { LOCATION_CHANGE } from 'connected-react-router';
-jest.mock('./actions', () => ({
-  __esModule: true, // not sure if needed
-  trackEvent: jest.fn(),
-}));
 
 import { trackEvent } from './actions';
 
@@ -37,6 +33,11 @@ import {
 } from '../login/constants';
 
 import { UPDATE_USER_SUCCESS } from '../common/user/constants';
+
+jest.mock('./actions', () => ({
+  __esModule: true, // not sure if needed
+  trackEvent: jest.fn(),
+}));
 
 function getActionType(actionType) {
   return actionType.split('/')[1];
