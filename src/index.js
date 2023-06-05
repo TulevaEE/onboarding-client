@@ -9,7 +9,7 @@ import { IntlProvider } from 'react-intl';
 import { Provider as ReduxProvider } from 'react-redux';
 import { Route, Switch } from 'react-router-dom';
 import { ConnectedRouter, routerMiddleware } from 'connected-react-router';
-import GoogleAnalytics from 'react-ga4';
+import ReactGA from 'react-ga4';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import moment from 'moment';
 import 'moment/locale/et';
@@ -27,8 +27,6 @@ import { actions as thirdPillarActions } from './components/thirdPillar';
 import './polyfills';
 import LoggedInApp from './components/LoggedInApp';
 import { loginPath } from './components/login/LoginPage';
-
-import { createTrackedEvent } from './components/common/api';
 
 const history = createBrowserHistory();
 
@@ -73,7 +71,7 @@ initializeConfiguration();
 window.config = config; // for debug only
 
 if (process.env.NODE_ENV !== 'test') {
-  GoogleAnalytics.initialize('UA-76855836-1', {
+  ReactGA.initialize('288772633', {
     debug: false,
     titleCase: false,
     gaOptions: {
@@ -81,24 +79,6 @@ if (process.env.NODE_ENV !== 'test') {
     },
   });
 }
-
-const noop = () => null;
-
-function trackPageView() {
-  createTrackedEvent(
-    'PAGE_VIEW',
-    { path: window.location.pathname.replace(/\/+$/g, '') },
-    store.getState().login.token,
-  ).catch(noop);
-}
-
-trackPageView();
-history.listen(() => {
-  trackPageView();
-  if (process.env.NODE_ENV === 'production') {
-    GoogleAnalytics.pageview(window.location.href);
-  }
-});
 
 export class App extends Component {
   constructor(props) {
