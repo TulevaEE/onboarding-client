@@ -71,7 +71,7 @@ initializeConfiguration();
 window.config = config; // for debug only
 
 if (process.env.NODE_ENV !== 'test') {
-  ReactGA.initialize('288772633', {
+  ReactGA.initialize('G-2LNCGK63HR', {
     debug: false,
     titleCase: false,
     gaOptions: {
