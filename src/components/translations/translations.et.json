@@ -433,8 +433,6 @@
   "thirdPillarPayment.EMPLOYER.title": "Avaldus tööandjale otse palgast III sambasse maksmiseks",
   "thirdPillarPayment.EMPLOYER.form": "Salvesta avalduse blankett",
   "thirdPillarPayment.EMPLOYER.formFields": "Täida avalduse väljad:",
-  "thirdPillarPayment.EMPLOYER.employerName": "Tööandja nimi",
-  "thirdPillarPayment.EMPLOYER.employerName.description": "Sinu tööandja nimi",
   "thirdPillarPayment.EMPLOYER.percent": "Protsent brutopalgast",
   "thirdPillarPayment.EMPLOYER.percent.description": "Protsent sinu brutopalgast",
   "thirdPillarPayment.EMPLOYER.pensionAccountNumber": "Sinu pensionikonto number",

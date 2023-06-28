@@ -38,10 +38,6 @@ export const EmployerPaymentDetails: React.FunctionComponent<{
           <table>
             <tbody>
               <TextRow>
-                <FormattedMessage id="thirdPillarPayment.EMPLOYER.employerName" />
-                <FormattedMessage id="thirdPillarPayment.EMPLOYER.employerName.description" />
-              </TextRow>
-              <TextRow>
                 <FormattedMessage id="thirdPillarPayment.EMPLOYER.percent" />
                 <FormattedMessage id="thirdPillarPayment.EMPLOYER.percent.description" />
               </TextRow>
