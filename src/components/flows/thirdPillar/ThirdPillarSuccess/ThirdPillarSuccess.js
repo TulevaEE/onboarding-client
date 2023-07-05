@@ -134,7 +134,7 @@ ThirdPillarSuccess.defaultProps = {
 
 const mapStateToProps = (state) => ({
   secondPillarSourceFunds: state.exchange.sourceFunds,
-  weightedAverageFee: state.login.userConversion?.weightedAverageFee,
+  weightedAverageFee: state.login.userConversion?.secondPillar.weightedAverageFee,
 });
 const mapDispatchToProps = (dispatch) => bindActionCreators({}, dispatch);
 
