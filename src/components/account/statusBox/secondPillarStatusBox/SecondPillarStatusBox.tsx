@@ -68,29 +68,9 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
   }
 
   const isPartiallyConverted = conversion.selectionPartial || conversion.transfersPartial;
-  const isFullyConverted = conversion.selectionComplete && conversion.transfersComplete;
-
-  if (!isPartiallyConverted || !isFullyConverted) {
+  if (!isPartiallyConverted) {
     if (conversion.weightedAverageFee > 0.005) {
-      return (
-        <StatusBoxRow
-          error
-          showAction={!loading}
-          name={<FormattedMessage id="account.status.choice.pillar.second" />}
-          lines={[
-            <>
-              <FormattedMessage id="account.status.choice.highFee.label" />
-              <InfoTooltip name="second-pillar-tooltip">
-                <FormattedMessage id="account.status.choice.highFee.description" />
-              </InfoTooltip>
-            </>,
-          ]}
-        >
-          <Link to="/2nd-pillar-flow" className="btn btn-primary">
-            <FormattedMessage id="account.status.choice.choose.low.fees" />
-          </Link>
-        </StatusBoxRow>
-      );
+      return highFee(loading);
     }
     return (
       <StatusBoxRow
@@ -113,6 +93,25 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
     );
   }
 
+  const isFullyConverted = conversion.selectionComplete && conversion.transfersComplete;
+  if (!isFullyConverted) {
+    if (conversion.weightedAverageFee > 0.005) {
+      return highFee(loading);
+    }
+    return (
+      <StatusBoxRow
+        error
+        showAction={!loading}
+        name={<FormattedMessage id="account.status.choice.pillar.second" />}
+        lines={[<FormattedMessage id="account.status.choice.pillar.second.transferIncomplete" />]}
+      >
+        <Link to="/2nd-pillar-flow" className="btn btn-primary">
+          <FormattedMessage id="account.status.choice.transfer.tuleva.2" />
+        </Link>
+      </StatusBoxRow>
+    );
+  }
+
   return (
     <StatusBoxRow
       ok
@@ -129,6 +128,28 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
     />
   );
 };
+
+function highFee(loading: boolean) {
+  return (
+    <StatusBoxRow
+      error
+      showAction={!loading}
+      name={<FormattedMessage id="account.status.choice.pillar.second" />}
+      lines={[
+        <>
+          <FormattedMessage id="account.status.choice.highFee.label" />
+          <InfoTooltip name="second-pillar-tooltip">
+            <FormattedMessage id="account.status.choice.highFee.description" />
+          </InfoTooltip>
+        </>,
+      ]}
+    >
+      <Link to="/2nd-pillar-flow" className="btn btn-primary">
+        <FormattedMessage id="account.status.choice.choose.low.fees" />
+      </Link>
+    </StatusBoxRow>
+  );
+}
 
 const usePendingWithdrawalApplication = (): Application | undefined =>
   usePendingApplications().data?.find(

@@ -46,8 +46,17 @@ describe('SecondPillarStatusBox', () => {
     expect(component).toMatchSnapshot();
   });
 
-  it('renders the choice flow when fund selection incomplete', () => {
-    component.setProps({ conversion: { selectionPartial: false, selectionComplete: false } });
+  it('renders low fee when fund selection incomplete', () => {
+    component.setProps({
+      conversion: { selectionPartial: false, selectionComplete: false, weightedAverageFee: 0.0049 },
+    });
+    expect(component).toMatchSnapshot();
+  });
+
+  it('renders high fee flow when fund selection incomplete', () => {
+    component.setProps({
+      conversion: { selectionPartial: false, selectionComplete: false, weightedAverageFee: 0.0051 },
+    });
     expect(component).toMatchSnapshot();
   });
 
