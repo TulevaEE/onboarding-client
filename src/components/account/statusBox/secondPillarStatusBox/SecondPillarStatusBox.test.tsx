@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
-import { SecondPillarStatusBox } from './SecondPillarStatusBox';
+import { Props, SecondPillarStatusBox } from './SecondPillarStatusBox';
 import StatusBoxRow from '../statusBoxRow';
 import {
   activeSecondPillar,
@@ -15,7 +15,7 @@ jest.mock('../../../common/apiHooks', () => ({
 
 describe('SecondPillarStatusBox', () => {
   let component: ShallowWrapper;
-  const props = {
+  const props: Props = {
     loading: false,
     conversion: completeSecondPillarConversion.secondPillar,
     secondPillarFunds: [activeSecondPillar],
@@ -58,6 +58,7 @@ describe('SecondPillarStatusBox', () => {
         transfersComplete: false,
         selectionPartial: false,
         selectionComplete: false,
+        weightedAverageFee: 0.01,
       },
       secondPillarFunds: [highFeeSecondPillar],
     });
@@ -71,6 +72,7 @@ describe('SecondPillarStatusBox', () => {
         transfersComplete: false,
         selectionPartial: true,
         selectionComplete: true,
+        weightedAverageFee: 0.01,
       },
     });
     expect(component).toMatchSnapshot();

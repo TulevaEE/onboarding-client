@@ -9,7 +9,7 @@ describe('ThirdPillarStatusBox', () => {
   const props = {
     conversion: completeThirdPillarConversion.thirdPillar,
     loading: false,
-    sourceFunds: [activeThirdPillar],
+    thirdPillarFunds: [activeThirdPillar],
     thirdPillarActive: true,
   };
 
@@ -38,6 +38,7 @@ describe('ThirdPillarStatusBox', () => {
         selectionPartial: false,
         selectionComplete: false,
         contribution: { yearToDate: 20, total: 20 },
+        weightedAverageFee: 0.0049,
       },
     });
     expect(component).toMatchSnapshot();
@@ -48,6 +49,7 @@ describe('ThirdPillarStatusBox', () => {
       conversion: {
         selectionPartial: true,
         contribution: { yearToDate: 20, total: 20 },
+        weightedAverageFee: 0.01,
       },
     });
     expect(component).toMatchSnapshot();
@@ -58,6 +60,7 @@ describe('ThirdPillarStatusBox', () => {
       conversion: {
         transferPartial: true,
         contribution: { yearToDate: 20, total: 20 },
+        weightedAverageFee: 0.0049,
       },
     });
     expect(component).toMatchSnapshot();
@@ -71,6 +74,7 @@ describe('ThirdPillarStatusBox', () => {
         selectionComplete: true,
         selectionPartial: true,
         contribution: { yearToDate: 20, total: 20 },
+        weightedAverageFee: 0.01,
       },
     });
     expect(component).toMatchSnapshot();
@@ -84,6 +88,7 @@ describe('ThirdPillarStatusBox', () => {
         selectionComplete: true,
         selectionPartial: true,
         contribution: { yearToDate: 20, total: 20 },
+        weightedAverageFee: 0.01,
       },
     });
     expect(component).toMatchSnapshot();
@@ -97,6 +102,7 @@ describe('ThirdPillarStatusBox', () => {
         selectionComplete: true,
         selectionPartial: true,
         contribution: { yearToDate: 0, total: 0 },
+        weightedAverageFee: 0.01,
       },
     });
     expect(component).toMatchSnapshot();
@@ -111,6 +117,7 @@ describe('ThirdPillarStatusBox', () => {
         selectionComplete: true,
         selectionPartial: true,
         contribution: { yearToDate: 0, total: 20 },
+        weightedAverageFee: 0.01,
       },
     });
     expect(component).toMatchSnapshot();
@@ -125,6 +132,7 @@ describe('ThirdPillarStatusBox', () => {
         selectionComplete: true,
         selectionPartial: true,
         contribution: { yearToDate: 0, total: 20 },
+        weightedAverageFee: 0.01,
       },
     });
     expect(component).toMatchSnapshot();
@@ -139,6 +147,7 @@ describe('ThirdPillarStatusBox', () => {
         selectionComplete: true,
         selectionPartial: true,
         contribution: { yearToDate: 0, total: 20 },
+        weightedAverageFee: 0.01,
       },
     });
     expect(component).toMatchSnapshot();
@@ -149,8 +158,9 @@ describe('ThirdPillarStatusBox', () => {
       conversion: {
         transferPartial: true,
         contribution: { yearToDate: 20, total: 20 },
+        weightedAverageFee: 0.01,
       },
-      sourceFunds: [highFeeThirdPillar],
+      thirdPillarFunds: [highFeeThirdPillar],
     });
     expect(component).toMatchSnapshot();
   });

@@ -7,22 +7,23 @@ import { Conversion, SourceFund } from '../../../common/apiModels';
 import { InfoTooltip } from '../../../common';
 import { State } from '../../../../types';
 import ThirdPillarPaymentsAmount from './ThirdPillarContributionAmount';
-import { getWeightedAverageFee } from '../../AccountStatement/fundSelector';
 
 interface Props {
   conversion: Conversion;
   loading: boolean;
-  sourceFunds: SourceFund[];
+  thirdPillarFunds: SourceFund[];
   thirdPillarActive: boolean;
 }
 
 export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
   conversion,
   loading = false,
-  sourceFunds = [],
+  thirdPillarFunds = [],
   thirdPillarActive,
 }) => {
-  if (!thirdPillarActive) {
+  const activeFund = thirdPillarFunds.find((fund) => fund.activeFund);
+
+  if (!thirdPillarActive || !activeFund) {
     return (
       <StatusBoxRow
         error
@@ -41,11 +42,9 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
   const isFebruaryToNovember = month > 0 && month < 11;
   const isDecember = month === 11;
 
-  const weightedAverageFee = getWeightedAverageFee(sourceFunds);
-
   const isPartiallyConverted = conversion.selectionPartial || conversion.transfersPartial;
   if (!isPartiallyConverted) {
-    if (weightedAverageFee > 0.005) {
+    if (conversion.weightedAverageFee > 0.005) {
       return (
         <StatusBoxRow
           error
@@ -202,7 +201,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
 const mapStateToProps = (state: State) => ({
   conversion: state.login.userConversion.thirdPillar,
   loading: state.login.loadingUserConversion,
-  sourceFunds: state.thirdPillar.sourceFunds,
+  thirdPillarFunds: state.thirdPillar.sourceFunds,
   thirdPillarActive: state.login.user.thirdPillarActive,
 });
 

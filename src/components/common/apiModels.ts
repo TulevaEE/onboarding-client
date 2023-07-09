@@ -190,6 +190,7 @@ export interface Conversion {
   pendingWithdrawal: boolean;
   contribution: Amount;
   subtraction: Amount;
+  weightedAverageFee: number;
 }
 
 export interface InitialCapital {

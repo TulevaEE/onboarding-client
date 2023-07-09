@@ -6,14 +6,13 @@ import StatusBoxRow from '../statusBoxRow';
 import { usePendingApplications } from '../../../common/apiHooks';
 import { Application, ApplicationType, Conversion, SourceFund } from '../../../common/apiModels';
 import { State } from '../../../../types';
-import { getWeightedAverageFee } from '../../AccountStatement/fundSelector';
 import InfoTooltip from '../../../common/infoTooltip';
 
-interface Props {
+export interface Props {
   loading: boolean;
   conversion: Conversion;
   secondPillarFunds: SourceFund[];
-  secondPillarPikNumber: string;
+  secondPillarPikNumber: string | null;
   secondPillarActive: boolean;
 }
 
@@ -67,11 +66,10 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
       />
     );
   }
-  const weightedAverageFee = getWeightedAverageFee(secondPillarFunds);
 
   const isPartiallyConverted = conversion.selectionPartial || conversion.transfersPartial;
   if (!isPartiallyConverted) {
-    if (weightedAverageFee > 0.005) {
+    if (conversion.weightedAverageFee > 0.005) {
       return (
         <StatusBoxRow
           error

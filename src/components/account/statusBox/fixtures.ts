@@ -11,6 +11,7 @@ export const incompleteConversion: UserConversion = {
     pendingWithdrawal: false,
     contribution: { yearToDate: 200, lastYear: 40, total: 250 },
     subtraction: { yearToDate: 0, lastYear: 0, total: 0 },
+    weightedAverageFee: 0.01,
   },
   thirdPillar: {
     selectionComplete: false,
@@ -21,6 +22,7 @@ export const incompleteConversion: UserConversion = {
     pendingWithdrawal: false,
     contribution: { yearToDate: 300, lastYear: 50, total: 450 },
     subtraction: { yearToDate: 0, lastYear: 0, total: 0 },
+    weightedAverageFee: 0.01,
   },
 };
 
@@ -35,6 +37,7 @@ export const completeConversion: UserConversion = {
     pendingWithdrawal: false,
     contribution: { yearToDate: 560, lastYear: 100, total: 20600 },
     subtraction: { yearToDate: 0, lastYear: 0, total: 0 },
+    weightedAverageFee: 0.0049,
   },
   thirdPillar: {
     selectionComplete: true,
@@ -45,6 +48,7 @@ export const completeConversion: UserConversion = {
     pendingWithdrawal: false,
     contribution: { yearToDate: 2500, lastYear: 1000, total: 37000 },
     subtraction: { yearToDate: 0, lastYear: 0, total: 0 },
+    weightedAverageFee: 0.0049,
   },
 };
 
@@ -59,6 +63,7 @@ export const completeThirdPillarConversion: UserConversion = {
     pendingWithdrawal: false,
     contribution: { yearToDate: 560, lastYear: 100, total: 20600 },
     subtraction: { yearToDate: 0, lastYear: 0, total: 0 },
+    weightedAverageFee: 0.01,
   },
   thirdPillar: {
     selectionComplete: true,
@@ -69,6 +74,7 @@ export const completeThirdPillarConversion: UserConversion = {
     pendingWithdrawal: false,
     contribution: { yearToDate: 2500, lastYear: 1000, total: 37000 },
     subtraction: { yearToDate: 0, lastYear: 0, total: 0 },
+    weightedAverageFee: 0.0049,
   },
 };
 
@@ -83,6 +89,7 @@ export const completeSecondPillarConversion: UserConversion = {
     pendingWithdrawal: false,
     contribution: { yearToDate: 2500, lastYear: 100, total: 37000 },
     subtraction: { yearToDate: 0, lastYear: 0, total: 0 },
+    weightedAverageFee: 0.0049,
   },
   thirdPillar: {
     selectionComplete: false,
@@ -93,6 +100,7 @@ export const completeSecondPillarConversion: UserConversion = {
     pendingWithdrawal: false,
     contribution: { yearToDate: 560, lastYear: 100, total: 20600 },
     subtraction: { yearToDate: 0, lastYear: 0, total: 0 },
+    weightedAverageFee: 0.01,
   },
 };
 
