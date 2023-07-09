@@ -16,6 +16,7 @@ import {
 } from '../../common/apiModels';
 import Percentage from '../../common/Percentage';
 import Euro from '../../common/Euro';
+import { Fees } from '../../common/Percentage/Fees';
 
 export const ApplicationCard: React.FunctionComponent<{
   application: Application;
@@ -92,12 +93,30 @@ const TransferApplicationCard: React.FunctionComponent<{
         definitions={[
           {
             key: 'applications.type.transfer.sourceFund',
-            value: application.details.sourceFund && application.details.sourceFund.name,
+            value: application.details.sourceFund && (
+              <>
+                {application.details.sourceFund.name} <br />
+                <small className="text-muted">
+                  <FormattedMessage id="target.funds.fees" />:{' '}
+                  <Fees value={application.details.sourceFund.ongoingChargesFigure} />
+                </small>
+              </>
+            ),
           },
           application.details.exchanges.map(({ targetFund, targetPik, amount }) => [
             {
               key: 'applications.type.transfer.targetFund',
-              value: targetFund?.name || `${targetPik} (PIK)`,
+              value: targetFund?.name ? (
+                <>
+                  {targetFund.name} <br />
+                  <small className="text-muted">
+                    <FormattedMessage id="target.funds.fees" />:{' '}
+                    <Fees value={targetFund.ongoingChargesFigure} />
+                  </small>
+                </>
+              ) : (
+                `${targetPik} (PIK)`
+              ),
             },
             {
               key: 'applications.type.transfer.amount',

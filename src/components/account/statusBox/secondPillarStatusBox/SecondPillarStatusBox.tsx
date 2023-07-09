@@ -68,7 +68,9 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
   }
 
   const isPartiallyConverted = conversion.selectionPartial || conversion.transfersPartial;
-  if (!isPartiallyConverted) {
+  const isFullyConverted = conversion.selectionComplete && conversion.transfersComplete;
+
+  if (!isPartiallyConverted || !isFullyConverted) {
     if (conversion.weightedAverageFee > 0.005) {
       return (
         <StatusBoxRow
@@ -106,22 +108,6 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
       >
         <Link to="/2nd-pillar-flow" className="btn btn-light">
           <FormattedMessage id="account.status.choice.join.tuleva.2" />
-        </Link>
-      </StatusBoxRow>
-    );
-  }
-
-  const isFullyConverted = conversion.selectionComplete && conversion.transfersComplete;
-  if (!isFullyConverted) {
-    return (
-      <StatusBoxRow
-        error
-        showAction={!loading}
-        name={<FormattedMessage id="account.status.choice.pillar.second" />}
-        lines={[<FormattedMessage id="account.status.choice.pillar.second.transferIncomplete" />]}
-      >
-        <Link to="/2nd-pillar-flow" className="btn btn-primary">
-          <FormattedMessage id="account.status.choice.transfer.tuleva.2" />
         </Link>
       </StatusBoxRow>
     );

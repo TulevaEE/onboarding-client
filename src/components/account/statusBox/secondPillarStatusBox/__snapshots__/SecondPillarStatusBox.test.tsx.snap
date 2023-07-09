@@ -149,9 +149,18 @@ exports[`SecondPillarStatusBox renders the transfer flow when fund transfers inc
   error={true}
   lines={
     Array [
-      <Memo(MemoizedFormattedMessage)
-        id="account.status.choice.pillar.second.transferIncomplete"
-      />,
+      <React.Fragment>
+        <Memo(MemoizedFormattedMessage)
+          id="account.status.choice.highFee.label"
+        />
+        <InfoTooltip
+          name="second-pillar-tooltip"
+        >
+          <Memo(MemoizedFormattedMessage)
+            id="account.status.choice.highFee.description"
+          />
+        </InfoTooltip>
+      </React.Fragment>,
     ]
   }
   name={
@@ -166,7 +175,7 @@ exports[`SecondPillarStatusBox renders the transfer flow when fund transfers inc
     to="/2nd-pillar-flow"
   >
     <MemoizedFormattedMessage
-      id="account.status.choice.transfer.tuleva.2"
+      id="account.status.choice.choose.low.fees"
     />
   </Link>
 </StatusBoxRow>
