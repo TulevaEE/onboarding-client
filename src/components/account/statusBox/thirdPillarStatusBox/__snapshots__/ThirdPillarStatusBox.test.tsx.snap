@@ -34,7 +34,7 @@ exports[`ThirdPillarStatusBox renders the "payment incomplete" flow when funds h
     Array [
       <React.Fragment>
         <Memo(MemoizedFormattedMessage)
-          id="account.status.choice.pillar.third.paymentIncomplete.label"
+          id="account.status.choice.pillar.third.thisYearPaymentIncomplete.label"
         />
         <InfoTooltip
           name="third-pillar-tooltip"

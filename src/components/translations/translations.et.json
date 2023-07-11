@@ -233,6 +233,7 @@
   "account.status.choice.pillar.third.transferIncomplete.action": "Vaheta fondi",
   "account.status.choice.pillar.third.transferIncomplete.label": "Sa kogud täna mitmes erinevas pensionifondis",
   "account.status.choice.pillar.third.paymentIncomplete.label": "Sinu sissemakse pole veel fondi jõudnud",
+  "account.status.choice.pillar.third.thisYearPaymentIncomplete.label": "Sinu selle aasta sissemakse pole veel fondi jõudnud",
   "account.status.choice.pillar.third.success.action": "Tee sissemakse",
   "account.status.choice.pillar.third.paymentInfo": "Fondiosakud jõuavad sinu kolmanda samba kontole ühe tööpäeva möödudes makse teostamisest. \n Kui teed makse reede pärastlõunal või nädalavahetusel, jõuavad osakud sinu kontole teisipäeva õhtuks.",
   "account.status.choice.pillar.third.paymentDeadline": "Selle aasta III samba sissemakse tegemise viimane tähtaeg on <b>28. detsember 15:59</b>.",

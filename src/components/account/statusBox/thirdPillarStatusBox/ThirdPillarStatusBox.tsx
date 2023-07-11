@@ -138,7 +138,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
         name={<FormattedMessage id="account.status.choice.pillar.third" />}
         lines={[
           <>
-            <FormattedMessage id="account.status.choice.pillar.third.paymentIncomplete.label" />
+            <FormattedMessage id="account.status.choice.pillar.third.thisYearPaymentIncomplete.label" />
             <InfoTooltip name="third-pillar-tooltip">
               <FormattedMessage id="account.status.choice.pillar.third.paymentInfo" />
             </InfoTooltip>
