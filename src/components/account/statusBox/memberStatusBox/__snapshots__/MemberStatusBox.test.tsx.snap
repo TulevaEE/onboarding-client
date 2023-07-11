@@ -52,6 +52,13 @@ exports[`MemberStatusBox renders the full component 1`] = `
           }
         }
       />,
+      <small
+        className="text-muted"
+      >
+        <Memo(MemoizedFormattedMessage)
+          id="account.member.statement.comment"
+        />
+      </small>,
     ]
   }
   name={

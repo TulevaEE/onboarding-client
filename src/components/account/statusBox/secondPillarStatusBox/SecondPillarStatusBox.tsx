@@ -4,14 +4,24 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import StatusBoxRow from '../statusBoxRow';
 import { usePendingApplications } from '../../../common/apiHooks';
-import { Application, ApplicationType, Conversion, SourceFund } from '../../../common/apiModels';
+import {
+  Application,
+  ApplicationType,
+  Conversion,
+  Fund,
+  SourceFund,
+} from '../../../common/apiModels';
 import { State } from '../../../../types';
 import InfoTooltip from '../../../common/infoTooltip';
+import { isTuleva } from '../../../common/utils';
+import { getValueSum } from '../../AccountStatement/fundSelector';
+import Euro from '../../../common/Euro';
 
 export interface Props {
   loading: boolean;
   conversion: Conversion;
-  secondPillarFunds: SourceFund[];
+  sourceFunds: SourceFund[];
+  targetFunds: Fund[];
   secondPillarPikNumber: string | null;
   secondPillarActive: boolean;
 }
@@ -19,11 +29,12 @@ export interface Props {
 export const SecondPillarStatusBox: React.FC<Props> = ({
   loading,
   conversion,
-  secondPillarFunds,
+  sourceFunds,
+  targetFunds,
   secondPillarPikNumber,
   secondPillarActive,
 }: Props) => {
-  const activeFund = secondPillarFunds.find((fund) => fund.activeFund);
+  const activeFund = sourceFunds.find((fund) => fund.activeFund);
 
   if (!secondPillarActive || !activeFund) {
     return (
@@ -70,7 +81,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
   const isPartiallyConverted = conversion.selectionPartial || conversion.transfersPartial;
   if (!isPartiallyConverted) {
     if (conversion.weightedAverageFee > 0.005) {
-      return highFee(loading);
+      return highFee(loading, conversion, sourceFunds, targetFunds);
     }
     return (
       <StatusBoxRow
@@ -96,7 +107,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
   const isFullyConverted = conversion.selectionComplete && conversion.transfersComplete;
   if (!isFullyConverted) {
     if (conversion.weightedAverageFee > 0.005) {
-      return highFee(loading);
+      return highFee(loading, conversion, sourceFunds, targetFunds);
     }
     return (
       <StatusBoxRow
@@ -129,7 +140,21 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
   );
 };
 
-function highFee(loading: boolean) {
+function highFee(
+  loading: boolean,
+  conversion: Conversion,
+  sourceFunds: SourceFund[],
+  targetFunds: Fund[],
+) {
+  const value = getValueSum(sourceFunds);
+  const currentFeesEuro = conversion.weightedAverageFee * value;
+  const tulevaTargetFunds =
+    targetFunds && targetFunds.length && targetFunds.filter((fund) => isTuleva(fund));
+  const defaultTargetFund =
+    tulevaTargetFunds && tulevaTargetFunds.length ? tulevaTargetFunds[0] : null;
+  const tulevaFeesPercent = defaultTargetFund?.ongoingChargesFigure || 0;
+  const tulevaFeesEuro = tulevaFeesPercent * value;
+
   return (
     <StatusBoxRow
       error
@@ -142,6 +167,19 @@ function highFee(loading: boolean) {
             <FormattedMessage id="account.status.choice.highFee.description" />
           </InfoTooltip>
         </>,
+        <small className="text-muted">
+          <FormattedMessage
+            id="account.status.choice.highFee.comment"
+            values={{
+              currentFeesEuro: (
+                <Euro amount={currentFeesEuro} className="text-danger" fractionDigits={0} />
+              ),
+              tulevaFeesEuro: (
+                <Euro amount={tulevaFeesEuro} className="text-success" fractionDigits={0} />
+              ),
+            }}
+          />
+        </small>,
       ]}
     >
       <Link to="/2nd-pillar-flow" className="btn btn-primary">
@@ -161,9 +199,10 @@ const usePendingWithdrawalApplication = (): Application | undefined =>
 const mapStateToProps = (state: State) => ({
   loading: state.login.loadingUserConversion,
   conversion: state.login.userConversion.secondPillar,
-  secondPillarFunds: state.exchange.sourceFunds,
-  secondPillarPikNumber: state.login.user.secondPillarPikNumber,
-  secondPillarActive: state.login.user.secondPillarActive,
+  sourceFunds: state.exchange.sourceFunds || [],
+  targetFunds: state.exchange.targetFunds || [],
+  secondPillarPikNumber: (state.login.user || {}).secondPillarPikNumber,
+  secondPillarActive: (state.login.user || {}).secondPillarActive,
 });
 
 export default connect(mapStateToProps)(SecondPillarStatusBox);

@@ -17,6 +17,27 @@ exports[`SecondPillarStatusBox renders high fee flow when fund selection incompl
           />
         </InfoTooltip>
       </React.Fragment>,
+      <small
+        className="text-muted"
+      >
+        <Memo(MemoizedFormattedMessage)
+          id="account.status.choice.highFee.comment"
+          values={
+            Object {
+              "currentFeesEuro": <Euro
+                amount={0.11730000000000002}
+                className="text-danger"
+                fractionDigits={0}
+              />,
+              "tulevaFeesEuro": <Euro
+                amount={0}
+                className="text-success"
+                fractionDigits={0}
+              />,
+            }
+          }
+        />
+      </small>,
     ]
   }
   name={
@@ -54,6 +75,27 @@ exports[`SecondPillarStatusBox renders high fee message when in high fee fund an
           />
         </InfoTooltip>
       </React.Fragment>,
+      <small
+        className="text-muted"
+      >
+        <Memo(MemoizedFormattedMessage)
+          id="account.status.choice.highFee.comment"
+          values={
+            Object {
+              "currentFeesEuro": <Euro
+                amount={0.23}
+                className="text-danger"
+                fractionDigits={0}
+              />,
+              "tulevaFeesEuro": <Euro
+                amount={0}
+                className="text-success"
+                fractionDigits={0}
+              />,
+            }
+          }
+        />
+      </small>,
     ]
   }
   name={
@@ -198,6 +240,27 @@ exports[`SecondPillarStatusBox renders the transfer flow when fund transfers inc
           />
         </InfoTooltip>
       </React.Fragment>,
+      <small
+        className="text-muted"
+      >
+        <Memo(MemoizedFormattedMessage)
+          id="account.status.choice.highFee.comment"
+          values={
+            Object {
+              "currentFeesEuro": <Euro
+                amount={0.23}
+                className="text-danger"
+                fractionDigits={0}
+              />,
+              "tulevaFeesEuro": <Euro
+                amount={0}
+                className="text-success"
+                fractionDigits={0}
+              />,
+            }
+          }
+        />
+      </small>,
     ]
   }
   name={

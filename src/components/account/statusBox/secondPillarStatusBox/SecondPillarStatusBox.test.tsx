@@ -18,7 +18,7 @@ describe('SecondPillarStatusBox', () => {
   const props: Props = {
     loading: false,
     conversion: completeSecondPillarConversion.secondPillar,
-    secondPillarFunds: [activeSecondPillar],
+    sourceFunds: [activeSecondPillar],
     secondPillarPikNumber: null,
     secondPillarActive: true,
   };

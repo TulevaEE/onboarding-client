@@ -16,7 +16,12 @@ export const MemberStatusBox: React.FunctionComponent<Props> = ({
 }) => {
   const isTulevaMember = memberNumber != null;
   const tulevaData = isTulevaMember
-    ? [<FormattedMessage id="account.member.statement" values={{ memberNumber }} />]
+    ? [
+        <FormattedMessage id="account.member.statement" values={{ memberNumber }} />,
+        <small className="text-muted">
+          <FormattedMessage id="account.member.statement.comment" />
+        </small>,
+      ]
     : [
         <>
           <FormattedMessage id="account.non.member.statement" />
