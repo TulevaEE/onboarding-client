@@ -354,6 +354,16 @@ describe('Login actions', () => {
     return getUser().then(() => expect(dispatch).toHaveBeenCalledWith({ type: LOG_OUT }));
   });
 
+  it('can handle forbidden error when getting a user', () => {
+    state.login.token = 'token';
+    const error = new Error('oh no!');
+    error.status = 403;
+    mockApi.getUserWithToken = jest.fn(() => Promise.reject(error));
+    const getUser = createBoundAction(actions.getUser);
+    expect(dispatch).not.toHaveBeenCalled();
+    return getUser().then(() => expect(dispatch).toHaveBeenCalledWith({ type: LOG_OUT }));
+  });
+
   it('can handle bad gateway error when getting a user', () => {
     state.login.token = 'token';
     const error = new Error('oh no!');
