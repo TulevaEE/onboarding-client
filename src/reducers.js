@@ -8,6 +8,7 @@ import { reducer as account } from './components/account';
 import { reducer as contactDetails } from './components/contact-details';
 import { reducer as thirdPillar } from './components/thirdPillar';
 import { reducer as aml } from './components/aml';
+import { reducer as tracking } from './components/tracking';
 import { LOG_OUT } from './components/login/constants';
 
 export default (history) => {
@@ -20,6 +21,7 @@ export default (history) => {
     contactDetails,
     form,
     aml,
+    tracking,
   });
 
   return (state, action) => {
