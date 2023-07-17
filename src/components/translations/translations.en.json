@@ -62,7 +62,7 @@
   "accountSummary.columns.subtractions": "Withdrawals",
   "accountSummary.columns.profit": "Profit",
   "accountSummary.columns.value": "Value of fund units",
-  "accountSummary.disclaimer": "Low fees <a>predict</a> higher long-term returns.",
+  "accountSummary.disclaimer": "Low fees (below 0.5% per year) <a>predict</a> higher long-term returns.",
 
   "accountStatement.heading": "Your portfolio details",
   "accountStatement.secondPillar.heading": "II Pillar",

@@ -62,7 +62,7 @@
   "accountSummary.columns.subtractions": "Väljamaksed",
   "accountSummary.columns.profit": "Tulu",
   "accountSummary.columns.value": "Osakute väärtus",
-  "accountSummary.disclaimer": "Madalad tasud <a>ennustavad</a> suuremat pikaajalist tootlust.",
+  "accountSummary.disclaimer": "Madalad tasud (alla 0.5% aastas) <a>ennustavad</a> suuremat pikaajalist tootlust.",
 
   "accountStatement.heading": "Sinu portfell detailsemalt",
   "accountStatement.secondPillar.heading": "II Sammas",
