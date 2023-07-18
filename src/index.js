@@ -28,6 +28,8 @@ import './polyfills';
 import LoggedInApp from './components/LoggedInApp';
 import { loginPath } from './components/login/LoginPage';
 
+import { createTrackedEvent } from './components/common/api';
+
 const history = createBrowserHistory();
 
 const composeEnhancers =
@@ -79,6 +81,21 @@ if (process.env.NODE_ENV !== 'test') {
     },
   });
 }
+
+const noop = () => null;
+
+function trackPageView() {
+  createTrackedEvent(
+    'PAGE_VIEW',
+    { path: window.location.pathname.replace(/\/+$/g, '') },
+    store.getState().login.token,
+  ).catch(noop);
+}
+
+trackPageView();
+history.listen(() => {
+  trackPageView();
+});
 
 export class App extends Component {
   constructor(props) {
