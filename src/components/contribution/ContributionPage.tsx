@@ -5,8 +5,12 @@ import { ContributionSection } from './ContributionSection';
 export const ContributionPage: React.FunctionComponent = () => {
   return (
     <>
-      <ContributionSection>
-        <FormattedMessage id="contributions.title" />
+      <ContributionSection pillar={3}>
+        <FormattedMessage id="contributions.title.3rd" />
+      </ContributionSection>
+
+      <ContributionSection pillar={2}>
+        <FormattedMessage id="contributions.title.2nd" />
       </ContributionSection>
     </>
   );

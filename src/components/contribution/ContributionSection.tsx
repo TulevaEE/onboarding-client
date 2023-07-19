@@ -9,8 +9,9 @@ import Table from '../common/table';
 import { Contribution } from '../common/apiModels';
 
 export const ContributionSection: React.FunctionComponent<{
+  pillar?: number;
   children?: React.ReactNode;
-}> = ({ children }) => {
+}> = ({ pillar, children }) => {
   const { data: contributions } = useContributions();
 
   if (!contributions) {
@@ -24,13 +25,11 @@ export const ContributionSection: React.FunctionComponent<{
   if (!contributions.length) {
     return <></>;
   }
-
-  const amountSum = sumBy(contributions, (contribution) => contribution.amount);
-
   const sumAmountsBySender = (
     result: {
       [sender: string]: Contribution;
     },
+    // eslint-disable-next-line @typescript-eslint/no-shadow
     { time, sender, amount, currency, pillar }: Contribution,
   ) => ({
     ...result,
@@ -42,15 +41,36 @@ export const ContributionSection: React.FunctionComponent<{
       pillar,
     },
   });
-  const thirdPillarAggregate = contributions
-    .filter((contribution) => contribution.pillar === 3)
+  const aggregatePillarContributions = contributions
+    .filter((contribution) => contribution.pillar === pillar)
     .sort((contribution1, contribution2) => contribution2.time.localeCompare(contribution1.time))
     .reduce(sumAmountsBySender, {});
 
-  const secondPillarAggregate = contributions
-    .filter((contribution) => contribution.pillar === 2)
-    .sort((contribution1, contribution2) => contribution2.time.localeCompare(contribution1.time))
-    .reduce(sumAmountsBySender, {});
+  const pillarContributions = Object.values(aggregatePillarContributions);
+
+  const amountSum = sumBy(pillarContributions, (contribution) => contribution.amount);
+
+  const footerMessage = () =>
+    pillar === 2 ? (
+      <small className="text-muted">
+        <FormattedMessage
+          id="contributions.notice"
+          values={{
+            a: (chunks: string) => (
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href="//www.pensionikeskus.ee/pensionireform-2021/kusimused-ja-vastused-2-samba-maksete-kompenseerimise-kohta/"
+              >
+                {chunks}
+              </a>
+            ),
+          }}
+        />
+      </small>
+    ) : (
+      ''
+    );
 
   const columns = [
     {
@@ -58,6 +78,7 @@ export const ContributionSection: React.FunctionComponent<{
       dataIndex: 'sender',
       width100: true,
       align: 'left',
+      footer: footerMessage(),
     },
     {
       title: <FormattedMessage id="contributions.columns.amount.title" />,
@@ -66,36 +87,11 @@ export const ContributionSection: React.FunctionComponent<{
     },
   ];
 
-  const pillarContributions = [
-    ...Object.values(thirdPillarAggregate),
-    ...Object.values(secondPillarAggregate),
-  ];
-  const dataSource = pillarContributions.flatMap((contribution, index) => {
-    const previousContribution = pillarContributions[index - 1];
-    return [
-      ...(previousContribution?.pillar !== contribution.pillar
-        ? [
-            {
-              sender: (
-                <strong>
-                  {contribution.pillar === 2 ? (
-                    <FormattedMessage id="accountStatement.secondPillar.heading" />
-                  ) : (
-                    <FormattedMessage id="accountStatement.thirdPillar.heading" />
-                  )}
-                </strong>
-              ),
-              key: contribution.pillar.toString(),
-            },
-          ]
-        : []),
-      {
-        sender: contribution.sender,
-        amount: <Euro amount={contribution.amount} />,
-        key: contribution.time,
-      },
-    ];
-  });
+  const dataSource = pillarContributions.map((contribution) => ({
+    sender: contribution.sender,
+    amount: <Euro amount={contribution.amount} />,
+    key: contribution.time,
+  }));
 
   return (
     <section className="mt-5">

@@ -489,12 +489,15 @@
   "transactions.personal": "Eraisikult",
 
   "contributions.title": "Sinu sissemaksed",
+  "contributions.title.2nd": "Sinu II samba sissemaksed",
+  "contributions.title.3rd": "Sinu III samba sissemaksed",
   "contributions.columns.date.title": "Kuupäev",
   "contributions.columns.date.footer": "Kokku",
   "contributions.columns.sender.title": "Saatja",
   "contributions.columns.amount.title": "Summa",
   "contributions.seeAll": "Vaata kõiki sissemakseid",
   "contributions.backToAccountPage": "Tagasi avalehele",
+  "contributions.notice": "NB! Siit tabelist on puudu <a>riigi kompensatsioon</a>.",
 
   "cancellation.flow.confirm.title": "Kinnita avalduse tühistamine",
   "cancellation.flow.confirm.content": "Avaldust allkirjastades kinnitad, et soovid tühistada järgmise avalduse:",

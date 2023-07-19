@@ -512,12 +512,15 @@
   "transactions.personal": "Person",
 
   "contributions.title": "Your contributions",
+  "contributions.title.2nd": "Your II pillar contributions",
+  "contributions.title.3rd": "Your III pillar contributions",
   "contributions.columns.date.title": "Date",
   "contributions.columns.date.footer": "Total",
   "contributions.columns.sender.title": "Sender",
   "contributions.columns.amount.title": "Amount",
   "contributions.seeAll": "See all contributions",
   "contributions.backToAccountPage": "Back to account page",
+  "contributions.notice": "NB! <a>State compensatsion</a> is missing from this table.",
 
   "cancellation.flow.confirm.title": "Confirm cancelling application",
   "cancellation.flow.confirm.content": "By signing you confirm that you would like to cancel following application:",
