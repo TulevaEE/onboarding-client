@@ -65,8 +65,8 @@
   "accountSummary.disclaimer": "Madalad tasud (alla 0.5% aastas) <a>ennustavad</a> suuremat pikaajalist tootlust.",
 
   "accountStatement.heading": "Sinu portfell detailsemalt",
-  "accountStatement.secondPillar.heading": "II Sammas",
-  "accountStatement.thirdPillar.heading": "III Sammas",
+  "accountStatement.secondPillar.heading": "II sammas",
+  "accountStatement.thirdPillar.heading": "III sammas",
   "accountStatement.columns.fund.title": "Pensionifond",
   "accountStatement.columns.fees.title": "Tasud aastas",
   "accountStatement.columns.contributions.title": "Sissemaksed",
@@ -488,14 +488,12 @@
   "transactions.workplace": "Tööandjalt",
   "transactions.personal": "Eraisikult",
 
-  "contributions.title": "Sinu viimased laekumised",
-  "contributions.title.2nd": "Sinu II samba laekumised",
-  "contributions.title.3rd": "Sinu III samba laekumised",
+  "contributions.title": "Sinu sissemaksed",
   "contributions.columns.date.title": "Kuupäev",
   "contributions.columns.date.footer": "Kokku",
   "contributions.columns.sender.title": "Saatja",
   "contributions.columns.amount.title": "Summa",
-  "contributions.seeAll": "Vaata kõiki laekumisi",
+  "contributions.seeAll": "Vaata kõiki sissemakseid",
   "contributions.backToAccountPage": "Tagasi avalehele",
 
   "cancellation.flow.confirm.title": "Kinnita avalduse tühistamine",
