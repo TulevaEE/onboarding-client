@@ -22,6 +22,10 @@ import { TransactionSection } from './TransactionSection/TransactionSection';
 const noop = () => null;
 
 export class AccountPage extends Component {
+  componentDidMount() {
+    this.getData();
+  }
+
   componentDidUpdate() {
     this.getData();
   }
@@ -180,7 +184,8 @@ const mapStateToProps = (state) => ({
     state.login.token &&
     state.login.user &&
     state.login.user.memberNumber &&
-    !(state.account.initialCapital || state.account.loadingInitialCapital),
+    !state.account.initialCapital &&
+    !state.account.loadingInitialCapital,
   memberCapital: state.account.initialCapital,
   loadingCapital: state.account.loadingInitialCapital,
   error: state.exchange.error,
