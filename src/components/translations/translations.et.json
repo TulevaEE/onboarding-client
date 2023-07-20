@@ -501,6 +501,8 @@
   "contributions.backToAccountPage": "Tagasi avalehele",
   "contributions.notice.2nd": "NB! Siit tabelist on puudu <a>riigi kompensatsioon</a>.",
   "contributions.notice.3rd": "NB! Siit tabelist on puudu enne 2018. aastat tehtud sissemaksed.",
+  "contributions.seeAll.2": "II sammas",
+  "contributions.seeAll.3": "III sammas",
 
   "cancellation.flow.confirm.title": "Kinnita avalduse tühistamine",
   "cancellation.flow.confirm.content": "Avaldust allkirjastades kinnitad, et soovid tühistada järgmise avalduse:",

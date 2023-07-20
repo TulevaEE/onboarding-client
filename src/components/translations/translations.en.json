@@ -524,6 +524,8 @@
   "contributions.backToAccountPage": "Back to account page",
   "contributions.notice.2nd": "NB! <a>State compensation</a> is missing from this table.",
   "contributions.notice.3rd": "NB! Contributions made before 2018 are missing from this table.",
+  "contributions.seeAll.2": "II pillar",
+  "contributions.seeAll.3": "III pillar",
 
   "cancellation.flow.confirm.title": "Confirm cancelling application",
   "cancellation.flow.confirm.content": "By signing you confirm that you would like to cancel following application:",
