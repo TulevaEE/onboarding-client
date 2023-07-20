@@ -9,9 +9,9 @@ import LanguageSwitcher from './languageSwitcher';
 const Header = ({ user: { name } = {}, loading, onLogout }) => (
   <div className="row">
     <div className="col align-self-start">
-      <a href="//tuleva.ee" target="_blank" rel="noopener noreferrer">
+      <Link to="/account">
         <img src={logo} alt="Tuleva" className="img-responsive brand-logo" />
-      </a>
+      </Link>
     </div>
     <div className="col align-self-end text-right">
       {loading || !name ? (

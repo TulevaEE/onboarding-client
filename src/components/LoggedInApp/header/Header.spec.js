@@ -16,9 +16,9 @@ describe('Header', () => {
   it('shows a header logo with a link', () => {
     expect(
       component.contains(
-        <a href="//tuleva.ee" target="_blank" rel="noopener noreferrer">
+        <Link to="/account">
           <img src={logo} alt="Tuleva" className="img-responsive brand-logo" />
-        </a>,
+        </Link>,
       ),
     ).toBe(true);
   });
@@ -49,7 +49,7 @@ describe('Header', () => {
   it('renders my account button', () => {
     const onLogout = jest.fn();
     component.setProps({ loading: false, onLogout, user: { name: 'name' } });
-    expect(component.find(Link).at(0)).toMatchSnapshot();
+    expect(component.find(Link).at(1)).toMatchSnapshot();
   });
 
   it('renders the language switcher', () => {
