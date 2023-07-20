@@ -87,7 +87,7 @@ const TransferApplicationCard: React.FunctionComponent<{
     <BaseApplicationCard
       application={application}
       allowedActions={transferActions}
-      titleKey="applications.type.transfer.title"
+      titleKey={`applications.type.transfer.title.${application.details.sourceFund.pillar}`}
     >
       <DefinitionList
         definitions={[

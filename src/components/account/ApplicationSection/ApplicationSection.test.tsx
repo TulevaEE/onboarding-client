@@ -88,7 +88,7 @@ describe('Application section', () => {
     mockApplications([application]);
     initializeComponent();
 
-    expect(await screen.findByText('applications.type.transfer.title')).toBeInTheDocument();
+    expect(await screen.findByText('applications.type.transfer.title.2')).toBeInTheDocument();
     expect(screen.getByText(application.details.sourceFund.name)).toBeInTheDocument();
     const formattedCreationTime = 'December 17, 1995';
     expect(screen.getByText(formattedCreationTime)).toBeInTheDocument();
@@ -106,7 +106,7 @@ describe('Application section', () => {
     mockApplications([application]);
     initializeComponent();
 
-    expect(await screen.findByText('applications.type.transfer.title')).toBeInTheDocument();
+    expect(await screen.findByText('applications.type.transfer.title.2')).toBeInTheDocument();
     expect(screen.getByText(application.details.sourceFund.name)).toBeInTheDocument();
     const formattedCreationTime = 'December 17, 1995';
     expect(screen.getByText(formattedCreationTime)).toBeInTheDocument();
@@ -123,7 +123,7 @@ describe('Application section', () => {
     mockApplications([application]);
     initializeComponent();
 
-    expect(await screen.findByText('applications.type.transfer.title')).toBeInTheDocument();
+    expect(await screen.findByText('applications.type.transfer.title.3')).toBeInTheDocument();
     expect(screen.getByText(application.details.sourceFund.name)).toBeInTheDocument();
     const formattedCreationTime = 'August 1, 2021';
     expect(screen.getByText(formattedCreationTime)).toBeInTheDocument();
@@ -195,7 +195,7 @@ describe('Application section', () => {
     mockApplications([earlyWithdrawal, transfer2Pillar]);
     initializeComponent();
     expect(await screen.findByText('applications.type.earlyWithdrawal.title')).toBeInTheDocument();
-    expect(screen.getByText('applications.type.transfer.title')).toBeInTheDocument();
+    expect(screen.getByText('applications.type.transfer.title.2')).toBeInTheDocument();
     expect(screen.queryByText('applications.type.stopContributions.title')).not.toBeInTheDocument();
   });
 

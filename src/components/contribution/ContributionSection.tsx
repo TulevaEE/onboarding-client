@@ -2,6 +2,7 @@ import React from 'react';
 
 import { FormattedMessage } from 'react-intl';
 import sumBy from 'lodash/sumBy';
+import { Link } from 'react-router-dom';
 import { useContributions } from '../common/apiHooks';
 import { Shimmer } from '../common/shimmer/Shimmer';
 import Euro from '../common/Euro';
@@ -50,27 +51,36 @@ export const ContributionSection: React.FunctionComponent<{
 
   const amountSum = sumBy(pillarContributions, (contribution) => contribution.amount);
 
-  const footerMessage = () =>
-    pillar === 2 ? (
-      <small className="text-muted">
-        <FormattedMessage
-          id="contributions.notice"
-          values={{
-            a: (chunks: string) => (
-              <a
-                target="_blank"
-                rel="noopener noreferrer"
-                href="//www.pensionikeskus.ee/pensionireform-2021/kusimused-ja-vastused-2-samba-maksete-kompenseerimise-kohta/"
-              >
-                {chunks}
-              </a>
-            ),
-          }}
-        />
-      </small>
-    ) : (
-      ''
-    );
+  function footerMessage() {
+    if (pillar === 2) {
+      return (
+        <small className="text-muted">
+          <FormattedMessage
+            id="contributions.notice.2nd"
+            values={{
+              a: (chunks: string) => (
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href="//www.pensionikeskus.ee/pensionireform-2021/kusimused-ja-vastused-2-samba-maksete-kompenseerimise-kohta/"
+                >
+                  {chunks}
+                </a>
+              ),
+            }}
+          />
+        </small>
+      );
+    }
+    if (pillar === 3) {
+      return (
+        <small className="text-muted">
+          <FormattedMessage id="contributions.notice.3rd" />
+        </small>
+      );
+    }
+    return '';
+  }
 
   const columns = [
     {
@@ -97,6 +107,11 @@ export const ContributionSection: React.FunctionComponent<{
     <section className="mt-5">
       <div className="d-flex justify-content-between">
         <h2 className="mb-4 lead">{children || <FormattedMessage id="contributions.title" />}</h2>
+        <div>
+          <Link className="text-nowrap" to="/account">
+            <FormattedMessage id="contributions.backToAccountPage" />
+          </Link>
+        </div>
       </div>
       <Table columns={columns} dataSource={dataSource} />
     </section>

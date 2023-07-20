@@ -56,9 +56,7 @@ describe('When a user is cancelling an application', () => {
   });
 
   test('the application being cancelled is shown', async () => {
-    expect(
-      await screen.findByText('Second pillar early withdrawal application'),
-    ).toBeInTheDocument();
+    expect(await screen.findByText('II pillar early withdrawal application')).toBeInTheDocument();
     expect(screen.getByText(testApplication().details.depositAccountIBAN)).toBeInTheDocument();
 
     // no cancellation button shown in the card
@@ -68,9 +66,7 @@ describe('When a user is cancelling an application', () => {
   test('a cancellation mandate can be created and signed', async () => {
     const cancellation = cancellationBackend(server);
     smartIdSigningBackend(server);
-    expect(
-      await screen.findByText('Second pillar early withdrawal application'),
-    ).toBeInTheDocument();
+    expect(await screen.findByText('II pillar early withdrawal application')).toBeInTheDocument();
 
     expect(cancellation.cancellationCreated).toBe(false);
     userEvent.click(screen.getByText('Sign and send mandate'));
@@ -84,9 +80,7 @@ describe('When a user is cancelling an application', () => {
   test('a preview can be downloaded of the cancellation mandate', async () => {
     cancellationBackend(server);
     mandatePreviewBackend(server);
-    expect(
-      await screen.findByText('Second pillar early withdrawal application'),
-    ).toBeInTheDocument();
+    expect(await screen.findByText('II pillar early withdrawal application')).toBeInTheDocument();
 
     expect(download).not.toHaveBeenCalled();
     userEvent.click(screen.getByText('Preview'));
@@ -103,9 +97,7 @@ describe('When a user is cancelling an application', () => {
   test('a success screen is shown that lets the user navigate back', async () => {
     cancellationBackend(server);
     smartIdSigningBackend(server);
-    expect(
-      await screen.findByText('Second pillar early withdrawal application'),
-    ).toBeInTheDocument();
+    expect(await screen.findByText('II pillar early withdrawal application')).toBeInTheDocument();
 
     userEvent.click(screen.getByText('Sign and send mandate'));
 
@@ -126,9 +118,7 @@ describe('When a user is cancelling an application', () => {
     cancellationBackend(server);
     smartIdSigningBackend(server);
     mandateDownloadBackend(server);
-    expect(
-      await screen.findByText('Second pillar early withdrawal application'),
-    ).toBeInTheDocument();
+    expect(await screen.findByText('II pillar early withdrawal application')).toBeInTheDocument();
 
     userEvent.click(screen.getByText('Sign and send mandate'));
 

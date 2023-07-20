@@ -21,10 +21,11 @@ import SignUpPage from '../newUserFlow';
 // eslint-disable-next-line import/no-named-as-default
 import Payment from '../flows/thirdPillar/ThirdPillarPayment/Payment';
 import { TransactionPage } from '../account/TransactionSection/TransactionPage';
-import { ContributionPage } from '../contribution/ContributionPage';
+import { ContributionPageThirdPillar } from '../contribution/ContributionPageThirdPillar';
 import Gift from '../flows/thirdPillar/ThirdPillarPayment/ThirdPillarGift';
 import ThirdPillarSuccess from '../flows/thirdPillar/ThirdPillarSuccess';
 import EmployerPayment from '../flows/thirdPillar/ThirdPillarPayment/paymentDetails/EmployerPaymentDetails';
+import { ContributionPageSecondPillar } from '../contribution/ContributionPageSecondPillar';
 
 export const ACCOUNT_PATH = '/account';
 export const AML_PATH = '/aml';
@@ -81,7 +82,8 @@ export class LoggedInApp extends PureComponent {
               <Route path="/3rd-pillar-gift" component={Gift} />
               <Route path="/3rd-pillar-employer" component={EmployerPayment} />
               <Route path="/transactions" component={TransactionPage} />
-              <Route path="/contributions" component={ContributionPage} />
+              <Route path="/2nd-pillar-contributions" component={ContributionPageSecondPillar} />
+              <Route path="/3rd-pillar-contributions" component={ContributionPageThirdPillar} />
               <Route path={cancellationFlowPath} component={CancellationFlow} />
               <Redirect exact path="/" to={ACCOUNT_PATH} />
             </Switch>

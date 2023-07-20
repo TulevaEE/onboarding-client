@@ -1,6 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { FormattedMessage } from 'react-intl';
+import { Link } from 'react-router-dom';
 import AccountSummary from '.';
 import Table from '../../common/table';
 import Euro from '../../common/Euro';
@@ -98,10 +99,18 @@ describe('Account summary', () => {
     );
     expect(dataSource[2].pillarLabel).toEqual(<FormattedMessage id="memberCapital.heading" />);
 
-    expect(dataSource[0].contributions).toEqual(<Euro amount={3} />);
+    expect(dataSource[0].contributions).toEqual(
+      <Link to="/2nd-pillar-contributions">
+        <Euro amount={3} />
+      </Link>,
+    );
     expect(dataSource[0].subtractions).toEqual(<Euro amount={-1} />);
 
-    expect(dataSource[1].contributions).toEqual(<Euro amount={104} />);
+    expect(dataSource[1].contributions).toEqual(
+      <Link to="/3rd-pillar-contributions">
+        <Euro amount={104} />
+      </Link>,
+    );
     expect(dataSource[1].subtractions).toEqual(<Euro amount={-2} />);
 
     expect(dataSource[2].contributions).toEqual(<Euro amount={3} />);

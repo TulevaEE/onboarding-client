@@ -3,6 +3,7 @@ import { PropTypes as Types } from 'prop-types';
 import sumBy from 'lodash/sumBy';
 
 import { FormattedMessage } from 'react-intl';
+import { Link } from 'react-router-dom';
 import Table from '../../common/table';
 import Euro from '../../common/Euro';
 import { Shimmer } from '../../common/shimmer/Shimmer';
@@ -37,12 +38,13 @@ const AccountSummary = ({
 
   memberCapital,
 }) => {
-  const getPillarSummary = (pillarLabel, contributions, subtractions, funds) => {
+  const getPillarSummary = (pillar, pillarLabel, contributions, subtractions, funds) => {
     const value = getValueSum(funds);
     const feesPercent = getWeightedAverageFee(funds);
     const feesEuro = feesPercent * value;
 
     return {
+      pillar,
       pillarLabel,
       feesPercent,
       feesEuro,
@@ -55,12 +57,14 @@ const AccountSummary = ({
 
   const summary = [
     getPillarSummary(
+      2,
       'accountStatement.secondPillar.heading',
       secondPillarContributions,
       secondPillarSubtractions,
       secondPillarSourceFunds,
     ),
     getPillarSummary(
+      3,
       'accountStatement.thirdPillar.heading',
       thirdPillarContributions,
       thirdPillarSubtractions,
@@ -81,6 +85,7 @@ const AccountSummary = ({
 
   if (memberCapital) {
     summary.push({
+      pillar: -1,
       pillarLabel: 'memberCapital.heading',
       feesPercent: 0,
       feesEuro: 0,
@@ -169,12 +174,39 @@ const AccountSummary = ({
     },
   ];
 
+  function getContributions(pillar, contributions) {
+    if (pillar === 2) {
+      return (
+        <Link to="/2nd-pillar-contributions">
+          <Euro amount={contributions} />
+        </Link>
+      );
+    }
+    if (pillar === 3) {
+      return (
+        <Link to="/3rd-pillar-contributions">
+          <Euro amount={contributions} />
+        </Link>
+      );
+    }
+    return <Euro amount={contributions} />;
+  }
+
   const dataSource = summary.map(
-    ({ pillarLabel, feesPercent, feesEuro, contributions, subtractions, profit, value }) => ({
+    ({
+      pillar,
+      pillarLabel,
+      feesPercent,
+      feesEuro,
+      contributions,
+      subtractions,
+      profit,
+      value,
+    }) => ({
       pillarLabel: <FormattedMessage id={pillarLabel} />,
       feesPercent: <Fees value={feesPercent} />,
       feesEuro: feesEuro ? <Euro className="text-muted" amount={-feesEuro} /> : <></>,
-      contributions: <Euro amount={contributions} />,
+      contributions: getContributions(pillar, contributions),
       subtractions: <Euro amount={subtractions} />,
       profit: <Euro amount={profit} />,
       value: <Euro amount={value} />,
