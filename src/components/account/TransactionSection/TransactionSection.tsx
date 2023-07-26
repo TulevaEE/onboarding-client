@@ -2,13 +2,13 @@ import React from 'react';
 
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
-import moment from 'moment/moment';
 import sumBy from 'lodash/sumBy';
 import { useFunds, useTransactions } from '../../common/apiHooks';
 import Table from '../../common/table';
 import Euro from '../../common/Euro';
 import { Shimmer } from '../../common/shimmer/Shimmer';
 import { TransactionType } from '../../common/apiModels';
+import { formatDate } from '../../common/dateUtils';
 
 export const TransactionSection: React.FunctionComponent<{
   limit?: number;
@@ -143,8 +143,3 @@ export const TransactionSection: React.FunctionComponent<{
     </section>
   );
 };
-
-function formatDate(date: string): string {
-  const format = moment.locale() === 'et' ? 'D. MMMM' : 'MMMM D';
-  return moment(date).format(format);
-}

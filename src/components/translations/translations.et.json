@@ -40,6 +40,7 @@
   "select.sources.total": "Kokku",
   "select.sources.select.all": "Toon kogu II samba Tulevasse",
   "select.sources.select.all.subtitle": "Kogud edaspidi ainult Tulevas ja tood üle ka varem II sambasse kogutud vara. Tuleva soodsad tasud rakenduvad kogu portfellile. Fondivahetus on tasuta.",
+  "select.sources.select.all.deadline": "Selle vahetusperioodi tähtaeg on <b>{periodEnding}.</b>",
   "select.sources.select.all.choose": "Vali fond:",
   "select.sources.select.some": "Toon II samba valikuliselt üle",
   "select.sources.select.some.subtitle": "Kui soovid osakuid mitme fondi vahel jagada, täpsusta valikut:",

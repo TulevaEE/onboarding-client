@@ -11,6 +11,8 @@ import TargetFundSelector from './targetFundSelector';
 import ExactFundSelector from './exactFundSelector';
 import { isTuleva } from '../../../common/utils';
 import AccountStatement from '../../../account/AccountStatement';
+import { useMandateDeadlines } from '../../../common/apiHooks';
+import { formatDate } from '../../../common/dateUtils';
 
 function selectAllWithTarget(sourceFunds, targetFund) {
   return sourceFunds
@@ -54,6 +56,8 @@ export const SelectSources = ({
   error,
   nextPath,
 }) => {
+  const { data: mandateDeadlines } = useMandateDeadlines();
+
   if (error) {
     return <ErrorMessage errors={error.body} />;
   }
@@ -92,8 +96,16 @@ export const SelectSources = ({
         </h3>
         {fullSelectionActive ? (
           <div className="mt-3">
-            <FormattedMessage id="select.sources.select.all.subtitle" />
-
+            <FormattedMessage id="select.sources.select.all.subtitle" />{' '}
+            {mandateDeadlines && (
+              <FormattedMessage
+                id="select.sources.select.all.deadline"
+                values={{
+                  periodEnding: formatDate(mandateDeadlines.periodEnding),
+                  b: (chunks) => <b className="text-nowrap">{chunks}</b>,
+                }}
+              />
+            )}
             <div className="mt-4">
               <FormattedMessage id="select.sources.select.all.choose" className="pt-2" />
             </div>

@@ -11,6 +11,7 @@ import {
   IdCardSignatureStatusResponse,
   InitialCapital,
   Mandate,
+  MandateDeadlines,
   MobileSignatureResponse,
   MobileSignatureStatusResponse,
   Payment,
@@ -303,6 +304,12 @@ export function getTransactions(token: string): Promise<Transaction[]> {
 
 export function getContributions(token: string): Promise<Contribution[]> {
   return get(getEndpoint('/v1/contributions'), undefined, {
+    Authorization: `Bearer ${token}`,
+  });
+}
+
+export function getMandateDeadlines(token: string): Promise<MandateDeadlines> {
+  return get(getEndpoint('/v1/mandate-deadlines'), undefined, {
     Authorization: `Bearer ${token}`,
   });
 }

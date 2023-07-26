@@ -9,6 +9,11 @@ import TargetFundSelector from './targetFundSelector';
 import { SelectSources } from './SelectSources';
 import AccountStatement from '../../../account/AccountStatement';
 
+// TODO: Figure out a cleaner way to mock the hook
+jest.mock('../../../common/apiHooks', () => ({
+  useMandateDeadlines: () => ({ data: { periodEnding: '2023-07-31T20:59:59.999999999Z' } }),
+}));
+
 describe('Select sources step', () => {
   let component;
 

@@ -38,6 +38,19 @@ exports[`SecondPillarStatusBox renders high fee flow when fund selection incompl
           }
         />
       </small>,
+      <small
+        className="text-muted"
+      >
+        <Memo(MemoizedFormattedMessage)
+          id="select.sources.select.all.deadline"
+          values={
+            Object {
+              "b": [Function],
+              "periodEnding": "July 31",
+            }
+          }
+        />
+      </small>,
     ]
   }
   name={
@@ -92,6 +105,19 @@ exports[`SecondPillarStatusBox renders high fee message when in high fee fund an
                 className="text-success"
                 fractionDigits={0}
               />,
+            }
+          }
+        />
+      </small>,
+      <small
+        className="text-muted"
+      >
+        <Memo(MemoizedFormattedMessage)
+          id="select.sources.select.all.deadline"
+          values={
+            Object {
+              "b": [Function],
+              "periodEnding": "July 31",
             }
           }
         />
@@ -257,6 +283,19 @@ exports[`SecondPillarStatusBox renders the transfer flow when fund transfers inc
                 className="text-success"
                 fractionDigits={0}
               />,
+            }
+          }
+        />
+      </small>,
+      <small
+        className="text-muted"
+      >
+        <Memo(MemoizedFormattedMessage)
+          id="select.sources.select.all.deadline"
+          values={
+            Object {
+              "b": [Function],
+              "periodEnding": "July 31",
             }
           }
         />

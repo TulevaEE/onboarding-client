@@ -2,13 +2,15 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import moment from 'moment';
 import StatusBoxRow from '../statusBoxRow';
-import { usePendingApplications } from '../../../common/apiHooks';
+import { useMandateDeadlines, usePendingApplications } from '../../../common/apiHooks';
 import {
   Application,
   ApplicationType,
   Conversion,
   Fund,
+  MandateDeadlines,
   SourceFund,
 } from '../../../common/apiModels';
 import { State } from '../../../../types';
@@ -16,6 +18,7 @@ import InfoTooltip from '../../../common/infoTooltip';
 import { isTuleva } from '../../../common/utils';
 import { getValueSum } from '../../AccountStatement/fundSelector';
 import Euro from '../../../common/Euro';
+import { formatDate } from '../../../common/dateUtils';
 
 export interface Props {
   loading: boolean;
@@ -35,6 +38,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
   secondPillarActive,
 }: Props) => {
   const activeFund = sourceFunds.find((fund) => fund.activeFund);
+  const { data: mandateDeadlines } = useMandateDeadlines();
 
   if (!secondPillarActive || !activeFund) {
     return (
@@ -81,7 +85,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
   const isPartiallyConverted = conversion.selectionPartial || conversion.transfersPartial;
   if (!isPartiallyConverted) {
     if (conversion.weightedAverageFee > 0.005) {
-      return highFee(loading, conversion, sourceFunds, targetFunds);
+      return highFee(loading, conversion, sourceFunds, targetFunds, mandateDeadlines);
     }
     return (
       <StatusBoxRow
@@ -107,14 +111,19 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
   const isFullyConverted = conversion.selectionComplete && conversion.transfersComplete;
   if (!isFullyConverted) {
     if (conversion.weightedAverageFee > 0.005) {
-      return highFee(loading, conversion, sourceFunds, targetFunds);
+      return highFee(loading, conversion, sourceFunds, targetFunds, mandateDeadlines);
     }
     return (
       <StatusBoxRow
         error
         showAction={!loading}
         name={<FormattedMessage id="account.status.choice.pillar.second" />}
-        lines={[<FormattedMessage id="account.status.choice.pillar.second.transferIncomplete" />]}
+        lines={[
+          <FormattedMessage id="account.status.choice.pillar.second.transferIncomplete" />,
+          ...(mandateDeadlines && isPeriodEnding(mandateDeadlines)
+            ? [periodEndingMessage(mandateDeadlines)]
+            : []),
+        ]}
       >
         <Link to="/2nd-pillar-flow" className="btn btn-primary">
           <FormattedMessage id="account.status.choice.transfer.tuleva.2" />
@@ -140,11 +149,30 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
   );
 };
 
+function feeComparison(currentFeesEuro: number, tulevaFeesEuro: number) {
+  return (
+    <small className="text-muted">
+      <FormattedMessage
+        id="account.status.choice.highFee.comment"
+        values={{
+          currentFeesEuro: (
+            <Euro amount={currentFeesEuro} className="text-danger" fractionDigits={0} />
+          ),
+          tulevaFeesEuro: (
+            <Euro amount={tulevaFeesEuro} className="text-success" fractionDigits={0} />
+          ),
+        }}
+      />
+    </small>
+  );
+}
+
 function highFee(
   loading: boolean,
   conversion: Conversion,
   sourceFunds: SourceFund[],
   targetFunds: Fund[],
+  mandateDeadlines: MandateDeadlines | undefined,
 ) {
   const value = getValueSum(sourceFunds);
   const currentFeesEuro = conversion.weightedAverageFee * value;
@@ -167,25 +195,34 @@ function highFee(
             <FormattedMessage id="account.status.choice.highFee.description" />
           </InfoTooltip>
         </>,
-        <small className="text-muted">
-          <FormattedMessage
-            id="account.status.choice.highFee.comment"
-            values={{
-              currentFeesEuro: (
-                <Euro amount={currentFeesEuro} className="text-danger" fractionDigits={0} />
-              ),
-              tulevaFeesEuro: (
-                <Euro amount={tulevaFeesEuro} className="text-success" fractionDigits={0} />
-              ),
-            }}
-          />
-        </small>,
+        feeComparison(currentFeesEuro, tulevaFeesEuro),
+        ...(mandateDeadlines && isPeriodEnding(mandateDeadlines)
+          ? [periodEndingMessage(mandateDeadlines)]
+          : []),
       ]}
     >
       <Link to="/2nd-pillar-flow" className="btn btn-primary">
         <FormattedMessage id="account.status.choice.choose.low.fees" />
       </Link>
     </StatusBoxRow>
+  );
+}
+
+function isPeriodEnding(mandateDeadlines: MandateDeadlines | undefined) {
+  return mandateDeadlines && moment(mandateDeadlines.periodEnding).diff(moment(), 'days') <= 10;
+}
+
+function periodEndingMessage(mandateDeadlines: MandateDeadlines) {
+  return (
+    <small className="text-muted">
+      <FormattedMessage
+        id="select.sources.select.all.deadline"
+        values={{
+          periodEnding: formatDate(mandateDeadlines.periodEnding),
+          b: (chunks: string) => <b className="text-nowrap">{chunks}</b>,
+        }}
+      />
+    </small>
   );
 }
 

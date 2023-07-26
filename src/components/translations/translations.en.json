@@ -40,6 +40,7 @@
   "select.sources.total": "Total",
   "select.sources.select.all": "Transfer my pension to Tuleva",
   "select.sources.select.all.subtitle": "Your future contributions will be directed to Tuleva and your existing funds will be transferred. Your portfolio will benefit from Tuleva's low fees. The transfer is free of charge.",
+  "select.sources.select.all.deadline": "The deadline for this fund exchange period is <b>{periodEnding}.</b>",
   "select.sources.select.all.choose": "Pick a fund:",
   "select.sources.select.some": "Exchange only some current fund units",
   "select.sources.select.some.subtitle": "If you wish to make specific changes, make them here:",

@@ -8,10 +8,14 @@ import {
   highFeeSecondPillar,
 } from '../fixtures';
 
-// TODO: Figure out a cleaner way to mock applications from the hook
+// TODO: Figure out a cleaner way to mock the hooks
 jest.mock('../../../common/apiHooks', () => ({
   usePendingApplications: () => ({ data: [{ type: 'WITHDRAWAL' }] }),
+  useMandateDeadlines: () => ({ data: { periodEnding: '2023-07-31T20:59:59.999999999Z' } }),
 }));
+
+jest.useFakeTimers('modern');
+jest.setSystemTime(new Date('July 22, 2023 10:36:00'));
 
 describe('SecondPillarStatusBox', () => {
   let component: ShallowWrapper;
@@ -19,6 +23,7 @@ describe('SecondPillarStatusBox', () => {
     loading: false,
     conversion: completeSecondPillarConversion.secondPillar,
     sourceFunds: [activeSecondPillar],
+    targetFunds: [],
     secondPillarPikNumber: null,
     secondPillarActive: true,
   };

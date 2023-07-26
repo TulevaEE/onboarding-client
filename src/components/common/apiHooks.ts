@@ -5,10 +5,18 @@ import {
   createApplicationCancellation,
   getContributions,
   getFunds,
+  getMandateDeadlines,
   getPendingApplications,
   getTransactions,
 } from './api';
-import { Application, CancellationMandate, Contribution, Fund, Transaction } from './apiModels';
+import {
+  Application,
+  CancellationMandate,
+  Contribution,
+  Fund,
+  MandateDeadlines,
+  Transaction,
+} from './apiModels';
 
 function useTokenOrFail(): string {
   const token = useSelector<{ login: { token?: string } }, string | null>(
@@ -59,4 +67,9 @@ export function useApplication(id: number): UseQueryResult<Application | null> {
     ...result,
     data: result.data ? result.data.find((application) => application.id === id) || null : null,
   } as UseQueryResult<Application | null>;
+}
+
+export function useMandateDeadlines(): UseQueryResult<MandateDeadlines> {
+  const token = useTokenOrFail();
+  return useQuery('mandateDeadlines', () => getMandateDeadlines(token));
 }

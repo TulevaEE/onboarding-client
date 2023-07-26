@@ -283,3 +283,13 @@ export interface Contribution {
   currency: Currency;
   pillar: Pillar;
 }
+
+export interface MandateDeadlines {
+  transferMandateFulfillmentDate: string;
+  periodEnding: string;
+  withdrawalFulfillmentDate: string;
+  earlyWithdrawalFulfillmentDate: string;
+  transferMandateCancellationDeadline: string;
+  withdrawalCancellationDeadline: string;
+  earlyWithdrawalCancellationDeadline: string;
+}
