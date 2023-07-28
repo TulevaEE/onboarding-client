@@ -73,7 +73,7 @@ initializeConfiguration();
 window.config = config; // for debug only
 
 if (process.env.NODE_ENV !== 'test') {
-  ReactGA.initialize('G-2LNCGK63HR', {
+  ReactGA.initialize('GTM-MRRG43', {
     debug: false,
     titleCase: false,
     gaOptions: {
