@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "npm": ">=8.15.0 <9",
-    "node": ">=16.17.0 <17"
+    "npm": ">=8.15.0",
+    "node": ">=16.17.0"
   },
   "dependencies": {
     "@sentry/browser": "^7.12.1",
@@ -29,6 +29,7 @@
     "react-facebook": "^8.1.4",
     "react-ga4": "^1.4.1",
     "react-global-configuration": "^1.4.1",
+    "react-gtm-module": "^2.0.11",
     "react-intl": "^5.25.1",
     "react-query": "^3.31.0",
     "react-redux": "^7.2.6",

@@ -13,6 +13,7 @@ import ReactGA from 'react-ga4';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import moment from 'moment';
 import 'moment/locale/et';
+import TagManager from 'react-gtm-module';
 
 import createRootReducer from './reducers';
 import { getQueryParams } from './utils';
@@ -73,6 +74,9 @@ initializeConfiguration();
 window.config = config; // for debug only
 
 if (process.env.NODE_ENV !== 'test') {
+  TagManager.initialize({
+    gtmId: 'GTM-MRRG43',
+  });
   ReactGA.initialize('G-2LNCGK63HR', {
     debug: false,
     titleCase: false,
