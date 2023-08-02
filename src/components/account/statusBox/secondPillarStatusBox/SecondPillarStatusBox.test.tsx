@@ -6,6 +6,7 @@ import {
   activeSecondPillar,
   completeSecondPillarConversion,
   highFeeSecondPillar,
+  tulevaSecondPillarFund,
 } from '../fixtures';
 
 // TODO: Figure out a cleaner way to mock the hooks
@@ -23,7 +24,7 @@ describe('SecondPillarStatusBox', () => {
     loading: false,
     conversion: completeSecondPillarConversion.secondPillar,
     sourceFunds: [activeSecondPillar],
-    targetFunds: [],
+    targetFunds: [tulevaSecondPillarFund],
     secondPillarPikNumber: null,
     secondPillarActive: true,
   };
@@ -60,6 +61,8 @@ describe('SecondPillarStatusBox', () => {
 
   it('renders high fee flow when fund selection incomplete', () => {
     component.setProps({
+      sourceFunds: [highFeeSecondPillar],
+      targetFunds: [tulevaSecondPillarFund],
       conversion: { selectionPartial: false, selectionComplete: false, weightedAverageFee: 0.0051 },
     });
     expect(component).toMatchSnapshot();
@@ -67,6 +70,8 @@ describe('SecondPillarStatusBox', () => {
 
   it('renders high fee message when in high fee fund and no partial conversion', () => {
     component.setProps({
+      sourceFunds: [highFeeSecondPillar],
+      targetFunds: [tulevaSecondPillarFund],
       conversion: {
         transfersPartial: false,
         transfersComplete: false,
@@ -74,7 +79,6 @@ describe('SecondPillarStatusBox', () => {
         selectionComplete: false,
         weightedAverageFee: 0.01,
       },
-      secondPillarFunds: [highFeeSecondPillar],
     });
     expect(component).toMatchSnapshot();
   });

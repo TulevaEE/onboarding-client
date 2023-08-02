@@ -1,4 +1,4 @@
-import { SourceFund, UserConversion } from '../../common/apiModels';
+import { Fund, FundStatus, SourceFund, UserConversion } from '../../common/apiModels';
 
 export const incompleteConversion: UserConversion = {
   weightedAverageFee: 0.004,
@@ -111,13 +111,23 @@ export const activeSecondPillar: SourceFund = {
   pillar: 2,
   managementFeePercent: 0.003,
   isin: 'EE000123',
-  price: 23,
+  price: 20000,
   unavailablePrice: 0,
   currency: 'EUR',
   ongoingChargesFigure: 0.0049,
   contributions: 500,
   subtractions: 0,
   profit: 500,
+};
+
+export const tulevaSecondPillarFund: Fund = {
+  isin: 'EE123',
+  name: 'Tuleva II Samba Fond',
+  pillar: 2,
+  managementFeeRate: 0.003,
+  ongoingChargesFigure: 0.0049,
+  fundManager: { name: 'Tuleva' },
+  status: FundStatus.ACTIVE,
 };
 
 export const activeThirdPillar: SourceFund = {
@@ -159,7 +169,7 @@ export const highFeeSecondPillar: SourceFund = {
   pillar: 2,
   managementFeePercent: 0.015,
   isin: 'EE432432',
-  price: 23,
+  price: 20000,
   unavailablePrice: 0,
   currency: 'EUR',
   ongoingChargesFigure: 0.0156,

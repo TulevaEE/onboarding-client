@@ -195,7 +195,9 @@ function highFee(
             <FormattedMessage id="account.status.choice.highFee.description" />
           </InfoTooltip>
         </>,
-        feeComparison(currentFeesEuro, tulevaFeesEuro),
+        ...(currentFeesEuro >= 0.5 && tulevaFeesEuro >= 0.5 && currentFeesEuro - tulevaFeesEuro >= 1
+          ? [feeComparison(currentFeesEuro, tulevaFeesEuro)]
+          : []),
         ...(mandateDeadlines && isPeriodEnding(mandateDeadlines)
           ? [periodEndingMessage(mandateDeadlines)]
           : []),

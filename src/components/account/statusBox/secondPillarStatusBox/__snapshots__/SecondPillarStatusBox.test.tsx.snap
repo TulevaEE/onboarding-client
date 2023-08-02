@@ -25,12 +25,12 @@ exports[`SecondPillarStatusBox renders high fee flow when fund selection incompl
           values={
             Object {
               "currentFeesEuro": <Euro
-                amount={0.11730000000000002}
+                amount={102.00000000000001}
                 className="text-danger"
                 fractionDigits={0}
               />,
               "tulevaFeesEuro": <Euro
-                amount={0}
+                amount={98}
                 className="text-success"
                 fractionDigits={0}
               />,
@@ -96,12 +96,12 @@ exports[`SecondPillarStatusBox renders high fee message when in high fee fund an
           values={
             Object {
               "currentFeesEuro": <Euro
-                amount={0.23}
+                amount={200}
                 className="text-danger"
                 fractionDigits={0}
               />,
               "tulevaFeesEuro": <Euro
-                amount={0}
+                amount={98}
                 className="text-success"
                 fractionDigits={0}
               />,
@@ -274,12 +274,12 @@ exports[`SecondPillarStatusBox renders the transfer flow when fund transfers inc
           values={
             Object {
               "currentFeesEuro": <Euro
-                amount={0.23}
+                amount={200}
                 className="text-danger"
                 fractionDigits={0}
               />,
               "tulevaFeesEuro": <Euro
-                amount={0}
+                amount={98}
                 className="text-success"
                 fractionDigits={0}
               />,
