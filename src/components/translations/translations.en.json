@@ -52,6 +52,8 @@
   "select.sources.select.none": "Direct only future contributions",
   "select.sources.select.none.subtitle": "Skip this step",
   "select.sources.select.all.recommended": "We recommend this fund based on your current age.",
+  "select.sources.error.source.fund.is.target.fund":  "Source fund and target fund can not be on the same exchange row",
+  "select.sources.error.source.fund.percentages.over.100":  "More than 100% of fund units can not be transferred from one source fund",
 
   "select": "Select",
 

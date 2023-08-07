@@ -52,6 +52,8 @@
   "select.sources.select.none": "Suunan ainult edasised II samba maksed",
   "select.sources.select.none.subtitle": "Jätan selle sammu vahele",
   "select.sources.select.all.recommended": "Alla 55-aastastele sobib see fond.",
+  "select.sources.error.source.fund.is.target.fund":  "Lähte fond ja siht fond ei saa olla samal vahetuse real",
+  "select.sources.error.source.fund.percentages.over.100":  "Lähte fondist ei saa väljuda üle 100% osakuid",
 
   "select": "Vali",
 

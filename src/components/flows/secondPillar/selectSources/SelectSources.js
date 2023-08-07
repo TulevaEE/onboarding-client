@@ -24,24 +24,24 @@ function selectAllWithTarget(sourceFunds, targetFund) {
     }));
 }
 
-function selectionsValid(selections) {
+function selectionsError(selections) {
   const sourceFundPercentages = {};
-  let isValid = true;
+  let errorDescriptionCode = null;
   selections.forEach((selection) => {
     if (!sourceFundPercentages[selection.sourceFundIsin]) {
       sourceFundPercentages[selection.sourceFundIsin] = 0;
     }
     sourceFundPercentages[selection.sourceFundIsin] += selection.percentage;
     if (sourceFundPercentages[selection.sourceFundIsin] > 1) {
-      isValid = false;
+      errorDescriptionCode = 'select.sources.error.source.fund.percentages.over.100';
     }
 
     if (selection.sourceFundIsin === selection.targetFundIsin) {
-      isValid = false;
+      errorDescriptionCode = 'select.sources.error.source.fund.is.target.fund';
     }
   });
 
-  return isValid;
+  return errorDescriptionCode;
 }
 
 export const SelectSources = ({
@@ -66,11 +66,23 @@ export const SelectSources = ({
   }
   const fullSelectionActive = !!sourceSelection.length && !sourceSelectionExact;
   const noneSelectionActive = !sourceSelection.length && !sourceSelectionExact;
-  const isValid = selectionsValid(sourceSelection);
+  const validationErrorCode = selectionsError(sourceSelection);
+  const isValid = !validationErrorCode;
   const tulevaTargetFunds =
     targetFunds && targetFunds.length && targetFunds.filter((fund) => isTuleva(fund));
   const defaultTargetFund =
     tulevaTargetFunds && tulevaTargetFunds.length ? tulevaTargetFunds[0] : null;
+
+  function validationSelectionErrorElement(errorCode) {
+    if (!errorCode) {
+      return null;
+    }
+    return (
+      <div className="text-danger mt-3">
+        <FormattedMessage id={errorCode} />
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -164,12 +176,12 @@ export const SelectSources = ({
           ''
         )}
       </Radio>
-
       <Link id="nextStep" to={isValid ? nextPath : '#'}>
         <button type="button" className={`btn btn-primary mt-5 ${!isValid ? 'disabled' : ''}`}>
           <FormattedMessage id="steps.next" />
         </button>
       </Link>
+      {validationSelectionErrorElement(validationErrorCode)}
     </div>
   );
 };

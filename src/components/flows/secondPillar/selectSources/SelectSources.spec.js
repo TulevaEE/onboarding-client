@@ -67,6 +67,12 @@ describe('Select sources step', () => {
       sourceSelection: [{ sourceFundIsin: 'a', percentage: 1 }],
     });
     expect(component.find('#nextStep button').prop('className')).not.toContain('disabled');
+    expect(
+      component.contains(
+        <FormattedMessage id="select.sources.error.source.fund.percentages.over.100" />,
+      ),
+    ).toBe(false);
+
     component.setProps({
       sourceSelection: [
         { sourceFundIsin: 'a', percentage: 1 },
@@ -74,9 +80,14 @@ describe('Select sources step', () => {
       ],
     });
     expect(component.find('#nextStep button').prop('className')).toContain('disabled');
+    expect(
+      component.contains(
+        <FormattedMessage id="select.sources.error.source.fund.percentages.over.100" />,
+      ),
+    ).toBe(true);
   });
 
-  it('disables the next step button if selection is invalid due to inter fund transfer', () => {
+  it('disables the next step button if selection is invalid due to inter fund transfer and displays help text', () => {
     component.setProps({
       sourceSelection: [
         {
@@ -87,6 +98,10 @@ describe('Select sources step', () => {
       ],
     });
     expect(component.find('#nextStep button').prop('className')).not.toContain('disabled');
+    expect(
+      component.contains(<FormattedMessage id="select.sources.error.source.fund.is.target.fund" />),
+    ).toBe(false);
+
     component.setProps({
       sourceSelection: [
         {
@@ -97,6 +112,10 @@ describe('Select sources step', () => {
       ],
     });
     expect(component.find('#nextStep button').prop('className')).toContain('disabled');
+
+    expect(
+      component.contains(<FormattedMessage id="select.sources.error.source.fund.is.target.fund" />),
+    ).toBe(true);
   });
 
   it('sets the full selection radio as selected only when all funds selected', () => {
