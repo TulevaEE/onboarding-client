@@ -391,6 +391,12 @@
   "thirdPillarPayment.amountInEur": "Summa eurodes",
   "thirdPillarPayment.description": "Selgitus",
 
+  "thirdPillarPayment.RECURRING.coop": "Püsimakse juhend Coop Pangas",
+  "thirdPillarPayment.RECURRING.coop.login": "Vajuta allolevat nuppu ning logi sisse Coop Panga internetipanka.",
+  "thirdPillarPayment.RECURRING.coop.form": "Vajuta nupule “uus püsikorraldus”, täida väljad järgnevate andmetega ning kinnita makse:",
+  "thirdPillarPayment.beneficiary": "Saaja",
+  "thirdPillarPayment.information": "Selgitus",
+
   "thirdPillarPayment.RECURRING.other": "Püsimakse juhend teistes pankades",
   "thirdPillarPayment.RECURRING.other.login": "Logi sisse oma internetipanka.",
   "thirdPillarPayment.RECURRING.other.form": "Lisa uus püsikorraldus järgmiste andmetega ja kinnita makse:",

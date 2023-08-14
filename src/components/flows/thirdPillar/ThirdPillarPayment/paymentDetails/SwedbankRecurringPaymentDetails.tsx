@@ -25,7 +25,7 @@ export const SwedbankRecurringPaymentDetails: React.FunctionComponent<{
       </span>
       <span className="flex-grow-1 align-self-center">
         <FormattedMessage id="thirdPillarPayment.RECURRING.swedbank.form" />
-        <div className="mt-2 p-4 payment-details-table">
+        <div className="mt-3 p-4 ml-n4 payment-details-table">
           <table>
             <tbody>
               <FundRow>

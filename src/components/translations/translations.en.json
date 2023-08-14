@@ -415,6 +415,12 @@
   "thirdPillarPayment.amountInEur": "Amount in EUR",
   "thirdPillarPayment.description": "Description",
 
+  "thirdPillarPayment.RECURRING.coop": "How to set up a recurring payment in Coop Pank",
+  "thirdPillarPayment.RECURRING.coop.login": "Click the button below and log into your Coop Pank internet bank.",
+  "thirdPillarPayment.RECURRING.coop.form": "Click the “new standing order” button, fill the form and conclude the agreement:",
+  "thirdPillarPayment.beneficiary": "Beneficiary",
+  "thirdPillarPayment.information": "Information",
+
   "thirdPillarPayment.RECURRING.other": "How to set up a recurring payment in another bank",
   "thirdPillarPayment.RECURRING.other.login": "Log in to your internet bank.",
   "thirdPillarPayment.RECURRING.other.form": "Set up a recurring payment with the following details:",

@@ -15,6 +15,7 @@ import { OtherBankPaymentDetails } from './paymentDetails/OtherBankPaymentDetail
 import { SwedbankRecurringPaymentDetails } from './paymentDetails/SwedbankRecurringPaymentDetails';
 import { SebRecurringPaymentDetails } from './paymentDetails/SebRecurringPaymentDetails';
 import { LhvRecurringPaymentDetails } from './paymentDetails/LhvRecurringPaymentDetails';
+import { CoopRecurringPaymentDetails } from './paymentDetails/CoopRecurringPaymentDetails';
 import EmployerPayment from './paymentDetails/EmployerPaymentDetails';
 
 export const Payment: React.FunctionComponent<{
@@ -148,6 +149,12 @@ export const Payment: React.FunctionComponent<{
               setPaymentBank={setPaymentBank}
             />
             <BankButton
+              bankKey="coop"
+              bankName="Coop"
+              paymentBank={paymentBank}
+              setPaymentBank={setPaymentBank}
+            />
+            <BankButton
               bankKey="other"
               bankName={formatMessage({ id: 'thirdPillarPayment.otherBank' })}
               paymentBank={paymentBank}
@@ -171,6 +178,10 @@ export const Payment: React.FunctionComponent<{
                     amount={paymentAmount}
                     personalCode={personalCode}
                   />
+                )}
+
+                {paymentBank === 'coop' && (
+                  <CoopRecurringPaymentDetails amount={paymentAmount} personalCode={personalCode} />
                 )}
 
                 {paymentBank === 'other' && (

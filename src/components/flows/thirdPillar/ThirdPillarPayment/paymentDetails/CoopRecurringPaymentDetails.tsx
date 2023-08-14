@@ -5,20 +5,20 @@ import { PaymentAmountRow } from './row/PaymentAmountRow';
 import { AccountNumberRow } from './row/AccountNumberRow';
 import { PaymentDescriptionRow } from './row/PaymentDescriptionRow';
 
-export const LuminorRecurringPaymentDetails: React.FunctionComponent<{
+export const CoopRecurringPaymentDetails: React.FunctionComponent<{
   amount: string;
   personalCode: string;
 }> = ({ amount, personalCode }) => (
   <div className="mt-4 payment-details p-4">
     <h3>
-      <FormattedMessage id="thirdPillarPayment.RECURRING.luminor" />
+      <FormattedMessage id="thirdPillarPayment.RECURRING.coop" />
     </h3>
     <div className="d-sm-flex py-2">
       <span className="flex-shrink-0 tv-step__number mr-3">
         <b>1</b>
       </span>
       <span className="flex-grow-1 align-self-center">
-        <FormattedMessage id="thirdPillarPayment.RECURRING.luminor.login" />
+        <FormattedMessage id="thirdPillarPayment.RECURRING.coop.login" />
       </span>
     </div>
     <div className="d-sm-flex py-2">
@@ -26,22 +26,22 @@ export const LuminorRecurringPaymentDetails: React.FunctionComponent<{
         <b>2</b>
       </span>
       <span className="flex-grow-1 align-self-center">
-        <FormattedMessage id="thirdPillarPayment.RECURRING.luminor.form" />
+        <FormattedMessage id="thirdPillarPayment.RECURRING.coop.form" />
         <div className="mt-3 p-4 ml-n4 payment-details-table">
           <table>
             <tbody>
               <AccountNameRow>
-                <FormattedMessage id="thirdPillarPayment.beneficiaryName" />
+                <FormattedMessage id="thirdPillarPayment.beneficiary" />
               </AccountNameRow>
               <PaymentAmountRow amount={amount}>
-                <FormattedMessage id="thirdPillarPayment.amountInEur" />
+                <FormattedMessage id="thirdPillarPayment.amount" />
                 {null}
               </PaymentAmountRow>
-              <AccountNumberRow bank="luminor">
+              <AccountNumberRow bank="swedbank">
                 <FormattedMessage id="thirdPillarPayment.accountNumber" />
               </AccountNumberRow>
               <PaymentDescriptionRow personalCode={personalCode}>
-                <FormattedMessage id="thirdPillarPayment.description" />
+                <FormattedMessage id="thirdPillarPayment.information" />
               </PaymentDescriptionRow>
             </tbody>
           </table>

@@ -255,6 +255,7 @@ export enum Bank {
   LHV = 'LHV',
   SEB = 'SEB',
   LUMINOR = 'LUMINOR',
+  COOP = 'COOP',
 }
 
 export interface Authentication {

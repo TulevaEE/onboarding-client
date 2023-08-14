@@ -52,6 +52,17 @@
   color: white;
 }
 
+.btn.btn-coop, .btn.btn-coop:hover {
+  background-color: white;
+  border-color: #1c7ed4;
+  color: #1c7ed4;
+}
+
+.btn.btn-coop:not(:disabled):not(.disabled):active, .btn.btn-coop:not(:disabled):not(.disabled).active {
+  background-color: #1c7ed4;
+  border-color: #1c7ed4;
+  color: white;
+}
 
 .btn.btn-other:not(:disabled):not(.disabled):active, .btn.btn-other:not(:disabled):not(.disabled).active {
   background-color: $blue;
