@@ -150,7 +150,7 @@ export const Payment: React.FunctionComponent<{
             />
             <BankButton
               bankKey="coop"
-              bankName="Coop"
+              bankName="Coop Pank"
               paymentBank={paymentBank}
               setPaymentBank={setPaymentBank}
             />
