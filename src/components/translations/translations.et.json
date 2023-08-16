@@ -393,9 +393,8 @@
 
   "thirdPillarPayment.RECURRING.coop": "Püsimakse juhend Coop Pangas",
   "thirdPillarPayment.RECURRING.coop.login": "Vajuta allolevat nuppu ning logi sisse Coop Panga internetipanka.",
-  "thirdPillarPayment.RECURRING.coop.form": "Vajuta nupule “uus püsikorraldus”, täida väljad järgnevate andmetega ning kinnita makse:",
-  "thirdPillarPayment.beneficiary": "Saaja",
-  "thirdPillarPayment.information": "Selgitus",
+  "thirdPillarPayment.RECURRING.coop.form": "Püsimakse vorm on eeltäidetud sinu pensionikonto andmetega. Kontrolli üle vaid järgnevad väljad ning sõlmi leping:",
+  "thirdPillarPayment.payer": "Maksja",
 
   "thirdPillarPayment.RECURRING.other": "Püsimakse juhend teistes pankades",
   "thirdPillarPayment.RECURRING.other.login": "Logi sisse oma internetipanka.",

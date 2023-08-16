@@ -1,14 +1,8 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import { AccountNameRow } from './row/AccountNameRow';
-import { PaymentAmountRow } from './row/PaymentAmountRow';
-import { AccountNumberRow } from './row/AccountNumberRow';
-import { PaymentDescriptionRow } from './row/PaymentDescriptionRow';
+import { TextRow } from './row/TextRow';
 
-export const CoopRecurringPaymentDetails: React.FunctionComponent<{
-  amount: string;
-  personalCode: string;
-}> = ({ amount, personalCode }) => (
+export const CoopRecurringPaymentDetails: React.FunctionComponent = () => (
   <div className="mt-4 payment-details p-4">
     <h3>
       <FormattedMessage id="thirdPillarPayment.RECURRING.coop" />
@@ -30,19 +24,14 @@ export const CoopRecurringPaymentDetails: React.FunctionComponent<{
         <div className="mt-3 p-4 ml-n4 payment-details-table">
           <table>
             <tbody>
-              <AccountNameRow>
-                <FormattedMessage id="thirdPillarPayment.beneficiary" />
-              </AccountNameRow>
-              <PaymentAmountRow amount={amount}>
-                <FormattedMessage id="thirdPillarPayment.amount" />
-                {null}
-              </PaymentAmountRow>
-              <AccountNumberRow bank="swedbank">
-                <FormattedMessage id="thirdPillarPayment.accountNumber" />
-              </AccountNumberRow>
-              <PaymentDescriptionRow personalCode={personalCode}>
-                <FormattedMessage id="thirdPillarPayment.information" />
-              </PaymentDescriptionRow>
+              <TextRow>
+                <FormattedMessage id="thirdPillarPayment.payer" />
+                <FormattedMessage id="thirdPillarPayment.chooseAccount" />
+              </TextRow>
+              <TextRow>
+                <FormattedMessage id="thirdPillarPayment.firstPayment" />
+                <FormattedMessage id="thirdPillarPayment.yourPaymentDate" />
+              </TextRow>
             </tbody>
           </table>
         </div>

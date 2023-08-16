@@ -180,9 +180,7 @@ export const Payment: React.FunctionComponent<{
                   />
                 )}
 
-                {paymentBank === 'coop' && (
-                  <CoopRecurringPaymentDetails amount={paymentAmount} personalCode={personalCode} />
-                )}
+                {paymentBank === 'coop' && <CoopRecurringPaymentDetails />}
 
                 {paymentBank === 'other' && (
                   <OtherBankPaymentDetails

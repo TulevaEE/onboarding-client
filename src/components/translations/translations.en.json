@@ -417,9 +417,8 @@
 
   "thirdPillarPayment.RECURRING.coop": "How to set up a recurring payment in Coop Pank",
   "thirdPillarPayment.RECURRING.coop.login": "Click the button below and log into your Coop Pank internet bank.",
-  "thirdPillarPayment.RECURRING.coop.form": "Click the “new standing order” button, fill the form and conclude the agreement:",
-  "thirdPillarPayment.beneficiary": "Beneficiary",
-  "thirdPillarPayment.information": "Information",
+  "thirdPillarPayment.RECURRING.coop.form": "The standing order form is pre-filled with your data. Check the following fields and conclude the agreement:",
+  "thirdPillarPayment.payer": "Remitter",
 
   "thirdPillarPayment.RECURRING.other": "How to set up a recurring payment in another bank",
   "thirdPillarPayment.RECURRING.other.login": "Log in to your internet bank.",
