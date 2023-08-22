@@ -44,9 +44,9 @@
     "uuid": "^3.3.3"
   },
   "scripts": {
-    "build": "react-scripts build",
+    "build": "react-scripts --openssl-legacy-provider build",
     "build:staging": "REACT_APP_ENV=staging react-scripts build",
-    "develop": "react-scripts start",
+    "develop": "react-scripts --openssl-legacy-provider start",
     "develop-production": "HTTPS=true HOST=local.tuleva.ee npm run develop",
     "develop-production-win": "set HTTPS=true&&set HOST=local.tuleva.ee&&npm run develop",
     "lint": "eslint --ext .js,.ts,.jsx,.tsx src/",
