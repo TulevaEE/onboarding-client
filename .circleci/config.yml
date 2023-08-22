@@ -12,7 +12,7 @@ jobs:
   build:
     executor:
       name: node/default
-      tag: '18'
+      tag: '18.17'
     steps:
       - *attach_workspace
       - checkout
@@ -32,7 +32,7 @@ jobs:
   test:
     executor:
       name: node/default
-      tag: '18'
+      tag: '18.17'
     steps:
       - checkout
       - node/install-packages
