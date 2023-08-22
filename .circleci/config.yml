@@ -1,7 +1,7 @@
 version: 2.1
 orbs:
   aws-cli: circleci/aws-cli@3.1.1
-  node: circleci/node@5.0.2
+  node: circleci/node@5.1.0
   codecov: codecov/codecov@3.2.3
 references:
   workspace_root: &workspace_root /tmp/workspace
@@ -12,7 +12,7 @@ jobs:
   build:
     executor:
       name: node/default
-      tag: '16.17'
+      tag: '18'
     steps:
       - *attach_workspace
       - checkout
@@ -32,7 +32,7 @@ jobs:
   test:
     executor:
       name: node/default
-      tag: '16.17'
+      tag: '18'
     steps:
       - checkout
       - node/install-packages
