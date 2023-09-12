@@ -2,13 +2,14 @@
 import { SubmissionError } from 'redux-form';
 import config from 'react-global-configuration';
 
-import { updateUserWithToken } from '../api';
+import {redirectToPayment, updateUserWithToken} from '../api';
 import {
   UPDATE_USER_START,
   UPDATE_USER_SUCCESS,
   UPDATE_USER_ERROR,
   USER_UPDATED,
 } from './constants';
+import {Bank} from "../apiModels";
 
 function toFieldErrors(errorResponse) {
   return errorResponse.body.errors.reduce((totalErrors, currentError) => {
@@ -53,8 +54,18 @@ export function createNewMember(user) {
     return updateUserWithToken(user, getState().login.token)
       .then((newUser) => {
         dispatch({ type: UPDATE_USER_SUCCESS, newUser });
-        const paymentUrl = `${config.get('newUserPaymentRedirectBaseUrl')}&reference=${newUser.id}`;
-        window.location = paymentUrl;
+        redirectToPayment(
+          {
+            recipientPersonalCode: personalCode,
+            amount: Number(paymentAmount),
+            currency: 'EUR',
+            type: paymentType,
+            bank: paymentBank.toUpperCase() as Bank,
+          },
+          token,
+        );
+        // const paymentUrl = `${config.get('newUserPaymentRedirectBaseUrl')}&reference=${newUser.id}`;
+        // window.location = paymentUrl;
       })
       .catch((errorResponse) => {
         dispatch({ type: UPDATE_USER_ERROR, errorResponse });

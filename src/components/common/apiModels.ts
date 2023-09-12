@@ -256,6 +256,7 @@ export enum Bank {
   SEB = 'SEB',
   LUMINOR = 'LUMINOR',
   COOP = 'COOP',
+  TULUNDUSUHISTU = 'TULUNDUSUHISTU',
 }
 
 export interface Authentication {

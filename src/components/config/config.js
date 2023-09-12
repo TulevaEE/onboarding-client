@@ -2,6 +2,7 @@ import config from 'react-global-configuration';
 
 const DEFAULT_CONF_DEV = {
   applicationUrl: 'http://localhost:3000',
+  //TODO remove these newUserPaymentRedirectBaseUrl
   newUserPaymentRedirectBaseUrl:
     'https://payment.test.maksekeskus.ee/pay/1/link.html?shopId=322a5e5e-37ee-45b1-8961-ebd00e84e209&amount=125',
   clientCredentialsAccessToken: '6b338ba2-805c-4300-9341-b38bb4ad34a9',
