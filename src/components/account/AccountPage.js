@@ -18,6 +18,7 @@ import { ACCOUNT_PATH, AML_PATH } from '../LoggedInApp';
 import { isTuleva } from '../common/utils';
 import { AccountSummaryLoader } from './AccountSummary/AccountSummary';
 import { TransactionSection } from './TransactionSection/TransactionSection';
+import { getQueryParams } from '../../utils';
 
 const noop = () => null;
 
@@ -175,6 +176,11 @@ AccountPage.defaultProps = {
   shouldRedirectToAml: false,
 };
 
+const errorCodeFromUrl = getQueryParams().error_code;
+const errorPackageFromUrl = errorCodeFromUrl
+  ? { body: { errors: [{ code: errorCodeFromUrl }] } }
+  : null;
+
 const mapStateToProps = (state) => ({
   secondPillarSourceFunds: state.exchange.sourceFunds,
   thirdPillarSourceFunds: state.thirdPillar.sourceFunds,
@@ -188,7 +194,7 @@ const mapStateToProps = (state) => ({
     !state.account.loadingInitialCapital,
   memberCapital: state.account.initialCapital,
   loadingCapital: state.account.loadingInitialCapital,
-  error: state.exchange.error,
+  error: state.exchange.error || errorPackageFromUrl,
   token: state.login.token,
   shouldRedirectToAml:
     state.aml.missingAmlChecks &&

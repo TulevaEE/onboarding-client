@@ -2,6 +2,7 @@ import { SubmissionError } from 'redux-form';
 import config from 'react-global-configuration';
 
 import { UPDATE_USER_START, UPDATE_USER_SUCCESS, UPDATE_USER_ERROR } from './constants';
+import {Bank, PaymentType} from "../apiModels";
 
 const mockApi = jest.genMockFromModule('../api');
 jest.mock('../api', () => mockApi);
@@ -78,6 +79,7 @@ describe('newUserFlow actions', () => {
       dispatch.mockClear();
       return Promise.resolve(newUser);
     });
+    mockApi.redirectToPayment = jest.fn();
     const createUser = createBoundAction(actions.createNewMember);
     expect(dispatch).not.toHaveBeenCalled();
     return createUser(newUser).then(() => {
@@ -86,6 +88,16 @@ describe('newUserFlow actions', () => {
         type: UPDATE_USER_SUCCESS,
         newUser,
       });
+      expect(mockApi.redirectToPayment).toHaveBeenCalledWith(
+        {
+          recipientPersonalCode: newUser.personalCode,
+          amount: Number(config.get('memberFee')),
+          currency: 'EUR',
+          type: PaymentType.MEMBER_FEE,
+          bank: Bank.TULUNDUSUHISTU,
+        },
+        state.login.token
+      );
     });
   });
 

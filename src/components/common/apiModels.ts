@@ -248,6 +248,7 @@ export enum PaymentType {
   RECURRING = 'RECURRING',
   EMPLOYER = 'EMPLOYER',
   GIFT = 'GIFT',
+  MEMBER_FEE = 'MEMBER_FEE',
 }
 
 export enum Bank {
