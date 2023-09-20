@@ -4,7 +4,6 @@ const BASE_CONFIG = {
   clientCredentialsAccessToken: undefined,
   language: 'et',
   idCardUrl: 'https://id.tuleva.ee',
-  memberFee: 125,
 };
 
 const ENV_CONFIGS = {

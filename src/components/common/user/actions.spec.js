@@ -91,7 +91,7 @@ describe('newUserFlow actions', () => {
       expect(mockApi.redirectToPayment).toHaveBeenCalledWith(
         {
           recipientPersonalCode: newUser.personalCode,
-          amount: Number(config.get('memberFee')),
+          amount: null,
           currency: 'EUR',
           type: PaymentType.MEMBER_FEE,
           bank: Bank.TULUNDUSUHISTU,

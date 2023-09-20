@@ -1,6 +1,5 @@
 /* eslint-disable no-param-reassign,no-underscore-dangle */
 import { SubmissionError } from 'redux-form';
-import config from 'react-global-configuration';
 
 import { redirectToPayment, updateUserWithToken } from '../api';
 import {
@@ -55,11 +54,10 @@ export function createNewMember(user) {
       .then((newUser) => {
         dispatch({ type: UPDATE_USER_SUCCESS, newUser });
         const { token } = getState().login;
-        const memberFee = config.get('memberFee');
         redirectToPayment(
           {
             recipientPersonalCode: newUser.personalCode,
-            amount: Number(memberFee),
+            amount: null,
             currency: 'EUR',
             type: PaymentType.MEMBER_FEE,
             bank: Bank.TULUNDUSUHISTU,
