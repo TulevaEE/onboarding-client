@@ -2,7 +2,7 @@ import { SubmissionError } from 'redux-form';
 import config from 'react-global-configuration';
 
 import { UPDATE_USER_START, UPDATE_USER_SUCCESS, UPDATE_USER_ERROR } from './constants';
-import { Bank, PaymentType } from '../apiModels';
+import { PaymentChannel, PaymentType } from '../apiModels';
 
 const mockApi = jest.genMockFromModule('../api');
 jest.mock('../api', () => mockApi);
@@ -94,7 +94,7 @@ describe('newUserFlow actions', () => {
           amount: null,
           currency: 'EUR',
           type: PaymentType.MEMBER_FEE,
-          bank: Bank.TULUNDUSUHISTU,
+          paymentChannel: PaymentChannel.TULUNDUSUHISTU,
         },
         state.login.token,
       );

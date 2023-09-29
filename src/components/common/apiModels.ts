@@ -238,7 +238,7 @@ export interface Payment {
   amount: number;
   currency: Currency;
   type: PaymentType;
-  bank: Bank;
+  paymentChannel: PaymentChannel;
 }
 
 export type Currency = 'EUR';
@@ -251,7 +251,7 @@ export enum PaymentType {
   MEMBER_FEE = 'MEMBER_FEE',
 }
 
-export enum Bank {
+export enum PaymentChannel {
   SWEDBANK = 'SWEDBANK',
   LHV = 'LHV',
   SEB = 'SEB',

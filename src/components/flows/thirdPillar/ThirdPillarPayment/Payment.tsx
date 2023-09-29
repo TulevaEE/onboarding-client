@@ -8,7 +8,7 @@ import './ThirdPillarPayment.scss';
 import { BankButton } from './BankButton';
 import { State } from '../../../../types';
 import { redirectToPayment } from '../../../common/api';
-import { Bank, PaymentType } from '../../../common/apiModels';
+import { PaymentChannel, PaymentType } from '../../../common/apiModels';
 import { PaymentAmountInput } from './PaymentAmountInput';
 import { LuminorRecurringPaymentDetails } from './paymentDetails/LuminorRecurringPaymentDetails';
 import { OtherBankPaymentDetails } from './paymentDetails/OtherBankPaymentDetails';
@@ -222,7 +222,7 @@ export const Payment: React.FunctionComponent<{
                             amount: Number(paymentAmount),
                             currency: 'EUR',
                             type: paymentType,
-                            bank: paymentBank.toUpperCase() as Bank,
+                            paymentChannel: paymentBank.toUpperCase() as PaymentChannel,
                           },
                           token,
                         );
