@@ -6,7 +6,7 @@ import './ThirdPillarPayment.scss';
 import { BankButton } from './BankButton';
 import { State } from '../../../../types';
 import { redirectToPayment } from '../../../common/api';
-import { Bank, PaymentType } from '../../../common/apiModels';
+import { PaymentChannel, PaymentType } from '../../../common/apiModels';
 import { PaymentAmountInput } from './PaymentAmountInput';
 import { OtherBankPaymentDetails } from './paymentDetails/OtherBankPaymentDetails';
 import { isValidPersonalCode } from './PersonalCode';
@@ -150,7 +150,7 @@ export const ThirdPillarGift: React.FunctionComponent<{
                       amount: Number(paymentAmount),
                       currency: 'EUR',
                       type: PaymentType.GIFT,
-                      bank: paymentBank.toUpperCase() as Bank,
+                      paymentChannel: paymentBank.toUpperCase() as PaymentChannel,
                     },
                     token,
                   );

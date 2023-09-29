@@ -441,7 +441,7 @@ export function paymentLinkBackend(server: SetupServerApi): void {
         return res(
           ctx.json({
             url:
-              `https://${req.url.searchParams.get('bank')}.EE` +
+              `https://${req.url.searchParams.get('paymentChannel')}.EE` +
               `/${req.url.searchParams.get('type')}` +
               `.${req.url.searchParams.get('amount')}` +
               `.${req.url.searchParams.get('currency')}`,
@@ -454,7 +454,7 @@ export function paymentLinkBackend(server: SetupServerApi): void {
             `https://sandbox-payments.montonio.com?payment_token=example.jwt.token.with` +
             `.${req.url.searchParams.get('amount')}` +
             `.${req.url.searchParams.get('currency')}` +
-            `.${req.url.searchParams.get('bank')}`,
+            `.${req.url.searchParams.get('paymentChannel')}`,
         }),
       );
     }),
