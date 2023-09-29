@@ -40,9 +40,6 @@ jobs:
           name: Lint
           command: npm run lint
       - run:
-          name: Update snapshots
-          command: npm run update-snapshot
-      - run:
           name: Run tests
           command: npm test -- --maxWorkers=2
       - store_test_results:
