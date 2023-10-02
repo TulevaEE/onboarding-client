@@ -81,12 +81,13 @@ describe('Login reducer', () => {
   });
 
   it('sets the error when mobile authentication fails', () => {
-    const error = { body: { error_description: 'oh no' } };
+    const errorMessage = 'oh no!';
+    const error = { body: { errors: [{ code: errorMessage }] } };
     const action = { type: MOBILE_AUTHENTICATION_ERROR, error };
 
     const newState = loginReducer(undefined, action);
 
-    expect(newState.error).toBe('oh no');
+    expect(newState.error).toBe(errorMessage);
     expect(newState.token).toBe(null);
     expect(newState.controlCode).toBe(null);
     expect(newState.loadingAuthentication).toBe(false);
@@ -112,7 +113,7 @@ describe('Login reducer', () => {
     expect(loginReducer(undefined, action).token).toBe('token');
   });
 
-  it('sets the error when mobile authentication fails', () => {
+  it('sets the error when id card authentication start fails', () => {
     const error = { body: { errors: [{ code: 'oh noes!!1' }] } };
     const action = { type: ID_CARD_AUTHENTICATION_START_ERROR, error };
 
@@ -122,8 +123,8 @@ describe('Login reducer', () => {
     expect(newState.token).toBe(null);
   });
 
-  it('sets the error when mobile authentication fails', () => {
-    const error = { body: { error_description: 'oh noes!!1' } };
+  it('sets the error when id card authentication fails', () => {
+    const error = { body: { errors: [{ code: 'oh noes!!1' }] } };
     const action = { type: ID_CARD_AUTHENTICATION_ERROR, error };
 
     const newState = loginReducer(undefined, action);
