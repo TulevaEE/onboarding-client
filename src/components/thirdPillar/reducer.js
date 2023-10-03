@@ -92,7 +92,7 @@ export default function thirdPillarReducer(state = initialState, action) {
     case SIGN_MANDATE_SUCCESS:
       return {
         ...state,
-        signedMandateId: action.signedMandateId,
+        signedMandateId: action.pillar === 3 ? action.signedMandateId : null,
       };
     case SELECT_THIRD_PILLAR_SOURCES:
       return {

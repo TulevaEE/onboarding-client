@@ -72,7 +72,7 @@ test('2nd pillar flow allows moving all external pension to main Tuleva pension 
 
   server.use(
     rest.post('http://localhost/v1/mandates', (req, res, ctx) => {
-      return res(ctx.json({ id: 1 }));
+      return res(ctx.json({ id: 1, pillar: 2 }));
     }),
   );
   smartIdSigningBackend(server);

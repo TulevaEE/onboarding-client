@@ -204,7 +204,7 @@ export default function exchangeReducer(state = initialState, action) {
       return {
         ...state,
         mandateSigningControlCode: null,
-        signedMandateId: action.signedMandateId,
+        signedMandateId: action.pillar === 2 ? action.signedMandateId : null,
         loadingMandate: false,
       };
 

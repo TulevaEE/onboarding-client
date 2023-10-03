@@ -295,6 +295,7 @@ describe('Third pillar reducer', () => {
     const state = reducer(undefined, {
       type: SIGN_MANDATE_SUCCESS,
       signedMandateId: 123,
+      pillar: 3,
     });
 
     expect(state).toEqual({

@@ -288,19 +288,13 @@ describe('api', () => {
     expect(mockHttp.put).not.toHaveBeenCalled();
     const mandateId = '123';
     const token = 'a token';
-    return api
-      .getMobileIdSignatureChallengeCodeForMandateIdWithToken(mandateId, token)
-      .then((challengeCode) => {
-        expect(challengeCode).toBe(7777);
-        expect(mockHttp.put).toHaveBeenCalledTimes(1);
-        expect(mockHttp.put).toHaveBeenCalledWith(
-          '/v1/mandates/123/signature/mobileId',
-          undefined,
-          {
-            Authorization: `Bearer ${token}`,
-          },
-        );
+    return api.getMobileIdSignatureChallengeCode(mandateId, token).then((challengeCode) => {
+      expect(challengeCode).toBe(7777);
+      expect(mockHttp.put).toHaveBeenCalledTimes(1);
+      expect(mockHttp.put).toHaveBeenCalledWith('/v1/mandates/123/signature/mobileId', undefined, {
+        Authorization: `Bearer ${token}`,
       });
+    });
   });
 
   it('can get a mobile id signature status', () => {
@@ -308,7 +302,7 @@ describe('api', () => {
     expect(mockHttp.get).not.toHaveBeenCalled();
     const mandateId = '123';
     const token = 'a token';
-    return api.getMobileIdSignatureStatusForMandateIdWithToken(mandateId, token).then((status) => {
+    return api.getMobileIdSignatureStatus(mandateId, token).then((status) => {
       expect(status.statusCode).toBe('SIGNATURE');
       expect(status.challengeCode).toBe(1234);
       expect(mockHttp.get).toHaveBeenCalledTimes(1);
@@ -327,15 +321,13 @@ describe('api', () => {
     expect(mockHttp.put).not.toHaveBeenCalled();
     const mandateId = '123';
     const token = 'a token';
-    return api
-      .getSmartIdSignatureChallengeCodeForMandateIdWithToken(mandateId, token)
-      .then((challengeCode) => {
-        expect(challengeCode).toBe(null);
-        expect(mockHttp.put).toHaveBeenCalledTimes(1);
-        expect(mockHttp.put).toHaveBeenCalledWith('/v1/mandates/123/signature/smartId', undefined, {
-          Authorization: `Bearer ${token}`,
-        });
+    return api.getSmartIdSignatureChallengeCode(mandateId, token).then((challengeCode) => {
+      expect(challengeCode).toBe(null);
+      expect(mockHttp.put).toHaveBeenCalledTimes(1);
+      expect(mockHttp.put).toHaveBeenCalledWith('/v1/mandates/123/signature/smartId', undefined, {
+        Authorization: `Bearer ${token}`,
       });
+    });
   });
 
   it('can get a smart id signature status', () => {
@@ -343,7 +335,7 @@ describe('api', () => {
     expect(mockHttp.get).not.toHaveBeenCalled();
     const mandateId = '123';
     const token = 'a token';
-    return api.getMobileIdSignatureStatusForMandateIdWithToken(mandateId, token).then((status) => {
+    return api.getMobileIdSignatureStatus(mandateId, token).then((status) => {
       expect(status.statusCode).toBe('SIGNATURE');
       expect(status.challengeCode).toBe(1234);
       expect(mockHttp.get).toHaveBeenCalledTimes(1);
@@ -363,23 +355,17 @@ describe('api', () => {
     const clientCertificate = 'a certificate';
     const mandateId = '123';
     const token = 'a token';
-    return api
-      .getIdCardSignatureHashForMandateIdWithCertificateHexAndToken(
-        mandateId,
-        clientCertificate,
-        token,
-      )
-      .then((hash) => {
-        expect(hash).toBe('asdfg');
-        expect(mockHttp.put).toHaveBeenCalledTimes(1);
-        expect(mockHttp.put).toHaveBeenCalledWith(
-          '/v1/mandates/123/signature/idCard',
-          { clientCertificate },
-          {
-            Authorization: `Bearer ${token}`,
-          },
-        );
-      });
+    return api.getIdCardSignatureHash(mandateId, clientCertificate, token).then((hash) => {
+      expect(hash).toBe('asdfg');
+      expect(mockHttp.put).toHaveBeenCalledTimes(1);
+      expect(mockHttp.put).toHaveBeenCalledWith(
+        '/v1/mandates/123/signature/idCard',
+        { clientCertificate },
+        {
+          Authorization: `Bearer ${token}`,
+        },
+      );
+    });
   });
 
   it('can get an id card signature status', () => {
@@ -388,19 +374,17 @@ describe('api', () => {
     const signedHash = 'a signed hash';
     const mandateId = '123';
     const token = 'a token';
-    return api
-      .getIdCardSignatureStatusForMandateIdWithSignedHashAndToken(mandateId, signedHash, token)
-      .then((statusCode) => {
-        expect(statusCode).toBe('SIGNATURE');
-        expect(mockHttp.put).toHaveBeenCalledTimes(1);
-        expect(mockHttp.put).toHaveBeenCalledWith(
-          '/v1/mandates/123/signature/idCard/status',
-          { signedHash },
-          {
-            Authorization: `Bearer ${token}`,
-          },
-        );
-      });
+    return api.getIdCardSignatureStatus(mandateId, signedHash, token).then((statusCode) => {
+      expect(statusCode).toBe('SIGNATURE');
+      expect(mockHttp.put).toHaveBeenCalledTimes(1);
+      expect(mockHttp.put).toHaveBeenCalledWith(
+        '/v1/mandates/123/signature/idCard/status',
+        { signedHash },
+        {
+          Authorization: `Bearer ${token}`,
+        },
+      );
+    });
   });
 
   it('can update a user', () => {

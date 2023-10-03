@@ -220,22 +220,19 @@ describe('Exchange actions', () => {
       dispatch.mockClear();
       return Promise.resolve(mandate);
     });
-    mockApi.getMobileIdSignatureChallengeCodeForMandateIdWithToken = jest.fn(() => {
+    mockApi.getMobileIdSignatureChallengeCode = jest.fn(() => {
       expect(mockApi.saveMandateWithToken).toHaveBeenCalledTimes(1);
       expect(mockApi.saveMandateWithToken).toHaveBeenCalledWith({}, 'token');
       return Promise.resolve(controlCode);
     });
-    mockApi.getMobileIdSignatureStatusForMandateIdWithToken = jest.fn(() =>
+    mockApi.getMobileIdSignatureStatus = jest.fn(() =>
       Promise.resolve({ statusCode: 'OUTSTANDING_TRANSACTION' }),
     );
     const signMandate = createBoundAction(actions.signMandateWithMobileId);
     expect(dispatch).not.toHaveBeenCalled();
     await signMandate({});
-    expect(mockApi.getMobileIdSignatureChallengeCodeForMandateIdWithToken).toHaveBeenCalledTimes(1);
-    expect(mockApi.getMobileIdSignatureChallengeCodeForMandateIdWithToken).toHaveBeenCalledWith(
-      mandate.id,
-      'token',
-    );
+    expect(mockApi.getMobileIdSignatureChallengeCode).toHaveBeenCalledTimes(1);
+    expect(mockApi.getMobileIdSignatureChallengeCode).toHaveBeenCalledWith(mandate.id, 'token');
     expect(dispatch).toHaveBeenCalledTimes(2); // calls next action to start polling as well.
     expect(dispatch).toHaveBeenCalledWith({
       type: SIGN_MANDATE_MOBILE_ID_START_SUCCESS,
@@ -246,13 +243,11 @@ describe('Exchange actions', () => {
   it('starts polling until succeeds when signing the mandate with mobile id', async () => {
     state.login.token = 'token';
 
-    const mandate = { id: 'id' };
+    const mandate = { id: 'id', pillar: 2 };
     const controlCode = '1337';
     mockApi.saveMandateWithToken = jest.fn(() => Promise.resolve(mandate));
-    mockApi.getMobileIdSignatureChallengeCodeForMandateIdWithToken = jest.fn(() =>
-      Promise.resolve(controlCode),
-    );
-    mockApi.getMobileIdSignatureStatusForMandateIdWithToken = jest.fn(() =>
+    mockApi.getMobileIdSignatureChallengeCode = jest.fn(() => Promise.resolve(controlCode));
+    mockApi.getMobileIdSignatureStatus = jest.fn(() =>
       Promise.resolve({ statusCode: 'OUTSTANDING_TRANSACTION' }),
     );
     const signMandate = createBoundAction(actions.signMandateWithMobileId);
@@ -260,22 +255,20 @@ describe('Exchange actions', () => {
     await signMandate({});
     dispatch.mockClear();
 
-    mockApi.getMobileIdSignatureStatusForMandateIdWithToken = jest.fn(() =>
+    mockApi.getMobileIdSignatureStatus = jest.fn(() =>
       Promise.resolve({ statusCode: 'SIGNATURE' }),
     );
     jest.runOnlyPendingTimers();
 
     expect(dispatch).not.toHaveBeenCalled();
-    expect(mockApi.getMobileIdSignatureStatusForMandateIdWithToken).toHaveBeenCalledTimes(1);
-    expect(mockApi.getMobileIdSignatureStatusForMandateIdWithToken).toHaveBeenCalledWith(
-      'id',
-      'token',
-    );
+    expect(mockApi.getMobileIdSignatureStatus).toHaveBeenCalledTimes(1);
+    expect(mockApi.getMobileIdSignatureStatus).toHaveBeenCalledWith('id', 'token');
     await nextTick();
 
     expect(dispatch).toHaveBeenCalledWith({
       type: SIGN_MANDATE_SUCCESS,
-      signedMandateId: 'id',
+      signedMandateId: mandate.id,
+      pillar: mandate.pillar,
     });
     expect(dispatch).toHaveBeenCalledWith(push('/2nd-pillar-flow/success'));
   });
@@ -285,21 +278,17 @@ describe('Exchange actions', () => {
 
     const mandate = { id: 'id' };
     mockApi.saveMandateWithToken = jest.fn(() => Promise.resolve(mandate));
-    mockApi.getMobileIdSignatureChallengeCodeForMandateIdWithToken = jest.fn(() =>
-      Promise.resolve('1337'),
-    );
-    mockApi.getMobileIdSignatureStatusForMandateIdWithToken = jest.fn(() =>
-      Promise.resolve('OUTSTANDING_TRANSACTION'),
-    );
+    mockApi.getMobileIdSignatureChallengeCode = jest.fn(() => Promise.resolve('1337'));
+    mockApi.getMobileIdSignatureStatus = jest.fn(() => Promise.resolve('OUTSTANDING_TRANSACTION'));
     const error = new Error('oh no dude');
     const signMandate = createBoundAction(actions.signMandateWithMobileId);
     await signMandate({});
     dispatch.mockClear();
-    mockApi.getMobileIdSignatureStatusForMandateIdWithToken = jest.fn(() => Promise.reject(error));
+    mockApi.getMobileIdSignatureStatus = jest.fn(() => Promise.reject(error));
     jest.runOnlyPendingTimers();
     await nextTick();
     expect(dispatch).not.toHaveBeenCalled();
-    expect(mockApi.getMobileIdSignatureStatusForMandateIdWithToken).toHaveBeenCalledTimes(1);
+    expect(mockApi.getMobileIdSignatureStatus).toHaveBeenCalledTimes(1);
 
     jest.runOnlyPendingTimers();
     await nextTick();
@@ -328,7 +317,7 @@ describe('Exchange actions', () => {
   it('starts polling until succeeds when signing the mandate with id card', async () => {
     state.login.token = 'token';
 
-    const mandate = { id: 'id' };
+    const mandate = { id: 'id', pillar: 2 };
     const hash = 'hash';
     const certificate = { hex: 'certificate' };
     const signedHash = { hex: 'signedHash' };
@@ -337,34 +326,23 @@ describe('Exchange actions', () => {
     mockHwcrypto.getCertificate = jest.fn(() => Promise.resolve(certificate));
     mockApi.saveMandateWithToken = jest.fn(() => Promise.resolve(mandate));
 
-    mockApi.getIdCardSignatureHashForMandateIdWithCertificateHexAndToken = jest.fn(() =>
-      Promise.resolve(hash),
-    );
+    mockApi.getIdCardSignatureHash = jest.fn(() => Promise.resolve(hash));
     mockHwcrypto.sign = jest.fn(() => Promise.resolve(signedHash));
-    mockApi.getIdCardSignatureStatusForMandateIdWithSignedHashAndToken = jest.fn(() =>
-      Promise.resolve('OUTSTANDING_TRANSACTION'),
-    );
+    mockApi.getIdCardSignatureStatus = jest.fn(() => Promise.resolve('OUTSTANDING_TRANSACTION'));
 
     const signMandate = createBoundAction(actions.signMandateWithIdCard);
     await signMandate(mandate);
     dispatch.mockClear();
-    mockApi.getIdCardSignatureStatusForMandateIdWithSignedHashAndToken = jest.fn(() =>
-      Promise.resolve('SIGNATURE'),
-    );
+    mockApi.getIdCardSignatureStatus = jest.fn(() => Promise.resolve('SIGNATURE'));
     jest.runOnlyPendingTimers();
     expect(dispatch).not.toHaveBeenCalled();
-    expect(
-      mockApi.getIdCardSignatureStatusForMandateIdWithSignedHashAndToken,
-    ).toHaveBeenCalledTimes(1);
-    expect(mockApi.getIdCardSignatureStatusForMandateIdWithSignedHashAndToken).toHaveBeenCalledWith(
-      'id',
-      'signedHash',
-      'token',
-    );
+    expect(mockApi.getIdCardSignatureStatus).toHaveBeenCalledTimes(1);
+    expect(mockApi.getIdCardSignatureStatus).toHaveBeenCalledWith('id', 'signedHash', 'token');
     await nextTick();
     expect(dispatch).toHaveBeenCalledWith({
       type: SIGN_MANDATE_SUCCESS,
-      signedMandateId: 'id',
+      signedMandateId: mandate.id,
+      pillar: mandate.pillar,
     });
     expect(dispatch).toHaveBeenCalledWith(push('/2nd-pillar-flow/success'));
   });
@@ -428,7 +406,7 @@ describe('Exchange actions', () => {
   it('creates aml checks if needed', async () => {
     state.login.loginMethod = 'mobileId';
     mockApi.saveMandateWithToken = jest.fn(() => Promise.reject(new Error()));
-    mockApi.getMobileIdSignatureStatusForMandateIdWithToken = jest.fn(() =>
+    mockApi.getMobileIdSignatureStatus = jest.fn(() =>
       Promise.resolve({ statusCode: 'SIGNATURE' }),
     );
     const amlChecks = {
@@ -450,9 +428,7 @@ describe('Exchange actions', () => {
     state.login.loginMethod = 'smartId';
     const signMandate = createBoundAction(actions.signMandate);
     mockApi.saveMandateWithToken = jest.fn(() => Promise.resolve(mandate));
-    mockApi.getSmartIdSignatureStatusForMandateIdWithToken = jest.fn(() =>
-      Promise.reject(new Error('Stop polling')),
-    );
+    mockApi.getSmartIdSignatureStatus = jest.fn(() => Promise.reject(new Error('Stop polling')));
     await signMandate(mandate);
     expect(mockApi.saveMandateWithToken).not.toHaveBeenCalled();
   });
@@ -462,9 +438,7 @@ describe('Exchange actions', () => {
     state.login.loginMethod = 'mobileId';
     const signMandate = createBoundAction(actions.signMandate);
     mockApi.saveMandateWithToken = jest.fn(() => Promise.resolve(mandate));
-    mockApi.getMobileIdSignatureStatusForMandateIdWithToken = jest.fn(() =>
-      Promise.reject(new Error('Stop polling')),
-    );
+    mockApi.getMobileIdSignatureStatus = jest.fn(() => Promise.reject(new Error('Stop polling')));
     await signMandate(mandate);
     expect(mockApi.saveMandateWithToken).not.toHaveBeenCalled();
   });
@@ -478,9 +452,7 @@ describe('Exchange actions', () => {
     const certificate = { hex: 'certificate' };
     global.hwcrypto = mockHwcrypto;
     mockHwcrypto.getCertificate = jest.fn(() => Promise.resolve(certificate));
-    mockApi.getIdCardSignatureHashForMandateIdWithCertificateHexAndToken = jest.fn(() =>
-      Promise.reject(new Error('Stop polling')),
-    );
+    mockApi.getIdCardSignatureHash = jest.fn(() => Promise.reject(new Error('Stop polling')));
     await signMandate(mandate);
     expect(mockApi.saveMandateWithToken).not.toHaveBeenCalled();
   });
