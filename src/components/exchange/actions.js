@@ -5,12 +5,12 @@ import hwcrypto from 'hwcrypto-js';
 import {
   downloadMandatePreviewWithIdAndToken,
   downloadMandateWithIdAndToken,
-  getIdCardSignatureHashForMandateIdWithCertificateHexAndToken,
-  getIdCardSignatureStatusForMandateIdWithSignedHashAndToken,
-  getMobileIdSignatureChallengeCodeForMandateIdWithToken,
-  getMobileIdSignatureStatusForMandateIdWithToken,
-  getSmartIdSignatureChallengeCodeForMandateIdWithToken,
-  getSmartIdSignatureStatusForMandateIdWithToken,
+  getIdCardSignatureHash,
+  getIdCardSignatureStatus,
+  getMobileIdSignatureChallengeCode,
+  getMobileIdSignatureStatus,
+  getSmartIdSignatureChallengeCode,
+  getSmartIdSignatureStatus,
   getSourceFundsWithToken,
   getFunds,
   saveMandateWithToken,
@@ -98,24 +98,25 @@ export function selectFutureContributionsFund(targetFundIsin) {
   return { type: SELECT_TARGET_FUND, targetFundIsin };
 }
 
-function pollForMandateSignatureWithMandateId(mandateId) {
+function pollForMobileIdSignature(mandateId, pillar) {
   return (dispatch, getState) => {
     if (timeout) {
       clearTimeout(timeout);
     }
     timeout = setTimeout(() => {
-      getMobileIdSignatureStatusForMandateIdWithToken(mandateId, getState().login.token)
+      getMobileIdSignatureStatus(mandateId, getState().login.token)
         .then((status) => {
           if (status.statusCode === SIGNING_IN_PROGRESS_STATUS) {
             dispatch({
               type: SIGN_MANDATE_IN_PROGRESS,
               controlCode: status.challengeCode,
             });
-            dispatch(pollForMandateSignatureWithMandateId(mandateId));
+            dispatch(pollForMobileIdSignature(mandateId, pillar));
           } else {
             dispatch({
               type: SIGN_MANDATE_SUCCESS,
               signedMandateId: mandateId,
+              pillar,
             });
             if (window.useHackySecondPillarRoutePushesInActions) {
               dispatch(push('/2nd-pillar-flow/success'));
@@ -127,24 +128,25 @@ function pollForMandateSignatureWithMandateId(mandateId) {
   };
 }
 
-function pollForMandateSignatureWithMandateIdUsingSmartId(mandateId) {
+function pollForSmartIdSignature(mandateId, pillar) {
   return (dispatch, getState) => {
     if (timeout) {
       clearTimeout(timeout);
     }
     timeout = setTimeout(() => {
-      getSmartIdSignatureStatusForMandateIdWithToken(mandateId, getState().login.token)
+      getSmartIdSignatureStatus(mandateId, getState().login.token)
         .then((status) => {
           if (status.statusCode === SIGNING_IN_PROGRESS_STATUS) {
             dispatch({
               type: SIGN_MANDATE_IN_PROGRESS,
               controlCode: status.challengeCode,
             });
-            dispatch(pollForMandateSignatureWithMandateIdUsingSmartId(mandateId));
+            dispatch(pollForSmartIdSignature(mandateId, pillar));
           } else {
             dispatch({
               type: SIGN_MANDATE_SUCCESS,
               signedMandateId: mandateId,
+              pillar,
             });
             if (window.useHackySecondPillarRoutePushesInActions) {
               dispatch(push('/2nd-pillar-flow/success'));
@@ -182,14 +184,16 @@ export function signMandateWithMobileId(mandate) {
     dispatch({ type: SIGN_MANDATE_MOBILE_ID_START });
     const { token } = getState().login;
     let mandateId;
+    let mandatePillar;
     return saveOrRetrieveExistingMandate(mandate, token)
-      .then(({ id }) => {
+      .then(({ id, pillar }) => {
         mandateId = id;
-        return getMobileIdSignatureChallengeCodeForMandateIdWithToken(mandateId, token);
+        mandatePillar = pillar;
+        return getMobileIdSignatureChallengeCode(mandateId, token);
       })
       .then((controlCode) => {
         dispatch({ type: SIGN_MANDATE_MOBILE_ID_START_SUCCESS, controlCode });
-        dispatch(pollForMandateSignatureWithMandateId(mandateId));
+        dispatch(pollForMobileIdSignature(mandateId, mandatePillar));
       })
       .catch((error) => {
         handleSaveMandateError(dispatch, error);
@@ -202,14 +206,16 @@ export function signMandateWithSmartId(mandate) {
     dispatch({ type: SIGN_MANDATE_SMART_ID_START });
     const { token } = getState().login;
     let mandateId;
+    let mandatePillar;
     return saveOrRetrieveExistingMandate(mandate, token)
-      .then(({ id }) => {
+      .then(({ id, pillar }) => {
         mandateId = id;
-        return getSmartIdSignatureChallengeCodeForMandateIdWithToken(mandateId, token);
+        mandatePillar = pillar;
+        return getSmartIdSignatureChallengeCode(mandateId, token);
       })
       .then((controlCode) => {
         dispatch({ type: SIGN_MANDATE_SMART_ID_START_SUCCESS, controlCode });
-        dispatch(pollForMandateSignatureWithMandateIdUsingSmartId(mandateId));
+        dispatch(pollForSmartIdSignature(mandateId, mandatePillar));
       })
       .catch((error) => {
         handleSaveMandateError(dispatch, error);
@@ -217,28 +223,25 @@ export function signMandateWithSmartId(mandate) {
   };
 }
 
-function pollForMandateSignatureWithMandateIdAndSignedHash(mandateId, signedHash) {
+function pollForIdCardSignature(mandateId, pillar, signedHash) {
   return (dispatch, getState) => {
     if (timeout) {
       clearTimeout(timeout);
     }
     timeout = setTimeout(() => {
-      getIdCardSignatureStatusForMandateIdWithSignedHashAndToken(
-        mandateId,
-        signedHash,
-        getState().login.token,
-      )
+      getIdCardSignatureStatus(mandateId, signedHash, getState().login.token)
         .then((statusCode) => {
           if (statusCode === SIGNATURE_DONE_STATUS) {
             dispatch({
               type: SIGN_MANDATE_SUCCESS,
               signedMandateId: mandateId,
+              pillar,
             });
             if (window.useHackySecondPillarRoutePushesInActions) {
               dispatch(push('/2nd-pillar-flow/success'));
             }
           } else if (statusCode === SIGNING_IN_PROGRESS_STATUS) {
-            dispatch(pollForMandateSignatureWithMandateIdAndSignedHash(mandateId, signedHash));
+            dispatch(pollForIdCardSignature(mandateId, pillar, signedHash));
           } else {
             dispatch({ type: SIGN_MANDATE_ERROR, statusCode });
           }
@@ -248,7 +251,7 @@ function pollForMandateSignatureWithMandateIdAndSignedHash(mandateId, signedHash
   };
 }
 
-function signIdCardSignatureHashWithCertificateForMandateId(hash, certificate, mandateId) {
+function signIdCardSignatureHash(hash, certificate, mandateId, pillar) {
   return (dispatch) =>
     hwcrypto
       .sign(certificate, { type: 'SHA-256', hex: hash }, { lang: 'en' })
@@ -262,7 +265,7 @@ function signIdCardSignatureHashWithCertificateForMandateId(hash, certificate, m
         },
       )
       .then((signedHash) => {
-        dispatch(pollForMandateSignatureWithMandateIdAndSignedHash(mandateId, signedHash));
+        dispatch(pollForIdCardSignature(mandateId, pillar, signedHash));
       })
       .catch((error) => {
         handleSaveMandateError(dispatch, error);
@@ -281,6 +284,7 @@ export function signMandateWithIdCard(mandate) {
     dispatch({ type: SIGN_MANDATE_ID_CARD_START });
     const { token } = getState().login;
     let mandateId;
+    let mandatePillar;
     let certificate;
 
     return hwcrypto
@@ -297,17 +301,14 @@ export function signMandateWithIdCard(mandate) {
         },
       )
       .then(() => saveOrRetrieveExistingMandate(mandate, token))
-      .then(({ id }) => {
+      .then(({ id, pillar }) => {
         mandateId = id;
-        return getIdCardSignatureHashForMandateIdWithCertificateHexAndToken(
-          mandateId,
-          certificate.hex,
-          token,
-        );
+        mandatePillar = pillar;
+        return getIdCardSignatureHash(mandateId, certificate.hex, token);
       })
       .then((hash) => {
         dispatch({ type: SIGN_MANDATE_ID_CARD_START_SUCCESS });
-        dispatch(signIdCardSignatureHashWithCertificateForMandateId(hash, certificate, mandateId));
+        dispatch(signIdCardSignatureHash(hash, certificate, mandateId, mandatePillar));
       })
       .catch((error) => {
         dispatch({ type: SIGN_MANDATE_START_ERROR, error });

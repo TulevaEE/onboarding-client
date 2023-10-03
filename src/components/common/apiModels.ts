@@ -144,6 +144,7 @@ export interface CancellationMandate {
 
 export interface Mandate {
   id: number;
+  pillar: Pillar;
 }
 
 interface Address {

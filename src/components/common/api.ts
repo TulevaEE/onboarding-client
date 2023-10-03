@@ -8,7 +8,6 @@ import {
   Fund,
   FundBalance,
   IdCardSignatureResponse,
-  IdCardSignatureStatusResponse,
   InitialCapital,
   Mandate,
   MandateDeadlines,
@@ -165,7 +164,7 @@ export function saveMandateWithToken(mandate: string, token: string): Promise<Ma
   });
 }
 
-export async function getMobileIdSignatureChallengeCodeForMandateIdWithToken(
+export async function getMobileIdSignatureChallengeCode(
   mandateId: string,
   token: string,
 ): Promise<MobileSignatureResponse> {
@@ -179,7 +178,7 @@ export async function getMobileIdSignatureChallengeCodeForMandateIdWithToken(
   return challengeCode;
 }
 
-export async function getMobileIdSignatureStatusForMandateIdWithToken(
+export async function getMobileIdSignatureStatus(
   mandateId: string,
   token: string,
 ): Promise<MobileSignatureStatusResponse> {
@@ -188,7 +187,7 @@ export async function getMobileIdSignatureStatusForMandateIdWithToken(
   });
 }
 
-export async function getSmartIdSignatureChallengeCodeForMandateIdWithToken(
+export async function getSmartIdSignatureChallengeCode(
   mandateId: string,
   token: string,
 ): Promise<MobileSignatureResponse> {
@@ -202,7 +201,7 @@ export async function getSmartIdSignatureChallengeCodeForMandateIdWithToken(
   return challengeCode;
 }
 
-export async function getSmartIdSignatureStatusForMandateIdWithToken(
+export async function getSmartIdSignatureStatus(
   mandateId: string,
   token: string,
 ): Promise<MobileSignatureStatusResponse> {
@@ -211,7 +210,7 @@ export async function getSmartIdSignatureStatusForMandateIdWithToken(
   });
 }
 
-export async function getIdCardSignatureHashForMandateIdWithCertificateHexAndToken(
+export async function getIdCardSignatureHash(
   mandateId: string,
   certificateHex: string,
   token: string,
@@ -226,11 +225,11 @@ export async function getIdCardSignatureHashForMandateIdWithCertificateHexAndTok
   return hash;
 }
 
-export async function getIdCardSignatureStatusForMandateIdWithSignedHashAndToken(
+export async function getIdCardSignatureStatus(
   mandateId: string,
   signedHash: string,
   token: string,
-): Promise<IdCardSignatureStatusResponse> {
+): Promise<string> {
   const { statusCode } = await put(
     getEndpoint(`/v1/mandates/${mandateId}/signature/idCard/status`),
     { signedHash },

@@ -14,7 +14,7 @@ export function useCancellationWithSigning(): {
 
   async function cancelApplication(applicationId: number) {
     const cancellation = await mutation.mutateAsync(applicationId);
-    signing.sign({ id: cancellation.mandateId });
+    signing.sign({ id: cancellation.mandateId, pillar: 2 });
   }
 
   function cancelSigning() {
@@ -39,7 +39,7 @@ export function useCancellationPreview(): {
 
   async function downloadPreview(applicationId: number) {
     const cancellation = await mutation.mutateAsync(applicationId);
-    preview.downloadPreview({ id: cancellation.mandateId });
+    preview.downloadPreview({ id: cancellation.mandateId, pillar: 2 });
   }
 
   return {
