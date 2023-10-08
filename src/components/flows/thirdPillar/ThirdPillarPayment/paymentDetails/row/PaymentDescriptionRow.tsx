@@ -3,7 +3,7 @@ import { FormattedMessage } from 'react-intl';
 import { InfoTooltip } from '../../../../../common';
 
 export const PaymentDescriptionRow: React.FunctionComponent<{
-  personalCode?: string;
+  personalCode: string;
   children: React.ReactNode;
 }> = ({ personalCode, children }) => (
   <tr>

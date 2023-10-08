@@ -162,6 +162,7 @@ const renderLoginTabs = (
 );
 
 const renderSmartId = (onIdCodeSubmit, personalCode, onPersonalCodeChange, formatMessage) => (
+  // eslint-disable-next-line react/no-unknown-property
   <div label="login.smart.id" hideOnMobile="false">
     <form onSubmit={runWithDefaultPrevention(() => onIdCodeSubmit(personalCode))}>
       <div className="form-group">
@@ -195,6 +196,7 @@ const renderMobileId = (
   formatMessage,
   onPhoneNumberChange,
 ) => (
+  // eslint-disable-next-line react/no-unknown-property
   <div label="login.mobile.id" hideOnMobile="false">
     <form onSubmit={runWithDefaultPrevention(() => onMobileIdSubmit(phoneNumber, personalCode))}>
       <div className="form-group">
@@ -231,6 +233,7 @@ const renderMobileId = (
 );
 
 const renderIdCard = (onAuthenticateWithIdCard) => (
+  // eslint-disable-next-line react/no-unknown-property
   <div label="login.id.card" hideOnMobile="true">
     <div>
       <button

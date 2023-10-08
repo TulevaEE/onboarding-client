@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { FormattedMessage, injectIntl, WrappedComponentProps } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
 
 import moment, { Moment } from 'moment';
@@ -19,7 +19,7 @@ interface Option {
   label: string;
 }
 
-interface Props extends WrappedComponentProps {
+interface Props {
   token: string;
   fundNameMap: Record<string, string>;
 }
@@ -130,8 +130,7 @@ export class ReturnComparison extends Component<Props, State> {
   }
 
   render(): JSX.Element {
-    const { fundNameMap, intl } = this.props;
-
+    const { fundNameMap } = this.props;
     const {
       loading,
       fromDateOptions,
@@ -275,7 +274,7 @@ export class ReturnComparison extends Component<Props, State> {
                   <a
                     target="_blank"
                     rel="noopener noreferrer"
-                    href={intl.formatMessage({ id: 'returnComparison.returnNotice.link' })}
+                    href="//tuleva.ee/analuusid/millist-tootlust-on-tulevas-oodata/"
                   >
                     {chunks}
                   </a>
@@ -297,4 +296,4 @@ const mapStateToProps = (state: {
   fundNameMap: convertFundsToFundNameMap(state.exchange.targetFunds),
 });
 
-export default connect(mapStateToProps)(injectIntl(ReturnComparison));
+export default connect(mapStateToProps)(ReturnComparison);

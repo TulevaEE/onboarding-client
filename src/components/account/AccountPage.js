@@ -7,18 +7,17 @@ import { FormattedMessage } from 'react-intl';
 
 import { ErrorMessage, Loader } from '../common';
 import ReturnComparison from './ReturnComparison';
-import { actions as accountActions } from '.';
 import AccountStatement from './AccountStatement';
 import MemberCapital from './MemberCapital';
 import StatusBox from './statusBox';
 import GreetingBar from './GreetingBar';
 import AccountSummary from './AccountSummary';
 import { ApplicationSection } from './ApplicationSection/ApplicationSection';
-import { ACCOUNT_PATH, AML_PATH } from '../LoggedInApp';
 import { isTuleva } from '../common/utils';
 import { AccountSummaryLoader } from './AccountSummary/AccountSummary';
 import { TransactionSection } from './TransactionSection/TransactionSection';
 import { getQueryParams } from '../../utils';
+import { getInitialCapital } from './actions';
 
 const noop = () => null;
 
@@ -56,8 +55,8 @@ export class AccountPage extends Component {
         {shouldRedirectToAml && (
           <Redirect
             to={{
-              pathname: AML_PATH,
-              state: { from: ACCOUNT_PATH },
+              pathname: '/aml',
+              state: { from: '/account' },
             }}
           />
         )}
@@ -206,7 +205,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) =>
   bindActionCreators(
     {
-      onGetMemberCapital: accountActions.getInitialCapital,
+      onGetMemberCapital: getInitialCapital,
     },
     dispatch,
   );

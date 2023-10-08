@@ -11,6 +11,6 @@ export const FundRow: React.FunctionComponent<{
         <FormattedMessage id="thirdPillarPayment.tuleva3rdPillarFund" />
       </b>
     </td>
-    <td className="d-none d-sm-table-cell" />
+    <td className="d-none d-sm-table-cell"> </td>
   </tr>
 );

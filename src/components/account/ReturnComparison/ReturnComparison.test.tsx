@@ -17,7 +17,7 @@ jest.mock('./fundIsinsWithAvailableData.json', () => ['EE123456', 'EE987654']);
 
 describe('Return comparison', () => {
   it('does not get returns when no token', () => {
-    shallow(<ReturnComparison token={undefined} fundNameMap={{}} />);
+    shallow(<ReturnComparison token="" fundNameMap={{}} />);
     expect(getReturnComparison).not.toHaveBeenCalled();
   });
 
@@ -196,22 +196,21 @@ describe('Return comparison', () => {
     expect(dateSelect(component).prop('selected')).toEqual('2010-01-01');
   });
 
-  const unitButton = (c): ShallowWrapper => c.find('button');
-  const select = (c): ShallowWrapper => c.find(Select);
-  const dateSelect = (c): ShallowWrapper => select(c).at(0);
-  const personalReturnSelect = (c): ShallowWrapper => select(c).at(1);
-  const indexSelect = (c): ShallowWrapper => select(c).at(2);
-  const pensionFundSelect = (c): ShallowWrapper => select(c).at(3);
+  const select = (c: ShallowWrapper) => c.find(Select);
+  const dateSelect = (c: ShallowWrapper) => select(c).at(0);
+  const personalReturnSelect = (c: ShallowWrapper) => select(c).at(1);
+  const indexSelect = (c: ShallowWrapper) => select(c).at(2);
+  const pensionFundSelect = (c: ShallowWrapper) => select(c).at(3);
   const aDate = (): string => '2020-06-25';
   const aToken = (): string => 'a-token';
-  const returns = (c, index): ShallowWrapper => c.find('.h2').at(index);
-  const personalReturn = (c): string => returns(c, 0).text();
-  const indexReturn = (c): string => returns(c, 1).text();
-  const pensionFundReturn = (c): string => returns(c, 2).text();
+  const returns = (c: ShallowWrapper, index: number) => c.find('.h2').at(index);
+  const personalReturn = (c: ShallowWrapper): string => returns(c, 0).text();
+  const indexReturn = (c: ShallowWrapper): string => returns(c, 1).text();
+  const pensionFundReturn = (c: ShallowWrapper): string => returns(c, 2).text();
   const flushPromises = (): Promise<any> =>
     new Promise((resolve): void => {
       process.nextTick((): void => {
-        resolve();
+        resolve('');
       });
     });
 });
