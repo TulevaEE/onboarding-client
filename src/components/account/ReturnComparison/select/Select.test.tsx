@@ -1,5 +1,5 @@
 import React from 'react';
-import { shallow, ShallowWrapper } from 'enzyme';
+import { HTMLAttributes, shallow, ShallowWrapper } from 'enzyme';
 
 import { Select } from './Select';
 
@@ -10,31 +10,30 @@ jest.mock('react-intl', () => ({
 }));
 
 describe('Select', () => {
-  let component;
-  let onChange;
+  let component: ShallowWrapper;
+  let onChange: (selected: string) => void;
   beforeEach(() => {
     onChange = jest.fn();
     component = shallow(
       <Select
         options={[
-          { value: 1, label: 'One' },
-          { value: 2, label: 'Two' },
-          { value: 3, label: 'Three' },
+          { value: 'one', label: 'One' },
+          { value: 'two', label: 'Two' },
+          { value: 'three', label: 'Three' },
         ]}
-        selected={1}
+        selected="one"
         onChange={onChange}
-        translations={{ translate: jest.fn() }}
       />,
     );
   });
 
   it('has value as selected', () => {
-    component.setProps({ selected: 3 });
-    expect(select().prop('value')).toBe(3);
+    component.setProps({ selected: 'three' });
+    expect(select().prop('value')).toBe('three');
   });
 
   it('has option values', () => {
-    expect(options().map((option) => option.prop('value'))).toEqual([1, 2, 3]);
+    expect(options().map((option) => option.prop('value'))).toEqual(['one', 'two', 'three']);
   });
 
   it('has translated option labels', () => {
@@ -47,10 +46,10 @@ describe('Select', () => {
 
   it('executes callback with value on change', () => {
     expect(onChange).not.toBeCalled();
-    select().simulate('change', { target: { value: 3 } });
-    expect(onChange).toBeCalledWith(3);
+    select().simulate('change', { target: { value: 'three' } });
+    expect(onChange).toBeCalledWith('three');
   });
 
-  const select = (): ShallowWrapper<HTMLSelectElement> => component.find('select');
-  const options = (): ShallowWrapper<HTMLOptionElement> => component.find('option');
+  const select = (): ShallowWrapper<HTMLAttributes, HTMLSelectElement> => component.find('select');
+  const options = (): ShallowWrapper<HTMLAttributes, HTMLOptionElement> => component.find('option');
 });

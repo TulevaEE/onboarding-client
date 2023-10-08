@@ -5,7 +5,6 @@ import { FormSubmitHandler } from 'redux-form';
 import { Redirect } from 'react-router-dom';
 import InlineSignUpForm from './inlineSignUp/inlineSignUpForm';
 import { createNewMember } from '../common/user/actions';
-import { ACCOUNT_PATH } from '../LoggedInApp';
 
 export const SignUpPage: React.FunctionComponent<{
   saveUser: FormSubmitHandler;
@@ -13,7 +12,7 @@ export const SignUpPage: React.FunctionComponent<{
 }> = ({ saveUser, isMember }) => {
   return (
     <div className="row">
-      {isMember && <Redirect to={ACCOUNT_PATH} />}
+      {isMember && <Redirect to="/account" />}
       <div className="col-md-4">
         <InlineSignUpForm onSubmit={saveUser} />
       </div>

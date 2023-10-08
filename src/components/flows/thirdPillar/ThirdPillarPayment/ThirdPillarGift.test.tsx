@@ -149,12 +149,6 @@ describe('When a user is making a third pillar payment', () => {
   const otherBankButton = async () => screen.findByLabelText('Other bank');
 
   const makePaymentButton = async () => screen.findByRole('button', { name: 'Make payment' });
-  const queryMakePaymentButton = () => screen.queryByRole('button', { name: 'Make payment' });
-
-  const logIntoInternetBankButton = async () =>
-    screen.findByRole('button', { name: 'Log into internet bank' });
-  const queryLogIntoInternetBankButton = () =>
-    screen.queryByRole('button', { name: 'Log into internet bank' });
 
   const backToAccountPageButton = async () => screen.findByText('Back to account page');
 });

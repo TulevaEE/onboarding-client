@@ -9,7 +9,7 @@ describe('Login form', () => {
   let component;
 
   beforeEach(() => {
-    jest.useFakeTimers('modern');
+    jest.useFakeTimers();
     jest.setSystemTime(new Date('August 10, 2021 10:36:00'));
 
     component = shallow(<LoginForm />);

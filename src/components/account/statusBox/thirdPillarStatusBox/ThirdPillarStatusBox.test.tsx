@@ -14,7 +14,7 @@ describe('ThirdPillarStatusBox', () => {
   };
 
   beforeEach(() => {
-    jest.useFakeTimers('modern');
+    jest.useFakeTimers();
     component = shallow(<ThirdPillarStatusBox {...props} />);
   });
 

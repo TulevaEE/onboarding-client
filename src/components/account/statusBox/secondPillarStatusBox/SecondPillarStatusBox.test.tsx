@@ -12,10 +12,10 @@ import {
 // TODO: Figure out a cleaner way to mock the hooks
 jest.mock('../../../common/apiHooks', () => ({
   usePendingApplications: () => ({ data: [{ type: 'WITHDRAWAL' }] }),
-  useMandateDeadlines: () => ({ data: { periodEnding: '2023-07-31T20:59:59.999999999Z' } }),
+  useMandateDeadlines: () => ({ data: { periodEnding: '2023-07-31T00:59:59.999999999Z' } }),
 }));
 
-jest.useFakeTimers('modern');
+jest.useFakeTimers();
 jest.setSystemTime(new Date('July 22, 2023 10:36:00'));
 
 describe('SecondPillarStatusBox', () => {

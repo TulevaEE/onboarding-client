@@ -8,6 +8,6 @@ export const TextRow: React.FunctionComponent<{
     <td className="align-bottom pl-2">
       <b>{children[1]}</b>
     </td>
-    <td className="d-none d-sm-table-cell" />
+    <td className="d-none d-sm-table-cell"> </td>
   </tr>
 );
