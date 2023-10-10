@@ -16,7 +16,7 @@ Originally, this repo was built using js, redux and enzyme for testing. Over the
 ## Prerequisites
 
 - Git
-- Node.js LTS (16.17.0) and NPM (8.15.0)
+- Node.js LTS (18.17.0) and NPM (8.15.0)
 
 Easiest way to get a specific version of Nodejs (or almost anything really) is to use [asdf](https://asdf-vm.com)
 - *asdf plugin add nodejs*

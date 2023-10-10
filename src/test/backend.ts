@@ -2,9 +2,7 @@ import { DefaultRequestMultipartBody, rest } from 'msw';
 import { SetupServerApi } from 'msw/node';
 import queryString from 'qs';
 
-export function cancellationBackend(
-  server: SetupServerApi,
-): {
+export function cancellationBackend(server: SetupServerApi): {
   cancellationCreated: boolean;
 } {
   const backend = {
@@ -33,9 +31,7 @@ export const mandateDownloadBackend = (server: SetupServerApi): void => {
   );
 };
 
-export function mandatePreviewBackend(
-  server: SetupServerApi,
-): {
+export function mandatePreviewBackend(server: SetupServerApi): {
   previewDownloaded: boolean;
 } {
   const backend = {
@@ -179,9 +175,10 @@ export function mobileIdAuthenticationBackend(
   };
 }
 
-export function idCardAuthenticationBackend(
-  server: SetupServerApi,
-): { authenticatedWithIdCard: boolean; acceptedCertificate: boolean } {
+export function idCardAuthenticationBackend(server: SetupServerApi): {
+  authenticatedWithIdCard: boolean;
+  acceptedCertificate: boolean;
+} {
   const backend = { authenticatedWithIdCard: false, acceptedCertificate: false };
   server.use(
     rest.get('https://id.tuleva.ee', (req, res, ctx) => {
