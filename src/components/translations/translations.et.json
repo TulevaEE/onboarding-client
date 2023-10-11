@@ -39,7 +39,7 @@
   "select.sources.current.status": "Sinu II samba pensionivara seis täna",
   "select.sources.total": "Kokku",
   "select.sources.select.all": "Toon kogu II samba Tulevasse",
-  "select.sources.select.all.subtitle": "Kogud edaspidi ainult Tulevas ja tood üle ka varem II sambasse kogutud vara. Tuleva soodsad tasud rakenduvad kogu portfellile. Fondivahetus on tasuta.",
+  "select.sources.select.all.subtitle": "Tood üle varem II sambasse kogutud vara ning kogud edaspidi ainult Tulevas. Tuleva soodsad tasud rakenduvad kogu portfellile. Fondivahetus on tasuta.",
   "select.sources.select.all.deadline": "Selle vahetusperioodi tähtaeg on <b>{periodEnding}.</b>",
   "select.sources.select.all.choose": "Vali fond:",
   "select.sources.select.some": "Toon II samba valikuliselt üle",
@@ -326,7 +326,7 @@
 
   "thirdPillarFlowSelectSources.title": "Sinu III samba pensionivara seis täna",
   "thirdPillarFlowSelectSources.selectAll.title": "Toon kogu III samba pensionivara Tulevasse",
-  "thirdPillarFlowSelectSources.selectAll.subtitle": "Kogud edaspidi ainult Tulevas ja tood üle ka varem III sambasse kogutud vara. Tuleva soodsad tasud rakenduvad kogu portfellile. Fondivahetus on tasuta.",
+  "thirdPillarFlowSelectSources.selectAll.subtitle": "Tood üle varem III sambasse kogutud vara ning kogud edaspidi ainult Tulevas. Tuleva soodsad tasud rakenduvad kogu portfellile. Fondivahetus on tasuta.",
   "thirdPillarFlowSelectSources.cost": "Mis fondivahetus maksab?",
   "thirdPillarFlowSelectSources.insurance_info": "NB! Siin on <a>juhised kindlustuslepingust vara üle toomiseks</a>.",
   "thirdPillarFlowSelectSources.insurance_info.link": "https://tuleva.ee/iii-sammas-kindlustusleping/",
