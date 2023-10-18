@@ -62,7 +62,7 @@
     "@testing-library/user-event": "^13.5.0",
     "@transferwise/eslint-config": "^6.1.0",
     "@types/classnames": "^2.2.11",
-    "@types/downloadjs": "^1.4.4",
+    "@types/downloadjs": "^1.4.5",
     "@types/enzyme": "^3.10.10",
     "@types/jest": "^29.5.5",
     "@types/lodash": "^4.14.176",
