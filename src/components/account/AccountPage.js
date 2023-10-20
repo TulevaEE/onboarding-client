@@ -18,6 +18,7 @@ import { AccountSummaryLoader } from './AccountSummary/AccountSummary';
 import { TransactionSection } from './TransactionSection/TransactionSection';
 import { getQueryParams } from '../../utils';
 import { getInitialCapital } from './actions';
+import SecondPillarUpsell from './SecondPillarUpsell';
 
 const noop = () => null;
 
@@ -62,6 +63,9 @@ export class AccountPage extends Component {
         )}
         <div className="row mt-5">
           <GreetingBar />
+        </div>
+        <div className="mt-5">
+          <SecondPillarUpsell />
         </div>
         <div className="mt-5">
           <StatusBox />
