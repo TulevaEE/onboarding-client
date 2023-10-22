@@ -3,7 +3,7 @@ import { shallow, ShallowWrapper } from 'enzyme';
 import { FormattedMessage } from 'react-intl';
 
 import { ReturnComparison } from './ReturnComparison';
-import { getReturnComparison, Key } from './api';
+import { getReturnComparison, Key, ReturnComparison as ReturnComparisonType } from './api';
 import Select from './select';
 
 jest.mock('./api', () => ({
@@ -141,11 +141,29 @@ describe('Return comparison', () => {
   });
 
   it('shows returns as formatted percentages and no error messages', async () => {
-    const returns = {
-      personal: { rate: 0.1, amount: 1000.1033 },
-      index: { rate: 0.122, amount: 1222.1232 },
-      pensionFund: { rate: 0.111, amount: 1111.0123 },
-      notEnoughHistory: false,
+    const returns: ReturnComparisonType = {
+      personal: {
+        key: Key.SECOND_PILLAR,
+        type: 'PERSONAL',
+        rate: 0.1,
+        amount: 1000.1033,
+        currency: 'EUR',
+      },
+      index: {
+        key: Key.UNION_STOCK_INDEX,
+        type: 'INDEX',
+        rate: 0.122,
+        amount: 1222.1232,
+        currency: 'EUR',
+      },
+      pensionFund: {
+        key: Key.THIRD_PILLAR,
+        type: 'FUND',
+        rate: 0.111,
+        amount: 1111.0123,
+        currency: 'EUR',
+      },
+      from: '2019-01-01',
     };
 
     (getReturnComparison as jest.Mock).mockResolvedValueOnce({});
@@ -174,7 +192,7 @@ describe('Return comparison', () => {
       personal: null,
       index: null,
       pensionFund: null,
-      notEnoughHistory: true,
+      from: '2020-01-01',
     });
     dateSelect(component).simulate('change', aDate());
     await flushPromises();

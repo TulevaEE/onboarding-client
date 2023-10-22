@@ -4,15 +4,10 @@ import { connect } from 'react-redux';
 
 import moment, { Moment } from 'moment';
 import Select from './select';
-import { getReturnComparison, Key, ReturnRateAndAmount } from './api';
+import { getReturnComparison, Key, Return } from './api';
 import fundIsinsWithAvailableData from './fundIsinsWithAvailableData.json';
 import convertFundsToFundNameMap from './convertFundsToFundNameMap';
 import Euro from '../../common/Euro';
-
-enum PresentationUnit {
-  CURRENCY = 'CURRENCY',
-  PERCENTAGE = 'PERCENTAGE',
-}
 
 interface Option {
   value: string;
@@ -29,25 +24,26 @@ interface State {
   fromDateOptions: Option[];
   fromDate: string;
   selectedPersonalKey: Key;
-  selectedPensionFundKey: Key | string;
+  selectedFundKey: Key | string;
   selectedIndexKey: Key;
-  personalReturn: ReturnRateAndAmount | null;
-  pensionFundReturn: ReturnRateAndAmount | null;
-  indexReturn: ReturnRateAndAmount | null;
-  notEnoughHistory: boolean;
+  personalReturn: Return | null;
+  fundReturn: Return | null;
+  indexReturn: Return | null;
+  from: string;
 }
 
-const formatReturn = (
-  returnRateAndAmount: ReturnRateAndAmount | null,
-  presentationUnit: PresentationUnit,
-): JSX.Element => {
-  if (returnRateAndAmount) {
-    if (presentationUnit === PresentationUnit.PERCENTAGE) {
-      return <span>{(returnRateAndAmount.rate * 100).toFixed(1)}%</span>;
-    }
-    return <Euro amount={returnRateAndAmount.amount} fractionDigits={0} />;
+const formatReturn = (aReturn: Return | null): JSX.Element => {
+  if (aReturn) {
+    return <span>{(aReturn.rate * 100).toFixed(1)}%</span>;
   }
   return <span>-</span>;
+};
+
+const formatAmount = (aReturn: Return | null): JSX.Element => {
+  if (aReturn) {
+    return <Euro amount={aReturn.amount} fractionDigits={0} />;
+  }
+  return <>&nbsp;</>;
 };
 
 const LOADER = '...';
@@ -81,12 +77,12 @@ export class ReturnComparison extends Component<Props, State> {
     fromDate: tenYearsAgo,
     loading: false,
     selectedPersonalKey: Key.SECOND_PILLAR,
-    selectedPensionFundKey: Key.EPI,
+    selectedFundKey: Key.EPI,
     selectedIndexKey: Key.UNION_STOCK_INDEX,
     personalReturn: null,
-    pensionFundReturn: null,
+    fundReturn: null,
     indexReturn: null,
-    notEnoughHistory: false,
+    from: tenYearsAgo,
   };
 
   componentDidMount(): void {
@@ -99,30 +95,31 @@ export class ReturnComparison extends Component<Props, State> {
 
   async loadReturns(): Promise<void> {
     const { token } = this.props;
-    const { fromDate, selectedPersonalKey, selectedPensionFundKey, selectedIndexKey } = this.state;
+    const { fromDate, selectedPersonalKey, selectedFundKey, selectedIndexKey } = this.state;
 
     this.setState({ loading: true });
     try {
       const {
         personal: personalReturn,
-        pensionFund: pensionFundReturn,
+        pensionFund: fundReturn,
         index: indexReturn,
-        notEnoughHistory,
+        from,
       } = await getReturnComparison(
         fromDate,
         {
           personalKey: selectedPersonalKey,
-          pensionFundKey: selectedPensionFundKey,
+          pensionFundKey: selectedFundKey,
           indexKey: selectedIndexKey,
         },
         token,
       );
-      this.setState({ personalReturn, pensionFundReturn, indexReturn, notEnoughHistory });
+      this.setState({ personalReturn, fundReturn, indexReturn, from });
     } catch (ignored) {
       this.setState({
         personalReturn: null,
-        pensionFundReturn: null,
+        fundReturn: null,
         indexReturn: null,
+        from: fromDate,
       });
     } finally {
       this.setState({ loading: false });
@@ -136,12 +133,12 @@ export class ReturnComparison extends Component<Props, State> {
       fromDateOptions,
       fromDate,
       selectedPersonalKey,
-      selectedPensionFundKey,
+      selectedFundKey,
       selectedIndexKey,
       personalReturn,
-      pensionFundReturn,
+      fundReturn,
       indexReturn,
-      notEnoughHistory,
+      from,
     } = this.state;
 
     return (
@@ -185,10 +182,10 @@ export class ReturnComparison extends Component<Props, State> {
               />
               <div className="my-4">
                 <div className="h2 text-primary m-0">
-                  {loading ? LOADER : formatReturn(personalReturn, PresentationUnit.PERCENTAGE)}
+                  {loading ? LOADER : formatReturn(personalReturn)}
                 </div>
                 <small className="text-muted">
-                  {loading ? <>&nbsp;</> : formatReturn(personalReturn, PresentationUnit.CURRENCY)}
+                  {loading ? <>&nbsp;</> : formatAmount(personalReturn)}
                 </small>
               </div>
             </div>
@@ -210,10 +207,10 @@ export class ReturnComparison extends Component<Props, State> {
               />
               <div className="my-4">
                 <div className="h2 text-success m-0">
-                  {loading ? LOADER : formatReturn(indexReturn, PresentationUnit.PERCENTAGE)}
+                  {loading ? LOADER : formatReturn(indexReturn)}
                 </div>
                 <small className="text-muted">
-                  {loading ? <>&nbsp;</> : formatReturn(indexReturn, PresentationUnit.CURRENCY)}
+                  {loading ? <>&nbsp;</> : formatAmount(indexReturn)}
                 </small>
               </div>
             </div>
@@ -228,29 +225,25 @@ export class ReturnComparison extends Component<Props, State> {
                     }))
                     .sort((option1, option2) => option1.label.localeCompare(option2.label)),
                 ]}
-                selected={selectedPensionFundKey}
+                selected={selectedFundKey}
                 onChange={(key: string) => {
-                  this.setState({ selectedPensionFundKey: key }, () => {
+                  this.setState({ selectedFundKey: key }, () => {
                     this.loadReturns();
                   });
                 }}
               />
               <div className="my-4">
                 <div className="h2 text-danger m-0">
-                  {loading ? LOADER : formatReturn(pensionFundReturn, PresentationUnit.PERCENTAGE)}
+                  {loading ? LOADER : formatReturn(fundReturn)}
                 </div>
                 <small className="text-muted">
-                  {loading ? (
-                    <>&nbsp;</>
-                  ) : (
-                    formatReturn(pensionFundReturn, PresentationUnit.CURRENCY)
-                  )}
+                  {loading ? <>&nbsp;</> : formatAmount(fundReturn)}
                 </small>
               </div>
             </div>
           </div>
 
-          {notEnoughHistory && (
+          {moment().diff(from, 'years') < 1 && (
             <div className="text-center mt-2 alert alert-danger">
               <FormattedMessage id="returnComparison.notEnoughHistory" />
             </div>

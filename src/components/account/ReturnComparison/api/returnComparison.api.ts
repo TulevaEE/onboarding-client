@@ -1,7 +1,6 @@
 import { get } from '../../../common/http';
 import { getEndpoint } from '../../../common/api';
 
-// eslint-disable-next-line no-shadow
 export enum Key {
   SECOND_PILLAR = 'SECOND_PILLAR',
   THIRD_PILLAR = 'THIRD_PILLAR',
@@ -12,7 +11,7 @@ export enum Key {
 
 type ReturnType = 'PERSONAL' | 'FUND' | 'INDEX';
 
-interface Return {
+export interface Return {
   type: ReturnType;
   key: string;
   rate: number;
@@ -22,20 +21,14 @@ interface Return {
 
 interface ReturnsResponse {
   from: string;
-  notEnoughHistory: boolean;
   returns: Return[];
 }
 
-export interface ReturnRateAndAmount {
-  rate: number;
-  amount: number;
-}
-
-interface ReturnComparison {
-  personal: ReturnRateAndAmount | null;
-  pensionFund: ReturnRateAndAmount | null;
-  index: ReturnRateAndAmount | null;
-  notEnoughHistory: boolean;
+export interface ReturnComparison {
+  personal: Return | null;
+  pensionFund: Return | null;
+  index: Return | null;
+  from: string;
 }
 
 export async function getReturnComparison(
@@ -47,23 +40,17 @@ export async function getReturnComparison(
   }: { personalKey: Key; pensionFundKey: Key | string; indexKey: Key },
   token: string,
 ): Promise<ReturnComparison> {
-  const { notEnoughHistory, returns } = await getReturns(
-    date,
-    [personalKey, pensionFundKey, indexKey],
-    token,
-  );
+  const { returns, from } = await getReturns(date, [personalKey, pensionFundKey, indexKey], token);
 
   const personal = getReturnByKey(personalKey, returns);
   const pensionFund = getReturnByKey(pensionFundKey, returns);
   const index = getReturnByKey(indexKey, returns);
 
-  return { personal, pensionFund, index, notEnoughHistory };
+  return { personal, pensionFund, index, from };
 }
 
-function getReturnByKey(key: string, returns: Return[]): ReturnRateAndAmount | null {
-  const returnForKey = returns?.find((ret) => ret.key === key);
-
-  return returnForKey ? { rate: returnForKey.rate, amount: returnForKey.amount } : null;
+function getReturnByKey(key: string, returns: Return[]): Return | null {
+  return returns?.find((ret) => ret.key === key) || null;
 }
 
 function getReturns(

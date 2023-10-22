@@ -25,14 +25,12 @@ describe('Return comparison API', () => {
   });
 
   it('returns return comparison object with passed personal pillar, pension fund, and index values', async () => {
+    const personalReturn = { key: Key.THIRD_PILLAR, rate: 0.0436, amount: 997.12, currency: 'EUR' };
+    const fundReturn = { key: 'EE123456', rate: 0.0228, amount: 883.45, currency: 'EUR' };
+    const indexReturn = { key: Key.CPI, rate: 0.0686, amount: 224.23, currency: 'EUR' };
     (get as jest.Mock).mockResolvedValueOnce({
-      from: '',
-      notEnoughHistory: false,
-      returns: [
-        { key: Key.CPI, rate: 0.0686, amount: 224.23 },
-        { key: 'EE123456', rate: 0.0228, amount: 883.45 },
-        { key: Key.THIRD_PILLAR, rate: 0.0436, amount: 997.12 },
-      ],
+      from: '2020-01-01',
+      returns: [indexReturn, fundReturn, personalReturn],
     });
 
     const comparison = await getReturnComparison(
@@ -41,18 +39,19 @@ describe('Return comparison API', () => {
       '',
     );
     expect(comparison).toStrictEqual({
-      personal: { rate: 0.0436, amount: 997.12 },
-      pensionFund: { rate: 0.0228, amount: 883.45 },
-      index: { rate: 0.0686, amount: 224.23 },
-      notEnoughHistory: false,
+      personal: personalReturn,
+      pensionFund: fundReturn,
+      index: indexReturn,
+      from: '2020-01-01',
     });
   });
 
   it('returns return comparison object with null values when respective keys are not found', async () => {
+    const fundReturn = { key: 'EPI', rate: 0.0228, amount: 220.204, currency: 'EUR' };
     (get as jest.Mock).mockResolvedValueOnce({
       from: '',
       notEnoughHistory: false,
-      returns: [{ key: 'EPI', rate: 0.0228, amount: 220.204 }],
+      returns: [fundReturn],
     });
 
     const comparison = await getReturnComparison(
@@ -61,29 +60,9 @@ describe('Return comparison API', () => {
       '',
     );
     expect(comparison).toStrictEqual({
-      notEnoughHistory: false,
-      personal: null,
-      pensionFund: { rate: 0.0228, amount: 220.204 },
-      index: null,
-    });
-  });
-
-  it('returns return comparison object with null values when there is not enough history', async () => {
-    (get as jest.Mock).mockResolvedValueOnce({
       from: '',
-      notEnoughHistory: true,
-      returns: null,
-    });
-
-    const comparison = await getReturnComparison(
-      '',
-      { personalKey: Key.THIRD_PILLAR, pensionFundKey: Key.EPI, indexKey: Key.CPI },
-      '',
-    );
-    expect(comparison).toStrictEqual({
-      notEnoughHistory: true,
       personal: null,
-      pensionFund: null,
+      pensionFund: fundReturn,
       index: null,
     });
   });
