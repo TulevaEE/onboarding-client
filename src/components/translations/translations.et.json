@@ -516,5 +516,19 @@
   "cancellation.flow.confirm.content": "Avaldust allkirjastades kinnitad, et soovid tühistada järgmise avalduse:",
   "cancellation.flow.success.title": "Avaldus tühistatud",
   "cancellation.flow.success.download": "Lae alla",
-  "cancellation.flow.success.back": "Tagasi kontole"
+  "cancellation.flow.success.back": "Tagasi kontole",
+
+  "secondPillarUpsell.riskDiversification": "Tuleva Maailma Aktsiate Pensionifond <b>hajutab riski</b> 3000 maailma suurima ettevõtte vahel.",
+  "secondPillarUpsell.ownership": "Tuleva <b>kuulub kogujatele</b> endile, seega puudub kogujate ja ärihuvide konflikt.",
+  "secondPillarUpsell.lowFees": "<b>Madalad tasud</b> on ainus kindel viis tootluse suurendamiseks. Mida rohkem kogujaid Tulevas, seda madalamaks saame tasusid viia.",
+  "secondPillarUpsell.readMore": "Loe Tuleva II sambast lähemalt",
+  "secondPillarUpsell.pensionSavings": "Pensionieaks koguksid Tuleva indeksfondis <a>eeldatavalt</a> {amount} rohkem",
+  "secondPillarUpsell.youAreHere": "Sina oled siin",
+  "secondPillarUpsell.cardTitle": "II sammas",
+  "secondPillarUpsell.notInTuleva": "Pole Tulevas",
+  "secondPillarUpsell.callToAction": "Too II sammas Tulevasse (2 min)",
+  "secondPillarUpsell.yourSecondPillar": "Sinu II sammas täna",
+  "secondPillarUpsell.amountInIndexFund": "Indeksfondis oleksid kogunud tänaseks",
+  "secondPillarUpsell.whatDoTheseNumbersMean": "Mida need numbrid tähendavad?"
+
 }
