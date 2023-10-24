@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 import { FormattedMessage } from 'react-intl';
 
-import { ReturnComparison } from './ReturnComparison';
+import { ReturnComparison, START_DATE } from './ReturnComparison';
 import { getReturnComparison, Key, ReturnComparison as ReturnComparisonType } from './api';
 import Select from './select';
 
@@ -21,11 +21,11 @@ describe('Return comparison', () => {
     expect(getReturnComparison).not.toHaveBeenCalled();
   });
 
-  it('gets returns for ten years ago, second pillar, epi, and union stock index with token', () => {
+  it('gets returns from the beginning for second pillar, epi, and union stock index with token', () => {
     expect(getReturnComparison).not.toHaveBeenCalled();
     shallow(<ReturnComparison token="a-token" fundNameMap={{}} />);
     expect(getReturnComparison).toHaveBeenCalledWith(
-      '2010-01-01',
+      START_DATE,
       { personalKey: Key.SECOND_PILLAR, pensionFundKey: Key.EPI, indexKey: Key.UNION_STOCK_INDEX },
       'a-token',
     );
@@ -208,13 +208,13 @@ describe('Return comparison', () => {
     );
   });
 
-  it('passes ten years ago select by default', async () => {
+  it('gets returns from the beginning by default', async () => {
     (getReturnComparison as jest.Mock).mockResolvedValueOnce({});
 
     const component = shallow(<ReturnComparison token={aToken()} fundNameMap={{}} />);
     await flushPromises();
 
-    expect(dateSelect(component).prop('selected')).toEqual('2010-01-01');
+    expect(dateSelect(component).prop('selected')).toEqual(START_DATE);
   });
 
   const select = (c: ShallowWrapper) => c.find(Select);
