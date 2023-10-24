@@ -8,6 +8,7 @@ import {
   getMandateDeadlines,
   getPendingApplications,
   getTransactions,
+  getUserWithToken,
 } from './api';
 import {
   Application,
@@ -16,9 +17,10 @@ import {
   Fund,
   MandateDeadlines,
   Transaction,
+  User,
 } from './apiModels';
 
-function useTokenOrFail(): string {
+export function useTokenOrFail(): string {
   const token = useSelector<{ login: { token?: string } }, string | null>(
     (state) => state.login.token || null,
   );
@@ -72,4 +74,9 @@ export function useApplication(id: number): UseQueryResult<Application | null> {
 export function useMandateDeadlines(): UseQueryResult<MandateDeadlines> {
   const token = useTokenOrFail();
   return useQuery('mandateDeadlines', () => getMandateDeadlines(token));
+}
+
+export function useMe(): UseQueryResult<User> {
+  const token = useTokenOrFail();
+  return useQuery('user', () => getUserWithToken(token));
 }

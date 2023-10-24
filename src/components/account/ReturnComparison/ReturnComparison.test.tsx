@@ -147,6 +147,7 @@ describe('Return comparison', () => {
         type: 'PERSONAL',
         rate: 0.1,
         amount: 1000.1033,
+        paymentsSum: 100.123,
         currency: 'EUR',
       },
       index: {
@@ -154,6 +155,7 @@ describe('Return comparison', () => {
         type: 'INDEX',
         rate: 0.122,
         amount: 1222.1232,
+        paymentsSum: 200.234,
         currency: 'EUR',
       },
       pensionFund: {
@@ -161,6 +163,7 @@ describe('Return comparison', () => {
         type: 'FUND',
         rate: 0.111,
         amount: 1111.0123,
+        paymentsSum: 300.345,
         currency: 'EUR',
       },
       from: '2019-01-01',

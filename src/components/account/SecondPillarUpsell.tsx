@@ -1,7 +1,10 @@
 import React from 'react';
 import './SecondPillarUpsell.scss';
 import { FormattedMessage, useIntl } from 'react-intl';
+import moment from 'moment';
 import Euro from '../common/Euro';
+import { useMe } from '../common/apiHooks';
+import { useDefaultReturns } from './ReturnComparison/returnComparisonHooks';
 
 interface CardTitleProps {
   className: string;
@@ -32,9 +35,9 @@ const CallToAction: React.FC<CTAProps> = ({ className }) => {
 };
 
 interface PensionGraphProps {
-  startingYear: number;
-  currentYear: number;
-  endingYear: number;
+  startingYear: number | string;
+  currentYear: number | string;
+  endingYear: number | string;
   markerText: string;
 }
 
@@ -111,16 +114,17 @@ const PensionGraph: React.FC<PensionGraphProps> = ({
   );
 };
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface Props {}
-// eslint-disable-next-line no-empty-pattern
-const SecondPillarUpsell: React.FC<Props> = ({}) => {
-  const startingYear = 2003;
-  const currentYear = 2023;
-  const endingYear = 2062;
-
+const SecondPillarUpsell: React.FC = () => {
   const intl = useIntl();
+  const { data: returns } = useDefaultReturns();
+  const { data: user } = useMe();
 
+  const startingYear = moment(returns?.from).year() || '...';
+  const currentYear = moment().year() || '...';
+  const endingYear = moment(user?.dateOfBirth).year() + (user?.retirementAge || 65) || '...';
+
+  const yourSecondPillar = (returns?.personal?.amount || 0) + (returns?.personal?.paymentsSum || 0);
+  const amountInIndexFund = (returns?.index?.amount || 0) + (returns?.index?.paymentsSum || 0);
   return (
     <div className="card">
       <div className="card-body p-4">
@@ -189,13 +193,13 @@ const SecondPillarUpsell: React.FC<Props> = ({}) => {
                   <div className="d-flex justify-content-between align-items-end small mb-1">
                     <FormattedMessage id="secondPillarUpsell.yourSecondPillar" />
                     <span className="text-bold text-nowrap">
-                      <Euro amount={36622} fractionDigits={0} />
+                      <Euro amount={yourSecondPillar} fractionDigits={0} />
                     </span>
                   </div>
                   <div className="d-flex justify-content-between align-items-end small mb-1 text-primary text-bold">
                     <FormattedMessage id="secondPillarUpsell.amountInIndexFund" />
                     <span className="text-bold text-nowrap">
-                      <Euro amount={40713} fractionDigits={0} />
+                      <Euro amount={amountInIndexFund} fractionDigits={0} />
                     </span>
                   </div>
                   <a href="/" className="small text-dark">

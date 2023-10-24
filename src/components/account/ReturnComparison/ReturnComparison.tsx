@@ -48,7 +48,7 @@ const formatAmount = (aReturn: Return | null): JSX.Element => {
 
 const LOADER = '...';
 
-const startDate = '2003-01-07';
+export const START_DATE = '2003-01-07';
 
 const format = (momentDate: Moment) => momentDate.format('YYYY-MM-DD');
 
@@ -61,7 +61,7 @@ const twoYearsAgo = format(moment().subtract(2, 'years'));
 const oneYearAgo = format(moment().subtract(1, 'year'));
 
 export const dateOptions = [
-  { value: startDate, label: 'returnComparison.period.all' },
+  { value: START_DATE, label: 'returnComparison.period.all' },
   { value: twentyYearsAgo, label: 'returnComparison.period.twentyYears' },
   { value: fifteenYearsAgo, label: 'returnComparison.period.fifteenYears' },
   { value: tenYearsAgo, label: 'returnComparison.period.tenYears' },
@@ -74,7 +74,7 @@ export const dateOptions = [
 export class ReturnComparison extends Component<Props, State> {
   state = {
     fromDateOptions: dateOptions,
-    fromDate: tenYearsAgo,
+    fromDate: START_DATE,
     loading: false,
     selectedPersonalKey: Key.SECOND_PILLAR,
     selectedFundKey: Key.EPI,
@@ -82,7 +82,7 @@ export class ReturnComparison extends Component<Props, State> {
     personalReturn: null,
     fundReturn: null,
     indexReturn: null,
-    from: tenYearsAgo,
+    from: START_DATE,
   };
 
   componentDidMount(): void {
