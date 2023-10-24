@@ -167,7 +167,9 @@ export interface User {
   address: Address;
   secondPillarActive: boolean;
   thirdPillarActive: boolean;
+  dateOfBirth: string;
   age: number;
+  retirementAge: number;
 }
 
 export interface UserConversion {

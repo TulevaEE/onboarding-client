@@ -16,10 +16,11 @@ export interface Return {
   key: string;
   rate: number;
   amount: number;
+  paymentsSum: number;
   currency: string;
 }
 
-interface ReturnsResponse {
+export interface ReturnsResponse {
   from: string;
   returns: Return[];
 }
