@@ -1,18 +1,31 @@
 import React from 'react';
 import './SecondPillarUpsell.scss';
+import { FormattedMessage, useIntl } from 'react-intl';
+import Euro from '../common/Euro';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface Props {}
-
+interface CardTitleProps {
+  className: string;
+}
+const CardTitle: React.FC<CardTitleProps> = ({ className }) => {
+  return (
+    <div className={`card-title mb-3 ${className}`}>
+      <h2 className="d-inline mr-2">
+        <FormattedMessage id="secondPillarUpsell.cardTitle" />
+      </h2>
+      <span className="badge badge-pink">
+        <FormattedMessage id="secondPillarUpsell.notInTuleva" />
+      </span>
+    </div>
+  );
+};
 interface CTAProps {
   className: string;
 }
-
 const CallToAction: React.FC<CTAProps> = ({ className }) => {
   return (
     <div className={`cta ${className}`}>
       <button className="btn btn-primary px-3" type="button">
-        Too II sammas Tulevasse (2 min)
+        <FormattedMessage id="secondPillarUpsell.callToAction" />
       </button>
     </div>
   );
@@ -98,24 +111,16 @@ const PensionGraph: React.FC<PensionGraphProps> = ({
   );
 };
 
-interface CTAProps {
-  className: string;
-}
-
-const CardTitle: React.FC<CTAProps> = ({ className }) => {
-  return (
-    <div className={`card-title mb-3 ${className}`}>
-      <h2 className="d-inline mr-2">II sammas</h2>
-      <span className="badge badge-pink">Pole Tulevas</span>
-    </div>
-  );
-};
-
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+interface Props {}
 // eslint-disable-next-line no-empty-pattern
 const SecondPillarUpsell: React.FC<Props> = ({}) => {
   const startingYear = 2003;
   const currentYear = 2023;
   const endingYear = 2062;
+
+  const intl = useIntl();
+
   return (
     <div className="card">
       <div className="card-body p-4">
@@ -123,23 +128,31 @@ const SecondPillarUpsell: React.FC<Props> = ({}) => {
           <div className="col-md-6 order-1 order-md-0">
             <CardTitle className="d-none d-md-block" />
             <div className="card-text mt-4 mt-md-0">
-              <ul className="pl-3 small-bullet-list pr-5">
+              <ul className="pl-3 small-bullet-list pr-4">
                 <li className="mb-3">
-                  Tuleva laiapõhjaline indeksfond <b>hajutab riski</b> 3000 maailma suurima
-                  ettevõtte vahel.
+                  <FormattedMessage
+                    id="secondPillarUpsell.riskDiversification"
+                    values={{ b: (chunks: string) => <b>{chunks}</b> }}
+                  />
                 </li>
                 <li className="mb-3">
-                  Tuleva <b>kuulub kogujatele</b> endile, seega puudub kogujate ja ärihuvide
-                  konflikt.
+                  <FormattedMessage
+                    id="secondPillarUpsell.ownership"
+                    values={{ b: (chunks: string) => <b>{chunks}</b> }}
+                  />
                 </li>
                 <li className="mb-3">
-                  <b>Madalad tasud</b> on ainus kindel viis tootluse suurendamiseks. Mida rohkem
-                  kogujaid Tulevas, seda madalamaks saame tasusid viia.
+                  <FormattedMessage
+                    id="secondPillarUpsell.lowFees"
+                    values={{ b: (chunks: string) => <b>{chunks}</b> }}
+                  />
                 </li>
               </ul>
               <p className="ml-3">
                 <a href="/">
-                  <u>Loe Tuleva II sambast lähemalt</u>
+                  <u>
+                    <FormattedMessage id="secondPillarUpsell.readMore" />
+                  </u>
                 </a>
               </p>
               <CallToAction className="d-none d-md-block" />
@@ -150,26 +163,45 @@ const SecondPillarUpsell: React.FC<Props> = ({}) => {
             <div className="card card-primary mr-md-0 border-0 pb-md-2">
               <div className="card-body">
                 <span className="h6">
-                  Pensionieaks koguksid Tuleva indeksfondis eeldatavalt{' '}
-                  <span className="h2 text-primary text-bold text-nowrap">64 732 €</span> rohkem
+                  <FormattedMessage
+                    id="secondPillarUpsell.pensionSavings"
+                    values={{
+                      a: (text: string) => (
+                        <a href="/">
+                          <u>{text}</u>
+                        </a>
+                      ),
+                      amount: (
+                        <span className="h2 text-primary text-bold text-nowrap">
+                          <Euro amount={64732} fractionDigits={0} />
+                        </span>
+                      ),
+                    }}
+                  />
                 </span>
                 <PensionGraph
                   startingYear={startingYear}
                   currentYear={currentYear}
                   endingYear={endingYear}
-                  markerText="Sina oled siin"
+                  markerText={intl.formatMessage({ id: 'secondPillarUpsell.youAreHere' })}
                 />
                 <div className="mt-3">
                   <div className="d-flex justify-content-between align-items-end small mb-1">
-                    <span>Sinu II sammas</span>
-                    <span className="text-bold text-nowrap">36 622 €</span>
+                    <FormattedMessage id="secondPillarUpsell.yourSecondPillar" />
+                    <span className="text-bold text-nowrap">
+                      <Euro amount={36622} fractionDigits={0} />
+                    </span>
                   </div>
                   <div className="d-flex justify-content-between align-items-end small mb-1 text-primary text-bold">
-                    <span>Indeksfondis oleksid kogunud tänaseks</span>
-                    <span className="text-bold text-nowrap">40 713 €</span>
+                    <FormattedMessage id="secondPillarUpsell.amountInIndexFund" />
+                    <span className="text-bold text-nowrap">
+                      <Euro amount={40713} fractionDigits={0} />
+                    </span>
                   </div>
                   <a href="/" className="small text-dark">
-                    <u>Mida need numbrid tähendavad?</u>
+                    <u>
+                      <FormattedMessage id="secondPillarUpsell.whatDoTheseNumbersMean" />
+                    </u>
                   </a>
                   <CallToAction className="d-md-none mt-3" />
                 </div>
