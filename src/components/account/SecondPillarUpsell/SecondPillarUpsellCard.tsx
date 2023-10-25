@@ -68,7 +68,7 @@ const SecondPillarUpsellCard: React.FC = () => {
                       id="secondPillarUpsell.pensionSavings"
                       values={{
                         amount: (
-                          <span className="h2 text-primary text-bold text-nowrap">
+                          <span className="h2 text-orange text-bold text-nowrap">
                             {diff ? <Euro amount={diff} fractionDigits={0} /> : '...'}
                           </span>
                         ),

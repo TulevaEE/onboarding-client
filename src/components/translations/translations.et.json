@@ -522,7 +522,7 @@
   "secondPillarUpsell.ownership": "Tuleva <b>kuulub kogujatele</b> endile, seega puudub kogujate ja ärihuvide konflikt.",
   "secondPillarUpsell.lowFees": "<b>Madalad tasud</b> on ainus kindel viis tootluse suurendamiseks. Mida rohkem kogujaid Tulevas, seda madalamaks saame tasusid viia.",
   "secondPillarUpsell.readMore": "Loe Tuleva II sambast lähemalt",
-  "secondPillarUpsell.pensionSavings": "Sinu II samba tootlus on võrreldes maailmaturgu järgiva indeksfondiga {amount}",
+  "secondPillarUpsell.pensionSavings": "Sinu II samba tootlus on võrreldes maailma aktsiaturgu järgiva indeksfondiga {amount}",
   "secondPillarUpsell.youAreHere": "Sina oled siin",
   "secondPillarUpsell.cardTitle": "II sammas",
   "secondPillarUpsell.notInTuleva": "Pole Tulevas",
