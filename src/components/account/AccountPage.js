@@ -18,7 +18,7 @@ import { AccountSummaryLoader } from './AccountSummary/AccountSummary';
 import { TransactionSection } from './TransactionSection/TransactionSection';
 import { getQueryParams } from '../../utils';
 import { getInitialCapital } from './actions';
-import SecondPillarUpsell from './SecondPillarUpsell';
+import SecondPillarUpsell from './SecondPillarUpsell/SecondPillarUpsell';
 
 const noop = () => null;
 
