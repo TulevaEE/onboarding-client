@@ -24,7 +24,7 @@ const SecondPillarUpsellCard: React.FC = () => {
   return (
     <div>
       <div className="card">
-        <div className="card-body p-4">
+        <div className="card-body p-3">
           <div className="row">
             <div className="col-md-6 order-1 order-md-0">
               <CardTitle className="d-none d-md-block" />
@@ -67,10 +67,12 @@ const SecondPillarUpsellCard: React.FC = () => {
                     <FormattedMessage
                       id="secondPillarUpsell.pensionSavings"
                       values={{
-                        amount: (
+                        amount: diff ? (
                           <span className="h2 text-orange text-bold text-nowrap">
-                            {diff ? <Euro amount={diff} fractionDigits={0} /> : '...'}
+                            <Euro amount={diff} fractionDigits={0} />
                           </span>
+                        ) : (
+                          <span className="h2 text-bold text-primary text-nowrap">...</span>
                         ),
                       }}
                     />
