@@ -88,7 +88,6 @@ describe('Select sources step', () => {
     ).toBe(true);
   });
 
-
   it('on exact selection disables the next step button if selection is invalid due to inter fund transfer and displays help text', () => {
     component.setProps({
       sourceSelectionExact: true,
