@@ -66,7 +66,8 @@ export const SelectSources = ({
   }
   const fullSelectionActive = !!sourceSelection.length && !sourceSelectionExact;
   const noneSelectionActive = !sourceSelection.length && !sourceSelectionExact;
-  const validationErrorCode = selectionsError(sourceSelection);
+  const validationErrorCode =
+    sourceSelectionExact === true ? selectionsError(sourceSelection) : null;
   const isValid = !validationErrorCode;
   const tulevaTargetFunds =
     targetFunds && targetFunds.length && targetFunds.filter((fund) => isTuleva(fund));
