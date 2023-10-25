@@ -547,11 +547,11 @@
   "secondPillarUpsell.ownership": "Tuleva <b>belongs to the savers</b> themselves, thus eliminating the conflict of interest between savers and owners.",
   "secondPillarUpsell.lowFees": "<b>Low fees</b> are the surest predictor of high returns. The more savers in Tuleva, the lower we can bring the fees.",
   "secondPillarUpsell.readMore": "Read more about Tuleva's II Pillar",
-  "secondPillarUpsell.pensionSavings": "In Tuleva's index fund, you could <a>presumably</a> accumulate {amount} more by the time you retire.",
+  "secondPillarUpsell.pensionSavings": "Your II pillar return compared to the world market average is {amount}",
   "secondPillarUpsell.callToAction": "Transfer II Pillar to Tuleva (2 min)",
   "secondPillarUpsell.youAreHere": " You are here",
   "secondPillarUpsell.yourSecondPillar": "Your II Pillar today",
   "secondPillarUpsell.amountInIndexFund": "In an index fund, you would have accumulated",
-  "secondPillarUpsell.whatDoTheseNumbersMean": "What do these numbers mean?"
-
+  "secondPillarUpsell.whatDoTheseNumbersMean": "What do these numbers mean?",
+  "secondPillarUpsell.disclaimer": "This is a financial service. Be sure to review the selected pension fund's terms and conditions and prospectus on tuleva.ee website. For help, you can reach us at tuleva@tuleva.ee or 644 5100."
 }

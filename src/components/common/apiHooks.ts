@@ -8,6 +8,7 @@ import {
   getMandateDeadlines,
   getPendingApplications,
   getTransactions,
+  getUserConversionWithToken,
   getUserWithToken,
 } from './api';
 import {
@@ -18,6 +19,7 @@ import {
   MandateDeadlines,
   Transaction,
   User,
+  UserConversion,
 } from './apiModels';
 
 export function useTokenOrFail(): string {
@@ -79,4 +81,9 @@ export function useMandateDeadlines(): UseQueryResult<MandateDeadlines> {
 export function useMe(): UseQueryResult<User> {
   const token = useTokenOrFail();
   return useQuery('user', () => getUserWithToken(token));
+}
+
+export function useConversion(): UseQueryResult<UserConversion> {
+  const token = useTokenOrFail();
+  return useQuery('conversion', () => getUserConversionWithToken(token));
 }

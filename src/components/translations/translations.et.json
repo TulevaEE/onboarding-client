@@ -522,13 +522,13 @@
   "secondPillarUpsell.ownership": "Tuleva <b>kuulub kogujatele</b> endile, seega puudub kogujate ja ärihuvide konflikt.",
   "secondPillarUpsell.lowFees": "<b>Madalad tasud</b> on ainus kindel viis tootluse suurendamiseks. Mida rohkem kogujaid Tulevas, seda madalamaks saame tasusid viia.",
   "secondPillarUpsell.readMore": "Loe Tuleva II sambast lähemalt",
-  "secondPillarUpsell.pensionSavings": "Pensionieaks koguksid Tuleva indeksfondis <a>eeldatavalt</a> {amount} rohkem",
+  "secondPillarUpsell.pensionSavings": "Sinu II samba tootlus on võrreldes maailma keskmisega {amount}",
   "secondPillarUpsell.youAreHere": "Sina oled siin",
   "secondPillarUpsell.cardTitle": "II sammas",
   "secondPillarUpsell.notInTuleva": "Pole Tulevas",
   "secondPillarUpsell.callToAction": "Too II sammas Tulevasse (2 min)",
   "secondPillarUpsell.yourSecondPillar": "Sinu II sammas täna",
   "secondPillarUpsell.amountInIndexFund": "Indeksfondis oleksid kogunud tänaseks",
-  "secondPillarUpsell.whatDoTheseNumbersMean": "Mida need numbrid tähendavad?"
-
+  "secondPillarUpsell.whatDoTheseNumbersMean": "Mida need arvud tähendavad?",
+  "secondPillarUpsell.disclaimer": "Tegemist on finantsteenusega. Tutvu kindlasti ka valitud pensionifondi tingimuste ja prospektiga tuleva.ee lehel ja vajadusel küsi nõu tuleva@tuleva.ee või 644 5100."
 }
