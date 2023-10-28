@@ -243,7 +243,7 @@ export class ReturnComparison extends Component<Props, State> {
             </div>
           </div>
 
-          {moment().diff(from, 'years') < 1 && (
+          {moment().diff(from, 'years', true) < 0.8 && (
             <div className="text-center mt-2 alert alert-danger">
               <FormattedMessage id="returnComparison.notEnoughHistory" />
             </div>

@@ -50,7 +50,6 @@ describe('Return comparison API', () => {
     const fundReturn = { key: 'EPI', rate: 0.0228, amount: 220.204, currency: 'EUR' };
     (get as jest.Mock).mockResolvedValueOnce({
       from: '',
-      notEnoughHistory: false,
       returns: [fundReturn],
     });
 
