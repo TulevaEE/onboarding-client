@@ -154,6 +154,7 @@ export const SelectSources = ({
               targetFunds={targetFunds}
               onChange={(selection) => onSelect(selection, true)}
             />
+            {validationSelectionErrorElement(validationErrorCode)}
           </div>
         ) : (
           ''
@@ -182,7 +183,6 @@ export const SelectSources = ({
           <FormattedMessage id="steps.next" />
         </button>
       </Link>
-      {validationSelectionErrorElement(validationErrorCode)}
     </div>
   );
 };
