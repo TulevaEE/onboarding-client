@@ -1,15 +1,17 @@
 @import "../../variables";
 
-.badge-pink {
+.second-pillar-upsell .badge-orange {
   background: rgba(255, 72, 0, 0.20);
   color: $orange;
-  font-weight: normal !important;
+  font-weight: normal;
+  padding: 0.5em 0.8em;
+  vertical-align: text-bottom;
 }
 
 .small-bullet-list {
   list-style-type: '\2022   ';
 }
 
-.text-orange {
-  color: $orange !important;
+.second-pillar-upsell .text-orange {
+  color: $orange;
 }

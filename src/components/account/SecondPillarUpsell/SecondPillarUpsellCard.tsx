@@ -23,7 +23,7 @@ const SecondPillarUpsellCard: React.FC = () => {
 
   return (
     <div>
-      <div className="card">
+      <div className="card second-pillar-upsell">
         <div className="card-body p-3">
           <div className="row">
             <div className="col-md-6 order-1 order-md-0">
@@ -137,7 +137,7 @@ const CardTitle: React.FC<CardTitleProps> = ({ className }) => {
       <h2 className="d-inline mr-2">
         <FormattedMessage id="secondPillarUpsell.cardTitle" />
       </h2>
-      <span className="badge badge-pink">
+      <span className="badge badge-orange">
         <FormattedMessage id="secondPillarUpsell.notInTuleva" />
       </span>
     </div>
