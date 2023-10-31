@@ -520,15 +520,16 @@
 
   "secondPillarUpsell.cardTitle": "II sammas",
   "secondPillarUpsell.notInTuleva": "Pole Tulevas",
-  "secondPillarUpsell.riskDiversification": "Tuleva Maailma Aktsiate Pensionifond on indeksfond, mis <b>hajutab riski</b> 3000 maailma suurima ettevõtte vahel.",
-  "secondPillarUpsell.ownership": "Tuleva <b>kuulub kogujatele</b> endile, seega puudub kogujate ja ärihuvide konflikt.",
-  "secondPillarUpsell.lowFees": "<b>Madalad tasud</b> on ainus kindel viis tootluse suurendamiseks. Mida rohkem kogujaid Tulevas, seda madalamaks saame tasusid viia.",
+  "secondPillarUpsell.worldMarketAverageReturn": "Tuleva Maailma Aktsiate Pensionifondi eesmärk on saavutada <b>maailmaturu keskmine</b> tootlus.",
+  "secondPillarUpsell.riskDiversification": "Investeerime 3000 maailma suurima ettevõtte aktsiatesse, nii <b>hajutame riski.</b>",
+  "secondPillarUpsell.lowFees": "Hoiame <b>tasud madalad,</b> sest see on ainus kindel viis tootluse suurendamiseks.",
+  "secondPillarUpsell.ownership": "Tuleva on ainus <b>kogujatele endile kuuluv</b> fondivalitseja Eestis.",
   "secondPillarUpsell.readMore": "Loe Tuleva II sambast lähemalt",
-  "secondPillarUpsell.pensionSavings": "Sinu II samba tootlus on võrreldes maailma aktsiaturgu järgiva indeksfondiga {amount}",
+  "secondPillarUpsell.pensionSavings": "Sinu II samba tootlus on {amount} võrreldes maailmaturu keskmise tootlusega",
   "secondPillarUpsell.youAreHere": "Sina oled siin",
   "secondPillarUpsell.callToAction": "Too II sammas Tulevasse (2 min)",
   "secondPillarUpsell.yourSecondPillar": "Sinu II sammas täna",
-  "secondPillarUpsell.amountInIndexFund": "Indeksfondis oleksid kogunud tänaseks",
+  "secondPillarUpsell.amountInIndexFund": "Maailmaturu keskmise tootlusega oleks",
   "secondPillarUpsell.whatDoTheseNumbersMean": "Mida need arvud tähendavad?",
-  "secondPillarUpsell.disclaimer": "Tegemist on finantsteenusega. Tutvu kindlasti ka valitud pensionifondi tingimuste ja prospektiga tuleva.ee lehel ja vajadusel küsi nõu tuleva@tuleva.ee või 644 5100."
+  "secondPillarUpsell.disclaimer": "Tegemist on finantsteenusega. Graafik on illustratiivne."
 }

@@ -32,19 +32,25 @@ const SecondPillarUpsellCard: React.FC = () => {
                 <ul className="pl-3 small-bullet-list pr-4">
                   <li className="mb-3">
                     <FormattedMessage
+                      id="secondPillarUpsell.worldMarketAverageReturn"
+                      values={{ b: (chunks: string) => <b>{chunks}</b> }}
+                    />
+                  </li>
+                  <li className="mb-3">
+                    <FormattedMessage
                       id="secondPillarUpsell.riskDiversification"
                       values={{ b: (chunks: string) => <b>{chunks}</b> }}
                     />
                   </li>
                   <li className="mb-3">
                     <FormattedMessage
-                      id="secondPillarUpsell.ownership"
+                      id="secondPillarUpsell.lowFees"
                       values={{ b: (chunks: string) => <b>{chunks}</b> }}
                     />
                   </li>
                   <li className="mb-3">
                     <FormattedMessage
-                      id="secondPillarUpsell.lowFees"
+                      id="secondPillarUpsell.ownership"
                       values={{ b: (chunks: string) => <b>{chunks}</b> }}
                     />
                   </li>

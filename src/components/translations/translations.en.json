@@ -543,15 +543,16 @@
 
   "secondPillarUpsell.cardTitle": "II Pillar",
   "secondPillarUpsell.notInTuleva": "Not in Tuleva",
+  "secondPillarUpsell.worldMarketAverageReturn": "The goal of the Tuleva World Stocks Pension Fund is to achieve the average return of the world market.",
   "secondPillarUpsell.riskDiversification": "Tuleva World Stocks Pension Fund is an index fund that <b>diversifies risk</b> among 3000 of the world's largest companies.",
-  "secondPillarUpsell.ownership": "Tuleva <b>belongs to the savers</b> themselves, thus eliminating the conflict of interest between savers and owners.",
   "secondPillarUpsell.lowFees": "<b>Low fees</b> are the surest predictor of high returns. The more savers in Tuleva, the lower we can bring the fees.",
+  "secondPillarUpsell.ownership": "Tuleva is the only pension fund manager in Estonia that <b>belongs to the savers</b> themselves.",
   "secondPillarUpsell.readMore": "Read more about Tuleva's II Pillar",
-  "secondPillarUpsell.pensionSavings": "Your II pillar return compared to the world stock index fund is {amount}",
+  "secondPillarUpsell.pensionSavings": "Your II pillar return compared to the world market average is {amount}",
   "secondPillarUpsell.callToAction": "Transfer II Pillar to Tuleva (2 min)",
   "secondPillarUpsell.youAreHere": " You are here",
   "secondPillarUpsell.yourSecondPillar": "Your II Pillar today",
-  "secondPillarUpsell.amountInIndexFund": "In an index fund, you would have accumulated",
+  "secondPillarUpsell.amountInIndexFund": "With the world market average return you would have",
   "secondPillarUpsell.whatDoTheseNumbersMean": "What do these numbers mean?",
-  "secondPillarUpsell.disclaimer": "This is a financial service. Be sure to review the selected pension fund's terms and conditions and prospectus on tuleva.ee website. For help, you can reach us at tuleva@tuleva.ee or 644 5100."
+  "secondPillarUpsell.disclaimer": "This is a financial service. The graph is illustrative."
 }

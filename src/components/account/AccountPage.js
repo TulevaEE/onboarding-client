@@ -64,7 +64,9 @@ export class AccountPage extends Component {
         <div className="row mt-5">
           <GreetingBar />
         </div>
-        <div className="mt-5">{false && <SecondPillarUpsell />}</div>
+        <div className="mt-5">
+          <SecondPillarUpsell />
+        </div>
         <div className="mt-5">
           <StatusBox />
         </div>
