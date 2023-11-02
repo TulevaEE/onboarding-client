@@ -24,7 +24,7 @@ const SecondPillarUpsellCard: React.FC = () => {
   return (
     <div>
       <div className="card second-pillar-upsell">
-        <div className="card-body p-3">
+        <div className="card-body p-4">
           <div className="row">
             <div className="col-md-6 order-1 order-md-0">
               <CardTitle className="d-none d-md-block" />
