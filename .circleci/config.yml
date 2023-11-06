@@ -104,7 +104,7 @@ workflows:
               only: master
       - notify-sentry-deploy:
           requires:
-            - deploy
+            - deploy-production
           context: sentry
           filters:
             branches:
