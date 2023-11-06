@@ -350,6 +350,18 @@ export function redirectToPayment(payment: Payment, token: string): void {
   });
 }
 
+// Exchanges handoverToken for accessToken and overwrites the session
+export function exchangeHandoverToken(handoverToken: string): Promise<void> {
+  return post(getEndpoint('/v1/token'), {
+    handoverToken,
+  }).then((result) => {
+    // TODO: Agree on api
+    console.log();
+    console.log('API responded', result);
+    console.log('overwriting session');
+  });
+}
+
 function getWindow(paymentType: PaymentType): Window {
   if (paymentType !== PaymentType.RECURRING) {
     return window;
