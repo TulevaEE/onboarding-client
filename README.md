@@ -11,7 +11,7 @@ Originally, this repo was built using js, redux and enzyme for testing. Over the
 
 - Convert files you touch to typescript, this can be easily done as typescript and js can be used interchangably in this repo
 - Try to not use redux, or if you need to use it try to keep it far away from your code in a generic hook, use simple hooks for logic and [React Query](https://react-query.tanstack.com/) for async data fetching boilerplate
-- Use react testing library and msw for tests and try to mock as little as possible, building tests to imitate how a user would use your application. See the `src/flows/CancellationFlow` for an example of how to incrementally move to this structure while reusing previous redux code.
+- Use react testing library and msw for tests and try to mock as little as possible, building tests to imitate how a user would use your application. See the [`CancellationFlow`](./src/components/flows/cancellation/CancellationFlow.tsx) for an example of how to incrementally move to this structure while reusing previous redux code.
 
 ## Prerequisites
 
