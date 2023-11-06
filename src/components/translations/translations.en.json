@@ -52,8 +52,8 @@
   "select.sources.select.none": "Direct only future contributions",
   "select.sources.select.none.subtitle": "Skip this step",
   "select.sources.select.all.recommended": "We recommend this fund based on your current age.",
-  "select.sources.error.source.fund.is.target.fund":  "Current fund and new fund can not be on the same exchange row",
-  "select.sources.error.source.fund.percentages.over.100":  "More than 100% of fund units can not be transferred from current fund",
+  "select.sources.error.source.fund.is.target.fund": "Current fund and new fund can not be on the same exchange row",
+  "select.sources.error.source.fund.percentages.over.100": "More than 100% of fund units can not be transferred from current fund",
 
   "select": "Select",
 
@@ -208,10 +208,10 @@
   "mobile.id.certificates.revoked": "You are not a Mobile-ID client or your Mobile-ID certificates are revoked. Please contact your mobile operator.",
   "mobile.id.timeout": "You didn't type in PIN code into your phone or there was a communication error.",
   "mobile.id.no.signal": "Unable to reach your phone. Please make sure your phone has mobile coverage.",
-  "mobile.id.communication.error" : "Communication error. Unable to reach your phone.",
-  "mobile.id.configuration.error" : "Mobile-ID configuration on your SIM card differs from what is configured on service provider's side. Please contact your mobile operator.",
-  "mobile.id.error" : "Client side error with mobile-ID integration.",
-  "mobile.id.internal.error" : "MID internal error.",
+  "mobile.id.communication.error": "Communication error. Unable to reach your phone.",
+  "mobile.id.configuration.error": "Mobile-ID configuration on your SIM card differs from what is configured on service provider's side. Please contact your mobile operator.",
+  "mobile.id.error": "Client side error with mobile-ID integration.",
+  "mobile.id.internal.error": "MID internal error.",
   "smart.id.validation.failed": "Smart ID validation failed",
   "smart.id.account.not.found": "Smart ID account not found",
   "smart.id.user.refused": "Smart ID user refused",
@@ -540,6 +540,8 @@
   "cancellation.flow.success.title": "Application cancelled",
   "cancellation.flow.success.download": "Download",
   "cancellation.flow.success.back": "Back to account",
+
+  "partnerFlow.error": "Oops, unexpected error occurred while initiating process",
 
   "secondPillarUpsell.cardTitle": "II Pillar",
   "secondPillarUpsell.notInTuleva": "Not in Tuleva",
