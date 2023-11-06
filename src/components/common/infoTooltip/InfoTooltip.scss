@@ -1,10 +1,10 @@
-@import "../../variables";
+@import '../../variables';
 
 .react-tooltip {
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
   opacity: 1 !important;
   color: $text-primary;
-  h3{
+  h3 {
     color: $text-secondary-heading;
   }
   img {
@@ -32,5 +32,4 @@
       line-height: 1.7em;
     }
   }
-
 }

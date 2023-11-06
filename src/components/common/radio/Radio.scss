@@ -1,4 +1,4 @@
-@import "../../variables";
+@import '../../variables';
 
 .tv-radio {
   background-color: $gray-washed;
@@ -9,9 +9,7 @@
   width: 100%;
   cursor: pointer;
 
-  transition:
-    background-color .15s ease-out,
-    border-color .15s ease-out;
+  transition: background-color 0.15s ease-out, border-color 0.15s ease-out;
 
   & > * {
     cursor: pointer;
@@ -36,7 +34,7 @@
       border-color: $blue;
 
       & .tv-radio__check {
-        transition: transform .15s ease-out;
+        transition: transform 0.15s ease-out;
         background-color: $blue;
         transform: scale(1);
       }
@@ -54,11 +52,11 @@
     display: inline-block;
     background-color: transparent;
     border-width: 2px;
-    transition: border-color .15s ease-out;
+    transition: border-color 0.15s ease-out;
   }
 
   &__check {
-    transition: transform .15s ease-out;
+    transition: transform 0.15s ease-out;
     width: 10px;
     height: 10px;
     display: block;
