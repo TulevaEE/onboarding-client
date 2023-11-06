@@ -45,14 +45,23 @@ jobs:
       - store_test_results:
           path: ./test-results.json
       - codecov/upload
-  deploy:
+  deploy-staging:
     executor: aws-cli/default
     steps:
       - checkout
       - *attach_workspace
       - aws-cli/setup
       - run:
-          name: Deploy master to S3
+          name: Deploy master to staging
+          command: aws s3 cp /tmp/workspace/build s3://staging.tuleva.ee --recursive
+  deploy-production:
+    executor: aws-cli/default
+    steps:
+      - checkout
+      - *attach_workspace
+      - aws-cli/setup
+      - run:
+          name: Deploy master to production
           command: aws s3 cp /tmp/workspace/build s3://pension.tuleva.ee --recursive
   notify-sentry-deploy:
     docker:
@@ -79,7 +88,14 @@ workflows:
       - test:
           requires:
             - build
-      - deploy:
+      - deploy-staging:
+          requires:
+            - test
+          context: aws
+          filters:
+            branches:
+              only: master
+      - deploy-production:
           requires:
             - test
           context: aws
