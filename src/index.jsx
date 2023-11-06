@@ -21,7 +21,7 @@ import { initializeConfiguration, updateLanguage } from './components/config/con
 import translations from './components/translations';
 import './components/index.scss';
 
-import Authenticate from './components/Authenticate/Authenticate';
+import { Authenticate } from './components/Authenticate/Authenticate';
 import PrivateRoute from './PrivateRoute';
 import LoginPage, { actions as loginActions } from './components/login';
 import { actions as thirdPillarActions } from './components/thirdPillar';
