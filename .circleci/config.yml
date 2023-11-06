@@ -9,6 +9,51 @@ references:
     attach_workspace:
       at: *workspace_root
 jobs:
+  build-staging:
+    executor:
+      name: node/default
+      tag: '18.17'
+    steps:
+      - *attach_workspace
+      - checkout
+      - node/install-packages
+      - run:
+          name: Build
+          command: npm run build:staging
+      - run:
+          name: Copy assets
+          command: |
+            set -exu
+            mv build /tmp/workspace
+      - persist_to_workspace:
+          root: *workspace_root
+          paths:
+            - build
+  test-staging:
+    executor:
+      name: node/default
+      tag: '18.17'
+    steps:
+      - checkout
+      - node/install-packages
+      - run:
+          name: Lint
+          command: npm run lint
+      - run:
+          name: Run tests
+          command: npm test -- --maxWorkers=2
+      - store_test_results:
+          path: ./test-results.json
+      - codecov/upload
+  deploy-staging:
+    executor: aws-cli/default
+    steps:
+      - checkout
+      - *attach_workspace
+      - aws-cli/setup
+      - run:
+          name: Deploy master to staging
+          command: aws s3 cp /tmp/workspace/build s3://staging.tuleva.ee --recursive
   build:
     executor:
       name: node/default
@@ -45,15 +90,6 @@ jobs:
       - store_test_results:
           path: ./test-results.json
       - codecov/upload
-  deploy-staging:
-    executor: aws-cli/default
-    steps:
-      - checkout
-      - *attach_workspace
-      - aws-cli/setup
-      - run:
-          name: Deploy master to staging
-          command: aws s3 cp /tmp/workspace/build s3://staging.tuleva.ee --recursive
   deploy-production:
     executor: aws-cli/default
     steps:
@@ -84,17 +120,21 @@ workflows:
   version: 2
   onboarding-client-production:
     jobs:
-      - build
-      - test:
+      - build-staging
+      - test-staging:
           requires:
-            - build
+            - build-staging
       - deploy-staging:
           requires:
-            - test
+            - test-staging
           context: aws
           filters:
             branches:
               only: master
+      - build
+      - test:
+          requires:
+            - build
       - deploy-production:
           requires:
             - test
