@@ -21,6 +21,7 @@ import { initializeConfiguration, updateLanguage } from './components/config/con
 import translations from './components/translations';
 import './components/index.scss';
 
+import { TriggerProcedure } from './components/TriggerProcedure/TriggerProcedure';
 import PrivateRoute from './PrivateRoute';
 import LoginPage, { actions as loginActions } from './components/login';
 import { actions as thirdPillarActions } from './components/thirdPillar';
@@ -117,6 +118,7 @@ export class App extends Component {
             <ConnectedRouter history={history}>
               <Switch>
                 <Route path={loginPath} component={LoginPage} />
+                <Route path="/trigger-procedure" component={TriggerProcedure} />
                 <PrivateRoute exact path="" component={LoggedInApp} />
               </Switch>
             </ConnectedRouter>
