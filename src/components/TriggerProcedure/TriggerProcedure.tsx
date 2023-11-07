@@ -9,6 +9,8 @@ import { getQueryParams } from '../../utils';
 import { MOBILE_AUTHENTICATION_SUCCESS } from '../login/constants';
 import { init } from './externalProviderUtils';
 
+import './TriggerProcedure.scss';
+
 export const TriggerProcedure: React.FC = () => {
   const intl = useIntl();
   const query = getQueryParams();
@@ -54,15 +56,7 @@ export const TriggerProcedure: React.FC = () => {
   }, [query.handoverToken]);
 
   return (
-    <div
-      style={{
-        width: '100%',
-        height: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
+    <div className="full-screen centered-contents">
       {message ?? <Loader className="align-middle" />}
     </div>
   );
