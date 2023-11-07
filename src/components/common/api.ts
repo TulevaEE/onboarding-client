@@ -350,13 +350,6 @@ export function redirectToPayment(payment: Payment, token: string): void {
   });
 }
 
-// Exchanges handoverToken for accessToken
-export function exchangeHandoverToken(handoverToken: string): Promise<{ accessToken: string }> {
-  return post(getEndpoint('/v1/tokens'), {
-    handoverToken,
-  });
-}
-
 function getWindow(paymentType: PaymentType): Window {
   if (paymentType !== PaymentType.RECURRING) {
     return window;

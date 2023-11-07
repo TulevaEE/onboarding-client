@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import Loader from '../common/loader';
-import { exchangeHandoverToken } from '../common/api';
+import { exchangeHandoverToken } from './exchangeHandoverToken';
 import { getQueryParams } from '../../utils';
 import { MOBILE_AUTHENTICATION_SUCCESS } from '../login/constants';
 import { init } from './externalProviderUtils';
