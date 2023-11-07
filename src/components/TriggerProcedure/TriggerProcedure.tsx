@@ -19,7 +19,7 @@ export const TriggerProcedure: React.FC = () => {
   React.useEffect(() => {
     setMessage(undefined);
     try {
-      const { provider, procedure, handoverToken, path, redirectUri } = init(query);
+      const { provider, handoverToken, path } = init(query);
       exchangeHandoverToken(handoverToken)
         .then((res) => {
           const { accessToken } = res;
@@ -30,24 +30,20 @@ export const TriggerProcedure: React.FC = () => {
             method: 'handoverToken',
             provider,
           });
-          if (path) {
-            setMessage(`Redirecting to ${path}`);
-          } else {
-            console.error('Unknown procedure:', procedure);
-            setMessage(intl.formatMessage({ id: 'partnerFlow.error' }));
-          }
+
+          setMessage(`Redirecting to ${path}`);
 
           if (typeof query.redirect !== 'undefined') {
             if (path) {
               // using push for ease of testings for now, will be turning into replace, because hitting back should skip this component
-              // history.push(path);
+              history.push(path);
               // history.replace(path);
             }
           }
         })
         .catch((err) => {
-          setMessage(intl.formatMessage({ id: 'partnerFlow.error' }));
           console.error('error on exchange', err);
+          setMessage(intl.formatMessage({ id: 'partnerFlow.error' }));
         });
     } catch (err) {
       console.error(err);

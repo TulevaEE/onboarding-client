@@ -352,7 +352,7 @@ export function redirectToPayment(payment: Payment, token: string): void {
 
 // Exchanges handoverToken for accessToken and overwrites the session
 export function exchangeHandoverToken(handoverToken: string): Promise<{ accessToken: string }> {
-  return post(getEndpoint('/v1/token'), {
+  return post(getEndpoint('/v1/tokens'), {
     handoverToken,
   });
 }
