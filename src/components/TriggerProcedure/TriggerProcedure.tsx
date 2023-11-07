@@ -42,10 +42,12 @@ export const TriggerProcedure: React.FC = () => {
           }
         })
         .catch((err) => {
+          // eslint-disable-next-line no-console -- make this flow more debuggable for 3rd parties
           console.error('error on exchange', err);
           setMessage(intl.formatMessage({ id: 'partnerFlow.error' }));
         });
     } catch (err) {
+      // eslint-disable-next-line no-console -- make this flow more debuggable for 3rd parties
       console.error(err);
       setMessage(intl.formatMessage({ id: 'partnerFlow.error' }));
     }

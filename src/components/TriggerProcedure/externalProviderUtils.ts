@@ -50,10 +50,12 @@ const getPath = (provider: ExternalProvider, procedure: Procedure) => {
   throw new Error(`Invalid procedure for provider(${provider}): ${procedure}`);
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any -- WIP
 export const finish = (_result: any, _error: any) => {
   const provider = sessionStorage.getItem(EXTERNAL_AUTHENTICATOR_PROVIDER);
   const redirectUri = sessionStorage.getItem(EXTERNAL_AUTHENTICATOR_REDIRECT_URI);
-  // somehow differentiate between success and error results
+  // TODO: somehow differentiate between success and error results
+  // eslint-disable-next-line no-console -- WIP
   console.log('finishing', provider, 'flow and redirecting to', redirectUri, _result, _error);
 };
 
