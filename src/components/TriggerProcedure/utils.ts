@@ -56,7 +56,7 @@ export const finish = (_result: any, _error: any) => {
   const redirectUri = sessionStorage.getItem(EXTERNAL_AUTHENTICATOR_REDIRECT_URI);
   // TODO: somehow differentiate between success and error results
   // eslint-disable-next-line no-console -- WIP
-  console.log('finishing', provider, 'flow and redirecting to', redirectUri, _result, _error);
+  console.log('finishing', provider, 'and redirecting to', redirectUri, _result, _error);
 };
 
 export const init = (input: {
