@@ -43,6 +43,18 @@ describe('Config', () => {
       });
     });
 
+    it('sets staging configuration when REACT_APP_ENV is staging and NODE_ENV is production', () => {
+      process.env.REACT_APP_ENV = 'staging';
+      process.env.NODE_ENV = 'production'; // set automatically by create-react-app
+      initializeConfiguration();
+      expect(config.get()).toEqual({
+        applicationUrl: 'https://staging.tuleva.ee',
+        clientCredentialsAccessToken: '6b338ba2-805c-4300-9341-b38bb4ad34a9',
+        language: 'et',
+        idCardUrl: 'https://id-staging.tuleva.ee',
+      });
+    });
+
     it('sets test configuration when NODE_ENV is test', () => {
       process.env.NODE_ENV = 'test';
       initializeConfiguration();
@@ -72,6 +84,7 @@ describe('Config', () => {
 
     it('updates language in staging environment', () => {
       process.env.REACT_APP_ENV = 'staging';
+      process.env.NODE_ENV = 'production'; // set automatically by create-react-app
       initializeConfiguration();
       updateLanguage('en');
       expect(config.get('language')).toBe('en');
