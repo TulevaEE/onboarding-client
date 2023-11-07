@@ -53,7 +53,7 @@ describe('When an external provider process is triggered', () => {
     consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
   });
 
-  describe('... and invalid data is provider', () => {
+  describe('... and invalid data is provided', () => {
     test('no params', async () => {
       initializeComponent('');
       expect(await screen.findByText('unexpected error', { exact: false })).toBeInTheDocument();
