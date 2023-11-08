@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import Loader from '../common/loader';
-import { exchangeHandoverToken } from './exchangeHandoverToken';
+import { exchangeHandoverTokenForAccessToken } from './exchangeHandoverToken';
 import { getQueryParams } from '../../utils';
 import { MOBILE_AUTHENTICATION_SUCCESS } from '../login/constants';
 import { init } from './externalProviderUtils';
@@ -22,14 +22,13 @@ export const TriggerProcedure: React.FC = () => {
     setMessage(undefined);
     try {
       const { provider, handoverToken, path } = init(query);
-      exchangeHandoverToken(handoverToken)
-        .then((res) => {
-          const { accessToken } = res;
+      exchangeHandoverTokenForAccessToken(handoverToken)
+        .then((token) => {
           // setting access token globally
           dispatch({
             type: MOBILE_AUTHENTICATION_SUCCESS,
-            tokens: { accessToken },
-            method: 'handoverToken',
+            tokens: token,
+            method: 'handoverToken', // TODO: read correct method from JWT
             provider,
           });
 

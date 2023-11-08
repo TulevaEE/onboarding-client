@@ -41,7 +41,7 @@ describe('When an external provider process is triggered', () => {
   beforeEach(() => {
     initializeConfiguration();
     server.use(
-      rest.post('http://localhost/v1/tokens', (req, res, ctx) => {
+      rest.post('http://localhost/oauth/token', (req, res, ctx) => {
         return res(
           ctx.status(200),
           ctx.json({

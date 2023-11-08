@@ -1,9 +1,6 @@
-import { getEndpoint } from '../common/api';
-import { post } from '../common/http';
+import { getTokensWithGrantType } from '../common/api';
+import { Token } from '../common/apiModels';
 
-// Exchanges handoverToken for accessToken
-export function exchangeHandoverToken(handoverToken: string): Promise<{ accessToken: string }> {
-  return post(getEndpoint('/v1/tokens'), {
-    handoverToken,
-  });
+export function exchangeHandoverTokenForAccessToken(handoverToken: string): Promise<Token | null> {
+  return getTokensWithGrantType('partner', { authenticationHash: handoverToken });
 }

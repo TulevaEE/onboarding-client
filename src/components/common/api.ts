@@ -75,7 +75,7 @@ export function logout(token: string): Promise<void> {
   );
 }
 
-async function getTokensWithGrantType(
+export async function getTokensWithGrantType(
   grantType: string,
   extraParameters: Record<string, string> = {},
 ): Promise<Token | null> {
