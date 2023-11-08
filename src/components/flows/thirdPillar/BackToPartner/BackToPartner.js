@@ -10,13 +10,7 @@ import { Shimmer } from '../../../common/shimmer/Shimmer';
 import { getValueSum } from '../../../account/AccountStatement/fundSelector';
 import { finish } from '../../../TriggerProcedure/utils';
 
-// "thirdPillarBackToPartner.opened": "Sinu III sammas on avatud",
-// "thirdPillarBackToPartner.automateNext": "Järgmiseks muuda säästmine automaatseks",
-// "thirdPillarBackToPartner.automateNext.subtitle": "Tee oma netipangas püsikorraldus, et sissemaksed läheks III sambasse alati kohe pärast palgapäeva.",
-// "thirdPillarBackToPartner.recurringPayment.button": "Seadista püsimakse",
-// "thirdPillarBackToPartner.recurringPayment.subtitle": "Püsikorralduse tegemiseks suuname Sind tagasi TestingProvider1 juurde.",
-
-const ThirdPillarSuccessDefault = () => {
+const BackToPartnerDefault = () => {
   return (
     <>
       <div className="row mt-5">
@@ -50,7 +44,7 @@ const ThirdPillarSuccessDefault = () => {
   );
 };
 
-export const ThirdPillarSuccess = ({ secondPillarSourceFunds, weightedAverageFee }) => {
+export const BackToPartner = ({ secondPillarSourceFunds, weightedAverageFee }) => {
   const ourFundIsin = 'EE3600109435';
   const maximumFundColumnHeight = 150;
   const tooHighAverageAumFee = 0.005;
@@ -61,7 +55,7 @@ export const ThirdPillarSuccess = ({ secondPillarSourceFunds, weightedAverageFee
   const secondPillarTotalContributionAmount = getValueSum(secondPillarSourceFunds);
 
   if (weightedAverageFee <= tooHighAverageAumFee) {
-    return ThirdPillarSuccessDefault();
+    return BackToPartnerDefault();
   }
 
   const ourFund = secondPillarSourceFunds.find(({ isin }) => isin === ourFundIsin);
@@ -82,15 +76,15 @@ export const ThirdPillarSuccess = ({ secondPillarSourceFunds, weightedAverageFee
       <div className="col-12 px-0">
         <SuccessNotice>
           <h2 className="text-center mt-3">
-            <FormattedMessage id="thirdPillarSuccess.done" />
+            <FormattedMessage id="BackToPartner.done" />
           </h2>
           <p className="mt-5">
-            <FormattedMessage id="thirdPillarSuccess.message" />
+            <FormattedMessage id="BackToPartner.message" />
           </p>
         </SuccessNotice>
         <Notice>
           <h2 className="text-center mt-3">
-            <FormattedMessage id="thirdPillarSuccess.notice.header" />
+            <FormattedMessage id="BackToPartner.notice.header" />
           </h2>
           <div>
             <div className="row d-flex justify-content-center align-items-end mt-5">
@@ -119,25 +113,25 @@ export const ThirdPillarSuccess = ({ secondPillarSourceFunds, weightedAverageFee
             <div className="row d-flex justify-content-center align-items-start my-3">
               <div className="col-md-3 col-5">
                 <small className="text-muted">
-                  <FormattedMessage id="thirdPillarSuccess.ourFund" />
+                  <FormattedMessage id="BackToPartner.ourFund" />
                 </small>
               </div>
               <div className="col-md-1 col-1" />
               <div className="col-md-3 col-5">
                 <small className="text-muted">
-                  <FormattedMessage id="thirdPillarSuccess.currentFund" />
+                  <FormattedMessage id="BackToPartner.currentFund" />
                 </small>
               </div>
             </div>
           </div>
           <p className="mt-5">
             <FormattedMessage
-              id="thirdPillarSuccess.notice.description"
+              id="BackToPartner.notice.description"
               values={{ currentFundsFee, currentFundsFeeAmount, ourFundFeeAmount, savingsAmount }}
             />
           </p>
           <a className="btn btn-primary mt-4 profile-link" href="/2nd-pillar-flow">
-            <FormattedMessage id="thirdPillarSuccess.button" />
+            <FormattedMessage id="BackToPartner.button" />
           </a>
         </Notice>
       </div>
@@ -145,12 +139,12 @@ export const ThirdPillarSuccess = ({ secondPillarSourceFunds, weightedAverageFee
   );
 };
 
-ThirdPillarSuccess.propTypes = {
+BackToPartner.propTypes = {
   secondPillarSourceFunds: Types.arrayOf(Types.shape({})),
   weightedAverageFee: Types.number,
 };
 
-ThirdPillarSuccess.defaultProps = {
+BackToPartner.defaultProps = {
   secondPillarSourceFunds: [],
   weightedAverageFee: 0,
 };
@@ -163,4 +157,4 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({}, dispatch);
 
 const withRedux = connect(mapStateToProps, mapDispatchToProps);
 
-export default withRedux(ThirdPillarSuccess);
+export default withRedux(BackToPartner);
