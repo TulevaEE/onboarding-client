@@ -1,4 +1,4 @@
-@import "../../variables";
+@import '../../variables';
 
 .login-form {
   background: #fff;
@@ -18,9 +18,10 @@
     padding-left: 7px;
     color: $text-secondary;
 
-    &::before, &::after {
+    &::before,
+    &::after {
       background-color: $gray-mid;
-      content: "";
+      content: '';
       display: inline-block;
       height: 1px;
       position: relative;

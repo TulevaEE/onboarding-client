@@ -1,4 +1,4 @@
-@import "../../variables";
+@import '../../variables';
 
 .px-col {
   padding-left: 15px !important;
@@ -10,7 +10,7 @@
 }
 
 .tv-steps > .tv-step:not(:first-child)::before {
-  content: "";
+  content: '';
   background-color: $gray-mid;
   display: inline-block;
   position: absolute;
