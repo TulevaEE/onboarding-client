@@ -44,7 +44,7 @@ const validateHandoverToken = (value?: unknown) => {
 
 const getPath = (provider: ExternalProvider, procedure: Procedure) => {
   if (procedure === Procedure.PARTNER_3RD_PILLAR) {
-    return '/3rd-pillar-flow';
+    return '/partner/3rd-pillar-flow';
   }
   throw new Error(`Invalid procedure for provider(${provider}): ${procedure}`);
 };
