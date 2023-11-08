@@ -5,9 +5,8 @@ import ThirdPillarSetup from './ThirdPillarSetup';
 import ThirdPillarSelectSources from './ThirdPillarSelectSources';
 import AddressStep from '../common/AddressStep';
 import ConfirmThirdPillarMandate from './ConfirmThirdPillarMandate';
-import ThirdPillarPayment from './ThirdPillarPayment';
 import Flow from '../common/Flow'; // eslint-disable-line import/no-named-as-default
-import ThirdPillarSuccess from './ThirdPillarSuccess';
+import BackToPartner from './BackToPartner/BackToPartner';
 
 const flowPath = '/partner/3rd-pillar-flow';
 const steps = [
@@ -39,18 +38,8 @@ const steps = [
     title: <FormattedMessage id="thirdPillarFlow.steps.confirmMandate.title" />,
   },
   {
-    path: 'payment',
-    Component: () => (
-      <ThirdPillarPayment
-        previousPath={`${flowPath}/confirm-mandate`}
-        nextPath={`${flowPath}/success`}
-      />
-    ),
-    title: <FormattedMessage id="thirdPillarFlow.steps.payment.title" />,
-  },
-  {
     path: 'success',
-    Component: () => <ThirdPillarSuccess />,
+    Component: () => <BackToPartner />,
   },
 ];
 
