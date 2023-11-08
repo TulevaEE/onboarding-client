@@ -67,14 +67,16 @@ describe('When an external provider process is triggered', () => {
     });
 
     test('missing redirect uri', async () => {
-      initializeComponent('?provider=provider1');
+      initializeComponent('?provider=testprovider1');
 
       expect(await screen.findByText('unexpected error', { exact: false })).toBeInTheDocument();
       expectConsoledError(/redirect uri/i);
     });
 
     test('missing procedure', async () => {
-      initializeComponent('?provider=provider1&redirectUri=provider1%3A%2F%2Ftuleva-flow%2Flink');
+      initializeComponent(
+        '?provider=testprovider1&redirectUri=testprovider1%3A%2F%2Ftuleva-flow%2Flink',
+      );
 
       expect(await screen.findByText('unexpected error', { exact: false })).toBeInTheDocument();
       expectConsoledError(/procedure/i);
@@ -82,7 +84,7 @@ describe('When an external provider process is triggered', () => {
 
     test('invalid procedure', async () => {
       initializeComponent(
-        '?provider=provider1&redirectUri=provider1%3A%2F%2Ftuleva-flow%2Flink&procedure=_invalid_',
+        '?provider=testprovider1&redirectUri=testprovider1%3A%2F%2Ftuleva-flow%2Flink&procedure=_invalid_',
       );
 
       expect(await screen.findByText('unexpected error', { exact: false })).toBeInTheDocument();
@@ -91,7 +93,7 @@ describe('When an external provider process is triggered', () => {
 
     test('missing handoverToken', async () => {
       initializeComponent(
-        '?provider=provider1&redirectUri=provider1%3A%2F%2Ftuleva-flow%2Flink&procedure=partner-3rd-pillar-flow',
+        '?provider=testprovider1&redirectUri=testprovider1%3A%2F%2Ftuleva-flow%2Flink&procedure=partner-3rd-pillar-flow',
       );
 
       expect(await screen.findByText('unexpected error', { exact: false })).toBeInTheDocument();
@@ -101,7 +103,7 @@ describe('When an external provider process is triggered', () => {
 
   test('redirects if valid data is provided', async () => {
     initializeComponent(
-      '?provider=provider1&redirectUri=provider1%3A%2F%2Ftuleva-flow%2Flink&procedure=partner-3rd-pillar-flow&handoverToken=_handover_token_',
+      '?provider=testprovider1&redirectUri=testprovider1%3A%2F%2Ftuleva-flow%2Flink&procedure=partner-3rd-pillar-flow&handoverToken=_handover_token_',
     );
     expect(await screen.findByText('redirecting to', { exact: false })).toBeInTheDocument();
   });

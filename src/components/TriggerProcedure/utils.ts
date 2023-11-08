@@ -2,8 +2,7 @@ const EXTERNAL_AUTHENTICATOR_PROVIDER = 'EXTERNAL_AUTHENTICATOR_PROVIDER';
 const EXTERNAL_AUTHENTICATOR_REDIRECT_URI = 'EXTERNAL_AUTHENTICATOR_REDIRECT_URI';
 
 enum ExternalProvider {
-  PROVIDER1 = 'provider1',
-  PROVIDER2 = 'provider2',
+  TESTPROVIDER1 = 'testprovider1',
 }
 enum Procedure {
   PARTNER_3RD_PILLAR = 'partner-3rd-pillar-flow',
