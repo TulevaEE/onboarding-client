@@ -1,0 +1,26 @@
+@import '../../../variables';
+
+.leftcolumn {
+  background-color: #0078ff3d;
+  color: #002f63;
+  border-radius: 4px;
+  display: flex;
+  height: 100%;
+}
+
+.rightcolumn {
+  background-color: #002f63;
+  color: #ffffff;
+  border-radius: 4px;
+  display: flex;
+  height: 100%;
+}
+
+.columncontent {
+  display: inline-block;
+  align-self: flex-end;
+  width: 100%;
+  font-size: 24px;
+  padding-bottom: 8px;
+  font-weight: 500;
+}
