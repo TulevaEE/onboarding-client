@@ -16,10 +16,10 @@ export const TriggerProcedure: React.FC = () => {
   const query = getQueryParams();
   const dispatch = useDispatch();
   const history = useHistory();
-  const [message, setMessage] = React.useState<undefined | string>();
+  const [message, setMessage] = React.useState<null | string>(null);
 
   React.useEffect(() => {
-    setMessage(undefined);
+    setMessage(null);
     try {
       const { provider, handoverToken, path } = init(query);
       exchangeHandoverTokenForAccessToken(handoverToken)
