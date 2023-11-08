@@ -1,4 +1,4 @@
-@import "../variables";
+@import '../variables';
 
 .login-page {
   background: rgba(48, 48, 48, 0.06);
@@ -22,8 +22,6 @@
   padding-left: 0;
 }
 
-
-
 .tab-list-item {
   width: 33.33%;
   max-width: 100%;
@@ -45,7 +43,9 @@
 }
 
 @include mobile {
-  .tab-list-item { width: 50%; }
+  .tab-list-item {
+    width: 50%;
+  }
 }
 
 .tab-list-item:focus {
@@ -73,6 +73,6 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 
-input[type="number"] {
+input[type='number'] {
   -moz-appearance: textfield;
 }

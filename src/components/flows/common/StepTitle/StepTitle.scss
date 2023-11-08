@@ -1,4 +1,4 @@
-@import "../../../variables";
+@import '../../../variables';
 
 .tv-step__number {
   width: 32px;
@@ -23,15 +23,16 @@
   &--completed {
     & .tv-step__number {
       vertical-align: middle;
-      background: white url("done.svg") center center no-repeat;
+      background: white url('done.svg') center center no-repeat;
       background-size: 24px;
     }
   }
 
   &--active {
-    &::before, &::after {
+    &::before,
+    &::after {
       background-color: $gray-mid;
-      content: "";
+      content: '';
       display: inline-block;
       height: 1px;
       position: relative;
