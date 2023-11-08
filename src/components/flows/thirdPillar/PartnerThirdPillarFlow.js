@@ -6,7 +6,7 @@ import ThirdPillarSelectSources from './ThirdPillarSelectSources';
 import AddressStep from '../common/AddressStep';
 import ConfirmThirdPillarMandate from './ConfirmThirdPillarMandate';
 import Flow from '../common/Flow'; // eslint-disable-line import/no-named-as-default
-import BackToPartner from './BackToPartner/BackToPartner';
+import BackToPartner from './BackToPartner/BackToPartner'; // eslint-disable-line import/no-named-as-default
 
 const flowPath = '/partner/3rd-pillar-flow';
 const steps = [
