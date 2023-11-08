@@ -55,8 +55,15 @@ export const finish = (result?: string, error?: string) => {
   const provider = sessionStorage.getItem(EXTERNAL_AUTHENTICATOR_PROVIDER);
   const redirectUri = sessionStorage.getItem(EXTERNAL_AUTHENTICATOR_REDIRECT_URI);
 
-  if (!provider || !redirectUri) {
-    console.error('finishing with error');
+  if (!provider) {
+    // eslint-disable-next-line no-console -- WIP
+    console.error('unexpected state: no provider');
+    return;
+  }
+
+  if (!redirectUri) {
+    // eslint-disable-next-line no-console -- WIP
+    console.error('unexpected state: no redirectUri');
     return;
   }
 
