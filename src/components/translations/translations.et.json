@@ -460,6 +460,12 @@
   "thirdPillarSuccess.ourFund": "Tuleva Maailma Aktsiate pensionifond",
   "thirdPillarSuccess.currentFund": "Sinu valitud pensionifondid",
 
+  "thirdPillarBackToPartner.opened": "Sinu III sammas on avatud",
+  "thirdPillarBackToPartner.automateNext": "Järgmiseks muuda säästmine automaatseks",
+  "thirdPillarBackToPartner.automateNext.subtitle": "Tee oma netipangas püsikorraldus, et sissemaksed läheks III sambasse alati kohe pärast palgapäeva.",
+  "thirdPillarBackToPartner.recurringPayment.button": "Seadista püsimakse",
+  "thirdPillarBackToPartner.recurringPayment.subtitle": "Püsikorralduse tegemiseks suuname Sind tagasi TestingProvider1 juurde.",
+
   "applications.title": "Sinu ootel olevad tehingud",
   "applications.cancel": "Tühista avaldus",
   "applications.type.payment.title": "III samba sissemakse",
