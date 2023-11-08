@@ -12,7 +12,7 @@ import ExactFundSelector from './exactFundSelector';
 import { isTuleva } from '../../../common/utils';
 import AccountStatement from '../../../account/AccountStatement';
 import { useMandateDeadlines } from '../../../common/apiHooks';
-import { formatDate } from '../../../common/dateUtils';
+import { formatDateTime } from '../../../common/dateFormatter';
 
 function selectAllWithTarget(sourceFunds, targetFund) {
   return sourceFunds
@@ -114,7 +114,7 @@ export const SelectSources = ({
               <FormattedMessage
                 id="select.sources.select.all.deadline"
                 values={{
-                  periodEnding: formatDate(mandateDeadlines.periodEnding),
+                  periodEnding: formatDateTime(mandateDeadlines.periodEnding),
                   b: (chunks) => <b className="text-nowrap">{chunks}</b>,
                 }}
               />

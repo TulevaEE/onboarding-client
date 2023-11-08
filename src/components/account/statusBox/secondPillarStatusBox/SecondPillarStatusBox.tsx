@@ -18,7 +18,7 @@ import InfoTooltip from '../../../common/infoTooltip';
 import { isTuleva } from '../../../common/utils';
 import { getValueSum } from '../../AccountStatement/fundSelector';
 import Euro from '../../../common/Euro';
-import { formatDate } from '../../../common/dateUtils';
+import { formatDate } from '../../../common/dateFormatter';
 
 export interface Props {
   loading: boolean;
