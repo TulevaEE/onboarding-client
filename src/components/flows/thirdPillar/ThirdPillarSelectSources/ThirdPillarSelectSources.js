@@ -105,10 +105,12 @@ export const ThirdPillarSelectSources = ({
         <h3 className="m-0">
           <FormattedMessage id="thirdPillarFlowSelectSources.futureContributions.title" />
         </h3>
-        {someSelectionActive && (
+        {someSelectionActive ? (
           <div className="mt-3">
             <FormattedMessage id="thirdPillarFlowSelectSources.futureContributions.subtitle" />
           </div>
+        ) : (
+          ''
         )}
       </Radio>
 
