@@ -51,12 +51,28 @@ const getPath = (provider: ExternalProvider, procedure: Procedure) => {
 };
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any -- WIP
-export const finish = (_result: any, _error: any) => {
+export const finish = (result?: string, error?: string) => {
   const provider = sessionStorage.getItem(EXTERNAL_AUTHENTICATOR_PROVIDER);
   const redirectUri = sessionStorage.getItem(EXTERNAL_AUTHENTICATOR_REDIRECT_URI);
-  // TODO: somehow differentiate between success and error results
+
+  if (!provider || !redirectUri) {
+    console.error('finishing with error');
+    return;
+  }
+
+  const url = new URL(redirectUri);
+  if (error) {
+    url.searchParams.set('error', error);
+  } else if (result) {
+    url.searchParams.set('result', result);
+  }
   // eslint-disable-next-line no-console -- WIP
-  console.log('finishing', provider, 'and redirecting to', redirectUri, _result, _error);
+  console.log('finishing', provider, 'and redirecting to', redirectUri, result, error);
+  setTimeout(() => {
+    if (error) {
+      window.location.href = url.toString();
+    }
+  }, 2000);
 };
 
 export const init = (input: {
