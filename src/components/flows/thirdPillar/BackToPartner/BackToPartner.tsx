@@ -2,7 +2,7 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { SuccessNotice } from '../../common/SuccessNotice/SuccessNotice';
 import { Notice } from '../../common/Notice/Notice';
-import { finish } from '../../../TriggerProcedure/utils';
+import { finish as finishProcedure } from '../../../TriggerProcedure/utils';
 
 export const BackToPartner: React.FC = () => {
   return (
@@ -28,7 +28,7 @@ export const BackToPartner: React.FC = () => {
             <button
               type="button"
               className="btn btn-block d-md-inline btn-primary mt-4 profile-link"
-              onClick={() => finish('success')}
+              onClick={() => finishProcedure('success')}
             >
               <FormattedMessage id="thirdPillarBackToPartner.recurringPayment.button" />
             </button>
