@@ -38,13 +38,13 @@ export const TriggerProcedure: React.FC = () => {
 
           setMessage(`Redirecting to ${path}`);
 
-          if (typeof query.redirect !== 'undefined') {
-            if (path) {
-              // using push for ease of testings for now, will be turning into replace, because hitting back should skip this component
-              history.push(path);
-              // history.replace(path);
-            }
+          if (query.redirect === '0') {
+            return;
           }
+
+          // using push for ease of testings for now, will be turning into replace, because hitting back should skip this component
+          history.push(path);
+          // history.replace(path);
         })
         .catch((err) => {
           // eslint-disable-next-line no-console -- make this flow more debuggable for 3rd parties
