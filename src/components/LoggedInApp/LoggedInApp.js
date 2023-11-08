@@ -10,6 +10,7 @@ import Header from './header';
 import AccountPage from '../account';
 import SecondPillarFlow from '../flows/secondPillar';
 import ThirdPillarFlow from '../flows/thirdPillar';
+import PartnerThirdPillarFlow from '../flows/thirdPillar/PartnerThirdPillarFlow';
 import {
   CancellationFlow,
   flowPath as cancellationFlowPath,
@@ -79,6 +80,7 @@ export class LoggedInApp extends PureComponent {
               <Route path="/contact-details" component={ContactDetailsPage} />
               <Route path="/2nd-pillar-flow" component={SecondPillarFlow} />
               <Route path="/3rd-pillar-flow" component={ThirdPillarFlow} />
+              <Route path="/partner/3rd-pillar-flow" component={PartnerThirdPillarFlow} />
               <Route path="/3rd-pillar-payment" component={Payment} />
               <Route path="/3rd-pillar-success" component={ThirdPillarSuccess} />
               <Route path="/3rd-pillar-gift" component={Gift} />
