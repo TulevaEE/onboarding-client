@@ -9,7 +9,13 @@ module.exports = {
     'import/no-extraneous-dependencies': [
       'error',
       {
-        devDependencies: ['**/*.spec.js', '**/*.spec.tsx', '**/*.test.tsx', 'src/setupTests.js'],
+        devDependencies: [
+          '**/*.spec.js',
+          '**/*.spec.jsx',
+          '**/*.spec.tsx',
+          '**/*.test.tsx',
+          'src/setupTests.js',
+        ],
       },
     ], // for Enzyme
     '@typescript-eslint/no-use-before-define': 0, // for clean code
