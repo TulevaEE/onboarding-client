@@ -49,14 +49,12 @@ export const ConfirmThirdPillarMandate = ({
       {isUserConverted && <Redirect to={nextPath} />}
       {signedMandateId && <Redirect to={nextPath} />}
       {(!hasAddress || !hasContactDetailsAmlCheck) && <Redirect to={previousPath} />}
-      {loadingMandate || mandateSigningControlCode ? (
+      {(loadingMandate || mandateSigningControlCode) && (
         <AuthenticationLoader
           controlCode={mandateSigningControlCode}
           onCancel={onCancelSigningMandate}
           overlayed
         />
-      ) : (
-        ''
       )}
 
       <FormattedMessage id="confirmThirdPillarMandate.intro" />
@@ -93,10 +91,8 @@ export const ConfirmThirdPillarMandate = ({
       <ResidencyAgreement className="mt-3" />
       <OccupationAgreement className="col-md-5 mt-3 px-0" />
 
-      {mandateSigningError ? (
+      {mandateSigningError && (
         <ErrorMessage errors={mandateSigningError.body} onCancel={onCloseErrorMessages} overlayed />
-      ) : (
-        ''
       )}
 
       <div className="mt-5">
