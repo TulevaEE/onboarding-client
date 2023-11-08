@@ -7,7 +7,7 @@ import Loader from '../common/loader';
 import { exchangeHandoverTokenForAccessToken } from './exchangeHandoverToken';
 import { getQueryParams } from '../../utils';
 import { MOBILE_AUTHENTICATION_SUCCESS } from '../login/constants';
-import { init } from './utils';
+import { init, finish } from './utils';
 
 import './TriggerProcedure.scss';
 
@@ -46,15 +46,19 @@ export const TriggerProcedure: React.FC = () => {
           history.push(path);
           // history.replace(path);
         })
-        .catch((err) => {
+        .catch((err: Error) => {
           // eslint-disable-next-line no-console -- make this flow more debuggable for 3rd parties
           console.error('error on exchange', err);
           setMessage(intl.formatMessage({ id: 'partnerFlow.error' }));
+          finish(undefined, err.message);
         });
     } catch (err) {
       // eslint-disable-next-line no-console -- make this flow more debuggable for 3rd parties
       console.error(err);
       setMessage(intl.formatMessage({ id: 'partnerFlow.error' }));
+      if (err instanceof Error) {
+        finish(undefined, err.message);
+      }
     }
   }, [query.handoverToken]);
 
