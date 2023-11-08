@@ -30,7 +30,8 @@ const validateProcedure = (value?: unknown): Procedure => {
 
 const validateUri = (_provider: ExternalProvider, uri?: unknown) => {
   if (uri && typeof uri === 'string') {
-    return uri;
+    const url = new URL(uri);
+    return url.toString();
   }
   throw new Error('Redirect URI missing');
 };
