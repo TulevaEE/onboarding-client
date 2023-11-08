@@ -75,11 +75,7 @@ export const finish = (result?: string, error?: string) => {
   }
   // eslint-disable-next-line no-console -- WIP
   console.log('finishing', provider, 'and redirecting to', redirectUri, result, error);
-  setTimeout(() => {
-    if (error) {
-      window.location.href = url.toString();
-    }
-  }, 2000);
+  window.location.href = url.toString();
 };
 
 export const init = (input: {
