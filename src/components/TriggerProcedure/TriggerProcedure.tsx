@@ -11,6 +11,7 @@ import { init, finish } from './utils';
 
 import './TriggerProcedure.scss';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function parseJwt(token: string): any {
   const base64Url = token.split('.')[1];
   const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -18,9 +19,7 @@ function parseJwt(token: string): any {
     window
       .atob(base64)
       .split('')
-      .map(function (c) {
-        return `%${`00${c.charCodeAt(0).toString(16)}`.slice(-2)}`;
-      })
+      .map((c) => `%${`00${c.charCodeAt(0).toString(16)}`.slice(-2)}`)
       .join(''),
   );
 
