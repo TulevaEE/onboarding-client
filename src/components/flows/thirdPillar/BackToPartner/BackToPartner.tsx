@@ -32,7 +32,7 @@ export const BackToPartner: React.FC = () => {
             >
               <FormattedMessage id="thirdPillarBackToPartner.recurringPayment.button" />
             </button>
-            <p className="mt-2">
+            <p className="mt-2 mb-0">
               <small className="text-muted">
                 <FormattedMessage id="thirdPillarBackToPartner.recurringPayment.subtitle" />
               </small>
