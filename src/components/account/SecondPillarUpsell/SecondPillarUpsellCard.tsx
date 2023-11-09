@@ -29,13 +29,10 @@ const SecondPillarUpsellCard: React.FC = () => {
             <div className="col-md-6 order-1 order-md-0">
               <CardTitle className="d-none d-md-block" />
               <div className="card-text mt-4 mt-md-0">
+                <h6 className="mb-3">
+                  <FormattedMessage id="secondPillarUpsell.worldMarketAverageReturn" />
+                </h6>
                 <ul className="pl-3 small-bullet-list pr-4">
-                  <li className="mb-3">
-                    <FormattedMessage
-                      id="secondPillarUpsell.worldMarketAverageReturn"
-                      values={{ b: (chunks: string) => <b>{chunks}</b> }}
-                    />
-                  </li>
                   <li className="mb-3">
                     <FormattedMessage
                       id="secondPillarUpsell.riskDiversification"
