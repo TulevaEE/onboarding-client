@@ -100,7 +100,7 @@ export function smartIdAuthenticationBackend(
         body.grant_type !== 'SMART_ID' ||
         body.client_id !== 'onboarding-client' ||
         req.headers.get('Authorization') !==
-        'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ='
+          'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ='
       ) {
         return res(
           ctx.status(401),
@@ -150,7 +150,7 @@ export function mobileIdAuthenticationBackend(
         body.grant_type !== 'MOBILE_ID' ||
         body.client_id !== 'onboarding-client' ||
         req.headers.get('Authorization') !==
-        'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ='
+          'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ='
       ) {
         return res(
           ctx.status(401),
@@ -195,7 +195,7 @@ export function idCardAuthenticationBackend(server: SetupServerApi): {
         body.grant_type !== 'ID_CARD' ||
         body.client_id !== 'onboarding-client' ||
         req.headers.get('Authorization') !==
-        'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ='
+          'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ='
       ) {
         return res(
           ctx.status(401),
