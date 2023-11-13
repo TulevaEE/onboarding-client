@@ -2,7 +2,9 @@ import { DefaultRequestMultipartBody, rest } from 'msw';
 import { SetupServerApi } from 'msw/node';
 import queryString from 'qs';
 
-export function cancellationBackend(server: SetupServerApi): {
+export function cancellationBackend(
+  server: SetupServerApi,
+): {
   cancellationCreated: boolean;
 } {
   const backend = {
@@ -31,7 +33,9 @@ export const mandateDownloadBackend = (server: SetupServerApi): void => {
   );
 };
 
-export function mandatePreviewBackend(server: SetupServerApi): {
+export function mandatePreviewBackend(
+  server: SetupServerApi,
+): {
   previewDownloaded: boolean;
 } {
   const backend = {
@@ -175,7 +179,9 @@ export function mobileIdAuthenticationBackend(
   };
 }
 
-export function idCardAuthenticationBackend(server: SetupServerApi): {
+export function idCardAuthenticationBackend(
+  server: SetupServerApi,
+): {
   authenticatedWithIdCard: boolean;
   acceptedCertificate: boolean;
 } {
@@ -226,9 +232,6 @@ export function userBackend(server: SetupServerApi): void {
           memberNumber: 987,
           pensionAccountNumber: '9876543210',
           address: {
-            street: 'Telliskivi 60a',
-            districtCode: '0011',
-            postalCode: '10101',
             countryCode: 'EE',
           },
           secondPillarActive: true,

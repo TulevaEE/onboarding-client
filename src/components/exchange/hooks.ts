@@ -9,11 +9,7 @@ export function useMandateSigning(): {
   signedMandateId: number | null;
   challengeCode: string | null;
 } {
-  const {
-    controlCode: challengeCode,
-    loading,
-    signedMandateId,
-  } = useSelector<
+  const { controlCode: challengeCode, loading, signedMandateId } = useSelector<
     {
       exchange: {
         loadingMandate: boolean;
