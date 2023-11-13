@@ -63,7 +63,7 @@ describe('ConfirmThirdPillarMandate', () => {
       isPoliticallyExposed: true,
       occupation: 'PRIVATE_SECTOR',
     };
-    const address = { street: 'Telliskivi 60' };
+    const address = { countryCode: 'EE' };
     component.setProps({
       exchangeExistingUnits: true,
       exchangeableSourceFunds: [
@@ -98,7 +98,7 @@ describe('ConfirmThirdPillarMandate', () => {
       isPoliticallyExposed: true,
       occupation: 'PRIVATE_SECTOR',
     };
-    const address = { street: 'Telliskivi 60' };
+    const address = { countryCode: 'EE' };
     component.setProps({
       exchangeExistingUnits: true,
       exchangeableSourceFunds: [

@@ -159,9 +159,6 @@ export interface Mandate {
 }
 
 interface Address {
-  street: string;
-  districtCode: string;
-  postalCode: string;
   countryCode: string;
 }
 

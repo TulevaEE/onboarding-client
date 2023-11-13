@@ -346,7 +346,7 @@ describe('Confirm mandate step', () => {
       selectedFutureContributionsFundIsin: 'target 1',
       agreedToTerms: true,
     };
-    const address = { street: 'Telliskivi 60' };
+    const address = { countryCode: 'EE' };
     component.setProps({ onPreviewMandate, exchange, address });
     expect(onPreviewMandate).not.toHaveBeenCalled();
     component.find('button#preview').simulate('click');
@@ -394,7 +394,7 @@ describe('Confirm mandate step', () => {
       selectedFutureContributionsFundIsin: 'target 1',
       agreedToTerms: true,
     };
-    const address = { street: 'Telliskivi 60' };
+    const address = { countryCode: 'EE' };
     component.setProps({ onSignMandate, exchange, address });
     expect(onSignMandate).not.toHaveBeenCalled();
     component.find('button#sign').simulate('click');
@@ -435,7 +435,7 @@ describe('Confirm mandate step', () => {
       selectedFutureContributionsFundIsin: null,
       agreedToTerms: true,
     };
-    const address = { street: 'Telliskivi 60' };
+    const address = { countryCode: 'EE' };
     component.setProps({ onSignMandate, exchange, address });
     expect(onSignMandate).not.toHaveBeenCalled();
     component.find('button#sign').simulate('click');
