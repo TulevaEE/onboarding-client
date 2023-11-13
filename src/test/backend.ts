@@ -2,9 +2,7 @@ import { DefaultRequestMultipartBody, rest } from 'msw';
 import { SetupServerApi } from 'msw/node';
 import queryString from 'qs';
 
-export function cancellationBackend(
-  server: SetupServerApi,
-): {
+export function cancellationBackend(server: SetupServerApi): {
   cancellationCreated: boolean;
 } {
   const backend = {
@@ -33,9 +31,7 @@ export const mandateDownloadBackend = (server: SetupServerApi): void => {
   );
 };
 
-export function mandatePreviewBackend(
-  server: SetupServerApi,
-): {
+export function mandatePreviewBackend(server: SetupServerApi): {
   previewDownloaded: boolean;
 } {
   const backend = {
@@ -104,7 +100,7 @@ export function smartIdAuthenticationBackend(
         body.grant_type !== 'SMART_ID' ||
         body.client_id !== 'onboarding-client' ||
         req.headers.get('Authorization') !==
-          'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ='
+        'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ='
       ) {
         return res(
           ctx.status(401),
@@ -154,7 +150,7 @@ export function mobileIdAuthenticationBackend(
         body.grant_type !== 'MOBILE_ID' ||
         body.client_id !== 'onboarding-client' ||
         req.headers.get('Authorization') !==
-          'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ='
+        'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ='
       ) {
         return res(
           ctx.status(401),
@@ -179,9 +175,7 @@ export function mobileIdAuthenticationBackend(
   };
 }
 
-export function idCardAuthenticationBackend(
-  server: SetupServerApi,
-): {
+export function idCardAuthenticationBackend(server: SetupServerApi): {
   authenticatedWithIdCard: boolean;
   acceptedCertificate: boolean;
 } {
@@ -201,7 +195,7 @@ export function idCardAuthenticationBackend(
         body.grant_type !== 'ID_CARD' ||
         body.client_id !== 'onboarding-client' ||
         req.headers.get('Authorization') !==
-          'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ='
+        'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ='
       ) {
         return res(
           ctx.status(401),
