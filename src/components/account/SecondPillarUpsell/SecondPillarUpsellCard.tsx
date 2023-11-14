@@ -29,7 +29,7 @@ const SecondPillarUpsellCard: React.FC = () => {
             <div className="col-md-6 order-1 order-md-0">
               <CardTitle className="d-none d-md-block" />
               <div className="card-text mt-4 mt-md-0">
-                <h6 className="mb-3">
+                <h6 className="mb-3 lh-base">
                   <FormattedMessage id="secondPillarUpsell.worldMarketAverageReturn" />
                 </h6>
                 <ul className="pl-3 small-bullet-list pr-4">
