@@ -8,14 +8,14 @@ const LOGIN_PATH = '/login';
 const PrivateRoute = ({ component: Component, isAuthenticated, ...otherPrivateRouteProps }) => (
   <Route
     {...otherPrivateRouteProps}
-    render={({ location: { pathname } }) =>
+    render={({ location: { pathname, search } }) =>
       isAuthenticated ? (
         <Component />
       ) : (
         <Redirect
           to={{
             pathname: LOGIN_PATH,
-            state: { from: pathname },
+            state: { from: pathname + search },
           }}
         />
       )
