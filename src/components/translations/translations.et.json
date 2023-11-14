@@ -464,7 +464,7 @@
   "thirdPillarBackToPartner.automateNext": "Järgmiseks muuda säästmine automaatseks",
   "thirdPillarBackToPartner.automateNext.subtitle": "Tee oma netipangas püsikorraldus, et sissemaksed läheks III sambasse alati kohe pärast palgapäeva.",
   "thirdPillarBackToPartner.recurringPayment.button": "Seadista püsimakse",
-  "thirdPillarBackToPartner.recurringPayment.subtitle": "Püsikorralduse tegemiseks suuname Sind tagasi TestingProvider1 juurde.",
+  "thirdPillarBackToPartner.recurringPayment.subtitle": "Püsikorralduse tegemiseks suuname Sind tagasi Partneri juurde.",
 
   "applications.title": "Sinu ootel olevad tehingud",
   "applications.cancel": "Tühista avaldus",
@@ -528,7 +528,7 @@
 
   "secondPillarUpsell.cardTitle": "II sammas",
   "secondPillarUpsell.notInTuleva": "Pole Tulevas",
-  "secondPillarUpsell.worldMarketAverageReturn": "Tuleva Maailma Aktsiate Pensionifondi eesmärk on saavutada <b>maailmaturu keskmine</b> tootlus.",
+  "secondPillarUpsell.worldMarketAverageReturn": "Tuleva Maailma Aktsiate Pensionifondi eesmärk on saavutada maailmaturu keskmine tootlus.",
   "secondPillarUpsell.riskDiversification": "Investeerime 3000 maailma suurima ettevõtte aktsiatesse, nii <b>hajutame riski.</b>",
   "secondPillarUpsell.lowFees": "Hoiame <b>tasud madalad,</b> sest see on ainus kindel viis tootluse suurendamiseks.",
   "secondPillarUpsell.ownership": "Tuleva on ainus <b>kogujatele endile kuuluv</b> fondivalitseja Eestis.",
