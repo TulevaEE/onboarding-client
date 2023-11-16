@@ -191,7 +191,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
         <ThirdPillarPaymentsAmount />,
       ]}
     >
-      <Link to="/3rd-pillar-payment" className="btn btn-primary">
+      <Link to="/3rd-pillar-payment" className="btn btn-outline-primary">
         <FormattedMessage id="account.status.choice.pillar.third.success.action" />
       </Link>
     </StatusBoxRow>

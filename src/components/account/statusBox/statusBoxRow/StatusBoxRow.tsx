@@ -22,6 +22,7 @@ export const StatusBoxRow: React.FunctionComponent<{
   error?: boolean;
   last?: boolean;
   children?: React.ReactNode;
+  extraBottom?: React.ReactNode;
 }> = ({
   name = '',
   lines = [],
@@ -31,6 +32,7 @@ export const StatusBoxRow: React.FunctionComponent<{
   error = false,
   children = '',
   last = false,
+  extraBottom = <></>,
 }) => {
   const formattedLines = (
     <ul>
@@ -46,25 +48,24 @@ export const StatusBoxRow: React.FunctionComponent<{
     </ul>
   );
   return (
-    <div
-      className={`d-flex flex-sm-row flex-column justify-content-between py-2 status-box-row ${
-        !last ? 'tv-table__row' : ''
-      }`}
-    >
-      <div className="d-flex">
-        <div className="d-flex flex-column justify-content-center">
-          <CheckMark checked={ok} warning={warning} error={error} />
-        </div>
-        <div className="d-flex flex-column justify-content-center">
-          <div className="mt-0 pt-1 pl-2">
-            <b>{name}</b>
+    <div className={`py-2 status-box-row ${!last ? 'tv-table__row' : ''}`}>
+      <div className="d-flex flex-sm-row flex-column justify-content-between">
+        <div className="d-flex">
+          <div className="d-flex flex-column justify-content-center">
+            <CheckMark checked={ok} warning={warning} error={error} />
           </div>
-          {formattedLines}
+          <div className="d-flex flex-column justify-content-center">
+            <div className="mt-0 pt-1 pl-2">
+              <b>{name}</b>
+            </div>
+            {formattedLines}
+          </div>
+        </div>
+        <div className="d-flex flex-column justify-content-center my-2 mx-3 text-nowrap">
+          {showAction && children ? children : ''}
         </div>
       </div>
-      <div className="d-flex flex-column justify-content-center my-2 mx-3 text-nowrap">
-        {showAction && children ? children : ''}
-      </div>
+      {extraBottom}
     </div>
   );
 };

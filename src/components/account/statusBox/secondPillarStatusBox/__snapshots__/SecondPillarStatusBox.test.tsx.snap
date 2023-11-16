@@ -3,6 +3,80 @@
 exports[`SecondPillarStatusBox renders high fee flow when fund selection incomplete 1`] = `
 <StatusBoxRow
   error={true}
+  extraBottom={
+    <div
+      className="card card-primary border-0 mt-3 ml-3 ml-md-5 mr-3 my-2 px-4 py-3"
+    >
+      <div
+        className="row"
+      >
+        <TinyCard
+          img="euro.svg"
+          text={
+            <Memo(MemoizedFormattedMessage)
+              id="account.status.choice.pillar.second.feecard.text"
+              values={
+                Object {
+                  "b": [Function],
+                }
+              }
+            />
+          }
+          title={
+            <Memo(MemoizedFormattedMessage)
+              id="account.status.choice.pillar.second.feecard.title"
+            />
+          }
+        />
+        <TinyCard
+          img="basket.svg"
+          text={
+            <React.Fragment>
+              <Memo(MemoizedFormattedMessage)
+                id="account.status.choice.pillar.second.basketcard.text"
+                values={
+                  Object {
+                    "b": [Function],
+                  }
+                }
+              />
+              <InfoTooltip
+                name="diversification-tooltip"
+              >
+                <Memo(MemoizedFormattedMessage)
+                  id="account.status.choice.pillar.second.basketcard.tooltip"
+                />
+              </InfoTooltip>
+            </React.Fragment>
+          }
+          title={
+            <Memo(MemoizedFormattedMessage)
+              id="account.status.choice.pillar.second.basketcard.title"
+            />
+          }
+        />
+        <TinyCard
+          img="deadline.svg"
+          text={
+            <Memo(MemoizedFormattedMessage)
+              id="account.status.choice.pillar.second.deadlinecard.text"
+              values={
+                Object {
+                  "b": [Function],
+                  "periodEnding": "July 31 at 07:59",
+                }
+              }
+            />
+          }
+          title={
+            <Memo(MemoizedFormattedMessage)
+              id="account.status.choice.pillar.second.deadlinecard.title"
+            />
+          }
+        />
+      </div>
+    </div>
+  }
   lines={
     Array [
       <React.Fragment>
@@ -38,19 +112,6 @@ exports[`SecondPillarStatusBox renders high fee flow when fund selection incompl
           }
         />
       </small>,
-      <small
-        className="text-muted"
-      >
-        <Memo(MemoizedFormattedMessage)
-          id="select.sources.select.all.deadline"
-          values={
-            Object {
-              "b": [Function],
-              "periodEnding": "July 31",
-            }
-          }
-        />
-      </small>,
     ]
   }
   name={
@@ -65,7 +126,7 @@ exports[`SecondPillarStatusBox renders high fee flow when fund selection incompl
     to="/2nd-pillar-flow"
   >
     <MemoizedFormattedMessage
-      id="account.status.choice.choose.low.fees"
+      id="account.status.choice.bring.to.tuleva"
     />
   </Link>
 </StatusBoxRow>
@@ -74,6 +135,80 @@ exports[`SecondPillarStatusBox renders high fee flow when fund selection incompl
 exports[`SecondPillarStatusBox renders high fee message when in high fee fund and no partial conversion 1`] = `
 <StatusBoxRow
   error={true}
+  extraBottom={
+    <div
+      className="card card-primary border-0 mt-3 ml-3 ml-md-5 mr-3 my-2 px-4 py-3"
+    >
+      <div
+        className="row"
+      >
+        <TinyCard
+          img="euro.svg"
+          text={
+            <Memo(MemoizedFormattedMessage)
+              id="account.status.choice.pillar.second.feecard.text"
+              values={
+                Object {
+                  "b": [Function],
+                }
+              }
+            />
+          }
+          title={
+            <Memo(MemoizedFormattedMessage)
+              id="account.status.choice.pillar.second.feecard.title"
+            />
+          }
+        />
+        <TinyCard
+          img="basket.svg"
+          text={
+            <React.Fragment>
+              <Memo(MemoizedFormattedMessage)
+                id="account.status.choice.pillar.second.basketcard.text"
+                values={
+                  Object {
+                    "b": [Function],
+                  }
+                }
+              />
+              <InfoTooltip
+                name="diversification-tooltip"
+              >
+                <Memo(MemoizedFormattedMessage)
+                  id="account.status.choice.pillar.second.basketcard.tooltip"
+                />
+              </InfoTooltip>
+            </React.Fragment>
+          }
+          title={
+            <Memo(MemoizedFormattedMessage)
+              id="account.status.choice.pillar.second.basketcard.title"
+            />
+          }
+        />
+        <TinyCard
+          img="deadline.svg"
+          text={
+            <Memo(MemoizedFormattedMessage)
+              id="account.status.choice.pillar.second.deadlinecard.text"
+              values={
+                Object {
+                  "b": [Function],
+                  "periodEnding": "July 31 at 07:59",
+                }
+              }
+            />
+          }
+          title={
+            <Memo(MemoizedFormattedMessage)
+              id="account.status.choice.pillar.second.deadlinecard.title"
+            />
+          }
+        />
+      </div>
+    </div>
+  }
   lines={
     Array [
       <React.Fragment>
@@ -109,19 +244,6 @@ exports[`SecondPillarStatusBox renders high fee message when in high fee fund an
           }
         />
       </small>,
-      <small
-        className="text-muted"
-      >
-        <Memo(MemoizedFormattedMessage)
-          id="select.sources.select.all.deadline"
-          values={
-            Object {
-              "b": [Function],
-              "periodEnding": "July 31",
-            }
-          }
-        />
-      </small>,
     ]
   }
   name={
@@ -136,7 +258,7 @@ exports[`SecondPillarStatusBox renders high fee message when in high fee fund an
     to="/2nd-pillar-flow"
   >
     <MemoizedFormattedMessage
-      id="account.status.choice.choose.low.fees"
+      id="account.status.choice.bring.to.tuleva"
     />
   </Link>
 </StatusBoxRow>
@@ -252,6 +374,80 @@ exports[`SecondPillarStatusBox renders the success flow 1`] = `
 exports[`SecondPillarStatusBox renders the transfer flow when fund transfers incomplete 1`] = `
 <StatusBoxRow
   error={true}
+  extraBottom={
+    <div
+      className="card card-primary border-0 mt-3 ml-3 ml-md-5 mr-3 my-2 px-4 py-3"
+    >
+      <div
+        className="row"
+      >
+        <TinyCard
+          img="euro.svg"
+          text={
+            <Memo(MemoizedFormattedMessage)
+              id="account.status.choice.pillar.second.feecard.text"
+              values={
+                Object {
+                  "b": [Function],
+                }
+              }
+            />
+          }
+          title={
+            <Memo(MemoizedFormattedMessage)
+              id="account.status.choice.pillar.second.feecard.title"
+            />
+          }
+        />
+        <TinyCard
+          img="basket.svg"
+          text={
+            <React.Fragment>
+              <Memo(MemoizedFormattedMessage)
+                id="account.status.choice.pillar.second.basketcard.text"
+                values={
+                  Object {
+                    "b": [Function],
+                  }
+                }
+              />
+              <InfoTooltip
+                name="diversification-tooltip"
+              >
+                <Memo(MemoizedFormattedMessage)
+                  id="account.status.choice.pillar.second.basketcard.tooltip"
+                />
+              </InfoTooltip>
+            </React.Fragment>
+          }
+          title={
+            <Memo(MemoizedFormattedMessage)
+              id="account.status.choice.pillar.second.basketcard.title"
+            />
+          }
+        />
+        <TinyCard
+          img="deadline.svg"
+          text={
+            <Memo(MemoizedFormattedMessage)
+              id="account.status.choice.pillar.second.deadlinecard.text"
+              values={
+                Object {
+                  "b": [Function],
+                  "periodEnding": "July 31 at 07:59",
+                }
+              }
+            />
+          }
+          title={
+            <Memo(MemoizedFormattedMessage)
+              id="account.status.choice.pillar.second.deadlinecard.title"
+            />
+          }
+        />
+      </div>
+    </div>
+  }
   lines={
     Array [
       <React.Fragment>
@@ -287,19 +483,6 @@ exports[`SecondPillarStatusBox renders the transfer flow when fund transfers inc
           }
         />
       </small>,
-      <small
-        className="text-muted"
-      >
-        <Memo(MemoizedFormattedMessage)
-          id="select.sources.select.all.deadline"
-          values={
-            Object {
-              "b": [Function],
-              "periodEnding": "July 31",
-            }
-          }
-        />
-      </small>,
     ]
   }
   name={
@@ -314,7 +497,7 @@ exports[`SecondPillarStatusBox renders the transfer flow when fund transfers inc
     to="/2nd-pillar-flow"
   >
     <MemoizedFormattedMessage
-      id="account.status.choice.choose.low.fees"
+      id="account.status.choice.bring.to.tuleva"
     />
   </Link>
 </StatusBoxRow>

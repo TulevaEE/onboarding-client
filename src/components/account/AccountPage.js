@@ -65,10 +65,10 @@ export class AccountPage extends Component {
           <GreetingBar />
         </div>
         <div className="mt-5">
-          <SecondPillarUpsell />
+          <StatusBox />
         </div>
         <div className="mt-5">
-          <StatusBox />
+          <SecondPillarUpsell />
         </div>
 
         {error && error.body ? <ErrorMessage errors={error.body} /> : ''}
@@ -203,6 +203,7 @@ const mapStateToProps = (state) => ({
     state.aml.missingAmlChecks &&
     state.aml.missingAmlChecks.length > 0 &&
     !state.aml.createAmlChecksSuccess &&
+    state.login.user.thirdPillarActive &&
     state.thirdPillar.sourceFunds &&
     state.thirdPillar.sourceFunds.some((fund) => isTuleva(fund)),
 });

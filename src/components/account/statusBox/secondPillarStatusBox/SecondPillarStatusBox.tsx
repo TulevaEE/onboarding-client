@@ -18,7 +18,10 @@ import InfoTooltip from '../../../common/infoTooltip';
 import { isTuleva } from '../../../common/utils';
 import { getValueSum } from '../../AccountStatement/fundSelector';
 import Euro from '../../../common/Euro';
-import { formatDate } from '../../../common/dateFormatter';
+import { formatDateTime } from '../../../common/dateFormatter';
+import deadline from './deadline.svg';
+import euro from './euro.svg';
+import basket from './basket.svg';
 
 export interface Props {
   loading: boolean;
@@ -167,6 +170,20 @@ function feeComparison(currentFeesEuro: number, tulevaFeesEuro: number) {
   );
 }
 
+const TinyCard = ({ title, text, img }: { title: JSX.Element; text: JSX.Element; img: string }) => (
+  <div className="col-md-4 my-3 my-md-0">
+    <div className="d-flex align-items-center">
+      <div className="mr-3">
+        <img width={36} src={img} alt="" />
+      </div>
+      <div>
+        <h5 className="card-title mb-1">{title}</h5>
+        <small className="card-text">{text}</small>
+      </div>
+    </div>
+  </div>
+);
+
 function highFee(
   loading: boolean,
   conversion: Conversion,
@@ -198,33 +215,82 @@ function highFee(
         ...(currentFeesEuro >= 0.5 && tulevaFeesEuro >= 0.5 && currentFeesEuro - tulevaFeesEuro >= 1
           ? [feeComparison(currentFeesEuro, tulevaFeesEuro)]
           : []),
-        ...(mandateDeadlines && isPeriodEnding(mandateDeadlines)
-          ? [periodEndingMessage(mandateDeadlines)]
-          : []),
       ]}
+      extraBottom={
+        <div className="card card-primary border-0 mt-3 ml-3 ml-md-5 mr-3 my-2 px-4 py-3">
+          <div className="row">
+            <TinyCard
+              img={euro}
+              title={<FormattedMessage id="account.status.choice.pillar.second.feecard.title" />}
+              text={
+                <FormattedMessage
+                  id="account.status.choice.pillar.second.feecard.text"
+                  values={{
+                    b: (chunks: string) => <b>{chunks}</b>,
+                  }}
+                />
+              }
+            />
+            <TinyCard
+              img={basket}
+              title={<FormattedMessage id="account.status.choice.pillar.second.basketcard.title" />}
+              text={
+                <>
+                  <FormattedMessage
+                    id="account.status.choice.pillar.second.basketcard.text"
+                    values={{
+                      b: (chunks: string) => <b>{chunks}</b>,
+                    }}
+                  />
+                  <InfoTooltip name="diversification-tooltip">
+                    <FormattedMessage id="account.status.choice.pillar.second.basketcard.tooltip" />
+                  </InfoTooltip>
+                </>
+              }
+            />
+            <TinyCard
+              img={deadline}
+              title={
+                <FormattedMessage id="account.status.choice.pillar.second.deadlinecard.title" />
+              }
+              text={
+                <FormattedMessage
+                  id="account.status.choice.pillar.second.deadlinecard.text"
+                  values={{
+                    periodEnding: mandateDeadlines && formatDateTime(mandateDeadlines.periodEnding),
+                    b: (chunks: string) => <b className="text-nowrap">{chunks}</b>,
+                  }}
+                />
+              }
+            />
+          </div>
+        </div>
+      }
     >
       <Link to="/2nd-pillar-flow" className="btn btn-primary">
-        <FormattedMessage id="account.status.choice.choose.low.fees" />
+        <FormattedMessage id="account.status.choice.bring.to.tuleva" />
       </Link>
     </StatusBoxRow>
   );
 }
 
 function isPeriodEnding(mandateDeadlines: MandateDeadlines | undefined) {
-  return mandateDeadlines && moment(mandateDeadlines.periodEnding).diff(moment(), 'days') <= 10;
+  return mandateDeadlines && moment(mandateDeadlines.periodEnding).diff(moment(), 'days') <= 30;
 }
 
-function periodEndingMessage(mandateDeadlines: MandateDeadlines) {
+function periodEndingMessage(mandateDeadlines: MandateDeadlines | undefined) {
   return (
-    <small className="text-muted">
-      <FormattedMessage
-        id="select.sources.select.all.deadline"
-        values={{
-          periodEnding: formatDate(mandateDeadlines.periodEnding),
-          b: (chunks: string) => <b className="text-nowrap">{chunks}</b>,
-        }}
-      />
-    </small>
+    mandateDeadlines && (
+      <small className="text-muted">
+        <FormattedMessage
+          id="select.sources.select.all.deadline"
+          values={{
+            periodEnding: formatDateTime(mandateDeadlines?.periodEnding),
+            b: (chunks: string) => <b className="text-nowrap">{chunks}</b>,
+          }}
+        />
+      </small>
+    )
   );
 }
 

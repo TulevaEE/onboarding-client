@@ -19,7 +19,7 @@ const Header = ({ user: { name } = {}, loading, onLogout }) => (
       ) : (
         <span>
           {name}
-          &ensp;&middot;&ensp;
+          <br />
           <button type="button" className="btn btn-link p-0 border-0" onClick={onLogout}>
             <FormattedMessage id="log.out" />
           </button>
