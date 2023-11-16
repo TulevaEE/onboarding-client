@@ -63,7 +63,7 @@ exports[`SecondPillarStatusBox renders high fee flow when fund selection incompl
               values={
                 Object {
                   "b": [Function],
-                  "periodEnding": "July 31 at 07:59",
+                  "periodEnding": "July 31 at 00:59",
                 }
               }
             />
@@ -195,7 +195,7 @@ exports[`SecondPillarStatusBox renders high fee message when in high fee fund an
               values={
                 Object {
                   "b": [Function],
-                  "periodEnding": "July 31 at 07:59",
+                  "periodEnding": "July 31 at 00:59",
                 }
               }
             />
@@ -434,7 +434,7 @@ exports[`SecondPillarStatusBox renders the transfer flow when fund transfers inc
               values={
                 Object {
                   "b": [Function],
-                  "periodEnding": "July 31 at 07:59",
+                  "periodEnding": "July 31 at 00:59",
                 }
               }
             />
