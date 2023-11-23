@@ -15,7 +15,8 @@ const PrivateRoute = ({ component: Component, isAuthenticated, ...otherPrivateRo
         <Redirect
           to={{
             pathname: LOGIN_PATH,
-            state: { from: pathname + search },
+            search,
+            state: { from: pathname },
           }}
         />
       )
