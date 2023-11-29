@@ -97,7 +97,7 @@
   "target.funds.EE3600109435.terms.link": "https://tuleva.ee/tuleva-maailma-aktsiate-pensionifond/",
 
   "target.funds.EE3600109443.title": "Tuleva Maailma Võlakirjade Pensionifond",
-  "target.funds.EE3600109443.description": "Konservatiivne indeksfond - võib sobida, kui sul on jäänud vaid mõni aasta või kui sa oled kindluse nimel nõus kõrgema tootluse võimalusest loobuma.",
+  "target.funds.EE3600109443.description": "Konservatiivne indeksfond - võib sobida, kui sul on jäänud vaid mõni aasta pensionini või kui sa oled kindluse nimel nõus kõrgema tootluse võimalusest loobuma.",
   "target.funds.EE3600109443.terms.link": "https://tuleva.ee/tuleva-maailma-volakirjade-pensionifond/",
 
   "target.funds.EE3600001707.title": "Tuleva III Samba Pensionifond",
@@ -430,8 +430,8 @@
   "thirdPillarPayment.EMPLOYER": "Otse palgast",
   "thirdPillarPayment.freeSinglePayment": "Sissemakse tegemine on <b>tasuta</b>. Veendu, et sinu pangakonto ülekandelimiit on piisavalt suur.",
   "thirdPillarPayment.freeRecurringPayment": "Püsikorralduse tegemine on <b>tasuta</b>. Püsikorraldust saad igal ajal oma internetipangas muuta.",
-  "thirdPillarPayment.makePayment": "Tee makse",
-  "thirdPillarPayment.setupRecurringPayment": "Sisene internetipanka",
+  "thirdPillarPayment.makePayment": "Teen makse",
+  "thirdPillarPayment.setupRecurringPayment": "Sisenen internetipanka",
   "thirdPillarPayment.giftRecipient": "Kellele soovid kingituse teha?",
   "thirdPillarPayment.singlePaymentAmount": "Kui suures summas soovid sissemakset teha?",
   "thirdPillarPayment.recurringPaymentAmount": "Kui suures summas soovid püsimakset teha?",
