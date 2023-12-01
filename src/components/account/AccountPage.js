@@ -184,6 +184,16 @@ const errorPackageFromUrl = errorCodeFromUrl
   ? { body: { errors: [{ code: errorCodeFromUrl }] } }
   : null;
 
+export const shouldRedirectToAml = (state) =>
+  state.aml.missingAmlChecks &&
+  state.aml.missingAmlChecks.length > 0 &&
+  !state.aml.createAmlChecksSuccess &&
+  state.login.user.thirdPillarActive &&
+  state.thirdPillar.sourceFunds &&
+  state.thirdPillar.sourceFunds.some(
+    (fund) => isTuleva(fund) && fund.price + fund.unavailablePrice > 0,
+  );
+
 const mapStateToProps = (state) => ({
   secondPillarSourceFunds: state.exchange.sourceFunds,
   thirdPillarSourceFunds: state.thirdPillar.sourceFunds,
@@ -199,13 +209,7 @@ const mapStateToProps = (state) => ({
   loadingCapital: state.account.loadingInitialCapital,
   error: state.exchange.error || errorPackageFromUrl,
   token: state.login.token,
-  shouldRedirectToAml:
-    state.aml.missingAmlChecks &&
-    state.aml.missingAmlChecks.length > 0 &&
-    !state.aml.createAmlChecksSuccess &&
-    state.login.user.thirdPillarActive &&
-    state.thirdPillar.sourceFunds &&
-    state.thirdPillar.sourceFunds.some((fund) => isTuleva(fund)),
+  shouldRedirectToAml: shouldRedirectToAml(state),
 });
 const mapDispatchToProps = (dispatch) =>
   bindActionCreators(

@@ -2,12 +2,13 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { ErrorMessage } from '../common';
-import { AccountPage } from './AccountPage';
+import { AccountPage, shouldRedirectToAml } from './AccountPage';
 import AccountStatement from './AccountStatement';
 import GreetingBar from './GreetingBar';
 import AccountSummary from './AccountSummary';
 import StatusBox from './statusBox';
 import { ApplicationSection } from './ApplicationSection/ApplicationSection';
+import { activeThirdPillar } from './statusBox/fixtures';
 
 describe('Account page', () => {
   let component;
@@ -112,6 +113,66 @@ describe('Account page', () => {
     component.setProps({ error, funds });
 
     expect(component.contains(<ErrorMessage errors={error.body} />)).toBe(true);
+  });
+
+  describe('aml redirect', () => {
+    it('should redirect to aml page', () => {
+      const state = {
+        aml: {
+          missingAmlChecks: ['missing'],
+          createAmlChecksSuccess: false,
+        },
+        login: {
+          user: {
+            thirdPillarActive: true,
+          },
+        },
+        thirdPillar: {
+          sourceFunds: [activeThirdPillar],
+        },
+      };
+
+      const redirectToAml = shouldRedirectToAml(state);
+
+      expect(redirectToAml).toBe(true);
+    });
+
+    it('should not redirect when no fund balance in Tuleva', () => {
+      const state = {
+        aml: {
+          missingAmlChecks: ['missing'],
+          createAmlChecksSuccess: false,
+        },
+        login: {
+          user: {
+            thirdPillarActive: true,
+          },
+        },
+        thirdPillar: {
+          sourceFunds: [
+            {
+              activeFund: false,
+              name: 'Tuleva III Samba Pensionifond',
+              fundManager: { name: 'Tuleva' },
+              pillar: 3,
+              managementFeePercent: 0.003,
+              isin: 'EE3600001707',
+              price: 0,
+              unavailablePrice: 0,
+              currency: 'EUR',
+              ongoingChargesFigure: 0.0049,
+              contributions: 500,
+              subtractions: 0,
+              profit: 500,
+            },
+          ],
+        },
+      };
+
+      const redirectToAml = shouldRedirectToAml(state);
+
+      expect(redirectToAml).toBe(false);
+    });
   });
 
   function accountStatement() {
