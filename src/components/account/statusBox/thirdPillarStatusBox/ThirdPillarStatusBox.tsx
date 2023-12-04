@@ -191,7 +191,10 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
         <ThirdPillarPaymentsAmount />,
       ]}
     >
-      <Link to="/3rd-pillar-payment" className="btn btn-outline-primary">
+      <Link
+        to="/3rd-pillar-payment"
+        className={`btn ${isDecember ? 'btn-primary' : 'btn-outline-primary'}`}
+      >
         <FormattedMessage id="account.status.choice.pillar.third.success.action" />
       </Link>
     </StatusBoxRow>
