@@ -24,7 +24,7 @@
   "login.apply.link": "Täida liitumisavaldus",
   "login.epis_maintenance": "Meil on hooldustööd ning sel ajal ei saa oma pensionikonto seisu vaadata ega avaldusi esitada. Palume uuesti proovida mõne aja pärast.",
   "log.out": "Login välja",
-  "steps.intro": "Tulevas on ainult madalate tasudega indeksifondid, mis investeerivad 100% maailma väärtpaberiturgudele.",
+  "steps.intro": "Tulevas on ainult madalate tasudega indeksfondid, mis investeerivad 100% maailma väärtpaberiturgudele.",
   "steps.next": "Järgmine samm",
   "steps.previous": "Eelmine samm",
   "steps.select-sources": "Alusta kogumist Tuleva II samba fondis",
@@ -101,7 +101,7 @@
   "target.funds.EE3600109443.terms.link": "https://tuleva.ee/tuleva-maailma-volakirjade-pensionifond/",
 
   "target.funds.EE3600001707.title": "Tuleva III Samba Pensionifond",
-  "target.funds.EE3600001707.description": "See on madalate tasudega indeksifond, mis investeerib 100% maailma aktsiaturule. Sobib, kui soovid saavutada parimat võimalikku tootlust pika aja vältel ja sind ei löö rivist välja turu lühiajalised kõikumised.",
+  "target.funds.EE3600001707.description": "See on madalate tasudega indeksfond, mis investeerib 100% maailma aktsiaturule. Sobib, kui soovid saavutada parimat võimalikku tootlust pika aja vältel ja sind ei löö rivist välja turu lühiajalised kõikumised.",
   "target.funds.EE3600001707.terms.link": "https://tuleva.ee/tuleva-iii-samba-pensionifond/",
 
   "target.funds.EE3600109435.tooltip.title": "Tuleva Maailma Aktsiate Pensionifond",

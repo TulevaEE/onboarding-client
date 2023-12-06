@@ -3,13 +3,13 @@ import { PropTypes as Types } from 'prop-types';
 
 import './Radio.scss';
 
-const Radio = ({ children, onSelect, selected, name, className, id }) => (
+const Radio = ({ children, onSelect, selected, name, className, id, alignRadioCenter = false }) => (
   <label
     className={`tv-radio p-4 mb-0 px-col ${selected ? 'tv-radio--selected' : ''} ${className}`}
     htmlFor={id}
   >
     <div className="row mb-0">
-      <div className="col col-auto pr-0">
+      <div className={`col col-auto ${alignRadioCenter ? 'align-self-center' : ''} pr-0`}>
         <input
           type="radio"
           className="sr-only"

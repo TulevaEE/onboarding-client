@@ -29,6 +29,7 @@ import EmployerPayment from '../flows/thirdPillar/ThirdPillarPayment/paymentDeta
 import { ContributionPageSecondPillar } from '../contribution/ContributionPageSecondPillar';
 import { TransactionPageSecondPillar } from '../account/TransactionSection/TransactionPageSecondPillar';
 import SecondPillarUpsellCard from '../account/SecondPillarUpsell/SecondPillarUpsellCard';
+import { SecondPillarPaymentRate } from '../flows/secondPillarPaymentRate/SecondPillarPaymentRate';
 
 export const ACCOUNT_PATH = '/account';
 export const AML_PATH = '/aml';
@@ -90,6 +91,7 @@ export class LoggedInApp extends PureComponent {
               <Route path="/2nd-pillar-contributions" component={ContributionPageSecondPillar} />
               <Route path="/3rd-pillar-contributions" component={ContributionPageThirdPillar} />
               <Route path="/2nd-pillar-upsell" component={SecondPillarUpsellCard} />
+              <Route path="/2nd-pillar-payment-rate" component={SecondPillarPaymentRate} />
               <Route path={cancellationFlowPath} component={CancellationFlow} />
               <Redirect exact path="/" to={ACCOUNT_PATH} />
             </Switch>
