@@ -17,55 +17,57 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
       <p className="mt-3">
         II samba panused on tulumaksuvabad. Saad maksusoodustusega säästa tänasest veelgi rohkem.
       </p>
-      <Radio
-        name="payment-rate"
-        id="payment-rate-2"
-        className="mt-3"
-        selected={paymentRate === 2}
-        onSelect={() => {
-          setPaymentRate(2);
-        }}
-        alignRadioCenter
-      >
-        <h3 className="mb-1">2% brutopalgast</h3>
-        <p className="m-0">
-          Sina panustad 2% ja riik 4%&ensp;·&ensp;Kokku säästad <b>6%</b> brutopalgast
-        </p>
-      </Radio>
-      <Radio
-        name="payment-rate"
-        id="payment-rate-4"
-        className="mt-3"
-        selected={paymentRate === 4}
-        onSelect={() => {
-          setPaymentRate(4);
-        }}
-        alignRadioCenter
-      >
-        <h3 className="mb-1">4% brutopalgast</h3>
-        <p className="m-0">
-          Sina panustad 4% ja riik 4%&ensp;·&ensp;Kokku säästad <b>8%</b> brutopalgast
-        </p>
-      </Radio>
-      <Radio
-        name="payment-rate"
-        id="payment-rate-6"
-        className="mt-3"
-        selected={paymentRate === 6}
-        onSelect={() => {
-          setPaymentRate(6);
-        }}
-        alignRadioCenter
-      >
-        <h3 className="mb-1">6% brutopalgast</h3>
-        <p className="m-0">
-          Sina panustad 6% ja riik 4%&ensp;·&ensp;Kokku säästad <b>10%</b> brutopalgast
-        </p>
-        <p className="m-0 text-muted">
-          Sellega saad <span className="text-success">suurima maksuvõidu</span> ja kogud II sambasse
-          maksimaalselt
-        </p>
-      </Radio>
+
+      <div>
+        <Radio
+          name="payment-rate"
+          id="payment-rate-2"
+          className="mt-3"
+          selected={paymentRate === 2}
+          onSelect={() => {
+            setPaymentRate(2);
+          }}
+          alignRadioCenter
+        >
+          <h3 className="mb-1">2% brutopalgast</h3>
+          <p className="m-0">
+            Sina panustad 2% ja riik 4%, kokku säästad <b>6%</b>
+          </p>
+        </Radio>
+        <Radio
+          name="payment-rate"
+          id="payment-rate-4"
+          className="mt-3"
+          selected={paymentRate === 4}
+          onSelect={() => {
+            setPaymentRate(4);
+          }}
+          alignRadioCenter
+        >
+          <h3 className="mb-1">4% brutopalgast</h3>
+          <p className="m-0">
+            Sina panustad 4% ja riik 4%, kokku säästad <b>8%</b>
+          </p>
+        </Radio>
+        <Radio
+          name="payment-rate"
+          id="payment-rate-6"
+          className="mt-3"
+          selected={paymentRate === 6}
+          onSelect={() => {
+            setPaymentRate(6);
+          }}
+          alignRadioCenter
+        >
+          <h3 className="mb-1">6% brutopalgast</h3>
+          <p className="m-0">
+            Sina panustad 6% ja riik 4%, kokku säästad <b>10%</b>
+          </p>
+          <p className="m-0 text-muted">
+            Sellega saad suurima maksuvõidu ja kogud II sambasse maksimaalselt
+          </p>
+        </Radio>
+      </div>
 
       <p className="mt-5 lead">Kinnitamine</p>
 
@@ -101,7 +103,7 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
 
         <Link to="/account">
           <button type="button" className="btn btn-light mb-2">
-            Tühista
+            Katkesta
           </button>
         </Link>
       </div>
