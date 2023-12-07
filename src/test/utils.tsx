@@ -50,7 +50,7 @@ export function createDefaultStore(history: History): Store {
   );
 }
 
-export function login(store: Store, method = 'smartId', token = 'mock token'): void {
+export function login(store: Store, method = 'SMART_ID', token = 'mock token'): void {
   store.dispatch({
     type: MOBILE_AUTHENTICATION_SUCCESS,
     tokens: {

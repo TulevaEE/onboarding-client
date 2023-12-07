@@ -318,8 +318,8 @@ export function signMandateWithIdCard(mandate) {
 
 export function signMandate(mandate, amlChecks) {
   return (dispatch, getState) => {
-    const loggedInWithMobileId = getState().login.loginMethod === 'mobileId';
-    const loggedInWithSmartId = getState().login.loginMethod === 'smartId';
+    const loggedInWithMobileId = getState().login.loginMethod === 'MOBILE_ID';
+    const loggedInWithSmartId = getState().login.loginMethod === 'SMART_ID';
     return dispatch(amlActions.createAmlChecks(amlChecks))
       .then(() => {
         if (loggedInWithMobileId) {

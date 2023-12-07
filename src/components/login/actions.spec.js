@@ -142,7 +142,7 @@ describe('Login actions', () => {
     expect(dispatch).not.toHaveBeenCalled();
     mockApi.getIdCardTokens = jest.fn(() => Promise.resolve(tokens));
 
-    handleIdCardLogin({ login: 'idCard' });
+    handleIdCardLogin({ login: 'ID_CARD' });
 
     expect(dispatch).toHaveBeenCalledTimes(3);
     expect(dispatch).toHaveBeenCalledWith({
@@ -194,7 +194,7 @@ describe('Login actions', () => {
         expect(dispatch).toHaveBeenCalledWith({
           type: MOBILE_AUTHENTICATION_SUCCESS,
           tokens,
-          method: 'mobileId',
+          method: 'MOBILE_ID',
         });
       });
   });
@@ -242,7 +242,7 @@ describe('Login actions', () => {
         expect(dispatch).toHaveBeenCalledWith({
           type: MOBILE_AUTHENTICATION_SUCCESS,
           tokens,
-          method: 'smartId',
+          method: 'SMART_ID',
         });
       });
   });

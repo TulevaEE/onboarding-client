@@ -18,4 +18,4 @@ export type Login = {
   email: string;
 };
 
-type LoginMethod = 'mobileId' | 'smartId' | 'idCard';
+type LoginMethod = 'MOBILE_ID' | 'SMART_ID' | 'ID_CARD';

@@ -121,13 +121,13 @@ export default function loginReducer(state = initialState, action) {
       return { ...state, loadingAuthentication: true, error: null };
 
     case ID_CARD_AUTHENTICATION_SUCCESS:
-      updateSessionStorage(action, 'idCard');
+      updateSessionStorage(action, 'ID_CARD');
       return {
         // reset all state so page is clean when entered again.
         ...state,
         token: action.tokens.accessToken,
         loadingAuthentication: false,
-        loginMethod: 'idCard',
+        loginMethod: 'ID_CARD',
         error: null,
       };
 

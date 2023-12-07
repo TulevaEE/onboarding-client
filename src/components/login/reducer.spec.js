@@ -73,11 +73,11 @@ describe('Login reducer', () => {
     const action = {
       type: MOBILE_AUTHENTICATION_SUCCESS,
       tokens,
-      method: 'mobileId',
+      method: 'MOBILE_ID',
     };
     const newState = loginReducer(undefined, action);
     expect(newState.token).toBe('token');
-    expect(newState.loginMethod).toBe('mobileId');
+    expect(newState.loginMethod).toBe('MOBILE_ID');
   });
 
   it('sets the error when mobile authentication fails', () => {

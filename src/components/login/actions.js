@@ -94,13 +94,13 @@ export function handleLoginCookies() {
     };
     if (tokens.accessToken) {
       const loginMethod = getCookie(LOGIN_COOKIE_METHOD_NAME);
-      if (loginMethod === 'mobileId' || loginMethod === 'smartId') {
+      if (loginMethod === 'MOBILE_ID' || loginMethod === 'SMART_ID') {
         dispatch({
           type: MOBILE_AUTHENTICATION_SUCCESS,
           tokens,
           method: loginMethod,
         });
-      } else if (loginMethod === 'idCard') {
+      } else if (loginMethod === 'ID_CARD') {
         dispatch({ type: ID_CARD_AUTHENTICATION_SUCCESS, tokens });
       } else {
         throw new Error('Login method not recognized.');
@@ -120,7 +120,7 @@ function getMobileIdTokens() {
             dispatch({
               type: MOBILE_AUTHENTICATION_SUCCESS,
               tokens,
-              method: 'mobileId',
+              method: 'MOBILE_ID',
             });
             dispatch(handleLogin());
           } else if (getState().login.loadingAuthentication) {
@@ -157,7 +157,7 @@ function getSmartIdTokens(authenticationHash) {
             dispatch({
               type: MOBILE_AUTHENTICATION_SUCCESS,
               tokens,
-              method: 'smartId',
+              method: 'SMART_ID',
             });
             dispatch(handleLogin());
           } else if (getState().login.loadingAuthentication) {
@@ -241,7 +241,7 @@ export function authenticateWithIdCard() {
 }
 
 export function handleIdCardLogin(query) {
-  if (query.login === 'idCard') {
+  if (query.login === 'ID_CARD') {
     return (dispatch) => {
       dispatch({ type: ID_CARD_AUTHENTICATION_START });
       dispatch({ type: ID_CARD_AUTHENTICATION_START_SUCCESS });

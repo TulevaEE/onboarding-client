@@ -384,7 +384,7 @@ describe('Exchange actions', () => {
   });
 
   it('starts mobile id signing if logged in with mobile id', async () => {
-    state.login.loginMethod = 'mobileId';
+    state.login.loginMethod = 'MOBILE_ID';
     const signMandate = createBoundAction(actions.signMandate);
     mockApi.saveMandateWithToken = jest.fn(() => Promise.reject(new Error()));
     await signMandate({});
@@ -394,7 +394,7 @@ describe('Exchange actions', () => {
   });
 
   it('starts smart id signing if logged in with smart id', async () => {
-    state.login.loginMethod = 'smartId';
+    state.login.loginMethod = 'SMART_ID';
     const signMandate = createBoundAction(actions.signMandate);
     mockApi.saveMandateWithToken = jest.fn(() => Promise.reject(new Error()));
     await signMandate({});
@@ -404,7 +404,7 @@ describe('Exchange actions', () => {
   });
 
   it('creates aml checks if needed', async () => {
-    state.login.loginMethod = 'mobileId';
+    state.login.loginMethod = 'MOBILE_ID';
     mockApi.saveMandateWithToken = jest.fn(() => Promise.reject(new Error()));
     mockApi.getMobileIdSignatureStatus = jest.fn(() =>
       Promise.resolve({ statusCode: 'SIGNATURE' }),
@@ -425,7 +425,7 @@ describe('Exchange actions', () => {
 
   it('does not create new mandate if one is already provided when signing with smart id', async () => {
     const mandate = { id: 'id' };
-    state.login.loginMethod = 'smartId';
+    state.login.loginMethod = 'SMART_ID';
     const signMandate = createBoundAction(actions.signMandate);
     mockApi.saveMandateWithToken = jest.fn(() => Promise.resolve(mandate));
     mockApi.getSmartIdSignatureStatus = jest.fn(() => Promise.reject(new Error('Stop polling')));
@@ -435,7 +435,7 @@ describe('Exchange actions', () => {
 
   it('does not create new mandate if one is already provided when signing with mobile id', async () => {
     const mandate = { id: 'id' };
-    state.login.loginMethod = 'mobileId';
+    state.login.loginMethod = 'MOBILE_ID';
     const signMandate = createBoundAction(actions.signMandate);
     mockApi.saveMandateWithToken = jest.fn(() => Promise.resolve(mandate));
     mockApi.getMobileIdSignatureStatus = jest.fn(() => Promise.reject(new Error('Stop polling')));
@@ -445,7 +445,7 @@ describe('Exchange actions', () => {
 
   it('does not create new mandate if one is already provided when signing with id card', async () => {
     const mandate = { id: 'id' };
-    state.login.loginMethod = 'idCard';
+    state.login.loginMethod = 'ID_CARD';
     const signMandate = createBoundAction(actions.signMandate);
     mockApi.saveMandateWithToken = jest.fn(() => Promise.resolve(mandate));
 
