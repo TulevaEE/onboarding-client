@@ -103,15 +103,15 @@ export async function getTokensWithGrantType(
 }
 
 export function getMobileIdTokens(): Promise<Token | null> {
-  return getTokensWithGrantType('mobile_id');
+  return getTokensWithGrantType('MOBILE_ID');
 }
 
 export function getSmartIdTokens(authenticationHash: string): Promise<Token | null> {
-  return getTokensWithGrantType('smart_id', { authenticationHash });
+  return getTokensWithGrantType('SMART_ID', { authenticationHash });
 }
 
 export function getIdCardTokens(): Promise<Token | null> {
-  return getTokensWithGrantType('id_card');
+  return getTokensWithGrantType('ID_CARD');
 }
 
 export function downloadMandatePreviewWithIdAndToken(

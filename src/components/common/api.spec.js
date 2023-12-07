@@ -104,7 +104,7 @@ describe('api', () => {
         '/oauth/token',
         {
           client_id: 'onboarding-client',
-          grant_type: 'mobile_id',
+          grant_type: 'MOBILE_ID',
         },
         {
           Authorization: 'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ=',
@@ -128,7 +128,7 @@ describe('api', () => {
         '/oauth/token',
         {
           client_id: 'onboarding-client',
-          grant_type: 'smart_id',
+          grant_type: 'SMART_ID',
           authenticationHash,
         },
         {
@@ -148,7 +148,7 @@ describe('api', () => {
         '/oauth/token',
         {
           client_id: 'onboarding-client',
-          grant_type: 'id_card',
+          grant_type: 'ID_CARD',
         },
         {
           Authorization: 'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ=',

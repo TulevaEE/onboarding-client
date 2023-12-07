@@ -97,7 +97,7 @@ export function smartIdAuthenticationBackend(
     rest.post('http://localhost/oauth/token', (req, res, ctx) => {
       const body = queryString.parse(req.body as string);
       if (
-        body.grant_type !== 'smart_id' ||
+        body.grant_type !== 'SMART_ID' ||
         body.client_id !== 'onboarding-client' ||
         req.headers.get('Authorization') !==
           'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ='
@@ -147,7 +147,7 @@ export function mobileIdAuthenticationBackend(
     rest.post('http://localhost/oauth/token', (req, res, ctx) => {
       const body = queryString.parse(req.body as string);
       if (
-        body.grant_type !== 'mobile_id' ||
+        body.grant_type !== 'MOBILE_ID' ||
         body.client_id !== 'onboarding-client' ||
         req.headers.get('Authorization') !==
           'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ='
@@ -192,7 +192,7 @@ export function idCardAuthenticationBackend(server: SetupServerApi): {
     rest.post('http://localhost/oauth/token', (req, res, ctx) => {
       const body = queryString.parse(req.body as string);
       if (
-        body.grant_type !== 'id_card' ||
+        body.grant_type !== 'ID_CARD' ||
         body.client_id !== 'onboarding-client' ||
         req.headers.get('Authorization') !==
           'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ='
