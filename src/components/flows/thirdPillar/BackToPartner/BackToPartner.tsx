@@ -1,10 +1,14 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
+import { useSelector } from 'react-redux';
 import { SuccessNotice } from '../../common/SuccessNotice/SuccessNotice';
 import { Notice } from '../../common/Notice/Notice';
 import { finish as finishProcedure } from '../../../TriggerProcedure/utils';
+import { State } from '../../../../types';
 
 export const BackToPartner: React.FC = () => {
+  const token = useSelector<State, string>((state) => state.login.token);
+  const personalCode = useSelector<State, string>((state) => state.login.user?.personalCode);
   return (
     <>
       <div className="row mt-5">
@@ -28,7 +32,7 @@ export const BackToPartner: React.FC = () => {
             <button
               type="button"
               className="btn btn-block d-md-inline btn-primary mt-4 profile-link"
-              onClick={() => finishProcedure('success')}
+              onClick={() => finishProcedure('success', undefined, personalCode, token)}
             >
               <FormattedMessage id="thirdPillarBackToPartner.recurringPayment.button" />
             </button>

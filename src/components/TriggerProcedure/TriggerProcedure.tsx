@@ -7,24 +7,9 @@ import Loader from '../common/loader';
 import { exchangeHandoverTokenForAccessToken } from './exchangeHandoverToken';
 import { getQueryParams } from '../../utils';
 import { MOBILE_AUTHENTICATION_SUCCESS } from '../login/constants';
-import { init, finish } from './utils';
+import { init, finish, parseJwt } from './utils';
 
 import './TriggerProcedure.scss';
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function parseJwt(token: string): any {
-  const base64Url = token.split('.')[1];
-  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-  const jsonPayload = decodeURIComponent(
-    window
-      .atob(base64)
-      .split('')
-      .map((c) => `%${`00${c.charCodeAt(0).toString(16)}`.slice(-2)}`)
-      .join(''),
-  );
-
-  return JSON.parse(jsonPayload);
-}
 
 export const TriggerProcedure: React.FC = () => {
   const intl = useIntl();

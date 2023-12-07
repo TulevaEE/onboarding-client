@@ -237,11 +237,11 @@ export interface IdCardSignatureStatusResponse {
 }
 
 export interface Payment {
-  recipientPersonalCode: string;
-  amount: number;
-  currency: Currency;
   type: PaymentType;
   paymentChannel: PaymentChannel;
+  recipientPersonalCode: string;
+  amount?: number;
+  currency?: Currency;
 }
 
 export type Currency = 'EUR';
@@ -260,6 +260,7 @@ export enum PaymentChannel {
   SEB = 'SEB',
   LUMINOR = 'LUMINOR',
   COOP = 'COOP',
+  PARTNER = 'PARTNER',
   TULUNDUSUHISTU = 'TULUNDUSUHISTU',
 }
 
@@ -298,4 +299,8 @@ export interface MandateDeadlines {
   transferMandateCancellationDeadline: string;
   withdrawalCancellationDeadline: string;
   earlyWithdrawalCancellationDeadline: string;
+}
+
+export interface PaymentLink {
+  url: string;
 }

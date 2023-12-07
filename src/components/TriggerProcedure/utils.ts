@@ -1,5 +1,7 @@
+import { getPaymentLink } from '../common/api';
+import { PaymentChannel, PaymentType } from '../common/apiModels';
+
 const EXTERNAL_AUTHENTICATOR_PROVIDER = 'EXTERNAL_AUTHENTICATOR_PROVIDER';
-const EXTERNAL_AUTHENTICATOR_REDIRECT_URI = 'EXTERNAL_AUTHENTICATOR_REDIRECT_URI';
 
 enum ExternalProvider {
   TESTPROVIDER1 = 'testprovider1',
@@ -28,14 +30,6 @@ const validateProcedure = (value?: unknown): Procedure => {
   throw new Error(`Invalid procedure: ${value}`);
 };
 
-const validateUri = (_provider: ExternalProvider, uri?: unknown) => {
-  if (uri && typeof uri === 'string') {
-    const url = new URL(uri);
-    return url.toString();
-  }
-  throw new Error('Redirect URI missing');
-};
-
 const validateHandoverToken = (value?: unknown) => {
   if (value && typeof value === 'string') {
     return value;
@@ -51,58 +45,80 @@ const getPath = (provider: ExternalProvider, procedure: Procedure) => {
 };
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any -- WIP
-export const finish = (result?: string, error?: string) => {
+export const finish = async (
+  result?: string,
+  error?: string,
+  personalCode?: string,
+  token?: string,
+) => {
   const provider = sessionStorage.getItem(EXTERNAL_AUTHENTICATOR_PROVIDER);
-  const redirectUri = sessionStorage.getItem(EXTERNAL_AUTHENTICATOR_REDIRECT_URI);
 
   if (!provider) {
     // eslint-disable-next-line no-console -- WIP
     console.error('unexpected state: no provider');
     return;
   }
-
-  if (!redirectUri) {
+  if (!token || !personalCode) {
     // eslint-disable-next-line no-console -- WIP
-    console.error('unexpected state: no redirectUri');
+    console.error('unexpected state: no token/personal code');
     return;
   }
 
-  const url = new URL(redirectUri);
-  if (error) {
-    url.searchParams.set('error', error);
-  } else if (result) {
-    url.searchParams.set('result', result);
-  }
+  const paymentLink = await getPaymentLink(
+    {
+      type: PaymentType.RECURRING,
+      paymentChannel: PaymentChannel.PARTNER,
+      recipientPersonalCode: personalCode,
+    },
+    token,
+  );
+  const message = paymentLink.url;
+
   // eslint-disable-next-line no-console -- WIP
-  console.log('finishing', provider, 'and redirecting to', redirectUri, result, error);
-  window.location.href = url.toString();
+  console.log('finishing', provider, result, error, 'and posting message', message);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  if ((window as any).ReactNativeWebView) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window as any).ReactNativeWebView.postMessage(message);
+  }
 };
 
 export const init = (input: {
   provider?: unknown;
-  redirectUri?: unknown;
   handoverToken?: unknown;
   procedure?: unknown;
 }): {
   provider: ExternalProvider;
-  redirectUri: string;
   handoverToken: string;
   procedure: Procedure;
   path: string;
 } => {
   const provider = validateProvider(input.provider);
-  const redirectUri = validateUri(provider, input.redirectUri);
   const procedure = validateProcedure(input.procedure);
   const handoverToken = validateHandoverToken(input.handoverToken);
 
   sessionStorage.setItem(EXTERNAL_AUTHENTICATOR_PROVIDER, provider);
-  sessionStorage.setItem(EXTERNAL_AUTHENTICATOR_REDIRECT_URI, redirectUri);
 
   return {
     provider,
-    redirectUri,
     procedure,
     handoverToken,
     path: getPath(provider, procedure),
   };
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const parseJwt = (token: string): any => {
+  const base64Url = token.split('.')[1];
+  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  const jsonPayload = decodeURIComponent(
+    window
+      .atob(base64)
+      .split('')
+      .map((c) => `%${`00${c.charCodeAt(0).toString(16)}`.slice(-2)}`)
+      .join(''),
+  );
+
+  return JSON.parse(jsonPayload);
 };

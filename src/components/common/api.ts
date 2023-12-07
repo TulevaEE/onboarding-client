@@ -14,6 +14,7 @@ import {
   MobileSignatureResponse,
   MobileSignatureStatusResponse,
   Payment,
+  PaymentLink,
   PaymentType,
   SourceFund,
   Token,
@@ -341,11 +342,15 @@ export function createTrackedEvent(
   );
 }
 
+export function getPaymentLink(payment: Payment, token: string): Promise<PaymentLink> {
+  return get(getEndpoint('/v1/payments/link'), payment, {
+    Authorization: `Bearer ${token}`,
+  });
+}
+
 export function redirectToPayment(payment: Payment, token: string): void {
   const wndw = getWindow(payment.type);
-  get(getEndpoint('/v1/payments/link'), payment, {
-    Authorization: `Bearer ${token}`,
-  }).then((paymentLink) => {
+  getPaymentLink(payment, token).then((paymentLink) => {
     wndw.location.replace(paymentLink.url);
   });
 }
