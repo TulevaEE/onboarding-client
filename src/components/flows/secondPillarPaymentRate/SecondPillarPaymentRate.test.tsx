@@ -3,6 +3,7 @@ import { setupServer } from 'msw/node';
 import { screen } from '@testing-library/react';
 import { Route } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
+import userEvent from '@testing-library/user-event';
 import { createDefaultStore, login, renderWrapped } from '../../../test/utils';
 import { initializeConfiguration } from '../../config/config';
 import {
@@ -12,6 +13,8 @@ import {
   paymentLinkBackend,
   pensionAccountStatementBackend,
   returnsBackend,
+  secondPillarPaymentRateBackend,
+  smartIdSigningBackend,
   userBackend,
   userConversionBackend,
 } from '../../../test/backend';
@@ -51,6 +54,8 @@ describe('When a user is changing their 2nd pillar payment rate', () => {
     paymentLinkBackend(server);
     applicationsBackend(server);
     returnsBackend(server);
+    secondPillarPaymentRateBackend(server);
+    smartIdSigningBackend(server);
 
     initializeComponent();
 
@@ -63,6 +68,28 @@ describe('When a user is changing their 2nd pillar payment rate', () => {
     expect(sign).toBeDisabled();
   });
 
+  test('can agree to the terms', async () => {
+    expect(await screen.findByText('II samba panuse muutmine')).toBeInTheDocument();
+    const sign = await signButton();
+    const confirmationCheckbox = screen.getByRole('checkbox', { name: /I confirm/i });
+
+    userEvent.click(confirmationCheckbox);
+
+    expect(sign).toBeEnabled();
+  });
+
+  test('can change 2nd pillar payment rate', async () => {
+    expect(await screen.findByText('II samba panuse muutmine')).toBeInTheDocument();
+    const sign = await signButton();
+    const confirmationCheckbox = screen.getByRole('checkbox', { name: /I confirm/i });
+
+    userEvent.click(confirmationCheckbox);
+    userEvent.click(sign);
+
+    expect(
+      await screen.findByRole('heading', { name: 'Muudatus tehtud' }, { timeout: 10_000 }),
+    ).toBeInTheDocument();
+  }, 20_000);
+
   const signButton = async () => screen.findByRole('button', { name: 'Sign and send mandate' });
-  const querySignButton = () => screen.queryByRole('button', { name: 'Sign and send mandate' });
 });

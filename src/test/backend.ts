@@ -457,3 +457,21 @@ export function paymentLinkBackend(server: SetupServerApi): void {
     }),
   );
 }
+
+export function secondPillarPaymentRateBackend(server: SetupServerApi): {
+  mandateCreated: boolean;
+} {
+  const backend = {
+    mandateCreated: false,
+  };
+  server.use(
+    rest.post('http://localhost/v1/second-pillar-payment-rates', (req, res, ctx) => {
+      if (req.headers.get('Authorization') !== 'Bearer mock token') {
+        return res(ctx.status(401), ctx.json({ error: 'not authenticated correctly' }));
+      }
+      backend.mandateCreated = true;
+      return res(ctx.status(200), ctx.json({ mandateId: '1' }));
+    }),
+  );
+  return backend;
+}
