@@ -495,10 +495,12 @@
   "thirdPillarSuccess.currentFund": "Your selected pension funds",
 
   "thirdPillarBackToPartner.opened": "Your III pillar is opened",
+  "thirdPillarBackToPartner.account": "See your account balance",
   "thirdPillarBackToPartner.automateNext": "Make contributions to it automatic",
   "thirdPillarBackToPartner.automateNext.subtitle": "Set up recurring payment in your internet bank, to contribute after every payday.",
-  "thirdPillarBackToPartner.recurringPayment.button": "Set up recurring payment",
-  "thirdPillarBackToPartner.recurringPayment.subtitle": "We will redirect you back to your internet bank to set up recurring payment.",
+  "thirdPillarBackToPartner.recurringPayment.button": "Set up a recurring payment",
+  "thirdPillarBackToPartner.singlePayment.button": "Make a payment",
+  "thirdPillarBackToPartner.payment.subtitle": "We will redirect you back to your internet bank to make the payment.",
 
   "applications.title": "Your pending transactions",
   "applications.cancel": "Cancel application",

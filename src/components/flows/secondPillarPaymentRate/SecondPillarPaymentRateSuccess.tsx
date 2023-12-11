@@ -1,7 +1,7 @@
 import React from 'react';
 import { SuccessNotice } from '../common/SuccessNotice/SuccessNotice';
 
-export const SecondPillarPaymentRateSuccess = () => (
+export const SecondPillarPaymentRateSuccess: React.FC = () => (
   <div className="row mt-5">
     <div className="col-12 px-0">
       <SuccessNotice>

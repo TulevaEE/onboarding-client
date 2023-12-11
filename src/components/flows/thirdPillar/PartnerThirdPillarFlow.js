@@ -32,7 +32,7 @@ const steps = [
     Component: () => (
       <ConfirmThirdPillarMandate
         previousPath={`${flowPath}/setup`}
-        nextPath={`${flowPath}/success`}
+        nextPath={`${flowPath}-success`}
       />
     ),
     title: <FormattedMessage id="thirdPillarFlow.steps.confirmMandate.title" />,

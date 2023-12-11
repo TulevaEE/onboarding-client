@@ -1,10 +1,11 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { SuccessNotice } from '../../common/SuccessNotice/SuccessNotice';
-import { Notice } from '../../common/Notice/Notice';
+import { Link } from 'react-router-dom';
 import { finish as finishProcedure } from '../../../TriggerProcedure/utils';
 import { State } from '../../../../types';
+import success from './success.svg';
+import pig from './pig.svg';
 
 export const BackToPartner: React.FC = () => {
   const token = useSelector<State, string>((state) => state.login.token);
@@ -13,35 +14,55 @@ export const BackToPartner: React.FC = () => {
     <>
       <div className="row mt-5">
         <div className="col-12 px-0">
-          <SuccessNotice>
-            <h2 className="text-center mt-3">
+          <div className="alert text-center py-5 bg-very-light-blue border-0">
+            <img src={success} alt="" />
+            <h2 className="mt-3">
               <FormattedMessage id="thirdPillarBackToPartner.opened" />
             </h2>
-          </SuccessNotice>
+            <Link to="/account">
+              <FormattedMessage id="thirdPillarBackToPartner.account" />
+            </Link>
+          </div>
         </div>
       </div>
       <div className="row">
         <div className="col-12 px-0">
-          <Notice>
-            <h2 className="mt-0 text-center">
+          <div className="alert text-center py-5">
+            <img src={pig} alt="" />
+            <h2 className="mt-3">
               <FormattedMessage id="thirdPillarBackToPartner.automateNext" />
             </h2>
             <p className="mt-3">
               <FormattedMessage id="thirdPillarBackToPartner.automateNext.subtitle" />
             </p>
-            <button
-              type="button"
-              className="btn btn-block d-md-inline btn-primary mt-4 profile-link"
-              onClick={() => finishProcedure('success', undefined, personalCode, token)}
-            >
-              <FormattedMessage id="thirdPillarBackToPartner.recurringPayment.button" />
-            </button>
+
+            <div className="d-flex justify-content-center mt-4">
+              <button
+                type="button"
+                className="btn btn-primary flex-grow-1 flex-md-grow-0"
+                onClick={() =>
+                  finishProcedure('newRecurringPayment', undefined, personalCode, token)
+                }
+              >
+                <FormattedMessage id="thirdPillarBackToPartner.recurringPayment.button" />
+              </button>
+            </div>
+            <div className="d-flex justify-content-center mt-2">
+              <button
+                type="button"
+                className="btn btn-outline-primary flex-grow-1 flex-md-grow-0"
+                onClick={() => finishProcedure('newPayment', undefined, personalCode, token)}
+              >
+                <FormattedMessage id="thirdPillarBackToPartner.singlePayment.button" />
+              </button>
+            </div>
+
             <p className="mt-2 mb-0">
               <small className="text-muted">
-                <FormattedMessage id="thirdPillarBackToPartner.recurringPayment.subtitle" />
+                <FormattedMessage id="thirdPillarBackToPartner.payment.subtitle" />
               </small>
             </p>
-          </Notice>
+          </div>
         </div>
       </div>
     </>

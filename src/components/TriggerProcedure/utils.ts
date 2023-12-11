@@ -64,6 +64,10 @@ export const finish = async (
     return;
   }
 
+  if (error) {
+    sendMessage({ errorMessage: error, time: new Date().toISOString() });
+  }
+
   const paymentLink = await getPaymentLink(
     {
       type: PaymentType.RECURRING,
@@ -72,15 +76,31 @@ export const finish = async (
     },
     token,
   );
-  const message = paymentLink.url;
+  const message = {
+    type: result,
+    version: '1',
+    data: JSON.parse(paymentLink.url),
+    time: new Date().toISOString(),
+  };
 
   // eslint-disable-next-line no-console -- WIP
   console.log('finishing', provider, result, error, 'and posting message', message);
 
+  sendMessage(message);
+};
+
+const sendMessage = (message: {
+  data?: unknown;
+  errorMessage?: string;
+  errorCode?: string;
+  time?: string;
+  type?: string;
+  version?: string;
+}) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   if ((window as any).ReactNativeWebView) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (window as any).ReactNativeWebView.postMessage(message);
+    (window as any).ReactNativeWebView.postMessage(JSON.stringify(message));
   }
 };
 

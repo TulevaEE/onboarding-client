@@ -31,6 +31,7 @@ import { TransactionPageSecondPillar } from '../account/TransactionSection/Trans
 import SecondPillarUpsellCard from '../account/SecondPillarUpsell/SecondPillarUpsellCard';
 import { SecondPillarPaymentRate } from '../flows/secondPillarPaymentRate/SecondPillarPaymentRate';
 import { SecondPillarPaymentRateSuccess } from '../flows/secondPillarPaymentRate/SecondPillarPaymentRateSuccess';
+import { BackToPartner } from '../flows/thirdPillar/BackToPartner/BackToPartner';
 
 export const ACCOUNT_PATH = '/account';
 export const AML_PATH = '/aml';
@@ -83,6 +84,7 @@ export class LoggedInApp extends PureComponent {
               <Route path="/2nd-pillar-flow" component={SecondPillarFlow} />
               <Route path="/3rd-pillar-flow" component={ThirdPillarFlow} />
               <Route path="/partner/3rd-pillar-flow" component={PartnerThirdPillarFlow} />
+              <Route path="/partner/3rd-pillar-flow-success" component={BackToPartner} />
               <Route path="/3rd-pillar-payment" component={Payment} />
               <Route path="/3rd-pillar-success" component={ThirdPillarSuccess} />
               <Route path="/3rd-pillar-gift" component={Gift} />

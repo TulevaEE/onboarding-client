@@ -57,12 +57,22 @@ describe('When is at the partner flow success screen', () => {
     history.push('/partner/3rd-pillar-flow/success');
   });
 
-  test('recurring payment button is shown', async () => {
+  test('payment card is shown', async () => {
     expect(await screen.findByText('Make contributions to it automatic')).toBeInTheDocument();
+  });
+
+  test('recurring payment button is shown', async () => {
     const button = await recurringPaymentButton();
     expect(button).toBeEnabled();
   });
 
+  test('signle payment button is shown', async () => {
+    const button = await singlePaymentButton();
+    expect(button).toBeEnabled();
+  });
+
   const recurringPaymentButton = async () =>
-    screen.findByRole('button', { name: 'Set up recurring payment' });
+    screen.findByRole('button', { name: 'Set up a recurring payment' });
+
+  const singlePaymentButton = async () => screen.findByRole('button', { name: 'Make a payment' });
 });

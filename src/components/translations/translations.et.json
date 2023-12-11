@@ -472,10 +472,12 @@
   "thirdPillarSuccess.currentFund": "Sinu valitud pensionifondid",
 
   "thirdPillarBackToPartner.opened": "Sinu III sammas on avatud",
+  "thirdPillarBackToPartner.account": "Vaata oma konto seisu",
   "thirdPillarBackToPartner.automateNext": "Järgmiseks muuda säästmine automaatseks",
   "thirdPillarBackToPartner.automateNext.subtitle": "Tee oma netipangas püsikorraldus, et sissemaksed läheks III sambasse alati kohe pärast palgapäeva.",
-  "thirdPillarBackToPartner.recurringPayment.button": "Seadista püsimakse",
-  "thirdPillarBackToPartner.recurringPayment.subtitle": "Püsikorralduse tegemiseks suuname Sind tagasi Partneri juurde.",
+  "thirdPillarBackToPartner.recurringPayment.button": "Seadista igakuine püsimakse",
+  "thirdPillarBackToPartner.singlePayment.button": "Tee ühekordne sissemakse",
+  "thirdPillarBackToPartner.payment.subtitle": "Makse tegemiseks suuname Sind tagasi Partneri juurde.",
 
   "applications.title": "Sinu ootel olevad tehingud",
   "applications.cancel": "Tühista avaldus",
