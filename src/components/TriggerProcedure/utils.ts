@@ -5,6 +5,7 @@ const EXTERNAL_AUTHENTICATOR_PROVIDER = 'EXTERNAL_AUTHENTICATOR_PROVIDER';
 
 enum ExternalProvider {
   TESTPROVIDER1 = 'testprovider1',
+  COOP_PANK = 'COOP_PANK',
 }
 enum Procedure {
   PARTNER_3RD_PILLAR = 'partner-3rd-pillar-flow',
