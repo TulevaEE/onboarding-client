@@ -188,6 +188,7 @@ export const shouldRedirectToAml = (state) =>
   state.aml.missingAmlChecks &&
   state.aml.missingAmlChecks.length > 0 &&
   !state.aml.createAmlChecksSuccess &&
+  state.login.user &&
   state.login.user.thirdPillarActive &&
   state.thirdPillar.sourceFunds &&
   state.thirdPillar.sourceFunds.some(
