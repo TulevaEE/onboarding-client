@@ -33,7 +33,7 @@ export const Payment: React.FunctionComponent<{
     !paymentBank ||
     paymentBank === 'other' ||
     !paymentAmount ||
-    Number(paymentAmount) <= 0;
+    Number(paymentAmount.replace(',', '.')) <= 0;
 
   return (
     <>
@@ -91,7 +91,14 @@ export const Payment: React.FunctionComponent<{
           <PaymentAmountInput
             paymentType={paymentType}
             value={paymentAmount}
-            onChange={(event) => setPaymentAmount(event.target.value)}
+            onChange={(event) => {
+              const { value } = event.target;
+              const euroRegex = /^\d+([.,]\d{0,2})?$/;
+
+              if (value === '' || euroRegex.test(value)) {
+                setPaymentAmount(value);
+              }
+            }}
             onWheel={(event) => event.currentTarget.blur()}
             className="mt-5"
           />
@@ -219,7 +226,7 @@ export const Payment: React.FunctionComponent<{
                         redirectToPayment(
                           {
                             recipientPersonalCode: personalCode,
-                            amount: Number(paymentAmount),
+                            amount: Number(paymentAmount.replace(',', '.')),
                             currency: 'EUR',
                             type: paymentType,
                             paymentChannel: paymentBank.toUpperCase() as PaymentChannel,

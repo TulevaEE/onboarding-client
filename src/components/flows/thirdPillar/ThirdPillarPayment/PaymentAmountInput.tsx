@@ -25,11 +25,10 @@ export const PaymentAmountInput: React.FunctionComponent<{
       <div className="input-group input-group-lg mt-2">
         <input
           id="payment-amount"
-          type="number"
+          type="text"
+          inputMode="decimal"
           placeholder={paymentType === PaymentType.RECURRING ? '100' : '1000'}
           className="form-control form-control-lg"
-          min="0.00"
-          step="0.01"
           value={value}
           onChange={onChange}
           onWheel={onWheel}
