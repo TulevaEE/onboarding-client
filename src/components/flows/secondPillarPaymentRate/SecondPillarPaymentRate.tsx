@@ -32,7 +32,7 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
         Vali, kui palju soovid II sambasse igakuiselt panustada alates 1. jaanuar 2025.
       </p>
       <p className="mt-3">
-        II samba panused on tulumaksuvabad. Saad maksusoodustusega säästa tänasest veelgi rohkem.
+        II samba panused on tulumaksuvabad. Saad maksusoodustusega koguda tänasest veelgi rohkem.
       </p>
 
       <div>
@@ -47,7 +47,7 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
         >
           <h3 className="mb-1">2% brutopalgast</h3>
           <p className="m-0">
-            Sina panustad 2% ja riik 4%, kokku säästad <b>6%</b>
+            Sina panustad 2% ja riik 4%, kokku kogud <b>6%</b>
           </p>
         </Radio>
         <Radio
@@ -61,7 +61,7 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
         >
           <h3 className="mb-1">4% brutopalgast</h3>
           <p className="m-0">
-            Sina panustad 4% ja riik 4%, kokku säästad <b>8%</b>
+            Sina panustad 4% ja riik 4%, kokku kogud <b>8%</b>
           </p>
         </Radio>
         <Radio
@@ -75,7 +75,7 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
         >
           <h3 className="mb-1">6% brutopalgast</h3>
           <p className="m-0">
-            Sina panustad 6% ja riik 4%, kokku säästad <b>10%</b>
+            Sina panustad 6% ja riik 4%, kokku kogud <b>10%</b>
           </p>
           <p className="m-0 text-muted">
             Sellega saad suurima maksuvõidu ja kogud II sambasse maksimaalselt
