@@ -71,7 +71,7 @@ export const finish = async (
 
   const paymentLink = await getPaymentLink(
     {
-      type: PaymentType.RECURRING,
+      type: result === 'newRecurringPayment' ? PaymentType.RECURRING : PaymentType.SINGLE,
       paymentChannel: PaymentChannel.PARTNER,
       recipientPersonalCode: personalCode,
     },
