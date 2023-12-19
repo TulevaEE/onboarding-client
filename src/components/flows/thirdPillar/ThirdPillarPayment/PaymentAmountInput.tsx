@@ -32,6 +32,7 @@ export const PaymentAmountInput: React.FunctionComponent<{
           value={value}
           onChange={onChange}
           onWheel={onWheel}
+          lang="et"
         />
         <div className="input-group-append">
           <span className="input-group-text">
