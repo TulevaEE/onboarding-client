@@ -20,6 +20,7 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
   } = useSecondPillarPaymentRate();
 
   const { data: user } = useMe();
+  const currentPaymentRate = user?.secondPillarPaymentRate || 2;
   const { data: mandateDeadlines } = useMandateDeadlines();
 
   if (signedMandateId && signedMandateId === paymentRateChangeMandateId) {
@@ -71,7 +72,7 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
           <div className="mb-1">
             <h3 className="d-inline">
               <FormattedMessage id="secondPillarPaymentRate.option.2Percent" />
-              {user?.secondPillarPaymentRate === 2 && <Currently />}
+              {currentPaymentRate === 2 && <Currently />}
             </h3>
           </div>
           <p className="m-0">
@@ -90,7 +91,7 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
         >
           <h3 className="mb-1">
             <FormattedMessage id="secondPillarPaymentRate.option.4Percent" />
-            {user?.secondPillarPaymentRate === 4 && <Currently />}
+            {currentPaymentRate === 4 && <Currently />}
           </h3>
           <p className="m-0">
             <FormattedMessage
@@ -110,7 +111,7 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
             <h3 className="d-inline">
               <FormattedMessage id="secondPillarPaymentRate.option.6Percent" />
               <Recommended />
-              {user?.secondPillarPaymentRate === 6 && <Currently />}
+              {currentPaymentRate === 6 && <Currently />}
             </h3>
           </div>
           <p className="mb-1">
@@ -129,7 +130,7 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
         <button
           type="button"
           className="btn btn-primary mb-2 mr-2"
-          disabled={paymentRate === user?.secondPillarPaymentRate}
+          disabled={paymentRate === currentPaymentRate}
           onClick={() => changePaymentRate(paymentRate)}
         >
           <FormattedMessage id="secondPillarPaymentRate.confirm.mandate.sign" />
