@@ -10,7 +10,7 @@
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@sentry/browser": "^7.74.0",
     "array.prototype.find": "^2.1.2",
-    "axios": "^0.24.0",
+    "axios": "^1.6.2",
     "bootstrap": "^4.6.2",
     "classnames": "^2.2.6",
     "connected-react-router": "^6.9.3",
