@@ -170,6 +170,7 @@ export interface User {
   dateOfBirth: string;
   age: number;
   retirementAge: number;
+  secondPillarPaymentRate: number;
 }
 
 export interface UserConversion {

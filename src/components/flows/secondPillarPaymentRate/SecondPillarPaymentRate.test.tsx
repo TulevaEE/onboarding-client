@@ -70,19 +70,33 @@ describe('When a user is changing their 2nd pillar payment rate', () => {
 
   test('can agree to the terms', async () => {
     expect(await screen.findByText('II Pillar Contribution Change')).toBeInTheDocument();
-    const sign = await signButton();
+    const fourPercentOption = await screen.findByText('4% of Gross Salary');
     const confirmationCheckbox = screen.getByRole('checkbox', { name: /By clicking/i });
+    const sign = await signButton();
 
+    userEvent.click(fourPercentOption);
     userEvent.click(confirmationCheckbox);
 
     expect(sign).toBeEnabled();
   });
 
+  test('can not change 2nd pillar payment rate to the same rate', async () => {
+    expect(await screen.findByText('II Pillar Contribution Change')).toBeInTheDocument();
+    const confirmationCheckbox = screen.getByRole('checkbox', { name: /By clicking/i });
+    const sign = await signButton();
+
+    userEvent.click(confirmationCheckbox);
+
+    expect(sign).toBeDisabled();
+  });
+
   test('can change 2nd pillar payment rate', async () => {
     expect(await screen.findByText('II Pillar Contribution Change')).toBeInTheDocument();
-    const sign = await signButton();
+    const fourPercentOption = await screen.findByText('4% of Gross Salary');
     const confirmationCheckbox = screen.getByRole('checkbox', { name: /By clicking/i });
+    const sign = await signButton();
 
+    userEvent.click(fourPercentOption);
     userEvent.click(confirmationCheckbox);
     userEvent.click(sign);
 

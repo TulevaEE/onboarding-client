@@ -234,6 +234,7 @@ export function userBackend(server: SetupServerApi): void {
           secondPillarActive: true,
           thirdPillarActive: true,
           age: 30,
+          secondPillarPaymentRate: 2,
         }),
       );
     }),

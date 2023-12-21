@@ -4,6 +4,7 @@ import { Link, Redirect } from 'react-router-dom';
 import { AuthenticationLoader, Radio } from '../../common';
 import { useSecondPillarPaymentRate } from './hooks';
 import { PaymentRate } from './types';
+import { useMe } from '../../common/apiHooks';
 
 export const SecondPillarPaymentRate: React.FunctionComponent = () => {
   const [paymentRate, setPaymentRate] = useState<PaymentRate>(2);
@@ -17,6 +18,8 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
     signedMandateId,
     paymentRateChangeMandateId,
   } = useSecondPillarPaymentRate();
+
+  const { data: user } = useMe();
 
   if (signedMandateId && signedMandateId === paymentRateChangeMandateId) {
     return <Redirect to="/2nd-pillar-payment-rate-success" />;
@@ -129,7 +132,7 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
         <button
           type="button"
           className="btn btn-primary mb-2 mr-2"
-          disabled={!agreedToTerms}
+          disabled={!agreedToTerms || paymentRate === user?.secondPillarPaymentRate}
           onClick={() => changePaymentRate(paymentRate)}
         >
           <FormattedMessage id="secondPillarPaymentRate.confirm.mandate.sign" />
