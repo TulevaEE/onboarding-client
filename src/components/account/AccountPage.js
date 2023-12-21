@@ -192,7 +192,7 @@ export const shouldRedirectToAml = (state) =>
   state.login.user.thirdPillarActive &&
   state.thirdPillar.sourceFunds &&
   state.thirdPillar.sourceFunds.some(
-    (fund) => isTuleva(fund) && fund.price + fund.unavailablePrice > 0,
+    (fund) => isTuleva(fund) && (fund.price + fund.unavailablePrice > 0 || fund.activeFund),
   );
 
 const mapStateToProps = (state) => ({

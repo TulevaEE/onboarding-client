@@ -137,7 +137,7 @@ describe('Account page', () => {
       expect(redirectToAml).toBe(true);
     });
 
-    it('should not redirect when no fund balance in Tuleva', () => {
+    it('should not redirect when Tuleva fund is not active', () => {
       const state = {
         aml: {
           missingAmlChecks: ['missing'],
@@ -172,6 +172,43 @@ describe('Account page', () => {
       const redirectToAml = shouldRedirectToAml(state);
 
       expect(redirectToAml).toBe(false);
+    });
+
+    it('should redirect when Tuleva fund is active but has no fund balance', () => {
+      const state = {
+        aml: {
+          missingAmlChecks: ['missing'],
+          createAmlChecksSuccess: false,
+        },
+        login: {
+          user: {
+            thirdPillarActive: true,
+          },
+        },
+        thirdPillar: {
+          sourceFunds: [
+            {
+              activeFund: true,
+              name: 'Tuleva III Samba Pensionifond',
+              fundManager: { name: 'Tuleva' },
+              pillar: 3,
+              managementFeePercent: 0.003,
+              isin: 'EE3600001707',
+              price: 0,
+              unavailablePrice: 0,
+              currency: 'EUR',
+              ongoingChargesFigure: 0.0049,
+              contributions: 500,
+              subtractions: 0,
+              profit: 500,
+            },
+          ],
+        },
+      };
+
+      const redirectToAml = shouldRedirectToAml(state);
+
+      expect(redirectToAml).toBe(true);
     });
   });
 
