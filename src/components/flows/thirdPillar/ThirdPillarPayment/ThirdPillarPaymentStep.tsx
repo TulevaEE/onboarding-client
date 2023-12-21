@@ -1,11 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
-import './ThirdPillarPayment.scss';
 import { State } from '../../../../types';
 import Payment from './Payment'; // eslint-disable-line import/no-named-as-default
 
-export const ThirdPillarPayment: React.FunctionComponent<{
+export const ThirdPillarPaymentStep: React.FunctionComponent<{
   previousPath: string;
   signedMandateId: number;
   isUserConverted: boolean;
@@ -26,4 +25,4 @@ const mapStateToProps = (state: State) => ({
     state.login.userConversion &&
     state.login.userConversion.thirdPillar.selectionComplete,
 });
-export default connect(mapStateToProps)(ThirdPillarPayment);
+export default connect(mapStateToProps)(ThirdPillarPaymentStep);

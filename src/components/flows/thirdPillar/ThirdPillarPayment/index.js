@@ -1,1 +1,1 @@
-export { default } from './ThirdPillarPayment';
+export { default } from './ThirdPillarPaymentStep';

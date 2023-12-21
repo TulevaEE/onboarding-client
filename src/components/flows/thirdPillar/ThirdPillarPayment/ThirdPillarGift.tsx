@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { FormattedMessage, useIntl } from 'react-intl';
-import './ThirdPillarPayment.scss';
+import './Payment.scss';
 import { BankButton } from './BankButton';
 import { State } from '../../../../types';
 import { redirectToPayment } from '../../../common/api';
@@ -26,7 +26,7 @@ export const ThirdPillarGift: React.FunctionComponent<{
     !paymentBank ||
     paymentBank === 'other' ||
     !paymentAmount ||
-    Number(paymentAmount) <= 0;
+    Number(paymentAmount.replace(',', '.')) <= 0;
 
   return (
     <>
@@ -71,7 +71,14 @@ export const ThirdPillarGift: React.FunctionComponent<{
       <PaymentAmountInput
         paymentType={PaymentType.GIFT}
         value={paymentAmount}
-        onChange={(event) => setPaymentAmount(event.target.value)}
+        onChange={(event) => {
+          const { value } = event.target;
+          const euroRegex = /^\d+([.,]\d{0,2})?$/;
+
+          if (value === '' || euroRegex.test(value)) {
+            setPaymentAmount(value);
+          }
+        }}
         onWheel={(event) => event.currentTarget.blur()}
         className="mt-3"
       />
@@ -147,7 +154,7 @@ export const ThirdPillarGift: React.FunctionComponent<{
                   redirectToPayment(
                     {
                       recipientPersonalCode: paymentPersonalCode,
-                      amount: Number(paymentAmount),
+                      amount: Number(paymentAmount.replace(',', '.')),
                       currency: 'EUR',
                       type: PaymentType.GIFT,
                       paymentChannel: paymentBank.toUpperCase() as PaymentChannel,

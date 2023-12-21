@@ -19,8 +19,6 @@ import Footer from './footer';
 import ContactDetailsPage from '../contact-details';
 import AmlPage, { actions as amlActions } from '../aml';
 import SignUpPage from '../newUserFlow';
-// eslint-disable-next-line import/no-named-as-default
-import Payment from '../flows/thirdPillar/ThirdPillarPayment/Payment';
 import { TransactionPageThirdPillar } from '../account/TransactionSection/TransactionPageThirdPillar';
 import { ContributionPageThirdPillar } from '../contribution/ContributionPageThirdPillar';
 import Gift from '../flows/thirdPillar/ThirdPillarPayment/ThirdPillarGift';
@@ -32,6 +30,7 @@ import SecondPillarUpsellCard from '../account/SecondPillarUpsell/SecondPillarUp
 import { SecondPillarPaymentRate } from '../flows/secondPillarPaymentRate/SecondPillarPaymentRate';
 import { SecondPillarPaymentRateSuccess } from '../flows/secondPillarPaymentRate/SecondPillarPaymentRateSuccess';
 import { BackToPartner } from '../flows/thirdPillar/BackToPartner/BackToPartner';
+import ThirdPillarPaymentPage from '../flows/thirdPillar/ThirdPillarPayment/ThirdPillarPaymentPage';
 
 export const ACCOUNT_PATH = '/account';
 export const AML_PATH = '/aml';
@@ -85,7 +84,7 @@ export class LoggedInApp extends PureComponent {
               <Route path="/3rd-pillar-flow" component={ThirdPillarFlow} />
               <Route path="/partner/3rd-pillar-flow" component={PartnerThirdPillarFlow} />
               <Route path="/partner/3rd-pillar-flow-success" component={BackToPartner} />
-              <Route path="/3rd-pillar-payment" component={Payment} />
+              <Route path="/3rd-pillar-payment" component={ThirdPillarPaymentPage} />
               <Route path="/3rd-pillar-success" component={ThirdPillarSuccess} />
               <Route path="/3rd-pillar-gift" component={Gift} />
               <Route path="/3rd-pillar-employer" component={EmployerPayment} />
