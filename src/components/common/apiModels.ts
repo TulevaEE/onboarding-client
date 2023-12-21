@@ -300,6 +300,8 @@ export interface MandateDeadlines {
   transferMandateCancellationDeadline: string;
   withdrawalCancellationDeadline: string;
   earlyWithdrawalCancellationDeadline: string;
+  paymentRateDeadline: string;
+  paymentRateFulfillmentDate: string;
 }
 
 export interface PaymentLink {

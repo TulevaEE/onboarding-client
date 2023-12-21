@@ -555,15 +555,16 @@
   "secondPillarUpsell.disclaimer": "Tegemist on finantsteenusega. Graafik on illustratiivne.",
 
   "secondPillarPaymentRate.contributionChange": "II samba panuse muutmine",
-  "secondPillarPaymentRate.chooseAmount": "Vali, kui palju soovid II sambasse igakuiselt panustada alates {date}.",
+  "secondPillarPaymentRate.chooseAmount": "Vali, kui palju soovid II sambasse igakuiselt panustada.",
   "secondPillarPaymentRate.taxFree": "II samba panused on tulumaksuvabad. Saad maksusoodustusega koguda tänasest veelgi rohkem.",
-  "secondPillarPaymentRate.applicationDeadline": "Avalduse tähtaeg on {deadline}.",
+  "secondPillarPaymentRate.applicationDeadline": "Et muudatus rakenduks esimesel võimalusel ehk <b>{paymentRateFulfillmentDate}. aasta jaanuarist,</b> esita avaldus hiljemalt <b>{paymentRateDeadline}. aasta novembri lõpuks.</b> Kuni novembri lõpuni saad valikut ka muuta.",
   "secondPillarPaymentRate.option.2Percent": "2% brutopalgast",
   "secondPillarPaymentRate.calculation.2Percent": "Sina panustad 2% ja riik 4%, kokku kogud <b>6%</b>",
   "secondPillarPaymentRate.option.4Percent": "4% brutopalgast",
   "secondPillarPaymentRate.calculation.4Percent": "Sina panustad 4% ja riik 4%, kokku kogud <b>8%</b>",
   "secondPillarPaymentRate.option.6Percent": "6% brutopalgast",
   "secondPillarPaymentRate.calculation.6Percent": "Sina panustad 6% ja riik 4%, kokku kogud <b>10%</b>",
+  "secondPillarPaymentRate.current": "Praegune valik",
   "secondPillarPaymentRate.recommended": "Soovitame",
   "secondPillarPaymentRate.maximumBenefit": "Sellega saad suurima maksuvõidu ja kogud II sambasse maksimaalselt",
   "secondPillarPaymentRate.confirmation": "Kinnitamine",
@@ -572,7 +573,7 @@
   "secondPillarPaymentRate.cancel": "Katkesta",
 
   "secondPillarPaymentRateSuccess.title": "Muudatus tehtud",
-  "secondPillarPaymentRateSuccess.description": "Alates {date} panustad II sambasse {paymentRate}% brutopalgast.",
+  "secondPillarPaymentRateSuccess.description": "Alates <b>{paymentRateFulfillmentDate}</b> panustad II sambasse <b>{paymentRate}%</b> brutopalgast.",
   "secondPillarPaymentRateSuccess.accountLink": "Minu konto"
 
 }

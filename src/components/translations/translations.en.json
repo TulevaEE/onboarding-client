@@ -578,15 +578,16 @@
   "secondPillarUpsell.disclaimer": "This is a financial service. The graph is illustrative.",
 
   "secondPillarPaymentRate.contributionChange": "II Pillar Contribution Change",
-  "secondPillarPaymentRate.chooseAmount": "Choose how much you want to contribute to the II pillar monthly from {date}.",
+  "secondPillarPaymentRate.chooseAmount": "Choose how much you want to contribute to the II pillar every month.",
   "secondPillarPaymentRate.taxFree": "II pillar contributions are tax-free. You can save more with tax benefits.",
-  "secondPillarPaymentRate.applicationDeadline": "The application deadline is {deadline}.",
+  "secondPillarPaymentRate.applicationDeadline": "In order for the change to be applied at the earliest opportunity, i.e., from <b>January, {paymentRateFulfillmentDate}</b> submit your application by the end of <b>November, {paymentRateDeadline}.</b> You can also change your choice until the end of November.",
   "secondPillarPaymentRate.option.2Percent": "2% of Gross Salary",
   "secondPillarPaymentRate.calculation.2Percent": "You contribute 2% and the state 4%, totaling <b>6%</b>",
   "secondPillarPaymentRate.option.4Percent": "4% of Gross Salary",
   "secondPillarPaymentRate.calculation.4Percent": "You contribute 4% and the state 4%, totaling <b>8%</b>",
   "secondPillarPaymentRate.option.6Percent": "6% of Gross Salary",
   "secondPillarPaymentRate.calculation.6Percent": "You contribute 6% and the state 4%, totaling <b>10%</b>",
+  "secondPillarPaymentRate.current": "Current choice",
   "secondPillarPaymentRate.recommended": "Recommended",
   "secondPillarPaymentRate.maximumBenefit": "With this option, you achieve the greatest tax benefit and contribute the maximum to the II pillar.",
   "secondPillarPaymentRate.confirmation": "Confirmation",
@@ -595,6 +596,6 @@
   "secondPillarPaymentRate.cancel": "Cancel",
 
   "secondPillarPaymentRateSuccess.title": "All done",
-  "secondPillarPaymentRateSuccess.description": "From {date}, you will contribute {paymentRate}% of your gross salary to the II pillar.",
+  "secondPillarPaymentRateSuccess.description": "From <b>{paymentRateFulfillmentDate}</b>, you will contribute <b>{paymentRate}%</b> of your gross salary to the II pillar.",
   "secondPillarPaymentRateSuccess.accountLink": "My Account"
 }

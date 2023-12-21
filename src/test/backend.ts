@@ -476,3 +476,23 @@ export function secondPillarPaymentRateBackend(server: SetupServerApi): {
   );
   return backend;
 }
+
+export function mandateDeadlinesBackend(server: SetupServerApi): void {
+  server.use(
+    rest.get('http://localhost/v1/mandate-deadlines', (req, res, ctx) => {
+      return res(
+        ctx.json({
+          periodEnding: '2024-03-31T20:59:59.999999999Z',
+          paymentRateDeadline: '2024-11-30T21:59:59.999999999Z',
+          earlyWithdrawalFulfillmentDate: '2024-09-02',
+          transferMandateCancellationDeadline: '2024-03-31T20:59:59.999999999Z',
+          withdrawalCancellationDeadline: '2023-12-31T21:59:59.999999999Z',
+          earlyWithdrawalCancellationDeadline: '2024-07-31T20:59:59.999999999Z',
+          transferMandateFulfillmentDate: '2024-05-01',
+          withdrawalFulfillmentDate: '2024-01-16',
+          paymentRateFulfillmentDate: '2025-01-01',
+        }),
+      );
+    }),
+  );
+}

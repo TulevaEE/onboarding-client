@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, Redirect } from 'react-router-dom';
+import moment from 'moment/moment';
 import { AuthenticationLoader, Radio } from '../../common';
 import { useSecondPillarPaymentRate } from './hooks';
 import { PaymentRate } from './types';
-import { useMe } from '../../common/apiHooks';
+import { useMandateDeadlines, useMe } from '../../common/apiHooks';
 
 export const SecondPillarPaymentRate: React.FunctionComponent = () => {
   const [paymentRate, setPaymentRate] = useState<PaymentRate>(2);
-  const [agreedToTerms, setAgreedToTerms] = useState<boolean>(false);
 
   const {
     changePaymentRate,
@@ -20,9 +20,17 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
   } = useSecondPillarPaymentRate();
 
   const { data: user } = useMe();
+  const { data: mandateDeadlines } = useMandateDeadlines();
 
   if (signedMandateId && signedMandateId === paymentRateChangeMandateId) {
-    return <Redirect to="/2nd-pillar-payment-rate-success" />;
+    return (
+      <Redirect
+        to={{
+          pathname: '/2nd-pillar-payment-rate-success',
+          state: { fulfillmentDate: mandateDeadlines?.paymentRateFulfillmentDate, paymentRate },
+        }}
+      />
+    );
   }
 
   return (
@@ -34,18 +42,21 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
         <FormattedMessage id="secondPillarPaymentRate.contributionChange" />
       </h2>
       <p className="mt-3 lead">
-        <FormattedMessage
-          id="secondPillarPaymentRate.chooseAmount"
-          values={{ date: <span className="text-nowrap">1. jaanuar 2025</span> }}
-        />
+        <FormattedMessage id="secondPillarPaymentRate.chooseAmount" />
       </p>
       <p>
         <FormattedMessage id="secondPillarPaymentRate.taxFree" />
       </p>
-      <p className="mt-3 text-muted">
+      <p className="mt-3">
         <FormattedMessage
           id="secondPillarPaymentRate.applicationDeadline"
-          values={{ deadline: <span className="text-nowrap">30. november 2024</span> }}
+          values={{
+            paymentRateDeadline: moment(mandateDeadlines?.paymentRateDeadline).format('YYYY'),
+            paymentRateFulfillmentDate: moment(mandateDeadlines?.paymentRateFulfillmentDate).format(
+              'YYYY',
+            ),
+            b: (chunks: string) => <b>{chunks}</b>,
+          }}
         />
       </p>
 
@@ -57,9 +68,12 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
           selected={paymentRate === 2}
           onSelect={() => setPaymentRate(2)}
         >
-          <h3 className="mb-1">
-            <FormattedMessage id="secondPillarPaymentRate.option.2Percent" />
-          </h3>
+          <div className="mb-1">
+            <h3 className="d-inline">
+              <FormattedMessage id="secondPillarPaymentRate.option.2Percent" />
+              {user?.secondPillarPaymentRate === 2 && <Currently />}
+            </h3>
+          </div>
           <p className="m-0">
             <FormattedMessage
               id="secondPillarPaymentRate.calculation.2Percent"
@@ -76,6 +90,7 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
         >
           <h3 className="mb-1">
             <FormattedMessage id="secondPillarPaymentRate.option.4Percent" />
+            {user?.secondPillarPaymentRate === 4 && <Currently />}
           </h3>
           <p className="m-0">
             <FormattedMessage
@@ -94,10 +109,9 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
           <div className="mb-1">
             <h3 className="d-inline">
               <FormattedMessage id="secondPillarPaymentRate.option.6Percent" />
-              <span className="ml-2 badge badge-pill badge-primary align-text-bottom">
-                <FormattedMessage id="secondPillarPaymentRate.recommended" />
-              </span>
-            </h3>{' '}
+              <Recommended />
+              {user?.secondPillarPaymentRate === 6 && <Currently />}
+            </h3>
           </div>
           <p className="mb-1">
             <FormattedMessage
@@ -111,28 +125,11 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
         </Radio>
       </div>
 
-      <p className="mt-5 lead">
-        <FormattedMessage id="secondPillarPaymentRate.confirmation" />
-      </p>
-
-      <div className="custom-control custom-checkbox">
-        <input
-          checked={agreedToTerms}
-          onChange={() => setAgreedToTerms(!agreedToTerms)}
-          type="checkbox"
-          className="custom-control-input"
-          id="agree-to-terms-checkbox"
-        />
-        <label className="custom-control-label" htmlFor="agree-to-terms-checkbox">
-          <FormattedMessage id="secondPillarPaymentRate.confirm.mandate.agree.to.terms" />
-        </label>
-      </div>
-
       <div className="mt-5">
         <button
           type="button"
           className="btn btn-primary mb-2 mr-2"
-          disabled={!agreedToTerms || paymentRate === user?.secondPillarPaymentRate}
+          disabled={paymentRate === user?.secondPillarPaymentRate}
           onClick={() => changePaymentRate(paymentRate)}
         >
           <FormattedMessage id="secondPillarPaymentRate.confirm.mandate.sign" />
@@ -147,3 +144,15 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
     </>
   );
 };
+
+const Currently = () => (
+  <span className="ml-2 badge badge-pill badge-secondary align-text-bottom">
+    <FormattedMessage id="secondPillarPaymentRate.current" />
+  </span>
+);
+
+const Recommended = () => (
+  <span className="ml-2 badge badge-pill badge-primary align-text-bottom">
+    <FormattedMessage id="secondPillarPaymentRate.recommended" />
+  </span>
+);

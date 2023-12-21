@@ -10,6 +10,7 @@ import {
   amlChecksBackend,
   applicationsBackend,
   fundsBackend,
+  mandateDeadlinesBackend,
   paymentLinkBackend,
   pensionAccountStatementBackend,
   returnsBackend,
@@ -56,6 +57,7 @@ describe('When a user is changing their 2nd pillar payment rate', () => {
     returnsBackend(server);
     secondPillarPaymentRateBackend(server);
     smartIdSigningBackend(server);
+    mandateDeadlinesBackend(server);
 
     initializeComponent();
 
@@ -63,47 +65,54 @@ describe('When a user is changing their 2nd pillar payment rate', () => {
   });
 
   test('payment rate changing page is shown', async () => {
-    expect(await screen.findByText('II Pillar Contribution Change')).toBeInTheDocument();
+    expect(await title()).toBeInTheDocument();
+  });
+
+  test('can not change 2nd pillar payment rate to the same rate', async () => {
+    expect(await title()).toBeInTheDocument();
     const sign = await signButton();
     expect(sign).toBeDisabled();
   });
 
-  test('can agree to the terms', async () => {
-    expect(await screen.findByText('II Pillar Contribution Change')).toBeInTheDocument();
-    const fourPercentOption = await screen.findByText('4% of Gross Salary');
-    const confirmationCheckbox = screen.getByRole('checkbox', { name: /By clicking/i });
+  test('can choose a different payment rate', async () => {
+    expect(await title()).toBeInTheDocument();
+    const fourPercent = await fourPercentOption();
     const sign = await signButton();
 
-    userEvent.click(fourPercentOption);
-    userEvent.click(confirmationCheckbox);
+    userEvent.click(fourPercent);
 
     expect(sign).toBeEnabled();
   });
 
-  test('can not change 2nd pillar payment rate to the same rate', async () => {
-    expect(await screen.findByText('II Pillar Contribution Change')).toBeInTheDocument();
-    const confirmationCheckbox = screen.getByRole('checkbox', { name: /By clicking/i });
-    const sign = await signButton();
-
-    userEvent.click(confirmationCheckbox);
-
-    expect(sign).toBeDisabled();
-  });
-
   test('can change 2nd pillar payment rate', async () => {
-    expect(await screen.findByText('II Pillar Contribution Change')).toBeInTheDocument();
-    const fourPercentOption = await screen.findByText('4% of Gross Salary');
-    const confirmationCheckbox = screen.getByRole('checkbox', { name: /By clicking/i });
+    expect(await title()).toBeInTheDocument();
+    const fourPercent = await fourPercentOption();
     const sign = await signButton();
 
-    userEvent.click(fourPercentOption);
-    userEvent.click(confirmationCheckbox);
+    userEvent.click(fourPercent);
     userEvent.click(sign);
 
-    expect(
-      await screen.findByRole('heading', { name: 'All done' }, { timeout: 10_000 }),
-    ).toBeInTheDocument();
+    expect(await allDone()).toBeInTheDocument();
   }, 20_000);
 
+  test('can see new payment rate and fulfillment date on the success screen', async () => {
+    expect(await title()).toBeInTheDocument();
+    const fourPercent = await fourPercentOption();
+    const sign = await signButton();
+
+    userEvent.click(fourPercent);
+    userEvent.click(sign);
+
+    expect(await allDone()).toBeInTheDocument();
+    expect(await paymentRateFulfillmentDate()).toBeInTheDocument();
+    expect(await newPaymentRate()).toBeInTheDocument();
+  }, 20_000);
+
+  const title = () => screen.findByText('II Pillar Contribution Change');
+  const fourPercentOption = async () => screen.findByText('4% of Gross Salary');
   const signButton = async () => screen.findByRole('button', { name: 'Sign and send' });
+  const allDone = async () =>
+    screen.findByRole('heading', { name: 'All done' }, { timeout: 10_000 });
+  const paymentRateFulfillmentDate = () => screen.findByText('January 1, 2025');
+  const newPaymentRate = () => screen.findByText('4%');
 });
