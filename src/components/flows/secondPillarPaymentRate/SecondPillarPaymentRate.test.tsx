@@ -63,15 +63,15 @@ describe('When a user is changing their 2nd pillar payment rate', () => {
   });
 
   test('payment rate changing page is shown', async () => {
-    expect(await screen.findByText('II samba panuse muutmine')).toBeInTheDocument();
+    expect(await screen.findByText('II Pillar Contribution Change')).toBeInTheDocument();
     const sign = await signButton();
     expect(sign).toBeDisabled();
   });
 
   test('can agree to the terms', async () => {
-    expect(await screen.findByText('II samba panuse muutmine')).toBeInTheDocument();
+    expect(await screen.findByText('II Pillar Contribution Change')).toBeInTheDocument();
     const sign = await signButton();
-    const confirmationCheckbox = screen.getByRole('checkbox', { name: /I confirm/i });
+    const confirmationCheckbox = screen.getByRole('checkbox', { name: /By clicking/i });
 
     userEvent.click(confirmationCheckbox);
 
@@ -79,17 +79,17 @@ describe('When a user is changing their 2nd pillar payment rate', () => {
   });
 
   test('can change 2nd pillar payment rate', async () => {
-    expect(await screen.findByText('II samba panuse muutmine')).toBeInTheDocument();
+    expect(await screen.findByText('II Pillar Contribution Change')).toBeInTheDocument();
     const sign = await signButton();
-    const confirmationCheckbox = screen.getByRole('checkbox', { name: /I confirm/i });
+    const confirmationCheckbox = screen.getByRole('checkbox', { name: /By clicking/i });
 
     userEvent.click(confirmationCheckbox);
     userEvent.click(sign);
 
     expect(
-      await screen.findByRole('heading', { name: 'Muudatus tehtud' }, { timeout: 10_000 }),
+      await screen.findByRole('heading', { name: 'All done' }, { timeout: 10_000 }),
     ).toBeInTheDocument();
   }, 20_000);
 
-  const signButton = async () => screen.findByRole('button', { name: 'Sign and send mandate' });
+  const signButton = async () => screen.findByRole('button', { name: 'Sign and send' });
 });
