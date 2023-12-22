@@ -577,7 +577,7 @@
   "secondPillarUpsell.whatDoTheseNumbersMean": "What do these numbers mean?",
   "secondPillarUpsell.disclaimer": "This is a financial service. The graph is illustrative.",
 
-  "secondPillarPaymentRate.contributionChange": "II Pillar Contribution Change",
+  "secondPillarPaymentRate.contributionChange": "II pillar contribution change",
   "secondPillarPaymentRate.chooseAmount": "Choose how much you want to contribute to the II pillar every month.",
   "secondPillarPaymentRate.taxFree": "II pillar contributions are tax-free. You can save more with tax benefits.",
   "secondPillarPaymentRate.applicationDeadline": "In order for the change to be applied at the earliest opportunity, i.e., from <b>January, {paymentRateFulfillmentDate}</b> submit your application by the end of <b>November, {paymentRateDeadline}.</b> You can also change your choice until the end of November.",
