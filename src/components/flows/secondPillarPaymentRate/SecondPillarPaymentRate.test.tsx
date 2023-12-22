@@ -108,7 +108,7 @@ describe('When a user is changing their 2nd pillar payment rate', () => {
     expect(await newPaymentRate()).toBeInTheDocument();
   }, 20_000);
 
-  const title = () => screen.findByText('II Pillar Contribution Change');
+  const title = () => screen.findByText('II pillar contribution change');
   const fourPercentOption = async () => screen.findByText('4% of Gross Salary');
   const signButton = async () => screen.findByRole('button', { name: 'Sign and send' });
   const allDone = async () =>
