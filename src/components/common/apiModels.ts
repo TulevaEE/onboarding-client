@@ -4,7 +4,17 @@ export type Application =
   | ResumeContributionsApplication
   | EarlyWithdrawalApplication
   | WithdrawalApplication
-  | PaymentApplication;
+  | PaymentApplication
+  | PaymentRateApplication;
+
+export type PaymentRateApplication = BaseApplication<
+  ApplicationType.PAYMENT_RATE,
+  {
+    paymentRate: number;
+    cancellationDeadline: string;
+    fulfillmentDate: string;
+  }
+>;
 
 export type PaymentApplication = BaseApplication<
   ApplicationType.PAYMENT,
@@ -70,6 +80,7 @@ export enum ApplicationType {
   EARLY_WITHDRAWAL = 'EARLY_WITHDRAWAL',
   WITHDRAWAL = 'WITHDRAWAL',
   PAYMENT = 'PAYMENT',
+  PAYMENT_RATE = 'PAYMENT_RATE',
 }
 
 export enum ApplicationStatus {

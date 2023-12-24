@@ -481,6 +481,14 @@
 
   "applications.title": "Sinu ootel olevad tehingud",
   "applications.cancel": "Tühista avaldus",
+
+  "applications.type.paymentRate.title": "Minu II samba panus",
+  "applications.type.paymentRate.status": "Staatus",
+  "applications.type.paymentRate.status.pending": "Jõustub {paymentRateFulfillmentDate}",
+  "applications.type.paymentRate.application": "Avaldus",
+  "applications.type.paymentRate.application.paymentRate": "Maksemäära muutmise avaldus",
+  "applications.type.paymentRate.rate": "Panus",
+
   "applications.type.payment.title": "III samba sissemakse",
   "applications.type.payment.status": "Staatus",
   "applications.type.payment.status.pending": "Teel pensionikontole",

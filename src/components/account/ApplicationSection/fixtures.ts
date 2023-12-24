@@ -177,3 +177,15 @@ export const payment = {
     },
   },
 };
+
+export const paymentRateChange = {
+  id: 654,
+  type: ApplicationType.PAYMENT_RATE,
+  status: ApplicationStatus.PENDING,
+  creationTime: '2024-10-04T13:22:24.215230Z',
+  details: {
+    paymentRate: 6,
+    cancellationDeadline: '2024-11-30T23:59:59.999999999Z',
+    fulfillmentDate: '2025-01-01',
+  },
+};

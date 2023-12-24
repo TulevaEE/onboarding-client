@@ -19,6 +19,7 @@ import {
   transfer3Pillar,
   transferPIK,
   withdrawal,
+  paymentRateChange,
 } from './fixtures';
 
 jest.mock('react-global-configuration');
@@ -256,6 +257,18 @@ describe('Application section', () => {
     expect(screen.getByText('applications.type.payment.status.pending')).toBeInTheDocument();
     expect(screen.getByText(application.details.targetFund.name)).toBeInTheDocument();
     expect(screen.getByText(`${application.details.amount} €`)).toBeInTheDocument();
+  });
+
+  it('renders payment rate applications successfully', async () => {
+    const application = paymentRateChange;
+    mockApplications([application]);
+    initializeComponent();
+    const formattedCreationTime = 'October 4, 2024';
+
+    expect(await screen.findByText('applications.type.paymentRate.title')).toBeInTheDocument();
+    expect(screen.getByText(formattedCreationTime)).toBeInTheDocument();
+    expect(screen.getByText('applications.type.paymentRate.status.pending')).toBeInTheDocument();
+    expect(screen.getByText(`${application.details.paymentRate}%`)).toBeInTheDocument();
   });
 
   function waitForRequestToFinish() {

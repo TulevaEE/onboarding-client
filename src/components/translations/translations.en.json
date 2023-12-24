@@ -504,6 +504,14 @@
 
   "applications.title": "Your pending transactions",
   "applications.cancel": "Cancel application",
+
+  "applications.type.paymentRate.title": "II pillar contribution rate",
+  "applications.type.paymentRate.status": "Status",
+  "applications.type.paymentRate.status.pending": "Takes effect on {paymentRateFulfillmentDate}",
+  "applications.type.paymentRate.application": "Application",
+  "applications.type.paymentRate.application.paymentRate": "Contribution rate change application",
+  "applications.type.paymentRate.rate": "Contribution rate",
+
   "applications.type.payment.title": "III pillar contribution",
   "applications.type.payment.status": "Status",
   "applications.type.payment.status.pending": "On its way to Pensionikeskus",

@@ -9,6 +9,7 @@ import {
   ApplicationType,
   EarlyWithdrawalApplication,
   PaymentApplication,
+  PaymentRateApplication,
   ResumeContributionsApplication,
   StopContributionsApplication,
   TransferApplication,
@@ -33,11 +34,63 @@ export const ApplicationCard: React.FunctionComponent<{
       return <ResumeContributionsCard application={application} allowedActions={allowedActions} />;
     case ApplicationType.TRANSFER:
       return <TransferApplicationCard application={application} allowedActions={allowedActions} />;
+    case ApplicationType.PAYMENT_RATE:
+      return <PaymentRateApplicationCard application={application} />;
     case ApplicationType.PAYMENT:
       return <PaymentApplicationCard application={application} />;
+
     default:
       return <></>;
   }
+};
+
+//  "applications.type.paymentRate.title": "Minu II samba panus",
+//   "applications.type.paymentRate.status": "Staatus",
+//   "applications.type.paymentRate.status.pending": "Jõustub {paymentRateFulfillmentDate}",
+//   "applications.type.paymentRate.application": "Avaldus",
+//   "applications.type.paymentRate.application.paymentRate": "Maksemäära muutmise avaldus",
+//   "applications.type.paymentRate.rate": "Panus",
+const PaymentRateApplicationCard: React.FunctionComponent<{
+  application: PaymentRateApplication;
+}> = ({ application }) => {
+  return (
+    <BaseApplicationCard
+      application={application}
+      allowedActions={[]}
+      titleKey="applications.type.paymentRate.title"
+    >
+      <DefinitionList
+        definitions={[
+          {
+            key: 'applications.type.paymentRate.application',
+            value: <FormattedMessage id="applications.type.paymentRate.application.paymentRate" />,
+          },
+          [
+            [
+              {
+                key: 'applications.type.paymentRate.status',
+                value: (
+                  <FormattedMessage
+                    id="applications.type.paymentRate.status.pending"
+                    values={{
+                      paymentRateFulfillmentDate: formatDate(application.details.fulfillmentDate),
+                    }}
+                  />
+                ),
+              },
+              {
+                key: 'applications.type.paymentRate.rate',
+                value: (
+                  <Percentage value={application.details.paymentRate / 100} stripTrailingZeros />
+                ),
+                alignRight: true,
+              },
+            ],
+          ],
+        ]}
+      />
+    </BaseApplicationCard>
+  );
 };
 
 const PaymentApplicationCard: React.FunctionComponent<{
