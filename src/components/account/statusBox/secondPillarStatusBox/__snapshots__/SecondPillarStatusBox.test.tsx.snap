@@ -343,6 +343,34 @@ exports[`SecondPillarStatusBox renders the PIK flow when fund PIK number present
 />
 `;
 
+exports[`SecondPillarStatusBox renders the payment rate flow 1`] = `
+<StatusBoxRow
+  lines={
+    Array [
+      <Memo(MemoizedFormattedMessage)
+        id="account.status.choice.pillar.second.paymentRate"
+      />,
+    ]
+  }
+  name={
+    <Memo(MemoizedFormattedMessage)
+      id="account.status.choice.pillar.second"
+    />
+  }
+  showAction={true}
+  warning={true}
+>
+  <Link
+    className="btn btn-primary"
+    to="/2nd-pillar-payment-rate"
+  >
+    <MemoizedFormattedMessage
+      id="account.status.choice.paymentRate.increase"
+    />
+  </Link>
+</StatusBoxRow>
+`;
+
 exports[`SecondPillarStatusBox renders the success flow 1`] = `
 <StatusBoxRow
   lines={
@@ -368,7 +396,16 @@ exports[`SecondPillarStatusBox renders the success flow 1`] = `
   }
   ok={true}
   showAction={true}
-/>
+>
+  <Link
+    className="btn btn-light"
+    to="/2nd-pillar-payment-rate"
+  >
+    <MemoizedFormattedMessage
+      id="account.status.choice.paymentRate.change"
+    />
+  </Link>
+</StatusBoxRow>
 `;
 
 exports[`SecondPillarStatusBox renders the transfer flow when fund transfers incomplete 1`] = `

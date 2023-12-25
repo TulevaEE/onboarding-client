@@ -38,7 +38,7 @@ AmlPage.propTypes = {
   updateUserSuccess: Types.bool,
   createAmlChecksSuccess: Types.bool,
   save: Types.func,
-  location: Types.shape({ state: { from: Types.string } }),
+  location: Types.shape({ state: Types.shape({ from: Types.string }) }),
 };
 
 AmlPage.defaultProps = {

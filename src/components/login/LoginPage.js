@@ -129,7 +129,7 @@ LoginPage.propTypes = {
   monthlyThirdPillarContribution: Types.number,
   exchangeExistingThirdPillarUnits: Types.bool,
 
-  location: Types.shape({ state: { from: Types.string } }),
+  location: Types.shape({ state: Types.shape({ from: Types.string }) }),
 };
 
 const mapStateToProps = (state) => ({

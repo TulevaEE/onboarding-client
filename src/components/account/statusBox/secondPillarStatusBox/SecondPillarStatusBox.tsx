@@ -30,6 +30,7 @@ export interface Props {
   targetFunds: Fund[];
   secondPillarPikNumber: string | null;
   secondPillarActive: boolean;
+  secondPillarPaymentRate: number;
 }
 
 export const SecondPillarStatusBox: React.FC<Props> = ({
@@ -39,6 +40,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
   targetFunds,
   secondPillarPikNumber,
   secondPillarActive,
+  secondPillarPaymentRate,
 }: Props) => {
   const activeFund = sourceFunds.find((fund) => fund.activeFund);
   const { data: mandateDeadlines } = useMandateDeadlines();
@@ -135,6 +137,26 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
     );
   }
 
+  // TODO: remove this after 2024-01-01
+  const currentDate = new Date();
+  const comparisonDate = new Date('2024-01-01');
+  const isJanuaryFirst2024OrLater = currentDate >= comparisonDate;
+
+  if (secondPillarPaymentRate < 6 && isJanuaryFirst2024OrLater) {
+    return (
+      <StatusBoxRow
+        warning
+        showAction={!loading}
+        name={<FormattedMessage id="account.status.choice.pillar.second" />}
+        lines={[<FormattedMessage id="account.status.choice.pillar.second.paymentRate" />]}
+      >
+        <Link to="/2nd-pillar-payment-rate" className="btn btn-primary">
+          <FormattedMessage id="account.status.choice.paymentRate.increase" />
+        </Link>
+      </StatusBoxRow>
+    );
+  }
+
   return (
     <StatusBoxRow
       ok
@@ -148,7 +170,13 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
           </InfoTooltip>
         </>,
       ]}
-    />
+    >
+      {isJanuaryFirst2024OrLater && (
+        <Link to="/2nd-pillar-payment-rate" className="btn btn-light">
+          <FormattedMessage id="account.status.choice.paymentRate.change" />
+        </Link>
+      )}
+    </StatusBoxRow>
   );
 };
 
@@ -308,6 +336,7 @@ const mapStateToProps = (state: State) => ({
   targetFunds: state.exchange.targetFunds || [],
   secondPillarPikNumber: (state.login.user || {}).secondPillarPikNumber,
   secondPillarActive: (state.login.user || {}).secondPillarActive,
+  secondPillarPaymentRate: (state.login.user || {}).secondPillarPaymentRate,
 });
 
 export default connect(mapStateToProps)(SecondPillarStatusBox);

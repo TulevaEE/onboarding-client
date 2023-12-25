@@ -256,6 +256,7 @@
   "account.status.choice.pillar.second.withdraw.cancel": "Cancel application",
   "account.status.choice.pillar.second.transferIncomplete": "You have several pension funds",
   "account.status.choice.pillar.second.pik": "Pension investment account: {secondPillarPikNumber}",
+  "account.status.choice.pillar.second.paymentRate": "You could increase your contribution rate to II pillar",
 
   "account.status.choice.pillar.second.deadlinecard.title": "Deadline!",
   "account.status.choice.pillar.second.deadlinecard.text": "The exchange period for this year ends on <b>{periodEnding}</b>",
@@ -288,6 +289,9 @@
   "account.status.choice.bring.to.tuleva": "Choose Tuleva",
   "account.status.choice.join.tuleva.2": "Choose Tuleva",
   "account.status.choice.transfer.tuleva.2": "Switch fund",
+  "account.status.choice.paymentRate.increase": "Increase contribution",
+  "account.status.choice.paymentRate.change": "Change contribution",
+
   "account.status.choice.join.tuleva": "Sign up",
   "account.status.contributionAmount": "You have contributed {thisYearContribution} to your III pillar this year and {lastYearContribution} last year.",
   "account.greeting": "Hi",

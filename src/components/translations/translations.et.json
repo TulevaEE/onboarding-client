@@ -231,6 +231,7 @@
   "account.status.choice.pillar.second.withdraw.cancel": "Tühista avaldus",
   "account.status.choice.pillar.second.transferIncomplete": "Sa kogud täna mitmes erinevas pensionifondis",
   "account.status.choice.pillar.second.pik": "Pensioni investeerimiskonto: {secondPillarPikNumber}",
+  "account.status.choice.pillar.second.paymentRate": "Sa saaksid II sambasse rohkem panustada",
 
   "account.status.choice.pillar.second.deadlinecard.title": "Tähtaeg!",
   "account.status.choice.pillar.second.deadlinecard.text": "Sellel aastal saad fondi vahetada kuni <b>{periodEnding}</b>",
@@ -263,6 +264,9 @@
   "account.status.choice.bring.to.tuleva": "Toon Tulevasse",
   "account.status.choice.join.tuleva.2": "Vali Tuleva",
   "account.status.choice.transfer.tuleva.2": "Vaheta fondi",
+  "account.status.choice.paymentRate.increase": "Suurendan sissemakset",
+  "account.status.choice.paymentRate.change": "Muudan sissemakset",
+
   "account.status.choice.join.tuleva": "Astu liikmeks",
   "account.status.contributionAmount": "Oled sel aastal maksnud III sambasse {thisYearContribution} ja eelmisel aastal {lastYearContribution}.",
   "account.greeting": "Tere",
