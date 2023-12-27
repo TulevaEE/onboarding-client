@@ -562,7 +562,6 @@
   "contributions.columns.date.footer": "Total",
   "contributions.columns.sender.title": "Sender",
   "contributions.columns.amount.title": "Amount",
-  "contributions.seeAll": "See all contributions",
   "contributions.backToAccountPage": "Back to account page",
   "contributions.notice.2nd": "NB! <a>State compensation</a> is missing from this table.",
   "contributions.notice.3rd": "NB! Contributions made before 2018 are missing from this table.",

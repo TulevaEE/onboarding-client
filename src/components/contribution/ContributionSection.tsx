@@ -105,16 +105,19 @@ export const ContributionSection: React.FunctionComponent<{
 
   return (
     <section className="mt-5">
-      <div className="d-flex justify-content-between">
+      <div className="d-flex flex-md-row flex-column align-items-md-end justify-content-between">
         <h2 className="mb-4 lead">{children || <FormattedMessage id="contributions.title" />}</h2>
-        <div className="ml-2">
-          <Link className="text-nowrap" to="/2nd-pillar-contributions">
-            <FormattedMessage id="contributions.seeAll.2" />
-          </Link>{' '}
-          <span className="mx-2">·</span>{' '}
-          <Link className="text-nowrap" to="/3rd-pillar-contributions">
-            <FormattedMessage id="contributions.seeAll.3" />
-          </Link>{' '}
+        <div className="ml-md-2 text-nowrap mb-4">
+          {pillar === 2 && (
+            <Link className="text-nowrap" to="/3rd-pillar-contributions">
+              <FormattedMessage id="contributions.seeAll.3" />
+            </Link>
+          )}
+          {pillar === 3 && (
+            <Link className="text-nowrap" to="/2nd-pillar-contributions">
+              <FormattedMessage id="contributions.seeAll.2" />
+            </Link>
+          )}{' '}
           <span className="mx-2">·</span>{' '}
           <Link to="/account">
             <FormattedMessage id="contributions.backToAccountPage" />
