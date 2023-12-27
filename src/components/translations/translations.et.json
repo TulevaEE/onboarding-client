@@ -251,7 +251,7 @@
   "account.status.choice.pillar.third.thisYearPaymentIncomplete.label": "Sinu selle aasta sissemakse pole veel fondi jõudnud",
   "account.status.choice.pillar.third.success.action": "Teen sissemakse",
   "account.status.choice.pillar.third.paymentInfo": "Fondiosakud jõuavad sinu kolmanda samba kontole ühe tööpäeva möödudes makse teostamisest. \n Kui teed makse reede pärastlõunal või nädalavahetusel, jõuavad osakud sinu kontole teisipäeva õhtuks.",
-  "account.status.choice.pillar.third.paymentDeadline": "Selle aasta III samba sissemakse tegemise viimane tähtaeg on <b>28. detsember 15:59</b>.",
+  "account.status.choice.pillar.third.paymentDeadline": "Selle aasta III samba sissemakse tegemise viimane tähtaeg on <b>27. detsember 15:59</b>.",
   "account.status.choice.highFee.label": "Sa kogud kõrge tasuga fondis",
   "account.status.choice.highFee.description": "Sinu fondide kaalutud keskmine tasu on üle 0.5% aastas",
   "account.status.choice.highFee.comment": "Maksad tasudeks {currentFeesEuro} aastas. Tulevas maksaksid {tulevaFeesEuro} aastas.",
