@@ -44,12 +44,6 @@ export const ApplicationCard: React.FunctionComponent<{
   }
 };
 
-//  "applications.type.paymentRate.title": "Minu II samba panus",
-//   "applications.type.paymentRate.status": "Staatus",
-//   "applications.type.paymentRate.status.pending": "Jõustub {paymentRateFulfillmentDate}",
-//   "applications.type.paymentRate.application": "Avaldus",
-//   "applications.type.paymentRate.application.paymentRate": "Maksemäära muutmise avaldus",
-//   "applications.type.paymentRate.rate": "Panus",
 const PaymentRateApplicationCard: React.FunctionComponent<{
   application: PaymentRateApplication;
 }> = ({ application }) => {
@@ -63,7 +57,14 @@ const PaymentRateApplicationCard: React.FunctionComponent<{
         definitions={[
           {
             key: 'applications.type.paymentRate.application',
-            value: <FormattedMessage id="applications.type.paymentRate.application.paymentRate" />,
+            value: (
+              <FormattedMessage
+                id="applications.type.paymentRate.application.paymentRate"
+                values={{
+                  paymentRate: application.details.paymentRate,
+                }}
+              />
+            ),
           },
           [
             [
@@ -77,13 +78,6 @@ const PaymentRateApplicationCard: React.FunctionComponent<{
                     }}
                   />
                 ),
-              },
-              {
-                key: 'applications.type.paymentRate.rate',
-                value: (
-                  <Percentage value={application.details.paymentRate / 100} stripTrailingZeros />
-                ),
-                alignRight: true,
               },
             ],
           ],

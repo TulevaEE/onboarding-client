@@ -256,7 +256,8 @@
   "account.status.choice.pillar.second.withdraw.cancel": "Cancel application",
   "account.status.choice.pillar.second.transferIncomplete": "You have several pension funds",
   "account.status.choice.pillar.second.pik": "Pension investment account: {secondPillarPikNumber}",
-  "account.status.choice.pillar.second.paymentRate": "You could increase your contribution rate to II pillar",
+  "account.status.choice.pillar.second.paymentRate": "You contribute {paymentRate}% of your gross salary to II pillar",
+  "account.status.choice.pillar.second.paymentRate.comment": "From January 2024, you can increase your contributions to <b>4%</b> or <b>6%</b>",
 
   "account.status.choice.pillar.second.deadlinecard.title": "Deadline!",
   "account.status.choice.pillar.second.deadlinecard.text": "The exchange period for this year ends on <b>{periodEnding}</b>",
@@ -284,6 +285,7 @@
   "account.status.choice.lowFee.label": "You're in a low cost fund",
   "account.status.choice.lowFee.description": "Your portfolio weighted average cost is below 0.5% per year",
   "account.status.choice.lowFee.index.label": "You're in a Tuleva low cost index fund",
+  "account.status.choice.lowFee.index.2.label": "You're in a Tuleva low cost index fund: {paymentRate}% of your gross salary",
   "account.status.choice.tuleva": "Tuleva",
   "account.status.choice.choose.low.fees": "Choose low fees",
   "account.status.choice.bring.to.tuleva": "Choose Tuleva",
@@ -513,7 +515,7 @@
   "applications.type.paymentRate.status": "Status",
   "applications.type.paymentRate.status.pending": "Takes effect on {paymentRateFulfillmentDate}",
   "applications.type.paymentRate.application": "Application",
-  "applications.type.paymentRate.application.paymentRate": "Contribution rate change application",
+  "applications.type.paymentRate.application.paymentRate": "Contribution rate change: {paymentRate}% of your gross salary",
   "applications.type.paymentRate.rate": "Contribution rate",
 
   "applications.type.payment.title": "III pillar contribution",

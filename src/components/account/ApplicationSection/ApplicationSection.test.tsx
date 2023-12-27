@@ -268,7 +268,6 @@ describe('Application section', () => {
     expect(await screen.findByText('applications.type.paymentRate.title')).toBeInTheDocument();
     expect(screen.getByText(formattedCreationTime)).toBeInTheDocument();
     expect(screen.getByText('applications.type.paymentRate.status.pending')).toBeInTheDocument();
-    expect(screen.getByText(`${application.details.paymentRate}%`)).toBeInTheDocument();
   });
 
   function waitForRequestToFinish() {

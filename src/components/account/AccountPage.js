@@ -51,6 +51,11 @@ export class AccountPage extends Component {
       shouldRedirectToAml,
     } = this.props;
 
+    // TODO: remove this after 2024-01-01
+    const currentDate = new Date();
+    const comparisonDate = new Date('2024-01-01');
+    const isJanuaryFirst2024OrLater = currentDate >= comparisonDate;
+
     return (
       <>
         {shouldRedirectToAml && (
@@ -103,14 +108,22 @@ export class AccountPage extends Component {
             <p className="mb-4 lead">
               <FormattedMessage id="accountStatement.heading" />
             </p>
-            <div className="d-flex flex-sm-row flex-column align-items-sm-end justify-content-between">
+            <div className="d-flex flex-md-row flex-column align-items-md-end justify-content-between">
               <div className="mb-3">
                 <FormattedMessage id="accountStatement.secondPillar.heading" />
               </div>
-              <Link className="btn btn-light mb-3" to="/2nd-pillar-flow">
-                <FormattedMessage id="change.my.pension.fund" />
-              </Link>
+              <div className="d-flex flex-sm-row flex-column align-items-sm-end justify-content-between">
+                {isJanuaryFirst2024OrLater && (
+                  <Link className="btn btn-light mb-3 mr-md-3" to="/2nd-pillar-payment-rate">
+                    <FormattedMessage id="account.status.choice.paymentRate.change" />
+                  </Link>
+                )}
+                <Link className="btn btn-light mb-3" to="/2nd-pillar-flow">
+                  <FormattedMessage id="change.my.pension.fund" />
+                </Link>
+              </div>
             </div>
+
             {secondPillarSourceFunds && secondPillarSourceFunds.length > 0 && (
               <AccountStatement funds={secondPillarSourceFunds} />
             )}

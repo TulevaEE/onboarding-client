@@ -148,7 +148,22 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
         warning
         showAction={!loading}
         name={<FormattedMessage id="account.status.choice.pillar.second" />}
-        lines={[<FormattedMessage id="account.status.choice.pillar.second.paymentRate" />]}
+        lines={[
+          <FormattedMessage
+            id="account.status.choice.pillar.second.paymentRate"
+            values={{
+              paymentRate: secondPillarPaymentRate,
+            }}
+          />,
+          <small className="text-muted">
+            <FormattedMessage
+              id="account.status.choice.pillar.second.paymentRate.comment"
+              values={{
+                b: (chunks: string) => <b>{chunks}</b>,
+              }}
+            />
+          </small>,
+        ]}
       >
         <Link to="/2nd-pillar-payment-rate" className="btn btn-primary">
           <FormattedMessage id="account.status.choice.paymentRate.increase" />
@@ -164,19 +179,15 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
       showAction={!loading}
       lines={[
         <>
-          <FormattedMessage id="account.status.choice.lowFee.index.label" />
-          <InfoTooltip name="second-pillar-tooltip">
-            <FormattedMessage id="account.status.choice.lowFee.description" />
-          </InfoTooltip>
+          <FormattedMessage
+            id="account.status.choice.lowFee.index.2.label"
+            values={{
+              paymentRate: secondPillarPaymentRate,
+            }}
+          />
         </>,
       ]}
-    >
-      {isJanuaryFirst2024OrLater && (
-        <Link to="/2nd-pillar-payment-rate" className="btn btn-light">
-          <FormattedMessage id="account.status.choice.paymentRate.change" />
-        </Link>
-      )}
-    </StatusBoxRow>
+    />
   );
 };
 
@@ -336,7 +347,7 @@ const mapStateToProps = (state: State) => ({
   targetFunds: state.exchange.targetFunds || [],
   secondPillarPikNumber: (state.login.user || {}).secondPillarPikNumber,
   secondPillarActive: (state.login.user || {}).secondPillarActive,
-  secondPillarPaymentRate: (state.login.user || {}).secondPillarPaymentRate,
+  secondPillarPaymentRate: (state.login.user || {}).secondPillarPaymentRate || 2,
 });
 
 export default connect(mapStateToProps)(SecondPillarStatusBox);

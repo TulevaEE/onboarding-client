@@ -175,18 +175,9 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when partially conv
 <StatusBoxRow
   lines={
     Array [
-      <React.Fragment>
-        <Memo(MemoizedFormattedMessage)
-          id="account.status.choice.lowFee.index.label"
-        />
-        <InfoTooltip
-          name="third-pillar-tooltip"
-        >
-          <Memo(MemoizedFormattedMessage)
-            id="account.status.choice.lowFee.description"
-          />
-        </InfoTooltip>
-      </React.Fragment>,
+      <Memo(MemoizedFormattedMessage)
+        id="account.status.choice.lowFee.index.label"
+      />,
       <Memo(Connect(ThirdPillarContributionAmount)) />,
     ]
   }
@@ -352,18 +343,9 @@ exports[`ThirdPillarStatusBox renders the success flow 1`] = `
 <StatusBoxRow
   lines={
     Array [
-      <React.Fragment>
-        <Memo(MemoizedFormattedMessage)
-          id="account.status.choice.lowFee.index.label"
-        />
-        <InfoTooltip
-          name="third-pillar-tooltip"
-        >
-          <Memo(MemoizedFormattedMessage)
-            id="account.status.choice.lowFee.description"
-          />
-        </InfoTooltip>
-      </React.Fragment>,
+      <Memo(MemoizedFormattedMessage)
+        id="account.status.choice.lowFee.index.label"
+      />,
       <Memo(Connect(ThirdPillarContributionAmount)) />,
     ]
   }
@@ -390,18 +372,9 @@ exports[`ThirdPillarStatusBox renders the success flow when funds have not trans
 <StatusBoxRow
   lines={
     Array [
-      <React.Fragment>
-        <Memo(MemoizedFormattedMessage)
-          id="account.status.choice.lowFee.index.label"
-        />
-        <InfoTooltip
-          name="third-pillar-tooltip"
-        >
-          <Memo(MemoizedFormattedMessage)
-            id="account.status.choice.lowFee.description"
-          />
-        </InfoTooltip>
-      </React.Fragment>,
+      <Memo(MemoizedFormattedMessage)
+        id="account.status.choice.lowFee.index.label"
+      />,
       <Memo(Connect(ThirdPillarContributionAmount)) />,
     ]
   }

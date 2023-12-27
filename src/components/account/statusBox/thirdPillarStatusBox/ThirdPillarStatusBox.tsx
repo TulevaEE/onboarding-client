@@ -182,12 +182,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
       showAction={!loading}
       name={<FormattedMessage id="account.status.choice.pillar.third" />}
       lines={[
-        <>
-          <FormattedMessage id="account.status.choice.lowFee.index.label" />
-          <InfoTooltip name="third-pillar-tooltip">
-            <FormattedMessage id="account.status.choice.lowFee.description" />
-          </InfoTooltip>
-        </>,
+        <FormattedMessage id="account.status.choice.lowFee.index.label" />,
         <ThirdPillarPaymentsAmount />,
       ]}
     >

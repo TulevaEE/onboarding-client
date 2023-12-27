@@ -231,7 +231,8 @@
   "account.status.choice.pillar.second.withdraw.cancel": "Tühista avaldus",
   "account.status.choice.pillar.second.transferIncomplete": "Sa kogud täna mitmes erinevas pensionifondis",
   "account.status.choice.pillar.second.pik": "Pensioni investeerimiskonto: {secondPillarPikNumber}",
-  "account.status.choice.pillar.second.paymentRate": "Sa saaksid II sambasse rohkem panustada",
+  "account.status.choice.pillar.second.paymentRate": "Sa panustad II sambasse {paymentRate}% brutopalgast",
+  "account.status.choice.pillar.second.paymentRate.comment": "Alates 2024. a jaanuarist saad sissemakse suurendada <b>4%</b> või <b>6%</b> peale",
 
   "account.status.choice.pillar.second.deadlinecard.title": "Tähtaeg!",
   "account.status.choice.pillar.second.deadlinecard.text": "Sellel aastal saad fondi vahetada kuni <b>{periodEnding}</b>",
@@ -258,6 +259,7 @@
   "account.status.choice.diversification.comment": "Läbi Tuleva saad hoida munad 3000 eri korvis.",
   "account.status.choice.lowFee.label": "Sa kogud madala tasuga fondis",
   "account.status.choice.lowFee.description": "Sinu fondide kaalutud keskmine tasu on alla 0.5% aastas",
+  "account.status.choice.lowFee.index.2.label": "Sa kogud Tuleva madala tasuga indeksfondis: {paymentRate}% brutopalgast",
   "account.status.choice.lowFee.index.label": "Sa kogud Tuleva madala tasuga indeksfondis",
   "account.status.choice.tuleva": "Tuleva ühistu",
   "account.status.choice.choose.low.fees": "Vali madalad tasud",
@@ -490,7 +492,7 @@
   "applications.type.paymentRate.status": "Staatus",
   "applications.type.paymentRate.status.pending": "Jõustub {paymentRateFulfillmentDate}",
   "applications.type.paymentRate.application": "Avaldus",
-  "applications.type.paymentRate.application.paymentRate": "Maksemäära muutmise avaldus",
+  "applications.type.paymentRate.application.paymentRate": "II samba sissemakse muutmine: {paymentRate}% brutopalgast",
   "applications.type.paymentRate.rate": "Panus",
 
   "applications.type.payment.title": "III samba sissemakse",
@@ -566,7 +568,7 @@
   "secondPillarUpsell.whatDoTheseNumbersMean": "Mida need arvud tähendavad?",
   "secondPillarUpsell.disclaimer": "Tegemist on finantsteenusega. Graafik on illustratiivne.",
 
-  "secondPillarPaymentRate.contributionChange": "II samba panuse muutmine",
+  "secondPillarPaymentRate.contributionChange": "II samba sissemakse muutmine",
   "secondPillarPaymentRate.chooseAmount": "Vali, kui palju soovid II sambasse igakuiselt panustada.",
   "secondPillarPaymentRate.taxFree": "II samba panused on tulumaksuvabad. Saad maksusoodustusega koguda tänasest veelgi rohkem.",
   "secondPillarPaymentRate.applicationDeadline": "Et muudatus rakenduks esimesel võimalusel ehk <b>{paymentRateFulfillmentDate}. aasta jaanuarist,</b> esita avaldus hiljemalt <b>{paymentRateDeadline}. aasta novembri lõpuks.</b> Kuni novembri lõpuni saad valikut ka muuta.",
