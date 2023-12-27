@@ -525,6 +525,7 @@
   "transactions.columns.date.footer": "Kokku",
   "transactions.columns.pillar.title": "Sammas",
   "transactions.columns.amount.title": "Summa",
+  "transactions.seeAll": "Vaata kõiki",
   "transactions.seeAll.2": "II sammas",
   "transactions.seeAll.3": "III sammas",
   "transactions.backToAccountPage": "Tagasi avalehele",

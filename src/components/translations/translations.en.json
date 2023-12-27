@@ -548,6 +548,7 @@
   "transactions.columns.date.title": "Date",
   "transactions.columns.date.footer": "Total",
   "transactions.columns.amount.title": "Amount",
+  "transactions.seeAll": "See all",
   "transactions.seeAll.2": "II pillar",
   "transactions.seeAll.3": "III pillar",
   "transactions.backToAccountPage": "Back to account page",
