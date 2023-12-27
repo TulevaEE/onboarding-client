@@ -56,6 +56,11 @@ export class AccountPage extends Component {
     const comparisonDate = new Date('2024-01-01');
     const isJanuaryFirst2024OrLater = currentDate >= comparisonDate;
 
+    const isThirdPillarFullyConverted =
+      conversion &&
+      conversion.thirdPillar.selectionComplete &&
+      conversion.thirdPillar.transfersComplete;
+
     return (
       <>
         {shouldRedirectToAml && (
@@ -136,9 +141,11 @@ export class AccountPage extends Component {
               <div className="mb-3">
                 <FormattedMessage id="accountStatement.thirdPillar.heading" />
               </div>
-              <Link className="btn btn-light mb-3" to="/3rd-pillar-flow">
-                <FormattedMessage id="change.my.pension.fund.third.pillar" />
-              </Link>
+              {!isThirdPillarFullyConverted && (
+                <Link className="btn btn-light mb-3" to="/3rd-pillar-flow">
+                  <FormattedMessage id="change.my.pension.fund.third.pillar" />
+                </Link>
+              )}
             </div>
             {thirdPillarSourceFunds && thirdPillarSourceFunds.length > 0 && (
               <AccountStatement funds={thirdPillarSourceFunds} />
