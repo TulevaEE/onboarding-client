@@ -142,19 +142,25 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
   const comparisonDate = new Date('2024-01-01');
   const isJanuaryFirst2024OrLater = currentDate >= comparisonDate;
 
-  if (secondPillarPaymentRate < 6 && isJanuaryFirst2024OrLater) {
+  if (secondPillarPaymentRate < 6) {
     return (
       <StatusBoxRow
-        warning
+        ok
         showAction={!loading}
         name={<FormattedMessage id="account.status.choice.pillar.second" />}
         lines={[
           <FormattedMessage
-            id="account.status.choice.pillar.second.paymentRate"
+            id="account.status.choice.lowFee.index.2.label"
             values={{
               paymentRate: secondPillarPaymentRate,
             }}
           />,
+          // <FormattedMessage
+          //   id="account.status.choice.pillar.second.paymentRate"
+          //   values={{
+          //     paymentRate: secondPillarPaymentRate,
+          //   }}
+          // />,
           <small className="text-muted">
             <FormattedMessage
               id="account.status.choice.pillar.second.paymentRate.comment"
@@ -165,9 +171,11 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
           </small>,
         ]}
       >
-        <Link to="/2nd-pillar-payment-rate" className="btn btn-primary">
-          <FormattedMessage id="account.status.choice.paymentRate.increase" />
-        </Link>
+        {isJanuaryFirst2024OrLater && (
+          <Link to="/2nd-pillar-payment-rate" className="btn btn-primary">
+            <FormattedMessage id="account.status.choice.paymentRate.increase" />
+          </Link>
+        )}
       </StatusBoxRow>
     );
   }

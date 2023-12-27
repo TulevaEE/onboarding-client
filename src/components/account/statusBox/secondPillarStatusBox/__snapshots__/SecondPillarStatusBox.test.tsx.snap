@@ -348,7 +348,7 @@ exports[`SecondPillarStatusBox renders the payment rate flow 1`] = `
   lines={
     Array [
       <Memo(MemoizedFormattedMessage)
-        id="account.status.choice.pillar.second.paymentRate"
+        id="account.status.choice.lowFee.index.2.label"
         values={
           Object {
             "paymentRate": 2,
@@ -374,8 +374,8 @@ exports[`SecondPillarStatusBox renders the payment rate flow 1`] = `
       id="account.status.choice.pillar.second"
     />
   }
+  ok={true}
   showAction={true}
-  warning={true}
 >
   <Link
     className="btn btn-primary"
