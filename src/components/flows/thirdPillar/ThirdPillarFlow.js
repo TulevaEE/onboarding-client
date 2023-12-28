@@ -5,7 +5,7 @@ import ThirdPillarSetup from './ThirdPillarSetup';
 import ThirdPillarSelectSources from './ThirdPillarSelectSources';
 import AddressStep from '../common/AddressStep';
 import ConfirmThirdPillarMandate from './ConfirmThirdPillarMandate';
-import ThirdPillarPayment from './ThirdPillarPayment';
+import ThirdPillarPayment from './ThirdPillarPayment/ThirdPillarPaymentStep';
 import Flow from '../common/Flow'; // eslint-disable-line import/no-named-as-default
 import ThirdPillarSuccess from './ThirdPillarSuccess';
 

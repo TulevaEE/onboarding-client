@@ -47,7 +47,9 @@ module.exports = {
       files: [
         '**/*.d.ts',
         '**/*.test.tsx',
+        '**/*.spec.tsx',
         '**/*.test.ts',
+        '**/*.spec.ts',
         'src/test/**/*.ts',
         'src/test/**/*.tsx',
       ],
