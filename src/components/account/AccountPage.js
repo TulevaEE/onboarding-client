@@ -51,11 +51,6 @@ export class AccountPage extends Component {
       shouldRedirectToAml,
     } = this.props;
 
-    // TODO: remove this after 2024-01-01
-    const currentDate = new Date();
-    const comparisonDate = new Date('2024-01-01');
-    const isJanuaryFirst2024OrLater = currentDate >= comparisonDate;
-
     const isThirdPillarFullyConverted =
       conversion &&
       conversion.thirdPillar.selectionComplete &&
@@ -118,11 +113,9 @@ export class AccountPage extends Component {
                 <FormattedMessage id="accountStatement.secondPillar.heading" />
               </div>
               <div className="d-flex flex-sm-row flex-column align-items-sm-end justify-content-between">
-                {isJanuaryFirst2024OrLater && (
-                  <Link className="btn btn-light mb-3 mr-md-3" to="/2nd-pillar-payment-rate">
-                    <FormattedMessage id="account.status.choice.paymentRate.change" />
-                  </Link>
-                )}
+                <Link className="btn btn-light mb-3 mr-md-3" to="/2nd-pillar-payment-rate">
+                  <FormattedMessage id="account.status.choice.paymentRate.change" />
+                </Link>
                 <Link className="btn btn-light mb-3" to="/2nd-pillar-flow">
                   <FormattedMessage id="change.my.pension.fund" />
                 </Link>

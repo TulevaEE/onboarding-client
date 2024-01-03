@@ -18,7 +18,7 @@ import InfoTooltip from '../../../common/infoTooltip';
 import { isTuleva } from '../../../common/utils';
 import { getValueSum } from '../../AccountStatement/fundSelector';
 import Euro from '../../../common/Euro';
-import { formatDateTime } from '../../../common/dateFormatter';
+import { formatDateTime, formatDateYear } from '../../../common/dateFormatter';
 import deadline from './deadline.svg';
 import euro from './euro.svg';
 import basket from './basket.svg';
@@ -137,12 +137,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
     );
   }
 
-  // TODO: remove this after 2024-01-01
-  const currentDate = new Date();
-  const comparisonDate = new Date('2024-01-01');
-  const isJanuaryFirst2024OrLater = currentDate >= comparisonDate;
-
-  if (secondPillarPaymentRate < 6) {
+  if (secondPillarPaymentRate < 4) {
     return (
       <StatusBoxRow
         ok
@@ -155,12 +150,6 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
               paymentRate: secondPillarPaymentRate,
             }}
           />,
-          // <FormattedMessage
-          //   id="account.status.choice.pillar.second.paymentRate"
-          //   values={{
-          //     paymentRate: secondPillarPaymentRate,
-          //   }}
-          // />,
           <small className="text-muted">
             <FormattedMessage
               id="account.status.choice.pillar.second.paymentRate.comment"
@@ -171,11 +160,9 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
           </small>,
         ]}
       >
-        {isJanuaryFirst2024OrLater && (
-          <Link to="/2nd-pillar-payment-rate" className="btn btn-primary">
-            <FormattedMessage id="account.status.choice.paymentRate.increase" />
-          </Link>
-        )}
+        <Link to="/2nd-pillar-payment-rate" className="btn btn-primary">
+          <FormattedMessage id="account.status.choice.paymentRate.increase" />
+        </Link>
       </StatusBoxRow>
     );
   }
@@ -186,16 +173,31 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
       name={<FormattedMessage id="account.status.choice.pillar.second" />}
       showAction={!loading}
       lines={[
-        <>
+        <FormattedMessage
+          id="account.status.choice.lowFee.index.2.label"
+          values={{
+            paymentRate: 2,
+          }}
+        />,
+        <small className="text-muted">
           <FormattedMessage
-            id="account.status.choice.lowFee.index.2.label"
+            id="account.status.choice.lowFee.index.2.description"
             values={{
               paymentRate: secondPillarPaymentRate,
+              paymentRateFulfillmentDate: formatDateYear(
+                mandateDeadlines?.paymentRateFulfillmentDate,
+              ),
             }}
           />
-        </>,
+        </small>,
       ]}
-    />
+    >
+      {secondPillarPaymentRate < 6 && (
+        <Link to="/2nd-pillar-payment-rate" className="btn btn-primary">
+          <FormattedMessage id="account.status.choice.paymentRate.increase" />
+        </Link>
+      )}
+    </StatusBoxRow>
   );
 };
 
@@ -304,7 +306,7 @@ function highFee(
                 <FormattedMessage
                   id="account.status.choice.pillar.second.deadlinecard.text"
                   values={{
-                    periodEnding: mandateDeadlines && formatDateTime(mandateDeadlines.periodEnding),
+                    periodEnding: formatDateTime(mandateDeadlines?.periodEnding),
                     b: (chunks: string) => <b className="text-nowrap">{chunks}</b>,
                   }}
                 />

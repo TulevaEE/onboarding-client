@@ -257,6 +257,7 @@
   "account.status.choice.lowFee.label": "Sa kogud madala tasuga fondis",
   "account.status.choice.lowFee.description": "Sinu fondide kaalutud keskmine tasu on alla 0.5% aastas",
   "account.status.choice.lowFee.index.2.label": "Sa kogud Tuleva madala tasuga indeksfondis: {paymentRate}% brutopalgast",
+  "account.status.choice.lowFee.index.2.description": "Sinu panus alates {paymentRateFulfillmentDate}: {paymentRate}% brutopalgast",
   "account.status.choice.lowFee.index.label": "Sa kogud Tuleva madala tasuga indeksfondis",
   "account.status.choice.tuleva": "Tuleva ühistu",
   "account.status.choice.choose.low.fees": "Vali madalad tasud",
