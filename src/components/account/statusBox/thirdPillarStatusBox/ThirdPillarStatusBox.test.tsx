@@ -15,6 +15,7 @@ describe('ThirdPillarStatusBox', () => {
 
   beforeEach(() => {
     jest.useFakeTimers();
+    jest.setSystemTime(new Date('2024-07-22T10:36:00Z'));
     component = shallow(<ThirdPillarStatusBox {...props} />);
   });
 

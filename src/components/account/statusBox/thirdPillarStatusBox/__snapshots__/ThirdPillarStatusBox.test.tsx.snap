@@ -190,7 +190,7 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when partially conv
   showAction={true}
 >
   <Link
-    className="btn btn-primary"
+    className="btn btn-outline-primary"
     to="/3rd-pillar-payment"
   >
     <MemoizedFormattedMessage
@@ -358,7 +358,7 @@ exports[`ThirdPillarStatusBox renders the success flow 1`] = `
   showAction={true}
 >
   <Link
-    className="btn btn-primary"
+    className="btn btn-outline-primary"
     to="/3rd-pillar-payment"
   >
     <MemoizedFormattedMessage
