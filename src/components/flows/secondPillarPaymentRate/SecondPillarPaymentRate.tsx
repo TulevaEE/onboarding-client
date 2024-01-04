@@ -20,7 +20,7 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
   } = useSecondPillarPaymentRate();
 
   const { data: user } = useMe();
-  const currentPaymentRate = user?.secondPillarPaymentRate || 2;
+  const currentPaymentRate = user?.secondPillarPaymentRates.pending || 2;
   const { data: mandateDeadlines } = useMandateDeadlines();
 
   if (signedMandateId && signedMandateId === paymentRateChangeMandateId) {

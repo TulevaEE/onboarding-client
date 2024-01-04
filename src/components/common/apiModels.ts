@@ -162,6 +162,11 @@ interface Address {
   countryCode: string;
 }
 
+interface PaymentRates {
+  current: number;
+  pending: number;
+}
+
 export interface User {
   id: number;
   personalCode: string;
@@ -178,7 +183,7 @@ export interface User {
   dateOfBirth: string;
   age: number;
   retirementAge: number;
-  secondPillarPaymentRate: number;
+  secondPillarPaymentRates: PaymentRates;
 }
 
 export interface UserConversion {

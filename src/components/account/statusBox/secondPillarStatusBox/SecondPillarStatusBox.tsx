@@ -357,7 +357,7 @@ const mapStateToProps = (state: State) => ({
   targetFunds: state.exchange.targetFunds || [],
   secondPillarPikNumber: (state.login.user || {}).secondPillarPikNumber,
   secondPillarActive: (state.login.user || {}).secondPillarActive,
-  secondPillarPaymentRate: (state.login.user || {}).secondPillarPaymentRate || 2,
+  secondPillarPaymentRate: (state.login.user || {}).secondPillarPaymentRates.pending || 2,
 });
 
 export default connect(mapStateToProps)(SecondPillarStatusBox);
