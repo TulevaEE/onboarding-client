@@ -16,7 +16,6 @@ import { ApplicationSection } from './ApplicationSection/ApplicationSection';
 import { isTuleva } from '../common/utils';
 import { AccountSummaryLoader } from './AccountSummary/AccountSummary';
 import { TransactionSection } from './TransactionSection/TransactionSection';
-import { getQueryParams } from '../../utils';
 import { getInitialCapital } from './actions';
 import SecondPillarUpsell from './SecondPillarUpsell/SecondPillarUpsell';
 
@@ -192,11 +191,6 @@ AccountPage.defaultProps = {
   shouldRedirectToAml: false,
 };
 
-const errorCodeFromUrl = getQueryParams().error_code;
-const errorPackageFromUrl = errorCodeFromUrl
-  ? { body: { errors: [{ code: errorCodeFromUrl }] } }
-  : null;
-
 export const shouldRedirectToAml = (state) =>
   state.aml.missingAmlChecks &&
   state.aml.missingAmlChecks.length > 0 &&
@@ -221,7 +215,7 @@ const mapStateToProps = (state) => ({
     !state.account.loadingInitialCapital,
   memberCapital: state.account.initialCapital,
   loadingCapital: state.account.loadingInitialCapital,
-  error: state.exchange.error || errorPackageFromUrl,
+  error: state.exchange.error,
   token: state.login.token,
   shouldRedirectToAml: shouldRedirectToAml(state),
 });
