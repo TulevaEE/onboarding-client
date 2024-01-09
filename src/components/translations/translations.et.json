@@ -255,6 +255,7 @@
   "account.status.choice.highFee.comment": "Maksad tasudeks {currentFeesEuro} aastas. Tulevas maksaksid {tulevaFeesEuro} aastas.",
   "account.status.choice.diversification.comment": "Läbi Tuleva saad hoida munad 3000 eri korvis.",
   "account.status.choice.lowFee.label": "Sa kogud madala tasuga fondis",
+  "account.status.choice.lowFee.2.label": "Sa kogud madala tasuga fondis: {paymentRate}% brutopalgast",
   "account.status.choice.lowFee.description": "Sinu fondide kaalutud keskmine tasu on alla 0.5% aastas",
   "account.status.choice.lowFee.index.2.label": "Sa kogud Tuleva madala tasuga indeksfondis: {paymentRate}% brutopalgast",
   "account.status.choice.lowFee.index.2.description": "Sinu panus alates {paymentRateFulfillmentDate}: {paymentRate}% brutopalgast",

@@ -87,10 +87,40 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
     );
   }
 
-  const isPartiallyConverted = conversion.selectionPartial || conversion.transfersPartial;
-  if (!isPartiallyConverted) {
-    if (conversion.weightedAverageFee > 0.005) {
-      return highFee(loading, conversion, sourceFunds, targetFunds, mandateDeadlines);
+  if (conversion.weightedAverageFee > 0.005) {
+    return highFee(loading, conversion, sourceFunds, targetFunds, mandateDeadlines);
+  }
+
+  const isFullyConverted = conversion.selectionComplete && conversion.transfersComplete;
+  if (!isFullyConverted) {
+    if (secondPillarPaymentRate < 4) {
+      return (
+        <StatusBoxRow
+          ok
+          showAction={!loading}
+          name={<FormattedMessage id="account.status.choice.pillar.second" />}
+          lines={[
+            <FormattedMessage
+              id="account.status.choice.lowFee.2.label"
+              values={{
+                paymentRate: secondPillarPaymentRate,
+              }}
+            />,
+            <small className="text-muted">
+              <FormattedMessage
+                id="account.status.choice.pillar.second.paymentRate.comment"
+                values={{
+                  b: (chunks: string) => <b>{chunks}</b>,
+                }}
+              />
+            </small>,
+          ]}
+        >
+          <Link to="/2nd-pillar-payment-rate" className="btn btn-primary">
+            <FormattedMessage id="account.status.choice.paymentRate.increase" />
+          </Link>
+        </StatusBoxRow>
+      );
     }
     return (
       <StatusBoxRow
@@ -98,41 +128,35 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
         showAction={!loading}
         name={<FormattedMessage id="account.status.choice.pillar.second" />}
         lines={[
-          <>
-            <FormattedMessage id="account.status.choice.lowFee.label" />
-            <InfoTooltip name="second-pillar-tooltip">
-              <FormattedMessage id="account.status.choice.lowFee.description" />
-            </InfoTooltip>
-          </>,
+          <FormattedMessage
+            id="account.status.choice.lowFee.2.label"
+            values={{
+              paymentRate: 2,
+            }}
+          />,
+          <small className="text-muted">
+            <FormattedMessage
+              id="account.status.choice.lowFee.index.2.description"
+              values={{
+                paymentRate: secondPillarPaymentRate,
+                paymentRateFulfillmentDate: formatDateYear(
+                  mandateDeadlines?.paymentRateFulfillmentDate,
+                ),
+              }}
+            />
+          </small>,
         ]}
       >
-        <Link to="/2nd-pillar-flow" className="btn btn-light">
-          <FormattedMessage id="account.status.choice.join.tuleva.2" />
-        </Link>
-      </StatusBoxRow>
-    );
-  }
-
-  const isFullyConverted = conversion.selectionComplete && conversion.transfersComplete;
-  if (!isFullyConverted) {
-    if (conversion.weightedAverageFee > 0.005) {
-      return highFee(loading, conversion, sourceFunds, targetFunds, mandateDeadlines);
-    }
-    return (
-      <StatusBoxRow
-        error
-        showAction={!loading}
-        name={<FormattedMessage id="account.status.choice.pillar.second" />}
-        lines={[
-          <FormattedMessage id="account.status.choice.pillar.second.transferIncomplete" />,
-          ...(mandateDeadlines && isPeriodEnding(mandateDeadlines)
-            ? [periodEndingMessage(mandateDeadlines)]
-            : []),
-        ]}
-      >
-        <Link to="/2nd-pillar-flow" className="btn btn-primary">
-          <FormattedMessage id="account.status.choice.transfer.tuleva.2" />
-        </Link>
+        {secondPillarPaymentRate < 6 && (
+          <Link to="/2nd-pillar-payment-rate" className="btn btn-primary">
+            <FormattedMessage id="account.status.choice.paymentRate.increase" />
+          </Link>
+        )}
+        {secondPillarPaymentRate === 6 && (
+          <Link to="/2nd-pillar-flow" className="btn btn-light">
+            <FormattedMessage id="account.status.choice.join.tuleva.2" />
+          </Link>
+        )}
       </StatusBoxRow>
     );
   }
