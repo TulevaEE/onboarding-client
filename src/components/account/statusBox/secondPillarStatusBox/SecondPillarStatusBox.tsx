@@ -2,7 +2,6 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import moment from 'moment';
 import StatusBoxRow from '../statusBoxRow';
 import { useMandateDeadlines, usePendingApplications } from '../../../common/apiHooks';
 import {
@@ -344,26 +343,6 @@ function highFee(
         <FormattedMessage id="account.status.choice.bring.to.tuleva" />
       </Link>
     </StatusBoxRow>
-  );
-}
-
-function isPeriodEnding(mandateDeadlines: MandateDeadlines | undefined) {
-  return mandateDeadlines && moment(mandateDeadlines.periodEnding).diff(moment(), 'days') <= 30;
-}
-
-function periodEndingMessage(mandateDeadlines: MandateDeadlines | undefined) {
-  return (
-    mandateDeadlines && (
-      <small className="text-muted">
-        <FormattedMessage
-          id="select.sources.select.all.deadline"
-          values={{
-            periodEnding: formatDateTime(mandateDeadlines?.periodEnding),
-            b: (chunks: string) => <b className="text-nowrap">{chunks}</b>,
-          }}
-        />
-      </small>
-    )
   );
 }
 

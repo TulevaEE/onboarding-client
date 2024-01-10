@@ -232,9 +232,9 @@
   "account.status.choice.pillar.second.paymentRate.comment": "Alates 2024. a jaanuarist saad sissemakse suurendada <b>4%</b> või <b>6%</b> peale",
 
   "account.status.choice.pillar.second.deadlinecard.title": "Tähtaeg!",
-  "account.status.choice.pillar.second.deadlinecard.text": "Sellel aastal saad fondi vahetada kuni <b>{periodEnding}</b>",
+  "account.status.choice.pillar.second.deadlinecard.text": "Selle vahetusperioodi tähtaeg on <b>{periodEnding}</b>",
   "account.status.choice.pillar.second.basketcard.title": "Riskide hajutamine",
-  "account.status.choice.pillar.second.basketcard.text": "Indeksfondis saad hoida munad <b>3000 eri korvis</b>",
+  "account.status.choice.pillar.second.basketcard.text": "Ära hoia kõiki mune ühes korvis, hoia <b>3000 eri korvis</b>",
   "account.status.choice.pillar.second.basketcard.tooltip": "Tuleva Maailma Aktsiate Pensionifond investeerib 3000 maailma suurima ettevõtte aktsiatesse.",
   "account.status.choice.pillar.second.feecard.title": "Madalad tasud",
   "account.status.choice.pillar.second.feecard.text": "Tuleva II samba fondides kogud <b>madalate tasudega</b>",

@@ -257,9 +257,9 @@
   "account.status.choice.pillar.second.paymentRate.comment": "From January 2024, you can increase your contributions to <b>4%</b> or <b>6%</b>",
 
   "account.status.choice.pillar.second.deadlinecard.title": "Deadline!",
-  "account.status.choice.pillar.second.deadlinecard.text": "The exchange period for this year ends on <b>{periodEnding}</b>",
+  "account.status.choice.pillar.second.deadlinecard.text": "This exchange period ends on <b>{periodEnding}</b>",
   "account.status.choice.pillar.second.basketcard.title": "Diversification",
-  "account.status.choice.pillar.second.basketcard.text": "In an index fund, you can hold eggs in <b>3000 different baskets</b>",
+  "account.status.choice.pillar.second.basketcard.text": "Don't put your all eggs in one basket. Use <b>3000 baskets</b>",
   "account.status.choice.pillar.second.basketcard.tooltip": "Tuleva World Stocks Pension Fund invests in the shares of 3000 of the world's largest companies.",
   "account.status.choice.pillar.second.feecard.title": "Low Fees",
   "account.status.choice.pillar.second.feecard.text": "You accumulate in Tuleva's II pillar funds with <b>low fees</b>",
