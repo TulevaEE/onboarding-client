@@ -1,11 +1,11 @@
-import { AmlCheck, HttpError } from '../common/apiModels';
+import { AmlCheck, ErrorResponse } from '../common/apiModels';
 
 export type Aml = {
   isPoliticallyExposed: boolean;
   isResident: boolean;
   occupation: string;
   loading: boolean;
-  error: HttpError;
+  error: ErrorResponse;
   missingAmlChecks: AmlCheck[];
   createAmlChecksSuccess: boolean;
 };

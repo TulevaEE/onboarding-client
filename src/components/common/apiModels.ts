@@ -1,3 +1,5 @@
+import { PaymentRate } from '../flows/secondPillarPaymentRate/types';
+
 export type Application =
   | TransferApplication
   | StopContributionsApplication
@@ -163,8 +165,8 @@ interface Address {
 }
 
 interface PaymentRates {
-  current: number;
-  pending: number;
+  current: PaymentRate;
+  pending: PaymentRate;
 }
 
 export interface User {
@@ -225,7 +227,7 @@ export interface AmlCheck {
   success: boolean;
 }
 
-export interface HttpError {
+export interface ErrorResponse {
   body: { errors: [{ code: string }] };
 }
 

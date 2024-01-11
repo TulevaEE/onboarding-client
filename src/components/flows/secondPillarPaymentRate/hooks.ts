@@ -3,6 +3,7 @@ import { useTokenOrFail } from '../../common/apiHooks';
 import { useMandateSigning } from '../../exchange/hooks';
 import { createSecondPillarPaymentRateChange } from './api';
 import { PaymentRate, SecondPillarPaymentRateChangeMandate } from './types';
+import { ErrorResponse } from '../../common/apiModels';
 
 export function useSecondPillarPaymentRate(): {
   changePaymentRate: (paymentRate: PaymentRate) => void;
@@ -11,6 +12,8 @@ export function useSecondPillarPaymentRate(): {
   signedMandateId: number | null;
   loading: boolean;
   challengeCode: string | null;
+  error: ErrorResponse | null;
+  resetError: () => void;
 } {
   const mutation = useSecondPillarPaymentRateChange();
   const signing = useMandateSigning();
@@ -24,6 +27,10 @@ export function useSecondPillarPaymentRate(): {
     signing.cancel();
   }
 
+  function resetError() {
+    signing.resetError();
+  }
+
   return {
     changePaymentRate,
     cancelSigning,
@@ -31,6 +38,8 @@ export function useSecondPillarPaymentRate(): {
     signedMandateId: signing.signedMandateId,
     loading: mutation.isLoading || signing.loading,
     challengeCode: signing.challengeCode,
+    error: signing.error,
+    resetError,
   };
 }
 

@@ -1,4 +1,4 @@
-import { Fund, HttpError, SourceFund } from '../common/apiModels';
+import { Fund, ErrorResponse, SourceFund } from '../common/apiModels';
 
 export type ThirdPillar = {
   monthlyContribution: number;
@@ -11,5 +11,5 @@ export type ThirdPillar = {
   exchangeExistingUnits: boolean;
   agreedToTerms: boolean;
   signedMandateId: number;
-  error: HttpError;
+  error: ErrorResponse;
 };

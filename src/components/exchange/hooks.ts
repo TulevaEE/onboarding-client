@@ -1,6 +1,12 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { Mandate } from '../common/apiModels';
-import { cancelSigningMandate, downloadMandate, previewMandate, signMandate } from './actions';
+import { ErrorResponse, Mandate } from '../common/apiModels';
+import {
+  cancelSigningMandate,
+  closeErrorMessages,
+  downloadMandate,
+  previewMandate,
+  signMandate,
+} from './actions';
 
 export function useMandateSigning(): {
   sign: (mandate: Mandate) => void;
@@ -8,24 +14,34 @@ export function useMandateSigning(): {
   loading: boolean;
   signedMandateId: number | null;
   challengeCode: string | null;
+  error: ErrorResponse | null;
+  resetError: () => void;
 } {
   const {
     controlCode: challengeCode,
     loading,
     signedMandateId,
+    error,
   } = useSelector<
     {
       exchange: {
         loadingMandate: boolean;
         mandateSigningControlCode: string | null;
         signedMandateId: number;
+        mandateSigningError: ErrorResponse | null;
       };
     },
-    { controlCode: string | null; loading: boolean; signedMandateId: number }
+    {
+      controlCode: string | null;
+      loading: boolean;
+      signedMandateId: number;
+      error: ErrorResponse | null;
+    }
   >(({ exchange }) => ({
     controlCode: exchange.mandateSigningControlCode,
     loading: exchange.loadingMandate,
     signedMandateId: exchange.signedMandateId,
+    error: exchange.mandateSigningError,
   }));
   const dispatch = useDispatch();
 
@@ -37,12 +53,18 @@ export function useMandateSigning(): {
     dispatch(cancelSigningMandate());
   }
 
+  function resetError() {
+    dispatch(closeErrorMessages());
+  }
+
   return {
     sign,
     cancel,
     loading,
     signedMandateId,
     challengeCode,
+    error,
+    resetError,
   };
 }
 

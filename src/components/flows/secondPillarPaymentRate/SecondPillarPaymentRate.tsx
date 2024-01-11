@@ -1,14 +1,20 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, Redirect } from 'react-router-dom';
 import moment from 'moment/moment';
-import { AuthenticationLoader, Radio } from '../../common';
+import { AuthenticationLoader, ErrorMessage, Radio } from '../../common';
 import { useSecondPillarPaymentRate } from './hooks';
 import { PaymentRate } from './types';
 import { useMandateDeadlines, useMe } from '../../common/apiHooks';
 
 export const SecondPillarPaymentRate: React.FunctionComponent = () => {
-  const [paymentRate, setPaymentRate] = useState<PaymentRate>(2);
+  const { data: user } = useMe();
+  const pendingPaymentRate = user?.secondPillarPaymentRates.pending || null;
+  const [paymentRate, setPaymentRate] = useState<PaymentRate | null>(null);
+
+  useEffect(() => {
+    setPaymentRate(pendingPaymentRate);
+  }, [pendingPaymentRate]);
 
   const {
     changePaymentRate,
@@ -17,10 +23,10 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
     challengeCode,
     signedMandateId,
     paymentRateChangeMandateId,
+    error,
+    resetError,
   } = useSecondPillarPaymentRate();
 
-  const { data: user } = useMe();
-  const currentPaymentRate = user?.secondPillarPaymentRates.pending || 2;
   const { data: mandateDeadlines } = useMandateDeadlines();
 
   if (signedMandateId && signedMandateId === paymentRateChangeMandateId) {
@@ -39,6 +45,9 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
       {(signing || challengeCode) && (
         <AuthenticationLoader controlCode={challengeCode} onCancel={cancelSigning} overlayed />
       )}
+
+      {error && <ErrorMessage errors={error.body} onCancel={resetError} overlayed />}
+
       <h2 className="mt-3">
         <FormattedMessage id="secondPillarPaymentRate.contributionChange" />
       </h2>
@@ -72,7 +81,7 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
           <div className="mb-1">
             <h3 className="d-inline">
               <FormattedMessage id="secondPillarPaymentRate.option.2Percent" />
-              {currentPaymentRate === 2 && <Currently />}
+              {pendingPaymentRate === 2 && <Currently />}
             </h3>
           </div>
           <p className="m-0">
@@ -91,7 +100,7 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
         >
           <h3 className="mb-1">
             <FormattedMessage id="secondPillarPaymentRate.option.4Percent" />
-            {currentPaymentRate === 4 && <Currently />}
+            {pendingPaymentRate === 4 && <Currently />}
           </h3>
           <p className="m-0">
             <FormattedMessage
@@ -111,7 +120,7 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
             <h3 className="d-inline">
               <FormattedMessage id="secondPillarPaymentRate.option.6Percent" />
               <Recommended />
-              {currentPaymentRate === 6 && <Currently />}
+              {pendingPaymentRate === 6 && <Currently />}
             </h3>
           </div>
           <p className="mb-1">
@@ -130,8 +139,8 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
         <button
           type="button"
           className="btn btn-primary mb-2 mr-2"
-          disabled={paymentRate === currentPaymentRate}
-          onClick={() => changePaymentRate(paymentRate)}
+          disabled={!paymentRate || paymentRate === pendingPaymentRate}
+          onClick={() => paymentRate && changePaymentRate(paymentRate)}
         >
           <FormattedMessage id="secondPillarPaymentRate.confirm.mandate.sign" />
         </button>
