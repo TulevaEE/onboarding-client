@@ -68,6 +68,17 @@ describe('When a user is changing their 2nd pillar payment rate', () => {
     expect(await title()).toBeInTheDocument();
   });
 
+  test('renders Currently tag for the active pending payment rate', async () => {
+    expect(await title()).toBeInTheDocument();
+
+    const paymentRateOption = screen.getByText('2% of Gross Salary');
+
+    // eslint-disable-next-line testing-library/no-node-access
+    const currently = paymentRateOption.closest('h3')?.querySelector('.badge');
+    expect(currently).toBeInTheDocument();
+    expect(currently).toHaveTextContent('Current choice');
+  });
+
   test('can not change 2nd pillar payment rate to the same rate', async () => {
     expect(await title()).toBeInTheDocument();
     const sign = await signButton();

@@ -233,7 +233,7 @@ export function userBackend(server: SetupServerApi): void {
           age: 30,
           secondPillarPaymentRates: {
             current: 2,
-            pending: 2,
+            pending: null,
           },
         }),
       );
