@@ -29,7 +29,11 @@ export const ThirdPillarTermsAgreement = ({ age, agreed, onAgreementChange }) =>
             id="thirdPillarAgreement.termsConfirmation"
             values={{
               a: (chunks) => (
-                <a href={formatMessage({ id: 'thirdPillarAgreement.termsConfirmation.link' })}>
+                <a
+                  href={formatMessage({ id: 'thirdPillarAgreement.termsConfirmation.link' })}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   {chunks}
                 </a>
               ),
