@@ -1,8 +1,8 @@
+import { withRouter, Redirect, Route, Switch } from 'react-router-dom';
 import React, { PureComponent } from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Redirect, Route, Switch } from 'react-router-dom';
 
 import { actions as loginActions } from '../login';
 import { actions as exchangeActions } from '../exchange';
@@ -31,6 +31,7 @@ import { SecondPillarPaymentRate } from '../flows/secondPillarPaymentRate/Second
 import { SecondPillarPaymentRateSuccess } from '../flows/secondPillarPaymentRate/SecondPillarPaymentRateSuccess';
 import { BackToPartner } from '../flows/thirdPillar/BackToPartner/BackToPartner';
 import ThirdPillarPaymentPage from '../flows/thirdPillar/ThirdPillarPayment/ThirdPillarPaymentPage';
+import DevSidebar from '../dev/DevSidebar';
 
 export const ACCOUNT_PATH = '/account';
 export const AML_PATH = '/aml';
@@ -67,6 +68,12 @@ export class LoggedInApp extends PureComponent {
     }
   }
 
+  isDevelopmentMode() {
+    const { location } = this.props;
+    const queryParams = new URLSearchParams(location.search);
+    return queryParams.get('development') === 'true';
+  }
+
   render() {
     const { user, loading, onLogout } = this.props;
 
@@ -75,6 +82,7 @@ export class LoggedInApp extends PureComponent {
         <div className="row justify-content-center">
           <div className="col-lg-10">
             <Header user={user} loading={loading} onLogout={onLogout} />
+            {this.isDevelopmentMode() && <DevSidebar />}
             <Switch>
               <Route path={ACCOUNT_PATH} component={AccountPage} />
               <Route path={AML_PATH} component={AmlPage} />
@@ -177,4 +185,4 @@ const mapDispatchToProps = (dispatch) =>
 
 const connectToRedux = connect(mapStateToProps, mapDispatchToProps);
 
-export default connectToRedux(LoggedInApp);
+export default withRouter(connectToRedux(LoggedInApp));

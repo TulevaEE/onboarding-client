@@ -1,7 +1,7 @@
-import { createMemoryHistory } from 'history';
+import { createMemoryHistory, MemoryHistory } from 'history';
 import { applyMiddleware, compose, createStore, Store } from 'redux';
 import { Provider as ReduxProvider } from 'react-redux';
-import configureMockStore from 'redux-mock-store';
+import configureMockStore, { MockStore } from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { ConnectedRouter, routerMiddleware } from 'connected-react-router';
 import { QueryClient, QueryClientProvider } from 'react-query';
@@ -43,13 +43,22 @@ export function renderWrapped(
   return { ...view, rerender };
 }
 
-export function createDefaultStore(history: History): Store {
+export function createDefaultStore(history: History | MemoryHistory<unknown>): Store {
   return createStore(
     createRootReducer(history),
     compose(applyMiddleware(routerMiddleware(history as any), thunk)),
   );
 }
 
+export function createDefaultMockStore(
+  history: MemoryHistory<unknown>,
+  initialState = {},
+): MockStore {
+  const enhancedMiddlewares = [routerMiddleware(history)];
+  const defaultMockStore = configureMockStore(enhancedMiddlewares);
+
+  return defaultMockStore(initialState);
+}
 export function login(store: Store, method = 'SMART_ID', token = 'mock token'): void {
   store.dispatch({
     type: MOBILE_AUTHENTICATION_SUCCESS,
