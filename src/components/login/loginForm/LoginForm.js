@@ -168,8 +168,9 @@ const renderSmartId = (onIdCodeSubmit, personalCode, onPersonalCodeChange, forma
       <div className="form-group">
         <input
           id="smart-id-personal-code"
-          type="number"
+          type="text"
           inputMode="numeric"
+          autocomplete="username"
           value={personalCode}
           onChange={(event) => onPersonalCodeChange(event.target.value)}
           className="form-control form-control-lg"
@@ -203,8 +204,9 @@ const renderMobileId = (
       <div className="form-group">
         <input
           id="mobile-id-personal-code"
-          type="number"
+          type="text"
           inputMode="numeric"
+          autocomplete="username"
           value={personalCode}
           onChange={(event) => onPersonalCodeChange(event.target.value)}
           className="form-control form-control-lg"
@@ -215,6 +217,7 @@ const renderMobileId = (
         <input
           id="mobile-id-number"
           type="tel"
+          autocomplete="tel"
           value={phoneNumber}
           onChange={(event) => onPhoneNumberChange(event.target.value)}
           className="form-control form-control-lg"
