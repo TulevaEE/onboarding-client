@@ -67,6 +67,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
       );
     }
     return (
+      // TODO: bug - if fund balance is 0, it always shows this message. rather, it should then consider the active fund fee
       <StatusBoxRow
         ok
         showAction={!loading}

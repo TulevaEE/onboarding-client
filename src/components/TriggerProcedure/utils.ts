@@ -4,12 +4,18 @@ import { PaymentChannel, PaymentType } from '../common/apiModels';
 const EXTERNAL_AUTHENTICATOR_PROVIDER = 'EXTERNAL_AUTHENTICATOR_PROVIDER';
 
 enum ExternalProvider {
-  TESTPROVIDER1 = 'testprovider1',
   COOP_PANK = 'COOP_PANK',
 }
+
 enum Procedure {
-  PARTNER_3RD_PILLAR = 'partner-3rd-pillar-flow',
+  PARTNER_2ND_PILLAR_FLOW = 'partner-2nd-pillar-flow',
+  PARTNER_3RD_PILLAR_FLOW = 'partner-3rd-pillar-flow',
 }
+
+const procedureToPath = new Map<Procedure, string>([
+  [Procedure.PARTNER_2ND_PILLAR_FLOW, '/partner/2nd-pillar-flow'],
+  [Procedure.PARTNER_3RD_PILLAR_FLOW, '/partner/3rd-pillar-flow'],
+]);
 
 const stringToProvider: Record<string, ExternalProvider> = Object.fromEntries(
   Object.entries(ExternalProvider).map(([key, value]) => [
@@ -17,16 +23,21 @@ const stringToProvider: Record<string, ExternalProvider> = Object.fromEntries(
     key as ExternalProvider,
   ]),
 );
+
+const stringToProcedure: Record<string, Procedure> = Object.fromEntries(
+  Object.entries(Procedure).map(([key, value]) => [value as string, key as Procedure]),
+);
+
 const validateProvider = (value?: unknown): ExternalProvider => {
   if (value && typeof value === 'string' && stringToProvider[value]) {
-    return stringToProvider[value];
+    return value as ExternalProvider;
   }
   throw new Error(`Invalid provider: ${value}`);
 };
 
 const validateProcedure = (value?: unknown): Procedure => {
-  if (value && typeof value === 'string' && value === Procedure.PARTNER_3RD_PILLAR) {
-    return Procedure.PARTNER_3RD_PILLAR;
+  if (value && typeof value === 'string' && stringToProcedure[value]) {
+    return value as Procedure;
   }
   throw new Error(`Invalid procedure: ${value}`);
 };
@@ -38,9 +49,10 @@ const validateHandoverToken = (value?: unknown) => {
   throw new Error(`Invalid handoverToken: ${value}`);
 };
 
-const getPath = (provider: ExternalProvider, procedure: Procedure) => {
-  if (procedure === Procedure.PARTNER_3RD_PILLAR) {
-    return '/partner/3rd-pillar-flow';
+const getPath = (provider: ExternalProvider, procedure: Procedure): string => {
+  if (procedureToPath.has(procedure)) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return procedureToPath.get(procedure)!;
   }
   throw new Error(`Invalid procedure for provider(${provider}): ${procedure}`);
 };

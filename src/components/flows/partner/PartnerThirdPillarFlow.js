@@ -1,10 +1,10 @@
 import React from 'react';
 
 import { FormattedMessage } from 'react-intl';
-import ThirdPillarSetup from './ThirdPillarSetup';
-import ThirdPillarSelectSources from './ThirdPillarSelectSources';
+import ThirdPillarSetup from '../thirdPillar/ThirdPillarSetup';
+import ThirdPillarSelectSources from '../thirdPillar/ThirdPillarSelectSources';
 import AddressStep from '../common/AddressStep';
-import ConfirmThirdPillarMandate from './ConfirmThirdPillarMandate';
+import ConfirmThirdPillarMandate from '../thirdPillar/ConfirmThirdPillarMandate';
 import Flow from '../common/Flow'; // eslint-disable-line import/no-named-as-default
 import BackToPartner from './BackToPartner/BackToPartner'; // eslint-disable-line import/no-named-as-default
 

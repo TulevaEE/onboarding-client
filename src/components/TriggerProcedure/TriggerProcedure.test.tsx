@@ -67,32 +67,41 @@ describe('When an external provider process is triggered', () => {
     });
 
     test('missing procedure', async () => {
-      initializeComponent('?provider=testprovider1');
+      initializeComponent('?provider=COOP_PANK');
 
       expect(await screen.findByText('unexpected error', { exact: false })).toBeInTheDocument();
       expectConsoledError(/procedure/i);
     });
 
     test('invalid procedure', async () => {
-      initializeComponent('?provider=testprovider1&procedure=_invalid_');
+      initializeComponent('?provider=COOP_PANK&procedure=_invalid_');
 
       expect(await screen.findByText('unexpected error', { exact: false })).toBeInTheDocument();
       expectConsoledError(/invalid procedure.*_invalid_/i);
     });
 
     test('missing handoverToken', async () => {
-      initializeComponent('?provider=testprovider1&procedure=partner-3rd-pillar-flow');
+      initializeComponent('?provider=COOP_PANK&procedure=partner-3rd-pillar-flow');
 
       expect(await screen.findByText('unexpected error', { exact: false })).toBeInTheDocument();
       expectConsoledError(/invalid handover/i);
     });
   });
 
-  test('redirects if valid data is provided', async () => {
+  test('redirects to 3rd pillar flow if valid data is provided', async () => {
     const handoverToken =
       'eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJzaWduaW5nTWV0aG9kIjoic21hcnRJZCJ9.V-eWT1WG1CKKAsUkPOOU8zL9SbGNdv9RIO5viE9V_vORSu48UqnYKk5wHUQxOK2EvG1O64RRnc1aBTrkr0zxpHgUxshPtAYOY7SThLWLjxBbQ7T4EnZp1wJjGkpsucOmdSw7YSDdGpEn7uIrqPAaxrKzO9YKkvXYNfbS1fYAcc9mckHxf0_IyYBnrg1vxBzlSdwwmNUvhJELaKSdhrrmqZRU8zg0IHrHf0RQTZrpK8q5Pz29IgjoZNHFkuI6RW0AmypCSneoXUdPGIPxLJkyw2j1xVDHBVa37rCnZ3GNiMOAiGREld80ZXyYR4cfOT5Z4LYghWB5Pkgjxi1KcHhxoA';
     initializeComponent(
-      `?provider=testprovider1&procedure=partner-3rd-pillar-flow&handoverToken=${handoverToken}`,
+      `?provider=COOP_PANK&procedure=partner-3rd-pillar-flow&handoverToken=${handoverToken}`,
+    );
+    expect(await screen.findByText('redirecting to', { exact: false })).toBeInTheDocument();
+  });
+
+  test('redirects to 2nd pillar flow if valid data is provided', async () => {
+    const handoverToken =
+      'eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJzaWduaW5nTWV0aG9kIjoic21hcnRJZCJ9.V-eWT1WG1CKKAsUkPOOU8zL9SbGNdv9RIO5viE9V_vORSu48UqnYKk5wHUQxOK2EvG1O64RRnc1aBTrkr0zxpHgUxshPtAYOY7SThLWLjxBbQ7T4EnZp1wJjGkpsucOmdSw7YSDdGpEn7uIrqPAaxrKzO9YKkvXYNfbS1fYAcc9mckHxf0_IyYBnrg1vxBzlSdwwmNUvhJELaKSdhrrmqZRU8zg0IHrHf0RQTZrpK8q5Pz29IgjoZNHFkuI6RW0AmypCSneoXUdPGIPxLJkyw2j1xVDHBVa37rCnZ3GNiMOAiGREld80ZXyYR4cfOT5Z4LYghWB5Pkgjxi1KcHhxoA';
+    initializeComponent(
+      `?provider=COOP_PANK&procedure=partner-2nd-pillar-flow&handoverToken=${handoverToken}`,
     );
     expect(await screen.findByText('redirecting to', { exact: false })).toBeInTheDocument();
   });

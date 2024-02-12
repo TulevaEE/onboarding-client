@@ -1,4 +1,4 @@
-import { withRouter, Redirect, Route, Switch } from 'react-router-dom';
+import { Redirect, Route, Switch, withRouter } from 'react-router-dom';
 import React, { PureComponent } from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { bindActionCreators } from 'redux';
@@ -10,7 +10,8 @@ import Header from './header';
 import AccountPage from '../account';
 import SecondPillarFlow from '../flows/secondPillar';
 import ThirdPillarFlow from '../flows/thirdPillar';
-import PartnerThirdPillarFlow from '../flows/thirdPillar/PartnerThirdPillarFlow';
+import PartnerSecondPillarFlow from '../flows/partner/PartnerSecondPillarFlow';
+import PartnerThirdPillarFlow from '../flows/partner/PartnerThirdPillarFlow';
 import {
   CancellationFlow,
   flowPath as cancellationFlowPath,
@@ -29,7 +30,7 @@ import { TransactionPageSecondPillar } from '../account/TransactionSection/Trans
 import SecondPillarUpsellCard from '../account/SecondPillarUpsell/SecondPillarUpsellCard';
 import { SecondPillarPaymentRate } from '../flows/secondPillarPaymentRate/SecondPillarPaymentRate';
 import { SecondPillarPaymentRateSuccess } from '../flows/secondPillarPaymentRate/SecondPillarPaymentRateSuccess';
-import { BackToPartner } from '../flows/thirdPillar/BackToPartner/BackToPartner';
+import { BackToPartner } from '../flows/partner/BackToPartner/BackToPartner';
 import ThirdPillarPaymentPage from '../flows/thirdPillar/ThirdPillarPayment/ThirdPillarPaymentPage';
 import DevSidebar from '../dev/DevSidebar';
 
@@ -90,6 +91,7 @@ export class LoggedInApp extends PureComponent {
               <Route path="/contact-details" component={ContactDetailsPage} />
               <Route path="/2nd-pillar-flow" component={SecondPillarFlow} />
               <Route path="/3rd-pillar-flow" component={ThirdPillarFlow} />
+              <Route path="/partner/2nd-pillar-flow" component={PartnerSecondPillarFlow} />
               <Route path="/partner/3rd-pillar-flow" component={PartnerThirdPillarFlow} />
               <Route path="/partner/3rd-pillar-flow-success" component={BackToPartner} />
               <Route path="/3rd-pillar-payment" component={ThirdPillarPaymentPage} />
