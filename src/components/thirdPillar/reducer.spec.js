@@ -335,4 +335,13 @@ describe('Third pillar reducer', () => {
     expect(newState.error).toEqual(error);
     expect(newState.loadingTargetFunds).toBe(false);
   });
+
+  it('saves recurring payment count from query params', () => {
+    const state = reducer(undefined, {
+      type: QUERY_PARAMETERS,
+      query: { recurringPaymentCount: '2' },
+    });
+
+    expect(state).toEqual({ ...initialState, recurringPaymentCount: 2 });
+  });
 });

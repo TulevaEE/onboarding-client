@@ -13,4 +13,5 @@ export default {
   agreedToTerms: false,
   signedMandateId: null,
   error: null,
+  recurringPaymentCount: 0,
 };

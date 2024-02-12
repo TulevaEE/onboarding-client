@@ -1,15 +1,20 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useSelector } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { finish as finishProcedure } from '../../../TriggerProcedure/utils';
 import { State } from '../../../../types';
 import success from './success.svg';
 import pig from './pig.svg';
 
-export const BackToPartner: React.FC = () => {
+interface Props {
+  recurringPaymentCount: number;
+}
+
+export const BackToPartner: React.FC<Props> = ({ recurringPaymentCount }) => {
   const token = useSelector<State, string>((state) => state.login.token);
   const personalCode = useSelector<State, string>((state) => state.login.user?.personalCode);
+
   return (
     <>
       <div className="row mt-5">
@@ -29,24 +34,37 @@ export const BackToPartner: React.FC = () => {
         <div className="col-12 px-0">
           <div className="alert text-center py-5">
             <img src={pig} alt="" />
-            <h2 className="mt-3">
-              <FormattedMessage id="thirdPillarBackToPartner.automateNext" />
-            </h2>
-            <p className="mt-3">
-              <FormattedMessage id="thirdPillarBackToPartner.automateNext.subtitle" />
-            </p>
 
-            <div className="d-flex justify-content-center mt-4">
-              <button
-                type="button"
-                className="btn btn-primary flex-grow-1 flex-md-grow-0"
-                onClick={() =>
-                  finishProcedure('newRecurringPayment', undefined, personalCode, token)
-                }
-              >
-                <FormattedMessage id="thirdPillarBackToPartner.recurringPayment.button" />
-              </button>
-            </div>
+            {recurringPaymentCount >= 1 ? (
+              <>
+                <h2 className="mt-3">
+                  <FormattedMessage id="thirdPillarBackToPartner.automated" />
+                </h2>
+                <p className="mt-3">
+                  <FormattedMessage id="thirdPillarBackToPartner.automated.subtitle" />
+                </p>
+              </>
+            ) : (
+              <>
+                <h2 className="mt-3">
+                  <FormattedMessage id="thirdPillarBackToPartner.automateNext" />
+                </h2>
+                <p className="mt-3">
+                  <FormattedMessage id="thirdPillarBackToPartner.automateNext.subtitle" />
+                </p>
+                <div className="d-flex justify-content-center mt-4">
+                  <button
+                    type="button"
+                    className="btn btn-primary flex-grow-1 flex-md-grow-0"
+                    onClick={() =>
+                      finishProcedure('newRecurringPayment', undefined, personalCode, token)
+                    }
+                  >
+                    <FormattedMessage id="thirdPillarBackToPartner.recurringPayment.button" />
+                  </button>
+                </div>
+              </>
+            )}
             <div className="d-flex justify-content-center mt-2">
               <button
                 type="button"
@@ -69,4 +87,8 @@ export const BackToPartner: React.FC = () => {
   );
 };
 
-export default BackToPartner;
+const mapStateToProps = (state: State) => ({
+  recurringPaymentCount: state.thirdPillar.recurringPaymentCount,
+});
+
+export default connect(mapStateToProps)(BackToPartner);

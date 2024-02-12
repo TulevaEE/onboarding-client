@@ -30,7 +30,7 @@ import { TransactionPageSecondPillar } from '../account/TransactionSection/Trans
 import SecondPillarUpsellCard from '../account/SecondPillarUpsell/SecondPillarUpsellCard';
 import { SecondPillarPaymentRate } from '../flows/secondPillarPaymentRate/SecondPillarPaymentRate';
 import { SecondPillarPaymentRateSuccess } from '../flows/secondPillarPaymentRate/SecondPillarPaymentRateSuccess';
-import { BackToPartner } from '../flows/partner/BackToPartner/BackToPartner';
+import BackToPartner from '../flows/partner/BackToPartner';
 import ThirdPillarPaymentPage from '../flows/thirdPillar/ThirdPillarPayment/ThirdPillarPaymentPage';
 import DevSidebar from '../dev/DevSidebar';
 

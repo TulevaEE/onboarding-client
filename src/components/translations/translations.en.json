@@ -501,11 +501,13 @@
 
   "thirdPillarBackToPartner.opened": "Your III pillar is opened",
   "thirdPillarBackToPartner.account": "See your account balance",
-  "thirdPillarBackToPartner.automateNext": "Make contributions to it automatic",
-  "thirdPillarBackToPartner.automateNext.subtitle": "Set up recurring payment in your internet bank, to contribute after every payday.",
+  "thirdPillarBackToPartner.automateNext": "Make contributions automatic",
+  "thirdPillarBackToPartner.automateNext.subtitle": "Set up a recurring payment in your internet bank so that contributions always go to the III pillar immediately after payday.",
+  "thirdPillarBackToPartner.automated": "Good, you have already set up a recurring payment",
+  "thirdPillarBackToPartner.automated.subtitle": "In addition to the recurring payment, you can also contribute with a regular payment.",
   "thirdPillarBackToPartner.recurringPayment.button": "Set up a recurring payment",
   "thirdPillarBackToPartner.singlePayment.button": "Make a payment",
-  "thirdPillarBackToPartner.payment.subtitle": "We will redirect you back to your internet bank to make the payment.",
+  "thirdPillarBackToPartner.payment.subtitle": "We will redirect you back to your bank to make the payment.",
 
   "applications.title": "Your pending transactions",
   "applications.cancel": "Cancel application",

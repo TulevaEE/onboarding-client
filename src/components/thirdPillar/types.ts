@@ -12,4 +12,5 @@ export type ThirdPillar = {
   agreedToTerms: boolean;
   signedMandateId: number;
   error: ErrorResponse;
+  recurringPaymentCount: number;
 };

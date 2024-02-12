@@ -58,7 +58,7 @@ describe('When is at the partner flow success screen', () => {
   });
 
   test('payment card is shown', async () => {
-    expect(await screen.findByText('Make contributions to it automatic')).toBeInTheDocument();
+    expect(await screen.findByText('Make contributions automatic')).toBeInTheDocument();
   });
 
   test('recurring payment button is shown', async () => {
@@ -66,7 +66,7 @@ describe('When is at the partner flow success screen', () => {
     expect(button).toBeEnabled();
   });
 
-  test('signle payment button is shown', async () => {
+  test('single payment button is shown', async () => {
     const button = await singlePaymentButton();
     expect(button).toBeEnabled();
   });
