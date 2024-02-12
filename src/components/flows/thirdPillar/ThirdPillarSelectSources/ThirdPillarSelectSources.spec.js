@@ -5,6 +5,7 @@ import { FormattedMessage } from 'react-intl';
 import { Loader, Radio } from '../../../common';
 import { ThirdPillarSelectSources } from './ThirdPillarSelectSources';
 import AccountStatement from '../../../account/AccountStatement';
+import { Shimmer } from '../../../common/shimmer/Shimmer';
 
 describe('Third pillar select sources step', () => {
   let component;
@@ -20,17 +21,14 @@ describe('Third pillar select sources step', () => {
   });
 
   it('renders a loader when no source funds available', () => {
-    component.setProps({ loadingSourceFunds: false, sourceFunds: [] });
-    expect(component.contains(<Loader className="align-middle" />)).toBe(true);
-
-    component.setProps({ loadingSourceFunds: true, sourceFunds: [] });
-    expect(component.contains(<Loader className="align-middle" />)).toBe(true);
+    component.setProps({ loadingSourceFunds: true, exchangeableSourceFunds: [] });
+    expect(component.contains(<Shimmer height={26} />)).toBe(true);
 
     component.setProps({
       loadingSourceFunds: false,
-      sourceFunds: [{ fund: true }],
+      exchangeableSourceFunds: [{ fund: true }],
     });
-    expect(component.contains(<Loader className="align-middle" />)).toBe(false);
+    expect(component.contains(<Shimmer height={26} />)).toBe(false);
   });
 
   it('renders a pension fund table with given funds', () => {
@@ -70,22 +68,14 @@ describe('Third pillar select sources step', () => {
     expect(onSelect).toHaveBeenCalledWith(true, 'EE123');
   });
 
-  it('renders a loader when no target funds available', () => {
-    component.setProps({
-      exchangeExistingUnits: true,
-      futureContributionsFundIsin: 'EE123',
-      loadingTargetFunds: false,
-      targetFunds: [],
-    });
-    expect(component.contains(<Loader className="align-middle mt-4" />)).toBe(true);
-
+  it('renders a shimmer when no target funds available', () => {
     component.setProps({
       exchangeExistingUnits: true,
       futureContributionsFundIsin: 'EE123',
       loadingTargetFunds: true,
       targetFunds: [],
     });
-    expect(component.contains(<Loader className="align-middle mt-4" />)).toBe(true);
+    expect(component.contains(<Shimmer height={26} />)).toBe(true);
 
     component.setProps({
       exchangeExistingUnits: true,
@@ -93,6 +83,6 @@ describe('Third pillar select sources step', () => {
       loadingTargetFunds: false,
       targetFunds: [{ fund: true }],
     });
-    expect(component.contains(<Loader className="align-middle mt-4" />)).toBe(false);
+    expect(component.contains(<Shimmer height={26} />)).toBe(false);
   });
 });

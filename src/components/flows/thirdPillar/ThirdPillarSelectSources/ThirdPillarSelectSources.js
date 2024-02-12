@@ -5,23 +5,24 @@ import { connect } from 'react-redux';
 
 import { Link, Redirect } from 'react-router-dom';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Loader, Radio } from '../../../common';
+import { Radio } from '../../../common';
 import { selectThirdPillarSources } from '../../../thirdPillar/actions';
 import AccountStatement from '../../../account/AccountStatement';
 
 // TODO: don't import from 2nd pillar flow
 import TargetFundSelector from '../../secondPillar/selectSources/targetFundSelector';
+import { Shimmer } from '../../../common/shimmer/Shimmer';
 
 export const ThirdPillarSelectSources = ({
   exchangeExistingUnits,
   futureContributionsFundIsin,
   loadingSourceFunds,
   loadingTargetFunds,
-  sourceFunds,
   targetFunds,
   exchangeableSourceFunds,
   onSelect,
   nextPath,
+  loading,
 }) => {
   const { formatMessage } = useIntl();
 
@@ -30,19 +31,20 @@ export const ThirdPillarSelectSources = ({
   const isValid = exchangeExistingUnits || futureContributionsFundIsin;
   const defaultTargetFund = targetFunds && targetFunds.length ? targetFunds[0] : {};
 
+  if (loading || loadingSourceFunds || loadingTargetFunds) {
+    return <Shimmer height={26} />;
+  }
+
   return (
     <div>
-      {!loadingSourceFunds && exchangeableSourceFunds && !exchangeableSourceFunds.length && (
-        <Redirect to={nextPath} />
-      )}
+      {exchangeableSourceFunds && !exchangeableSourceFunds.length && <Redirect to={nextPath} />}
       <div className="row justify-content-around align-items-center">
         <div className="col-12">
           <div className="px-col mb-4">
             <p className="mb-4 lead">
               <FormattedMessage id="thirdPillarFlowSelectSources.title" />
             </p>
-            {(loadingSourceFunds || !sourceFunds.length) && <Loader className="align-middle" />}
-            {!loadingSourceFunds && exchangeableSourceFunds && !!exchangeableSourceFunds.length && (
+            {exchangeableSourceFunds && !!exchangeableSourceFunds.length && (
               <AccountStatement funds={exchangeableSourceFunds} />
             )}
           </div>
@@ -81,15 +83,10 @@ export const ThirdPillarSelectSources = ({
               }}
             />
 
-            {(loadingTargetFunds || !targetFunds.length) && (
-              <Loader className="align-middle mt-4" />
-            )}
-            {!loadingTargetFunds && !!targetFunds.length && (
-              <TargetFundSelector
-                targetFunds={targetFunds}
-                onSelectFund={(targetFund) => onSelect(true, targetFund.isin)}
-              />
-            )}
+            <TargetFundSelector
+              targetFunds={targetFunds}
+              onSelectFund={(targetFund) => onSelect(true, targetFund.isin)}
+            />
           </div>
         ) : (
           ''
@@ -132,7 +129,6 @@ const noop = () => null;
 ThirdPillarSelectSources.defaultProps = {
   exchangeExistingUnits: false,
   futureContributionsFundIsin: '',
-  sourceFunds: [],
   targetFunds: [],
   loadingSourceFunds: false,
   loadingTargetFunds: false,
@@ -144,7 +140,6 @@ ThirdPillarSelectSources.defaultProps = {
 ThirdPillarSelectSources.propTypes = {
   exchangeExistingUnits: Types.bool,
   futureContributionsFundIsin: Types.string,
-  sourceFunds: Types.arrayOf(Types.shape({})),
   targetFunds: Types.arrayOf(Types.shape({})),
   loadingSourceFunds: Types.bool,
   loadingTargetFunds: Types.bool,
@@ -157,10 +152,10 @@ const mapStateToProps = (state) => ({
   exchangeExistingUnits: state.thirdPillar.exchangeExistingUnits,
   exchangeableSourceFunds: state.thirdPillar.exchangeableSourceFunds,
   futureContributionsFundIsin: state.thirdPillar.selectedFutureContributionsFundIsin,
-  sourceFunds: state.thirdPillar.sourceFunds,
   targetFunds: state.thirdPillar.targetFunds,
   loadingSourceFunds: state.thirdPillar.loadingSourceFunds,
   loadingTargetFunds: state.thirdPillar.loadingTargetFunds,
+  loading: state.login.loadingUser || state.login.loadingUserConversion,
 });
 
 const mapDispatchToProps = (dispatch) =>
