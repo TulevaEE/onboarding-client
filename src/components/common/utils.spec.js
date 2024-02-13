@@ -1,4 +1,12 @@
-import { findWhere, createClamper, formatAmountForCurrency } from './utils';
+import {
+  findWhere,
+  createClamper,
+  formatAmountForCurrency,
+  isThirdPillar,
+  isSecondPillar,
+  isActive,
+  isTuleva,
+} from './utils';
 
 describe('Utils', () => {
   describe('findWhere', () => {
@@ -71,6 +79,34 @@ describe('Utils', () => {
 
     it('can format with less fractional digits', () => {
       expect(formatAmountForCurrency(12345678.97, 0)).toBe('12 345 679 €');
+    });
+  });
+
+  describe('Fund Status and Pillar checks', () => {
+    const fund = {
+      status: 'ACTIVE',
+      pillar: 2,
+      fundManager: { name: 'Tuleva' },
+    };
+
+    it('checks if a fund is active', () => {
+      expect(isActive(fund)).toBe(true);
+      expect(isActive({ ...fund, status: 'INACTIVE' })).toBe(false);
+    });
+
+    it('checks if a fund is second pillar', () => {
+      expect(isSecondPillar(fund)).toBe(true);
+      expect(isSecondPillar({ ...fund, pillar: 3 })).toBe(false);
+    });
+
+    it('checks if a fund is third pillar', () => {
+      expect(isThirdPillar({ ...fund, pillar: 3 })).toBe(true);
+      expect(isThirdPillar(fund)).toBe(false);
+    });
+
+    it('checks if a fund is managed by Tuleva', () => {
+      expect(isTuleva(fund)).toBe(true);
+      expect(isTuleva({ ...fund, fundManager: { name: 'Other' } })).toBe(false);
     });
   });
 });

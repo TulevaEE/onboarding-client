@@ -1,3 +1,5 @@
+import { FundStatus } from './apiModels';
+
 const isTruthy = (value) => !!value;
 
 const NOT_FOUND_ITEM_CONSTANT = {}; // using this as a secret comparison reference.
@@ -31,6 +33,8 @@ export function getTotalFundValue(funds) {
   return (funds || []).reduce((sum, { price }) => sum + price, 0);
 }
 
+export const isActive = (fund) => fund.status === FundStatus.ACTIVE;
+export const isSecondPillar = (fund) => fund.pillar === 2;
 export const isThirdPillar = (fund) => fund.pillar === 3;
 
 export const isTuleva = (fund) => (fund.fundManager || {}).name === 'Tuleva';

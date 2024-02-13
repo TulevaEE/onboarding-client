@@ -203,9 +203,31 @@ describe('Exchange reducer', () => {
         status: FundStatus.ACTIVE,
       },
     ];
-    const action = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
+
+    const fundsFromBothPillarsAndAllStates = [
+      ...targetFunds,
+      {
+        isin: 'third pillar fund',
+        hello: true,
+        fundManager: { name: 'A' },
+        pillar: 3,
+        status: FundStatus.ACTIVE,
+      },
+      {
+        isin: 'third pillar non active fund',
+        hello: true,
+        fundManager: { name: 'A' },
+        pillar: 3,
+        status: FundStatus.CONTRIBUTIONS_FORBIDDEN,
+      },
+    ];
+    const action = {
+      type: GET_TARGET_FUNDS_SUCCESS,
+      targetFunds: fundsFromBothPillarsAndAllStates,
+    };
     const newState = exchangeReducer({ loadingTargetFunds: true }, action);
     expect(newState.targetFunds).toEqual(targetFunds);
+    expect(newState.funds).toEqual(fundsFromBothPillarsAndAllStates);
     expect(newState.loadingTargetFunds).toBe(false);
   });
 

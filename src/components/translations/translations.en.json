@@ -338,7 +338,7 @@
   "pension.registry.connection.exception": "Couldn't connect to the Estonian Pension Registry, please try again.",
   "change.my.pension.fund": "Change II pillar fund",
   "change.my.pension.fund.third.pillar": "Change III pillar fund",
-  "returnComparison.title": "Your personal rate of return",
+  "returnComparison.title": "Your personal rate of return, since {fromDate}",
   "returnComparison.show.in.eur": "Show in euros",
   "returnComparison.show.in.percentage": "Show in percentage",
   "returnComparison.personal.secondPillar": "Your II pillar",

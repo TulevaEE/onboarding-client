@@ -10,20 +10,40 @@ jest.mock('./api', () => ({
   ...jest.requireActual('./api'),
   getReturnComparison: jest.fn(),
 }));
+
 jest.mock('moment', () => {
-  return () => jest.requireActual('moment')('2020-01-01T00:00:00.000Z');
+  const actualMoment = jest.requireActual('moment');
+
+  const mockedMoment = (...args: any[]) => {
+    if (args.length === 0) {
+      return actualMoment('2020-01-01T00:00:00.000Z');
+    }
+    return actualMoment(...args);
+  };
+
+  mockedMoment.locale = (lang: any) => {
+    return lang || 'en';
+  };
+
+  mockedMoment.format = (...args: any[]) => actualMoment().format(...args);
+
+  // eslint-disable-next-line fp/no-mutating-assign
+  Object.assign(mockedMoment, actualMoment);
+
+  return mockedMoment;
 });
-jest.mock('./fundIsinsWithAvailableData.json', () => ['EE123456', 'EE987654']);
 
 describe('Return comparison', () => {
   it('does not get returns when no token', () => {
-    shallow(<ReturnComparison token="" fundNameMap={{}} />);
+    shallow(<ReturnComparison token="" fundNameMapSecondPillar={{}} fundNameMapThirdPillar={{}} />);
     expect(getReturnComparison).not.toHaveBeenCalled();
   });
 
   it('gets returns from the beginning for second pillar, epi, and union stock index with token', () => {
     expect(getReturnComparison).not.toHaveBeenCalled();
-    shallow(<ReturnComparison token="a-token" fundNameMap={{}} />);
+    shallow(
+      <ReturnComparison token="a-token" fundNameMapSecondPillar={{}} fundNameMapThirdPillar={{}} />,
+    );
     expect(getReturnComparison).toHaveBeenCalledWith(
       START_DATE,
       { personalKey: Key.SECOND_PILLAR, pensionFundKey: Key.EPI, indexKey: Key.UNION_STOCK_INDEX },
@@ -33,7 +53,9 @@ describe('Return comparison', () => {
 
   it('gets returns on date change with date', async () => {
     (getReturnComparison as jest.Mock).mockResolvedValueOnce({});
-    const component = shallow(<ReturnComparison token="a-token" fundNameMap={{}} />);
+    const component = shallow(
+      <ReturnComparison token="a-token" fundNameMapSecondPillar={{}} fundNameMapThirdPillar={{}} />,
+    );
 
     await flushPromises();
     (getReturnComparison as jest.Mock).mockClear();
@@ -45,7 +67,9 @@ describe('Return comparison', () => {
 
   it('gets returns on personal pillar change with pillar', async () => {
     (getReturnComparison as jest.Mock).mockResolvedValueOnce({});
-    const component = shallow(<ReturnComparison token="a-token" fundNameMap={{}} />);
+    const component = shallow(
+      <ReturnComparison token="a-token" fundNameMapSecondPillar={{}} fundNameMapThirdPillar={{}} />,
+    );
 
     await flushPromises();
     (getReturnComparison as jest.Mock).mockClear();
@@ -64,7 +88,9 @@ describe('Return comparison', () => {
   });
 
   it('gets returns on pension fund change with key', async () => {
-    const component = shallow(<ReturnComparison token="a-token" fundNameMap={{}} />);
+    const component = shallow(
+      <ReturnComparison token="a-token" fundNameMapSecondPillar={{}} fundNameMapThirdPillar={{}} />,
+    );
     await flushPromises();
     (getReturnComparison as jest.Mock).mockClear();
 
@@ -82,7 +108,9 @@ describe('Return comparison', () => {
   });
 
   it('gets returns on index change with key', async () => {
-    const component = shallow(<ReturnComparison token="a-token" fundNameMap={{}} />);
+    const component = shallow(
+      <ReturnComparison token="a-token" fundNameMapSecondPillar={{}} fundNameMapThirdPillar={{}} />,
+    );
     await flushPromises();
     (getReturnComparison as jest.Mock).mockClear();
 
@@ -102,19 +130,33 @@ describe('Return comparison', () => {
   it('has transformed hardcoded pension fund isins and epi as pension fund select options', async () => {
     const fundNameMap = {
       EE987654: 'Existing fund name',
+      EE123456: 'Additional fund name',
     };
-    const component = shallow(<ReturnComparison token={aToken()} fundNameMap={fundNameMap} />);
+
+    const component = shallow(
+      <ReturnComparison
+        token={aToken()}
+        fundNameMapSecondPillar={fundNameMap}
+        fundNameMapThirdPillar={fundNameMap}
+      />,
+    );
 
     expect(pensionFundSelect(component).prop('options')).toEqual([
       { label: 'returnComparison.pensionFund', value: Key.EPI },
-      { label: 'EE123456', value: 'EE123456' },
+      { label: 'Additional fund name', value: 'EE123456' },
       { label: 'Existing fund name', value: 'EE987654' },
     ]);
   });
 
   it('shows returns as - after failed retrieval', async () => {
     (getReturnComparison as jest.Mock).mockResolvedValueOnce({});
-    const component = shallow(<ReturnComparison token={aToken()} fundNameMap={{}} />);
+    const component = shallow(
+      <ReturnComparison
+        token={aToken()}
+        fundNameMapSecondPillar={{}}
+        fundNameMapThirdPillar={{}}
+      />,
+    );
 
     await flushPromises();
 
@@ -129,7 +171,13 @@ describe('Return comparison', () => {
 
   it('shows ... for returns while getting returns', async () => {
     (getReturnComparison as jest.Mock).mockResolvedValueOnce({});
-    const component = shallow(<ReturnComparison token={aToken()} fundNameMap={{}} />);
+    const component = shallow(
+      <ReturnComparison
+        token={aToken()}
+        fundNameMapSecondPillar={{}}
+        fundNameMapThirdPillar={{}}
+      />,
+    );
     await flushPromises();
 
     (getReturnComparison as jest.Mock).mockResolvedValueOnce({});
@@ -170,7 +218,13 @@ describe('Return comparison', () => {
     };
 
     (getReturnComparison as jest.Mock).mockResolvedValueOnce({});
-    const component = shallow(<ReturnComparison token={aToken()} fundNameMap={{}} />);
+    const component = shallow(
+      <ReturnComparison
+        token={aToken()}
+        fundNameMapSecondPillar={{}}
+        fundNameMapThirdPillar={{}}
+      />,
+    );
     await flushPromises();
 
     (getReturnComparison as jest.Mock).mockResolvedValueOnce(returns);
@@ -187,7 +241,13 @@ describe('Return comparison', () => {
 
   it('shows an error message and returns as - after getting not enough history response', async () => {
     (getReturnComparison as jest.Mock).mockResolvedValueOnce({});
-    const component = shallow(<ReturnComparison token={aToken()} fundNameMap={{}} />);
+    const component = shallow(
+      <ReturnComparison
+        token={aToken()}
+        fundNameMapSecondPillar={{}}
+        fundNameMapThirdPillar={{}}
+      />,
+    );
 
     await flushPromises();
 
@@ -211,10 +271,45 @@ describe('Return comparison', () => {
   it('gets returns from the beginning by default', async () => {
     (getReturnComparison as jest.Mock).mockResolvedValueOnce({});
 
-    const component = shallow(<ReturnComparison token={aToken()} fundNameMap={{}} />);
+    const component = shallow(
+      <ReturnComparison
+        token={aToken()}
+        fundNameMapSecondPillar={{}}
+        fundNameMapThirdPillar={{}}
+      />,
+    );
     await flushPromises();
 
     expect(dateSelect(component).prop('selected')).toEqual(START_DATE);
+  });
+
+  it('updates pension fund options based on selected personal key', async () => {
+    const secondPillarFundMap = {
+      'SP-123456': 'Second Pillar Fund 1',
+    };
+    const thirdPillarFundMap = {
+      'TP-654321': 'Third Pillar Fund 1',
+    };
+
+    const component = shallow(
+      <ReturnComparison
+        token={aToken()}
+        fundNameMapSecondPillar={secondPillarFundMap}
+        fundNameMapThirdPillar={thirdPillarFundMap}
+      />,
+    );
+
+    component.setState({ selectedPersonalKey: Key.SECOND_PILLAR });
+    await flushPromises();
+    let selectOptions = pensionFundSelect(component).prop('options');
+    expect(selectOptions).toContainEqual(expect.objectContaining({ value: 'SP-123456' }));
+    expect(selectOptions).not.toContainEqual(expect.objectContaining({ value: 'TP-654321' }));
+
+    component.setState({ selectedPersonalKey: Key.THIRD_PILLAR });
+    await flushPromises();
+    selectOptions = pensionFundSelect(component).prop('options');
+    expect(selectOptions).toContainEqual(expect.objectContaining({ value: 'TP-654321' }));
+    expect(selectOptions).not.toContainEqual(expect.objectContaining({ value: 'SP-123456' }));
   });
 
   const select = (c: ShallowWrapper) => c.find(Select);

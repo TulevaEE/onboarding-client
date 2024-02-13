@@ -5,9 +5,10 @@ import { connect } from 'react-redux';
 import moment, { Moment } from 'moment';
 import Select from './select';
 import { getReturnComparison, Key, Return } from './api';
-import fundIsinsWithAvailableData from './fundIsinsWithAvailableData.json';
 import convertFundsToFundNameMap from './convertFundsToFundNameMap';
 import Euro from '../../common/Euro';
+import { isActive, isSecondPillar, isThirdPillar } from '../../common/utils';
+import { formatDateYear } from '../../common/dateFormatter';
 
 interface Option {
   value: string;
@@ -16,7 +17,8 @@ interface Option {
 
 interface Props {
   token: string;
-  fundNameMap: Record<string, string>;
+  fundNameMapSecondPillar: Record<string, string>;
+  fundNameMapThirdPillar: Record<string, string>;
 }
 
 interface State {
@@ -127,7 +129,7 @@ export class ReturnComparison extends Component<Props, State> {
   }
 
   render(): JSX.Element {
-    const { fundNameMap } = this.props;
+    const { fundNameMapSecondPillar, fundNameMapThirdPillar } = this.props;
     const {
       loading,
       fromDateOptions,
@@ -141,12 +143,17 @@ export class ReturnComparison extends Component<Props, State> {
       from,
     } = this.state;
 
+    const selectedPillarFundNameMap =
+      selectedPersonalKey === Key.SECOND_PILLAR ? fundNameMapSecondPillar : fundNameMapThirdPillar;
     return (
       <div className="mt-5">
         <div className="row mb-2">
           <div className="col-md-8">
             <p className="mt-1 lead">
-              <FormattedMessage id="returnComparison.title" />
+              <FormattedMessage
+                id="returnComparison.title"
+                values={{ fromDate: from ? formatDateYear(from) : '' }}
+              />
             </p>
           </div>
           <div className="col-md-4 text-md-right">
@@ -218,10 +225,10 @@ export class ReturnComparison extends Component<Props, State> {
               <Select
                 options={[
                   { value: Key.EPI, label: 'returnComparison.pensionFund' },
-                  ...fundIsinsWithAvailableData
-                    .map((isin) => ({
+                  ...Object.entries(selectedPillarFundNameMap)
+                    .map(([isin, fundName]) => ({
                       value: isin,
-                      label: fundNameMap[isin] || isin,
+                      label: fundName || isin,
                     }))
                     .sort((option1, option2) => option1.label.localeCompare(option2.label)),
                 ]}
@@ -283,10 +290,19 @@ export class ReturnComparison extends Component<Props, State> {
 
 const mapStateToProps = (state: {
   login: { token: string };
-  exchange: { targetFunds: Record<string, string>[] };
-}): { token: string; fundNameMap: Record<string, string> } => ({
+  exchange: { targetFunds: Record<string, string>[]; funds: Record<string, string>[] };
+}): {
+  token: string;
+  fundNameMapSecondPillar: Record<string, string>;
+  fundNameMapThirdPillar: Record<string, string>;
+} => ({
   token: state.login.token,
-  fundNameMap: convertFundsToFundNameMap(state.exchange.targetFunds),
+  fundNameMapSecondPillar: convertFundsToFundNameMap(
+    state.exchange.funds?.filter(isSecondPillar).filter(isActive),
+  ),
+  fundNameMapThirdPillar: convertFundsToFundNameMap(
+    state.exchange.funds?.filter(isThirdPillar).filter(isActive),
+  ),
 });
 
 export default connect(mapStateToProps)(ReturnComparison);
