@@ -716,7 +716,7 @@ describe('Exchange reducer', () => {
       expect(newState.loadingMandate).toBe(false);
       expect(newState.mandateSigningControlCode).toBe(null);
       expect(newState.mandateSigningError).toBe(null);
-      expect(newState.signedMandateId).toBe(false);
+      expect(newState.signedMandateId).toBe(null);
       expect(newState.agreedToTerms).toBe(false);
     });
   });

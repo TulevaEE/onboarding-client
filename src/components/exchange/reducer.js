@@ -48,7 +48,7 @@ const initialState = {
   loadingMandate: false,
   mandateSigningControlCode: null,
   mandateSigningError: null,
-  signedMandateId: false,
+  signedMandateId: null,
   agreedToTerms: false,
 };
 

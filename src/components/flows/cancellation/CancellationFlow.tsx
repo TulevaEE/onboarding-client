@@ -18,5 +18,5 @@ const steps = [
 ];
 
 export const CancellationFlow: React.FunctionComponent = () => (
-  <Flow name="CANCELLATION" flowPath={flowPath} steps={steps} />
+  <Flow flowPath={flowPath} steps={steps} />
 );

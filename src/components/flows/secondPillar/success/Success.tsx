@@ -68,7 +68,7 @@ export const Success: React.FC<Props> = ({
       </div>
       <div className="d-flex justify-content-center mt-4">
         <Link
-          to="/2nd-pillar-payment"
+          to="/2nd-pillar-payment-rate"
           className="btn btn-primary btn-lg flex-grow-1 flex-md-grow-0"
         >
           <FormattedMessage id="success.2ndPillarPaymentUpsell.button" />

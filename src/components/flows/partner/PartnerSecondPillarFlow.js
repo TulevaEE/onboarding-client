@@ -47,7 +47,7 @@ const steps = [
 ];
 
 const PartnerSecondPillarFlow = () => (
-  <Flow name="SECOND_PILLAR" flowPath={flowPath} introMessage={introMessage} steps={steps} />
+  <Flow flowPath={flowPath} introMessage={introMessage} steps={steps} />
 );
 
 export default PartnerSecondPillarFlow;

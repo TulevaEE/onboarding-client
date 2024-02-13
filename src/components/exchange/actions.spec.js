@@ -1,5 +1,3 @@
-import { push } from 'connected-react-router';
-
 import {
   CHANGE_AGREEMENT_TO_TERMS,
   GET_SOURCE_FUNDS_ERROR,
@@ -38,14 +36,6 @@ function nextTick() {
 }
 
 describe('Exchange actions', () => {
-  beforeEach(() => {
-    global.window.useHackySecondPillarRoutePushesInActions = true;
-  });
-
-  afterEach(() => {
-    delete global.window.useHackySecondPillarRoutePushesInActions;
-  });
-
   let dispatch;
   let state;
 
@@ -270,7 +260,6 @@ describe('Exchange actions', () => {
       signedMandateId: mandate.id,
       pillar: mandate.pillar,
     });
-    expect(dispatch).toHaveBeenCalledWith(push('/2nd-pillar-flow/success'));
   });
 
   it('starts polling until fails when signing the mandate with mobile id', async () => {
@@ -344,7 +333,6 @@ describe('Exchange actions', () => {
       signedMandateId: mandate.id,
       pillar: mandate.pillar,
     });
-    expect(dispatch).toHaveBeenCalledWith(push('/2nd-pillar-flow/success'));
   });
 
   it('can handle unprocessable entity errors when saving the mandate', async () => {

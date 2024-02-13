@@ -54,4 +54,4 @@ const steps = [
   },
 ];
 
-export default () => <Flow name="THIRD_PILLAR" flowPath={flowPath} steps={steps} />;
+export default () => <Flow flowPath={flowPath} steps={steps} />;

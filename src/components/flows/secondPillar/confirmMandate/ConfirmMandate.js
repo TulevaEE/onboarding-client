@@ -5,14 +5,14 @@ import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 
 import { FormattedMessage } from 'react-intl';
-import { Loader, AuthenticationLoader, ErrorMessage, utils } from '../../../common';
+import { AuthenticationLoader, ErrorMessage, Loader, utils } from '../../../common';
 
 import {
-  previewMandate,
-  signMandate,
   cancelSigningMandate,
   changeAgreementToTerms,
   closeErrorMessages,
+  previewMandate,
+  signMandate,
 } from '../../../exchange/actions';
 
 import MandateNotFilledAlert from './mandateNotFilledAlert';
@@ -97,6 +97,8 @@ export const ConfirmMandate = ({
   selectedFutureContributionsFund,
   address,
   hasAddress,
+  signedMandateId,
+  nextPath,
   loading,
   previousPath,
   onPreviewMandate,
@@ -134,6 +136,7 @@ export const ConfirmMandate = ({
   return (
     <div className="px-col">
       {!hasAddress && <Redirect to={previousPath} />}
+      {signedMandateId && <Redirect to={nextPath} />}
 
       {exchange.loadingMandate || exchange.mandateSigningControlCode ? (
         <AuthenticationLoader
@@ -234,6 +237,8 @@ ConfirmMandate.defaultProps = {
   selectedFutureContributionsFund: {},
   address: {},
   hasAddress: false,
+  signedMandateId: null,
+  nextPath: '',
   onPreviewMandate: noop,
   onSignMandate: noop,
   onCancelSigningMandate: noop,
@@ -261,6 +266,8 @@ ConfirmMandate.propTypes = {
   }),
   address: Types.shape({}),
   hasAddress: Types.bool,
+  signedMandateId: Types.number,
+  nextPath: Types.string,
   loading: Types.bool,
   onPreviewMandate: Types.func,
   onSignMandate: Types.func,
@@ -276,6 +283,8 @@ const mapStateToProps = (state) => ({
   ),
   address: (state.login.user || {}).address,
   hasAddress: !state.login.user || isAddressFilled(state.login.user),
+  signedMandateId: state.exchange.signedMandateId,
+
   loading:
     state.login.loadingUser ||
     state.login.loadingUserConversion ||

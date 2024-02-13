@@ -1,10 +1,10 @@
-import { push } from 'connected-react-router';
 import download from 'downloadjs';
 import hwcrypto from 'hwcrypto-js';
 
 import {
   downloadMandatePreviewWithIdAndToken,
   downloadMandateWithIdAndToken,
+  getFunds,
   getIdCardSignatureHash,
   getIdCardSignatureStatus,
   getMobileIdSignatureChallengeCode,
@@ -12,7 +12,6 @@ import {
   getSmartIdSignatureChallengeCode,
   getSmartIdSignatureStatus,
   getSourceFundsWithToken,
-  getFunds,
   saveMandateWithToken,
 } from '../common/api';
 import {
@@ -30,6 +29,7 @@ import {
   SIGN_MANDATE_ID_CARD_SIGN_HASH_SUCCESS,
   SIGN_MANDATE_ID_CARD_START,
   SIGN_MANDATE_ID_CARD_START_SUCCESS,
+  SIGN_MANDATE_IN_PROGRESS,
   SIGN_MANDATE_INVALID_ERROR,
   SIGN_MANDATE_MOBILE_ID_CANCEL,
   SIGN_MANDATE_MOBILE_ID_START,
@@ -38,7 +38,6 @@ import {
   SIGN_MANDATE_SMART_ID_START_SUCCESS,
   SIGN_MANDATE_START_ERROR,
   SIGN_MANDATE_SUCCESS,
-  SIGN_MANDATE_IN_PROGRESS,
 } from './constants';
 import { actions as amlActions } from '../aml';
 
@@ -118,9 +117,6 @@ function pollForMobileIdSignature(mandateId, pillar) {
               signedMandateId: mandateId,
               pillar,
             });
-            if (window.useHackySecondPillarRoutePushesInActions) {
-              dispatch(push('/2nd-pillar-flow/success'));
-            }
           }
         })
         .catch((error) => dispatch({ type: SIGN_MANDATE_ERROR, error }));
@@ -148,9 +144,6 @@ function pollForSmartIdSignature(mandateId, pillar) {
               signedMandateId: mandateId,
               pillar,
             });
-            if (window.useHackySecondPillarRoutePushesInActions) {
-              dispatch(push('/2nd-pillar-flow/success'));
-            }
           }
         })
         .catch((error) => dispatch({ type: SIGN_MANDATE_ERROR, error }));
@@ -237,9 +230,6 @@ function pollForIdCardSignature(mandateId, pillar, signedHash) {
               signedMandateId: mandateId,
               pillar,
             });
-            if (window.useHackySecondPillarRoutePushesInActions) {
-              dispatch(push('/2nd-pillar-flow/success'));
-            }
           } else if (statusCode === SIGNING_IN_PROGRESS_STATUS) {
             dispatch(pollForIdCardSignature(mandateId, pillar, signedHash));
           } else {

@@ -36,13 +36,7 @@ describe('Flow', () => {
         Component: FourthComponent,
       },
     ];
-    component = shallow(<Flow name="SOME_FLOW" flowPath="/a-flow" steps={steps} />);
-  });
-
-  it('sets window.useHackySecondPillarRoutePushesInActions to whether flow name is SECOND_PILLAR on mount', () => {
-    expect(window.useHackySecondPillarRoutePushesInActions).toBe(false);
-    component = shallow(<Flow name="SECOND_PILLAR" flowPath="/a-flow" steps={steps} />);
-    expect(window.useHackySecondPillarRoutePushesInActions).toBe(true);
+    component = shallow(<Flow flowPath="/a-flow" steps={steps} />);
   });
 
   it('has intro message when passed and on first step', () => {
