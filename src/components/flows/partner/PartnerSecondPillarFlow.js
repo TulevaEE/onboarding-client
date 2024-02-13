@@ -36,13 +36,13 @@ const steps = [
   {
     path: 'confirm-mandate',
     Component: () => (
-      <ConfirmMandate previousPath={`${flowPath}/address`} nextPath={`${flowPath}/success`} />
+      <ConfirmMandate previousPath={`${flowPath}/address`} nextPath={`${flowPath}-success`} />
     ),
     title: <FormattedMessage id="steps.confirm-mandate" />,
   },
   {
     path: 'success',
-    Component: () => <Success previousPath={`${flowPath}/confirm-mandate`} />,
+    Component: () => <Success />,
   },
 ];
 

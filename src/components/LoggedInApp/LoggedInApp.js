@@ -33,6 +33,7 @@ import { SecondPillarPaymentRateSuccess } from '../flows/secondPillarPaymentRate
 import BackToPartner from '../flows/partner/BackToPartner';
 import ThirdPillarPaymentPage from '../flows/thirdPillar/ThirdPillarPayment/ThirdPillarPaymentPage';
 import DevSidebar from '../dev/DevSidebar';
+import Success from '../flows/secondPillar/success';
 
 export const ACCOUNT_PATH = '/account';
 export const AML_PATH = '/aml';
@@ -92,6 +93,7 @@ export class LoggedInApp extends PureComponent {
               <Route path="/2nd-pillar-flow" component={SecondPillarFlow} />
               <Route path="/3rd-pillar-flow" component={ThirdPillarFlow} />
               <Route path="/partner/2nd-pillar-flow" component={PartnerSecondPillarFlow} />
+              <Route path="/partner/2nd-pillar-flow-success" component={Success} />
               <Route path="/partner/3rd-pillar-flow" component={PartnerThirdPillarFlow} />
               <Route path="/partner/3rd-pillar-flow-success" component={BackToPartner} />
               <Route path="/3rd-pillar-payment" component={ThirdPillarPaymentPage} />

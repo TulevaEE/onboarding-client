@@ -4,21 +4,20 @@ import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Route } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
-// eslint-disable-next-line import/no-named-as-default
 import { rest } from 'msw';
 import { initializeConfiguration } from '../../config/config';
 import LoggedInApp from '../../LoggedInApp';
 import { createDefaultStore, login, renderWrapped } from '../../../test/utils';
 import {
-  userBackend,
-  userConversionBackend,
   amlChecksBackend,
-  pensionAccountStatementBackend,
-  fundsBackend,
-  returnsBackend,
-  userCapitalBackend,
   applicationsBackend,
+  fundsBackend,
+  pensionAccountStatementBackend,
+  returnsBackend,
   smartIdSigningBackend,
+  userBackend,
+  userCapitalBackend,
+  userConversionBackend,
 } from '../../../test/backend';
 
 const server = setupServer();
@@ -81,6 +80,25 @@ test('2nd pillar flow allows moving all external pension to main Tuleva pension 
 
   expect(
     await screen.findByRole('heading', { name: 'Application finished' }, { timeout: 10_000 }),
+  ).toBeInTheDocument();
+
+  expect(
+    await screen.findByText('Your current fund units will be transferred on', { exact: false }),
+  ).toBeInTheDocument();
+
+  expect(
+    await screen.findByText('the first working day following', { exact: false }),
+  ).toBeInTheDocument();
+
+  expect(
+    await screen.findByText(
+      'Your future contributions will be directed to your selected pension fund',
+      { exact: false },
+    ),
+  ).toBeInTheDocument();
+
+  expect(
+    await screen.findByText('starting from the next payment', { exact: false }),
   ).toBeInTheDocument();
 
   // TODO: Consider testing mandate download

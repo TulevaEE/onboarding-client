@@ -42,7 +42,7 @@ const steps = [
   },
   {
     path: 'success',
-    Component: () => <Success previousPath={`${flowPath}/confirm-mandate`} />,
+    Component: () => <Success />,
   },
 ];
 

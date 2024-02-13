@@ -114,6 +114,9 @@ const sendMessage = (message: {
   if ((window as any).ReactNativeWebView) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (window as any).ReactNativeWebView.postMessage(JSON.stringify(message));
+  } else {
+    // eslint-disable-next-line no-console
+    console.error('no window.ReactNativeWebView');
   }
 };
 
