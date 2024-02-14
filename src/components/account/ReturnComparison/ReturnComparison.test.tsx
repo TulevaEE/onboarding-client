@@ -5,6 +5,7 @@ import { FormattedMessage } from 'react-intl';
 import { ReturnComparison, START_DATE } from './ReturnComparison';
 import { getReturnComparison, Key, ReturnComparison as ReturnComparisonType } from './api';
 import Select from './select';
+import Loader from '../../common/loader';
 
 jest.mock('./api', () => ({
   ...jest.requireActual('./api'),
@@ -169,7 +170,7 @@ describe('Return comparison', () => {
     expect(pensionFundReturn(component)).toBe('-');
   });
 
-  it('shows ... for returns while getting returns', async () => {
+  it('shows a loader for returns while getting returns', async () => {
     (getReturnComparison as jest.Mock).mockResolvedValueOnce({});
     const component = shallow(
       <ReturnComparison
@@ -183,9 +184,9 @@ describe('Return comparison', () => {
     (getReturnComparison as jest.Mock).mockResolvedValueOnce({});
     dateSelect(component).simulate('change', aDate());
 
-    expect(personalReturn(component)).toBe('...');
-    expect(indexReturn(component)).toBe('...');
-    expect(pensionFundReturn(component)).toBe('...');
+    expect(personalReturn(component)).toBe('');
+    expect(indexReturn(component)).toEqual('<Loader />');
+    expect(pensionFundReturn(component)).toBe('');
   });
 
   it('shows returns as formatted percentages and no error messages', async () => {
