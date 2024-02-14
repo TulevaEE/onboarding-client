@@ -9,6 +9,9 @@ import convertFundsToFundNameMap from './convertFundsToFundNameMap';
 import Euro from '../../common/Euro';
 import { isActive, isSecondPillar, isThirdPillar } from '../../common/utils';
 import { formatDateYear } from '../../common/dateFormatter';
+import Loader from '../../common/loader';
+
+import styles from './ReturnComparison.module.scss';
 
 interface Option {
   value: string;
@@ -48,7 +51,7 @@ const formatAmount = (aReturn: Return | null): JSX.Element => {
   return <>&nbsp;</>;
 };
 
-const LOADER = '...';
+const LOADER = <Loader className="align-middle" />;
 
 export const START_DATE = '2003-01-07';
 
@@ -189,7 +192,7 @@ export class ReturnComparison extends Component<Props, State> {
               />
               <div className="my-4">
                 <div className="h2 text-primary m-0">
-                  {loading ? LOADER : formatReturn(personalReturn)}
+                  {loading ? '' : formatReturn(personalReturn)}
                 </div>
                 <small className="text-muted">
                   {loading ? <>&nbsp;</> : formatAmount(personalReturn)}
@@ -212,7 +215,7 @@ export class ReturnComparison extends Component<Props, State> {
                   });
                 }}
               />
-              <div className="my-4">
+              <div className={`my-4 ${styles.minHeightLoader}`}>
                 <div className="h2 text-success m-0">
                   {loading ? LOADER : formatReturn(indexReturn)}
                 </div>
@@ -240,9 +243,7 @@ export class ReturnComparison extends Component<Props, State> {
                 }}
               />
               <div className="my-4">
-                <div className="h2 text-danger m-0">
-                  {loading ? LOADER : formatReturn(fundReturn)}
-                </div>
+                <div className="h2 text-danger m-0">{loading ? '' : formatReturn(fundReturn)}</div>
                 <small className="text-muted">
                   {loading ? <>&nbsp;</> : formatAmount(fundReturn)}
                 </small>
