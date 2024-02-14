@@ -98,6 +98,44 @@ export class ReturnComparison extends Component<Props, State> {
     }
   }
 
+  private getFundOptions(
+    fundNameMapSecondPillar: Record<string, string>,
+    fundNameMapThirdPillar: Record<string, string>,
+  ): Option[] {
+    const { selectedPersonalKey } = this.state;
+
+    const selectedPillarFundNameMap =
+      selectedPersonalKey === Key.SECOND_PILLAR ? fundNameMapSecondPillar : fundNameMapThirdPillar;
+
+    let fundOptions = Object.entries(selectedPillarFundNameMap).map(([isin, fundName]) => ({
+      value: isin,
+      label: fundName || isin,
+    }));
+
+    fundOptions.sort((option1, option2) => option1.label.localeCompare(option2.label));
+
+    if (selectedPersonalKey === Key.SECOND_PILLAR) {
+      fundOptions = [{ value: Key.EPI, label: 'returnComparison.pensionFund' }, ...fundOptions];
+    }
+
+    return fundOptions;
+  }
+
+  private refreshFundOptionsAndLoadReturns(
+    fundNameMapSecondPillar: Record<string, string>,
+    fundNameMapThirdPillar: Record<string, string>,
+  ) {
+    this.setState(
+      {
+        selectedFundKey: this.getFundOptions(fundNameMapSecondPillar, fundNameMapThirdPillar)[0]
+          .value,
+      },
+      () => {
+        this.loadReturns();
+      },
+    );
+  }
+
   async loadReturns(): Promise<void> {
     const { token } = this.props;
     const { fromDate, selectedPersonalKey, selectedFundKey, selectedIndexKey } = this.state;
@@ -145,9 +183,8 @@ export class ReturnComparison extends Component<Props, State> {
       indexReturn,
       from,
     } = this.state;
+    const fundOptions = this.getFundOptions(fundNameMapSecondPillar, fundNameMapThirdPillar);
 
-    const selectedPillarFundNameMap =
-      selectedPersonalKey === Key.SECOND_PILLAR ? fundNameMapSecondPillar : fundNameMapThirdPillar;
     return (
       <div className="mt-5">
         <div className="row mb-2">
@@ -186,7 +223,10 @@ export class ReturnComparison extends Component<Props, State> {
                 selected={selectedPersonalKey}
                 onChange={(key: string) => {
                   this.setState({ selectedPersonalKey: Key[key as keyof typeof Key] }, () => {
-                    this.loadReturns();
+                    this.refreshFundOptionsAndLoadReturns(
+                      fundNameMapSecondPillar,
+                      fundNameMapThirdPillar,
+                    );
                   });
                 }}
               />
@@ -226,15 +266,7 @@ export class ReturnComparison extends Component<Props, State> {
             </div>
             <div className="col-sm-4 text-center">
               <Select
-                options={[
-                  { value: Key.EPI, label: 'returnComparison.pensionFund' },
-                  ...Object.entries(selectedPillarFundNameMap)
-                    .map(([isin, fundName]) => ({
-                      value: isin,
-                      label: fundName || isin,
-                    }))
-                    .sort((option1, option2) => option1.label.localeCompare(option2.label)),
-                ]}
+                options={fundOptions}
                 selected={selectedFundKey}
                 onChange={(key: string) => {
                   this.setState({ selectedFundKey: key }, () => {

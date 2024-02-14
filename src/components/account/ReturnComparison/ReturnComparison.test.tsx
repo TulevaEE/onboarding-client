@@ -5,7 +5,6 @@ import { FormattedMessage } from 'react-intl';
 import { ReturnComparison, START_DATE } from './ReturnComparison';
 import { getReturnComparison, Key, ReturnComparison as ReturnComparisonType } from './api';
 import Select from './select';
-import Loader from '../../common/loader';
 
 jest.mock('./api', () => ({
   ...jest.requireActual('./api'),
@@ -66,10 +65,16 @@ describe('Return comparison', () => {
     expect(getReturnComparison).toHaveBeenCalledWith('2020-06-25', expect.any(Object), 'a-token');
   });
 
-  it('gets returns on personal pillar change with pillar', async () => {
+  it('gets returns on personal pillar change with pillar, with refreshed fund key', async () => {
     (getReturnComparison as jest.Mock).mockResolvedValueOnce({});
+
+    const fundNameMapThirdPillar = { thirdPillarFund1: 'Some fund' };
     const component = shallow(
-      <ReturnComparison token="a-token" fundNameMapSecondPillar={{}} fundNameMapThirdPillar={{}} />,
+      <ReturnComparison
+        token="a-token"
+        fundNameMapSecondPillar={{}}
+        fundNameMapThirdPillar={fundNameMapThirdPillar}
+      />,
     );
 
     await flushPromises();
@@ -81,7 +86,7 @@ describe('Return comparison', () => {
       expect.any(String),
       {
         personalKey: Key.THIRD_PILLAR,
-        pensionFundKey: expect.any(String),
+        pensionFundKey: 'thirdPillarFund1',
         indexKey: expect.any(String),
       },
       'a-token',
@@ -144,6 +149,32 @@ describe('Return comparison', () => {
 
     expect(pensionFundSelect(component).prop('options')).toEqual([
       { label: 'returnComparison.pensionFund', value: Key.EPI },
+      { label: 'Additional fund name', value: 'EE123456' },
+      { label: 'Existing fund name', value: 'EE987654' },
+    ]);
+  });
+
+  it('does not display EPI in funds when third pillar is selected', async () => {
+    const fundNameMap = {
+      EE987654: 'Existing fund name',
+      EE123456: 'Additional fund name',
+    };
+
+    const component = shallow(
+      <ReturnComparison
+        token={aToken()}
+        fundNameMapSecondPillar={fundNameMap}
+        fundNameMapThirdPillar={fundNameMap}
+      />,
+    );
+
+    expect(pensionFundSelect(component).prop('options')).toEqual([
+      { label: 'returnComparison.pensionFund', value: Key.EPI },
+      { label: 'Additional fund name', value: 'EE123456' },
+      { label: 'Existing fund name', value: 'EE987654' },
+    ]);
+    personalReturnSelect(component).simulate('change', Key.THIRD_PILLAR);
+    expect(pensionFundSelect(component).prop('options')).toEqual([
       { label: 'Additional fund name', value: 'EE123456' },
       { label: 'Existing fund name', value: 'EE987654' },
     ]);
