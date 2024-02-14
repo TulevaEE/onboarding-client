@@ -51,7 +51,7 @@ const formatAmount = (aReturn: Return | null): JSX.Element => {
   return <>&nbsp;</>;
 };
 
-const LOADER = <Loader className="align-middle" />;
+const LOADER = <Loader className={`align-middle ${styles.tinyLoader}`} />;
 
 export const START_DATE = '2003-01-07';
 
