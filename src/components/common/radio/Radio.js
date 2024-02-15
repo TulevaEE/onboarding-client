@@ -5,7 +5,7 @@ import './Radio.scss';
 
 const Radio = ({ children, onSelect, selected, name, className, id, alignRadioCenter = false }) => (
   <label
-    className={`tv-radio p-4 mb-0 px-col ${selected ? 'tv-radio--selected' : ''} ${className}`}
+    className={`tv-radio p-4 mb-0 ${selected ? 'tv-radio--selected' : ''} ${className}`}
     htmlFor={id}
   >
     <div className="row mb-0">

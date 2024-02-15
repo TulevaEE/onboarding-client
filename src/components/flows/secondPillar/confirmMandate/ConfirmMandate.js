@@ -134,7 +134,7 @@ export const ConfirmMandate = ({
   };
   const startSigningMandate = () => canSignMandate && onSignMandate(getMandate(exchange, address));
   return (
-    <div className="px-col">
+    <>
       {!hasAddress && <Redirect to={previousPath} />}
       {signedMandateId && <Redirect to={nextPath} />}
 
@@ -226,7 +226,7 @@ export const ConfirmMandate = ({
           </button>
         </Link>
       </div>
-    </div>
+    </>
   );
 };
 

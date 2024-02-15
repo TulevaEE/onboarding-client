@@ -8,22 +8,22 @@ const StepTitle = ({ children, number, active, completed }) => (
   <div className="tv-step">
     <div
       className={classNames('tv-step__title', 'mb-4', {
-        'tv-step__title--active mb-5': active,
+        'tv-step__title--active mb-2': active,
         'tv-step__title--completed': completed,
       })}
     >
       {number && (
-        <span className="tv-step__number ml-2 mr-3">
+        <span className="tv-step__number mr-3">
           {!completed && !active && <span className="text-regular">{number}</span>}
           {!completed && active && <b>{number}</b>}
         </span>
       )}
-      <span className={`mr-2 ${active ? 'h2' : 'text-muted'}`}>{children}</span>
+      <span className={`mr-2 ${active ? 'h2 mb-0' : 'text-muted'}`}>{children}</span>
     </div>
   </div>
 );
 
-StepTitle.defaultProps = {
+StepTitle.defaultPropfs = {
   children: '',
   number: null,
   active: false,

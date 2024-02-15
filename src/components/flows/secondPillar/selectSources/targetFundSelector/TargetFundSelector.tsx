@@ -10,25 +10,23 @@ type Props = {
   targetFunds: Fund[];
   onSelectFund: (fund: Fund) => void;
   selectedTargetFundIsin: string;
-  recommendedFundIsin: string;
 };
 
 export const TargetFundSelector: React.FunctionComponent<Props> = ({
   targetFunds = [],
   onSelectFund,
   selectedTargetFundIsin = '',
-  recommendedFundIsin = '',
 }) => {
   const { formatMessage } = useIntl();
 
   return (
-    <div className="row mx-0 mt-2 tv-target-fund__container">
+    <div className="row mx-0 mt-3 tv-target-fund__container">
       {targetFunds.map((fund) => (
-        <div key={fund.isin} className="col-12 col-sm mb-3 mr-2 p-0">
+        <div key={fund.isin} className="col-12 col-sm mb-2 mr-2 p-0">
           <button
             type="button"
             className={`
-                tv-target-fund p-4 text-left mb-2
+                tv-target-fund p-4 text-left
                 ${selectedTargetFundIsin === fund.isin ? 'tv-target-fund--active' : ''}
               `}
             onClick={() => onSelectFund(fund)}
@@ -65,14 +63,6 @@ export const TargetFundSelector: React.FunctionComponent<Props> = ({
               </small>
             </div>
           </button>
-
-          {recommendedFundIsin === fund.isin ? (
-            <small className="text-muted">
-              <FormattedMessage id="select.sources.select.all.recommended" />
-            </small>
-          ) : (
-            ''
-          )}
         </div>
       ))}
     </div>
