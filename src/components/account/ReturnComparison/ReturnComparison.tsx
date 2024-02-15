@@ -9,9 +9,9 @@ import convertFundsToFundNameMap from './convertFundsToFundNameMap';
 import Euro from '../../common/Euro';
 import { isActive, isSecondPillar, isThirdPillar } from '../../common/utils';
 import { formatDateYear } from '../../common/dateFormatter';
-import Loader from '../../common/loader';
 
 import styles from './ReturnComparison.module.scss';
+import { Shimmer } from '../../common/shimmer/Shimmer';
 
 interface Option {
   value: string;
@@ -51,7 +51,7 @@ const formatAmount = (aReturn: Return | null): JSX.Element => {
   return <>&nbsp;</>;
 };
 
-const LOADER = <Loader className={`align-middle ${styles.tinyLoader}`} />;
+const LOADER = <Shimmer height={29} className={`${styles.returnComparisonShimmer}`} />;
 
 export const START_DATE = '2003-01-07';
 
@@ -232,7 +232,7 @@ export class ReturnComparison extends Component<Props, State> {
               />
               <div className="my-4">
                 <div className="h2 text-primary m-0">
-                  {loading ? '' : formatReturn(personalReturn)}
+                  {loading ? LOADER : formatReturn(personalReturn)}
                 </div>
                 <small className="text-muted">
                   {loading ? <>&nbsp;</> : formatAmount(personalReturn)}
@@ -275,7 +275,9 @@ export class ReturnComparison extends Component<Props, State> {
                 }}
               />
               <div className="my-4">
-                <div className="h2 text-danger m-0">{loading ? '' : formatReturn(fundReturn)}</div>
+                <div className="h2 text-danger m-0">
+                  {loading ? LOADER : formatReturn(fundReturn)}
+                </div>
                 <small className="text-muted">
                   {loading ? <>&nbsp;</> : formatAmount(fundReturn)}
                 </small>

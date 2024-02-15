@@ -1,6 +1,9 @@
 import React from 'react';
 import styles from './Shimmer.module.scss';
 
-export const Shimmer: React.FunctionComponent<{ height?: number }> = ({ height = 16 }) => {
-  return <div className={styles.shimmer} style={{ height: `${height}px` }} />;
+export const Shimmer: React.FunctionComponent<{ height?: number; className?: string }> = ({
+  height = 16,
+  className,
+}) => {
+  return <div className={className || styles.shimmerDefault} style={{ height: `${height}px` }} />;
 };

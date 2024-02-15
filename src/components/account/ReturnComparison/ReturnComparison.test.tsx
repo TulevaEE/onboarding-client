@@ -215,9 +215,9 @@ describe('Return comparison', () => {
     (getReturnComparison as jest.Mock).mockResolvedValueOnce({});
     dateSelect(component).simulate('change', aDate());
 
-    expect(personalReturn(component)).toBe('');
-    expect(indexReturn(component)).toEqual('<Loader />');
-    expect(pensionFundReturn(component)).toBe('');
+    expect(personalReturn(component)).toBe('<Shimmer />');
+    expect(indexReturn(component)).toEqual('<Shimmer />');
+    expect(pensionFundReturn(component)).toBe('<Shimmer />');
   });
 
   it('shows returns as formatted percentages and no error messages', async () => {

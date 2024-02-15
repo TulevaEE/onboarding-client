@@ -1,4 +1,4 @@
-.tinyLoader {
-  width: 29px;
-  height: 29px;
+@import '../../common/shimmer/Shimmer.module.scss';
+.returnComparisonShimmer {
+  @include shimmerWithColor(#edf7fe, #D8EBFA);
 }
