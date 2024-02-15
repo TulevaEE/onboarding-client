@@ -5,7 +5,7 @@ import './Table.scss';
 
 const Table = ({ columns, dataSource }) => (
   <div className="table-container">
-    <table className="table">
+    <table className="table mb-0">
       <thead>
         <tr>
           {columns.map(({ dataIndex, title, hideOnMobile, align }) => (

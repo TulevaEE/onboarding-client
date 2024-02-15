@@ -13,12 +13,13 @@
   text-align: center;
   background-color: white;
   z-index: 3;
+  flex-basis: 32px;
+  flex-shrink: 0;
 }
 
 .tv-step__title {
-  overflow: hidden;
-  padding-left: 7px; // 15 (px-col) - 8 (pl-2) = 7px
-  padding-left: 7px; // 15 (px-col) - 8 (pr-2) = 7px
+  display: flex;
+  align-items: center;
 
   &--completed {
     & .tv-step__number {
@@ -29,25 +30,6 @@
   }
 
   &--active {
-    &::before,
-    &::after {
-      background-color: $gray-mid;
-      content: '';
-      display: inline-block;
-      height: 1px;
-      position: relative;
-      vertical-align: middle;
-      width: 100%;
-    }
-
-    &::before {
-      margin-left: -100%;
-    }
-
-    &::after {
-      margin-right: -100%;
-    }
-
     & .tv-step__number {
       color: $blue;
       background-color: rgba(5, 147, 252, 0.24);
@@ -55,7 +37,7 @@
     }
   }
 
-  & > .h2 > span {
+  & > span.h2 {
     vertical-align: middle;
   }
 }

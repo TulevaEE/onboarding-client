@@ -85,10 +85,7 @@ function isContributionsFundAlreadyActive(sourceFunds, isinToCompareTo) {
 
 function getContributionFundIsin(action, state) {
   if (!action.sourceSelectionExact && action.sourceSelection.length > 0) {
-    const futureContributionsFundCandidate = action.sourceSelection[0].targetFundIsin;
-    return isContributionsFundAlreadyActive(state.sourceFunds, futureContributionsFundCandidate)
-      ? null
-      : futureContributionsFundCandidate;
+    return action.sourceSelection[0].targetFundIsin;
   }
   return state.selectedFutureContributionsFundIsin;
 }
@@ -182,12 +179,7 @@ export default function exchangeReducer(state = initialState, action) {
     case SELECT_TARGET_FUND:
       return {
         ...state,
-        selectedFutureContributionsFundIsin: isContributionsFundAlreadyActive(
-          state.sourceFunds,
-          action.targetFundIsin,
-        )
-          ? null
-          : action.targetFundIsin,
+        selectedFutureContributionsFundIsin: action.targetFundIsin,
       };
 
     case SIGN_MANDATE_MOBILE_ID_START:

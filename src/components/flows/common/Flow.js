@@ -7,7 +7,7 @@ import StepTitle from './StepTitle';
 
 import './Flow.scss';
 
-export const Flow = ({ steps, flowPath, lastPartOfPath, introMessage }) => {
+export const Flow = ({ steps, flowPath, lastPartOfPath }) => {
   const stepPaths = steps.map((step) => step.path);
   const isStepPath = stepPaths.indexOf(lastPartOfPath) !== -1;
   const stepIndex = isStepPath ? stepPaths.indexOf(lastPartOfPath) : 0;
@@ -21,13 +21,8 @@ export const Flow = ({ steps, flowPath, lastPartOfPath, introMessage }) => {
 
   return (
     <div className="row">
-      <div className="col px-0">
-        {stepIndex === 0 && introMessage && (
-          <div className="px-col mt-5">
-            <p className="lead">{introMessage}</p>
-          </div>
-        )}
-        <div className="tv-steps mt-5">
+      <div className="col">
+        <div className="tv-steps mt-4">
           <>
             {beforeSteps.map(({ path, title }, index) => (
               <StepTitle key={path} number={index + 1} completed>
@@ -41,7 +36,7 @@ export const Flow = ({ steps, flowPath, lastPartOfPath, introMessage }) => {
             )}
           </>
 
-          <div className="pb-5 px-col">
+          <div className="pb-5">
             <Switch>
               <Route path={`${flowPath}/${currentStepPath}`} render={StepComponent} />
               <Redirect exact path={`${flowPath}`} to={`${flowPath}/${currentStepPath}`} />
@@ -64,7 +59,6 @@ export const Flow = ({ steps, flowPath, lastPartOfPath, introMessage }) => {
 
 Flow.propTypes = {
   flowPath: Types.string,
-  introMessage: Types.node,
   steps: Types.arrayOf(
     Types.shape({
       path: Types.string,
@@ -78,7 +72,6 @@ Flow.propTypes = {
 
 Flow.defaultProps = {
   flowPath: '',
-  introMessage: '',
   steps: [],
 
   lastPartOfPath: null,

@@ -27,62 +27,35 @@ function createRowAdder({ sourceFunds, targetFunds, selections, onChange }) {
 }
 
 const ExactFundSelector = ({ selections, sourceFunds, targetFunds, onChange }) => (
-  <div>
-    <div className="row mt-4">
-      <div className="col-12 col-md">
-        <small>
-          <b>
-            <FormattedMessage id="select.sources.select.some.source" />
-          </b>
-        </small>
+  <>
+    {selections && selections.length ? (
+      <div className="row mt-3">
+        {selections.map((selection, index) => (
+          <FundExchangeRow
+            key={index}
+            selection={selection}
+            sourceFunds={sourceFunds}
+            targetFunds={targetFunds}
+            onChange={createSelectionChangeHandler(index, selections, onChange)}
+          />
+        ))}
       </div>
-      <div className="col-12 col-md">
-        <small>
-          <b>
-            <FormattedMessage id="select.sources.select.some.target" />
-          </b>
-        </small>
-      </div>
-      <div className="col-12 col-md-2">
-        <small>
-          <b>
-            <FormattedMessage id="select.sources.select.some.percentage" />
-          </b>
-        </small>
-      </div>
-      <div className="col-12 col-md-1" />
-    </div>
-    {selections.map((selection, index) => (
-      <FundExchangeRow
-        key={index}
-        selection={selection}
-        sourceFunds={sourceFunds}
-        targetFunds={targetFunds}
-        onChange={createSelectionChangeHandler(index, selections, onChange)}
-      />
-    ))}
-    <div className="row mt-4">
-      <div className="col">
-        <small className="text-muted">
-          <FormattedMessage id="select.sources.select.some.cost" />
-        </small>
-      </div>
-      <div className="col">
-        <button
-          type="button"
-          className="btn btn-primary btn-sm float-right"
-          onClick={createRowAdder({
-            sourceFunds,
-            targetFunds,
-            selections,
-            onChange,
-          })}
-        >
-          <FormattedMessage id="select.sources.select.some.add" />
-        </button>
-      </div>
-    </div>
-  </div>
+    ) : (
+      ''
+    )}
+    <button
+      type="button"
+      className="btn btn-outline-primary px-3 mt-3"
+      onClick={createRowAdder({
+        sourceFunds,
+        targetFunds,
+        selections,
+        onChange,
+      })}
+    >
+      <FormattedMessage id="select.sources.select.some.add" />
+    </button>
+  </>
 );
 
 const noop = () => null;

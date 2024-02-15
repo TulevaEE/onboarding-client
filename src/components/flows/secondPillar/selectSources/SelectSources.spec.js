@@ -338,18 +338,6 @@ describe('Select sources step', () => {
     expect(onSelect).toHaveBeenCalledWith(selection, true);
   });
 
-  it('passes the recommended fund isin forward to the target fund selector', () => {
-    const recommendedFundIsin = 'asd';
-    component.setProps({
-      sourceSelection: [{ name: 'a', percentage: 1 }],
-      sourceSelectionExact: false,
-      recommendedFundIsin,
-    });
-    expect(component.find(TargetFundSelector).prop('recommendedFundIsin')).toBe(
-      recommendedFundIsin,
-    );
-  });
-
   it('passes only Tuleva funds to the target fund selector', () => {
     const tulevaFund = { isin: 'b', fundManager: { name: 'Tuleva' } };
     const targetFunds = [{ isin: 'a' }, tulevaFund];

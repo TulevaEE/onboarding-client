@@ -38,9 +38,9 @@ export const ThirdPillarSelectSources = ({
   return (
     <div>
       {exchangeableSourceFunds && !exchangeableSourceFunds.length && <Redirect to={nextPath} />}
-      <div className="row justify-content-around align-items-center">
+      <div className="row">
         <div className="col-12">
-          <div className="px-col mb-4">
+          <div className="mb-4">
             <p className="mb-4 lead">
               <FormattedMessage id="thirdPillarFlowSelectSources.title" />
             </p>

@@ -1,14 +1,13 @@
 import React from 'react';
 import { PropTypes as Types } from 'prop-types';
 
+import { FormattedMessage } from 'react-intl';
 import { createClamper } from '../../../../../common/utils';
-import './FundExchangeRow.scss';
 
 const clampFromZeroToHundred = createClamper(0, 100);
 
 export const FundExchangeRow = ({ sourceFunds, targetFunds, onChange, selection }) => {
   const randomString = (Math.random() + 1).toString(36).substring(7);
-  const randomId = `tv-percentage-selector-${randomString}`;
   const sortedSourceFunds = sourceFunds
     .slice()
     .sort((fund1, fund2) => fund1.name.localeCompare(fund2.name));
@@ -16,10 +15,17 @@ export const FundExchangeRow = ({ sourceFunds, targetFunds, onChange, selection 
     .slice()
     .sort((fund1, fund2) => fund1.name.localeCompare(fund2.name));
   return (
-    <div className="row">
-      <div className="col-12 col-md mt-2">
-        <div className="input-group">
+    <div className="col-md-6 px-1">
+      <div className="form-group card mx-0 mb-2">
+        <div className="card-body">
+          <label
+            className="small text-bold mb-1"
+            htmlFor={`tv-source-fund-selector-${randomString}`}
+          >
+            <FormattedMessage id="select.sources.select.some.source" />
+          </label>
           <select
+            id={`tv-source-fund-selector-${randomString}`}
             className="custom-select"
             value={selection.sourceFundIsin}
             onChange={({ target: { value: sourceFundIsin } }) =>
@@ -32,11 +38,15 @@ export const FundExchangeRow = ({ sourceFunds, targetFunds, onChange, selection 
               </option>
             ))}
           </select>
-        </div>
-      </div>
-      <div className="col-12 col-md mt-2">
-        <div className="input-group">
+
+          <label
+            className="small text-bold mb-1 mt-3"
+            htmlFor={`tv-target-fund-selector-${randomString}`}
+          >
+            <FormattedMessage id="select.sources.select.some.target" />
+          </label>
           <select
+            id={`tv-target-fund-selector-${randomString}`}
             className="custom-select"
             value={selection.targetFundIsin}
             onChange={({ target: { value: targetFundIsin } }) =>
@@ -49,34 +59,41 @@ export const FundExchangeRow = ({ sourceFunds, targetFunds, onChange, selection 
               </option>
             ))}
           </select>
-        </div>
-      </div>
-      <div className="col-12 col-md-2 mt-2">
-        <div className="input-group tv-percentage-selector">
-          <input
-            id={randomId}
-            className="form-control pr-0"
-            min="0"
-            max="100"
-            value={(selection.percentage * 100).toFixed()}
-            type="number"
-            onChange={({ target: { value } }) =>
-              onChange({
-                ...selection,
-                percentage: clampFromZeroToHundred(parseInt(value, 10)) / 100,
-              })
-            }
-          />
-          {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-          <label htmlFor={randomId} className="tv-percentage-selector__addon">
-            %
+
+          <label
+            className="small text-bold mb-1 mt-3"
+            htmlFor={`tv-percentage-selector-${randomString}`}
+          >
+            <FormattedMessage id="select.sources.select.some.percentage" />
           </label>
+          <div className="input-group">
+            <input
+              id={`tv-percentage-selector-${randomString}`}
+              className="form-control pr-0 d-block"
+              min="0"
+              max="100"
+              value={(selection.percentage * 100).toFixed()}
+              type="number"
+              onChange={({ target: { value } }) =>
+                onChange({
+                  ...selection,
+                  percentage: clampFromZeroToHundred(parseInt(value, 10)) / 100,
+                })
+              }
+            />
+            <div className="input-group-append">
+              <span className="input-group-text bg-white">%</span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            className="btn btn-outline-danger mt-3 px-3"
+            onClick={() => onChange(null)}
+          >
+            <FormattedMessage id="select.sources.select.some.delete" />
+          </button>
         </div>
-      </div>
-      <div className="col-12 col-md-1 mt-2 d-flex flex-column justify-content-center">
-        <button type="button" className="removeButton" onClick={() => onChange(null)}>
-          <span className="fa fa-times" />
-        </button>
       </div>
     </div>
   );

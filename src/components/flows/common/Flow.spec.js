@@ -39,24 +39,6 @@ describe('Flow', () => {
     component = shallow(<Flow flowPath="/a-flow" steps={steps} />);
   });
 
-  it('has intro message when passed and on first step', () => {
-    const introMessage = <FormattedMessage id="steps.intro" />;
-
-    const hasIntro = () => component.contains(introMessage);
-
-    component.setProps({ introMessage: null });
-    component.setProps({ lastPartOfPath: 'second-step' });
-    expect(hasIntro()).toBe(false);
-    component.setProps({ lastPartOfPath: 'first-step' });
-    expect(hasIntro()).toBe(false);
-
-    component.setProps({ introMessage });
-    component.setProps({ lastPartOfPath: 'second-step' });
-    expect(hasIntro()).toBe(false);
-    component.setProps({ lastPartOfPath: 'first-step' });
-    expect(hasIntro()).toBe(true);
-  });
-
   it('has completed step titles with numbers and titles', () => {
     const completedTitles = () =>
       component.find(StepTitle).filterWhere((title) => title.prop('completed'));

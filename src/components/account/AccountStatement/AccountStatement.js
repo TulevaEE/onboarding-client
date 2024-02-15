@@ -9,7 +9,7 @@ import { getValueSum, getWeightedAverageFee } from './fundSelector';
 import { Fees } from '../../common/Percentage/Fees';
 import { Shimmer } from '../../common/shimmer/Shimmer';
 
-const AccountStatement = ({ funds }) => {
+const AccountStatement = ({ funds, activeFundNotice }) => {
   if (!funds) {
     return <Shimmer height={26} />;
   }
@@ -93,7 +93,9 @@ const AccountStatement = ({ funds }) => {
 
       {showActiveFundNotice && (
         <small className="text-muted">
-          <FormattedMessage id={`accountStatement.${fundPillar}.activeFundNotice`} />
+          {activeFundNotice || (
+            <FormattedMessage id={`accountStatement.${fundPillar}.activeFundNotice`} />
+          )}
         </small>
       )}
     </>
@@ -113,6 +115,7 @@ AccountStatement.propTypes = {
       unavailablePrice: Types.number,
     }),
   ).isRequired,
+  activeFundNotice: Types.node,
 };
 
 export default AccountStatement;
