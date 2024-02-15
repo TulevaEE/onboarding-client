@@ -203,6 +203,7 @@
   "invalid.mandate.source.amount.exceeded": "Transfer amount for one of the funds is more than 100%.",
   "invalid.mandate.checks.missing": "Due to restrictions from anti moneylaundering, you can submit your application through Swedbank or SEB internet bank or pensionikeskus, but not yet through us.",
   "invalid.mandate.same.source.and.target.transfer.present": "Same source and target fund transfers are not allowed.",
+  "invalid.mandate.future.contributions.to.same.fund": "Chosen future contributions fund is already active.",
   "mobile.id.session.not.found": "Mobile id session is expired. Please log in again.",
   "mobile.id.signature.session.not.found": "Mobile id session is expired. Please log in again.",
   "mobile.id.cancelled": "You cancelled the operation from your phone.",
