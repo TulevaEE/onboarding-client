@@ -59,9 +59,11 @@ export const SelectSources = ({
 }) => {
   const { data: mandateDeadlines } = useMandateDeadlines();
   const [someExistingSwitch, setSomeExistingSwitch] = useState(
+    sourceSelection && sourceSelection.length > 0,
+  );
+  const [someFutureSwitch, setSomeFutureSwitch] = useState(
     selectedFutureContributionsFundIsin != null,
   );
-  const [someFutureSwitch, setSomeFutureSwitch] = useState(false);
 
   const onSomeExistingSwitchChange = (event) => {
     setSomeExistingSwitch(event.target.checked);
@@ -237,7 +239,7 @@ export const SelectSources = ({
                 className="custom-control-input"
                 id="someFutureSwitch"
                 onChange={onSomeFutureSwitchChange}
-                checked={someExistingSwitch}
+                checked={someFutureSwitch}
               />
               <label className="custom-control-label text-bold" htmlFor="someFutureSwitch">
                 <FormattedMessage id="select.sources.select.some.future" />
