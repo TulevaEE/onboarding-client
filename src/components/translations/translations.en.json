@@ -246,7 +246,7 @@
   "Swedbank Pensionifond K90-99 (Elutsükli strateegia)": "Swedbank Pension Fund K90-99 (Life-cycle Strategy)",
   "header.my.account": "My account",
   "account.member.statement": "You are Tuleva member no. {memberNumber}",
-  "account.member.statement.comment": "You're earning a 0.05% annual membership bonus",
+  "account.member.statement.comment": "You're a member since {memberJoinDate} and earn a 0.05% annual membership bonus",
   "account.non.member.statement": "Not a member and not earning any membership bonus",
   "account.non.member.info": "Tuleva members earn a 0.05% annual membership bonus",
   "account.converted.user.statement": "You have successfully filled an application to transfer future payments and current fund units to Tuleva.",

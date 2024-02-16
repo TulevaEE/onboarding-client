@@ -221,7 +221,7 @@
   "id.card.signature.session.not.found": "Id kaardi sessioon on aegunud, palun logi uuesti sisse.",
   "header.my.account": "Minu konto",
   "account.member.statement": "Sa oled Tuleva liige nr. {memberNumber}",
-  "account.member.statement.comment": "Teenid Tulevasse toodud raha pealt liikmeboonust 0.05% aastas",
+  "account.member.statement.comment": "Oled liige alates {memberJoinDate} ja teenid Tulevasse toodud raha pealt liikmeboonust 0.05% aastas",
   "account.non.member.statement": "Sa pole veel Tuleva liige ega teeni liikmeboonust",
   "account.non.member.info": "Tuleva liikmed teenivad Tulevasse toodud raha pealt liikmeboonust 0.05% aastas",
   "account.converted.user.statement": "Avaldus maksete ümber suunamiseks ja olemasolevate osakute ümber vahetamiseks Tuleva pensionifondi on tehtud.",

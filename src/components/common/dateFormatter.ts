@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-export function formatDate(date?: string): string {
+export function formatDate(date?: string | null): string {
   if (!date) {
     return '...';
   }
@@ -8,7 +8,7 @@ export function formatDate(date?: string): string {
   return moment(date).format(format);
 }
 
-export function formatDateTime(date?: string): string {
+export function formatDateTime(date?: string | null): string {
   if (!date) {
     return '...';
   }
@@ -16,7 +16,7 @@ export function formatDateTime(date?: string): string {
   return moment(date).format(format);
 }
 
-export function formatDateYear(date?: string): string {
+export function formatDateYear(date?: string | null): string {
   if (!date) {
     return '...';
   }

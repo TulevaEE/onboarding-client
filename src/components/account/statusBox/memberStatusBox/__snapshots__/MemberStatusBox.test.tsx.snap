@@ -57,6 +57,11 @@ exports[`MemberStatusBox renders the full component 1`] = `
       >
         <Memo(MemoizedFormattedMessage)
           id="account.member.statement.comment"
+          values={
+            Object {
+              "memberJoinDate": "February 16, 2024",
+            }
+          }
         />
       </small>,
     ]

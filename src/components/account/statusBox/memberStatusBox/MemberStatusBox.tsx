@@ -4,22 +4,28 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import StatusBoxRow from '../statusBoxRow';
 import { InfoTooltip } from '../../../common';
+import { formatDateYear } from '../../../common/dateFormatter';
 
 interface Props {
   loading: boolean;
   memberNumber: number | null;
+  memberJoinDate: string | null;
 }
 
 export const MemberStatusBox: React.FunctionComponent<Props> = ({
   loading = false,
   memberNumber,
+  memberJoinDate,
 }) => {
   const isTulevaMember = memberNumber != null;
   const tulevaData = isTulevaMember
     ? [
         <FormattedMessage id="account.member.statement" values={{ memberNumber }} />,
         <small className="text-muted">
-          <FormattedMessage id="account.member.statement.comment" />
+          <FormattedMessage
+            id="account.member.statement.comment"
+            values={{ memberJoinDate: formatDateYear(memberJoinDate) }}
+          />
         </small>,
       ]
     : [
@@ -52,12 +58,16 @@ export const MemberStatusBox: React.FunctionComponent<Props> = ({
 type State = {
   login: {
     loadingUserConversion: boolean;
-    user: { memberNumber: number };
+    user: {
+      memberNumber: number;
+      memberJoinDate: string;
+    };
   };
 };
 
 const mapStateToProps = (state: State) => ({
   memberNumber: (state.login.user || {}).memberNumber,
+  memberJoinDate: (state.login.user || {}).memberJoinDate,
   loading: state.login.loadingUserConversion,
 });
 

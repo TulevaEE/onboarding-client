@@ -6,7 +6,14 @@ import StatusBoxRow from '../statusBoxRow';
 describe('MemberStatusBox', () => {
   const loading = false;
   const memberNumber = 123;
-  const component = shallow(<MemberStatusBox loading={loading} memberNumber={memberNumber} />);
+  const memberJoinDate = '2024-02-16T12:15:10Z';
+  const component = shallow(
+    <MemberStatusBox
+      loading={loading}
+      memberNumber={memberNumber}
+      memberJoinDate={memberJoinDate}
+    />,
+  );
 
   it('renders the full component', () => {
     expect(component).toMatchSnapshot();
