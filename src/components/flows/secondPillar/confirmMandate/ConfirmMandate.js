@@ -53,11 +53,16 @@ function normalizeAndGetSelections(routes) {
   return selections;
 }
 
+function removeSameFundTransfers(normalized) {
+  return normalized.filter((selection) => selection.sourceFundIsin !== selection.targetFundIsin);
+}
+
 function aggregateSelections(selections) {
   // first, let's add up all the percentages
   const routes = joinDuplicateSelections(selections);
   // now, let's normalize the percentages and turn it back into a selection
-  return normalizeAndGetSelections(routes);
+  const normalized = normalizeAndGetSelections(routes);
+  return removeSameFundTransfers(normalized);
 }
 
 function attachNames(selections, sourceFunds, targetFunds) {
@@ -76,18 +81,14 @@ function isFundPriceZero(sourceFunds, isinToMatch) {
   return utils.findWhere(sourceFunds, ({ isin }) => isin === isinToMatch).price === 0;
 }
 
-function getMandate(exchange, address) {
+function getMandate(aggregatedSelections, selectedFutureContributionsFund, address) {
   return {
-    fundTransferExchanges: exchange.sourceSelection
-      .filter(
-        (selection) => isFundPriceZero(exchange.sourceFunds, selection.sourceFundIsin) !== true,
-      )
-      .map((selection) => ({
-        amount: selection.percentage,
-        sourceFundIsin: selection.sourceFundIsin,
-        targetFundIsin: selection.targetFundIsin,
-      })),
-    futureContributionFundIsin: exchange.selectedFutureContributionsFundIsin,
+    fundTransferExchanges: aggregatedSelections.map((selection) => ({
+      amount: selection.percentage,
+      sourceFundIsin: selection.sourceFundIsin,
+      targetFundIsin: selection.targetFundIsin,
+    })),
+    futureContributionFundIsin: selectedFutureContributionsFund.isin,
     address,
   };
 }
@@ -123,16 +124,19 @@ export const ConfirmMandate = ({
     exchange.sourceFunds,
     exchange.targetFunds,
   );
-  const hasFilledFlow = aggregatedSelections.length || exchange.selectedFutureContributionsFundIsin;
+  const hasFilledFlow = !!aggregatedSelections.length || !!selectedFutureContributionsFund;
   if (!hasFilledFlow) {
     return <MandateNotFilledAlert />;
   }
   const canSignMandate = exchange.agreedToTerms && hasFilledFlow;
   // TODO: extract into a function
   const startPreviewMandate = () => {
-    onPreviewMandate(getMandate(exchange, address));
+    const mandate = getMandate(aggregatedSelections, selectedFutureContributionsFund, address);
+    onPreviewMandate(mandate);
   };
-  const startSigningMandate = () => canSignMandate && onSignMandate(getMandate(exchange, address));
+  const startSigningMandate = () =>
+    canSignMandate &&
+    onSignMandate(getMandate(aggregatedSelections, selectedFutureContributionsFund, address));
   return (
     <>
       {!hasAddress && <Redirect to={previousPath} />}
@@ -149,7 +153,7 @@ export const ConfirmMandate = ({
       )}
 
       <FormattedMessage id="confirm.mandate.intro" />
-      {exchange.selectedFutureContributionsFundIsin ? (
+      {selectedFutureContributionsFund ? (
         <div className="mt-4">
           <FormattedMessage id="confirm.mandate.future.contribution" />
           <b className="highlight">{selectedFutureContributionsFund.name}</b>
@@ -234,7 +238,7 @@ const noop = () => null;
 
 ConfirmMandate.defaultProps = {
   loading: false,
-  selectedFutureContributionsFund: {},
+  selectedFutureContributionsFund: null,
   address: {},
   hasAddress: false,
   signedMandateId: null,
@@ -276,21 +280,31 @@ ConfirmMandate.propTypes = {
   onCloseErrorMessages: Types.func,
 };
 
-const mapStateToProps = (state) => ({
-  exchange: state.exchange,
-  selectedFutureContributionsFund: (state.exchange.targetFunds || []).find(
-    (fund) => fund.isin === state.exchange.selectedFutureContributionsFundIsin,
-  ),
-  address: (state.login.user || {}).address,
-  hasAddress: !state.login.user || isAddressFilled(state.login.user),
-  signedMandateId: state.exchange.signedMandateId,
+const mapStateToProps = (state) => {
+  const activeFundIsin = (state.exchange.sourceFunds || []).reduce(
+    (acc, fund) => (fund.activeFund ? fund.isin : acc),
+    '',
+  );
 
-  loading:
-    state.login.loadingUser ||
-    state.login.loadingUserConversion ||
-    state.exchange.loadingSourceFunds ||
-    state.exchange.loadingTargetFunds,
-});
+  const selectedFutureContributionsFund = (state.exchange.targetFunds || []).find(
+    (targetFund) =>
+      targetFund.isin === state.exchange.selectedFutureContributionsFundIsin &&
+      targetFund.isin !== activeFundIsin,
+  );
+
+  return {
+    exchange: state.exchange,
+    selectedFutureContributionsFund,
+    address: (state.login.user || {}).address,
+    hasAddress: !state.login.user || isAddressFilled(state.login.user),
+    signedMandateId: state.exchange.signedMandateId,
+    loading:
+      state.login.loadingUser ||
+      state.login.loadingUserConversion ||
+      state.exchange.loadingSourceFunds ||
+      state.exchange.loadingTargetFunds,
+  };
+};
 
 const mapDispatchToProps = (dispatch) =>
   bindActionCreators(
