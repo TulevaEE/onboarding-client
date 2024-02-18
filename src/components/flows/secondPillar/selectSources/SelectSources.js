@@ -78,7 +78,7 @@ export const SelectSources = ({
   if (error) {
     return <ErrorMessage errors={error.body} />;
   }
-  if (loadingSourceFunds || loadingTargetFunds) {
+  if (loadingSourceFunds || !sourceFunds || loadingTargetFunds || !targetFunds) {
     return <Loader className="align-middle" />;
   }
   const fullSelectionActive = !!sourceSelection.length && !sourceSelectionExact;
@@ -288,8 +288,8 @@ export const SelectSources = ({
 const noop = () => null;
 
 SelectSources.defaultProps = {
-  sourceFunds: [],
-  targetFunds: [],
+  sourceFunds: null,
+  targetFunds: null,
   loadingSourceFunds: false,
   loadingTargetFunds: false,
   sourceSelection: [],
