@@ -30,8 +30,8 @@ describe('Confirm mandate step', () => {
       previousPath: '/a-path',
       exchange: {
         sourceSelection: [],
-        selectedFutureContributionsFundIsin: 'EE123',
       },
+      selectedFutureContributionsFund: { isin: 'EE123' },
     });
     const redirects = () => component.contains(<Redirect to="/a-path" />);
 
@@ -56,9 +56,8 @@ describe('Confirm mandate step', () => {
   it('shows the intro to the mandate', () => {
     const exchange = {
       sourceSelection: [],
-      selectedFutureContributionsFundIsin: 'asd',
     };
-    component.setProps({ exchange });
+    component.setProps({ exchange, selectedFutureContributionsFund: { isin: 'EE123' } });
     expect(component.contains(<FormattedMessage id="confirm.mandate.intro" />)).toBe(true);
   });
 
@@ -78,7 +77,7 @@ describe('Confirm mandate step', () => {
       ),
     ).toBe(true);
     exchange.selectedFutureContributionsFundIsin = null;
-    component.setProps({ exchange });
+    component.setProps({ exchange, selectedFutureContributionsFund: null });
     expect(component.contains(<FormattedMessage id="confirm.mandate.future.contribution" />)).toBe(
       false,
     );
@@ -91,6 +90,7 @@ describe('Confirm mandate step', () => {
         sourceSelection: [],
         selectedFutureContributionsFundIsin: 'asd',
       },
+      selectedFutureContributionsFund: { isin: 'asd' },
       onPreviousStep,
     });
     expect(
@@ -247,6 +247,7 @@ describe('Confirm mandate step', () => {
         loadingMandate: true,
         selectedFutureContributionsFundIsin: 'asd',
       },
+      selectedFutureContributionsFund: { isin: 'asd' },
     });
     expect(hasAuthLoader()).toBe(true);
   });
@@ -258,6 +259,7 @@ describe('Confirm mandate step', () => {
         mandateSigningControlCode: '1337',
         selectedFutureContributionsFundIsin: 'asd',
       },
+      selectedFutureContributionsFund: { isin: 'asd' },
     });
     expect(component.find(AuthenticationLoader).prop('controlCode')).toBe('1337');
   });
@@ -270,6 +272,7 @@ describe('Confirm mandate step', () => {
         mandateSigningControlCode: '1337',
         selectedFutureContributionsFundIsin: 'asd',
       },
+      selectedFutureContributionsFund: { isin: 'asd' },
       onCancelSigningMandate,
     });
     expect(onCancelSigningMandate).not.toHaveBeenCalled();
@@ -347,7 +350,12 @@ describe('Confirm mandate step', () => {
       agreedToTerms: true,
     };
     const address = { countryCode: 'EE' };
-    component.setProps({ onPreviewMandate, exchange, address });
+    component.setProps({
+      onPreviewMandate,
+      exchange,
+      address,
+      selectedFutureContributionsFund: { isin: 'target 1' },
+    });
     expect(onPreviewMandate).not.toHaveBeenCalled();
     component.find('button#preview').simulate('click');
     expect(onPreviewMandate).toHaveBeenCalledTimes(1);
@@ -395,7 +403,12 @@ describe('Confirm mandate step', () => {
       agreedToTerms: true,
     };
     const address = { countryCode: 'EE' };
-    component.setProps({ onSignMandate, exchange, address });
+    component.setProps({
+      onSignMandate,
+      exchange,
+      address,
+      selectedFutureContributionsFund: { isin: 'target 1' },
+    });
     expect(onSignMandate).not.toHaveBeenCalled();
     component.find('button#sign').simulate('click');
     expect(onSignMandate).toHaveBeenCalledTimes(1);
@@ -436,7 +449,12 @@ describe('Confirm mandate step', () => {
       agreedToTerms: true,
     };
     const address = { countryCode: 'EE' };
-    component.setProps({ onSignMandate, exchange, address });
+    component.setProps({
+      onSignMandate,
+      exchange,
+      address,
+      selectedFutureContributionsFund: { isin: null },
+    });
     expect(onSignMandate).not.toHaveBeenCalled();
     component.find('button#sign').simulate('click');
     expect(onSignMandate).toHaveBeenCalledTimes(1);
@@ -655,6 +673,7 @@ describe('Confirm mandate step', () => {
         sourceSelection: [],
         mandateSigningError: null,
       },
+      selectedFutureContributionsFund: { isin: 'test isin' },
     });
     const hasErrorMessage = () => !!component.find(ErrorMessage).length;
 
