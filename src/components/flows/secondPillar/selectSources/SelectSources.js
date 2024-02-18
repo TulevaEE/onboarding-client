@@ -71,7 +71,12 @@ export const SelectSources = ({
 
   const onSomeFutureSwitchChange = (event) => {
     setSomeFutureSwitch(event.target.checked);
-    onSelectFutureContributionsFund(null);
+    const activeFund = sourceFunds.find((fund) => fund.activeFund) || {};
+    const defaultTargetFund =
+      activeFund.isin !== tulevaTargetFunds[0].isin
+        ? tulevaTargetFunds[0].isin
+        : tulevaTargetFunds[1].isin;
+    onSelectFutureContributionsFund(event.target.checked ? defaultTargetFund : null);
   };
 
   if (error) {
