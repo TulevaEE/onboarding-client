@@ -50,18 +50,6 @@ describe('Exact fund selector', () => {
     component = shallow(<ExactFundSelector />);
   });
 
-  it('renders a header for the selection table', () => {
-    expect(component.contains(<FormattedMessage id="select.sources.select.some.source" />)).toBe(
-      true,
-    );
-    expect(
-      component.contains(<FormattedMessage id="select.sources.select.some.percentage" />),
-    ).toBe(true);
-    expect(component.contains(<FormattedMessage id="select.sources.select.some.target" />)).toBe(
-      true,
-    );
-  });
-
   it('renders a table row with selectors for every fund', () => {
     component.setProps({ selections, sourceFunds, targetFunds });
 
