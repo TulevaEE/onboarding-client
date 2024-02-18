@@ -83,7 +83,7 @@ export const SelectSources = ({
   }
   const fullSelectionActive = !!sourceSelection.length && !sourceSelectionExact;
   const futureSelectionActive =
-    !sourceSelection.length && !sourceSelectionExact && targetFunds && targetFunds.length;
+    !sourceSelection.length && !sourceSelectionExact && targetFunds && !!targetFunds.length;
   const validationErrorCode =
     sourceSelectionExact === true ? selectionsError(sourceSelection) : null;
   const isValid = !validationErrorCode;
@@ -105,7 +105,6 @@ export const SelectSources = ({
 
   return (
     <div>
-      {sourceFunds && !sourceFunds.length && <Redirect to={nextPath} />}
       <div className="row">
         <div className="col-12">
           <div className="mb-4">
