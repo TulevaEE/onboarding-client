@@ -28,15 +28,14 @@ function selectionsError(selections) {
   const sourceFundPercentages = {};
   let errorDescriptionCode = null;
   selections.forEach((selection) => {
-    if (!sourceFundPercentages[selection.sourceFundIsin]) {
+    if (selection.sourceFundIsin && !sourceFundPercentages[selection.sourceFundIsin]) {
       sourceFundPercentages[selection.sourceFundIsin] = 0;
     }
     sourceFundPercentages[selection.sourceFundIsin] += selection.percentage;
-    if (sourceFundPercentages[selection.sourceFundIsin] > 1) {
+    if (selection.sourceFundIsin && sourceFundPercentages[selection.sourceFundIsin] > 1) {
       errorDescriptionCode = 'select.sources.error.source.fund.percentages.over.100';
     }
-
-    if (selection.sourceFundIsin === selection.targetFundIsin) {
+    if (selection.sourceFundIsin && selection.sourceFundIsin === selection.targetFundIsin) {
       errorDescriptionCode = 'select.sources.error.source.fund.is.target.fund';
     }
   });
