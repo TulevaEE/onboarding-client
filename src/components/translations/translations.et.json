@@ -45,7 +45,7 @@
   "select.sources.select.future": "Suunan ainult edasised sissemaksed Tulevasse",
   "select.sources.select.future.subtitle": "Jätan seni II sambasse kogutud vara sinna, kus see praegu on, ja toon ainult uued sissemaksed Tulevasse.",
   "select.sources.select.some": "Toon II samba valikuliselt üle",
-  "select.sources.select.some.existing": "Vahetan seni kogutud osakud",
+  "select.sources.select.some.existing": "Toon seni kogutud osakud",
   "select.sources.select.some.future": "Suunan tuleviku sissemaksed",
   "select.sources.select.some.cost": "Fondivahetus on tasuta.",
   "select.sources.select.some.add": "Lisa veel üks valik",
