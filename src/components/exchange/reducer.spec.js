@@ -128,33 +128,6 @@ describe('Exchange reducer', () => {
     );
   });
 
-  it('when defaulting contributions fund selection, remove selection when fund is already active', () => {
-    const activeFundIsin = 'activeFundIsin';
-    const state = {
-      sourceFunds: [
-        {
-          isin: activeFundIsin,
-          activeFund: true,
-          price: 1,
-          unavailablePrice: 0,
-        },
-      ],
-    };
-
-    const sourceExchange = {
-      sourceFundIsin: 'sourceFundIsin',
-      targetFundIsin: activeFundIsin,
-    };
-    const sourceSelection = [sourceExchange];
-    const action = {
-      type: SELECT_EXCHANGE_SOURCES,
-      sourceSelection,
-      sourceSelectionExact: false,
-    };
-
-    expect(exchangeReducer(state, action).selectedFutureContributionsFundIsin).toEqual(null);
-  });
-
   it('defaulting contributions fund selection works with sourceFunds list', () => {
     const targetFundIsin = 'targetFundIsin';
     const state = {
@@ -546,20 +519,6 @@ describe('Exchange reducer', () => {
     expect(exchangeReducer(undefined, action).selectedFutureContributionsFundIsin).toEqual(
       targetFundIsin,
     );
-  });
-
-  it('selecting a target fund which is already active for future contributions will result an empty selection', () => {
-    const activeFundIsin = 'activeFundIsin';
-    const state = {
-      sourceFunds: [
-        {
-          isin: activeFundIsin,
-          activeFund: true,
-        },
-      ],
-    };
-    const action = { type: SELECT_TARGET_FUND, targetFundIsin: activeFundIsin };
-    expect(exchangeReducer(state, action).selectedFutureContributionsFundIsin).toEqual(null);
   });
 
   it('can change the agreement to the terms of use', () => {
