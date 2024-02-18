@@ -16,11 +16,13 @@ function createSelectionChangeHandler(index, selections, onChange) {
 }
 
 function createRowAdder({ sourceFunds, targetFunds, selections, onChange }) {
+  const tulevaFunds = targetFunds.filter((fund) => isTuleva(fund));
   return () =>
     onChange(
       selections.concat({
         sourceFundIsin: sourceFunds[0].isin,
-        targetFundIsin: targetFunds.filter((fund) => isTuleva(fund))[0].isin,
+        targetFundIsin:
+          tulevaFunds[0].isin !== sourceFunds[0].isin ? tulevaFunds[0].isin : tulevaFunds[1].isin,
         percentage: 1,
       }),
     );
