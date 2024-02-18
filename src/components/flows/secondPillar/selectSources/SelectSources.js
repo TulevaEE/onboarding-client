@@ -3,7 +3,7 @@ import { PropTypes as Types } from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import { Link, Redirect } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { selectExchangeSources, selectFutureContributionsFund } from '../../../exchange/actions';
 import { ErrorMessage, Loader, Radio } from '../../../common';
