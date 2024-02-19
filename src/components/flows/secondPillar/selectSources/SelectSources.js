@@ -64,6 +64,14 @@ export const SelectSources = ({
     selectedFutureContributionsFundIsin != null,
   );
 
+  React.useEffect(() => {
+    setSomeExistingSwitch(sourceSelection && sourceSelection.length > 0);
+  }, [selectedFutureContributionsFundIsin]);
+
+  React.useEffect(() => {
+    setSomeFutureSwitch(selectedFutureContributionsFundIsin != null);
+  }, [selectedFutureContributionsFundIsin]);
+
   const onSomeExistingSwitchChange = (event) => {
     setSomeExistingSwitch(event.target.checked);
     onSelectExchangeSources([], true);

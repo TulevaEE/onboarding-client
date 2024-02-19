@@ -214,13 +214,23 @@ describe('2nd pillar flow', () => {
 
     userEvent.click(screen.getByText('Transfer II pillar selectively'));
 
-    userEvent.click(exchangeCurrentFundUnitsSwitch());
-    userEvent.click(screen.getByText('Add another selection'));
-    userEvent.selectOptions(screen.getByLabelText('Current fund'), 'Swedbank Pension Fund K60');
-    userEvent.selectOptions(screen.getByLabelText('New fund'), 'Tuleva World Stocks Pension Fund');
-    userEvent.type(screen.getByLabelText('Percentage'), '100');
+    if (!exchangeCurrentFundUnitsSwitch().checked) {
+      userEvent.click(exchangeCurrentFundUnitsSwitch());
+    }
 
-    userEvent.click(directFutureContributionsSwitch());
+    userEvent.selectOptions(
+      screen.getAllByLabelText('Current fund')[0],
+      'Swedbank Pension Fund K60',
+    );
+    userEvent.selectOptions(
+      screen.getAllByLabelText('New fund')[0],
+      'Tuleva World Stocks Pension Fund',
+    );
+    userEvent.type(screen.getAllByLabelText('Percentage')[0], '50');
+
+    if (!directFutureContributionsSwitch().checked) {
+      userEvent.click(directFutureContributionsSwitch());
+    }
 
     userEvent.selectOptions(
       // eslint-disable-next-line testing-library/no-node-access
@@ -260,9 +270,56 @@ describe('2nd pillar flow', () => {
 
     await expectSuccessScreen();
   }, 20_000);
+
+  test('allows transferring only existing fund units', async () => {
+    expect(
+      await screen.findByText(/Your pension account overview/i, undefined, { timeout: 1000 }),
+    ).toBeInTheDocument();
+
+    expect(await screen.findByText('Swedbank Pension Fund K60*')).toBeInTheDocument();
+
+    userEvent.click(screen.getByText('Transfer II pillar selectively'));
+
+    if (!exchangeCurrentFundUnitsSwitch().checked) {
+      userEvent.click(exchangeCurrentFundUnitsSwitch());
+    }
+
+    if (directFutureContributionsSwitch().checked) {
+      userEvent.click(directFutureContributionsSwitch());
+    }
+
+    userEvent.click(nextButton());
+
+    expect(await screen.findByText(/Swedbank Pension Fund K60/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Tuleva World Stocks Pension Fund/i)).toBeInTheDocument();
+    expect(await screen.findByText(/100%/i)).toBeInTheDocument();
+
+    expect(signButton()).toBeDisabled();
+
+    userEvent.click(confirmationCheckbox());
+    expect(signButton()).toBeEnabled();
+
+    const expectedRequest = {
+      fundTransferExchanges: [
+        {
+          amount: 1,
+          sourceFundIsin: 'EE3600019758',
+          targetFundIsin: 'EE3600109435',
+        },
+      ],
+      futureContributionFundIsin: null,
+      address: { countryCode: 'EE' },
+    };
+    mandatesBackend(expectedRequest);
+    smartIdSigningBackend(server);
+
+    userEvent.click(signButton());
+
+    await expectSuccessScreen(false);
+  }, 20_000);
 });
 
-async function expectSuccessScreen() {
+async function expectSuccessScreen(withFutureContributions = true) {
   expect(
     await screen.findByRole('heading', { name: 'Application finished' }, { timeout: 10_000 }),
   ).toBeInTheDocument();
@@ -275,16 +332,18 @@ async function expectSuccessScreen() {
     await screen.findByText('the first working day following', { exact: false }),
   ).toBeInTheDocument();
 
-  expect(
-    await screen.findByText(
-      'Your future contributions will be directed to your selected pension fund',
-      { exact: false },
-    ),
-  ).toBeInTheDocument();
+  if (withFutureContributions) {
+    expect(
+      await screen.findByText(
+        'Your future contributions will be directed to your selected pension fund',
+        { exact: false },
+      ),
+    ).toBeInTheDocument();
 
-  expect(
-    await screen.findByText('starting from the next payment', { exact: false }),
-  ).toBeInTheDocument();
+    expect(
+      await screen.findByText('starting from the next payment', { exact: false }),
+    ).toBeInTheDocument();
+  }
 }
 
 function mandatesBackend(expectedRequest: any) {
@@ -301,9 +360,9 @@ function mandatesBackend(expectedRequest: any) {
 }
 const bonds = () => screen.getByText('Tuleva World Bonds Pension Fund');
 
-const exchangeCurrentFundUnitsSwitch = () =>
+const exchangeCurrentFundUnitsSwitch: () => HTMLInputElement = () =>
   screen.getByRole('checkbox', { name: /Exchange current fund units/i });
-const directFutureContributionsSwitch = () =>
+const directFutureContributionsSwitch: () => HTMLInputElement = () =>
   screen.getByRole('checkbox', { name: /Direct future contributions/i });
 const nextButton = () => screen.getByRole('button', { name: 'Next step' });
 const confirmationCheckbox = () => screen.getByRole('checkbox', { name: /I confirm/i });
