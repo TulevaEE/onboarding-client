@@ -88,7 +88,9 @@ function getMandate(aggregatedSelections, selectedFutureContributionsFund, addre
       sourceFundIsin: selection.sourceFundIsin,
       targetFundIsin: selection.targetFundIsin,
     })),
-    futureContributionFundIsin: selectedFutureContributionsFund.isin,
+    futureContributionFundIsin: selectedFutureContributionsFund
+      ? selectedFutureContributionsFund.isin
+      : null,
     address,
   };
 }
