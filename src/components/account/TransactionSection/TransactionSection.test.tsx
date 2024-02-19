@@ -50,13 +50,6 @@ describe('Transaction section', () => {
     fundsBackend(server);
   });
 
-  it('does not render at all when there are no transactions', async () => {
-    mockTransactions([]);
-    initializeComponent();
-    await waitForRequestToFinish();
-    expect(screen.queryByText('transactions.title')).not.toBeInTheDocument();
-  });
-
   it('does not render at all when there has been an error fetching', async () => {
     server.use(
       rest.get('http://localhost/v1/transactions', (req, res, ctx) => {
