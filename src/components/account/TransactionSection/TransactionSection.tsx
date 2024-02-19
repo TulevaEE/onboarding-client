@@ -27,7 +27,7 @@ export const TransactionSection: React.FunctionComponent<{
     );
   }
 
-  if (!transactions.length || !funds.length) {
+  if (!funds.length) {
     return <></>;
   }
 
@@ -42,10 +42,6 @@ export const TransactionSection: React.FunctionComponent<{
 
   if (pillar) {
     fundTransactions = fundTransactions.filter((transaction) => transaction.pillar === pillar);
-  }
-
-  if (!fundTransactions.length) {
-    return <></>;
   }
 
   const amountSum = sumBy(fundTransactions, (transaction) => transaction.amount);
