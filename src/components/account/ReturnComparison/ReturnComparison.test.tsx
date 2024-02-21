@@ -48,7 +48,7 @@ describe('Return comparison', () => {
       START_DATE,
       {
         personalKey: Key.SECOND_PILLAR,
-        pensionFundKey: 'EE3600109401',
+        pensionFundKey: 'EE3600109435',
         indexKey: Key.UNION_STOCK_INDEX,
       },
       'a-token',
@@ -90,7 +90,7 @@ describe('Return comparison', () => {
       expect.any(String),
       {
         personalKey: Key.THIRD_PILLAR,
-        pensionFundKey: 'thirdPillarFund1',
+        pensionFundKey: 'EE3600001707',
         indexKey: expect.any(String),
       },
       'a-token',

@@ -76,13 +76,23 @@ export const dateOptions = [
   { value: oneYearAgo, label: 'returnComparison.period.oneYear' },
 ];
 
+function getReturnColor(aReturn: Return | null) {
+  if (aReturn && aReturn.rate >= 0.07) {
+    return 'text-success';
+  }
+  if (aReturn && aReturn.rate >= 0.05) {
+    return 'text-primary';
+  }
+  return 'text-danger';
+}
+
 export class ReturnComparison extends Component<Props, State> {
-  state = {
+  state: State = {
     fromDateOptions: dateOptions,
     fromDate: START_DATE,
     loading: false,
     selectedPersonalKey: Key.SECOND_PILLAR,
-    selectedFundKey: 'EE3600109401',
+    selectedFundKey: 'EE3600109435',
     selectedIndexKey: Key.UNION_STOCK_INDEX,
     personalReturn: null,
     fundReturn: null,
@@ -117,14 +127,12 @@ export class ReturnComparison extends Component<Props, State> {
     return fundOptions;
   }
 
-  private refreshFundOptionsAndLoadReturns(
-    fundNameMapSecondPillar: Record<string, string>,
-    fundNameMapThirdPillar: Record<string, string>,
-  ) {
+  private refreshFundOptionsAndLoadReturns() {
+    const { selectedPersonalKey } = this.state;
     this.setState(
       {
-        selectedFundKey: this.getFundOptions(fundNameMapSecondPillar, fundNameMapThirdPillar)[0]
-          .value,
+        selectedFundKey:
+          selectedPersonalKey === Key.SECOND_PILLAR ? 'EE3600109435' : 'EE3600001707',
       },
       () => {
         this.loadReturns();
@@ -219,15 +227,12 @@ export class ReturnComparison extends Component<Props, State> {
                 selected={selectedPersonalKey}
                 onChange={(key: string) => {
                   this.setState({ selectedPersonalKey: Key[key as keyof typeof Key] }, () => {
-                    this.refreshFundOptionsAndLoadReturns(
-                      fundNameMapSecondPillar,
-                      fundNameMapThirdPillar,
-                    );
+                    this.refreshFundOptionsAndLoadReturns();
                   });
                 }}
               />
               <div className="my-4">
-                <div className="h2 text-primary m-0">
+                <div className={`h2 ${getReturnColor(personalReturn)} m-0`}>
                   {loading ? LOADER : formatReturn(personalReturn)}
                 </div>
                 <small className="text-muted">
@@ -255,7 +260,7 @@ export class ReturnComparison extends Component<Props, State> {
                 }}
               />
               <div className={`my-4 ${styles.minHeightLoader}`}>
-                <div className="h2 text-success m-0">
+                <div className={`h2 ${getReturnColor(indexReturn)} m-0`}>
                   {loading ? LOADER : formatReturn(indexReturn)}
                 </div>
                 <small className="text-muted">
@@ -274,7 +279,7 @@ export class ReturnComparison extends Component<Props, State> {
                 }}
               />
               <div className="my-4">
-                <div className="h2 text-danger m-0">
+                <div className={`h2 ${getReturnColor(fundReturn)} m-0`}>
                   {loading ? LOADER : formatReturn(fundReturn)}
                 </div>
                 <small className="text-muted">
