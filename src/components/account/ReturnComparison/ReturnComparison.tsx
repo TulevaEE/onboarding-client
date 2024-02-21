@@ -82,7 +82,7 @@ export class ReturnComparison extends Component<Props, State> {
     fromDate: START_DATE,
     loading: false,
     selectedPersonalKey: Key.SECOND_PILLAR,
-    selectedFundKey: Key.EPI,
+    selectedFundKey: 'EE3600109401',
     selectedIndexKey: Key.UNION_STOCK_INDEX,
     personalReturn: null,
     fundReturn: null,

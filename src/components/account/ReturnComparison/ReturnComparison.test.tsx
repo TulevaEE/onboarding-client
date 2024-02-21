@@ -39,14 +39,18 @@ describe('Return comparison', () => {
     expect(getReturnComparison).not.toHaveBeenCalled();
   });
 
-  it('gets returns from the beginning for second pillar, epi, and union stock index with token', () => {
+  it('gets returns from the beginning for second pillar, first fund, and union stock index with token', () => {
     expect(getReturnComparison).not.toHaveBeenCalled();
     shallow(
       <ReturnComparison token="a-token" fundNameMapSecondPillar={{}} fundNameMapThirdPillar={{}} />,
     );
     expect(getReturnComparison).toHaveBeenCalledWith(
       START_DATE,
-      { personalKey: Key.SECOND_PILLAR, pensionFundKey: Key.EPI, indexKey: Key.UNION_STOCK_INDEX },
+      {
+        personalKey: Key.SECOND_PILLAR,
+        pensionFundKey: 'EE3600109401',
+        indexKey: Key.UNION_STOCK_INDEX,
+      },
       'a-token',
     );
   });
