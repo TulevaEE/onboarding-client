@@ -133,7 +133,7 @@ describe('Return comparison', () => {
     );
   });
 
-  it('has transformed hardcoded pension fund isins and epi as pension fund select options', async () => {
+  it('has transformed pension fund isins as pension fund select options', async () => {
     const fundNameMap = {
       EE987654: 'Existing fund name',
       EE123456: 'Additional fund name',
@@ -148,13 +148,12 @@ describe('Return comparison', () => {
     );
 
     expect(pensionFundSelect(component).prop('options')).toEqual([
-      { label: 'returnComparison.pensionFund', value: Key.EPI },
       { label: 'Additional fund name', value: 'EE123456' },
       { label: 'Existing fund name', value: 'EE987654' },
     ]);
   });
 
-  it('does not display EPI in funds when third pillar is selected', async () => {
+  it('does not display EPI when third pillar is selected', async () => {
     const fundNameMap = {
       EE987654: 'Existing fund name',
       EE123456: 'Additional fund name',
@@ -168,15 +167,15 @@ describe('Return comparison', () => {
       />,
     );
 
-    expect(pensionFundSelect(component).prop('options')).toEqual([
+    expect(indexSelect(component).prop('options')).toEqual([
+      { label: 'returnComparison.index.unionStockIndex', value: Key.UNION_STOCK_INDEX },
       { label: 'returnComparison.pensionFund', value: Key.EPI },
-      { label: 'Additional fund name', value: 'EE123456' },
-      { label: 'Existing fund name', value: 'EE987654' },
+      { label: 'returnComparison.index.cpi', value: Key.CPI },
     ]);
     personalReturnSelect(component).simulate('change', Key.THIRD_PILLAR);
-    expect(pensionFundSelect(component).prop('options')).toEqual([
-      { label: 'Additional fund name', value: 'EE123456' },
-      { label: 'Existing fund name', value: 'EE987654' },
+    expect(indexSelect(component).prop('options')).toEqual([
+      { label: 'returnComparison.index.unionStockIndex', value: Key.UNION_STOCK_INDEX },
+      { label: 'returnComparison.index.cpi', value: Key.CPI },
     ]);
   });
 

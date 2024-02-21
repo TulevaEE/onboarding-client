@@ -107,16 +107,12 @@ export class ReturnComparison extends Component<Props, State> {
     const selectedPillarFundNameMap =
       selectedPersonalKey === Key.SECOND_PILLAR ? fundNameMapSecondPillar : fundNameMapThirdPillar;
 
-    let fundOptions = Object.entries(selectedPillarFundNameMap).map(([isin, fundName]) => ({
+    const fundOptions = Object.entries(selectedPillarFundNameMap).map(([isin, fundName]) => ({
       value: isin,
       label: fundName || isin,
     }));
 
     fundOptions.sort((option1, option2) => option1.label.localeCompare(option2.label));
-
-    if (selectedPersonalKey === Key.SECOND_PILLAR) {
-      fundOptions = [{ value: Key.EPI, label: 'returnComparison.pensionFund' }, ...fundOptions];
-    }
 
     return fundOptions;
   }
@@ -246,6 +242,9 @@ export class ReturnComparison extends Component<Props, State> {
                     value: Key.UNION_STOCK_INDEX,
                     label: 'returnComparison.index.unionStockIndex',
                   },
+                  ...(selectedPersonalKey === Key.SECOND_PILLAR
+                    ? [{ value: Key.EPI, label: 'returnComparison.pensionFund' }]
+                    : []),
                   { value: Key.CPI, label: 'returnComparison.index.cpi' },
                 ]}
                 selected={selectedIndexKey}
