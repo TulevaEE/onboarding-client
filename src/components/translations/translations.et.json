@@ -325,7 +325,7 @@
   "returnComparison.index.cpi": "Eesti inflatsioon",
   "returnComparison.explanationLinkText": "Mida need arvud näitavad?",
   "returnComparison.returnNotice": "Millist <a>tootlust</a> on Tulevas oodata?",
-  "returnComparison.notEnoughHistory": "Alla aasta pikkuse kogumise korral ei saa tootlust arvutada.",
+  "returnComparison.notEnoughHistory": "Alla aasta pikkuse perioodi korral ei saa aasta baasil tootlust arvutada.",
   "returnComparison.period.all": "Maksimaalne periood",
   "returnComparison.period.twentyYears": "Kuni 20 aastat",
   "returnComparison.period.fifteenYears": "Kuni 15 aastat",
