@@ -1,6 +1,7 @@
 import { DefaultRequestMultipartBody, rest } from 'msw';
 import { SetupServerApi } from 'msw/node';
 import queryString from 'qs';
+import { FundBalance, FundStatus } from '../components/common/apiModels';
 
 export function cancellationBackend(server: SetupServerApi): {
   cancellationCreated: boolean;
@@ -212,7 +213,7 @@ export function idCardAuthenticationBackend(server: SetupServerApi): {
   return backend;
 }
 
-export function userBackend(server: SetupServerApi): void {
+export function userBackend(server: SetupServerApi, overrides = {}): void {
   server.use(
     rest.get('http://localhost/v1/me', (req, res, ctx) => {
       return res(
@@ -235,13 +236,18 @@ export function userBackend(server: SetupServerApi): void {
             current: 2,
             pending: null,
           },
+          ...overrides,
         }),
       );
     }),
   );
 }
 
-export function userConversionBackend(server: SetupServerApi): void {
+export function userConversionBackend(
+  server: SetupServerApi,
+  secondPillarOverrides = {},
+  thirdPillarOverrides = {},
+): void {
   server.use(
     rest.get('http://localhost/v1/me/conversion', (req, res, ctx) => {
       return res(
@@ -253,6 +259,7 @@ export function userConversionBackend(server: SetupServerApi): void {
             paymentComplete: null,
             contribution: { total: 12345.67, yearToDate: 111.11 },
             subtraction: { total: 0.0, yearToDate: 0.0 },
+            ...secondPillarOverrides,
           },
           thirdPillar: {
             transfersComplete: true,
@@ -261,6 +268,7 @@ export function userConversionBackend(server: SetupServerApi): void {
             paymentComplete: true,
             contribution: { total: 9876.54, yearToDate: 999.99 },
             subtraction: { total: 0.0, yearToDate: 0.0 },
+            ...thirdPillarOverrides,
           },
         }),
       );
@@ -274,76 +282,79 @@ export function amlChecksBackend(server: SetupServerApi): void {
       return res(ctx.json([]));
     }),
   );
+  server.use(
+    rest.post('http://localhost/v1/amlchecks', (req, res, ctx) => {
+      if (req.headers.get('Authorization') !== 'Bearer mock token') {
+        return res(ctx.status(401), ctx.json({ error: 'not authenticated correctly' }));
+      }
+      return res(ctx.status(200), ctx.json(req.body));
+    }),
+  );
 }
 
-export function pensionAccountStatementBackend(server: SetupServerApi): void {
+export function pensionAccountStatementBackend(
+  server: SetupServerApi,
+  fundBalances: FundBalance[] | null = null,
+): void {
   server.use(
     rest.get('http://localhost/v1/pension-account-statement', (req, res, ctx) => {
-      return res(
-        ctx.json([
-          {
-            fund: {
-              fundManager: { name: 'Tuleva' },
-              isin: 'EE3600109435',
-              name: 'Tuleva World Stocks Pension Fund',
-              managementFeeRate: 0.0034,
-              pillar: 2,
-              ongoingChargesFigure: 0.0039,
-              status: 'ACTIVE',
-            },
-            value: 15000.0,
-            unavailableValue: 0,
-            currency: 'EUR',
+      const defaultFundBalances: FundBalance[] = [
+        {
+          fund: {
+            fundManager: { name: 'Tuleva' },
+            isin: 'EE3600109435',
+            name: 'Tuleva World Stocks Pension Fund',
+            managementFeeRate: 0.0034,
             pillar: 2,
-            activeContributions: false,
-            contributions: 12345.67,
-            subtractions: 0,
-            profit: 2654.33,
+            ongoingChargesFigure: 0.0039,
+            status: FundStatus.ACTIVE,
           },
-          {
-            fund: {
-              fundManager: { name: 'Swedbank' },
-              isin: 'EE3600019758',
-              name: 'Swedbank Pension Fund K60',
-              managementFeeRate: 0.0083,
-              nav: 1.46726,
-              volume: 1216511545.68352,
-              pillar: 2,
-              ongoingChargesFigure: 0.0065,
-              status: 'ACTIVE',
-              peopleCount: 131988,
-              shortName: 'SWK50',
-            },
-            value: 100000,
-            unavailableValue: 0,
-            currency: 'EUR',
+          value: 15000.0,
+          unavailableValue: 0,
+          currency: 'EUR',
+          activeContributions: false,
+          contributions: 12345.67,
+          subtractions: 0,
+          profit: 2654.33,
+        },
+        {
+          fund: {
+            fundManager: { name: 'Swedbank' },
+            isin: 'EE3600019758',
+            name: 'Swedbank Pension Fund K60',
+            managementFeeRate: 0.0083,
             pillar: 2,
-            activeContributions: true,
-            contributions: 112233.44,
-            subtractions: 0,
-            profit: -12233.44,
+            ongoingChargesFigure: 0.0065,
+            status: FundStatus.ACTIVE,
           },
-          {
-            fund: {
-              fundManager: { name: 'Tuleva' },
-              isin: 'EE3600001707',
-              name: 'Tuleva III Samba Pensionifond',
-              managementFeeRate: 0.003,
-              pillar: 3,
-              ongoingChargesFigure: 0.0043,
-              status: 'ACTIVE',
-            },
-            value: 5699.36,
-            unavailableValue: 0,
-            currency: 'EUR',
+          value: 100000,
+          unavailableValue: 0,
+          currency: 'EUR',
+          activeContributions: true,
+          contributions: 112233.44,
+          subtractions: 0,
+          profit: -12233.44,
+        },
+        {
+          fund: {
+            fundManager: { name: 'Tuleva' },
+            isin: 'EE3600001707',
+            name: 'Tuleva III Samba Pensionifond',
+            managementFeeRate: 0.003,
             pillar: 3,
-            activeContributions: true,
-            contributions: 9876.54,
-            subtractions: 0,
-            profit: -1876.54,
+            ongoingChargesFigure: 0.0043,
+            status: FundStatus.ACTIVE,
           },
-        ]),
-      );
+          value: 5699.36,
+          unavailableValue: 0,
+          currency: 'EUR',
+          activeContributions: true,
+          contributions: 9876.54,
+          subtractions: 0,
+          profit: -1876.54,
+        },
+      ];
+      return res(ctx.json(fundBalances || defaultFundBalances));
     }),
   );
 }
@@ -440,6 +451,14 @@ export function userCapitalBackend(server: SetupServerApi): void {
 export function applicationsBackend(server: SetupServerApi): void {
   server.use(
     rest.get('http://localhost/v1/applications', (req, res, ctx) => {
+      return res(ctx.json([]));
+    }),
+  );
+}
+
+export function transactionsBackend(server: SetupServerApi): void {
+  server.use(
+    rest.get('http://localhost/v1/transactions', (req, res, ctx) => {
       return res(ctx.json([]));
     }),
   );

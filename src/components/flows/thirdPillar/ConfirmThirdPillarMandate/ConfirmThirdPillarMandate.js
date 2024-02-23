@@ -24,6 +24,7 @@ export const ConfirmThirdPillarMandate = ({
   exchangeExistingUnits,
   exchangeableSourceFunds,
   selectedFutureContributionsFund,
+  activeFundIsin,
   agreedToTerms,
   isResident,
   isPoliticallyExposed,
@@ -61,12 +62,13 @@ export const ConfirmThirdPillarMandate = ({
 
       <FormattedMessage id="confirmThirdPillarMandate.intro" />
 
-      {selectedFutureContributionsFund && (
-        <div className="mt-4">
-          <FormattedMessage id="confirmThirdPillarMandate.contribution" />{' '}
-          <b className="highlight">{selectedFutureContributionsFund.name}</b>
-        </div>
-      )}
+      {selectedFutureContributionsFund &&
+        selectedFutureContributionsFund.isin !== activeFundIsin && (
+          <div className="mt-4">
+            <FormattedMessage id="confirmThirdPillarMandate.contribution" />{' '}
+            <b className="highlight">{selectedFutureContributionsFund.name}</b>
+          </div>
+        )}
       {(loadingSourceFunds || loadingTargetFunds) && <Loader className="align-middle" />}
       {exchangeExistingUnits &&
         !loadingSourceFunds &&
@@ -110,6 +112,7 @@ export const ConfirmThirdPillarMandate = ({
                 exchangeExistingUnits,
                 exchangeableSourceFunds,
                 selectedFutureContributionsFund,
+                activeFundIsin,
                 address,
               ),
               { isResident, isPoliticallyExposed, occupation },
@@ -129,6 +132,7 @@ export const ConfirmThirdPillarMandate = ({
                 exchangeExistingUnits,
                 exchangeableSourceFunds,
                 selectedFutureContributionsFund,
+                activeFundIsin,
                 address,
               ),
               { isResident, isPoliticallyExposed, occupation },
@@ -148,7 +152,7 @@ export const ConfirmThirdPillarMandate = ({
   );
 };
 
-function getMandate(exchangeExistingUnits, sourceFunds, targetFund, address) {
+function getMandate(exchangeExistingUnits, sourceFunds, targetFund, activeFundIsin, address) {
   return {
     fundTransferExchanges: exchangeExistingUnits
       ? sourceFunds.map((sourceFund) => ({
@@ -157,7 +161,7 @@ function getMandate(exchangeExistingUnits, sourceFunds, targetFund, address) {
           targetFundIsin: targetFund.isin,
         }))
       : [],
-    futureContributionFundIsin: targetFund.isin,
+    futureContributionFundIsin: targetFund.isin !== activeFundIsin ? targetFund.isin : null,
     address,
   };
 }
@@ -185,6 +189,7 @@ ConfirmThirdPillarMandate.propTypes = {
   exchangeExistingUnits: Types.bool,
   exchangeableSourceFunds: Types.arrayOf(fundType),
   selectedFutureContributionsFund: fundType,
+  activeFundIsin: Types.string,
   agreedToTerms: Types.bool,
   isResident: Types.bool,
   isPoliticallyExposed: Types.bool,
@@ -212,6 +217,7 @@ ConfirmThirdPillarMandate.defaultProps = {
   exchangeExistingUnits: null,
   exchangeableSourceFunds: null,
   selectedFutureContributionsFund: { isin: TULEVA_3RD_PILLAR_FUND_ISIN },
+  activeFundIsin: '',
   agreedToTerms: false,
   isResident: null,
   isPoliticallyExposed: null,
@@ -235,6 +241,10 @@ const mapStateToProps = (state) => ({
   signedMandateId: state.thirdPillar.signedMandateId,
   selectedFutureContributionsFund: state.thirdPillar.targetFunds.find(
     (fund) => fund.isin === state.thirdPillar.selectedFutureContributionsFundIsin,
+  ),
+  activeFundIsin: state.thirdPillar.sourceFunds.reduce(
+    (acc, fund) => (fund.activeFund ? fund.isin : acc),
+    '',
   ),
   agreedToTerms: state.thirdPillar.agreedToTerms,
   isResident: state.aml.isResident,

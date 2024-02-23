@@ -18,7 +18,7 @@ import {
 } from '../../../../test/backend';
 import LoggedInApp from '../../../LoggedInApp';
 
-describe('When a user is making a third pillar payment', () => {
+describe('When a user is making a third pillar gift', () => {
   const server = setupServer();
   let history: History;
 

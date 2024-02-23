@@ -55,7 +55,7 @@ describe('When a user is making a third pillar payment', () => {
 
     initializeComponent();
 
-    history.push('/3rd-pillar-flow/payment');
+    history.push('/3rd-pillar-payment');
   });
 
   test('payment page is being shown', async () => {
