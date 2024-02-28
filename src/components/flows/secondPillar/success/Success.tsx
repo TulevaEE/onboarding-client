@@ -83,7 +83,8 @@ export const Success: React.FC<Props> = ({
 
 const mapStateToProps = (state: State) => ({
   userContributingFuturePayments: !!state.exchange.selectedFutureContributionsFundIsin,
-  userHasTransferredFunds: !!state.exchange.sourceSelection,
+  userHasTransferredFunds:
+    state.exchange.sourceSelection && state.exchange.sourceSelection.length > 0,
 });
 
 const connectToRedux = connect(mapStateToProps);
