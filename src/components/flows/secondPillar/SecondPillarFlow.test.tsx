@@ -88,7 +88,7 @@ describe('2nd pillar flow', () => {
 
     userEvent.click(signButton());
 
-    await expectSuccessScreen();
+    await expectSuccessScreen(true, true);
   }, 20_000);
 
   test('allows moving all external pension to bond Tuleva pension fund', async () => {
@@ -133,7 +133,7 @@ describe('2nd pillar flow', () => {
 
     userEvent.click(signButton());
 
-    await expectSuccessScreen();
+    await expectSuccessScreen(true, true);
   }, 20_000);
 
   test('allows moving only future payments to stock Tuleva pension fund', async () => {
@@ -167,7 +167,7 @@ describe('2nd pillar flow', () => {
 
     userEvent.click(signButton());
 
-    await expectSuccessScreen();
+    await expectSuccessScreen(false, true);
   }, 20_000);
 
   test('allows moving only future payments to bond Tuleva pension fund', async () => {
@@ -202,7 +202,7 @@ describe('2nd pillar flow', () => {
 
     userEvent.click(signButton());
 
-    await expectSuccessScreen();
+    await expectSuccessScreen(false, true);
   }, 20_000);
 
   test('allows customizing the transfer', async () => {
@@ -268,7 +268,7 @@ describe('2nd pillar flow', () => {
 
     userEvent.click(signButton());
 
-    await expectSuccessScreen();
+    await expectSuccessScreen(true, true);
   }, 20_000);
 
   test('allows transferring only existing fund units', async () => {
@@ -315,22 +315,23 @@ describe('2nd pillar flow', () => {
 
     userEvent.click(signButton());
 
-    await expectSuccessScreen(false);
+    await expectSuccessScreen(true, false);
   }, 20_000);
 });
 
-async function expectSuccessScreen(withFutureContributions = true) {
+async function expectSuccessScreen(withCurrentFundUnits = true, withFutureContributions = true) {
   expect(
     await screen.findByRole('heading', { name: 'Application finished' }, { timeout: 10_000 }),
   ).toBeInTheDocument();
 
-  expect(
-    await screen.findByText('Your current fund units will be transferred on', { exact: false }),
-  ).toBeInTheDocument();
-
-  expect(
-    await screen.findByText('the first working day following', { exact: false }),
-  ).toBeInTheDocument();
+  if (withCurrentFundUnits) {
+    expect(
+      await screen.findByText('Your current fund units will be transferred on', { exact: false }),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText('the first working day following', { exact: false }),
+    ).toBeInTheDocument();
+  }
 
   if (withFutureContributions) {
     expect(
@@ -358,6 +359,7 @@ function mandatesBackend(expectedRequest: any) {
     }),
   );
 }
+
 const bonds = () => screen.getByText('Tuleva World Bonds Pension Fund');
 
 const exchangeCurrentFundUnitsSwitch: () => HTMLInputElement = () =>
