@@ -16,6 +16,10 @@ export const PaymentPage: React.FunctionComponent<{
 };
 
 const mapStateToProps = (state: State) => ({
-  noThirdPillar: !!(state.login.token && state.login.user && !state.login.user.thirdPillarActive),
+  noThirdPillar: !!(
+    state.login.authenticationPrincipal?.accessToken &&
+    state.login.user &&
+    !state.login.user.thirdPillarActive
+  ),
 });
 export default connect(mapStateToProps)(PaymentPage);

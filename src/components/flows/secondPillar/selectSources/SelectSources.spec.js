@@ -56,7 +56,6 @@ describe('Select sources step', () => {
   it('renders a button to the next step', () => {
     const nextPath = '/next-path';
     component.setProps({ nextPath });
-    console.log(component.debug());
 
     expect(component.find('#nextStep').prop('to')).toBe(nextPath);
     expect(component.find('#nextStep button').children().at(0).getElement(0)).toMatchSnapshot();
@@ -85,7 +84,6 @@ describe('Select sources step', () => {
       selectedFutureContributionsFundIsin: 'a',
     });
     expect(component.find('#nextStep button').prop('className')).toContain('disabled');
-    console.log(component.debug());
     expect(
       component.contains(
         <FormattedMessage id="select.sources.error.source.fund.percentages.over.100" />,

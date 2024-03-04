@@ -1,19 +1,25 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import { connect, useSelector } from 'react-redux';
+import { connect, useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { finish as finishProcedure } from '../../../TriggerProcedure/utils';
 import { State } from '../../../../types';
 import pig from './pig.svg';
 import { SuccessNotice2 } from '../../common/SuccessNotice2/SuccessNotice2';
 import { Notice } from '../../common/Notice/Notice';
+import { AuthenticationPrincipal } from '../../../common/apiModels';
+
+import { withUpdatableAuthenticationPrincipal } from '../../../common/updatableAuthenticationPrincipal';
 
 interface Props {
   recurringPaymentCount: number;
 }
 
 export const BackToPartner: React.FC<Props> = ({ recurringPaymentCount }) => {
-  const token = useSelector<State, string>((state) => state.login.token);
+  const authenticationPrincipal = withUpdatableAuthenticationPrincipal(
+    useSelector<State, AuthenticationPrincipal>((state) => state.login.authenticationPrincipal),
+    useDispatch(),
+  );
   const personalCode = useSelector<State, string>((state) => state.login.user?.personalCode);
 
   return (
@@ -52,7 +58,12 @@ export const BackToPartner: React.FC<Props> = ({ recurringPaymentCount }) => {
                 type="button"
                 className="btn btn-primary flex-grow-1 flex-md-grow-0"
                 onClick={() =>
-                  finishProcedure('newRecurringPayment', undefined, personalCode, token)
+                  finishProcedure(
+                    'newRecurringPayment',
+                    undefined,
+                    personalCode,
+                    authenticationPrincipal,
+                  )
                 }
               >
                 <FormattedMessage id="thirdPillarBackToPartner.recurringPayment.button" />
@@ -64,7 +75,9 @@ export const BackToPartner: React.FC<Props> = ({ recurringPaymentCount }) => {
           <button
             type="button"
             className="btn btn-outline-primary flex-grow-1 flex-md-grow-0"
-            onClick={() => finishProcedure('newPayment', undefined, personalCode, token)}
+            onClick={() =>
+              finishProcedure('newPayment', undefined, personalCode, authenticationPrincipal)
+            }
           >
             <FormattedMessage id="thirdPillarBackToPartner.singlePayment.button" />
           </button>

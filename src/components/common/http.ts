@@ -1,15 +1,11 @@
 import axios, { AxiosResponse } from 'axios';
 import config from 'react-global-configuration';
+import { UpdatableAuthenticationPrincipal } from './updatableAuthenticationPrincipal';
+import { createAxiosInstance } from './tokenManagement';
 
 axios.defaults.withCredentials = true;
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
-function createCustomHeaders(): Record<string, string> {
-  return {
-    'Accept-Language': config.get('language'),
-  };
-}
 
 function transformResponse(response: Response): Promise<Response> {
   if (response.ok && response.status < 400) {
@@ -26,13 +22,6 @@ function transformResponse(response: Response): Promise<Response> {
   throw response;
 }
 
-function transformFileResponse(response: Response): Promise<Blob> {
-  if (response.ok && response.status < 400) {
-    return response.blob();
-  }
-  throw response;
-}
-
 function urlEncodeParameters(params: Record<string, string>): string {
   return Object.keys(params)
     .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
@@ -43,7 +32,7 @@ export async function get(url: string, params = {}, headers = {}): Promise<Axios
   try {
     const response = await axios.get(url, {
       params,
-      headers: { ...headers, ...createCustomHeaders() },
+      headers: { ...headers, ...createLanguageHeaders() },
     });
     return response.data;
   } catch (error: any) {
@@ -54,16 +43,65 @@ export async function get(url: string, params = {}, headers = {}): Promise<Axios
     };
   }
 }
+export async function getWithAuthentication(
+  authenticationPrincipal: UpdatableAuthenticationPrincipal,
+  url: string,
+  params = {},
+  axiosConfig = {},
+): Promise<any> {
+  checkUpdatableAuthenticationPrincipal(authenticationPrincipal);
+  const axiosInstance = createAxiosInstance(authenticationPrincipal);
+  return axiosInstance.get(url, { params, ...axiosConfig }).then((response) => response.data);
+}
 
-export async function downloadFile(url: string, headers = {}): Promise<any> {
-  const response = await fetch(url, {
-    headers: { ...headers, ...createCustomHeaders() },
-    method: 'GET',
-    credentials: 'include',
-    mode: 'cors',
-    cache: 'default',
-  });
-  return transformFileResponse(response);
+export async function postWithAuthentication(
+  authenticationPrincipal: UpdatableAuthenticationPrincipal,
+  url: string,
+  data = {},
+  axiosConfig = {},
+): Promise<any> {
+  checkUpdatableAuthenticationPrincipal(authenticationPrincipal);
+  const axiosInstance = createAxiosInstance(authenticationPrincipal);
+  return axiosInstance.post(url, data, axiosConfig).then((response) => response.data);
+}
+
+export async function putWithAuthentication(
+  authenticationPrincipal: UpdatableAuthenticationPrincipal,
+  url: string,
+  data = {},
+  axiosConfig = {},
+): Promise<any> {
+  checkUpdatableAuthenticationPrincipal(authenticationPrincipal);
+  const axiosInstance = createAxiosInstance(authenticationPrincipal);
+  return axiosInstance.put(url, data, axiosConfig).then((response) => response.data);
+}
+
+export async function patchWithAuthentication(
+  authenticationPrincipal: UpdatableAuthenticationPrincipal,
+  url: string,
+  data = {},
+  axiosConfig = {},
+): Promise<any> {
+  checkUpdatableAuthenticationPrincipal(authenticationPrincipal);
+  const axiosInstance = createAxiosInstance(authenticationPrincipal);
+  return axiosInstance.patch(url, data, axiosConfig).then((response) => response.data);
+}
+
+export async function downloadFileWithAuthentication(
+  authenticationPrincipal: UpdatableAuthenticationPrincipal,
+  url: string,
+  headers = {},
+): Promise<Blob> {
+  checkUpdatableAuthenticationPrincipal(authenticationPrincipal);
+
+  const axiosInstance = createAxiosInstance(authenticationPrincipal);
+
+  return axiosInstance
+    .get(url, {
+      headers: { ...headers },
+      responseType: 'blob',
+    })
+    .then((response) => response.data);
 }
 
 export async function post(url: string, params = {}, headers = {}): Promise<any> {
@@ -72,41 +110,7 @@ export async function post(url: string, params = {}, headers = {}): Promise<any>
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
       ...headers,
-      ...createCustomHeaders(),
-    },
-    body: JSON.stringify(params),
-    credentials: 'include',
-    mode: 'cors',
-    cache: 'default',
-  });
-
-  return transformResponse(response);
-}
-
-// TODO: write tests for this
-export async function put(url: string, params = {}, headers = {}): Promise<any> {
-  const response = await fetch(url, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
-      ...headers,
-      ...createCustomHeaders(),
-    },
-    body: JSON.stringify(params),
-    credentials: 'include',
-    mode: 'cors',
-    cache: 'default',
-  });
-  return transformResponse(response);
-}
-
-export async function patch(url: string, params = {}, headers = {}): Promise<any> {
-  const response = await fetch(url, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
-      ...headers,
-      ...createCustomHeaders(),
+      ...createLanguageHeaders(),
     },
     body: JSON.stringify(params),
     credentials: 'include',
@@ -124,7 +128,7 @@ export async function postForm(url: string, params = {}, headers = {}): Promise<
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
       ...headers,
-      ...createCustomHeaders(),
+      ...createLanguageHeaders(),
     },
     body,
     credentials: 'include',
@@ -146,6 +150,23 @@ export async function simpleFetch(method: string, url: string): Promise<any> {
     cache: 'default',
   });
   return transformResponse(response);
+}
+
+// Runtime exception if we use this file from not typed
+function checkUpdatableAuthenticationPrincipal(
+  authenticationPrincipal: UpdatableAuthenticationPrincipal,
+) {
+  if (typeof authenticationPrincipal.update !== 'function') {
+    // eslint-disable-next-line no-console
+    console.error('No updatable authentication principal present');
+    throw new Error('No updatable authentication principal present');
+  }
+}
+
+function createLanguageHeaders(): Record<string, string> {
+  return {
+    'Accept-Language': config.get('language'),
+  };
 }
 
 /* eslint-enable @typescript-eslint/no-explicit-any */

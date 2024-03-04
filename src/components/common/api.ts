@@ -22,7 +22,17 @@ import {
   User,
   UserConversion,
 } from './apiModels';
-import { downloadFile, get, patch, post, postForm, put, simpleFetch } from './http';
+import {
+  downloadFileWithAuthentication,
+  getWithAuthentication,
+  patchWithAuthentication,
+  post,
+  postForm,
+  postWithAuthentication,
+  putWithAuthentication,
+  simpleFetch,
+} from './http';
+import { UpdatableAuthenticationPrincipal } from './updatableAuthenticationPrincipal';
 
 const API_URI = '/api';
 
@@ -66,14 +76,8 @@ export async function authenticateWithIdCard(): Promise<boolean> {
   return success;
 }
 
-export function logout(token: string): Promise<void> {
-  return get(
-    getEndpoint('/v1/logout'),
-    {},
-    {
-      Authorization: `Bearer ${token}`,
-    },
-  );
+export function logout(authenticationPrincipal: UpdatableAuthenticationPrincipal): Promise<void> {
+  return getWithAuthentication(authenticationPrincipal, getEndpoint('/v1/logout'), {});
 }
 
 export async function getTokensWithGrantType(
@@ -81,7 +85,7 @@ export async function getTokensWithGrantType(
   extraParameters: Record<string, string> = {},
 ): Promise<Token | null> {
   try {
-    const { access_token: accessToken } = await postForm(
+    const { access_token: accessToken, refresh_token: refreshToken } = await postForm(
       getEndpoint('/oauth/token'),
       {
         grant_type: grantType,
@@ -93,7 +97,7 @@ export async function getTokensWithGrantType(
       },
     );
 
-    return { accessToken };
+    return { accessToken, refreshToken };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error.error !== 'AUTHENTICATION_NOT_COMPLETE') {
@@ -117,29 +121,38 @@ export function getIdCardTokens(): Promise<Token | null> {
 
 export function downloadMandatePreviewWithIdAndToken(
   mandateId: string,
-  token: string,
+  authenticationPrincipal: UpdatableAuthenticationPrincipal,
 ): Promise<Blob> {
-  return downloadFile(getEndpoint(`/v1/mandates/${mandateId}/file/preview`), {
-    Authorization: `Bearer ${token}`,
-  });
+  return downloadFileWithAuthentication(
+    authenticationPrincipal,
+    getEndpoint(`/v1/mandates/${mandateId}/file/preview`),
+  );
 }
 
-export function downloadMandateWithIdAndToken(mandateId: string, token: string): Promise<Blob> {
-  return downloadFile(getEndpoint(`/v1/mandates/${mandateId}/file`), {
-    Authorization: `Bearer ${token}`,
-  });
+export function downloadMandateWithIdAndToken(
+  mandateId: string,
+  authenticationPrincipal: UpdatableAuthenticationPrincipal,
+): Promise<Blob> {
+  return downloadFileWithAuthentication(
+    authenticationPrincipal,
+    getEndpoint(`/v1/mandates/${mandateId}/file`),
+  );
 }
 
-export function getUserWithToken(token: string): Promise<User> {
-  return get(getEndpoint('/v1/me'), undefined, {
-    Authorization: `Bearer ${token}`,
-  });
+export function getUserWithToken(
+  authenticationPrincipal: UpdatableAuthenticationPrincipal,
+): Promise<User> {
+  return getWithAuthentication(authenticationPrincipal, getEndpoint('/v1/me'), undefined);
 }
 
-export async function getSourceFundsWithToken(token: string): Promise<SourceFund[]> {
-  const funds = await get(getEndpoint('/v1/pension-account-statement'), undefined, {
-    Authorization: `Bearer ${token}`,
-  });
+export async function getSourceFundsWithToken(
+  authenticationPrincipal: UpdatableAuthenticationPrincipal,
+): Promise<SourceFund[]> {
+  const funds = await getWithAuthentication(
+    authenticationPrincipal,
+    getEndpoint('/v1/pension-account-statement'),
+    undefined,
+  );
   return funds.map(transformFundBalance);
 }
 
@@ -159,69 +172,68 @@ const transformFundBalance = (fundBalance: FundBalance): SourceFund => ({
   profit: fundBalance.profit,
 });
 
-export function saveMandateWithToken(mandate: string, token: string): Promise<Mandate> {
-  return post(getEndpoint('/v1/mandates'), mandate, {
-    Authorization: `Bearer ${token}`,
-  });
+export function saveMandateWithToken(
+  mandate: string,
+  authenticationPrincipal: UpdatableAuthenticationPrincipal,
+): Promise<Mandate> {
+  return postWithAuthentication(authenticationPrincipal, getEndpoint('/v1/mandates'), mandate);
 }
 
 export async function getMobileIdSignatureChallengeCode(
   mandateId: string,
-  token: string,
+  authenticationPrincipal: UpdatableAuthenticationPrincipal,
 ): Promise<MobileSignatureResponse> {
-  const { challengeCode } = await put(
+  const { challengeCode } = await putWithAuthentication(
+    authenticationPrincipal,
     getEndpoint(`/v1/mandates/${mandateId}/signature/mobileId`),
     undefined,
-    {
-      Authorization: `Bearer ${token}`,
-    },
   );
   return challengeCode;
 }
 
 export async function getMobileIdSignatureStatus(
   mandateId: string,
-  token: string,
+  authenticationPrincipal: UpdatableAuthenticationPrincipal,
 ): Promise<MobileSignatureStatusResponse> {
-  return get(getEndpoint(`/v1/mandates/${mandateId}/signature/mobileId/status`), undefined, {
-    Authorization: `Bearer ${token}`,
-  });
+  return getWithAuthentication(
+    authenticationPrincipal,
+    getEndpoint(`/v1/mandates/${mandateId}/signature/mobileId/status`),
+    undefined,
+  );
 }
 
 export async function getSmartIdSignatureChallengeCode(
   mandateId: string,
-  token: string,
+  authenticationPrincipal: UpdatableAuthenticationPrincipal,
 ): Promise<MobileSignatureResponse> {
-  const { challengeCode } = await put(
+  const { challengeCode } = await putWithAuthentication(
+    authenticationPrincipal,
     getEndpoint(`/v1/mandates/${mandateId}/signature/smartId`),
     undefined,
-    {
-      Authorization: `Bearer ${token}`,
-    },
   );
   return challengeCode;
 }
 
 export async function getSmartIdSignatureStatus(
   mandateId: string,
-  token: string,
+  authenticationPrincipal: UpdatableAuthenticationPrincipal,
 ): Promise<MobileSignatureStatusResponse> {
-  return get(getEndpoint(`/v1/mandates/${mandateId}/signature/smartId/status`), undefined, {
-    Authorization: `Bearer ${token}`,
-  });
+  return getWithAuthentication(
+    authenticationPrincipal,
+    getEndpoint(`/v1/mandates/${mandateId}/signature/smartId/status`),
+    undefined,
+  );
 }
 
 export async function getIdCardSignatureHash(
   mandateId: string,
   certificateHex: string,
-  token: string,
+  authenticationPrincipal: UpdatableAuthenticationPrincipal,
 ): Promise<IdCardSignatureResponse> {
-  const { hash } = await put(
+  const { hash } = await putWithAuthentication(
+    authenticationPrincipal,
     getEndpoint(`/v1/mandates/${mandateId}/signature/idCard`),
     { clientCertificate: certificateHex },
-    {
-      Authorization: `Bearer ${token}`,
-    },
   );
   return hash;
 }
@@ -229,101 +241,106 @@ export async function getIdCardSignatureHash(
 export async function getIdCardSignatureStatus(
   mandateId: string,
   signedHash: string,
-  token: string,
+  authenticationPrincipal: UpdatableAuthenticationPrincipal,
 ): Promise<string> {
-  const { statusCode } = await put(
+  const { statusCode } = await putWithAuthentication(
+    authenticationPrincipal,
     getEndpoint(`/v1/mandates/${mandateId}/signature/idCard/status`),
     { signedHash },
-    {
-      Authorization: `Bearer ${token}`,
-    },
   );
   return statusCode;
 }
 
-export function updateUserWithToken(user: User, token: string): Promise<User> {
-  return patch(getEndpoint('/v1/me'), user, {
-    Authorization: `Bearer ${token}`,
-  });
+export function updateUserWithToken(
+  user: User,
+  authenticationPrincipal: UpdatableAuthenticationPrincipal,
+): Promise<User> {
+  return patchWithAuthentication(authenticationPrincipal, getEndpoint('/v1/me'), user);
 }
 
-export function getUserConversionWithToken(token: string): Promise<UserConversion> {
-  return get(getEndpoint('/v1/me/conversion'), undefined, {
-    Authorization: `Bearer ${token}`,
-  });
+export function getUserConversionWithToken(
+  authenticationPrincipal: UpdatableAuthenticationPrincipal,
+): Promise<UserConversion> {
+  return getWithAuthentication(
+    authenticationPrincipal,
+    getEndpoint('/v1/me/conversion'),
+    undefined,
+  );
 }
 
-export function getInitialCapitalWithToken(token: string): Promise<InitialCapital> {
-  return get(getEndpoint('/v1/me/capital'), undefined, {
-    Authorization: `Bearer ${token}`,
-  });
+export function getInitialCapitalWithToken(
+  authenticationPrincipal: UpdatableAuthenticationPrincipal,
+): Promise<InitialCapital> {
+  return getWithAuthentication(authenticationPrincipal, getEndpoint('/v1/me/capital'), undefined);
 }
 
 export function createAmlCheck(
   type: string,
   success: boolean,
   metadata: Record<string, unknown>,
-  token: string,
+  authenticationPrincipal: UpdatableAuthenticationPrincipal,
 ): Promise<AmlCheck> {
-  return post(
-    getEndpoint('/v1/amlchecks'),
-    { type, success, metadata },
-    {
-      Authorization: `Bearer ${token}`,
-    },
+  return postWithAuthentication(authenticationPrincipal, getEndpoint('/v1/amlchecks'), {
+    type,
+    success,
+    metadata,
+  });
+}
+
+export function getMissingAmlChecks(
+  authenticationPrincipal: UpdatableAuthenticationPrincipal,
+): Promise<AmlCheck[]> {
+  return getWithAuthentication(authenticationPrincipal, getEndpoint('/v1/amlchecks'), undefined);
+}
+
+export function getFunds(
+  authenticationPrincipal: UpdatableAuthenticationPrincipal,
+): Promise<Fund[]> {
+  return getWithAuthentication(authenticationPrincipal, getEndpoint('/v1/funds'));
+}
+
+export function getPendingApplications(
+  authenticationPrincipal: UpdatableAuthenticationPrincipal,
+): Promise<Application[]> {
+  return getWithAuthentication(authenticationPrincipal, getEndpoint('/v1/applications'), {
+    status: 'PENDING',
+  });
+}
+
+export function getTransactions(
+  authenticationPrincipal: UpdatableAuthenticationPrincipal,
+): Promise<Transaction[]> {
+  return getWithAuthentication(authenticationPrincipal, getEndpoint('/v1/transactions'), undefined);
+}
+
+export function getContributions(
+  authenticationPrincipal: UpdatableAuthenticationPrincipal,
+): Promise<Contribution[]> {
+  return getWithAuthentication(
+    authenticationPrincipal,
+    getEndpoint('/v1/contributions'),
+    undefined,
   );
 }
 
-export function getMissingAmlChecks(token: string): Promise<AmlCheck[]> {
-  return get(getEndpoint('/v1/amlchecks'), undefined, {
-    Authorization: `Bearer ${token}`,
-  });
-}
-
-export function getFunds(token: string): Promise<Fund[]> {
-  return get(getEndpoint('/v1/funds'), undefined, {
-    Authorization: `Bearer ${token}`,
-  });
-}
-
-export function getPendingApplications(token: string): Promise<Application[]> {
-  return get(
-    getEndpoint('/v1/applications'),
-    { status: 'PENDING' },
-    {
-      Authorization: `Bearer ${token}`,
-    },
+export function getMandateDeadlines(
+  authenticationPrincipal: UpdatableAuthenticationPrincipal,
+): Promise<MandateDeadlines> {
+  return getWithAuthentication(
+    authenticationPrincipal,
+    getEndpoint('/v1/mandate-deadlines'),
+    undefined,
   );
-}
-
-export function getTransactions(token: string): Promise<Transaction[]> {
-  return get(getEndpoint('/v1/transactions'), undefined, {
-    Authorization: `Bearer ${token}`,
-  });
-}
-
-export function getContributions(token: string): Promise<Contribution[]> {
-  return get(getEndpoint('/v1/contributions'), undefined, {
-    Authorization: `Bearer ${token}`,
-  });
-}
-
-export function getMandateDeadlines(token: string): Promise<MandateDeadlines> {
-  return get(getEndpoint('/v1/mandate-deadlines'), undefined, {
-    Authorization: `Bearer ${token}`,
-  });
 }
 
 export function createApplicationCancellation(
   applicationId: number,
-  token: string,
+  authenticationPrincipal: UpdatableAuthenticationPrincipal,
 ): Promise<CancellationMandate> {
-  return post(
+  return postWithAuthentication(
+    authenticationPrincipal,
     getEndpoint(`/v1/applications/${applicationId}/cancellations`),
     {},
-    {
-      Authorization: `Bearer ${token}`,
-    },
   );
 }
 
@@ -331,26 +348,24 @@ export function createApplicationCancellation(
 export function createTrackedEvent(
   type: string,
   data: Record<string, unknown>,
-  token: string,
+  authenticationPrincipal: UpdatableAuthenticationPrincipal,
 ): Promise<any> {
-  return post(
-    getEndpoint('/v1/t'),
-    { type, data },
-    {
-      Authorization: `Bearer ${token}`,
-    },
-  );
+  return postWithAuthentication(authenticationPrincipal, getEndpoint('/v1/t'), { type, data });
 }
 
-export function getPaymentLink(payment: Payment, token: string): Promise<PaymentLink> {
-  return get(getEndpoint('/v1/payments/link'), payment, {
-    Authorization: `Bearer ${token}`,
-  });
+export function getPaymentLink(
+  payment: Payment,
+  authenticationPrincipal: UpdatableAuthenticationPrincipal,
+): Promise<PaymentLink> {
+  return getWithAuthentication(authenticationPrincipal, getEndpoint('/v1/payments/link'), payment);
 }
 
-export function redirectToPayment(payment: Payment, token: string): void {
+export function redirectToPayment(
+  payment: Payment,
+  authenticationPrincipal: UpdatableAuthenticationPrincipal,
+): void {
   const wndw = getWindow(payment.type);
-  getPaymentLink(payment, token).then((paymentLink) => {
+  getPaymentLink(payment, authenticationPrincipal).then((paymentLink) => {
     wndw.location.replace(paymentLink.url);
   });
 }

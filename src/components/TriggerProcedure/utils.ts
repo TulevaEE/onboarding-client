@@ -1,5 +1,6 @@
 import { getPaymentLink } from '../common/api';
 import { PaymentChannel, PaymentType } from '../common/apiModels';
+import { UpdatableAuthenticationPrincipal } from '../common/updatableAuthenticationPrincipal';
 
 const EXTERNAL_AUTHENTICATOR_PROVIDER = 'EXTERNAL_AUTHENTICATOR_PROVIDER';
 
@@ -62,7 +63,7 @@ export const finish = async (
   result?: string,
   error?: string,
   personalCode?: string,
-  token?: string,
+  authenticationPrincipal?: UpdatableAuthenticationPrincipal,
 ) => {
   const provider = sessionStorage.getItem(EXTERNAL_AUTHENTICATOR_PROVIDER);
 
@@ -71,7 +72,7 @@ export const finish = async (
     console.error('unexpected state: no provider');
     return;
   }
-  if (!token || !personalCode) {
+  if (!authenticationPrincipal?.accessToken || !personalCode) {
     // eslint-disable-next-line no-console -- WIP
     console.error('unexpected state: no token/personal code');
     return;
@@ -87,7 +88,7 @@ export const finish = async (
       paymentChannel: PaymentChannel.PARTNER,
       recipientPersonalCode: personalCode,
     },
-    token,
+    authenticationPrincipal,
   );
   const message = {
     type: result,

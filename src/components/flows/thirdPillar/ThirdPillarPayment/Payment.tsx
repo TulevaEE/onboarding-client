@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Radio } from '../../../common';
@@ -8,7 +8,7 @@ import './Payment.scss';
 import { BankButton } from './BankButton';
 import { State } from '../../../../types';
 import { redirectToPayment } from '../../../common/api';
-import { PaymentChannel, PaymentType } from '../../../common/apiModels';
+import { AuthenticationPrincipal, PaymentChannel, PaymentType } from '../../../common/apiModels';
 import { PaymentAmountInput } from './PaymentAmountInput';
 import { LuminorRecurringPaymentDetails } from './paymentDetails/LuminorRecurringPaymentDetails';
 import { OtherBankPaymentDetails } from './paymentDetails/OtherBankPaymentDetails';
@@ -18,16 +18,22 @@ import { LhvRecurringPaymentDetails } from './paymentDetails/LhvRecurringPayment
 import { CoopRecurringPaymentDetails } from './paymentDetails/CoopRecurringPaymentDetails';
 import EmployerPayment from './paymentDetails/EmployerPaymentDetails';
 
+import { withUpdatableAuthenticationPrincipal } from '../../../common/updatableAuthenticationPrincipal';
+
 export const Payment: React.FunctionComponent<{
   personalCode: string;
-  token: string;
-}> = ({ personalCode, token }) => {
+  authenticationPrincipal: AuthenticationPrincipal;
+}> = ({ personalCode, authenticationPrincipal }) => {
   const { formatMessage } = useIntl();
 
   const [paymentType, setPaymentType] = useState<PaymentType>(PaymentType.SINGLE);
   const [paymentAmount, setPaymentAmount] = useState<string>('');
   const [paymentBank, setPaymentBank] = useState<string>('');
 
+  const updatableAuthenticationPrincipal = withUpdatableAuthenticationPrincipal(
+    authenticationPrincipal,
+    useDispatch(),
+  );
   const isDisabled = () =>
     !personalCode ||
     !paymentBank ||
@@ -231,7 +237,7 @@ export const Payment: React.FunctionComponent<{
                             type: paymentType,
                             paymentChannel: paymentBank.toUpperCase() as PaymentChannel,
                           },
-                          token,
+                          updatableAuthenticationPrincipal,
                         );
                       }}
                     >
@@ -293,6 +299,6 @@ export const Payment: React.FunctionComponent<{
 
 const mapStateToProps = (state: State) => ({
   personalCode: state.login.user && state.login.user.personalCode,
-  token: state.login.token,
+  authenticationPrincipal: state.login.authenticationPrincipal,
 });
 export default connect(mapStateToProps)(Payment);

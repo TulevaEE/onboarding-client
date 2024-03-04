@@ -5,7 +5,7 @@ const mockUuid = jest.genMockFromModule('uuid/v4');
 jest.mock('uuid/v4', () => mockUuid);
 jest.mock('axios');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const { get, post, postForm, patch, downloadFile, simpleFetch } = require('./http');
+const { get, post, postForm, simpleFetch } = require('./http');
 
 describe('http', () => {
   let originalFetch;
@@ -67,24 +67,6 @@ describe('http', () => {
     );
   });
 
-  it('can download a file', () => {
-    const value = { thisIsTheReturnValue: true };
-    fetch.mockReturnValueOnce(fakeSuccessfulResponseWithValue(value));
-    const headers = {
-      thing: 'hello',
-      another: 5,
-      'Accept-Language': 'en',
-    };
-    return downloadFile('https://example.com', headers).then((givenValue) => {
-      expect(givenValue).toEqual(value);
-      const url = fetch.mock.calls[0][0];
-      expect(url).toEqual('https://example.com');
-      const options = fetch.mock.calls[0][1];
-      expect(options.method).toEqual('GET');
-      expect(options.headers).toEqual(headers);
-    });
-  });
-
   it('gets with headers', async () => {
     axios.get.mockResolvedValueOnce(anAxiosResponse());
 
@@ -142,19 +124,6 @@ describe('http', () => {
       expect(options.method).toEqual('POST');
       expect(options.headers['Content-Type']).toBe('application/x-www-form-urlencoded');
       expect(options.body).toEqual('thisIsTheBody=true&yes=no');
-    });
-  });
-
-  it('can patch some data', () => {
-    const value = { thisIsTheReturnValue: true };
-    fetch.mockReturnValueOnce(fakeSuccessfulResponseWithValue(value));
-    return patch('https://example.com', { thisIsTheBody: true }).then((givenValue) => {
-      expect(givenValue).toEqual(value);
-      const url = fetch.mock.calls[0][0];
-      expect(url).toEqual('https://example.com');
-      const options = fetch.mock.calls[0][1];
-      expect(options.method).toEqual('PATCH');
-      expect(options.body).toEqual('{"thisIsTheBody":true}');
     });
   });
 

@@ -24,6 +24,7 @@ import {
 } from './constants';
 
 import { ID_CARD_LOGIN_START_FAILED_ERROR } from '../common/errorAlert/ErrorAlert';
+import { anAuthenticationPrincipal } from '../common/updatableAuthenticationPrincipal.test';
 
 const mockHttp = jest.genMockFromModule('../common/http');
 jest.mock('../common/http', () => mockHttp);
@@ -116,7 +117,7 @@ describe('Login actions', () => {
   });
 
   it('can authenticate with an id card', () => {
-    const tokens = { accessToken: 'token' };
+    const tokens = { accessToken: 'token', refreshToken: 'refreshToken' };
     mockApi.authenticateWithIdCard = jest.fn(() => {
       expect(dispatch).toHaveBeenCalledTimes(1);
       expect(dispatch).toHaveBeenCalledWith({
@@ -137,7 +138,7 @@ describe('Login actions', () => {
   });
 
   it('can handle id card login with query parameter', () => {
-    const tokens = { accessToken: 'token' };
+    const tokens = { accessToken: 'token', refreshToken: 'refreshToken' };
     const handleIdCardLogin = createBoundAction(actions.handleIdCardLogin);
     expect(dispatch).not.toHaveBeenCalled();
     mockApi.getIdCardTokens = jest.fn(() => Promise.resolve(tokens));
@@ -178,7 +179,7 @@ describe('Login actions', () => {
   });
 
   it('starts polling until succeeds when authenticating with a phone number', () => {
-    const tokens = { accessToken: 'token' };
+    const tokens = { accessToken: 'token', refreshToken: 'refreshToken' };
     mockApi.authenticateWithMobileId = jest.fn(() => Promise.resolve('1337'));
     mockApi.getMobileIdTokens = jest.fn(() => Promise.resolve(null));
     const authenticateWithMobileId = createBoundAction(actions.authenticateWithMobileId);
@@ -224,7 +225,7 @@ describe('Login actions', () => {
   });
 
   it('starts polling until succeeds when authenticating with smart id', () => {
-    const tokens = { accessToken: 'token' };
+    const tokens = { accessToken: 'token', refreshToken: 'refreshToken' };
     mockApi.authenticateWithIdCode = jest.fn(() =>
       Promise.resolve({ challengeCode: '1337', authenticationHash: '123456' }),
     );
@@ -248,7 +249,7 @@ describe('Login actions', () => {
   });
 
   it('starts polling until succeeds when authenticating with id card', () => {
-    const tokens = { accessToken: 'token' };
+    const tokens = { accessToken: 'token', refreshToken: 'refreshToken' };
     mockApi.authenticateWithIdCard = jest.fn(() => Promise.resolve());
     mockApi.getIdCardTokens = jest.fn(() => Promise.resolve(null));
     const authenticateWithIdCard = createBoundAction(actions.authenticateWithIdCard);
@@ -315,7 +316,7 @@ describe('Login actions', () => {
   });
 
   it('can get a user', () => {
-    state.login.token = 'token';
+    state.login.authenticationPrincipal = anAuthenticationPrincipal();
     const user = { iAmAUser: true };
     mockApi.getUserWithToken = jest.fn(() => {
       expect(dispatch).toHaveBeenCalledTimes(1);
@@ -334,7 +335,7 @@ describe('Login actions', () => {
   });
 
   it('can handle errors when getting a user', () => {
-    state.login.token = 'token';
+    state.login.authenticationPrincipal = anAuthenticationPrincipal();
     const error = new Error('oh no!');
     mockApi.getUserWithToken = jest.fn(() => Promise.reject(error));
     const getUser = createBoundAction(actions.getUser);
@@ -344,18 +345,8 @@ describe('Login actions', () => {
     );
   });
 
-  it('can handle unauthorized error when getting a user', () => {
-    state.login.token = 'token';
-    const error = new Error('oh no!');
-    error.status = 401;
-    mockApi.getUserWithToken = jest.fn(() => Promise.reject(error));
-    const getUser = createBoundAction(actions.getUser);
-    expect(dispatch).not.toHaveBeenCalled();
-    return getUser().then(() => expect(dispatch).toHaveBeenCalledWith({ type: LOG_OUT }));
-  });
-
   it('can handle forbidden error when getting a user', () => {
-    state.login.token = 'token';
+    state.login.authenticationPrincipal = anAuthenticationPrincipal();
     const error = new Error('oh no!');
     error.status = 403;
     mockApi.getUserWithToken = jest.fn(() => Promise.reject(error));
@@ -365,7 +356,7 @@ describe('Login actions', () => {
   });
 
   it('can handle bad gateway error when getting a user', () => {
-    state.login.token = 'token';
+    state.login.authenticationPrincipal = anAuthenticationPrincipal();
     const error = new Error('oh no!');
     error.status = 502;
     mockApi.getUserWithToken = jest.fn(() => Promise.reject(error));
@@ -381,7 +372,7 @@ describe('Login actions', () => {
   });
 
   it('can get user conversion', () => {
-    state.login.token = 'token';
+    state.login.authenticationPrincipal = anAuthenticationPrincipal();
     const userConversion = { iAmAConversion: true };
     mockApi.getUserConversionWithToken = jest.fn(() => {
       expect(dispatch).toHaveBeenCalledTimes(1);
@@ -402,7 +393,7 @@ describe('Login actions', () => {
   });
 
   it('can handle errors when getting user conversion', () => {
-    state.login.token = 'token';
+    state.login.authenticationPrincipal = anAuthenticationPrincipal();
     const error = new Error('oh no!');
     mockApi.getUserConversionWithToken = jest.fn(() => Promise.reject(error));
     const getUserConversion = createBoundAction(actions.getUserConversion);

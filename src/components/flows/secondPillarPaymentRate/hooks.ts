@@ -1,5 +1,5 @@
 import { useMutation, UseMutationResult } from 'react-query';
-import { useTokenOrFail } from '../../common/apiHooks';
+import { useUpdatableAuthenticationPrincipalOrFail } from '../../common/apiHooks';
 import { useMandateSigning } from '../../exchange/hooks';
 import { createSecondPillarPaymentRateChange } from './api';
 import { PaymentRate, SecondPillarPaymentRateChangeMandate } from './types';
@@ -48,8 +48,8 @@ export function useSecondPillarPaymentRateChange(): UseMutationResult<
   unknown,
   PaymentRate
 > {
-  const token = useTokenOrFail();
+  const authenticationPrincipal = useUpdatableAuthenticationPrincipalOrFail();
   return useMutation((paymentRate: PaymentRate) =>
-    createSecondPillarPaymentRateChange(paymentRate, token),
+    createSecondPillarPaymentRateChange(paymentRate, authenticationPrincipal),
   );
 }

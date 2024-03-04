@@ -160,12 +160,12 @@ const mapStateToProps = (state) => ({
   hasError: !!(state.login.userConversionError || state.login.userError),
   loading: state.login.loadingUser || state.login.loadingUserConversion,
   shouldLoadAllUserData:
-    state.login.token &&
+    state.login.authenticationPrincipal?.accessToken &&
     (!(state.login.user || state.login.loadingUser) ||
       !(state.login.userConversion || state.login.loadingUserConversion) ||
       !(state.aml.missingAmlChecks || state.aml.loading)),
   shouldLoadSourceAndTargetFunds:
-    state.login.token &&
+    state.login.authenticationPrincipal?.accessToken &&
     !(
       state.exchange.sourceFunds ||
       state.exchange.loadingSourceFunds ||

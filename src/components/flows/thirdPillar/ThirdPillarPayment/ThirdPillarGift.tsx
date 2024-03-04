@@ -1,24 +1,31 @@
 import React, { useState } from 'react';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { FormattedMessage, useIntl } from 'react-intl';
 import './Payment.scss';
 import { BankButton } from './BankButton';
 import { State } from '../../../../types';
 import { redirectToPayment } from '../../../common/api';
-import { PaymentChannel, PaymentType } from '../../../common/apiModels';
+import { AuthenticationPrincipal, PaymentChannel, PaymentType } from '../../../common/apiModels';
 import { PaymentAmountInput } from './PaymentAmountInput';
 import { OtherBankPaymentDetails } from './paymentDetails/OtherBankPaymentDetails';
 import { isValidPersonalCode } from './PersonalCode';
 
+import { withUpdatableAuthenticationPrincipal } from '../../../common/updatableAuthenticationPrincipal';
+
 export const ThirdPillarGift: React.FunctionComponent<{
-  token: string;
-}> = ({ token }) => {
+  authenticationPrincipal: AuthenticationPrincipal;
+}> = ({ authenticationPrincipal }) => {
   const { formatMessage } = useIntl();
 
   const [paymentPersonalCode, setPaymentPersonalCode] = useState<string>('');
   const [paymentAmount, setPaymentAmount] = useState<string>('');
   const [paymentBank, setPaymentBank] = useState<string>('');
+
+  const updatableAuthenticationPrincipal = withUpdatableAuthenticationPrincipal(
+    authenticationPrincipal,
+    useDispatch(),
+  );
 
   const isDisabled = () =>
     !paymentPersonalCode ||
@@ -159,7 +166,7 @@ export const ThirdPillarGift: React.FunctionComponent<{
                       type: PaymentType.GIFT,
                       paymentChannel: paymentBank.toUpperCase() as PaymentChannel,
                     },
-                    token,
+                    updatableAuthenticationPrincipal,
                   );
                 }}
               >
@@ -184,6 +191,6 @@ export const ThirdPillarGift: React.FunctionComponent<{
 };
 
 const mapStateToProps = (state: State) => ({
-  token: state.login.token,
+  authenticationPrincipal: state.login.authenticationPrincipal,
 });
 export default connect(mapStateToProps)(ThirdPillarGift);

@@ -11,6 +11,7 @@ import { IntlProvider } from 'react-intl';
 import { ContributionSection } from './ContributionSection';
 import { contribution } from './fixtures';
 import { fundsBackend } from '../../test/backend';
+import { anAuthenticationPrincipal } from '../common/updatableAuthenticationPrincipal.test';
 
 jest.mock('react-global-configuration');
 jest.mock('react-redux');
@@ -44,7 +45,11 @@ describe('Contribution section', () => {
 
   beforeEach(() => {
     (useSelector as any).mockImplementation((selector: any) =>
-      selector({ login: { token: 'mock token' } }),
+      selector({
+        login: {
+          authenticationPrincipal: anAuthenticationPrincipal('mock token'),
+        },
+      }),
     );
     (config.get as any).mockImplementation((key: string) => (key === 'language' ? 'en' : null));
     fundsBackend(server);

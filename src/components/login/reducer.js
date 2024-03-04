@@ -20,26 +20,26 @@ import {
   SET_LOGIN_TO_REDIRECT,
   LOG_OUT,
   CHANGE_PERSONAL_CODE,
+  UPDATE_AUTHENTICATION_PRINCIPAL,
 } from './constants';
 
 import { getGlobalErrorCode } from '../common/errorMessage';
 import { UPDATE_USER_SUCCESS } from '../common/user/constants';
 
-const TOKEN_STORAGE_KEY = 'accessToken';
-const LOGIN_METHOD_STORAGE_KEY = 'loginMethod';
-
-// get saved token if it's there
-const token = (window.sessionStorage && sessionStorage.getItem(TOKEN_STORAGE_KEY)) || null;
-const loginMethod =
-  (window.sessionStorage && sessionStorage.getItem(LOGIN_METHOD_STORAGE_KEY)) || null;
+const AUTHENTICATION_PRINCIPAL_STORAGE_KEY = 'authenticationPrincipal';
+let authenticationPrincipal = null;
+if (window.sessionStorage && sessionStorage.getItem(AUTHENTICATION_PRINCIPAL_STORAGE_KEY)) {
+  authenticationPrincipal = JSON.parse(
+    sessionStorage.getItem(AUTHENTICATION_PRINCIPAL_STORAGE_KEY),
+  );
+}
 
 export const initialState = {
   phoneNumber: '',
   personalCode: '',
   controlCode: null,
   loadingAuthentication: false,
-  token,
-  loginMethod,
+  authenticationPrincipal,
   error: null,
   user: null,
   loadingUser: false,
@@ -51,12 +51,12 @@ export const initialState = {
   email: null,
 };
 
-function updateSessionStorage(action, loginMethodUsed) {
+function updateSessionStorage(authentication) {
   if (window.sessionStorage) {
-    sessionStorage.setItem(TOKEN_STORAGE_KEY, action.tokens.accessToken);
-    if (loginMethodUsed) {
-      sessionStorage.setItem(LOGIN_METHOD_STORAGE_KEY, loginMethodUsed);
-    }
+    sessionStorage.setItem(AUTHENTICATION_PRINCIPAL_STORAGE_KEY, JSON.stringify(authentication));
+  } else {
+    // eslint-disable-next-line no-console
+    console.error('No session storage present');
   }
 }
 export default function loginReducer(state = initialState, action) {
@@ -84,14 +84,32 @@ export default function loginReducer(state = initialState, action) {
         loadingUser: false,
       };
 
+    case UPDATE_AUTHENTICATION_PRINCIPAL:
+      updateSessionStorage({
+        accessToken: action.principal.accessToken,
+        refreshToken: action.principal.refreshToken,
+        loginMethod: action.principal.loginMethod,
+      });
+      return {
+        ...state,
+        authenticationPrincipal: action.principal,
+      };
+
     case MOBILE_AUTHENTICATION_SUCCESS:
-      updateSessionStorage(action, action.method);
+      updateSessionStorage({
+        accessToken: action.tokens.accessToken,
+        refreshToken: action.tokens.refreshToken,
+        loginMethod: action.method,
+      });
 
       return {
         // reset all state so page is clean when entered again.
         ...state,
-        token: action.tokens.accessToken,
-        loginMethod: action.method,
+        authenticationPrincipal: {
+          accessToken: action.tokens.accessToken,
+          refreshToken: action.tokens.refreshToken,
+          loginMethod: action.method,
+        },
         loadingAuthentication: false,
         controlCode: null,
         error: null,
@@ -121,13 +139,20 @@ export default function loginReducer(state = initialState, action) {
       return { ...state, loadingAuthentication: true, error: null };
 
     case ID_CARD_AUTHENTICATION_SUCCESS:
-      updateSessionStorage(action, 'ID_CARD');
+      updateSessionStorage({
+        accessToken: action.tokens.accessToken,
+        refreshToken: action.tokens.refreshToken,
+        loginMethod: 'ID_CARD',
+      });
       return {
         // reset all state so page is clean when entered again.
         ...state,
-        token: action.tokens.accessToken,
+        authenticationPrincipal: {
+          accessToken: action.tokens.accessToken,
+          refreshToken: action.tokens.refreshToken,
+          loginMethod: 'ID_CARD',
+        },
         loadingAuthentication: false,
-        loginMethod: 'ID_CARD',
         error: null,
       };
 
@@ -182,13 +207,11 @@ export default function loginReducer(state = initialState, action) {
 
     case LOG_OUT:
       if (window.sessionStorage) {
-        sessionStorage.removeItem(TOKEN_STORAGE_KEY);
-        sessionStorage.removeItem(LOGIN_METHOD_STORAGE_KEY);
+        sessionStorage.removeItem(AUTHENTICATION_PRINCIPAL_STORAGE_KEY);
       }
       return {
         ...initialState,
-        token: null,
-        loginMethod: null,
+        authenticationPrincipal: null,
       };
 
     default:
