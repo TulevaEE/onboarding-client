@@ -32,53 +32,67 @@ const MemberCapital = ({
   ];
 
   const dataSource = [
-    {
-      source: <FormattedMessage id="memberCapital.source.capitalPayment" />,
-      value: <Euro amount={capitalPayment} />,
-      key: 'payment',
-    },
-    {
-      source: <FormattedMessage id="memberCapital.source.profit" />,
-      value: <Euro amount={profit} />,
-      key: 'profit',
-    },
-    {
-      source: (
-        <FormattedMessage
-          id="memberCapital.source.membershipBonus"
-          values={{
-            a: (chunks) => (
-              <a
-                target="_blank"
-                rel="noreferrer"
-                href={formatMessage({ id: 'memberCapital.source.membershipBonus.link' })}
-              >
-                {chunks}
-              </a>
+    ...(capitalPayment
+      ? [
+          {
+            source: <FormattedMessage id="memberCapital.source.capitalPayment" />,
+            value: <Euro amount={capitalPayment} />,
+            key: 'payment',
+          },
+        ]
+      : []),
+    ...(profit
+      ? [
+          {
+            source: <FormattedMessage id="memberCapital.source.profit" />,
+            value: <Euro amount={profit} />,
+            key: 'profit',
+          },
+        ]
+      : []),
+    ...(membershipBonus
+      ? [
+          {
+            source: (
+              <FormattedMessage
+                id="memberCapital.source.membershipBonus"
+                values={{
+                  a: (chunks) => (
+                    <a
+                      target="_blank"
+                      rel="noreferrer"
+                      href={formatMessage({ id: 'memberCapital.source.membershipBonus.link' })}
+                    >
+                      {chunks}
+                    </a>
+                  ),
+                }}
+              />
             ),
-          }}
-        />
-      ),
-      value: <Euro amount={membershipBonus} />,
-      key: 'bonus',
-    },
+            value: <Euro amount={membershipBonus} />,
+            key: 'bonus',
+          },
+        ]
+      : []),
+    ...(workCompensation
+      ? [
+          {
+            source: <FormattedMessage id="memberCapital.source.workCompensation" />,
+            value: <Euro amount={workCompensation} />,
+            key: 'work',
+          },
+        ]
+      : []),
+    ...(unvestedWorkCompensation
+      ? [
+          {
+            source: <FormattedMessage id="memberCapital.source.unvestedWorkCompensation" />,
+            value: <Euro amount={unvestedWorkCompensation} />,
+            key: 'unvestedWork',
+          },
+        ]
+      : []),
   ];
-
-  if (workCompensation) {
-    dataSource.push({
-      source: <FormattedMessage id="memberCapital.source.workCompensation" />,
-      value: <Euro amount={workCompensation} />,
-      key: 'work',
-    });
-  }
-
-  if (unvestedWorkCompensation) {
-    dataSource.push({
-      source: <FormattedMessage id="memberCapital.source.unvestedWorkCompensation" />,
-      value: <Euro amount={unvestedWorkCompensation} />,
-      key: 'unvestedWork',
-    });
-  }
 
   return <Table columns={columns} dataSource={dataSource} />;
 };

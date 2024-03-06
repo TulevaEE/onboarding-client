@@ -6,25 +6,23 @@ import Table from '../../common/table';
 import Euro from '../../common/Euro';
 
 describe('Member capital', () => {
-  const alwaysExistingKeys = ['payment', 'profit', 'bonus'];
-
   let component;
-  it('passes data that exists for everyone to table', () => {
+  it('passes data only by existence to table', () => {
     component = shallow(<MemberCapital />);
 
-    expect(passedDataKeys()).toStrictEqual(alwaysExistingKeys);
+    expect(passedDataKeys()).toStrictEqual([]);
   });
 
   it('passes work compensation to table when exists', () => {
     component = shallow(<MemberCapital value={{ workCompensation: 123 }} />);
 
-    expect(passedDataKeys()).toStrictEqual([...alwaysExistingKeys, 'work']);
+    expect(passedDataKeys()).toStrictEqual(['work']);
   });
 
   it('passes unvested work compensation to table when exists', () => {
     component = shallow(<MemberCapital value={{ unvestedWorkCompensation: 123 }} />);
 
-    expect(passedDataKeys()).toStrictEqual([...alwaysExistingKeys, 'unvestedWork']);
+    expect(passedDataKeys()).toStrictEqual(['unvestedWork']);
   });
 
   it('passes total sum of capital as column footer', () => {
