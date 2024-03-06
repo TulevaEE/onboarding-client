@@ -88,7 +88,7 @@
   "memberCapital.columns.value.title": "Väärtus",
   "memberCapital.source.capitalPayment": "Panus liikmekapitali",
   "memberCapital.source.profit": "Teenitud investeerimiskasum",
-  "memberCapital.source.membershipBonus": "Kogunenud <a>liikmeboonus</a>",
+  "memberCapital.source.membershipBonus": "Kogunenud <a>liikmeboonus ehk omanikutulu</a>",
   "memberCapital.source.membershipBonus.link": "https://tuleva.ee/liikmetele/mis-on-liikmeboonus/",
   "memberCapital.source.workCompensation": "Tööpanus",
   "memberCapital.source.unvestedWorkCompensation": "Broneeritud tööpanus",
