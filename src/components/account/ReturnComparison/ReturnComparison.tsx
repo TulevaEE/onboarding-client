@@ -279,6 +279,7 @@ export class ReturnComparison extends Component<Props, State> {
               <Select
                 options={fundOptions}
                 selected={selectedFundKey}
+                translate={false}
                 onChange={(key: string) => {
                   this.setState({ selectedFundKey: key }, () => {
                     this.loadReturns();
