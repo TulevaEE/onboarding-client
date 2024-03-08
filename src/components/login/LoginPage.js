@@ -133,7 +133,7 @@ LoginPage.propTypes = {
 };
 
 const mapStateToProps = (state) => ({
-  isAuthenticated: !!state.login.token,
+  isAuthenticated: !!state.login.authenticationPrincipal?.accessToken,
   phoneNumber: state.login.phoneNumber,
   personalCode: state.login.personalCode,
   controlCode: state.login.controlCode,

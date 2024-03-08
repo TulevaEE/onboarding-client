@@ -34,7 +34,13 @@ describe('requireAuthentication higher-order component', () => {
   });
 
   it('renders the inner component if authentication is given', () => {
-    fakeStateGetter = () => ({ token: 'an existing token!' });
+    fakeStateGetter = () => ({
+      authenticationPrincipal: {
+        accessToken: 'mockAccessToken',
+        refreshToken: 'mockRefreshToken',
+        loginMethod: 'ID_CARD',
+      },
+    });
     fakeReducer.mockClear();
     store.dispatch({ type: 'this type will not be used!' }); // trigger update from fakeState
     expect(component.text()).toContain('I am FakeComponent');

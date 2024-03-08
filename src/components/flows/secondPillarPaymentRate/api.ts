@@ -1,16 +1,16 @@
-import { post } from '../../common/http';
+import { postWithAuthentication } from '../../common/http';
 import { getEndpoint } from '../../common/api';
 import { PaymentRate, SecondPillarPaymentRateChangeMandate } from './types';
 
+import { UpdatableAuthenticationPrincipal } from '../../common/updatableAuthenticationPrincipal';
+
 export function createSecondPillarPaymentRateChange(
   paymentRate: PaymentRate,
-  token: string,
+  authenticationPrincipal: UpdatableAuthenticationPrincipal,
 ): Promise<SecondPillarPaymentRateChangeMandate> {
-  return post(
+  return postWithAuthentication(
+    authenticationPrincipal,
     getEndpoint(`/v1/second-pillar-payment-rates`),
     { paymentRate },
-    {
-      Authorization: `Bearer ${token}`,
-    },
   );
 }

@@ -21,6 +21,7 @@ import {
   withdrawal,
   paymentRateChange,
 } from './fixtures';
+import { anAuthenticationPrincipal } from '../../common/updatableAuthenticationPrincipal.test';
 
 jest.mock('react-global-configuration');
 jest.mock('react-redux');
@@ -55,7 +56,11 @@ describe('Application section', () => {
 
   beforeEach(() => {
     (useSelector as any).mockImplementation((selector: any) =>
-      selector({ login: { token: 'mock token' } }),
+      selector({
+        login: {
+          authenticationPrincipal: anAuthenticationPrincipal('mock token'),
+        },
+      }),
     );
     (config.get as any).mockImplementation((key: string) => (key === 'language' ? 'en' : null));
   });

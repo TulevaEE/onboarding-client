@@ -10,6 +10,8 @@ import {
 } from './constants';
 import { PaymentChannel, PaymentType } from '../apiModels';
 
+import { withUpdatableAuthenticationPrincipal } from '../updatableAuthenticationPrincipal';
+
 function toFieldErrors(errorResponse) {
   return errorResponse.body.errors.reduce((totalErrors, currentError) => {
     if (currentError.path) {
@@ -34,7 +36,10 @@ export function updateUserEmailAndPhone(user) {
 export function updateUser(user) {
   return (dispatch, getState) => {
     dispatch({ type: UPDATE_USER_START });
-    return updateUserWithToken(user, getState().login.token)
+    return updateUserWithToken(
+      user,
+      withUpdatableAuthenticationPrincipal(getState().login.authenticationPrincipal, dispatch),
+    )
       .then((newUser) => dispatch({ type: UPDATE_USER_SUCCESS, newUser }))
       .catch((errorResponse) => {
         dispatch({ type: UPDATE_USER_ERROR, errorResponse });
@@ -50,10 +55,14 @@ export function userUpdated() {
 export function createNewMember(user) {
   return (dispatch, getState) => {
     dispatch({ type: UPDATE_USER_START });
-    return updateUserWithToken(user, getState().login.token)
+
+    const authenticationPrincipal = withUpdatableAuthenticationPrincipal(
+      getState().login.authenticationPrincipal,
+      dispatch,
+    );
+    return updateUserWithToken(user, authenticationPrincipal)
       .then((newUser) => {
         dispatch({ type: UPDATE_USER_SUCCESS, newUser });
-        const { token } = getState().login;
         redirectToPayment(
           {
             recipientPersonalCode: newUser.personalCode,
@@ -62,7 +71,7 @@ export function createNewMember(user) {
             type: PaymentType.MEMBER_FEE,
             paymentChannel: PaymentChannel.TULUNDUSUHISTU,
           },
-          token,
+          authenticationPrincipal,
         );
       })
       .catch((errorResponse) => {

@@ -233,6 +233,12 @@ export interface ErrorResponse {
 
 export interface Token {
   accessToken: string;
+  refreshToken: string;
+}
+
+type LoginMethod = 'MOBILE_ID' | 'SMART_ID' | 'ID_CARD';
+export interface AuthenticationPrincipal extends Token {
+  loginMethod: LoginMethod;
 }
 
 export interface MobileSignatureResponse {

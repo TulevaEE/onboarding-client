@@ -96,7 +96,11 @@ describe('newUserFlow actions', () => {
           type: PaymentType.MEMBER_FEE,
           paymentChannel: PaymentChannel.TULUNDUSUHISTU,
         },
-        state.login.token,
+        expect.objectContaining({
+          remove: expect.any(Function),
+          update: expect.any(Function),
+          ...state.login.authenticationPrincipal,
+        }),
       );
     });
   });

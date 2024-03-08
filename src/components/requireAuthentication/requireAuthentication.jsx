@@ -49,7 +49,7 @@ const requireAuthentication = (WrappedComponent) => {
   AuthenticatedComponent.displayName = `requireAuthentication(${getDisplayName(WrappedComponent)})`;
 
   const mapStateToProps = (state) => ({
-    authenticated: !!state.login.token,
+    authenticated: !!state.login.authenticationPrincipal?.accessToken,
   });
 
   const mapDispatchToProps = (dispatch) =>

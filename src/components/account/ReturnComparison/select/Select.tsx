@@ -11,10 +11,21 @@ interface SelectProps {
   selected: string;
   onChange: (selected: string) => void;
   disabled?: boolean;
+  translate?: boolean;
 }
 
-export const Select: FC<SelectProps> = ({ options, selected, onChange, disabled = false }) => {
+export const Select: FC<SelectProps> = ({
+  options,
+  selected,
+  onChange,
+  disabled = false,
+  translate = true,
+}) => {
   const { formatMessage } = useIntl();
+
+  const getLabel = (label: string) => {
+    return translate ? formatMessage({ id: label }) : label;
+  };
 
   return (
     <select
@@ -25,7 +36,7 @@ export const Select: FC<SelectProps> = ({ options, selected, onChange, disabled 
     >
       {options.map(({ value, label }) => (
         <option value={value} key={label}>
-          {formatMessage({ id: label })}
+          {getLabel(label)}
         </option>
       ))}
     </select>

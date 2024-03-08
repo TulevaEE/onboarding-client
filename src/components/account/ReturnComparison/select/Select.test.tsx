@@ -50,6 +50,15 @@ describe('Select', () => {
     expect(onChange).toBeCalledWith('three');
   });
 
+  it('displays original option labels without translation', () => {
+    component.setProps({ translate: false });
+    expect(component.find('option').map((option) => option.text())).toEqual([
+      'One',
+      'Two',
+      'Three',
+    ]);
+  });
+
   const select = (): ShallowWrapper<HTMLAttributes, HTMLSelectElement> => component.find('select');
   const options = (): ShallowWrapper<HTMLAttributes, HTMLOptionElement> => component.find('option');
 });

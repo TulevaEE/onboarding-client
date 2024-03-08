@@ -32,6 +32,8 @@ import { api } from '../common';
 
 import { ID_CARD_LOGIN_START_FAILED_ERROR } from '../common/errorAlert/ErrorAlert';
 
+import { withUpdatableAuthenticationPrincipal } from '../common/updatableAuthenticationPrincipal';
+
 const POLL_DELAY = 1000;
 let timeout;
 
@@ -47,10 +49,10 @@ export function changeEmail(email) {
   return { type: CHANGE_EMAIL, email };
 }
 
-const LOGIN_COOKIE_TOKEN_NAME = 'token';
 const LOGIN_COOKIE_EMAIL_NAME = 'email';
-const LOGIN_COOKIE_METHOD_NAME = 'loginMethod';
+const LOGIN_COOKIE_AUTHENTICATION_PRINCIPAL_NAME = 'authenticationPrincipal';
 
+// TODO: is this used?
 function setCookie(name, value) {
   const date = new Date();
   date.setTime(date.getTime() + 5 * 1000);
@@ -60,9 +62,8 @@ function setCookie(name, value) {
 }
 
 function setLoginCookies(getState) {
-  setCookie(LOGIN_COOKIE_TOKEN_NAME, getState().login.token);
+  setCookie(LOGIN_COOKIE_AUTHENTICATION_PRINCIPAL_NAME, getState().login.authenticationPrincipal);
   setCookie(LOGIN_COOKIE_EMAIL_NAME, getState().login.email);
-  setCookie(LOGIN_COOKIE_METHOD_NAME, getState().login.loginMethod);
 }
 
 function handleLogin() {
@@ -89,11 +90,14 @@ export function handleLoginCookies() {
     if (email) {
       dispatch(changeEmail(email));
     }
+    const authenticationPrincipal = getCookie(LOGIN_COOKIE_AUTHENTICATION_PRINCIPAL_NAME);
+
     const tokens = {
-      accessToken: getCookie(LOGIN_COOKIE_TOKEN_NAME),
+      accessToken: authenticationPrincipal.accessToken,
+      refreshToken: authenticationPrincipal.refreshToken,
     };
-    if (tokens.accessToken) {
-      const loginMethod = getCookie(LOGIN_COOKIE_METHOD_NAME);
+    if (isTokenPresent(tokens)) {
+      const { loginMethod } = authenticationPrincipal;
       if (loginMethod === 'MOBILE_ID' || loginMethod === 'SMART_ID') {
         dispatch({
           type: MOBILE_AUTHENTICATION_SUCCESS,
@@ -115,7 +119,7 @@ function getMobileIdTokens() {
       api
         .getMobileIdTokens()
         .then((tokens) => {
-          if (tokens.accessToken) {
+          if (isTokenPresent(tokens)) {
             // authentication complete
             dispatch({
               type: MOBILE_AUTHENTICATION_SUCCESS,
@@ -152,7 +156,7 @@ function getSmartIdTokens(authenticationHash) {
       api
         .getSmartIdTokens(authenticationHash)
         .then((tokens) => {
-          if (tokens.accessToken) {
+          if (isTokenPresent(tokens)) {
             // authentication complete
             dispatch({
               type: MOBILE_AUTHENTICATION_SUCCESS,
@@ -198,7 +202,7 @@ function getIdCardTokens() {
       api
         .getIdCardTokens()
         .then((tokens) => {
-          if (tokens.accessToken) {
+          if (isTokenPresent(tokens)) {
             // authentication complete
             dispatch({ type: ID_CARD_AUTHENTICATION_SUCCESS, tokens });
             dispatch(handleLogin());
@@ -240,6 +244,10 @@ export function authenticateWithIdCard() {
   };
 }
 
+function isTokenPresent(tokens) {
+  return tokens.accessToken && tokens.refreshToken;
+}
+
 export function handleIdCardLogin(query) {
   if (query.login === 'ID_CARD') {
     return (dispatch) => {
@@ -262,7 +270,9 @@ export function getUser() {
   return (dispatch, getState) => {
     dispatch({ type: GET_USER_START });
     return api
-      .getUserWithToken(getState().login.token)
+      .getUserWithToken(
+        withUpdatableAuthenticationPrincipal(getState().login.authenticationPrincipal, dispatch),
+      )
       .then((user) => {
         if (process.env.NODE_ENV === 'production') {
           Sentry.configureScope((scope) => {
@@ -272,7 +282,8 @@ export function getUser() {
         dispatch({ type: GET_USER_SUCCESS, user });
       })
       .catch((error) => {
-        if (error.status === 401 || error.status === 403 || error.status === 502) {
+        // TODO This probably can be moved into an Axios interceptor nearer to http.js
+        if (error.status === 403 || error.status === 502) {
           dispatch({ type: LOG_OUT });
         } else {
           dispatch({ type: GET_USER_ERROR, error });
@@ -282,16 +293,16 @@ export function getUser() {
 }
 
 export function getUserConversion() {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     dispatch({ type: GET_USER_CONVERSION_START });
-    return api
-      .getUserConversionWithToken(getState().login.token)
-      .then((userConversion) => {
-        dispatch({ type: GET_USER_CONVERSION_SUCCESS, userConversion });
-      })
-      .catch((error) => {
-        dispatch({ type: GET_USER_CONVERSION_ERROR, error });
-      });
+    try {
+      const userConversion = await api.getUserConversionWithToken(
+        withUpdatableAuthenticationPrincipal(getState().login.authenticationPrincipal, dispatch),
+      );
+      dispatch({ type: GET_USER_CONVERSION_SUCCESS, userConversion });
+    } catch (error) {
+      dispatch({ type: GET_USER_CONVERSION_ERROR, error });
+    }
   };
 }
 
@@ -302,9 +313,13 @@ export function logOut() {
         scope.clear();
       });
     }
-    return api.logout(getState().login.token).then(() => {
-      dispatch({ type: LOG_OUT });
-    });
+    return api
+      .logout(
+        withUpdatableAuthenticationPrincipal(getState().login.authenticationPrincipal, dispatch),
+      )
+      .then(() => {
+        dispatch({ type: LOG_OUT });
+      });
   };
 }
 

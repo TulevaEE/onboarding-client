@@ -208,7 +208,7 @@ const mapStateToProps = (state) => ({
   conversion: state.login.userConversion,
   loadingCurrentBalance: state.exchange.loadingSourceFunds,
   shouldGetMemberCapital:
-    state.login.token &&
+    state.login.authenticationPrincipal?.accessToken &&
     state.login.user &&
     state.login.user.memberNumber &&
     !state.account.initialCapital &&
@@ -216,7 +216,7 @@ const mapStateToProps = (state) => ({
   memberCapital: state.account.initialCapital,
   loadingCapital: state.account.loadingInitialCapital,
   error: state.exchange.error,
-  token: state.login.token,
+  authenticationPrincipal: state.login.authenticationPrincipal,
   shouldRedirectToAml: shouldRedirectToAml(state),
 });
 const mapDispatchToProps = (dispatch) =>

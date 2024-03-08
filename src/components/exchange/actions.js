@@ -41,6 +41,8 @@ import {
 } from './constants';
 import { actions as amlActions } from '../aml';
 
+import { withUpdatableAuthenticationPrincipal } from '../common/updatableAuthenticationPrincipal';
+
 const POLL_DELAY = 1000;
 
 const SIGNATURE_DONE_STATUS = 'SIGNATURE';
@@ -51,7 +53,12 @@ let timeout;
 export function getSourceFunds() {
   return (dispatch, getState) => {
     dispatch({ type: GET_SOURCE_FUNDS_START });
-    return getSourceFundsWithToken(getState().login.token)
+    const authenticationPrincipal = withUpdatableAuthenticationPrincipal(
+      getState().login.authenticationPrincipal,
+      dispatch,
+    );
+
+    return getSourceFundsWithToken(authenticationPrincipal)
       .then((sourceFunds) => {
         dispatch({ type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds });
       })
@@ -74,9 +81,12 @@ export function changeAgreementToTerms(agreement) {
 export function downloadMandate() {
   return (dispatch, getState) => {
     const mandateId = getState().exchange.signedMandateId;
-    const { token } = getState().login;
-    if (mandateId && token) {
-      return downloadMandateWithIdAndToken(mandateId, token).then((file) =>
+    const authenticationPrincipal = withUpdatableAuthenticationPrincipal(
+      getState().login.authenticationPrincipal,
+      dispatch,
+    );
+    if (mandateId && authenticationPrincipal) {
+      return downloadMandateWithIdAndToken(mandateId, authenticationPrincipal).then((file) =>
         download(file, 'Tuleva_avaldus.bdoc', 'application/bdoc'),
       );
     }
@@ -87,7 +97,9 @@ export function downloadMandate() {
 export function getTargetFunds() {
   return (dispatch, getState) => {
     dispatch({ type: GET_TARGET_FUNDS_START });
-    return getFunds(getState().login.token)
+    return getFunds(
+      withUpdatableAuthenticationPrincipal(getState().login.authenticationPrincipal, dispatch),
+    )
       .then((targetFunds) => dispatch({ type: GET_TARGET_FUNDS_SUCCESS, targetFunds }))
       .catch((error) => dispatch({ type: GET_TARGET_FUNDS_ERROR, error }));
   };
@@ -103,7 +115,10 @@ function pollForMobileIdSignature(mandateId, pillar) {
       clearTimeout(timeout);
     }
     timeout = setTimeout(() => {
-      getMobileIdSignatureStatus(mandateId, getState().login.token)
+      getMobileIdSignatureStatus(
+        mandateId,
+        withUpdatableAuthenticationPrincipal(getState().login.authenticationPrincipal, dispatch),
+      )
         .then((status) => {
           if (status.statusCode === SIGNING_IN_PROGRESS_STATUS) {
             dispatch({
@@ -130,7 +145,10 @@ function pollForSmartIdSignature(mandateId, pillar) {
       clearTimeout(timeout);
     }
     timeout = setTimeout(() => {
-      getSmartIdSignatureStatus(mandateId, getState().login.token)
+      getSmartIdSignatureStatus(
+        mandateId,
+        withUpdatableAuthenticationPrincipal(getState().login.authenticationPrincipal, dispatch),
+      )
         .then((status) => {
           if (status.statusCode === SIGNING_IN_PROGRESS_STATUS) {
             dispatch({
@@ -161,10 +179,13 @@ function handleSaveMandateError(dispatch, error) {
 
 export function previewMandate(mandate, amlChecks) {
   return (dispatch, getState) => {
-    const { token } = getState().login;
+    const authenticationPrincipal = withUpdatableAuthenticationPrincipal(
+      getState().login.authenticationPrincipal,
+      dispatch,
+    );
     return dispatch(amlActions.createAmlChecks(amlChecks))
-      .then(() => saveOrRetrieveExistingMandate(mandate, token))
-      .then(({ id }) => downloadMandatePreviewWithIdAndToken(id, token))
+      .then(() => saveOrRetrieveExistingMandate(mandate, authenticationPrincipal))
+      .then(({ id }) => downloadMandatePreviewWithIdAndToken(id, authenticationPrincipal))
       .then((file) => download(file, 'Tuleva_avaldus_eelvaade.zip', 'application/zip'))
       .catch((error) => {
         handleSaveMandateError(dispatch, error);
@@ -175,14 +196,18 @@ export function previewMandate(mandate, amlChecks) {
 export function signMandateWithMobileId(mandate) {
   return (dispatch, getState) => {
     dispatch({ type: SIGN_MANDATE_MOBILE_ID_START });
-    const { token } = getState().login;
     let mandateId;
     let mandatePillar;
-    return saveOrRetrieveExistingMandate(mandate, token)
+    const authenticationPrincipal = withUpdatableAuthenticationPrincipal(
+      getState().login.authenticationPrincipal,
+      dispatch,
+    );
+
+    return saveOrRetrieveExistingMandate(mandate, authenticationPrincipal)
       .then(({ id, pillar }) => {
         mandateId = id;
         mandatePillar = pillar;
-        return getMobileIdSignatureChallengeCode(mandateId, token);
+        return getMobileIdSignatureChallengeCode(mandateId, authenticationPrincipal);
       })
       .then((controlCode) => {
         dispatch({ type: SIGN_MANDATE_MOBILE_ID_START_SUCCESS, controlCode });
@@ -197,14 +222,17 @@ export function signMandateWithMobileId(mandate) {
 export function signMandateWithSmartId(mandate) {
   return (dispatch, getState) => {
     dispatch({ type: SIGN_MANDATE_SMART_ID_START });
-    const { token } = getState().login;
+    const authenticationPrincipal = withUpdatableAuthenticationPrincipal(
+      getState().login.authenticationPrincipal,
+      dispatch,
+    );
     let mandateId;
     let mandatePillar;
-    return saveOrRetrieveExistingMandate(mandate, token)
+    return saveOrRetrieveExistingMandate(mandate, authenticationPrincipal)
       .then(({ id, pillar }) => {
         mandateId = id;
         mandatePillar = pillar;
-        return getSmartIdSignatureChallengeCode(mandateId, token);
+        return getSmartIdSignatureChallengeCode(mandateId, authenticationPrincipal);
       })
       .then((controlCode) => {
         dispatch({ type: SIGN_MANDATE_SMART_ID_START_SUCCESS, controlCode });
@@ -221,8 +249,13 @@ function pollForIdCardSignature(mandateId, pillar, signedHash) {
     if (timeout) {
       clearTimeout(timeout);
     }
+    const authenticationPrincipal = withUpdatableAuthenticationPrincipal(
+      getState().login.authenticationPrincipal,
+      dispatch,
+    );
+
     timeout = setTimeout(() => {
-      getIdCardSignatureStatus(mandateId, signedHash, getState().login.token)
+      getIdCardSignatureStatus(mandateId, signedHash, authenticationPrincipal)
         .then((statusCode) => {
           if (statusCode === SIGNATURE_DONE_STATUS) {
             dispatch({
@@ -272,7 +305,10 @@ function saveOrRetrieveExistingMandate(mandate, token) {
 export function signMandateWithIdCard(mandate) {
   return (dispatch, getState) => {
     dispatch({ type: SIGN_MANDATE_ID_CARD_START });
-    const { token } = getState().login;
+    const authenticationPrincipal = withUpdatableAuthenticationPrincipal(
+      getState().login.authenticationPrincipal,
+      dispatch,
+    );
     let mandateId;
     let mandatePillar;
     let certificate;
@@ -290,11 +326,11 @@ export function signMandateWithIdCard(mandate) {
           dispatch({ type: SIGN_MANDATE_START_ERROR, error });
         },
       )
-      .then(() => saveOrRetrieveExistingMandate(mandate, token))
+      .then(() => saveOrRetrieveExistingMandate(mandate, authenticationPrincipal))
       .then(({ id, pillar }) => {
         mandateId = id;
         mandatePillar = pillar;
-        return getIdCardSignatureHash(mandateId, certificate.hex, token);
+        return getIdCardSignatureHash(mandateId, certificate.hex, authenticationPrincipal);
       })
       .then((hash) => {
         dispatch({ type: SIGN_MANDATE_ID_CARD_START_SUCCESS });
@@ -308,8 +344,9 @@ export function signMandateWithIdCard(mandate) {
 
 export function signMandate(mandate, amlChecks) {
   return (dispatch, getState) => {
-    const loggedInWithMobileId = getState().login.loginMethod === 'MOBILE_ID';
-    const loggedInWithSmartId = getState().login.loginMethod === 'SMART_ID';
+    const loggedInWithMobileId =
+      getState().login.authenticationPrincipal.loginMethod === 'MOBILE_ID';
+    const loggedInWithSmartId = getState().login.authenticationPrincipal.loginMethod === 'SMART_ID';
     return dispatch(amlActions.createAmlChecks(amlChecks))
       .then(() => {
         if (loggedInWithMobileId) {

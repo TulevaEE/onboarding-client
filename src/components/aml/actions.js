@@ -12,6 +12,8 @@ import {
 } from './constants';
 import * as userActions from '../common/user/actions';
 
+import { withUpdatableAuthenticationPrincipal } from '../common/updatableAuthenticationPrincipal';
+
 export function changeIsPoliticallyExposed(isPoliticallyExposed) {
   return { type: CHANGE_POLITICALLY_EXPOSED, isPoliticallyExposed };
 }
@@ -30,7 +32,12 @@ export function createAmlChecks(amlChecks) {
       return Promise.resolve();
     }
     dispatch({ type: CREATE_AML_CHECKS_START });
-    return createAmlCheck('RESIDENCY_MANUAL', amlChecks.isResident, {}, getState().login.token)
+    return createAmlCheck(
+      'RESIDENCY_MANUAL',
+      amlChecks.isResident,
+      {},
+      withUpdatableAuthenticationPrincipal(getState().login.authenticationPrincipal, dispatch),
+    )
       .then(
         () =>
           amlChecks.isPoliticallyExposed != null &&
@@ -38,7 +45,10 @@ export function createAmlChecks(amlChecks) {
             'POLITICALLY_EXPOSED_PERSON',
             amlChecks.isPoliticallyExposed === false,
             {},
-            getState().login.token,
+            withUpdatableAuthenticationPrincipal(
+              getState().login.authenticationPrincipal,
+              dispatch,
+            ),
           ),
       )
       .then(
@@ -48,7 +58,10 @@ export function createAmlChecks(amlChecks) {
             'OCCUPATION',
             !!amlChecks.occupation,
             { occupation: amlChecks.occupation },
-            getState().login.token,
+            withUpdatableAuthenticationPrincipal(
+              getState().login.authenticationPrincipal,
+              dispatch,
+            ),
           ),
       )
       .then(() => dispatch({ type: CREATE_AML_CHECKS_SUCCESS }))
@@ -59,7 +72,9 @@ export function createAmlChecks(amlChecks) {
 export function getAmlChecks() {
   return (dispatch, getState) => {
     dispatch({ type: GET_MISSING_AML_CHECKS_START });
-    return getMissingAmlChecks(getState().login.token)
+    return getMissingAmlChecks(
+      withUpdatableAuthenticationPrincipal(getState().login.authenticationPrincipal, dispatch),
+    )
       .then((missingAmlChecks) =>
         dispatch({ type: GET_MISSING_AML_CHECKS_SUCCESS, missingAmlChecks }),
       )

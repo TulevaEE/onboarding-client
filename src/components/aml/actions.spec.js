@@ -23,7 +23,15 @@ describe('AML actions', () => {
   }
 
   function mockDispatch() {
-    state = { login: { token: 'token' } };
+    state = {
+      login: {
+        authenticationPrincipal: {
+          accessToken: 'an access token',
+          refreshToken: 'a refresh token',
+          loginMethod: 'a login method',
+        },
+      },
+    };
 
     dispatch = jest.fn((action) => {
       if (typeof action === 'function') {

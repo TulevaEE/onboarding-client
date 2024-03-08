@@ -42,7 +42,7 @@ ThirdPillarSetup.defaultProps = {
 
 const mapStateToProps = (state) => ({
   isThirdPillarActive: !!(
-    state.login.token &&
+    state.login.authenticationPrincipal?.accessToken &&
     state.login.user &&
     state.login.user.thirdPillarActive
   ),
