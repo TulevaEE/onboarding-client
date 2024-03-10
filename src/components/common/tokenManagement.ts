@@ -1,4 +1,5 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
+import config from 'react-global-configuration';
 import { AuthenticationPrincipal, Token } from './apiModels';
 import { UpdatableAuthenticationPrincipal } from './updatableAuthenticationPrincipal';
 
@@ -94,13 +95,16 @@ export function createAxiosInstance(
   axiosInstance.interceptors.request.use(
     (configuration: AxiosRequestConfig) => {
       const token = getCurrentAccessToken();
-      if (token) {
-        // eslint-disable-next-line no-param-reassign
-        configuration.headers = configuration.headers || {};
-        // eslint-disable-next-line no-param-reassign
-        configuration.headers.Authorization = `Bearer ${token}`;
-      }
-      return configuration;
+      const language = config.get('language');
+
+      return {
+        ...configuration,
+        headers: {
+          ...configuration.headers,
+          Authorization: token ? `Bearer ${token}` : configuration.headers?.Authorization ?? '',
+          'Accept-Language': language,
+        },
+      };
     },
     (error) => {
       return Promise.reject(error);

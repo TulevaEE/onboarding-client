@@ -1,5 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import config from 'react-global-configuration';
 import { createAxiosInstance } from './tokenManagement';
 import { UpdatableAuthenticationPrincipal } from './updatableAuthenticationPrincipal';
 
@@ -12,6 +13,8 @@ describe('Axios Instance Creation and Interceptors', () => {
     update: jest.fn(),
     remove: jest.fn(),
   };
+
+  config.set({ language: 'en' });
 
   beforeEach(() => {
     mockAxios = new MockAdapter(axios);
@@ -78,5 +81,16 @@ describe('Axios Instance Creation and Interceptors', () => {
     } catch (error) {
       expect(mockPrincipal.remove).toHaveBeenCalled();
     }
+  });
+
+  it('sets Accept-Language header according to config', async () => {
+    const axiosInstance = createAxiosInstance(mockPrincipal);
+
+    mockAxios.onGet('/test-language').reply((configuration: AxiosRequestConfig) => {
+      expect(configuration.headers?.['Accept-Language']).toEqual(config.get('language'));
+      return [200, {}];
+    });
+
+    await axiosInstance.get('/test-language');
   });
 });
