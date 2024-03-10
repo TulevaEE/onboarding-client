@@ -33,8 +33,8 @@ describe('Axios Instance Creation and Interceptors', () => {
   it('sets Authorization header with current access token', async () => {
     const axiosInstance = createAxiosInstance(mockPrincipal);
 
-    mockAxios.onGet('/test').reply((config: AxiosRequestConfig) => {
-      expect(config.headers?.Authorization).toEqual(`Bearer ${mockPrincipal.accessToken}`);
+    mockAxios.onGet('/test').reply((configuration: AxiosRequestConfig) => {
+      expect(configuration.headers?.Authorization).toEqual(`Bearer ${mockPrincipal.accessToken}`);
       return [200, {}];
     });
 
@@ -54,8 +54,8 @@ describe('Axios Instance Creation and Interceptors', () => {
     });
 
     // Original request retried after token refresh succeeds
-    mockAxios.onGet('/test').reply((config: AxiosRequestConfig) => {
-      expect(config.headers?.Authorization).toEqual(`Bearer ${newAccessToken}`);
+    mockAxios.onGet('/test').reply((configuration: AxiosRequestConfig) => {
+      expect(configuration.headers?.Authorization).toEqual(`Bearer ${newAccessToken}`);
       return [200, {}];
     });
 
