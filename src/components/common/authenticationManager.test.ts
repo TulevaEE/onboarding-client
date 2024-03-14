@@ -21,6 +21,7 @@ describe('Authentication Management', () => {
         if (key === AUTHENTICATION_CONFIGURATION_KEY) {
           return JSON.stringify(mockAuthentication);
         }
+        return null;
       }),
       setItem: jest.fn(),
       removeItem: jest.fn(),
