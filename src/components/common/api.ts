@@ -21,6 +21,7 @@ import {
   Transaction,
   User,
   UserConversion,
+  LoginMethod,
 } from './apiModels';
 import {
   downloadFileWithAuthentication,
@@ -32,7 +33,7 @@ import {
   putWithAuthentication,
   simpleFetch,
 } from './http';
-import { UpdatableAuthenticationPrincipal } from './updatableAuthenticationPrincipal';
+import { getAuthentication } from './authenticationManager';
 
 const API_URI = '/api';
 
@@ -76,12 +77,14 @@ export async function authenticateWithIdCard(): Promise<boolean> {
   return success;
 }
 
-export function logout(authenticationPrincipal: UpdatableAuthenticationPrincipal): Promise<void> {
-  return getWithAuthentication(authenticationPrincipal, getEndpoint('/v1/logout'), {});
+export function logout(): Promise<void> {
+  const request = getWithAuthentication(getEndpoint('/v1/logout'), {});
+  getAuthentication().remove();
+  return request;
 }
 
 export async function getTokensWithGrantType(
-  grantType: string,
+  grantType: LoginMethod,
   extraParameters: Record<string, string> = {},
 ): Promise<Token | null> {
   try {
@@ -97,6 +100,11 @@ export async function getTokensWithGrantType(
       },
     );
 
+    getAuthentication().update({
+      accessToken,
+      refreshToken,
+      loginMethod: grantType,
+    });
     return { accessToken, refreshToken };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
@@ -119,37 +127,20 @@ export function getIdCardTokens(): Promise<Token | null> {
   return getTokensWithGrantType('ID_CARD');
 }
 
-export function downloadMandatePreviewWithIdAndToken(
-  mandateId: string,
-  authenticationPrincipal: UpdatableAuthenticationPrincipal,
-): Promise<Blob> {
-  return downloadFileWithAuthentication(
-    authenticationPrincipal,
-    getEndpoint(`/v1/mandates/${mandateId}/file/preview`),
-  );
+export function downloadMandatePreviewWithId(mandateId: string): Promise<Blob> {
+  return downloadFileWithAuthentication(getEndpoint(`/v1/mandates/${mandateId}/file/preview`));
 }
 
-export function downloadMandateWithIdAndToken(
-  mandateId: string,
-  authenticationPrincipal: UpdatableAuthenticationPrincipal,
-): Promise<Blob> {
-  return downloadFileWithAuthentication(
-    authenticationPrincipal,
-    getEndpoint(`/v1/mandates/${mandateId}/file`),
-  );
+export function downloadMandateWithId(mandateId: string): Promise<Blob> {
+  return downloadFileWithAuthentication(getEndpoint(`/v1/mandates/${mandateId}/file`));
 }
 
-export function getUserWithToken(
-  authenticationPrincipal: UpdatableAuthenticationPrincipal,
-): Promise<User> {
-  return getWithAuthentication(authenticationPrincipal, getEndpoint('/v1/me'), undefined);
+export function getUserWithToken(): Promise<User> {
+  return getWithAuthentication(getEndpoint('/v1/me'), undefined);
 }
 
-export async function getSourceFundsWithToken(
-  authenticationPrincipal: UpdatableAuthenticationPrincipal,
-): Promise<SourceFund[]> {
+export async function getSourceFunds(): Promise<SourceFund[]> {
   const funds = await getWithAuthentication(
-    authenticationPrincipal,
     getEndpoint('/v1/pension-account-statement'),
     undefined,
   );
@@ -172,19 +163,14 @@ const transformFundBalance = (fundBalance: FundBalance): SourceFund => ({
   profit: fundBalance.profit,
 });
 
-export function saveMandateWithToken(
-  mandate: string,
-  authenticationPrincipal: UpdatableAuthenticationPrincipal,
-): Promise<Mandate> {
-  return postWithAuthentication(authenticationPrincipal, getEndpoint('/v1/mandates'), mandate);
+export function saveMandateWithAuthentication(mandate: string): Promise<Mandate> {
+  return postWithAuthentication(getEndpoint('/v1/mandates'), mandate);
 }
 
 export async function getMobileIdSignatureChallengeCode(
   mandateId: string,
-  authenticationPrincipal: UpdatableAuthenticationPrincipal,
 ): Promise<MobileSignatureResponse> {
   const { challengeCode } = await putWithAuthentication(
-    authenticationPrincipal,
     getEndpoint(`/v1/mandates/${mandateId}/signature/mobileId`),
     undefined,
   );
@@ -193,10 +179,8 @@ export async function getMobileIdSignatureChallengeCode(
 
 export async function getMobileIdSignatureStatus(
   mandateId: string,
-  authenticationPrincipal: UpdatableAuthenticationPrincipal,
 ): Promise<MobileSignatureStatusResponse> {
   return getWithAuthentication(
-    authenticationPrincipal,
     getEndpoint(`/v1/mandates/${mandateId}/signature/mobileId/status`),
     undefined,
   );
@@ -204,10 +188,8 @@ export async function getMobileIdSignatureStatus(
 
 export async function getSmartIdSignatureChallengeCode(
   mandateId: string,
-  authenticationPrincipal: UpdatableAuthenticationPrincipal,
 ): Promise<MobileSignatureResponse> {
   const { challengeCode } = await putWithAuthentication(
-    authenticationPrincipal,
     getEndpoint(`/v1/mandates/${mandateId}/signature/smartId`),
     undefined,
   );
@@ -216,10 +198,8 @@ export async function getSmartIdSignatureChallengeCode(
 
 export async function getSmartIdSignatureStatus(
   mandateId: string,
-  authenticationPrincipal: UpdatableAuthenticationPrincipal,
 ): Promise<MobileSignatureStatusResponse> {
   return getWithAuthentication(
-    authenticationPrincipal,
     getEndpoint(`/v1/mandates/${mandateId}/signature/smartId/status`),
     undefined,
   );
@@ -228,10 +208,8 @@ export async function getSmartIdSignatureStatus(
 export async function getIdCardSignatureHash(
   mandateId: string,
   certificateHex: string,
-  authenticationPrincipal: UpdatableAuthenticationPrincipal,
 ): Promise<IdCardSignatureResponse> {
   const { hash } = await putWithAuthentication(
-    authenticationPrincipal,
     getEndpoint(`/v1/mandates/${mandateId}/signature/idCard`),
     { clientCertificate: certificateHex },
   );
@@ -241,131 +219,80 @@ export async function getIdCardSignatureHash(
 export async function getIdCardSignatureStatus(
   mandateId: string,
   signedHash: string,
-  authenticationPrincipal: UpdatableAuthenticationPrincipal,
 ): Promise<string> {
   const { statusCode } = await putWithAuthentication(
-    authenticationPrincipal,
     getEndpoint(`/v1/mandates/${mandateId}/signature/idCard/status`),
     { signedHash },
   );
   return statusCode;
 }
 
-export function updateUserWithToken(
-  user: User,
-  authenticationPrincipal: UpdatableAuthenticationPrincipal,
-): Promise<User> {
-  return patchWithAuthentication(authenticationPrincipal, getEndpoint('/v1/me'), user);
+export function updateUserWithToken(user: User): Promise<User> {
+  return patchWithAuthentication(getEndpoint('/v1/me'), user);
 }
 
-export function getUserConversionWithToken(
-  authenticationPrincipal: UpdatableAuthenticationPrincipal,
-): Promise<UserConversion> {
-  return getWithAuthentication(
-    authenticationPrincipal,
-    getEndpoint('/v1/me/conversion'),
-    undefined,
-  );
+export function getUserConversionWithToken(): Promise<UserConversion> {
+  return getWithAuthentication(getEndpoint('/v1/me/conversion'), undefined);
 }
 
-export function getInitialCapitalWithToken(
-  authenticationPrincipal: UpdatableAuthenticationPrincipal,
-): Promise<InitialCapital> {
-  return getWithAuthentication(authenticationPrincipal, getEndpoint('/v1/me/capital'), undefined);
+export function getInitialCapitalWithToken(): Promise<InitialCapital> {
+  return getWithAuthentication(getEndpoint('/v1/me/capital'), undefined);
 }
 
 export function createAmlCheck(
   type: string,
   success: boolean,
   metadata: Record<string, unknown>,
-  authenticationPrincipal: UpdatableAuthenticationPrincipal,
 ): Promise<AmlCheck> {
-  return postWithAuthentication(authenticationPrincipal, getEndpoint('/v1/amlchecks'), {
+  return postWithAuthentication(getEndpoint('/v1/amlchecks'), {
     type,
     success,
     metadata,
   });
 }
 
-export function getMissingAmlChecks(
-  authenticationPrincipal: UpdatableAuthenticationPrincipal,
-): Promise<AmlCheck[]> {
-  return getWithAuthentication(authenticationPrincipal, getEndpoint('/v1/amlchecks'), undefined);
+export function getMissingAmlChecks(): Promise<AmlCheck[]> {
+  return getWithAuthentication(getEndpoint('/v1/amlchecks'), undefined);
 }
 
-export function getFunds(
-  authenticationPrincipal: UpdatableAuthenticationPrincipal,
-): Promise<Fund[]> {
-  return getWithAuthentication(authenticationPrincipal, getEndpoint('/v1/funds'));
+export function getFunds(): Promise<Fund[]> {
+  return getWithAuthentication(getEndpoint('/v1/funds'));
 }
 
-export function getPendingApplications(
-  authenticationPrincipal: UpdatableAuthenticationPrincipal,
-): Promise<Application[]> {
-  return getWithAuthentication(authenticationPrincipal, getEndpoint('/v1/applications'), {
+export function getPendingApplications(): Promise<Application[]> {
+  return getWithAuthentication(getEndpoint('/v1/applications'), {
     status: 'PENDING',
   });
 }
 
-export function getTransactions(
-  authenticationPrincipal: UpdatableAuthenticationPrincipal,
-): Promise<Transaction[]> {
-  return getWithAuthentication(authenticationPrincipal, getEndpoint('/v1/transactions'), undefined);
+export function getTransactions(): Promise<Transaction[]> {
+  return getWithAuthentication(getEndpoint('/v1/transactions'), undefined);
 }
 
-export function getContributions(
-  authenticationPrincipal: UpdatableAuthenticationPrincipal,
-): Promise<Contribution[]> {
-  return getWithAuthentication(
-    authenticationPrincipal,
-    getEndpoint('/v1/contributions'),
-    undefined,
-  );
+export function getContributions(): Promise<Contribution[]> {
+  return getWithAuthentication(getEndpoint('/v1/contributions'), undefined);
 }
 
-export function getMandateDeadlines(
-  authenticationPrincipal: UpdatableAuthenticationPrincipal,
-): Promise<MandateDeadlines> {
-  return getWithAuthentication(
-    authenticationPrincipal,
-    getEndpoint('/v1/mandate-deadlines'),
-    undefined,
-  );
+export function getMandateDeadlines(): Promise<MandateDeadlines> {
+  return getWithAuthentication(getEndpoint('/v1/mandate-deadlines'), undefined);
 }
 
-export function createApplicationCancellation(
-  applicationId: number,
-  authenticationPrincipal: UpdatableAuthenticationPrincipal,
-): Promise<CancellationMandate> {
-  return postWithAuthentication(
-    authenticationPrincipal,
-    getEndpoint(`/v1/applications/${applicationId}/cancellations`),
-    {},
-  );
+export function createApplicationCancellation(applicationId: number): Promise<CancellationMandate> {
+  return postWithAuthentication(getEndpoint(`/v1/applications/${applicationId}/cancellations`), {});
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export function createTrackedEvent(
-  type: string,
-  data: Record<string, unknown>,
-  authenticationPrincipal: UpdatableAuthenticationPrincipal,
-): Promise<any> {
-  return postWithAuthentication(authenticationPrincipal, getEndpoint('/v1/t'), { type, data });
+export function createTrackedEvent(type: string, data: Record<string, unknown>): Promise<any> {
+  return postWithAuthentication(getEndpoint('/v1/t'), { type, data });
 }
 
-export function getPaymentLink(
-  payment: Payment,
-  authenticationPrincipal: UpdatableAuthenticationPrincipal,
-): Promise<PaymentLink> {
-  return getWithAuthentication(authenticationPrincipal, getEndpoint('/v1/payments/link'), payment);
+export function getPaymentLink(payment: Payment): Promise<PaymentLink> {
+  return getWithAuthentication(getEndpoint('/v1/payments/link'), payment);
 }
 
-export function redirectToPayment(
-  payment: Payment,
-  authenticationPrincipal: UpdatableAuthenticationPrincipal,
-): void {
+export function redirectToPayment(payment: Payment): void {
   const wndw = getWindow(payment.type);
-  getPaymentLink(payment, authenticationPrincipal).then((paymentLink) => {
+  getPaymentLink(payment).then((paymentLink) => {
     wndw.location.replace(paymentLink.url);
   });
 }

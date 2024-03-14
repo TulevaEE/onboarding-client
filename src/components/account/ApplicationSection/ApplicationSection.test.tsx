@@ -3,9 +3,7 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { useSelector } from 'react-redux';
 import { MemoryRouter, Route } from 'react-router-dom';
-import config from 'react-global-configuration';
 import { QueryClient, QueryClientProvider } from 'react-query';
 
 import { IntlProvider } from 'react-intl';
@@ -21,9 +19,10 @@ import {
   withdrawal,
   paymentRateChange,
 } from './fixtures';
-import { anAuthenticationPrincipal } from '../../common/updatableAuthenticationPrincipal.test';
+import { initializeConfiguration } from '../../config/config';
+import { getAuthentication } from '../../common/authenticationManager';
+import { anAuthenticationManager } from '../../common/authenticationManagerFixture';
 
-jest.mock('react-global-configuration');
 jest.mock('react-redux');
 
 describe('Application section', () => {
@@ -51,18 +50,14 @@ describe('Application section', () => {
   }
 
   beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
-  afterEach(() => server.resetHandlers());
+  afterEach(() => {
+    server.resetHandlers();
+  });
   afterAll(() => server.close());
 
   beforeEach(() => {
-    (useSelector as any).mockImplementation((selector: any) =>
-      selector({
-        login: {
-          authenticationPrincipal: anAuthenticationPrincipal('mock token'),
-        },
-      }),
-    );
-    (config.get as any).mockImplementation((key: string) => (key === 'language' ? 'en' : null));
+    initializeConfiguration();
+    getAuthentication().update(anAuthenticationManager());
   });
 
   it('does not render at all when no pending applications are found', async () => {
@@ -284,7 +279,7 @@ describe('Application section', () => {
   function mockApplications(applications: any[]) {
     server.use(
       rest.get('http://localhost/v1/applications', (req, res, ctx) => {
-        if (req.headers.get('Authorization') !== 'Bearer mock token') {
+        if (req.headers.get('Authorization') !== 'Bearer an access token') {
           return res(ctx.status(401), ctx.json({ error: 'not authenticated correctly' }));
         }
         if (req.url.searchParams.get('status') !== 'PENDING') {

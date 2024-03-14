@@ -1,5 +1,5 @@
 import { useMutation, UseMutationResult, useQuery, UseQueryResult } from 'react-query';
-import { useDispatch, useSelector } from 'react-redux';
+// import { useDispatch, useSelector } from 'react-redux';
 
 import {
   createApplicationCancellation,
@@ -13,7 +13,6 @@ import {
 } from './api';
 import {
   Application,
-  AuthenticationPrincipal,
   CancellationMandate,
   Contribution,
   Fund,
@@ -22,40 +21,21 @@ import {
   User,
   UserConversion,
 } from './apiModels';
-import {
-  UpdatableAuthenticationPrincipal,
-  withUpdatableAuthenticationPrincipal,
-} from './updatableAuthenticationPrincipal';
-
-export function useUpdatableAuthenticationPrincipalOrFail(): UpdatableAuthenticationPrincipal {
-  const authenticationPrincipal = useSelector<
-    { login: { authenticationPrincipal?: AuthenticationPrincipal } },
-    AuthenticationPrincipal | null
-  >((state) => state.login.authenticationPrincipal || null);
-  if (!authenticationPrincipal?.accessToken) {
-    throw new Error('Tried to use token without the user being signed up');
-  }
-  return withUpdatableAuthenticationPrincipal(authenticationPrincipal, useDispatch());
-}
 
 export function usePendingApplications(): UseQueryResult<Application[]> {
-  const authenticationPrincipal = useUpdatableAuthenticationPrincipalOrFail();
-  return useQuery('pendingApplications', () => getPendingApplications(authenticationPrincipal));
+  return useQuery('pendingApplications', () => getPendingApplications());
 }
 
 export function useTransactions(): UseQueryResult<Transaction[]> {
-  const authenticationPrincipal = useUpdatableAuthenticationPrincipalOrFail();
-  return useQuery('transactions', () => getTransactions(authenticationPrincipal));
+  return useQuery('transactions', () => getTransactions());
 }
 
 export function useContributions(): UseQueryResult<Contribution[]> {
-  const authenticationPrincipal = useUpdatableAuthenticationPrincipalOrFail();
-  return useQuery('contributions', () => getContributions(authenticationPrincipal));
+  return useQuery('contributions', () => getContributions());
 }
 
 export function useFunds(): UseQueryResult<Fund[]> {
-  const authenticationPrincipal = useUpdatableAuthenticationPrincipalOrFail();
-  return useQuery('funds', () => getFunds(authenticationPrincipal));
+  return useQuery('funds', () => getFunds());
 }
 
 export function useApplicationCancellation(): UseMutationResult<
@@ -64,10 +44,7 @@ export function useApplicationCancellation(): UseMutationResult<
   number,
   unknown
 > {
-  const authenticationPrincipal = useUpdatableAuthenticationPrincipalOrFail();
-  return useMutation((applicationId: number) =>
-    createApplicationCancellation(applicationId, authenticationPrincipal),
-  );
+  return useMutation((applicationId: number) => createApplicationCancellation(applicationId));
 }
 
 export function useApplication(id: number): UseQueryResult<Application | null> {
@@ -80,16 +57,13 @@ export function useApplication(id: number): UseQueryResult<Application | null> {
 }
 
 export function useMandateDeadlines(): UseQueryResult<MandateDeadlines> {
-  const authenticationPrincipal = useUpdatableAuthenticationPrincipalOrFail();
-  return useQuery('mandateDeadlines', () => getMandateDeadlines(authenticationPrincipal));
+  return useQuery('mandateDeadlines', () => getMandateDeadlines());
 }
 
 export function useMe(): UseQueryResult<User> {
-  const authenticationPrincipal = useUpdatableAuthenticationPrincipalOrFail();
-  return useQuery('user', () => getUserWithToken(authenticationPrincipal));
+  return useQuery('user', () => getUserWithToken());
 }
 
 export function useConversion(): UseQueryResult<UserConversion> {
-  const authenticationPrincipal = useUpdatableAuthenticationPrincipalOrFail();
-  return useQuery('conversion', () => getUserConversionWithToken(authenticationPrincipal));
+  return useQuery('conversion', () => getUserConversionWithToken());
 }

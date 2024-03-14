@@ -4,6 +4,7 @@ import { Link, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import { Shimmer } from '../../../common/shimmer/Shimmer';
+import { getAuthentication } from '../../../common/authenticationManager';
 
 export const ThirdPillarSetup = ({ nextPath, isThirdPillarActive, loading }) => {
   if (loading) {
@@ -42,7 +43,7 @@ ThirdPillarSetup.defaultProps = {
 
 const mapStateToProps = (state) => ({
   isThirdPillarActive: !!(
-    state.login.authenticationPrincipal?.accessToken &&
+    getAuthentication().isAuthenticated() &&
     state.login.user &&
     state.login.user.thirdPillarActive
   ),

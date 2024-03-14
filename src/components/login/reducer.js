@@ -20,26 +20,17 @@ import {
   SET_LOGIN_TO_REDIRECT,
   LOG_OUT,
   CHANGE_PERSONAL_CODE,
-  UPDATE_AUTHENTICATION_PRINCIPAL,
 } from './constants';
 
 import { getGlobalErrorCode } from '../common/errorMessage';
 import { UPDATE_USER_SUCCESS } from '../common/user/constants';
-
-const AUTHENTICATION_PRINCIPAL_STORAGE_KEY = 'authenticationPrincipal';
-let authenticationPrincipal = null;
-if (window.sessionStorage && sessionStorage.getItem(AUTHENTICATION_PRINCIPAL_STORAGE_KEY)) {
-  authenticationPrincipal = JSON.parse(
-    sessionStorage.getItem(AUTHENTICATION_PRINCIPAL_STORAGE_KEY),
-  );
-}
+import { getAuthentication } from '../common/authenticationManager';
 
 export const initialState = {
   phoneNumber: '',
   personalCode: '',
   controlCode: null,
   loadingAuthentication: false,
-  authenticationPrincipal,
   error: null,
   user: null,
   loadingUser: false,
@@ -51,14 +42,6 @@ export const initialState = {
   email: null,
 };
 
-function updateSessionStorage(authentication) {
-  if (window.sessionStorage) {
-    sessionStorage.setItem(AUTHENTICATION_PRINCIPAL_STORAGE_KEY, JSON.stringify(authentication));
-  } else {
-    // eslint-disable-next-line no-console
-    console.error('No session storage present');
-  }
-}
 export default function loginReducer(state = initialState, action) {
   switch (action.type) {
     case CHANGE_PHONE_NUMBER:
@@ -84,32 +67,10 @@ export default function loginReducer(state = initialState, action) {
         loadingUser: false,
       };
 
-    case UPDATE_AUTHENTICATION_PRINCIPAL:
-      updateSessionStorage({
-        accessToken: action.principal.accessToken,
-        refreshToken: action.principal.refreshToken,
-        loginMethod: action.principal.loginMethod,
-      });
-      return {
-        ...state,
-        authenticationPrincipal: action.principal,
-      };
-
     case MOBILE_AUTHENTICATION_SUCCESS:
-      updateSessionStorage({
-        accessToken: action.tokens.accessToken,
-        refreshToken: action.tokens.refreshToken,
-        loginMethod: action.method,
-      });
-
       return {
         // reset all state so page is clean when entered again.
         ...state,
-        authenticationPrincipal: {
-          accessToken: action.tokens.accessToken,
-          refreshToken: action.tokens.refreshToken,
-          loginMethod: action.method,
-        },
         loadingAuthentication: false,
         controlCode: null,
         error: null,
@@ -139,19 +100,9 @@ export default function loginReducer(state = initialState, action) {
       return { ...state, loadingAuthentication: true, error: null };
 
     case ID_CARD_AUTHENTICATION_SUCCESS:
-      updateSessionStorage({
-        accessToken: action.tokens.accessToken,
-        refreshToken: action.tokens.refreshToken,
-        loginMethod: 'ID_CARD',
-      });
       return {
         // reset all state so page is clean when entered again.
         ...state,
-        authenticationPrincipal: {
-          accessToken: action.tokens.accessToken,
-          refreshToken: action.tokens.refreshToken,
-          loginMethod: 'ID_CARD',
-        },
         loadingAuthentication: false,
         error: null,
       };
@@ -206,12 +157,10 @@ export default function loginReducer(state = initialState, action) {
       };
 
     case LOG_OUT:
-      if (window.sessionStorage) {
-        sessionStorage.removeItem(AUTHENTICATION_PRINCIPAL_STORAGE_KEY);
-      }
+      // possibly duplicate with logout api action
+      getAuthentication().remove();
       return {
         ...initialState,
-        authenticationPrincipal: null,
       };
 
     default:

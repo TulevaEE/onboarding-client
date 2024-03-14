@@ -1,4 +1,5 @@
 import config from 'react-global-configuration';
+import { restoreAuthenticationFromSession } from '../common/authenticationManager';
 
 const BASE_CONFIG = {
   clientCredentialsAccessToken: undefined,
@@ -34,11 +35,12 @@ const ENV_CONFIGS = {
 export function initializeConfiguration() {
   const env = process.env.REACT_APP_ENV || process.env.NODE_ENV;
   const selectedConfig = ENV_CONFIGS[env] || BASE_CONFIG;
-  config.set(selectedConfig, { freeze: false });
+  config.set(selectedConfig, { freeze: false, assign: false });
+  restoreAuthenticationFromSession();
 }
 
 export function updateLanguage(language) {
   const env = process.env.REACT_APP_ENV || process.env.NODE_ENV;
   const selectedConfig = { ...ENV_CONFIGS[env], language };
-  config.set(selectedConfig, { freeze: false });
+  config.set(selectedConfig, { freeze: false, assign: true });
 }

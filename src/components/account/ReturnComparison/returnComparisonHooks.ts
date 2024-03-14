@@ -1,5 +1,4 @@
 import { useQuery, UseQueryResult } from 'react-query';
-import { useUpdatableAuthenticationPrincipalOrFail } from '../../common/apiHooks';
 import { getReturnComparison, Key, ReturnComparison } from './api';
 import { START_DATE } from './ReturnComparison';
 
@@ -18,8 +17,7 @@ export function useReturns(
     indexKey,
   }: { personalKey: Key; pensionFundKey: Key | string; indexKey: Key },
 ): UseQueryResult<ReturnComparison> {
-  const authenticationPrincipal = useUpdatableAuthenticationPrincipalOrFail();
   return useQuery('returns', () =>
-    getReturnComparison(date, { personalKey, pensionFundKey, indexKey }, authenticationPrincipal),
+    getReturnComparison(date, { personalKey, pensionFundKey, indexKey }),
   );
 }

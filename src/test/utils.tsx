@@ -11,6 +11,11 @@ import { IntlProvider } from 'react-intl';
 import translations from '../components/translations';
 import { MOBILE_AUTHENTICATION_SUCCESS } from '../components/login/constants';
 import createRootReducer from '../reducers';
+import {
+  AuthenticationManager,
+  getAuthentication,
+} from '../components/common/authenticationManager';
+import { anAuthenticationManager } from '../components/common/authenticationManagerFixture';
 
 export const mockStore = configureMockStore([thunk]);
 
@@ -59,12 +64,11 @@ export function createDefaultMockStore(
 
   return defaultMockStore(initialState);
 }
-export function login(store: Store, method = 'SMART_ID', token = 'mock token'): void {
+export function login(store: Store, method = 'SMART_ID'): void {
+  const mockAuthenticationManager: AuthenticationManager = anAuthenticationManager();
+  getAuthentication().update(mockAuthenticationManager);
   store.dispatch({
     type: MOBILE_AUTHENTICATION_SUCCESS,
-    tokens: {
-      accessToken: token,
-    },
     method,
   });
 }

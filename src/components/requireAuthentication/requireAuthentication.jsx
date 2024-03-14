@@ -8,7 +8,7 @@ import { actions as loginActions } from '../login';
 function getDisplayName(WrappedComponent) {
   return WrappedComponent.displayName || WrappedComponent.name || 'Component';
 }
-
+// TODO: unused
 // higher order component which will redirect to login if tried to go to without auth.
 const requireAuthentication = (WrappedComponent) => {
   class AuthenticatedComponent extends Component {

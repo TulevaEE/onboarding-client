@@ -1,31 +1,21 @@
 import React, { useState } from 'react';
-import { connect, useDispatch } from 'react-redux';
+import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { FormattedMessage, useIntl } from 'react-intl';
 import './Payment.scss';
 import { BankButton } from './BankButton';
-import { State } from '../../../../types';
 import { redirectToPayment } from '../../../common/api';
-import { AuthenticationPrincipal, PaymentChannel, PaymentType } from '../../../common/apiModels';
+import { PaymentChannel, PaymentType } from '../../../common/apiModels';
 import { PaymentAmountInput } from './PaymentAmountInput';
 import { OtherBankPaymentDetails } from './paymentDetails/OtherBankPaymentDetails';
 import { isValidPersonalCode } from './PersonalCode';
 
-import { withUpdatableAuthenticationPrincipal } from '../../../common/updatableAuthenticationPrincipal';
-
-export const ThirdPillarGift: React.FunctionComponent<{
-  authenticationPrincipal: AuthenticationPrincipal;
-}> = ({ authenticationPrincipal }) => {
+export const ThirdPillarGift: React.FunctionComponent = () => {
   const { formatMessage } = useIntl();
 
   const [paymentPersonalCode, setPaymentPersonalCode] = useState<string>('');
   const [paymentAmount, setPaymentAmount] = useState<string>('');
   const [paymentBank, setPaymentBank] = useState<string>('');
-
-  const updatableAuthenticationPrincipal = withUpdatableAuthenticationPrincipal(
-    authenticationPrincipal,
-    useDispatch(),
-  );
 
   const isDisabled = () =>
     !paymentPersonalCode ||
@@ -158,16 +148,13 @@ export const ThirdPillarGift: React.FunctionComponent<{
                 className="btn btn-primary payment-button text-nowrap mt-4"
                 disabled={isDisabled()}
                 onClick={() => {
-                  redirectToPayment(
-                    {
-                      recipientPersonalCode: paymentPersonalCode,
-                      amount: Number(paymentAmount.replace(',', '.')),
-                      currency: 'EUR',
-                      type: PaymentType.GIFT,
-                      paymentChannel: paymentBank.toUpperCase() as PaymentChannel,
-                    },
-                    updatableAuthenticationPrincipal,
-                  );
+                  redirectToPayment({
+                    recipientPersonalCode: paymentPersonalCode,
+                    amount: Number(paymentAmount.replace(',', '.')),
+                    currency: 'EUR',
+                    type: PaymentType.GIFT,
+                    paymentChannel: paymentBank.toUpperCase() as PaymentChannel,
+                  });
                 }}
               >
                 <FormattedMessage id="thirdPillarPayment.makePayment" />
@@ -190,7 +177,5 @@ export const ThirdPillarGift: React.FunctionComponent<{
   );
 };
 
-const mapStateToProps = (state: State) => ({
-  authenticationPrincipal: state.login.authenticationPrincipal,
-});
+const mapStateToProps = () => ({});
 export default connect(mapStateToProps)(ThirdPillarGift);

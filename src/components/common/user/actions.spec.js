@@ -88,20 +88,13 @@ describe('newUserFlow actions', () => {
         type: UPDATE_USER_SUCCESS,
         newUser,
       });
-      expect(mockApi.redirectToPayment).toHaveBeenCalledWith(
-        {
-          recipientPersonalCode: newUser.personalCode,
-          amount: null,
-          currency: 'EUR',
-          type: PaymentType.MEMBER_FEE,
-          paymentChannel: PaymentChannel.TULUNDUSUHISTU,
-        },
-        expect.objectContaining({
-          remove: expect.any(Function),
-          update: expect.any(Function),
-          ...state.login.authenticationPrincipal,
-        }),
-      );
+      expect(mockApi.redirectToPayment).toHaveBeenCalledWith({
+        recipientPersonalCode: newUser.personalCode,
+        amount: null,
+        currency: 'EUR',
+        type: PaymentType.MEMBER_FEE,
+        paymentChannel: PaymentChannel.TULUNDUSUHISTU,
+      });
     });
   });
 

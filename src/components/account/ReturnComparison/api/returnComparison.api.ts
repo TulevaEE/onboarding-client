@@ -1,6 +1,5 @@
 import { getWithAuthentication } from '../../../common/http';
 import { getEndpoint } from '../../../common/api';
-import { UpdatableAuthenticationPrincipal } from '../../../common/updatableAuthenticationPrincipal';
 
 export enum Key {
   SECOND_PILLAR = 'SECOND_PILLAR',
@@ -40,13 +39,8 @@ export async function getReturnComparison(
     pensionFundKey,
     indexKey,
   }: { personalKey: Key; pensionFundKey: Key | string; indexKey: Key },
-  authenticationPrincipal: UpdatableAuthenticationPrincipal,
 ): Promise<ReturnComparison> {
-  const { returns, from } = await getReturns(
-    date,
-    [personalKey, pensionFundKey, indexKey],
-    authenticationPrincipal,
-  );
+  const { returns, from } = await getReturns(date, [personalKey, pensionFundKey, indexKey]);
 
   const personal = getReturnByKey(personalKey, returns);
   const pensionFund = getReturnByKey(pensionFundKey, returns);
@@ -59,12 +53,8 @@ function getReturnByKey(key: string, returns: Return[]): Return | null {
   return returns?.find((ret) => ret.key === key) || null;
 }
 
-function getReturns(
-  startDate: string,
-  keys: (Key | string)[],
-  authenticationPrincipal: UpdatableAuthenticationPrincipal,
-): Promise<ReturnsResponse> {
+function getReturns(startDate: string, keys: (Key | string)[]): Promise<ReturnsResponse> {
   const params = { from: startDate, keys };
 
-  return getWithAuthentication(authenticationPrincipal, getEndpoint('/v1/returns'), params);
+  return getWithAuthentication(getEndpoint('/v1/returns'), params);
 }

@@ -24,11 +24,12 @@ export const TriggerProcedure: React.FC = () => {
       const { provider, handoverToken, path } = init(query);
       exchangeHandoverTokenForAccessToken(handoverToken)
         .then((token) => {
+          // setMessage(token);
+          // return;
           if (!token) {
             throw new Error('Failed to receive accessToken');
           }
 
-          // setting access token globally
           dispatch({
             type: MOBILE_AUTHENTICATION_SUCCESS,
             tokens: token,

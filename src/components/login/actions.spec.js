@@ -24,7 +24,6 @@ import {
 } from './constants';
 
 import { ID_CARD_LOGIN_START_FAILED_ERROR } from '../common/errorAlert/ErrorAlert';
-import { anAuthenticationPrincipal } from '../common/updatableAuthenticationPrincipal.test';
 
 const mockHttp = jest.genMockFromModule('../common/http');
 jest.mock('../common/http', () => mockHttp);
@@ -316,7 +315,6 @@ describe('Login actions', () => {
   });
 
   it('can get a user', () => {
-    state.login.authenticationPrincipal = anAuthenticationPrincipal();
     const user = { iAmAUser: true };
     mockApi.getUserWithToken = jest.fn(() => {
       expect(dispatch).toHaveBeenCalledTimes(1);
@@ -335,7 +333,6 @@ describe('Login actions', () => {
   });
 
   it('can handle errors when getting a user', () => {
-    state.login.authenticationPrincipal = anAuthenticationPrincipal();
     const error = new Error('oh no!');
     mockApi.getUserWithToken = jest.fn(() => Promise.reject(error));
     const getUser = createBoundAction(actions.getUser);
@@ -346,7 +343,6 @@ describe('Login actions', () => {
   });
 
   it('can handle forbidden error when getting a user', () => {
-    state.login.authenticationPrincipal = anAuthenticationPrincipal();
     const error = new Error('oh no!');
     error.status = 403;
     mockApi.getUserWithToken = jest.fn(() => Promise.reject(error));
@@ -356,7 +352,6 @@ describe('Login actions', () => {
   });
 
   it('can handle bad gateway error when getting a user', () => {
-    state.login.authenticationPrincipal = anAuthenticationPrincipal();
     const error = new Error('oh no!');
     error.status = 502;
     mockApi.getUserWithToken = jest.fn(() => Promise.reject(error));
@@ -372,7 +367,6 @@ describe('Login actions', () => {
   });
 
   it('can get user conversion', () => {
-    state.login.authenticationPrincipal = anAuthenticationPrincipal();
     const userConversion = { iAmAConversion: true };
     mockApi.getUserConversionWithToken = jest.fn(() => {
       expect(dispatch).toHaveBeenCalledTimes(1);
@@ -393,7 +387,6 @@ describe('Login actions', () => {
   });
 
   it('can handle errors when getting user conversion', () => {
-    state.login.authenticationPrincipal = anAuthenticationPrincipal();
     const error = new Error('oh no!');
     mockApi.getUserConversionWithToken = jest.fn(() => Promise.reject(error));
     const getUserConversion = createBoundAction(actions.getUserConversion);

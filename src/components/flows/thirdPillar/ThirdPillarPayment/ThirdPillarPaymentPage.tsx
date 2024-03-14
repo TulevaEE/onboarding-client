@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import { State } from '../../../../types';
 import Payment from './Payment'; // eslint-disable-line import/no-named-as-default
+import { getAuthentication } from '../../../common/authenticationManager';
 
 export const PaymentPage: React.FunctionComponent<{
   noThirdPillar: boolean;
@@ -15,11 +16,12 @@ export const PaymentPage: React.FunctionComponent<{
   );
 };
 
-const mapStateToProps = (state: State) => ({
-  noThirdPillar: !!(
-    state.login.authenticationPrincipal?.accessToken &&
-    state.login.user &&
-    !state.login.user.thirdPillarActive
-  ),
-});
+const mapStateToProps = (state: State) => {
+  const isAuthenticated = getAuthentication().isAuthenticated();
+  const { user } = state.login;
+  const noThirdPillar = isAuthenticated && user && !user.thirdPillarActive;
+
+  return { noThirdPillar };
+};
+
 export default connect(mapStateToProps)(PaymentPage);

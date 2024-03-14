@@ -2,6 +2,7 @@ import React from 'react';
 import Types from 'prop-types';
 import { Route, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { getAuthentication } from '../components/common/authenticationManager';
 
 const LOGIN_PATH = '/login';
 
@@ -34,8 +35,8 @@ PrivateRoute.defaultProps = {
   isAuthenticated: false,
 };
 
-const mapStateToProps = (state) => ({
-  isAuthenticated: !!state.login.authenticationPrincipal?.accessToken,
+const mapStateToProps = () => ({
+  isAuthenticated: !!getAuthentication().isAuthenticated(),
 });
 
 export default connect(mapStateToProps)(PrivateRoute);

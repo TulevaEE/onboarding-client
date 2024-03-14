@@ -32,8 +32,6 @@ import { loginPath } from './components/login/LoginPage';
 
 import { createTrackedEvent } from './components/common/api';
 
-import { withNotUpdatableAuthenticationPrincipal } from './components/common/updatableAuthenticationPrincipal';
-
 const history = createBrowserHistory();
 
 const composeEnhancers =
@@ -92,11 +90,9 @@ if (process.env.NODE_ENV !== 'test') {
 const noop = () => null;
 
 function trackPageView() {
-  createTrackedEvent(
-    'PAGE_VIEW',
-    { path: window.location.pathname.replace(/\/+$/g, '') },
-    withNotUpdatableAuthenticationPrincipal(store.getState().login.authenticationPrincipal),
-  ).catch(noop);
+  createTrackedEvent('PAGE_VIEW', { path: window.location.pathname.replace(/\/+$/g, '') }).catch(
+    noop,
+  );
 }
 
 trackPageView();

@@ -3,7 +3,6 @@ import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
 
 import moment, { Moment } from 'moment';
-import { Dispatch } from 'redux';
 import Select from './select';
 import { getReturnComparison, Key, Return } from './api';
 import convertFundsToFundNameMap from './convertFundsToFundNameMap';
@@ -13,9 +12,7 @@ import { formatDateYear } from '../../common/dateFormatter';
 
 import styles from './ReturnComparison.module.scss';
 import { Shimmer } from '../../common/shimmer/Shimmer';
-import { AuthenticationPrincipal } from '../../common/apiModels';
-
-import { withUpdatableAuthenticationPrincipal } from '../../common/updatableAuthenticationPrincipal';
+import { getAuthentication } from '../../common/authenticationManager';
 
 interface Option {
   value: string;
@@ -23,8 +20,6 @@ interface Option {
 }
 
 interface Props {
-  dispatch: Dispatch;
-  authenticationPrincipal: AuthenticationPrincipal;
   fundNameMapSecondPillar: Record<string, string>;
   fundNameMapThirdPillar: Record<string, string>;
 }
@@ -106,9 +101,7 @@ export class ReturnComparison extends Component<Props, State> {
   };
 
   componentDidMount(): void {
-    const { authenticationPrincipal } = this.props;
-
-    if (authenticationPrincipal?.accessToken) {
+    if (getAuthentication().isAuthenticated()) {
       this.loadReturns();
     }
   }
@@ -146,7 +139,6 @@ export class ReturnComparison extends Component<Props, State> {
   }
 
   async loadReturns(): Promise<void> {
-    const { authenticationPrincipal, dispatch } = this.props;
     const { fromDate, selectedPersonalKey, selectedFundKey, selectedIndexKey } = this.state;
 
     this.setState({ loading: true });
@@ -156,15 +148,11 @@ export class ReturnComparison extends Component<Props, State> {
         pensionFund: fundReturn,
         index: indexReturn,
         from,
-      } = await getReturnComparison(
-        fromDate,
-        {
-          personalKey: selectedPersonalKey,
-          pensionFundKey: selectedFundKey,
-          indexKey: selectedIndexKey,
-        },
-        withUpdatableAuthenticationPrincipal(authenticationPrincipal, dispatch),
-      );
+      } = await getReturnComparison(fromDate, {
+        personalKey: selectedPersonalKey,
+        pensionFundKey: selectedFundKey,
+        indexKey: selectedIndexKey,
+      });
       this.setState({ personalReturn, fundReturn, indexReturn, from });
     } catch (ignored) {
       // eslint-disable-next-line no-console
@@ -336,14 +324,11 @@ export class ReturnComparison extends Component<Props, State> {
 }
 
 const mapStateToProps = (state: {
-  login: { authenticationPrincipal: AuthenticationPrincipal };
   exchange: { targetFunds: Record<string, string>[]; funds: Record<string, string>[] };
 }): {
-  authenticationPrincipal: AuthenticationPrincipal;
   fundNameMapSecondPillar: Record<string, string>;
   fundNameMapThirdPillar: Record<string, string>;
 } => ({
-  authenticationPrincipal: state.login.authenticationPrincipal,
   fundNameMapSecondPillar: convertFundsToFundNameMap(
     state.exchange.funds?.filter(isSecondPillar).filter(isActive),
   ),

@@ -3,11 +3,6 @@ import { get, getWithAuthentication } from '../../../common/http';
 import { getEndpoint } from '../../../common/api';
 import { Key } from './returnComparison.api';
 
-import {
-  anAuthenticationPrincipal,
-  anUpdatableAuthenticationPrincipal,
-} from '../../../common/updatableAuthenticationPrincipal.test';
-
 jest.mock('../../../common/api', () => ({ getEndpoint: jest.fn() }));
 
 jest.mock('../../../common/http', () => ({
@@ -20,20 +15,15 @@ describe('Return comparison API', () => {
     (getWithAuthentication as jest.Mock).mockResolvedValueOnce({ returns: [] });
 
     expect(getWithAuthentication).not.toHaveBeenCalled();
-    await getReturnComparison(
-      '2019-02-28',
-      { personalKey: Key.THIRD_PILLAR, pensionFundKey: 'EE12345', indexKey: Key.CPI },
-      anUpdatableAuthenticationPrincipal(),
-    );
-    expect(getWithAuthentication).toHaveBeenCalledWith(
-      expect.objectContaining({
-        remove: expect.any(Function),
-        update: expect.any(Function),
-        ...anAuthenticationPrincipal(),
-      }),
-      '/transformed/v1/returns',
-      { from: '2019-02-28', keys: [Key.THIRD_PILLAR, 'EE12345', Key.CPI] },
-    );
+    await getReturnComparison('2019-02-28', {
+      personalKey: Key.THIRD_PILLAR,
+      pensionFundKey: 'EE12345',
+      indexKey: Key.CPI,
+    });
+    expect(getWithAuthentication).toHaveBeenCalledWith('/transformed/v1/returns', {
+      from: '2019-02-28',
+      keys: [Key.THIRD_PILLAR, 'EE12345', Key.CPI],
+    });
   });
 
   it('returns return comparison object with passed personal pillar, pension fund, and index values', async () => {
@@ -45,11 +35,11 @@ describe('Return comparison API', () => {
       returns: [indexReturn, fundReturn, personalReturn],
     });
 
-    const comparison = await getReturnComparison(
-      '',
-      { personalKey: Key.THIRD_PILLAR, pensionFundKey: 'EE123456', indexKey: Key.CPI },
-      anUpdatableAuthenticationPrincipal(),
-    );
+    const comparison = await getReturnComparison('', {
+      personalKey: Key.THIRD_PILLAR,
+      pensionFundKey: 'EE123456',
+      indexKey: Key.CPI,
+    });
     expect(comparison).toStrictEqual({
       personal: personalReturn,
       pensionFund: fundReturn,
@@ -65,11 +55,11 @@ describe('Return comparison API', () => {
       returns: [fundReturn],
     });
 
-    const comparison = await getReturnComparison(
-      '',
-      { personalKey: Key.THIRD_PILLAR, pensionFundKey: Key.EPI, indexKey: Key.CPI },
-      anUpdatableAuthenticationPrincipal(),
-    );
+    const comparison = await getReturnComparison('', {
+      personalKey: Key.THIRD_PILLAR,
+      pensionFundKey: Key.EPI,
+      indexKey: Key.CPI,
+    });
     expect(comparison).toStrictEqual({
       from: '',
       personal: null,

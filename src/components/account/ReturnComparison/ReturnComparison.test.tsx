@@ -5,8 +5,9 @@ import { FormattedMessage } from 'react-intl';
 import { ReturnComparison, START_DATE } from './ReturnComparison';
 import { getReturnComparison, Key, ReturnComparison as ReturnComparisonType } from './api';
 import Select from './select';
-import { AuthenticationPrincipal } from '../../common/apiModels';
-import { anAuthenticationPrincipal } from '../../common/updatableAuthenticationPrincipal.test';
+import { initializeConfiguration } from '../../config/config';
+import { getAuthentication } from '../../common/authenticationManager';
+import { anAuthenticationManager } from '../../common/authenticationManagerFixture';
 
 jest.mock('./api', () => ({
   ...jest.requireActual('./api'),
@@ -35,59 +36,28 @@ jest.mock('moment', () => {
   return mockedMoment;
 });
 
-const mockDispatch = jest.fn();
-
 describe('Return comparison', () => {
   it('does not get returns when no token', () => {
-    shallow(
-      <ReturnComparison
-        dispatch={mockDispatch}
-        authenticationPrincipal={{
-          accessToken: '',
-          refreshToken: '',
-          loginMethod: 'SMART_ID',
-        }}
-        fundNameMapSecondPillar={{}}
-        fundNameMapThirdPillar={{}}
-      />,
-    );
+    initializeConfiguration();
+    shallow(<ReturnComparison fundNameMapSecondPillar={{}} fundNameMapThirdPillar={{}} />);
     expect(getReturnComparison).not.toHaveBeenCalled();
   });
 
   it('gets returns from the beginning for second pillar, first fund, and union stock index with token', () => {
     expect(getReturnComparison).not.toHaveBeenCalled();
-    shallow(
-      <ReturnComparison
-        dispatch={mockDispatch}
-        authenticationPrincipal={anAuthenticationPrincipal()}
-        fundNameMapSecondPillar={{}}
-        fundNameMapThirdPillar={{}}
-      />,
-    );
-    expect(getReturnComparison).toHaveBeenCalledWith(
-      START_DATE,
-      {
-        personalKey: Key.SECOND_PILLAR,
-        pensionFundKey: 'EE3600109435',
-        indexKey: Key.UNION_STOCK_INDEX,
-      },
-      expect.objectContaining({
-        remove: expect.any(Function),
-        update: expect.any(Function),
-        ...anAuthenticationPrincipal(),
-      }),
-    );
+    getAuthentication().update(anAuthenticationManager());
+    shallow(<ReturnComparison fundNameMapSecondPillar={{}} fundNameMapThirdPillar={{}} />);
+    expect(getReturnComparison).toHaveBeenCalledWith(START_DATE, {
+      personalKey: Key.SECOND_PILLAR,
+      pensionFundKey: 'EE3600109435',
+      indexKey: Key.UNION_STOCK_INDEX,
+    });
   });
 
   it('gets returns on date change with date', async () => {
     (getReturnComparison as jest.Mock).mockResolvedValueOnce({});
     const component = shallow(
-      <ReturnComparison
-        dispatch={mockDispatch}
-        authenticationPrincipal={anAuthenticationPrincipal()}
-        fundNameMapSecondPillar={{}}
-        fundNameMapThirdPillar={{}}
-      />,
+      <ReturnComparison fundNameMapSecondPillar={{}} fundNameMapThirdPillar={{}} />,
     );
 
     await flushPromises();
@@ -95,15 +65,7 @@ describe('Return comparison', () => {
     expect(getReturnComparison).not.toHaveBeenCalled();
 
     dateSelect(component).simulate('change', '2020-06-25');
-    expect(getReturnComparison).toHaveBeenCalledWith(
-      '2020-06-25',
-      expect.any(Object),
-      expect.objectContaining({
-        remove: expect.any(Function),
-        update: expect.any(Function),
-        ...anAuthenticationPrincipal(),
-      }),
-    );
+    expect(getReturnComparison).toHaveBeenCalledWith('2020-06-25', expect.any(Object));
   });
 
   it('gets returns on personal pillar change with pillar, with refreshed fund key', async () => {
@@ -112,8 +74,6 @@ describe('Return comparison', () => {
     const fundNameMapThirdPillar = { thirdPillarFund1: 'Some fund' };
     const component = shallow(
       <ReturnComparison
-        dispatch={mockDispatch}
-        authenticationPrincipal={anAuthenticationPrincipal()}
         fundNameMapSecondPillar={{}}
         fundNameMapThirdPillar={fundNameMapThirdPillar}
       />,
@@ -124,77 +84,43 @@ describe('Return comparison', () => {
     expect(getReturnComparison).not.toHaveBeenCalled();
 
     personalReturnSelect(component).simulate('change', Key.THIRD_PILLAR);
-    expect(getReturnComparison).toHaveBeenCalledWith(
-      expect.any(String),
-      {
-        personalKey: Key.THIRD_PILLAR,
-        pensionFundKey: 'EE3600001707',
-        indexKey: expect.any(String),
-      },
-      expect.objectContaining({
-        remove: expect.any(Function),
-        update: expect.any(Function),
-        ...anAuthenticationPrincipal(),
-      }),
-    );
+    expect(getReturnComparison).toHaveBeenCalledWith(expect.any(String), {
+      personalKey: Key.THIRD_PILLAR,
+      pensionFundKey: 'EE3600001707',
+      indexKey: expect.any(String),
+    });
   });
 
   it('gets returns on pension fund change with key', async () => {
     const component = shallow(
-      <ReturnComparison
-        dispatch={mockDispatch}
-        authenticationPrincipal={anAuthenticationPrincipal()}
-        fundNameMapSecondPillar={{}}
-        fundNameMapThirdPillar={{}}
-      />,
+      <ReturnComparison fundNameMapSecondPillar={{}} fundNameMapThirdPillar={{}} />,
     );
     await flushPromises();
     (getReturnComparison as jest.Mock).mockClear();
 
     expect(getReturnComparison).not.toHaveBeenCalled();
     pensionFundSelect(component).simulate('change', 'EE987654');
-    expect(getReturnComparison).toHaveBeenCalledWith(
-      expect.any(String),
-      {
-        personalKey: expect.any(String),
-        pensionFundKey: 'EE987654',
-        indexKey: expect.any(String),
-      },
-      expect.objectContaining({
-        remove: expect.any(Function),
-        update: expect.any(Function),
-        ...anAuthenticationPrincipal(),
-      }),
-    );
+    expect(getReturnComparison).toHaveBeenCalledWith(expect.any(String), {
+      personalKey: expect.any(String),
+      pensionFundKey: 'EE987654',
+      indexKey: expect.any(String),
+    });
   });
 
   it('gets returns on index change with key', async () => {
     const component = shallow(
-      <ReturnComparison
-        dispatch={mockDispatch}
-        authenticationPrincipal={anAuthenticationPrincipal()}
-        fundNameMapSecondPillar={{}}
-        fundNameMapThirdPillar={{}}
-      />,
+      <ReturnComparison fundNameMapSecondPillar={{}} fundNameMapThirdPillar={{}} />,
     );
     await flushPromises();
     (getReturnComparison as jest.Mock).mockClear();
 
     expect(getReturnComparison).not.toHaveBeenCalled();
     indexSelect(component).simulate('change', Key.CPI);
-    expect(getReturnComparison).toHaveBeenCalledWith(
-      expect.any(String),
-      {
-        personalKey: expect.any(String),
-        pensionFundKey: expect.any(String),
-        indexKey: Key.CPI,
-      },
-      expect.objectContaining({
-        remove: expect.any(Function),
-        update: expect.any(Function),
-        ...anAuthenticationPrincipal(),
-      }),
-    );
+    expect(getReturnComparison).toHaveBeenCalledWith(expect.any(String), {
+      personalKey: expect.any(String),
+      pensionFundKey: expect.any(String),
+      indexKey: Key.CPI,
+    });
   });
 
   it('has transformed pension fund isins as pension fund select options', async () => {
@@ -205,8 +131,6 @@ describe('Return comparison', () => {
 
     const component = shallow(
       <ReturnComparison
-        dispatch={mockDispatch}
-        authenticationPrincipal={anAuthenticationPrincipal()}
         fundNameMapSecondPillar={fundNameMap}
         fundNameMapThirdPillar={fundNameMap}
       />,
@@ -226,8 +150,6 @@ describe('Return comparison', () => {
 
     const component = shallow(
       <ReturnComparison
-        dispatch={mockDispatch}
-        authenticationPrincipal={anAuthenticationPrincipal()}
         fundNameMapSecondPillar={fundNameMap}
         fundNameMapThirdPillar={fundNameMap}
       />,
@@ -248,12 +170,7 @@ describe('Return comparison', () => {
   it('shows returns as - after failed retrieval', async () => {
     (getReturnComparison as jest.Mock).mockResolvedValueOnce({});
     const component = shallow(
-      <ReturnComparison
-        dispatch={mockDispatch}
-        authenticationPrincipal={anAuthenticationPrincipal()}
-        fundNameMapSecondPillar={{}}
-        fundNameMapThirdPillar={{}}
-      />,
+      <ReturnComparison fundNameMapSecondPillar={{}} fundNameMapThirdPillar={{}} />,
     );
 
     await flushPromises();
@@ -270,12 +187,7 @@ describe('Return comparison', () => {
   it('shows a loader for returns while getting returns', async () => {
     (getReturnComparison as jest.Mock).mockResolvedValueOnce({});
     const component = shallow(
-      <ReturnComparison
-        dispatch={mockDispatch}
-        authenticationPrincipal={anAuthenticationPrincipal()}
-        fundNameMapSecondPillar={{}}
-        fundNameMapThirdPillar={{}}
-      />,
+      <ReturnComparison fundNameMapSecondPillar={{}} fundNameMapThirdPillar={{}} />,
     );
     await flushPromises();
 
@@ -316,14 +228,10 @@ describe('Return comparison', () => {
       from: '2019-01-01',
     };
 
+    getAuthentication().update(anAuthenticationManager());
     (getReturnComparison as jest.Mock).mockResolvedValueOnce({});
     const component = shallow(
-      <ReturnComparison
-        dispatch={mockDispatch}
-        authenticationPrincipal={anAuthenticationPrincipal()}
-        fundNameMapSecondPillar={{}}
-        fundNameMapThirdPillar={{}}
-      />,
+      <ReturnComparison fundNameMapSecondPillar={{}} fundNameMapThirdPillar={{}} />,
     );
     await flushPromises();
 
@@ -342,12 +250,7 @@ describe('Return comparison', () => {
   it('shows an error message and returns as - after getting not enough history response', async () => {
     (getReturnComparison as jest.Mock).mockResolvedValueOnce({});
     const component = shallow(
-      <ReturnComparison
-        dispatch={mockDispatch}
-        authenticationPrincipal={anAuthenticationPrincipal()}
-        fundNameMapSecondPillar={{}}
-        fundNameMapThirdPillar={{}}
-      />,
+      <ReturnComparison fundNameMapSecondPillar={{}} fundNameMapThirdPillar={{}} />,
     );
 
     await flushPromises();
@@ -373,12 +276,7 @@ describe('Return comparison', () => {
     (getReturnComparison as jest.Mock).mockResolvedValueOnce({});
 
     const component = shallow(
-      <ReturnComparison
-        dispatch={mockDispatch}
-        authenticationPrincipal={anAuthenticationPrincipal()}
-        fundNameMapSecondPillar={{}}
-        fundNameMapThirdPillar={{}}
-      />,
+      <ReturnComparison fundNameMapSecondPillar={{}} fundNameMapThirdPillar={{}} />,
     );
     await flushPromises();
 
@@ -395,8 +293,6 @@ describe('Return comparison', () => {
 
     const component = shallow(
       <ReturnComparison
-        dispatch={mockDispatch}
-        authenticationPrincipal={anAuthenticationPrincipal()}
         fundNameMapSecondPillar={secondPillarFundMap}
         fundNameMapThirdPillar={thirdPillarFundMap}
       />,

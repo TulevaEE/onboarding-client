@@ -1,6 +1,6 @@
 import { getPaymentLink } from '../common/api';
 import { PaymentChannel, PaymentType } from '../common/apiModels';
-import { UpdatableAuthenticationPrincipal } from '../common/updatableAuthenticationPrincipal';
+import { getAuthentication } from '../common/authenticationManager';
 
 const EXTERNAL_AUTHENTICATOR_PROVIDER = 'EXTERNAL_AUTHENTICATOR_PROVIDER';
 
@@ -59,12 +59,7 @@ const getPath = (provider: ExternalProvider, procedure: Procedure): string => {
 };
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any -- WIP
-export const finish = async (
-  result?: string,
-  error?: string,
-  personalCode?: string,
-  authenticationPrincipal?: UpdatableAuthenticationPrincipal,
-) => {
+export const finish = async (result?: string, error?: string, personalCode?: string) => {
   const provider = sessionStorage.getItem(EXTERNAL_AUTHENTICATOR_PROVIDER);
 
   if (!provider) {
@@ -72,7 +67,7 @@ export const finish = async (
     console.error('unexpected state: no provider');
     return;
   }
-  if (!authenticationPrincipal?.accessToken || !personalCode) {
+  if (!getAuthentication().isAuthenticated() || !personalCode) {
     // eslint-disable-next-line no-console -- WIP
     console.error('unexpected state: no token/personal code');
     return;
@@ -82,14 +77,11 @@ export const finish = async (
     sendMessage({ errorMessage: error, time: new Date().toISOString() });
   }
 
-  const paymentLink = await getPaymentLink(
-    {
-      type: result === 'newRecurringPayment' ? PaymentType.RECURRING : PaymentType.SINGLE,
-      paymentChannel: PaymentChannel.PARTNER,
-      recipientPersonalCode: personalCode,
-    },
-    authenticationPrincipal,
-  );
+  const paymentLink = await getPaymentLink({
+    type: result === 'newRecurringPayment' ? PaymentType.RECURRING : PaymentType.SINGLE,
+    paymentChannel: PaymentChannel.PARTNER,
+    recipientPersonalCode: personalCode,
+  });
   const message = {
     type: result,
     version: '1',

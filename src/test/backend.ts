@@ -11,7 +11,7 @@ export function cancellationBackend(server: SetupServerApi): {
   };
   server.use(
     rest.post('http://localhost/v1/applications/123/cancellations', (req, res, ctx) => {
-      if (req.headers.get('Authorization') !== 'Bearer mock token') {
+      if (req.headers.get('Authorization') !== 'Bearer an access token') {
         return res(ctx.status(401), ctx.json({ error: 'not authenticated correctly' }));
       }
       backend.cancellationCreated = true;
@@ -24,7 +24,7 @@ export function cancellationBackend(server: SetupServerApi): {
 export const mandateDownloadBackend = (server: SetupServerApi): void => {
   server.use(
     rest.get('http://localhost/v1/mandates/1/file', async (req, res, ctx) => {
-      if (req.headers.get('Authorization') !== 'Bearer mock token') {
+      if (req.headers.get('Authorization') !== 'Bearer an access token') {
         return res(ctx.status(401), ctx.json({ error: 'not authenticated correctly' }));
       }
       return res(ctx.status(200), ctx.text('fake mandate'));
@@ -40,7 +40,7 @@ export function mandatePreviewBackend(server: SetupServerApi): {
   };
   server.use(
     rest.get('http://localhost/v1/mandates/1/file/preview', async (req, res, ctx) => {
-      if (req.headers.get('Authorization') !== 'Bearer mock token') {
+      if (req.headers.get('Authorization') !== 'Bearer an access token') {
         return res(ctx.status(401), ctx.json({ error: 'not authenticated correctly' }));
       }
       backend.previewDownloaded = true;
@@ -61,14 +61,14 @@ export function smartIdSigningBackend(
   };
   server.use(
     rest.put('http://localhost/v1/mandates/1/signature/smartId', (req, res, ctx) => {
-      if (req.headers.get('Authorization') !== 'Bearer mock token') {
+      if (req.headers.get('Authorization') !== 'Bearer an access token') {
         return res(ctx.status(401), ctx.json({ error: 'not authenticated correctly' }));
       }
       backend.mandateSigned = true;
       return res(ctx.status(200), ctx.json({ challengeCode: options.challengeCode || '9876' }));
     }),
     rest.get('http://localhost/v1/mandates/1/signature/smartId/status', (req, res, ctx) => {
-      if (req.headers.get('Authorization') !== 'Bearer mock token') {
+      if (req.headers.get('Authorization') !== 'Bearer an access token') {
         return res(ctx.status(401), ctx.json({ error: 'not authenticated correctly' }));
       }
       return res(ctx.status(200), ctx.json({ statusCode: 'SIGNATURE' }));
@@ -115,7 +115,7 @@ export function smartIdAuthenticationBackend(
 
       return res(
         ctx.status(200),
-        ctx.json({ access_token: 'mock token', refresh_token: 'mock refresh token' }),
+        ctx.json({ access_token: 'an access token', refresh_token: 'mock refresh token' }),
       );
     }),
   );
@@ -165,7 +165,7 @@ export function mobileIdAuthenticationBackend(
 
       return res(
         ctx.status(200),
-        ctx.json({ access_token: 'mock token', refresh_token: 'mock refresh token' }),
+        ctx.json({ access_token: 'an access token', refresh_token: 'mock refresh token' }),
       );
     }),
   );
@@ -206,7 +206,7 @@ export function idCardAuthenticationBackend(server: SetupServerApi): {
 
       return res(
         ctx.status(200),
-        ctx.json({ access_token: 'mock token', refresh_token: 'mock refresh token' }),
+        ctx.json({ access_token: 'an access token', refresh_token: 'mock refresh token' }),
       );
     }),
   );
@@ -284,7 +284,7 @@ export function amlChecksBackend(server: SetupServerApi): void {
   );
   server.use(
     rest.post('http://localhost/v1/amlchecks', (req, res, ctx) => {
-      if (req.headers.get('Authorization') !== 'Bearer mock token') {
+      if (req.headers.get('Authorization') !== 'Bearer an access token') {
         return res(ctx.status(401), ctx.json({ error: 'not authenticated correctly' }));
       }
       return res(ctx.status(200), ctx.json(req.body));
@@ -499,7 +499,7 @@ export function secondPillarPaymentRateBackend(server: SetupServerApi): {
   };
   server.use(
     rest.post('http://localhost/v1/second-pillar-payment-rates', (req, res, ctx) => {
-      if (req.headers.get('Authorization') !== 'Bearer mock token') {
+      if (req.headers.get('Authorization') !== 'Bearer an access token') {
         return res(ctx.status(401), ctx.json({ error: 'not authenticated correctly' }));
       }
       backend.mandateCreated = true;

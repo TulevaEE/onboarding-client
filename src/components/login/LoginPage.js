@@ -17,6 +17,7 @@ import {
   authenticateWithIdCard,
   authenticateWithIdCode,
 } from './actions';
+import { getAuthentication } from '../common/authenticationManager';
 
 export const LoginPage = ({
   isAuthenticated,
@@ -133,7 +134,7 @@ LoginPage.propTypes = {
 };
 
 const mapStateToProps = (state) => ({
-  isAuthenticated: !!state.login.authenticationPrincipal?.accessToken,
+  isAuthenticated: getAuthentication().isAuthenticated(),
   phoneNumber: state.login.phoneNumber,
   personalCode: state.login.personalCode,
   controlCode: state.login.controlCode,

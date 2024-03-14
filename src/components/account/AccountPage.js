@@ -18,6 +18,7 @@ import { AccountSummaryLoader } from './AccountSummary/AccountSummary';
 import { TransactionSection } from './TransactionSection/TransactionSection';
 import { getInitialCapital } from './actions';
 import SecondPillarUpsell from './SecondPillarUpsell/SecondPillarUpsell';
+import { getAuthentication } from '../common/authenticationManager';
 
 const noop = () => null;
 
@@ -208,7 +209,7 @@ const mapStateToProps = (state) => ({
   conversion: state.login.userConversion,
   loadingCurrentBalance: state.exchange.loadingSourceFunds,
   shouldGetMemberCapital:
-    state.login.authenticationPrincipal?.accessToken &&
+    getAuthentication().isAuthenticated() &&
     state.login.user &&
     state.login.user.memberNumber &&
     !state.account.initialCapital &&
@@ -216,7 +217,6 @@ const mapStateToProps = (state) => ({
   memberCapital: state.account.initialCapital,
   loadingCapital: state.account.loadingInitialCapital,
   error: state.exchange.error,
-  authenticationPrincipal: state.login.authenticationPrincipal,
   shouldRedirectToAml: shouldRedirectToAml(state),
 });
 const mapDispatchToProps = (dispatch) =>

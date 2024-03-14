@@ -236,7 +236,7 @@ export interface Token {
   refreshToken: string;
 }
 
-type LoginMethod = 'MOBILE_ID' | 'SMART_ID' | 'ID_CARD';
+export type LoginMethod = 'MOBILE_ID' | 'SMART_ID' | 'ID_CARD' | 'PARTNER';
 export interface AuthenticationPrincipal extends Token {
   loginMethod: LoginMethod;
 }

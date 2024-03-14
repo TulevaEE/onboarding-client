@@ -4,16 +4,16 @@ import { setupServer } from 'msw/node';
 import { render, screen } from '@testing-library/react';
 import { useSelector } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
-import config from 'react-global-configuration';
 import { QueryClient, QueryClientProvider } from 'react-query';
 
 import { IntlProvider } from 'react-intl';
 import { ContributionSection } from './ContributionSection';
 import { contribution } from './fixtures';
 import { fundsBackend } from '../../test/backend';
-import { anAuthenticationPrincipal } from '../common/updatableAuthenticationPrincipal.test';
+import { initializeConfiguration } from '../config/config';
+import { getAuthentication } from '../common/authenticationManager';
+import { anAuthenticationManager } from '../common/authenticationManagerFixture';
 
-jest.mock('react-global-configuration');
 jest.mock('react-redux');
 
 describe('Contribution section', () => {
@@ -40,18 +40,20 @@ describe('Contribution section', () => {
   }
 
   beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
-  afterEach(() => server.resetHandlers());
+  afterEach(() => {
+    server.resetHandlers();
+  });
   afterAll(() => server.close());
 
   beforeEach(() => {
+    initializeConfiguration();
+    getAuthentication().update(anAuthenticationManager());
+
     (useSelector as any).mockImplementation((selector: any) =>
       selector({
-        login: {
-          authenticationPrincipal: anAuthenticationPrincipal('mock token'),
-        },
+        login: {},
       }),
     );
-    (config.get as any).mockImplementation((key: string) => (key === 'language' ? 'en' : null));
     fundsBackend(server);
   });
 
@@ -88,7 +90,7 @@ describe('Contribution section', () => {
   function mockContributions(contributions: any[]) {
     server.use(
       rest.get('http://localhost/v1/contributions', (req, res, ctx) => {
-        if (req.headers.get('Authorization') !== 'Bearer mock token') {
+        if (req.headers.get('Authorization') !== 'Bearer an access token') {
           return res(ctx.status(401), ctx.json({ error: 'not authenticated correctly' }));
         }
         return res(ctx.status(200), ctx.json(contributions));

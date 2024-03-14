@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
 import config from 'react-global-configuration';
 import { AuthenticationPrincipal, Token } from './apiModels';
-import { UpdatableAuthenticationPrincipal } from './updatableAuthenticationPrincipal';
+import { AuthenticationManager, getAuthentication } from './authenticationManager';
 
 let currentAccessToken: string | null = null;
 
@@ -25,9 +25,7 @@ function getIsRefreshing(): boolean {
   return isRefreshing;
 }
 
-async function executeRefreshTokenRequest(
-  authenticationPrincipal: UpdatableAuthenticationPrincipal,
-) {
+async function executeRefreshTokenRequest(authenticationPrincipal: AuthenticationManager) {
   try {
     const response = await axios.post('/oauth/refresh-token', {
       refresh_token: authenticationPrincipal.refreshToken,
@@ -56,11 +54,11 @@ async function executeRefreshTokenRequest(
 }
 
 function queueRequestToWaitForANewToken(
-  authenticationPrincipal: UpdatableAuthenticationPrincipal,
-): Promise<UpdatableAuthenticationPrincipal> {
+  authenticationPrincipal: AuthenticationManager,
+): Promise<AuthenticationManager> {
   return new Promise((resolve) => {
     tokenRefreshSubscribers.push((tokens: Token) => {
-      const updatedPrincipal: UpdatableAuthenticationPrincipal = {
+      const updatedPrincipal: AuthenticationManager = {
         ...authenticationPrincipal,
         accessToken: tokens.accessToken,
         refreshToken: tokens.refreshToken,
@@ -71,7 +69,7 @@ function queueRequestToWaitForANewToken(
 }
 
 const refreshCurrentToken = async (
-  authenticationPrincipal: UpdatableAuthenticationPrincipal,
+  authenticationPrincipal: AuthenticationManager,
 ): Promise<AuthenticationPrincipal> => {
   if (!getIsRefreshing()) {
     setIsRefreshing(true);
@@ -84,9 +82,8 @@ function isAccessTokenExpired(error: AxiosError) {
   return error.response?.status === 401 && error.response.data.error === 'TOKEN_EXPIRED';
 }
 
-export function createAxiosInstance(
-  authenticationPrincipal: UpdatableAuthenticationPrincipal,
-): AxiosInstance {
+export function createAxiosInstance(): AxiosInstance {
+  const authenticationPrincipal = getAuthentication();
   setCurrentAccessToken(authenticationPrincipal.accessToken);
   const axiosInstance = axios.create({
     withCredentials: true,
@@ -157,7 +154,7 @@ function isRefreshTokenExpired(axiosError: AxiosError) {
 
 function handleTokenRefreshFailure(
   refreshError: unknown,
-  authenticationPrincipal: UpdatableAuthenticationPrincipal,
+  authenticationPrincipal: AuthenticationManager,
   error: unknown,
 ) {
   if (refreshError && (refreshError as AxiosError).isAxiosError) {

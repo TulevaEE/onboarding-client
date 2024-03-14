@@ -10,8 +10,6 @@ import {
 } from './constants';
 import { PaymentChannel, PaymentType } from '../apiModels';
 
-import { withUpdatableAuthenticationPrincipal } from '../updatableAuthenticationPrincipal';
-
 function toFieldErrors(errorResponse) {
   return errorResponse.body.errors.reduce((totalErrors, currentError) => {
     if (currentError.path) {
@@ -34,12 +32,9 @@ export function updateUserEmailAndPhone(user) {
 }
 
 export function updateUser(user) {
-  return (dispatch, getState) => {
+  return (dispatch) => {
     dispatch({ type: UPDATE_USER_START });
-    return updateUserWithToken(
-      user,
-      withUpdatableAuthenticationPrincipal(getState().login.authenticationPrincipal, dispatch),
-    )
+    return updateUserWithToken(user)
       .then((newUser) => dispatch({ type: UPDATE_USER_SUCCESS, newUser }))
       .catch((errorResponse) => {
         dispatch({ type: UPDATE_USER_ERROR, errorResponse });
@@ -53,26 +48,19 @@ export function userUpdated() {
 }
 
 export function createNewMember(user) {
-  return (dispatch, getState) => {
+  return (dispatch) => {
     dispatch({ type: UPDATE_USER_START });
 
-    const authenticationPrincipal = withUpdatableAuthenticationPrincipal(
-      getState().login.authenticationPrincipal,
-      dispatch,
-    );
-    return updateUserWithToken(user, authenticationPrincipal)
+    return updateUserWithToken(user)
       .then((newUser) => {
         dispatch({ type: UPDATE_USER_SUCCESS, newUser });
-        redirectToPayment(
-          {
-            recipientPersonalCode: newUser.personalCode,
-            amount: null,
-            currency: 'EUR',
-            type: PaymentType.MEMBER_FEE,
-            paymentChannel: PaymentChannel.TULUNDUSUHISTU,
-          },
-          authenticationPrincipal,
-        );
+        redirectToPayment({
+          recipientPersonalCode: newUser.personalCode,
+          amount: null,
+          currency: 'EUR',
+          type: PaymentType.MEMBER_FEE,
+          paymentChannel: PaymentChannel.TULUNDUSUHISTU,
+        });
       })
       .catch((errorResponse) => {
         dispatch({ type: UPDATE_USER_ERROR, errorResponse });

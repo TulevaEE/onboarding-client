@@ -7,6 +7,8 @@ import { createMemoryHistory, History } from 'history';
 import { TriggerProcedure } from './TriggerProcedure';
 import { initializeConfiguration } from '../config/config';
 import { createDefaultStore, renderWrapped } from '../../test/utils';
+import { getAuthentication } from '../common/authenticationManager';
+import { anAuthenticationManager } from '../common/authenticationManagerFixture';
 
 describe('When an external provider process is triggered', () => {
   const server = setupServer();
@@ -45,7 +47,8 @@ describe('When an external provider process is triggered', () => {
         return res(
           ctx.status(200),
           ctx.json({
-            accessToken: '_accessToken_',
+            access_token: anAuthenticationManager().accessToken,
+            refresh_token: anAuthenticationManager().refreshToken,
           }),
         );
       }),
@@ -95,6 +98,8 @@ describe('When an external provider process is triggered', () => {
       `?provider=COOP_PANK&procedure=partner-3rd-pillar-flow&handoverToken=${handoverToken}`,
     );
     expect(await screen.findByText('redirecting to', { exact: false })).toBeInTheDocument();
+    expect(getAuthentication().accessToken).toBe(anAuthenticationManager().accessToken);
+    expect(getAuthentication().refreshToken).toBe(anAuthenticationManager().refreshToken);
   });
 
   test('redirects to 2nd pillar flow if valid data is provided', async () => {
@@ -104,5 +109,7 @@ describe('When an external provider process is triggered', () => {
       `?provider=COOP_PANK&procedure=partner-2nd-pillar-flow&handoverToken=${handoverToken}`,
     );
     expect(await screen.findByText('redirecting to', { exact: false })).toBeInTheDocument();
+    expect(getAuthentication().accessToken).toBe(anAuthenticationManager().accessToken);
+    expect(getAuthentication().refreshToken).toBe(anAuthenticationManager().refreshToken);
   });
 });

@@ -1,6 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
 import config from 'react-global-configuration';
-import { UpdatableAuthenticationPrincipal } from './updatableAuthenticationPrincipal';
 import { createAxiosInstance } from './tokenManagement';
 
 axios.defaults.withCredentials = true;
@@ -44,57 +43,43 @@ export async function get(url: string, params = {}, headers = {}): Promise<Axios
   }
 }
 export async function getWithAuthentication(
-  authenticationPrincipal: UpdatableAuthenticationPrincipal,
   url: string,
   params = {},
   axiosConfig = {},
 ): Promise<any> {
-  checkUpdatableAuthenticationPrincipal(authenticationPrincipal);
-  const axiosInstance = createAxiosInstance(authenticationPrincipal);
+  const axiosInstance = createAxiosInstance();
   return axiosInstance.get(url, { params, ...axiosConfig }).then((response) => response.data);
 }
 
 export async function postWithAuthentication(
-  authenticationPrincipal: UpdatableAuthenticationPrincipal,
   url: string,
   data = {},
   axiosConfig = {},
 ): Promise<any> {
-  checkUpdatableAuthenticationPrincipal(authenticationPrincipal);
-  const axiosInstance = createAxiosInstance(authenticationPrincipal);
+  const axiosInstance = createAxiosInstance();
   return axiosInstance.post(url, data, axiosConfig).then((response) => response.data);
 }
 
 export async function putWithAuthentication(
-  authenticationPrincipal: UpdatableAuthenticationPrincipal,
   url: string,
   data = {},
   axiosConfig = {},
 ): Promise<any> {
-  checkUpdatableAuthenticationPrincipal(authenticationPrincipal);
-  const axiosInstance = createAxiosInstance(authenticationPrincipal);
+  const axiosInstance = createAxiosInstance();
   return axiosInstance.put(url, data, axiosConfig).then((response) => response.data);
 }
 
 export async function patchWithAuthentication(
-  authenticationPrincipal: UpdatableAuthenticationPrincipal,
   url: string,
   data = {},
   axiosConfig = {},
 ): Promise<any> {
-  checkUpdatableAuthenticationPrincipal(authenticationPrincipal);
-  const axiosInstance = createAxiosInstance(authenticationPrincipal);
+  const axiosInstance = createAxiosInstance();
   return axiosInstance.patch(url, data, axiosConfig).then((response) => response.data);
 }
 
-export async function downloadFileWithAuthentication(
-  authenticationPrincipal: UpdatableAuthenticationPrincipal,
-  url: string,
-  headers = {},
-): Promise<Blob> {
-  checkUpdatableAuthenticationPrincipal(authenticationPrincipal);
-
-  const axiosInstance = createAxiosInstance(authenticationPrincipal);
+export async function downloadFileWithAuthentication(url: string, headers = {}): Promise<Blob> {
+  const axiosInstance = createAxiosInstance();
 
   return axiosInstance
     .get(url, {
@@ -150,17 +135,6 @@ export async function simpleFetch(method: string, url: string): Promise<any> {
     cache: 'default',
   });
   return transformResponse(response);
-}
-
-// Runtime exception if we use this file from not typed
-function checkUpdatableAuthenticationPrincipal(
-  authenticationPrincipal: UpdatableAuthenticationPrincipal,
-) {
-  if (typeof authenticationPrincipal.update !== 'function') {
-    // eslint-disable-next-line no-console
-    console.error('No updatable authentication principal present');
-    throw new Error('No updatable authentication principal present');
-  }
 }
 
 function createLanguageHeaders(): Record<string, string> {

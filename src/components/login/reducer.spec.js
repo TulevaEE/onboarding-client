@@ -23,6 +23,9 @@ import {
   CHANGE_PERSONAL_CODE,
 } from './constants';
 import { UPDATE_USER_SUCCESS } from '../common/user/constants';
+import { initializeConfiguration } from '../config/config';
+import { getAuthentication } from '../common/authenticationManager';
+import { anAuthenticationManager } from '../common/authenticationManagerFixture';
 
 describe('Login reducer', () => {
   it('changes phone number', () => {
@@ -68,19 +71,13 @@ describe('Login reducer', () => {
     expect(newState.error).toBe('oh no!');
   });
 
-  it('sets the tokens when mobile authentication succeeds', () => {
-    const tokens = { accessToken: 'token', refreshToken: 'refreshToken' };
+  it('sets the state when mobile authentication succeeds', () => {
     const action = {
       type: MOBILE_AUTHENTICATION_SUCCESS,
-      tokens,
       method: 'MOBILE_ID',
     };
     const newState = loginReducer(undefined, action);
-    expect(newState.authenticationPrincipal).toStrictEqual({
-      accessToken: 'token',
-      refreshToken: 'refreshToken',
-      loginMethod: 'MOBILE_ID',
-    });
+    expect(newState.loadingAuthentication).toBe(false);
   });
 
   it('sets the error when mobile authentication fails', () => {
@@ -91,7 +88,6 @@ describe('Login reducer', () => {
     const newState = loginReducer(undefined, action);
 
     expect(newState.error).toBe(errorMessage);
-    expect(newState.authenticationPrincipal).toBe(null);
     expect(newState.controlCode).toBe(null);
     expect(newState.loadingAuthentication).toBe(false);
     expect(newState.loadingUser).toBe(false);
@@ -110,15 +106,11 @@ describe('Login reducer', () => {
     expect(newState.error).toBe(null);
   });
 
-  it('sets the token when id card authentication succeeds', () => {
-    const tokens = { accessToken: 'token', refreshToken: 'refreshToken' };
-    const action = { type: ID_CARD_AUTHENTICATION_SUCCESS, tokens };
+  it('sets the state when id card authentication succeeds', () => {
+    const state = {};
+    const action = { type: ID_CARD_AUTHENTICATION_SUCCESS, state };
 
-    expect(loginReducer(undefined, action).authenticationPrincipal).toStrictEqual({
-      accessToken: 'token',
-      refreshToken: 'refreshToken',
-      loginMethod: 'ID_CARD',
-    });
+    expect(loginReducer(undefined, action).loadingAuthentication).toBe(false);
   });
 
   it('sets the error when id card authentication start fails', () => {
@@ -128,7 +120,7 @@ describe('Login reducer', () => {
     const newState = loginReducer(undefined, action);
 
     expect(newState.error).toBe('oh noes!!1');
-    expect(newState.authenticationPrincipal).toBe(null);
+    expect(newState.loadingAuthentication).toBe(false);
   });
 
   it('sets the error when id card authentication fails', () => {
@@ -138,7 +130,6 @@ describe('Login reducer', () => {
     const newState = loginReducer(undefined, action);
 
     expect(newState.error).toBe('oh noes!!1');
-    expect(newState.authenticationPrincipal).toBe(null);
   });
 
   it('starts loading when user when starting to get the user', () => {
@@ -173,10 +164,14 @@ describe('Login reducer', () => {
     expect(newState.user).toBe(newUser);
   });
 
-  it('removes token and login method flag when you log out', () => {
+  it('removes authentication and login method flag when you log out', () => {
+    initializeConfiguration();
+    getAuthentication().update(anAuthenticationManager());
+    expect(getAuthentication().isAuthenticated()).toBe(true);
     const newState = loginReducer(undefined, { type: LOG_OUT });
 
     expect(newState).toEqual(initialState);
+    expect(getAuthentication().isAuthenticated()).toBe(false);
   });
 
   it('starts loading when starting to get the user conversion', () => {

@@ -2,28 +2,32 @@ import axios, { AxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import config from 'react-global-configuration';
 import { createAxiosInstance } from './tokenManagement';
-import { UpdatableAuthenticationPrincipal } from './updatableAuthenticationPrincipal';
+import { AuthenticationManager } from './authenticationManager';
+import * as authenticationManager from './authenticationManager';
+import Mock = jest.Mock;
 
+jest.mock('./authenticationManager', () => ({
+  getAuthentication: jest.fn(),
+}));
 describe('Axios Instance Creation and Interceptors', () => {
   let mockAxios: MockAdapter;
-  const mockPrincipal: UpdatableAuthenticationPrincipal = {
+  const mockPrincipal: AuthenticationManager = {
     accessToken: 'initialAccessToken',
     refreshToken: 'validRefreshToken',
     loginMethod: 'SMART_ID',
     update: jest.fn(),
     remove: jest.fn(),
+    isAuthenticated: jest.fn(),
   };
 
   config.set({ language: 'en' });
 
   beforeEach(() => {
     mockAxios = new MockAdapter(axios);
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    mockPrincipal.update.mockClear();
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    mockPrincipal.remove.mockClear();
+    jest.clearAllMocks();
+    (authenticationManager.getAuthentication as jest.Mock).mockReturnValue(mockPrincipal);
+    (mockPrincipal.update as Mock).mockClear();
+    (mockPrincipal.remove as Mock).mockClear();
   });
 
   afterEach(() => {
@@ -31,7 +35,7 @@ describe('Axios Instance Creation and Interceptors', () => {
   });
 
   it('sets Authorization header with current access token', async () => {
-    const axiosInstance = createAxiosInstance(mockPrincipal);
+    const axiosInstance = createAxiosInstance();
 
     mockAxios.onGet('/test').reply((configuration: AxiosRequestConfig) => {
       expect(configuration.headers?.Authorization).toEqual(`Bearer ${mockPrincipal.accessToken}`);
@@ -42,7 +46,7 @@ describe('Axios Instance Creation and Interceptors', () => {
   });
 
   it('refreshes token on 401 response and retries original request', async () => {
-    const axiosInstance = createAxiosInstance(mockPrincipal);
+    const axiosInstance = createAxiosInstance();
     const newAccessToken = 'newAccessToken';
 
     // First request fails with 401, triggering token refresh
@@ -68,7 +72,7 @@ describe('Axios Instance Creation and Interceptors', () => {
   });
 
   it('removes principal on refresh token expiration', async () => {
-    const axiosInstance = createAxiosInstance(mockPrincipal);
+    const axiosInstance = createAxiosInstance();
 
     // First request fails with 401, indicating expired token
     mockAxios.onGet('/test').replyOnce(401, { error: 'TOKEN_EXPIRED' });
@@ -84,7 +88,7 @@ describe('Axios Instance Creation and Interceptors', () => {
   });
 
   it('sets Accept-Language header according to config', async () => {
-    const axiosInstance = createAxiosInstance(mockPrincipal);
+    const axiosInstance = createAxiosInstance();
 
     mockAxios.onGet('/test-language').reply((configuration: AxiosRequestConfig) => {
       expect(configuration.headers?.['Accept-Language']).toEqual(config.get('language'));

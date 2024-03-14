@@ -6,8 +6,8 @@ import {
   createAmlCheck,
   createApplicationCancellation,
   createTrackedEvent,
-  downloadMandatePreviewWithIdAndToken,
-  downloadMandateWithIdAndToken,
+  downloadMandatePreviewWithId,
+  downloadMandateWithId,
   getContributions,
   getFunds,
   getIdCardSignatureHash,
@@ -24,14 +24,14 @@ import {
   getSmartIdSignatureChallengeCode,
   getSmartIdSignatureStatus,
   getSmartIdTokens,
-  getSourceFundsWithToken,
+  getSourceFunds,
   getTokensWithGrantType,
   getTransactions,
   getUserConversionWithToken,
   getUserWithToken,
   logout,
   redirectToPayment,
-  saveMandateWithToken,
+  saveMandateWithAuthentication,
   updateUserWithToken,
 } from './api';
 import * as http from './http';
@@ -45,6 +45,7 @@ import {
   Fund,
   FundStatus,
   InitialCapital,
+  LoginMethod,
   MandateDeadlines,
   Payment,
   PaymentChannel,
@@ -55,20 +56,32 @@ import {
   User,
   UserConversion,
 } from './apiModels';
-import { UpdatableAuthenticationPrincipal } from './updatableAuthenticationPrincipal';
-import { anUpdatableAuthenticationPrincipal } from './updatableAuthenticationPrincipal.test';
+
+import * as authenticationManager from './authenticationManager';
+import Mock = jest.Mock;
 
 jest.mock('./http');
-
+jest.mock('./authenticationManager', () => ({
+  getAuthentication: jest.fn(),
+  remove: jest.fn(),
+}));
 const mockHttp = http as jest.Mocked<typeof http>;
 
 describe('API calls', () => {
-  let mockPrincipal: UpdatableAuthenticationPrincipal;
-
+  const mockAuthenticationUpdate = jest.fn();
+  const mockAuthenticationRemove = jest.fn();
   beforeEach(() => {
-    mockPrincipal = anUpdatableAuthenticationPrincipal();
     config.set({ idCardUrl: 'https://id.tuleva.ee' }, { freeze: false, assign: false });
     jest.clearAllMocks();
+    (authenticationManager.getAuthentication as Mock).mockReturnValue({
+      update: mockAuthenticationUpdate,
+      remove: mockAuthenticationRemove,
+    });
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+    jest.resetModules();
   });
 
   describe('authenticateWithIdCard', () => {
@@ -89,9 +102,10 @@ describe('API calls', () => {
     it('should successfully logout the user', async () => {
       mockHttp.getWithAuthentication.mockResolvedValueOnce(undefined);
 
-      await logout(mockPrincipal);
+      await logout();
 
-      expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith(mockPrincipal, '/v1/logout', {});
+      expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith('/v1/logout', {});
+      expect(mockAuthenticationRemove).toHaveBeenCalled();
     });
   });
 
@@ -111,6 +125,11 @@ describe('API calls', () => {
         expect.any(Object),
         expect.any(Object),
       );
+      expect(mockAuthenticationUpdate).toHaveBeenCalledWith({
+        accessToken: expectedToken.accessToken,
+        refreshToken: expectedToken.refreshToken,
+        loginMethod: 'MOBILE_ID',
+      });
     });
   });
 
@@ -136,6 +155,11 @@ describe('API calls', () => {
         },
         expect.any(Object),
       );
+      expect(mockAuthenticationUpdate).toHaveBeenCalledWith({
+        accessToken: expectedToken.accessToken,
+        refreshToken: expectedToken.refreshToken,
+        loginMethod: 'SMART_ID',
+      });
     });
   });
 
@@ -155,6 +179,11 @@ describe('API calls', () => {
         expect.any(Object),
         expect.any(Object),
       );
+      expect(mockAuthenticationUpdate).toHaveBeenCalledWith({
+        accessToken: expectedToken.accessToken,
+        refreshToken: expectedToken.refreshToken,
+        loginMethod: 'ID_CARD',
+      });
     });
   });
 
@@ -220,6 +249,11 @@ describe('API calls', () => {
           Authorization: basicAuthHeader,
         },
       );
+      expect(mockAuthenticationUpdate).toHaveBeenCalledWith({
+        accessToken: expectedToken.accessToken,
+        refreshToken: expectedToken.refreshToken,
+        loginMethod: grantType,
+      });
     });
 
     it('handles AUTHENTICATION_NOT_COMPLETE error by returning null', async () => {
@@ -269,7 +303,7 @@ describe('API calls', () => {
         refresh_token: expectedToken.refreshToken,
       });
 
-      const token = await getTokensWithGrantType(grant, params);
+      const token = await getTokensWithGrantType(grant as LoginMethod, params);
 
       expect(token).toEqual(expectedToken);
       expect(mockHttp.postForm).toHaveBeenCalledWith(
@@ -280,6 +314,11 @@ describe('API calls', () => {
         }),
         expect.any(Object),
       );
+      expect(mockAuthenticationUpdate).toHaveBeenCalledWith({
+        accessToken: expectedToken.accessToken,
+        refreshToken: expectedToken.refreshToken,
+        loginMethod: grant,
+      });
     });
   });
 
@@ -293,11 +332,10 @@ describe('API calls', () => {
     });
 
     it('downloads the mandate preview', async () => {
-      const blob = await downloadMandatePreviewWithIdAndToken(mandateId, mockPrincipal);
+      const blob = await downloadMandatePreviewWithId(mandateId);
 
       expect(blob).toEqual(mockBlob);
       expect(mockHttp.downloadFileWithAuthentication).toHaveBeenCalledWith(
-        mockPrincipal,
         expect.stringContaining(`/v1/mandates/${mandateId}/file/preview`),
       );
     });
@@ -313,11 +351,10 @@ describe('API calls', () => {
     });
 
     it('downloads the mandate', async () => {
-      const blob = await downloadMandateWithIdAndToken(mandateId, mockPrincipal);
+      const blob = await downloadMandateWithId(mandateId);
 
       expect(blob).toEqual(mockBlob);
       expect(mockHttp.downloadFileWithAuthentication).toHaveBeenCalledWith(
-        mockPrincipal,
         expect.stringContaining(`/v1/mandates/${mandateId}/file`),
       );
     });
@@ -336,11 +373,10 @@ describe('API calls', () => {
     });
 
     it('retrieves the user', async () => {
-      const user = await getUserWithToken(mockPrincipal);
+      const user = await getUserWithToken();
 
       expect(user).toEqual(mockUser);
       expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith(
-        mockPrincipal,
         expect.stringContaining('/v1/me'),
         undefined,
       );
@@ -391,7 +427,7 @@ describe('API calls', () => {
     });
 
     it('retrieves and transforms source funds correctly', async () => {
-      const sourceFunds = await getSourceFundsWithToken(mockPrincipal);
+      const sourceFunds = await getSourceFunds();
 
       expect(sourceFunds).toEqual([
         {
@@ -426,7 +462,6 @@ describe('API calls', () => {
         },
       ]);
       expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith(
-        mockPrincipal,
         expect.stringContaining('/v1/pension-account-statement'),
         undefined,
       );
@@ -447,11 +482,10 @@ describe('API calls', () => {
     });
 
     it('saves the mandate with the correct parameters', async () => {
-      const mandateResponse = await saveMandateWithToken(mockMandate, mockPrincipal);
+      const mandateResponse = await saveMandateWithAuthentication(mockMandate);
 
       expect(mandateResponse).toEqual(mockMandateResponse);
       expect(mockHttp.postWithAuthentication).toHaveBeenCalledWith(
-        mockPrincipal,
         expect.stringContaining('/v1/mandates'),
         mockMandate,
       );
@@ -470,11 +504,10 @@ describe('API calls', () => {
     });
 
     it('retrieves the mobile ID signature challenge code', async () => {
-      const challengeCode = await getMobileIdSignatureChallengeCode(mandateId, mockPrincipal);
+      const challengeCode = await getMobileIdSignatureChallengeCode(mandateId);
 
       expect(challengeCode).toEqual(mockResponse.challengeCode);
       expect(mockHttp.putWithAuthentication).toHaveBeenCalledWith(
-        mockPrincipal,
         expect.stringContaining(`/v1/mandates/${mandateId}/signature/mobileId`),
         undefined,
       );
@@ -494,11 +527,10 @@ describe('API calls', () => {
     });
 
     it('retrieves the mobile ID signature status with the correct parameters', async () => {
-      const statusResponse = await getMobileIdSignatureStatus(mandateId, mockPrincipal);
+      const statusResponse = await getMobileIdSignatureStatus(mandateId);
 
       expect(statusResponse).toEqual(mockStatusResponse);
       expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith(
-        mockPrincipal,
         expect.stringContaining(`/v1/mandates/${mandateId}/signature/mobileId/status`),
         undefined,
       );
@@ -515,11 +547,10 @@ describe('API calls', () => {
     });
 
     it('retrieves the smart ID signature challenge code correctly', async () => {
-      const challengeCode = await getSmartIdSignatureChallengeCode(mandateId, mockPrincipal);
+      const challengeCode = await getSmartIdSignatureChallengeCode(mandateId);
 
       expect(challengeCode).toEqual(mockResponse.challengeCode);
       expect(mockHttp.putWithAuthentication).toHaveBeenCalledWith(
-        mockPrincipal,
         expect.stringContaining(`/v1/mandates/${mandateId}/signature/smartId`),
         undefined,
       );
@@ -536,11 +567,10 @@ describe('API calls', () => {
     });
 
     it('retrieves the smart ID signature status correctly', async () => {
-      const statusResponse = await getSmartIdSignatureStatus(mandateId, mockPrincipal);
+      const statusResponse = await getSmartIdSignatureStatus(mandateId);
 
       expect(statusResponse).toEqual(mockStatusResponse);
       expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith(
-        mockPrincipal,
         expect.stringContaining(`/v1/mandates/${mandateId}/signature/smartId/status`),
         undefined,
       );
@@ -558,11 +588,10 @@ describe('API calls', () => {
     });
 
     it('retrieves the ID card signature hash correctly', async () => {
-      const hash = await getIdCardSignatureHash(mandateId, certificateHex, mockPrincipal);
+      const hash = await getIdCardSignatureHash(mandateId, certificateHex);
 
       expect(hash).toEqual(mockResponse.hash);
       expect(mockHttp.putWithAuthentication).toHaveBeenCalledWith(
-        mockPrincipal,
         expect.stringContaining(`/v1/mandates/${mandateId}/signature/idCard`),
         { clientCertificate: certificateHex },
       );
@@ -580,11 +609,10 @@ describe('API calls', () => {
     });
 
     it('retrieves the ID card signature status correctly', async () => {
-      const statusCode = await getIdCardSignatureStatus(mandateId, signedHash, mockPrincipal);
+      const statusCode = await getIdCardSignatureStatus(mandateId, signedHash);
 
       expect(statusCode).toEqual(mockResponse.statusCode);
       expect(mockHttp.putWithAuthentication).toHaveBeenCalledWith(
-        mockPrincipal,
         expect.stringContaining(`/v1/mandates/${mandateId}/signature/idCard/status`),
         { signedHash },
       );
@@ -617,14 +645,10 @@ describe('API calls', () => {
     });
 
     it('updates the user correctly', async () => {
-      const updatedUser = await updateUserWithToken(mockUser, mockPrincipal);
+      const updatedUser = await updateUserWithToken(mockUser);
 
       expect(updatedUser).toEqual(mockUser);
-      expect(mockHttp.patchWithAuthentication).toHaveBeenCalledWith(
-        mockPrincipal,
-        '/v1/me',
-        mockUser,
-      );
+      expect(mockHttp.patchWithAuthentication).toHaveBeenCalledWith('/v1/me', mockUser);
     });
 
     it('updates the user and verifies returned data integrity', async () => {
@@ -632,13 +656,9 @@ describe('API calls', () => {
       const updatedUser = { ...userToUpdate, id: 'user-123' };
       mockHttp.patchWithAuthentication.mockResolvedValueOnce(updatedUser);
 
-      const result = await updateUserWithToken(userToUpdate, mockPrincipal);
+      const result = await updateUserWithToken(userToUpdate);
       expect(result).toEqual(updatedUser);
-      expect(mockHttp.patchWithAuthentication).toHaveBeenCalledWith(
-        mockPrincipal,
-        '/v1/me',
-        userToUpdate,
-      );
+      expect(mockHttp.patchWithAuthentication).toHaveBeenCalledWith('/v1/me', userToUpdate);
     });
   });
 
@@ -675,14 +695,10 @@ describe('API calls', () => {
     });
 
     it('retrieves user conversion correctly', async () => {
-      const conversion = await getUserConversionWithToken(mockPrincipal);
+      const conversion = await getUserConversionWithToken();
 
       expect(conversion).toEqual(mockConversion);
-      expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith(
-        mockPrincipal,
-        '/v1/me/conversion',
-        undefined,
-      );
+      expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith('/v1/me/conversion', undefined);
     });
   });
 
@@ -703,14 +719,10 @@ describe('API calls', () => {
     });
 
     it('retrieves initial capital correctly', async () => {
-      const capital = await getInitialCapitalWithToken(mockPrincipal);
+      const capital = await getInitialCapitalWithToken();
 
       expect(capital).toEqual(mockCapital);
-      expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith(
-        mockPrincipal,
-        '/v1/me/capital',
-        undefined,
-      );
+      expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith('/v1/me/capital', undefined);
     });
   });
 
@@ -726,10 +738,10 @@ describe('API calls', () => {
     });
 
     it('creates an AML check correctly', async () => {
-      const amlCheck = await createAmlCheck('ID_DOCUMENT', true, {}, mockPrincipal);
+      const amlCheck = await createAmlCheck('ID_DOCUMENT', true, {});
 
       expect(amlCheck).toEqual(mockAmlCheck);
-      expect(mockHttp.postWithAuthentication).toHaveBeenCalledWith(mockPrincipal, '/v1/amlchecks', {
+      expect(mockHttp.postWithAuthentication).toHaveBeenCalledWith('/v1/amlchecks', {
         type: 'ID_DOCUMENT',
         success: true,
         metadata: {},
@@ -746,14 +758,10 @@ describe('API calls', () => {
     });
 
     it('retrieves missing AML checks correctly', async () => {
-      const amlChecks = await getMissingAmlChecks(mockPrincipal);
+      const amlChecks = await getMissingAmlChecks();
 
       expect(amlChecks).toEqual(mockAmlChecks);
-      expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith(
-        mockPrincipal,
-        '/v1/amlchecks',
-        undefined,
-      );
+      expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith('/v1/amlchecks', undefined);
     });
   });
 
@@ -776,10 +784,10 @@ describe('API calls', () => {
     });
 
     it('retrieves funds correctly', async () => {
-      const funds = await getFunds(mockPrincipal);
+      const funds = await getFunds();
 
       expect(funds).toEqual(mockFunds);
-      expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith(mockPrincipal, '/v1/funds');
+      expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith('/v1/funds');
     });
   });
 
@@ -812,14 +820,12 @@ describe('API calls', () => {
     });
 
     it('retrieves pending applications correctly', async () => {
-      const applications = await getPendingApplications(mockPrincipal);
+      const applications = await getPendingApplications();
 
       expect(applications).toEqual(mockApplications);
-      expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith(
-        mockPrincipal,
-        '/v1/applications',
-        { status: 'PENDING' },
-      );
+      expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith('/v1/applications', {
+        status: 'PENDING',
+      });
     });
   });
 
@@ -840,14 +846,10 @@ describe('API calls', () => {
     });
 
     it('retrieves transactions correctly', async () => {
-      const transactions = await getTransactions(mockPrincipal);
+      const transactions = await getTransactions();
 
       expect(transactions).toEqual(mockTransactions);
-      expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith(
-        mockPrincipal,
-        '/v1/transactions',
-        undefined,
-      );
+      expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith('/v1/transactions', undefined);
     });
   });
 
@@ -862,14 +864,10 @@ describe('API calls', () => {
     });
 
     it('retrieves contributions correctly', async () => {
-      const contributions = await getContributions(mockPrincipal);
+      const contributions = await getContributions();
 
       expect(contributions).toEqual(mockContributions);
-      expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith(
-        mockPrincipal,
-        '/v1/contributions',
-        undefined,
-      );
+      expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith('/v1/contributions', undefined);
     });
   });
 
@@ -892,11 +890,10 @@ describe('API calls', () => {
     });
 
     it('retrieves mandate deadlines correctly', async () => {
-      const mandateDeadlines = await getMandateDeadlines(mockPrincipal);
+      const mandateDeadlines = await getMandateDeadlines();
 
       expect(mandateDeadlines).toEqual(mockMandateDeadlines);
       expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith(
-        mockPrincipal,
         '/v1/mandate-deadlines',
         undefined,
       );
@@ -913,11 +910,10 @@ describe('API calls', () => {
     });
 
     it('creates application cancellation correctly', async () => {
-      const cancellationMandate = await createApplicationCancellation(applicationId, mockPrincipal);
+      const cancellationMandate = await createApplicationCancellation(applicationId);
 
       expect(cancellationMandate).toEqual(mockCancellationMandate);
       expect(mockHttp.postWithAuthentication).toHaveBeenCalledWith(
-        mockPrincipal,
         `/v1/applications/${applicationId}/cancellations`,
         {},
       );
@@ -934,10 +930,10 @@ describe('API calls', () => {
     });
 
     it('creates a tracked event correctly', async () => {
-      const trackedEvent = await createTrackedEvent(eventType, eventData, mockPrincipal);
+      const trackedEvent = await createTrackedEvent(eventType, eventData);
 
       expect(trackedEvent).toEqual({ type: eventType, data: eventData });
-      expect(mockHttp.postWithAuthentication).toHaveBeenCalledWith(mockPrincipal, '/v1/t', {
+      expect(mockHttp.postWithAuthentication).toHaveBeenCalledWith('/v1/t', {
         type: eventType,
         data: eventData,
       });
@@ -960,14 +956,10 @@ describe('API calls', () => {
     });
 
     it('retrieves payment link correctly', async () => {
-      const paymentLink = await getPaymentLink(mockPayment, mockPrincipal);
+      const paymentLink = await getPaymentLink(mockPayment);
 
       expect(paymentLink).toEqual(mockPaymentLink);
-      expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith(
-        mockPrincipal,
-        '/v1/payments/link',
-        mockPayment,
-      );
+      expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith('/v1/payments/link', mockPayment);
     });
   });
 
@@ -1015,31 +1007,23 @@ describe('API calls', () => {
 
     it('redirects to payment link for non-recurring payments', async () => {
       mockPayment.type = PaymentType.SINGLE;
-      redirectToPayment(mockPayment, mockPrincipal);
+      redirectToPayment(mockPayment);
 
       // Use setTimeout as an alternative to setImmediate
       await new Promise((resolve) => setTimeout(resolve, 0));
 
-      expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith(
-        mockPrincipal,
-        expect.any(String),
-        mockPayment,
-      );
+      expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith(expect.any(String), mockPayment);
       expect(replaceSpy).toHaveBeenCalledWith(mockPaymentLink.url);
       expect(openSpy).not.toHaveBeenCalled();
     });
 
     it('opens a new window for recurring payments and writes "Loading..."', async () => {
       mockPayment.type = PaymentType.RECURRING;
-      redirectToPayment(mockPayment, mockPrincipal);
+      redirectToPayment(mockPayment);
 
       await new Promise((resolve) => setTimeout(resolve, 0));
 
-      expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith(
-        mockPrincipal,
-        expect.any(String),
-        mockPayment,
-      );
+      expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith(expect.any(String), mockPayment);
 
       expect(window.open).toHaveBeenCalled();
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment

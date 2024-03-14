@@ -32,7 +32,7 @@ import { api } from '../common';
 
 import { ID_CARD_LOGIN_START_FAILED_ERROR } from '../common/errorAlert/ErrorAlert';
 
-import { withUpdatableAuthenticationPrincipal } from '../common/updatableAuthenticationPrincipal';
+import { getAuthentication } from '../common/authenticationManager';
 
 const POLL_DELAY = 1000;
 let timeout;
@@ -62,7 +62,7 @@ function setCookie(name, value) {
 }
 
 function setLoginCookies(getState) {
-  setCookie(LOGIN_COOKIE_AUTHENTICATION_PRINCIPAL_NAME, getState().login.authenticationPrincipal);
+  setCookie(LOGIN_COOKIE_AUTHENTICATION_PRINCIPAL_NAME, getAuthentication());
   setCookie(LOGIN_COOKIE_EMAIL_NAME, getState().login.email);
 }
 
@@ -267,12 +267,10 @@ export function cancelMobileAuthentication() {
 }
 
 export function getUser() {
-  return (dispatch, getState) => {
+  return (dispatch) => {
     dispatch({ type: GET_USER_START });
     return api
-      .getUserWithToken(
-        withUpdatableAuthenticationPrincipal(getState().login.authenticationPrincipal, dispatch),
-      )
+      .getUserWithToken()
       .then((user) => {
         if (process.env.NODE_ENV === 'production') {
           Sentry.configureScope((scope) => {
@@ -293,12 +291,10 @@ export function getUser() {
 }
 
 export function getUserConversion() {
-  return async (dispatch, getState) => {
+  return async (dispatch) => {
     dispatch({ type: GET_USER_CONVERSION_START });
     try {
-      const userConversion = await api.getUserConversionWithToken(
-        withUpdatableAuthenticationPrincipal(getState().login.authenticationPrincipal, dispatch),
-      );
+      const userConversion = await api.getUserConversionWithToken();
       dispatch({ type: GET_USER_CONVERSION_SUCCESS, userConversion });
     } catch (error) {
       dispatch({ type: GET_USER_CONVERSION_ERROR, error });
@@ -307,22 +303,17 @@ export function getUserConversion() {
 }
 
 export function logOut() {
-  return (dispatch, getState) => {
+  return (dispatch) => {
     if (process.env.NODE_ENV === 'production') {
       Sentry.configureScope((scope) => {
         scope.clear();
       });
     }
-    return api
-      .logout(
-        withUpdatableAuthenticationPrincipal(getState().login.authenticationPrincipal, dispatch),
-      )
-      .then(() => {
-        dispatch({ type: LOG_OUT });
-      });
+    return api.logout().then(() => {
+      dispatch({ type: LOG_OUT });
+    });
   };
 }
-
 export function setLoginToRedirect() {
   return { type: SET_LOGIN_TO_REDIRECT };
 }

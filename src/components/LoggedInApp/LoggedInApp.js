@@ -34,6 +34,7 @@ import BackToPartner from '../flows/partner/BackToPartner';
 import ThirdPillarPaymentPage from '../flows/thirdPillar/ThirdPillarPayment/ThirdPillarPaymentPage';
 import DevSidebar from '../dev/DevSidebar';
 import Success from '../flows/secondPillar/success';
+import { getAuthentication } from '../common/authenticationManager';
 
 export const ACCOUNT_PATH = '/account';
 export const AML_PATH = '/aml';
@@ -160,12 +161,12 @@ const mapStateToProps = (state) => ({
   hasError: !!(state.login.userConversionError || state.login.userError),
   loading: state.login.loadingUser || state.login.loadingUserConversion,
   shouldLoadAllUserData:
-    state.login.authenticationPrincipal?.accessToken &&
+    getAuthentication().isAuthenticated() &&
     (!(state.login.user || state.login.loadingUser) ||
       !(state.login.userConversion || state.login.loadingUserConversion) ||
       !(state.aml.missingAmlChecks || state.aml.loading)),
   shouldLoadSourceAndTargetFunds:
-    state.login.authenticationPrincipal?.accessToken &&
+    getAuthentication().isAuthenticated() &&
     !(
       state.exchange.sourceFunds ||
       state.exchange.loadingSourceFunds ||
@@ -180,7 +181,7 @@ const mapDispatchToProps = (dispatch) =>
       onLogout: loginActions.logOut,
       onGetUserConversion: loginActions.getUserConversion,
       onGetUser: loginActions.getUser,
-      onGetSourceFunds: exchangeActions.getSourceFunds,
+      onGetSourceFunds: exchangeActions.getAllSourceFunds,
       onGetTargetFunds: exchangeActions.getTargetFunds,
       onGetAmlChecks: amlActions.getAmlChecks,
     },
