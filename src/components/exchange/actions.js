@@ -309,6 +309,7 @@ export function signMandate(mandate, amlChecks) {
     const { loginMethod } = getAuthentication();
     const loggedInWithMobileId = loginMethod === 'MOBILE_ID';
     const loggedInWithSmartId = loginMethod === 'SMART_ID';
+    const loggedInWithIdCard = loginMethod === 'ID_CARD';
     return dispatch(amlActions.createAmlChecks(amlChecks))
       .then(() => {
         if (loggedInWithMobileId) {
@@ -317,7 +318,10 @@ export function signMandate(mandate, amlChecks) {
         if (loggedInWithSmartId) {
           return dispatch(signMandateWithSmartId(mandate));
         }
-        return dispatch(signMandateWithIdCard(mandate));
+        if (loggedInWithIdCard) {
+          return dispatch(signMandateWithIdCard(mandate));
+        }
+        throw new Error(`Invalid login method: ${loginMethod}`);
       })
       .catch((error) => {
         handleSaveMandateError(dispatch, error);

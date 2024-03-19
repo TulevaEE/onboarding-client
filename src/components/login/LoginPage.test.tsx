@@ -15,13 +15,7 @@ import {
   mobileIdAuthenticationBackend,
   idCardAuthenticationBackend,
 } from '../../test/backend';
-
-import * as authenticationManager from '../common/authenticationManager';
-
-jest.mock('../common/authenticationManager', () => ({
-  getAuthentication: jest.fn(),
-  restoreAuthenticationFromSession: jest.fn(),
-}));
+import { getAuthentication } from '../common/authenticationManager';
 
 jest.unmock('react-intl');
 
@@ -43,8 +37,8 @@ describe('When a user is logging in', () => {
     );
   }
   beforeEach(() => {
-    mockNonAuthenticated();
     initializeConfiguration();
+    getAuthentication().remove();
     initializeComponent();
     act(() => {
       history.push('/login');
@@ -65,7 +59,6 @@ describe('When a user is logging in', () => {
     userEvent.click(screen.getByText(/Log in$/gi));
     expect(await screen.findByText('1928')).toBeInTheDocument();
     backend.resolvePolling();
-    mockIsAuthenticated();
     expect(
       await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
     ).toBeInTheDocument();
@@ -86,7 +79,6 @@ describe('When a user is logging in', () => {
     userEvent.click(screen.getByText(/Log in$/gi));
     expect(await screen.findByText('4321')).toBeInTheDocument();
     backend.resolvePolling();
-    mockIsAuthenticated();
     expect(
       await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
     ).toBeInTheDocument();
@@ -99,7 +91,6 @@ describe('When a user is logging in', () => {
     expect(await screen.findByText('Log in')).toBeInTheDocument();
     userEvent.click(screen.getByText(/ID-card/gi));
     userEvent.click(screen.getByText(/Log in$/gi));
-    mockIsAuthenticated();
 
     expect(
       await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
@@ -108,19 +99,3 @@ describe('When a user is logging in', () => {
     expect(backend.authenticatedWithIdCard).toBeTruthy();
   });
 });
-
-function mockIsAuthenticated() {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  authenticationManager.getAuthentication.mockImplementation(() => ({
-    isAuthenticated: () => true,
-  }));
-}
-
-function mockNonAuthenticated() {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  authenticationManager.getAuthentication.mockImplementation(() => ({
-    isAuthenticated: () => false,
-  }));
-}

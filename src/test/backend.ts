@@ -2,6 +2,7 @@ import { DefaultRequestMultipartBody, rest } from 'msw';
 import { SetupServerApi } from 'msw/node';
 import queryString from 'qs';
 import { FundBalance, FundStatus } from '../components/common/apiModels';
+import { anAuthenticationManager } from '../components/common/authenticationManagerFixture';
 
 export function cancellationBackend(server: SetupServerApi): {
   cancellationCreated: boolean;
@@ -211,6 +212,20 @@ export function idCardAuthenticationBackend(server: SetupServerApi): {
     }),
   );
   return backend;
+}
+
+export function partnerAuthenticationBackend(server: SetupServerApi): void {
+  server.use(
+    rest.post('http://localhost/oauth/token', (req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json({
+          access_token: anAuthenticationManager().accessToken,
+          refresh_token: anAuthenticationManager().refreshToken,
+        }),
+      );
+    }),
+  );
 }
 
 export function userBackend(server: SetupServerApi, overrides = {}): void {
