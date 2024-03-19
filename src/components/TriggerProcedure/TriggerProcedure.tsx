@@ -10,6 +10,7 @@ import { MOBILE_AUTHENTICATION_SUCCESS } from '../login/constants';
 import { finish, init, parseJwt } from './utils';
 
 import './TriggerProcedure.scss';
+import { getAuthentication } from '../common/authenticationManager';
 
 export const TriggerProcedure: React.FC = () => {
   const intl = useIntl();
@@ -35,6 +36,12 @@ export const TriggerProcedure: React.FC = () => {
             tokens: token,
             method: parseJwt(handoverToken).signingMethod,
             provider,
+          });
+
+          getAuthentication().update({
+            accessToken: token.accessToken,
+            refreshToken: token.refreshToken,
+            loginMethod: parseJwt(handoverToken).signingMethod,
           });
 
           setMessage(`Redirecting to ${path}`);
