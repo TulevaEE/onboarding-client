@@ -7,22 +7,22 @@ import Euro from '../../common/Euro';
 
 describe('Member capital', () => {
   let component;
-  it('passes data only by existence to table', () => {
+  it('passes data to table', () => {
     component = shallow(<MemberCapital />);
 
-    expect(passedDataKeys()).toStrictEqual([]);
+    expect(passedDataKeys()).toStrictEqual(['bonus']);
   });
 
   it('passes work compensation to table when exists', () => {
     component = shallow(<MemberCapital value={{ workCompensation: 123 }} />);
 
-    expect(passedDataKeys()).toStrictEqual(['work']);
+    expect(passedDataKeys()).toStrictEqual(['bonus', 'work']);
   });
 
   it('passes unvested work compensation to table when exists', () => {
     component = shallow(<MemberCapital value={{ unvestedWorkCompensation: 123 }} />);
 
-    expect(passedDataKeys()).toStrictEqual(['unvestedWork']);
+    expect(passedDataKeys()).toStrictEqual(['bonus', 'unvestedWork']);
   });
 
   it('passes total sum of capital as column footer', () => {
