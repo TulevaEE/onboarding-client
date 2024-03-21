@@ -50,30 +50,26 @@ const MemberCapital = ({
           },
         ]
       : []),
-    ...(membershipBonus
-      ? [
-          {
-            source: (
-              <FormattedMessage
-                id="memberCapital.source.membershipBonus"
-                values={{
-                  a: (chunks) => (
-                    <a
-                      target="_blank"
-                      rel="noreferrer"
-                      href={formatMessage({ id: 'memberCapital.source.membershipBonus.link' })}
-                    >
-                      {chunks}
-                    </a>
-                  ),
-                }}
-              />
+    {
+      source: (
+        <FormattedMessage
+          id="memberCapital.source.membershipBonus"
+          values={{
+            a: (chunks) => (
+              <a
+                target="_blank"
+                rel="noreferrer"
+                href={formatMessage({ id: 'memberCapital.source.membershipBonus.link' })}
+              >
+                {chunks}
+              </a>
             ),
-            value: <Euro amount={membershipBonus} />,
-            key: 'bonus',
-          },
-        ]
-      : []),
+          }}
+        />
+      ),
+      value: <Euro amount={membershipBonus} />,
+      key: 'bonus',
+    },
     ...(workCompensation
       ? [
           {
