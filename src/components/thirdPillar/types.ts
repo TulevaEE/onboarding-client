@@ -7,6 +7,7 @@ export type ThirdPillar = {
   loadingTargetFunds: boolean;
   exchangeableSourceFunds: Fund[];
   targetFunds: Fund[];
+  funds: Fund[] | null;
   selectedFutureContributionsFundIsin: string;
   exchangeExistingUnits: boolean;
   agreedToTerms: boolean;

@@ -2,11 +2,11 @@ import { Fund, SourceFund } from '../common/apiModels';
 
 export type Exchange = {
   loadingPensionData: boolean;
-  sourceFunds: SourceFund[];
+  sourceFunds: SourceFund[] | null;
   loadingSourceFunds: boolean;
   sourceSelection: SourceSelection[];
   sourceSelectionExact: boolean;
-  targetFunds: Fund[];
+  targetFunds: Fund[] | null;
   loadingTargetFunds: boolean;
   selectedFutureContributionsFundIsin: string;
   error: string;

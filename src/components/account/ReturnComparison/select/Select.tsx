@@ -4,6 +4,7 @@ import { useIntl } from 'react-intl';
 interface Option {
   value: string;
   label: string;
+  disabled?: boolean;
 }
 
 interface SelectProps {
@@ -34,8 +35,9 @@ export const Select: FC<SelectProps> = ({
       value={selected}
       disabled={disabled}
     >
-      {options.map(({ value, label }) => (
-        <option value={value} key={label}>
+      {/* eslint-disable-next-line @typescript-eslint/no-shadow */}
+      {options.map(({ value, label, disabled }) => (
+        <option value={value} key={label} disabled={disabled}>
           {getLabel(label)}
         </option>
       ))}

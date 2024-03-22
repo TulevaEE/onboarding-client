@@ -8,6 +8,7 @@ export default {
   loadingTargetFunds: false,
   exchangeableSourceFunds: null,
   targetFunds: [],
+  funds: null,
   selectedFutureContributionsFundIsin: TULEVA_3RD_PILLAR_FUND_ISIN,
   exchangeExistingUnits: true,
   agreedToTerms: false,

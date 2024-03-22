@@ -637,6 +637,8 @@ describe('API calls', () => {
       age: 40,
       retirementAge: 65,
       secondPillarPaymentRates: { current: 2, pending: 4 },
+      secondPillarOpenDate: '2020-01-01',
+      thirdPillarInitDate: '2021-01-01',
     };
 
     beforeEach(() => {
@@ -775,6 +777,7 @@ describe('API calls', () => {
         ongoingChargesFigure: 0.0047,
         fundManager: { name: 'Tuleva' },
         status: FundStatus.ACTIVE,
+        inceptionDate: '2017-01-01',
       },
     ];
 
@@ -807,6 +810,7 @@ describe('API calls', () => {
             ongoingChargesFigure: 0.0047,
             fundManager: { name: 'Tuleva' },
             status: FundStatus.ACTIVE,
+            inceptionDate: '2017-01-01',
           },
           exchanges: [],
           cancellationDeadline: '2020-02-01',

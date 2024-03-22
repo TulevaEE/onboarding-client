@@ -108,6 +108,7 @@ export interface Fund {
   ongoingChargesFigure: number;
   fundManager: FundManager;
   status: FundStatus;
+  inceptionDate: string;
 }
 
 export type Pillar = 2 | 3;
@@ -186,6 +187,8 @@ export interface User {
   age: number;
   retirementAge: number;
   secondPillarPaymentRates: PaymentRates;
+  secondPillarOpenDate: string;
+  thirdPillarInitDate: string;
 }
 
 export interface UserConversion {

@@ -16,7 +16,7 @@ import {
   SIGN_MANDATE_SUCCESS,
 } from '../exchange/constants';
 import { LOG_OUT } from '../login/constants';
-import { isThirdPillar, isTuleva } from '../common/utils';
+import { isActive, isThirdPillar, isTuleva } from '../common/utils';
 
 export default function thirdPillarReducer(state = initialState, action) {
   const { type, query, monthlyContribution } = action;
@@ -82,6 +82,7 @@ export default function thirdPillarReducer(state = initialState, action) {
       return {
         ...state,
         targetFunds: action.targetFunds.filter(isThirdPillar).filter(isTuleva),
+        funds: action.targetFunds.filter(isThirdPillar).filter(isActive),
         loadingTargetFunds: false,
         error: null,
       };

@@ -5,14 +5,13 @@ import { connect } from 'react-redux';
 import moment, { Moment } from 'moment';
 import Select from './select';
 import { getReturnComparison, Key, Return } from './api';
-import convertFundsToFundNameMap from './convertFundsToFundNameMap';
 import Euro from '../../common/Euro';
-import { isActive, isSecondPillar, isThirdPillar } from '../../common/utils';
-import { formatDateYear } from '../../common/dateFormatter';
 
 import styles from './ReturnComparison.module.scss';
 import { Shimmer } from '../../common/shimmer/Shimmer';
 import { getAuthentication } from '../../common/authenticationManager';
+import { Fund } from '../../common/apiModels';
+import { State } from '../../../types';
 
 interface Option {
   value: string;
@@ -20,13 +19,14 @@ interface Option {
 }
 
 interface Props {
-  fundNameMapSecondPillar: Record<string, string>;
-  fundNameMapThirdPillar: Record<string, string>;
+  secondPillarFunds: Fund[];
+  thirdPillarFunds: Fund[];
+  secondPillarOpenDate: string;
+  thirdPillarInitDate: string;
 }
 
-interface State {
+interface ReturnComparisonState {
   loading: boolean;
-  fromDateOptions: Option[];
   fromDate: string;
   selectedPersonalKey: Key;
   selectedFundKey: Key | string;
@@ -54,27 +54,8 @@ const formatAmount = (aReturn: Return | null): JSX.Element => {
 const LOADER = <Shimmer height={29} className={`${styles.returnComparisonShimmer}`} />;
 
 export const START_DATE = '2003-01-07';
-
-const format = (momentDate: Moment) => momentDate.format('YYYY-MM-DD');
-
-const twentyYearsAgo = format(moment().subtract(20, 'years'));
-const fifteenYearsAgo = format(moment().subtract(15, 'years'));
-const tenYearsAgo = format(moment().subtract(10, 'years'));
-const fiveYearsAgo = format(moment().subtract(5, 'years'));
-const threeYearsAgo = format(moment().subtract(3, 'years'));
-const twoYearsAgo = format(moment().subtract(2, 'years'));
-const oneYearAgo = format(moment().subtract(1, 'year'));
-
-export const dateOptions = [
-  { value: START_DATE, label: 'returnComparison.period.all' },
-  { value: twentyYearsAgo, label: 'returnComparison.period.twentyYears' },
-  { value: fifteenYearsAgo, label: 'returnComparison.period.fifteenYears' },
-  { value: tenYearsAgo, label: 'returnComparison.period.tenYears' },
-  { value: fiveYearsAgo, label: 'returnComparison.period.fiveYears' },
-  { value: threeYearsAgo, label: 'returnComparison.period.threeYears' },
-  { value: twoYearsAgo, label: 'returnComparison.period.twoYears' },
-  { value: oneYearAgo, label: 'returnComparison.period.oneYear' },
-];
+export const INCEPTION = '2017-04-27';
+export const THIRD_PILLAR_INCEPTION = '2019-10-14';
 
 function getReturnColor(aReturn: Return | null) {
   if (aReturn && aReturn.rate >= 0.07) {
@@ -86,10 +67,9 @@ function getReturnColor(aReturn: Return | null) {
   return 'text-danger';
 }
 
-export class ReturnComparison extends Component<Props, State> {
-  state: State = {
-    fromDateOptions: dateOptions,
-    fromDate: START_DATE,
+export class ReturnComparison extends Component<Props, ReturnComparisonState> {
+  state: ReturnComparisonState = {
+    fromDate: INCEPTION,
     loading: false,
     selectedPersonalKey: Key.SECOND_PILLAR,
     selectedFundKey: 'EE3600109435',
@@ -97,7 +77,7 @@ export class ReturnComparison extends Component<Props, State> {
     personalReturn: null,
     fundReturn: null,
     indexReturn: null,
-    from: START_DATE,
+    from: INCEPTION,
   };
 
   componentDidMount(): void {
@@ -106,18 +86,69 @@ export class ReturnComparison extends Component<Props, State> {
     }
   }
 
-  private getFundOptions(
-    fundNameMapSecondPillar: Record<string, string>,
-    fundNameMapThirdPillar: Record<string, string>,
-  ): Option[] {
+  private getFromDateOptions(): Option[] {
     const { selectedPersonalKey } = this.state;
+    const { secondPillarOpenDate, thirdPillarInitDate } = this.props;
 
-    const selectedPillarFundNameMap =
-      selectedPersonalKey === Key.SECOND_PILLAR ? fundNameMapSecondPillar : fundNameMapThirdPillar;
+    const format = (momentDate: Moment) => momentDate.format('YYYY-MM-DD');
 
-    const fundOptions = Object.entries(selectedPillarFundNameMap).map(([isin, fundName]) => ({
-      value: isin,
-      label: fundName || isin,
+    const referenceTime =
+      selectedPersonalKey === Key.SECOND_PILLAR ? secondPillarOpenDate : thirdPillarInitDate;
+    const referenceDate = format(moment(referenceTime));
+
+    const twentyYearsAgo = format(moment().subtract(20, 'years'));
+    const fifteenYearsAgo = format(moment().subtract(15, 'years'));
+    const tenYearsAgo = format(moment().subtract(10, 'years'));
+    const fiveYearsAgo = format(moment().subtract(5, 'years'));
+    const threeYearsAgo = format(moment().subtract(3, 'years'));
+    const twoYearsAgo = format(moment().subtract(2, 'years'));
+    const oneYearAgo = format(moment().subtract(1, 'year'));
+
+    const options = [
+      { value: referenceDate, label: 'returnComparison.period.all' },
+      ...(new Date(twentyYearsAgo) >= new Date(referenceDate)
+        ? [{ value: twentyYearsAgo, label: 'returnComparison.period.twentyYears' }]
+        : []),
+      ...(new Date(fifteenYearsAgo) >= new Date(referenceDate)
+        ? [{ value: fifteenYearsAgo, label: 'returnComparison.period.fifteenYears' }]
+        : []),
+      ...(new Date(tenYearsAgo) >= new Date(referenceDate)
+        ? [{ value: tenYearsAgo, label: 'returnComparison.period.tenYears' }]
+        : []),
+      ...(new Date(INCEPTION) >= new Date(referenceDate)
+        ? [{ value: INCEPTION, label: 'returnComparison.period.inception' }]
+        : []),
+      ...(new Date(THIRD_PILLAR_INCEPTION) >= new Date(referenceDate)
+        ? [{ value: THIRD_PILLAR_INCEPTION, label: 'returnComparison.period.thirdPillarInception' }]
+        : []),
+      ...(new Date(fiveYearsAgo) >= new Date(referenceDate)
+        ? [{ value: fiveYearsAgo, label: 'returnComparison.period.fiveYears' }]
+        : []),
+      ...(new Date(threeYearsAgo) >= new Date(referenceDate)
+        ? [{ value: threeYearsAgo, label: 'returnComparison.period.threeYears' }]
+        : []),
+      ...(new Date(twoYearsAgo) >= new Date(referenceDate)
+        ? [{ value: twoYearsAgo, label: 'returnComparison.period.twoYears' }]
+        : []),
+      ...(new Date(oneYearAgo) >= new Date(referenceDate)
+        ? [{ value: oneYearAgo, label: 'returnComparison.period.oneYear' }]
+        : []),
+    ];
+
+    return options.sort((option1, option2) => option1.value.localeCompare(option2.value));
+  }
+
+  private getFundOptions(): Option[] {
+    const { selectedPersonalKey, fromDate } = this.state;
+    const { secondPillarFunds, thirdPillarFunds } = this.props;
+
+    const selectedPillarFunds =
+      selectedPersonalKey === Key.SECOND_PILLAR ? secondPillarFunds : thirdPillarFunds;
+
+    const fundOptions = selectedPillarFunds.map((fund) => ({
+      value: fund.isin,
+      label: fund.name || fund.isin,
+      disabled: new Date(fund.inceptionDate) > new Date(fromDate),
     }));
 
     fundOptions.sort((option1, option2) => option1.label.localeCompare(option2.label));
@@ -125,12 +156,32 @@ export class ReturnComparison extends Component<Props, State> {
     return fundOptions;
   }
 
+  private refreshFromDate(callback: () => void) {
+    const { selectedPersonalKey, fromDate } = this.state;
+    const secondPillarFromDate = new Date(fromDate) >= new Date(INCEPTION) ? fromDate : INCEPTION;
+    const thirdPillarFromDate =
+      new Date(fromDate) >= new Date(THIRD_PILLAR_INCEPTION) ? fromDate : THIRD_PILLAR_INCEPTION;
+
+    this.setState(
+      {
+        fromDate:
+          selectedPersonalKey === Key.SECOND_PILLAR ? secondPillarFromDate : thirdPillarFromDate,
+      },
+      callback,
+    );
+  }
+
   private refreshFundOptionsAndLoadReturns() {
-    const { selectedPersonalKey } = this.state;
+    const { selectedPersonalKey, fromDate } = this.state;
+    const secondPillarFund =
+      new Date(fromDate) >= new Date(INCEPTION) ? 'EE3600109435' : 'EE3600019832';
+    const thirdPillarFund =
+      new Date(fromDate) >= new Date(THIRD_PILLAR_INCEPTION) ? 'EE3600001707' : 'EE3600010294';
+
     this.setState(
       {
         selectedFundKey:
-          selectedPersonalKey === Key.SECOND_PILLAR ? 'EE3600109435' : 'EE3600001707',
+          selectedPersonalKey === Key.SECOND_PILLAR ? secondPillarFund : thirdPillarFund,
       },
       () => {
         this.loadReturns();
@@ -169,10 +220,8 @@ export class ReturnComparison extends Component<Props, State> {
   }
 
   render(): JSX.Element {
-    const { fundNameMapSecondPillar, fundNameMapThirdPillar } = this.props;
     const {
       loading,
-      fromDateOptions,
       fromDate,
       selectedPersonalKey,
       selectedFundKey,
@@ -182,26 +231,23 @@ export class ReturnComparison extends Component<Props, State> {
       indexReturn,
       from,
     } = this.state;
-    const fundOptions = this.getFundOptions(fundNameMapSecondPillar, fundNameMapThirdPillar);
-
+    const fundOptions = this.getFundOptions();
+    const fromDateOptions = this.getFromDateOptions();
     return (
       <div className="mt-5">
         <div className="row mb-2">
-          <div className="col-md-8">
+          <div className="col-xl-6">
             <p className="mt-1 lead">
-              <FormattedMessage
-                id="returnComparison.title"
-                values={{ fromDate: from ? formatDateYear(from) : '' }}
-              />
+              <FormattedMessage id="returnComparison.title" />
             </p>
           </div>
-          <div className="col-md-4 text-md-right">
+          <div className="col-xl-6 text-md-right">
             <Select
               options={fromDateOptions}
               selected={fromDate}
               onChange={(date: string): void => {
                 this.setState({ fromDate: date }, () => {
-                  this.loadReturns();
+                  this.refreshFundOptionsAndLoadReturns();
                 });
               }}
             />
@@ -222,7 +268,9 @@ export class ReturnComparison extends Component<Props, State> {
                 selected={selectedPersonalKey}
                 onChange={(key: string) => {
                   this.setState({ selectedPersonalKey: Key[key as keyof typeof Key] }, () => {
-                    this.refreshFundOptionsAndLoadReturns();
+                    this.refreshFromDate(() => {
+                      this.refreshFundOptionsAndLoadReturns();
+                    });
                   });
                 }}
               />
@@ -323,18 +371,11 @@ export class ReturnComparison extends Component<Props, State> {
   }
 }
 
-const mapStateToProps = (state: {
-  exchange: { targetFunds: Record<string, string>[]; funds: Record<string, string>[] };
-}): {
-  fundNameMapSecondPillar: Record<string, string>;
-  fundNameMapThirdPillar: Record<string, string>;
-} => ({
-  fundNameMapSecondPillar: convertFundsToFundNameMap(
-    state.exchange.funds?.filter(isSecondPillar).filter(isActive),
-  ),
-  fundNameMapThirdPillar: convertFundsToFundNameMap(
-    state.exchange.funds?.filter(isThirdPillar).filter(isActive),
-  ),
+const mapStateToProps = (state: State): Props => ({
+  secondPillarFunds: state.exchange.targetFunds || [],
+  thirdPillarFunds: state.thirdPillar.funds || [],
+  secondPillarOpenDate: state.login.user ? state.login.user.secondPillarOpenDate : INCEPTION,
+  thirdPillarInitDate: state.login.user ? state.login.user.thirdPillarInitDate : INCEPTION,
 });
 
 export default connect(mapStateToProps, null, null, { forwardRef: true })(ReturnComparison);

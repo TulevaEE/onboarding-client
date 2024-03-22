@@ -40,7 +40,6 @@ const initialState = {
   sourceSelection: [],
   sourceSelectionExact: false,
   targetFunds: null,
-  funds: null,
   loadingTargetFunds: false,
   selectedFutureContributionsFundIsin: null,
   error: null,
@@ -157,7 +156,6 @@ export default function exchangeReducer(state = initialState, action) {
       return {
         ...state,
         loadingTargetFunds: false,
-        funds: action.targetFunds,
         targetFunds: secondPillarTargetFunds,
         selectedFutureContributionsFundIsin: selectDefaultContributionsFund(
           secondPillarTargetFunds,

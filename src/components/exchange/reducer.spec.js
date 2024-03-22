@@ -200,7 +200,6 @@ describe('Exchange reducer', () => {
     };
     const newState = exchangeReducer({ loadingTargetFunds: true }, action);
     expect(newState.targetFunds).toEqual(targetFunds);
-    expect(newState.funds).toEqual(fundsFromBothPillarsAndAllStates);
     expect(newState.loadingTargetFunds).toBe(false);
   });
 
