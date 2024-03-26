@@ -1,5 +1,4 @@
 import { useMutation, UseMutationResult, useQuery, UseQueryResult } from 'react-query';
-// import { useDispatch, useSelector } from 'react-redux';
 
 import {
   createApplicationCancellation,
