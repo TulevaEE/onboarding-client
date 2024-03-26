@@ -95,6 +95,7 @@ export class ReturnComparison extends Component<Props, ReturnComparisonState> {
     const referenceTime =
       selectedPersonalKey === Key.SECOND_PILLAR ? secondPillarOpenDate : thirdPillarInitDate;
     const referenceDate = format(moment(referenceTime));
+    const beginning = new Date(START_DATE) >= new Date(referenceDate) ? START_DATE : referenceDate;
 
     const twentyYearsAgo = format(moment().subtract(20, 'years'));
     const fifteenYearsAgo = format(moment().subtract(15, 'years'));
@@ -105,7 +106,7 @@ export class ReturnComparison extends Component<Props, ReturnComparisonState> {
     const oneYearAgo = format(moment().subtract(1, 'year'));
 
     const options = [
-      { value: referenceDate, label: 'returnComparison.period.all' },
+      { value: beginning, label: 'returnComparison.period.all' },
       ...(new Date(twentyYearsAgo) >= new Date(referenceDate)
         ? [{ value: twentyYearsAgo, label: 'returnComparison.period.twentyYears' }]
         : []),
