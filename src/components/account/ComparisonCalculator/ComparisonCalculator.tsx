@@ -9,7 +9,9 @@ interface Option {
 
 const ComparisonCalculator: React.FC = () => {
   const [selectedOption, setSelectedOption] = useState<string>('option1');
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [barHeights, setBarHeights] = useState({ bar1: 120, bar2: 200 });
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [barColors, setBarColors] = useState({ bar1: 'orange', bar2: 'blue' });
 
   const getTimePeriodOptions = (): Option[] => {
@@ -31,6 +33,7 @@ const ComparisonCalculator: React.FC = () => {
   // Handling selection change with proper type for the event
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedOption(event.target.value);
+    // eslint-disable-next-line no-console
     console.log('Selected key:', event.target.value);
   };
 
