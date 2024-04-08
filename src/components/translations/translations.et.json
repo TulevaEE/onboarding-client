@@ -598,6 +598,21 @@
   "secondPillarPaymentRateSuccess.description": "Alates <b>{paymentRateFulfillmentDate}</b> panustad II sambasse <b>{paymentRate}%</b> brutopalgast.",
   "secondPillarPaymentRateSuccess.accountLink": "Minu konto",
 
+  "comparisonCalculator.timePeriod": "Ajaperioodil",
+  "comparisonCalculator.comparedTo": "Võrdluses",
+  "comparisonCalculator.yourIIpillar": "Sinu II sammas",
+  "comparisonCalculator.yourIIIpillar": "Sinu III sammas",
+  "comparisonCalculator.contentPerformance": "Sinu II sammas on viimase 20 aastaga <b>maailmaturu indeksi</b> tootlusele",
+  "comparisonCalculator.contentPerformanceNegativeVerdict": "alla jäänud.",
+  "comparisonCalculator.contentExplanation": "<b>Tuleva Maailma Aktsiate Pensionifond</b> järgib maailmaturu indeksit, st püüab saavutada sellega võimalikult sarnast pikaajalist tootlust.",
+  "comparisonCalculator.ctaButton" : "Too oma II sammas Tulevasse",
+  "comparisonCalculator.graphWorldMarketStockIndex" : "Maailmaturu indeks",
+  "comparisonCalculator.graphYourIIPillar" : "Sinu II sammas",
+  "comparisonCalculator.footerDisclaimer" : "Protsendid näitavad, kui palju on sinu II sammas keskmiselt igal aastal kasvanud. Eurod näitavad viimase 20 aasta kogukasvu.",
+  "comparisonCalculator.footerNumbersExplanationLink": "Mida need arvud näitavad?",
+  "comparisonCalculator.footerPerformanceExplanationLink": "Millist tootlust on Tulevas oodata?",
+
+
   "LHV Pensionifond XL": "LHV Pensionifond XL",
   "Tuleva Maailma Aktsiate Pensionifond": "Tuleva Maailma Aktsiate Pensionifond",
   "Tuleva Maailma Võlakirjade Pensionifond": "Tuleva Maailma Võlakirjade Pensionifond",

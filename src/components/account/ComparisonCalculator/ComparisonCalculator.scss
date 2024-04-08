@@ -1,0 +1,167 @@
+.comparison-calculator {
+
+  label {
+    // From Figma
+    overflow: hidden;
+    color: var(--Text-Primary, #212529);
+    text-overflow: ellipsis;
+
+    font-family: Roboto;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 142.85%;
+  }
+
+  .header-section {
+    padding: 24px;
+  }
+
+  .footer-section {
+    border-top: 1px solid var(--Blue-Border, #CAE0F1);
+    padding: 24px;
+
+    .footer-disclaimer {
+      color: var(--Text-Secondary, #6C757D);
+
+      /* Body S */
+      font-family: Roboto;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 142.85%; /* 19.999px */
+    }
+
+    .footer-links {
+
+    }
+  }
+
+
+  .content-section {
+    padding: 32px 24px;
+    border-top: 1px solid var(--Blue-Border, #CAE0F1);
+
+    .result-section {
+      flex-grow: 1;
+
+      .result-negative {
+        color: #d9534f;
+        font-weight: bold;
+      }
+
+      //.result-positive {
+      //  color: #5cb85c;
+      //  font-weight: bold;
+      //}
+
+      .result-text {
+        // From Figma
+
+        color: var(--Deep-Blue, #002F63);
+        font-family: Roboto;
+        font-size: 20px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 140%; /* 28px */
+      }
+
+    }
+
+    .graph-section {
+      .bar-container {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-around;
+        padding: 75px 20px 0px 20px;
+      }
+
+      .bar {
+        width: 100px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-family: Arial, sans-serif;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+      }
+
+      .bar-value {
+        position: absolute;
+
+        //From Figma
+        color: var(--Deep-Blue, #002F63);
+        text-align: center;
+
+        font-family: Roboto;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 150%;
+      }
+
+      .bar-graph {
+        height: 1px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .bar-percentage {
+        //From Figma
+        color: var(--White, #FFF);
+        text-align: center;
+        font-family: Roboto;
+        font-size: 24px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 100%; /* 24px */
+      }
+
+      .bar-1 {
+        margin-right: 10px;
+      }
+
+      .bar-2 {
+      }
+
+      .bar-label {
+        position: absolute;
+        bottom: -20px;
+        overflow: hidden;
+        color: var(--Deep-Blue, #002F63);
+        text-align: center;
+        text-overflow: ellipsis;
+        font-family: Roboto;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 125%; /* 17.5px */      }
+
+      .bottom-divider {
+        .gradient-left {
+          background: linear-gradient(90deg, rgba(0, 47, 99, 0.00) 0%, #002F63 100%);
+          width: 50px;
+        }
+
+        .gradient-center {
+          background: #002F63;
+        }
+
+        .gradient-right {
+          background: linear-gradient(90deg, #002F63 0%, rgba(0, 47, 99, 0.00) 100%);
+          width: 50px;
+        }
+
+        // Ensuring the height of the gradient is 1px
+        .row > div {
+          height: 1px;
+        }
+
+      }
+    }
+
+  }
+
+}
