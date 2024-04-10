@@ -126,7 +126,7 @@ const ComparisonCalculator: React.FC = () => {
           </div>
           <div className="graph-section col-md-5 order-1 order-md-2 d-flex flex-column mb-4">
             <div className="bar-container mt-5 d-flex">
-              <div className="col-5">
+              <div className="col-md-5  col-sm-6">
                 <div className="bar bar-1" style={{ backgroundColor: barColors.bar1 }}>
                   <div className="bar-value" style={{ bottom: `${barHeights.bar1 + 8 + 32}px` }}>
                     +14 800 €
@@ -139,7 +139,7 @@ const ComparisonCalculator: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <div className="col-5">
+              <div className="col-md-5 col-sm-6">
                 <div className="bar bar-2" style={{ backgroundColor: barColors.bar2 }}>
                   <div className="bar-value" style={{ bottom: `${barHeights.bar2 + 8 + 32}px` }}>
                     +25 500 €
