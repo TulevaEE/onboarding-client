@@ -51,8 +51,8 @@ const ComparisonCalculator: React.FC = () => {
               </button>
             </div>
           </div>
-          <div className="row justify-content-center mt-3">
-            <div className="col text-left">
+          <div className="row justify-content-center">
+            <div className="col-12 col-md text-left  mt-3">
               <label htmlFor="timePeriodSelect" className="form-label">
                 <FormattedMessage id="comparisonCalculator.timePeriod" />:{' '}
               </label>
@@ -69,7 +69,7 @@ const ComparisonCalculator: React.FC = () => {
                 ))}
               </select>
             </div>
-            <div className="col text-left">
+            <div className="col-12 col-md text-left  mt-3">
               <label htmlFor="comparedToSelect" className="form-label">
                 <FormattedMessage id="comparisonCalculator.comparedTo" />:{' '}
               </label>
@@ -89,7 +89,7 @@ const ComparisonCalculator: React.FC = () => {
           </div>
         </div>
         <div className="row justify-content-center content-section">
-          <div className="col-md-7 d-flex flex-column">
+          <div className="col-md-7 order-2 order-md-1 d-flex flex-column">
             <div className="result-section text-left pt-4 pb-0 d-flex flex-column justify-content-between">
               <div className="mb-3">
                 <p className="result-text">
@@ -124,7 +124,7 @@ const ComparisonCalculator: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="col-md-5 graph-section d-flex flex-column">
+          <div className="col-md-5 order-1 order-md-2 graph-section d-flex flex-column">
             <div className="bar-container">
               <div className="bar bar-1" style={{ backgroundColor: barColors.bar1 }}>
                 <div className="bar-value" style={{ bottom: `${barHeights.bar1 + 8 + 16}px` }}>
@@ -165,22 +165,28 @@ const ComparisonCalculator: React.FC = () => {
             <FormattedMessage id="comparisonCalculator.footerDisclaimer" />
           </div>
           <div className="footer-links pt-3">
-            <a
-              href="https://tuleva.ee/mida-need-numbrid-naitavad"
-              className="pr-2"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <FormattedMessage id="comparisonCalculator.footerNumbersExplanationLink" />
-            </a>
-            <a
-              href="https://tuleva.ee/analuusid/millist-tootlust-on-tulevas-oodata"
-              className="pl-2"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <FormattedMessage id="comparisonCalculator.footerPerformanceExplanationLink" />
-            </a>
+            <div className="row justify-content-center">
+              <div className="col-12 col-sm-6 col-md-auto">
+                <a
+                  href="https://tuleva.ee/mida-need-numbrid-naitavad"
+                  // className="pr-2"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <FormattedMessage id="comparisonCalculator.footerNumbersExplanationLink" />
+                </a>
+              </div>
+              <div className="col-12 col-sm-6 col-md-auto">
+                <a
+                  href="https://tuleva.ee/analuusid/millist-tootlust-on-tulevas-oodata"
+                  // className="pl-2"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <FormattedMessage id="comparisonCalculator.footerPerformanceExplanationLink" />
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </div>
