@@ -29,7 +29,7 @@ const ComparisonCalculator: React.FC = () => {
   const [selectedOption, setSelectedOption] = useState<string>('option1');
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [graphProperties, setGraphProperties] = useState<GraphProperties>({
-    barCount: 3,
+    barCount: 2,
     barProperties: {
       1: {
         color: 'orange',
@@ -204,14 +204,14 @@ const ComparisonCalculator: React.FC = () => {
     const handleMouseEnter = () => {
       setGraphProperties((prevState) => ({
         ...prevState,
-        barCount: 2,
+        barCount: 3,
       }));
     };
 
     const handleMouseLeave = () => {
       setGraphProperties((prevState) => ({
         ...prevState,
-        barCount: 3,
+        barCount: 2,
       }));
     };
     return (
