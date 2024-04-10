@@ -97,11 +97,9 @@
         display: flex;
         align-items: flex-end;
         justify-content: space-around;
-        padding: 75px 20px 0px 20px;
       }
 
       .bar {
-        width: 100px;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -144,15 +142,15 @@
       }
 
       .bar-1 {
-        margin-right: 10px;
       }
 
       .bar-2 {
       }
 
       .bar-label {
-        position: absolute;
-        bottom: -20px;
+        position: relative;
+        height: 35px; //to keep other elements in the column at the same height
+        bottom: -40px;
         overflow: hidden;
         color: var(--Deep-Blue, #002F63);
         text-align: center;

@@ -88,9 +88,9 @@ const ComparisonCalculator: React.FC = () => {
             </div>
           </div>
         </div>
-        <div className="row justify-content-center content-section">
+        <div className="content-section row justify-content-center">
           <div className="col-md-7 order-2 order-md-1 d-flex flex-column">
-            <div className="result-section text-left pt-4 pb-0 d-flex flex-column justify-content-between">
+            <div className="result-section text-left mt-5 pb-0 d-flex flex-column justify-content-between">
               <div className="mb-3">
                 <p className="result-text">
                   <FormattedMessage
@@ -124,28 +124,32 @@ const ComparisonCalculator: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="col-md-5 order-1 order-md-2 graph-section d-flex flex-column">
-            <div className="bar-container">
-              <div className="bar bar-1" style={{ backgroundColor: barColors.bar1 }}>
-                <div className="bar-value" style={{ bottom: `${barHeights.bar1 + 8 + 16}px` }}>
-                  +14 800 €
-                </div>
-                <div className="bar-graph" style={{ height: `${barHeights.bar1}px` }}>
-                  <div className="bar-percentage">5.7%</div>
-                </div>
-                <div className="bar-label">
-                  <FormattedMessage id="comparisonCalculator.graphYourIIPillar" />
+          <div className="graph-section col-md-5 order-1 order-md-2 d-flex flex-column mb-4">
+            <div className="bar-container mt-5 d-flex">
+              <div className="col-5">
+                <div className="bar bar-1" style={{ backgroundColor: barColors.bar1 }}>
+                  <div className="bar-value" style={{ bottom: `${barHeights.bar1 + 8 + 32}px` }}>
+                    +14 800 €
+                  </div>
+                  <div className="bar-graph" style={{ height: `${barHeights.bar1}px` }}>
+                    <div className="bar-percentage">5.7%</div>
+                  </div>
+                  <div className="bar-label">
+                    <FormattedMessage id="comparisonCalculator.graphYourIIPillar" />
+                  </div>
                 </div>
               </div>
-              <div className="bar bar-2" style={{ backgroundColor: barColors.bar2 }}>
-                <div className="bar-value" style={{ bottom: `${barHeights.bar2 + 8 + 16}px` }}>
-                  +25 500 €
-                </div>
-                <div className="bar-graph" style={{ height: `${barHeights.bar2}px` }}>
-                  <div className="bar-percentage">8.5%</div>
-                </div>
-                <div className="bar-label">
-                  <FormattedMessage id="comparisonCalculator.graphWorldMarketStockIndex" />
+              <div className="col-5">
+                <div className="bar bar-2" style={{ backgroundColor: barColors.bar2 }}>
+                  <div className="bar-value" style={{ bottom: `${barHeights.bar2 + 8 + 32}px` }}>
+                    +25 500 €
+                  </div>
+                  <div className="bar-graph" style={{ height: `${barHeights.bar2}px` }}>
+                    <div className="bar-percentage">8.5%</div>
+                  </div>
+                  <div className="bar-label">
+                    <FormattedMessage id="comparisonCalculator.graphWorldMarketStockIndex" />
+                  </div>
                 </div>
               </div>
             </div>
