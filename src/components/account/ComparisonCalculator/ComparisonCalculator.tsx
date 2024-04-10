@@ -1,18 +1,59 @@
 import React, { useState } from 'react';
 import './ComparisonCalculator.scss';
 import { FormattedMessage } from 'react-intl';
+import { formatAmountForCurrency } from '../../common/utils';
 
 interface Option {
   value: string;
   label: string;
 }
 
+interface GraphBarProperties {
+  color: string;
+  amount: number;
+  percentage: number;
+  height: number;
+  label: string;
+}
+
+interface GraphProperties {
+  barCount: 2 | 3;
+  barProperties: {
+    1: GraphBarProperties;
+    2: GraphBarProperties;
+    3: GraphBarProperties | undefined;
+  };
+}
+
 const ComparisonCalculator: React.FC = () => {
   const [selectedOption, setSelectedOption] = useState<string>('option1');
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [barHeights, setBarHeights] = useState({ bar1: 120, bar2: 200 });
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [barColors, setBarColors] = useState({ bar1: 'orange', bar2: 'blue' });
+  const [graphProperties, setGraphProperties] = useState<GraphProperties>({
+    barCount: 3,
+    barProperties: {
+      1: {
+        color: 'orange',
+        amount: 14800,
+        percentage: 5.7,
+        height: 120,
+        label: 'comparisonCalculator.graphYourIIPillar',
+      },
+      2: {
+        color: 'green',
+        amount: 24300,
+        percentage: 200,
+        height: 200,
+        label: 'Bank 2i',
+      },
+      3: {
+        color: 'blue',
+        amount: 21000,
+        percentage: 8.5,
+        height: 165,
+        label: 'comparisonCalculator.graphWorldMarketStockIndex',
+      },
+    },
+  });
 
   const getTimePeriodOptions = (): Option[] => {
     return [
@@ -30,7 +71,6 @@ const ComparisonCalculator: React.FC = () => {
     ];
   };
 
-  // Handling selection change with proper type for the event
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedOption(event.target.value);
     // eslint-disable-next-line no-console
@@ -124,45 +164,7 @@ const ComparisonCalculator: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="graph-section col-md-5 order-1 order-md-2 d-flex flex-column mb-4">
-            <div className="bar-container mt-5 d-flex">
-              <div className="col-md-5  col-sm-6">
-                <div className="bar bar-1" style={{ backgroundColor: barColors.bar1 }}>
-                  <div className="bar-value" style={{ bottom: `${barHeights.bar1 + 8 + 32}px` }}>
-                    +14 800 €
-                  </div>
-                  <div className="bar-graph" style={{ height: `${barHeights.bar1}px` }}>
-                    <div className="bar-percentage">5.7%</div>
-                  </div>
-                  <div className="bar-label">
-                    <FormattedMessage id="comparisonCalculator.graphYourIIPillar" />
-                  </div>
-                </div>
-              </div>
-              <div className="col-md-5 col-sm-6">
-                <div className="bar bar-2" style={{ backgroundColor: barColors.bar2 }}>
-                  <div className="bar-value" style={{ bottom: `${barHeights.bar2 + 8 + 32}px` }}>
-                    +25 500 €
-                  </div>
-                  <div className="bar-graph" style={{ height: `${barHeights.bar2}px` }}>
-                    <div className="bar-percentage">8.5%</div>
-                  </div>
-                  <div className="bar-label">
-                    <FormattedMessage id="comparisonCalculator.graphWorldMarketStockIndex" />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="bottom-divider">
-              <div className="container-fluid">
-                <div className="row">
-                  <div className="col-auto px-0 gradient-left" />
-                  <div className="col gradient-center" />
-                  <div className="col-auto px-0 gradient-right" />
-                </div>
-              </div>
-            </div>
-          </div>
+          {getGraphSection()}
         </div>
         <div className="footer-section text-center">
           <div className="footer-disclaimer">
@@ -196,6 +198,82 @@ const ComparisonCalculator: React.FC = () => {
       </div>
     </div>
   );
+
+  function getGraphSection() {
+    // convenience to see 2 vs 3 bars
+    const handleMouseEnter = () => {
+      setGraphProperties((prevState) => ({
+        ...prevState,
+        barCount: 2,
+      }));
+    };
+
+    const handleMouseLeave = () => {
+      setGraphProperties((prevState) => ({
+        ...prevState,
+        barCount: 3,
+      }));
+    };
+    return (
+      <div
+        className="graph-section col-md-5 order-1 order-md-2 d-flex flex-column mb-4"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        {getGraphBars()}
+        <div className="bottom-divider">
+          <div className="container-fluid">
+            <div className="row">
+              <div className="col-auto px-0 gradient-left" />
+              <div className="col gradient-center" />
+              <div className="col-auto px-0 gradient-right" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  function getGraphBars() {
+    if (graphProperties.barCount === 2) {
+      return (
+        <div className="bar-container mt-5 d-flex">
+          <div className="col-md-5 col-sm-6">{getGraphBar(graphProperties.barProperties['1'])}</div>
+          <div className="col-md-5 col-sm-6">{getGraphBar(graphProperties.barProperties['2'])}</div>
+        </div>
+      );
+    }
+    if (graphProperties.barCount === 3) {
+      return (
+        <div className="bar-container mt-5 d-flex">
+          <div className="col-4">{getGraphBar(graphProperties.barProperties['1'])}</div>
+          <div className="col-4">{getGraphBar(graphProperties.barProperties['2'])}</div>
+          {graphProperties.barProperties['3'] && (
+            <div className="col-4">{getGraphBar(graphProperties.barProperties['3'])}</div>
+          )}
+        </div>
+      );
+    }
+    return <div />;
+  }
+  function getGraphBar(properties: GraphBarProperties) {
+    // eslint-disable-next-line no-nested-ternary
+    const amountSign = properties.amount > 0 ? '+' : properties.amount < 0 ? '-' : '';
+    return (
+      <div className="bar bar-2" style={{ backgroundColor: properties.color }}>
+        <div className="bar-value" style={{ bottom: `${properties.height + 8 + 32}px` }}>
+          {amountSign}
+          {formatAmountForCurrency(properties.amount, 0)}
+        </div>
+        <div className="bar-graph" style={{ height: `${properties.height}px` }}>
+          <div className="bar-percentage">{properties.percentage}%</div>
+        </div>
+        <div className="bar-label">
+          <FormattedMessage id={properties.label} />
+        </div>
+      </div>
+    );
+  }
 };
 
 export default ComparisonCalculator;
