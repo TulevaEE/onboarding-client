@@ -12,6 +12,7 @@ import {
   START_DATE,
   THIRD_PILLAR_INCEPTION,
 } from '../ReturnComparison/ReturnComparison';
+import Loader from '../../common/loader';
 
 interface Option {
   value: string;
@@ -105,7 +106,13 @@ const ComparisonCalculator: React.FC = () => {
   };
 
   const getCompareToOptions = (): Option[] => {
-    return secondPillarFundsOptions;
+    if (selectedPillar === Key.SECOND_PILLAR) {
+      return secondPillarFundsOptions;
+    }
+    if (selectedPillar === Key.THIRD_PILLAR) {
+      return thirdPillarFundsOptions;
+    }
+    return [];
   };
 
   const isReady = (): boolean => {
@@ -240,7 +247,7 @@ const ComparisonCalculator: React.FC = () => {
           </div>
         </div>
       ) : (
-        <div />
+        <Loader className="align-middle" />
       )}
     </div>
   );
