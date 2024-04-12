@@ -612,6 +612,17 @@
   "comparisonCalculator.footerDisclaimer" : "Percentages show, how much has your II pillar on average grown per year. Euros show the last 20 year total growth.",
   "comparisonCalculator.footerNumbersExplanationLink": "What do these numbers mean?",
   "comparisonCalculator.footerPerformanceExplanationLink": "What returns to expect in Tuleva?",
+  "comparisonCalculator.period.all": "From the beginning",
+  "comparisonCalculator.period.twentyYears": "Last 20 years",
+  "comparisonCalculator.period.fifteenYears": "Last 15 years",
+  "comparisonCalculator.period.tenYears": "Last 10 years",
+  "comparisonCalculator.period.inception": "Since the inception of Tuleva II pillar funds (7 years)",
+  "comparisonCalculator.period.thirdPillarInception": "Since the inception of Tuleva III pillar fund (4 years)",
+  "comparisonCalculator.period.fiveYears": "Last 5 years",
+  "comparisonCalculator.period.threeYears": "Last 3 years",
+  "comparisonCalculator.period.twoYears": "Last 2 years",
+  "comparisonCalculator.period.oneYear": "Last year",
+
 
   "LHV Pensionifond XL": "Pension Fund LHV XL",
   "Tuleva Maailma Aktsiate Pensionifond": "Tuleva World Stocks Pension Fund",
