@@ -603,12 +603,13 @@
   "comparisonCalculator.comparedTo": "Compared to",
   "comparisonCalculator.yourIIpillar": "Your II pillar",
   "comparisonCalculator.yourIIIpillar": "Your III pillar",
-  "comparisonCalculator.contentPerformance": "Your II pillar during the past 20 years, in compared to <b>all world market index</b> has ",
+  "comparisonCalculator.contentPerformance": "Your II pillar during the past {years} years, in compared to <b>all world market index</b> has ",
   "comparisonCalculator.contentPerformanceNegativeVerdict": " underperformance.",
   "comparisonCalculator.contentExplanation": "<b>Tuleva World Stock Pensionfund</b> follows the world market index, meaning it endeavors to achieve the most similar long-term performance.",
   "comparisonCalculator.ctaButton" : "Bring your II pillar to Tuleva",
   "comparisonCalculator.graphWorldMarketStockIndex" : "World market index",
   "comparisonCalculator.graphYourIIPillar" : "Your II pillar",
+  "comparisonCalculator.graphYourIIIPillar" : "Your III pillar",
   "comparisonCalculator.footerDisclaimer" : "Percentages show, how much has your II pillar on average grown per year. Euros show the last 20 year total growth.",
   "comparisonCalculator.footerNumbersExplanationLink": "What do these numbers mean?",
   "comparisonCalculator.footerPerformanceExplanationLink": "What returns to expect in Tuleva?",
@@ -622,6 +623,8 @@
   "comparisonCalculator.period.threeYears": "Last 3 years",
   "comparisonCalculator.period.twoYears": "Last 2 years",
   "comparisonCalculator.period.oneYear": "Last year",
+  "comparisonCalculator.index.unionStockIndex": "World market return",
+
 
 
   "LHV Pensionifond XL": "Pension Fund LHV XL",

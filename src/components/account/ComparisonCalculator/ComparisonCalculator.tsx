@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import './ComparisonCalculator.scss';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import moment, { Moment } from 'moment/moment';
 import { formatAmountForCurrency } from '../../common/utils';
 import { Fund } from '../../common/apiModels';
 import Select from '../ReturnComparison/select';
-import { Key } from '../ReturnComparison/api';
+import { getReturnComparison, Key, ReturnComparison } from '../ReturnComparison/api';
 import {
   INCEPTION,
   START_DATE,
@@ -36,6 +36,12 @@ interface GraphProperties {
   };
 }
 
+interface ContentTextProperties {
+  years: number;
+  amount: number;
+  positivePerformanceVerdict: boolean;
+}
+
 interface RootState {
   exchange: { targetFunds: Fund[] };
   thirdPillar: { funds: Fund[] };
@@ -46,8 +52,28 @@ interface RootState {
     };
   };
 }
+
 const ComparisonCalculator: React.FC = () => {
+  const { formatMessage } = useIntl();
+
   const [selectedPillar, setSelectedPillar] = useState<Key>(Key.SECOND_PILLAR);
+  const [selectedTimePeriod, setSelectedTimePeriod] = useState<string>('');
+  const [selectedComparison, setSelectedComparison] = useState<string>('');
+  const [loadingInitialData, setLoadingInitialData] = useState<boolean>(true);
+  const [loadingReturns, setLoadingReturns] = useState<boolean>(false);
+  const [contentTextProperties, setContentTextProperties] = useState<ContentTextProperties>({
+    years: 0,
+    amount: 0,
+    positivePerformanceVerdict: true,
+  });
+
+  const initialReturns = {
+    personal: null,
+    pensionFund: null,
+    index: null,
+    from: '',
+  };
+  const [returns, setReturns] = useState<ReturnComparison>(initialReturns);
 
   const secondPillarFunds = useSelector((state: RootState) => state.exchange.targetFunds || []);
   const thirdPillarFunds = useSelector((state: RootState) => state.thirdPillar.funds || []);
@@ -62,6 +88,7 @@ const ComparisonCalculator: React.FC = () => {
     if (secondPillarFunds.length > 0) {
       const options = secondPillarFunds.map((fund) => ({ value: fund.isin, label: fund.name }));
       setSecondPillarFundsOptions(options);
+      setLoadingInitialData(false);
     }
     if (thirdPillarFunds.length > 0) {
       const options = thirdPillarFunds.map((fund) => ({ value: fund.isin, label: fund.name }));
@@ -69,33 +96,33 @@ const ComparisonCalculator: React.FC = () => {
     }
   }, [secondPillarFunds, thirdPillarFunds]);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [graphProperties, setGraphProperties] = useState<GraphProperties>({
-    barCount: 2,
-    barProperties: {
-      1: {
-        color: 'orange',
-        amount: 14800,
-        percentage: 5.7,
-        height: 120,
-        label: 'comparisonCalculator.graphYourIIPillar',
-      },
-      2: {
-        color: 'green',
-        amount: 24300,
-        percentage: 200,
-        height: 200,
-        label: 'Bank 2i',
-      },
-      3: {
-        color: 'blue',
-        amount: 21000,
-        percentage: 8.5,
-        height: 165,
-        label: 'comparisonCalculator.graphWorldMarketStockIndex',
-      },
-    },
-  });
+  useEffect(() => {
+    if (!loadingInitialData) {
+      loadReturns();
+    }
+  }, [loadingInitialData]);
+
+  useEffect(() => {
+    loadReturns();
+  }, [selectedComparison, selectedTimePeriod, selectedPillar]);
+
+  useEffect(() => {
+    setContentProperties();
+  }, [returns]);
+
+  useEffect(() => {
+    if (returns.personal && returns.index) {
+      setContentTextProperties({
+        years: getFullYearsSince(returns.from),
+        amount: returns.personal?.amount - returns.index?.amount,
+        positivePerformanceVerdict: true, // TODO: make a verdict
+      });
+    }
+  }, [returns]);
+
+  const [graphProperties, setGraphProperties] = useState<GraphProperties>(
+    getInitialGraphProperties(),
+  );
 
   const [secondPillarFundsOptions, setSecondPillarFundsOptions] = useState<Option[]>([]);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -106,22 +133,24 @@ const ComparisonCalculator: React.FC = () => {
   };
 
   const getCompareToOptions = (): Option[] => {
+    const stockIndexOption = {
+      value: Key.UNION_STOCK_INDEX,
+      label: formatMessage({ id: 'comparisonCalculator.index.unionStockIndex' }),
+    };
     if (selectedPillar === Key.SECOND_PILLAR) {
-      return secondPillarFundsOptions;
+      return [stockIndexOption, ...secondPillarFundsOptions];
     }
     if (selectedPillar === Key.THIRD_PILLAR) {
-      return thirdPillarFundsOptions;
+      return [stockIndexOption, ...thirdPillarFundsOptions];
     }
     return [];
   };
 
-  const isReady = (): boolean => {
-    return getCompareToOptions().length > 0;
-  };
+  // const yearsSinceReturn = getFullYearsSince(returns.from);
 
   return (
     <div className="comparison-calculator">
-      {isReady() ? (
+      {!loadingInitialData ? (
         <div className="card card-primary p-4">
           <div className="header-section">
             <div className="row justify-content-center">
@@ -153,12 +182,8 @@ const ComparisonCalculator: React.FC = () => {
                 </label>
                 <Select
                   options={getTimePeriodOptions()}
-                  selected=""
-                  // selected={getTimePeriodOptions()[0].value}
-                  onChange={(key: string) => {
-                    // eslint-disable-next-line no-console
-                    console.log(key);
-                  }}
+                  selected={selectedTimePeriod}
+                  onChange={setSelectedTimePeriod}
                 />
               </div>
               <div className="col-12 col-md text-left  mt-3">
@@ -167,55 +192,59 @@ const ComparisonCalculator: React.FC = () => {
                 </label>
                 <Select
                   options={getCompareToOptions()}
-                  selected=""
-                  // selected={getCompareToOptions()[0].value}
                   translate={false}
-                  onChange={(key: string) => {
-                    // eslint-disable-next-line no-console
-                    console.log(key);
-                  }}
+                  selected={selectedComparison}
+                  onChange={setSelectedComparison}
                 />
               </div>
             </div>
           </div>
-          <div className="content-section row justify-content-center">
-            <div className="col-md-7 order-2 order-md-1 d-flex flex-column">
-              <div className="result-section text-left mt-5 pb-0 d-flex flex-column justify-content-between">
-                <div className="mb-3">
-                  <p className="result-text">
-                    <FormattedMessage
-                      id="comparisonCalculator.contentPerformance"
-                      values={{
-                        b: (chunks: string) => (
-                          <strong style={{ fontWeight: 'bold' }}>{chunks}</strong>
-                        ),
-                      }}
-                    />{' '}
-                    <span className="result-negative">-10 700 €</span>{' '}
-                    <FormattedMessage id="comparisonCalculator.contentPerformanceNegativeVerdict" />
-                  </p>
-                </div>
-                <div className="mb-3">
-                  <p className="result-text">
-                    <FormattedMessage
-                      id="comparisonCalculator.contentExplanation"
-                      values={{
-                        b: (chunks: string) => (
-                          <strong style={{ fontWeight: 'bold' }}>{chunks}</strong>
-                        ),
-                      }}
-                    />{' '}
-                  </p>
-                </div>
-                <div className="">
-                  <button type="button" className="btn btn-outline-primary">
-                    <FormattedMessage id="comparisonCalculator.ctaButton" />
-                  </button>
+          {loadingReturns ? (
+            <Loader className="align-middle" />
+          ) : (
+            <div className="content-section row justify-content-center">
+              <div className="col-md-7 order-2 order-md-1 d-flex flex-column">
+                <div className="result-section text-left mt-5 pb-0 d-flex flex-column justify-content-between">
+                  <div className="mb-3">
+                    <p className="result-text">
+                      <FormattedMessage
+                        id="comparisonCalculator.contentPerformance"
+                        values={{
+                          b: (chunks: string) => (
+                            <strong style={{ fontWeight: 'bold' }}>{chunks}</strong>
+                          ),
+                          years: contentTextProperties.years,
+                        }}
+                      />{' '}
+                      {/* TODO: use verdict */}
+                      <span className="result-negative">
+                        {formatAmountForCurrency(contentTextProperties.amount, 0)}
+                      </span>{' '}
+                      <FormattedMessage id="comparisonCalculator.contentPerformanceNegativeVerdict" />
+                    </p>
+                  </div>
+                  <div className="mb-3">
+                    <p className="result-text">
+                      <FormattedMessage
+                        id="comparisonCalculator.contentExplanation"
+                        values={{
+                          b: (chunks: string) => (
+                            <strong style={{ fontWeight: 'bold' }}>{chunks}</strong>
+                          ),
+                        }}
+                      />{' '}
+                    </p>
+                  </div>
+                  <div className="">
+                    <button type="button" className="btn btn-outline-primary">
+                      <FormattedMessage id="comparisonCalculator.ctaButton" />
+                    </button>
+                  </div>
                 </div>
               </div>
+              {getGraphSection()}
             </div>
-            {getGraphSection()}
-          </div>
+          )}
           <div className="footer-section text-center">
             <div className="footer-disclaimer">
               <FormattedMessage id="comparisonCalculator.footerDisclaimer" />
@@ -225,7 +254,6 @@ const ComparisonCalculator: React.FC = () => {
                 <div className="col-12 col-sm-6 col-md-auto">
                   <a
                     href="https://tuleva.ee/mida-need-numbrid-naitavad"
-                    // className="pr-2"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -235,7 +263,6 @@ const ComparisonCalculator: React.FC = () => {
                 <div className="col-12 col-sm-6 col-md-auto">
                   <a
                     href="https://tuleva.ee/analuusid/millist-tootlust-on-tulevas-oodata"
-                    // className="pl-2"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -253,26 +280,8 @@ const ComparisonCalculator: React.FC = () => {
   );
 
   function getGraphSection() {
-    // convenience to see 2 vs 3 bars
-    const handleMouseEnter = () => {
-      setGraphProperties((prevState) => ({
-        ...prevState,
-        barCount: 3,
-      }));
-    };
-
-    const handleMouseLeave = () => {
-      setGraphProperties((prevState) => ({
-        ...prevState,
-        barCount: 2,
-      }));
-    };
     return (
-      <div
-        className="graph-section col-md-5 order-1 order-md-2 d-flex flex-column mb-4"
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-      >
+      <div className="graph-section col-md-5 order-1 order-md-2 d-flex flex-column mb-4">
         {getGraphBars()}
         <div className="bottom-divider">
           <div className="container-fluid">
@@ -333,6 +342,28 @@ const ComparisonCalculator: React.FC = () => {
     );
   }
 
+  type BarHeights = {
+    personal: number;
+    pensionFund: number;
+    index: number;
+  };
+
+  function calculateGraphBarHeights(): BarHeights {
+    const maxHeight = 200; // The maximum height for the graph bars in pixels
+
+    const maxAmount = Math.max(
+      returns.personal?.amount ?? 0,
+      returns.pensionFund?.amount ?? 0,
+      returns.index?.amount ?? 0,
+    );
+
+    return {
+      personal: returns.personal ? (returns.personal.amount / maxAmount) * maxHeight : 0,
+      pensionFund: returns.pensionFund ? (returns.pensionFund.amount / maxAmount) * maxHeight : 0,
+      index: returns.index ? (returns.index.amount / maxAmount) * maxHeight : 0,
+    };
+  }
+
   function getFromDateOptions(): Option[] {
     const selectedPersonalKey = selectedPillar;
 
@@ -388,6 +419,131 @@ const ComparisonCalculator: React.FC = () => {
     ];
 
     return options.sort((option1, option2) => option1.value.localeCompare(option2.value));
+  }
+
+  async function loadReturns(): Promise<void> {
+    // const { fromDate, selectedPersonalKey, selectedFundKey, selectedIndexKey } = this.state;
+    const selectedPersonalKey = selectedPillar;
+    const fromDate = selectedTimePeriod;
+    let selectedFundKey = selectedComparison;
+    // TODO: make an intelligent selection here
+    if (selectedFundKey === Key.UNION_STOCK_INDEX) {
+      selectedFundKey = '';
+    }
+    const selectedIndexKey = Key.UNION_STOCK_INDEX;
+
+    setLoadingReturns(true);
+    try {
+      const result = await getReturnComparison(fromDate, {
+        personalKey: selectedPersonalKey,
+        pensionFundKey: selectedFundKey,
+        indexKey: selectedIndexKey,
+      });
+      setReturns(result);
+    } catch (ignored) {
+      // eslint-disable-next-line no-console
+      console.error(ignored);
+      setReturns(initialReturns);
+    } finally {
+      setLoadingReturns(false);
+    }
+  }
+
+  function setContentProperties() {
+    setGraphProperties(getInitialGraphProperties());
+    const barHeights = calculateGraphBarHeights();
+    const indexBarProperties: GraphBarProperties = {
+      color: 'blue',
+      amount: returns.index ? returns.index.amount : 0,
+      percentage: returns.index ? Math.round(returns.index.rate * 10000) / 100 : 0,
+      height: barHeights.index,
+      label: 'comparisonCalculator.graphWorldMarketStockIndex',
+    };
+
+    const personalBarProperties: GraphBarProperties = {
+      color: 'green',
+      amount: returns.personal ? returns.personal.amount : 0,
+      percentage: returns.personal ? Math.round(returns.personal.rate * 10000) / 100 : 0,
+      height: barHeights.personal,
+      label:
+        selectedPillar === Key.SECOND_PILLAR
+          ? 'comparisonCalculator.graphYourIIPillar'
+          : 'comparisonCalculator.graphYourIIIPillar',
+    };
+
+    const comparisonBarProperties: GraphBarProperties = {
+      color: 'red',
+      amount: returns.pensionFund ? returns.pensionFund.amount : 0,
+      percentage: returns.pensionFund ? Math.round(returns.pensionFund.rate * 10000) / 100 : 0,
+      height: barHeights.pensionFund,
+      label: returns.pensionFund ? returns.pensionFund.key : '',
+    };
+
+    if (returns.pensionFund) {
+      setGraphProperties({
+        barCount: 3,
+        barProperties: {
+          1: personalBarProperties,
+          2: comparisonBarProperties,
+          3: indexBarProperties,
+        },
+      });
+    } else {
+      setGraphProperties({
+        barCount: 2,
+        barProperties: {
+          1: personalBarProperties,
+          2: indexBarProperties,
+          3: undefined,
+        },
+      });
+    }
+  }
+
+  function getFullYearsSince(dateString: string): number {
+    const startDate = new Date(dateString);
+    const currentDate = new Date();
+
+    let yearsDifference = currentDate.getFullYear() - startDate.getFullYear();
+
+    if (
+      currentDate.getMonth() < startDate.getMonth() ||
+      (currentDate.getMonth() === startDate.getMonth() &&
+        currentDate.getDate() < startDate.getDate())
+    ) {
+      yearsDifference -= 1;
+    }
+
+    return yearsDifference;
+  }
+
+  function getInitialGraphProperties(): GraphProperties {
+    return {
+      barCount: 2,
+      barProperties: {
+        1: {
+          color: 'orange',
+          amount: 14800,
+          percentage: 5.7,
+          height: 120,
+          label: 'comparisonCalculator.graphYourIIPillar',
+        },
+        2: {
+          color: 'green',
+          amount: 24300,
+          percentage: 200,
+          height: 200,
+          label: 'Bank 2i',
+        },
+        3: {
+          color: 'blue',
+          amount: 21000,
+          percentage: 8.5,
+          height: 165,
+          label: 'comparisonCalculator.graphWorldMarketStockIndex',
+        },
+      },
+    };
   }
 };
 
