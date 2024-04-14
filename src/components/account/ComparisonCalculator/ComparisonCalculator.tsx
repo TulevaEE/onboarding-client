@@ -39,7 +39,9 @@ interface GraphProperties {
 interface ContentTextProperties {
   years: number;
   amount: number;
+  pillar: string;
   positivePerformanceVerdict: boolean;
+  ctaLink: string;
 }
 
 interface RootState {
@@ -64,6 +66,8 @@ const ComparisonCalculator: React.FC = () => {
   const [contentTextProperties, setContentTextProperties] = useState<ContentTextProperties>({
     years: 0,
     amount: 0,
+    pillar: '',
+    ctaLink: '',
     positivePerformanceVerdict: true,
   });
 
@@ -112,10 +116,22 @@ const ComparisonCalculator: React.FC = () => {
 
   useEffect(() => {
     if (returns.personal && returns.index) {
+      let ctaLink = '';
+      let pillarAsString = '';
+      if (selectedPillar === Key.SECOND_PILLAR) {
+        pillarAsString = 'II';
+        ctaLink = '/2nd-pillar-flow/';
+      } else if (selectedPillar === Key.THIRD_PILLAR) {
+        ctaLink = '/3rd-pillar-flow/';
+        pillarAsString = 'III';
+      }
+      const returnAmount = returns.personal?.amount - returns.index?.amount;
       setContentTextProperties({
         years: getFullYearsSince(returns.from),
-        amount: returns.personal?.amount - returns.index?.amount,
-        positivePerformanceVerdict: true, // TODO: make a verdict
+        amount: returnAmount,
+        pillar: pillarAsString,
+        ctaLink,
+        positivePerformanceVerdict: returnAmount >= 0,
       });
     }
   }, [returns]);
@@ -146,12 +162,10 @@ const ComparisonCalculator: React.FC = () => {
     return [];
   };
 
-  // const yearsSinceReturn = getFullYearsSince(returns.from);
-
   return (
     <div className="comparison-calculator">
       {!loadingInitialData ? (
-        <div className="card card-primary p-4">
+        <div className="card card-primary">
           <div className="header-section">
             <div className="row justify-content-center">
               <div className="btn-group">
@@ -199,52 +213,67 @@ const ComparisonCalculator: React.FC = () => {
               </div>
             </div>
           </div>
+          <div className="separator" />
           {loadingReturns ? (
             <Loader className="align-middle" />
           ) : (
-            <div className="content-section row justify-content-center">
-              <div className="col-md-7 order-2 order-md-1 d-flex flex-column">
-                <div className="result-section text-left mt-5 pb-0 d-flex flex-column justify-content-between">
-                  <div className="mb-3">
-                    <p className="result-text">
-                      <FormattedMessage
-                        id="comparisonCalculator.contentPerformance"
-                        values={{
-                          b: (chunks: string) => (
-                            <strong style={{ fontWeight: 'bold' }}>{chunks}</strong>
-                          ),
-                          years: contentTextProperties.years,
-                        }}
-                      />{' '}
-                      {/* TODO: use verdict */}
-                      <span className="result-negative">
-                        {formatAmountForCurrency(contentTextProperties.amount, 0)}
-                      </span>{' '}
-                      <FormattedMessage id="comparisonCalculator.contentPerformanceNegativeVerdict" />
-                    </p>
-                  </div>
-                  <div className="mb-3">
-                    <p className="result-text">
-                      <FormattedMessage
-                        id="comparisonCalculator.contentExplanation"
-                        values={{
-                          b: (chunks: string) => (
-                            <strong style={{ fontWeight: 'bold' }}>{chunks}</strong>
-                          ),
-                        }}
-                      />{' '}
-                    </p>
-                  </div>
-                  <div className="">
-                    <button type="button" className="btn btn-outline-primary">
-                      <FormattedMessage id="comparisonCalculator.ctaButton" />
-                    </button>
+            <div>
+              {contentTextProperties.years < 3 && (
+                <div className="alert alert-warning rounded-0 text-center" role="alert">
+                  <FormattedMessage id="comparisonCalculator.shortTimePeriodWarning" />
+                  <a href="/warning" className="text-success">
+                    {' '}
+                    <FormattedMessage id="comparisonCalculator.shortTimePeriodWarningLink" />
+                  </a>
+                </div>
+              )}
+
+              <div className="content-section row justify-content-center">
+                <div className="col-md-7 order-2 order-md-1 d-flex flex-column">
+                  <div className="result-section text-left mt-5 pb-0 d-flex flex-column justify-content-between">
+                    <div className="mb-3">
+                      <p className="result-text">
+                        <FormattedMessage
+                          id="comparisonCalculator.contentPerformance"
+                          values={{
+                            b: (chunks: string) => (
+                              <strong style={{ fontWeight: 'bold' }}>{chunks}</strong>
+                            ),
+                            years: contentTextProperties.years,
+                            pillar: contentTextProperties.pillar,
+                          }}
+                        />{' '}
+                        {getContentTextVerdict()}
+                      </p>
+                    </div>
+                    <div className="mb-3">
+                      <p className="result-text">
+                        <FormattedMessage
+                          id="comparisonCalculator.contentExplanation"
+                          values={{
+                            b: (chunks: string) => (
+                              <strong style={{ fontWeight: 'bold' }}>{chunks}</strong>
+                            ),
+                          }}
+                        />{' '}
+                      </p>
+                    </div>
+                    <div className="">
+                      <a href={contentTextProperties.ctaLink} className="btn btn-outline-primary">
+                        <FormattedMessage
+                          id="comparisonCalculator.ctaButton"
+                          values={{ pillar: contentTextProperties.pillar }}
+                        />
+                      </a>
+                    </div>
                   </div>
                 </div>
+                {getGraphSection()}
               </div>
-              {getGraphSection()}
             </div>
           )}
+          <div className="separator" />
+
           <div className="footer-section text-center">
             <div className="footer-disclaimer">
               <FormattedMessage id="comparisonCalculator.footerDisclaimer" />
@@ -447,6 +476,29 @@ const ComparisonCalculator: React.FC = () => {
     } finally {
       setLoadingReturns(false);
     }
+  }
+
+  function getContentTextVerdict() {
+    if (contentTextProperties.positivePerformanceVerdict) {
+      return (
+        <>
+          <FormattedMessage id="comparisonCalculator.contentPerformanceWordPositive" />{' '}
+          <span className="result-positive">
+            {formatAmountForCurrency(contentTextProperties.amount, 0)}
+          </span>{' '}
+          <FormattedMessage id="comparisonCalculator.contentPerformancePositiveVerdict" />
+        </>
+      );
+    }
+    return (
+      <>
+        <FormattedMessage id="comparisonCalculator.contentPerformanceWordNegative" />{' '}
+        <span className="result-negative">
+          {formatAmountForCurrency(contentTextProperties.amount, 0)}
+        </span>{' '}
+        <FormattedMessage id="comparisonCalculator.contentPerformanceNegativeVerdict" />
+      </>
+    );
   }
 
   function setContentProperties() {

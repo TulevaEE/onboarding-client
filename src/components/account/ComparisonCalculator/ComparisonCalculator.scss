@@ -13,6 +13,10 @@
     line-height: 142.85%;
   }
 
+  .separator {
+    border-top: 1px solid var(--Blue-Border, #CAE0F1);
+  }
+
   .header-section {
     padding: 24px;
 
@@ -32,7 +36,6 @@
   }
 
   .footer-section {
-    border-top: 1px solid var(--Blue-Border, #CAE0F1);
     padding: 24px;
 
     .footer-disclaimer {
@@ -54,7 +57,6 @@
 
   .content-section {
     padding: 32px 24px;
-    border-top: 1px solid var(--Blue-Border, #CAE0F1);
 
     .result-section {
       flex-grow: 1;
@@ -64,10 +66,10 @@
         font-weight: bold;
       }
 
-      //.result-positive {
-      //  color: #5cb85c;
-      //  font-weight: bold;
-      //}
+      .result-positive {
+        color: #5cb85c;
+        font-weight: bold;
+      }
 
       .result-text {
         // From Figma
