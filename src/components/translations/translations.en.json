@@ -603,7 +603,7 @@
   "comparisonCalculator.comparedTo": "Compared to",
   "comparisonCalculator.yourIIpillar": "Your II pillar",
   "comparisonCalculator.yourIIIpillar": "Your III pillar",
-  "comparisonCalculator.shortTimePeriodWarning": "The comparison period is short. Avoid the temptation to make sudden moves based on short-term fluctuations.",
+  "comparisonCalculator.shortTimePeriodWarning": "ⓘ The comparison period is short. Avoid the temptation to make sudden moves based on short-term fluctuations.",
   "comparisonCalculator.shortTimePeriodWarningLink": "Read more.",
   "comparisonCalculator.contentPerformance": "Your {pillar} pillar during the past {years} years, when compared to <b>all world market index</b> has ",
   "comparisonCalculator.contentPerformanceWordNegative": " ",

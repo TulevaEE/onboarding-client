@@ -602,7 +602,7 @@
   "comparisonCalculator.comparedTo": "Võrdluses",
   "comparisonCalculator.yourIIpillar": "Sinu II sammas",
   "comparisonCalculator.yourIIIpillar": "Sinu III sammas",
-  "comparisonCalculator.shortTimePeriodWarning": "Võrdlusperiood on lühike. Hoidu kiusatusest teha lühiajaliste kõikumiste põhjal järske liigutusi.",
+  "comparisonCalculator.shortTimePeriodWarning": "ⓘ Võrdlusperiood on lühike. Hoidu kiusatusest teha lühiajaliste kõikumiste põhjal järske liigutusi.",
   "comparisonCalculator.shortTimePeriodWarningLink": "Loe lähemalt.",
   "comparisonCalculator.contentPerformance": "Sinu {pillar} sammas on viimase {years} aastaga <b>maailmaturu indeksi</b>",
   "comparisonCalculator.contentPerformanceWordNegative": "tootlusele",
