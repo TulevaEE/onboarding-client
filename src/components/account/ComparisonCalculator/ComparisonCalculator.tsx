@@ -507,7 +507,7 @@ const ComparisonCalculator: React.FC = () => {
     const indexBarProperties: GraphBarProperties = {
       color: 'blue',
       amount: returns.index ? returns.index.amount : 0,
-      percentage: returns.index ? Math.round(returns.index.rate * 10000) / 100 : 0,
+      percentage: returns.index ? formatPercentage(returns.index.rate) : 0,
       height: barHeights.index,
       label: 'comparisonCalculator.graphWorldMarketStockIndex',
     };
@@ -515,7 +515,7 @@ const ComparisonCalculator: React.FC = () => {
     const personalBarProperties: GraphBarProperties = {
       color: 'green',
       amount: returns.personal ? returns.personal.amount : 0,
-      percentage: returns.personal ? Math.round(returns.personal.rate * 10000) / 100 : 0,
+      percentage: returns.personal ? formatPercentage(returns.personal.rate) : 0,
       height: barHeights.personal,
       label:
         selectedPillar === Key.SECOND_PILLAR
@@ -526,7 +526,7 @@ const ComparisonCalculator: React.FC = () => {
     const comparisonBarProperties: GraphBarProperties = {
       color: 'red',
       amount: returns.pensionFund ? returns.pensionFund.amount : 0,
-      percentage: returns.pensionFund ? Math.round(returns.pensionFund.rate * 10000) / 100 : 0,
+      percentage: returns.pensionFund ? formatPercentage(returns.pensionFund.rate) : 0,
       height: barHeights.pensionFund,
       label: returns.pensionFund ? returns.pensionFund.key : '',
     };
@@ -549,6 +549,10 @@ const ComparisonCalculator: React.FC = () => {
           3: undefined,
         },
       });
+    }
+
+    function formatPercentage(percentage: number) {
+      return Math.round(percentage * 1000) / 10;
     }
   }
 
