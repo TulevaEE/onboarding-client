@@ -9,9 +9,9 @@ import LanguageSwitcher from './languageSwitcher';
 const Header = ({ user: { name } = {}, loading, onLogout }) => (
   <div className="row">
     <div className="col align-self-start">
-      <Link to="/account">
+      <a href="/account">
         <img src={logo} alt="Tuleva" className="img-responsive brand-logo" />
-      </Link>
+      </a>
     </div>
     <div className="col align-self-end text-right">
       {loading || !name ? (
@@ -26,9 +26,9 @@ const Header = ({ user: { name } = {}, loading, onLogout }) => (
           <br />
           <LanguageSwitcher />
           &ensp;&middot;&ensp;
-          <Link className="btn btn-link p-0 border-0" to="/account">
+          <a className="btn btn-link p-0 border-0" href="/account">
             <FormattedMessage id="header.my.account" />
-          </Link>
+          </a>
         </span>
       )}
     </div>

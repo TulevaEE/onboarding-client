@@ -159,7 +159,7 @@
   "success.2ndPillarPaymentUpsell.title": "Pane oma II sammas jõudsamalt kasvama",
   "success.2ndPillarPaymentUpsell.content": "Nüüd saad esitada avalduse, et järgmisest aastast <b>suureneks sinu II samba panus</b> 2% pealt kuni <b>6% peale</b> brutopalgast.",
   "success.2ndPillarPaymentUpsell.small": "Mida suurem protsent, seda kiiremini kasvavad sinu säästud. Kasuta see võimalus kindlasti ära.",
-  "success.2ndPillarPaymentUpsell.button": "Suurendan sissemakset",
+  "success.2ndPillarPaymentUpsell.button": "Tõstan sissemakset",
   "success.2ndPillarPaymentUpsell.disclaimer": "Avalduse esitamine on tasuta.",
   "account.current.balance.title": "Minu II samba pensionikonto seis",
   "account.current.balance.subtitle": "Pensionikontode üle peab arvestust ",
@@ -235,7 +235,7 @@
   "account.status.choice.pillar.second.transferIncomplete": "Sa kogud täna mitmes erinevas pensionifondis",
   "account.status.choice.pillar.second.pik": "Pensioni investeerimiskonto: {secondPillarPikNumber}",
   "account.status.choice.pillar.second.paymentRate": "Sa panustad II sambasse {paymentRate}% brutopalgast",
-  "account.status.choice.pillar.second.paymentRate.comment": "Alates 2024. a jaanuarist saad sissemakse suurendada <b>4%</b> või <b>6%</b> peale",
+  "account.status.choice.pillar.second.paymentRate.comment": "Alates 2024. a jaanuarist saad sissemakse tõsta kuni <b>6%</b> peale",
 
   "account.status.choice.pillar.second.deadlinecard.title": "Tähtaeg!",
   "account.status.choice.pillar.second.deadlinecard.text": "Selle vahetusperioodi tähtaeg on <b>{periodEnding}</b>",
@@ -271,7 +271,7 @@
   "account.status.choice.bring.to.tuleva": "Toon Tulevasse",
   "account.status.choice.join.tuleva.2": "Vali Tuleva",
   "account.status.choice.transfer.tuleva.2": "Vaheta fondi",
-  "account.status.choice.paymentRate.increase": "Suurendan sissemakset",
+  "account.status.choice.paymentRate.increase": "Tõstan sissemakset",
   "account.status.choice.paymentRate.change": "Muudan sissemakset",
 
   "account.status.choice.join.tuleva": "Astu liikmeks",
