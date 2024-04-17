@@ -16,9 +16,9 @@ describe('Header', () => {
   it('shows a header logo with a link', () => {
     expect(
       component.contains(
-        <Link to="/account">
+        <a href="/account">
           <img src={logo} alt="Tuleva" className="img-responsive brand-logo" />
-        </Link>,
+        </a>,
       ),
     ).toBe(true);
   });
