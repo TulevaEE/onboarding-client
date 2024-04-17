@@ -1,9 +1,8 @@
 import React from 'react';
 import { PropTypes as Types } from 'prop-types';
-import { Link } from 'react-router-dom';
 
 import { FormattedMessage } from 'react-intl';
-import { logo, Loader } from '../../common';
+import { Loader, logo } from '../../common';
 import LanguageSwitcher from './languageSwitcher';
 
 const Header = ({ user: { name } = {}, loading, onLogout }) => (
