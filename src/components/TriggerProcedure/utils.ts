@@ -59,7 +59,13 @@ const getPath = (provider: ExternalProvider, procedure: Procedure): string => {
 };
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any -- WIP
-export const finish = async (result?: string, error?: string, personalCode?: string) => {
+export const finish = async (
+  result?: string,
+  error?: string,
+  personalCode?: string,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  returnUri?: string,
+) => {
   const provider = sessionStorage.getItem(EXTERNAL_AUTHENTICATOR_PROVIDER);
 
   if (!provider) {
@@ -73,26 +79,41 @@ export const finish = async (result?: string, error?: string, personalCode?: str
     return;
   }
 
-  if (error) {
-    sendMessage({ errorMessage: error, time: new Date().toISOString() });
+  const paymentType = result === 'newRecurringPayment' ? PaymentType.RECURRING : PaymentType.SINGLE;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  if ((window as any).ReactNativeWebView) {
+    if (error) {
+      sendMessage({ errorMessage: error, time: new Date().toISOString() });
+    }
+
+    const paymentLink = await getPaymentLink({
+      type: paymentType,
+      paymentChannel: PaymentChannel.PARTNER,
+      recipientPersonalCode: personalCode,
+    });
+    const message = {
+      type: result,
+      version: '1',
+      data: JSON.parse(paymentLink.url),
+      time: new Date().toISOString(),
+    };
+
+    // eslint-disable-next-line no-console -- WIP
+    console.log('finishing', provider, result, error, 'and posting message', message);
+
+    sendMessage(message);
+  } else {
+    const paymentLink = await getPaymentLink({
+      type: paymentType,
+      paymentChannel: PaymentChannel.COOP_WEB,
+      recipientPersonalCode: personalCode,
+    });
+    // eslint-disable-next-line no-console -- WIP
+    console.log('finishing', provider, result, error, 'and redirecting', paymentLink.url);
+
+    window.location.href = paymentLink.url;
   }
-
-  const paymentLink = await getPaymentLink({
-    type: result === 'newRecurringPayment' ? PaymentType.RECURRING : PaymentType.SINGLE,
-    paymentChannel: PaymentChannel.PARTNER,
-    recipientPersonalCode: personalCode,
-  });
-  const message = {
-    type: result,
-    version: '1',
-    data: JSON.parse(paymentLink.url),
-    time: new Date().toISOString(),
-  };
-
-  // eslint-disable-next-line no-console -- WIP
-  console.log('finishing', provider, result, error, 'and posting message', message);
-
-  sendMessage(message);
 };
 
 const sendMessage = (message: {
@@ -104,32 +125,30 @@ const sendMessage = (message: {
   version?: string;
 }) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  if ((window as any).ReactNativeWebView) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (window as any).ReactNativeWebView.postMessage(JSON.stringify(message));
-  } else {
-    throw new Error('no window.ReactNativeWebView');
-  }
+  (window as any).ReactNativeWebView.postMessage(JSON.stringify(message));
 };
 
-export const init = (input: {
+export const init = (query: {
   provider?: unknown;
+  redirectUri?: string;
   handoverToken?: unknown;
   procedure?: unknown;
 }): {
-  provider: ExternalProvider;
+  redirectUri: string | undefined;
   handoverToken: string;
-  procedure: Procedure;
   path: string;
+  provider: ExternalProvider;
+  procedure: Procedure;
 } => {
-  const provider = validateProvider(input.provider);
-  const procedure = validateProcedure(input.procedure);
-  const handoverToken = validateHandoverToken(input.handoverToken);
+  const provider = validateProvider(query.provider);
+  const procedure = validateProcedure(query.procedure);
+  const handoverToken = validateHandoverToken(query.handoverToken);
 
   sessionStorage.setItem(EXTERNAL_AUTHENTICATOR_PROVIDER, provider);
 
   return {
     provider,
+    redirectUri: query.redirectUri,
     procedure,
     handoverToken,
     path: getPath(provider, procedure),

@@ -285,6 +285,7 @@ export enum PaymentChannel {
   SEB = 'SEB',
   LUMINOR = 'LUMINOR',
   COOP = 'COOP',
+  COOP_WEB = 'COOP_WEB',
   PARTNER = 'PARTNER',
   TULUNDUSUHISTU = 'TULUNDUSUHISTU',
 }
