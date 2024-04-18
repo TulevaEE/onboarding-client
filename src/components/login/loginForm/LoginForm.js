@@ -75,9 +75,9 @@ const renderLoginForm = (
             )
           ) : (
             <>
-              <h3>
+              <h2>
                 <FormattedMessage id="login.title" />
-              </h3>
+              </h2>
               <span className="text-muted">
                 <FormattedMessage id="login.subtitle" />
               </span>
@@ -97,7 +97,7 @@ const renderLoginForm = (
         )}
       </div>
 
-      <div className="col-lg-9 mt-4">
+      <div className="col-lg-9 mt-4 text-muted">
         <FormattedMessage
           id="login.permission.note"
           values={{
