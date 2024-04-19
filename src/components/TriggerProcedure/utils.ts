@@ -3,6 +3,7 @@ import { PaymentChannel, PaymentType } from '../common/apiModels';
 import { getAuthentication } from '../common/authenticationManager';
 
 const EXTERNAL_AUTHENTICATOR_PROVIDER = 'EXTERNAL_AUTHENTICATOR_PROVIDER';
+const EXTERNAL_AUTHENTICATOR_REDIRECT_URI = 'EXTERNAL_AUTHENTICATOR_REDIRECT_URI';
 
 enum ExternalProvider {
   COOP_PANK = 'COOP_PANK',
@@ -59,14 +60,9 @@ const getPath = (provider: ExternalProvider, procedure: Procedure): string => {
 };
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any -- WIP
-export const finish = async (
-  result?: string,
-  error?: string,
-  personalCode?: string,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  returnUri?: string,
-) => {
+export const finish = async (result?: string, error?: string, personalCode?: string) => {
   const provider = sessionStorage.getItem(EXTERNAL_AUTHENTICATOR_PROVIDER);
+  const redirectUri = sessionStorage.getItem(EXTERNAL_AUTHENTICATOR_REDIRECT_URI);
 
   if (!provider) {
     // eslint-disable-next-line no-console -- WIP
@@ -110,9 +106,16 @@ export const finish = async (
       recipientPersonalCode: personalCode,
     });
     // eslint-disable-next-line no-console -- WIP
-    console.log('finishing', provider, result, error, 'and redirecting', paymentLink.url);
+    console.log(
+      'finishing',
+      provider,
+      result,
+      error,
+      'and redirecting to',
+      redirectUri + paymentLink.url,
+    );
 
-    window.location.href = paymentLink.url;
+    window.location.href = redirectUri + paymentLink.url;
   }
 };
 
@@ -145,6 +148,7 @@ export const init = (query: {
   const handoverToken = validateHandoverToken(query.handoverToken);
 
   sessionStorage.setItem(EXTERNAL_AUTHENTICATOR_PROVIDER, provider);
+  sessionStorage.setItem(EXTERNAL_AUTHENTICATOR_REDIRECT_URI, query.redirectUri || '');
 
   return {
     provider,
