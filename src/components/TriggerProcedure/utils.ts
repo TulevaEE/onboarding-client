@@ -3,7 +3,7 @@ import { PaymentChannel, PaymentType } from '../common/apiModels';
 import { getAuthentication } from '../common/authenticationManager';
 
 const EXTERNAL_AUTHENTICATOR_PROVIDER = 'EXTERNAL_AUTHENTICATOR_PROVIDER';
-const EXTERNAL_AUTHENTICATOR_REDIRECT_URI = 'EXTERNAL_AUTHENTICATOR_REDIRECT_URI';
+export const EXTERNAL_AUTHENTICATOR_REDIRECT_URI = 'EXTERNAL_AUTHENTICATOR_REDIRECT_URI';
 
 enum ExternalProvider {
   COOP_PANK = 'COOP_PANK',

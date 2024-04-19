@@ -491,6 +491,7 @@
   "thirdPillarBackToPartner.automated.subtitle": "Lisaks igakuisele püsimaksele saad panustada ka ühekordse sissemaksena endale sobival ajal ja summas.",
   "thirdPillarBackToPartner.recurringPayment.button": "Seadista igakuine püsimakse",
   "thirdPillarBackToPartner.singlePayment.button": "Tee ühekordne sissemakse",
+  "thirdPillarBackToPartner.back.button": "Tagasi internetipanka",
   "thirdPillarBackToPartner.payment.subtitle": "Makse tegemiseks suuname sind tagasi Coop Panka.",
 
   "applications.title": "Sinu ootel olevad tehingud",

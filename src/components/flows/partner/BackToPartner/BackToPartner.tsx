@@ -2,7 +2,10 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { connect, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { finish as finishProcedure } from '../../../TriggerProcedure/utils';
+import {
+  EXTERNAL_AUTHENTICATOR_REDIRECT_URI,
+  finish as finishProcedure,
+} from '../../../TriggerProcedure/utils';
 import { State } from '../../../../types';
 import pig from './pig.svg';
 import { SuccessNotice2 } from '../../common/SuccessNotice2/SuccessNotice2';
@@ -14,6 +17,7 @@ interface Props {
 
 export const BackToPartner: React.FC<Props> = ({ recurringPaymentCount }) => {
   const personalCode = useSelector<State, string>((state) => state.login.user?.personalCode);
+  const redirectUri = sessionStorage.getItem(EXTERNAL_AUTHENTICATOR_REDIRECT_URI);
 
   return (
     <>
@@ -29,7 +33,16 @@ export const BackToPartner: React.FC<Props> = ({ recurringPaymentCount }) => {
       <Notice>
         <img src={pig} alt="" />
 
-        {recurringPaymentCount >= 1 ? (
+        {recurringPaymentCount < 1 ? (
+          <>
+            <h2 className="mt-3">
+              <FormattedMessage id="thirdPillarBackToPartner.automateNext" />
+            </h2>
+            <p className="mt-3">
+              <FormattedMessage id="thirdPillarBackToPartner.automateNext.subtitle" />
+            </p>
+          </>
+        ) : (
           <>
             <h2 className="mt-3">
               <FormattedMessage id="thirdPillarBackToPartner.automated" />
@@ -38,24 +51,19 @@ export const BackToPartner: React.FC<Props> = ({ recurringPaymentCount }) => {
               <FormattedMessage id="thirdPillarBackToPartner.automated.subtitle" />
             </p>
           </>
+        )}
+        {recurringPaymentCount < 1 ? (
+          <div className="d-flex justify-content-center mt-4">
+            <button
+              type="button"
+              className="btn btn-primary btn-default flex-grow-1 flex-md-grow-0"
+              onClick={() => finishProcedure('newRecurringPayment', undefined, personalCode)}
+            >
+              <FormattedMessage id="thirdPillarBackToPartner.recurringPayment.button" />
+            </button>
+          </div>
         ) : (
-          <>
-            <h2 className="mt-3">
-              <FormattedMessage id="thirdPillarBackToPartner.automateNext" />
-            </h2>
-            <p className="mt-3">
-              <FormattedMessage id="thirdPillarBackToPartner.automateNext.subtitle" />
-            </p>
-            <div className="d-flex justify-content-center mt-4">
-              <button
-                type="button"
-                className="btn btn-primary flex-grow-1 flex-md-grow-0"
-                onClick={() => finishProcedure('newRecurringPayment', undefined, personalCode)}
-              >
-                <FormattedMessage id="thirdPillarBackToPartner.recurringPayment.button" />
-              </button>
-            </div>
-          </>
+          ''
         )}
         <div className="d-flex justify-content-center mt-2">
           <button
@@ -66,6 +74,18 @@ export const BackToPartner: React.FC<Props> = ({ recurringPaymentCount }) => {
             <FormattedMessage id="thirdPillarBackToPartner.singlePayment.button" />
           </button>
         </div>
+        {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          !(window as any).ReactNativeWebView && redirectUri ? (
+            <div className="d-flex justify-content-center mt-2">
+              <a href={redirectUri}>
+                <FormattedMessage id="thirdPillarBackToPartner.back.button" />
+              </a>
+            </div>
+          ) : (
+            ''
+          )
+        }
 
         <p className="mt-2 mb-0">
           <small className="text-muted">
