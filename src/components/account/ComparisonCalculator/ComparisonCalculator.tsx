@@ -29,6 +29,7 @@ interface GraphBarProperties {
 
 interface GraphProperties {
   barCount: 2 | 3;
+  hasNegativeValueBar: boolean;
   barProperties: {
     1: GraphBarProperties;
     2: GraphBarProperties;
@@ -54,6 +55,13 @@ interface RootState {
     };
   };
 }
+
+type BarHeights = {
+  personal: number;
+  pensionFund: number;
+  index: number;
+  hasNegativeHeightBar: boolean;
+};
 
 const ComparisonCalculator: React.FC = () => {
   const { formatMessage } = useIntl();
@@ -164,154 +172,158 @@ const ComparisonCalculator: React.FC = () => {
 
   return (
     <div className="comparison-calculator">
-      {!loadingInitialData ? (
-        <div className="card card-primary">
-          <div className="header-section container p-4">
-            <div className="row justify-content-center">
-              <div className="btn-group">
-                <button
-                  type="button"
-                  className={`btn ${
-                    selectedPillar === Key.SECOND_PILLAR ? 'btn-primary' : 'btn-light'
-                  }`}
-                  onClick={() => setSelectedPillar(Key.SECOND_PILLAR)}
-                >
-                  <FormattedMessage id="comparisonCalculator.yourIIpillar" />
-                </button>
-                <button
-                  type="button"
-                  className={`btn ${
-                    selectedPillar === Key.THIRD_PILLAR ? 'btn-primary' : 'btn-light'
-                  }`}
-                  onClick={() => setSelectedPillar(Key.THIRD_PILLAR)}
-                >
-                  <FormattedMessage id="comparisonCalculator.yourIIIpillar" />
-                </button>
+      <div className="card card-primary">
+        {!loadingInitialData ? (
+          <div>
+            <div className="header-section container p-4">
+              <div className="row justify-content-center">
+                <div className="btn-group">
+                  <button
+                    type="button"
+                    className={`btn ${
+                      selectedPillar === Key.SECOND_PILLAR ? 'btn-primary' : 'btn-light'
+                    }`}
+                    onClick={() => setSelectedPillar(Key.SECOND_PILLAR)}
+                  >
+                    <FormattedMessage id="comparisonCalculator.yourIIpillar" />
+                  </button>
+                  <button
+                    type="button"
+                    className={`btn ${
+                      selectedPillar === Key.THIRD_PILLAR ? 'btn-primary' : 'btn-light'
+                    }`}
+                    onClick={() => setSelectedPillar(Key.THIRD_PILLAR)}
+                  >
+                    <FormattedMessage id="comparisonCalculator.yourIIIpillar" />
+                  </button>
+                </div>
+              </div>
+              <div className="row justify-content-center">
+                <div className="col-12 col-md text-left  mt-3">
+                  <label htmlFor="timePeriodSelect" className="form-label">
+                    <FormattedMessage id="comparisonCalculator.timePeriod" />:{' '}
+                  </label>
+                  <Select
+                    options={getTimePeriodOptions()}
+                    selected={selectedTimePeriod}
+                    onChange={setSelectedTimePeriod}
+                  />
+                </div>
+                <div className="col-12 col-md text-left  mt-3">
+                  <label htmlFor="comparedToSelect" className="form-label">
+                    <FormattedMessage id="comparisonCalculator.comparedTo" />:{' '}
+                  </label>
+                  <Select
+                    options={getCompareToOptions()}
+                    translate={false}
+                    selected={selectedComparison}
+                    onChange={setSelectedComparison}
+                  />
+                </div>
               </div>
             </div>
-            <div className="row justify-content-center">
-              <div className="col-12 col-md text-left  mt-3">
-                <label htmlFor="timePeriodSelect" className="form-label">
-                  <FormattedMessage id="comparisonCalculator.timePeriod" />:{' '}
-                </label>
-                <Select
-                  options={getTimePeriodOptions()}
-                  selected={selectedTimePeriod}
-                  onChange={setSelectedTimePeriod}
-                />
-              </div>
-              <div className="col-12 col-md text-left  mt-3">
-                <label htmlFor="comparedToSelect" className="form-label">
-                  <FormattedMessage id="comparisonCalculator.comparedTo" />:{' '}
-                </label>
-                <Select
-                  options={getCompareToOptions()}
-                  translate={false}
-                  selected={selectedComparison}
-                  onChange={setSelectedComparison}
-                />
-              </div>
-            </div>
-          </div>
-          <div className="separator" />
-          <div className="middle-section d-flex justify-content-center align-items-center">
-            {loadingReturns ? (
-              <Loader className="align-middle" />
-            ) : (
-              <div>
-                {contentTextProperties.years < 3 && (
-                  <div className="alert alert-warning rounded-0 text-center" role="alert">
-                    <FormattedMessage id="comparisonCalculator.shortTimePeriodWarning" />
-                    <a href="/warning" className="text-success">
-                      {' '}
-                      <FormattedMessage id="comparisonCalculator.shortTimePeriodWarningLink" />
-                    </a>
-                  </div>
-                )}
+            <div className="separator" />
+            <div className="middle-section d-flex justify-content-center align-items-center">
+              {loadingReturns ? (
+                <Loader className="align-middle" />
+              ) : (
+                <div>
+                  {contentTextProperties.years < 3 && (
+                    <div className="alert alert-warning rounded-0 text-center" role="alert">
+                      <FormattedMessage id="comparisonCalculator.shortTimePeriodWarning" />
+                      <a href="/warning" className="text-success">
+                        {' '}
+                        <FormattedMessage id="comparisonCalculator.shortTimePeriodWarningLink" />
+                      </a>
+                    </div>
+                  )}
 
-                <div className="container">
-                  <div className="content-section row justify-content-center pt-4 pb-4">
-                    <div className="col-md-7 order-2 order-md-1 d-flex flex-column">
-                      <div className="result-section text-left mt-5 pb-0 d-flex flex-column justify-content-between">
-                        <div className="mb-3">
-                          <p className="result-text">
-                            <FormattedMessage
-                              id="comparisonCalculator.contentPerformance"
-                              values={{
-                                b: (chunks: string) => (
-                                  <strong style={{ fontWeight: 'bold' }}>{chunks}</strong>
-                                ),
-                                years: contentTextProperties.years,
-                                pillar: contentTextProperties.pillar,
-                              }}
-                            />{' '}
-                            {getContentTextVerdict()}
-                          </p>
-                        </div>
-                        <div className="mb-3">
-                          <p className="result-text">
-                            <FormattedMessage
-                              id="comparisonCalculator.contentExplanation"
-                              values={{
-                                b: (chunks: string) => (
-                                  <strong style={{ fontWeight: 'bold' }}>{chunks}</strong>
-                                ),
-                              }}
-                            />{' '}
-                          </p>
-                        </div>
-                        <div className="">
-                          <a
-                            href={contentTextProperties.ctaLink}
-                            className="btn btn-outline-primary"
-                          >
-                            <FormattedMessage
-                              id="comparisonCalculator.ctaButton"
-                              values={{ pillar: contentTextProperties.pillar }}
-                            />
-                          </a>
+                  <div className="container">
+                    <div className="content-section row justify-content-center pt-4 pb-4">
+                      <div className="col-md-7 order-2 order-md-1 d-flex flex-column">
+                        <div className="result-section text-left mt-5 pb-0 d-flex flex-column justify-content-between">
+                          <div className="mb-3">
+                            <p className="result-text">
+                              <FormattedMessage
+                                id="comparisonCalculator.contentPerformance"
+                                values={{
+                                  b: (chunks: string) => (
+                                    <strong style={{ fontWeight: 'bold' }}>{chunks}</strong>
+                                  ),
+                                  years: contentTextProperties.years,
+                                  pillar: contentTextProperties.pillar,
+                                }}
+                              />{' '}
+                              {getContentTextVerdict()}
+                            </p>
+                          </div>
+                          <div className="mb-3">
+                            <p className="result-text">
+                              <FormattedMessage
+                                id="comparisonCalculator.contentExplanation"
+                                values={{
+                                  b: (chunks: string) => (
+                                    <strong style={{ fontWeight: 'bold' }}>{chunks}</strong>
+                                  ),
+                                }}
+                              />{' '}
+                            </p>
+                          </div>
+                          <div className="">
+                            <a
+                              href={contentTextProperties.ctaLink}
+                              className="btn btn-outline-primary"
+                            >
+                              <FormattedMessage
+                                id="comparisonCalculator.ctaButton"
+                                values={{ pillar: contentTextProperties.pillar }}
+                              />
+                            </a>
+                          </div>
                         </div>
                       </div>
+                      {getGraphSection()}
                     </div>
-                    {getGraphSection()}
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="separator" />
+
+            <div className="footer-section text-center p-4">
+              <div className="footer-disclaimer">
+                <FormattedMessage id="comparisonCalculator.footerDisclaimer" />
+              </div>
+              <div className="footer-links container pt-3">
+                <div className="row justify-content-center">
+                  <div className="col-12 col-sm-6 col-md-auto">
+                    <a
+                      href="https://tuleva.ee/mida-need-numbrid-naitavad"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <FormattedMessage id="comparisonCalculator.footerNumbersExplanationLink" />
+                    </a>
+                  </div>
+                  <div className="col-12 col-sm-6 col-md-auto">
+                    <a
+                      href="https://tuleva.ee/analuusid/millist-tootlust-on-tulevas-oodata"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <FormattedMessage id="comparisonCalculator.footerPerformanceExplanationLink" />
+                    </a>
                   </div>
                 </div>
               </div>
-            )}
-          </div>
-          <div className="separator" />
-
-          <div className="footer-section text-center p-4">
-            <div className="footer-disclaimer">
-              <FormattedMessage id="comparisonCalculator.footerDisclaimer" />
-            </div>
-            <div className="footer-links container pt-3">
-              <div className="row justify-content-center">
-                <div className="col-12 col-sm-6 col-md-auto">
-                  <a
-                    href="https://tuleva.ee/mida-need-numbrid-naitavad"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <FormattedMessage id="comparisonCalculator.footerNumbersExplanationLink" />
-                  </a>
-                </div>
-                <div className="col-12 col-sm-6 col-md-auto">
-                  <a
-                    href="https://tuleva.ee/analuusid/millist-tootlust-on-tulevas-oodata"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <FormattedMessage id="comparisonCalculator.footerPerformanceExplanationLink" />
-                  </a>
-                </div>
-              </div>
             </div>
           </div>
-        </div>
-      ) : (
-        <Loader className="align-middle" />
-      )}
+        ) : (
+          <div className="p-4">
+            <Loader className="align-middle" />
+          </div>
+        )}
+      </div>
     </div>
   );
 
@@ -333,39 +345,63 @@ const ComparisonCalculator: React.FC = () => {
   }
 
   function getGraphBars() {
-    if (graphProperties.barCount === 2) {
-      return (
-        <div className="bar-container mt-5 d-flex">
-          <div className="col-md-5 col-sm-6">{getGraphBar(graphProperties.barProperties['1'])}</div>
-          <div className="col-md-5 col-sm-6">{getGraphBar(graphProperties.barProperties['2'])}</div>
-        </div>
-      );
-    }
-    if (graphProperties.barCount === 3) {
-      return (
-        <div className="bar-container mt-5 d-flex">
-          <div className="col-4">{getGraphBar(graphProperties.barProperties['1'])}</div>
-          <div className="col-4">{getGraphBar(graphProperties.barProperties['2'])}</div>
-          {graphProperties.barProperties['3'] && (
+    return (
+      <div className="bar-container mt-5 d-flex position-relative">
+        {graphProperties.barCount === 2 && (
+          <>
+            <div className="col-md-5 col-sm-6">
+              {getGraphBar(graphProperties.barProperties['1'])}
+            </div>
+            <div className="col-md-5 col-sm-6">
+              {getGraphBar(graphProperties.barProperties['2'])}
+            </div>
+          </>
+        )}
+        {graphProperties.barCount === 3 && graphProperties.barProperties['3'] && (
+          <>
+            <div className="col-4">{getGraphBar(graphProperties.barProperties['1'])}</div>
+            <div className="col-4">{getGraphBar(graphProperties.barProperties['2'])}</div>
             <div className="col-4">{getGraphBar(graphProperties.barProperties['3'])}</div>
-          )}
-        </div>
-      );
-    }
-    return <div />;
+          </>
+        )}
+      </div>
+    );
   }
 
   function getGraphBar(properties: GraphBarProperties) {
+    const isNegativeValue = properties.height < 0;
+    const height = Math.abs(properties.height);
+    const barCornerRadius = 5;
+    const barStyle = {
+      backgroundColor: properties.color,
+      top: isNegativeValue ? height : undefined,
+      borderTopLeftRadius: isNegativeValue ? 0 : barCornerRadius,
+      borderTopRightRadius: isNegativeValue ? 0 : barCornerRadius,
+      borderBottomLeftRadius: isNegativeValue ? barCornerRadius : 0,
+      borderBottomRightRadius: isNegativeValue ? barCornerRadius : 0,
+    };
+
+    const labelAndAmountMargin = 6;
+    const barLabelStyle = {
+      bottom: isNegativeValue ? height + labelAndAmountMargin : undefined,
+      top: isNegativeValue ? undefined : height + labelAndAmountMargin,
+    };
+
+    const barAmountStyle = {
+      bottom: isNegativeValue ? undefined : height + labelAndAmountMargin,
+      top: isNegativeValue ? height + labelAndAmountMargin : undefined,
+    };
+
     // eslint-disable-next-line no-nested-ternary
     return (
-      <div className="bar bar-2" style={{ backgroundColor: properties.color }}>
-        <div className="bar-value" style={{ bottom: `${properties.height + 8 + 32}px` }}>
+      <div className="bar bar-2 position-relative" style={barStyle}>
+        <div className="bar-amount" style={barAmountStyle}>
           {formatAmountForCurrency(properties.amount, 0)}
         </div>
-        <div className="bar-graph" style={{ height: `${properties.height}px` }}>
+        <div className="bar-graph" style={{ height: `${height}px` }}>
           <div className="bar-percentage">{properties.percentage}%</div>
         </div>
-        <div className="bar-label">
+        <div className="bar-label position-absolute" style={barLabelStyle}>
           {properties.label.includes('.') ? (
             <FormattedMessage id={properties.label} />
           ) : (
@@ -376,14 +412,19 @@ const ComparisonCalculator: React.FC = () => {
     );
   }
 
-  type BarHeights = {
-    personal: number;
-    pensionFund: number;
-    index: number;
-  };
-
   function calculateGraphBarHeights(): BarHeights {
-    const maxHeight = 200; // The maximum height for the graph bars in pixels
+    const minAmount = Math.min(
+      returns.personal?.amount ?? 0,
+      returns.pensionFund?.amount ?? 0,
+      returns.index?.amount ?? 0,
+    );
+
+    let maxHeight = 200;
+    let hasNegativeHeightBar = false;
+    if (minAmount < 0) {
+      maxHeight = 100;
+      hasNegativeHeightBar = true;
+    }
 
     const maxAmount = Math.max(
       returns.personal?.amount ?? 0,
@@ -395,6 +436,7 @@ const ComparisonCalculator: React.FC = () => {
       personal: returns.personal ? (returns.personal.amount / maxAmount) * maxHeight : 0,
       pensionFund: returns.pensionFund ? (returns.pensionFund.amount / maxAmount) * maxHeight : 0,
       index: returns.index ? (returns.index.amount / maxAmount) * maxHeight : 0,
+      hasNegativeHeightBar,
     };
   }
 
@@ -539,6 +581,7 @@ const ComparisonCalculator: React.FC = () => {
     if (returns.pensionFund) {
       setGraphProperties({
         barCount: 3,
+        hasNegativeValueBar: barHeights.hasNegativeHeightBar,
         barProperties: {
           1: personalBarProperties,
           2: comparisonBarProperties,
@@ -548,6 +591,7 @@ const ComparisonCalculator: React.FC = () => {
     } else {
       setGraphProperties({
         barCount: 2,
+        hasNegativeValueBar: barHeights.hasNegativeHeightBar,
         barProperties: {
           1: personalBarProperties,
           2: indexBarProperties,
@@ -581,6 +625,7 @@ const ComparisonCalculator: React.FC = () => {
   function getInitialGraphProperties(): GraphProperties {
     return {
       barCount: 2,
+      hasNegativeValueBar: false,
       barProperties: {
         1: {
           color: 'orange',
