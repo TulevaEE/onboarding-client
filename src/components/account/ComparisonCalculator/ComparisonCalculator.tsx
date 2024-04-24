@@ -166,7 +166,7 @@ const ComparisonCalculator: React.FC = () => {
     <div className="comparison-calculator">
       {!loadingInitialData ? (
         <div className="card card-primary">
-          <div className="header-section">
+          <div className="header-section container p-4">
             <div className="row justify-content-center">
               <div className="btn-group">
                 <button
@@ -214,71 +214,78 @@ const ComparisonCalculator: React.FC = () => {
             </div>
           </div>
           <div className="separator" />
-          {loadingReturns ? (
-            <Loader className="align-middle" />
-          ) : (
-            <div>
-              {contentTextProperties.years < 3 && (
-                <div className="alert alert-warning rounded-0 text-center" role="alert">
-                  <FormattedMessage id="comparisonCalculator.shortTimePeriodWarning" />
-                  <a href="/warning" className="text-success">
-                    {' '}
-                    <FormattedMessage id="comparisonCalculator.shortTimePeriodWarningLink" />
-                  </a>
-                </div>
-              )}
+          <div className="middle-section d-flex justify-content-center align-items-center">
+            {loadingReturns ? (
+              <Loader className="align-middle" />
+            ) : (
+              <div>
+                {contentTextProperties.years < 3 && (
+                  <div className="alert alert-warning rounded-0 text-center" role="alert">
+                    <FormattedMessage id="comparisonCalculator.shortTimePeriodWarning" />
+                    <a href="/warning" className="text-success">
+                      {' '}
+                      <FormattedMessage id="comparisonCalculator.shortTimePeriodWarningLink" />
+                    </a>
+                  </div>
+                )}
 
-              <div className="content-section row justify-content-center">
-                <div className="col-md-7 order-2 order-md-1 d-flex flex-column">
-                  <div className="result-section text-left mt-5 pb-0 d-flex flex-column justify-content-between">
-                    <div className="mb-3">
-                      <p className="result-text">
-                        <FormattedMessage
-                          id="comparisonCalculator.contentPerformance"
-                          values={{
-                            b: (chunks: string) => (
-                              <strong style={{ fontWeight: 'bold' }}>{chunks}</strong>
-                            ),
-                            years: contentTextProperties.years,
-                            pillar: contentTextProperties.pillar,
-                          }}
-                        />{' '}
-                        {getContentTextVerdict()}
-                      </p>
+                <div className="container">
+                  <div className="content-section row justify-content-center pt-4 pb-4">
+                    <div className="col-md-7 order-2 order-md-1 d-flex flex-column">
+                      <div className="result-section text-left mt-5 pb-0 d-flex flex-column justify-content-between">
+                        <div className="mb-3">
+                          <p className="result-text">
+                            <FormattedMessage
+                              id="comparisonCalculator.contentPerformance"
+                              values={{
+                                b: (chunks: string) => (
+                                  <strong style={{ fontWeight: 'bold' }}>{chunks}</strong>
+                                ),
+                                years: contentTextProperties.years,
+                                pillar: contentTextProperties.pillar,
+                              }}
+                            />{' '}
+                            {getContentTextVerdict()}
+                          </p>
+                        </div>
+                        <div className="mb-3">
+                          <p className="result-text">
+                            <FormattedMessage
+                              id="comparisonCalculator.contentExplanation"
+                              values={{
+                                b: (chunks: string) => (
+                                  <strong style={{ fontWeight: 'bold' }}>{chunks}</strong>
+                                ),
+                              }}
+                            />{' '}
+                          </p>
+                        </div>
+                        <div className="">
+                          <a
+                            href={contentTextProperties.ctaLink}
+                            className="btn btn-outline-primary"
+                          >
+                            <FormattedMessage
+                              id="comparisonCalculator.ctaButton"
+                              values={{ pillar: contentTextProperties.pillar }}
+                            />
+                          </a>
+                        </div>
+                      </div>
                     </div>
-                    <div className="mb-3">
-                      <p className="result-text">
-                        <FormattedMessage
-                          id="comparisonCalculator.contentExplanation"
-                          values={{
-                            b: (chunks: string) => (
-                              <strong style={{ fontWeight: 'bold' }}>{chunks}</strong>
-                            ),
-                          }}
-                        />{' '}
-                      </p>
-                    </div>
-                    <div className="">
-                      <a href={contentTextProperties.ctaLink} className="btn btn-outline-primary">
-                        <FormattedMessage
-                          id="comparisonCalculator.ctaButton"
-                          values={{ pillar: contentTextProperties.pillar }}
-                        />
-                      </a>
-                    </div>
+                    {getGraphSection()}
                   </div>
                 </div>
-                {getGraphSection()}
               </div>
-            </div>
-          )}
+            )}
+          </div>
           <div className="separator" />
 
-          <div className="footer-section text-center">
+          <div className="footer-section text-center p-4">
             <div className="footer-disclaimer">
               <FormattedMessage id="comparisonCalculator.footerDisclaimer" />
             </div>
-            <div className="footer-links pt-3">
+            <div className="footer-links container pt-3">
               <div className="row justify-content-center">
                 <div className="col-12 col-sm-6 col-md-auto">
                   <a
@@ -350,11 +357,9 @@ const ComparisonCalculator: React.FC = () => {
 
   function getGraphBar(properties: GraphBarProperties) {
     // eslint-disable-next-line no-nested-ternary
-    const amountSign = properties.amount > 0 ? '+' : properties.amount < 0 ? '-' : '';
     return (
       <div className="bar bar-2" style={{ backgroundColor: properties.color }}>
         <div className="bar-value" style={{ bottom: `${properties.height + 8 + 32}px` }}>
-          {amountSign}
           {formatAmountForCurrency(properties.amount, 0)}
         </div>
         <div className="bar-graph" style={{ height: `${properties.height}px` }}>
