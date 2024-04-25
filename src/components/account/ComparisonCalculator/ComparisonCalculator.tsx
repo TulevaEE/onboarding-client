@@ -231,15 +231,21 @@ const ComparisonCalculator: React.FC = () => {
                   {contentTextProperties.years < 3 && (
                     <div className="alert alert-warning rounded-0 text-center" role="alert">
                       <FormattedMessage id="comparisonCalculator.shortTimePeriodWarning" />
-                      <a href="/warning" className="text-success">
+                      <a
+                        href="/soovitused/laura-rikkaks-4/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-success"
+                      >
                         {' '}
                         <FormattedMessage id="comparisonCalculator.shortTimePeriodWarningLink" />
                       </a>
                     </div>
                   )}
 
-                  <div className="container">
-                    <div className="content-section row justify-content-center pt-4 pb-5">
+                  <div className="container p-4">
+                    {/* <div className="content-section row justify-content-center pt-4 pb-5"> */}
+                    <div className="content-section row justify-content-center">
                       <div className="col-md-7 order-2 order-md-1 d-flex flex-column">
                         <div className="result-section text-left mt-5 pb-0 d-flex flex-column justify-content-between">
                           <div className="mb-3">
