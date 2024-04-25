@@ -1,15 +1,12 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { connect, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
-import {
-  EXTERNAL_AUTHENTICATOR_REDIRECT_URI,
-  finish as finishProcedure,
-} from '../../../TriggerProcedure/utils';
+import { finish as finishProcedure } from '../../../TriggerProcedure/utils';
 import { State } from '../../../../types';
 import pig from './pig.svg';
 import { SuccessNotice2 } from '../../common/SuccessNotice2/SuccessNotice2';
 import { Notice } from '../../common/Notice/Notice';
+import { BackToInternetBankButton } from './BackToInternetBankButton';
 
 interface Props {
   recurringPaymentCount: number;
@@ -17,7 +14,6 @@ interface Props {
 
 export const BackToPartner: React.FC<Props> = ({ recurringPaymentCount }) => {
   const personalCode = useSelector<State, string>((state) => state.login.user?.personalCode);
-  const redirectUri = sessionStorage.getItem(EXTERNAL_AUTHENTICATOR_REDIRECT_URI);
 
   return (
     <>
@@ -25,9 +21,12 @@ export const BackToPartner: React.FC<Props> = ({ recurringPaymentCount }) => {
         <h2 className="mt-3">
           <FormattedMessage id="thirdPillarBackToPartner.opened" />
         </h2>
-        <Link to="/account">
-          <FormattedMessage id="thirdPillarBackToPartner.account" />
-        </Link>
+        <div className="d-flex justify-content-center mt-4">
+          <a className="btn btn-outline-primary flex-grow-1 flex-md-grow-0" href="/account">
+            <FormattedMessage id="thirdPillarBackToPartner.account" />
+          </a>
+        </div>
+        <BackToInternetBankButton />
       </SuccessNotice2>
 
       <Notice>
@@ -74,19 +73,6 @@ export const BackToPartner: React.FC<Props> = ({ recurringPaymentCount }) => {
             <FormattedMessage id="thirdPillarBackToPartner.singlePayment.button" />
           </button>
         </div>
-        {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          !(window as any).ReactNativeWebView && redirectUri ? (
-            <div className="d-flex justify-content-center mt-2">
-              <a href={redirectUri}>
-                <FormattedMessage id="thirdPillarBackToPartner.back.button" />
-              </a>
-            </div>
-          ) : (
-            ''
-          )
-        }
-
         <p className="mt-2 mb-0">
           <small className="text-muted">
             <FormattedMessage id="thirdPillarBackToPartner.payment.subtitle" />

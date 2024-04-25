@@ -7,6 +7,7 @@ import { SuccessNotice2 } from '../../common/SuccessNotice2/SuccessNotice2';
 import { State } from '../../../../types';
 import { Notice } from '../../common/Notice/Notice';
 import whatshot from './whatshot.svg';
+import { BackToInternetBankButton } from '../../partner/BackToPartner/BackToInternetBankButton';
 
 interface Props {
   userContributingFuturePayments: boolean;
@@ -46,9 +47,10 @@ export const Success: React.FC<Props> = ({
 
       <div className="d-flex justify-content-center mt-4">
         <a className="btn btn-outline-primary flex-grow-1 flex-md-grow-0" href="/account">
-          <FormattedMessage id="thirdPillarBackToPartner.account" />
+          <FormattedMessage id="success.backToAccount" />
         </a>
       </div>
+      <BackToInternetBankButton />
     </SuccessNotice2>
     <Notice>
       <img src={whatshot} alt="" />
