@@ -239,7 +239,7 @@ const ComparisonCalculator: React.FC = () => {
                   )}
 
                   <div className="container">
-                    <div className="content-section row justify-content-center pt-4 pb-4">
+                    <div className="content-section row justify-content-center pt-4 pb-5">
                       <div className="col-md-7 order-2 order-md-1 d-flex flex-column">
                         <div className="result-section text-left mt-5 pb-0 d-flex flex-column justify-content-between">
                           <div className="mb-3">
