@@ -550,22 +550,26 @@ const ComparisonCalculator: React.FC = () => {
   function setContentProperties() {
     setGraphProperties(getInitialGraphProperties());
     const barHeights = calculateGraphBarHeights();
+
+    const redColorThreshold = 0.01;
+    const colorRed = '#FF4800';
+    const colorGreen = '#51C26C';
+    const colorBlue = '#0081EE';
+
     const indexBarProperties: GraphBarProperties = {
-      color: 'blue',
+      color: colorBlue,
       amount: returns.index ? returns.index.amount : 0,
       percentage: returns.index ? formatPercentage(returns.index.rate) : 0,
       height: barHeights.index,
       label: 'comparisonCalculator.graphWorldMarketStockIndex',
     };
 
-    const redColorThreshold = 0.01;
-
     const personalBarColor =
       returns.personal &&
       returns.index &&
       returns.personal.rate + redColorThreshold < returns.index.rate
-        ? 'red'
-        : 'green';
+        ? colorRed
+        : colorGreen;
 
     const personalBarProperties: GraphBarProperties = {
       color: personalBarColor,
@@ -579,11 +583,11 @@ const ComparisonCalculator: React.FC = () => {
     };
 
     const comparisonBarColor =
-      returns.personal &&
+      returns.pensionFund &&
       returns.index &&
-      returns.personal.rate + redColorThreshold < returns.index.rate
-        ? 'red'
-        : 'green';
+      returns.pensionFund.rate + redColorThreshold < returns.index.rate
+        ? colorRed
+        : colorGreen;
 
     const comparisonFundIsin = returns.pensionFund ? returns.pensionFund.key : '';
     const comparisonFundLabel =
