@@ -329,7 +329,7 @@ const ComparisonCalculator: React.FC = () => {
 
   function getGraphSection() {
     return (
-      <div className="graph-section col-md-5 order-1 order-md-2 d-flex flex-column mb-4">
+      <div className="graph-section col-md-5 order-1 order-md-2 d-flex flex-column mb-5">
         {getGraphBars()}
         <div className="bottom-divider">
           <div className="container-fluid">

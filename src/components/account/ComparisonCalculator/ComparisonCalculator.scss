@@ -18,7 +18,6 @@
   }
 
   .header-section {
-
     //To scale header buttons on smaller screens
     @media (max-width: 768px) {
       .btn-group {
@@ -52,9 +51,8 @@
     }
   }
 
-
   .middle-section{
-    min-height: 365px;
+    min-height: 370px;
     .content-section {
 
       .result-section {
@@ -170,12 +168,9 @@
           .row > div {
             height: 1px;
           }
-
         }
       }
 
     }
-
   }
-
 }
