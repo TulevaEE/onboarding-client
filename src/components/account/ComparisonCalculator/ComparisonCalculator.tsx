@@ -498,7 +498,6 @@ const ComparisonCalculator: React.FC = () => {
   }
 
   async function loadReturns(): Promise<void> {
-    // const { fromDate, selectedPersonalKey, selectedFundKey, selectedIndexKey } = this.state;
     const selectedPersonalKey = selectedPillar;
     const fromDate = selectedTimePeriod;
     let selectedFundKey = selectedComparison;
@@ -559,8 +558,17 @@ const ComparisonCalculator: React.FC = () => {
       label: 'comparisonCalculator.graphWorldMarketStockIndex',
     };
 
+    const redColorThreshold = 0.01;
+
+    const personalBarColor =
+      returns.personal &&
+      returns.index &&
+      returns.personal.rate + redColorThreshold < returns.index.rate
+        ? 'red'
+        : 'green';
+
     const personalBarProperties: GraphBarProperties = {
-      color: 'green',
+      color: personalBarColor,
       amount: returns.personal ? returns.personal.amount : 0,
       percentage: returns.personal ? formatPercentage(returns.personal.rate) : 0,
       height: barHeights.personal,
@@ -570,12 +578,23 @@ const ComparisonCalculator: React.FC = () => {
           : 'comparisonCalculator.graphYourIIIPillar',
     };
 
+    const comparisonBarColor =
+      returns.personal &&
+      returns.index &&
+      returns.personal.rate + redColorThreshold < returns.index.rate
+        ? 'red'
+        : 'green';
+
+    const comparisonFundIsin = returns.pensionFund ? returns.pensionFund.key : '';
+    const comparisonFundLabel =
+      [...secondPillarFunds, ...thirdPillarFunds].find((it) => it.isin === comparisonFundIsin)
+        ?.name || comparisonFundIsin;
     const comparisonBarProperties: GraphBarProperties = {
-      color: 'red',
+      color: comparisonBarColor,
       amount: returns.pensionFund ? returns.pensionFund.amount : 0,
       percentage: returns.pensionFund ? formatPercentage(returns.pensionFund.rate) : 0,
       height: barHeights.pensionFund,
-      label: returns.pensionFund ? returns.pensionFund.key : '',
+      label: comparisonFundLabel,
     };
 
     if (returns.pensionFund) {
