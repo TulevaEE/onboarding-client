@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './ComparisonCalculator.scss';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage, MessageDescriptor, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import moment, { Moment } from 'moment/moment';
 import { formatAmountForCurrency } from '../../common/utils';
@@ -13,11 +13,7 @@ import {
   THIRD_PILLAR_INCEPTION,
 } from '../ReturnComparison/ReturnComparison';
 import Loader from '../../common/loader';
-
-interface Option {
-  value: string;
-  label: string;
-}
+import { Option, OptionGroup } from '../ReturnComparison/select/Select';
 
 interface GraphBarProperties {
   color: string;
@@ -35,6 +31,22 @@ interface GraphProperties {
     2: GraphBarProperties;
     3: GraphBarProperties | undefined;
   };
+}
+
+enum PerformanceVerdict {
+  POSITIVE_ALPHA = 'POSITIVE_ALPHA',
+  NEGATIVE_ALPHA = 'NEGATIVE_ALPHA',
+  NEUTRAL = 'NEUTRAL',
+}
+
+enum PerformanceVerdictComparison {
+  WORLD_INDEX = 'WORLD_INDEX',
+  FUND = 'FUND',
+  INFLATION = 'INFLATION',
+}
+interface PerformanceVerdictProperties {
+  verdict: PerformanceVerdict;
+  comparison: PerformanceVerdictComparison;
 }
 
 interface ContentTextProperties {
@@ -63,12 +75,31 @@ type BarHeights = {
   hasNegativeHeightBar: boolean;
 };
 
+interface FormatValues {
+  [key: string]: string | JSX.Element | ((chunks: string | JSX.Element) => JSX.Element);
+}
+
+interface FormatTagsMessageDescriptor extends MessageDescriptor {
+  id: string;
+  values?: FormatValues;
+}
+
+const formatMessageWithTags = ({ id, values }: FormatTagsMessageDescriptor) => (
+  <FormattedMessage
+    id={id}
+    values={{
+      b: (chunks: string | JSX.Element) => <strong style={{ fontWeight: 'bold' }}>{chunks}</strong>,
+      ...values,
+    }}
+  />
+);
+
 const ComparisonCalculator: React.FC = () => {
   const { formatMessage } = useIntl();
 
   const [selectedPillar, setSelectedPillar] = useState<Key>(Key.SECOND_PILLAR);
   const [selectedTimePeriod, setSelectedTimePeriod] = useState<string>('');
-  const [selectedComparison, setSelectedComparison] = useState<string>('');
+  const [selectedComparison, setSelectedComparison] = useState<string>(Key.UNION_STOCK_INDEX);
   const [loadingInitialData, setLoadingInitialData] = useState<boolean>(true);
   const [loadingReturns, setLoadingReturns] = useState<boolean>(false);
   const [contentTextProperties, setContentTextProperties] = useState<ContentTextProperties>({
@@ -97,14 +128,9 @@ const ComparisonCalculator: React.FC = () => {
   );
 
   useEffect(() => {
-    if (secondPillarFunds.length > 0) {
-      const options = secondPillarFunds.map((fund) => ({ value: fund.isin, label: fund.name }));
-      setSecondPillarFundsOptions(options);
+    if (secondPillarFunds.length > 0 && thirdPillarFunds.length > 0) {
       setLoadingInitialData(false);
-    }
-    if (thirdPillarFunds.length > 0) {
-      const options = thirdPillarFunds.map((fund) => ({ value: fund.isin, label: fund.name }));
-      setThirdPillarFundsOptions(options);
+      populateCompareToOptions();
     }
   }, [secondPillarFunds, thirdPillarFunds]);
 
@@ -117,6 +143,10 @@ const ComparisonCalculator: React.FC = () => {
   useEffect(() => {
     loadReturns();
   }, [selectedComparison, selectedTimePeriod, selectedPillar]);
+
+  useEffect(() => {
+    populateCompareToOptions();
+  }, [selectedPillar]);
 
   useEffect(() => {
     setContentProperties();
@@ -135,11 +165,11 @@ const ComparisonCalculator: React.FC = () => {
       }
       const returnAmount = returns.personal?.amount - returns.index?.amount;
       setContentTextProperties({
-        years: getFullYearsSince(returns.from),
+        years: getFullYearsSince(returns.from), // need this to know when to show warning message
         amount: returnAmount,
         pillar: pillarAsString,
         ctaLink,
-        positivePerformanceVerdict: returnAmount >= 0,
+        positivePerformanceVerdict: returnAmount >= 0, // TODO remove this and use Performance verdict
       });
     }
   }, [returns]);
@@ -148,26 +178,12 @@ const ComparisonCalculator: React.FC = () => {
     getInitialGraphProperties(),
   );
 
-  const [secondPillarFundsOptions, setSecondPillarFundsOptions] = useState<Option[]>([]);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [thirdPillarFundsOptions, setThirdPillarFundsOptions] = useState<Option[]>([]);
+  const [performanceVerdictProperties, setPerformanceVerdictProperties] =
+    useState<PerformanceVerdictProperties>(getInitialPerformanceVerdictProperties());
+  const [comparisonOptions, setComparisonOptions] = useState<OptionGroup[]>([]);
 
   const getTimePeriodOptions = (): Option[] => {
     return getFromDateOptions();
-  };
-
-  const getCompareToOptions = (): Option[] => {
-    const stockIndexOption = {
-      value: Key.UNION_STOCK_INDEX,
-      label: formatMessage({ id: 'comparisonCalculator.index.unionStockIndex' }),
-    };
-    if (selectedPillar === Key.SECOND_PILLAR) {
-      return [stockIndexOption, ...secondPillarFundsOptions];
-    }
-    if (selectedPillar === Key.THIRD_PILLAR) {
-      return [stockIndexOption, ...thirdPillarFundsOptions];
-    }
-    return [];
   };
 
   return (
@@ -214,7 +230,7 @@ const ComparisonCalculator: React.FC = () => {
                     <FormattedMessage id="comparisonCalculator.comparedTo" />:{' '}
                   </label>
                   <Select
-                    options={getCompareToOptions()}
+                    options={comparisonOptions}
                     translate={false}
                     selected={selectedComparison}
                     onChange={setSelectedComparison}
@@ -244,51 +260,13 @@ const ComparisonCalculator: React.FC = () => {
                   )}
 
                   <div className="container p-4">
-                    {/* <div className="content-section row justify-content-center pt-4 pb-5"> */}
                     <div className="content-section row justify-content-center">
                       <div className="col-md-7 order-2 order-md-1 d-flex flex-column">
-                        <div className="result-section text-left mt-5 pb-0 d-flex flex-column justify-content-between">
-                          <div className="mb-3">
-                            <p className="result-text">
-                              <FormattedMessage
-                                id="comparisonCalculator.contentPerformance"
-                                values={{
-                                  b: (chunks: string) => (
-                                    <strong style={{ fontWeight: 'bold' }}>{chunks}</strong>
-                                  ),
-                                  years: contentTextProperties.years,
-                                  pillar: contentTextProperties.pillar,
-                                }}
-                              />{' '}
-                              {getContentTextVerdict()}
-                            </p>
-                          </div>
-                          <div className="mb-3">
-                            <p className="result-text">
-                              <FormattedMessage
-                                id="comparisonCalculator.contentExplanation"
-                                values={{
-                                  b: (chunks: string) => (
-                                    <strong style={{ fontWeight: 'bold' }}>{chunks}</strong>
-                                  ),
-                                }}
-                              />{' '}
-                            </p>
-                          </div>
-                          <div className="">
-                            <a
-                              href={contentTextProperties.ctaLink}
-                              className="btn btn-outline-primary"
-                            >
-                              <FormattedMessage
-                                id="comparisonCalculator.ctaButton"
-                                values={{ pillar: contentTextProperties.pillar }}
-                              />
-                            </a>
-                          </div>
-                        </div>
+                        {getResultSection()}
                       </div>
-                      {getGraphSection()}
+                      <div className="graph-section col-md-5 order-1 order-md-2 d-flex flex-column mb-5">
+                        {getGraphSection()}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -297,8 +275,10 @@ const ComparisonCalculator: React.FC = () => {
             <div className="separator" />
 
             <div className="footer-section text-center p-4">
-              <div className="footer-disclaimer">
-                <FormattedMessage id="comparisonCalculator.footerDisclaimer" />
+              <div className="footer-disclaimer text-secondary">
+                <small>
+                  <FormattedMessage id="comparisonCalculator.footerDisclaimer" />
+                </small>
               </div>
               <div className="footer-links container pt-3">
                 <div className="row justify-content-center">
@@ -335,7 +315,7 @@ const ComparisonCalculator: React.FC = () => {
 
   function getGraphSection() {
     return (
-      <div className="graph-section col-md-5 order-1 order-md-2 d-flex flex-column mb-5">
+      <>
         {getGraphBars()}
         <div className="bottom-divider">
           <div className="container-fluid">
@@ -346,7 +326,7 @@ const ComparisonCalculator: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
+      </>
     );
   }
 
@@ -530,31 +510,61 @@ const ComparisonCalculator: React.FC = () => {
     }
   }
 
-  function getContentTextVerdict() {
-    if (contentTextProperties.positivePerformanceVerdict) {
-      return (
-        <>
-          <FormattedMessage id="comparisonCalculator.contentPerformanceWordPositive" />{' '}
-          <span className="result-positive">
-            {formatAmountForCurrency(contentTextProperties.amount, 0)}
-          </span>{' '}
-          <FormattedMessage id="comparisonCalculator.contentPerformancePositiveVerdict" />
-        </>
-      );
+  function calculatePerformanceVerdictProperties(): void {
+    function calculatePerformanceVerdict(
+      personalRate: number,
+      comparisonRate: number,
+    ): PerformanceVerdict {
+      const comparisonAlphaThreshold = 0.01;
+      const difference = personalRate - comparisonRate;
+      if (difference > 0 && difference > comparisonAlphaThreshold) {
+        return PerformanceVerdict.POSITIVE_ALPHA;
+      }
+      if (difference < 0 && difference < -comparisonAlphaThreshold) {
+        return PerformanceVerdict.NEGATIVE_ALPHA;
+      }
+      return PerformanceVerdict.NEUTRAL;
     }
-    return (
-      <>
-        <FormattedMessage id="comparisonCalculator.contentPerformanceWordNegative" />{' '}
-        <span className="result-negative">
-          {formatAmountForCurrency(contentTextProperties.amount, 0)}
-        </span>{' '}
-        <FormattedMessage id="comparisonCalculator.contentPerformanceNegativeVerdict" />
-      </>
-    );
+
+    let performanceVerdictProps: PerformanceVerdictProperties;
+    if (selectedComparison === Key.UNION_STOCK_INDEX) {
+      const performanceVerdict: PerformanceVerdict =
+        (returns.personal &&
+          returns.index &&
+          calculatePerformanceVerdict(returns.personal.rate, returns.index.rate)) ||
+        PerformanceVerdict.NEUTRAL;
+
+      performanceVerdictProps = {
+        comparison: PerformanceVerdictComparison.WORLD_INDEX,
+        verdict: performanceVerdict,
+      };
+    } else if (selectedComparison === Key.CPI) {
+      const performanceVerdict: PerformanceVerdict =
+        (returns.personal &&
+          returns.pensionFund &&
+          calculatePerformanceVerdict(returns.personal.rate, returns.pensionFund.rate)) ||
+        PerformanceVerdict.NEUTRAL;
+
+      performanceVerdictProps = {
+        comparison: PerformanceVerdictComparison.INFLATION,
+        verdict: performanceVerdict,
+      };
+    } else {
+      const performanceVerdict: PerformanceVerdict =
+        (returns.personal &&
+          returns.pensionFund &&
+          calculatePerformanceVerdict(returns.personal.rate, returns.pensionFund.rate)) ||
+        PerformanceVerdict.NEUTRAL;
+
+      performanceVerdictProps = {
+        comparison: PerformanceVerdictComparison.FUND,
+        verdict: performanceVerdict,
+      };
+    }
+    setPerformanceVerdictProperties(performanceVerdictProps);
   }
 
-  function setContentProperties() {
-    setGraphProperties(getInitialGraphProperties());
+  function calculateGraphProperties(): void {
     const barHeights = calculateGraphBarHeights();
 
     const redColorThreshold = 0.01;
@@ -596,9 +606,8 @@ const ComparisonCalculator: React.FC = () => {
         : colorGreen;
 
     const comparisonFundIsin = returns.pensionFund ? returns.pensionFund.key : '';
-    const comparisonFundLabel =
-      [...secondPillarFunds, ...thirdPillarFunds].find((it) => it.isin === comparisonFundIsin)
-        ?.name || comparisonFundIsin;
+
+    const comparisonFundLabel = getFundLabelByKey(comparisonFundIsin);
     const comparisonBarProperties: GraphBarProperties = {
       color: comparisonBarColor,
       amount: returns.pensionFund ? returns.pensionFund.amount : 0,
@@ -634,6 +643,13 @@ const ComparisonCalculator: React.FC = () => {
     }
   }
 
+  function setContentProperties() {
+    setGraphProperties(getInitialGraphProperties());
+    setPerformanceVerdictProperties(getInitialPerformanceVerdictProperties());
+    calculatePerformanceVerdictProperties();
+    calculateGraphProperties();
+  }
+
   function getFullYearsSince(dateString: string): number {
     const startDate = new Date(dateString);
     const currentDate = new Date();
@@ -649,6 +665,13 @@ const ComparisonCalculator: React.FC = () => {
     }
 
     return yearsDifference;
+  }
+
+  function getInitialPerformanceVerdictProperties(): PerformanceVerdictProperties {
+    return {
+      comparison: PerformanceVerdictComparison.WORLD_INDEX,
+      verdict: PerformanceVerdict.NEUTRAL,
+    };
   }
 
   function getInitialGraphProperties(): GraphProperties {
@@ -679,6 +702,373 @@ const ComparisonCalculator: React.FC = () => {
         },
       },
     };
+  }
+
+  function populateCompareToOptions() {
+    const stockIndexOption = {
+      value: Key.UNION_STOCK_INDEX,
+      label: formatMessage({ id: 'comparisonCalculator.comparisonOptions.unionStockIndex' }),
+    };
+
+    const inflationOption = {
+      value: Key.CPI,
+      label: formatMessage({ id: 'comparisonCalculator.comparisonOptions.cpi' }),
+    };
+
+    const secondPillarAverageOption = {
+      value: Key.EPI,
+      label: formatMessage({ id: 'comparisonCalculator.comparisonOptions.epi' }),
+    };
+
+    let funds = secondPillarFunds;
+    if (selectedPillar === Key.THIRD_PILLAR) {
+      funds = thirdPillarFunds;
+    }
+
+    const benchmarkOptions = [stockIndexOption];
+    if (selectedPillar === Key.SECOND_PILLAR) {
+      benchmarkOptions.push(secondPillarAverageOption);
+    }
+    benchmarkOptions.push(inflationOption);
+
+    const lowFeeFundThreshold = 0.005;
+    const lowFeeFunds = sortFundsWithTulevaFirst(
+      funds.filter((fund) => fund.ongoingChargesFigure < lowFeeFundThreshold),
+    );
+
+    const lowFeeComparisonOptions: Option[] = lowFeeFunds.map((fund: Fund) => ({
+      value: fund.isin,
+      label: fund.name,
+    }));
+
+    const highFeeFunds = funds.filter((fund) => fund.ongoingChargesFigure >= lowFeeFundThreshold);
+    const highFeeComparisonOptions: Option[] = highFeeFunds.map((fund: Fund) => ({
+      value: fund.isin,
+      label: fund.name,
+    }));
+
+    const lowestHighFeeFund =
+      Math.round(Math.min(...highFeeFunds.map((fund) => fund.ongoingChargesFigure)) * 10000) / 100;
+
+    const groups: OptionGroup[] = [
+      {
+        label: formatMessage({ id: 'comparisonCalculator.comparisonOptions.benchmarks' }),
+        options: benchmarkOptions,
+      },
+      {
+        label: formatMessage({
+          id: 'comparisonCalculator.comparisonOptions.lowFeeFunds',
+        }),
+        options: lowFeeComparisonOptions,
+      },
+      {
+        label: formatMessage(
+          {
+            id: 'comparisonCalculator.comparisonOptions.highFeeFunds',
+          },
+          {
+            minimumFee: lowestHighFeeFund,
+          },
+        ),
+        options: highFeeComparisonOptions,
+      },
+    ];
+
+    setComparisonOptions(groups);
+  }
+
+  function sortFundsWithTulevaFirst(funds: Fund[]): Fund[] {
+    const tulevaFunds = funds.filter((fund) => fund.name.includes('Tuleva'));
+
+    // Filter other funds and sort them alphabetically by name
+    const otherFunds = funds
+      .filter((fund) => !fund.name.includes('Tuleva'))
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    return [...tulevaFunds, ...otherFunds];
+  }
+
+  function getResultSection() {
+    return (
+      <div className="result-section text-left mt-5 pb-0 d-flex flex-column justify-content-between">
+        <div className="mb-3">
+          <p className="result-text">{getContentTextVerdict()}</p>
+        </div>
+        <div className="mb-3">
+          <p className="result-text">{getContentTextExplanation()} </p>
+        </div>
+        <div className="">
+          <a href={contentTextProperties.ctaLink} className="btn btn-outline-primary">
+            <FormattedMessage
+              id="comparisonCalculator.ctaButton"
+              values={{ pillar: contentTextProperties.pillar }}
+            />
+          </a>
+        </div>
+        <div className="text-secondary pt-2">
+          <small>{getContentTextCtaSubtext()}</small>
+        </div>
+      </div>
+    );
+  }
+
+  function getContentTextVerdict() {
+    if (performanceVerdictProperties.comparison === PerformanceVerdictComparison.WORLD_INDEX) {
+      if (performanceVerdictProperties.verdict === PerformanceVerdict.POSITIVE_ALPHA) {
+        return (
+          <>
+            {formatMessageWithTags({
+              id: 'comparisonCalculator.content.performance.index.alpha.start',
+              values: {
+                years: contentTextProperties.years.toString(),
+                pillar: contentTextProperties.pillar,
+              },
+            })}{' '}
+            <FormattedMessage id="comparisonCalculator.content.performance.index.alpha.wordPositive" />{' '}
+            <span className="result-positive">
+              {formatAmountForCurrency(contentTextProperties.amount, 0)}
+            </span>{' '}
+            <FormattedMessage id="comparisonCalculator.content.performance.index.alpha.positiveVerdict" />
+          </>
+        );
+      }
+      if (performanceVerdictProperties.verdict === PerformanceVerdict.NEUTRAL) {
+        return (
+          <>
+            {formatMessageWithTags({
+              id: 'comparisonCalculator.content.performance.index.neutral.start',
+              values: {
+                years: contentTextProperties.years.toString(),
+                pillar: contentTextProperties.pillar,
+              },
+            })}{' '}
+          </>
+        );
+      }
+      if (performanceVerdictProperties.verdict === PerformanceVerdict.NEGATIVE_ALPHA) {
+        return (
+          <>
+            {formatMessageWithTags({
+              id: 'comparisonCalculator.content.performance.index.alpha.start',
+              values: {
+                years: contentTextProperties.years.toString(),
+                pillar: contentTextProperties.pillar,
+              },
+            })}{' '}
+            <FormattedMessage id="comparisonCalculator.content.performance.index.alpha.wordNegative" />{' '}
+            <span className="result-negative">
+              {formatAmountForCurrency(contentTextProperties.amount, 0)}
+            </span>{' '}
+            <FormattedMessage id="comparisonCalculator.content.performance.index.alpha.negativeVerdict" />
+          </>
+        );
+      }
+    }
+
+    if (performanceVerdictProperties.comparison === PerformanceVerdictComparison.FUND) {
+      const fundLabel = getFundLabelByKey(selectedComparison);
+      if (performanceVerdictProperties.verdict === PerformanceVerdict.POSITIVE_ALPHA) {
+        return (
+          <>
+            {formatMessageWithTags({
+              id: 'comparisonCalculator.content.performance.fund.alpha.start',
+              values: {
+                years: contentTextProperties.years.toString(),
+                pillar: contentTextProperties.pillar,
+                fund: fundLabel,
+              },
+            })}{' '}
+            <FormattedMessage id="comparisonCalculator.content.performance.fund.alpha.wordPositive" />{' '}
+            <span className="result-positive">
+              {formatAmountForCurrency(contentTextProperties.amount, 0)}
+            </span>{' '}
+            <FormattedMessage id="comparisonCalculator.content.performance.fund.alpha.positiveVerdict" />
+          </>
+        );
+      }
+      if (performanceVerdictProperties.verdict === PerformanceVerdict.NEUTRAL) {
+        return (
+          <>
+            {formatMessageWithTags({
+              id: 'comparisonCalculator.content.performance.fund.neutral.start',
+              values: {
+                years: contentTextProperties.years.toString(),
+                pillar: contentTextProperties.pillar,
+                fund: fundLabel,
+              },
+            })}{' '}
+          </>
+        );
+      }
+      if (performanceVerdictProperties.verdict === PerformanceVerdict.NEGATIVE_ALPHA) {
+        return (
+          <>
+            {formatMessageWithTags({
+              id: 'comparisonCalculator.content.performance.fund.alpha.start',
+              values: {
+                years: contentTextProperties.years.toString(),
+                pillar: contentTextProperties.pillar,
+                fund: fundLabel,
+              },
+            })}{' '}
+            <FormattedMessage id="comparisonCalculator.content.performance.fund.alpha.wordNegative" />{' '}
+            <span className="result-negative">
+              {formatAmountForCurrency(contentTextProperties.amount, 0)}
+            </span>{' '}
+            <FormattedMessage id="comparisonCalculator.content.performance.fund.alpha.negativeVerdict" />
+          </>
+        );
+      }
+    }
+
+    if (performanceVerdictProperties.comparison === PerformanceVerdictComparison.INFLATION) {
+      if (performanceVerdictProperties.verdict === PerformanceVerdict.POSITIVE_ALPHA) {
+        return (
+          <>
+            {formatMessageWithTags({
+              id: 'comparisonCalculator.content.performance.cpi.alpha.start',
+              values: {
+                years: contentTextProperties.years.toString(),
+                pillar: contentTextProperties.pillar,
+              },
+            })}{' '}
+            <FormattedMessage id="comparisonCalculator.content.performance.cpi.alpha.wordPositive" />{' '}
+            <span className="result-positive">
+              {formatAmountForCurrency(contentTextProperties.amount, 0)}
+            </span>{' '}
+            <FormattedMessage id="comparisonCalculator.content.performance.cpi.alpha.positiveVerdict" />
+          </>
+        );
+      }
+      if (performanceVerdictProperties.verdict === PerformanceVerdict.NEUTRAL) {
+        if (
+          returns.personal &&
+          returns.pensionFund &&
+          returns.personal?.rate < returns.pensionFund?.rate
+        ) {
+          // reset inflation neutral alpha into either positive or negative alpha
+          setPerformanceVerdictProperties((prevState) => {
+            return {
+              ...prevState,
+              verdict: PerformanceVerdict.NEGATIVE_ALPHA,
+            };
+          });
+        }
+        return <div />;
+      }
+      if (performanceVerdictProperties.verdict === PerformanceVerdict.NEGATIVE_ALPHA) {
+        return (
+          <>
+            {formatMessageWithTags({
+              id: 'comparisonCalculator.content.performance.cpi.alpha.start',
+              values: {
+                years: contentTextProperties.years.toString(),
+                pillar: contentTextProperties.pillar,
+              },
+            })}
+            {formatMessageWithTags({
+              id: 'comparisonCalculator.content.performance.cpi.alpha.wordNegative',
+            })}{' '}
+            <span className="result-negative">
+              {formatAmountForCurrency(contentTextProperties.amount, 0)}
+            </span>{' '}
+            <FormattedMessage id="comparisonCalculator.content.performance.cpi.alpha.negativeVerdict" />
+          </>
+        );
+      }
+    }
+
+    return <div />;
+  }
+
+  function getContentTextExplanation() {
+    if (performanceVerdictProperties.comparison === PerformanceVerdictComparison.WORLD_INDEX) {
+      if (performanceVerdictProperties.verdict === PerformanceVerdict.POSITIVE_ALPHA) {
+        return (
+          <>
+            {formatMessageWithTags({
+              id: 'comparisonCalculator.content.performance.index.alpha.explanation',
+            })}
+          </>
+        );
+      }
+      if (performanceVerdictProperties.verdict === PerformanceVerdict.NEUTRAL) {
+        return (
+          <>
+            {formatMessageWithTags({
+              id: 'comparisonCalculator.content.performance.index.neutral.explanation',
+            })}
+          </>
+        );
+      }
+      if (performanceVerdictProperties.verdict === PerformanceVerdict.NEGATIVE_ALPHA) {
+        return (
+          <>
+            {formatMessageWithTags({
+              id: 'comparisonCalculator.content.performance.index.alpha.explanation',
+            })}
+          </>
+        );
+      }
+    }
+
+    function getFundAndInflationExplanationn() {
+      if (returns.personal && returns.index && returns.personal?.amount > returns.index?.amount) {
+        return (
+          <>
+            {formatMessageWithTags({
+              id: 'comparisonCalculator.content.performance.fund.indexUnderperformance.explanation',
+              values: {
+                currentAmount: formatAmountForCurrency(returns.personal?.amount, 0),
+                indexAmount: formatAmountForCurrency(returns.index?.amount, 0),
+              },
+            })}
+          </>
+        );
+      }
+      return (
+        <>
+          {formatMessageWithTags({
+            id: 'comparisonCalculator.content.performance.fund.indexOverperformance.explanation',
+            values: {
+              currentAmount: formatAmountForCurrency(returns.personal?.amount, 0),
+              indexAmount: formatAmountForCurrency(returns.index?.amount, 0),
+            },
+          })}
+        </>
+      );
+    }
+
+    if (performanceVerdictProperties.comparison === PerformanceVerdictComparison.FUND) {
+      return getFundAndInflationExplanationn();
+    }
+
+    if (performanceVerdictProperties.comparison === PerformanceVerdictComparison.INFLATION) {
+      return getFundAndInflationExplanationn();
+    }
+    return <div />;
+  }
+
+  function getContentTextCtaSubtext() {
+    if (performanceVerdictProperties.comparison === PerformanceVerdictComparison.FUND) {
+      return <FormattedMessage id="comparisonCalculator.content.performance.cta.subtext" />;
+    }
+
+    if (performanceVerdictProperties.comparison === PerformanceVerdictComparison.INFLATION) {
+      return <FormattedMessage id="comparisonCalculator.content.performance.cta.subtext" />;
+    }
+    return <div />;
+  }
+
+  function getFundLabelByKey(key: string) {
+    if (key === Key.CPI) {
+      return formatMessage({ id: 'comparisonCalculator.comparisonOptions.cpi' });
+    }
+    if (key === Key.EPI) {
+      return formatMessage({ id: 'comparisonCalculator.comparisonOptions.epi' });
+    }
+
+    return [...secondPillarFunds, ...thirdPillarFunds].find((it) => it.isin === key)?.name || key;
   }
 };
 

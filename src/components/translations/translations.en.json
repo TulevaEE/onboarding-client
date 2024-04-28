@@ -607,12 +607,41 @@
   "comparisonCalculator.yourIIIpillar": "Your III pillar",
   "comparisonCalculator.shortTimePeriodWarning": "ⓘ The comparison period is short. Avoid the temptation to make sudden moves based on short-term fluctuations.",
   "comparisonCalculator.shortTimePeriodWarningLink": "Read more.",
-  "comparisonCalculator.contentPerformance": "Your {pillar} pillar during the past {years} years, when compared to <b>all world market index</b> has ",
-  "comparisonCalculator.contentPerformanceWordNegative": " ",
-  "comparisonCalculator.contentPerformanceWordPositive": " ",
-  "comparisonCalculator.contentPerformanceNegativeVerdict": "underperformance.",
-  "comparisonCalculator.contentPerformancePositiveVerdict": "better performance.",
-  "comparisonCalculator.contentExplanation": "<b>Tuleva World Stock Pensionfund</b> follows the world market index, meaning it endeavors to achieve the most similar long-term performance.",
+
+  "comparisonCalculator.comparisonOptions.benchmarks": "Benchmarks",
+  "comparisonCalculator.comparisonOptions.lowFeeFunds": "Low fee pension funds (below 0.5%)",
+  "comparisonCalculator.comparisonOptions.highFeeFunds": "High fee pension funds ({minimumFee}%–1.56%)",
+  "comparisonCalculator.comparisonOptions.unionStockIndex": "World stock market index",
+  "comparisonCalculator.comparisonOptions.epi": "Estonian II pillar funds average performance",
+  "comparisonCalculator.comparisonOptions.cpi": "Estonia inflation rate",
+
+  "comparisonCalculator.content.performance.index.alpha.start": "Your {pillar} pillar during the past {years} years, when compared to <b>all world market index</b> has ",
+  "comparisonCalculator.content.performance.index.alpha.wordNegative": " ",
+  "comparisonCalculator.content.performance.index.alpha.wordPositive": " ",
+  "comparisonCalculator.content.performance.index.alpha.negativeVerdict": "underperformance.",
+  "comparisonCalculator.content.performance.index.alpha.positiveVerdict": "better performance.",
+  "comparisonCalculator.content.performance.index.alpha.explanation": "<b>Tuleva World Stock Pensionfund</b> follows the world market index, meaning it endeavors to achieve the most similar long-term performance.",
+
+  "comparisonCalculator.content.performance.index.neutral.start": "Your {pillar} pillar during the past {years} years, when compared to <b>all world market index</b> has similar performance.",
+  "comparisonCalculator.content.performance.index.neutral.explanation": "Be persistent and accumulate in low fee aggressive strategy index fund, through market ups and downs.",
+
+  "comparisonCalculator.content.performance.fund.alpha.start": "Your {pillar} pillar during the past {years} years, when compared to <b>{fund}</b> has ",
+  "comparisonCalculator.content.performance.fund.alpha.wordNegative": " ",
+  "comparisonCalculator.content.performance.fund.alpha.wordPositive": " ",
+  "comparisonCalculator.content.performance.fund.alpha.negativeVerdict": "underperformance.",
+  "comparisonCalculator.content.performance.fund.alpha.positiveVerdict": "better performance.",
+  "comparisonCalculator.content.performance.fund.indexOverperformance.explanation": "If you had earned the world market index return, your pension assets would have grown instead of {currentAmount} to {indexAmount}",
+  "comparisonCalculator.content.performance.fund.indexUnderperformanceexplanation": "If you had earned the world market index return, your pension assets would have grown instead of  {currentAmount} to <b>{indexAmount}</b>",
+  "comparisonCalculator.content.performance.fund.neutral.start": "Your {pillar} pillar over the past {years} years has achieved a result close to <b>{fund}</b> performance.",
+
+  "comparisonCalculator.content.performance.cpi.alpha.start": "Your {pillar} pillar during the past {years} years, when compared to <b>Estonian inflation</b>",
+  "comparisonCalculator.content.performance.cpi.alpha.wordNegative": " ",
+  "comparisonCalculator.content.performance.cpi.alpha.wordPositive": " ",
+  "comparisonCalculator.content.performance.cpi.alpha.negativeVerdict": "underperformance.",
+  "comparisonCalculator.content.performance.cpi.alpha.positiveVerdict": "better performance.",
+
+  "comparisonCalculator.content.performance.cta.subtext": "Tuleva World Stock Pension Fund follows the world market index, it tries to achieve a long-term return as similar as possible to it.",
+
   "comparisonCalculator.ctaButton" : "Bring your {pillar} pillar to Tuleva",
   "comparisonCalculator.graphWorldMarketStockIndex" : "World market index",
   "comparisonCalculator.graphYourIIPillar" : "Your II pillar",
@@ -630,7 +659,6 @@
   "comparisonCalculator.period.threeYears": "Last 3 years",
   "comparisonCalculator.period.twoYears": "Last 2 years",
   "comparisonCalculator.period.oneYear": "Last year",
-  "comparisonCalculator.index.unionStockIndex": "World market return",
 
 
 

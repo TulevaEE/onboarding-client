@@ -1,5 +1,5 @@
 import React from 'react';
-import { HTMLAttributes, shallow, ShallowWrapper } from 'enzyme';
+import { shallow, ShallowWrapper } from 'enzyme';
 
 import { Select } from './Select';
 
@@ -12,6 +12,7 @@ jest.mock('react-intl', () => ({
 describe('Select', () => {
   let component: ShallowWrapper;
   let onChange: (selected: string) => void;
+
   beforeEach(() => {
     onChange = jest.fn();
     component = shallow(
@@ -19,7 +20,13 @@ describe('Select', () => {
         options={[
           { value: 'one', label: 'One' },
           { value: 'two', label: 'Two' },
-          { value: 'three', label: 'Three' },
+          {
+            label: 'Group Label',
+            options: [
+              { value: 'three', label: 'Three' },
+              { value: 'four', label: 'Four', disabled: true },
+            ],
+          },
         ]}
         selected="one"
         onChange={onChange}
@@ -32,33 +39,43 @@ describe('Select', () => {
     expect(select().prop('value')).toBe('three');
   });
 
-  it('has option values', () => {
-    expect(options().map((option) => option.prop('value'))).toEqual(['one', 'two', 'three']);
+  it('renders individual options and option groups', () => {
+    const options = component.find('option');
+    const groups = component.find('optgroup');
+    expect(options.length).toBe(2); // 'One', 'Two'
+    expect(groups.length).toBe(1); // 'Group Label' group
+    expect(groups.find('option').length).toBe(2); // 'Three', 'Four' inside the group
   });
 
-  it('has translated option labels', () => {
-    expect(options().map((option) => option.text())).toEqual([
-      'translated One',
-      'translated Two',
-      'translated Three',
-    ]);
+  it('has translated labels for options and groups', () => {
+    expect(options().at(0).text()).toEqual('translated One');
+    expect(component.find('optgroup').prop('label')).toBe('translated Group Label');
+    expect(
+      component
+        .find('optgroup')
+        .find('option')
+        .map((o) => o.text()),
+    ).toEqual(['translated Three', 'translated Four']);
   });
 
   it('executes callback with value on change', () => {
     expect(onChange).not.toBeCalled();
-    select().simulate('change', { target: { value: 'three' } });
-    expect(onChange).toBeCalledWith('three');
+    select().simulate('change', { target: { value: 'four' } });
+    expect(onChange).toBeCalledWith('four');
   });
 
-  it('displays original option labels without translation', () => {
+  it('displays original option and group labels without translation', () => {
     component.setProps({ translate: false });
-    expect(component.find('option').map((option) => option.text())).toEqual([
-      'One',
-      'Two',
-      'Three',
-    ]);
+    expect(component.find('option').at(0).text()).toEqual('One');
+    expect(component.find('optgroup').prop('label')).toBe('Group Label');
+    expect(
+      component
+        .find('optgroup')
+        .find('option')
+        .map((o) => o.text()),
+    ).toEqual(['Three', 'Four']);
   });
 
-  const select = (): ShallowWrapper<HTMLAttributes, HTMLSelectElement> => component.find('select');
-  const options = (): ShallowWrapper<HTMLAttributes, HTMLOptionElement> => component.find('option');
+  const select = (): ShallowWrapper => component.find('select');
+  const options = (): ShallowWrapper => component.find('option');
 });

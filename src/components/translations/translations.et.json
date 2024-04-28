@@ -606,12 +606,42 @@
   "comparisonCalculator.yourIIIpillar": "Sinu III sammas",
   "comparisonCalculator.shortTimePeriodWarning": "ⓘ Võrdlusperiood on lühike. Hoidu kiusatusest teha lühiajaliste kõikumiste põhjal järske liigutusi.",
   "comparisonCalculator.shortTimePeriodWarningLink": "Loe lähemalt.",
-  "comparisonCalculator.contentPerformance": "Sinu {pillar} sammas on viimase {years} aastaga <b>maailmaturu indeksi</b>",
-  "comparisonCalculator.contentPerformanceWordNegative": "tootlusele",
-  "comparisonCalculator.contentPerformanceWordPositive": "tootlust",
-  "comparisonCalculator.contentPerformanceNegativeVerdict": "alla jäänud.",
-  "comparisonCalculator.contentPerformancePositiveVerdict": "edestanud.",
-  "comparisonCalculator.contentExplanation": "<b>Tuleva Maailma Aktsiate Pensionifond</b> järgib maailmaturu indeksit, st püüab saavutada sellega võimalikult sarnast pikaajalist tootlust.",
+
+  "comparisonCalculator.comparisonOptions.benchmarks": "Mõõdikud",
+  "comparisonCalculator.comparisonOptions.lowFeeFunds": "Madala tasuga pensionifondid (alla 0.5%)",
+  "comparisonCalculator.comparisonOptions.highFeeFunds": "Kõrge tasuga pensionifondid ({minimumFee}%–1.56%)",
+  "comparisonCalculator.comparisonOptions.unionStockIndex": "Maailma aktsiaturu indeks",
+  "comparisonCalculator.comparisonOptions.epi": "Eesti II samba fondide keskmine tootlus",
+  "comparisonCalculator.comparisonOptions.cpi": "Eesti inflatsioon",
+
+
+  "comparisonCalculator.content.performance.index.alpha.start": "Sinu {pillar} sammas on viimase {years} aastaga <b>maailmaturu indeksi</b>",
+  "comparisonCalculator.content.performance.index.alpha.wordNegative": "tootlusele",
+  "comparisonCalculator.content.performance.index.alpha.wordPositive": "tootlust",
+  "comparisonCalculator.content.performance.index.alpha.negativeVerdict": "alla jäänud.",
+  "comparisonCalculator.content.performance.index.alpha.positiveVerdict": "edestanud.",
+  "comparisonCalculator.content.performance.index.alpha.explanation": "<b>Tuleva Maailma Aktsiate Pensionifond</b> järgib maailmaturu indeksit, st püüab saavutada sellega võimalikult sarnast pikaajalist tootlust.",
+
+  "comparisonCalculator.content.performance.index.neutral.start": "Sinu {pillar} sammas on viimase {years} aastaga <b>maailmaturu indeksi</b> tootlusele lähedase tulemuse.",
+  "comparisonCalculator.content.performance.index.neutral.explanation": "Ole järjekindel ning kogu madala tasu ja agressiivse strateegiaga indeksfondis läbi turgude tõusude ja languste.",
+
+  "comparisonCalculator.content.performance.fund.alpha.start": "Sinu {pillar} sammas on viimase {years} aastaga <b>{fund}</b>",
+  "comparisonCalculator.content.performance.fund.alpha.wordNegative": "tootlusele",
+  "comparisonCalculator.content.performance.fund.alpha.wordPositive": "tootlust",
+  "comparisonCalculator.content.performance.fund.alpha.negativeVerdict": "alla jäänud.",
+  "comparisonCalculator.content.performance.fund.alpha.positiveVerdict": "edestanud.",
+  "comparisonCalculator.content.performance.fund.indexOverperformance.explanation": "Kui oleksid teeninud maailmaturu indeksi tootlust, oleks sinu pensionivara kasvanud senise {currentAmount} asemel {indexAmount}",
+  "comparisonCalculator.content.performance.fund.indexUnderperformance.explanation": "Kui oleksid teeninud maailmaturu indeksi tootlust, oleks sinu pensionivara kasvanud senise {currentAmount} asemel <b>{indexAmount}</b>",
+  "comparisonCalculator.content.performance.fund.neutral.start": "Sinu {pillar} sammas on viimase {years} aastaga <b>{fund}</b> tootlusele lähedase tulemuse.",
+
+  "comparisonCalculator.content.performance.cpi.alpha.start": "Sinu {pillar} sammas on viimase {years} aastaga <b>Eesti inflatsiooni</b>",
+  "comparisonCalculator.content.performance.cpi.alpha.wordNegative": "<b>le</b>",
+  "comparisonCalculator.content.performance.cpi.alpha.wordPositive": " ",
+  "comparisonCalculator.content.performance.cpi.alpha.negativeVerdict": "alla jäänud.",
+  "comparisonCalculator.content.performance.cpi.alpha.positiveVerdict": "edestanud.",
+
+  "comparisonCalculator.content.performance.cta.subtext": "Tuleva Maailma Aktsiate Pensionifond järgib maailmaturu indeksit, st püüab saavutada sellega võimalikult sarnast pikaajalist tootlust.",
+
   "comparisonCalculator.ctaButton" : "Too oma {pillar} sammas Tulevasse",
   "comparisonCalculator.graphWorldMarketStockIndex" : "Maailmaturu indeks",
   "comparisonCalculator.graphYourIIPillar" : "Sinu II sammas",
@@ -629,7 +659,6 @@
   "comparisonCalculator.period.threeYears": "Viimased 3 aastat",
   "comparisonCalculator.period.twoYears": "Viimased 2 aastat",
   "comparisonCalculator.period.oneYear": "Viimane aasta",
-  "comparisonCalculator.index.unionStockIndex": "Maailma keskmine",
 
   "LHV Pensionifond XL": "LHV Pensionifond XL",
   "Tuleva Maailma Aktsiate Pensionifond": "Tuleva Maailma Aktsiate Pensionifond",
