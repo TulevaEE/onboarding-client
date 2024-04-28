@@ -42,9 +42,9 @@ describe('Select', () => {
   it('renders individual options and option groups', () => {
     const options = component.find('option');
     const groups = component.find('optgroup');
-    expect(options.length).toBe(2); // 'One', 'Two'
-    expect(groups.length).toBe(1); // 'Group Label' group
-    expect(groups.find('option').length).toBe(2); // 'Three', 'Four' inside the group
+    expect(options.length).toBe(4);
+    expect(groups.length).toBe(1);
+    expect(groups.find('option').length).toBe(2);
   });
 
   it('has translated labels for options and groups', () => {
