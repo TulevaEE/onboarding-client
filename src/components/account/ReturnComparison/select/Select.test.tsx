@@ -1,48 +1,64 @@
-import React, { FC } from 'react';
-import { useIntl } from 'react-intl';
+import React from 'react';
+import { HTMLAttributes, shallow, ShallowWrapper } from 'enzyme';
 
-interface Option {
-  value: string;
-  label: string;
-  disabled?: boolean;
-}
+import { Select } from './Select';
 
-interface SelectProps {
-  options: Option[];
-  selected: string;
-  onChange: (selected: string) => void;
-  disabled?: boolean;
-  translate?: boolean;
-}
+jest.mock('react-intl', () => ({
+  useIntl: () => ({
+    formatMessage: jest.fn().mockImplementation(({ id }) => `translated ${id}`),
+  }),
+}));
 
-export const Select: FC<SelectProps> = ({
-  options,
-  selected,
-  onChange,
-  disabled = false,
-  translate = true,
-}) => {
-  const { formatMessage } = useIntl();
+describe('Select', () => {
+  let component: ShallowWrapper;
+  let onChange: (selected: string) => void;
+  beforeEach(() => {
+    onChange = jest.fn();
+    component = shallow(
+      <Select
+        options={[
+          { value: 'one', label: 'One' },
+          { value: 'two', label: 'Two' },
+          { value: 'three', label: 'Three' },
+        ]}
+        selected="one"
+        onChange={onChange}
+      />,
+    );
+  });
 
-  const getLabel = (label: string) => {
-    return translate ? formatMessage({ id: label }) : label;
-  };
+  it('has value as selected', () => {
+    component.setProps({ selected: 'three' });
+    expect(select().prop('value')).toBe('three');
+  });
 
-  return (
-    <select
-      className="custom-select"
-      onChange={(event): void => onChange(event.target.value)}
-      value={selected}
-      disabled={disabled}
-    >
-      {/* eslint-disable-next-line @typescript-eslint/no-shadow */}
-      {options.map(({ value, label, disabled }) => (
-        <option value={value} key={label} disabled={disabled}>
-          {getLabel(label)}
-        </option>
-      ))}
-    </select>
-  );
-};
+  it('has option values', () => {
+    expect(options().map((option) => option.prop('value'))).toEqual(['one', 'two', 'three']);
+  });
 
-export default Select;
+  it('has translated option labels', () => {
+    expect(options().map((option) => option.text())).toEqual([
+      'translated One',
+      'translated Two',
+      'translated Three',
+    ]);
+  });
+
+  it('executes callback with value on change', () => {
+    expect(onChange).not.toBeCalled();
+    select().simulate('change', { target: { value: 'three' } });
+    expect(onChange).toBeCalledWith('three');
+  });
+
+  it('displays original option labels without translation', () => {
+    component.setProps({ translate: false });
+    expect(component.find('option').map((option) => option.text())).toEqual([
+      'One',
+      'Two',
+      'Three',
+    ]);
+  });
+
+  const select = (): ShallowWrapper<HTMLAttributes, HTMLSelectElement> => component.find('select');
+  const options = (): ShallowWrapper<HTMLAttributes, HTMLOptionElement> => component.find('option');
+});
