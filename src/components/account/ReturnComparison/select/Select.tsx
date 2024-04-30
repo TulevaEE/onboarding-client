@@ -1,19 +1,14 @@
 import React, { FC } from 'react';
 import { useIntl } from 'react-intl';
 
-export interface Option {
+interface Option {
   value: string;
   label: string;
   disabled?: boolean;
 }
 
-export interface OptionGroup {
-  label: string;
-  options: Option[];
-}
-
 interface SelectProps {
-  options: (Option | OptionGroup)[];
+  options: Option[];
   selected: string;
   onChange: (selected: string) => void;
   disabled?: boolean;
@@ -33,23 +28,6 @@ export const Select: FC<SelectProps> = ({
     return translate ? formatMessage({ id: label }) : label;
   };
 
-  const renderOption = (option: Option) => (
-    <option value={option.value} key={option.value} disabled={option.disabled}>
-      {getLabel(option.label)}
-    </option>
-  );
-
-  const renderOptions = () =>
-    options.map((option) =>
-      'options' in option ? (
-        <optgroup label={getLabel(option.label)} key={option.label}>
-          {option.options.map(renderOption)}
-        </optgroup>
-      ) : (
-        renderOption(option)
-      ),
-    );
-
   return (
     <select
       className="custom-select"
@@ -57,7 +35,12 @@ export const Select: FC<SelectProps> = ({
       value={selected}
       disabled={disabled}
     >
-      {renderOptions()}
+      {/* eslint-disable-next-line @typescript-eslint/no-shadow */}
+      {options.map(({ value, label, disabled }) => (
+        <option value={value} key={label} disabled={disabled}>
+          {getLabel(label)}
+        </option>
+      ))}
     </select>
   );
 };

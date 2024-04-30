@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import moment, { Moment } from 'moment/moment';
 import { formatAmountForCurrency } from '../../common/utils';
 import { Fund } from '../../common/apiModels';
-import Select from '../ReturnComparison/select';
+import Select from './select';
 import { getReturnComparison, Key, ReturnComparison } from '../ReturnComparison/api';
 import {
   INCEPTION,
@@ -13,7 +13,7 @@ import {
   THIRD_PILLAR_INCEPTION,
 } from '../ReturnComparison/ReturnComparison';
 import Loader from '../../common/loader';
-import { Option, OptionGroup } from '../ReturnComparison/select/Select';
+import { Option, OptionGroup } from './select/Select';
 
 interface GraphBarProperties {
   color: string;
