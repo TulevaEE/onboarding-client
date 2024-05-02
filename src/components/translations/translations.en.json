@@ -18,7 +18,7 @@
   "login.error.generic": "There appears to have been a mistake. Please try again.",
   "login.join.tuleva": "Join!",
   "login.or": "or",
-  "login.permission.note": "By logging in you are giving Tuleva permission to request your pension account information from tne Estonian Central Securities Depository and agreeing to the <a>privacy policy</a>.",
+  "login.permission.note": "By logging in you are giving Tuleva permission to request your pension account information from the Estonian Central Securities Depository and agreeing to the <a>privacy policy</a>.",
   "login.permission.note.url": "https://tuleva.ee/en/tuleva-privacy-policy-and-terms-of-use-of-website/",
   "login.not.member": "You aren't a member of Tuleva yet?",
   "login.apply.link": "Fill out a membership application",
