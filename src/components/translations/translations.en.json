@@ -630,11 +630,14 @@
   "comparisonCalculator.content.performance.fund.alpha.wordPositive": " ",
   "comparisonCalculator.content.performance.fund.alpha.negativeVerdict": "underperformance.",
   "comparisonCalculator.content.performance.fund.alpha.positiveVerdict": "better performance.",
-  "comparisonCalculator.content.performance.fund.indexOverperformance.explanation": "If you had earned the world market index return, your pension assets would have grown instead of {currentAmount} to {indexAmount}",
-  "comparisonCalculator.content.performance.fund.indexUnderperformanceexplanation": "If you had earned the world market index return, your pension assets would have grown instead of  {currentAmount} to <b>{indexAmount}</b>",
+  "comparisonCalculator.content.performance.fund.indexOverperformance.explanation": "If you had earned <b>the world market index</b> return, your pension assets would have grown instead of {currentAmount} to {indexAmount}",
+  "comparisonCalculator.content.performance.fund.indexUnderperformance.explanation": "If you had earned <b>the world market index</b> return, your pension assets would have grown instead of  {currentAmount} to <b>{indexAmount}</b>",
   "comparisonCalculator.content.performance.fund.neutral.start": "Your {pillar} pillar over the past {years} years has achieved a result close to <b>{fund}</b> performance.",
 
-  "comparisonCalculator.content.performance.cpi.alpha.start": "Your {pillar} pillar during the past {years} years, when compared to <b>Estonian inflation</b>",
+  "comparisonCalculator.content.performance.epi.alpha.label.negative": "Estonian II pillar funds average",
+  "comparisonCalculator.content.performance.epi.alpha.label.positive": "Estonian II pillar funds average",
+
+  "comparisonCalculator.content.performance.cpi.alpha.start": "Your {pillar} pillar during the past {years} years, when compared to <b>Estonian inflation</b> has ",
   "comparisonCalculator.content.performance.cpi.alpha.wordNegative": " ",
   "comparisonCalculator.content.performance.cpi.alpha.wordPositive": " ",
   "comparisonCalculator.content.performance.cpi.alpha.negativeVerdict": "underperformance.",

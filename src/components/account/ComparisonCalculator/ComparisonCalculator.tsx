@@ -4,7 +4,7 @@ import { FormattedMessage, MessageDescriptor, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import moment, { Moment } from 'moment/moment';
 import { formatAmountForCurrency } from '../../common/utils';
-import { Fund } from '../../common/apiModels';
+import { Fund, UserConversion } from '../../common/apiModels';
 import Select from './select';
 import { getReturnComparison, Key, ReturnComparison } from '../ReturnComparison/api';
 import {
@@ -47,14 +47,13 @@ enum PerformanceVerdictComparison {
 interface PerformanceVerdictProperties {
   verdict: PerformanceVerdict;
   comparison: PerformanceVerdictComparison;
+  amount: number;
 }
 
 interface ContentTextProperties {
   years: number;
-  amount: number;
   pillar: string;
-  positivePerformanceVerdict: boolean;
-  ctaLink: string;
+  ctaLink: string | null;
 }
 
 interface RootState {
@@ -65,6 +64,7 @@ interface RootState {
       secondPillarOpenDate: string;
       thirdPillarInitDate: string;
     };
+    userConversion: UserConversion;
   };
 }
 
@@ -104,10 +104,8 @@ const ComparisonCalculator: React.FC = () => {
   const [loadingReturns, setLoadingReturns] = useState<boolean>(false);
   const [contentTextProperties, setContentTextProperties] = useState<ContentTextProperties>({
     years: 0,
-    amount: 0,
     pillar: '',
     ctaLink: '',
-    positivePerformanceVerdict: true,
   });
 
   const initialReturns = {
@@ -152,24 +150,33 @@ const ComparisonCalculator: React.FC = () => {
     setContentProperties();
   }, [returns]);
 
+  const secondPillarFullyConverted = useSelector(
+    (state: RootState) =>
+      state.login?.userConversion?.secondPillar?.transfersComplete &&
+      state.login?.userConversion?.secondPillar?.selectionComplete,
+  );
+
+  const thirdPillarFullyConverted = useSelector(
+    (state: RootState) =>
+      state.login?.userConversion?.thirdPillar?.transfersComplete &&
+      state.login?.userConversion?.thirdPillar?.selectionComplete,
+  );
+
   useEffect(() => {
     if (returns.personal && returns.index) {
-      let ctaLink = '';
+      let ctaLink = null;
       let pillarAsString = '';
-      if (selectedPillar === Key.SECOND_PILLAR) {
+      if (selectedPillar === Key.SECOND_PILLAR && secondPillarFullyConverted) {
         pillarAsString = 'II';
         ctaLink = '/2nd-pillar-flow/';
-      } else if (selectedPillar === Key.THIRD_PILLAR) {
+      } else if (selectedPillar === Key.THIRD_PILLAR && thirdPillarFullyConverted) {
         ctaLink = '/3rd-pillar-flow/';
         pillarAsString = 'III';
       }
-      const returnAmount = returns.personal?.amount - returns.index?.amount;
       setContentTextProperties({
-        years: getFullYearsSince(returns.from), // need this to know when to show warning message
-        amount: returnAmount,
+        years: getFullYearsSince(returns.from),
         pillar: pillarAsString,
         ctaLink,
-        positivePerformanceVerdict: returnAmount >= 0, // TODO remove this and use Performance verdict
       });
     }
   }, [returns]);
@@ -537,6 +544,7 @@ const ComparisonCalculator: React.FC = () => {
       performanceVerdictProps = {
         comparison: PerformanceVerdictComparison.WORLD_INDEX,
         verdict: performanceVerdict,
+        amount: (returns.personal?.amount || 0) - (returns.index?.amount || 0),
       };
     } else if (selectedComparison === Key.CPI) {
       const performanceVerdict: PerformanceVerdict =
@@ -548,6 +556,7 @@ const ComparisonCalculator: React.FC = () => {
       performanceVerdictProps = {
         comparison: PerformanceVerdictComparison.INFLATION,
         verdict: performanceVerdict,
+        amount: (returns.personal?.amount || 0) - (returns.pensionFund?.amount || 0),
       };
     } else {
       const performanceVerdict: PerformanceVerdict =
@@ -559,6 +568,7 @@ const ComparisonCalculator: React.FC = () => {
       performanceVerdictProps = {
         comparison: PerformanceVerdictComparison.FUND,
         verdict: performanceVerdict,
+        amount: (returns.personal?.amount || 0) - (returns.pensionFund?.amount || 0),
       };
     }
     setPerformanceVerdictProperties(performanceVerdictProps);
@@ -671,6 +681,7 @@ const ComparisonCalculator: React.FC = () => {
     return {
       comparison: PerformanceVerdictComparison.WORLD_INDEX,
       verdict: PerformanceVerdict.NEUTRAL,
+      amount: 0,
     };
   }
 
@@ -798,12 +809,14 @@ const ComparisonCalculator: React.FC = () => {
           <p className="result-text">{getContentTextExplanation()} </p>
         </div>
         <div className="">
-          <a href={contentTextProperties.ctaLink} className="btn btn-outline-primary">
-            <FormattedMessage
-              id="comparisonCalculator.ctaButton"
-              values={{ pillar: contentTextProperties.pillar }}
-            />
-          </a>
+          {contentTextProperties.ctaLink && (
+            <a href={contentTextProperties.ctaLink} className="btn btn-outline-primary">
+              <FormattedMessage
+                id="comparisonCalculator.ctaButton"
+                values={{ pillar: contentTextProperties.pillar }}
+              />
+            </a>
+          )}
         </div>
         <div className="text-secondary pt-2">
           <small>{getContentTextCtaSubtext()}</small>
@@ -826,7 +839,7 @@ const ComparisonCalculator: React.FC = () => {
             })}{' '}
             <FormattedMessage id="comparisonCalculator.content.performance.index.alpha.wordPositive" />{' '}
             <span className="result-positive">
-              {formatAmountForCurrency(contentTextProperties.amount, 0)}
+              {formatAmountForCurrency(performanceVerdictProperties.amount, 0)}
             </span>{' '}
             <FormattedMessage id="comparisonCalculator.content.performance.index.alpha.positiveVerdict" />
           </>
@@ -857,7 +870,7 @@ const ComparisonCalculator: React.FC = () => {
             })}{' '}
             <FormattedMessage id="comparisonCalculator.content.performance.index.alpha.wordNegative" />{' '}
             <span className="result-negative">
-              {formatAmountForCurrency(contentTextProperties.amount, 0)}
+              {formatAmountForCurrency(performanceVerdictProperties.amount, 0)}
             </span>{' '}
             <FormattedMessage id="comparisonCalculator.content.performance.index.alpha.negativeVerdict" />
           </>
@@ -866,8 +879,18 @@ const ComparisonCalculator: React.FC = () => {
     }
 
     if (performanceVerdictProperties.comparison === PerformanceVerdictComparison.FUND) {
-      const fundLabel = getFundLabelByKey(selectedComparison);
+      let fundLabel = getFundLabelByKey(selectedComparison);
+      if (selectedComparison === Key.EPI) {
+        fundLabel = formatMessage({
+          id: 'comparisonCalculator.content.performance.epi.alpha.label.negative',
+        });
+      }
       if (performanceVerdictProperties.verdict === PerformanceVerdict.POSITIVE_ALPHA) {
+        if (selectedComparison === Key.EPI) {
+          fundLabel = formatMessage({
+            id: 'comparisonCalculator.content.performance.epi.alpha.label.positive',
+          });
+        }
         return (
           <>
             {formatMessageWithTags({
@@ -880,7 +903,7 @@ const ComparisonCalculator: React.FC = () => {
             })}{' '}
             <FormattedMessage id="comparisonCalculator.content.performance.fund.alpha.wordPositive" />{' '}
             <span className="result-positive">
-              {formatAmountForCurrency(contentTextProperties.amount, 0)}
+              {formatAmountForCurrency(performanceVerdictProperties.amount, 0)}
             </span>{' '}
             <FormattedMessage id="comparisonCalculator.content.performance.fund.alpha.positiveVerdict" />
           </>
@@ -913,7 +936,7 @@ const ComparisonCalculator: React.FC = () => {
             })}{' '}
             <FormattedMessage id="comparisonCalculator.content.performance.fund.alpha.wordNegative" />{' '}
             <span className="result-negative">
-              {formatAmountForCurrency(contentTextProperties.amount, 0)}
+              {formatAmountForCurrency(performanceVerdictProperties.amount, 0)}
             </span>{' '}
             <FormattedMessage id="comparisonCalculator.content.performance.fund.alpha.negativeVerdict" />
           </>
@@ -934,7 +957,7 @@ const ComparisonCalculator: React.FC = () => {
             })}{' '}
             <FormattedMessage id="comparisonCalculator.content.performance.cpi.alpha.wordPositive" />{' '}
             <span className="result-positive">
-              {formatAmountForCurrency(contentTextProperties.amount, 0)}
+              {formatAmountForCurrency(performanceVerdictProperties.amount, 0)}
             </span>{' '}
             <FormattedMessage id="comparisonCalculator.content.performance.cpi.alpha.positiveVerdict" />
           </>
@@ -970,7 +993,7 @@ const ComparisonCalculator: React.FC = () => {
               id: 'comparisonCalculator.content.performance.cpi.alpha.wordNegative',
             })}{' '}
             <span className="result-negative">
-              {formatAmountForCurrency(contentTextProperties.amount, 0)}
+              {formatAmountForCurrency(performanceVerdictProperties.amount, 0)}
             </span>{' '}
             <FormattedMessage id="comparisonCalculator.content.performance.cpi.alpha.negativeVerdict" />
           </>
@@ -1012,7 +1035,16 @@ const ComparisonCalculator: React.FC = () => {
       }
     }
 
-    function getFundAndInflationExplanationn() {
+    if (performanceVerdictProperties.comparison === PerformanceVerdictComparison.FUND) {
+      return getFundAndInflationExplanation();
+    }
+
+    if (performanceVerdictProperties.comparison === PerformanceVerdictComparison.INFLATION) {
+      return getFundAndInflationExplanation();
+    }
+    return <div />;
+
+    function getFundAndInflationExplanation() {
       if (returns.personal && returns.index && returns.personal?.amount > returns.index?.amount) {
         return (
           <>
@@ -1038,15 +1070,6 @@ const ComparisonCalculator: React.FC = () => {
         </>
       );
     }
-
-    if (performanceVerdictProperties.comparison === PerformanceVerdictComparison.FUND) {
-      return getFundAndInflationExplanationn();
-    }
-
-    if (performanceVerdictProperties.comparison === PerformanceVerdictComparison.INFLATION) {
-      return getFundAndInflationExplanationn();
-    }
-    return <div />;
   }
 
   function getContentTextCtaSubtext() {
