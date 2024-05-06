@@ -75,13 +75,13 @@ test('pension summary table is shown', async () => {
   const thirdPillarRow = getRow('III Pillar');
   expect(within(thirdPillarRow).getByText('9 876.54 €')).toBeInTheDocument();
   expect(within(thirdPillarRow).queryByText('0.00 €')).not.toBeInTheDocument();
-  expect(within(thirdPillarRow).getByText('-4 177.18 €')).toBeInTheDocument();
+  expect(within(thirdPillarRow).getByText('−4 177.18 €')).toBeInTheDocument();
   expect(within(thirdPillarRow).getByText('5 699.36 €')).toBeInTheDocument();
 
   const memberCapitalRow = getRow('Your member capital');
   expect(within(memberCapitalRow).getByText('1 000.00 €')).toBeInTheDocument();
   expect(within(memberCapitalRow).queryByText('0.00 €')).not.toBeInTheDocument();
-  expect(within(memberCapitalRow).getByText('-122.22 €')).toBeInTheDocument();
+  expect(within(memberCapitalRow).getByText('−122.22 €')).toBeInTheDocument();
   expect(within(memberCapitalRow).getByText('877.78 €')).toBeInTheDocument();
 
   const totalRow = getRow('Total');
