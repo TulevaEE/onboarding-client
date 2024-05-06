@@ -23,3 +23,10 @@ export function formatDateYear(date?: string | null): string {
   const format = moment.locale() === 'et' ? 'D. MMMM YYYY' : 'MMMM D, YYYY';
   return moment(date).format(format);
 }
+
+export function formatMonth(date?: string | null): string {
+  if (!date) {
+    return '...';
+  }
+  return moment(date).format('MMMM YYYY');
+}

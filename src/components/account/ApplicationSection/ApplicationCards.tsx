@@ -18,6 +18,7 @@ import {
 import Percentage from '../../common/Percentage';
 import Euro from '../../common/Euro';
 import { Fees } from '../../common/Percentage/Fees';
+import { formatMonth } from '../../common/dateFormatter';
 
 export const ApplicationCard: React.FunctionComponent<{
   application: Application;
@@ -195,7 +196,7 @@ const EarlyWithdrawalCard: React.FunctionComponent<{
       definitions={[
         {
           key: 'applications.type.earlyWithdrawal.time',
-          value: formatDate(application.details.fulfillmentDate),
+          value: formatMonth(application.details.fulfillmentDate),
         },
         {
           key: 'applications.type.earlyWithdrawal.account',
@@ -219,7 +220,7 @@ const WithdrawalCard: React.FunctionComponent<{
       definitions={[
         {
           key: 'applications.type.withdrawal.time',
-          value: formatDate(application.details.fulfillmentDate),
+          value: formatMonth(application.details.fulfillmentDate),
         },
         {
           key: 'applications.type.earlyWithdrawal.account',

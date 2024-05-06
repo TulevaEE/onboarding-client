@@ -172,7 +172,7 @@ describe('Application section', () => {
     const formattedCreationTime = 'December 17, 1995';
     expect(screen.getByText(formattedCreationTime)).toBeInTheDocument();
 
-    const formattedFulfillmentDate = 'January 2, 1995';
+    const formattedFulfillmentDate = 'January 1995';
     expect(screen.getByText(formattedFulfillmentDate)).toBeInTheDocument();
 
     expect(screen.getByText(application.details.depositAccountIBAN)).toBeInTheDocument();
@@ -186,7 +186,7 @@ describe('Application section', () => {
     const formattedCreationTime = 'December 17, 1995';
     expect(screen.getByText(formattedCreationTime)).toBeInTheDocument();
 
-    const formattedFulfillmentDate = 'January 2, 1995';
+    const formattedFulfillmentDate = 'January 1995';
     expect(screen.getByText(formattedFulfillmentDate)).toBeInTheDocument();
 
     expect(screen.getByText(application.details.depositAccountIBAN)).toBeInTheDocument();
