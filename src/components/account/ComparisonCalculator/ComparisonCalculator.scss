@@ -1,18 +1,5 @@
 .comparison-calculator {
 
-  label {
-    // From Figma
-    overflow: hidden;
-    color: var(--Text-Primary, #212529);
-    text-overflow: ellipsis;
-
-    font-family: Roboto;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 142.85%;
-  }
-
   .separator {
     border-top: 1px solid var(--Blue-Border, #CAE0F1);
   }

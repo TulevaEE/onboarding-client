@@ -237,18 +237,19 @@ const ComparisonCalculator: React.FC = () => {
                 </div>
               </div>
               <div className="row justify-content-center">
-                <div className="col-12 col-md text-left  mt-3">
-                  <label htmlFor="timePeriodSelect" className="form-label">
+                <div className="col-12 col-md text-left mt-3">
+                  <label htmlFor="timePeriodSelect" className="form-label small text-bold">
                     <FormattedMessage id="comparisonCalculator.timePeriod" />:{' '}
                   </label>
                   <Select
                     options={timePeriodOptions}
                     selected={selectedTimePeriod}
                     onChange={setSelectedTimePeriod}
+                    id="timePeriodSelect"
                   />
                 </div>
-                <div className="col-12 col-md text-left  mt-3">
-                  <label htmlFor="comparedToSelect" className="form-label">
+                <div className="col-12 col-md text-left mt-3">
+                  <label htmlFor="comparedToSelect" className="form-label small text-bold">
                     <FormattedMessage id="comparisonCalculator.comparedTo" />:{' '}
                   </label>
                   <Select
@@ -256,6 +257,7 @@ const ComparisonCalculator: React.FC = () => {
                     translate={false}
                     selected={selectedComparison}
                     onChange={setSelectedComparison}
+                    id="comparedToSelect"
                   />
                 </div>
               </div>

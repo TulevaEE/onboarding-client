@@ -21,6 +21,7 @@ interface SelectProps {
   onChange: (selected: string) => void;
   disabled?: boolean;
   translate?: boolean;
+  id?: string;
 }
 
 export const Select: FC<SelectProps> = ({
@@ -29,6 +30,7 @@ export const Select: FC<SelectProps> = ({
   onChange,
   disabled = false,
   translate = true,
+  id,
 }) => {
   const { formatMessage } = useIntl();
 
@@ -70,6 +72,7 @@ export const Select: FC<SelectProps> = ({
       onChange={(event): void => onChange(event.target.value)}
       value={selected}
       disabled={disabled}
+      id={id}
     >
       {renderOptions()}
     </select>
