@@ -124,7 +124,7 @@ const ComparisonCalculator: React.FC = () => {
     }
   }, [secondPillarFunds, thirdPillarFunds]);
 
-  const latestRequestIdRef = useRef<number>(0);
+  const latestRequestId = useRef<number>(0);
   useEffect(() => {
     if (!loadingInitialData) {
       loadReturns();
@@ -577,9 +577,9 @@ const ComparisonCalculator: React.FC = () => {
     if (!selectedTimePeriod) {
       return;
     }
-    latestRequestIdRef.current += 1;
+    latestRequestId.current += 1;
 
-    const requestId = latestRequestIdRef.current;
+    const requestId = latestRequestId.current;
     const selectedPersonalKey = selectedPillar;
     const fromDate = selectedTimePeriod;
     let selectedFundKey = selectedComparison;
@@ -596,17 +596,17 @@ const ComparisonCalculator: React.FC = () => {
         pensionFundKey: selectedFundKey,
         indexKey: selectedIndexKey,
       });
-      if (requestId === latestRequestIdRef.current) {
+      if (requestId === latestRequestId.current) {
         setReturns(result);
       }
     } catch (ignored) {
-      if (requestId === latestRequestIdRef.current) {
+      if (requestId === latestRequestId.current) {
         // eslint-disable-next-line no-console
         console.error(ignored);
         setReturns(initialReturns);
       }
     } finally {
-      if (requestId === latestRequestIdRef.current) {
+      if (requestId === latestRequestId.current) {
         setLoadingReturns(false);
       }
     }
