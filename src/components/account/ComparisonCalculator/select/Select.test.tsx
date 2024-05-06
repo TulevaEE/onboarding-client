@@ -43,7 +43,7 @@ describe('Select', () => {
   it('renders individual options and option groups', () => {
     const options = component.find('option');
     const groups = component.find('optgroup');
-    expect(options.length).toBe(5);
+    expect(options.length).toBe(4);
     expect(groups.length).toBe(1);
     expect(groups.find('option').length).toBe(2);
   });
@@ -77,14 +77,11 @@ describe('Select', () => {
     ).toEqual(['Three', 'Four']);
   });
 
-  it('renders a divider and it is disabled', () => {
-    const dividerOption = component
-      .find('option')
-      .filterWhere((option) => option.prop('value') === 'divider1');
-    expect(dividerOption.exists()).toBe(true);
-    expect(dividerOption.text()).toBe('─────────────────────────');
-    expect(dividerOption.prop('disabled')).toBe(true);
+  it('renders a divider', () => {
+    const divider = component.find('hr');
+    expect(divider.exists()).toBe(true);
   });
+
   const select = (): ShallowWrapper => component.find('select');
   const options = (): ShallowWrapper => component.find('option');
 });
