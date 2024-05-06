@@ -192,11 +192,14 @@ const ComparisonCalculator: React.FC = () => {
   const [incomparableResults, setIncomparableResults] = useState<boolean>(false);
   useEffect(() => {
     if (returns.from && selectedTimePeriod) {
-      // TODO: remove the 2 month buffer when we have longer index history or a change in the returns algorithm
-      const comparisonDate = moment(returns.from).subtract(2, 'months');
-      const isSelectedPeriodAfterComparison = moment(selectedTimePeriod).isAfter(comparisonDate);
+      const funds = [...secondPillarFunds, ...thirdPillarFunds];
+      const comparisonFund = funds.find((fund) => fund.isin >= selectedComparison);
+      if (comparisonFund) {
+        const comparisonDate = moment(comparisonFund.inceptionDate);
+        const isSelectedPeriodAfterComparison = moment(selectedTimePeriod).isAfter(comparisonDate);
 
-      setIncomparableResults(!isSelectedPeriodAfterComparison);
+        setIncomparableResults(!isSelectedPeriodAfterComparison);
+      }
     }
   }, [returns.from, selectedTimePeriod]);
 
