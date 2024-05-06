@@ -187,6 +187,16 @@ const ComparisonCalculator: React.FC = () => {
     setTimePeriodOptions(getFromDateOptions());
   }, [secondPillarOpenDate, thirdPillarInitDate, selectedPillar]);
 
+  const [incomparableResults, setIncomparableResults] = useState<boolean>(false);
+  useEffect(() => {
+    if (returns.from && selectedTimePeriod) {
+      const comparisonDate = moment(returns.from).subtract(2, 'months');
+      const isSelectedPeriodAfterComparison = moment(selectedTimePeriod).isAfter(comparisonDate);
+
+      setIncomparableResults(!isSelectedPeriodAfterComparison);
+    }
+  }, [returns.from, selectedTimePeriod]);
+
   return (
     <div className="comparison-calculator">
       <div className="card card-primary">
@@ -245,31 +255,59 @@ const ComparisonCalculator: React.FC = () => {
                 <Loader className="align-middle" />
               ) : (
                 <div>
-                  {contentTextProperties.years < 3 && (
-                    <div className="alert alert-warning rounded-0 text-center" role="alert">
-                      <FormattedMessage id="comparisonCalculator.shortTimePeriodWarning" />
-                      <a
-                        href="/soovitused/laura-rikkaks-4/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-success"
-                      >
-                        {' '}
-                        <FormattedMessage id="comparisonCalculator.shortTimePeriodWarningLink" />
-                      </a>
+                  {incomparableResults ? (
+                    <div>
+                      <div className="container p-4">
+                        <div className="content-section row justify-content-center text-center">
+                          <div className="col-md-7">
+                            <div className="m-2 text-secondary">
+                              <h1>ⓘ</h1>
+                            </div>
+                            <div className="m-2 lead text-secondary">
+                              {formatMessageWithTags({
+                                id: 'comparisonCalculator.content.incomparable.intro',
+                                values: {
+                                  comparison: getFundLabelByKey(selectedComparison),
+                                  date: returns.from,
+                                },
+                              })}
+                            </div>
+                            <div className="m-2 lead text-secondary">
+                              <FormattedMessage id="comparisonCalculator.content.incomparable.selectNew" />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      {contentTextProperties.years < 3 && (
+                        <div className="alert alert-warning rounded-0 text-center" role="alert">
+                          <FormattedMessage id="comparisonCalculator.shortTimePeriodWarning" />
+                          <a
+                            href="/soovitused/laura-rikkaks-4/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-success"
+                          >
+                            {' '}
+                            <FormattedMessage id="comparisonCalculator.shortTimePeriodWarningLink" />
+                          </a>
+                        </div>
+                      )}
+
+                      <div className="container p-4">
+                        <div className="content-section row justify-content-center">
+                          <div className="col-md-7 order-2 order-md-1 d-flex flex-column">
+                            {getResultSection()}
+                          </div>
+                          <div className="graph-section col-md-5 order-1 order-md-2 d-flex flex-column mb-5">
+                            {getGraphSection()}
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   )}
-
-                  <div className="container p-4">
-                    <div className="content-section row justify-content-center">
-                      <div className="col-md-7 order-2 order-md-1 d-flex flex-column">
-                        {getResultSection()}
-                      </div>
-                      <div className="graph-section col-md-5 order-1 order-md-2 d-flex flex-column mb-5">
-                        {getGraphSection()}
-                      </div>
-                    </div>
-                  </div>
                 </div>
               )}
             </div>

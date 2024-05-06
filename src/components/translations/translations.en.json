@@ -643,6 +643,9 @@
   "comparisonCalculator.content.performance.cpi.alpha.negativeVerdict": "underperformance.",
   "comparisonCalculator.content.performance.cpi.alpha.positiveVerdict": "better performance.",
 
+  "comparisonCalculator.content.incomparable.intro": "<b>{comparison}</b> is younger ({date}) than selected time period, performances are not comparable.",
+  "comparisonCalculator.content.incomparable.selectNew": "Shorten the time period or select another comparison.",
+
   "comparisonCalculator.content.performance.cta.subtext": "Tuleva World Stock Pension Fund follows the world market index, it tries to achieve a long-term return as similar as possible to it.",
 
   "comparisonCalculator.ctaButton" : "Bring your {pillar} pillar to Tuleva",
