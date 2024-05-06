@@ -190,20 +190,23 @@ const ComparisonCalculator: React.FC = () => {
   }, [secondPillarOpenDate, thirdPillarInitDate, selectedPillar]);
 
   const [incomparableResults, setIncomparableResults] = useState<boolean>(false);
+  const [incomparableFundInceptionDate, setIncomparableFundInceptionDate] = useState<string>('');
   useEffect(() => {
     if (returns.from && selectedTimePeriod) {
       const funds = [...secondPillarFunds, ...thirdPillarFunds];
-      const comparisonFund = funds.find((fund) => fund.isin >= selectedComparison);
+      const comparisonFund = funds.find((fund) => fund.isin === selectedComparison);
+      let isIncomparable = false;
+
       if (comparisonFund) {
         const comparisonDate = moment(comparisonFund.inceptionDate);
-        const isSelectedPeriodAfterComparison = moment(selectedTimePeriod).isAfter(comparisonDate);
-
-        setIncomparableResults(!isSelectedPeriodAfterComparison);
-      } else {
-        setIncomparableResults(false);
+        if (moment(selectedTimePeriod).isBefore(comparisonDate)) {
+          isIncomparable = true;
+          setIncomparableFundInceptionDate(comparisonFund.inceptionDate);
+        }
       }
+      setIncomparableResults(isIncomparable);
     }
-  }, [returns.from, selectedTimePeriod]);
+  }, [returns.from, selectedTimePeriod, selectedComparison]);
 
   return (
     <div className="comparison-calculator">
@@ -276,7 +279,7 @@ const ComparisonCalculator: React.FC = () => {
                                 id: 'comparisonCalculator.content.incomparable.intro',
                                 values: {
                                   comparison: getFundLabelByKey(selectedComparison),
-                                  date: formatDateYear(returns.from),
+                                  date: formatDateYear(incomparableFundInceptionDate),
                                 },
                               })}
                             </div>
