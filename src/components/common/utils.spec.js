@@ -81,12 +81,12 @@ describe('Utils', () => {
       expect(formatAmountForCurrency(12345678.97, 0)).toBe('12 345 679 €');
     });
 
-    it('can format with plus sign', () => {
+    it('can format with a plus sign', () => {
       expect(formatAmountForCurrency(12345678.97, 0, { isSigned: true })).toBe('+12 345 679 €');
     });
 
-    it('can format with minus sign', () => {
-      expect(formatAmountForCurrency(-12345678.97, 0, { isSigned: true })).toBe('-12 345 679 €');
+    it('can format with a minus sign', () => {
+      expect(formatAmountForCurrency(-12345678.97, 0, { isSigned: true })).toBe('−12 345 679 €');
     });
   });
 

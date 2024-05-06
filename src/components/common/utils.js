@@ -24,7 +24,10 @@ export function createClamper(lowerLimit = 0, upperLimit = 10) {
 export function formatAmountForCurrency(amount = 0, fractionDigits = 2, options = {}) {
   const { isSigned = false } = options;
   const sign = amount > 0 && isSigned ? '+' : '';
-  const formattedAmount = amount.toFixed(fractionDigits).replace(/\B(?=(\d{3})+(?!\d))/g, '\u00A0');
+  let formattedAmount = amount.toFixed(fractionDigits).replace(/\B(?=(\d{3})+(?!\d))/g, '\u00A0');
+  if (amount < 0) {
+    formattedAmount = formattedAmount.replace('-', '−');
+  }
   return `${sign}${formattedAmount}\u00A0€`;
 }
 
