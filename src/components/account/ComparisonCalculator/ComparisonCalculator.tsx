@@ -9,6 +9,7 @@ import Select from './select';
 import { getReturnComparison, Key, ReturnComparison } from '../ReturnComparison/api';
 import Loader from '../../common/loader';
 import { Option, OptionGroup } from './select/Select';
+import { formatDateYear } from '../../common/dateFormatter';
 
 interface GraphBarProperties {
   color: string;
@@ -191,6 +192,7 @@ const ComparisonCalculator: React.FC = () => {
   const [incomparableResults, setIncomparableResults] = useState<boolean>(false);
   useEffect(() => {
     if (returns.from && selectedTimePeriod) {
+      // TODO: remove the 2 month buffer when we have longer index history or a change in the returns algorithm
       const comparisonDate = moment(returns.from).subtract(2, 'months');
       const isSelectedPeriodAfterComparison = moment(selectedTimePeriod).isAfter(comparisonDate);
 
@@ -269,7 +271,7 @@ const ComparisonCalculator: React.FC = () => {
                                 id: 'comparisonCalculator.content.incomparable.intro',
                                 values: {
                                   comparison: getFundLabelByKey(selectedComparison),
-                                  date: returns.from,
+                                  date: formatDateYear(returns.from),
                                 },
                               })}
                             </div>
@@ -490,7 +492,7 @@ const ComparisonCalculator: React.FC = () => {
           },
           {
             pillar: getPillarAsString(),
-            date: beginning,
+            date: formatDateYear(beginning),
           },
         ),
         translate: false,
@@ -505,7 +507,7 @@ const ComparisonCalculator: React.FC = () => {
                 },
                 {
                   pillar: getPillarAsString(),
-                  date: inceptionDate,
+                  date: formatDateYear(inceptionDate),
                 },
               ),
               translate: false,
