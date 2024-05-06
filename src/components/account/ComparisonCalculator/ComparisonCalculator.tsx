@@ -7,11 +7,6 @@ import { formatAmountForCurrency } from '../../common/utils';
 import { Fund, UserConversion } from '../../common/apiModels';
 import Select from './select';
 import { getReturnComparison, Key, ReturnComparison } from '../ReturnComparison/api';
-import {
-  INCEPTION,
-  START_DATE,
-  THIRD_PILLAR_INCEPTION,
-} from '../ReturnComparison/ReturnComparison';
 import Loader from '../../common/loader';
 import { Option, OptionGroup } from './select/Select';
 
@@ -118,17 +113,12 @@ const ComparisonCalculator: React.FC = () => {
 
   const secondPillarFunds = useSelector((state: RootState) => state.exchange.targetFunds || []);
   const thirdPillarFunds = useSelector((state: RootState) => state.thirdPillar.funds || []);
-  const secondPillarOpenDate = useSelector(
-    (state: RootState) => state.login.user?.secondPillarOpenDate || '2004-03-19',
-  );
-  const thirdPillarInitDate = useSelector(
-    (state: RootState) => state.login.user?.thirdPillarInitDate || '2004-03-19',
-  );
 
   useEffect(() => {
     if (secondPillarFunds.length > 0 && thirdPillarFunds.length > 0) {
       setLoadingInitialData(false);
       populateCompareToOptions();
+      setSelectedTimePeriod(timePeriodOptions[0].value);
     }
   }, [secondPillarFunds, thirdPillarFunds]);
 
@@ -165,17 +155,14 @@ const ComparisonCalculator: React.FC = () => {
   useEffect(() => {
     if (returns.personal && returns.index) {
       let ctaLink = null;
-      let pillarAsString = '';
       if (selectedPillar === Key.SECOND_PILLAR && secondPillarFullyConverted) {
-        pillarAsString = 'II';
         ctaLink = '/2nd-pillar-flow/';
       } else if (selectedPillar === Key.THIRD_PILLAR && thirdPillarFullyConverted) {
         ctaLink = '/3rd-pillar-flow/';
-        pillarAsString = 'III';
       }
       setContentTextProperties({
         years: getFullYearsSince(returns.from),
-        pillar: pillarAsString,
+        pillar: getPillarAsString(),
         ctaLink,
       });
     }
@@ -188,10 +175,17 @@ const ComparisonCalculator: React.FC = () => {
   const [performanceVerdictProperties, setPerformanceVerdictProperties] =
     useState<PerformanceVerdictProperties>(getInitialPerformanceVerdictProperties());
   const [comparisonOptions, setComparisonOptions] = useState<OptionGroup[]>([]);
+  const [timePeriodOptions, setTimePeriodOptions] = useState<Option[]>([]);
 
-  const getTimePeriodOptions = (): Option[] => {
-    return getFromDateOptions();
-  };
+  const secondPillarOpenDate = useSelector(
+    (state: RootState) => state.login.user?.secondPillarOpenDate || '2004-03-19',
+  );
+  const thirdPillarInitDate = useSelector(
+    (state: RootState) => state.login.user?.thirdPillarInitDate || '2004-03-19',
+  );
+  useEffect(() => {
+    setTimePeriodOptions(getFromDateOptions());
+  }, [secondPillarOpenDate, thirdPillarInitDate, selectedPillar]);
 
   return (
     <div className="comparison-calculator">
@@ -227,7 +221,7 @@ const ComparisonCalculator: React.FC = () => {
                     <FormattedMessage id="comparisonCalculator.timePeriod" />:{' '}
                   </label>
                   <Select
-                    options={getTimePeriodOptions()}
+                    options={timePeriodOptions}
                     selected={selectedTimePeriod}
                     onChange={setSelectedTimePeriod}
                   />
@@ -434,6 +428,10 @@ const ComparisonCalculator: React.FC = () => {
   }
 
   function getFromDateOptions(): Option[] {
+    const START_DATE = '2003-01-07';
+    const INCEPTION = '2017-04-27';
+    const THIRD_PILLAR_INCEPTION = '2019-10-14';
+
     const selectedPersonalKey = selectedPillar;
 
     const format = (momentDate: Moment) => momentDate.format('YYYY-MM-DD');
@@ -442,17 +440,51 @@ const ComparisonCalculator: React.FC = () => {
       selectedPersonalKey === Key.SECOND_PILLAR ? secondPillarOpenDate : thirdPillarInitDate;
     const referenceDate = format(moment(referenceTime));
     const beginning = new Date(START_DATE) >= new Date(referenceDate) ? START_DATE : referenceDate;
+    const inceptionDate = selectedPillar === Key.SECOND_PILLAR ? INCEPTION : THIRD_PILLAR_INCEPTION;
+
+    const topGroup = [
+      {
+        value: beginning,
+        label: formatMessage(
+          {
+            id: 'comparisonCalculator.period.all',
+          },
+          {
+            pillar: getPillarAsString(),
+            date: beginning,
+          },
+        ),
+        translate: false,
+      },
+      ...(new Date(inceptionDate) >= new Date(referenceDate)
+        ? [
+            {
+              value: inceptionDate,
+              label: formatMessage(
+                {
+                  id: 'comparisonCalculator.period.inception',
+                },
+                {
+                  pillar: getPillarAsString(),
+                  date: inceptionDate,
+                },
+              ),
+              translate: false,
+            },
+          ]
+        : []),
+    ];
 
     const twentyYearsAgo = format(moment().subtract(20, 'years'));
     const fifteenYearsAgo = format(moment().subtract(15, 'years'));
     const tenYearsAgo = format(moment().subtract(10, 'years'));
     const fiveYearsAgo = format(moment().subtract(5, 'years'));
+    const fourYearsAgo = format(moment().subtract(4, 'years'));
     const threeYearsAgo = format(moment().subtract(3, 'years'));
     const twoYearsAgo = format(moment().subtract(2, 'years'));
     const oneYearAgo = format(moment().subtract(1, 'year'));
 
-    const options = [
-      { value: beginning, label: 'comparisonCalculator.period.all' },
+    const bottomGroup = [
       ...(new Date(twentyYearsAgo) >= new Date(referenceDate)
         ? [{ value: twentyYearsAgo, label: 'comparisonCalculator.period.twentyYears' }]
         : []),
@@ -462,19 +494,11 @@ const ComparisonCalculator: React.FC = () => {
       ...(new Date(tenYearsAgo) >= new Date(referenceDate)
         ? [{ value: tenYearsAgo, label: 'comparisonCalculator.period.tenYears' }]
         : []),
-      ...(new Date(INCEPTION) >= new Date(referenceDate)
-        ? [{ value: INCEPTION, label: 'comparisonCalculator.period.inception' }]
-        : []),
-      ...(new Date(THIRD_PILLAR_INCEPTION) >= new Date(referenceDate)
-        ? [
-            {
-              value: THIRD_PILLAR_INCEPTION,
-              label: 'comparisonCalculator.period.thirdPillarInception',
-            },
-          ]
-        : []),
       ...(new Date(fiveYearsAgo) >= new Date(referenceDate)
         ? [{ value: fiveYearsAgo, label: 'comparisonCalculator.period.fiveYears' }]
+        : []),
+      ...(new Date(fourYearsAgo) >= new Date(referenceDate)
+        ? [{ value: fourYearsAgo, label: 'comparisonCalculator.period.fourYears' }]
         : []),
       ...(new Date(threeYearsAgo) >= new Date(referenceDate)
         ? [{ value: threeYearsAgo, label: 'comparisonCalculator.period.threeYears' }]
@@ -487,10 +511,17 @@ const ComparisonCalculator: React.FC = () => {
         : []),
     ];
 
-    return options.sort((option1, option2) => option1.value.localeCompare(option2.value));
+    return [
+      ...topGroup,
+      { divider: true, label: 'divider1', value: 'divider1' },
+      ...bottomGroup.sort((option1, option2) => option1.value.localeCompare(option2.value)),
+    ];
   }
 
   async function loadReturns(): Promise<void> {
+    if (!selectedTimePeriod) {
+      return;
+    }
     const selectedPersonalKey = selectedPillar;
     const fromDate = selectedTimePeriod;
     let selectedFundKey = selectedComparison;
@@ -1092,6 +1123,16 @@ const ComparisonCalculator: React.FC = () => {
     }
 
     return [...secondPillarFunds, ...thirdPillarFunds].find((it) => it.isin === key)?.name || key;
+  }
+
+  function getPillarAsString() {
+    let pillarAsString = '';
+    if (selectedPillar === Key.SECOND_PILLAR) {
+      pillarAsString = 'II';
+    } else if (selectedPillar === Key.THIRD_PILLAR) {
+      pillarAsString = 'III';
+    }
+    return pillarAsString;
   }
 };
 

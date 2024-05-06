@@ -5,11 +5,14 @@ export interface Option {
   value: string;
   label: string;
   disabled?: boolean;
+  divider?: boolean;
+  translate?: boolean;
 }
 
 export interface OptionGroup {
   label: string;
   options: Option[];
+  translate?: boolean;
 }
 
 interface SelectProps {
@@ -29,20 +32,31 @@ export const Select: FC<SelectProps> = ({
 }) => {
   const { formatMessage } = useIntl();
 
-  const getLabel = (label: string) => {
-    return translate ? formatMessage({ id: label }) : label;
+  const getLabel = (option: Option | OptionGroup) => {
+    return translate && option.translate !== false
+      ? formatMessage({ id: option.label })
+      : option.label;
   };
 
-  const renderOption = (option: Option) => (
-    <option value={option.value} key={option.value} disabled={option.disabled}>
-      {getLabel(option.label)}
-    </option>
-  );
+  const renderOption = (option: Option) => {
+    if (option.divider) {
+      return (
+        <option value={option.value} key={option.value} disabled>
+          ─────────────────────────
+        </option>
+      );
+    }
+    return (
+      <option value={option.value} key={option.value} disabled={option.disabled}>
+        {getLabel(option)}
+      </option>
+    );
+  };
 
   const renderOptions = () =>
     options.map((option) =>
       'options' in option ? (
-        <optgroup label={getLabel(option.label)} key={option.label}>
+        <optgroup label={getLabel(option)} key={option.label}>
           {option.options.map(renderOption)}
         </optgroup>
       ) : (
