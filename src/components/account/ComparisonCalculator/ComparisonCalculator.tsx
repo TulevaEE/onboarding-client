@@ -185,6 +185,7 @@ const ComparisonCalculator: React.FC = () => {
   );
   useEffect(() => {
     setTimePeriodOptions(getFromDateOptions());
+    setSelectedTimePeriod(getFromDateOptions()[0].value);
   }, [secondPillarOpenDate, thirdPillarInitDate, selectedPillar]);
 
   const [incomparableResults, setIncomparableResults] = useState<boolean>(false);
