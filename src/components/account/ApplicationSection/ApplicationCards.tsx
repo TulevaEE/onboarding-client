@@ -195,7 +195,7 @@ const EarlyWithdrawalCard: React.FunctionComponent<{
     <DefinitionList
       definitions={[
         {
-          key: 'applications.type.earlyWithdrawal.time',
+          key: 'applications.type.earlyWithdrawal.month',
           value: formatMonth(application.details.fulfillmentDate),
         },
         {
@@ -219,7 +219,7 @@ const WithdrawalCard: React.FunctionComponent<{
     <DefinitionList
       definitions={[
         {
-          key: 'applications.type.withdrawal.time',
+          key: 'applications.type.withdrawal.month',
           value: formatMonth(application.details.fulfillmentDate),
         },
         {

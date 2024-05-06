@@ -521,10 +521,10 @@
   "applications.type.resumeContributions.title": "II samba maksete uuesti alustamise avaldus",
   "applications.type.resumeContributions.time": "Maksed algavad alates",
   "applications.type.earlyWithdrawal.title": "II samba enneaegse väljavõtmise avaldus",
-  "applications.type.earlyWithdrawal.time": "Väljamakse kuu",
+  "applications.type.earlyWithdrawal.month": "Väljamakse kuu",
   "applications.type.earlyWithdrawal.account": "Pangakonto",
   "applications.type.withdrawal.title": "II samba väljavõtmise avaldus",
-  "applications.type.withdrawal.time": "Väljamakse kuu",
+  "applications.type.withdrawal.month": "Väljamakse kuu",
   "applications.type.withdrawal.account": "Pangakonto",
 
   "transactions.title": "Sinu viimased tehingud",
