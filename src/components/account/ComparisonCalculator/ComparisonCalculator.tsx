@@ -1159,6 +1159,9 @@ const ComparisonCalculator: React.FC = () => {
     if (key === Key.EPI) {
       return formatMessage({ id: 'comparisonCalculator.comparisonOptions.epi' });
     }
+    if (key === Key.UNION_STOCK_INDEX) {
+      return formatMessage({ id: 'comparisonCalculator.comparisonOptions.unionStockIndex' });
+    }
 
     return [...secondPillarFunds, ...thirdPillarFunds].find((it) => it.isin === key)?.name || key;
   }
