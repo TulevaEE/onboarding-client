@@ -155,9 +155,9 @@ const ComparisonCalculator: React.FC = () => {
   useEffect(() => {
     if (returns.personal && returns.index) {
       let ctaLink = null;
-      if (selectedPillar === Key.SECOND_PILLAR && secondPillarFullyConverted) {
+      if (selectedPillar === Key.SECOND_PILLAR && !secondPillarFullyConverted) {
         ctaLink = '/2nd-pillar-flow/';
-      } else if (selectedPillar === Key.THIRD_PILLAR && thirdPillarFullyConverted) {
+      } else if (selectedPillar === Key.THIRD_PILLAR && !thirdPillarFullyConverted) {
         ctaLink = '/3rd-pillar-flow/';
       }
       setContentTextProperties({
