@@ -429,7 +429,7 @@ const ComparisonCalculator: React.FC = () => {
     return (
       <div className="bar bar-2 position-relative" style={barStyle}>
         <div className="bar-amount" style={barAmountStyle}>
-          {formatAmountForCurrency(properties.amount, 0)}
+          {formatAmountForCurrency(properties.amount, 0, { isSigned: true })}
         </div>
         <div className="bar-graph" style={{ height: `${height}px` }}>
           <div className="bar-percentage">{properties.percentage}%</div>

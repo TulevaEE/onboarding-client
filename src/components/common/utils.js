@@ -21,8 +21,11 @@ export function createClamper(lowerLimit = 0, upperLimit = 10) {
   return (value) => Math.max(Math.min(value, upperLimit), lowerLimit);
 }
 
-export function formatAmountForCurrency(amount = 0, fractionDigits = 2) {
-  return `${amount.toFixed(fractionDigits).replace(/\B(?=(\d{3})+(?!\d))/g, '\u00A0')}\u00A0€`;
+export function formatAmountForCurrency(amount = 0, fractionDigits = 2, options = {}) {
+  const { isSigned = false } = options;
+  const sign = amount > 0 && isSigned ? '+' : '';
+  const formattedAmount = amount.toFixed(fractionDigits).replace(/\B(?=(\d{3})+(?!\d))/g, '\u00A0');
+  return `${sign}${formattedAmount}\u00A0€`;
 }
 
 export function formatLargeAmountForCurrency(amount = 0) {

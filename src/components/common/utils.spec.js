@@ -80,6 +80,14 @@ describe('Utils', () => {
     it('can format with less fractional digits', () => {
       expect(formatAmountForCurrency(12345678.97, 0)).toBe('12 345 679 €');
     });
+
+    it('can format with plus sign', () => {
+      expect(formatAmountForCurrency(12345678.97, 0, { isSigned: true })).toBe('+12 345 679 €');
+    });
+
+    it('can format with minus sign', () => {
+      expect(formatAmountForCurrency(-12345678.97, 0, { isSigned: true })).toBe('-12 345 679 €');
+    });
   });
 
   describe('Fund Status and Pillar checks', () => {
