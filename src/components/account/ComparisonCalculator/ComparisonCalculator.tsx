@@ -10,6 +10,7 @@ import { getReturnComparison, Key, ReturnComparison } from '../ReturnComparison/
 import Loader from '../../common/loader';
 import { Option, OptionGroup } from './select/Select';
 import { formatDateYear } from '../../common/dateFormatter';
+import Percentage from '../../common/Percentage';
 
 interface GraphBarProperties {
   color: string;
@@ -296,14 +297,13 @@ const ComparisonCalculator: React.FC = () => {
                     <div>
                       {contentTextProperties.years < 3 && (
                         <div className="alert alert-warning rounded-0 text-center" role="alert">
-                          <FormattedMessage id="comparisonCalculator.shortTimePeriodWarning" />
+                          <FormattedMessage id="comparisonCalculator.shortTimePeriodWarning" />{' '}
                           <a
                             href="/soovitused/laura-rikkaks-4/"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-success"
                           >
-                            {' '}
                             <FormattedMessage id="comparisonCalculator.shortTimePeriodWarningLink" />
                           </a>
                         </div>
@@ -437,7 +437,9 @@ const ComparisonCalculator: React.FC = () => {
           {formatAmountForCurrency(properties.amount, 0, { isSigned: true })}
         </div>
         <div className="bar-graph" style={{ height: `${height}px` }}>
-          <div className="bar-percentage">{properties.percentage}%</div>
+          <div className="bar-percentage">
+            <Percentage value={properties.percentage} fractionDigits={1} />
+          </div>
         </div>
         <div className="bar-label position-absolute" style={barLabelStyle}>
           {properties.label.includes('.') ? (
@@ -667,7 +669,7 @@ const ComparisonCalculator: React.FC = () => {
     const indexBarProperties: GraphBarProperties = {
       color: colorBlue,
       amount: returns.index ? returns.index.amount : 0,
-      percentage: returns.index ? formatPercentage(returns.index.rate) : 0,
+      percentage: returns.index ? returns.index.rate : 0,
       height: barHeights.index,
       label: 'comparisonCalculator.graphWorldMarketStockIndex',
     };
@@ -682,7 +684,7 @@ const ComparisonCalculator: React.FC = () => {
     const personalBarProperties: GraphBarProperties = {
       color: personalBarColor,
       amount: returns.personal ? returns.personal.amount : 0,
-      percentage: returns.personal ? formatPercentage(returns.personal.rate) : 0,
+      percentage: returns.personal ? returns.personal.rate : 0,
       height: barHeights.personal,
       label:
         selectedPillar === Key.SECOND_PILLAR
@@ -703,7 +705,7 @@ const ComparisonCalculator: React.FC = () => {
     const comparisonBarProperties: GraphBarProperties = {
       color: comparisonBarColor,
       amount: returns.pensionFund ? returns.pensionFund.amount : 0,
-      percentage: returns.pensionFund ? formatPercentage(returns.pensionFund.rate) : 0,
+      percentage: returns.pensionFund ? returns.pensionFund.rate : 0,
       height: barHeights.pensionFund,
       label: comparisonFundLabel,
     };
@@ -728,10 +730,6 @@ const ComparisonCalculator: React.FC = () => {
           3: undefined,
         },
       });
-    }
-
-    function formatPercentage(percentage: number) {
-      return Math.round(percentage * 1000) / 10;
     }
   }
 
