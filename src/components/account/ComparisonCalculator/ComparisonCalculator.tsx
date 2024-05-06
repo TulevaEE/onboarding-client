@@ -199,6 +199,8 @@ const ComparisonCalculator: React.FC = () => {
         const isSelectedPeriodAfterComparison = moment(selectedTimePeriod).isAfter(comparisonDate);
 
         setIncomparableResults(!isSelectedPeriodAfterComparison);
+      } else {
+        setIncomparableResults(false);
       }
     }
   }, [returns.from, selectedTimePeriod]);
