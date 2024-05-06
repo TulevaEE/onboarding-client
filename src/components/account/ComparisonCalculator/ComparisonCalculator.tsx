@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './ComparisonCalculator.scss';
 import { FormattedMessage, MessageDescriptor, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
@@ -124,6 +124,7 @@ const ComparisonCalculator: React.FC = () => {
     }
   }, [secondPillarFunds, thirdPillarFunds]);
 
+  const latestRequestIdRef = useRef<number>(0);
   useEffect(() => {
     if (!loadingInitialData) {
       loadReturns();
@@ -188,6 +189,7 @@ const ComparisonCalculator: React.FC = () => {
   useEffect(() => {
     setTimePeriodOptions(getFromDateOptions());
     setSelectedTimePeriod(getFromDateOptions()[0].value);
+    setSelectedComparison(Key.UNION_STOCK_INDEX);
   }, [secondPillarOpenDate, thirdPillarInitDate, selectedPillar]);
 
   const [incomparableResults, setIncomparableResults] = useState<boolean>(false);
@@ -575,6 +577,9 @@ const ComparisonCalculator: React.FC = () => {
     if (!selectedTimePeriod) {
       return;
     }
+    latestRequestIdRef.current += 1;
+
+    const requestId = latestRequestIdRef.current;
     const selectedPersonalKey = selectedPillar;
     const fromDate = selectedTimePeriod;
     let selectedFundKey = selectedComparison;
@@ -591,13 +596,19 @@ const ComparisonCalculator: React.FC = () => {
         pensionFundKey: selectedFundKey,
         indexKey: selectedIndexKey,
       });
-      setReturns(result);
+      if (requestId === latestRequestIdRef.current) {
+        setReturns(result);
+      }
     } catch (ignored) {
-      // eslint-disable-next-line no-console
-      console.error(ignored);
-      setReturns(initialReturns);
+      if (requestId === latestRequestIdRef.current) {
+        // eslint-disable-next-line no-console
+        console.error(ignored);
+        setReturns(initialReturns);
+      }
     } finally {
-      setLoadingReturns(false);
+      if (requestId === latestRequestIdRef.current) {
+        setLoadingReturns(false);
+      }
     }
   }
 
