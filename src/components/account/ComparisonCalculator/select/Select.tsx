@@ -42,11 +42,7 @@ export const Select: FC<SelectProps> = ({
 
   const renderOption = (option: Option) => {
     if (option.divider) {
-      return (
-        <option value={option.value} key={option.value} disabled>
-          ─────────────────────────
-        </option>
-      );
+      return <hr />;
     }
     return (
       <option value={option.value} key={option.value} disabled={option.disabled}>
