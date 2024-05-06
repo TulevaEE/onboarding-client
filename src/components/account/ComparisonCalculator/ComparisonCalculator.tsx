@@ -752,20 +752,12 @@ const ComparisonCalculator: React.FC = () => {
   }
 
   function getFullYearsSince(dateString: string): number {
-    const startDate = new Date(dateString);
+    const givenDate = new Date(dateString);
     const currentDate = new Date();
-
-    let yearsDifference = currentDate.getFullYear() - startDate.getFullYear();
-
-    if (
-      currentDate.getMonth() < startDate.getMonth() ||
-      (currentDate.getMonth() === startDate.getMonth() &&
-        currentDate.getDate() < startDate.getDate())
-    ) {
-      yearsDifference -= 1;
-    }
-
-    return yearsDifference;
+    const millisecondsDifference = currentDate.getTime() - givenDate.getTime();
+    const daysDifference = millisecondsDifference / (1000 * 60 * 60 * 24);
+    const yearsDifference = daysDifference / 365.25;
+    return Math.round(yearsDifference);
   }
 
   function getInitialPerformanceVerdictProperties(): PerformanceVerdictProperties {
