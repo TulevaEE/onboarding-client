@@ -8,7 +8,7 @@
   "login.smart.id": "Smart-ID",
   "login.id.card": "ID-card",
   "login.id.card.start.failed": "Please check that your ID card reader is connected and try again.",
-  "login.invalid.personal.code": "Oops, invalid personal code. Please try again.",
+  "login.invalid.personal.code": "Invalid personal code. Please try again.",
   "login.phone.number": "Phone number",
   "login.id.code": "Identity code",
   "login.enter": "Log in",
@@ -570,7 +570,7 @@
   "cancellation.flow.success.download": "Download",
   "cancellation.flow.success.back": "Back to account",
 
-  "partnerFlow.error": "Oops, unexpected error occurred while initiating process",
+  "partnerFlow.error": "An unexpected error occurred while initiating process",
 
   "secondPillarUpsell.cardTitle": "II Pillar",
   "secondPillarUpsell.notInTuleva": "Not in Tuleva",
