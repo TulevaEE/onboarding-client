@@ -25,10 +25,11 @@ export const LoginForm = ({
   exchangeExistingThirdPillarUnits,
 }) => {
   return (
-    <>
-      {isMaintenanceWindow() ? <Maintenance /> : ''}
-      <div className="row mt-4 pt-4 pb-4 justify-content-center login-form">
-        {renderLoginForm(
+    <div className="bg-white shadow rounded-lg p-5 text-center">
+      {isMaintenanceWindow() ? (
+        <Maintenance />
+      ) : (
+        renderLoginForm(
           monthlyThirdPillarContribution,
           exchangeExistingThirdPillarUnits,
           onIdCodeSubmit,
@@ -38,16 +39,16 @@ export const LoginForm = ({
           phoneNumber,
           onPhoneNumberChange,
           onAuthenticateWithIdCard,
-        )}
-      </div>
-    </>
+        )
+      )}
+    </div>
   );
 };
 
 const isMaintenanceWindow = () => {
   const currentTime = new Date();
-  const maintenanceStart = new Date('May 9, 2024 9:00:00');
-  const maintenanceEnd = new Date('May 9, 2024 12:00:00');
+  const maintenanceStart = new Date('October 20, 2022 20:00:00');
+  const maintenanceEnd = new Date('October 20, 2022 23:00:00');
   return currentTime >= maintenanceStart && currentTime <= maintenanceEnd;
 };
 
@@ -66,38 +67,34 @@ const renderLoginForm = (
 
   return (
     <>
-      <div className="col-lg-9">
-        <div className="mt-2 mb-4">
-          {monthlyThirdPillarContribution ? (
-            renderMonthlyThirdPillarNotice(
-              exchangeExistingThirdPillarUnits,
-              monthlyThirdPillarContribution,
-            )
-          ) : (
-            <>
-              <h2>
-                <FormattedMessage id="login.title" />
-              </h2>
-              <span className="text-muted">
-                <FormattedMessage id="login.subtitle" />
-              </span>
-            </>
-          )}
-        </div>
+      {monthlyThirdPillarContribution ? (
+        renderMonthlyThirdPillarNotice(
+          exchangeExistingThirdPillarUnits,
+          monthlyThirdPillarContribution,
+        )
+      ) : (
+        <>
+          <h2 className="m-0">
+            <FormattedMessage id="login.title" />
+          </h2>
+          <p className="m-0 mt-2 text-secondary">
+            <FormattedMessage id="login.subtitle" />
+          </p>
+        </>
+      )}
 
-        {renderLoginTabs(
-          onIdCodeSubmit,
-          personalCode,
-          onPersonalCodeChange,
-          onMobileIdSubmit,
-          phoneNumber,
-          onPhoneNumberChange,
-          onAuthenticateWithIdCard,
-          formatMessage,
-        )}
-      </div>
+      {renderLoginTabs(
+        onIdCodeSubmit,
+        personalCode,
+        onPersonalCodeChange,
+        onMobileIdSubmit,
+        phoneNumber,
+        onPhoneNumberChange,
+        onAuthenticateWithIdCard,
+        formatMessage,
+      )}
 
-      <div className="col-lg-9 mt-4 text-muted">
+      <p className="m-0 mt-4 text-secondary">
         <FormattedMessage
           id="login.permission.note"
           values={{
@@ -106,7 +103,7 @@ const renderLoginForm = (
             ),
           }}
         />
-      </div>
+      </p>
     </>
   );
 };
