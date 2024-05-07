@@ -610,7 +610,7 @@
   "comparisonCalculator.comparisonOptions.benchmarks": "Mõõdikud",
   "comparisonCalculator.comparisonOptions.lowFeeFunds": "Madala tasuga pensionifondid (alla 0.5%)",
   "comparisonCalculator.comparisonOptions.highFeeFunds": "Kõrge tasuga pensionifondid ({minimumFee}%–1.56%)",
-  "comparisonCalculator.comparisonOptions.unionStockIndex": "Maailma aktsiaturu indeks",
+  "comparisonCalculator.comparisonOptions.unionStockIndex": "Maailmaturu indeks",
   "comparisonCalculator.comparisonOptions.epi": "Eesti II samba fondide keskmine tootlus",
   "comparisonCalculator.comparisonOptions.cpi": "Eesti inflatsioon",
 

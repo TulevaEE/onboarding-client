@@ -611,7 +611,7 @@
   "comparisonCalculator.comparisonOptions.benchmarks": "Benchmarks",
   "comparisonCalculator.comparisonOptions.lowFeeFunds": "Low fee pension funds (below 0.5%)",
   "comparisonCalculator.comparisonOptions.highFeeFunds": "High fee pension funds ({minimumFee}%–1.56%)",
-  "comparisonCalculator.comparisonOptions.unionStockIndex": "World stock market index",
+  "comparisonCalculator.comparisonOptions.unionStockIndex": "World market index",
   "comparisonCalculator.comparisonOptions.epi": "Estonian II pillar funds average performance",
   "comparisonCalculator.comparisonOptions.cpi": "Estonia inflation rate",
 
