@@ -8,29 +8,25 @@ const noop = () => null;
 
 const ErrorMessage = ({ errors, onCancel, overlayed }) => {
   const content = (
-    <div className="card text-center p-4 tv-modal__content">
-      <div className="p-4">
-        <div>
-          <p>
-            <b>
-              <FormattedMessage id="error.messages.intro" />
-            </b>
+    <div className="bg-white shadow rounded-lg p-5 text-center">
+      <p>
+        <b>
+          <FormattedMessage id="error.messages.intro" />
+        </b>
+      </p>
+      {errors.errors &&
+        errors.errors.map((error, index) => (
+          <p key={index}>
+            <FormattedMessage id={error.code} /> {error.message}
           </p>
-          {errors.errors &&
-            errors.errors.map((error, index) => (
-              <p key={index}>
-                <FormattedMessage id={error.code} /> {error.message}
-              </p>
-            ))}
-        </div>
-        {onCancel !== noop ? (
-          <button type="button" className="btn btn-secondary mt-4" onClick={onCancel}>
-            <FormattedMessage id="error.message.close" />
-          </button>
-        ) : (
-          ''
-        )}
-      </div>
+        ))}
+      {onCancel !== noop ? (
+        <button type="button" className="btn btn-secondary mt-4" onClick={onCancel}>
+          <FormattedMessage id="error.message.close" />
+        </button>
+      ) : (
+        ''
+      )}
     </div>
   );
   if (overlayed) {
