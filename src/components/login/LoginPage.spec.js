@@ -1,5 +1,4 @@
 import React from 'react';
-import { FacebookProvider, Like } from 'react-facebook';
 import { shallow } from 'enzyme';
 import { LoginPage } from './LoginPage';
 import { AuthenticationLoader, ErrorAlert } from '../common';
@@ -96,13 +95,4 @@ describe('Login page', () => {
     expect(component.contains(<AuthenticationLoader {...authProps} />)).toBe(false);
   });
 
-  it('shows facebook likes', () => {
-    expect(
-      component.contains(
-        <FacebookProvider appId="1939240566313354">
-          <Like href="https://www.facebook.com/Tuleva.ee" showFaces />
-        </FacebookProvider>,
-      ),
-    ).toBe(true);
-  });
 });
