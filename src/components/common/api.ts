@@ -4,6 +4,7 @@ import {
   Application,
   Authentication,
   CancellationMandate,
+  CapitalEvent,
   CapitalRow,
   Contribution,
   Fund,
@@ -267,6 +268,10 @@ export function getPendingApplications(): Promise<Application[]> {
 
 export function getTransactions(): Promise<Transaction[]> {
   return getWithAuthentication(getEndpoint('/v1/transactions'), undefined);
+}
+
+export function getCapitalEvents(): Promise<CapitalEvent[]> {
+  return getWithAuthentication(getEndpoint('/v1/me/capital/events'), undefined);
 }
 
 export function getContributions(): Promise<Contribution[]> {

@@ -147,14 +147,17 @@ export class AccountPage extends Component {
         )}
 
         {loadingCapital || memberCapital ? (
-          <div>
-            <div className="mt-5">
+          <div className="mt-5">
+            <div className="d-flex flex-row justify-content-between align-items-end">
               <p className="mb-4 lead">
                 <FormattedMessage id="memberCapital.heading" />
               </p>
-              {loadingCapital && <Loader className="align-middle" />}
-              {memberCapital && <MemberCapital rows={memberCapital} />}
+              <Link className="text-nowrap mb-4" to="/capital">
+                <FormattedMessage id="memberCapital.seeMore" />
+              </Link>
             </div>
+            {loadingCapital && <Loader className="align-middle" />}
+            {memberCapital && <MemberCapital rows={memberCapital} />}
           </div>
         ) : (
           ''

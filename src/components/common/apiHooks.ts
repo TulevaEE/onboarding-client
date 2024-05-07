@@ -2,6 +2,7 @@ import { useMutation, UseMutationResult, useQuery, UseQueryResult } from 'react-
 
 import {
   createApplicationCancellation,
+  getCapitalEvents,
   getContributions,
   getFunds,
   getMandateDeadlines,
@@ -13,6 +14,7 @@ import {
 import {
   Application,
   CancellationMandate,
+  CapitalEvent,
   Contribution,
   Fund,
   MandateDeadlines,
@@ -27,6 +29,10 @@ export function usePendingApplications(): UseQueryResult<Application[]> {
 
 export function useTransactions(): UseQueryResult<Transaction[]> {
   return useQuery('transactions', () => getTransactions());
+}
+
+export function useCapitalEvents(): UseQueryResult<CapitalEvent[]> {
+  return useQuery('capitalEvents', () => getCapitalEvents());
 }
 
 export function useContributions(): UseQueryResult<Contribution[]> {

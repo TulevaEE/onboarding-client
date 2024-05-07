@@ -36,6 +36,7 @@ import DevSidebar from '../dev/DevSidebar';
 import Success from '../flows/secondPillar/success';
 import { getAuthentication } from '../common/authenticationManager';
 import ComparisonCalculator from '../account/ComparisonCalculator';
+import { CapitalPage } from '../account/MemberCapital/CapitalPage';
 
 export const ACCOUNT_PATH = '/account';
 export const AML_PATH = '/aml';
@@ -109,6 +110,7 @@ export class LoggedInApp extends PureComponent {
               <Route path="/3rd-pillar-contributions" component={ContributionPageThirdPillar} />
               <Route path="/2nd-pillar-upsell" component={SecondPillarUpsellCard} />
               <Route path="/2nd-pillar-payment-rate" component={SecondPillarPaymentRate} />
+              <Route path="/capital" component={CapitalPage} />
               <Route
                 path="/2nd-pillar-payment-rate-success"
                 component={SecondPillarPaymentRateSuccess}

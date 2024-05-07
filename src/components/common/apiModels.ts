@@ -223,6 +223,13 @@ export interface CapitalRow {
   currency: Currency;
 }
 
+export interface CapitalEvent {
+  date: string;
+  type: CapitalType;
+  value: number;
+  currency: Currency;
+}
+
 export enum CapitalType {
   CAPITAL_PAYMENT = 'CAPITAL_PAYMENT',
   UNVESTED_WORK_COMPENSATION = 'UNVESTED_WORK_COMPENSATION',
