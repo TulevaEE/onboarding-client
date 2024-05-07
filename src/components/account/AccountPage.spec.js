@@ -9,20 +9,42 @@ import AccountSummary from './AccountSummary';
 import StatusBox from './statusBox';
 import { ApplicationSection } from './ApplicationSection/ApplicationSection';
 import { activeThirdPillar } from './statusBox/fixtures';
+import { CapitalType } from '../common/apiModels';
 
 describe('Account page', () => {
   let component;
   let props;
 
-  const capital = {
-    membershipBonus: 10,
-    capitalPayment: 1000,
-    unvestedWorkCompensation: 1000,
-    workCompensation: 1000,
-    profit: 0.1,
-    total: 10 + 1000 + 1000 + 1000 + 0.1,
-    currency: 'EUR',
-  };
+  const capital = [
+    {
+      type: CapitalType.CAPITAL_PAYMENT,
+      contributions: 1,
+      profit: 1,
+      value: 2,
+      currency: 'EUR',
+    },
+    {
+      type: CapitalType.UNVESTED_WORK_COMPENSATION,
+      contributions: 1,
+      profit: 0,
+      value: 1,
+      currency: 'EUR',
+    },
+    {
+      type: CapitalType.WORK_COMPENSATION,
+      contributions: 1,
+      profit: 1,
+      value: 2,
+      currency: 'EUR',
+    },
+    {
+      type: CapitalType.MEMBERSHIP_BONUS,
+      contributions: 0,
+      profit: 1,
+      value: 1,
+      currency: 'EUR',
+    },
+  ];
 
   beforeEach(() => {
     props = {};

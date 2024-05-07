@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import AccountSummary from '.';
 import Table from '../../common/table';
 import Euro from '../../common/Euro';
+import { CapitalType } from '../../common/apiModels';
 
 describe('Account summary', () => {
   let component;
@@ -76,15 +77,36 @@ describe('Account summary', () => {
             unavailablePrice: 0,
           },
         ]}
-        memberCapital={{
-          capitalPayment: 1,
-          unvestedWorkCompensation: 1,
-          workCompensation: 1,
-          membershipBonus: 1,
-          profit: 2,
-          total: 6,
-          currency: 'EUR',
-        }}
+        memberCapital={[
+          {
+            type: CapitalType.CAPITAL_PAYMENT,
+            contributions: 1,
+            profit: 1,
+            value: 2,
+            currency: 'EUR',
+          },
+          {
+            type: CapitalType.UNVESTED_WORK_COMPENSATION,
+            contributions: 1,
+            profit: 0,
+            value: 1,
+            currency: 'EUR',
+          },
+          {
+            type: CapitalType.WORK_COMPENSATION,
+            contributions: 1,
+            profit: 1,
+            value: 2,
+            currency: 'EUR',
+          },
+          {
+            type: CapitalType.MEMBERSHIP_BONUS,
+            contributions: 0,
+            profit: 1,
+            value: 1,
+            currency: 'EUR',
+          },
+        ]}
       />,
     );
 
@@ -195,15 +217,36 @@ describe('Account summary', () => {
             unavailablePrice: 1,
           },
         ]}
-        memberCapital={{
-          capitalPayment: 1,
-          unvestedWorkCompensation: 1,
-          workCompensation: 1,
-          membershipBonus: 1,
-          profit: 2,
-          total: 6,
-          currency: 'EUR',
-        }}
+        memberCapital={[
+          {
+            type: CapitalType.CAPITAL_PAYMENT,
+            contributions: 1,
+            profit: 1,
+            value: 2,
+            currency: 'EUR',
+          },
+          {
+            type: CapitalType.UNVESTED_WORK_COMPENSATION,
+            contributions: 1,
+            profit: 0,
+            value: 1,
+            currency: 'EUR',
+          },
+          {
+            type: CapitalType.WORK_COMPENSATION,
+            contributions: 1,
+            profit: 1,
+            value: 2,
+            currency: 'EUR',
+          },
+          {
+            type: CapitalType.MEMBERSHIP_BONUS,
+            contributions: 0,
+            profit: 1,
+            value: 1,
+            currency: 'EUR',
+          },
+        ]}
       />,
     );
 

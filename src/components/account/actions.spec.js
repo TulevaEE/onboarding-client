@@ -4,7 +4,7 @@ import {
   GET_INITIAL_CAPITAL_ERROR,
 } from './constants';
 
-const mockApi = jest.genMockFromModule('../common/api');
+const mockApi = jest.createMockFromModule('../common/api');
 jest.mock('../common/api', () => mockApi);
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -33,7 +33,7 @@ describe('Account actions', () => {
 
   it('can get initial capital', () => {
     const initialCapital = [{ initialCapital: true }];
-    mockApi.getInitialCapitalWithToken = jest.fn(() => {
+    mockApi.getCapitalRowsWithToken = jest.fn(() => {
       expect(dispatch).toHaveBeenCalledTimes(1);
       expect(dispatch).toHaveBeenCalledWith({
         type: GET_INITIAL_CAPITAL_START,
@@ -54,7 +54,7 @@ describe('Account actions', () => {
 
   it('can handle errors when getting initial capital', () => {
     const error = new Error('oh no!');
-    mockApi.getInitialCapitalWithToken = jest.fn(() => Promise.reject(error));
+    mockApi.getCapitalRowsWithToken = jest.fn(() => Promise.reject(error));
     const getInitialCapital = createBoundAction(actions.getInitialCapital);
     expect(dispatch).not.toHaveBeenCalled();
     return getInitialCapital().then(() =>

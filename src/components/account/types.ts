@@ -1,7 +1,7 @@
-import { ErrorResponse, InitialCapital } from '../common/apiModels';
+import { CapitalRow, ErrorResponse } from '../common/apiModels';
 
 export type Account = {
-  initialCapital: InitialCapital;
+  initialCapital: CapitalRow[];
   loadingInitialCapital: boolean;
   error: ErrorResponse;
 };

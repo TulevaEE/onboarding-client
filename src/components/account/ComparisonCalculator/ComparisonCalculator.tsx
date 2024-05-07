@@ -162,9 +162,9 @@ const ComparisonCalculator: React.FC = () => {
     if (returns.personal && returns.index) {
       let ctaLink = null;
       if (selectedPillar === Key.SECOND_PILLAR && !secondPillarFullyConverted) {
-        ctaLink = '/2nd-pillar-flow/';
+        ctaLink = '/2nd-pillar-flow';
       } else if (selectedPillar === Key.THIRD_PILLAR && !thirdPillarFullyConverted) {
-        ctaLink = '/3rd-pillar-flow/';
+        ctaLink = '/3rd-pillar-flow';
       }
       setContentTextProperties({
         years: getFullYearsSince(returns.from),

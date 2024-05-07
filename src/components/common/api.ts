@@ -4,11 +4,12 @@ import {
   Application,
   Authentication,
   CancellationMandate,
+  CapitalRow,
   Contribution,
   Fund,
   FundBalance,
   IdCardSignatureResponse,
-  InitialCapital,
+  LoginMethod,
   Mandate,
   MandateDeadlines,
   MobileSignatureResponse,
@@ -21,7 +22,6 @@ import {
   Transaction,
   User,
   UserConversion,
-  LoginMethod,
 } from './apiModels';
 import {
   downloadFileWithAuthentication,
@@ -235,8 +235,8 @@ export function getUserConversionWithToken(): Promise<UserConversion> {
   return getWithAuthentication(getEndpoint('/v1/me/conversion'), undefined);
 }
 
-export function getInitialCapitalWithToken(): Promise<InitialCapital> {
-  return getWithAuthentication(getEndpoint('/v1/me/capital'), undefined);
+export function getCapitalRowsWithToken(): Promise<CapitalRow[]> {
+  return getWithAuthentication(getEndpoint('/v2/me/capital'), undefined);
 }
 
 export function createAmlCheck(

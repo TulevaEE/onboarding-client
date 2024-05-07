@@ -1,12 +1,13 @@
 import {
+  GET_INITIAL_CAPITAL_ERROR,
   GET_INITIAL_CAPITAL_START,
   GET_INITIAL_CAPITAL_SUCCESS,
-  GET_INITIAL_CAPITAL_ERROR,
 } from './constants';
 
 import { LOG_OUT } from '../login/constants';
 
 import accountReducer, { initialState } from './reducer';
+import { CapitalType } from '../common/apiModels';
 
 describe('Account reducer', () => {
   it('starts loading when starting to get initial capital', () => {
@@ -17,7 +18,15 @@ describe('Account reducer', () => {
   });
 
   it('stops loading and saves initial capital', () => {
-    const initialCapital = { capitalPayment: 1, membershipBonus: 1 };
+    const initialCapital = [
+      {
+        type: CapitalType.CAPITAL_PAYMENT,
+        contributions: 1,
+        profit: 1,
+        value: 2,
+        currency: 'EUR',
+      },
+    ];
     const action = { type: GET_INITIAL_CAPITAL_SUCCESS, initialCapital };
     const newState = accountReducer({ loadingInitialCapital: true }, action);
     expect(newState.loadingInitialCapital).toBe(false);

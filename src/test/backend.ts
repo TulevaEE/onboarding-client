@@ -1,7 +1,7 @@
 import { DefaultRequestMultipartBody, rest } from 'msw';
 import { SetupServerApi } from 'msw/node';
 import queryString from 'qs';
-import { FundBalance, FundStatus } from '../components/common/apiModels';
+import { CapitalType, FundBalance, FundStatus } from '../components/common/apiModels';
 import { anAuthenticationManager } from '../components/common/authenticationManagerFixture';
 
 export function cancellationBackend(server: SetupServerApi): {
@@ -461,6 +461,42 @@ export function userCapitalBackend(server: SetupServerApi): void {
           total: 1.23 + 1000.0 - 123.45,
           currency: 'EUR',
         }),
+      );
+    }),
+  );
+  server.use(
+    rest.get('http://localhost/v2/me/capital', (req, res, ctx) => {
+      return res(
+        ctx.json([
+          {
+            type: CapitalType.CAPITAL_PAYMENT,
+            contributions: 1000.0,
+            profit: -123.45,
+            value: 1000.0 - 123.45,
+            currency: 'EUR',
+          },
+          {
+            type: CapitalType.UNVESTED_WORK_COMPENSATION,
+            contributions: 0,
+            profit: 0,
+            value: 0,
+            currency: 'EUR',
+          },
+          {
+            type: CapitalType.WORK_COMPENSATION,
+            contributions: 0,
+            profit: 0,
+            value: 0,
+            currency: 'EUR',
+          },
+          {
+            type: CapitalType.MEMBERSHIP_BONUS,
+            contributions: 1.23,
+            profit: 0,
+            value: 1.23,
+            currency: 'EUR',
+          },
+        ]),
       );
     }),
   );

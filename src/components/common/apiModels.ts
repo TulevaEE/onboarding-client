@@ -215,14 +215,19 @@ export interface Conversion {
   weightedAverageFee: number;
 }
 
-export interface InitialCapital {
-  membershipBonus: number;
-  capitalPayment: number;
-  unvestedWorkCompensation: number;
-  workCompensation: number;
+export interface CapitalRow {
+  type: CapitalType;
+  contributions: number;
   profit: number;
-  total: number;
+  value: number;
   currency: Currency;
+}
+
+export enum CapitalType {
+  CAPITAL_PAYMENT = 'CAPITAL_PAYMENT',
+  UNVESTED_WORK_COMPENSATION = 'UNVESTED_WORK_COMPENSATION',
+  WORK_COMPENSATION = 'WORK_COMPENSATION',
+  MEMBERSHIP_BONUS = 'MEMBERSHIP_BONUS',
 }
 
 export interface AmlCheck {

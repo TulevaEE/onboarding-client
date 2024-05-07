@@ -8,12 +8,12 @@ import {
   createTrackedEvent,
   downloadMandatePreviewWithId,
   downloadMandateWithId,
+  getCapitalRowsWithToken,
   getContributions,
   getFunds,
   getIdCardSignatureHash,
   getIdCardSignatureStatus,
   getIdCardTokens,
-  getInitialCapitalWithToken,
   getMandateDeadlines,
   getMissingAmlChecks,
   getMobileIdSignatureChallengeCode,
@@ -41,10 +41,11 @@ import {
   ApplicationStatus,
   ApplicationType,
   CancellationMandate,
+  CapitalRow,
+  CapitalType,
   Contribution,
   Fund,
   FundStatus,
-  InitialCapital,
   LoginMethod,
   MandateDeadlines,
   Payment,
@@ -704,16 +705,37 @@ describe('API calls', () => {
     });
   });
 
-  describe('getInitialCapitalWithToken', () => {
-    const mockCapital: InitialCapital = {
-      membershipBonus: 100,
-      capitalPayment: 200,
-      unvestedWorkCompensation: 50,
-      workCompensation: 150,
-      profit: 300,
-      total: 800,
-      currency: 'EUR',
-    };
+  describe('getCapitalRowsWithToken', () => {
+    const mockCapital: CapitalRow[] = [
+      {
+        type: CapitalType.CAPITAL_PAYMENT,
+        contributions: 100,
+        profit: 50,
+        value: 150,
+        currency: 'EUR',
+      },
+      {
+        type: CapitalType.UNVESTED_WORK_COMPENSATION,
+        contributions: 200,
+        profit: 100,
+        value: 300,
+        currency: 'EUR',
+      },
+      {
+        type: CapitalType.WORK_COMPENSATION,
+        contributions: 300,
+        profit: 150,
+        value: 450,
+        currency: 'EUR',
+      },
+      {
+        type: CapitalType.MEMBERSHIP_BONUS,
+        contributions: 400,
+        profit: 200,
+        value: 600,
+        currency: 'EUR',
+      },
+    ];
 
     beforeEach(() => {
       jest.clearAllMocks();
@@ -721,10 +743,10 @@ describe('API calls', () => {
     });
 
     it('retrieves initial capital correctly', async () => {
-      const capital = await getInitialCapitalWithToken();
+      const capital = await getCapitalRowsWithToken();
 
       expect(capital).toEqual(mockCapital);
-      expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith('/v1/me/capital', undefined);
+      expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith('/v2/me/capital', undefined);
     });
   });
 

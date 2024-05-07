@@ -89,13 +89,10 @@ const AccountSummary = ({
       pillarLabel: 'memberCapital.heading',
       feesPercent: 0,
       feesEuro: 0,
-      contributions:
-        memberCapital.capitalPayment +
-        memberCapital.unvestedWorkCompensation +
-        memberCapital.workCompensation,
+      contributions: sumBy(memberCapital, (row) => row.contributions),
       subtractions: 0, // ?
-      profit: memberCapital.profit + memberCapital.membershipBonus,
-      value: memberCapital.total,
+      profit: sumBy(memberCapital, (row) => row.profit),
+      value: sumBy(memberCapital, (row) => row.value),
     });
   }
 
@@ -268,14 +265,7 @@ AccountSummary.propTypes = {
       unavailablePrice: Types.number,
     }),
   ).isRequired,
-  memberCapital: Types.shape({
-    capitalPayment: Types.number,
-    unvestedWorkCompensation: Types.number,
-    workCompensation: Types.number,
-    membershipBonus: Types.number,
-    profit: Types.number,
-    total: Types.number,
-  }),
+  memberCapital: Types.shape(),
 };
 
 export default AccountSummary;

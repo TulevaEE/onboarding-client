@@ -153,7 +153,7 @@ export class AccountPage extends Component {
                 <FormattedMessage id="memberCapital.heading" />
               </p>
               {loadingCapital && <Loader className="align-middle" />}
-              {memberCapital && <MemberCapital value={memberCapital} />}
+              {memberCapital && <MemberCapital rows={memberCapital} />}
             </div>
           </div>
         ) : (
