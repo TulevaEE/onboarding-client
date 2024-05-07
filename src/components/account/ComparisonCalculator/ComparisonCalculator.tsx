@@ -213,7 +213,7 @@ const ComparisonCalculator: React.FC = () => {
   }, [returns.from, selectedTimePeriod, selectedComparison]);
 
   return (
-    <div className="comparison-calculator">
+    <div className="comparison-calculator mt-5">
       <div className="card card-primary">
         {!loadingInitialData ? (
           <div>

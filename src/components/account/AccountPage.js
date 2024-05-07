@@ -6,7 +6,7 @@ import { Link, Redirect } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 
 import { ErrorMessage, Loader } from '../common';
-import ReturnComparison from './ReturnComparison';
+import ComparisonCalculator from './ComparisonCalculator';
 import AccountStatement from './AccountStatement';
 import MemberCapital from './MemberCapital';
 import StatusBox from './statusBox';
@@ -97,7 +97,7 @@ export class AccountPage extends Component {
           )}
         </div>
 
-        <ReturnComparison />
+        <ComparisonCalculator />
 
         <ApplicationSection />
 
