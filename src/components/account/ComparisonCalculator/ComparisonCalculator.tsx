@@ -121,7 +121,9 @@ const ComparisonCalculator: React.FC = () => {
     if (secondPillarFunds.length > 0 && thirdPillarFunds.length > 0) {
       setLoadingInitialData(false);
       populateCompareToOptions();
-      setSelectedTimePeriod(timePeriodOptions[0].value);
+      if (timePeriodOptions[0]) {
+        setSelectedTimePeriod(timePeriodOptions[0].value);
+      }
     }
   }, [secondPillarFunds, thirdPillarFunds]);
 
