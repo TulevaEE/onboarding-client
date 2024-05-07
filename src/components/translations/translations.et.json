@@ -660,7 +660,7 @@
   "comparisonCalculator.graphWorldMarketStockIndex" : "Maailmaturu indeks",
   "comparisonCalculator.graphYourIIPillar" : "Sinu II sammas",
   "comparisonCalculator.graphYourIIIPillar" : "Sinu III sammas",
-  "comparisonCalculator.footerDisclaimer" : "Protsendid näitavad, kui palju on sinu II sammas keskmiselt igal aastal kasvanud. Eurod näitavad viimase 20 aasta kogukasvu.",
+  "comparisonCalculator.footerDisclaimer" : "Protsendid näitavad, kui palju on sinu II sammas keskmiselt igal aastal kasvanud. Eurod näitavad viimase {years} aasta kogukasvu.",
   "comparisonCalculator.footerNumbersExplanationLink": "Mida need arvud näitavad?",
   "comparisonCalculator.footerPerformanceExplanationLink": "Millist tootlust on Tulevas oodata?",
   "comparisonCalculator.period.all": "Alates {pillar} samba kogumise algusest ({date})",

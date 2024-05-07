@@ -660,7 +660,7 @@
   "comparisonCalculator.graphWorldMarketStockIndex" : "World market index",
   "comparisonCalculator.graphYourIIPillar" : "Your II pillar",
   "comparisonCalculator.graphYourIIIPillar" : "Your III pillar",
-  "comparisonCalculator.footerDisclaimer" : "Percentages show, how much has your II pillar on average grown per year. Euros show the last 20 year total growth.",
+  "comparisonCalculator.footerDisclaimer" : "Percentages show, how much has your II pillar on average grown per year. Euros show the last {years} year total growth.",
   "comparisonCalculator.footerNumbersExplanationLink": "What do these numbers mean?",
   "comparisonCalculator.footerPerformanceExplanationLink": "What returns to expect in Tuleva?",
   "comparisonCalculator.period.all": "From the starting {pillar} contributions ({date})",

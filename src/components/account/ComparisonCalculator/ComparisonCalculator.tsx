@@ -42,6 +42,7 @@ enum PerformanceVerdictComparison {
   FUND = 'FUND',
   INFLATION = 'INFLATION',
 }
+
 interface PerformanceVerdictProperties {
   verdict: PerformanceVerdict;
   comparison: PerformanceVerdictComparison;
@@ -362,7 +363,10 @@ const ComparisonCalculator: React.FC = () => {
             <div className="footer-section text-center p-4">
               <div className="footer-disclaimer text-secondary">
                 <small>
-                  <FormattedMessage id="comparisonCalculator.footerDisclaimer" />
+                  <FormattedMessage
+                    id="comparisonCalculator.footerDisclaimer"
+                    values={{ years: contentTextProperties.years }}
+                  />
                 </small>
               </div>
               <div className="footer-links container pt-3">
