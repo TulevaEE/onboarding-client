@@ -44,9 +44,7 @@ class ErrorAlert extends Component {
 
   render() {
     return (
-      <div className="row mt-4 pt-4 justify-content-center">
-        <div className="alert alert-danger">{this.errorMessage()}</div>
-      </div>
+      <div className="alert alert-danger">{this.errorMessage()}</div>
     );
   }
 }
