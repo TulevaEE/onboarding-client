@@ -284,7 +284,7 @@ const ComparisonCalculator: React.FC = () => {
                     onChange={(newValue) => {
                       createTrackedEvent('CLICK', {
                         path: getCurrentPath(),
-                        target: 'comparisonCalculator.setSelectedTimePeriod',
+                        target: 'comparisonCalculator.setSelectedComparison',
                         value: newValue,
                       }).catch(() => {});
                       setSelectedComparison(newValue);
