@@ -38,7 +38,7 @@ const ErrorMessage = ({ errors, onCancel, overlayed }) => {
       </div>
     );
   }
-  return <div className="row mt-4 pt-4 justify-content-center">{content}</div>;
+  return {content};
 };
 
 ErrorMessage.defaultProps = {
