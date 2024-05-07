@@ -41,46 +41,35 @@ export const LoginPage = ({
     <Redirect to={location.state && location.state.from ? location.state.from : ''} />
   ) : (
     <div className="login-page">
-      <div className="container pt-5">
-        <div className="row">
-          <div className="col-lg-12 text-center">
-            <img src={logo} alt="Tuleva" className="img-responsive brand-logo mb-3 pb-3 mt-2" />
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-lg-10 offset-lg-1 col-sm-12 offset-sm-0 text-center">
-            <div className="col-lg-6 offset-lg-3 col-md-8 offset-md-2 col-sm-12">
-              {errorDescription ? <ErrorAlert description={errorDescription} /> : ''}
-              {!loadingAuthentication && !controlCode && !loadingUserConversion ? (
-                <LoginForm
-                  onMobileIdSubmit={onMobileIdSubmit}
-                  onPhoneNumberChange={onPhoneNumberChange}
-                  onPersonalCodeChange={onPersonalCodeChange}
-                  phoneNumber={phoneNumber}
-                  personalCode={personalCode}
-                  onIdCodeSubmit={onIdCodeSubmit}
-                  onAuthenticateWithIdCard={onAuthenticateWithIdCard}
-                  monthlyThirdPillarContribution={monthlyThirdPillarContribution}
-                  exchangeExistingThirdPillarUnits={exchangeExistingThirdPillarUnits}
-                />
-              ) : (
-                ''
-              )}
-              {!errorDescription &&
-              (loadingAuthentication || controlCode || loadingUserConversion) ? (
-                <AuthenticationLoader
-                  onCancel={onCancelMobileAuthentication}
-                  controlCode={controlCode}
-                />
-              ) : (
-                ''
-              )}
-            </div>
-            <div className="col-lg-6 offset-lg-3 col-md-8 offset-md-2 col-sm-12 fb-widget mt-3">
-              <FacebookProvider appId="1939240566313354">
-                <Like href="https://www.facebook.com/Tuleva.ee" showFaces />
-              </FacebookProvider>
-            </div>
+      <div className="container-sm py-5">
+        <div className="row justify-content-center">
+          <div className="col-12 col-sm-12 col-md-10 col-lg-7 col-xl-6">
+            <img width="146" height="66" src={logo} alt="Tuleva" className="d-block mx-auto mb-5 brand-logo" />
+            {errorDescription ? <ErrorAlert description={errorDescription} /> : ''}
+            {!loadingAuthentication && !controlCode && !loadingUserConversion ? (
+              <LoginForm
+                onMobileIdSubmit={onMobileIdSubmit}
+                onPhoneNumberChange={onPhoneNumberChange}
+                onPersonalCodeChange={onPersonalCodeChange}
+                phoneNumber={phoneNumber}
+                personalCode={personalCode}
+                onIdCodeSubmit={onIdCodeSubmit}
+                onAuthenticateWithIdCard={onAuthenticateWithIdCard}
+                monthlyThirdPillarContribution={monthlyThirdPillarContribution}
+                exchangeExistingThirdPillarUnits={exchangeExistingThirdPillarUnits}
+              />
+            ) : (
+              ''
+            )}
+            {!errorDescription &&
+            (loadingAuthentication || controlCode || loadingUserConversion) ? (
+              <AuthenticationLoader
+                onCancel={onCancelMobileAuthentication}
+                controlCode={controlCode}
+              />
+            ) : (
+              ''
+            )}
           </div>
         </div>
       </div>
