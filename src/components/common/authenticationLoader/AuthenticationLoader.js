@@ -7,28 +7,24 @@ import './AuthenticationLoader.scss';
 
 const AuthenticationLoader = ({ controlCode, onCancel, overlayed }) => {
   const content = (
-    <div className="card text-center p-4 tv-modal__content">
-      <div className="p-4">
-        {controlCode ? (
-          <div>
-            <p>
-              <FormattedMessage id="login.control.code" />
-            </p>
-            <div className="control-code">{controlCode}</div>
-          </div>
-        ) : (
-          ''
-        )}
-        <Loader className="align-middle" />
+    <div className="bg-white shadow-sm rounded-lg p-5 text-center">
+      {controlCode ? (
+        <p>
+          <FormattedMessage id="login.control.code" />
+        </p>
+        <div className="display-2 font-weight-bold">{controlCode}</div>
+      ) : (
+        ''
+      )}
+      <Loader className="align-middle" />
 
-        {controlCode ? (
-          <button type="button" className="btn btn-secondary mt-4" onClick={onCancel}>
-            <FormattedMessage id="login.stop" />
-          </button>
-        ) : (
-          ''
-        )}
-      </div>
+      {controlCode ? (
+        <button type="button" className="btn btn-outline-primary mt-4" onClick={onCancel}>
+          <FormattedMessage id="login.stop" />
+        </button>
+      ) : (
+        ''
+      )}
     </div>
   );
   if (overlayed) {
@@ -40,7 +36,7 @@ const AuthenticationLoader = ({ controlCode, onCancel, overlayed }) => {
       </div>
     );
   }
-  return <div className="row mt-4 pt-4 justify-content-center">{content}</div>;
+  return {content};
 };
 
 const noop = () => null;
