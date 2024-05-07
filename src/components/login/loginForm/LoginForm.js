@@ -25,7 +25,7 @@ export const LoginForm = ({
   exchangeExistingThirdPillarUnits,
 }) => {
   return (
-    <div className="bg-white shadow-sm rounded-lg p-5 text-center">
+    <div className="bg-white shadow-sm rounded-lg p-4 p-sm-5 text-center">
       {isMaintenanceWindow() ? (
         <Maintenance />
       ) : (
