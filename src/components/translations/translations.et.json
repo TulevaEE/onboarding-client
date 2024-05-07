@@ -12,7 +12,7 @@
   "login.phone.number": "Telefoninumber",
   "login.id.code": "Isikukood",
   "login.enter": "Sisene",
-  "login.control.code": "Kontrolli, et sinu telefonile saabunud kontrollkood oleks järgmine:",
+  "login.control.code": "Veendu, et sinu telefonile saabunud kontrollkood oleks järgmine:",
   "login.stop": "Katkesta",
   "login.error.invalid.user.credentials": "Sa pole veel Tuleva liige",
   "login.error.generic": "Sisselogimisel tekkis viga. Palun proovi uuesti.",
