@@ -11,6 +11,7 @@ import Loader from '../../common/loader';
 import { Option, OptionGroup } from './select/Select';
 import { formatDateYear } from '../../common/dateFormatter';
 import Percentage from '../../common/Percentage';
+import { createTrackedEvent } from '../../common/api';
 
 interface GraphBarProperties {
   color: string;
@@ -224,7 +225,14 @@ const ComparisonCalculator: React.FC = () => {
                     className={`btn ${
                       selectedPillar === Key.SECOND_PILLAR ? 'btn-primary' : 'btn-light'
                     }`}
-                    onClick={() => setSelectedPillar(Key.SECOND_PILLAR)}
+                    onClick={() => {
+                      createTrackedEvent('CLICK', {
+                        path: getCurrentPath(),
+                        target: 'comparisonCalculator.setSelectedPillar',
+                        value: 2,
+                      }).catch(() => {});
+                      setSelectedPillar(Key.SECOND_PILLAR);
+                    }}
                   >
                     <FormattedMessage id="comparisonCalculator.yourIIpillar" />
                   </button>
@@ -233,7 +241,14 @@ const ComparisonCalculator: React.FC = () => {
                     className={`btn ${
                       selectedPillar === Key.THIRD_PILLAR ? 'btn-primary' : 'btn-light'
                     }`}
-                    onClick={() => setSelectedPillar(Key.THIRD_PILLAR)}
+                    onClick={() => {
+                      createTrackedEvent('CLICK', {
+                        path: getCurrentPath(),
+                        target: 'comparisonCalculator.setSelectedPillar',
+                        value: 3,
+                      }).catch(() => {});
+                      setSelectedPillar(Key.THIRD_PILLAR);
+                    }}
                   >
                     <FormattedMessage id="comparisonCalculator.yourIIIpillar" />
                   </button>
@@ -247,7 +262,14 @@ const ComparisonCalculator: React.FC = () => {
                   <Select
                     options={timePeriodOptions}
                     selected={selectedTimePeriod}
-                    onChange={setSelectedTimePeriod}
+                    onChange={(newValue) => {
+                      createTrackedEvent('CLICK', {
+                        path: getCurrentPath(),
+                        target: 'comparisonCalculator.setSelectedTimePeriod',
+                        value: newValue,
+                      }).catch(() => {});
+                      setSelectedTimePeriod(newValue);
+                    }}
                     id="timePeriodSelect"
                   />
                 </div>
@@ -259,7 +281,14 @@ const ComparisonCalculator: React.FC = () => {
                     options={comparisonOptions}
                     translate={false}
                     selected={selectedComparison}
-                    onChange={setSelectedComparison}
+                    onChange={(newValue) => {
+                      createTrackedEvent('CLICK', {
+                        path: getCurrentPath(),
+                        target: 'comparisonCalculator.setSelectedTimePeriod',
+                        value: newValue,
+                      }).catch(() => {});
+                      setSelectedComparison(newValue);
+                    }}
                     id="comparedToSelect"
                   />
                 </div>
@@ -893,7 +922,11 @@ const ComparisonCalculator: React.FC = () => {
         </div>
         <div className="">
           {contentTextProperties.ctaLink && (
-            <a href={contentTextProperties.ctaLink} className="btn btn-outline-primary">
+            <a
+              href={contentTextProperties.ctaLink}
+              className="btn btn-outline-primary"
+              onClick={handleCtaClick}
+            >
               <FormattedMessage
                 id="comparisonCalculator.ctaButton"
                 values={{ pillar: contentTextProperties.pillar }}
@@ -906,6 +939,21 @@ const ComparisonCalculator: React.FC = () => {
         </div>
       </div>
     );
+  }
+
+  function handleCtaClick(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>): void {
+    event.preventDefault();
+    const url = (event.target as HTMLAnchorElement).href;
+    createTrackedEvent('CLICK', {
+      path: getCurrentPath(),
+      target: 'comparisonCalculator.ctaButton',
+      url,
+    }).catch(() => {});
+    window.location.href = url;
+  }
+
+  function getCurrentPath(): string {
+    return window.location.pathname.replace(/\/+$/g, '');
   }
 
   function getContentTextVerdict() {
