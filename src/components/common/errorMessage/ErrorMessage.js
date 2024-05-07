@@ -8,7 +8,7 @@ const noop = () => null;
 
 const ErrorMessage = ({ errors, onCancel, overlayed }) => {
   const content = (
-    <div className="bg-white shadow rounded-lg p-5 text-center">
+    <div className="bg-white shadow-sm rounded-lg p-5 text-center">
       <p>
         <b>
           <FormattedMessage id="error.messages.intro" />
