@@ -1,7 +1,6 @@
 import React from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { Redirect, withRouter } from 'react-router-dom';
-import { FacebookProvider, Like } from 'react-facebook';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
