@@ -10,7 +10,7 @@ const AuthenticationLoader = ({ controlCode, onCancel, overlayed }) => {
     <div className="bg-white shadow-sm rounded-lg p-5 text-center">
       {controlCode ? (
         <>
-          <p>
+          <p className="m-0 mb-4">
             <FormattedMessage id="login.control.code" />
           </p>
           <div className="display-2 font-weight-bold">{controlCode}</div>
