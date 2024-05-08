@@ -234,6 +234,7 @@
   "header.my.account": "My account",
   "account.member.statement": "You are Tuleva member no. {memberNumber}",
   "account.member.statement.comment": "Since {memberJoinDate}, you earn a 0.05% annual membership bonus",
+  "account.member.statement.comment.amount": "In {year}, you earned a membership bonus of {amount}",
   "account.non.member.statement": "Not a member and not earning any membership bonus",
   "account.non.member.info": "Tuleva members earn a 0.05% annual membership bonus",
   "account.converted.user.statement": "You have successfully filled an application to transfer future payments and current fund units to Tuleva.",
@@ -286,7 +287,7 @@
   "account.status.choice.paymentRate.change": "Change contribution",
 
   "account.status.choice.join.tuleva": "Sign up",
-  "account.status.contributionAmount": "You have contributed {thisYearContribution} to your III pillar this year and {lastYearContribution} last year.",
+  "account.status.contributionAmount": "You have contributed {thisYearContribution} to your III pillar this year and {lastYearContribution} last year",
   "account.greeting": "Hi",
   "account.update.contact": "Update contact details",
   "new.user.flow.new.user.total.fund.value": "Your current second pillar total savings are ",

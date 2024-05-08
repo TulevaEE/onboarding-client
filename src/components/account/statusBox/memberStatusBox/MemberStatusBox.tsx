@@ -5,6 +5,8 @@ import { Link } from 'react-router-dom';
 import StatusBoxRow from '../statusBoxRow';
 import { InfoTooltip } from '../../../common';
 import { formatDateYear } from '../../../common/dateFormatter';
+import { useCapitalEvents } from '../../../common/apiHooks';
+import Euro from '../../../common/Euro';
 
 interface Props {
   loading: boolean;
@@ -17,15 +19,34 @@ export const MemberStatusBox: React.FunctionComponent<Props> = ({
   memberNumber,
   memberJoinDate,
 }) => {
+  const { data: capitalEvents } = useCapitalEvents();
+  const lastMembershipBonus = capitalEvents
+    ?.filter((event) => event.type === 'MEMBERSHIP_BONUS')
+    .sort((event1, event2) => event2.date.localeCompare(event1.date))[0];
+
   const isTulevaMember = memberNumber != null;
   const tulevaData = isTulevaMember
     ? [
         <FormattedMessage id="account.member.statement" values={{ memberNumber }} />,
         <small className="text-muted">
-          <FormattedMessage
-            id="account.member.statement.comment"
-            values={{ memberJoinDate: formatDateYear(memberJoinDate) }}
-          />
+          {lastMembershipBonus ? (
+            <FormattedMessage
+              id="account.member.statement.comment.amount"
+              values={{
+                year: new Date(lastMembershipBonus.date).getFullYear(),
+                amount: (
+                  <strong>
+                    <Euro amount={lastMembershipBonus.value} />
+                  </strong>
+                ),
+              }}
+            />
+          ) : (
+            <FormattedMessage
+              id="account.member.statement.comment"
+              values={{ memberJoinDate: formatDateYear(memberJoinDate) }}
+            />
+          )}
         </small>,
       ]
     : [
