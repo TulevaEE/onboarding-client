@@ -10,7 +10,7 @@ describe('Member capital', () => {
   it('passes data to table', () => {
     component = shallow(<MemberCapital />);
 
-    expect(passedDataKeys()).toStrictEqual([]);
+    expect(passedDataKeys()).toStrictEqual(['profit']);
   });
 
   it('passes work compensation to table when exists', () => {
@@ -28,7 +28,7 @@ describe('Member capital', () => {
       />,
     );
 
-    expect(passedDataKeys()).toStrictEqual(['WORK_COMPENSATION']);
+    expect(passedDataKeys()).toStrictEqual(['WORK_COMPENSATION', 'profit']);
   });
 
   const passedDataKeys = () =>

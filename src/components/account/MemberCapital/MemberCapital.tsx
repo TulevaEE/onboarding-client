@@ -10,7 +10,6 @@ interface Props {
   rows: CapitalRow[];
 }
 export const MemberCapital: FC<Props> = ({ rows = [] }) => {
-  const contributionsSum = sumBy(rows, (row) => row.contributions);
   const profitSum = sumBy(rows, (row) => row.profit);
   const valueSum = sumBy(rows, (row) => row.value);
 
@@ -22,31 +21,23 @@ export const MemberCapital: FC<Props> = ({ rows = [] }) => {
       width100: true,
     },
     {
-      title: <FormattedMessage id="memberCapital.columns.contributions.title" />,
-      dataIndex: 'contributions',
-      footer: <Euro amount={contributionsSum} />,
-      hideOnMobile: true,
-    },
-    {
-      title: <FormattedMessage id="memberCapital.columns.profit.title" />,
-      dataIndex: 'profit',
-      footer: <Euro amount={profitSum} />,
-      hideOnMobile: true,
-    },
-    {
       title: <FormattedMessage id="memberCapital.columns.value.title" />,
-      dataIndex: 'value',
+      dataIndex: 'contributions',
       footer: <Euro amount={valueSum} />,
     },
   ];
 
-  const dataSource = rows.map(({ type, contributions, profit, value }) => ({
+  const dataSource = rows.map(({ type, contributions }) => ({
     type: <FormattedMessage id={`memberCapital.source.${type}`} />,
     contributions: <Euro amount={contributions} />,
-    profit: <Euro amount={profit} />,
-    value: <Euro amount={value} />,
-    key: type,
+    key: type.toString(),
   }));
+
+  dataSource.push({
+    type: <FormattedMessage id="memberCapital.source.profit" />,
+    contributions: <Euro amount={profitSum} />,
+    key: 'profit',
+  });
 
   return <Table columns={columns} dataSource={dataSource} />;
 };
