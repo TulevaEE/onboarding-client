@@ -3,6 +3,10 @@ import { shallow } from 'enzyme';
 import { MemberStatusBox } from './MemberStatusBox';
 import StatusBoxRow from '../statusBoxRow';
 
+jest.mock('../../../common/apiHooks', () => ({
+  useCapitalEvents: () => ({ data: [] }),
+}));
+
 describe('MemberStatusBox', () => {
   const loading = false;
   const memberNumber = 123;
