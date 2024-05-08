@@ -87,7 +87,7 @@
   "memberCapital.heading": "Your member capital",
   "memberCapital.columns.source.title": "Source",
   "memberCapital.columns.source.total": "Total",
-  "memberCapital.columns.value.title": "Value",
+  "memberCapital.columns.value.title": "Amount",
   "memberCapital.source.CAPITAL_PAYMENT": "Capital payment",
   "memberCapital.source.MEMBERSHIP_BONUS": "Membership bonus",
   "memberCapital.source.WORK_COMPENSATION": "Work compensation",

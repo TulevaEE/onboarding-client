@@ -85,7 +85,7 @@
   "memberCapital.heading": "Sinu liikmekapital",
   "memberCapital.columns.source.title": "Allikas",
   "memberCapital.columns.source.total": "Kokku",
-  "memberCapital.columns.value.title": "Väärtus",
+  "memberCapital.columns.value.title": "Summa",
   "memberCapital.source.CAPITAL_PAYMENT": "Panus liikmekapitali",
   "memberCapital.source.MEMBERSHIP_BONUS": "Kogunenud liikmeboonus",
   "memberCapital.source.WORK_COMPENSATION": "Tööpanus",
