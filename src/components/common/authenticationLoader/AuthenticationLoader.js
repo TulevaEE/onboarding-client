@@ -9,10 +9,12 @@ const AuthenticationLoader = ({ controlCode, onCancel, overlayed }) => {
   const content = (
     <div className="bg-white shadow-sm rounded-lg p-5 text-center">
       {controlCode ? (
-        <p>
-          <FormattedMessage id="login.control.code" />
-        </p>
-        <div className="display-2 font-weight-bold">{controlCode}</div>
+        <>
+          <p>
+            <FormattedMessage id="login.control.code" />
+          </p>
+          <div className="display-2 font-weight-bold">{controlCode}</div>
+        </>
       ) : (
         ''
       )}
@@ -36,7 +38,7 @@ const AuthenticationLoader = ({ controlCode, onCancel, overlayed }) => {
       </div>
     );
   }
-  return {content};
+  return <>{content}</>;
 };
 
 const noop = () => null;
