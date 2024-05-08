@@ -94,5 +94,4 @@ describe('Login page', () => {
     expect(component.contains(<LoginForm {...formProps} />)).toBe(true);
     expect(component.contains(<AuthenticationLoader {...authProps} />)).toBe(false);
   });
-
 });
