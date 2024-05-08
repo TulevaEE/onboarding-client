@@ -38,7 +38,7 @@ const ErrorMessage = ({ errors, onCancel, overlayed }) => {
       </div>
     );
   }
-  return {content};
+  return <>{content}</>;
 };
 
 ErrorMessage.defaultProps = {

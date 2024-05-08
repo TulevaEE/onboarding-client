@@ -43,7 +43,13 @@ export const LoginPage = ({
       <div className="container-sm py-5">
         <div className="row justify-content-center">
           <div className="col-12 col-sm-12 col-md-10 col-lg-7 col-xl-6">
-            <img width="146" height="66" src={logo} alt="Tuleva" className="d-block mx-auto mb-5 brand-logo" />
+            <img
+              width="146"
+              height="66"
+              src={logo}
+              alt="Tuleva"
+              className="d-block mx-auto mb-5 brand-logo"
+            />
             {errorDescription ? <ErrorAlert description={errorDescription} /> : ''}
             {!loadingAuthentication && !controlCode && !loadingUserConversion ? (
               <LoginForm
