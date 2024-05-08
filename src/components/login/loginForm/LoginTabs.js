@@ -24,7 +24,7 @@ class LoginTabs extends Component {
     } = this;
 
     return (
-      <div className="tabs">
+      <div className="m-0 mt-4 tabs">
         <ol className="tab-list">
           {React.Children.map(children, (child) => {
             const { label, hideOnMobile } = child.props;
