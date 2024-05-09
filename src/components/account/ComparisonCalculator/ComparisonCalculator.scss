@@ -28,14 +28,6 @@
 
   .footer-section {
     border-top: 1px solid #CAE0F1;
-
-    .footer-disclaimer {
-      //color: var(--Text-Secondary, #6C757D);
-    }
-
-    .footer-links {
-
-    }
   }
 
   .middle-section{
@@ -64,7 +56,7 @@
           font-weight: 400;
           line-height: 140%; /* 28px */
 
-          + .result-text { 
+          + .result-text {
               margin-top: 1.5rem;
           }
         }
@@ -72,7 +64,7 @@
         .result-action {
           margin: 2rem 0 0;
 
-          + .result-action-explainer { 
+          + .result-action-explainer {
             margin-top: 1rem;
           }
         }
