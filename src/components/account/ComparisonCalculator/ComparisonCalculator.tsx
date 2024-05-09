@@ -297,99 +297,85 @@ const ComparisonCalculator: React.FC = () => {
                 </div>
               </div>
             </div>
-            <div className="separator" />
-            <div className="middle-section d-flex justify-content-center align-items-center">
+
+            <div className="middle-section p-4 d-flex justify-content-center align-items-center">
               {loadingReturns ? (
                 <Loader className="align-middle" />
               ) : (
-                <div>
+                <>
                   {incomparableResults ? (
-                    <div>
-                      <div className="container p-4">
-                        <div className="content-section row justify-content-center text-center">
-                          <div className="col-md-7">
-                            <div className="m-2 text-secondary">
-                              <h1>ⓘ</h1>
-                            </div>
-                            <div className="m-2 lead text-secondary">
-                              {formatMessageWithTags({
-                                id: 'comparisonCalculator.content.incomparable.intro',
-                                values: {
-                                  comparison: getFundLabelByKey(selectedComparison),
-                                  date: formatDateYear(incomparableFundInceptionDate),
-                                },
-                              })}
-                            </div>
-                            <div className="m-2 lead text-secondary">
-                              <FormattedMessage id="comparisonCalculator.content.incomparable.selectNew" />
-                            </div>
-                          </div>
-                        </div>
+                    <div className="content-section row justify-content-center align-items-center text-center">
+                      <div className="col-lg-9">
+                        <p className="m-0 lead text-secondary">
+                          {formatMessageWithTags({
+                            id: 'comparisonCalculator.content.incomparable.intro',
+                            values: {
+                              comparison: getFundLabelByKey(selectedComparison),
+                              date: formatDateYear(incomparableFundInceptionDate),
+                            },
+                          })}
+                        </p>
+                        <p className="m-0 mt-3 lead text-secondary">
+                          <FormattedMessage id="comparisonCalculator.content.incomparable.selectNew" />
+                        </p>
                       </div>
                     </div>
                   ) : (
-                    <div>
+                    <>
                       {contentTextProperties.years < 3 && (
-                        <div className="alert alert-warning rounded-0 text-center" role="alert">
+                        <div
+                          className="alert alert-warning rounded-0 text-center border-top-0 border-left-0 border-right-0"
+                          role="alert"
+                        >
                           <FormattedMessage id="comparisonCalculator.shortTimePeriodWarning" />{' '}
                           <a
                             href="/soovitused/laura-rikkaks-4/"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-success"
                           >
                             <FormattedMessage id="comparisonCalculator.shortTimePeriodWarningLink" />
                           </a>
                         </div>
                       )}
 
-                      <div className="container p-4">
-                        <div className="content-section row justify-content-center">
-                          <div className="col-md-7 order-2 order-md-1 d-flex flex-column">
-                            {getResultSection()}
-                          </div>
-                          <div className="graph-section col-md-5 order-1 order-md-2 d-flex flex-column mb-5">
-                            {getGraphSection()}
-                          </div>
+                      <div className="content-section row justify-content-center align-items-center">
+                        <div className="col-md-7 order-2 mt-4 mt-md-0 order-md-1 d-flex flex-column">
+                          {getResultSection()}
+                        </div>
+                        <div className="graph-section col-md-5 order-1 order-md-2 d-flex flex-column py-5">
+                          {getGraphSection()}
                         </div>
                       </div>
-                    </div>
+                    </>
                   )}
-                </div>
+                </>
               )}
             </div>
-            <div className="separator" />
 
-            <div className="footer-section text-center p-4">
+            <div className="footer-section text-center small p-4">
               <div className="footer-disclaimer text-secondary">
-                <small>
-                  <FormattedMessage
-                    id="comparisonCalculator.footerDisclaimer"
-                    values={{ years: contentTextProperties.years }}
-                  />
-                </small>
+                <FormattedMessage
+                  id="comparisonCalculator.footerDisclaimer"
+                  values={{ years: contentTextProperties.years }}
+                />
               </div>
-              <div className="footer-links container pt-3">
-                <div className="row justify-content-center">
-                  <div className="col-12 col-sm-6 col-md-auto">
-                    <a
-                      href="https://tuleva.ee/mida-need-numbrid-naitavad"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <FormattedMessage id="comparisonCalculator.footerNumbersExplanationLink" />
-                    </a>
-                  </div>
-                  <div className="col-12 col-sm-6 col-md-auto">
-                    <a
-                      href="https://tuleva.ee/analuusid/millist-tootlust-on-tulevas-oodata"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <FormattedMessage id="comparisonCalculator.footerPerformanceExplanationLink" />
-                    </a>
-                  </div>
-                </div>
+              <div className="footer-links pt-2">
+                <a
+                  href="https://tuleva.ee/mida-need-numbrid-naitavad"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="d-inline-block mx-2 mt-1"
+                >
+                  <FormattedMessage id="comparisonCalculator.footerNumbersExplanationLink" />
+                </a>
+                <a
+                  href="https://tuleva.ee/analuusid/millist-tootlust-on-tulevas-oodata"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="d-inline-block mx-2 mt-1"
+                >
+                  <FormattedMessage id="comparisonCalculator.footerPerformanceExplanationLink" />
+                </a>
               </div>
             </div>
           </div>
@@ -406,40 +392,38 @@ const ComparisonCalculator: React.FC = () => {
     return (
       <>
         {getGraphBars()}
-        <div className="bottom-divider">
-          <div className="container-fluid">
-            <div className="row">
-              <div className="col-auto px-0 gradient-left" />
-              <div className="col gradient-center" />
-              <div className="col-auto px-0 gradient-right" />
-            </div>
-          </div>
-        </div>
+        <div className="bottom-divider" />
       </>
     );
   }
 
   function getGraphBars() {
     return (
-      <div className="bar-container mt-5 d-flex position-relative">
+      <>
         {graphProperties.barCount === 2 && (
-          <>
-            <div className="col-md-5 col-sm-6">
+          <div className="bar-container px-3 px-sm-4 px-md-3 px-xl-4 d-flex position-relative">
+            <div className="col-6 px-2 px-sm-4 px-md-2 px-xl-4">
               {getGraphBar(graphProperties.barProperties['1'])}
             </div>
-            <div className="col-md-5 col-sm-6">
+            <div className="col-6 px-2 px-sm-4 px-md-2 px-xl-4">
               {getGraphBar(graphProperties.barProperties['2'])}
             </div>
-          </>
+          </div>
         )}
         {graphProperties.barCount === 3 && graphProperties.barProperties['3'] && (
-          <>
-            <div className="col-4">{getGraphBar(graphProperties.barProperties['1'])}</div>
-            <div className="col-4">{getGraphBar(graphProperties.barProperties['2'])}</div>
-            <div className="col-4">{getGraphBar(graphProperties.barProperties['3'])}</div>
-          </>
+          <div className="bar-container px-3 px-sm-4 d-flex position-relative">
+            <div className="col-4 px-2 px-sm-3">
+              {getGraphBar(graphProperties.barProperties['1'])}
+            </div>
+            <div className="col-4 px-2 px-sm-3">
+              {getGraphBar(graphProperties.barProperties['2'])}
+            </div>
+            <div className="col-4 px-2 px-sm-3">
+              {getGraphBar(graphProperties.barProperties['3'])}
+            </div>
+          </div>
         )}
-      </div>
+      </>
     );
   }
 
@@ -919,15 +903,12 @@ const ComparisonCalculator: React.FC = () => {
 
   function getResultSection() {
     return (
-      <div className="result-section text-left mt-5 pb-0 d-flex flex-column justify-content-between">
-        <div className="mb-3">
-          <p className="result-text">{getContentTextVerdict()}</p>
-        </div>
-        <div className="mb-3">
-          <p className="result-text">{getContentTextExplanation()} </p>
-        </div>
-        <div className="">
-          {contentTextProperties.ctaLink && (
+      <div className="result-section text-left d-flex flex-column justify-content-between">
+        <p className="result-text">{getContentTextVerdict()}</p>
+        <p className="result-text">{getContentTextExplanation()} </p>
+
+        {contentTextProperties.ctaLink && (
+          <div className="result-action">
             <a
               href={contentTextProperties.ctaLink}
               className="btn btn-outline-primary"
@@ -938,11 +919,9 @@ const ComparisonCalculator: React.FC = () => {
                 values={{ pillar: contentTextProperties.pillar }}
               />
             </a>
-          )}
-        </div>
-        <div className="text-secondary pt-2">
-          <small>{getContentTextCtaSubtext()}</small>
-        </div>
+          </div>
+        )}
+        <p className="text-secondary small m-0 mt-3">{getContentTextCtaSubtext()}</p>
       </div>
     );
   }
@@ -1217,7 +1196,7 @@ const ComparisonCalculator: React.FC = () => {
     if (performanceVerdictProperties.comparison === PerformanceVerdictComparison.INFLATION) {
       return <FormattedMessage id="comparisonCalculator.content.performance.cta.subtext" />;
     }
-    return <div />;
+    return <></>;
   }
 
   function getFundLabelByKey(key: string) {

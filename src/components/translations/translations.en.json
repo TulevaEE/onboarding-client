@@ -613,8 +613,8 @@
   "comparisonCalculator.comparedTo": "Compared to",
   "comparisonCalculator.yourIIpillar": "Your II pillar",
   "comparisonCalculator.yourIIIpillar": "Your III pillar",
-  "comparisonCalculator.shortTimePeriodWarning": "ⓘ The comparison period is short. Avoid the temptation to make sudden moves based on short-term fluctuations.",
-  "comparisonCalculator.shortTimePeriodWarningLink": "Read more.",
+  "comparisonCalculator.shortTimePeriodWarning": "The comparison period is short. Avoid the temptation to make sudden moves based on short-term fluctuations.",
+  "comparisonCalculator.shortTimePeriodWarningLink": "Read more",
 
   "comparisonCalculator.comparisonOptions.benchmarks": "Benchmarks",
   "comparisonCalculator.comparisonOptions.lowFeeFunds": "Low fee pension funds (below 0.5%)",
