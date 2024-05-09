@@ -631,7 +631,7 @@
   "comparisonCalculator.content.performance.index.alpha.explanation": "<b>Tuleva Maailma Aktsiate Pensionifond</b> järgib maailmaturu indeksit, st püüab saavutada sellega võimalikult sarnast pikaajalist tootlust.",
 
   "comparisonCalculator.content.performance.index.neutral.start": "Sinu {pillar} sammas on viimase {years} aastaga teinud <b>maailmaturu indeksi</b> tootlusele lähedase tulemuse.",
-  "comparisonCalculator.content.performance.index.neutral.explanation": "Ole järjekindel ning kogu madala tasu ja agressiivse strateegiaga indeksfondis läbi turgude tõusude ja languste.",
+  "comparisonCalculator.content.performance.index.neutral.explanation": "Ole järjekindel ning kogu madala tasuga indeksfondis läbi aktsiaturu tõusude ja languste.",
 
   "comparisonCalculator.content.performance.fund.alpha.start": "Sinu {pillar} sammas on viimase {years} aastaga <b>{fund}</b>",
   "comparisonCalculator.content.performance.fund.alpha.wordNegative": "tootlusele",
