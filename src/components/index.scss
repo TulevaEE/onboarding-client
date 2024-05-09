@@ -106,20 +106,6 @@ hr {
   width: 100%;
 }
 
-.alert {
-  /*
-  border: solid 1px $gray-mid;
-  */
-  border-radius: 0.3rem;
-
-  /*
-  &-success {
-    background-color: rgba(11, 250, 67, 0.08);
-    border-color: $green;
-  }
-  */
-}
-
 .card {
   margin-right: -$grid-gutter-width/2;
   margin-left: -$grid-gutter-width/2;
@@ -130,7 +116,6 @@ hr {
     background-color: $very-light-blue;
   }
 }
-
 
 .custom-control-label {
   cursor: pointer;
