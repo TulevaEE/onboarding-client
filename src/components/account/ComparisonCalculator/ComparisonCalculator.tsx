@@ -921,7 +921,7 @@ const ComparisonCalculator: React.FC = () => {
             </a>
           </div>
         )}
-        <p className="text-secondary small m-0 mt-3">{getContentTextCtaSubtext()}</p>
+        {getContentTextCtaSubtext()}
       </div>
     );
   }
@@ -1190,11 +1190,18 @@ const ComparisonCalculator: React.FC = () => {
 
   function getContentTextCtaSubtext() {
     if (performanceVerdictProperties.comparison === PerformanceVerdictComparison.FUND) {
-      return <FormattedMessage id="comparisonCalculator.content.performance.cta.subtext" />;
+      return (
+        <p className="text-secondary small m-0 mt-3">
+          <FormattedMessage id="comparisonCalculator.content.performance.cta.subtext" />
+        </p>
+      );
     }
-
     if (performanceVerdictProperties.comparison === PerformanceVerdictComparison.INFLATION) {
-      return <FormattedMessage id="comparisonCalculator.content.performance.cta.subtext" />;
+      return (
+        <p className="text-secondary small m-0 mt-3">
+          <FormattedMessage id="comparisonCalculator.content.performance.cta.subtext" />
+        </p>
+      );
     }
     return <></>;
   }
