@@ -612,8 +612,8 @@
   "comparisonCalculator.comparedTo": "Võrdluses",
   "comparisonCalculator.yourIIpillar": "Sinu II sammas",
   "comparisonCalculator.yourIIIpillar": "Sinu III sammas",
-  "comparisonCalculator.shortTimePeriodWarning": "ⓘ Võrdlusperiood on lühike. Hoidu kiusatusest teha lühiajaliste kõikumiste põhjal järske liigutusi.",
-  "comparisonCalculator.shortTimePeriodWarningLink": "Loe lähemalt.",
+  "comparisonCalculator.shortTimePeriodWarning": "Võrdlusperiood on lühike. Hoidu kiusatusest teha lühiajaliste kõikumiste põhjal järske liigutusi.",
+  "comparisonCalculator.shortTimePeriodWarningLink": "Loe lähemalt",
 
   "comparisonCalculator.comparisonOptions.benchmarks": "Mõõdikud",
   "comparisonCalculator.comparisonOptions.lowFeeFunds": "Madala tasuga pensionifondid (alla 0.5%)",

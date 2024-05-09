@@ -1,10 +1,16 @@
 .comparison-calculator {
 
+  .card-primary {
+    border-color: #CAE0F1;
+  }
+
   .separator {
     border-top: 1px solid var(--Blue-Border, #CAE0F1);
   }
 
   .header-section {
+    border-bottom: 1px solid #CAE0F1;
+
     //To scale header buttons on smaller screens
     @media (max-width: 768px) {
       .btn-group {
@@ -21,16 +27,19 @@
   }
 
   .footer-section {
+    border-top: 1px solid #CAE0F1;
+
     .footer-disclaimer {
       //color: var(--Text-Secondary, #6C757D);
     }
 
     .footer-links {
+
     }
   }
 
   .middle-section{
-    min-height: 370px;
+    min-height: 320px;
     .content-section {
 
       .result-section {
@@ -47,12 +56,21 @@
             font-size: 16px;
           }
 
+          margin: 0;
           color: var(--Deep-Blue, #002F63);
           font-family: Roboto;
           font-size: 20px;
           font-style: normal;
           font-weight: 400;
           line-height: 140%; /* 28px */
+
+          + .result-text { 
+              margin-top: 1.5rem;
+          }
+        }
+
+        .result-action {
+          margin: 2rem 0 0;
         }
 
         @media (max-width: 768px) {
@@ -127,24 +145,14 @@
         }
 
         .bottom-divider {
-          .gradient-left {
-            background: linear-gradient(90deg, rgba(0, 47, 99, 0.00) 0%, #002F63 100%);
-            width: 50px;
-          }
-
-          .gradient-center {
-            background: #002F63;
-          }
-
-          .gradient-right {
-            background: linear-gradient(90deg, #002F63 0%, rgba(0, 47, 99, 0.00) 100%);
-            width: 50px;
-          }
-
-          // Ensuring the height of the gradient is 1px
-          .row > div {
-            height: 1px;
-          }
+          height: 1px;
+          background: linear-gradient(
+            to right,
+            rgba(0, 47, 99, 0) 0%,
+            rgba(0, 47, 99, 1) 24px,
+            rgba(0, 47, 99, 1) calc(100% - 24px),
+            rgba(0, 47, 99, 0) 100%
+          );
         }
       }
 
