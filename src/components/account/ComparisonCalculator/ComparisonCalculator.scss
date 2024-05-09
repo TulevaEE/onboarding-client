@@ -39,7 +39,7 @@
   }
 
   .middle-section{
-    min-height: 320px;
+    min-height: 345px;
     .content-section {
 
       .result-section {
@@ -71,6 +71,10 @@
 
         .result-action {
           margin: 2rem 0 0;
+
+          + .result-action-explainer { 
+            margin-top: 1rem;
+          }
         }
 
         @media (max-width: 768px) {

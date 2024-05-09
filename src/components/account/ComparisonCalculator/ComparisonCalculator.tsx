@@ -219,7 +219,7 @@ const ComparisonCalculator: React.FC = () => {
     <div className="comparison-calculator mt-5">
       <div className="card card-primary">
         {!loadingInitialData ? (
-          <div>
+          <>
             <div className="header-section container p-4">
               <div className="row justify-content-center">
                 <div className="btn-group">
@@ -298,33 +298,35 @@ const ComparisonCalculator: React.FC = () => {
               </div>
             </div>
 
-            <div className="middle-section p-4 d-flex justify-content-center align-items-center">
+            <div className="middle-section d-flex flex-column justify-content-center align-items-center">
               {loadingReturns ? (
                 <Loader className="align-middle" />
               ) : (
                 <>
                   {incomparableResults ? (
-                    <div className="content-section row justify-content-center align-items-center text-center">
-                      <div className="col-lg-9">
-                        <p className="m-0 lead text-secondary">
-                          {formatMessageWithTags({
-                            id: 'comparisonCalculator.content.incomparable.intro',
-                            values: {
-                              comparison: getFundLabelByKey(selectedComparison),
-                              date: formatDateYear(incomparableFundInceptionDate),
-                            },
-                          })}
-                        </p>
-                        <p className="m-0 mt-3 lead text-secondary">
-                          <FormattedMessage id="comparisonCalculator.content.incomparable.selectNew" />
-                        </p>
+                    <div className="p-4">
+                      <div className="content-section row justify-content-center align-items-center text-center">
+                        <div className="col-lg-9">
+                          <p className="m-0 lead text-secondary">
+                            {formatMessageWithTags({
+                              id: 'comparisonCalculator.content.incomparable.intro',
+                              values: {
+                                comparison: getFundLabelByKey(selectedComparison),
+                                date: formatDateYear(incomparableFundInceptionDate),
+                              },
+                            })}
+                          </p>
+                          <p className="m-0 mt-3 lead text-secondary">
+                            <FormattedMessage id="comparisonCalculator.content.incomparable.selectNew" />
+                          </p>
+                        </div>
                       </div>
                     </div>
                   ) : (
                     <>
                       {contentTextProperties.years < 3 && (
                         <div
-                          className="alert alert-warning rounded-0 text-center border-top-0 border-left-0 border-right-0"
+                          className="alert alert-warning w-100 m-0 rounded-0 text-center border-top-0 border-left-0 border-right-0"
                           role="alert"
                         >
                           <FormattedMessage id="comparisonCalculator.shortTimePeriodWarning" />{' '}
@@ -338,12 +340,14 @@ const ComparisonCalculator: React.FC = () => {
                         </div>
                       )}
 
-                      <div className="content-section row justify-content-center align-items-center">
-                        <div className="col-md-7 order-2 mt-4 mt-md-0 order-md-1 d-flex flex-column">
-                          {getResultSection()}
-                        </div>
-                        <div className="graph-section col-md-5 order-1 order-md-2 d-flex flex-column py-5">
-                          {getGraphSection()}
+                      <div className="p-4">
+                        <div className="content-section row justify-content-center align-items-center">
+                          <div className="col-12 col-lg-7 order-2 mx-n3 mt-4 mx-lg-0 mt-lg-0 px-3 order-lg-1 d-flex flex-column">
+                            {getResultSection()}
+                          </div>
+                          <div className="graph-section mx-n3 mx-lg-0 px-0 px-sm-3 col-12 col-lg-5 order-1 order-lg-2 d-flex flex-column py-5">
+                            {getGraphSection()}
+                          </div>
                         </div>
                       </div>
                     </>
@@ -378,7 +382,7 @@ const ComparisonCalculator: React.FC = () => {
                 </a>
               </div>
             </div>
-          </div>
+          </>
         ) : (
           <div className="p-4">
             <Loader className="align-middle" />
@@ -401,24 +405,24 @@ const ComparisonCalculator: React.FC = () => {
     return (
       <>
         {graphProperties.barCount === 2 && (
-          <div className="bar-container px-3 px-sm-4 px-md-3 px-xl-4 d-flex position-relative">
-            <div className="col-6 px-2 px-sm-4 px-md-2 px-xl-4">
+          <div className="bar-container px-3 px-sm-4 px-md-5 px-lg-3 px-xl-4 d-flex position-relative">
+            <div className="col-6 px-3 px-sm-4 px-md-5 px-lg-2 px-xl-3">
               {getGraphBar(graphProperties.barProperties['1'])}
             </div>
-            <div className="col-6 px-2 px-sm-4 px-md-2 px-xl-4">
+            <div className="col-6 px-3 px-sm-4 px-md-5 px-lg-2 px-xl-3">
               {getGraphBar(graphProperties.barProperties['2'])}
             </div>
           </div>
         )}
         {graphProperties.barCount === 3 && graphProperties.barProperties['3'] && (
-          <div className="bar-container px-3 px-sm-4 d-flex position-relative">
-            <div className="col-4 px-2 px-sm-3">
+          <div className="bar-container px-3 px-sm-3 px-md-4 px-lg-3 d-flex position-relative">
+            <div className="col-4 px-2 px-sm-3 px-md-4 px-lg-1 px-xl-2">
               {getGraphBar(graphProperties.barProperties['1'])}
             </div>
-            <div className="col-4 px-2 px-sm-3">
+            <div className="col-4 px-2 px-sm-3 px-md-4 px-lg-1 px-xl-2">
               {getGraphBar(graphProperties.barProperties['2'])}
             </div>
-            <div className="col-4 px-2 px-sm-3">
+            <div className="col-4 px-2 px-sm-3 px-md-4 px-lg-1 px-xl-2">
               {getGraphBar(graphProperties.barProperties['3'])}
             </div>
           </div>
@@ -1191,14 +1195,14 @@ const ComparisonCalculator: React.FC = () => {
   function getContentTextCtaSubtext() {
     if (performanceVerdictProperties.comparison === PerformanceVerdictComparison.FUND) {
       return (
-        <p className="text-secondary small m-0 mt-3">
+        <p className="result-action-explainer text-secondary small m-0 mt-4">
           <FormattedMessage id="comparisonCalculator.content.performance.cta.subtext" />
         </p>
       );
     }
     if (performanceVerdictProperties.comparison === PerformanceVerdictComparison.INFLATION) {
       return (
-        <p className="text-secondary small m-0 mt-3">
+        <p className="result-action-explainer text-secondary small m-0 mt-4">
           <FormattedMessage id="comparisonCalculator.content.performance.cta.subtext" />
         </p>
       );
