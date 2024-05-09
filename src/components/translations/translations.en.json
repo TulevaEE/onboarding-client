@@ -631,7 +631,7 @@
   "comparisonCalculator.content.performance.index.alpha.explanation": "<b>Tuleva World Stock Pensionfund</b> follows the world market index, meaning it endeavors to achieve the most similar long-term performance.",
 
   "comparisonCalculator.content.performance.index.neutral.start": "Your {pillar} pillar during the past {years} years, when compared to <b>all world market index</b> has similar performance.",
-  "comparisonCalculator.content.performance.index.neutral.explanation": "Be persistent and accumulate in low fee aggressive strategy index fund, through market ups and downs.",
+  "comparisonCalculator.content.performance.index.neutral.explanation": "Stick with a low-cost index fund and keep investing, no matter the market's highs and lows.",
 
   "comparisonCalculator.content.performance.fund.alpha.start": "Your {pillar} pillar during the past {years} years, when compared to <b>{fund}</b> has ",
   "comparisonCalculator.content.performance.fund.alpha.wordNegative": " ",
