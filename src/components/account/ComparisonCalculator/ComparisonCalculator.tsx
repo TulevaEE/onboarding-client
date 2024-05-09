@@ -259,7 +259,7 @@ const ComparisonCalculator: React.FC = () => {
               </div>
               <div className="row justify-content-center">
                 <div className="col-12 col-md text-left mt-3">
-                  <label htmlFor="timePeriodSelect" className="form-label small text-bold">
+                  <label htmlFor="timePeriodSelect" className="form-label small text-bold mb-1">
                     <FormattedMessage id="comparisonCalculator.timePeriod" />:{' '}
                   </label>
                   <Select
@@ -277,7 +277,7 @@ const ComparisonCalculator: React.FC = () => {
                   />
                 </div>
                 <div className="col-12 col-md text-left mt-3">
-                  <label htmlFor="comparedToSelect" className="form-label small text-bold">
+                  <label htmlFor="comparedToSelect" className="form-label small text-bold mb-1">
                     <FormattedMessage id="comparisonCalculator.comparedTo" />:{' '}
                   </label>
                   <Select
@@ -326,7 +326,7 @@ const ComparisonCalculator: React.FC = () => {
                     <>
                       {contentTextProperties.years < 3 && (
                         <div
-                          className="alert alert-warning w-100 m-0 rounded-0 text-center border-top-0 border-left-0 border-right-0"
+                          className="alert alert-warning w-100 m-0 rounded-0 text-center border-top-0 border-left-0 border-right-0 border-bottom"
                           role="alert"
                         >
                           <FormattedMessage id="comparisonCalculator.shortTimePeriodWarning" />{' '}
