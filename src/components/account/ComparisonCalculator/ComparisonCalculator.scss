@@ -4,12 +4,28 @@
     border-color: #CAE0F1;
   }
 
-  .separator {
-    border-top: 1px solid var(--Blue-Border, #CAE0F1);
-  }
-
   .header-section {
     border-bottom: 1px solid #CAE0F1;
+
+    .btn-group .btn {
+      min-width: 200px;
+    }
+
+    .pillar-selection {
+      + .input-selection > div {
+        margin-top: 1rem;
+      }
+    }
+
+    .input-selection {
+      margin-left: -12px;
+      margin-right: -12px;
+
+      > div {
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+    }
 
     //To scale header buttons on smaller screens
     @media (max-width: 768px) {
@@ -20,6 +36,7 @@
       }
       .btn-group .btn {
         width: 50%;
+        min-width: auto;
         padding-left: 7px;
         padding-right: 7px;
       }
@@ -30,8 +47,18 @@
     border-top: 1px solid #CAE0F1;
   }
 
-  .middle-section{
-    min-height: 345px;
+  .middle-section,
+  .middle-section p {
+    color: #002F63;
+  }
+
+  .middle-section {
+    min-height: 333px;
+
+    > .alert:first-child {
+      margin-top: -1px !important;
+    }
+
     .content-section {
 
       .result-section {
@@ -49,11 +76,7 @@
           }
 
           margin: 0;
-          color: var(--Deep-Blue, #002F63);
-          font-family: Roboto, sans-serif;
           font-size: 20px;
-          font-style: normal;
-          font-weight: 400;
           line-height: 140%; /* 28px */
 
           + .result-text {
@@ -65,7 +88,7 @@
           margin: 2rem 0 0;
 
           + .result-action-explainer {
-            margin-top: 1rem;
+            margin-top: 1em !important;
           }
         }
 
@@ -79,6 +102,9 @@
       }
 
       .graph-section {
+        padding-top: 42px;
+        padding-bottom: 42px;
+
         .bar-container {
           display: flex;
           align-items: flex-end;
@@ -96,14 +122,11 @@
           position: absolute;
 
           //From Figma
-          color: var(--Deep-Blue, #002F63);
+          
           text-align: center;
-
-          font-family: Roboto, sans-serif;
           font-size: 16px;
-          font-style: normal;
           font-weight: 700;
-          line-height: 150%;
+          line-height: 1.5;
         }
 
         .bar-graph {
@@ -119,11 +142,9 @@
           //From Figma
           color: var(--White, #FFF);
           text-align: center;
-          font-family: Roboto, sans-serif;
           font-size: 24px;
-          font-style: normal;
           font-weight: 700;
-          line-height: 100%; /* 24px */
+          line-height: 1; /* 24px */
         }
 
         .bar-label {
@@ -132,13 +153,10 @@
           -webkit-line-clamp: 2;
           text-overflow: ellipsis;
           overflow: hidden;
-          color: var(--Deep-Blue, #002F63);
           text-align: center;
-          font-family: Roboto, sans-serif;
           font-size: 14px;
-          font-style: normal;
           font-weight: 500;
-          line-height: 125%; /* 17.5px */
+          line-height: 1.2857; /* 18px */
         }
 
         .bottom-divider {

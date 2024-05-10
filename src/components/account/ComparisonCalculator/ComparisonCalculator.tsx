@@ -12,6 +12,7 @@ import { Option, OptionGroup } from './select/Select';
 import { formatDateYear } from '../../common/dateFormatter';
 import Percentage from '../../common/Percentage';
 import { createTrackedEvent } from '../../common/api';
+import { InfoTooltip } from '../../common';
 
 interface GraphBarProperties {
   color: string;
@@ -216,180 +217,182 @@ const ComparisonCalculator: React.FC = () => {
   }, [returns.from, selectedTimePeriod, selectedComparison]);
 
   return (
-    <div className="comparison-calculator mt-5">
-      <div className="card card-primary">
-        {!loadingInitialData ? (
-          <>
-            <div className="header-section container p-4">
-              <div className="row justify-content-center">
-                <div className="btn-group">
-                  <button
-                    type="button"
-                    className={`btn ${
-                      selectedPillar === Key.SECOND_PILLAR ? 'btn-primary' : 'btn-light'
-                    }`}
-                    onClick={() => {
-                      createTrackedEvent('CLICK', {
-                        path: getCurrentPath(),
-                        target: 'comparisonCalculator.setSelectedPillar',
-                        value: 2,
-                      }).catch(() => {});
-                      setSelectedPillar(Key.SECOND_PILLAR);
-                    }}
-                  >
-                    <FormattedMessage id="comparisonCalculator.yourIIpillar" />
-                  </button>
-                  <button
-                    type="button"
-                    className={`btn ${
-                      selectedPillar === Key.THIRD_PILLAR ? 'btn-primary' : 'btn-light'
-                    }`}
-                    onClick={() => {
-                      createTrackedEvent('CLICK', {
-                        path: getCurrentPath(),
-                        target: 'comparisonCalculator.setSelectedPillar',
-                        value: 3,
-                      }).catch(() => {});
-                      setSelectedPillar(Key.THIRD_PILLAR);
-                    }}
-                  >
-                    <FormattedMessage id="comparisonCalculator.yourIIIpillar" />
-                  </button>
+    <>
+      <p className="mt-5 mb-4 lead">
+        <FormattedMessage id="returnComparison.title" />
+      </p>
+      <div className="comparison-calculator">
+        <div className="card card-primary">
+          {!loadingInitialData ? (
+            <>
+              <div className="header-section container p-4">
+                <div className="pillar-selection row justify-content-center">
+                  <div className="btn-group">
+                    <button
+                      type="button"
+                      className={`btn ${
+                        selectedPillar === Key.SECOND_PILLAR ? 'btn-primary' : 'btn-light'
+                      }`}
+                      onClick={() => {
+                        createTrackedEvent('CLICK', {
+                          path: getCurrentPath(),
+                          target: 'comparisonCalculator.setSelectedPillar',
+                          value: 2,
+                        }).catch(() => {});
+                        setSelectedPillar(Key.SECOND_PILLAR);
+                      }}
+                    >
+                      <FormattedMessage id="comparisonCalculator.yourIIpillar" />
+                    </button>
+                    <button
+                      type="button"
+                      className={`btn ${
+                        selectedPillar === Key.THIRD_PILLAR ? 'btn-primary' : 'btn-light'
+                      }`}
+                      onClick={() => {
+                        createTrackedEvent('CLICK', {
+                          path: getCurrentPath(),
+                          target: 'comparisonCalculator.setSelectedPillar',
+                          value: 3,
+                        }).catch(() => {});
+                        setSelectedPillar(Key.THIRD_PILLAR);
+                      }}
+                    >
+                      <FormattedMessage id="comparisonCalculator.yourIIIpillar" />
+                    </button>
+                  </div>
+                </div>
+                <div className="input-selection row justify-content-center">
+                  <div className="col-12 col-md text-left">
+                    <label htmlFor="timePeriodSelect" className="form-label small text-bold mb-1">
+                      <FormattedMessage id="comparisonCalculator.timePeriod" />:{' '}
+                    </label>
+                    <Select
+                      options={timePeriodOptions}
+                      selected={selectedTimePeriod}
+                      onChange={(newValue) => {
+                        createTrackedEvent('CLICK', {
+                          path: getCurrentPath(),
+                          target: 'comparisonCalculator.setSelectedTimePeriod',
+                          value: newValue,
+                        }).catch(() => {});
+                        setSelectedTimePeriod(newValue);
+                      }}
+                      id="timePeriodSelect"
+                    />
+                  </div>
+                  <div className="col-12 col-md text-left">
+                    <label htmlFor="comparedToSelect" className="form-label small text-bold mb-1">
+                      <FormattedMessage id="comparisonCalculator.comparedTo" />:{' '}
+                    </label>
+                    <Select
+                      options={comparisonOptions}
+                      translate={false}
+                      selected={selectedComparison}
+                      onChange={(newValue) => {
+                        createTrackedEvent('CLICK', {
+                          path: getCurrentPath(),
+                          target: 'comparisonCalculator.setSelectedComparison',
+                          value: newValue,
+                        }).catch(() => {});
+                        setSelectedComparison(newValue);
+                      }}
+                      id="comparedToSelect"
+                    />
+                  </div>
                 </div>
               </div>
-              <div className="row justify-content-center">
-                <div className="col-12 col-md text-left mt-3">
-                  <label htmlFor="timePeriodSelect" className="form-label small text-bold mb-1">
-                    <FormattedMessage id="comparisonCalculator.timePeriod" />:{' '}
-                  </label>
-                  <Select
-                    options={timePeriodOptions}
-                    selected={selectedTimePeriod}
-                    onChange={(newValue) => {
-                      createTrackedEvent('CLICK', {
-                        path: getCurrentPath(),
-                        target: 'comparisonCalculator.setSelectedTimePeriod',
-                        value: newValue,
-                      }).catch(() => {});
-                      setSelectedTimePeriod(newValue);
-                    }}
-                    id="timePeriodSelect"
-                  />
-                </div>
-                <div className="col-12 col-md text-left mt-3">
-                  <label htmlFor="comparedToSelect" className="form-label small text-bold mb-1">
-                    <FormattedMessage id="comparisonCalculator.comparedTo" />:{' '}
-                  </label>
-                  <Select
-                    options={comparisonOptions}
-                    translate={false}
-                    selected={selectedComparison}
-                    onChange={(newValue) => {
-                      createTrackedEvent('CLICK', {
-                        path: getCurrentPath(),
-                        target: 'comparisonCalculator.setSelectedComparison',
-                        value: newValue,
-                      }).catch(() => {});
-                      setSelectedComparison(newValue);
-                    }}
-                    id="comparedToSelect"
-                  />
-                </div>
-              </div>
-            </div>
 
-            <div className="middle-section d-flex flex-column justify-content-center align-items-center">
-              {loadingReturns ? (
-                <Loader className="align-middle" />
-              ) : (
-                <>
-                  {incomparableResults ? (
-                    <div className="p-4">
-                      <div className="content-section row justify-content-center align-items-center text-center">
-                        <div className="col-lg-9">
-                          <p className="m-0 lead text-secondary">
-                            {formatMessageWithTags({
-                              id: 'comparisonCalculator.content.incomparable.intro',
-                              values: {
-                                comparison: getFundLabelByKey(selectedComparison),
-                                date: formatDateYear(incomparableFundInceptionDate),
-                              },
-                            })}
-                          </p>
-                          <p className="m-0 mt-3 lead text-secondary">
-                            <FormattedMessage id="comparisonCalculator.content.incomparable.selectNew" />
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <>
-                      {contentTextProperties.years < 3 && (
-                        <div
-                          className="alert alert-warning w-100 m-0 rounded-0 text-center border-top-0 border-left-0 border-right-0 border-bottom"
-                          role="alert"
-                        >
-                          <FormattedMessage id="comparisonCalculator.shortTimePeriodWarning" />{' '}
-                          <a
-                            href="/soovitused/laura-rikkaks-4/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <FormattedMessage id="comparisonCalculator.shortTimePeriodWarningLink" />
-                          </a>
-                        </div>
-                      )}
-
+              <div className="middle-section d-flex flex-column justify-content-center align-items-center pb-2 pb-lg-0">
+                {loadingReturns ? (
+                  <Loader className="align-middle" />
+                ) : (
+                  <>
+                    {incomparableResults ? (
                       <div className="p-4">
-                        <div className="content-section row justify-content-center align-items-center">
-                          <div className="col-12 col-lg-7 order-2 mx-n3 mt-4 mx-lg-0 mt-lg-0 px-3 order-lg-1 d-flex flex-column">
-                            {getResultSection()}
-                          </div>
-                          <div className="graph-section mx-n3 mx-lg-0 px-0 px-sm-3 col-12 col-lg-5 order-1 order-lg-2 d-flex flex-column py-5">
-                            {getGraphSection()}
+                        <div className="content-section row justify-content-center align-items-center text-center">
+                          <div className="col-lg-9">
+                            <p className="m-0 lead">
+                              {formatMessageWithTags({
+                                id: 'comparisonCalculator.content.incomparable.intro',
+                                values: {
+                                  comparison: getFundLabelByKey(selectedComparison),
+                                  date: formatDateYear(incomparableFundInceptionDate),
+                                },
+                              })}
+                            </p>
+                            <p className="m-0 mt-3 lead">
+                              <FormattedMessage id="comparisonCalculator.content.incomparable.selectNew" />
+                            </p>
                           </div>
                         </div>
                       </div>
-                    </>
-                  )}
-                </>
-              )}
-            </div>
+                    ) : (
+                      <>
+                        {contentTextProperties.years < 3 && (
+                          <div
+                            className="alert alert-warning w-100 m-0 rounded-0 border-left-0 border-right-0 border-top border-bottom text-center"
+                            role="alert"
+                          >
+                            <FormattedMessage id="comparisonCalculator.shortTimePeriodWarning" />{' '}
+                            <a
+                              href="/soovitused/laura-rikkaks-4/"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <FormattedMessage id="comparisonCalculator.shortTimePeriodWarningLink" />
+                            </a>
+                          </div>
+                        )}
 
-            <div className="footer-section text-center small p-4">
-              <div className="footer-disclaimer text-secondary">
-                <FormattedMessage
-                  id="comparisonCalculator.footerDisclaimer"
-                  values={{ years: contentTextProperties.years }}
-                />
+                        <div className="p-4">
+                          <div className="content-section row justify-content-center align-items-center">
+                            <div className="col-12 col-lg-7 order-2 mx-n3 mt-4 mx-lg-0 mt-lg-0 px-3 order-lg-1 d-flex flex-column">
+                              {getResultSection()}
+                            </div>
+                            <div className="graph-section mx-n3 mx-lg-0 px-0 px-sm-3 col-12 col-lg-5 order-1 order-lg-2 d-flex flex-column">
+                              {getGraphSection()}
+                            </div>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </>
+                )}
               </div>
-              <div className="footer-links pt-2">
-                <a
-                  href="https://tuleva.ee/mida-need-numbrid-naitavad"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="d-inline-block mx-2 mt-1"
-                >
-                  <FormattedMessage id="comparisonCalculator.footerNumbersExplanationLink" />
-                </a>
-                <a
-                  href="https://tuleva.ee/analuusid/millist-tootlust-on-tulevas-oodata"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="d-inline-block mx-2 mt-1"
-                >
-                  <FormattedMessage id="comparisonCalculator.footerPerformanceExplanationLink" />
-                </a>
+
+              <div className="footer-section text-center small p-4">
+                <div className="footer-disclaimer text-secondary">
+                  <FormattedMessage id="comparisonCalculator.footerDisclaimer" />
+                </div>
+                <div className="footer-links pt-2">
+                  <a
+                    href="https://tuleva.ee/mida-need-numbrid-naitavad"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="d-inline-block mx-2"
+                  >
+                    <FormattedMessage id="comparisonCalculator.footerNumbersExplanationLink" />
+                  </a>
+                  <a
+                    href="https://tuleva.ee/analuusid/millist-tootlust-on-tulevas-oodata"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="d-inline-block mx-2"
+                  >
+                    <FormattedMessage id="comparisonCalculator.footerPerformanceExplanationLink" />
+                  </a>
+                </div>
               </div>
+            </>
+          ) : (
+            <div className="p-4">
+              <Loader className="align-middle" />
             </div>
-          </>
-        ) : (
-          <div className="p-4">
-            <Loader className="align-middle" />
-          </div>
-        )}
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 
   function getGraphSection() {
@@ -915,7 +918,7 @@ const ComparisonCalculator: React.FC = () => {
           <div className="result-action">
             <a
               href={contentTextProperties.ctaLink}
-              className="btn btn-outline-primary"
+              className="btn btn-outline-primary px-3"
               onClick={handleCtaClick}
             >
               <FormattedMessage
@@ -923,9 +926,9 @@ const ComparisonCalculator: React.FC = () => {
                 values={{ pillar: contentTextProperties.pillar }}
               />
             </a>
+            {getContentTextCtaSubtext()}
           </div>
         )}
-        {getContentTextCtaSubtext()}
       </div>
     );
   }
@@ -1195,16 +1198,16 @@ const ComparisonCalculator: React.FC = () => {
   function getContentTextCtaSubtext() {
     if (performanceVerdictProperties.comparison === PerformanceVerdictComparison.FUND) {
       return (
-        <p className="result-action-explainer text-secondary small m-0 mt-4">
+        <InfoTooltip name="cta-tooltip" className="info-tooltip-modern ml-3 align-middle">
           <FormattedMessage id="comparisonCalculator.content.performance.cta.subtext" />
-        </p>
+        </InfoTooltip>
       );
     }
     if (performanceVerdictProperties.comparison === PerformanceVerdictComparison.INFLATION) {
       return (
-        <p className="result-action-explainer text-secondary small m-0 mt-4">
+        <InfoTooltip name="cta-tooltip" className="info-tooltip-modern ml-3 align-middle">
           <FormattedMessage id="comparisonCalculator.content.performance.cta.subtext" />
-        </p>
+        </InfoTooltip>
       );
     }
     return <></>;
