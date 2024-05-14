@@ -3,6 +3,7 @@ import { SetupServerApi } from 'msw/node';
 import queryString from 'qs';
 import { CapitalType, FundBalance, FundStatus } from '../components/common/apiModels';
 import { anAuthenticationManager } from '../components/common/authenticationManagerFixture';
+import { ReturnsResponse } from '../components/account/ReturnComparison/api';
 
 export function cancellationBackend(server: SetupServerApi): {
   cancellationCreated: boolean;
@@ -440,10 +441,37 @@ export function fundsBackend(server: SetupServerApi): void {
   );
 }
 
+let returnData: ReturnsResponse | undefined;
+
+export function setReturnsData(data: ReturnsResponse | undefined): void {
+  returnData = data;
+}
+
 export function returnsBackend(server: SetupServerApi): void {
   server.use(
     rest.get('http://localhost/v1/returns', (req, res, ctx) => {
-      return res(ctx.json({ from: '2018-06-06', returns: [] })); // TODO: Add returns
+      const data = returnData || {
+        from: '2018-06-06',
+        returns: [
+          {
+            key: 'UNION_STOCK_INDEX',
+            rate: 0.09,
+            amount: 16000.0,
+            paymentsSum: 14000.0,
+            currency: 'EUR',
+            type: 'INDEX',
+          },
+          {
+            key: 'SECOND_PILLAR',
+            rate: 0.07,
+            amount: 11000.0,
+            paymentsSum: 15000.0,
+            currency: 'EUR',
+            type: 'PERSONAL',
+          },
+        ],
+      };
+      return res(ctx.json(data));
     }),
   );
 }

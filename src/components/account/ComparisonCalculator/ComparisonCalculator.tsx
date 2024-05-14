@@ -221,7 +221,7 @@ const ComparisonCalculator: React.FC = () => {
       <p className="mt-5 mb-4 lead">
         <FormattedMessage id="returnComparison.title" />
       </p>
-      <div className="comparison-calculator">
+      <div data-testid="comparisonCalculator" className="comparison-calculator">
         <div className="card card-primary">
           {!loadingInitialData ? (
             <>
@@ -279,6 +279,7 @@ const ComparisonCalculator: React.FC = () => {
                         setSelectedTimePeriod(newValue);
                       }}
                       id="timePeriodSelect"
+                      testId="timePeriodSelect"
                     />
                   </div>
                   <div className="col-12 col-md text-left">
@@ -298,6 +299,7 @@ const ComparisonCalculator: React.FC = () => {
                         setSelectedComparison(newValue);
                       }}
                       id="comparedToSelect"
+                      testId="comparedToSelect"
                     />
                   </div>
                 </div>
@@ -305,7 +307,9 @@ const ComparisonCalculator: React.FC = () => {
 
               <div className="middle-section d-flex flex-column justify-content-center align-items-center pb-2 pb-lg-0">
                 {loadingReturns ? (
-                  <Loader className="align-middle" />
+                  <div data-testid="comparisonCalculator-returnLoader">
+                    <Loader className="align-middle" />
+                  </div>
                 ) : (
                   <>
                     {incomparableResults ? (
@@ -329,7 +333,7 @@ const ComparisonCalculator: React.FC = () => {
                       </div>
                     ) : (
                       <>
-                        {contentTextProperties.years < 3 && (
+                        {contentTextProperties.years <= 3 && (
                           <div
                             className="alert alert-warning w-100 m-0 rounded-0 border-left-0 border-right-0 border-top border-bottom text-center"
                             role="alert"
@@ -386,7 +390,7 @@ const ComparisonCalculator: React.FC = () => {
               </div>
             </>
           ) : (
-            <div className="p-4">
+            <div className="p-4" data-testid="comparisonCalculator-loader">
               <Loader className="align-middle" />
             </div>
           )}

@@ -663,7 +663,7 @@
   "comparisonCalculator.footerDisclaimer" : "Percentages show, how much has your II pillar on average grown per year. Euros show the last {years} year total growth.",
   "comparisonCalculator.footerNumbersExplanationLink": "What do these numbers mean?",
   "comparisonCalculator.footerPerformanceExplanationLink": "What returns to expect in Tuleva?",
-  "comparisonCalculator.period.all": "From the starting {pillar} contributions ({date})",
+  "comparisonCalculator.period.all": "From starting {pillar} contributions ({date})",
   "comparisonCalculator.period.inception": "From Tuleva {pillar} pillar fund creation ({date})",
   "comparisonCalculator.period.twentyYears": "Last 20 years",
   "comparisonCalculator.period.fifteenYears": "Last 15 years",

@@ -22,6 +22,7 @@ interface SelectProps {
   disabled?: boolean;
   translate?: boolean;
   id?: string;
+  testId?: string;
 }
 
 export const Select: FC<SelectProps> = ({
@@ -31,6 +32,7 @@ export const Select: FC<SelectProps> = ({
   disabled = false,
   translate = true,
   id,
+  testId,
 }) => {
   const { formatMessage } = useIntl();
 
@@ -69,6 +71,7 @@ export const Select: FC<SelectProps> = ({
       value={selected}
       disabled={disabled}
       id={id}
+      data-testid={testId}
     >
       {renderOptions()}
     </select>

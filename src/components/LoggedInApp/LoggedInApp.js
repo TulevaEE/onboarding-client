@@ -35,7 +35,6 @@ import ThirdPillarPaymentPage from '../flows/thirdPillar/ThirdPillarPayment/Thir
 import DevSidebar from '../dev/DevSidebar';
 import Success from '../flows/secondPillar/success';
 import { getAuthentication } from '../common/authenticationManager';
-import ComparisonCalculator from '../account/ComparisonCalculator';
 import { CapitalPage } from '../account/MemberCapital/CapitalPage';
 
 export const ACCOUNT_PATH = '/account';
@@ -91,7 +90,6 @@ export class LoggedInApp extends PureComponent {
             <Switch>
               <Route path={ACCOUNT_PATH} component={AccountPage} />
               <Route path={AML_PATH} component={AmlPage} />
-              <Route path="/comparison-calculator" component={ComparisonCalculator} />
               <Route path="/join" component={SignUpPage} />
               <Route path="/contact-details" component={ContactDetailsPage} />
               <Route path="/2nd-pillar-flow" component={SecondPillarFlow} />
