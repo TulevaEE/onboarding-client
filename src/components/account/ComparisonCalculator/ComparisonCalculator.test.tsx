@@ -224,7 +224,9 @@ describe('ComparisonCalculator', () => {
     const graphSection = screen.getByTestId('graph-section');
 
     // Bar heights
+    // eslint-disable-next-line testing-library/no-node-access
     const firstBarGraph = within(graphSection).getByText('7.0%').closest('.bar-graph');
+    // eslint-disable-next-line testing-library/no-node-access
     const secondBarGraph = within(graphSection).getByText('9.0%').closest('.bar-graph');
     expect(firstBarGraph).toHaveStyle('height: 137.5px');
     expect(secondBarGraph).toHaveStyle('height: 200px');
@@ -238,7 +240,9 @@ describe('ComparisonCalculator', () => {
     expect(within(graphSection).getByText('World market index')).toBeInTheDocument();
 
     // Bar colors
+    // eslint-disable-next-line testing-library/no-node-access
     const firstBar = within(graphSection).getByText('Your II pillar').closest('.bar');
+    // eslint-disable-next-line testing-library/no-node-access
     const secondBar = within(graphSection).getByText('World market index').closest('.bar');
     expect(firstBar).toHaveStyle('background-color: rgb(255, 72, 0)');
     expect(secondBar).toHaveStyle('background-color: rgb(0, 129, 238)');
@@ -270,7 +274,9 @@ describe('ComparisonCalculator', () => {
     const graphSection = screen.getByTestId('graph-section');
 
     // Bar heights
+    // eslint-disable-next-line testing-library/no-node-access
     const firstBarGraph = within(graphSection).getByText('10.0%').closest('.bar-graph');
+    // eslint-disable-next-line testing-library/no-node-access
     const secondBarGraph = within(graphSection).getByText('9.0%').closest('.bar-graph');
     expect(firstBarGraph).toHaveStyle('height: 200px');
     expect(secondBarGraph).toHaveStyle('height: 188.23529411764704px');
@@ -284,7 +290,9 @@ describe('ComparisonCalculator', () => {
     expect(within(graphSection).getByText('World market index')).toBeInTheDocument();
 
     // Bar colors
+    // eslint-disable-next-line testing-library/no-node-access
     const firstBar = within(graphSection).getByText('Your II pillar').closest('.bar');
+    // eslint-disable-next-line testing-library/no-node-access
     const secondBar = within(graphSection).getByText('World market index').closest('.bar');
     expect(firstBar).toHaveStyle('background-color: rgb(81, 194, 108)');
     expect(secondBar).toHaveStyle('background-color: rgb(0, 129, 238)');
@@ -316,7 +324,9 @@ describe('ComparisonCalculator', () => {
     const graphSection = screen.getByTestId('graph-section');
 
     // Bar heights
+    // eslint-disable-next-line testing-library/no-node-access
     const firstBarGraph = within(graphSection).getByText('9.0%').closest('.bar-graph');
+    // eslint-disable-next-line testing-library/no-node-access
     const secondBarGraph = within(graphSection).getByText('9.5%').closest('.bar-graph');
     expect(firstBarGraph).toHaveStyle('height: 198.75776397515529px');
     expect(secondBarGraph).toHaveStyle('height: 200px');
@@ -330,7 +340,9 @@ describe('ComparisonCalculator', () => {
     expect(within(graphSection).getByText('World market index')).toBeInTheDocument();
 
     // Bar colors
+    // eslint-disable-next-line testing-library/no-node-access
     const firstBar = within(graphSection).getByText('Your II pillar').closest('.bar');
+    // eslint-disable-next-line testing-library/no-node-access
     const secondBar = within(graphSection).getByText('World market index').closest('.bar');
     expect(firstBar).toHaveStyle('background-color: rgb(81, 194, 108)');
     expect(secondBar).toHaveStyle('background-color: rgb(0, 129, 238)');
@@ -372,14 +384,17 @@ describe('ComparisonCalculator', () => {
     const graphSection = screen.getByTestId('graph-section');
 
     // First Bar
+    // eslint-disable-next-line testing-library/no-node-access
     const firstBarGraph = within(graphSection).getByText('7.0%').closest('.bar-graph');
     expect(firstBarGraph).toHaveStyle('height: 137.5px');
     expect(within(graphSection).getByText('+11 000 €')).toBeInTheDocument();
     expect(within(graphSection).getByText('Your II pillar')).toBeInTheDocument();
+    // eslint-disable-next-line testing-library/no-node-access
     const firstBar = within(graphSection).getByText('Your II pillar').closest('.bar');
     expect(firstBar).toHaveStyle('background-color: rgb(255, 72, 0)');
 
     // Second Bar
+    // eslint-disable-next-line testing-library/no-node-access
     const secondBarGraph = within(graphSection).getByText('6.9%').closest('.bar-graph');
     expect(secondBarGraph).toHaveStyle('height: 136.25px');
     expect(within(graphSection).getByText('+10 900 €')).toBeInTheDocument();
@@ -388,14 +403,17 @@ describe('ComparisonCalculator', () => {
     ).toBeInTheDocument();
     const secondBar = within(graphSection)
       .getByText('Estonian II pillar funds average performance')
+      // eslint-disable-next-line testing-library/no-node-access
       .closest('.bar');
     expect(secondBar).toHaveStyle('background-color: rgb(255, 72, 0)');
 
     // Third Bar
+    // eslint-disable-next-line testing-library/no-node-access
     const thirdBarGraph = within(graphSection).getByText('9.0%').closest('.bar-graph');
     expect(thirdBarGraph).toHaveStyle('height: 200px');
     expect(within(graphSection).getByText('+16 000 €')).toBeInTheDocument();
     expect(within(graphSection).getByText('World market index')).toBeInTheDocument();
+    // eslint-disable-next-line testing-library/no-node-access
     const thirdBar = within(graphSection).getByText('World market index').closest('.bar');
     expect(thirdBar).toHaveStyle('background-color: rgb(0, 129, 238)');
   });
@@ -442,7 +460,9 @@ describe('ComparisonCalculator', () => {
     const graphSection = screen.getByTestId('graph-section');
 
     // Bar heights
+    // eslint-disable-next-line testing-library/no-node-access
     const firstBarGraph = within(graphSection).getByText('7.0%').closest('.bar-graph');
+    // eslint-disable-next-line testing-library/no-node-access
     const secondBarGraph = within(graphSection).getByText('9.0%').closest('.bar-graph');
     expect(firstBarGraph).toHaveStyle('height: 137.5px');
     expect(secondBarGraph).toHaveStyle('height: 200px');
@@ -456,7 +476,9 @@ describe('ComparisonCalculator', () => {
     expect(within(graphSection).getByText('World market index')).toBeInTheDocument();
 
     // Bar colors
+    // eslint-disable-next-line testing-library/no-node-access
     const firstBar = within(graphSection).getByText('Your III pillar').closest('.bar');
+    // eslint-disable-next-line testing-library/no-node-access
     const secondBar = within(graphSection).getByText('World market index').closest('.bar');
     expect(firstBar).toHaveStyle('background-color: rgb(255, 72, 0)');
     expect(secondBar).toHaveStyle('background-color: rgb(0, 129, 238)');
@@ -490,7 +512,9 @@ describe('ComparisonCalculator', () => {
     const graphSection = screen.getByTestId('graph-section');
 
     // Bar heights
+    // eslint-disable-next-line testing-library/no-node-access
     const firstBarGraph = within(graphSection).getByText('10.0%').closest('.bar-graph');
+    // eslint-disable-next-line testing-library/no-node-access
     const secondBarGraph = within(graphSection).getByText('9.0%').closest('.bar-graph');
     expect(firstBarGraph).toHaveStyle('height: 200px');
     expect(secondBarGraph).toHaveStyle('height: 188.23529411764704px');
@@ -504,7 +528,9 @@ describe('ComparisonCalculator', () => {
     expect(within(graphSection).getByText('World market index')).toBeInTheDocument();
 
     // Bar colors
+    // eslint-disable-next-line testing-library/no-node-access
     const firstBar = within(graphSection).getByText('Your III pillar').closest('.bar');
+    // eslint-disable-next-line testing-library/no-node-access
     const secondBar = within(graphSection).getByText('World market index').closest('.bar');
     expect(firstBar).toHaveStyle('background-color: rgb(81, 194, 108)');
     expect(secondBar).toHaveStyle('background-color: rgb(0, 129, 238)');
@@ -531,7 +557,9 @@ describe('ComparisonCalculator', () => {
     const graphSection = screen.getByTestId('graph-section');
 
     // Bar heights
+    // eslint-disable-next-line testing-library/no-node-access
     const firstBarGraph = within(graphSection).getByText('9.0%').closest('.bar-graph');
+    // eslint-disable-next-line testing-library/no-node-access
     const secondBarGraph = within(graphSection).getByText('9.5%').closest('.bar-graph');
     expect(firstBarGraph).toHaveStyle('height: 198.75776397515529px');
     expect(secondBarGraph).toHaveStyle('height: 200px');
@@ -545,7 +573,9 @@ describe('ComparisonCalculator', () => {
     expect(within(graphSection).getByText('World market index')).toBeInTheDocument();
 
     // Bar colors
+    // eslint-disable-next-line testing-library/no-node-access
     const firstBar = within(graphSection).getByText('Your III pillar').closest('.bar');
+    // eslint-disable-next-line testing-library/no-node-access
     const secondBar = within(graphSection).getByText('World market index').closest('.bar');
     expect(firstBar).toHaveStyle('background-color: rgb(81, 194, 108)');
     expect(secondBar).toHaveStyle('background-color: rgb(0, 129, 238)');
