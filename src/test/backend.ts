@@ -1,6 +1,7 @@
 import { DefaultRequestMultipartBody, rest } from 'msw';
 import { SetupServerApi } from 'msw/node';
 import queryString from 'qs';
+import moment from 'moment/moment';
 import { CapitalType, FundBalance, FundStatus } from '../components/common/apiModels';
 import { anAuthenticationManager } from '../components/common/authenticationManagerFixture';
 import { ReturnsResponse } from '../components/account/ReturnComparison/api';
@@ -433,6 +434,20 @@ export function fundsBackend(server: SetupServerApi): void {
             nav: 0.59311,
             volume: 9414001.84915,
             peopleCount: 1621,
+            shortName: 'TUK00',
+          },
+          {
+            fundManager: { name: 'Young' },
+            isin: 'EE1000000000',
+            name: 'Young Fund',
+            managementFeeRate: 0.0027,
+            pillar: 2,
+            ongoingChargesFigure: 0.0039,
+            status: 'ACTIVE',
+            nav: 0.59311,
+            volume: 9414001.84915,
+            peopleCount: 1621,
+            inceptionDate: moment().subtract(2, 'years').format(),
             shortName: 'TUK00',
           },
         ]),

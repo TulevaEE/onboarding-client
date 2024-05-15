@@ -257,6 +257,7 @@ const ComparisonCalculator: React.FC = () => {
                         }).catch(() => {});
                         setSelectedPillar(Key.THIRD_PILLAR);
                       }}
+                      data-testid="pillar3Button"
                     >
                       <FormattedMessage id="comparisonCalculator.yourIIIpillar" />
                     </button>
@@ -354,7 +355,10 @@ const ComparisonCalculator: React.FC = () => {
                             <div className="col-12 col-lg-7 order-2 mx-n3 mt-4 mx-lg-0 mt-lg-0 px-3 order-lg-1 d-flex flex-column">
                               {getResultSection()}
                             </div>
-                            <div className="graph-section mx-n3 mx-lg-0 px-0 px-sm-3 col-12 col-lg-5 order-1 order-lg-2 d-flex flex-column">
+                            <div
+                              data-testid="graph-section"
+                              className="graph-section mx-n3 mx-lg-0 px-0 px-sm-3 col-12 col-lg-5 order-1 order-lg-2 d-flex flex-column"
+                            >
                               {getGraphSection()}
                             </div>
                           </div>
