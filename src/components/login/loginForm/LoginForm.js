@@ -25,11 +25,16 @@ export const LoginForm = ({
   exchangeExistingThirdPillarUnits,
 }) => {
   return (
-    <div className="bg-white shadow-sm rounded-lg p-4 p-sm-5 text-center">
+    <>
       {isMaintenanceWindow() ? (
-        <Maintenance />
+        <div className="text-center mb-4">
+          <Maintenance />
+        </div>
       ) : (
-        renderLoginForm(
+        ''
+      )}
+      <div className="bg-white shadow-sm rounded-lg p-4 p-sm-5 text-center">
+        {renderLoginForm(
           monthlyThirdPillarContribution,
           exchangeExistingThirdPillarUnits,
           onIdCodeSubmit,
@@ -39,16 +44,16 @@ export const LoginForm = ({
           phoneNumber,
           onPhoneNumberChange,
           onAuthenticateWithIdCard,
-        )
-      )}
-    </div>
+        )}
+      </div>
+    </>
   );
 };
 
 const isMaintenanceWindow = () => {
   const currentTime = new Date();
-  const maintenanceStart = new Date('October 20, 2022 20:00:00');
-  const maintenanceEnd = new Date('October 20, 2022 23:00:00');
+  const maintenanceStart = new Date('May 18, 2024 13:00:00');
+  const maintenanceEnd = new Date('May 18, 2024 16:30:00');
   return currentTime >= maintenanceStart && currentTime <= maintenanceEnd;
 };
 
