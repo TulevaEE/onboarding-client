@@ -221,7 +221,7 @@ const ComparisonCalculator: React.FC = () => {
       <p className="mt-5 mb-4 lead">
         <FormattedMessage id="returnComparison.title" />
       </p>
-      <div data-testid="comparisonCalculator" className="comparison-calculator">
+      <div className="comparison-calculator" role="region" aria-label="Comparison Calculator">
         <div className="card card-primary">
           {!loadingInitialData ? (
             <>
@@ -257,7 +257,6 @@ const ComparisonCalculator: React.FC = () => {
                         }).catch(() => {});
                         setSelectedPillar(Key.THIRD_PILLAR);
                       }}
-                      data-testid="pillar3Button"
                     >
                       <FormattedMessage id="comparisonCalculator.yourIIIpillar" />
                     </button>
@@ -280,7 +279,6 @@ const ComparisonCalculator: React.FC = () => {
                         setSelectedTimePeriod(newValue);
                       }}
                       id="timePeriodSelect"
-                      testId="timePeriodSelect"
                     />
                   </div>
                   <div className="col-12 col-md text-left">
@@ -300,7 +298,6 @@ const ComparisonCalculator: React.FC = () => {
                         setSelectedComparison(newValue);
                       }}
                       id="comparedToSelect"
-                      testId="comparedToSelect"
                     />
                   </div>
                 </div>
@@ -308,9 +305,7 @@ const ComparisonCalculator: React.FC = () => {
 
               <div className="middle-section d-flex flex-column justify-content-center align-items-center pb-2 pb-lg-0">
                 {loadingReturns ? (
-                  <div data-testid="comparisonCalculator-returnLoader">
-                    <Loader className="align-middle" />
-                  </div>
+                  <Loader className="align-middle" label="Loading comparison..." />
                 ) : (
                   <>
                     {incomparableResults ? (
@@ -356,7 +351,8 @@ const ComparisonCalculator: React.FC = () => {
                               {getResultSection()}
                             </div>
                             <div
-                              data-testid="graph-section"
+                              role="figure"
+                              aria-label="Comparison Calculator Figure"
                               className="graph-section mx-n3 mx-lg-0 px-0 px-sm-3 col-12 col-lg-5 order-1 order-lg-2 d-flex flex-column"
                             >
                               {getGraphSection()}
@@ -394,9 +390,7 @@ const ComparisonCalculator: React.FC = () => {
               </div>
             </>
           ) : (
-            <div className="p-4" data-testid="comparisonCalculator-loader">
-              <Loader className="align-middle" />
-            </div>
+            <Loader className="align-middle" label="Loading Comparison Calculator..." />
           )}
         </div>
       </div>
