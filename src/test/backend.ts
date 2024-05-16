@@ -409,6 +409,7 @@ export function fundsBackend(server: SetupServerApi): void {
             status: 'ACTIVE',
             peopleCount: 131988,
             shortName: 'SWK50',
+            inceptionDate: moment().subtract(25, 'years').format(),
           },
           {
             fundManager: { name: 'Tuleva' },

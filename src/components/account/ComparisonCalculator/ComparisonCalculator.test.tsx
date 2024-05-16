@@ -19,7 +19,6 @@ import {
   userConversionBackend,
 } from '../../../test/backend';
 import LoggedInApp from '../../LoggedInApp';
-import comparisonCalculator from './ComparisonCalculator';
 import { ReturnsResponse } from '../ReturnComparison/api';
 
 const server = setupServer();
@@ -480,6 +479,70 @@ describe('ComparisonCalculator', () => {
     expect(thirdBar).toHaveStyle('background-color: rgb(0, 129, 238)');
   });
 
+  test('II pillar content with neutral performance compared to a fund', async () => {
+    setReturnsData(returnsData2ndPillarAndFund);
+    await awaitForInitialData();
+    userEvent.selectOptions(comparedToSelect(), 'Swedbank Pension Fund K60');
+    await awaitForReturnsData();
+
+    // Content text
+    expect(
+      await screen.findByText(
+        /Your II pillar over the past 6 years has achieved a result close to/i,
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      await screen.findByText(/Swedbank Pension Fund K60/i, { selector: 'strong' }),
+    ).toBeInTheDocument();
+
+    expect(await screen.findByText(/performance./i)).toBeInTheDocument();
+
+    expect(await screen.findByText(/If you had earned/i)).toBeInTheDocument();
+    expect(
+      await screen.findByText(/the world market index/i, { selector: 'strong' }),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText(
+        /return, your pension assets would have grown instead of 11 000 € to 16 000 €/i,
+      ),
+    ).toBeInTheDocument();
+
+    const graphSection = screen.getByTestId('graph-section');
+
+    // First Bar
+    // eslint-disable-next-line testing-library/no-node-access
+    const firstBarGraph = within(graphSection).getByText('7.0%').closest('.bar-graph');
+    expect(firstBarGraph).toHaveStyle('height: 137.5px');
+    expect(within(graphSection).getByText('+11 000 €')).toBeInTheDocument();
+    expect(within(graphSection).getByText('Your II pillar')).toBeInTheDocument();
+    // eslint-disable-next-line testing-library/no-node-access
+    const firstBar = within(graphSection).getByText('Your II pillar').closest('.bar');
+    expect(firstBar).toHaveStyle('background-color: rgb(255, 72, 0)');
+
+    // Second Bar
+    // eslint-disable-next-line testing-library/no-node-access
+    const secondBarGraph = within(graphSection).getByText('7.0%').closest('.bar-graph');
+    expect(secondBarGraph).toHaveStyle('height: 137.5px');
+    expect(within(graphSection).getByText('+11 000 €')).toBeInTheDocument();
+    expect(within(graphSection).getByText('Your II pillar')).toBeInTheDocument();
+    const secondBar = within(graphSection)
+      .getByText('Your II pillar')
+      // eslint-disable-next-line testing-library/no-node-access
+      .closest('.bar');
+    expect(secondBar).toHaveStyle('background-color: rgb(255, 72, 0)');
+
+    // Third Bar
+    // eslint-disable-next-line testing-library/no-node-access
+    const thirdBarGraph = within(graphSection).getByText('9.0%').closest('.bar-graph');
+    expect(thirdBarGraph).toHaveStyle('height: 200px');
+    expect(within(graphSection).getByText('+16 000 €')).toBeInTheDocument();
+    expect(within(graphSection).getByText('World market index')).toBeInTheDocument();
+    // eslint-disable-next-line testing-library/no-node-access
+    const thirdBar = within(graphSection).getByText('World market index').closest('.bar');
+    expect(thirdBar).toHaveStyle('background-color: rgb(0, 129, 238)');
+  });
+
   test('no CTA button when user is already fully converted', async () => {
     userConversionBackend(server);
     await awaitForInitialData();
@@ -874,6 +937,36 @@ const returnsData2ndPillarCpi: ReturnsResponse = {
       paymentsSum: 14000.0,
       currency: 'EUR',
       type: 'INDEX',
+    },
+    {
+      key: 'UNION_STOCK_INDEX',
+      rate: 0.09,
+      amount: 16000.0,
+      paymentsSum: 14000.0,
+      currency: 'EUR',
+      type: 'INDEX',
+    },
+    {
+      key: 'SECOND_PILLAR',
+      rate: 0.07,
+      amount: 11000.0,
+      paymentsSum: 15000.0,
+      currency: 'EUR',
+      type: 'PERSONAL',
+    },
+  ],
+};
+
+const returnsData2ndPillarAndFund: ReturnsResponse = {
+  from: moment().subtract(6, 'years').format(),
+  returns: [
+    {
+      key: 'EE0123',
+      rate: 0.069,
+      amount: 10900.0,
+      paymentsSum: 14000.0,
+      currency: 'EUR',
+      type: 'FUND',
     },
     {
       key: 'UNION_STOCK_INDEX',
