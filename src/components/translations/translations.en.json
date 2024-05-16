@@ -628,7 +628,7 @@
   "comparisonCalculator.content.performance.index.alpha.wordPositive": " ",
   "comparisonCalculator.content.performance.index.alpha.negativeVerdict": "underperformance.",
   "comparisonCalculator.content.performance.index.alpha.positiveVerdict": "better performance.",
-  "comparisonCalculator.content.performance.index.alpha.explanation": "<b>Tuleva World Stock Pensionfund</b> follows the world market index, meaning it endeavors to achieve the most similar long-term performance.",
+  "comparisonCalculator.content.performance.index.alpha.explanation": "<b>Tuleva stock funds</b> follow the world market index, meaning they endeavor to achieve the most similar long-term performance.",
 
   "comparisonCalculator.content.performance.index.neutral.start": "Your {pillar} pillar during the past {years} years, when compared to <b>all world market index</b> has similar performance.",
   "comparisonCalculator.content.performance.index.neutral.explanation": "Stick with a low-cost index fund and keep investing, no matter the market's highs and lows.",

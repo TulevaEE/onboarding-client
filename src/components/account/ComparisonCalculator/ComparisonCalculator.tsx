@@ -737,12 +737,18 @@ const ComparisonCalculator: React.FC = () => {
           : 'comparisonCalculator.graphYourIIIPillar',
     };
 
-    const comparisonBarColor =
-      returns.pensionFund &&
-      returns.index &&
-      returns.pensionFund.rate + redColorThreshold < returns.index.rate
-        ? colorRed
-        : colorGreen;
+    let comparisonBarColor: string;
+
+    if (returns.pensionFund?.key === Key.CPI) {
+      comparisonBarColor = colorRed;
+    } else {
+      comparisonBarColor =
+        returns.pensionFund &&
+        returns.index &&
+        returns.pensionFund.rate + redColorThreshold < returns.index.rate
+          ? colorRed
+          : colorGreen;
+    }
 
     const comparisonFundIsin = returns.pensionFund ? returns.pensionFund.key : '';
 

@@ -73,12 +73,12 @@ function comparedToSelect() {
 
 async function checkForExplanationSubtext() {
   expect(
-    await screen.findByText(/Tuleva World Stock Pensionfund/i, { selector: 'strong' }),
+    await screen.findByText(/Tuleva stock funds/i, { selector: 'strong' }),
   ).toBeInTheDocument();
 
   expect(
     await screen.findByText(
-      /follows the world market index, meaning it endeavors to achieve the most similar long-term performance./i,
+      /follow the world market index, meaning they endeavor to achieve the most similar long-term performance./i,
     ),
   ).toBeInTheDocument();
 }
@@ -411,6 +411,68 @@ describe('ComparisonCalculator', () => {
     // eslint-disable-next-line testing-library/no-node-access
     const thirdBarGraph = within(graphSection).getByText('9.0%').closest('.bar-graph');
     expect(thirdBarGraph).toHaveStyle('height: 200px');
+    expect(within(graphSection).getByText('+16 000 €')).toBeInTheDocument();
+    expect(within(graphSection).getByText('World market index')).toBeInTheDocument();
+    // eslint-disable-next-line testing-library/no-node-access
+    const thirdBar = within(graphSection).getByText('World market index').closest('.bar');
+    expect(thirdBar).toHaveStyle('background-color: rgb(0, 129, 238)');
+  });
+
+  test('II pillar content CPI over performing index and bar being red', async () => {
+    setReturnsData(returnsData2ndPillarCpi);
+    await awaitForInitialData();
+    userEvent.selectOptions(comparedToSelect(), 'Estonia inflation rate');
+    await awaitForReturnsData();
+
+    // Content text
+    expect(
+      await screen.findByText(/Your II pillar during the past 6 years, when compared to/i),
+    ).toBeInTheDocument();
+
+    expect(
+      await screen.findByText(/Estonian inflation/i, { selector: 'strong' }),
+    ).toBeInTheDocument();
+
+    expect(await screen.findByText(/performance./i)).toBeInTheDocument();
+
+    expect(await screen.findByText(/If you had earned/i)).toBeInTheDocument();
+    expect(
+      await screen.findByText(/the world market index/i, { selector: 'strong' }),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText(
+        /return, your pension assets would have grown instead of 11 000 € to 16 000 €/i,
+      ),
+    ).toBeInTheDocument();
+
+    const graphSection = screen.getByTestId('graph-section');
+
+    // First Bar
+    // eslint-disable-next-line testing-library/no-node-access
+    const firstBarGraph = within(graphSection).getByText('7.0%').closest('.bar-graph');
+    expect(firstBarGraph).toHaveStyle('height: 115.78947368421053px');
+    expect(within(graphSection).getByText('+11 000 €')).toBeInTheDocument();
+    expect(within(graphSection).getByText('Your II pillar')).toBeInTheDocument();
+    // eslint-disable-next-line testing-library/no-node-access
+    const firstBar = within(graphSection).getByText('Your II pillar').closest('.bar');
+    expect(firstBar).toHaveStyle('background-color: rgb(255, 72, 0)');
+
+    // Second Bar
+    // eslint-disable-next-line testing-library/no-node-access
+    const secondBarGraph = within(graphSection).getByText('10.0%').closest('.bar-graph');
+    expect(secondBarGraph).toHaveStyle('height: 200px');
+    expect(within(graphSection).getByText('+19 000 €')).toBeInTheDocument();
+    expect(within(graphSection).getByText('Estonia inflation rate')).toBeInTheDocument();
+    const secondBar = within(graphSection)
+      .getByText('Estonia inflation rate')
+      // eslint-disable-next-line testing-library/no-node-access
+      .closest('.bar');
+    expect(secondBar).toHaveStyle('background-color: rgb(255, 72, 0)');
+
+    // Third Bar
+    // eslint-disable-next-line testing-library/no-node-access
+    const thirdBarGraph = within(graphSection).getByText('9.0%').closest('.bar-graph');
+    expect(thirdBarGraph).toHaveStyle('height: 168.42105263157893px');
     expect(within(graphSection).getByText('+16 000 €')).toBeInTheDocument();
     expect(within(graphSection).getByText('World market index')).toBeInTheDocument();
     // eslint-disable-next-line testing-library/no-node-access
@@ -779,6 +841,36 @@ const returnsData2ndPillarAverage: ReturnsResponse = {
       key: 'EPI',
       rate: 0.069,
       amount: 10900.0,
+      paymentsSum: 14000.0,
+      currency: 'EUR',
+      type: 'INDEX',
+    },
+    {
+      key: 'UNION_STOCK_INDEX',
+      rate: 0.09,
+      amount: 16000.0,
+      paymentsSum: 14000.0,
+      currency: 'EUR',
+      type: 'INDEX',
+    },
+    {
+      key: 'SECOND_PILLAR',
+      rate: 0.07,
+      amount: 11000.0,
+      paymentsSum: 15000.0,
+      currency: 'EUR',
+      type: 'PERSONAL',
+    },
+  ],
+};
+
+const returnsData2ndPillarCpi: ReturnsResponse = {
+  from: moment().subtract(6, 'years').format(),
+  returns: [
+    {
+      key: 'CPI',
+      rate: 0.1,
+      amount: 19000.0,
       paymentsSum: 14000.0,
       currency: 'EUR',
       type: 'INDEX',

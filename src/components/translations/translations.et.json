@@ -628,7 +628,7 @@
   "comparisonCalculator.content.performance.index.alpha.wordPositive": "tootlust",
   "comparisonCalculator.content.performance.index.alpha.negativeVerdict": "alla jäänud.",
   "comparisonCalculator.content.performance.index.alpha.positiveVerdict": "edestanud.",
-  "comparisonCalculator.content.performance.index.alpha.explanation": "<b>Tuleva Maailma Aktsiate Pensionifond</b> järgib maailmaturu indeksit, st püüab saavutada sellega võimalikult sarnast pikaajalist tootlust.",
+  "comparisonCalculator.content.performance.index.alpha.explanation": "<b>Tuleva aktsiafondid</b> järgivad maailmaturu indeksit, st püüavad saavutada sellega võimalikult sarnast pikaajalist tootlust.",
 
   "comparisonCalculator.content.performance.index.neutral.start": "Sinu {pillar} sammas on viimase {years} aastaga teinud <b>maailmaturu indeksi</b> tootlusele lähedase tulemuse.",
   "comparisonCalculator.content.performance.index.neutral.explanation": "Ole järjekindel ning kogu madala tasuga indeksfondis läbi aktsiaturu tõusude ja languste.",
