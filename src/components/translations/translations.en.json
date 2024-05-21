@@ -61,6 +61,7 @@
   "select": "Select",
 
   "accountSummary.heading": "Your pension summary",
+  "accountSummary.transactions": "Transactions",
   "accountSummary.columns.pillar.title": "Pillar",
   "accountSummary.columns.pillar.footer": "Total",
   "accountSummary.columns.fees": "Annual fees",
@@ -93,7 +94,7 @@
   "memberCapital.source.WORK_COMPENSATION": "Work compensation",
   "memberCapital.source.UNVESTED_WORK_COMPENSATION": "Unvested work compensation",
   "memberCapital.source.profit": "Investment profit",
-  "memberCapital.seeMore": "See more",
+  "memberCapital.transactions": "Transactions",
 
   "capitalEvents.columns.date.title": "Date",
   "capitalEvents.columns.source.title": "Source",

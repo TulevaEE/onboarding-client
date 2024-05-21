@@ -59,6 +59,7 @@
   "select": "Vali",
 
   "accountSummary.heading": "Sinu pensionivara koondseis",
+  "accountSummary.transactions": "Tehingud",
   "accountSummary.columns.pillar.title": "Pensionivara",
   "accountSummary.columns.pillar.footer": "Kokku",
   "accountSummary.columns.fees": "Tasud aastas",
@@ -91,7 +92,7 @@
   "memberCapital.source.WORK_COMPENSATION": "Tööpanus",
   "memberCapital.source.UNVESTED_WORK_COMPENSATION": "Broneeritud tööpanus",
   "memberCapital.source.profit": "Teenitud investeerimiskasum",
-  "memberCapital.seeMore": "Vaatan lähemalt",
+  "memberCapital.transactions": "Tehingud",
 
   "capitalEvents.columns.date.title": "Kuupäev",
   "capitalEvents.columns.source.title": "Allikas",
