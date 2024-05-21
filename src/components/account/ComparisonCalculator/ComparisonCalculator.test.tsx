@@ -55,16 +55,21 @@ function component() {
   return screen.getByRole('region', { name: 'Comparison Calculator' });
 }
 
+function queryComponent() {
+  return screen.queryByRole('region', { name: 'Comparison Calculator' });
+}
+
 async function awaitForInitialData() {
-  await waitForElementToBeRemoved(() =>
-    screen.queryByRole('progressbar', { name: /Loading Comparison Calculator.../i }),
-  );
+  const loader = screen.queryByRole('progressbar', { name: /Loading Comparison Calculator.../i });
+  if (loader) {
+    await waitForElementToBeRemoved(loader);
+  }
 }
 
 async function awaitForReturnsData() {
-  const loaderElem = screen.queryByRole('progressbar', { name: /Loading comparison.../i });
-  if (loaderElem) {
-    await waitForElementToBeRemoved(loaderElem);
+  const loader = screen.queryByRole('progressbar', { name: /Loading comparison.../i });
+  if (loader) {
+    await waitForElementToBeRemoved(loader);
   }
 }
 
@@ -128,7 +133,7 @@ describe('ComparisonCalculator', () => {
     expect(thirdPillarButton).toHaveClass('btn-light');
   });
 
-  test('renders no pillar selection when user has only second pillar', async () => {
+  test('does not render pillar selection when user has only second pillar', async () => {
     userBackend(server, { thirdPillarActive: true, secondPillarActive: false });
     await awaitForInitialData();
 
@@ -143,7 +148,7 @@ describe('ComparisonCalculator', () => {
     expect(thirdPillarButton).not.toBeInTheDocument();
   });
 
-  test('renders no pillar selection when user has only second pillar', async () => {
+  test('does not render pillar selection when user has only second pillar', async () => {
     userBackend(server, { thirdPillarActive: false, secondPillarActive: true });
     await awaitForInitialData();
 
@@ -156,6 +161,12 @@ describe('ComparisonCalculator', () => {
 
     expect(secondPillarButton).not.toBeInTheDocument();
     expect(thirdPillarButton).not.toBeInTheDocument();
+  });
+
+  test('does not render component when user does not have active II or III pillar', async () => {
+    userBackend(server, { thirdPillarActive: false, secondPillarActive: false });
+    await awaitForInitialData();
+    expect(queryComponent()).not.toBeInTheDocument();
   });
 
   test('renders 2nd pillar time period select', async () => {

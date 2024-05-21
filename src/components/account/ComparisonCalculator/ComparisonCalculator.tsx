@@ -118,6 +118,7 @@ const ComparisonCalculator: React.FC = () => {
   const [returns, setReturns] = useState<ReturnComparison>(initialReturns);
 
   const [showPillarSelection, setShowPillarSelection] = useState<boolean>(true);
+  const [showComponent, setShowComponent] = useState<boolean>(true);
   const hasSecondPillar = useSelector((state: RootState) => state.login?.user?.secondPillarActive);
   const hasThirdPillar = useSelector((state: RootState) => state.login?.user?.thirdPillarActive);
   useEffect(() => {
@@ -125,6 +126,9 @@ const ComparisonCalculator: React.FC = () => {
       setShowPillarSelection(hasSecondPillar && hasThirdPillar);
       if (!hasSecondPillar) {
         setSelectedPillar(Key.THIRD_PILLAR);
+        if (!hasThirdPillar) {
+          setShowComponent(false);
+        }
       }
     }
   }, [hasSecondPillar, hasThirdPillar]);
@@ -228,7 +232,9 @@ const ComparisonCalculator: React.FC = () => {
       setIncomparableResults(isIncomparable);
     }
   }, [returns.from, selectedTimePeriod, selectedComparison]);
-
+  if (!showComponent) {
+    return <div />;
+  }
   return (
     <>
       <p className="mt-5 mb-4 lead">
