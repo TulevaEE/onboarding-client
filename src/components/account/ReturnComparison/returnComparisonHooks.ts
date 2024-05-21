@@ -1,6 +1,7 @@
 import { useQuery, UseQueryResult } from 'react-query';
 import { getReturnComparison, Key, ReturnComparison } from './api';
-import { START_DATE } from './ReturnComparison';
+
+const START_DATE = '2003-01-07';
 
 export function useDefaultReturns(): UseQueryResult<ReturnComparison> {
   return useReturns(START_DATE, {
