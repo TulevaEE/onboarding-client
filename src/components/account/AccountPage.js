@@ -211,7 +211,23 @@ export const shouldRedirectToAml = (state) =>
   );
 
 const mapStateToProps = (state) => ({
-  secondPillarSourceFunds: state.exchange.sourceFunds,
+  secondPillarSourceFunds: [
+    ...(state.exchange.sourceFunds ? state.exchange.sourceFunds : []),
+    ...((state.login.user || {}).secondPillarPikNumber
+      ? [
+          {
+            isin: state.login.user.secondPillarPikNumber,
+            name: `PIK: ${state.login.user.secondPillarPikNumber}`,
+            activeFund: true,
+            pillar: 2,
+            ongoingChargesFigure: 0,
+            price: 0,
+            unavailablePrice: 0,
+            currency: 'EUR',
+          },
+        ]
+      : []),
+  ],
   thirdPillarSourceFunds: state.thirdPillar.sourceFunds,
   conversion: state.login.userConversion,
   loadingCurrentBalance: state.exchange.loadingSourceFunds,

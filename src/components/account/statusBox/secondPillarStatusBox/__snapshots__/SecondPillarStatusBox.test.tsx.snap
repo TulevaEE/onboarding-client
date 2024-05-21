@@ -329,29 +329,6 @@ exports[`SecondPillarStatusBox renders no 2nd pillar flow when no second pillar 
 />
 `;
 
-exports[`SecondPillarStatusBox renders the PIK flow when fund PIK number present 1`] = `
-<StatusBoxRow
-  lines={
-    Array [
-      <Memo(MemoizedFormattedMessage)
-        id="account.status.choice.pillar.second.pik"
-        values={
-          Object {
-            "secondPillarPikNumber": "EE1234567",
-          }
-        }
-      />,
-    ]
-  }
-  name={
-    <Memo(MemoizedFormattedMessage)
-      id="account.status.choice.pillar.second"
-    />
-  }
-  showAction={true}
-/>
-`;
-
 exports[`SecondPillarStatusBox renders the payment rate flow 1`] = `
 <StatusBoxRow
   lines={
