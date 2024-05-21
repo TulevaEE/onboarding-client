@@ -6,7 +6,7 @@ import moment, { Moment } from 'moment/moment';
 import { formatAmountForCurrency } from '../../common/utils';
 import { Fund, UserConversion } from '../../common/apiModels';
 import Select from './select';
-import { getReturnComparison, Key, ReturnComparison } from '../ReturnComparison/api';
+import { getReturnComparison, Key, ReturnComparison } from './api';
 import Loader from '../../common/loader';
 import { Option, OptionGroup } from './select/Select';
 import { formatDateYear } from '../../common/dateFormatter';

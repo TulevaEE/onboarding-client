@@ -5,8 +5,8 @@ import moment from 'moment';
 import { Link } from 'react-router-dom';
 import Euro from '../../common/Euro';
 import { useMe } from '../../common/apiHooks';
-import { useDefaultReturns } from '../ReturnComparison/returnComparisonHooks';
 import PensionGraph from './PensionGraph';
+import { useDefaultReturns } from '../ComparisonCalculator/returnComparisonHooks';
 
 const SecondPillarUpsellCard: React.FC = () => {
   const intl = useIntl();

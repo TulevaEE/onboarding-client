@@ -4,7 +4,7 @@ import queryString from 'qs';
 import moment from 'moment/moment';
 import { CapitalType, FundBalance, FundStatus } from '../components/common/apiModels';
 import { anAuthenticationManager } from '../components/common/authenticationManagerFixture';
-import { ReturnsResponse } from '../components/account/ReturnComparison/api';
+import { ReturnsResponse } from '../components/account/ComparisonCalculator/api';
 
 export function cancellationBackend(server: SetupServerApi): {
   cancellationCreated: boolean;

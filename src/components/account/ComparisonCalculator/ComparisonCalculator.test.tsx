@@ -19,7 +19,7 @@ import {
   userConversionBackend,
 } from '../../../test/backend';
 import LoggedInApp from '../../LoggedInApp';
-import { ReturnsResponse } from '../ReturnComparison/api';
+import { ReturnsResponse } from './api';
 
 const server = setupServer();
 let history: History;
