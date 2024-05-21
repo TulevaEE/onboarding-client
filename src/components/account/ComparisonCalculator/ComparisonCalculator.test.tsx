@@ -35,9 +35,10 @@ beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
+const userBackendOverrides = {};
 beforeEach(() => {
   initializeConfiguration();
-  userBackend(server);
+  // userBackend(server, userBackendOverrides);
   amlChecksBackend(server);
   pensionAccountStatementBackend(server);
   fundsBackend(server);
@@ -113,6 +114,50 @@ describe('ComparisonCalculator', () => {
     await awaitForInitialData();
   });
 
+  test('renders pillar selection', async () => {
+    userBackend(server);
+    await awaitForInitialData();
+
+    const secondPillarButton = within(component()).getByRole('button', { name: 'Your II pillar' });
+    const thirdPillarButton = within(component()).getByRole('button', { name: 'Your III pillar' });
+
+    expect(secondPillarButton).toBeInTheDocument();
+    expect(thirdPillarButton).toBeInTheDocument();
+
+    expect(secondPillarButton).toHaveClass('btn-primary');
+    expect(thirdPillarButton).toHaveClass('btn-light');
+  });
+
+  test('renders no pillar selection when user has only second pillar', async () => {
+    userBackend(server, { thirdPillarActive: true, secondPillarActive: false });
+    await awaitForInitialData();
+
+    const secondPillarButton = within(component()).queryByRole('button', {
+      name: 'Your II pillar',
+    });
+    const thirdPillarButton = within(component()).queryByRole('button', {
+      name: 'Your III pillar',
+    });
+
+    expect(secondPillarButton).not.toBeInTheDocument();
+    expect(thirdPillarButton).not.toBeInTheDocument();
+  });
+
+  test('renders no pillar selection when user has only second pillar', async () => {
+    userBackend(server, { thirdPillarActive: false, secondPillarActive: true });
+    await awaitForInitialData();
+
+    const secondPillarButton = within(component()).queryByRole('button', {
+      name: 'Your II pillar',
+    });
+    const thirdPillarButton = within(component()).queryByRole('button', {
+      name: 'Your III pillar',
+    });
+
+    expect(secondPillarButton).not.toBeInTheDocument();
+    expect(thirdPillarButton).not.toBeInTheDocument();
+  });
+
   test('renders 2nd pillar time period select', async () => {
     await awaitForInitialData();
 
@@ -166,6 +211,7 @@ describe('ComparisonCalculator', () => {
   });
 
   test('renders 3rd pillar compare to select', async () => {
+    userBackend(server);
     await awaitForInitialData();
     userEvent.click(pillar3button());
     await awaitForReturnsData();
@@ -179,6 +225,7 @@ describe('ComparisonCalculator', () => {
   });
 
   test('displays too short time period alert', async () => {
+    userBackend(server);
     const comp = component();
     expect(comp).toBeInTheDocument();
 
@@ -210,6 +257,7 @@ describe('ComparisonCalculator', () => {
   });
 
   test('II pillar content with negative performance compared to the index', async () => {
+    userBackend(server);
     setReturnsData(returnsData2ndPillarIndexNegative);
     await awaitForInitialData();
 
@@ -259,6 +307,7 @@ describe('ComparisonCalculator', () => {
   });
 
   test('II pillar content with positive performance compared to the index', async () => {
+    userBackend(server);
     setReturnsData(returnsData2ndPillarIndexPositive);
     await awaitForInitialData();
 
@@ -307,6 +356,7 @@ describe('ComparisonCalculator', () => {
   });
 
   test('II pillar content with neutral performance compared to the index', async () => {
+    userBackend(server);
     setReturnsData(returnsData2ndPillarIndexNeutral);
     await awaitForInitialData();
 
@@ -355,6 +405,7 @@ describe('ComparisonCalculator', () => {
   });
 
   test('II pillar content with neutral performance compared to 2nd pillar average with 3 bars', async () => {
+    userBackend(server);
     setReturnsData(returnsData2ndPillarAverage);
     await awaitForInitialData();
     userEvent.selectOptions(comparedToSelect(), 'Estonian II pillar funds average performance');
@@ -419,6 +470,7 @@ describe('ComparisonCalculator', () => {
   });
 
   test('II pillar content CPI over performing index and bar being red', async () => {
+    userBackend(server);
     setReturnsData(returnsData2ndPillarCpi);
     await awaitForInitialData();
     userEvent.selectOptions(comparedToSelect(), 'Estonia inflation rate');
@@ -479,6 +531,7 @@ describe('ComparisonCalculator', () => {
   });
 
   test('II pillar content with neutral performance compared to a fund', async () => {
+    userBackend(server);
     setReturnsData(returnsData2ndPillarAndFund);
     await awaitForInitialData();
     userEvent.selectOptions(comparedToSelect(), 'Swedbank Pension Fund K60');
@@ -541,6 +594,7 @@ describe('ComparisonCalculator', () => {
   });
 
   test('no CTA button when user is already fully converted', async () => {
+    userBackend(server);
     userConversionBackend(server);
     await awaitForInitialData();
 
@@ -548,6 +602,7 @@ describe('ComparisonCalculator', () => {
   });
 
   test('CTA button when user is not fully converted', async () => {
+    userBackend(server);
     userConversionBackend(
       server,
       { transfersComplete: false, selectionComplete: false },
@@ -609,6 +664,7 @@ describe('ComparisonCalculator', () => {
   });
 
   test('III pillar explanation text with positive performance compared to the index', async () => {
+    userBackend(server);
     setReturnsData(returnsData3rdPillarIndexPositive);
     await awaitForInitialData();
 

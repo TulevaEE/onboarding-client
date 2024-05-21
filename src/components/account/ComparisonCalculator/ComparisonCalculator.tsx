@@ -63,6 +63,8 @@ interface RootState {
     user?: {
       secondPillarOpenDate: string;
       thirdPillarInitDate: string;
+      secondPillarActive: boolean;
+      thirdPillarActive: boolean;
     };
     userConversion: UserConversion;
   };
@@ -96,7 +98,6 @@ const formatMessageWithTags = ({ id, values }: FormatTagsMessageDescriptor) => (
 
 const ComparisonCalculator: React.FC = () => {
   const { formatMessage } = useIntl();
-
   const [selectedPillar, setSelectedPillar] = useState<Key>(Key.SECOND_PILLAR);
   const [selectedTimePeriod, setSelectedTimePeriod] = useState<string>('');
   const [selectedComparison, setSelectedComparison] = useState<string>(Key.UNION_STOCK_INDEX);
@@ -115,6 +116,18 @@ const ComparisonCalculator: React.FC = () => {
     from: '',
   };
   const [returns, setReturns] = useState<ReturnComparison>(initialReturns);
+
+  const [showPillarSelection, setShowPillarSelection] = useState<boolean>(true);
+  const hasSecondPillar = useSelector((state: RootState) => state.login?.user?.secondPillarActive);
+  const hasThirdPillar = useSelector((state: RootState) => state.login?.user?.thirdPillarActive);
+  useEffect(() => {
+    if (hasSecondPillar !== undefined && hasThirdPillar !== undefined) {
+      setShowPillarSelection(hasSecondPillar && hasThirdPillar);
+      if (!hasSecondPillar) {
+        setSelectedPillar(Key.THIRD_PILLAR);
+      }
+    }
+  }, [hasSecondPillar, hasThirdPillar]);
 
   const secondPillarFunds = useSelector((state: RootState) => state.exchange.targetFunds || []);
   const thirdPillarFunds = useSelector((state: RootState) => state.thirdPillar.funds || []);
@@ -226,42 +239,44 @@ const ComparisonCalculator: React.FC = () => {
           {!loadingInitialData ? (
             <>
               <div className="header-section container p-4">
-                <div className="pillar-selection row justify-content-center">
-                  <div className="btn-group">
-                    <button
-                      type="button"
-                      className={`btn ${
-                        selectedPillar === Key.SECOND_PILLAR ? 'btn-primary' : 'btn-light'
-                      }`}
-                      onClick={() => {
-                        createTrackedEvent('CLICK', {
-                          path: getCurrentPath(),
-                          target: 'comparisonCalculator.setSelectedPillar',
-                          value: 2,
-                        }).catch(() => {});
-                        setSelectedPillar(Key.SECOND_PILLAR);
-                      }}
-                    >
-                      <FormattedMessage id="comparisonCalculator.yourIIpillar" />
-                    </button>
-                    <button
-                      type="button"
-                      className={`btn ${
-                        selectedPillar === Key.THIRD_PILLAR ? 'btn-primary' : 'btn-light'
-                      }`}
-                      onClick={() => {
-                        createTrackedEvent('CLICK', {
-                          path: getCurrentPath(),
-                          target: 'comparisonCalculator.setSelectedPillar',
-                          value: 3,
-                        }).catch(() => {});
-                        setSelectedPillar(Key.THIRD_PILLAR);
-                      }}
-                    >
-                      <FormattedMessage id="comparisonCalculator.yourIIIpillar" />
-                    </button>
+                {showPillarSelection && (
+                  <div className="pillar-selection row justify-content-center">
+                    <div className="btn-group">
+                      <button
+                        type="button"
+                        className={`btn ${
+                          selectedPillar === Key.SECOND_PILLAR ? 'btn-primary' : 'btn-light'
+                        }`}
+                        onClick={() => {
+                          createTrackedEvent('CLICK', {
+                            path: getCurrentPath(),
+                            target: 'comparisonCalculator.setSelectedPillar',
+                            value: 2,
+                          }).catch(() => {});
+                          setSelectedPillar(Key.SECOND_PILLAR);
+                        }}
+                      >
+                        <FormattedMessage id="comparisonCalculator.yourIIpillar" />
+                      </button>
+                      <button
+                        type="button"
+                        className={`btn ${
+                          selectedPillar === Key.THIRD_PILLAR ? 'btn-primary' : 'btn-light'
+                        }`}
+                        onClick={() => {
+                          createTrackedEvent('CLICK', {
+                            path: getCurrentPath(),
+                            target: 'comparisonCalculator.setSelectedPillar',
+                            value: 3,
+                          }).catch(() => {});
+                          setSelectedPillar(Key.THIRD_PILLAR);
+                        }}
+                      >
+                        <FormattedMessage id="comparisonCalculator.yourIIIpillar" />
+                      </button>
+                    </div>
                   </div>
-                </div>
+                )}
                 <div className="input-selection row justify-content-center">
                   <div className="col-12 col-md text-left">
                     <label htmlFor="timePeriodSelect" className="form-label small text-bold mb-1">
