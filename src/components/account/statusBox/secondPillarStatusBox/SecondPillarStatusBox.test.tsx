@@ -25,7 +25,6 @@ describe('SecondPillarStatusBox', () => {
     conversion: completeSecondPillarConversion.secondPillar,
     sourceFunds: [activeSecondPillar],
     targetFunds: [tulevaSecondPillarFund],
-    secondPillarPikNumber: null,
     secondPillarActive: true,
     secondPillarPaymentRate: 6,
   };
@@ -99,11 +98,6 @@ describe('SecondPillarStatusBox', () => {
         weightedAverageFee: 0.01,
       },
     });
-    expect(component).toMatchSnapshot();
-  });
-
-  it('renders the PIK flow when fund PIK number present', () => {
-    component.setProps({ secondPillarPikNumber: 'EE1234567', sourceFunds: [] });
     expect(component).toMatchSnapshot();
   });
 });

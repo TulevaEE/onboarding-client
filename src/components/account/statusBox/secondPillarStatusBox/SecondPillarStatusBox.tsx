@@ -27,7 +27,6 @@ export interface Props {
   conversion: Conversion;
   sourceFunds: SourceFund[];
   targetFunds: Fund[];
-  secondPillarPikNumber: string | null;
   secondPillarActive: boolean;
   secondPillarPaymentRate: number;
 }
@@ -37,7 +36,6 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
   conversion,
   sourceFunds,
   targetFunds,
-  secondPillarPikNumber,
   secondPillarActive,
   secondPillarPaymentRate,
 }: Props) => {
@@ -67,21 +65,6 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
           <FormattedMessage id="account.status.choice.pillar.second.withdraw.cancel" />
         </Link>
       </StatusBoxRow>
-    );
-  }
-
-  if (secondPillarPikNumber) {
-    return (
-      <StatusBoxRow
-        showAction={!loading}
-        name={<FormattedMessage id="account.status.choice.pillar.second" />}
-        lines={[
-          <FormattedMessage
-            id="account.status.choice.pillar.second.pik"
-            values={{ secondPillarPikNumber }}
-          />,
-        ]}
-      />
     );
   }
 
@@ -316,7 +299,6 @@ const mapStateToProps = (state: State) => ({
   conversion: state.login.userConversion.secondPillar,
   sourceFunds: state.exchange.sourceFunds || [],
   targetFunds: state.exchange.targetFunds || [],
-  secondPillarPikNumber: (state.login.user || {}).secondPillarPikNumber,
   secondPillarActive: (state.login.user || {}).secondPillarActive,
   secondPillarPaymentRate:
     (state.login.user || {}).secondPillarPaymentRates.pending ||
