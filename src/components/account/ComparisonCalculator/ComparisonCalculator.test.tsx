@@ -61,9 +61,10 @@ async function awaitForInitialData() {
 }
 
 async function awaitForReturnsData() {
-  await waitForElementToBeRemoved(() =>
-    screen.queryByRole('progressbar', { name: /Loading comparison.../i }),
-  );
+  const loaderElem = screen.queryByRole('progressbar', { name: /Loading comparison.../i });
+  if (loaderElem) {
+    await waitForElementToBeRemoved(loaderElem);
+  }
 }
 
 function timePeriodSelect() {
