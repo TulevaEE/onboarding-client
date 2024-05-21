@@ -746,7 +746,7 @@ describe('API calls', () => {
       const capital = await getCapitalRowsWithToken();
 
       expect(capital).toEqual(mockCapital);
-      expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith('/v2/me/capital', undefined);
+      expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith('/v1/me/capital', undefined);
     });
   });
 

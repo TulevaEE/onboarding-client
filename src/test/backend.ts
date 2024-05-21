@@ -496,21 +496,6 @@ export function userCapitalBackend(server: SetupServerApi): void {
   server.use(
     rest.get('http://localhost/v1/me/capital', (req, res, ctx) => {
       return res(
-        ctx.json({
-          membershipBonus: 1.23,
-          capitalPayment: 1000.0,
-          unvestedWorkCompensation: 0,
-          workCompensation: 0,
-          profit: -123.45,
-          total: 1.23 + 1000.0 - 123.45,
-          currency: 'EUR',
-        }),
-      );
-    }),
-  );
-  server.use(
-    rest.get('http://localhost/v2/me/capital', (req, res, ctx) => {
-      return res(
         ctx.json([
           {
             type: CapitalType.CAPITAL_PAYMENT,

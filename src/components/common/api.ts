@@ -237,7 +237,7 @@ export function getUserConversionWithToken(): Promise<UserConversion> {
 }
 
 export function getCapitalRowsWithToken(): Promise<CapitalRow[]> {
-  return getWithAuthentication(getEndpoint('/v2/me/capital'), undefined);
+  return getWithAuthentication(getEndpoint('/v1/me/capital'), undefined);
 }
 
 export function createAmlCheck(
