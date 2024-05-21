@@ -41,10 +41,9 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
   secondPillarActive,
   secondPillarPaymentRate,
 }: Props) => {
-  const activeFund = sourceFunds.find((fund) => fund.activeFund);
   const { data: mandateDeadlines } = useMandateDeadlines();
 
-  if (!secondPillarActive || !activeFund) {
+  if (!secondPillarActive) {
     return (
       <StatusBoxRow
         error
@@ -91,36 +90,38 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
   }
 
   const isFullyConverted = conversion.selectionComplete && conversion.transfersComplete;
-  if (!isFullyConverted) {
-    if (secondPillarPaymentRate < 4) {
-      return (
-        <StatusBoxRow
-          ok
-          showAction={!loading}
-          name={<FormattedMessage id="account.status.choice.pillar.second" />}
-          lines={[
+
+  if (secondPillarPaymentRate < 4) {
+    return (
+      <StatusBoxRow
+        ok
+        showAction={!loading}
+        name={<FormattedMessage id="account.status.choice.pillar.second" />}
+        lines={[
+          <FormattedMessage
+            id={`account.status.choice.lowFee${isFullyConverted ? '.index' : ''}.2.label`}
+            values={{
+              paymentRate: secondPillarPaymentRate,
+            }}
+          />,
+          <small className="text-muted">
             <FormattedMessage
-              id="account.status.choice.lowFee.2.label"
+              id="account.status.choice.pillar.second.paymentRate.comment"
               values={{
-                paymentRate: secondPillarPaymentRate,
+                b: (chunks: string) => <b>{chunks}</b>,
               }}
-            />,
-            <small className="text-muted">
-              <FormattedMessage
-                id="account.status.choice.pillar.second.paymentRate.comment"
-                values={{
-                  b: (chunks: string) => <b>{chunks}</b>,
-                }}
-              />
-            </small>,
-          ]}
-        >
-          <Link to="/2nd-pillar-payment-rate" className="btn btn-primary">
-            <FormattedMessage id="account.status.choice.paymentRate.increase" />
-          </Link>
-        </StatusBoxRow>
-      );
-    }
+            />
+          </small>,
+        ]}
+      >
+        <Link to="/2nd-pillar-payment-rate" className="btn btn-primary">
+          <FormattedMessage id="account.status.choice.paymentRate.increase" />
+        </Link>
+      </StatusBoxRow>
+    );
+  }
+
+  if (!isFullyConverted) {
     return (
       <StatusBoxRow
         ok
@@ -146,45 +147,8 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
           </small>,
         ]}
       >
-        {secondPillarPaymentRate < 6 && (
-          <Link to="/2nd-pillar-payment-rate" className="btn btn-primary">
-            <FormattedMessage id="account.status.choice.paymentRate.increase" />
-          </Link>
-        )}
-        {secondPillarPaymentRate === 6 && (
-          <Link to="/2nd-pillar-flow" className="btn btn-light">
-            <FormattedMessage id="account.status.choice.join.tuleva.2" />
-          </Link>
-        )}
-      </StatusBoxRow>
-    );
-  }
-
-  if (secondPillarPaymentRate < 4) {
-    return (
-      <StatusBoxRow
-        ok
-        showAction={!loading}
-        name={<FormattedMessage id="account.status.choice.pillar.second" />}
-        lines={[
-          <FormattedMessage
-            id="account.status.choice.lowFee.index.2.label"
-            values={{
-              paymentRate: secondPillarPaymentRate,
-            }}
-          />,
-          <small className="text-muted">
-            <FormattedMessage
-              id="account.status.choice.pillar.second.paymentRate.comment"
-              values={{
-                b: (chunks: string) => <b>{chunks}</b>,
-              }}
-            />
-          </small>,
-        ]}
-      >
-        <Link to="/2nd-pillar-payment-rate" className="btn btn-primary">
-          <FormattedMessage id="account.status.choice.paymentRate.increase" />
+        <Link to="/2nd-pillar-flow" className="btn btn-light">
+          <FormattedMessage id="account.status.choice.join.tuleva.2" />
         </Link>
       </StatusBoxRow>
     );
@@ -214,13 +178,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
           />
         </small>,
       ]}
-    >
-      {secondPillarPaymentRate < 6 && (
-        <Link to="/2nd-pillar-payment-rate" className="btn btn-primary">
-          <FormattedMessage id="account.status.choice.paymentRate.increase" />
-        </Link>
-      )}
-    </StatusBoxRow>
+    />
   );
 };
 

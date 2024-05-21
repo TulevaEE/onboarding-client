@@ -103,7 +103,7 @@ describe('SecondPillarStatusBox', () => {
   });
 
   it('renders the PIK flow when fund PIK number present', () => {
-    component.setProps({ secondPillarPikNumber: 'EE1234567' });
+    component.setProps({ secondPillarPikNumber: 'EE1234567', sourceFunds: [] });
     expect(component).toMatchSnapshot();
   });
 });
