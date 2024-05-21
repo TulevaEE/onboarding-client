@@ -15,7 +15,6 @@ import AccountSummary from './AccountSummary';
 import { ApplicationSection } from './ApplicationSection/ApplicationSection';
 import { isTuleva } from '../common/utils';
 import { AccountSummaryLoader } from './AccountSummary/AccountSummary';
-import { TransactionSection } from './TransactionSection/TransactionSection';
 import { getInitialCapital } from './actions';
 import SecondPillarUpsell from './SecondPillarUpsell/SecondPillarUpsell';
 import { getAuthentication } from '../common/authenticationManager';
@@ -79,9 +78,16 @@ export class AccountPage extends Component {
         {error && error.body ? <ErrorMessage errors={error.body} /> : ''}
 
         <div className="mt-5">
-          <p className="mb-4 lead">
-            <FormattedMessage id="accountSummary.heading" />
-          </p>
+          <div className="mb-4 d-flex flex-sm-row flex-column align-items-sm-end justify-content-between">
+            <h2 className="lead">
+              <FormattedMessage id="accountSummary.heading" />
+            </h2>
+            <div className="mb-2 ml-md-2 text-nowrap">
+              <Link className="text-nowrap" to="/2nd-pillar-transactions">
+                <FormattedMessage id="accountSummary.transactions" />
+              </Link>
+            </div>
+          </div>
           {secondPillarSourceFunds && thirdPillarSourceFunds && conversion ? (
             <AccountSummary
               secondPillarContributions={conversion.secondPillar.contribution.total}
@@ -100,8 +106,6 @@ export class AccountPage extends Component {
         <ComparisonCalculator />
 
         <ApplicationSection />
-
-        <TransactionSection limit={3} />
 
         {!loadingCurrentBalance && (
           <div className="mt-5">
@@ -153,7 +157,7 @@ export class AccountPage extends Component {
                 <FormattedMessage id="memberCapital.heading" />
               </p>
               <Link className="text-nowrap mb-4" to="/capital">
-                <FormattedMessage id="memberCapital.seeMore" />
+                <FormattedMessage id="memberCapital.transactions" />
               </Link>
             </div>
             {loadingCapital && <Loader className="align-middle" />}
