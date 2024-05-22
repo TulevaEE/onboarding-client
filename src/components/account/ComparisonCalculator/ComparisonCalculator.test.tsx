@@ -317,6 +317,38 @@ describe('ComparisonCalculator', () => {
     expect(within(graphSection()).getByText('9.0%')).toBeInTheDocument();
   });
 
+  test('Hide percentage when graph bar is too small', async () => {
+    userBackend(server);
+    setReturnsData(returnsData2ndPillarSmallPersonalReturn);
+    await awaitForInitialData();
+
+    expect(await screen.findByText(/has underperformance./i)).toBeInTheDocument();
+    await checkForExplanationSubtext();
+
+    const bars = within(graphSection()).getAllByRole('figure');
+    expect(bars).toHaveLength(2); // Ensure there are exactly two bars
+
+    const largeBarPercentage = within(bars[1]).getByText('9.0%');
+    expect(largeBarPercentage).toBeVisible();
+
+    const smallBarPercentage = within(bars[0]).queryByText('1.0%');
+    expect(smallBarPercentage).not.toBeInTheDocument();
+
+    expect(within(bars[0]).getByText('+1 000 €')).toBeInTheDocument();
+    expect(within(bars[1]).getByText('+16 000 €')).toBeInTheDocument();
+
+    expect(within(bars[0]).getByText('Your II pillar')).toBeInTheDocument();
+    expect(within(bars[1]).getByText('World market index')).toBeInTheDocument();
+
+    expect(bars[0]).toHaveStyle('background-color: rgb(255, 72, 0)');
+    expect(bars[1]).toHaveStyle('background-color: rgb(0, 129, 238)');
+
+    const smallBarGraph = within(bars[0]).getByRole('presentation');
+    expect(smallBarGraph).toHaveStyle('height: 12.5px');
+    const largeBarGraph = within(bars[1]).getByRole('presentation');
+    expect(largeBarGraph).toHaveStyle('height: 200px');
+  });
+
   test('II pillar content with positive performance compared to the index', async () => {
     userBackend(server);
     setReturnsData(returnsData2ndPillarIndexPositive);
@@ -1068,6 +1100,28 @@ const returnsData2ndPillarAndIncomparableFund: ReturnsResponse = {
       key: 'SECOND_PILLAR',
       rate: 0.07,
       amount: 11000.0,
+      paymentsSum: 15000.0,
+      currency: 'EUR',
+      type: 'PERSONAL',
+    },
+  ],
+};
+
+const returnsData2ndPillarSmallPersonalReturn: ReturnsResponse = {
+  from: '2018-06-06',
+  returns: [
+    {
+      key: 'UNION_STOCK_INDEX',
+      rate: 0.09,
+      amount: 16000.0,
+      paymentsSum: 14000.0,
+      currency: 'EUR',
+      type: 'INDEX',
+    },
+    {
+      key: 'SECOND_PILLAR',
+      rate: 0.01,
+      amount: 1000.0,
       paymentsSum: 15000.0,
       currency: 'EUR',
       type: 'PERSONAL',

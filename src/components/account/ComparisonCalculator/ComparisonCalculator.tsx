@@ -401,6 +401,7 @@ const ComparisonCalculator: React.FC = () => {
     const isNegativeValue = properties.height < 0;
     const height = Math.abs(properties.height);
     const barCornerRadius = 5;
+    const showPercentage = height > 30;
     const barStyle = {
       backgroundColor: properties.color,
       top: isNegativeValue ? height : undefined,
@@ -423,14 +424,21 @@ const ComparisonCalculator: React.FC = () => {
 
     // eslint-disable-next-line no-nested-ternary
     return (
-      <div className="bar bar-2 position-relative" style={barStyle}>
+      <div
+        className="bar bar-2 position-relative"
+        style={barStyle}
+        role="figure"
+        aria-label="Comparison Calculator Bar Figure"
+      >
         <div className="bar-amount" style={barAmountStyle}>
           {formatAmountForCurrency(properties.amount, 0, { isSigned: true })}
         </div>
-        <div className="bar-graph" style={{ height: `${height}px` }}>
-          <div className="bar-percentage">
-            <Percentage value={properties.percentage} fractionDigits={1} />
-          </div>
+        <div className="bar-graph" role="presentation" style={{ height: `${height}px` }}>
+          {showPercentage && (
+            <div className="bar-percentage">
+              <Percentage value={properties.percentage} fractionDigits={1} />
+            </div>
+          )}
         </div>
         <div className="bar-label position-absolute" style={barLabelStyle}>
           {properties.label.includes('.') ? (
