@@ -351,7 +351,7 @@ const ComparisonCalculator: React.FC = () => {
               </div>
             </>
           ) : (
-            <Loader className="align-middle" label="Loading Comparison Calculator..." />
+            <Loader className="align-middle my-4" label="Loading Comparison Calculator..." />
           )}
         </div>
       </div>
