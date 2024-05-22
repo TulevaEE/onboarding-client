@@ -78,7 +78,7 @@ export class AccountPage extends Component {
         {error && error.body ? <ErrorMessage errors={error.body} /> : ''}
 
         <div className="mt-5">
-          <div className="mb-4 d-flex flex-sm-row flex-column align-items-sm-end justify-content-between">
+          <div className="mb-4 d-flex flex-row align-items-sm-end justify-content-between">
             <h2 className="lead">
               <FormattedMessage id="accountSummary.heading" />
             </h2>
