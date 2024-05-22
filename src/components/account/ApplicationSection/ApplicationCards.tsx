@@ -19,6 +19,7 @@ import Percentage from '../../common/Percentage';
 import Euro from '../../common/Euro';
 import { Fees } from '../../common/Percentage/Fees';
 import { formatMonth } from '../../common/dateFormatter';
+import { isBeforeCancellationDeadline } from './ApplicationFunctions';
 
 export const ApplicationCard: React.FunctionComponent<{
   application: Application;
@@ -282,18 +283,8 @@ const BaseApplicationCard: React.FunctionComponent<{
   allowedActions: ApplicationAction[];
 }> = ({ application, titleKey, children, allowedActions }) => {
   const cancellationUrl = `/applications/${application.id}/cancellation`;
-  const isBeforeCancellationDeadline = moment().isSameOrBefore(
-    moment(
-      (
-        application.details as {
-          cancellationDeadline: string;
-        }
-      ).cancellationDeadline,
-    ),
-    'day',
-  );
   const canCancel =
-    allowedActions.includes(ApplicationAction.CANCEL) && isBeforeCancellationDeadline;
+    allowedActions.includes(ApplicationAction.CANCEL) && isBeforeCancellationDeadline(application);
   return (
     <div className={styles.card}>
       <div className={styles.header}>

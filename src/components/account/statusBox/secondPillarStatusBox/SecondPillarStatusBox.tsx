@@ -21,6 +21,7 @@ import { formatDateTime, formatDateYear } from '../../../common/dateFormatter';
 import deadline from './deadline.svg';
 import euro from './euro.svg';
 import basket from './basket.svg';
+import { isBeforeCancellationDeadline } from '../../ApplicationSection/ApplicationFunctions';
 
 export interface Props {
   loading: boolean;
@@ -221,7 +222,7 @@ function SecondPillarActionButton({
 }) {
   return (
     <>
-      {leaveApplication ? (
+      {leaveApplication && isBeforeCancellationDeadline(leaveApplication) ? (
         <Link
           to={`/applications/${leaveApplication.id}/cancellation`}
           className={`btn ${className}`}
