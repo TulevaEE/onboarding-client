@@ -6,7 +6,7 @@ import successImage from './success.svg';
 export const SuccessNotice: React.FunctionComponent<{ children?: React.ReactNode }> = ({
   children = '',
 }) => (
-  <div className="alert alert-success text-center py-4">
+  <div className="alert alert-success alert-success-notice text-center py-5">
     <div className={styles.container}>
       <img src={successImage} alt="Success" className={styles.check} />
     </div>

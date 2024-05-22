@@ -11,10 +11,10 @@ export const CancellationSuccess: React.FunctionComponent<unknown> = () => {
     <div className="row">
       <div className="col-12 mt-5 px-0">
         <SuccessNotice>
-          <h2 className="text-center mt-3">
+          <h2 className="text-center m-0 mt-3">
             <FormattedMessage id="cancellation.flow.success.title" />
           </h2>
-          <button type="button" className="btn btn-secondary text-center" onClick={download}>
+          <button type="button" className="btn btn-light text-center mt-5" onClick={download}>
             <FormattedMessage id="cancellation.flow.success.download" />
           </button>
         </SuccessNotice>

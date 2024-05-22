@@ -567,8 +567,8 @@
 
   "cancellation.flow.confirm.title": "Kinnita avalduse tühistamine",
   "cancellation.flow.confirm.content": "Avaldust allkirjastades kinnitad, et soovid tühistada järgmise avalduse:",
-  "cancellation.flow.success.title": "Avaldus tühistatud",
-  "cancellation.flow.success.download": "Laadi alla",
+  "cancellation.flow.success.title": "Avaldus on tühistatud",
+  "cancellation.flow.success.download": "Laadi avaldus alla",
   "cancellation.flow.success.back": "Tagasi kontole",
 
   "partnerFlow.error": "Protsessi alustamisel tekkis viga",
