@@ -1,4 +1,4 @@
-import { Fund, FundStatus, SourceFund } from './apiModels';
+import { Fund, FundStatus, SourceFund, User } from './apiModels';
 
 const isTruthy = (value: unknown) => !!value;
 
@@ -42,6 +42,8 @@ export function formatLargeAmountForCurrency(amount = 0) {
 export function getTotalFundValue(funds: SourceFund[] = []) {
   return funds.reduce((sum, { price }) => sum + price, 0);
 }
+
+export const getFullName = (user: User) => `${user.firstName} ${user.lastName}`;
 
 export const isActive = (fund: Fund) => fund.status === FundStatus.ACTIVE;
 export const isSecondPillar = (fund: Fund) => fund.pillar === 2;

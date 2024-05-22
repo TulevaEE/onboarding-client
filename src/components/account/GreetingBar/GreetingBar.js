@@ -3,6 +3,7 @@ import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Shimmer } from '../../common/shimmer/Shimmer';
+import { getFullName } from '../../common/utils';
 
 export class GreetingBar extends Component {
   componentDidMount() {}
@@ -19,7 +20,7 @@ export class GreetingBar extends Component {
     return (
       <>
         <div className="col-md-auto mb-1 mt-2 lead">
-          <FormattedMessage id="account.greeting" />, {user.firstName} {user.lastName}!
+          <FormattedMessage id="account.greeting" />, {getFullName(user)}!
         </div>
         <div className="col mb-1 mt-2 text-md-right">
           {user.email}

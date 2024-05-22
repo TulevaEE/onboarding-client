@@ -16,7 +16,7 @@ import { SwedbankRecurringPaymentDetails } from './paymentDetails/SwedbankRecurr
 import { SebRecurringPaymentDetails } from './paymentDetails/SebRecurringPaymentDetails';
 import { LhvRecurringPaymentDetails } from './paymentDetails/LhvRecurringPaymentDetails';
 import { CoopRecurringPaymentDetails } from './paymentDetails/CoopRecurringPaymentDetails';
-import EmployerPayment from './paymentDetails/EmployerPaymentDetails';
+import { EmployerPaymentDetails } from './paymentDetails/EmployerPaymentDetails';
 
 export const Payment: React.FunctionComponent<{
   personalCode: string;
@@ -277,7 +277,7 @@ export const Payment: React.FunctionComponent<{
       )}
       {paymentType === PaymentType.EMPLOYER && (
         <>
-          <EmployerPayment />
+          <EmployerPaymentDetails />
           <a className="btn btn-light text-nowrap mt-4" href="/account">
             <FormattedMessage id="thirdPillarPayment.backToAccountPage" />
           </a>
