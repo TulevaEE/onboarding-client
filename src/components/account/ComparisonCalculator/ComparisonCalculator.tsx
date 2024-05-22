@@ -465,16 +465,20 @@ const ComparisonCalculator: React.FC = () => {
       hasNegativeHeightBar = true;
     }
 
-    const maxAmount = Math.max(
-      returns.personal?.amount ?? 0,
-      returns.pensionFund?.amount ?? 0,
-      returns.index?.amount ?? 0,
+    const maximumAbsoluteAmount = Math.max(
+      Math.abs(returns.personal?.amount || 0),
+      Math.abs(returns.pensionFund?.amount || 0),
+      Math.abs(returns.index?.amount || 0),
     );
 
     return {
-      personal: returns.personal ? (returns.personal.amount / maxAmount) * maxHeight : 0,
-      pensionFund: returns.pensionFund ? (returns.pensionFund.amount / maxAmount) * maxHeight : 0,
-      index: returns.index ? (returns.index.amount / maxAmount) * maxHeight : 0,
+      personal: returns.personal
+        ? (returns.personal.amount / maximumAbsoluteAmount) * maxHeight
+        : 0,
+      pensionFund: returns.pensionFund
+        ? (returns.pensionFund.amount / maximumAbsoluteAmount) * maxHeight
+        : 0,
+      index: returns.index ? (returns.index.amount / maximumAbsoluteAmount) * maxHeight : 0,
       hasNegativeHeightBar,
     };
   }

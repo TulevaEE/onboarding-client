@@ -317,6 +317,50 @@ describe('ComparisonCalculator', () => {
     expect(within(graphSection()).getByText('9.0%')).toBeInTheDocument();
   });
 
+  test('II pillar content with largest absolute negative performance compared to the index', async () => {
+    userBackend(server);
+    setReturnsData(returnsData2ndPillarIndexAbsoluteNegative);
+    await awaitForInitialData();
+
+    expect(
+      await screen.findByText(/Your II pillar during the past 6 years, when compared to/i),
+    ).toBeInTheDocument();
+
+    await expectAllWorldMarketInBold();
+
+    expect(
+      await screen.findByText(/−37 000 €/i, {
+        selector: '.text-orange.text-bold',
+      }),
+    ).toBeInTheDocument();
+
+    expect(await screen.findByText(/has underperformance./i)).toBeInTheDocument();
+    await checkForExplanationSubtext();
+
+    const bars = within(graphSection()).getAllByRole('figure');
+    expect(bars).toHaveLength(2);
+
+    const negativeBarPercentage = within(bars[0]).queryByText('-17.0%');
+    expect(negativeBarPercentage).toBeVisible();
+
+    const largeBarPercentage = within(bars[1]).getByText('9.0%');
+    expect(largeBarPercentage).toBeVisible();
+
+    expect(within(bars[0]).getByText('−21 000 €')).toBeInTheDocument();
+    expect(within(bars[1]).getByText('+16 000 €')).toBeInTheDocument();
+
+    expect(within(bars[0]).getByText('Your II pillar')).toBeInTheDocument();
+    expect(within(bars[1]).getByText('World market index')).toBeInTheDocument();
+
+    expect(bars[0]).toHaveStyle('background-color: rgb(255, 72, 0)');
+    expect(bars[1]).toHaveStyle('background-color: rgb(0, 129, 238)');
+
+    const smallBarGraph = within(bars[0]).getByRole('presentation');
+    expect(smallBarGraph).toHaveStyle('height: 100px');
+    const largeBarGraph = within(bars[1]).getByRole('presentation');
+    expect(largeBarGraph).toHaveStyle('height: 76.19047619047619px');
+  });
+
   test('Hide percentage when graph bar is too small', async () => {
     userBackend(server);
     setReturnsData(returnsData2ndPillarSmallPersonalReturn);
@@ -326,7 +370,7 @@ describe('ComparisonCalculator', () => {
     await checkForExplanationSubtext();
 
     const bars = within(graphSection()).getAllByRole('figure');
-    expect(bars).toHaveLength(2); // Ensure there are exactly two bars
+    expect(bars).toHaveLength(2);
 
     const largeBarPercentage = within(bars[1]).getByText('9.0%');
     expect(largeBarPercentage).toBeVisible();
@@ -881,6 +925,29 @@ const returnsData2ndPillarIndexNegative: ReturnsResponse = {
     },
   ],
 };
+
+const returnsData2ndPillarIndexAbsoluteNegative: ReturnsResponse = {
+  from: '2018-06-06',
+  returns: [
+    {
+      key: 'UNION_STOCK_INDEX',
+      rate: 0.09,
+      amount: 16000.0,
+      paymentsSum: 14000.0,
+      currency: 'EUR',
+      type: 'INDEX',
+    },
+    {
+      key: 'SECOND_PILLAR',
+      rate: -0.17,
+      amount: -21000.0,
+      paymentsSum: 15000.0,
+      currency: 'EUR',
+      type: 'PERSONAL',
+    },
+  ],
+};
+
 const returnsData2ndPillarIndexPositive: ReturnsResponse = {
   from: moment().subtract(4, 'years').format(),
   returns: [
