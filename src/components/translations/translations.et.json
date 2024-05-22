@@ -476,6 +476,8 @@
   "thirdPillarPayment.pensionAccountNumber": "Sinu personaalne pensionikonto number",
 
   "thirdPillarPayment.EMPLOYER.title": "Avaldus tööandjale otse palgast III sambasse maksmiseks",
+  "thirdPillarPayment.EMPLOYER.publicEmployer": "Olen avaliku sektori töötaja",
+  "thirdPillarPayment.EMPLOYER.privateEmployer": "Olen erasektori töötaja",
   "thirdPillarPayment.EMPLOYER.form": "Salvesta avalduse blankett",
   "thirdPillarPayment.EMPLOYER.formFields": "Täida avalduse väljad:",
   "thirdPillarPayment.EMPLOYER.percent": "Protsent brutopalgast",
