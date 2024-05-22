@@ -41,6 +41,7 @@ module.exports = {
         '@typescript-eslint/explicit-module-boundary-types': 1, // should only be used once file is renamed to actual typescript
         'no-shadow': 'off', // https://stackoverflow.com/questions/63961803/eslint-says-all-enums-in-typescript-app-are-already-declared-in-the-upper-scope
         '@typescript-eslint/no-shadow': ['error'],
+        'react/react-in-jsx-scope': 'off',
       },
     },
     {

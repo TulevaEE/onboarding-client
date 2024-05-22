@@ -18,6 +18,7 @@ import { AccountSummaryLoader } from './AccountSummary/AccountSummary';
 import { getInitialCapital } from './actions';
 import SecondPillarUpsell from './SecondPillarUpsell/SecondPillarUpsell';
 import { getAuthentication } from '../common/authenticationManager';
+import { SectionHeading } from './SectionHeading';
 
 const noop = () => null;
 
@@ -78,16 +79,12 @@ export class AccountPage extends Component {
         {error && error.body ? <ErrorMessage errors={error.body} /> : ''}
 
         <div className="mt-5">
-          <div className="mb-4 d-flex flex-sm-row flex-column align-items-sm-end justify-content-between">
-            <h2 className="lead">
-              <FormattedMessage id="accountSummary.heading" />
-            </h2>
-            <div className="mb-2 ml-md-2 text-nowrap">
-              <Link className="text-nowrap" to="/2nd-pillar-transactions">
-                <FormattedMessage id="accountSummary.transactions" />
-              </Link>
-            </div>
-          </div>
+          <SectionHeading titleId="accountSummary.heading" lead>
+            <Link className="text-nowrap" to="/2nd-pillar-transactions">
+              <FormattedMessage id="accountSummary.transactions" />
+            </Link>
+          </SectionHeading>
+
           {secondPillarSourceFunds && thirdPillarSourceFunds && conversion ? (
             <AccountSummary
               secondPillarContributions={conversion.secondPillar.contribution.total}
@@ -108,7 +105,7 @@ export class AccountPage extends Component {
         <ApplicationSection />
 
         {!loadingCurrentBalance && (
-          <div className="mt-5">
+          <div className="mt-5 mb-4">
             <p className="mb-4 lead">
               <FormattedMessage id="accountStatement.heading" />
             </p>
@@ -134,16 +131,13 @@ export class AccountPage extends Component {
 
         {!loadingCurrentBalance && (
           <>
-            <div className="mt-4 d-flex flex-sm-row flex-column align-items-sm-end justify-content-between">
-              <div className="mb-3">
-                <FormattedMessage id="accountStatement.thirdPillar.heading" />
-              </div>
+            <SectionHeading titleId="accountStatement.thirdPillar.heading">
               {!isThirdPillarFullyConverted && (
                 <Link className="btn btn-light mb-3" to="/3rd-pillar-flow">
                   <FormattedMessage id="change.my.pension.fund.third.pillar" />
                 </Link>
               )}
-            </div>
+            </SectionHeading>
             {thirdPillarSourceFunds && thirdPillarSourceFunds.length > 0 && (
               <AccountStatement funds={thirdPillarSourceFunds} />
             )}
@@ -152,14 +146,11 @@ export class AccountPage extends Component {
 
         {loadingCapital || memberCapital ? (
           <div className="mt-5">
-            <div className="d-flex flex-row justify-content-between align-items-end">
-              <p className="mb-4 lead">
-                <FormattedMessage id="memberCapital.heading" />
-              </p>
+            <SectionHeading titleId="memberCapital.heading">
               <Link className="text-nowrap mb-4" to="/capital">
                 <FormattedMessage id="memberCapital.transactions" />
               </Link>
-            </div>
+            </SectionHeading>
             {loadingCapital && <Loader className="align-middle" />}
             {memberCapital && <MemberCapital rows={memberCapital} />}
           </div>
