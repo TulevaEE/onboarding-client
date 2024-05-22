@@ -79,7 +79,7 @@ export class AccountPage extends Component {
         {error && error.body ? <ErrorMessage errors={error.body} /> : ''}
 
         <div className="mt-5">
-          <SectionHeading titleId="accountSummary.heading">
+          <SectionHeading titleId="accountSummary.heading" lead>
             <Link className="text-nowrap" to="/2nd-pillar-transactions">
               <FormattedMessage id="accountSummary.transactions" />
             </Link>
@@ -105,18 +105,23 @@ export class AccountPage extends Component {
         <ApplicationSection />
 
         {!loadingCurrentBalance && (
-          <div className="mt-5">
+          <div className="mt-5 mb-4">
             <p className="mb-4 lead">
               <FormattedMessage id="accountStatement.heading" />
             </p>
-            <SectionHeading titleId="accountStatement.secondPillar.heading">
-              <Link className="btn btn-light mb-3 mr-md-3" to="/2nd-pillar-payment-rate">
-                <FormattedMessage id="account.status.choice.paymentRate.change" />
-              </Link>
-              <Link className="btn btn-light mb-3" to="/2nd-pillar-flow">
-                <FormattedMessage id="change.my.pension.fund" />
-              </Link>
-            </SectionHeading>
+            <div className="d-flex flex-md-row flex-column align-items-md-end justify-content-between">
+              <div className="mb-3">
+                <FormattedMessage id="accountStatement.secondPillar.heading" />
+              </div>
+              <div className="d-flex flex-sm-row flex-column align-items-sm-end justify-content-between">
+                <Link className="btn btn-light mb-3 mr-md-3" to="/2nd-pillar-payment-rate">
+                  <FormattedMessage id="account.status.choice.paymentRate.change" />
+                </Link>
+                <Link className="btn btn-light mb-3" to="/2nd-pillar-flow">
+                  <FormattedMessage id="change.my.pension.fund" />
+                </Link>
+              </div>
+            </div>
 
             {secondPillarSourceFunds && secondPillarSourceFunds.length > 0 && (
               <AccountStatement funds={secondPillarSourceFunds} />
