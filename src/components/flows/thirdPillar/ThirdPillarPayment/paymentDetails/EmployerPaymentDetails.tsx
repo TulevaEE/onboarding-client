@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useState } from 'react';
+import { PropsWithChildren, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { TextRow } from './row/TextRow';
 import { useMe } from '../../../../common/apiHooks';
