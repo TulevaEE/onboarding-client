@@ -19,9 +19,6 @@ export const UpdateUserForm = ({
     <form id="update-user-form" onSubmit={handleSubmit}>
       {updateUserSuccess && (
         <div className="alert alert-success" role="alert">
-          <strong>
-            <FormattedMessage id="update.user.thanks" />
-          </strong>{' '}
           <FormattedMessage id="update.user.success.message" />
         </div>
       )}
