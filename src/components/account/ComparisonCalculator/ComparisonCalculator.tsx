@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './ComparisonCalculator.scss';
-import { FormattedMessage, MessageDescriptor, useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import moment, { Moment } from 'moment/moment';
 import { formatAmountForCurrency } from '../../common/utils';
-import { Fund, UserConversion } from '../../common/apiModels';
+import { Fund } from '../../common/apiModels';
 import Select from './select';
 import { getReturnComparison, Key, ReturnComparison } from './api';
 import Loader from '../../common/loader';
@@ -13,78 +13,18 @@ import { formatDateYear } from '../../common/dateFormatter';
 import Percentage from '../../common/Percentage';
 import { createTrackedEvent } from '../../common/api';
 import { InfoTooltip } from '../../common';
-
-interface GraphBarProperties {
-  color: string;
-  amount: number;
-  percentage: number;
-  height: number;
-  label: string;
-}
-
-interface GraphProperties {
-  barCount: 2 | 3;
-  hasNegativeValueBar: boolean;
-  barProperties: {
-    1: GraphBarProperties;
-    2: GraphBarProperties;
-    3: GraphBarProperties | undefined;
-  };
-}
-
-enum PerformanceVerdict {
-  POSITIVE_ALPHA = 'POSITIVE_ALPHA',
-  NEGATIVE_ALPHA = 'NEGATIVE_ALPHA',
-  NEUTRAL = 'NEUTRAL',
-}
-
-enum PerformanceVerdictComparison {
-  WORLD_INDEX = 'WORLD_INDEX',
-  FUND = 'FUND',
-  INFLATION = 'INFLATION',
-}
-
-interface PerformanceVerdictProperties {
-  verdict: PerformanceVerdict;
-  comparison: PerformanceVerdictComparison;
-  amount: number;
-}
-
-interface ContentTextProperties {
-  years: number;
-  pillar: string;
-  ctaLink: string | null;
-}
-
-interface RootState {
-  exchange: { targetFunds: Fund[] };
-  thirdPillar: { funds: Fund[] };
-  login: {
-    user?: {
-      secondPillarOpenDate: string;
-      thirdPillarInitDate: string;
-      secondPillarActive: boolean;
-      thirdPillarActive: boolean;
-    };
-    userConversion: UserConversion;
-  };
-}
-
-type BarHeights = {
-  personal: number;
-  pensionFund: number;
-  index: number;
-  hasNegativeHeightBar: boolean;
-};
-
-interface FormatValues {
-  [key: string]: string | JSX.Element | ((chunks: string | JSX.Element) => JSX.Element);
-}
-
-interface FormatTagsMessageDescriptor extends MessageDescriptor {
-  id: string;
-  values?: FormatValues;
-}
+import {
+  BarHeights,
+  ContentTextProperties,
+  FormatTagsMessageDescriptor,
+  GraphBarProperties,
+  GraphProperties,
+  PerformanceVerdict,
+  PerformanceVerdictComparison,
+  PerformanceVerdictProperties,
+  RootState,
+} from './types';
+import { getCurrentPath, getFullYearsSince, sortFundsWithTulevaFirst } from './utility';
 
 const formatMessageWithTags = ({ id, values }: FormatTagsMessageDescriptor) => (
   <FormattedMessage
@@ -806,15 +746,6 @@ const ComparisonCalculator: React.FC = () => {
     calculateGraphProperties();
   }
 
-  function getFullYearsSince(dateString: string): number {
-    const givenDate = new Date(dateString);
-    const currentDate = new Date();
-    const millisecondsDifference = currentDate.getTime() - givenDate.getTime();
-    const daysDifference = millisecondsDifference / (1000 * 60 * 60 * 24);
-    const yearsDifference = daysDifference / 365.25;
-    return Math.round(yearsDifference);
-  }
-
   function getInitialPerformanceVerdictProperties(): PerformanceVerdictProperties {
     return {
       comparison: PerformanceVerdictComparison.WORLD_INDEX,
@@ -926,17 +857,6 @@ const ComparisonCalculator: React.FC = () => {
     setComparisonOptions(groups);
   }
 
-  function sortFundsWithTulevaFirst(funds: Fund[]): Fund[] {
-    const tulevaFunds = funds.filter((fund) => fund.name.includes('Tuleva'));
-
-    // Filter other funds and sort them alphabetically by name
-    const otherFunds = funds
-      .filter((fund) => !fund.name.includes('Tuleva'))
-      .sort((a, b) => a.name.localeCompare(b.name));
-
-    return [...tulevaFunds, ...otherFunds];
-  }
-
   function getResultSection() {
     return (
       <div className="result-section text-left d-flex flex-column justify-content-between">
@@ -971,10 +891,6 @@ const ComparisonCalculator: React.FC = () => {
       url,
     }).catch(() => {});
     window.location.href = url;
-  }
-
-  function getCurrentPath(): string {
-    return window.location.pathname.replace(/\/+$/g, '');
   }
 
   function getContentTextVerdict() {
