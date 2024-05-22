@@ -29,7 +29,8 @@ export interface Props {
   sourceFunds: SourceFund[];
   targetFunds: Fund[];
   secondPillarActive: boolean;
-  secondPillarPaymentRate: number;
+  currentPaymentRate: number;
+  pendingPaymentRate: number;
 }
 
 export const SecondPillarStatusBox: React.FC<Props> = ({
@@ -38,7 +39,8 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
   sourceFunds,
   targetFunds,
   secondPillarActive,
-  secondPillarPaymentRate,
+  currentPaymentRate,
+  pendingPaymentRate,
 }: Props) => {
   const { data: mandateDeadlines } = useMandateDeadlines();
   const { data: applications } = usePendingApplications();
@@ -89,7 +91,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
 
   const isFullyConverted = conversion.selectionComplete && conversion.transfersComplete;
 
-  if (secondPillarPaymentRate < 4) {
+  if (currentPaymentRate < 4) {
     return (
       <StatusBoxRow
         ok
@@ -99,7 +101,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
           <FormattedMessage
             id={`account.status.choice.lowFee${isFullyConverted ? '.index' : ''}.2.label`}
             values={{
-              paymentRate: secondPillarPaymentRate,
+              paymentRate: currentPaymentRate,
             }}
           />,
           <small className="text-muted">
@@ -129,14 +131,14 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
           <FormattedMessage
             id="account.status.choice.lowFee.2.label"
             values={{
-              paymentRate: 2,
+              paymentRate: currentPaymentRate,
             }}
           />,
           <small className="text-muted">
             <FormattedMessage
               id="account.status.choice.lowFee.index.2.description"
               values={{
-                paymentRate: secondPillarPaymentRate,
+                paymentRate: pendingPaymentRate,
                 paymentRateFulfillmentDate: formatDateYear(
                   mandateDeadlines?.paymentRateFulfillmentDate,
                 ),
@@ -162,14 +164,14 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
         <FormattedMessage
           id="account.status.choice.lowFee.index.2.label"
           values={{
-            paymentRate: 2,
+            paymentRate: currentPaymentRate,
           }}
         />,
         <small className="text-muted">
           <FormattedMessage
             id="account.status.choice.lowFee.index.2.description"
             values={{
-              paymentRate: secondPillarPaymentRate,
+              paymentRate: pendingPaymentRate,
               paymentRateFulfillmentDate: formatDateYear(
                 mandateDeadlines?.paymentRateFulfillmentDate,
               ),
@@ -340,7 +342,8 @@ const mapStateToProps = (state: State) => ({
   sourceFunds: state.exchange.sourceFunds || [],
   targetFunds: state.exchange.targetFunds || [],
   secondPillarActive: (state.login.user || {}).secondPillarActive,
-  secondPillarPaymentRate:
+  currentPaymentRate: (state.login.user || {}).secondPillarPaymentRates.current || 2,
+  pendingPaymentRate:
     (state.login.user || {}).secondPillarPaymentRates.pending ||
     (state.login.user || {}).secondPillarPaymentRates.current ||
     2,

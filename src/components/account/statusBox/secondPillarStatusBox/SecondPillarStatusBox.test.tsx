@@ -26,7 +26,8 @@ describe('SecondPillarStatusBox', () => {
     sourceFunds: [activeSecondPillar],
     targetFunds: [tulevaSecondPillarFund],
     secondPillarActive: true,
-    secondPillarPaymentRate: 6,
+    pendingPaymentRate: 6,
+    currentPaymentRate: 6,
   };
 
   beforeEach(() => {
@@ -38,7 +39,7 @@ describe('SecondPillarStatusBox', () => {
   });
 
   it('renders the payment rate flow', () => {
-    component.setProps({ secondPillarPaymentRate: 2 });
+    component.setProps({ currentPaymentRate: 2 });
     expect(component).toMatchSnapshot();
   });
 
