@@ -1,6 +1,5 @@
-import React from 'react';
 import { setupServer } from 'msw/node';
-import { act, screen, waitFor } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { Route } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
 import userEvent from '@testing-library/user-event';
@@ -68,15 +67,11 @@ describe('When a user is setting up third pillar payments via employer', () => {
     const publicOption = await publicSectorOption();
     const privateOption = await privateSectorOption();
 
-    act(() => {
-      userEvent.click(publicOption);
-    });
+    userEvent.click(publicOption);
     expect(await publicSectorOption()).toBeChecked();
     expect(await navigateToRtkFormButton()).toBeVisible();
 
-    act(() => {
-      userEvent.click(privateOption);
-    });
+    userEvent.click(privateOption);
     expect(await privateSectorOption()).toBeChecked();
     expect(await saveApplicationFormButton()).toBeVisible();
   });
@@ -131,9 +126,7 @@ describe('When a user is setting up third pillar payments via employer', () => {
 
       const publicOption = await publicSectorOption();
 
-      act(() => {
-        userEvent.click(publicOption);
-      });
+      userEvent.click(publicOption);
       expect(await publicSectorOption()).toBeChecked();
 
       expect(await screen.findByText('Digitally sign the application in RTK.'));
