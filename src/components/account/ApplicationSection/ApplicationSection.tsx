@@ -1,17 +1,24 @@
 import React from 'react';
 
 import { FormattedMessage } from 'react-intl';
-import { usePendingApplications } from '../../common/apiHooks';
+import { useMe, usePendingApplications } from '../../common/apiHooks';
 import { ApplicationAction, ApplicationCard } from './ApplicationCards';
+import { ApplicationType } from '../../common/apiModels';
 
 export const ApplicationSection: React.FunctionComponent = () => {
   const { data: applications } = usePendingApplications();
-  return applications && applications.length ? (
+  const { data: user } = useMe();
+  const filteredApplications = applications?.filter(
+    (application) =>
+      application.type === ApplicationType.PAYMENT_RATE &&
+      application.details.paymentRate === user?.secondPillarPaymentRates.current,
+  );
+  return filteredApplications && filteredApplications.length ? (
     <section className="mt-5">
       <h2 className="mb-4 lead">
         <FormattedMessage id="applications.title" />
       </h2>
-      {applications
+      {filteredApplications
         .sort((application1, application2) =>
           application2.creationTime.localeCompare(application1.creationTime),
         )
