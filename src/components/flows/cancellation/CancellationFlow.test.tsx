@@ -130,7 +130,7 @@ describe('When a user is cancelling an application', () => {
     );
 
     expect(download).not.toHaveBeenCalled();
-    userEvent.click(screen.getByText('Download'));
+    userEvent.click(screen.getByText(/Download/i));
     await waitFor(() => {
       expect(download).toHaveBeenCalledWith(
         expect.any(Blob),
