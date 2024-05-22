@@ -280,6 +280,7 @@
   "account.status.choice.choose.low.fees": "Vali madalad tasud",
   "account.status.choice.bring.to.tuleva": "Toon Tulevasse",
   "account.status.choice.join.tuleva.2": "Vali Tuleva",
+  "account.status.choice.cancel.application": "Tühista ootel avaldus",
   "account.status.choice.transfer.tuleva.2": "Vaheta fondi",
   "account.status.choice.paymentRate.increase": "Tõstan sissemakset",
   "account.status.choice.paymentRate.change": "Muudan sissemakset",

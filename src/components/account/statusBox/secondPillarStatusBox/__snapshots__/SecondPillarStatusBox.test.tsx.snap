@@ -121,14 +121,9 @@ exports[`SecondPillarStatusBox renders high fee flow when fund selection incompl
   }
   showAction={true}
 >
-  <Link
-    className="btn btn-primary"
-    to="/2nd-pillar-flow"
-  >
-    <MemoizedFormattedMessage
-      id="account.status.choice.bring.to.tuleva"
-    />
-  </Link>
+  <SecondPillarActionButton
+    className="btn-primary"
+  />
 </StatusBoxRow>
 `;
 
@@ -253,14 +248,9 @@ exports[`SecondPillarStatusBox renders high fee message when in high fee fund an
   }
   showAction={true}
 >
-  <Link
-    className="btn btn-primary"
-    to="/2nd-pillar-flow"
-  >
-    <MemoizedFormattedMessage
-      id="account.status.choice.bring.to.tuleva"
-    />
-  </Link>
+  <SecondPillarActionButton
+    className="btn-primary"
+  />
 </StatusBoxRow>
 `;
 
@@ -299,14 +289,9 @@ exports[`SecondPillarStatusBox renders low fee when fund selection incomplete 1`
   ok={true}
   showAction={true}
 >
-  <Link
-    className="btn btn-light"
-    to="/2nd-pillar-flow"
-  >
-    <MemoizedFormattedMessage
-      id="account.status.choice.join.tuleva.2"
-    />
-  </Link>
+  <SecondPillarActionButton
+    className="btn-outline-primary"
+  />
 </StatusBoxRow>
 `;
 
@@ -532,14 +517,9 @@ exports[`SecondPillarStatusBox renders the transfer flow when fund transfers inc
   }
   showAction={true}
 >
-  <Link
-    className="btn btn-primary"
-    to="/2nd-pillar-flow"
-  >
-    <MemoizedFormattedMessage
-      id="account.status.choice.bring.to.tuleva"
-    />
-  </Link>
+  <SecondPillarActionButton
+    className="btn-primary"
+  />
 </StatusBoxRow>
 `;
 

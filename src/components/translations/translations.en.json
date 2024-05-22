@@ -283,6 +283,7 @@
   "account.status.choice.choose.low.fees": "Choose low fees",
   "account.status.choice.bring.to.tuleva": "Choose Tuleva",
   "account.status.choice.join.tuleva.2": "Choose Tuleva",
+  "account.status.choice.cancel.application": "Cancel pending application",
   "account.status.choice.transfer.tuleva.2": "Switch fund",
   "account.status.choice.paymentRate.increase": "Increase contribution",
   "account.status.choice.paymentRate.change": "Change contribution",

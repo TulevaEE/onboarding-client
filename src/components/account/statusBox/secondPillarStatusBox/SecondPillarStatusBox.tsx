@@ -40,6 +40,13 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
   secondPillarPaymentRate,
 }: Props) => {
   const { data: mandateDeadlines } = useMandateDeadlines();
+  const { data: applications } = usePendingApplications();
+  const leaveApplication: Application | undefined =
+    applications &&
+    applications.find(
+      (application) =>
+        application.type === ApplicationType.TRANSFER && isTuleva(application.details.sourceFund),
+    );
 
   if (!secondPillarActive) {
     return (
@@ -69,7 +76,14 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
   }
 
   if (conversion.weightedAverageFee > 0.005) {
-    return highFee(loading, conversion, sourceFunds, targetFunds, mandateDeadlines);
+    return highFee(
+      loading,
+      conversion,
+      sourceFunds,
+      targetFunds,
+      mandateDeadlines,
+      leaveApplication,
+    );
   }
 
   const isFullyConverted = conversion.selectionComplete && conversion.transfersComplete;
@@ -130,9 +144,10 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
           </small>,
         ]}
       >
-        <Link to="/2nd-pillar-flow" className="btn btn-light">
-          <FormattedMessage id="account.status.choice.join.tuleva.2" />
-        </Link>
+        <SecondPillarActionButton
+          leaveApplication={leaveApplication}
+          className="btn-outline-primary"
+        />
       </StatusBoxRow>
     );
   }
@@ -197,12 +212,38 @@ const TinyCard = ({ title, text, img }: { title: JSX.Element; text: JSX.Element;
   </div>
 );
 
+function SecondPillarActionButton({
+  leaveApplication,
+  className,
+}: {
+  leaveApplication: Application | undefined;
+  className: string;
+}) {
+  return (
+    <>
+      {leaveApplication ? (
+        <Link
+          to={`/applications/${leaveApplication.id}/cancellation`}
+          className={`btn ${className}`}
+        >
+          <FormattedMessage id="account.status.choice.cancel.application" />
+        </Link>
+      ) : (
+        <Link to="/2nd-pillar-flow" className={`btn ${className}`}>
+          <FormattedMessage id="account.status.choice.bring.to.tuleva" />
+        </Link>
+      )}
+    </>
+  );
+}
+
 function highFee(
   loading: boolean,
   conversion: Conversion,
   sourceFunds: SourceFund[],
   targetFunds: Fund[],
   mandateDeadlines: MandateDeadlines | undefined,
+  leaveApplication?: Application | undefined,
 ) {
   const value = getValueSum(sourceFunds);
   const currentFeesEuro = conversion.weightedAverageFee * value;
@@ -280,9 +321,7 @@ function highFee(
         </div>
       }
     >
-      <Link to="/2nd-pillar-flow" className="btn btn-primary">
-        <FormattedMessage id="account.status.choice.bring.to.tuleva" />
-      </Link>
+      <SecondPillarActionButton leaveApplication={leaveApplication} className="btn-primary" />
     </StatusBoxRow>
   );
 }
