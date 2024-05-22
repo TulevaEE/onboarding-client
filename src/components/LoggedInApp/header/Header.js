@@ -17,8 +17,8 @@ const Header = ({ user: { name } = {}, loading, onLogout }) => (
         ) : (
           <>
             <p className="m-0">
-              <span className="text-body">{name}</span>
-              <span className="text-secondary">&ensp;&middot;&ensp;</span>
+              <span className="text-body align-middle">{name}</span>
+              <span className="text-secondary align-middle">&ensp;&middot;&ensp;</span>
               <button type="button" className="btn btn-link p-0 border-0" onClick={onLogout}>
                 <FormattedMessage id="log.out" />
               </button>
@@ -27,7 +27,7 @@ const Header = ({ user: { name } = {}, loading, onLogout }) => (
               <a className="btn btn-link p-0 border-0" href="/account">
                 <FormattedMessage id="header.my.account" />
               </a>
-              <span className="text-secondary">&ensp;&middot;&ensp;</span>
+              <span className="text-secondary align-middle">&ensp;&middot;&ensp;</span>
               <LanguageSwitcher />
             </p>
           </>
