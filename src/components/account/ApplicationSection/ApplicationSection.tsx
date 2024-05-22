@@ -10,8 +10,10 @@ export const ApplicationSection: React.FunctionComponent = () => {
   const { data: user } = useMe();
   const filteredApplications = applications?.filter(
     (application) =>
-      application.type === ApplicationType.PAYMENT_RATE &&
-      application.details.paymentRate === user?.secondPillarPaymentRates.current,
+      !(
+        application.type === ApplicationType.PAYMENT_RATE &&
+        application.details.paymentRate === user?.secondPillarPaymentRates.current
+      ),
   );
   return filteredApplications && filteredApplications.length ? (
     <section className="mt-5">
