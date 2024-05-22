@@ -104,6 +104,7 @@
       .graph-section {
         padding-top: 42px;
         padding-bottom: 42px;
+        min-height: 285px;
 
         .bar-container {
           display: flex;
@@ -122,7 +123,7 @@
           position: absolute;
 
           //From Figma
-          
+
           text-align: center;
           font-size: 16px;
           font-weight: 700;
