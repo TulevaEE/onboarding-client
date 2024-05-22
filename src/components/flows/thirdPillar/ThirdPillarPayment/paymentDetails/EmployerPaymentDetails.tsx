@@ -10,7 +10,7 @@ import Radio from '../../../../common/radio';
 export const EmployerPaymentDetails = () => {
   const { data: user } = useMe();
 
-  const [employerType, setEmployerType] = useState<'private' | 'public' | null>();
+  const [employerType, setEmployerType] = useState<'private' | 'public'>('private');
 
   if (!user) {
     return <Shimmer height={500} />;
@@ -48,15 +48,60 @@ export const EmployerPaymentDetails = () => {
         </p>
       </Radio>
 
-      {employerType && (
-        <div className="pt-3">
-          {employerType === 'private' && <PrivateEmployerGuide user={user} />}
-          {employerType === 'public' && null}
-        </div>
-      )}
+      <div className="pt-3">
+        {employerType === 'private' && <PrivateEmployerGuide user={user} />}
+        {employerType === 'public' && <PublicEmployerGuide user={user} />}
+      </div>
     </div>
   );
 };
+
+const PublicEmployerGuide = ({ user }: { user: User }) => (
+  <>
+    <Step number={1}>
+      <a
+        className="btn btn-primary text-nowrap px-3"
+        href="https://docs.google.com/document/d/1ZnF9CBxnXWzCjDz-wk1H84pz_yD3EIcD3WPBYt5RuDA/edit"
+        target="_blank"
+        rel="noreferrer"
+      >
+        <FormattedMessage id="thirdPillarPayment.EMPLOYER.signInToRtk" />
+      </a>
+    </Step>
+
+    <Step number={2}>
+      <FormattedMessage id="thirdPillarPayment.EMPLOYER.rtkNavigationGuide" />
+    </Step>
+
+    <Step number={3}>
+      <FormattedMessage id="thirdPillarPayment.EMPLOYER.rtkFormFields" />
+      <div className="mt-3 p-4 ml-n4 payment-details-table">
+        <table>
+          <tbody>
+            <TextRow>
+              <FormattedMessage id="thirdPillarPayment.EMPLOYER.percent" />
+              <FormattedMessage id="thirdPillarPayment.EMPLOYER.percent.description" />
+            </TextRow>
+            <TextRow>
+              <FormattedMessage id="thirdPillarPayment.EMPLOYER.pensionAccountNumber" />
+              {user.pensionAccountNumber}
+            </TextRow>
+            <TextRow>
+              <FormattedMessage id="thirdPillarPayment.EMPLOYER.fullName" />
+              {getFullName(user)}
+            </TextRow>
+          </tbody>
+        </table>
+      </div>
+    </Step>
+    <Step number={4}>
+      <FormattedMessage id="thirdPillarPayment.EMPLOYER.rtkDigitalSignature" />
+    </Step>
+    <Step number={5}>
+      <FormattedMessage id="thirdPillarPayment.EMPLOYER.salaryPayment" />
+    </Step>
+  </>
+);
 
 const PrivateEmployerGuide = ({ user }: { user: User }) => (
   <>
