@@ -22,8 +22,8 @@ export const EmployerPaymentDetails = () => {
         <FormattedMessage id="thirdPillarPayment.EMPLOYER.title" />
       </h3>
       <Radio
-        name="payment-type"
-        id="payment-type-single"
+        name="employer-type"
+        id="employer-type-private"
         className="mt-3 p-3"
         selected={employerType === 'private'}
         onSelect={() => {
@@ -35,8 +35,8 @@ export const EmployerPaymentDetails = () => {
         </p>
       </Radio>
       <Radio
-        name="payment-type"
-        id="payment-type-recurring"
+        name="employer-type"
+        id="employer-type-public"
         className="mt-3"
         selected={employerType === 'public'}
         onSelect={() => {
