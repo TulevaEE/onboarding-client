@@ -12,6 +12,7 @@
  */
 
 html {
+  min-width: 320px;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
@@ -88,6 +89,27 @@ small {
 
 .brand-logo {
   max-width: 146px;
+}
+
+.app-header {
+  .brand-logo {
+    height: 64px;
+  }
+  @media (max-width: 576px) {
+    .brand-logo {
+      height: 52px;
+    }
+  }
+  @media (max-width: 375px) { /* iPhone 6 and newer */
+    .brand-logo {
+      height: 48px;
+    }
+  }
+  @media (max-width: 359px) {
+    .brand-logo {
+      height: 42px;
+    }
+  }
 }
 
 .control-code {

@@ -23,7 +23,7 @@
   "login.not.member": "Sa pole veel Tuleva liige?",
   "login.apply.link": "Täida liitumisavaldus",
   "login.epis_maintenance": "Kui sisse logida ei õnnestu, proovi mõne aja pärast uuesti.",
-  "log.out": "Login välja",
+  "log.out": "Väljun",
   "steps.next": "Järgmine samm",
   "steps.previous": "Eelmine samm",
   "steps.select-sources": "Alusta kogumist Tuleva II samba fondis",

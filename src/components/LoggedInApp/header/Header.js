@@ -6,35 +6,35 @@ import { Loader, logo } from '../../common';
 import LanguageSwitcher from './languageSwitcher';
 
 const Header = ({ user: { name } = {}, loading, onLogout }) => (
-  <div className="row">
-    <div className="col align-self-start">
+  <>
+    <div className="d-flex justify-content-between align-items-end border-bottom pb-4 mb-5 app-header">
       <a href="/account">
-        <img src={logo} alt="Tuleva" className="img-responsive brand-logo" />
+        <img src={logo} alt="Tuleva" className="brand-logo" />
       </a>
+      <div className="text-right">
+        {loading || !name ? (
+          <Loader className="align-right" />
+        ) : (
+          <>
+            <p className="m-0">
+              <span className="text-body">{name}</span>
+              <span className="text-secondary">&ensp;&middot;&ensp;</span>
+              <button type="button" className="btn btn-link p-0 border-0" onClick={onLogout}>
+                <FormattedMessage id="log.out" />
+              </button>
+            </p>
+            <p className="m-0 mt-1">
+              <a className="btn btn-link p-0 border-0" href="/account">
+                <FormattedMessage id="header.my.account" />
+              </a>
+              <span className="text-secondary">&ensp;&middot;&ensp;</span>
+              <LanguageSwitcher />
+            </p>
+          </>
+        )}
+      </div>
     </div>
-    <div className="col align-self-end text-right">
-      {loading || !name ? (
-        <Loader className="align-right" />
-      ) : (
-        <span>
-          {name}
-          <br />
-          <button type="button" className="btn btn-link p-0 border-0" onClick={onLogout}>
-            <FormattedMessage id="log.out" />
-          </button>
-          <br />
-          <LanguageSwitcher />
-          &ensp;&middot;&ensp;
-          <a className="btn btn-link p-0 border-0" href="/account">
-            <FormattedMessage id="header.my.account" />
-          </a>
-        </span>
-      )}
-    </div>
-    <div className="col-12 my-3 px-0">
-      <hr />
-    </div>
-  </div>
+  </>
 );
 
 const noop = () => null;
