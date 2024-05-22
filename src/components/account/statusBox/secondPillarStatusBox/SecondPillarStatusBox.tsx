@@ -171,17 +171,21 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
             paymentRate: currentPaymentRate,
           }}
         />,
-        <small className="text-muted">
-          <FormattedMessage
-            id="account.status.choice.lowFee.index.2.description"
-            values={{
-              paymentRate: pendingPaymentRate,
-              paymentRateFulfillmentDate: formatDateYear(
-                mandateDeadlines?.paymentRateFulfillmentDate,
-              ),
-            }}
-          />
-        </small>,
+        currentPaymentRate !== pendingPaymentRate ? (
+          <small className="text-muted">
+            <FormattedMessage
+              id="account.status.choice.lowFee.index.2.description"
+              values={{
+                paymentRate: pendingPaymentRate,
+                paymentRateFulfillmentDate: formatDateYear(
+                  mandateDeadlines?.paymentRateFulfillmentDate,
+                ),
+              }}
+            />
+          </small>
+        ) : (
+          <></>
+        ),
       ]}
     />
   );
