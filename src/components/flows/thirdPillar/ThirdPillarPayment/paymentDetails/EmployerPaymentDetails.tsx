@@ -61,7 +61,7 @@ const PublicEmployerGuide = ({ user }: { user: User }) => (
     <Step number={1}>
       <a
         className="btn btn-primary text-nowrap px-3"
-        href="https://docs.google.com/document/d/1ZnF9CBxnXWzCjDz-wk1H84pz_yD3EIcD3WPBYt5RuDA/edit"
+        href="https://www.riigitootaja.ee/rtip-client/login"
         target="_blank"
         rel="noreferrer"
       >
@@ -79,8 +79,8 @@ const PublicEmployerGuide = ({ user }: { user: User }) => (
         <table>
           <tbody>
             <TextRow>
-              <FormattedMessage id="thirdPillarPayment.EMPLOYER.percent" />
-              <FormattedMessage id="thirdPillarPayment.EMPLOYER.percent.description" />
+              <FormattedMessage id="thirdPillarPayment.EMPLOYER.rtkAmount" />
+              <FormattedMessage id="thirdPillarPayment.EMPLOYER.rtkAmount.description" />
             </TextRow>
             <TextRow>
               <FormattedMessage id="thirdPillarPayment.EMPLOYER.pensionAccountNumber" />

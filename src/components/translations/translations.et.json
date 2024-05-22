@@ -487,6 +487,8 @@
   "thirdPillarPayment.EMPLOYER.digitalSignature": "Digiallkirjasta avaldus ja saada e-kirjaga oma tööandja raamatupidajale.",
   "thirdPillarPayment.EMPLOYER.salaryPayment": "Iga palgapäev tehakse automaatne sissemakse sinu III sambasse.",
   "thirdPillarPayment.EMPLOYER.signInToRtk": "Sisene RTK iseteenindusse",
+  "thirdPillarPayment.EMPLOYER.rtkAmount": "Summa eurodes",
+  "thirdPillarPayment.EMPLOYER.rtkAmount.description": "Igakuine summa, mida soovid III sambasse suunata",
   "thirdPillarPayment.EMPLOYER.rtkNavigationGuide": "Mine: Isikuandmed → Esita avaldus → III samba sissemaksed otse palgast",
   "thirdPillarPayment.EMPLOYER.rtkFormFields": "Vajalik info avalduse täitmiseks:",
   "thirdPillarPayment.EMPLOYER.rtkDigitalSignature": "Kinnita avaldus RTK portaalis digiallkirjaga.",
