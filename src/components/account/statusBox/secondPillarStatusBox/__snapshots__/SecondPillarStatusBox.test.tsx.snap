@@ -351,19 +351,7 @@ exports[`SecondPillarStatusBox renders the success flow 1`] = `
           }
         }
       />,
-      <small
-        className="text-muted"
-      >
-        <Memo(MemoizedFormattedMessage)
-          id="account.status.choice.lowFee.index.2.description"
-          values={
-            Object {
-              "paymentRate": 6,
-              "paymentRateFulfillmentDate": "...",
-            }
-          }
-        />
-      </small>,
+      <React.Fragment />,
     ]
   }
   name={
