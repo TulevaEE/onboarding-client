@@ -91,7 +91,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
 
   const isFullyConverted = conversion.selectionComplete && conversion.transfersComplete;
 
-  if (currentPaymentRate < 4) {
+  if (currentPaymentRate < 4 && pendingPaymentRate < 4) {
     return (
       <StatusBoxRow
         ok

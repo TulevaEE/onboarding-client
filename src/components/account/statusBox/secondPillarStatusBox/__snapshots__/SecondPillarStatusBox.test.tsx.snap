@@ -330,10 +330,11 @@ exports[`SecondPillarStatusBox renders the payment rate flow 1`] = `
         className="text-muted"
       >
         <Memo(MemoizedFormattedMessage)
-          id="account.status.choice.pillar.second.paymentRate.comment"
+          id="account.status.choice.lowFee.index.2.description"
           values={
             Object {
-              "b": [Function],
+              "paymentRate": 6,
+              "paymentRateFulfillmentDate": "...",
             }
           }
         />
@@ -347,16 +348,7 @@ exports[`SecondPillarStatusBox renders the payment rate flow 1`] = `
   }
   ok={true}
   showAction={true}
->
-  <Link
-    className="btn btn-primary"
-    to="/2nd-pillar-payment-rate"
-  >
-    <MemoizedFormattedMessage
-      id="account.status.choice.paymentRate.increase"
-    />
-  </Link>
-</StatusBoxRow>
+/>
 `;
 
 exports[`SecondPillarStatusBox renders the success flow 1`] = `
