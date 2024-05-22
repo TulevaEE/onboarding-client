@@ -196,7 +196,7 @@
   "new.user.flow.signup.firstName": "First name*",
   "new.user.flow.signup.lastName": "Last name*",
   "new.user.flow.signup.personalCode": "Personal code*",
-  "new.user.flow.signup.email": "Email*",
+  "new.user.flow.signup.email": "Email address*",
   "new.user.flow.signup.phoneNumber": "Phone number",
   "new.user.flow.signup.country": "Permanent or principal country of residence*",
   "new.user.flow.signup.tos.start": "I have read",

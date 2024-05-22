@@ -194,7 +194,7 @@
   "new.user.flow.signup.firstName": "Eesnimi*",
   "new.user.flow.signup.lastName": "Perekonnanimi*",
   "new.user.flow.signup.personalCode": "Isikukood*",
-  "new.user.flow.signup.email": "Email*",
+  "new.user.flow.signup.email": "E-posti aadress*",
   "new.user.flow.signup.phoneNumber": "Telefoninumber",
   "new.user.flow.signup.country": "Alaline või peamine elukoha riik*",
   "new.user.flow.signup.tos.start": "Olen tutvunud ",

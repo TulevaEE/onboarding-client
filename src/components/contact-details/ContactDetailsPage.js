@@ -10,11 +10,13 @@ const noop = () => null;
 
 export const ContactDetailsPage = ({ saveUser }) => {
   return (
-    <div className="mt-5">
-      <p className="mb-4 lead">
-        <FormattedMessage id="update.user.details.title" />
-      </p>
-      <UpdateUserForm onSubmit={saveUser} />
+    <div className="row">
+      <div className="col col-sm-8 col-md-6 col-xl-5 mx-auto my-5">
+        <p className="mb-4 lead">
+          <FormattedMessage id="update.user.details.title" />
+        </p>
+        <UpdateUserForm onSubmit={saveUser} />
+      </div>
     </div>
   );
 };
