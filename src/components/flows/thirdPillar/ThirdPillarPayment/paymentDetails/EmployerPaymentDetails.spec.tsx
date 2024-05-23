@@ -1,5 +1,5 @@
 import { setupServer } from 'msw/node';
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import { Route } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
 import userEvent from '@testing-library/user-event';
@@ -95,8 +95,10 @@ describe('When a user is setting up third pillar payments via employer', () => {
         ),
       );
 
-      expect(await screen.findByText('John Doe')).toBeVisible();
-      expect(await screen.findByText('9876543210')).toBeVisible();
+      const setupInfoTable = await screen.findByRole('table');
+
+      expect(await within(setupInfoTable).findByText('John Doe')).toBeVisible();
+      expect(await within(setupInfoTable).findByText('9876543210')).toBeVisible();
     });
 
     test('private sector employer button navigates to form template', async () => {
