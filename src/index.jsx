@@ -28,6 +28,7 @@ import { actions as thirdPillarActions } from './components/thirdPillar';
 
 import './polyfills';
 import LoggedInApp from './components/LoggedInApp';
+import { ScrollToTopOnNavigation } from './components/common/ScrollToTopOnNavigation';
 import { loginPath } from './components/login/LoginPage';
 
 import { createTrackedEvent } from './components/common/api';
@@ -114,6 +115,7 @@ export class App extends Component {
         <IntlProvider messages={translations[locale]} locale={locale} defaultLocale="et">
           <ReduxProvider store={store}>
             <ConnectedRouter history={history}>
+              <ScrollToTopOnNavigation />
               <Switch>
                 <Route path={loginPath} component={LoginPage} />
                 <Route path="/trigger-procedure" component={TriggerProcedure} />
