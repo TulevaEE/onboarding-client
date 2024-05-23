@@ -1,80 +1,158 @@
-import React from 'react';
+import { PropsWithChildren, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { connect } from 'react-redux';
 import { TextRow } from './row/TextRow';
-import { State } from '../../../../../types';
+import { useMe } from '../../../../common/apiHooks';
+import { Shimmer } from '../../../../common/shimmer/Shimmer';
+import { getFullName } from '../../../../common/utils';
+import { User } from '../../../../common/apiModels';
+import Radio from '../../../../common/radio';
 
-export const EmployerPaymentDetails: React.FunctionComponent<{
-  pensionAccountNumber: string;
-  fullName: string;
-}> = ({ pensionAccountNumber, fullName }) => (
-  <div className="mt-4 payment-details p-4">
-    <h3>
-      <FormattedMessage id="thirdPillarPayment.EMPLOYER.title" />
-    </h3>
-    <div className="d-sm-flex py-2">
-      <span className="flex-shrink-0 tv-step__number mr-3">
-        <b>1</b>
-      </span>
-      <span className="flex-grow-1 align-self-center">
-        <a
-          className="btn btn-primary text-nowrap px-3"
-          href="https://docs.google.com/document/d/1ZnF9CBxnXWzCjDz-wk1H84pz_yD3EIcD3WPBYt5RuDA/edit"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <FormattedMessage id="thirdPillarPayment.EMPLOYER.form" />
-        </a>
-      </span>
-    </div>
+export const EmployerPaymentDetails = () => {
+  const { data: user } = useMe();
 
-    <div className="d-sm-flex py-2">
-      <span className="flex-shrink-0 tv-step__number mr-3">
-        <b>2</b>
-      </span>
-      <span className="flex-grow-1 align-self-center">
-        <FormattedMessage id="thirdPillarPayment.EMPLOYER.formFields" />
-        <div className="mt-3 p-4 ml-n4 payment-details-table">
-          <table>
-            <tbody>
-              <TextRow>
-                <FormattedMessage id="thirdPillarPayment.EMPLOYER.percent" />
-                <FormattedMessage id="thirdPillarPayment.EMPLOYER.percent.description" />
-              </TextRow>
-              <TextRow>
-                <FormattedMessage id="thirdPillarPayment.EMPLOYER.pensionAccountNumber" />
-                {pensionAccountNumber}
-              </TextRow>
-              <TextRow>
-                <FormattedMessage id="thirdPillarPayment.EMPLOYER.fullName" />
-                {fullName}
-              </TextRow>
-            </tbody>
-          </table>
-        </div>
-      </span>
-    </div>
-    <div className="d-sm-flex py-2">
-      <span className="flex-shrink-0 tv-step__number mr-3">
-        <b>3</b>
-      </span>
-      <span className="flex-grow-1 align-self-center">
-        <FormattedMessage id="thirdPillarPayment.EMPLOYER.digitalSignature" />
-      </span>
-    </div>
-    <div className="d-sm-flex py-2">
-      <span className="flex-shrink-0 tv-step__number mr-3">
-        <b>4</b>
-      </span>
-      <span className="flex-grow-1 align-self-center">
-        <FormattedMessage id="thirdPillarPayment.EMPLOYER.salaryPayment" />
-      </span>
-    </div>
-  </div>
+  const [employerType, setEmployerType] = useState<'PRIVATE_SECTOR' | 'PUBLIC_SECTOR'>(
+    'PRIVATE_SECTOR',
+  );
+
+  if (!user) {
+    return <Shimmer height={500} />;
+  }
+
+  return (
+    <>
+      <h2 className="mt-3">
+        <FormattedMessage id="thirdPillarPayment.EMPLOYER.title" />
+      </h2>
+      <Radio
+        name="employer-type"
+        id="employer-type-private"
+        className="mt-4 p-3"
+        selected={employerType === 'PRIVATE_SECTOR'}
+        onSelect={() => {
+          setEmployerType('PRIVATE_SECTOR');
+        }}
+      >
+        <p className="m-0">
+          <FormattedMessage id="thirdPillarPayment.EMPLOYER.privateEmployer" />
+        </p>
+      </Radio>
+      <Radio
+        name="employer-type"
+        id="employer-type-public"
+        className="mt-3"
+        selected={employerType === 'PUBLIC_SECTOR'}
+        onSelect={() => {
+          setEmployerType('PUBLIC_SECTOR');
+        }}
+      >
+        <p className="m-0">
+          <FormattedMessage id="thirdPillarPayment.EMPLOYER.publicEmployer" />
+        </p>
+      </Radio>
+
+      <div className="p-4 mt-5 payment-details">
+        {employerType === 'PRIVATE_SECTOR' && <PrivateEmployerGuide user={user} />}
+        {employerType === 'PUBLIC_SECTOR' && <PublicEmployerGuide user={user} />}
+      </div>
+    </>
+  );
+};
+
+const PublicEmployerGuide = ({ user }: { user: User }) => (
+  <>
+    <Step number={1}>
+      <a
+        className="btn btn-primary text-nowrap px-3"
+        href="https://www.riigitootaja.ee/rtip-client/login"
+        target="_blank"
+        rel="noreferrer"
+      >
+        <FormattedMessage id="thirdPillarPayment.EMPLOYER.signInToRtk" />
+      </a>
+    </Step>
+
+    <Step number={2}>
+      <FormattedMessage id="thirdPillarPayment.EMPLOYER.rtkNavigationGuide" />
+    </Step>
+
+    <Step number={3}>
+      <FormattedMessage id="thirdPillarPayment.EMPLOYER.rtkFormFields" />
+      <div className="mt-3 p-4 ml-n4 payment-details-table">
+        <table>
+          <tbody>
+            <TextRow>
+              <FormattedMessage id="thirdPillarPayment.EMPLOYER.rtkAmount" />
+              <FormattedMessage id="thirdPillarPayment.EMPLOYER.rtkAmount.description" />
+            </TextRow>
+            <TextRow>
+              <FormattedMessage id="thirdPillarPayment.EMPLOYER.pensionAccountNumber" />
+              {user.pensionAccountNumber}
+            </TextRow>
+            <TextRow>
+              <FormattedMessage id="thirdPillarPayment.EMPLOYER.fullName" />
+              {getFullName(user)}
+            </TextRow>
+          </tbody>
+        </table>
+      </div>
+    </Step>
+    <Step number={4}>
+      <FormattedMessage id="thirdPillarPayment.EMPLOYER.rtkDigitalSignature" />
+    </Step>
+    <Step number={5}>
+      <FormattedMessage id="thirdPillarPayment.EMPLOYER.salaryPayment" />
+    </Step>
+  </>
 );
 
-const mapStateToProps = (state: State) => ({
-  pensionAccountNumber: state.login.user && state.login.user.pensionAccountNumber,
-  fullName: state.login.user && `${state.login.user.firstName} ${state.login.user.lastName}`,
-});
-export default connect(mapStateToProps)(EmployerPaymentDetails);
+export const PrivateEmployerGuide = ({ user }: { user: User }) => (
+  <>
+    <Step number={1}>
+      <a
+        className="btn btn-primary text-nowrap px-3"
+        href="https://docs.google.com/document/d/1ZnF9CBxnXWzCjDz-wk1H84pz_yD3EIcD3WPBYt5RuDA/edit"
+        target="_blank"
+        rel="noreferrer"
+      >
+        <FormattedMessage id="thirdPillarPayment.EMPLOYER.form" />
+      </a>
+    </Step>
+
+    <Step number={2}>
+      <FormattedMessage id="thirdPillarPayment.EMPLOYER.formFields" />
+      <div className="mt-3 p-4 ml-n4 payment-details-table">
+        <table>
+          <tbody>
+            <TextRow>
+              <FormattedMessage id="thirdPillarPayment.EMPLOYER.percent" />
+              <FormattedMessage id="thirdPillarPayment.EMPLOYER.percent.description" />
+            </TextRow>
+            <TextRow>
+              <FormattedMessage id="thirdPillarPayment.EMPLOYER.pensionAccountNumber" />
+              {user.pensionAccountNumber}
+            </TextRow>
+            <TextRow>
+              <FormattedMessage id="thirdPillarPayment.EMPLOYER.fullName" />
+              {getFullName(user)}
+            </TextRow>
+          </tbody>
+        </table>
+      </div>
+    </Step>
+    <Step number={3}>
+      <FormattedMessage id="thirdPillarPayment.EMPLOYER.digitalSignature" />
+    </Step>
+    <Step number={4}>
+      <FormattedMessage id="thirdPillarPayment.EMPLOYER.salaryPayment" />
+    </Step>
+  </>
+);
+
+const Step = ({ number, children }: PropsWithChildren<{ number: number }>) => (
+  <div className="d-sm-flex py-2">
+    <span className="flex-shrink-0 tv-step__number mr-3">
+      <b>{number}</b>
+    </span>
+    <span className="flex-grow-1 align-self-center">{children}</span>
+  </div>
+);

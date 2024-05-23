@@ -477,6 +477,8 @@
   "thirdPillarPayment.pensionAccountNumber": "Your pension account number",
 
   "thirdPillarPayment.EMPLOYER.title": "Application to the employer to pay directly from the salary to III pillar",
+  "thirdPillarPayment.EMPLOYER.publicEmployer": "I'm a public sector employee",
+  "thirdPillarPayment.EMPLOYER.privateEmployer": "I'm a private sector employee",
   "thirdPillarPayment.EMPLOYER.form": "Save the application form",
   "thirdPillarPayment.EMPLOYER.formFields": "Fill in the fields:",
   "thirdPillarPayment.EMPLOYER.percent": "Percentage of gross salary",
@@ -485,6 +487,12 @@
   "thirdPillarPayment.EMPLOYER.fullName": "First and last name",
   "thirdPillarPayment.EMPLOYER.digitalSignature": "Digitally sign the application and e-mail it to your employer's accountant.",
   "thirdPillarPayment.EMPLOYER.salaryPayment": "Every payday, an automatic contribution is made to your III pillar.",
+  "thirdPillarPayment.EMPLOYER.signInToRtk": "Sign in to RTK self service",
+  "thirdPillarPayment.EMPLOYER.rtkAmount": "Sum in euros",
+  "thirdPillarPayment.EMPLOYER.rtkAmount.description": "Monthly sum to transfer to III pillar",
+  "thirdPillarPayment.EMPLOYER.rtkNavigationGuide": "Navigate: Isikuandmed → Esita avaldus → III samba sissemaksed otse palgast",
+  "thirdPillarPayment.EMPLOYER.rtkFormFields": "Necessary information for the application:",
+  "thirdPillarPayment.EMPLOYER.rtkDigitalSignature": "Digitally sign the application in RTK.",
 
   "thirdPillarSuccess.done": "Payment done",
   "thirdPillarSuccess.message": "Payment will reach the fund within 2 working days.",

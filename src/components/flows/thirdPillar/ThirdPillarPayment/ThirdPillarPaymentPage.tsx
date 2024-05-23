@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import { State } from '../../../../types';
-import Payment from './Payment'; // eslint-disable-line import/no-named-as-default
+import { Payment } from './Payment';
 import { getAuthentication } from '../../../common/authenticationManager';
 
 export const PaymentPage: React.FunctionComponent<{
