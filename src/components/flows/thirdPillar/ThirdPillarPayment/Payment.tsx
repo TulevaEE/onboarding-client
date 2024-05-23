@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
-import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Radio } from '../../../common';
 import ThirdPillarPaymentsAmount from '../../../account/statusBox/thirdPillarStatusBox/ThirdPillarContributionAmount';
 import './Payment.scss';
 import { BankButton } from './BankButton';
-import { State } from '../../../../types';
 import { redirectToPayment } from '../../../common/api';
 import { PaymentChannel, PaymentType } from '../../../common/apiModels';
 import { PaymentAmountInput } from './PaymentAmountInput';
@@ -16,19 +14,24 @@ import { SwedbankRecurringPaymentDetails } from './paymentDetails/SwedbankRecurr
 import { SebRecurringPaymentDetails } from './paymentDetails/SebRecurringPaymentDetails';
 import { LhvRecurringPaymentDetails } from './paymentDetails/LhvRecurringPaymentDetails';
 import { CoopRecurringPaymentDetails } from './paymentDetails/CoopRecurringPaymentDetails';
-import { EmployerPaymentDetails } from './paymentDetails/EmployerPaymentDetails';
+import { PrivateEmployerGuide } from './paymentDetails/EmployerPaymentDetails';
+import { useMe } from '../../../common/apiHooks';
 
-export const Payment: React.FunctionComponent<{
-  personalCode: string;
-}> = ({ personalCode }) => {
+export const Payment: React.FunctionComponent = () => {
   const { formatMessage } = useIntl();
 
   const [paymentType, setPaymentType] = useState<PaymentType>(PaymentType.SINGLE);
   const [paymentAmount, setPaymentAmount] = useState<string>('');
   const [paymentBank, setPaymentBank] = useState<string>('');
 
+  const { data: user } = useMe();
+
+  if (!user) {
+    return null;
+  }
+
   const isDisabled = () =>
-    !personalCode ||
+    !user.personalCode ||
     !paymentBank ||
     paymentBank === 'other' ||
     !paymentAmount ||
@@ -182,7 +185,7 @@ export const Payment: React.FunctionComponent<{
                 {paymentBank === 'luminor' && (
                   <LuminorRecurringPaymentDetails
                     amount={paymentAmount}
-                    personalCode={personalCode}
+                    personalCode={user.personalCode}
                   />
                 )}
 
@@ -190,7 +193,7 @@ export const Payment: React.FunctionComponent<{
 
                 {paymentBank === 'other' && (
                   <OtherBankPaymentDetails
-                    personalCode={personalCode}
+                    personalCode={user.personalCode}
                     amount={paymentAmount}
                     paymentType={PaymentType.RECURRING}
                   />
@@ -199,7 +202,7 @@ export const Payment: React.FunctionComponent<{
             )}
             {paymentType === PaymentType.SINGLE && paymentBank === 'other' && (
               <OtherBankPaymentDetails
-                personalCode={personalCode}
+                personalCode={user.personalCode}
                 amount={paymentAmount}
                 paymentType={PaymentType.SINGLE}
               />
@@ -223,7 +226,7 @@ export const Payment: React.FunctionComponent<{
                       disabled={isDisabled()}
                       onClick={() => {
                         redirectToPayment({
-                          recipientPersonalCode: personalCode,
+                          recipientPersonalCode: user.personalCode,
                           amount: Number(paymentAmount.replace(',', '.')),
                           currency: 'EUR',
                           type: paymentType,
@@ -277,7 +280,12 @@ export const Payment: React.FunctionComponent<{
       )}
       {paymentType === PaymentType.EMPLOYER && (
         <div className="mt-4 payment-details p-4">
-          <EmployerPaymentDetails /> {/*TODO private only here*/}
+          <h2 className="mt-3">
+            <FormattedMessage id="thirdPillarPayment.EMPLOYER.title" />
+          </h2>
+          <div className="mt-4">
+            <PrivateEmployerGuide user={user} />
+          </div>
           <a className="btn btn-light text-nowrap mt-4" href="/account">
             <FormattedMessage id="thirdPillarPayment.backToAccountPage" />
           </a>
@@ -286,8 +294,3 @@ export const Payment: React.FunctionComponent<{
     </>
   );
 };
-
-const mapStateToProps = (state: State) => ({
-  personalCode: state.login.user && state.login.user.personalCode,
-});
-export default connect(mapStateToProps)(Payment);
