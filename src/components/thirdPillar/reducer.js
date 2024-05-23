@@ -5,7 +5,7 @@ import {
   QUERY_PARAMETERS,
   SELECT_THIRD_PILLAR_SOURCES,
 } from './constants';
-import initialState, { EXIT_RESTRICTED_FUND } from './initialState';
+import initialState, { EXIT_RESTRICTED_FUNDS } from './initialState';
 import {
   GET_SOURCE_FUNDS_ERROR,
   GET_SOURCE_FUNDS_START,
@@ -55,7 +55,7 @@ export default function thirdPillarReducer(state = initialState, action) {
       // eslint-disable-next-line no-case-declarations
       const exchangeableSourceFunds = sourceFunds
         .filter((fund) => fund.price > 0)
-        .filter((fund) => fund.isin !== EXIT_RESTRICTED_FUND)
+        .filter((fund) => EXIT_RESTRICTED_FUNDS.indexOf(fund.isin) === -1)
         .filter((fund) => fund.isin !== state.selectedFutureContributionsFundIsin); // TODO: change source funds on selected change
 
       // eslint-disable-next-line no-case-declarations

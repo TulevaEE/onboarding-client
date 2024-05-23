@@ -5,7 +5,7 @@ import {
   QUERY_PARAMETERS,
   SELECT_THIRD_PILLAR_SOURCES,
 } from './constants';
-import initialState, { EXIT_RESTRICTED_FUND } from './initialState';
+import initialState, { EXIT_RESTRICTED_FUNDS } from './initialState';
 import reducer from './reducer';
 import {
   GET_SOURCE_FUNDS_ERROR,
@@ -235,7 +235,7 @@ describe('Third pillar reducer', () => {
       selectedFutureContributionsFundIsin: 'EE789',
     };
     const sourceFunds = [
-      { isin: EXIT_RESTRICTED_FUND, pillar: 3, price: 100, unavailablePrice: 0 },
+      { isin: EXIT_RESTRICTED_FUNDS[0], pillar: 3, price: 100, unavailablePrice: 0 },
     ];
 
     const state = reducer(oldState, {
