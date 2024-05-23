@@ -1,28 +1,21 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-const Separator = () => <span className="mx-2">·</span>;
+const Separator = () => <span className="mx-2 text-secondary">·</span>;
 
 const Footer = () => (
-  <div className="row mt-4">
-    <div className="col-12 px-0 mb-4">
-      <hr />
-    </div>
-    <div className="col-12 text-center mb-4">
-      <small className="text-muted">
-        <b>
-          <FormattedMessage id="footer.name" />
-        </b>
-        <Separator />
-        <FormattedMessage id="footer.address" />
-        <Separator />
-        <FormattedMessage id="footer.email" />
-        <Separator />
-        <FormattedMessage id="footer.phone.number" />
-        <Separator />
-        <FormattedMessage id="footer.registration.code" />
-      </small>
-    </div>
+  <div className="mt-5 pt-4 pb-5 border-top small text-center text-secondary app-footer">
+    <strong>
+      <FormattedMessage id="footer.name" />
+    </strong>
+    <Separator />
+    <FormattedMessage id="footer.address" />
+    <Separator />
+    <FormattedMessage id="footer.email" />
+    <Separator />
+    <FormattedMessage id="footer.phone.number" />
+    <Separator />
+    <FormattedMessage id="footer.registration.code" />
   </div>
 );
 
