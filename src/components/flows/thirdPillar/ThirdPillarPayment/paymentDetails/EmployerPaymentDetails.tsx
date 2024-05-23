@@ -10,7 +10,9 @@ import Radio from '../../../../common/radio';
 export const EmployerPaymentDetails = () => {
   const { data: user } = useMe();
 
-  const [employerType, setEmployerType] = useState<'private' | 'public'>('private');
+  const [employerType, setEmployerType] = useState<'PRIVATE_SECTOR' | 'PUBLIC_SECTOR'>(
+    'PRIVATE_SECTOR',
+  );
 
   if (!user) {
     return <Shimmer height={500} />;
@@ -25,9 +27,9 @@ export const EmployerPaymentDetails = () => {
         name="employer-type"
         id="employer-type-private"
         className="mt-4 p-3"
-        selected={employerType === 'private'}
+        selected={employerType === 'PRIVATE_SECTOR'}
         onSelect={() => {
-          setEmployerType('private');
+          setEmployerType('PRIVATE_SECTOR');
         }}
       >
         <p className="m-0">
@@ -38,9 +40,9 @@ export const EmployerPaymentDetails = () => {
         name="employer-type"
         id="employer-type-public"
         className="mt-3"
-        selected={employerType === 'public'}
+        selected={employerType === 'PUBLIC_SECTOR'}
         onSelect={() => {
-          setEmployerType('public');
+          setEmployerType('PUBLIC_SECTOR');
         }}
       >
         <p className="m-0">
@@ -49,8 +51,8 @@ export const EmployerPaymentDetails = () => {
       </Radio>
 
       <div className="p-4 mt-5 payment-details">
-        {employerType === 'private' && <PrivateEmployerGuide user={user} />}
-        {employerType === 'public' && <PublicEmployerGuide user={user} />}
+        {employerType === 'PRIVATE_SECTOR' && <PrivateEmployerGuide user={user} />}
+        {employerType === 'PUBLIC_SECTOR' && <PublicEmployerGuide user={user} />}
       </div>
     </>
   );
