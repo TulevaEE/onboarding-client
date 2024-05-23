@@ -276,12 +276,12 @@ export const Payment: React.FunctionComponent<{
         </>
       )}
       {paymentType === PaymentType.EMPLOYER && (
-        <>
-          <EmployerPaymentDetails />
+        <div className="mt-4 payment-details p-4">
+          <EmployerPaymentDetails /> {/*TODO private only here*/}
           <a className="btn btn-light text-nowrap mt-4" href="/account">
             <FormattedMessage id="thirdPillarPayment.backToAccountPage" />
           </a>
-        </>
+        </div>
       )}
     </>
   );

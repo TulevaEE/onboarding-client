@@ -17,14 +17,14 @@ export const EmployerPaymentDetails = () => {
   }
 
   return (
-    <div className="mt-4 payment-details p-4">
-      <h3>
+    <>
+      <h2 className="mt-3">
         <FormattedMessage id="thirdPillarPayment.EMPLOYER.title" />
-      </h3>
+      </h2>
       <Radio
         name="employer-type"
         id="employer-type-private"
-        className="mt-3 p-3"
+        className="mt-4 p-3"
         selected={employerType === 'private'}
         onSelect={() => {
           setEmployerType('private');
@@ -48,11 +48,11 @@ export const EmployerPaymentDetails = () => {
         </p>
       </Radio>
 
-      <div className="pt-3">
+      <div className="p-4 mt-5 payment-details">
         {employerType === 'private' && <PrivateEmployerGuide user={user} />}
         {employerType === 'public' && <PublicEmployerGuide user={user} />}
       </div>
-    </div>
+    </>
   );
 };
 
@@ -103,7 +103,7 @@ const PublicEmployerGuide = ({ user }: { user: User }) => (
   </>
 );
 
-const PrivateEmployerGuide = ({ user }: { user: User }) => (
+export const PrivateEmployerGuide = ({ user }: { user: User }) => (
   <>
     <Step number={1}>
       <a
