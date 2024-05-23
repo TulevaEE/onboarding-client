@@ -1,4 +1,4 @@
-import { Fund, FundStatus, SourceFund, User } from './apiModels';
+import { Fund, FundStatus, User } from './apiModels';
 
 const isTruthy = (value: unknown) => !!value;
 
