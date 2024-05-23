@@ -42,8 +42,6 @@
   "select.sources.select.all.subtitle": "Tood üle seni II sambasse kogutud vara ja kogud edaspidi ainult Tulevas. Soodsad tasud rakenduvad kogu portfellile.",
   "select.sources.select.all.deadline": "Sinu edasiste sissemaksete avaldus jõustub koheselt. Et sinu varem kogutud vara jõuaks Tulevasse esimesel võimalusel, tee muudatus hiljemalt <b>{periodEnding}.</b>",
   "select.sources.select.all.choose": "Vali fond:",
-  "select.sources.select.future": "Suunan ainult edasised sissemaksed Tulevasse",
-  "select.sources.select.future.subtitle": "Jätan seni II sambasse kogutud vara sinna, kus see praegu on, ja toon ainult uued sissemaksed Tulevasse.",
   "select.sources.select.some": "Toon II samba valikuliselt üle",
   "select.sources.select.some.existing": "Toon seni kogutud osakud",
   "select.sources.select.some.future": "Suunan tuleviku sissemaksed",

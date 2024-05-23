@@ -1,4 +1,4 @@
-import { Fund, SourceFund } from '../common/apiModels';
+import { ErrorResponse, Fund, SourceFund } from '../common/apiModels';
 
 export type Exchange = {
   loadingPensionData: boolean;
@@ -9,15 +9,15 @@ export type Exchange = {
   targetFunds: Fund[] | null;
   loadingTargetFunds: boolean;
   selectedFutureContributionsFundIsin: string;
-  error: string;
+  error: ErrorResponse | null;
   loadingMandate: boolean;
   mandateSigningControlCode: string;
-  mandateSigningError: string;
+  mandateSigningError: ErrorResponse | null;
   signedMandateId: boolean;
   agreedToTerms: boolean;
 };
 
-type SourceSelection = {
+export type SourceSelection = {
   sourceFundIsin: string;
   targetFundIsin: string;
   percentage: number;

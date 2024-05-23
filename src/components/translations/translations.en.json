@@ -44,8 +44,6 @@
   "select.sources.select.all.subtitle": "Your future contributions will be directed to Tuleva and your existing funds will be transferred. Your portfolio will benefit from Tuleva's low fees. The transfer is free of charge.",
   "select.sources.select.all.deadline": "The deadline for this fund exchange period is <b>{periodEnding}.</b>",
   "select.sources.select.all.choose": "Pick a fund:",
-  "select.sources.select.future": "Bring only future contributions to Tuleva",
-  "select.sources.select.future.subtitle": "I will leave my II pillar assets where they are now, and only direct new contributions to Tuleva.",
   "select.sources.select.some": "Transfer II pillar selectively",
   "select.sources.select.some.existing": "Exchange current fund units",
   "select.sources.select.some.future": "Direct future contributions",

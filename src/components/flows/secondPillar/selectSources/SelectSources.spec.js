@@ -63,10 +63,12 @@ describe('Select sources step', () => {
 
   it('on exact selection disables the next step button if selection is invalid', () => {
     component.setProps({
-      sourceSelectionExact: true,
       sourceSelection: [{ sourceFundIsin: 'a', percentage: 1 }],
       selectedFutureContributionsFundIsin: 'a',
+      onSelectExchangeSources: jest.fn(),
     });
+
+    component.find(Radio).last().simulate('select');
     component.find('#someExistingSwitch').simulate('change', { target: { checked: true } });
 
     expect(component.find('#nextStep button').prop('className')).not.toContain('disabled');
@@ -93,7 +95,6 @@ describe('Select sources step', () => {
 
   it('on exact selection disables the next step button if selection is invalid due to inter fund transfer and displays help text', () => {
     component.setProps({
-      sourceSelectionExact: true,
       sourceSelection: [
         {
           sourceFundIsin: 'a',
@@ -101,7 +102,9 @@ describe('Select sources step', () => {
           percentage: 1,
         },
       ],
+      onSelectExchangeSources: jest.fn(),
     });
+    component.find(Radio).last().simulate('select');
     component.find('#someExistingSwitch').simulate('change', { target: { checked: true } });
 
     expect(component.find('#nextStep button').prop('className')).not.toContain('disabled');
@@ -125,60 +128,18 @@ describe('Select sources step', () => {
     ).toBe(true);
   });
 
-  it('on not exact selection does not disables the next step button if selection is invalid due to inter fund transfer and displays help text', () => {
-    component.setProps({
-      sourceSelectionExact: false,
-      sourceSelection: [
-        {
-          sourceFundIsin: 'a',
-          targetFundIsin: 'b',
-          percentage: 1,
-        },
-      ],
-    });
-    expect(component.find('#nextStep button').prop('className')).not.toContain('disabled');
-    expect(
-      component.contains(<FormattedMessage id="select.sources.error.source.fund.is.target.fund" />),
-    ).toBe(false);
-
-    component.setProps({
-      sourceSelection: [
-        {
-          sourceFundIsin: 'a',
-          targetFundIsin: 'a',
-          percentage: 1,
-        },
-      ],
-    });
-    expect(component.find('#nextStep button').prop('className')).not.toContain('disabled');
-
-    expect(
-      component.contains(<FormattedMessage id="select.sources.error.source.fund.is.target.fund" />),
-    ).toBe(false);
-  });
-
-  it('sets the full selection radio as selected only when all funds selected', () => {
+  it('sets the full selection radio by default', () => {
     const fullSelectionRadio = () => component.find(Radio).first();
     component.setProps({
-      sourceSelectionExact: false,
-      sourceSelection: [
-        { name: 'a', percentage: 1 },
-        { name: 'b', percentage: 1 },
-      ],
+      sourceSelection: [],
     });
     expect(fullSelectionRadio().prop('selected')).toBe(true);
 
-    component.setProps({ sourceSelectionExact: true });
-    expect(fullSelectionRadio().prop('selected')).toBe(false);
-
-    component.setProps({
-      sourceSelectionExact: false,
-      sourceSelection: [],
-    });
+    component.find(Radio).last().simulate('select');
     expect(fullSelectionRadio().prop('selected')).toBe(false);
   });
 
-  it('selects all funds when clicking on the full selection radio', () => {
+  it('selects all funds when toggling the someExistingSwitch on', () => {
     const onSelectExchangeSources = jest.fn();
     const sourceFunds = [{ isin: 'a' }, { isin: 'b' }];
     const targetFunds = [{ isin: 'c', fundManager: { name: 'Tuleva' } }];
@@ -188,9 +149,10 @@ describe('Select sources step', () => {
     ];
     component.setProps({ sourceFunds, targetFunds, onSelectExchangeSources });
     expect(onSelectExchangeSources).not.toHaveBeenCalled();
-    component.find(Radio).first().simulate('select');
+    component.find(Radio).last().simulate('select');
+    component.find('#someExistingSwitch').simulate('change', { target: { checked: true } });
     expect(onSelectExchangeSources).toHaveBeenCalledTimes(1);
-    expect(onSelectExchangeSources).toHaveBeenCalledWith(fullSelection, false);
+    expect(onSelectExchangeSources).toHaveBeenCalledWith(fullSelection, true);
   });
 
   it('when selecting all funds, skip inter fund transfer', () => {
@@ -206,9 +168,10 @@ describe('Select sources step', () => {
     ];
     component.setProps({ sourceFunds, targetFunds, onSelectExchangeSources });
     expect(onSelectExchangeSources).not.toHaveBeenCalled();
-    component.find(Radio).first().simulate('select');
+    component.find(Radio).last().simulate('select');
+    component.find('#someExistingSwitch').simulate('change', { target: { checked: true } });
     expect(onSelectExchangeSources).toHaveBeenCalledTimes(1);
-    expect(onSelectExchangeSources).toHaveBeenCalledWith(fullSelection, false);
+    expect(onSelectExchangeSources).toHaveBeenCalledWith(fullSelection, true);
   });
 
   it('when selecting all funds and the default fund (first target fund) is the only source fund, dont skip it', () => {
@@ -224,86 +187,26 @@ describe('Select sources step', () => {
     ];
     component.setProps({ sourceFunds, targetFunds, onSelectExchangeSources });
     expect(onSelectExchangeSources).not.toHaveBeenCalled();
-    component.find(Radio).first().simulate('select');
+    component.find(Radio).last().simulate('select');
+    component.find('#someExistingSwitch').simulate('change', { target: { checked: true } });
     expect(onSelectExchangeSources).toHaveBeenCalledTimes(1);
-    expect(onSelectExchangeSources).toHaveBeenCalledWith(fullSelection, false);
-  });
-
-  it('sets the no selection radio as selected only when no funds selected', () => {
-    const futureSelectionRadio = () => component.find(Radio).at(1);
-    component.setProps({
-      sourceSelectionExact: false,
-      sourceSelection: [],
-      targetFunds: [{ isin: 'c', fundManager: { name: 'Tuleva' } }],
-    });
-
-    expect(futureSelectionRadio().prop('selected')).toBe(true);
-
-    component.setProps({ sourceSelectionExact: true });
-    expect(futureSelectionRadio().prop('selected')).toBe(false);
-
-    component.setProps({
-      sourceSelectionExact: false,
-      sourceSelection: [
-        { name: 'a', percentage: 0.5 },
-        { name: 'b', percentage: 1 },
-      ],
-    });
-    expect(futureSelectionRadio().prop('selected')).toBe(false);
-  });
-
-  it('shows subtitle for future funds only when it is selected', () => {
-    const futureSelectionRadio = () => component.find(Radio).at(1);
-
-    component.setProps({
-      sourceSelectionExact: false,
-      sourceSelection: [],
-      targetFunds: [{ isin: 'c', fundManager: { name: 'Tuleva' } }],
-    });
-
-    expect(futureSelectionRadio().prop('selected')).toBe(true);
-    expect(
-      component.contains(<FormattedMessage id="select.sources.select.future.subtitle" />),
-    ).toBe(true);
-
-    component.setProps({
-      sourceSelectionExact: false,
-      sourceSelection: [
-        { name: 'a', percentage: 0.5 },
-        { name: 'b', percentage: 1 },
-      ],
-    });
-
-    expect(futureSelectionRadio().prop('selected')).toBe(false);
-    expect(
-      component.contains(<FormattedMessage id="select.sources.select.future.subtitle" />),
-    ).toBe(false);
-  });
-
-  it('selects future funds when clicking on the future funds radio', () => {
-    const onSelectExchangeSources = jest.fn();
-    const sourceFunds = [{ isin: 'a' }, { isin: 'b' }];
-    component.setProps({ sourceFunds, onSelectExchangeSources });
-    expect(onSelectExchangeSources).not.toHaveBeenCalled();
-    component.find(Radio).at(1).simulate('select');
-    expect(onSelectExchangeSources).toHaveBeenCalledTimes(1);
-    expect(onSelectExchangeSources).toHaveBeenCalledWith([], false);
+    expect(onSelectExchangeSources).toHaveBeenCalledWith(fullSelection, true);
   });
 
   it('sets the exact fund selector active as selected when fund selection is exact', () => {
-    component.setProps({ sourceSelectionExact: true });
     const exactFundSelector = () => component.find(Radio).last();
-    expect(exactFundSelector().prop('selected')).toBe(true);
-    component.setProps({ sourceSelectionExact: false });
     expect(exactFundSelector().prop('selected')).toBe(false);
+    component.find(Radio).last().simulate('select');
+    expect(exactFundSelector().prop('selected')).toBe(true);
   });
 
   it('shows the exact fund selector when fund selection is exact', () => {
     const exactFundSelectorRendered = () => !!component.find(ExactFundSelector).length;
-    component.setProps({ sourceSelectionExact: true });
+    component.setProps({ onSelectExchangeSources: jest.fn() });
+    component.find(Radio).last().simulate('select');
     component.find('#someExistingSwitch').simulate('change', { target: { checked: true } });
     expect(exactFundSelectorRendered()).toBe(true);
-    component.setProps({ sourceSelectionExact: false });
+    component.find('#someExistingSwitch').simulate('change', { target: { checked: false } });
     expect(exactFundSelectorRendered()).toBe(false);
   });
 
@@ -311,9 +214,8 @@ describe('Select sources step', () => {
     const subtitleRendered = () =>
       component.contains(<FormattedMessage id="select.sources.select.some.existing" />) &&
       component.contains(<FormattedMessage id="select.sources.select.some.future" />);
-    component.setProps({ sourceSelectionExact: false });
     expect(subtitleRendered()).toBe(false);
-    component.setProps({ sourceSelectionExact: true });
+    component.find(Radio).last().simulate('select');
     expect(subtitleRendered()).toBe(true);
   });
 
@@ -323,13 +225,14 @@ describe('Select sources step', () => {
       { sourceFundIsin: 'b', targetFundIsin: 'c', percentage: 1 },
     ];
     const sourceFunds = [{ isin: 'a' }, { isin: 'b' }];
-    const targetFunds = [{ isin: 'c' }];
+    const targetFunds = [{ isin: 'c', fundManager: { name: 'Tuleva' } }];
     component.setProps({
-      sourceSelectionExact: true,
       sourceSelection,
       sourceFunds,
       targetFunds,
+      onSelectExchangeSources: jest.fn(),
     });
+    component.find(Radio).last().simulate('select');
     component.find('#someExistingSwitch').simulate('change', { target: { checked: true } });
 
     const selectorProp = (name) => component.find(ExactFundSelector).prop(name);
@@ -340,12 +243,13 @@ describe('Select sources step', () => {
 
   it('selects exact funds when the selector tells it to', () => {
     const onSelectExchangeSources = jest.fn();
-    component.setProps({ onSelectExchangeSources, sourceSelectionExact: true });
+    component.setProps({ onSelectExchangeSources });
     const selection = [
       { name: 'a', percentage: 0.7 },
       { name: 'b', percentage: 0.8 },
     ];
     expect(onSelectExchangeSources).not.toHaveBeenCalled();
+    component.find(Radio).last().simulate('select');
     component.find('#someExistingSwitch').simulate('change', { target: { checked: true } });
     component.find(ExactFundSelector).simulate('change', selection);
     expect(onSelectExchangeSources).toHaveBeenCalledTimes(2);
@@ -358,7 +262,6 @@ describe('Select sources step', () => {
 
     component.setProps({
       sourceSelection: [{ name: 'a', percentage: 1 }],
-      sourceSelectionExact: false,
       targetFunds,
     });
     expect(component.find(TargetFundSelector).prop('targetFunds')).toEqual([tulevaFund]);

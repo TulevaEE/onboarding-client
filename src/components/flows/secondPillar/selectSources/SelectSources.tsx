@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-import { PropTypes as Types } from 'prop-types';
-import { bindActionCreators } from 'redux';
+import React, { ReactNode, useState } from 'react';
+import { bindActionCreators, Dispatch } from 'redux';
 import { connect } from 'react-redux';
 
 import { Link } from 'react-router-dom';
@@ -13,21 +12,29 @@ import { isTuleva } from '../../../common/utils';
 import AccountStatement from '../../../account/AccountStatement';
 import { useMandateDeadlines } from '../../../common/apiHooks';
 import { formatDateTime } from '../../../common/dateFormatter';
+import { ErrorResponse, Fund, SourceFund } from '../../../common/apiModels';
+import { SourceSelection } from '../../../exchange/types';
+import { State } from '../../../../types';
 
-function selectAllWithTarget(sourceFunds, targetFund) {
-  return sourceFunds
-    .filter((fund, index, list) => list.length === 1 || fund.isin !== targetFund.isin)
-    .map((fund) => ({
-      sourceFundIsin: fund.isin,
-      targetFundIsin: targetFund.isin,
-      percentage: 1,
-    }));
+function selectAllWithTarget(
+  sourceFunds: SourceFund[] | null,
+  targetFund: Fund,
+): SourceSelection[] {
+  return (
+    sourceFunds
+      ?.filter((sourceFund, _, list) => list.length === 1 || sourceFund.isin !== targetFund?.isin)
+      .map((fund) => ({
+        sourceFundIsin: fund.isin,
+        targetFundIsin: targetFund.isin,
+        percentage: 1,
+      })) || []
+  );
 }
 
-function selectionsError(selections) {
-  const sourceFundPercentages = {};
+function validate(selections: SourceSelection[] | null): string | null {
+  const sourceFundPercentages: { [key: string]: number } = {};
   let errorDescriptionCode = null;
-  selections.forEach((selection) => {
+  selections?.forEach((selection) => {
     if (selection.sourceFundIsin && !sourceFundPercentages[selection.sourceFundIsin]) {
       sourceFundPercentages[selection.sourceFundIsin] = 0;
     }
@@ -43,6 +50,11 @@ function selectionsError(selections) {
   return errorDescriptionCode;
 }
 
+enum SelectionActive {
+  FULL_SELECTION = 'FULL_SELECTION',
+  SOME_SELECTION = 'SOME_SELECTION',
+}
+
 export const SelectSources = ({
   loadingSourceFunds,
   loadingTargetFunds,
@@ -51,12 +63,26 @@ export const SelectSources = ({
   sourceSelection,
   onSelectExchangeSources,
   onSelectFutureContributionsFund,
-  sourceSelectionExact,
   error,
   nextPath,
   selectedFutureContributionsFundIsin,
+}: {
+  loadingSourceFunds: boolean;
+  loadingTargetFunds: boolean;
+  sourceFunds: SourceFund[] | null;
+  targetFunds: Fund[] | null;
+  sourceSelection: SourceSelection[];
+  onSelectExchangeSources: (selection: SourceSelection[], exact: boolean) => void;
+  onSelectFutureContributionsFund: (fundIsin: string | null) => void;
+  error: ErrorResponse | null;
+  nextPath: string;
+  selectedFutureContributionsFundIsin: string;
 }) => {
   const { data: mandateDeadlines } = useMandateDeadlines();
+  const [selectionActive, setSelectionActive] = useState<SelectionActive>(
+    SelectionActive.FULL_SELECTION,
+  );
+
   const [someExistingSwitch, setSomeExistingSwitch] = useState(
     sourceSelection && sourceSelection.length > 0,
   );
@@ -65,23 +91,26 @@ export const SelectSources = ({
   );
 
   React.useEffect(() => {
-    setSomeExistingSwitch(sourceSelection && sourceSelection.length > 0);
-  }, [selectedFutureContributionsFundIsin]);
-
-  React.useEffect(() => {
     setSomeFutureSwitch(selectedFutureContributionsFundIsin != null);
   }, [selectedFutureContributionsFundIsin]);
 
-  const onSomeExistingSwitchChange = (event) => {
+  React.useEffect(() => {
+    setSomeExistingSwitch(sourceSelection && sourceSelection.length > 0);
+  }, [sourceSelection]);
+
+  const onSomeExistingSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSomeExistingSwitch(event.target.checked);
-    onSelectExchangeSources([], true);
+    onSelectExchangeSources(
+      event.target.checked ? selectAllWithTarget(sourceFunds, defaultTargetFund) : [],
+      true,
+    );
   };
 
-  const onSomeFutureSwitchChange = (event) => {
+  const onSomeFutureSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSomeFutureSwitch(event.target.checked);
-    const activeFund = sourceFunds.find((fund) => fund.activeFund) || {};
+    const activeFund = sourceFunds?.find((fund) => fund.activeFund);
     const defaultTargetFund =
-      activeFund.isin !== tulevaTargetFunds[0].isin
+      activeFund?.isin !== tulevaTargetFunds[0].isin
         ? tulevaTargetFunds[0].isin
         : tulevaTargetFunds[1].isin;
     onSelectFutureContributionsFund(event.target.checked ? defaultTargetFund : null);
@@ -93,18 +122,12 @@ export const SelectSources = ({
   if (loadingSourceFunds || !sourceFunds || loadingTargetFunds || !targetFunds) {
     return <Loader className="align-middle" />;
   }
-  const fullSelectionActive = !!sourceSelection.length && !sourceSelectionExact;
-  const futureSelectionActive =
-    !sourceSelection.length && !sourceSelectionExact && targetFunds && !!targetFunds.length;
-  const validationErrorCode =
-    sourceSelectionExact === true ? selectionsError(sourceSelection) : null;
+  const validationErrorCode = validate(sourceSelection);
   const isValid = !validationErrorCode;
-  const tulevaTargetFunds =
-    targetFunds && targetFunds.length && targetFunds.filter((fund) => isTuleva(fund));
-  const defaultTargetFund =
-    tulevaTargetFunds && tulevaTargetFunds.length ? tulevaTargetFunds[0] : null;
+  const tulevaTargetFunds = targetFunds?.filter((fund) => isTuleva(fund));
+  const defaultTargetFund = tulevaTargetFunds[0];
 
-  function validationSelectionErrorElement(errorCode) {
+  function validationSelectionErrorElement(errorCode: string | null): ReactNode {
     if (!errorCode) {
       return null;
     }
@@ -136,15 +159,13 @@ export const SelectSources = ({
       <Radio
         name="tv-select-sources-type"
         id="tv-select-sources-type-all"
-        selected={fullSelectionActive}
-        onSelect={() =>
-          onSelectExchangeSources(selectAllWithTarget(sourceFunds, defaultTargetFund), false)
-        }
+        selected={selectionActive === SelectionActive.FULL_SELECTION}
+        onSelect={() => setSelectionActive(SelectionActive.FULL_SELECTION)}
       >
         <h3 className="m-0">
           <FormattedMessage id="select.sources.select.all" />
         </h3>
-        {fullSelectionActive ? (
+        {selectionActive === SelectionActive.FULL_SELECTION ? (
           <div className="mt-3">
             <p>
               <FormattedMessage id="select.sources.select.all.subtitle" />
@@ -155,7 +176,7 @@ export const SelectSources = ({
                   id="select.sources.select.all.deadline"
                   values={{
                     periodEnding: formatDateTime(mandateDeadlines.periodEnding),
-                    b: (chunks) => <b className="text-nowrap">{chunks}</b>,
+                    b: (chunks: string) => <b className="text-nowrap">{chunks}</b>,
                   }}
                 />
               )}
@@ -163,10 +184,14 @@ export const SelectSources = ({
             <FormattedMessage id="select.sources.select.all.choose" />
             <TargetFundSelector
               targetFunds={tulevaTargetFunds}
-              onSelectFund={(targetFund) =>
+              onSelectFund={(targetFund: Fund) =>
                 onSelectExchangeSources(selectAllWithTarget(sourceFunds, targetFund), false)
               }
-              selectedTargetFundIsin={sourceSelection[0].targetFundIsin}
+              isSelected={(targetFund: Fund) =>
+                JSON.stringify([...sourceSelection].sort()) ===
+                  JSON.stringify(selectAllWithTarget(sourceFunds, targetFund).sort()) &&
+                targetFund.isin === selectedFutureContributionsFundIsin
+              }
             />
           </div>
         ) : (
@@ -175,43 +200,15 @@ export const SelectSources = ({
       </Radio>
       <Radio
         name="tv-select-sources-type"
-        id="tv-select-sources-type-future"
-        className="mt-3"
-        selected={futureSelectionActive}
-        onSelect={() => onSelectExchangeSources([], false)}
-      >
-        <h3 className="m-0">
-          <FormattedMessage id="select.sources.select.future" />
-        </h3>
-        {futureSelectionActive ? (
-          <>
-            <p className="mt-3">
-              <FormattedMessage id="select.sources.select.future.subtitle" />
-            </p>
-            <p>
-              <FormattedMessage id="select.sources.select.all.choose" />
-            </p>
-            <TargetFundSelector
-              targetFunds={tulevaTargetFunds}
-              onSelectFund={(fund) => onSelectFutureContributionsFund(fund.isin)}
-              selectedTargetFundIsin={selectedFutureContributionsFundIsin}
-            />
-          </>
-        ) : (
-          ''
-        )}
-      </Radio>
-      <Radio
-        name="tv-select-sources-type"
         id="tv-select-sources-type-some"
         className="mt-3"
-        selected={sourceSelectionExact}
-        onSelect={() => onSelectExchangeSources(sourceSelection, true)}
+        selected={selectionActive === SelectionActive.SOME_SELECTION}
+        onSelect={() => setSelectionActive(SelectionActive.SOME_SELECTION)}
       >
-        <p className="m-0">
+        <h3 className="m-0">
           <FormattedMessage id="select.sources.select.some" />
-        </p>
-        {sourceSelectionExact ? (
+        </h3>
+        {selectionActive === SelectionActive.SOME_SELECTION ? (
           <div className="mt-3">
             <hr className="mb-3" />
 
@@ -234,7 +231,9 @@ export const SelectSources = ({
                   selections={sourceSelection}
                   sourceFunds={sourceFunds}
                   targetFunds={targetFunds}
-                  onChange={(selection) => onSelectExchangeSources(selection, true)}
+                  onChange={(selection: SourceSelection[]) =>
+                    onSelectExchangeSources(selection, true)
+                  }
                 />
                 {validationSelectionErrorElement(validationErrorCode)}
               </>
@@ -266,12 +265,12 @@ export const SelectSources = ({
                 >
                   <FormattedMessage id="transfer.future.capital.other.fund">
                     {(message) => (
-                      <option value="1" hidden="hidden">
+                      <option value="1" hidden>
                         {message}
                       </option>
                     )}
                   </FormattedMessage>
-                  {targetFunds.map((fund) => (
+                  {targetFunds.map((fund: Fund) => (
                     <option value={fund.isin} key={fund.isin}>
                       {fund.name}
                     </option>
@@ -296,38 +295,8 @@ export const SelectSources = ({
   );
 };
 
-const noop = () => null;
-
-SelectSources.defaultProps = {
-  sourceFunds: null,
-  targetFunds: null,
-  loadingSourceFunds: false,
-  loadingTargetFunds: false,
-  sourceSelection: [],
-  sourceSelectionExact: false,
-  onSelectExchangeSources: noop,
-  onSelectFutureContributionsFund: noop,
-  error: null,
-  selectedFutureContributionsFundIsin: null,
-};
-
-SelectSources.propTypes = {
-  sourceSelection: Types.arrayOf(Types.shape({ targetFundIsin: Types.string })),
-  sourceSelectionExact: Types.bool,
-  sourceFunds: Types.arrayOf(Types.shape({})),
-  targetFunds: Types.arrayOf(Types.shape({})),
-  loadingSourceFunds: Types.bool,
-  loadingTargetFunds: Types.bool,
-  onSelectExchangeSources: Types.func,
-  onSelectFutureContributionsFund: Types.func,
-  error: Types.shape({ body: Types.string }),
-  nextPath: Types.string.isRequired,
-  selectedFutureContributionsFundIsin: Types.string,
-};
-
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state: State) => ({
   sourceSelection: state.exchange.sourceSelection,
-  sourceSelectionExact: state.exchange.sourceSelectionExact,
   sourceFunds: state.exchange.sourceFunds,
   targetFunds: state.exchange.targetFunds,
   loadingSourceFunds: state.exchange.loadingSourceFunds,
@@ -336,7 +305,7 @@ const mapStateToProps = (state) => ({
   selectedFutureContributionsFundIsin: state.exchange.selectedFutureContributionsFundIsin,
 });
 
-const mapDispatchToProps = (dispatch) =>
+const mapDispatchToProps = (dispatch: Dispatch) =>
   bindActionCreators(
     {
       onSelectExchangeSources: selectExchangeSources,
