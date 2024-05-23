@@ -56,6 +56,8 @@ export default function thirdPillarReducer(state = initialState, action) {
       const exchangeableSourceFunds = sourceFunds
         .filter((fund) => fund.price > 0)
         .filter((fund) => EXIT_RESTRICTED_FUNDS.indexOf(fund.isin) === -1)
+        .filter((fund) => !fund.name?.toLowerCase().includes('väljumine piiratud'))
+        .filter((fund) => !fund.name?.toLowerCase().includes('limited redemption'))
         .filter((fund) => fund.isin !== state.selectedFutureContributionsFundIsin); // TODO: change source funds on selected change
 
       // eslint-disable-next-line no-case-declarations

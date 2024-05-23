@@ -236,6 +236,20 @@ describe('Third pillar reducer', () => {
     };
     const sourceFunds = [
       { isin: EXIT_RESTRICTED_FUNDS[0], pillar: 3, price: 100, unavailablePrice: 0 },
+      {
+        isin: 'ABC123',
+        pillar: 3,
+        price: 100,
+        unavailablePrice: 0,
+        name: 'Fund One (väljumine piiratud)',
+      },
+      {
+        isin: 'ABC123',
+        pillar: 3,
+        price: 100,
+        unavailablePrice: 0,
+        name: 'Fund Two (limited redemption)',
+      },
     ];
 
     const state = reducer(oldState, {
