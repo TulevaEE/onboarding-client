@@ -9,13 +9,13 @@ import { Fees } from '../../../../common/Percentage/Fees';
 type Props = {
   targetFunds: Fund[];
   onSelectFund: (fund: Fund) => void;
-  selectedTargetFundIsin: string;
+  isSelected: (fund: Fund) => boolean;
 };
 
 export const TargetFundSelector: React.FunctionComponent<Props> = ({
   targetFunds = [],
   onSelectFund,
-  selectedTargetFundIsin = '',
+  isSelected = () => false,
 }) => {
   const { formatMessage } = useIntl();
 
@@ -27,11 +27,11 @@ export const TargetFundSelector: React.FunctionComponent<Props> = ({
             type="button"
             className={`
                 tv-target-fund p-4 text-left
-                ${selectedTargetFundIsin === fund.isin ? 'tv-target-fund--active' : ''}
+                ${isSelected(fund) ? 'tv-target-fund--active' : ''}
               `}
             onClick={() => onSelectFund(fund)}
           >
-            {selectedTargetFundIsin === fund.isin ? (
+            {isSelected(fund) ? (
               <div className="tv-target-fund__corner-check">
                 <span>
                   <img src={checkImage} alt="Success" />

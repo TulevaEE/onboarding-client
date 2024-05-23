@@ -12,6 +12,6 @@ export type ThirdPillar = {
   exchangeExistingUnits: boolean;
   agreedToTerms: boolean;
   signedMandateId: number;
-  error: ErrorResponse;
+  error: ErrorResponse | null;
   recurringPaymentCount: number;
 };

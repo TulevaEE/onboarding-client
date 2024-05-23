@@ -53,13 +53,11 @@ export const FundExchangeRow = ({ sourceFunds, targetFunds, onChange, selection 
               onChange({ ...selection, targetFundIsin })
             }
           >
-            {sortedTargetFunds
-              .filter((fund) => fund.isin !== selection.sourceFundIsin)
-              .map((fund) => (
-                <option key={fund.isin} value={fund.isin}>
-                  {fund.name}
-                </option>
-              ))}
+            {sortedTargetFunds.map((fund) => (
+              <option key={fund.isin} value={fund.isin}>
+                {fund.name}
+              </option>
+            ))}
           </select>
 
           <label

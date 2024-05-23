@@ -5,7 +5,7 @@ export type Aml = {
   isResident: boolean;
   occupation: string;
   loading: boolean;
-  error: ErrorResponse;
+  error: ErrorResponse | null;
   missingAmlChecks: AmlCheck[];
   createAmlChecksSuccess: boolean;
 };
