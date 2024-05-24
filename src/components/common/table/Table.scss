@@ -13,14 +13,14 @@
 .table th {
   text-transform: uppercase;
   font-weight: bolder;
-  font-size: 0.8em;
+  font-size: 0.8125em;
   background-color: $gray-washed;
   border-top-width: 1px;
   border-top-style: solid;
   border-bottom-width: 1px;
   border-bottom-style: solid;
   border-color: $gray-mid;
-  color: darkgray;
+  color: $text-secondary;
   @include not-mobile {
     white-space: nowrap;
   }

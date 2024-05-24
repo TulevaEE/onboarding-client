@@ -6,7 +6,7 @@ $padding: 15px;
   width: auto !important;
   max-width: none !important;
   margin-bottom: $padding;
-  border: 1px solid $very-light-gray;
+  border: 1px solid $gray-mid;
   border-radius: 0.25rem;
   overflow: hidden;
 }
@@ -16,7 +16,7 @@ $padding: 15px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid $very-light-gray;
+  border-bottom: 1px solid $gray-mid;
 }
 
 .content {
@@ -28,5 +28,5 @@ $padding: 15px;
   padding: $padding 18px;
   display: flex;
   flex-direction: column;
-  border-top: 1px solid $very-light-gray;
+  border-top: 1px solid $gray-mid;
 }
