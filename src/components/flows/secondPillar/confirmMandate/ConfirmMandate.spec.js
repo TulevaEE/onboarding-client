@@ -4,7 +4,7 @@ import { shallow } from 'enzyme';
 import { Link, Redirect } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { ConfirmMandate } from './ConfirmMandate';
-import FundTransferTable from './fundTransferTable';
+import { FundTransferTable } from './fundTransferTable/FundTransferTable';
 import MandateNotFilledAlert from './mandateNotFilledAlert';
 import { Loader, AuthenticationLoader, ErrorMessage } from '../../../common';
 

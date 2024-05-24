@@ -1,11 +1,18 @@
-/* eslint-disable react/no-array-index-key */
-import React from 'react';
-import { PropTypes as Types } from 'prop-types';
 import './FundTransferTable.scss';
 
 import { FormattedMessage } from 'react-intl';
 
-const FundTransferTable = ({ selections }) => (
+type Props = {
+  selections: {
+    sourceFundIsin: string;
+    sourceFundName: string;
+    targetFundName: string;
+    targetFundIsin: string;
+    percentage: number;
+  }[];
+};
+
+export const FundTransferTable = ({ selections = [] }: Props) => (
   <div>
     <div className="row tv-table__header py-2">
       <div className="col-12 col-sm">
@@ -29,20 +36,3 @@ const FundTransferTable = ({ selections }) => (
     ))}
   </div>
 );
-
-FundTransferTable.defaultProps = {
-  selections: [],
-};
-
-FundTransferTable.propTypes = {
-  selections: Types.arrayOf(
-    Types.shape({
-      sourceFundIsin: Types.string,
-      sourceFundName: Types.string,
-      targetFundIsin: Types.string,
-      percentage: Types.number,
-    }),
-  ),
-};
-
-export default FundTransferTable;

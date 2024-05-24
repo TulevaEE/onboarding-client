@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { FormattedMessage } from 'react-intl';
-import FundTransferTable from './FundTransferTable';
+import { FundTransferTable } from './FundTransferTable';
 
 describe('Fund transfer table', () => {
   let component;
