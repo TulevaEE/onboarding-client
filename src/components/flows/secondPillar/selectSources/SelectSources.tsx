@@ -192,7 +192,8 @@ export const SelectSources = ({
                 JSON.stringify([...sourceSelection].sort()) ===
                   JSON.stringify(selectAllWithTarget(sourceFunds, targetFund).sort()) &&
                 (targetFund.isin === selectedFutureContributionsFundIsin ||
-                  isContributionsFundAlreadyActive(sourceFunds, targetFund.isin))
+                  (!selectedFutureContributionsFundIsin &&
+                    isContributionsFundAlreadyActive(sourceFunds, targetFund.isin)))
               }
             />
           </div>
