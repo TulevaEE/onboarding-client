@@ -2,9 +2,10 @@ import React from 'react';
 import classNames from 'classnames';
 import { FormattedMessage } from 'react-intl';
 import styles from './DefinitionList.module.scss';
+import { TranslationKey } from '../../translations';
 
 export interface Definition {
-  key: string;
+  key: TranslationKey;
   value: React.ReactNode;
   alignRight?: boolean;
 }

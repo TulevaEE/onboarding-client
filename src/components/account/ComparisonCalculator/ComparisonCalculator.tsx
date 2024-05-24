@@ -25,6 +25,7 @@ import {
   RootState,
 } from './types';
 import { getCurrentPath, getFullYearsSince, sortFundsWithTulevaFirst } from './utility';
+import { TranslationKey } from '../../translations';
 
 const formatMessageWithTags = ({ id, values }: FormatTagsMessageDescriptor) => (
   <FormattedMessage
@@ -446,7 +447,7 @@ const ComparisonCalculator: React.FC = () => {
         </div>
         <div className="bar-label position-absolute" style={barLabelStyle}>
           {properties.label.includes('.') ? (
-            <FormattedMessage id={properties.label} />
+            <FormattedMessage id={properties.label as TranslationKey} />
           ) : (
             properties.label
           )}

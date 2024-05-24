@@ -11,13 +11,13 @@ describe('Status Box Row', () => {
   });
 
   it('renders the name', () => {
-    const displayName = <FormattedMessage id="i am a name" />;
+    const displayName = <span>i am a name</span>;
     component.setProps({ name: displayName });
     expect(component.contains(displayName)).toBe(true);
   });
 
   it('renders action button if row status not ok', () => {
-    const action = <FormattedMessage id="do next" />;
+    const action = <span>do next</span>;
     component.setProps({ showAction: true, children: action });
     expect(component.contains(action)).toBe(true);
   });

@@ -1,19 +1,28 @@
 import React, { FC } from 'react';
 import { useIntl } from 'react-intl';
+import { TranslationKey } from '../../../translations';
 
-export interface Option {
+export type Option = BaseOption & TranslateOption;
+
+type BaseOption = {
   value: string;
-  label: string;
   disabled?: boolean;
   divider?: boolean;
-  translate?: boolean;
-}
+};
 
-export interface OptionGroup {
-  label: string;
+type TranslateOption =
+  | {
+      translate?: false;
+      label: string;
+    }
+  | {
+      translate: true;
+      label: TranslationKey;
+    };
+
+export type OptionGroup = {
   options: Option[];
-  translate?: boolean;
-}
+} & TranslateOption;
 
 interface SelectProps {
   options: (Option | OptionGroup)[];
@@ -35,9 +44,11 @@ export const Select: FC<SelectProps> = ({
   const { formatMessage } = useIntl();
 
   const getLabel = (option: Option | OptionGroup) => {
-    return translate && option.translate !== false
-      ? formatMessage({ id: option.label })
-      : option.label;
+    if (translate && option.translate) {
+      return formatMessage({ id: option.label });
+    }
+
+    return option.label;
   };
 
   const renderOption = (option: Option) => {

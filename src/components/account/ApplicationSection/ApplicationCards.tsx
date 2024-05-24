@@ -20,6 +20,7 @@ import Euro from '../../common/Euro';
 import { Fees } from '../../common/Percentage/Fees';
 import { formatMonth } from '../../common/dateFormatter';
 import { isBeforeCancellationDeadline } from './ApplicationFunctions';
+import { TranslationKey } from '../../translations';
 
 export const ApplicationCard: React.FunctionComponent<{
   application: Application;
@@ -154,7 +155,7 @@ const TransferApplicationCard: React.FunctionComponent<{
           },
           application.details.exchanges.map(({ targetFund, targetPik, amount }) => [
             {
-              key: 'applications.type.transfer.targetFund',
+              key: 'applications.type.transfer.targetFund' as const,
               value: targetFund?.name ? (
                 <>
                   {targetFund.name} <br />
@@ -168,7 +169,7 @@ const TransferApplicationCard: React.FunctionComponent<{
               ),
             },
             {
-              key: 'applications.type.transfer.amount',
+              key: 'applications.type.transfer.amount' as const,
               value: isThirdPillarTransfer ? (
                 amount
               ) : (
@@ -277,7 +278,7 @@ const ResumeContributionsCard: React.FunctionComponent<{
 );
 
 const BaseApplicationCard: React.FunctionComponent<{
-  titleKey: string;
+  titleKey: TranslationKey;
   application: Application;
   children: React.ReactNode;
   allowedActions: ApplicationAction[];

@@ -1,5 +1,6 @@
 import { MessageDescriptor } from 'react-intl';
 import { Fund, UserConversion } from '../../common/apiModels';
+import { TranslationKey } from '../../translations';
 
 export interface GraphBarProperties {
   color: string;
@@ -69,6 +70,6 @@ export interface FormatValues {
 }
 
 export interface FormatTagsMessageDescriptor extends MessageDescriptor {
-  id: string;
+  id: TranslationKey;
   values?: FormatValues;
 }
