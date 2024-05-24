@@ -650,8 +650,8 @@
   "comparisonCalculator.content.performance.fund.indexUnderperformance.explanation": "Kui oleksid teeninud <b>maailmaturu indeksi</b> tootlust, oleks sinu pensionivara kasvanud senise {currentAmount} asemel {indexAmount}.",
   "comparisonCalculator.content.performance.fund.neutral.start": "Sinu {pillar} sammas on viimase {years} aastaga teinud <b>{fund}</b> tootlusele lähedase tulemuse.",
 
-  "comparisonCalculator.content.performance.epi.alpha.label.negative": "Eesti keskmisele II samba fondile",
-  "comparisonCalculator.content.performance.epi.alpha.label.positive": "Eesti keskmist II samba fondi",
+  "comparisonCalculator.content.performance.epi.alpha.label.negative": "Eesti keskmise II samba fondi",
+  "comparisonCalculator.content.performance.epi.alpha.label.positive": "Eesti keskmise II samba fondi",
 
   "comparisonCalculator.content.performance.cpi.alpha.start": "Sinu {pillar} sammas on viimase {years} aastaga <b>Eesti inflatsiooni</b>",
   "comparisonCalculator.content.performance.cpi.alpha.wordNegative": "<b>le</b>",
