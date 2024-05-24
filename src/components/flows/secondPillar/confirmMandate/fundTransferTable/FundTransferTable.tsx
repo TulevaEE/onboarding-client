@@ -19,18 +19,18 @@ export const FundTransferTable = ({ selections = [] }: Props) => (
     </div>
     {selections.map((selection, index) => (
       <div key={index}>
-        <div className="px-3 pb-3 d-flex flex-column flex-sm-row justify-content-between">
-          <TransferDataPoint fixedSize>
+        <div className="px-3 pb-3 d-flex flex-column flex-md-row justify-content-between">
+          <TransferDataPoint className="flex-grow-0 flex-shrink-0 fund-selections-current-fund">
             <FormattedMessage id="confirm.mandate.current.fund" />
             <b>{selection.sourceFundName}</b>
           </TransferDataPoint>
-          <TransferDataPoint>
+          <TransferDataPoint className="flex-grow-1">
             <FormattedMessage id="confirm.mandate.future.fund" />
             <b>
               <span className="highlight">{selection.targetFundName}</span>
             </b>
           </TransferDataPoint>
-          <TransferDataPoint fixedSize>
+          <TransferDataPoint className="flex-grow-0 flex-shrink-0">
             <FormattedMessage id="confirm.mandate.percentage" />
             <b>{selection.percentage * 100}%</b>
           </TransferDataPoint>
@@ -44,12 +44,6 @@ export const FundTransferTable = ({ selections = [] }: Props) => (
   </div>
 );
 
-const TransferDataPoint = ({ children, fixedSize }: PropsWithChildren<{ fixedSize?: boolean }>) => (
-  <div
-    className={`pt-2 d-flex flex-column justify-start ${
-      fixedSize ? 'flex-grow-0' : 'flex-grow-1 pl-sm-5'
-    }`}
-  >
-    {children}
-  </div>
+const TransferDataPoint = ({ children, className }: PropsWithChildren<{ className?: string }>) => (
+  <div className={`pt-2 d-flex flex-column justify-start ${className ?? ''}`}>{children}</div>
 );

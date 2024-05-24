@@ -16,9 +16,14 @@
   border-color: $gray-mid;
 }
 
-. {
+.fund-selections-container {
   background-color: $blue-washed;
   border-radius: 8px;
+}
+
+.fund-selections-current-fund {
+  flex-basis: 40%;
+  flex-shrink: 0;
 }
 
 .fund-selection-divider {
