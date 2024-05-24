@@ -629,7 +629,7 @@
   "comparisonCalculator.comparisonOptions.lowFeeFunds": "Madala tasuga pensionifondid (alla 0.5%)",
   "comparisonCalculator.comparisonOptions.highFeeFunds": "Kõrge tasuga pensionifondid ({minimumFee}%–1.56%)",
   "comparisonCalculator.comparisonOptions.unionStockIndex": "Maailmaturu indeks",
-  "comparisonCalculator.comparisonOptions.epi": "Eesti II samba fondide keskmine tootlus",
+  "comparisonCalculator.comparisonOptions.epi": "Eesti keskmine II samba fond",
   "comparisonCalculator.comparisonOptions.cpi": "Eesti inflatsioon",
 
 
@@ -652,8 +652,8 @@
   "comparisonCalculator.content.performance.fund.indexUnderperformance.explanation": "Kui oleksid teeninud <b>maailmaturu indeksi</b> tootlust, oleks sinu pensionivara kasvanud senise {currentAmount} asemel {indexAmount}.",
   "comparisonCalculator.content.performance.fund.neutral.start": "Sinu {pillar} sammas on viimase {years} aastaga teinud <b>{fund}</b> tootlusele lähedase tulemuse.",
 
-  "comparisonCalculator.content.performance.epi.alpha.label.negative": "Eesti II samba fondide keskmisele",
-  "comparisonCalculator.content.performance.epi.alpha.label.positive": "Eesti II samba fondide keskmist",
+  "comparisonCalculator.content.performance.epi.alpha.label.negative": "Eesti keskmisele II samba fondile",
+  "comparisonCalculator.content.performance.epi.alpha.label.positive": "Eesti keskmist II samba fondi",
 
   "comparisonCalculator.content.performance.cpi.alpha.start": "Sinu {pillar} sammas on viimase {years} aastaga <b>Eesti inflatsiooni</b>",
   "comparisonCalculator.content.performance.cpi.alpha.wordNegative": "<b>le</b>",

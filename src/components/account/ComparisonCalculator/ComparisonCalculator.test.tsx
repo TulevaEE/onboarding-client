@@ -517,7 +517,7 @@ describe('ComparisonCalculator', () => {
     ).toBeInTheDocument();
     expect(
       await screen.findByText(
-        /return, your pension assets would have grown instead of 11 000 € to 16 000 €/i,
+        /return, your pension assets would have grown instead of \+11 000 € to \+16 000 €/i,
       ),
     ).toBeInTheDocument();
 
@@ -580,7 +580,7 @@ describe('ComparisonCalculator', () => {
     ).toBeInTheDocument();
     expect(
       await screen.findByText(
-        /return, your pension assets would have grown instead of 11 000 € to 16 000 €/i,
+        /return, your pension assets would have grown instead of \+11 000 € to \+16 000 €/i,
       ),
     ).toBeInTheDocument();
 
@@ -643,7 +643,7 @@ describe('ComparisonCalculator', () => {
     ).toBeInTheDocument();
     expect(
       await screen.findByText(
-        /return, your pension assets would have grown instead of 11 000 € to 16 000 €/i,
+        /return, your pension assets would have grown instead of \+11 000 € to \+16 000 €/i,
       ),
     ).toBeInTheDocument();
 
