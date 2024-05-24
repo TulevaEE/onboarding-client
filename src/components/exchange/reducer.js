@@ -65,17 +65,19 @@ function getCurrentCompanyFunds(targetFunds) {
 
 function createFullDefaultSourceSelection({ sourceFunds, targetFunds }) {
   const currentCompanyFunds = getCurrentCompanyFunds(targetFunds);
+  const targetFundIsin = currentCompanyFunds[0].isin;
+
   return sourceFunds
-    .filter((fund) => currentCompanyFunds.map((tf) => tf.isin).indexOf(fund.isin) === -1)
+    .filter((fund) => fund.isin !== targetFundIsin)
     .filter((fund) => fund.price > 0)
     .map(({ isin }) => ({
       sourceFundIsin: isin,
-      targetFundIsin: currentCompanyFunds[0].isin,
+      targetFundIsin,
       percentage: 1,
     }));
 }
 
-function isContributionsFundAlreadyActive(sourceFunds, isinToCompareTo) {
+export function isContributionsFundAlreadyActive(sourceFunds, isinToCompareTo) {
   return (
     sourceFunds &&
     !!sourceFunds.find((sourceFund) => sourceFund.activeFund && sourceFund.isin === isinToCompareTo)
