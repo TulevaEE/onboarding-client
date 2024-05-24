@@ -212,7 +212,7 @@ export const SelectSources = ({
           <FormattedMessage id="select.sources.select.some" />
         </h3>
         {selectionActive === SelectionActive.SOME_SELECTION ? (
-          <div className="mt-3">
+          <div className="mt-4">
             <hr className="mb-3" />
 
             <div className="custom-control custom-switch">
@@ -244,7 +244,7 @@ export const SelectSources = ({
               ''
             )}
 
-            <hr className="mt-4 mb-3" />
+            <hr className="my-3" />
 
             <div className="custom-control custom-switch">
               <input
