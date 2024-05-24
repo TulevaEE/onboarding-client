@@ -1,5 +1,5 @@
 import './FundTransferTable.scss';
-
+import { PropsWithChildren } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 type Props = {
@@ -13,26 +13,43 @@ type Props = {
 };
 
 export const FundTransferTable = ({ selections = [] }: Props) => (
-  <div>
-    <div className="row tv-table__header py-2">
-      <div className="col-12 col-sm">
-        <FormattedMessage id="confirm.mandate.current.fund" />
-      </div>
-      <div className="col-12 col-sm">
-        <FormattedMessage id="confirm.mandate.future.fund" />
-      </div>
-      <div className="col-12 col-sm-2">
-        <FormattedMessage id="confirm.mandate.percentage" />
-      </div>
+  <div className="fund-selections-container">
+    <div className="pt-3 px-3">
+      <FormattedMessage id="confirm.mandate.transferExisting" />
     </div>
     {selections.map((selection, index) => (
-      <div className="row tv-table__row py-2" key={index}>
-        <div className="col-12 col-sm">{selection.sourceFundName}</div>
-        <div className="col-12 col-sm">
-          <b className="highlight">{selection.targetFundName}</b>
+      <div key={index}>
+        <div className="px-3 pb-3 d-flex flex-column flex-sm-row justify-content-between">
+          <TransferDataPoint fixedSize>
+            <FormattedMessage id="confirm.mandate.current.fund" />
+            <b>{selection.sourceFundName}</b>
+          </TransferDataPoint>
+          <TransferDataPoint>
+            <FormattedMessage id="confirm.mandate.future.fund" />
+            <b>
+              <span className="highlight">{selection.targetFundName}</span>
+            </b>
+          </TransferDataPoint>
+          <TransferDataPoint fixedSize>
+            <FormattedMessage id="confirm.mandate.percentage" />
+            <b>{selection.percentage * 100}%</b>
+          </TransferDataPoint>
         </div>
-        <div className="col-12 col-sm-2">{selection.percentage * 100}%</div>
+
+        {selections.length > 1 && index !== selections.length - 1 && (
+          <div className="fund-selection-divider ml-3" />
+        )}
       </div>
     ))}
+  </div>
+);
+
+const TransferDataPoint = ({ children, fixedSize }: PropsWithChildren<{ fixedSize?: boolean }>) => (
+  <div
+    className={`pt-2 d-flex flex-column justify-start ${
+      fixedSize ? 'flex-grow-0' : 'flex-grow-1 pl-sm-5'
+    }`}
+  >
+    {children}
   </div>
 );

@@ -15,3 +15,13 @@
   border-bottom-style: solid;
   border-color: $gray-mid;
 }
+
+. {
+  background-color: $blue-washed;
+  border-radius: 8px;
+}
+
+.fund-selection-divider {
+  width: calc(100% - 2rem);
+  border-bottom: 1px solid #cae0f1;
+}
