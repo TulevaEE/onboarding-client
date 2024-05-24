@@ -9,8 +9,10 @@ const accountNumber: { [bank: string]: string } = {
   luminor: 'EE961700017004379157',
 };
 
+type Bank = 'swedbank' | 'seb' | 'lhv' | 'luminor';
+
 export const AccountNumberRow: React.FunctionComponent<{
-  bank: string;
+  bank: Bank;
   children: React.ReactNode;
 }> = ({ bank, children }) => (
   <tr>

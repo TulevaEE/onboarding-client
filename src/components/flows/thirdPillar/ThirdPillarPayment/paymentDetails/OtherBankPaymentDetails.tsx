@@ -9,7 +9,10 @@ import { PaymentType } from '../../../../common/apiModels';
 export const OtherBankPaymentDetails: React.FunctionComponent<{
   amount: string;
   personalCode: string;
-  paymentType: PaymentType;
+  paymentType: Exclude<
+    PaymentType,
+    PaymentType.EMPLOYER | PaymentType.GIFT | PaymentType.MEMBER_FEE
+  >;
 }> = ({ amount, personalCode, paymentType }) => (
   <div className="mt-4 payment-details p-4">
     <h3>
