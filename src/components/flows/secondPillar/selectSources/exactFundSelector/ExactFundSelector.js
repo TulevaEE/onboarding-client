@@ -31,7 +31,7 @@ function createRowAdder({ sourceFunds, targetFunds, selections, onChange }) {
 const ExactFundSelector = ({ selections, sourceFunds, targetFunds, onChange }) => (
   <>
     {selections && selections.length ? (
-      <div className="row mt-3">
+      <div className="mt-3">
         {selections.map((selection, index) => (
           <FundExchangeRow
             key={index}
@@ -47,7 +47,7 @@ const ExactFundSelector = ({ selections, sourceFunds, targetFunds, onChange }) =
     )}
     <button
       type="button"
-      className="btn btn-outline-primary px-3 mt-3"
+      className="btn btn-outline-primary px-3 mt-2"
       onClick={createRowAdder({
         sourceFunds,
         targetFunds,
