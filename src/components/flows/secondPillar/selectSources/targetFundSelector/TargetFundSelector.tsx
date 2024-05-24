@@ -20,13 +20,13 @@ export const TargetFundSelector: React.FunctionComponent<Props> = ({
   const { formatMessage } = useIntl();
 
   return (
-    <div className="row mx-0 mt-3 tv-target-fund__container">
+    <div className="row mx-0 mt-3 tv-target-fund__container align-items-stretch">
       {targetFunds.map((fund) => (
         <div key={fund.isin} className="col-12 col-sm mb-2 mr-2 p-0">
           <button
             type="button"
             className={`
-                tv-target-fund p-4 text-left
+                tv-target-fund h-100 p-4 text-left
                 ${isSelected(fund) ? 'tv-target-fund--active' : ''}
               `}
             onClick={() => onSelectFund(fund)}

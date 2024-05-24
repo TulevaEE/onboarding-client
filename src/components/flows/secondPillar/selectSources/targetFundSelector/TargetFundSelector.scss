@@ -7,6 +7,10 @@
   position: relative;
   overflow: hidden;
 
+  &:hover {
+    border-color: #0593fc;
+  }
+
   &__corner-check {
     border-bottom: 60px solid #0593fc;
     border-left: 60px solid transparent;

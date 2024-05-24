@@ -7,11 +7,11 @@
   border-color: $gray-mid;
   border-radius: 8px;
   width: 100%;
-  cursor: pointer;
 
   transition: background-color 0.15s ease-out, border-color 0.15s ease-out;
 
-  & > * {
+  &:not(&--selected),
+  &:not(&--selected) > * {
     cursor: pointer;
   }
 
