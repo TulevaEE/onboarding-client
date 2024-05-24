@@ -15,6 +15,7 @@ import { formatDateTime } from '../../../common/dateFormatter';
 import { ErrorResponse, Fund, SourceFund } from '../../../common/apiModels';
 import { SourceSelection } from '../../../exchange/types';
 import { State } from '../../../../types';
+import { isContributionsFundAlreadyActive } from '../../../exchange/reducer';
 
 function selectAllWithTarget(
   sourceFunds: SourceFund[] | null,
@@ -190,7 +191,8 @@ export const SelectSources = ({
               isSelected={(targetFund: Fund) =>
                 JSON.stringify([...sourceSelection].sort()) ===
                   JSON.stringify(selectAllWithTarget(sourceFunds, targetFund).sort()) &&
-                targetFund.isin === selectedFutureContributionsFundIsin
+                (targetFund.isin === selectedFutureContributionsFundIsin ||
+                  isContributionsFundAlreadyActive(sourceFunds, targetFund.isin))
               }
             />
           </div>

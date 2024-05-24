@@ -419,12 +419,17 @@ describe('Exchange reducer', () => {
         targetFundIsin: 'thissourcewillbeskipped',
         percentage: 1,
       },
+      {
+        sourceFundIsin: 'willnotbeskipped',
+        targetFundIsin: 'thissourcewillbeskipped',
+        percentage: 1,
+      },
     ];
 
     const sourceFunds = [
       { name: 'name', isin: 'source', price: 100, unavailablePrice: 0, pillar: 2 },
       { name: 'name', isin: 'thissourcewillbeskipped', price: 100, unavailablePrice: 0, pillar: 2 },
-      { name: 'name', isin: 'willbeskippedaswell', price: 100, unavailablePrice: 0, pillar: 2 },
+      { name: 'name', isin: 'willnotbeskipped', price: 100, unavailablePrice: 0, pillar: 2 },
     ];
     const sourceFundsAction = { type: GET_SOURCE_FUNDS_SUCCESS, sourceFunds };
     const targetFunds = [
@@ -437,7 +442,7 @@ describe('Exchange reducer', () => {
       },
       {
         name: 'name',
-        isin: 'willbeskippedaswell',
+        isin: 'willnotbeskipped',
         fundManager: { name: 'Tuleva' },
         pillar: 2,
         status: FundStatus.ACTIVE,
