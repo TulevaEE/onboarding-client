@@ -44,8 +44,8 @@ export const Select: FC<SelectProps> = ({
   const { formatMessage } = useIntl();
 
   const getLabel = (option: Option | OptionGroup) => {
-    if (translate && option.translate) {
-      return formatMessage({ id: option.label });
+    if (translate && option.translate !== false) {
+      return formatMessage({ id: option.label as TranslationKey });
     }
 
     return option.label;
