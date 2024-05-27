@@ -16,6 +16,7 @@ import { ErrorResponse, Fund, SourceFund } from '../../../common/apiModels';
 import { SourceSelection } from '../../../exchange/types';
 import { State } from '../../../../types';
 import { isContributionsFundAlreadyActive } from '../../../exchange/reducer';
+import { TranslationKey } from '../../../translations';
 
 function selectAllWithTarget(
   sourceFunds: SourceFund[] | null,
@@ -32,7 +33,7 @@ function selectAllWithTarget(
   );
 }
 
-function validate(selections: SourceSelection[] | null): string | null {
+function validate(selections: SourceSelection[] | null): TranslationKey | null {
   const sourceFundPercentages: { [key: string]: number } = {};
   let errorDescriptionCode = null;
   selections?.forEach((selection) => {
@@ -128,7 +129,7 @@ export const SelectSources = ({
   const tulevaTargetFunds = targetFunds?.filter((fund) => isTuleva(fund));
   const defaultTargetFund = tulevaTargetFunds[0];
 
-  function validationSelectionErrorElement(errorCode: string | null): ReactNode {
+  function validationSelectionErrorElement(errorCode: TranslationKey | null): ReactNode {
     if (!errorCode) {
       return null;
     }

@@ -12,6 +12,8 @@ type Props = {
   isSelected: (fund: Fund) => boolean;
 };
 
+type TulevaFundIsin = 'EE3600109435' | 'EE3600109443' | 'EE3600001707';
+
 export const TargetFundSelector: React.FunctionComponent<Props> = ({
   targetFunds = [],
   onSelectFund,
@@ -50,11 +52,15 @@ export const TargetFundSelector: React.FunctionComponent<Props> = ({
                   <Fees className="text-bold" value={fund.ongoingChargesFigure} />
                 </div>
                 <div className="mb-2">
-                  <FormattedMessage id={`target.funds.${fund.isin}.description`} />
+                  <FormattedMessage
+                    id={`target.funds.${fund.isin as TulevaFundIsin}.description`}
+                  />
                 </div>
                 <a
                   className="tv-target-fund__terms-link"
-                  href={formatMessage({ id: `target.funds.${fund.isin}.terms.link` })}
+                  href={formatMessage({
+                    id: `target.funds.${fund.isin as TulevaFundIsin}.terms.link`,
+                  })}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
