@@ -174,8 +174,8 @@ describe('ComparisonCalculator', () => {
 
     const timeSelect = timePeriodSelect();
     expect(timeSelect).toBeInTheDocument();
-    expect(timeSelect).toHaveTextContent('From starting II contributions (March 19, 2004)');
-    expect(timeSelect).toHaveTextContent('From Tuleva II pillar fund creation (April 27, 2017)');
+    expect(timeSelect).toHaveTextContent('From starting II contributions (2004-03-19)');
+    expect(timeSelect).toHaveTextContent('From Tuleva II pillar fund creation (2017-04-27)');
     expect(timeSelect).toHaveTextContent('Last 20 years');
     expect(timeSelect).toHaveTextContent('Last 15 years');
     expect(timeSelect).toHaveTextContent('Last 10 years');
@@ -194,8 +194,8 @@ describe('ComparisonCalculator', () => {
 
     const timeSelect = timePeriodSelect();
     expect(timeSelect).toBeInTheDocument();
-    expect(timeSelect).toHaveTextContent('From starting III contributions (March 19, 2004)');
-    expect(timeSelect).toHaveTextContent('From Tuleva III pillar fund creation (October 14, 2019)');
+    expect(timeSelect).toHaveTextContent('From starting III contributions (2004-03-19)');
+    expect(timeSelect).toHaveTextContent('From Tuleva III pillar fund creation (2019-10-14)');
     expect(timeSelect).toHaveTextContent('Last 20 years');
     expect(timeSelect).toHaveTextContent('Last 15 years');
     expect(timeSelect).toHaveTextContent('Last 10 years');

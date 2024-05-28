@@ -9,7 +9,6 @@ import Select from './select';
 import { getReturnComparison, Key, ReturnComparison } from './api';
 import Loader from '../../common/loader';
 import { Option, OptionGroup } from './select/Select';
-import { formatDateYear } from '../../common/dateFormatter';
 import Percentage from '../../common/Percentage';
 import { createTrackedEvent } from '../../common/api';
 import { InfoTooltip } from '../../common';
@@ -512,7 +511,7 @@ const ComparisonCalculator: React.FC = () => {
           },
           {
             pillar: getPillarAsString(),
-            date: formatDateYear(beginning),
+            date: beginning,
           },
         ),
         translate: false,
@@ -527,7 +526,7 @@ const ComparisonCalculator: React.FC = () => {
                 },
                 {
                   pillar: getPillarAsString(),
-                  date: formatDateYear(inceptionDate),
+                  date: inceptionDate,
                 },
               ),
               translate: false,
