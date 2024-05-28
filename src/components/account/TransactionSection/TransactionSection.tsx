@@ -114,35 +114,39 @@ export const TransactionSection: React.FunctionComponent<{
 
   return (
     <section className="mt-5">
-      <div className="d-flex flex-md-row flex-column align-items-md-end justify-content-between">
-        <h2 className="mb-4 lead">{children || <FormattedMessage id="transactions.title" />}</h2>
-        <div className="ml-md-2 text-nowrap mb-4">
-          {!pillar && (
-            <Link className="text-nowrap" to="/2nd-pillar-transactions">
-              <FormattedMessage id="transactions.seeAll" />
-            </Link>
-          )}
-          {pillar === 2 && (
-            <Link className="text-nowrap" to="/3rd-pillar-transactions">
-              <FormattedMessage id="transactions.seeAll.3" />
-            </Link>
-          )}
-          {pillar === 3 && (
-            <Link className="text-nowrap" to="/2nd-pillar-transactions">
-              <FormattedMessage id="transactions.seeAll.2" />
-            </Link>
-          )}
-          {!limit && (
-            <>
-              {' '}
-              <span className="mx-2">·</span>{' '}
-              <Link to="/account">
-                <FormattedMessage id="transactions.backToAccountPage" />
-              </Link>
-            </>
-          )}
+      {!pillar ? (
+        <div className="d-flex flex-row justify-content-between">
+          <h2 className="mb-4 lead">{children || <FormattedMessage id="transactions.title" />}</h2>
+          <Link className="text-nowrap" to="/2nd-pillar-transactions">
+            <FormattedMessage id="transactions.seeAll" />
+          </Link>
         </div>
-      </div>
+      ) : (
+        <div className="d-flex flex-md-row flex-column align-items-md-end justify-content-between">
+          <h2 className="mb-4 lead">{children || <FormattedMessage id="transactions.title" />}</h2>
+          <div className="ml-md-2 text-nowrap mb-4">
+            {pillar === 2 && (
+              <Link className="text-nowrap" to="/3rd-pillar-transactions">
+                <FormattedMessage id="transactions.seeAll.3" />
+              </Link>
+            )}
+            {pillar === 3 && (
+              <Link className="text-nowrap" to="/2nd-pillar-transactions">
+                <FormattedMessage id="transactions.seeAll.2" />
+              </Link>
+            )}
+            {!limit && (
+              <>
+                {' '}
+                <span className="mx-2">·</span>{' '}
+                <Link to="/account">
+                  <FormattedMessage id="transactions.backToAccountPage" />
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
+      )}
       <Table columns={columns} dataSource={dataSource} />
     </section>
   );

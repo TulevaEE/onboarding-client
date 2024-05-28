@@ -19,6 +19,7 @@ import { getInitialCapital } from './actions';
 import SecondPillarUpsell from './SecondPillarUpsell/SecondPillarUpsell';
 import { getAuthentication } from '../common/authenticationManager';
 import { SectionHeading } from './SectionHeading';
+import { TransactionSection } from './TransactionSection/TransactionSection';
 
 const noop = () => null;
 
@@ -78,12 +79,10 @@ export class AccountPage extends Component {
 
         {error && error.body ? <ErrorMessage errors={error.body} /> : ''}
 
+        <ComparisonCalculator />
+
         <div className="mt-5">
-          <SectionHeading titleId="accountSummary.heading" lead>
-            <Link className="text-nowrap" to="/2nd-pillar-transactions">
-              <FormattedMessage id="accountSummary.transactions" />
-            </Link>
-          </SectionHeading>
+          <SectionHeading titleId="accountSummary.heading" lead />
 
           {secondPillarSourceFunds && thirdPillarSourceFunds && conversion ? (
             <AccountSummary
@@ -100,7 +99,7 @@ export class AccountPage extends Component {
           )}
         </div>
 
-        <ComparisonCalculator />
+        <TransactionSection limit={3} />
 
         <ApplicationSection />
 
