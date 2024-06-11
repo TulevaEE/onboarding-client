@@ -1,12 +1,19 @@
+import moment from 'moment';
 import { Fund } from '../../common/apiModels';
 
 export function getFullYearsSince(dateString: string): number {
-  const givenDate = new Date(dateString);
-  const currentDate = new Date();
-  const millisecondsDifference = currentDate.getTime() - givenDate.getTime();
-  const daysDifference = millisecondsDifference / (1000 * 60 * 60 * 24);
-  const yearsDifference = daysDifference / 365.25;
-  return Math.round(yearsDifference);
+  const givenDate = moment(dateString);
+  const currentDate = moment();
+
+  return currentDate.diff(givenDate, 'years');
+}
+
+export function isShortPeriod(dateString: string) {
+  const givenDate = moment(dateString);
+  const currentDate = moment();
+  const yearsDifference = currentDate.diff(givenDate, 'years', true);
+
+  return yearsDifference <= 3;
 }
 
 export function sortFundsWithTulevaFirst(funds: Fund[]): Fund[] {

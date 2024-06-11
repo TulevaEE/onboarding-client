@@ -23,7 +23,12 @@ import {
   PerformanceVerdictProperties,
   RootState,
 } from './types';
-import { getCurrentPath, getFullYearsSince, sortFundsWithTulevaFirst } from './utility';
+import {
+  getCurrentPath,
+  getFullYearsSince,
+  isShortPeriod,
+  sortFundsWithTulevaFirst,
+} from './utility';
 import { TranslationKey } from '../../translations';
 
 const formatMessageWithTags = ({ id, values }: FormatTagsMessageDescriptor) => (
@@ -47,6 +52,7 @@ const ComparisonCalculator: React.FC = () => {
     years: 0,
     pillar: '',
     ctaLink: '',
+    shortPeriod: false,
   });
 
   const initialReturns = {
@@ -129,6 +135,7 @@ const ComparisonCalculator: React.FC = () => {
         years: getFullYearsSince(returns.from),
         pillar: getPillarAsString(),
         ctaLink,
+        shortPeriod: isShortPeriod(returns.from),
       });
     }
   }, [returns]);
@@ -294,7 +301,7 @@ const ComparisonCalculator: React.FC = () => {
                       </div>
                     ) : (
                       <>
-                        {contentTextProperties.years <= 3 && (
+                        {contentTextProperties.shortPeriod && (
                           <div
                             className="alert alert-warning w-100 m-0 rounded-0 border-left-0 border-right-0 border-top border-bottom text-center"
                             role="alert"

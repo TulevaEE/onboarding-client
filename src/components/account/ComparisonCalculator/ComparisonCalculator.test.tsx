@@ -267,6 +267,26 @@ describe('ComparisonCalculator', () => {
     });
   });
 
+  test('does not display too short time period alert above the threshold', async () => {
+    userBackend(server);
+    const comp = component();
+    expect(comp).toBeInTheDocument();
+
+    await awaitForInitialData();
+
+    setReturnsData(returnsData3YearsAnd1DayAgo);
+    userEvent.selectOptions(timePeriodSelect(), 'Last 3 years');
+    await awaitForReturnsData();
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText(
+          'The comparison period is short. Avoid the temptation to make sudden moves based on short-term fluctuations.',
+        ),
+      ).not.toBeInTheDocument();
+    });
+  });
+
   test('II pillar content with negative performance compared to the index', async () => {
     userBackend(server);
     setReturnsData(returnsData2ndPillarIndexNegative);
@@ -863,7 +883,7 @@ describe('ComparisonCalculator', () => {
 });
 
 const returnsData3YearsAgo: ReturnsResponse = {
-  from: moment().subtract(3, 'years').format(),
+  from: moment().subtract(3, 'years').add(1, 'days').format(),
   returns: [
     {
       key: 'UNION_STOCK_INDEX',
@@ -883,6 +903,29 @@ const returnsData3YearsAgo: ReturnsResponse = {
     },
   ],
 };
+
+const returnsData3YearsAnd1DayAgo: ReturnsResponse = {
+  from: moment().subtract(3, 'years').subtract(1, 'days').format(),
+  returns: [
+    {
+      key: 'UNION_STOCK_INDEX',
+      rate: 0.09,
+      amount: 16000.0,
+      paymentsSum: 14000.0,
+      currency: 'EUR',
+      type: 'INDEX',
+    },
+    {
+      key: 'SECOND_PILLAR',
+      rate: 0.07,
+      amount: 11000.0,
+      paymentsSum: 15000.0,
+      currency: 'EUR',
+      type: 'PERSONAL',
+    },
+  ],
+};
+
 const returnsData4YearsAgo: ReturnsResponse = {
   from: moment().subtract(4, 'years').format(),
   returns: [

@@ -42,6 +42,7 @@ export interface ContentTextProperties {
   years: number;
   pillar: string;
   ctaLink: string | null;
+  shortPeriod: boolean;
 }
 
 export interface RootState {
