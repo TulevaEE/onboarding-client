@@ -2,10 +2,12 @@ import moment from 'moment';
 import { Fund } from '../../common/apiModels';
 
 export function getFullYearsSince(dateString: string): number {
-  const givenDate = moment(dateString);
-  const currentDate = moment();
-
-  return currentDate.diff(givenDate, 'years');
+  const givenDate = new Date(dateString);
+  const currentDate = new Date();
+  const millisecondsDifference = currentDate.getTime() - givenDate.getTime();
+  const daysDifference = millisecondsDifference / (1000 * 60 * 60 * 24);
+  const yearsDifference = daysDifference / 365.25;
+  return Math.round(yearsDifference);
 }
 
 export function isShortPeriod(dateString: string) {
