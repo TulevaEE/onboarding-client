@@ -25,8 +25,6 @@ export const TriggerProcedure: React.FC = () => {
       const { provider, handoverToken, path } = init(query);
       exchangeHandoverTokenForAccessToken(handoverToken)
         .then((token) => {
-          // setMessage(token);
-          // return;
           if (!token) {
             throw new Error('Failed to receive accessToken');
           }

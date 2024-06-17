@@ -434,6 +434,34 @@ describe('Exchange actions', () => {
     expect(mockApi.createAmlCheck).toHaveBeenCalledTimes(3);
   });
 
+  it('dispatches SIGN_MANDATE_START_ERROR for invalid login method', async () => {
+    getAuthentication.mockImplementation(() => ({
+      isAuthenticated: jest.fn().mockReturnValue(true),
+      loginMethod: 'INVALID_METHOD',
+    }));
+
+    const amlChecks = {
+      isPoliticallyExposed: true,
+      isResident: true,
+      occupation: 'PRIVATE_SECTOR',
+    };
+    mockApi.createAmlCheck = jest.fn(() => Promise.resolve('{"success":true}'));
+
+    const signMandate = createBoundAction(actions.signMandate);
+
+    await signMandate({}, amlChecks);
+
+    expect(dispatch).toHaveBeenCalledWith({
+      type: SIGN_MANDATE_START_ERROR,
+      error: expect.any(Error),
+    });
+    expect(dispatch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        error: expect.objectContaining({ message: 'Invalid login method: INVALID_METHOD' }),
+      }),
+    );
+  });
+
   it('does not create new mandate if one is already provided when signing with smart id', async () => {
     const mandate = { id: 'id' };
     getAuthentication.mockImplementation(() => ({
