@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 
 import { actions as loginActions } from '../login';
 import { actions as exchangeActions } from '../exchange';
-import Header from './header';
+import { Header } from './header';
 import AccountPage from '../account';
 import SecondPillarFlow from '../flows/secondPillar';
 import ThirdPillarFlow from '../flows/thirdPillar';
