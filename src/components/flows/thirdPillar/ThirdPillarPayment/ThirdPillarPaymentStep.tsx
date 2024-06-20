@@ -8,14 +8,12 @@ export const ThirdPillarPaymentStep: React.FunctionComponent<{
   previousPath: string;
   signedMandateId: number;
   isUserConverted: boolean;
-}> = ({ previousPath, signedMandateId, isUserConverted }) => {
-  return (
-    <>
-      {!signedMandateId && !isUserConverted && <Redirect to={previousPath} />}
-      <Payment />
-    </>
-  );
-};
+}> = ({ previousPath, signedMandateId, isUserConverted }) => (
+  <>
+    {!signedMandateId && !isUserConverted && <Redirect to={previousPath} />}
+    <Payment />
+  </>
+);
 
 const mapStateToProps = (state: State) => ({
   signedMandateId: state.thirdPillar.signedMandateId,

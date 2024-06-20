@@ -417,9 +417,7 @@ describe('Login actions', () => {
   });
 
   it('can handle redirect login with id card', () => {
-    mockApi.authenticateWithIdCard = jest.fn(() => {
-      return Promise.resolve();
-    });
+    mockApi.authenticateWithIdCard = jest.fn(() => Promise.resolve());
     const useRedirectLoginWithIdCard = createBoundAction(actions.useRedirectLoginWithIdCard);
     useRedirectLoginWithIdCard();
     expect(dispatch).toHaveBeenCalledWith({ type: SET_LOGIN_TO_REDIRECT });

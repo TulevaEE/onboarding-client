@@ -23,9 +23,7 @@ export function isValidPersonalCode(personalCode: string): boolean {
   const checksum = code[10];
 
   const modulus = (pCode: number[], weights: number[]) =>
-    pCode.slice(0, 10).reduce((sum, n, i) => {
-      return n * weights[i] + sum;
-    }, 0) % 11;
+    pCode.slice(0, 10).reduce((sum, n, i) => n * weights[i] + sum, 0) % 11;
 
   const realChecksum = [
     modulus(code, [1, 2, 3, 4, 5, 6, 7, 8, 9, 1]),

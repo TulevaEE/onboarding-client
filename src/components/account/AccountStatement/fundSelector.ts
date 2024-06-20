@@ -2,9 +2,7 @@ import sumBy from 'lodash/sumBy';
 import { SourceFund } from '../../common/apiModels';
 
 export function getValueSum(funds: SourceFund[]): number {
-  return sumBy(funds, (fund) => {
-    return fund.price + fund.unavailablePrice;
-  });
+  return sumBy(funds, (fund) => fund.price + fund.unavailablePrice);
 }
 
 export function getWeightedAverageFee(funds: SourceFund[]): number {

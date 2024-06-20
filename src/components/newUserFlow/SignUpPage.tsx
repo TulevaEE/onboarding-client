@@ -9,16 +9,14 @@ import { createNewMember } from '../common/user/actions';
 export const SignUpPage: React.FunctionComponent<{
   saveUser: FormSubmitHandler;
   isMember: boolean;
-}> = ({ saveUser, isMember }) => {
-  return (
-    <div className="row">
-      {isMember && <Redirect to="/account" />}
-      <div className="col-md-4">
-        <InlineSignUpForm onSubmit={saveUser} />
-      </div>
+}> = ({ saveUser, isMember }) => (
+  <div className="row">
+    {isMember && <Redirect to="/account" />}
+    <div className="col-md-4">
+      <InlineSignUpForm onSubmit={saveUser} />
     </div>
-  );
-};
+  </div>
+);
 
 const mapStateToProps = (state: {
   login: {

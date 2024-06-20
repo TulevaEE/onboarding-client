@@ -45,9 +45,9 @@ describe('When a user is cancelling an application', () => {
   beforeEach(() => {
     initializeConfiguration();
     server.use(
-      rest.get('http://localhost/v1/applications', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json([testApplication()]));
-      }),
+      rest.get('http://localhost/v1/applications', (req, res, ctx) =>
+        res(ctx.status(200), ctx.json([testApplication()])),
+      ),
     );
     initializeComponent();
     act(() => {

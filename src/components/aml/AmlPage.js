@@ -11,28 +11,26 @@ import { updateUserAndAml } from './actions';
 
 const noop = () => null;
 
-export const AmlPage = ({ save, updateUserSuccess, createAmlChecksSuccess, location }) => {
-  return (
-    <div className="mt-5">
-      {updateUserSuccess && createAmlChecksSuccess && (
-        <Redirect to={location.state && location.state.from ? location.state.from : ''} />
-      )}
-      <p>
-        <FormattedMessage id="aml.updateContactDetails" />
+export const AmlPage = ({ save, updateUserSuccess, createAmlChecksSuccess, location }) => (
+  <div className="mt-5">
+    {updateUserSuccess && createAmlChecksSuccess && (
+      <Redirect to={location.state && location.state.from ? location.state.from : ''} />
+    )}
+    <p>
+      <FormattedMessage id="aml.updateContactDetails" />
+    </p>
+    <p className="mb-4 lead">
+      <FormattedMessage id="update.user.details.title" />
+    </p>
+    <UpdateUserForm onSubmit={save}>
+      <p className="mt-4 mb-3 lead">
+        <FormattedMessage id="aml.extraDetails" />
       </p>
-      <p className="mb-4 lead">
-        <FormattedMessage id="update.user.details.title" />
-      </p>
-      <UpdateUserForm onSubmit={save}>
-        <p className="mt-4 mb-3 lead">
-          <FormattedMessage id="aml.extraDetails" />
-        </p>
-        <OccupationAgreement className="mt-3" />
-        <ResidencyAgreement className="mt-3 mb-4" />
-      </UpdateUserForm>
-    </div>
-  );
-};
+      <OccupationAgreement className="mt-3" />
+      <ResidencyAgreement className="mt-3 mb-4" />
+    </UpdateUserForm>
+  </div>
+);
 
 AmlPage.propTypes = {
   updateUserSuccess: Types.bool,

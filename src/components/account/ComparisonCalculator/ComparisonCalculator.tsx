@@ -1061,12 +1061,10 @@ const ComparisonCalculator: React.FC = () => {
           returns.personal?.rate < returns.pensionFund?.rate
         ) {
           // reset inflation neutral alpha into either positive or negative alpha
-          setPerformanceVerdictProperties((prevState) => {
-            return {
-              ...prevState,
-              verdict: PerformanceVerdict.NEGATIVE_ALPHA,
-            };
-          });
+          setPerformanceVerdictProperties((prevState) => ({
+            ...prevState,
+            verdict: PerformanceVerdict.NEGATIVE_ALPHA,
+          }));
         }
         return <div />;
       }
