@@ -308,7 +308,7 @@ const ComparisonCalculator: React.FC = () => {
                           >
                             <FormattedMessage id="comparisonCalculator.shortTimePeriodWarning" />{' '}
                             <a
-                              href="/soovitused/laura-rikkaks-4/"
+                              href="//tuleva.ee/soovitused/laura-rikkaks-4/"
                               target="_blank"
                               rel="noopener noreferrer"
                             >
@@ -343,7 +343,7 @@ const ComparisonCalculator: React.FC = () => {
                 </div>
                 <div className="footer-links pt-2">
                   <a
-                    href="https://tuleva.ee/mida-need-numbrid-naitavad"
+                    href="//tuleva.ee/mida-need-numbrid-naitavad"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="d-inline-block mx-2"
@@ -351,7 +351,7 @@ const ComparisonCalculator: React.FC = () => {
                     <FormattedMessage id="comparisonCalculator.footerNumbersExplanationLink" />
                   </a>
                   <a
-                    href="https://tuleva.ee/analuusid/millist-tootlust-on-tulevas-oodata"
+                    href="//tuleva.ee/analuusid/millist-tootlust-on-tulevas-oodata"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="d-inline-block mx-2"
