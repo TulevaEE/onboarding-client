@@ -1,4 +1,4 @@
-import React, { Component, PureComponent } from 'react';
+import React, { PureComponent } from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
