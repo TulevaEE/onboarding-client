@@ -134,38 +134,32 @@ interface CardTitleProps {
   className: string;
 }
 
-const CardTitle: React.FC<CardTitleProps> = ({ className }) => {
-  return (
-    <div className={`card-title mb-3 ${className}`}>
-      <h2 className="d-inline mr-2">
-        <FormattedMessage id="secondPillarUpsell.cardTitle" />
-      </h2>
-      <span className="badge badge-orange">
-        <FormattedMessage id="secondPillarUpsell.notInTuleva" />
-      </span>
-    </div>
-  );
-};
+const CardTitle: React.FC<CardTitleProps> = ({ className }) => (
+  <div className={`card-title mb-3 ${className}`}>
+    <h2 className="d-inline mr-2">
+      <FormattedMessage id="secondPillarUpsell.cardTitle" />
+    </h2>
+    <span className="badge badge-orange">
+      <FormattedMessage id="secondPillarUpsell.notInTuleva" />
+    </span>
+  </div>
+);
 interface CTAProps {
   className: string;
 }
-const CallToAction: React.FC<CTAProps> = ({ className }) => {
-  return (
-    <div className={className}>
-      <Link to="/2nd-pillar-flow" className="btn btn-primary px-3">
-        <FormattedMessage id="secondPillarUpsell.callToAction" />
-      </Link>
-    </div>
-  );
-};
-const Disclaimer: React.FC = () => {
-  return (
-    <div className="mt-2 text-center">
-      <small className="text-muted">
-        <FormattedMessage id="secondPillarUpsell.disclaimer" />
-      </small>
-    </div>
-  );
-};
+const CallToAction: React.FC<CTAProps> = ({ className }) => (
+  <div className={className}>
+    <Link to="/2nd-pillar-flow" className="btn btn-primary px-3">
+      <FormattedMessage id="secondPillarUpsell.callToAction" />
+    </Link>
+  </div>
+);
+const Disclaimer: React.FC = () => (
+  <div className="mt-2 text-center">
+    <small className="text-muted">
+      <FormattedMessage id="secondPillarUpsell.disclaimer" />
+    </small>
+  </div>
+);
 
 export default SecondPillarUpsellCard;

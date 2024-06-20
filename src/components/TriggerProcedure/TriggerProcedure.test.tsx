@@ -43,15 +43,15 @@ describe('When an external provider process is triggered', () => {
   beforeEach(() => {
     initializeConfiguration();
     server.use(
-      rest.post('http://localhost/oauth/token', (req, res, ctx) => {
-        return res(
+      rest.post('http://localhost/oauth/token', (req, res, ctx) =>
+        res(
           ctx.status(200),
           ctx.json({
             access_token: anAuthenticationManager().accessToken,
             refresh_token: anAuthenticationManager().refreshToken,
           }),
-        );
-      }),
+        ),
+      ),
     );
     consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
   });

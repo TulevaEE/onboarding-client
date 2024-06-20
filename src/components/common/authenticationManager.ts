@@ -63,13 +63,10 @@ export function getAuthentication(): AuthenticationManager {
 
   const authenticationPrincipal = config.get(AUTHENTICATION_CONFIGURATION_KEY) || {};
 
-  const isAuthenticated = (): boolean => {
-    return (
-      authenticationPrincipal !== null &&
-      authenticationPrincipal !== undefined &&
-      !!authenticationPrincipal.accessToken
-    );
-  };
+  const isAuthenticated = (): boolean =>
+    authenticationPrincipal !== null &&
+    authenticationPrincipal !== undefined &&
+    !!authenticationPrincipal.accessToken;
 
   return {
     ...authenticationPrincipal,

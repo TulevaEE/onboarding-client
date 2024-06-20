@@ -69,9 +69,9 @@ describe('Application section', () => {
 
   it('does not render at all when there has been an error fetching', async () => {
     server.use(
-      rest.get('http://localhost/v1/applications', (req, res, ctx) => {
-        return res(ctx.status(500), ctx.json({ error: 'oh no' }));
-      }),
+      rest.get('http://localhost/v1/applications', (req, res, ctx) =>
+        res(ctx.status(500), ctx.json({ error: 'oh no' })),
+      ),
     );
     initializeComponent();
     await waitForRequestToFinish();

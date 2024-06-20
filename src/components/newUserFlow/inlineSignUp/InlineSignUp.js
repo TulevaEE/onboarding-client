@@ -22,9 +22,7 @@ InlineSignUp.propTypes = {
   saveUser: Types.func,
 };
 
-const onCreateUser = (user) => (dispatch) => {
-  return dispatch(createNewMember(user));
-};
+const onCreateUser = (user) => (dispatch) => dispatch(createNewMember(user));
 
 const mapDispatchToProps = (dispatch) =>
   bindActionCreators(

@@ -38,13 +38,11 @@ export const StatusBoxRow: React.FunctionComponent<{
     <ul>
       {lines &&
         lines.length > 0 &&
-        lines.map((line, i) => {
-          return (
-            <li className="pl-2" key={i}>
-              {line}
-            </li>
-          );
-        })}
+        lines.map((line, i) => (
+          <li className="pl-2" key={i}>
+            {line}
+          </li>
+        ))}
     </ul>
   );
   return (

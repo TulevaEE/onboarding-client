@@ -23,32 +23,30 @@ export const LoginForm = ({
   onAuthenticateWithIdCard,
   monthlyThirdPillarContribution,
   exchangeExistingThirdPillarUnits,
-}) => {
-  return (
-    <>
-      {isMaintenanceWindow() ? (
-        <div className="text-center mb-4">
-          <Maintenance />
-        </div>
-      ) : (
-        ''
-      )}
-      <div className="bg-white shadow-sm rounded-lg p-4 p-sm-5 text-center">
-        {renderLoginForm(
-          monthlyThirdPillarContribution,
-          exchangeExistingThirdPillarUnits,
-          onIdCodeSubmit,
-          personalCode,
-          onPersonalCodeChange,
-          onMobileIdSubmit,
-          phoneNumber,
-          onPhoneNumberChange,
-          onAuthenticateWithIdCard,
-        )}
+}) => (
+  <>
+    {isMaintenanceWindow() ? (
+      <div className="text-center mb-4">
+        <Maintenance />
       </div>
-    </>
-  );
-};
+    ) : (
+      ''
+    )}
+    <div className="bg-white shadow-sm rounded-lg p-4 p-sm-5 text-center">
+      {renderLoginForm(
+        monthlyThirdPillarContribution,
+        exchangeExistingThirdPillarUnits,
+        onIdCodeSubmit,
+        personalCode,
+        onPersonalCodeChange,
+        onMobileIdSubmit,
+        phoneNumber,
+        onPhoneNumberChange,
+        onAuthenticateWithIdCard,
+      )}
+    </div>
+  </>
+);
 
 const isMaintenanceWindow = () => {
   const currentTime = new Date();

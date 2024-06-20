@@ -13,32 +13,30 @@ export const PoliticallyExposedPersonAgreement = ({
   isPoliticallyExposed,
   onPoliticallyExposedChange,
   className,
-}) => {
-  return (
-    <div className={className}>
-      <div className="custom-control custom-checkbox">
-        <Field
-          checked={isPoliticallyExposed === false}
-          onChange={(e) => onPoliticallyExposedChange(!e.target.checked)}
-          component="input"
-          type="checkbox"
-          name="aml.isNotPoliticallyExposed"
-          id="aml-not-pep-checkbox"
-          className="custom-control-input"
-          validate={[requiredField]}
-        />
-        <label className="custom-control-label" htmlFor="aml-not-pep-checkbox">
-          <FormattedMessage id="aml.isNotPep" />
-          <InfoTooltip name="pep-tooltip">
-            <div className="content">
-              <FormattedMessage id="aml.pepTooltip" />
-            </div>
-          </InfoTooltip>
-        </label>
-      </div>
+}) => (
+  <div className={className}>
+    <div className="custom-control custom-checkbox">
+      <Field
+        checked={isPoliticallyExposed === false}
+        onChange={(e) => onPoliticallyExposedChange(!e.target.checked)}
+        component="input"
+        type="checkbox"
+        name="aml.isNotPoliticallyExposed"
+        id="aml-not-pep-checkbox"
+        className="custom-control-input"
+        validate={[requiredField]}
+      />
+      <label className="custom-control-label" htmlFor="aml-not-pep-checkbox">
+        <FormattedMessage id="aml.isNotPep" />
+        <InfoTooltip name="pep-tooltip">
+          <div className="content">
+            <FormattedMessage id="aml.pepTooltip" />
+          </div>
+        </InfoTooltip>
+      </label>
     </div>
-  );
-};
+  </div>
+);
 
 PoliticallyExposedPersonAgreement.propTypes = {
   isPoliticallyExposed: Types.bool,

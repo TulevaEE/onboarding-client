@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import { Link } from 'react-router-dom';
 
 import { logo, Loader } from '../../common';
-import Header from './Header';
+import { Header } from '.';
 import LanguageSwitcher from './languageSwitcher';
 
 describe('Header', () => {

@@ -49,80 +49,76 @@ export const ApplicationCard: React.FunctionComponent<{
 
 const PaymentRateApplicationCard: React.FunctionComponent<{
   application: PaymentRateApplication;
-}> = ({ application }) => {
-  return (
-    <BaseApplicationCard
-      application={application}
-      allowedActions={[]}
-      titleKey="applications.type.paymentRate.title"
-    >
-      <DefinitionList
-        definitions={[
-          {
-            key: 'applications.type.paymentRate.application',
-            value: (
-              <FormattedMessage
-                id="applications.type.paymentRate.application.paymentRate"
-                values={{
-                  paymentRate: application.details.paymentRate,
-                }}
-              />
-            ),
-          },
+}> = ({ application }) => (
+  <BaseApplicationCard
+    application={application}
+    allowedActions={[]}
+    titleKey="applications.type.paymentRate.title"
+  >
+    <DefinitionList
+      definitions={[
+        {
+          key: 'applications.type.paymentRate.application',
+          value: (
+            <FormattedMessage
+              id="applications.type.paymentRate.application.paymentRate"
+              values={{
+                paymentRate: application.details.paymentRate,
+              }}
+            />
+          ),
+        },
+        [
           [
-            [
-              {
-                key: 'applications.type.paymentRate.status',
-                value: (
-                  <FormattedMessage
-                    id="applications.type.paymentRate.status.pending"
-                    values={{
-                      paymentRateFulfillmentDate: formatDate(application.details.fulfillmentDate),
-                    }}
-                  />
-                ),
-              },
-            ],
+            {
+              key: 'applications.type.paymentRate.status',
+              value: (
+                <FormattedMessage
+                  id="applications.type.paymentRate.status.pending"
+                  values={{
+                    paymentRateFulfillmentDate: formatDate(application.details.fulfillmentDate),
+                  }}
+                />
+              ),
+            },
           ],
-        ]}
-      />
-    </BaseApplicationCard>
-  );
-};
+        ],
+      ]}
+    />
+  </BaseApplicationCard>
+);
 
 const PaymentApplicationCard: React.FunctionComponent<{
   application: PaymentApplication;
-}> = ({ application }) => {
-  return (
-    <BaseApplicationCard
-      application={application}
-      allowedActions={[]}
-      titleKey="applications.type.payment.title"
-    >
-      <DefinitionList
-        definitions={[
-          {
-            key: 'applications.type.payment.status',
-            value: <FormattedMessage id="applications.type.payment.status.pending" />,
-          },
+}> = ({ application }) => (
+  <BaseApplicationCard
+    application={application}
+    allowedActions={[]}
+    titleKey="applications.type.payment.title"
+  >
+    <DefinitionList
+      definitions={[
+        {
+          key: 'applications.type.payment.status',
+          value: <FormattedMessage id="applications.type.payment.status.pending" />,
+        },
+        [
           [
-            [
-              {
-                key: 'applications.type.payment.targetFund',
-                value: application.details.targetFund.name,
-              },
-              {
-                key: 'applications.type.payment.amount',
-                value: <Euro amount={application.details.amount} />,
-                alignRight: true,
-              },
-            ],
+            {
+              key: 'applications.type.payment.targetFund',
+              value: application.details.targetFund.name,
+            },
+            {
+              key: 'applications.type.payment.amount',
+              value: <Euro amount={application.details.amount} />,
+              alignRight: true,
+            },
           ],
-        ]}
-      />
-    </BaseApplicationCard>
-  );
-};
+        ],
+      ]}
+    />
+  </BaseApplicationCard>
+);
 
 const TransferApplicationCard: React.FunctionComponent<{
   application: TransferApplication;

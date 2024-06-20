@@ -7,14 +7,12 @@ import { getAuthentication } from '../../../common/authenticationManager';
 
 export const PaymentPage: React.FunctionComponent<{
   noThirdPillar: boolean;
-}> = ({ noThirdPillar }) => {
-  return (
-    <>
-      {noThirdPillar && <Redirect to="/3rd-pillar-flow" />}
-      <Payment />
-    </>
-  );
-};
+}> = ({ noThirdPillar }) => (
+  <>
+    {noThirdPillar && <Redirect to="/3rd-pillar-flow" />}
+    <Payment />
+  </>
+);
 
 const mapStateToProps = (state: State) => {
   const isAuthenticated = getAuthentication().isAuthenticated();

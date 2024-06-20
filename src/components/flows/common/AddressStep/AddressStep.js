@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -8,7 +8,7 @@ import { updateUser, updateUserEmailAndPhone } from '../../../common/user/action
 import { hasAddress as isAddressFilled } from '../../../common/user/address';
 import { hasContactDetailsAmlCheck as isContactDetailsAmlCheckPassed } from '../../../aml';
 
-export class AddressStep extends Component {
+export class AddressStep extends PureComponent {
   render() {
     const {
       nextPath,
@@ -19,9 +19,10 @@ export class AddressStep extends Component {
       updateFullUser,
       updateEmailAndPhone,
     } = this.props;
-    const shouldSkipAddressStep = () => {
-      return pillar === 2 ? hasAddress : hasAddress && hasContactDetailsAmlCheck;
-    };
+
+    const shouldSkipAddressStep = () =>
+      pillar === 2 ? hasAddress : hasAddress && hasContactDetailsAmlCheck;
+
     return (
       <>
         {shouldSkipAddressStep() && <Redirect to={nextPath} />}
@@ -53,12 +54,10 @@ AddressStep.defaultProps = {
   updateFullUser: noop,
 };
 
-const mapStateToProps = (state) => {
-  return {
-    hasAddress: state.login.user && isAddressFilled(state.login.user),
-    hasContactDetailsAmlCheck: isContactDetailsAmlCheckPassed(state.aml.missingAmlChecks),
-  };
-};
+const mapStateToProps = (state) => ({
+  hasAddress: state.login.user && isAddressFilled(state.login.user),
+  hasContactDetailsAmlCheck: isContactDetailsAmlCheckPassed(state.aml.missingAmlChecks),
+});
 
 const mapDispatchToProps = (dispatch) =>
   bindActionCreators(

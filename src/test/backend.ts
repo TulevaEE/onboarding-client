@@ -218,22 +218,22 @@ export function idCardAuthenticationBackend(server: SetupServerApi): {
 
 export function partnerAuthenticationBackend(server: SetupServerApi): void {
   server.use(
-    rest.post('http://localhost/oauth/token', (req, res, ctx) => {
-      return res(
+    rest.post('http://localhost/oauth/token', (req, res, ctx) =>
+      res(
         ctx.status(200),
         ctx.json({
           access_token: anAuthenticationManager().accessToken,
           refresh_token: anAuthenticationManager().refreshToken,
         }),
-      );
-    }),
+      ),
+    ),
   );
 }
 
 export function userBackend(server: SetupServerApi, overrides = {}): void {
   server.use(
-    rest.get('http://localhost/v1/me', (req, res, ctx) => {
-      return res(
+    rest.get('http://localhost/v1/me', (req, res, ctx) =>
+      res(
         ctx.json({
           id: 123,
           personalCode: '39001011234',
@@ -255,8 +255,8 @@ export function userBackend(server: SetupServerApi, overrides = {}): void {
           },
           ...overrides,
         }),
-      );
-    }),
+      ),
+    ),
   );
 }
 
@@ -266,8 +266,8 @@ export function userConversionBackend(
   thirdPillarOverrides = {},
 ): void {
   server.use(
-    rest.get('http://localhost/v1/me/conversion', (req, res, ctx) => {
-      return res(
+    rest.get('http://localhost/v1/me/conversion', (req, res, ctx) =>
+      res(
         ctx.json({
           secondPillar: {
             transfersComplete: true,
@@ -288,17 +288,13 @@ export function userConversionBackend(
             ...thirdPillarOverrides,
           },
         }),
-      );
-    }),
+      ),
+    ),
   );
 }
 
 export function amlChecksBackend(server: SetupServerApi): void {
-  server.use(
-    rest.get('http://localhost/v1/amlchecks', (req, res, ctx) => {
-      return res(ctx.json([]));
-    }),
-  );
+  server.use(rest.get('http://localhost/v1/amlchecks', (req, res, ctx) => res(ctx.json([]))));
   server.use(
     rest.post('http://localhost/v1/amlchecks', (req, res, ctx) => {
       if (req.headers.get('Authorization') !== 'Bearer an access token') {
@@ -381,8 +377,8 @@ export function pensionAccountStatementBackend(
 
 export function fundsBackend(server: SetupServerApi): void {
   server.use(
-    rest.get('http://localhost/v1/funds', (req, res, ctx) => {
-      return res(
+    rest.get('http://localhost/v1/funds', (req, res, ctx) =>
+      res(
         ctx.json([
           {
             fundManager: { name: 'Tuleva' },
@@ -452,8 +448,8 @@ export function fundsBackend(server: SetupServerApi): void {
             shortName: 'TUK00',
           },
         ]),
-      );
-    }),
+      ),
+    ),
   );
 }
 
@@ -494,8 +490,8 @@ export function returnsBackend(server: SetupServerApi): void {
 
 export function userCapitalBackend(server: SetupServerApi): void {
   server.use(
-    rest.get('http://localhost/v1/me/capital', (req, res, ctx) => {
-      return res(
+    rest.get('http://localhost/v1/me/capital', (req, res, ctx) =>
+      res(
         ctx.json([
           {
             type: CapitalType.CAPITAL_PAYMENT,
@@ -526,25 +522,17 @@ export function userCapitalBackend(server: SetupServerApi): void {
             currency: 'EUR',
           },
         ]),
-      );
-    }),
+      ),
+    ),
   );
 }
 
 export function applicationsBackend(server: SetupServerApi): void {
-  server.use(
-    rest.get('http://localhost/v1/applications', (req, res, ctx) => {
-      return res(ctx.json([]));
-    }),
-  );
+  server.use(rest.get('http://localhost/v1/applications', (req, res, ctx) => res(ctx.json([]))));
 }
 
 export function transactionsBackend(server: SetupServerApi): void {
-  server.use(
-    rest.get('http://localhost/v1/transactions', (req, res, ctx) => {
-      return res(ctx.json([]));
-    }),
-  );
+  server.use(rest.get('http://localhost/v1/transactions', (req, res, ctx) => res(ctx.json([]))));
 }
 
 export function paymentLinkBackend(server: SetupServerApi): void {
@@ -594,8 +582,8 @@ export function secondPillarPaymentRateBackend(server: SetupServerApi): {
 
 export function mandateDeadlinesBackend(server: SetupServerApi): void {
   server.use(
-    rest.get('http://localhost/v1/mandate-deadlines', (req, res, ctx) => {
-      return res(
+    rest.get('http://localhost/v1/mandate-deadlines', (req, res, ctx) =>
+      res(
         ctx.json({
           periodEnding: '2024-03-31T20:59:59.999999999Z',
           paymentRateDeadline: '2024-11-30T21:59:59.999999999Z',
@@ -607,7 +595,7 @@ export function mandateDeadlinesBackend(server: SetupServerApi): void {
           withdrawalFulfillmentDate: '2024-01-16',
           paymentRateFulfillmentDate: '2025-01-01',
         }),
-      );
-    }),
+      ),
+    ),
   );
 }

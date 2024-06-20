@@ -161,15 +161,14 @@ function handleSaveMandateError(dispatch, error) {
 }
 
 export function previewMandate(mandate, amlChecks) {
-  return (dispatch) => {
-    return dispatch(amlActions.createAmlChecks(amlChecks))
+  return (dispatch) =>
+    dispatch(amlActions.createAmlChecks(amlChecks))
       .then(() => saveOrRetrieveExistingMandate(mandate))
       .then(({ id }) => downloadMandatePreviewWithId(id))
       .then((file) => download(file, 'Tuleva_avaldus_eelvaade.zip', 'application/zip'))
       .catch((error) => {
         handleSaveMandateError(dispatch, error);
       });
-  };
 }
 
 export function signMandateWithMobileId(mandate) {

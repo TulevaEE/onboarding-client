@@ -1,23 +1,29 @@
 import React from 'react';
-import { PropTypes as Types } from 'prop-types';
 
 import { FormattedMessage } from 'react-intl';
 import { Loader, logo } from '../../common';
 import LanguageSwitcher from './languageSwitcher';
 
-const Header = ({ user: { name } = {}, loading, onLogout }) => (
+type Props = {
+  // TODO move to useMe hook here
+  user: { name: string };
+  loading: boolean;
+  onLogout: () => unknown;
+};
+
+export const Header = ({ user, loading, onLogout }: Props) => (
   <>
     <div className="d-flex justify-content-between align-items-end border-bottom pb-4 mb-5 app-header">
       <a href="/account">
         <img src={logo} alt="Tuleva" className="brand-logo" />
       </a>
       <div className="text-right">
-        {loading || !name ? (
+        {loading || !user ? (
           <Loader className="align-right" />
         ) : (
           <>
             <p className="m-0">
-              <span className="text-body align-middle">{name}</span>
+              <span className="text-body align-middle">{user.name}</span>
               <span className="text-secondary align-middle">&ensp;&middot;&ensp;</span>
               <button type="button" className="btn btn-link p-0 border-0" onClick={onLogout}>
                 <FormattedMessage id="log.out" />
@@ -36,19 +42,3 @@ const Header = ({ user: { name } = {}, loading, onLogout }) => (
     </div>
   </>
 );
-
-const noop = () => null;
-
-Header.defaultProps = {
-  user: {},
-  loading: false,
-  onLogout: noop,
-};
-
-Header.propTypes = {
-  user: Types.shape({ name: Types.string }),
-  loading: Types.bool,
-  onLogout: Types.func,
-};
-
-export default Header;

@@ -10,22 +10,20 @@ import { Shimmer } from '../../common/shimmer/Shimmer';
 import { getValueSum, getWeightedAverageFee } from '../AccountStatement/fundSelector';
 import { Fees } from '../../common/Percentage/Fees';
 
-export const AccountSummaryLoader = () => {
-  return (
-    <div>
+export const AccountSummaryLoader = () => (
+  <div>
+    <Shimmer height={26} />
+    <div className="mt-4">
       <Shimmer height={26} />
-      <div className="mt-4">
-        <Shimmer height={26} />
-      </div>
-      <div className="mt-4">
-        <Shimmer height={26} />
-      </div>
-      <div className="mt-4">
-        <Shimmer height={26} />
-      </div>
     </div>
-  );
-};
+    <div className="mt-4">
+      <Shimmer height={26} />
+    </div>
+    <div className="mt-4">
+      <Shimmer height={26} />
+    </div>
+  </div>
+);
 
 const AccountSummary = ({
   secondPillarContributions,
