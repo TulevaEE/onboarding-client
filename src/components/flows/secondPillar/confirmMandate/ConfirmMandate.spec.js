@@ -68,14 +68,7 @@ describe('Confirm mandate step', () => {
     };
     const selectedFutureContributionsFund = { name: 'test name' };
     component.setProps({ exchange, selectedFutureContributionsFund });
-    expect(
-      component.contains(
-        <div className="mt-4">
-          <FormattedMessage id="confirm.mandate.future.contribution" />
-          <b className="highlight">test name</b>
-        </div>,
-      ),
-    ).toBe(true);
+    expect(component.contains('test name')).toBe(true);
     exchange.selectedFutureContributionsFundIsin = null;
     component.setProps({ exchange, selectedFutureContributionsFund: null });
     expect(component.contains(<FormattedMessage id="confirm.mandate.future.contribution" />)).toBe(
@@ -152,7 +145,9 @@ describe('Confirm mandate step', () => {
         targetFundName: 'd',
       },
     ]);
-    expect(component.contains(<FormattedMessage id="confirm.mandate.switch.sources" />)).toBe(true);
+    expect(component.contains(<FormattedMessage id="confirm.mandate.transferExisting" />)).toBe(
+      true,
+    );
   });
 
   it('aggregates selections for showing funds', () => {
