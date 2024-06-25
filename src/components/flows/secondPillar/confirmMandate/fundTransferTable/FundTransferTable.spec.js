@@ -12,21 +12,9 @@ describe('Fund transfer table', () => {
   });
 
   it('renders a header', () => {
-    expect(
-      component.contains(
-        <div className="row tv-table__header py-2">
-          <div className="col-12 col-sm">
-            <FormattedMessage id="confirm.mandate.current.fund" />
-          </div>
-          <div className="col-12 col-sm">
-            <FormattedMessage id="confirm.mandate.future.fund" />
-          </div>
-          <div className="col-12 col-sm-2">
-            <FormattedMessage id="confirm.mandate.percentage" />
-          </div>
-        </div>,
-      ),
-    ).toBe(true);
+    expect(component.contains(<FormattedMessage id="confirm.mandate.transferExisting" />)).toBe(
+      true,
+    );
   });
 
   it('renders an exchange row for every selection', () => {
@@ -47,18 +35,12 @@ describe('Fund transfer table', () => {
       },
     ];
     component.setProps({ selections });
-    selections.forEach((selection) =>
+    selections.forEach((selection) => {
+      expect(component.contains(<b>{selection.sourceFundName}</b>)).toBe(true);
       expect(
-        component.contains(
-          <div className="row tv-table__row py-2">
-            <div className="col-12 col-sm">{selection.sourceFundName}</div>
-            <div className="col-12 col-sm">
-              <b className="highlight">{selection.targetFundName}</b>
-            </div>
-            <div className="col-12 col-sm-2">{selection.percentage * 100}%</div>
-          </div>,
-        ),
-      ).toBe(true),
-    );
+        component.contains(<span className="highlight">{selection.targetFundName}</span>),
+      ).toBe(true);
+      expect(component.contains(<b>{selection.percentage * 100}%</b>)).toBe(true);
+    });
   });
 });
