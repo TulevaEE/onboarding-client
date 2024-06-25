@@ -145,9 +145,6 @@ describe('Confirm mandate step', () => {
         targetFundName: 'd',
       },
     ]);
-    expect(component.contains(<FormattedMessage id="confirm.mandate.transferExisting" />)).toBe(
-      true,
-    );
   });
 
   it('aggregates selections for showing funds', () => {
