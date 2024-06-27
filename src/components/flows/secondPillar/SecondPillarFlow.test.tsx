@@ -167,7 +167,7 @@ describe('2nd pillar flow', () => {
 
     userEvent.click(nextButton());
 
-    const selectionSentence = await screen.findByText(/New fund/i);
+    const selectionSentence = await screen.findByText(/I transfer future fund payments to/i);
     expect(
       within(selectionSentence).getByText('Tuleva World Stocks Pension Fund'),
     ).toBeInTheDocument();
