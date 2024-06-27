@@ -45,5 +45,5 @@ export const FundTransferTable = ({ selections = [] }: Props) => (
 );
 
 const TransferDataPoint = ({ children, className }: PropsWithChildren<{ className?: string }>) => (
-  <div className={`pt-2 d-flex flex-column justify-start ${className ?? ''}`}>{children}</div>
+  <div className={`pt-3 d-flex flex-column justify-start ${className ?? ''}`}>{children}</div>
 );
