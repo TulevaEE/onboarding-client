@@ -40,7 +40,7 @@
   "select.sources.total": "Kokku",
   "select.sources.select.all": "Toon kogu II samba Tulevasse",
   "select.sources.select.all.subtitle": "Tood üle seni II sambasse kogutud vara ja kogud edaspidi ainult Tulevas. Soodsad tasud rakenduvad kogu portfellile.",
-  "select.sources.select.all.deadline": "Sinu edasiste sissemaksete avaldus jõustub koheselt. Et sinu varem kogutud vara jõuaks Tulevasse esimesel võimalusel, tee muudatus hiljemalt <b>{periodEnding}.</b>",
+  "select.sources.select.all.deadline": "Sinu edasiste sissemaksete avaldus jõustub kohe. Et sinu varem kogutud vara jõuaks Tulevasse esimesel võimalusel, tee muudatus hiljemalt <b>{periodEnding}.</b>",
   "select.sources.select.all.choose": "Vali fond:",
   "select.sources.select.some": "Toon II samba valikuliselt üle",
   "select.sources.select.some.existing": "Vahetan seni kogutud osakud",
