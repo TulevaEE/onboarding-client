@@ -16,7 +16,7 @@ import {
 } from '../../../exchange/actions';
 
 import MandateNotFilledAlert from './mandateNotFilledAlert';
-import FundTransferTable from './fundTransferTable';
+import { FundTransferTable } from './fundTransferTable/FundTransferTable';
 import './ConfirmMandate.scss';
 import { hasAddress as isAddressFilled } from '../../../common/user/address';
 
@@ -155,24 +155,24 @@ export const ConfirmMandate = ({
       )}
 
       <FormattedMessage id="confirm.mandate.intro" />
-      {selectedFutureContributionsFund ? (
-        <div className="mt-4">
-          <FormattedMessage id="confirm.mandate.future.contribution" />
-          <b className="highlight">{selectedFutureContributionsFund.name}</b>
-        </div>
-      ) : (
-        ''
-      )}
       {aggregatedSelections.length ? (
         <div className="mt-4">
-          <FormattedMessage id="confirm.mandate.switch.sources" />
-          <div className="mt-4">
-            <FundTransferTable selections={aggregatedSelectionsWithNames} />
-          </div>
+          <FundTransferTable selections={aggregatedSelectionsWithNames} />
         </div>
       ) : (
         ''
       )}
+      {selectedFutureContributionsFund ? (
+        <div className="mt-2 p-3 fund-selections-container d-flex flex-column justify-content-between">
+          <FormattedMessage id="confirm.mandate.future.contribution" />
+          <b>
+            <span className="highlight">{selectedFutureContributionsFund.name}</span>
+          </b>
+        </div>
+      ) : (
+        ''
+      )}
+
       <div className="mt-5">
         <div className="custom-control custom-checkbox">
           <input

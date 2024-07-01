@@ -9,7 +9,7 @@ import { FormattedMessage } from 'react-intl';
 import ThirdPillarTermsAgreement from './ThirdPillarTermsAgreement';
 import PoliticallyExposedPersonAgreement from '../../../aml/PoliticallyExposedPersonAgreement';
 import { actions as exchangeActions } from '../../../exchange';
-import FundTransferTable from '../../secondPillar/confirmMandate/fundTransferTable';
+import { FundTransferTable } from '../../secondPillar/confirmMandate/fundTransferTable/FundTransferTable';
 import ResidencyAgreement from '../../../aml/ResidencyAgreement';
 import { AuthenticationLoader, ErrorMessage, Loader } from '../../../common';
 import { hasAddress as isAddressFilled } from '../../../common/user/address';

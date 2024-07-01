@@ -60,9 +60,7 @@ describe('2nd pillar flow', () => {
 
     userEvent.click(nextButton());
 
-    const selectionSentence = await screen.findByText(
-      /I wish to transfer future fund payments to:/i,
-    );
+    const selectionSentence = await screen.findByText(/I transfer future fund payments to/i);
     expect(
       within(selectionSentence).getByText('Tuleva World Stocks Pension Fund'),
     ).toBeInTheDocument();
@@ -100,9 +98,7 @@ describe('2nd pillar flow', () => {
 
     userEvent.click(nextButton());
 
-    const selectionSentence = await screen.findByText(
-      /I wish to transfer future fund payments to:/i,
-    );
+    const selectionSentence = await screen.findByText(/I transfer future fund payments to/i);
     expect(
       within(selectionSentence).getByText('Tuleva World Bonds Pension Fund'),
     ).toBeInTheDocument();
@@ -171,9 +167,7 @@ describe('2nd pillar flow', () => {
 
     userEvent.click(nextButton());
 
-    const selectionSentence = await screen.findByText(
-      /I wish to transfer future fund payments to:/i,
-    );
+    const selectionSentence = await screen.findByText(/I transfer future fund payments to/i);
     expect(
       within(selectionSentence).getByText('Tuleva World Stocks Pension Fund'),
     ).toBeInTheDocument();

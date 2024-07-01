@@ -4,7 +4,7 @@ import { shallow } from 'enzyme';
 
 import { FormattedMessage } from 'react-intl';
 import { ConfirmThirdPillarMandate } from './ConfirmThirdPillarMandate';
-import FundTransferTable from '../../secondPillar/confirmMandate/fundTransferTable';
+import { FundTransferTable } from '../../secondPillar/confirmMandate/fundTransferTable/FundTransferTable';
 import { AuthenticationLoader, Loader } from '../../../common';
 
 describe('ConfirmThirdPillarMandate', () => {
