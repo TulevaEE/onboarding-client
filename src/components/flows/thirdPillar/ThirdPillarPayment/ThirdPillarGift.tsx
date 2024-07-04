@@ -9,13 +9,14 @@ import { PaymentChannel, PaymentType } from '../../../common/apiModels';
 import { PaymentAmountInput } from './PaymentAmountInput';
 import { OtherBankPaymentDetails } from './paymentDetails/OtherBankPaymentDetails';
 import { isValidPersonalCode } from './PersonalCode';
+import { BankKey } from './types';
 
 export const ThirdPillarGift: React.FunctionComponent = () => {
   const { formatMessage } = useIntl();
 
   const [paymentPersonalCode, setPaymentPersonalCode] = useState<string>('');
   const [paymentAmount, setPaymentAmount] = useState<string>('');
-  const [paymentBank, setPaymentBank] = useState<string>('');
+  const [paymentBank, setPaymentBank] = useState<BankKey | 'other' | null>(null);
 
   const isDisabled = () =>
     !paymentPersonalCode ||
@@ -88,33 +89,12 @@ export const ThirdPillarGift: React.FunctionComponent = () => {
       </div>
 
       <div className="mt-2 payment-banks">
-        <BankButton
-          bankKey="swedbank"
-          bankName="Swedbank"
-          paymentBank={paymentBank}
-          setPaymentBank={setPaymentBank}
-        />
-        <BankButton
-          bankKey="seb"
-          bankName="SEB"
-          paymentBank={paymentBank}
-          setPaymentBank={setPaymentBank}
-        />
-        <BankButton
-          bankKey="lhv"
-          bankName="LHV"
-          paymentBank={paymentBank}
-          setPaymentBank={setPaymentBank}
-        />
-        <BankButton
-          bankKey="luminor"
-          bankName="Luminor"
-          paymentBank={paymentBank}
-          setPaymentBank={setPaymentBank}
-        />
+        <BankButton bankKey="swedbank" paymentBank={paymentBank} setPaymentBank={setPaymentBank} />
+        <BankButton bankKey="seb" paymentBank={paymentBank} setPaymentBank={setPaymentBank} />
+        <BankButton bankKey="lhv" paymentBank={paymentBank} setPaymentBank={setPaymentBank} />
+        <BankButton bankKey="luminor" paymentBank={paymentBank} setPaymentBank={setPaymentBank} />
         <BankButton
           bankKey="other"
-          bankName={formatMessage({ id: 'thirdPillarPayment.otherBank' })}
           paymentBank={paymentBank}
           setPaymentBank={setPaymentBank}
           disabled={!paymentPersonalCode || !isValidPersonalCode(paymentPersonalCode)}
@@ -153,7 +133,7 @@ export const ThirdPillarGift: React.FunctionComponent = () => {
                     amount: Number(paymentAmount.replace(',', '.')),
                     currency: 'EUR',
                     type: PaymentType.GIFT,
-                    paymentChannel: paymentBank.toUpperCase() as PaymentChannel,
+                    paymentChannel: paymentBank?.toUpperCase() as PaymentChannel,
                   });
                 }}
               >
