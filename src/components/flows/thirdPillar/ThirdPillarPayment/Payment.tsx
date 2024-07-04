@@ -43,159 +43,157 @@ export const Payment: React.FunctionComponent = () => {
         <FormattedMessage id="thirdPillarPayment.title" />
       </h2>
       <PaymentTypeSelection paymentType={paymentType} setPaymentType={setPaymentType} />
-      {(paymentType === PaymentType.SINGLE || paymentType === PaymentType.RECURRING) && (
-        <>
-          <PaymentAmountInput
-            paymentType={paymentType}
-            value={paymentAmount}
-            onChange={(event) => {
-              const { value } = event.target;
-              const euroRegex = /^\d+([.,]\d{0,2})?$/;
+      <>
+        <PaymentAmountInput
+          paymentType={paymentType}
+          value={paymentAmount}
+          onChange={(event) => {
+            const { value } = event.target;
+            const euroRegex = /^\d+([.,]\d{0,2})?$/;
 
-              if (value === '' || euroRegex.test(value)) {
-                setPaymentAmount(value);
-              }
-            }}
-            onWheel={(event) => event.currentTarget.blur()}
-            className="mt-5"
-          />
+            if (value === '' || euroRegex.test(value)) {
+              setPaymentAmount(value);
+            }
+          }}
+          onWheel={(event) => event.currentTarget.blur()}
+          className="mt-5"
+        />
 
-          <div className="payment-amount-input-footer">
-            <ThirdPillarPaymentsAmount />
-            <div>
-              <small className="text-muted">
-                <a href="//tuleva.ee/iii-sammas/" target="_blank" rel="noreferrer">
-                  {paymentType === PaymentType.SINGLE && (
-                    <FormattedMessage id="thirdPillarPayment.singlePaymentHowMuch" />
-                  )}
-                  {paymentType === PaymentType.RECURRING && (
-                    <FormattedMessage id="thirdPillarPayment.recurringPaymentHowMuch" />
-                  )}
-                </a>
-              </small>
+        <div className="payment-amount-input-footer">
+          <ThirdPillarPaymentsAmount />
+          <div>
+            <small className="text-muted">
+              <a href="//tuleva.ee/iii-sammas/" target="_blank" rel="noreferrer">
+                {paymentType === PaymentType.SINGLE && (
+                  <FormattedMessage id="thirdPillarPayment.singlePaymentHowMuch" />
+                )}
+                {paymentType === PaymentType.RECURRING && (
+                  <FormattedMessage id="thirdPillarPayment.recurringPaymentHowMuch" />
+                )}
+              </a>
+            </small>
+          </div>
+        </div>
+
+        <div className="mt-5 payment-bank-title">
+          <b>
+            {paymentType === PaymentType.SINGLE && (
+              <FormattedMessage id="thirdPillarPayment.singlePaymentBank" />
+            )}
+            {paymentType === PaymentType.RECURRING && (
+              <FormattedMessage id="thirdPillarPayment.recurringPaymentBank" />
+            )}
+          </b>
+        </div>
+
+        <PaymentBankButtons paymentBank={paymentBank} setPaymentBank={setPaymentBank} />
+
+        <div className="payment-details-container">
+          {paymentType === PaymentType.RECURRING && paymentBank && (
+            <>
+              {paymentBank === 'swedbank' && (
+                <SwedbankRecurringPaymentDetails amount={paymentAmount} />
+              )}
+
+              {paymentBank === 'seb' && <SebRecurringPaymentDetails />}
+
+              {paymentBank === 'lhv' && <LhvRecurringPaymentDetails />}
+
+              {paymentBank === 'luminor' && (
+                <LuminorRecurringPaymentDetails
+                  amount={paymentAmount}
+                  personalCode={user.personalCode}
+                />
+              )}
+
+              {paymentBank === 'coop' && <CoopRecurringPaymentDetails />}
+
+              {paymentBank === 'other' && (
+                <OtherBankPaymentDetails
+                  personalCode={user.personalCode}
+                  amount={paymentAmount}
+                  paymentType={PaymentType.RECURRING}
+                />
+              )}
+            </>
+          )}
+          {paymentType === PaymentType.SINGLE && paymentBank === 'other' && (
+            <OtherBankPaymentDetails
+              personalCode={user.personalCode}
+              amount={paymentAmount}
+              paymentType={PaymentType.SINGLE}
+            />
+          )}
+          {paymentBank === 'other' && (
+            <div className="mt-4">
+              <Link to="/account">
+                <button type="button" className="btn btn-light">
+                  <FormattedMessage id="thirdPillarPayment.backToAccountPage" />
+                </button>
+              </Link>
             </div>
-          </div>
-
-          <div className="mt-5 payment-bank-title">
-            <b>
-              {paymentType === PaymentType.SINGLE && (
-                <FormattedMessage id="thirdPillarPayment.singlePaymentBank" />
-              )}
-              {paymentType === PaymentType.RECURRING && (
-                <FormattedMessage id="thirdPillarPayment.recurringPaymentBank" />
-              )}
-            </b>
-          </div>
-
-          <PaymentBankButtons paymentBank={paymentBank} setPaymentBank={setPaymentBank} />
-
-          <div className="payment-details-container">
-            {paymentType === PaymentType.RECURRING && paymentBank && (
-              <>
-                {paymentBank === 'swedbank' && (
-                  <SwedbankRecurringPaymentDetails amount={paymentAmount} />
-                )}
-
-                {paymentBank === 'seb' && <SebRecurringPaymentDetails />}
-
-                {paymentBank === 'lhv' && <LhvRecurringPaymentDetails />}
-
-                {paymentBank === 'luminor' && (
-                  <LuminorRecurringPaymentDetails
-                    amount={paymentAmount}
-                    personalCode={user.personalCode}
-                  />
-                )}
-
-                {paymentBank === 'coop' && <CoopRecurringPaymentDetails />}
-
-                {paymentBank === 'other' && (
-                  <OtherBankPaymentDetails
-                    personalCode={user.personalCode}
-                    amount={paymentAmount}
-                    paymentType={PaymentType.RECURRING}
-                  />
-                )}
-              </>
-            )}
-            {paymentType === PaymentType.SINGLE && paymentBank === 'other' && (
-              <OtherBankPaymentDetails
-                personalCode={user.personalCode}
-                amount={paymentAmount}
-                paymentType={PaymentType.SINGLE}
-              />
-            )}
-            {paymentBank === 'other' && (
-              <div className="mt-4">
-                <Link to="/account">
-                  <button type="button" className="btn btn-light">
-                    <FormattedMessage id="thirdPillarPayment.backToAccountPage" />
+          )}
+          {paymentBank !== 'other' && (
+            <>
+              <div className="d-flex flex-wrap align-items-start">
+                <div className="mr-auto">
+                  <button
+                    type="button"
+                    className="btn btn-primary payment-button text-nowrap mt-4"
+                    disabled={isSubmitDisabled()}
+                    onClick={() => {
+                      redirectToPayment({
+                        recipientPersonalCode: user.personalCode,
+                        amount: Number(paymentAmount.replace(',', '.')),
+                        currency: 'EUR',
+                        type: paymentType,
+                        paymentChannel: paymentBank.toUpperCase() as PaymentChannel,
+                      });
+                    }}
+                  >
+                    {paymentType === PaymentType.SINGLE && (
+                      <FormattedMessage id="thirdPillarPayment.makePayment" />
+                    )}
+                    {paymentType === PaymentType.RECURRING && (
+                      <FormattedMessage id="thirdPillarPayment.setupRecurringPayment" />
+                    )}
                   </button>
-                </Link>
-              </div>
-            )}
-            {paymentBank !== 'other' && (
-              <>
-                <div className="d-flex flex-wrap align-items-start">
-                  <div className="mr-auto">
-                    <button
-                      type="button"
-                      className="btn btn-primary payment-button text-nowrap mt-4"
-                      disabled={isSubmitDisabled()}
-                      onClick={() => {
-                        redirectToPayment({
-                          recipientPersonalCode: user.personalCode,
-                          amount: Number(paymentAmount.replace(',', '.')),
-                          currency: 'EUR',
-                          type: paymentType,
-                          paymentChannel: paymentBank.toUpperCase() as PaymentChannel,
-                        });
-                      }}
-                    >
+                  <div className="mt-2">
+                    <small className="text-muted">
                       {paymentType === PaymentType.SINGLE && (
-                        <FormattedMessage id="thirdPillarPayment.makePayment" />
+                        <FormattedMessage
+                          id="thirdPillarPayment.freeSinglePayment"
+                          values={{
+                            b: (chunks: string) => <b>{chunks}</b>,
+                          }}
+                        />
                       )}
                       {paymentType === PaymentType.RECURRING && (
-                        <FormattedMessage id="thirdPillarPayment.setupRecurringPayment" />
+                        <FormattedMessage
+                          id="thirdPillarPayment.freeRecurringPayment"
+                          values={{
+                            b: (chunks: string) => <b>{chunks}</b>,
+                          }}
+                        />
                       )}
-                    </button>
-                    <div className="mt-2">
-                      <small className="text-muted">
-                        {paymentType === PaymentType.SINGLE && (
-                          <FormattedMessage
-                            id="thirdPillarPayment.freeSinglePayment"
-                            values={{
-                              b: (chunks: string) => <b>{chunks}</b>,
-                            }}
-                          />
-                        )}
-                        {paymentType === PaymentType.RECURRING && (
-                          <FormattedMessage
-                            id="thirdPillarPayment.freeRecurringPayment"
-                            values={{
-                              b: (chunks: string) => <b>{chunks}</b>,
-                            }}
-                          />
-                        )}
-                      </small>
-                    </div>
+                    </small>
                   </div>
-                  {paymentType === PaymentType.RECURRING && !isSubmitDisabled() && (
-                    <div className="d-flex flex-wrap align-items-center">
-                      <span className="mr-2 mt-4">
-                        <FormattedMessage id="thirdPillarPayment.recurringPaymentQuestion" />
-                      </span>
-                      <a className="btn btn-light text-nowrap mt-4" href="/account">
-                        <FormattedMessage id="thirdPillarPayment.backToAccountPage" />
-                      </a>
-                    </div>
-                  )}
                 </div>
-              </>
-            )}
-          </div>
-        </>
-      )}
+                {paymentType === PaymentType.RECURRING && !isSubmitDisabled() && (
+                  <div className="d-flex flex-wrap align-items-center">
+                    <span className="mr-2 mt-4">
+                      <FormattedMessage id="thirdPillarPayment.recurringPaymentQuestion" />
+                    </span>
+                    <a className="btn btn-light text-nowrap mt-4" href="/account">
+                      <FormattedMessage id="thirdPillarPayment.backToAccountPage" />
+                    </a>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+        </div>
+      </>
     </>
   );
 };
