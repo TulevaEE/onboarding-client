@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Radio } from '../../../common';
 import ThirdPillarPaymentsAmount from '../../../account/statusBox/thirdPillarStatusBox/ThirdPillarContributionAmount';
 import './Payment.scss';
-import { BankButton } from './BankButton';
 import { redirectToPayment } from '../../../common/api';
 import { PaymentChannel, PaymentType } from '../../../common/apiModels';
 import { PaymentAmountInput } from './PaymentAmountInput';
@@ -14,15 +12,17 @@ import { SwedbankRecurringPaymentDetails } from './paymentDetails/SwedbankRecurr
 import { SebRecurringPaymentDetails } from './paymentDetails/SebRecurringPaymentDetails';
 import { LhvRecurringPaymentDetails } from './paymentDetails/LhvRecurringPaymentDetails';
 import { CoopRecurringPaymentDetails } from './paymentDetails/CoopRecurringPaymentDetails';
-import { PrivateEmployerGuide } from './paymentDetails/EmployerPaymentDetails';
 import { useMe } from '../../../common/apiHooks';
+import { AvailablePaymentType, BankKey } from './types';
+import { PaymentTypeSelection } from './PaymentTypeSelection';
+import { PaymentBankButtons } from './PaymentBankButtons';
 
 export const Payment: React.FunctionComponent = () => {
-  const { formatMessage } = useIntl();
+  useIntl();
 
-  const [paymentType, setPaymentType] = useState<PaymentType>(PaymentType.SINGLE);
+  const [paymentType, setPaymentType] = useState<AvailablePaymentType>(PaymentType.SINGLE);
   const [paymentAmount, setPaymentAmount] = useState<string>('');
-  const [paymentBank, setPaymentBank] = useState<string>('');
+  const [paymentBank, setPaymentBank] = useState<BankKey | 'other' | null>(null);
 
   const { data: user } = useMe();
 
@@ -30,7 +30,7 @@ export const Payment: React.FunctionComponent = () => {
     return null;
   }
 
-  const isDisabled = () =>
+  const isSubmitDisabled = () =>
     !user.personalCode ||
     !paymentBank ||
     paymentBank === 'other' ||
@@ -42,52 +42,7 @@ export const Payment: React.FunctionComponent = () => {
       <h2 className="mt-3">
         <FormattedMessage id="thirdPillarPayment.title" />
       </h2>
-      <div className="mt-5">
-        <b>
-          <FormattedMessage id="thirdPillarPayment.paymentType" />
-        </b>
-      </div>
-      <Radio
-        name="payment-type"
-        id="payment-type-single"
-        className="mt-3 p-3"
-        selected={paymentType === PaymentType.SINGLE}
-        onSelect={() => {
-          setPaymentType(PaymentType.SINGLE);
-        }}
-      >
-        <p className="m-0">
-          <FormattedMessage id="thirdPillarPayment.SINGLE" />
-        </p>
-      </Radio>
-      <Radio
-        name="payment-type"
-        id="payment-type-recurring"
-        className="mt-3"
-        selected={paymentType === PaymentType.RECURRING}
-        onSelect={() => {
-          setPaymentType(PaymentType.RECURRING);
-        }}
-      >
-        <p className="m-0">
-          <FormattedMessage id="thirdPillarPayment.RECURRING" />
-        </p>
-      </Radio>
-      {false && (
-        <Radio
-          name="payment-type"
-          id="payment-type-employer"
-          className="mt-3"
-          selected={paymentType === PaymentType.EMPLOYER}
-          onSelect={() => {
-            setPaymentType(PaymentType.EMPLOYER);
-          }}
-        >
-          <p className="m-0">
-            <FormattedMessage id="thirdPillarPayment.EMPLOYER" />
-          </p>
-        </Radio>
-      )}
+      <PaymentTypeSelection paymentType={paymentType} setPaymentType={setPaymentType} />
       {(paymentType === PaymentType.SINGLE || paymentType === PaymentType.RECURRING) && (
         <>
           <PaymentAmountInput
@@ -132,44 +87,7 @@ export const Payment: React.FunctionComponent = () => {
             </b>
           </div>
 
-          <div className="mt-2 payment-banks">
-            <BankButton
-              bankKey="swedbank"
-              bankName="Swedbank"
-              paymentBank={paymentBank}
-              setPaymentBank={setPaymentBank}
-            />
-            <BankButton
-              bankKey="seb"
-              bankName="SEB"
-              paymentBank={paymentBank}
-              setPaymentBank={setPaymentBank}
-            />
-            <BankButton
-              bankKey="lhv"
-              bankName="LHV"
-              paymentBank={paymentBank}
-              setPaymentBank={setPaymentBank}
-            />
-            <BankButton
-              bankKey="luminor"
-              bankName="Luminor"
-              paymentBank={paymentBank}
-              setPaymentBank={setPaymentBank}
-            />
-            <BankButton
-              bankKey="coop"
-              bankName="Coop Pank"
-              paymentBank={paymentBank}
-              setPaymentBank={setPaymentBank}
-            />
-            <BankButton
-              bankKey="other"
-              bankName={formatMessage({ id: 'thirdPillarPayment.otherBank' })}
-              paymentBank={paymentBank}
-              setPaymentBank={setPaymentBank}
-            />
-          </div>
+          <PaymentBankButtons paymentBank={paymentBank} setPaymentBank={setPaymentBank} />
 
           <div className="payment-details-container">
             {paymentType === PaymentType.RECURRING && paymentBank && (
@@ -223,7 +141,7 @@ export const Payment: React.FunctionComponent = () => {
                     <button
                       type="button"
                       className="btn btn-primary payment-button text-nowrap mt-4"
-                      disabled={isDisabled()}
+                      disabled={isSubmitDisabled()}
                       onClick={() => {
                         redirectToPayment({
                           recipientPersonalCode: user.personalCode,
@@ -262,7 +180,7 @@ export const Payment: React.FunctionComponent = () => {
                       </small>
                     </div>
                   </div>
-                  {paymentType === PaymentType.RECURRING && !isDisabled() && (
+                  {paymentType === PaymentType.RECURRING && !isSubmitDisabled() && (
                     <div className="d-flex flex-wrap align-items-center">
                       <span className="mr-2 mt-4">
                         <FormattedMessage id="thirdPillarPayment.recurringPaymentQuestion" />
@@ -277,19 +195,6 @@ export const Payment: React.FunctionComponent = () => {
             )}
           </div>
         </>
-      )}
-      {paymentType === PaymentType.EMPLOYER && (
-        <div className="mt-4 payment-details p-4">
-          <h2 className="mt-3">
-            <FormattedMessage id="thirdPillarPayment.EMPLOYER.title" />
-          </h2>
-          <div className="mt-4">
-            <PrivateEmployerGuide user={user} />
-          </div>
-          <a className="btn btn-light text-nowrap mt-4" href="/account">
-            <FormattedMessage id="thirdPillarPayment.backToAccountPage" />
-          </a>
-        </div>
       )}
     </>
   );
