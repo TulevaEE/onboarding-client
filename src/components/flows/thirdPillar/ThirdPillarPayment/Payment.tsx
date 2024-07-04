@@ -1,21 +1,17 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { FormattedMessage, useIntl } from 'react-intl';
 import ThirdPillarPaymentsAmount from '../../../account/statusBox/thirdPillarStatusBox/ThirdPillarContributionAmount';
 import './Payment.scss';
 import { redirectToPayment } from '../../../common/api';
 import { PaymentChannel, PaymentType } from '../../../common/apiModels';
 import { PaymentAmountInput } from './PaymentAmountInput';
-import { LuminorRecurringPaymentDetails } from './paymentDetails/LuminorRecurringPaymentDetails';
 import { OtherBankPaymentDetails } from './paymentDetails/OtherBankPaymentDetails';
-import { SwedbankRecurringPaymentDetails } from './paymentDetails/SwedbankRecurringPaymentDetails';
-import { SebRecurringPaymentDetails } from './paymentDetails/SebRecurringPaymentDetails';
-import { LhvRecurringPaymentDetails } from './paymentDetails/LhvRecurringPaymentDetails';
-import { CoopRecurringPaymentDetails } from './paymentDetails/CoopRecurringPaymentDetails';
 import { useMe } from '../../../common/apiHooks';
 import { AvailablePaymentType, BankKey } from './types';
 import { PaymentTypeSelection } from './PaymentTypeSelection';
 import { PaymentBankButtons } from './PaymentBankButtons';
+import { RecurringPaymentDetails } from './RecurringPaymentDetails';
+import { PaymentSubmitSection } from './PaymentSubmitSection';
 
 export const Payment: React.FunctionComponent = () => {
   useIntl();
@@ -36,6 +32,20 @@ export const Payment: React.FunctionComponent = () => {
     paymentBank === 'other' ||
     !paymentAmount ||
     Number(paymentAmount.replace(',', '.')) <= 0;
+
+  const handleSubmit = () => {
+    if (isSubmitDisabled()) {
+      return;
+    }
+
+    redirectToPayment({
+      recipientPersonalCode: user.personalCode,
+      amount: Number(paymentAmount.replace(',', '.')),
+      currency: 'EUR',
+      type: paymentType,
+      paymentChannel: paymentBank?.toUpperCase() as PaymentChannel,
+    });
+  };
 
   return (
     <>
@@ -90,32 +100,11 @@ export const Payment: React.FunctionComponent = () => {
 
         <div className="payment-details-container">
           {paymentType === PaymentType.RECURRING && paymentBank && (
-            <>
-              {paymentBank === 'swedbank' && (
-                <SwedbankRecurringPaymentDetails amount={paymentAmount} />
-              )}
-
-              {paymentBank === 'seb' && <SebRecurringPaymentDetails />}
-
-              {paymentBank === 'lhv' && <LhvRecurringPaymentDetails />}
-
-              {paymentBank === 'luminor' && (
-                <LuminorRecurringPaymentDetails
-                  amount={paymentAmount}
-                  personalCode={user.personalCode}
-                />
-              )}
-
-              {paymentBank === 'coop' && <CoopRecurringPaymentDetails />}
-
-              {paymentBank === 'other' && (
-                <OtherBankPaymentDetails
-                  personalCode={user.personalCode}
-                  amount={paymentAmount}
-                  paymentType={PaymentType.RECURRING}
-                />
-              )}
-            </>
+            <RecurringPaymentDetails
+              paymentBank={paymentBank}
+              paymentAmount={paymentAmount}
+              personalCode={user.personalCode}
+            />
           )}
           {paymentType === PaymentType.SINGLE && paymentBank === 'other' && (
             <OtherBankPaymentDetails
@@ -124,74 +113,12 @@ export const Payment: React.FunctionComponent = () => {
               paymentType={PaymentType.SINGLE}
             />
           )}
-          {paymentBank === 'other' && (
-            <div className="mt-4">
-              <Link to="/account">
-                <button type="button" className="btn btn-light">
-                  <FormattedMessage id="thirdPillarPayment.backToAccountPage" />
-                </button>
-              </Link>
-            </div>
-          )}
-          {paymentBank !== 'other' && (
-            <>
-              <div className="d-flex flex-wrap align-items-start">
-                <div className="mr-auto">
-                  <button
-                    type="button"
-                    className="btn btn-primary payment-button text-nowrap mt-4"
-                    disabled={isSubmitDisabled()}
-                    onClick={() => {
-                      redirectToPayment({
-                        recipientPersonalCode: user.personalCode,
-                        amount: Number(paymentAmount.replace(',', '.')),
-                        currency: 'EUR',
-                        type: paymentType,
-                        paymentChannel: paymentBank.toUpperCase() as PaymentChannel,
-                      });
-                    }}
-                  >
-                    {paymentType === PaymentType.SINGLE && (
-                      <FormattedMessage id="thirdPillarPayment.makePayment" />
-                    )}
-                    {paymentType === PaymentType.RECURRING && (
-                      <FormattedMessage id="thirdPillarPayment.setupRecurringPayment" />
-                    )}
-                  </button>
-                  <div className="mt-2">
-                    <small className="text-muted">
-                      {paymentType === PaymentType.SINGLE && (
-                        <FormattedMessage
-                          id="thirdPillarPayment.freeSinglePayment"
-                          values={{
-                            b: (chunks: string) => <b>{chunks}</b>,
-                          }}
-                        />
-                      )}
-                      {paymentType === PaymentType.RECURRING && (
-                        <FormattedMessage
-                          id="thirdPillarPayment.freeRecurringPayment"
-                          values={{
-                            b: (chunks: string) => <b>{chunks}</b>,
-                          }}
-                        />
-                      )}
-                    </small>
-                  </div>
-                </div>
-                {paymentType === PaymentType.RECURRING && !isSubmitDisabled() && (
-                  <div className="d-flex flex-wrap align-items-center">
-                    <span className="mr-2 mt-4">
-                      <FormattedMessage id="thirdPillarPayment.recurringPaymentQuestion" />
-                    </span>
-                    <a className="btn btn-light text-nowrap mt-4" href="/account">
-                      <FormattedMessage id="thirdPillarPayment.backToAccountPage" />
-                    </a>
-                  </div>
-                )}
-              </div>
-            </>
-          )}
+          <PaymentSubmitSection
+            paymentBank={paymentBank}
+            paymentType={paymentType}
+            handleSubmit={handleSubmit}
+            disabled={isSubmitDisabled()}
+          />
         </div>
       </>
     </>
