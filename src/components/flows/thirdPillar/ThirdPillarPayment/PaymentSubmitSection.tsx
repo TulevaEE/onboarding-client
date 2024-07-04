@@ -16,10 +16,6 @@ export const PaymentSubmitSection = ({
   handleSubmit,
   disabled,
 }: Props) => {
-  if (paymentBank === null) {
-    return null;
-  }
-
   if (paymentBank === 'other') {
     return (
       <div className="mt-4">
