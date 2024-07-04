@@ -89,6 +89,7 @@ export const ThirdPillarGift: React.FunctionComponent = () => {
       </div>
 
       <div className="mt-2 payment-banks">
+        {/* TODO use refactored PaymentBankButtons here */}
         <BankButton bankKey="swedbank" paymentBank={paymentBank} setPaymentBank={setPaymentBank} />
         <BankButton bankKey="seb" paymentBank={paymentBank} setPaymentBank={setPaymentBank} />
         <BankButton bankKey="lhv" paymentBank={paymentBank} setPaymentBank={setPaymentBank} />
