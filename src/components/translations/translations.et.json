@@ -256,7 +256,7 @@
   "account.status.choice.pillar.second.feecard.title": "Madalad tasud",
   "account.status.choice.pillar.second.feecard.text": "Tuleva II samba fondides kogud <b>madalate tasudega</b>",
 
-"account.status.choice.pillar.third": "III sammas",
+  "account.status.choice.pillar.third": "III sammas",
   "account.status.choice.pillar.third.missing.action": "Ava III sammas",
   "account.status.choice.pillar.third.missing.label": "Sul pole III sammas veel avatud",
   "account.status.choice.pillar.third.inactive.action": "Vali Tuleva",
@@ -475,6 +475,7 @@
   "thirdPillarPayment.accountNumber.luminor": "Pensionikeskuse Luminori kontonumber",
   "thirdPillarPayment.processingCodeAndPersonalCode": "III sammast tähistav töötluskood, isikukood ja Tuleva III Samba Pensionifondi ISIN",
   "thirdPillarPayment.pensionAccountNumber": "Sinu personaalne pensionikonto number",
+  "thirdPillarPayment.errorGeneratingLink": "Makselingi genereerimisel tekkis viga. Palun proovi hiljem uuesti või võta meiega ühendust",
 
   "thirdPillarPayment.EMPLOYER.title": "Avaldus tööandjale otse palgast III sambasse maksmiseks",
   "thirdPillarPayment.EMPLOYER.publicEmployer": "Olen avaliku sektori töötaja",
@@ -633,7 +634,6 @@
   "comparisonCalculator.comparisonOptions.epi": "Eesti keskmine II samba fond",
   "comparisonCalculator.comparisonOptions.cpi": "Eesti inflatsioon",
 
-
   "comparisonCalculator.content.performance.index.alpha.start": "Sinu {pillar} sammas on viimase {years} aastaga <b>maailmaturu indeksi</b>",
   "comparisonCalculator.content.performance.index.alpha.wordNegative": "tootlusele",
   "comparisonCalculator.content.performance.index.alpha.wordPositive": "tootlust",
@@ -667,11 +667,11 @@
 
   "comparisonCalculator.content.performance.cta.subtext": "Tuleva Maailma Aktsiate Pensionifond järgib maailmaturu indeksit, st püüab saavutada sellega võimalikult sarnast pikaajalist tootlust.",
 
-  "comparisonCalculator.ctaButton" : "Too oma {pillar} sammas Tulevasse",
-  "comparisonCalculator.graphWorldMarketStockIndex" : "Maailmaturu indeks",
-  "comparisonCalculator.graphYourIIPillar" : "Sinu II sammas",
-  "comparisonCalculator.graphYourIIIPillar" : "Sinu III sammas",
-  "comparisonCalculator.footerDisclaimer" : "Protsendid näitavad, kui palju on sinu pensionisammas kasvanud keskmiselt igal aastal. Eurod näitavad kogukasvu valitud ajaperioodil.",
+  "comparisonCalculator.ctaButton": "Too oma {pillar} sammas Tulevasse",
+  "comparisonCalculator.graphWorldMarketStockIndex": "Maailmaturu indeks",
+  "comparisonCalculator.graphYourIIPillar": "Sinu II sammas",
+  "comparisonCalculator.graphYourIIIPillar": "Sinu III sammas",
+  "comparisonCalculator.footerDisclaimer": "Protsendid näitavad, kui palju on sinu pensionisammas kasvanud keskmiselt igal aastal. Eurod näitavad kogukasvu valitud ajaperioodil.",
   "comparisonCalculator.footerNumbersExplanationLink": "Mida need arvud näitavad?",
   "comparisonCalculator.footerPerformanceExplanationLink": "Millist tootlust on Tulevas oodata?",
   "comparisonCalculator.period.all": "Kogumise algusest {pillar} sambas ({date})",

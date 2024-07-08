@@ -48,7 +48,8 @@ export async function getWithAuthentication(
   axiosConfig = {},
 ): Promise<any> {
   const axiosInstance = createAxiosInstance();
-  return axiosInstance.get(url, { params, ...axiosConfig }).then((response) => response.data);
+  const response = await axiosInstance.get(url, { params, ...axiosConfig });
+  return response.data;
 }
 
 export async function postWithAuthentication(

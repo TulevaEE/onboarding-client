@@ -19,6 +19,7 @@ export const Payment: React.FunctionComponent = () => {
   const [paymentType, setPaymentType] = useState<AvailablePaymentType>(PaymentType.SINGLE);
   const [paymentAmount, setPaymentAmount] = useState<string>('');
   const [paymentBank, setPaymentBank] = useState<BankKey | 'other' | null>(null);
+  const [error, setError] = useState<boolean>(false);
 
   const { data: user } = useMe();
 
@@ -33,18 +34,24 @@ export const Payment: React.FunctionComponent = () => {
     !paymentAmount ||
     Number(paymentAmount.replace(',', '.')) <= 0;
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    setError(false);
+
     if (isSubmitDisabled()) {
       return;
     }
 
-    redirectToPayment({
-      recipientPersonalCode: user.personalCode,
-      amount: Number(paymentAmount.replace(',', '.')),
-      currency: 'EUR',
-      type: paymentType,
-      paymentChannel: paymentBank?.toUpperCase() as PaymentChannel,
-    });
+    try {
+      await redirectToPayment({
+        recipientPersonalCode: user.personalCode,
+        amount: Number(paymentAmount.replace(',', '.')),
+        currency: 'EUR',
+        type: paymentType,
+        paymentChannel: paymentBank?.toUpperCase() as PaymentChannel,
+      });
+    } catch (e) {
+      setError(true);
+    }
   };
 
   return (
@@ -52,6 +59,11 @@ export const Payment: React.FunctionComponent = () => {
       <h2 className="mt-3">
         <FormattedMessage id="thirdPillarPayment.title" />
       </h2>
+      {error && (
+        <div className="alert alert-danger mt-5" role="alert">
+          <FormattedMessage id="thirdPillarPayment.errorGeneratingLink" />
+        </div>
+      )}
       <PaymentTypeSelection paymentType={paymentType} setPaymentType={setPaymentType} />
       <>
         <PaymentAmountInput
