@@ -475,7 +475,7 @@
   "thirdPillarPayment.accountNumber.luminor": "Pensionikeskuse Luminori kontonumber",
   "thirdPillarPayment.processingCodeAndPersonalCode": "III sammast tähistav töötluskood, isikukood ja Tuleva III Samba Pensionifondi ISIN",
   "thirdPillarPayment.pensionAccountNumber": "Sinu personaalne pensionikonto number",
-  "thirdPillarPayment.errorGeneratingLink": "Makselingi genereerimisel tekkis viga. Palun proovi hiljem uuesti või võta meiega ühendust",
+  "thirdPillarPayment.errorGeneratingLink": "Makse algatamisel tekkis viga. Palun proovi hiljem uuesti või võta meiega ühendust: tuleva@tuleva.ee",
 
   "thirdPillarPayment.EMPLOYER.title": "Avaldus tööandjale otse palgast III sambasse maksmiseks",
   "thirdPillarPayment.EMPLOYER.publicEmployer": "Olen avaliku sektori töötaja",
