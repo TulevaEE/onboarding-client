@@ -286,8 +286,7 @@ export function createApplicationCancellation(applicationId: number): Promise<Ca
   return postWithAuthentication(getEndpoint(`/v1/applications/${applicationId}/cancellations`), {});
 }
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export function createTrackedEvent(type: string, data: Record<string, unknown>): Promise<any> {
+export function createTrackedEvent(type: string, data: Record<string, unknown>): Promise<unknown> {
   return postWithAuthentication(getEndpoint('/v1/t'), { type, data });
 }
 
@@ -295,11 +294,10 @@ export function getPaymentLink(payment: Payment): Promise<PaymentLink> {
   return getWithAuthentication(getEndpoint('/v1/payments/link'), payment);
 }
 
-export function redirectToPayment(payment: Payment): void {
+export async function redirectToPayment(payment: Payment): Promise<void> {
   const wndw = getWindow(payment.type);
-  getPaymentLink(payment).then((paymentLink) => {
-    wndw.location.replace(paymentLink.url);
-  });
+  const paymentLink = await getPaymentLink(payment);
+  wndw.location.replace(paymentLink.url);
 }
 
 function getWindow(paymentType: PaymentType): Window {

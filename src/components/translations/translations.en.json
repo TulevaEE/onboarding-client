@@ -257,7 +257,6 @@
   "account.status.choice.pillar.second.feecard.title": "Low Fees",
   "account.status.choice.pillar.second.feecard.text": "You accumulate in Tuleva's II pillar funds with <b>low fees</b>",
 
-
   "account.status.choice.pillar.third": "III pillar",
   "account.status.choice.pillar.third.missing.action": "Open III pillar",
   "account.status.choice.pillar.third.missing.label": "You have not opened your III pillar yet",
@@ -474,6 +473,7 @@
   "thirdPillarPayment.accountNumber.luminor": "Estonian Pension Registry's Luminor account number",
   "thirdPillarPayment.processingCodeAndPersonalCode": "III pillar processing code, personal code and Tuleva III Pillar Pension Fund ISIN",
   "thirdPillarPayment.pensionAccountNumber": "Your pension account number",
+  "thirdPillarPayment.errorGeneratingLink": "There was an error generating the payment link. Please try again later or contact us",
 
   "thirdPillarPayment.EMPLOYER.title": "Application to the employer to pay directly from the salary to III pillar",
   "thirdPillarPayment.EMPLOYER.publicEmployer": "I'm a public sector employee",
@@ -665,11 +665,11 @@
 
   "comparisonCalculator.content.performance.cta.subtext": "Tuleva World Stock Pension Fund follows the world market index, it tries to achieve a long-term return as similar as possible to it.",
 
-  "comparisonCalculator.ctaButton" : "Bring your {pillar} pillar to Tuleva",
-  "comparisonCalculator.graphWorldMarketStockIndex" : "World market index",
-  "comparisonCalculator.graphYourIIPillar" : "Your II pillar",
-  "comparisonCalculator.graphYourIIIPillar" : "Your III pillar",
-  "comparisonCalculator.footerDisclaimer" : "Percentages show, how much has your II pillar on average grown per year. Euros show the last {years} year total growth.",
+  "comparisonCalculator.ctaButton": "Bring your {pillar} pillar to Tuleva",
+  "comparisonCalculator.graphWorldMarketStockIndex": "World market index",
+  "comparisonCalculator.graphYourIIPillar": "Your II pillar",
+  "comparisonCalculator.graphYourIIIPillar": "Your III pillar",
+  "comparisonCalculator.footerDisclaimer": "Percentages show, how much has your II pillar on average grown per year. Euros show the last {years} year total growth.",
   "comparisonCalculator.footerNumbersExplanationLink": "What do these numbers mean?",
   "comparisonCalculator.footerPerformanceExplanationLink": "What returns to expect in Tuleva?",
   "comparisonCalculator.period.all": "From starting {pillar} contributions ({date})",
@@ -682,8 +682,6 @@
   "comparisonCalculator.period.threeYears": "Last 3 years",
   "comparisonCalculator.period.twoYears": "Last 2 years",
   "comparisonCalculator.period.oneYear": "Last year",
-
-
 
   "LHV Pensionifond XL": "Pension Fund LHV XL",
   "Tuleva Maailma Aktsiate Pensionifond": "Tuleva World Stocks Pension Fund",
