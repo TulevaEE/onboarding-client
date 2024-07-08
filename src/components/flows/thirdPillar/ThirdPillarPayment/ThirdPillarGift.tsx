@@ -17,14 +17,35 @@ export const ThirdPillarGift: React.FunctionComponent = () => {
   const [paymentPersonalCode, setPaymentPersonalCode] = useState<string>('');
   const [paymentAmount, setPaymentAmount] = useState<string>('');
   const [paymentBank, setPaymentBank] = useState<BankKey | 'other' | null>(null);
+  const [error, setError] = useState<boolean>(false);
 
-  const isDisabled = () =>
+  const isSubmitDisabled = () =>
     !paymentPersonalCode ||
     !isValidPersonalCode(paymentPersonalCode) ||
     !paymentBank ||
     paymentBank === 'other' ||
     !paymentAmount ||
     Number(paymentAmount.replace(',', '.')) <= 0;
+
+  const handleSubmit = async () => {
+    setError(false);
+
+    if (isSubmitDisabled()) {
+      return;
+    }
+
+    try {
+      await redirectToPayment({
+        recipientPersonalCode: paymentPersonalCode,
+        amount: Number(paymentAmount.replace(',', '.')),
+        currency: 'EUR',
+        type: PaymentType.GIFT,
+        paymentChannel: paymentBank?.toUpperCase() as PaymentChannel,
+      });
+    } catch (e) {
+      setError(true);
+    }
+  };
 
   return (
     <>
@@ -40,6 +61,11 @@ export const ThirdPillarGift: React.FunctionComponent = () => {
           }}
         />
       </p>
+      {error && (
+        <div className="alert alert-danger mt-3" role="alert">
+          <FormattedMessage id="thirdPillarPayment.errorGeneratingLink" />
+        </div>
+      )}
 
       <div>
         <label className="mt-3" htmlFor="payment-personal-code">
@@ -127,16 +153,8 @@ export const ThirdPillarGift: React.FunctionComponent = () => {
               <button
                 type="button"
                 className="btn btn-primary payment-button text-nowrap mt-4"
-                disabled={isDisabled()}
-                onClick={() => {
-                  redirectToPayment({
-                    recipientPersonalCode: paymentPersonalCode,
-                    amount: Number(paymentAmount.replace(',', '.')),
-                    currency: 'EUR',
-                    type: PaymentType.GIFT,
-                    paymentChannel: paymentBank?.toUpperCase() as PaymentChannel,
-                  });
-                }}
+                disabled={isSubmitDisabled()}
+                onClick={handleSubmit}
               >
                 <FormattedMessage id="thirdPillarPayment.makePayment" />
               </button>
