@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { FormattedMessage, useIntl } from 'react-intl';
 import './Payment.scss';
+import { captureException } from '@sentry/browser';
 import { BankButton } from './BankButton';
 import { redirectToPayment } from '../../../common/api';
 import { PaymentChannel, PaymentType } from '../../../common/apiModels';
@@ -44,6 +45,7 @@ export const ThirdPillarGift: React.FunctionComponent = () => {
       });
     } catch (e) {
       setError(true);
+      captureException(e);
     }
   };
 

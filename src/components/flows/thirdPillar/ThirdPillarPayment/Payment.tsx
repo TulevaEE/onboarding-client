@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { captureException } from '@sentry/browser';
 import ThirdPillarPaymentsAmount from '../../../account/statusBox/thirdPillarStatusBox/ThirdPillarContributionAmount';
 import './Payment.scss';
 import { redirectToPayment } from '../../../common/api';
@@ -51,6 +52,7 @@ export const Payment: React.FunctionComponent = () => {
       });
     } catch (e) {
       setError(true);
+      captureException(e);
     }
   };
 

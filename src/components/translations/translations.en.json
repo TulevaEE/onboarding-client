@@ -473,7 +473,7 @@
   "thirdPillarPayment.accountNumber.luminor": "Estonian Pension Registry's Luminor account number",
   "thirdPillarPayment.processingCodeAndPersonalCode": "III pillar processing code, personal code and Tuleva III Pillar Pension Fund ISIN",
   "thirdPillarPayment.pensionAccountNumber": "Your pension account number",
-  "thirdPillarPayment.errorGeneratingLink": "There was an error generating the payment link. Please try again later or contact us",
+  "thirdPillarPayment.errorGeneratingLink": "There was an error initiating the payment. Please try again later or contact us: tuleva@tuleva.ee",
 
   "thirdPillarPayment.EMPLOYER.title": "Application to the employer to pay directly from the salary to III pillar",
   "thirdPillarPayment.EMPLOYER.publicEmployer": "I'm a public sector employee",
