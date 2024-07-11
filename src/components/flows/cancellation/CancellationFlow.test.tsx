@@ -31,7 +31,6 @@ describe('When a user is cancelling an application', () => {
 
     renderWrapped(
       <Switch>
-        <Route path="/account" render={() => <h1>Mock account page</h1>} />
         <Route path={flowPath} component={CancellationFlow} />
       </Switch>,
       history as any,
@@ -94,7 +93,7 @@ describe('When a user is cancelling an application', () => {
     });
   });
 
-  test('a success screen is shown that lets the user navigate back', async () => {
+  test('a success screen is shown', async () => {
     cancellationBackend(server);
     smartIdSigningBackend(server);
     expect(await screen.findByText('II pillar early withdrawal application')).toBeInTheDocument();
@@ -108,10 +107,7 @@ describe('When a user is cancelling an application', () => {
       { timeout: 1500 },
     );
 
-    userEvent.click(screen.getByText('Back to account'));
-    await waitFor(() => {
-      expect(screen.getByText(/Mock account page/)).toBeInTheDocument();
-    });
+    expect(screen.getByText('Back to account')).toBeInTheDocument();
   });
 
   test('the success screen lets you download the signed mandate', async () => {

@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { useSignedMandateDownload } from '../../exchange/hooks';
 import { SuccessNotice } from '../common/SuccessNotice/SuccessNotice';
@@ -18,9 +17,9 @@ export const CancellationSuccess: React.FunctionComponent<unknown> = () => {
             <FormattedMessage id="cancellation.flow.success.download" />
           </button>
         </SuccessNotice>
-        <Link className="btn btn-primary mt-4 profile-link" to="/account">
+        <a className="btn btn-primary mt-4 profile-link" href="/account">
           <FormattedMessage id="cancellation.flow.success.back" />
-        </Link>
+        </a>
       </div>
     </div>
   );
