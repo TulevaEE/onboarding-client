@@ -13,6 +13,13 @@ export const Payout: React.FunctionComponent = () => {
     return null;
   }
 
+  function onToggle() {
+    if (partialWithdrawal) {
+      setAmount(0);
+    }
+    setPartialWithdrawal(!partialWithdrawal);
+  }
+
   return (
     <div className="col-md-8 offset-md-2">
       <h1 className="mt-3 mb-4 text-center font-weight-semibold">Väljamaksed</h1>
@@ -46,7 +53,7 @@ export const Payout: React.FunctionComponent = () => {
               type="checkbox"
               className="custom-control-input"
               id="partialWithdrawal"
-              onChange={() => setPartialWithdrawal(!partialWithdrawal)}
+              onChange={onToggle}
               checked={partialWithdrawal}
             />
             {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
