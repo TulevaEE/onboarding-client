@@ -95,6 +95,7 @@ small {
   .brand-logo {
     height: 64px;
   }
+
   @media (max-width: 576px) {
     .brand-logo {
       height: 52px;
@@ -151,4 +152,8 @@ hr {
 
 .text-orange {
   color: $orange;
+}
+
+.font-weight-semibold {
+  font-weight: 500 !important;
 }

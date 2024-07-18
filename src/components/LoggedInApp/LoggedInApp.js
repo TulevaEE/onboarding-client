@@ -10,6 +10,7 @@ import { Header } from './header';
 import AccountPage from '../account';
 import SecondPillarFlow from '../flows/secondPillar';
 import ThirdPillarFlow from '../flows/thirdPillar';
+import { PayoutFlow } from '../flows/payout';
 import PartnerSecondPillarFlow from '../flows/partner/PartnerSecondPillarFlow';
 import PartnerThirdPillarFlow from '../flows/partner/PartnerThirdPillarFlow';
 import {
@@ -114,6 +115,8 @@ export class LoggedInApp extends PureComponent {
                 component={SecondPillarPaymentRateSuccess}
               />
               <Route path={cancellationFlowPath} component={CancellationFlow} />
+              <Route path="/payout" component={PayoutFlow} />
+
               <Redirect exact path="/" to={ACCOUNT_PATH} />
             </Switch>
             <Footer />
