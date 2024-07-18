@@ -69,7 +69,8 @@ export const Payout: React.FunctionComponent = () => {
                   value={amount}
                   onChange={(event) => setAmount(event.target.valueAsNumber)}
                   onWheel={(event) => event.currentTarget.blur()}
-                  lang="et"
+                  min={0}
+                  max={10000}
                 />
                 <div className="input-group-append">
                   <span className="input-group-text bg-white">&euro;</span>
