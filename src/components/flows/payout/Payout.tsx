@@ -30,7 +30,7 @@ export const Payout: React.FunctionComponent = () => {
       {/* </div> */}
       <div className="card p-4 d-flex flex-row justify-content-between mb-3">
         <h3 className="m-0">Sul on III sambas kokku</h3>
-        <h3 className="m-0">10 000 €</h3>
+        <h3 className="m-0">{formatAmountForCurrency(10000, 0)}</h3>
       </div>
 
       <div className="card p-4">
@@ -104,11 +104,11 @@ export const Payout: React.FunctionComponent = () => {
       </div>
 
       <div className="mt-3 card p-4 bg-very-light-blue border-0">
-        <div className="d-flex flex-row justify-content-between">
-          <h3 className="m-0">Saad tulumaksuvabalt</h3>
-          <h3 className="m-0">
+        <div className="d-flex flex-row justify-content-between align-items-end">
+          <h3 className="m-0">Saad tulumaksu&shy;vabalt</h3>
+          <h3 className="m-0 pl-2">
             {monthlyAmount > 0 ? '~' : ''}
-            {formatAmountForCurrency(monthlyAmount, 0)} kuus
+            {formatAmountForCurrency(monthlyAmount, 0)}&nbsp;kuus
           </h3>
         </div>
         <div className="mt-3 text-muted">
