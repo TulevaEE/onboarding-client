@@ -167,7 +167,7 @@ interface Address {
 
 interface PaymentRates {
   current: PaymentRate;
-  pending: PaymentRate;
+  pending: PaymentRate | null;
 }
 
 export interface User {
