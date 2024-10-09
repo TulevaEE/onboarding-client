@@ -10,7 +10,6 @@ import { Header } from './header';
 import AccountPage from '../account';
 import SecondPillarFlow from '../flows/secondPillar';
 import ThirdPillarFlow from '../flows/thirdPillar';
-import { PayoutFlow } from '../flows/payout';
 import PartnerSecondPillarFlow from '../flows/partner/PartnerSecondPillarFlow';
 import PartnerThirdPillarFlow from '../flows/partner/PartnerThirdPillarFlow';
 import {
@@ -37,6 +36,7 @@ import DevSidebar from '../dev/DevSidebar';
 import Success from '../flows/secondPillar/success';
 import { getAuthentication } from '../common/authenticationManager';
 import { CapitalPage } from '../account/MemberCapital/CapitalPage';
+import { Withdrawals } from '../flows/withdrawals/Withdrawals';
 
 export const ACCOUNT_PATH = '/account';
 export const AML_PATH = '/aml';
@@ -115,7 +115,7 @@ export class LoggedInApp extends PureComponent {
                 component={SecondPillarPaymentRateSuccess}
               />
               <Route path={cancellationFlowPath} component={CancellationFlow} />
-              <Route path="/payout" component={PayoutFlow} />
+              <Route path="/withdrawals" component={Withdrawals} />
 
               <Redirect exact path="/" to={ACCOUNT_PATH} />
             </Switch>

@@ -37,6 +37,29 @@
     }
   }
 
+  &--previous {
+    & .tv-step__number {
+      color: $blue;
+      background-color: rgba(5, 147, 252, 0.24);
+      border: none;
+    }
+  }
+
+  &--current {
+    & .tv-step__number {
+      color: var(--White, #fff);
+      background-color: $blue;
+    }
+  }
+
+  &--upcoming {
+    color: #6c757d;
+    & .tv-step__number {
+      color: #6c757d;
+      background-color: white;
+    }
+  }
+
   & > span.h2 {
     vertical-align: middle;
   }

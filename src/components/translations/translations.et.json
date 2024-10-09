@@ -685,6 +685,10 @@
   "comparisonCalculator.period.twoYears": "Viimased 2 aastat",
   "comparisonCalculator.period.oneYear": "Viimane aasta",
 
+  "withdrawals.content.payoutSize": "Väljamakse suurus",
+  "withdrawals.content.yourInformation": "Sinu andmed",
+  "withdrawals.content.confirmApplication": "Kinnita avaldus",
+
   "LHV Pensionifond XL": "LHV Pensionifond XL",
   "Tuleva Maailma Aktsiate Pensionifond": "Tuleva Maailma Aktsiate Pensionifond",
   "Tuleva Maailma Võlakirjade Pensionifond": "Tuleva Maailma Võlakirjade Pensionifond",

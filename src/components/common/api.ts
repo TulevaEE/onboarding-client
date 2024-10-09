@@ -35,6 +35,7 @@ import {
   simpleFetch,
 } from './http';
 import { getAuthentication } from './authenticationManager';
+import { WithdrawalsEligibility } from './apiModels/withdrawals';
 
 const API_URI = '/api';
 
@@ -138,6 +139,10 @@ export function downloadMandateWithId(mandateId: string): Promise<Blob> {
 
 export function getUserWithToken(): Promise<User> {
   return getWithAuthentication(getEndpoint('/v1/me'), undefined);
+}
+
+export function getWithdrawalsEligibility(): Promise<WithdrawalsEligibility> {
+  return getWithAuthentication(getEndpoint('/v1/withdrawals/eligibility'), undefined);
 }
 
 export async function getSourceFunds(): Promise<SourceFund[]> {

@@ -10,6 +10,7 @@ import {
   getTransactions,
   getUserConversionWithToken,
   getUserWithToken,
+  getWithdrawalsEligibility,
 } from './api';
 import {
   Application,
@@ -22,6 +23,7 @@ import {
   User,
   UserConversion,
 } from './apiModels';
+import { WithdrawalsEligibility } from './apiModels/withdrawals';
 
 export function usePendingApplications(): UseQueryResult<Application[]> {
   return useQuery('pendingApplications', () => getPendingApplications());
@@ -67,6 +69,10 @@ export function useMandateDeadlines(): UseQueryResult<MandateDeadlines> {
 
 export function useMe(): UseQueryResult<User> {
   return useQuery('user', () => getUserWithToken());
+}
+
+export function useWithdrawalsEligibility(): UseQueryResult<WithdrawalsEligibility> {
+  return useQuery('withdrawalsEligibility', () => getWithdrawalsEligibility());
 }
 
 export function useConversion(): UseQueryResult<UserConversion> {
