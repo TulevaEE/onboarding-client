@@ -1,4 +1,4 @@
-import { PaymentRate } from '../flows/secondPillarPaymentRate/types';
+import { PaymentRate } from '../../flows/secondPillarPaymentRate/types';
 
 export type Application =
   | TransferApplication

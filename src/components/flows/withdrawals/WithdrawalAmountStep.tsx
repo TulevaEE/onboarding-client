@@ -1,17 +1,11 @@
 import React, { useState } from 'react';
-import { useMe } from '../../common/apiHooks';
 import { formatAmountForCurrency } from '../../common/utils';
 
-export const Payout: React.FunctionComponent = () => {
-  const { data: user } = useMe();
+export const WithdrawalAmountStep = () => {
   const [partialWithdrawal, setPartialWithdrawal] = useState(false);
   const [amount, setAmount] = useState<number>(0);
 
   const monthlyAmount = (10000 - amount) / 19 / 12;
-
-  if (!user) {
-    return null;
-  }
 
   function onToggle() {
     if (partialWithdrawal) {
@@ -21,25 +15,11 @@ export const Payout: React.FunctionComponent = () => {
   }
 
   return (
-    <div className="col-md-8 offset-md-2">
-      <h1 className="mt-3 mb-4 text-center font-weight-semibold">Väljamaksed</h1>
-      <div className="lead text-center mb-5">
-        Oled <span className="font-weight-bold">60-aastane</span> ja sul on õigus kogutud
-        pensionivara <span className="font-weight-bold">soodustingimustel</span> kasutama hakata.
-      </div>
-      {/* <div> */}
-      {/*  <div className="tv-step__title tv-step__title--active"> */}
-      {/*    <span className="tv-step__number mr-3"> */}
-      {/*      <b>1</b> */}
-      {/*    </span> */}
-      {/*    Väljamakse */}
-      {/*  </div> */}
-      {/* </div> */}
+    <div className="pt-5">
       <div className="card p-4 d-flex flex-row justify-content-between mb-3">
         <h3 className="m-0">Sul on III sambas kokku</h3>
         <h3 className="m-0">{formatAmountForCurrency(10000, 0)}</h3>
       </div>
-
       <div className="card p-4">
         <div className="d-flex flex-row justify-content-between">
           {!partialWithdrawal ? (

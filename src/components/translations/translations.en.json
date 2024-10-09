@@ -683,6 +683,10 @@
   "comparisonCalculator.period.twoYears": "Last 2 years",
   "comparisonCalculator.period.oneYear": "Last year",
 
+  "withdrawals.content.payoutSize": "Payout size",
+  "withdrawals.content.yourInformation": "Your information",
+  "withdrawals.content.confirmApplication": "Confirm application",
+
   "LHV Pensionifond XL": "Pension Fund LHV XL",
   "Tuleva Maailma Aktsiate Pensionifond": "Tuleva World Stocks Pension Fund",
   "Tuleva Maailma Võlakirjade Pensionifond": "Tuleva World Bonds Pension Fund",
