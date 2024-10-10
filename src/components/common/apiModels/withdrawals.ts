@@ -1,5 +1,5 @@
 export type WithdrawalsEligibility = {
   hasReachedEarlyRetirementAge: boolean;
-  recommendedDurationYears: boolean;
+  recommendedDurationYears: number;
   age: number;
 };

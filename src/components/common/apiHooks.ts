@@ -7,6 +7,7 @@ import {
   getFunds,
   getMandateDeadlines,
   getPendingApplications,
+  getSourceFunds,
   getTransactions,
   getUserConversionWithToken,
   getUserWithToken,
@@ -19,6 +20,7 @@ import {
   Contribution,
   Fund,
   MandateDeadlines,
+  SourceFund,
   Transaction,
   User,
   UserConversion,
@@ -77,4 +79,8 @@ export function useWithdrawalsEligibility(): UseQueryResult<WithdrawalsEligibili
 
 export function useConversion(): UseQueryResult<UserConversion> {
   return useQuery('conversion', () => getUserConversionWithToken());
+}
+
+export function useSourceFunds(): UseQueryResult<SourceFund[]> {
+  return useQuery('sourceFunds', () => getSourceFunds());
 }

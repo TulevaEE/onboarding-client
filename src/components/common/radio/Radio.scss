@@ -42,6 +42,15 @@
     }
   }
 
+  &__inline {
+    border: 0;
+    background: transparent;
+
+    &.tv-radio--selected {
+      font-weight: bold;
+    }
+  }
+
   &__button {
     border-radius: 50%;
     cursor: pointer;
