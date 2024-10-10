@@ -15,7 +15,7 @@ export type WithdrawalsContext = {
 };
 
 export type WithdrawalsAmountStepState = {
-  pillarsToWithdrawFrom: PillarToWithdrawFrom | null;
+  pillarsToWithdrawFrom: PillarToWithdrawFrom;
   singleWithdrawalAmount: number | null;
 };
 
@@ -28,7 +28,7 @@ export const WithdrawalsContext = createContext<WithdrawalsContext>({
   currentStep: null,
   withdrawalAmount: {
     singleWithdrawalAmount: null,
-    pillarsToWithdrawFrom: null,
+    pillarsToWithdrawFrom: 'BOTH',
   },
   personalDetails: null,
 
@@ -50,7 +50,7 @@ export const WithdrawalsProvider = ({
 
   const [withdrawalAmount, setWithdrawalAmount] = useState<WithdrawalsAmountStepState>({
     singleWithdrawalAmount: null,
-    pillarsToWithdrawFrom: null,
+    pillarsToWithdrawFrom: 'BOTH',
   });
   const [personalDetails, setPersonalDetails] = useState<PersonalDetailsStepState | null>(null);
 
