@@ -1,13 +1,5 @@
-import { TranslationKey } from '../../translations';
+import { WithdrawalStep } from './types';
 import { WithdrawalAmountStep } from './WithdrawalAmountStep';
-
-export type WithdrawalStep = {
-  type: 'WITHDRAWAL_SIZE' | 'YOUR_INFORMATION' | 'SIGNING';
-  titleId: TranslationKey;
-  component: () => JSX.Element;
-};
-
-export type WithdrawalStepType = WithdrawalStep['type'];
 
 export const WITHDRAWAL_STEPS: WithdrawalStep[] = [
   {

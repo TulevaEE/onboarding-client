@@ -4,7 +4,8 @@ import { useWithdrawalsContext } from './hooks';
 import { WITHDRAWAL_STEPS } from './constants';
 
 export const WithdrawalsSteps = () => {
-  const { currentStepNumber } = useWithdrawalsContext();
+  const { currentStep } = useWithdrawalsContext();
+  const currentStepNumber = WITHDRAWAL_STEPS.findIndex((step) => step.type === currentStep?.type);
 
   return (
     <div className="tv-steps d-flex justify-content-between">

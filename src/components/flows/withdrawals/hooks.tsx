@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import React, { createContext, PropsWithChildren, useContext, useState } from 'react';
-import { WITHDRAWAL_STEPS, WithdrawalStep, WithdrawalStepType } from './constants';
+import { WithdrawalStep, WithdrawalStepType } from './types';
 
 export type WithdrawalsContext = {
-  currentStep: WithdrawalStep;
-  currentStepNumber: number;
+  currentStep: WithdrawalStep | null;
   withdrawalAmount: WithdrawalsAmountStepState | null;
   personalDetails: PersonalDetailsStepState | null;
 
@@ -26,8 +25,7 @@ export type PersonalDetailsStepState = {
 };
 
 export const WithdrawalsContext = createContext<WithdrawalsContext>({
-  currentStep: WITHDRAWAL_STEPS[0],
-  currentStepNumber: 0,
+  currentStep: null,
   withdrawalAmount: null,
   personalDetails: null,
 
@@ -40,40 +38,40 @@ export const WithdrawalsContext = createContext<WithdrawalsContext>({
 
 export const useWithdrawalsContext = () => useContext(WithdrawalsContext);
 
-export const WithdrawalsProvider = ({ children }: PropsWithChildren<unknown>) => {
+export const WithdrawalsProvider = ({
+  children,
+  steps,
+}: PropsWithChildren<{ steps: WithdrawalStep[] }>) => {
   const [currentStepType, setCurrentStepType] = useState<WithdrawalStepType>('WITHDRAWAL_SIZE');
-  const currentStep = WITHDRAWAL_STEPS.find((step) => step.type === currentStepType)!;
-  const currentStepNumber = WITHDRAWAL_STEPS.findIndex((step) => step.type === currentStepType);
+  const currentStep = steps.find((step) => step.type === currentStepType)!;
 
   const [withdrawalAmount, setWithdrawalAmount] = useState<WithdrawalsAmountStepState | null>(null);
   const [personalDetails, setPersonalDetails] = useState<PersonalDetailsStepState | null>(null);
 
   const navigateToNextStep = () => {
-    const nextStepIndex = WITHDRAWAL_STEPS.findIndex((step) => step.type === currentStepType) + 1;
+    const nextStepIndex = steps.findIndex((step) => step.type === currentStepType) + 1;
 
-    if (!WITHDRAWAL_STEPS[nextStepIndex]) {
+    if (!steps[nextStepIndex]) {
       return;
     }
 
-    setCurrentStepType(WITHDRAWAL_STEPS[nextStepIndex].type);
+    setCurrentStepType(steps[nextStepIndex].type);
   };
 
   const navigateToPreviousStep = () => {
-    const previousStepIndex =
-      WITHDRAWAL_STEPS.findIndex((step) => step.type === currentStepType) - 1;
+    const previousStepIndex = steps.findIndex((step) => step.type === currentStepType) - 1;
 
-    if (!WITHDRAWAL_STEPS[previousStepIndex]) {
+    if (!steps[previousStepIndex]) {
       return;
     }
 
-    setCurrentStepType(WITHDRAWAL_STEPS[previousStepIndex].type);
+    setCurrentStepType(steps[previousStepIndex].type);
   };
 
   return (
     <WithdrawalsContext.Provider
       value={{
         currentStep,
-        currentStepNumber,
         withdrawalAmount,
         personalDetails,
 

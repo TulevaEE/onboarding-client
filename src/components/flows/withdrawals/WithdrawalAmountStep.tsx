@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { formatAmountForCurrency } from '../../common/utils';
+import { StepButtons } from './StepButtons';
 
 export const WithdrawalAmountStep = () => {
   const [partialWithdrawal, setPartialWithdrawal] = useState(false);
@@ -108,6 +109,11 @@ export const WithdrawalAmountStep = () => {
           osaku turuhind kasvab, siis väljamakse suureneb, ja kui kahaneb, siis väheneb.
         </div>
       </div>
+
+      <div />
+      <StepButtons />
+
+      <div />
     </div>
   );
 };
