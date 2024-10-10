@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useEffect } from 'react';
 import { formatAmountForCurrency } from '../../common/utils';
 import { StepButtons } from './StepButtons';
 import { useSourceFunds, useWithdrawalsEligibility } from '../../common/apiHooks';
@@ -14,11 +14,6 @@ export const WithdrawalAmountStep = () => {
 
   const { withdrawalAmount, setWithdrawalAmount } = useWithdrawalsContext();
 
-  if (!eligibility || !sourceFunds) {
-    return null;
-  }
-
-  // TODO move these to context to calculate default state for pillar to withdraw from?
   const secondPillarSourceFunds = sourceFunds?.filter((fund) => fund.pillar === 2);
   const thirdPillarSourceFunds = sourceFunds?.filter((fund) => fund.pillar === 3);
 
@@ -26,13 +21,39 @@ export const WithdrawalAmountStep = () => {
   const totalThirdPillar = getValueSum(thirdPillarSourceFunds ?? []);
   const totalBothPillars = totalSecondPillar + totalThirdPillar;
 
+  // TODO move this logic to context to calculate default state for pillar to withdraw from?
+  useEffect(() => {
+    if (totalSecondPillar === 0 && totalThirdPillar > 0) {
+      handlePillarSelected('SECOND');
+    } else if (totalSecondPillar > 0 && totalThirdPillar === 0) {
+      handlePillarSelected('THIRD');
+    } else {
+      handlePillarSelected('BOTH');
+    }
+  }, [totalSecondPillar, totalThirdPillar, totalBothPillars]);
+
+  const getTotalAmount = () => {
+    if (withdrawalAmount.pillarsToWithdrawFrom === 'SECOND') {
+      return totalSecondPillar;
+    }
+
+    if (withdrawalAmount.pillarsToWithdrawFrom === 'THIRD') {
+      return totalThirdPillar;
+    }
+
+    return totalBothPillars;
+  };
+
   const handlePillarSelected = (pillar: PillarToWithdrawFrom) => {
     setWithdrawalAmount({
-      // TODO broken state from setting this as well? need more methods in context?
-      singleWithdrawalAmount: withdrawalAmount.singleWithdrawalAmount ?? null,
+      singleWithdrawalAmount: 0,
       pillarsToWithdrawFrom: pillar,
     });
   };
+
+  if (!eligibility || !sourceFunds) {
+    return null;
+  }
 
   return (
     <div className="pt-5">
@@ -42,15 +63,14 @@ export const WithdrawalAmountStep = () => {
         selectedPillar={withdrawalAmount.pillarsToWithdrawFrom}
         setSelectedPillar={handlePillarSelected}
       />
-      <FundPensionStatusBox totalBothPillars={totalBothPillars} />
-      <SingleWithdrawalSelectionBox totalBothPillars={totalBothPillars} />
+      <FundPensionStatusBox totalAmount={getTotalAmount()} />
+      <SingleWithdrawalSelectionBox totalAmount={getTotalAmount()} />
       <StepButtons />
-      <div />
     </div>
   );
 };
 
-const SingleWithdrawalSelectionBox = ({ totalBothPillars }: { totalBothPillars: number }) => {
+const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) => {
   const { withdrawalAmount, setWithdrawalAmount } = useWithdrawalsContext();
 
   const handleSingleWithdrawalAmountSelected = (amount: number) => {
@@ -78,7 +98,7 @@ const SingleWithdrawalSelectionBox = ({ totalBothPillars }: { totalBothPillars: 
               onChange={(event) => handleSingleWithdrawalAmountSelected(event.target.valueAsNumber)}
               onWheel={(event) => event.currentTarget.blur()}
               min={0}
-              max={totalBothPillars}
+              max={totalAmount}
             />
             <div className="input-group-append">
               <span className="input-group-text bg-white">&euro;</span>
@@ -95,7 +115,7 @@ const SingleWithdrawalSelectionBox = ({ totalBothPillars }: { totalBothPillars: 
           value={withdrawalAmount.singleWithdrawalAmount ?? 0}
           onChange={(event) => handleSingleWithdrawalAmountSelected(event.target.valueAsNumber)}
           min={0}
-          max={totalBothPillars}
+          max={totalAmount}
           step={1}
         />
       </div>
@@ -106,7 +126,7 @@ const SingleWithdrawalSelectionBox = ({ totalBothPillars }: { totalBothPillars: 
   );
 };
 
-const FundPensionStatusBox = ({ totalBothPillars }: { totalBothPillars: number }) => {
+const FundPensionStatusBox = ({ totalAmount }: { totalAmount: number }) => {
   const { data: eligibility } = useWithdrawalsEligibility();
   const { withdrawalAmount } = useWithdrawalsContext();
 
@@ -114,7 +134,7 @@ const FundPensionStatusBox = ({ totalBothPillars }: { totalBothPillars: number }
     return null;
   }
 
-  const fundPensionSize = totalBothPillars - (withdrawalAmount.singleWithdrawalAmount ?? 0);
+  const fundPensionSize = totalAmount - (withdrawalAmount.singleWithdrawalAmount ?? 0);
   const fundPensionPeriods = eligibility.recommendedDurationYears * 12;
 
   const fundPensionMonthlyPaymentApproximateSize = fundPensionSize / fundPensionPeriods;
@@ -176,8 +196,8 @@ const PillarSelection = ({
   return (
     <div className="card d-flex flex-column mb-3">
       <Radio
-        name="employer-type"
-        id="employer-type-private"
+        name="pillar-to-withdraw"
+        id="pillar-to-withdraw-both"
         className=" tv-radio__inline"
         selected={selectedPillar === 'BOTH'}
         onSelect={() => setSelectedPillar('BOTH')}
@@ -189,8 +209,8 @@ const PillarSelection = ({
       </Radio>
 
       <Radio
-        name="employer-type"
-        id="employer-type-private"
+        name="pillar-to-withdraw"
+        id="pillar-to-withdraw-second"
         className="tv-radio__inline"
         selected={selectedPillar === 'SECOND'}
         onSelect={() => setSelectedPillar('SECOND')}
@@ -202,8 +222,8 @@ const PillarSelection = ({
       </Radio>
 
       <Radio
-        name="employer-type"
-        id="employer-type-private"
+        name="pillar-to-withdraw"
+        id="pillar-to-withdraw-third"
         className=" tv-radio__inline"
         selected={selectedPillar === 'THIRD'}
         onSelect={() => setSelectedPillar('THIRD')}
