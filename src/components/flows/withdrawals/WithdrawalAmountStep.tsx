@@ -18,6 +18,7 @@ export const WithdrawalAmountStep = () => {
     return null;
   }
 
+  // TODO move these to context to calculate default state for pillar to withdraw from?
   const secondPillarSourceFunds = sourceFunds?.filter((fund) => fund.pillar === 2);
   const thirdPillarSourceFunds = sourceFunds?.filter((fund) => fund.pillar === 3);
 
@@ -27,6 +28,7 @@ export const WithdrawalAmountStep = () => {
 
   const handlePillarSelected = (pillar: PillarToWithdrawFrom) => {
     setWithdrawalAmount({
+      // TODO broken state from setting this as well? need more methods in context?
       singleWithdrawalAmount: withdrawalAmount.singleWithdrawalAmount ?? null,
       pillarsToWithdrawFrom: pillar,
     });
@@ -55,6 +57,7 @@ const SingleWithdrawalSelectionBox = ({ totalBothPillars }: { totalBothPillars: 
     const valueToSet = amount === 0 ? null : amount;
 
     setWithdrawalAmount({
+      // TODO broken state from setting this as well? need more methods in context?
       pillarsToWithdrawFrom: withdrawalAmount.pillarsToWithdrawFrom,
       singleWithdrawalAmount: valueToSet,
     });
