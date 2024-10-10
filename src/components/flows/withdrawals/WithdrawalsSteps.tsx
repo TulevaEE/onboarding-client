@@ -1,22 +1,24 @@
 import { FormattedMessage } from 'react-intl';
-import React from 'react';
 import { TranslationKey } from '../../translations';
+import { useWithdrawalsContext } from './hooks';
+import { WITHDRAWAL_STEPS } from './constants';
 
-export const WithdrawalsSteps = ({ currentStep }: { currentStep: number }) => (
-  <div className="tv-steps d-flex justify-content-between">
-    <WithdrawalStep step={0} currentStep={currentStep} titleId="withdrawals.content.payoutSize" />
-    <WithdrawalStep
-      step={1}
-      currentStep={currentStep}
-      titleId="withdrawals.content.yourInformation"
-    />
-    <WithdrawalStep
-      step={2}
-      currentStep={currentStep}
-      titleId="withdrawals.content.confirmApplication"
-    />
-  </div>
-);
+export const WithdrawalsSteps = () => {
+  const { currentStepNumber } = useWithdrawalsContext();
+
+  return (
+    <div className="tv-steps d-flex justify-content-between">
+      {WITHDRAWAL_STEPS.map((step, idx) => (
+        <WithdrawalStep
+          key={step.type}
+          step={idx}
+          currentStep={currentStepNumber}
+          titleId={step.titleId}
+        />
+      ))}
+    </div>
+  );
+};
 
 const WithdrawalStep = ({
   step,

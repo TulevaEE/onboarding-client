@@ -1,21 +1,24 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useMe, useWithdrawalsEligibility } from '../../common/apiHooks';
 import { WithdrawalsHeader } from './WithdrawalsHeader';
 import Loader from '../../common/loader';
 import { WithdrawalsSteps } from './WithdrawalsSteps';
-import { withdrawalSteps, WithdrawalStepType } from './constants';
+import { useWithdrawalsContext, WithdrawalsProvider } from './hooks';
 
-export const Withdrawals: React.FunctionComponent = () => {
+export const Withdrawals = () => (
+  <WithdrawalsProvider>
+    <InnerWithdrawals />
+  </WithdrawalsProvider>
+);
+
+export const InnerWithdrawals: React.FunctionComponent = () => {
   const { data: user } = useMe();
   const { data: eligibility } = useWithdrawalsEligibility();
 
-  const [currentStepType, setCurrentStepType] = useState<WithdrawalStepType>('WITHDRAWAL_SIZE');
-
-  const currentStep = withdrawalSteps.find((step) => step.type === currentStepType);
-  const currentStepNumber = withdrawalSteps.findIndex((step) => step.type === currentStepType);
+  const { currentStep } = useWithdrawalsContext();
 
   if (!user) {
-    return <Loader className="align-middle my-4" label="Loading ..." />;
+    return <Loader className="align-middle my-4" />;
   }
 
   if (!eligibility) {
@@ -27,7 +30,7 @@ export const Withdrawals: React.FunctionComponent = () => {
   return (
     <div className="col-md-8 offset-md-2">
       <WithdrawalsHeader />
-      <WithdrawalsSteps currentStep={currentStepNumber} />
+      <WithdrawalsSteps />
       <CurrentStepComponent />
     </div>
   );
