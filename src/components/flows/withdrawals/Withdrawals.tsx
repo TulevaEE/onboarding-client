@@ -4,9 +4,10 @@ import { WithdrawalsHeader } from './WithdrawalsHeader';
 import Loader from '../../common/loader';
 import { WithdrawalsSteps } from './WithdrawalsSteps';
 import { useWithdrawalsContext, WithdrawalsProvider } from './hooks';
+import { WITHDRAWAL_STEPS } from './constants';
 
 export const Withdrawals = () => (
-  <WithdrawalsProvider>
+  <WithdrawalsProvider steps={WITHDRAWAL_STEPS}>
     <InnerWithdrawals />
   </WithdrawalsProvider>
 );
