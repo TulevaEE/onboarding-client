@@ -30,6 +30,7 @@ interface SelectProps {
   onChange: (selected: string) => void;
   disabled?: boolean;
   translate?: boolean;
+  name?: string;
   id?: string;
 }
 
@@ -37,6 +38,7 @@ export const Select: FC<SelectProps> = ({
   options,
   selected,
   onChange,
+  name,
   disabled = false,
   translate = true,
   id,
@@ -80,6 +82,7 @@ export const Select: FC<SelectProps> = ({
       value={selected}
       disabled={disabled}
       id={id}
+      name={name}
     >
       {renderOptions()}
     </select>

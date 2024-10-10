@@ -5,7 +5,7 @@ import { PillarToWithdrawFrom, WithdrawalStep, WithdrawalStepType } from './type
 export type WithdrawalsContext = {
   currentStep: WithdrawalStep | null;
   withdrawalAmount: WithdrawalsAmountStepState;
-  personalDetails: PersonalDetailsStepState | null;
+  personalDetails: PersonalDetailsStepState;
 
   setWithdrawalAmount: (state: WithdrawalsAmountStepState) => unknown;
   setPersonalDetails: (state: PersonalDetailsStepState) => unknown;
@@ -20,7 +20,7 @@ export type WithdrawalsAmountStepState = {
 };
 
 export type PersonalDetailsStepState = {
-  bankAccountIban: string;
+  bankAccountIban: string | null;
   taxResidencyCode: string; // TODO
 };
 
@@ -30,7 +30,10 @@ export const WithdrawalsContext = createContext<WithdrawalsContext>({
     singleWithdrawalAmount: null,
     pillarsToWithdrawFrom: 'BOTH',
   },
-  personalDetails: null,
+  personalDetails: {
+    bankAccountIban: null,
+    taxResidencyCode: 'EST',
+  },
 
   setWithdrawalAmount: () => {},
   setPersonalDetails: () => {},
@@ -52,7 +55,10 @@ export const WithdrawalsProvider = ({
     singleWithdrawalAmount: null,
     pillarsToWithdrawFrom: 'BOTH',
   });
-  const [personalDetails, setPersonalDetails] = useState<PersonalDetailsStepState | null>(null);
+  const [personalDetails, setPersonalDetails] = useState<PersonalDetailsStepState>({
+    taxResidencyCode: 'EST',
+    bankAccountIban: null,
+  });
 
   const navigateToNextStep = () => {
     const nextStepIndex = steps.findIndex((step) => step.type === currentStepType) + 1;
