@@ -8,7 +8,7 @@ export const WithdrawalsSteps = () => {
   const currentStepNumber = WITHDRAWAL_STEPS.findIndex((step) => step.type === currentStep?.type);
 
   return (
-    <div className="tv-steps d-flex justify-content-between">
+    <div className="tv-steps d-flex justify-content-between pr-2 pl-2">
       {WITHDRAWAL_STEPS.map((step, idx) => (
         <WithdrawalStep
           key={step.type}

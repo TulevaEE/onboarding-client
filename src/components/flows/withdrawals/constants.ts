@@ -1,3 +1,4 @@
+import { PersonalDetailsStep } from './PersonalDetailsStep';
 import { WithdrawalStep } from './types';
 import { WithdrawalAmountStep } from './WithdrawalAmountStep';
 
@@ -10,7 +11,7 @@ export const WITHDRAWAL_STEPS: WithdrawalStep[] = [
   {
     type: 'YOUR_INFORMATION',
     titleId: 'withdrawals.content.yourInformation',
-    component: WithdrawalAmountStep,
+    component: PersonalDetailsStep,
   },
   {
     type: 'SIGNING',
