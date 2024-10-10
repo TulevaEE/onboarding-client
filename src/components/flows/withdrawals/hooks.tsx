@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import React, { createContext, PropsWithChildren, useContext, useState } from 'react';
-import { WithdrawalStep, WithdrawalStepType } from './types';
+import { PillarToWithdrawFrom, WithdrawalStep, WithdrawalStepType } from './types';
 
 export type WithdrawalsContext = {
   currentStep: WithdrawalStep | null;
-  withdrawalAmount: WithdrawalsAmountStepState | null;
+  withdrawalAmount: WithdrawalsAmountStepState;
   personalDetails: PersonalDetailsStepState | null;
 
   setWithdrawalAmount: (state: WithdrawalsAmountStepState) => unknown;
@@ -15,7 +15,7 @@ export type WithdrawalsContext = {
 };
 
 export type WithdrawalsAmountStepState = {
-  pillarsToWithdrawFrom: 'SECOND' | 'THIRD' | 'BOTH';
+  pillarsToWithdrawFrom: PillarToWithdrawFrom | null;
   singleWithdrawalAmount: number | null;
 };
 
@@ -26,7 +26,10 @@ export type PersonalDetailsStepState = {
 
 export const WithdrawalsContext = createContext<WithdrawalsContext>({
   currentStep: null,
-  withdrawalAmount: null,
+  withdrawalAmount: {
+    singleWithdrawalAmount: null,
+    pillarsToWithdrawFrom: null,
+  },
   personalDetails: null,
 
   setWithdrawalAmount: () => {},
@@ -45,7 +48,10 @@ export const WithdrawalsProvider = ({
   const [currentStepType, setCurrentStepType] = useState<WithdrawalStepType>('WITHDRAWAL_SIZE');
   const currentStep = steps.find((step) => step.type === currentStepType)!;
 
-  const [withdrawalAmount, setWithdrawalAmount] = useState<WithdrawalsAmountStepState | null>(null);
+  const [withdrawalAmount, setWithdrawalAmount] = useState<WithdrawalsAmountStepState>({
+    singleWithdrawalAmount: null,
+    pillarsToWithdrawFrom: null,
+  });
   const [personalDetails, setPersonalDetails] = useState<PersonalDetailsStepState | null>(null);
 
   const navigateToNextStep = () => {
