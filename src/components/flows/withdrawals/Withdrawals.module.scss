@@ -1,0 +1,13 @@
+@import '../../variables';
+
+.mandateSubheading {
+  color: $blue;
+  text-transform: uppercase;
+  font-size: $font-size-small;
+}
+
+.mandateHeading {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+}

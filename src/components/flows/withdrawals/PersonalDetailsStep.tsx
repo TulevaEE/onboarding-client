@@ -24,6 +24,7 @@ export const PersonalDetailsStep = () => {
                 bankAccountIban: e.target.value,
               })
             }
+            value={personalDetails.bankAccountIban ?? ''}
           />
           <div className="pt-2 text-muted">Pangakonto peab kuuluma sinule</div>
         </div>
