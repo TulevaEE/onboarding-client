@@ -1,47 +1,30 @@
-import React, { useEffect } from 'react';
 import { formatAmountForCurrency } from '../../common/utils';
 import { StepButtons } from './StepButtons';
-import { useSourceFunds, useWithdrawalsEligibility } from '../../common/apiHooks';
-import { getValueSum } from '../../account/AccountStatement/fundSelector';
+import { useWithdrawalsEligibility } from '../../common/apiHooks';
 import { Radio } from '../../common';
-import { PillarToWithdrawFrom } from './types';
+import { PensionHoldings, PillarToWithdrawFrom } from './types';
 import { useWithdrawalsContext } from './hooks';
 import Percentage from '../../common/Percentage';
 
 export const WithdrawalAmountStep = () => {
-  const { data: sourceFunds } = useSourceFunds();
   const { data: eligibility } = useWithdrawalsEligibility();
 
-  const { withdrawalAmount, setWithdrawalAmount } = useWithdrawalsContext();
+  const { withdrawalAmount, setWithdrawalAmount, pensionHoldings } = useWithdrawalsContext();
 
-  const secondPillarSourceFunds = sourceFunds?.filter((fund) => fund.pillar === 2);
-  const thirdPillarSourceFunds = sourceFunds?.filter((fund) => fund.pillar === 3);
-
-  const totalSecondPillar = getValueSum(secondPillarSourceFunds ?? []);
-  const totalThirdPillar = getValueSum(thirdPillarSourceFunds ?? []);
-  const totalBothPillars = totalSecondPillar + totalThirdPillar;
-
-  // TODO move this logic to context to calculate default state for pillar to withdraw from?
-  useEffect(() => {
-    if (totalSecondPillar === 0 && totalThirdPillar > 0) {
-      handlePillarSelected('SECOND');
-    } else if (totalSecondPillar > 0 && totalThirdPillar === 0) {
-      handlePillarSelected('THIRD');
-    } else {
-      handlePillarSelected('BOTH');
+  const getTotalAmount = (holdings: PensionHoldings) => {
+    if (!holdings) {
+      return 0;
     }
-  }, [totalSecondPillar, totalThirdPillar, totalBothPillars]);
 
-  const getTotalAmount = () => {
     if (withdrawalAmount.pillarsToWithdrawFrom === 'SECOND') {
-      return totalSecondPillar;
+      return holdings.totalSecondPillar;
     }
 
     if (withdrawalAmount.pillarsToWithdrawFrom === 'THIRD') {
-      return totalThirdPillar;
+      return holdings.totalThirdPillar;
     }
 
-    return totalBothPillars;
+    return holdings.totalBothPillars;
   };
 
   const handlePillarSelected = (pillar: PillarToWithdrawFrom) => {
@@ -51,20 +34,20 @@ export const WithdrawalAmountStep = () => {
     });
   };
 
-  if (!eligibility || !sourceFunds) {
+  if (!eligibility || !pensionHoldings) {
     return null;
   }
 
   return (
     <div className="pt-5">
       <PillarSelection
-        secondPillarAmount={totalSecondPillar}
-        thirdPillarAmount={totalThirdPillar}
+        secondPillarAmount={pensionHoldings.totalSecondPillar}
+        thirdPillarAmount={pensionHoldings.totalThirdPillar}
         selectedPillar={withdrawalAmount.pillarsToWithdrawFrom}
         setSelectedPillar={handlePillarSelected}
       />
-      <FundPensionStatusBox totalAmount={getTotalAmount()} />
-      <SingleWithdrawalSelectionBox totalAmount={getTotalAmount()} />
+      <FundPensionStatusBox totalAmount={getTotalAmount(pensionHoldings)} />
+      <SingleWithdrawalSelectionBox totalAmount={getTotalAmount(pensionHoldings)} />
       <StepButtons />
     </div>
   );

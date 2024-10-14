@@ -1,7 +1,38 @@
 import { TranslationKey } from '../../translations';
 
+export type WithdrawalsContextState = {
+  currentStep: WithdrawalStep | null;
+  withdrawalAmount: WithdrawalsAmountStepState;
+  personalDetails: PersonalDetailsStepState;
+  pensionHoldings: PensionHoldings | null;
+
+  mandatesToCreate: WithdrawalMandateDetails[] | null;
+
+  setWithdrawalAmount: (state: WithdrawalsAmountStepState) => unknown;
+  setPersonalDetails: (state: PersonalDetailsStepState) => unknown;
+
+  navigateToNextStep: () => void;
+  navigateToPreviousStep: () => void;
+};
+
+export type PensionHoldings = {
+  totalSecondPillar: number;
+  totalThirdPillar: number;
+  totalBothPillars: number;
+};
+
+export type WithdrawalsAmountStepState = {
+  pillarsToWithdrawFrom: PillarToWithdrawFrom;
+  singleWithdrawalAmount: number | null;
+};
+
+export type PersonalDetailsStepState = {
+  bankAccountIban: string | null;
+  taxResidencyCode: string; // TODO
+};
+
 export type WithdrawalStep = {
-  type: 'WITHDRAWAL_SIZE' | 'YOUR_INFORMATION' | 'SIGNING';
+  type: 'WITHDRAWAL_SIZE' | 'YOUR_INFORMATION' | 'REVIEW_AND_CONFIRM';
   titleId: TranslationKey;
   component: () => JSX.Element | null;
 };
@@ -15,6 +46,7 @@ export type WithdrawalMandateDetails =
   | PartialWithdrawalMandateDetails;
 
 export type FundPensionOpeningMandateDetails = {
+  type: 'FUND_PENSION_OPENING';
   pillar: 'SECOND' | 'THIRD';
   // TODO remove from backend frequency: 'MONTHLY' |
   duration: {
@@ -25,6 +57,7 @@ export type FundPensionOpeningMandateDetails = {
 };
 
 export type PartialWithdrawalMandateDetails = {
+  type: 'PARTIAL_WITHDRAWAL';
   pillar: 'SECOND' | 'THIRD';
   bankAccountDetails: BankAccountDetails;
   fundWithdrawalAmounts: {
