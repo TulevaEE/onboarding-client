@@ -1,30 +1,17 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import React, { createContext, PropsWithChildren, useContext, useState } from 'react';
-import { PillarToWithdrawFrom, WithdrawalStep, WithdrawalStepType } from './types';
+import { createContext, PropsWithChildren, useContext, useEffect, useMemo, useState } from 'react';
+import {
+  PersonalDetailsStepState,
+  WithdrawalsAmountStepState,
+  WithdrawalsContextState,
+  WithdrawalStep,
+  WithdrawalStepType,
+} from './types';
+import { useSourceFunds, useWithdrawalsEligibility } from '../../common/apiHooks';
+import { getValueSum } from '../../account/AccountStatement/fundSelector';
+import { getMandatesToCreate } from './utils';
 
-export type WithdrawalsContext = {
-  currentStep: WithdrawalStep | null;
-  withdrawalAmount: WithdrawalsAmountStepState;
-  personalDetails: PersonalDetailsStepState;
-
-  setWithdrawalAmount: (state: WithdrawalsAmountStepState) => unknown;
-  setPersonalDetails: (state: PersonalDetailsStepState) => unknown;
-
-  navigateToNextStep: () => void;
-  navigateToPreviousStep: () => void;
-};
-
-export type WithdrawalsAmountStepState = {
-  pillarsToWithdrawFrom: PillarToWithdrawFrom;
-  singleWithdrawalAmount: number | null;
-};
-
-export type PersonalDetailsStepState = {
-  bankAccountIban: string | null;
-  taxResidencyCode: string; // TODO
-};
-
-export const WithdrawalsContext = createContext<WithdrawalsContext>({
+export const WithdrawalsContext = createContext<WithdrawalsContextState>({
   currentStep: null,
   withdrawalAmount: {
     singleWithdrawalAmount: null,
@@ -34,6 +21,8 @@ export const WithdrawalsContext = createContext<WithdrawalsContext>({
     bankAccountIban: null,
     taxResidencyCode: 'EST',
   },
+  pensionHoldings: null,
+  mandatesToCreate: null,
 
   setWithdrawalAmount: () => {},
   setPersonalDetails: () => {},
@@ -48,6 +37,8 @@ export const WithdrawalsProvider = ({
   children,
   steps,
 }: PropsWithChildren<{ steps: WithdrawalStep[] }>) => {
+  const { data: sourceFunds } = useSourceFunds();
+
   const [currentStepType, setCurrentStepType] = useState<WithdrawalStepType>('WITHDRAWAL_SIZE');
   const currentStep = steps.find((step) => step.type === currentStepType)!;
 
@@ -59,6 +50,31 @@ export const WithdrawalsProvider = ({
     taxResidencyCode: 'EST',
     bankAccountIban: null,
   });
+
+  const { data: eligibility } = useWithdrawalsEligibility();
+
+  const secondPillarSourceFunds = sourceFunds?.filter((fund) => fund.pillar === 2);
+  const thirdPillarSourceFunds = sourceFunds?.filter((fund) => fund.pillar === 3);
+
+  const totalSecondPillar = getValueSum(secondPillarSourceFunds ?? []);
+  const totalThirdPillar = getValueSum(thirdPillarSourceFunds ?? []);
+  const totalBothPillars = totalSecondPillar + totalThirdPillar;
+
+  const pensionHoldings = {
+    totalSecondPillar,
+    totalThirdPillar,
+    totalBothPillars,
+  };
+
+  useEffect(() => {
+    if (totalSecondPillar === 0 && totalThirdPillar > 0) {
+      setWithdrawalAmount((prevVal) => ({ ...prevVal, pillarsToWithdrawFrom: 'THIRD' }));
+    } else if (totalSecondPillar > 0 && totalThirdPillar === 0) {
+      setWithdrawalAmount((prevVal) => ({ ...prevVal, pillarsToWithdrawFrom: 'SECOND' }));
+    } else {
+      setWithdrawalAmount((prevVal) => ({ ...prevVal, pillarsToWithdrawFrom: 'BOTH' }));
+    }
+  }, [totalSecondPillar, totalThirdPillar, totalBothPillars]);
 
   const navigateToNextStep = () => {
     const nextStepIndex = steps.findIndex((step) => step.type === currentStepType) + 1;
@@ -80,12 +96,34 @@ export const WithdrawalsProvider = ({
     setCurrentStepType(steps[previousStepIndex].type);
   };
 
+  const mandatesToCreate = useMemo(
+    () =>
+      getMandatesToCreate({
+        personalDetails,
+        pensionHoldings,
+        withdrawalAmount,
+        eligibility: eligibility ?? null,
+        secondPillarSourceFunds: secondPillarSourceFunds ?? null,
+        thirdPillarSourceFunds: thirdPillarSourceFunds ?? null,
+      }),
+    [
+      personalDetails,
+      pensionHoldings,
+      withdrawalAmount,
+      eligibility,
+      secondPillarSourceFunds,
+      thirdPillarSourceFunds,
+    ],
+  );
+
   return (
     <WithdrawalsContext.Provider
       value={{
         currentStep,
         withdrawalAmount,
         personalDetails,
+        pensionHoldings,
+        mandatesToCreate,
 
         setWithdrawalAmount,
         setPersonalDetails,

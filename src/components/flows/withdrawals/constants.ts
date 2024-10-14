@@ -1,4 +1,5 @@
 import { PersonalDetailsStep } from './PersonalDetailsStep';
+import { ReviewAndConfirmStep } from './ReviewAndConfirmStep';
 import { WithdrawalStep } from './types';
 import { WithdrawalAmountStep } from './WithdrawalAmountStep';
 
@@ -14,8 +15,8 @@ export const WITHDRAWAL_STEPS: WithdrawalStep[] = [
     component: PersonalDetailsStep,
   },
   {
-    type: 'SIGNING',
+    type: 'REVIEW_AND_CONFIRM',
     titleId: 'withdrawals.content.confirmApplication',
-    component: WithdrawalAmountStep,
+    component: ReviewAndConfirmStep,
   },
 ];
