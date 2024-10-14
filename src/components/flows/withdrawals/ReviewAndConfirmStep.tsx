@@ -1,8 +1,8 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useWithdrawalsContext } from './hooks';
-import { getMandatesToCreate } from './utils';
 import { WithdrawalMandateDetails } from './types';
-import { TranslationKey } from '../../translations';
+
+import styles from './Withdrawals.module.scss';
 
 export const ReviewAndConfirmStep = () => {
   const { mandatesToCreate, personalDetails, navigateToPreviousStep } = useWithdrawalsContext();
@@ -15,33 +15,43 @@ export const ReviewAndConfirmStep = () => {
 
   return (
     <div>
-      <span>Esitan järgmised avaldused ja olen teadlik nende tingimustest:</span>
+      <div className="pt-5 pb-5 pl-2 pr-2">
+        Esitan järgmised avaldused ja olen teadlik nende tingimustest:
+      </div>
 
       {mandatesToCreate.map((mandate, idx) => (
         <MandatePreview key={`${mandate.type}_${mandate.pillar}`} mandate={mandate} index={idx} />
       ))}
 
-      <div className="card p-4">
-        <div>Pangakonto number (IBAN): {personalDetails.bankAccountIban}</div>
-        <div>Maksuresidentsus: {personalDetails.taxResidencyCode}</div>
+      <div className="card p-4 mb-3">
+        <div className="d-flex justify-content-between mb-3">
+          <div>Pangakonto number (IBAN):</div>
+          <b>{personalDetails.bankAccountIban}</b>
+        </div>
+        <div className="d-flex justify-content-between">
+          <div>Maksuresidentsus:</div>
+          <b>{personalDetails.taxResidencyCode}</b>
+        </div>
       </div>
 
       <div className="card p-4">
-        <input
-          checked={agreedToTerms}
-          onChange={(e) => setAgreedToTerms(e.target.checked)}
-          type="checkbox"
-          className="custom-control-input"
-          id="confirm-withdrawal-steps"
-        />
-        <label htmlFor="confirm-withdrawal-step">
-          Olen teadlik, et AS Pensionikeskus kogub ja töötleb minu isikuandmeid kogumispensionide
-          seaduses ja väärtpaberite registri pidamise seaduses sätestatud ulatuses Euroopa Liidu
-          piires.
-        </label>
+        <div className="custom-control custom-checkbox">
+          <input
+            checked={agreedToTerms}
+            onChange={() => setAgreedToTerms(!agreedToTerms)}
+            type="checkbox"
+            className="custom-control-input"
+            id="agree-to-terms-checkbox"
+          />
+          <label className="custom-control-label" htmlFor="agree-to-terms-checkbox">
+            Olen teadlik, et AS Pensionikeskus kogub ja töötleb minu isikuandmeid kogumispensionide
+            seaduses ja väärtpaberite registri pidamise seaduses sätestatud ulatuses Euroopa Liidu
+            piires.
+          </label>
+        </div>
       </div>
 
-      <div className="d-flex justify-content-between pt-4">
+      <div className="d-flex justify-content-between pt-5">
         {/* TODO paddings */}
         <button type="button" className="btn btn-light" onClick={() => navigateToPreviousStep()}>
           Tagasi
@@ -69,10 +79,10 @@ const MandatePreview = ({
   const MandateDescriptionComponent = DESCRIPTION_COMPONENT_MAPPING[mandate.type][mandate.pillar];
 
   return (
-    <div className="card p-4 mb-2">
+    <div className="card p-4 mb-3">
       <div>
-        <h3>Avaldus #{index + 1}</h3>
-        <h2>{TITLE_MAPPING[mandate.type][mandate.pillar]}</h2>
+        <h3 className={styles.mandateSubheading}>Avaldus #{index + 1}</h3>
+        <h2 className={styles.mandateHeading}>{TITLE_MAPPING[mandate.type][mandate.pillar]}</h2>
       </div>
       <MandateDescriptionComponent />
     </div>
