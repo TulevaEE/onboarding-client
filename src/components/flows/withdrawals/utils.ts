@@ -1,4 +1,4 @@
-import { SourceFund } from '../../common/apiModels/index';
+import { Fund, SourceFund } from '../../common/apiModels/index';
 import { getValueSum } from '../../account/AccountStatement/fundSelector';
 import {
   PensionHoldings,
@@ -22,39 +22,44 @@ export const getPartialWithdrawalMandatesToCreate = (
   personalDetails: PersonalDetailsStepState,
   withdrawalAmount: WithdrawalsAmountStepState,
   pensionHoldings: PensionHoldings,
+  funds: Fund[],
   secondPillarSourceFunds: SourceFund[],
   thirdPillarSourceFunds: SourceFund[],
 ): PartialWithdrawalMandateDetails[] => {
-  if (withdrawalAmount.singleWithdrawalAmount === null) {
+  const { singleWithdrawalAmount } = withdrawalAmount;
+
+  if (singleWithdrawalAmount === null) {
     return [];
   }
 
+  const fundIsinToFundNavMap: Record<string, number> = funds.reduce(
+    (acc, fund) => ({
+      ...acc,
+      [fund.isin]: fund.nav,
+    }),
+    {},
+  );
+
   const bankAccountDetails = getBankAccountDetails(personalDetails);
 
-  const partialWithdrawalOfTotal =
-    withdrawalAmount.singleWithdrawalAmount / pensionHoldings.totalBothPillars;
+  const partialWithdrawalOfTotal = singleWithdrawalAmount / pensionHoldings.totalBothPillars;
 
-  const secondPillarWithdrawal: PartialWithdrawalMandateDetails = {
+  const getWithdrawalDetails = (
+    pillar: 'SECOND' | 'THIRD',
+    sourceFunds: SourceFund[],
+  ): PartialWithdrawalMandateDetails => ({
     type: 'PARTIAL_WITHDRAWAL',
-    pillar: 'SECOND',
+    pillar,
     bankAccountDetails,
-    fundWithdrawalAmounts: secondPillarSourceFunds.map((fund) => ({
+    fundWithdrawalAmounts: sourceFunds.map((fund) => ({
       isin: fund.isin,
       percentage: Math.floor(partialWithdrawalOfTotal * 100),
-      units: 0, // TODO
+      units: singleWithdrawalAmount / fundIsinToFundNavMap[fund.isin], // TODO handle null NAV?
     })),
-  };
+  });
 
-  const thirdPillarWithdrawal: PartialWithdrawalMandateDetails = {
-    type: 'PARTIAL_WITHDRAWAL',
-    pillar: 'THIRD',
-    bankAccountDetails,
-    fundWithdrawalAmounts: thirdPillarSourceFunds.map((fund) => ({
-      isin: fund.isin,
-      percentage: Math.floor(partialWithdrawalOfTotal * 100),
-      units: 0, // TODO
-    })),
-  };
+  const secondPillarWithdrawal = getWithdrawalDetails('SECOND', secondPillarSourceFunds);
+  const thirdPillarWithdrawal = getWithdrawalDetails('THIRD', thirdPillarSourceFunds);
 
   if (withdrawalAmount.pillarsToWithdrawFrom === 'THIRD') {
     return [thirdPillarWithdrawal];
@@ -115,6 +120,7 @@ export const getMandatesToCreate = ({
   pensionHoldings,
   withdrawalAmount,
   eligibility,
+  funds,
   secondPillarSourceFunds,
   thirdPillarSourceFunds,
 }: {
@@ -122,12 +128,14 @@ export const getMandatesToCreate = ({
   pensionHoldings: PensionHoldings;
   withdrawalAmount: WithdrawalsAmountStepState;
   eligibility: WithdrawalsEligibility | null;
+  funds: Fund[] | null;
   secondPillarSourceFunds: SourceFund[] | null;
   thirdPillarSourceFunds: SourceFund[] | null;
 }): WithdrawalMandateDetails[] | null => {
   if (
     !eligibility ||
     !pensionHoldings ||
+    !funds ||
     secondPillarSourceFunds === null ||
     thirdPillarSourceFunds === null
   ) {
@@ -145,6 +153,7 @@ export const getMandatesToCreate = ({
       personalDetails,
       withdrawalAmount,
       pensionHoldings,
+      funds,
       secondPillarSourceFunds,
       thirdPillarSourceFunds,
     ),

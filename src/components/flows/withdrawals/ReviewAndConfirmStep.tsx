@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useWithdrawalsContext } from './hooks';
 import {
   FundPensionOpeningMandateDetails,
@@ -9,17 +9,31 @@ import {
 import styles from './Withdrawals.module.scss';
 import Percentage from '../../common/Percentage';
 import { getEstimatedFundPension } from './utils';
-import { useWithdrawalsEligibility } from '../../common/apiHooks';
 import { formatAmountForCurrency } from '../../common/utils';
+import { useFunds } from '../../common/apiHooks';
 
 export const ReviewAndConfirmStep = () => {
+  const { data: funds } = useFunds();
+
   const { mandatesToCreate, personalDetails, navigateToPreviousStep } = useWithdrawalsContext();
 
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 
-  if (mandatesToCreate === null) {
+  if (mandatesToCreate === null || !funds) {
     return null;
   }
+
+  const fundIsinToFundNameMap: Record<string, string> = useMemo(
+    () =>
+      funds.reduce(
+        (acc, fund) => ({
+          ...acc,
+          [fund.isin]: fund.name,
+        }),
+        {},
+      ),
+    [funds],
+  );
 
   return (
     <div>
@@ -28,7 +42,12 @@ export const ReviewAndConfirmStep = () => {
       </div>
 
       {mandatesToCreate.map((mandate, idx) => (
-        <MandatePreview key={`${mandate.type}_${mandate.pillar}`} mandate={mandate} index={idx} />
+        <MandatePreview
+          key={`${mandate.type}_${mandate.pillar}`}
+          mandate={mandate}
+          index={idx}
+          fundIsinToFundNameMap={fundIsinToFundNameMap}
+        />
       ))}
 
       <div className="card p-4 mb-3">
@@ -79,8 +98,10 @@ export const ReviewAndConfirmStep = () => {
 
 const MandatePreview = ({
   mandate,
+  fundIsinToFundNameMap,
   index,
 }: {
+  fundIsinToFundNameMap: Record<string, string>;
   mandate: WithdrawalMandateDetails;
   index: number;
 }) => (
@@ -91,7 +112,10 @@ const MandatePreview = ({
     </div>
     {mandate.type === 'FUND_PENSION_OPENING' && <FundPensionMandateDescription mandate={mandate} />}
     {mandate.type === 'PARTIAL_WITHDRAWAL' && (
-      <PartialWithdrawalMandateDescription mandate={mandate} />
+      <PartialWithdrawalMandateDescription
+        mandate={mandate}
+        fundIsinToFundNameMap={fundIsinToFundNameMap}
+      />
     )}
   </div>
 );
@@ -104,7 +128,7 @@ const FundPensionMandateDescription = ({
   const { withdrawalAmount, pensionHoldings } = useWithdrawalsContext();
 
   if (!pensionHoldings) {
-    return null; // TODO
+    return null; // TODO better handling
   }
 
   const totalPillarHolding =
@@ -127,24 +151,43 @@ const FundPensionMandateDescription = ({
       <p>
         Väljamaksed on <b>soovitusliku kestusega</b> ({mandate.duration.durationYears} aastat) ja{' '}
         <b className="text-success">tulumaksuvabad</b>.
-        <div className="text-muted">
+        <span className="text-muted">
+          <br />
           Soovituslik kestus arvutatakse keskmiselt elada jäänud aastate alusel vastavalt sinu
           vanusele. Hetkel on see {mandate.duration.durationYears} aastat.
-        </div>
+        </span>
       </p>
       <p>
         Esimene väljamakse laekub TODO ja on eeldatavalt{' '}
         <b>{formatAmountForCurrency(fundPensionMonthlyPaymentApproximateSize, 0)}</b>.
-        <div className="text-muted">
+        <span className="text-muted">
+          <br />
           Summad varieeruvad ja selguvad fondiosakute müümise hetkel.
-        </div>
+        </span>
       </p>
+
+      {mandate.pillar === 'SECOND' && (
+        <p>
+          Avalduse esitamisega <b>peatuvad II samba sissemaksed</b> 1. jaanuarist ja neid ei saa
+          hiljem taastada.
+        </p>
+      )}
+
+      <p>
+        Saan avalduse tühistada kuni <b>TODO</b>.
+      </p>
+
+      <p>Saan väljamaksed igal ajal lõpetada ja uuesti sõlmida.</p>
+
+      {mandate.pillar === 'THIRD' && <p>TODO arest/pankrotinõue disclaimer</p>}
     </>
   );
 };
 const PartialWithdrawalMandateDescription = ({
   mandate,
+  fundIsinToFundNameMap,
 }: {
+  fundIsinToFundNameMap: Record<string, string>;
   mandate: PartialWithdrawalMandateDetails;
 }) => (
   <>
@@ -152,7 +195,7 @@ const PartialWithdrawalMandateDescription = ({
     <div>
       {mandate.fundWithdrawalAmounts.map((amount) => (
         <div className="d-flex justify-content-between">
-          <div>{amount.isin}</div>
+          <div>{fundIsinToFundNameMap[amount.isin]}</div>
           <div>
             {mandate.pillar === 'SECOND' ? (
               `${amount.units} ühikut`
