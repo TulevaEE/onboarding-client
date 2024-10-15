@@ -1,8 +1,16 @@
 import { useState } from 'react';
 import { useWithdrawalsContext } from './hooks';
-import { WithdrawalMandateDetails } from './types';
+import {
+  FundPensionOpeningMandateDetails,
+  PartialWithdrawalMandateDetails,
+  WithdrawalMandateDetails,
+} from './types';
 
 import styles from './Withdrawals.module.scss';
+import Percentage from '../../common/Percentage';
+import { getEstimatedFundPension } from './utils';
+import { useWithdrawalsEligibility } from '../../common/apiHooks';
+import { formatAmountForCurrency } from '../../common/utils';
 
 export const ReviewAndConfirmStep = () => {
   const { mandatesToCreate, personalDetails, navigateToPreviousStep } = useWithdrawalsContext();
@@ -75,20 +83,90 @@ const MandatePreview = ({
 }: {
   mandate: WithdrawalMandateDetails;
   index: number;
-}) => {
-  const MandateDescriptionComponent = DESCRIPTION_COMPONENT_MAPPING[mandate.type][mandate.pillar];
-
-  return (
-    <div className="card p-4 mb-3">
-      <div>
-        <h3 className={styles.mandateSubheading}>Avaldus #{index + 1}</h3>
-        <h2 className={styles.mandateHeading}>{TITLE_MAPPING[mandate.type][mandate.pillar]}</h2>
-      </div>
-      <MandateDescriptionComponent />
+}) => (
+  <div className="card p-4 mb-3">
+    <div>
+      <h3 className={styles.mandateSubheading}>Avaldus #{index + 1}</h3>
+      <h2 className={styles.mandateHeading}>{TITLE_MAPPING[mandate.type][mandate.pillar]}</h2>
     </div>
+    {mandate.type === 'FUND_PENSION_OPENING' && <FundPensionMandateDescription mandate={mandate} />}
+    {mandate.type === 'PARTIAL_WITHDRAWAL' && (
+      <PartialWithdrawalMandateDescription mandate={mandate} />
+    )}
+  </div>
+);
+
+const FundPensionMandateDescription = ({
+  mandate,
+}: {
+  mandate: FundPensionOpeningMandateDetails;
+}) => {
+  const { withdrawalAmount, pensionHoldings } = useWithdrawalsContext();
+
+  if (!pensionHoldings) {
+    return null; // TODO
+  }
+
+  const totalPillarHolding =
+    mandate.pillar === 'SECOND'
+      ? pensionHoldings?.totalSecondPillar
+      : pensionHoldings?.totalThirdPillar;
+
+  const pillarHoldingRatioOfTotals = totalPillarHolding / pensionHoldings.totalBothPillars;
+
+  const { fundPensionMonthlyPaymentApproximateSize } = getEstimatedFundPension({
+    totalAmount: totalPillarHolding ?? 0,
+    durationYears: mandate.duration.durationYears,
+    singleWithdrawalAmountFromPillar:
+      (withdrawalAmount.singleWithdrawalAmount ?? 0) * pillarHoldingRatioOfTotals,
+  });
+
+  // TODO formatforcurrency rounds up, this can cause state where total is 4.6 + 1.4 = 6, but components are displayed as 4 and 1
+  return (
+    <>
+      <p>
+        Väljamaksed on <b>soovitusliku kestusega</b> ({mandate.duration.durationYears} aastat) ja{' '}
+        <b className="text-success">tulumaksuvabad</b>.
+        <div className="text-muted">
+          Soovituslik kestus arvutatakse keskmiselt elada jäänud aastate alusel vastavalt sinu
+          vanusele. Hetkel on see {mandate.duration.durationYears} aastat.
+        </div>
+      </p>
+      <p>
+        Esimene väljamakse laekub TODO ja on eeldatavalt{' '}
+        <b>{formatAmountForCurrency(fundPensionMonthlyPaymentApproximateSize, 0)}</b>.
+        <div className="text-muted">
+          Summad varieeruvad ja selguvad fondiosakute müümise hetkel.
+        </div>
+      </p>
+    </>
   );
 };
-
+const PartialWithdrawalMandateDescription = ({
+  mandate,
+}: {
+  mandate: PartialWithdrawalMandateDetails;
+}) => (
+  <>
+    <b>Võtan välja igast fondist proportsionaalselt:</b>
+    <div>
+      {mandate.fundWithdrawalAmounts.map((amount) => (
+        <div className="d-flex justify-content-between">
+          <div>{amount.isin}</div>
+          <div>
+            {mandate.pillar === 'SECOND' ? (
+              `${amount.units} ühikut`
+            ) : (
+              <>
+                <Percentage value={amount.percentage / 100} fractionDigits={0} /> osakutest
+              </>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  </>
+);
 const TITLE_MAPPING: Record<
   WithdrawalMandateDetails['type'],
   Record<'SECOND' | 'THIRD', string> // TODO TranslationKey
@@ -100,19 +178,5 @@ const TITLE_MAPPING: Record<
   PARTIAL_WITHDRAWAL: {
     SECOND: 'Osaline väljamakse II sambast',
     THIRD: 'Osaline väljamakse III sambast',
-  },
-};
-
-const DESCRIPTION_COMPONENT_MAPPING: Record<
-  WithdrawalMandateDetails['type'],
-  Record<'SECOND' | 'THIRD', () => JSX.Element | null>
-> = {
-  FUND_PENSION_OPENING: {
-    SECOND: () => <p>Second pillar fund pension</p>,
-    THIRD: () => <p>Third pillar fund pension</p>,
-  },
-  PARTIAL_WITHDRAWAL: {
-    SECOND: () => <p>Second pillar partial withdrawal</p>,
-    THIRD: () => <p>Third pillar partial withdrawal</p>,
   },
 };

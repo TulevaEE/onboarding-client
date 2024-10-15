@@ -5,6 +5,7 @@ import { Radio } from '../../common';
 import { PensionHoldings, PillarToWithdrawFrom } from './types';
 import { useWithdrawalsContext } from './hooks';
 import Percentage from '../../common/Percentage';
+import { getEstimatedFundPension } from './utils';
 
 export const WithdrawalAmountStep = () => {
   const { data: eligibility } = useWithdrawalsEligibility();
@@ -29,7 +30,7 @@ export const WithdrawalAmountStep = () => {
 
   const handlePillarSelected = (pillar: PillarToWithdrawFrom) => {
     setWithdrawalAmount({
-      singleWithdrawalAmount: 0,
+      singleWithdrawalAmount: null,
       pillarsToWithdrawFrom: pillar,
     });
   };
@@ -117,11 +118,12 @@ const FundPensionStatusBox = ({ totalAmount }: { totalAmount: number }) => {
     return null;
   }
 
-  const fundPensionSize = totalAmount - (withdrawalAmount.singleWithdrawalAmount ?? 0);
-  const fundPensionPeriods = eligibility.recommendedDurationYears * 12;
-
-  const fundPensionMonthlyPaymentApproximateSize = fundPensionSize / fundPensionPeriods;
-  const fundPensionPercentageLiquidatedMonthly = 1 / fundPensionPeriods;
+  const { fundPensionMonthlyPaymentApproximateSize, fundPensionPercentageLiquidatedMonthly } =
+    getEstimatedFundPension({
+      totalAmount,
+      durationYears: eligibility.recommendedDurationYears,
+      singleWithdrawalAmountFromPillar: withdrawalAmount.singleWithdrawalAmount,
+    });
 
   return (
     <div className="mt-3 card p-4 bg-very-light-blue">
