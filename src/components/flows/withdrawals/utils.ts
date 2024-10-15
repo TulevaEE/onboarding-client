@@ -21,6 +21,7 @@ export const getBankAccountDetails = (
 export const getPartialWithdrawalMandatesToCreate = (
   personalDetails: PersonalDetailsStepState,
   withdrawalAmount: WithdrawalsAmountStepState,
+  pensionHoldings: PensionHoldings,
   secondPillarSourceFunds: SourceFund[],
   thirdPillarSourceFunds: SourceFund[],
 ): PartialWithdrawalMandateDetails[] => {
@@ -30,14 +31,8 @@ export const getPartialWithdrawalMandatesToCreate = (
 
   const bankAccountDetails = getBankAccountDetails(personalDetails);
 
-  const bothPillarsTotal = getValueSum([...secondPillarSourceFunds, ...thirdPillarSourceFunds]);
-  const partialWithdrawalOfTotal = withdrawalAmount.singleWithdrawalAmount / bothPillarsTotal;
-
-  const secondPillarTotal = getValueSum(secondPillarSourceFunds);
-  const secondPillarRatio = secondPillarTotal / bothPillarsTotal;
-
-  const thirdPillarTotal = getValueSum(thirdPillarSourceFunds);
-  const thirdPillarRatio = thirdPillarTotal / bothPillarsTotal;
+  const partialWithdrawalOfTotal =
+    withdrawalAmount.singleWithdrawalAmount / pensionHoldings.totalBothPillars;
 
   const secondPillarWithdrawal: PartialWithdrawalMandateDetails = {
     type: 'PARTIAL_WITHDRAWAL',
@@ -45,7 +40,7 @@ export const getPartialWithdrawalMandatesToCreate = (
     bankAccountDetails,
     fundWithdrawalAmounts: secondPillarSourceFunds.map((fund) => ({
       isin: fund.isin,
-      percentage: Math.floor(partialWithdrawalOfTotal * secondPillarRatio),
+      percentage: Math.floor(partialWithdrawalOfTotal * 100),
       units: 0, // TODO
     })),
   };
@@ -54,9 +49,9 @@ export const getPartialWithdrawalMandatesToCreate = (
     type: 'PARTIAL_WITHDRAWAL',
     pillar: 'THIRD',
     bankAccountDetails,
-    fundWithdrawalAmounts: secondPillarSourceFunds.map((fund) => ({
+    fundWithdrawalAmounts: thirdPillarSourceFunds.map((fund) => ({
       isin: fund.isin,
-      percentage: Math.floor(partialWithdrawalOfTotal * thirdPillarRatio),
+      percentage: Math.floor(partialWithdrawalOfTotal * 100),
       units: 0, // TODO
     })),
   };
@@ -136,8 +131,6 @@ export const getMandatesToCreate = ({
     secondPillarSourceFunds === null ||
     thirdPillarSourceFunds === null
   ) {
-    console.log(eligibility, pensionHoldings, secondPillarSourceFunds, thirdPillarSourceFunds);
-
     return null;
   }
 
@@ -151,8 +144,27 @@ export const getMandatesToCreate = ({
     ...getPartialWithdrawalMandatesToCreate(
       personalDetails,
       withdrawalAmount,
+      pensionHoldings,
       secondPillarSourceFunds,
       thirdPillarSourceFunds,
     ),
   ];
+};
+
+export const getEstimatedFundPension = ({
+  totalAmount,
+  durationYears,
+  singleWithdrawalAmountFromPillar,
+}: {
+  totalAmount: number;
+  durationYears: number;
+  singleWithdrawalAmountFromPillar: number | null;
+}) => {
+  const fundPensionSize = totalAmount - (singleWithdrawalAmountFromPillar ?? 0);
+  const fundPensionPeriods = durationYears * 12;
+
+  const fundPensionMonthlyPaymentApproximateSize = fundPensionSize / fundPensionPeriods;
+  const fundPensionPercentageLiquidatedMonthly = 1 / fundPensionPeriods;
+
+  return { fundPensionMonthlyPaymentApproximateSize, fundPensionPercentageLiquidatedMonthly };
 };
