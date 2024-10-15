@@ -103,6 +103,7 @@ export interface BaseApplication<Type extends ApplicationType, Details> {
 export interface Fund {
   isin: string;
   name: string;
+  nav: number | null;
   pillar: Pillar;
   managementFeeRate: number;
   ongoingChargesFigure: number;

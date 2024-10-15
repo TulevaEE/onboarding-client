@@ -7,7 +7,7 @@ import {
   WithdrawalStep,
   WithdrawalStepType,
 } from './types';
-import { useSourceFunds, useWithdrawalsEligibility } from '../../common/apiHooks';
+import { useFunds, useSourceFunds, useWithdrawalsEligibility } from '../../common/apiHooks';
 import { getValueSum } from '../../account/AccountStatement/fundSelector';
 import { getMandatesToCreate } from './utils';
 
@@ -38,6 +38,7 @@ export const WithdrawalsProvider = ({
   steps,
 }: PropsWithChildren<{ steps: WithdrawalStep[] }>) => {
   const { data: sourceFunds } = useSourceFunds();
+  const { data: funds } = useFunds();
 
   const [currentStepType, setCurrentStepType] = useState<WithdrawalStepType>('WITHDRAWAL_SIZE');
   const currentStep = steps.find((step) => step.type === currentStepType)!;
@@ -105,6 +106,7 @@ export const WithdrawalsProvider = ({
         eligibility: eligibility ?? null,
         secondPillarSourceFunds: secondPillarSourceFunds ?? null,
         thirdPillarSourceFunds: thirdPillarSourceFunds ?? null,
+        funds: funds ?? null,
       }),
     [
       personalDetails,
@@ -113,6 +115,7 @@ export const WithdrawalsProvider = ({
       eligibility,
       secondPillarSourceFunds,
       thirdPillarSourceFunds,
+      funds,
     ],
   );
 

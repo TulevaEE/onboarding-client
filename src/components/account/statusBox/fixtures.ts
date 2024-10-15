@@ -129,6 +129,7 @@ export const tulevaSecondPillarFund: Fund = {
   fundManager: { name: 'Tuleva' },
   status: FundStatus.ACTIVE,
   inceptionDate: '2017-01-01',
+  nav: 1,
 };
 
 export const activeThirdPillar: SourceFund = {

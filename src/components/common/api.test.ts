@@ -800,6 +800,7 @@ describe('API calls', () => {
         fundManager: { name: 'Tuleva' },
         status: FundStatus.ACTIVE,
         inceptionDate: '2017-01-01',
+        nav: 1,
       },
     ];
 
@@ -825,6 +826,7 @@ describe('API calls', () => {
         type: ApplicationType.TRANSFER,
         details: {
           sourceFund: {
+            nav: 1,
             isin: 'EE3600109435',
             name: 'Tuleva World Stocks Pension Fund',
             pillar: 2,
