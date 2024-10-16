@@ -93,7 +93,7 @@ export const ReviewAndConfirmStep = () => {
         <button
           type="button"
           className="btn btn-primary"
-          onClick={() => alert('TODO create and sign mandates')}
+          onClick={() => {}}
           disabled={!agreedToTerms}
         >
           Allkirjastan {mandatesToCreate.length} avaldust
