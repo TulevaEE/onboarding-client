@@ -177,3 +177,24 @@ export const getEstimatedFundPension = ({
 
   return { fundPensionMonthlyPaymentApproximateSize, fundPensionPercentageLiquidatedMonthly };
 };
+
+export const getAllFundNavsPresent = (
+  funds: Fund[],
+  secondPillarSourceFunds: SourceFund[],
+  thirdPillarSourceFunds: SourceFund[],
+) => {
+  const fundIsinToFundNavMap: Record<string, number> = funds.reduce(
+    (acc, fund) => ({
+      ...acc,
+      [fund.isin]: fund.nav,
+    }),
+    {},
+  );
+
+  const allFunds = [...secondPillarSourceFunds, ...thirdPillarSourceFunds];
+  return allFunds.every(
+    (fund) =>
+      Object.prototype.hasOwnProperty.call(fundIsinToFundNavMap, fund.isin) &&
+      typeof fundIsinToFundNavMap[fund.isin] === 'number',
+  );
+};

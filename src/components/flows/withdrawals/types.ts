@@ -8,6 +8,8 @@ export type WithdrawalsContextState = {
 
   mandatesToCreate: WithdrawalMandateDetails[] | null;
 
+  allFundNavsPresent: boolean;
+
   setWithdrawalAmount: (state: WithdrawalsAmountStepState) => unknown;
   setPersonalDetails: (state: PersonalDetailsStepState) => unknown;
 

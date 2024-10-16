@@ -334,6 +334,7 @@ export interface MandateDeadlines {
   transferMandateFulfillmentDate: string;
   periodEnding: string;
   withdrawalFulfillmentDate: string;
+  withdrawalLatestFulfillmentDate: string;
   earlyWithdrawalFulfillmentDate: string;
   transferMandateCancellationDeadline: string;
   withdrawalCancellationDeadline: string;
