@@ -6,6 +6,7 @@ import { PensionHoldings, PillarToWithdrawFrom } from './types';
 import { useWithdrawalsContext } from './hooks';
 import Percentage from '../../common/Percentage';
 import { getEstimatedFundPension } from './utils';
+import styles from './Withdrawals.module.scss';
 
 export const WithdrawalAmountStep = () => {
   const { data: eligibility } = useWithdrawalsEligibility();
@@ -102,9 +103,22 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
           max={totalAmount}
           step={1}
         />
+        <div className="mt-1 d-flex justify-content-between">
+          <div className="text-muted">{formatAmountForCurrency(0, 0)}</div>
+          <div className="text-muted">{formatAmountForCurrency(totalAmount, 0)}</div>
+        </div>
       </div>
-      <div className="mt-3 text-muted">
-        Riik peab kinni 10% tulumaksu. Täpne summa selgub osakute müümisel.
+      <div className="mt-3">
+        Väljamakselt peab riik kinni 10% tulumaksu{' '}
+        {withdrawalAmount.singleWithdrawalAmount ? ': ' : '.'}
+        {withdrawalAmount.singleWithdrawalAmount && (
+          <span className={styles.warningText}>
+            {formatAmountForCurrency(-0.1 * withdrawalAmount.singleWithdrawalAmount, 0)}
+          </span>
+        )}
+        <div className="text-muted">
+          Täpne summa selgub osakute müümisel ja sõltub osakute turuhinnast.
+        </div>
       </div>
     </div>
   );
@@ -128,22 +142,22 @@ const FundPensionStatusBox = ({ totalAmount }: { totalAmount: number }) => {
   return (
     <div className="mt-3 card p-4 bg-very-light-blue">
       <div className="d-flex flex-row justify-content-between align-items-end">
-        <h3 className="m-0">Saad tulumaksu&shy;vabalt</h3>
+        <h3 className="m-0">Saad regulaarselt ja tulumaksuvabalt</h3>
         <h3 className="m-0 pl-2">
           {fundPensionMonthlyPaymentApproximateSize > 0 ? '~' : ''}
           {formatAmountForCurrency(fundPensionMonthlyPaymentApproximateSize, 0)}&nbsp;kuus
         </h3>
       </div>
       <div className="mt-3 text-muted">
-        Iga kuu saad kätte <Percentage value={fundPensionPercentageLiquidatedMonthly} />, mis on
-        tänases turuhinnas {formatAmountForCurrency(fundPensionMonthlyPaymentApproximateSize, 0)}.
+        Iga kuu saad kätte <Percentage value={fundPensionPercentageLiquidatedMonthly} />{' '}
+        fondiosakutest. Hetkehinnas on see{' '}
+        {formatAmountForCurrency(fundPensionMonthlyPaymentApproximateSize, 0)}.
       </div>
       <div className="mt-3">
-        <a href="#asdf">
-          Sinu fondi jääv vara teenib järgnevad {eligibility.recommendedDurationYears} aastat
-          tootlust edasi.
-        </a>{' '}
-        Kui osaku turuhind kasvab, siis väljamakse suureneb, ja kui kahaneb, siis väheneb.
+        Sinu fondi jääv vara{' '}
+        <b>teenib järgnevad {eligibility.recommendedDurationYears} aastat tootlust edasi</b>.<br />
+        Kui osaku turuhind kasvab või kahaneb, siis suurenevad või vähenevad ka sinu väljamaksed.{' '}
+        <a href="#test">Kui suureks võivad sinu väljamaksed kasvada?</a>
       </div>
     </div>
   );
@@ -179,11 +193,11 @@ const PillarSelection = ({
   }
 
   return (
-    <div className="card d-flex flex-column mb-3">
+    <div className={`card d-flex flex-column mb-3 p-4 ${styles.pillarSelectionContainer}`}>
       <Radio
         name="pillar-to-withdraw"
         id="pillar-to-withdraw-both"
-        className=" tv-radio__inline"
+        className="tv-radio__inline mb-1"
         selected={selectedPillar === 'BOTH'}
         onSelect={() => setSelectedPillar('BOTH')}
       >
@@ -196,7 +210,7 @@ const PillarSelection = ({
       <Radio
         name="pillar-to-withdraw"
         id="pillar-to-withdraw-second"
-        className="tv-radio__inline"
+        className="tv-radio__inline mb-1"
         selected={selectedPillar === 'SECOND'}
         onSelect={() => setSelectedPillar('SECOND')}
       >

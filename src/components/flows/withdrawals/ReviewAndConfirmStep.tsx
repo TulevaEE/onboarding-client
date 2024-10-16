@@ -10,7 +10,8 @@ import styles from './Withdrawals.module.scss';
 import Percentage from '../../common/Percentage';
 import { getEstimatedFundPension } from './utils';
 import { formatAmountForCurrency } from '../../common/utils';
-import { useFunds } from '../../common/apiHooks';
+import { useFunds, useMandateDeadlines } from '../../common/apiHooks';
+import { formatDateTime } from '../../common/dateFormatter';
 
 export const ReviewAndConfirmStep = () => {
   const { data: funds } = useFunds();
@@ -126,8 +127,9 @@ const FundPensionMandateDescription = ({
   mandate: FundPensionOpeningMandateDetails;
 }) => {
   const { withdrawalAmount, pensionHoldings } = useWithdrawalsContext();
+  const { data: mandateDeadlines } = useMandateDeadlines();
 
-  if (!pensionHoldings) {
+  if (!pensionHoldings || !mandateDeadlines) {
     return null; // TODO better handling
   }
 
@@ -174,7 +176,8 @@ const FundPensionMandateDescription = ({
       )}
 
       <p>
-        Saan avalduse tühistada kuni <b>TODO</b>.
+        Saan avalduse tühistada kuni{' '}
+        <b>{formatDateTime(mandateDeadlines?.withdrawalCancellationDeadline)}</b>.
       </p>
 
       <p>Saan väljamaksed igal ajal lõpetada ja uuesti sõlmida.</p>
