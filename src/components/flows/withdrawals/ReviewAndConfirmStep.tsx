@@ -3,13 +3,12 @@ import { useWithdrawalsContext } from './hooks';
 import {
   FundPensionOpeningMandateDetails,
   PartialWithdrawalMandateDetails,
-  PensionHoldings,
   WithdrawalMandateDetails,
 } from './types';
 
 import styles from './Withdrawals.module.scss';
 import Percentage from '../../common/Percentage';
-import { getAllFundNavsPresent, getEstimatedFundPension } from './utils';
+import { getEstimatedFundPension, getTotalAmountAvailableToWithdraw } from './utils';
 import { formatAmountForCurrency } from '../../common/utils';
 import { useFunds, useMandateDeadlines } from '../../common/apiHooks';
 import { formatDate, formatDateTime } from '../../common/dateFormatter';
@@ -94,7 +93,7 @@ export const ReviewAndConfirmStep = () => {
         <button
           type="button"
           className="btn btn-primary"
-          onClick={() => alert('Created mandates')}
+          onClick={() => alert('TODO create and sign mandates')}
           disabled={!agreedToTerms}
         >
           Allkirjastan {mandatesToCreate.length} avaldust
@@ -216,16 +215,12 @@ const PartialWithdrawalMandateDescription = ({
     return null;
   }
 
-  const secondPillarOfTotalRatio =
-    pensionHoldings.totalSecondPillar / pensionHoldings.totalBothPillars;
-  const thirdPillarOfTotalRatio =
-    pensionHoldings.totalThirdPillar / pensionHoldings.totalBothPillars;
+  const totalAmount = getTotalAmountAvailableToWithdraw(mandate.pillar, pensionHoldings);
 
-  const selectedPillarOfTotalRatio =
-    mandate.pillar === 'SECOND' ? secondPillarOfTotalRatio : thirdPillarOfTotalRatio;
+  const partialWithdrawalOfTotalHoldings = withdrawalAmount.singleWithdrawalAmount / totalAmount;
 
   const estimatedWithdrawalSizeWithTax =
-    selectedPillarOfTotalRatio * withdrawalAmount.singleWithdrawalAmount * 0.9;
+    partialWithdrawalOfTotalHoldings * withdrawalAmount.singleWithdrawalAmount * 0.9;
 
   return (
     <>
