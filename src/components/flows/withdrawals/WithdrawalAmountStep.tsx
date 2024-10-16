@@ -2,32 +2,16 @@ import { formatAmountForCurrency } from '../../common/utils';
 import { StepButtons } from './StepButtons';
 import { useWithdrawalsEligibility } from '../../common/apiHooks';
 import { Radio } from '../../common';
-import { PensionHoldings, PillarToWithdrawFrom } from './types';
+import { PillarToWithdrawFrom } from './types';
 import { useWithdrawalsContext } from './hooks';
 import Percentage from '../../common/Percentage';
-import { getEstimatedFundPension } from './utils';
+import { getEstimatedFundPension, getTotalAmountAvailableToWithdraw } from './utils';
 import styles from './Withdrawals.module.scss';
 
 export const WithdrawalAmountStep = () => {
   const { data: eligibility } = useWithdrawalsEligibility();
 
   const { withdrawalAmount, setWithdrawalAmount, pensionHoldings } = useWithdrawalsContext();
-
-  const getTotalAmount = (holdings: PensionHoldings) => {
-    if (!holdings) {
-      return 0;
-    }
-
-    if (withdrawalAmount.pillarsToWithdrawFrom === 'SECOND') {
-      return holdings.totalSecondPillar;
-    }
-
-    if (withdrawalAmount.pillarsToWithdrawFrom === 'THIRD') {
-      return holdings.totalThirdPillar;
-    }
-
-    return holdings.totalBothPillars;
-  };
 
   const handlePillarSelected = (pillar: PillarToWithdrawFrom) => {
     setWithdrawalAmount({
@@ -40,6 +24,11 @@ export const WithdrawalAmountStep = () => {
     return null;
   }
 
+  const totalAmount = getTotalAmountAvailableToWithdraw(
+    withdrawalAmount.pillarsToWithdrawFrom,
+    pensionHoldings,
+  );
+
   return (
     <div className="pt-5">
       <PillarSelection
@@ -48,8 +37,8 @@ export const WithdrawalAmountStep = () => {
         selectedPillar={withdrawalAmount.pillarsToWithdrawFrom}
         setSelectedPillar={handlePillarSelected}
       />
-      <FundPensionStatusBox totalAmount={getTotalAmount(pensionHoldings)} />
-      <SingleWithdrawalSelectionBox totalAmount={getTotalAmount(pensionHoldings)} />
+      <FundPensionStatusBox totalAmount={totalAmount} />
+      <SingleWithdrawalSelectionBox totalAmount={totalAmount} />
       <StepButtons />
     </div>
   );

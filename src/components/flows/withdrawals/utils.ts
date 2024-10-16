@@ -13,10 +13,13 @@ import { WithdrawalsEligibility } from '../../common/apiModels/withdrawals';
 
 export const getBankAccountDetails = (
   personalDetails: PersonalDetailsStepState,
-): BankAccountDetails => ({
-  type: 'ESTONIAN',
-  accountIban: personalDetails.bankAccountIban as string,
-});
+): BankAccountDetails =>
+  // TODO improve handling
+
+  ({
+    type: 'ESTONIAN',
+    accountIban: personalDetails.bankAccountIban as string,
+  });
 
 export const getPartialWithdrawalMandatesToCreate = (
   personalDetails: PersonalDetailsStepState,
@@ -42,21 +45,30 @@ export const getPartialWithdrawalMandatesToCreate = (
 
   const bankAccountDetails = getBankAccountDetails(personalDetails);
 
-  const partialWithdrawalOfTotal = singleWithdrawalAmount / pensionHoldings.totalBothPillars;
+  const totalAvailableToWithdraw = getTotalAmountAvailableToWithdraw(
+    withdrawalAmount.pillarsToWithdrawFrom,
+    pensionHoldings,
+  );
+  const partialWithdrawalOfTotal = singleWithdrawalAmount / totalAvailableToWithdraw;
 
   const getWithdrawalDetails = (
     pillar: 'SECOND' | 'THIRD',
     sourceFunds: SourceFund[],
-  ): PartialWithdrawalMandateDetails => ({
-    type: 'PARTIAL_WITHDRAWAL',
-    pillar,
-    bankAccountDetails,
-    fundWithdrawalAmounts: sourceFunds.map((fund) => ({
-      isin: fund.isin,
-      percentage: Math.floor(partialWithdrawalOfTotal * 100),
-      units: singleWithdrawalAmount / fundIsinToFundNavMap[fund.isin], // TODO handle null NAV?
-    })),
-  });
+  ): PartialWithdrawalMandateDetails => {
+    const getSourceFundTotalUnits = (fund: SourceFund) =>
+      getValueSum([fund]) / fundIsinToFundNavMap[fund.isin]; // TODO handle null NAV better
+
+    return {
+      type: 'PARTIAL_WITHDRAWAL',
+      pillar,
+      bankAccountDetails,
+      fundWithdrawalAmounts: sourceFunds.map((fund) => ({
+        isin: fund.isin,
+        percentage: Math.floor(partialWithdrawalOfTotal * 100),
+        units: getSourceFundTotalUnits(fund) * partialWithdrawalOfTotal, // TODO bigdecimal <-> JS IEEE754 floating point handling
+      })),
+    };
+  };
 
   const secondPillarWithdrawal = getWithdrawalDetails('SECOND', secondPillarSourceFunds);
   const thirdPillarWithdrawal = getWithdrawalDetails('THIRD', thirdPillarSourceFunds);
@@ -78,7 +90,12 @@ export const getFundPensionMandatesToCreate = (
   withdrawalsEligibility: WithdrawalsEligibility,
   pensionHoldings: PensionHoldings,
 ): FundPensionOpeningMandateDetails[] => {
-  if (pensionHoldings.totalBothPillars === withdrawalAmount.singleWithdrawalAmount) {
+  const totalAmount = getTotalAmountAvailableToWithdraw(
+    withdrawalAmount.pillarsToWithdrawFrom,
+    pensionHoldings,
+  );
+
+  if (totalAmount === withdrawalAmount.singleWithdrawalAmount) {
     return [];
   }
 
@@ -197,4 +214,19 @@ export const getAllFundNavsPresent = (
       Object.prototype.hasOwnProperty.call(fundIsinToFundNavMap, fund.isin) &&
       typeof fundIsinToFundNavMap[fund.isin] === 'number',
   );
+};
+
+export const getTotalAmountAvailableToWithdraw = (
+  pillarToWithdrawFrom: 'SECOND' | 'THIRD' | 'BOTH',
+  holdings: PensionHoldings,
+) => {
+  if (pillarToWithdrawFrom === 'SECOND') {
+    return holdings.totalSecondPillar;
+  }
+
+  if (pillarToWithdrawFrom === 'THIRD') {
+    return holdings.totalThirdPillar;
+  }
+
+  return holdings.totalBothPillars;
 };
