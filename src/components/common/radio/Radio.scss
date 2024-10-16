@@ -6,6 +6,7 @@
   border-style: solid;
   border-color: $gray-mid;
   border-radius: 8px;
+  padding: 1.5rem;
   width: 100%;
 
   transition: background-color 0.15s ease-out, border-color 0.15s ease-out;
@@ -45,6 +46,8 @@
   &__inline {
     border: 0;
     background: transparent;
+    padding: 0;
+    line-height: 2rem;
 
     &.tv-radio--selected {
       font-weight: bold;
