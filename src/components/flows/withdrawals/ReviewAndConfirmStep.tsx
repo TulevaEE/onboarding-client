@@ -3,20 +3,22 @@ import { useWithdrawalsContext } from './hooks';
 import {
   FundPensionOpeningMandateDetails,
   PartialWithdrawalMandateDetails,
+  PensionHoldings,
   WithdrawalMandateDetails,
 } from './types';
 
 import styles from './Withdrawals.module.scss';
 import Percentage from '../../common/Percentage';
-import { getEstimatedFundPension } from './utils';
+import { getAllFundNavsPresent, getEstimatedFundPension } from './utils';
 import { formatAmountForCurrency } from '../../common/utils';
 import { useFunds, useMandateDeadlines } from '../../common/apiHooks';
-import { formatDateTime } from '../../common/dateFormatter';
+import { formatDate, formatDateTime } from '../../common/dateFormatter';
 
 export const ReviewAndConfirmStep = () => {
   const { data: funds } = useFunds();
 
-  const { mandatesToCreate, personalDetails, navigateToPreviousStep } = useWithdrawalsContext();
+  const { mandatesToCreate, personalDetails, allFundNavsPresent, navigateToPreviousStep } =
+    useWithdrawalsContext();
 
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 
@@ -41,6 +43,11 @@ export const ReviewAndConfirmStep = () => {
       <div className="pt-5 pb-5 pl-2 pr-2">
         Esitan järgmised avaldused ja olen teadlik nende tingimustest:
       </div>
+      {!allFundNavsPresent && (
+        <div className="alert alert-danger">
+          DEV: Mõnel likvideeritaval fondil pole NAV-i. Osalise väljamakse avaldused ei tööta.
+        </div>
+      )}
 
       {mandatesToCreate.map((mandate, idx) => (
         <MandatePreview
@@ -106,18 +113,22 @@ const MandatePreview = ({
   mandate: WithdrawalMandateDetails;
   index: number;
 }) => (
-  <div className="card p-4 mb-3">
+  <div className="card p-4 mb-4">
     <div>
       <h3 className={styles.mandateSubheading}>Avaldus #{index + 1}</h3>
       <h2 className={styles.mandateHeading}>{TITLE_MAPPING[mandate.type][mandate.pillar]}</h2>
     </div>
-    {mandate.type === 'FUND_PENSION_OPENING' && <FundPensionMandateDescription mandate={mandate} />}
-    {mandate.type === 'PARTIAL_WITHDRAWAL' && (
-      <PartialWithdrawalMandateDescription
-        mandate={mandate}
-        fundIsinToFundNameMap={fundIsinToFundNameMap}
-      />
-    )}
+    <div className="mt-2">
+      {mandate.type === 'FUND_PENSION_OPENING' && (
+        <FundPensionMandateDescription mandate={mandate} />
+      )}
+      {mandate.type === 'PARTIAL_WITHDRAWAL' && (
+        <PartialWithdrawalMandateDescription
+          mandate={mandate}
+          fundIsinToFundNameMap={fundIsinToFundNameMap}
+        />
+      )}
+    </div>
   </div>
 );
 
@@ -152,7 +163,7 @@ const FundPensionMandateDescription = ({
     <>
       <p>
         Väljamaksed on <b>soovitusliku kestusega</b> ({mandate.duration.durationYears} aastat) ja{' '}
-        <b className="text-success">tulumaksuvabad</b>.
+        <b className={styles.successText}>tulumaksuvabad</b>.
         <span className="text-muted">
           <br />
           Soovituslik kestus arvutatakse keskmiselt elada jäänud aastate alusel vastavalt sinu
@@ -160,7 +171,11 @@ const FundPensionMandateDescription = ({
         </span>
       </p>
       <p>
-        Esimene väljamakse laekub TODO ja on eeldatavalt{' '}
+        Esimene väljamakse laekub{' '}
+        <b>
+          <WithdrawalPaymentDate mandate={mandate} />
+        </b>{' '}
+        ja on eeldatavalt{' '}
         <b>{formatAmountForCurrency(fundPensionMonthlyPaymentApproximateSize, 0)}</b>.
         <span className="text-muted">
           <br />
@@ -170,8 +185,8 @@ const FundPensionMandateDescription = ({
 
       {mandate.pillar === 'SECOND' && (
         <p>
-          Avalduse esitamisega <b>peatuvad II samba sissemaksed</b> 1. jaanuarist ja neid ei saa
-          hiljem taastada.
+          Avalduse esitamisega <b>peatuvad II samba sissemaksed</b> alates{' '}
+          {formatDate(mandateDeadlines.periodEnding)} ja neid ei saa hiljem taastada.
         </p>
       )}
 
@@ -182,7 +197,7 @@ const FundPensionMandateDescription = ({
 
       <p>Saan väljamaksed igal ajal lõpetada ja uuesti sõlmida.</p>
 
-      {mandate.pillar === 'THIRD' && <p>TODO arest/pankrotinõue disclaimer</p>}
+      <p>TODO arest/pankrotinõue disclaimer</p>
     </>
   );
 };
@@ -192,27 +207,89 @@ const PartialWithdrawalMandateDescription = ({
 }: {
   fundIsinToFundNameMap: Record<string, string>;
   mandate: PartialWithdrawalMandateDetails;
-}) => (
-  <>
-    <b>Võtan välja igast fondist proportsionaalselt:</b>
-    <div>
-      {mandate.fundWithdrawalAmounts.map((amount) => (
-        <div className="d-flex justify-content-between">
-          <div>{fundIsinToFundNameMap[amount.isin]}</div>
-          <div>
-            {mandate.pillar === 'SECOND' ? (
-              `${amount.units} ühikut`
-            ) : (
-              <>
-                <Percentage value={amount.percentage / 100} fractionDigits={0} /> osakutest
-              </>
-            )}
+}) => {
+  const { data: mandateDeadlines } = useMandateDeadlines();
+  const { withdrawalAmount, pensionHoldings } = useWithdrawalsContext();
+
+  // TODO better handling
+  if (!pensionHoldings || !withdrawalAmount.singleWithdrawalAmount) {
+    return null;
+  }
+
+  const secondPillarOfTotalRatio =
+    pensionHoldings.totalSecondPillar / pensionHoldings.totalBothPillars;
+  const thirdPillarOfTotalRatio =
+    pensionHoldings.totalThirdPillar / pensionHoldings.totalBothPillars;
+
+  const selectedPillarOfTotalRatio =
+    mandate.pillar === 'SECOND' ? secondPillarOfTotalRatio : thirdPillarOfTotalRatio;
+
+  const estimatedWithdrawalSizeWithTax =
+    selectedPillarOfTotalRatio * withdrawalAmount.singleWithdrawalAmount * 0.9;
+
+  return (
+    <>
+      <b>Võtan välja igast fondist proportsionaalselt:</b>
+      <div>
+        {mandate.fundWithdrawalAmounts.map((amount) => (
+          <div className="d-flex justify-content-between">
+            <div>{fundIsinToFundNameMap[amount.isin]}</div>
+            <div>
+              {mandate.pillar === 'SECOND' ? (
+                `${amount.units} ühikut`
+              ) : (
+                <>
+                  <Percentage value={amount.percentage / 100} fractionDigits={0} /> osakutest
+                </>
+              )}
+            </div>
           </div>
-        </div>
-      ))}
-    </div>
-  </>
-);
+        ))}
+      </div>
+
+      <div className="mt-3">
+        <p>
+          Väljamakse laekub{' '}
+          <b>
+            <WithdrawalPaymentDate mandate={mandate} />
+          </b>
+          . Väljamakse kajastatakse tuludeklaratsioonis. Riik peab kinni{' '}
+          <b className={styles.warningText}>10% tulumaksu</b>, seega saan kätte eeldatavalt{' '}
+          <b>{formatAmountForCurrency(estimatedWithdrawalSizeWithTax, 0)}</b>. Täpne summa selgub
+          fondiosakute müümise hetkel.
+        </p>
+
+        {mandate.pillar === 'SECOND' && (
+          <p>
+            Avalduse esitamisega <b>peatuvad II samba sissemaksed</b>{' '}
+            {mandateDeadlines?.periodEnding && formatDate(mandateDeadlines.periodEnding)} ja neid ei
+            saa hiljem taastada.
+          </p>
+        )}
+      </div>
+    </>
+  );
+};
+
+const WithdrawalPaymentDate = ({ mandate }: { mandate: WithdrawalMandateDetails }) => {
+  const { data: mandateDeadlines } = useMandateDeadlines();
+
+  if (!mandateDeadlines) {
+    return null; // TODO
+  }
+
+  if (mandate.pillar === 'THIRD' && mandate.type === 'PARTIAL_WITHDRAWAL') {
+    return <>nelja tööpäeva jooksul</>;
+  }
+
+  return (
+    <>
+      {formatDate(mandateDeadlines.withdrawalFulfillmentDate)} –{' '}
+      {formatDate(mandateDeadlines.withdrawalLatestFulfillmentDate)}
+    </>
+  );
+};
+
 const TITLE_MAPPING: Record<
   WithdrawalMandateDetails['type'],
   Record<'SECOND' | 'THIRD', string> // TODO TranslationKey

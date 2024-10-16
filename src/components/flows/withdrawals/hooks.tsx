@@ -9,7 +9,7 @@ import {
 } from './types';
 import { useFunds, useSourceFunds, useWithdrawalsEligibility } from '../../common/apiHooks';
 import { getValueSum } from '../../account/AccountStatement/fundSelector';
-import { getMandatesToCreate } from './utils';
+import { getAllFundNavsPresent, getMandatesToCreate } from './utils';
 
 export const WithdrawalsContext = createContext<WithdrawalsContextState>({
   currentStep: null,
@@ -23,6 +23,8 @@ export const WithdrawalsContext = createContext<WithdrawalsContextState>({
   },
   pensionHoldings: null,
   mandatesToCreate: null,
+
+  allFundNavsPresent: true,
 
   setWithdrawalAmount: () => {},
   setPersonalDetails: () => {},
@@ -66,6 +68,16 @@ export const WithdrawalsProvider = ({
     totalThirdPillar,
     totalBothPillars,
   };
+
+  const allFundNavsPresent = useMemo(
+    () =>
+      getAllFundNavsPresent(
+        funds ?? [],
+        secondPillarSourceFunds ?? [],
+        thirdPillarSourceFunds ?? [],
+      ),
+    [funds, secondPillarSourceFunds, thirdPillarSourceFunds],
+  );
 
   useEffect(() => {
     if (totalSecondPillar === 0 && totalThirdPillar > 0) {
@@ -127,6 +139,8 @@ export const WithdrawalsProvider = ({
         personalDetails,
         pensionHoldings,
         mandatesToCreate,
+
+        allFundNavsPresent,
 
         setWithdrawalAmount,
         setPersonalDetails,

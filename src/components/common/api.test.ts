@@ -903,7 +903,8 @@ describe('API calls', () => {
     const mockMandateDeadlines: MandateDeadlines = {
       transferMandateFulfillmentDate: '2020-02-01',
       periodEnding: '2020-01-31',
-      withdrawalFulfillmentDate: '2020-03-01',
+      withdrawalFulfillmentDate: '2020-03-15',
+      withdrawalLatestFulfillmentDate: '2020-03-20',
       earlyWithdrawalFulfillmentDate: '2020-02-15',
       transferMandateCancellationDeadline: '2020-01-15',
       withdrawalCancellationDeadline: '2020-02-15',
