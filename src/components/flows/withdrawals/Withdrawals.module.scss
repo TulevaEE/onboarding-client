@@ -1,5 +1,12 @@
 @import '../../variables';
 
+.stepDivider {
+  height: 1px;
+  background: #dee2e6;
+  margin: 0 8px;
+  max-width: 24px;
+  flex-grow: 1;
+}
 .successText {
   color: #00ac00;
 }

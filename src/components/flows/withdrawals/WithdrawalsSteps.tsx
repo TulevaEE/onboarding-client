@@ -2,20 +2,26 @@ import { FormattedMessage } from 'react-intl';
 import { TranslationKey } from '../../translations';
 import { useWithdrawalsContext } from './hooks';
 import { WITHDRAWAL_STEPS } from './constants';
+import styles from './Withdrawals.module.scss';
 
 export const WithdrawalsSteps = () => {
   const { currentStep } = useWithdrawalsContext();
   const currentStepNumber = WITHDRAWAL_STEPS.findIndex((step) => step.type === currentStep?.type);
 
   return (
-    <div className="tv-steps d-flex justify-content-between pr-2 pl-2">
+    <div
+      className={`tv-steps d-flex justify-content-between align-items-center pr-2 pl-2 ${styles.stepper}`}
+    >
       {WITHDRAWAL_STEPS.map((step, idx) => (
-        <WithdrawalStep
-          key={step.type}
-          step={idx}
-          currentStep={currentStepNumber}
-          titleId={step.titleId}
-        />
+        <>
+          <WithdrawalStep
+            key={step.type}
+            step={idx}
+            currentStep={currentStepNumber}
+            titleId={step.titleId}
+          />
+          {idx !== WITHDRAWAL_STEPS.length - 1 && <div className={styles.stepDivider} />}
+        </>
       ))}
     </div>
   );
