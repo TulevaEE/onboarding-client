@@ -78,8 +78,8 @@ describe('withdrawals flow', () => {
     ).toBeInTheDocument();
 
     const applicationTitles = [
-      /Igakuised fondipensioni väljamaksed II sambast/,
-      /Igakuised fondipensioni väljamaksed III sambast/,
+      /Igakuised fondipensioni väljamaksed II sambast/,
+      /Igakuised fondipensioni väljamaksed III sambast/,
       /Osaline väljamakse II sambast/,
       /Osaline väljamakse III sambast/,
     ];
