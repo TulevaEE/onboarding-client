@@ -5,6 +5,7 @@ import moment from 'moment/moment';
 import { CapitalType, FundBalance, FundStatus } from '../components/common/apiModels';
 import { anAuthenticationManager } from '../components/common/authenticationManagerFixture';
 import { ReturnsResponse } from '../components/account/ComparisonCalculator/api';
+import { WithdrawalsEligibility } from '../components/common/apiModels/withdrawals';
 
 export function cancellationBackend(server: SetupServerApi): {
   cancellationCreated: boolean;
@@ -581,6 +582,21 @@ export function secondPillarPaymentRateBackend(server: SetupServerApi): {
     }),
   );
   return backend;
+}
+
+export function withdrawalsEligibilityBackend(
+  server: SetupServerApi,
+  eligibility: WithdrawalsEligibility = {
+    age: 60,
+    hasReachedEarlyRetirementAge: true,
+    recommendedDurationYears: 20,
+  },
+) {
+  server.use(
+    rest.get('http://localhost/v1/withdrawals/eligibility', (req, res, ctx) =>
+      res(ctx.json(eligibility)),
+    ),
+  );
 }
 
 export function mandateDeadlinesBackend(server: SetupServerApi): void {

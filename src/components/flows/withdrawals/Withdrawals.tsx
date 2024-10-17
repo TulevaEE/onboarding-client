@@ -27,7 +27,6 @@ export const InnerWithdrawals: React.FunctionComponent = () => {
   }
 
   const CurrentStepComponent = currentStep?.component ?? (() => null);
-
   return (
     <div className="col-md-8 offset-md-2">
       <WithdrawalsHeader />

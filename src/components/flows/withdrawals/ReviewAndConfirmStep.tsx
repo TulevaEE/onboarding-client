@@ -48,7 +48,8 @@ export const ReviewAndConfirmStep = () => {
       </div>
       {!allFundNavsPresent && (
         <div className="alert alert-danger">
-          DEV: Mõnel likvideeritaval fondil pole NAV-i. Osalise väljamakse avaldused ei tööta.
+          DEV: Mõnel likvideeritaval fondil pole NAV-i. Osalise väljamakse avaldused ei tööta
+          korrektselt.
         </div>
       )}
 
@@ -238,7 +239,7 @@ const PartialWithdrawalMandateDescription = ({
       <b>Võtan välja igast fondist proportsionaalselt:</b>
       <div>
         {mandate.fundWithdrawalAmounts.map((amount) => (
-          <div className="d-flex justify-content-between">
+          <div className="d-flex justify-content-between" key={amount.isin}>
             <div>{fundIsinToFundNameMap[amount.isin]}</div>
             <div>
               {mandate.pillar === 'SECOND' ? (
@@ -301,8 +302,8 @@ const TITLE_MAPPING: Record<
   Record<'SECOND' | 'THIRD', string> // TODO TranslationKey
 > = {
   FUND_PENSION_OPENING: {
-    SECOND: 'Igakuised fondipensioni väljamakseid II sambast',
-    THIRD: 'Igakuised fondipensioni väljamakseid III sambast',
+    SECOND: 'Igakuised fondipensioni väljamaksed II sambast',
+    THIRD: 'Igakuised fondipensioni väljamaksed III sambast',
   },
   PARTIAL_WITHDRAWAL: {
     SECOND: 'Osaline väljamakse II sambast',
