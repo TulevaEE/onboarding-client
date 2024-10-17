@@ -302,8 +302,8 @@ const TITLE_MAPPING: Record<
   Record<'SECOND' | 'THIRD', string> // TODO TranslationKey
 > = {
   FUND_PENSION_OPENING: {
-    SECOND: 'Igakuised fondipensioni väljamaksed II sambast',
-    THIRD: 'Igakuised fondipensioni väljamaksed III sambast',
+    SECOND: 'Igakuised fondipensioni väljamaksed II sambast',
+    THIRD: 'Igakuised fondipensioni väljamaksed III sambast',
   },
   PARTIAL_WITHDRAWAL: {
     SECOND: 'Osaline väljamakse II sambast',
