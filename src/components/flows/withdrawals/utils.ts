@@ -230,3 +230,11 @@ export const getTotalAmountAvailableToWithdraw = (
 
   return holdings.totalBothPillars;
 };
+
+export const getPillarRatios = (
+  holdings: PensionHoldings,
+  totalAvailableToWithdraw: number,
+): Record<'SECOND' | 'THIRD', number> => ({
+  SECOND: holdings.totalSecondPillar / totalAvailableToWithdraw,
+  THIRD: holdings.totalThirdPillar / totalAvailableToWithdraw,
+});

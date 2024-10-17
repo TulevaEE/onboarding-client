@@ -8,7 +8,11 @@ import {
 
 import styles from './Withdrawals.module.scss';
 import Percentage from '../../common/Percentage';
-import { getEstimatedFundPension, getTotalAmountAvailableToWithdraw } from './utils';
+import {
+  getEstimatedFundPension,
+  getPillarRatios,
+  getTotalAmountAvailableToWithdraw,
+} from './utils';
 import { formatAmountForCurrency } from '../../common/utils';
 import { useFunds, useMandateDeadlines } from '../../common/apiHooks';
 import { formatDate, formatDateTime } from '../../common/dateFormatter';
@@ -215,12 +219,19 @@ const PartialWithdrawalMandateDescription = ({
     return null;
   }
 
-  const totalAmount = getTotalAmountAvailableToWithdraw(mandate.pillar, pensionHoldings);
+  const totalAvailableToWithdraw = getTotalAmountAvailableToWithdraw(
+    withdrawalAmount.pillarsToWithdrawFrom,
+    pensionHoldings,
+  );
 
-  const partialWithdrawalOfTotalHoldings = withdrawalAmount.singleWithdrawalAmount / totalAmount;
+  const pillarRatioOfTotal = getPillarRatios(pensionHoldings, totalAvailableToWithdraw)[
+    mandate.pillar
+  ];
 
-  const estimatedWithdrawalSizeWithTax =
-    partialWithdrawalOfTotalHoldings * withdrawalAmount.singleWithdrawalAmount * 0.9;
+  const partialWithdrawalSizeFromPillar =
+    withdrawalAmount.singleWithdrawalAmount * pillarRatioOfTotal;
+
+  const estimatedWithdrawalSizeWithTax = partialWithdrawalSizeFromPillar * 0.9;
 
   return (
     <>
