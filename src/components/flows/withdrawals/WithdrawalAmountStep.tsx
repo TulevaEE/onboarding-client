@@ -60,11 +60,13 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
   return (
     <div className="mt-3 card p-4">
       <div className="d-flex flex-row justify-content-between align-items-center">
-        <div className="">Soovid osa raha kohe välja võtta?</div>
+        <div>
+          <label htmlFor="single-withdrawal-amount">Soovid osa raha kohe välja võtta?</label>
+        </div>
         <div className="form-inline">
           <div className="input-group input-group-lg w-100">
             <input
-              id="amount"
+              id="single-withdrawal-amount"
               type="number"
               inputMode="decimal"
               className="form-control form-control-lg text-right"
@@ -84,8 +86,7 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
       <div className="mt-3">
         <input
           type="range"
-          className="form-control-range"
-          id="formControlRange"
+          className="form-control-range custom-range"
           value={withdrawalAmount.singleWithdrawalAmount ?? 0}
           onChange={(event) => handleSingleWithdrawalAmountSelected(event.target.valueAsNumber)}
           min={0}
