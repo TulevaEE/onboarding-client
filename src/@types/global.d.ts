@@ -1,4 +1,4 @@
-import { TranslationKey } from './components/translations';
+import { TranslationKey } from '../components/translations';
 
 declare global {
   namespace FormatjsIntl {
@@ -7,5 +7,3 @@ declare global {
     }
   }
 }
-
-declare module 'hwcrypto-js';
