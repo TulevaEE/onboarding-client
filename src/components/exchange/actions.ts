@@ -2,7 +2,7 @@ import download from 'downloadjs';
 import hwcrypto from 'hwcrypto-js';
 
 import { Dispatch } from 'react';
-import { AxiosError, AxiosResponse } from 'axios';
+import { AxiosError } from 'axios';
 import {
   downloadMandatePreviewWithId,
   downloadMandateWithId,
