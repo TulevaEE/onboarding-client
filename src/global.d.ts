@@ -7,3 +7,5 @@ declare global {
     }
   }
 }
+
+declare module 'hwcrypto-js';
