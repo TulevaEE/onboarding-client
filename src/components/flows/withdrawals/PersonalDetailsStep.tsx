@@ -1,13 +1,35 @@
+import { useMemo, useState } from 'react';
 import { useWithdrawalsContext } from './hooks';
 import { Select } from '../../account/ComparisonCalculator/select/Select';
 import { StepButtons } from './StepButtons';
+import { isValidIBAN } from './utils';
 
 export const PersonalDetailsStep = () => {
-  const { personalDetails, setPersonalDetails } = useWithdrawalsContext();
+  const { personalDetails, setPersonalDetails, navigateToNextStep, navigateToPreviousStep } =
+    useWithdrawalsContext();
+
+  const ibanValid = useMemo(
+    () => isValidIBAN(personalDetails.bankAccountIban ?? ''),
+    [personalDetails.bankAccountIban],
+  );
+
+  const [submitted, setSubmitted] = useState(false);
+
+  const canProceed =
+    personalDetails.bankAccountIban && personalDetails.taxResidencyCode && ibanValid;
+
+  const handleNextClicked = () => {
+    setSubmitted(true);
+
+    if (canProceed) {
+      navigateToNextStep();
+    }
+  };
 
   return (
     <>
       <div className="mt-3 card p-4">
+        <div className="alert alert-warning" />
         <div className="form-group">
           <label htmlFor="bank-account-iban">
             <b>Pangakonto number (IBAN)</b>
@@ -43,9 +65,15 @@ export const PersonalDetailsStep = () => {
           />
         </div>
       </div>
-      <StepButtons
-        canProceed={Boolean(personalDetails.bankAccountIban && personalDetails.taxResidencyCode)}
-      />
+      <div className="d-flex justify-content-between pt-4">
+        {/* TODO paddings */}
+        <button type="button" className="btn btn-light" onClick={() => navigateToPreviousStep()}>
+          Tagasi
+        </button>
+        <button type="button" className="btn btn-primary" onClick={handleNextClicked}>
+          Jätkan
+        </button>
+      </div>
     </>
   );
 };
