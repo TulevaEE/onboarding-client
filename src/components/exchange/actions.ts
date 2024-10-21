@@ -1,6 +1,8 @@
 import download from 'downloadjs';
 import hwcrypto from 'hwcrypto-js';
 
+import { Dispatch } from 'react';
+import { AxiosError, AxiosResponse } from 'axios';
 import {
   downloadMandatePreviewWithId,
   downloadMandateWithId,
@@ -41,16 +43,19 @@ import {
 } from './constants';
 import { actions as amlActions } from '../aml';
 import { getAuthentication } from '../common/authenticationManager';
+import { RootState } from '../account/ComparisonCalculator/types';
+import { Mandate } from '../common/apiModels';
+import { SourceSelection } from './types';
 
 const POLL_DELAY = 1000;
 
 const SIGNATURE_DONE_STATUS = 'SIGNATURE';
 const SIGNING_IN_PROGRESS_STATUS = 'OUTSTANDING_TRANSACTION';
 
-let timeout;
+let timeout: number;
 
 export function getAllSourceFunds() {
-  return (dispatch) => {
+  return (dispatch: Dispatch<unknown>) => {
     dispatch({ type: GET_SOURCE_FUNDS_START });
 
     return getSourceFunds()
@@ -61,7 +66,10 @@ export function getAllSourceFunds() {
   };
 }
 
-export function selectExchangeSources(sourceSelection, sourceSelectionExact = false) {
+export function selectExchangeSources(
+  sourceSelection: SourceSelection[],
+  sourceSelectionExact = false,
+) {
   return {
     type: SELECT_EXCHANGE_SOURCES,
     sourceSelection,
@@ -69,12 +77,12 @@ export function selectExchangeSources(sourceSelection, sourceSelectionExact = fa
   };
 }
 
-export function changeAgreementToTerms(agreement) {
+export function changeAgreementToTerms(agreement: boolean) {
   return { type: CHANGE_AGREEMENT_TO_TERMS, agreement };
 }
 
 export function downloadMandate() {
-  return (_, getState) => {
+  return (_: unknown, getState: () => RootState) => {
     const mandateId = getState().exchange.signedMandateId;
     if (mandateId && getAuthentication().isAuthenticated()) {
       return downloadMandateWithId(mandateId).then((file) =>
@@ -86,7 +94,7 @@ export function downloadMandate() {
 }
 
 export function getTargetFunds() {
-  return (dispatch) => {
+  return (dispatch: Dispatch<unknown>) => {
     dispatch({ type: GET_TARGET_FUNDS_START });
     return getFunds()
       .then((targetFunds) => dispatch({ type: GET_TARGET_FUNDS_SUCCESS, targetFunds }))
@@ -94,16 +102,16 @@ export function getTargetFunds() {
   };
 }
 
-export function selectFutureContributionsFund(targetFundIsin) {
+export function selectFutureContributionsFund(targetFundIsin: string | null) {
   return { type: SELECT_TARGET_FUND, targetFundIsin };
 }
 
-function pollForMobileIdSignature(mandateId, pillar) {
-  return (dispatch) => {
+function pollForMobileIdSignature(mandateId: string, pillar: 2 | 3) {
+  return (dispatch: Dispatch<unknown>) => {
     if (timeout) {
       clearTimeout(timeout);
     }
-    timeout = setTimeout(() => {
+    timeout = window.setTimeout(() => {
       getMobileIdSignatureStatus(mandateId)
         .then((status) => {
           if (status.statusCode === SIGNING_IN_PROGRESS_STATUS) {
@@ -125,12 +133,12 @@ function pollForMobileIdSignature(mandateId, pillar) {
   };
 }
 
-function pollForSmartIdSignature(mandateId, pillar) {
-  return (dispatch) => {
+function pollForSmartIdSignature(mandateId: string, pillar: 2 | 3) {
+  return (dispatch: Dispatch<unknown>) => {
     if (timeout) {
       clearTimeout(timeout);
     }
-    timeout = setTimeout(() => {
+    timeout = window.setTimeout(() => {
       getSmartIdSignatureStatus(mandateId)
         .then((status) => {
           if (status.statusCode === SIGNING_IN_PROGRESS_STATUS) {
@@ -152,7 +160,10 @@ function pollForSmartIdSignature(mandateId, pillar) {
   };
 }
 
-function handleSaveMandateError(dispatch, error) {
+// should be AxiosError though status
+function handleSaveMandateError(dispatch: Dispatch<unknown>, error: unknown) {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   if (error?.status === 400) {
     dispatch({ type: SIGN_MANDATE_INVALID_ERROR, error });
   } else {
@@ -160,26 +171,31 @@ function handleSaveMandateError(dispatch, error) {
   }
 }
 
-export function previewMandate(mandate, amlChecks) {
-  return (dispatch) =>
-    dispatch(amlActions.createAmlChecks(amlChecks))
+export function previewMandate(mandate: Mandate, amlChecks?: unknown) {
+  return (dispatch: Dispatch<unknown>) => {
+    const amlChecksPromise = dispatch(
+      amlActions.createAmlChecks(amlChecks),
+    ) as unknown as Promise<unknown>;
+
+    return amlChecksPromise
       .then(() => saveOrRetrieveExistingMandate(mandate))
-      .then(({ id }) => downloadMandatePreviewWithId(id))
-      .then((file) => download(file, 'Tuleva_avaldus_eelvaade.zip', 'application/zip'))
-      .catch((error) => {
+      .then(({ id }: { id: number }) => downloadMandatePreviewWithId(id.toString()))
+      .then((file: Blob) => download(file, 'Tuleva_avaldus_eelvaade.zip', 'application/zip'))
+      .catch((error: string) => {
         handleSaveMandateError(dispatch, error);
       });
+  };
 }
 
-export function signMandateWithMobileId(mandate) {
-  return (dispatch) => {
+export function signMandateWithMobileId(mandate: Mandate) {
+  return (dispatch: Dispatch<unknown>) => {
     dispatch({ type: SIGN_MANDATE_MOBILE_ID_START });
-    let mandateId;
-    let mandatePillar;
+    let mandateId: string;
+    let mandatePillar: 2 | 3;
 
     return saveOrRetrieveExistingMandate(mandate)
       .then(({ id, pillar }) => {
-        mandateId = id;
+        mandateId = id.toString();
         mandatePillar = pillar;
         return getMobileIdSignatureChallengeCode(mandateId);
       })
@@ -193,14 +209,14 @@ export function signMandateWithMobileId(mandate) {
   };
 }
 
-export function signMandateWithSmartId(mandate) {
-  return (dispatch) => {
+export function signMandateWithSmartId(mandate: Mandate) {
+  return (dispatch: Dispatch<unknown>) => {
     dispatch({ type: SIGN_MANDATE_SMART_ID_START });
-    let mandateId;
-    let mandatePillar;
+    let mandateId: string;
+    let mandatePillar: 2 | 3;
     return saveOrRetrieveExistingMandate(mandate)
       .then(({ id, pillar }) => {
-        mandateId = id;
+        mandateId = id.toString();
         mandatePillar = pillar;
         return getSmartIdSignatureChallengeCode(mandateId);
       })
@@ -214,12 +230,12 @@ export function signMandateWithSmartId(mandate) {
   };
 }
 
-function pollForIdCardSignature(mandateId, pillar, signedHash) {
-  return (dispatch) => {
+function pollForIdCardSignature(mandateId: string, pillar: 2 | 3, signedHash: string) {
+  return (dispatch: Dispatch<unknown>) => {
     if (timeout) {
       clearTimeout(timeout);
     }
-    timeout = setTimeout(() => {
+    timeout = window.setTimeout(() => {
       getIdCardSignatureStatus(mandateId, signedHash)
         .then((statusCode) => {
           if (statusCode === SIGNATURE_DONE_STATUS) {
@@ -239,45 +255,50 @@ function pollForIdCardSignature(mandateId, pillar, signedHash) {
   };
 }
 
-function signIdCardSignatureHash(hash, certificate, mandateId, pillar) {
-  return (dispatch) =>
+function signIdCardSignatureHash(
+  hash: unknown,
+  certificate: unknown,
+  mandateId: string,
+  pillar: 2 | 3,
+) {
+  return (dispatch: Dispatch<unknown>) =>
     hwcrypto
       .sign(certificate, { type: 'SHA-256', hex: hash }, { lang: 'en' })
       .then(
-        (signature) => {
+        (signature: { hex: string }) => {
           dispatch({ type: SIGN_MANDATE_ID_CARD_SIGN_HASH_SUCCESS });
           return signature.hex;
         },
-        (error) => {
+        (error: string) => {
           dispatch({ type: SIGN_MANDATE_ERROR, error });
         },
       )
-      .then((signedHash) => {
+      .then((signedHash: string) => {
         dispatch(pollForIdCardSignature(mandateId, pillar, signedHash));
       })
-      .catch((error) => {
+      .catch((error: string) => {
         handleSaveMandateError(dispatch, error);
       });
 }
 
-function saveOrRetrieveExistingMandate(mandate) {
+function saveOrRetrieveExistingMandate(mandate: Mandate | string) {
   if (typeof mandate === 'object' && mandate.id) {
     return Promise.resolve(mandate);
   }
-  return saveMandateWithAuthentication(mandate);
+  return saveMandateWithAuthentication(mandate as string);
 }
 
-export function signMandateWithIdCard(mandate) {
-  return (dispatch) => {
+export function signMandateWithIdCard(mandate: Mandate) {
+  return (dispatch: Dispatch<unknown>) => {
     dispatch({ type: SIGN_MANDATE_ID_CARD_START });
-    let mandateId;
-    let mandatePillar;
-    let certificate;
+    let mandateId: string;
+    let mandatePillar: 2 | 3;
+    let certificate: { hex: string };
 
     return hwcrypto
       .getCertificate({ lang: 'en' })
       .then(
-        (cert) => {
+        (cert: { hex: string }) => {
           certificate = cert;
         },
         () => {
@@ -288,28 +309,32 @@ export function signMandateWithIdCard(mandate) {
         },
       )
       .then(() => saveOrRetrieveExistingMandate(mandate))
-      .then(({ id, pillar }) => {
-        mandateId = id;
+      .then(({ id, pillar }: Mandate) => {
+        mandateId = id.toString();
         mandatePillar = pillar;
         return getIdCardSignatureHash(mandateId, certificate.hex);
       })
-      .then((hash) => {
+      .then((hash: string) => {
         dispatch({ type: SIGN_MANDATE_ID_CARD_START_SUCCESS });
         dispatch(signIdCardSignatureHash(hash, certificate, mandateId, mandatePillar));
       })
-      .catch((error) => {
+      .catch((error: string) => {
         dispatch({ type: SIGN_MANDATE_START_ERROR, error });
       });
   };
 }
 
-export function signMandate(mandate, amlChecks) {
-  return (dispatch) => {
+export function signMandate(mandate: Mandate, amlChecks?: unknown) {
+  return (dispatch: Dispatch<unknown>) => {
     const { loginMethod } = getAuthentication();
     const loggedInWithMobileId = loginMethod === 'MOBILE_ID';
     const loggedInWithSmartId = loginMethod === 'SMART_ID';
     const loggedInWithIdCard = loginMethod === 'ID_CARD';
-    return dispatch(amlActions.createAmlChecks(amlChecks))
+    const amlChecksPromise = dispatch(
+      amlActions.createAmlChecks(amlChecks),
+    ) as unknown as Promise<unknown>;
+
+    return amlChecksPromise
       .then(() => {
         if (loggedInWithMobileId) {
           return dispatch(signMandateWithMobileId(mandate));
@@ -322,7 +347,7 @@ export function signMandate(mandate, amlChecks) {
         }
         throw new Error(`Invalid login method: ${loginMethod}`);
       })
-      .catch((error) => {
+      .catch((error: AxiosError) => {
         handleSaveMandateError(dispatch, error);
       });
   };
