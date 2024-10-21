@@ -179,7 +179,7 @@ export function previewMandate(mandate: Mandate, amlChecks?: unknown) {
 
     return amlChecksPromise
       .then(() => saveOrRetrieveExistingMandate(mandate))
-      .then(({ id }: { id: number }) => downloadMandatePreviewWithId(id.toString()))
+      .then(({ id }: Mandate) => downloadMandatePreviewWithId(id.toString()))
       .then((file: Blob) => download(file, 'Tuleva_avaldus_eelvaade.zip', 'application/zip'))
       .catch((error: string) => {
         handleSaveMandateError(dispatch, error);
