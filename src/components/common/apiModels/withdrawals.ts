@@ -50,5 +50,6 @@ export type CreateMandateBatchDto = {
 };
 
 export type MandateBatchDto = {
+  id: number;
   mandates: MandateDto[];
 };
