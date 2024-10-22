@@ -4,7 +4,7 @@ import {
   FundPensionOpeningMandateDetails,
   PartialWithdrawalMandateDetails,
   WithdrawalMandateDetails,
-} from './types';
+} from '../../common/apiModels/withdrawals';
 
 import styles from './Withdrawals.module.scss';
 import Percentage from '../../common/Percentage';

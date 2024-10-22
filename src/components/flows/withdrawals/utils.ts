@@ -1,15 +1,14 @@
 import { Fund, SourceFund } from '../../common/apiModels/index';
 import { getValueSum } from '../../account/AccountStatement/fundSelector';
+import { PensionHoldings, PersonalDetailsStepState, WithdrawalsAmountStepState } from './types';
+
 import {
-  PensionHoldings,
-  PersonalDetailsStepState,
-  WithdrawalsAmountStepState,
-  BankAccountDetails,
   FundPensionOpeningMandateDetails,
   PartialWithdrawalMandateDetails,
   WithdrawalMandateDetails,
-} from './types';
-import { WithdrawalsEligibility } from '../../common/apiModels/withdrawals';
+  BankAccountDetails,
+  WithdrawalsEligibility,
+} from '../../common/apiModels/withdrawals';
 
 export const getBankAccountDetails = (
   personalDetails: PersonalDetailsStepState,

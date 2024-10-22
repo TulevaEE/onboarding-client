@@ -35,7 +35,11 @@ import {
   simpleFetch,
 } from './http';
 import { getAuthentication } from './authenticationManager';
-import { WithdrawalsEligibility } from './apiModels/withdrawals';
+import {
+  CreateMandateBatchDto,
+  MandateBatchDto,
+  WithdrawalsEligibility,
+} from './apiModels/withdrawals';
 
 const API_URI = '/api';
 
@@ -129,12 +133,12 @@ export function getIdCardTokens(): Promise<Token | null> {
   return getTokensWithGrantType('ID_CARD');
 }
 
-export function downloadMandatePreviewWithId(mandateId: string): Promise<Blob> {
-  return downloadFileWithAuthentication(getEndpoint(`/v1/mandates/${mandateId}/file/preview`));
+export function downloadMandatePreviewWithId(entityId: string): Promise<Blob> {
+  return downloadFileWithAuthentication(getEndpoint(`/v1/mandates/${entityId}/file/preview`));
 }
 
-export function downloadMandateWithId(mandateId: string): Promise<Blob> {
-  return downloadFileWithAuthentication(getEndpoint(`/v1/mandates/${mandateId}/file`));
+export function downloadMandateWithId(entityId: string): Promise<Blob> {
+  return downloadFileWithAuthentication(getEndpoint(`/v1/mandates/${entityId}/file`));
 }
 
 export function getUserWithToken(): Promise<User> {
@@ -143,6 +147,12 @@ export function getUserWithToken(): Promise<User> {
 
 export function getWithdrawalsEligibility(): Promise<WithdrawalsEligibility> {
   return getWithAuthentication(getEndpoint('/v1/withdrawals/eligibility'), undefined);
+}
+
+export function createMandateBatch(
+  createMandateBatchDto: CreateMandateBatchDto,
+): Promise<MandateBatchDto> {
+  return postWithAuthentication(getEndpoint('/v1/mandate-batches'), createMandateBatchDto);
 }
 
 export async function getSourceFunds(): Promise<SourceFund[]> {
@@ -173,61 +183,85 @@ export function saveMandateWithAuthentication(mandate: string): Promise<Mandate>
   return postWithAuthentication(getEndpoint('/v1/mandates'), mandate);
 }
 
-export async function getMobileIdSignatureChallengeCode(
-  mandateId: string,
-): Promise<MobileSignatureResponse> {
+export async function getMobileIdSignatureChallengeCode({
+  entityId,
+  type = 'MANDATE',
+}: {
+  entityId: string;
+  type?: 'MANDATE' | 'MANDATE_BATCH';
+}): Promise<MobileSignatureResponse> {
   const { challengeCode } = await putWithAuthentication(
-    getEndpoint(`/v1/mandates/${mandateId}/signature/mobileId`),
+    getEndpoint(`/v1/mandates/${entityId}/signature/mobileId`),
     undefined,
   );
   return challengeCode;
 }
 
-export async function getMobileIdSignatureStatus(
-  mandateId: string,
-): Promise<MobileSignatureStatusResponse> {
+export async function getMobileIdSignatureStatus({
+  entityId,
+  type = 'MANDATE',
+}: {
+  entityId: string;
+  type?: 'MANDATE' | 'MANDATE_BATCH';
+}): Promise<MobileSignatureStatusResponse> {
   return getWithAuthentication(
-    getEndpoint(`/v1/mandates/${mandateId}/signature/mobileId/status`),
+    getEndpoint(`/v1/mandates/${entityId}/signature/mobileId/status`),
     undefined,
   );
 }
 
-export async function getSmartIdSignatureChallengeCode(
-  mandateId: string,
-): Promise<MobileSignatureResponse> {
+export async function getSmartIdSignatureChallengeCode({
+  entityId,
+  type = 'MANDATE',
+}: {
+  entityId: string;
+  type?: 'MANDATE' | 'MANDATE_BATCH';
+}): Promise<MobileSignatureResponse> {
   const { challengeCode } = await putWithAuthentication(
-    getEndpoint(`/v1/mandates/${mandateId}/signature/smartId`),
+    getEndpoint(`/v1/mandates/${entityId}/signature/smartId`),
     undefined,
   );
   return challengeCode;
 }
 
-export async function getSmartIdSignatureStatus(
-  mandateId: string,
-): Promise<MobileSignatureStatusResponse> {
+export async function getSmartIdSignatureStatus({
+  entityId,
+  type = 'MANDATE',
+}: {
+  entityId: string;
+  type?: 'MANDATE' | 'MANDATE_BATCH';
+}): Promise<MobileSignatureStatusResponse> {
   return getWithAuthentication(
-    getEndpoint(`/v1/mandates/${mandateId}/signature/smartId/status`),
+    getEndpoint(`/v1/mandates/${entityId}/signature/smartId/status`),
     undefined,
   );
 }
 
-export async function getIdCardSignatureHash(
-  mandateId: string,
-  certificateHex: string,
-): Promise<IdCardSignatureResponse> {
+export async function getIdCardSignatureHash({
+  entityId,
+  certificateHex,
+}: {
+  entityId: string;
+  certificateHex: string;
+}): Promise<IdCardSignatureResponse> {
   const { hash } = await putWithAuthentication(
-    getEndpoint(`/v1/mandates/${mandateId}/signature/idCard`),
+    getEndpoint(`/v1/mandates/${entityId}/signature/idCard`),
     { clientCertificate: certificateHex },
   );
   return hash;
 }
 
-export async function getIdCardSignatureStatus(
-  mandateId: string,
-  signedHash: string,
-): Promise<string> {
+export async function getIdCardSignatureStatus({
+  entityId,
+  type = 'MANDATE',
+  signedHash,
+}: {
+  entityId: string;
+  type?: 'MANDATE' | 'MANDATE_BATCH';
+  signedHash: string;
+}): Promise<string> {
   const { statusCode } = await putWithAuthentication(
-    getEndpoint(`/v1/mandates/${mandateId}/signature/idCard/status`),
+    getEndpoint(`/v1/mandates/${entityId}/signature/idCard/status`),
     { signedHash },
   );
   return statusCode;

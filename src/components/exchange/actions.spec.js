@@ -230,7 +230,9 @@ describe('Exchange actions', () => {
     expect(dispatch).not.toHaveBeenCalled();
     await signMandate({});
     expect(mockApi.getMobileIdSignatureChallengeCode).toHaveBeenCalledTimes(1);
-    expect(mockApi.getMobileIdSignatureChallengeCode).toHaveBeenCalledWith(mandate.id);
+    expect(mockApi.getMobileIdSignatureChallengeCode).toHaveBeenCalledWith({
+      entityId: mandate.id.toString(),
+    });
     expect(dispatch).not.toHaveBeenCalledWith({
       type: SIGN_MANDATE_START_ERROR,
       controlCode,
@@ -262,7 +264,7 @@ describe('Exchange actions', () => {
 
     expect(dispatch).not.toHaveBeenCalled();
     expect(mockApi.getMobileIdSignatureStatus).toHaveBeenCalledTimes(1);
-    expect(mockApi.getMobileIdSignatureStatus).toHaveBeenCalledWith('id');
+    expect(mockApi.getMobileIdSignatureStatus).toHaveBeenCalledWith({ entityId: 'id' });
     await nextTick();
 
     expect(dispatch).toHaveBeenCalledWith({
@@ -332,7 +334,10 @@ describe('Exchange actions', () => {
     jest.runOnlyPendingTimers();
     expect(dispatch).not.toHaveBeenCalled();
     expect(mockApi.getIdCardSignatureStatus).toHaveBeenCalledTimes(1);
-    expect(mockApi.getIdCardSignatureStatus).toHaveBeenCalledWith('id', 'signedHash');
+    expect(mockApi.getIdCardSignatureStatus).toHaveBeenCalledWith({
+      entityId: 'id',
+      signedHash: 'signedHash',
+    });
     await nextTick();
     expect(dispatch).toHaveBeenCalledWith({
       type: SIGN_MANDATE_SUCCESS,
