@@ -513,6 +513,19 @@ describe('API calls', () => {
         undefined,
       );
     });
+
+    it('retrieves the mobile ID signature challenge code for mandate batch', async () => {
+      const challengeCode = await getMobileIdSignatureChallengeCode({
+        entityId: mandateId,
+        type: 'MANDATE_BATCH',
+      });
+
+      expect(challengeCode).toEqual(mockResponse.challengeCode);
+      expect(mockHttp.putWithAuthentication).toHaveBeenCalledWith(
+        expect.stringContaining(`/v1/mandate-batches/${mandateId}/signature/mobile-id`),
+        undefined,
+      );
+    });
   });
 
   describe('getMobileIdSignatureStatus', () => {
@@ -536,6 +549,19 @@ describe('API calls', () => {
         undefined,
       );
     });
+
+    it('retrieves the mobile ID signature status with the correct parameters for mandate batch', async () => {
+      const statusResponse = await getMobileIdSignatureStatus({
+        entityId: mandateId,
+        type: 'MANDATE_BATCH',
+      });
+
+      expect(statusResponse).toEqual(mockStatusResponse);
+      expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith(
+        expect.stringContaining(`/v1/mandate-batches/${mandateId}/signature/mobile-id/status`),
+        undefined,
+      );
+    });
   });
 
   describe('getSmartIdSignatureChallengeCode', () => {
@@ -556,6 +582,19 @@ describe('API calls', () => {
         undefined,
       );
     });
+
+    it('retrieves the smart ID signature challenge code correctly for mandate batch', async () => {
+      const challengeCode = await getSmartIdSignatureChallengeCode({
+        entityId: mandateId,
+        type: 'MANDATE_BATCH',
+      });
+
+      expect(challengeCode).toEqual(mockResponse.challengeCode);
+      expect(mockHttp.putWithAuthentication).toHaveBeenCalledWith(
+        expect.stringContaining(`/v1/mandate-batches/${mandateId}/signature/smart-id`),
+        undefined,
+      );
+    });
   });
 
   describe('getSmartIdSignatureStatus', () => {
@@ -573,6 +612,19 @@ describe('API calls', () => {
       expect(statusResponse).toEqual(mockStatusResponse);
       expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith(
         expect.stringContaining(`/v1/mandates/${mandateId}/signature/smartId/status`),
+        undefined,
+      );
+    });
+
+    it('retrieves the smart ID signature status correctly for mandate batch', async () => {
+      const statusResponse = await getSmartIdSignatureStatus({
+        entityId: mandateId,
+        type: 'MANDATE_BATCH',
+      });
+
+      expect(statusResponse).toEqual(mockStatusResponse);
+      expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith(
+        expect.stringContaining(`/v1/mandate-batches/${mandateId}/signature/smart-id/status`),
         undefined,
       );
     });
@@ -600,6 +652,20 @@ describe('API calls', () => {
         { clientCertificate: certificateHex },
       );
     });
+
+    it('retrieves the ID card signature hash correctly for mandate batch', async () => {
+      const hash = await getIdCardSignatureHash({
+        entityId: mandateId,
+        certificateHex,
+        type: 'MANDATE_BATCH',
+      });
+
+      expect(hash).toEqual(mockResponse.hash);
+      expect(mockHttp.putWithAuthentication).toHaveBeenCalledWith(
+        expect.stringContaining(`/v1/mandate-batches/${mandateId}/signature/id-card`),
+        { clientCertificate: certificateHex },
+      );
+    });
   });
 
   describe('getIdCardSignatureStatus', () => {
@@ -618,6 +684,20 @@ describe('API calls', () => {
       expect(statusCode).toEqual(mockResponse.statusCode);
       expect(mockHttp.putWithAuthentication).toHaveBeenCalledWith(
         expect.stringContaining(`/v1/mandates/${mandateId}/signature/idCard/status`),
+        { signedHash },
+      );
+    });
+
+    it('retrieves the ID card signature status correctly for mandate batch', async () => {
+      const statusCode = await getIdCardSignatureStatus({
+        entityId: mandateId,
+        signedHash,
+        type: 'MANDATE_BATCH',
+      });
+
+      expect(statusCode).toEqual(mockResponse.statusCode);
+      expect(mockHttp.putWithAuthentication).toHaveBeenCalledWith(
+        expect.stringContaining(`/v1/mandate-batches/${mandateId}/signature/id-card/status`),
         { signedHash },
       );
     });
