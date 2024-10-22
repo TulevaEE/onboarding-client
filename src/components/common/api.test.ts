@@ -505,7 +505,7 @@ describe('API calls', () => {
     });
 
     it('retrieves the mobile ID signature challenge code', async () => {
-      const challengeCode = await getMobileIdSignatureChallengeCode(mandateId);
+      const challengeCode = await getMobileIdSignatureChallengeCode({ entityId: mandateId });
 
       expect(challengeCode).toEqual(mockResponse.challengeCode);
       expect(mockHttp.putWithAuthentication).toHaveBeenCalledWith(
@@ -528,7 +528,7 @@ describe('API calls', () => {
     });
 
     it('retrieves the mobile ID signature status with the correct parameters', async () => {
-      const statusResponse = await getMobileIdSignatureStatus(mandateId);
+      const statusResponse = await getMobileIdSignatureStatus({ entityId: mandateId });
 
       expect(statusResponse).toEqual(mockStatusResponse);
       expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith(
@@ -548,7 +548,7 @@ describe('API calls', () => {
     });
 
     it('retrieves the smart ID signature challenge code correctly', async () => {
-      const challengeCode = await getSmartIdSignatureChallengeCode(mandateId);
+      const challengeCode = await getSmartIdSignatureChallengeCode({ entityId: mandateId });
 
       expect(challengeCode).toEqual(mockResponse.challengeCode);
       expect(mockHttp.putWithAuthentication).toHaveBeenCalledWith(
@@ -568,7 +568,7 @@ describe('API calls', () => {
     });
 
     it('retrieves the smart ID signature status correctly', async () => {
-      const statusResponse = await getSmartIdSignatureStatus(mandateId);
+      const statusResponse = await getSmartIdSignatureStatus({ entityId: mandateId });
 
       expect(statusResponse).toEqual(mockStatusResponse);
       expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith(
@@ -589,7 +589,10 @@ describe('API calls', () => {
     });
 
     it('retrieves the ID card signature hash correctly', async () => {
-      const hash = await getIdCardSignatureHash(mandateId, certificateHex);
+      const hash = await getIdCardSignatureHash({
+        entityId: mandateId,
+        certificateHex,
+      });
 
       expect(hash).toEqual(mockResponse.hash);
       expect(mockHttp.putWithAuthentication).toHaveBeenCalledWith(
@@ -610,7 +613,7 @@ describe('API calls', () => {
     });
 
     it('retrieves the ID card signature status correctly', async () => {
-      const statusCode = await getIdCardSignatureStatus(mandateId, signedHash);
+      const statusCode = await getIdCardSignatureStatus({ entityId: mandateId, signedHash });
 
       expect(statusCode).toEqual(mockResponse.statusCode);
       expect(mockHttp.putWithAuthentication).toHaveBeenCalledWith(

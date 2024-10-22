@@ -112,7 +112,7 @@ function pollForMobileIdSignature(mandateId: string, pillar: 2 | 3) {
       clearTimeout(timeout);
     }
     timeout = window.setTimeout(() => {
-      getMobileIdSignatureStatus(mandateId)
+      getMobileIdSignatureStatus({ entityId: mandateId })
         .then((status) => {
           if (status.statusCode === SIGNING_IN_PROGRESS_STATUS) {
             dispatch({
@@ -139,7 +139,7 @@ function pollForSmartIdSignature(mandateId: string, pillar: 2 | 3) {
       clearTimeout(timeout);
     }
     timeout = window.setTimeout(() => {
-      getSmartIdSignatureStatus(mandateId)
+      getSmartIdSignatureStatus({ entityId: mandateId })
         .then((status) => {
           if (status.statusCode === SIGNING_IN_PROGRESS_STATUS) {
             dispatch({
@@ -197,7 +197,7 @@ export function signMandateWithMobileId(mandate: Mandate) {
       .then(({ id, pillar }) => {
         mandateId = id.toString();
         mandatePillar = pillar;
-        return getMobileIdSignatureChallengeCode(mandateId);
+        return getMobileIdSignatureChallengeCode({ entityId: mandateId });
       })
       .then((controlCode) => {
         dispatch({ type: SIGN_MANDATE_MOBILE_ID_START_SUCCESS, controlCode });
@@ -218,7 +218,7 @@ export function signMandateWithSmartId(mandate: Mandate) {
       .then(({ id, pillar }) => {
         mandateId = id.toString();
         mandatePillar = pillar;
-        return getSmartIdSignatureChallengeCode(mandateId);
+        return getSmartIdSignatureChallengeCode({ entityId: mandateId });
       })
       .then((controlCode) => {
         dispatch({ type: SIGN_MANDATE_SMART_ID_START_SUCCESS, controlCode });
@@ -236,7 +236,7 @@ function pollForIdCardSignature(mandateId: string, pillar: 2 | 3, signedHash: st
       clearTimeout(timeout);
     }
     timeout = window.setTimeout(() => {
-      getIdCardSignatureStatus(mandateId, signedHash)
+      getIdCardSignatureStatus({ entityId: mandateId, signedHash })
         .then((statusCode) => {
           if (statusCode === SIGNATURE_DONE_STATUS) {
             dispatch({
@@ -312,7 +312,7 @@ export function signMandateWithIdCard(mandate: Mandate) {
       .then(({ id, pillar }: Mandate) => {
         mandateId = id.toString();
         mandatePillar = pillar;
-        return getIdCardSignatureHash(mandateId, certificate.hex);
+        return getIdCardSignatureHash({ entityId: mandateId, certificateHex: certificate.hex });
       })
       .then((hash: string) => {
         dispatch({ type: SIGN_MANDATE_ID_CARD_START_SUCCESS });

@@ -2,6 +2,7 @@ import { useMutation, UseMutationResult, useQuery, UseQueryResult } from 'react-
 
 import {
   createApplicationCancellation,
+  createMandateBatch,
   getCapitalEvents,
   getContributions,
   getFunds,
@@ -25,7 +26,11 @@ import {
   User,
   UserConversion,
 } from './apiModels';
-import { WithdrawalsEligibility } from './apiModels/withdrawals';
+import {
+  CreateMandateBatchDto,
+  MandateBatchDto,
+  WithdrawalsEligibility,
+} from './apiModels/withdrawals';
 
 export function usePendingApplications(): UseQueryResult<Application[]> {
   return useQuery('pendingApplications', () => getPendingApplications());
@@ -83,4 +88,13 @@ export function useConversion(): UseQueryResult<UserConversion> {
 
 export function useSourceFunds(): UseQueryResult<SourceFund[]> {
   return useQuery('sourceFunds', () => getSourceFunds());
+}
+
+export function useCreateMandateBatch(): UseMutationResult<
+  MandateBatchDto,
+  unknown,
+  CreateMandateBatchDto,
+  unknown
+> {
+  return useMutation((dto) => createMandateBatch(dto));
 }
