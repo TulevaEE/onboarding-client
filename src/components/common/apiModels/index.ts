@@ -262,7 +262,7 @@ export interface MobileSignatureResponse {
 }
 
 export interface MobileSignatureStatusResponse {
-  statusCode: string;
+  statusCode: 'SIGNATURE' | 'OUTSTANDING_TRANSACTION';
   challengeCode: string;
 }
 
