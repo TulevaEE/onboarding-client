@@ -253,15 +253,16 @@ export async function getIdCardSignatureHash({
   entityId: string;
   certificateHex: string;
   type?: 'MANDATE' | 'MANDATE_BATCH';
-}): Promise<IdCardSignatureResponse> {
+}) {
   const path =
     type === 'MANDATE'
       ? `/v1/mandates/${entityId}/signature/idCard`
       : `/v1/mandate-batches/${entityId}/signature/id-card`;
 
-  const { hash } = await putWithAuthentication(getEndpoint(path), {
+  const { hash } = await putWithAuthentication<IdCardSignatureResponse>(getEndpoint(path), {
     clientCertificate: certificateHex,
   });
+
   return hash;
 }
 

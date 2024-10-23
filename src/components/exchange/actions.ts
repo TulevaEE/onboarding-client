@@ -1,5 +1,6 @@
 import download from 'downloadjs';
-import hwcrypto from 'hwcrypto-js';
+// TODO migrate to web-eid-library
+import hwcrypto, { Certificate } from 'hwcrypto-js';
 
 import { Dispatch } from 'react';
 import { AxiosError } from 'axios';
@@ -256,8 +257,8 @@ function pollForIdCardSignature(mandateId: string, pillar: 2 | 3, signedHash: st
 }
 
 function signIdCardSignatureHash(
-  hash: unknown,
-  certificate: unknown,
+  hash: string,
+  certificate: Certificate,
   mandateId: string,
   pillar: 2 | 3,
 ) {
@@ -273,6 +274,8 @@ function signIdCardSignatureHash(
           dispatch({ type: SIGN_MANDATE_ERROR, error });
         },
       )
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       .then((signedHash: string) => {
         dispatch(pollForIdCardSignature(mandateId, pillar, signedHash));
       })
@@ -293,12 +296,12 @@ export function signMandateWithIdCard(mandate: Mandate) {
     dispatch({ type: SIGN_MANDATE_ID_CARD_START });
     let mandateId: string;
     let mandatePillar: 2 | 3;
-    let certificate: { hex: string };
+    let certificate: Certificate;
 
     return hwcrypto
       .getCertificate({ lang: 'en' })
       .then(
-        (cert: { hex: string }) => {
+        (cert) => {
           certificate = cert;
         },
         () => {
