@@ -42,41 +42,44 @@ export async function get(url: string, params = {}, headers = {}): Promise<Axios
     };
   }
 }
-export async function getWithAuthentication(
+export async function getWithAuthentication<TResponse = any>(
   url: string,
   params = {},
   axiosConfig = {},
-): Promise<any> {
+) {
   const axiosInstance = createAxiosInstance();
-  const response = await axiosInstance.get(url, { params, ...axiosConfig });
+  const response = await axiosInstance.get<TResponse>(url, { params, ...axiosConfig });
   return response.data;
 }
 
-export async function postWithAuthentication(
+export async function postWithAuthentication<TResponse = any>(
   url: string,
   data = {},
   axiosConfig = {},
 ): Promise<any> {
   const axiosInstance = createAxiosInstance();
-  return axiosInstance.post(url, data, axiosConfig).then((response) => response.data);
+  const response = await axiosInstance.post<TResponse>(url, data, axiosConfig);
+  return response.data;
 }
 
-export async function putWithAuthentication(
+export async function putWithAuthentication<TResponse = any>(
   url: string,
   data = {},
   axiosConfig = {},
 ): Promise<any> {
   const axiosInstance = createAxiosInstance();
-  return axiosInstance.put(url, data, axiosConfig).then((response) => response.data);
+  const response = await axiosInstance.put<TResponse>(url, data, axiosConfig);
+  return response.data;
 }
 
-export async function patchWithAuthentication(
+export async function patchWithAuthentication<TResponse = any>(
   url: string,
   data = {},
   axiosConfig = {},
 ): Promise<any> {
   const axiosInstance = createAxiosInstance();
-  return axiosInstance.patch(url, data, axiosConfig).then((response) => response.data);
+  const response = await axiosInstance.patch<TResponse>(url, data, axiosConfig);
+  return response.data;
 }
 
 export async function downloadFileWithAuthentication(url: string, headers = {}): Promise<Blob> {
