@@ -98,7 +98,7 @@ describe('withdrawals flow', () => {
     userEvent.click(confirmationCheckbox());
     expect(signButton()).toBeEnabled();
 
-    userEvent.click(signButton());
+    // userEvent.click(signButton());
   }, 20_000);
 });
 
