@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useWithdrawalsContext } from './hooks';
 import {
   FundPensionOpeningMandateDetails,
@@ -14,20 +14,46 @@ import {
   getTotalAmountAvailableToWithdraw,
 } from './utils';
 import { formatAmountForCurrency } from '../../common/utils';
-import { useFunds, useMandateDeadlines } from '../../common/apiHooks';
+import { useCreateMandateBatch, useFunds, useMandateDeadlines } from '../../common/apiHooks';
 import { formatDate, formatDateTime } from '../../common/dateFormatter';
+import { useMandateBatchSigning } from './signing/useMandateBatchSigning';
+import { AuthenticationLoader } from '../../common';
 
 export const ReviewAndConfirmStep = () => {
+  const {
+    startSigningMandateBatch,
+    cancelSigning,
+    signed,
+    error: signingError,
+    loading: signingInProgress,
+    challengeCode,
+  } = useMandateBatchSigning();
+
+  const [batchCreationLoading, setBatchCreationLoading] = useState(false);
+  const [batchCreationError, setBatchCreationError] = useState<Error | null>(null); // TODO better error handling
+
   const { data: funds } = useFunds();
 
-  const { mandatesToCreate, personalDetails, allFundNavsPresent, navigateToPreviousStep } =
-    useWithdrawalsContext();
+  const {
+    mandatesToCreate,
+    personalDetails,
+    allFundNavsPresent,
+    navigateToPreviousStep,
+    navigateToNextStep,
+  } = useWithdrawalsContext();
 
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const { mutateAsync: createMandateBatch } = useCreateMandateBatch();
 
   if (mandatesToCreate === null || !funds) {
     return null;
   }
+
+  useEffect(() => {
+    if (signed) {
+      navigateToNextStep();
+    }
+  }, [signed]);
 
   const fundIsinToFundNameMap: Record<string, string> = useMemo(
     () =>
@@ -41,8 +67,30 @@ export const ReviewAndConfirmStep = () => {
     [funds],
   );
 
+  const createMandateBatchAndStartSigning = async () => {
+    setBatchCreationLoading(true);
+    try {
+      const mandateBatch = await createMandateBatch({
+        mandates: mandatesToCreate.map((details) => ({ details })),
+      });
+      // no await to
+      startSigningMandateBatch(mandateBatch);
+    } catch (e) {
+      setBatchCreationError(e as Error);
+    }
+
+    setBatchCreationLoading(false);
+  };
+
   return (
     <div>
+      {(signingError || batchCreationError) && (
+        <div className="pt-2 pb-2">Avalduse esitamisel esines viga.</div>
+      )}
+
+      {(signingInProgress || challengeCode) && (
+        <AuthenticationLoader controlCode={challengeCode} onCancel={cancelSigning} overlayed />
+      )}
       <div className="pt-5 pb-5 pl-2 pr-2">
         Esitan järgmised avaldused ja olen teadlik nende tingimustest:
       </div>
@@ -92,14 +140,19 @@ export const ReviewAndConfirmStep = () => {
 
       <div className="d-flex justify-content-between pt-5">
         {/* TODO paddings */}
-        <button type="button" className="btn btn-light" onClick={() => navigateToPreviousStep()}>
+        <button
+          type="button"
+          className="btn btn-light"
+          disabled={signingInProgress || batchCreationLoading}
+          onClick={() => navigateToPreviousStep()}
+        >
           Tagasi
         </button>
         <button
           type="button"
           className="btn btn-primary"
-          onClick={() => {}}
-          disabled={!agreedToTerms}
+          onClick={() => createMandateBatchAndStartSigning()}
+          disabled={!agreedToTerms || signingInProgress || batchCreationLoading}
         >
           Allkirjastan {mandatesToCreate.length} avaldust
         </button>

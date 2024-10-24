@@ -1,3 +1,4 @@
+import { DoneStep } from './DoneStep';
 import { PersonalDetailsStep } from './PersonalDetailsStep';
 import { ReviewAndConfirmStep } from './ReviewAndConfirmStep';
 import { WithdrawalStep } from './types';
@@ -19,4 +20,5 @@ export const WITHDRAWAL_STEPS: WithdrawalStep[] = [
     titleId: 'withdrawals.content.confirmApplication',
     component: ReviewAndConfirmStep,
   },
+  { type: 'DONE', titleId: 'withdrawals.content.applicationSubmitted', component: DoneStep },
 ];
