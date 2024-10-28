@@ -14,7 +14,7 @@ import {
   fundsBackend,
   pensionAccountStatementBackend,
   returnsBackend,
-  smartIdSigningBackend,
+  smartIdMandateSigningBackend,
   transactionsBackend,
   userBackend,
   userCapitalBackend,
@@ -83,7 +83,7 @@ describe('3rd pillar flow', () => {
       address: { countryCode: 'EE' },
     };
     mandatesBackend(expectedRequest);
-    smartIdSigningBackend(server);
+    smartIdMandateSigningBackend(server);
 
     userEvent.click(sign());
 
@@ -133,7 +133,7 @@ describe('3rd pillar flow', () => {
       address: { countryCode: 'EE' },
     };
     mandatesBackend(expectedRequest);
-    smartIdSigningBackend(server);
+    smartIdMandateSigningBackend(server);
 
     userEvent.click(sign());
     expect(await paymentStepHeading()).toBeInTheDocument();

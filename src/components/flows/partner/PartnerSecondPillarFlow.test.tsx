@@ -15,7 +15,7 @@ import {
   partnerAuthenticationBackend,
   pensionAccountStatementBackend,
   returnsBackend,
-  smartIdSigningBackend,
+  smartIdMandateSigningBackend,
   userBackend,
   userCapitalBackend,
   userConversionBackend,
@@ -104,7 +104,7 @@ describe('partner 2nd pillar flow', () => {
       address: { countryCode: 'EE' },
     };
     mandatesBackend(expectedRequest);
-    smartIdSigningBackend(server);
+    smartIdMandateSigningBackend(server);
 
     userEvent.click(signButton());
 
@@ -147,7 +147,7 @@ describe('partner 2nd pillar flow', () => {
       address: { countryCode: 'EE' },
     };
     mandatesBackend(expectedRequest);
-    smartIdSigningBackend(server);
+    smartIdMandateSigningBackend(server);
 
     userEvent.click(signButton());
 
@@ -211,7 +211,7 @@ describe('partner 2nd pillar flow', () => {
       address: { countryCode: 'EE' },
     };
     mandatesBackend(expectedRequest);
-    smartIdSigningBackend(server);
+    smartIdMandateSigningBackend(server);
 
     userEvent.click(signButton());
 
@@ -258,7 +258,7 @@ describe('partner 2nd pillar flow', () => {
       address: { countryCode: 'EE' },
     };
     mandatesBackend(expectedRequest);
-    smartIdSigningBackend(server);
+    smartIdMandateSigningBackend(server);
 
     userEvent.click(signButton());
 

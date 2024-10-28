@@ -10,9 +10,11 @@ import {
   amlChecksBackend,
   applicationsBackend,
   fundsBackend,
+  mandateBatchBackend,
   mandateDeadlinesBackend,
   pensionAccountStatementBackend,
   returnsBackend,
+  smartIdMandateBatchSigningBackend,
   transactionsBackend,
   userBackend,
   userConversionBackend,
@@ -46,6 +48,8 @@ beforeEach(async () => {
   applicationsBackend(server);
   returnsBackend(server);
   withdrawalsEligibilityBackend(server);
+  smartIdMandateBatchSigningBackend(server);
+  mandateBatchBackend(server);
   mandateDeadlinesBackend(server);
 
   initializeComponent();

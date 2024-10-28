@@ -1,11 +1,14 @@
-import { DefaultRequestMultipartBody, rest } from 'msw';
+import { DefaultRequestMultipartBody, rest, RestRequest } from 'msw';
 import { SetupServerApi } from 'msw/node';
 import queryString from 'qs';
 import moment from 'moment/moment';
 import { CapitalType, FundBalance, FundStatus } from '../components/common/apiModels';
 import { anAuthenticationManager } from '../components/common/authenticationManagerFixture';
 import { ReturnsResponse } from '../components/account/ComparisonCalculator/api';
-import { WithdrawalsEligibility } from '../components/common/apiModels/withdrawals';
+import {
+  CreateMandateBatchDto,
+  WithdrawalsEligibility,
+} from '../components/common/apiModels/withdrawals';
 
 export function cancellationBackend(server: SetupServerApi): {
   cancellationCreated: boolean;
@@ -54,7 +57,27 @@ export function mandatePreviewBackend(server: SetupServerApi): {
   return backend;
 }
 
-export function smartIdSigningBackend(
+export const mandateBatchBackend = (server: SetupServerApi): void => {
+  server.use(
+    rest.post(
+      'http://localhost/v1/mandate-batches',
+      async (req: RestRequest<CreateMandateBatchDto>, res, ctx) => {
+        if (req.headers.get('Authorization') !== 'Bearer an access token') {
+          return res(ctx.status(401), ctx.json({ error: 'not authenticated correctly' }));
+        }
+        return res(
+          ctx.status(200),
+          ctx.json({
+            id: 1,
+            mandates: req.body.mandates.map((mandate, idx) => ({ ...mandate, id: idx + 1 })),
+          }),
+        );
+      },
+    ),
+  );
+};
+
+export function smartIdMandateSigningBackend(
   server: SetupServerApi,
   options: { challengeCode?: string } = {},
 ): {
@@ -72,6 +95,33 @@ export function smartIdSigningBackend(
       return res(ctx.status(200), ctx.json({ challengeCode: options.challengeCode || '9876' }));
     }),
     rest.get('http://localhost/v1/mandates/1/signature/smartId/status', (req, res, ctx) => {
+      if (req.headers.get('Authorization') !== 'Bearer an access token') {
+        return res(ctx.status(401), ctx.json({ error: 'not authenticated correctly' }));
+      }
+      return res(ctx.status(200), ctx.json({ statusCode: 'SIGNATURE' }));
+    }),
+  );
+  return backend;
+}
+
+export function smartIdMandateBatchSigningBackend(
+  server: SetupServerApi,
+  options: { challengeCode?: string } = {},
+): {
+  signed: boolean;
+} {
+  const backend = {
+    signed: false,
+  };
+  server.use(
+    rest.put('http://localhost/v1/mandate-batches/1/signature/smart-id', (req, res, ctx) => {
+      if (req.headers.get('Authorization') !== 'Bearer an access token') {
+        return res(ctx.status(401), ctx.json({ error: 'not authenticated correctly' }));
+      }
+      backend.signed = true;
+      return res(ctx.status(200), ctx.json({ challengeCode: options.challengeCode || '9876' }));
+    }),
+    rest.get('http://localhost/v1/mandate-batches/1/signature/smart-id/status', (req, res, ctx) => {
       if (req.headers.get('Authorization') !== 'Bearer an access token') {
         return res(ctx.status(401), ctx.json({ error: 'not authenticated correctly' }));
       }

@@ -9,9 +9,8 @@ export type WithdrawalMandateDetails =
   | PartialWithdrawalMandateDetails;
 
 export type FundPensionOpeningMandateDetails = {
-  type: 'FUND_PENSION_OPENING';
+  mandateType: 'FUND_PENSION_OPENING';
   pillar: 'SECOND' | 'THIRD';
-  // TODO remove from backend frequency: 'MONTHLY' |
   duration: {
     durationYears: number;
     recommendedDuration: boolean;
@@ -20,7 +19,7 @@ export type FundPensionOpeningMandateDetails = {
 };
 
 export type PartialWithdrawalMandateDetails = {
-  type: 'PARTIAL_WITHDRAWAL';
+  mandateType: 'PARTIAL_WITHDRAWAL';
   pillar: 'SECOND' | 'THIRD';
   bankAccountDetails: BankAccountDetails;
   fundWithdrawalAmounts: {
@@ -32,7 +31,6 @@ export type PartialWithdrawalMandateDetails = {
 
 export type BankAccountDetails = {
   type: 'ESTONIAN';
-  // TODO remove? bank: 'COOP' | 'SEB' | 'SWED'
   accountIban: string;
 };
 

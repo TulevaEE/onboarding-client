@@ -15,7 +15,7 @@ import {
   pensionAccountStatementBackend,
   returnsBackend,
   secondPillarPaymentRateBackend,
-  smartIdSigningBackend,
+  smartIdMandateSigningBackend,
   userBackend,
   userConversionBackend,
 } from '../../../test/backend';
@@ -56,7 +56,7 @@ describe('When a user is changing their 2nd pillar payment rate', () => {
     applicationsBackend(server);
     returnsBackend(server);
     secondPillarPaymentRateBackend(server);
-    smartIdSigningBackend(server);
+    smartIdMandateSigningBackend(server);
     mandateDeadlinesBackend(server);
 
     initializeComponent();

@@ -13,7 +13,7 @@ import { initializeConfiguration } from '../../config/config';
 import { createDefaultStore, login, renderWrapped } from '../../../test/utils';
 import {
   cancellationBackend,
-  smartIdSigningBackend,
+  smartIdMandateSigningBackend,
   mandatePreviewBackend,
   mandateDownloadBackend,
 } from '../../../test/backend';
@@ -64,7 +64,7 @@ describe('When a user is cancelling an application', () => {
 
   test('a cancellation mandate can be created and signed', async () => {
     const cancellation = cancellationBackend(server);
-    smartIdSigningBackend(server);
+    smartIdMandateSigningBackend(server);
     expect(await screen.findByText('II pillar early withdrawal application')).toBeInTheDocument();
 
     expect(cancellation.cancellationCreated).toBe(false);
@@ -95,7 +95,7 @@ describe('When a user is cancelling an application', () => {
 
   test('a success screen is shown', async () => {
     cancellationBackend(server);
-    smartIdSigningBackend(server);
+    smartIdMandateSigningBackend(server);
     expect(await screen.findByText('II pillar early withdrawal application')).toBeInTheDocument();
 
     userEvent.click(screen.getByText('Sign and send mandate'));
@@ -112,7 +112,7 @@ describe('When a user is cancelling an application', () => {
 
   test('the success screen lets you download the signed mandate', async () => {
     cancellationBackend(server);
-    smartIdSigningBackend(server);
+    smartIdMandateSigningBackend(server);
     mandateDownloadBackend(server);
     expect(await screen.findByText('II pillar early withdrawal application')).toBeInTheDocument();
 
