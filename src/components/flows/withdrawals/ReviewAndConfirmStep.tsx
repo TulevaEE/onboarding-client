@@ -84,10 +84,6 @@ export const ReviewAndConfirmStep = () => {
 
   return (
     <div>
-      {(signingError || batchCreationError) && (
-        <div className="pt-2 pb-2">Avalduse esitamisel esines viga.</div>
-      )}
-
       {(signingInProgress || challengeCode) && (
         <AuthenticationLoader controlCode={challengeCode} onCancel={cancelSigning} overlayed />
       )}
@@ -103,7 +99,7 @@ export const ReviewAndConfirmStep = () => {
 
       {mandatesToCreate.map((mandate, idx) => (
         <MandatePreview
-          key={`${mandate.type}_${mandate.pillar}`}
+          key={`${mandate.mandateType}_${mandate.pillar}`}
           mandate={mandate}
           index={idx}
           fundIsinToFundNameMap={fundIsinToFundNameMap}
@@ -137,6 +133,10 @@ export const ReviewAndConfirmStep = () => {
           </label>
         </div>
       </div>
+
+      {(signingError || batchCreationError) && (
+        <div className="mt-3 alert alert-danger pt-2 pb-2">Avalduse esitamisel esines viga.</div>
+      )}
 
       <div className="d-flex justify-content-between pt-5">
         {/* TODO paddings */}
@@ -173,13 +173,15 @@ const MandatePreview = ({
   <div className="card p-4 mb-4">
     <div>
       <h3 className={styles.mandateSubheading}>Avaldus #{index + 1}</h3>
-      <h2 className={styles.mandateHeading}>{TITLE_MAPPING[mandate.type][mandate.pillar]}</h2>
+      <h2 className={styles.mandateHeading}>
+        {TITLE_MAPPING[mandate.mandateType][mandate.pillar]}
+      </h2>
     </div>
     <div className="mt-2">
-      {mandate.type === 'FUND_PENSION_OPENING' && (
+      {mandate.mandateType === 'FUND_PENSION_OPENING' && (
         <FundPensionMandateDescription mandate={mandate} />
       )}
-      {mandate.type === 'PARTIAL_WITHDRAWAL' && (
+      {mandate.mandateType === 'PARTIAL_WITHDRAWAL' && (
         <PartialWithdrawalMandateDescription
           mandate={mandate}
           fundIsinToFundNameMap={fundIsinToFundNameMap}
@@ -338,7 +340,7 @@ const WithdrawalPaymentDate = ({ mandate }: { mandate: WithdrawalMandateDetails 
     return null; // TODO
   }
 
-  if (mandate.pillar === 'THIRD' && mandate.type === 'PARTIAL_WITHDRAWAL') {
+  if (mandate.pillar === 'THIRD' && mandate.mandateType === 'PARTIAL_WITHDRAWAL') {
     return <>nelja tööpäeva jooksul</>;
   }
 
@@ -351,7 +353,7 @@ const WithdrawalPaymentDate = ({ mandate }: { mandate: WithdrawalMandateDetails 
 };
 
 const TITLE_MAPPING: Record<
-  WithdrawalMandateDetails['type'],
+  WithdrawalMandateDetails['mandateType'],
   Record<'SECOND' | 'THIRD', string> // TODO TranslationKey
 > = {
   FUND_PENSION_OPENING: {

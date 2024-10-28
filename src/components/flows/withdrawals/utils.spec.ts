@@ -354,10 +354,10 @@ describe('getMandatesToCreate', () => {
     expect(mandates?.length).toBe(4);
 
     const secondPillarWithdrawalMandate = mandates?.find(
-      (mandate) => mandate.pillar === 'SECOND' && mandate.type === 'PARTIAL_WITHDRAWAL',
+      (mandate) => mandate.pillar === 'SECOND' && mandate.mandateType === 'PARTIAL_WITHDRAWAL',
     );
     const thirdPillarWithdrawalMandate = mandates?.find(
-      (mandate) => mandate.pillar === 'THIRD' && mandate.type === 'PARTIAL_WITHDRAWAL',
+      (mandate) => mandate.pillar === 'THIRD' && mandate.mandateType === 'PARTIAL_WITHDRAWAL',
     );
 
     expect(secondPillarWithdrawalMandate).toStrictEqual({
@@ -393,10 +393,10 @@ describe('getMandatesToCreate', () => {
     });
 
     const secondPillarFundPensionMandate = mandates?.find(
-      (mandate) => mandate.pillar === 'SECOND' && mandate.type === 'FUND_PENSION_OPENING',
+      (mandate) => mandate.pillar === 'SECOND' && mandate.mandateType === 'FUND_PENSION_OPENING',
     );
     const thirdPillarFundPensionMandate = mandates?.find(
-      (mandate) => mandate.pillar === 'THIRD' && mandate.type === 'FUND_PENSION_OPENING',
+      (mandate) => mandate.pillar === 'THIRD' && mandate.mandateType === 'FUND_PENSION_OPENING',
     );
 
     expect(secondPillarFundPensionMandate).toStrictEqual({

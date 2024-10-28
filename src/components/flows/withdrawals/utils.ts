@@ -17,6 +17,7 @@ export const getBankAccountDetails = (
 
   ({
     type: 'ESTONIAN',
+    // bank: 'SWED', // TODO
     accountIban: personalDetails.bankAccountIban as string,
   });
 
@@ -58,7 +59,7 @@ export const getPartialWithdrawalMandatesToCreate = (
       getValueSum([fund]) / fundIsinToFundNavMap[fund.isin]; // TODO handle null NAV better
 
     return {
-      type: 'PARTIAL_WITHDRAWAL',
+      mandateType: 'PARTIAL_WITHDRAWAL',
       pillar,
       bankAccountDetails,
       fundWithdrawalAmounts: sourceFunds.map((fund) => ({
@@ -101,7 +102,7 @@ export const getFundPensionMandatesToCreate = (
   const bankAccountDetails = getBankAccountDetails(personalDetails);
 
   const secondPillarWithdrawal: FundPensionOpeningMandateDetails = {
-    type: 'FUND_PENSION_OPENING',
+    mandateType: 'FUND_PENSION_OPENING',
     pillar: 'SECOND',
     bankAccountDetails,
     duration: {
@@ -111,7 +112,7 @@ export const getFundPensionMandatesToCreate = (
   };
 
   const thirdPillarWithdrawal: FundPensionOpeningMandateDetails = {
-    type: 'FUND_PENSION_OPENING',
+    mandateType: 'FUND_PENSION_OPENING',
     pillar: 'THIRD',
     bankAccountDetails,
     duration: {
