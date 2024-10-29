@@ -4,7 +4,7 @@ import {
   getSmartIdSignatureChallengeCode,
   getSmartIdSignatureStatus,
 } from '../../../common/api';
-import { MobileSignatureResponse, MobileSignatureStatusResponse } from '../../../common/apiModels';
+import { MobileSignatureStatusResponse } from '../../../common/apiModels';
 import { MandateBatchDto } from '../../../common/apiModels/withdrawals';
 
 export const startSigningWithChallengeCode = async (

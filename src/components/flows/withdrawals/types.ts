@@ -37,6 +37,7 @@ export type PersonalDetailsStepState = {
 export type WithdrawalStep = {
   type: 'WITHDRAWAL_SIZE' | 'YOUR_INFORMATION' | 'REVIEW_AND_CONFIRM' | 'DONE';
   titleId: TranslationKey;
+  hidden?: boolean;
   component: () => JSX.Element | null;
 };
 
