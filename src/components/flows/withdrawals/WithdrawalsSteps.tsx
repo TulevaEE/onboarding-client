@@ -1,4 +1,5 @@
 import { FormattedMessage } from 'react-intl';
+import { Fragment } from 'react';
 import { TranslationKey } from '../../translations';
 import { useWithdrawalsContext } from './hooks';
 import { WITHDRAWAL_STEPS } from './constants';
@@ -15,17 +16,12 @@ export const WithdrawalsSteps = () => {
       {WITHDRAWAL_STEPS.map(
         (step, idx) =>
           !step.hidden && (
-            <>
-              <WithdrawalStep
-                key={step.type}
-                step={idx}
-                currentStep={currentStepNumber}
-                titleId={step.titleId}
-              />
+            <Fragment key={step.type}>
+              <WithdrawalStep step={idx} currentStep={currentStepNumber} titleId={step.titleId} />
               {idx !== WITHDRAWAL_STEPS.filter(({ hidden }) => !hidden).length - 1 && (
                 <div className={styles.stepDivider} />
               )}
-            </>
+            </Fragment>
           ),
       )}
     </div>
