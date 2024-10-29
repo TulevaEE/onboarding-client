@@ -61,7 +61,7 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
     const thirdPillarMandate = mandates.find((mandate) => mandate.pillar === 'THIRD');
 
     expect(secondPillarMandate).toStrictEqual({
-      type: 'PARTIAL_WITHDRAWAL',
+      mandateType: 'PARTIAL_WITHDRAWAL',
       pillar: 'SECOND',
       bankAccountDetails: getBankAccountDetails(personalDetails),
       fundWithdrawalAmounts: [
@@ -79,7 +79,7 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
     });
 
     expect(thirdPillarMandate).toStrictEqual({
-      type: 'PARTIAL_WITHDRAWAL',
+      mandateType: 'PARTIAL_WITHDRAWAL',
       pillar: 'THIRD',
       bankAccountDetails: getBankAccountDetails(personalDetails),
       fundWithdrawalAmounts: [
@@ -108,7 +108,7 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
     const thirdPillarMandate = mandates.find((mandate) => mandate.pillar === 'THIRD');
 
     expect(secondPillarMandate).toStrictEqual({
-      type: 'PARTIAL_WITHDRAWAL',
+      mandateType: 'PARTIAL_WITHDRAWAL',
       pillar: 'SECOND',
       bankAccountDetails: getBankAccountDetails(personalDetails),
       fundWithdrawalAmounts: [
@@ -126,7 +126,7 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
     });
 
     expect(thirdPillarMandate).toStrictEqual({
-      type: 'PARTIAL_WITHDRAWAL',
+      mandateType: 'PARTIAL_WITHDRAWAL',
       pillar: 'THIRD',
       bankAccountDetails: getBankAccountDetails(personalDetails),
       fundWithdrawalAmounts: [
@@ -158,7 +158,7 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
     const [secondPillarMandate] = mandates;
 
     expect(secondPillarMandate).toStrictEqual({
-      type: 'PARTIAL_WITHDRAWAL',
+      mandateType: 'PARTIAL_WITHDRAWAL',
       pillar: 'SECOND',
       bankAccountDetails: getBankAccountDetails(personalDetails),
       fundWithdrawalAmounts: [
@@ -194,7 +194,7 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
     const [thirdPillarMandate] = mandates;
 
     expect(thirdPillarMandate).toStrictEqual({
-      type: 'PARTIAL_WITHDRAWAL',
+      mandateType: 'PARTIAL_WITHDRAWAL',
       pillar: 'THIRD',
       bankAccountDetails: getBankAccountDetails(personalDetails),
       fundWithdrawalAmounts: [
@@ -265,7 +265,7 @@ describe('getFundPensionMandatesToCreate', () => {
     const thirdPillarMandate = mandates.find((mandate) => mandate.pillar === 'THIRD');
 
     expect(secondPillarMandate).toStrictEqual({
-      type: 'FUND_PENSION_OPENING',
+      mandateType: 'FUND_PENSION_OPENING',
       pillar: 'SECOND',
       bankAccountDetails: getBankAccountDetails(personalDetails),
       duration: {
@@ -275,7 +275,7 @@ describe('getFundPensionMandatesToCreate', () => {
     });
 
     expect(thirdPillarMandate).toStrictEqual({
-      type: 'FUND_PENSION_OPENING',
+      mandateType: 'FUND_PENSION_OPENING',
       pillar: 'THIRD',
       bankAccountDetails: getBankAccountDetails(personalDetails),
       duration: {
@@ -300,7 +300,7 @@ describe('getFundPensionMandatesToCreate', () => {
     const [secondPillarMandate] = mandates;
 
     expect(secondPillarMandate).toStrictEqual({
-      type: 'FUND_PENSION_OPENING',
+      mandateType: 'FUND_PENSION_OPENING',
       pillar: 'SECOND',
       bankAccountDetails: getBankAccountDetails(personalDetails),
       duration: {
@@ -325,7 +325,7 @@ describe('getFundPensionMandatesToCreate', () => {
     const [thirdPillarMandate] = mandates;
 
     expect(thirdPillarMandate).toStrictEqual({
-      type: 'FUND_PENSION_OPENING',
+      mandateType: 'FUND_PENSION_OPENING',
       pillar: 'THIRD',
       bankAccountDetails: getBankAccountDetails(personalDetails),
       duration: {
@@ -361,7 +361,7 @@ describe('getMandatesToCreate', () => {
     );
 
     expect(secondPillarWithdrawalMandate).toStrictEqual({
-      type: 'PARTIAL_WITHDRAWAL',
+      mandateType: 'PARTIAL_WITHDRAWAL',
       pillar: 'SECOND',
       bankAccountDetails: getBankAccountDetails(personalDetails),
       fundWithdrawalAmounts: [
@@ -379,7 +379,7 @@ describe('getMandatesToCreate', () => {
     });
 
     expect(thirdPillarWithdrawalMandate).toStrictEqual({
-      type: 'PARTIAL_WITHDRAWAL',
+      mandateType: 'PARTIAL_WITHDRAWAL',
       pillar: 'THIRD',
       bankAccountDetails: getBankAccountDetails(personalDetails),
       fundWithdrawalAmounts: [
@@ -400,7 +400,7 @@ describe('getMandatesToCreate', () => {
     );
 
     expect(secondPillarFundPensionMandate).toStrictEqual({
-      type: 'FUND_PENSION_OPENING',
+      mandateType: 'FUND_PENSION_OPENING',
       pillar: 'SECOND',
       bankAccountDetails: getBankAccountDetails(personalDetails),
       duration: {
@@ -410,7 +410,7 @@ describe('getMandatesToCreate', () => {
     });
 
     expect(thirdPillarFundPensionMandate).toStrictEqual({
-      type: 'FUND_PENSION_OPENING',
+      mandateType: 'FUND_PENSION_OPENING',
       pillar: 'THIRD',
       bankAccountDetails: getBankAccountDetails(personalDetails),
       duration: {
