@@ -17,7 +17,6 @@ export const getBankAccountDetails = (
 
   ({
     type: 'ESTONIAN',
-    // bank: 'SWED', // TODO
     accountIban: personalDetails.bankAccountIban as string,
   });
 
