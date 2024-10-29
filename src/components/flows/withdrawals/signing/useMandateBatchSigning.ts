@@ -8,6 +8,7 @@ import {
   SignedMandateBatch,
   pollForBatchStatusSignedWithIdCard,
 } from './signWithIdCard';
+import { ErrorResponse } from '../../../common/apiModels';
 
 const POLL_DELAY = 1000;
 const SIGNATURE_DONE_STATUS = 'SIGNATURE';
@@ -20,8 +21,7 @@ export const useMandateBatchSigning = () => {
 
   const [signed, setSigned] = useState(false);
   const [loading, setLoading] = useState(false);
-  // TODO errors list
-  const [error, setError] = useState<Error | null>(null);
+  const [error, setError] = useState<ErrorResponse | null>(null);
 
   useEffect(() => {
     if (error) {
@@ -60,7 +60,7 @@ export const useMandateBatchSigning = () => {
         throw new Error(`Invalid login method: ${loginMethod}`);
       }
     } catch (e) {
-      setError(e as Error);
+      setError(e as ErrorResponse); // TODO
       return Promise.reject(e);
     }
 
@@ -81,7 +81,7 @@ export const useMandateBatchSigning = () => {
           pollForIdCard(signedMandateBatch);
         }
       } catch (e) {
-        setError(e as Error);
+        setError(e as ErrorResponse); // TODO
       }
     }, POLL_DELAY);
   };
@@ -100,7 +100,7 @@ export const useMandateBatchSigning = () => {
           poll(mandateBatch, loginMethod);
         }
       } catch (e) {
-        setError(e as Error);
+        setError(e as ErrorResponse); // TODO
       }
     }, POLL_DELAY);
   };
@@ -117,6 +117,7 @@ export const useMandateBatchSigning = () => {
       resetCurrentPolling();
       setLoading(false);
       setChallengeCode(null);
+      setError(null);
     }
   };
 

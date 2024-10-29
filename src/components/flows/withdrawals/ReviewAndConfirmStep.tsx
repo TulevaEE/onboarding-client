@@ -17,7 +17,7 @@ import { formatAmountForCurrency } from '../../common/utils';
 import { useCreateMandateBatch, useFunds, useMandateDeadlines } from '../../common/apiHooks';
 import { formatDate, formatDateTime } from '../../common/dateFormatter';
 import { useMandateBatchSigning } from './signing/useMandateBatchSigning';
-import { AuthenticationLoader } from '../../common';
+import { AuthenticationLoader, ErrorMessage } from '../../common';
 
 export const ReviewAndConfirmStep = () => {
   const {
@@ -87,6 +87,10 @@ export const ReviewAndConfirmStep = () => {
       {(signingInProgress || challengeCode) && (
         <AuthenticationLoader controlCode={challengeCode} onCancel={cancelSigning} overlayed />
       )}
+      {signingError && (
+        <ErrorMessage errors={signingError.body} onCancel={cancelSigning} overlayed />
+      )}
+
       <div className="pt-5 pb-5 pl-2 pr-2">
         Esitan järgmised avaldused ja olen teadlik nende tingimustest:
       </div>
