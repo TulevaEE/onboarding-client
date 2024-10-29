@@ -54,9 +54,7 @@ export const useMandateBatchSigning = () => {
         pollForIdCard(signature);
       } else if (loggedInWithSmartId || loggedInWithMobileId) {
         setSigningType(loginMethod);
-        setChallengeCode(
-          (await startSigningWithChallengeCode(mandateBatch, loginMethod)).challengeCode,
-        );
+        setChallengeCode((await startSigningWithChallengeCode(mandateBatch, loginMethod)) ?? null);
         poll(mandateBatch, loginMethod);
       } else {
         throw new Error(`Invalid login method: ${loginMethod}`);
@@ -94,6 +92,7 @@ export const useMandateBatchSigning = () => {
     pollTimeout.current = window.setTimeout(async () => {
       try {
         const signatureStatus = await pollForSignatureStatus(mandateBatch, loginMethod);
+        setChallengeCode(signatureStatus.challengeCode);
 
         if (signatureStatus.statusCode === SIGNATURE_DONE_STATUS) {
           setSigned(true);

@@ -189,13 +189,16 @@ export async function getMobileIdSignatureChallengeCode({
 }: {
   entityId: string;
   type?: 'MANDATE' | 'MANDATE_BATCH';
-}): Promise<MobileSignatureResponse> {
+}): Promise<string | null> {
   const path =
     type === 'MANDATE'
       ? `/v1/mandates/${entityId}/signature/mobileId`
       : `/v1/mandate-batches/${entityId}/signature/mobile-id`;
 
-  const { challengeCode } = await putWithAuthentication(getEndpoint(path), undefined);
+  const { challengeCode } = await putWithAuthentication<MobileSignatureResponse>(
+    getEndpoint(path),
+    undefined,
+  );
   return challengeCode;
 }
 
@@ -211,7 +214,7 @@ export async function getMobileIdSignatureStatus({
       ? `/v1/mandates/${entityId}/signature/mobileId/status`
       : `/v1/mandate-batches/${entityId}/signature/mobile-id/status`;
 
-  return getWithAuthentication(getEndpoint(path), undefined);
+  return getWithAuthentication<MobileSignatureStatusResponse>(getEndpoint(path), undefined);
 }
 
 export async function getSmartIdSignatureChallengeCode({
@@ -220,13 +223,16 @@ export async function getSmartIdSignatureChallengeCode({
 }: {
   entityId: string;
   type?: 'MANDATE' | 'MANDATE_BATCH';
-}): Promise<MobileSignatureResponse> {
+}): Promise<string | null> {
   const path =
     type === 'MANDATE'
       ? `/v1/mandates/${entityId}/signature/smartId`
       : `/v1/mandate-batches/${entityId}/signature/smart-id`;
 
-  const { challengeCode } = await putWithAuthentication(getEndpoint(path), undefined);
+  const { challengeCode } = await putWithAuthentication<MobileSignatureResponse>(
+    getEndpoint(path),
+    undefined,
+  );
   return challengeCode;
 }
 
@@ -242,7 +248,7 @@ export async function getSmartIdSignatureStatus({
       ? `/v1/mandates/${entityId}/signature/smartId/status`
       : `/v1/mandate-batches/${entityId}/signature/smart-id/status`;
 
-  return getWithAuthentication(getEndpoint(path), undefined);
+  return getWithAuthentication<MobileSignatureStatusResponse>(getEndpoint(path), undefined);
 }
 
 export async function getIdCardSignatureHash({

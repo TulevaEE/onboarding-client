@@ -33,10 +33,7 @@ export const pollForSignatureStatus = async (
 
 const challengeCodeGetterMap: Record<
   'MOBILE_ID' | 'SMART_ID',
-  (args: {
-    entityId: string;
-    type?: 'MANDATE' | 'MANDATE_BATCH';
-  }) => Promise<MobileSignatureResponse>
+  (args: { entityId: string; type?: 'MANDATE' | 'MANDATE_BATCH' }) => Promise<string | null>
 > = {
   MOBILE_ID: getMobileIdSignatureChallengeCode,
   SMART_ID: getSmartIdSignatureChallengeCode,
