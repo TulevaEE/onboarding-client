@@ -102,7 +102,15 @@ describe('withdrawals flow', () => {
     userEvent.click(confirmationCheckbox());
     expect(signButton()).toBeEnabled();
 
-    // userEvent.click(signButton());
+    userEvent.click(signButton());
+
+    expect(
+      await screen.findByRole(
+        'heading',
+        { name: 'Väljamaksete avaldused esitatud' },
+        { timeout: 10_000 },
+      ),
+    ).toBeInTheDocument();
   }, 20_000);
 });
 

@@ -112,6 +112,7 @@ export function smartIdMandateBatchSigningBackend(
 } {
   const backend = {
     signed: false,
+    statusCount: 0,
   };
   server.use(
     rest.put('http://localhost/v1/mandate-batches/1/signature/smart-id', (req, res, ctx) => {
@@ -119,13 +120,26 @@ export function smartIdMandateBatchSigningBackend(
         return res(ctx.status(401), ctx.json({ error: 'not authenticated correctly' }));
       }
       backend.signed = true;
-      return res(ctx.status(200), ctx.json({ challengeCode: options.challengeCode || '9876' }));
+      return res(ctx.status(200), ctx.json({ challengeCode: null }));
     }),
     rest.get('http://localhost/v1/mandate-batches/1/signature/smart-id/status', (req, res, ctx) => {
       if (req.headers.get('Authorization') !== 'Bearer an access token') {
         return res(ctx.status(401), ctx.json({ error: 'not authenticated correctly' }));
       }
-      return res(ctx.status(200), ctx.json({ statusCode: 'SIGNATURE' }));
+
+      backend.statusCount += 1;
+
+      if (backend.statusCount >= 2) {
+        return res(ctx.status(200), ctx.json({ statusCode: 'SIGNATURE' }));
+      }
+
+      return res(
+        ctx.status(200),
+        ctx.json({
+          statusCode: 'OUTSTANDING_TRANSACTION',
+          challengeCode: options.challengeCode ?? '9876',
+        }),
+      );
     }),
   );
   return backend;
