@@ -18,6 +18,7 @@ import { useCreateMandateBatch, useFunds, useMandateDeadlines } from '../../comm
 import { formatDate, formatDateTime } from '../../common/dateFormatter';
 import { useMandateBatchSigning } from './signing/useMandateBatchSigning';
 import { AuthenticationLoader, ErrorMessage } from '../../common';
+import { ErrorResponse } from '../../common/apiModels';
 
 export const ReviewAndConfirmStep = () => {
   const {
@@ -30,7 +31,7 @@ export const ReviewAndConfirmStep = () => {
   } = useMandateBatchSigning();
 
   const [batchCreationLoading, setBatchCreationLoading] = useState(false);
-  const [batchCreationError, setBatchCreationError] = useState<Error | null>(null); // TODO better error handling
+  const [batchCreationError, setBatchCreationError] = useState<ErrorResponse | null>(null); // TODO better error handling
 
   const { data: funds } = useFunds();
 
@@ -73,10 +74,9 @@ export const ReviewAndConfirmStep = () => {
       const mandateBatch = await createMandateBatch({
         mandates: mandatesToCreate.map((details) => ({ details })),
       });
-      // no await to
       startSigningMandateBatch(mandateBatch);
     } catch (e) {
-      setBatchCreationError(e as Error);
+      setBatchCreationError(e as ErrorResponse);
     }
 
     setBatchCreationLoading(false);
@@ -89,6 +89,10 @@ export const ReviewAndConfirmStep = () => {
       )}
       {signingError && (
         <ErrorMessage errors={signingError.body} onCancel={cancelSigning} overlayed />
+      )}
+
+      {batchCreationError && (
+        <ErrorMessage errors={batchCreationError.body} onCancel={cancelSigning} overlayed />
       )}
 
       <div className="pt-5 pb-5 pl-2 pr-2">
@@ -137,10 +141,6 @@ export const ReviewAndConfirmStep = () => {
           </label>
         </div>
       </div>
-
-      {(signingError || batchCreationError) && (
-        <div className="mt-3 alert alert-danger pt-2 pb-2">Avalduse esitamisel esines viga.</div>
-      )}
 
       <div className="d-flex justify-content-between pt-5">
         {/* TODO paddings */}
