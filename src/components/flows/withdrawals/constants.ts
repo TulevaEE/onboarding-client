@@ -20,5 +20,10 @@ export const WITHDRAWAL_STEPS: WithdrawalStep[] = [
     titleId: 'withdrawals.content.confirmApplication',
     component: ReviewAndConfirmStep,
   },
-  { type: 'DONE', titleId: 'withdrawals.content.applicationSubmitted', component: DoneStep },
+  {
+    type: 'DONE',
+    titleId: 'withdrawals.content.applicationSubmitted',
+    component: DoneStep,
+    hidden: true,
+  },
 ];
