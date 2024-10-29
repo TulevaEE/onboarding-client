@@ -258,7 +258,7 @@ export interface AuthenticationPrincipal extends Token {
 }
 
 export interface MobileSignatureResponse {
-  challengeCode: string;
+  challengeCode: string | null; // Can be null during first request of Smart-ID
 }
 
 export interface MobileSignatureStatusResponse {
