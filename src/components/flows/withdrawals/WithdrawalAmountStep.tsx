@@ -165,7 +165,7 @@ const FundPensionStatusBox = ({ totalAmount }: { totalAmount: number }) => {
         Sinu fondi jääv vara{' '}
         <b>teenib järgnevad {eligibility.recommendedDurationYears} aastat tootlust edasi</b>.<br />
         Kui osaku turuhind kasvab või kahaneb, siis suurenevad või vähenevad ka sinu väljamaksed.{' '}
-        <a href="#test" target="_blank">
+        <a href="https://tuleva.ee/pensioni-valjamaksed/" target="_blank" rel="noreferrer">
           Kui suureks võivad sinu väljamaksed kasvada?
         </a>
       </div>
