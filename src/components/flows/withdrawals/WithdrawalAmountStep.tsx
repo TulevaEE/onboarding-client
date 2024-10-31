@@ -153,7 +153,8 @@ const FundPensionStatusBox = ({ totalAmount }: { totalAmount: number }) => {
         </h3>
       </div>
       <div className="mt-3 text-muted">
-        Iga kuu saad kätte <Percentage value={fundPensionPercentageLiquidatedMonthly} />{' '}
+        Iga kuu saad kätte{' '}
+        <Percentage value={fundPensionPercentageLiquidatedMonthly} alwaysSingleColor />{' '}
         fondiosakutest. Hetkehinnas on see{' '}
         {formatAmountForCurrency(fundPensionMonthlyPaymentApproximateSize, 2)}.
       </div>

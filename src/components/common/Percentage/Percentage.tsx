@@ -5,15 +5,17 @@ interface PercentageProps {
   fractionDigits?: number;
   stripTrailingZeros?: boolean;
   className?: string;
+  alwaysSingleColor?: boolean;
 }
 
 const Percentage: FC<PercentageProps> = ({
   value,
   fractionDigits = 2,
   stripTrailingZeros = false,
+  alwaysSingleColor = false,
   className,
 }) => (
-  <span className={`${className || ''}${value === 0 ? ' text-muted' : ''}`}>
+  <span className={`${className || ''}${value === 0 && !alwaysSingleColor ? ' text-muted' : ''}`}>
     {formatPercentage(value, fractionDigits, stripTrailingZeros)}
   </span>
 );

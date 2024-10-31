@@ -324,7 +324,12 @@ const PartialWithdrawalMandateDescription = ({
                 `${amount.units.toFixed(2)} osakut` // TODO generify logic
               ) : (
                 <>
-                  <Percentage value={amount.percentage / 100} fractionDigits={0} /> osakutest
+                  <Percentage
+                    value={amount.percentage / 100}
+                    fractionDigits={0}
+                    alwaysSingleColor
+                  />{' '}
+                  osakutest
                 </>
               )}
             </div>
