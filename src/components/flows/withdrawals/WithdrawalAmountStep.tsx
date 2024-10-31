@@ -61,7 +61,9 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
     <div className="mt-3 card p-4">
       <div className="d-flex flex-row justify-content-between align-items-center">
         <div>
-          <label htmlFor="single-withdrawal-amount">Soovid osa raha kohe välja võtta?</label>
+          <label htmlFor="single-withdrawal-amount" className="lead mb-0">
+            Soovid osa raha kohe välja võtta?
+          </label>
         </div>
         <div className="form-inline">
           <div className="input-group input-group-lg w-100">
@@ -77,7 +79,7 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
               max={totalAmount}
             />
             <div className="input-group-append">
-              <span className="input-group-text bg-white">&euro;</span>
+              <span className="input-group-text">&euro;</span>
             </div>
           </div>
         </div>
@@ -95,15 +97,15 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
         />
         <div className="mt-1 d-flex justify-content-between">
           <div className="text-muted">{formatAmountForCurrency(0, 0)}</div>
-          <div className="text-muted">{formatAmountForCurrency(totalAmount, 0)}</div>
+          <div className="text-muted">{formatAmountForCurrency(totalAmount, 2)}</div>
         </div>
       </div>
       <div className="mt-3">
-        Väljamakselt peab riik kinni 10% tulumaksu{' '}
+        Väljamakselt peab riik kinni 10% tulumaksu
         {withdrawalAmount.singleWithdrawalAmount ? ': ' : '.'}
         {withdrawalAmount.singleWithdrawalAmount && (
           <span className={styles.warningText}>
-            {formatAmountForCurrency(-0.1 * withdrawalAmount.singleWithdrawalAmount, 0)}
+            {formatAmountForCurrency(-0.1 * withdrawalAmount.singleWithdrawalAmount, 2)}
           </span>
         )}
         <div className="text-muted">
@@ -134,20 +136,24 @@ const FundPensionStatusBox = ({ totalAmount }: { totalAmount: number }) => {
       <div className="d-flex flex-row justify-content-between align-items-end">
         <h3 className="m-0">Saad regulaarselt ja tulumaksuvabalt</h3>
         <h3 className="m-0 pl-2">
-          {fundPensionMonthlyPaymentApproximateSize > 0 ? '~' : ''}
-          {formatAmountForCurrency(fundPensionMonthlyPaymentApproximateSize, 0)}&nbsp;kuus
+          {formatAmountForCurrency(fundPensionMonthlyPaymentApproximateSize, 2)}&nbsp;kuus
         </h3>
       </div>
       <div className="mt-3 text-muted">
         Iga kuu saad kätte <Percentage value={fundPensionPercentageLiquidatedMonthly} />{' '}
         fondiosakutest. Hetkehinnas on see{' '}
-        {formatAmountForCurrency(fundPensionMonthlyPaymentApproximateSize, 0)}.
+        {formatAmountForCurrency(fundPensionMonthlyPaymentApproximateSize, 2)}.
+      </div>
+      <div className="text-muted">
+        Täpsed summad selguvad osakute müümise hetkel ja võivad varieeruda.
       </div>
       <div className="mt-3">
         Sinu fondi jääv vara{' '}
         <b>teenib järgnevad {eligibility.recommendedDurationYears} aastat tootlust edasi</b>.<br />
         Kui osaku turuhind kasvab või kahaneb, siis suurenevad või vähenevad ka sinu väljamaksed.{' '}
-        <a href="#test">Kui suureks võivad sinu väljamaksed kasvada?</a>
+        <a href="#test" target="_blank">
+          Kui suureks võivad sinu väljamaksed kasvada?
+        </a>
       </div>
     </div>
   );

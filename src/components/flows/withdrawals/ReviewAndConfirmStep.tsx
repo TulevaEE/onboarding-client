@@ -239,7 +239,7 @@ const FundPensionMandateDescription = ({
           <WithdrawalPaymentDate mandate={mandate} />
         </b>{' '}
         ja on eeldatavalt{' '}
-        <b>{formatAmountForCurrency(fundPensionMonthlyPaymentApproximateSize, 0)}</b>.
+        <b>{formatAmountForCurrency(fundPensionMonthlyPaymentApproximateSize, 2)}</b>.
         <span className="text-muted">
           <br />
           Summad varieeruvad ja selguvad fondiosakute müümise hetkel.
@@ -301,8 +301,8 @@ const PartialWithdrawalMandateDescription = ({
           <div className="d-flex justify-content-between" key={amount.isin}>
             <div>{fundIsinToFundNameMap[amount.isin]}</div>
             <div>
-              {mandate.pillar === 'SECOND' ? (
-                `${amount.units} ühikut`
+              {mandate.pillar === 'THIRD' ? (
+                `${amount.units.toFixed(2)} osakut` // TODO generify logic
               ) : (
                 <>
                   <Percentage value={amount.percentage / 100} fractionDigits={0} /> osakutest

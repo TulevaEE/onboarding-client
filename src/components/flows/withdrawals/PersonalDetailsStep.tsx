@@ -26,7 +26,9 @@ export const PersonalDetailsStep = () => {
             }
             value={personalDetails.bankAccountIban ?? ''}
           />
-          <div className="pt-2 text-muted">Pangakonto peab kuuluma sinule</div>
+          <div className="pt-2 text-muted">
+            Pangakonto peab olema avatud Eestis ja kuuluma sinule.
+          </div>
         </div>
 
         <div className="form-group">
@@ -34,8 +36,8 @@ export const PersonalDetailsStep = () => {
             <b>Maksuresidentsus</b>
           </label>
           <Select
-            name="tax-residency"
-            options={[{ value: 'EST', translate: false, label: 'EST' }]}
+            id="tax-residency"
+            options={[{ value: 'EST', translate: false, label: 'Eesti' }]}
             selected={personalDetails.taxResidencyCode}
             onChange={() => {}}
           />
