@@ -8,7 +8,6 @@ import {
   WithdrawalStepType,
 } from './types';
 import { useFunds, useSourceFunds, useWithdrawalsEligibility } from '../../common/apiHooks';
-import { getValueSum } from '../../account/AccountStatement/fundSelector';
 import { getAllFundNavsPresent, getMandatesToCreate } from './utils';
 
 export const WithdrawalsContext = createContext<WithdrawalsContextState>({
@@ -59,8 +58,14 @@ export const WithdrawalsProvider = ({
   const secondPillarSourceFunds = sourceFunds?.filter((fund) => fund.pillar === 2);
   const thirdPillarSourceFunds = sourceFunds?.filter((fund) => fund.pillar === 3);
 
-  const totalSecondPillar = getValueSum(secondPillarSourceFunds ?? []);
-  const totalThirdPillar = getValueSum(thirdPillarSourceFunds ?? []);
+  const totalSecondPillar = (secondPillarSourceFunds ?? []).reduce(
+    (acc, fund) => acc + fund.price,
+    0,
+  );
+  const totalThirdPillar = (thirdPillarSourceFunds ?? []).reduce(
+    (acc, fund) => acc + fund.price,
+    0,
+  );
   const totalBothPillars = totalSecondPillar + totalThirdPillar;
 
   const pensionHoldings = {

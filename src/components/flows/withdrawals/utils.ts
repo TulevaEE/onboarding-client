@@ -1,5 +1,4 @@
 import { Fund, SourceFund } from '../../common/apiModels/index';
-import { getValueSum } from '../../account/AccountStatement/fundSelector';
 import { PensionHoldings, PersonalDetailsStepState, WithdrawalsAmountStepState } from './types';
 
 import {
