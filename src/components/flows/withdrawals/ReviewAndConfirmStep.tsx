@@ -14,7 +14,12 @@ import {
   getTotalAmountAvailableToWithdraw,
 } from './utils';
 import { formatAmountForCurrency } from '../../common/utils';
-import { useCreateMandateBatch, useFunds, useMandateDeadlines } from '../../common/apiHooks';
+import {
+  useCreateMandateBatch,
+  useFunds,
+  useMandateDeadlines,
+  useWithdrawalsEligibility,
+} from '../../common/apiHooks';
 import { formatDate, formatDateRange, formatDateTime } from '../../common/dateFormatter';
 import { useMandateBatchSigning } from './signing/useMandateBatchSigning';
 import { AuthenticationLoader, ErrorMessage } from '../../common';
@@ -34,6 +39,7 @@ export const ReviewAndConfirmStep = () => {
   const [batchCreationError, setBatchCreationError] = useState<ErrorResponse | null>(null);
 
   const { data: funds } = useFunds();
+  const { data: eligibility } = useWithdrawalsEligibility();
 
   const {
     mandatesToCreate,
@@ -73,6 +79,10 @@ export const ReviewAndConfirmStep = () => {
   const createMandateBatchAndStartSigning = async () => {
     if (!agreedToTerms) {
       setAgreedToTermsError(true);
+      return;
+    }
+
+    if (!eligibility || !eligibility?.hasReachedEarlyRetirementAge) {
       return;
     }
     setAgreedToTermsError(false);
@@ -175,9 +185,15 @@ export const ReviewAndConfirmStep = () => {
           type="button"
           className="btn btn-primary"
           onClick={() => createMandateBatchAndStartSigning()}
-          disabled={signingInProgress || batchCreationLoading}
+          disabled={
+            signingInProgress ||
+            batchCreationLoading ||
+            !eligibility ||
+            !eligibility?.hasReachedEarlyRetirementAge
+          }
         >
-          Allkirjastan {mandatesToCreate.length} avaldust
+          Allkirjastan {mandatesToCreate.length}{' '}
+          {mandatesToCreate.length === 1 ? 'avalduse' : 'avaldust'}
         </button>
       </div>
     </div>
