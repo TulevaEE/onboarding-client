@@ -73,13 +73,15 @@ describe('withdrawals flow', () => {
 
     const ibanInput = await screen.findByLabelText('Pangakonto number (IBAN)');
 
-    userEvent.type(ibanInput, 'EE34123123');
+    userEvent.type(ibanInput, 'EE591254471322749514');
 
     userEvent.click(nextButton());
 
     expect(
       await screen.findByText(/Esitan järgmised avaldused ja olen teadlik nende tingimustest/i),
     ).toBeInTheDocument();
+
+    expect(await screen.findByText(/EE591254471322749514/i)).toBeInTheDocument();
 
     const applicationTitles = [
       /Igakuised fondipensioni väljamaksed II sambast/,
@@ -111,6 +113,43 @@ describe('withdrawals flow', () => {
         { timeout: 10_000 },
       ),
     ).toBeInTheDocument();
+  }, 20_000);
+
+  test('reaches final confirmation step to make partial withdrawal with fund pension', async () => {
+    expect(
+      await screen.findByText(/II ja III samba väljamaksed/i, undefined, { timeout: 1000 }),
+    ).toBeInTheDocument();
+
+    const partialWithdrawalSizeInput = await screen.findByLabelText(
+      'Soovid osa raha kohe välja võtta',
+      { exact: false },
+    );
+
+    userEvent.type(partialWithdrawalSizeInput, '100');
+
+    userEvent.click(nextButton());
+
+    const ibanInput = await screen.findByLabelText('Pangakonto number (IBAN)');
+
+    userEvent.type(ibanInput, 'EE123_INVALID_IBAN');
+
+    userEvent.click(nextButton());
+
+    expect(
+      await screen.findByText(/Sisestatud IBAN ei ole korrektne. Eesti IBAN on 20-kohaline./i),
+    ).toBeInTheDocument();
+
+    userEvent.clear(ibanInput);
+
+    userEvent.type(ibanInput, 'EE591254471322749514');
+
+    userEvent.click(nextButton());
+
+    expect(
+      await screen.findByText(/Esitan järgmised avaldused ja olen teadlik nende tingimustest/i),
+    ).toBeInTheDocument();
+
+    expect(await screen.findByText(/EE591254471322749514/i)).toBeInTheDocument();
   }, 20_000);
 });
 
