@@ -1,27 +1,37 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useWithdrawalsContext } from './hooks';
 import { Select } from '../../account/ComparisonCalculator/select/Select';
-import { StepButtons } from './StepButtons';
-import { isValidIBAN } from './utils';
+import { isValidIban, preProcessIban } from './iban';
+import styles from './Withdrawals.module.scss';
 
 export const PersonalDetailsStep = () => {
   const { personalDetails, setPersonalDetails, navigateToNextStep, navigateToPreviousStep } =
     useWithdrawalsContext();
 
-  const ibanValid = useMemo(
-    () => isValidIBAN(personalDetails.bankAccountIban ?? ''),
-    [personalDetails.bankAccountIban],
-  );
+  const [iban, setIban] = useState<string>(personalDetails.bankAccountIban ?? '');
 
-  const [submitted, setSubmitted] = useState(false);
+  const [ibanError, setIbanError] = useState(false);
 
-  const canProceed =
-    personalDetails.bankAccountIban && personalDetails.taxResidencyCode && ibanValid;
+  const canProceed = () => {
+    if (!iban || !isValidIban(iban)) {
+      setIbanError(true);
+      return false;
+    }
+
+    if (!personalDetails.taxResidencyCode) {
+      return false;
+    }
+
+    return true;
+  };
 
   const handleNextClicked = () => {
-    setSubmitted(true);
-
-    if (canProceed) {
+    if (canProceed()) {
+      setPersonalDetails({
+        taxResidencyCode: personalDetails.taxResidencyCode,
+        bankAccountIban: preProcessIban(iban),
+      });
+      setIbanError(false);
       navigateToNextStep();
     }
   };
@@ -29,7 +39,6 @@ export const PersonalDetailsStep = () => {
   return (
     <>
       <div className="mt-3 card p-4">
-        <div className="alert alert-warning" />
         <div className="form-group">
           <label htmlFor="bank-account-iban">
             <b>Pangakonto number (IBAN)</b>
@@ -38,19 +47,17 @@ export const PersonalDetailsStep = () => {
             type="text"
             className="form-control"
             id="bank-account-iban"
-            placeholder=""
-            // TODO validation, check the check digit here
-            onChange={(e) =>
-              setPersonalDetails({
-                taxResidencyCode: personalDetails.taxResidencyCode,
-                bankAccountIban: e.target.value,
-              })
-            }
-            value={personalDetails.bankAccountIban ?? ''}
+            onChange={(e) => setIban(e.target.value)}
+            value={iban}
           />
           <div className="pt-2 text-muted">
             Pangakonto peab olema avatud Eestis ja kuuluma sinule.
           </div>
+          {ibanError && (
+            <div className={`pt-2 ${styles.warningText}`}>
+              Sisestatud IBAN ei ole korrektne. Eesti IBAN on 20-kohaline.
+            </div>
+          )}
         </div>
 
         <div className="form-group">
