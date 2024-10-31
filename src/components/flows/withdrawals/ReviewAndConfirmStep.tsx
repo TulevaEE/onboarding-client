@@ -31,7 +31,7 @@ export const ReviewAndConfirmStep = () => {
   } = useMandateBatchSigning();
 
   const [batchCreationLoading, setBatchCreationLoading] = useState(false);
-  const [batchCreationError, setBatchCreationError] = useState<ErrorResponse | null>(null); // TODO better error handling
+  const [batchCreationError, setBatchCreationError] = useState<ErrorResponse | null>(null);
 
   const { data: funds } = useFunds();
 
