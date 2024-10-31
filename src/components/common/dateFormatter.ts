@@ -8,6 +8,23 @@ export function formatDate(date?: string | null): string {
   return moment(date).format(format);
 }
 
+export function formatDateRange(firstDate: string, secondDate: string): string {
+  const firstDateMoment = moment(firstDate);
+  const secondDateMoment = moment(secondDate);
+
+  if (firstDateMoment.month() === secondDateMoment.month()) {
+    const monthFormatted = firstDateMoment.format('MMMM');
+    const dateNumberFormat = moment.locale() === 'et' ? 'D.' : 'D';
+
+    const firstDateFormatted = firstDateMoment.format(dateNumberFormat);
+    const secondDateFormatted = secondDateMoment.format(dateNumberFormat);
+
+    return `${firstDateFormatted} - ${secondDateFormatted} ${monthFormatted}`;
+  }
+
+  return `${formatDate(firstDate)} - ${formatDate(secondDate)}`;
+}
+
 export function formatDateTime(date?: string | null): string {
   if (!date) {
     return '...';

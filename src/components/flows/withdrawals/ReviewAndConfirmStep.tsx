@@ -15,7 +15,7 @@ import {
 } from './utils';
 import { formatAmountForCurrency } from '../../common/utils';
 import { useCreateMandateBatch, useFunds, useMandateDeadlines } from '../../common/apiHooks';
-import { formatDate, formatDateTime } from '../../common/dateFormatter';
+import { formatDate, formatDateRange, formatDateTime } from '../../common/dateFormatter';
 import { useMandateBatchSigning } from './signing/useMandateBatchSigning';
 import { AuthenticationLoader, ErrorMessage } from '../../common';
 import { ErrorResponse } from '../../common/apiModels';
@@ -369,8 +369,10 @@ const WithdrawalPaymentDate = ({ mandate }: { mandate: WithdrawalMandateDetails 
 
   return (
     <>
-      {formatDate(mandateDeadlines.withdrawalFulfillmentDate)} –{' '}
-      {formatDate(mandateDeadlines.withdrawalLatestFulfillmentDate)}
+      {formatDateRange(
+        mandateDeadlines.withdrawalFulfillmentDate,
+        mandateDeadlines.withdrawalLatestFulfillmentDate,
+      )}
     </>
   );
 };

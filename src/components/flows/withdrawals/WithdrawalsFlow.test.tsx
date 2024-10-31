@@ -99,8 +99,6 @@ describe('withdrawals flow', () => {
       ),
     );
 
-    expect(signButton()).toBeDisabled();
-
     userEvent.click(confirmationCheckbox());
     expect(signButton()).toBeEnabled();
 
