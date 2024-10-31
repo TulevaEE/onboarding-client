@@ -68,12 +68,12 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
         {
           isin: 'EE3600109435',
           percentage: 100,
-          units: 2000 / TEST_NAVS.TULEVA_WORLD_SECOND_PILLAR,
+          units: 1500 / TEST_NAVS.TULEVA_WORLD_SECOND_PILLAR,
         },
         {
           isin: 'EE3600109443',
           percentage: 100,
-          units: 1000 / TEST_NAVS.TULEVA_BOND_SECOND_PILLAR,
+          units: 800 / TEST_NAVS.TULEVA_BOND_SECOND_PILLAR,
         },
       ],
     });
@@ -83,8 +83,8 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
       pillar: 'THIRD',
       bankAccountDetails: getBankAccountDetails(personalDetails),
       fundWithdrawalAmounts: [
-        { isin: 'EE3600001707', percentage: 100, units: 1500 / TEST_NAVS.TULEVA_THIRD_PILLAR },
-        { isin: 'EE3600010294', percentage: 100, units: 500 / TEST_NAVS.LHV_THIRD_PILLAR },
+        { isin: 'EE3600001707', percentage: 100, units: 1000 / TEST_NAVS.TULEVA_THIRD_PILLAR },
+        { isin: 'EE3600010294', percentage: 100, units: 400 / TEST_NAVS.LHV_THIRD_PILLAR },
       ],
     });
   });
@@ -115,12 +115,12 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
         {
           isin: 'EE3600109435',
           percentage: 40,
-          units: (2000 / TEST_NAVS.TULEVA_WORLD_SECOND_PILLAR) * 0.4,
+          units: (1500 / TEST_NAVS.TULEVA_WORLD_SECOND_PILLAR) * 0.4,
         },
         {
           isin: 'EE3600109443',
           percentage: 40,
-          units: (1000 / TEST_NAVS.TULEVA_BOND_SECOND_PILLAR) * 0.4,
+          units: (800 / TEST_NAVS.TULEVA_BOND_SECOND_PILLAR) * 0.4,
         },
       ],
     });
@@ -133,9 +133,9 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
         {
           isin: 'EE3600001707',
           percentage: 40,
-          units: (1500 / TEST_NAVS.TULEVA_THIRD_PILLAR) * 0.4,
+          units: (1000 / TEST_NAVS.TULEVA_THIRD_PILLAR) * 0.4,
         },
-        { isin: 'EE3600010294', percentage: 40, units: (500 / TEST_NAVS.LHV_THIRD_PILLAR) * 0.4 },
+        { isin: 'EE3600010294', percentage: 40, units: (400 / TEST_NAVS.LHV_THIRD_PILLAR) * 0.4 },
       ],
     });
   });
@@ -165,12 +165,12 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
         {
           isin: 'EE3600109435',
           percentage: 40,
-          units: (2000 / TEST_NAVS.TULEVA_WORLD_SECOND_PILLAR) * 0.4,
+          units: (1500 / TEST_NAVS.TULEVA_WORLD_SECOND_PILLAR) * 0.4,
         },
         {
           isin: 'EE3600109443',
           percentage: 40,
-          units: (1000 / TEST_NAVS.TULEVA_BOND_SECOND_PILLAR) * 0.4,
+          units: (800 / TEST_NAVS.TULEVA_BOND_SECOND_PILLAR) * 0.4,
         },
       ],
     });
@@ -201,9 +201,9 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
         {
           isin: 'EE3600001707',
           percentage: 40,
-          units: (1500 / TEST_NAVS.TULEVA_THIRD_PILLAR) * 0.4,
+          units: (1000 / TEST_NAVS.TULEVA_THIRD_PILLAR) * 0.4,
         },
-        { isin: 'EE3600010294', percentage: 40, units: (500 / TEST_NAVS.LHV_THIRD_PILLAR) * 0.4 },
+        { isin: 'EE3600010294', percentage: 40, units: (400 / TEST_NAVS.LHV_THIRD_PILLAR) * 0.4 },
       ],
     });
   });
@@ -368,12 +368,12 @@ describe('getMandatesToCreate', () => {
         {
           isin: 'EE3600109435',
           percentage: 10,
-          units: (2000 / TEST_NAVS.TULEVA_WORLD_SECOND_PILLAR) * 0.1,
+          units: (1500 / TEST_NAVS.TULEVA_WORLD_SECOND_PILLAR) * 0.1,
         },
         {
           isin: 'EE3600109443',
           percentage: 10,
-          units: (1000 / TEST_NAVS.TULEVA_BOND_SECOND_PILLAR) * 0.1,
+          units: (800 / TEST_NAVS.TULEVA_BOND_SECOND_PILLAR) * 0.1,
         },
       ],
     });
@@ -386,9 +386,9 @@ describe('getMandatesToCreate', () => {
         {
           isin: 'EE3600001707',
           percentage: 10,
-          units: (1500 / TEST_NAVS.TULEVA_THIRD_PILLAR) * 0.1,
+          units: (1000 / TEST_NAVS.TULEVA_THIRD_PILLAR) * 0.1,
         },
-        { isin: 'EE3600010294', percentage: 10, units: (500 / TEST_NAVS.LHV_THIRD_PILLAR) * 0.1 },
+        { isin: 'EE3600010294', percentage: 10, units: (400 / TEST_NAVS.LHV_THIRD_PILLAR) * 0.1 },
       ],
     });
 
