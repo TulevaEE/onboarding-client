@@ -19,6 +19,7 @@ import {
   CancellationMandate,
   CapitalEvent,
   Contribution,
+  ErrorResponse,
   Fund,
   MandateDeadlines,
   SourceFund,
@@ -92,7 +93,7 @@ export function useSourceFunds(): UseQueryResult<SourceFund[]> {
 
 export function useCreateMandateBatch(): UseMutationResult<
   MandateBatchDto,
-  unknown,
+  ErrorResponse,
   CreateMandateBatchDto,
   unknown
 > {

@@ -44,6 +44,8 @@ export const ReviewAndConfirmStep = () => {
   } = useWithdrawalsContext();
 
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [agreedToTermsError, setAgreedToTermsError] = useState(false);
+
   const { mutateAsync: createMandateBatch } = useCreateMandateBatch();
 
   if (mandatesToCreate === null || !funds) {
@@ -69,6 +71,11 @@ export const ReviewAndConfirmStep = () => {
   );
 
   const createMandateBatchAndStartSigning = async () => {
+    if (!agreedToTerms) {
+      setAgreedToTermsError(true);
+      return;
+    }
+    setAgreedToTermsError(false);
     setBatchCreationLoading(true);
     try {
       const mandateBatch = await createMandateBatch({
@@ -82,6 +89,11 @@ export const ReviewAndConfirmStep = () => {
     setBatchCreationLoading(false);
   };
 
+  const handleBatchCreationErrorCancel = () => {
+    cancelSigning();
+    setBatchCreationError(null);
+  };
+
   return (
     <div>
       {(signingInProgress || challengeCode) && (
@@ -92,7 +104,11 @@ export const ReviewAndConfirmStep = () => {
       )}
 
       {batchCreationError && (
-        <ErrorMessage errors={batchCreationError.body} onCancel={cancelSigning} overlayed />
+        <ErrorMessage
+          errors={batchCreationError.body}
+          onCancel={handleBatchCreationErrorCancel}
+          overlayed
+        />
       )}
 
       <div className="pt-5 pb-5 pl-2 pr-2">
@@ -139,6 +155,9 @@ export const ReviewAndConfirmStep = () => {
             seaduses ja väärtpaberite registri pidamise seaduses sätestatud ulatuses Euroopa Liidu
             piires.
           </label>
+          {agreedToTermsError && (
+            <div className={styles.warningText}>Välja täitmine on kohustuslik.</div>
+          )}
         </div>
       </div>
 
@@ -156,7 +175,7 @@ export const ReviewAndConfirmStep = () => {
           type="button"
           className="btn btn-primary"
           onClick={() => createMandateBatchAndStartSigning()}
-          disabled={!agreedToTerms || signingInProgress || batchCreationLoading}
+          disabled={signingInProgress || batchCreationLoading}
         >
           Allkirjastan {mandatesToCreate.length} avaldust
         </button>

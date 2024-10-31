@@ -1,5 +1,4 @@
 import { formatAmountForCurrency } from '../../common/utils';
-import { StepButtons } from './StepButtons';
 import { useWithdrawalsEligibility } from '../../common/apiHooks';
 import { Radio } from '../../common';
 import { PillarToWithdrawFrom } from './types';
@@ -11,7 +10,13 @@ import styles from './Withdrawals.module.scss';
 export const WithdrawalAmountStep = () => {
   const { data: eligibility } = useWithdrawalsEligibility();
 
-  const { withdrawalAmount, setWithdrawalAmount, pensionHoldings } = useWithdrawalsContext();
+  const {
+    withdrawalAmount,
+    setWithdrawalAmount,
+    pensionHoldings,
+    navigateToPreviousStep,
+    navigateToNextStep,
+  } = useWithdrawalsContext();
 
   const handlePillarSelected = (pillar: PillarToWithdrawFrom) => {
     setWithdrawalAmount({
@@ -39,7 +44,15 @@ export const WithdrawalAmountStep = () => {
       />
       <FundPensionStatusBox totalAmount={totalAmount} />
       <SingleWithdrawalSelectionBox totalAmount={totalAmount} />
-      <StepButtons />
+      <div className="d-flex justify-content-between pt-4">
+        {/* TODO paddings */}
+        <button type="button" className="btn btn-light" onClick={() => navigateToPreviousStep()}>
+          Tagasi
+        </button>
+        <button type="button" className="btn btn-primary" onClick={() => navigateToNextStep()}>
+          Jätkan
+        </button>
+      </div>
     </div>
   );
 };
