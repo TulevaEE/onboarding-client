@@ -61,11 +61,13 @@ export const getPartialWithdrawalMandatesToCreate = (
       mandateType: 'PARTIAL_WITHDRAWAL',
       pillar,
       bankAccountDetails,
-      fundWithdrawalAmounts: sourceFunds.map((fund) => ({
-        isin: fund.isin,
-        percentage: Math.floor(partialWithdrawalOfTotal * 100),
-        units: getSourceFundTotalUnits(fund) * partialWithdrawalOfTotal, // TODO bigdecimal <-> JS IEEE754 floating point handling
-      })),
+      fundWithdrawalAmounts: sourceFunds
+        .filter((fund) => fund.price + fund.unavailablePrice !== 0)
+        .map((fund) => ({
+          isin: fund.isin,
+          percentage: Math.floor(partialWithdrawalOfTotal * 100),
+          units: getSourceFundTotalUnits(fund) * partialWithdrawalOfTotal, // TODO bigdecimal <-> JS IEEE754 floating point handling
+        })),
     };
   };
 

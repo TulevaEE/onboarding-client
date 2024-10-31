@@ -104,6 +104,21 @@ export const secondPillarSourceFunds: SourceFund[] = [
     subtractions: 0,
     profit: 200,
   },
+  {
+    isin: 'EE3600109443',
+    price: 0,
+    unavailablePrice: 0,
+    activeFund: false,
+    currency: 'GBP',
+    name: 'Tuleva Maailma Võlakirjade Pensionifond',
+    fundManager: { name: 'Tuleva' },
+    managementFeePercent: 0.39,
+    pillar: 2,
+    ongoingChargesFigure: 0.0045,
+    contributions: 0,
+    subtractions: 0,
+    profit: 0,
+  },
 ];
 
 export const thirdPillarSourceFunds: SourceFund[] = [
