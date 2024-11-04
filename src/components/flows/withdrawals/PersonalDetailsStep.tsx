@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useWithdrawalsContext } from './hooks';
-import { Select } from '../../account/ComparisonCalculator/select/Select';
 import { isValidIban, preProcessIban } from './iban';
 import styles from './Withdrawals.module.scss';
+import { TaxResidencySelect } from './TaxResidencySelect';
 
 export const PersonalDetailsStep = () => {
   const { personalDetails, setPersonalDetails, navigateToNextStep, navigateToPreviousStep } =
@@ -60,17 +60,15 @@ export const PersonalDetailsStep = () => {
           )}
         </div>
 
-        <div className="form-group">
-          <label htmlFor="tax-residency">
-            <b>Maksuresidentsus</b>
-          </label>
-          <Select
-            id="tax-residency"
-            options={[{ value: 'EST', translate: false, label: 'Eesti' }]}
-            selected={personalDetails.taxResidencyCode}
-            onChange={() => {}}
-          />
-        </div>
+        <TaxResidencySelect
+          value={personalDetails.taxResidencyCode}
+          onChange={(taxResidencyCode) =>
+            setPersonalDetails({
+              taxResidencyCode,
+              bankAccountIban: personalDetails.bankAccountIban,
+            })
+          }
+        />
       </div>
       <div className="d-flex justify-content-between pt-4">
         {/* TODO paddings */}
