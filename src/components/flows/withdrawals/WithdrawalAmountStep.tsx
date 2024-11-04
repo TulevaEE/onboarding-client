@@ -181,7 +181,7 @@ const PillarSelection = ({
   selectedPillar: PillarToWithdrawFrom | null;
   setSelectedPillar: (pillar: PillarToWithdrawFrom) => unknown;
 }) => {
-  if (thirdPillarAmount > 0 && secondPillarAmount === 0) {
+  if (secondPillarAmount > 0 && thirdPillarAmount === 0) {
     return (
       <div className="card p-4 d-flex flex-row justify-content-between mb-3">
         <h3 className="m-0">Sul on II sambas kokku</h3>
@@ -190,7 +190,7 @@ const PillarSelection = ({
     );
   }
 
-  if (secondPillarAmount > 0 && thirdPillarAmount === 0) {
+  if (thirdPillarAmount > 0 && secondPillarAmount === 0) {
     return (
       <div className="card p-4 d-flex flex-row justify-content-between mb-3">
         <h3 className="m-0">Sul on III sambas kokku</h3>

@@ -20,6 +20,7 @@ import {
   userConversionBackend,
   withdrawalsEligibilityBackend,
 } from '../../../test/backend';
+import { FundStatus } from '../../common/apiModels';
 
 const server = setupServer();
 let history: History;
@@ -43,7 +44,6 @@ beforeEach(async () => {
   userConversionBackend(server);
   userBackend(server);
   amlChecksBackend(server);
-  pensionAccountStatementBackend(server);
   fundsBackend(server);
   applicationsBackend(server);
   returnsBackend(server);
@@ -56,10 +56,18 @@ beforeEach(async () => {
 
   history.push('/withdrawals');
 });
-describe('withdrawals flow', () => {
+describe('withdrawals flow with both pillars', () => {
+  beforeEach(() => {
+    pensionAccountStatementBackend(server);
+  });
+
   test('reaches final confirmation step to make partial withdrawal with fund pension', async () => {
     expect(
       await screen.findByText(/II ja III samba väljamaksed/i, undefined, { timeout: 1000 }),
+    ).toBeInTheDocument();
+
+    expect(
+      await screen.findByText(/Kasutan kogu pensionivara/i, undefined, { timeout: 1000 }),
     ).toBeInTheDocument();
 
     const partialWithdrawalSizeInput = await screen.findByLabelText(
@@ -113,7 +121,7 @@ describe('withdrawals flow', () => {
     ).toBeInTheDocument();
   }, 20_000);
 
-  test('reaches final confirmation step to make partial withdrawal with fund pension', async () => {
+  test('reaches final confirmation step with iban validation', async () => {
     expect(
       await screen.findByText(/II ja III samba väljamaksed/i, undefined, { timeout: 1000 }),
     ).toBeInTheDocument();
@@ -149,6 +157,196 @@ describe('withdrawals flow', () => {
 
     expect(await screen.findByText(/EE591254471322749514/i)).toBeInTheDocument();
   }, 20_000);
+});
+
+describe('withdrawals flow with only second pillar', () => {
+  beforeEach(() => {
+    pensionAccountStatementBackend(server, [
+      {
+        fund: {
+          fundManager: { name: 'Tuleva' },
+          isin: 'EE3600109435',
+          name: 'Tuleva World Stocks Pension Fund',
+          managementFeeRate: 0.0034,
+          pillar: 2,
+          ongoingChargesFigure: 0.0039,
+          status: FundStatus.ACTIVE,
+          inceptionDate: '2017-01-01',
+          nav: 1,
+        },
+        value: 15000.0,
+        unavailableValue: 0,
+        currency: 'EUR',
+        activeContributions: false,
+        contributions: 12345.67,
+        subtractions: 0,
+        profit: 2654.33,
+      },
+      {
+        fund: {
+          fundManager: { name: 'Swedbank' },
+          isin: 'EE3600019758',
+          name: 'Swedbank Pension Fund K60',
+          managementFeeRate: 0.0083,
+          pillar: 2,
+          ongoingChargesFigure: 0.0065,
+          status: FundStatus.ACTIVE,
+          inceptionDate: '2017-01-01',
+          nav: 1,
+        },
+        value: 100000,
+        unavailableValue: 0,
+        currency: 'EUR',
+        activeContributions: true,
+        contributions: 112233.44,
+        subtractions: 0,
+        profit: -12233.44,
+      },
+    ]);
+  });
+
+  test('reaches final confirmation step', async () => {
+    expect(
+      await screen.findByText(/II ja III samba väljamaksed/i, undefined, { timeout: 1000 }),
+    ).toBeInTheDocument();
+
+    expect(
+      await screen.findByText(/Sul on II sambas kokku/i, { exact: false }, { timeout: 1000 }),
+    ).toBeInTheDocument();
+
+    const partialWithdrawalSizeInput = await screen.findByLabelText(
+      'Soovid osa raha kohe välja võtta',
+      { exact: false },
+    );
+
+    userEvent.type(partialWithdrawalSizeInput, '100');
+
+    userEvent.click(nextButton());
+
+    const ibanInput = await screen.findByLabelText('Pangakonto number (IBAN)');
+
+    userEvent.type(ibanInput, 'EE591254471322749514');
+
+    userEvent.click(nextButton());
+
+    expect(
+      await screen.findByText(/Esitan järgmised avaldused ja olen teadlik nende tingimustest/i),
+    ).toBeInTheDocument();
+
+    expect(await screen.findByText(/EE591254471322749514/i)).toBeInTheDocument();
+
+    const applicationTitles = [
+      /Igakuised fondipensioni väljamaksed II sambast/,
+      /Osaline väljamakse II sambast/,
+    ];
+
+    await Promise.all(
+      applicationTitles.map(async (title, i) =>
+        Promise.all([
+          expect(await screen.findByText(`Avaldus #${i + 1}`)).toBeInTheDocument(),
+          expect(await screen.findByRole('heading', { name: title })).toBeInTheDocument(),
+        ]),
+      ),
+    );
+
+    userEvent.click(confirmationCheckbox());
+    expect(signButton()).toBeEnabled();
+
+    userEvent.click(signButton());
+
+    expect(
+      await screen.findByRole(
+        'heading',
+        { name: 'Väljamaksete avaldused esitatud' },
+        { timeout: 10_000 },
+      ),
+    ).toBeInTheDocument();
+  });
+});
+
+describe('withdrawals flow with only third pillar', () => {
+  beforeEach(() => {
+    pensionAccountStatementBackend(server, [
+      {
+        fund: {
+          fundManager: { name: 'Tuleva' },
+          isin: 'EE3600001707',
+          name: 'Tuleva III Samba Pensionifond',
+          managementFeeRate: 0.003,
+          pillar: 3,
+          ongoingChargesFigure: 0.0043,
+          status: FundStatus.ACTIVE,
+          inceptionDate: '2017-01-01',
+          nav: 1,
+        },
+        value: 5699.36,
+        unavailableValue: 0,
+        currency: 'EUR',
+        activeContributions: true,
+        contributions: 9876.54,
+        subtractions: 0,
+        profit: -1876.54,
+      },
+    ]);
+  });
+
+  test('reaches final confirmation step', async () => {
+    expect(
+      await screen.findByText(/II ja III samba väljamaksed/i, undefined, { timeout: 1000 }),
+    ).toBeInTheDocument();
+
+    expect(
+      await screen.findByText(/Sul on III sambas kokku/i, { exact: false }, { timeout: 1000 }),
+    ).toBeInTheDocument();
+
+    const partialWithdrawalSizeInput = await screen.findByLabelText(
+      'Soovid osa raha kohe välja võtta',
+      { exact: false },
+    );
+
+    userEvent.type(partialWithdrawalSizeInput, '100');
+
+    userEvent.click(nextButton());
+
+    const ibanInput = await screen.findByLabelText('Pangakonto number (IBAN)');
+
+    userEvent.type(ibanInput, 'EE591254471322749514');
+
+    userEvent.click(nextButton());
+
+    expect(
+      await screen.findByText(/Esitan järgmised avaldused ja olen teadlik nende tingimustest/i),
+    ).toBeInTheDocument();
+
+    expect(await screen.findByText(/EE591254471322749514/i)).toBeInTheDocument();
+
+    const applicationTitles = [
+      /Igakuised fondipensioni väljamaksed III sambast/,
+      /Osaline väljamakse III sambast/,
+    ];
+
+    await Promise.all(
+      applicationTitles.map(async (title, i) =>
+        Promise.all([
+          expect(await screen.findByText(`Avaldus #${i + 1}`)).toBeInTheDocument(),
+          expect(await screen.findByRole('heading', { name: title })).toBeInTheDocument(),
+        ]),
+      ),
+    );
+
+    userEvent.click(confirmationCheckbox());
+    expect(signButton()).toBeEnabled();
+
+    userEvent.click(signButton());
+
+    expect(
+      await screen.findByRole(
+        'heading',
+        { name: 'Väljamaksete avaldused esitatud' },
+        { timeout: 10_000 },
+      ),
+    ).toBeInTheDocument();
+  });
 });
 
 const nextButton = () => screen.getByRole('button', { name: 'Jätkan' });
