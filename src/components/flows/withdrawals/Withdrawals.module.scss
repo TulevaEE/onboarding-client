@@ -34,3 +34,20 @@
     line-height: 2rem;
   }
 }
+
+.rangeContainer {
+  position: relative;
+}
+
+.coloredRange {
+  position: absolute;
+  height: 0.5rem;
+  background-color: $orange;
+  top: 12px;
+  width: 50%;
+  user-select: none;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+  user-select: none;
+  pointer-events: none;
+}

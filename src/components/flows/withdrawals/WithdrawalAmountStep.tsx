@@ -96,15 +96,12 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
       </div>
 
       <div className="mt-3">
-        <input
-          type="range"
-          className="form-control-range custom-range"
+        <WithdrawalRangeInput
           value={withdrawalAmount.singleWithdrawalAmount ?? 0}
-          onChange={(event) => handleSingleWithdrawalAmountSelected(event.target.valueAsNumber)}
-          min={0}
           max={totalAmount}
-          step={1}
+          onChange={(value) => handleSingleWithdrawalAmountSelected(value)}
         />
+
         <div className="mt-1 d-flex justify-content-between">
           <div className="text-muted">{formatAmountForCurrency(0, 0)}</div>
           <div className="text-muted">{formatAmountForCurrency(totalAmount, 2)}</div>
@@ -169,6 +166,29 @@ const FundPensionStatusBox = ({ totalAmount }: { totalAmount: number }) => {
     </div>
   );
 };
+
+const WithdrawalRangeInput = ({
+  value,
+  max,
+  onChange,
+}: {
+  value: number;
+  max: number;
+  onChange: (value: number) => unknown;
+}) => (
+  <div className={styles.rangeContainer}>
+    <div className={styles.coloredRange} style={{ width: `${(value / max) * 100}%` }} />
+    <input
+      type="range"
+      className="form-control-range custom-range"
+      value={value}
+      onChange={(event) => onChange(event.target.valueAsNumber)}
+      min={0}
+      max={max}
+      step={1}
+    />
+  </div>
+);
 
 const PillarSelection = ({
   secondPillarAmount,
