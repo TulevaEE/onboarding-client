@@ -181,20 +181,25 @@ export const ReviewAndConfirmStep = () => {
         >
           Tagasi
         </button>
-        <button
-          type="button"
-          className="btn btn-primary"
-          onClick={() => createMandateBatchAndStartSigning()}
-          disabled={
-            signingInProgress ||
-            batchCreationLoading ||
-            !eligibility ||
-            !eligibility?.hasReachedEarlyRetirementAge
-          }
-        >
-          Allkirjastan {mandatesToCreate.length}{' '}
-          {mandatesToCreate.length === 1 ? 'avalduse' : 'avaldust'}
-        </button>
+        <div className="d-flex">
+          <button type="button" className="btn btn-light mr-2" onClick={navigateToNextStep}>
+            Jäta vahele
+          </button>
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => createMandateBatchAndStartSigning()}
+            disabled={
+              signingInProgress ||
+              batchCreationLoading ||
+              !eligibility ||
+              !eligibility?.hasReachedEarlyRetirementAge
+            }
+          >
+            Allkirjastan {mandatesToCreate.length}{' '}
+            {mandatesToCreate.length === 1 ? 'avalduse' : 'avaldust'}
+          </button>
+        </div>
       </div>
     </div>
   );
