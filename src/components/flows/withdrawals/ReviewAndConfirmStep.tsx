@@ -183,7 +183,7 @@ export const ReviewAndConfirmStep = () => {
         </button>
         <div className="d-flex">
           <button type="button" className="btn btn-light mr-2" onClick={navigateToNextStep}>
-            Jäta vahele
+            Edasi
           </button>
           <button
             type="button"
