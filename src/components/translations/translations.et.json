@@ -248,6 +248,9 @@
   "account.status.choice.pillar.second.paymentRate": "Sa panustad II sambasse {paymentRate}% brutopalgast",
   "account.status.choice.pillar.second.paymentRate.comment": "Alates 2024. a jaanuarist saad sissemakse tõsta kuni <b>6%</b> peale",
 
+  "account.status.choice.pillar.second.tax.benefit.warning": "Ära jää maksuvõidust ilma",
+  "account.status.choice.pillar.second.tax.benefit.deadline": "Tegutse enne <b>30. novembri südaööd</b>, sest muidu jääd järgmisel aastal ilma <b>{estimatedWin}</b> maksuvõidust",
+
   "account.status.choice.pillar.second.deadlinecard.title": "Tähtaeg!",
   "account.status.choice.pillar.second.deadlinecard.text": "Selle vahetusperioodi tähtaeg on <b>{periodEnding}</b>",
   "account.status.choice.pillar.second.basketcard.title": "Riskide hajutamine",

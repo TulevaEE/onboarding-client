@@ -12,6 +12,8 @@ import {
 // TODO: Figure out a cleaner way to mock the hooks
 jest.mock('../../../common/apiHooks', () => ({
   usePendingApplications: () => ({ data: [{ type: 'WITHDRAWAL' }] }),
+  useTransactions: () => ({ data: [{ amount: 100 }] }),
+  useFunds: () => ({ data: [{ pillar: 2 }] }),
   useMandateDeadlines: () => ({ data: { periodEnding: '2024-07-31T00:59:59.999999999Z' } }),
 }));
 
@@ -39,7 +41,7 @@ describe('SecondPillarStatusBox', () => {
   });
 
   it('renders the payment rate flow', () => {
-    component.setProps({ currentPaymentRate: 2 });
+    component.setProps({ currentPaymentRate: 2, pendingPaymentRate: 2 });
     expect(component).toMatchSnapshot();
   });
 

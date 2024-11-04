@@ -249,6 +249,9 @@
   "account.status.choice.pillar.second.paymentRate": "You contribute {paymentRate}% of your gross salary to II pillar",
   "account.status.choice.pillar.second.paymentRate.comment": "From January 2024, you can increase your contributions to <b>4%</b> or <b>6%</b>",
 
+  "account.status.choice.pillar.second.tax.benefit.warning": "Don't miss out on tax benefits",
+  "account.status.choice.pillar.second.tax.benefit.deadline": "Act before midnight on <b>November 30th</b> to avoid missing out on <b>{estimatedWin}</b> in tax benefits next year.",
+
   "account.status.choice.pillar.second.deadlinecard.title": "Deadline!",
   "account.status.choice.pillar.second.deadlinecard.text": "This exchange period ends on <b>{periodEnding}</b>",
   "account.status.choice.pillar.second.basketcard.title": "Diversification",

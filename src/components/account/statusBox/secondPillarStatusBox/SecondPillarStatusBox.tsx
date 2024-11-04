@@ -3,7 +3,12 @@ import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import StatusBoxRow from '../statusBoxRow';
-import { useMandateDeadlines, usePendingApplications } from '../../../common/apiHooks';
+import {
+  useFunds,
+  useMandateDeadlines,
+  usePendingApplications,
+  useTransactions,
+} from '../../../common/apiHooks';
 import {
   Application,
   ApplicationType,
@@ -11,6 +16,7 @@ import {
   Fund,
   MandateDeadlines,
   SourceFund,
+  Transaction,
 } from '../../../common/apiModels';
 import { State } from '../../../../types';
 import InfoTooltip from '../../../common/infoTooltip';
@@ -33,6 +39,40 @@ export interface Props {
   pendingPaymentRate: number;
 }
 
+const estimateYearlyTaxWin = (
+  transactions: Transaction[] | undefined,
+  funds: Fund[] | undefined,
+  currentPaymentRate: number,
+) => {
+  const averageSecondPillarPayment =
+    transactions
+      ?.map((transaction) => {
+        const fund = funds?.find((fnd) => fnd.isin === transaction.isin);
+        return {
+          ...transaction,
+          pillar: fund?.pillar,
+        };
+      })
+      .filter((transaction) => transaction.pillar === 2)
+      .slice(0, 6)
+      .reduce(
+        (acc, transaction, _, secondPillarTransactions) =>
+          acc + transaction.amount / secondPillarTransactions.length,
+        0,
+      ) || 0;
+
+  const governmentPaymentRate = 4;
+
+  const estimatedWage =
+    averageSecondPillarPayment / ((currentPaymentRate + governmentPaymentRate) / 100);
+
+  const maxPercentage = 0.06;
+  const incomeTax = 0.22;
+  const months = 12;
+
+  return estimatedWage * maxPercentage * incomeTax * months;
+};
+
 export const SecondPillarStatusBox: React.FC<Props> = ({
   loading,
   conversion,
@@ -44,12 +84,17 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
 }: Props) => {
   const { data: mandateDeadlines } = useMandateDeadlines();
   const { data: applications } = usePendingApplications();
+  const { data: transactions } = useTransactions();
+  const { data: funds } = useFunds();
+
   const leaveApplication: Application | undefined =
     applications &&
     applications.find(
       (application) =>
         application.type === ApplicationType.TRANSFER && isTuleva(application.details.sourceFund),
     );
+
+  const estimatedYearlyTaxWin = estimateYearlyTaxWin(transactions, funds, currentPaymentRate);
 
   if (!secondPillarActive) {
     return (
@@ -94,24 +139,24 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
   if (currentPaymentRate < 4 && pendingPaymentRate < 4) {
     return (
       <StatusBoxRow
-        ok
+        warning
         showAction={!loading}
         name={<FormattedMessage id="account.status.choice.pillar.second" />}
         lines={[
-          <FormattedMessage
-            id={`account.status.choice.lowFee${isFullyConverted ? '.index' : ''}.2.label`}
-            values={{
-              paymentRate: currentPaymentRate,
-            }}
-          />,
-          <small className="text-muted">
-            <FormattedMessage
-              id="account.status.choice.pillar.second.paymentRate.comment"
-              values={{
-                b: (chunks: string) => <b>{chunks}</b>,
-              }}
-            />
-          </small>,
+          <FormattedMessage id="account.status.choice.pillar.second.tax.benefit.warning" />,
+          ...(estimatedYearlyTaxWin >= 1
+            ? [
+                <small className="text-muted">
+                  <FormattedMessage
+                    id="account.status.choice.pillar.second.tax.benefit.deadline"
+                    values={{
+                      estimatedWin: <Euro amount={estimatedYearlyTaxWin} fractionDigits={0} />,
+                      b: (chunks: string) => <b>{chunks}</b>,
+                    }}
+                  />
+                </small>,
+              ]
+            : []),
         ]}
       >
         <Link to="/2nd-pillar-payment-rate" className="btn btn-primary">
