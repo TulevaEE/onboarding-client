@@ -6,6 +6,7 @@ export const withdrawalEligibility: WithdrawalsEligibility = {
   hasReachedEarlyRetirementAge: true,
   recommendedDurationYears: 20,
   age: 60,
+  arrestsOrBankruptciesPresent: false,
 };
 
 export const personalDetails: PersonalDetailsStepState = {

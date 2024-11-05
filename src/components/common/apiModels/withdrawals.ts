@@ -2,6 +2,7 @@ export type WithdrawalsEligibility = {
   hasReachedEarlyRetirementAge: boolean;
   recommendedDurationYears: number;
   age: number;
+  arrestsOrBankruptciesPresent: boolean;
 };
 
 export type WithdrawalMandateDetails =

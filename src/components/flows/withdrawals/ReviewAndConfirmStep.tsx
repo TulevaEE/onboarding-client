@@ -242,6 +242,7 @@ const FundPensionMandateDescription = ({
 }) => {
   const { withdrawalAmount, pensionHoldings } = useWithdrawalsContext();
   const { data: mandateDeadlines } = useMandateDeadlines();
+  const { data: eligibility } = useWithdrawalsEligibility();
 
   if (!pensionHoldings || !mandateDeadlines) {
     return null; // TODO better handling
@@ -293,14 +294,20 @@ const FundPensionMandateDescription = ({
         </p>
       )}
 
-      <p>
-        Saan avalduse tühistada kuni{' '}
-        <b>{formatDateTime(mandateDeadlines?.withdrawalCancellationDeadline)}</b>.
-      </p>
-
-      <p>Saan väljamaksed igal ajal lõpetada ja uuesti sõlmida.</p>
-
-      <p>TODO arest/pankrotinõue disclaimer</p>
+      {mandate.pillar === 'SECOND' && eligibility?.arrestsOrBankruptciesPresent ? (
+        <p>
+          <b>Sul ei ole võimalik avaldust tühistada</b>, kuna sul on pensioniregistris
+          registreeritud kehtiv aresti- või pankrotinõue.
+        </p>
+      ) : (
+        <>
+          <p>
+            Saan avalduse tühistada kuni{' '}
+            <b>{formatDateTime(mandateDeadlines?.withdrawalCancellationDeadline)}</b>.
+          </p>
+          <p>Saan väljamaksed igal ajal lõpetada ja uuesti sõlmida.</p>
+        </>
+      )}
     </>
   );
 };
@@ -312,6 +319,7 @@ const PartialWithdrawalMandateDescription = ({
   mandate: PartialWithdrawalMandateDetails;
 }) => {
   const { data: mandateDeadlines } = useMandateDeadlines();
+  const { data: eligibility } = useWithdrawalsEligibility();
   const { withdrawalAmount, pensionHoldings } = useWithdrawalsContext();
 
   // TODO better handling
@@ -375,6 +383,13 @@ const PartialWithdrawalMandateDescription = ({
             Avalduse esitamisega <b>peatuvad II samba sissemaksed</b>{' '}
             {mandateDeadlines?.periodEnding && formatDate(mandateDeadlines.periodEnding)} ja neid ei
             saa hiljem taastada.
+          </p>
+        )}
+
+        {mandate.pillar === 'SECOND' && eligibility?.arrestsOrBankruptciesPresent && (
+          <p>
+            <b>Sul ei ole võimalik avaldust tühistada</b>, kuna sul on pensioniregistris
+            registreeritud kehtiv aresti- või pankrotinõue.
           </p>
         )}
       </div>

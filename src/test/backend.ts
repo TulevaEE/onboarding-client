@@ -654,6 +654,7 @@ export function withdrawalsEligibilityBackend(
     age: 60,
     hasReachedEarlyRetirementAge: true,
     recommendedDurationYears: 20,
+    arrestsOrBankruptciesPresent: false,
   },
 ) {
   server.use(
