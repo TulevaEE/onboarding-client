@@ -718,6 +718,33 @@
   "withdrawals.personalDetails.bankAccount.ibanDescription": "Pangakonto peab olema avatud Eestis ja kuuluma sinule.",
   "withdrawals.personalDetails.bankAccount.ibanError": "Sisestatud IBAN ei ole korrektne. Eesti IBAN on 20-kohaline.",
 
+  "withdrawals.reviewAndConfirm.confirmAndSubmit": "Esitan järgmised avaldused ja olen teadlik nende tingimustest:",
+  "withdrawals.reviewAndConfirm.episDisclaimer": "Olen teadlik, et AS Pensionikeskus kogub ja töötleb minu isikuandmeid kogumispensionide seaduses ja väärtpaberite registri pidamise seaduses sätestatud ulatuses Euroopa Liidu piires.",
+  "withdrawals.reviewAndConfirm.episDisclaimerError": "Välja täitmine on kohustuslik.",
+
+  "withdrawals.reviewAndConfirm.signMandateSingle": "Allkirjastan {amount} avalduse",
+  "withdrawals.reviewAndConfirm.signMandatePlural": "Allkirjastan {amount} avaldust",
+
+  "withdrawals.mandates.partialWithdrawal.secondPillar.title": "Osaline väljamakse II sambast",
+  "withdrawals.mandates.partialWithdrawal.thirdPillar.title": "Osaline väljamakse III sambast",
+  "withdrawals.mandates.fundPension.secondPillar.title": "Igakuised fondipensioni väljamaksed II sambast",
+  "withdrawals.mandates.fundPension.thirdPillar.title": "Igakuised fondipensioni väljamaksed III sambast",
+
+  "withdrawals.mandates.partialWithdrawal.withdrawFromFundsProportionally": "Võtan välja igast fondist proportsionaalselt:",
+  "withdrawals.mandates.partialWithdrawal.shares": "osakut",
+  "withdrawals.mandates.partialWithdrawal.percentageOfShares": "osakutest",
+
+  "withdrawals.mandates.partialWithdrawal.dateAndSize": "Väljamakse laekub <b>{withdrawalDate}</b> . Väljamakse kajastatakse tuludeklaratsioonis. Riik peab kinni <warningText>10% tulumaksu</warningText>, seega saan kätte eeldatavalt <b>{estimatedWithdrawalSizeWithTax}</b>. Täpne summa selgub fondiosakute müümise hetkel.",
+  "withdrawals.mandates.partialWithdrawal.secondPillarPaymentsFinished": "Avalduse esitamisega <b>peatuvad II samba sissemaksed</b> {endingDate} ja neid ei saa hiljem taastada.",
+  "withdrawals.mandates.arrestsBankrupticesDisclaimer": "<b>Sul ei ole võimalik avaldust tühistada</b>, kuna sul on pensioniregistris registreeritud kehtiv aresti- või pankrotinõue.",
+
+  "withdrawals.mandates.fundPension.recommendedDurationTaxFree": "Väljamaksed on <b>soovitusliku kestusega</b> ({duration} aastat) ja <successText>tulumaksuvabad</successText>.",
+  "withdrawals.mandates.fundPension.yearsLeftToLiveDescription": "Soovituslik kestus arvutatakse keskmiselt elada jäänud aastate alusel vastavalt sinu vanusele. Hetkel on see {duration} aastat.",
+
+  "withdrawals.mandates.fundPension.dateAndSize": "Esimene väljamakse laekub <b>{withdrawalDate}</b> ja on eeldatavalt <b>{paymentSize}</b>. <muted>Summad varieeruvad ja selguvad fondiosakute müümise hetkel.</muted>",
+  "withdrawals.mandates.fundPension.cancellationUntil": "Saan avalduse tühistada kuni <b>{cancellationDate}</b>.",
+  "withdrawals.mandates.fundPension.stopResumePayments": "Saan väljamaksed igal ajal lõpetada ja uuesti sõlmida.",
+
   "LHV Pensionifond XL": "LHV Pensionifond XL",
   "Tuleva Maailma Aktsiate Pensionifond": "Tuleva Maailma Aktsiate Pensionifond",
   "Tuleva Maailma Võlakirjade Pensionifond": "Tuleva Maailma Võlakirjade Pensionifond",
