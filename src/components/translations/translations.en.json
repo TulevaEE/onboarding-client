@@ -685,6 +685,9 @@
   "comparisonCalculator.period.twoYears": "Last 2 years",
   "comparisonCalculator.period.oneYear": "Last year",
 
+  "withdrawals.heading": "II and III pillar withdrawals",
+  "withdrawals.subHeading": "You are <b>{age} years old</b> and eligible to start using your accumulated pension holdings <b>under preferential conditions</b>",
+
   "withdrawals.steps.withdrawalSize": "Withdrawal size",
   "withdrawals.steps.yourInformation": "Your information",
   "withdrawals.steps.confirmApplication": "Confirm application",
@@ -722,6 +725,8 @@
 
   "withdrawals.reviewAndConfirm.signMandateSingle": "Sign {amount} application",
   "withdrawals.reviewAndConfirm.signMandatePlural": "Sign {amount} applications",
+
+  "withdrawals.reviewAndConfirm.application": "Application #{number}",
 
   "withdrawals.mandates.partialWithdrawal.secondPillar.title": "Partial withdrawal from II pillar",
   "withdrawals.mandates.partialWithdrawal.thirdPillar.title": "Partial withdrawal from III pillar",

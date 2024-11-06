@@ -63,15 +63,17 @@ describe('withdrawals flow with both pillars', () => {
 
   test('reaches final confirmation step to make partial withdrawal with fund pension', async () => {
     expect(
-      await screen.findByText(/II ja III samba väljamaksed/i, undefined, { timeout: 1000 }),
+      await screen.findByText(/II and III pillar withdrawals/i, undefined, { timeout: 1000 }),
     ).toBeInTheDocument();
 
     expect(
-      await screen.findByText(/Kasutan kogu pensionivara/i, undefined, { timeout: 1000 }),
+      await screen.findByText(/Withdraw from the entire pension holding/i, undefined, {
+        timeout: 1000,
+      }),
     ).toBeInTheDocument();
 
     const partialWithdrawalSizeInput = await screen.findByLabelText(
-      'Soovid osa raha kohe välja võtta',
+      'Do you wish to make a partial withdrawal immediately?',
       { exact: false },
     );
 
@@ -79,29 +81,29 @@ describe('withdrawals flow with both pillars', () => {
 
     userEvent.click(nextButton());
 
-    const ibanInput = await screen.findByLabelText('Pangakonto number (IBAN)');
+    const ibanInput = await screen.findByLabelText('Bank account number (IBAN)');
 
     userEvent.type(ibanInput, 'EE591254471322749514');
 
     userEvent.click(nextButton());
 
     expect(
-      await screen.findByText(/Esitan järgmised avaldused ja olen teadlik nende tingimustest/i),
+      await screen.findByText(/I submit the following applications and am aware of their terms/i),
     ).toBeInTheDocument();
 
     expect(await screen.findByText(/EE591254471322749514/i)).toBeInTheDocument();
 
     const applicationTitles = [
-      /Igakuised fondipensioni väljamaksed II sambast/,
-      /Igakuised fondipensioni väljamaksed III sambast/,
-      /Osaline väljamakse II sambast/,
-      /Osaline väljamakse III sambast/,
+      /Monthly fund pension payments from II pillar/,
+      /Monthly fund pension payments from III pillar/,
+      /Partial withdrawal from II pillar/,
+      /Partial withdrawal from III pillar/,
     ];
 
     await Promise.all(
       applicationTitles.map(async (title, i) =>
         Promise.all([
-          expect(await screen.findByText(`Avaldus #${i + 1}`)).toBeInTheDocument(),
+          expect(await screen.findByText(`Application #${i + 1}`)).toBeInTheDocument(),
           expect(await screen.findByRole('heading', { name: title })).toBeInTheDocument(),
         ]),
       ),
@@ -123,11 +125,11 @@ describe('withdrawals flow with both pillars', () => {
 
   test('reaches final confirmation step with iban validation', async () => {
     expect(
-      await screen.findByText(/II ja III samba väljamaksed/i, undefined, { timeout: 1000 }),
+      await screen.findByText(/II and III pillar withdrawals/i, undefined, { timeout: 1000 }),
     ).toBeInTheDocument();
 
     const partialWithdrawalSizeInput = await screen.findByLabelText(
-      'Soovid osa raha kohe välja võtta',
+      'Do you wish to make a partial withdrawal immediately?',
       { exact: false },
     );
 
@@ -135,14 +137,16 @@ describe('withdrawals flow with both pillars', () => {
 
     userEvent.click(nextButton());
 
-    const ibanInput = await screen.findByLabelText('Pangakonto number (IBAN)');
+    const ibanInput = await screen.findByLabelText('Bank account number (IBAN)');
 
     userEvent.type(ibanInput, 'EE123_INVALID_IBAN');
 
     userEvent.click(nextButton());
 
     expect(
-      await screen.findByText(/Sisestatud IBAN ei ole korrektne. Eesti IBAN on 20-kohaline./i),
+      await screen.findByText(
+        /The entered IBAN is incorrect. An Estonian IBAN has 20 characters./i,
+      ),
     ).toBeInTheDocument();
 
     userEvent.clear(ibanInput);
@@ -152,7 +156,7 @@ describe('withdrawals flow with both pillars', () => {
     userEvent.click(nextButton());
 
     expect(
-      await screen.findByText(/Esitan järgmised avaldused ja olen teadlik nende tingimustest/i),
+      await screen.findByText(/I submit the following applications and am aware of their terms/i),
     ).toBeInTheDocument();
 
     expect(await screen.findByText(/EE591254471322749514/i)).toBeInTheDocument();
@@ -207,15 +211,15 @@ describe('withdrawals flow with only second pillar', () => {
 
   test('reaches final confirmation step', async () => {
     expect(
-      await screen.findByText(/II ja III samba väljamaksed/i, undefined, { timeout: 1000 }),
+      await screen.findByText(/II and III pillar withdrawals/i, undefined, { timeout: 1000 }),
     ).toBeInTheDocument();
 
     expect(
-      await screen.findByText(/Sul on II sambas kokku/i, { exact: false }, { timeout: 1000 }),
+      await screen.findByText(/Your holdings in II pillar/i, { exact: false }, { timeout: 1000 }),
     ).toBeInTheDocument();
 
     const partialWithdrawalSizeInput = await screen.findByLabelText(
-      'Soovid osa raha kohe välja võtta',
+      'Do you wish to make a partial withdrawal immediately?',
       { exact: false },
     );
 
@@ -223,27 +227,27 @@ describe('withdrawals flow with only second pillar', () => {
 
     userEvent.click(nextButton());
 
-    const ibanInput = await screen.findByLabelText('Pangakonto number (IBAN)');
+    const ibanInput = await screen.findByLabelText('Bank account number (IBAN)');
 
     userEvent.type(ibanInput, 'EE591254471322749514');
 
     userEvent.click(nextButton());
 
     expect(
-      await screen.findByText(/Esitan järgmised avaldused ja olen teadlik nende tingimustest/i),
+      await screen.findByText(/I submit the following applications and am aware of their terms/i),
     ).toBeInTheDocument();
 
     expect(await screen.findByText(/EE591254471322749514/i)).toBeInTheDocument();
 
     const applicationTitles = [
-      /Igakuised fondipensioni väljamaksed II sambast/,
-      /Osaline väljamakse II sambast/,
+      /Monthly fund pension payments from II pillar/,
+      /Partial withdrawal from II pillar/,
     ];
 
     await Promise.all(
       applicationTitles.map(async (title, i) =>
         Promise.all([
-          expect(await screen.findByText(`Avaldus #${i + 1}`)).toBeInTheDocument(),
+          expect(await screen.findByText(`Application #${i + 1}`)).toBeInTheDocument(),
           expect(await screen.findByRole('heading', { name: title })).toBeInTheDocument(),
         ]),
       ),
@@ -292,15 +296,15 @@ describe('withdrawals flow with only third pillar', () => {
 
   test('reaches final confirmation step', async () => {
     expect(
-      await screen.findByText(/II ja III samba väljamaksed/i, undefined, { timeout: 1000 }),
+      await screen.findByText(/II and III pillar withdrawals/i, undefined, { timeout: 1000 }),
     ).toBeInTheDocument();
 
     expect(
-      await screen.findByText(/Sul on III sambas kokku/i, { exact: false }, { timeout: 1000 }),
+      await screen.findByText(/Your holdings in III pillar/i, { exact: false }, { timeout: 1000 }),
     ).toBeInTheDocument();
 
     const partialWithdrawalSizeInput = await screen.findByLabelText(
-      'Soovid osa raha kohe välja võtta',
+      'Do you wish to make a partial withdrawal immediately?',
       { exact: false },
     );
 
@@ -308,27 +312,27 @@ describe('withdrawals flow with only third pillar', () => {
 
     userEvent.click(nextButton());
 
-    const ibanInput = await screen.findByLabelText('Pangakonto number (IBAN)');
+    const ibanInput = await screen.findByLabelText('Bank account number (IBAN)');
 
     userEvent.type(ibanInput, 'EE591254471322749514');
 
     userEvent.click(nextButton());
 
     expect(
-      await screen.findByText(/Esitan järgmised avaldused ja olen teadlik nende tingimustest/i),
+      await screen.findByText(/I submit the following applications and am aware of their terms/i),
     ).toBeInTheDocument();
 
     expect(await screen.findByText(/EE591254471322749514/i)).toBeInTheDocument();
 
     const applicationTitles = [
-      /Igakuised fondipensioni väljamaksed III sambast/,
-      /Osaline väljamakse III sambast/,
+      /Monthly fund pension payments from III pillar/,
+      /Partial withdrawal from III pillar/,
     ];
 
     await Promise.all(
       applicationTitles.map(async (title, i) =>
         Promise.all([
-          expect(await screen.findByText(`Avaldus #${i + 1}`)).toBeInTheDocument(),
+          expect(await screen.findByText(`Application #${i + 1}`)).toBeInTheDocument(),
           expect(await screen.findByRole('heading', { name: title })).toBeInTheDocument(),
         ]),
       ),
@@ -349,6 +353,6 @@ describe('withdrawals flow with only third pillar', () => {
   });
 });
 
-const nextButton = () => screen.getByRole('button', { name: 'Jätkan' });
+const nextButton = () => screen.getByRole('button', { name: 'Continue' });
 const confirmationCheckbox = () => screen.getByRole('checkbox');
-const signButton = () => screen.getByRole('button', { name: /Allkirjastan/ });
+const signButton = () => screen.getByRole('button', { name: /Sign/ });
