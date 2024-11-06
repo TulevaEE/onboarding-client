@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { ReactChildren } from 'react';
+import { FormattedMessage } from 'react-intl';
 import { useWithdrawalsEligibility } from '../../common/apiHooks';
 
 export const WithdrawalsHeader = () => {
@@ -10,11 +11,17 @@ export const WithdrawalsHeader = () => {
 
   return (
     <div className="pt-3 pb-5">
-      <h1 className="mb-4 text-center font-weight-semibold">II ja III samba väljamaksed</h1>
+      <h1 className="mb-4 text-center font-weight-semibold">
+        <FormattedMessage id="withdrawals.heading" />
+      </h1>
       <div className="lead text-center">
-        Oled <span className="font-weight-bold">{eligibility.age}-aastane</span> ja sul on õigus
-        kogutud pensionivara <span className="font-weight-bold">soodustingimustel</span> kasutama
-        hakata.
+        <FormattedMessage
+          id="withdrawals.subHeading"
+          values={{
+            b: (children: ReactChildren) => <span className="text-bold">{children}</span>,
+            age: eligibility.age,
+          }}
+        />
       </div>
     </div>
   );

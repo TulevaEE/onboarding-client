@@ -167,8 +167,6 @@ export const ReviewAndConfirmStep = () => {
             id="agree-to-terms-checkbox"
           />
           <label className="custom-control-label" htmlFor="agree-to-terms-checkbox">
-            <FormattedMessage id="withdrawals.reviewAndConfirm.confirmAndSubmit" />
-            <br />
             <FormattedMessage id="withdrawals.reviewAndConfirm.episDisclaimer" />
           </label>
           {agreedToTermsError && (
@@ -230,7 +228,12 @@ const MandatePreview = ({
 }) => (
   <div className="card p-4 mb-4">
     <div>
-      <h3 className={styles.mandateSubheading}>Avaldus #{index + 1}</h3>
+      <h3 className={styles.mandateSubheading}>
+        <FormattedMessage
+          id="withdrawals.reviewAndConfirm.application"
+          values={{ number: index + 1 }}
+        />
+      </h3>
       <h2 className={styles.mandateHeading}>
         <FormattedMessage id={TITLE_MAPPING[mandate.mandateType][mandate.pillar]} />
       </h2>

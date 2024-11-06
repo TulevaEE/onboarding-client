@@ -688,6 +688,9 @@
   "comparisonCalculator.period.twoYears": "Viimased 2 aastat",
   "comparisonCalculator.period.oneYear": "Viimane aasta",
 
+  "withdrawals.heading": "II ja III samba väljamaksed",
+  "withdrawals.subHeading": "Oled <b>{age}-aastane</b> ja sul on õigus kogutud pensionivara <b>soodustingimustel</b> kasutama hakata.",
+
   "withdrawals.steps.withdrawalSize": "Väljamakse suurus",
   "withdrawals.steps.yourInformation": "Sinu andmed",
   "withdrawals.steps.confirmApplication": "Kinnita avaldus",
@@ -721,6 +724,8 @@
   "withdrawals.reviewAndConfirm.confirmAndSubmit": "Esitan järgmised avaldused ja olen teadlik nende tingimustest:",
   "withdrawals.reviewAndConfirm.episDisclaimer": "Olen teadlik, et AS Pensionikeskus kogub ja töötleb minu isikuandmeid kogumispensionide seaduses ja väärtpaberite registri pidamise seaduses sätestatud ulatuses Euroopa Liidu piires.",
   "withdrawals.reviewAndConfirm.episDisclaimerError": "Välja täitmine on kohustuslik.",
+
+  "withdrawals.reviewAndConfirm.application": "Avaldus #{number}",
 
   "withdrawals.reviewAndConfirm.signMandateSingle": "Allkirjastan {amount} avalduse",
   "withdrawals.reviewAndConfirm.signMandatePlural": "Allkirjastan {amount} avaldust",
