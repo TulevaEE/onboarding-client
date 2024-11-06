@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { ReactChildren, useEffect, useMemo, useState } from 'react';
+import { FormattedMessage } from 'react-intl';
 import { useWithdrawalsContext } from './hooks';
 import {
   FundPensionOpeningMandateDetails,
@@ -24,6 +25,7 @@ import { formatDate, formatDateRange, formatDateTime } from '../../common/dateFo
 import { useMandateBatchSigning } from './signing/useMandateBatchSigning';
 import { AuthenticationLoader, ErrorMessage } from '../../common';
 import { ErrorResponse } from '../../common/apiModels';
+import { TranslationKey } from '../../translations';
 
 export const ReviewAndConfirmStep = () => {
   const {
@@ -122,7 +124,7 @@ export const ReviewAndConfirmStep = () => {
       )}
 
       <div className="pt-5 pb-5 pl-2 pr-2">
-        Esitan järgmised avaldused ja olen teadlik nende tingimustest:
+        <FormattedMessage id="withdrawals.reviewAndConfirm.confirmAndSubmit" />
       </div>
       {!allFundNavsPresent && (
         <div className="alert alert-danger">
@@ -142,11 +144,15 @@ export const ReviewAndConfirmStep = () => {
 
       <div className="card p-4 mb-3">
         <div className="d-flex justify-content-between mb-3">
-          <div>Pangakonto number (IBAN):</div>
+          <div>
+            <FormattedMessage id="withdrawals.personalDetails.bankAccount.ibanLabel" />:
+          </div>
           <b>{personalDetails.bankAccountIban}</b>
         </div>
         <div className="d-flex justify-content-between">
-          <div>Maksuresidentsus:</div>
+          <div>
+            <FormattedMessage id="withdrawals.personalDetails.bankAccount.taxResidencyLabel" />:
+          </div>
           <b>{personalDetails.taxResidencyCode}</b>
         </div>
       </div>
@@ -161,12 +167,13 @@ export const ReviewAndConfirmStep = () => {
             id="agree-to-terms-checkbox"
           />
           <label className="custom-control-label" htmlFor="agree-to-terms-checkbox">
-            Olen teadlik, et AS Pensionikeskus kogub ja töötleb minu isikuandmeid kogumispensionide
-            seaduses ja väärtpaberite registri pidamise seaduses sätestatud ulatuses Euroopa Liidu
-            piires.
+            <FormattedMessage id="withdrawals.reviewAndConfirm.confirmAndSubmit" />
+            <FormattedMessage id="withdrawals.reviewAndConfirm.episDisclaimer" />
           </label>
           {agreedToTermsError && (
-            <div className={styles.warningText}>Välja täitmine on kohustuslik.</div>
+            <div className={styles.warningText}>
+              <FormattedMessage id="withdrawals.reviewAndConfirm.episDisclaimerError" />
+            </div>
           )}
         </div>
       </div>
@@ -179,11 +186,11 @@ export const ReviewAndConfirmStep = () => {
           disabled={signingInProgress || batchCreationLoading}
           onClick={() => navigateToPreviousStep()}
         >
-          Tagasi
+          <FormattedMessage id="withdrawals.navigation.back" />
         </button>
         <div className="d-flex">
           <button type="button" className="btn btn-light mr-2" onClick={navigateToNextStep}>
-            Edasi
+            <FormattedMessage id="withdrawals.navigation.continue" />
           </button>
           <button
             type="button"
@@ -196,8 +203,14 @@ export const ReviewAndConfirmStep = () => {
               !eligibility?.hasReachedEarlyRetirementAge
             }
           >
-            Allkirjastan {mandatesToCreate.length}{' '}
-            {mandatesToCreate.length === 1 ? 'avalduse' : 'avaldust'}
+            <FormattedMessage
+              id={
+                mandatesToCreate.length === 1
+                  ? 'withdrawals.reviewAndConfirm.signMandateSingle'
+                  : 'withdrawals.reviewAndConfirm.signMandatePlural'
+              }
+              values={{ amount: mandatesToCreate.length }}
+            />
           </button>
         </div>
       </div>
@@ -266,46 +279,73 @@ const FundPensionMandateDescription = ({
   return (
     <>
       <p>
-        Väljamaksed on <b>soovitusliku kestusega</b> ({mandate.duration.durationYears} aastat) ja{' '}
-        <b className={styles.successText}>tulumaksuvabad</b>.
+        <FormattedMessage
+          id="withdrawals.mandates.fundPension.recommendedDurationTaxFree"
+          values={{
+            duration: mandate.duration.durationYears,
+            successText: (children: ReactChildren) => (
+              <b className={styles.successText}>{children}</b>
+            ),
+            b: (children: ReactChildren) => <b>{children}</b>,
+          }}
+        />
         <span className="text-muted">
           <br />
-          Soovituslik kestus arvutatakse keskmiselt elada jäänud aastate alusel vastavalt sinu
-          vanusele. Hetkel on see {mandate.duration.durationYears} aastat.
+          <FormattedMessage
+            id="withdrawals.mandates.fundPension.yearsLeftToLiveDescription"
+            values={{
+              duration: mandate.duration.durationYears,
+            }}
+          />
         </span>
       </p>
       <p>
-        Esimene väljamakse laekub{' '}
-        <b>
-          <WithdrawalPaymentDate mandate={mandate} />
-        </b>{' '}
-        ja on eeldatavalt{' '}
-        <b>{formatAmountForCurrency(fundPensionMonthlyPaymentApproximateSize, 2)}</b>.
-        <span className="text-muted">
-          <br />
-          Summad varieeruvad ja selguvad fondiosakute müümise hetkel.
-        </span>
+        <FormattedMessage
+          id="withdrawals.mandates.fundPension.dateAndSize"
+          values={{
+            b: (children: ReactChildren) => <b>{children}</b>,
+            withdrawalDate: <WithdrawalPaymentDate mandate={mandate} />,
+            paymentSize: formatAmountForCurrency(fundPensionMonthlyPaymentApproximateSize, 2),
+            muted: (children: ReactChildren) => <span className="text-muted">{children}</span>,
+          }}
+        />
       </p>
 
       {mandate.pillar === 'SECOND' && (
         <p>
-          Avalduse esitamisega <b>peatuvad II samba sissemaksed</b> alates{' '}
-          {formatDate(mandateDeadlines.periodEnding)} ja neid ei saa hiljem taastada.
+          <FormattedMessage
+            id="withdrawals.mandates.partialWithdrawal.secondPillarPaymentsFinished"
+            values={{
+              endingDate: formatDate(mandateDeadlines.periodEnding),
+              b: (children: ReactChildren) => <b>{children}</b>,
+            }}
+          />
         </p>
       )}
 
       {mandate.pillar === 'SECOND' && eligibility?.arrestsOrBankruptciesPresent ? (
         <p>
-          <b>Sul ei ole võimalik avaldust tühistada</b>, kuna sul on pensioniregistris
-          registreeritud kehtiv aresti- või pankrotinõue.
+          <FormattedMessage
+            id="withdrawals.mandates.arrestsBankrupticesDisclaimer"
+            values={{
+              b: (children: ReactChildren) => <b>{children}</b>,
+            }}
+          />
         </p>
       ) : (
         <>
           <p>
-            Saan avalduse tühistada kuni{' '}
-            <b>{formatDateTime(mandateDeadlines?.withdrawalCancellationDeadline)}</b>.
+            <FormattedMessage
+              id="withdrawals.mandates.fundPension.cancellationUntil"
+              values={{
+                b: (children: ReactChildren) => <b>{children}</b>,
+                cancellationDate: formatDateTime(mandateDeadlines?.withdrawalCancellationDeadline),
+              }}
+            />
           </p>
-          <p>Saan väljamaksed igal ajal lõpetada ja uuesti sõlmida.</p>
+          <p>
+            <FormattedMessage id="withdrawals.mandates.fundPension.stopResumePayments" />
+          </p>
         </>
       )}
     </>
@@ -343,14 +383,19 @@ const PartialWithdrawalMandateDescription = ({
 
   return (
     <>
-      <b>Võtan välja igast fondist proportsionaalselt:</b>
+      <b>
+        <FormattedMessage id="withdrawals.mandates.partialWithdrawal.withdrawFromFundsProportionally" />
+      </b>
       <div>
         {mandate.fundWithdrawalAmounts.map((amount) => (
           <div className="d-flex justify-content-between" key={amount.isin}>
             <div>{fundIsinToFundNameMap[amount.isin]}</div>
             <div>
               {mandate.pillar === 'THIRD' ? (
-                `${amount.units.toFixed(2)} osakut` // TODO generify logic
+                <>
+                  {amount.units.toFixed(2)}{' '}
+                  <FormattedMessage id="withdrawals.mandates.partialWithdrawal.shares" />
+                </>
               ) : (
                 <>
                   <Percentage
@@ -358,7 +403,7 @@ const PartialWithdrawalMandateDescription = ({
                     fractionDigits={0}
                     alwaysSingleColor
                   />{' '}
-                  osakutest
+                  <FormattedMessage id="withdrawals.mandates.partialWithdrawal.percentageOfShares" />
                 </>
               )}
             </div>
@@ -368,28 +413,43 @@ const PartialWithdrawalMandateDescription = ({
 
       <div className="mt-3">
         <p>
-          Väljamakse laekub{' '}
-          <b>
-            <WithdrawalPaymentDate mandate={mandate} />
-          </b>
-          . Väljamakse kajastatakse tuludeklaratsioonis. Riik peab kinni{' '}
-          <b className={styles.warningText}>10% tulumaksu</b>, seega saan kätte eeldatavalt{' '}
-          <b>{formatAmountForCurrency(estimatedWithdrawalSizeWithTax, 0)}</b>. Täpne summa selgub
-          fondiosakute müümise hetkel.
+          <FormattedMessage
+            id="withdrawals.mandates.partialWithdrawal.dateAndSize"
+            values={{
+              b: (children: ReactChildren) => <b>{children}</b>,
+              warningText: (children: ReactChildren) => (
+                <b className={styles.warningText}>{children}</b>
+              ),
+              estimatedWithdrawalSizeWithTax: formatAmountForCurrency(
+                estimatedWithdrawalSizeWithTax,
+                0,
+              ),
+              withdrawalDate: <WithdrawalPaymentDate mandate={mandate} />,
+            }}
+          />
         </p>
 
         {mandate.pillar === 'SECOND' && (
           <p>
-            Avalduse esitamisega <b>peatuvad II samba sissemaksed</b>{' '}
-            {mandateDeadlines?.periodEnding && formatDate(mandateDeadlines.periodEnding)} ja neid ei
-            saa hiljem taastada.
+            <FormattedMessage
+              id="withdrawals.mandates.partialWithdrawal.secondPillarPaymentsFinished"
+              values={{
+                b: (children: ReactChildren) => <b>{children}</b>,
+                endingDate:
+                  mandateDeadlines?.periodEnding && formatDate(mandateDeadlines.periodEnding),
+              }}
+            />
           </p>
         )}
 
         {mandate.pillar === 'SECOND' && eligibility?.arrestsOrBankruptciesPresent && (
           <p>
-            <b>Sul ei ole võimalik avaldust tühistada</b>, kuna sul on pensioniregistris
-            registreeritud kehtiv aresti- või pankrotinõue.
+            <FormattedMessage
+              id="withdrawals.mandates.arrestsBankrupticesDisclaimer"
+              values={{
+                b: (children: ReactChildren) => <b>{children}</b>,
+              }}
+            />
           </p>
         )}
       </div>
@@ -420,14 +480,14 @@ const WithdrawalPaymentDate = ({ mandate }: { mandate: WithdrawalMandateDetails 
 
 const TITLE_MAPPING: Record<
   WithdrawalMandateDetails['mandateType'],
-  Record<'SECOND' | 'THIRD', string> // TODO TranslationKey
+  Record<'SECOND' | 'THIRD', TranslationKey> // TODO TranslationKey
 > = {
   FUND_PENSION_OPENING: {
-    SECOND: 'Igakuised fondipensioni väljamaksed II sambast',
-    THIRD: 'Igakuised fondipensioni väljamaksed III sambast',
+    SECOND: 'withdrawals.mandates.fundPension.secondPillar.title',
+    THIRD: 'withdrawals.mandates.fundPension.thirdPillar.title',
   },
   PARTIAL_WITHDRAWAL: {
-    SECOND: 'Osaline väljamakse II sambast',
-    THIRD: 'Osaline väljamakse III sambast',
+    SECOND: 'withdrawals.mandates.partialWithdrawal.secondPillar.title',
+    THIRD: 'withdrawals.mandates.partialWithdrawal.thirdPillar.title',
   },
 };
