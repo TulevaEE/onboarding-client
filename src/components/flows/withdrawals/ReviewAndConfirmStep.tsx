@@ -168,6 +168,7 @@ export const ReviewAndConfirmStep = () => {
           />
           <label className="custom-control-label" htmlFor="agree-to-terms-checkbox">
             <FormattedMessage id="withdrawals.reviewAndConfirm.confirmAndSubmit" />
+            <br />
             <FormattedMessage id="withdrawals.reviewAndConfirm.episDisclaimer" />
           </label>
           {agreedToTermsError && (
@@ -231,7 +232,7 @@ const MandatePreview = ({
     <div>
       <h3 className={styles.mandateSubheading}>Avaldus #{index + 1}</h3>
       <h2 className={styles.mandateHeading}>
-        {TITLE_MAPPING[mandate.mandateType][mandate.pillar]}
+        <FormattedMessage id={TITLE_MAPPING[mandate.mandateType][mandate.pillar]} />
       </h2>
     </div>
     <div className="mt-2">
@@ -465,7 +466,7 @@ const WithdrawalPaymentDate = ({ mandate }: { mandate: WithdrawalMandateDetails 
   }
 
   if (mandate.pillar === 'THIRD' && mandate.mandateType === 'PARTIAL_WITHDRAWAL') {
-    return <>nelja tööpäeva jooksul</>;
+    return <FormattedMessage id="withdrawals.mandates.fundPension.fourWorkingDays" />;
   }
 
   return (
