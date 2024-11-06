@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { ReactChildren } from 'react';
 import { Link } from 'react-router-dom';
+import { FormattedMessage } from 'react-intl';
 import { formatAmountForCurrency } from '../../common/utils';
 import { useWithdrawalsEligibility } from '../../common/apiHooks';
 import { Radio } from '../../common';
@@ -44,10 +45,10 @@ export const WithdrawalAmountStep = () => {
       <div className="d-flex justify-content-between pt-4">
         {/* TODO paddings */}
         <Link className="btn btn-light" to="/account">
-          Tagasi
+          <FormattedMessage id="withdrawals.navigation.back" />
         </Link>
         <button type="button" className="btn btn-primary" onClick={() => navigateToNextStep()}>
-          Jätkan
+          <FormattedMessage id="withdrawals.navigation.continue" />
         </button>
       </div>
     </div>
@@ -72,7 +73,7 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
       <div className="d-flex flex-row justify-content-between align-items-center">
         <div>
           <label htmlFor="single-withdrawal-amount" className="lead mb-0">
-            Soovid osa raha kohe välja võtta?
+            <FormattedMessage id="withdrawals.withdrawalAmount.partialWithdrawQuestion" />
           </label>
         </div>
         <div className="form-inline">
@@ -111,7 +112,7 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
         </div>
       </div>
       <div className="mt-3">
-        Väljamakselt peab riik kinni 10% tulumaksu
+        <FormattedMessage id="withdrawals.withdrawalAmount.partialWithdrawalTax" />
         {withdrawalAmount.singleWithdrawalAmount ? ': ' : '.'}
         {withdrawalAmount.singleWithdrawalAmount && (
           <span className={styles.warningText}>
@@ -119,7 +120,7 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
           </span>
         )}
         <div className="text-muted">
-          Täpne summa selgub osakute müümisel ja sõltub osakute turuhinnast.
+          <FormattedMessage id="withdrawals.withdrawalAmount.precisePriceAtSaleDisclaimer" />
         </div>
       </div>
     </div>
@@ -144,26 +145,39 @@ const FundPensionStatusBox = ({ totalAmount }: { totalAmount: number }) => {
   return (
     <div className="mt-3 card p-4 bg-very-light-blue">
       <div className="d-flex flex-row justify-content-between align-items-end">
-        <h3 className="m-0">Saad regulaarselt ja tulumaksuvabalt</h3>
+        <h3 className="m-0">
+          <FormattedMessage id="withdrawals.withdrawalAmount.youReceiveRegularlyAndTaxFree" />
+        </h3>
         <h3 className="m-0 pl-2">
-          {formatAmountForCurrency(fundPensionMonthlyPaymentApproximateSize, 2)}&nbsp;kuus
+          {formatAmountForCurrency(fundPensionMonthlyPaymentApproximateSize, 2)}&nbsp;
+          <FormattedMessage id="withdrawals.perMonth" />
         </h3>
       </div>
       <div className="mt-3 text-muted">
-        Iga kuu saad kätte{' '}
-        <Percentage value={fundPensionPercentageLiquidatedMonthly} alwaysSingleColor />{' '}
-        fondiosakutest. Hetkehinnas on see{' '}
-        {formatAmountForCurrency(fundPensionMonthlyPaymentApproximateSize, 2)}.
+        <FormattedMessage
+          id="withdrawals.withdrawalAmount.monthlyPaymentSize"
+          values={{
+            percentageLiquidated: (
+              <Percentage value={fundPensionPercentageLiquidatedMonthly} alwaysSingleColor />
+            ),
+            paymentAmount: formatAmountForCurrency(fundPensionMonthlyPaymentApproximateSize, 2),
+          }}
+        />
       </div>
       <div className="text-muted">
-        Täpsed summad selguvad osakute müümise hetkel ja võivad varieeruda.
+        <FormattedMessage id="withdrawals.withdrawalAmount.fundPensionPrecisePriceAtSaleDisclaimer" />
       </div>
       <div className="mt-3">
-        Sinu fondi jääv vara{' '}
-        <b>teenib järgnevad {eligibility.recommendedDurationYears} aastat tootlust edasi</b>.<br />
-        Kui osaku turuhind kasvab või kahaneb, siis suurenevad või vähenevad ka sinu väljamaksed.{' '}
+        <FormattedMessage
+          id="withdrawals.withdrawalAmount.fundPensionGrowth"
+          values={{
+            duration: eligibility.recommendedDurationYears,
+            b: (chunks: ReactChildren) => <b>{chunks}</b>,
+            br: <br />,
+          }}
+        />{' '}
         <a href="https://tuleva.ee/pensioni-valjamaksed/" target="_blank" rel="noreferrer">
-          Kui suureks võivad sinu väljamaksed kasvada?
+          <FormattedMessage id="withdrawals.withdrawalAmount.fundPensionLinkText" />
         </a>
       </div>
     </div>
@@ -184,7 +198,9 @@ const PillarSelection = ({
   if (secondPillarAmount > 0 && thirdPillarAmount === 0) {
     return (
       <div className="card p-4 d-flex flex-row justify-content-between mb-3">
-        <h3 className="m-0">Sul on II sambas kokku</h3>
+        <h3 className="m-0">
+          <FormattedMessage id="withdrawals.withdrawalAmount.secondPillarTotal" />
+        </h3>
         <h3 className="m-0">{formatAmountForCurrency(secondPillarAmount, 2)}</h3>
       </div>
     );
@@ -193,7 +209,10 @@ const PillarSelection = ({
   if (thirdPillarAmount > 0 && secondPillarAmount === 0) {
     return (
       <div className="card p-4 d-flex flex-row justify-content-between mb-3">
-        <h3 className="m-0">Sul on III sambas kokku</h3>
+        <h3 className="m-0">
+          {' '}
+          <FormattedMessage id="withdrawals.withdrawalAmount.thirdPillarTotal" />
+        </h3>
         <h3 className="m-0">{formatAmountForCurrency(thirdPillarAmount, 2)}</h3>
       </div>
     );
@@ -209,7 +228,9 @@ const PillarSelection = ({
         onSelect={() => setSelectedPillar('BOTH')}
       >
         <div className="d-flex justify-content-between">
-          <span className="m-0">Kasutan kogu pensionivara</span>
+          <span className="m-0">
+            <FormattedMessage id="withdrawals.withdrawalAmount.useEntirePensionHoldings" />
+          </span>
           <span>{formatAmountForCurrency(secondPillarAmount + thirdPillarAmount, 2)}</span>
         </div>
       </Radio>
@@ -222,7 +243,9 @@ const PillarSelection = ({
         onSelect={() => setSelectedPillar('SECOND')}
       >
         <div className="d-flex justify-content-between">
-          <span className="m-0">Võtan ainult II sambast</span>
+          <span className="m-0">
+            <FormattedMessage id="withdrawals.withdrawalAmount.withdrawOnlySecondPillar" />
+          </span>
           <span>{formatAmountForCurrency(secondPillarAmount, 2)}</span>
         </div>
       </Radio>
@@ -235,7 +258,9 @@ const PillarSelection = ({
         onSelect={() => setSelectedPillar('THIRD')}
       >
         <div className="d-flex justify-content-between">
-          <span className="m-0">Võtan ainult III sambast</span>
+          <span className="m-0">
+            <FormattedMessage id="withdrawals.withdrawalAmount.withdrawOnlyThirdPillar" />
+          </span>
           <span>{formatAmountForCurrency(thirdPillarAmount, 2)}</span>
         </div>
       </Radio>

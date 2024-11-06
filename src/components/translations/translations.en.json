@@ -686,10 +686,36 @@
   "comparisonCalculator.period.twoYears": "Last 2 years",
   "comparisonCalculator.period.oneYear": "Last year",
 
-  "withdrawals.content.payoutSize": "Payout size",
-  "withdrawals.content.yourInformation": "Your information",
-  "withdrawals.content.confirmApplication": "Confirm application",
-  "withdrawals.content.applicationSubmitted": "Avaldus esitatud",
+  "withdrawals.steps.withdrawalSize": "Withdrawal size",
+  "withdrawals.steps.yourInformation": "Your information",
+  "withdrawals.steps.confirmApplication": "Confirm application",
+  "withdrawals.steps.applicationSubmitted": "Avaldus esitatud",
+  "withdrawals.navigation.back": "Back",
+  "withdrawals.navigation.continue": "Continue",
+
+  "withdrawals.withdrawalAmount.partialWithdrawQuestion": "Do you wish to make a partial withdrawal immediately?",
+  "withdrawals.withdrawalAmount.partialWithdrawalTax": "Partial withdrawal will be subject to 10% income tax",
+  "withdrawals.withdrawalAmount.precisePriceAtSaleDisclaimer": "The exact amount depends on the price of shares.",
+  "withdrawals.withdrawalAmount.fundPensionPrecisePriceAtSaleDisclaimer": "The exact amounts depend on the price of shares.",
+
+  "withdrawals.withdrawalAmount.youReceiveRegularlyAndTaxFree": "You receive regularly and tax free",
+  "withdrawals.perMonth": "per month",
+
+  "withdrawals.withdrawalAmount.secondPillarTotal": "Your holdings in II pillar",
+  "withdrawals.withdrawalAmount.thirdPillarTotal": "Your holdings in III pillar",
+  "withdrawals.withdrawalAmount.useEntirePensionHoldings": "Withdraw from the entire pension holding",
+  "withdrawals.withdrawalAmount.withdrawOnlySecondPillar": "Withdraw only from II pillar",
+  "withdrawals.withdrawalAmount.withdrawOnlyThirdPillar": "Withdraw only from III pillar",
+
+  "withdrawals.withdrawalAmount.monthlyPaymentSize": "Every month you will receive {percentageLiquidated} of fund shares. With current prices, this amounts to {paymentAmount}.",
+
+  "withdrawals.withdrawalAmount.fundPensionGrowth": "The holdings left in the fund <b>will earn returns for the next {duration} years</b>.{br} When the price of the share rises or falls, the size of the payment will change accordingly.",
+  "withdrawals.withdrawalAmount.fundPensionLinkText": "How large can your payments grow?",
+
+  "withdrawals.personalDetails.bankAccount.ibanLabel": "Bank account number (IBAN)",
+  "withdrawals.personalDetails.bankAccount.taxResidencyLabel": "Tax residency",
+  "withdrawals.personalDetails.bankAccount.ibanDescription": "The bank account must be opened in Estonia and belong to you.",
+  "withdrawals.personalDetails.bankAccount.ibanError": "The entered IBAN is incorrect. An Estonian IBAN has 20 characters.",
 
   "LHV Pensionifond XL": "Pension Fund LHV XL",
   "Tuleva Maailma Aktsiate Pensionifond": "Tuleva World Stocks Pension Fund",
