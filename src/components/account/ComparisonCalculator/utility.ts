@@ -14,7 +14,7 @@ export function isShortPeriod(dateString: string) {
   const currentDate = moment();
   const yearsDifference = currentDate.diff(givenDate, 'years', true);
 
-  return yearsDifference <= 3;
+  return yearsDifference <= 2;
 }
 
 export function sortFundsWithTulevaFirst(funds: Fund[]): Fund[] {

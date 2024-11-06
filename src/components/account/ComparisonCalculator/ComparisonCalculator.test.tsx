@@ -242,8 +242,8 @@ describe('ComparisonCalculator', () => {
 
     await awaitForInitialData();
 
-    setReturnsData(returnsData3YearsAgo);
-    userEvent.selectOptions(timePeriodSelect(), 'Last 3 years');
+    setReturnsData(returnsData2YearsAgo);
+    userEvent.selectOptions(timePeriodSelect(), 'Last 2 years');
     await awaitForReturnsData();
 
     await waitFor(() => {
@@ -274,8 +274,8 @@ describe('ComparisonCalculator', () => {
 
     await awaitForInitialData();
 
-    setReturnsData(returnsData3YearsAnd1DayAgo);
-    userEvent.selectOptions(timePeriodSelect(), 'Last 3 years');
+    setReturnsData(returnsData2YearsAnd1DayAgo);
+    userEvent.selectOptions(timePeriodSelect(), 'Last 2 years');
     await awaitForReturnsData();
 
     await waitFor(() => {
@@ -882,8 +882,8 @@ describe('ComparisonCalculator', () => {
   });
 });
 
-const returnsData3YearsAgo: ReturnsResponse = {
-  from: moment().subtract(3, 'years').add(1, 'days').format(),
+const returnsData2YearsAgo: ReturnsResponse = {
+  from: moment().subtract(2, 'years').add(1, 'days').format(),
   returns: [
     {
       key: 'UNION_STOCK_INDEX',
@@ -904,8 +904,8 @@ const returnsData3YearsAgo: ReturnsResponse = {
   ],
 };
 
-const returnsData3YearsAnd1DayAgo: ReturnsResponse = {
-  from: moment().subtract(3, 'years').subtract(1, 'days').format(),
+const returnsData2YearsAnd1DayAgo: ReturnsResponse = {
+  from: moment().subtract(2, 'years').subtract(1, 'days').format(),
   returns: [
     {
       key: 'UNION_STOCK_INDEX',
