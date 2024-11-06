@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, Redirect } from 'react-router-dom';
-import moment from 'moment/moment';
 import { AuthenticationLoader, ErrorMessage, Radio } from '../../common';
 import { useSecondPillarPaymentRate } from './hooks';
 import { PaymentRate } from './types';
 import { useMandateDeadlines, useMe } from '../../common/apiHooks';
+import { SecondPillarPaymentRateTaxWin } from './SecondPillarPaymentRateTaxWin';
+import { formatDateYear } from '../../common/dateFormatter';
 
 export const SecondPillarPaymentRate: React.FunctionComponent = () => {
   const { data: user } = useMe();
@@ -43,7 +44,7 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
   }
 
   return (
-    <>
+    <div className="col-lg-8 offset-lg-2 px-0">
       {(signing || challengeCode) && (
         <AuthenticationLoader controlCode={challengeCode} onCancel={cancelSigning} overlayed />
       )}
@@ -53,23 +54,25 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
       <h2 className="mt-3">
         <FormattedMessage id="secondPillarPaymentRate.contributionChange" />
       </h2>
-      <p className="mt-3 lead">
-        <FormattedMessage id="secondPillarPaymentRate.chooseAmount" />
-      </p>
-      <p>
-        <FormattedMessage id="secondPillarPaymentRate.taxFree" />
-      </p>
       <p className="mt-3">
+        {!pendingPaymentRate || pendingPaymentRate < 6 ? (
+          <>
+            <SecondPillarPaymentRateTaxWin />.{' '}
+          </>
+        ) : (
+          ''
+        )}
         <FormattedMessage
           id="secondPillarPaymentRate.applicationDeadline"
           values={{
-            paymentRateDeadline: moment(mandateDeadlines?.paymentRateDeadline).format('YYYY'),
-            paymentRateFulfillmentDate: moment(mandateDeadlines?.paymentRateFulfillmentDate).format(
-              'YYYY',
+            paymentRateFulfillmentDate: formatDateYear(
+              mandateDeadlines?.paymentRateFulfillmentDate,
             ),
-            b: (chunks: string) => <b>{chunks}</b>,
           }}
         />
+      </p>
+      <p className="mt-3">
+        <FormattedMessage id="secondPillarPaymentRate.chooseContributionRate" />
       </p>
 
       <div>
@@ -82,7 +85,9 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
         >
           <div className="mb-1">
             <h3 className="d-inline">
-              <FormattedMessage id="secondPillarPaymentRate.option.2Percent" />
+              <span className="mr-2">
+                <FormattedMessage id="secondPillarPaymentRate.option.2Percent" />
+              </span>
               {pendingPaymentRate === 2 && <Currently />}
             </h3>
           </div>
@@ -101,7 +106,9 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
           onSelect={() => setPaymentRate(4)}
         >
           <h3 className="mb-1">
-            <FormattedMessage id="secondPillarPaymentRate.option.4Percent" />
+            <span className="mr-2">
+              <FormattedMessage id="secondPillarPaymentRate.option.4Percent" />
+            </span>
             {pendingPaymentRate === 4 && <Currently />}
           </h3>
           <p className="m-0">
@@ -120,7 +127,9 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
         >
           <div className="mb-1">
             <h3 className="d-inline">
-              <FormattedMessage id="secondPillarPaymentRate.option.6Percent" />
+              <span className="mr-2">
+                <FormattedMessage id="secondPillarPaymentRate.option.6Percent" />
+              </span>
               <Recommended />
               {pendingPaymentRate === 6 && <Currently />}
             </h3>
@@ -137,34 +146,31 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
         </Radio>
       </div>
 
-      <div className="mt-5">
+      <div className="d-flex flex-column-reverse flex-md-row justify-content-between mt-4">
+        <Link className="btn btn-light mt-2" to="/account">
+          <FormattedMessage id="secondPillarPaymentRate.cancel" />
+        </Link>
         <button
           type="button"
-          className="btn btn-primary mb-2 mr-2"
+          className="btn btn-primary mt-2"
           disabled={!paymentRate || paymentRate === pendingPaymentRate}
           onClick={() => paymentRate && changePaymentRate(paymentRate)}
         >
           <FormattedMessage id="secondPillarPaymentRate.confirm.mandate.sign" />
         </button>
-
-        <Link to="/account">
-          <button type="button" className="btn btn-light mb-2">
-            <FormattedMessage id="secondPillarPaymentRate.cancel" />
-          </button>
-        </Link>
       </div>
-    </>
+    </div>
   );
 };
 
 const Currently = () => (
-  <span className="ml-2 badge badge-pill badge-secondary align-text-bottom">
+  <span className="badge badge-pill badge-secondary align-text-bottom">
     <FormattedMessage id="secondPillarPaymentRate.current" />
   </span>
 );
 
 const Recommended = () => (
-  <span className="ml-2 badge badge-pill badge-primary align-text-bottom">
+  <span className="mr-2 badge badge-pill badge-primary align-text-bottom">
     <FormattedMessage id="secondPillarPaymentRate.recommended" />
   </span>
 );

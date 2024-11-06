@@ -312,18 +312,7 @@ exports[`SecondPillarStatusBox renders the payment rate flow 1`] = `
       <small
         className="text-muted"
       >
-        <Memo(MemoizedFormattedMessage)
-          id="account.status.choice.pillar.second.tax.benefit.deadline"
-          values={
-            Object {
-              "b": [Function],
-              "estimatedWin": <Euro
-                amount={264}
-                fractionDigits={0}
-              />,
-            }
-          }
-        />
+        <SecondPillarPaymentRateTaxWin />
       </small>,
     ]
   }

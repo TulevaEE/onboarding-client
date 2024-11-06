@@ -16,7 +16,7 @@ const ErrorMessage = ({ errors, onCancel, overlayed }) => {
       </p>
       {errors.errors &&
         errors.errors.map((error, index) => (
-          <p key={index}>
+          <p className="text-muted small" key={index}>
             <FormattedMessage id={error.code} /> {error.message}
           </p>
         ))}
