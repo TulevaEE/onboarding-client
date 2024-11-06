@@ -734,7 +734,7 @@
   "withdrawals.mandates.partialWithdrawal.percentageOfShares": "osakutest",
 
   "withdrawals.mandates.partialWithdrawal.dateAndSize": "Väljamakse laekub <b>{withdrawalDate}</b> . Väljamakse kajastatakse tuludeklaratsioonis. Riik peab kinni <warningText>10% tulumaksu</warningText>, seega saan kätte eeldatavalt <b>{estimatedWithdrawalSizeWithTax}</b>. Täpne summa selgub fondiosakute müümise hetkel.",
-  "withdrawals.mandates.partialWithdrawal.secondPillarPaymentsFinished": "Avalduse esitamisega <b>peatuvad II samba sissemaksed</b> {endingDate} ja neid ei saa hiljem taastada.",
+  "withdrawals.mandates.partialWithdrawal.secondPillarPaymentsFinished": "Avalduse esitamisega <b>peatuvad II samba sissemaksed</b> alates {endingDate} ja neid ei saa hiljem taastada.",
   "withdrawals.mandates.arrestsBankrupticesDisclaimer": "<b>Sul ei ole võimalik avaldust tühistada</b>, kuna sul on pensioniregistris registreeritud kehtiv aresti- või pankrotinõue.",
 
   "withdrawals.mandates.fundPension.recommendedDurationTaxFree": "Väljamaksed on <b>soovitusliku kestusega</b> ({duration} aastat) ja <successText>tulumaksuvabad</successText>.",
@@ -743,6 +743,8 @@
   "withdrawals.mandates.fundPension.dateAndSize": "Esimene väljamakse laekub <b>{withdrawalDate}</b> ja on eeldatavalt <b>{paymentSize}</b>. <muted>Summad varieeruvad ja selguvad fondiosakute müümise hetkel.</muted>",
   "withdrawals.mandates.fundPension.cancellationUntil": "Saan avalduse tühistada kuni <b>{cancellationDate}</b>.",
   "withdrawals.mandates.fundPension.stopResumePayments": "Saan väljamaksed igal ajal lõpetada ja uuesti sõlmida.",
+
+  "withdrawals.mandates.fundPension.fourWorkingDays": "nelja tööpäeva jooksul",
 
   "LHV Pensionifond XL": "LHV Pensionifond XL",
   "Tuleva Maailma Aktsiate Pensionifond": "Tuleva Maailma Aktsiate Pensionifond",
