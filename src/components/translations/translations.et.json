@@ -687,10 +687,35 @@
   "comparisonCalculator.period.twoYears": "Viimased 2 aastat",
   "comparisonCalculator.period.oneYear": "Viimane aasta",
 
-  "withdrawals.content.payoutSize": "Väljamakse suurus",
-  "withdrawals.content.yourInformation": "Sinu andmed",
-  "withdrawals.content.confirmApplication": "Kinnita avaldus",
-  "withdrawals.content.applicationSubmitted": "Avaldus esitatud",
+  "withdrawals.steps.withdrawalSize": "Väljamakse suurus",
+  "withdrawals.steps.yourInformation": "Sinu andmed",
+  "withdrawals.steps.confirmApplication": "Kinnita avaldus",
+  "withdrawals.steps.applicationSubmitted": "Avaldus esitatud",
+  "withdrawals.navigation.back": "Tagasi",
+  "withdrawals.navigation.continue": "Jätkan",
+
+  "withdrawals.withdrawalAmount.partialWithdrawQuestion": "Soovid osa raha kohe välja võtta?",
+  "withdrawals.withdrawalAmount.partialWithdrawalTax": "Väljamakselt peab riik kinni 10% tulumaksu",
+  "withdrawals.withdrawalAmount.precisePriceAtSaleDisclaimer": "Täpne summa selgub osakute müümisel ja sõltub osakute turuhinnast.",
+  "withdrawals.withdrawalAmount.youReceiveRegularlyAndTaxFree": "Saad regulaarselt ja tulumaksuvabalt",
+  "withdrawals.perMonth": "kuus",
+  "withdrawals.withdrawalAmount.fundPensionPrecisePriceAtSaleDisclaimer": "Täpsed summad selguvad osakute müümise hetkel ja võivad varieeruda.",
+
+  "withdrawals.withdrawalAmount.secondPillarTotal": "Sul on II sambas kokku",
+  "withdrawals.withdrawalAmount.thirdPillarTotal": "Sul on III sambas kokku",
+  "withdrawals.withdrawalAmount.useEntirePensionHoldings": "Kasutan kogu pensionivara",
+  "withdrawals.withdrawalAmount.withdrawOnlySecondPillar": "Võtan ainult II sambast",
+  "withdrawals.withdrawalAmount.withdrawOnlyThirdPillar": "Võtan ainult III sambast",
+
+  "withdrawals.withdrawalAmount.monthlyPaymentSize": "Iga kuu saad kätte {percentageLiquidated} fondiosakutest. Hetkehinnas on see {paymentAmount}.",
+
+  "withdrawals.withdrawalAmount.fundPensionGrowth": "Sinu fondi jääv vara <b>teenib järgnevad {duration} aastat tootlust edasi</b>.{br} Kui osaku turuhind kasvab või kahaneb, siis suurenevad või vähenevad ka sinu väljamaksed.",
+  "withdrawals.withdrawalAmount.fundPensionLinkText": "Kui suureks võivad sinu väljamaksed kasvada?",
+
+  "withdrawals.personalDetails.bankAccount.ibanLabel": "Pangakonto number (IBAN)",
+  "withdrawals.personalDetails.bankAccount.taxResidencyLabel": "Maksuresidentsus",
+  "withdrawals.personalDetails.bankAccount.ibanDescription": "Pangakonto peab olema avatud Eestis ja kuuluma sinule.",
+  "withdrawals.personalDetails.bankAccount.ibanError": "Sisestatud IBAN ei ole korrektne. Eesti IBAN on 20-kohaline.",
 
   "LHV Pensionifond XL": "LHV Pensionifond XL",
   "Tuleva Maailma Aktsiate Pensionifond": "Tuleva Maailma Aktsiate Pensionifond",

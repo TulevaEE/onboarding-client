@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { FormattedMessage } from 'react-intl';
 import { useWithdrawalsContext } from './hooks';
 import { isValidIban, preProcessIban } from './iban';
 import styles from './Withdrawals.module.scss';
@@ -41,7 +42,9 @@ export const PersonalDetailsStep = () => {
       <div className="mt-3 card p-4">
         <div className="form-group">
           <label htmlFor="bank-account-iban">
-            <b>Pangakonto number (IBAN)</b>
+            <b>
+              <FormattedMessage id="withdrawals.personalDetails.bankAccount.ibanLabel" />
+            </b>
           </label>
           <input
             type="text"
@@ -51,11 +54,11 @@ export const PersonalDetailsStep = () => {
             value={iban}
           />
           <div className="pt-2 text-muted">
-            Pangakonto peab olema avatud Eestis ja kuuluma sinule.
+            <FormattedMessage id="withdrawals.personalDetails.bankAccount.ibanDescription" />
           </div>
           {ibanError && (
             <div className={`pt-2 ${styles.warningText}`}>
-              Sisestatud IBAN ei ole korrektne. Eesti IBAN on 20-kohaline.
+              <FormattedMessage id="withdrawals.personalDetails.bankAccount.ibanError" />
             </div>
           )}
         </div>
@@ -71,12 +74,11 @@ export const PersonalDetailsStep = () => {
         />
       </div>
       <div className="d-flex justify-content-between pt-4">
-        {/* TODO paddings */}
         <button type="button" className="btn btn-light" onClick={() => navigateToPreviousStep()}>
-          Tagasi
+          <FormattedMessage id="withdrawals.navigation.back" />
         </button>
         <button type="button" className="btn btn-primary" onClick={handleNextClicked}>
-          Jätkan
+          <FormattedMessage id="withdrawals.navigation.continue" />
         </button>
       </div>
     </>

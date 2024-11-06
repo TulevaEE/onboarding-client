@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { FormattedMessage } from 'react-intl';
 import Select from '../../account/ComparisonCalculator/select';
 
 export const TaxResidencySelect = ({
@@ -21,7 +22,9 @@ export const TaxResidencySelect = ({
   return (
     <div className="form-group">
       <label htmlFor="tax-residency">
-        <b>Maksuresidentsus</b>
+        <b>
+          <FormattedMessage id="withdrawals.personalDetails.bankAccount.taxResidencyLabel" />
+        </b>
       </label>
       <Select id="tax-residency" options={options} selected={value} onChange={onChange} />
     </div>
