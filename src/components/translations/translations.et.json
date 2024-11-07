@@ -246,10 +246,10 @@
   "account.status.choice.pillar.second.transferIncomplete": "Sa kogud täna mitmes erinevas pensionifondis",
   "account.status.choice.pillar.second.pik": "Pensioni investeerimiskonto: {secondPillarPikNumber}",
   "account.status.choice.pillar.second.paymentRate": "Sa panustad II sambasse {paymentRate}% brutopalgast",
-  "account.status.choice.pillar.second.paymentRate.comment": "Tegutse enne <b>30. novembri südaööd</b>, sest muidu jääd järgmisel aastal ilma <b>maksuvõidust</b>",
+  "account.status.choice.pillar.second.paymentRate.comment": "Tegutse enne <b>30. novembrit kell 23.59</b>, sest muidu jääd järgmisel aastal ilma <b>maksuvõidust</b>",
 
   "account.status.choice.pillar.second.tax.benefit.warning": "Suurenda oma II samba maksuvõitu",
-  "account.status.choice.pillar.second.tax.benefit.deadline": "Tegutse enne <b>30. novembri südaööd</b>, sest muidu jääd järgmisel aastal ilma <b>{estimatedWin} maksuvõidust</b>",
+  "account.status.choice.pillar.second.tax.benefit.deadline": "Tegutse enne <b>30. novembrit kell 23.59</b>, sest muidu jääd järgmisel aastal ilma <b>{estimatedWin} maksuvõidust</b>",
 
   "account.status.choice.pillar.second.deadlinecard.title": "Tähtaeg!",
   "account.status.choice.pillar.second.deadlinecard.text": "Selle vahetusperioodi tähtaeg on <b>{periodEnding}</b>",

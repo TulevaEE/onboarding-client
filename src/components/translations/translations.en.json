@@ -247,10 +247,10 @@
   "account.status.choice.pillar.second.transferIncomplete": "You have several pension funds",
   "account.status.choice.pillar.second.pik": "Pension investment account: {secondPillarPikNumber}",
   "account.status.choice.pillar.second.paymentRate": "You contribute {paymentRate}% of your gross salary to II pillar",
-  "account.status.choice.pillar.second.paymentRate.comment": "Act before midnight on <b>November 30th</b> to avoid missing out on <b>tax benefits</b> next year",
+  "account.status.choice.pillar.second.paymentRate.comment": "Act before <b>November 30 at 23:59</b> to avoid missing out on <b>tax benefits</b> next year",
 
   "account.status.choice.pillar.second.tax.benefit.warning": "Increase your II pillar tax benefits",
-  "account.status.choice.pillar.second.tax.benefit.deadline": "Act before midnight on <b>November 30th</b> to avoid missing out on <b>{estimatedWin}</b> in tax benefits next year",
+  "account.status.choice.pillar.second.tax.benefit.deadline": "Act before <b>November 30 at 23:59</b> to avoid missing out on <b>{estimatedWin}</b> in tax benefits next year",
 
   "account.status.choice.pillar.second.deadlinecard.title": "Deadline!",
   "account.status.choice.pillar.second.deadlinecard.text": "This exchange period ends on <b>{periodEnding}</b>",
