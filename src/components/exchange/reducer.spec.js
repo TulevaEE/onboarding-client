@@ -625,7 +625,7 @@ describe('Exchange reducer', () => {
       {
         loadingMandate: true,
         mandateSigningControlCode: '1337',
-        signedMandateId: 'an id',
+        signedMandateId: 2135415,
       },
       action,
     );
