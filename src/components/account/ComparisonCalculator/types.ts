@@ -46,7 +46,7 @@ export interface ContentTextProperties {
 }
 
 export interface RootState {
-  exchange: { targetFunds: Fund[]; signedMandateId?: string };
+  exchange: { targetFunds: Fund[]; signedMandateId?: number };
   thirdPillar: { funds: Fund[] };
   login: {
     user?: {

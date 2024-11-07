@@ -584,7 +584,7 @@ describe('Exchange reducer', () => {
   });
 
   it('saves the mandate id when signing mandate succeeds', () => {
-    const signedMandateId = 'an id';
+    const signedMandateId = 1234566;
     const action = { type: SIGN_MANDATE_SUCCESS, signedMandateId, pillar: 2 };
     const newState = exchangeReducer(
       { mandateSigningControlCode: 'code', loadingMandate: true },

@@ -86,7 +86,7 @@ export function downloadMandate() {
   return (_: unknown, getState: () => RootState) => {
     const mandateId = getState().exchange.signedMandateId;
     if (mandateId && getAuthentication().isAuthenticated()) {
-      return downloadMandateWithId(mandateId).then((file) =>
+      return downloadMandateWithId(mandateId.toString()).then((file) =>
         download(file, 'Tuleva_avaldus.bdoc', 'application/bdoc'),
       );
     }
@@ -107,13 +107,13 @@ export function selectFutureContributionsFund(targetFundIsin: string | null) {
   return { type: SELECT_TARGET_FUND, targetFundIsin };
 }
 
-function pollForMobileIdSignature(mandateId: string, pillar: 2 | 3) {
+function pollForMobileIdSignature(mandateId: number, pillar: 2 | 3) {
   return (dispatch: Dispatch<unknown>) => {
     if (timeout) {
       clearTimeout(timeout);
     }
     timeout = window.setTimeout(() => {
-      getMobileIdSignatureStatus({ entityId: mandateId })
+      getMobileIdSignatureStatus({ entityId: mandateId.toString() })
         .then((status) => {
           if (status.statusCode === SIGNING_IN_PROGRESS_STATUS) {
             dispatch({
@@ -134,13 +134,13 @@ function pollForMobileIdSignature(mandateId: string, pillar: 2 | 3) {
   };
 }
 
-function pollForSmartIdSignature(mandateId: string, pillar: 2 | 3) {
+function pollForSmartIdSignature(mandateId: number, pillar: 2 | 3) {
   return (dispatch: Dispatch<unknown>) => {
     if (timeout) {
       clearTimeout(timeout);
     }
     timeout = window.setTimeout(() => {
-      getSmartIdSignatureStatus({ entityId: mandateId })
+      getSmartIdSignatureStatus({ entityId: mandateId.toString() })
         .then((status) => {
           if (status.statusCode === SIGNING_IN_PROGRESS_STATUS) {
             dispatch({
@@ -191,14 +191,14 @@ export function previewMandate(mandate: Mandate, amlChecks?: unknown) {
 export function signMandateWithMobileId(mandate: Mandate) {
   return (dispatch: Dispatch<unknown>) => {
     dispatch({ type: SIGN_MANDATE_MOBILE_ID_START });
-    let mandateId: string;
+    let mandateId: number;
     let mandatePillar: 2 | 3;
 
     return saveOrRetrieveExistingMandate(mandate)
       .then(({ id, pillar }) => {
-        mandateId = id.toString();
+        mandateId = id;
         mandatePillar = pillar;
-        return getMobileIdSignatureChallengeCode({ entityId: mandateId });
+        return getMobileIdSignatureChallengeCode({ entityId: mandateId.toString() });
       })
       .then((controlCode) => {
         dispatch({ type: SIGN_MANDATE_MOBILE_ID_START_SUCCESS, controlCode });
@@ -213,13 +213,13 @@ export function signMandateWithMobileId(mandate: Mandate) {
 export function signMandateWithSmartId(mandate: Mandate) {
   return (dispatch: Dispatch<unknown>) => {
     dispatch({ type: SIGN_MANDATE_SMART_ID_START });
-    let mandateId: string;
+    let mandateId: number;
     let mandatePillar: 2 | 3;
     return saveOrRetrieveExistingMandate(mandate)
       .then(({ id, pillar }) => {
-        mandateId = id.toString();
+        mandateId = id;
         mandatePillar = pillar;
-        return getSmartIdSignatureChallengeCode({ entityId: mandateId });
+        return getSmartIdSignatureChallengeCode({ entityId: mandateId.toString() });
       })
       .then((controlCode) => {
         dispatch({ type: SIGN_MANDATE_SMART_ID_START_SUCCESS, controlCode });
@@ -231,13 +231,13 @@ export function signMandateWithSmartId(mandate: Mandate) {
   };
 }
 
-function pollForIdCardSignature(mandateId: string, pillar: 2 | 3, signedHash: string) {
+function pollForIdCardSignature(mandateId: number, pillar: 2 | 3, signedHash: string) {
   return (dispatch: Dispatch<unknown>) => {
     if (timeout) {
       clearTimeout(timeout);
     }
     timeout = window.setTimeout(() => {
-      getIdCardSignatureStatus({ entityId: mandateId, signedHash })
+      getIdCardSignatureStatus({ entityId: mandateId.toString(), signedHash })
         .then((statusCode) => {
           if (statusCode === SIGNATURE_DONE_STATUS) {
             dispatch({
@@ -259,7 +259,7 @@ function pollForIdCardSignature(mandateId: string, pillar: 2 | 3, signedHash: st
 function signIdCardSignatureHash(
   hash: string,
   certificate: Certificate,
-  mandateId: string,
+  mandateId: number,
   pillar: 2 | 3,
 ) {
   return (dispatch: Dispatch<unknown>) =>
@@ -294,7 +294,7 @@ function saveOrRetrieveExistingMandate(mandate: Mandate | string) {
 export function signMandateWithIdCard(mandate: Mandate) {
   return (dispatch: Dispatch<unknown>) => {
     dispatch({ type: SIGN_MANDATE_ID_CARD_START });
-    let mandateId: string;
+    let mandateId: number;
     let mandatePillar: 2 | 3;
     let certificate: Certificate;
 
@@ -313,9 +313,12 @@ export function signMandateWithIdCard(mandate: Mandate) {
       )
       .then(() => saveOrRetrieveExistingMandate(mandate))
       .then(({ id, pillar }: Mandate) => {
-        mandateId = id.toString();
+        mandateId = id;
         mandatePillar = pillar;
-        return getIdCardSignatureHash({ entityId: mandateId, certificateHex: certificate.hex });
+        return getIdCardSignatureHash({
+          entityId: mandateId.toString(),
+          certificateHex: certificate.hex,
+        });
       })
       .then((hash: string) => {
         dispatch({ type: SIGN_MANDATE_ID_CARD_START_SUCCESS });

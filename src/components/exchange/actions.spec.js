@@ -170,7 +170,7 @@ describe('Exchange actions', () => {
   });
 
   it('can download the mandate', async () => {
-    state.exchange.signedMandateId = 'mandate id';
+    state.exchange.signedMandateId = 1233446;
     const file = { iAmAFakeFile: true };
     mockApi.downloadMandateWithId = jest.fn(() => Promise.resolve(file));
     const downloadMandate = createBoundAction(actions.downloadMandate);
@@ -179,7 +179,7 @@ describe('Exchange actions', () => {
       loginMethod: 'ID_CARD',
     }));
     await downloadMandate();
-    expect(mockApi.downloadMandateWithId).toHaveBeenCalledWith('mandate id');
+    expect(mockApi.downloadMandateWithId).toHaveBeenCalledWith('1233446');
     expect(mockDownload).toHaveBeenCalledWith(file, 'Tuleva_avaldus.bdoc', 'application/bdoc');
   });
 
