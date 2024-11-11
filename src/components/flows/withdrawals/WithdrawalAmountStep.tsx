@@ -59,7 +59,7 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
   const { withdrawalAmount, setWithdrawalAmount } = useWithdrawalsContext();
 
   const handleSingleWithdrawalAmountSelected = (amount: number) => {
-    const valueToSet = amount === 0 ? null : amount;
+    const valueToSet = amount === 0 || Number.isNaN(amount) ? null : amount;
 
     setWithdrawalAmount({
       // TODO broken state from setting this as well? need more methods in context?

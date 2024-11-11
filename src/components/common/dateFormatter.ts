@@ -19,10 +19,10 @@ export function formatDateRange(firstDate: string, secondDate: string): string {
     const firstDateFormatted = firstDateMoment.format(dateNumberFormat);
     const secondDateFormatted = secondDateMoment.format(dateNumberFormat);
 
-    return `${firstDateFormatted} - ${secondDateFormatted} ${monthFormatted}`;
+    return `${firstDateFormatted} – ${secondDateFormatted} ${monthFormatted}`;
   }
 
-  return `${formatDate(firstDate)} - ${formatDate(secondDate)}`;
+  return `${formatDate(firstDate)} – ${formatDate(secondDate)}`;
 }
 
 export function formatDateTime(date?: string | null): string {
