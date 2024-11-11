@@ -1,0 +1,188 @@
+import moment from 'moment';
+import {
+  CancellationMandate,
+  CapitalEvent,
+  CapitalType,
+  Conversion,
+  Fund,
+  FundStatus,
+  MandateDeadlines,
+  MobileSignatureResponse,
+  MobileSignatureStatusResponse,
+  User,
+} from '../components/common/apiModels';
+import { SecondPillarPaymentRateChangeMandate } from '../components/flows/secondPillarPaymentRate/types';
+
+export const authErrorResponse = {
+  error: 'not authenticated correctly',
+};
+
+export const getMobileSignatureResponse = (
+  challengeCode?: string | null,
+): MobileSignatureResponse => ({
+  challengeCode: challengeCode ?? '9876',
+});
+
+export const getMobileSignatureStatusResponse = (
+  statusCode: 'SIGNATURE' | 'OUTSTANDING_TRANSACTION',
+  challengeCode?: string | null,
+): MobileSignatureStatusResponse => ({
+  challengeCode: challengeCode ?? '9876',
+  statusCode,
+});
+
+export const secondPillarPaymentRateChangeResponse: SecondPillarPaymentRateChangeMandate = {
+  mandateId: 1,
+};
+
+export const cancellationResponse: CancellationMandate = {
+  mandateId: 1,
+};
+
+export const mockUser: User = {
+  id: 123,
+  personalCode: '39001011234',
+  firstName: 'John',
+  lastName: 'Doe',
+  email: 'john.doe@example.com',
+  phoneNumber: '55667788',
+  memberNumber: 987,
+  pensionAccountNumber: '9876543210',
+  address: {
+    countryCode: 'EE',
+  },
+  secondPillarActive: true,
+  thirdPillarActive: true,
+  age: 30,
+  secondPillarPaymentRates: {
+    current: 2,
+    pending: null,
+  },
+  secondPillarPikNumber: 'TEST_PIK',
+  dateOfBirth: '1989-01-01',
+  retirementAge: 60,
+  secondPillarOpenDate: '2010-01-01',
+  thirdPillarInitDate: '2019-01-01',
+};
+
+export const mockSecondPillarConversion: Conversion = {
+  transfersComplete: true,
+  selectionComplete: true,
+  pendingWithdrawal: false,
+  paymentComplete: false,
+  contribution: { total: 12345.67, yearToDate: 111.11, lastYear: 100 },
+  subtraction: { total: 0.0, yearToDate: 0.0, lastYear: 0 },
+  selectionPartial: false,
+  transfersPartial: false,
+  weightedAverageFee: 0.034,
+};
+
+export const mockThirdPillarConversion: Conversion = {
+  transfersComplete: true,
+  selectionComplete: true,
+  pendingWithdrawal: false,
+  paymentComplete: true,
+  contribution: { total: 9876.54, yearToDate: 999.99, lastYear: 100 },
+  subtraction: { total: 0.0, yearToDate: 0.0, lastYear: 0 },
+  selectionPartial: false,
+  transfersPartial: false,
+  weightedAverageFee: 0.034,
+};
+
+export const mockFunds: Fund[] = [
+  {
+    fundManager: { name: 'Tuleva' },
+    isin: 'EE3600001707',
+    name: 'Tuleva III Samba Pensionifond',
+    managementFeeRate: 0.003,
+    nav: 0.7813,
+    pillar: 3,
+    ongoingChargesFigure: 0.0043,
+    status: FundStatus.ACTIVE,
+    inceptionDate: moment().subtract(25, 'years').format(),
+  },
+  {
+    fundManager: { name: 'Swedbank' },
+    isin: 'EE3600019758',
+    name: 'Swedbank Pension Fund K60',
+    managementFeeRate: 0.0083,
+    nav: 1.46726,
+    pillar: 2,
+    ongoingChargesFigure: 0.0065,
+    status: FundStatus.ACTIVE,
+    inceptionDate: moment().subtract(25, 'years').format(),
+  },
+  {
+    fundManager: { name: 'Tuleva' },
+    isin: 'EE3600109435',
+    name: 'Tuleva World Stocks Pension Fund',
+    managementFeeRate: 0.0034,
+    nav: 0.87831,
+    pillar: 2,
+    ongoingChargesFigure: 0.0039,
+    status: FundStatus.ACTIVE,
+    inceptionDate: moment().subtract(2, 'years').format(),
+  },
+  {
+    fundManager: { name: 'Tuleva' },
+    isin: 'EE3600109443',
+    name: 'Tuleva World Bonds Pension Fund',
+    managementFeeRate: 0.0027,
+    pillar: 2,
+    ongoingChargesFigure: 0.0039,
+    status: FundStatus.ACTIVE,
+    nav: 0.59311,
+    inceptionDate: moment().subtract(2, 'years').format(),
+  },
+  {
+    fundManager: { name: 'Young' },
+    isin: 'EE1000000000',
+    name: 'Young Fund',
+    managementFeeRate: 0.0027,
+    pillar: 2,
+    ongoingChargesFigure: 0.0039,
+    status: FundStatus.ACTIVE,
+    nav: 0.59311,
+    inceptionDate: moment().subtract(2, 'years').format(),
+  },
+];
+
+export const capitalEventsResponse: CapitalEvent[] = [
+  {
+    type: CapitalType.CAPITAL_PAYMENT,
+    value: 1000.0 - 123.45,
+    currency: 'EUR',
+    date: '2020-01-04',
+  },
+  {
+    type: CapitalType.UNVESTED_WORK_COMPENSATION,
+    value: 0,
+    currency: 'EUR',
+    date: '2020-01-05',
+  },
+  {
+    type: CapitalType.WORK_COMPENSATION,
+    value: 0,
+    currency: 'EUR',
+    date: '2020-01-06',
+  },
+  {
+    type: CapitalType.MEMBERSHIP_BONUS,
+    value: 1.23,
+    currency: 'EUR',
+    date: '2020-01-07',
+  },
+];
+
+export const mandateDeadlinesResponse: MandateDeadlines = {
+  periodEnding: '2024-03-31T20:59:59.999999999Z',
+  paymentRateDeadline: '2024-11-30T21:59:59.999999999Z',
+  earlyWithdrawalFulfillmentDate: '2024-09-02',
+  transferMandateCancellationDeadline: '2024-03-31T20:59:59.999999999Z',
+  withdrawalCancellationDeadline: '2023-12-31T21:59:59.999999999Z',
+  earlyWithdrawalCancellationDeadline: '2024-07-31T20:59:59.999999999Z',
+  transferMandateFulfillmentDate: '2024-05-01',
+  withdrawalFulfillmentDate: '2024-01-16',
+  paymentRateFulfillmentDate: '2025-01-01',
+  withdrawalLatestFulfillmentDate: '2024-01-20',
+};
