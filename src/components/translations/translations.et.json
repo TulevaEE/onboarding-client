@@ -602,7 +602,7 @@
   "secondPillarUpsell.disclaimer": "Tegemist on finantsteenusega. Graafik on illustratiivne.",
 
   "secondPillarPaymentRate.contributionChange": "Suurenda oma II samba maksuvõitu",
-  "secondPillarPaymentRate.chooseContributionRate": "Vali, kui palju soovid igakuiselt panustada:",
+  "secondPillarPaymentRate.chooseContributionRate": "Vali, kui palju soovid igakuiselt II sambasse panustada:",
   "secondPillarPaymentRate.applicationDeadline": "Sinu valik jõustub {paymentRateFulfillmentDate}. Oma valikut saad muuta igal aastal novembri lõpuni.",
   "secondPillarPaymentRate.option.2Percent": "2% brutopalgast",
   "secondPillarPaymentRate.calculation.2Percent": "Sina panustad 2% ja riik 4%, kokku kogud <b>6%</b>",
