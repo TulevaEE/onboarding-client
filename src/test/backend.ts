@@ -1,14 +1,26 @@
 import { DefaultRequestMultipartBody, rest, RestRequest } from 'msw';
 import { SetupServerApi } from 'msw/node';
 import queryString from 'qs';
-import moment from 'moment/moment';
-import { CapitalType, FundBalance, FundStatus } from '../components/common/apiModels';
+import { FundBalance, FundStatus } from '../components/common/apiModels';
 import { anAuthenticationManager } from '../components/common/authenticationManagerFixture';
 import { ReturnsResponse } from '../components/account/ComparisonCalculator/api';
 import {
   CreateMandateBatchDto,
   WithdrawalsEligibility,
 } from '../components/common/apiModels/withdrawals';
+import {
+  authErrorResponse,
+  cancellationResponse,
+  capitalEventsResponse,
+  getMobileSignatureResponse,
+  getMobileSignatureStatusResponse,
+  mandateDeadlinesResponse,
+  mockFunds,
+  mockSecondPillarConversion,
+  mockThirdPillarConversion,
+  mockUser,
+  secondPillarPaymentRateChangeResponse,
+} from './backend-responses';
 
 export function cancellationBackend(server: SetupServerApi): {
   cancellationCreated: boolean;
@@ -19,10 +31,10 @@ export function cancellationBackend(server: SetupServerApi): {
   server.use(
     rest.post('http://localhost/v1/applications/123/cancellations', (req, res, ctx) => {
       if (req.headers.get('Authorization') !== 'Bearer an access token') {
-        return res(ctx.status(401), ctx.json({ error: 'not authenticated correctly' }));
+        return res(ctx.status(401), ctx.json(authErrorResponse));
       }
       backend.cancellationCreated = true;
-      return res(ctx.status(200), ctx.json({ mandateId: '1' }));
+      return res(ctx.status(200), ctx.json(cancellationResponse));
     }),
   );
   return backend;
@@ -32,7 +44,7 @@ export const mandateDownloadBackend = (server: SetupServerApi): void => {
   server.use(
     rest.get('http://localhost/v1/mandates/1/file', async (req, res, ctx) => {
       if (req.headers.get('Authorization') !== 'Bearer an access token') {
-        return res(ctx.status(401), ctx.json({ error: 'not authenticated correctly' }));
+        return res(ctx.status(401), ctx.json(authErrorResponse));
       }
       return res(ctx.status(200), ctx.text('fake mandate'));
     }),
@@ -48,7 +60,7 @@ export function mandatePreviewBackend(server: SetupServerApi): {
   server.use(
     rest.get('http://localhost/v1/mandates/1/file/preview', async (req, res, ctx) => {
       if (req.headers.get('Authorization') !== 'Bearer an access token') {
-        return res(ctx.status(401), ctx.json({ error: 'not authenticated correctly' }));
+        return res(ctx.status(401), ctx.json(authErrorResponse));
       }
       backend.previewDownloaded = true;
       return res(ctx.status(200), ctx.text('fake mandate preview'));
@@ -63,7 +75,7 @@ export const mandateBatchBackend = (server: SetupServerApi): void => {
       'http://localhost/v1/mandate-batches',
       async (req: RestRequest<CreateMandateBatchDto>, res, ctx) => {
         if (req.headers.get('Authorization') !== 'Bearer an access token') {
-          return res(ctx.status(401), ctx.json({ error: 'not authenticated correctly' }));
+          return res(ctx.status(401), ctx.json(authErrorResponse));
         }
         return res(
           ctx.status(200),
@@ -89,16 +101,16 @@ export function smartIdMandateSigningBackend(
   server.use(
     rest.put('http://localhost/v1/mandates/1/signature/smartId', (req, res, ctx) => {
       if (req.headers.get('Authorization') !== 'Bearer an access token') {
-        return res(ctx.status(401), ctx.json({ error: 'not authenticated correctly' }));
+        return res(ctx.status(401), ctx.json(authErrorResponse));
       }
       backend.mandateSigned = true;
-      return res(ctx.status(200), ctx.json({ challengeCode: options.challengeCode || '9876' }));
+      return res(ctx.status(200), ctx.json(getMobileSignatureResponse(options.challengeCode)));
     }),
     rest.get('http://localhost/v1/mandates/1/signature/smartId/status', (req, res, ctx) => {
       if (req.headers.get('Authorization') !== 'Bearer an access token') {
-        return res(ctx.status(401), ctx.json({ error: 'not authenticated correctly' }));
+        return res(ctx.status(401), ctx.json(authErrorResponse));
       }
-      return res(ctx.status(200), ctx.json({ statusCode: 'SIGNATURE' }));
+      return res(ctx.status(200), ctx.json(getMobileSignatureStatusResponse('SIGNATURE')));
     }),
   );
   return backend;
@@ -117,28 +129,27 @@ export function smartIdMandateBatchSigningBackend(
   server.use(
     rest.put('http://localhost/v1/mandate-batches/1/signature/smart-id', (req, res, ctx) => {
       if (req.headers.get('Authorization') !== 'Bearer an access token') {
-        return res(ctx.status(401), ctx.json({ error: 'not authenticated correctly' }));
+        return res(ctx.status(401), ctx.json(authErrorResponse));
       }
       backend.signed = true;
-      return res(ctx.status(200), ctx.json({ challengeCode: null }));
+      return res(ctx.status(200), ctx.json(getMobileSignatureResponse(null)));
     }),
     rest.get('http://localhost/v1/mandate-batches/1/signature/smart-id/status', (req, res, ctx) => {
       if (req.headers.get('Authorization') !== 'Bearer an access token') {
-        return res(ctx.status(401), ctx.json({ error: 'not authenticated correctly' }));
+        return res(ctx.status(401), ctx.json(authErrorResponse));
       }
 
       backend.statusCount += 1;
 
       if (backend.statusCount >= 2) {
-        return res(ctx.status(200), ctx.json({ statusCode: 'SIGNATURE' }));
+        return res(ctx.status(200), ctx.json(getMobileSignatureStatusResponse('SIGNATURE')));
       }
 
       return res(
         ctx.status(200),
-        ctx.json({
-          statusCode: 'OUTSTANDING_TRANSACTION',
-          challengeCode: options.challengeCode ?? '9876',
-        }),
+        ctx.json(
+          getMobileSignatureStatusResponse('OUTSTANDING_TRANSACTION', options.challengeCode),
+        ),
       );
     }),
   );
@@ -160,7 +171,7 @@ export function smartIdAuthenticationBackend(
       ) {
         return res(ctx.status(401), ctx.json({ error: 'wrong method or id code' }));
       }
-      return res(ctx.status(200), ctx.json({ challengeCode: options.challengeCode || '9876' }));
+      return res(ctx.status(200), ctx.json(getMobileSignatureResponse(options.challengeCode)));
     }),
 
     rest.post('http://localhost/oauth/token', (req, res, ctx) => {
@@ -210,7 +221,7 @@ export function mobileIdAuthenticationBackend(
       ) {
         return res(ctx.status(401), ctx.json({ error: 'wrong method, id code or number' }));
       }
-      return res(ctx.status(200), ctx.json({ challengeCode: options.challengeCode || '9876' }));
+      return res(ctx.status(200), ctx.json(getMobileSignatureResponse(options.challengeCode)));
     }),
 
     rest.post('http://localhost/oauth/token', (req, res, ctx) => {
@@ -300,24 +311,7 @@ export function userBackend(server: SetupServerApi, overrides = {}): void {
     rest.get('http://localhost/v1/me', (req, res, ctx) =>
       res(
         ctx.json({
-          id: 123,
-          personalCode: '39001011234',
-          firstName: 'John',
-          lastName: 'Doe',
-          email: 'john.doe@example.com',
-          phoneNumber: '55667788',
-          memberNumber: 987,
-          pensionAccountNumber: '9876543210',
-          address: {
-            countryCode: 'EE',
-          },
-          secondPillarActive: true,
-          thirdPillarActive: true,
-          age: 30,
-          secondPillarPaymentRates: {
-            current: 2,
-            pending: null,
-          },
+          ...mockUser,
           ...overrides,
         }),
       ),
@@ -335,21 +329,11 @@ export function userConversionBackend(
       res(
         ctx.json({
           secondPillar: {
-            transfersComplete: true,
-            selectionComplete: true,
-            pendingWithdrawal: false,
-            paymentComplete: null,
-            contribution: { total: 12345.67, yearToDate: 111.11 },
-            subtraction: { total: 0.0, yearToDate: 0.0 },
+            ...mockSecondPillarConversion,
             ...secondPillarOverrides,
           },
           thirdPillar: {
-            transfersComplete: true,
-            selectionComplete: true,
-            pendingWithdrawal: false,
-            paymentComplete: true,
-            contribution: { total: 9876.54, yearToDate: 999.99 },
-            subtraction: { total: 0.0, yearToDate: 0.0 },
+            ...mockThirdPillarConversion,
             ...thirdPillarOverrides,
           },
         }),
@@ -363,7 +347,7 @@ export function amlChecksBackend(server: SetupServerApi): void {
   server.use(
     rest.post('http://localhost/v1/amlchecks', (req, res, ctx) => {
       if (req.headers.get('Authorization') !== 'Bearer an access token') {
-        return res(ctx.status(401), ctx.json({ error: 'not authenticated correctly' }));
+        return res(ctx.status(401), ctx.json(authErrorResponse));
       }
       return res(ctx.status(200), ctx.json(req.body));
     }),
@@ -444,81 +428,7 @@ export function pensionAccountStatementBackend(
 }
 
 export function fundsBackend(server: SetupServerApi): void {
-  server.use(
-    rest.get('http://localhost/v1/funds', (req, res, ctx) =>
-      res(
-        ctx.json([
-          {
-            fundManager: { name: 'Tuleva' },
-            isin: 'EE3600001707',
-            name: 'Tuleva III Samba Pensionifond',
-            managementFeeRate: 0.003,
-            nav: 0.7813,
-            volume: 47975601.7201,
-            pillar: 3,
-            ongoingChargesFigure: 0.0043,
-            status: 'ACTIVE',
-            peopleCount: 0,
-            shortName: 'TUV100',
-          },
-          {
-            fundManager: { name: 'Swedbank' },
-            isin: 'EE3600019758',
-            name: 'Swedbank Pension Fund K60',
-            managementFeeRate: 0.0083,
-            nav: 1.46726,
-            volume: 1216511545.68352,
-            pillar: 2,
-            ongoingChargesFigure: 0.0065,
-            status: 'ACTIVE',
-            peopleCount: 131988,
-            shortName: 'SWK50',
-            inceptionDate: moment().subtract(25, 'years').format(),
-          },
-          {
-            fundManager: { name: 'Tuleva' },
-            isin: 'EE3600109435',
-            name: 'Tuleva World Stocks Pension Fund',
-            managementFeeRate: 0.0034,
-            nav: 0.87831,
-            volume: 253616160.18811,
-            pillar: 2,
-            ongoingChargesFigure: 0.0039,
-            status: 'ACTIVE',
-            peopleCount: 24485,
-            shortName: 'TUK75',
-          },
-          {
-            fundManager: { name: 'Tuleva' },
-            isin: 'EE3600109443',
-            name: 'Tuleva World Bonds Pension Fund',
-            managementFeeRate: 0.0027,
-            pillar: 2,
-            ongoingChargesFigure: 0.0039,
-            status: 'ACTIVE',
-            nav: 0.59311,
-            volume: 9414001.84915,
-            peopleCount: 1621,
-            shortName: 'TUK00',
-          },
-          {
-            fundManager: { name: 'Young' },
-            isin: 'EE1000000000',
-            name: 'Young Fund',
-            managementFeeRate: 0.0027,
-            pillar: 2,
-            ongoingChargesFigure: 0.0039,
-            status: 'ACTIVE',
-            nav: 0.59311,
-            volume: 9414001.84915,
-            peopleCount: 1621,
-            inceptionDate: moment().subtract(2, 'years').format(),
-            shortName: 'TUK00',
-          },
-        ]),
-      ),
-    ),
-  );
+  server.use(rest.get('http://localhost/v1/funds', (req, res, ctx) => res(ctx.json(mockFunds))));
 }
 
 let returnData: ReturnsResponse | undefined;
@@ -559,38 +469,7 @@ export function returnsBackend(server: SetupServerApi): void {
 export function userCapitalBackend(server: SetupServerApi): void {
   server.use(
     rest.get('http://localhost/v1/me/capital', (req, res, ctx) =>
-      res(
-        ctx.json([
-          {
-            type: CapitalType.CAPITAL_PAYMENT,
-            contributions: 1000.0,
-            profit: -123.45,
-            value: 1000.0 - 123.45,
-            currency: 'EUR',
-          },
-          {
-            type: CapitalType.UNVESTED_WORK_COMPENSATION,
-            contributions: 0,
-            profit: 0,
-            value: 0,
-            currency: 'EUR',
-          },
-          {
-            type: CapitalType.WORK_COMPENSATION,
-            contributions: 0,
-            profit: 0,
-            value: 0,
-            currency: 'EUR',
-          },
-          {
-            type: CapitalType.MEMBERSHIP_BONUS,
-            contributions: 1.23,
-            profit: 0,
-            value: 1.23,
-            currency: 'EUR',
-          },
-        ]),
-      ),
+      res(ctx.json(capitalEventsResponse)),
     ),
   );
 }
@@ -639,10 +518,10 @@ export function secondPillarPaymentRateBackend(server: SetupServerApi): {
   server.use(
     rest.post('http://localhost/v1/second-pillar-payment-rates', (req, res, ctx) => {
       if (req.headers.get('Authorization') !== 'Bearer an access token') {
-        return res(ctx.status(401), ctx.json({ error: 'not authenticated correctly' }));
+        return res(ctx.status(401), ctx.json(authErrorResponse));
       }
       backend.mandateCreated = true;
-      return res(ctx.status(200), ctx.json({ mandateId: '1' }));
+      return res(ctx.status(200), ctx.json(secondPillarPaymentRateChangeResponse));
     }),
   );
   return backend;
@@ -667,19 +546,7 @@ export function withdrawalsEligibilityBackend(
 export function mandateDeadlinesBackend(server: SetupServerApi): void {
   server.use(
     rest.get('http://localhost/v1/mandate-deadlines', (req, res, ctx) =>
-      res(
-        ctx.json({
-          periodEnding: '2024-03-31T20:59:59.999999999Z',
-          paymentRateDeadline: '2024-11-30T21:59:59.999999999Z',
-          earlyWithdrawalFulfillmentDate: '2024-09-02',
-          transferMandateCancellationDeadline: '2024-03-31T20:59:59.999999999Z',
-          withdrawalCancellationDeadline: '2023-12-31T21:59:59.999999999Z',
-          earlyWithdrawalCancellationDeadline: '2024-07-31T20:59:59.999999999Z',
-          transferMandateFulfillmentDate: '2024-05-01',
-          withdrawalFulfillmentDate: '2024-01-16',
-          paymentRateFulfillmentDate: '2025-01-01',
-        }),
-      ),
+      res(ctx.json(mandateDeadlinesResponse)),
     ),
   );
 }
