@@ -189,7 +189,7 @@ export const ReviewAndConfirmStep = () => {
         </button>
         <div className="d-flex">
           <button type="button" className="btn btn-light mr-2" onClick={navigateToNextStep}>
-            <FormattedMessage id="withdrawals.navigation.continue" />
+            <FormattedMessage id="withdrawals.navigation.forward" />
           </button>
           <button
             type="button"

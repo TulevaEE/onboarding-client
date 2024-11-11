@@ -694,6 +694,7 @@
   "withdrawals.steps.applicationSubmitted": "Avaldus esitatud",
   "withdrawals.navigation.back": "Back",
   "withdrawals.navigation.continue": "Continue",
+  "withdrawals.navigation.forward": "Forward",
 
   "withdrawals.withdrawalAmount.partialWithdrawQuestion": "Do you wish to make a partial withdrawal immediately?",
   "withdrawals.withdrawalAmount.partialWithdrawalTax": "Partial withdrawal will be subject to 10% income tax",

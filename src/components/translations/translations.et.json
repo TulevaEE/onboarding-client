@@ -696,6 +696,7 @@
   "withdrawals.steps.applicationSubmitted": "Avaldus esitatud",
   "withdrawals.navigation.back": "Tagasi",
   "withdrawals.navigation.continue": "Jätkan",
+  "withdrawals.navigation.forward": "Edasi",
 
   "withdrawals.withdrawalAmount.partialWithdrawQuestion": "Soovid osa raha kohe välja võtta?",
   "withdrawals.withdrawalAmount.partialWithdrawalTax": "Väljamakselt peab riik kinni 10% tulumaksu",

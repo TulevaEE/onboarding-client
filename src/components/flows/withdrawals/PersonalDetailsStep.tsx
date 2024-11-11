@@ -77,9 +77,14 @@ export const PersonalDetailsStep = () => {
         <button type="button" className="btn btn-light" onClick={() => navigateToPreviousStep()}>
           <FormattedMessage id="withdrawals.navigation.back" />
         </button>
-        <button type="button" className="btn btn-primary" onClick={handleNextClicked}>
-          <FormattedMessage id="withdrawals.navigation.continue" />
-        </button>
+        <div className="d-flex">
+          <button type="button" className="btn btn-light mr-2" onClick={navigateToNextStep}>
+            <FormattedMessage id="withdrawals.navigation.forward" />
+          </button>
+          <button type="button" className="btn btn-primary" onClick={handleNextClicked}>
+            <FormattedMessage id="withdrawals.navigation.continue" />
+          </button>
+        </div>
       </div>
     </>
   );
