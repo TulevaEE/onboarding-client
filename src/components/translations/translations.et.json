@@ -601,7 +601,7 @@
   "secondPillarUpsell.whatDoTheseNumbersMean": "Mida need arvud tähendavad?",
   "secondPillarUpsell.disclaimer": "Tegemist on finantsteenusega. Graafik on illustratiivne.",
 
-  "secondPillarPaymentRate.contributionChange": "Suurenda oma II samba maksuvõitu",
+  "secondPillarPaymentRate.contributionChange": "Suurenda oma II samba maksuvõitu",
   "secondPillarPaymentRate.chooseContributionRate": "Vali, kui palju soovid igakuiselt panustada:",
   "secondPillarPaymentRate.applicationDeadline": "Sinu valik jõustub {paymentRateFulfillmentDate}. Oma valikut saad muuta igal aastal novembri lõpuni.",
   "secondPillarPaymentRate.option.2Percent": "2% brutopalgast",
@@ -612,7 +612,7 @@
   "secondPillarPaymentRate.calculation.6Percent": "Sina panustad 6% ja riik 4%, kokku kogud <b>10%</b>",
   "secondPillarPaymentRate.current": "Praegune valik",
   "secondPillarPaymentRate.recommended": "Soovitame",
-  "secondPillarPaymentRate.maximumBenefit": "Saad suurima maksuvõidu ja kogud II sambasse maksimaalselt",
+  "secondPillarPaymentRate.maximumBenefit": "Saad suurima maksuvõidu ja kogud II sambasse maksimaalselt",
   "secondPillarPaymentRate.confirmation": "Kinnitamine",
   "secondPillarPaymentRate.confirm.mandate.agree.to.terms": "Vajutades nupule “Allkirjasta ja saada”, saadan digiallkirjastatud avalduse otse registripidajale.",
   "secondPillarPaymentRate.confirm.mandate.sign": "Allkirjasta ja saada",

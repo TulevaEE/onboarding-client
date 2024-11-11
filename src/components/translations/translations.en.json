@@ -599,7 +599,7 @@
   "secondPillarUpsell.whatDoTheseNumbersMean": "What do these numbers mean?",
   "secondPillarUpsell.disclaimer": "This is a financial service. The graph is illustrative.",
 
-  "secondPillarPaymentRate.contributionChange": "Increase your II pillar tax benefits",
+  "secondPillarPaymentRate.contributionChange": "Increase your II pillar tax benefits",
   "secondPillarPaymentRate.chooseContributionRate": "Choose how much you would like to contribute:",
   "secondPillarPaymentRate.applicationDeadline": "The change will be applied on {paymentRateFulfillmentDate}. You can change your choice every year until the end of November.",
   "secondPillarPaymentRate.option.2Percent": "2% of Gross Salary",
@@ -610,7 +610,7 @@
   "secondPillarPaymentRate.calculation.6Percent": "You contribute 6% and the state 4%, totaling <b>10%</b>",
   "secondPillarPaymentRate.current": "Current choice",
   "secondPillarPaymentRate.recommended": "Recommended",
-  "secondPillarPaymentRate.maximumBenefit": "You achieve the greatest tax benefit and contribute the maximum to your II pillar",
+  "secondPillarPaymentRate.maximumBenefit": "You achieve the greatest tax benefit and contribute the maximum to your II pillar",
   "secondPillarPaymentRate.confirmation": "Confirmation",
   "secondPillarPaymentRate.confirm.mandate.agree.to.terms": "By clicking “Sign and send“ a digitally signed application will be sent to the register.",
   "secondPillarPaymentRate.confirm.mandate.sign": "Sign and send",
