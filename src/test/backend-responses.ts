@@ -2,6 +2,7 @@ import moment from 'moment';
 import {
   CancellationMandate,
   CapitalEvent,
+  CapitalRow,
   CapitalType,
   Conversion,
   Fund,
@@ -147,30 +148,34 @@ export const mockFunds: Fund[] = [
   },
 ];
 
-export const capitalEventsResponse: CapitalEvent[] = [
+export const capitalRowsResponse: CapitalRow[] = [
   {
     type: CapitalType.CAPITAL_PAYMENT,
+    contributions: 1000.0,
+    profit: -123.45,
     value: 1000.0 - 123.45,
     currency: 'EUR',
-    date: '2020-01-04',
   },
   {
     type: CapitalType.UNVESTED_WORK_COMPENSATION,
+    contributions: 0,
+    profit: 0,
     value: 0,
     currency: 'EUR',
-    date: '2020-01-05',
   },
   {
     type: CapitalType.WORK_COMPENSATION,
+    contributions: 0,
+    profit: 0,
     value: 0,
     currency: 'EUR',
-    date: '2020-01-06',
   },
   {
     type: CapitalType.MEMBERSHIP_BONUS,
+    contributions: 1.23,
+    profit: 0,
     value: 1.23,
     currency: 'EUR',
-    date: '2020-01-07',
   },
 ];
 
