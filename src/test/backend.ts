@@ -6,12 +6,13 @@ import { anAuthenticationManager } from '../components/common/authenticationMana
 import { ReturnsResponse } from '../components/account/ComparisonCalculator/api';
 import {
   CreateMandateBatchDto,
+  MandateDto,
   WithdrawalsEligibility,
 } from '../components/common/apiModels/withdrawals';
 import {
   authErrorResponse,
   cancellationResponse,
-  capitalEventsResponse,
+  capitalRowsResponse,
   getMobileSignatureResponse,
   getMobileSignatureStatusResponse,
   mandateDeadlinesResponse,
@@ -77,11 +78,18 @@ export const mandateBatchBackend = (server: SetupServerApi): void => {
         if (req.headers.get('Authorization') !== 'Bearer an access token') {
           return res(ctx.status(401), ctx.json(authErrorResponse));
         }
+
+        const mandates: MandateDto[] = req.body.mandates.map((mandate, idx) => ({
+          ...mandate,
+          id: idx + 1,
+          createdDate: '2024-01-01',
+        }));
+
         return res(
           ctx.status(200),
           ctx.json({
             id: 1,
-            mandates: req.body.mandates.map((mandate, idx) => ({ ...mandate, id: idx + 1 })),
+            mandates,
           }),
         );
       },
@@ -469,7 +477,7 @@ export function returnsBackend(server: SetupServerApi): void {
 export function userCapitalBackend(server: SetupServerApi): void {
   server.use(
     rest.get('http://localhost/v1/me/capital', (req, res, ctx) =>
-      res(ctx.json(capitalEventsResponse)),
+      res(ctx.json(capitalRowsResponse)),
     ),
   );
 }
