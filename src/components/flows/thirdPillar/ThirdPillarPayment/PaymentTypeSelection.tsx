@@ -19,7 +19,7 @@ export const PaymentTypeSelection = ({ paymentType, setPaymentType }: Props) => 
     <Radio
       name="payment-type"
       id="payment-type-single"
-      className="mt-3 p-3"
+      className="mt-3"
       selected={paymentType === PaymentType.SINGLE}
       onSelect={() => {
         setPaymentType(PaymentType.SINGLE);

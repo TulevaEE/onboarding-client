@@ -1,3 +1,4 @@
+import { captureException } from '@sentry/browser';
 import { Fund, SourceFund } from '../../common/apiModels/index';
 import { PensionHoldings, PersonalDetailsStepState, WithdrawalsAmountStepState } from './types';
 
@@ -209,11 +210,29 @@ export const getAllFundNavsPresent = (
   );
 
   const allFunds = [...secondPillarSourceFunds, ...thirdPillarSourceFunds];
-  return allFunds.every(
+  const areNavsMissing = allFunds.every(
     (fund) =>
       Object.prototype.hasOwnProperty.call(fundIsinToFundNavMap, fund.isin) &&
       typeof fundIsinToFundNavMap[fund.isin] === 'number',
   );
+
+  if (areNavsMissing) {
+    const missingNavs: { name: string; isin: string }[] = allFunds
+      .filter(
+        (fund) =>
+          !(
+            Object.prototype.hasOwnProperty.call(fundIsinToFundNavMap, fund.isin) &&
+            typeof fundIsinToFundNavMap[fund.isin] === 'number'
+          ),
+      )
+      .map(({ name, isin }) => ({ name, isin }));
+
+    captureException(new Error('Some withdrawal NAVs are missing'), {
+      contexts: { state: { state: { type: 'funds', value: { missingNavs } } } },
+    });
+  }
+
+  return areNavsMissing;
 };
 
 export const getTotalAmountAvailableToWithdraw = (
