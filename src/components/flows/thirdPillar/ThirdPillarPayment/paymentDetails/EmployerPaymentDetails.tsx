@@ -26,7 +26,7 @@ export const EmployerPaymentDetails = () => {
       <Radio
         name="employer-type"
         id="employer-type-private"
-        className="mt-4 p-3"
+        className="mt-4"
         selected={employerType === 'PRIVATE_SECTOR'}
         onSelect={() => {
           setEmployerType('PRIVATE_SECTOR');
