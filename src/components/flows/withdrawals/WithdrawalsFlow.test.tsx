@@ -161,6 +161,41 @@ describe('withdrawals flow with both pillars', () => {
 
     expect(await screen.findByText(/EE591254471322749514/i)).toBeInTheDocument();
   }, 20_000);
+
+  test('can click on link to go to previous step', async () => {
+    expect(
+      await screen.findByText(/II and III pillar withdrawals/i, undefined, { timeout: 1000 }),
+    ).toBeInTheDocument();
+
+    const partialWithdrawalSizeInput = await screen.findByLabelText(
+      'Do you wish to make a partial withdrawal immediately?',
+      { exact: false },
+    );
+
+    userEvent.type(partialWithdrawalSizeInput, '100');
+
+    userEvent.click(nextButton());
+
+    const ibanInput = await screen.findByLabelText('Bank account number (IBAN)');
+
+    userEvent.type(ibanInput, 'EE591254471322749514');
+
+    userEvent.click(nextButton());
+
+    expect(
+      await screen.findByText(/I submit the following applications and am aware of their terms/i),
+    ).toBeInTheDocument();
+
+    const withdrawalSizeStep = await screen.findByRole('link', { name: 'Withdrawal size' });
+
+    userEvent.click(withdrawalSizeStep);
+
+    expect(
+      await screen.findByLabelText('Do you wish to make a partial withdrawal immediately?', {
+        exact: false,
+      }),
+    ).toBeInTheDocument();
+  }, 20_000);
 });
 
 describe('withdrawals flow with only second pillar', () => {

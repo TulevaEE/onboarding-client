@@ -11,6 +11,7 @@ export type WithdrawalsContextState = {
 
   allFundNavsPresent: boolean;
 
+  onMandatesSubmitted: () => unknown;
   setWithdrawalAmount: (state: WithdrawalsAmountStepState) => unknown;
   setPersonalDetails: (state: PersonalDetailsStepState) => unknown;
 
@@ -37,6 +38,7 @@ export type PersonalDetailsStepState = {
 export type WithdrawalStep = {
   type: 'WITHDRAWAL_SIZE' | 'YOUR_INFORMATION' | 'REVIEW_AND_CONFIRM' | 'DONE';
   titleId: TranslationKey;
+  subPath: string;
   hidden?: boolean;
   component: () => JSX.Element | null;
 };

@@ -1,5 +1,6 @@
 import { ReactChildren, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
+import { Redirect } from 'react-router-dom';
 import { useWithdrawalsContext } from './hooks';
 import {
   FundPensionOpeningMandateDetails,
@@ -23,7 +24,7 @@ import {
 } from '../../common/apiHooks';
 import { formatDate, formatDateRange, formatDateTime } from '../../common/dateFormatter';
 import { useMandateBatchSigning } from './signing/useMandateBatchSigning';
-import { AuthenticationLoader, ErrorMessage } from '../../common';
+import { AuthenticationLoader, ErrorMessage, Loader } from '../../common';
 import { ErrorResponse } from '../../common/apiModels';
 import { TranslationKey } from '../../translations';
 
@@ -49,6 +50,7 @@ export const ReviewAndConfirmStep = () => {
     allFundNavsPresent,
     navigateToPreviousStep,
     navigateToNextStep,
+    onMandatesSubmitted,
   } = useWithdrawalsContext();
 
   const [agreedToTerms, setAgreedToTerms] = useState(false);
@@ -56,15 +58,20 @@ export const ReviewAndConfirmStep = () => {
 
   const { mutateAsync: createMandateBatch } = useCreateMandateBatch();
 
-  if (mandatesToCreate === null || !funds) {
-    return null;
-  }
-
   useEffect(() => {
     if (signed) {
+      onMandatesSubmitted();
       navigateToNextStep();
     }
   }, [signed]);
+
+  if (mandatesToCreate === null) {
+    return <Redirect to="/withdrawals" />;
+  }
+
+  if (!funds) {
+    return <Loader className="align-middle my-4" />;
+  }
 
   const fundIsinToFundNameMap: Record<string, string> = useMemo(
     () =>
@@ -188,7 +195,14 @@ export const ReviewAndConfirmStep = () => {
           <FormattedMessage id="withdrawals.navigation.back" />
         </button>
         <div className="d-flex">
-          <button type="button" className="btn btn-light mr-2" onClick={navigateToNextStep}>
+          <button
+            type="button"
+            className="btn btn-light mr-2"
+            onClick={() => {
+              onMandatesSubmitted();
+              navigateToNextStep();
+            }}
+          >
             <FormattedMessage id="withdrawals.navigation.forward" />
           </button>
           <button
@@ -262,7 +276,7 @@ const FundPensionMandateDescription = ({
   const { data: eligibility } = useWithdrawalsEligibility();
 
   if (!pensionHoldings || !mandateDeadlines) {
-    return null; // TODO better handling
+    return <Loader className="align-middle my-4" />;
   }
 
   const totalPillarHolding =
@@ -366,9 +380,8 @@ const PartialWithdrawalMandateDescription = ({
   const { data: eligibility } = useWithdrawalsEligibility();
   const { withdrawalAmount, pensionHoldings } = useWithdrawalsContext();
 
-  // TODO better handling
   if (!pensionHoldings || !withdrawalAmount.singleWithdrawalAmount) {
-    return null;
+    return <Loader className="align-middle my-4" />;
   }
 
   const totalAvailableToWithdraw = getTotalAmountAvailableToWithdraw(
@@ -465,7 +478,7 @@ const WithdrawalPaymentDate = ({ mandate }: { mandate: WithdrawalMandateDetails 
   const { data: mandateDeadlines } = useMandateDeadlines();
 
   if (!mandateDeadlines) {
-    return null; // TODO
+    return null; // TODO skeleton?
   }
 
   if (mandate.pillar === 'THIRD' && mandate.mandateType === 'PARTIAL_WITHDRAWAL') {
@@ -484,7 +497,7 @@ const WithdrawalPaymentDate = ({ mandate }: { mandate: WithdrawalMandateDetails 
 
 const TITLE_MAPPING: Record<
   WithdrawalMandateDetails['mandateType'],
-  Record<'SECOND' | 'THIRD', TranslationKey> // TODO TranslationKey
+  Record<'SECOND' | 'THIRD', TranslationKey>
 > = {
   FUND_PENSION_OPENING: {
     SECOND: 'withdrawals.mandates.fundPension.secondPillar.title',

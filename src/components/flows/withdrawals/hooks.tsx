@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { createContext, PropsWithChildren, useContext, useEffect, useMemo, useState } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 import {
   PersonalDetailsStepState,
   WithdrawalsAmountStepState,
   WithdrawalsContextState,
   WithdrawalStep,
-  WithdrawalStepType,
 } from './types';
 import { useFunds, useSourceFunds, useWithdrawalsEligibility } from '../../common/apiHooks';
-import { getAllFundNavsPresent, getMandatesToCreate } from './utils';
+import { getAllFundNavsPresent, getMandatesToCreate, getWithdrawalsPath } from './utils';
 
 export const WithdrawalsContext = createContext<WithdrawalsContextState>({
   currentStep: null,
@@ -24,6 +24,8 @@ export const WithdrawalsContext = createContext<WithdrawalsContextState>({
   mandatesToCreate: null,
 
   allFundNavsPresent: true,
+
+  onMandatesSubmitted: () => {},
 
   setWithdrawalAmount: () => {},
   setPersonalDetails: () => {},
@@ -41,7 +43,11 @@ export const WithdrawalsProvider = ({
   const { data: sourceFunds } = useSourceFunds();
   const { data: funds } = useFunds();
 
-  const [currentStepType, setCurrentStepType] = useState<WithdrawalStepType>('WITHDRAWAL_SIZE');
+  const { pathname } = useLocation();
+  const history = useHistory();
+
+  const currentStepType =
+    steps.find((step) => pathname.includes(step.subPath))?.type ?? 'WITHDRAWAL_SIZE';
   const currentStep = steps.find((step) => step.type === currentStepType)!;
 
   const [withdrawalAmount, setWithdrawalAmount] = useState<WithdrawalsAmountStepState>({
@@ -52,6 +58,10 @@ export const WithdrawalsProvider = ({
     taxResidencyCode: 'EST',
     bankAccountIban: null,
   });
+
+  const onMandatesSubmitted = () => {
+    history.replace('/');
+  };
 
   const { data: eligibility } = useWithdrawalsEligibility();
 
@@ -101,7 +111,7 @@ export const WithdrawalsProvider = ({
       return;
     }
 
-    setCurrentStepType(steps[nextStepIndex].type);
+    history.push(getWithdrawalsPath(steps[nextStepIndex].subPath));
   };
 
   const navigateToPreviousStep = () => {
@@ -111,7 +121,7 @@ export const WithdrawalsProvider = ({
       return;
     }
 
-    setCurrentStepType(steps[previousStepIndex].type);
+    history.goBack();
   };
 
   const mandatesToCreate = useMemo(
@@ -146,6 +156,7 @@ export const WithdrawalsProvider = ({
         mandatesToCreate,
 
         allFundNavsPresent,
+        onMandatesSubmitted,
 
         setWithdrawalAmount,
         setPersonalDetails,

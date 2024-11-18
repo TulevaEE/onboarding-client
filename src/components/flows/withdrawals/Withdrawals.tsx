@@ -1,10 +1,12 @@
 import React from 'react';
+import { Redirect, Route, Switch } from 'react-router-dom';
 import { useMe, useWithdrawalsEligibility } from '../../common/apiHooks';
 import { WithdrawalsHeader } from './WithdrawalsHeader';
 import Loader from '../../common/loader';
 import { WithdrawalsSteps } from './WithdrawalsSteps';
 import { useWithdrawalsContext, WithdrawalsProvider } from './hooks';
 import { WITHDRAWAL_STEPS } from './constants';
+import { getWithdrawalsPath } from './utils';
 
 export const Withdrawals = () => (
   <WithdrawalsProvider steps={WITHDRAWAL_STEPS}>
@@ -18,20 +20,25 @@ export const InnerWithdrawals: React.FunctionComponent = () => {
 
   const { currentStep } = useWithdrawalsContext();
 
-  if (!user) {
+  if (!user || !eligibility) {
     return <Loader className="align-middle my-4" />;
   }
 
-  if (!eligibility) {
-    return null;
-  }
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
+  const CurrentStepComponent = currentStep?.component!;
+  const currentStepPath = currentStep?.subPath;
 
-  const CurrentStepComponent = currentStep?.component ?? (() => null);
   return (
     <div className="col-md-8 offset-md-2">
       <WithdrawalsHeader />
       <WithdrawalsSteps />
-      <CurrentStepComponent />
+      <Switch>
+        <Route
+          path={getWithdrawalsPath(currentStepPath as string)}
+          component={CurrentStepComponent}
+        />
+        <Redirect exact path="/withdrawals" to={getWithdrawalsPath(currentStepPath as string)} />
+      </Switch>
     </div>
   );
 };

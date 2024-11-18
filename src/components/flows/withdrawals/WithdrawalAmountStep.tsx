@@ -43,7 +43,6 @@ export const WithdrawalAmountStep = () => {
       <FundPensionStatusBox totalAmount={totalAmount} />
       <SingleWithdrawalSelectionBox totalAmount={totalAmount} />
       <div className="d-flex justify-content-between pt-4">
-        {/* TODO paddings */}
         <Link className="btn btn-light" to="/account">
           <FormattedMessage id="withdrawals.navigation.back" />
         </Link>

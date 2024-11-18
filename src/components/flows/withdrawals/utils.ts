@@ -10,6 +10,7 @@ import {
   WithdrawalsEligibility,
 } from '../../common/apiModels/withdrawals';
 
+export const getWithdrawalsPath = (subPath: string) => `/withdrawals/${subPath}`;
 export const getBankAccountDetails = (
   personalDetails: PersonalDetailsStepState,
 ): BankAccountDetails =>

@@ -1,13 +1,15 @@
 import { FormattedMessage } from 'react-intl';
 import { Fragment } from 'react';
+import { Link } from 'react-router-dom';
 import { TranslationKey } from '../../translations';
 import { useWithdrawalsContext } from './hooks';
 import { WITHDRAWAL_STEPS } from './constants';
 import styles from './Withdrawals.module.scss';
+import { getWithdrawalsPath } from './utils';
 
 export const WithdrawalsSteps = () => {
   const { currentStep } = useWithdrawalsContext();
-  const currentStepNumber = WITHDRAWAL_STEPS.findIndex((step) => step.type === currentStep?.type);
+  const currentStepIndex = WITHDRAWAL_STEPS.findIndex((step) => step.type === currentStep?.type);
 
   return (
     <div
@@ -17,7 +19,17 @@ export const WithdrawalsSteps = () => {
         (step, idx) =>
           !step.hidden && (
             <Fragment key={step.type}>
-              <WithdrawalStep step={idx} currentStep={currentStepNumber} titleId={step.titleId} />
+              {idx < currentStepIndex && currentStep?.type !== 'DONE' ? (
+                <Link className="text-decoration-none" to={getWithdrawalsPath(step.subPath)}>
+                  <WithdrawalStep
+                    step={idx}
+                    currentStep={currentStepIndex}
+                    titleId={step.titleId}
+                  />
+                </Link>
+              ) : (
+                <WithdrawalStep step={idx} currentStep={currentStepIndex} titleId={step.titleId} />
+              )}
               {idx !== WITHDRAWAL_STEPS.filter(({ hidden }) => !hidden).length - 1 && (
                 <div className={styles.stepDivider} />
               )}
