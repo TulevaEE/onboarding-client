@@ -49,6 +49,10 @@
     padding: 0;
     line-height: 2rem;
 
+    & .row {
+      border-width: 0;
+    }
+
     &.tv-radio--selected {
       font-weight: bold;
     }
