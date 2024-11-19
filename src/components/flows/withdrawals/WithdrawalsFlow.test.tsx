@@ -64,10 +64,6 @@ describe('withdrawals flow with both pillars', () => {
 
   test('reaches final confirmation step to make partial withdrawal with fund pension', async () => {
     expect(
-      await screen.findByText(/II and III pillar withdrawals/i, undefined, { timeout: 1000 }),
-    ).toBeInTheDocument();
-
-    expect(
       await screen.findByText(/Withdraw from the entire pension holding/i, undefined, {
         timeout: 1000,
       }),
@@ -81,17 +77,13 @@ describe('withdrawals flow with both pillars', () => {
     );
 
     userEvent.type(partialWithdrawalSizeInput, '20000');
+    assertTotalTaxText('−2 000.00 €');
 
     await assertFundPensionCalculations('419.58 € per month');
 
-    assertTaxText('−2 000.00 €');
-
     userEvent.click(nextButton());
 
-    const ibanInput = await screen.findByLabelText('Bank account number (IBAN)');
-
-    userEvent.type(ibanInput, 'EE591254471322749514');
-
+    await enterIban('EE591254471322749514');
     userEvent.click(nextButton());
 
     expect(
@@ -99,6 +91,7 @@ describe('withdrawals flow with both pillars', () => {
     ).toBeInTheDocument();
 
     expect(await screen.findByText(/EE591254471322749514/i)).toBeInTheDocument();
+    expect(await screen.findByText('EST')).toBeInTheDocument();
 
     assertMandateCount(4);
 
@@ -131,25 +124,10 @@ describe('withdrawals flow with both pillars', () => {
       '850 €',
     );
 
-    userEvent.click(confirmationCheckbox());
-    expect(signButton()).toBeEnabled();
-
-    userEvent.click(signButton());
-
-    expect(
-      await screen.findByRole(
-        'heading',
-        { name: 'Väljamaksete avaldused esitatud' },
-        { timeout: 10_000 },
-      ),
-    ).toBeInTheDocument();
+    await confirmAndSignAndAssertDone();
   }, 20_000);
 
   test('reaches final confirmation step with iban validation', async () => {
-    expect(
-      await screen.findByText(/II and III pillar withdrawals/i, undefined, { timeout: 1000 }),
-    ).toBeInTheDocument();
-
     const partialWithdrawalSizeInput = await screen.findByLabelText(
       'Do you wish to make a partial withdrawal immediately?',
       { exact: false },
@@ -185,23 +163,15 @@ describe('withdrawals flow with both pillars', () => {
   }, 20_000);
 
   test('can click on link to go to previous step', async () => {
-    expect(
-      await screen.findByText(/II and III pillar withdrawals/i, undefined, { timeout: 1000 }),
-    ).toBeInTheDocument();
-
     const partialWithdrawalSizeInput = await screen.findByLabelText(
       'Do you wish to make a partial withdrawal immediately?',
       { exact: false },
     );
 
     userEvent.type(partialWithdrawalSizeInput, '100');
-
     userEvent.click(nextButton());
 
-    const ibanInput = await screen.findByLabelText('Bank account number (IBAN)');
-
-    userEvent.type(ibanInput, 'EE591254471322749514');
-
+    await enterIban('EE591254471322749514');
     userEvent.click(nextButton());
 
     expect(
@@ -221,10 +191,6 @@ describe('withdrawals flow with both pillars', () => {
 
   test('uses only second pillar with partial withdrawal', async () => {
     expect(
-      await screen.findByText(/II and III pillar withdrawals/i, undefined, { timeout: 1000 }),
-    ).toBeInTheDocument();
-
-    expect(
       await screen.findByText(/Withdraw from the entire pension holding/i, undefined, {
         timeout: 1000,
       }),
@@ -242,26 +208,14 @@ describe('withdrawals flow with both pillars', () => {
     );
 
     userEvent.type(partialWithdrawalSizeInput, '20000');
+    assertTotalTaxText('−2 000.00 €');
 
     const finalFundPensionSize = '395.83 €';
-
     await assertFundPensionCalculations(`${finalFundPensionSize} per month`);
-
-    assertTaxText('−2 000.00 €');
-
     userEvent.click(nextButton());
 
-    const ibanInput = await screen.findByLabelText('Bank account number (IBAN)');
-
-    userEvent.type(ibanInput, 'EE591254471322749514');
-
+    await enterIban('EE591254471322749514');
     userEvent.click(nextButton());
-
-    expect(
-      await screen.findByText(/I submit the following applications and am aware of their terms/i),
-    ).toBeInTheDocument();
-
-    expect(await screen.findByText(/EE591254471322749514/i)).toBeInTheDocument();
 
     assertMandateCount(2);
 
@@ -282,25 +236,10 @@ describe('withdrawals flow with both pillars', () => {
       '18 000 €',
     );
 
-    userEvent.click(confirmationCheckbox());
-    expect(signButton()).toBeEnabled();
-
-    userEvent.click(signButton());
-
-    expect(
-      await screen.findByRole(
-        'heading',
-        { name: 'Väljamaksete avaldused esitatud' },
-        { timeout: 10_000 },
-      ),
-    ).toBeInTheDocument();
+    await confirmAndSignAndAssertDone();
   }, 20_000);
 
   test('uses only second pillar without partial withdrawal', async () => {
-    expect(
-      await screen.findByText(/II and III pillar withdrawals/i, undefined, { timeout: 1000 }),
-    ).toBeInTheDocument();
-
     expect(
       await screen.findByText(/Withdraw from the entire pension holding/i, undefined, {
         timeout: 1000,
@@ -316,41 +255,17 @@ describe('withdrawals flow with both pillars', () => {
 
     userEvent.click(nextButton());
 
-    const ibanInput = await screen.findByLabelText('Bank account number (IBAN)');
-
-    userEvent.type(ibanInput, 'EE591254471322749514');
-
+    await enterIban('EE591254471322749514');
     userEvent.click(nextButton());
-
-    expect(
-      await screen.findByText(/I submit the following applications and am aware of their terms/i),
-    ).toBeInTheDocument();
-
-    expect(await screen.findByText(/EE591254471322749514/i)).toBeInTheDocument();
 
     assertMandateCount(1);
 
     await assertFundPensionMandate('SECOND', finalFundPensionSize);
 
-    userEvent.click(confirmationCheckbox());
-    expect(signButton()).toBeEnabled();
-
-    userEvent.click(signButton());
-
-    expect(
-      await screen.findByRole(
-        'heading',
-        { name: 'Väljamaksete avaldused esitatud' },
-        { timeout: 10_000 },
-      ),
-    ).toBeInTheDocument();
+    await confirmAndSignAndAssertDone();
   }, 20_000);
 
   test('uses only third pillar with partial withdrawal ', async () => {
-    expect(
-      await screen.findByText(/II and III pillar withdrawals/i, undefined, { timeout: 1000 }),
-    ).toBeInTheDocument();
-
     expect(
       await screen.findByText(/Withdraw from the entire pension holding/i, undefined, {
         timeout: 1000,
@@ -369,25 +284,15 @@ describe('withdrawals flow with both pillars', () => {
     );
 
     userEvent.type(partialWithdrawalSizeInput, '1000');
+    assertTotalTaxText('−100.00 €');
 
     const finalFundPensionSize = '19.58 €';
     await assertFundPensionCalculations(`${finalFundPensionSize} per month`);
 
-    assertTaxText('−100.00 €');
-
     userEvent.click(nextButton());
 
-    const ibanInput = await screen.findByLabelText('Bank account number (IBAN)');
-
-    userEvent.type(ibanInput, 'EE591254471322749514');
-
+    await enterIban('EE591254471322749514');
     userEvent.click(nextButton());
-
-    expect(
-      await screen.findByText(/I submit the following applications and am aware of their terms/i),
-    ).toBeInTheDocument();
-
-    expect(await screen.findByText(/EE591254471322749514/i)).toBeInTheDocument();
 
     assertMandateCount(2);
 
@@ -404,25 +309,10 @@ describe('withdrawals flow with both pillars', () => {
       '900 €',
     );
 
-    userEvent.click(confirmationCheckbox());
-    expect(signButton()).toBeEnabled();
-
-    userEvent.click(signButton());
-
-    expect(
-      await screen.findByRole(
-        'heading',
-        { name: 'Väljamaksete avaldused esitatud' },
-        { timeout: 10_000 },
-      ),
-    ).toBeInTheDocument();
+    await confirmAndSignAndAssertDone();
   }, 20_000);
 
   test('uses only third pillar without partial withdrawal ', async () => {
-    expect(
-      await screen.findByText(/II and III pillar withdrawals/i, undefined, { timeout: 1000 }),
-    ).toBeInTheDocument();
-
     expect(
       await screen.findByText(/Withdraw from the entire pension holding/i, undefined, {
         timeout: 1000,
@@ -438,33 +328,13 @@ describe('withdrawals flow with both pillars', () => {
 
     userEvent.click(nextButton());
 
-    const ibanInput = await screen.findByLabelText('Bank account number (IBAN)');
-
-    userEvent.type(ibanInput, 'EE591254471322749514');
-
+    await enterIban('EE591254471322749514');
     userEvent.click(nextButton());
-
-    expect(
-      await screen.findByText(/I submit the following applications and am aware of their terms/i),
-    ).toBeInTheDocument();
-
-    expect(await screen.findByText(/EE591254471322749514/i)).toBeInTheDocument();
 
     assertMandateCount(1);
     await assertFundPensionMandate('THIRD', finalFundPensionSize);
 
-    userEvent.click(confirmationCheckbox());
-    expect(signButton()).toBeEnabled();
-
-    userEvent.click(signButton());
-
-    expect(
-      await screen.findByRole(
-        'heading',
-        { name: 'Väljamaksete avaldused esitatud' },
-        { timeout: 10_000 },
-      ),
-    ).toBeInTheDocument();
+    await confirmAndSignAndAssertDone();
   }, 20_000);
 });
 
@@ -516,10 +386,6 @@ describe('withdrawals flow with only second pillar', () => {
 
   test('reaches final confirmation step', async () => {
     expect(
-      await screen.findByText(/II and III pillar withdrawals/i, undefined, { timeout: 1000 }),
-    ).toBeInTheDocument();
-
-    expect(
       await screen.findByText(/Your holdings in II pillar/i, { exact: false }, { timeout: 1000 }),
     ).toBeInTheDocument();
 
@@ -531,24 +397,14 @@ describe('withdrawals flow with only second pillar', () => {
     await assertFundPensionCalculations('479.17 € per month');
 
     userEvent.type(partialWithdrawalSizeInput, '50000');
+    assertTotalTaxText('−5 000.00 €');
 
     await assertFundPensionCalculations('270.83 € per month');
 
-    assertTaxText('−5 000.00 €');
-
     userEvent.click(nextButton());
 
-    const ibanInput = await screen.findByLabelText('Bank account number (IBAN)');
-
-    userEvent.type(ibanInput, 'EE591254471322749514');
-
+    await enterIban('EE591254471322749514');
     userEvent.click(nextButton());
-
-    expect(
-      await screen.findByText(/I submit the following applications and am aware of their terms/i),
-    ).toBeInTheDocument();
-
-    expect(await screen.findByText(/EE591254471322749514/i)).toBeInTheDocument();
 
     assertMandateCount(2);
 
@@ -568,18 +424,7 @@ describe('withdrawals flow with only second pillar', () => {
       '45 000 €',
     );
 
-    userEvent.click(confirmationCheckbox());
-    expect(signButton()).toBeEnabled();
-
-    userEvent.click(signButton());
-
-    expect(
-      await screen.findByRole(
-        'heading',
-        { name: 'Väljamaksete avaldused esitatud' },
-        { timeout: 10_000 },
-      ),
-    ).toBeInTheDocument();
+    await confirmAndSignAndAssertDone();
   });
 });
 
@@ -611,10 +456,6 @@ describe('withdrawals flow with only third pillar', () => {
 
   test('reaches final confirmation step', async () => {
     expect(
-      await screen.findByText(/II and III pillar withdrawals/i, undefined, { timeout: 1000 }),
-    ).toBeInTheDocument();
-
-    expect(
       await screen.findByText(/Your holdings in III pillar/i, { exact: false }, { timeout: 1000 }),
     ).toBeInTheDocument();
 
@@ -627,17 +468,8 @@ describe('withdrawals flow with only third pillar', () => {
 
     userEvent.click(nextButton());
 
-    const ibanInput = await screen.findByLabelText('Bank account number (IBAN)');
-
-    userEvent.type(ibanInput, 'EE591254471322749514');
-
+    await enterIban('EE591254471322749514');
     userEvent.click(nextButton());
-
-    expect(
-      await screen.findByText(/I submit the following applications and am aware of their terms/i),
-    ).toBeInTheDocument();
-
-    expect(await screen.findByText(/EE591254471322749514/i)).toBeInTheDocument();
 
     assertMandateCount(2);
 
@@ -653,24 +485,33 @@ describe('withdrawals flow with only third pillar', () => {
       '90 €',
     );
 
-    userEvent.click(confirmationCheckbox());
-    expect(signButton()).toBeEnabled();
-
-    userEvent.click(signButton());
-
-    expect(
-      await screen.findByRole(
-        'heading',
-        { name: 'Väljamaksete avaldused esitatud' },
-        { timeout: 10_000 },
-      ),
-    ).toBeInTheDocument();
+    await confirmAndSignAndAssertDone();
   });
 });
 
 const nextButton = () => screen.getByRole('button', { name: 'Continue' });
 const confirmationCheckbox = () => screen.getByRole('checkbox');
 const signButton = () => screen.getByRole('button', { name: /Sign/ });
+
+const enterIban = async (iban: string) => {
+  const ibanInput = await screen.findByLabelText('Bank account number (IBAN)');
+  userEvent.type(ibanInput, iban);
+};
+
+const confirmAndSignAndAssertDone = async () => {
+  userEvent.click(confirmationCheckbox());
+  expect(signButton()).toBeEnabled();
+
+  userEvent.click(signButton());
+
+  expect(
+    await screen.findByRole(
+      'heading',
+      { name: 'Väljamaksete avaldused esitatud' },
+      { timeout: 10_000 },
+    ),
+  ).toBeInTheDocument();
+};
 
 const assertMandateCount = async (count: number) =>
   Promise.all(
@@ -689,7 +530,7 @@ const assertFundPensionCalculations = async (fundPensionMonthlySize: string) => 
   expect(screen.getByText(/will earn returns for the next 20 years/i)).toBeInTheDocument();
 };
 
-const assertTaxText = (amount: string) => {
+const assertTotalTaxText = (amount: string) => {
   const taxText = screen.getByText(/Partial withdrawal will be subject to 10% income tax/i);
   expect(within(taxText).getByText(amount)).toBeInTheDocument();
 };
