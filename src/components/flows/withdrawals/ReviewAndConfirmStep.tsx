@@ -275,11 +275,6 @@ const FundPensionMandateDescription = ({
     return <Loader className="align-middle my-4" />;
   }
 
-  const totalPillarHolding =
-    mandate.pillar === 'SECOND'
-      ? pensionHoldings?.totalSecondPillar
-      : pensionHoldings?.totalThirdPillar;
-
   const totalWithdrawableAmount = getTotalWithdrawableAmount(
     withdrawalAmount.pillarsToWithdrawFrom,
     pensionHoldings,
