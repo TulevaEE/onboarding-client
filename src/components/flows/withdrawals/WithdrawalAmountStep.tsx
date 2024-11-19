@@ -7,7 +7,7 @@ import { Radio } from '../../common';
 import { PillarToWithdrawFrom } from './types';
 import { useWithdrawalsContext } from './hooks';
 import Percentage from '../../common/Percentage';
-import { getEstimatedFundPension, getTotalAmountAvailableToWithdraw } from './utils';
+import { getEstimatedTotalFundPension, getTotalWithdrawableAmount } from './utils';
 import styles from './Withdrawals.module.scss';
 
 export const WithdrawalAmountStep = () => {
@@ -27,7 +27,7 @@ export const WithdrawalAmountStep = () => {
     return null;
   }
 
-  const totalAmount = getTotalAmountAvailableToWithdraw(
+  const totalAmount = getTotalWithdrawableAmount(
     withdrawalAmount.pillarsToWithdrawFrom,
     pensionHoldings,
   );
@@ -135,10 +135,10 @@ const FundPensionStatusBox = ({ totalAmount }: { totalAmount: number }) => {
   }
 
   const { fundPensionMonthlyPaymentApproximateSize, fundPensionPercentageLiquidatedMonthly } =
-    getEstimatedFundPension({
-      totalAmount,
+    getEstimatedTotalFundPension({
+      totalWithdrawableAmount: totalAmount,
       durationYears: eligibility.recommendedDurationYears,
-      singleWithdrawalAmountFromPillar: withdrawalAmount.singleWithdrawalAmount,
+      singleWithdrawalAmount: withdrawalAmount.singleWithdrawalAmount,
     });
 
   return (

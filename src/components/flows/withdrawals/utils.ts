@@ -45,7 +45,7 @@ export const getPartialWithdrawalMandatesToCreate = (
 
   const bankAccountDetails = getBankAccountDetails(personalDetails);
 
-  const totalAvailableToWithdraw = getTotalAmountAvailableToWithdraw(
+  const totalAvailableToWithdraw = getTotalWithdrawableAmount(
     withdrawalAmount.pillarsToWithdrawFrom,
     pensionHoldings,
   );
@@ -92,7 +92,7 @@ export const getFundPensionMandatesToCreate = (
   withdrawalsEligibility: WithdrawalsEligibility,
   pensionHoldings: PensionHoldings,
 ): FundPensionOpeningMandateDetails[] => {
-  const totalAmount = getTotalAmountAvailableToWithdraw(
+  const totalAmount = getTotalWithdrawableAmount(
     withdrawalAmount.pillarsToWithdrawFrom,
     pensionHoldings,
   );
@@ -179,16 +179,16 @@ export const getMandatesToCreate = ({
   ];
 };
 
-export const getEstimatedFundPension = ({
-  totalAmount,
+export const getEstimatedTotalFundPension = ({
+  totalWithdrawableAmount,
   durationYears,
-  singleWithdrawalAmountFromPillar,
+  singleWithdrawalAmount,
 }: {
-  totalAmount: number;
+  totalWithdrawableAmount: number;
   durationYears: number;
-  singleWithdrawalAmountFromPillar: number | null;
+  singleWithdrawalAmount: number | null;
 }) => {
-  const fundPensionSize = totalAmount - (singleWithdrawalAmountFromPillar ?? 0);
+  const fundPensionSize = totalWithdrawableAmount - (singleWithdrawalAmount ?? 0);
   const fundPensionPeriods = durationYears * 12;
 
   const fundPensionMonthlyPaymentApproximateSize = fundPensionSize / fundPensionPeriods;
@@ -238,7 +238,7 @@ export const getAllFundNavsPresent = (
   return areNavsMissing;
 };
 
-export const getTotalAmountAvailableToWithdraw = (
+export const getTotalWithdrawableAmount = (
   pillarToWithdrawFrom: 'SECOND' | 'THIRD' | 'BOTH',
   holdings: PensionHoldings,
 ) => {

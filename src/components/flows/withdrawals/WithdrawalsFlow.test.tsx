@@ -22,7 +22,6 @@ import {
 } from '../../../test/backend';
 import { FundStatus } from '../../common/apiModels';
 import { WithdrawalMandateDetails } from '../../common/apiModels/withdrawals';
-import { formatAmountForCurrency } from '../../common/utils';
 
 const server = setupServer();
 let history: History;
@@ -217,6 +216,254 @@ describe('withdrawals flow with both pillars', () => {
       await screen.findByLabelText('Do you wish to make a partial withdrawal immediately?', {
         exact: false,
       }),
+    ).toBeInTheDocument();
+  }, 20_000);
+
+  test('uses only second pillar with partial withdrawal', async () => {
+    expect(
+      await screen.findByText(/II and III pillar withdrawals/i, undefined, { timeout: 1000 }),
+    ).toBeInTheDocument();
+
+    expect(
+      await screen.findByText(/Withdraw from the entire pension holding/i, undefined, {
+        timeout: 1000,
+      }),
+    ).toBeInTheDocument();
+
+    await assertFundPensionCalculations('502.91 € per month');
+
+    userEvent.click(await screen.findByLabelText(/Withdraw only from II pillar/i));
+
+    await assertFundPensionCalculations('479.17 € per month');
+
+    const partialWithdrawalSizeInput = await screen.findByLabelText(
+      'Do you wish to make a partial withdrawal immediately?',
+      { exact: false },
+    );
+
+    userEvent.type(partialWithdrawalSizeInput, '20000');
+
+    const finalFundPensionSize = '395.83 €';
+
+    await assertFundPensionCalculations(`${finalFundPensionSize} per month`);
+
+    assertTaxText('−2 000.00 €');
+
+    userEvent.click(nextButton());
+
+    const ibanInput = await screen.findByLabelText('Bank account number (IBAN)');
+
+    userEvent.type(ibanInput, 'EE591254471322749514');
+
+    userEvent.click(nextButton());
+
+    expect(
+      await screen.findByText(/I submit the following applications and am aware of their terms/i),
+    ).toBeInTheDocument();
+
+    expect(await screen.findByText(/EE591254471322749514/i)).toBeInTheDocument();
+
+    assertMandateCount(2);
+
+    await assertFundPensionMandate('SECOND', finalFundPensionSize);
+
+    await assertPartialWithdrawalMandate(
+      'SECOND',
+      [
+        {
+          fundName: 'Tuleva World Stocks Pension Fund',
+          liquidationAmount: '17%',
+        },
+        {
+          fundName: 'Swedbank Pension Fund K60',
+          liquidationAmount: '17%',
+        },
+      ],
+      '18 000 €',
+    );
+
+    userEvent.click(confirmationCheckbox());
+    expect(signButton()).toBeEnabled();
+
+    userEvent.click(signButton());
+
+    expect(
+      await screen.findByRole(
+        'heading',
+        { name: 'Väljamaksete avaldused esitatud' },
+        { timeout: 10_000 },
+      ),
+    ).toBeInTheDocument();
+  }, 20_000);
+
+  test('uses only second pillar without partial withdrawal', async () => {
+    expect(
+      await screen.findByText(/II and III pillar withdrawals/i, undefined, { timeout: 1000 }),
+    ).toBeInTheDocument();
+
+    expect(
+      await screen.findByText(/Withdraw from the entire pension holding/i, undefined, {
+        timeout: 1000,
+      }),
+    ).toBeInTheDocument();
+
+    await assertFundPensionCalculations('502.91 € per month');
+
+    userEvent.click(await screen.findByLabelText(/Withdraw only from II pillar/i));
+
+    const finalFundPensionSize = '479.17 €';
+    await assertFundPensionCalculations(`${finalFundPensionSize} per month`);
+
+    userEvent.click(nextButton());
+
+    const ibanInput = await screen.findByLabelText('Bank account number (IBAN)');
+
+    userEvent.type(ibanInput, 'EE591254471322749514');
+
+    userEvent.click(nextButton());
+
+    expect(
+      await screen.findByText(/I submit the following applications and am aware of their terms/i),
+    ).toBeInTheDocument();
+
+    expect(await screen.findByText(/EE591254471322749514/i)).toBeInTheDocument();
+
+    assertMandateCount(1);
+
+    await assertFundPensionMandate('SECOND', finalFundPensionSize);
+
+    userEvent.click(confirmationCheckbox());
+    expect(signButton()).toBeEnabled();
+
+    userEvent.click(signButton());
+
+    expect(
+      await screen.findByRole(
+        'heading',
+        { name: 'Väljamaksete avaldused esitatud' },
+        { timeout: 10_000 },
+      ),
+    ).toBeInTheDocument();
+  }, 20_000);
+
+  test('uses only third pillar with partial withdrawal ', async () => {
+    expect(
+      await screen.findByText(/II and III pillar withdrawals/i, undefined, { timeout: 1000 }),
+    ).toBeInTheDocument();
+
+    expect(
+      await screen.findByText(/Withdraw from the entire pension holding/i, undefined, {
+        timeout: 1000,
+      }),
+    ).toBeInTheDocument();
+
+    await assertFundPensionCalculations('502.91 € per month');
+
+    userEvent.click(await screen.findByLabelText(/Withdraw only from III pillar/i));
+
+    await assertFundPensionCalculations('23.75 € per month');
+
+    const partialWithdrawalSizeInput = await screen.findByLabelText(
+      'Do you wish to make a partial withdrawal immediately?',
+      { exact: false },
+    );
+
+    userEvent.type(partialWithdrawalSizeInput, '1000');
+
+    const finalFundPensionSize = '19.58 €';
+    await assertFundPensionCalculations(`${finalFundPensionSize} per month`);
+
+    assertTaxText('−100.00 €');
+
+    userEvent.click(nextButton());
+
+    const ibanInput = await screen.findByLabelText('Bank account number (IBAN)');
+
+    userEvent.type(ibanInput, 'EE591254471322749514');
+
+    userEvent.click(nextButton());
+
+    expect(
+      await screen.findByText(/I submit the following applications and am aware of their terms/i),
+    ).toBeInTheDocument();
+
+    expect(await screen.findByText(/EE591254471322749514/i)).toBeInTheDocument();
+
+    assertMandateCount(2);
+
+    await assertFundPensionMandate('THIRD', finalFundPensionSize);
+
+    await assertPartialWithdrawalMandate(
+      'THIRD',
+      [
+        {
+          fundName: 'Tuleva III Samba Pensionifond',
+          liquidationAmount: '1279.92 units',
+        },
+      ],
+      '900 €',
+    );
+
+    userEvent.click(confirmationCheckbox());
+    expect(signButton()).toBeEnabled();
+
+    userEvent.click(signButton());
+
+    expect(
+      await screen.findByRole(
+        'heading',
+        { name: 'Väljamaksete avaldused esitatud' },
+        { timeout: 10_000 },
+      ),
+    ).toBeInTheDocument();
+  }, 20_000);
+
+  test('uses only third pillar without partial withdrawal ', async () => {
+    expect(
+      await screen.findByText(/II and III pillar withdrawals/i, undefined, { timeout: 1000 }),
+    ).toBeInTheDocument();
+
+    expect(
+      await screen.findByText(/Withdraw from the entire pension holding/i, undefined, {
+        timeout: 1000,
+      }),
+    ).toBeInTheDocument();
+
+    await assertFundPensionCalculations('502.91 € per month');
+
+    userEvent.click(await screen.findByLabelText(/Withdraw only from III pillar/i));
+
+    const finalFundPensionSize = '23.75 €';
+    await assertFundPensionCalculations(`${finalFundPensionSize} per month`);
+
+    userEvent.click(nextButton());
+
+    const ibanInput = await screen.findByLabelText('Bank account number (IBAN)');
+
+    userEvent.type(ibanInput, 'EE591254471322749514');
+
+    userEvent.click(nextButton());
+
+    expect(
+      await screen.findByText(/I submit the following applications and am aware of their terms/i),
+    ).toBeInTheDocument();
+
+    expect(await screen.findByText(/EE591254471322749514/i)).toBeInTheDocument();
+
+    assertMandateCount(1);
+    await assertFundPensionMandate('THIRD', finalFundPensionSize);
+
+    userEvent.click(confirmationCheckbox());
+    expect(signButton()).toBeEnabled();
+
+    userEvent.click(signButton());
+
+    expect(
+      await screen.findByRole(
+        'heading',
+        { name: 'Väljamaksete avaldused esitatud' },
+        { timeout: 10_000 },
+      ),
     ).toBeInTheDocument();
   }, 20_000);
 });
@@ -467,7 +714,7 @@ const assertFundPensionMandate = async (
     ).toBeInTheDocument();
   }
 
-  const loader = screen.queryByRole('progressbar');
+  const loader = within(fundPensionSection).queryByRole('progressbar');
   if (loader) {
     await waitForElementToBeRemoved(loader);
   }
@@ -516,6 +763,11 @@ const assertPartialWithdrawalMandate = async (
         name: 'Partial withdrawal from III pillar',
       }),
     ).toBeInTheDocument();
+  }
+
+  const loader = within(partialWithdrawalSection).queryByRole('progressbar');
+  if (loader) {
+    await waitForElementToBeRemoved(loader);
   }
 
   rows.forEach(({ fundName, liquidationAmount }) => {

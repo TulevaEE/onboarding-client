@@ -10,11 +10,7 @@ import {
 
 import styles from './Withdrawals.module.scss';
 import Percentage from '../../common/Percentage';
-import {
-  getEstimatedFundPension,
-  getPillarRatios,
-  getTotalAmountAvailableToWithdraw,
-} from './utils';
+import { getEstimatedTotalFundPension, getPillarRatios, getTotalWithdrawableAmount } from './utils';
 import { formatAmountForCurrency } from '../../common/utils';
 import {
   useCreateMandateBatch,
@@ -284,14 +280,23 @@ const FundPensionMandateDescription = ({
       ? pensionHoldings?.totalSecondPillar
       : pensionHoldings?.totalThirdPillar;
 
-  const pillarHoldingRatioOfTotals = totalPillarHolding / pensionHoldings.totalBothPillars;
+  const totalWithdrawableAmount = getTotalWithdrawableAmount(
+    withdrawalAmount.pillarsToWithdrawFrom,
+    pensionHoldings,
+  );
 
-  const { fundPensionMonthlyPaymentApproximateSize } = getEstimatedFundPension({
-    totalAmount: totalPillarHolding ?? 0,
+  const pillarRatioOfTotal = getPillarRatios(pensionHoldings, totalWithdrawableAmount)[
+    mandate.pillar
+  ];
+
+  const { fundPensionMonthlyPaymentApproximateSize } = getEstimatedTotalFundPension({
+    totalWithdrawableAmount,
     durationYears: mandate.duration.durationYears,
-    singleWithdrawalAmountFromPillar:
-      (withdrawalAmount.singleWithdrawalAmount ?? 0) * pillarHoldingRatioOfTotals,
+    singleWithdrawalAmount: withdrawalAmount.singleWithdrawalAmount,
   });
+
+  const fundPensionMonthlyPaymentFromPillar =
+    fundPensionMonthlyPaymentApproximateSize * pillarRatioOfTotal;
 
   // TODO formatforcurrency rounds up, this can cause state where total is 4.6 + 1.4 = 6, but components are displayed as 4 and 1
   return (
@@ -325,7 +330,7 @@ const FundPensionMandateDescription = ({
             withdrawalDate: (
               <WithdrawalPaymentDate mandate={mandate} mandateDeadlines={mandateDeadlines} />
             ),
-            paymentSize: formatAmountForCurrency(fundPensionMonthlyPaymentApproximateSize, 2),
+            paymentSize: formatAmountForCurrency(fundPensionMonthlyPaymentFromPillar, 2),
             muted: (children: ReactChildren) => <span className="text-muted">{children}</span>,
           }}
         />
@@ -386,7 +391,7 @@ const PartialWithdrawalMandateDescription = ({
     return <Loader className="align-middle my-4" />;
   }
 
-  const totalAvailableToWithdraw = getTotalAmountAvailableToWithdraw(
+  const totalAvailableToWithdraw = getTotalWithdrawableAmount(
     withdrawalAmount.pillarsToWithdrawFrom,
     pensionHoldings,
   );
