@@ -48,7 +48,6 @@ beforeEach(async () => {
   fundsBackend(server);
   applicationsBackend(server);
   returnsBackend(server);
-  withdrawalsEligibilityBackend(server);
   smartIdMandateBatchSigningBackend(server);
   mandateBatchBackend(server);
   mandateDeadlinesBackend(server);
@@ -60,6 +59,7 @@ beforeEach(async () => {
 describe('withdrawals flow with both pillars', () => {
   beforeEach(() => {
     pensionAccountStatementBackend(server);
+    withdrawalsEligibilityBackend(server);
   });
 
   test('reaches final confirmation step to make partial withdrawal with fund pension', async () => {
@@ -338,7 +338,7 @@ describe('withdrawals flow with both pillars', () => {
   }, 20_000);
 });
 
-describe('withdrawals flow with only second pillar', () => {
+describe('withdrawals flow with only second pillar and arrests/bankruptcy', () => {
   beforeEach(() => {
     pensionAccountStatementBackend(server, [
       {
@@ -382,6 +382,12 @@ describe('withdrawals flow with only second pillar', () => {
         profit: -12233.44,
       },
     ]);
+    withdrawalsEligibilityBackend(server, {
+      age: 60,
+      hasReachedEarlyRetirementAge: true,
+      recommendedDurationYears: 20,
+      arrestsOrBankruptciesPresent: true,
+    });
   });
 
   test('reaches final confirmation step', async () => {
@@ -408,7 +414,7 @@ describe('withdrawals flow with only second pillar', () => {
 
     assertMandateCount(2);
 
-    assertFundPensionMandate('SECOND', '270.83 €');
+    assertFundPensionMandate('SECOND', '270.83 €', 'BANKRUPTCIES_ARRESTS_PRESENT');
     assertPartialWithdrawalMandate(
       'SECOND',
       [
@@ -422,6 +428,7 @@ describe('withdrawals flow with only second pillar', () => {
         },
       ],
       '45 000 €',
+      'BANKRUPTCIES_ARRESTS_PRESENT',
     );
 
     await confirmAndSignAndAssertDone();
@@ -452,6 +459,7 @@ describe('withdrawals flow with only third pillar', () => {
         profit: -1876.54,
       },
     ]);
+    withdrawalsEligibilityBackend(server);
   });
 
   test('reaches final confirmation step', async () => {
@@ -538,6 +546,7 @@ const assertTotalTaxText = (amount: string) => {
 const assertFundPensionMandate = async (
   pillar: WithdrawalMandateDetails['pillar'],
   fundPensionSize: string,
+  bankruptciesPresent?: 'BANKRUPTCIES_ARRESTS_PRESENT',
 ) => {
   const fundPensionSection = await screen.findByTestId(`FUND_PENSION_OPENING_${pillar}`);
 
@@ -579,16 +588,29 @@ const assertFundPensionMandate = async (
       within(pillarStoppedWarning).getByText(/II pillar contributions will stop/),
     ).toBeInTheDocument();
     expect(within(pillarStoppedWarning).getByText(/from March 31/)).toBeInTheDocument();
+
+    if (bankruptciesPresent) {
+      expect(
+        within(fundPensionSection).getByText(
+          /because there is an active arrest or bankruptcy claim registered in the pension registry./,
+        ),
+      ).toBeInTheDocument();
+    }
   }
 
-  const cancelDeadline = within(fundPensionSection).getByText(/I can cancel the application until/);
-  expect(within(cancelDeadline).getByText(/December 31 at 21:59/)).toBeInTheDocument();
+  if (!bankruptciesPresent && pillar !== 'SECOND') {
+    const cancelDeadline = within(fundPensionSection).getByText(
+      /I can cancel the application until/,
+    );
+    expect(within(cancelDeadline).getByText(/December 31 at 21:59/)).toBeInTheDocument();
+  }
 };
 
 const assertPartialWithdrawalMandate = async (
   pillar: WithdrawalMandateDetails['pillar'],
   rows: { fundName: string; liquidationAmount: string }[],
   partialWithdrawalAmount: string,
+  bankruptciesPresent?: 'BANKRUPTCIES_ARRESTS_PRESENT',
 ) => {
   const partialWithdrawalSection = await screen.findByTestId(`PARTIAL_WITHDRAWAL_${pillar}`);
 
@@ -644,5 +666,13 @@ const assertPartialWithdrawalMandate = async (
       within(pillarStoppedWarning).getByText(/II pillar contributions will stop/),
     ).toBeInTheDocument();
     expect(within(pillarStoppedWarning).getByText(/from March 31/)).toBeInTheDocument();
+
+    if (bankruptciesPresent) {
+      expect(
+        within(partialWithdrawalSection).getByText(
+          /because there is an active arrest or bankruptcy claim registered in the pension registry./,
+        ),
+      ).toBeInTheDocument();
+    }
   }
 };
