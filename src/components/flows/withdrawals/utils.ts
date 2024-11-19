@@ -228,11 +228,7 @@ export const getAllFundNavsPresent = (
       )
       .map(({ name, isin }) => ({ name, isin }));
 
-    captureException(new Error('Some withdrawal NAVs are missing'), {
-      contexts: {
-        state: { state: { type: 'funds', value: { missingNavs: JSON.stringify(missingNavs) } } },
-      },
-    });
+    captureException(new Error(`Some withdrawal NAVs are missing ${Object.entries(missingNavs)}`));
   }
 
   return areNavsMissing;
