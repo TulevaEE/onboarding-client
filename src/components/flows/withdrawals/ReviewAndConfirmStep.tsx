@@ -25,7 +25,7 @@ import {
 import { formatDate, formatDateRange, formatDateTime } from '../../common/dateFormatter';
 import { useMandateBatchSigning } from './signing/useMandateBatchSigning';
 import { AuthenticationLoader, ErrorMessage, Loader } from '../../common';
-import { ErrorResponse } from '../../common/apiModels';
+import { ErrorResponse, MandateDeadlines } from '../../common/apiModels';
 import { TranslationKey } from '../../translations';
 
 export const ReviewAndConfirmStep = () => {
@@ -240,7 +240,7 @@ const MandatePreview = ({
   mandate: WithdrawalMandateDetails;
   index: number;
 }) => (
-  <div className="card p-4 mb-4">
+  <div className="card p-4 mb-4" data-testid={`${mandate.mandateType}_${mandate.pillar}`}>
     <div>
       <h3 className={styles.mandateSubheading}>
         <FormattedMessage
@@ -322,7 +322,9 @@ const FundPensionMandateDescription = ({
           id="withdrawals.mandates.fundPension.dateAndSize"
           values={{
             b: (children: ReactChildren) => <b>{children}</b>,
-            withdrawalDate: <WithdrawalPaymentDate mandate={mandate} />,
+            withdrawalDate: (
+              <WithdrawalPaymentDate mandate={mandate} mandateDeadlines={mandateDeadlines} />
+            ),
             paymentSize: formatAmountForCurrency(fundPensionMonthlyPaymentApproximateSize, 2),
             muted: (children: ReactChildren) => <span className="text-muted">{children}</span>,
           }}
@@ -380,7 +382,7 @@ const PartialWithdrawalMandateDescription = ({
   const { data: eligibility } = useWithdrawalsEligibility();
   const { withdrawalAmount, pensionHoldings } = useWithdrawalsContext();
 
-  if (!pensionHoldings || !withdrawalAmount.singleWithdrawalAmount) {
+  if (!pensionHoldings || !mandateDeadlines || !withdrawalAmount.singleWithdrawalAmount) {
     return <Loader className="align-middle my-4" />;
   }
 
@@ -441,7 +443,9 @@ const PartialWithdrawalMandateDescription = ({
                 estimatedWithdrawalSizeWithTax,
                 0,
               ),
-              withdrawalDate: <WithdrawalPaymentDate mandate={mandate} />,
+              withdrawalDate: (
+                <WithdrawalPaymentDate mandate={mandate} mandateDeadlines={mandateDeadlines} />
+              ),
             }}
           />
         </p>
@@ -474,13 +478,13 @@ const PartialWithdrawalMandateDescription = ({
   );
 };
 
-const WithdrawalPaymentDate = ({ mandate }: { mandate: WithdrawalMandateDetails }) => {
-  const { data: mandateDeadlines } = useMandateDeadlines();
-
-  if (!mandateDeadlines) {
-    return null; // TODO skeleton?
-  }
-
+const WithdrawalPaymentDate = ({
+  mandate,
+  mandateDeadlines,
+}: {
+  mandate: WithdrawalMandateDetails;
+  mandateDeadlines: MandateDeadlines;
+}) => {
   if (mandate.pillar === 'THIRD' && mandate.mandateType === 'PARTIAL_WITHDRAWAL') {
     return <FormattedMessage id="withdrawals.mandates.fundPension.fourWorkingDays" />;
   }

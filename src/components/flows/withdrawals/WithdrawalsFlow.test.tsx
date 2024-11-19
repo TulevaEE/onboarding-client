@@ -1,5 +1,5 @@
 import { setupServer } from 'msw/node';
-import { screen } from '@testing-library/react';
+import { screen, waitForElementToBeRemoved, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Route } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
@@ -21,6 +21,8 @@ import {
   withdrawalsEligibilityBackend,
 } from '../../../test/backend';
 import { FundStatus } from '../../common/apiModels';
+import { WithdrawalMandateDetails } from '../../common/apiModels/withdrawals';
+import { formatAmountForCurrency } from '../../common/utils';
 
 const server = setupServer();
 let history: History;
@@ -72,12 +74,18 @@ describe('withdrawals flow with both pillars', () => {
       }),
     ).toBeInTheDocument();
 
+    await assertFundPensionCalculations('502.91 € per month');
+
     const partialWithdrawalSizeInput = await screen.findByLabelText(
       'Do you wish to make a partial withdrawal immediately?',
       { exact: false },
     );
 
-    userEvent.type(partialWithdrawalSizeInput, '100');
+    userEvent.type(partialWithdrawalSizeInput, '20000');
+
+    await assertFundPensionCalculations('419.58 € per month');
+
+    assertTaxText('−2 000.00 €');
 
     userEvent.click(nextButton());
 
@@ -93,20 +101,35 @@ describe('withdrawals flow with both pillars', () => {
 
     expect(await screen.findByText(/EE591254471322749514/i)).toBeInTheDocument();
 
-    const applicationTitles = [
-      /Monthly fund pension payments from II pillar/,
-      /Monthly fund pension payments from III pillar/,
-      /Partial withdrawal from II pillar/,
-      /Partial withdrawal from III pillar/,
-    ];
+    assertMandateCount(4);
 
-    await Promise.all(
-      applicationTitles.map(async (title, i) =>
-        Promise.all([
-          expect(await screen.findByText(`Application #${i + 1}`)).toBeInTheDocument(),
-          expect(await screen.findByRole('heading', { name: title })).toBeInTheDocument(),
-        ]),
-      ),
+    await assertFundPensionMandate('SECOND', '399.77 €');
+    await assertFundPensionMandate('THIRD', '19.81 €');
+
+    await assertPartialWithdrawalMandate(
+      'SECOND',
+      [
+        {
+          fundName: 'Tuleva World Stocks Pension Fund',
+          liquidationAmount: '16%',
+        },
+        {
+          fundName: 'Swedbank Pension Fund K60',
+          liquidationAmount: '16%',
+        },
+      ],
+      '17 150 €',
+    );
+
+    await assertPartialWithdrawalMandate(
+      'THIRD',
+      [
+        {
+          fundName: 'Tuleva III Samba Pensionifond',
+          liquidationAmount: '1208.74 units',
+        },
+      ],
+      '850 €',
     );
 
     userEvent.click(confirmationCheckbox());
@@ -258,7 +281,13 @@ describe('withdrawals flow with only second pillar', () => {
       { exact: false },
     );
 
-    userEvent.type(partialWithdrawalSizeInput, '100');
+    await assertFundPensionCalculations('479.17 € per month');
+
+    userEvent.type(partialWithdrawalSizeInput, '50000');
+
+    await assertFundPensionCalculations('270.83 € per month');
+
+    assertTaxText('−5 000.00 €');
 
     userEvent.click(nextButton());
 
@@ -274,18 +303,22 @@ describe('withdrawals flow with only second pillar', () => {
 
     expect(await screen.findByText(/EE591254471322749514/i)).toBeInTheDocument();
 
-    const applicationTitles = [
-      /Monthly fund pension payments from II pillar/,
-      /Partial withdrawal from II pillar/,
-    ];
+    assertMandateCount(2);
 
-    await Promise.all(
-      applicationTitles.map(async (title, i) =>
-        Promise.all([
-          expect(await screen.findByText(`Application #${i + 1}`)).toBeInTheDocument(),
-          expect(await screen.findByRole('heading', { name: title })).toBeInTheDocument(),
-        ]),
-      ),
+    assertFundPensionMandate('SECOND', '270.83 €');
+    assertPartialWithdrawalMandate(
+      'SECOND',
+      [
+        {
+          fundName: 'Tuleva World Stocks Pension Fund',
+          liquidationAmount: '43%',
+        },
+        {
+          fundName: 'Swedbank Pension Fund K60',
+          liquidationAmount: '43%',
+        },
+      ],
+      '45 000 €',
     );
 
     userEvent.click(confirmationCheckbox());
@@ -359,18 +392,18 @@ describe('withdrawals flow with only third pillar', () => {
 
     expect(await screen.findByText(/EE591254471322749514/i)).toBeInTheDocument();
 
-    const applicationTitles = [
-      /Monthly fund pension payments from III pillar/,
-      /Partial withdrawal from III pillar/,
-    ];
+    assertMandateCount(2);
 
-    await Promise.all(
-      applicationTitles.map(async (title, i) =>
-        Promise.all([
-          expect(await screen.findByText(`Application #${i + 1}`)).toBeInTheDocument(),
-          expect(await screen.findByRole('heading', { name: title })).toBeInTheDocument(),
-        ]),
-      ),
+    assertFundPensionMandate('THIRD', '23.33 €');
+    assertPartialWithdrawalMandate(
+      'THIRD',
+      [
+        {
+          fundName: 'Tuleva III Samba Pensionifond',
+          liquidationAmount: '127.99 units',
+        },
+      ],
+      '90 €',
     );
 
     userEvent.click(confirmationCheckbox());
@@ -391,3 +424,132 @@ describe('withdrawals flow with only third pillar', () => {
 const nextButton = () => screen.getByRole('button', { name: 'Continue' });
 const confirmationCheckbox = () => screen.getByRole('checkbox');
 const signButton = () => screen.getByRole('button', { name: /Sign/ });
+
+const assertMandateCount = async (count: number) =>
+  Promise.all(
+    Array(count)
+      .fill(null)
+      .map(async (_, i) =>
+        Promise.all([expect(await screen.findByText(`Application #${i + 1}`)).toBeInTheDocument()]),
+      ),
+  );
+
+const assertFundPensionCalculations = async (fundPensionMonthlySize: string) => {
+  const explanationText = screen.getByText(/Every month you will receive/i);
+  expect(within(explanationText).getByText('0.42%')).toBeInTheDocument();
+
+  expect(screen.getByText(new RegExp(fundPensionMonthlySize, 'i'))).toBeInTheDocument();
+  expect(screen.getByText(/will earn returns for the next 20 years/i)).toBeInTheDocument();
+};
+
+const assertTaxText = (amount: string) => {
+  const taxText = screen.getByText(/Partial withdrawal will be subject to 10% income tax/i);
+  expect(within(taxText).getByText(amount)).toBeInTheDocument();
+};
+
+const assertFundPensionMandate = async (
+  pillar: WithdrawalMandateDetails['pillar'],
+  fundPensionSize: string,
+) => {
+  const fundPensionSection = await screen.findByTestId(`FUND_PENSION_OPENING_${pillar}`);
+
+  if (pillar === 'SECOND') {
+    expect(
+      await within(fundPensionSection).findByRole('heading', {
+        name: 'Monthly fund pension payments from II pillar',
+      }),
+    ).toBeInTheDocument();
+  } else {
+    expect(
+      await within(fundPensionSection).findByRole('heading', {
+        name: 'Monthly fund pension payments from III pillar',
+      }),
+    ).toBeInTheDocument();
+  }
+
+  const loader = screen.queryByRole('progressbar');
+  if (loader) {
+    await waitForElementToBeRemoved(loader);
+  }
+
+  expect(
+    within(fundPensionSection).getByText(
+      /The recommended duration is calculated based on the average years left to live according to your age. Currently, it is 20 years./i,
+    ),
+  ).toBeInTheDocument();
+
+  const paymentDeadline = within(fundPensionSection).getByText(/The first payment will be sent on/);
+
+  expect(within(paymentDeadline).getByText(/16 – 20 January/)).toBeInTheDocument();
+  expect(within(paymentDeadline).getByText(new RegExp(fundPensionSize))).toBeInTheDocument();
+
+  if (pillar === 'SECOND') {
+    const pillarStoppedWarning = within(fundPensionSection).getByText(
+      /Upon submitting the application/,
+    );
+    expect(
+      within(pillarStoppedWarning).getByText(/II pillar contributions will stop/),
+    ).toBeInTheDocument();
+    expect(within(pillarStoppedWarning).getByText(/from March 31/)).toBeInTheDocument();
+  }
+
+  const cancelDeadline = within(fundPensionSection).getByText(/I can cancel the application until/);
+  expect(within(cancelDeadline).getByText(/December 31 at 21:59/)).toBeInTheDocument();
+};
+
+const assertPartialWithdrawalMandate = async (
+  pillar: WithdrawalMandateDetails['pillar'],
+  rows: { fundName: string; liquidationAmount: string }[],
+  partialWithdrawalAmount: string,
+) => {
+  const partialWithdrawalSection = await screen.findByTestId(`PARTIAL_WITHDRAWAL_${pillar}`);
+
+  if (pillar === 'SECOND') {
+    expect(
+      await within(partialWithdrawalSection).findByRole('heading', {
+        name: 'Partial withdrawal from II pillar',
+      }),
+    ).toBeInTheDocument();
+  } else {
+    expect(
+      await within(partialWithdrawalSection).findByRole('heading', {
+        name: 'Partial withdrawal from III pillar',
+      }),
+    ).toBeInTheDocument();
+  }
+
+  rows.forEach(({ fundName, liquidationAmount }) => {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const rowElement = within(partialWithdrawalSection).getByText(
+      fundName,
+      // eslint-disable-next-line testing-library/no-node-access
+    ).parentElement!;
+
+    expect(within(rowElement).getByText(fundName)).toBeInTheDocument();
+    expect(within(rowElement).getByText(liquidationAmount)).toBeInTheDocument();
+  });
+
+  const paymentDeadline = within(partialWithdrawalSection).getByText(/The payment will be sent on/);
+
+  if (pillar === 'SECOND') {
+    expect(within(paymentDeadline).getByText(/16 – 20 January/)).toBeInTheDocument();
+  } else {
+    expect(within(paymentDeadline).getByText(/in four working days/)).toBeInTheDocument();
+  }
+
+  expect(within(partialWithdrawalSection).getByText(/10% income tax/)).toBeInTheDocument();
+
+  expect(
+    within(partialWithdrawalSection).getByText(new RegExp(partialWithdrawalAmount)),
+  ).toBeInTheDocument();
+
+  if (pillar === 'SECOND') {
+    const pillarStoppedWarning = within(partialWithdrawalSection).getByText(
+      /Upon submitting the application/,
+    );
+    expect(
+      within(pillarStoppedWarning).getByText(/II pillar contributions will stop/),
+    ).toBeInTheDocument();
+    expect(within(pillarStoppedWarning).getByText(/from March 31/)).toBeInTheDocument();
+  }
+};
