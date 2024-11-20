@@ -617,7 +617,8 @@
   "secondPillarPaymentRate.cancel": "Cancel",
 
   "secondPillarPaymentRateSuccess.title": "All done",
-  "secondPillarPaymentRateSuccess.description": "From <b>{paymentRateFulfillmentDate}</b>, you will contribute <b>{paymentRate}%</b> of your gross salary to the II pillar.",
+  "secondPillarPaymentRateSuccess.descriptionNewRate": "From <b>{paymentRateFulfillmentDate}</b>, you will contribute <b>{paymentRate}%</b> of your gross salary to the II pillar.",
+  "secondPillarPaymentRateSuccess.descriptionEmployer": "Your employer will be informed and no further action is needed.",
   "secondPillarPaymentRateSuccess.accountLink": "My Account",
 
   "comparisonCalculator.timePeriod": "Time period",

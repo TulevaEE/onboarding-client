@@ -18,9 +18,9 @@ export const SecondPillarPaymentRateSuccess: React.FC = () => {
           <h2 className="text-center mt-3">
             <FormattedMessage id="secondPillarPaymentRateSuccess.title" />
           </h2>
-          <p className="mt-5">
+          <p className="m-0 mt-5">
             <FormattedMessage
-              id="secondPillarPaymentRateSuccess.description"
+              id="secondPillarPaymentRateSuccess.descriptionNewRate"
               values={{
                 paymentRateFulfillmentDate:
                   formatDateYear(mandateDeadlines?.paymentRateFulfillmentDate) || '...',
@@ -29,7 +29,10 @@ export const SecondPillarPaymentRateSuccess: React.FC = () => {
               }}
             />
           </p>
-          <a className="btn btn-primary mt-4 profile-link" href="/account">
+          <p className="m-0">
+            <FormattedMessage id="secondPillarPaymentRateSuccess.descriptionEmployer" />
+          </p>
+          <a className="btn btn-primary mt-5 profile-link" href="/account">
             <FormattedMessage id="secondPillarPaymentRateSuccess.accountLink" />
           </a>
         </SuccessNotice>
