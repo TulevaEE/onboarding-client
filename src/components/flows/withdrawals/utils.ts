@@ -218,17 +218,13 @@ export const getAllFundNavsPresent = (
   );
 
   if (areNavsMissing) {
-    const missingNavs: { name: string; isin: string }[] = allFunds
-      .filter(
-        (fund) =>
-          !(
-            Object.prototype.hasOwnProperty.call(fundIsinToFundNavMap, fund.isin) &&
-            typeof fundIsinToFundNavMap[fund.isin] === 'number'
-          ),
-      )
-      .map(({ name, isin }) => ({ name, isin }));
-
-    captureException(new Error(`Some withdrawal NAVs are missing ${Object.entries(missingNavs)}`));
+    // eslint-disable-next-line no-console
+    console.error(
+      allFunds
+        .filter((fund) => typeof fundIsinToFundNavMap[fund.isin] !== 'number')
+        .map(({ activeFund, name, isin }) => ({ activeFund, name, isin })),
+    );
+    captureException(new Error(`Some withdrawal NAVs are missing`));
   }
 
   return areNavsMissing;
