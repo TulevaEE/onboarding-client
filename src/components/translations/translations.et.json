@@ -620,7 +620,7 @@
 
   "secondPillarPaymentRateSuccess.title": "Muudatus tehtud",
   "secondPillarPaymentRateSuccess.descriptionNewRate": "Alates <b>{paymentRateFulfillmentDate}</b> panustad II sambasse <b>{paymentRate}%</b> brutopalgast.",
-  "secondPillarPaymentRateSuccess.descriptionEmployer": "Sinu tööandjat teavitatakse muudatusest ja sa ei pea rohkem midagi tegema.",
+  "secondPillarPaymentRateSuccess.descriptionEmployer": "Muudatus jõustub automaatselt ja sa ei pea rohkem midagi tegema.",
   "secondPillarPaymentRateSuccess.accountLink": "Minu konto",
 
   "comparisonCalculator.timePeriod": "Ajaperioodil",

@@ -618,7 +618,7 @@
 
   "secondPillarPaymentRateSuccess.title": "All done",
   "secondPillarPaymentRateSuccess.descriptionNewRate": "From <b>{paymentRateFulfillmentDate}</b>, you will contribute <b>{paymentRate}%</b> of your gross salary to the II pillar.",
-  "secondPillarPaymentRateSuccess.descriptionEmployer": "Your employer will be informed and no further action is needed.",
+  "secondPillarPaymentRateSuccess.descriptionEmployer": "The change will take effect automatically and no further action is required.",
   "secondPillarPaymentRateSuccess.accountLink": "My Account",
 
   "comparisonCalculator.timePeriod": "Time period",
