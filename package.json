@@ -9,6 +9,7 @@
   "dependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@sentry/browser": "^7.74.0",
+    "@types/prop-types": "^15.7.13",
     "array.prototype.find": "^2.1.2",
     "axios": "^0.24.0",
     "bootstrap": "^4.6.2",

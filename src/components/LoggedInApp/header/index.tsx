@@ -6,7 +6,7 @@ import LanguageSwitcher from './languageSwitcher';
 
 type Props = {
   // TODO move to useMe hook here
-  user: { name: string };
+  user: { name: string } | null;
   loading: boolean;
   onLogout: () => unknown;
 };

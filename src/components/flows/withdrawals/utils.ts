@@ -209,6 +209,7 @@ export const getAllFundNavsPresent = (
     }),
     {},
   );
+  F;
 
   const allFunds = [...secondPillarSourceFunds, ...thirdPillarSourceFunds];
   const areNavsMissing = allFunds.every(

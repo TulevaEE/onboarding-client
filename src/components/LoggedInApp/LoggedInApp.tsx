@@ -1,8 +1,8 @@
 import { Redirect, Route, Switch, withRouter } from 'react-router-dom';
 import React, { PureComponent } from 'react';
-import { PropTypes as Types } from 'prop-types';
-import { bindActionCreators } from 'redux';
+import { AnyAction, bindActionCreators, Dispatch } from 'redux';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 
 import { actions as loginActions } from '../login';
 import { actions as exchangeActions } from '../exchange';
@@ -37,11 +37,42 @@ import Success from '../flows/secondPillar/success';
 import { getAuthentication } from '../common/authenticationManager';
 import { CapitalPage } from '../account/MemberCapital/CapitalPage';
 import { Withdrawals } from '../flows/withdrawals/Withdrawals';
+import { State } from '../../types';
 
 export const ACCOUNT_PATH = '/account';
 export const AML_PATH = '/aml';
 
-export class LoggedInApp extends PureComponent {
+export class LoggedInApp extends PureComponent<Props> {
+  static propTypes = {
+    user: PropTypes.shape({ name: PropTypes.string }),
+    hasError: PropTypes.bool,
+    loading: PropTypes.bool,
+    shouldLoadAllUserData: PropTypes.bool,
+    shouldLoadSourceAndTargetFunds: PropTypes.bool,
+
+    onLogout: PropTypes.func,
+    onGetUserConversion: PropTypes.func,
+    onGetUser: PropTypes.func,
+    onGetSourceFunds: PropTypes.func,
+    onGetTargetFunds: PropTypes.func,
+    onGetAmlChecks: PropTypes.func,
+  };
+
+  static defaultProps = {
+    user: null,
+    hasError: false,
+    loading: false,
+    shouldLoadAllUserData: false,
+    shouldLoadSourceAndTargetFunds: false,
+
+    onLogout: () => {},
+    onGetUserConversion: () => {},
+    onGetUser: () => {},
+    onGetSourceFunds: () => {},
+    onGetTargetFunds: () => {},
+    onGetAmlChecks: () => {},
+  };
+
   async componentDidMount() {
     await this.getUserAndConversionData();
   }
@@ -127,39 +158,26 @@ export class LoggedInApp extends PureComponent {
   }
 }
 
-const noop = () => null;
-
-LoggedInApp.defaultProps = {
-  user: null,
-  hasError: false,
-  loading: false,
-  shouldLoadAllUserData: false,
-  shouldLoadSourceAndTargetFunds: false,
-
-  onLogout: noop,
-  onGetUserConversion: noop,
-  onGetUser: noop,
-  onGetSourceFunds: noop,
-  onGetTargetFunds: noop,
-  onGetAmlChecks: noop,
+type StateProps = {
+  user: { name: string } | null;
+  hasError: boolean;
+  loading: boolean;
+  shouldLoadAllUserData: boolean;
+  shouldLoadSourceAndTargetFunds: boolean;
 };
 
-LoggedInApp.propTypes = {
-  user: Types.shape({ name: Types.string }),
-  hasError: Types.bool,
-  loading: Types.bool,
-  shouldLoadAllUserData: Types.bool,
-  shouldLoadSourceAndTargetFunds: Types.bool,
-
-  onLogout: Types.func,
-  onGetUserConversion: Types.func,
-  onGetUser: Types.func,
-  onGetSourceFunds: Types.func,
-  onGetTargetFunds: Types.func,
-  onGetAmlChecks: Types.func,
+type DispatchProps = {
+  onLogout: () => unknown;
+  onGetUserConversion: () => unknown;
+  onGetUser: () => unknown;
+  onGetSourceFunds: () => unknown;
+  onGetTargetFunds: () => unknown;
+  onGetAmlChecks: () => unknown;
 };
 
-const mapStateToProps = (state) => ({
+type Props = StateProps & DispatchProps;
+
+const mapStateToProps = (state: State): StateProps => ({
   user: {
     name: [(state.login.user || {}).firstName, (state.login.user || {}).lastName].join(' ').trim(),
   },
@@ -180,7 +198,7 @@ const mapStateToProps = (state) => ({
     ),
 });
 
-const mapDispatchToProps = (dispatch) =>
+const mapDispatchToProps = (dispatch: Dispatch<AnyAction>): DispatchProps =>
   bindActionCreators(
     {
       onLogout: loginActions.logOut,
