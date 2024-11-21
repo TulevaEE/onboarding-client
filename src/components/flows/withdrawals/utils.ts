@@ -210,24 +210,23 @@ export const getAllFundNavsPresent = (
     {},
   );
 
-  const allFunds = [...secondPillarSourceFunds, ...thirdPillarSourceFunds];
-  const areNavsMissing = allFunds.every(
-    (fund) =>
-      Object.prototype.hasOwnProperty.call(fundIsinToFundNavMap, fund.isin) &&
-      typeof fundIsinToFundNavMap[fund.isin] === 'number',
-  );
+  const navPresent = (fund: SourceFund) =>
+    Object.prototype.hasOwnProperty.call(fundIsinToFundNavMap, fund.isin) &&
+    typeof fundIsinToFundNavMap[fund.isin] === 'number';
 
-  if (areNavsMissing) {
+  const allFunds = [...secondPillarSourceFunds, ...thirdPillarSourceFunds];
+  const allNavsPresent = allFunds.every(navPresent);
+
+  if (!allNavsPresent) {
+    const missingFunds = allFunds
+      .filter((fund) => !navPresent(fund))
+      .map(({ activeFund, name, isin }) => ({ activeFund, name, isin }));
     // eslint-disable-next-line no-console
-    console.error(
-      allFunds
-        .filter((fund) => typeof fundIsinToFundNavMap[fund.isin] !== 'number')
-        .map(({ activeFund, name, isin }) => ({ activeFund, name, isin })),
-    );
-    captureException(new Error(`Some withdrawal NAVs are missing`));
+    console.error(missingFunds);
+    captureException(new Error(`Some withdrawal NAVs are missing ${missingFunds}`));
   }
 
-  return areNavsMissing;
+  return allNavsPresent;
 };
 
 export const getTotalWithdrawableAmount = (

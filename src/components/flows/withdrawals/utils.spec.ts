@@ -1,3 +1,5 @@
+import * as Sentry from '@sentry/browser';
+import { FundStatus } from '../../common/apiModels';
 import {
   funds,
   pensionHoldings,
@@ -8,6 +10,7 @@ import {
   withdrawalEligibility,
 } from './fixture';
 import {
+  getAllFundNavsPresent,
   getBankAccountDetails,
   getFundPensionMandatesToCreate,
   getMandatesToCreate,
@@ -22,6 +25,57 @@ describe('getBankAccountDetails', () => {
       type: 'ESTONIAN',
       accountIban: 'EE34123123',
     });
+  });
+});
+
+describe('getAllFundNavsPresent', () => {
+  it('returns true if NAVs present', () => {
+    expect(getAllFundNavsPresent(funds, secondPillarSourceFunds, thirdPillarSourceFunds)).toBe(
+      true,
+    );
+  });
+
+  it('returns false if NAVs missing', () => {
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    expect(
+      getAllFundNavsPresent(
+        [
+          ...funds,
+          {
+            isin: 'EE_TEST_ISIN',
+            name: 'Tuleva Maailma Aktsiate Pensionifond',
+            pillar: 2,
+            managementFeeRate: 0.0034,
+            ongoingChargesFigure: 0.0047,
+            fundManager: { name: 'Tuleva' },
+            status: FundStatus.ACTIVE,
+            inceptionDate: '2017-01-01',
+            nav: null,
+          },
+        ],
+        [
+          ...secondPillarSourceFunds,
+          {
+            isin: 'EE_TEST_ISIN',
+            price: 1500,
+            unavailablePrice: 500,
+            activeFund: false,
+            currency: 'EUR',
+            name: 'Test fund',
+            fundManager: { name: 'Tuleva' },
+            managementFeePercent: 0.34,
+            pillar: 2,
+            ongoingChargesFigure: 0.0047,
+            contributions: 1000,
+            subtractions: 0,
+            profit: 500,
+          },
+        ],
+        thirdPillarSourceFunds,
+      ),
+    ).toBe(false);
+    expect(consoleSpy).toHaveBeenCalled();
   });
 });
 
