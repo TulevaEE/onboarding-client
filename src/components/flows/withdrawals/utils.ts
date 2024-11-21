@@ -222,8 +222,8 @@ export const getAllFundNavsPresent = (
       .filter((fund) => !navPresent(fund))
       .map(({ activeFund, name, isin }) => ({ activeFund, name, isin }));
     // eslint-disable-next-line no-console
-    console.error(missingFunds);
-    captureException(new Error(`Some withdrawal NAVs are missing ${missingFunds}`));
+    console.error(JSON.stringify(missingFunds));
+    captureException(new Error(`Some withdrawal NAVs are missing ${JSON.stringify(missingFunds)}`));
   }
 
   return allNavsPresent;
