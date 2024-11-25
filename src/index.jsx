@@ -32,6 +32,7 @@ import { ScrollToTopOnNavigation } from './components/common/ScrollToTopOnNaviga
 import { loginPath } from './components/login/LoginPage';
 
 import { createTrackedEvent } from './components/common/api';
+import { shouldWriteTestMode, writeTestMode } from './components/common/test-mode';
 
 const history = createBrowserHistory();
 
@@ -54,6 +55,12 @@ function applyRouting() {
   const queryParams = getQueryParams();
   store.dispatch(loginActions.handleIdCardLogin(queryParams));
   store.dispatch(thirdPillarActions.addDataFromQueryParams(queryParams));
+}
+
+function applyTestModeForSession() {
+  if (shouldWriteTestMode()) {
+    writeTestMode();
+  }
 }
 
 function applyLanguage() {
@@ -104,6 +111,7 @@ history.listen(() => {
 export class App extends Component {
   constructor(props) {
     applyRouting();
+    applyTestModeForSession();
     super(props);
   }
 

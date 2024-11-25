@@ -23,6 +23,7 @@ import { useMandateBatchSigning } from './signing/useMandateBatchSigning';
 import { AuthenticationLoader, ErrorMessage, Loader } from '../../common';
 import { ErrorResponse, MandateDeadlines } from '../../common/apiModels';
 import { TranslationKey } from '../../translations';
+import { useTestMode } from '../../common/test-mode';
 
 export const ReviewAndConfirmStep = () => {
   const {
@@ -33,6 +34,8 @@ export const ReviewAndConfirmStep = () => {
     loading: signingInProgress,
     challengeCode,
   } = useMandateBatchSigning();
+
+  const isTestModeEnabled = useTestMode();
 
   const [batchCreationLoading, setBatchCreationLoading] = useState(false);
   const [batchCreationError, setBatchCreationError] = useState<ErrorResponse | null>(null);
@@ -191,16 +194,18 @@ export const ReviewAndConfirmStep = () => {
           <FormattedMessage id="withdrawals.navigation.back" />
         </button>
         <div className="d-flex">
-          <button
-            type="button"
-            className="btn btn-light mr-2"
-            onClick={() => {
-              onMandatesSubmitted();
-              navigateToNextStep();
-            }}
-          >
-            <FormattedMessage id="withdrawals.navigation.forward" />
-          </button>
+          {isTestModeEnabled && (
+            <button
+              type="button"
+              className="btn btn-light mr-2"
+              onClick={() => {
+                onMandatesSubmitted();
+                navigateToNextStep();
+              }}
+            >
+              <FormattedMessage id="withdrawals.navigation.forward" />
+            </button>
+          )}
           <button
             type="button"
             className="btn btn-primary"

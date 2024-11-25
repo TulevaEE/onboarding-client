@@ -64,6 +64,18 @@ describe('withdrawals flow with both pillars', () => {
 
   test('reaches final confirmation step to make partial withdrawal with fund pension', async () => {
     expect(
+      await screen.findByText(/60 years old/i, undefined, {
+        timeout: 1000,
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      await screen.findByText(/under preferential conditions/i, undefined, {
+        timeout: 1000,
+      }),
+    ).toBeInTheDocument();
+
+    expect(
       await screen.findByText(/Withdraw from the entire pension holding/i, undefined, {
         timeout: 1000,
       }),
@@ -494,6 +506,60 @@ describe('withdrawals flow with only third pillar', () => {
     );
 
     await confirmAndSignAndAssertDone();
+  });
+});
+
+describe('withdrawals flow before early retirement age', () => {
+  beforeEach(() => {
+    pensionAccountStatementBackend(server);
+    withdrawalsEligibilityBackend(server, {
+      age: 25,
+      hasReachedEarlyRetirementAge: false,
+      recommendedDurationYears: 35 + 20, // 35 years to go until 60 + 20 years recommended duration
+      arrestsOrBankruptciesPresent: true,
+    });
+  });
+
+  test('can only make calculations on first step and not proceed', async () => {
+    expect(
+      await screen.findByText(/25 years old/i, undefined, {
+        timeout: 1000,
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      await screen.findByText(/in 35 years/i, undefined, {
+        timeout: 1000,
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      await screen.findByText(/Withdraw from the entire pension holding/i, undefined, {
+        timeout: 1000,
+      }),
+    ).toBeInTheDocument();
+
+    await assertFundPensionCalculations('502.91 € per month');
+
+    const partialWithdrawalSizeInput = await screen.findByLabelText(
+      'Do you wish to make a partial withdrawal immediately?',
+      { exact: false },
+    );
+
+    userEvent.type(partialWithdrawalSizeInput, '20000');
+    assertTotalTaxText('−2 000.00 €');
+
+    await assertFundPensionCalculations('419.58 € per month');
+
+    expect(nextButton()).toBeDisabled();
+
+    userEvent.click(nextButton());
+
+    expect(
+      await screen.findByText(/Withdraw from the entire pension holding/i, undefined, {
+        timeout: 1000,
+      }),
+    ).toBeInTheDocument();
   });
 });
 

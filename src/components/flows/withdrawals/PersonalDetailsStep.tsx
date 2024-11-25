@@ -4,10 +4,13 @@ import { useWithdrawalsContext } from './hooks';
 import { isValidIban, preProcessIban } from './iban';
 import styles from './Withdrawals.module.scss';
 import { TaxResidencySelect } from './TaxResidencySelect';
+import { useTestMode } from '../../common/test-mode';
 
 export const PersonalDetailsStep = () => {
   const { personalDetails, setPersonalDetails, navigateToNextStep, navigateToPreviousStep } =
     useWithdrawalsContext();
+
+  const isTestModeEnabled = useTestMode();
 
   const [iban, setIban] = useState<string>(personalDetails.bankAccountIban ?? '');
 
@@ -78,9 +81,11 @@ export const PersonalDetailsStep = () => {
           <FormattedMessage id="withdrawals.navigation.back" />
         </button>
         <div className="d-flex">
-          <button type="button" className="btn btn-light mr-2" onClick={navigateToNextStep}>
-            <FormattedMessage id="withdrawals.navigation.forward" />
-          </button>
+          {isTestModeEnabled && (
+            <button type="button" className="btn btn-light mr-2" onClick={navigateToNextStep}>
+              <FormattedMessage id="withdrawals.navigation.forward" />
+            </button>
+          )}
           <button type="button" className="btn btn-primary" onClick={handleNextClicked}>
             <FormattedMessage id="withdrawals.navigation.continue" />
           </button>

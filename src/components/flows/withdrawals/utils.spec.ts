@@ -1,4 +1,3 @@
-import * as Sentry from '@sentry/browser';
 import { FundStatus } from '../../common/apiModels';
 import {
   funds,
@@ -10,12 +9,78 @@ import {
   withdrawalEligibility,
 } from './fixture';
 import {
+  decorateSimulatedEligibilityForUnderRetirementAge,
   getAllFundNavsPresent,
   getBankAccountDetails,
   getFundPensionMandatesToCreate,
   getMandatesToCreate,
   getPartialWithdrawalMandatesToCreate,
+  getYearsToGoUntilEarlyRetirementAge,
 } from './utils';
+
+describe('getYearsToGoUntilEarlyRetirementAge', () => {
+  it('return correct years to early retirement age', () => {
+    expect(getYearsToGoUntilEarlyRetirementAge(undefined)).toBe(0);
+    expect(
+      getYearsToGoUntilEarlyRetirementAge({
+        age: 25,
+        hasReachedEarlyRetirementAge: false,
+        recommendedDurationYears: 60 - 25 + 20,
+        arrestsOrBankruptciesPresent: false,
+      }),
+    ).toBe(60 - 25);
+
+    expect(
+      getYearsToGoUntilEarlyRetirementAge({
+        age: 60,
+        hasReachedEarlyRetirementAge: true,
+        recommendedDurationYears: 20,
+        arrestsOrBankruptciesPresent: false,
+      }),
+    ).toBe(0);
+
+    expect(
+      getYearsToGoUntilEarlyRetirementAge({
+        age: 65,
+        hasReachedEarlyRetirementAge: true,
+        recommendedDurationYears: 15,
+        arrestsOrBankruptciesPresent: false,
+      }),
+    ).toBe(0);
+  });
+});
+describe('decorateSimulatedEligibilityForUnderRetirementAge', () => {
+  it('returns original eligibility when user is over early retirement age', () => {
+    const eligibility = {
+      age: 60,
+      hasReachedEarlyRetirementAge: true,
+      recommendedDurationYears: 20,
+      arrestsOrBankruptciesPresent: false,
+    };
+    expect(decorateSimulatedEligibilityForUnderRetirementAge(eligibility)).toStrictEqual(
+      eligibility,
+    );
+  });
+
+  it('returns simulated eligibility when user is under retirement age', () => {
+    const age = 30;
+    const yearsLeftToLive = 55;
+
+    const eligibility = {
+      age,
+      hasReachedEarlyRetirementAge: false,
+      recommendedDurationYears: yearsLeftToLive,
+      arrestsOrBankruptciesPresent: false,
+    };
+
+    expect(decorateSimulatedEligibilityForUnderRetirementAge(eligibility)).toStrictEqual({
+      age: 60,
+      hasReachedEarlyRetirementAge: true,
+      recommendedDurationYears: 25, // (age + years_left_to_live) - 60
+      arrestsOrBankruptciesPresent: false,
+    });
+  });
+});
 
 describe('getBankAccountDetails', () => {
   it('returns bank account details', () => {

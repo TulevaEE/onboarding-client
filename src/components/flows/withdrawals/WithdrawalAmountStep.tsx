@@ -7,14 +7,21 @@ import { Radio } from '../../common';
 import { PillarToWithdrawFrom } from './types';
 import { useWithdrawalsContext } from './hooks';
 import Percentage from '../../common/Percentage';
-import { getEstimatedTotalFundPension, getTotalWithdrawableAmount } from './utils';
+import {
+  decorateSimulatedEligibilityForUnderRetirementAge,
+  getEstimatedTotalFundPension,
+  getTotalWithdrawableAmount,
+} from './utils';
 import styles from './Withdrawals.module.scss';
+import { useTestMode } from '../../common/test-mode';
 
 export const WithdrawalAmountStep = () => {
   const { data: eligibility } = useWithdrawalsEligibility();
 
   const { withdrawalAmount, setWithdrawalAmount, pensionHoldings, navigateToNextStep } =
     useWithdrawalsContext();
+
+  const isTestModeEnabled = useTestMode();
 
   const handlePillarSelected = (pillar: PillarToWithdrawFrom) => {
     setWithdrawalAmount({
@@ -32,6 +39,8 @@ export const WithdrawalAmountStep = () => {
     pensionHoldings,
   );
 
+  const canNavigateToNextStep = eligibility.hasReachedEarlyRetirementAge || isTestModeEnabled;
+
   return (
     <div className="pt-5">
       <PillarSelection
@@ -46,7 +55,12 @@ export const WithdrawalAmountStep = () => {
         <Link className="btn btn-light" to="/account">
           <FormattedMessage id="withdrawals.navigation.back" />
         </Link>
-        <button type="button" className="btn btn-primary" onClick={() => navigateToNextStep()}>
+        <button
+          type="button"
+          className="btn btn-primary"
+          disabled={!canNavigateToNextStep}
+          onClick={() => canNavigateToNextStep && navigateToNextStep()}
+        >
           <FormattedMessage id="withdrawals.navigation.continue" />
         </button>
       </div>
@@ -127,7 +141,9 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
 };
 
 const FundPensionStatusBox = ({ totalAmount }: { totalAmount: number }) => {
-  const { data: eligibility } = useWithdrawalsEligibility();
+  const { data } = useWithdrawalsEligibility();
+  const eligibility = decorateSimulatedEligibilityForUnderRetirementAge(data);
+
   const { withdrawalAmount } = useWithdrawalsContext();
 
   if (!eligibility) {

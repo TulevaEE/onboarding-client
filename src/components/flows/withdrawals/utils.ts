@@ -1,4 +1,5 @@
 import { captureException } from '@sentry/browser';
+import { withdrawalEligibility } from './fixture';
 import { Fund, SourceFund } from '../../common/apiModels/index';
 import { PensionHoldings, PersonalDetailsStepState, WithdrawalsAmountStepState } from './types';
 
@@ -9,6 +10,35 @@ import {
   BankAccountDetails,
   WithdrawalsEligibility,
 } from '../../common/apiModels/withdrawals';
+
+export const getYearsToGoUntilEarlyRetirementAge = (eligibility?: WithdrawalsEligibility) => {
+  if (!eligibility || eligibility?.hasReachedEarlyRetirementAge) {
+    return 0;
+  }
+
+  return 60 - eligibility?.age;
+};
+
+export const decorateSimulatedEligibilityForUnderRetirementAge = (
+  eligibility?: WithdrawalsEligibility,
+): WithdrawalsEligibility | undefined => {
+  if (!eligibility) {
+    return eligibility;
+  }
+
+  if (eligibility.hasReachedEarlyRetirementAge) {
+    return eligibility;
+  }
+
+  const yearsToGoUntil60 = getYearsToGoUntilEarlyRetirementAge(eligibility);
+
+  return {
+    age: 60,
+    hasReachedEarlyRetirementAge: true,
+    recommendedDurationYears: eligibility.recommendedDurationYears - yearsToGoUntil60,
+    arrestsOrBankruptciesPresent: eligibility.arrestsOrBankruptciesPresent,
+  };
+};
 
 export const getWithdrawalsPath = (subPath: string) => `/withdrawals/${subPath}`;
 export const getBankAccountDetails = (

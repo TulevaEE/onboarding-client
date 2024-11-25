@@ -690,6 +690,7 @@
 
   "withdrawals.heading": "II ja III samba väljamaksed",
   "withdrawals.subHeading": "Oled <b>{age}-aastane</b> ja sul on õigus kogutud pensionivara <b>soodustingimustel</b> kasutama hakata.",
+  "withdrawals.subHeadingUnderEarlyRetirementAge": "Oled <b>{age}-aastane</b> ja sul on õigus kogutud pensionivara <b>soodustingimustel</b> kasutama hakata <b>{yearsToGo} aasta pärast</b>.",
 
   "withdrawals.steps.withdrawalSize": "Väljamakse suurus",
   "withdrawals.steps.yourInformation": "Sinu andmed",
