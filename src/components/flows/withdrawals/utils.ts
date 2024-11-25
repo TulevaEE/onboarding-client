@@ -1,5 +1,4 @@
 import { captureException } from '@sentry/browser';
-import { withdrawalEligibility } from './fixture';
 import { Fund, SourceFund } from '../../common/apiModels/index';
 import { PensionHoldings, PersonalDetailsStepState, WithdrawalsAmountStepState } from './types';
 
