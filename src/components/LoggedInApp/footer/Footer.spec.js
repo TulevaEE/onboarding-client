@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { FormattedMessage } from 'react-intl';
-import Footer from './Footer';
+import { Footer } from '.';
 
 describe('Footer', () => {
   it('renders info about the company', () => {
