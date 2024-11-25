@@ -246,7 +246,7 @@ export const getAllFundNavsPresent = (
   const allFunds = [...secondPillarSourceFunds, ...thirdPillarSourceFunds];
   const allNavsPresent = allFunds.every(navPresent);
 
-  if (funds.length === 0 && !allNavsPresent) {
+  if (funds.length > 0 && !allNavsPresent) {
     const missingFunds = allFunds
       .filter((fund) => !navPresent(fund))
       .map(({ activeFund, name, isin }) => ({ activeFund, name, isin }));
