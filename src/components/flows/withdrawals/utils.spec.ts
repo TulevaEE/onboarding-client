@@ -100,6 +100,13 @@ describe('getAllFundNavsPresent', () => {
     );
   });
 
+  it('returns false but doesnt log if funds are loading and NAVs are missing', () => {
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    expect(getAllFundNavsPresent([], secondPillarSourceFunds, thirdPillarSourceFunds)).toBe(false);
+    expect(consoleSpy).not.toHaveBeenCalled();
+  });
+
   it('returns false if NAVs missing', () => {
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
