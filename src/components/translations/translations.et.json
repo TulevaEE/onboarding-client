@@ -57,6 +57,7 @@
   "select": "Vali",
 
   "accountSummary.heading": "Sinu pensionivara koondseis",
+  "accountSummary.withdrawalsLink": "Väljamaksed",
   "accountSummary.transactions": "Tehingud",
   "accountSummary.columns.pillar.title": "Pensionivara",
   "accountSummary.columns.pillar.footer": "Kokku",

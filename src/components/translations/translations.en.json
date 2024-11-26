@@ -59,6 +59,7 @@
   "select": "Select",
 
   "accountSummary.heading": "Your pension summary",
+  "accountSummary.withdrawalsLink": "Withdrawals",
   "accountSummary.transactions": "Transactions",
   "accountSummary.columns.pillar.title": "Pillar",
   "accountSummary.columns.pillar.footer": "Total",
