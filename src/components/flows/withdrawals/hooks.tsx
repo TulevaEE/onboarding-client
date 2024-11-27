@@ -25,6 +25,7 @@ export const WithdrawalsContext = createContext<WithdrawalsContextState>({
 
   allFundNavsPresent: true,
 
+  mandatesSubmitted: true,
   onMandatesSubmitted: () => {},
 
   setWithdrawalAmount: () => {},
@@ -59,7 +60,10 @@ export const WithdrawalsProvider = ({
     bankAccountIban: null,
   });
 
+  const [mandatesSubmitted, setMandatesSubmitted] = useState(false);
+
   const onMandatesSubmitted = () => {
+    setMandatesSubmitted(true);
     history.replace('/');
   };
 
@@ -156,6 +160,7 @@ export const WithdrawalsProvider = ({
         mandatesToCreate,
 
         allFundNavsPresent,
+        mandatesSubmitted,
         onMandatesSubmitted,
 
         setWithdrawalAmount,

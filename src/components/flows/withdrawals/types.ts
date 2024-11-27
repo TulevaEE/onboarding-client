@@ -11,6 +11,7 @@ export type WithdrawalsContextState = {
 
   allFundNavsPresent: boolean;
 
+  mandatesSubmitted: boolean;
   onMandatesSubmitted: () => unknown;
   setWithdrawalAmount: (state: WithdrawalsAmountStepState) => unknown;
   setPersonalDetails: (state: PersonalDetailsStepState) => unknown;
