@@ -287,7 +287,10 @@ const ComparisonCalculator: React.FC = () => {
                                   comparison: getFundLabelByKey(selectedComparison),
                                   date: (
                                     <span className="text-nowrap">
-                                      {moment(incomparableFundInceptionDate).fromNow(true)}
+                                      {moment().diff(
+                                        moment(incomparableFundInceptionDate),
+                                        'years',
+                                      )}
                                     </span>
                                   ),
                                 },
