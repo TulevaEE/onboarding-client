@@ -727,6 +727,7 @@
   "withdrawals.reviewAndConfirm.confirmAndSubmit": "Esitan järgmised avaldused ja olen teadlik nende tingimustest:",
   "withdrawals.reviewAndConfirm.episDisclaimer": "Olen teadlik, et AS Pensionikeskus kogub ja töötleb minu isikuandmeid kogumispensionide seaduses ja väärtpaberite registri pidamise seaduses sätestatud ulatuses Euroopa Liidu piires.",
   "withdrawals.reviewAndConfirm.episDisclaimerError": "Välja täitmine on kohustuslik.",
+  "withdrawals.error.generic": "Väljamaksete avalduste esitamisel tekkis viga. Palun võta meiega ühendust: tuleva@tuleva.ee ",
 
   "withdrawals.reviewAndConfirm.application": "Avaldus #{number}",
 

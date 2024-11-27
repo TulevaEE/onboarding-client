@@ -85,7 +85,7 @@ export const getPartialWithdrawalMandatesToCreate = (
     sourceFunds: SourceFund[],
   ): PartialWithdrawalMandateDetails => {
     const getSourceFundTotalUnits = (fund: SourceFund) =>
-      fund.price / fundIsinToFundNavMap[fund.isin]; // TODO handle null NAV better
+      fund.price / fundIsinToFundNavMap[fund.isin];
 
     return {
       mandateType: 'PARTIAL_WITHDRAWAL',

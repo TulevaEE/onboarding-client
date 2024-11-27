@@ -568,6 +568,57 @@ describe('withdrawals flow before early retirement age', () => {
   });
 });
 
+describe('withdrawals flow with missing NAV', () => {
+  beforeEach(() => {
+    pensionAccountStatementBackend(server, [
+      {
+        fund: {
+          fundManager: { name: 'Tuleva' },
+          isin: 'INVALID_NAV',
+          name: 'Tuleva World Stocks Pension Fund',
+          managementFeeRate: 0.0034,
+          pillar: 2,
+          ongoingChargesFigure: 0.0039,
+          status: FundStatus.ACTIVE,
+          inceptionDate: '2017-01-01',
+          nav: 1,
+        },
+        value: 15000.0,
+        unavailableValue: 0,
+        currency: 'EUR',
+        activeContributions: false,
+        contributions: 12345.67,
+        subtractions: 0,
+        profit: 2654.33,
+      },
+    ]);
+    withdrawalsEligibilityBackend(server);
+  });
+
+  test('can not submit when a NAV is missing', async () => {
+    const partialWithdrawalSizeInput = await screen.findByLabelText(
+      'Do you wish to make a partial withdrawal immediately?',
+      { exact: false },
+    );
+
+    userEvent.type(partialWithdrawalSizeInput, '20000');
+    assertTotalTaxText('−2 000.00 €');
+
+    userEvent.click(nextButton());
+
+    await enterIban('EE591254471322749514');
+    userEvent.click(nextButton());
+
+    expect(
+      await screen.findByText(/I submit the following applications and am aware of their terms/i),
+    ).toBeInTheDocument();
+
+    assertMandateCount(4);
+
+    await confirmAndSignAndAssertFailed();
+  });
+});
+
 const nextButton = () => screen.getByRole('button', { name: 'Continue' });
 const confirmationCheckbox = () => screen.getByRole('checkbox');
 const signButton = () => screen.getByRole('button', { name: /Sign/ });
@@ -575,6 +626,21 @@ const signButton = () => screen.getByRole('button', { name: /Sign/ });
 const enterIban = async (iban: string) => {
   const ibanInput = await screen.findByLabelText('Bank account number (IBAN)');
   userEvent.type(ibanInput, iban);
+};
+
+const confirmAndSignAndAssertFailed = async () => {
+  userEvent.click(confirmationCheckbox());
+  expect(signButton()).toBeEnabled();
+
+  userEvent.click(signButton());
+
+  expect(
+    screen.getByText(
+      /Submitting withdrawal applications failed. Please contact us: tuleva@tuleva.ee/i,
+    ),
+  ).toBeInTheDocument();
+
+  expect(signButton()).toBeInTheDocument();
 };
 
 const confirmAndSignAndAssertDone = async (singleApplication = false) => {

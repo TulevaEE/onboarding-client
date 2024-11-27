@@ -90,6 +90,12 @@ export const ReviewAndConfirmStep = () => {
       return;
     }
 
+    if (!allFundNavsPresent) {
+      const error: ErrorResponse = { body: { errors: [{ code: 'withdrawals.error.generic' }] } };
+      setBatchCreationError(error as ErrorResponse);
+      return;
+    }
+
     if (!eligibility || !eligibility?.hasReachedEarlyRetirementAge) {
       return;
     }
@@ -132,12 +138,6 @@ export const ReviewAndConfirmStep = () => {
       <div className="pt-5 pb-5 pl-2 pr-2">
         <FormattedMessage id="withdrawals.reviewAndConfirm.confirmAndSubmit" />
       </div>
-      {!allFundNavsPresent && (
-        <div className="alert alert-danger">
-          DEV: Mõnel likvideeritaval fondil pole NAV-i. Osalise väljamakse avaldused ei tööta
-          korrektselt.
-        </div>
-      )}
 
       {mandatesToCreate.map((mandate, idx) => (
         <MandatePreview

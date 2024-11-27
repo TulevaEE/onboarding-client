@@ -107,7 +107,7 @@ export const DoneStep = () => {
             </div>
           )}
           <Link to="/account">
-            <button type="button" className="btn text-bold btn-outline-primary mt-5">
+            <button type="button" className="btn btn-outline-primary mt-5">
               <FormattedMessage id="withdrawals.done.myAccount" />
             </button>
           </Link>

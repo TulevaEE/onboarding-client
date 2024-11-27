@@ -726,6 +726,7 @@
   "withdrawals.reviewAndConfirm.confirmAndSubmit": "I submit the following applications and am aware of their terms:",
   "withdrawals.reviewAndConfirm.episDisclaimer": "I am aware that AS Pensionikeskus collects and processes my personal data within the European Union to the extent specified in the Mandatory Pension Act and the Securities Register Act.",
   "withdrawals.reviewAndConfirm.episDisclaimerError": "This field is mandatory.",
+  "withdrawals.error.generic": "Submitting withdrawal applications failed. Please contact us: tuleva@tuleva.ee",
 
   "withdrawals.reviewAndConfirm.signMandateSingle": "Sign {amount} application",
   "withdrawals.reviewAndConfirm.signMandatePlural": "Sign {amount} applications",
