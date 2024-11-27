@@ -1,5 +1,6 @@
-import { PropsWithChildren, useMemo } from 'react';
+import { PropsWithChildren, ReactChildren, useMemo } from 'react';
 import { Link, Redirect } from 'react-router-dom';
+import { FormattedMessage } from 'react-intl';
 import { useWithdrawalsContext } from './hooks';
 import styles from './Withdrawals.module.scss';
 import { useMandateDeadlines } from '../../common/apiHooks';
@@ -30,7 +31,7 @@ export const DoneStep = () => {
     return <Redirect to="/withdrawals" />;
   }
 
-  if (!mandateDeadlines) {
+  if (!mandateDeadlines || !mandatesToCreate) {
     return <Loader className="align-middle my-4" />;
   }
 
@@ -38,41 +39,57 @@ export const DoneStep = () => {
     <div className="row">
       <div className="col-12 px-0">
         <SuccessAlert>
-          <h3 className="text-center mt-3">Avaldused on esitatud</h3>
-          {/* TODO mandate list? */}
-          <div className="mt-4">Saatsime digiallkirjastatud avalduse sinu e-posti aadressile.</div>
+          <h3 className="text-center mt-3">
+            {mandatesToCreate.length === 1 ? (
+              <FormattedMessage id="withdrawals.done.heading" />
+            ) : (
+              <FormattedMessage id="withdrawals.done.heading.plural" />
+            )}
+          </h3>
+          <div className="mt-4">
+            {mandatesToCreate.length === 1 ? (
+              <FormattedMessage id="withdrawals.done.subHeading" />
+            ) : (
+              <FormattedMessage id="withdrawals.done.subHeading.plural" />
+            )}
+          </div>
 
           <div className="pt-3">
             {fundPensionMandateDone && (
-              <>
-                Esimene igakuine fondipensioni väljamakse laekub{' '}
-                <b>
-                  {formatDateRange(
+              <FormattedMessage
+                id="withdrawals.done.fundPension.dateAndSize"
+                values={{
+                  b: (children: ReactChildren) => <b>{children}</b>,
+                  withdrawalDate: formatDateRange(
                     mandateDeadlines.withdrawalFulfillmentDate,
                     mandateDeadlines.withdrawalLatestFulfillmentDate,
-                  )}
-                </b>
-                .
-              </>
+                  ),
+                }}
+              />
             )}
             {partialWithdrawalPillars.size > 0 && (
               <div>
                 {partialWithdrawalPillars.has('SECOND') && (
-                  <span>
-                    II samba osaline väljamakse laekub{' '}
-                    <b>
-                      {formatDateRange(
-                        mandateDeadlines.withdrawalFulfillmentDate,
-                        mandateDeadlines.withdrawalLatestFulfillmentDate,
-                      )}
-                    </b>
-                    .{' '}
-                  </span>
+                  <>
+                    <FormattedMessage
+                      id="withdrawals.done.partialWithdrawal.second"
+                      values={{
+                        b: (children: ReactChildren) => <b>{children}</b>,
+                        withdrawalDate: formatDateRange(
+                          mandateDeadlines.withdrawalFulfillmentDate,
+                          mandateDeadlines.withdrawalLatestFulfillmentDate,
+                        ),
+                      }}
+                    />{' '}
+                  </>
                 )}
                 {partialWithdrawalPillars.has('THIRD') && (
-                  <span>
-                    III samba osaline väljamakse laekub <b>nelja tööpäeva jooksul</b>.
-                  </span>
+                  <FormattedMessage
+                    id="withdrawals.done.partialWithdrawal.third"
+                    values={{
+                      b: (children: ReactChildren) => <b>{children}</b>,
+                    }}
+                  />
                 )}
               </div>
             )}
@@ -80,15 +97,18 @@ export const DoneStep = () => {
 
           {secondPillarMandateDone && (
             <div className="pt-3">
-              Pea meeles, et II sambast väljamaksete tegemisel{' '}
-              <b>lõppevad sissemaksed sinu II sambasse igaveseks</b>. Selle vältimiseks on sul aega
-              väljamaksed tühistada kuni{' '}
-              <b>{formatDateTime(mandateDeadlines.withdrawalCancellationDeadline)}</b>.
+              <FormattedMessage
+                id="withdrawals.done.secondPillarDisclaimer"
+                values={{
+                  b: (children: ReactChildren) => <b>{children}</b>,
+                  cancellationDate: formatDateTime(mandateDeadlines.withdrawalCancellationDeadline),
+                }}
+              />
             </div>
           )}
           <Link to="/account">
             <button type="button" className="btn text-bold btn-outline-primary mt-5">
-              Minu konto
+              <FormattedMessage id="withdrawals.done.myAccount" />
             </button>
           </Link>
         </SuccessAlert>

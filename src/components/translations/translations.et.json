@@ -755,6 +755,16 @@
 
   "withdrawals.mandates.fundPension.fourWorkingDays": "nelja tööpäeva jooksul",
 
+  "withdrawals.done.heading": "Avaldus on esitatud",
+  "withdrawals.done.heading.plural": "Avaldused on esitatud",
+  "withdrawals.done.subHeading": "Saatsime digiallkirjastatud avalduse sinu e-posti aadressile.",
+  "withdrawals.done.subHeading.plural": "Saatsime digiallkirjastatud avaldused sinu e-posti aadressile.",
+  "withdrawals.done.fundPension.dateAndSize": "Esimene igakuine fondipensioni väljamakse laekub <b>{withdrawalDate}</b>.",
+  "withdrawals.done.partialWithdrawal.second": "II samba osaline väljamakse laekub <b>{withdrawalDate}</b>.",
+  "withdrawals.done.partialWithdrawal.third": "III samba osaline väljamakse laekub <b>nelja tööpäeva jooksul</b>.",
+  "withdrawals.done.secondPillarDisclaimer": "Pea meeles, et II sambast väljamaksete tegemisel <b>lõppevad sissemaksed sinu II sambasse igaveseks</b>. Selle vältimiseks on sul aega väljamaksed tühistada kuni <b>{cancellationDate}</b>.",
+  "withdrawals.done.myAccount": "Minu konto",
+
   "LHV Pensionifond XL": "LHV Pensionifond XL",
   "Tuleva Maailma Aktsiate Pensionifond": "Tuleva Maailma Aktsiate Pensionifond",
   "Tuleva Maailma Võlakirjade Pensionifond": "Tuleva Maailma Võlakirjade Pensionifond",

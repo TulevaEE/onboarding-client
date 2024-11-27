@@ -7,6 +7,7 @@
   max-width: 24px;
   flex-grow: 1;
 }
+
 .successText {
   color: #00ac00;
 }
@@ -33,6 +34,11 @@
   .tv-radio {
     line-height: 2rem;
   }
+}
+
+.singleWithdrawalAmountInputContainer {
+  min-width: 10em;
+  margin-left: 1em;
 }
 
 .doneAlert {

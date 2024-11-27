@@ -754,6 +754,16 @@
 
   "withdrawals.mandates.fundPension.fourWorkingDays": "in four working days",
 
+  "withdrawals.done.heading": "The application has been submitted",
+  "withdrawals.done.heading.plural": "The applications have been submitted",
+  "withdrawals.done.subHeading": "We have sent the digitally signed application to your email address.",
+  "withdrawals.done.subHeading.plural": "We have sent the digitally signed applications to your email address.",
+  "withdrawals.done.fundPension.dateAndSize": "The first monthly fund pension payment will be sent on <b>{withdrawalDate}</b>.",
+  "withdrawals.done.partialWithdrawal.second": "The partial withdrawal from II pillar will be sent on <b>{withdrawalDate}</b>.",
+  "withdrawals.done.partialWithdrawal.third": "The partial withdrawal from III pillar will be sent <b>within four working days</b>.",
+  "withdrawals.done.secondPillarDisclaimer": "When making withdrawals from the II pillar, <b>contributions to your second pillar will stop permanently</b>. To avoid this, you can cancel the withdrawals until <b>{cancellationDate}</b>.",
+  "withdrawals.done.myAccount": "My Account",
+
   "LHV Pensionifond XL": "Pension Fund LHV XL",
   "Tuleva Maailma Aktsiate Pensionifond": "Tuleva World Stocks Pension Fund",
   "Tuleva Maailma Võlakirjade Pensionifond": "Tuleva World Bonds Pension Fund",
