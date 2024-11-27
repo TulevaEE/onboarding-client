@@ -30,8 +30,12 @@ export const InnerWithdrawals: React.FunctionComponent = () => {
 
   return (
     <div className="col-md-8 offset-md-2">
-      <WithdrawalsHeader />
-      <WithdrawalsSteps />
+      {currentStep?.type !== 'DONE' && (
+        <>
+          <WithdrawalsHeader />
+          <WithdrawalsSteps />
+        </>
+      )}
       <Switch>
         <Route
           path={getWithdrawalsPath(currentStepPath as string)}
