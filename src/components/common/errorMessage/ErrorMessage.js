@@ -21,7 +21,7 @@ const ErrorMessage = ({ errors, onCancel, overlayed }) => {
           </p>
         ))}
       {onCancel !== noop ? (
-        <button type="button" className="btn btn-secondary mt-4" onClick={onCancel}>
+        <button type="button" className="btn btn-primary mt-4" onClick={onCancel}>
           <FormattedMessage id="error.message.close" />
         </button>
       ) : (

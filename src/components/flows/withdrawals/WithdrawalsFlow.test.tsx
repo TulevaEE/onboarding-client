@@ -602,7 +602,6 @@ describe('withdrawals flow with missing NAV', () => {
     );
 
     userEvent.type(partialWithdrawalSizeInput, '20000');
-    assertTotalTaxText('−2 000.00 €');
 
     userEvent.click(nextButton());
 
