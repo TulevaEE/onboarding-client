@@ -137,6 +137,11 @@ describe('withdrawals flow with both pillars', () => {
     );
 
     await confirmAndSignAndAssertDone();
+
+    assertDoneScreenFundPension();
+    assertDoneScreenPartialWithdrawal('SECOND');
+    assertDoneScreenPartialWithdrawal('THIRD');
+    assertDoneScreenSecondPillarWarning();
   }, 20_000);
 
   test('reaches final confirmation step with iban validation', async () => {
@@ -274,7 +279,7 @@ describe('withdrawals flow with both pillars', () => {
 
     await assertFundPensionMandate('SECOND', finalFundPensionSize);
 
-    await confirmAndSignAndAssertDone();
+    await confirmAndSignAndAssertDone(true);
   }, 20_000);
 
   test('uses only third pillar with partial withdrawal ', async () => {
@@ -346,7 +351,7 @@ describe('withdrawals flow with both pillars', () => {
     assertMandateCount(1);
     await assertFundPensionMandate('THIRD', finalFundPensionSize);
 
-    await confirmAndSignAndAssertDone();
+    await confirmAndSignAndAssertDone(true);
   }, 20_000);
 });
 
@@ -572,7 +577,7 @@ const enterIban = async (iban: string) => {
   userEvent.type(ibanInput, iban);
 };
 
-const confirmAndSignAndAssertDone = async () => {
+const confirmAndSignAndAssertDone = async (singleApplication = false) => {
   userEvent.click(confirmationCheckbox());
   expect(signButton()).toBeEnabled();
 
@@ -581,9 +586,45 @@ const confirmAndSignAndAssertDone = async () => {
   expect(
     await screen.findByRole(
       'heading',
-      { name: 'Väljamaksete avaldused esitatud' },
+      {
+        name: singleApplication
+          ? 'The application has been submitted'
+          : 'The applications have been submitted',
+      },
       { timeout: 10_000 },
     ),
+  ).toBeInTheDocument();
+
+  expect(
+    screen.getByText(
+      singleApplication
+        ? /We have sent the digitally signed application to your email address./i
+        : /We have sent the digitally signed applications to your email address./i,
+    ),
+  ).toBeInTheDocument();
+};
+
+const assertDoneScreenFundPension = () => {
+  expect(
+    screen.getByText(/The first monthly fund pension payment will be sent on/i),
+  ).toBeInTheDocument();
+};
+
+const assertDoneScreenPartialWithdrawal = (pillar: 'SECOND' | 'THIRD') => {
+  let paymentDeadline: HTMLElement;
+
+  if (pillar === 'SECOND') {
+    paymentDeadline = screen.getByText(/The partial withdrawal from II pillar will be sent on/i);
+  } else {
+    paymentDeadline = screen.getByText(/The partial withdrawal from III pillar will be sent on/i);
+  }
+
+  expect(within(paymentDeadline).getByText(/16 – 20 January/)).toBeInTheDocument();
+};
+
+const assertDoneScreenSecondPillarWarning = () => {
+  expect(
+    screen.getByText('contributions to your second pillar will stop permanently'),
   ).toBeInTheDocument();
 };
 
