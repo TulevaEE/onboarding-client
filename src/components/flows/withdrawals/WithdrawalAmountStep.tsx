@@ -90,7 +90,9 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
           </label>
         </div>
         <div className="form-inline">
-          <div className="input-group input-group-lg w-100">
+          <div
+            className={`input-group input-group-lg w-100 ${styles.singleWithdrawalAmountInputContainer}`}
+          >
             <input
               id="single-withdrawal-amount"
               type="number"
