@@ -16,7 +16,7 @@ import {
   CancellationFlow,
   flowPath as cancellationFlowPath,
 } from '../flows/cancellation/CancellationFlow';
-import Footer from './footer';
+import { Footer } from './footer';
 import ContactDetailsPage from '../contact-details';
 import AmlPage, { actions as amlActions } from '../aml';
 import SignUpPage from '../newUserFlow';
