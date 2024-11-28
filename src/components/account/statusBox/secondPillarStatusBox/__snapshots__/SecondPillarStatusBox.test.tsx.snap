@@ -299,16 +299,7 @@ exports[`SecondPillarStatusBox renders no 2nd pillar flow when no second pillar 
     />
   }
   showAction={true}
->
-  <Link
-    className="btn btn-primary"
-    to="/2nd-pillar-flow"
-  >
-    <MemoizedFormattedMessage
-      id="account.status.choice.pillar.second.missing.action"
-    />
-  </Link>
-</StatusBoxRow>
+/>
 `;
 
 exports[`SecondPillarStatusBox renders the payment rate flow 1`] = `

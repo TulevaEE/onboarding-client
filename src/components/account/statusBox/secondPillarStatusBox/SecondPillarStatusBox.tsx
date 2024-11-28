@@ -61,9 +61,10 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
         name={<FormattedMessage id="account.status.choice.pillar.second" />}
         lines={[<FormattedMessage id="account.status.choice.pillar.second.missing.label" />]}
       >
-        <Link to="/2nd-pillar-flow" className="btn btn-primary">
-          <FormattedMessage id="account.status.choice.pillar.second.missing.action" />
-        </Link>
+        {/* People who left the 2nd pillar can't rejoin for 10 years, so a CTA might be misleading */}
+        {/* <Link to="/2nd-pillar-flow" className="btn btn-primary"> */}
+        {/*  <FormattedMessage id="account.status.choice.pillar.second.missing.action" /> */}
+        {/* </Link> */}
       </StatusBoxRow>
     );
   }
