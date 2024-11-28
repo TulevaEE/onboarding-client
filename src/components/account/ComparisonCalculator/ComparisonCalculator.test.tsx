@@ -77,6 +77,10 @@ function timePeriodSelect() {
   return screen.getByRole('combobox', { name: /time period/i });
 }
 
+function findTimePeriodSelect() {
+  return screen.findByRole('combobox', { name: /time period/i });
+}
+
 function comparedToSelect() {
   return screen.getByRole('combobox', { name: /compared to/i });
 }
@@ -192,7 +196,7 @@ describe('ComparisonCalculator', () => {
     userEvent.click(pillar3button());
     await awaitForReturnsData();
 
-    const timeSelect = timePeriodSelect();
+    const timeSelect = await findTimePeriodSelect();
     expect(timeSelect).toBeInTheDocument();
     expect(timeSelect).toHaveTextContent(/From starting III contributions \(2004-03-19\)/);
     expect(timeSelect).toHaveTextContent(/From Tuleva III pillar fund creation \(2019-10-14\)/);
