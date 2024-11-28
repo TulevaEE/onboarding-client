@@ -8,7 +8,7 @@ import { selectExchangeSources, selectFutureContributionsFund } from '../../../e
 import { ErrorMessage, Loader, Radio } from '../../../common';
 import TargetFundSelector from './targetFundSelector';
 import ExactFundSelector from './exactFundSelector';
-import { isTuleva } from '../../../common/utils';
+import { isTuleva, isTulevaIsin } from '../../../common/utils';
 import AccountStatement from '../../../account/AccountStatement';
 import { useMandateDeadlines } from '../../../common/apiHooks';
 import { formatDateTime } from '../../../common/dateFormatter';
@@ -44,7 +44,11 @@ function validate(selections: SourceSelection[] | null): TranslationKey | null {
     if (selection.sourceFundIsin && sourceFundPercentages[selection.sourceFundIsin] > 1) {
       errorDescriptionCode = 'select.sources.error.source.fund.percentages.over.100';
     }
-    if (selection.sourceFundIsin && selection.sourceFundIsin === selection.targetFundIsin) {
+    if (
+      selection.sourceFundIsin &&
+      selection.sourceFundIsin === selection.targetFundIsin &&
+      !(isTulevaIsin(selection.sourceFundIsin) && isTulevaIsin(selection.targetFundIsin))
+    ) {
       errorDescriptionCode = 'select.sources.error.source.fund.is.target.fund';
     }
   });

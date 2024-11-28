@@ -60,7 +60,11 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
         showAction={!loading}
         name={<FormattedMessage id="account.status.choice.pillar.second" />}
         lines={[<FormattedMessage id="account.status.choice.pillar.second.missing.label" />]}
-      />
+      >
+        <Link to="/2nd-pillar-flow" className="btn btn-primary">
+          <FormattedMessage id="account.status.choice.pillar.second.missing.action" />
+        </Link>
+      </StatusBoxRow>
     );
   }
 

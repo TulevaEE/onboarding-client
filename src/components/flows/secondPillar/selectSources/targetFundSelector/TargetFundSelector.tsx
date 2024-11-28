@@ -5,14 +5,13 @@ import './TargetFundSelector.scss';
 import checkImage from '../../../common/SuccessNotice/success.svg';
 import { Fund } from '../../../../common/apiModels';
 import { Fees } from '../../../../common/Percentage/Fees';
+import { TulevaFundIsin } from '../../../../common/utils';
 
 type Props = {
   targetFunds: Fund[];
   onSelectFund: (fund: Fund) => void;
   isSelected: (fund: Fund) => boolean;
 };
-
-type TulevaFundIsin = 'EE3600109435' | 'EE3600109443' | 'EE3600001707';
 
 export const TargetFundSelector: React.FunctionComponent<Props> = ({
   targetFunds = [],

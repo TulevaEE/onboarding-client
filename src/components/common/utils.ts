@@ -46,3 +46,7 @@ export const isSecondPillar = (fund: Fund) => fund.pillar === 2;
 export const isThirdPillar = (fund: Fund) => fund.pillar === 3;
 
 export const isTuleva = (fund: Fund) => (fund.fundManager || {}).name === 'Tuleva';
+
+export type TulevaFundIsin = 'EE3600109435' | 'EE3600109443' | 'EE3600001707';
+export const isTulevaIsin = (value: string): value is TulevaFundIsin =>
+  ['EE3600109435', 'EE3600109443', 'EE3600001707'].includes(value);
