@@ -3,7 +3,6 @@ import { setupServer } from 'msw/node';
 import { screen, within } from '@testing-library/react';
 import { Route } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
-import * as testModeUtils from '../common/test-mode';
 import { initializeConfiguration } from '../config/config';
 import LoggedInApp from '../LoggedInApp';
 import { createDefaultStore, login, renderWrapped } from '../../test/utils';
@@ -48,10 +47,6 @@ beforeEach(() => {
   initializeComponent();
 
   history.push('/account');
-});
-
-test('withdrawals link is not shown by default', async () => {
-  expect(screen.queryByText(/Withdrawals/)).not.toBeInTheDocument();
 });
 
 test('user data is shown', async () => {

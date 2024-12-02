@@ -20,7 +20,6 @@ import SecondPillarUpsell from './SecondPillarUpsell/SecondPillarUpsell';
 import { getAuthentication } from '../common/authenticationManager';
 import { SectionHeading } from './SectionHeading';
 import { TransactionSection } from './TransactionSection/TransactionSection';
-import { isTestMode } from '../common/test-mode';
 
 const noop = () => null;
 
@@ -58,8 +57,6 @@ export class AccountPage extends Component {
       conversion.thirdPillar.selectionComplete &&
       conversion.thirdPillar.transfersComplete;
 
-    const testModeEnabled = isTestMode();
-
     return (
       <>
         {shouldRedirectToAml && (
@@ -86,11 +83,9 @@ export class AccountPage extends Component {
 
         <div className="mt-5">
           <SectionHeading titleId="accountSummary.heading" lead>
-            {testModeEnabled && (
-              <Link className="text-nowrap" to="/withdrawals">
-                <FormattedMessage id="accountSummary.withdrawalsLink" />
-              </Link>
-            )}
+            <Link className="text-nowrap" to="/withdrawals">
+              <FormattedMessage id="accountSummary.withdrawalsLink" />
+            </Link>
           </SectionHeading>
 
           {secondPillarSourceFunds && thirdPillarSourceFunds && conversion ? (
