@@ -249,7 +249,7 @@ export const getAllFundNavsPresent = (
   if (funds.length > 0 && !allNavsPresent) {
     const missingFunds = allFunds
       .filter((fund) => !navPresent(fund))
-      .map(({ activeFund, name, isin }) => ({ activeFund, name, isin }));
+      .map(({ activeFund, name, isin, price }) => ({ activeFund, name, isin, price }));
     // eslint-disable-next-line no-console
     console.error(JSON.stringify(missingFunds));
     captureException(new Error(`Some withdrawal NAVs are missing ${JSON.stringify(missingFunds)}`));

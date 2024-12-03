@@ -398,6 +398,27 @@ describe('withdrawals flow with only second pillar and arrests/bankruptcy', () =
         subtractions: 0,
         profit: -12233.44,
       },
+
+      {
+        fund: {
+          fundManager: { name: 'Nordea' },
+          isin: 'EE1000000000',
+          name: 'Nordea Liquidated fund',
+          managementFeeRate: 0.0083,
+          pillar: 2,
+          ongoingChargesFigure: 0.0065,
+          status: FundStatus.LIQUIDATED,
+          inceptionDate: '2017-01-01',
+          nav: 1,
+        },
+        value: 0,
+        unavailableValue: 0,
+        currency: 'EUR',
+        activeContributions: true,
+        contributions: 112233.44,
+        subtractions: 0,
+        profit: -12233.44,
+      },
     ]);
     withdrawalsEligibilityBackend(server, {
       age: 60,

@@ -41,8 +41,11 @@ export const WithdrawalsProvider = ({
   children,
   steps,
 }: PropsWithChildren<{ steps: WithdrawalStep[] }>) => {
-  const { data: sourceFunds } = useSourceFunds();
+  const { data: rawSourceFunds } = useSourceFunds();
   const { data: funds } = useFunds();
+
+  // without empty value
+  const sourceFunds = rawSourceFunds?.filter((sourceFund) => sourceFund.price !== 0);
 
   const { pathname } = useLocation();
   const history = useHistory();
