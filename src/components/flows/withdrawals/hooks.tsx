@@ -45,7 +45,7 @@ export const WithdrawalsProvider = ({
   const { data: funds } = useFunds();
 
   // without empty value
-  const sourceFunds = rawSourceFunds?.filter((sourceFund) => sourceFund.price !== 0);
+  const sourceFunds = rawSourceFunds?.filter((sourceFund) => sourceFund.price > 0);
 
   const { pathname } = useLocation();
   const history = useHistory();
