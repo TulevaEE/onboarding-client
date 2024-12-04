@@ -552,6 +552,11 @@
   "applications.type.withdrawal.month": "Väljamakse kuu",
   "applications.type.withdrawal.account": "Pangakonto",
 
+  "applications.type.fundPensionOpening.title": "II samba fondipensioni avamise avaldus",
+  "applications.type.fundPensionOpeningThirdPillar.title": "III samba fondipensioni avamise avaldus",
+  "applications.type.partialWithdrawal.title": "II samba osalise väljamakse avaldus",
+  "applications.type.withdrawalThirdPillar.title": "III samba väljamakse avaldus",
+
   "transactions.title": "Sinu viimased tehingud",
   "transactions.title.2nd": "Sinu II samba tehingud",
   "transactions.title.3rd": "Sinu III samba tehingud",

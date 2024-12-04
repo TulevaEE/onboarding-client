@@ -550,6 +550,11 @@
   "applications.type.withdrawal.month": "Withdrawal month",
   "applications.type.withdrawal.account": "Bank account",
 
+  "applications.type.fundPensionOpening.title": "II pillar fund pension opening application",
+  "applications.type.fundPensionOpeningThirdPillar.title": "III pilla fund pension opening application",
+  "applications.type.partialWithdrawal.title": "II pillar partial withdrawal application",
+  "applications.type.withdrawalThirdPillar.title": "III pillar withdrawal application",
+
   "transactions.title": "Your latest transactions",
   "transactions.title.2nd": "Your II pillar transactions",
   "transactions.title.3rd": "Your III pillar transactions",
