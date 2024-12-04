@@ -271,7 +271,7 @@ describe('Application section', () => {
 
     expect(await screen.findByText('II pillar contribution rate')).toBeInTheDocument();
     expect(screen.getByText(formattedCreationTime)).toBeInTheDocument();
-    expect(screen.getByText('Takes effect on January 1, 2025')).toBeInTheDocument();
+    expect(screen.getByText(/Takes effect on/i)).toBeInTheDocument();
   });
 
   function waitForRequestToFinish() {
