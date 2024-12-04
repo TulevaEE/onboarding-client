@@ -539,6 +539,7 @@
   "applications.type.transfer.sourceFund": "Lähtefond",
   "applications.type.transfer.targetFund": "Sihtfond",
   "applications.type.transfer.amount": "Maht",
+  "applications.type.transfer.units": "{amount} osakut",
   "applications.type.stopContributions.title": "II samba maksete lõpetamise avaldus",
   "applications.type.stopContributions.time": "Maksed peatuvad alates",
   "applications.type.stopContributions.resumeTime": "Maksete taastamise võimalus",

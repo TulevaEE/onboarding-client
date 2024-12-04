@@ -22,6 +22,7 @@ import {
 import { initializeConfiguration } from '../../config/config';
 import { getAuthentication } from '../../common/authenticationManager';
 import { anAuthenticationManager } from '../../common/authenticationManagerFixture';
+import translations from '../../translations';
 
 jest.mock('react-redux');
 
@@ -32,6 +33,7 @@ describe('Application section', () => {
     render(
       <IntlProvider
         locale="en"
+        messages={translations.en}
         onError={(err) => {
           if (err.code === 'MISSING_TRANSLATION') {
             return;
@@ -64,7 +66,7 @@ describe('Application section', () => {
     mockApplications([]);
     initializeComponent();
     await waitForRequestToFinish();
-    expect(screen.queryByText('applications.title')).not.toBeInTheDocument();
+    expect(screen.queryByText('Your pending transactions')).not.toBeInTheDocument();
   });
 
   it('does not render at all when there has been an error fetching', async () => {
@@ -75,13 +77,13 @@ describe('Application section', () => {
     );
     initializeComponent();
     await waitForRequestToFinish();
-    expect(screen.queryByText('applications.title')).not.toBeInTheDocument();
+    expect(screen.queryByText('Your pending transactions')).not.toBeInTheDocument();
   });
 
   it('renders the title when there are pending applications', async () => {
     mockApplications([transfer2Pillar]);
     initializeComponent();
-    expect(await screen.findByText('applications.title')).toBeInTheDocument();
+    expect(await screen.findByText('Your pending transactions')).toBeInTheDocument();
   });
 
   it('renders 2. pillar transfer applications successfully', async () => {
@@ -89,7 +91,7 @@ describe('Application section', () => {
     mockApplications([application]);
     initializeComponent();
 
-    expect(await screen.findByText('applications.type.transfer.title.2')).toBeInTheDocument();
+    expect(await screen.findByText('II pillar fund transfer application')).toBeInTheDocument();
     expect(screen.getByText(application.details.sourceFund.name)).toBeInTheDocument();
     const formattedCreationTime = 'December 17, 1995';
     expect(screen.getByText(formattedCreationTime)).toBeInTheDocument();
@@ -107,7 +109,7 @@ describe('Application section', () => {
     mockApplications([application]);
     initializeComponent();
 
-    expect(await screen.findByText('applications.type.transfer.title.2')).toBeInTheDocument();
+    expect(await screen.findByText('II pillar fund transfer application')).toBeInTheDocument();
     expect(screen.getByText(application.details.sourceFund.name)).toBeInTheDocument();
     const formattedCreationTime = 'December 17, 1995';
     expect(screen.getByText(formattedCreationTime)).toBeInTheDocument();
@@ -124,12 +126,12 @@ describe('Application section', () => {
     mockApplications([application]);
     initializeComponent();
 
-    expect(await screen.findByText('applications.type.transfer.title.3')).toBeInTheDocument();
+    expect(await screen.findByText('III pillar fund transfer application')).toBeInTheDocument();
     expect(screen.getByText(application.details.sourceFund.name)).toBeInTheDocument();
     const formattedCreationTime = 'August 1, 2021';
     expect(screen.getByText(formattedCreationTime)).toBeInTheDocument();
 
-    const exchangeAmount = '1310.247';
+    const exchangeAmount = '1310.247 units';
     expect(screen.getByText(exchangeAmount)).toBeInTheDocument();
     expect(screen.getByText(application.details.exchanges[0].targetFund.name)).toBeInTheDocument();
   });
@@ -139,7 +141,7 @@ describe('Application section', () => {
     mockApplications([application]);
     initializeComponent();
     expect(
-      await screen.findByText('applications.type.stopContributions.title'),
+      await screen.findByText('II pillar contribution stopping application'),
     ).toBeInTheDocument();
     const formattedCreationTime = 'December 17, 1995';
     expect(screen.getByText(formattedCreationTime)).toBeInTheDocument();
@@ -155,7 +157,7 @@ describe('Application section', () => {
     mockApplications([application]);
     initializeComponent();
     expect(
-      await screen.findByText('applications.type.resumeContributions.title'),
+      await screen.findByText('II pillar contribution resuming application'),
     ).toBeInTheDocument();
     const formattedCreationTime = 'December 17, 1995';
     expect(screen.getByText(formattedCreationTime)).toBeInTheDocument();
@@ -168,7 +170,7 @@ describe('Application section', () => {
     const application = earlyWithdrawal;
     mockApplications([application]);
     initializeComponent();
-    expect(await screen.findByText('applications.type.earlyWithdrawal.title')).toBeInTheDocument();
+    expect(await screen.findByText('II pillar early withdrawal application')).toBeInTheDocument();
     const formattedCreationTime = 'December 17, 1995';
     expect(screen.getByText(formattedCreationTime)).toBeInTheDocument();
 
@@ -182,7 +184,7 @@ describe('Application section', () => {
     const application = withdrawal;
     mockApplications([application]);
     initializeComponent();
-    expect(await screen.findByText('applications.type.withdrawal.title')).toBeInTheDocument();
+    expect(await screen.findByText('II pillar withdrawal application')).toBeInTheDocument();
     const formattedCreationTime = 'December 17, 1995';
     expect(screen.getByText(formattedCreationTime)).toBeInTheDocument();
 
@@ -195,15 +197,17 @@ describe('Application section', () => {
   it('renders multiple applications successfully', async () => {
     mockApplications([earlyWithdrawal, transfer2Pillar]);
     initializeComponent();
-    expect(await screen.findByText('applications.type.earlyWithdrawal.title')).toBeInTheDocument();
-    expect(screen.getByText('applications.type.transfer.title.2')).toBeInTheDocument();
-    expect(screen.queryByText('applications.type.stopContributions.title')).not.toBeInTheDocument();
+    expect(await screen.findByText('II pillar early withdrawal application')).toBeInTheDocument();
+    expect(screen.getByText('II pillar fund transfer application')).toBeInTheDocument();
+    expect(
+      screen.queryByText('II pillar contribution stopping application'),
+    ).not.toBeInTheDocument();
   });
 
   it('has a link to cancel an application', async () => {
     mockApplications([earlyWithdrawal]);
     initializeComponent();
-    const cancelButton = (await screen.findAllByText('applications.cancel'))[0];
+    const cancelButton = (await screen.findAllByText('Cancel application'))[0];
     expect(cancelButton).toBeInTheDocument();
 
     expect(screen.queryByText('Test cancellation route')).not.toBeInTheDocument();
@@ -216,7 +220,7 @@ describe('Application section', () => {
   it('does not allow cancelling of third pillar transfers', async () => {
     mockApplications([transfer3Pillar]);
     initializeComponent();
-    const cancelButton = screen.queryByText('applications.cancel');
+    const cancelButton = screen.queryByText('Cancel application');
     expect(cancelButton).not.toBeInTheDocument();
   });
 
@@ -230,7 +234,7 @@ describe('Application section', () => {
 
     await waitForRequestToFinish();
 
-    expect(screen.getAllByText('applications.cancel')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('Cancel application')[0]).toBeInTheDocument();
   });
 
   it('does not let you cancel after the deadline', async () => {
@@ -243,7 +247,7 @@ describe('Application section', () => {
 
     await waitForRequestToFinish();
 
-    expect(screen.queryByText('applications.cancel')).not.toBeInTheDocument();
+    expect(screen.queryByText('Cancel application')).not.toBeInTheDocument();
   });
 
   it('renders payment applications successfully', async () => {
@@ -252,9 +256,9 @@ describe('Application section', () => {
     initializeComponent();
     const formattedCreationTime = 'October 4, 2022';
 
-    expect(await screen.findByText('applications.type.payment.title')).toBeInTheDocument();
+    expect(await screen.findByText('III pillar contribution')).toBeInTheDocument();
     expect(screen.getByText(formattedCreationTime)).toBeInTheDocument();
-    expect(screen.getByText('applications.type.payment.status.pending')).toBeInTheDocument();
+    expect(screen.getByText('On its way to Pensionikeskus')).toBeInTheDocument();
     expect(screen.getByText(application.details.targetFund.name)).toBeInTheDocument();
     expect(screen.getByText(`${application.details.amount} €`)).toBeInTheDocument();
   });
@@ -265,9 +269,9 @@ describe('Application section', () => {
     initializeComponent();
     const formattedCreationTime = 'October 4, 2024';
 
-    expect(await screen.findByText('applications.type.paymentRate.title')).toBeInTheDocument();
+    expect(await screen.findByText('II pillar contribution rate')).toBeInTheDocument();
     expect(screen.getByText(formattedCreationTime)).toBeInTheDocument();
-    expect(screen.getByText('applications.type.paymentRate.status.pending')).toBeInTheDocument();
+    expect(screen.getByText('Takes effect on January 1, 2025')).toBeInTheDocument();
   });
 
   function waitForRequestToFinish() {

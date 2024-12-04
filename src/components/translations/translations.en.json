@@ -537,6 +537,7 @@
   "applications.type.transfer.sourceFund": "Source fund",
   "applications.type.transfer.targetFund": "Target fund",
   "applications.type.transfer.amount": "Amount",
+  "applications.type.transfer.units": "{amount} units",
   "applications.type.stopContributions.title": "II pillar contribution stopping application",
   "applications.type.stopContributions.time": "Contributions will stop",
   "applications.type.stopContributions.resumeTime": "Possibility to resume contributions",

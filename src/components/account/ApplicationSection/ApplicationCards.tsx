@@ -167,7 +167,7 @@ const TransferApplicationCard: React.FunctionComponent<{
             {
               key: 'applications.type.transfer.amount' as const,
               value: isThirdPillarTransfer ? (
-                amount
+                <FormattedMessage id="applications.type.transfer.units" values={{ amount }} />
               ) : (
                 <Percentage value={amount} stripTrailingZeros />
               ),
