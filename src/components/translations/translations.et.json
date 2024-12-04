@@ -554,7 +554,21 @@
 
   "applications.type.fundPensionOpening.title": "II samba fondipensioni avamise avaldus",
   "applications.type.fundPensionOpeningThirdPillar.title": "III samba fondipensioni avamise avaldus",
+
+  "applications.type.partialWithdrawal.account": "Pangakonto",
+  "applications.type.fundPensionOpening.account": "Pangakonto",
+
+  "applications.type.fundPensionOpening.startDate": "Alguskuupäev",
+  "applications.type.fundPensionOpening.duration": "Kestus",
+  "applications.type.fundPensionOpening.years": "{count} aastat",
+
+  "applications.type.fundPensionOpening.frequency": "Väljamaksete sagedus",
+  "applications.type.fundPensionOpening.frequency.monthly": "Kord kuus",
+  "applications.type.fundPensionOpening.frequency.quarterly": "Iga 3 kuu tagant",
+  "applications.type.fundPensionOpening.frequency.yearly": "Kord aastas",
+
   "applications.type.partialWithdrawal.title": "II samba osalise väljamakse avaldus",
+  "applications.type.partialWithdrawal.paymentDate": "Laekumise kuupäev",
   "applications.type.withdrawalThirdPillar.title": "III samba väljamakse avaldus",
 
   "transactions.title": "Sinu viimased tehingud",

@@ -9,7 +9,6 @@ export type Application =
   | PaymentApplication
   | PaymentRateApplication
   | FundPensionOpeningApplication
-  | ThirdPillarFundPensionOpeningApplication
   | PartialWithdrawalApplication
   | ThirdPillarWithdrawalApplication;
 
@@ -80,24 +79,22 @@ export type WithdrawalApplication = BaseApplication<
 >;
 
 export type FundPensionOpeningApplication = BaseApplication<
-  ApplicationType.FUND_PENSION_OPENING,
+  ApplicationType.FUND_PENSION_OPENING | ApplicationType.FUND_PENSION_OPENING_THIRD_PILLAR,
   {
+    depositAccountIBAN: string;
     cancellationDeadline: string;
     fulfillmentDate: string;
-  }
->;
-
-export type ThirdPillarFundPensionOpeningApplication = BaseApplication<
-  ApplicationType.FUND_PENSION_OPENING_THIRD_PILLAR,
-  {
-    cancellationDeadline: string;
-    fulfillmentDate: string;
+    fundPensionDetails: {
+      durationYears: number;
+      paymentsPerYear: 1 | 4 | 12;
+    };
   }
 >;
 
 export type PartialWithdrawalApplication = BaseApplication<
   ApplicationType.PARTIAL_WITHDRAWAL,
   {
+    depositAccountIBAN: string;
     cancellationDeadline: string;
     fulfillmentDate: string;
   }
@@ -106,7 +103,8 @@ export type PartialWithdrawalApplication = BaseApplication<
 export type ThirdPillarWithdrawalApplication = BaseApplication<
   ApplicationType.WITHDRAWAL_THIRD_PILLAR,
   {
-    cancellationDeadline: string;
+    depositAccountIBAN: string;
+    cancellationDeadline: null;
     fulfillmentDate: string;
   }
 >;

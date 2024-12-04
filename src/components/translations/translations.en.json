@@ -552,7 +552,21 @@
 
   "applications.type.fundPensionOpening.title": "II pillar fund pension opening application",
   "applications.type.fundPensionOpeningThirdPillar.title": "III pilla fund pension opening application",
+
+  "applications.type.fundPensionOpening.account": "Bank account",
+  "applications.type.partialWithdrawal.account": "Bank account",
+
+  "applications.type.fundPensionOpening.startDate": "Alguskuupäev",
+  "applications.type.fundPensionOpening.duration": "Duration",
+  "applications.type.fundPensionOpening.years": "{count} years",
+
+  "applications.type.fundPensionOpening.frequency": "Payout frequency",
+  "applications.type.fundPensionOpening.frequency.monthly": "Once a month",
+  "applications.type.fundPensionOpening.frequency.quarterly": "Once every 3 months",
+  "applications.type.fundPensionOpening.frequency.yearly": "Once a year",
+
   "applications.type.partialWithdrawal.title": "II pillar partial withdrawal application",
+  "applications.type.partialWithdrawal.paymentDate": "Payment date",
   "applications.type.withdrawalThirdPillar.title": "III pillar withdrawal application",
 
   "transactions.title": "Your latest transactions",

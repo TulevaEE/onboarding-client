@@ -9,7 +9,6 @@ import {
   ApplicationType,
   EarlyWithdrawalApplication,
   FundPensionOpeningApplication,
-  ThirdPillarFundPensionOpeningApplication,
   PaymentApplication,
   PaymentRateApplication,
   ResumeContributionsApplication,
@@ -46,20 +45,12 @@ export const ApplicationCard: React.FunctionComponent<{
     case ApplicationType.PAYMENT:
       return <PaymentApplicationCard application={application} />;
     case ApplicationType.FUND_PENSION_OPENING:
-      return <FundPensionOpeningCard application={application} allowedActions={allowedActions} />;
-    case ApplicationType.FUND_PENSION_OPENING_THIRD_PILLAR:
-      return (
-        <ThirdPillarFundPensionOpeningCard
-          application={application}
-          allowedActions={allowedActions}
-        />
-      );
+    case ApplicationType.FUND_PENSION_OPENING_THIRD_PILLAR: // TODO enable cancellation
+      return <FundPensionOpeningCard application={application} allowedActions={[]} />;
     case ApplicationType.PARTIAL_WITHDRAWAL:
-      return <PartialWithdrawalCard application={application} allowedActions={allowedActions} />;
+      return <PartialWithdrawalCard application={application} allowedActions={[]} />;
     case ApplicationType.WITHDRAWAL_THIRD_PILLAR:
-      return (
-        <ThirdPillarWithdrawalCard application={application} allowedActions={allowedActions} />
-      );
+      return <ThirdPillarWithdrawalCard application={application} allowedActions={[]} />;
     default:
       return <></>;
   }
@@ -250,28 +241,59 @@ const WithdrawalCard: React.FunctionComponent<{
 const FundPensionOpeningCard: React.FunctionComponent<{
   application: FundPensionOpeningApplication;
   allowedActions: ApplicationAction[];
-}> = ({ application, allowedActions }) => (
-  <BaseApplicationCard
-    allowedActions={allowedActions}
-    application={application}
-    titleKey="applications.type.fundPensionOpening.title"
-  >
-    <DefinitionList definitions={[]} />
-  </BaseApplicationCard>
-);
+}> = ({ application, allowedActions }) => {
+  const frequencyToTranslationKeyMap: Record<1 | 4 | 12, TranslationKey> = {
+    1: 'applications.type.fundPensionOpening.frequency.yearly',
+    4: 'applications.type.fundPensionOpening.frequency.quarterly',
+    12: 'applications.type.fundPensionOpening.frequency.monthly',
+  };
 
-const ThirdPillarFundPensionOpeningCard: React.FunctionComponent<{
-  application: ThirdPillarFundPensionOpeningApplication;
-  allowedActions: ApplicationAction[];
-}> = ({ application, allowedActions }) => (
-  <BaseApplicationCard
-    allowedActions={allowedActions}
-    application={application}
-    titleKey="applications.type.fundPensionOpeningThirdPillar.title"
-  >
-    <DefinitionList definitions={[]} />
-  </BaseApplicationCard>
-);
+  return (
+    <BaseApplicationCard
+      allowedActions={allowedActions}
+      application={application}
+      titleKey={
+        application.type === ApplicationType.FUND_PENSION_OPENING
+          ? 'applications.type.fundPensionOpening.title'
+          : 'applications.type.fundPensionOpeningThirdPillar.title'
+      }
+    >
+      <DefinitionList
+        definitions={[
+          {
+            key: 'applications.type.fundPensionOpening.startDate',
+            value: formatDate(application.details.fulfillmentDate),
+          },
+          {
+            key: 'applications.type.fundPensionOpening.account',
+            value: application.details.depositAccountIBAN,
+          },
+          {
+            key: 'applications.type.fundPensionOpening.duration',
+            value: (
+              <FormattedMessage
+                id="applications.type.fundPensionOpening.years"
+                values={{ count: application.details.fundPensionDetails.durationYears }}
+              />
+            ),
+          },
+          {
+            key: 'applications.type.fundPensionOpening.frequency',
+            value: (
+              <FormattedMessage
+                id={
+                  frequencyToTranslationKeyMap[
+                    application.details.fundPensionDetails.paymentsPerYear
+                  ]
+                }
+              />
+            ),
+          },
+        ]}
+      />
+    </BaseApplicationCard>
+  );
+};
 
 const PartialWithdrawalCard: React.FunctionComponent<{
   application: PartialWithdrawalApplication;
@@ -282,7 +304,18 @@ const PartialWithdrawalCard: React.FunctionComponent<{
     application={application}
     titleKey="applications.type.partialWithdrawal.title"
   >
-    <DefinitionList definitions={[]} />
+    <DefinitionList
+      definitions={[
+        {
+          key: 'applications.type.partialWithdrawal.paymentDate',
+          value: formatDate(application.details.fulfillmentDate),
+        },
+        {
+          key: 'applications.type.partialWithdrawal.account',
+          value: application.details.depositAccountIBAN,
+        },
+      ]}
+    />
   </BaseApplicationCard>
 );
 
@@ -295,7 +328,18 @@ const ThirdPillarWithdrawalCard: React.FunctionComponent<{
     application={application}
     titleKey="applications.type.withdrawalThirdPillar.title"
   >
-    <DefinitionList definitions={[]} />
+    <DefinitionList
+      definitions={[
+        {
+          key: 'applications.type.partialWithdrawal.paymentDate',
+          value: formatDate(application.details.fulfillmentDate),
+        },
+        {
+          key: 'applications.type.partialWithdrawal.account',
+          value: application.details.depositAccountIBAN,
+        },
+      ]}
+    />
   </BaseApplicationCard>
 );
 
