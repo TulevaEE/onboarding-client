@@ -8,12 +8,16 @@ import {
   Application,
   ApplicationType,
   EarlyWithdrawalApplication,
+  FundPensionOpeningApplication,
+  ThirdPillarFundPensionOpeningApplication,
   PaymentApplication,
   PaymentRateApplication,
   ResumeContributionsApplication,
   StopContributionsApplication,
   TransferApplication,
   WithdrawalApplication,
+  PartialWithdrawalApplication,
+  ThirdPillarWithdrawalApplication,
 } from '../../common/apiModels';
 import Percentage from '../../common/Percentage';
 import Euro from '../../common/Euro';
@@ -41,7 +45,21 @@ export const ApplicationCard: React.FunctionComponent<{
       return <PaymentRateApplicationCard application={application} />;
     case ApplicationType.PAYMENT:
       return <PaymentApplicationCard application={application} />;
-
+    case ApplicationType.FUND_PENSION_OPENING:
+      return <FundPensionOpeningCard application={application} allowedActions={allowedActions} />;
+    case ApplicationType.FUND_PENSION_OPENING_THIRD_PILLAR:
+      return (
+        <ThirdPillarFundPensionOpeningCard
+          application={application}
+          allowedActions={allowedActions}
+        />
+      );
+    case ApplicationType.PARTIAL_WITHDRAWAL:
+      return <PartialWithdrawalCard application={application} allowedActions={allowedActions} />;
+    case ApplicationType.WITHDRAWAL_THIRD_PILLAR:
+      return (
+        <ThirdPillarWithdrawalCard application={application} allowedActions={allowedActions} />
+      );
     default:
       return <></>;
   }
@@ -226,6 +244,58 @@ const WithdrawalCard: React.FunctionComponent<{
         },
       ]}
     />
+  </BaseApplicationCard>
+);
+
+const FundPensionOpeningCard: React.FunctionComponent<{
+  application: FundPensionOpeningApplication;
+  allowedActions: ApplicationAction[];
+}> = ({ application, allowedActions }) => (
+  <BaseApplicationCard
+    allowedActions={allowedActions}
+    application={application}
+    titleKey="applications.type.fundPensionOpening.title"
+  >
+    <DefinitionList definitions={[]} />
+  </BaseApplicationCard>
+);
+
+const ThirdPillarFundPensionOpeningCard: React.FunctionComponent<{
+  application: ThirdPillarFundPensionOpeningApplication;
+  allowedActions: ApplicationAction[];
+}> = ({ application, allowedActions }) => (
+  <BaseApplicationCard
+    allowedActions={allowedActions}
+    application={application}
+    titleKey="applications.type.fundPensionOpeningThirdPillar.title"
+  >
+    <DefinitionList definitions={[]} />
+  </BaseApplicationCard>
+);
+
+const PartialWithdrawalCard: React.FunctionComponent<{
+  application: PartialWithdrawalApplication;
+  allowedActions: ApplicationAction[];
+}> = ({ application, allowedActions }) => (
+  <BaseApplicationCard
+    allowedActions={allowedActions}
+    application={application}
+    titleKey="applications.type.partialWithdrawal.title"
+  >
+    <DefinitionList definitions={[]} />
+  </BaseApplicationCard>
+);
+
+const ThirdPillarWithdrawalCard: React.FunctionComponent<{
+  application: ThirdPillarWithdrawalApplication;
+  allowedActions: ApplicationAction[];
+}> = ({ application, allowedActions }) => (
+  <BaseApplicationCard
+    allowedActions={allowedActions}
+    application={application}
+    titleKey="applications.type.withdrawalThirdPillar.title"
+  >
+    <DefinitionList definitions={[]} />
   </BaseApplicationCard>
 );
 
