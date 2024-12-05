@@ -18,6 +18,10 @@ import {
   transferPIK,
   withdrawal,
   paymentRateChange,
+  fundPensionOpening,
+  thirdPillarFundPensionOpening,
+  partialWithdrawal,
+  thirdPillarWithdrawal,
 } from './fixtures';
 import { initializeConfiguration } from '../../config/config';
 import { getAuthentication } from '../../common/authenticationManager';
@@ -272,6 +276,82 @@ describe('Application section', () => {
     expect(await screen.findByText('II pillar contribution rate')).toBeInTheDocument();
     expect(screen.getByText(formattedCreationTime)).toBeInTheDocument();
     expect(screen.getByText(/Takes effect on/i)).toBeInTheDocument();
+  });
+
+  it('renders fund pension opening application successfully', async () => {
+    const application = fundPensionOpening;
+    mockApplications([application]);
+    initializeComponent();
+    const formattedStartTime = 'January 2, 2024';
+
+    expect(
+      await screen.findByText('II pillar fund pension opening application'),
+    ).toBeInTheDocument();
+
+    expect(screen.getByText(/Start date/i)).toBeInTheDocument();
+    expect(screen.getByText(formattedStartTime)).toBeInTheDocument();
+
+    expect(screen.getByText(/Bank account/i)).toBeInTheDocument();
+    expect(screen.getByText(fundPensionOpening.details.depositAccountIBAN)).toBeInTheDocument();
+
+    expect(screen.getByText(/Duration/i)).toBeInTheDocument();
+    expect(screen.getByText(/20 years/i)).toBeInTheDocument();
+
+    expect(screen.getByText(/Frequency/i)).toBeInTheDocument();
+    expect(screen.getByText('Once a month')).toBeInTheDocument();
+  });
+
+  it('renders third pillar fund pension opening application successfully', async () => {
+    const application = thirdPillarFundPensionOpening;
+    mockApplications([application]);
+    initializeComponent();
+    const formattedStartTime = 'January 2, 2024';
+
+    expect(
+      await screen.findByText('III pillar fund pension opening application'),
+    ).toBeInTheDocument();
+
+    expect(screen.getByText(/Start date/i)).toBeInTheDocument();
+    expect(screen.getByText(formattedStartTime)).toBeInTheDocument();
+
+    expect(screen.getByText(/Bank account/i)).toBeInTheDocument();
+    expect(screen.getByText(fundPensionOpening.details.depositAccountIBAN)).toBeInTheDocument();
+
+    expect(screen.getByText(/Duration/i)).toBeInTheDocument();
+    expect(screen.getByText(/20 years/i)).toBeInTheDocument();
+
+    expect(screen.getByText(/Frequency/i)).toBeInTheDocument();
+    expect(screen.getByText('Once a month')).toBeInTheDocument();
+  });
+
+  it('renders partial withdrawal application successfully', async () => {
+    const application = partialWithdrawal;
+    mockApplications([application]);
+    initializeComponent();
+    const formattedFulfillmentDate = 'January 2, 2024';
+
+    expect(await screen.findByText('II pillar partial withdrawal application')).toBeInTheDocument();
+
+    expect(screen.getByText(/Payment date/i)).toBeInTheDocument();
+    expect(screen.getByText(formattedFulfillmentDate)).toBeInTheDocument();
+
+    expect(screen.getByText(/Bank account/i)).toBeInTheDocument();
+    expect(screen.getByText(fundPensionOpening.details.depositAccountIBAN)).toBeInTheDocument();
+  });
+
+  it('renders third pillar withdrawal application successfully', async () => {
+    const application = thirdPillarWithdrawal;
+    mockApplications([application]);
+    initializeComponent();
+    const formattedFulfillmentDate = 'January 2, 2024';
+
+    expect(await screen.findByText('III pillar withdrawal application')).toBeInTheDocument();
+
+    expect(screen.getByText(/Payment date/i)).toBeInTheDocument();
+    expect(screen.getByText(formattedFulfillmentDate)).toBeInTheDocument();
+
+    expect(screen.getByText(/Bank account/i)).toBeInTheDocument();
+    expect(screen.getByText(fundPensionOpening.details.depositAccountIBAN)).toBeInTheDocument();
   });
 
   function waitForRequestToFinish() {

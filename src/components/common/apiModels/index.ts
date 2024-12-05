@@ -7,7 +7,10 @@ export type Application =
   | EarlyWithdrawalApplication
   | WithdrawalApplication
   | PaymentApplication
-  | PaymentRateApplication;
+  | PaymentRateApplication
+  | FundPensionOpeningApplication
+  | PartialWithdrawalApplication
+  | ThirdPillarWithdrawalApplication;
 
 export type PaymentRateApplication = BaseApplication<
   ApplicationType.PAYMENT_RATE,
@@ -75,6 +78,37 @@ export type WithdrawalApplication = BaseApplication<
   }
 >;
 
+export type FundPensionOpeningApplication = BaseApplication<
+  ApplicationType.FUND_PENSION_OPENING | ApplicationType.FUND_PENSION_OPENING_THIRD_PILLAR,
+  {
+    depositAccountIBAN: string;
+    cancellationDeadline: string;
+    fulfillmentDate: string;
+    fundPensionDetails: {
+      durationYears: number;
+      paymentsPerYear: 1 | 4 | 12;
+    };
+  }
+>;
+
+export type PartialWithdrawalApplication = BaseApplication<
+  ApplicationType.PARTIAL_WITHDRAWAL,
+  {
+    depositAccountIBAN: string;
+    cancellationDeadline: string;
+    fulfillmentDate: string;
+  }
+>;
+
+export type ThirdPillarWithdrawalApplication = BaseApplication<
+  ApplicationType.WITHDRAWAL_THIRD_PILLAR,
+  {
+    depositAccountIBAN: string;
+    cancellationDeadline: null;
+    fulfillmentDate: string;
+  }
+>;
+
 export enum ApplicationType {
   TRANSFER = 'TRANSFER',
   STOP_CONTRIBUTIONS = 'STOP_CONTRIBUTIONS',
@@ -83,6 +117,10 @@ export enum ApplicationType {
   WITHDRAWAL = 'WITHDRAWAL',
   PAYMENT = 'PAYMENT',
   PAYMENT_RATE = 'PAYMENT_RATE',
+  FUND_PENSION_OPENING = 'FUND_PENSION_OPENING',
+  FUND_PENSION_OPENING_THIRD_PILLAR = 'FUND_PENSION_OPENING_THIRD_PILLAR',
+  PARTIAL_WITHDRAWAL = 'PARTIAL_WITHDRAWAL',
+  WITHDRAWAL_THIRD_PILLAR = 'WITHDRAWAL_THIRD_PILLAR',
 }
 
 export enum ApplicationStatus {
