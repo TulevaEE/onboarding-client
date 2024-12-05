@@ -178,6 +178,62 @@ export const payment = {
   },
 };
 
+export const fundPensionOpening = {
+  id: 16,
+  type: ApplicationType.FUND_PENSION_OPENING,
+  status: ApplicationStatus.PENDING,
+  creationTime: '2022-10-04T13:22:24.215230Z',
+  details: {
+    cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
+    fulfillmentDate: new Date('January 2, 2024 03:24:00').toISOString(),
+    depositAccountIBAN: 'EE123123123',
+    fundPensionDetails: {
+      durationYears: 20,
+      paymentsPerYear: 12,
+    },
+  },
+};
+
+export const thirdPillarFundPensionOpening = {
+  id: 17,
+  type: ApplicationType.FUND_PENSION_OPENING_THIRD_PILLAR,
+  status: ApplicationStatus.PENDING,
+  creationTime: '2022-10-04T13:22:24.215230Z',
+  details: {
+    cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
+    fulfillmentDate: new Date('January 2, 2024 03:24:00').toISOString(),
+    depositAccountIBAN: 'EE123123123',
+    fundPensionDetails: {
+      durationYears: 20,
+      paymentsPerYear: 12,
+    },
+  },
+};
+
+export const partialWithdrawal = {
+  id: 18,
+  type: ApplicationType.PARTIAL_WITHDRAWAL,
+  status: ApplicationStatus.PENDING,
+  creationTime: new Date('December 17, 1995 03:24:00').toISOString(),
+  details: {
+    cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
+    fulfillmentDate: new Date('January 2, 2024 03:24:00').toISOString(),
+    depositAccountIBAN: 'EE123123123',
+  },
+};
+
+export const thirdPillarWithdrawal = {
+  id: 19,
+  type: ApplicationType.WITHDRAWAL_THIRD_PILLAR,
+  status: ApplicationStatus.PENDING,
+  creationTime: new Date('December 17, 1995 03:24:00').toISOString(),
+  details: {
+    cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
+    fulfillmentDate: new Date('January 2, 2024 03:24:00').toISOString(),
+    depositAccountIBAN: 'EE123123123',
+  },
+};
+
 export const paymentRateChange = {
   id: 654,
   type: ApplicationType.PAYMENT_RATE,

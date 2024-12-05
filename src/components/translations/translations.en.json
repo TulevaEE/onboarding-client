@@ -551,12 +551,12 @@
   "applications.type.withdrawal.account": "Bank account",
 
   "applications.type.fundPensionOpening.title": "II pillar fund pension opening application",
-  "applications.type.fundPensionOpeningThirdPillar.title": "III pilla fund pension opening application",
+  "applications.type.fundPensionOpeningThirdPillar.title": "III pillar fund pension opening application",
 
   "applications.type.fundPensionOpening.account": "Bank account",
   "applications.type.partialWithdrawal.account": "Bank account",
 
-  "applications.type.fundPensionOpening.startDate": "Alguskuupäev",
+  "applications.type.fundPensionOpening.startDate": "Start date",
   "applications.type.fundPensionOpening.duration": "Duration",
   "applications.type.fundPensionOpening.years": "{count} years",
 
