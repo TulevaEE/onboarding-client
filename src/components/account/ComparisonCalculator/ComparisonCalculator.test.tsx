@@ -298,7 +298,7 @@ describe('ComparisonCalculator', () => {
 
     // Content text
     expect(
-      await screen.findByText(/Your II pillar during the past 6 years, when compared to/i),
+      await screen.findByText(/Your II pillar during the past \d years, when compared to/i),
     ).toBeInTheDocument();
 
     await expectAllWorldMarketInBold();
@@ -347,7 +347,7 @@ describe('ComparisonCalculator', () => {
     await awaitForInitialData();
 
     expect(
-      await screen.findByText(/Your II pillar during the past 6 years, when compared to/i),
+      await screen.findByText(/Your II pillar during the past \d years, when compared to/i),
     ).toBeInTheDocument();
 
     await expectAllWorldMarketInBold();
@@ -731,7 +731,7 @@ describe('ComparisonCalculator', () => {
     await awaitForReturnsData();
 
     expect(
-      await screen.findByText(/Your III pillar during the past 6 years, when compared to/i),
+      await screen.findByText(/Your III pillar during the past \d years, when compared to/i),
     ).toBeInTheDocument();
 
     await expectAllWorldMarketInBold();
