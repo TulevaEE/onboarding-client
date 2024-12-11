@@ -10,6 +10,9 @@ import {
   WithdrawalsEligibility,
 } from '../../common/apiModels/withdrawals';
 
+export const canOnlyWithdrawThirdPillarTaxFree = (eligibility: WithdrawalsEligibility) =>
+  !eligibility.hasReachedEarlyRetirementAge && eligibility.canWithdrawThirdPillarWithReducedTax;
+
 export const getYearsToGoUntilEarlyRetirementAge = (eligibility?: WithdrawalsEligibility) => {
   if (!eligibility || eligibility?.hasReachedEarlyRetirementAge) {
     return 0;
@@ -34,6 +37,7 @@ export const decorateSimulatedEligibilityForUnderRetirementAge = (
   return {
     age: 60,
     hasReachedEarlyRetirementAge: true,
+    canWithdrawThirdPillarWithReducedTax: true,
     recommendedDurationYears: eligibility.recommendedDurationYears - yearsToGoUntil60,
     arrestsOrBankruptciesPresent: eligibility.arrestsOrBankruptciesPresent,
   };

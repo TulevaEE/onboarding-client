@@ -36,6 +36,16 @@
   }
 }
 
+.pillarSelectionContainerWarning {
+  background-color: #fff6d9;
+  padding: 1em 1.25em;
+  font-size: 0.75em;
+  text-align: center;
+  border-bottom: 1px solid $gray-mid;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
 .singleWithdrawalAmountInputContainer {
   min-width: 10em;
   margin-left: 1em;

@@ -405,6 +405,7 @@ describe('withdrawals flow with only second pillar and arrests/bankruptcy', () =
     withdrawalsEligibilityBackend(server, {
       age: 60,
       hasReachedEarlyRetirementAge: true,
+      canWithdrawThirdPillarWithReducedTax: true,
       recommendedDurationYears: 20,
       arrestsOrBankruptciesPresent: true,
     });
@@ -523,6 +524,7 @@ describe('withdrawals flow before early retirement age', () => {
     withdrawalsEligibilityBackend(server, {
       age: 25,
       hasReachedEarlyRetirementAge: false,
+      canWithdrawThirdPillarWithReducedTax: false,
       recommendedDurationYears: 35 + 20, // 35 years to go until 60 + 20 years recommended duration
       arrestsOrBankruptciesPresent: true,
     });
@@ -556,6 +558,86 @@ describe('withdrawals flow before early retirement age', () => {
     expect(
       await screen.findByText(/Withdraw from the entire pension holding/i),
     ).toBeInTheDocument();
+  });
+});
+
+describe('withdrawals flow at 55 withdrawing only third pillar', () => {
+  beforeEach(() => {
+    pensionAccountStatementBackend(server);
+    withdrawalsEligibilityBackend(server, {
+      age: 55,
+      hasReachedEarlyRetirementAge: false,
+      canWithdrawThirdPillarWithReducedTax: true,
+      recommendedDurationYears: 5 + 20, // 5 years to go until 60 + 20 years recommended duration
+      arrestsOrBankruptciesPresent: false,
+    });
+  });
+
+  test('can only make calculations on first step and not proceed', async () => {
+    expect(await screen.findByText(/55 years old/i)).toBeInTheDocument();
+
+    expect(
+      await screen.findByText(/eligible to start using your III pillar holdings/i),
+    ).toBeInTheDocument();
+
+    expect(
+      await screen.findByText(
+        /You will be able to use your II pillar holdings under preferential conditions when you are 60 years old./i,
+        undefined,
+        {
+          timeout: 1000,
+        },
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      await screen.findByText(/Withdraw only from III pillar/i, undefined, {
+        timeout: 1000,
+      }),
+    ).toBeInTheDocument();
+
+    await assertFundPensionCalculations('23.75 € per month');
+
+    const partialWithdrawalSizeInput = await screen.findByLabelText(
+      'Do you wish to make a partial withdrawal immediately?',
+      { exact: false },
+    );
+
+    userEvent.type(partialWithdrawalSizeInput, '100');
+    assertTotalTaxText('−10.00 €');
+
+    await assertFundPensionCalculations('23.33 € per month');
+
+    userEvent.click(nextButton());
+
+    await enterIban('EE591254471322749514');
+    userEvent.click(nextButton());
+
+    expect(
+      await screen.findByText(/I submit the following applications and am aware of their terms/i),
+    ).toBeInTheDocument();
+
+    expect(await screen.findByText(/EE591254471322749514/i)).toBeInTheDocument();
+    expect(await screen.findByText('EST')).toBeInTheDocument();
+
+    assertMandateCount(2);
+
+    await assertFundPensionMandate('THIRD', '18.66 €');
+    await assertPartialWithdrawalMandate(
+      'THIRD',
+      [
+        {
+          fundName: 'Tuleva III Samba Pensionifond',
+          liquidationAmount: '127.99 units',
+        },
+      ],
+      '90 €',
+    );
+
+    await confirmAndSignAndAssertDone();
+
+    assertDoneScreenFundPension();
+    assertDoneScreenPartialWithdrawal('THIRD');
   });
 });
 
@@ -734,7 +816,7 @@ const assertFundPensionMandate = async (
 
   expect(
     within(fundPensionSection).getByText(
-      /The recommended duration is calculated based on the average years left to live according to your age. Currently, it is 20 years./i,
+      /The recommended duration is calculated based on the average years left to live according to your age. Currently, it is \d+ years./i,
     ),
   ).toBeInTheDocument();
 

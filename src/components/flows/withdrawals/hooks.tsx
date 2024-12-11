@@ -102,6 +102,15 @@ export const WithdrawalsProvider = ({
   );
 
   useEffect(() => {
+    if (
+      eligibility &&
+      !eligibility.hasReachedEarlyRetirementAge &&
+      eligibility.canWithdrawThirdPillarWithReducedTax
+    ) {
+      setWithdrawalAmount((prevVal) => ({ ...prevVal, pillarsToWithdrawFrom: 'THIRD' }));
+      return;
+    }
+
     if (totalSecondPillar === 0 && totalThirdPillar > 0) {
       setWithdrawalAmount((prevVal) => ({ ...prevVal, pillarsToWithdrawFrom: 'THIRD' }));
     } else if (totalSecondPillar > 0 && totalThirdPillar === 0) {
@@ -109,7 +118,7 @@ export const WithdrawalsProvider = ({
     } else {
       setWithdrawalAmount((prevVal) => ({ ...prevVal, pillarsToWithdrawFrom: 'BOTH' }));
     }
-  }, [totalSecondPillar, totalThirdPillar, totalBothPillars]);
+  }, [eligibility, totalSecondPillar, totalThirdPillar, totalBothPillars]);
 
   const navigateToNextStep = () => {
     const nextStepIndex = steps.findIndex((step) => step.type === currentStepType) + 1;

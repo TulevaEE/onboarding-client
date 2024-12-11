@@ -540,6 +540,7 @@ export function withdrawalsEligibilityBackend(
   eligibility: WithdrawalsEligibility = {
     age: 60,
     hasReachedEarlyRetirementAge: true,
+    canWithdrawThirdPillarWithReducedTax: true,
     recommendedDurationYears: 20,
     arrestsOrBankruptciesPresent: false,
   },

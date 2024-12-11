@@ -10,7 +10,12 @@ import {
 
 import styles from './Withdrawals.module.scss';
 import Percentage from '../../common/Percentage';
-import { getEstimatedTotalFundPension, getPillarRatios, getTotalWithdrawableAmount } from './utils';
+import {
+  canOnlyWithdrawThirdPillarTaxFree,
+  getEstimatedTotalFundPension,
+  getPillarRatios,
+  getTotalWithdrawableAmount,
+} from './utils';
 import { formatAmountForCurrency } from '../../common/utils';
 import {
   useCreateMandateBatch,
@@ -118,6 +123,34 @@ export const ReviewAndConfirmStep = () => {
     setBatchCreationError(null);
   };
 
+  const isSigningDisabled = () => {
+    if (signingInProgress) {
+      return true;
+    }
+
+    if (batchCreationLoading) {
+      return true;
+    }
+
+    if (!eligibility) {
+      return true;
+    }
+
+    if (!eligibility) {
+      return true;
+    }
+
+    if (canOnlyWithdrawThirdPillarTaxFree(eligibility)) {
+      return false;
+    }
+
+    if (!eligibility.hasReachedEarlyRetirementAge) {
+      return true;
+    }
+
+    return false;
+  };
+
   return (
     <div>
       {(signingInProgress || challengeCode) && (
@@ -210,12 +243,7 @@ export const ReviewAndConfirmStep = () => {
             type="button"
             className="btn btn-primary"
             onClick={() => createMandateBatchAndStartSigning()}
-            disabled={
-              signingInProgress ||
-              batchCreationLoading ||
-              !eligibility ||
-              !eligibility?.hasReachedEarlyRetirementAge
-            }
+            disabled={isSigningDisabled()}
           >
             <FormattedMessage
               id={
