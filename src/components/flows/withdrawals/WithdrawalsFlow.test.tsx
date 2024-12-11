@@ -63,22 +63,12 @@ describe('withdrawals flow with both pillars', () => {
   });
 
   test('reaches final confirmation step to make partial withdrawal with fund pension', async () => {
-    expect(
-      await screen.findByText(/60 years old/i, undefined, {
-        timeout: 1000,
-      }),
-    ).toBeInTheDocument();
+    expect(await screen.findByText(/60 years old/i)).toBeInTheDocument();
+    expect(await screen.findByText(/under preferential conditions/i)).toBeInTheDocument();
+    expect(screen.queryByText(/you might receive/i)).not.toBeInTheDocument();
 
     expect(
-      await screen.findByText(/under preferential conditions/i, undefined, {
-        timeout: 1000,
-      }),
-    ).toBeInTheDocument();
-
-    expect(
-      await screen.findByText(/Withdraw from the entire pension holding/i, undefined, {
-        timeout: 1000,
-      }),
+      await screen.findByText(/Withdraw from the entire pension holding/i),
     ).toBeInTheDocument();
 
     await assertFundPensionCalculations('502.91 € per month');
@@ -208,9 +198,7 @@ describe('withdrawals flow with both pillars', () => {
 
   test('uses only second pillar with partial withdrawal', async () => {
     expect(
-      await screen.findByText(/Withdraw from the entire pension holding/i, undefined, {
-        timeout: 1000,
-      }),
+      await screen.findByText(/Withdraw from the entire pension holding/i),
     ).toBeInTheDocument();
 
     await assertFundPensionCalculations('502.91 € per month');
@@ -258,9 +246,7 @@ describe('withdrawals flow with both pillars', () => {
 
   test('uses only second pillar without partial withdrawal', async () => {
     expect(
-      await screen.findByText(/Withdraw from the entire pension holding/i, undefined, {
-        timeout: 1000,
-      }),
+      await screen.findByText(/Withdraw from the entire pension holding/i),
     ).toBeInTheDocument();
 
     await assertFundPensionCalculations('502.91 € per month');
@@ -284,9 +270,7 @@ describe('withdrawals flow with both pillars', () => {
 
   test('uses only third pillar with partial withdrawal ', async () => {
     expect(
-      await screen.findByText(/Withdraw from the entire pension holding/i, undefined, {
-        timeout: 1000,
-      }),
+      await screen.findByText(/Withdraw from the entire pension holding/i),
     ).toBeInTheDocument();
 
     await assertFundPensionCalculations('502.91 € per month');
@@ -331,9 +315,7 @@ describe('withdrawals flow with both pillars', () => {
 
   test('uses only third pillar without partial withdrawal ', async () => {
     expect(
-      await screen.findByText(/Withdraw from the entire pension holding/i, undefined, {
-        timeout: 1000,
-      }),
+      await screen.findByText(/Withdraw from the entire pension holding/i),
     ).toBeInTheDocument();
 
     await assertFundPensionCalculations('502.91 € per month');
@@ -430,7 +412,7 @@ describe('withdrawals flow with only second pillar and arrests/bankruptcy', () =
 
   test('reaches final confirmation step', async () => {
     expect(
-      await screen.findByText(/Your holdings in II pillar/i, { exact: false }, { timeout: 1000 }),
+      await screen.findByText(/Your holdings in II pillar/i, { exact: false }),
     ).toBeInTheDocument();
 
     const partialWithdrawalSizeInput = await screen.findByLabelText(
@@ -502,7 +484,7 @@ describe('withdrawals flow with only third pillar', () => {
 
   test('reaches final confirmation step', async () => {
     expect(
-      await screen.findByText(/Your holdings in III pillar/i, { exact: false }, { timeout: 1000 }),
+      await screen.findByText(/Your holdings in III pillar/i, { exact: false }),
     ).toBeInTheDocument();
 
     const partialWithdrawalSizeInput = await screen.findByLabelText(
@@ -547,22 +529,12 @@ describe('withdrawals flow before early retirement age', () => {
   });
 
   test('can only make calculations on first step and not proceed', async () => {
-    expect(
-      await screen.findByText(/25 years old/i, undefined, {
-        timeout: 1000,
-      }),
-    ).toBeInTheDocument();
+    expect(await screen.findByText(/25 years old/i)).toBeInTheDocument();
+    expect(await screen.findByText(/in 35 years/i)).toBeInTheDocument();
+    expect(await screen.findByText(/you might receive/i)).toBeInTheDocument();
 
     expect(
-      await screen.findByText(/in 35 years/i, undefined, {
-        timeout: 1000,
-      }),
-    ).toBeInTheDocument();
-
-    expect(
-      await screen.findByText(/Withdraw from the entire pension holding/i, undefined, {
-        timeout: 1000,
-      }),
+      await screen.findByText(/Withdraw from the entire pension holding/i),
     ).toBeInTheDocument();
 
     await assertFundPensionCalculations('502.91 € per month');
@@ -582,9 +554,7 @@ describe('withdrawals flow before early retirement age', () => {
     userEvent.click(nextButton());
 
     expect(
-      await screen.findByText(/Withdraw from the entire pension holding/i, undefined, {
-        timeout: 1000,
-      }),
+      await screen.findByText(/Withdraw from the entire pension holding/i),
     ).toBeInTheDocument();
   });
 });
