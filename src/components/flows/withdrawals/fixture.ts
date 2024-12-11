@@ -4,6 +4,7 @@ import { WithdrawalsEligibility } from '../../common/apiModels/withdrawals';
 
 export const withdrawalEligibility: WithdrawalsEligibility = {
   hasReachedEarlyRetirementAge: true,
+  canWithdrawThirdPillarWithReducedTax: true,
   recommendedDurationYears: 20,
   age: 60,
   arrestsOrBankruptciesPresent: false,

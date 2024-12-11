@@ -3,6 +3,8 @@ import { FormattedMessage } from 'react-intl';
 import { useWithdrawalsEligibility } from '../../common/apiHooks';
 import { getYearsToGoUntilEarlyRetirementAge } from './utils';
 import { useWithdrawalsContext } from './hooks';
+import { WithdrawalsEligibility } from '../../common/apiModels/withdrawals';
+import { TranslationKey } from '../../translations';
 
 export const WithdrawalsHeader = () => {
   const { data: eligibility } = useWithdrawalsEligibility();
@@ -11,8 +13,6 @@ export const WithdrawalsHeader = () => {
   if (!eligibility) {
     return null;
   }
-
-  const { hasReachedEarlyRetirementAge } = eligibility;
 
   return (
     <div className="pt-3 pb-5">
@@ -23,11 +23,7 @@ export const WithdrawalsHeader = () => {
         <>
           <p className="m-0 lead text-center">
             <FormattedMessage
-              id={
-                hasReachedEarlyRetirementAge
-                  ? 'withdrawals.subHeading'
-                  : 'withdrawals.subHeadingUnderEarlyRetirementAge'
-              }
+              id={getSubheadingTranslationId(eligibility)}
               values={{
                 b: (children: ReactChildren) => <span className="text-bold">{children}</span>,
                 age: eligibility.age,
@@ -35,7 +31,8 @@ export const WithdrawalsHeader = () => {
               }}
             />
           </p>
-          {!hasReachedEarlyRetirementAge && (
+          {(!eligibility.hasReachedEarlyRetirementAge ||
+            !eligibility.canWithdrawThirdPillarWithReducedTax) && (
             <p className="m-0 mt-3 lead text-center">
               <FormattedMessage id="withdrawals.additionalInfoUnderEarlyRetirementAge" />
             </p>
@@ -44,4 +41,16 @@ export const WithdrawalsHeader = () => {
       )}
     </div>
   );
+};
+
+const getSubheadingTranslationId = (eligibility: WithdrawalsEligibility): TranslationKey => {
+  if (eligibility.hasReachedEarlyRetirementAge) {
+    return 'withdrawals.subHeading';
+  }
+
+  if (eligibility.canWithdrawThirdPillarWithReducedTax) {
+    return 'withdrawals.subHeadingThirdPilllarReducedTax';
+  }
+
+  return 'withdrawals.subHeadingUnderEarlyRetirementAge';
 };

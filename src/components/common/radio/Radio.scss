@@ -11,8 +11,8 @@
 
   transition: background-color 0.15s ease-out, border-color 0.15s ease-out;
 
-  &:not(&--selected),
-  &:not(&--selected) > * {
+  &:not(&--selected):not(&--disabled),
+  &:not(&--selected):not(&--disabled) > * {
     cursor: pointer;
   }
 
@@ -56,6 +56,17 @@
 
     &.tv-radio--selected {
       font-weight: bold;
+    }
+
+    &.tv-radio--disabled {
+      color: $text-secondary;
+    }
+  }
+
+  &.tv-radio--disabled {
+    .tv-radio__button {
+      cursor: default;
+      border-color: #909396;
     }
   }
 

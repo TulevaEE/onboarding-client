@@ -1,4 +1,4 @@
-import React, { ReactChildren } from 'react';
+import React, { ReactChildren, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { formatAmountForCurrency } from '../../common/utils';
@@ -8,12 +8,14 @@ import { PillarToWithdrawFrom } from './types';
 import { useWithdrawalsContext } from './hooks';
 import Percentage from '../../common/Percentage';
 import {
+  canOnlyWithdrawThirdPillarTaxFree,
   decorateSimulatedEligibilityForUnderRetirementAge,
   getEstimatedTotalFundPension,
   getTotalWithdrawableAmount,
 } from './utils';
 import styles from './Withdrawals.module.scss';
 import { useTestMode } from '../../common/test-mode';
+import { WithdrawalsEligibility } from '../../common/apiModels/withdrawals';
 
 export const WithdrawalAmountStep = () => {
   const { data: eligibility } = useWithdrawalsEligibility();
@@ -39,7 +41,11 @@ export const WithdrawalAmountStep = () => {
     pensionHoldings,
   );
 
-  const canNavigateToNextStep = eligibility.hasReachedEarlyRetirementAge || isTestModeEnabled;
+  const canNavigateToNextStep =
+    eligibility.hasReachedEarlyRetirementAge ||
+    (canOnlyWithdrawThirdPillarTaxFree(eligibility) &&
+      withdrawalAmount.pillarsToWithdrawFrom === 'THIRD') ||
+    isTestModeEnabled;
 
   return (
     <div className="pt-5">
@@ -47,6 +53,7 @@ export const WithdrawalAmountStep = () => {
         secondPillarAmount={pensionHoldings.totalSecondPillar}
         thirdPillarAmount={pensionHoldings.totalThirdPillar}
         selectedPillar={withdrawalAmount.pillarsToWithdrawFrom}
+        eligibility={eligibility}
         setSelectedPillar={handlePillarSelected}
       />
       <FundPensionStatusBox totalAmount={totalAmount} />
@@ -204,14 +211,21 @@ const FundPensionStatusBox = ({ totalAmount }: { totalAmount: number }) => {
 const PillarSelection = ({
   secondPillarAmount,
   thirdPillarAmount,
+  eligibility,
   setSelectedPillar,
   selectedPillar,
 }: {
   secondPillarAmount: number;
   thirdPillarAmount: number;
   selectedPillar: PillarToWithdrawFrom | null;
+  eligibility: WithdrawalsEligibility;
   setSelectedPillar: (pillar: PillarToWithdrawFrom) => unknown;
 }) => {
+  const onlyThirdPillarEnabled = useMemo(
+    () => canOnlyWithdrawThirdPillarTaxFree(eligibility),
+    [eligibility],
+  );
+
   if (secondPillarAmount > 0 && thirdPillarAmount === 0) {
     return (
       <div className="card p-4 d-flex flex-row justify-content-between mb-3">
@@ -236,13 +250,19 @@ const PillarSelection = ({
   }
 
   return (
-    <div className={`card d-flex flex-column mb-3 p-4 ${styles.pillarSelectionContainer}`}>
+    <div className={`card d-flex flex-column mb-3  ${styles.pillarSelectionContainer}`}>
+      {onlyThirdPillarEnabled && (
+        <div className={styles.pillarSelectionContainerWarning}>
+          <FormattedMessage id="withdrawals.withdrawalAmount.secondPillarAtEarlyPensionAge" />
+        </div>
+      )}
       <Radio
         name="pillar-to-withdraw"
         id="pillar-to-withdraw-both"
-        className="tv-radio__inline mb-1"
+        className="tv-radio__inline mt-4 mb-1 px-4"
         selected={selectedPillar === 'BOTH'}
         onSelect={() => setSelectedPillar('BOTH')}
+        disabled={onlyThirdPillarEnabled}
       >
         <div className="d-flex justify-content-between">
           <span className="m-0">
@@ -255,9 +275,10 @@ const PillarSelection = ({
       <Radio
         name="pillar-to-withdraw"
         id="pillar-to-withdraw-second"
-        className="tv-radio__inline mb-1"
+        className="tv-radio__inline mb-1 px-4"
         selected={selectedPillar === 'SECOND'}
         onSelect={() => setSelectedPillar('SECOND')}
+        disabled={onlyThirdPillarEnabled}
       >
         <div className="d-flex justify-content-between">
           <span className="m-0">
@@ -270,7 +291,7 @@ const PillarSelection = ({
       <Radio
         name="pillar-to-withdraw"
         id="pillar-to-withdraw-third"
-        className=" tv-radio__inline"
+        className=" tv-radio__inline px-4 pb-4"
         selected={selectedPillar === 'THIRD'}
         onSelect={() => setSelectedPillar('THIRD')}
       >

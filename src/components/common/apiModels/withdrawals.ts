@@ -1,5 +1,6 @@
 export type WithdrawalsEligibility = {
   hasReachedEarlyRetirementAge: boolean;
+  canWithdrawThirdPillarWithReducedTax: boolean;
   recommendedDurationYears: number;
   age: number;
   arrestsOrBankruptciesPresent: boolean;

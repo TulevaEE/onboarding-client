@@ -25,6 +25,7 @@ describe('getYearsToGoUntilEarlyRetirementAge', () => {
       getYearsToGoUntilEarlyRetirementAge({
         age: 25,
         hasReachedEarlyRetirementAge: false,
+        canWithdrawThirdPillarWithReducedTax: false,
         recommendedDurationYears: 60 - 25 + 20,
         arrestsOrBankruptciesPresent: false,
       }),
@@ -34,6 +35,7 @@ describe('getYearsToGoUntilEarlyRetirementAge', () => {
       getYearsToGoUntilEarlyRetirementAge({
         age: 60,
         hasReachedEarlyRetirementAge: true,
+        canWithdrawThirdPillarWithReducedTax: true,
         recommendedDurationYears: 20,
         arrestsOrBankruptciesPresent: false,
       }),
@@ -43,6 +45,7 @@ describe('getYearsToGoUntilEarlyRetirementAge', () => {
       getYearsToGoUntilEarlyRetirementAge({
         age: 65,
         hasReachedEarlyRetirementAge: true,
+        canWithdrawThirdPillarWithReducedTax: true,
         recommendedDurationYears: 15,
         arrestsOrBankruptciesPresent: false,
       }),
@@ -54,6 +57,7 @@ describe('decorateSimulatedEligibilityForUnderRetirementAge', () => {
     const eligibility = {
       age: 60,
       hasReachedEarlyRetirementAge: true,
+      canWithdrawThirdPillarWithReducedTax: true,
       recommendedDurationYears: 20,
       arrestsOrBankruptciesPresent: false,
     };
@@ -69,6 +73,7 @@ describe('decorateSimulatedEligibilityForUnderRetirementAge', () => {
     const eligibility = {
       age,
       hasReachedEarlyRetirementAge: false,
+      canWithdrawThirdPillarWithReducedTax: false,
       recommendedDurationYears: yearsLeftToLive,
       arrestsOrBankruptciesPresent: false,
     };
@@ -76,6 +81,7 @@ describe('decorateSimulatedEligibilityForUnderRetirementAge', () => {
     expect(decorateSimulatedEligibilityForUnderRetirementAge(eligibility)).toStrictEqual({
       age: 60,
       hasReachedEarlyRetirementAge: true,
+      canWithdrawThirdPillarWithReducedTax: true,
       recommendedDurationYears: 25, // (age + years_left_to_live) - 60
       arrestsOrBankruptciesPresent: false,
     });
