@@ -573,7 +573,7 @@ describe('withdrawals flow at 55 withdrawing only third pillar', () => {
     });
   });
 
-  test('can only make calculations on first step and not proceed', async () => {
+  test('can only withdraw third pillar', async () => {
     expect(await screen.findByText(/55 years old/i)).toBeInTheDocument();
 
     expect(
@@ -590,23 +590,33 @@ describe('withdrawals flow at 55 withdrawing only third pillar', () => {
       ),
     ).toBeInTheDocument();
 
+    userEvent.click(await screen.findByLabelText(/Withdraw only from II pillar/i));
+
     expect(
       await screen.findByText(/Withdraw only from III pillar/i, undefined, {
         timeout: 1000,
       }),
     ).toBeInTheDocument();
 
-    await assertFundPensionCalculations('23.75 € per month');
+    await assertFundPensionCalculations(
+      '19.00 € per month',
+      '0.33%',
+      /will earn returns for the next 25 years/i,
+    );
 
     const partialWithdrawalSizeInput = await screen.findByLabelText(
       'Do you wish to make a partial withdrawal immediately?',
       { exact: false },
     );
 
-    userEvent.type(partialWithdrawalSizeInput, '100');
-    assertTotalTaxText('−10.00 €');
+    userEvent.type(partialWithdrawalSizeInput, '1000');
+    assertTotalTaxText('−100.00 €');
 
-    await assertFundPensionCalculations('23.33 € per month');
+    await assertFundPensionCalculations(
+      '15.66 € per month',
+      '0.33%',
+      /will earn returns for the next 25 years/i,
+    );
 
     userEvent.click(nextButton());
 
@@ -622,16 +632,16 @@ describe('withdrawals flow at 55 withdrawing only third pillar', () => {
 
     assertMandateCount(2);
 
-    await assertFundPensionMandate('THIRD', '18.66 €');
+    await assertFundPensionMandate('THIRD', '15.66 €');
     await assertPartialWithdrawalMandate(
       'THIRD',
       [
         {
           fundName: 'Tuleva III Samba Pensionifond',
-          liquidationAmount: '127.99 units',
+          liquidationAmount: '1279.92 units',
         },
       ],
-      '90 €',
+      '900 €',
     );
 
     await confirmAndSignAndAssertDone();
@@ -753,11 +763,11 @@ const assertDoneScreenPartialWithdrawal = (pillar: 'SECOND' | 'THIRD') => {
 
   if (pillar === 'SECOND') {
     paymentDeadline = screen.getByText(/The partial withdrawal from II pillar will be sent on/i);
+    expect(within(paymentDeadline).getByText(/16 – 20 January/)).toBeInTheDocument();
   } else {
     paymentDeadline = screen.getByText(/The partial withdrawal from III pillar will be sent on/i);
+    expect(within(paymentDeadline).getByText(/four working days/)).toBeInTheDocument();
   }
-
-  expect(within(paymentDeadline).getByText(/16 – 20 January/)).toBeInTheDocument();
 };
 
 const assertDoneScreenSecondPillarWarning = () => {
@@ -775,12 +785,16 @@ const assertMandateCount = async (count: number) =>
       ),
   );
 
-const assertFundPensionCalculations = async (fundPensionMonthlySize: string) => {
+const assertFundPensionCalculations = async (
+  fundPensionMonthlySize: string,
+  liquidatedMonthlyPercentage = '0.42%',
+  returnsRegex = /will earn returns for the next 20 years/i,
+) => {
   const explanationText = screen.getByText(/Every month you will receive/i);
-  expect(within(explanationText).getByText('0.42%')).toBeInTheDocument();
+  expect(within(explanationText).getByText(liquidatedMonthlyPercentage)).toBeInTheDocument();
 
   expect(screen.getByText(new RegExp(fundPensionMonthlySize, 'i'))).toBeInTheDocument();
-  expect(screen.getByText(/will earn returns for the next 20 years/i)).toBeInTheDocument();
+  expect(screen.getByText(returnsRegex)).toBeInTheDocument();
 };
 
 const assertTotalTaxText = (amount: string) => {

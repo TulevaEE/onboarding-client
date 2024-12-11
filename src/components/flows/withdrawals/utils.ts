@@ -28,7 +28,10 @@ export const decorateSimulatedEligibilityForUnderRetirementAge = (
     return eligibility;
   }
 
-  if (eligibility.hasReachedEarlyRetirementAge) {
+  if (
+    eligibility.hasReachedEarlyRetirementAge ||
+    eligibility.canWithdrawThirdPillarWithReducedTax
+  ) {
     return eligibility;
   }
 
