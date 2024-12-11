@@ -8,7 +8,12 @@ import {
   WithdrawalStep,
 } from './types';
 import { useFunds, useSourceFunds, useWithdrawalsEligibility } from '../../common/apiHooks';
-import { getAllFundNavsPresent, getMandatesToCreate, getWithdrawalsPath } from './utils';
+import {
+  canOnlyWithdrawThirdPillarTaxFree,
+  getAllFundNavsPresent,
+  getMandatesToCreate,
+  getWithdrawalsPath,
+} from './utils';
 
 export const WithdrawalsContext = createContext<WithdrawalsContextState>({
   currentStep: null,
@@ -102,11 +107,7 @@ export const WithdrawalsProvider = ({
   );
 
   useEffect(() => {
-    if (
-      eligibility &&
-      !eligibility.hasReachedEarlyRetirementAge &&
-      eligibility.canWithdrawThirdPillarWithReducedTax
-    ) {
+    if (eligibility && canOnlyWithdrawThirdPillarTaxFree(eligibility)) {
       setWithdrawalAmount((prevVal) => ({ ...prevVal, pillarsToWithdrawFrom: 'THIRD' }));
       return;
     }

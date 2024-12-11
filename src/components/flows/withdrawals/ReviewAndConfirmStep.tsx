@@ -101,14 +101,7 @@ export const ReviewAndConfirmStep = () => {
       return;
     }
 
-    if (!eligibility) {
-      return;
-    }
-
-    if (
-      !canOnlyWithdrawThirdPillarTaxFree(eligibility) &&
-      !eligibility.hasReachedEarlyRetirementAge
-    ) {
+    if (isSigningDisabled()) {
       return;
     }
 
@@ -137,10 +130,6 @@ export const ReviewAndConfirmStep = () => {
     }
 
     if (batchCreationLoading) {
-      return true;
-    }
-
-    if (!eligibility) {
       return true;
     }
 
