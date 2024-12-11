@@ -31,12 +31,12 @@ export const WithdrawalsHeader = () => {
               }}
             />
           </p>
-          {(!eligibility.hasReachedEarlyRetirementAge ||
-            !eligibility.canWithdrawThirdPillarWithReducedTax) && (
-            <p className="m-0 mt-3 lead text-center">
-              <FormattedMessage id="withdrawals.additionalInfoUnderEarlyRetirementAge" />
-            </p>
-          )}
+          {!eligibility.hasReachedEarlyRetirementAge &&
+            !eligibility.canWithdrawThirdPillarWithReducedTax && (
+              <p className="m-0 mt-3 lead text-center">
+                <FormattedMessage id="withdrawals.additionalInfoUnderEarlyRetirementAge" />
+              </p>
+            )}
         </>
       )}
     </div>
