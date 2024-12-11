@@ -20,20 +20,27 @@ export const WithdrawalsHeader = () => {
         <FormattedMessage id="withdrawals.heading" />
       </h1>
       {currentStep?.type !== 'DONE' && (
-        <div className="lead text-center">
-          <FormattedMessage
-            id={
-              hasReachedEarlyRetirementAge
-                ? 'withdrawals.subHeading'
-                : 'withdrawals.subHeadingUnderEarlyRetirementAge'
-            }
-            values={{
-              b: (children: ReactChildren) => <span className="text-bold">{children}</span>,
-              age: eligibility.age,
-              yearsToGo: getYearsToGoUntilEarlyRetirementAge(eligibility),
-            }}
-          />
-        </div>
+        <>
+          <p className="m-0 lead text-center">
+            <FormattedMessage
+              id={
+                hasReachedEarlyRetirementAge
+                  ? 'withdrawals.subHeading'
+                  : 'withdrawals.subHeadingUnderEarlyRetirementAge'
+              }
+              values={{
+                b: (children: ReactChildren) => <span className="text-bold">{children}</span>,
+                age: eligibility.age,
+                yearsToGo: getYearsToGoUntilEarlyRetirementAge(eligibility),
+              }}
+            />
+          </p>
+          {!hasReachedEarlyRetirementAge && (
+            <p className="m-0 mt-3 lead text-center">
+              <FormattedMessage id="withdrawals.additionalInfoUnderEarlyRetirementAge" />
+            </p>
+          )}
+        </>
       )}
     </div>
   );

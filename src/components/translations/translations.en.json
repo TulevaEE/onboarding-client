@@ -710,6 +710,7 @@
   "withdrawals.heading": "II and III pillar withdrawals",
   "withdrawals.subHeading": "You are <b>{age} years old</b> and eligible to start using your accumulated pension holdings <b>under preferential conditions</b>",
   "withdrawals.subHeadingUnderEarlyRetirementAge": "You are <b>{age} years old</b> and eligible to start using your accumulated pension holdings <b>in {yearsToGo} years</b>",
+  "withdrawals.additionalInfoUnderEarlyRetirementAge": "Until then, you can see here how much monthly fund pension you might receive upon reaching early retirement age, based on the assets accumulated so far.",
 
   "withdrawals.steps.withdrawalSize": "Withdrawal size",
   "withdrawals.steps.yourInformation": "Your information",
