@@ -35,13 +35,16 @@ export const decorateSimulatedEligibilityForUnderRetirementAge = (
     return eligibility;
   }
 
-  const yearsToGoUntil60 = getYearsToGoUntilEarlyRetirementAge(eligibility);
+  // Update every year from:
+  // https://andmed.stat.ee/et/stat/rahvastik__rahvastikunaitajad-ja-koosseis__demograafilised-pehinaitajad/RV045
+  // (Choose males and females, age 65, and the latest available year)
+  const CURRENT_YEARS_TO_LIVE_AT_65 = 19;
 
   return {
-    age: 60,
+    age: 65,
     hasReachedEarlyRetirementAge: true,
     canWithdrawThirdPillarWithReducedTax: true,
-    recommendedDurationYears: eligibility.recommendedDurationYears - yearsToGoUntil60,
+    recommendedDurationYears: CURRENT_YEARS_TO_LIVE_AT_65,
     arrestsOrBankruptciesPresent: eligibility.arrestsOrBankruptciesPresent,
   };
 };

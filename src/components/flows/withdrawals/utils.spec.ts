@@ -79,10 +79,10 @@ describe('decorateSimulatedEligibilityForUnderRetirementAge', () => {
     };
 
     expect(decorateSimulatedEligibilityForUnderRetirementAge(eligibility)).toStrictEqual({
-      age: 60,
+      age: 65,
       hasReachedEarlyRetirementAge: true,
       canWithdrawThirdPillarWithReducedTax: true,
-      recommendedDurationYears: 25, // (age + years_left_to_live) - 60
+      recommendedDurationYears: 20,
       arrestsOrBankruptciesPresent: false,
     });
   });
