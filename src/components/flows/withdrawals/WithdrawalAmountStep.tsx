@@ -1,5 +1,4 @@
 import React, { ReactChildren, useMemo } from 'react';
-import { Link } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { formatAmountForCurrency } from '../../common/utils';
 import { useWithdrawalsEligibility } from '../../common/apiHooks';
@@ -58,10 +57,12 @@ export const WithdrawalAmountStep = () => {
       />
       <FundPensionStatusBox totalAmount={totalAmount} />
       <SingleWithdrawalSelectionBox totalAmount={totalAmount} />
-      <div className="d-flex justify-content-between pt-4">
-        <Link className="btn btn-light" to="/account">
-          <FormattedMessage id="withdrawals.navigation.back" />
-        </Link>
+      <div className="mt-5 d-flex justify-content-between align-items-center">
+        {!canNavigateToNextStep && (
+          <p className="m-0 mr-4 text-secondary">
+            <FormattedMessage id="withdrawals.navigation.notEligible" />
+          </p>
+        )}
         <button
           type="button"
           className="btn btn-primary"

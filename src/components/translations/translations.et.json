@@ -722,6 +722,7 @@
   "withdrawals.navigation.back": "Tagasi",
   "withdrawals.navigation.continue": "Jätkan",
   "withdrawals.navigation.forward": "Edasi",
+  "withdrawals.navigation.notEligible": "Sa pole veel eelpensioniealine ega saa jätkata.",
 
   "withdrawals.withdrawalAmount.partialWithdrawQuestion": "Soovid osa raha kohe välja võtta?",
   "withdrawals.withdrawalAmount.partialWithdrawalTax": "Väljamakselt peab riik kinni 10% tulumaksu",

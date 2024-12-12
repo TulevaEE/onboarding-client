@@ -213,7 +213,7 @@ export const ReviewAndConfirmStep = () => {
         </div>
       </div>
 
-      <div className="d-flex justify-content-between pt-5">
+      <div className="mt-5 d-flex justify-content-between align-items-center">
         {/* TODO paddings */}
         <button
           type="button"
