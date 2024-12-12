@@ -726,7 +726,7 @@
   "withdrawals.withdrawalAmount.partialWithdrawQuestion": "Soovid osa raha kohe välja võtta?",
   "withdrawals.withdrawalAmount.partialWithdrawalTax": "Väljamakselt peab riik kinni 10% tulumaksu",
   "withdrawals.withdrawalAmount.precisePriceAtSaleDisclaimer": "Täpne summa selgub osakute müümisel ja sõltub osakute turuhinnast.",
-  "withdrawals.withdrawalAmount.youReceiveRegularlyAndTaxFree": "Saad regulaarselt ja tulumaksuvabalt",
+  "withdrawals.withdrawalAmount.receiveMonthlyAndTaxFree": "Saad igakuiselt ja tulumaksuvabalt",
   "withdrawals.perMonth": "kuus",
   "withdrawals.withdrawalAmount.fundPensionPrecisePriceAtSaleDisclaimer": "Täpsed summad selguvad osakute müümise hetkel ja võivad varieeruda.",
 

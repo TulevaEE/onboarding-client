@@ -170,7 +170,7 @@ const FundPensionStatusBox = ({ totalAmount }: { totalAmount: number }) => {
     <div className="mt-3 card p-4 bg-very-light-blue">
       <div className="d-flex flex-row justify-content-between align-items-end">
         <h3 className="m-0">
-          <FormattedMessage id="withdrawals.withdrawalAmount.youReceiveRegularlyAndTaxFree" />
+          <FormattedMessage id="withdrawals.withdrawalAmount.receiveMonthlyAndTaxFree" />
         </h3>
         <h3 className="m-0 pl-2">
           {formatAmountForCurrency(fundPensionMonthlyPaymentApproximateSize, 2)}&nbsp;

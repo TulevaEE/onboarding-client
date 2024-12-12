@@ -726,7 +726,7 @@
   "withdrawals.withdrawalAmount.precisePriceAtSaleDisclaimer": "The exact amount depends on the price of shares.",
   "withdrawals.withdrawalAmount.fundPensionPrecisePriceAtSaleDisclaimer": "The exact amounts depend on the price of shares.",
 
-  "withdrawals.withdrawalAmount.youReceiveRegularlyAndTaxFree": "You receive regularly and tax free",
+  "withdrawals.withdrawalAmount.receiveMonthlyAndTaxFree": "Receive montly and tax-free",
   "withdrawals.perMonth": "per month",
 
   "withdrawals.withdrawalAmount.secondPillarTotal": "Your holdings in II pillar",
