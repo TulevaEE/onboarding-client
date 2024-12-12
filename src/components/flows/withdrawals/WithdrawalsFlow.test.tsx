@@ -540,9 +540,9 @@ describe('withdrawals flow before early retirement age', () => {
     ).toBeInTheDocument();
 
     await assertFundPensionCalculations(
-      '529.38 € per month',
-      '0.44%',
-      /will earn returns for the next 19 years/i,
+      '457.19 € per month',
+      '0.38%',
+      /will earn returns for the next 22 years/i,
     );
 
     const partialWithdrawalSizeInput = await screen.findByLabelText(
@@ -554,9 +554,9 @@ describe('withdrawals flow before early retirement age', () => {
     assertTotalTaxText('−2 000.00 €');
 
     await assertFundPensionCalculations(
-      '441.66 € per month',
-      '0.44%',
-      /will earn returns for the next 19 years/i,
+      '381.44 € per month',
+      '0.38%',
+      /will earn returns for the next 22 years/i,
     );
 
     expect(nextButton()).toBeDisabled();

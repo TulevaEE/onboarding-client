@@ -713,7 +713,7 @@
   "withdrawals.subHeading": "Oled <b>{age}-aastane</b> ja sul on õigus kogutud pensionivara <b>soodustingimustel</b> kasutama hakata.",
   "withdrawals.subHeadingThirdPilllarReducedTax": "Oled <b>{age}-aastane</b> ja sul on õigus III samba pensionivara <b>soodustingimustel</b> kasutama hakata.",
   "withdrawals.subHeadingUnderEarlyRetirementAge": "Oled <b>{age}-aastane</b> ja sul on õigus kogutud pensionivara <b>soodustingimustel</b> kasutama hakata <b>{yearsToGo} aasta pärast</b>.",
-  "withdrawals.additionalInfoUnderEarlyRetirementAge": "Seniks näed siit, kui suurt igakuist fondipensioni võiksid saada pensioniikka jõudes, arvestades tänaseks kogutud vara.",
+  "withdrawals.additionalInfoUnderEarlyRetirementAge": "Seniks näed siit, kui suurt igakuist fondipensioni võiksid saada eelpensioniikka jõudes, arvestades tänaseks kogutud vara.",
 
   "withdrawals.steps.withdrawalSize": "Väljamakse suurus",
   "withdrawals.steps.yourInformation": "Sinu andmed",

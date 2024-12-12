@@ -37,14 +37,14 @@ export const decorateSimulatedEligibilityForUnderRetirementAge = (
 
   // Update every year from:
   // https://andmed.stat.ee/et/stat/rahvastik__rahvastikunaitajad-ja-koosseis__demograafilised-pehinaitajad/RV045
-  // (Choose males and females, age 65, and the latest available year)
-  const CURRENT_YEARS_TO_LIVE_AT_65 = 19;
+  // (Choose males and females, age 60, and the year before last year (current year - 2))
+  const CURRENT_YEARS_TO_LIVE_AT_60 = 22;
 
   return {
-    age: 65,
+    age: 60,
     hasReachedEarlyRetirementAge: true,
     canWithdrawThirdPillarWithReducedTax: true,
-    recommendedDurationYears: CURRENT_YEARS_TO_LIVE_AT_65,
+    recommendedDurationYears: CURRENT_YEARS_TO_LIVE_AT_60,
     arrestsOrBankruptciesPresent: eligibility.arrestsOrBankruptciesPresent,
   };
 };
