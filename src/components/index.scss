@@ -77,8 +77,11 @@ small {
 
 .btn {
   cursor: pointer;
-  padding-left: 32px;
-  padding-right: 32px;
+  padding-left: 1.5em;
+  padding-right: 1.5em;
+}
+.btn:disabled {
+  cursor: default;
 }
 
 .btn-light {
@@ -101,7 +104,8 @@ small {
       height: 52px;
     }
   }
-  @media (max-width: 375px) { /* iPhone 6 and newer */
+  @media (max-width: 375px) {
+    /* iPhone 6 and newer */
     .brand-logo {
       height: 48px;
     }
