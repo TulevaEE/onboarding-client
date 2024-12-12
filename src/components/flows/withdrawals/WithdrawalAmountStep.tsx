@@ -201,7 +201,11 @@ const FundPensionStatusBox = ({ totalAmount }: { totalAmount: number }) => {
             br: <br />,
           }}
         />{' '}
-        <a href="https://tuleva.ee/pensioni-valjamaksed/" target="_blank" rel="noreferrer">
+        <a
+          href="https://tuleva.ee/pensioni-valjamaksed/#valjamaksete-suurus"
+          target="_blank"
+          rel="noreferrer"
+        >
           <FormattedMessage id="withdrawals.withdrawalAmount.fundPensionLinkText" />
         </a>
       </div>
