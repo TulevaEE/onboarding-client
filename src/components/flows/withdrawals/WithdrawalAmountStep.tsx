@@ -15,6 +15,7 @@ import {
 import styles from './Withdrawals.module.scss';
 import { useTestMode } from '../../common/test-mode';
 import { WithdrawalsEligibility } from '../../common/apiModels/withdrawals';
+import Slider from './Slider';
 
 export const WithdrawalAmountStep = () => {
   const { data: eligibility } = useWithdrawalsEligibility();
@@ -120,11 +121,9 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
       </div>
 
       <div className="mt-3">
-        <input
-          type="range"
-          className="form-control-range custom-range"
+        <Slider
           value={withdrawalAmount.singleWithdrawalAmount ?? 0}
-          onChange={(event) => handleSingleWithdrawalAmountSelected(event.target.valueAsNumber)}
+          onChange={handleSingleWithdrawalAmountSelected}
           min={0}
           max={totalAmount}
           step={1}
