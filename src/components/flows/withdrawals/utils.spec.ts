@@ -82,7 +82,7 @@ describe('decorateSimulatedEligibilityForUnderRetirementAge', () => {
       age: 65,
       hasReachedEarlyRetirementAge: true,
       canWithdrawThirdPillarWithReducedTax: true,
-      recommendedDurationYears: 20,
+      recommendedDurationYears: 19,
       arrestsOrBankruptciesPresent: false,
     });
   });
