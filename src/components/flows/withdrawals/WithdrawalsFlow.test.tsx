@@ -525,7 +525,7 @@ describe('withdrawals flow before early retirement age', () => {
       age: 25,
       hasReachedEarlyRetirementAge: false,
       canWithdrawThirdPillarWithReducedTax: false,
-      recommendedDurationYears: 35 + 20, // 35 years to go until 60 + 20 years recommended duration
+      recommendedDurationYears: 55,
       arrestsOrBankruptciesPresent: true,
     });
   });
@@ -539,7 +539,11 @@ describe('withdrawals flow before early retirement age', () => {
       await screen.findByText(/Withdraw from the entire pension holding/i),
     ).toBeInTheDocument();
 
-    await assertFundPensionCalculations('502.91 € per month');
+    await assertFundPensionCalculations(
+      '529.38 € per month',
+      '0.44%',
+      /will earn returns for the next 19 years/i,
+    );
 
     const partialWithdrawalSizeInput = await screen.findByLabelText(
       'Do you wish to make a partial withdrawal immediately?',
@@ -549,7 +553,11 @@ describe('withdrawals flow before early retirement age', () => {
     userEvent.type(partialWithdrawalSizeInput, '20000');
     assertTotalTaxText('−2 000.00 €');
 
-    await assertFundPensionCalculations('419.58 € per month');
+    await assertFundPensionCalculations(
+      '441.66 € per month',
+      '0.44%',
+      /will earn returns for the next 19 years/i,
+    );
 
     expect(nextButton()).toBeDisabled();
 
