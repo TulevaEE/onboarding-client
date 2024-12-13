@@ -15,7 +15,7 @@ export const WithdrawalsHeader = () => {
   }
 
   return (
-    <div className="pt-3 pb-5">
+    <div className="my-5">
       <h1 className="mb-4 text-center font-weight-semibold">
         <FormattedMessage id="withdrawals.heading" />
       </h1>

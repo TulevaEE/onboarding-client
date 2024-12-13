@@ -1,11 +1,17 @@
 @import '../../variables';
 
 .stepDivider {
+  width: 24px;
   height: 1px;
   background: #dee2e6;
   margin: 0 8px;
-  max-width: 24px;
-  flex-grow: 1;
+}
+@media (max-width: 767.98px) {
+  .stepDivider {
+    width: 1px;
+    height: 16px;
+    margin: 4px 15.5px;
+  }
 }
 
 .successText {

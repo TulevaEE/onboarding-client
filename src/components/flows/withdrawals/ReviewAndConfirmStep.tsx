@@ -165,9 +165,9 @@ export const ReviewAndConfirmStep = () => {
         />
       )}
 
-      <div className="pt-5 pb-5 pl-2 pr-2">
+      <p className="my-5 lead text-center">
         <FormattedMessage id="withdrawals.reviewAndConfirm.confirmAndSubmit" />
-      </div>
+      </p>
 
       {mandatesToCreate.map((mandate, idx) => (
         <MandatePreview
@@ -266,7 +266,7 @@ const MandatePreview = ({
   mandate: WithdrawalMandateDetails;
   index: number;
 }) => (
-  <div className="card p-4 mb-4" data-testid={`${mandate.mandateType}_${mandate.pillar}`}>
+  <div className="card my-3 p-4" data-testid={`${mandate.mandateType}_${mandate.pillar}`}>
     <div>
       <h3 className={styles.mandateSubheading}>
         <FormattedMessage

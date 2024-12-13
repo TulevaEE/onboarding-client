@@ -48,7 +48,7 @@ export const WithdrawalAmountStep = () => {
     isTestModeEnabled;
 
   return (
-    <div className="pt-5">
+    <div className="my-5">
       <PillarSelection
         secondPillarAmount={pensionHoldings.totalSecondPillar}
         thirdPillarAmount={pensionHoldings.totalThirdPillar}

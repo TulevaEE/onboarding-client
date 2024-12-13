@@ -42,7 +42,7 @@ export const PersonalDetailsStep = () => {
 
   return (
     <>
-      <div className="mt-3 card p-4">
+      <div className="my-5 card p-4">
         <div className="form-group">
           <label htmlFor="bank-account-iban">
             <b>
