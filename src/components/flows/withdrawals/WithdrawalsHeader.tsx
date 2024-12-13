@@ -19,7 +19,7 @@ export const WithdrawalsHeader = () => {
       <h1 className="mb-4 text-center font-weight-semibold">
         <FormattedMessage id="withdrawals.heading" />
       </h1>
-      {currentStep?.type !== 'DONE' && (
+      {currentStep?.type === 'WITHDRAWAL_SIZE' && (
         <>
           <p className="m-0 lead text-center">
             <FormattedMessage
