@@ -268,15 +268,20 @@ const FundPensionOpeningCard: React.FunctionComponent<{
             key: 'applications.type.fundPensionOpening.account',
             value: application.details.depositAccountIBAN,
           },
-          {
-            key: 'applications.type.fundPensionOpening.duration',
-            value: (
-              <FormattedMessage
-                id="applications.type.fundPensionOpening.years"
-                values={{ count: application.details.fundPensionDetails.durationYears }}
-              />
-            ),
-          },
+          // TODO handle recommended or minimal frequency better
+          ...(application.details.fundPensionDetails.durationYears !== 0
+            ? [
+                {
+                  key: 'applications.type.fundPensionOpening.duration' as TranslationKey,
+                  value: (
+                    <FormattedMessage
+                      id="applications.type.fundPensionOpening.years"
+                      values={{ count: application.details.fundPensionDetails.durationYears }}
+                    />
+                  ),
+                },
+              ]
+            : []),
           {
             key: 'applications.type.fundPensionOpening.frequency',
             value: (

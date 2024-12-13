@@ -85,7 +85,7 @@ export type FundPensionOpeningApplication = BaseApplication<
     cancellationDeadline: string;
     fulfillmentDate: string;
     fundPensionDetails: {
-      durationYears: number;
+      durationYears: number | 0;
       paymentsPerYear: 1 | 4 | 12;
     };
   }
