@@ -185,7 +185,7 @@ describe('withdrawals flow with both pillars', () => {
       await screen.findByText(/I submit the following applications and am aware of their terms/i),
     ).toBeInTheDocument();
 
-    const withdrawalSizeStep = await screen.findByRole('link', { name: 'Withdrawal size' });
+    const withdrawalSizeStep = await screen.findByRole('link', { name: 'Withdrawal amount' });
 
     userEvent.click(withdrawalSizeStep);
 
