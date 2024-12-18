@@ -1,7 +1,7 @@
 import { FormattedMessage } from 'react-intl';
 import React from 'react';
 import { useFunds, useMe, useTransactions } from '../../common/apiHooks';
-import Euro from '../../common/Euro';
+import { Euro } from '../../common/Euro';
 import { Fund, Transaction } from '../../common/apiModels';
 
 export const SecondPillarPaymentRateTaxWin = () => {

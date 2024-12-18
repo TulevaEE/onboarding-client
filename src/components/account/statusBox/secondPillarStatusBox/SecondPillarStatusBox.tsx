@@ -16,7 +16,7 @@ import { State } from '../../../../types';
 import InfoTooltip from '../../../common/infoTooltip';
 import { isTuleva } from '../../../common/utils';
 import { getValueSum } from '../../AccountStatement/fundSelector';
-import Euro from '../../../common/Euro';
+import { Euro } from '../../../common/Euro';
 import { formatDateTime, formatDateYear } from '../../../common/dateFormatter';
 import deadline from './deadline.svg';
 import euro from './euro.svg';

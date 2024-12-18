@@ -5,7 +5,7 @@ import sumBy from 'lodash/sumBy';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 import Table from '../../common/table';
-import Euro from '../../common/Euro';
+import { Euro } from '../../common/Euro';
 import { Shimmer } from '../../common/shimmer/Shimmer';
 import { getValueSum, getWeightedAverageFee } from '../AccountStatement/fundSelector';
 import { Fees } from '../../common/Percentage/Fees';

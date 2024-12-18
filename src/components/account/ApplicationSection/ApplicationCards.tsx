@@ -19,7 +19,7 @@ import {
   ThirdPillarWithdrawalApplication,
 } from '../../common/apiModels';
 import Percentage from '../../common/Percentage';
-import Euro from '../../common/Euro';
+import { Euro } from '../../common/Euro';
 import { Fees } from '../../common/Percentage/Fees';
 import { formatMonth } from '../../common/dateFormatter';
 import { isBeforeCancellationDeadline } from './ApplicationFunctions';

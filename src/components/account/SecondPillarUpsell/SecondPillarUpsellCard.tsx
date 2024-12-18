@@ -3,7 +3,7 @@ import './SecondPillarUpsell.scss';
 import { FormattedMessage, useIntl } from 'react-intl';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
-import Euro from '../../common/Euro';
+import { Euro } from '../../common/Euro';
 import { useMe } from '../../common/apiHooks';
 import PensionGraph from './PensionGraph';
 import { useDefaultReturns } from '../ComparisonCalculator/returnComparisonHooks';

@@ -6,7 +6,7 @@ import StatusBoxRow from '../statusBoxRow';
 import { InfoTooltip } from '../../../common';
 import { formatDateYear } from '../../../common/dateFormatter';
 import { useCapitalEvents } from '../../../common/apiHooks';
-import Euro from '../../../common/Euro';
+import { Euro } from '../../../common/Euro';
 
 interface Props {
   loading: boolean;

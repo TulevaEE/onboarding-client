@@ -4,7 +4,7 @@ import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 import AccountSummary from '.';
 import Table from '../../common/table';
-import Euro from '../../common/Euro';
+import { Euro } from '../../common/Euro';
 import { CapitalType } from '../../common/apiModels';
 
 describe('Account summary', () => {

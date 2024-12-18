@@ -5,7 +5,7 @@ import sumBy from 'lodash/sumBy';
 import { Link } from 'react-router-dom';
 import { useContributions } from '../common/apiHooks';
 import { Shimmer } from '../common/shimmer/Shimmer';
-import Euro from '../common/Euro';
+import { Euro } from '../common/Euro';
 import Table from '../common/table';
 import { Contribution } from '../common/apiModels';
 

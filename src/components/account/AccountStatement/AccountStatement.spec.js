@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import AccountStatement from '.';
 
 import Table from '../../common/table';
-import Euro from '../../common/Euro';
+import { Euro } from '../../common/Euro';
 
 describe('Account statement', () => {
   let component;

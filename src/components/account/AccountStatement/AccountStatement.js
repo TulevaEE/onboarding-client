@@ -4,7 +4,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 import { sortBy } from 'lodash';
 import Table from '../../common/table';
-import Euro from '../../common/Euro';
+import { Euro } from '../../common/Euro';
 import { getValueSum, getWeightedAverageFee } from './fundSelector';
 import { Fees } from '../../common/Percentage/Fees';
 import { Shimmer } from '../../common/shimmer/Shimmer';

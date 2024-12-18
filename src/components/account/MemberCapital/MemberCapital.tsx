@@ -3,7 +3,7 @@ import { FormattedMessage } from 'react-intl';
 
 import sumBy from 'lodash/sumBy';
 import Table from '../../common/table';
-import Euro from '../../common/Euro';
+import { Euro } from '../../common/Euro';
 import { CapitalRow } from '../../common/apiModels';
 
 interface Props {

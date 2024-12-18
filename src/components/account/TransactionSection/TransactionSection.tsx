@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import sumBy from 'lodash/sumBy';
 import { useFunds, useTransactions } from '../../common/apiHooks';
 import Table from '../../common/table';
-import Euro from '../../common/Euro';
+import { Euro } from '../../common/Euro';
 import { Shimmer } from '../../common/shimmer/Shimmer';
 import { TransactionType } from '../../common/apiModels';
 import { formatDate } from '../../common/dateFormatter';
