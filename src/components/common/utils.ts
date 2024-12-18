@@ -4,13 +4,14 @@ const isTruthy = (value: unknown) => !!value;
 
 const NOT_FOUND_ITEM_CONSTANT = {}; // using this as a secret comparison reference.
 
-export function findWhere(list = [], predicate = isTruthy) {
-  const value = list.reduce((foundItem, current) => {
+// TODO why does this exist?
+export function findWhere<T>(list: T[] = [], predicate: (val: T) => boolean = isTruthy) {
+  const value = list.reduce((foundItem: T, current: T) => {
     if (foundItem === NOT_FOUND_ITEM_CONSTANT && predicate(current)) {
       return current;
     }
     return foundItem;
-  }, NOT_FOUND_ITEM_CONSTANT);
+  }, NOT_FOUND_ITEM_CONSTANT as T);
   if (value === NOT_FOUND_ITEM_CONSTANT) {
     return null;
   }
