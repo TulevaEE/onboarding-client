@@ -3,7 +3,7 @@ import { FormattedMessage } from 'react-intl';
 
 const Separator = () => <span className="mx-2 text-secondary">·</span>;
 
-const Footer = () => (
+export const Footer = () => (
   <div className="mt-5 pt-4 pb-5 border-top small text-center text-secondary app-footer">
     <strong>
       <FormattedMessage id="footer.name" />
@@ -18,5 +18,3 @@ const Footer = () => (
     <FormattedMessage id="footer.registration.code" />
   </div>
 );
-
-export default Footer;
