@@ -7,7 +7,7 @@ import { formatAmountForCurrency } from '../../common/utils';
 import { Fund } from '../../common/apiModels';
 import Select from './select';
 import { getReturnComparison, Key, ReturnComparison } from './api';
-import Loader from '../../common/loader';
+import { Loader } from '../../common/loader/Loader';
 import { Option, OptionGroup } from './select/Select';
 import Percentage from '../../common/Percentage';
 import { createTrackedEvent } from '../../common/api';

@@ -3,7 +3,7 @@ import { useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-import Loader from '../common/loader';
+import { Loader } from '../common/loader/Loader';
 import { exchangeHandoverTokenForAccessToken } from './exchangeHandoverToken';
 import { getQueryParams } from '../../utils';
 import { MOBILE_AUTHENTICATION_SUCCESS } from '../login/constants';

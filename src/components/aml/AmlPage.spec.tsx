@@ -1,10 +1,10 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import { shallow, ShallowWrapper } from 'enzyme';
 import UpdateUserForm from '../contact-details/updateUserForm';
 import { AmlPage } from './AmlPage';
 
 describe('AML Page', () => {
-  let component;
+  let component: ShallowWrapper;
   let props;
   beforeEach(() => {
     props = {};

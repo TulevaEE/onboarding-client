@@ -2,7 +2,7 @@ import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { useMe, useWithdrawalsEligibility } from '../../common/apiHooks';
 import { WithdrawalsHeader } from './WithdrawalsHeader';
-import Loader from '../../common/loader';
+import { Loader } from '../../common/loader/Loader';
 import { WithdrawalsSteps } from './WithdrawalsSteps';
 import { useWithdrawalsContext, WithdrawalsProvider } from './hooks';
 import { WITHDRAWAL_STEPS } from './constants';

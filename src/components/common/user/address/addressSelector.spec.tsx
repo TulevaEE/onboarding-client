@@ -1,3 +1,4 @@
+import { User } from '../../apiModels';
 import { hasAddress } from './addressSelector';
 
 describe('addressSelector', () => {
@@ -7,7 +8,7 @@ describe('addressSelector', () => {
       address: {
         countryCode: 'EE',
       },
-    };
+    } as User;
 
     expect(hasAddress(user)).toBe(true);
   });
@@ -18,7 +19,7 @@ describe('addressSelector', () => {
       address: {
         countryCode: 'EE',
       },
-    };
+    } as unknown as User;
 
     expect(hasAddress(user)).toBe(false);
   });
@@ -29,7 +30,7 @@ describe('addressSelector', () => {
       address: {
         countryCode: null,
       },
-    };
+    } as unknown as User;
     expect(hasAddress(user)).toBe(false);
   });
 });

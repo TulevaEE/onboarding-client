@@ -1,9 +1,12 @@
-import React from 'react';
-import { PropTypes as Types } from 'prop-types';
-
 import './Loader.scss';
 
-const Loader = ({ className, label }) => (
+export const Loader = ({
+  className = '',
+  label = 'Loading...',
+}: {
+  className?: string;
+  label?: string;
+}) => (
   <div className={`loader ${className}`} role="progressbar" aria-label={label}>
     <svg className="circular" viewBox="25 25 50 50">
       <circle
@@ -18,15 +21,3 @@ const Loader = ({ className, label }) => (
     </svg>
   </div>
 );
-
-Loader.defaultProps = {
-  className: '',
-  label: 'Loading...',
-};
-
-Loader.propTypes = {
-  className: Types.string,
-  label: Types.string,
-};
-
-export default Loader;

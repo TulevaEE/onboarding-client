@@ -1,10 +1,10 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import { shallow, ShallowWrapper } from 'enzyme';
 
 import Radio from './Radio';
 
 describe('Radio', () => {
-  let component;
+  let component: ShallowWrapper;
 
   beforeEach(() => {
     component = shallow(<Radio name="test-radio" id="an-id" />);

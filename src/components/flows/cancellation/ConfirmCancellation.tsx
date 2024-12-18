@@ -3,7 +3,7 @@ import { Redirect, useParams } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { useApplication } from '../../common/apiHooks';
 import { AuthenticationLoader } from '../../common';
-import Loader from '../../common/loader';
+import { Loader } from '../../common/loader/Loader';
 import { ApplicationCard } from '../../account/ApplicationSection/ApplicationCards';
 import { useCancellationPreview, useCancellationWithSigning } from './cancellationHooks';
 
