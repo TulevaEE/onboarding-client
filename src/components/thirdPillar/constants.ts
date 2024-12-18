@@ -1,4 +1,4 @@
-const withPrefix = (name) => `@thirdPillar/${name}`;
+const withPrefix = <T extends string>(name: T): `@thirdPillar/${T}` => `@thirdPillar/${name}`;
 
 export const QUERY_PARAMETERS = withPrefix('QUERY_PARAMETERS');
 export const CHANGE_MONTHLY_CONTRIBUTION = withPrefix('CHANGE_MONTHLY_CONTRIBUTION');

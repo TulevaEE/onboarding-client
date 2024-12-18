@@ -1,4 +1,4 @@
-const withPrefix = (name) => `@user/${name}`;
+const withPrefix = <T extends string>(name: T): `@user/${T}` => `@user/${name}`;
 
 export const UPDATE_USER_START = withPrefix('UPDATE_USER_START');
 export const UPDATE_USER_SUCCESS = withPrefix('UPDATE_USER_SUCCESS');

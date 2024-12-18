@@ -5,7 +5,7 @@ const BASE_CONFIG = {
   clientCredentialsAccessToken: undefined,
   language: 'et',
   idCardUrl: 'https://id.tuleva.ee',
-};
+} as const;
 
 const ENV_CONFIGS = {
   development: {
@@ -30,17 +30,20 @@ const ENV_CONFIGS = {
     language: 'en',
     clientCredentialsAccessToken: undefined,
   },
-};
+} as const;
+
+const getEnv = () =>
+  (process.env.REACT_APP_ENV || process.env.NODE_ENV) as keyof typeof ENV_CONFIGS;
 
 export function initializeConfiguration() {
-  const env = process.env.REACT_APP_ENV || process.env.NODE_ENV;
+  const env = getEnv();
   const selectedConfig = ENV_CONFIGS[env] || BASE_CONFIG;
   config.set(selectedConfig, { freeze: false, assign: false });
   restoreAuthenticationFromSession();
 }
 
-export function updateLanguage(language) {
-  const env = process.env.REACT_APP_ENV || process.env.NODE_ENV;
+export function updateLanguage(language: 'et' | 'en') {
+  const env = getEnv();
   const selectedConfig = { ...ENV_CONFIGS[env], language };
   config.set(selectedConfig, { freeze: false, assign: true });
 }
