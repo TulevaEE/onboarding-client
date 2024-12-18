@@ -1,5 +1,5 @@
 import { shallow, ShallowWrapper } from 'enzyme';
-import { StatusBox } from '.';
+import { StatusBoxComponent } from '.';
 import { completeConversion } from './fixtures';
 
 describe('Status Box', () => {
@@ -7,7 +7,7 @@ describe('Status Box', () => {
   const props = { conversion: completeConversion, secondPillarFunds: [], thirdPillarFunds: [] };
 
   beforeEach(() => {
-    component = shallow(<StatusBox {...props} />);
+    component = shallow(<StatusBoxComponent {...props} />);
   });
 
   it('renders all subcomponents when present', () => {

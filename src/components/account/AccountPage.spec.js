@@ -6,7 +6,7 @@ import { AccountPage, shouldRedirectToAml } from './AccountPage';
 import AccountStatement from './AccountStatement';
 import GreetingBar from './GreetingBar';
 import AccountSummary from './AccountSummary';
-import StatusBox from './statusBox';
+import { StatusBox } from './statusBox';
 import { ApplicationSection } from './ApplicationSection/ApplicationSection';
 import { activeThirdPillar } from './statusBox/fixtures';
 import { CapitalType } from '../common/apiModels';

@@ -13,7 +13,7 @@ interface Props {
   thirdPillarFunds?: SourceFund[];
 }
 
-export const StatusBox: React.FunctionComponent<Props> = ({
+export const StatusBoxComponent: React.FunctionComponent<Props> = ({
   conversion,
   secondPillarFunds,
   thirdPillarFunds,
@@ -49,4 +49,4 @@ const mapStateToProps = (state: State) => ({
   thirdPillarFunds: state.thirdPillar.sourceFunds,
 });
 
-export default connect(mapStateToProps)(StatusBox);
+export const StatusBox = connect(mapStateToProps)(StatusBoxComponent);
