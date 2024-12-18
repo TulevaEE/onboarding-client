@@ -8,7 +8,7 @@ import { FormattedMessage } from 'react-intl';
 import { ErrorMessage, Loader } from '../common';
 import ComparisonCalculator from './ComparisonCalculator';
 import AccountStatement from './AccountStatement';
-import MemberCapital from './MemberCapital';
+import { MemberCapital } from './MemberCapital';
 import StatusBox from './statusBox';
 import GreetingBar from './GreetingBar';
 import AccountSummary from './AccountSummary';

@@ -1,14 +1,14 @@
 import React from 'react';
-import { shallow } from 'enzyme';
-import MemberCapital from '.';
+import { shallow, ShallowWrapper } from 'enzyme';
+import { MemberCapital } from '.';
 
 import Table from '../../common/table';
 import { CapitalType } from '../../common/apiModels';
 
 describe('Member capital', () => {
-  let component;
+  let component: ShallowWrapper;
   it('passes data to table', () => {
-    component = shallow(<MemberCapital />);
+    component = shallow(<MemberCapital rows={[]} />);
 
     expect(passedDataKeys()).toStrictEqual(['profit']);
   });
@@ -35,5 +35,5 @@ describe('Member capital', () => {
     component
       .find(Table)
       .prop('dataSource')
-      .map(({ key }) => key);
+      .map(({ key }: { key: string }) => key);
 });

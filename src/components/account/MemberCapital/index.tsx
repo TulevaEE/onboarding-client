@@ -41,5 +41,3 @@ export const MemberCapital: FC<Props> = ({ rows = [] }) => {
 
   return <Table columns={columns} dataSource={dataSource} />;
 };
-
-export default MemberCapital;
