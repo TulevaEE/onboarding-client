@@ -249,6 +249,8 @@
   "account.status.choice.pillar.second.paymentRate": "Sa panustad II sambasse {paymentRate}% brutopalgast",
   "account.status.choice.pillar.second.paymentRate.comment": "Tegutse enne <b>30. novembrit kell 23.59</b>, sest muidu jääd järgmisel aastal ilma <b>maksuvõidust</b>",
 
+  "account.status.choice.pillar.second.fundPension.active": "Sissemaksed on lõppenud ja saad regulaarseid fondipensioni väljamakseid",
+
   "account.status.choice.pillar.second.tax.benefit.warning": "Suurenda oma II samba maksuvõitu",
   "account.status.choice.pillar.second.tax.benefit.deadline": "Tegutse enne <b>30. novembrit kell 23.59</b>, sest muidu jääd järgmisel aastal ilma <b>{estimatedWin} maksuvõidust</b>",
 
@@ -271,6 +273,9 @@
   "account.status.choice.pillar.third.success.action": "Teen sissemakse",
   "account.status.choice.pillar.third.paymentInfo": "Fondiosakud jõuavad sinu kolmanda samba kontole ühe tööpäeva möödudes makse teostamisest. \n Kui teed makse reede pärastlõunal või nädalavahetusel, jõuavad osakud sinu kontole teisipäeva õhtuks.",
   "account.status.choice.pillar.third.paymentDeadline": "Selle aasta III samba sissemakse tegemise viimane tähtaeg on <b>27. detsember 15:59</b>.",
+
+  "account.status.choice.pillar.third.fundPension.active": "Saad regulaarseid fondipensioni väljamakseid",
+
   "account.status.choice.highFee.label": "Sa kogud kõrge tasuga fondis",
   "account.status.choice.highFee.description": "Sinu fondide kaalutud keskmine tasu on üle 0.5% aastas",
   "account.status.choice.highFee.comment": "Maksad tasudeks {currentFeesEuro} aastas. Tulevas maksaksid {tulevaFeesEuro} aastas.",
@@ -289,6 +294,8 @@
   "account.status.choice.transfer.tuleva.2": "Vaheta fondi",
   "account.status.choice.paymentRate.increase": "Tõstan sissemakset",
   "account.status.choice.paymentRate.change": "Muudan sissemakset",
+
+  "account.status.choice.fundPension.description": "Fondipensioni väljamaksed lõppevad <b>{endDate}</b>",
 
   "account.status.choice.join.tuleva": "Astu liikmeks",
   "account.status.contributionAmount": "Oled sel aastal maksnud III sambasse {thisYearContribution} ja eelmisel aastal {lastYearContribution}",

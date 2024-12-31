@@ -37,6 +37,7 @@ import {
 import { getAuthentication } from './authenticationManager';
 import {
   CreateMandateBatchDto,
+  FundPensionStatus,
   MandateBatchDto,
   WithdrawalsEligibility,
 } from './apiModels/withdrawals';
@@ -147,6 +148,10 @@ export function getUserWithToken(): Promise<User> {
 
 export function getWithdrawalsEligibility(): Promise<WithdrawalsEligibility> {
   return getWithAuthentication(getEndpoint('/v1/withdrawals/eligibility'), undefined);
+}
+
+export function getFundPensionStatus(): Promise<FundPensionStatus> {
+  return getWithAuthentication(getEndpoint('/v1/withdrawals/fund-pension-status'), undefined);
 }
 
 export function createMandateBatch(

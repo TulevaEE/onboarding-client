@@ -250,6 +250,8 @@
   "account.status.choice.pillar.second.paymentRate": "You contribute {paymentRate}% of your gross salary to II pillar",
   "account.status.choice.pillar.second.paymentRate.comment": "Act before <b>November 30 at 23:59</b> to avoid missing out on <b>tax benefits</b> next year",
 
+  "account.status.choice.pillar.second.fundPension.active": "Contributions have ended and you are receiving regular fund pension payments",
+
   "account.status.choice.pillar.second.tax.benefit.warning": "Increase your II pillar tax benefits",
   "account.status.choice.pillar.second.tax.benefit.deadline": "Act before <b>November 30 at 23:59</b> to avoid missing out on <b>{estimatedWin}</b> in tax benefits next year",
 
@@ -272,6 +274,9 @@
   "account.status.choice.pillar.third.paymentInfo": "Note that fund units appear on your third pillar account by the end of the next working day. If you paid on Friday after 4pm or on the weekend, the units will appear on your account by Tuesday afternoon.",
   "account.status.choice.pillar.third.paymentDeadline": "The deadline for this year's III pillar contribution is <b>December 27 at 15:59</b>.",
   "account.status.choice.pillar.third.success.action": "Make a payment",
+
+  "account.status.choice.pillar.third.fundPension.active": "You are receiving regular fund pension payments",
+
   "account.status.choice.highFee.label": "You're in a high cost fund",
   "account.status.choice.highFee.description": "Your portfolio weighted average cost is above 0.5% per year",
   "account.status.choice.highFee.comment": "You're paying {currentFeesEuro} per year in fees. In Tuleva, you would pay {tulevaFeesEuro} per year.",
@@ -289,6 +294,8 @@
   "account.status.choice.transfer.tuleva.2": "Switch fund",
   "account.status.choice.paymentRate.increase": "Increase contribution",
   "account.status.choice.paymentRate.change": "Change contribution",
+
+  "account.status.choice.fundPension.description": "Fund pension payments will end in <b>{endDate}</b>",
 
   "account.status.choice.join.tuleva": "Sign up",
   "account.status.contributionAmount": "You have contributed {thisYearContribution} to your III pillar this year and {lastYearContribution} last year",
