@@ -55,7 +55,7 @@ export const Select: FC<SelectProps> = ({
 
   const renderOption = (option: Option) => {
     if (option.divider) {
-      return <hr />;
+      return <hr key={`divider-${option.value}`} />;
     }
     return (
       <option value={option.value} key={option.value} disabled={option.disabled}>

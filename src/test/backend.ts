@@ -6,6 +6,7 @@ import { anAuthenticationManager } from '../components/common/authenticationMana
 import { ReturnsResponse } from '../components/account/ComparisonCalculator/api';
 import {
   CreateMandateBatchDto,
+  FundPensionStatus,
   MandateDto,
   WithdrawalsEligibility,
 } from '../components/common/apiModels/withdrawals';
@@ -548,6 +549,27 @@ export function withdrawalsEligibilityBackend(
   server.use(
     rest.get('http://localhost/v1/withdrawals/eligibility', (req, res, ctx) =>
       res(ctx.json(eligibility)),
+    ),
+  );
+}
+
+export function fundPensionStatusBackend(
+  server: SetupServerApi,
+  fundPensionStatus: FundPensionStatus = {
+    fundPensions: [],
+  },
+) {
+  server.use(
+    rest.get('http://localhost/v1/withdrawals/fund-pension-status', (req, res, ctx) =>
+      res(ctx.json(fundPensionStatus)),
+    ),
+  );
+}
+
+export function capitalEventsBackend(server: SetupServerApi, capitalEvents: CapitalEvent[] = []) {
+  server.use(
+    rest.get('http://localhost/v1/me/capital/events', (req, res, ctx) =>
+      res(ctx.json(capitalEvents)),
     ),
   );
 }
