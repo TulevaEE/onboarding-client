@@ -172,7 +172,7 @@ AccountPage.propTypes = {
   loadingCurrentBalance: Types.bool,
   shouldGetMemberCapital: Types.bool,
   onGetMemberCapital: Types.func,
-  memberCapital: Types.shape({}),
+  memberCapital: Types.arrayOf(Types.shape({})),
   loadingCapital: Types.bool,
   error: Types.shape({
     body: Types.shape({}),
@@ -187,7 +187,7 @@ AccountPage.defaultProps = {
   loadingCurrentBalance: false,
   shouldGetMemberCapital: true,
   onGetMemberCapital: noop,
-  memberCapital: {},
+  memberCapital: [],
   loadingCapital: false,
   error: null,
   shouldRedirectToAml: false,

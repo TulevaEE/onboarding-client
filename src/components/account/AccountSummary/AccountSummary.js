@@ -235,7 +235,7 @@ const AccountSummary = ({
 };
 
 AccountSummary.defaultProps = {
-  memberCapital: {},
+  memberCapital: [],
 };
 
 AccountSummary.propTypes = {
@@ -263,7 +263,7 @@ AccountSummary.propTypes = {
       unavailablePrice: Types.number,
     }),
   ).isRequired,
-  memberCapital: Types.shape(),
+  memberCapital: Types.arrayOf(Types.shape()),
 };
 
 export default AccountSummary;
