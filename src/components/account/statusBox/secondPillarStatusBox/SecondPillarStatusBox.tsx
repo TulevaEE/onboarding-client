@@ -3,7 +3,11 @@ import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import StatusBoxRow from '../statusBoxRow';
-import { useMandateDeadlines, usePendingApplications } from '../../../common/apiHooks';
+import {
+  useFundPensionStatus,
+  useMandateDeadlines,
+  usePendingApplications,
+} from '../../../common/apiHooks';
 import {
   Application,
   ApplicationType,
@@ -23,6 +27,7 @@ import euro from './euro.svg';
 import basket from './basket.svg';
 import { isBeforeCancellationDeadline } from '../../ApplicationSection/ApplicationFunctions';
 import { SecondPillarPaymentRateTaxWin } from '../../../flows/secondPillarPaymentRate/SecondPillarPaymentRateTaxWin';
+import { ActiveFundPensionDescription } from '../ActiveFundPensionDescription';
 
 export interface Props {
   loading: boolean;
@@ -45,6 +50,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
 }: Props) => {
   const { data: mandateDeadlines } = useMandateDeadlines();
   const { data: applications } = usePendingApplications();
+  const { data: fundPensionStatus } = useFundPensionStatus();
 
   const leaveApplication: Application | undefined =
     applications &&
@@ -82,6 +88,24 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
           <FormattedMessage id="account.status.choice.pillar.second.withdraw.cancel" />
         </Link>
       </StatusBoxRow>
+    );
+  }
+
+  const activeSecondPillarFundPension = fundPensionStatus?.fundPensions.find(
+    (fundPension) => fundPension.active && fundPension.pillar === 'SECOND',
+  );
+
+  if (activeSecondPillarFundPension) {
+    return (
+      <StatusBoxRow
+        ok
+        name={<FormattedMessage id="account.status.choice.pillar.second" />}
+        showAction={false}
+        lines={[
+          <FormattedMessage id="account.status.choice.pillar.second.fundPension.active" />,
+          <ActiveFundPensionDescription fundPension={activeSecondPillarFundPension} />,
+        ]}
+      />
     );
   }
 

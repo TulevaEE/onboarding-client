@@ -7,6 +7,8 @@ import { Conversion, SourceFund } from '../../../common/apiModels';
 import { InfoTooltip } from '../../../common';
 import { State } from '../../../../types';
 import ThirdPillarPaymentsAmount from './ThirdPillarContributionAmount';
+import { useFundPensionStatus } from '../../../common/apiHooks';
+import { ActiveFundPensionDescription } from '../ActiveFundPensionDescription';
 
 interface Props {
   conversion: Conversion;
@@ -22,6 +24,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
   thirdPillarActive,
 }) => {
   const activeFund = thirdPillarFunds.find((fund) => fund.activeFund);
+  const { data: fundPensionStatus } = useFundPensionStatus();
 
   if (!thirdPillarActive || !activeFund) {
     return (
@@ -35,6 +38,24 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
           <FormattedMessage id="account.status.choice.pillar.third.missing.action" />
         </Link>
       </StatusBoxRow>
+    );
+  }
+
+  const activeThirdPillarFundPension = fundPensionStatus?.fundPensions.find(
+    (fundPension) => fundPension.active && fundPension.pillar === 'THIRD',
+  );
+
+  if (activeThirdPillarFundPension) {
+    return (
+      <StatusBoxRow
+        ok
+        name={<FormattedMessage id="account.status.choice.pillar.third" />}
+        showAction={false}
+        lines={[
+          <FormattedMessage id="account.status.choice.pillar.third.fundPension.active" />,
+          <ActiveFundPensionDescription fundPension={activeThirdPillarFundPension} />,
+        ]}
+      />
     );
   }
 

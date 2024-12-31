@@ -1,0 +1,22 @@
+import moment from 'moment';
+import { FormattedMessage } from 'react-intl';
+import { FundPension } from '../../common/apiModels/withdrawals';
+import { formatMonth } from '../../common/dateFormatter';
+
+export const ActiveFundPensionDescription = ({ fundPension }: { fundPension: FundPension }) => (
+  <small className="text-muted">
+    <FormattedMessage
+      id="account.status.choice.fundPension.description"
+      values={{
+        endDate: getFundPensionEndFormatted(fundPension),
+        b: (chunks: string) => <b>{chunks}</b>,
+      }}
+    />
+  </small>
+);
+
+const getFundPensionEndFormatted = (fundPension: FundPension) => {
+  const startDate = moment(fundPension.startDate);
+
+  return formatMonth(startDate.add(fundPension.durationYears, 'years').toISOString());
+};

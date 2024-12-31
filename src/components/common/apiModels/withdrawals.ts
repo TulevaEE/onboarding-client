@@ -1,3 +1,17 @@
+import { Pillar } from '.';
+
+export type FundPensionStatus = {
+  fundPensions: FundPension[];
+};
+
+export type FundPension = {
+  pillar: 'SECOND' | 'THIRD';
+  active: boolean;
+  startDate: string;
+  endDate: string | null;
+  durationYears: number;
+};
+
 export type WithdrawalsEligibility = {
   hasReachedEarlyRetirementAge: boolean;
   canWithdrawThirdPillarWithReducedTax: boolean;

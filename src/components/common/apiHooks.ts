@@ -5,6 +5,7 @@ import {
   createMandateBatch,
   getCapitalEvents,
   getContributions,
+  getFundPensionStatus,
   getFunds,
   getMandateDeadlines,
   getPendingApplications,
@@ -29,6 +30,7 @@ import {
 } from './apiModels';
 import {
   CreateMandateBatchDto,
+  FundPensionStatus,
   MandateBatchDto,
   WithdrawalsEligibility,
 } from './apiModels/withdrawals';
@@ -81,6 +83,10 @@ export function useMe(): UseQueryResult<User> {
 
 export function useWithdrawalsEligibility(): UseQueryResult<WithdrawalsEligibility> {
   return useQuery('withdrawalsEligibility', () => getWithdrawalsEligibility());
+}
+
+export function useFundPensionStatus(): UseQueryResult<FundPensionStatus> {
+  return useQuery('fundPensionStatus', () => getFundPensionStatus());
 }
 
 export function useConversion(): UseQueryResult<UserConversion> {
