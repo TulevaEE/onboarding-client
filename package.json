@@ -31,7 +31,7 @@
     "react-ga4": "^1.4.1",
     "react-global-configuration": "^1.4.1",
     "react-gtm-module": "^2.0.11",
-    "react-intl": "^5.25.1",
+    "react-intl": "^7.0.4",
     "react-query": "^3.31.0",
     "react-redux": "^7.2.9",
     "react-router-dom": "^5.3.4",
