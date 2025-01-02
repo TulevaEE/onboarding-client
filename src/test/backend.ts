@@ -581,3 +581,46 @@ export function mandateDeadlinesBackend(server: SetupServerApi): void {
     ),
   );
 }
+
+const TEST_BACKENDS = {
+  cancellation: cancellationBackend,
+  mandatePreview: mandatePreviewBackend,
+  smartIdMandateSigning: smartIdMandateSigningBackend,
+  smartIdMandateBatchSigning: smartIdMandateBatchSigningBackend,
+  smartIdAuthentication: smartIdAuthenticationBackend,
+  mobileIdAuthentication: mobileIdAuthenticationBackend,
+  idCardAuthentication: idCardAuthenticationBackend,
+  partnerAuthentication: partnerAuthenticationBackend,
+  user: userBackend,
+  userConversion: userConversionBackend,
+  amlChecks: amlChecksBackend,
+  pensionAccountStatement: pensionAccountStatementBackend,
+  funds: fundsBackend,
+  returns: returnsBackend,
+  userCapital: userCapitalBackend,
+  applications: applicationsBackend,
+  transactions: transactionsBackend,
+  paymentLink: paymentLinkBackend,
+  secondPillarPaymentRate: secondPillarPaymentRateBackend,
+  withdrawalsEligibility: withdrawalsEligibilityBackend,
+  fundPensionStatus: fundPensionStatusBackend,
+  capitalEvents: capitalEventsBackend,
+  mandateDeadlines: mandateDeadlinesBackend,
+} as const;
+
+export type TestBackendName = keyof typeof TEST_BACKENDS;
+
+export function useTestBackends(server: SetupServerApi) {
+  return useTestBackendsExcept(server, []);
+}
+
+export function useTestBackendsExcept(
+  server: SetupServerApi,
+  backendsToExclude: TestBackendName[],
+) {
+  const testBackendsToUse = Object.keys(TEST_BACKENDS)
+    .filter((name) => !backendsToExclude.includes(name as TestBackendName))
+    .map((name) => TEST_BACKENDS[name as TestBackendName]);
+
+  testBackendsToUse.forEach((backend) => backend(server));
+}
