@@ -1,4 +1,3 @@
-import React from 'react';
 import { setupServer } from 'msw/node';
 import { screen, within } from '@testing-library/react';
 import { Route } from 'react-router-dom';
@@ -7,18 +6,9 @@ import { initializeConfiguration } from '../config/config';
 import LoggedInApp from '../LoggedInApp';
 import { createDefaultStore, login, renderWrapped } from '../../test/utils';
 import {
-  userBackend,
-  userConversionBackend,
-  amlChecksBackend,
-  pensionAccountStatementBackend,
-  fundsBackend,
-  returnsBackend,
-  userCapitalBackend,
-  applicationsBackend,
-  transactionsBackend,
-  capitalEventsBackend,
   fundPensionStatusBackend,
-  mandateDeadlinesBackend,
+  useTestBackendsExcept,
+  useTestBackends,
 } from '../../test/backend';
 
 const server = setupServer();
@@ -39,20 +29,7 @@ afterAll(() => server.close());
 describe('happy path', () => {
   beforeEach(() => {
     initializeConfiguration();
-
-    transactionsBackend(server);
-    capitalEventsBackend(server);
-    userConversionBackend(server);
-    userBackend(server);
-    amlChecksBackend(server);
-    pensionAccountStatementBackend(server);
-    fundsBackend(server);
-    returnsBackend(server);
-    userCapitalBackend(server);
-    applicationsBackend(server);
-    fundPensionStatusBackend(server);
-    mandateDeadlinesBackend(server);
-
+    useTestBackends(server);
     initializeComponent();
 
     history.push('/account');
@@ -105,16 +82,8 @@ describe('fund pension status', () => {
   beforeEach(() => {
     initializeConfiguration();
 
-    transactionsBackend(server);
-    capitalEventsBackend(server);
-    userConversionBackend(server);
-    userBackend(server);
-    amlChecksBackend(server);
-    pensionAccountStatementBackend(server);
-    fundsBackend(server);
-    returnsBackend(server);
-    userCapitalBackend(server);
-    applicationsBackend(server);
+    useTestBackendsExcept(server, ['fundPensionStatus']);
+
     fundPensionStatusBackend(server, {
       fundPensions: [
         {
@@ -133,7 +102,6 @@ describe('fund pension status', () => {
         },
       ],
     });
-    mandateDeadlinesBackend(server);
 
     initializeComponent();
 
