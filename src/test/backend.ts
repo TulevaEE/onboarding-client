@@ -1,7 +1,7 @@
 import { DefaultRequestMultipartBody, rest, RestRequest } from 'msw';
 import { SetupServerApi } from 'msw/node';
 import queryString from 'qs';
-import { FundBalance, FundStatus } from '../components/common/apiModels';
+import { CapitalEvent, FundBalance, FundStatus } from '../components/common/apiModels';
 import { anAuthenticationManager } from '../components/common/authenticationManagerFixture';
 import { ReturnsResponse } from '../components/account/ComparisonCalculator/api';
 import {
