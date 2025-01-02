@@ -244,6 +244,11 @@
   "account.status.choice.pillar.second.missing.action": "Ava II sammas",
   "account.status.choice.pillar.second.withdraw": "Sa oled lahkumas II sambast",
   "account.status.choice.pillar.second.withdraw.cancel": "Tühista avaldus",
+  "account.status.choice.pillar.second.partialWithdrawal": "Sul on ootel osalise väljamakse avaldus",
+  "account.status.choice.pillar.second.fundPensionOpening": "Sul on ootel regulaarsete fondipensioni väljamaksete avaldus",
+  "account.status.choice.pillar.second.fundPensionOpeningPartialWithdrawal": "Sul on ootel regulaarsete fondipensioni väljamaksete avaldus ja osalise väljamakse avaldus",
+  "account.status.choice.pillar.second.withdrawalContributionEndingDisclaimer.singular": "Avalduse jõustumisega <b>lõppevad II samba sissemaksed {contributionEndDate}</b> ja neid ei saa hiljem taastada",
+  "account.status.choice.pillar.second.withdrawalContributionEndingDisclaimer.plural": "Avalduste jõustumisega <b>lõppevad II samba sissemaksed {contributionEndDate}</b> ja neid ei saa hiljem taastada",
   "account.status.choice.pillar.second.transferIncomplete": "Sa kogud täna mitmes erinevas pensionifondis",
   "account.status.choice.pillar.second.pik": "Pensioni investeerimiskonto: {secondPillarPikNumber}",
   "account.status.choice.pillar.second.paymentRate": "Sa panustad II sambasse {paymentRate}% brutopalgast",
@@ -273,6 +278,11 @@
   "account.status.choice.pillar.third.success.action": "Teen sissemakse",
   "account.status.choice.pillar.third.paymentInfo": "Fondiosakud jõuavad sinu kolmanda samba kontole ühe tööpäeva möödudes makse teostamisest. \n Kui teed makse reede pärastlõunal või nädalavahetusel, jõuavad osakud sinu kontole teisipäeva õhtuks.",
   "account.status.choice.pillar.third.paymentDeadline": "Selle aasta III samba sissemakse tegemise viimane tähtaeg on <b>27. detsember 15:59</b>.",
+
+  "account.status.choice.pillar.third.fundPensionOpeningPartialWithdrawal": "Sul on ootel regulaarsete fondipensioni väljamaksete avaldus ja osalise väljamakse avaldus",
+  "account.status.choice.pillar.third.fundPensionOpening": "Sul on ootel regulaarsete fondipensioni väljamaksete avaldus",
+  "account.status.choice.pillar.third.partialWithdrawal": "Sul on ootel osalise väljamakse avaldus",
+  "account.status.choice.pillar.third.withdrawalContributionSuggestion": "Jätka kuni 15% oma sissetulekust III sambasse lisamist ja saa sellelt tulumaksu tagasi",
 
   "account.status.choice.pillar.third.fundPension.active": "Saad regulaarseid fondipensioni väljamakseid",
 

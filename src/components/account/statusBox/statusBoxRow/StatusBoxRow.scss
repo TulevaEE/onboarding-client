@@ -13,6 +13,9 @@
   min-width: 161px;
 }
 
+.fa.fa-fw {
+  font-size: 1.25em;
+}
 .fa.fa-check {
   color: $green;
 }
@@ -23,4 +26,8 @@
 
 .fa.fa-exclamation-triangle {
   color: $yellow-dark;
+}
+
+.fa.fa-exclamation-circle {
+  color: #f8af18;
 }

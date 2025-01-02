@@ -3,11 +3,11 @@ import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import StatusBoxRow from '../statusBoxRow';
-import { Conversion, SourceFund } from '../../../common/apiModels';
+import { Application, ApplicationType, Conversion, SourceFund } from '../../../common/apiModels';
 import { InfoTooltip } from '../../../common';
 import { State } from '../../../../types';
 import ThirdPillarPaymentsAmount from './ThirdPillarContributionAmount';
-import { useFundPensionStatus } from '../../../common/apiHooks';
+import { useFundPensionStatus, usePendingApplications } from '../../../common/apiHooks';
 import { ActiveFundPensionDescription } from '../ActiveFundPensionDescription';
 
 interface Props {
@@ -55,8 +55,64 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
           <FormattedMessage id="account.status.choice.pillar.third.fundPension.active" />,
           <ActiveFundPensionDescription fundPension={activeThirdPillarFundPension} />,
         ]}
-      />
+      >
+        <Link to="/3rd-pillar-payment" className="btn btn-primary">
+          <FormattedMessage id="account.status.choice.pillar.third.success.action" />
+        </Link>
+      </StatusBoxRow>
     );
+  }
+
+  if (conversion.pendingWithdrawal) {
+    const pendingPartialWithdrawalApplication = usePendingThirdPillarWithdrawalApplication();
+    const pendingFundPensionOpeningApplication = usePendingFundPensionOpeningApplication();
+
+    if (pendingFundPensionOpeningApplication && pendingPartialWithdrawalApplication) {
+      return (
+        <StatusBoxRow
+          ok
+          showAction={!loading}
+          name={<FormattedMessage id="account.status.choice.pillar.third" />}
+          lines={[
+            <FormattedMessage id="account.status.choice.pillar.third.fundPensionOpeningPartialWithdrawal" />,
+          ]}
+        >
+          <Link to="/3rd-pillar-payment" className="btn btn-primary">
+            <FormattedMessage id="account.status.choice.pillar.third.success.action" />
+          </Link>
+        </StatusBoxRow>
+      );
+    }
+
+    if (pendingFundPensionOpeningApplication) {
+      return (
+        <StatusBoxRow
+          ok
+          showAction={!loading}
+          name={<FormattedMessage id="account.status.choice.pillar.third" />}
+          lines={[<FormattedMessage id="account.status.choice.pillar.third.fundPensionOpening" />]}
+        >
+          <Link to="/3rd-pillar-payment" className="btn btn-primary">
+            <FormattedMessage id="account.status.choice.pillar.third.success.action" />
+          </Link>
+        </StatusBoxRow>
+      );
+    }
+
+    if (pendingPartialWithdrawalApplication) {
+      return (
+        <StatusBoxRow
+          ok
+          showAction={!loading}
+          name={<FormattedMessage id="account.status.choice.pillar.third" />}
+          lines={[<FormattedMessage id="account.status.choice.pillar.third.partialWithdrawal" />]}
+        >
+          <Link to="/3rd-pillar-payment" className="btn btn-primary">
+            <FormattedMessage id="account.status.choice.pillar.third.success.action" />
+          </Link>
+        </StatusBoxRow>
+      );
+    }
   }
 
   const month = new Date().getMonth();
@@ -217,6 +273,16 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
     </StatusBoxRow>
   );
 };
+
+const usePendingThirdPillarWithdrawalApplication = (): Application | undefined =>
+  usePendingApplications().data?.find(
+    (application) => application.type === ApplicationType.WITHDRAWAL_THIRD_PILLAR,
+  );
+
+const usePendingFundPensionOpeningApplication = (): Application | undefined =>
+  usePendingApplications().data?.find(
+    (application) => application.type === ApplicationType.FUND_PENSION_OPENING_THIRD_PILLAR,
+  );
 
 const mapStateToProps = (state: State) => ({
   conversion: state.login.userConversion.thirdPillar,

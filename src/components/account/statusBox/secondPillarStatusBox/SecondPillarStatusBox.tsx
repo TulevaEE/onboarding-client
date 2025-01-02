@@ -21,7 +21,7 @@ import InfoTooltip from '../../../common/infoTooltip';
 import { isTuleva } from '../../../common/utils';
 import { getValueSum } from '../../AccountStatement/fundSelector';
 import { Euro } from '../../../common/Euro';
-import { formatDateTime, formatDateYear } from '../../../common/dateFormatter';
+import { formatDate, formatDateTime, formatDateYear } from '../../../common/dateFormatter';
 import deadline from './deadline.svg';
 import euro from './euro.svg';
 import basket from './basket.svg';
@@ -48,6 +48,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
   currentPaymentRate,
   pendingPaymentRate,
 }: Props) => {
+  // TODO improve loading state handling here
   const { data: mandateDeadlines } = useMandateDeadlines();
   const { data: applications } = usePendingApplications();
   const { data: fundPensionStatus } = useFundPensionStatus();
@@ -75,20 +76,95 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
     );
   }
 
-  const pendingWithdrawal = usePendingWithdrawalApplication();
-  if (conversion.pendingWithdrawal && pendingWithdrawal) {
-    return (
-      <StatusBoxRow
-        error
-        showAction={!loading}
-        name={<FormattedMessage id="account.status.choice.pillar.second" />}
-        lines={[<FormattedMessage id="account.status.choice.pillar.second.withdraw" />]}
-      >
-        <Link to={`/applications/${pendingWithdrawal.id}/cancellation`} className="btn btn-primary">
-          <FormattedMessage id="account.status.choice.pillar.second.withdraw.cancel" />
-        </Link>
-      </StatusBoxRow>
-    );
+  // TODO conversion includes all withdrawals and pendingEarly only includes early withdrawals
+  if (conversion.pendingWithdrawal) {
+    const pendingEarlyWithdrawal = usePendingEarlyWithdrawalApplication();
+    const pendingPartialWithdrawal = usePendingPartialWithdrawalApplication();
+    const pendingFundPensionOpening = usePendingFundPensionOpeningApplication();
+
+    if (pendingEarlyWithdrawal) {
+      return (
+        <StatusBoxRow
+          error
+          showAction={!loading}
+          name={<FormattedMessage id="account.status.choice.pillar.second" />}
+          lines={[<FormattedMessage id="account.status.choice.pillar.second.withdraw" />]}
+        >
+          <Link
+            to={`/applications/${pendingEarlyWithdrawal.id}/cancellation`}
+            className="btn btn-primary"
+          >
+            <FormattedMessage id="account.status.choice.pillar.second.withdraw.cancel" />
+          </Link>
+        </StatusBoxRow>
+      );
+    }
+
+    if (pendingFundPensionOpening && pendingPartialWithdrawal) {
+      return (
+        <StatusBoxRow
+          warning
+          showAction={false}
+          name={<FormattedMessage id="account.status.choice.pillar.second" />}
+          lines={[
+            <FormattedMessage id="account.status.choice.pillar.second.fundPensionOpeningPartialWithdrawal" />,
+            <small className="text-muted">
+              <FormattedMessage
+                id="account.status.choice.pillar.second.withdrawalContributionEndingDisclaimer.plural"
+                values={{
+                  b: (chunks: string) => <b>{chunks}</b>,
+                  contributionEndDate: formatDate(mandateDeadlines?.withdrawalCancellationDeadline), // TODO check this date
+                }}
+              />
+            </small>,
+          ]}
+        />
+      );
+    }
+
+    if (pendingPartialWithdrawal) {
+      return (
+        <StatusBoxRow
+          warning
+          showAction={false}
+          name={<FormattedMessage id="account.status.choice.pillar.second" />}
+          lines={[
+            <FormattedMessage id="account.status.choice.pillar.second.partialWithdrawal" />,
+            <small className="text-muted">
+              <FormattedMessage
+                id="account.status.choice.pillar.second.withdrawalContributionEndingDisclaimer.singular"
+                values={{
+                  b: (chunks: string) => <b>{chunks}</b>,
+                  contributionEndDate: formatDate(mandateDeadlines?.withdrawalCancellationDeadline), // TODO check this date
+                }}
+              />
+            </small>,
+          ]}
+        />
+      );
+    }
+
+    if (pendingFundPensionOpening) {
+      return (
+        <StatusBoxRow
+          warning
+          showAction={false}
+          name={<FormattedMessage id="account.status.choice.pillar.second" />}
+          lines={[
+            <FormattedMessage id="account.status.choice.pillar.second.fundPensionOpening" />,
+            <small className="text-muted">
+              <FormattedMessage
+                id="account.status.choice.pillar.second.withdrawalContributionEndingDisclaimer.singular"
+                values={{
+                  b: (chunks: string) => <b>{chunks}</b>,
+                  contributionEndDate: formatDate(mandateDeadlines?.withdrawalCancellationDeadline), // TODO check this date
+                }}
+              />
+            </small>,
+          ]}
+        />
+      );
+    }
   }
 
   const activeSecondPillarFundPension = fundPensionStatus?.fundPensions.find(
@@ -358,11 +434,21 @@ function highFee(
   );
 }
 
-const usePendingWithdrawalApplication = (): Application | undefined =>
+const usePendingEarlyWithdrawalApplication = (): Application | undefined =>
   usePendingApplications().data?.find(
     (application) =>
       application.type === ApplicationType.WITHDRAWAL ||
       application.type === ApplicationType.EARLY_WITHDRAWAL,
+  );
+
+const usePendingPartialWithdrawalApplication = (): Application | undefined =>
+  usePendingApplications().data?.find(
+    (application) => application.type === ApplicationType.PARTIAL_WITHDRAWAL,
+  );
+
+const usePendingFundPensionOpeningApplication = (): Application | undefined =>
+  usePendingApplications().data?.find(
+    (application) => application.type === ApplicationType.FUND_PENSION_OPENING,
   );
 
 const mapStateToProps = (state: State) => ({

@@ -245,6 +245,11 @@
   "account.status.choice.pillar.second.missing.action": "Open II pillar",
   "account.status.choice.pillar.second.withdraw": "You are leaving II pillar",
   "account.status.choice.pillar.second.withdraw.cancel": "Cancel application",
+  "account.status.choice.pillar.second.partialWithdrawal": "You have a pending partial withdrawal application",
+  "account.status.choice.pillar.second.fundPensionOpening": "You have a pending fund pension application for regular payments",
+  "account.status.choice.pillar.second.fundPensionOpeningPartialWithdrawal": "You have a pending fund pension application for regular payments and a pending partial withdrawal application",
+  "account.status.choice.pillar.second.withdrawalContributionEndingDisclaimer.plural": "When the applications take effect <b>on {contributionEndDate} your II pillar contributions will end</b> and they can't be restored",
+  "account.status.choice.pillar.second.withdrawalContributionEndingDisclaimer.singular": "When the application takes effect <b>on {contributionEndDate} your II pillar contributions will end</b> and they can't be restored",
   "account.status.choice.pillar.second.transferIncomplete": "You have several pension funds",
   "account.status.choice.pillar.second.pik": "Pension investment account: {secondPillarPikNumber}",
   "account.status.choice.pillar.second.paymentRate": "You contribute {paymentRate}% of your gross salary to II pillar",
@@ -274,6 +279,11 @@
   "account.status.choice.pillar.third.paymentInfo": "Note that fund units appear on your third pillar account by the end of the next working day. If you paid on Friday after 4pm or on the weekend, the units will appear on your account by Tuesday afternoon.",
   "account.status.choice.pillar.third.paymentDeadline": "The deadline for this year's III pillar contribution is <b>December 27 at 15:59</b>.",
   "account.status.choice.pillar.third.success.action": "Make a payment",
+
+  "account.status.choice.pillar.third.partialWithdrawal": "You have a pending partial withdrawal application",
+  "account.status.choice.pillar.third.fundPensionOpeningPartialWithdrawal": "You have a pending fund pension application for regular payments and a pending partial withdrawal application",
+  "account.status.choice.pillar.third.fundPensionOpening": "You have a pending fund pension application for regular payments",
+  "account.status.choice.pillar.third.withdrawalContributionSuggestion": "Continue contributing 15% of your income ",
 
   "account.status.choice.pillar.third.fundPension.active": "You are receiving regular fund pension payments",
 
