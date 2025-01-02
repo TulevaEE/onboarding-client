@@ -9,7 +9,10 @@ import {
   fundPensionStatusBackend,
   useTestBackendsExcept,
   useTestBackends,
+  applicationsBackend,
+  userConversionBackend,
 } from '../../test/backend';
+import { ApplicationStatus, ApplicationType } from '../common/apiModels';
 
 const server = setupServer();
 let history: History;
@@ -121,5 +124,92 @@ describe('fund pension status', () => {
 
     expect(await screen.findByText('October 2039')).toBeInTheDocument();
     expect(await screen.findByText('October 2033')).toBeInTheDocument();
+  });
+});
+
+describe('pending withdrawal transactions', () => {
+  beforeEach(() => {
+    initializeConfiguration();
+
+    useTestBackendsExcept(server, ['applications', 'userConversion']);
+
+    applicationsBackend(server, [
+      {
+        id: 124,
+        creationTime: '2024-12-01T01:23:45Z',
+        status: ApplicationStatus.PENDING,
+        details: {
+          depositAccountIBAN: 'EE_TEST_IBAN',
+          cancellationDeadline: '2025-01-20T21:59:59.999999999Z',
+          fulfillmentDate: '2025-01-20',
+        },
+        type: ApplicationType.PARTIAL_WITHDRAWAL,
+      },
+      {
+        id: 125,
+        creationTime: '2024-12-01T01:23:45Z',
+        status: ApplicationStatus.PENDING,
+        details: {
+          depositAccountIBAN: 'EE_TEST_IBAN',
+          cancellationDeadline: null,
+          fulfillmentDate: '2024-12-05',
+        },
+        type: ApplicationType.WITHDRAWAL_THIRD_PILLAR,
+      },
+      {
+        id: 126,
+        creationTime: '2024-12-02T01:23:45Z',
+        status: ApplicationStatus.PENDING,
+        details: {
+          depositAccountIBAN: 'EE_TEST_IBAN',
+          cancellationDeadline: '2025-01-15T21:59:59.999999999Z',
+          fulfillmentDate: '2025-01-20',
+          fundPensionDetails: {
+            durationYears: 20,
+            paymentsPerYear: 12,
+          },
+        },
+        type: ApplicationType.FUND_PENSION_OPENING,
+      },
+      {
+        id: 127,
+        creationTime: '2024-12-02T01:23:45Z',
+        status: ApplicationStatus.PENDING,
+        details: {
+          depositAccountIBAN: 'EE_TEST_IBAN',
+          cancellationDeadline: '2025-01-15T21:59:59.999999999Z',
+          fulfillmentDate: '2025-01-20',
+          fundPensionDetails: {
+            durationYears: 20,
+            paymentsPerYear: 12,
+          },
+        },
+        type: ApplicationType.FUND_PENSION_OPENING_THIRD_PILLAR,
+      },
+    ]);
+
+    userConversionBackend(
+      server,
+      {
+        pendingWithdrawal: true,
+      },
+      { pendingWithdrawal: true },
+    );
+
+    initializeComponent();
+
+    history.push('/account');
+  });
+
+  test('pending withdrawal and fund pension application info is shown', async () => {
+    expect(
+      await screen.findAllByText(
+        'You have a pending fund pension application for regular payments and a pending partial withdrawal application',
+      ),
+    ).toHaveLength(2);
+
+    expect(
+      await screen.findByText('on December 31 your II pillar contributions will end'),
+    ).toBeInTheDocument();
   });
 });

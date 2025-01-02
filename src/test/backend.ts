@@ -1,7 +1,14 @@
 import { DefaultRequestMultipartBody, rest, RestRequest } from 'msw';
 import { SetupServerApi } from 'msw/node';
 import queryString from 'qs';
-import { CapitalEvent, FundBalance, FundStatus } from '../components/common/apiModels';
+import {
+  Application,
+  CapitalEvent,
+  Conversion,
+  FundBalance,
+  FundStatus,
+  UserConversion,
+} from '../components/common/apiModels';
 import { anAuthenticationManager } from '../components/common/authenticationManagerFixture';
 import { ReturnsResponse } from '../components/account/ComparisonCalculator/api';
 import {
@@ -330,8 +337,8 @@ export function userBackend(server: SetupServerApi, overrides = {}): void {
 
 export function userConversionBackend(
   server: SetupServerApi,
-  secondPillarOverrides = {},
-  thirdPillarOverrides = {},
+  secondPillarOverrides: Partial<Conversion> = {},
+  thirdPillarOverrides: Partial<Conversion> = {},
 ): void {
   server.use(
     rest.get('http://localhost/v1/me/conversion', (req, res, ctx) =>
@@ -483,8 +490,13 @@ export function userCapitalBackend(server: SetupServerApi): void {
   );
 }
 
-export function applicationsBackend(server: SetupServerApi): void {
-  server.use(rest.get('http://localhost/v1/applications', (req, res, ctx) => res(ctx.json([]))));
+export function applicationsBackend(
+  server: SetupServerApi,
+  applications: Application[] = [],
+): void {
+  server.use(
+    rest.get('http://localhost/v1/applications', (req, res, ctx) => res(ctx.json(applications))),
+  );
 }
 
 export function transactionsBackend(server: SetupServerApi): void {
