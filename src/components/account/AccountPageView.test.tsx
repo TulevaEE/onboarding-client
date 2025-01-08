@@ -12,7 +12,14 @@ import {
   applicationsBackend,
   userConversionBackend,
 } from '../../test/backend';
-import { ApplicationStatus, ApplicationType } from '../common/apiModels';
+import {
+  Application,
+  ApplicationStatus,
+  ApplicationType,
+  FundPensionOpeningApplication,
+  PartialWithdrawalApplication,
+  ThirdPillarWithdrawalApplication,
+} from '../common/apiModels';
 
 const server = setupServer();
 let history: History;
@@ -28,6 +35,15 @@ function initializeComponent() {
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
+
+const getStatusBoxRow = async (type: 'SECOND' | 'THIRD' | 'MEMBER') => {
+  const rows = await screen.findAllByTestId('status-box-row');
+
+  const rowOrder = ['SECOND', 'THIRD', 'MEMBER'] as const;
+  const rowIndex = rowOrder.indexOf(type);
+
+  return rows[rowIndex];
+};
 
 describe('happy path', () => {
   beforeEach(() => {
@@ -128,65 +144,69 @@ describe('fund pension status', () => {
 });
 
 describe('pending withdrawal transactions', () => {
+  const secondPillarPartialWithdrawalApplication: PartialWithdrawalApplication = {
+    id: 124,
+    creationTime: '2024-12-01T01:23:45Z',
+    status: ApplicationStatus.PENDING,
+    details: {
+      depositAccountIBAN: 'EE_TEST_IBAN',
+      cancellationDeadline: '2025-01-20T21:59:59.999999999Z',
+      fulfillmentDate: '2025-01-20',
+    },
+    type: ApplicationType.PARTIAL_WITHDRAWAL,
+  };
+
+  const thirdPillarWithdrawalApplication: ThirdPillarWithdrawalApplication = {
+    id: 125,
+    creationTime: '2024-12-01T01:23:45Z',
+    status: ApplicationStatus.PENDING,
+    details: {
+      depositAccountIBAN: 'EE_TEST_IBAN',
+      cancellationDeadline: null,
+      fulfillmentDate: '2024-12-05',
+    },
+    type: ApplicationType.WITHDRAWAL_THIRD_PILLAR,
+  };
+
+  const secondPillarFundPensionOpeningApplication: FundPensionOpeningApplication = {
+    id: 126,
+    creationTime: '2024-12-02T01:23:45Z',
+    status: ApplicationStatus.PENDING,
+    details: {
+      depositAccountIBAN: 'EE_TEST_IBAN',
+      cancellationDeadline: '2025-01-15T21:59:59.999999999Z',
+      fulfillmentDate: '2025-01-20',
+      fundPensionDetails: {
+        durationYears: 20,
+        paymentsPerYear: 12,
+      },
+    },
+    type: ApplicationType.FUND_PENSION_OPENING,
+  };
+
+  const thirdPillarFundPensionOpeningApplication: FundPensionOpeningApplication = {
+    id: 127,
+    creationTime: '2024-12-02T01:23:45Z',
+    status: ApplicationStatus.PENDING,
+    details: {
+      depositAccountIBAN: 'EE_TEST_IBAN',
+      cancellationDeadline: '2025-01-15T21:59:59.999999999Z',
+      fulfillmentDate: '2025-01-20',
+      fundPensionDetails: {
+        durationYears: 20,
+        paymentsPerYear: 12,
+      },
+    },
+    type: ApplicationType.FUND_PENSION_OPENING_THIRD_PILLAR,
+  };
+
   beforeEach(() => {
     initializeConfiguration();
+  });
 
+  const initializeApplicationsAndComponent = (applications: Application[]) => {
     useTestBackendsExcept(server, ['applications', 'userConversion']);
-
-    applicationsBackend(server, [
-      {
-        id: 124,
-        creationTime: '2024-12-01T01:23:45Z',
-        status: ApplicationStatus.PENDING,
-        details: {
-          depositAccountIBAN: 'EE_TEST_IBAN',
-          cancellationDeadline: '2025-01-20T21:59:59.999999999Z',
-          fulfillmentDate: '2025-01-20',
-        },
-        type: ApplicationType.PARTIAL_WITHDRAWAL,
-      },
-      {
-        id: 125,
-        creationTime: '2024-12-01T01:23:45Z',
-        status: ApplicationStatus.PENDING,
-        details: {
-          depositAccountIBAN: 'EE_TEST_IBAN',
-          cancellationDeadline: null,
-          fulfillmentDate: '2024-12-05',
-        },
-        type: ApplicationType.WITHDRAWAL_THIRD_PILLAR,
-      },
-      {
-        id: 126,
-        creationTime: '2024-12-02T01:23:45Z',
-        status: ApplicationStatus.PENDING,
-        details: {
-          depositAccountIBAN: 'EE_TEST_IBAN',
-          cancellationDeadline: '2025-01-15T21:59:59.999999999Z',
-          fulfillmentDate: '2025-01-20',
-          fundPensionDetails: {
-            durationYears: 20,
-            paymentsPerYear: 12,
-          },
-        },
-        type: ApplicationType.FUND_PENSION_OPENING,
-      },
-      {
-        id: 127,
-        creationTime: '2024-12-02T01:23:45Z',
-        status: ApplicationStatus.PENDING,
-        details: {
-          depositAccountIBAN: 'EE_TEST_IBAN',
-          cancellationDeadline: '2025-01-15T21:59:59.999999999Z',
-          fulfillmentDate: '2025-01-20',
-          fundPensionDetails: {
-            durationYears: 20,
-            paymentsPerYear: 12,
-          },
-        },
-        type: ApplicationType.FUND_PENSION_OPENING_THIRD_PILLAR,
-      },
-    ]);
+    applicationsBackend(server, applications);
 
     userConversionBackend(
       server,
@@ -199,17 +219,89 @@ describe('pending withdrawal transactions', () => {
     initializeComponent();
 
     history.push('/account');
-  });
+  };
 
   test('pending withdrawal and fund pension application info is shown', async () => {
-    expect(
-      await screen.findAllByText(
-        'You have a pending fund pension application for regular payments and a pending partial withdrawal application',
-      ),
-    ).toHaveLength(2);
+    initializeApplicationsAndComponent([
+      secondPillarPartialWithdrawalApplication,
+      thirdPillarWithdrawalApplication,
+      secondPillarFundPensionOpeningApplication,
+      thirdPillarFundPensionOpeningApplication,
+    ]);
+
+    const secondPillarRow = await getStatusBoxRow('SECOND');
+    const thirdPillarRow = await getStatusBoxRow('THIRD');
 
     expect(
-      await screen.findByText('on August 1 your II pillar contributions will end'),
+      await within(secondPillarRow).findByText(
+        'You have a pending fund pension application for regular payments and a pending partial withdrawal application',
+      ),
     ).toBeInTheDocument();
+    expect(await within(secondPillarRow).findByTestId('status-icon-warning')).toBeInTheDocument();
+
+    expect(
+      await within(secondPillarRow).findByText('on August 1 your II pillar contributions will end'),
+    ).toBeInTheDocument();
+
+    expect(
+      await within(thirdPillarRow).findByText(
+        'You have a pending fund pension application for regular payments and a pending partial withdrawal application',
+      ),
+    ).toBeInTheDocument();
+    expect(await within(thirdPillarRow).findByTestId('status-icon-success')).toBeInTheDocument();
+  });
+
+  test('pending withdrawal info is shown', async () => {
+    initializeApplicationsAndComponent([
+      secondPillarPartialWithdrawalApplication,
+      thirdPillarWithdrawalApplication,
+    ]);
+
+    const secondPillarRow = await getStatusBoxRow('SECOND');
+    const thirdPillarRow = await getStatusBoxRow('THIRD');
+
+    expect(
+      await within(secondPillarRow).findByText('You have a pending partial withdrawal application'),
+    ).toBeInTheDocument();
+
+    expect(await within(secondPillarRow).findByTestId('status-icon-warning')).toBeInTheDocument();
+
+    expect(
+      await within(secondPillarRow).findByText('on August 1 your II pillar contributions will end'),
+    ).toBeInTheDocument();
+
+    expect(
+      await within(thirdPillarRow).findByText('You have a pending partial withdrawal application'),
+    ).toBeInTheDocument();
+    expect(await within(thirdPillarRow).findByTestId('status-icon-success')).toBeInTheDocument();
+  });
+
+  test('fund pension opening info is shown', async () => {
+    initializeApplicationsAndComponent([
+      secondPillarFundPensionOpeningApplication,
+      thirdPillarFundPensionOpeningApplication,
+    ]);
+
+    const secondPillarRow = await getStatusBoxRow('SECOND');
+    const thirdPillarRow = await getStatusBoxRow('THIRD');
+
+    expect(
+      await within(secondPillarRow).findByText(
+        'You have a pending fund pension application for regular payments',
+      ),
+    ).toBeInTheDocument();
+    expect(await within(secondPillarRow).findByTestId('status-icon-warning')).toBeInTheDocument();
+
+    expect(
+      await within(secondPillarRow).findByText('on August 1 your II pillar contributions will end'),
+    ).toBeInTheDocument();
+
+    expect(
+      await within(thirdPillarRow).findByText(
+        'You have a pending fund pension application for regular payments',
+      ),
+    ).toBeInTheDocument();
+
+    expect(await within(thirdPillarRow).findByTestId('status-icon-success')).toBeInTheDocument();
   });
 });

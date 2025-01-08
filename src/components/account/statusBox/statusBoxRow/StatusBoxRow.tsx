@@ -1,14 +1,14 @@
 import React from 'react';
 import './StatusBoxRow.scss';
 
-const Checkmark: React.FunctionComponent<{
+const StatusBoxIcon: React.FunctionComponent<{
   checked?: boolean;
   warning?: boolean;
   error?: boolean;
 }> = ({ checked = false, warning = false, error = false }) => {
   if (error) {
     return (
-      <div className="ml-3 mr-2 status-box-icon">
+      <div className="ml-3 mr-2 status-box-icon" data-testid="status-icon-error">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none">
           <path
             fill="#FF4800"
@@ -37,7 +37,7 @@ const Checkmark: React.FunctionComponent<{
 
   if (warning) {
     return (
-      <div className="ml-3 mr-2 status-box-icon">
+      <div className="ml-3 mr-2 status-box-icon" data-testid="status-icon-warning">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none">
           <path
             fill="#F8AF18"
@@ -64,7 +64,7 @@ const Checkmark: React.FunctionComponent<{
 
   if (checked) {
     return (
-      <div className="ml-3 mr-2 status-box-icon">
+      <div className="ml-3 mr-2 status-box-icon" data-testid="status-icon-success">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none">
           <path
             fill="#51C26C"
@@ -127,11 +127,11 @@ export const StatusBoxRow: React.FunctionComponent<{
     </ul>
   );
   return (
-    <div className={`status-box-row ${!last ? 'tv-table__row' : ''}`}>
+    <div className={`status-box-row ${!last ? 'tv-table__row' : ''}`} data-testid="status-box-row">
       <div className="d-flex flex-sm-row flex-column justify-content-between">
         <div className="d-flex">
           <div className="d-flex flex-column">
-            <Checkmark checked={ok} warning={warning} error={error} />
+            <StatusBoxIcon checked={ok} warning={warning} error={error} />
           </div>
           <div className="d-flex flex-column justify-content-center">
             <div className="mt-0 pt-1 pl-2">
