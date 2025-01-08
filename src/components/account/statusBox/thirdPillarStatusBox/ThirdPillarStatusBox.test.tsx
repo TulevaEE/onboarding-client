@@ -4,6 +4,10 @@ import { ThirdPillarStatusBox } from './ThirdPillarStatusBox';
 import StatusBoxRow from '../statusBoxRow';
 import { activeThirdPillar, completeThirdPillarConversion, highFeeThirdPillar } from '../fixtures';
 
+jest.mock('../../../common/apiHooks', () => ({
+  useFundPensionStatus: () => ({ fundPensions: [] }),
+}));
+
 describe('ThirdPillarStatusBox', () => {
   let component: ShallowWrapper;
   const props = {

@@ -15,6 +15,7 @@ jest.mock('../../../common/apiHooks', () => ({
   useTransactions: () => ({ data: [{ amount: 100 }] }),
   useFunds: () => ({ data: [{ pillar: 2 }] }),
   useMandateDeadlines: () => ({ data: { periodEnding: '2024-07-31T00:59:59.999999999Z' } }),
+  useFundPensionStatus: () => ({ fundPensions: [] }),
 }));
 
 jest.useFakeTimers();

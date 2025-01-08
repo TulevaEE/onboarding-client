@@ -209,7 +209,7 @@ describe('pending withdrawal transactions', () => {
     ).toHaveLength(2);
 
     expect(
-      await screen.findByText('on December 31 your II pillar contributions will end'),
+      await screen.findByText('on August 1 your II pillar contributions will end'),
     ).toBeInTheDocument();
   });
 });
