@@ -76,7 +76,6 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
     );
   }
 
-  // TODO conversion includes all withdrawals and pendingEarly only includes early withdrawals
   if (conversion.pendingWithdrawal) {
     const pendingEarlyWithdrawal = usePendingEarlyWithdrawalApplication();
     const pendingPartialWithdrawal = usePendingPartialWithdrawalApplication();
@@ -113,7 +112,9 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
                 id="account.status.choice.pillar.second.withdrawalContributionEndingDisclaimer.plural"
                 values={{
                   b: (chunks: string) => <b>{chunks}</b>,
-                  contributionEndDate: formatDate(mandateDeadlines?.withdrawalCancellationDeadline), // TODO check this date
+                  contributionEndDate: formatDate(
+                    mandateDeadlines?.secondPillarContributionEndDate,
+                  ),
                 }}
               />
             </small>,
@@ -135,7 +136,9 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
                 id="account.status.choice.pillar.second.withdrawalContributionEndingDisclaimer.singular"
                 values={{
                   b: (chunks: string) => <b>{chunks}</b>,
-                  contributionEndDate: formatDate(mandateDeadlines?.withdrawalCancellationDeadline), // TODO check this date
+                  contributionEndDate: formatDate(
+                    mandateDeadlines?.secondPillarContributionEndDate,
+                  ),
                 }}
               />
             </small>,
@@ -157,7 +160,9 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
                 id="account.status.choice.pillar.second.withdrawalContributionEndingDisclaimer.singular"
                 values={{
                   b: (chunks: string) => <b>{chunks}</b>,
-                  contributionEndDate: formatDate(mandateDeadlines?.withdrawalCancellationDeadline), // TODO check this date
+                  contributionEndDate: formatDate(
+                    mandateDeadlines?.secondPillarContributionEndDate,
+                  ),
                 }}
               />
             </small>,

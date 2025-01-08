@@ -994,6 +994,7 @@ describe('API calls', () => {
       earlyWithdrawalCancellationDeadline: '2020-01-20',
       paymentRateDeadline: '2020-01-10',
       paymentRateFulfillmentDate: '2020-02-10',
+      secondPillarContributionEndDate: '2021-04-01',
     };
 
     beforeEach(() => {
