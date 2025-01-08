@@ -379,6 +379,7 @@ export interface MandateDeadlines {
   earlyWithdrawalCancellationDeadline: string;
   paymentRateDeadline: string;
   paymentRateFulfillmentDate: string;
+  secondPillarContributionEndDate: string;
 }
 
 export interface PaymentLink {

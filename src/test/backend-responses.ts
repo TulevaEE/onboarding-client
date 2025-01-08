@@ -190,4 +190,5 @@ export const mandateDeadlinesResponse: MandateDeadlines = {
   withdrawalFulfillmentDate: '2024-01-16',
   paymentRateFulfillmentDate: '2025-01-01',
   withdrawalLatestFulfillmentDate: '2024-01-20',
+  secondPillarContributionEndDate: '2024-08-01',
 };

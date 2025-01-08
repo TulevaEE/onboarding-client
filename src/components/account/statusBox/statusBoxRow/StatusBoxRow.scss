@@ -1,7 +1,16 @@
 @import '../../../variables';
 
+.status-box-row {
+  padding: 0.75em 0;
+}
+
 .status-box-row li {
   list-style: none;
+  padding-top: 0.125em;
+}
+
+.status-box-icon {
+  padding-top: 0.2em;
 }
 
 .status-box-row ul {

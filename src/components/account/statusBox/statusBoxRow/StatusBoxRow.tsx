@@ -8,7 +8,7 @@ const Checkmark: React.FunctionComponent<{
 }> = ({ checked = false, warning = false, error = false }) => {
   if (error) {
     return (
-      <div className="ml-3 mr-2">
+      <div className="ml-3 mr-2 status-box-icon">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none">
           <path
             fill="#FF4800"
@@ -37,7 +37,7 @@ const Checkmark: React.FunctionComponent<{
 
   if (warning) {
     return (
-      <div className="ml-3 mr-2">
+      <div className="ml-3 mr-2 status-box-icon">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none">
           <path
             fill="#F8AF18"
@@ -64,7 +64,7 @@ const Checkmark: React.FunctionComponent<{
 
   if (checked) {
     return (
-      <div className="ml-3 mr-2">
+      <div className="ml-3 mr-2 status-box-icon">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none">
           <path
             fill="#51C26C"
@@ -127,10 +127,10 @@ export const StatusBoxRow: React.FunctionComponent<{
     </ul>
   );
   return (
-    <div className={`py-2 status-box-row ${!last ? 'tv-table__row' : ''}`}>
+    <div className={`status-box-row ${!last ? 'tv-table__row' : ''}`}>
       <div className="d-flex flex-sm-row flex-column justify-content-between">
         <div className="d-flex">
-          <div className="d-flex flex-column justify-content-center">
+          <div className="d-flex flex-column">
             <Checkmark checked={ok} warning={warning} error={error} />
           </div>
           <div className="d-flex flex-column justify-content-center">
