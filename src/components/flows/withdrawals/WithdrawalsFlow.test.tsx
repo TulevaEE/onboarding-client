@@ -854,7 +854,7 @@ const assertFundPensionMandate = async (
     expect(
       within(pillarStoppedWarning).getByText(/II pillar contributions will stop/),
     ).toBeInTheDocument();
-    expect(within(pillarStoppedWarning).getByText(/from March 31/)).toBeInTheDocument();
+    expect(within(pillarStoppedWarning).getByText(/from August 1/)).toBeInTheDocument();
 
     if (bankruptciesPresent) {
       expect(
@@ -932,7 +932,7 @@ const assertPartialWithdrawalMandate = async (
     expect(
       within(pillarStoppedWarning).getByText(/II pillar contributions will stop/),
     ).toBeInTheDocument();
-    expect(within(pillarStoppedWarning).getByText(/from March 31/)).toBeInTheDocument();
+    expect(within(pillarStoppedWarning).getByText(/from August 1/)).toBeInTheDocument();
 
     if (bankruptciesPresent) {
       expect(

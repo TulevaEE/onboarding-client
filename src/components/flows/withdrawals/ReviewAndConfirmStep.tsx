@@ -366,7 +366,7 @@ const FundPensionMandateDescription = ({
           <FormattedMessage
             id="withdrawals.mandates.partialWithdrawal.secondPillarPaymentsFinished"
             values={{
-              endingDate: formatDateTime(mandateDeadlines.periodEnding),
+              endingDate: formatDateTime(mandateDeadlines.secondPillarContributionEndDate),
               b: (children: ReactChildren) => <b>{children}</b>,
             }}
           />
@@ -487,7 +487,8 @@ const PartialWithdrawalMandateDescription = ({
               values={{
                 b: (children: ReactChildren) => <b>{children}</b>,
                 endingDate:
-                  mandateDeadlines?.periodEnding && formatDate(mandateDeadlines.periodEnding),
+                  mandateDeadlines?.periodEnding &&
+                  formatDate(mandateDeadlines.secondPillarContributionEndDate),
               }}
             />
           </p>
