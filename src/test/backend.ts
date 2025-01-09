@@ -618,6 +618,7 @@ const TEST_BACKENDS = {
   fundPensionStatus: fundPensionStatusBackend,
   capitalEvents: capitalEventsBackend,
   mandateDeadlines: mandateDeadlinesBackend,
+  mandateBatch: mandateBatchBackend,
 } as const;
 
 export type TestBackendName = keyof typeof TEST_BACKENDS;

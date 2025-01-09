@@ -7,17 +7,8 @@ import { initializeConfiguration } from '../../config/config';
 import LoggedInApp from '../../LoggedInApp';
 import { createDefaultStore, login, renderWrapped } from '../../../test/utils';
 import {
-  amlChecksBackend,
-  applicationsBackend,
-  fundsBackend,
-  mandateBatchBackend,
-  mandateDeadlinesBackend,
   pensionAccountStatementBackend,
-  returnsBackend,
-  smartIdMandateBatchSigningBackend,
-  transactionsBackend,
-  userBackend,
-  userConversionBackend,
+  useTestBackendsExcept,
   withdrawalsEligibilityBackend,
 } from '../../../test/backend';
 import { FundStatus } from '../../common/apiModels';
@@ -41,17 +32,7 @@ afterAll(() => server.close());
 beforeEach(async () => {
   initializeConfiguration();
 
-  transactionsBackend(server);
-  userConversionBackend(server);
-  userBackend(server);
-  amlChecksBackend(server);
-  fundsBackend(server);
-  applicationsBackend(server);
-  returnsBackend(server);
-  smartIdMandateBatchSigningBackend(server);
-  mandateBatchBackend(server);
-  mandateDeadlinesBackend(server);
-
+  useTestBackendsExcept(server, ['pensionAccountStatement', 'withdrawalsEligibility']);
   initializeComponent();
 
   history.push('/withdrawals');
