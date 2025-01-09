@@ -15,6 +15,7 @@ import {
   returnsBackend,
   userBackend,
   userConversionBackend,
+  useTestBackends,
 } from '../../../../test/backend';
 import LoggedInApp from '../../../LoggedInApp';
 
@@ -44,14 +45,7 @@ describe('When a user is making a third pillar gift', () => {
   beforeEach(async () => {
     initializeConfiguration();
 
-    userConversionBackend(server);
-    userBackend(server);
-    amlChecksBackend(server);
-    pensionAccountStatementBackend(server);
-    fundsBackend(server);
-    paymentLinkBackend(server);
-    applicationsBackend(server);
-    returnsBackend(server);
+    useTestBackends(server);
 
     initializeComponent();
 

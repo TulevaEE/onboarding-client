@@ -1,26 +1,12 @@
-import React from 'react';
 import { setupServer } from 'msw/node';
 import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Route, Switch } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
-import { rest } from 'msw';
 import { initializeConfiguration } from '../../config/config';
 import LoggedInApp from '../../LoggedInApp';
 import { createDefaultStore, renderWrapped } from '../../../test/utils';
-import {
-  amlChecksBackend,
-  applicationsBackend,
-  fundsBackend,
-  mandatesBackend,
-  partnerAuthenticationBackend,
-  pensionAccountStatementBackend,
-  returnsBackend,
-  smartIdMandateSigningBackend,
-  userBackend,
-  userCapitalBackend,
-  userConversionBackend,
-} from '../../../test/backend';
+import { mandatesBackend, useTestBackendsExcept } from '../../../test/backend';
 import { TriggerProcedure } from '../../TriggerProcedure/TriggerProcedure';
 import PrivateRoute from '../../../PrivateRoute/PrivateRoute';
 import { getAuthentication } from '../../common/authenticationManager';
@@ -50,15 +36,7 @@ beforeEach(() => {
   initializeConfiguration();
   getAuthentication().remove();
 
-  partnerAuthenticationBackend(server);
-  userConversionBackend(server);
-  userBackend(server);
-  amlChecksBackend(server);
-  pensionAccountStatementBackend(server);
-  fundsBackend(server);
-  returnsBackend(server);
-  userCapitalBackend(server);
-  applicationsBackend(server);
+  useTestBackendsExcept(server, ['mandates']);
 
   initializeComponent();
 
@@ -105,7 +83,6 @@ describe('partner 2nd pillar flow', () => {
       address: { countryCode: 'EE' },
     };
     mandatesBackend(server, expectedRequest, 2);
-    smartIdMandateSigningBackend(server);
 
     userEvent.click(signButton());
 
@@ -148,7 +125,6 @@ describe('partner 2nd pillar flow', () => {
       address: { countryCode: 'EE' },
     };
     mandatesBackend(server, expectedRequest, 2);
-    smartIdMandateSigningBackend(server);
 
     userEvent.click(signButton());
 
@@ -212,7 +188,6 @@ describe('partner 2nd pillar flow', () => {
       address: { countryCode: 'EE' },
     };
     mandatesBackend(server, expectedRequest, 2);
-    smartIdMandateSigningBackend(server);
 
     userEvent.click(signButton());
 
@@ -259,7 +234,6 @@ describe('partner 2nd pillar flow', () => {
       address: { countryCode: 'EE' },
     };
     mandatesBackend(server, expectedRequest, 2);
-    smartIdMandateSigningBackend(server);
 
     userEvent.click(signButton());
 

@@ -1,4 +1,3 @@
-import React from 'react';
 import { setupServer } from 'msw/node';
 import { screen, waitFor } from '@testing-library/react';
 import { Route } from 'react-router-dom';
@@ -6,16 +5,7 @@ import { createMemoryHistory, History } from 'history';
 import userEvent from '@testing-library/user-event';
 import { createDefaultStore, login, renderWrapped } from '../../../../test/utils';
 import { initializeConfiguration } from '../../../config/config';
-import {
-  amlChecksBackend,
-  applicationsBackend,
-  fundsBackend,
-  paymentLinkBackend,
-  pensionAccountStatementBackend,
-  returnsBackend,
-  userBackend,
-  userConversionBackend,
-} from '../../../../test/backend';
+import { useTestBackends } from '../../../../test/backend';
 import LoggedInApp from '../../../LoggedInApp';
 
 describe('When a user is making a third pillar payment', () => {
@@ -44,14 +34,7 @@ describe('When a user is making a third pillar payment', () => {
   beforeEach(async () => {
     initializeConfiguration();
 
-    userConversionBackend(server);
-    userBackend(server);
-    amlChecksBackend(server);
-    pensionAccountStatementBackend(server);
-    fundsBackend(server);
-    paymentLinkBackend(server);
-    applicationsBackend(server);
-    returnsBackend(server);
+    useTestBackends(server);
 
     initializeComponent();
 

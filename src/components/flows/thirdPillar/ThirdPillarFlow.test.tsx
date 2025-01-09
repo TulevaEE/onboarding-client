@@ -1,25 +1,17 @@
-import React from 'react';
 import { setupServer } from 'msw/node';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Route } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
-import { rest } from 'msw';
 import { initializeConfiguration } from '../../config/config';
 import LoggedInApp from '../../LoggedInApp';
 import { createDefaultStore, login, renderWrapped } from '../../../test/utils';
 import {
-  amlChecksBackend,
-  applicationsBackend,
-  fundsBackend,
   mandatesBackend,
   pensionAccountStatementBackend,
-  returnsBackend,
-  smartIdMandateSigningBackend,
-  transactionsBackend,
   userBackend,
-  userCapitalBackend,
   userConversionBackend,
+  useTestBackendsExcept,
 } from '../../../test/backend';
 import { FundBalance, FundStatus } from '../../common/apiModels';
 
@@ -41,12 +33,7 @@ afterAll(() => server.close());
 beforeEach(async () => {
   initializeConfiguration();
 
-  amlChecksBackend(server);
-  fundsBackend(server);
-  returnsBackend(server);
-  userCapitalBackend(server);
-  applicationsBackend(server);
-  transactionsBackend(server);
+  useTestBackendsExcept(server, ['user', 'userConversion', 'pensionAccountStatement', 'mandates']);
 
   initializeComponent();
 });
@@ -84,7 +71,6 @@ describe('3rd pillar flow', () => {
       address: { countryCode: 'EE' },
     };
     mandatesBackend(server, expectedRequest, 3);
-    smartIdMandateSigningBackend(server);
 
     userEvent.click(sign());
 
@@ -134,7 +120,6 @@ describe('3rd pillar flow', () => {
       address: { countryCode: 'EE' },
     };
     mandatesBackend(server, expectedRequest, 3);
-    smartIdMandateSigningBackend(server);
 
     userEvent.click(sign());
     expect(await paymentStepHeading()).toBeInTheDocument();

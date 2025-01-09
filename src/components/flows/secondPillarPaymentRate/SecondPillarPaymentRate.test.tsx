@@ -1,4 +1,3 @@
-import React from 'react';
 import { setupServer } from 'msw/node';
 import { screen } from '@testing-library/react';
 import { Route } from 'react-router-dom';
@@ -6,19 +5,7 @@ import { createMemoryHistory, History } from 'history';
 import userEvent from '@testing-library/user-event';
 import { createDefaultStore, login, renderWrapped } from '../../../test/utils';
 import { initializeConfiguration } from '../../config/config';
-import {
-  amlChecksBackend,
-  applicationsBackend,
-  fundsBackend,
-  mandateDeadlinesBackend,
-  paymentLinkBackend,
-  pensionAccountStatementBackend,
-  returnsBackend,
-  secondPillarPaymentRateBackend,
-  smartIdMandateSigningBackend,
-  userBackend,
-  userConversionBackend,
-} from '../../../test/backend';
+import { useTestBackends } from '../../../test/backend';
 import LoggedInApp from '../../LoggedInApp';
 
 describe('When a user is changing their 2nd pillar payment rate', () => {
@@ -47,17 +34,7 @@ describe('When a user is changing their 2nd pillar payment rate', () => {
   beforeEach(async () => {
     initializeConfiguration();
 
-    userConversionBackend(server);
-    userBackend(server);
-    amlChecksBackend(server);
-    pensionAccountStatementBackend(server);
-    fundsBackend(server);
-    paymentLinkBackend(server);
-    applicationsBackend(server);
-    returnsBackend(server);
-    secondPillarPaymentRateBackend(server);
-    smartIdMandateSigningBackend(server);
-    mandateDeadlinesBackend(server);
+    useTestBackends(server);
 
     initializeComponent();
 

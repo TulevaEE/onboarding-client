@@ -18,6 +18,7 @@ import {
   userBackend,
   userCapitalBackend,
   userConversionBackend,
+  useTestBackendsExcept,
 } from '../../../test/backend';
 
 const server = setupServer();
@@ -38,14 +39,7 @@ afterAll(() => server.close());
 beforeEach(async () => {
   initializeConfiguration();
 
-  userConversionBackend(server);
-  userBackend(server);
-  amlChecksBackend(server);
-  pensionAccountStatementBackend(server);
-  fundsBackend(server);
-  returnsBackend(server);
-  userCapitalBackend(server);
-  applicationsBackend(server);
+  useTestBackendsExcept(server, ['mandates', 'user']);
 
   initializeComponent();
 
@@ -53,6 +47,10 @@ beforeEach(async () => {
 });
 
 describe('2nd pillar flow', () => {
+  beforeEach(() => {
+    userBackend(server);
+  });
+
   test('allows moving all external pension to stock Tuleva pension fund', async () => {
     expect(
       await screen.findByText(/Your pension account overview/i, undefined, { timeout: 1000 }),
@@ -82,7 +80,6 @@ describe('2nd pillar flow', () => {
       address: { countryCode: 'EE' },
     };
     mandatesBackend(server, expectedRequest, 2);
-    smartIdMandateSigningBackend(server);
 
     userEvent.click(signButton());
 
@@ -125,7 +122,6 @@ describe('2nd pillar flow', () => {
       address: { countryCode: 'EE' },
     };
     mandatesBackend(server, expectedRequest, 2);
-    smartIdMandateSigningBackend(server);
 
     userEvent.click(signButton());
 
@@ -189,7 +185,6 @@ describe('2nd pillar flow', () => {
       address: { countryCode: 'EE' },
     };
     mandatesBackend(server, expectedRequest, 2);
-    smartIdMandateSigningBackend(server);
 
     userEvent.click(signButton());
 
@@ -236,13 +231,14 @@ describe('2nd pillar flow', () => {
       address: { countryCode: 'EE' },
     };
     mandatesBackend(server, expectedRequest, 2);
-    smartIdMandateSigningBackend(server);
 
     userEvent.click(signButton());
 
     await expectSuccessScreen(true, false);
   }, 20_000);
+});
 
+describe('payment rate upsell', () => {
   test(`doesn't upsell II pillar payment rate when change is already pending`, async () => {
     userBackend(server, { secondPillarPaymentRates: { current: 2, pending: 6 } });
     expect(
@@ -273,7 +269,6 @@ describe('2nd pillar flow', () => {
       address: { countryCode: 'EE' },
     };
     mandatesBackend(server, expectedRequest, 2);
-    smartIdMandateSigningBackend(server);
 
     userEvent.click(signButton());
 
@@ -310,7 +305,6 @@ describe('2nd pillar flow', () => {
       address: { countryCode: 'EE' },
     };
     mandatesBackend(server, expectedRequest, 2);
-    smartIdMandateSigningBackend(server);
 
     userEvent.click(signButton());
 
