@@ -2,7 +2,7 @@ import React from 'react';
 
 import { FormattedMessage } from 'react-intl';
 import { useMe, usePendingApplications } from '../../common/apiHooks';
-import { ApplicationAction, ApplicationCard } from './ApplicationCards';
+import { ApplicationCard } from './ApplicationCards';
 
 export const ApplicationSection: React.FunctionComponent = () => {
   const { data: applications } = usePendingApplications();
