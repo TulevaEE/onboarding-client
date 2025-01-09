@@ -1,5 +1,4 @@
 import './Payment.scss';
-import { PaymentType } from '../../../common/apiModels';
 import { LuminorRecurringPaymentDetails } from './paymentDetails/LuminorRecurringPaymentDetails';
 import { OtherBankPaymentDetails } from './paymentDetails/OtherBankPaymentDetails';
 import { SwedbankRecurringPaymentDetails } from './paymentDetails/SwedbankRecurringPaymentDetails';
@@ -32,7 +31,7 @@ export const RecurringPaymentDetails = ({ paymentBank, paymentAmount, personalCo
       <OtherBankPaymentDetails
         personalCode={personalCode}
         amount={paymentAmount}
-        paymentType={PaymentType.RECURRING}
+        paymentType="RECURRING"
       />
     )}
   </>

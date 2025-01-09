@@ -29,7 +29,6 @@ import {
   LOG_OUT,
   MOBILE_AUTHENTICATION_SUCCESS,
 } from '../login/constants';
-import { FundStatus } from '../common/apiModels';
 
 describe('Exchange reducer', () => {
   it('finishes loading pension data', () => {
@@ -166,14 +165,14 @@ describe('Exchange reducer', () => {
         iShouldBeSelected: true,
         fundManager: { name: 'Tuleva' },
         pillar: 2,
-        status: FundStatus.ACTIVE,
+        status: 'ACTIVE',
       },
       {
         isin: 'asd',
         hello: true,
         fundManager: { name: 'A' },
         pillar: 2,
-        status: FundStatus.ACTIVE,
+        status: 'ACTIVE',
       },
     ];
 
@@ -184,14 +183,14 @@ describe('Exchange reducer', () => {
         hello: true,
         fundManager: { name: 'A' },
         pillar: 3,
-        status: FundStatus.ACTIVE,
+        status: 'ACTIVE',
       },
       {
         isin: 'third pillar non active fund',
         hello: true,
         fundManager: { name: 'A' },
         pillar: 3,
-        status: FundStatus.CONTRIBUTIONS_FORBIDDEN,
+        status: 'CONTRIBUTIONS_FORBIDDEN',
       },
     ];
     const action = {
@@ -210,14 +209,14 @@ describe('Exchange reducer', () => {
         iShouldBeSelected: true,
         fundManager: { name: 'Tuleva' },
         pillar: 2,
-        status: FundStatus.ACTIVE,
+        status: 'ACTIVE',
       },
       {
         isin: 'asd',
         hello: true,
         fundManager: { name: 'A' },
         pillar: 2,
-        status: FundStatus.ACTIVE,
+        status: 'ACTIVE',
       },
     ];
     const action = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
@@ -254,21 +253,21 @@ describe('Exchange reducer', () => {
         isin: 'isin0',
         fundManager: { name: 'Random company fund' },
         pillar: 2,
-        status: FundStatus.ACTIVE,
+        status: 'ACTIVE',
       },
       {
         name: 'name',
         isin: 'isin1',
         fundManager: { name: 'Tuleva' },
         pillar: 2,
-        status: FundStatus.ACTIVE,
+        status: 'ACTIVE',
       },
       {
         name: 'name',
         isin: 'isin2',
         fundManager: { name: 'Tuleva' },
         pillar: 2,
-        status: FundStatus.ACTIVE,
+        status: 'ACTIVE',
       },
     ];
     const targetFundsAction = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
@@ -285,28 +284,28 @@ describe('Exchange reducer', () => {
         isin: 'wrongtarget',
         fundManager: { name: 'Random company fund' },
         pillar: 2,
-        status: FundStatus.ACTIVE,
+        status: 'ACTIVE',
       },
       {
         name: 'name',
         isin: '3rdpillartarget',
         fundManager: { name: 'Tuleva' },
         pillar: 3,
-        status: FundStatus.ACTIVE,
+        status: 'ACTIVE',
       },
       {
         name: 'name',
         isin: 'target1',
         fundManager: { name: 'Tuleva' },
         pillar: 2,
-        status: FundStatus.ACTIVE,
+        status: 'ACTIVE',
       },
       {
         name: 'name',
         isin: 'target2',
         fundManager: { name: 'Tuleva' },
         pillar: 2,
-        status: FundStatus.ACTIVE,
+        status: 'ACTIVE',
       },
     ];
     const targetFundsAction = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
@@ -328,14 +327,14 @@ describe('Exchange reducer', () => {
         isin: 'isin1',
         fundManager: { name: 'Tuleva' },
         pillar: 2,
-        status: FundStatus.ACTIVE,
+        status: 'ACTIVE',
       },
       {
         name: 'name',
         isin: 'isin2',
         fundManager: { name: 'Tuleva' },
         pillar: 2,
-        status: FundStatus.ACTIVE,
+        status: 'ACTIVE',
       },
     ];
     const targetFundsAction = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
@@ -360,14 +359,14 @@ describe('Exchange reducer', () => {
         isin: 'target',
         fundManager: { name: 'Tuleva' },
         pillar: 2,
-        status: FundStatus.ACTIVE,
+        status: 'ACTIVE',
       },
       {
         name: 'name',
         isin: 'target 2',
         fundManager: { name: 'Tuleva' },
         pillar: 2,
-        status: FundStatus.ACTIVE,
+        status: 'ACTIVE',
       },
     ];
     const targetFundsAction = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
@@ -395,14 +394,14 @@ describe('Exchange reducer', () => {
         isin: 'target',
         fundManager: { name: 'Tuleva' },
         pillar: 2,
-        status: FundStatus.ACTIVE,
+        status: 'ACTIVE',
       },
       {
         name: 'name',
         isin: 'target 2',
         fundManager: { name: 'Tuleva' },
         pillar: 2,
-        status: FundStatus.ACTIVE,
+        status: 'ACTIVE',
       },
     ];
     const targetFundsAction = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
@@ -438,14 +437,14 @@ describe('Exchange reducer', () => {
         isin: 'thissourcewillbeskipped',
         fundManager: { name: 'Tuleva' },
         pillar: 2,
-        status: FundStatus.ACTIVE,
+        status: 'ACTIVE',
       },
       {
         name: 'name',
         isin: 'willnotbeskipped',
         fundManager: { name: 'Tuleva' },
         pillar: 2,
-        status: FundStatus.ACTIVE,
+        status: 'ACTIVE',
       },
     ];
     const targetFundsAction = { type: GET_TARGET_FUNDS_SUCCESS, targetFunds };
@@ -484,19 +483,19 @@ describe('Exchange reducer', () => {
       isin: 'asd',
       fundManager: { name: 'Tuleva' },
       pillar: 2,
-      status: FundStatus.ACTIVE,
+      status: 'ACTIVE',
     };
     const liquidatedSecondPillarFund = {
       isin: 'hjk',
       fundManager: { name: 'B' },
       pillar: 2,
-      status: FundStatus.LIQUIDATED,
+      status: 'LIQUIDATED',
     };
     const thirdPillarFund = {
       isin: 'dfg',
       fundManager: { name: 'A' },
       pillar: 3,
-      status: FundStatus.ACTIVE,
+      status: 'ACTIVE',
     };
 
     const targetFunds = [activeSecondPillarFund, liquidatedSecondPillarFund, thirdPillarFund];

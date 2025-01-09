@@ -40,18 +40,13 @@ import {
   Application,
   CancellationMandate,
   CapitalRow,
-  CapitalType,
   Contribution,
   Fund,
-  FundStatus,
   LoginMethod,
   MandateDeadlines,
   Payment,
-  PaymentChannel,
   PaymentLink,
-  PaymentType,
   Transaction,
-  TransactionType,
   User,
   UserConversion,
 } from './apiModels';
@@ -789,28 +784,28 @@ describe('API calls', () => {
   describe('getCapitalRowsWithToken', () => {
     const mockCapital: CapitalRow[] = [
       {
-        type: CapitalType.CAPITAL_PAYMENT,
+        type: 'CAPITAL_PAYMENT',
         contributions: 100,
         profit: 50,
         value: 150,
         currency: 'EUR',
       },
       {
-        type: CapitalType.UNVESTED_WORK_COMPENSATION,
+        type: 'UNVESTED_WORK_COMPENSATION',
         contributions: 200,
         profit: 100,
         value: 300,
         currency: 'EUR',
       },
       {
-        type: CapitalType.WORK_COMPENSATION,
+        type: 'WORK_COMPENSATION',
         contributions: 300,
         profit: 150,
         value: 450,
         currency: 'EUR',
       },
       {
-        type: CapitalType.MEMBERSHIP_BONUS,
+        type: 'MEMBERSHIP_BONUS',
         contributions: 400,
         profit: 200,
         value: 600,
@@ -879,7 +874,7 @@ describe('API calls', () => {
         managementFeeRate: 0.0034,
         ongoingChargesFigure: 0.0047,
         fundManager: { name: 'Tuleva' },
-        status: FundStatus.ACTIVE,
+        status: 'ACTIVE',
         inceptionDate: '2017-01-01',
         nav: 1,
       },
@@ -914,7 +909,7 @@ describe('API calls', () => {
             managementFeeRate: 0.0034,
             ongoingChargesFigure: 0.0047,
             fundManager: { name: 'Tuleva' },
-            status: FundStatus.ACTIVE,
+            status: 'ACTIVE',
             inceptionDate: '2017-01-01',
           },
           exchanges: [],
@@ -945,7 +940,7 @@ describe('API calls', () => {
         currency: 'EUR',
         time: '2020-01-01T00:00:00Z',
         isin: 'EE3600109435',
-        type: TransactionType.CONTRIBUTION_CASH,
+        type: 'CONTRIBUTION_CASH',
       },
     ];
 
@@ -1053,8 +1048,8 @@ describe('API calls', () => {
 
   describe('getPaymentLink', () => {
     const mockPayment: Payment = {
-      type: PaymentType.SINGLE,
-      paymentChannel: PaymentChannel.SWEDBANK,
+      type: 'SINGLE',
+      paymentChannel: 'SWEDBANK',
       recipientPersonalCode: '12345678901',
       amount: 100,
       currency: 'EUR',
@@ -1076,8 +1071,8 @@ describe('API calls', () => {
 
   describe('redirectToPayment', () => {
     const mockPayment: Payment = {
-      type: PaymentType.SINGLE,
-      paymentChannel: PaymentChannel.SWEDBANK,
+      type: 'SINGLE',
+      paymentChannel: 'SWEDBANK',
       recipientPersonalCode: '12345678901',
       amount: 100,
       currency: 'EUR',
@@ -1117,7 +1112,7 @@ describe('API calls', () => {
     });
 
     it('redirects to payment link for non-recurring payments', async () => {
-      mockPayment.type = PaymentType.SINGLE;
+      mockPayment.type = 'SINGLE';
       redirectToPayment(mockPayment);
 
       // Use setTimeout as an alternative to setImmediate
@@ -1129,7 +1124,7 @@ describe('API calls', () => {
     });
 
     it('opens a new window for recurring payments and writes "Loading..."', async () => {
-      mockPayment.type = PaymentType.RECURRING;
+      mockPayment.type = 'RECURRING';
       redirectToPayment(mockPayment);
 
       await new Promise((resolve) => setTimeout(resolve, 0));

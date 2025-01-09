@@ -1,7 +1,6 @@
 import { FormattedMessage } from 'react-intl';
 import { Radio } from '../../../common';
 import './Payment.scss';
-import { PaymentType } from '../../../common/apiModels';
 import { AvailablePaymentType } from './types';
 
 type Props = {
@@ -20,9 +19,9 @@ export const PaymentTypeSelection = ({ paymentType, setPaymentType }: Props) => 
       name="payment-type"
       id="payment-type-single"
       className="mt-3"
-      selected={paymentType === PaymentType.SINGLE}
+      selected={paymentType === 'SINGLE'}
       onSelect={() => {
-        setPaymentType(PaymentType.SINGLE);
+        setPaymentType('SINGLE');
       }}
     >
       <p className="m-0">
@@ -33,9 +32,9 @@ export const PaymentTypeSelection = ({ paymentType, setPaymentType }: Props) => 
       name="payment-type"
       id="payment-type-recurring"
       className="mt-3"
-      selected={paymentType === PaymentType.RECURRING}
+      selected={paymentType === 'RECURRING'}
       onSelect={() => {
-        setPaymentType(PaymentType.RECURRING);
+        setPaymentType('RECURRING');
       }}
     >
       <p className="m-0">

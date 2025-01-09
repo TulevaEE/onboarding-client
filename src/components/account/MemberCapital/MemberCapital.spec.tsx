@@ -3,7 +3,6 @@ import { shallow, ShallowWrapper } from 'enzyme';
 import { MemberCapital } from '.';
 
 import Table from '../../common/table';
-import { CapitalType } from '../../common/apiModels';
 
 describe('Member capital', () => {
   let component: ShallowWrapper;
@@ -18,7 +17,7 @@ describe('Member capital', () => {
       <MemberCapital
         rows={[
           {
-            type: CapitalType.WORK_COMPENSATION,
+            type: 'WORK_COMPENSATION',
             contributions: 300,
             profit: 150,
             value: 450,

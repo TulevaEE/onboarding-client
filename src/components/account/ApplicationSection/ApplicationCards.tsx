@@ -134,7 +134,7 @@ const TransferApplicationCard: React.FunctionComponent<{
 }> = ({ application, allowedActions }) => {
   const isThirdPillarTransfer = application.details.sourceFund.pillar === 3;
   const transferActions = isThirdPillarTransfer
-    ? allowedActions.filter((action) => action !== ApplicationAction.CANCEL)
+    ? allowedActions.filter((action) => action !== 'CANCEL')
     : allowedActions;
 
   return (
@@ -398,8 +398,7 @@ const BaseApplicationCard: React.FunctionComponent<{
   allowedActions: ApplicationAction[];
 }> = ({ application, titleKey, children, allowedActions }) => {
   const cancellationUrl = `/applications/${application.id}/cancellation`;
-  const canCancel =
-    allowedActions.includes(ApplicationAction.CANCEL) && isBeforeCancellationDeadline(application);
+  const canCancel = allowedActions.includes('CANCEL') && isBeforeCancellationDeadline(application);
   return (
     <div className={styles.card}>
       <div className={styles.header}>
@@ -429,9 +428,7 @@ const BaseApplicationCard: React.FunctionComponent<{
   );
 };
 
-export enum ApplicationAction {
-  CANCEL = 'CANCEL',
-}
+export type ApplicationAction = 'CANCEL';
 
 function formatDate(date: string): string {
   const format = moment.localeData().longDateFormat('LL');

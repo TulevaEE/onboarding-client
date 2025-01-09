@@ -7,7 +7,6 @@ import { useFunds, useTransactions } from '../../common/apiHooks';
 import Table from '../../common/table';
 import { Euro } from '../../common/Euro';
 import { Shimmer } from '../../common/shimmer/Shimmer';
-import { TransactionType } from '../../common/apiModels';
 import { formatDate } from '../../common/dateFormatter';
 
 export const TransactionSection: React.FunctionComponent<{
@@ -89,7 +88,7 @@ export const TransactionSection: React.FunctionComponent<{
           : []),
         {
           type:
-            transaction.type === TransactionType.CONTRIBUTION_CASH_WORKPLACE ? (
+            transaction.type === 'CONTRIBUTION_CASH_WORKPLACE' ? (
               <span
                 className="fa fa-briefcase text-muted"
                 title={intl.formatMessage({ id: 'transactions.workplace' })}

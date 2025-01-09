@@ -19,7 +19,6 @@ import {
   GraphBarProperties,
   GraphProperties,
   PerformanceVerdict,
-  PerformanceVerdictComparison,
   PerformanceVerdictProperties,
   RootState,
 } from './types';
@@ -635,12 +634,12 @@ const ComparisonCalculator: React.FC = () => {
       const comparisonAlphaThreshold = 0.01;
       const difference = personalRate - comparisonRate;
       if (difference > 0 && difference > comparisonAlphaThreshold) {
-        return PerformanceVerdict.POSITIVE_ALPHA;
+        return 'POSITIVE_ALPHA';
       }
       if (difference < 0 && difference < -comparisonAlphaThreshold) {
-        return PerformanceVerdict.NEGATIVE_ALPHA;
+        return 'NEGATIVE_ALPHA';
       }
-      return PerformanceVerdict.NEUTRAL;
+      return 'NEUTRAL';
     }
 
     let performanceVerdictProps: PerformanceVerdictProperties;
@@ -649,10 +648,10 @@ const ComparisonCalculator: React.FC = () => {
         (returns.personal &&
           returns.index &&
           calculatePerformanceVerdict(returns.personal.rate, returns.index.rate)) ||
-        PerformanceVerdict.NEUTRAL;
+        'NEUTRAL';
 
       performanceVerdictProps = {
-        comparison: PerformanceVerdictComparison.WORLD_INDEX,
+        comparison: 'WORLD_INDEX',
         verdict: performanceVerdict,
         amount: (returns.personal?.amount || 0) - (returns.index?.amount || 0),
       };
@@ -661,10 +660,10 @@ const ComparisonCalculator: React.FC = () => {
         (returns.personal &&
           returns.pensionFund &&
           calculatePerformanceVerdict(returns.personal.rate, returns.pensionFund.rate)) ||
-        PerformanceVerdict.NEUTRAL;
+        'NEUTRAL';
 
       performanceVerdictProps = {
-        comparison: PerformanceVerdictComparison.INFLATION,
+        comparison: 'INFLATION',
         verdict: performanceVerdict,
         amount: (returns.personal?.amount || 0) - (returns.pensionFund?.amount || 0),
       };
@@ -673,10 +672,10 @@ const ComparisonCalculator: React.FC = () => {
         (returns.personal &&
           returns.pensionFund &&
           calculatePerformanceVerdict(returns.personal.rate, returns.pensionFund.rate)) ||
-        PerformanceVerdict.NEUTRAL;
+        'NEUTRAL';
 
       performanceVerdictProps = {
-        comparison: PerformanceVerdictComparison.FUND,
+        comparison: 'FUND',
         verdict: performanceVerdict,
         amount: (returns.personal?.amount || 0) - (returns.pensionFund?.amount || 0),
       };
@@ -774,8 +773,8 @@ const ComparisonCalculator: React.FC = () => {
 
   function getInitialPerformanceVerdictProperties(): PerformanceVerdictProperties {
     return {
-      comparison: PerformanceVerdictComparison.WORLD_INDEX,
-      verdict: PerformanceVerdict.NEUTRAL,
+      comparison: 'WORLD_INDEX',
+      verdict: 'NEUTRAL',
       amount: 0,
     };
   }
@@ -920,8 +919,8 @@ const ComparisonCalculator: React.FC = () => {
   }
 
   function getContentTextVerdict() {
-    if (performanceVerdictProperties.comparison === PerformanceVerdictComparison.WORLD_INDEX) {
-      if (performanceVerdictProperties.verdict === PerformanceVerdict.POSITIVE_ALPHA) {
+    if (performanceVerdictProperties.comparison === 'WORLD_INDEX') {
+      if (performanceVerdictProperties.verdict === 'POSITIVE_ALPHA') {
         return (
           <>
             {formatMessageWithTags({
@@ -939,7 +938,7 @@ const ComparisonCalculator: React.FC = () => {
           </>
         );
       }
-      if (performanceVerdictProperties.verdict === PerformanceVerdict.NEUTRAL) {
+      if (performanceVerdictProperties.verdict === 'NEUTRAL') {
         return (
           <>
             {formatMessageWithTags({
@@ -952,7 +951,7 @@ const ComparisonCalculator: React.FC = () => {
           </>
         );
       }
-      if (performanceVerdictProperties.verdict === PerformanceVerdict.NEGATIVE_ALPHA) {
+      if (performanceVerdictProperties.verdict === 'NEGATIVE_ALPHA') {
         return (
           <>
             {formatMessageWithTags({
@@ -972,14 +971,14 @@ const ComparisonCalculator: React.FC = () => {
       }
     }
 
-    if (performanceVerdictProperties.comparison === PerformanceVerdictComparison.FUND) {
+    if (performanceVerdictProperties.comparison === 'FUND') {
       let fundLabel = getFundLabelByKey(selectedComparison);
       if (selectedComparison === Key.EPI) {
         fundLabel = formatMessage({
           id: 'comparisonCalculator.content.performance.epi.alpha.label.negative',
         });
       }
-      if (performanceVerdictProperties.verdict === PerformanceVerdict.POSITIVE_ALPHA) {
+      if (performanceVerdictProperties.verdict === 'POSITIVE_ALPHA') {
         if (selectedComparison === Key.EPI) {
           fundLabel = formatMessage({
             id: 'comparisonCalculator.content.performance.epi.alpha.label.positive',
@@ -1003,7 +1002,7 @@ const ComparisonCalculator: React.FC = () => {
           </>
         );
       }
-      if (performanceVerdictProperties.verdict === PerformanceVerdict.NEUTRAL) {
+      if (performanceVerdictProperties.verdict === 'NEUTRAL') {
         return (
           <>
             {formatMessageWithTags({
@@ -1017,7 +1016,7 @@ const ComparisonCalculator: React.FC = () => {
           </>
         );
       }
-      if (performanceVerdictProperties.verdict === PerformanceVerdict.NEGATIVE_ALPHA) {
+      if (performanceVerdictProperties.verdict === 'NEGATIVE_ALPHA') {
         return (
           <>
             {formatMessageWithTags({
@@ -1038,8 +1037,8 @@ const ComparisonCalculator: React.FC = () => {
       }
     }
 
-    if (performanceVerdictProperties.comparison === PerformanceVerdictComparison.INFLATION) {
-      if (performanceVerdictProperties.verdict === PerformanceVerdict.POSITIVE_ALPHA) {
+    if (performanceVerdictProperties.comparison === 'INFLATION') {
+      if (performanceVerdictProperties.verdict === 'POSITIVE_ALPHA') {
         return (
           <>
             {formatMessageWithTags({
@@ -1057,7 +1056,7 @@ const ComparisonCalculator: React.FC = () => {
           </>
         );
       }
-      if (performanceVerdictProperties.verdict === PerformanceVerdict.NEUTRAL) {
+      if (performanceVerdictProperties.verdict === 'NEUTRAL') {
         if (
           returns.personal &&
           returns.pensionFund &&
@@ -1066,12 +1065,12 @@ const ComparisonCalculator: React.FC = () => {
           // reset inflation neutral alpha into either positive or negative alpha
           setPerformanceVerdictProperties((prevState) => ({
             ...prevState,
-            verdict: PerformanceVerdict.NEGATIVE_ALPHA,
+            verdict: 'NEGATIVE_ALPHA',
           }));
         }
         return <div />;
       }
-      if (performanceVerdictProperties.verdict === PerformanceVerdict.NEGATIVE_ALPHA) {
+      if (performanceVerdictProperties.verdict === 'NEGATIVE_ALPHA') {
         return (
           <>
             {formatMessageWithTags({
@@ -1097,8 +1096,8 @@ const ComparisonCalculator: React.FC = () => {
   }
 
   function getContentTextExplanation() {
-    if (performanceVerdictProperties.comparison === PerformanceVerdictComparison.WORLD_INDEX) {
-      if (performanceVerdictProperties.verdict === PerformanceVerdict.POSITIVE_ALPHA) {
+    if (performanceVerdictProperties.comparison === 'WORLD_INDEX') {
+      if (performanceVerdictProperties.verdict === 'POSITIVE_ALPHA') {
         return (
           <>
             {formatMessageWithTags({
@@ -1107,7 +1106,7 @@ const ComparisonCalculator: React.FC = () => {
           </>
         );
       }
-      if (performanceVerdictProperties.verdict === PerformanceVerdict.NEUTRAL) {
+      if (performanceVerdictProperties.verdict === 'NEUTRAL') {
         return (
           <>
             {formatMessageWithTags({
@@ -1116,7 +1115,7 @@ const ComparisonCalculator: React.FC = () => {
           </>
         );
       }
-      if (performanceVerdictProperties.verdict === PerformanceVerdict.NEGATIVE_ALPHA) {
+      if (performanceVerdictProperties.verdict === 'NEGATIVE_ALPHA') {
         return (
           <>
             {formatMessageWithTags({
@@ -1127,11 +1126,11 @@ const ComparisonCalculator: React.FC = () => {
       }
     }
 
-    if (performanceVerdictProperties.comparison === PerformanceVerdictComparison.FUND) {
+    if (performanceVerdictProperties.comparison === 'FUND') {
       return getFundAndInflationExplanation();
     }
 
-    if (performanceVerdictProperties.comparison === PerformanceVerdictComparison.INFLATION) {
+    if (performanceVerdictProperties.comparison === 'INFLATION') {
       return getFundAndInflationExplanation();
     }
     return <div />;
@@ -1169,14 +1168,14 @@ const ComparisonCalculator: React.FC = () => {
   }
 
   function getContentTextCtaSubtext() {
-    if (performanceVerdictProperties.comparison === PerformanceVerdictComparison.FUND) {
+    if (performanceVerdictProperties.comparison === 'FUND') {
       return (
         <InfoTooltip name="cta-tooltip" className="info-tooltip-modern ml-3 align-middle">
           <FormattedMessage id="comparisonCalculator.content.performance.cta.subtext" />
         </InfoTooltip>
       );
     }
-    if (performanceVerdictProperties.comparison === PerformanceVerdictComparison.INFLATION) {
+    if (performanceVerdictProperties.comparison === 'INFLATION') {
       return (
         <InfoTooltip name="cta-tooltip" className="info-tooltip-modern ml-3 align-middle">
           <FormattedMessage id="comparisonCalculator.content.performance.cta.subtext" />

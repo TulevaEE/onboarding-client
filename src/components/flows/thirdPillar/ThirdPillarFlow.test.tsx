@@ -13,7 +13,7 @@ import {
   userConversionBackend,
   useTestBackendsExcept,
 } from '../../../test/backend';
-import { FundBalance, FundStatus } from '../../common/apiModels';
+import { FundBalance } from '../../common/apiModels';
 
 const server = setupServer();
 let history: History;
@@ -189,7 +189,7 @@ const tulevaFund: FundBalance = {
     managementFeeRate: 0.003,
     pillar: 3,
     ongoingChargesFigure: 0.0043,
-    status: FundStatus.ACTIVE,
+    status: 'ACTIVE',
     inceptionDate: '2017-01-01',
     nav: 1,
   },
@@ -210,7 +210,7 @@ const otherFund: FundBalance = {
     managementFeeRate: 0.005,
     pillar: 3,
     ongoingChargesFigure: 0.005,
-    status: FundStatus.ACTIVE,
+    status: 'ACTIVE',
     inceptionDate: '2017-01-01',
     nav: 1,
   },

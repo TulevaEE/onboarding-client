@@ -1,4 +1,4 @@
-import { Fund, FundStatus } from './apiModels';
+import { Fund } from './apiModels';
 import {
   findWhere,
   createClamper,
@@ -100,7 +100,7 @@ describe('Utils', () => {
 
     it('checks if a fund is active', () => {
       expect(isActive(fund)).toBe(true);
-      expect(isActive({ ...fund, status: FundStatus.LIQUIDATED })).toBe(false);
+      expect(isActive({ ...fund, status: 'LIQUIDATED' })).toBe(false);
     });
 
     it('checks if a fund is second pillar', () => {

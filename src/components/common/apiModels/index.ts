@@ -147,13 +147,12 @@ export interface Fund {
 
 export type Pillar = 2 | 3;
 
-export enum FundStatus {
-  ACTIVE = 'ACTIVE',
-  LIQUIDATED = 'LIQUIDATED',
-  SUSPENDED = 'SUSPENDED',
-  CONTRIBUTIONS_FORBIDDEN = 'CONTRIBUTIONS_FORBIDDEN',
-  PAYOUTS_FORBIDDEN = 'PAYOUTS_FORBIDDEN',
-}
+export type FundStatus =
+  | 'ACTIVE'
+  | 'LIQUIDATED'
+  | 'SUSPENDED'
+  | 'CONTRIBUTIONS_FORBIDDEN'
+  | 'PAYOUTS_FORBIDDEN';
 
 export interface FundBalance {
   fund: Fund;
@@ -264,12 +263,11 @@ export interface CapitalEvent {
   currency: Currency;
 }
 
-export enum CapitalType {
-  CAPITAL_PAYMENT = 'CAPITAL_PAYMENT',
-  UNVESTED_WORK_COMPENSATION = 'UNVESTED_WORK_COMPENSATION',
-  WORK_COMPENSATION = 'WORK_COMPENSATION',
-  MEMBERSHIP_BONUS = 'MEMBERSHIP_BONUS',
-}
+export type CapitalType =
+  | 'CAPITAL_PAYMENT'
+  | 'UNVESTED_WORK_COMPENSATION'
+  | 'WORK_COMPENSATION'
+  | 'MEMBERSHIP_BONUS';
 
 export interface AmlCheck {
   type: string;
@@ -317,24 +315,17 @@ export interface Payment {
 
 export type Currency = 'EUR';
 
-export enum PaymentType {
-  SINGLE = 'SINGLE',
-  RECURRING = 'RECURRING',
-  EMPLOYER = 'EMPLOYER',
-  GIFT = 'GIFT',
-  MEMBER_FEE = 'MEMBER_FEE',
-}
+export type PaymentType = 'SINGLE' | 'RECURRING' | 'EMPLOYER' | 'GIFT' | 'MEMBER_FEE';
 
-export enum PaymentChannel {
-  SWEDBANK = 'SWEDBANK',
-  LHV = 'LHV',
-  SEB = 'SEB',
-  LUMINOR = 'LUMINOR',
-  COOP = 'COOP',
-  COOP_WEB = 'COOP_WEB',
-  PARTNER = 'PARTNER',
-  TULUNDUSUHISTU = 'TULUNDUSUHISTU',
-}
+export type PaymentChannel =
+  | 'SWEDBANK'
+  | 'LHV'
+  | 'SEB'
+  | 'LUMINOR'
+  | 'COOP'
+  | 'COOP_WEB'
+  | 'PARTNER'
+  | 'TULUNDUSUHISTU';
 
 export interface Authentication {
   authenticationHash: string;
@@ -349,12 +340,7 @@ export interface Transaction {
   type: TransactionType;
 }
 
-export enum TransactionType {
-  CONTRIBUTION_CASH = 'CONTRIBUTION_CASH',
-  CONTRIBUTION_CASH_WORKPLACE = 'CONTRIBUTION_CASH_WORKPLACE',
-  SUBTRACTION = 'SUBTRACTION',
-}
-
+export type TransactionType = 'CONTRIBUTION_CASH' | 'CONTRIBUTION_CASH_WORKPLACE' | 'SUBTRACTION';
 export interface Contribution {
   time: string;
   sender: string;

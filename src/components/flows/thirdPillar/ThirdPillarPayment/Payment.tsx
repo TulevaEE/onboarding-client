@@ -4,7 +4,7 @@ import { captureException } from '@sentry/browser';
 import ThirdPillarPaymentsAmount from '../../../account/statusBox/thirdPillarStatusBox/ThirdPillarContributionAmount';
 import './Payment.scss';
 import { redirectToPayment } from '../../../common/api';
-import { PaymentChannel, PaymentType } from '../../../common/apiModels';
+import { PaymentChannel } from '../../../common/apiModels';
 import { PaymentAmountInput } from './PaymentAmountInput';
 import { OtherBankPaymentDetails } from './paymentDetails/OtherBankPaymentDetails';
 import { useMe } from '../../../common/apiHooks';
@@ -17,7 +17,7 @@ import { PaymentSubmitSection } from './PaymentSubmitSection';
 export const Payment: React.FunctionComponent = () => {
   useIntl();
 
-  const [paymentType, setPaymentType] = useState<AvailablePaymentType>(PaymentType.SINGLE);
+  const [paymentType, setPaymentType] = useState<AvailablePaymentType>('SINGLE');
   const [paymentAmount, setPaymentAmount] = useState<string>('');
   const [paymentBank, setPaymentBank] = useState<BankKey | 'other' | null>(null);
   const [error, setError] = useState<boolean>(false);
@@ -88,10 +88,10 @@ export const Payment: React.FunctionComponent = () => {
           <div>
             <small className="text-muted">
               <a href="//tuleva.ee/iii-sammas/" target="_blank" rel="noreferrer">
-                {paymentType === PaymentType.SINGLE && (
+                {paymentType === 'SINGLE' && (
                   <FormattedMessage id="thirdPillarPayment.singlePaymentHowMuch" />
                 )}
-                {paymentType === PaymentType.RECURRING && (
+                {paymentType === 'RECURRING' && (
                   <FormattedMessage id="thirdPillarPayment.recurringPaymentHowMuch" />
                 )}
               </a>
@@ -101,10 +101,10 @@ export const Payment: React.FunctionComponent = () => {
 
         <div className="mt-5 payment-bank-title">
           <b>
-            {paymentType === PaymentType.SINGLE && (
+            {paymentType === 'SINGLE' && (
               <FormattedMessage id="thirdPillarPayment.singlePaymentBank" />
             )}
-            {paymentType === PaymentType.RECURRING && (
+            {paymentType === 'RECURRING' && (
               <FormattedMessage id="thirdPillarPayment.recurringPaymentBank" />
             )}
           </b>
@@ -113,18 +113,18 @@ export const Payment: React.FunctionComponent = () => {
         <PaymentBankButtons paymentBank={paymentBank} setPaymentBank={setPaymentBank} />
 
         <div className="payment-details-container">
-          {paymentType === PaymentType.RECURRING && paymentBank && (
+          {paymentType === 'RECURRING' && paymentBank && (
             <RecurringPaymentDetails
               paymentBank={paymentBank}
               paymentAmount={paymentAmount}
               personalCode={user.personalCode}
             />
           )}
-          {paymentType === PaymentType.SINGLE && paymentBank === 'other' && (
+          {paymentType === 'SINGLE' && paymentBank === 'other' && (
             <OtherBankPaymentDetails
               personalCode={user.personalCode}
               amount={paymentAmount}
-              paymentType={PaymentType.SINGLE}
+              paymentType="SINGLE"
             />
           )}
           <PaymentSubmitSection

@@ -7,7 +7,6 @@ import {
 import { LOG_OUT } from '../login/constants';
 
 import accountReducer, { initialState } from './reducer';
-import { CapitalType } from '../common/apiModels';
 
 describe('Account reducer', () => {
   it('starts loading when starting to get initial capital', () => {
@@ -20,7 +19,7 @@ describe('Account reducer', () => {
   it('stops loading and saves initial capital', () => {
     const initialCapital = [
       {
-        type: CapitalType.CAPITAL_PAYMENT,
+        type: 'CAPITAL_PAYMENT',
         contributions: 1,
         profit: 1,
         value: 2,

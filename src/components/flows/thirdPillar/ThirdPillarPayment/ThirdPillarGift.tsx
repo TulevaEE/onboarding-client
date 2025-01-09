@@ -6,7 +6,7 @@ import './Payment.scss';
 import { captureException } from '@sentry/browser';
 import { BankButton } from './BankButton';
 import { redirectToPayment } from '../../../common/api';
-import { PaymentChannel, PaymentType } from '../../../common/apiModels';
+import { PaymentChannel } from '../../../common/apiModels';
 import { PaymentAmountInput } from './PaymentAmountInput';
 import { OtherBankPaymentDetails } from './paymentDetails/OtherBankPaymentDetails';
 import { isValidPersonalCode } from './PersonalCode';
@@ -40,7 +40,7 @@ export const ThirdPillarGift: React.FunctionComponent = () => {
         recipientPersonalCode: paymentPersonalCode,
         amount: Number(paymentAmount.replace(',', '.')),
         currency: 'EUR',
-        type: PaymentType.GIFT,
+        type: 'GIFT',
         paymentChannel: paymentBank?.toUpperCase() as PaymentChannel,
       });
     } catch (e) {
@@ -95,7 +95,7 @@ export const ThirdPillarGift: React.FunctionComponent = () => {
       <div />
 
       <PaymentAmountInput
-        paymentType={PaymentType.GIFT}
+        paymentType="GIFT"
         value={paymentAmount}
         onChange={(event) => {
           const { value } = event.target;
@@ -136,7 +136,7 @@ export const ThirdPillarGift: React.FunctionComponent = () => {
           <OtherBankPaymentDetails
             personalCode={paymentPersonalCode}
             amount={paymentAmount}
-            paymentType={PaymentType.SINGLE}
+            paymentType="SINGLE"
           />
         )}
       {paymentBank === 'other' && (

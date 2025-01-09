@@ -16,7 +16,6 @@ import {
   SIGN_MANDATE_SUCCESS,
 } from '../exchange/constants';
 import { LOG_OUT } from '../login/constants';
-import { FundStatus } from '../common/apiModels';
 
 describe('Third pillar reducer', () => {
   it('saves monthly contribution as a number when monthlyContribution is in query params and parsable as a number', () => {
@@ -282,20 +281,20 @@ describe('Third pillar reducer', () => {
     const state = reducer(undefined, {
       type: GET_TARGET_FUNDS_SUCCESS,
       targetFunds: [
-        { isin: 'EE123', pillar: 3, fundManager: { name: 'Tuleva' }, status: FundStatus.ACTIVE },
-        { isin: 'EE456', pillar: 2, status: FundStatus.ACTIVE },
-        { isin: 'EE789', pillar: 3, status: FundStatus.ACTIVE },
+        { isin: 'EE123', pillar: 3, fundManager: { name: 'Tuleva' }, status: 'ACTIVE' },
+        { isin: 'EE456', pillar: 2, status: 'ACTIVE' },
+        { isin: 'EE789', pillar: 3, status: 'ACTIVE' },
       ],
     });
 
     expect(state).toEqual({
       ...initialState,
       targetFunds: [
-        { isin: 'EE123', pillar: 3, fundManager: { name: 'Tuleva' }, status: FundStatus.ACTIVE },
+        { isin: 'EE123', pillar: 3, fundManager: { name: 'Tuleva' }, status: 'ACTIVE' },
       ],
       funds: [
-        { isin: 'EE123', pillar: 3, fundManager: { name: 'Tuleva' }, status: FundStatus.ACTIVE },
-        { isin: 'EE789', pillar: 3, status: FundStatus.ACTIVE },
+        { isin: 'EE123', pillar: 3, fundManager: { name: 'Tuleva' }, status: 'ACTIVE' },
+        { isin: 'EE789', pillar: 3, status: 'ACTIVE' },
       ],
     });
   });
