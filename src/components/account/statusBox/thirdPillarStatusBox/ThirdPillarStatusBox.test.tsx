@@ -8,6 +8,9 @@ jest.mock('../../../common/apiHooks', () => ({
   useFundPensionStatus: () => ({ fundPensions: [] }),
 }));
 
+/**
+ * @deprecated Use AccountPageView.test.tsx
+ */
 describe('ThirdPillarStatusBox', () => {
   let component: ShallowWrapper;
   const props = {

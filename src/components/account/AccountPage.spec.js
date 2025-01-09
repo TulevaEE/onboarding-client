@@ -11,6 +11,9 @@ import { ApplicationSection } from './ApplicationSection/ApplicationSection';
 import { activeThirdPillar } from './statusBox/fixtures';
 import { CapitalType } from '../common/apiModels';
 
+/**
+ * @deprecated Use AccountPageView.test.tsx
+ */
 describe('Account page', () => {
   let component;
   let props;

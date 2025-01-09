@@ -10,7 +10,6 @@ import {
 } from '../../../common/apiHooks';
 import {
   Application,
-  ApplicationType,
   Conversion,
   Fund,
   MandateDeadlines,
@@ -56,8 +55,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
   const leaveApplication: Application | undefined =
     applications &&
     applications.find(
-      (application) =>
-        application.type === ApplicationType.TRANSFER && isTuleva(application.details.sourceFund),
+      (application) => application.type === 'TRANSFER' && isTuleva(application.details.sourceFund),
     );
 
   if (!secondPillarActive) {
@@ -441,20 +439,14 @@ function highFee(
 
 const usePendingEarlyWithdrawalApplication = (): Application | undefined =>
   usePendingApplications().data?.find(
-    (application) =>
-      application.type === ApplicationType.WITHDRAWAL ||
-      application.type === ApplicationType.EARLY_WITHDRAWAL,
+    (application) => application.type === 'WITHDRAWAL' || application.type === 'EARLY_WITHDRAWAL',
   );
 
 const usePendingPartialWithdrawalApplication = (): Application | undefined =>
-  usePendingApplications().data?.find(
-    (application) => application.type === ApplicationType.PARTIAL_WITHDRAWAL,
-  );
+  usePendingApplications().data?.find((application) => application.type === 'PARTIAL_WITHDRAWAL');
 
 const usePendingFundPensionOpeningApplication = (): Application | undefined =>
-  usePendingApplications().data?.find(
-    (application) => application.type === ApplicationType.FUND_PENSION_OPENING,
-  );
+  usePendingApplications().data?.find((application) => application.type === 'FUND_PENSION_OPENING');
 
 const mapStateToProps = (state: State) => ({
   loading: state.login.loadingUserConversion,

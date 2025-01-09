@@ -14,8 +14,6 @@ import {
 } from '../../test/backend';
 import {
   Application,
-  ApplicationStatus,
-  ApplicationType,
   FundPensionOpeningApplication,
   PartialWithdrawalApplication,
   ThirdPillarWithdrawalApplication,
@@ -147,31 +145,31 @@ describe('pending withdrawal transactions', () => {
   const secondPillarPartialWithdrawalApplication: PartialWithdrawalApplication = {
     id: 124,
     creationTime: '2024-12-01T01:23:45Z',
-    status: ApplicationStatus.PENDING,
+    status: 'PENDING',
     details: {
       depositAccountIBAN: 'EE_TEST_IBAN',
       cancellationDeadline: '2025-01-20T21:59:59.999999999Z',
       fulfillmentDate: '2025-01-20',
     },
-    type: ApplicationType.PARTIAL_WITHDRAWAL,
+    type: 'PARTIAL_WITHDRAWAL',
   };
 
   const thirdPillarWithdrawalApplication: ThirdPillarWithdrawalApplication = {
     id: 125,
     creationTime: '2024-12-01T01:23:45Z',
-    status: ApplicationStatus.PENDING,
+    status: 'PENDING',
     details: {
       depositAccountIBAN: 'EE_TEST_IBAN',
       cancellationDeadline: null,
       fulfillmentDate: '2024-12-05',
     },
-    type: ApplicationType.WITHDRAWAL_THIRD_PILLAR,
+    type: 'WITHDRAWAL_THIRD_PILLAR',
   };
 
   const secondPillarFundPensionOpeningApplication: FundPensionOpeningApplication = {
     id: 126,
     creationTime: '2024-12-02T01:23:45Z',
-    status: ApplicationStatus.PENDING,
+    status: 'PENDING',
     details: {
       depositAccountIBAN: 'EE_TEST_IBAN',
       cancellationDeadline: '2025-01-15T21:59:59.999999999Z',
@@ -181,13 +179,13 @@ describe('pending withdrawal transactions', () => {
         paymentsPerYear: 12,
       },
     },
-    type: ApplicationType.FUND_PENSION_OPENING,
+    type: 'FUND_PENSION_OPENING',
   };
 
   const thirdPillarFundPensionOpeningApplication: FundPensionOpeningApplication = {
     id: 127,
     creationTime: '2024-12-02T01:23:45Z',
-    status: ApplicationStatus.PENDING,
+    status: 'PENDING',
     details: {
       depositAccountIBAN: 'EE_TEST_IBAN',
       cancellationDeadline: '2025-01-15T21:59:59.999999999Z',
@@ -197,7 +195,7 @@ describe('pending withdrawal transactions', () => {
         paymentsPerYear: 12,
       },
     },
-    type: ApplicationType.FUND_PENSION_OPENING_THIRD_PILLAR,
+    type: 'FUND_PENSION_OPENING_THIRD_PILLAR',
   };
 
   beforeEach(() => {

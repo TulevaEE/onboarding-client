@@ -8,7 +8,6 @@ import { createMemoryHistory, History } from 'history';
 
 import download from 'downloadjs';
 import { CancellationFlow, flowPath } from './CancellationFlow';
-import { ApplicationStatus, ApplicationType } from '../../common/apiModels';
 import { initializeConfiguration } from '../../config/config';
 import { createDefaultStore, login, renderWrapped } from '../../../test/utils';
 import {
@@ -139,8 +138,8 @@ describe('When a user is cancelling an application', () => {
   function testApplication() {
     return {
       id: 123,
-      type: ApplicationType.EARLY_WITHDRAWAL,
-      status: ApplicationStatus.PENDING,
+      type: 'EARLY_WITHDRAWAL',
+      status: 'PENDING',
       creationTime: new Date('December 17, 1995 03:24:00').toISOString(),
       details: {
         fulfillmentDate: new Date('January 2, 1995 03:24:00').toISOString(),

@@ -38,8 +38,6 @@ import * as http from './http';
 import {
   AmlCheck,
   Application,
-  ApplicationStatus,
-  ApplicationType,
   CancellationMandate,
   CapitalRow,
   CapitalType,
@@ -904,9 +902,9 @@ describe('API calls', () => {
     const mockApplications: Application[] = [
       {
         id: 1,
-        status: ApplicationStatus.PENDING,
+        status: 'PENDING',
         creationTime: '2020-01-01T00:00:00Z',
-        type: ApplicationType.TRANSFER,
+        type: 'TRANSFER',
         details: {
           sourceFund: {
             nav: 1,

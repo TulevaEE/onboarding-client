@@ -21,6 +21,9 @@ jest.mock('../../../common/apiHooks', () => ({
 jest.useFakeTimers();
 jest.setSystemTime(new Date('2024-07-22T10:36:00Z'));
 
+/**
+ * @deprecated Use AccountPageView.test.tsx
+ */
 describe('SecondPillarStatusBox', () => {
   let component: ShallowWrapper;
   const props: Props = {

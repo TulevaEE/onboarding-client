@@ -1,9 +1,7 @@
-import { ApplicationStatus, ApplicationType } from '../../common/apiModels';
-
 export const transfer2Pillar = {
   id: 1234,
-  type: ApplicationType.TRANSFER,
-  status: ApplicationStatus.PENDING,
+  type: 'TRANSFER',
+  status: 'PENDING',
   creationTime: new Date('December 17, 1995 03:24:00').toISOString(),
   details: {
     cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
@@ -44,8 +42,8 @@ export const transfer2Pillar = {
 
 export const transferPIK = {
   id: 1234,
-  type: ApplicationType.TRANSFER,
-  status: ApplicationStatus.PENDING,
+  type: 'TRANSFER',
+  status: 'PENDING',
   creationTime: new Date('December 17, 1995 03:24:00').toISOString(),
   details: {
     cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
@@ -68,8 +66,8 @@ export const transferPIK = {
 
 export const transfer3Pillar = {
   id: 3832579,
-  type: ApplicationType.TRANSFER,
-  status: ApplicationStatus.PENDING,
+  type: 'TRANSFER',
+  status: 'PENDING',
   creationTime: '2021-08-01T14:00:00Z',
   details: {
     sourceFund: {
@@ -111,8 +109,8 @@ export const transfer3Pillar = {
 
 export const earlyWithdrawal = {
   id: 123,
-  type: ApplicationType.EARLY_WITHDRAWAL,
-  status: ApplicationStatus.PENDING,
+  type: 'EARLY_WITHDRAWAL',
+  status: 'PENDING',
   creationTime: new Date('December 17, 1995 03:24:00').toISOString(),
   details: {
     cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
@@ -123,8 +121,8 @@ export const earlyWithdrawal = {
 
 export const withdrawal = {
   id: 123,
-  type: ApplicationType.WITHDRAWAL,
-  status: ApplicationStatus.PENDING,
+  type: 'WITHDRAWAL',
+  status: 'PENDING',
   creationTime: new Date('December 17, 1995 03:24:00').toISOString(),
   details: {
     cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
@@ -135,8 +133,8 @@ export const withdrawal = {
 
 export const stopContributions = {
   id: 123,
-  type: ApplicationType.STOP_CONTRIBUTIONS,
-  status: ApplicationStatus.PENDING,
+  type: 'STOP_CONTRIBUTIONS',
+  status: 'PENDING',
   creationTime: new Date('December 17, 1995 03:24:00').toISOString(),
   details: {
     cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
@@ -147,8 +145,8 @@ export const stopContributions = {
 
 export const resumeContributions = {
   id: 123,
-  type: ApplicationType.RESUME_CONTRIBUTIONS,
-  status: ApplicationStatus.PENDING,
+  type: 'RESUME_CONTRIBUTIONS',
+  status: 'PENDING',
   creationTime: new Date('December 17, 1995 03:24:00').toISOString(),
   details: {
     cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
@@ -158,8 +156,8 @@ export const resumeContributions = {
 
 export const payment = {
   id: 15,
-  type: ApplicationType.PAYMENT,
-  status: ApplicationStatus.PENDING,
+  type: 'PAYMENT',
+  status: 'PENDING',
   creationTime: '2022-10-04T13:22:24.215230Z',
   details: {
     amount: 12.34,
@@ -180,8 +178,8 @@ export const payment = {
 
 export const fundPensionOpening = {
   id: 16,
-  type: ApplicationType.FUND_PENSION_OPENING,
-  status: ApplicationStatus.PENDING,
+  type: 'FUND_PENSION_OPENING',
+  status: 'PENDING',
   creationTime: '2022-10-04T13:22:24.215230Z',
   details: {
     cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
@@ -196,8 +194,8 @@ export const fundPensionOpening = {
 
 export const thirdPillarFundPensionOpening = {
   id: 17,
-  type: ApplicationType.FUND_PENSION_OPENING_THIRD_PILLAR,
-  status: ApplicationStatus.PENDING,
+  type: 'FUND_PENSION_OPENING_THIRD_PILLAR',
+  status: 'PENDING',
   creationTime: '2022-10-04T13:22:24.215230Z',
   details: {
     cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
@@ -212,8 +210,8 @@ export const thirdPillarFundPensionOpening = {
 
 export const partialWithdrawal = {
   id: 18,
-  type: ApplicationType.PARTIAL_WITHDRAWAL,
-  status: ApplicationStatus.PENDING,
+  type: 'PARTIAL_WITHDRAWAL',
+  status: 'PENDING',
   creationTime: new Date('December 17, 1995 03:24:00').toISOString(),
   details: {
     cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
@@ -224,8 +222,8 @@ export const partialWithdrawal = {
 
 export const thirdPillarWithdrawal = {
   id: 19,
-  type: ApplicationType.WITHDRAWAL_THIRD_PILLAR,
-  status: ApplicationStatus.PENDING,
+  type: 'WITHDRAWAL_THIRD_PILLAR',
+  status: 'PENDING',
   creationTime: new Date('December 17, 1995 03:24:00').toISOString(),
   details: {
     cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
@@ -236,8 +234,8 @@ export const thirdPillarWithdrawal = {
 
 export const paymentRateChange = {
   id: 654,
-  type: ApplicationType.PAYMENT_RATE,
-  status: ApplicationStatus.PENDING,
+  type: 'PAYMENT_RATE',
+  status: 'PENDING',
   creationTime: '2024-10-04T13:22:24.215230Z',
   details: {
     paymentRate: 6,

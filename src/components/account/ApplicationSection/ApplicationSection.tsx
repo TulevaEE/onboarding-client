@@ -3,7 +3,6 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useMe, usePendingApplications } from '../../common/apiHooks';
 import { ApplicationAction, ApplicationCard } from './ApplicationCards';
-import { ApplicationType } from '../../common/apiModels';
 
 export const ApplicationSection: React.FunctionComponent = () => {
   const { data: applications } = usePendingApplications();
@@ -11,7 +10,7 @@ export const ApplicationSection: React.FunctionComponent = () => {
   const filteredApplications = applications?.filter(
     (application) =>
       !(
-        application.type === ApplicationType.PAYMENT_RATE &&
+        application.type === 'PAYMENT_RATE' &&
         application.details.paymentRate === user?.secondPillarPaymentRates.current
       ),
   );

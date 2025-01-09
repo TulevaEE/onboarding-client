@@ -6,7 +6,6 @@ import { DefinitionList } from './DefinitionList';
 import styles from './ApplicationCards.module.scss';
 import {
   Application,
-  ApplicationType,
   EarlyWithdrawalApplication,
   FundPensionOpeningApplication,
   PaymentApplication,
@@ -30,26 +29,26 @@ export const ApplicationCard: React.FunctionComponent<{
   allowedActions?: ApplicationAction[];
 }> = ({ application, allowedActions = [] }) => {
   switch (application.type) {
-    case ApplicationType.EARLY_WITHDRAWAL:
+    case 'EARLY_WITHDRAWAL':
       return <EarlyWithdrawalCard application={application} allowedActions={allowedActions} />;
-    case ApplicationType.WITHDRAWAL:
+    case 'WITHDRAWAL':
       return <WithdrawalCard application={application} allowedActions={allowedActions} />;
-    case ApplicationType.STOP_CONTRIBUTIONS:
+    case 'STOP_CONTRIBUTIONS':
       return <StopContributionsCard application={application} allowedActions={allowedActions} />;
-    case ApplicationType.RESUME_CONTRIBUTIONS:
+    case 'RESUME_CONTRIBUTIONS':
       return <ResumeContributionsCard application={application} allowedActions={allowedActions} />;
-    case ApplicationType.TRANSFER:
+    case 'TRANSFER':
       return <TransferApplicationCard application={application} allowedActions={allowedActions} />;
-    case ApplicationType.PAYMENT_RATE:
+    case 'PAYMENT_RATE':
       return <PaymentRateApplicationCard application={application} />;
-    case ApplicationType.PAYMENT:
+    case 'PAYMENT':
       return <PaymentApplicationCard application={application} />;
-    case ApplicationType.FUND_PENSION_OPENING:
-    case ApplicationType.FUND_PENSION_OPENING_THIRD_PILLAR: // TODO enable cancellation
+    case 'FUND_PENSION_OPENING':
+    case 'FUND_PENSION_OPENING_THIRD_PILLAR': // TODO enable cancellation
       return <FundPensionOpeningCard application={application} allowedActions={[]} />;
-    case ApplicationType.PARTIAL_WITHDRAWAL:
+    case 'PARTIAL_WITHDRAWAL':
       return <PartialWithdrawalCard application={application} allowedActions={[]} />;
-    case ApplicationType.WITHDRAWAL_THIRD_PILLAR:
+    case 'WITHDRAWAL_THIRD_PILLAR':
       return <ThirdPillarWithdrawalCard application={application} allowedActions={[]} />;
     default:
       return <></>;
@@ -253,7 +252,7 @@ const FundPensionOpeningCard: React.FunctionComponent<{
       allowedActions={allowedActions}
       application={application}
       titleKey={
-        application.type === ApplicationType.FUND_PENSION_OPENING
+        application.type === 'FUND_PENSION_OPENING'
           ? 'applications.type.fundPensionOpening.title'
           : 'applications.type.fundPensionOpeningThirdPillar.title'
       }

@@ -3,7 +3,7 @@ import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import StatusBoxRow from '../statusBoxRow';
-import { Application, ApplicationType, Conversion, SourceFund } from '../../../common/apiModels';
+import { Application, Conversion, SourceFund } from '../../../common/apiModels';
 import { InfoTooltip } from '../../../common';
 import { State } from '../../../../types';
 import ThirdPillarPaymentsAmount from './ThirdPillarContributionAmount';
@@ -276,12 +276,12 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
 
 const usePendingThirdPillarWithdrawalApplication = (): Application | undefined =>
   usePendingApplications().data?.find(
-    (application) => application.type === ApplicationType.WITHDRAWAL_THIRD_PILLAR,
+    (application) => application.type === 'WITHDRAWAL_THIRD_PILLAR',
   );
 
 const usePendingFundPensionOpeningApplication = (): Application | undefined =>
   usePendingApplications().data?.find(
-    (application) => application.type === ApplicationType.FUND_PENSION_OPENING_THIRD_PILLAR,
+    (application) => application.type === 'FUND_PENSION_OPENING_THIRD_PILLAR',
   );
 
 const mapStateToProps = (state: State) => ({
