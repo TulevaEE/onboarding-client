@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { useEffect } from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -23,146 +23,157 @@ import { TransactionSection } from './TransactionSection/TransactionSection';
 
 const noop = () => null;
 
-export class AccountPage extends Component {
-  componentDidMount() {
-    this.getData();
-  }
-
-  componentDidUpdate() {
-    this.getData();
-  }
-
-  getData() {
-    const { shouldGetMemberCapital, onGetMemberCapital } = this.props;
+export function AccountPage(
+  props = {
+    user: {},
+    secondPillarSourceFunds: [],
+    thirdPillarSourceFunds: [],
+    loadingCurrentBalance: false,
+    shouldGetMemberCapital: true,
+    onGetMemberCapital: noop,
+    memberCapital: [],
+    loadingCapital: false,
+    error: null,
+    shouldRedirectToAml: false,
+  },
+) {
+  const getData = () => {
+    const { shouldGetMemberCapital, onGetMemberCapital } = props;
 
     if (shouldGetMemberCapital) {
       onGetMemberCapital();
     }
-  }
+  };
 
-  render() {
-    const {
-      secondPillarSourceFunds,
-      thirdPillarSourceFunds,
-      conversion,
-      loadingCurrentBalance,
-      memberCapital,
-      loadingCapital,
-      error,
-      shouldRedirectToAml,
-    } = this.props;
+  useEffect(() => {
+    getData();
+  }, []);
 
-    const isThirdPillarFullyConverted =
-      conversion &&
-      conversion.thirdPillar.selectionComplete &&
-      conversion.thirdPillar.transfersComplete;
+  useEffect(() => {
+    getData();
+  });
 
-    return (
-      <>
-        {shouldRedirectToAml && (
-          <Redirect
-            to={{
-              pathname: '/aml',
-              state: { from: '/account' },
-            }}
+  const {
+    secondPillarSourceFunds,
+    thirdPillarSourceFunds,
+    conversion,
+    loadingCurrentBalance,
+    memberCapital,
+    loadingCapital,
+    error,
+    shouldRedirectToAml,
+  } = props;
+
+  const isThirdPillarFullyConverted =
+    conversion &&
+    conversion.thirdPillar.selectionComplete &&
+    conversion.thirdPillar.transfersComplete;
+
+  return (
+    <>
+      {shouldRedirectToAml && (
+        <Redirect
+          to={{
+            pathname: '/aml',
+            state: { from: '/account' },
+          }}
+        />
+      )}
+      <div className="row mt-5">
+        <GreetingBar />
+      </div>
+      <div className="mt-5">
+        <StatusBox />
+      </div>
+      <div className="mt-5">
+        <SecondPillarUpsell />
+      </div>
+
+      {error && error.body ? <ErrorMessage errors={error.body} /> : ''}
+
+      <ComparisonCalculator />
+
+      <div className="mt-5">
+        <SectionHeading titleId="accountSummary.heading" lead>
+          <Link className="text-nowrap" to="/withdrawals">
+            <FormattedMessage id="accountSummary.withdrawalsLink" />
+          </Link>
+        </SectionHeading>
+
+        {secondPillarSourceFunds && thirdPillarSourceFunds && conversion ? (
+          <AccountSummary
+            secondPillarContributions={conversion.secondPillar.contribution.total}
+            secondPillarSubtractions={conversion.secondPillar.subtraction.total}
+            thirdPillarContributions={conversion.thirdPillar.contribution.total}
+            thirdPillarSubtractions={conversion.thirdPillar.subtraction.total}
+            memberCapital={memberCapital}
+            secondPillarSourceFunds={secondPillarSourceFunds}
+            thirdPillarSourceFunds={thirdPillarSourceFunds}
           />
+        ) : (
+          <AccountSummaryLoader />
         )}
-        <div className="row mt-5">
-          <GreetingBar />
-        </div>
-        <div className="mt-5">
-          <StatusBox />
-        </div>
-        <div className="mt-5">
-          <SecondPillarUpsell />
-        </div>
+      </div>
 
-        {error && error.body ? <ErrorMessage errors={error.body} /> : ''}
+      <TransactionSection limit={3} />
 
-        <ComparisonCalculator />
+      <ApplicationSection />
 
-        <div className="mt-5">
-          <SectionHeading titleId="accountSummary.heading" lead>
-            <Link className="text-nowrap" to="/withdrawals">
-              <FormattedMessage id="accountSummary.withdrawalsLink" />
-            </Link>
-          </SectionHeading>
+      {!loadingCurrentBalance && (
+        <div className="mt-5 mb-4">
+          <p className="mb-4 lead">
+            <FormattedMessage id="accountStatement.heading" />
+          </p>
+          <div className="d-flex flex-md-row flex-column align-items-md-end justify-content-between">
+            <div className="mb-3">
+              <FormattedMessage id="accountStatement.secondPillar.heading" />
+            </div>
+            <div className="d-flex flex-sm-row flex-column align-items-sm-end justify-content-between">
+              <Link className="btn btn-light mb-3 mr-md-3" to="/2nd-pillar-payment-rate">
+                <FormattedMessage id="account.status.choice.paymentRate.change" />
+              </Link>
+              <Link className="btn btn-light mb-3" to="/2nd-pillar-flow">
+                <FormattedMessage id="change.my.pension.fund" />
+              </Link>
+            </div>
+          </div>
 
-          {secondPillarSourceFunds && thirdPillarSourceFunds && conversion ? (
-            <AccountSummary
-              secondPillarContributions={conversion.secondPillar.contribution.total}
-              secondPillarSubtractions={conversion.secondPillar.subtraction.total}
-              thirdPillarContributions={conversion.thirdPillar.contribution.total}
-              thirdPillarSubtractions={conversion.thirdPillar.subtraction.total}
-              memberCapital={memberCapital}
-              secondPillarSourceFunds={secondPillarSourceFunds}
-              thirdPillarSourceFunds={thirdPillarSourceFunds}
-            />
-          ) : (
-            <AccountSummaryLoader />
+          {secondPillarSourceFunds && secondPillarSourceFunds.length > 0 && (
+            <AccountStatement funds={secondPillarSourceFunds} />
           )}
         </div>
+      )}
 
-        <TransactionSection limit={3} />
-
-        <ApplicationSection />
-
-        {!loadingCurrentBalance && (
-          <div className="mt-5 mb-4">
-            <p className="mb-4 lead">
-              <FormattedMessage id="accountStatement.heading" />
-            </p>
-            <div className="d-flex flex-md-row flex-column align-items-md-end justify-content-between">
-              <div className="mb-3">
-                <FormattedMessage id="accountStatement.secondPillar.heading" />
-              </div>
-              <div className="d-flex flex-sm-row flex-column align-items-sm-end justify-content-between">
-                <Link className="btn btn-light mb-3 mr-md-3" to="/2nd-pillar-payment-rate">
-                  <FormattedMessage id="account.status.choice.paymentRate.change" />
-                </Link>
-                <Link className="btn btn-light mb-3" to="/2nd-pillar-flow">
-                  <FormattedMessage id="change.my.pension.fund" />
-                </Link>
-              </div>
-            </div>
-
-            {secondPillarSourceFunds && secondPillarSourceFunds.length > 0 && (
-              <AccountStatement funds={secondPillarSourceFunds} />
-            )}
-          </div>
-        )}
-
-        {!loadingCurrentBalance && (
-          <>
-            <SectionHeading titleId="accountStatement.thirdPillar.heading">
-              {!isThirdPillarFullyConverted && (
-                <Link className="btn btn-light mb-3" to="/3rd-pillar-flow">
-                  <FormattedMessage id="change.my.pension.fund.third.pillar" />
-                </Link>
-              )}
-            </SectionHeading>
-            {thirdPillarSourceFunds && thirdPillarSourceFunds.length > 0 && (
-              <AccountStatement funds={thirdPillarSourceFunds} />
-            )}
-          </>
-        )}
-
-        {loadingCapital || memberCapital ? (
-          <div className="mt-5">
-            <SectionHeading titleId="memberCapital.heading">
-              <Link className="text-nowrap mb-4" to="/capital">
-                <FormattedMessage id="memberCapital.transactions" />
+      {!loadingCurrentBalance && (
+        <>
+          <SectionHeading titleId="accountStatement.thirdPillar.heading">
+            {!isThirdPillarFullyConverted && (
+              <Link className="btn btn-light mb-3" to="/3rd-pillar-flow">
+                <FormattedMessage id="change.my.pension.fund.third.pillar" />
               </Link>
-            </SectionHeading>
-            {loadingCapital && <Loader className="align-middle" />}
-            {memberCapital && <MemberCapital rows={memberCapital} />}
-          </div>
-        ) : (
-          ''
-        )}
-      </>
-    );
-  }
+            )}
+          </SectionHeading>
+          {thirdPillarSourceFunds && thirdPillarSourceFunds.length > 0 && (
+            <AccountStatement funds={thirdPillarSourceFunds} />
+          )}
+        </>
+      )}
+
+      {loadingCapital || memberCapital ? (
+        <div className="mt-5">
+          <SectionHeading titleId="memberCapital.heading">
+            <Link className="text-nowrap mb-4" to="/capital">
+              <FormattedMessage id="memberCapital.transactions" />
+            </Link>
+          </SectionHeading>
+          {loadingCapital && <Loader className="align-middle" />}
+          {memberCapital && <MemberCapital rows={memberCapital} />}
+        </div>
+      ) : (
+        ''
+      )}
+    </>
+  );
 }
 
 AccountPage.propTypes = {
@@ -178,19 +189,6 @@ AccountPage.propTypes = {
     body: Types.shape({}),
   }),
   shouldRedirectToAml: Types.bool,
-};
-
-AccountPage.defaultProps = {
-  user: {},
-  secondPillarSourceFunds: [],
-  thirdPillarSourceFunds: [],
-  loadingCurrentBalance: false,
-  shouldGetMemberCapital: true,
-  onGetMemberCapital: noop,
-  memberCapital: [],
-  loadingCapital: false,
-  error: null,
-  shouldRedirectToAml: false,
 };
 
 export const shouldRedirectToAml = (state) =>
