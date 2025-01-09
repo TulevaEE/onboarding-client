@@ -12,6 +12,7 @@ import {
   amlChecksBackend,
   applicationsBackend,
   fundsBackend,
+  mandatesBackend,
   partnerAuthenticationBackend,
   pensionAccountStatementBackend,
   returnsBackend,
@@ -103,7 +104,7 @@ describe('partner 2nd pillar flow', () => {
       futureContributionFundIsin: 'EE3600109435',
       address: { countryCode: 'EE' },
     };
-    mandatesBackend(expectedRequest);
+    mandatesBackend(server, expectedRequest, 2);
     smartIdMandateSigningBackend(server);
 
     userEvent.click(signButton());
@@ -146,7 +147,7 @@ describe('partner 2nd pillar flow', () => {
       futureContributionFundIsin: 'EE3600109443',
       address: { countryCode: 'EE' },
     };
-    mandatesBackend(expectedRequest);
+    mandatesBackend(server, expectedRequest, 2);
     smartIdMandateSigningBackend(server);
 
     userEvent.click(signButton());
@@ -210,7 +211,7 @@ describe('partner 2nd pillar flow', () => {
       futureContributionFundIsin: 'EE3600109435',
       address: { countryCode: 'EE' },
     };
-    mandatesBackend(expectedRequest);
+    mandatesBackend(server, expectedRequest, 2);
     smartIdMandateSigningBackend(server);
 
     userEvent.click(signButton());
@@ -257,7 +258,7 @@ describe('partner 2nd pillar flow', () => {
       futureContributionFundIsin: null,
       address: { countryCode: 'EE' },
     };
-    mandatesBackend(expectedRequest);
+    mandatesBackend(server, expectedRequest, 2);
     smartIdMandateSigningBackend(server);
 
     userEvent.click(signButton());
@@ -292,19 +293,6 @@ async function expectSuccessScreen(withCurrentFundUnits = true, withFutureContri
       await screen.findByText('starting from the next payment', { exact: false }),
     ).toBeInTheDocument();
   }
-}
-
-function mandatesBackend(expectedRequest: any) {
-  server.use(
-    rest.post('http://localhost/v1/mandates', (req, res, ctx) => {
-      // console.log('mandate request: ', req.body, ' expected:', expectedRequest);
-      if (JSON.stringify(req.body) !== JSON.stringify(expectedRequest)) {
-        return res(ctx.status(500), ctx.json({ error: 'wrong request body for mandate' }));
-      }
-
-      return res(ctx.json({ id: 1, pillar: 2 }));
-    }),
-  );
 }
 
 const bonds = () => screen.getByText('Tuleva World Bonds Pension Fund');

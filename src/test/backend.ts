@@ -594,6 +594,26 @@ export function mandateDeadlinesBackend(server: SetupServerApi): void {
   );
 }
 
+export function mandatesBackend(
+  server: SetupServerApi,
+  expectedRequest: unknown | null = null,
+  pillar: 2 | 3 = 2,
+) {
+  server.use(
+    rest.post('http://localhost/v1/mandates', (req, res, ctx) => {
+      console.log('mandate request: ', req.body, ' expected:', expectedRequest);
+      if (
+        expectedRequest !== null &&
+        JSON.stringify(req.body) !== JSON.stringify(expectedRequest)
+      ) {
+        return res(ctx.status(500), ctx.json({ error: 'wrong request body for mandate' }));
+      }
+
+      return res(ctx.json({ id: 1, pillar }));
+    }),
+  );
+}
+
 const TEST_BACKENDS = {
   cancellation: cancellationBackend,
   mandatePreview: mandatePreviewBackend,
@@ -619,6 +639,7 @@ const TEST_BACKENDS = {
   capitalEvents: capitalEventsBackend,
   mandateDeadlines: mandateDeadlinesBackend,
   mandateBatch: mandateBatchBackend,
+  mandates: mandatesBackend,
 } as const;
 
 export type TestBackendName = keyof typeof TEST_BACKENDS;

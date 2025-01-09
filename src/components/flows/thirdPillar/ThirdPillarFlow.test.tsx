@@ -12,6 +12,7 @@ import {
   amlChecksBackend,
   applicationsBackend,
   fundsBackend,
+  mandatesBackend,
   pensionAccountStatementBackend,
   returnsBackend,
   smartIdMandateSigningBackend,
@@ -82,7 +83,7 @@ describe('3rd pillar flow', () => {
       futureContributionFundIsin: 'EE3600001707',
       address: { countryCode: 'EE' },
     };
-    mandatesBackend(expectedRequest);
+    mandatesBackend(server, expectedRequest, 3);
     smartIdMandateSigningBackend(server);
 
     userEvent.click(sign());
@@ -132,7 +133,7 @@ describe('3rd pillar flow', () => {
       futureContributionFundIsin: null, // since it's already active
       address: { countryCode: 'EE' },
     };
-    mandatesBackend(expectedRequest);
+    mandatesBackend(server, expectedRequest, 3);
     smartIdMandateSigningBackend(server);
 
     userEvent.click(sign());
@@ -236,16 +237,3 @@ const otherFund: FundBalance = {
   subtractions: 0,
   profit: 234.56,
 };
-
-function mandatesBackend(expectedRequest: any) {
-  server.use(
-    rest.post('http://localhost/v1/mandates', (req, res, ctx) => {
-      console.log('mandate request: ', req.body, ' expected:', expectedRequest);
-      if (JSON.stringify(req.body) !== JSON.stringify(expectedRequest)) {
-        return res(ctx.status(500), ctx.json({ error: 'wrong request body for mandate' }));
-      }
-
-      return res(ctx.json({ id: 1, pillar: 3 }));
-    }),
-  );
-}

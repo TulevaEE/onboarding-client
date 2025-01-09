@@ -4,7 +4,6 @@ import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Route } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
-import { rest } from 'msw';
 import { initializeConfiguration } from '../../config/config';
 import LoggedInApp from '../../LoggedInApp';
 import { createDefaultStore, login, renderWrapped } from '../../../test/utils';
@@ -12,6 +11,7 @@ import {
   amlChecksBackend,
   applicationsBackend,
   fundsBackend,
+  mandatesBackend,
   pensionAccountStatementBackend,
   returnsBackend,
   smartIdMandateSigningBackend,
@@ -81,7 +81,7 @@ describe('2nd pillar flow', () => {
       futureContributionFundIsin: 'EE3600109435',
       address: { countryCode: 'EE' },
     };
-    mandatesBackend(expectedRequest);
+    mandatesBackend(server, expectedRequest, 2);
     smartIdMandateSigningBackend(server);
 
     userEvent.click(signButton());
@@ -124,7 +124,7 @@ describe('2nd pillar flow', () => {
       futureContributionFundIsin: 'EE3600109443',
       address: { countryCode: 'EE' },
     };
-    mandatesBackend(expectedRequest);
+    mandatesBackend(server, expectedRequest, 2);
     smartIdMandateSigningBackend(server);
 
     userEvent.click(signButton());
@@ -188,7 +188,7 @@ describe('2nd pillar flow', () => {
       futureContributionFundIsin: 'EE3600109435',
       address: { countryCode: 'EE' },
     };
-    mandatesBackend(expectedRequest);
+    mandatesBackend(server, expectedRequest, 2);
     smartIdMandateSigningBackend(server);
 
     userEvent.click(signButton());
@@ -235,7 +235,7 @@ describe('2nd pillar flow', () => {
       futureContributionFundIsin: null,
       address: { countryCode: 'EE' },
     };
-    mandatesBackend(expectedRequest);
+    mandatesBackend(server, expectedRequest, 2);
     smartIdMandateSigningBackend(server);
 
     userEvent.click(signButton());
@@ -272,7 +272,7 @@ describe('2nd pillar flow', () => {
       futureContributionFundIsin: 'EE3600109435',
       address: { countryCode: 'EE' },
     };
-    mandatesBackend(expectedRequest);
+    mandatesBackend(server, expectedRequest, 2);
     smartIdMandateSigningBackend(server);
 
     userEvent.click(signButton());
@@ -309,7 +309,7 @@ describe('2nd pillar flow', () => {
       futureContributionFundIsin: 'EE3600109435',
       address: { countryCode: 'EE' },
     };
-    mandatesBackend(expectedRequest);
+    mandatesBackend(server, expectedRequest, 2);
     smartIdMandateSigningBackend(server);
 
     userEvent.click(signButton());
@@ -354,19 +354,6 @@ async function expectSuccessScreen(
   } else {
     expect(screen.queryByText('Increase contribution', { exact: false })).not.toBeInTheDocument();
   }
-}
-
-function mandatesBackend(expectedRequest: any) {
-  server.use(
-    rest.post('http://localhost/v1/mandates', (req, res, ctx) => {
-      // console.log('mandate request: ', req.body, ' expected:', expectedRequest);
-      if (JSON.stringify(req.body) !== JSON.stringify(expectedRequest)) {
-        return res(ctx.status(500), ctx.json({ error: 'wrong request body for mandate' }));
-      }
-
-      return res(ctx.json({ id: 1, pillar: 2 }));
-    }),
-  );
 }
 
 const bonds = () => screen.getByText('Tuleva World Bonds Pension Fund');
