@@ -1,7 +1,13 @@
 import { getWithAuthentication } from '../../../common/http';
 import { getEndpoint } from '../../../common/api';
 
-export type Key = 'SECOND_PILLAR' | 'THIRD_PILLAR' | 'EPI' | 'UNION_STOCK_INDEX' | 'CPI';
+export enum Key {
+  SECOND_PILLAR = 'SECOND_PILLAR',
+  THIRD_PILLAR = 'THIRD_PILLAR',
+  EPI = 'EPI',
+  UNION_STOCK_INDEX = 'UNION_STOCK_INDEX',
+  CPI = 'CPI',
+}
 
 type ReturnType = 'PERSONAL' | 'FUND' | 'INDEX';
 
