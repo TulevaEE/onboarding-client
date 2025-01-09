@@ -1,12 +1,9 @@
 import moment from 'moment';
 import {
   CancellationMandate,
-  CapitalEvent,
   CapitalRow,
-  CapitalType,
   Conversion,
   Fund,
-  FundStatus,
   MandateDeadlines,
   MobileSignatureResponse,
   MobileSignatureStatusResponse,
@@ -99,7 +96,7 @@ export const mockFunds: Fund[] = [
     nav: 0.7813,
     pillar: 3,
     ongoingChargesFigure: 0.0043,
-    status: FundStatus.ACTIVE,
+    status: 'ACTIVE',
     inceptionDate: moment().subtract(25, 'years').format(),
   },
   {
@@ -110,7 +107,7 @@ export const mockFunds: Fund[] = [
     nav: 1.46726,
     pillar: 2,
     ongoingChargesFigure: 0.0065,
-    status: FundStatus.ACTIVE,
+    status: 'ACTIVE',
     inceptionDate: moment().subtract(25, 'years').format(),
   },
   {
@@ -121,7 +118,7 @@ export const mockFunds: Fund[] = [
     nav: 0.87831,
     pillar: 2,
     ongoingChargesFigure: 0.0039,
-    status: FundStatus.ACTIVE,
+    status: 'ACTIVE',
     inceptionDate: moment().subtract(2, 'years').format(),
   },
   {
@@ -131,7 +128,7 @@ export const mockFunds: Fund[] = [
     managementFeeRate: 0.0027,
     pillar: 2,
     ongoingChargesFigure: 0.0039,
-    status: FundStatus.ACTIVE,
+    status: 'ACTIVE',
     nav: 0.59311,
     inceptionDate: moment().subtract(2, 'years').format(),
   },
@@ -142,7 +139,7 @@ export const mockFunds: Fund[] = [
     managementFeeRate: 0.0027,
     pillar: 2,
     ongoingChargesFigure: 0.0039,
-    status: FundStatus.ACTIVE,
+    status: 'ACTIVE',
     nav: 0.59311,
     inceptionDate: moment().subtract(2, 'years').format(),
   },
@@ -150,28 +147,28 @@ export const mockFunds: Fund[] = [
 
 export const capitalRowsResponse: CapitalRow[] = [
   {
-    type: CapitalType.CAPITAL_PAYMENT,
+    type: 'CAPITAL_PAYMENT',
     contributions: 1000.0,
     profit: -123.45,
     value: 1000.0 - 123.45,
     currency: 'EUR',
   },
   {
-    type: CapitalType.UNVESTED_WORK_COMPENSATION,
+    type: 'UNVESTED_WORK_COMPENSATION',
     contributions: 0,
     profit: 0,
     value: 0,
     currency: 'EUR',
   },
   {
-    type: CapitalType.WORK_COMPENSATION,
+    type: 'WORK_COMPENSATION',
     contributions: 0,
     profit: 0,
     value: 0,
     currency: 'EUR',
   },
   {
-    type: CapitalType.MEMBERSHIP_BONUS,
+    type: 'MEMBERSHIP_BONUS',
     contributions: 1.23,
     profit: 0,
     value: 1.23,

@@ -5,7 +5,6 @@ import { Link } from 'react-router-dom';
 import AccountSummary from '.';
 import Table from '../../common/table';
 import { Euro } from '../../common/Euro';
-import { CapitalType } from '../../common/apiModels';
 
 describe('Account summary', () => {
   let component;
@@ -79,28 +78,28 @@ describe('Account summary', () => {
         ]}
         memberCapital={[
           {
-            type: CapitalType.CAPITAL_PAYMENT,
+            type: 'CAPITAL_PAYMENT',
             contributions: 1,
             profit: 1,
             value: 2,
             currency: 'EUR',
           },
           {
-            type: CapitalType.UNVESTED_WORK_COMPENSATION,
+            type: 'UNVESTED_WORK_COMPENSATION',
             contributions: 1,
             profit: 0,
             value: 1,
             currency: 'EUR',
           },
           {
-            type: CapitalType.WORK_COMPENSATION,
+            type: 'WORK_COMPENSATION',
             contributions: 1,
             profit: 1,
             value: 2,
             currency: 'EUR',
           },
           {
-            type: CapitalType.MEMBERSHIP_BONUS,
+            type: 'MEMBERSHIP_BONUS',
             contributions: 0,
             profit: 1,
             value: 1,
@@ -219,28 +218,28 @@ describe('Account summary', () => {
         ]}
         memberCapital={[
           {
-            type: CapitalType.CAPITAL_PAYMENT,
+            type: 'CAPITAL_PAYMENT',
             contributions: 1,
             profit: 1,
             value: 2,
             currency: 'EUR',
           },
           {
-            type: CapitalType.UNVESTED_WORK_COMPENSATION,
+            type: 'UNVESTED_WORK_COMPENSATION',
             contributions: 1,
             profit: 0,
             value: 1,
             currency: 'EUR',
           },
           {
-            type: CapitalType.WORK_COMPENSATION,
+            type: 'WORK_COMPENSATION',
             contributions: 1,
             profit: 1,
             value: 2,
             currency: 'EUR',
           },
           {
-            type: CapitalType.MEMBERSHIP_BONUS,
+            type: 'MEMBERSHIP_BONUS',
             contributions: 0,
             profit: 1,
             value: 1,

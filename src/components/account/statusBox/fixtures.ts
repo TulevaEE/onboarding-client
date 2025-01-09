@@ -1,4 +1,4 @@
-import { Fund, FundStatus, SourceFund, UserConversion } from '../../common/apiModels';
+import { Fund, SourceFund, UserConversion } from '../../common/apiModels';
 
 export const incompleteConversion: UserConversion = {
   weightedAverageFee: 0.004,
@@ -127,7 +127,7 @@ export const tulevaSecondPillarFund: Fund = {
   managementFeeRate: 0.003,
   ongoingChargesFigure: 0.0049,
   fundManager: { name: 'Tuleva' },
-  status: FundStatus.ACTIVE,
+  status: 'ACTIVE',
   inceptionDate: '2017-01-01',
   nav: 1,
 };

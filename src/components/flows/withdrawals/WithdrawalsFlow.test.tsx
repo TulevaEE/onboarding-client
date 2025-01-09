@@ -11,7 +11,6 @@ import {
   useTestBackendsExcept,
   withdrawalsEligibilityBackend,
 } from '../../../test/backend';
-import { FundStatus } from '../../common/apiModels';
 import { WithdrawalMandateDetails } from '../../common/apiModels/withdrawals';
 
 const server = setupServer();
@@ -329,7 +328,7 @@ describe('withdrawals flow with only second pillar and arrests/bankruptcy', () =
           managementFeeRate: 0.0034,
           pillar: 2,
           ongoingChargesFigure: 0.0039,
-          status: FundStatus.ACTIVE,
+          status: 'ACTIVE',
           inceptionDate: '2017-01-01',
           nav: 1,
         },
@@ -349,7 +348,7 @@ describe('withdrawals flow with only second pillar and arrests/bankruptcy', () =
           managementFeeRate: 0.0083,
           pillar: 2,
           ongoingChargesFigure: 0.0065,
-          status: FundStatus.ACTIVE,
+          status: 'ACTIVE',
           inceptionDate: '2017-01-01',
           nav: 1,
         },
@@ -370,7 +369,7 @@ describe('withdrawals flow with only second pillar and arrests/bankruptcy', () =
           managementFeeRate: 0.0083,
           pillar: 2,
           ongoingChargesFigure: 0.0065,
-          status: FundStatus.LIQUIDATED,
+          status: 'LIQUIDATED',
           inceptionDate: '2017-01-01',
           nav: 1,
         },
@@ -448,7 +447,7 @@ describe('withdrawals flow with only third pillar', () => {
           managementFeeRate: 0.003,
           pillar: 3,
           ongoingChargesFigure: 0.0043,
-          status: FundStatus.ACTIVE,
+          status: 'ACTIVE',
           inceptionDate: '2017-01-01',
           nav: 1,
         },
@@ -651,7 +650,7 @@ describe('withdrawals flow with missing NAV', () => {
           managementFeeRate: 0.0034,
           pillar: 2,
           ongoingChargesFigure: 0.0039,
-          status: FundStatus.ACTIVE,
+          status: 'ACTIVE',
           inceptionDate: '2017-01-01',
           nav: 1,
         },

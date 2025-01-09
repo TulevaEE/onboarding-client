@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import './Payment.scss';
-import { PaymentType } from '../../../common/apiModels';
 import { AvailablePaymentType, BankKey } from './types';
 
 type Props = {
@@ -37,16 +36,14 @@ export const PaymentSubmitSection = ({
             disabled={disabled}
             onClick={handleSubmit}
           >
-            {paymentType === PaymentType.SINGLE && (
-              <FormattedMessage id="thirdPillarPayment.makePayment" />
-            )}
-            {paymentType === PaymentType.RECURRING && (
+            {paymentType === 'SINGLE' && <FormattedMessage id="thirdPillarPayment.makePayment" />}
+            {paymentType === 'RECURRING' && (
               <FormattedMessage id="thirdPillarPayment.setupRecurringPayment" />
             )}
           </button>
           <div className="mt-2">
             <small className="text-muted">
-              {paymentType === PaymentType.SINGLE && (
+              {paymentType === 'SINGLE' && (
                 <FormattedMessage
                   id="thirdPillarPayment.freeSinglePayment"
                   values={{
@@ -54,7 +51,7 @@ export const PaymentSubmitSection = ({
                   }}
                 />
               )}
-              {paymentType === PaymentType.RECURRING && (
+              {paymentType === 'RECURRING' && (
                 <FormattedMessage
                   id="thirdPillarPayment.freeRecurringPayment"
                   values={{
@@ -65,7 +62,7 @@ export const PaymentSubmitSection = ({
             </small>
           </div>
         </div>
-        {paymentType === PaymentType.RECURRING && !disabled && (
+        {paymentType === 'RECURRING' && !disabled && (
           <div className="d-flex flex-wrap align-items-center">
             <span className="mr-2 mt-4">
               <FormattedMessage id="thirdPillarPayment.recurringPaymentQuestion" />

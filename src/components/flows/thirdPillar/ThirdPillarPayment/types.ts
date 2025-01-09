@@ -1,6 +1,4 @@
-import { PaymentType } from '../../../common/apiModels';
-
-export type AvailablePaymentType = PaymentType.SINGLE | PaymentType.RECURRING;
+export type AvailablePaymentType = 'SINGLE' | 'RECURRING';
 
 export const bankKeyToBankNameMap = {
   swedbank: 'Swedbank',

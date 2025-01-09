@@ -20,17 +20,8 @@ export interface GraphProperties {
   };
 }
 
-export enum PerformanceVerdict {
-  POSITIVE_ALPHA = 'POSITIVE_ALPHA',
-  NEGATIVE_ALPHA = 'NEGATIVE_ALPHA',
-  NEUTRAL = 'NEUTRAL',
-}
-
-export enum PerformanceVerdictComparison {
-  WORLD_INDEX = 'WORLD_INDEX',
-  FUND = 'FUND',
-  INFLATION = 'INFLATION',
-}
+export type PerformanceVerdict = 'POSITIVE_ALPHA' | 'NEGATIVE_ALPHA' | 'NEUTRAL';
+export type PerformanceVerdictComparison = 'WORLD_INDEX' | 'FUND' | 'INFLATION';
 
 export interface PerformanceVerdictProperties {
   verdict: PerformanceVerdict;

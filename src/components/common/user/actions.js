@@ -8,7 +8,6 @@ import {
   UPDATE_USER_ERROR,
   USER_UPDATED,
 } from './constants';
-import { PaymentChannel, PaymentType } from '../apiModels';
 
 function toFieldErrors(errorResponse) {
   return errorResponse.body.errors.reduce((totalErrors, currentError) => {
@@ -58,8 +57,8 @@ export function createNewMember(user) {
           recipientPersonalCode: newUser.personalCode,
           amount: null,
           currency: 'EUR',
-          type: PaymentType.MEMBER_FEE,
-          paymentChannel: PaymentChannel.TULUNDUSUHISTU,
+          type: 'MEMBER_FEE',
+          paymentChannel: 'TULUNDUSUHISTU',
         });
       })
       .catch((errorResponse) => {

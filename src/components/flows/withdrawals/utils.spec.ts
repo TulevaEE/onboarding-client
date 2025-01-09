@@ -1,4 +1,3 @@
-import { FundStatus } from '../../common/apiModels';
 import {
   funds,
   pensionHoldings,
@@ -127,7 +126,7 @@ describe('getAllFundNavsPresent', () => {
             managementFeeRate: 0.0034,
             ongoingChargesFigure: 0.0047,
             fundManager: { name: 'Tuleva' },
-            status: FundStatus.ACTIVE,
+            status: 'ACTIVE',
             inceptionDate: '2017-01-01',
             nav: null,
           },

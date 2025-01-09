@@ -31,7 +31,6 @@ import {
   MOBILE_AUTHENTICATION_SUCCESS,
 } from '../login/constants';
 import { isTuleva } from '../common/utils';
-import { FundStatus } from '../common/apiModels';
 
 const initialState = {
   loadingPensionData: true,
@@ -153,7 +152,7 @@ export default function exchangeReducer(state = initialState, action) {
     case GET_TARGET_FUNDS_SUCCESS:
       // eslint-disable-next-line no-case-declarations
       const secondPillarTargetFunds = action.targetFunds.filter(
-        (fund) => fund.pillar === 2 && fund.status === FundStatus.ACTIVE,
+        (fund) => fund.pillar === 2 && fund.status === 'ACTIVE',
       );
       return {
         ...state,

@@ -27,7 +27,7 @@ export const ApplicationSection: React.FunctionComponent = () => {
           <ApplicationCard
             key={application.id}
             application={application}
-            allowedActions={[ApplicationAction.CANCEL]}
+            allowedActions={['CANCEL']}
           />
         ))}
     </section>

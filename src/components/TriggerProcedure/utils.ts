@@ -1,5 +1,4 @@
 import { getPaymentLink } from '../common/api';
-import { PaymentChannel, PaymentType } from '../common/apiModels';
 import { getAuthentication } from '../common/authenticationManager';
 
 const EXTERNAL_AUTHENTICATOR_PROVIDER = 'EXTERNAL_AUTHENTICATOR_PROVIDER';
@@ -75,7 +74,7 @@ export const finish = async (result?: string, error?: string, personalCode?: str
     return;
   }
 
-  const paymentType = result === 'newRecurringPayment' ? PaymentType.RECURRING : PaymentType.SINGLE;
+  const paymentType = result === 'newRecurringPayment' ? 'RECURRING' : 'SINGLE';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   if ((window as any).ReactNativeWebView) {
@@ -85,7 +84,7 @@ export const finish = async (result?: string, error?: string, personalCode?: str
 
     const paymentLink = await getPaymentLink({
       type: paymentType,
-      paymentChannel: PaymentChannel.PARTNER,
+      paymentChannel: 'PARTNER',
       recipientPersonalCode: personalCode,
     });
     const message = {
@@ -102,7 +101,7 @@ export const finish = async (result?: string, error?: string, personalCode?: str
   } else {
     const paymentLink = await getPaymentLink({
       type: paymentType,
-      paymentChannel: PaymentChannel.COOP_WEB,
+      paymentChannel: 'COOP_WEB',
       recipientPersonalCode: personalCode,
     });
     // eslint-disable-next-line no-console -- WIP

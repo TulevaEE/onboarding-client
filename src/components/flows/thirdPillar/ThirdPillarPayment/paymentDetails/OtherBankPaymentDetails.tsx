@@ -4,12 +4,11 @@ import { AccountNameRow } from './row/AccountNameRow';
 import { AccountNumberRow } from './row/AccountNumberRow';
 import { PaymentDescriptionRow } from './row/PaymentDescriptionRow';
 import { PaymentAmountRow } from './row/PaymentAmountRow';
-import { PaymentType } from '../../../../common/apiModels';
 
 export const OtherBankPaymentDetails: React.FunctionComponent<{
   amount: string;
   personalCode: string;
-  paymentType: PaymentType.SINGLE | PaymentType.RECURRING;
+  paymentType: 'SINGLE' | 'RECURRING';
 }> = ({ amount, personalCode, paymentType }) => (
   <div className="mt-4 payment-details p-4">
     <h3>

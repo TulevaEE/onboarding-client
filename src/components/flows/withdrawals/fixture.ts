@@ -1,5 +1,5 @@
 import { PersonalDetailsStepState, PensionHoldings } from './types';
-import { Fund, FundStatus, SourceFund } from '../../common/apiModels';
+import { Fund, SourceFund } from '../../common/apiModels';
 import { WithdrawalsEligibility } from '../../common/apiModels/withdrawals';
 
 export const withdrawalEligibility: WithdrawalsEligibility = {
@@ -36,7 +36,7 @@ export const funds: Fund[] = [
     managementFeeRate: 0.0034,
     ongoingChargesFigure: 0.0047,
     fundManager: { name: 'Tuleva' },
-    status: FundStatus.ACTIVE,
+    status: 'ACTIVE',
     inceptionDate: '2017-01-01',
     nav: TEST_NAVS.TULEVA_WORLD_SECOND_PILLAR,
   },
@@ -47,7 +47,7 @@ export const funds: Fund[] = [
     managementFeeRate: 0.0039,
     ongoingChargesFigure: 0.0045,
     fundManager: { name: 'Tuleva' },
-    status: FundStatus.ACTIVE,
+    status: 'ACTIVE',
     inceptionDate: '2019-01-01',
     nav: TEST_NAVS.TULEVA_BOND_SECOND_PILLAR,
   },
@@ -58,7 +58,7 @@ export const funds: Fund[] = [
     managementFeeRate: 0.0039,
     ongoingChargesFigure: 0.0045,
     fundManager: { name: 'Tuleva' },
-    status: FundStatus.ACTIVE,
+    status: 'ACTIVE',
     inceptionDate: '2019-01-01',
     nav: TEST_NAVS.TULEVA_THIRD_PILLAR,
   },
@@ -69,7 +69,7 @@ export const funds: Fund[] = [
     managementFeeRate: 0.0039,
     ongoingChargesFigure: 0.0045,
     fundManager: { name: 'Tuleva' },
-    status: FundStatus.ACTIVE,
+    status: 'ACTIVE',
     inceptionDate: '2019-01-01',
     nav: TEST_NAVS.LHV_THIRD_PILLAR,
   },
