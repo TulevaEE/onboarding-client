@@ -2,6 +2,8 @@ import {
   CHANGE_OCCUPATION,
   CHANGE_POLITICALLY_EXPOSED,
   CHANGE_RESIDENCY,
+  CREATE_AML_CHECKS_ERROR,
+  CREATE_AML_CHECKS_SUCCESS,
   GET_MISSING_AML_CHECKS_ERROR,
   GET_MISSING_AML_CHECKS_START,
   GET_MISSING_AML_CHECKS_SUCCESS,
@@ -135,6 +137,56 @@ describe('AML actions', () => {
       expect(mockApi.updateUserWithToken).toHaveBeenCalled();
       expect(mockApi.createAmlCheck).toHaveBeenCalled();
       expect(mockApi.getMissingAmlChecks).toHaveBeenCalled();
+    });
+  });
+
+  it('dispatches all AML checks for valid amlChecks', async () => {
+    const amlChecks = {
+      isResident: true,
+      isPoliticallyExposed: false,
+      occupation: 'PRIVATE_SECTOR',
+    };
+
+    mockApi.createAmlCheck = jest.fn(() => Promise.resolve());
+    const store = mockStore();
+    await store.dispatch(actions.createAmlChecks(amlChecks));
+
+    expect(mockApi.createAmlCheck).toHaveBeenCalledTimes(3);
+    expect(mockApi.createAmlCheck).toHaveBeenNthCalledWith(1, 'RESIDENCY_MANUAL', true, {});
+    expect(mockApi.createAmlCheck).toHaveBeenNthCalledWith(
+      2,
+      'POLITICALLY_EXPOSED_PERSON',
+      true,
+      {},
+    );
+    expect(mockApi.createAmlCheck).toHaveBeenNthCalledWith(3, 'OCCUPATION', true, {
+      occupation: 'PRIVATE_SECTOR',
+    });
+
+    expect(store.getActions()).toContainEqual({
+      type: CREATE_AML_CHECKS_SUCCESS,
+    });
+  });
+
+  it('handles errors during AML checks', async () => {
+    const amlChecks = {
+      isResident: true,
+      isPoliticallyExposed: false,
+      occupation: 'PRIVATE_SECTOR',
+    };
+
+    const error = new Error('Test Error');
+    mockApi.createAmlCheck = jest.fn(() => Promise.reject(error));
+    const store = mockStore();
+
+    await store.dispatch(actions.createAmlChecks(amlChecks)).catch((err) => {
+      expect(err).toBe(error);
+    });
+
+    expect(mockApi.createAmlCheck).toHaveBeenCalledTimes(1);
+    expect(store.getActions()).toContainEqual({
+      type: CREATE_AML_CHECKS_ERROR,
+      error,
     });
   });
 });

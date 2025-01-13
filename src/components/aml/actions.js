@@ -31,24 +31,27 @@ export function createAmlChecks(amlChecks) {
     }
     dispatch({ type: CREATE_AML_CHECKS_START });
     return createAmlCheck('RESIDENCY_MANUAL', amlChecks.isResident, {})
-      .then(
-        () =>
-          amlChecks.isPoliticallyExposed != null &&
-          createAmlCheck(
-            'POLITICALLY_EXPOSED_PERSON',
-            amlChecks.isPoliticallyExposed === false,
-            {},
-          ),
+      .then(() =>
+        amlChecks.isPoliticallyExposed != null
+          ? createAmlCheck(
+              'POLITICALLY_EXPOSED_PERSON',
+              amlChecks.isPoliticallyExposed === false,
+              {},
+            )
+          : Promise.resolve(),
       )
-      .then(
-        () =>
-          amlChecks.occupation != null &&
-          createAmlCheck('OCCUPATION', !!amlChecks.occupation, {
-            occupation: amlChecks.occupation,
-          }),
+      .then(() =>
+        amlChecks.occupation != null
+          ? createAmlCheck('OCCUPATION', !!amlChecks.occupation, {
+              occupation: amlChecks.occupation,
+            })
+          : Promise.resolve(),
       )
       .then(() => dispatch({ type: CREATE_AML_CHECKS_SUCCESS }))
-      .catch((error) => dispatch({ type: CREATE_AML_CHECKS_ERROR, error }));
+      .catch((error) => {
+        dispatch({ type: CREATE_AML_CHECKS_ERROR, error });
+        return Promise.reject(error);
+      });
   };
 }
 
