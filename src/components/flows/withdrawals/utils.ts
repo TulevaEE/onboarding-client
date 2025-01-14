@@ -8,7 +8,18 @@ import {
   WithdrawalMandateDetails,
   BankAccountDetails,
   WithdrawalsEligibility,
+  FundPensionStatus,
 } from '../../common/apiModels/withdrawals';
+
+export const getActiveFundPensionPillars = (
+  fundPensionStatus: FundPensionStatus,
+): Set<'SECOND' | 'THIRD'> => {
+  const activeFundPensionPillars = fundPensionStatus.fundPensions
+    .filter((fundPension) => fundPension.active)
+    .map((fundPension) => fundPension.pillar);
+
+  return new Set(activeFundPensionPillars);
+};
 
 export const canOnlyWithdrawThirdPillarTaxFree = (eligibility: WithdrawalsEligibility) =>
   !eligibility.hasReachedEarlyRetirementAge && eligibility.canWithdrawThirdPillarWithReducedTax;
