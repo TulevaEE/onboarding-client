@@ -43,6 +43,8 @@ const getStatusBoxRow = async (type: 'SECOND' | 'THIRD' | 'MEMBER') => {
   return rows[rowIndex];
 };
 
+const getWithdrawalsLink = async () => screen.queryByRole('link', { name: 'Withdrawals' });
+
 describe('happy path', () => {
   beforeEach(() => {
     initializeConfiguration();
@@ -125,7 +127,7 @@ describe('fund pension status', () => {
     history.push('/account');
   });
 
-  test('active fund pension information is shown', async () => {
+  test("active fund pension information is shown and withdrawals isn't shown", async () => {
     expect(
       await screen.findByText(
         'Contributions have ended and you are receiving regular fund pension payments',
@@ -138,6 +140,8 @@ describe('fund pension status', () => {
 
     expect(await screen.findByText('October 2039')).toBeInTheDocument();
     expect(await screen.findByText('October 2033')).toBeInTheDocument();
+
+    expect(await getWithdrawalsLink()).not.toBeInTheDocument();
   });
 });
 
@@ -219,7 +223,7 @@ describe('pending withdrawal transactions', () => {
     history.push('/account');
   };
 
-  test('pending withdrawal and fund pension application info is shown', async () => {
+  test("pending withdrawal and fund pension application info is shown and withdrawals link isn't shown", async () => {
     initializeApplicationsAndComponent([
       secondPillarPartialWithdrawalApplication,
       thirdPillarWithdrawalApplication,
@@ -247,6 +251,8 @@ describe('pending withdrawal transactions', () => {
       ),
     ).toBeInTheDocument();
     expect(await within(thirdPillarRow).findByTestId('status-icon-success')).toBeInTheDocument();
+
+    expect(await getWithdrawalsLink()).not.toBeInTheDocument();
   });
 
   test('pending withdrawal info is shown', async () => {
@@ -272,6 +278,8 @@ describe('pending withdrawal transactions', () => {
       await within(thirdPillarRow).findByText('You have a pending partial withdrawal application'),
     ).toBeInTheDocument();
     expect(await within(thirdPillarRow).findByTestId('status-icon-success')).toBeInTheDocument();
+
+    expect(await getWithdrawalsLink()).not.toBeInTheDocument();
   });
 
   test('fund pension opening info is shown', async () => {
@@ -301,5 +309,116 @@ describe('pending withdrawal transactions', () => {
     ).toBeInTheDocument();
 
     expect(await within(thirdPillarRow).findByTestId('status-icon-success')).toBeInTheDocument();
+    expect(await getWithdrawalsLink()).not.toBeInTheDocument();
+  });
+});
+
+describe('withdrawals link', () => {
+  beforeEach(() => {
+    initializeConfiguration();
+
+    useTestBackendsExcept(server, ['fundPensionStatus', 'userConversion', 'applications']);
+  });
+
+  test('when second pillar fund pension is active with both pillars present, it shows withdrawals link', async () => {
+    fundPensionStatusBackend(server, {
+      fundPensions: [
+        {
+          pillar: 'SECOND',
+          startDate: '2019-10-01T12:13:27.141Z',
+          endDate: null,
+          active: true,
+          durationYears: 20,
+        },
+      ],
+    });
+    applicationsBackend(server);
+    userConversionBackend(
+      server,
+      {
+        selectionComplete: true,
+        paymentComplete: true,
+        pendingWithdrawal: false,
+      },
+      {
+        selectionComplete: true,
+        paymentComplete: true,
+        pendingWithdrawal: false,
+      },
+    );
+
+    initializeComponent();
+
+    history.push('/account');
+
+    expect(await getWithdrawalsLink()).toBeInTheDocument();
+  });
+
+  test('when second pillar fund pension is active with only second pillar present, it does not show withdrawals link', async () => {
+    fundPensionStatusBackend(server, {
+      fundPensions: [
+        {
+          pillar: 'SECOND',
+          startDate: '2019-10-01T12:13:27.141Z',
+          endDate: null,
+          active: true,
+          durationYears: 20,
+        },
+      ],
+    });
+    applicationsBackend(server);
+    userConversionBackend(
+      server,
+      {
+        selectionComplete: true,
+        paymentComplete: true,
+        pendingWithdrawal: false,
+      },
+      {
+        selectionComplete: false,
+        paymentComplete: false,
+        pendingWithdrawal: false,
+      },
+    );
+
+    initializeComponent();
+
+    history.push('/account');
+
+    expect(await getWithdrawalsLink()).not.toBeInTheDocument();
+  });
+
+  test('when third pillar fund pension is active with both pillars present, it shows withdrawals link', async () => {
+    fundPensionStatusBackend(server, {
+      fundPensions: [
+        {
+          pillar: 'THIRD',
+          startDate: '2019-10-01T12:13:27.141Z',
+          endDate: null,
+          active: true,
+          durationYears: 20,
+        },
+      ],
+    });
+    applicationsBackend(server);
+    userConversionBackend(
+      server,
+      {
+        selectionComplete: true,
+        paymentComplete: true,
+        pendingWithdrawal: false,
+      },
+      {
+        selectionComplete: true,
+        paymentComplete: true,
+        pendingWithdrawal: false,
+      },
+    );
+
+    initializeComponent();
+
+    history.push('/account');
+
+    expect(await getWithdrawalsLink()).toBeInTheDocument();
   });
 });

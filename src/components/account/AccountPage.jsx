@@ -20,6 +20,8 @@ import SecondPillarUpsell from './SecondPillarUpsell/SecondPillarUpsell';
 import { getAuthentication } from '../common/authenticationManager';
 import { SectionHeading } from './SectionHeading';
 import { TransactionSection } from './TransactionSection/TransactionSection';
+import { useFundPensionStatus } from '../common/apiHooks';
+import { getActiveFundPensionPillars } from '../flows/withdrawals/utils';
 
 const noop = () => null;
 
@@ -44,6 +46,7 @@ export function AccountPage(
       onGetMemberCapital();
     }
   };
+  const { data: fundPensionStatus } = useFundPensionStatus();
 
   useEffect(() => {
     getData();
@@ -64,10 +67,54 @@ export function AccountPage(
     shouldRedirectToAml,
   } = props;
 
+  const isSecondPillarFullyConverted =
+    conversion &&
+    conversion.secondPillar.selectionComplete &&
+    conversion.secondPillar.transfersComplete;
+
   const isThirdPillarFullyConverted =
     conversion &&
     conversion.thirdPillar.selectionComplete &&
     conversion.thirdPillar.transfersComplete;
+
+  const pendingSecondPillarWithdrawal = conversion && conversion.secondPillar.pendingWithdrawal;
+  const pendingThirdPillarWithdrawal = conversion && conversion.thirdPillar.pendingWithdrawal;
+
+  const shouldShowWithdrawalsButton = () => {
+    if (pendingSecondPillarWithdrawal && pendingThirdPillarWithdrawal) {
+      return false;
+    }
+
+    if (pendingSecondPillarWithdrawal && isThirdPillarFullyConverted) {
+      return true;
+    }
+
+    if (pendingThirdPillarWithdrawal && isSecondPillarFullyConverted) {
+      return true;
+    }
+
+    if (fundPensionStatus) {
+      const activeFundPensionPillars = getActiveFundPensionPillars(fundPensionStatus);
+
+      if (activeFundPensionPillars.size === 0) {
+        return true;
+      }
+
+      if (activeFundPensionPillars.has('SECOND') && activeFundPensionPillars.has('THIRD')) {
+        return false;
+      }
+
+      if (!activeFundPensionPillars.has('THIRD') && isThirdPillarFullyConverted) {
+        return true;
+      }
+
+      if (!activeFundPensionPillars.has('SECOND') && isSecondPillarFullyConverted) {
+        return true;
+      }
+    }
+
+    return true;
+  };
 
   return (
     <>
@@ -95,9 +142,11 @@ export function AccountPage(
 
       <div className="mt-5">
         <SectionHeading titleId="accountSummary.heading" lead>
-          <Link className="text-nowrap" to="/withdrawals">
-            <FormattedMessage id="accountSummary.withdrawalsLink" />
-          </Link>
+          {shouldShowWithdrawalsButton() && (
+            <Link className="text-nowrap" to="/withdrawals">
+              <FormattedMessage id="accountSummary.withdrawalsLink" />
+            </Link>
+          )}
         </SectionHeading>
 
         {secondPillarSourceFunds && thirdPillarSourceFunds && conversion ? (
