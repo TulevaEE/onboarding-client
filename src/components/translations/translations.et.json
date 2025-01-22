@@ -482,6 +482,7 @@
   "thirdPillarPayment.recurringPaymentAmount": "Kui suures summas soovid püsimakset teha?",
   "thirdPillarPayment.giftPaymentAmount": "Kui suures summas soovid kingituse teha?",
   "thirdPillarPayment.perMonth": " kuus",
+  "thirdPillarPayment.warningAmountExceeded": "Oled tegemas sissemakset, mis ületab III samba maksuvabastuse piiri. Pane tähele, et III samba sissemaksetele kehtib tulumaksusoodustus kuni 15% ulatuses Eestis maksustatavast brutotulust, kuid mitte rohkem kui {max} € aastas.",
   "thirdPillarPayment.paymentType": "Millist tüüpi makset soovid teha?",
   "thirdPillarPayment.singlePaymentBank": "Vali pank, kust soovid makset teha:",
   "thirdPillarPayment.recurringPaymentBank": "Vali pank, kust soovid püsimakset teha:",

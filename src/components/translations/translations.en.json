@@ -480,6 +480,7 @@
   "thirdPillarPayment.recurringPaymentAmount": "What is the recurring payment amount?",
   "thirdPillarPayment.giftPaymentAmount": "What is the gift payment amount?",
   "thirdPillarPayment.perMonth": "/month",
+  "thirdPillarPayment.warningAmountExceeded": "Contributions to the III pillar are eligible for an income tax deduction of up to 15% of taxable income in Estonia, but not more than 6000 €/year.",
   "thirdPillarPayment.paymentType": "What is the type of payment?",
   "thirdPillarPayment.singlePaymentBank": "Choose your payment bank:",
   "thirdPillarPayment.recurringPaymentBank": "Choose your recurring payment bank:",

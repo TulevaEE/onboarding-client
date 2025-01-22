@@ -80,6 +80,7 @@ export const Payment: React.FunctionComponent = () => {
             }
           }}
           onWheel={(event) => event.currentTarget.blur()}
+          max={6000}
           className="mt-5"
         />
 
