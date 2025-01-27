@@ -37,6 +37,7 @@ import Success from '../flows/secondPillar/success';
 import { getAuthentication } from '../common/authenticationManager';
 import { CapitalPage } from '../account/MemberCapital/CapitalPage';
 import { Withdrawals } from '../flows/withdrawals/Withdrawals';
+import { TimeoutAlert } from './TimeoutAlert';
 
 export const ACCOUNT_PATH = '/account';
 export const AML_PATH = '/aml';
@@ -86,6 +87,7 @@ export class LoggedInApp extends PureComponent {
       <div className="container mt-4">
         <div className="row justify-content-center">
           <div className="col-lg-10">
+            <TimeoutAlert />
             <Header user={user} loading={loading} onLogout={onLogout} />
             {this.isDevelopmentMode() && <DevSidebar />}
             <Switch>
