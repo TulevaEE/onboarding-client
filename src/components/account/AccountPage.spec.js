@@ -10,6 +10,9 @@ import { StatusBox } from './statusBox';
 import { ApplicationSection } from './ApplicationSection/ApplicationSection';
 import { activeThirdPillar } from './statusBox/fixtures';
 
+jest.mock('../common/apiHooks', () => ({
+  useFundPensionStatus: () => ({ data: null }),
+}));
 /**
  * @deprecated Use AccountPageView.test.tsx
  */
