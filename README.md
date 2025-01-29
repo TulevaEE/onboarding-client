@@ -9,9 +9,23 @@
 
 Originally, this repo was built using js, redux and enzyme for testing. Over the years react has grown, rendering some of these tehcnologies less useful. This architecture has shown itself to be overcomplicated and the current tests to not give as much value as they could. Thus, whenever you are working on new functionality in this repo, try to do the following:
 
-- Convert files you touch to typescript, this can be easily done as typescript and js can be used interchangably in this repo
-- Try to not use redux, or if you need to use it try to keep it far away from your code in a generic hook, use simple hooks for logic and [React Query](https://react-query.tanstack.com/) for async data fetching boilerplate. Use [React's native context](https://react.dev/learn/passing-data-deeply-with-context) for localized state sharing, example in withdrawals/hooks.ts.
+- Convert files you touch to typescript, this can be easily done as typescript and js can be used interchangably in this repo.
+- Convert class components to functional if possible.
+- Try to not use Redux (See below)
 - Use react testing library and msw for tests and try to mock as little as possible, building tests to imitate how a user would use your application. See the [`CancellationFlow`](./src/components/flows/cancellation/CancellationFlow.tsx) for an example of how to incrementally move to this structure while reusing previous redux code.
+
+### Migrating away from Redux 
+
+* Prefer [React Query](https://react-query.tanstack.com/) hooks in new code
+* Prefer [React's native context](https://react.dev/learn/passing-data-deeply-with-context) for localized state sharing, example in `withdrawals/hooks.ts`.
+
+For old code:
+1. Convert class components to functional to enable usage of hooks
+2. Replace Redux logic based on `connect(Component)` with hooks. Prefer `react-query` hooks for data fetching. If needed, use [useSelector, useDispatch](https://react-redux.js.org/api/hooks) etc., to interact with Redux from a legacy functional component.
+3. Abstract `useSelector` and `useDispatch` usage into separate hooks.
+
+Then it's later possible to replace `useSelector` and `useDispatch` within those abstract hooks as the implementation evolves.
+
 
 ## Prerequisites
 
