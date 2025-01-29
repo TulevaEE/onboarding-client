@@ -85,16 +85,8 @@ export function AccountPage(
       return false;
     }
 
-    if (pendingSecondPillarWithdrawal && pendingThirdPillarWithdrawal) {
+    if (pendingSecondPillarWithdrawal || pendingThirdPillarWithdrawal) {
       return false;
-    }
-
-    if (pendingSecondPillarWithdrawal && isThirdPillarFullyConverted) {
-      return true;
-    }
-
-    if (pendingThirdPillarWithdrawal && isSecondPillarFullyConverted) {
-      return true;
     }
 
     if (fundPensionStatus) {
@@ -104,20 +96,10 @@ export function AccountPage(
         return true;
       }
 
-      if (activeFundPensionPillars.has('SECOND') && activeFundPensionPillars.has('THIRD')) {
-        return false;
-      }
-
-      if (!activeFundPensionPillars.has('THIRD') && isThirdPillarFullyConverted) {
-        return true;
-      }
-
-      if (!activeFundPensionPillars.has('SECOND') && isSecondPillarFullyConverted) {
-        return true;
-      }
+      return false;
     }
 
-    return true;
+    return false;
   };
 
   return (
