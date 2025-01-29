@@ -327,7 +327,35 @@ describe('withdrawals link', () => {
     useTestBackendsExcept(server, ['fundPensionStatus', 'userConversion', 'applications']);
   });
 
-  test('when second pillar fund pension is active with both pillars present, it shows withdrawals link', async () => {
+  test('shows withdrawals link when no withdrawals and fund pensions active', async () => {
+    fundPensionStatusBackend(server, {
+      fundPensions: [],
+    });
+    applicationsBackend(server);
+    userConversionBackend(
+      server,
+      {
+        selectionComplete: true,
+        paymentComplete: true,
+        pendingWithdrawal: false,
+      },
+      {
+        selectionComplete: true,
+        paymentComplete: true,
+        pendingWithdrawal: false,
+      },
+    );
+
+    initializeComponent();
+
+    history.push('/account');
+
+    await waitFor(async () => {
+      expect(await getWithdrawalsLink()).toBeInTheDocument();
+    });
+  });
+
+  test('when second pillar fund pension is active with both pillars present, it does not show withdrawals link', async () => {
     fundPensionStatusBackend(server, {
       fundPensions: [
         {
@@ -359,7 +387,7 @@ describe('withdrawals link', () => {
     history.push('/account');
 
     await waitFor(async () => {
-      expect(await getWithdrawalsLink()).toBeInTheDocument();
+      expect(await getWithdrawalsLink()).not.toBeInTheDocument();
     });
   });
 
@@ -399,7 +427,7 @@ describe('withdrawals link', () => {
     });
   });
 
-  test('when third pillar fund pension is active with both pillars present, it shows withdrawals link', async () => {
+  test('when third pillar fund pension is active with both pillars present, it does not show withdrawals link', async () => {
     fundPensionStatusBackend(server, {
       fundPensions: [
         {
@@ -431,7 +459,7 @@ describe('withdrawals link', () => {
     history.push('/account');
 
     await waitFor(async () => {
-      expect(await getWithdrawalsLink()).toBeInTheDocument();
+      expect(await getWithdrawalsLink()).not.toBeInTheDocument();
     });
   });
 });
