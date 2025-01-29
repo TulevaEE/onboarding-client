@@ -1,15 +1,30 @@
 import { captureException } from '@sentry/browser';
-import { Fund, SourceFund } from '../../common/apiModels/index';
-import { PensionHoldings, PersonalDetailsStepState, WithdrawalsAmountStepState } from './types';
-
 import {
+  FundPensionStatus,
   FundPensionOpeningMandateDetails,
   PartialWithdrawalMandateDetails,
   WithdrawalMandateDetails,
   BankAccountDetails,
   WithdrawalsEligibility,
-  FundPensionStatus,
 } from '../../common/apiModels/withdrawals';
+import { Fund, SourceFund, UserConversion } from '../../common/apiModels/index';
+import { PensionHoldings, PersonalDetailsStepState, WithdrawalsAmountStepState } from './types';
+
+export const canAccessWithdrawals = (
+  conversion: UserConversion,
+  fundPensionStatus: FundPensionStatus,
+) => {
+  const pendingSecondPillarWithdrawal = conversion.secondPillar.pendingWithdrawal;
+  const pendingThirdPillarWithdrawal = conversion.thirdPillar.pendingWithdrawal;
+
+  if (pendingSecondPillarWithdrawal || pendingThirdPillarWithdrawal) {
+    return false;
+  }
+
+  const activeFundPensionPillars = getActiveFundPensionPillars(fundPensionStatus);
+
+  return activeFundPensionPillars.size === 0;
+};
 
 export const getActiveFundPensionPillars = (
   fundPensionStatus: FundPensionStatus,

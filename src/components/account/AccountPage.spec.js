@@ -11,7 +11,7 @@ import { ApplicationSection } from './ApplicationSection/ApplicationSection';
 import { activeThirdPillar } from './statusBox/fixtures';
 
 jest.mock('../common/apiHooks', () => ({
-  useFundPensionStatus: () => ({ data: null }),
+  useFundPensionStatus: () => ({ data: { fundPensions: [] } }),
 }));
 /**
  * @deprecated Use AccountPageView.test.tsx
