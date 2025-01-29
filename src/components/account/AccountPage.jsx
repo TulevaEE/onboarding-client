@@ -46,7 +46,7 @@ export function AccountPage(
       onGetMemberCapital();
     }
   };
-  const { data: fundPensionStatus } = useFundPensionStatus();
+  const { data: fundPensionStatus, loading: isFundPensionStatusLoading } = useFundPensionStatus();
 
   useEffect(() => {
     getData();
@@ -81,6 +81,10 @@ export function AccountPage(
   const pendingThirdPillarWithdrawal = conversion && conversion.thirdPillar.pendingWithdrawal;
 
   const shouldShowWithdrawalsButton = () => {
+    if (isFundPensionStatusLoading || !conversion) {
+      return false;
+    }
+
     if (pendingSecondPillarWithdrawal && pendingThirdPillarWithdrawal) {
       return false;
     }
