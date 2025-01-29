@@ -21,7 +21,7 @@ import { getAuthentication } from '../common/authenticationManager';
 import { SectionHeading } from './SectionHeading';
 import { TransactionSection } from './TransactionSection/TransactionSection';
 import { useFundPensionStatus } from '../common/apiHooks';
-import { getActiveFundPensionPillars } from '../flows/withdrawals/utils';
+import { canAccessWithdrawals } from '../flows/withdrawals/utils';
 
 const noop = () => null;
 
@@ -81,25 +81,11 @@ export function AccountPage(
   const pendingThirdPillarWithdrawal = conversion && conversion.thirdPillar.pendingWithdrawal;
 
   const shouldShowWithdrawalsButton = () => {
-    if (isFundPensionStatusLoading || !conversion) {
+    if (isFundPensionStatusLoading || !conversion || !fundPensionStatus) {
       return false;
     }
 
-    if (pendingSecondPillarWithdrawal || pendingThirdPillarWithdrawal) {
-      return false;
-    }
-
-    if (fundPensionStatus) {
-      const activeFundPensionPillars = getActiveFundPensionPillars(fundPensionStatus);
-
-      if (activeFundPensionPillars.size === 0) {
-        return true;
-      }
-
-      return false;
-    }
-
-    return false;
+    return canAccessWithdrawals(conversion, fundPensionStatus);
   };
 
   return (
