@@ -1,5 +1,5 @@
 import { setupServer } from 'msw/node';
-import { screen, within } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import { Route } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
 import { initializeConfiguration } from '../config/config';
@@ -252,7 +252,9 @@ describe('pending withdrawal transactions', () => {
     ).toBeInTheDocument();
     expect(await within(thirdPillarRow).findByTestId('status-icon-success')).toBeInTheDocument();
 
-    expect(await getWithdrawalsLink()).not.toBeInTheDocument();
+    await waitFor(async () => {
+      expect(await getWithdrawalsLink()).not.toBeInTheDocument();
+    });
   });
 
   test('pending withdrawal info is shown', async () => {
@@ -279,7 +281,9 @@ describe('pending withdrawal transactions', () => {
     ).toBeInTheDocument();
     expect(await within(thirdPillarRow).findByTestId('status-icon-success')).toBeInTheDocument();
 
-    expect(await getWithdrawalsLink()).not.toBeInTheDocument();
+    await waitFor(async () => {
+      expect(await getWithdrawalsLink()).not.toBeInTheDocument();
+    });
   });
 
   test('fund pension opening info is shown', async () => {
@@ -309,7 +313,10 @@ describe('pending withdrawal transactions', () => {
     ).toBeInTheDocument();
 
     expect(await within(thirdPillarRow).findByTestId('status-icon-success')).toBeInTheDocument();
-    expect(await getWithdrawalsLink()).not.toBeInTheDocument();
+
+    await waitFor(async () => {
+      expect(await getWithdrawalsLink()).not.toBeInTheDocument();
+    });
   });
 });
 
@@ -351,7 +358,9 @@ describe('withdrawals link', () => {
 
     history.push('/account');
 
-    expect(await getWithdrawalsLink()).toBeInTheDocument();
+    await waitFor(async () => {
+      expect(await getWithdrawalsLink()).toBeInTheDocument();
+    });
   });
 
   test('when second pillar fund pension is active with only second pillar present, it does not show withdrawals link', async () => {
@@ -385,7 +394,9 @@ describe('withdrawals link', () => {
 
     history.push('/account');
 
-    expect(await getWithdrawalsLink()).not.toBeInTheDocument();
+    await waitFor(async () => {
+      expect(await getWithdrawalsLink()).not.toBeInTheDocument();
+    });
   });
 
   test('when third pillar fund pension is active with both pillars present, it shows withdrawals link', async () => {
@@ -419,6 +430,8 @@ describe('withdrawals link', () => {
 
     history.push('/account');
 
-    expect(await getWithdrawalsLink()).toBeInTheDocument();
+    await waitFor(async () => {
+      expect(await getWithdrawalsLink()).toBeInTheDocument();
+    });
   });
 });
