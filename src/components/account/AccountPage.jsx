@@ -67,18 +67,10 @@ export function AccountPage(
     shouldRedirectToAml,
   } = props;
 
-  const isSecondPillarFullyConverted =
-    conversion &&
-    conversion.secondPillar.selectionComplete &&
-    conversion.secondPillar.transfersComplete;
-
   const isThirdPillarFullyConverted =
     conversion &&
     conversion.thirdPillar.selectionComplete &&
     conversion.thirdPillar.transfersComplete;
-
-  const pendingSecondPillarWithdrawal = conversion && conversion.secondPillar.pendingWithdrawal;
-  const pendingThirdPillarWithdrawal = conversion && conversion.thirdPillar.pendingWithdrawal;
 
   const shouldShowWithdrawalsButton = () => {
     if (isFundPensionStatusLoading || !conversion || !fundPensionStatus) {
