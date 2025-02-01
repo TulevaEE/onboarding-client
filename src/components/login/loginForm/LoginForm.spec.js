@@ -148,7 +148,7 @@ describe('Login form', () => {
 
   describe('when time within maintenance window', () => {
     beforeEach(() => {
-      jest.setSystemTime(new Date('Feb 2, 2025 17:00:00'));
+      jest.setSystemTime(new Date('Feb 1, 2025 17:00:00'));
       component = shallow(<LoginForm {...{ translations: { translate: () => '' } }} />);
     });
 
