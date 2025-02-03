@@ -1,7 +1,7 @@
 import React, { ReactChildren } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useWithdrawalsEligibility } from '../../common/apiHooks';
-import { getYearsToGoUntilEarlyRetirementAge } from './utils';
+import { canOnlyWithdrawThirdPillarTaxFree, getYearsToGoUntilEarlyRetirementAge } from './utils';
 import { useWithdrawalsContext } from './hooks';
 import { WithdrawalsEligibility } from '../../common/apiModels/withdrawals';
 import { TranslationKey } from '../../translations';
@@ -48,7 +48,7 @@ const getSubheadingTranslationId = (eligibility: WithdrawalsEligibility): Transl
     return 'withdrawals.subHeading';
   }
 
-  if (eligibility.canWithdrawThirdPillarWithReducedTax) {
+  if (canOnlyWithdrawThirdPillarTaxFree(eligibility)) {
     return 'withdrawals.subHeadingThirdPilllarReducedTax';
   }
 

@@ -130,6 +130,7 @@ describe('withdrawals flow at 55 withdrawing only third pillar', () => {
     ).toBeInTheDocument();
 
     userEvent.click(await screen.findByLabelText(/Withdraw only from II pillar/i));
+    userEvent.click(await screen.findByLabelText(/Withdraw from the entire pension holding/i));
 
     expect(
       await screen.findByText(/Withdraw only from III pillar/i, undefined, {

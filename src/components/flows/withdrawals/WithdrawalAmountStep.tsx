@@ -20,8 +20,13 @@ import Slider from './Slider';
 export const WithdrawalAmountStep = () => {
   const { data: eligibility } = useWithdrawalsEligibility();
 
-  const { withdrawalAmount, setWithdrawalAmount, pensionHoldings, navigateToNextStep } =
-    useWithdrawalsContext();
+  const {
+    withdrawalAmount,
+    setWithdrawalAmount,
+    pensionHoldings,
+    availablePillars,
+    navigateToNextStep,
+  } = useWithdrawalsContext();
 
   const isTestModeEnabled = useTestMode();
 
@@ -50,6 +55,7 @@ export const WithdrawalAmountStep = () => {
   return (
     <div className="my-5">
       <PillarSelection
+        availablePillars={availablePillars}
         secondPillarAmount={pensionHoldings.totalSecondPillar}
         thirdPillarAmount={pensionHoldings.totalThirdPillar}
         selectedPillar={withdrawalAmount.pillarsToWithdrawFrom}
@@ -213,49 +219,53 @@ const FundPensionStatusBox = ({ totalAmount }: { totalAmount: number }) => {
 };
 
 const PillarSelection = ({
+  availablePillars,
   secondPillarAmount,
   thirdPillarAmount,
   eligibility,
   setSelectedPillar,
   selectedPillar,
 }: {
+  availablePillars: Set<'SECOND' | 'THIRD'>;
   secondPillarAmount: number;
   thirdPillarAmount: number;
   selectedPillar: PillarToWithdrawFrom | null;
   eligibility: WithdrawalsEligibility;
   setSelectedPillar: (pillar: PillarToWithdrawFrom) => unknown;
 }) => {
-  const onlyThirdPillarEnabled = useMemo(
+  const earlyThirdPillarWithdrawal = useMemo(
     () => canOnlyWithdrawThirdPillarTaxFree(eligibility),
-    [eligibility],
+    [eligibility, availablePillars],
   );
 
-  if (secondPillarAmount > 0 && thirdPillarAmount === 0) {
-    return (
-      <div className="card p-4 d-flex flex-row justify-content-between mb-3">
-        <h3 className="m-0">
-          <FormattedMessage id="withdrawals.withdrawalAmount.secondPillarTotal" />
-        </h3>
-        <h3 className="m-0">{formatAmountForCurrency(secondPillarAmount, 2)}</h3>
-      </div>
-    );
-  }
+  if (!earlyThirdPillarWithdrawal) {
+    if (availablePillars.has('SECOND') && !availablePillars.has('THIRD')) {
+      return (
+        <div className="card p-4 d-flex flex-row justify-content-between mb-3">
+          <h3 className="m-0">
+            <FormattedMessage id="withdrawals.withdrawalAmount.secondPillarTotal" />
+          </h3>
+          <h3 className="m-0">{formatAmountForCurrency(secondPillarAmount, 2)}</h3>
+        </div>
+      );
+    }
 
-  if (thirdPillarAmount > 0 && secondPillarAmount === 0) {
-    return (
-      <div className="card p-4 d-flex flex-row justify-content-between mb-3">
-        <h3 className="m-0">
-          {' '}
-          <FormattedMessage id="withdrawals.withdrawalAmount.thirdPillarTotal" />
-        </h3>
-        <h3 className="m-0">{formatAmountForCurrency(thirdPillarAmount, 2)}</h3>
-      </div>
-    );
+    if (availablePillars.has('THIRD') && !availablePillars.has('SECOND')) {
+      return (
+        <div className="card p-4 d-flex flex-row justify-content-between mb-3">
+          <h3 className="m-0">
+            {' '}
+            <FormattedMessage id="withdrawals.withdrawalAmount.thirdPillarTotal" />
+          </h3>
+          <h3 className="m-0">{formatAmountForCurrency(thirdPillarAmount, 2)}</h3>
+        </div>
+      );
+    }
   }
 
   return (
     <div className={`card d-flex flex-column mb-3  ${styles.pillarSelectionContainer}`}>
-      {onlyThirdPillarEnabled && (
+      {earlyThirdPillarWithdrawal && (
         <div className={styles.pillarSelectionContainerWarning}>
           <FormattedMessage id="withdrawals.withdrawalAmount.secondPillarAtEarlyPensionAge" />
         </div>
@@ -266,7 +276,7 @@ const PillarSelection = ({
         className="tv-radio__inline mt-4 mb-1 px-4"
         selected={selectedPillar === 'BOTH'}
         onSelect={() => setSelectedPillar('BOTH')}
-        disabled={onlyThirdPillarEnabled}
+        disabled={earlyThirdPillarWithdrawal}
       >
         <div className="d-flex justify-content-between">
           <span className="m-0">
@@ -282,7 +292,7 @@ const PillarSelection = ({
         className="tv-radio__inline mb-1 px-4"
         selected={selectedPillar === 'SECOND'}
         onSelect={() => setSelectedPillar('SECOND')}
-        disabled={onlyThirdPillarEnabled}
+        disabled={earlyThirdPillarWithdrawal}
       >
         <div className="d-flex justify-content-between">
           <span className="m-0">

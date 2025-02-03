@@ -21,6 +21,7 @@ export const WithdrawalsContext = createContext<WithdrawalsContextState>({
     singleWithdrawalAmount: null,
     pillarsToWithdrawFrom: 'BOTH',
   },
+  availablePillars: new Set(),
   personalDetails: {
     bankAccountIban: null,
     taxResidencyCode: 'EST',
@@ -63,6 +64,8 @@ export const WithdrawalsProvider = ({
     singleWithdrawalAmount: null,
     pillarsToWithdrawFrom: 'BOTH',
   });
+  const [availablePillars, setAvailablePillars] = useState<Set<'SECOND' | 'THIRD'>>(new Set());
+
   const [personalDetails, setPersonalDetails] = useState<PersonalDetailsStepState>({
     taxResidencyCode: 'EST',
     bankAccountIban: null,
@@ -109,15 +112,19 @@ export const WithdrawalsProvider = ({
   useEffect(() => {
     if (eligibility && canOnlyWithdrawThirdPillarTaxFree(eligibility)) {
       setWithdrawalAmount((prevVal) => ({ ...prevVal, pillarsToWithdrawFrom: 'THIRD' }));
+      setAvailablePillars(new Set(['THIRD'] as const));
       return;
     }
 
-    if (totalSecondPillar === 0 && totalThirdPillar > 0) {
+    if (totalThirdPillar > 0 && totalSecondPillar === 0) {
       setWithdrawalAmount((prevVal) => ({ ...prevVal, pillarsToWithdrawFrom: 'THIRD' }));
+      setAvailablePillars(new Set(['THIRD'] as const));
     } else if (totalSecondPillar > 0 && totalThirdPillar === 0) {
       setWithdrawalAmount((prevVal) => ({ ...prevVal, pillarsToWithdrawFrom: 'SECOND' }));
+      setAvailablePillars(new Set(['SECOND'] as const));
     } else {
       setWithdrawalAmount((prevVal) => ({ ...prevVal, pillarsToWithdrawFrom: 'BOTH' }));
+      setAvailablePillars(new Set(['SECOND', 'THIRD'] as const));
     }
   }, [eligibility, totalSecondPillar, totalThirdPillar, totalBothPillars]);
 
@@ -171,6 +178,7 @@ export const WithdrawalsProvider = ({
         personalDetails,
         pensionHoldings,
         mandatesToCreate,
+        availablePillars,
 
         allFundNavsPresent,
         mandatesSubmitted,

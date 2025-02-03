@@ -6,12 +6,14 @@ export type WithdrawalsContextState = {
   withdrawalAmount: WithdrawalsAmountStepState;
   personalDetails: PersonalDetailsStepState;
   pensionHoldings: PensionHoldings | null;
+  availablePillars: Set<'SECOND' | 'THIRD'>;
 
   mandatesToCreate: WithdrawalMandateDetails[] | null;
 
   allFundNavsPresent: boolean;
 
   mandatesSubmitted: boolean;
+
   onMandatesSubmitted: () => unknown;
   setWithdrawalAmount: (state: WithdrawalsAmountStepState) => unknown;
   setPersonalDetails: (state: PersonalDetailsStepState) => unknown;
