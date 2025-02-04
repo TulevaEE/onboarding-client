@@ -747,7 +747,7 @@
   "withdrawals.withdrawalAmount.precisePriceAtSaleDisclaimer": "Täpne summa selgub osakute müümisel ja sõltub osakute turuhinnast.",
   "withdrawals.withdrawalAmount.receiveMonthlyAndTaxFree": "Saad igakuiselt ja tulumaksuvabalt",
   "withdrawals.perMonth": "kuus",
-  "withdrawals.withdrawalAmount.fundPensionPrecisePriceAtSaleDisclaimer": "Täpsed summad selguvad osakute müümise hetkel ja võivad varieeruda.",
+  "withdrawals.withdrawalAmount.fundPensionPrecisePriceAtSaleDisclaimer": "Täpsed summad selguvad osakute müümise hetkel ja võivad varieeruda.",
 
   "withdrawals.withdrawalAmount.secondPillarTotal": "Sul on II sambas kokku",
   "withdrawals.withdrawalAmount.thirdPillarTotal": "Sul on III sambas kokku",
@@ -758,8 +758,8 @@
 
   "withdrawals.withdrawalAmount.monthlyPaymentSize": "Iga kuu saad kätte {percentageLiquidated} fondiosakutest. Hetkehinnas on see {paymentAmount}.",
 
-  "withdrawals.withdrawalAmount.fundPensionGrowth": "Sinu fondi jääv vara <b>teenib järgnevad {duration} aastat tootlust edasi</b>.{br} Kui osaku turuhind kasvab või kahaneb, siis suurenevad või vähenevad ka sinu väljamaksed.",
-  "withdrawals.withdrawalAmount.fundPensionLinkText": "Kui suureks võivad sinu väljamaksed kasvada?",
+  "withdrawals.withdrawalAmount.fundPensionGrowth": "Sinu fondi jääv vara <b>teenib järgnevad {duration} aastat tootlust edasi</b>. Kui osaku turuhind kasvab või kahaneb, siis suurenevad või vähenevad ka sinu väljamaksed.",
+  "withdrawals.withdrawalAmount.fundPensionLinkText": "Kui suureks võivad sinu väljamaksed kasvada?",
 
   "withdrawals.personalDetails.bankAccount.ibanLabel": "Pangakonto number (IBAN)",
   "withdrawals.personalDetails.bankAccount.taxResidencyLabel": "Maksuresidentsus",

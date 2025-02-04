@@ -92,35 +92,31 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
 
   return (
     <div className="mt-3 card p-4">
-      <div className="d-flex flex-row justify-content-between align-items-center">
-        <div>
-          <label htmlFor="single-withdrawal-amount" className="lead mb-0">
-            <FormattedMessage id="withdrawals.withdrawalAmount.partialWithdrawQuestion" />
-          </label>
-        </div>
-        <div className="form-inline">
-          <div
-            className={`input-group input-group-lg w-100 ${styles.singleWithdrawalAmountInputContainer}`}
-          >
-            <input
-              id="single-withdrawal-amount"
-              type="number"
-              inputMode="decimal"
-              className="form-control form-control-lg text-right"
-              value={withdrawalAmount.singleWithdrawalAmount ?? 0}
-              onChange={(event) => handleSingleWithdrawalAmountSelected(event.target.valueAsNumber)}
-              onWheel={(event) => event.currentTarget.blur()}
-              min={0}
-              max={totalAmount}
-            />
-            <div className="input-group-append">
-              <span className="input-group-text">&euro;</span>
-            </div>
+      <div className="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center">
+        <label htmlFor="single-withdrawal-amount" className="w-100 lead mb-0">
+          <FormattedMessage id="withdrawals.withdrawalAmount.partialWithdrawQuestion" />
+        </label>
+        <div
+          className={`input-group input-group-lg flex-shrink-1 w-25 mt-2 mt-sm-0 ${styles.singleWithdrawalAmountInputContainer}`}
+        >
+          <input
+            id="single-withdrawal-amount"
+            type="number"
+            inputMode="decimal"
+            className="form-control form-control-lg text-right"
+            value={withdrawalAmount.singleWithdrawalAmount ?? 0}
+            onChange={(event) => handleSingleWithdrawalAmountSelected(event.target.valueAsNumber)}
+            onWheel={(event) => event.currentTarget.blur()}
+            min={0}
+            max={totalAmount}
+          />
+          <div className="input-group-append">
+            <span className="input-group-text">&euro;</span>
           </div>
         </div>
       </div>
 
-      <div className="mt-3">
+      <div className="mt-4">
         <Slider
           value={withdrawalAmount.singleWithdrawalAmount ?? 0}
           onChange={handleSingleWithdrawalAmountSelected}
@@ -168,11 +164,11 @@ const FundPensionStatusBox = ({ totalAmount }: { totalAmount: number }) => {
 
   return (
     <div className="mt-3 card p-4 bg-very-light-blue">
-      <div className="d-flex flex-row justify-content-between align-items-end">
+      <div className="d-flex flex-column flex-sm-row justify-content-between">
         <h3 className="m-0">
           <FormattedMessage id="withdrawals.withdrawalAmount.receiveMonthlyAndTaxFree" />
         </h3>
-        <h3 className="m-0 pl-2">
+        <h3 className="m-0">
           {formatAmountForCurrency(fundPensionMonthlyPaymentApproximateSize, 2)}&nbsp;
           <FormattedMessage id="withdrawals.perMonth" />
         </h3>
@@ -186,9 +182,7 @@ const FundPensionStatusBox = ({ totalAmount }: { totalAmount: number }) => {
             ),
             paymentAmount: formatAmountForCurrency(fundPensionMonthlyPaymentApproximateSize, 2),
           }}
-        />
-      </div>
-      <div className="text-muted">
+        />{' '}
         <FormattedMessage id="withdrawals.withdrawalAmount.fundPensionPrecisePriceAtSaleDisclaimer" />
       </div>
       <div className="mt-3">
@@ -263,12 +257,12 @@ const PillarSelection = ({
       <Radio
         name="pillar-to-withdraw"
         id="pillar-to-withdraw-both"
-        className="tv-radio__inline mt-4 mb-1 px-4"
+        className="tv-radio__inline mt-4 px-4 mb-2"
         selected={selectedPillar === 'BOTH'}
         onSelect={() => setSelectedPillar('BOTH')}
         disabled={onlyThirdPillarEnabled}
       >
-        <div className="d-flex justify-content-between">
+        <div className="d-flex flex-column flex-sm-row justify-content-between">
           <span className="m-0">
             <FormattedMessage id="withdrawals.withdrawalAmount.useEntirePensionHoldings" />
           </span>
@@ -279,12 +273,12 @@ const PillarSelection = ({
       <Radio
         name="pillar-to-withdraw"
         id="pillar-to-withdraw-second"
-        className="tv-radio__inline mb-1 px-4"
+        className="tv-radio__inline px-4 mb-2"
         selected={selectedPillar === 'SECOND'}
         onSelect={() => setSelectedPillar('SECOND')}
         disabled={onlyThirdPillarEnabled}
       >
-        <div className="d-flex justify-content-between">
+        <div className="d-flex flex-column flex-sm-row justify-content-between">
           <span className="m-0">
             <FormattedMessage id="withdrawals.withdrawalAmount.withdrawOnlySecondPillar" />
           </span>
@@ -295,11 +289,11 @@ const PillarSelection = ({
       <Radio
         name="pillar-to-withdraw"
         id="pillar-to-withdraw-third"
-        className=" tv-radio__inline px-4 pb-4"
+        className=" tv-radio__inline mb-4 px-4"
         selected={selectedPillar === 'THIRD'}
         onSelect={() => setSelectedPillar('THIRD')}
       >
-        <div className="d-flex justify-content-between">
+        <div className="d-flex flex-column flex-sm-row justify-content-between">
           <span className="m-0">
             <FormattedMessage id="withdrawals.withdrawalAmount.withdrawOnlyThirdPillar" />
           </span>

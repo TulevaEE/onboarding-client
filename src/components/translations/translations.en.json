@@ -743,7 +743,7 @@
   "withdrawals.withdrawalAmount.partialWithdrawQuestion": "Do you wish to make a partial withdrawal immediately?",
   "withdrawals.withdrawalAmount.partialWithdrawalTax": "Partial withdrawal will be subject to 10% income tax",
   "withdrawals.withdrawalAmount.precisePriceAtSaleDisclaimer": "The exact amount depends on the price of shares.",
-  "withdrawals.withdrawalAmount.fundPensionPrecisePriceAtSaleDisclaimer": "The exact amounts depend on the price of shares.",
+  "withdrawals.withdrawalAmount.fundPensionPrecisePriceAtSaleDisclaimer": "The exact amounts depend on the price of shares.",
 
   "withdrawals.withdrawalAmount.receiveMonthlyAndTaxFree": "Receive montly and tax-free",
   "withdrawals.perMonth": "per month",
@@ -757,8 +757,8 @@
 
   "withdrawals.withdrawalAmount.monthlyPaymentSize": "Every month you will receive {percentageLiquidated} of fund shares. With current prices, this amounts to {paymentAmount}.",
 
-  "withdrawals.withdrawalAmount.fundPensionGrowth": "The holdings left in the fund <b>will earn returns for the next {duration} years</b>.{br} When the price of the share rises or falls, the size of the payment will change accordingly.",
-  "withdrawals.withdrawalAmount.fundPensionLinkText": "How large can your payments grow?",
+  "withdrawals.withdrawalAmount.fundPensionGrowth": "The holdings left in the fund <b>will earn returns for the next {duration} years</b>. When the price of the share rises or falls, the size of the payment will change accordingly.",
+  "withdrawals.withdrawalAmount.fundPensionLinkText": "How large can your payments grow?",
 
   "withdrawals.personalDetails.bankAccount.ibanLabel": "Bank account number (IBAN)",
   "withdrawals.personalDetails.bankAccount.taxResidencyLabel": "Tax residency",

@@ -54,7 +54,11 @@
 
 .singleWithdrawalAmountInputContainer {
   min-width: 10em;
-  margin-left: 1em;
+}
+@media (max-width: 575.98px) {
+  .singleWithdrawalAmountInputContainer {
+    width: 100% !important;
+  }
 }
 
 .doneAlert {
