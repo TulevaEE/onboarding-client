@@ -372,6 +372,10 @@ export async function redirectToPayment(payment: Payment): Promise<void> {
     'Using window:',
     wndw === window ? 'same' : 'new',
     wndw,
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+    (wndw as any).then,
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+    typeof (wndw as any).then,
   );
 
   if (isSecurityRestricted(wndw)) {
