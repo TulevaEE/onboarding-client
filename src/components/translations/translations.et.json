@@ -776,23 +776,23 @@
   "withdrawals.reviewAndConfirm.signMandateSingle": "Allkirjastan {amount} avalduse",
   "withdrawals.reviewAndConfirm.signMandatePlural": "Allkirjastan {amount} avaldust",
 
-  "withdrawals.mandates.partialWithdrawal.secondPillar.title": "Osaline väljamakse II sambast",
-  "withdrawals.mandates.partialWithdrawal.thirdPillar.title": "Osaline väljamakse III sambast",
-  "withdrawals.mandates.fundPension.secondPillar.title": "Igakuised fondipensioni väljamaksed II sambast",
-  "withdrawals.mandates.fundPension.thirdPillar.title": "Igakuised fondipensioni väljamaksed III sambast",
+  "withdrawals.mandates.partialWithdrawal.secondPillar.title": "Osaline väljamakse II sambast",
+  "withdrawals.mandates.partialWithdrawal.thirdPillar.title": "Osaline väljamakse III sambast",
+  "withdrawals.mandates.fundPension.secondPillar.title": "Igakuised fondipensioni väljamaksed II sambast",
+  "withdrawals.mandates.fundPension.thirdPillar.title": "Igakuised fondipensioni väljamaksed III sambast",
 
   "withdrawals.mandates.partialWithdrawal.withdrawFromFundsProportionally": "Võtan välja igast fondist proportsionaalselt:",
   "withdrawals.mandates.partialWithdrawal.shares": "osakut",
   "withdrawals.mandates.partialWithdrawal.percentageOfShares": "osakutest",
 
   "withdrawals.mandates.partialWithdrawal.dateAndSize": "Väljamakse laekub <b>{withdrawalDate}</b>. Väljamakse kajastatakse tuludeklaratsioonis. Riik peab kinni <warningText>10% tulumaksu</warningText>, seega saan kätte eeldatavalt <b>{estimatedWithdrawalSizeWithTax}</b>. Täpne summa selgub fondiosakute müümise hetkel.",
-  "withdrawals.mandates.partialWithdrawal.secondPillarPaymentsFinished": "Avalduse jõustumisega <b>lõppevad II samba sissemaksed</b> alates {endingDate} ja neid ei saa hiljem taastada.",
+  "withdrawals.mandates.partialWithdrawal.secondPillarPaymentsFinished": "Avalduse jõustumisega <b>lõppevad II samba sissemaksed</b> alates {endingDate} ja neid ei saa hiljem taastada.",
   "withdrawals.mandates.arrestsBankrupticesDisclaimer": "<b>Sul ei ole võimalik avaldust tühistada</b>, kuna sul on pensioniregistris registreeritud kehtiv aresti- või pankrotinõue.",
 
-  "withdrawals.mandates.fundPension.recommendedDurationTaxFree": "Väljamaksed on <b>soovitusliku kestusega</b> ({duration} aastat) ja <successText>tulumaksuvabad</successText>.",
-  "withdrawals.mandates.fundPension.yearsLeftToLiveDescription": "Soovituslik kestus arvutatakse keskmiselt elada jäänud aastate alusel vastavalt sinu vanusele. Hetkel on see {duration} aastat.",
+  "withdrawals.mandates.fundPension.recommendedDurationTaxFree": "Väljamaksed on <b>soovitusliku kestusega</b> ({duration} aastat) ja <successText>tulumaksuvabad</successText>.",
+  "withdrawals.mandates.fundPension.yearsLeftToLiveDescription": "Soovituslik kestus arvutatakse keskmiselt elada jäänud aastate alusel vastavalt sinu vanusele. Hetkel on see {duration} aastat.",
 
-  "withdrawals.mandates.fundPension.dateAndSize": "Esimene väljamakse laekub <b>{withdrawalDate}</b> ja on eeldatavalt <b>{paymentSize}</b>. <muted>Summad varieeruvad ja selguvad fondiosakute müümise hetkel.</muted>",
+  "withdrawals.mandates.fundPension.dateAndSize": "Esimene väljamakse laekub <b>{withdrawalDate}</b> ja on eeldatavalt <b>{paymentSize}</b>. <muted>Summad varieeruvad ja selguvad fondiosakute müümise hetkel.</muted>",
   "withdrawals.mandates.fundPension.cancellationUntil": "Saan avalduse tühistada kuni <b>{cancellationDate}</b>.",
   "withdrawals.mandates.fundPension.stopResumePayments": "Saan väljamaksed igal ajal lõpetada ja uuesti sõlmida.",
 

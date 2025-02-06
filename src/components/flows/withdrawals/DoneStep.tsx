@@ -36,84 +36,80 @@ export const DoneStep = () => {
   }
 
   return (
-    <div className="row">
-      <div className="col-12 px-0">
-        <SuccessAlert>
-          <h3 className="text-center mt-3">
-            {mandatesToCreate.length === 1 ? (
-              <FormattedMessage id="withdrawals.done.heading" />
-            ) : (
-              <FormattedMessage id="withdrawals.done.heading.plural" />
-            )}
-          </h3>
-          <div className="mt-4">
-            {mandatesToCreate.length === 1 ? (
-              <FormattedMessage id="withdrawals.done.subHeading" />
-            ) : (
-              <FormattedMessage id="withdrawals.done.subHeading.plural" />
-            )}
-          </div>
-
-          <div className="pt-3">
-            {fundPensionMandateDone && (
-              <FormattedMessage
-                id="withdrawals.done.fundPension.dateAndSize"
-                values={{
-                  b: (children: ReactChildren) => <b>{children}</b>,
-                  withdrawalDate: formatDateRange(
-                    mandateDeadlines.withdrawalFulfillmentDate,
-                    mandateDeadlines.withdrawalLatestFulfillmentDate,
-                  ),
-                }}
-              />
-            )}
-            {partialWithdrawalPillars.size > 0 && (
-              <div>
-                {partialWithdrawalPillars.has('SECOND') && (
-                  <>
-                    <FormattedMessage
-                      id="withdrawals.done.partialWithdrawal.second"
-                      values={{
-                        b: (children: ReactChildren) => <b>{children}</b>,
-                        withdrawalDate: formatDateRange(
-                          mandateDeadlines.withdrawalFulfillmentDate,
-                          mandateDeadlines.withdrawalLatestFulfillmentDate,
-                        ),
-                      }}
-                    />{' '}
-                  </>
-                )}
-                {partialWithdrawalPillars.has('THIRD') && (
-                  <FormattedMessage
-                    id="withdrawals.done.partialWithdrawal.third"
-                    values={{
-                      b: (children: ReactChildren) => <b>{children}</b>,
-                    }}
-                  />
-                )}
-              </div>
-            )}
-          </div>
-
-          {secondPillarMandateDone && (
-            <div className="pt-3">
-              <FormattedMessage
-                id="withdrawals.done.secondPillarDisclaimer"
-                values={{
-                  b: (children: ReactChildren) => <b>{children}</b>,
-                  cancellationDate: formatDateTime(mandateDeadlines.withdrawalCancellationDeadline),
-                }}
-              />
-            </div>
-          )}
-          <Link to="/account">
-            <button type="button" className="btn btn-outline-primary mt-5">
-              <FormattedMessage id="withdrawals.done.myAccount" />
-            </button>
-          </Link>
-        </SuccessAlert>
+    <SuccessAlert>
+      <h3 className="text-center mt-3">
+        {mandatesToCreate.length === 1 ? (
+          <FormattedMessage id="withdrawals.done.heading" />
+        ) : (
+          <FormattedMessage id="withdrawals.done.heading.plural" />
+        )}
+      </h3>
+      <div className="mt-4">
+        {mandatesToCreate.length === 1 ? (
+          <FormattedMessage id="withdrawals.done.subHeading" />
+        ) : (
+          <FormattedMessage id="withdrawals.done.subHeading.plural" />
+        )}
       </div>
-    </div>
+
+      <div className="pt-3">
+        {fundPensionMandateDone && (
+          <FormattedMessage
+            id="withdrawals.done.fundPension.dateAndSize"
+            values={{
+              b: (children: ReactChildren) => <b>{children}</b>,
+              withdrawalDate: formatDateRange(
+                mandateDeadlines.withdrawalFulfillmentDate,
+                mandateDeadlines.withdrawalLatestFulfillmentDate,
+              ),
+            }}
+          />
+        )}
+        {partialWithdrawalPillars.size > 0 && (
+          <div>
+            {partialWithdrawalPillars.has('SECOND') && (
+              <>
+                <FormattedMessage
+                  id="withdrawals.done.partialWithdrawal.second"
+                  values={{
+                    b: (children: ReactChildren) => <b>{children}</b>,
+                    withdrawalDate: formatDateRange(
+                      mandateDeadlines.withdrawalFulfillmentDate,
+                      mandateDeadlines.withdrawalLatestFulfillmentDate,
+                    ),
+                  }}
+                />{' '}
+              </>
+            )}
+            {partialWithdrawalPillars.has('THIRD') && (
+              <FormattedMessage
+                id="withdrawals.done.partialWithdrawal.third"
+                values={{
+                  b: (children: ReactChildren) => <b>{children}</b>,
+                }}
+              />
+            )}
+          </div>
+        )}
+      </div>
+
+      {secondPillarMandateDone && (
+        <div className="pt-3">
+          <FormattedMessage
+            id="withdrawals.done.secondPillarDisclaimer"
+            values={{
+              b: (children: ReactChildren) => <b>{children}</b>,
+              cancellationDate: formatDateTime(mandateDeadlines.withdrawalCancellationDeadline),
+            }}
+          />
+        </div>
+      )}
+      <Link to="/account">
+        <button type="button" className="btn btn-outline-primary mt-5">
+          <FormattedMessage id="withdrawals.done.myAccount" />
+        </button>
+      </Link>
+    </SuccessAlert>
   );
 };
 

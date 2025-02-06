@@ -336,9 +336,8 @@ const FundPensionMandateDescription = ({
             ),
             b: (children: ReactChildren) => <b>{children}</b>,
           }}
-        />
+        />{' '}
         <span className="text-muted">
-          <br />
           <FormattedMessage
             id="withdrawals.mandates.fundPension.yearsLeftToLiveDescription"
             values={{

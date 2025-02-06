@@ -789,9 +789,9 @@
   "withdrawals.mandates.arrestsBankrupticesDisclaimer": "<b>You cannot cancel the application</b> because there is an active arrest or bankruptcy claim registered in the pension registry.",
 
   "withdrawals.mandates.fundPension.recommendedDurationTaxFree": "Payments are <b>for the recommended duration</b> ({duration} years) and <successText>tax-free</successText>.",
-  "withdrawals.mandates.fundPension.yearsLeftToLiveDescription": "The recommended duration is calculated based on the average years left to live according to your age. Currently, it is {duration} years.",
+  "withdrawals.mandates.fundPension.yearsLeftToLiveDescription": "The recommended duration is calculated based on the average years left to live according to your age. Currently, it is {duration} years.",
 
-  "withdrawals.mandates.fundPension.dateAndSize": "The first payment will be sent on <b>{withdrawalDate}</b> and is expected to be <b>{paymentSize}</b>. <muted>Amounts vary and are determined at the time of selling the fund units.</muted>",
+  "withdrawals.mandates.fundPension.dateAndSize": "The first payment will be sent on <b>{withdrawalDate}</b> and is expected to be <b>{paymentSize}</b>. <muted>Amounts vary and are determined at the time of selling the fund units.</muted>",
   "withdrawals.mandates.fundPension.cancellationUntil": "I can cancel the application until <b>{cancellationDate}</b>.",
   "withdrawals.mandates.fundPension.stopResumePayments": "I can stop and resume payments at any time.",
 
