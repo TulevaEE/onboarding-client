@@ -365,6 +365,7 @@ export async function redirectToPayment(payment: Payment): Promise<void> {
   const paymentLink = await getPaymentLink(payment);
   const wndw = getWindow(payment.type);
 
+  // eslint-disable-next-line no-console
   console.log(
     'Redirecting to:',
     paymentLink.url,
@@ -383,6 +384,7 @@ function getWindow(paymentType: PaymentType): Window {
   const newWindow = window.open('', '_blank'); // might be blocked by popup blockers
 
   if (newWindow == null) {
+    // eslint-disable-next-line no-console
     console.warn('New window blocked, falling back to same window');
     return window;
   }
