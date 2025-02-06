@@ -364,32 +364,17 @@ export function getPaymentLink(payment: Payment): Promise<PaymentLink> {
 export async function redirectToPayment(payment: Payment): Promise<void> {
   const wndw = getWindow(payment.type);
   const paymentLink = await getPaymentLink(payment);
-
-  // eslint-disable-next-line no-console
-  console.log(
-    'Redirecting to:',
-    paymentLink.url,
-    'Using window:',
-    wndw === window ? 'same' : 'new',
-    wndw,
-    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-    (wndw as any).then,
-    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-    typeof (wndw as any).then,
-  );
-
-  if (isSecurityRestricted(wndw)) {
-    // eslint-disable-next-line no-console
-    console.warn('Window is restricted, falling back to same window.');
-    window.location.replace(paymentLink.url);
-    return;
-  }
-
   try {
     wndw.location.replace(paymentLink.url);
+
+    // eslint-disable-next-line no-console
+    console.log(
+      'Immediately trying to read `location.href` to detect a SecurityError:',
+      wndw.location.href,
+    );
   } catch (err) {
     // eslint-disable-next-line no-console
-    console.warn('SecurityError detected, falling back to same window:', err);
+    console.log('SecurityError detected after setting location.href, falling back to same window.');
     window.location.replace(paymentLink.url);
   }
 }
@@ -398,48 +383,10 @@ function getWindow(paymentType: PaymentType): Window {
   if (paymentType !== 'RECURRING') {
     return window;
   }
-
-  try {
-    const newWindow = window.open('', '_blank'); // might be blocked by popup blockers
-
-    if (newWindow == null) {
-      // eslint-disable-next-line no-console
-      console.warn('New window blocked, falling back to same window');
-      return window;
-    }
-
-    newWindow.document.write('Loading...');
-    return newWindow;
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.warn('Error opening new window:', error);
+  const newWindow = window.open('', '_blank'); // might be blocked by popup blockers
+  if (newWindow == null) {
     return window;
   }
-}
-
-function isSecurityRestricted(wndw: Window): boolean {
-  if (!wndw || wndw.closed) {
-    // eslint-disable-next-line no-console
-    console.warn('Window is null or closed.');
-    return true;
-  }
-
-  try {
-    if (
-      typeof wndw.location.href === 'undefined' ||
-      wndw.location.href === '' ||
-      (wndw.opener && wndw.opener !== window && !wndw.opener.location) ||
-      wndw.top !== wndw.self
-    ) {
-      // eslint-disable-next-line no-console
-      console.warn('Security restriction detected.');
-      return true;
-    }
-  } catch {
-    // eslint-disable-next-line no-console
-    console.warn('Security error detected while accessing window properties.');
-    return true;
-  }
-
-  return false;
+  newWindow.document.write('Loading...');
+  return newWindow;
 }
