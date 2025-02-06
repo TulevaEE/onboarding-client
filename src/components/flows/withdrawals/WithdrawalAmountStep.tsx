@@ -92,12 +92,12 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
 
   return (
     <div className="mt-3 card p-4">
-      <div className="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center">
+      <div className="d-flex flex-column flex-md-row justify-content-md-between align-items-md-center">
         <label htmlFor="single-withdrawal-amount" className="w-100 lead mb-0">
           <FormattedMessage id="withdrawals.withdrawalAmount.partialWithdrawQuestion" />
         </label>
         <div
-          className={`input-group input-group-lg flex-shrink-1 w-25 mt-2 mt-sm-0 ${styles.singleWithdrawalAmountInputContainer}`}
+          className={`input-group input-group-lg flex-shrink-1 w-25 mt-2 mt-md-0 ${styles.singleWithdrawalAmountInputContainer}`}
         >
           <input
             id="single-withdrawal-amount"
@@ -136,10 +136,11 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
           <span className={styles.warningText}>
             {formatAmountForCurrency(-0.1 * withdrawalAmount.singleWithdrawalAmount, 2)}
           </span>
-        )}
-        <div className="text-muted">
+        )}{' '}
+        <br className="d-none d-md-block" />
+        <span className="text-muted">
           <FormattedMessage id="withdrawals.withdrawalAmount.precisePriceAtSaleDisclaimer" />
-        </div>
+        </span>
       </div>
     </div>
   );
