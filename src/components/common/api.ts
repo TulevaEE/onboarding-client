@@ -372,15 +372,20 @@ export async function redirectToPayment(payment: Payment): Promise<void> {
     'Using window:',
     wndw === window ? 'same' : 'new',
     wndw,
-    wndw.location,
-    typeof wndw.location,
   );
+
+  if (isSecurityRestricted(wndw)) {
+    // eslint-disable-next-line no-console
+    console.warn('Window is restricted, falling back to same window.');
+    window.location.replace(paymentLink.url);
+    return;
+  }
 
   try {
     wndw.location.replace(paymentLink.url);
-  } catch (error) {
+  } catch (err) {
     // eslint-disable-next-line no-console
-    console.warn('Error opening in new window, falling back:', error);
+    console.warn('SecurityError detected, falling back to same window:', err);
     window.location.replace(paymentLink.url);
   }
 }
@@ -406,4 +411,28 @@ function getWindow(paymentType: PaymentType): Window {
     console.warn('Error opening new window:', error);
     return window;
   }
+}
+
+function isSecurityRestricted(wndw: Window): boolean {
+  if (!wndw || wndw.closed) {
+    console.warn('Window is null or closed.');
+    return true;
+  }
+
+  try {
+    if (
+      typeof wndw.location.href === 'undefined' ||
+      wndw.location.href === '' ||
+      (wndw.opener && wndw.opener !== window && !wndw.opener.location) ||
+      wndw.top !== wndw.self
+    ) {
+      console.warn('Security restriction detected.');
+      return true;
+    }
+  } catch {
+    console.warn('Security error detected while accessing window properties.');
+    return true;
+  }
+
+  return false;
 }
