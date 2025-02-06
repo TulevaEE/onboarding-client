@@ -368,7 +368,7 @@ export async function redirectToPayment(payment: Payment): Promise<void> {
 }
 
 function getWindow(paymentType: PaymentType): Window {
-  if (paymentType !== 'RECURRING') {
+  if (paymentType !== 'RECURRING' || getAuthentication().loginMethod === 'PARTNER') {
     return window;
   }
   const newWindow = window.open('', '_blank'); // this might be blocked by popup blockers
