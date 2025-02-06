@@ -371,6 +371,7 @@ export async function redirectToPayment(payment: Payment): Promise<void> {
     paymentLink.url,
     'Using window:',
     wndw === window ? 'same' : 'new',
+    wndw,
   );
 
   wndw.location.replace(paymentLink.url);
