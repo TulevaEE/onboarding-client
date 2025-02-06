@@ -415,6 +415,7 @@ function getWindow(paymentType: PaymentType): Window {
 
 function isSecurityRestricted(wndw: Window): boolean {
   if (!wndw || wndw.closed) {
+    // eslint-disable-next-line no-console
     console.warn('Window is null or closed.');
     return true;
   }
@@ -426,10 +427,12 @@ function isSecurityRestricted(wndw: Window): boolean {
       (wndw.opener && wndw.opener !== window && !wndw.opener.location) ||
       wndw.top !== wndw.self
     ) {
+      // eslint-disable-next-line no-console
       console.warn('Security restriction detected.');
       return true;
     }
   } catch {
+    // eslint-disable-next-line no-console
     console.warn('Security error detected while accessing window properties.');
     return true;
   }
