@@ -39,7 +39,8 @@ export const TriggerProcedure: React.FC = () => {
           getAuthentication().update({
             accessToken: token.accessToken,
             refreshToken: token.refreshToken,
-            loginMethod: parseJwt(handoverToken).signingMethod,
+            loginMethod: 'PARTNER',
+            signingMethod: parseJwt(handoverToken).signingMethod,
           });
 
           setMessage(`Redirecting to ${path}`);

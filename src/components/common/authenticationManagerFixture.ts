@@ -6,6 +6,7 @@ export const anAuthenticationManager = (
   accessToken,
   refreshToken: 'a refresh token',
   loginMethod: 'SMART_ID',
+  signingMethod: 'SMART_ID',
   update: () => null,
   remove: () => null,
   isAuthenticated: () => true,

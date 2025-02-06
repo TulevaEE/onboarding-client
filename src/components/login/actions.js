@@ -75,44 +75,6 @@ function handleLogin() {
   };
 }
 
-function getCookie(name) {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) {
-    return parts.pop().split(';').shift();
-  }
-  return null;
-}
-
-export function handleLoginCookies() {
-  return (dispatch) => {
-    const email = getCookie(LOGIN_COOKIE_EMAIL_NAME);
-    if (email) {
-      dispatch(changeEmail(email));
-    }
-    const authenticationPrincipal = getCookie(LOGIN_COOKIE_AUTHENTICATION_PRINCIPAL_NAME);
-
-    const tokens = {
-      accessToken: authenticationPrincipal.accessToken,
-      refreshToken: authenticationPrincipal.refreshToken,
-    };
-    if (isTokenPresent(tokens)) {
-      const { loginMethod } = authenticationPrincipal;
-      if (loginMethod === 'MOBILE_ID' || loginMethod === 'SMART_ID') {
-        dispatch({
-          type: MOBILE_AUTHENTICATION_SUCCESS,
-          tokens,
-          method: loginMethod,
-        });
-      } else if (loginMethod === 'ID_CARD') {
-        dispatch({ type: ID_CARD_AUTHENTICATION_SUCCESS, tokens });
-      } else {
-        throw new Error('Login method not recognized.');
-      }
-    }
-  };
-}
-
 function getMobileIdTokens() {
   return (dispatch, getState) => {
     timeout = setTimeout(() => {

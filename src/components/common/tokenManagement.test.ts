@@ -15,6 +15,7 @@ describe('Axios Instance Creation and Interceptors', () => {
     accessToken: 'initialAccessToken',
     refreshToken: 'validRefreshToken',
     loginMethod: 'SMART_ID',
+    signingMethod: 'SMART_ID',
     update: jest.fn(),
     remove: jest.fn(),
     isAuthenticated: jest.fn(),

@@ -18,6 +18,7 @@ import {
   Payment,
   PaymentLink,
   PaymentType,
+  SigningMethod,
   SourceFund,
   Token,
   Transaction,
@@ -111,6 +112,7 @@ export async function getTokensWithGrantType(
       accessToken,
       refreshToken,
       loginMethod: grantType,
+      signingMethod: grantType as SigningMethod,
     });
     return { accessToken, refreshToken };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

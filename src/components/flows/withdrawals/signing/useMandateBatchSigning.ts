@@ -3,10 +3,10 @@ import { MandateBatchDto } from '../../../common/apiModels/withdrawals';
 import { getAuthentication } from '../../../common/authenticationManager';
 import { pollForSignatureStatus, startSigningWithChallengeCode } from './signWithChallengeCode';
 import {
-  signWithIdCard,
   persistSignedIdCardHex,
-  SignedMandateBatch,
   pollForBatchStatusSignedWithIdCard,
+  SignedMandateBatch,
+  signWithIdCard,
 } from './signWithIdCard';
 import { ErrorResponse } from '../../../common/apiModels';
 
@@ -38,26 +38,22 @@ export const useMandateBatchSigning = () => {
   }, [signed]);
 
   const startSigningMandateBatch = async (mandateBatch: MandateBatchDto) => {
-    const { loginMethod } = getAuthentication();
-    const loggedInWithMobileId = loginMethod === 'MOBILE_ID';
-    const loggedInWithSmartId = loginMethod === 'SMART_ID';
-    const loggedInWithIdCard = loginMethod === 'ID_CARD';
-
-    // TODO amlchecks?
-
+    const { signingMethod } = getAuthentication();
     try {
       setLoading(true);
-      if (loggedInWithIdCard) {
+      if (signingMethod === 'ID_CARD') {
         setSigningType('ID_CARD');
         const signature = await signWithIdCard(mandateBatch);
         await persistSignedIdCardHex(signature);
         pollForIdCard(signature);
-      } else if (loggedInWithSmartId || loggedInWithMobileId) {
-        setSigningType(loginMethod);
-        setChallengeCode((await startSigningWithChallengeCode(mandateBatch, loginMethod)) ?? null);
-        poll(mandateBatch, loginMethod);
+      } else if (signingMethod === 'SMART_ID' || signingMethod === 'MOBILE_ID') {
+        setSigningType(signingMethod);
+        setChallengeCode(
+          (await startSigningWithChallengeCode(mandateBatch, signingMethod)) ?? null,
+        );
+        poll(mandateBatch, signingMethod);
       } else {
-        throw new Error(`Invalid login method: ${loginMethod}`);
+        throw new Error(`Invalid signing method: ${signingMethod}`);
       }
     } catch (e) {
       setError(e as ErrorResponse); // TODO
@@ -86,18 +82,18 @@ export const useMandateBatchSigning = () => {
     }, POLL_DELAY);
   };
 
-  const poll = (mandateBatch: MandateBatchDto, loginMethod: 'MOBILE_ID' | 'SMART_ID') => {
+  const poll = (mandateBatch: MandateBatchDto, signingMethod: 'MOBILE_ID' | 'SMART_ID') => {
     resetCurrentPolling();
 
     pollTimeout.current = window.setTimeout(async () => {
       try {
-        const signatureStatus = await pollForSignatureStatus(mandateBatch, loginMethod);
+        const signatureStatus = await pollForSignatureStatus(mandateBatch, signingMethod);
         setChallengeCode(signatureStatus.challengeCode);
 
         if (signatureStatus.statusCode === SIGNATURE_DONE_STATUS) {
           setSigned(true);
         } else {
-          poll(mandateBatch, loginMethod);
+          poll(mandateBatch, signingMethod);
         }
       } catch (e) {
         setError(e as ErrorResponse); // TODO

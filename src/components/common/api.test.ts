@@ -123,6 +123,7 @@ describe('API calls', () => {
         accessToken: expectedToken.accessToken,
         refreshToken: expectedToken.refreshToken,
         loginMethod: 'MOBILE_ID',
+        signingMethod: 'MOBILE_ID',
       });
     });
   });
@@ -153,6 +154,7 @@ describe('API calls', () => {
         accessToken: expectedToken.accessToken,
         refreshToken: expectedToken.refreshToken,
         loginMethod: 'SMART_ID',
+        signingMethod: 'SMART_ID',
       });
     });
   });
@@ -177,6 +179,7 @@ describe('API calls', () => {
         accessToken: expectedToken.accessToken,
         refreshToken: expectedToken.refreshToken,
         loginMethod: 'ID_CARD',
+        signingMethod: 'ID_CARD',
       });
     });
   });
@@ -247,6 +250,7 @@ describe('API calls', () => {
         accessToken: expectedToken.accessToken,
         refreshToken: expectedToken.refreshToken,
         loginMethod: grantType,
+        signingMethod: grantType,
       });
     });
 
@@ -312,6 +316,7 @@ describe('API calls', () => {
         accessToken: expectedToken.accessToken,
         refreshToken: expectedToken.refreshToken,
         loginMethod: grant,
+        signingMethod: grant,
       });
     });
   });

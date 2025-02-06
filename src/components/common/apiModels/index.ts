@@ -284,8 +284,10 @@ export interface Token {
 }
 
 export type LoginMethod = 'MOBILE_ID' | 'SMART_ID' | 'ID_CARD' | 'PARTNER';
+export type SigningMethod = 'MOBILE_ID' | 'SMART_ID' | 'ID_CARD';
 export interface AuthenticationPrincipal extends Token {
   loginMethod: LoginMethod;
+  signingMethod: SigningMethod;
 }
 
 export interface MobileSignatureResponse {

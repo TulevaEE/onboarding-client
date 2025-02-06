@@ -332,26 +332,23 @@ export function signMandateWithIdCard(mandate: Mandate) {
 
 export function signMandate(mandate: Mandate, amlChecks?: unknown) {
   return (dispatch: Dispatch<unknown>) => {
-    const { loginMethod } = getAuthentication();
-    const loggedInWithMobileId = loginMethod === 'MOBILE_ID';
-    const loggedInWithSmartId = loginMethod === 'SMART_ID';
-    const loggedInWithIdCard = loginMethod === 'ID_CARD';
+    const { signingMethod } = getAuthentication();
     const amlChecksPromise = dispatch(
       amlActions.createAmlChecks(amlChecks),
     ) as unknown as Promise<unknown>;
 
     return amlChecksPromise
       .then(() => {
-        if (loggedInWithMobileId) {
+        if (signingMethod === 'MOBILE_ID') {
           return dispatch(signMandateWithMobileId(mandate));
         }
-        if (loggedInWithSmartId) {
+        if (signingMethod === 'SMART_ID') {
           return dispatch(signMandateWithSmartId(mandate));
         }
-        if (loggedInWithIdCard) {
+        if (signingMethod === 'ID_CARD') {
           return dispatch(signMandateWithIdCard(mandate));
         }
-        throw new Error(`Invalid login method: ${loginMethod}`);
+        throw new Error(`Invalid signing method: ${signingMethod}`);
       })
       .catch((error: AxiosError) => {
         handleSaveMandateError(dispatch, error);

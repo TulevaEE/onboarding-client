@@ -34,6 +34,7 @@ async function executeRefreshTokenRequest(authenticationPrincipal: Authenticatio
     const { access_token: newAccessToken, refresh_token: newRefreshToken } = response.data;
     const updatedPrincipal: AuthenticationPrincipal = {
       loginMethod: authenticationPrincipal.loginMethod,
+      signingMethod: authenticationPrincipal.signingMethod,
       accessToken: newAccessToken,
       refreshToken: newRefreshToken,
     };

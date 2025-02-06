@@ -11,6 +11,7 @@ describe('Authentication Management', () => {
     accessToken: anAuthenticationManager().accessToken,
     refreshToken: anAuthenticationManager().refreshToken,
     loginMethod: anAuthenticationManager().loginMethod,
+    signingMethod: anAuthenticationManager().signingMethod,
   };
 
   beforeEach(() => {

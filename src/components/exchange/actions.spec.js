@@ -64,6 +64,7 @@ describe('Exchange actions', () => {
     mockAuthentication.getAuthentication.mockImplementation(() => ({
       isAuthenticated: jest.fn().mockReturnValue(true),
       loginMethod: 'MOBILE_ID',
+      signingMethod: 'MOBILE_ID',
     }));
   });
 
@@ -177,6 +178,7 @@ describe('Exchange actions', () => {
     getAuthentication.mockImplementation(() => ({
       isAuthenticated: jest.fn().mockReturnValue(true),
       loginMethod: 'ID_CARD',
+      signingMethod: 'ID_CARD',
     }));
     await downloadMandate();
     expect(mockApi.downloadMandateWithId).toHaveBeenCalledWith('1233446');
@@ -378,6 +380,7 @@ describe('Exchange actions', () => {
     getAuthentication.mockImplementation(() => ({
       isAuthenticated: jest.fn().mockReturnValue(true),
       loginMethod: 'ID_CARD',
+      signingMethod: 'ID_CARD',
     }));
 
     const signMandate = createBoundAction(actions.signMandate);
@@ -391,6 +394,7 @@ describe('Exchange actions', () => {
     getAuthentication.mockImplementation(() => ({
       isAuthenticated: jest.fn().mockReturnValue(true),
       loginMethod: 'MOBILE_ID',
+      signingMethod: 'MOBILE_ID',
     }));
 
     const signMandate = createBoundAction(actions.signMandate);
@@ -405,6 +409,7 @@ describe('Exchange actions', () => {
     getAuthentication.mockImplementation(() => ({
       isAuthenticated: jest.fn().mockReturnValue(true),
       loginMethod: 'SMART_ID',
+      signingMethod: 'SMART_ID',
     }));
 
     const signMandate = createBoundAction(actions.signMandate);
@@ -419,6 +424,7 @@ describe('Exchange actions', () => {
     getAuthentication.mockImplementation(() => ({
       isAuthenticated: jest.fn().mockReturnValue(true),
       loginMethod: 'MOBILE_ID',
+      signingMethod: 'MOBILE_ID',
     }));
 
     mockApi.saveMandateWithAuthentication = jest.fn(() => Promise.reject(new Error()));
@@ -439,10 +445,11 @@ describe('Exchange actions', () => {
     expect(mockApi.createAmlCheck).toHaveBeenCalledTimes(3);
   });
 
-  it('dispatches SIGN_MANDATE_START_ERROR for invalid login method', async () => {
+  it('dispatches SIGN_MANDATE_START_ERROR for invalid signing method', async () => {
     getAuthentication.mockImplementation(() => ({
       isAuthenticated: jest.fn().mockReturnValue(true),
-      loginMethod: 'INVALID_METHOD',
+      loginMethod: 'SMART_ID',
+      signingMethod: 'INVALID_METHOD',
     }));
 
     const amlChecks = {
@@ -462,7 +469,7 @@ describe('Exchange actions', () => {
     });
     expect(dispatch).toHaveBeenCalledWith(
       expect.objectContaining({
-        error: expect.objectContaining({ message: 'Invalid login method: INVALID_METHOD' }),
+        error: expect.objectContaining({ message: 'Invalid signing method: INVALID_METHOD' }),
       }),
     );
   });
@@ -472,6 +479,7 @@ describe('Exchange actions', () => {
     getAuthentication.mockImplementation(() => ({
       isAuthenticated: jest.fn().mockReturnValue(true),
       loginMethod: 'SMART_ID',
+      signingMethod: 'SMART_ID',
     }));
 
     const signMandate = createBoundAction(actions.signMandate);
@@ -486,6 +494,7 @@ describe('Exchange actions', () => {
     getAuthentication.mockImplementation(() => ({
       isAuthenticated: jest.fn().mockReturnValue(true),
       loginMethod: 'MOBILE_ID',
+      signingMethod: 'MOBILE_ID',
     }));
 
     const signMandate = createBoundAction(actions.signMandate);
@@ -500,6 +509,7 @@ describe('Exchange actions', () => {
     getAuthentication.mockImplementation(() => ({
       isAuthenticated: jest.fn().mockReturnValue(true),
       loginMethod: 'ID_CARD',
+      signingMethod: 'ID_CARD',
     }));
     const signMandate = createBoundAction(actions.signMandate);
     mockApi.saveMandateWithAuthentication = jest.fn(() => Promise.resolve(mandate));
