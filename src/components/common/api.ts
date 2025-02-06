@@ -364,19 +364,20 @@ export function getPaymentLink(payment: Payment): Promise<PaymentLink> {
 export async function redirectToPayment(payment: Payment): Promise<void> {
   const wndw = getWindow(payment.type);
   const paymentLink = await getPaymentLink(payment);
-  try {
-    wndw.location.replace(paymentLink.url);
 
-    // eslint-disable-next-line no-console
-    console.log(
-      'Immediately trying to read `location.href` to detect a SecurityError:',
-      wndw.location.href,
-    );
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log('SecurityError detected after setting location.href, falling back to same window.');
-    window.location.replace(paymentLink.url);
-  }
+  wndw.location.replace(paymentLink.url);
+
+  // Wait briefly before checking location.href to allow navigation to take effect
+  setTimeout(() => {
+    try {
+      // eslint-disable-next-line no-console
+      console.log('Verifying window access:', wndw.location.href);
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.log('SecurityError detected after navigation, falling back to same window.', err);
+      window.location.replace(paymentLink.url);
+    }
+  }, 100);
 }
 
 function getWindow(paymentType: PaymentType): Window {
