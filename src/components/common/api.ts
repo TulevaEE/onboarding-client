@@ -362,8 +362,8 @@ export function getPaymentLink(payment: Payment): Promise<PaymentLink> {
 }
 
 export async function redirectToPayment(payment: Payment): Promise<void> {
-  const paymentLink = await getPaymentLink(payment);
   const wndw = getWindow(payment.type);
+  const paymentLink = await getPaymentLink(payment);
 
   // eslint-disable-next-line no-console
   console.log(
@@ -372,6 +372,8 @@ export async function redirectToPayment(payment: Payment): Promise<void> {
     'Using window:',
     wndw === window ? 'same' : 'new',
     wndw,
+    wndw.location,
+    typeof wndw.location,
   );
 
   wndw.location.replace(paymentLink.url);
