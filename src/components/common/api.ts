@@ -376,7 +376,13 @@ export async function redirectToPayment(payment: Payment): Promise<void> {
     typeof wndw.location,
   );
 
-  wndw.location.replace(paymentLink.url);
+  try {
+    wndw.location.replace(paymentLink.url);
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.warn('Error opening in new window, falling back:', error);
+    window.location.replace(paymentLink.url);
+  }
 }
 
 function getWindow(paymentType: PaymentType): Window {
@@ -384,14 +390,20 @@ function getWindow(paymentType: PaymentType): Window {
     return window;
   }
 
-  const newWindow = window.open('', '_blank'); // might be blocked by popup blockers
+  try {
+    const newWindow = window.open('', '_blank'); // might be blocked by popup blockers
 
-  if (newWindow == null) {
+    if (newWindow == null) {
+      // eslint-disable-next-line no-console
+      console.warn('New window blocked, falling back to same window');
+      return window;
+    }
+
+    newWindow.document.write('Loading...');
+    return newWindow;
+  } catch (error) {
     // eslint-disable-next-line no-console
-    console.warn('New window blocked, falling back to same window');
+    console.warn('Error opening new window:', error);
     return window;
   }
-
-  newWindow.document.write('Loading...');
-  return newWindow;
 }
