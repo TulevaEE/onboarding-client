@@ -362,8 +362,16 @@ export function getPaymentLink(payment: Payment): Promise<PaymentLink> {
 }
 
 export async function redirectToPayment(payment: Payment): Promise<void> {
-  const wndw = getWindow(payment.type);
   const paymentLink = await getPaymentLink(payment);
+  const wndw = getWindow(payment.type);
+
+  console.log(
+    'Redirecting to:',
+    paymentLink.url,
+    'Using window:',
+    wndw === window ? 'same' : 'new',
+  );
+
   wndw.location.replace(paymentLink.url);
 }
 
@@ -371,10 +379,14 @@ function getWindow(paymentType: PaymentType): Window {
   if (paymentType !== 'RECURRING') {
     return window;
   }
-  const newWindow = window.open('', '_blank'); // this might be blocked by popup blockers
+
+  const newWindow = window.open('', '_blank'); // might be blocked by popup blockers
+
   if (newWindow == null) {
+    console.warn('New window blocked, falling back to same window');
     return window;
   }
+
   newWindow.document.write('Loading...');
   return newWindow;
 }
