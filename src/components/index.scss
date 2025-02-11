@@ -162,16 +162,7 @@ hr {
   font-weight: 500 !important;
 }
 
-/* bootstrap 5 migration */
-
-/* both bootstrap versions use function on background color to determine
-whether to use dark or light text color, algorithm changed between 4 and 5
-and from our blue resulting in light in 4, to dark in 5*/
-.btn-primary,
-.btn-primary:hover,
-.btn-primary:active {
-  color: #fff !important;
-}
+/* Bootstrap 5 Migration */
 
 a:not(.btn),
 .btn-link {
