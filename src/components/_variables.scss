@@ -4,6 +4,7 @@
 
 $font-family-sans-serif: 'Roboto', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif !default;
 $font-family-serif: 'Merriweather', Georgia, 'Times New Roman', Times, serif !default;
+$font-family-system: system-ui, sans-serif !default;
 $font-family-monospace: Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace !default;
 $font-family-base: $font-family-sans-serif !default;
 
@@ -13,24 +14,35 @@ $font-size-small: 0.875em;
  * Colors
  */
 
-$text-primary: #303030;
-$text-secondary: rgba(48, 48, 48, 0.64);
-$text-hint: rgba(48, 48, 48, 0.32);
-$text-secondary-heading: #2a2c2e;
+$text-primary: #293036;
+$text-secondary: #6d7276;
+$text-tertiary: #909396;
 
 $blue: #0072ec;
 $navy-blue: #002f63;
+$navy-blue-secondary: #5c738c;
 $blue-light: #00aeea;
-$very-light-blue: #edf7fe;
-$blue-washed: #ebf6fe;
 $orange: #ff4800;
 $yellow: #fce228;
 $yellow-dark: #ffc107;
 $green: #078c28;
+$text-green: #00ac00;
 $red: $orange;
-$gray-mid: #d8d8d8;
-$gray-washed: #fafafa;
-$very-light-gray: rgba(48, 48, 48, 0.32);
+
+$note-bg: #fff6d9;
+$note-border: #faeed0;
+
+$gray-bg-1: #fafbfc;
+$gray-bg-2: #f5f7f9;
+$gray-border-1: #ebeef3;
+$gray-border-2: #e0e6ec;
+$gray-border-3: #d6dee6;
+
+$blue-bg-1: #f3fafe;
+$blue-bg-2: #eef7fd;
+$blue-border-1: #ddeefa;
+$blue-border-2: #d3e6f4;
+$blue-border-3: #cadeee;
 
 :root {
   --blue: #{$blue};

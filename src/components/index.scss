@@ -68,7 +68,7 @@ small {
 }
 
 .form-control::placeholder {
-  color: $text-hint;
+  color: $text-tertiary;
 }
 
 .text-bold {
@@ -86,7 +86,7 @@ small {
 
 .btn-light {
   color: $blue;
-  border: 1px solid $gray-mid;
+  border: 1px solid $gray-border-3;
   background: white;
 }
 
@@ -123,7 +123,7 @@ small {
 }
 
 hr {
-  border-color: $gray-mid;
+  border-color: $gray-border-3;
   background-color: white;
   margin: 0;
   padding: 0;
@@ -142,7 +142,7 @@ hr {
 
   &-primary {
     border-color: $blue-light;
-    background-color: $very-light-blue;
+    background-color: $blue-bg-2;
   }
 }
 
@@ -151,7 +151,7 @@ hr {
 }
 
 .bg-very-light-blue {
-  background-color: $very-light-blue !important;
+  background-color: $blue-bg-2 !important;
 }
 
 .text-orange {
@@ -160,6 +160,10 @@ hr {
 
 .font-weight-semibold {
   font-weight: 500 !important;
+}
+
+.ff-system {
+  font-family: $font-family-system;
 }
 
 /* Bootstrap 5 Migration */
