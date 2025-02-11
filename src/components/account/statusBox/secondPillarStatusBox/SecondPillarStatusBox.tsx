@@ -312,7 +312,7 @@ function feeComparison(currentFeesEuro: number, tulevaFeesEuro: number) {
 const TinyCard = ({ title, text, img }: { title: JSX.Element; text: JSX.Element; img: string }) => (
   <div className="col-md-4 my-3 my-md-0">
     <div className="d-flex align-items-center">
-      <div className="mr-3">
+      <div className="me-3">
         <img width={36} src={img} alt="" />
       </div>
       <div>
@@ -382,7 +382,7 @@ function highFee(
           : []),
       ]}
       extraBottom={
-        <div className="card card-primary border-0 mt-3 ml-3 ml-md-5 mr-3 my-2 px-4 py-3">
+        <div className="card card-primary border-0 mt-3 ms-3 ms-md-5 me-3 my-2 px-4 py-3">
           <div className="row">
             <TinyCard
               img={euro}

@@ -18,6 +18,6 @@ export const SectionHeading = ({ titleId, lead, children }: Props): React.ReactN
         <FormattedMessage id={titleId} />
       </div>
     )}
-    {children && <div className="ml-md-2 text-nowrap">{children}</div>}
+    {children && <div className="ms-md-2 text-nowrap">{children}</div>}
   </div>
 );

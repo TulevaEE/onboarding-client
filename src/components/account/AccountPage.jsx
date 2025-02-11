@@ -142,7 +142,7 @@ export function AccountPage(
               <FormattedMessage id="accountStatement.secondPillar.heading" />
             </div>
             <div className="d-flex flex-sm-row flex-column align-items-sm-end justify-content-between">
-              <Link className="btn btn-light mb-3 mr-md-3" to="/2nd-pillar-payment-rate">
+              <Link className="btn btn-light mb-3 me-md-3" to="/2nd-pillar-payment-rate">
                 <FormattedMessage id="account.status.choice.paymentRate.change" />
               </Link>
               <Link className="btn btn-light mb-3" to="/2nd-pillar-flow">

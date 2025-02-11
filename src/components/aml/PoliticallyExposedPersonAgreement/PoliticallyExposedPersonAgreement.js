@@ -15,7 +15,7 @@ export const PoliticallyExposedPersonAgreement = ({
   className,
 }) => (
   <div className={className}>
-    <div className="custom-control custom-checkbox">
+    <div className="form-check">
       <Field
         checked={isPoliticallyExposed === false}
         onChange={(e) => onPoliticallyExposedChange(!e.target.checked)}
@@ -23,10 +23,10 @@ export const PoliticallyExposedPersonAgreement = ({
         type="checkbox"
         name="aml.isNotPoliticallyExposed"
         id="aml-not-pep-checkbox"
-        className="custom-control-input"
+        className="form-check-input"
         validate={[requiredField]}
       />
-      <label className="custom-control-label" htmlFor="aml-not-pep-checkbox">
+      <label className="form-check-label" htmlFor="aml-not-pep-checkbox">
         <FormattedMessage id="aml.isNotPep" />
         <InfoTooltip name="pep-tooltip">
           <div className="content">

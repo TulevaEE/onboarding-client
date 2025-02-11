@@ -9,7 +9,7 @@ const StatusBoxIcon: React.FunctionComponent<{
 }> = ({ checked = false, warning = false, error = false }) => {
   if (error) {
     return (
-      <div className="ml-3 mr-2 status-box-icon" data-testid="status-icon-error">
+      <div className="ms-3 me-2 status-box-icon" data-testid="status-icon-error">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none">
           <path
             fill="#FF4800"
@@ -38,7 +38,7 @@ const StatusBoxIcon: React.FunctionComponent<{
 
   if (warning) {
     return (
-      <div className="ml-3 mr-2 status-box-icon" data-testid="status-icon-warning">
+      <div className="ms-3 me-2 status-box-icon" data-testid="status-icon-warning">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none">
           <path
             fill="#F8AF18"
@@ -65,7 +65,7 @@ const StatusBoxIcon: React.FunctionComponent<{
 
   if (checked) {
     return (
-      <div className="ml-3 mr-2 status-box-icon" data-testid="status-icon-success">
+      <div className="ms-3 me-2 status-box-icon" data-testid="status-icon-success">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none">
           <path
             fill="#51C26C"
@@ -121,7 +121,7 @@ export const StatusBoxRow: React.FunctionComponent<{
       {lines &&
         lines.length > 0 &&
         lines.map((line, i) => (
-          <li className="pl-2" key={i}>
+          <li className="ps-2" key={i}>
             {line}
           </li>
         ))}
@@ -135,7 +135,7 @@ export const StatusBoxRow: React.FunctionComponent<{
             <StatusBoxIcon checked={ok} warning={warning} error={error} />
           </div>
           <div className="d-flex flex-column justify-content-center">
-            <div className="mt-0 pt-1 pl-2">
+            <div className="mt-0 pt-1 ps-2">
               <b>{name}</b>
             </div>
             {formattedLines}

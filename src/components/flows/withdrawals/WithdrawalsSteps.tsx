@@ -56,7 +56,7 @@ const WithdrawalStep = ({
   if (isStepCompleted) {
     return (
       <div className="tv-step__title tv-step__title--previous">
-        <span className="tv-step__number mr-2">
+        <span className="tv-step__number me-2">
           <Checkmark />
         </span>
         <FormattedMessage id={titleId} />
@@ -67,7 +67,7 @@ const WithdrawalStep = ({
   if (isCurrentStep) {
     return (
       <div className="tv-step__title tv-step__title--current">
-        <span className="tv-step__number mr-2">{step + 1}</span>
+        <span className="tv-step__number me-2">{step + 1}</span>
         <FormattedMessage id={titleId} />
       </div>
     );
@@ -76,7 +76,7 @@ const WithdrawalStep = ({
   if (isStepUpcoming) {
     return (
       <div className="tv-step__title tv-step__title--upcoming">
-        <span className="tv-step__number mr-2">{step + 1}</span>
+        <span className="tv-step__number me-2">{step + 1}</span>
         <FormattedMessage id={titleId} />
       </div>
     );

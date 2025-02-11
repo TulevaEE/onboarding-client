@@ -23,11 +23,11 @@ export const TargetFundSelector: React.FunctionComponent<Props> = ({
   return (
     <div className="row mx-0 mt-3 tv-target-fund__container align-items-stretch">
       {targetFunds.map((fund) => (
-        <div key={fund.isin} className="col-12 col-sm mb-2 mr-2 p-0">
+        <div key={fund.isin} className="col-12 col-sm mb-2 me-2 p-0">
           <button
             type="button"
             className={`
-                tv-target-fund h-100 p-4 text-left
+                tv-target-fund h-100 p-4 text-start
                 ${isSelected(fund) ? 'tv-target-fund--active' : ''}
               `}
             onClick={() => onSelectFund(fund)}

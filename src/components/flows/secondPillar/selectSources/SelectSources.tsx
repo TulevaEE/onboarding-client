@@ -220,15 +220,15 @@ export const SelectSources = ({
           <div className="mt-4">
             <hr className="mb-3" />
 
-            <div className="custom-control custom-switch">
+            <div className="form-check form-switch">
               <input
                 type="checkbox"
-                className="custom-control-input"
+                className="form-check-input"
                 id="someExistingSwitch"
                 onChange={onSomeExistingSwitchChange}
                 checked={someExistingSwitch}
               />
-              <label className="custom-control-label text-bold" htmlFor="someExistingSwitch">
+              <label className="form-check-label text-bold" htmlFor="someExistingSwitch">
                 <FormattedMessage id="select.sources.select.some.existing" />
               </label>
             </div>
@@ -251,15 +251,15 @@ export const SelectSources = ({
 
             <hr className="my-3" />
 
-            <div className="custom-control custom-switch">
+            <div className="form-check form-switch">
               <input
                 type="checkbox"
-                className="custom-control-input"
+                className="form-check-input"
                 id="someFutureSwitch"
                 onChange={onSomeFutureSwitchChange}
                 checked={someFutureSwitch}
               />
-              <label className="custom-control-label text-bold" htmlFor="someFutureSwitch">
+              <label className="form-check-label text-bold" htmlFor="someFutureSwitch">
                 <FormattedMessage id="select.sources.select.some.future" />
               </label>
             </div>
@@ -267,7 +267,7 @@ export const SelectSources = ({
             {someFutureSwitch ? (
               <>
                 <select
-                  className="custom-select mt-3"
+                  className="form-select mt-3"
                   onChange={(event) => onSelectFutureContributionsFund(event.target.value)}
                   value={selectedFutureContributionsFundIsin || ''}
                 >

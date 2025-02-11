@@ -60,7 +60,7 @@ export const WithdrawalAmountStep = () => {
       <SingleWithdrawalSelectionBox totalAmount={totalAmount} />
       <div className="mt-5 d-flex justify-content-end align-items-center">
         {!canNavigateToNextStep && (
-          <p className="m-0 mr-3 flex-fill text-secondary">
+          <p className="m-0 me-3 flex-fill text-secondary">
             <FormattedMessage id="withdrawals.navigation.notEligible" />
           </p>
         )}
@@ -103,14 +103,14 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
             id="single-withdrawal-amount"
             type="number"
             inputMode="decimal"
-            className="form-control form-control-lg text-right"
+            className="form-control form-control-lg text-end"
             value={withdrawalAmount.singleWithdrawalAmount ?? 0}
             onChange={(event) => handleSingleWithdrawalAmountSelected(event.target.valueAsNumber)}
             onWheel={(event) => event.currentTarget.blur()}
             min={0}
             max={totalAmount}
           />
-          <div className="input-group-append">
+          <div className="input-group-text">
             <span className="input-group-text">&euro;</span>
           </div>
         </div>

@@ -43,7 +43,7 @@ export const PersonalDetailsStep = () => {
   return (
     <>
       <div className="my-5 card p-4">
-        <div className="form-group">
+        <div className="mb-3">
           <label htmlFor="bank-account-iban">
             <b>
               <FormattedMessage id="withdrawals.personalDetails.bankAccount.ibanLabel" />
@@ -82,7 +82,7 @@ export const PersonalDetailsStep = () => {
         </button>
         <div className="d-flex">
           {isTestModeEnabled && (
-            <button type="button" className="btn btn-light mr-2" onClick={navigateToNextStep}>
+            <button type="button" className="btn btn-light me-2" onClick={navigateToNextStep}>
               <FormattedMessage id="withdrawals.navigation.forward" />
             </button>
           )}

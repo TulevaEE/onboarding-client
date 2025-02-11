@@ -15,16 +15,16 @@ export const ThirdPillarTermsAgreement = ({ age, agreed, onAgreementChange }) =>
 
   return (
     <div className="mt-5">
-      <div className="custom-control custom-checkbox">
+      <div className="form-check">
         <input
           checked={agreed}
           onChange={() => onAgreementChange(!agreed)}
           type="checkbox"
-          className="custom-control-input"
+          className="form-check-input"
           id="third-pillar-terms-checkbox"
         />
 
-        <label className="custom-control-label" htmlFor="third-pillar-terms-checkbox">
+        <label className="form-check-label" htmlFor="third-pillar-terms-checkbox">
           <FormattedMessage
             id="thirdPillarAgreement.termsConfirmation"
             values={{

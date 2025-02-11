@@ -21,7 +21,7 @@ export const BankButton = ({ bankKey, paymentBank, setPaymentBank, disabled = fa
   };
 
   return (
-    <div className="btn-group-toggle d-inline-block mt-2 mr-2">
+    <div className="btn-group-toggle d-inline-block mt-2 me-2">
       <label
         className={`btn btn-light btn-payment btn-${bankKey} text-nowrap ${
           paymentBank === bankKey ? 'active' : ''

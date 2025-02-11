@@ -12,7 +12,7 @@ interface SliderProps {
 const Slider: React.FC<SliderProps> = ({ value, onChange, min, max, step }) => (
   <input
     type="range"
-    className={`form-control-range ${styles.customRangePayout}`}
+    className={`form-range ${styles.customRangePayout}`}
     value={value}
     onChange={(event) => onChange(event.target.valueAsNumber)}
     min={min}

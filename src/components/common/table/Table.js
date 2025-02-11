@@ -56,10 +56,10 @@ function getMobileClass(hideOnMobile) {
 
 function getAlignClass(align) {
   if (align === 'left') {
-    return 'text-left';
+    return 'text-start';
   }
   if (align === 'right') {
-    return 'text-right';
+    return 'text-end';
   }
   return '';
 }

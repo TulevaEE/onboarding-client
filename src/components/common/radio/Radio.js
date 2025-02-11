@@ -20,10 +20,10 @@ const Radio = ({
     htmlFor={id}
   >
     <div className="row mb-0">
-      <div className={`col col-auto ${alignRadioCenter ? 'align-self-center' : ''} pr-0`}>
+      <div className={`col col-auto ${alignRadioCenter ? 'align-self-center' : ''} pe-0`}>
         <input
           type="radio"
-          className="sr-only"
+          className="visually-hidden"
           name={name}
           id={id}
           checked={selected}

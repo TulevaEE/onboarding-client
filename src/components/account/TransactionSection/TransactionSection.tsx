@@ -123,7 +123,7 @@ export const TransactionSection: React.FunctionComponent<{
       ) : (
         <div className="d-flex flex-md-row flex-column align-items-md-end justify-content-between">
           <h2 className="mb-4 lead">{children || <FormattedMessage id="transactions.title" />}</h2>
-          <div className="ml-md-2 text-nowrap mb-4">
+          <div className="ms-md-2 text-nowrap mb-4">
             {pillar === 2 && (
               <Link className="text-nowrap" to="/3rd-pillar-transactions">
                 <FormattedMessage id="transactions.seeAll.3" />

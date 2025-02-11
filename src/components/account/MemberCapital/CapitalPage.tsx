@@ -56,7 +56,7 @@ export const CapitalPage: React.FunctionComponent = () => {
         <h2 className="mb-4 lead">
           <FormattedMessage id="capitalEvents.title" />
         </h2>
-        <div className="ml-md-2 text-nowrap mb-4">
+        <div className="ms-md-2 text-nowrap mb-4">
           <Link to="/account">
             <FormattedMessage id="capitalEvents.backToAccountPage" />
           </Link>

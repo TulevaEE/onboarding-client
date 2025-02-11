@@ -18,13 +18,13 @@ export const FundExchangeRow = ({ sourceFunds, targetFunds, onChange, selection 
     <div className="card mx-0 mb-2">
       <div className="card-body">
         <div className="row flex-column flex-xl-row">
-          <div className="col-12 col-xl-5 pr-xl-2 form-group">
+          <div className="col-12 col-xl-5 pe-xl-2 mb-3">
             <label className="small text-bold" htmlFor={`tv-source-fund-selector-${randomString}`}>
               <FormattedMessage id="select.sources.select.some.source" />
             </label>
             <select
               id={`tv-source-fund-selector-${randomString}`}
-              className="custom-select"
+              className="form-select"
               value={selection.sourceFundIsin}
               onChange={({ target: { value: sourceFundIsin } }) =>
                 onChange({ ...selection, sourceFundIsin })
@@ -38,13 +38,13 @@ export const FundExchangeRow = ({ sourceFunds, targetFunds, onChange, selection 
             </select>
           </div>
 
-          <div className="col-12 col-xl-5 px-xl-2 form-group">
+          <div className="col-12 col-xl-5 px-xl-2 mb-3">
             <label className="small text-bold" htmlFor={`tv-target-fund-selector-${randomString}`}>
               <FormattedMessage id="select.sources.select.some.target" />
             </label>
             <select
               id={`tv-target-fund-selector-${randomString}`}
-              className="custom-select"
+              className="form-select"
               value={selection.targetFundIsin}
               onChange={({ target: { value: targetFundIsin } }) =>
                 onChange({ ...selection, targetFundIsin })
@@ -58,14 +58,14 @@ export const FundExchangeRow = ({ sourceFunds, targetFunds, onChange, selection 
             </select>
           </div>
 
-          <div className="col-12 col-xl-2 pl-xl-2 form-group">
+          <div className="col-12 col-xl-2 ps-xl-2 mb-3">
             <label className="small text-bold" htmlFor={`tv-percentage-selector-${randomString}`}>
               <FormattedMessage id="select.sources.select.some.percentage" />
             </label>
             <div className="input-group">
               <input
                 id={`tv-percentage-selector-${randomString}`}
-                className="form-control pr-0 d-block"
+                className="form-control pe-0 d-block"
                 min="0"
                 max="100"
                 value={(selection.percentage * 100).toFixed()}
@@ -77,7 +77,7 @@ export const FundExchangeRow = ({ sourceFunds, targetFunds, onChange, selection 
                   })
                 }
               />
-              <div className="input-group-append">
+              <div className="input-group-text">
                 <span className="input-group-text bg-white">%</span>
               </div>
             </div>

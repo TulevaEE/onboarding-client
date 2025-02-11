@@ -77,7 +77,7 @@ export const Select: FC<SelectProps> = ({
 
   return (
     <select
-      className="custom-select"
+      className="form-select"
       onChange={(event): void => onChange(event.target.value)}
       value={selected}
       disabled={disabled}

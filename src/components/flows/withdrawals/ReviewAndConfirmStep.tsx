@@ -194,15 +194,15 @@ export const ReviewAndConfirmStep = () => {
       </div>
 
       <div className="card p-4">
-        <div className="custom-control custom-checkbox">
+        <div className="form-check">
           <input
             checked={agreedToTerms}
             onChange={() => setAgreedToTerms(!agreedToTerms)}
             type="checkbox"
-            className="custom-control-input"
+            className="form-check-input"
             id="agree-to-terms-checkbox"
           />
-          <label className="custom-control-label" htmlFor="agree-to-terms-checkbox">
+          <label className="form-check-label" htmlFor="agree-to-terms-checkbox">
             <FormattedMessage id="withdrawals.reviewAndConfirm.episDisclaimer" />
           </label>
           {agreedToTermsError && (
@@ -227,7 +227,7 @@ export const ReviewAndConfirmStep = () => {
           {isTestModeEnabled && (
             <button
               type="button"
-              className="btn btn-light mr-2"
+              className="btn btn-light me-2"
               onClick={() => {
                 onMandatesSubmitted();
                 navigateToNextStep();
