@@ -2,12 +2,12 @@
 
 .tv-table__header {
   font-size: 0.8em;
-  background-color: $gray-washed;
+  background-color: $gray-bg-1;
   border-top-width: 1px;
   border-top-style: solid;
   border-bottom-width: 1px;
   border-bottom-style: solid;
-  border-color: $gray-mid;
+  border-color: $gray-border-3;
 }
 
 .tv-table__row {
@@ -17,7 +17,7 @@
 }
 
 .fund-selections-container {
-  background-color: $blue-washed;
+  background-color: $blue-bg-2;
   border-radius: 8px;
 }
 

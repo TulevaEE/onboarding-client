@@ -1,11 +1,10 @@
 .comparison-calculator {
-
   .card-primary {
-    border-color: #CAE0F1;
+    border-color: #cae0f1;
   }
 
   .header-section {
-    border-bottom: 1px solid #CAE0F1;
+    border-bottom: 1px solid #cae0f1;
 
     .btn-group .btn {
       min-width: 200px;
@@ -44,12 +43,12 @@
   }
 
   .footer-section {
-    border-top: 1px solid #CAE0F1;
+    border-top: 1px solid #cae0f1;
   }
 
   .middle-section,
   .middle-section p {
-    color: #002F63;
+    color: #002f63;
   }
 
   .middle-section {
@@ -60,12 +59,11 @@
     }
 
     .content-section {
-
       .result-section {
         flex-grow: 1;
 
         .result-positive {
-          color: #00AC00;
+          color: #00ac00;
           font-weight: bold;
         }
 
@@ -80,7 +78,7 @@
           line-height: 140%; /* 28px */
 
           + .result-text {
-              margin-top: 1.5rem;
+            margin-top: 1.5rem;
           }
         }
 
@@ -116,7 +114,6 @@
           display: flex;
           flex-direction: column;
           align-items: center;
-          font-family: Roboto, sans-serif;
         }
 
         .bar-amount {
@@ -141,7 +138,7 @@
 
         .bar-percentage {
           //From Figma
-          color: var(--White, #FFF);
+          color: var(--White, #fff);
           text-align: center;
           font-size: 24px;
           font-weight: 700;
@@ -171,7 +168,6 @@
           );
         }
       }
-
     }
   }
 }

@@ -20,7 +20,7 @@
 
     &::before,
     &::after {
-      background-color: $gray-mid;
+      background-color: $gray-border-3;
       content: '';
       display: inline-block;
       height: 1px;

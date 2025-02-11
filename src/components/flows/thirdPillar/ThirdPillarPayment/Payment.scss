@@ -82,19 +82,19 @@
 }
 
 .payment-details {
-  border: 1px solid $gray-mid;
+  border: 1px solid $gray-border-3;
   border-radius: 8px;
 }
 
 .payment-details-table {
-  background-color: $blue-washed;
+  background-color: $blue-bg-2;
   border-radius: 4px;
   display: table;
 
   table {
     tr td {
       padding: 0.75rem;
-      border-bottom: 1px solid $gray-mid;
+      border-bottom: 1px solid $gray-border-3;
     }
 
     tr:last-child td {
