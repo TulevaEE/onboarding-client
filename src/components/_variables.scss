@@ -27,10 +27,16 @@ $orange: #ff4800;
 $yellow: #fce228;
 $yellow-dark: #ffc107;
 $green: #078c28;
-$red: #dc3545;
+$red: $orange;
 $gray-mid: #d8d8d8;
 $gray-washed: #fafafa;
 $very-light-gray: rgba(48, 48, 48, 0.32);
+
+:root {
+  --blue: #{$blue};
+  --red: #{$red};
+  --green: #{$green};
+}
 
 /**
  * Brand definitions

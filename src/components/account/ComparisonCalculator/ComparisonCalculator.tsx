@@ -687,9 +687,10 @@ const ComparisonCalculator: React.FC = () => {
     const barHeights = calculateGraphBarHeights();
 
     const redColorThreshold = 0.01;
-    const colorRed = '#FF4800';
-    const colorGreen = '#51C26C';
-    const colorBlue = '#0081EE';
+    const rootStyles = getComputedStyle(document.documentElement);
+    const colorRed = rootStyles.getPropertyValue('--red').trim();
+    const colorGreen = rootStyles.getPropertyValue('--green').trim();
+    const colorBlue = rootStyles.getPropertyValue('--blue').trim();
 
     const indexBarProperties: GraphBarProperties = {
       color: colorBlue,
