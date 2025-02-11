@@ -1,7 +1,7 @@
 @import '../variables';
 
 .login-page {
-  background: rgba(48, 48, 48, 0.06);
+  background: $gray-bg-2;
   min-height: 100vh;
   &__not-member {
     font-weight: 500;
@@ -18,22 +18,22 @@
 }
 
 .tab-list {
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid $gray-border-3;
   padding-left: 0;
 }
 
 .tab-list-item {
-  width: 33.33%;
+  width: 33.3333%;
   max-width: 100%;
   display: inline-block;
   list-style: none;
   margin-bottom: -1px;
   padding: 0.5rem 0.75rem;
-  background: white;
-  color: #838383;
-  box-shadow: 0px 0px 0px transparent;
-  border: 0px solid transparent;
-  text-shadow: 0px 0px 0px transparent;
+  color: $text-secondary;
+  background: #fff;
+  box-shadow: none;
+  border: none;
+  text-shadow: none;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
@@ -55,10 +55,8 @@
 
 .tab-list-active {
   font-weight: bold;
-  background-color: white;
-  color: black;
-  border: solid #0081ed;
-  border-width: 0 0 4px 0;
+  color: $text-primary;
+  border-bottom: 4px solid $blue;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
