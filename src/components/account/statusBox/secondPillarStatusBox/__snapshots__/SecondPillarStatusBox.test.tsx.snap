@@ -5,7 +5,7 @@ exports[`SecondPillarStatusBox renders high fee flow when fund selection incompl
   error={true}
   extraBottom={
     <div
-      className="card card-primary border-0 mt-3 ml-3 ml-md-5 me-3 my-2 px-4 py-3"
+      className="card card-primary border-0 mt-3 ms-3 ms-md-5 me-3 my-2 px-4 py-3"
     >
       <div
         className="row"
@@ -132,7 +132,7 @@ exports[`SecondPillarStatusBox renders high fee message when in high fee fund an
   error={true}
   extraBottom={
     <div
-      className="card card-primary border-0 mt-3 ml-3 ml-md-5 me-3 my-2 px-4 py-3"
+      className="card card-primary border-0 mt-3 ms-3 ms-md-5 me-3 my-2 px-4 py-3"
     >
       <div
         className="row"
@@ -365,7 +365,7 @@ exports[`SecondPillarStatusBox renders the transfer flow when fund transfers inc
   error={true}
   extraBottom={
     <div
-      className="card card-primary border-0 mt-3 ml-3 ml-md-5 me-3 my-2 px-4 py-3"
+      className="card card-primary border-0 mt-3 ms-3 ms-md-5 me-3 my-2 px-4 py-3"
     >
       <div
         className="row"
