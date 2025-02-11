@@ -40,9 +40,9 @@ export const LoginPage = ({
     <Redirect to={location.state && location.state.from ? location.state.from : ''} />
   ) : (
     <div className="login-page">
-      <div className="container-sm py-5">
+      <div className="container py-5">
         <div className="row justify-content-center">
-          <div className="col-12 col-sm-12 col-md-10 col-lg-7 col-xl-6">
+          <div className="col-12 col-md-9 col-lg-7 col-xl-6 col-xxl-5">
             <img width="146" height="66" src={logo} alt="Tuleva" className="d-block mx-auto mb-5" />
             {errorDescription ? <ErrorAlert description={errorDescription} /> : ''}
             {!loadingAuthentication && !controlCode && !loadingUserConversion ? (

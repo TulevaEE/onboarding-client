@@ -2,7 +2,6 @@ import React from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import './LoginForm.scss';
 import LoginTabs from './LoginTabs';
 import { Maintenance } from '../Maintenance';
 
@@ -176,11 +175,11 @@ const renderSmartId = (onIdCodeSubmit, personalCode, onPersonalCodeChange, forma
           placeholder={formatMessage({ id: 'login.id.code' })}
         />
       </div>
-      <div className="mb-3">
+      <div className="d-grid mb-3">
         <input
           id="smart-id-submit"
           type="submit"
-          className="btn btn-primary btn-block btn-lg"
+          className="btn btn-primary btn-lg"
           disabled={!personalCode}
           value={formatMessage({ id: 'login.enter' })}
         />
@@ -223,11 +222,11 @@ const renderMobileId = (
           placeholder={formatMessage({ id: 'login.phone.number' })}
         />
       </div>
-      <div className="mb-3">
+      <div className="d-grid mb-3">
         <input
           id="mobile-id-submit"
           type="submit"
-          className="btn btn-primary btn-block btn-lg"
+          className="btn btn-primary btn-lg"
           disabled={!phoneNumber || !personalCode}
           value={formatMessage({ id: 'login.enter' })}
         />
@@ -239,12 +238,8 @@ const renderMobileId = (
 const renderIdCard = (onAuthenticateWithIdCard) => (
   // eslint-disable-next-line react/no-unknown-property
   <div label="login.id.card" hideOnMobile="true">
-    <div>
-      <button
-        type="button"
-        className="btn btn-primary btn-block btn-lg"
-        onClick={onAuthenticateWithIdCard}
-      >
+    <div className="d-grid">
+      <button type="button" className="btn btn-primary btn-lg" onClick={onAuthenticateWithIdCard}>
         <FormattedMessage id="login.enter" />
       </button>
     </div>
