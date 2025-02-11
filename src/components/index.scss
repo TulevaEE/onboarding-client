@@ -129,7 +129,7 @@ hr {
   padding: 0;
 }
 
-.form-select {
+.custom-select {
   width: 100%;
 }
 
@@ -160,4 +160,24 @@ hr {
 
 .font-weight-semibold {
   font-weight: 500 !important;
+}
+
+/* bootstrap 5 migration */
+
+/* both bootstrap versions use function on background color to determine
+whether to use dark or light text color, algorithm changed between 4 and 5
+and from our blue resulting in light in 4, to dark in 5*/
+.btn-primary,
+.btn-primary:hover,
+.btn-primary:active {
+  color: #fff !important;
+}
+
+a:not(.btn),
+.btn-link {
+  text-decoration: none;
+  &:hover,
+  &:focus {
+    text-decoration: underline;
+  }
 }

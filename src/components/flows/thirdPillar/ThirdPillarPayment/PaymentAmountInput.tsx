@@ -48,10 +48,8 @@ export const PaymentAmountInput: React.FunctionComponent<{
             lang="et"
           />
           <div className="input-group-text">
-            <span className="input-group-text">
-              &euro;
-              {paymentType === 'RECURRING' && <FormattedMessage id="thirdPillarPayment.perMonth" />}
-            </span>
+            &euro;
+            {paymentType === 'RECURRING' && <FormattedMessage id="thirdPillarPayment.perMonth" />}
           </div>
         </div>
       </div>
