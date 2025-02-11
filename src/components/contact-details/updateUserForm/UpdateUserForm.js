@@ -23,7 +23,7 @@ export const UpdateUserForm = ({
         </div>
       )}
 
-      <div className="form-group">
+      <div className="mb-3">
         <label htmlFor="update-user-form-email">
           <FormattedMessage id="new.user.flow.signup.email" />
         </label>
@@ -36,7 +36,7 @@ export const UpdateUserForm = ({
           validate={[requiredField, emailValidator]}
         />
       </div>
-      <div className="form-group">
+      <div className="mb-3">
         <label htmlFor="update-user-form-phoneNumber">
           <FormattedMessage id="new.user.flow.signup.phoneNumber" />
         </label>
@@ -48,7 +48,7 @@ export const UpdateUserForm = ({
           placeholder={formatMessage({ id: 'new.user.flow.signup.phoneNumber' })}
         />
       </div>
-      <div className="form-group">
+      <div className="mb-3">
         <label htmlFor="update-user-form-country">
           <FormattedMessage id="new.user.flow.signup.country" />
         </label>

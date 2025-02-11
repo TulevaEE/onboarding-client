@@ -230,7 +230,7 @@ const ComparisonCalculator: React.FC = () => {
                   </div>
                 )}
                 <div className="input-selection row justify-content-center">
-                  <div className="col-12 col-md text-left">
+                  <div className="col-12 col-md text-start">
                     <label htmlFor="timePeriodSelect" className="form-label small text-bold mb-1">
                       <FormattedMessage id="comparisonCalculator.timePeriod" />:{' '}
                     </label>
@@ -248,7 +248,7 @@ const ComparisonCalculator: React.FC = () => {
                       id="timePeriodSelect"
                     />
                   </div>
-                  <div className="col-12 col-md text-left">
+                  <div className="col-12 col-md text-start">
                     <label htmlFor="comparedToSelect" className="form-label small text-bold mb-1">
                       <FormattedMessage id="comparisonCalculator.comparedTo" />:{' '}
                     </label>
@@ -305,7 +305,7 @@ const ComparisonCalculator: React.FC = () => {
                       <>
                         {contentTextProperties.shortPeriod && (
                           <div
-                            className="alert alert-warning w-100 m-0 rounded-0 border-left-0 border-right-0 border-top border-bottom text-center"
+                            className="alert alert-warning w-100 m-0 rounded-0 border-start-0 border-end-0 border-top border-bottom text-center"
                             role="alert"
                           >
                             <FormattedMessage id="comparisonCalculator.shortTimePeriodWarning" />{' '}
@@ -884,7 +884,7 @@ const ComparisonCalculator: React.FC = () => {
 
   function getResultSection() {
     return (
-      <div className="result-section text-left d-flex flex-column justify-content-between">
+      <div className="result-section text-start d-flex flex-column justify-content-between">
         <p className="result-text">{getContentTextVerdict()}</p>
         <p className="result-text">{getContentTextExplanation()} </p>
 
@@ -1170,14 +1170,14 @@ const ComparisonCalculator: React.FC = () => {
   function getContentTextCtaSubtext() {
     if (performanceVerdictProperties.comparison === 'FUND') {
       return (
-        <InfoTooltip name="cta-tooltip" className="info-tooltip-modern ml-3 align-middle">
+        <InfoTooltip name="cta-tooltip" className="info-tooltip-modern ms-3 align-middle">
           <FormattedMessage id="comparisonCalculator.content.performance.cta.subtext" />
         </InfoTooltip>
       );
     }
     if (performanceVerdictProperties.comparison === 'INFLATION') {
       return (
-        <InfoTooltip name="cta-tooltip" className="info-tooltip-modern ml-3 align-middle">
+        <InfoTooltip name="cta-tooltip" className="info-tooltip-modern ms-3 align-middle">
           <FormattedMessage id="comparisonCalculator.content.performance.cta.subtext" />
         </InfoTooltip>
       );

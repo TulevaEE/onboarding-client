@@ -11,7 +11,7 @@
     "@sentry/browser": "^7.74.0",
     "array.prototype.find": "^2.1.2",
     "axios": "^0.24.0",
-    "bootstrap": "^4.6.2",
+    "bootstrap": "^5.3.3",
     "classnames": "^2.2.6",
     "connected-react-router": "^6.9.3",
     "downloadjs": "^1.4.7",

@@ -32,7 +32,7 @@ export const LoginForm = ({
     ) : (
       ''
     )}
-    <div className="bg-white shadow-sm rounded-lg p-4 p-sm-5 text-center">
+    <div className="bg-white shadow-sm rounded-3 p-4 p-sm-5 text-center">
       {renderLoginForm(
         monthlyThirdPillarContribution,
         exchangeExistingThirdPillarUnits,
@@ -164,7 +164,7 @@ const renderSmartId = (onIdCodeSubmit, personalCode, onPersonalCodeChange, forma
   // eslint-disable-next-line react/no-unknown-property
   <div label="login.smart.id" hideOnMobile="false">
     <form onSubmit={runWithDefaultPrevention(() => onIdCodeSubmit(personalCode))}>
-      <div className="form-group">
+      <div className="mb-3">
         <input
           id="smart-id-personal-code"
           type="text"
@@ -176,7 +176,7 @@ const renderSmartId = (onIdCodeSubmit, personalCode, onPersonalCodeChange, forma
           placeholder={formatMessage({ id: 'login.id.code' })}
         />
       </div>
-      <div className="form-group">
+      <div className="mb-3">
         <input
           id="smart-id-submit"
           type="submit"
@@ -200,7 +200,7 @@ const renderMobileId = (
   // eslint-disable-next-line react/no-unknown-property
   <div label="login.mobile.id" hideOnMobile="false">
     <form onSubmit={runWithDefaultPrevention(() => onMobileIdSubmit(phoneNumber, personalCode))}>
-      <div className="form-group">
+      <div className="mb-3">
         <input
           id="mobile-id-personal-code"
           type="text"
@@ -212,7 +212,7 @@ const renderMobileId = (
           placeholder={formatMessage({ id: 'login.id.code' })}
         />
       </div>
-      <div className="form-group">
+      <div className="mb-3">
         <input
           id="mobile-id-number"
           type="tel"
@@ -223,7 +223,7 @@ const renderMobileId = (
           placeholder={formatMessage({ id: 'login.phone.number' })}
         />
       </div>
-      <div className="form-group">
+      <div className="mb-3">
         <input
           id="mobile-id-submit"
           type="submit"

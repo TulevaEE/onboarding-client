@@ -32,7 +32,7 @@ const SecondPillarUpsellCard: React.FC = () => {
                 <h6 className="mb-3 lh-base">
                   <FormattedMessage id="secondPillarUpsell.worldMarketAverageReturn" />
                 </h6>
-                <ul className="pl-3 small-bullet-list pr-4">
+                <ul className="ps-3 small-bullet-list pe-4">
                   <li className="mb-3">
                     <FormattedMessage
                       id="secondPillarUpsell.riskDiversification"
@@ -52,7 +52,7 @@ const SecondPillarUpsellCard: React.FC = () => {
                     />
                   </li>
                 </ul>
-                <p className="ml-3">
+                <p className="ms-3">
                   <a href="https://tuleva.ee/tasud-alla/" target="_blank" rel="noreferrer">
                     <u>
                       <FormattedMessage id="secondPillarUpsell.readMore" />
@@ -64,7 +64,7 @@ const SecondPillarUpsellCard: React.FC = () => {
             </div>
             <div className="col-md-6 order-0 order-md-1">
               <CardTitle className="d-md-none" />
-              <div className="card card-primary mr-md-0 border-0 pb-md-2">
+              <div className="card card-primary me-md-0 border-0 pb-md-2">
                 <div className="card-body">
                   <span className="h6">
                     <FormattedMessage
@@ -136,7 +136,7 @@ interface CardTitleProps {
 
 const CardTitle: React.FC<CardTitleProps> = ({ className }) => (
   <div className={`card-title mb-3 ${className}`}>
-    <h2 className="d-inline mr-2">
+    <h2 className="d-inline me-2">
       <FormattedMessage id="secondPillarUpsell.cardTitle" />
     </h2>
     <span className="badge badge-orange">

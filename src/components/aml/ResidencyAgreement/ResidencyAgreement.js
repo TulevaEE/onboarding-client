@@ -11,7 +11,7 @@ import { requiredField } from '../../common/form';
 
 export const ResidencyAgreement = ({ isResident, onResidentChange, className }) => (
   <div className={className}>
-    <div className="custom-control custom-checkbox">
+    <div className="form-check">
       <Field
         checked={!!isResident}
         onChange={(e) => onResidentChange(e.target.checked)}
@@ -19,11 +19,11 @@ export const ResidencyAgreement = ({ isResident, onResidentChange, className }) 
         type="checkbox"
         name="aml.isResident"
         id="aml-resident-checkbox"
-        className="custom-control-input"
+        className="form-check-input"
         validate={[requiredField]}
       />
 
-      <label className="custom-control-label" htmlFor="aml-resident-checkbox">
+      <label className="form-check-label" htmlFor="aml-resident-checkbox">
         <FormattedMessage id="aml.isResident" />
         <InfoTooltip name="resident-tooltip">
           <div className="content">

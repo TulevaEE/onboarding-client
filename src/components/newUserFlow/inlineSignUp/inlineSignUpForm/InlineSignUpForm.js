@@ -7,7 +7,7 @@ import { emailValidator, requiredField } from '../../../common/form';
 
 const renderField = ({ input, type, placeholder, disabled, meta: { touched, error } }) => (
   <div>
-    <div className={`form-group ${touched && error ? 'has-error' : ''}`}>
+    <div className={`mb-3 ${touched && error ? 'has-error' : ''}`}>
       <input
         {...input}
         type={type}
@@ -30,7 +30,7 @@ export const InlineSignUpForm = ({ handleSubmit, invalid, submitting, error }) =
   return (
     <div>
       <form id="register-form" onSubmit={handleSubmit}>
-        <div className="form-group mb-2">
+        <div className="mb-2">
           <label htmlFor="register-form-email">
             <FormattedMessage id="new.user.flow.signup.email" />
           </label>
@@ -43,7 +43,7 @@ export const InlineSignUpForm = ({ handleSubmit, invalid, submitting, error }) =
             validate={[requiredField, emailValidator]}
           />
         </div>
-        <div className="form-group mb-2">
+        <div className="mb-2">
           <label htmlFor="register-form-phoneNumber">
             <FormattedMessage id="new.user.flow.signup.phoneNumber" />
           </label>

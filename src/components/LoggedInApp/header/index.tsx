@@ -17,7 +17,7 @@ export const Header = ({ user, loading, onLogout }: Props) => (
       <a href="/account">
         <img src={logo} alt="Tuleva" className="brand-logo" />
       </a>
-      <div className="text-right">
+      <div className="text-end">
         {loading || !user ? (
           <Loader className="align-right" />
         ) : (

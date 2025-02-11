@@ -37,7 +37,7 @@ export const FundTransferTable = ({ selections = [] }: Props) => (
         </div>
 
         {selections.length > 1 && index !== selections.length - 1 && (
-          <div className="fund-selection-divider ml-3" />
+          <div className="fund-selection-divider ms-3" />
         )}
       </div>
     ))}

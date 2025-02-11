@@ -403,14 +403,14 @@ const BaseApplicationCard: React.FunctionComponent<{
     <div className={styles.card}>
       <div className={styles.header}>
         <div className="d-flex">
-          <b className="mr-3">
+          <b className="me-3">
             <FormattedMessage id={titleKey} />
           </b>
           <span className="text-nowrap">{formatDate(application.creationTime)}</span>
         </div>
 
         {canCancel && (
-          <Link to={cancellationUrl} className="btn btn-light d-none d-md-block ml-2">
+          <Link to={cancellationUrl} className="btn btn-light d-none d-md-block ms-2">
             <FormattedMessage id="applications.cancel" />
           </Link>
         )}

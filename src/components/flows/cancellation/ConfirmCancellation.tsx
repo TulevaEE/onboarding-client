@@ -49,7 +49,7 @@ export const ConfirmCancellation: React.FunctionComponent = () => {
         <button
           type="button"
           id="sign"
-          className="btn btn-primary mb-2 mr-2"
+          className="btn btn-primary mb-2 me-2"
           onClick={confirmCancellation}
         >
           <FormattedMessage id="confirm.mandate.sign" />
@@ -57,7 +57,7 @@ export const ConfirmCancellation: React.FunctionComponent = () => {
         <button
           type="button"
           id="preview"
-          className="btn btn-secondary mb-2 mr-2"
+          className="btn btn-secondary mb-2 me-2"
           onClick={previewCancellation}
         >
           <FormattedMessage id="confirm.mandate.preview" />

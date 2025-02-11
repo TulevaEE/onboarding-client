@@ -85,7 +85,7 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
         >
           <div className="mb-1">
             <h3 className="d-inline">
-              <span className="mr-2">
+              <span className="me-2">
                 <FormattedMessage id="secondPillarPaymentRate.option.2Percent" />
               </span>
               {pendingPaymentRate === 2 && <Currently />}
@@ -106,7 +106,7 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
           onSelect={() => setPaymentRate(4)}
         >
           <h3 className="mb-1">
-            <span className="mr-2">
+            <span className="me-2">
               <FormattedMessage id="secondPillarPaymentRate.option.4Percent" />
             </span>
             {pendingPaymentRate === 4 && <Currently />}
@@ -127,7 +127,7 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
         >
           <div className="mb-1">
             <h3 className="d-inline">
-              <span className="mr-2">
+              <span className="me-2">
                 <FormattedMessage id="secondPillarPaymentRate.option.6Percent" />
               </span>
               <Recommended />
@@ -164,13 +164,13 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
 };
 
 const Currently = () => (
-  <span className="badge badge-pill badge-secondary align-text-bottom">
+  <span className="badge rounded-pill text-bg-secondary align-text-bottom">
     <FormattedMessage id="secondPillarPaymentRate.current" />
   </span>
 );
 
 const Recommended = () => (
-  <span className="mr-2 badge badge-pill badge-primary align-text-bottom">
+  <span className="me-2 badge rounded-pill text-bg-primary align-text-bottom">
     <FormattedMessage id="secondPillarPaymentRate.recommended" />
   </span>
 );
