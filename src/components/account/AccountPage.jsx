@@ -90,9 +90,9 @@ export function AccountPage(
           }}
         />
       )}
-      <div className="row mt-5">
-        <GreetingBar />
-      </div>
+
+      <GreetingBar />
+
       <div className="mt-5">
         <StatusBox />
       </div>

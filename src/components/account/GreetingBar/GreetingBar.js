@@ -12,25 +12,29 @@ export class GreetingBar extends Component {
     const { user } = this.props;
     if (!user) {
       return (
-        <div className="col mb-1 mt-2">
+        <div>
           <Shimmer height={38} />
         </div>
       );
     }
     return (
-      <>
-        <div className="col-md-auto mb-1 mt-2 lead">
-          <FormattedMessage id="account.greeting" />, {getFullName(user)}!
+      <div className="d-flex flex-column flex-md-row align-items-md-center mt-5">
+        <div className="d-flex flex-column flex-lg-row flex-fill justify-content-between align-items-lg-center">
+          <div className="lead">
+            <FormattedMessage id="account.greeting" />, {getFullName(user)}
+          </div>
+          <div>
+            {user.email}
+            {user.email && user.phoneNumber && <span className="text-separator mx-2">·</span>}
+            <span className="me-3">{user.phoneNumber}</span>
+          </div>
         </div>
-        <div className="col mb-1 mt-2 text-md-right">
-          {user.email}
-          {user.email && user.phoneNumber && <span className="mx-1"> · </span>}
-          <span className="me-2">{user.phoneNumber} </span>
-          <Link className="btn btn-light mt-2 mt-sm-0" to="/contact-details">
+        <div>
+          <Link className="btn btn-light mt-3 mt-lg-0" to="/contact-details">
             <FormattedMessage id="account.update.contact" />
           </Link>
         </div>
-      </>
+      </div>
     );
   }
 }

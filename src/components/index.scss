@@ -166,6 +166,11 @@ hr {
   font-family: $font-family-system;
 }
 
+.text-separator {
+  color: $text-secondary;
+  user-select: none;
+}
+
 /* Bootstrap 5 Migration */
 
 a:not(.btn),
