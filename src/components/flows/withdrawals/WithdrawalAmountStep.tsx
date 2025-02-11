@@ -110,9 +110,7 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
             min={0}
             max={totalAmount}
           />
-          <div className="input-group-text">
-            <span className="input-group-text">&euro;</span>
-          </div>
+          <div className="input-group-text">&euro;</div>
         </div>
       </div>
 
