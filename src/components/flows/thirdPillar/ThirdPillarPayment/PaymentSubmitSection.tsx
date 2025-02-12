@@ -42,7 +42,7 @@ export const PaymentSubmitSection = ({
             )}
           </button>
           <div className="mt-2">
-            <small className="text-muted">
+            <small className="text-body-secondary">
               {paymentType === 'SINGLE' && (
                 <FormattedMessage
                   id="thirdPillarPayment.freeSinglePayment"

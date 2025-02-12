@@ -337,7 +337,7 @@ const FundPensionMandateDescription = ({
             b: (children: ReactChildren) => <b>{children}</b>,
           }}
         />{' '}
-        <span className="text-muted">
+        <span className="text-body-secondary">
           <FormattedMessage
             id="withdrawals.mandates.fundPension.yearsLeftToLiveDescription"
             values={{
@@ -355,7 +355,9 @@ const FundPensionMandateDescription = ({
               <WithdrawalPaymentDate mandate={mandate} mandateDeadlines={mandateDeadlines} />
             ),
             paymentSize: formatAmountForCurrency(fundPensionMonthlyPaymentFromPillar, 2),
-            muted: (children: ReactChildren) => <span className="text-muted">{children}</span>,
+            muted: (children: ReactChildren) => (
+              <span className="text-body-secondary">{children}</span>
+            ),
           }}
         />
       </p>

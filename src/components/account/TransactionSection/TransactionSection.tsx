@@ -90,12 +90,12 @@ export const TransactionSection: React.FunctionComponent<{
           type:
             transaction.type === 'CONTRIBUTION_CASH_WORKPLACE' ? (
               <span
-                className="fa fa-briefcase text-muted"
+                className="fa fa-briefcase text-body-secondary"
                 title={intl.formatMessage({ id: 'transactions.workplace' })}
               />
             ) : (
               <span
-                className="fa fa-user-o text-muted"
+                className="fa fa-user-o text-body-secondary"
                 title={intl.formatMessage({ id: 'transactions.personal' })}
               />
             ),

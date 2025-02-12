@@ -47,7 +47,7 @@ export const ThirdPillarTermsAgreement = ({ age, agreed, onAgreementChange }) =>
           <FormattedMessage id="thirdPillarAgreement.signingExplanation" />
           {showAgeDependentRecommendation && (
             <div className="mt-2">
-              <small className="text-muted">
+              <small className="text-body-secondary">
                 <FormattedMessage id="thirdPillarAgreement.ageDependentRecommendation" />
               </small>
             </div>

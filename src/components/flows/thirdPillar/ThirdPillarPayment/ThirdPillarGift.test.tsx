@@ -127,7 +127,7 @@ describe('When a user is making a third pillar gift', () => {
     const backToAccountPage = await backToAccountPageButton();
     userEvent.click(backToAccountPage);
 
-    expect(await screen.findByText('Hi, John Doe!')).toBeInTheDocument();
+    expect(await screen.findByText('Hi, John Doe')).toBeInTheDocument();
   });
 
   const personalCodeInput: () => Promise<HTMLInputElement> = async () =>

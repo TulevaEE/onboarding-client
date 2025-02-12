@@ -18,7 +18,7 @@ export const ThirdPillarContributionAmount: React.FunctionComponent<Props> = ({
     return <Shimmer height={24} />;
   }
   return (
-    <small className={`text-muted ${className}`}>
+    <small className={`text-body-secondary ${className}`}>
       <FormattedMessage
         id="account.status.contributionAmount"
         values={{

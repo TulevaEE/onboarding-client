@@ -85,7 +85,7 @@ export const Success: React.FC<Props> = ({
               <FormattedMessage id="success.2ndPillarPaymentUpsell.button" />
             </Link>
           </div>
-          <div className="mt-2 small text-muted">
+          <div className="mt-2 small text-body-secondary">
             <FormattedMessage id="success.2ndPillarPaymentUpsell.disclaimer" />
           </div>
         </Notice>

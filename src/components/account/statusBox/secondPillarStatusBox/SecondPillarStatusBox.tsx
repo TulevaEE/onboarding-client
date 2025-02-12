@@ -105,7 +105,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
           name={<FormattedMessage id="account.status.choice.pillar.second" />}
           lines={[
             <FormattedMessage id="account.status.choice.pillar.second.fundPensionOpeningPartialWithdrawal" />,
-            <small className="text-muted">
+            <small className="text-body-secondary">
               <FormattedMessage
                 id="account.status.choice.pillar.second.withdrawalContributionEndingDisclaimer.plural"
                 values={{
@@ -129,7 +129,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
           name={<FormattedMessage id="account.status.choice.pillar.second" />}
           lines={[
             <FormattedMessage id="account.status.choice.pillar.second.partialWithdrawal" />,
-            <small className="text-muted">
+            <small className="text-body-secondary">
               <FormattedMessage
                 id="account.status.choice.pillar.second.withdrawalContributionEndingDisclaimer.singular"
                 values={{
@@ -153,7 +153,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
           name={<FormattedMessage id="account.status.choice.pillar.second" />}
           lines={[
             <FormattedMessage id="account.status.choice.pillar.second.fundPensionOpening" />,
-            <small className="text-muted">
+            <small className="text-body-secondary">
               <FormattedMessage
                 id="account.status.choice.pillar.second.withdrawalContributionEndingDisclaimer.singular"
                 values={{
@@ -209,7 +209,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
         name={<FormattedMessage id="account.status.choice.pillar.second" />}
         lines={[
           <FormattedMessage id="account.status.choice.pillar.second.tax.benefit.warning" />,
-          <small className="text-muted">
+          <small className="text-body-secondary">
             <SecondPillarPaymentRateTaxWin />
           </small>,
         ]}
@@ -235,7 +235,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
             }}
           />,
           currentPaymentRate !== pendingPaymentRate ? (
-            <small className="text-muted">
+            <small className="text-body-secondary">
               <FormattedMessage
                 id="account.status.choice.lowFee.index.2.description"
                 values={{
@@ -272,7 +272,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
           }}
         />,
         currentPaymentRate !== pendingPaymentRate ? (
-          <small className="text-muted">
+          <small className="text-body-secondary">
             <FormattedMessage
               id="account.status.choice.lowFee.index.2.description"
               values={{
@@ -291,7 +291,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
 
 function feeComparison(currentFeesEuro: number, tulevaFeesEuro: number) {
   return (
-    <small className="text-muted">
+    <small className="text-body-secondary">
       <FormattedMessage
         id="account.status.choice.highFee.comment"
         values={{
