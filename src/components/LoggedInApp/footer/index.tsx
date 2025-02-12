@@ -1,10 +1,10 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-const Separator = () => <span className="mx-2 text-secondary">·</span>;
+const Separator = () => <span className="mx-2 text-body-secondary">·</span>;
 
 export const Footer = () => (
-  <div className="mt-5 pt-4 pb-5 border-top small text-center text-secondary app-footer">
+  <div className="mt-5 pt-4 pb-5 border-top small text-center text-body-secondary app-footer">
     <strong>
       <FormattedMessage id="footer.name" />
     </strong>

@@ -104,7 +104,7 @@ export const ConfirmThirdPillarMandate = ({
       <div className="mt-5">
         <button
           type="button"
-          className="btn btn-primary mb-2 mr-2"
+          className="btn btn-primary mb-2 me-2"
           disabled={buttonDisabled}
           onClick={() => {
             onSign(
@@ -124,7 +124,7 @@ export const ConfirmThirdPillarMandate = ({
 
         <button
           type="button"
-          className="btn btn-secondary mb-2 mr-2"
+          className="btn btn-secondary mb-2 me-2"
           disabled={buttonDisabled}
           onClick={() => {
             onPreview(

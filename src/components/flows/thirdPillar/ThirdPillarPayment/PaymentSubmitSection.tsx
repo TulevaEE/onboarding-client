@@ -29,10 +29,10 @@ export const PaymentSubmitSection = ({
   return (
     <>
       <div className="d-flex flex-wrap align-items-start">
-        <div className="mr-auto">
+        <div className="me-auto">
           <button
             type="button"
-            className="btn btn-primary payment-button text-nowrap mt-4"
+            className="btn btn-lg btn-primary payment-button text-nowrap"
             disabled={disabled}
             onClick={handleSubmit}
           >
@@ -42,7 +42,7 @@ export const PaymentSubmitSection = ({
             )}
           </button>
           <div className="mt-2">
-            <small className="text-muted">
+            <small className="text-body-secondary">
               {paymentType === 'SINGLE' && (
                 <FormattedMessage
                   id="thirdPillarPayment.freeSinglePayment"
@@ -64,7 +64,7 @@ export const PaymentSubmitSection = ({
         </div>
         {paymentType === 'RECURRING' && !disabled && (
           <div className="d-flex flex-wrap align-items-center">
-            <span className="mr-2 mt-4">
+            <span className="me-2 mt-4">
               <FormattedMessage id="thirdPillarPayment.recurringPaymentQuestion" />
             </span>
             <a className="btn btn-light text-nowrap mt-4" href="/account">

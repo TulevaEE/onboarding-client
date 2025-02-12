@@ -26,7 +26,7 @@ export const renderField = ({
   children,
 }) => (
   <div>
-    <div className={`form-group ${touched && error ? 'text-danger' : ''}`}>
+    <div className={`mb-3 ${touched && error ? 'text-danger' : ''}`}>
       {type !== 'select' && (
         <input
           {...input}

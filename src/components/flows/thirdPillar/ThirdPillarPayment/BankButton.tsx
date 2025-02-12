@@ -21,24 +21,23 @@ export const BankButton = ({ bankKey, paymentBank, setPaymentBank, disabled = fa
   };
 
   return (
-    <div className="btn-group-toggle d-inline-block mt-2 mr-2">
-      <label
-        className={`btn btn-light btn-payment btn-${bankKey} text-nowrap ${
-          paymentBank === bankKey ? 'active' : ''
-        }`}
-      >
-        <input
-          type="radio"
-          name="banks"
-          id={bankKey}
-          checked={paymentBank === bankKey}
-          onChange={() => {
-            setPaymentBank(bankKey);
-          }}
-          disabled={disabled}
-        />
-        {getBankName(bankKey)}
-      </label>
-    </div>
+    <label
+      className={`btn btn-outline-secondary btn-payment btn-${bankKey} ${
+        paymentBank === bankKey ? 'active' : ''
+      }`}
+    >
+      <input
+        className="btn-check"
+        type="radio"
+        name="banks"
+        id={bankKey}
+        checked={paymentBank === bankKey}
+        onChange={() => {
+          setPaymentBank(bankKey);
+        }}
+        disabled={disabled}
+      />
+      {getBankName(bankKey)}
+    </label>
   );
 };

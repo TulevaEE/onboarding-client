@@ -16,7 +16,7 @@ export const WithdrawalsHeader = () => {
 
   return (
     <div className="my-5">
-      <h1 className="mb-4 text-center font-weight-semibold">
+      <h1 className="mb-4 text-center">
         <FormattedMessage id="withdrawals.heading" />
       </h1>
       {currentStep?.type === 'WITHDRAWAL_SIZE' && (
@@ -25,7 +25,7 @@ export const WithdrawalsHeader = () => {
             <FormattedMessage
               id={getSubheadingTranslationId(eligibility)}
               values={{
-                b: (children: ReactChildren) => <span className="text-bold">{children}</span>,
+                b: (children: ReactChildren) => <span className="fw-bold">{children}</span>,
                 age: eligibility.age,
                 yearsToGo: getYearsToGoUntilEarlyRetirementAge(eligibility),
               }}

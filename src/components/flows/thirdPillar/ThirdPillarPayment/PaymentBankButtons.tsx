@@ -8,7 +8,7 @@ type Props = {
 
 export const PaymentBankButtons = ({ paymentBank, setPaymentBank }: Props) => (
   <>
-    <div className="mt-2 payment-banks">
+    <div className="d-flex gap-2 flex-wrap mt-2 payment-banks">
       <BankButton bankKey="swedbank" paymentBank={paymentBank} setPaymentBank={setPaymentBank} />
       <BankButton bankKey="seb" paymentBank={paymentBank} setPaymentBank={setPaymentBank} />
       <BankButton bankKey="lhv" paymentBank={paymentBank} setPaymentBank={setPaymentBank} />

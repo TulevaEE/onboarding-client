@@ -7,7 +7,7 @@ exports[`InlineSignUpForm renders component 1`] = `
     onSubmit={[Function]}
   >
     <div
-      className="form-group mb-2"
+      className="mb-2"
     >
       <label
         htmlFor="register-form-email"
@@ -31,7 +31,7 @@ exports[`InlineSignUpForm renders component 1`] = `
       />
     </div>
     <div
-      className="form-group mb-2"
+      className="mb-2"
     >
       <label
         htmlFor="register-form-phoneNumber"

@@ -3,7 +3,7 @@
 .stepDivider {
   width: 24px;
   height: 1px;
-  background: #dee2e6;
+  background: $gray-border-3;
   margin: 0 8px;
 }
 @media (max-width: 767.98px) {
@@ -15,11 +15,11 @@
 }
 
 .successText {
-  color: #00ac00;
+  color: $text-green;
 }
 
 .warningText {
-  color: $orange;
+  color: $red;
 }
 
 .mandateSubheading {
@@ -43,11 +43,11 @@
 }
 
 .pillarSelectionContainerWarning {
-  background-color: #fff6d9;
+  background-color: $note-bg;
   padding: 1em 1.25em;
   font-size: 0.75em;
   text-align: center;
-  border-bottom: 1px solid $gray-mid;
+  border-bottom: 1px solid $gray-border-3;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
 }
@@ -62,16 +62,16 @@
 }
 
 .doneAlert {
-  background: #eef7fd;
+  background: $blue-bg-2;
   border-radius: 16px;
   padding: 1.75em;
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: #002f63;
+  color: $navy-blue;
   text-align: center;
 
   h3 {
-    color: #002f63;
+    color: $navy-blue;
   }
 }

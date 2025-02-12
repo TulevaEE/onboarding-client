@@ -11,6 +11,7 @@ import { Loader } from '../../common/loader/Loader';
 import { Option, OptionGroup } from './select/Select';
 import Percentage from '../../common/Percentage';
 import { createTrackedEvent } from '../../common/api';
+import { Shimmer } from '../../common/shimmer/Shimmer';
 import { InfoTooltip } from '../../common';
 import {
   BarHeights,
@@ -186,188 +187,195 @@ const ComparisonCalculator: React.FC = () => {
       <p className="mt-5 mb-4 lead">
         <FormattedMessage id="returnComparison.title" />
       </p>
-      <div className="comparison-calculator" role="region" aria-label="Comparison Calculator">
-        <div className="card card-primary">
-          {!loadingInitialData ? (
-            <>
-              <div className="header-section container p-4">
-                {showPillarSelection && (
-                  <div className="pillar-selection row justify-content-center">
-                    <div className="btn-group">
-                      <button
-                        type="button"
-                        className={`btn ${
-                          selectedPillar === Key.SECOND_PILLAR ? 'btn-primary' : 'btn-light'
-                        }`}
-                        onClick={() => {
-                          createTrackedEvent('CLICK', {
-                            path: getCurrentPath(),
-                            target: 'comparisonCalculator.setSelectedPillar',
-                            value: 2,
-                          }).catch(() => {});
-                          setSelectedPillar(Key.SECOND_PILLAR);
-                        }}
-                      >
-                        <FormattedMessage id="comparisonCalculator.yourIIpillar" />
-                      </button>
-                      <button
-                        type="button"
-                        className={`btn ${
-                          selectedPillar === Key.THIRD_PILLAR ? 'btn-primary' : 'btn-light'
-                        }`}
-                        onClick={() => {
-                          createTrackedEvent('CLICK', {
-                            path: getCurrentPath(),
-                            target: 'comparisonCalculator.setSelectedPillar',
-                            value: 3,
-                          }).catch(() => {});
-                          setSelectedPillar(Key.THIRD_PILLAR);
-                        }}
-                      >
-                        <FormattedMessage id="comparisonCalculator.yourIIIpillar" />
-                      </button>
-                    </div>
-                  </div>
-                )}
-                <div className="input-selection row justify-content-center">
-                  <div className="col-12 col-md text-left">
-                    <label htmlFor="timePeriodSelect" className="form-label small text-bold mb-1">
-                      <FormattedMessage id="comparisonCalculator.timePeriod" />:{' '}
-                    </label>
-                    <Select
-                      options={timePeriodOptions}
-                      selected={selectedTimePeriod}
-                      onChange={(newValue) => {
+
+      {loadingInitialData ? (
+        <div className="card">
+          <div className="p-3">
+            <Shimmer height={38} />
+          </div>
+          <div className="p-3">
+            <Shimmer height={38} />
+          </div>
+          <hr />
+          <div className="p-3">
+            <Shimmer height={320} />
+          </div>
+        </div>
+      ) : (
+        <div className="comparison-calculator" role="region" aria-label="Comparison Calculator">
+          <div className="card card-primary">
+            <div className="header-section container p-4">
+              {showPillarSelection && (
+                <div className="pillar-selection row justify-content-center">
+                  <div className="btn-group">
+                    <button
+                      type="button"
+                      className={`btn ${
+                        selectedPillar === Key.SECOND_PILLAR ? 'btn-primary' : 'btn-light'
+                      }`}
+                      onClick={() => {
                         createTrackedEvent('CLICK', {
                           path: getCurrentPath(),
-                          target: 'comparisonCalculator.setSelectedTimePeriod',
-                          value: newValue,
+                          target: 'comparisonCalculator.setSelectedPillar',
+                          value: 2,
                         }).catch(() => {});
-                        setSelectedTimePeriod(newValue);
+                        setSelectedPillar(Key.SECOND_PILLAR);
                       }}
-                      id="timePeriodSelect"
-                    />
-                  </div>
-                  <div className="col-12 col-md text-left">
-                    <label htmlFor="comparedToSelect" className="form-label small text-bold mb-1">
-                      <FormattedMessage id="comparisonCalculator.comparedTo" />:{' '}
-                    </label>
-                    <Select
-                      options={comparisonOptions}
-                      translate={false}
-                      selected={selectedComparison}
-                      onChange={(newValue) => {
+                    >
+                      <FormattedMessage id="comparisonCalculator.yourIIpillar" />
+                    </button>
+                    <button
+                      type="button"
+                      className={`btn ${
+                        selectedPillar === Key.THIRD_PILLAR ? 'btn-primary' : 'btn-light'
+                      }`}
+                      onClick={() => {
                         createTrackedEvent('CLICK', {
                           path: getCurrentPath(),
-                          target: 'comparisonCalculator.setSelectedComparison',
-                          value: newValue,
+                          target: 'comparisonCalculator.setSelectedPillar',
+                          value: 3,
                         }).catch(() => {});
-                        setSelectedComparison(newValue);
+                        setSelectedPillar(Key.THIRD_PILLAR);
                       }}
-                      id="comparedToSelect"
-                    />
+                    >
+                      <FormattedMessage id="comparisonCalculator.yourIIIpillar" />
+                    </button>
                   </div>
                 </div>
+              )}
+              <div className="input-selection row justify-content-center">
+                <div className="col-12 col-md text-start">
+                  <label htmlFor="timePeriodSelect" className="form-label small fw-bold mb-1">
+                    <FormattedMessage id="comparisonCalculator.timePeriod" />:{' '}
+                  </label>
+                  <Select
+                    options={timePeriodOptions}
+                    selected={selectedTimePeriod}
+                    onChange={(newValue) => {
+                      createTrackedEvent('CLICK', {
+                        path: getCurrentPath(),
+                        target: 'comparisonCalculator.setSelectedTimePeriod',
+                        value: newValue,
+                      }).catch(() => {});
+                      setSelectedTimePeriod(newValue);
+                    }}
+                    id="timePeriodSelect"
+                  />
+                </div>
+                <div className="col-12 col-md text-start">
+                  <label htmlFor="comparedToSelect" className="form-label small fw-bold mb-1">
+                    <FormattedMessage id="comparisonCalculator.comparedTo" />:{' '}
+                  </label>
+                  <Select
+                    options={comparisonOptions}
+                    translate={false}
+                    selected={selectedComparison}
+                    onChange={(newValue) => {
+                      createTrackedEvent('CLICK', {
+                        path: getCurrentPath(),
+                        target: 'comparisonCalculator.setSelectedComparison',
+                        value: newValue,
+                      }).catch(() => {});
+                      setSelectedComparison(newValue);
+                    }}
+                    id="comparedToSelect"
+                  />
+                </div>
               </div>
+            </div>
 
-              <div className="middle-section d-flex flex-column justify-content-center align-items-center pb-2 pb-lg-0">
-                {loadingReturns ? (
-                  <Loader className="align-middle" label="Loading comparison..." />
-                ) : (
-                  <>
-                    {incomparableResults ? (
+            <div className="middle-section d-flex flex-column justify-content-center align-items-center pb-2 pb-lg-0">
+              {loadingReturns ? (
+                <Loader className="align-middle" label="Loading comparison..." />
+              ) : (
+                <>
+                  {incomparableResults ? (
+                    <div className="p-4">
+                      <div className="content-section row justify-content-center align-items-center text-center">
+                        <div className="col-lg-9">
+                          <p className="m-0 lead">
+                            {formatMessageWithTags({
+                              id: 'comparisonCalculator.content.incomparable.intro',
+                              values: {
+                                comparison: getFundLabelByKey(selectedComparison),
+                                date: (
+                                  <span className="text-nowrap">
+                                    {moment().diff(moment(incomparableFundInceptionDate), 'years')}
+                                  </span>
+                                ),
+                              },
+                            })}
+                          </p>
+                          <p className="m-0 mt-3 lead">
+                            <FormattedMessage id="comparisonCalculator.content.incomparable.selectNew" />
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      {contentTextProperties.shortPeriod && (
+                        <div
+                          className="alert alert-warning w-100 m-0 rounded-0 border-start-0 border-end-0 border-top border-bottom text-center"
+                          role="alert"
+                        >
+                          <FormattedMessage id="comparisonCalculator.shortTimePeriodWarning" />{' '}
+                          <a
+                            href="//tuleva.ee/soovitused/laura-rikkaks-4/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <FormattedMessage id="comparisonCalculator.shortTimePeriodWarningLink" />
+                          </a>
+                        </div>
+                      )}
+
                       <div className="p-4">
-                        <div className="content-section row justify-content-center align-items-center text-center">
-                          <div className="col-lg-9">
-                            <p className="m-0 lead">
-                              {formatMessageWithTags({
-                                id: 'comparisonCalculator.content.incomparable.intro',
-                                values: {
-                                  comparison: getFundLabelByKey(selectedComparison),
-                                  date: (
-                                    <span className="text-nowrap">
-                                      {moment().diff(
-                                        moment(incomparableFundInceptionDate),
-                                        'years',
-                                      )}
-                                    </span>
-                                  ),
-                                },
-                              })}
-                            </p>
-                            <p className="m-0 mt-3 lead">
-                              <FormattedMessage id="comparisonCalculator.content.incomparable.selectNew" />
-                            </p>
+                        <div className="content-section row justify-content-center align-items-center">
+                          <div className="col-12 col-lg-7 order-2 mx-n3 mt-4 mx-lg-0 mt-lg-0 px-3 order-lg-1 d-flex flex-column">
+                            {getResultSection()}
+                          </div>
+                          <div
+                            role="figure"
+                            aria-label="Comparison Calculator Figure"
+                            className="graph-section mx-n3 mx-lg-0 px-0 px-sm-3 col-12 col-lg-5 order-1 order-lg-2 d-flex flex-column"
+                          >
+                            {getGraphSection()}
                           </div>
                         </div>
                       </div>
-                    ) : (
-                      <>
-                        {contentTextProperties.shortPeriod && (
-                          <div
-                            className="alert alert-warning w-100 m-0 rounded-0 border-left-0 border-right-0 border-top border-bottom text-center"
-                            role="alert"
-                          >
-                            <FormattedMessage id="comparisonCalculator.shortTimePeriodWarning" />{' '}
-                            <a
-                              href="//tuleva.ee/soovitused/laura-rikkaks-4/"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              <FormattedMessage id="comparisonCalculator.shortTimePeriodWarningLink" />
-                            </a>
-                          </div>
-                        )}
+                    </>
+                  )}
+                </>
+              )}
+            </div>
 
-                        <div className="p-4">
-                          <div className="content-section row justify-content-center align-items-center">
-                            <div className="col-12 col-lg-7 order-2 mx-n3 mt-4 mx-lg-0 mt-lg-0 px-3 order-lg-1 d-flex flex-column">
-                              {getResultSection()}
-                            </div>
-                            <div
-                              role="figure"
-                              aria-label="Comparison Calculator Figure"
-                              className="graph-section mx-n3 mx-lg-0 px-0 px-sm-3 col-12 col-lg-5 order-1 order-lg-2 d-flex flex-column"
-                            >
-                              {getGraphSection()}
-                            </div>
-                          </div>
-                        </div>
-                      </>
-                    )}
-                  </>
-                )}
+            <div className="footer-section text-center small p-4">
+              <div className="footer-disclaimer text-body-secondary">
+                <FormattedMessage id="comparisonCalculator.footerDisclaimer" />
               </div>
-
-              <div className="footer-section text-center small p-4">
-                <div className="footer-disclaimer text-secondary">
-                  <FormattedMessage id="comparisonCalculator.footerDisclaimer" />
-                </div>
-                <div className="footer-links pt-2">
-                  <a
-                    href="//tuleva.ee/mida-need-numbrid-naitavad"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="d-inline-block mx-2"
-                  >
-                    <FormattedMessage id="comparisonCalculator.footerNumbersExplanationLink" />
-                  </a>
-                  <a
-                    href="//tuleva.ee/analuusid/millist-tootlust-on-tulevas-oodata"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="d-inline-block mx-2"
-                  >
-                    <FormattedMessage id="comparisonCalculator.footerPerformanceExplanationLink" />
-                  </a>
-                </div>
+              <div className="footer-links pt-2">
+                <a
+                  href="//tuleva.ee/mida-need-numbrid-naitavad"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="d-inline-block mx-2"
+                >
+                  <FormattedMessage id="comparisonCalculator.footerNumbersExplanationLink" />
+                </a>
+                <a
+                  href="//tuleva.ee/analuusid/millist-tootlust-on-tulevas-oodata"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="d-inline-block mx-2"
+                >
+                  <FormattedMessage id="comparisonCalculator.footerPerformanceExplanationLink" />
+                </a>
               </div>
-            </>
-          ) : (
-            <Loader className="align-middle my-4" label="Loading Comparison Calculator..." />
-          )}
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </>
   );
 
@@ -415,8 +423,17 @@ const ComparisonCalculator: React.FC = () => {
     const height = Math.abs(properties.height);
     const barCornerRadius = 5;
     const showPercentage = height > 30;
+
+    const rootStyles = getComputedStyle(document.documentElement);
+
+    const colorMap = {
+      POSITIVE: rootStyles.getPropertyValue('--green').trim(),
+      NEGATIVE: rootStyles.getPropertyValue('--red').trim(),
+      INDEX: rootStyles.getPropertyValue('--blue').trim(),
+    } as const;
+
     const barStyle = {
-      backgroundColor: properties.color,
+      backgroundColor: colorMap[properties.color],
       top: isNegativeValue ? height : undefined,
       borderTopLeftRadius: isNegativeValue ? 0 : barCornerRadius,
       borderTopRightRadius: isNegativeValue ? 0 : barCornerRadius,
@@ -442,6 +459,7 @@ const ComparisonCalculator: React.FC = () => {
         style={barStyle}
         role="figure"
         aria-label="Comparison Calculator Bar Figure"
+        data-testid={`bar-${properties.color}`}
       >
         <div className="bar-amount" style={barAmountStyle}>
           {formatAmountForCurrency(properties.amount, 0, { isSigned: true })}
@@ -686,13 +704,10 @@ const ComparisonCalculator: React.FC = () => {
   function calculateGraphProperties(): void {
     const barHeights = calculateGraphBarHeights();
 
-    const redColorThreshold = 0.01;
-    const colorRed = '#FF4800';
-    const colorGreen = '#51C26C';
-    const colorBlue = '#0081EE';
+    const negativeColorThreshold = 0.01;
 
     const indexBarProperties: GraphBarProperties = {
-      color: colorBlue,
+      color: 'INDEX',
       amount: returns.index ? returns.index.amount : 0,
       percentage: returns.index ? returns.index.rate : 0,
       height: barHeights.index,
@@ -702,9 +717,9 @@ const ComparisonCalculator: React.FC = () => {
     const personalBarColor =
       returns.personal &&
       returns.index &&
-      returns.personal.rate + redColorThreshold < returns.index.rate
-        ? colorRed
-        : colorGreen;
+      returns.personal.rate + negativeColorThreshold < returns.index.rate
+        ? 'NEGATIVE'
+        : 'POSITIVE';
 
     const personalBarProperties: GraphBarProperties = {
       color: personalBarColor,
@@ -717,17 +732,17 @@ const ComparisonCalculator: React.FC = () => {
           : 'comparisonCalculator.graphYourIIIPillar',
     };
 
-    let comparisonBarColor: string;
+    let comparisonBarColor: GraphBarProperties['color'];
 
     if (returns.pensionFund?.key === Key.CPI) {
-      comparisonBarColor = colorRed;
+      comparisonBarColor = 'NEGATIVE';
     } else {
       comparisonBarColor =
         returns.pensionFund &&
         returns.index &&
-        returns.pensionFund.rate + redColorThreshold < returns.index.rate
-          ? colorRed
-          : colorGreen;
+        returns.pensionFund.rate + negativeColorThreshold < returns.index.rate
+          ? 'NEGATIVE'
+          : 'POSITIVE';
     }
 
     const comparisonFundIsin = returns.pensionFund ? returns.pensionFund.key : '';
@@ -785,21 +800,21 @@ const ComparisonCalculator: React.FC = () => {
       hasNegativeValueBar: false,
       barProperties: {
         1: {
-          color: 'orange',
+          color: 'NEGATIVE',
           amount: 14800,
           percentage: 5.7,
           height: 120,
           label: 'comparisonCalculator.graphYourIIPillar',
         },
         2: {
-          color: 'green',
+          color: 'POSITIVE',
           amount: 24300,
           percentage: 200,
           height: 200,
           label: 'Bank 2i',
         },
         3: {
-          color: 'blue',
+          color: 'INDEX',
           amount: 21000,
           percentage: 8.5,
           height: 165,
@@ -884,7 +899,7 @@ const ComparisonCalculator: React.FC = () => {
 
   function getResultSection() {
     return (
-      <div className="result-section text-left d-flex flex-column justify-content-between">
+      <div className="result-section text-start d-flex flex-column justify-content-between">
         <p className="result-text">{getContentTextVerdict()}</p>
         <p className="result-text">{getContentTextExplanation()} </p>
 
@@ -962,7 +977,7 @@ const ComparisonCalculator: React.FC = () => {
               },
             })}{' '}
             <FormattedMessage id="comparisonCalculator.content.performance.index.alpha.wordNegative" />{' '}
-            <span className="text-orange text-bold">
+            <span className="text-orange fw-bold">
               {formatAmountForCurrency(performanceVerdictProperties.amount, 0, { isSigned: true })}
             </span>{' '}
             <FormattedMessage id="comparisonCalculator.content.performance.index.alpha.negativeVerdict" />
@@ -1028,7 +1043,7 @@ const ComparisonCalculator: React.FC = () => {
               },
             })}{' '}
             <FormattedMessage id="comparisonCalculator.content.performance.fund.alpha.wordNegative" />{' '}
-            <span className="text-orange text-bold">
+            <span className="text-orange fw-bold">
               {formatAmountForCurrency(performanceVerdictProperties.amount, 0, { isSigned: true })}
             </span>{' '}
             <FormattedMessage id="comparisonCalculator.content.performance.fund.alpha.negativeVerdict" />
@@ -1083,7 +1098,7 @@ const ComparisonCalculator: React.FC = () => {
             {formatMessageWithTags({
               id: 'comparisonCalculator.content.performance.cpi.alpha.wordNegative',
             })}{' '}
-            <span className="text-orange text-bold">
+            <span className="text-orange fw-bold">
               {formatAmountForCurrency(performanceVerdictProperties.amount, 0, { isSigned: true })}
             </span>{' '}
             <FormattedMessage id="comparisonCalculator.content.performance.cpi.alpha.negativeVerdict" />
@@ -1170,14 +1185,14 @@ const ComparisonCalculator: React.FC = () => {
   function getContentTextCtaSubtext() {
     if (performanceVerdictProperties.comparison === 'FUND') {
       return (
-        <InfoTooltip name="cta-tooltip" className="info-tooltip-modern ml-3 align-middle">
+        <InfoTooltip name="cta-tooltip" className="info-tooltip-modern ms-3 align-middle">
           <FormattedMessage id="comparisonCalculator.content.performance.cta.subtext" />
         </InfoTooltip>
       );
     }
     if (performanceVerdictProperties.comparison === 'INFLATION') {
       return (
-        <InfoTooltip name="cta-tooltip" className="info-tooltip-modern ml-3 align-middle">
+        <InfoTooltip name="cta-tooltip" className="info-tooltip-modern ms-3 align-middle">
           <FormattedMessage id="comparisonCalculator.content.performance.cta.subtext" />
         </InfoTooltip>
       );

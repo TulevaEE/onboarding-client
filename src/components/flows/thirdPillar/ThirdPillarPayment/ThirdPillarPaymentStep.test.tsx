@@ -119,7 +119,7 @@ describe('When a user is making a third pillar payment', () => {
     const backToAccountPage = await backToAccountPageButton();
     userEvent.click(backToAccountPage);
 
-    expect(await screen.findByText('Hi, John Doe!')).toBeInTheDocument();
+    expect(await screen.findByText('Hi, John Doe')).toBeInTheDocument();
   });
 
   test('can see Other bank payment details', async () => {
@@ -151,7 +151,7 @@ describe('When a user is making a third pillar payment', () => {
     const backToAccountPage = await backToAccountPageButton();
     userEvent.click(backToAccountPage);
 
-    expect(await screen.findByText('Hi, John Doe!')).toBeInTheDocument();
+    expect(await screen.findByText('Hi, John Doe')).toBeInTheDocument();
   });
 
   test('can switch between Single and Recurring payment', async () => {

@@ -60,7 +60,7 @@ export const WithdrawalAmountStep = () => {
       <SingleWithdrawalSelectionBox totalAmount={totalAmount} />
       <div className="mt-5 d-flex justify-content-end align-items-center">
         {!canNavigateToNextStep && (
-          <p className="m-0 mr-3 flex-fill text-secondary">
+          <p className="m-0 me-3 flex-fill text-body-secondary">
             <FormattedMessage id="withdrawals.navigation.notEligible" />
           </p>
         )}
@@ -103,16 +103,14 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
             id="single-withdrawal-amount"
             type="number"
             inputMode="decimal"
-            className="form-control form-control-lg text-right"
+            className="form-control form-control-lg text-end"
             value={withdrawalAmount.singleWithdrawalAmount ?? 0}
             onChange={(event) => handleSingleWithdrawalAmountSelected(event.target.valueAsNumber)}
             onWheel={(event) => event.currentTarget.blur()}
             min={0}
             max={totalAmount}
           />
-          <div className="input-group-append">
-            <span className="input-group-text">&euro;</span>
-          </div>
+          <div className="input-group-text">&euro;</div>
         </div>
       </div>
 
@@ -125,8 +123,8 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
           step={1}
         />
         <div className="mt-1 d-flex justify-content-between">
-          <div className="text-muted">{formatAmountForCurrency(0, 0)}</div>
-          <div className="text-muted">{formatAmountForCurrency(totalAmount, 2)}</div>
+          <div className="text-body-secondary">{formatAmountForCurrency(0, 0)}</div>
+          <div className="text-body-secondary">{formatAmountForCurrency(totalAmount, 2)}</div>
         </div>
       </div>
       <div className="mt-3">
@@ -138,7 +136,7 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
           </span>
         )}{' '}
         <br className="d-none d-md-block" />
-        <span className="text-muted">
+        <span className="text-body-secondary">
           <FormattedMessage id="withdrawals.withdrawalAmount.precisePriceAtSaleDisclaimer" />
         </span>
       </div>
@@ -164,7 +162,7 @@ const FundPensionStatusBox = ({ totalAmount }: { totalAmount: number }) => {
     });
 
   return (
-    <div className="mt-3 card p-4 bg-very-light-blue">
+    <div className="mt-3 card p-4 bg-blue-2">
       <div className="d-flex flex-column flex-sm-row justify-content-between">
         <h3 className="m-0">
           <FormattedMessage id="withdrawals.withdrawalAmount.receiveMonthlyAndTaxFree" />
@@ -174,7 +172,7 @@ const FundPensionStatusBox = ({ totalAmount }: { totalAmount: number }) => {
           <FormattedMessage id="withdrawals.perMonth" />
         </h3>
       </div>
-      <div className="mt-3 text-muted">
+      <div className="mt-3 text-body-secondary">
         <FormattedMessage
           id="withdrawals.withdrawalAmount.monthlyPaymentSize"
           values={{

@@ -132,7 +132,7 @@ const AccountSummary = ({
               </>
             ),
             dataIndex: 'feesEuro',
-            footer: <Euro className="text-muted" amount={-feesEuroSum} />,
+            footer: <Euro className="text-body-secondary" amount={-feesEuroSum} />,
             hideOnMobile: true,
           },
         ]),
@@ -200,7 +200,7 @@ const AccountSummary = ({
     }) => ({
       pillarLabel: <FormattedMessage id={pillarLabel} />,
       feesPercent: <Fees value={feesPercent} />,
-      feesEuro: feesEuro ? <Euro className="text-muted" amount={-feesEuro} /> : <></>,
+      feesEuro: feesEuro ? <Euro className="text-body-secondary" amount={-feesEuro} /> : <></>,
       contributions: getContributions(pillar, contributions),
       subtractions: <Euro amount={subtractions} />,
       profit: <Euro amount={profit} />,
@@ -213,7 +213,7 @@ const AccountSummary = ({
     <>
       <Table columns={columns} dataSource={dataSource} />
       <div className="text-center">
-        <small className="text-muted">
+        <small className="text-body-secondary">
           <FormattedMessage
             id="accountSummary.disclaimer"
             values={{

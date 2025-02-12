@@ -6,7 +6,7 @@
 
 .tv-steps > .tv-step:not(:first-child)::before {
   content: '';
-  background-color: $gray-mid;
+  background-color: $gray-border-3;
   display: inline-block;
   position: absolute;
   height: 25px;

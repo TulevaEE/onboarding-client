@@ -77,7 +77,7 @@ const PublicEmployerGuide = ({ user }: { user: User }) => (
 
     <Step number={3}>
       <FormattedMessage id="thirdPillarPayment.EMPLOYER.rtkFormFields" />
-      <div className="mt-3 p-4 ml-n4 payment-details-table">
+      <div className="mt-3 p-4 ms-n4 payment-details-table">
         <table>
           <tbody>
             <TextRow>
@@ -120,7 +120,7 @@ export const PrivateEmployerGuide = ({ user }: { user: User }) => (
 
     <Step number={2}>
       <FormattedMessage id="thirdPillarPayment.EMPLOYER.formFields" />
-      <div className="mt-3 p-4 ml-n4 payment-details-table">
+      <div className="mt-3 p-4 ms-n4 payment-details-table">
         <table>
           <tbody>
             <TextRow>
@@ -150,7 +150,7 @@ export const PrivateEmployerGuide = ({ user }: { user: User }) => (
 
 const Step = ({ number, children }: PropsWithChildren<{ number: number }>) => (
   <div className="d-sm-flex py-2">
-    <span className="flex-shrink-0 tv-step__number mr-3">
+    <span className="flex-shrink-0 tv-step__number me-3">
       <b>{number}</b>
     </span>
     <span className="flex-grow-1 align-self-center">{children}</span>

@@ -20,7 +20,7 @@ export const TaxResidencySelect = ({
   );
 
   return (
-    <div className="form-group">
+    <div className="mb-3">
       <label htmlFor="tax-residency">
         <b>
           <FormattedMessage id="withdrawals.personalDetails.bankAccount.taxResidencyLabel" />

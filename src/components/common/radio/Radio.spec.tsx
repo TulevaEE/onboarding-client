@@ -12,7 +12,7 @@ describe('Radio', () => {
 
   it('renders a hidden input that keeps and changes state', () => {
     const hiddenInput = () => component.find('input');
-    expect(hiddenInput().prop('className')).toContain('sr-only');
+    expect(hiddenInput().prop('className')).toContain('visually-hidden');
     expect(hiddenInput().prop('name')).toBe('test-radio');
     const onSelect = jest.fn();
     component.setProps({ selected: false, onSelect });

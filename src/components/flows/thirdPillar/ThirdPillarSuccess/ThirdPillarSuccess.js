@@ -95,13 +95,13 @@ export const ThirdPillarSuccess = ({ secondPillarSourceFunds, weightedAverageFee
             </div>
             <div className="row d-flex justify-content-center align-items-start my-3">
               <div className="col-md-3 col-5">
-                <small className="text-muted">
+                <small className="text-body-secondary">
                   <FormattedMessage id="thirdPillarSuccess.ourFund" />
                 </small>
               </div>
               <div className="col-md-1 col-1" />
               <div className="col-md-3 col-5">
-                <small className="text-muted">
+                <small className="text-body-secondary">
                   <FormattedMessage id="thirdPillarSuccess.currentFund" />
                 </small>
               </div>

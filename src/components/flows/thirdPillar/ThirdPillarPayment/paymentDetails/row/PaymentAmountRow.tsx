@@ -7,8 +7,8 @@ export const PaymentAmountRow: React.FunctionComponent<{
   <>
     {amount && Number(amount) > 0 ? (
       <tr>
-        <td className="align-top text-right">{children[0]}:</td>
-        <td className="align-bottom pl-2">
+        <td className="align-top text-end">{children[0]}:</td>
+        <td className="align-bottom ps-2">
           {children[1] && (
             <>
               <b>{children[1]}</b>

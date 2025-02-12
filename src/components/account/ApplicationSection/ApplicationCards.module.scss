@@ -6,7 +6,7 @@ $padding: 15px;
   width: auto !important;
   max-width: none !important;
   margin-bottom: $padding;
-  border: 1px solid $gray-mid;
+  border: 1px solid $gray-border-3;
   border-radius: 0.25rem;
   overflow: hidden;
 }
@@ -16,11 +16,11 @@ $padding: 15px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid $gray-mid;
+  border-bottom: 1px solid $gray-border-3;
 }
 
 .content {
-  background-color: $gray-washed;
+  background-color: $gray-bg-1;
   padding: $padding 18px;
 }
 
@@ -28,5 +28,5 @@ $padding: 15px;
   padding: $padding 18px;
   display: flex;
   flex-direction: column;
-  border-top: 1px solid $gray-mid;
+  border-top: 1px solid $gray-border-3;
 }

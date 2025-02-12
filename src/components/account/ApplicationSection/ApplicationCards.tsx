@@ -150,7 +150,7 @@ const TransferApplicationCard: React.FunctionComponent<{
             value: application.details.sourceFund && (
               <>
                 {application.details.sourceFund.name} <br />
-                <small className="text-muted">
+                <small className="text-body-secondary">
                   <FormattedMessage id="target.funds.fees" />:{' '}
                   <Fees value={application.details.sourceFund.ongoingChargesFigure} />
                 </small>
@@ -163,7 +163,7 @@ const TransferApplicationCard: React.FunctionComponent<{
               value: targetFund?.name ? (
                 <>
                   {targetFund.name} <br />
-                  <small className="text-muted">
+                  <small className="text-body-secondary">
                     <FormattedMessage id="target.funds.fees" />:{' '}
                     <Fees value={targetFund.ongoingChargesFigure} />
                   </small>
@@ -403,14 +403,14 @@ const BaseApplicationCard: React.FunctionComponent<{
     <div className={styles.card}>
       <div className={styles.header}>
         <div className="d-flex">
-          <b className="mr-3">
+          <b className="me-3">
             <FormattedMessage id={titleKey} />
           </b>
           <span className="text-nowrap">{formatDate(application.creationTime)}</span>
         </div>
 
         {canCancel && (
-          <Link to={cancellationUrl} className="btn btn-light d-none d-md-block ml-2">
+          <Link to={cancellationUrl} className="btn btn-light d-none d-md-block ms-2">
             <FormattedMessage id="applications.cancel" />
           </Link>
         )}

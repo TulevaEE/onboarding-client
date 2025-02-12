@@ -8,7 +8,7 @@ export const LhvRecurringPaymentDetails: React.FunctionComponent = () => (
       <FormattedMessage id="thirdPillarPayment.RECURRING.lhv" />
     </h3>
     <div className="d-sm-flex py-2">
-      <span className="flex-shrink-0 tv-step__number mr-3">
+      <span className="flex-shrink-0 tv-step__number me-3">
         <b>1</b>
       </span>
       <span className="flex-grow-1 align-self-center">
@@ -16,12 +16,12 @@ export const LhvRecurringPaymentDetails: React.FunctionComponent = () => (
       </span>
     </div>
     <div className="d-sm-flex py-2">
-      <span className="flex-shrink-0 tv-step__number mr-3">
+      <span className="flex-shrink-0 tv-step__number me-3">
         <b>2</b>
       </span>
       <span className="flex-grow-1 align-self-center">
         <FormattedMessage id="thirdPillarPayment.RECURRING.lhv.form" />
-        <div className="mt-3 p-4 ml-n4 payment-details-table">
+        <div className="mt-3 p-4 ms-n4 payment-details-table">
           <table>
             <tbody>
               <TextRow>
@@ -38,7 +38,7 @@ export const LhvRecurringPaymentDetails: React.FunctionComponent = () => (
       </span>
     </div>
     <div className="d-sm-flex py-2">
-      <span className="flex-shrink-0 tv-step__number mr-3">
+      <span className="flex-shrink-0 tv-step__number me-3">
         <b>3</b>
       </span>
       <span className="flex-grow-1 align-self-center">

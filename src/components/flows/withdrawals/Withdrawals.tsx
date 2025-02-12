@@ -40,7 +40,7 @@ export const InnerWithdrawals: React.FunctionComponent = () => {
   const currentStepPath = currentStep?.subPath;
 
   return (
-    <div className="col-lg-10 col-xl-8 mx-auto px-0">
+    <div className="col-12 col-md-11 col-lg-8 mx-auto">
       {currentStep?.type !== 'DONE' && (
         <>
           <WithdrawalsHeader />

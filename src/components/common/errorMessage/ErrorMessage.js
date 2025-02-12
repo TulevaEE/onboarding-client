@@ -8,7 +8,7 @@ const noop = () => null;
 
 const ErrorMessage = ({ errors, onCancel, overlayed }) => {
   const content = (
-    <div className="bg-white shadow-sm rounded-lg p-5 text-center">
+    <div className="bg-white shadow-sm rounded-3 p-5 text-center">
       <p>
         <b>
           <FormattedMessage id="error.messages.intro" />
@@ -16,7 +16,7 @@ const ErrorMessage = ({ errors, onCancel, overlayed }) => {
       </p>
       {errors.errors &&
         errors.errors.map((error, index) => (
-          <p className="text-muted small" key={index}>
+          <p className="text-body-secondary small" key={index}>
             <FormattedMessage id={error.code} /> {error.message}
           </p>
         ))}

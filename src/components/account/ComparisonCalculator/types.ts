@@ -3,7 +3,7 @@ import { Fund, UserConversion } from '../../common/apiModels';
 import { TranslationKey } from '../../translations';
 
 export interface GraphBarProperties {
-  color: string;
+  color: 'POSITIVE' | 'INDEX' | 'NEGATIVE';
   amount: number;
   percentage: number;
   height: number;

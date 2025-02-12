@@ -15,7 +15,11 @@ const Percentage: FC<PercentageProps> = ({
   alwaysSingleColor = false,
   className,
 }) => (
-  <span className={`${className || ''}${value === 0 && !alwaysSingleColor ? ' text-muted' : ''}`}>
+  <span
+    className={`${className || ''}${
+      value === 0 && !alwaysSingleColor ? ' text-body-secondary' : ''
+    }`}
+  >
     {formatPercentage(value, fractionDigits, stripTrailingZeros)}
   </span>
 );

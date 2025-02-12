@@ -76,7 +76,7 @@ export const ThirdPillarGift: React.FunctionComponent = () => {
               <FormattedMessage id="thirdPillarPayment.giftRecipient" />
             </b>
           </b>
-          <div className="form-inline">
+          <div className="d-flex align-items-center">
             <div className="input-group input-group-lg mt-2">
               <input
                 id="payment-personal-code"
@@ -152,17 +152,17 @@ export const ThirdPillarGift: React.FunctionComponent = () => {
       {paymentBank !== 'other' && (
         <>
           <div className="d-flex flex-wrap align-items-start">
-            <div className="mr-auto">
+            <div className="me-auto">
               <button
                 type="button"
-                className="btn btn-primary payment-button text-nowrap mt-4"
+                className="btn btn-lg btn-primary payment-button text-nowrap"
                 disabled={isSubmitDisabled()}
                 onClick={handleSubmit}
               >
                 <FormattedMessage id="thirdPillarPayment.makePayment" />
               </button>
               <div className="mt-2">
-                <small className="text-muted">
+                <small className="text-body-secondary">
                   <FormattedMessage
                     id="thirdPillarPayment.freeSinglePayment"
                     values={{

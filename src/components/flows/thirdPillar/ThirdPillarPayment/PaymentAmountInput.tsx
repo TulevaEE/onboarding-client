@@ -34,7 +34,7 @@ export const PaymentAmountInput: React.FunctionComponent<{
         )}
         {paymentType === 'GIFT' && <FormattedMessage id="thirdPillarPayment.giftPaymentAmount" />}
       </b>
-      <div className="form-inline">
+      <div className="d-flex align-items-center">
         <div className="input-group input-group-lg mt-2">
           <input
             id="payment-amount"
@@ -47,11 +47,9 @@ export const PaymentAmountInput: React.FunctionComponent<{
             onWheel={onWheel}
             lang="et"
           />
-          <div className="input-group-append">
-            <span className="input-group-text">
-              &euro;
-              {paymentType === 'RECURRING' && <FormattedMessage id="thirdPillarPayment.perMonth" />}
-            </span>
+          <div className="input-group-text">
+            &euro;
+            {paymentType === 'RECURRING' && <FormattedMessage id="thirdPillarPayment.perMonth" />}
           </div>
         </div>
       </div>

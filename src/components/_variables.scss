@@ -1,36 +1,89 @@
 /**
+ * Responsive breakpoints
+ */
+
+$container-max-widths: (
+  sm: 540px,
+  md: 720px,
+  lg: 960px,
+  xl: 960px,
+  // override for xl breakpoint
+  xxl: 960px // override for xxl breakpoint,
+);
+
+/**
  * Fonts customization
  */
 
 $font-family-sans-serif: 'Roboto', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif !default;
 $font-family-serif: 'Merriweather', Georgia, 'Times New Roman', Times, serif !default;
+$font-family-system: system-ui, sans-serif !default;
 $font-family-monospace: Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace !default;
 $font-family-base: $font-family-sans-serif !default;
 
 $font-size-small: 0.875em;
 
+$h1-font-size: 2rem !default; // 32
+$h2-font-size: 1.75rem !default; // 28
+$h3-font-size: 1.5rem !default; // 24
+$h4-font-size: 1.25rem !default; // 20
+$h5-font-size: 1.125rem !default; // 18
+$h6-font-size: 1rem !default; // 16
+
+$h1-line-height: 1.25;
+$h2-line-height: 1.2857;
+$h3-line-height: 1.3333;
+$h4-line-height: 1.4;
+$h5-line-height: 1.3333;
+$h6-line-height: 1.5;
+
 /**
  * Colors
  */
 
-$text-primary: #303030;
-$text-secondary: rgba(48, 48, 48, 0.64);
-$text-hint: rgba(48, 48, 48, 0.32);
-$text-secondary-heading: #2a2c2e;
+$text-primary: #293036;
+$text-secondary: #6d7276;
+$text-tertiary: #909396;
 
-$blue: #0081ee;
+$text-body-primary: $text-primary;
+$text-body-secondary: $text-secondary;
+$text-body-tertiary: $text-tertiary;
+
+$blue: #0072ec;
 $navy-blue: #002f63;
+$navy-blue-secondary: #5c738c;
 $blue-light: #00aeea;
-$very-light-blue: #edf7fe;
-$blue-washed: #ebf6fe;
 $orange: #ff4800;
 $yellow: #fce228;
-$yellow-dark: #ffc107;
-$green: #078c28;
-$red: #dc3545;
-$gray-mid: #d8d8d8;
-$gray-washed: #fafafa;
-$very-light-gray: rgba(48, 48, 48, 0.32);
+$green: #51c26c;
+$text-green: #00ac00;
+$red: $orange;
+
+$note-bg: #fff6d9;
+$note-border: #faeed0;
+
+$gray-bg-1: #fafbfc;
+$gray-bg-2: #f5f7f9;
+$gray-border-1: #ebeef3;
+$gray-border-2: #e0e6ec;
+$gray-border-3: #d6dee6;
+
+$blue-bg-1: #f3fafe;
+$blue-bg-2: #eef7fd;
+$blue-border-1: #ddeefa;
+$blue-border-2: #d3e6f4;
+$blue-border-3: #cadeee;
+
+$border-color: $gray-border-3;
+$card-border-color: $gray-border-3;
+
+:root {
+  --blue: #{$blue};
+  --red: #{$red};
+  --green: #{$green};
+}
+
+$btn-padding-x: 1rem;
 
 /**
  * Brand definitions
@@ -94,5 +147,5 @@ $screen-lg-max: ($screen-xl-min - 1) !default;
 
 $fa-font-path: '~font-awesome/fonts';
 
-$custom-range-thumb-width: 1.5rem !default;
-$custom-range-thumb-border-radius: 100% !default;
+$form-range-thumb-width: 1.5rem !default;
+$form-range-thumb-border-radius: 100% !default;

@@ -2,14 +2,14 @@
 
 .leftcolumn {
   background-color: #0078ff3d;
-  color: #002f63;
+  color: $navy-blue;
   border-radius: 4px;
   display: flex;
   height: 100%;
 }
 
 .rightcolumn {
-  background-color: #002f63;
+  background-color: $navy-blue;
   color: #ffffff;
   border-radius: 4px;
   display: flex;

@@ -7,13 +7,13 @@ import './AuthenticationLoader.scss';
 
 const AuthenticationLoader = ({ controlCode, onCancel, overlayed }) => {
   const content = (
-    <div className="bg-white shadow-sm rounded-lg p-5 text-center">
+    <div className="bg-white shadow-sm rounded-3 p-5 text-center">
       {controlCode ? (
         <>
           <p className="m-0 mb-4">
             <FormattedMessage id="login.control.code" />
           </p>
-          <div className="display-2 font-weight-bold">{controlCode}</div>
+          <div className="display-2 fw-bold mb-2">{controlCode}</div>
         </>
       ) : (
         ''
@@ -32,7 +32,7 @@ const AuthenticationLoader = ({ controlCode, onCancel, overlayed }) => {
   if (overlayed) {
     return (
       <div className="tv-modal">
-        <div className="container">
+        <div className="col-12 col-sm-10 col-md-7 col-lg-5 mx-auto">
           <div className="row mt-4 pt-4 justify-content-center">{content}</div>
         </div>
       </div>

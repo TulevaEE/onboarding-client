@@ -17,11 +17,11 @@ export const OccupationAgreement = ({ occupation, onOccupationChange, className 
       className={`${className}`}
       onChange={(event) => onOccupationChange(event.target.value)}
     >
-      <div className="form-group">
+      <div className="mb-3">
         <label htmlFor="occupation">
           <FormattedMessage id="aml.occupation" />
         </label>
-        <div className="form-group">
+        <div className="mb-3">
           <Field
             component={renderField}
             type="select"

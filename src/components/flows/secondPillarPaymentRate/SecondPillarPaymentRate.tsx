@@ -44,7 +44,7 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
   }
 
   return (
-    <div className="col-lg-8 offset-lg-2 px-0">
+    <div className="col-12 col-md-11 col-lg-8 mx-auto">
       {(signing || challengeCode) && (
         <AuthenticationLoader controlCode={challengeCode} onCancel={cancelSigning} overlayed />
       )}
@@ -85,7 +85,7 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
         >
           <div className="mb-1">
             <h3 className="d-inline">
-              <span className="mr-2">
+              <span className="me-2">
                 <FormattedMessage id="secondPillarPaymentRate.option.2Percent" />
               </span>
               {pendingPaymentRate === 2 && <Currently />}
@@ -106,7 +106,7 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
           onSelect={() => setPaymentRate(4)}
         >
           <h3 className="mb-1">
-            <span className="mr-2">
+            <span className="me-2">
               <FormattedMessage id="secondPillarPaymentRate.option.4Percent" />
             </span>
             {pendingPaymentRate === 4 && <Currently />}
@@ -127,7 +127,7 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
         >
           <div className="mb-1">
             <h3 className="d-inline">
-              <span className="mr-2">
+              <span className="me-2">
                 <FormattedMessage id="secondPillarPaymentRate.option.6Percent" />
               </span>
               <Recommended />
@@ -140,7 +140,7 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
               values={{ b: (chunks: string) => <b>{chunks}</b> }}
             />
           </p>
-          <p className="m-0 text-muted">
+          <p className="m-0 text-body-secondary">
             <FormattedMessage id="secondPillarPaymentRate.maximumBenefit" />
           </p>
         </Radio>
@@ -164,13 +164,13 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
 };
 
 const Currently = () => (
-  <span className="badge badge-pill badge-secondary align-text-bottom">
+  <span className="badge rounded-pill text-bg-secondary align-text-bottom">
     <FormattedMessage id="secondPillarPaymentRate.current" />
   </span>
 );
 
 const Recommended = () => (
-  <span className="mr-2 badge badge-pill badge-primary align-text-bottom">
+  <span className="me-2 badge rounded-pill text-bg-primary align-text-bottom">
     <FormattedMessage id="secondPillarPaymentRate.recommended" />
   </span>
 );

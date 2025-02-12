@@ -74,7 +74,7 @@ export const BackToPartner: React.FC<Props> = ({ recurringPaymentCount }) => {
           </button>
         </div>
         <p className="mt-2 mb-0">
-          <small className="text-muted">
+          <small className="text-body-secondary">
             <FormattedMessage id="thirdPillarBackToPartner.payment.subtitle" />
           </small>
         </p>

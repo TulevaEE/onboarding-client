@@ -55,7 +55,7 @@ describe('happy path', () => {
   });
 
   test('user data is shown', async () => {
-    expect(await screen.findByText('Hi, John Doe!')).toBeInTheDocument();
+    expect(await screen.findByText('Hi, John Doe')).toBeInTheDocument();
     expect(screen.getByText('john.doe@example.com')).toBeInTheDocument();
     expect(screen.getByText('55667788')).toBeInTheDocument();
   });
