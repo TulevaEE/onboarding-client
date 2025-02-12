@@ -115,20 +115,8 @@ export const StatusBoxRow: React.FunctionComponent<{
   last = false,
   extraBottom = <></>,
 }) => {
-  const filteredLines =
-    lines && lines.filter((line) => line !== null && line !== undefined && line !== false);
+  const filteredLines = lines && lines.filter((line) => line);
 
-  const formattedLines = (
-    <>
-      {filteredLines &&
-        filteredLines.length > 0 &&
-        filteredLines.map((line, i) => (
-          <p className="m-0" key={i}>
-            {line}
-          </p>
-        ))}
-    </>
-  );
   return (
     <div className={`status-box-row ${!last ? 'tv-table__row' : ''}`} data-testid="status-box-row">
       <div className="d-flex gap-3 flex-column flex-sm-row justify-content-between p-3">
@@ -136,7 +124,8 @@ export const StatusBoxRow: React.FunctionComponent<{
           <StatusBoxIcon checked={ok} warning={warning} error={error} />
           <div className="d-flex flex-column justify-content-center">
             <h3 className="m-0 h6 fw-bold">{name}</h3>
-            {formattedLines}
+            {filteredLines?.length > 0 &&
+              filteredLines.map((line) => <p className="m-0">{line}</p>)}
           </div>
         </div>
         <div className="d-flex flex-column justify-content-center text-nowrap">
