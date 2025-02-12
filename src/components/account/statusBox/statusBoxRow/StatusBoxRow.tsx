@@ -114,27 +114,24 @@ export const StatusBoxRow: React.FunctionComponent<{
   children = '',
   last = false,
   extraBottom = <></>,
-}) => {
-  const filteredLines = lines && lines.filter((line) => line);
-
-  return (
-    <div className={`status-box-row ${!last ? 'tv-table__row' : ''}`} data-testid="status-box-row">
-      <div className="d-flex gap-3 flex-column flex-sm-row justify-content-between p-3">
-        <div className="d-flex gap-3">
-          <StatusBoxIcon checked={ok} warning={warning} error={error} />
-          <div className="d-flex flex-column justify-content-center">
-            <h3 className="m-0 h6 fw-bold">{name}</h3>
-            {filteredLines?.length > 0 &&
-              filteredLines.map((line) => <p className="m-0">{line}</p>)}
-          </div>
-        </div>
-        <div className="d-flex flex-column justify-content-center text-nowrap">
-          {showAction && children ? children : ''}
+}) => (
+  <div className={`status-box-row ${!last ? 'tv-table__row' : ''}`} data-testid="status-box-row">
+    <div className="d-flex gap-3 flex-column flex-sm-row justify-content-between p-3">
+      <div className="d-flex gap-3">
+        <StatusBoxIcon checked={ok} warning={warning} error={error} />
+        <div className="d-flex flex-column justify-content-center">
+          <h3 className="m-0 h6 fw-bold">{name}</h3>
+          {lines.map((line) => (
+            <p className="m-0">{line}</p>
+          ))}
         </div>
       </div>
-      {extraBottom}
+      <div className="d-flex flex-column justify-content-center text-nowrap">
+        {showAction && children ? children : ''}
+      </div>
     </div>
-  );
-};
+    {extraBottom}
+  </div>
+);
 
 export default StatusBoxRow;
