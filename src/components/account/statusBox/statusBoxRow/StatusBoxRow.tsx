@@ -116,8 +116,19 @@ export const StatusBoxRow: React.FunctionComponent<{
   last = false,
   extraBottom = <></>,
 }) => {
+  const filteredLines =
+    lines && lines.filter((line) => line !== null && line !== undefined && line !== false);
+
   const formattedLines = (
-    <ul>{lines && lines.length > 0 && lines.map((line, i) => <li key={i}>{line}</li>)}</ul>
+    <>
+      {filteredLines &&
+        filteredLines.length > 0 &&
+        filteredLines.map((line, i) => (
+          <p className="m-0" key={i}>
+            {line}
+          </p>
+        ))}
+    </>
   );
   return (
     <div className={`status-box-row ${!last ? 'tv-table__row' : ''}`} data-testid="status-box-row">

@@ -283,9 +283,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
               }}
             />
           </small>
-        ) : (
-          <></>
-        ),
+        ) : null,
       ]}
     />
   );
