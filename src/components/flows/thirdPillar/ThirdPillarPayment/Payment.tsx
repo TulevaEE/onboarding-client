@@ -84,7 +84,7 @@ export const Payment: React.FunctionComponent = () => {
           className="mt-5"
         />
 
-        <div className="payment-amount-input-footer">
+        <div className="payment-amount-input-footer mt-2">
           <ThirdPillarPaymentsAmount />
           <div>
             <small className="text-body-secondary">
@@ -113,7 +113,7 @@ export const Payment: React.FunctionComponent = () => {
 
         <PaymentBankButtons paymentBank={paymentBank} setPaymentBank={setPaymentBank} />
 
-        <div className="payment-details-container">
+        <div className="payment-details-container mt-5">
           {paymentType === 'RECURRING' && paymentBank && (
             <RecurringPaymentDetails
               paymentBank={paymentBank}
