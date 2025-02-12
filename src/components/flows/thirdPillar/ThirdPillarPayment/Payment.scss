@@ -1,48 +1,52 @@
 @import '../../../variables';
 
 .btn-payment {
-  min-width: 143.25px;
+  min-width: 144px;
+
+  &.active {
+    font-weight: 500;
+  }
 }
 
 .btn.btn-swedbank,
 .btn.btn-swedbank:hover {
   background-color: white;
-  border-color: #ee7023;
-  color: #ee7023;
+  border-color: #fb4f00;
+  color: #fb4f00;
 }
 
 .btn.btn-swedbank:not(:disabled):not(.disabled):active,
 .btn.btn-swedbank:not(:disabled):not(.disabled).active {
-  background-color: #ee7023;
-  border-color: #ee7023;
+  background-color: #fb4f00;
+  border-color: #fb4f00;
   color: white;
 }
 
 .btn.btn-seb,
 .btn.btn-seb:hover {
   background-color: white;
-  border-color: #47b102;
-  color: #47b102;
+  border-color: #45b400;
+  color: #45b400;
 }
 
 .btn.btn-seb:not(:disabled):not(.disabled):active,
 .btn.btn-seb:not(:disabled):not(.disabled).active {
-  background-color: #5dcb15;
-  border-color: #5dcb15;
+  background-color: #45b400;
+  border-color: #45b400;
   color: white;
 }
 
 .btn.btn-lhv,
 .btn.btn-lhv:hover {
   background-color: white;
-  border-color: #2a2c2e;
-  color: #2a2c2e;
+  border-color: #4a4e5a;
+  color: #4a4e5a;
 }
 
 .btn.btn-lhv:not(:disabled):not(.disabled):active,
 .btn.btn-lhv:not(:disabled):not(.disabled).active {
-  background-color: #2a2c2e;
-  border-color: #2a2c2e;
+  background-color: #4a4e5a;
+  border-color: #4a4e5a;
   color: white;
 }
 
@@ -63,14 +67,14 @@
 .btn.btn-coop,
 .btn.btn-coop:hover {
   background-color: white;
-  border-color: #1c7ed4;
-  color: #1c7ed4;
+  border-color: #0078d2;
+  color: #0078d2;
 }
 
 .btn.btn-coop:not(:disabled):not(.disabled):active,
 .btn.btn-coop:not(:disabled):not(.disabled).active {
-  background-color: #1c7ed4;
-  border-color: #1c7ed4;
+  background-color: #0078d2;
+  border-color: #0078d2;
   color: white;
 }
 
