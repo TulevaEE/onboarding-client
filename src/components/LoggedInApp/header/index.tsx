@@ -24,7 +24,7 @@ export const Header = ({ user, loading, onLogout }: Props) => (
           <>
             <p className="m-0">
               <span className="text-body align-middle">{user.name}</span>
-              <span className="text-secondary align-middle">&ensp;&middot;&ensp;</span>
+              <span className="text-body-secondary align-middle">&ensp;&middot;&ensp;</span>
               <button type="button" className="btn btn-link p-0 border-0" onClick={onLogout}>
                 <FormattedMessage id="log.out" />
               </button>
@@ -33,7 +33,7 @@ export const Header = ({ user, loading, onLogout }: Props) => (
               <a className="btn btn-link p-0 border-0" href="/account">
                 <FormattedMessage id="header.my.account" />
               </a>
-              <span className="text-secondary align-middle">&ensp;&middot;&ensp;</span>
+              <span className="text-body-secondary align-middle">&ensp;&middot;&ensp;</span>
               <LanguageSwitcher />
             </p>
           </>
