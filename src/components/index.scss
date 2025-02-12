@@ -141,10 +141,11 @@ small {
 }
 
 hr {
-  border-color: $gray-border-3;
-  background-color: white;
   margin: 0;
   padding: 0;
+  border-color: $gray-border-3;
+  background-color: white;
+  opacity: 1;
 }
 
 .custom-select {

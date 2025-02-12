@@ -318,9 +318,11 @@ export const UpdateUserForm = ({
             <FormattedMessage id={error} />
           </div>
         )}
-        <button type="submit" disabled={submitting} className="btn btn-primary btn-block">
-          <FormattedMessage id="update.user.save" />
-        </button>
+        <div className="d-grid mt-4">
+          <button type="submit" disabled={submitting} className="btn btn-primary">
+            <FormattedMessage id="update.user.save" />
+          </button>
+        </div>
       </div>
     </form>
   );
