@@ -28,6 +28,7 @@ export const BankButton = ({ bankKey, paymentBank, setPaymentBank, disabled = fa
         }`}
       >
         <input
+          className="visually-hidden"
           type="radio"
           name="banks"
           id={bankKey}
