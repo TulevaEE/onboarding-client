@@ -1,10 +1,12 @@
+@import '../../variables';
+
 .comparison-calculator {
   .card-primary {
-    border-color: #cae0f1;
+    border-color: $blue-border-3;
   }
 
   .header-section {
-    border-bottom: 1px solid #cae0f1;
+    border-bottom: 1px solid $blue-border-3;
 
     .btn-group .btn {
       min-width: 200px;
@@ -43,7 +45,7 @@
   }
 
   .footer-section {
-    border-top: 1px solid #cae0f1;
+    border-top: 1px solid $blue-border-3;
   }
 
   .middle-section,
