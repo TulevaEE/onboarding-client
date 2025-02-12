@@ -48,7 +48,7 @@ export const TargetFundSelector: React.FunctionComponent<Props> = ({
               <small>
                 <div className="mb-2">
                   <FormattedMessage id="target.funds.fees" />:{' '}
-                  <Fees className="text-bold" value={fund.ongoingChargesFigure} />
+                  <Fees className="fw-bold" value={fund.ongoingChargesFigure} />
                 </div>
                 <div className="mb-2">
                   <FormattedMessage

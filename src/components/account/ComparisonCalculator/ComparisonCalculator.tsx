@@ -231,7 +231,7 @@ const ComparisonCalculator: React.FC = () => {
                 )}
                 <div className="input-selection row justify-content-center">
                   <div className="col-12 col-md text-start">
-                    <label htmlFor="timePeriodSelect" className="form-label small text-bold mb-1">
+                    <label htmlFor="timePeriodSelect" className="form-label small fw-bold mb-1">
                       <FormattedMessage id="comparisonCalculator.timePeriod" />:{' '}
                     </label>
                     <Select
@@ -249,7 +249,7 @@ const ComparisonCalculator: React.FC = () => {
                     />
                   </div>
                   <div className="col-12 col-md text-start">
-                    <label htmlFor="comparedToSelect" className="form-label small text-bold mb-1">
+                    <label htmlFor="comparedToSelect" className="form-label small fw-bold mb-1">
                       <FormattedMessage id="comparisonCalculator.comparedTo" />:{' '}
                     </label>
                     <Select
@@ -969,7 +969,7 @@ const ComparisonCalculator: React.FC = () => {
               },
             })}{' '}
             <FormattedMessage id="comparisonCalculator.content.performance.index.alpha.wordNegative" />{' '}
-            <span className="text-orange text-bold">
+            <span className="text-orange fw-bold">
               {formatAmountForCurrency(performanceVerdictProperties.amount, 0, { isSigned: true })}
             </span>{' '}
             <FormattedMessage id="comparisonCalculator.content.performance.index.alpha.negativeVerdict" />
@@ -1035,7 +1035,7 @@ const ComparisonCalculator: React.FC = () => {
               },
             })}{' '}
             <FormattedMessage id="comparisonCalculator.content.performance.fund.alpha.wordNegative" />{' '}
-            <span className="text-orange text-bold">
+            <span className="text-orange fw-bold">
               {formatAmountForCurrency(performanceVerdictProperties.amount, 0, { isSigned: true })}
             </span>{' '}
             <FormattedMessage id="comparisonCalculator.content.performance.fund.alpha.negativeVerdict" />
@@ -1090,7 +1090,7 @@ const ComparisonCalculator: React.FC = () => {
             {formatMessageWithTags({
               id: 'comparisonCalculator.content.performance.cpi.alpha.wordNegative',
             })}{' '}
-            <span className="text-orange text-bold">
+            <span className="text-orange fw-bold">
               {formatAmountForCurrency(performanceVerdictProperties.amount, 0, { isSigned: true })}
             </span>{' '}
             <FormattedMessage id="comparisonCalculator.content.performance.cpi.alpha.negativeVerdict" />

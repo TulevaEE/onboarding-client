@@ -56,7 +56,7 @@ const AccountStatement = ({ funds, activeFundNotice }) => {
     {
       title: <FormattedMessage id="accountStatement.columns.value.title" />,
       dataIndex: 'value',
-      footer: <Euro className="text-bold" amount={valueSum} />,
+      footer: <Euro className="fw-bold" amount={valueSum} />,
     },
   ];
 

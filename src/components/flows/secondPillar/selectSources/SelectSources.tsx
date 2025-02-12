@@ -228,7 +228,7 @@ export const SelectSources = ({
                 onChange={onSomeExistingSwitchChange}
                 checked={someExistingSwitch}
               />
-              <label className="form-check-label text-bold" htmlFor="someExistingSwitch">
+              <label className="form-check-label fw-bold" htmlFor="someExistingSwitch">
                 <FormattedMessage id="select.sources.select.some.existing" />
               </label>
             </div>
@@ -259,7 +259,7 @@ export const SelectSources = ({
                 onChange={onSomeFutureSwitchChange}
                 checked={someFutureSwitch}
               />
-              <label className="form-check-label text-bold" htmlFor="someFutureSwitch">
+              <label className="form-check-label fw-bold" htmlFor="someFutureSwitch">
                 <FormattedMessage id="select.sources.select.some.future" />
               </label>
             </div>

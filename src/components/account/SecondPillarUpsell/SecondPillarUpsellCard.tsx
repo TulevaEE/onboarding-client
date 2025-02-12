@@ -71,11 +71,11 @@ const SecondPillarUpsellCard: React.FC = () => {
                       id="secondPillarUpsell.pensionSavings"
                       values={{
                         amount: diff ? (
-                          <span className="h2 text-orange text-bold text-nowrap">
+                          <span className="h2 text-orange fw-bold text-nowrap">
                             <Euro amount={diff} fractionDigits={0} />
                           </span>
                         ) : (
-                          <span className="h2 text-bold text-primary text-nowrap">...</span>
+                          <span className="h2 fw-bold text-primary text-nowrap">...</span>
                         ),
                       }}
                     />
@@ -87,9 +87,9 @@ const SecondPillarUpsellCard: React.FC = () => {
                     markerText={intl.formatMessage({ id: 'secondPillarUpsell.youAreHere' })}
                   />
                   <div className="mt-3">
-                    <div className="d-flex justify-content-between align-items-end small mb-1 text-primary text-bold">
+                    <div className="d-flex justify-content-between align-items-end small mb-1 text-primary fw-bold">
                       <FormattedMessage id="secondPillarUpsell.amountInIndexFund" />
-                      <span className="text-bold text-nowrap">
+                      <span className="fw-bold text-nowrap">
                         {amountInIndexFund ? (
                           <Euro amount={amountInIndexFund} fractionDigits={0} />
                         ) : (
@@ -99,7 +99,7 @@ const SecondPillarUpsellCard: React.FC = () => {
                     </div>
                     <div className="d-flex justify-content-between align-items-end small mb-1">
                       <FormattedMessage id="secondPillarUpsell.yourSecondPillar" />
-                      <span className="text-bold text-nowrap">
+                      <span className="fw-bold text-nowrap">
                         {yourSecondPillar ? (
                           <Euro amount={yourSecondPillar} fractionDigits={0} />
                         ) : (
