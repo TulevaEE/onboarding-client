@@ -38,7 +38,7 @@ const StatusBoxIcon: React.FunctionComponent<{
 
   if (warning) {
     return (
-      <div className="ms-3 me-2 status-box-icon" data-testid="status-icon-warning">
+      <div className="status-box-icon" data-testid="status-icon-warning">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none">
           <path
             fill="#F8AF18"
@@ -65,7 +65,7 @@ const StatusBoxIcon: React.FunctionComponent<{
 
   if (checked) {
     return (
-      <div className="ms-3 me-2 status-box-icon" data-testid="status-icon-success">
+      <div className="status-box-icon" data-testid="status-icon-success">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none">
           <path
             fill="#51C26C"
@@ -117,31 +117,19 @@ export const StatusBoxRow: React.FunctionComponent<{
   extraBottom = <></>,
 }) => {
   const formattedLines = (
-    <ul>
-      {lines &&
-        lines.length > 0 &&
-        lines.map((line, i) => (
-          <li className="ps-2" key={i}>
-            {line}
-          </li>
-        ))}
-    </ul>
+    <ul>{lines && lines.length > 0 && lines.map((line, i) => <li key={i}>{line}</li>)}</ul>
   );
   return (
     <div className={`status-box-row ${!last ? 'tv-table__row' : ''}`} data-testid="status-box-row">
-      <div className="d-flex flex-sm-row flex-column justify-content-between">
-        <div className="d-flex">
-          <div className="d-flex flex-column">
-            <StatusBoxIcon checked={ok} warning={warning} error={error} />
-          </div>
+      <div className="d-flex gap-3 flex-column flex-sm-row justify-content-between p-3">
+        <div className="d-flex gap-3">
+          <StatusBoxIcon checked={ok} warning={warning} error={error} />
           <div className="d-flex flex-column justify-content-center">
-            <div className="mt-0 pt-1 ps-2">
-              <b>{name}</b>
-            </div>
+            <h3 className="m-0 h6 fw-bold">{name}</h3>
             {formattedLines}
           </div>
         </div>
-        <div className="d-flex flex-column justify-content-center my-2 mx-3 text-nowrap">
+        <div className="d-flex flex-column justify-content-center text-nowrap">
           {showAction && children ? children : ''}
         </div>
       </div>

@@ -13,12 +13,12 @@ const AuthenticationLoader = ({ controlCode, onCancel, overlayed }) => {
           <p className="m-0 mb-4">
             <FormattedMessage id="login.control.code" />
           </p>
-          <div className="display-2 fw-bold">{controlCode}</div>
+          <div className="display-2 fw-bold mb-2">{controlCode}</div>
         </>
       ) : (
         ''
       )}
-      <Loader className="align-middle mt-2" />
+      <Loader className="align-middle" />
 
       {controlCode ? (
         <button type="button" className="btn btn-outline-primary mt-4" onClick={onCancel}>

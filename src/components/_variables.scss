@@ -10,6 +10,20 @@ $font-family-base: $font-family-sans-serif !default;
 
 $font-size-small: 0.875em;
 
+$h1-font-size: 2rem !default; // 32
+$h2-font-size: 1.75rem !default; // 28
+$h3-font-size: 1.5rem !default; // 24
+$h4-font-size: 1.25rem !default; // 20
+$h5-font-size: 1.125rem !default; // 18
+$h6-font-size: 1rem !default; // 16
+
+$h1-line-height: 1.25;
+$h2-line-height: 1.2857;
+$h3-line-height: 1.3333;
+$h4-line-height: 1.4;
+$h5-line-height: 1.3333;
+$h6-line-height: 1.5;
+
 /**
  * Colors
  */
@@ -44,11 +58,16 @@ $blue-border-1: #ddeefa;
 $blue-border-2: #d3e6f4;
 $blue-border-3: #cadeee;
 
+$border-color: $gray-border-3;
+$card-border-color: $gray-border-3;
+
 :root {
   --blue: #{$blue};
   --red: #{$red};
   --green: #{$green};
 }
+
+$btn-padding-x: 1rem;
 
 /**
  * Brand definitions

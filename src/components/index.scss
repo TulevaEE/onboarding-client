@@ -25,25 +25,52 @@ button {
   font-family: $font-family-sans-serif;
 }
 
+/* typography */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
+  font-weight: $font-weight-semibold;
+  text-wrap: pretty;
+}
 h1,
 .h1 {
-  font-size: 2em;
-  font-weight: 400;
-  color: $text-primary;
+  font-size: $h1-font-size;
+  line-height: $h1-line-height;
 }
-
 h2,
 .h2 {
-  font-size: 1.5em;
-  font-weight: 500;
-  color: $text-primary;
+  font-size: $h2-font-size;
+  line-height: $h2-line-height;
 }
-
 h3,
 .h3 {
-  font-size: 1.25em;
-  font-weight: 500;
-  color: $text-primary;
+  font-size: $h3-font-size;
+  line-height: $h3-line-height;
+}
+h4,
+.h4 {
+  font-size: $h4-font-size;
+  line-height: $h4-line-height;
+}
+h5,
+.h5 {
+  font-size: $h5-font-size;
+  line-height: $h5-line-height;
+}
+h6,
+.h6 {
+  font-size: $h6-font-size;
+  line-height: $h6-line-height;
 }
 
 p,
@@ -73,15 +100,6 @@ small {
 
 .text-bold {
   font-weight: 600;
-}
-
-.btn {
-  cursor: pointer;
-  padding-left: 1.5em;
-  padding-right: 1.5em;
-}
-.btn:disabled {
-  cursor: default;
 }
 
 .btn-light {
