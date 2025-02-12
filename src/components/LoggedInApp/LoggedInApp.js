@@ -83,45 +83,41 @@ export class LoggedInApp extends PureComponent {
     const { user, loading, onLogout } = this.props;
 
     return (
-      <div className="container mt-4">
-        <div className="row justify-content-center">
-          <div className="col-lg-10">
-            <Header user={user} loading={loading} onLogout={onLogout} />
-            {this.isDevelopmentMode() && <DevSidebar />}
-            <Switch>
-              <Route path={ACCOUNT_PATH} component={AccountPage} />
-              <Route path={AML_PATH} component={AmlPage} />
-              <Route path="/join" component={SignUpPage} />
-              <Route path="/contact-details" component={ContactDetailsPage} />
-              <Route path="/2nd-pillar-flow" component={SecondPillarFlow} />
-              <Route path="/3rd-pillar-flow" component={ThirdPillarFlow} />
-              <Route path="/partner/2nd-pillar-flow" component={PartnerSecondPillarFlow} />
-              <Route path="/partner/2nd-pillar-flow-success" component={Success} />
-              <Route path="/partner/3rd-pillar-flow" component={PartnerThirdPillarFlow} />
-              <Route path="/partner/3rd-pillar-flow-success" component={BackToPartner} />
-              <Route path="/3rd-pillar-payment" component={ThirdPillarPaymentPage} />
-              <Route path="/3rd-pillar-success" component={ThirdPillarSuccess} />
-              <Route path="/3rd-pillar-gift" component={Gift} />
-              <Route path="/3rd-pillar-employer" component={EmployerPaymentDetails} />
-              <Route path="/2nd-pillar-transactions" component={TransactionPageSecondPillar} />
-              <Route path="/3rd-pillar-transactions" component={TransactionPageThirdPillar} />
-              <Route path="/2nd-pillar-contributions" component={ContributionPageSecondPillar} />
-              <Route path="/3rd-pillar-contributions" component={ContributionPageThirdPillar} />
-              <Route path="/2nd-pillar-upsell" component={SecondPillarUpsellCard} />
-              <Route path="/2nd-pillar-payment-rate" component={SecondPillarPaymentRate} />
-              <Route path="/capital" component={CapitalPage} />
-              <Route
-                path="/2nd-pillar-payment-rate-success"
-                component={SecondPillarPaymentRateSuccess}
-              />
-              <Route path={cancellationFlowPath} component={CancellationFlow} />
-              <Route path="/withdrawals" component={Withdrawals} />
+      <div className="container">
+        <Header user={user} loading={loading} onLogout={onLogout} />
+        {this.isDevelopmentMode() && <DevSidebar />}
+        <Switch>
+          <Route path={ACCOUNT_PATH} component={AccountPage} />
+          <Route path={AML_PATH} component={AmlPage} />
+          <Route path="/join" component={SignUpPage} />
+          <Route path="/contact-details" component={ContactDetailsPage} />
+          <Route path="/2nd-pillar-flow" component={SecondPillarFlow} />
+          <Route path="/3rd-pillar-flow" component={ThirdPillarFlow} />
+          <Route path="/partner/2nd-pillar-flow" component={PartnerSecondPillarFlow} />
+          <Route path="/partner/2nd-pillar-flow-success" component={Success} />
+          <Route path="/partner/3rd-pillar-flow" component={PartnerThirdPillarFlow} />
+          <Route path="/partner/3rd-pillar-flow-success" component={BackToPartner} />
+          <Route path="/3rd-pillar-payment" component={ThirdPillarPaymentPage} />
+          <Route path="/3rd-pillar-success" component={ThirdPillarSuccess} />
+          <Route path="/3rd-pillar-gift" component={Gift} />
+          <Route path="/3rd-pillar-employer" component={EmployerPaymentDetails} />
+          <Route path="/2nd-pillar-transactions" component={TransactionPageSecondPillar} />
+          <Route path="/3rd-pillar-transactions" component={TransactionPageThirdPillar} />
+          <Route path="/2nd-pillar-contributions" component={ContributionPageSecondPillar} />
+          <Route path="/3rd-pillar-contributions" component={ContributionPageThirdPillar} />
+          <Route path="/2nd-pillar-upsell" component={SecondPillarUpsellCard} />
+          <Route path="/2nd-pillar-payment-rate" component={SecondPillarPaymentRate} />
+          <Route path="/capital" component={CapitalPage} />
+          <Route
+            path="/2nd-pillar-payment-rate-success"
+            component={SecondPillarPaymentRateSuccess}
+          />
+          <Route path={cancellationFlowPath} component={CancellationFlow} />
+          <Route path="/withdrawals" component={Withdrawals} />
 
-              <Redirect exact path="/" to={ACCOUNT_PATH} />
-            </Switch>
-            <Footer />
-          </div>
-        </div>
+          <Redirect exact path="/" to={ACCOUNT_PATH} />
+        </Switch>
+        <Footer />
       </div>
     );
   }

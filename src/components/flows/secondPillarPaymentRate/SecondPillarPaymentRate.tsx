@@ -44,7 +44,7 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
   }
 
   return (
-    <div className="col-lg-8 offset-lg-2 px-0">
+    <div className="col-12 col-md-11 col-lg-8 mx-auto">
       {(signing || challengeCode) && (
         <AuthenticationLoader controlCode={challengeCode} onCancel={cancelSigning} overlayed />
       )}

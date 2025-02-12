@@ -13,7 +13,7 @@ type Props = {
 
 export const Header = ({ user, loading, onLogout }: Props) => (
   <>
-    <div className="d-flex justify-content-between align-items-end border-bottom pb-4 mb-5 app-header">
+    <div className="d-flex justify-content-between align-items-end border-bottom py-4 mb-5 app-header">
       <a href="/account">
         <img src={logo} alt="Tuleva" className="brand-logo" />
       </a>
