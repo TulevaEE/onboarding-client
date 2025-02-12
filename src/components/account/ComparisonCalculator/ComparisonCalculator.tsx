@@ -340,7 +340,7 @@ const ComparisonCalculator: React.FC = () => {
               </div>
 
               <div className="footer-section text-center small p-4">
-                <div className="footer-disclaimer text-secondary">
+                <div className="footer-disclaimer text-body-secondary">
                   <FormattedMessage id="comparisonCalculator.footerDisclaimer" />
                 </div>
                 <div className="footer-links pt-2">

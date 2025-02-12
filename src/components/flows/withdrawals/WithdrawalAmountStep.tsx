@@ -60,7 +60,7 @@ export const WithdrawalAmountStep = () => {
       <SingleWithdrawalSelectionBox totalAmount={totalAmount} />
       <div className="mt-5 d-flex justify-content-end align-items-center">
         {!canNavigateToNextStep && (
-          <p className="m-0 me-3 flex-fill text-secondary">
+          <p className="m-0 me-3 flex-fill text-body-secondary">
             <FormattedMessage id="withdrawals.navigation.notEligible" />
           </p>
         )}
