@@ -266,7 +266,6 @@ exports[`SecondPillarStatusBox renders low fee when fund selection incomplete 1`
           }
         }
       />,
-      <React.Fragment />,
     ]
   }
   name={
@@ -347,7 +346,6 @@ exports[`SecondPillarStatusBox renders the success flow 1`] = `
           }
         }
       />,
-      <React.Fragment />,
     ]
   }
   name={
