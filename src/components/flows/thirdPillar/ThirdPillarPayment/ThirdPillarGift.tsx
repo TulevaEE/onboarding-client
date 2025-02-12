@@ -155,7 +155,7 @@ export const ThirdPillarGift: React.FunctionComponent = () => {
             <div className="me-auto">
               <button
                 type="button"
-                className="btn btn-primary payment-button text-nowrap mt-4"
+                className="btn btn-lg btn-primary payment-button text-nowrap"
                 disabled={isSubmitDisabled()}
                 onClick={handleSubmit}
               >
