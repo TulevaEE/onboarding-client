@@ -333,8 +333,8 @@ describe('ComparisonCalculator', () => {
     const firstBar = within(graphSection()).getByText('Your II pillar').closest('.bar');
     // eslint-disable-next-line testing-library/no-node-access
     const secondBar = within(graphSection()).getByText('World market index').closest('.bar');
-    expect(firstBar).toHaveStyle('background-color: rgb(255, 72, 0)');
-    expect(secondBar).toHaveStyle('background-color: rgb(0, 114, 236)');
+    expect(firstBar).toHaveAttribute('data-testid', 'bar-NEGATIVE');
+    expect(secondBar).toHaveAttribute('data-testid', 'bar-INDEX');
 
     // Bar percentages
     expect(within(graphSection()).getByText('7.0%')).toBeInTheDocument();
@@ -376,8 +376,8 @@ describe('ComparisonCalculator', () => {
     expect(within(bars[0]).getByText('Your II pillar')).toBeInTheDocument();
     expect(within(bars[1]).getByText('World market index')).toBeInTheDocument();
 
-    expect(bars[0]).toHaveStyle('background-color: rgb(255, 72, 0)');
-    expect(bars[1]).toHaveStyle('background-color: rgb(0, 114, 236)');
+    expect(bars[0]).toHaveAttribute('data-testid', 'bar-NEGATIVE');
+    expect(bars[1]).toHaveAttribute('data-testid', 'bar-INDEX');
 
     const smallBarGraph = within(bars[0]).getByRole('presentation');
     expect(smallBarGraph).toHaveStyle('height: 100px');
@@ -408,8 +408,8 @@ describe('ComparisonCalculator', () => {
     expect(within(bars[0]).getByText('Your II pillar')).toBeInTheDocument();
     expect(within(bars[1]).getByText('World market index')).toBeInTheDocument();
 
-    expect(bars[0]).toHaveStyle('background-color: rgb(255, 72, 0)');
-    expect(bars[1]).toHaveStyle('background-color: rgb(0, 114, 236)');
+    expect(bars[0]).toHaveAttribute('data-testid', 'bar-NEGATIVE');
+    expect(bars[1]).toHaveAttribute('data-testid', 'bar-INDEX');
 
     const smallBarGraph = within(bars[0]).getByRole('presentation');
     expect(smallBarGraph).toHaveStyle('height: 12.5px');
@@ -458,8 +458,8 @@ describe('ComparisonCalculator', () => {
     const firstBar = within(graphSection()).getByText('Your II pillar').closest('.bar');
     // eslint-disable-next-line testing-library/no-node-access
     const secondBar = within(graphSection()).getByText('World market index').closest('.bar');
-    expect(firstBar).toHaveStyle('background-color: rgb(81, 194, 108)');
-    expect(secondBar).toHaveStyle('background-color: rgb(0, 114, 236)');
+    expect(firstBar).toHaveAttribute('data-testid', 'bar-POSITIVE');
+    expect(secondBar).toHaveAttribute('data-testid', 'bar-INDEX');
 
     // Bar percentages
     expect(within(graphSection()).getByText('10.0%')).toBeInTheDocument();
@@ -507,8 +507,8 @@ describe('ComparisonCalculator', () => {
     const firstBar = within(graphSection()).getByText('Your II pillar').closest('.bar');
     // eslint-disable-next-line testing-library/no-node-access
     const secondBar = within(graphSection()).getByText('World market index').closest('.bar');
-    expect(firstBar).toHaveStyle('background-color: rgb(81, 194, 108)');
-    expect(secondBar).toHaveStyle('background-color: rgb(0, 114, 236)');
+    expect(firstBar).toHaveAttribute('data-testid', 'bar-POSITIVE');
+    expect(secondBar).toHaveAttribute('data-testid', 'bar-INDEX');
 
     // Bar percentages
     expect(within(graphSection()).getByText('9.0%')).toBeInTheDocument();
@@ -553,7 +553,7 @@ describe('ComparisonCalculator', () => {
     expect(within(graphSection()).getByText('Your II pillar')).toBeInTheDocument();
     // eslint-disable-next-line testing-library/no-node-access
     const firstBar = within(graphSection()).getByText('Your II pillar').closest('.bar');
-    expect(firstBar).toHaveStyle('background-color: rgb(255, 72, 0)');
+    expect(firstBar).toHaveAttribute('data-testid', 'bar-NEGATIVE');
 
     // Second Bar
     // eslint-disable-next-line testing-library/no-node-access
@@ -567,7 +567,7 @@ describe('ComparisonCalculator', () => {
       .getByText('Estonian II pillar funds average performance')
       // eslint-disable-next-line testing-library/no-node-access
       .closest('.bar');
-    expect(secondBar).toHaveStyle('background-color: rgb(255, 72, 0)');
+    expect(secondBar).toHaveAttribute('data-testid', 'bar-NEGATIVE');
 
     // Third Bar
     // eslint-disable-next-line testing-library/no-node-access
@@ -577,7 +577,7 @@ describe('ComparisonCalculator', () => {
     expect(within(graphSection()).getByText('World market index')).toBeInTheDocument();
     // eslint-disable-next-line testing-library/no-node-access
     const thirdBar = within(graphSection()).getByText('World market index').closest('.bar');
-    expect(thirdBar).toHaveStyle('background-color: rgb(0, 114, 236)');
+    expect(thirdBar).toHaveAttribute('data-testid', 'bar-INDEX');
   });
 
   test('II pillar content CPI over performing index and bar being red', async () => {
@@ -616,7 +616,7 @@ describe('ComparisonCalculator', () => {
     expect(within(graphSection()).getByText('Your II pillar')).toBeInTheDocument();
     // eslint-disable-next-line testing-library/no-node-access
     const firstBar = within(graphSection()).getByText('Your II pillar').closest('.bar');
-    expect(firstBar).toHaveStyle('background-color: rgb(255, 72, 0)');
+    expect(firstBar).toHaveAttribute('data-testid', 'bar-NEGATIVE');
 
     // Second Bar
     // eslint-disable-next-line testing-library/no-node-access
@@ -628,7 +628,7 @@ describe('ComparisonCalculator', () => {
       .getByText('Estonia inflation rate')
       // eslint-disable-next-line testing-library/no-node-access
       .closest('.bar');
-    expect(secondBar).toHaveStyle('background-color: rgb(255, 72, 0)');
+    expect(secondBar).toHaveAttribute('data-testid', 'bar-NEGATIVE');
 
     // Third Bar
     // eslint-disable-next-line testing-library/no-node-access
@@ -638,7 +638,7 @@ describe('ComparisonCalculator', () => {
     expect(within(graphSection()).getByText('World market index')).toBeInTheDocument();
     // eslint-disable-next-line testing-library/no-node-access
     const thirdBar = within(graphSection()).getByText('World market index').closest('.bar');
-    expect(thirdBar).toHaveStyle('background-color: rgb(0, 114, 236)');
+    expect(thirdBar).toHaveAttribute('data-testid', 'bar-INDEX');
   });
 
   test('II pillar content with neutral performance compared to a fund', async () => {
@@ -679,7 +679,7 @@ describe('ComparisonCalculator', () => {
     expect(within(graphSection()).getByText('Your II pillar')).toBeInTheDocument();
     // eslint-disable-next-line testing-library/no-node-access
     const firstBar = within(graphSection()).getByText('Your II pillar').closest('.bar');
-    expect(firstBar).toHaveStyle('background-color: rgb(255, 72, 0)');
+    expect(firstBar).toHaveAttribute('data-testid', 'bar-NEGATIVE');
 
     // Second Bar
     // eslint-disable-next-line testing-library/no-node-access
@@ -691,7 +691,7 @@ describe('ComparisonCalculator', () => {
       .getByText('Your II pillar')
       // eslint-disable-next-line testing-library/no-node-access
       .closest('.bar');
-    expect(secondBar).toHaveStyle('background-color: rgb(255, 72, 0)');
+    expect(secondBar).toHaveAttribute('data-testid', 'bar-NEGATIVE');
 
     // Third Bar
     // eslint-disable-next-line testing-library/no-node-access
@@ -701,7 +701,7 @@ describe('ComparisonCalculator', () => {
     expect(within(graphSection()).getByText('World market index')).toBeInTheDocument();
     // eslint-disable-next-line testing-library/no-node-access
     const thirdBar = within(graphSection()).getByText('World market index').closest('.bar');
-    expect(thirdBar).toHaveStyle('background-color: rgb(0, 114, 236)');
+    expect(thirdBar).toHaveAttribute('data-testid', 'bar-INDEX');
   });
 
   test('no CTA button when user is already fully converted', async () => {
@@ -766,8 +766,8 @@ describe('ComparisonCalculator', () => {
     const firstBar = within(graphSection()).getByText('Your III pillar').closest('.bar');
     // eslint-disable-next-line testing-library/no-node-access
     const secondBar = within(graphSection()).getByText('World market index').closest('.bar');
-    expect(firstBar).toHaveStyle('background-color: rgb(255, 72, 0)');
-    expect(secondBar).toHaveStyle('background-color: rgb(0, 114, 236)');
+    expect(firstBar).toHaveAttribute('data-testid', 'bar-NEGATIVE');
+    expect(secondBar).toHaveAttribute('data-testid', 'bar-INDEX');
 
     // Bar percentages
     expect(within(graphSection()).getByText('7.0%')).toBeInTheDocument();
@@ -817,8 +817,8 @@ describe('ComparisonCalculator', () => {
     const firstBar = within(graphSection()).getByText('Your III pillar').closest('.bar');
     // eslint-disable-next-line testing-library/no-node-access
     const secondBar = within(graphSection()).getByText('World market index').closest('.bar');
-    expect(firstBar).toHaveStyle('background-color: rgb(81, 194, 108)');
-    expect(secondBar).toHaveStyle('background-color: rgb(0, 114, 236)');
+    expect(firstBar).toHaveAttribute('data-testid', 'bar-POSITIVE');
+    expect(secondBar).toHaveAttribute('data-testid', 'bar-INDEX');
 
     // Bar percentages
     expect(within(graphSection()).getByText('10.0%')).toBeInTheDocument();
@@ -860,8 +860,8 @@ describe('ComparisonCalculator', () => {
     const firstBar = within(graphSection()).getByText('Your III pillar').closest('.bar');
     // eslint-disable-next-line testing-library/no-node-access
     const secondBar = within(graphSection()).getByText('World market index').closest('.bar');
-    expect(firstBar).toHaveStyle('background-color: rgb(81, 194, 108)');
-    expect(secondBar).toHaveStyle('background-color: rgb(0, 114, 236)');
+    expect(firstBar).toHaveAttribute('data-testid', 'bar-POSITIVE');
+    expect(secondBar).toHaveAttribute('data-testid', 'bar-INDEX');
 
     // Bar percentages
     expect(within(graphSection()).getByText('9.0%')).toBeInTheDocument();
