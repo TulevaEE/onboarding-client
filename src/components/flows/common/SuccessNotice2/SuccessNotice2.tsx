@@ -5,7 +5,7 @@ export const SuccessNotice2: React.FC<{ children?: React.ReactNode; className?: 
   children,
   className,
 }) => (
-  <div className={`alert text-center py-4 bg-very-light-blue border-0 ${className}`}>
+  <div className={`alert text-center py-4 bg-blue-2 border-0 ${className}`}>
     <img src={success} alt="" />
     {children}
   </div>

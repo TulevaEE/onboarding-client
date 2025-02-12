@@ -92,7 +92,7 @@ describe('Account statement', () => {
 
     const { footer } = tableProp('columns')[3];
 
-    expect(footer).toEqual(<Euro className="text-bold" amount={3333} />);
+    expect(footer).toEqual(<Euro className="fw-bold" amount={3333} />);
   });
 
   it('shows active fund notice only if there is an active fund', () => {

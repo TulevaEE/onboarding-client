@@ -14,7 +14,7 @@ const StepTitle = ({ children, number, active, completed }) => (
     >
       {number && (
         <span className="tv-step__number me-3">
-          {!completed && !active && <span className="text-regular">{number}</span>}
+          {!completed && !active && <span className="fw-medium">{number}</span>}
           {!completed && active && <b>{number}</b>}
         </span>
       )}

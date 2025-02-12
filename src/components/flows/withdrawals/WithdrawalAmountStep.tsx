@@ -162,7 +162,7 @@ const FundPensionStatusBox = ({ totalAmount }: { totalAmount: number }) => {
     });
 
   return (
-    <div className="mt-3 card p-4 bg-very-light-blue">
+    <div className="mt-3 card p-4 bg-blue-2">
       <div className="d-flex flex-column flex-sm-row justify-content-between">
         <h3 className="m-0">
           <FormattedMessage id="withdrawals.withdrawalAmount.receiveMonthlyAndTaxFree" />

@@ -19,7 +19,7 @@ export const FundExchangeRow = ({ sourceFunds, targetFunds, onChange, selection 
       <div className="card-body">
         <div className="row flex-column flex-xl-row">
           <div className="col-12 col-xl-5 pe-xl-2 mb-3">
-            <label className="small text-bold" htmlFor={`tv-source-fund-selector-${randomString}`}>
+            <label className="small fw-bold" htmlFor={`tv-source-fund-selector-${randomString}`}>
               <FormattedMessage id="select.sources.select.some.source" />
             </label>
             <select
@@ -39,7 +39,7 @@ export const FundExchangeRow = ({ sourceFunds, targetFunds, onChange, selection 
           </div>
 
           <div className="col-12 col-xl-5 px-xl-2 mb-3">
-            <label className="small text-bold" htmlFor={`tv-target-fund-selector-${randomString}`}>
+            <label className="small fw-bold" htmlFor={`tv-target-fund-selector-${randomString}`}>
               <FormattedMessage id="select.sources.select.some.target" />
             </label>
             <select
@@ -59,7 +59,7 @@ export const FundExchangeRow = ({ sourceFunds, targetFunds, onChange, selection 
           </div>
 
           <div className="col-12 col-xl-2 ps-xl-2 mb-3">
-            <label className="small text-bold" htmlFor={`tv-percentage-selector-${randomString}`}>
+            <label className="small fw-bold" htmlFor={`tv-percentage-selector-${randomString}`}>
               <FormattedMessage id="select.sources.select.some.percentage" />
             </label>
             <div className="input-group">

@@ -17,14 +17,6 @@ html {
   -webkit-font-smoothing: antialiased;
 }
 
-body {
-  font-size: 16px;
-}
-
-button {
-  font-family: $font-family-sans-serif;
-}
-
 /* typography */
 
 h1,
@@ -73,16 +65,8 @@ h6,
   line-height: $h6-line-height;
 }
 
-p,
-.p {
-  line-height: 1.44;
-  font-size: 1em;
-  font-weight: normal;
-  color: $text-primary;
-
-  & .lead {
-    font-size: 1.25em;
-  }
+.lead {
+  font-size: 1.25em;
 }
 
 small {
@@ -90,16 +74,8 @@ small {
   color: $text-primary;
 }
 
-.text-regular {
-  font-weight: medium;
-}
-
 .form-control::placeholder {
   color: $text-tertiary;
-}
-
-.text-bold {
-  font-weight: 600;
 }
 
 .btn-light {
@@ -169,16 +145,8 @@ hr {
   cursor: pointer;
 }
 
-.bg-very-light-blue {
-  background-color: $blue-bg-2 !important;
-}
-
 .text-orange {
   color: $orange;
-}
-
-.font-weight-semibold {
-  font-weight: 500 !important;
 }
 
 .ff-system {
@@ -188,6 +156,22 @@ hr {
 .text-separator {
   color: $text-body-secondary;
   user-select: none;
+}
+
+// Backgrounds
+
+.bg-gray-1 {
+  background-color: $gray-bg-1;
+}
+.bg-gray-2 {
+  background-color: $gray-bg-2;
+}
+
+.bg-blue-1 {
+  background-color: $blue-bg-1;
+}
+.bg-blue-2 {
+  background-color: $blue-bg-2;
 }
 
 /* Bootstrap 5 Migration */
