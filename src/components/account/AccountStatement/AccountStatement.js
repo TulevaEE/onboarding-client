@@ -47,7 +47,9 @@ const AccountStatement = ({ funds, activeFundNotice }) => {
               </>
             ),
             dataIndex: 'feesEuro',
-            footer: <Euro className="text-muted" amount={-(weightedAverageFee * valueSum)} />,
+            footer: (
+              <Euro className="text-body-secondary" amount={-(weightedAverageFee * valueSum)} />
+            ),
             hideOnMobile: true,
           },
         ]),
@@ -66,7 +68,7 @@ const AccountStatement = ({ funds, activeFundNotice }) => {
   const dataSource = sortedFunds.map((fund) => {
     const fundValue = fund.price + fund.unavailablePrice;
     const isMuted = !fund.activeFund && fundValue === 0;
-    const className = isMuted ? 'text-muted' : undefined;
+    const className = isMuted ? 'text-body-secondary' : undefined;
     const prefix = isMuted
       ? formatMessage({ id: 'accountStatement.columns.fund.muted.prefix' })
       : '';
@@ -75,7 +77,7 @@ const AccountStatement = ({ funds, activeFundNotice }) => {
     return {
       fund: <span className={className}>{`${prefix}${fund.name}${suffix}`}</span>,
       feesPercent: <Fees value={fund.ongoingChargesFigure} />,
-      feesEuro: !feesEuro ? <></> : <Euro className="text-muted" amount={feesEuro} />,
+      feesEuro: !feesEuro ? <></> : <Euro className="text-body-secondary" amount={feesEuro} />,
       value: !fundValue ? <></> : <Euro className={className} amount={fundValue} />,
       key: fund.isin,
     };
@@ -89,7 +91,7 @@ const AccountStatement = ({ funds, activeFundNotice }) => {
       <Table columns={columns} dataSource={dataSource} />
 
       {showActiveFundNotice && (
-        <small className="text-muted">
+        <small className="text-body-secondary">
           {activeFundNotice || (
             <FormattedMessage id={`accountStatement.${fundPillar}.activeFundNotice`} />
           )}

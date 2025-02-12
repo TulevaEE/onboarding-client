@@ -54,7 +54,7 @@ export const ContributionSection: React.FunctionComponent<{
   function footerMessage() {
     if (pillar === 2) {
       return (
-        <small className="text-muted">
+        <small className="text-body-secondary">
           <FormattedMessage
             id="contributions.notice.2nd"
             values={{
@@ -74,7 +74,7 @@ export const ContributionSection: React.FunctionComponent<{
     }
     if (pillar === 3) {
       return (
-        <small className="text-muted">
+        <small className="text-body-secondary">
           <FormattedMessage id="contributions.notice.3rd" />
         </small>
       );

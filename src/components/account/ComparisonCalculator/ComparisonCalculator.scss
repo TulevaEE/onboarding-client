@@ -50,7 +50,7 @@
 
   .middle-section,
   .middle-section p {
-    color: #002f63;
+    color: $navy-blue;
   }
 
   .middle-section {
@@ -65,7 +65,7 @@
         flex-grow: 1;
 
         .result-positive {
-          color: #00ac00;
+          color: $text-green;
           font-weight: bold;
         }
 
@@ -140,7 +140,7 @@
 
         .bar-percentage {
           //From Figma
-          color: var(--White, #fff);
+          color: #fff;
           text-align: center;
           font-size: 24px;
           font-weight: 700;

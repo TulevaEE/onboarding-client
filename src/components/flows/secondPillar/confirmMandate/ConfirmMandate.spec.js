@@ -292,7 +292,7 @@ describe('Confirm mandate step', () => {
         <label className="form-check-label" htmlFor="agree-to-terms-checkbox">
           <FormattedMessage id="confirm.mandate.agree.to.terms" />
           <div className="mt-2">
-            <small className="text-muted">
+            <small className="text-body-secondary">
               <a
                 target="_blank"
                 rel="noopener noreferrer"

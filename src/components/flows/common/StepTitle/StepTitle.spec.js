@@ -15,7 +15,7 @@ describe('Step title', () => {
     component.setProps({ children });
     const childClass = () => component.find('div#test-child').parent().prop('className');
     expect(childClass()).not.toContain('h2');
-    expect(childClass()).toContain('text-muted');
+    expect(childClass()).toContain('text-body-secondary');
     expect(component.contains(children)).toBe(true);
   });
 
@@ -24,7 +24,7 @@ describe('Step title', () => {
     component.setProps({ children, active: true });
     const childClass = () => component.find('div#test-child').parent().prop('className');
     expect(childClass()).toContain('h2');
-    expect(childClass()).not.toContain('text-muted');
+    expect(childClass()).not.toContain('text-body-secondary');
     expect(component.contains(children)).toBe(true);
   });
 

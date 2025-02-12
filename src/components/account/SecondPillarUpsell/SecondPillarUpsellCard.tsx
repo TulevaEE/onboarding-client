@@ -156,7 +156,7 @@ const CallToAction: React.FC<CTAProps> = ({ className }) => (
 );
 const Disclaimer: React.FC = () => (
   <div className="mt-2 text-center">
-    <small className="text-muted">
+    <small className="text-body-secondary">
       <FormattedMessage id="secondPillarUpsell.disclaimer" />
     </small>
   </div>

@@ -162,7 +162,7 @@ export const ThirdPillarGift: React.FunctionComponent = () => {
                 <FormattedMessage id="thirdPillarPayment.makePayment" />
               </button>
               <div className="mt-2">
-                <small className="text-muted">
+                <small className="text-body-secondary">
                   <FormattedMessage
                     id="thirdPillarPayment.freeSinglePayment"
                     values={{

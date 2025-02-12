@@ -123,8 +123,8 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
           step={1}
         />
         <div className="mt-1 d-flex justify-content-between">
-          <div className="text-muted">{formatAmountForCurrency(0, 0)}</div>
-          <div className="text-muted">{formatAmountForCurrency(totalAmount, 2)}</div>
+          <div className="text-body-secondary">{formatAmountForCurrency(0, 0)}</div>
+          <div className="text-body-secondary">{formatAmountForCurrency(totalAmount, 2)}</div>
         </div>
       </div>
       <div className="mt-3">
@@ -136,7 +136,7 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
           </span>
         )}{' '}
         <br className="d-none d-md-block" />
-        <span className="text-muted">
+        <span className="text-body-secondary">
           <FormattedMessage id="withdrawals.withdrawalAmount.precisePriceAtSaleDisclaimer" />
         </span>
       </div>
@@ -172,7 +172,7 @@ const FundPensionStatusBox = ({ totalAmount }: { totalAmount: number }) => {
           <FormattedMessage id="withdrawals.perMonth" />
         </h3>
       </div>
-      <div className="mt-3 text-muted">
+      <div className="mt-3 text-body-secondary">
         <FormattedMessage
           id="withdrawals.withdrawalAmount.monthlyPaymentSize"
           values={{

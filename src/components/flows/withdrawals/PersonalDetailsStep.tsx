@@ -56,7 +56,7 @@ export const PersonalDetailsStep = () => {
             onChange={(e) => setIban(e.target.value)}
             value={iban}
           />
-          <div className="pt-2 text-muted">
+          <div className="pt-2 text-body-secondary">
             <FormattedMessage id="withdrawals.personalDetails.bankAccount.ibanDescription" />
           </div>
           {ibanError && (

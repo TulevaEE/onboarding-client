@@ -87,7 +87,7 @@ export const Payment: React.FunctionComponent = () => {
         <div className="payment-amount-input-footer">
           <ThirdPillarPaymentsAmount />
           <div>
-            <small className="text-muted">
+            <small className="text-body-secondary">
               <a href="//tuleva.ee/iii-sammas/" target="_blank" rel="noreferrer">
                 {paymentType === 'SINGLE' && (
                   <FormattedMessage id="thirdPillarPayment.singlePaymentHowMuch" />

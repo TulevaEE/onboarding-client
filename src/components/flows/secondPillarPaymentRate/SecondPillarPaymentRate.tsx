@@ -140,7 +140,7 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
               values={{ b: (chunks: string) => <b>{chunks}</b> }}
             />
           </p>
-          <p className="m-0 text-muted">
+          <p className="m-0 text-body-secondary">
             <FormattedMessage id="secondPillarPaymentRate.maximumBenefit" />
           </p>
         </Radio>
