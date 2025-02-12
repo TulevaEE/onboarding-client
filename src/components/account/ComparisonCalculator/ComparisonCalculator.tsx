@@ -415,8 +415,17 @@ const ComparisonCalculator: React.FC = () => {
     const height = Math.abs(properties.height);
     const barCornerRadius = 5;
     const showPercentage = height > 30;
+
+    const rootStyles = getComputedStyle(document.documentElement);
+
+    const colorMap = {
+      POSITIVE: rootStyles.getPropertyValue('--green').trim(),
+      NEGATIVE: rootStyles.getPropertyValue('--red').trim(),
+      INDEX: rootStyles.getPropertyValue('--blue').trim(),
+    } as const;
+
     const barStyle = {
-      backgroundColor: properties.color,
+      backgroundColor: colorMap[properties.color],
       top: isNegativeValue ? height : undefined,
       borderTopLeftRadius: isNegativeValue ? 0 : barCornerRadius,
       borderTopRightRadius: isNegativeValue ? 0 : barCornerRadius,
@@ -442,6 +451,7 @@ const ComparisonCalculator: React.FC = () => {
         style={barStyle}
         role="figure"
         aria-label="Comparison Calculator Bar Figure"
+        data-testid={`bar-${properties.color}`}
       >
         <div className="bar-amount" style={barAmountStyle}>
           {formatAmountForCurrency(properties.amount, 0, { isSigned: true })}
@@ -686,14 +696,10 @@ const ComparisonCalculator: React.FC = () => {
   function calculateGraphProperties(): void {
     const barHeights = calculateGraphBarHeights();
 
-    const redColorThreshold = 0.01;
-    const rootStyles = getComputedStyle(document.documentElement);
-    const colorRed = rootStyles.getPropertyValue('--red').trim();
-    const colorGreen = rootStyles.getPropertyValue('--green').trim();
-    const colorBlue = rootStyles.getPropertyValue('--blue').trim();
+    const negativeColorThreshold = 0.01;
 
     const indexBarProperties: GraphBarProperties = {
-      color: colorBlue,
+      color: 'INDEX',
       amount: returns.index ? returns.index.amount : 0,
       percentage: returns.index ? returns.index.rate : 0,
       height: barHeights.index,
@@ -703,9 +709,9 @@ const ComparisonCalculator: React.FC = () => {
     const personalBarColor =
       returns.personal &&
       returns.index &&
-      returns.personal.rate + redColorThreshold < returns.index.rate
-        ? colorRed
-        : colorGreen;
+      returns.personal.rate + negativeColorThreshold < returns.index.rate
+        ? 'NEGATIVE'
+        : 'POSITIVE';
 
     const personalBarProperties: GraphBarProperties = {
       color: personalBarColor,
@@ -718,17 +724,17 @@ const ComparisonCalculator: React.FC = () => {
           : 'comparisonCalculator.graphYourIIIPillar',
     };
 
-    let comparisonBarColor: string;
+    let comparisonBarColor: GraphBarProperties['color'];
 
     if (returns.pensionFund?.key === Key.CPI) {
-      comparisonBarColor = colorRed;
+      comparisonBarColor = 'NEGATIVE';
     } else {
       comparisonBarColor =
         returns.pensionFund &&
         returns.index &&
-        returns.pensionFund.rate + redColorThreshold < returns.index.rate
-          ? colorRed
-          : colorGreen;
+        returns.pensionFund.rate + negativeColorThreshold < returns.index.rate
+          ? 'NEGATIVE'
+          : 'POSITIVE';
     }
 
     const comparisonFundIsin = returns.pensionFund ? returns.pensionFund.key : '';
@@ -786,21 +792,21 @@ const ComparisonCalculator: React.FC = () => {
       hasNegativeValueBar: false,
       barProperties: {
         1: {
-          color: 'orange',
+          color: 'NEGATIVE',
           amount: 14800,
           percentage: 5.7,
           height: 120,
           label: 'comparisonCalculator.graphYourIIPillar',
         },
         2: {
-          color: 'green',
+          color: 'POSITIVE',
           amount: 24300,
           percentage: 200,
           height: 200,
           label: 'Bank 2i',
         },
         3: {
-          color: 'blue',
+          color: 'INDEX',
           amount: 21000,
           percentage: 8.5,
           height: 165,
