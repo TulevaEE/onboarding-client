@@ -234,21 +234,21 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
               paymentRate: currentPaymentRate,
             }}
           />,
-          currentPaymentRate !== pendingPaymentRate ? (
-            <small className="text-body-secondary">
-              <FormattedMessage
-                id="account.status.choice.lowFee.index.2.description"
-                values={{
-                  paymentRate: pendingPaymentRate,
-                  paymentRateFulfillmentDate: formatDateYear(
-                    mandateDeadlines?.paymentRateFulfillmentDate,
-                  ),
-                }}
-              />
-            </small>
-          ) : (
-            <></>
-          ),
+          ...(currentPaymentRate !== pendingPaymentRate
+            ? [
+                <small className="text-body-secondary">
+                  <FormattedMessage
+                    id="account.status.choice.lowFee.index.2.description"
+                    values={{
+                      paymentRate: pendingPaymentRate,
+                      paymentRateFulfillmentDate: formatDateYear(
+                        mandateDeadlines?.paymentRateFulfillmentDate,
+                      ),
+                    }}
+                  />
+                </small>,
+              ]
+            : []),
         ]}
       >
         <SecondPillarActionButton
@@ -271,19 +271,21 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
             paymentRate: currentPaymentRate,
           }}
         />,
-        currentPaymentRate !== pendingPaymentRate ? (
-          <small className="text-body-secondary">
-            <FormattedMessage
-              id="account.status.choice.lowFee.index.2.description"
-              values={{
-                paymentRate: pendingPaymentRate,
-                paymentRateFulfillmentDate: formatDateYear(
-                  mandateDeadlines?.paymentRateFulfillmentDate,
-                ),
-              }}
-            />
-          </small>
-        ) : null,
+        ...(currentPaymentRate !== pendingPaymentRate
+          ? [
+              <small className="text-body-secondary">
+                <FormattedMessage
+                  id="account.status.choice.lowFee.index.2.description"
+                  values={{
+                    paymentRate: pendingPaymentRate,
+                    paymentRateFulfillmentDate: formatDateYear(
+                      mandateDeadlines?.paymentRateFulfillmentDate,
+                    ),
+                  }}
+                />
+              </small>,
+            ]
+          : []),
       ]}
     />
   );
