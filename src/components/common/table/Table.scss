@@ -1,4 +1,5 @@
 @import '../../variables';
+@import '~bootstrap/scss/bootstrap.scss';
 
 .table-container {
   width: 100%;
@@ -7,6 +8,16 @@
 .table th:not(:first-child) {
   text-align: right;
 }
+.table thead td,
+.table thead th {
+  font-weight: $font-weight-medium;
+}
+.table tfoot td:first-child,
+.table tfoot td:last-child,
+.table tfoot th:first-child,
+.table tfoot th:last-child {
+  font-weight: $font-weight-bold;
+}
 
 @media (min-width: 992px) {
   .table th {
@@ -14,7 +25,7 @@
   }
 }
 
-/* test without our custom styles
+/* test without previous custom styles
 
 .table {
   width: auto !important;

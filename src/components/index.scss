@@ -31,28 +31,14 @@ h6,
 .h4,
 .h5,
 .h6 {
-  text-wrap: pretty;
-}
-h1,
-h4,
-h5,
-h6,
-.h1,
-.h4,
-.h5,
-.h6 {
-  font-weight: $font-weight-semibold;
-}
-h2,
-h3,
-.h2,
-.h3 {
   font-weight: $font-weight-medium;
+  text-wrap: pretty;
 }
 h1,
 .h1 {
   font-size: $h1-font-size;
   line-height: $h1-line-height;
+  font-weight: $font-weight-semibold;
 }
 h2,
 .h2 {
