@@ -8,6 +8,12 @@
   text-align: right;
 }
 
+@media (min-width: 992px) {
+  .table th {
+    white-space: nowrap;
+  }
+}
+
 /* test without our custom styles
 
 .table {

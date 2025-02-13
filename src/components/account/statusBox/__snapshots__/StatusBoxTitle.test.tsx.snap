@@ -1,15 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`StatusBoxLoader renders correctly 1`] = `
-<div
-  className="row"
->
-  <div
-    className="col-md-6 mb-4 lead"
-  >
-    <MemoizedFormattedMessage
-      id="account.status.choices"
-    />
-  </div>
-</div>
+<h2 className="mt-5 mb-4">
+  <MemoizedFormattedMessage
+    id="account.status.choices"
+  />
+</h2>
 `;

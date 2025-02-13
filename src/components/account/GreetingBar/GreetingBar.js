@@ -13,24 +13,24 @@ export class GreetingBar extends Component {
     if (!user) {
       return (
         <div>
-          <Shimmer height={38} />
+          <Shimmer height={32} />
         </div>
       );
     }
     return (
-      <div className="d-flex flex-column flex-md-row align-items-md-center mt-5">
-        <div className="d-flex flex-column flex-lg-row flex-fill justify-content-between align-items-lg-center">
-          <div className="lead">
+      <div className="my-5 d-flex flex-column flex-md-row gap-4 row-gap-1 align-items-md-center">
+        <div className="d-flex flex-column flex-lg-row row-gap-1 flex-fill justify-content-between align-items-baseline align-items-lg-center">
+          <h2 className="m-0">
             <FormattedMessage id="account.greeting" />, {getFullName(user)}
-          </div>
-          <div>
+          </h2>
+          <div className="d-flex">
             {user.email}
             {user.email && user.phoneNumber && <span className="text-separator mx-2">·</span>}
-            <span className="me-3">{user.phoneNumber}</span>
+            {user.phoneNumber}
           </div>
         </div>
         <div>
-          <Link className="btn btn-light mt-3 mt-lg-0" to="/contact-details">
+          <Link className="icon-link" to="/contact-details">
             <FormattedMessage id="account.update.contact" />
           </Link>
         </div>

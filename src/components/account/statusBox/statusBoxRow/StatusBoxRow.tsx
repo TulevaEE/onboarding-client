@@ -120,7 +120,7 @@ export const StatusBoxRow: React.FunctionComponent<{
       <div className="d-flex gap-3">
         <StatusBoxIcon checked={ok} warning={warning} error={error} />
         <div className="d-flex flex-column justify-content-center">
-          <h3 className="m-0 h6 fw-bold">{name}</h3>
+          <h3 className="mb-1 h4">{name}</h3>
           {lines.map((line) => (
             <p className="m-0">{line}</p>
           ))}
