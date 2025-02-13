@@ -3,6 +3,12 @@
 .table-container {
   width: 100%;
 }
+.table td:not(:first-child),
+.table th:not(:first-child) {
+  text-align: right;
+}
+
+/* test without our custom styles
 
 .table {
   width: auto !important;
@@ -46,3 +52,4 @@
 .table th:first-child {
   text-align: left;
 }
+*/

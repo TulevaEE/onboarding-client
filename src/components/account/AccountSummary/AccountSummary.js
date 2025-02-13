@@ -212,24 +212,22 @@ const AccountSummary = ({
   return (
     <>
       <Table columns={columns} dataSource={dataSource} />
-      <div className="text-center">
-        <small className="text-body-secondary">
-          <FormattedMessage
-            id="accountSummary.disclaimer"
-            values={{
-              a: (chunks) => (
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href="//tuleva.ee/vastused/pensionifondide-tasud/"
-                >
-                  {chunks}
-                </a>
-              ),
-            }}
-          />
-        </small>
-      </div>
+      <p className="m-0 mt-3 text-body-secondary text-center small">
+        <FormattedMessage
+          id="accountSummary.disclaimer"
+          values={{
+            a: (chunks) => (
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href="//tuleva.ee/vastused/pensionifondide-tasud/"
+              >
+                {chunks}
+              </a>
+            ),
+          }}
+        />
+      </p>
     </>
   );
 };
