@@ -178,7 +178,7 @@
   "account.current.balance.total": "Total",
   "account.active.fund.title": "My current active pension fund",
   "account.contact.info.title": "My contact information",
-  "error.messages.intro": "An error occurred. Please contact us or try again!",
+  "error.messages.intro": "An error occurred. Please try again or reach out to us.",
   "error.message.close": "Close",
   "error.payment-failed": "Payment failed.",
   "id.card.signing.error": "Couldn't find ID-card or certificates are outdated or browser signing plugin is not working. If needed restart the broswer and try again.",
