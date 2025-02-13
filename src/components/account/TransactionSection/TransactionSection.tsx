@@ -114,16 +114,16 @@ export const TransactionSection: React.FunctionComponent<{
   return (
     <section className="mt-5">
       {!pillar ? (
-        <div className="d-flex flex-row align-items-baseline justify-content-between mb-4">
+        <div className="mt-5 mb-4 d-flex flex-row align-items-baseline justify-content-between">
           <h2 className="m-0">{children || <FormattedMessage id="transactions.title" />}</h2>
           <Link className="icon-link" to="/2nd-pillar-transactions">
             <FormattedMessage id="transactions.seeAll" />
           </Link>
         </div>
       ) : (
-        <div className="d-flex flex-md-row flex-column align-items-baseline justify-content-between">
-          <h2 className="mb-4">{children || <FormattedMessage id="transactions.title" />}</h2>
-          <div className="ms-md-2 text-nowrap mb-4">
+        <div className="mt-5 mb-4 d-flex flex-md-row flex-column align-items-baseline justify-content-between">
+          <h2 className="m-0">{children || <FormattedMessage id="transactions.title" />}</h2>
+          <div className="d-flex gap-4">
             {pillar === 2 && (
               <Link className="icon-link" to="/3rd-pillar-transactions">
                 <FormattedMessage id="transactions.seeAll.3" />
@@ -135,13 +135,9 @@ export const TransactionSection: React.FunctionComponent<{
               </Link>
             )}
             {!limit && (
-              <>
-                {' '}
-                <span className="mx-2">·</span>{' '}
-                <Link to="/account">
-                  <FormattedMessage id="transactions.backToAccountPage" />
-                </Link>
-              </>
+              <Link className="icon-link" to="/account">
+                <FormattedMessage id="transactions.backToAccountPage" />
+              </Link>
             )}
           </div>
         </div>

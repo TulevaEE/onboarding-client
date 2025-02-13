@@ -16,7 +16,7 @@ export const ApplicationSection: React.FunctionComponent = () => {
   );
   return filteredApplications && filteredApplications.length ? (
     <section className="mt-5">
-      <h2 className="mb-4 lead">
+      <h2 className="mt-5 mb-4">
         <FormattedMessage id="applications.title" />
       </h2>
       {filteredApplications
