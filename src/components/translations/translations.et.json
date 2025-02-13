@@ -97,7 +97,7 @@
   "capitalEvents.columns.source.title": "Allikas",
   "capitalEvents.columns.value.title": "Summa",
   "capitalEvents.columns.date.footer": "Kokku",
-  "capitalEvents.backToAccountPage": "Tagasi kontole",
+  "capitalEvents.backToAccountPage": "Tagasi kontolehele",
   "capitalEvents.title": "Sinu liikmekapitali tehingud",
 
   "target.funds.EE3600109435.title": "Tuleva Maailma Aktsiate Pensionifond",
@@ -469,7 +469,7 @@
   "thirdPillarPayment.paymentDescription": "Makse selgitus",
   "thirdPillarPayment.reference": "Viitenumber",
   "thirdPillarPayment.recurringPaymentQuestion": "Tegid püsikorralduse ära?",
-  "thirdPillarPayment.backToAccountPage": "Tagasi avalehele",
+  "thirdPillarPayment.backToAccountPage": "Tagasi kontolehele",
   "thirdPillarPayment.SINGLE": "Ühekordne sissemakse",
   "thirdPillarPayment.RECURRING": "Igakuine püsimakse",
   "thirdPillarPayment.EMPLOYER": "Otse palgast",
@@ -600,7 +600,7 @@
   "transactions.seeAll": "Vaatan kõiki tehinguid",
   "transactions.seeAll.2": "II sammas",
   "transactions.seeAll.3": "III sammas",
-  "transactions.backToAccountPage": "Tagasi avalehele",
+  "transactions.backToAccountPage": "Tagasi kontolehele",
   "transactions.workplace": "Tööandjalt",
   "transactions.personal": "Eraisikult",
 
@@ -611,7 +611,7 @@
   "contributions.columns.date.footer": "Kokku",
   "contributions.columns.sender.title": "Saatja",
   "contributions.columns.amount.title": "Summa",
-  "contributions.backToAccountPage": "Tagasi avalehele",
+  "contributions.backToAccountPage": "Tagasi kontolehele",
   "contributions.notice.2nd": "NB! Siit tabelist on puudu <a>riigi kompensatsioon</a>.",
   "contributions.notice.3rd": "NB! Siit tabelist on puudu enne 2018. aastat tehtud sissemaksed.",
   "contributions.seeAll.2": "II sammas",
@@ -621,7 +621,7 @@
   "cancellation.flow.confirm.content": "Avaldust allkirjastades kinnitad, et soovid tühistada järgmise avalduse:",
   "cancellation.flow.success.title": "Avaldus on tühistatud",
   "cancellation.flow.success.download": "Laadi avaldus alla",
-  "cancellation.flow.success.back": "Tagasi kontole",
+  "cancellation.flow.success.back": "Tagasi kontolehele",
 
   "partnerFlow.error": "Protsessi alustamisel tekkis viga",
 

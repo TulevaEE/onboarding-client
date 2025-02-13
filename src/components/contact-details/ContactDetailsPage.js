@@ -9,10 +9,10 @@ import { updateUser } from '../common/user/actions';
 const noop = () => null;
 
 export const ContactDetailsPage = ({ saveUser }) => (
-  <div className="col-sm-8 col-md-6 col-lg-5 mx-auto my-5">
-    <p className="mb-4 lead">
+  <div className="col-sm-8 col-md-6 col-lg-5 mx-auto">
+    <h2 className="mt-5 mb-4">
       <FormattedMessage id="update.user.details.title" />
-    </p>
+    </h2>
     <UpdateUserForm onSubmit={saveUser} />
   </div>
 );

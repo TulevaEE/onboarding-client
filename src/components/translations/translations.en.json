@@ -619,7 +619,7 @@
   "cancellation.flow.confirm.content": "By signing you confirm that you would like to cancel following application:",
   "cancellation.flow.success.title": "Application cancelled",
   "cancellation.flow.success.download": "Download application",
-  "cancellation.flow.success.back": "Back to account",
+  "cancellation.flow.success.back": "Back to account page",
 
   "partnerFlow.error": "An unexpected error occurred while initiating process",
 

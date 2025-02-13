@@ -105,21 +105,20 @@ export const ContributionSection: React.FunctionComponent<{
 
   return (
     <section className="mt-5">
-      <div className="d-flex flex-md-row flex-column align-items-baseline justify-content-between">
-        <h2 className="mb-4 lead">{children || <FormattedMessage id="contributions.title" />}</h2>
-        <div className="ms-md-2 text-nowrap mb-4">
+      <div className="mt-5 mb-4 d-flex flex-md-row flex-column align-items-baseline justify-content-between">
+        <h2 className="m-0">{children || <FormattedMessage id="contributions.title" />}</h2>
+        <div className="d-flex gap-4">
           {pillar === 2 && (
-            <Link className="text-nowrap" to="/3rd-pillar-contributions">
+            <Link className="icon-link" to="/3rd-pillar-contributions">
               <FormattedMessage id="contributions.seeAll.3" />
             </Link>
           )}
           {pillar === 3 && (
-            <Link className="text-nowrap" to="/2nd-pillar-contributions">
+            <Link className="icon-link" to="/2nd-pillar-contributions">
               <FormattedMessage id="contributions.seeAll.2" />
             </Link>
-          )}{' '}
-          <span className="mx-2">·</span>{' '}
-          <Link to="/account">
+          )}
+          <Link className="icon-link" to="/account">
             <FormattedMessage id="contributions.backToAccountPage" />
           </Link>
         </div>
