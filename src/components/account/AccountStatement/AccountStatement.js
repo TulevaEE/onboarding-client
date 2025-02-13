@@ -91,11 +91,11 @@ const AccountStatement = ({ funds, activeFundNotice }) => {
       <Table columns={columns} dataSource={dataSource} />
 
       {showActiveFundNotice && (
-        <small className="text-body-secondary">
+        <p className="m-0 mt-3 text-body-secondary text-center small">
           {activeFundNotice || (
             <FormattedMessage id={`accountStatement.${fundPillar}.activeFundNotice`} />
           )}
-        </small>
+        </p>
       )}
     </>
   );

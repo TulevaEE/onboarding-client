@@ -145,8 +145,11 @@ hr {
   cursor: pointer;
 }
 
-.text-orange {
-  color: $orange;
+.text-danger {
+  color: $red !important;
+}
+.text-success {
+  color: $text-green !important;
 }
 
 .ff-system {
