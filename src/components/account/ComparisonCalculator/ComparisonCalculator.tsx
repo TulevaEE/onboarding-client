@@ -193,7 +193,7 @@ const ComparisonCalculator: React.FC = () => {
           <div className="p-3">
             <Shimmer height={38} />
           </div>
-          <div className="p-3">
+          <div className="p-3 pt-0">
             <Shimmer height={38} />
           </div>
           <hr />
