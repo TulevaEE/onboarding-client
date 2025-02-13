@@ -106,7 +106,7 @@ describe('When a user is cancelling an application', () => {
       { timeout: 1500 },
     );
 
-    expect(screen.getByText('Back to account')).toBeInTheDocument();
+    expect(screen.getByText('Back to account page')).toBeInTheDocument();
   });
 
   test('the success screen lets you download the signed mandate', async () => {

@@ -52,12 +52,12 @@ export const CapitalPage: React.FunctionComponent = () => {
 
   return (
     <section className="mt-5">
-      <div className="d-flex flex-row align-items-end justify-content-between">
-        <h2 className="mb-4 lead">
+      <div className="mt-5 mb-4 d-flex flex-row align-items-baseline justify-content-between">
+        <h2 className="m-0">
           <FormattedMessage id="capitalEvents.title" />
         </h2>
-        <div className="ms-md-2 text-nowrap mb-4">
-          <Link to="/account">
+        <div className="d-flex gap-4">
+          <Link className="icon-link" to="/account">
             <FormattedMessage id="capitalEvents.backToAccountPage" />
           </Link>
         </div>
