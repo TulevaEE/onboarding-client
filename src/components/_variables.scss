@@ -8,7 +8,7 @@ $container-max-widths: (
   lg: 960px,
   xl: 960px,
   // override for xl breakpoint
-  xxl: 960px // override for xxl breakpoint,,
+  xxl: 960px // override for xxl breakpoint,,,
 );
 
 /**
@@ -48,6 +48,8 @@ $text-tertiary: #909396;
 $text-body-primary: $text-primary;
 $text-body-secondary: $text-secondary;
 $text-body-tertiary: $text-tertiary;
+
+$table-color: $text-primary;
 
 $blue: #0072ec;
 $navy-blue: #002f63;
