@@ -12,6 +12,12 @@
 .table thead th {
   font-weight: $font-weight-medium;
 }
+.table tr > :first-child {
+  padding-left: 0;
+}
+.table tr > :last-child {
+  padding-right: 0;
+}
 .table tfoot td:first-child,
 .table tfoot td:last-child,
 .table tfoot th:first-child,
@@ -20,7 +26,8 @@
 }
 
 @media (min-width: 992px) {
-  .table th {
+  .table thead td,
+  .table thead th {
     white-space: nowrap;
   }
 }

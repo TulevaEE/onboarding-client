@@ -8,7 +8,7 @@ $container-max-widths: (
   lg: 960px,
   xl: 960px,
   // override for xl breakpoint
-  xxl: 960px // override for xxl breakpoint,,,
+  xxl: 960px // override for xxl breakpoint,,,,
 );
 
 /**
@@ -60,6 +60,9 @@ $yellow: #fce228;
 $green: #51c26c;
 $text-green: #00ac00;
 $red: $orange;
+
+$link-color: $blue;
+$link-hover-color: $blue;
 
 $note-bg: #fff6d9;
 $note-border: #faeed0;
