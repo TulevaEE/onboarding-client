@@ -160,19 +160,25 @@ hr {
   cursor: pointer;
 }
 
+.ff-system {
+  font-family: $font-family-system;
+}
+
 .text-danger {
   color: $red !important;
 }
 .text-success {
   color: $text-green !important;
 }
-
-.ff-system {
-  font-family: $font-family-system;
+.text-body-secondary {
+  color: $text-body-secondary !important;
+}
+.text-body-tertiary {
+  color: $text-body-tertiary !important;
 }
 
 .text-separator {
-  color: $text-body-secondary;
+  color: $text-body-secondary !important;
   user-select: none;
 }
 
