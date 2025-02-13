@@ -184,9 +184,9 @@ const ComparisonCalculator: React.FC = () => {
   }
   return (
     <>
-      <p className="mt-5 mb-4 lead">
+      <h2 className="mt-5 mb-4">
         <FormattedMessage id="returnComparison.title" />
-      </p>
+      </h2>
 
       {loadingInitialData ? (
         <div className="card">
