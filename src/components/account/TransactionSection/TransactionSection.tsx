@@ -114,23 +114,23 @@ export const TransactionSection: React.FunctionComponent<{
   return (
     <section className="mt-5">
       {!pillar ? (
-        <div className="d-flex flex-row justify-content-between">
-          <h2 className="mb-4 lead">{children || <FormattedMessage id="transactions.title" />}</h2>
-          <Link className="text-nowrap" to="/2nd-pillar-transactions">
+        <div className="d-flex flex-row align-items-baseline justify-content-between mb-4">
+          <h2 className="m-0">{children || <FormattedMessage id="transactions.title" />}</h2>
+          <Link className="icon-link" to="/2nd-pillar-transactions">
             <FormattedMessage id="transactions.seeAll" />
           </Link>
         </div>
       ) : (
-        <div className="d-flex flex-md-row flex-column align-items-md-end justify-content-between">
-          <h2 className="mb-4 lead">{children || <FormattedMessage id="transactions.title" />}</h2>
+        <div className="d-flex flex-md-row flex-column align-items-baseline justify-content-between">
+          <h2 className="mb-4">{children || <FormattedMessage id="transactions.title" />}</h2>
           <div className="ms-md-2 text-nowrap mb-4">
             {pillar === 2 && (
-              <Link className="text-nowrap" to="/3rd-pillar-transactions">
+              <Link className="icon-link" to="/3rd-pillar-transactions">
                 <FormattedMessage id="transactions.seeAll.3" />
               </Link>
             )}
             {pillar === 3 && (
-              <Link className="text-nowrap" to="/2nd-pillar-transactions">
+              <Link className="icon-link" to="/2nd-pillar-transactions">
                 <FormattedMessage id="transactions.seeAll.2" />
               </Link>
             )}

@@ -183,7 +183,7 @@ const ComparisonCalculator: React.FC = () => {
   }
   return (
     <>
-      <p className="mt-5 mb-4 lead">
+      <h2 className="mt-5 mb-4">
         <FormattedMessage id="returnComparison.title" />
       </p>
       <div className="comparison-calculator" role="region" aria-label="Comparison Calculator">

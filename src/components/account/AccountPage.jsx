@@ -107,7 +107,7 @@ export function AccountPage(
       <div className="mt-5">
         <SectionHeading titleId="accountSummary.heading" lead>
           {shouldShowWithdrawalsButton() && (
-            <Link className="text-nowrap" to="/withdrawals">
+            <Link className="icon-link" to="/withdrawals">
               <FormattedMessage id="accountSummary.withdrawalsLink" />
             </Link>
           )}
@@ -133,19 +133,19 @@ export function AccountPage(
       <ApplicationSection />
 
       {!loadingCurrentBalance && (
-        <div className="mt-5 mb-4">
-          <p className="mb-4 lead">
+        <>
+          <h2 className="mt-5 mb-4">
             <FormattedMessage id="accountStatement.heading" />
-          </p>
-          <div className="d-flex flex-md-row flex-column align-items-md-end justify-content-between">
-            <div className="mb-3">
+          </h2>
+          <div className="my-4 d-flex flex-md-row flex-column gap-2 justify-content-between align-items-baseline">
+            <h3 className="m-0">
               <FormattedMessage id="accountStatement.secondPillar.heading" />
-            </div>
-            <div className="d-flex flex-sm-row flex-column align-items-sm-end justify-content-between">
-              <Link className="btn btn-light mb-3 me-md-3" to="/2nd-pillar-payment-rate">
+            </h3>
+            <div className="d-flex flex-sm-row flex-column gap-4 align-items-baseline justify-content-between">
+              <Link className="icon-link" to="/2nd-pillar-payment-rate">
                 <FormattedMessage id="account.status.choice.paymentRate.change" />
               </Link>
-              <Link className="btn btn-light mb-3" to="/2nd-pillar-flow">
+              <Link className="icon-link" to="/2nd-pillar-flow">
                 <FormattedMessage id="change.my.pension.fund" />
               </Link>
             </div>
@@ -154,14 +154,14 @@ export function AccountPage(
           {secondPillarSourceFunds && secondPillarSourceFunds.length > 0 && (
             <AccountStatement funds={secondPillarSourceFunds} />
           )}
-        </div>
+        </>
       )}
 
       {!loadingCurrentBalance && (
         <>
           <SectionHeading titleId="accountStatement.thirdPillar.heading">
             {!isThirdPillarFullyConverted && (
-              <Link className="btn btn-light mb-3" to="/3rd-pillar-flow">
+              <Link className="btn btn-light" to="/3rd-pillar-flow">
                 <FormattedMessage id="change.my.pension.fund.third.pillar" />
               </Link>
             )}
@@ -175,7 +175,7 @@ export function AccountPage(
       {loadingCapital || memberCapital ? (
         <div className="mt-5">
           <SectionHeading titleId="memberCapital.heading">
-            <Link className="text-nowrap mb-4" to="/capital">
+            <Link className="icon-link" to="/capital">
               <FormattedMessage id="memberCapital.transactions" />
             </Link>
           </SectionHeading>

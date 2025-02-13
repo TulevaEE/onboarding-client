@@ -8,16 +8,16 @@ type Props = PropsWithChildren<{
 }>;
 
 export const SectionHeading = ({ titleId, lead, children }: Props): React.ReactNode => (
-  <div className="mb-3 d-flex flex-row justify-content-between">
+  <div className="mt-5 mb-4 d-flex flex-row justify-content-between align-items-baseline">
     {lead ? (
-      <h2 className="lead">
+      <h2 className="m-0">
         <FormattedMessage id={titleId} />
       </h2>
     ) : (
-      <div>
+      <h3 className="m-0">
         <FormattedMessage id={titleId} />
-      </div>
+      </h3>
     )}
-    {children && <div className="ms-md-2 text-nowrap">{children}</div>}
+    {children && <div>{children}</div>}
   </div>
 );

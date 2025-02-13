@@ -8,7 +8,7 @@ $container-max-widths: (
   lg: 960px,
   xl: 960px,
   // override for xl breakpoint
-  xxl: 960px // override for xxl breakpoint,
+  xxl: 960px // override for xxl breakpoint,,
 );
 
 /**
@@ -21,21 +21,21 @@ $font-family-system: system-ui, sans-serif !default;
 $font-family-monospace: Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace !default;
 $font-family-base: $font-family-sans-serif !default;
 
-$font-size-small: 0.875em;
+$font-size-small: 0.875em; // 14
 
 $h1-font-size: 2rem !default; // 32
-$h2-font-size: 1.75rem !default; // 28
-$h3-font-size: 1.5rem !default; // 24
-$h4-font-size: 1.25rem !default; // 20
+$h2-font-size: 1.5rem !default; // 24
+$h3-font-size: 1.25rem !default; // 20
+$h4-font-size: 1.125rem !default; // 18
 $h5-font-size: 1.125rem !default; // 18
-$h6-font-size: 1rem !default; // 16
+$h6-font-size: 1.125rem !default; // 18
 
-$h1-line-height: 1.25;
-$h2-line-height: 1.2857;
-$h3-line-height: 1.3333;
-$h4-line-height: 1.4;
-$h5-line-height: 1.3333;
-$h6-line-height: 1.5;
+$h1-line-height: 1.25; // 40
+$h2-line-height: 1.3333; // 32
+$h3-line-height: 1.4; // 28
+$h4-line-height: 1.3333; // 24
+$h5-line-height: 1.3333; // 24
+$h6-line-height: 1.3333; // 24
 
 /**
  * Colors

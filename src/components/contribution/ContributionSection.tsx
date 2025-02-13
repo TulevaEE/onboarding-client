@@ -105,7 +105,7 @@ export const ContributionSection: React.FunctionComponent<{
 
   return (
     <section className="mt-5">
-      <div className="d-flex flex-md-row flex-column align-items-md-end justify-content-between">
+      <div className="d-flex flex-md-row flex-column align-items-baseline justify-content-between">
         <h2 className="mb-4 lead">{children || <FormattedMessage id="contributions.title" />}</h2>
         <div className="ms-md-2 text-nowrap mb-4">
           {pillar === 2 && (
