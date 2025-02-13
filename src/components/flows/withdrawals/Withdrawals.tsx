@@ -7,7 +7,7 @@ import {
   useWithdrawalsEligibility,
 } from '../../common/apiHooks';
 import { WithdrawalsHeader } from './WithdrawalsHeader';
-import { Loader } from '../../common/loader/Loader';
+import { Shimmer } from '../../common/shimmer/Shimmer';
 import { WithdrawalsSteps } from './WithdrawalsSteps';
 import { useWithdrawalsContext, WithdrawalsProvider } from './hooks';
 import { WITHDRAWAL_STEPS } from './constants';
@@ -28,7 +28,39 @@ export const InnerWithdrawals: React.FunctionComponent = () => {
   const { currentStep } = useWithdrawalsContext();
 
   if (!user || !eligibility || !conversion || !fundPensionStatus) {
-    return <Loader className="align-middle my-4" />;
+    return (
+      <div className="d-flex flex-column align-items-center">
+        <div style={{ width: '336px' }} className="mb-4">
+          <Shimmer height={36} />
+        </div>
+        <div style={{ width: '540px' }} className="mb-3">
+          <Shimmer height={60} />
+        </div>
+        <div style={{ width: '540px' }}>
+          <Shimmer height={60} />
+        </div>
+        <div style={{ width: '540px' }} className="my-5">
+          <Shimmer height={32} />
+        </div>
+        <div className="col-12 col-md-11 col-lg-8 mx-auto">
+          <div className="card p-4 d-flex flex-column gap-2">
+            <Shimmer height={32} />
+            <Shimmer height={32} />
+            <Shimmer height={32} />
+          </div>
+          <div className="card p-4 d-flex flex-column gap-2 mt-3">
+            <Shimmer height={32} />
+            <Shimmer height={32} />
+            <Shimmer height={32} />
+          </div>
+          <div className="card p-4 d-flex flex-column gap-2 mt-3">
+            <Shimmer height={32} />
+            <Shimmer height={32} />
+            <Shimmer height={32} />
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (!canAccessWithdrawals(conversion, fundPensionStatus)) {

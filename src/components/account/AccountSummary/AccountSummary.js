@@ -11,16 +11,18 @@ import { getValueSum, getWeightedAverageFee } from '../AccountStatement/fundSele
 import { Fees } from '../../common/Percentage/Fees';
 
 export const AccountSummaryLoader = () => (
-  <div>
-    <Shimmer height={26} />
-    <div className="mt-4">
-      <Shimmer height={26} />
+  <div className="d-flex flex-column gap-3">
+    <div>
+      <Shimmer height={40} />
     </div>
-    <div className="mt-4">
-      <Shimmer height={26} />
+    <div>
+      <Shimmer height={40} />
     </div>
-    <div className="mt-4">
-      <Shimmer height={26} />
+    <div>
+      <Shimmer height={40} />
+    </div>
+    <div>
+      <Shimmer height={40} />
     </div>
   </div>
 );
