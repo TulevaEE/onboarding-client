@@ -1,8 +1,9 @@
 import React from 'react';
 
 import { FormattedMessage } from 'react-intl';
-import { Loader, logo } from '../../common';
+import { logo } from '../../common';
 import LanguageSwitcher from './languageSwitcher';
+import { Shimmer } from '../../common/shimmer/Shimmer';
 
 type Props = {
   // TODO move to useMe hook here
@@ -13,27 +14,34 @@ type Props = {
 
 export const Header = ({ user, loading, onLogout }: Props) => (
   <>
-    <div className="d-flex justify-content-between align-items-end border-bottom py-4 mb-5 app-header">
+    <div className="d-flex justify-content-between align-items-center border-bottom py-4 mb-5 app-header">
       <a href="/account">
         <img src={logo} alt="Tuleva" className="brand-logo" />
       </a>
-      <div className="text-end">
+      <div>
         {loading || !user ? (
-          <Loader className="align-right" />
+          <div className="d-flex flex-column gap-2 align-items-end">
+            <div style={{ width: '160px' }}>
+              <Shimmer height={24} />
+            </div>
+            <div style={{ width: '120px' }}>
+              <Shimmer height={24} />
+            </div>
+          </div>
         ) : (
           <>
-            <p className="m-0">
-              <span className="text-body align-middle">{user.name}</span>
-              <span className="text-body-secondary align-middle">&ensp;&middot;&ensp;</span>
+            <p className="m-0 d-flex justify-content-end align-items-baseline">
+              <span className="text-body">{user.name}</span>
+              <span className="text-separator mx-2">&middot;</span>
               <button type="button" className="btn btn-link p-0 border-0" onClick={onLogout}>
                 <FormattedMessage id="log.out" />
               </button>
             </p>
-            <p className="m-0 mt-1">
+            <p className="m-0 mt-2 d-flex justify-content-end align-items-baseline">
               <a className="btn btn-link p-0 border-0" href="/account">
                 <FormattedMessage id="header.my.account" />
               </a>
-              <span className="text-body-secondary align-middle">&ensp;&middot;&ensp;</span>
+              <span className="text-separator mx-2">&middot;</span>
               <LanguageSwitcher />
             </p>
           </>

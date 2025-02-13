@@ -13,16 +13,16 @@ export class GreetingBar extends Component {
     if (!user) {
       return (
         <div>
-          <Shimmer height={32} />
+          <Shimmer height={30} />
         </div>
       );
     }
     return (
       <div className="my-5 d-flex flex-column flex-md-row gap-4 row-gap-1 align-items-md-center">
         <div className="d-flex flex-column flex-lg-row row-gap-1 flex-fill justify-content-between align-items-baseline align-items-lg-center">
-          <h2 className="m-0">
+          <p className="m-0 lead">
             <FormattedMessage id="account.greeting" />, {getFullName(user)}
-          </h2>
+          </p>
           <div className="d-flex">
             {user.email}
             {user.email && user.phoneNumber && <span className="text-separator mx-2">·</span>}
