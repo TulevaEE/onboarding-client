@@ -51,10 +51,10 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
 
       {error && <ErrorMessage errors={error.body} onCancel={resetError} overlayed />}
 
-      <h2 className="mt-3">
+      <h1 className="mb-3">
         <FormattedMessage id="secondPillarPaymentRate.contributionChange" />
-      </h2>
-      <p className="mt-3">
+      </h1>
+      <p className="mb-5">
         {!pendingPaymentRate || pendingPaymentRate < 6 ? (
           <>
             <SecondPillarPaymentRateTaxWin />.{' '}
@@ -71,15 +71,14 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
           }}
         />
       </p>
-      <p className="mt-3">
+      <p className="mb-4">
         <FormattedMessage id="secondPillarPaymentRate.chooseContributionRate" />
       </p>
 
-      <div>
+      <div className="d-flex flex-column gap-2">
         <Radio
           name="payment-rate"
           id="payment-rate-2"
-          className="mt-3"
           selected={paymentRate === 2}
           onSelect={() => setPaymentRate(2)}
         >
@@ -101,7 +100,6 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
         <Radio
           name="payment-rate"
           id="payment-rate-4"
-          className="mt-3"
           selected={paymentRate === 4}
           onSelect={() => setPaymentRate(4)}
         >
@@ -121,7 +119,6 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
         <Radio
           name="payment-rate"
           id="payment-rate-6"
-          className="mt-3"
           selected={paymentRate === 6}
           onSelect={() => setPaymentRate(6)}
         >
@@ -146,7 +143,7 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
         </Radio>
       </div>
 
-      <div className="d-flex flex-column-reverse flex-md-row justify-content-between mt-4">
+      <div className="mt-5 d-flex flex-column-reverse flex-md-row justify-content-between">
         <Link className="btn btn-light mt-2" to="/account">
           <FormattedMessage id="secondPillarPaymentRate.cancel" />
         </Link>

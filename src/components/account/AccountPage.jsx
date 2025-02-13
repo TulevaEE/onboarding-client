@@ -5,7 +5,8 @@ import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 
-import { ErrorMessage, Loader } from '../common';
+import { ErrorMessage } from '../common';
+import { Shimmer } from '../common/shimmer/Shimmer';
 import ComparisonCalculator from './ComparisonCalculator';
 import AccountStatement from './AccountStatement';
 import { MemberCapital } from './MemberCapital';
@@ -179,7 +180,11 @@ export function AccountPage(
               <FormattedMessage id="memberCapital.transactions" />
             </Link>
           </SectionHeading>
-          {loadingCapital && <Loader className="align-middle" />}
+          {loadingCapital && (
+            <>
+              <Shimmer height={32} />
+            </>
+          )}
           {memberCapital && <MemberCapital rows={memberCapital} />}
         </div>
       ) : (
