@@ -1,14 +1,9 @@
-@mixin shimmerWithColor($shimmer-color: #f6f7f8, $shimmer-color2: #edeef1) {
+@mixin shimmerWithColor($shimmer-color: #f5f7f9, $shimmer-color2: #fff) {
   display: block;
   width: 100%;
-  background: linear-gradient(
-      to right,
-      $shimmer-color 0%,
-      $shimmer-color2,
-      $shimmer-color 40%,
-      $shimmer-color 100%
-  ) no-repeat;
-  background-size: 800px 104px;
+  background: linear-gradient(to right, $shimmer-color 30%, $shimmer-color2 50%, $shimmer-color 70%)
+    no-repeat;
+  background-size: 300% 100%;
   animation-duration: 1s;
   animation-fill-mode: forwards;
   animation-iteration-count: infinite;
@@ -18,14 +13,13 @@
 
 @keyframes shimmer-animation {
   0% {
-    background-position: -800px 0;
+    background-position: 100% 0;
   }
   100% {
-    background-position: 800px 0;
+    background-position: 0 0;
   }
 }
 
 .shimmerDefault {
   @include shimmerWithColor;
 }
-
