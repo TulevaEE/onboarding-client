@@ -12,8 +12,13 @@ export class GreetingBar extends Component {
     const { user } = this.props;
     if (!user) {
       return (
-        <div>
-          <Shimmer height={30} />
+        <div className="d-flex justify-content-between align-items-center">
+          <div style={{ width: '200px' }}>
+            <Shimmer height={30} />
+          </div>
+          <div style={{ width: '320px' }}>
+            <Shimmer height={24} />
+          </div>
         </div>
       );
     }

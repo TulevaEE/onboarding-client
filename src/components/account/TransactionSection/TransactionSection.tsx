@@ -21,7 +21,7 @@ export const TransactionSection: React.FunctionComponent<{
   if (!transactions || !funds) {
     return (
       <section className="mt-5">
-        <Shimmer height={26} />
+        <Shimmer height={32} />
       </section>
     );
   }
