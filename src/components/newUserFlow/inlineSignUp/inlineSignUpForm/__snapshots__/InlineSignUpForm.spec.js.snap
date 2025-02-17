@@ -20,7 +20,7 @@ exports[`InlineSignUpForm renders component 1`] = `
         component={[Function]}
         id="register-form-email"
         name="email"
-        placeholder="Email address*"
+        placeholder="Email address *"
         type="email"
         validate={
           Array [
