@@ -12,20 +12,17 @@ import { updateUserAndAml } from './actions';
 const noop = () => null;
 
 export const AmlPage = ({ save, updateUserSuccess, createAmlChecksSuccess, location }) => (
-  <div className="mt-5">
+  <div className="col-sm-10 col-md-8 col-lg-6 mx-auto">
     {updateUserSuccess && createAmlChecksSuccess && (
       <Redirect to={location.state && location.state.from ? location.state.from : ''} />
     )}
-    <p>
+    <h1 className="mb-3">
+      <FormattedMessage id="update.user.details.title" />
+    </h1>
+    <p className="mb-5">
       <FormattedMessage id="aml.updateContactDetails" />
     </p>
-    <p className="mb-4 lead">
-      <FormattedMessage id="update.user.details.title" />
-    </p>
     <UpdateUserForm onSubmit={save}>
-      <p className="mt-4 mb-3 lead">
-        <FormattedMessage id="aml.extraDetails" />
-      </p>
       <OccupationAgreement className="mt-3" />
       <ResidencyAgreement className="mt-3 mb-4" />
     </UpdateUserForm>
