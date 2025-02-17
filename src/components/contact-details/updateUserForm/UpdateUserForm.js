@@ -24,7 +24,7 @@ export const UpdateUserForm = ({
       )}
 
       <div className="mb-3">
-        <label htmlFor="update-user-form-email">
+        <label className="form-label" htmlFor="update-user-form-email">
           <FormattedMessage id="new.user.flow.signup.email" />
         </label>
         <Field
@@ -32,24 +32,22 @@ export const UpdateUserForm = ({
           type="email"
           name="email"
           id="update-user-form-email"
-          placeholder={formatMessage({ id: 'new.user.flow.signup.email' })}
           validate={[requiredField, emailValidator]}
         />
       </div>
       <div className="mb-3">
-        <label htmlFor="update-user-form-phoneNumber">
+        <label className="form-label" htmlFor="update-user-form-phoneNumber">
           <FormattedMessage id="new.user.flow.signup.phoneNumber" />
         </label>
         <Field
           component={renderField}
-          type="number"
+          type="tel"
           name="phoneNumber"
           id="update-user-form-phoneNumber"
-          placeholder={formatMessage({ id: 'new.user.flow.signup.phoneNumber' })}
         />
       </div>
       <div className="mb-3">
-        <label htmlFor="update-user-form-country">
+        <label className="form-label" htmlFor="update-user-form-country">
           <FormattedMessage id="new.user.flow.signup.country" />
         </label>
         <Field
@@ -314,9 +312,9 @@ export const UpdateUserForm = ({
       {children}
       <div className={`${error ? 'text-danger' : ''}`}>
         {error && (
-          <div className="mb-3">
+          <p className="m-0 mt-2">
             <FormattedMessage id={error} />
-          </div>
+          </p>
         )}
         <div className="d-grid mt-4">
           <button type="submit" disabled={submitting} className="btn btn-primary">
