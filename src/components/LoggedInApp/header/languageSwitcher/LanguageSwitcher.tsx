@@ -4,11 +4,11 @@ import config from 'react-global-configuration';
 const LanguageSwitcher: FC = () => (
   <>
     {config.get('language') === 'et' ? (
-      <a className="btn btn-link p-0 border-0" href="?language=en">
+      <a className="icon-link" href="?language=en">
         EN
       </a>
     ) : (
-      <a className="btn btn-link p-0 border-0" href="?language=et">
+      <a className="icon-link" href="?language=et">
         ET
       </a>
     )}
