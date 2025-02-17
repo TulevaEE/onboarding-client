@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 import { FormattedMessage, useIntl } from 'react-intl';
 import './Payment.scss';
 import { captureException } from '@sentry/browser';
@@ -50,18 +49,12 @@ export const ThirdPillarGift: React.FunctionComponent = () => {
   };
 
   return (
-    <>
-      <h2 className="mt-3">
+    <div className="col-12 col-md-11 col-lg-8 mx-auto">
+      <h1 className="mb-3">
         <FormattedMessage id="thirdPillarPayment.giftTitle" />
-      </h2>
-
-      <p className="mt-3">
-        <FormattedMessage
-          id="thirdPillarPayment.giftDescription"
-          values={{
-            br: <br />,
-          }}
-        />
+      </h1>
+      <p className="mt-3 lead">
+        <FormattedMessage id="thirdPillarPayment.giftDescription" />
       </p>
       {error && (
         <div className="alert alert-danger mt-3" role="alert">
@@ -69,53 +62,46 @@ export const ThirdPillarGift: React.FunctionComponent = () => {
         </div>
       )}
 
-      <div>
-        <label className="mt-3" htmlFor="payment-personal-code">
-          <b>
-            <b>
-              <FormattedMessage id="thirdPillarPayment.giftRecipient" />
-            </b>
-          </b>
-          <div className="d-flex align-items-center">
-            <div className="input-group input-group-lg mt-2">
-              <input
-                id="payment-personal-code"
-                type="number"
-                placeholder={formatMessage({ id: 'login.id.code' })}
-                min={0}
-                className="form-control form-control-lg"
-                value={paymentPersonalCode}
-                onChange={(event) => setPaymentPersonalCode(event.target.value)}
-                onWheel={(event) => event.currentTarget.blur()}
-              />
-            </div>
-          </div>
+      <div className="mt-5">
+        <label className="mb-2 fw-bold" htmlFor="payment-personal-code">
+          <FormattedMessage id="thirdPillarPayment.giftRecipient" />
         </label>
+        <input
+          id="payment-personal-code"
+          type="text"
+          maxLength={11}
+          inputMode="numeric"
+          placeholder={formatMessage({ id: 'login.id.code' })}
+          min={0}
+          className="form-control form-control-lg w-50"
+          value={paymentPersonalCode}
+          onChange={(event) => setPaymentPersonalCode(event.target.value)}
+          onWheel={(event) => event.currentTarget.blur()}
+        />
       </div>
-      <div />
 
-      <PaymentAmountInput
-        paymentType="GIFT"
-        value={paymentAmount}
-        onChange={(event) => {
-          const { value } = event.target;
-          const euroRegex = /^\d+([.,]\d{0,2})?$/;
+      <div className="mt-4">
+        <PaymentAmountInput
+          paymentType="GIFT"
+          value={paymentAmount}
+          onChange={(event) => {
+            const { value } = event.target;
+            const euroRegex = /^\d+([.,]\d{0,2})?$/;
 
-          if (value === '' || euroRegex.test(value)) {
-            setPaymentAmount(value);
-          }
-        }}
-        onWheel={(event) => event.currentTarget.blur()}
-        max={6000}
-        className="mt-3"
-      />
-      <div />
+            if (value === '' || euroRegex.test(value)) {
+              setPaymentAmount(value);
+            }
+          }}
+          onWheel={(event) => event.currentTarget.blur()}
+          max={6000}
+          className="mb-2 fw-bold"
+        />
+      </div>
 
-      <p className="mt-3 mb-2 fw-bold">
+      <p className="mt-4 mb-2 fw-bold">
         <FormattedMessage id="thirdPillarPayment.singlePaymentBank" />
       </p>
-
-      <div className="mt-2 payment-banks">
+      <div className="d-flex gap-2 flex-wrap mt-2 payment-banks">
         {/* TODO use refactored PaymentBankButtons here */}
         <BankButton bankKey="swedbank" paymentBank={paymentBank} setPaymentBank={setPaymentBank} />
         <BankButton bankKey="seb" paymentBank={paymentBank} setPaymentBank={setPaymentBank} />
@@ -139,17 +125,18 @@ export const ThirdPillarGift: React.FunctionComponent = () => {
           />
         )}
       {paymentBank === 'other' && (
-        <div className="mt-4">
-          <Link to="/account">
-            <button type="button" className="btn btn-light">
-              <FormattedMessage id="thirdPillarPayment.backToAccountPage" />
-            </button>
-          </Link>
+        <div className="mt-5 d-flex gap-2 align-items-center">
+          <span>
+            <FormattedMessage id="thirdPillarPayment.recurringPaymentQuestion" />
+          </span>
+          <a className="icon-link" href="/account">
+            <FormattedMessage id="thirdPillarPayment.backToAccountPage" />
+          </a>
         </div>
       )}
       {paymentBank !== 'other' && (
         <>
-          <div className="d-flex flex-wrap align-items-start">
+          <div className="mt-5 d-flex flex-column">
             <div className="me-auto">
               <button
                 type="button"
@@ -173,7 +160,7 @@ export const ThirdPillarGift: React.FunctionComponent = () => {
           </div>
         </>
       )}
-    </>
+    </div>
   );
 };
 

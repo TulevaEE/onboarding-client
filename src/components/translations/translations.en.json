@@ -413,8 +413,8 @@
   "aml.occupation.unemployed": "Unemployed",
 
   "thirdPillarPayment.title": "Payment instructions for Tuleva III pillar pension fund",
-  "thirdPillarPayment.giftTitle": "\uD83C\uDF81 A gift to a loved one - a contribution to their Tuleva III Pillar Pension Fund",
-  "thirdPillarPayment.giftDescription": "Did you know that you can put the III pillar to work for your loved ones? Yes, it is also possible to make contributions to another person's III pillar.",
+  "thirdPillarPayment.giftTitle": "A gift to a loved one’s Tuleva III Pillar Pension Fund",
+  "thirdPillarPayment.giftDescription": "Did you know that you can put the III pillar to work for your loved ones? Yes, it is also possible to make contributions to another person's III pillar.",
 
   "thirdPillarPayment.RECURRING.swedbank": "How to set up a recurring payment in Swedbank",
   "thirdPillarPayment.RECURRING.swedbank.login": "Click the button below and log into your Swedbank internet bank.",
@@ -464,6 +464,7 @@
   "thirdPillarPayment.accountNumber": "Account number",
   "thirdPillarPayment.amount": "Amount",
   "thirdPillarPayment.paymentDescription": "Payment description",
+  "thirdPillarPayment.paymentQuestion": "Did you make the payment?",
   "thirdPillarPayment.reference": "Payment reference",
   "thirdPillarPayment.recurringPaymentQuestion": "Did you set up a recurring payment?",
   "thirdPillarPayment.backToAccountPage": "Back to account page",

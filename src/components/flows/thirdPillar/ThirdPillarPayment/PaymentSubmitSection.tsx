@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import './Payment.scss';
 import { AvailablePaymentType, BankKey } from './types';
@@ -19,8 +18,12 @@ export const PaymentSubmitSection = ({
     return (
       <div className="mt-5 d-flex gap-2 align-items-center">
         <span>
-          <FormattedMessage id="thirdPillarPayment.recurringPaymentQuestion" />
+          {paymentType === 'SINGLE' && <FormattedMessage id="thirdPillarPayment.paymentQuestion" />}
+          {paymentType === 'RECURRING' && (
+            <FormattedMessage id="thirdPillarPayment.recurringPaymentQuestion" />
+          )}
         </span>
+
         <a className="icon-link" href="/account">
           <FormattedMessage id="thirdPillarPayment.backToAccountPage" />
         </a>
