@@ -9,7 +9,7 @@
   font-weight: 100 900; /* Enables the weight axis from 100 to 900 */
   font-stretch: 75% 125%; /* Enables the width axis from 75% to 125% */
   font-style: normal; /* For non-italic styles */
-  font-display: swap;
+  font-display: fallback;
 }
 
 @font-face {
@@ -18,5 +18,5 @@
   font-weight: 100 900;
   font-stretch: 75% 125%;
   font-style: italic; /* For italic styles */
-  font-display: swap;
+  font-display: fallback;
 }
