@@ -111,11 +111,9 @@ export const ThirdPillarGift: React.FunctionComponent = () => {
       />
       <div />
 
-      <div className="mt-3 payment-bank-title">
-        <b>
-          <FormattedMessage id="thirdPillarPayment.singlePaymentBank" />
-        </b>
-      </div>
+      <p className="mt-3 mb-2 fw-bold">
+        <FormattedMessage id="thirdPillarPayment.singlePaymentBank" />
+      </p>
 
       <div className="mt-2 payment-banks">
         {/* TODO use refactored PaymentBankButtons here */}

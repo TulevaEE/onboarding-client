@@ -25,15 +25,11 @@ export const PaymentAmountInput: React.FunctionComponent<{
 
   return (
     <label className={className} htmlFor="payment-amount">
-      <b>
-        {paymentType === 'SINGLE' && (
-          <FormattedMessage id="thirdPillarPayment.singlePaymentAmount" />
-        )}
-        {paymentType === 'RECURRING' && (
-          <FormattedMessage id="thirdPillarPayment.recurringPaymentAmount" />
-        )}
-        {paymentType === 'GIFT' && <FormattedMessage id="thirdPillarPayment.giftPaymentAmount" />}
-      </b>
+      {paymentType === 'SINGLE' && <FormattedMessage id="thirdPillarPayment.singlePaymentAmount" />}
+      {paymentType === 'RECURRING' && (
+        <FormattedMessage id="thirdPillarPayment.recurringPaymentAmount" />
+      )}
+      {paymentType === 'GIFT' && <FormattedMessage id="thirdPillarPayment.giftPaymentAmount" />}
       <div className="d-flex align-items-center">
         <div className="input-group input-group-lg mt-2">
           <input
@@ -41,7 +37,7 @@ export const PaymentAmountInput: React.FunctionComponent<{
             type="text"
             inputMode="decimal"
             placeholder={paymentType === 'RECURRING' ? '100' : '1000'}
-            className="form-control form-control-lg"
+            className="form-control form-control-lg text-end"
             value={value}
             onChange={handleInputChange}
             onWheel={onWheel}
