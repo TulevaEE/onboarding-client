@@ -57,7 +57,7 @@ export const Payment: React.FunctionComponent = () => {
   };
 
   return (
-    <>
+    <div className="col-12 col-md-11 col-lg-8 mx-auto">
       <h1 className="mb-3">
         <FormattedMessage id="thirdPillarPayment.title" />
       </h1>
@@ -134,6 +134,6 @@ export const Payment: React.FunctionComponent = () => {
           />
         </div>
       </>
-    </>
+    </div>
   );
 };
