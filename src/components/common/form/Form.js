@@ -39,7 +39,7 @@ export const renderField = ({
         />
       )}
       {type === 'select' && (
-        <select {...input} disabled={disabled} id={id} className="form-control" {...override}>
+        <select {...input} disabled={disabled} id={id} className="form-select" {...override}>
           {children}
         </select>
       )}
