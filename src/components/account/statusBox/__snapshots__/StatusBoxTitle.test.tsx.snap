@@ -1,7 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`StatusBoxLoader renders correctly 1`] = `
-<h2 className="mt-5 mb-4">
+<h2
+  className="mt-5 mb-4"
+>
   <MemoizedFormattedMessage
     id="account.status.choices"
   />
