@@ -58,9 +58,9 @@ export const Payment: React.FunctionComponent = () => {
 
   return (
     <>
-      <h2 className="mt-3">
+      <h1 className="mb-3">
         <FormattedMessage id="thirdPillarPayment.title" />
-      </h2>
+      </h1>
       {error && (
         <div className="alert alert-danger mt-5" role="alert">
           <FormattedMessage id="thirdPillarPayment.errorGeneratingLink" />
@@ -81,7 +81,7 @@ export const Payment: React.FunctionComponent = () => {
           }}
           onWheel={(event) => event.currentTarget.blur()}
           max={6000}
-          className="mt-5"
+          className="mt-5 fw-bold"
         />
 
         <div className="payment-amount-input-footer mt-2">
@@ -100,16 +100,14 @@ export const Payment: React.FunctionComponent = () => {
           </div>
         </div>
 
-        <div className="mt-5 payment-bank-title">
-          <b>
-            {paymentType === 'SINGLE' && (
-              <FormattedMessage id="thirdPillarPayment.singlePaymentBank" />
-            )}
-            {paymentType === 'RECURRING' && (
-              <FormattedMessage id="thirdPillarPayment.recurringPaymentBank" />
-            )}
-          </b>
-        </div>
+        <p className="mt-5 mb-2 fw-bold">
+          {paymentType === 'SINGLE' && (
+            <FormattedMessage id="thirdPillarPayment.singlePaymentBank" />
+          )}
+          {paymentType === 'RECURRING' && (
+            <FormattedMessage id="thirdPillarPayment.recurringPaymentBank" />
+          )}
+        </p>
 
         <PaymentBankButtons paymentBank={paymentBank} setPaymentBank={setPaymentBank} />
 

@@ -10,15 +10,13 @@ type Props = {
 
 export const PaymentTypeSelection = ({ paymentType, setPaymentType }: Props) => (
   <>
-    <div className="mt-5">
-      <b>
-        <FormattedMessage id="thirdPillarPayment.paymentType" />
-      </b>
-    </div>
+    <p className="mt-5 mb-2 fw-bold">
+      <FormattedMessage id="thirdPillarPayment.paymentType" />
+    </p>
     <Radio
       name="payment-type"
       id="payment-type-single"
-      className="mt-3"
+      className="mb-2"
       selected={paymentType === 'SINGLE'}
       onSelect={() => {
         setPaymentType('SINGLE');
@@ -31,7 +29,6 @@ export const PaymentTypeSelection = ({ paymentType, setPaymentType }: Props) => 
     <Radio
       name="payment-type"
       id="payment-type-recurring"
-      className="mt-3"
       selected={paymentType === 'RECURRING'}
       onSelect={() => {
         setPaymentType('RECURRING');
