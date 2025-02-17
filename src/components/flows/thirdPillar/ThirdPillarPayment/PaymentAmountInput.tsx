@@ -24,29 +24,31 @@ export const PaymentAmountInput: React.FunctionComponent<{
   };
 
   return (
-    <label className={className} htmlFor="payment-amount">
-      {paymentType === 'SINGLE' && <FormattedMessage id="thirdPillarPayment.singlePaymentAmount" />}
-      {paymentType === 'RECURRING' && (
-        <FormattedMessage id="thirdPillarPayment.recurringPaymentAmount" />
-      )}
-      {paymentType === 'GIFT' && <FormattedMessage id="thirdPillarPayment.giftPaymentAmount" />}
-      <div className="d-flex align-items-center">
-        <div className="input-group input-group-lg mt-2">
-          <input
-            id="payment-amount"
-            type="text"
-            inputMode="decimal"
-            placeholder={paymentType === 'RECURRING' ? '100' : '1000'}
-            className="form-control form-control-lg text-end"
-            value={value}
-            onChange={handleInputChange}
-            onWheel={onWheel}
-            lang="et"
-          />
-          <div className="input-group-text">
-            &euro;
-            {paymentType === 'RECURRING' && <FormattedMessage id="thirdPillarPayment.perMonth" />}
-          </div>
+    <>
+      <label className={className} htmlFor="payment-amount">
+        {paymentType === 'SINGLE' && (
+          <FormattedMessage id="thirdPillarPayment.singlePaymentAmount" />
+        )}
+        {paymentType === 'RECURRING' && (
+          <FormattedMessage id="thirdPillarPayment.recurringPaymentAmount" />
+        )}
+        {paymentType === 'GIFT' && <FormattedMessage id="thirdPillarPayment.giftPaymentAmount" />}
+      </label>
+      <div className="input-group input-group-lg w-50">
+        <input
+          id="payment-amount"
+          type="text"
+          inputMode="decimal"
+          placeholder={paymentType === 'RECURRING' ? '100' : '1000'}
+          className="form-control form-control-lg"
+          value={value}
+          onChange={handleInputChange}
+          onWheel={onWheel}
+          lang="et"
+        />
+        <div className="input-group-text">
+          &euro;
+          {paymentType === 'RECURRING' && <FormattedMessage id="thirdPillarPayment.perMonth" />}
         </div>
       </div>
       {showWarning && max !== undefined && (
@@ -54,6 +56,6 @@ export const PaymentAmountInput: React.FunctionComponent<{
           <FormattedMessage id="thirdPillarPayment.warningAmountExceeded" values={{ max }} />
         </div>
       )}
-    </label>
+    </>
   );
 };
