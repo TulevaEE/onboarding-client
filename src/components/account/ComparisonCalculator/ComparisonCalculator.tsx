@@ -332,13 +332,13 @@ const ComparisonCalculator: React.FC = () => {
 
                       <div className="p-4">
                         <div className="content-section row justify-content-center align-items-center">
-                          <div className="col-12 col-lg-7 order-2 mx-n3 mt-4 mx-lg-0 mt-lg-0 px-3 order-lg-1 d-flex flex-column">
+                          <div className="col-12 col-lg-7 order-2 mt-4 mx-lg-0 mt-lg-0 px-3 order-lg-1 d-flex flex-column">
                             {getResultSection()}
                           </div>
                           <div
                             role="figure"
                             aria-label="Comparison Calculator Figure"
-                            className="graph-section mx-n3 mx-lg-0 px-0 px-sm-3 col-12 col-lg-5 order-1 order-lg-2 d-flex flex-column"
+                            className="graph-section mx-lg-0 px-0 px-sm-3 col-12 col-lg-5 order-1 order-lg-2 d-flex flex-column"
                           >
                             {getGraphSection()}
                           </div>
