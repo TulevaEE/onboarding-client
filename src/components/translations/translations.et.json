@@ -414,8 +414,8 @@
   "aml.occupation.unemployed": "Hetkel ei tööta",
 
   "thirdPillarPayment.title": "Sissemakse Tuleva III samba pensionifondi",
-  "thirdPillarPayment.giftTitle": "\uD83C\uDF81 Kingitus lähedasele - sissemakse tema Tuleva III Samba Pensionifondi",
-  "thirdPillarPayment.giftDescription": "Kas teadsid, et III samba saad tööle panna mitte ainult enda tuleviku tarbeks, vaid ka oma kõige kallimate inimeste jaoks? {br} Jah, sissemakseid on võimalik teha ka teise inimese III sambasse.",
+  "thirdPillarPayment.giftTitle": "Kingitus lähedase Tuleva III Samba Pensionifondi",
+  "thirdPillarPayment.giftDescription": "Kas teadsid, et saad III samba tööle panna mitte ainult enda tuleviku tarbeks, vaid ka oma kõige kallimate jaoks? Jah, sissemakseid on võimalik teha ka teise inimese III sambasse.",
 
   "thirdPillarPayment.RECURRING.swedbank": "Püsimakse juhend Swedbankis",
   "thirdPillarPayment.RECURRING.swedbank.login": "Vajuta allolevat nuppu ning logi sisse Swedbanki internetipanka.",
@@ -466,6 +466,7 @@
   "thirdPillarPayment.accountNumber": "Kontonumber",
   "thirdPillarPayment.amount": "Summa",
   "thirdPillarPayment.paymentDescription": "Makse selgitus",
+  "thirdPillarPayment.paymentQuestion": "Tegid makse ära?",
   "thirdPillarPayment.reference": "Viitenumber",
   "thirdPillarPayment.recurringPaymentQuestion": "Tegid püsikorralduse ära?",
   "thirdPillarPayment.backToAccountPage": "Tagasi kontolehele",
