@@ -17,18 +17,19 @@ export const PaymentSubmitSection = ({
 }: Props) => {
   if (paymentBank === 'other') {
     return (
-      <div className="mt-4">
-        <Link to="/account">
-          <button type="button" className="btn btn-light">
-            <FormattedMessage id="thirdPillarPayment.backToAccountPage" />
-          </button>
-        </Link>
+      <div className="mt-5 d-flex gap-2 align-items-center">
+        <span>
+          <FormattedMessage id="thirdPillarPayment.recurringPaymentQuestion" />
+        </span>
+        <a className="icon-link" href="/account">
+          <FormattedMessage id="thirdPillarPayment.backToAccountPage" />
+        </a>
       </div>
     );
   }
   return (
     <>
-      <div className="d-flex flex-wrap align-items-start">
+      <div className="mt-5 d-flex flex-column">
         <div className="me-auto">
           <button
             type="button"
@@ -63,11 +64,11 @@ export const PaymentSubmitSection = ({
           </div>
         </div>
         {paymentType === 'RECURRING' && !disabled && (
-          <div className="d-flex flex-wrap align-items-center">
-            <span className="me-2 mt-4">
+          <div className="mt-5 d-flex gap-2 align-items-center">
+            <span>
               <FormattedMessage id="thirdPillarPayment.recurringPaymentQuestion" />
             </span>
-            <a className="btn btn-light text-nowrap mt-4" href="/account">
+            <a className="icon-link" href="/account">
               <FormattedMessage id="thirdPillarPayment.backToAccountPage" />
             </a>
           </div>
