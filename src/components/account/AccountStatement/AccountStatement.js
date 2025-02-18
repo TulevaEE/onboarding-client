@@ -72,7 +72,7 @@ const AccountStatement = ({ funds, activeFundNotice }) => {
     const prefix = isMuted
       ? formatMessage({ id: 'accountStatement.columns.fund.muted.prefix' })
       : '';
-    const suffix = fund.activeFund ? '*' : '';
+    const suffix = fund.activeFund ? ' *' : '';
     const feesEuro = -(fund.ongoingChargesFigure * fundValue);
     return {
       fund: <span className={className}>{`${prefix}${fund.name}${suffix}`}</span>,
