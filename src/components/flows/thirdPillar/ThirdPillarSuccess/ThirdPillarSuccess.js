@@ -10,21 +10,17 @@ import { Shimmer } from '../../../common/shimmer/Shimmer';
 import { getValueSum } from '../../../account/AccountStatement/fundSelector';
 
 const ThirdPillarSuccessDefault = () => (
-  <div className="row mt-5">
-    <div className="col-12 px-0">
-      <SuccessNotice>
-        <h2 className="text-center mt-3">
-          <FormattedMessage id="thirdPillarSuccess.done" />
-        </h2>
-        <p className="mt-5">
-          <FormattedMessage id="thirdPillarSuccess.message" />
-        </p>
-        <a className="btn btn-primary mt-4 profile-link" href="/account">
-          <FormattedMessage id="thirdPillarSuccess.button.account" />
-        </a>
-      </SuccessNotice>
-    </div>
-  </div>
+  <SuccessNotice>
+    <h2 className="text-center mt-3">
+      <FormattedMessage id="thirdPillarSuccess.done" />
+    </h2>
+    <p className="mt-5">
+      <FormattedMessage id="thirdPillarSuccess.message" />
+    </p>
+    <a className="btn btn-primary mt-4 profile-link" href="/account">
+      <FormattedMessage id="thirdPillarSuccess.button.account" />
+    </a>
+  </SuccessNotice>
 );
 
 export const ThirdPillarSuccess = ({ secondPillarSourceFunds, weightedAverageFee }) => {
@@ -55,70 +51,68 @@ export const ThirdPillarSuccess = ({ secondPillarSourceFunds, weightedAverageFee
   const savingsAmount = currentFundsFeeAmount - ourFundFeeAmount;
 
   return (
-    <div className="row mt-5">
-      <div className="col-12 px-0">
-        <SuccessNotice>
-          <h2 className="text-center mt-3">
-            <FormattedMessage id="thirdPillarSuccess.done" />
-          </h2>
-          <p className="mt-5">
-            <FormattedMessage id="thirdPillarSuccess.message" />
-          </p>
-        </SuccessNotice>
-        <Notice>
-          <h2 className="text-center mt-3">
-            <FormattedMessage id="thirdPillarSuccess.notice.header" />
-          </h2>
-          <div>
-            <div className="row d-flex justify-content-center align-items-end mt-5">
-              <div className="col-md-2 col-5">
-                <div
-                  className={styles.leftcolumn}
-                  style={{
-                    height: ourFundHeight,
-                  }}
-                >
-                  <div className={styles.columncontent}>{ourFundFeeAmount}&nbsp;€</div>
-                </div>
-              </div>
-              <div className="col-md-2 col-1" />
-              <div className="col-md-2 col-5">
-                <div
-                  className={styles.rightcolumn}
-                  style={{
-                    height: currentFundsHeight,
-                  }}
-                >
-                  <div className={styles.columncontent}>{currentFundsFeeAmount}&nbsp;€</div>
-                </div>
+    <>
+      <SuccessNotice>
+        <h2 className="text-center mt-3">
+          <FormattedMessage id="thirdPillarSuccess.done" />
+        </h2>
+        <p className="mt-5">
+          <FormattedMessage id="thirdPillarSuccess.message" />
+        </p>
+      </SuccessNotice>
+      <Notice>
+        <h2 className="text-center mt-3">
+          <FormattedMessage id="thirdPillarSuccess.notice.header" />
+        </h2>
+        <div>
+          <div className="row d-flex justify-content-center align-items-end mt-5">
+            <div className="col-md-2 col-5">
+              <div
+                className={styles.leftcolumn}
+                style={{
+                  height: ourFundHeight,
+                }}
+              >
+                <div className={styles.columncontent}>{ourFundFeeAmount}&nbsp;€</div>
               </div>
             </div>
-            <div className="row d-flex justify-content-center align-items-start my-3">
-              <div className="col-md-3 col-5">
-                <small className="text-body-secondary">
-                  <FormattedMessage id="thirdPillarSuccess.ourFund" />
-                </small>
-              </div>
-              <div className="col-md-1 col-1" />
-              <div className="col-md-3 col-5">
-                <small className="text-body-secondary">
-                  <FormattedMessage id="thirdPillarSuccess.currentFund" />
-                </small>
+            <div className="col-md-2 col-1" />
+            <div className="col-md-2 col-5">
+              <div
+                className={styles.rightcolumn}
+                style={{
+                  height: currentFundsHeight,
+                }}
+              >
+                <div className={styles.columncontent}>{currentFundsFeeAmount}&nbsp;€</div>
               </div>
             </div>
           </div>
-          <p className="mt-5">
-            <FormattedMessage
-              id="thirdPillarSuccess.notice.description"
-              values={{ currentFundsFee, currentFundsFeeAmount, ourFundFeeAmount, savingsAmount }}
-            />
-          </p>
-          <a className="btn btn-primary mt-4 profile-link" href="/2nd-pillar-flow">
-            <FormattedMessage id="thirdPillarSuccess.button" />
-          </a>
-        </Notice>
-      </div>
-    </div>
+          <div className="row d-flex justify-content-center align-items-start my-3">
+            <div className="col-md-3 col-5">
+              <small className="text-body-secondary">
+                <FormattedMessage id="thirdPillarSuccess.ourFund" />
+              </small>
+            </div>
+            <div className="col-md-1 col-1" />
+            <div className="col-md-3 col-5">
+              <small className="text-body-secondary">
+                <FormattedMessage id="thirdPillarSuccess.currentFund" />
+              </small>
+            </div>
+          </div>
+        </div>
+        <p className="mt-5">
+          <FormattedMessage
+            id="thirdPillarSuccess.notice.description"
+            values={{ currentFundsFee, currentFundsFeeAmount, ourFundFeeAmount, savingsAmount }}
+          />
+        </p>
+        <a className="btn btn-primary mt-4 profile-link" href="/2nd-pillar-flow">
+          <FormattedMessage id="thirdPillarSuccess.button" />
+        </a>
+      </Notice>
+    </>
   );
 };
 
