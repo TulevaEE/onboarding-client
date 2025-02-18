@@ -5,14 +5,16 @@ import { connect } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import { Shimmer } from '../../../common/shimmer/Shimmer';
 import { getAuthentication } from '../../../common/authenticationManager';
+import { isTestMode } from '../../../common/test-mode';
 
 export const ThirdPillarSetup = ({ nextPath, isThirdPillarActive, loading }) => {
+  const isTestModeEnabled = isTestMode();
   if (loading) {
     return <Shimmer height={26} />;
   }
   return (
     <div>
-      {isThirdPillarActive && <Redirect to={nextPath} />}
+      {!isTestModeEnabled && isThirdPillarActive && <Redirect to={nextPath} />}
 
       <p>
         <FormattedMessage id="thirdPillarFlowSetup.text" />
