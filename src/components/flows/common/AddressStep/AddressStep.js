@@ -7,6 +7,7 @@ import UpdateUserForm from '../../../contact-details/updateUserForm';
 import { updateUser, updateUserEmailAndPhone } from '../../../common/user/actions';
 import { hasAddress as isAddressFilled } from '../../../common/user/address';
 import { hasContactDetailsAmlCheck as isContactDetailsAmlCheckPassed } from '../../../aml';
+import { isTestMode } from '../../../common/test-mode';
 
 export class AddressStep extends PureComponent {
   render() {
@@ -20,12 +21,14 @@ export class AddressStep extends PureComponent {
       updateEmailAndPhone,
     } = this.props;
 
+    const isTestModeEnabled = isTestMode();
+
     const shouldSkipAddressStep = () =>
       pillar === 2 ? hasAddress : hasAddress && hasContactDetailsAmlCheck;
 
     return (
       <>
-        {shouldSkipAddressStep() && <Redirect to={nextPath} />}
+        {!isTestModeEnabled && shouldSkipAddressStep() && <Redirect to={nextPath} />}
         <UpdateUserForm
           onSubmit={(user) =>
             updateOnlyEmailAndPhone ? updateEmailAndPhone(user) : updateFullUser(user)
