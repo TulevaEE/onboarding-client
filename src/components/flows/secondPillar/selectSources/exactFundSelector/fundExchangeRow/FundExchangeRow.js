@@ -77,9 +77,7 @@ export const FundExchangeRow = ({ sourceFunds, targetFunds, onChange, selection 
                   })
                 }
               />
-              <div className="input-group-text">
-                <span className="input-group-text bg-white">%</span>
-              </div>
+              <span className="input-group-text">%</span>
             </div>
           </div>
         </div>

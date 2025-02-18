@@ -107,10 +107,10 @@ export const ConfirmThirdPillarMandate = ({
         ''
       )}
 
-      <div className="mt-5">
+      <div className="mt-5 d-flex align-items-center gap-2">
         <button
           type="button"
-          className="btn btn-primary mb-2 me-2"
+          className="btn btn-primary"
           disabled={buttonDisabled}
           onClick={() => {
             onSign(
@@ -127,10 +127,9 @@ export const ConfirmThirdPillarMandate = ({
         >
           <FormattedMessage id="confirm.mandate.sign" />
         </button>
-
         <button
           type="button"
-          className="btn btn-secondary mb-2 me-2"
+          className="btn btn-outline-primary"
           disabled={buttonDisabled}
           onClick={() => {
             onPreview(
@@ -147,11 +146,8 @@ export const ConfirmThirdPillarMandate = ({
         >
           <FormattedMessage id="confirm.mandate.preview" />
         </button>
-
-        <Link to={previousPath}>
-          <button type="button" className="btn btn-secondary mb-2">
-            <FormattedMessage id="confirm.mandate.back" />
-          </button>
+        <Link className="btn btn-outline-primary" to={previousPath}>
+          <FormattedMessage id="confirm.mandate.back" />
         </Link>
       </div>
     </>
