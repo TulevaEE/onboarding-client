@@ -3,11 +3,11 @@
   top: 0;
   left: 0;
   width: 100vw;
-  height: 100vw;
-  background-color: rgba(209,213,219,0.5);
+  height: 100vh;
+  background-color: rgba(209, 213, 219, 0.5);
   z-index: 999;
 
   &__content {
-    background-color: #ffffff;
+    background-color: #fff;
   }
 }
