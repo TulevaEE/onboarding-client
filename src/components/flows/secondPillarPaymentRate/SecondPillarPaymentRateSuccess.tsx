@@ -12,31 +12,27 @@ export const SecondPillarPaymentRateSuccess: React.FC = () => {
   const { data: mandateDeadlines } = useMandateDeadlines();
 
   return (
-    <div className="row mt-5">
-      <div className="col-12 px-0">
-        <SuccessNotice>
-          <h2 className="text-center mt-3">
-            <FormattedMessage id="secondPillarPaymentRateSuccess.title" />
-          </h2>
-          <p className="m-0 mt-5">
-            <FormattedMessage
-              id="secondPillarPaymentRateSuccess.descriptionNewRate"
-              values={{
-                paymentRateFulfillmentDate:
-                  formatDateYear(mandateDeadlines?.paymentRateFulfillmentDate) || '...',
-                paymentRate: paymentRate || '...',
-                b: (chunks: string) => <b>{chunks}</b>,
-              }}
-            />
-          </p>
-          <p className="m-0">
-            <FormattedMessage id="secondPillarPaymentRateSuccess.descriptionEmployer" />
-          </p>
-          <a className="btn btn-primary mt-5 profile-link" href="/account">
-            <FormattedMessage id="secondPillarPaymentRateSuccess.accountLink" />
-          </a>
-        </SuccessNotice>
-      </div>
-    </div>
+    <SuccessNotice>
+      <h2 className="text-center mt-3">
+        <FormattedMessage id="secondPillarPaymentRateSuccess.title" />
+      </h2>
+      <p className="m-0 mt-5">
+        <FormattedMessage
+          id="secondPillarPaymentRateSuccess.descriptionNewRate"
+          values={{
+            paymentRateFulfillmentDate:
+              formatDateYear(mandateDeadlines?.paymentRateFulfillmentDate) || '...',
+            paymentRate: paymentRate || '...',
+            b: (chunks: string) => <b>{chunks}</b>,
+          }}
+        />
+      </p>
+      <p className="m-0">
+        <FormattedMessage id="secondPillarPaymentRateSuccess.descriptionEmployer" />
+      </p>
+      <a className="btn btn-primary mt-5 profile-link" href="/account">
+        <FormattedMessage id="secondPillarPaymentRateSuccess.accountLink" />
+      </a>
+    </SuccessNotice>
   );
 };
