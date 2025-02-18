@@ -23,18 +23,13 @@ export class GreetingBar extends Component {
       );
     }
     return (
-      <div className="my-5 d-flex flex-column flex-md-row gap-4 row-gap-1 align-items-md-center">
-        <div className="d-flex flex-column flex-lg-row row-gap-1 flex-fill justify-content-between align-items-baseline align-items-lg-center">
-          <p className="m-0 lead">
-            <FormattedMessage id="account.greeting" />, {getFullName(user)}
-          </p>
-          <div className="d-flex">
-            {user.email}
-            {user.email && user.phoneNumber && <span className="text-separator mx-2">·</span>}
-            {user.phoneNumber}
-          </div>
-        </div>
-        <div>
+      <div className="my-5 d-flex flex-wrap gap-4 row-gap-2 justify-content-between align-items-baseline">
+        <p className="m-0 lead">
+          <FormattedMessage id="account.greeting" />, {getFullName(user)}
+        </p>
+        <div className="d-flex flex-wrap gap-4 row-gap-1 align-items-baseline">
+          {user.email && <span>{user.email}</span>}
+          {user.phoneNumber && <span>{user.phoneNumber}</span>}
           <Link className="icon-link" to="/contact-details">
             <FormattedMessage id="account.update.contact" />
           </Link>
