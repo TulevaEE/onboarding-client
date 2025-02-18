@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Redirect, useParams } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { useApplication } from '../../common/apiHooks';
@@ -6,15 +6,33 @@ import { AuthenticationLoader } from '../../common';
 import { Loader } from '../../common/loader/Loader';
 import { ApplicationCard } from '../../account/ApplicationSection/ApplicationCards';
 import { useCancellationPreview, useCancellationWithSigning } from './cancellationHooks';
+import { EarlyWithdrawalApplication } from '../../common/apiModels';
 
 export const ConfirmCancellation: React.FunctionComponent = () => {
   const applicationId = useApplicationIdFromUrl();
-  const { isLoading, data: application } = useApplication(applicationId);
+  // const { isLoading, data: application } = useApplication(applicationId);
+
+  const isLoading = false;
+  const application: EarlyWithdrawalApplication = {
+    id: 1,
+    status: 'PENDING',
+    creationTime: new Date().toISOString(),
+    type: 'EARLY_WITHDRAWAL',
+    details: {
+      depositAccountIBAN: 'EE_TEST_IBAN',
+      cancellationDeadline: '2025-03-31',
+      fulfillmentDate: '2025-03-31',
+    },
+  };
+
+  const [signing, setSigning] = useState(false);
+  const [challengeCode, setChallengeCode] = useState('');
+
   const {
     cancelApplication,
     cancelSigning,
-    loading: signing,
-    challengeCode,
+    // loading: signing,
+    // challengeCode,
     signedMandateId,
     cancellationMandateId,
   } = useCancellationWithSigning();
@@ -39,7 +57,14 @@ export const ConfirmCancellation: React.FunctionComponent = () => {
   return (
     <>
       {(signing || challengeCode) && (
-        <AuthenticationLoader controlCode={challengeCode} onCancel={cancelSigning} overlayed />
+        <AuthenticationLoader
+          controlCode={challengeCode}
+          onCancel={() => {
+            setSigning(false);
+            setChallengeCode('');
+          }}
+          overlayed
+        />
       )}
       <p>
         <FormattedMessage id="cancellation.flow.confirm.content" />
@@ -50,7 +75,10 @@ export const ConfirmCancellation: React.FunctionComponent = () => {
           type="button"
           id="sign"
           className="btn btn-primary mb-2 me-2"
-          onClick={confirmCancellation}
+          onClick={() => {
+            setSigning(true);
+            setChallengeCode('1234');
+          }}
         >
           <FormattedMessage id="confirm.mandate.sign" />
         </button>
