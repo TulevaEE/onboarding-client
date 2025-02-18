@@ -8,7 +8,7 @@ const StatusBoxIcon: React.FunctionComponent<{
 }> = ({ checked = false, warning = false, error = false }) => {
   if (error) {
     return (
-      <div className="ms-3 me-2 status-box-icon" data-testid="status-icon-error">
+      <div className="status-box-icon" data-testid="status-icon-error">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none">
           <path
             fill="#FF4800"
