@@ -16,6 +16,7 @@ import { hasAddress as isAddressFilled } from '../../../common/user/address';
 import OccupationAgreement from '../../../aml/OccupationAgreement';
 import { hasContactDetailsAmlCheck as isContactDetailsAmlCheckPassed } from '../../../aml';
 import { TULEVA_3RD_PILLAR_FUND_ISIN } from '../../../thirdPillar/initialState';
+import { isTestMode } from '../../../common/test-mode';
 
 export const ConfirmThirdPillarMandate = ({
   previousPath,
@@ -43,13 +44,18 @@ export const ConfirmThirdPillarMandate = ({
   mandateSigningControlCode,
   mandateSigningError,
 }) => {
+  const isTestModeEnabled = isTestMode();
   const buttonDisabled =
     !agreedToTerms || !isResident || !(isPoliticallyExposed === false) || !occupation;
   return (
     <>
-      {isUserConverted && <Redirect to={nextPath} />}
-      {signedMandateId && <Redirect to={nextPath} />}
-      {(!hasAddress || !hasContactDetailsAmlCheck) && <Redirect to={previousPath} />}
+      {!isTestModeEnabled && (
+        <>
+          {isUserConverted && <Redirect to={nextPath} />}
+          {signedMandateId && <Redirect to={nextPath} />}
+          {(!hasAddress || !hasContactDetailsAmlCheck) && <Redirect to={previousPath} />}
+        </>
+      )}
       {loadingMandate || mandateSigningControlCode ? (
         <AuthenticationLoader
           controlCode={mandateSigningControlCode}
