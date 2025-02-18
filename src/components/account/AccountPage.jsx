@@ -138,11 +138,11 @@ export function AccountPage(
           <h2 className="mt-5 mb-4">
             <FormattedMessage id="accountStatement.heading" />
           </h2>
-          <div className="my-4 d-flex flex-md-row flex-column gap-2 justify-content-between align-items-baseline">
+          <div className="my-4 d-flex flex-wrap column-gap-4 row-gap-2 justify-content-between align-items-baseline">
             <h3 className="m-0">
               <FormattedMessage id="accountStatement.secondPillar.heading" />
             </h3>
-            <div className="d-flex flex-sm-row flex-column gap-4 align-items-baseline justify-content-between">
+            <div className="d-flex flex-wrap column-gap-4 row-gap-2 align-items-baseline justify-content-between">
               <Link className="icon-link" to="/2nd-pillar-payment-rate">
                 <FormattedMessage id="account.status.choice.paymentRate.change" />
               </Link>
