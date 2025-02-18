@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 import './Payment.scss';
+import { Link } from 'react-router-dom';
 import { captureException } from '@sentry/browser';
 import { BankButton } from './BankButton';
 import { redirectToPayment } from '../../../common/api';
@@ -129,9 +130,9 @@ export const ThirdPillarGift: React.FunctionComponent = () => {
           <span>
             <FormattedMessage id="thirdPillarPayment.recurringPaymentQuestion" />
           </span>
-          <a className="icon-link" href="/account">
+          <Link className="icon-link" to="/account">
             <FormattedMessage id="thirdPillarPayment.backToAccountPage" />
-          </a>
+          </Link>
         </div>
       )}
       {paymentBank !== 'other' && (
