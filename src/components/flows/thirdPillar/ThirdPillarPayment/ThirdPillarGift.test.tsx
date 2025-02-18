@@ -54,9 +54,7 @@ describe('When a user is making a third pillar gift', () => {
 
   test('gift page is being shown', async () => {
     expect(
-      await screen.findByText(
-        '🎁 A gift to a loved one - a contribution to their Tuleva III Pillar Pension Fund',
-      ),
+      await screen.findByText('A gift to a loved one’s Tuleva III Pillar Pension Fund'),
     ).toBeInTheDocument();
     const makePayment = await makePaymentButton();
     expect(makePayment).toBeDisabled();
@@ -142,7 +140,7 @@ describe('When a user is making a third pillar gift', () => {
 
   const otherBankButton = async () => screen.findByLabelText('Other bank');
 
-  const makePaymentButton = async () => screen.findByRole('button', { name: 'Make payment' });
+  const makePaymentButton = async () => screen.findByRole('button', { name: 'Start payment' });
 
   const backToAccountPageButton = async () => screen.findByText('Back to account page');
 });

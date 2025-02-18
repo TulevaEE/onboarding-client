@@ -30,7 +30,7 @@ describe('Header', () => {
       loading: false,
     });
     expect(component.text()).toContain(name);
-    expect(component.contains(<Loader className="align-right" />)).toBe(false);
+    expect(component.contains(<Shimmer height={24} />)).toBe(false);
   });
 
   it('can log out the user', () => {
@@ -43,7 +43,7 @@ describe('Header', () => {
 
   it("shows a loader when it's loading", () => {
     component.setProps({ loading: true });
-    expect(component.contains(<Loader className="align-right" />)).toBe(true);
+    expect(component.contains(<Shimmer height={24} />)).toBe(true);
   });
 
   it('renders my account button', () => {
