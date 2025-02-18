@@ -30,18 +30,16 @@ export const Header = ({ user, loading, onLogout }: Props) => (
           </div>
         ) : (
           <>
-            <p className="m-0 d-flex justify-content-end align-items-baseline">
+            <p className="m-0 d-flex gap-3 justify-content-end align-items-baseline">
               <span className="text-body">{user.name}</span>
-              <span className="text-separator mx-2">&middot;</span>
               <a href="/login" className="icon-link" onClick={onLogout}>
                 <FormattedMessage id="log.out" />
               </a>
             </p>
-            <p className="m-0 mt-2 d-flex justify-content-end align-items-baseline">
+            <p className="m-0 mt-2 d-flex gap-3 justify-content-end align-items-baseline">
               <a className="icon-link" href="/account">
                 <FormattedMessage id="header.my.account" />
               </a>
-              <span className="text-separator mx-2">&middot;</span>
               <LanguageSwitcher />
             </p>
           </>

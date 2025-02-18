@@ -114,7 +114,7 @@ export const TransactionSection: React.FunctionComponent<{
   return (
     <section className="mt-5">
       {!pillar ? (
-        <div className="mt-5 mb-4 d-flex flex-wrap column-gap-4 row-gap-2 align-items-baseline justify-content-between">
+        <div className="mt-5 mb-4 d-flex flex-wrap column-gap-3 row-gap-2 align-items-baseline justify-content-between">
           <h2 className="m-0">{children || <FormattedMessage id="transactions.title" />}</h2>
           <Link className="icon-link" to="/2nd-pillar-transactions">
             <FormattedMessage id="transactions.seeAll" />
@@ -123,7 +123,7 @@ export const TransactionSection: React.FunctionComponent<{
       ) : (
         <div className="mt-5 mb-4 d-flex flex-md-row flex-column align-items-baseline justify-content-between">
           <h2 className="m-0">{children || <FormattedMessage id="transactions.title" />}</h2>
-          <div className="d-flex gap-4">
+          <div className="d-flex gap-3">
             {pillar === 2 && (
               <Link className="icon-link" to="/3rd-pillar-transactions">
                 <FormattedMessage id="transactions.seeAll.3" />
