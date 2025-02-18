@@ -70,11 +70,11 @@ export const ConfirmCancellation: React.FunctionComponent = () => {
         <FormattedMessage id="cancellation.flow.confirm.content" />
       </p>
       <ApplicationCard application={application} />
-      <div className="mt-5">
+      <div className="mt-5 d-flex align-items-center gap-2">
         <button
           type="button"
           id="sign"
-          className="btn btn-primary mb-2 me-2"
+          className="btn btn-primary"
           onClick={() => {
             setSigning(true);
             setChallengeCode('1234');
@@ -85,7 +85,7 @@ export const ConfirmCancellation: React.FunctionComponent = () => {
         <button
           type="button"
           id="preview"
-          className="btn btn-secondary mb-2 me-2"
+          className="btn btn-outline-primary"
           onClick={previewCancellation}
         >
           <FormattedMessage id="confirm.mandate.preview" />

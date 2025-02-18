@@ -208,11 +208,11 @@ export const ConfirmMandate = ({
       ) : (
         ''
       )}
-      <div className="mt-5">
+      <div className="mt-5 d-flex align-items-center gap-2">
         <button
           type="button"
           id="sign"
-          className="btn btn-primary mb-2 me-2"
+          className="btn btn-primary"
           disabled={!canSignMandate}
           onClick={startSigningMandate}
         >
@@ -221,15 +221,13 @@ export const ConfirmMandate = ({
         <button
           type="button"
           id="preview"
-          className="btn btn-secondary mb-2 me-2"
+          className="btn btn-outline-primary"
           onClick={startPreviewMandate}
         >
           <FormattedMessage id="confirm.mandate.preview" />
         </button>
-        <Link to="/2nd-pillar-flow/select-sources">
-          <button type="button" className="btn btn-secondary mb-2">
-            <FormattedMessage id="confirm.mandate.back" />
-          </button>
+        <Link className="btn btn-outline-primary" to="/2nd-pillar-flow/select-sources">
+          <FormattedMessage id="confirm.mandate.back" />
         </Link>
       </div>
     </>
