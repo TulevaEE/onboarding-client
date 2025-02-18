@@ -12,6 +12,7 @@ import AccountStatement from '../../../account/AccountStatement';
 // TODO: don't import from 2nd pillar flow
 import TargetFundSelector from '../../secondPillar/selectSources/targetFundSelector';
 import { Shimmer } from '../../../common/shimmer/Shimmer';
+import { isTestMode } from '../../../common/test-mode';
 
 export const ThirdPillarSelectSources = ({
   exchangeExistingUnits,
@@ -26,6 +27,8 @@ export const ThirdPillarSelectSources = ({
 }) => {
   const { formatMessage } = useIntl();
 
+  const isTestModeEnabled = isTestMode();
+
   const fullSelectionActive = !!exchangeExistingUnits && !!futureContributionsFundIsin;
   const someSelectionActive = !exchangeExistingUnits && !!futureContributionsFundIsin;
   const isValid = exchangeExistingUnits || futureContributionsFundIsin;
@@ -37,7 +40,9 @@ export const ThirdPillarSelectSources = ({
 
   return (
     <div>
-      {exchangeableSourceFunds && !exchangeableSourceFunds.length && <Redirect to={nextPath} />}
+      {!isTestModeEnabled && exchangeableSourceFunds && !exchangeableSourceFunds.length && (
+        <Redirect to={nextPath} />
+      )}
       <div className="row">
         <div className="col-12">
           <div className="mb-4">
