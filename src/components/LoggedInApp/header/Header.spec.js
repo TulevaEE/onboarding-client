@@ -38,7 +38,7 @@ describe('Header', () => {
     const onLogout = jest.fn();
     component.setProps({ loading: false, onLogout, user: { name: 'name' } });
     expect(onLogout).not.toHaveBeenCalled();
-    component.find('button').simulate('click');
+    component.find('[href="/login"]').simulate('click');
     expect(onLogout).toHaveBeenCalledTimes(1);
   });
 
