@@ -32,7 +32,14 @@ export const Header = ({ user, loading, onLogout }: Props) => (
           <>
             <p className="m-0 d-flex gap-3 justify-content-end align-items-baseline">
               <span className="text-body">{user.name}</span>
-              <a href="/login" className="icon-link" onClick={onLogout}>
+              <a
+                href="/login"
+                className="icon-link"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onLogout();
+                }}
+              >
                 <FormattedMessage id="log.out" />
               </a>
             </p>
