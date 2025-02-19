@@ -49,7 +49,8 @@ describe('Account statement', () => {
 
     const funds = tableProp('dataSource').map(({ fund }) => fund);
 
-    expect(funds).toEqual([<span>A</span>, <span>B *</span>, <span>C</span>]);
+    // eslint-disable-next-line no-irregular-whitespace
+    expect(funds).toEqual([<span>A</span>, <span>B *</span>, <span>C</span>]);
   });
 
   it('passes total value as value column footer', () => {
@@ -177,5 +178,5 @@ describe('Account statement', () => {
   });
 
   const tableProp = (name) => component.find(Table).prop(name);
-  const activeFundNotice = () => component.find('small');
+  const activeFundNotice = () => component.find('.small');
 });

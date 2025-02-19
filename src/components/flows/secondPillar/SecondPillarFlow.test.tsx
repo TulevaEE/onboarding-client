@@ -1,4 +1,3 @@
-import React from 'react';
 import { setupServer } from 'msw/node';
 import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -7,19 +6,7 @@ import { createMemoryHistory, History } from 'history';
 import { initializeConfiguration } from '../../config/config';
 import LoggedInApp from '../../LoggedInApp';
 import { createDefaultStore, login, renderWrapped } from '../../../test/utils';
-import {
-  amlChecksBackend,
-  applicationsBackend,
-  fundsBackend,
-  mandatesBackend,
-  pensionAccountStatementBackend,
-  returnsBackend,
-  smartIdMandateSigningBackend,
-  userBackend,
-  userCapitalBackend,
-  userConversionBackend,
-  useTestBackendsExcept,
-} from '../../../test/backend';
+import { mandatesBackend, userBackend, useTestBackendsExcept } from '../../../test/backend';
 
 const server = setupServer();
 let history: History;
@@ -133,7 +120,7 @@ describe('2nd pillar flow', () => {
       await screen.findByText(/Your pension account overview/i, undefined, { timeout: 1000 }),
     ).toBeInTheDocument();
 
-    expect(await screen.findByText('Swedbank Pension Fund K60*')).toBeInTheDocument();
+    expect(await screen.findByText(/Swedbank Pension Fund K60.\*/)).toBeInTheDocument();
 
     userEvent.click(screen.getByText('Transfer II pillar selectively'));
 
@@ -196,7 +183,7 @@ describe('2nd pillar flow', () => {
       await screen.findByText(/Your pension account overview/i, undefined, { timeout: 1000 }),
     ).toBeInTheDocument();
 
-    expect(await screen.findByText('Swedbank Pension Fund K60*')).toBeInTheDocument();
+    expect(await screen.findByText(/Swedbank Pension Fund K60.\*/)).toBeInTheDocument();
 
     userEvent.click(screen.getByText('Transfer II pillar selectively'));
 
