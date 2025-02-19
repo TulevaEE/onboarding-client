@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { logo } from '../../common';
 import { Header } from '.';
 import LanguageSwitcher from './languageSwitcher';
+import { Shimmer } from '../../common/shimmer/Shimmer';
 
 describe('Header', () => {
   let component;
