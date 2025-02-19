@@ -223,6 +223,7 @@ export const SelectSources = ({
             <div className="form-check form-switch">
               <input
                 type="checkbox"
+                role="switch"
                 className="form-check-input"
                 id="someExistingSwitch"
                 onChange={onSomeExistingSwitchChange}
@@ -254,6 +255,7 @@ export const SelectSources = ({
             <div className="form-check form-switch">
               <input
                 type="checkbox"
+                role="switch"
                 className="form-check-input"
                 id="someFutureSwitch"
                 onChange={onSomeFutureSwitchChange}

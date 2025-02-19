@@ -34,7 +34,7 @@ export const PaymentAmountInput: React.FunctionComponent<{
         )}
         {paymentType === 'GIFT' && <FormattedMessage id="thirdPillarPayment.giftPaymentAmount" />}
       </label>
-      <div className="mt-2 input-group input-group-lg w-50">
+      <div className="input-group input-group-lg w-50">
         <input
           id="payment-amount"
           type="text"

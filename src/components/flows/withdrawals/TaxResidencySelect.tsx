@@ -21,10 +21,8 @@ export const TaxResidencySelect = ({
 
   return (
     <div className="mb-3">
-      <label htmlFor="tax-residency">
-        <b>
-          <FormattedMessage id="withdrawals.personalDetails.bankAccount.taxResidencyLabel" />
-        </b>
+      <label htmlFor="form-label fw-bold tax-residency">
+        <FormattedMessage id="withdrawals.personalDetails.bankAccount.taxResidencyLabel" />
       </label>
       <Select id="tax-residency" options={options} selected={value} onChange={onChange} />
     </div>

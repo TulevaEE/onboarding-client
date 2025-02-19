@@ -1,18 +1,18 @@
 .tv-target-fund {
   border-radius: 8px;
   background-color: white;
-  border: solid 1px #cccccc;
+  border: solid 1px $gray-border-3;
   cursor: pointer;
   transition: border-color 0.15s ease-out;
   position: relative;
   overflow: hidden;
 
   &:hover {
-    border-color: #0593fc;
+    border-color: $blue;
   }
 
   &__corner-check {
-    border-bottom: 60px solid #0593fc;
+    border-bottom: 60px solid $blue;
     border-left: 60px solid transparent;
     border-right: 60px solid transparent;
     margin-right: -62px;
@@ -47,7 +47,7 @@
   }
 
   &--active {
-    border: solid 2px #0593fc;
+    border: solid 2px $blue;
 
     & .tv-target-fund__inner-container {
       border-width: 0;

@@ -81,7 +81,7 @@ export const Payment: React.FunctionComponent = () => {
           }}
           onWheel={(event) => event.currentTarget.blur()}
           max={6000}
-          className="mt-5 fw-bold"
+          className="mt-5 form-label fw-bold"
         />
 
         <div className="payment-amount-input-footer mt-2">
