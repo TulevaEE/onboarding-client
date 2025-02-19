@@ -53,7 +53,7 @@ describe('When a user is cancelling an application', () => {
     });
   });
 
-  fit('the application being cancelled is shown', async () => {
+  test('the application being cancelled is shown', async () => {
     expect(await screen.findByText('II pillar early withdrawal application')).toBeInTheDocument();
     expect(screen.getByText(testApplication().details.depositAccountIBAN)).toBeInTheDocument();
 
