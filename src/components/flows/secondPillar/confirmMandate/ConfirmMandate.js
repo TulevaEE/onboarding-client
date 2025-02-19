@@ -208,7 +208,7 @@ export const ConfirmMandate = ({
       ) : (
         ''
       )}
-      <div className="mt-5 d-flex align-items-center gap-2">
+      <div className="mt-5 d-flex flex-wrap align-items-center gap-2">
         <button
           type="button"
           id="sign"
