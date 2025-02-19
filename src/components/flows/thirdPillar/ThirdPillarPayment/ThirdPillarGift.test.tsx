@@ -1,4 +1,3 @@
-import React from 'react';
 import { setupServer } from 'msw/node';
 import { screen, waitFor } from '@testing-library/react';
 import { Route } from 'react-router-dom';
@@ -6,17 +5,7 @@ import { createMemoryHistory, History } from 'history';
 import userEvent from '@testing-library/user-event';
 import { createDefaultStore, login, renderWrapped } from '../../../../test/utils';
 import { initializeConfiguration } from '../../../config/config';
-import {
-  amlChecksBackend,
-  applicationsBackend,
-  fundsBackend,
-  paymentLinkBackend,
-  pensionAccountStatementBackend,
-  returnsBackend,
-  userBackend,
-  userConversionBackend,
-  useTestBackends,
-} from '../../../../test/backend';
+import { useTestBackends } from '../../../../test/backend';
 import LoggedInApp from '../../../LoggedInApp';
 
 describe('When a user is making a third pillar gift', () => {
@@ -54,7 +43,8 @@ describe('When a user is making a third pillar gift', () => {
 
   test('gift page is being shown', async () => {
     expect(
-      await screen.findByText('A gift to a loved one’s Tuleva III Pillar Pension Fund'),
+      // eslint-disable-next-line no-irregular-whitespace
+      await screen.findByText(/A.gift.to.a.loved.one’s.Tuleva.III.Pillar.Pension.Fund/),
     ).toBeInTheDocument();
     const makePayment = await makePaymentButton();
     expect(makePayment).toBeDisabled();

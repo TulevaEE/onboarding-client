@@ -43,7 +43,7 @@ describe('When a user is making a third pillar payment', () => {
 
   test('payment page is being shown', async () => {
     expect(
-      await screen.findByText('Payment instructions for Tuleva III pillar pension fund'),
+      await screen.findByText(/Payment instructions for Tuleva III.pillar pension fund/),
     ).toBeInTheDocument();
     const makePayment = await makePaymentButton();
     expect(makePayment).toBeDisabled();
