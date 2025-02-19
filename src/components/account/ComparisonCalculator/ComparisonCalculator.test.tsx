@@ -59,18 +59,8 @@ function queryComponent() {
   return screen.queryByRole('region', { name: 'Comparison Calculator' });
 }
 
-async function awaitForInitialData() {
-  const loader = screen.queryByRole('progressbar', { name: /Loading Comparison Calculator.../i });
-  if (loader) {
-    await waitForElementToBeRemoved(loader);
-  }
-}
-
-async function awaitForReturnsData() {
-  const loader = screen.queryByRole('progressbar', { name: /Loading comparison.../i });
-  if (loader) {
-    await waitForElementToBeRemoved(loader);
-  }
+function queryComponentLoading() {
+  return screen.queryByRole('region', { name: 'Comparison Calculator loading' });
 }
 
 async function timePeriodSelect() {
@@ -113,7 +103,6 @@ describe('ComparisonCalculator', () => {
   });
 
   test('renders component', async () => {
-    await awaitForInitialData();
     const comp = await component();
 
     expect(comp).toBeInTheDocument();
@@ -121,7 +110,6 @@ describe('ComparisonCalculator', () => {
 
   test('renders pillar selection', async () => {
     userBackend(server);
-    await awaitForInitialData();
     const calculator = await component();
 
     const secondPillarButton = within(calculator).getByRole('button', { name: 'Your II pillar' });
@@ -136,7 +124,6 @@ describe('ComparisonCalculator', () => {
 
   test('does not render pillar selection when user has only second pillar', async () => {
     userBackend(server, { thirdPillarActive: true, secondPillarActive: false });
-    await awaitForInitialData();
     const calculator = await component();
 
     const secondPillarButton = within(calculator).queryByRole('button', {
@@ -152,7 +139,6 @@ describe('ComparisonCalculator', () => {
 
   test('does not render pillar selection when user has only second pillar', async () => {
     userBackend(server, { thirdPillarActive: false, secondPillarActive: true });
-    await awaitForInitialData();
     const calculator = await component();
 
     const secondPillarButton = within(calculator).queryByRole('button', {
@@ -168,12 +154,12 @@ describe('ComparisonCalculator', () => {
 
   test('does not render component when user does not have active II or III pillar', async () => {
     userBackend(server, { thirdPillarActive: false, secondPillarActive: false });
-    await awaitForInitialData();
+    await waitForElementToBeRemoved(queryComponentLoading());
     expect(queryComponent()).not.toBeInTheDocument();
   });
 
   test('renders 2nd pillar time period select', async () => {
-    await awaitForInitialData();
+    await component();
 
     const timeSelect = await timePeriodSelect();
     expect(timeSelect).toBeInTheDocument();
@@ -191,9 +177,8 @@ describe('ComparisonCalculator', () => {
   });
 
   test('renders 3rd pillar time period select', async () => {
-    await awaitForInitialData();
+    await component();
     userEvent.click(await pillar3button());
-    await awaitForReturnsData();
 
     const timeSelect = await timePeriodSelect();
     expect(timeSelect).toBeInTheDocument();
@@ -211,7 +196,7 @@ describe('ComparisonCalculator', () => {
   });
 
   test('renders 2nd pillar compare to select', async () => {
-    await awaitForInitialData();
+    await component();
 
     const comparisonSelect = await comparedToSelect();
     expect(comparisonSelect).toBeInTheDocument();
@@ -226,9 +211,8 @@ describe('ComparisonCalculator', () => {
 
   test('renders 3rd pillar compare to select', async () => {
     userBackend(server);
-    await awaitForInitialData();
+    await component();
     userEvent.click(await pillar3button());
-    await awaitForReturnsData();
 
     const comparisonSelect = await comparedToSelect();
     expect(comparisonSelect).toBeInTheDocument();
@@ -240,25 +224,21 @@ describe('ComparisonCalculator', () => {
 
   test('displays too short time period alert', async () => {
     userBackend(server);
-    await awaitForInitialData();
     const calculator = await component();
     expect(calculator).toBeInTheDocument();
 
     setReturnsData(returnsData2YearsAgo);
     userEvent.selectOptions(await timePeriodSelect(), 'Last 2 years');
-    await awaitForReturnsData();
 
-    await waitFor(() => {
-      expect(
-        screen.getByText(
-          'The comparison period is short. Avoid the temptation to make sudden moves based on short-term fluctuations.',
-        ),
-      ).toBeInTheDocument();
-    });
+    expect(
+      await screen.findByText(
+        'The comparison period is short. Avoid the temptation to make sudden moves based on short-term fluctuations.',
+      ),
+    ).toBeInTheDocument();
 
     setReturnsData(returnsData4YearsAgo);
     userEvent.selectOptions(await timePeriodSelect(), 'Last 4 years');
-    await awaitForReturnsData();
+    await component();
 
     await waitFor(() => {
       expect(
@@ -271,13 +251,12 @@ describe('ComparisonCalculator', () => {
 
   test('does not display too short time period alert above the threshold', async () => {
     userBackend(server);
-    await awaitForInitialData();
     const calculator = await component();
     expect(calculator).toBeInTheDocument();
 
     setReturnsData(returnsData2YearsAnd1DayAgo);
     userEvent.selectOptions(await timePeriodSelect(), 'Last 2 years');
-    await awaitForReturnsData();
+    await component();
 
     await waitFor(() => {
       expect(
@@ -291,7 +270,7 @@ describe('ComparisonCalculator', () => {
   test('II pillar content with negative performance compared to the index', async () => {
     userBackend(server);
     setReturnsData(returnsData2ndPillarIndexNegative);
-    await awaitForInitialData();
+    await component();
 
     // Content text
     expect(
@@ -342,7 +321,7 @@ describe('ComparisonCalculator', () => {
   test('II pillar content with largest absolute negative performance compared to the index', async () => {
     userBackend(server);
     setReturnsData(returnsData2ndPillarIndexAbsoluteNegative);
-    await awaitForInitialData();
+    await component();
 
     expect(
       await screen.findByText(/Your II pillar during the past \d years, when compared to/i),
@@ -387,7 +366,7 @@ describe('ComparisonCalculator', () => {
   test('Hide percentage when graph bar is too small', async () => {
     userBackend(server);
     setReturnsData(returnsData2ndPillarSmallPersonalReturn);
-    await awaitForInitialData();
+    await component();
 
     expect(await screen.findByText(/has underperformance./i)).toBeInTheDocument();
     await checkForExplanationSubtext();
@@ -420,7 +399,7 @@ describe('ComparisonCalculator', () => {
   test('II pillar content with positive performance compared to the index', async () => {
     userBackend(server);
     setReturnsData(returnsData2ndPillarIndexPositive);
-    await awaitForInitialData();
+    await component();
 
     // Content text
     expect(
@@ -470,7 +449,7 @@ describe('ComparisonCalculator', () => {
   test('II pillar content with neutral performance compared to the index', async () => {
     userBackend(server);
     setReturnsData(returnsData2ndPillarIndexNeutral);
-    await awaitForInitialData();
+    await component();
 
     // Content text
     expect(
@@ -520,12 +499,12 @@ describe('ComparisonCalculator', () => {
   test('II pillar content with neutral performance compared to 2nd pillar average with 3 bars', async () => {
     userBackend(server);
     setReturnsData(returnsData2ndPillarAverage);
-    await awaitForInitialData();
+    await component();
     userEvent.selectOptions(
       await comparedToSelect(),
       'Estonian II pillar funds average performance',
     );
-    await awaitForReturnsData();
+    await component();
 
     // Content text
     expect(
@@ -589,9 +568,9 @@ describe('ComparisonCalculator', () => {
   test('II pillar content CPI over performing index and bar being red', async () => {
     userBackend(server);
     setReturnsData(returnsData2ndPillarCpi);
-    await awaitForInitialData();
+    await component();
     userEvent.selectOptions(await comparedToSelect(), 'Estonia inflation rate');
-    await awaitForReturnsData();
+    await component();
 
     // Content text
     expect(
@@ -651,9 +630,9 @@ describe('ComparisonCalculator', () => {
   test('II pillar content with neutral performance compared to a fund', async () => {
     userBackend(server);
     setReturnsData(returnsData2ndPillarAndFund);
-    await awaitForInitialData();
+    await component();
     userEvent.selectOptions(await comparedToSelect(), 'Swedbank Pension Fund K60');
-    await awaitForReturnsData();
+    await component();
 
     // Content text
     expect(
@@ -715,7 +694,7 @@ describe('ComparisonCalculator', () => {
   test('no CTA button when user is already fully converted', async () => {
     userBackend(server);
     userConversionBackend(server);
-    await awaitForInitialData();
+    await component();
 
     expect(screen.queryByText('Bring your II pillar to Tuleva')).not.toBeInTheDocument();
   });
@@ -727,16 +706,16 @@ describe('ComparisonCalculator', () => {
       { transfersComplete: false, selectionComplete: false },
       { transfersComplete: false, selectionComplete: false, paymentComplete: false },
     );
-    await awaitForInitialData();
+    await component();
 
     expect(await screen.findByText(/Bring your II pillar to Tuleva/i)).toBeInTheDocument();
   });
 
   test('III pillar explanation text with negative performance compared to the index', async () => {
     setReturnsData(returnsData3rdPillarIndexNegative);
-    await awaitForInitialData();
+    await component();
     userEvent.click(await pillar3button());
-    await awaitForReturnsData();
+    await component();
 
     expect(
       await screen.findByText(/Your III pillar during the past \d years, when compared to/i),
@@ -786,10 +765,10 @@ describe('ComparisonCalculator', () => {
   test('III pillar explanation text with positive performance compared to the index', async () => {
     userBackend(server);
     setReturnsData(returnsData3rdPillarIndexPositive);
-    await awaitForInitialData();
+    await component();
 
     userEvent.click(await pillar3button());
-    await awaitForReturnsData();
+    await component();
 
     expect(
       await screen.findByText(/Your III pillar during the past 4 years, when compared to/i),
@@ -837,9 +816,9 @@ describe('ComparisonCalculator', () => {
 
   test('III pillar explanation text with neutral performance compared to index', async () => {
     setReturnsData(returnsData3rdPillarIndexNeutral);
-    await awaitForInitialData();
+    await component();
     userEvent.click(await pillar3button());
-    await awaitForReturnsData();
+    await component();
 
     expect(
       await screen.findByText(/Your III pillar during the past 6 years, when compared to/i),
@@ -881,10 +860,10 @@ describe('ComparisonCalculator', () => {
 
   test('II pillar content with incomparable fund', async () => {
     setReturnsData(returnsData2ndPillarAndIncomparableFund);
-    await awaitForInitialData();
+    await component();
     userEvent.selectOptions(await timePeriodSelect(), 'Last 20 years');
     userEvent.selectOptions(await comparedToSelect(), 'Young Fund');
-    await awaitForReturnsData();
+    await component();
 
     expect(await screen.findByText(/Young Fund/i, { selector: 'strong' })).toBeInTheDocument();
     expect(await screen.findByText(/is younger /i)).toBeInTheDocument();
