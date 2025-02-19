@@ -36,7 +36,7 @@ export const Header = ({ user, loading, onLogout }: Props) => (
                 href="/login"
                 className="icon-link"
                 onClick={(e) => {
-                  e.preventDefault();
+                  e?.preventDefault();
                   onLogout();
                 }}
               >
