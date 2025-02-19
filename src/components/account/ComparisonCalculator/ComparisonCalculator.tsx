@@ -189,7 +189,7 @@ const ComparisonCalculator: React.FC = () => {
       </h2>
 
       {loadingInitialData ? (
-        <div className="card">
+        <div className="card" role="region" aria-label="Comparison Calculator loading">
           <div className="p-3">
             <Shimmer height={38} />
           </div>
