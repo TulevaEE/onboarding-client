@@ -51,8 +51,8 @@ beforeEach(() => {
   history.push('/account');
 });
 
-function component() {
-  return screen.getByRole('region', { name: 'Comparison Calculator' });
+async function component() {
+  return screen.findByRole('region', { name: 'Comparison Calculator' });
 }
 
 function queryComponent() {
@@ -73,20 +73,16 @@ async function awaitForReturnsData() {
   }
 }
 
-function timePeriodSelect() {
-  return screen.getByRole('combobox', { name: /time period/i });
-}
-
-function findTimePeriodSelect() {
+async function timePeriodSelect() {
   return screen.findByRole('combobox', { name: /time period/i });
 }
 
-function comparedToSelect() {
-  return screen.getByRole('combobox', { name: /compared to/i });
+async function comparedToSelect() {
+  return screen.findByRole('combobox', { name: /compared to/i });
 }
 
-function graphSection() {
-  return screen.getByRole('figure', { name: 'Comparison Calculator Figure' });
+async function graphSection() {
+  return screen.findByRole('figure', { name: 'Comparison Calculator Figure' });
 }
 
 async function checkForExplanationSubtext() {
@@ -101,8 +97,8 @@ async function checkForExplanationSubtext() {
   ).toBeInTheDocument();
 }
 
-function pillar3button() {
-  return screen.getByRole('button', { name: /Your III pillar/i });
+async function pillar3button() {
+  return screen.findByRole('button', { name: /Your III pillar/i });
 }
 
 async function expectAllWorldMarketInBold() {
@@ -117,18 +113,19 @@ describe('ComparisonCalculator', () => {
   });
 
   test('renders component', async () => {
-    const comp = component();
-    expect(comp).toBeInTheDocument();
-
     await awaitForInitialData();
+    const comp = await component();
+
+    expect(comp).toBeInTheDocument();
   });
 
   test('renders pillar selection', async () => {
     userBackend(server);
     await awaitForInitialData();
+    const calculator = await component();
 
-    const secondPillarButton = within(component()).getByRole('button', { name: 'Your II pillar' });
-    const thirdPillarButton = within(component()).getByRole('button', { name: 'Your III pillar' });
+    const secondPillarButton = within(calculator).getByRole('button', { name: 'Your II pillar' });
+    const thirdPillarButton = within(calculator).getByRole('button', { name: 'Your III pillar' });
 
     expect(secondPillarButton).toBeInTheDocument();
     expect(thirdPillarButton).toBeInTheDocument();
@@ -140,11 +137,12 @@ describe('ComparisonCalculator', () => {
   test('does not render pillar selection when user has only second pillar', async () => {
     userBackend(server, { thirdPillarActive: true, secondPillarActive: false });
     await awaitForInitialData();
+    const calculator = await component();
 
-    const secondPillarButton = within(component()).queryByRole('button', {
+    const secondPillarButton = within(calculator).queryByRole('button', {
       name: 'Your II pillar',
     });
-    const thirdPillarButton = within(component()).queryByRole('button', {
+    const thirdPillarButton = within(calculator).queryByRole('button', {
       name: 'Your III pillar',
     });
 
@@ -155,11 +153,12 @@ describe('ComparisonCalculator', () => {
   test('does not render pillar selection when user has only second pillar', async () => {
     userBackend(server, { thirdPillarActive: false, secondPillarActive: true });
     await awaitForInitialData();
+    const calculator = await component();
 
-    const secondPillarButton = within(component()).queryByRole('button', {
+    const secondPillarButton = within(calculator).queryByRole('button', {
       name: 'Your II pillar',
     });
-    const thirdPillarButton = within(component()).queryByRole('button', {
+    const thirdPillarButton = within(calculator).queryByRole('button', {
       name: 'Your III pillar',
     });
 
@@ -176,7 +175,7 @@ describe('ComparisonCalculator', () => {
   test('renders 2nd pillar time period select', async () => {
     await awaitForInitialData();
 
-    const timeSelect = timePeriodSelect();
+    const timeSelect = await timePeriodSelect();
     expect(timeSelect).toBeInTheDocument();
     expect(timeSelect).toHaveTextContent(/From starting II contributions \(2004-03-19\)/);
     expect(timeSelect).toHaveTextContent(/From Tuleva II pillar fund creation \(2017-04-27\)/);
@@ -193,10 +192,10 @@ describe('ComparisonCalculator', () => {
 
   test('renders 3rd pillar time period select', async () => {
     await awaitForInitialData();
-    userEvent.click(pillar3button());
+    userEvent.click(await pillar3button());
     await awaitForReturnsData();
 
-    const timeSelect = await findTimePeriodSelect();
+    const timeSelect = await timePeriodSelect();
     expect(timeSelect).toBeInTheDocument();
     expect(timeSelect).toHaveTextContent(/From starting III contributions \(2004-03-19\)/);
     expect(timeSelect).toHaveTextContent(/From Tuleva III pillar fund creation \(2019-10-14\)/);
@@ -214,7 +213,7 @@ describe('ComparisonCalculator', () => {
   test('renders 2nd pillar compare to select', async () => {
     await awaitForInitialData();
 
-    const comparisonSelect = comparedToSelect();
+    const comparisonSelect = await comparedToSelect();
     expect(comparisonSelect).toBeInTheDocument();
 
     expect(comparisonSelect).toHaveTextContent('World market index');
@@ -228,10 +227,10 @@ describe('ComparisonCalculator', () => {
   test('renders 3rd pillar compare to select', async () => {
     userBackend(server);
     await awaitForInitialData();
-    userEvent.click(pillar3button());
+    userEvent.click(await pillar3button());
     await awaitForReturnsData();
 
-    const comparisonSelect = comparedToSelect();
+    const comparisonSelect = await comparedToSelect();
     expect(comparisonSelect).toBeInTheDocument();
 
     expect(comparisonSelect).toHaveTextContent('World market index');
@@ -241,13 +240,12 @@ describe('ComparisonCalculator', () => {
 
   test('displays too short time period alert', async () => {
     userBackend(server);
-    const comp = component();
-    expect(comp).toBeInTheDocument();
-
     await awaitForInitialData();
+    const calculator = await component();
+    expect(calculator).toBeInTheDocument();
 
     setReturnsData(returnsData2YearsAgo);
-    userEvent.selectOptions(timePeriodSelect(), 'Last 2 years');
+    userEvent.selectOptions(await timePeriodSelect(), 'Last 2 years');
     await awaitForReturnsData();
 
     await waitFor(() => {
@@ -259,7 +257,7 @@ describe('ComparisonCalculator', () => {
     });
 
     setReturnsData(returnsData4YearsAgo);
-    userEvent.selectOptions(timePeriodSelect(), 'Last 4 years');
+    userEvent.selectOptions(await timePeriodSelect(), 'Last 4 years');
     await awaitForReturnsData();
 
     await waitFor(() => {
@@ -273,13 +271,12 @@ describe('ComparisonCalculator', () => {
 
   test('does not display too short time period alert above the threshold', async () => {
     userBackend(server);
-    const comp = component();
-    expect(comp).toBeInTheDocument();
-
     await awaitForInitialData();
+    const calculator = await component();
+    expect(calculator).toBeInTheDocument();
 
     setReturnsData(returnsData2YearsAnd1DayAgo);
-    userEvent.selectOptions(timePeriodSelect(), 'Last 2 years');
+    userEvent.selectOptions(await timePeriodSelect(), 'Last 2 years');
     await awaitForReturnsData();
 
     await waitFor(() => {
@@ -312,33 +309,34 @@ describe('ComparisonCalculator', () => {
     expect(await screen.findByText(/has underperformance./i)).toBeInTheDocument();
     await checkForExplanationSubtext();
 
+    const graph = await graphSection();
     // Bar heights
     // eslint-disable-next-line testing-library/no-node-access
-    const firstBarGraph = within(graphSection()).getByText('7.0%').closest('.bar-graph');
+    const firstBarGraph = within(graph).getByText('7.0%').closest('.bar-graph');
     // eslint-disable-next-line testing-library/no-node-access
-    const secondBarGraph = within(graphSection()).getByText('9.0%').closest('.bar-graph');
+    const secondBarGraph = within(graph).getByText('9.0%').closest('.bar-graph');
     expect(firstBarGraph).toHaveStyle('height: 137.5px');
     expect(secondBarGraph).toHaveStyle('height: 200px');
 
     // Bar amounts
-    expect(within(graphSection()).getByText('+11 000 €')).toBeInTheDocument();
-    expect(within(graphSection()).getByText('+16 000 €')).toBeInTheDocument();
+    expect(within(graph).getByText('+11 000 €')).toBeInTheDocument();
+    expect(within(graph).getByText('+16 000 €')).toBeInTheDocument();
 
     // Bar labels
-    expect(within(graphSection()).getByText('Your II pillar')).toBeInTheDocument();
-    expect(within(graphSection()).getByText('World market index')).toBeInTheDocument();
+    expect(within(graph).getByText('Your II pillar')).toBeInTheDocument();
+    expect(within(graph).getByText('World market index')).toBeInTheDocument();
 
     // Bar colors
     // eslint-disable-next-line testing-library/no-node-access
-    const firstBar = within(graphSection()).getByText('Your II pillar').closest('.bar');
+    const firstBar = within(graph).getByText('Your II pillar').closest('.bar');
     // eslint-disable-next-line testing-library/no-node-access
-    const secondBar = within(graphSection()).getByText('World market index').closest('.bar');
+    const secondBar = within(graph).getByText('World market index').closest('.bar');
     expect(firstBar).toHaveAttribute('data-testid', 'bar-NEGATIVE');
     expect(secondBar).toHaveAttribute('data-testid', 'bar-INDEX');
 
     // Bar percentages
-    expect(within(graphSection()).getByText('7.0%')).toBeInTheDocument();
-    expect(within(graphSection()).getByText('9.0%')).toBeInTheDocument();
+    expect(within(graph).getByText('7.0%')).toBeInTheDocument();
+    expect(within(graph).getByText('9.0%')).toBeInTheDocument();
   });
 
   test('II pillar content with largest absolute negative performance compared to the index', async () => {
@@ -361,7 +359,8 @@ describe('ComparisonCalculator', () => {
     expect(await screen.findByText(/has underperformance./i)).toBeInTheDocument();
     await checkForExplanationSubtext();
 
-    const bars = within(graphSection()).getAllByRole('figure');
+    const graph = await graphSection();
+    const bars = within(graph).getAllByRole('figure');
     expect(bars).toHaveLength(2);
 
     const negativeBarPercentage = within(bars[0]).queryByText('-17.0%');
@@ -393,7 +392,8 @@ describe('ComparisonCalculator', () => {
     expect(await screen.findByText(/has underperformance./i)).toBeInTheDocument();
     await checkForExplanationSubtext();
 
-    const bars = within(graphSection()).getAllByRole('figure');
+    const graph = await graphSection();
+    const bars = within(graph).getAllByRole('figure');
     expect(bars).toHaveLength(2);
 
     const largeBarPercentage = within(bars[1]).getByText('9.0%');
@@ -437,33 +437,34 @@ describe('ComparisonCalculator', () => {
 
     await checkForExplanationSubtext();
 
+    const graph = await graphSection();
     // Bar heights
     // eslint-disable-next-line testing-library/no-node-access
-    const firstBarGraph = within(graphSection()).getByText('10.0%').closest('.bar-graph');
+    const firstBarGraph = within(graph).getByText('10.0%').closest('.bar-graph');
     // eslint-disable-next-line testing-library/no-node-access
-    const secondBarGraph = within(graphSection()).getByText('9.0%').closest('.bar-graph');
+    const secondBarGraph = within(graph).getByText('9.0%').closest('.bar-graph');
     expect(firstBarGraph).toHaveStyle('height: 200px');
     expect(secondBarGraph).toHaveStyle('height: 188.23529411764704px');
 
     // Bar amounts
-    expect(within(graphSection()).getByText('+17 000 €')).toBeInTheDocument();
-    expect(within(graphSection()).getByText('+16 000 €')).toBeInTheDocument();
+    expect(within(graph).getByText('+17 000 €')).toBeInTheDocument();
+    expect(within(graph).getByText('+16 000 €')).toBeInTheDocument();
 
     // Bar labels
-    expect(within(graphSection()).getByText('Your II pillar')).toBeInTheDocument();
-    expect(within(graphSection()).getByText('World market index')).toBeInTheDocument();
+    expect(within(graph).getByText('Your II pillar')).toBeInTheDocument();
+    expect(within(graph).getByText('World market index')).toBeInTheDocument();
 
     // Bar colors
     // eslint-disable-next-line testing-library/no-node-access
-    const firstBar = within(graphSection()).getByText('Your II pillar').closest('.bar');
+    const firstBar = within(graph).getByText('Your II pillar').closest('.bar');
     // eslint-disable-next-line testing-library/no-node-access
-    const secondBar = within(graphSection()).getByText('World market index').closest('.bar');
+    const secondBar = within(graph).getByText('World market index').closest('.bar');
     expect(firstBar).toHaveAttribute('data-testid', 'bar-POSITIVE');
     expect(secondBar).toHaveAttribute('data-testid', 'bar-INDEX');
 
     // Bar percentages
-    expect(within(graphSection()).getByText('10.0%')).toBeInTheDocument();
-    expect(within(graphSection()).getByText('9.0%')).toBeInTheDocument();
+    expect(within(graph).getByText('10.0%')).toBeInTheDocument();
+    expect(within(graph).getByText('9.0%')).toBeInTheDocument();
   });
 
   test('II pillar content with neutral performance compared to the index', async () => {
@@ -486,40 +487,44 @@ describe('ComparisonCalculator', () => {
       ),
     ).toBeInTheDocument();
 
+    const graph = await graphSection();
     // Bar heights
     // eslint-disable-next-line testing-library/no-node-access
-    const firstBarGraph = within(graphSection()).getByText('9.0%').closest('.bar-graph');
+    const firstBarGraph = within(graph).getByText('9.0%').closest('.bar-graph');
     // eslint-disable-next-line testing-library/no-node-access
-    const secondBarGraph = within(graphSection()).getByText('9.5%').closest('.bar-graph');
+    const secondBarGraph = within(graph).getByText('9.5%').closest('.bar-graph');
     expect(firstBarGraph).toHaveStyle('height: 198.75776397515529px');
     expect(secondBarGraph).toHaveStyle('height: 200px');
 
     // Bar amounts
-    expect(within(graphSection()).getByText('+16 000 €')).toBeInTheDocument();
-    expect(within(graphSection()).getByText('+16 100 €')).toBeInTheDocument();
+    expect(within(graph).getByText('+16 000 €')).toBeInTheDocument();
+    expect(within(graph).getByText('+16 100 €')).toBeInTheDocument();
 
     // Bar labels
-    expect(within(graphSection()).getByText('Your II pillar')).toBeInTheDocument();
-    expect(within(graphSection()).getByText('World market index')).toBeInTheDocument();
+    expect(within(graph).getByText('Your II pillar')).toBeInTheDocument();
+    expect(within(graph).getByText('World market index')).toBeInTheDocument();
 
     // Bar colors
     // eslint-disable-next-line testing-library/no-node-access
-    const firstBar = within(graphSection()).getByText('Your II pillar').closest('.bar');
+    const firstBar = within(graph).getByText('Your II pillar').closest('.bar');
     // eslint-disable-next-line testing-library/no-node-access
-    const secondBar = within(graphSection()).getByText('World market index').closest('.bar');
+    const secondBar = within(graph).getByText('World market index').closest('.bar');
     expect(firstBar).toHaveAttribute('data-testid', 'bar-POSITIVE');
     expect(secondBar).toHaveAttribute('data-testid', 'bar-INDEX');
 
     // Bar percentages
-    expect(within(graphSection()).getByText('9.0%')).toBeInTheDocument();
-    expect(within(graphSection()).getByText('9.5%')).toBeInTheDocument();
+    expect(within(graph).getByText('9.0%')).toBeInTheDocument();
+    expect(within(graph).getByText('9.5%')).toBeInTheDocument();
   });
 
   test('II pillar content with neutral performance compared to 2nd pillar average with 3 bars', async () => {
     userBackend(server);
     setReturnsData(returnsData2ndPillarAverage);
     await awaitForInitialData();
-    userEvent.selectOptions(comparedToSelect(), 'Estonian II pillar funds average performance');
+    userEvent.selectOptions(
+      await comparedToSelect(),
+      'Estonian II pillar funds average performance',
+    );
     await awaitForReturnsData();
 
     // Content text
@@ -545,25 +550,26 @@ describe('ComparisonCalculator', () => {
       ),
     ).toBeInTheDocument();
 
+    const graph = await graphSection();
     // First Bar
     // eslint-disable-next-line testing-library/no-node-access
-    const firstBarGraph = within(graphSection()).getByText('7.0%').closest('.bar-graph');
+    const firstBarGraph = within(graph).getByText('7.0%').closest('.bar-graph');
     expect(firstBarGraph).toHaveStyle('height: 137.5px');
-    expect(within(graphSection()).getByText('+11 000 €')).toBeInTheDocument();
-    expect(within(graphSection()).getByText('Your II pillar')).toBeInTheDocument();
+    expect(within(graph).getByText('+11 000 €')).toBeInTheDocument();
+    expect(within(graph).getByText('Your II pillar')).toBeInTheDocument();
     // eslint-disable-next-line testing-library/no-node-access
-    const firstBar = within(graphSection()).getByText('Your II pillar').closest('.bar');
+    const firstBar = within(graph).getByText('Your II pillar').closest('.bar');
     expect(firstBar).toHaveAttribute('data-testid', 'bar-NEGATIVE');
 
     // Second Bar
     // eslint-disable-next-line testing-library/no-node-access
-    const secondBarGraph = within(graphSection()).getByText('6.9%').closest('.bar-graph');
+    const secondBarGraph = within(graph).getByText('6.9%').closest('.bar-graph');
     expect(secondBarGraph).toHaveStyle('height: 136.25px');
-    expect(within(graphSection()).getByText('+10 900 €')).toBeInTheDocument();
+    expect(within(graph).getByText('+10 900 €')).toBeInTheDocument();
     expect(
-      within(graphSection()).getByText('Estonian II pillar funds average performance'),
+      within(graph).getByText('Estonian II pillar funds average performance'),
     ).toBeInTheDocument();
-    const secondBar = within(graphSection())
+    const secondBar = within(graph)
       .getByText('Estonian II pillar funds average performance')
       // eslint-disable-next-line testing-library/no-node-access
       .closest('.bar');
@@ -571,12 +577,12 @@ describe('ComparisonCalculator', () => {
 
     // Third Bar
     // eslint-disable-next-line testing-library/no-node-access
-    const thirdBarGraph = within(graphSection()).getByText('9.0%').closest('.bar-graph');
+    const thirdBarGraph = within(graph).getByText('9.0%').closest('.bar-graph');
     expect(thirdBarGraph).toHaveStyle('height: 200px');
-    expect(within(graphSection()).getByText('+16 000 €')).toBeInTheDocument();
-    expect(within(graphSection()).getByText('World market index')).toBeInTheDocument();
+    expect(within(graph).getByText('+16 000 €')).toBeInTheDocument();
+    expect(within(graph).getByText('World market index')).toBeInTheDocument();
     // eslint-disable-next-line testing-library/no-node-access
-    const thirdBar = within(graphSection()).getByText('World market index').closest('.bar');
+    const thirdBar = within(graph).getByText('World market index').closest('.bar');
     expect(thirdBar).toHaveAttribute('data-testid', 'bar-INDEX');
   });
 
@@ -584,7 +590,7 @@ describe('ComparisonCalculator', () => {
     userBackend(server);
     setReturnsData(returnsData2ndPillarCpi);
     await awaitForInitialData();
-    userEvent.selectOptions(comparedToSelect(), 'Estonia inflation rate');
+    userEvent.selectOptions(await comparedToSelect(), 'Estonia inflation rate');
     await awaitForReturnsData();
 
     // Content text
@@ -608,23 +614,24 @@ describe('ComparisonCalculator', () => {
       ),
     ).toBeInTheDocument();
 
+    const graph = await graphSection();
     // First Bar
     // eslint-disable-next-line testing-library/no-node-access
-    const firstBarGraph = within(graphSection()).getByText('7.0%').closest('.bar-graph');
+    const firstBarGraph = within(graph).getByText('7.0%').closest('.bar-graph');
     expect(firstBarGraph).toHaveStyle('height: 115.78947368421053px');
-    expect(within(graphSection()).getByText('+11 000 €')).toBeInTheDocument();
-    expect(within(graphSection()).getByText('Your II pillar')).toBeInTheDocument();
+    expect(within(graph).getByText('+11 000 €')).toBeInTheDocument();
+    expect(within(graph).getByText('Your II pillar')).toBeInTheDocument();
     // eslint-disable-next-line testing-library/no-node-access
-    const firstBar = within(graphSection()).getByText('Your II pillar').closest('.bar');
+    const firstBar = within(graph).getByText('Your II pillar').closest('.bar');
     expect(firstBar).toHaveAttribute('data-testid', 'bar-NEGATIVE');
 
     // Second Bar
     // eslint-disable-next-line testing-library/no-node-access
-    const secondBarGraph = within(graphSection()).getByText('10.0%').closest('.bar-graph');
+    const secondBarGraph = within(graph).getByText('10.0%').closest('.bar-graph');
     expect(secondBarGraph).toHaveStyle('height: 200px');
-    expect(within(graphSection()).getByText('+19 000 €')).toBeInTheDocument();
-    expect(within(graphSection()).getByText('Estonia inflation rate')).toBeInTheDocument();
-    const secondBar = within(graphSection())
+    expect(within(graph).getByText('+19 000 €')).toBeInTheDocument();
+    expect(within(graph).getByText('Estonia inflation rate')).toBeInTheDocument();
+    const secondBar = within(graph)
       .getByText('Estonia inflation rate')
       // eslint-disable-next-line testing-library/no-node-access
       .closest('.bar');
@@ -632,12 +639,12 @@ describe('ComparisonCalculator', () => {
 
     // Third Bar
     // eslint-disable-next-line testing-library/no-node-access
-    const thirdBarGraph = within(graphSection()).getByText('9.0%').closest('.bar-graph');
+    const thirdBarGraph = within(graph).getByText('9.0%').closest('.bar-graph');
     expect(thirdBarGraph).toHaveStyle('height: 168.42105263157893px');
-    expect(within(graphSection()).getByText('+16 000 €')).toBeInTheDocument();
-    expect(within(graphSection()).getByText('World market index')).toBeInTheDocument();
+    expect(within(graph).getByText('+16 000 €')).toBeInTheDocument();
+    expect(within(graph).getByText('World market index')).toBeInTheDocument();
     // eslint-disable-next-line testing-library/no-node-access
-    const thirdBar = within(graphSection()).getByText('World market index').closest('.bar');
+    const thirdBar = within(graph).getByText('World market index').closest('.bar');
     expect(thirdBar).toHaveAttribute('data-testid', 'bar-INDEX');
   });
 
@@ -645,7 +652,7 @@ describe('ComparisonCalculator', () => {
     userBackend(server);
     setReturnsData(returnsData2ndPillarAndFund);
     await awaitForInitialData();
-    userEvent.selectOptions(comparedToSelect(), 'Swedbank Pension Fund K60');
+    userEvent.selectOptions(await comparedToSelect(), 'Swedbank Pension Fund K60');
     await awaitForReturnsData();
 
     // Content text
@@ -671,23 +678,24 @@ describe('ComparisonCalculator', () => {
       ),
     ).toBeInTheDocument();
 
+    const graph = await graphSection();
     // First Bar
     // eslint-disable-next-line testing-library/no-node-access
-    const firstBarGraph = within(graphSection()).getByText('7.0%').closest('.bar-graph');
+    const firstBarGraph = within(graph).getByText('7.0%').closest('.bar-graph');
     expect(firstBarGraph).toHaveStyle('height: 137.5px');
-    expect(within(graphSection()).getByText('+11 000 €')).toBeInTheDocument();
-    expect(within(graphSection()).getByText('Your II pillar')).toBeInTheDocument();
+    expect(within(graph).getByText('+11 000 €')).toBeInTheDocument();
+    expect(within(graph).getByText('Your II pillar')).toBeInTheDocument();
     // eslint-disable-next-line testing-library/no-node-access
-    const firstBar = within(graphSection()).getByText('Your II pillar').closest('.bar');
+    const firstBar = within(graph).getByText('Your II pillar').closest('.bar');
     expect(firstBar).toHaveAttribute('data-testid', 'bar-NEGATIVE');
 
     // Second Bar
     // eslint-disable-next-line testing-library/no-node-access
-    const secondBarGraph = within(graphSection()).getByText('7.0%').closest('.bar-graph');
+    const secondBarGraph = within(graph).getByText('7.0%').closest('.bar-graph');
     expect(secondBarGraph).toHaveStyle('height: 137.5px');
-    expect(within(graphSection()).getByText('+11 000 €')).toBeInTheDocument();
-    expect(within(graphSection()).getByText('Your II pillar')).toBeInTheDocument();
-    const secondBar = within(graphSection())
+    expect(within(graph).getByText('+11 000 €')).toBeInTheDocument();
+    expect(within(graph).getByText('Your II pillar')).toBeInTheDocument();
+    const secondBar = within(graph)
       .getByText('Your II pillar')
       // eslint-disable-next-line testing-library/no-node-access
       .closest('.bar');
@@ -695,12 +703,12 @@ describe('ComparisonCalculator', () => {
 
     // Third Bar
     // eslint-disable-next-line testing-library/no-node-access
-    const thirdBarGraph = within(graphSection()).getByText('9.0%').closest('.bar-graph');
+    const thirdBarGraph = within(graph).getByText('9.0%').closest('.bar-graph');
     expect(thirdBarGraph).toHaveStyle('height: 200px');
-    expect(within(graphSection()).getByText('+16 000 €')).toBeInTheDocument();
-    expect(within(graphSection()).getByText('World market index')).toBeInTheDocument();
+    expect(within(graph).getByText('+16 000 €')).toBeInTheDocument();
+    expect(within(graph).getByText('World market index')).toBeInTheDocument();
     // eslint-disable-next-line testing-library/no-node-access
-    const thirdBar = within(graphSection()).getByText('World market index').closest('.bar');
+    const thirdBar = within(graph).getByText('World market index').closest('.bar');
     expect(thirdBar).toHaveAttribute('data-testid', 'bar-INDEX');
   });
 
@@ -727,7 +735,7 @@ describe('ComparisonCalculator', () => {
   test('III pillar explanation text with negative performance compared to the index', async () => {
     setReturnsData(returnsData3rdPillarIndexNegative);
     await awaitForInitialData();
-    userEvent.click(pillar3button());
+    userEvent.click(await pillar3button());
     await awaitForReturnsData();
 
     expect(
@@ -744,34 +752,35 @@ describe('ComparisonCalculator', () => {
 
     expect(await screen.findByText(/has underperformance./i)).toBeInTheDocument();
     await checkForExplanationSubtext();
+    const graph = await graphSection();
 
     // Bar heights
     // eslint-disable-next-line testing-library/no-node-access
-    const firstBarGraph = within(graphSection()).getByText('7.0%').closest('.bar-graph');
+    const firstBarGraph = within(graph).getByText('7.0%').closest('.bar-graph');
     // eslint-disable-next-line testing-library/no-node-access
-    const secondBarGraph = within(graphSection()).getByText('9.0%').closest('.bar-graph');
+    const secondBarGraph = within(graph).getByText('9.0%').closest('.bar-graph');
     expect(firstBarGraph).toHaveStyle('height: 137.5px');
     expect(secondBarGraph).toHaveStyle('height: 200px');
 
     // Bar amounts
-    expect(within(graphSection()).getByText('+11 000 €')).toBeInTheDocument();
-    expect(within(graphSection()).getByText('+16 000 €')).toBeInTheDocument();
+    expect(within(graph).getByText('+11 000 €')).toBeInTheDocument();
+    expect(within(graph).getByText('+16 000 €')).toBeInTheDocument();
 
     // Bar labels
-    expect(within(graphSection()).getByText('Your III pillar')).toBeInTheDocument();
-    expect(within(graphSection()).getByText('World market index')).toBeInTheDocument();
+    expect(within(graph).getByText('Your III pillar')).toBeInTheDocument();
+    expect(within(graph).getByText('World market index')).toBeInTheDocument();
 
     // Bar colors
     // eslint-disable-next-line testing-library/no-node-access
-    const firstBar = within(graphSection()).getByText('Your III pillar').closest('.bar');
+    const firstBar = within(graph).getByText('Your III pillar').closest('.bar');
     // eslint-disable-next-line testing-library/no-node-access
-    const secondBar = within(graphSection()).getByText('World market index').closest('.bar');
+    const secondBar = within(graph).getByText('World market index').closest('.bar');
     expect(firstBar).toHaveAttribute('data-testid', 'bar-NEGATIVE');
     expect(secondBar).toHaveAttribute('data-testid', 'bar-INDEX');
 
     // Bar percentages
-    expect(within(graphSection()).getByText('7.0%')).toBeInTheDocument();
-    expect(within(graphSection()).getByText('9.0%')).toBeInTheDocument();
+    expect(within(graph).getByText('7.0%')).toBeInTheDocument();
+    expect(within(graph).getByText('9.0%')).toBeInTheDocument();
   });
 
   test('III pillar explanation text with positive performance compared to the index', async () => {
@@ -779,7 +788,7 @@ describe('ComparisonCalculator', () => {
     setReturnsData(returnsData3rdPillarIndexPositive);
     await awaitForInitialData();
 
-    userEvent.click(pillar3button());
+    userEvent.click(await pillar3button());
     await awaitForReturnsData();
 
     expect(
@@ -796,39 +805,40 @@ describe('ComparisonCalculator', () => {
 
     await checkForExplanationSubtext();
 
+    const graph = await graphSection();
     // Bar heights
     // eslint-disable-next-line testing-library/no-node-access
-    const firstBarGraph = within(graphSection()).getByText('10.0%').closest('.bar-graph');
+    const firstBarGraph = within(graph).getByText('10.0%').closest('.bar-graph');
     // eslint-disable-next-line testing-library/no-node-access
-    const secondBarGraph = within(graphSection()).getByText('9.0%').closest('.bar-graph');
+    const secondBarGraph = within(graph).getByText('9.0%').closest('.bar-graph');
     expect(firstBarGraph).toHaveStyle('height: 200px');
     expect(secondBarGraph).toHaveStyle('height: 188.23529411764704px');
 
     // Bar amounts
-    expect(within(graphSection()).getByText('+17 000 €')).toBeInTheDocument();
-    expect(within(graphSection()).getByText('+16 000 €')).toBeInTheDocument();
+    expect(within(graph).getByText('+17 000 €')).toBeInTheDocument();
+    expect(within(graph).getByText('+16 000 €')).toBeInTheDocument();
 
     // Bar labels
-    expect(within(graphSection()).getByText('Your III pillar')).toBeInTheDocument();
-    expect(within(graphSection()).getByText('World market index')).toBeInTheDocument();
+    expect(within(graph).getByText('Your III pillar')).toBeInTheDocument();
+    expect(within(graph).getByText('World market index')).toBeInTheDocument();
 
     // Bar colors
     // eslint-disable-next-line testing-library/no-node-access
-    const firstBar = within(graphSection()).getByText('Your III pillar').closest('.bar');
+    const firstBar = within(graph).getByText('Your III pillar').closest('.bar');
     // eslint-disable-next-line testing-library/no-node-access
-    const secondBar = within(graphSection()).getByText('World market index').closest('.bar');
+    const secondBar = within(graph).getByText('World market index').closest('.bar');
     expect(firstBar).toHaveAttribute('data-testid', 'bar-POSITIVE');
     expect(secondBar).toHaveAttribute('data-testid', 'bar-INDEX');
 
     // Bar percentages
-    expect(within(graphSection()).getByText('10.0%')).toBeInTheDocument();
-    expect(within(graphSection()).getByText('9.0%')).toBeInTheDocument();
+    expect(within(graph).getByText('10.0%')).toBeInTheDocument();
+    expect(within(graph).getByText('9.0%')).toBeInTheDocument();
   });
 
   test('III pillar explanation text with neutral performance compared to index', async () => {
     setReturnsData(returnsData3rdPillarIndexNeutral);
     await awaitForInitialData();
-    userEvent.click(pillar3button());
+    userEvent.click(await pillar3button());
     await awaitForReturnsData();
 
     expect(
@@ -839,40 +849,41 @@ describe('ComparisonCalculator', () => {
 
     expect(await screen.findByText(/has similar performance./i)).toBeInTheDocument();
 
+    const graph = await graphSection();
     // Bar heights
     // eslint-disable-next-line testing-library/no-node-access
-    const firstBarGraph = within(graphSection()).getByText('9.0%').closest('.bar-graph');
+    const firstBarGraph = within(graph).getByText('9.0%').closest('.bar-graph');
     // eslint-disable-next-line testing-library/no-node-access
-    const secondBarGraph = within(graphSection()).getByText('9.5%').closest('.bar-graph');
+    const secondBarGraph = within(graph).getByText('9.5%').closest('.bar-graph');
     expect(firstBarGraph).toHaveStyle('height: 198.75776397515529px');
     expect(secondBarGraph).toHaveStyle('height: 200px');
 
     // Bar amounts
-    expect(within(graphSection()).getByText('+16 000 €')).toBeInTheDocument();
-    expect(within(graphSection()).getByText('+16 100 €')).toBeInTheDocument();
+    expect(within(graph).getByText('+16 000 €')).toBeInTheDocument();
+    expect(within(graph).getByText('+16 100 €')).toBeInTheDocument();
 
     // Bar labels
-    expect(within(graphSection()).getByText('Your III pillar')).toBeInTheDocument();
-    expect(within(graphSection()).getByText('World market index')).toBeInTheDocument();
+    expect(within(graph).getByText('Your III pillar')).toBeInTheDocument();
+    expect(within(graph).getByText('World market index')).toBeInTheDocument();
 
     // Bar colors
     // eslint-disable-next-line testing-library/no-node-access
-    const firstBar = within(graphSection()).getByText('Your III pillar').closest('.bar');
+    const firstBar = within(graph).getByText('Your III pillar').closest('.bar');
     // eslint-disable-next-line testing-library/no-node-access
-    const secondBar = within(graphSection()).getByText('World market index').closest('.bar');
+    const secondBar = within(graph).getByText('World market index').closest('.bar');
     expect(firstBar).toHaveAttribute('data-testid', 'bar-POSITIVE');
     expect(secondBar).toHaveAttribute('data-testid', 'bar-INDEX');
 
     // Bar percentages
-    expect(within(graphSection()).getByText('9.0%')).toBeInTheDocument();
-    expect(within(graphSection()).getByText('9.5%')).toBeInTheDocument();
+    expect(within(graph).getByText('9.0%')).toBeInTheDocument();
+    expect(within(graph).getByText('9.5%')).toBeInTheDocument();
   });
 
   test('II pillar content with incomparable fund', async () => {
     setReturnsData(returnsData2ndPillarAndIncomparableFund);
     await awaitForInitialData();
-    userEvent.selectOptions(timePeriodSelect(), 'Last 20 years');
-    userEvent.selectOptions(comparedToSelect(), 'Young Fund');
+    userEvent.selectOptions(await timePeriodSelect(), 'Last 20 years');
+    userEvent.selectOptions(await comparedToSelect(), 'Young Fund');
     await awaitForReturnsData();
 
     expect(await screen.findByText(/Young Fund/i, { selector: 'strong' })).toBeInTheDocument();
