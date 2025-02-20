@@ -44,7 +44,7 @@ export const PersonalDetailsStep = () => {
     <>
       <div className="my-5 card p-4">
         <div className="mb-3">
-          <label htmlFor="form-label bank-account-iban fw-bold">
+          <label className="form-label" htmlFor="bank-account-iban">
             <FormattedMessage id="withdrawals.personalDetails.bankAccount.ibanLabel" />
           </label>
           <input
