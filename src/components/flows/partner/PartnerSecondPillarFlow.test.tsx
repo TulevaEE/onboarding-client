@@ -272,9 +272,9 @@ async function expectSuccessScreen(withCurrentFundUnits = true, withFutureContri
 const bonds = () => screen.getByText('Tuleva World Bonds Pension Fund');
 
 const exchangeCurrentFundUnitsSwitch: () => HTMLInputElement = () =>
-  screen.getByRole('checkbox', { name: /Exchange current fund units/i });
+  screen.getByRole('switch', { name: /Exchange current fund units/i });
 const directFutureContributionsSwitch: () => HTMLInputElement = () =>
-  screen.getByRole('checkbox', { name: /Direct future contributions/i });
+  screen.getByRole('switch', { name: /Direct future contributions/i });
 const nextButton = () => screen.getByRole('button', { name: 'Next step' });
 const confirmationCheckbox = () => screen.getByRole('checkbox', { name: /I confirm/i });
 const signButton = () => screen.getByRole('button', { name: 'Sign and send mandate' });
