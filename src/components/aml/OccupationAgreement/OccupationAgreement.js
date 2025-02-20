@@ -18,7 +18,7 @@ export const OccupationAgreement = ({ occupation, onOccupationChange, className 
       onChange={(event) => onOccupationChange(event.target.value)}
     >
       <div className="mb-3">
-        <label htmlFor="occupation">
+        <label className="form-label" htmlFor="occupation">
           <FormattedMessage id="aml.occupation" />
         </label>
         <div className="mb-3">
