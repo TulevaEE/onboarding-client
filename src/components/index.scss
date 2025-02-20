@@ -193,6 +193,13 @@ hr {
   background-color: $blue-bg-2;
 }
 
+/* layout */
+
+.app-footer a {
+  color: inherit;
+  text-decoration-color: currentcolor !important;
+}
+
 /* Bootstrap 5 Migration */
 
 a:not(.btn),
