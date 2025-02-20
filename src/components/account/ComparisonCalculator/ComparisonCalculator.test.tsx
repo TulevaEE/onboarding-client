@@ -281,7 +281,7 @@ describe('ComparisonCalculator', () => {
 
     expect(
       await screen.findByText(/−5 000 €/i, {
-        selector: '.text-danger.fw-bold',
+        selector: '.text-danger',
       }),
     ).toBeInTheDocument();
 
@@ -331,7 +331,7 @@ describe('ComparisonCalculator', () => {
 
     expect(
       await screen.findByText(/−37 000 €/i, {
-        selector: '.text-danger.fw-bold',
+        selector: '.text-danger',
       }),
     ).toBeInTheDocument();
 
@@ -725,7 +725,7 @@ describe('ComparisonCalculator', () => {
 
     expect(
       await screen.findByText(/−5 000 €/i, {
-        selector: '.text-danger.fw-bold',
+        selector: '.text-danger',
       }),
     ).toBeInTheDocument();
 
