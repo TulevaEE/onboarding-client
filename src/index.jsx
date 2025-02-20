@@ -75,6 +75,8 @@ function applyLanguage() {
   updateLanguage(language);
   moment.locale(language);
 
+  document.documentElement.setAttribute('lang', language);
+
   return language;
 }
 
