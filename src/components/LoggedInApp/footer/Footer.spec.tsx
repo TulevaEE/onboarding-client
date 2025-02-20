@@ -8,8 +8,9 @@ describe('Footer', () => {
     const component = shallow(<Footer />);
     expect(component.contains(<FormattedMessage id="footer.name" />)).toBe(true);
     expect(component.contains(<FormattedMessage id="footer.address" />)).toBe(true);
-    expect(component.contains(<FormattedMessage id="footer.email" />)).toBe(true);
-    expect(component.contains(<FormattedMessage id="footer.phone.number" />)).toBe(true);
     expect(component.contains(<FormattedMessage id="footer.registration.code" />)).toBe(true);
+
+    expect(component.find('a[href^="mailto:"]').exists()).toBe(true);
+    expect(component.find('a[href^="tel:"]').exists()).toBe(true);
   });
 });
