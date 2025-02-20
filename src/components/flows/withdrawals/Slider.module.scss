@@ -8,6 +8,10 @@
   outline: none;
   background: #e0e6ec;
 }
+.customRangePayout::-webkit-slider-runnable-track {
+  -webkit-appearance: none;
+  background: transparent;
+}
 .customRangePayout::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
