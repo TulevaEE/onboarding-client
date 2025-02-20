@@ -4,13 +4,13 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import './Payment.scss';
 import { Link } from 'react-router-dom';
 import { captureException } from '@sentry/browser';
-import { BankButton } from './BankButton';
 import { redirectToPayment } from '../../../common/api';
 import { PaymentChannel } from '../../../common/apiModels';
 import { PaymentAmountInput } from './PaymentAmountInput';
 import { OtherBankPaymentDetails } from './paymentDetails/OtherBankPaymentDetails';
 import { isValidPersonalCode } from './PersonalCode';
 import { BankKey } from './types';
+import { PaymentBankButtons } from './PaymentBankButtons';
 
 export const ThirdPillarGift: React.FunctionComponent = () => {
   const { formatMessage } = useIntl();
@@ -103,38 +103,28 @@ export const ThirdPillarGift: React.FunctionComponent = () => {
         <FormattedMessage id="thirdPillarPayment.singlePaymentBank" />
       </p>
       <div className="d-flex gap-2 flex-wrap mt-2 payment-banks">
-        {/* TODO use refactored PaymentBankButtons here */}
-        <BankButton bankKey="swedbank" paymentBank={paymentBank} setPaymentBank={setPaymentBank} />
-        <BankButton bankKey="seb" paymentBank={paymentBank} setPaymentBank={setPaymentBank} />
-        <BankButton bankKey="lhv" paymentBank={paymentBank} setPaymentBank={setPaymentBank} />
-        <BankButton bankKey="luminor" paymentBank={paymentBank} setPaymentBank={setPaymentBank} />
-        <BankButton
-          bankKey="other"
-          paymentBank={paymentBank}
-          setPaymentBank={setPaymentBank}
-          disabled={!paymentPersonalCode || !isValidPersonalCode(paymentPersonalCode)}
-        />
+        <PaymentBankButtons paymentBank={paymentBank} setPaymentBank={setPaymentBank} />
       </div>
 
       {paymentBank === 'other' &&
         paymentPersonalCode &&
         isValidPersonalCode(paymentPersonalCode) && (
-          <OtherBankPaymentDetails
-            personalCode={paymentPersonalCode}
-            amount={paymentAmount}
-            paymentType="SINGLE"
-          />
+          <>
+            <OtherBankPaymentDetails
+              personalCode={paymentPersonalCode}
+              amount={paymentAmount}
+              paymentType="SINGLE"
+            />
+            <div className="mt-5 d-flex gap-2 align-items-center">
+              <span>
+                <FormattedMessage id="thirdPillarPayment.paymentQuestion" />
+              </span>
+              <Link className="icon-link" to="/account">
+                <FormattedMessage id="thirdPillarPayment.backToAccountPage" />
+              </Link>
+            </div>
+          </>
         )}
-      {paymentBank === 'other' && (
-        <div className="mt-5 d-flex gap-2 align-items-center">
-          <span>
-            <FormattedMessage id="thirdPillarPayment.recurringPaymentQuestion" />
-          </span>
-          <Link className="icon-link" to="/account">
-            <FormattedMessage id="thirdPillarPayment.backToAccountPage" />
-          </Link>
-        </div>
-      )}
       {paymentBank !== 'other' && (
         <>
           <div className="mt-5 d-flex flex-column">

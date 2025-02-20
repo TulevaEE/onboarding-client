@@ -1,4 +1,4 @@
-import React, { ChangeEventHandler, WheelEventHandler, useState } from 'react';
+import React, { ChangeEventHandler, WheelEventHandler } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { PaymentType } from '../../../common/apiModels';
 
@@ -10,22 +10,10 @@ export const PaymentAmountInput: React.FunctionComponent<{
   className?: string;
   max?: number;
 }> = ({ paymentType, value, onChange, onWheel, className = '', max }) => {
-  const [showWarning, setShowWarning] = useState(false);
-
-  const handleInputChange: ChangeEventHandler<HTMLInputElement> = (event) => {
-    const inputValue = event.target.value;
-    const numericValue = parseFloat(inputValue.replace(',', '.'));
-
-    if (max !== undefined) {
-      if (paymentType === 'RECURRING') {
-        setShowWarning(numericValue > max / 12);
-      } else {
-        setShowWarning(numericValue > max);
-      }
-    }
-
-    onChange(event);
-  };
+  const numericValue = parseFloat(value.replace(',', '.'));
+  const showWarning =
+    max !== undefined &&
+    (paymentType === 'RECURRING' ? numericValue > max / 12 : numericValue > max);
 
   return (
     <>
@@ -46,7 +34,7 @@ export const PaymentAmountInput: React.FunctionComponent<{
           placeholder={paymentType === 'RECURRING' ? '100' : '1000'}
           className="form-control form-control-lg"
           value={value}
-          onChange={handleInputChange}
+          onChange={onChange}
           onWheel={onWheel}
           lang="et"
         />
@@ -55,7 +43,7 @@ export const PaymentAmountInput: React.FunctionComponent<{
           {paymentType === 'RECURRING' && <FormattedMessage id="thirdPillarPayment.perMonth" />}
         </div>
       </div>
-      {showWarning && max !== undefined && (
+      {showWarning && (
         <div className="alert alert-warning mt-2 mb-0" role="alert">
           <FormattedMessage id="thirdPillarPayment.warningAmountExceeded" values={{ max }} />
         </div>
