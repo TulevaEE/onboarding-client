@@ -1,30 +1,29 @@
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 const Separator = () => <span className="mx-2 text-body-secondary">·</span>;
 
-export const Footer = () => (
-  <footer className="mt-5 pt-4 pb-5 border-top small text-center text-body-secondary app-footer">
-    <address>
-      <strong>
-        <FormattedMessage id="footer.name" />
-      </strong>
-      <Separator />
-      <FormattedMessage id="footer.address" />
-      <Separator />
-      <FormattedMessage id="footer.email">
-        {(email) => <a href={`mailto:${email}`}>{email}</a>}
-      </FormattedMessage>
-      <Separator />
-      <FormattedMessage id="footer.phone.number">
-        {(phone) => {
-          const phoneString = typeof phone === 'string' ? phone : String(phone);
-          const cleanedPhoneNumber = phoneString.replace(/\s/g, '');
-          return <a href={`tel:${cleanedPhoneNumber}`}>{phone}</a>;
-        }}
-      </FormattedMessage>
-      <Separator />
-      <FormattedMessage id="footer.registration.code" />
-    </address>
-  </footer>
-);
+export const Footer = () => {
+  const { formatMessage } = useIntl();
+  return (
+    <footer className="mt-5 pt-4 pb-5 border-top small text-center text-body-secondary app-footer">
+      <address>
+        <strong>
+          <FormattedMessage id="footer.name" />
+        </strong>
+        <Separator />
+        <FormattedMessage id="footer.address" />
+        <Separator />
+        <a href={`mailto:${formatMessage({ id: 'footer.email' })}`}>
+          <FormattedMessage id="footer.email" />
+        </a>
+        <Separator />
+        <a href={`tel:${formatMessage({ id: 'footer.phone.number' }).replace(/\s/g, '')}`}>
+          <FormattedMessage id="footer.phone.number" />
+        </a>
+        <Separator />
+        <FormattedMessage id="footer.registration.code" />
+      </address>
+    </footer>
+  );
+};
