@@ -17,7 +17,11 @@ export const PaymentAmountInput: React.FunctionComponent<{
     const numericValue = parseFloat(inputValue.replace(',', '.'));
 
     if (max !== undefined) {
-      setShowWarning(numericValue > max);
+      if (paymentType === 'RECURRING') {
+        setShowWarning(numericValue > max / 12);
+      } else {
+        setShowWarning(numericValue > max);
+      }
     }
 
     onChange(event);
