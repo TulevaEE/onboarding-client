@@ -119,6 +119,7 @@ export const getPartialWithdrawalMandatesToCreate = (
   const getWithdrawalDetails = (
     pillar: 'SECOND' | 'THIRD',
     sourceFunds: SourceFund[],
+    taxResidency: string,
   ): PartialWithdrawalMandateDetails => {
     const getSourceFundTotalUnits = (fund: SourceFund) =>
       fund.price / fundIsinToFundNavMap[fund.isin];
@@ -134,11 +135,20 @@ export const getPartialWithdrawalMandatesToCreate = (
           percentage: Math.floor(partialWithdrawalOfTotal * 100),
           units: getSourceFundTotalUnits(fund) * partialWithdrawalOfTotal, // TODO bigdecimal <-> JS IEEE754 floating point handling
         })),
+      taxResidency,
     };
   };
 
-  const secondPillarWithdrawal = getWithdrawalDetails('SECOND', secondPillarSourceFunds);
-  const thirdPillarWithdrawal = getWithdrawalDetails('THIRD', thirdPillarSourceFunds);
+  const secondPillarWithdrawal = getWithdrawalDetails(
+    'SECOND',
+    secondPillarSourceFunds,
+    personalDetails.taxResidencyCode,
+  );
+  const thirdPillarWithdrawal = getWithdrawalDetails(
+    'THIRD',
+    thirdPillarSourceFunds,
+    personalDetails.taxResidencyCode,
+  );
 
   if (withdrawalAmount.pillarsToWithdrawFrom === 'THIRD') {
     return [thirdPillarWithdrawal];

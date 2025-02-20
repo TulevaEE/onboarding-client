@@ -194,6 +194,7 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
     expect(secondPillarMandate).toStrictEqual({
       mandateType: 'PARTIAL_WITHDRAWAL',
       pillar: 'SECOND',
+      taxResidency: 'EST',
       bankAccountDetails: getBankAccountDetails(personalDetails),
       fundWithdrawalAmounts: [
         {
@@ -212,6 +213,7 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
     expect(thirdPillarMandate).toStrictEqual({
       mandateType: 'PARTIAL_WITHDRAWAL',
       pillar: 'THIRD',
+      taxResidency: 'EST',
       bankAccountDetails: getBankAccountDetails(personalDetails),
       fundWithdrawalAmounts: [
         { isin: 'EE3600001707', percentage: 100, units: 1000 / TEST_NAVS.TULEVA_THIRD_PILLAR },
@@ -241,6 +243,7 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
     expect(secondPillarMandate).toStrictEqual({
       mandateType: 'PARTIAL_WITHDRAWAL',
       pillar: 'SECOND',
+      taxResidency: 'EST',
       bankAccountDetails: getBankAccountDetails(personalDetails),
       fundWithdrawalAmounts: [
         {
@@ -259,6 +262,7 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
     expect(thirdPillarMandate).toStrictEqual({
       mandateType: 'PARTIAL_WITHDRAWAL',
       pillar: 'THIRD',
+      taxResidency: 'EST',
       bankAccountDetails: getBankAccountDetails(personalDetails),
       fundWithdrawalAmounts: [
         {
@@ -291,6 +295,7 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
     expect(secondPillarMandate).toStrictEqual({
       mandateType: 'PARTIAL_WITHDRAWAL',
       pillar: 'SECOND',
+      taxResidency: 'EST',
       bankAccountDetails: getBankAccountDetails(personalDetails),
       fundWithdrawalAmounts: [
         {
@@ -327,6 +332,7 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
     expect(thirdPillarMandate).toStrictEqual({
       mandateType: 'PARTIAL_WITHDRAWAL',
       pillar: 'THIRD',
+      taxResidency: 'EST',
       bankAccountDetails: getBankAccountDetails(personalDetails),
       fundWithdrawalAmounts: [
         {
@@ -494,6 +500,7 @@ describe('getMandatesToCreate', () => {
     expect(secondPillarWithdrawalMandate).toStrictEqual({
       mandateType: 'PARTIAL_WITHDRAWAL',
       pillar: 'SECOND',
+      taxResidency: 'EST',
       bankAccountDetails: getBankAccountDetails(personalDetails),
       fundWithdrawalAmounts: [
         {
@@ -512,6 +519,8 @@ describe('getMandatesToCreate', () => {
     expect(thirdPillarWithdrawalMandate).toStrictEqual({
       mandateType: 'PARTIAL_WITHDRAWAL',
       pillar: 'THIRD',
+      taxResidency: 'EST',
+
       bankAccountDetails: getBankAccountDetails(personalDetails),
       fundWithdrawalAmounts: [
         {

@@ -43,6 +43,7 @@ export type PartialWithdrawalMandateDetails = {
     percentage: number;
     units: number;
   }[];
+  taxResidency: string;
 };
 
 export type BankAccountDetails = {
