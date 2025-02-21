@@ -1,5 +1,5 @@
 {
-  "login.title": "Log in to your pension account.",
+  "login.title": "Log in to your pension account",
   "login.subtitle": "Anyone can log in. Even if you are not yet in Tuleva.",
   "login.title.thirdPillar.withExchange": "You want to change your III pillar pension fund and make a monthly contribution of {monthlyContribution} euros",
   "login.title.thirdPillar.withoutExchange": "You want to select III pillar pension fund and make a monthly contribution of {monthlyContribution} euros",
@@ -18,7 +18,7 @@
   "login.error.generic": "There appears to have been a mistake. Please try again.",
   "login.join.tuleva": "Join!",
   "login.or": "or",
-  "login.permission.note": "By logging in you are giving Tuleva permission to request your pension account information from the Estonian Central Securities Depository and agreeing to the <a>privacy policy</a>.",
+  "login.permission.note": "By logging in, you allow a one-time request for your data from the pension register and agree to Tuleva’s <a>privacy policy</a>.",
   "login.permission.note.url": "https://tuleva.ee/en/tuleva-privacy-policy-and-terms-of-use-of-website/",
   "login.not.member": "You aren't a member of Tuleva yet?",
   "login.apply.link": "Fill out a membership application",
