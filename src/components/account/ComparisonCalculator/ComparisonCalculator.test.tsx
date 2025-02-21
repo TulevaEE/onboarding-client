@@ -462,7 +462,7 @@ describe('ComparisonCalculator', () => {
 
     expect(
       await screen.findByText(
-        "Stick with a low-cost index fund and keep investing, no matter the market's highs and lows.",
+        'Stick with a low-cost index fund and keep investing, no matter the market’s highs and lows.',
       ),
     ).toBeInTheDocument();
 

@@ -91,7 +91,7 @@ describe('When a user is setting up third pillar payments via employer', () => {
 
       expect(
         await screen.findByText(
-          "Digitally sign the application and e-mail it to your employer's accountant.",
+          'Digitally sign the application and e-mail it to your employer’s accountant.',
         ),
       );
 
@@ -142,8 +142,8 @@ describe('When a user is setting up third pillar payments via employer', () => {
     });
   });
 
-  const privateSectorOption = async () => screen.findByLabelText("I'm a private sector employee");
-  const publicSectorOption = async () => screen.findByLabelText("I'm a public sector employee");
+  const privateSectorOption = async () => screen.findByLabelText('I’m a private sector employee');
+  const publicSectorOption = async () => screen.findByLabelText('I’m a public sector employee');
 
   const saveApplicationFormButton = async () =>
     screen.queryByRole('link', { name: 'Save the application form' });
