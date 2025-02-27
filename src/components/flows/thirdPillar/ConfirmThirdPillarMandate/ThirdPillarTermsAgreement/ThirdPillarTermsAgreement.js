@@ -6,12 +6,8 @@ import { connect } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { actions as thirdPillarActions } from '../../../../thirdPillar';
 
-const RECOMMENDATION_AGE = 55;
-
-export const ThirdPillarTermsAgreement = ({ age, agreed, onAgreementChange }) => {
+export const ThirdPillarTermsAgreement = ({ agreed, onAgreementChange }) => {
   const { formatMessage } = useIntl();
-
-  const showAgeDependentRecommendation = age && age >= RECOMMENDATION_AGE;
 
   return (
     <div className="mt-5">
@@ -39,19 +35,7 @@ export const ThirdPillarTermsAgreement = ({ age, agreed, onAgreementChange }) =>
               ),
             }}
           />{' '}
-          {showAgeDependentRecommendation && (
-            <>
-              <FormattedMessage id="thirdPillarAgreement.ageDependentRecommendationConfirmation" />{' '}
-            </>
-          )}
           <FormattedMessage id="thirdPillarAgreement.signingExplanation" />
-          {showAgeDependentRecommendation && (
-            <div className="mt-2">
-              <small className="text-body-secondary">
-                <FormattedMessage id="thirdPillarAgreement.ageDependentRecommendation" />
-              </small>
-            </div>
-          )}
         </label>
       </div>
     </div>
@@ -59,20 +43,17 @@ export const ThirdPillarTermsAgreement = ({ age, agreed, onAgreementChange }) =>
 };
 
 ThirdPillarTermsAgreement.propTypes = {
-  age: Types.number,
   agreed: Types.bool,
   onAgreementChange: Types.func,
 };
 
 ThirdPillarTermsAgreement.defaultProps = {
-  age: null,
   agreed: false,
   onAgreementChange: () => {},
 };
 
 const mapStateToProps = (state) => ({
   agreed: state.thirdPillar.agreedToTerms,
-  age: state.login.user ? state.login.user.age : null,
 });
 
 const mapDispatchToProps = (dispatch) =>

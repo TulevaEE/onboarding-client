@@ -151,7 +151,7 @@ const TransferApplicationCard: React.FunctionComponent<{
               <>
                 {application.details.sourceFund.name} <br />
                 <small className="text-body-secondary">
-                  <FormattedMessage id="target.funds.fees" />:{' '}
+                  <FormattedMessage id="applications.type.transfer.fees" />:{' '}
                   <Fees value={application.details.sourceFund.ongoingChargesFigure} />
                 </small>
               </>
@@ -164,7 +164,7 @@ const TransferApplicationCard: React.FunctionComponent<{
                 <>
                   {targetFund.name} <br />
                   <small className="text-body-secondary">
-                    <FormattedMessage id="target.funds.fees" />:{' '}
+                    <FormattedMessage id="applications.type.transfer.fees" />:{' '}
                     <Fees value={targetFund.ongoingChargesFigure} />
                   </small>
                 </>

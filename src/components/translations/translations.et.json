@@ -101,15 +101,15 @@
   "capitalEvents.title": "Sinu liikmekapitali tehingud",
 
   "target.funds.EE3600109435.title": "Tuleva Maailma Aktsiate Pensionifond",
-  "target.funds.EE3600109435.description": "Agressiivne indeksfond – sobib, kui oled noorem kui 55, soovid saavutada parimat võimalikku pikaajalist tootlust ja sind ei löö rivist välja turu lühiajalised kõikumised.",
+  "target.funds.EE3600109435.description": "Madala tasuga indeksfond, mis investeerib täielikult aktsiatesse. Sobib sulle, kui soovid <b>parimat võimalikku tootlust</b> pika aja vältel ja sind ei löö rivist välja turu lühiajalised kõikumised.",
   "target.funds.EE3600109435.terms.link": "https://tuleva.ee/tuleva-maailma-aktsiate-pensionifond/",
 
   "target.funds.EE3600109443.title": "Tuleva Maailma Võlakirjade Pensionifond",
-  "target.funds.EE3600109443.description": "Konservatiivne indeksfond – võib sobida, kui sul on jäänud vaid mõni aasta pensionini või kui oled kindluse nimel nõus kõrgema tootluse võimalusest loobuma.",
+  "target.funds.EE3600109443.description": "Konservatiivne indeksfond, mis investeerib täielikult võlakirjadesse. Võib sulle sobida, kui plaanid kogutud vara lähema viie aasta jooksul korraga välja võtta ja oled valmis loobuma tootlusest.",
   "target.funds.EE3600109443.terms.link": "https://tuleva.ee/tuleva-maailma-volakirjade-pensionifond/",
 
   "target.funds.EE3600001707.title": "Tuleva III Samba Pensionifond",
-  "target.funds.EE3600001707.description": "See on madalate tasudega indeksfond, mis investeerib 100% maailma aktsiaturule. Sobib, kui soovid saavutada parimat võimalikku tootlust pika aja vältel ja sind ei löö rivist välja turu lühiajalised kõikumised.",
+  "target.funds.EE3600001707.description": "Soovid saavutada <b>parimat pikaajalist tootlust</b> ja sind ei löö rivist välja turu lühiajalised kõikumised. See sobib eelkõige sulle, kui sa ei plaani järgmise 5 aasta jooksul kogu fondi kogutud raha korraga välja võtta.",
   "target.funds.EE3600001707.terms.link": "https://tuleva.ee/tuleva-iii-samba-pensionifond/",
 
   "target.funds.EE3600109435.tooltip.title": "Tuleva Maailma Aktsiate Pensionifond",
@@ -123,8 +123,8 @@
   "target.funds.EE3600109443.tooltip.investment.2": "iShares Euro Aggregate Bond Index Fund — 25%",
   "target.funds.EE3600109443.tooltip.investment.3": "iShares Global Government Bond Index Fund — 25%",
   "target.funds.EE3600109443.tooltip.investment.4": "iShares Euro Credit Bond Index Fund — 25%",
-  "target.funds.fees": "Tasud aastas",
-  "target.funds.terms": "Tutvu fondi tingimustega",
+  "target.funds.fees": "Tasud",
+  "target.funds.terms": "Tutvu tingimustega",
   "transfer.future.capital.intro.choose": "Vali fond, kuhu suunad oma edasised sissemaksed:",
   "transfer.future.capital.EE3600109435.fund": "Tuleva Maailma Aktsiate Pensionifond",
   "transfer.future.capital.EE3600109443.fund": "Tuleva Maailma Võlakirjade Pensionifond",
@@ -395,9 +395,7 @@
 
   "thirdPillarAgreement.termsConfirmation": "Kinnitan, et mul on olnud võimalik tutvuda kõigi registreeritud <a>vabatahtlike pensionifondide tingimuste ja emissiooniprospektidega</a>, nõustun minu valitud pensionifondi(de) tingimustega ning mõistan vabatahtliku pensionifondi osakute omandamisega kaasnevaid riske.",
   "thirdPillarAgreement.termsConfirmation.link": "https://www.pensionikeskus.ee/iii-sammas/vabatahtlikud-fondid/",
-  "thirdPillarAgreement.ageDependentRecommendationConfirmation": "Olen lugenud alljärgnevat soovitust.",
   "thirdPillarAgreement.signingExplanation": "Vajutades nupule “allkirjasta ja saada”, saadan digiallkirjastatud avalduse otse registripidajale *",
-  "thirdPillarAgreement.ageDependentRecommendation": "Märkasime, et Sul on pensionini jäänud 10 või vähem aastat. Tuleva III Samba Pensionifond investeerib 100% aktsiatesse, pensioniea lähenedes on soovitatav lühiajaliste turukõikumiste mõju vähendamiseks osaku hinnale osa varast investeerida madalama riskiga võlakirjafondi. Küsimuste korral helista Tuleva numbril 644 5100 või kirjuta tuleva@tuleva.ee.",
 
   "aml.updateContactDetails": "Seadus nõuab, et kontrolliksime vähemalt kord aastas oma III samba kogujate andmeid. Aita meid palun selles ja veendu, kas midagi vajab muutmist. Aitäh!",
   "aml.isNotPep": "Kinnitan, et ma ei ole riikliku taustaga isik, tema pereliige ega lähedane kaastöötaja *",
@@ -556,6 +554,7 @@
   "applications.type.transfer.title.3": "III samba osakute vahetamise avaldus",
   "applications.type.transfer.sourceFund": "Lähtefond",
   "applications.type.transfer.targetFund": "Sihtfond",
+  "applications.type.transfer.fees": "Tasud aastas",
   "applications.type.transfer.amount": "Maht",
   "applications.type.transfer.units": "{amount} osakut",
   "applications.type.stopContributions.title": "II samba maksete lõpetamise avaldus",
@@ -875,5 +874,7 @@
   "Swedbank Pensionifond K1990-1999 indeks": "Swedbank Pensionifond K1990-1999 indeks",
   "LHV Pensionifond Eesti": "LHV Pensionifond Eesti",
   "Luminor A Pensionifond": "Luminor A Pensionifond",
-  "Luminor A Pluss Pensionifond": "Luminor A Pluss Pensionifond"
+  "Luminor A Pluss Pensionifond": "Luminor A Pluss Pensionifond",
+
+  "fees.perYear": " aastas"
 }
