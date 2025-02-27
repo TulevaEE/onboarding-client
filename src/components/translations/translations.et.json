@@ -101,15 +101,18 @@
   "capitalEvents.title": "Sinu liikmekapitali tehingud",
 
   "target.funds.EE3600109435.title": "Tuleva Maailma Aktsiate Pensionifond",
-  "target.funds.EE3600109435.description": "Agressiivne indeksfond – sobib, kui oled noorem kui 55, soovid saavutada parimat võimalikku pikaajalist tootlust ja sind ei löö rivist välja turu lühiajalised kõikumised.",
+  "target.funds.EE3600109435.description": "Madala tasuga indeksfond, mis investeerib 100% maailma aktsiaturule. See fond on mõeldud sulle, kui soovid saavutada <b>parimat pikaajalist tootlust</b> ja sind ei löö rivist välja turu lühiajalised kõikumised.",
+  "target.funds.EE3600109435.description.2": "See sobib eelkõige sulle, kui sa ei plaani järgmise 5 aasta jooksul kogu II samba korraga välja võtta.",
   "target.funds.EE3600109435.terms.link": "https://tuleva.ee/tuleva-maailma-aktsiate-pensionifond/",
 
   "target.funds.EE3600109443.title": "Tuleva Maailma Võlakirjade Pensionifond",
-  "target.funds.EE3600109443.description": "Konservatiivne indeksfond – võib sobida, kui sul on jäänud vaid mõni aasta pensionini või kui oled kindluse nimel nõus kõrgema tootluse võimalusest loobuma.",
+  "target.funds.EE3600109443.description": "Konservatiivne indeksfond, mis investeerib täielikult võlakirjadesse. See fond on mõeldud sulle, kui otsid stabiilsust ja kaitset turukõikumiste eest, isegi kui see tähendab loobumist võimalikust tootlusest.",
+  "target.funds.EE3600109443.description.2": "See sobib eelkõige sulle, kui sa plaanid järgmise 5 aasta jooksul II samba korraga välja võtta.",
   "target.funds.EE3600109443.terms.link": "https://tuleva.ee/tuleva-maailma-volakirjade-pensionifond/",
 
   "target.funds.EE3600001707.title": "Tuleva III Samba Pensionifond",
-  "target.funds.EE3600001707.description": "See on madalate tasudega indeksfond, mis investeerib 100% maailma aktsiaturule. Sobib, kui soovid saavutada parimat võimalikku tootlust pika aja vältel ja sind ei löö rivist välja turu lühiajalised kõikumised.",
+  "target.funds.EE3600001707.description": "Madala tasuga indeksfond, mis investeerib 100% maailma aktsiaturule. See fond on mõeldud sulle, kui soovid saavutada <b>parimat pikaajalist tootlust</b> ja sind ei löö rivist välja turu lühiajalised kõikumised.",
+  "target.funds.EE3600001707.description.2": "See sobib eelkõige sulle, kui sa ei plaani järgmise 5 aasta jooksul kogu fondi kogutud raha korraga välja võtta.",
   "target.funds.EE3600001707.terms.link": "https://tuleva.ee/tuleva-iii-samba-pensionifond/",
 
   "target.funds.EE3600109435.tooltip.title": "Tuleva Maailma Aktsiate Pensionifond",
@@ -395,9 +398,7 @@
 
   "thirdPillarAgreement.termsConfirmation": "Kinnitan, et mul on olnud võimalik tutvuda kõigi registreeritud <a>vabatahtlike pensionifondide tingimuste ja emissiooniprospektidega</a>, nõustun minu valitud pensionifondi(de) tingimustega ning mõistan vabatahtliku pensionifondi osakute omandamisega kaasnevaid riske.",
   "thirdPillarAgreement.termsConfirmation.link": "https://www.pensionikeskus.ee/iii-sammas/vabatahtlikud-fondid/",
-  "thirdPillarAgreement.ageDependentRecommendationConfirmation": "Olen lugenud alljärgnevat soovitust.",
   "thirdPillarAgreement.signingExplanation": "Vajutades nupule “allkirjasta ja saada”, saadan digiallkirjastatud avalduse otse registripidajale *",
-  "thirdPillarAgreement.ageDependentRecommendation": "Märkasime, et Sul on pensionini jäänud 10 või vähem aastat. Tuleva III Samba Pensionifond investeerib 100% aktsiatesse, pensioniea lähenedes on soovitatav lühiajaliste turukõikumiste mõju vähendamiseks osaku hinnale osa varast investeerida madalama riskiga võlakirjafondi. Küsimuste korral helista Tuleva numbril 644 5100 või kirjuta tuleva@tuleva.ee.",
 
   "aml.updateContactDetails": "Seadus nõuab, et kontrolliksime vähemalt kord aastas oma III samba kogujate andmeid. Aita meid palun selles ja veendu, kas midagi vajab muutmist. Aitäh!",
   "aml.isNotPep": "Kinnitan, et ma ei ole riikliku taustaga isik, tema pereliige ega lähedane kaastöötaja *",

@@ -53,6 +53,14 @@ export const TargetFundSelector: React.FunctionComponent<Props> = ({
                 <div className="mb-2">
                   <FormattedMessage
                     id={`target.funds.${fund.isin as TulevaFundIsin}.description`}
+                    values={{
+                      b: (chunks: string) => <b>{chunks}</b>,
+                    }}
+                  />
+                </div>
+                <div className="mb-2">
+                  <FormattedMessage
+                    id={`target.funds.${fund.isin as TulevaFundIsin}.description.2`}
                   />
                 </div>
                 <a

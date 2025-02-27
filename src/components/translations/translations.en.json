@@ -103,15 +103,18 @@
   "capitalEvents.title": "Your member capital transactions",
 
   "target.funds.EE3600109435.title": "Tuleva World Stocks Pension Fund",
-  "target.funds.EE3600109435.description": "Agressive index fund - this fund is best for you if you wish to maximise returns and you are not scared by short term market fluctuations.",
+  "target.funds.EE3600109435.description": "This is a low-cost index fund that invests in the global stock market. This fund is designed for you if you want to achieve the <b>best possible returns</b> over the long term while staying unfazed by short-term market fluctuations.",
+  "target.funds.EE3600109435.description.2": "It suits you if you don't plan on withdrawing your II pillar savings as a lump sum in the next 5 years.",
   "target.funds.EE3600109435.terms.link": "https://tuleva.ee/en/tuleva-world-stocks-pension-fund/",
 
   "target.funds.EE3600109443.title": "Tuleva World Bonds Pension Fund",
-  "target.funds.EE3600109443.description": "Conservative index fund - this fund is best for you if you only have a few years left until retirement or you are willing to accept lower returns in the name of less risk.",
+  "target.funds.EE3600109443.description": "A conservative index fund that invests entirely in bonds. This fund is designed for you if you are looking for stability and protection against market fluctuations, even if that means sacrificing potential returns.",
+  "target.funds.EE3600109443.description.2": "It suits you if you plan to withdraw your II pillar savings as a lump sum in the next 5 years.",
   "target.funds.EE3600109443.terms.link": "https://tuleva.ee/en/tuleva-world-bonds-pension-funds/",
 
   "target.funds.EE3600001707.title": "Tuleva III Pillar Pension Fund",
-  "target.funds.EE3600001707.description": "Fund invests 100% into stocks. This suits you if you want to have best long-term performance and you are not afraid of short-term fluctuations.",
+  "target.funds.EE3600001707.description": "This is a low-cost index fund that invests 100% in the global stock market. This fund is designed for you if you want to achieve the <b>best possible returns</b> over the long term while staying unfazed by short-term market fluctuations.",
+  "target.funds.EE3600001707.description.2": "It suits you if you don't plan on withdrawing the entire accumulated fund amount as a lump sum in the next 5 years.",
   "target.funds.EE3600001707.terms.link": "https://tuleva.ee/tuleva-iii-samba-pensionifond/",
 
   "target.funds.EE3600109435.tooltip.title": "Tuleva World Stocks Pension Fund",
@@ -381,9 +384,9 @@
   "thirdPillarFlowSetup.buttonText": "Next step",
 
   "thirdPillarFlowSelectSources.title": "Your available III pillar units",
-  "thirdPillarFlowSelectSources.selectAll.title": "Transfer your III pillar fund contents to Tuleva",
-  "thirdPillarFlowSelectSources.selectAll.subtitle": "Your future contributions will be directed to Tuleva and your existing funds will be transferred. Your portfolio will benefit from Tuleva’s low fees. The transfer is free of charge.",
-  "thirdPillarFlowSelectSources.insurance_info": "NB! Here are instructions to transfer funds <a>from your insurance provider</a> (in Estonian).",
+  "thirdPillarFlowSelectSources.selectAll.title": "Transfer your whole III pillar to Tuleva",
+  "thirdPillarFlowSelectSources.selectAll.subtitle": "Your future contributions will be directed to Tuleva and your existing fund units will be transferred. Your portfolio will benefit from Tuleva’s low fees. The transfer is free of charge.",
+  "thirdPillarFlowSelectSources.insurance_info": "NB! Here are the instructions to transfer funds <a>from your insurance provider</a> (in Estonian).",
   "thirdPillarFlowSelectSources.insurance_info.link": "https://tuleva.ee/iii-sammas-kindlustusleping/",
   "thirdPillarFlowSelectSources.futureContributions.title": "I’ll direct only future payments to Tuleva",
   "thirdPillarFlowSelectSources.futureContributions.subtitle": "Your existing fund units will remain in your current fund and new contributions will be directed to the Tuleva III Pillar Pension Fund.",
@@ -394,9 +397,7 @@
 
   "thirdPillarAgreement.termsConfirmation": "I confirm that I have had the chance to view all <a>supplementary pension funds’ terms and prospectuses</a>, I agree to the terms of my chosen pension fund(s) and understand the risks that accompany the acquisition of supplementary pension fund units.",
   "thirdPillarAgreement.termsConfirmation.link": "https://www.pensionikeskus.ee/en/iii-pillar/supplementary-pension-funds/",
-  "thirdPillarAgreement.ageDependentRecommendationConfirmation": "I have read the recommendation below.",
   "thirdPillarAgreement.signingExplanation": "By clicking “sign and send“ a digitally signed application will be sent to the register *",
-  "thirdPillarAgreement.ageDependentRecommendation": "We have noticed that your statutory retirement age is in less than 10 years. Tuleva III Pillar Pension Fund invests 100% in shares. As retirement age approaches, in order to reduce the impact of short-term market fluctuations, it is advisable to switch part of your funds into lower risk bond fund. In case of questions, please call Tuleva on 644 5100 or write to us tuleva@tuleva.ee.",
 
   "aml.updateContactDetails": "The law requires that we check our third pillar clients’ info at least once a year. Please help us in this and check your details below. Thank you!",
   "aml.isNotPep": "I confirm that I am not a politically exposed person, his/her close relative or close associate *",
