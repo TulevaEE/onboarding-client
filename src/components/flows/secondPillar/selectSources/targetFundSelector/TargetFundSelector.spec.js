@@ -29,7 +29,7 @@ describe('Target fund selector', () => {
     targetFunds.forEach((fund) => {
       expect(component.contains(fund.name)).toBe(true);
       expect(
-        component.contains(<FormattedMessage id={`target.funds.${fund.isin}.description`} />),
+        component.contains(<FormattedMessage id={`target.funds.${fund.isin}.description.2`} />),
       ).toBe(true);
       // TODO: add test for terms link once we have the links.
     });
