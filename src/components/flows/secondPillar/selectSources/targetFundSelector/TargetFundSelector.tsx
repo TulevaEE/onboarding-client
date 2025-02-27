@@ -48,7 +48,7 @@ export const TargetFundSelector: React.FunctionComponent<Props> = ({
               <small>
                 <div className="mb-2">
                   <FormattedMessage id="target.funds.fees" />:{' '}
-                  <Fees className="fw-bold" value={fund.ongoingChargesFigure} />
+                  <Fees className="fw-bold" value={fund.ongoingChargesFigure} showPerYear />
                 </div>
                 <div className="mb-2">
                   <FormattedMessage
@@ -56,11 +56,6 @@ export const TargetFundSelector: React.FunctionComponent<Props> = ({
                     values={{
                       b: (chunks: string) => <b>{chunks}</b>,
                     }}
-                  />
-                </div>
-                <div className="mb-2">
-                  <FormattedMessage
-                    id={`target.funds.${fund.isin as TulevaFundIsin}.description.2`}
                   />
                 </div>
                 <a
