@@ -103,18 +103,15 @@
   "capitalEvents.title": "Your member capital transactions",
 
   "target.funds.EE3600109435.title": "Tuleva World Stocks Pension Fund",
-  "target.funds.EE3600109435.description": "This is a low-cost index fund that invests in the global stock market. This fund is designed for you if you want to achieve the <b>best possible returns</b> over the long term while staying unfazed by short-term market fluctuations.",
-  "target.funds.EE3600109435.description.2": "It suits you if you don't plan on withdrawing your II pillar savings as a lump sum in the next 5 years.",
+  "target.funds.EE3600109435.description": "This fund is designed for you if you want to achieve the <b>best possible returns</b> over the long term while staying unfazed by short-term market fluctuations. It suits you if you don't plan on withdrawing your II pillar savings as a lump sum in the next 5 years.",
   "target.funds.EE3600109435.terms.link": "https://tuleva.ee/en/tuleva-world-stocks-pension-fund/",
 
   "target.funds.EE3600109443.title": "Tuleva World Bonds Pension Fund",
-  "target.funds.EE3600109443.description": "A conservative index fund that invests entirely in bonds. This fund is designed for you if you are looking for stability and protection against market fluctuations, even if that means sacrificing potential returns.",
-  "target.funds.EE3600109443.description.2": "It suits you if you plan to withdraw your II pillar savings as a lump sum in the next 5 years.",
+  "target.funds.EE3600109443.description": "This fund is designed for you if you are looking for stability and protection against market fluctuations, even if that means sacrificing potential returns. It suits you if you plan to withdraw your II pillar savings as a lump sum in the next 5 years.",
   "target.funds.EE3600109443.terms.link": "https://tuleva.ee/en/tuleva-world-bonds-pension-funds/",
 
   "target.funds.EE3600001707.title": "Tuleva III Pillar Pension Fund",
-  "target.funds.EE3600001707.description": "This is a low-cost index fund that invests 100% in the global stock market. This fund is designed for you if you want to achieve the <b>best possible returns</b> over the long term while staying unfazed by short-term market fluctuations.",
-  "target.funds.EE3600001707.description.2": "It suits you if you don't plan on withdrawing the entire accumulated fund amount as a lump sum in the next 5 years.",
+  "target.funds.EE3600001707.description": "This fund is designed for you if you want to achieve the <b>best possible returns</b> over the long term while staying unfazed by short-term market fluctuations. It suits you if you don't plan on withdrawing the entire accumulated fund amount as a lump sum in the next 5 years.",
   "target.funds.EE3600001707.terms.link": "https://tuleva.ee/tuleva-iii-samba-pensionifond/",
 
   "target.funds.EE3600109435.tooltip.title": "Tuleva World Stocks Pension Fund",
@@ -128,7 +125,7 @@
   "target.funds.EE3600109443.tooltip.investment.2": "iShares Euro Aggregate Bond Index Fund — 25%",
   "target.funds.EE3600109443.tooltip.investment.3": "iShares Global Government Bond Index Fund — 25%",
   "target.funds.EE3600109443.tooltip.investment.4": "iShares Euro Credit Bond Index Fund — 25%",
-  "target.funds.fees": "Annual fees",
+  "target.funds.fees": "Low-cost index fund",
   "target.funds.terms": "Read fund prospectus",
   "transfer.future.capital.intro.choose": "Pick a fund for your future contributions:",
   "transfer.future.capital.EE3600109435.fund": "Tuleva World Stocks Pension Fund",
@@ -555,6 +552,7 @@
   "applications.type.transfer.title.3": "III pillar fund transfer application",
   "applications.type.transfer.sourceFund": "Source fund",
   "applications.type.transfer.targetFund": "Target fund",
+  "applications.type.transfer.fees": "Annual fees",
   "applications.type.transfer.amount": "Amount",
   "applications.type.transfer.units": "{amount} units",
   "applications.type.stopContributions.title": "II pillar contribution stopping application",
@@ -875,5 +873,7 @@
   "Swedbank Pensionifond K1990-1999 indeks": "Swedbank Pension Fund K1990-1999 Index",
   "LHV Pensionifond Eesti": "LHV Estonian Pension Fund",
   "Luminor A Pensionifond": "Luminor A Pension Fund",
-  "Luminor A Pluss Pensionifond": "Luminor A Plus Pension Fund"
+  "Luminor A Pluss Pensionifond": "Luminor A Plus Pension Fund",
+
+  "fees.perYear": " per year"
 }

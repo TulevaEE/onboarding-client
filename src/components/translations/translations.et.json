@@ -101,18 +101,15 @@
   "capitalEvents.title": "Sinu liikmekapitali tehingud",
 
   "target.funds.EE3600109435.title": "Tuleva Maailma Aktsiate Pensionifond",
-  "target.funds.EE3600109435.description": "Madala tasuga indeksfond, mis investeerib 100% maailma aktsiaturule. See fond on mõeldud sulle, kui soovid saavutada <b>parimat pikaajalist tootlust</b> ja sind ei löö rivist välja turu lühiajalised kõikumised.",
-  "target.funds.EE3600109435.description.2": "See sobib eelkõige sulle, kui sa ei plaani järgmise 5 aasta jooksul kogu II samba korraga välja võtta.",
+  "target.funds.EE3600109435.description": "Soovid saavutada <b>parimat pikaajalist tootlust</b> ja sind ei löö rivist välja turu lühiajalised kõikumised. See sobib eelkõige sulle, kui sa ei plaani järgmise 5 aasta jooksul II samba korraga välja võtta.",
   "target.funds.EE3600109435.terms.link": "https://tuleva.ee/tuleva-maailma-aktsiate-pensionifond/",
 
   "target.funds.EE3600109443.title": "Tuleva Maailma Võlakirjade Pensionifond",
-  "target.funds.EE3600109443.description": "Konservatiivne indeksfond, mis investeerib täielikult võlakirjadesse. See fond on mõeldud sulle, kui otsid stabiilsust ja kaitset turukõikumiste eest, isegi kui see tähendab loobumist võimalikust tootlusest.",
-  "target.funds.EE3600109443.description.2": "See sobib eelkõige sulle, kui sa plaanid järgmise 5 aasta jooksul II samba korraga välja võtta.",
+  "target.funds.EE3600109443.description": "Otsid stabiilsust ja kaitset turukõikumiste eest, isegi kui see tähendab loobumist võimalikust tootlusest. See sobib eelkõige sulle, kui sa plaanid järgmise 5 aasta jooksul II samba korraga välja võtta.",
   "target.funds.EE3600109443.terms.link": "https://tuleva.ee/tuleva-maailma-volakirjade-pensionifond/",
 
   "target.funds.EE3600001707.title": "Tuleva III Samba Pensionifond",
-  "target.funds.EE3600001707.description": "Madala tasuga indeksfond, mis investeerib 100% maailma aktsiaturule. See fond on mõeldud sulle, kui soovid saavutada <b>parimat pikaajalist tootlust</b> ja sind ei löö rivist välja turu lühiajalised kõikumised.",
-  "target.funds.EE3600001707.description.2": "See sobib eelkõige sulle, kui sa ei plaani järgmise 5 aasta jooksul kogu fondi kogutud raha korraga välja võtta.",
+  "target.funds.EE3600001707.description": "Soovid saavutada <b>parimat pikaajalist tootlust</b> ja sind ei löö rivist välja turu lühiajalised kõikumised. See sobib eelkõige sulle, kui sa ei plaani järgmise 5 aasta jooksul kogu fondi kogutud raha korraga välja võtta.",
   "target.funds.EE3600001707.terms.link": "https://tuleva.ee/tuleva-iii-samba-pensionifond/",
 
   "target.funds.EE3600109435.tooltip.title": "Tuleva Maailma Aktsiate Pensionifond",
@@ -126,7 +123,7 @@
   "target.funds.EE3600109443.tooltip.investment.2": "iShares Euro Aggregate Bond Index Fund — 25%",
   "target.funds.EE3600109443.tooltip.investment.3": "iShares Global Government Bond Index Fund — 25%",
   "target.funds.EE3600109443.tooltip.investment.4": "iShares Euro Credit Bond Index Fund — 25%",
-  "target.funds.fees": "Tasud aastas",
+  "target.funds.fees": "Madala tasuga indeksfond",
   "target.funds.terms": "Tutvu fondi tingimustega",
   "transfer.future.capital.intro.choose": "Vali fond, kuhu suunad oma edasised sissemaksed:",
   "transfer.future.capital.EE3600109435.fund": "Tuleva Maailma Aktsiate Pensionifond",
@@ -557,6 +554,7 @@
   "applications.type.transfer.title.3": "III samba osakute vahetamise avaldus",
   "applications.type.transfer.sourceFund": "Lähtefond",
   "applications.type.transfer.targetFund": "Sihtfond",
+  "applications.type.transfer.fees": "Tasud aastas",
   "applications.type.transfer.amount": "Maht",
   "applications.type.transfer.units": "{amount} osakut",
   "applications.type.stopContributions.title": "II samba maksete lõpetamise avaldus",
@@ -876,5 +874,7 @@
   "Swedbank Pensionifond K1990-1999 indeks": "Swedbank Pensionifond K1990-1999 indeks",
   "LHV Pensionifond Eesti": "LHV Pensionifond Eesti",
   "Luminor A Pensionifond": "Luminor A Pensionifond",
-  "Luminor A Pluss Pensionifond": "Luminor A Pluss Pensionifond"
+  "Luminor A Pluss Pensionifond": "Luminor A Pluss Pensionifond",
+
+  "fees.perYear": " aastas"
 }
