@@ -27,7 +27,7 @@ export const TargetFundSelector: React.FunctionComponent<Props> = ({
           <button
             type="button"
             className={`
-                tv-target-fund h-100 p-4 text-start
+                tv-target-fund h-100 p-3 text-start
                 ${isSelected(fund) ? 'tv-target-fund--active' : ''}
               `}
             onClick={() => onSelectFund(fund)}
@@ -41,23 +41,12 @@ export const TargetFundSelector: React.FunctionComponent<Props> = ({
             ) : (
               ''
             )}
-            <div className="tv-target-fund__inner-container">
-              <div className="mb-2">
-                <b>{fund.name}</b>
-              </div>
-              <small>
-                <div className="mb-2">
-                  <FormattedMessage id="target.funds.fees" />:{' '}
-                  <Fees className="fw-bold" value={fund.ongoingChargesFigure} showPerYear />
-                </div>
-                <div className="mb-2">
-                  <FormattedMessage
-                    id={`target.funds.${fund.isin as TulevaFundIsin}.description`}
-                    values={{
-                      b: (chunks: string) => <b>{chunks}</b>,
-                    }}
-                  />
-                </div>
+            <div className="tv-target-fund__inner-container small">
+              <p className="mb-2 fs-6 fw-bold">{fund.name}</p>
+              <p className="mb-3">
+                <FormattedMessage id="target.funds.fees" />{' '}
+                <Fees className="fw-bold" value={fund.ongoingChargesFigure} showPerYear />{' '}
+                <span className="mx-1 text-separator">·</span>{' '}
                 <a
                   className="tv-target-fund__terms-link"
                   href={formatMessage({
@@ -68,7 +57,15 @@ export const TargetFundSelector: React.FunctionComponent<Props> = ({
                 >
                   <FormattedMessage id="target.funds.terms" />
                 </a>
-              </small>
+              </p>
+              <p className="m-0">
+                <FormattedMessage
+                  id={`target.funds.${fund.isin as TulevaFundIsin}.description`}
+                  values={{
+                    b: (chunks: string) => <b>{chunks}</b>,
+                  }}
+                />
+              </p>
             </div>
           </button>
         </div>
