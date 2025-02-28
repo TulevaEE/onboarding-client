@@ -44,6 +44,14 @@ export const TargetFundSelector: React.FunctionComponent<Props> = ({
             <div className="tv-target-fund__inner-container small">
               <p className="mb-2 fs-6 fw-bold">{fund.name}</p>
               <p className="mb-3">
+                <FormattedMessage
+                  id={`target.funds.${fund.isin as TulevaFundIsin}.description`}
+                  values={{
+                    b: (chunks: string) => <b>{chunks}</b>,
+                  }}
+                />
+              </p>
+              <p className="m-0">
                 <FormattedMessage id="target.funds.fees" />{' '}
                 <Fees className="fw-bold" value={fund.ongoingChargesFigure} showPerYear />{' '}
                 <span className="mx-1 text-separator">·</span>{' '}
@@ -57,14 +65,6 @@ export const TargetFundSelector: React.FunctionComponent<Props> = ({
                 >
                   <FormattedMessage id="target.funds.terms" />
                 </a>
-              </p>
-              <p className="m-0">
-                <FormattedMessage
-                  id={`target.funds.${fund.isin as TulevaFundIsin}.description`}
-                  values={{
-                    b: (chunks: string) => <b>{chunks}</b>,
-                  }}
-                />
               </p>
             </div>
           </button>
