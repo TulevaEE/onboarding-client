@@ -103,15 +103,18 @@
   "capitalEvents.title": "Your member capital transactions",
 
   "target.funds.EE3600109435.title": "Tuleva World Stocks Pension Fund",
-  "target.funds.EE3600109435.description": "This fund is designed for you if you want to achieve the <b>best possible returns</b> over the long term while staying unfazed by short-term market fluctuations. It suits you if you don't plan on withdrawing your II pillar savings as a lump sum in the next 5 years.",
+  "target.funds.EE3600109435.description": "A low-cost index fund that invests entirely in stocks. The annual returns of this fund can vary sharply. However, projected long-term returns are nevertheless significantly higher than for a bond fund. It is impossible to combine low risk with high returns.",
+  "target.funds.EE3600109435.description.2": "Suitable for you if you want to achieve <b>the best long-term returns</b> and do not plan to withdraw your entire II pillar within the next 5 years.",
   "target.funds.EE3600109435.terms.link": "https://tuleva.ee/en/tuleva-world-stocks-pension-fund/",
 
   "target.funds.EE3600109443.title": "Tuleva World Bonds Pension Fund",
-  "target.funds.EE3600109443.description": "This fund is designed for you if you are looking for stability and protection against market fluctuations, even if that means sacrificing potential returns. It suits you if you plan to withdraw your II pillar savings as a lump sum in the next 5 years.",
+  "target.funds.EE3600109443.description": "A conservative index fund that invests entirely in low-risk bonds. It is easier to predict the future value of bond funds than it is for stock funds, but a low level of risk also means that returns on bond funds are low compared to stock funds. It is impossible to combine low risk with high returns.",
+  "target.funds.EE3600109443.description.2": "Suitable for you if you plan to withdraw your entire II pillar within the next 5 years and are willing to give up returns for security.",
   "target.funds.EE3600109443.terms.link": "https://tuleva.ee/en/tuleva-world-bonds-pension-funds/",
 
   "target.funds.EE3600001707.title": "Tuleva III Pillar Pension Fund",
-  "target.funds.EE3600001707.description": "This fund is designed for you if you want to achieve the <b>best possible returns</b> over the long term while staying unfazed by short-term market fluctuations. It suits you if you don't plan on withdrawing the entire accumulated fund amount as a lump sum in the next 5 years.",
+  "target.funds.EE3600001707.description": "This fund is designed for you if you want to achieve the <b>best possible returns</b> over the long term while staying unfazed by short-term market fluctuations.",
+  "target.funds.EE3600001707.description.2": "It suits you if you don't plan on withdrawing the entire accumulated fund amount as a lump sum in the next 5 years.",
   "target.funds.EE3600001707.terms.link": "https://tuleva.ee/tuleva-iii-samba-pensionifond/",
 
   "target.funds.EE3600109435.tooltip.title": "Tuleva World Stocks Pension Fund",

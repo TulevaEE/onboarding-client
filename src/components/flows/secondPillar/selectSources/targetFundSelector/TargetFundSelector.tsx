@@ -43,9 +43,17 @@ export const TargetFundSelector: React.FunctionComponent<Props> = ({
             )}
             <div className="tv-target-fund__inner-container small">
               <p className="mb-2 fs-6 fw-bold">{fund.name}</p>
-              <p className="mb-3">
+              <p>
                 <FormattedMessage
                   id={`target.funds.${fund.isin as TulevaFundIsin}.description`}
+                  values={{
+                    b: (chunks: string) => <b>{chunks}</b>,
+                  }}
+                />
+              </p>
+              <p className="mb-3">
+                <FormattedMessage
+                  id={`target.funds.${fund.isin as TulevaFundIsin}.description.2`}
                   values={{
                     b: (chunks: string) => <b>{chunks}</b>,
                   }}

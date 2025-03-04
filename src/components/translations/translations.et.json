@@ -101,15 +101,18 @@
   "capitalEvents.title": "Sinu liikmekapitali tehingud",
 
   "target.funds.EE3600109435.title": "Tuleva Maailma Aktsiate Pensionifond",
-  "target.funds.EE3600109435.description": "Madala tasuga indeksfond, mis investeerib täielikult aktsiatesse. Fondi tootlus võib aastast aastasse järsult kõikuda. Sobib sulle, kui soovid saavutada <b>parimat pikaajalist tootlust</b> ja sa ei plaani kogu II sammast lähema 5 aasta jooksul korraga välja võtta.",
+  "target.funds.EE3600109435.description": "Madala tasuga indeksfond, mis investeerib täielikult aktsiatesse. Selle fondi tootlus võib järsult aastast-aastasse kõikuda. Oodatav tootlus on sellegipoolest oluliselt kõrgem kui võlakirjafondil.",
+  "target.funds.EE3600109435.description.2": "Sobib sulle, kui soovid saavutada <b>parimat pikaajalist tootlust</b> ja ei plaani järgmise 5 aasta jooksul kogu II sammast välja võtta.",
   "target.funds.EE3600109435.terms.link": "https://tuleva.ee/tuleva-maailma-aktsiate-pensionifond/",
 
   "target.funds.EE3600109443.title": "Tuleva Maailma Võlakirjade Pensionifond",
-  "target.funds.EE3600109443.description": "Konservatiivne indeksfond, mis investeerib täielikult võlakirjadesse. Fondi oodatav tootlus on oluliselt madalam kui aktsiafondidel. Võib sulle osaliselt sobida, kui plaanid kogutud vara lähema 5 aasta jooksul korraga välja võtta ja oled kindluse nimel valmis tootlusest loobuma.",
+  "target.funds.EE3600109443.description": "Konservatiivne indeksfond, mis investeerib täielikult madala riskiga võlakirjadesse. Selle fondi oodatav tootlus on oluliselt madalam kui aktsiafondidel. Madala riskiga on võimatu head tootlust teenida.",
+  "target.funds.EE3600109443.description.2": "Sobib sulle, kui plaanid järgmise 5 aasta jooksul kogu II samba välja võtta ning oled kindluse nimel valmis tootlusest loobuma.",
   "target.funds.EE3600109443.terms.link": "https://tuleva.ee/tuleva-maailma-volakirjade-pensionifond/",
 
   "target.funds.EE3600001707.title": "Tuleva III Samba Pensionifond",
-  "target.funds.EE3600001707.description": "Soovid saavutada <b>parimat pikaajalist tootlust</b> ja sind ei löö rivist välja turu lühiajalised kõikumised. See sobib eelkõige sulle, kui sa ei plaani järgmise 5 aasta jooksul kogu fondi kogutud raha korraga välja võtta.",
+  "target.funds.EE3600001707.description": "Soovid saavutada <b>parimat pikaajalist tootlust</b> ja sind ei löö rivist välja turu lühiajalised kõikumised.",
+  "target.funds.EE3600001707.description.2": "See sobib eelkõige sulle, kui sa ei plaani järgmise 5 aasta jooksul kogu fondi kogutud raha korraga välja võtta.",
   "target.funds.EE3600001707.terms.link": "https://tuleva.ee/tuleva-iii-samba-pensionifond/",
 
   "target.funds.EE3600109435.tooltip.title": "Tuleva Maailma Aktsiate Pensionifond",
