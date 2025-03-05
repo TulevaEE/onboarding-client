@@ -102,16 +102,16 @@
 
   "target.funds.EE3600109435.title": "Tuleva Maailma Aktsiate Pensionifond",
   "target.funds.EE3600109435.description": "Madala tasuga indeksfond, mis investeerib täielikult aktsiatesse. Selle fondi tootlus võib järsult aastast-aastasse kõikuda. Oodatav tootlus on sellegipoolest oluliselt kõrgem kui võlakirjafondil.",
-  "target.funds.EE3600109435.description.2": "Sobib sulle, kui soovid saavutada <b>parimat pikaajalist tootlust</b> ja ei plaani järgmise 5 aasta jooksul kogu II sammast välja võtta.",
+  "target.funds.EE3600109435.description.2": "Sobib sulle, kui soovid saavutada <b>parimat pikaajalist tootlust</b> ja ei plaani järgmise 5 aasta jooksul kogu II sammast välja võtta.",
   "target.funds.EE3600109435.terms.link": "https://tuleva.ee/tuleva-maailma-aktsiate-pensionifond/",
 
   "target.funds.EE3600109443.title": "Tuleva Maailma Võlakirjade Pensionifond",
-  "target.funds.EE3600109443.description": "Konservatiivne indeksfond, mis investeerib täielikult madala riskiga võlakirjadesse. Selle fondi oodatav tootlus on oluliselt madalam kui aktsiafondidel. Madala riskiga on võimatu head tootlust teenida.",
-  "target.funds.EE3600109443.description.2": "Sobib sulle, kui plaanid järgmise 5 aasta jooksul kogu II samba välja võtta ning oled kindluse nimel valmis tootlusest loobuma.",
+  "target.funds.EE3600109443.description": "Konservatiivne indeksfond, mis investeerib täielikult madala riskiga võlakirjadesse. Selle fondi oodatav tootlus on oluliselt madalam kui aktsiafondil. Madala riskiga on võimatu head tootlust teenida.",
+  "target.funds.EE3600109443.description.2": "Sobib sulle, kui plaanid järgmise 5 aasta jooksul kogu II samba välja võtta ning oled kindluse nimel valmis tootlusest loobuma.",
   "target.funds.EE3600109443.terms.link": "https://tuleva.ee/tuleva-maailma-volakirjade-pensionifond/",
 
   "target.funds.EE3600001707.title": "Tuleva III Samba Pensionifond",
-  "target.funds.EE3600001707.description": "Madala tasuga indeksfond, mis investeerib täielikult aktsiatesse. Selle fondi tootlus võib järsult aastast-aastasse kõikuda. Oodatav tootlus on sellegipoolest oluliselt kõrgem kui võlakirjafondidel.",
+  "target.funds.EE3600001707.description": "Madala tasuga indeksfond, mis investeerib täielikult aktsiatesse. Selle fondi tootlus võib järsult aastast-aastasse kõikuda. Oodatav tootlus on sellegipoolest oluliselt kõrgem kui mõne võlakirjafondi puhul.",
   "target.funds.EE3600001707.description.2": "Sobib sulle, kui soovid saavutada <b>parimat pikaajalist tootlust</b> ja ei plaani järgmise 5 aasta jooksul kogu III sammast välja võtta.",
   "target.funds.EE3600001707.terms.link": "https://tuleva.ee/tuleva-iii-samba-pensionifond/",
 
@@ -127,7 +127,7 @@
   "target.funds.EE3600109443.tooltip.investment.3": "iShares Global Government Bond Index Fund — 25%",
   "target.funds.EE3600109443.tooltip.investment.4": "iShares Euro Credit Bond Index Fund — 25%",
   "target.funds.fees": "Tasud",
-  "target.funds.terms": "Tutvu tingimustega",
+  "target.funds.terms": "Tutvu fondi infoga",
   "transfer.future.capital.intro.choose": "Vali fond, kuhu suunad oma edasised sissemaksed:",
   "transfer.future.capital.EE3600109435.fund": "Tuleva Maailma Aktsiate Pensionifond",
   "transfer.future.capital.EE3600109443.fund": "Tuleva Maailma Võlakirjade Pensionifond",
