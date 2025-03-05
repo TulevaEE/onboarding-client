@@ -1,4 +1,4 @@
-import React, { ReactChildren, useMemo } from 'react';
+import React, { ReactChildren, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { formatAmountForCurrency } from '../../common/utils';
 import { useWithdrawalsEligibility } from '../../common/apiHooks';
@@ -80,14 +80,46 @@ export const WithdrawalAmountStep = () => {
 const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) => {
   const { withdrawalAmount, setWithdrawalAmount } = useWithdrawalsContext();
 
-  const handleSingleWithdrawalAmountSelected = (amount: number) => {
-    const valueToSet = amount === 0 || Number.isNaN(amount) ? null : amount;
+  const [inputValue, setInputValue] = useState(
+    withdrawalAmount.singleWithdrawalAmount?.toString() || '',
+  );
 
+  const handleInputChange = (value: string) => {
+    const euroRegex = /^\d+([.,]\d{0,2})?$/;
+
+    if (value === '' || euroRegex.test(value)) {
+      setInputValue(value);
+    }
+
+    if (value === '') {
+      setWithdrawalAmount({
+        pillarsToWithdrawFrom: withdrawalAmount.pillarsToWithdrawFrom,
+        singleWithdrawalAmount: null,
+      });
+      return;
+    }
+
+    if (!euroRegex.test(value)) {
+      return;
+    }
+
+    const parsedValue = Number(value.replace(',', '.'));
+
+    if (!Number.isNaN(parsedValue)) {
+      const clampedValue = Math.min(totalAmount, Math.max(0, parsedValue));
+      setWithdrawalAmount({
+        pillarsToWithdrawFrom: withdrawalAmount.pillarsToWithdrawFrom,
+        singleWithdrawalAmount: clampedValue === 0 ? null : clampedValue,
+      });
+    }
+  };
+
+  const handleSliderChange = (amount: number) => {
     setWithdrawalAmount({
-      // TODO broken state from setting this as well? need more methods in context?
       pillarsToWithdrawFrom: withdrawalAmount.pillarsToWithdrawFrom,
-      singleWithdrawalAmount: valueToSet,
+      singleWithdrawalAmount: amount === 0 ? null : amount,
     });
+    setInputValue(amount.toString());
   };
 
   return (
@@ -101,11 +133,11 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
         >
           <input
             id="single-withdrawal-amount"
-            type="number"
+            type="text"
             inputMode="decimal"
             className="form-control form-control-lg text-end"
-            value={withdrawalAmount.singleWithdrawalAmount ?? 0}
-            onChange={(event) => handleSingleWithdrawalAmountSelected(event.target.valueAsNumber)}
+            value={inputValue}
+            onChange={(event) => handleInputChange(event.target.value)}
             onWheel={(event) => event.currentTarget.blur()}
             min={0}
             max={totalAmount}
@@ -117,10 +149,10 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
       <div className="mt-4">
         <Slider
           value={withdrawalAmount.singleWithdrawalAmount ?? 0}
-          onChange={handleSingleWithdrawalAmountSelected}
+          onChange={handleSliderChange}
           min={0}
           max={totalAmount}
-          step={1}
+          step={0.01}
         />
         <div className="mt-1 d-flex justify-content-between">
           <div className="text-body-secondary">{formatAmountForCurrency(0, 0)}</div>
