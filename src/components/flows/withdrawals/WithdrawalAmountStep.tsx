@@ -87,8 +87,10 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
   const handleInputChange = (value: string) => {
     const euroRegex = /^\d+([.,]\d{0,2})?$/;
 
+    const formattedValue = value.replace(',', '.');
+
     if (value === '' || euroRegex.test(value)) {
-      setInputValue(value);
+      setInputValue(formattedValue);
     }
 
     if (value === '') {
@@ -103,7 +105,7 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
       return;
     }
 
-    const parsedValue = Number(value.replace(',', '.'));
+    const parsedValue = Number(formattedValue);
 
     if (!Number.isNaN(parsedValue)) {
       const clampedValue = Math.min(totalAmount, Math.max(0, parsedValue));
