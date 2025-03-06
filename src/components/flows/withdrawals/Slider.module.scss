@@ -9,7 +9,11 @@
   background: #e0e6ec;
 }
 .customRangePayout::-webkit-slider-runnable-track {
-  -webkit-appearance: none;
+  border: none;
+  background: transparent;
+}
+.customRangePayout::-moz-range-track {
+  border: none;
   background: transparent;
 }
 .customRangePayout::-webkit-slider-thumb {
