@@ -1,3 +1,5 @@
+@import '../../variables';
+
 .customRangePayout {
   -webkit-appearance: none;
   appearance: none;
@@ -6,7 +8,7 @@
   height: 12px;
   border-radius: 12px;
   outline: none;
-  background: #e0e6ec;
+  background: $gray-border-2;
 }
 .customRangePayout::-webkit-slider-runnable-track {
   border: none;
