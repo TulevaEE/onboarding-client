@@ -81,7 +81,7 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
   const { withdrawalAmount, setWithdrawalAmount } = useWithdrawalsContext();
 
   const [inputValue, setInputValue] = useState(
-    withdrawalAmount.singleWithdrawalAmount?.toString() || '',
+    withdrawalAmount.singleWithdrawalAmount?.toString() || '0',
   );
 
   const handleInputChange = (value: string) => {
@@ -89,21 +89,20 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
 
     const formattedValue = value.replace(',', '.');
 
-    if (value === '' || euroRegex.test(value)) {
-      setInputValue(formattedValue);
-    }
-
-    if (value === '') {
+    if (formattedValue === '') {
+      setInputValue('0');
       setWithdrawalAmount({
         pillarsToWithdrawFrom: withdrawalAmount.pillarsToWithdrawFrom,
-        singleWithdrawalAmount: null,
+        singleWithdrawalAmount: 0,
       });
       return;
     }
 
-    if (!euroRegex.test(value)) {
+    if (!euroRegex.test(formattedValue)) {
       return;
     }
+
+    setInputValue(formattedValue);
 
     const parsedValue = Number(formattedValue);
 
@@ -111,7 +110,7 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
       const clampedValue = Math.min(totalAmount, Math.max(0, parsedValue));
       setWithdrawalAmount({
         pillarsToWithdrawFrom: withdrawalAmount.pillarsToWithdrawFrom,
-        singleWithdrawalAmount: clampedValue === 0 ? null : clampedValue,
+        singleWithdrawalAmount: clampedValue,
       });
     }
   };
@@ -119,7 +118,7 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
   const handleSliderChange = (amount: number) => {
     setWithdrawalAmount({
       pillarsToWithdrawFrom: withdrawalAmount.pillarsToWithdrawFrom,
-      singleWithdrawalAmount: amount === 0 ? null : amount,
+      singleWithdrawalAmount: amount,
     });
     setInputValue(amount.toString());
   };
@@ -163,12 +162,12 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
       </div>
       <div className="mt-3">
         <FormattedMessage id="withdrawals.withdrawalAmount.partialWithdrawalTax" />
-        {withdrawalAmount.singleWithdrawalAmount ? ': ' : '.'}
-        {withdrawalAmount.singleWithdrawalAmount && (
+        {(withdrawalAmount.singleWithdrawalAmount ?? 0) > 0 ? ': ' : '.'}
+        {(withdrawalAmount.singleWithdrawalAmount ?? 0) > 0 && (
           <span className={styles.warningText}>
-            {formatAmountForCurrency(-0.1 * withdrawalAmount.singleWithdrawalAmount, 2)}
+            {formatAmountForCurrency(-0.1 * (withdrawalAmount.singleWithdrawalAmount ?? 0), 2)}
           </span>
-        )}{' '}
+        )}
         <br className="d-none d-md-block" />
         <span className="text-body-secondary">
           <FormattedMessage id="withdrawals.withdrawalAmount.precisePriceAtSaleDisclaimer" />
