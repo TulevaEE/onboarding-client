@@ -23,6 +23,7 @@ import {
   confirmAndSignAndAssertFailed,
   enterIban,
   nextButton,
+  partialWithdrawalSizeInput,
 } from './utils';
 
 const server = setupServer();
@@ -71,21 +72,16 @@ describe('withdrawals flow before early retirement age', () => {
     ).toBeInTheDocument();
 
     await assertFundPensionCalculations(
-      '457.19 € per month',
+      '457 € per month',
       '0.38%',
       /will earn returns for the next 22 years/i,
     );
 
-    const partialWithdrawalSizeInput = await screen.findByLabelText(
-      'Do you wish to make a partial withdrawal immediately?',
-      { exact: false },
-    );
-
-    userEvent.type(partialWithdrawalSizeInput, '20000');
+    userEvent.type(await partialWithdrawalSizeInput(), '20000');
     assertTotalTaxText('−2 000.00 €');
 
     await assertFundPensionCalculations(
-      '381.44 € per month',
+      '381 € per month',
       '0.38%',
       /will earn returns for the next 22 years/i,
     );
@@ -138,21 +134,16 @@ describe('withdrawals flow at 55 withdrawing only third pillar', () => {
     ).toBeInTheDocument();
 
     await assertFundPensionCalculations(
-      '19.00 € per month',
+      '19 € per month',
       '0.33%',
       /will earn returns for the next 25 years/i,
     );
 
-    const partialWithdrawalSizeInput = await screen.findByLabelText(
-      'Do you wish to make a partial withdrawal immediately?',
-      { exact: false },
-    );
-
-    userEvent.type(partialWithdrawalSizeInput, '1000');
+    userEvent.type(await partialWithdrawalSizeInput(), '1000');
     assertTotalTaxText('−100.00 €');
 
     await assertFundPensionCalculations(
-      '15.66 € per month',
+      '16 € per month',
       '0.33%',
       /will earn returns for the next 25 years/i,
     );
@@ -171,7 +162,7 @@ describe('withdrawals flow at 55 withdrawing only third pillar', () => {
 
     assertMandateCount(2);
 
-    await assertFundPensionMandate('THIRD', '15.66 €');
+    await assertFundPensionMandate('THIRD', '16 €');
     await assertPartialWithdrawalMandate(
       'THIRD',
       [
@@ -218,12 +209,7 @@ describe('withdrawals flow with missing NAV', () => {
   });
 
   test('can not submit when a NAV is missing', async () => {
-    const partialWithdrawalSizeInput = await screen.findByLabelText(
-      'Do you wish to make a partial withdrawal immediately?',
-      { exact: false },
-    );
-
-    userEvent.type(partialWithdrawalSizeInput, '20000');
+    userEvent.type(await partialWithdrawalSizeInput(), '20000');
 
     userEvent.click(nextButton());
 
