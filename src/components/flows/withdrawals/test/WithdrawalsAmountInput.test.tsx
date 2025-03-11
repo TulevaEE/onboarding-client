@@ -126,10 +126,32 @@ describe('withdrawals amount input', () => {
     expect(input.value).toBe('0');
     expect(slider.valueAsNumber).toBe(0);
   });
+
+  test('can slide to an even number', async () => {
+    const slider = await sliderInput();
+    const input = await partialWithdrawalSizeInput();
+
+    // eslint-disable-next-line testing-library/prefer-user-event
+    fireEvent.change(slider, { target: { value: '1000.00' } });
+
+    expect(slider.valueAsNumber).toBe(1000);
+    expect(input.value).toBe('1000.00');
+  });
+
+  test('can slide to an amount that ends with 0 cents', async () => {
+    const slider = await sliderInput();
+    const input = await partialWithdrawalSizeInput();
+
+    // eslint-disable-next-line testing-library/prefer-user-event
+    fireEvent.change(slider, { target: { value: '123.40' } });
+
+    expect(slider.valueAsNumber).toBe(123.4);
+    expect(input.value).toBe('123.40');
+  });
 });
 
 async function partialWithdrawalSizeInput(): Promise<HTMLInputElement> {
-  return screen.findByLabelText(/Do you wish to make a partial withdrawal immediately/);
+  return screen.findByLabelText(/Withdraw with 10% income tax/);
 }
 
 async function sliderInput(): Promise<HTMLInputElement> {

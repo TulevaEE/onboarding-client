@@ -354,7 +354,7 @@ const FundPensionMandateDescription = ({
             withdrawalDate: (
               <WithdrawalPaymentDate mandate={mandate} mandateDeadlines={mandateDeadlines} />
             ),
-            paymentSize: formatAmountForCurrency(fundPensionMonthlyPaymentFromPillar, 2),
+            paymentSize: formatAmountForCurrency(fundPensionMonthlyPaymentFromPillar, 0),
             muted: (children: ReactChildren) => (
               <span className="text-body-secondary">{children}</span>
             ),

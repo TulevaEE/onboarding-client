@@ -237,3 +237,6 @@ export const assertPartialWithdrawalMandate = async (
     }
   }
 };
+
+export const partialWithdrawalSizeInput = async () =>
+  screen.findByLabelText(/Withdraw with 10% income tax/);

@@ -742,12 +742,14 @@
   "withdrawals.navigation.forward": "Forward",
   "withdrawals.navigation.notEligible": "You haven’t reached early retirement age yet and can’t continue.",
 
-  "withdrawals.withdrawalAmount.partialWithdrawQuestion": "Do you wish to make a partial withdrawal immediately?",
+  "withdrawals.withdrawalAmount.partialWithdrawTitle": "Withdraw some money right away",
+  "withdrawals.withdrawalAmount.partialWithdrawInputLabel": "Withdraw with 10% income tax",
   "withdrawals.withdrawalAmount.partialWithdrawalTax": "Partial withdrawal will be subject to 10% income tax",
   "withdrawals.withdrawalAmount.precisePriceAtSaleDisclaimer": "The exact amount depends on the price of shares.",
   "withdrawals.withdrawalAmount.fundPensionPrecisePriceAtSaleDisclaimer": "The exact amounts depend on the price of shares.",
 
-  "withdrawals.withdrawalAmount.receiveMonthlyAndTaxFree": "Receive montly and tax-free",
+  "withdrawals.withdrawalAmount.fundPensionTitle": "Receive monthly fund pension payments",
+  "withdrawals.withdrawalAmount.receiveMonthlyAndTaxFree": "Tax-free over {duration} years",
   "withdrawals.perMonth": "per month",
 
   "withdrawals.withdrawalAmount.secondPillarTotal": "Your holdings in II pillar",
