@@ -20,24 +20,16 @@ export const WithdrawalsHeader = () => {
         <FormattedMessage id="withdrawals.heading" />
       </h1>
       {currentStep?.type === 'WITHDRAWAL_SIZE' && (
-        <>
-          <p className="m-0 lead text-center">
-            <FormattedMessage
-              id={getSubheadingTranslationId(eligibility)}
-              values={{
-                b: (children: ReactChildren) => <span className="fw-bold">{children}</span>,
-                age: eligibility.age,
-                yearsToGo: getYearsToGoUntilEarlyRetirementAge(eligibility),
-              }}
-            />
-          </p>
-          {!eligibility.hasReachedEarlyRetirementAge &&
-            !eligibility.canWithdrawThirdPillarWithReducedTax && (
-              <p className="m-0 mt-3 lead text-center">
-                <FormattedMessage id="withdrawals.additionalInfoUnderEarlyRetirementAge" />
-              </p>
-            )}
-        </>
+        <p className="m-0 lead text-center">
+          <FormattedMessage
+            id={getSubheadingTranslationId(eligibility)}
+            values={{
+              b: (children: ReactChildren) => <span className="fw-bold">{children}</span>,
+              age: eligibility.age,
+              yearsToGo: getYearsToGoUntilEarlyRetirementAge(eligibility),
+            }}
+          />
+        </p>
       )}
     </div>
   );

@@ -2,7 +2,7 @@ import React, { ChangeEvent, ReactChildren, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { formatAmountForCurrency } from '../../common/utils';
 import { useWithdrawalsEligibility } from '../../common/apiHooks';
-import { Radio } from '../../common';
+import { Radio, InfoTooltip } from '../../common';
 import { PillarToWithdrawFrom } from './types';
 import { useWithdrawalsContext } from './hooks';
 import Percentage from '../../common/Percentage';
@@ -134,7 +134,7 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
   return (
     <div className="mt-3 card">
       <div className="card-header p-4">
-        <div className="form-check form-switch fs-3">
+        <div className="form-check form-switch m-0 fs-3">
           <input
             type="checkbox"
             role="button"
@@ -153,11 +153,10 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
       </div>
 
       <div className="card-body p-4">
-        <div className="d-flex flex-column flex-md-row justify-content-md-between align-items-md-center">
-          <label htmlFor="single-withdrawal-amount" className="w-100 lead mb-0">
+        <div className="d-flex flex-column flex-md-row justify-content-md-between align-items-md-center fs-3">
+          <label htmlFor="single-withdrawal-amount" className="mb-0">
             <FormattedMessage id="withdrawals.withdrawalAmount.partialWithdrawInputLabel" />
           </label>
-
           <div
             className={`input-group input-group-lg flex-shrink-1 w-25 mt-2 mt-md-0 ${styles.singleWithdrawalAmountInputContainer}`}
           >
@@ -185,12 +184,12 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
             max={totalAmount}
             step={0.01}
           />
-          <div className="mt-1 d-flex justify-content-between">
+          <div className="mt-2 d-flex justify-content-between">
             <div className="text-body-secondary">{formatAmountForCurrency(0, 0)}</div>
             <div className="text-body-secondary">{formatAmountForCurrency(totalAmount, 2)}</div>
           </div>
         </div>
-        <div className="mt-3">
+        <p className="m-0 mt-3">
           <FormattedMessage id="withdrawals.withdrawalAmount.partialWithdrawalTax" />
           {withdrawalAmount.singleWithdrawalAmount ? ': ' : '.'}
           {withdrawalAmount.singleWithdrawalAmount && (
@@ -202,7 +201,7 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
           <span className="text-body-secondary">
             <FormattedMessage id="withdrawals.withdrawalAmount.precisePriceAtSaleDisclaimer" />
           </span>
-        </div>
+        </p>
       </div>
     </div>
   );
@@ -232,7 +231,7 @@ const FundPensionStatusBox = ({ totalAmount }: { totalAmount: number }) => {
   return (
     <div className="mt-3 card">
       <div className="card-header p-4">
-        <div className="form-check form-switch fs-3">
+        <div className="form-check form-switch m-0 fs-3">
           <input
             type="checkbox"
             role="button"
@@ -251,31 +250,24 @@ const FundPensionStatusBox = ({ totalAmount }: { totalAmount: number }) => {
       </div>
 
       <div className="card-body p-4">
-        <div className="d-flex flex-column flex-sm-row justify-content-between">
-          <div className="lead m-0">
-            <FormattedMessage
-              id="withdrawals.withdrawalAmount.receiveMonthlyAndTaxFree"
-              values={{
-                duration: eligibility.recommendedDurationYears,
-              }}
-            />
+        <div className="d-flex flex-column flex-sm-row justify-content-between fs-3">
+          <div className="d-flex flex-row align-items-center gap-2">
+            <span>
+              <FormattedMessage
+                id="withdrawals.withdrawalAmount.receiveMonthlyAndTaxFree"
+                values={{
+                  duration: eligibility.recommendedDurationYears,
+                }}
+              />
+            </span>{' '}
+            <InfoTooltip>Ajutine sisu</InfoTooltip>{' '}
           </div>
-          <h3 className="m-0">
-            {formatAmountForCurrency(fundPensionMonthlyPaymentApproximateSize, 0)}&nbsp;
+          <strong>
+            ~{formatAmountForCurrency(fundPensionMonthlyPaymentApproximateSize, 0)}&nbsp;
             <FormattedMessage id="withdrawals.perMonth" />
-            {/* just testing :p */}
-            <svg
-              className="ps-1"
-              xmlns="http://www.w3.org/2000/svg"
-              height="22"
-              width="24.75"
-              viewBox="0 0 576 512"
-            >
-              <path d="M384 160c-17.7 0-32-14.3-32-32s14.3-32 32-32l160 0c17.7 0 32 14.3 32 32l0 160c0 17.7-14.3 32-32 32s-32-14.3-32-32l0-82.7L342.6 374.6c-12.5 12.5-32.8 12.5-45.3 0L192 269.3 54.6 406.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l160-160c12.5-12.5 32.8-12.5 45.3 0L320 306.7 466.7 160 384 160z" />
-            </svg>
-          </h3>
+          </strong>
         </div>
-        <div className="mt-3 text-body-secondary">
+        <p className="m-0 mt-4">
           <FormattedMessage
             id="withdrawals.withdrawalAmount.monthlyPaymentSize"
             values={{
@@ -286,14 +278,14 @@ const FundPensionStatusBox = ({ totalAmount }: { totalAmount: number }) => {
             }}
           />{' '}
           <FormattedMessage id="withdrawals.withdrawalAmount.fundPensionPrecisePriceAtSaleDisclaimer" />
-        </div>
-        <div className="mt-3">
+        </p>
+        <p className="m-0 mt-3">
           <FormattedMessage
             id="withdrawals.withdrawalAmount.fundPensionGrowth"
             values={{
               duration: eligibility.recommendedDurationYears,
-              b: (chunks: ReactChildren) => <b>{chunks}</b>,
-              br: <br />,
+              b: (chunks: ReactChildren) => <strong>{chunks}</strong>,
+              br: <br className="d-none d-md-block" />,
             }}
           />{' '}
           <a
@@ -303,20 +295,62 @@ const FundPensionStatusBox = ({ totalAmount }: { totalAmount: number }) => {
           >
             <FormattedMessage id="withdrawals.withdrawalAmount.fundPensionLinkText" />
           </a>
-        </div>
+        </p>
       </div>
     </div>
   );
 };
 
 const SummaryBox = () => (
-  <div className="mt-3 card bg-blue-2">
-    <div className="card-body p-4">
-      <div className="d-flex flex-column flex-sm-row justify-content-between">
-        <div className="fw-semibold">Väljamaksete kokkuvõte</div>
+  <>
+    <div className="mt-3 card bg-blue-2">
+      <div className="card-body p-4 d-flex flex-column gap-4">
+        <div className="d-flex flex-column gap-2">
+          <p className="m-0 fw-bold">Väljamaksete kokkuvõte</p>
+          <div>
+            <p className="m-0 d-flex flex-row justify-content-between">
+              <span>Võtan kohe välja</span> <span className="fw-bold">12&nbsp;000.00&nbsp;€</span>
+            </p>
+            <p className="m-0 d-flex flex-row justify-content-between">
+              <span>ja maksan sellest tulumaksuks</span>{' '}
+              <span className="fw-bold text-danger">&minus;1&nbsp;200.00&nbsp;€</span>
+            </p>
+          </div>
+          <div className="m-0 d-flex flex-row justify-content-between">
+            <div className="d-flex flex-row align-items-center gap-2">
+              <span>Hakkan saama igakuiselt</span> <InfoTooltip>Ajutine sisu</InfoTooltip>{' '}
+            </div>
+            <span className="fw-bold text-nowrap">
+              <del className="text-secondary fw-normal">~278&nbsp;€</del> ~225&nbsp;€&nbsp;kuus
+            </span>
+          </div>
+        </div>
+        <div className="d-grid">
+          <button className="btn btn-lg btn-primary" type="button">
+            Jätkan
+          </button>
+        </div>
       </div>
     </div>
-  </div>
+
+    <div className="mt-3 card text-center">
+      <div className="card-body p-4 d-flex flex-column gap-4">
+        <div className="d-flex flex-column gap-2">
+          <h2 className="m-0 h3 fw-bold">
+            <FormattedMessage id="withdrawals.navigation.notEligible" />
+          </h2>
+          <p className="m-0">
+            <FormattedMessage id="withdrawals.additionalInfoUnderEarlyRetirementAge" />
+          </p>
+        </div>
+        <div className="d-grid">
+          <button className="btn btn-lg btn-secondary" type="button" disabled>
+            Jätkan
+          </button>
+        </div>
+      </div>
+    </div>
+  </>
 );
 
 const PillarSelection = ({
