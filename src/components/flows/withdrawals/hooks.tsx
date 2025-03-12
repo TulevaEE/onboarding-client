@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { createContext, PropsWithChildren, useContext, useEffect, useMemo, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import {
@@ -65,7 +66,6 @@ export const WithdrawalsProvider = ({
 
   const currentStepType =
     steps.find((step) => pathname.includes(step.subPath))?.type ?? 'WITHDRAWAL_SIZE';
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const currentStep = steps.find((step) => step.type === currentStepType)!;
 
   const [withdrawalAmount, setWithdrawalAmount] = useState<WithdrawalsAmountStepState>({
