@@ -1,9 +1,21 @@
 import React from 'react';
-import Types from 'prop-types';
-
 import './Table.scss';
 
-const Table = ({ columns, dataSource }) => (
+export interface TableColumn {
+  title: React.ReactNode;
+  dataIndex: string;
+  footer?: React.ReactNode;
+  hideOnMobile?: boolean;
+  align?: 'left' | 'right' | string;
+  width100?: boolean;
+}
+
+export interface Props {
+  columns: TableColumn[];
+  dataSource: { key: string; [key: string]: unknown }[];
+}
+
+const Table: React.FC<Props> = ({ columns, dataSource }) => (
   <div className="table-container">
     <table className="table mb-0">
       <thead>
@@ -49,12 +61,12 @@ const Table = ({ columns, dataSource }) => (
   </div>
 );
 
-function getMobileClass(hideOnMobile) {
+function getMobileClass(hideOnMobile?: boolean) {
   const HIDDEN_ON_MOBILE_CELL_CLASS = 'd-none d-sm-table-cell';
   return hideOnMobile ? HIDDEN_ON_MOBILE_CELL_CLASS : undefined;
 }
 
-function getAlignClass(align) {
+function getAlignClass(align?: string) {
   if (align === 'left') {
     return 'text-start';
   }
@@ -64,27 +76,8 @@ function getAlignClass(align) {
   return '';
 }
 
-function getWidthClass(width100) {
+function getWidthClass(width100?: boolean) {
   return width100 ? 'w-100' : '';
 }
-
-export function getProfitClassName(profit) {
-  return profit > 0 ? 'text-success' : undefined;
-}
-
-Table.propTypes = {
-  columns: Types.arrayOf(
-    Types.shape({
-      title: Types.node.isRequired,
-      dataIndex: Types.string.isRequired,
-      footer: Types.node,
-    }).isRequired,
-  ).isRequired,
-  dataSource: Types.arrayOf(
-    Types.shape({
-      key: Types.string.isRequired,
-    }),
-  ).isRequired,
-};
 
 export default Table;

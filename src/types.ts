@@ -1,3 +1,4 @@
+import { RouterState } from 'connected-react-router';
 import { Aml } from './components/aml/types';
 import { Login } from './components/login/types';
 import { Exchange } from './components/exchange/types';
@@ -12,4 +13,5 @@ export type State = {
   thirdPillar: ThirdPillar;
   contactDetails: ContactDetails;
   aml: Aml;
+  router: RouterState;
 };

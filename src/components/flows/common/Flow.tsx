@@ -1,13 +1,25 @@
 import React from 'react';
-import Types from 'prop-types';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import StepTitle from './StepTitle';
 
 import './Flow.scss';
+import { State } from '../../../types';
 
-export const Flow = ({ steps, flowPath, lastPartOfPath }) => {
+export interface FlowStep {
+  path: string;
+  Component: () => React.ReactNode;
+  title?: React.ReactNode;
+}
+
+export interface Props {
+  steps: FlowStep[];
+  flowPath: string;
+  lastPartOfPath: string;
+}
+
+export const Flow: React.FC<Props> = ({ steps, flowPath, lastPartOfPath }) => {
   const stepPaths = steps.map((step) => step.path);
   const isStepPath = stepPaths.indexOf(lastPartOfPath) !== -1;
   const stepIndex = isStepPath ? stepPaths.indexOf(lastPartOfPath) : 0;
@@ -57,28 +69,8 @@ export const Flow = ({ steps, flowPath, lastPartOfPath }) => {
   );
 };
 
-Flow.propTypes = {
-  flowPath: Types.string,
-  steps: Types.arrayOf(
-    Types.shape({
-      path: Types.string,
-      Component: Types.func,
-      title: Types.node,
-    }),
-  ),
-
-  lastPartOfPath: Types.string,
-};
-
-Flow.defaultProps = {
-  flowPath: '',
-  steps: [],
-
-  lastPartOfPath: null,
-};
-
-const mapStateToProps = (state) => ({
-  lastPartOfPath: state.router.location.pathname.split('/').pop(),
+const mapStateToProps = (state: State) => ({
+  lastPartOfPath: state.router.location.pathname.split('/').pop() || '',
 });
 
 export default connect(mapStateToProps)(Flow);
