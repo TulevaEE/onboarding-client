@@ -65,6 +65,7 @@ export const WithdrawalsProvider = ({
 
   const currentStepType =
     steps.find((step) => pathname.includes(step.subPath))?.type ?? 'WITHDRAWAL_SIZE';
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const currentStep = steps.find((step) => step.type === currentStepType)!;
 
   const [withdrawalAmount, setWithdrawalAmount] = useState<WithdrawalsAmountStepState>({

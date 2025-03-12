@@ -2,14 +2,13 @@ import React, { ChangeEvent, ReactChildren, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { formatAmountForCurrency } from '../../common/utils';
 import { useWithdrawalsEligibility } from '../../common/apiHooks';
-import { Radio, InfoTooltip } from '../../common';
+import { InfoTooltip, Radio } from '../../common';
 import { PillarToWithdrawFrom } from './types';
 import { useWithdrawalsContext } from './hooks';
 import Percentage from '../../common/Percentage';
 import {
   canOnlyWithdrawThirdPillarTaxFree,
   decorateSimulatedEligibilityForUnderRetirementAge,
-  getEstimatedTotalFundPension,
   getTotalWithdrawableAmount,
 } from './utils';
 import styles from './Withdrawals.module.scss';
@@ -20,8 +19,7 @@ import Slider from './Slider';
 export const WithdrawalAmountStep = () => {
   const { data: eligibility } = useWithdrawalsEligibility();
 
-  const { withdrawalAmount, setWithdrawalAmount, pensionHoldings, navigateToNextStep } =
-    useWithdrawalsContext();
+  const { withdrawalAmount, setWithdrawalAmount, pensionHoldings } = useWithdrawalsContext();
 
   const isTestModeEnabled = useTestMode();
 
@@ -58,23 +56,7 @@ export const WithdrawalAmountStep = () => {
       />
       <SingleWithdrawalSelectionBox totalAmount={totalAmount} />
       <FundPensionStatusBox />
-      <SummaryBox />
-
-      <div className="mt-5 d-flex justify-content-end align-items-center">
-        {!canNavigateToNextStep && (
-          <p className="m-0 me-3 flex-fill text-body-secondary">
-            <FormattedMessage id="withdrawals.navigation.notEligible" />
-          </p>
-        )}
-        <button
-          type="button"
-          className="btn btn-primary"
-          disabled={!canNavigateToNextStep}
-          onClick={() => canNavigateToNextStep && navigateToNextStep()}
-        >
-          <FormattedMessage id="withdrawals.navigation.continue" />
-        </button>
-      </div>
+      {canNavigateToNextStep ? <SummaryBox /> : <NotEligible />}
     </div>
   );
 };
@@ -197,8 +179,8 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
           </div>
           <p className="m-0 mt-3">
             <FormattedMessage id="withdrawals.withdrawalAmount.partialWithdrawalTax" />
-            {taxAmount > 0 ? ': ' : '.'}
-            {taxAmount > 0 && (
+            {taxAmount < 0 ? ': ' : '.'}
+            {taxAmount < 0 && (
               <span className={styles.warningText}>{formatAmountForCurrency(taxAmount, 2)}</span>
             )}{' '}
             <br className="d-none d-md-block" />
@@ -306,10 +288,11 @@ const FundPensionStatusBox = () => {
 };
 
 const SummaryBox = () => {
-  const { withdrawalAmount, taxAmount, fundPension } = useWithdrawalsContext();
+  const { withdrawalAmount, taxAmount, fundPension, navigateToNextStep } = useWithdrawalsContext();
+
   return (
     <>
-      <div className="mt-3 card bg-blue-2">
+      <div className="mt-5 card bg-blue-2">
         <div className="card-body p-4 d-flex flex-column gap-4">
           <div className="d-flex flex-column gap-2">
             <p className="m-0 fw-bold">Väljamaksete kokkuvõte</p>
@@ -323,7 +306,7 @@ const SummaryBox = () => {
                   )}
                 </span>
               </p>
-              {taxAmount > 0 && (
+              {taxAmount < 0 && (
                 <p className="m-0 d-flex flex-row justify-content-between">
                   <span>ja maksan sellest tulumaksuks</span>{' '}
                   <span className="fw-bold text-danger">
@@ -351,26 +334,12 @@ const SummaryBox = () => {
             </div>
           </div>
           <div className="d-grid">
-            <button className="btn btn-lg btn-primary" type="button">
-              Jätkan
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-3 card text-center">
-        <div className="card-body p-4 d-flex flex-column gap-4">
-          <div className="d-flex flex-column gap-2">
-            <h2 className="m-0 h3 fw-bold">
-              <FormattedMessage id="withdrawals.navigation.notEligible" />
-            </h2>
-            <p className="m-0">
-              <FormattedMessage id="withdrawals.additionalInfoUnderEarlyRetirementAge" />
-            </p>
-          </div>
-          <div className="d-grid">
-            <button className="btn btn-lg btn-secondary" type="button" disabled>
-              Jätkan
+            <button
+              className="btn btn-lg btn-primary"
+              type="button"
+              onClick={() => navigateToNextStep()}
+            >
+              <FormattedMessage id="withdrawals.navigation.continue" />
             </button>
           </div>
         </div>
@@ -378,6 +347,26 @@ const SummaryBox = () => {
     </>
   );
 };
+
+const NotEligible = () => (
+  <div className="mt-5 card text-center bg-warning-subtle border-warning text-warning-emphasis">
+    <div className="card-body p-4 d-flex flex-column gap-4">
+      <div className="d-flex flex-column gap-2">
+        <h2 className="m-0 h3 fw-bold">
+          <FormattedMessage id="withdrawals.navigation.notEligible" />
+        </h2>
+        <p className="m-0">
+          <FormattedMessage id="withdrawals.additionalInfoUnderEarlyRetirementAge" />
+        </p>
+      </div>
+      <div className="d-grid">
+        <button className="btn btn-lg btn-secondary" type="button" disabled>
+          <FormattedMessage id="withdrawals.navigation.continue" />
+        </button>
+      </div>
+    </div>
+  </div>
+);
 
 const PillarSelection = ({
   secondPillarAmount,
