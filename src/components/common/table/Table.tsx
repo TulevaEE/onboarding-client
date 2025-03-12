@@ -6,7 +6,7 @@ export interface TableColumn {
   dataIndex: string;
   footer?: React.ReactNode;
   hideOnMobile?: boolean;
-  align?: 'left' | 'right';
+  align?: 'left' | 'right' | string;
   width100?: boolean;
 }
 
