@@ -751,6 +751,7 @@
 
   "withdrawals.withdrawalAmount.fundPensionTitle": "Hakkan saama igakuist fondipensioni",
   "withdrawals.withdrawalAmount.receiveMonthlyAndTaxFree": "Tulumaksuvabalt {duration} aasta jooksul",
+  "withdrawals.withdrawalAmount.receiveMonthlyAndTaxFree.tooltip": "Täiesti tulumaksuvabalt",
   "withdrawals.perMonth": "kuus",
   "withdrawals.withdrawalAmount.fundPensionPrecisePriceAtSaleDisclaimer": "Täpsed summad selguvad osakute müümise hetkel ja varieeruvad.",
 
@@ -765,6 +766,12 @@
 
   "withdrawals.withdrawalAmount.fundPensionGrowth": "Sinu fondi jääv vara <b>teenib järgnevad {duration} aastat tootlust edasi</b>. Kui osaku turuhind kasvab või kahaneb, siis suurenevad või vähenevad ka sinu väljamaksed.",
   "withdrawals.withdrawalAmount.fundPensionLinkText": "Kui suureks võivad väljamaksed kasvada?",
+
+  "withdrawals.withdrawalAmount.summary.title": "Väljamaksete kokkuvõte",
+  "withdrawals.withdrawalAmount.summary.immediateWithdrawal": "Võtan kohe välja",
+  "withdrawals.withdrawalAmount.summary.taxPayment": "ja maksan sellest tulumaksuks",
+  "withdrawals.withdrawalAmount.summary.monthlyReceipt": "Hakkan saama igakuiselt",
+  "withdrawals.withdrawalAmount.summary.monthlyReceipt.tooltip": "Täiesti tulumaksuvabalt",
 
   "withdrawals.personalDetails.bankAccount.ibanLabel": "Pangakonto number (IBAN)",
   "withdrawals.personalDetails.bankAccount.taxResidencyLabel": "Maksuresidentsus",

@@ -245,7 +245,9 @@ const FundPensionStatusBox = () => {
                   }}
                 />
               </span>{' '}
-              <InfoTooltip name="test1">Ajutine sisu</InfoTooltip>
+              <InfoTooltip name="receiveMonthlyAndTaxFreeTooltip">
+                <FormattedMessage id="withdrawals.withdrawalAmount.receiveMonthlyAndTaxFree.tooltip" />
+              </InfoTooltip>
             </div>
             <strong>
               ~{formatAmountForCurrency(fundPension.estimatedMonthlyPayment, 0)}&nbsp;
@@ -295,10 +297,14 @@ const SummaryBox = () => {
       <div className="mt-5 card bg-blue-2">
         <div className="card-body p-4 d-flex flex-column gap-4">
           <div className="d-flex flex-column gap-2">
-            <p className="m-0 fw-bold">Väljamaksete kokkuvõte</p>
+            <p className="m-0 fw-bold">
+              <FormattedMessage id="withdrawals.withdrawalAmount.summary.title" />
+            </p>
             <div>
               <p className="m-0 d-flex flex-row justify-content-between">
-                <span>Võtan kohe välja</span>
+                <span>
+                  <FormattedMessage id="withdrawals.withdrawalAmount.summary.immediateWithdrawal" />
+                </span>
                 <span className="fw-bold">
                   {formatAmountForCurrency(
                     withdrawalAmount.singleWithdrawalAmount || 0,
@@ -308,7 +314,9 @@ const SummaryBox = () => {
               </p>
               {taxAmount < 0 && (
                 <p className="m-0 d-flex flex-row justify-content-between">
-                  <span>ja maksan sellest tulumaksuks</span>{' '}
+                  <span>
+                    <FormattedMessage id="withdrawals.withdrawalAmount.summary.taxPayment" />
+                  </span>{' '}
                   <span className="fw-bold text-danger">
                     {formatAmountForCurrency(taxAmount, 2)}
                   </span>
@@ -317,8 +325,12 @@ const SummaryBox = () => {
             </div>
             <div className="m-0 d-flex flex-row justify-content-between">
               <div className="d-flex flex-row align-items-center gap-2">
-                <span>Hakkan saama igakuiselt</span>{' '}
-                <InfoTooltip name="test2">Ajutine sisu</InfoTooltip>
+                <span>
+                  <FormattedMessage id="withdrawals.withdrawalAmount.summary.monthlyReceipt" />
+                </span>{' '}
+                <InfoTooltip name="monthlyReceiptTootlip">
+                  <FormattedMessage id="withdrawals.withdrawalAmount.summary.monthlyReceipt.tooltip" />
+                </InfoTooltip>
               </div>
               <span className="fw-bold text-nowrap">
                 {fundPension.maxMonthlyPayment > fundPension.estimatedMonthlyPayment && (
