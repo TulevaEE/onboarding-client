@@ -1,5 +1,6 @@
 import React, { ChangeEvent, ReactChildren, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
+import { Collapse } from 'react-bootstrap';
 import { formatAmountForCurrency } from '../../common/utils';
 import { useWithdrawalsEligibility } from '../../common/apiHooks';
 import { InfoTooltip, Radio } from '../../common';
@@ -127,8 +128,6 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
             onChange={onSingleWithdrawalSwitchChange}
             aria-expanded="false"
             aria-controls="single-withdrawal-body"
-            data-bs-toggle="collapse"
-            data-bs-target="#single-withdrawal-body"
           />
           <label
             htmlFor="single-withdrawal-switch"
@@ -139,57 +138,59 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
         </div>
       </div>
 
-      <div id="single-withdrawal-body" className="collapse">
-        <div className="card-body p-4">
-          <div className="d-flex flex-column flex-md-row justify-content-md-between align-items-md-center fs-3">
-            <label htmlFor="single-withdrawal-amount" className="mb-0">
-              <FormattedMessage id="withdrawals.withdrawalAmount.partialWithdrawInputLabel" />
-            </label>
-            <div
-              className={`input-group input-group-lg flex-shrink-1 w-25 mt-2 mt-md-0 ${styles.singleWithdrawalAmountInputContainer}`}
-            >
-              <input
-                id="single-withdrawal-amount"
-                type="text"
-                inputMode="decimal"
-                className="form-control form-control-lg text-end"
-                value={inputValue}
-                onChange={(event) => handleInputChange(event.target.value)}
-                onWheel={(event) => event.currentTarget.blur()}
+      <Collapse in={singleWithdrawalSwitch}>
+        <div id="single-withdrawal-body">
+          <div className="card-body p-4">
+            <div className="d-flex flex-column flex-md-row justify-content-md-between align-items-md-center fs-3">
+              <label htmlFor="single-withdrawal-amount" className="mb-0">
+                <FormattedMessage id="withdrawals.withdrawalAmount.partialWithdrawInputLabel" />
+              </label>
+              <div
+                className={`input-group input-group-lg flex-shrink-1 w-25 mt-2 mt-md-0 ${styles.singleWithdrawalAmountInputContainer}`}
+              >
+                <input
+                  id="single-withdrawal-amount"
+                  type="text"
+                  inputMode="decimal"
+                  className="form-control form-control-lg text-end"
+                  value={inputValue}
+                  onChange={(event) => handleInputChange(event.target.value)}
+                  onWheel={(event) => event.currentTarget.blur()}
+                  min={0}
+                  max={totalAmount}
+                  placeholder="0"
+                />
+                <div className="input-group-text">&euro;</div>
+              </div>
+            </div>
+
+            <div className="mt-4">
+              <Slider
+                value={withdrawalAmount.singleWithdrawalAmount ?? 0}
+                onChange={handleSliderChange}
                 min={0}
                 max={totalAmount}
-                placeholder="0"
+                step={0.01}
               />
-              <div className="input-group-text">&euro;</div>
+              <div className="mt-2 d-flex justify-content-between">
+                <div className="text-body-secondary">{formatAmountForCurrency(0, 0)}</div>
+                <div className="text-body-secondary">{formatAmountForCurrency(totalAmount, 2)}</div>
+              </div>
             </div>
+            <p className="m-0 mt-3">
+              <FormattedMessage id="withdrawals.withdrawalAmount.partialWithdrawalTax" />
+              {taxAmount < 0 ? ': ' : '.'}
+              {taxAmount < 0 && (
+                <span className={styles.warningText}>{formatAmountForCurrency(taxAmount, 2)}</span>
+              )}{' '}
+              <br className="d-none d-md-block" />
+              <span className="text-body-secondary">
+                <FormattedMessage id="withdrawals.withdrawalAmount.precisePriceAtSaleDisclaimer" />
+              </span>
+            </p>
           </div>
-
-          <div className="mt-4">
-            <Slider
-              value={withdrawalAmount.singleWithdrawalAmount ?? 0}
-              onChange={handleSliderChange}
-              min={0}
-              max={totalAmount}
-              step={0.01}
-            />
-            <div className="mt-2 d-flex justify-content-between">
-              <div className="text-body-secondary">{formatAmountForCurrency(0, 0)}</div>
-              <div className="text-body-secondary">{formatAmountForCurrency(totalAmount, 2)}</div>
-            </div>
-          </div>
-          <p className="m-0 mt-3">
-            <FormattedMessage id="withdrawals.withdrawalAmount.partialWithdrawalTax" />
-            {taxAmount < 0 ? ': ' : '.'}
-            {taxAmount < 0 && (
-              <span className={styles.warningText}>{formatAmountForCurrency(taxAmount, 2)}</span>
-            )}{' '}
-            <br className="d-none d-md-block" />
-            <span className="text-body-secondary">
-              <FormattedMessage id="withdrawals.withdrawalAmount.precisePriceAtSaleDisclaimer" />
-            </span>
-          </p>
         </div>
-      </div>
+      </Collapse>
     </div>
   );
 };
@@ -219,10 +220,8 @@ const FundPensionStatusBox = () => {
             id="fund-pension-switch"
             checked={fundPensionSwitch}
             onChange={onFundPensionSwitchChange}
-            aria-expanded="true"
+            aria-expanded={fundPensionSwitch}
             aria-controls="fund-pension-body"
-            data-bs-toggle="collapse"
-            data-bs-target="#fund-pension-body"
           />
           <label
             htmlFor="fund-pension-switch"
@@ -233,58 +232,60 @@ const FundPensionStatusBox = () => {
         </div>
       </div>
 
-      <div id="fund-pension-body" className="collapse show">
-        <div className="card-body p-4">
-          <div className="d-flex flex-column flex-sm-row justify-content-between fs-3">
-            <div className="d-flex flex-row align-items-center gap-2">
-              <span>
-                <FormattedMessage
-                  id="withdrawals.withdrawalAmount.receiveMonthlyAndTaxFree"
-                  values={{
-                    duration: eligibility.recommendedDurationYears,
-                  }}
-                />
-              </span>{' '}
-              <InfoTooltip name="receiveMonthlyAndTaxFreeTooltip">
-                <FormattedMessage id="withdrawals.withdrawalAmount.receiveMonthlyAndTaxFree.tooltip" />
-              </InfoTooltip>
+      <Collapse in={fundPensionSwitch}>
+        <div id="fund-pension-body">
+          <div className="card-body p-4">
+            <div className="d-flex flex-column flex-sm-row justify-content-between fs-3">
+              <div className="d-flex flex-row align-items-center gap-2">
+                <span>
+                  <FormattedMessage
+                    id="withdrawals.withdrawalAmount.receiveMonthlyAndTaxFree"
+                    values={{
+                      duration: eligibility.recommendedDurationYears,
+                    }}
+                  />
+                </span>{' '}
+                <InfoTooltip name="receiveMonthlyAndTaxFreeTooltip">
+                  <FormattedMessage id="withdrawals.withdrawalAmount.receiveMonthlyAndTaxFree.tooltip" />
+                </InfoTooltip>
+              </div>
+              <strong>
+                ~{formatAmountForCurrency(fundPension.estimatedMonthlyPayment, 0)}&nbsp;
+                <FormattedMessage id="withdrawals.perMonth" />
+              </strong>
             </div>
-            <strong>
-              ~{formatAmountForCurrency(fundPension.estimatedMonthlyPayment, 0)}&nbsp;
-              <FormattedMessage id="withdrawals.perMonth" />
-            </strong>
+            <p className="m-0 mt-4">
+              <FormattedMessage
+                id="withdrawals.withdrawalAmount.monthlyPaymentSize"
+                values={{
+                  percentageLiquidated: (
+                    <Percentage value={fundPension.percentageLiquidatedMonthly} alwaysSingleColor />
+                  ),
+                  paymentAmount: formatAmountForCurrency(fundPension.estimatedMonthlyPayment, 0),
+                }}
+              />{' '}
+              <FormattedMessage id="withdrawals.withdrawalAmount.fundPensionPrecisePriceAtSaleDisclaimer" />
+            </p>
+            <p className="m-0 mt-3">
+              <FormattedMessage
+                id="withdrawals.withdrawalAmount.fundPensionGrowth"
+                values={{
+                  duration: eligibility.recommendedDurationYears,
+                  b: (chunks: ReactChildren) => <strong>{chunks}</strong>,
+                  br: <br className="d-none d-md-block" />,
+                }}
+              />{' '}
+              <a
+                href="https://tuleva.ee/pensioni-valjamaksed/#valjamaksete-suurus"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <FormattedMessage id="withdrawals.withdrawalAmount.fundPensionLinkText" />
+              </a>
+            </p>
           </div>
-          <p className="m-0 mt-4">
-            <FormattedMessage
-              id="withdrawals.withdrawalAmount.monthlyPaymentSize"
-              values={{
-                percentageLiquidated: (
-                  <Percentage value={fundPension.percentageLiquidatedMonthly} alwaysSingleColor />
-                ),
-                paymentAmount: formatAmountForCurrency(fundPension.estimatedMonthlyPayment, 0),
-              }}
-            />{' '}
-            <FormattedMessage id="withdrawals.withdrawalAmount.fundPensionPrecisePriceAtSaleDisclaimer" />
-          </p>
-          <p className="m-0 mt-3">
-            <FormattedMessage
-              id="withdrawals.withdrawalAmount.fundPensionGrowth"
-              values={{
-                duration: eligibility.recommendedDurationYears,
-                b: (chunks: ReactChildren) => <strong>{chunks}</strong>,
-                br: <br className="d-none d-md-block" />,
-              }}
-            />{' '}
-            <a
-              href="https://tuleva.ee/pensioni-valjamaksed/#valjamaksete-suurus"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <FormattedMessage id="withdrawals.withdrawalAmount.fundPensionLinkText" />
-            </a>
-          </p>
         </div>
-      </div>
+      </Collapse>
     </div>
   );
 };

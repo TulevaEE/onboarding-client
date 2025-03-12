@@ -765,8 +765,8 @@
   "withdrawals.withdrawalAmount.fundPensionGrowth": "The holdings left in the fund <b>will earn returns for the next {duration} years</b>. When the price of the share rises or falls, the size of the payment will change accordingly.",
   "withdrawals.withdrawalAmount.fundPensionLinkText": "How large can my payments grow?",
 
-  "withdrawals.withdrawalAmount.summary.title": "Withdrawal Summary",
-  "withdrawals.withdrawalAmount.summary.immediateWithdrawal": "Withdraw Immediately",
+  "withdrawals.withdrawalAmount.summary.title": "Withdrawal summary",
+  "withdrawals.withdrawalAmount.summary.immediateWithdrawal": "Withdraw immediately",
   "withdrawals.withdrawalAmount.summary.taxPayment": "and pay income tax on it",
   "withdrawals.withdrawalAmount.summary.monthlyReceipt": "Receive monthly",
   "withdrawals.withdrawalAmount.summary.monthlyReceipt.tooltip": "Receive monthly indeed",

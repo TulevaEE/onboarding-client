@@ -26,6 +26,7 @@
     "qs": "^6.8.0",
     "react": "^17.0.2",
     "react-app-polyfill": "^1.0.2",
+    "react-bootstrap": "^2.10.9",
     "react-dom": "^17.0.2",
     "react-facebook": "^8.1.4",
     "react-ga4": "^1.4.1",
@@ -117,8 +118,8 @@
       "pre-commit": "lint-staged"
     }
   },
-  "proxy": "http://localhost:9000",
-  "//proxy": "https://onboarding-service.tuleva.ee",
+  "//proxy": "http://localhost:9000",
+  "proxy": "https://onboarding-service.tuleva.ee",
   "browserslist": [
     ">0.2%",
     "not dead",
