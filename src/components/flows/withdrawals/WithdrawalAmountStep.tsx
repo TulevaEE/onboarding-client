@@ -88,6 +88,7 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
 
   const onSingleWithdrawalSwitchChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSingleWithdrawalSwitch(event.target.checked);
+    handleSliderChange(0);
   };
 
   const handleInputChange = (value: string) => {
@@ -128,12 +129,12 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
       singleWithdrawalAmount: amount === 0 ? null : amount,
     });
 
-    setInputValue(amount === 0 ? '0' : amount.toFixed(2));
+    setInputValue(amount === 0 ? '' : amount.toFixed(2));
   };
 
   return (
     <div className="mt-3 card">
-      <div className="card-header p-4">
+      <div className={`${singleWithdrawalSwitch ? 'card-header' : ''} p-4`}>
         <div className="form-check form-switch m-0 fs-3">
           <input
             type="checkbox"
@@ -142,6 +143,10 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
             id="single-withdrawal-switch"
             checked={singleWithdrawalSwitch}
             onChange={onSingleWithdrawalSwitchChange}
+            aria-expanded="false"
+            aria-controls="single-withdrawal-body"
+            data-bs-toggle="collapse"
+            data-bs-target="#single-withdrawal-body"
           />
           <label
             htmlFor="single-withdrawal-switch"
@@ -152,56 +157,58 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
         </div>
       </div>
 
-      <div className="card-body p-4">
-        <div className="d-flex flex-column flex-md-row justify-content-md-between align-items-md-center fs-3">
-          <label htmlFor="single-withdrawal-amount" className="mb-0">
-            <FormattedMessage id="withdrawals.withdrawalAmount.partialWithdrawInputLabel" />
-          </label>
-          <div
-            className={`input-group input-group-lg flex-shrink-1 w-25 mt-2 mt-md-0 ${styles.singleWithdrawalAmountInputContainer}`}
-          >
-            <input
-              id="single-withdrawal-amount"
-              type="text"
-              inputMode="decimal"
-              className="form-control form-control-lg text-end"
-              value={inputValue}
-              onChange={(event) => handleInputChange(event.target.value)}
-              onWheel={(event) => event.currentTarget.blur()}
+      <div id="single-withdrawal-body" className="collapse">
+        <div className="card-body p-4">
+          <div className="d-flex flex-column flex-md-row justify-content-md-between align-items-md-center fs-3">
+            <label htmlFor="single-withdrawal-amount" className="mb-0">
+              <FormattedMessage id="withdrawals.withdrawalAmount.partialWithdrawInputLabel" />
+            </label>
+            <div
+              className={`input-group input-group-lg flex-shrink-1 w-25 mt-2 mt-md-0 ${styles.singleWithdrawalAmountInputContainer}`}
+            >
+              <input
+                id="single-withdrawal-amount"
+                type="text"
+                inputMode="decimal"
+                className="form-control form-control-lg text-end"
+                value={inputValue}
+                onChange={(event) => handleInputChange(event.target.value)}
+                onWheel={(event) => event.currentTarget.blur()}
+                min={0}
+                max={totalAmount}
+                placeholder="0"
+              />
+              <div className="input-group-text">&euro;</div>
+            </div>
+          </div>
+
+          <div className="mt-4">
+            <Slider
+              value={withdrawalAmount.singleWithdrawalAmount ?? 0}
+              onChange={handleSliderChange}
               min={0}
               max={totalAmount}
-              placeholder="0"
+              step={0.01}
             />
-            <div className="input-group-text">&euro;</div>
+            <div className="mt-2 d-flex justify-content-between">
+              <div className="text-body-secondary">{formatAmountForCurrency(0, 0)}</div>
+              <div className="text-body-secondary">{formatAmountForCurrency(totalAmount, 2)}</div>
+            </div>
           </div>
-        </div>
-
-        <div className="mt-4">
-          <Slider
-            value={withdrawalAmount.singleWithdrawalAmount ?? 0}
-            onChange={handleSliderChange}
-            min={0}
-            max={totalAmount}
-            step={0.01}
-          />
-          <div className="mt-2 d-flex justify-content-between">
-            <div className="text-body-secondary">{formatAmountForCurrency(0, 0)}</div>
-            <div className="text-body-secondary">{formatAmountForCurrency(totalAmount, 2)}</div>
-          </div>
-        </div>
-        <p className="m-0 mt-3">
-          <FormattedMessage id="withdrawals.withdrawalAmount.partialWithdrawalTax" />
-          {withdrawalAmount.singleWithdrawalAmount ? ': ' : '.'}
-          {withdrawalAmount.singleWithdrawalAmount && (
-            <span className={styles.warningText}>
-              {formatAmountForCurrency(-0.1 * withdrawalAmount.singleWithdrawalAmount, 2)}
+          <p className="m-0 mt-3">
+            <FormattedMessage id="withdrawals.withdrawalAmount.partialWithdrawalTax" />
+            {withdrawalAmount.singleWithdrawalAmount ? ': ' : '.'}
+            {withdrawalAmount.singleWithdrawalAmount && (
+              <span className={styles.warningText}>
+                {formatAmountForCurrency(-0.1 * withdrawalAmount.singleWithdrawalAmount, 2)}
+              </span>
+            )}{' '}
+            <br className="d-none d-md-block" />
+            <span className="text-body-secondary">
+              <FormattedMessage id="withdrawals.withdrawalAmount.precisePriceAtSaleDisclaimer" />
             </span>
-          )}{' '}
-          <br className="d-none d-md-block" />
-          <span className="text-body-secondary">
-            <FormattedMessage id="withdrawals.withdrawalAmount.precisePriceAtSaleDisclaimer" />
-          </span>
-        </p>
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -230,7 +237,7 @@ const FundPensionStatusBox = ({ totalAmount }: { totalAmount: number }) => {
 
   return (
     <div className="mt-3 card">
-      <div className="card-header p-4">
+      <div className={`${fundPensionSwitch ? 'card-header' : ''} p-4`}>
         <div className="form-check form-switch m-0 fs-3">
           <input
             type="checkbox"
@@ -239,6 +246,10 @@ const FundPensionStatusBox = ({ totalAmount }: { totalAmount: number }) => {
             id="fund-pension-switch"
             checked={fundPensionSwitch}
             onChange={onFundPensionSwitchChange}
+            aria-expanded="true"
+            aria-controls="fund-pension-body"
+            data-bs-toggle="collapse"
+            data-bs-target="#fund-pension-body"
           />
           <label
             htmlFor="fund-pension-switch"
@@ -249,53 +260,55 @@ const FundPensionStatusBox = ({ totalAmount }: { totalAmount: number }) => {
         </div>
       </div>
 
-      <div className="card-body p-4">
-        <div className="d-flex flex-column flex-sm-row justify-content-between fs-3">
-          <div className="d-flex flex-row align-items-center gap-2">
-            <span>
-              <FormattedMessage
-                id="withdrawals.withdrawalAmount.receiveMonthlyAndTaxFree"
-                values={{
-                  duration: eligibility.recommendedDurationYears,
-                }}
-              />
-            </span>{' '}
-            <InfoTooltip>Ajutine sisu</InfoTooltip>{' '}
+      <div id="fund-pension-body" className="collapse show">
+        <div className="card-body p-4">
+          <div className="d-flex flex-column flex-sm-row justify-content-between fs-3">
+            <div className="d-flex flex-row align-items-center gap-2">
+              <span>
+                <FormattedMessage
+                  id="withdrawals.withdrawalAmount.receiveMonthlyAndTaxFree"
+                  values={{
+                    duration: eligibility.recommendedDurationYears,
+                  }}
+                />
+              </span>{' '}
+              <InfoTooltip name="test1">Ajutine sisu</InfoTooltip>
+            </div>
+            <strong>
+              ~{formatAmountForCurrency(fundPensionMonthlyPaymentApproximateSize, 0)}&nbsp;
+              <FormattedMessage id="withdrawals.perMonth" />
+            </strong>
           </div>
-          <strong>
-            ~{formatAmountForCurrency(fundPensionMonthlyPaymentApproximateSize, 0)}&nbsp;
-            <FormattedMessage id="withdrawals.perMonth" />
-          </strong>
+          <p className="m-0 mt-4">
+            <FormattedMessage
+              id="withdrawals.withdrawalAmount.monthlyPaymentSize"
+              values={{
+                percentageLiquidated: (
+                  <Percentage value={fundPensionPercentageLiquidatedMonthly} alwaysSingleColor />
+                ),
+                paymentAmount: formatAmountForCurrency(fundPensionMonthlyPaymentApproximateSize, 0),
+              }}
+            />{' '}
+            <FormattedMessage id="withdrawals.withdrawalAmount.fundPensionPrecisePriceAtSaleDisclaimer" />
+          </p>
+          <p className="m-0 mt-3">
+            <FormattedMessage
+              id="withdrawals.withdrawalAmount.fundPensionGrowth"
+              values={{
+                duration: eligibility.recommendedDurationYears,
+                b: (chunks: ReactChildren) => <strong>{chunks}</strong>,
+                br: <br className="d-none d-md-block" />,
+              }}
+            />{' '}
+            <a
+              href="https://tuleva.ee/pensioni-valjamaksed/#valjamaksete-suurus"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <FormattedMessage id="withdrawals.withdrawalAmount.fundPensionLinkText" />
+            </a>
+          </p>
         </div>
-        <p className="m-0 mt-4">
-          <FormattedMessage
-            id="withdrawals.withdrawalAmount.monthlyPaymentSize"
-            values={{
-              percentageLiquidated: (
-                <Percentage value={fundPensionPercentageLiquidatedMonthly} alwaysSingleColor />
-              ),
-              paymentAmount: formatAmountForCurrency(fundPensionMonthlyPaymentApproximateSize, 0),
-            }}
-          />{' '}
-          <FormattedMessage id="withdrawals.withdrawalAmount.fundPensionPrecisePriceAtSaleDisclaimer" />
-        </p>
-        <p className="m-0 mt-3">
-          <FormattedMessage
-            id="withdrawals.withdrawalAmount.fundPensionGrowth"
-            values={{
-              duration: eligibility.recommendedDurationYears,
-              b: (chunks: ReactChildren) => <strong>{chunks}</strong>,
-              br: <br className="d-none d-md-block" />,
-            }}
-          />{' '}
-          <a
-            href="https://tuleva.ee/pensioni-valjamaksed/#valjamaksete-suurus"
-            target="_blank"
-            rel="noreferrer"
-          >
-            <FormattedMessage id="withdrawals.withdrawalAmount.fundPensionLinkText" />
-          </a>
-        </p>
       </div>
     </div>
   );
@@ -318,7 +331,8 @@ const SummaryBox = () => (
           </div>
           <div className="m-0 d-flex flex-row justify-content-between">
             <div className="d-flex flex-row align-items-center gap-2">
-              <span>Hakkan saama igakuiselt</span> <InfoTooltip>Ajutine sisu</InfoTooltip>{' '}
+              <span>Hakkan saama igakuiselt</span>{' '}
+              <InfoTooltip name="test2">Ajutine sisu</InfoTooltip>
             </div>
             <span className="fw-bold text-nowrap">
               <del className="text-secondary fw-normal">~278&nbsp;€</del> ~225&nbsp;€&nbsp;kuus
