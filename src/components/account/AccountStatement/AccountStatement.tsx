@@ -1,15 +1,19 @@
 import React from 'react';
-import Types from 'prop-types';
 import { FormattedMessage, useIntl } from 'react-intl';
-
 import { sortBy } from 'lodash';
 import Table from '../../common/table';
 import { Euro } from '../../common/Euro';
 import { getValueSum, getWeightedAverageFee } from './fundSelector';
 import { Fees } from '../../common/Percentage/Fees';
 import { Shimmer } from '../../common/shimmer/Shimmer';
+import { SourceFund } from '../../common/apiModels';
 
-const AccountStatement = ({ funds, activeFundNotice }) => {
+interface Props {
+  funds: SourceFund[];
+  activeFundNotice?: React.ReactElement | string;
+}
+
+const AccountStatement: React.FC<Props> = ({ funds, activeFundNotice }) => {
   if (!funds) {
     return <Shimmer height={26} />;
   }
@@ -99,22 +103,6 @@ const AccountStatement = ({ funds, activeFundNotice }) => {
       )}
     </>
   );
-};
-
-AccountStatement.propTypes = {
-  funds: Types.arrayOf(
-    Types.shape({
-      isin: Types.string.isRequired,
-      name: Types.string.isRequired,
-      activeFund: Types.bool,
-      contributions: Types.number,
-      subtractions: Types.number,
-      profit: Types.number,
-      price: Types.number,
-      unavailablePrice: Types.number,
-    }),
-  ).isRequired,
-  activeFundNotice: Types.node,
 };
 
 export default AccountStatement;
