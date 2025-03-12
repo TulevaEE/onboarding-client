@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { createContext, PropsWithChildren, useContext, useEffect, useMemo, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import {
@@ -10,8 +9,11 @@ import {
 import { useFunds, useSourceFunds, useWithdrawalsEligibility } from '../../common/apiHooks';
 import {
   canOnlyWithdrawThirdPillarTaxFree,
+  decorateSimulatedEligibilityForUnderRetirementAge,
   getAllFundNavsPresent,
+  getEstimatedTotalFundPension,
   getMandatesToCreate,
+  getTotalWithdrawableAmount,
   getWithdrawalsPath,
 } from './utils';
 
@@ -20,6 +22,12 @@ export const WithdrawalsContext = createContext<WithdrawalsContextState>({
   withdrawalAmount: {
     singleWithdrawalAmount: null,
     pillarsToWithdrawFrom: 'BOTH',
+  },
+  taxAmount: 0,
+  fundPension: {
+    estimatedMonthlyPayment: 0,
+    maxMonthlyPayment: 0,
+    percentageLiquidatedMonthly: 0,
   },
   personalDetails: {
     bankAccountIban: null,
@@ -63,6 +71,14 @@ export const WithdrawalsProvider = ({
     singleWithdrawalAmount: null,
     pillarsToWithdrawFrom: 'BOTH',
   });
+
+  const taxAmount = useMemo(() => {
+    const INCOME_TAX_RATE = 0.1;
+    return withdrawalAmount.singleWithdrawalAmount
+      ? -withdrawalAmount.singleWithdrawalAmount * INCOME_TAX_RATE
+      : 0;
+  }, [withdrawalAmount.singleWithdrawalAmount]);
+
   const [personalDetails, setPersonalDetails] = useState<PersonalDetailsStepState>({
     taxResidencyCode: 'EST',
     bankAccountIban: null,
@@ -105,6 +121,42 @@ export const WithdrawalsProvider = ({
       ),
     [funds, secondPillarSourceFunds, thirdPillarSourceFunds],
   );
+
+  const fundPension = useMemo(() => {
+    const simulatedEligibility = decorateSimulatedEligibilityForUnderRetirementAge(eligibility);
+
+    if (!simulatedEligibility || !pensionHoldings) {
+      return {
+        estimatedMonthlyPayment: 0,
+        maxMonthlyPayment: 0,
+        percentageLiquidatedMonthly: 0,
+      };
+    }
+
+    const totalAmount = getTotalWithdrawableAmount(
+      withdrawalAmount.pillarsToWithdrawFrom,
+      pensionHoldings,
+    );
+
+    const { fundPensionMonthlyPaymentApproximateSize, fundPensionPercentageLiquidatedMonthly } =
+      getEstimatedTotalFundPension({
+        totalWithdrawableAmount: totalAmount,
+        durationYears: simulatedEligibility.recommendedDurationYears,
+        singleWithdrawalAmount: withdrawalAmount.singleWithdrawalAmount,
+      });
+
+    const maxFundPension = getEstimatedTotalFundPension({
+      totalWithdrawableAmount: totalAmount,
+      durationYears: simulatedEligibility.recommendedDurationYears,
+      singleWithdrawalAmount: 0,
+    });
+
+    return {
+      estimatedMonthlyPayment: fundPensionMonthlyPaymentApproximateSize,
+      maxMonthlyPayment: maxFundPension.fundPensionMonthlyPaymentApproximateSize,
+      percentageLiquidatedMonthly: fundPensionPercentageLiquidatedMonthly,
+    };
+  }, [withdrawalAmount, eligibility, pensionHoldings]);
 
   useEffect(() => {
     if (eligibility && canOnlyWithdrawThirdPillarTaxFree(eligibility)) {
@@ -168,6 +220,8 @@ export const WithdrawalsProvider = ({
       value={{
         currentStep,
         withdrawalAmount,
+        taxAmount,
+        fundPension,
         personalDetails,
         pensionHoldings,
         mandatesToCreate,

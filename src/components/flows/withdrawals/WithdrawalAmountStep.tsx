@@ -57,7 +57,7 @@ export const WithdrawalAmountStep = () => {
         setSelectedPillar={handlePillarSelected}
       />
       <SingleWithdrawalSelectionBox totalAmount={totalAmount} />
-      <FundPensionStatusBox totalAmount={totalAmount} />
+      <FundPensionStatusBox />
       <SummaryBox />
 
       <div className="mt-5 d-flex justify-content-end align-items-center">
@@ -80,7 +80,7 @@ export const WithdrawalAmountStep = () => {
 };
 
 const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) => {
-  const { withdrawalAmount, setWithdrawalAmount } = useWithdrawalsContext();
+  const { withdrawalAmount, setWithdrawalAmount, taxAmount } = useWithdrawalsContext();
   const [singleWithdrawalSwitch, setSingleWithdrawalSwitch] = useState(false);
   const [inputValue, setInputValue] = useState(
     withdrawalAmount.singleWithdrawalAmount?.toString() || '',
@@ -197,11 +197,9 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
           </div>
           <p className="m-0 mt-3">
             <FormattedMessage id="withdrawals.withdrawalAmount.partialWithdrawalTax" />
-            {withdrawalAmount.singleWithdrawalAmount ? ': ' : '.'}
-            {withdrawalAmount.singleWithdrawalAmount && (
-              <span className={styles.warningText}>
-                {formatAmountForCurrency(-0.1 * withdrawalAmount.singleWithdrawalAmount, 2)}
-              </span>
+            {taxAmount > 0 ? ': ' : '.'}
+            {taxAmount > 0 && (
+              <span className={styles.warningText}>{formatAmountForCurrency(taxAmount, 2)}</span>
             )}{' '}
             <br className="d-none d-md-block" />
             <span className="text-body-secondary">
@@ -214,10 +212,10 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
   );
 };
 
-const FundPensionStatusBox = ({ totalAmount }: { totalAmount: number }) => {
+const FundPensionStatusBox = () => {
   const { data } = useWithdrawalsEligibility();
   const eligibility = decorateSimulatedEligibilityForUnderRetirementAge(data);
-  const { withdrawalAmount } = useWithdrawalsContext();
+  const { fundPension } = useWithdrawalsContext();
   const [fundPensionSwitch, setFundPensionSwitch] = useState(true);
 
   const onFundPensionSwitchChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -227,13 +225,6 @@ const FundPensionStatusBox = ({ totalAmount }: { totalAmount: number }) => {
   if (!eligibility) {
     return null;
   }
-
-  const { fundPensionMonthlyPaymentApproximateSize, fundPensionPercentageLiquidatedMonthly } =
-    getEstimatedTotalFundPension({
-      totalWithdrawableAmount: totalAmount,
-      durationYears: eligibility.recommendedDurationYears,
-      singleWithdrawalAmount: withdrawalAmount.singleWithdrawalAmount,
-    });
 
   return (
     <div className="mt-3 card">
@@ -275,7 +266,7 @@ const FundPensionStatusBox = ({ totalAmount }: { totalAmount: number }) => {
               <InfoTooltip name="test1">Ajutine sisu</InfoTooltip>
             </div>
             <strong>
-              ~{formatAmountForCurrency(fundPensionMonthlyPaymentApproximateSize, 0)}&nbsp;
+              ~{formatAmountForCurrency(fundPension.estimatedMonthlyPayment, 0)}&nbsp;
               <FormattedMessage id="withdrawals.perMonth" />
             </strong>
           </div>
@@ -284,9 +275,9 @@ const FundPensionStatusBox = ({ totalAmount }: { totalAmount: number }) => {
               id="withdrawals.withdrawalAmount.monthlyPaymentSize"
               values={{
                 percentageLiquidated: (
-                  <Percentage value={fundPensionPercentageLiquidatedMonthly} alwaysSingleColor />
+                  <Percentage value={fundPension.percentageLiquidatedMonthly} alwaysSingleColor />
                 ),
-                paymentAmount: formatAmountForCurrency(fundPensionMonthlyPaymentApproximateSize, 0),
+                paymentAmount: formatAmountForCurrency(fundPension.estimatedMonthlyPayment, 0),
               }}
             />{' '}
             <FormattedMessage id="withdrawals.withdrawalAmount.fundPensionPrecisePriceAtSaleDisclaimer" />
@@ -314,58 +305,79 @@ const FundPensionStatusBox = ({ totalAmount }: { totalAmount: number }) => {
   );
 };
 
-const SummaryBox = () => (
-  <>
-    <div className="mt-3 card bg-blue-2">
-      <div className="card-body p-4 d-flex flex-column gap-4">
-        <div className="d-flex flex-column gap-2">
-          <p className="m-0 fw-bold">Väljamaksete kokkuvõte</p>
-          <div>
-            <p className="m-0 d-flex flex-row justify-content-between">
-              <span>Võtan kohe välja</span> <span className="fw-bold">12&nbsp;000.00&nbsp;€</span>
-            </p>
-            <p className="m-0 d-flex flex-row justify-content-between">
-              <span>ja maksan sellest tulumaksuks</span>{' '}
-              <span className="fw-bold text-danger">&minus;1&nbsp;200.00&nbsp;€</span>
-            </p>
-          </div>
-          <div className="m-0 d-flex flex-row justify-content-between">
-            <div className="d-flex flex-row align-items-center gap-2">
-              <span>Hakkan saama igakuiselt</span>{' '}
-              <InfoTooltip name="test2">Ajutine sisu</InfoTooltip>
+const SummaryBox = () => {
+  const { withdrawalAmount, taxAmount, fundPension } = useWithdrawalsContext();
+  return (
+    <>
+      <div className="mt-3 card bg-blue-2">
+        <div className="card-body p-4 d-flex flex-column gap-4">
+          <div className="d-flex flex-column gap-2">
+            <p className="m-0 fw-bold">Väljamaksete kokkuvõte</p>
+            <div>
+              <p className="m-0 d-flex flex-row justify-content-between">
+                <span>Võtan kohe välja</span>
+                <span className="fw-bold">
+                  {formatAmountForCurrency(
+                    withdrawalAmount.singleWithdrawalAmount || 0,
+                    withdrawalAmount.singleWithdrawalAmount ? 2 : 0,
+                  )}
+                </span>
+              </p>
+              {taxAmount > 0 && (
+                <p className="m-0 d-flex flex-row justify-content-between">
+                  <span>ja maksan sellest tulumaksuks</span>{' '}
+                  <span className="fw-bold text-danger">
+                    {formatAmountForCurrency(taxAmount, 2)}
+                  </span>
+                </p>
+              )}
             </div>
-            <span className="fw-bold text-nowrap">
-              <del className="text-secondary fw-normal">~278&nbsp;€</del> ~225&nbsp;€&nbsp;kuus
-            </span>
+            <div className="m-0 d-flex flex-row justify-content-between">
+              <div className="d-flex flex-row align-items-center gap-2">
+                <span>Hakkan saama igakuiselt</span>{' '}
+                <InfoTooltip name="test2">Ajutine sisu</InfoTooltip>
+              </div>
+              <span className="fw-bold text-nowrap">
+                {fundPension.maxMonthlyPayment > fundPension.estimatedMonthlyPayment && (
+                  <>
+                    <del className="text-secondary fw-normal">
+                      ~{formatAmountForCurrency(fundPension.maxMonthlyPayment, 0)}
+                    </del>{' '}
+                  </>
+                )}
+                ~{formatAmountForCurrency(fundPension.estimatedMonthlyPayment, 0)}&nbsp;
+                <FormattedMessage id="withdrawals.perMonth" />
+              </span>
+            </div>
+          </div>
+          <div className="d-grid">
+            <button className="btn btn-lg btn-primary" type="button">
+              Jätkan
+            </button>
           </div>
         </div>
-        <div className="d-grid">
-          <button className="btn btn-lg btn-primary" type="button">
-            Jätkan
-          </button>
-        </div>
       </div>
-    </div>
 
-    <div className="mt-3 card text-center">
-      <div className="card-body p-4 d-flex flex-column gap-4">
-        <div className="d-flex flex-column gap-2">
-          <h2 className="m-0 h3 fw-bold">
-            <FormattedMessage id="withdrawals.navigation.notEligible" />
-          </h2>
-          <p className="m-0">
-            <FormattedMessage id="withdrawals.additionalInfoUnderEarlyRetirementAge" />
-          </p>
-        </div>
-        <div className="d-grid">
-          <button className="btn btn-lg btn-secondary" type="button" disabled>
-            Jätkan
-          </button>
+      <div className="mt-3 card text-center">
+        <div className="card-body p-4 d-flex flex-column gap-4">
+          <div className="d-flex flex-column gap-2">
+            <h2 className="m-0 h3 fw-bold">
+              <FormattedMessage id="withdrawals.navigation.notEligible" />
+            </h2>
+            <p className="m-0">
+              <FormattedMessage id="withdrawals.additionalInfoUnderEarlyRetirementAge" />
+            </p>
+          </div>
+          <div className="d-grid">
+            <button className="btn btn-lg btn-secondary" type="button" disabled>
+              Jätkan
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  </>
-);
+    </>
+  );
+};
 
 const PillarSelection = ({
   secondPillarAmount,

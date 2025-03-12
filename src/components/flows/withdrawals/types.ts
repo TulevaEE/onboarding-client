@@ -4,6 +4,8 @@ import { TranslationKey } from '../../translations';
 export type WithdrawalsContextState = {
   currentStep: WithdrawalStep | null;
   withdrawalAmount: WithdrawalsAmountStepState;
+  taxAmount: number;
+  fundPension: FundPensionState;
   personalDetails: PersonalDetailsStepState;
   pensionHoldings: PensionHoldings | null;
 
@@ -29,6 +31,12 @@ export type PensionHoldings = {
 export type WithdrawalsAmountStepState = {
   pillarsToWithdrawFrom: PillarToWithdrawFrom;
   singleWithdrawalAmount: number | null;
+};
+
+export type FundPensionState = {
+  estimatedMonthlyPayment: number;
+  maxMonthlyPayment: number;
+  percentageLiquidatedMonthly: number;
 };
 
 export type PersonalDetailsStepState = {
