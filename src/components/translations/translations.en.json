@@ -731,7 +731,7 @@
   "withdrawals.subHeading": "You are <b>{age} years old</b> and eligible to start using your accumulated pension holdings <b>under preferential conditions</b>.",
   "withdrawals.subHeadingThirdPilllarReducedTax": "You are <b>{age} years old</b> and eligible to start using your III pillar holdings <b>under preferential conditions</b>.",
   "withdrawals.subHeadingUnderEarlyRetirementAge": "You are <b>{age} years old</b> and eligible to start using your accumulated pension holdings under preferential conditions <b>in {yearsToGo} years</b>.",
-  "withdrawals.additionalInfoUnderEarlyRetirementAge": "Until then, you can see here how much monthly fund pension you might receive upon reaching early retirement age, based on the assets accumulated so far.",
+  "withdrawals.additionalInfoUnderEarlyRetirementAge": "Until then, you can see on this page how much monthly fund pension you might receive upon reaching early retirement age, based on the assets accumulated so far.",
 
   "withdrawals.steps.withdrawalSize": "Withdrawal amount",
   "withdrawals.steps.yourInformation": "Your information",
@@ -740,7 +740,7 @@
   "withdrawals.navigation.back": "Back",
   "withdrawals.navigation.continue": "Continue",
   "withdrawals.navigation.forward": "Forward",
-  "withdrawals.navigation.notEligible": "You haven’t reached early retirement age yet and can’t continue.",
+  "withdrawals.navigation.notEligible": "You haven’t reached early retirement age yet and can’t continue",
 
   "withdrawals.withdrawalAmount.partialWithdrawTitle": "Withdraw some money right away",
   "withdrawals.withdrawalAmount.partialWithdrawInputLabel": "Withdraw with 10% income tax",
@@ -762,7 +762,7 @@
   "withdrawals.withdrawalAmount.monthlyPaymentSize": "Every month you will receive {percentageLiquidated} of fund shares. With current prices, this amounts to {paymentAmount}.",
 
   "withdrawals.withdrawalAmount.fundPensionGrowth": "The holdings left in the fund <b>will earn returns for the next {duration} years</b>. When the price of the share rises or falls, the size of the payment will change accordingly.",
-  "withdrawals.withdrawalAmount.fundPensionLinkText": "How large can your payments grow?",
+  "withdrawals.withdrawalAmount.fundPensionLinkText": "How large can my payments grow?",
 
   "withdrawals.personalDetails.bankAccount.ibanLabel": "Bank account number (IBAN)",
   "withdrawals.personalDetails.bankAccount.taxResidencyLabel": "Tax residency",
