@@ -116,7 +116,7 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
   };
 
   return (
-    <div className="mt-3 card">
+    <div className="mt-3 card" role="region" aria-labelledby="single-withdrawal-title">
       <div className={`${singleWithdrawalSwitch ? 'card-header' : ''} p-4`}>
         <div className="form-check form-switch m-0 fs-3">
           <input
@@ -130,6 +130,7 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
             aria-controls="single-withdrawal-body"
           />
           <label
+            id="single-withdrawal-title"
             htmlFor="single-withdrawal-switch"
             className={`form-check-label ps-1 mb-0 ${singleWithdrawalSwitch ? 'fw-semibold' : ''}`}
           >
@@ -210,7 +211,7 @@ const FundPensionStatusBox = () => {
   }
 
   return (
-    <div className="mt-3 card">
+    <div className="mt-3 card" role="region" aria-labelledby="fund-pension-title">
       <div className={`${fundPensionSwitch ? 'card-header' : ''} p-4`}>
         <div className="form-check form-switch m-0 fs-3">
           <input
@@ -224,6 +225,7 @@ const FundPensionStatusBox = () => {
             aria-controls="fund-pension-body"
           />
           <label
+            id="fund-pension-title"
             htmlFor="fund-pension-switch"
             className={`form-check-label ps-1 mb-0 ${fundPensionSwitch ? 'fw-semibold' : ''}`}
           >
@@ -295,10 +297,10 @@ const SummaryBox = () => {
 
   return (
     <>
-      <div className="mt-5 card bg-blue-2">
+      <div className="mt-5 card bg-blue-2" role="region" aria-labelledby="summary-title">
         <div className="card-body p-4 d-flex flex-column gap-4">
           <div className="d-flex flex-column gap-2">
-            <p className="m-0 fw-bold">
+            <p id="summary-title" className="m-0 fw-bold">
               <FormattedMessage id="withdrawals.withdrawalAmount.summary.title" />
             </p>
             <div>
@@ -362,10 +364,14 @@ const SummaryBox = () => {
 };
 
 const NotEligible = () => (
-  <div className="mt-5 card text-center bg-warning-subtle border-warning text-warning-emphasis">
+  <div
+    className="mt-5 card text-center bg-warning-subtle border-warning text-warning-emphasis"
+    role="region"
+    aria-labelledby="not-eligible-title"
+  >
     <div className="card-body p-4 d-flex flex-column gap-4">
       <div className="d-flex flex-column gap-2">
-        <h2 className="m-0 h3 fw-bold">
+        <h2 id="not-eligible-title" className="m-0 h3 fw-bold">
           <FormattedMessage id="withdrawals.navigation.notEligible" />
         </h2>
         <p className="m-0">
@@ -401,7 +407,7 @@ const PillarSelection = ({
 
   if (secondPillarAmount > 0 && thirdPillarAmount === 0) {
     return (
-      <div className="card p-4 d-flex flex-row justify-content-between mb-3">
+      <div className="card p-4 d-flex flex-row justify-content-between mb-3" role="region">
         <h3 className="m-0">
           <FormattedMessage id="withdrawals.withdrawalAmount.secondPillarTotal" />
         </h3>
@@ -412,7 +418,7 @@ const PillarSelection = ({
 
   if (thirdPillarAmount > 0 && secondPillarAmount === 0) {
     return (
-      <div className="card p-4 d-flex flex-row justify-content-between mb-3">
+      <div className="card p-4 d-flex flex-row justify-content-between mb-3" role="region">
         <h3 className="m-0">
           {' '}
           <FormattedMessage id="withdrawals.withdrawalAmount.thirdPillarTotal" />
@@ -423,7 +429,10 @@ const PillarSelection = ({
   }
 
   return (
-    <div className={`card d-flex flex-column mb-3  ${styles.pillarSelectionContainer}`}>
+    <div
+      className={`card d-flex flex-column mb-3  ${styles.pillarSelectionContainer}`}
+      role="region"
+    >
       {onlyThirdPillarEnabled && (
         <div className={styles.pillarSelectionContainerWarning}>
           <FormattedMessage id="withdrawals.withdrawalAmount.secondPillarAtEarlyPensionAge" />

@@ -93,9 +93,14 @@ export const assertFundPensionCalculations = async (
   returnsRegex = /will earn returns for the next 20 years/i,
 ) => {
   const explanationText = screen.getByText(/Every month you will receive/i);
-  expect(within(explanationText).getByText(liquidatedMonthlyPercentage)).toBeInTheDocument();
+  const fundPensionCard = screen.getByRole('region', {
+    name: /Receive monthly fund pension payments/i,
+  });
 
-  expect(screen.getByText(new RegExp(fundPensionMonthlySize, 'i'))).toBeInTheDocument();
+  expect(within(explanationText).getByText(liquidatedMonthlyPercentage)).toBeInTheDocument();
+  expect(
+    within(fundPensionCard).getByText(new RegExp(fundPensionMonthlySize, 'i')),
+  ).toBeInTheDocument();
   expect(screen.getByText(returnsRegex)).toBeInTheDocument();
 };
 
