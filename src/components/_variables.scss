@@ -8,7 +8,7 @@ $container-max-widths: (
   lg: 960px,
   xl: 960px,
   // override for xl breakpoint
-  xxl: 960px // override for xxl breakpoint,,,,,,,
+  xxl: 960px // override for xxl breakpoint,,,,,,,,
 );
 
 /**
@@ -161,3 +161,6 @@ $fa-font-path: '~font-awesome/fonts';
 
 $form-range-thumb-width: 1.5rem !default;
 $form-range-thumb-border-radius: 100% !default;
+
+//$transition-collapse:         height .35s ease !default;
+//$transition-collapse-width:   width .35s ease !default;

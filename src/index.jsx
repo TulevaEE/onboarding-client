@@ -20,6 +20,7 @@ import { getQueryParams } from './utils';
 import { initializeConfiguration, updateLanguage } from './components/config/config';
 import translations from './components/translations';
 import './components/index.scss';
+import 'bootstrap/dist/js/bootstrap.bundle.min'; // not sure if good practice?
 
 import { TriggerProcedure } from './components/TriggerProcedure/TriggerProcedure';
 import PrivateRoute from './PrivateRoute';

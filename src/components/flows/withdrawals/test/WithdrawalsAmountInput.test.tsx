@@ -123,7 +123,7 @@ describe('withdrawals amount input', () => {
     // eslint-disable-next-line testing-library/prefer-user-event
     fireEvent.change(slider, { target: { value: '0' } });
 
-    expect(input.value).toBe('0');
+    expect(input.value).toBe('');
     expect(slider.valueAsNumber).toBe(0);
   });
 
