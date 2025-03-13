@@ -146,6 +146,15 @@ hr {
     border-color: $blue-light;
     background-color: $blue-bg-2;
   }
+
+  &-header {
+    &-collapsed {
+      border-bottom-width: 0;
+    }
+    & .form-switch {
+      padding-left: 74px !important; // 24px + 50px
+    }
+  }
 }
 
 .form-check-label {

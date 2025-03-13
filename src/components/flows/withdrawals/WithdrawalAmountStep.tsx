@@ -117,11 +117,16 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
 
   return (
     <div className="mt-3 card" role="region" aria-labelledby="single-withdrawal-title">
-      <div className={`${singleWithdrawalSwitch ? 'card-header' : ''} p-4`}>
-        <div className="form-check form-switch m-0 fs-3">
+      <div className="card-header border-0 p-0">
+        <label
+          id="single-withdrawal-title"
+          className={`d-block form-check form-switch form-check-label m-0 p-4 fs-3 ${
+            singleWithdrawalSwitch ? 'fw-semibold' : ''
+          }`}
+        >
           <input
             type="checkbox"
-            role="button"
+            role="switch"
             className="form-check-input"
             id="single-withdrawal-switch"
             checked={singleWithdrawalSwitch}
@@ -129,19 +134,15 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
             aria-expanded="false"
             aria-controls="single-withdrawal-body"
           />
-          <label
-            id="single-withdrawal-title"
-            htmlFor="single-withdrawal-switch"
-            className={`form-check-label ps-1 mb-0 ${singleWithdrawalSwitch ? 'fw-semibold' : ''}`}
-          >
+          <span className="ps-1">
             <FormattedMessage id="withdrawals.withdrawalAmount.partialWithdrawTitle" />
-          </label>
-        </div>
+          </span>
+        </label>
       </div>
 
       <Collapse in={singleWithdrawalSwitch}>
         <div id="single-withdrawal-body">
-          <div className="card-body p-4">
+          <div className="card-body border-top p-4">
             <div className="d-flex flex-column flex-md-row justify-content-md-between align-items-md-center fs-3">
               <label htmlFor="single-withdrawal-amount" className="mb-0">
                 <FormattedMessage id="withdrawals.withdrawalAmount.partialWithdrawInputLabel" />
@@ -212,11 +213,16 @@ const FundPensionStatusBox = () => {
 
   return (
     <div className="mt-3 card" role="region" aria-labelledby="fund-pension-title">
-      <div className={`${fundPensionSwitch ? 'card-header' : ''} p-4`}>
-        <div className="form-check form-switch m-0 fs-3">
+      <div className="card-header border-0 p-0">
+        <label
+          id="fund-pension-title"
+          className={`d-block form-check form-switch form-check-label m-0 p-4 fs-3 ${
+            fundPensionSwitch ? 'fw-semibold' : ''
+          }`}
+        >
           <input
             type="checkbox"
-            role="button"
+            role="switch"
             className="form-check-input"
             id="fund-pension-switch"
             checked={fundPensionSwitch}
@@ -224,19 +230,15 @@ const FundPensionStatusBox = () => {
             aria-expanded={fundPensionSwitch}
             aria-controls="fund-pension-body"
           />
-          <label
-            id="fund-pension-title"
-            htmlFor="fund-pension-switch"
-            className={`form-check-label ps-1 mb-0 ${fundPensionSwitch ? 'fw-semibold' : ''}`}
-          >
+          <span className="ps-1">
             <FormattedMessage id="withdrawals.withdrawalAmount.fundPensionTitle" />
-          </label>
-        </div>
+          </span>
+        </label>
       </div>
 
       <Collapse in={fundPensionSwitch}>
         <div id="fund-pension-body">
-          <div className="card-body p-4">
+          <div className="card-body border-top p-4">
             <div className="d-flex flex-column flex-sm-row justify-content-between fs-3">
               <div className="d-flex flex-row align-items-center gap-2">
                 <span>
@@ -365,13 +367,13 @@ const SummaryBox = () => {
 
 const NotEligible = () => (
   <div
-    className="mt-5 card text-center bg-warning-subtle border-warning text-warning-emphasis"
+    className="mt-5 card text-center bg-warning-subtle border-warning"
     role="region"
     aria-labelledby="not-eligible-title"
   >
     <div className="card-body p-4 d-flex flex-column gap-4">
       <div className="d-flex flex-column gap-2">
-        <h2 id="not-eligible-title" className="m-0 h3 fw-bold">
+        <h2 id="not-eligible-title" className="m-0 h3 fw-semibold">
           <FormattedMessage id="withdrawals.navigation.notEligible" />
         </h2>
         <p className="m-0">

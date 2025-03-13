@@ -55,7 +55,7 @@
     }
 
     &.tv-radio--selected {
-      font-weight: bold;
+      font-weight: $font-weight-semibold;
     }
 
     &.tv-radio--disabled {
