@@ -1,5 +1,13 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { createContext, PropsWithChildren, useContext, useEffect, useMemo, useState } from 'react';
+import {
+  createContext,
+  PropsWithChildren,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import {
   PersonalDetailsStepState,
@@ -12,23 +20,17 @@ import {
   canOnlyWithdrawThirdPillarTaxFree,
   decorateSimulatedEligibilityForUnderRetirementAge,
   getAllFundNavsPresent,
-  getEstimatedTotalFundPension,
+  getFundPensionMonthlyPaymentEstimation,
   getMandatesToCreate,
-  getTotalWithdrawableAmount,
   getWithdrawalsPath,
 } from './utils';
 
 export const WithdrawalsContext = createContext<WithdrawalsContextState>({
   currentStep: null,
-  withdrawalAmount: {
+  amountStep: {
     singleWithdrawalAmount: null,
     pillarsToWithdrawFrom: 'BOTH',
-  },
-  taxAmount: 0,
-  fundPension: {
-    estimatedMonthlyPayment: 0,
-    maxMonthlyPayment: 0,
-    percentageLiquidatedMonthly: 0,
+    fundPensionEnabled: false,
   },
   personalDetails: {
     bankAccountIban: null,
@@ -42,7 +44,7 @@ export const WithdrawalsContext = createContext<WithdrawalsContextState>({
   mandatesSubmitted: true,
   onMandatesSubmitted: () => {},
 
-  setWithdrawalAmount: () => {},
+  setAmountStep: () => {},
   setPersonalDetails: () => {},
 
   navigateToNextStep: () => {},
@@ -68,17 +70,21 @@ export const WithdrawalsProvider = ({
     steps.find((step) => pathname.includes(step.subPath))?.type ?? 'WITHDRAWAL_SIZE';
   const currentStep = steps.find((step) => step.type === currentStepType)!;
 
-  const [withdrawalAmount, setWithdrawalAmount] = useState<WithdrawalsAmountStepState>({
+  const [amountStep, setEntireAmountStep] = useState<WithdrawalsAmountStepState>({
     singleWithdrawalAmount: null,
+    fundPensionEnabled: false,
     pillarsToWithdrawFrom: 'BOTH',
   });
 
-  const taxAmount = useMemo(() => {
-    const INCOME_TAX_RATE = 0.1;
-    return withdrawalAmount.singleWithdrawalAmount
-      ? -withdrawalAmount.singleWithdrawalAmount * INCOME_TAX_RATE
-      : 0;
-  }, [withdrawalAmount.singleWithdrawalAmount]);
+  const setAmountStep = useCallback(
+    (newState: Partial<WithdrawalsAmountStepState>) => {
+      setEntireAmountStep((prevState) => ({
+        ...prevState,
+        ...newState,
+      }));
+    },
+    [amountStep, setEntireAmountStep],
+  );
 
   const [personalDetails, setPersonalDetails] = useState<PersonalDetailsStepState>({
     taxResidencyCode: 'EST',
@@ -123,54 +129,18 @@ export const WithdrawalsProvider = ({
     [funds, secondPillarSourceFunds, thirdPillarSourceFunds],
   );
 
-  const fundPension = useMemo(() => {
-    const simulatedEligibility = decorateSimulatedEligibilityForUnderRetirementAge(eligibility);
-
-    if (!simulatedEligibility || !pensionHoldings) {
-      return {
-        estimatedMonthlyPayment: 0,
-        maxMonthlyPayment: 0,
-        percentageLiquidatedMonthly: 0,
-      };
-    }
-
-    const totalAmount = getTotalWithdrawableAmount(
-      withdrawalAmount.pillarsToWithdrawFrom,
-      pensionHoldings,
-    );
-
-    const { fundPensionMonthlyPaymentApproximateSize, fundPensionPercentageLiquidatedMonthly } =
-      getEstimatedTotalFundPension({
-        totalWithdrawableAmount: totalAmount,
-        durationYears: simulatedEligibility.recommendedDurationYears,
-        singleWithdrawalAmount: withdrawalAmount.singleWithdrawalAmount,
-      });
-
-    const maxFundPension = getEstimatedTotalFundPension({
-      totalWithdrawableAmount: totalAmount,
-      durationYears: simulatedEligibility.recommendedDurationYears,
-      singleWithdrawalAmount: 0,
-    });
-
-    return {
-      estimatedMonthlyPayment: fundPensionMonthlyPaymentApproximateSize,
-      maxMonthlyPayment: maxFundPension.fundPensionMonthlyPaymentApproximateSize,
-      percentageLiquidatedMonthly: fundPensionPercentageLiquidatedMonthly,
-    };
-  }, [withdrawalAmount, eligibility, pensionHoldings]);
-
   useEffect(() => {
     if (eligibility && canOnlyWithdrawThirdPillarTaxFree(eligibility)) {
-      setWithdrawalAmount((prevVal) => ({ ...prevVal, pillarsToWithdrawFrom: 'THIRD' }));
+      setAmountStep({ pillarsToWithdrawFrom: 'THIRD' });
       return;
     }
 
     if (totalSecondPillar === 0 && totalThirdPillar > 0) {
-      setWithdrawalAmount((prevVal) => ({ ...prevVal, pillarsToWithdrawFrom: 'THIRD' }));
+      setAmountStep({ pillarsToWithdrawFrom: 'THIRD' });
     } else if (totalSecondPillar > 0 && totalThirdPillar === 0) {
-      setWithdrawalAmount((prevVal) => ({ ...prevVal, pillarsToWithdrawFrom: 'SECOND' }));
+      setAmountStep({ pillarsToWithdrawFrom: 'SECOND' });
     } else {
-      setWithdrawalAmount((prevVal) => ({ ...prevVal, pillarsToWithdrawFrom: 'BOTH' }));
+      setAmountStep({ pillarsToWithdrawFrom: 'BOTH' });
     }
   }, [eligibility, totalSecondPillar, totalThirdPillar, totalBothPillars]);
 
@@ -199,7 +169,7 @@ export const WithdrawalsProvider = ({
       getMandatesToCreate({
         personalDetails,
         pensionHoldings,
-        withdrawalAmount,
+        amountStep,
         eligibility: eligibility ?? null,
         secondPillarSourceFunds: secondPillarSourceFunds ?? null,
         thirdPillarSourceFunds: thirdPillarSourceFunds ?? null,
@@ -208,7 +178,7 @@ export const WithdrawalsProvider = ({
     [
       personalDetails,
       pensionHoldings,
-      withdrawalAmount,
+      amountStep,
       eligibility,
       secondPillarSourceFunds,
       thirdPillarSourceFunds,
@@ -220,9 +190,7 @@ export const WithdrawalsProvider = ({
     <WithdrawalsContext.Provider
       value={{
         currentStep,
-        withdrawalAmount,
-        taxAmount,
-        fundPension,
+        amountStep,
         personalDetails,
         pensionHoldings,
         mandatesToCreate,
@@ -231,7 +199,7 @@ export const WithdrawalsProvider = ({
         mandatesSubmitted,
         onMandatesSubmitted,
 
-        setWithdrawalAmount,
+        setAmountStep,
         setPersonalDetails,
 
         navigateToNextStep,
@@ -241,4 +209,16 @@ export const WithdrawalsProvider = ({
       {children}
     </WithdrawalsContext.Provider>
   );
+};
+
+export const useFundPensionCalculation = () => {
+  const { data } = useWithdrawalsEligibility();
+  const { amountStep, pensionHoldings } = useWithdrawalsContext();
+  const decoratedEligibility = decorateSimulatedEligibilityForUnderRetirementAge(data);
+
+  if (!decoratedEligibility || !pensionHoldings) {
+    return null;
+  }
+
+  return getFundPensionMonthlyPaymentEstimation(amountStep, decoratedEligibility, pensionHoldings);
 };

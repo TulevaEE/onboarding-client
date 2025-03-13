@@ -5,11 +5,12 @@ import { formatAmountForCurrency } from '../../common/utils';
 import { useWithdrawalsEligibility } from '../../common/apiHooks';
 import { InfoTooltip, Radio } from '../../common';
 import { PillarToWithdrawFrom } from './types';
-import { useWithdrawalsContext } from './hooks';
+import { useFundPensionCalculation, useWithdrawalsContext } from './hooks';
 import Percentage from '../../common/Percentage';
 import {
   canOnlyWithdrawThirdPillarTaxFree,
   decorateSimulatedEligibilityForUnderRetirementAge,
+  getSingleWithdrawalTaxAmount,
   getTotalWithdrawableAmount,
 } from './utils';
 import styles from './Withdrawals.module.scss';
@@ -20,13 +21,12 @@ import Slider from './Slider';
 export const WithdrawalAmountStep = () => {
   const { data: eligibility } = useWithdrawalsEligibility();
 
-  const { withdrawalAmount, setWithdrawalAmount, pensionHoldings } = useWithdrawalsContext();
+  const { amountStep, setAmountStep, pensionHoldings } = useWithdrawalsContext();
 
   const isTestModeEnabled = useTestMode();
 
   const handlePillarSelected = (pillar: PillarToWithdrawFrom) => {
-    setWithdrawalAmount({
-      singleWithdrawalAmount: null,
+    setAmountStep({
       pillarsToWithdrawFrom: pillar,
     });
   };
@@ -35,15 +35,12 @@ export const WithdrawalAmountStep = () => {
     return null;
   }
 
-  const totalAmount = getTotalWithdrawableAmount(
-    withdrawalAmount.pillarsToWithdrawFrom,
-    pensionHoldings,
-  );
+  const totalAmount = getTotalWithdrawableAmount(amountStep.pillarsToWithdrawFrom, pensionHoldings);
 
   const canNavigateToNextStep =
     eligibility.hasReachedEarlyRetirementAge ||
     (canOnlyWithdrawThirdPillarTaxFree(eligibility) &&
-      withdrawalAmount.pillarsToWithdrawFrom === 'THIRD') ||
+      amountStep.pillarsToWithdrawFrom === 'THIRD') ||
     isTestModeEnabled;
 
   return (
@@ -51,7 +48,7 @@ export const WithdrawalAmountStep = () => {
       <PillarSelection
         secondPillarAmount={pensionHoldings.totalSecondPillar}
         thirdPillarAmount={pensionHoldings.totalThirdPillar}
-        selectedPillar={withdrawalAmount.pillarsToWithdrawFrom}
+        selectedPillar={amountStep.pillarsToWithdrawFrom}
         eligibility={eligibility}
         setSelectedPillar={handlePillarSelected}
       />
@@ -63,11 +60,13 @@ export const WithdrawalAmountStep = () => {
 };
 
 const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) => {
-  const { withdrawalAmount, setWithdrawalAmount, taxAmount } = useWithdrawalsContext();
-  const [singleWithdrawalSwitch, setSingleWithdrawalSwitch] = useState(false);
-  const [inputValue, setInputValue] = useState(
-    withdrawalAmount.singleWithdrawalAmount?.toString() || '',
+  const { amountStep, setAmountStep } = useWithdrawalsContext();
+  const [singleWithdrawalSwitch, setSingleWithdrawalSwitch] = useState(
+    amountStep.singleWithdrawalAmount !== null,
   );
+  const [inputValue, setInputValue] = useState(amountStep.singleWithdrawalAmount?.toString() || '');
+
+  const taxAmount = getSingleWithdrawalTaxAmount(amountStep) ?? 0;
 
   const onSingleWithdrawalSwitchChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSingleWithdrawalSwitch(event.target.checked);
@@ -84,8 +83,7 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
     }
 
     if (value === '') {
-      setWithdrawalAmount({
-        pillarsToWithdrawFrom: withdrawalAmount.pillarsToWithdrawFrom,
+      setAmountStep({
         singleWithdrawalAmount: null,
       });
       return;
@@ -99,16 +97,14 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
 
     if (!Number.isNaN(parsedValue)) {
       const clampedValue = Math.min(totalAmount, Math.max(0, parsedValue));
-      setWithdrawalAmount({
-        pillarsToWithdrawFrom: withdrawalAmount.pillarsToWithdrawFrom,
+      setAmountStep({
         singleWithdrawalAmount: clampedValue === 0 ? null : clampedValue,
       });
     }
   };
 
   const handleSliderChange = (amount: number) => {
-    setWithdrawalAmount({
-      pillarsToWithdrawFrom: withdrawalAmount.pillarsToWithdrawFrom,
+    setAmountStep({
       singleWithdrawalAmount: amount === 0 ? null : amount,
     });
 
@@ -171,7 +167,7 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
 
             <div className="mt-4">
               <Slider
-                value={withdrawalAmount.singleWithdrawalAmount ?? 0}
+                value={amountStep.singleWithdrawalAmount ?? 0}
                 onChange={handleSliderChange}
                 min={0}
                 max={totalAmount}
@@ -184,9 +180,9 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
             </div>
             <p className="m-0 mt-3">
               <FormattedMessage id="withdrawals.withdrawalAmount.partialWithdrawalTax" />
-              {taxAmount < 0 ? ': ' : '.'}
-              {taxAmount < 0 && (
-                <span className={styles.warningText}>{formatAmountForCurrency(taxAmount, 2)}</span>
+              {taxAmount > 0 ? ': ' : '.'}
+              {taxAmount > 0 && (
+                <span className={styles.warningText}>{formatAmountForCurrency(-taxAmount, 2)}</span>
               )}
             </p>
             <p className="m-0 text-body-secondary">
@@ -200,16 +196,21 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
 };
 
 const FundPensionStatusBox = () => {
-  const { data } = useWithdrawalsEligibility();
-  const eligibility = decorateSimulatedEligibilityForUnderRetirementAge(data);
-  const { fundPension } = useWithdrawalsContext();
-  const [fundPensionSwitch, setFundPensionSwitch] = useState(true);
+  const { data: eligibility } = useWithdrawalsEligibility();
+  const decoratedEligibility = decorateSimulatedEligibilityForUnderRetirementAge(eligibility);
+
+  const fundPension = useFundPensionCalculation();
+
+  const { amountStep, setAmountStep } = useWithdrawalsContext();
+
+  const fundPensionSwitch = amountStep.fundPensionEnabled;
 
   const onFundPensionSwitchChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setFundPensionSwitch(event.target.checked);
+    setAmountStep({ fundPensionEnabled: event.target.checked });
   };
 
-  if (!eligibility) {
+  const isLoading = !decoratedEligibility || !fundPension;
+  if (isLoading) {
     return null;
   }
 
@@ -246,7 +247,7 @@ const FundPensionStatusBox = () => {
                   <FormattedMessage
                     id="withdrawals.withdrawalAmount.receiveMonthlyAndTaxFree"
                     values={{
-                      duration: eligibility.recommendedDurationYears,
+                      duration: decoratedEligibility.recommendedDurationYears,
                     }}
                   />
                 </span>
@@ -280,7 +281,7 @@ const FundPensionStatusBox = () => {
               <FormattedMessage
                 id="withdrawals.withdrawalAmount.fundPensionGrowth"
                 values={{
-                  duration: eligibility.recommendedDurationYears,
+                  duration: decoratedEligibility.recommendedDurationYears,
                   b: (chunks: ReactChildren) => <strong>{chunks}</strong>,
                   br: <br className="d-none d-md-block" />,
                 }}
@@ -301,7 +302,15 @@ const FundPensionStatusBox = () => {
 };
 
 const SummaryBox = () => {
-  const { withdrawalAmount, taxAmount, fundPension, navigateToNextStep } = useWithdrawalsContext();
+  const { amountStep, navigateToNextStep } = useWithdrawalsContext();
+
+  const taxAmount = getSingleWithdrawalTaxAmount(amountStep) ?? 0;
+  const fundPension = useFundPensionCalculation();
+
+  const isLoading = !fundPension;
+  if (isLoading) {
+    return null;
+  }
 
   return (
     <>
@@ -318,18 +327,18 @@ const SummaryBox = () => {
                 </span>
                 <span className="fw-bold">
                   {formatAmountForCurrency(
-                    withdrawalAmount.singleWithdrawalAmount || 0,
-                    withdrawalAmount.singleWithdrawalAmount ? 2 : 0,
+                    amountStep.singleWithdrawalAmount || 0,
+                    amountStep.singleWithdrawalAmount ? 2 : 0,
                   )}
                 </span>
               </p>
-              {taxAmount < 0 && (
+              {taxAmount > 0 && (
                 <p className="m-0 d-flex flex-column flex-sm-row column-gap-2 justify-content-between">
                   <span>
                     <FormattedMessage id="withdrawals.withdrawalAmount.summary.taxPayment" />
                   </span>{' '}
                   <span className="fw-bold text-danger">
-                    {formatAmountForCurrency(taxAmount, 2)}
+                    {formatAmountForCurrency(-taxAmount, 2)}
                   </span>
                 </p>
               )}
