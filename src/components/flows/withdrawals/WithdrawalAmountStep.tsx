@@ -251,7 +251,11 @@ const FundPensionStatusBox = () => {
                     }}
                   />
                 </span>{' '}
-                <InfoTooltip name="receiveMonthlyAndTaxFreeTooltip" className="info-tooltip-modern">
+                <InfoTooltip
+                  name="receiveMonthlyAndTaxFreeTooltip"
+                  className="info-tooltip-modern"
+                  place="bottom"
+                >
                   <FormattedMessage id="withdrawals.withdrawalAmount.fundPensionRecommendedPeriodDescription" />
                 </InfoTooltip>
               </div>
@@ -344,8 +348,8 @@ const SummaryBox = () => {
                     </del>{' '}
                     <InfoTooltip
                       name="monthlyReceiptTootlip"
-                      place="bottom"
                       className="info-tooltip-modern me-2"
+                      place="bottom"
                     >
                       <FormattedMessage id="withdrawals.withdrawalAmount.summary.partialWithdrawImpactToFundPension" />
                     </InfoTooltip>
