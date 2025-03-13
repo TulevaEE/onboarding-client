@@ -24,6 +24,7 @@ import {
   enterIban,
   nextButton,
   partialWithdrawalSizeInput,
+  singleWithdrawalCheckbox,
 } from './utils';
 
 const server = setupServer();
@@ -67,6 +68,7 @@ describe('withdrawals flow with both pillars', () => {
 
     await assertFundPensionCalculations('503 € per month');
 
+    userEvent.click(await singleWithdrawalCheckbox());
     userEvent.type(await partialWithdrawalSizeInput(), '20000');
     assertTotalTaxText('−2 000.00 €');
 
@@ -124,6 +126,7 @@ describe('withdrawals flow with both pillars', () => {
   }, 20_000);
 
   test('reaches final confirmation step with iban validation', async () => {
+    userEvent.click(await singleWithdrawalCheckbox());
     userEvent.type(await partialWithdrawalSizeInput(), '100');
 
     userEvent.click(nextButton());
@@ -154,6 +157,7 @@ describe('withdrawals flow with both pillars', () => {
   }, 20_000);
 
   test('can click on link to go to previous step', async () => {
+    userEvent.click(await singleWithdrawalCheckbox());
     userEvent.type(await partialWithdrawalSizeInput(), '100');
     userEvent.click(nextButton());
 
@@ -167,6 +171,7 @@ describe('withdrawals flow with both pillars', () => {
     const withdrawalSizeStep = await screen.findByRole('link', { name: 'Withdrawal amount' });
 
     userEvent.click(withdrawalSizeStep);
+    userEvent.click(await singleWithdrawalCheckbox());
 
     expect(await partialWithdrawalSizeInput()).toBeInTheDocument();
   }, 20_000);
@@ -182,6 +187,7 @@ describe('withdrawals flow with both pillars', () => {
 
     await assertFundPensionCalculations('479 € per month');
 
+    userEvent.click(await singleWithdrawalCheckbox());
     userEvent.type(await partialWithdrawalSizeInput(), '20000');
     assertTotalTaxText('−2 000.00 €');
 
@@ -249,6 +255,7 @@ describe('withdrawals flow with both pillars', () => {
 
     await assertFundPensionCalculations('24 € per month');
 
+    userEvent.click(await singleWithdrawalCheckbox());
     userEvent.type(await partialWithdrawalSizeInput(), '1000');
     assertTotalTaxText('−100.00 €');
 
@@ -383,6 +390,7 @@ describe('withdrawals flow with only second pillar and arrests/bankruptcy', () =
 
     await assertFundPensionCalculations('479 € per month');
 
+    userEvent.click(await singleWithdrawalCheckbox());
     userEvent.type(await partialWithdrawalSizeInput(), '50000');
     assertTotalTaxText('−5 000.00 €');
 
@@ -448,6 +456,7 @@ describe('withdrawals flow with only third pillar', () => {
       await screen.findByText(/Your holdings in III pillar/i, { exact: false }),
     ).toBeInTheDocument();
 
+    userEvent.click(await singleWithdrawalCheckbox());
     userEvent.type(await partialWithdrawalSizeInput(), '100');
 
     userEvent.click(nextButton());
