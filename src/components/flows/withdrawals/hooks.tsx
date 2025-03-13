@@ -30,7 +30,7 @@ export const WithdrawalsContext = createContext<WithdrawalsContextState>({
   amountStep: {
     singleWithdrawalAmount: null,
     pillarsToWithdrawFrom: 'BOTH',
-    fundPensionEnabled: false,
+    fundPensionEnabled: true,
   },
   personalDetails: {
     bankAccountIban: null,
@@ -72,7 +72,7 @@ export const WithdrawalsProvider = ({
 
   const [amountStep, setEntireAmountStep] = useState<WithdrawalsAmountStepState>({
     singleWithdrawalAmount: null,
-    fundPensionEnabled: false,
+    fundPensionEnabled: true,
     pillarsToWithdrawFrom: 'BOTH',
   });
 
