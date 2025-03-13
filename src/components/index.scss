@@ -151,6 +151,9 @@ hr {
     &-collapsed {
       border-bottom-width: 0;
     }
+    & .form-check {
+      padding-left: 54px !important; // 24px + 30px
+    }
     & .form-switch {
       padding-left: 74px !important; // 24px + 50px
     }
