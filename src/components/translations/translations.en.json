@@ -769,7 +769,7 @@
   "withdrawals.withdrawalAmount.summary.immediateWithdrawal": "Withdraw immediately",
   "withdrawals.withdrawalAmount.summary.taxPayment": "and pay income tax on it",
   "withdrawals.withdrawalAmount.summary.monthlyReceipt": "Receive monthly",
-  "withdrawals.withdrawalAmount.summary.partialWithdrawImpactToFundPension": "If you withdraw money partially, it will reduce the amount of your monthly fund pension payments.",
+  "withdrawals.withdrawalAmount.summary.partialWithdrawImpactToFundPension": "If you withdraw money partially, your monthly fund pension payments will decrease, as there will be less money remaining in the pillar.",
 
   "withdrawals.personalDetails.bankAccount.ibanLabel": "Bank account number (IBAN)",
   "withdrawals.personalDetails.bankAccount.taxResidencyLabel": "Tax residency",

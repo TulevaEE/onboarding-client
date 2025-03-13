@@ -771,7 +771,7 @@
   "withdrawals.withdrawalAmount.summary.immediateWithdrawal": "Võtan kohe välja",
   "withdrawals.withdrawalAmount.summary.taxPayment": "ja maksan sellest tulumaksuks",
   "withdrawals.withdrawalAmount.summary.monthlyReceipt": "Hakkan saama igakuiselt",
-  "withdrawals.withdrawalAmount.summary.partialWithdrawImpactToFundPension": "Kui võtad raha välja osaliselt, vähendab see sinu igakuiste fondipensioni väljamaksete suurust.",
+  "withdrawals.withdrawalAmount.summary.partialWithdrawImpactToFundPension": "Kui võtad raha osaliselt välja, vähenevad sinu igakuised fondipensioni väljamaksed, sest raha on sambasse selle võrra vähem jäänud.",
 
   "withdrawals.personalDetails.bankAccount.ibanLabel": "Pangakonto number (IBAN)",
   "withdrawals.personalDetails.bankAccount.taxResidencyLabel": "Maksuresidentsus",
