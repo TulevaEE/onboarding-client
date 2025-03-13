@@ -8,7 +8,7 @@ $container-max-widths: (
   lg: 960px,
   xl: 960px,
   // override for xl breakpoint
-  xxl: 960px // override for xxl breakpoint,
+  xxl: 960px // override for xxl breakpoint,,
 );
 
 /**
@@ -36,6 +36,15 @@ $h3-line-height: 1.4; // 28
 $h4-line-height: 1.3333; // 24
 $h5-line-height: 1.3333; // 24
 $h6-line-height: 1.3333; // 24
+
+$font-weight-lighter: lighter;
+$font-weight-light: 300;
+$font-weight-normal: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+$font-weight-bolder: bolder;
+$font-weight-base: $font-weight-normal;
 
 /**
  * Colors
