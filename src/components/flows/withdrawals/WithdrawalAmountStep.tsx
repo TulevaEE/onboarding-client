@@ -116,8 +116,12 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
   };
 
   return (
-    <div className="mt-3 card" role="region" aria-labelledby="single-withdrawal-title">
-      <div className="card-header border-0 p-0">
+    <div
+      className="mt-3 card overflow-hidden"
+      role="region"
+      aria-labelledby="single-withdrawal-title"
+    >
+      <div className={`card-header ${singleWithdrawalSwitch ? '' : 'bg-white'} border-0 p-0`}>
         <label
           id="single-withdrawal-title"
           className={`d-block form-check form-switch form-check-label m-0 p-4 fs-3 ${
@@ -212,8 +216,8 @@ const FundPensionStatusBox = () => {
   }
 
   return (
-    <div className="mt-3 card" role="region" aria-labelledby="fund-pension-title">
-      <div className="card-header border-0 p-0">
+    <div className="mt-3 card overflow-hidden" role="region" aria-labelledby="fund-pension-title">
+      <div className={`card-header ${fundPensionSwitch ? '' : 'bg-white'} border-0 p-0`}>
         <label
           id="fund-pension-title"
           className={`d-block form-check form-switch form-check-label m-0 p-4 fs-3 ${
