@@ -24,6 +24,7 @@ import {
   enterIban,
   nextButton,
   partialWithdrawalSizeInput,
+  singleWithdrawalCheckbox,
 } from './utils';
 
 const server = setupServer();
@@ -77,6 +78,7 @@ describe('withdrawals flow before early retirement age', () => {
       /will earn returns for the next 22 years/i,
     );
 
+    userEvent.click(await singleWithdrawalCheckbox());
     userEvent.type(await partialWithdrawalSizeInput(), '20000');
     assertTotalTaxText('−2 000.00 €');
 
@@ -209,6 +211,7 @@ describe('withdrawals flow with missing NAV', () => {
   });
 
   test('can not submit when a NAV is missing', async () => {
+    userEvent.click(await singleWithdrawalCheckbox());
     userEvent.type(await partialWithdrawalSizeInput(), '20000');
 
     userEvent.click(nextButton());

@@ -3,8 +3,14 @@ import { screen, waitForElementToBeRemoved, within } from '@testing-library/reac
 import userEvent from '@testing-library/user-event';
 import { WithdrawalMandateDetails } from '../../../common/apiModels/withdrawals';
 
+export const singleWithdrawalCheckbox = async () =>
+  screen.findByRole('checkbox', { name: 'Withdraw some money right away' });
+export const fundPensionCheckbox = async () =>
+  screen.findByRole('checkbox', { name: 'Receive monthly fund pension payments' });
+
 export const nextButton = () => screen.getByRole('button', { name: 'Continue' });
 export const confirmationCheckbox = () => screen.getByRole('checkbox');
+
 export const signButton = () => screen.getByRole('button', { name: /Sign/ });
 
 export const enterIban = async (iban: string) => {
