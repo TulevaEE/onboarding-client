@@ -162,6 +162,7 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
       getPartialWithdrawalMandatesToCreate(
         personalDetails,
         {
+          fundPensionEnabled: true,
           pillarsToWithdrawFrom: 'BOTH',
           singleWithdrawalAmount: null,
         },
@@ -177,6 +178,7 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
     const mandates = getPartialWithdrawalMandatesToCreate(
       personalDetails,
       {
+        fundPensionEnabled: true,
         pillarsToWithdrawFrom: 'BOTH',
         singleWithdrawalAmount: pensionHoldings.totalBothPillars,
       },
@@ -226,6 +228,7 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
     const mandates = getPartialWithdrawalMandatesToCreate(
       personalDetails,
       {
+        fundPensionEnabled: true,
         pillarsToWithdrawFrom: 'BOTH',
         singleWithdrawalAmount: pensionHoldings.totalBothPillars * 0.4,
       },
@@ -279,6 +282,7 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
     const mandates = getPartialWithdrawalMandatesToCreate(
       personalDetails,
       {
+        fundPensionEnabled: true,
         pillarsToWithdrawFrom: 'SECOND',
         singleWithdrawalAmount: pensionHoldings.totalSecondPillar * 0.4,
       },
@@ -316,6 +320,7 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
     const mandates = getPartialWithdrawalMandatesToCreate(
       personalDetails,
       {
+        fundPensionEnabled: true,
         pillarsToWithdrawFrom: 'THIRD',
         singleWithdrawalAmount: pensionHoldings.totalThirdPillar * 0.4,
       },
@@ -347,11 +352,12 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
 });
 
 describe('getFundPensionMandatesToCreate', () => {
-  it('returns nothing when withdrawing everything already with partial withdrawal', () => {
+  it('returns nothing when fund pension disabled', () => {
     expect(
       getFundPensionMandatesToCreate(
         personalDetails,
         {
+          fundPensionEnabled: false,
           pillarsToWithdrawFrom: 'BOTH',
           singleWithdrawalAmount: pensionHoldings.totalBothPillars,
         },
@@ -364,6 +370,7 @@ describe('getFundPensionMandatesToCreate', () => {
       getFundPensionMandatesToCreate(
         personalDetails,
         {
+          fundPensionEnabled: false,
           pillarsToWithdrawFrom: 'SECOND',
           singleWithdrawalAmount: pensionHoldings.totalSecondPillar,
         },
@@ -376,6 +383,48 @@ describe('getFundPensionMandatesToCreate', () => {
       getFundPensionMandatesToCreate(
         personalDetails,
         {
+          fundPensionEnabled: false,
+          pillarsToWithdrawFrom: 'THIRD',
+          singleWithdrawalAmount: pensionHoldings.totalThirdPillar,
+        },
+        withdrawalEligibility,
+        pensionHoldings,
+      ),
+    ).toStrictEqual([]);
+  });
+
+  it('returns nothing when withdrawing everything already with partial withdrawal', () => {
+    expect(
+      getFundPensionMandatesToCreate(
+        personalDetails,
+        {
+          fundPensionEnabled: true,
+          pillarsToWithdrawFrom: 'BOTH',
+          singleWithdrawalAmount: pensionHoldings.totalBothPillars,
+        },
+        withdrawalEligibility,
+        pensionHoldings,
+      ),
+    ).toStrictEqual([]);
+
+    expect(
+      getFundPensionMandatesToCreate(
+        personalDetails,
+        {
+          fundPensionEnabled: true,
+          pillarsToWithdrawFrom: 'SECOND',
+          singleWithdrawalAmount: pensionHoldings.totalSecondPillar,
+        },
+        withdrawalEligibility,
+        pensionHoldings,
+      ),
+    ).toStrictEqual([]);
+
+    expect(
+      getFundPensionMandatesToCreate(
+        personalDetails,
+        {
+          fundPensionEnabled: true,
           pillarsToWithdrawFrom: 'THIRD',
           singleWithdrawalAmount: pensionHoldings.totalThirdPillar,
         },
@@ -389,6 +438,7 @@ describe('getFundPensionMandatesToCreate', () => {
     const mandates = getFundPensionMandatesToCreate(
       personalDetails,
       {
+        fundPensionEnabled: true,
         pillarsToWithdrawFrom: 'BOTH',
         singleWithdrawalAmount: null,
       },
@@ -426,6 +476,7 @@ describe('getFundPensionMandatesToCreate', () => {
     const mandates = getFundPensionMandatesToCreate(
       personalDetails,
       {
+        fundPensionEnabled: true,
         pillarsToWithdrawFrom: 'SECOND',
         singleWithdrawalAmount: null,
       },
@@ -451,6 +502,7 @@ describe('getFundPensionMandatesToCreate', () => {
     const mandates = getFundPensionMandatesToCreate(
       personalDetails,
       {
+        fundPensionEnabled: true,
         pillarsToWithdrawFrom: 'THIRD',
         singleWithdrawalAmount: null,
       },
@@ -477,7 +529,8 @@ describe('getMandatesToCreate', () => {
   it('returns mandates to create when doing 10% partial withdrawal', () => {
     const mandates = getMandatesToCreate({
       personalDetails,
-      withdrawalAmount: {
+      amountStep: {
+        fundPensionEnabled: true,
         pillarsToWithdrawFrom: 'BOTH',
         singleWithdrawalAmount: pensionHoldings.totalBothPillars * 0.1,
       },

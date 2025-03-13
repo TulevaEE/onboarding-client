@@ -171,6 +171,9 @@ export const getFundPensionMandatesToCreate = (
     withdrawalAmount.pillarsToWithdrawFrom,
     pensionHoldings,
   );
+  if (!withdrawalAmount.fundPensionEnabled) {
+    return [];
+  }
 
   if (totalAmount === withdrawalAmount.singleWithdrawalAmount) {
     return [];
@@ -212,7 +215,7 @@ export const getFundPensionMandatesToCreate = (
 export const getMandatesToCreate = ({
   personalDetails,
   pensionHoldings,
-  withdrawalAmount,
+  amountStep,
   eligibility,
   funds,
   secondPillarSourceFunds,
@@ -220,7 +223,7 @@ export const getMandatesToCreate = ({
 }: {
   personalDetails: PersonalDetailsStepState;
   pensionHoldings: PensionHoldings;
-  withdrawalAmount: WithdrawalsAmountStepState;
+  amountStep: WithdrawalsAmountStepState;
   eligibility: WithdrawalsEligibility | null;
   funds: Fund[] | null;
   secondPillarSourceFunds: SourceFund[] | null;
@@ -237,15 +240,10 @@ export const getMandatesToCreate = ({
   }
 
   return [
-    ...getFundPensionMandatesToCreate(
-      personalDetails,
-      withdrawalAmount,
-      eligibility,
-      pensionHoldings,
-    ),
+    ...getFundPensionMandatesToCreate(personalDetails, amountStep, eligibility, pensionHoldings),
     ...getPartialWithdrawalMandatesToCreate(
       personalDetails,
-      withdrawalAmount,
+      amountStep,
       pensionHoldings,
       funds,
       secondPillarSourceFunds,
@@ -302,6 +300,46 @@ export const getAllFundNavsPresent = (
   }
 
   return allNavsPresent;
+};
+
+export const getSingleWithdrawalTaxAmount = (withdrawalAmount: WithdrawalsAmountStepState) => {
+  const INCOME_TAX_RATE = 0.1;
+
+  if (!withdrawalAmount.singleWithdrawalAmount) {
+    return null;
+  }
+
+  return withdrawalAmount.singleWithdrawalAmount * INCOME_TAX_RATE;
+};
+
+export const getFundPensionMonthlyPaymentEstimation = (
+  withdrawalAmount: WithdrawalsAmountStepState,
+  eligibility: WithdrawalsEligibility,
+  pensionHoldings: PensionHoldings,
+) => {
+  const totalAmount = getTotalWithdrawableAmount(
+    withdrawalAmount.pillarsToWithdrawFrom,
+    pensionHoldings,
+  );
+
+  const { fundPensionMonthlyPaymentApproximateSize, fundPensionPercentageLiquidatedMonthly } =
+    getEstimatedTotalFundPension({
+      totalWithdrawableAmount: totalAmount,
+      durationYears: eligibility.recommendedDurationYears,
+      singleWithdrawalAmount: withdrawalAmount.singleWithdrawalAmount,
+    });
+
+  const maxFundPension = getEstimatedTotalFundPension({
+    totalWithdrawableAmount: totalAmount,
+    durationYears: eligibility.recommendedDurationYears,
+    singleWithdrawalAmount: 0,
+  });
+
+  return {
+    estimatedMonthlyPayment: fundPensionMonthlyPaymentApproximateSize,
+    maxMonthlyPayment: maxFundPension.fundPensionMonthlyPaymentApproximateSize,
+    percentageLiquidatedMonthly: fundPensionPercentageLiquidatedMonthly,
+  };
 };
 
 export const getTotalWithdrawableAmount = (

@@ -297,7 +297,7 @@ const FundPensionMandateDescription = ({
 }: {
   mandate: FundPensionOpeningMandateDetails;
 }) => {
-  const { withdrawalAmount, pensionHoldings } = useWithdrawalsContext();
+  const { amountStep, pensionHoldings } = useWithdrawalsContext();
   const { data: mandateDeadlines } = useMandateDeadlines();
   const { data: eligibility } = useWithdrawalsEligibility();
 
@@ -306,7 +306,7 @@ const FundPensionMandateDescription = ({
   }
 
   const totalWithdrawableAmount = getTotalWithdrawableAmount(
-    withdrawalAmount.pillarsToWithdrawFrom,
+    amountStep.pillarsToWithdrawFrom,
     pensionHoldings,
   );
 
@@ -317,7 +317,7 @@ const FundPensionMandateDescription = ({
   const { fundPensionMonthlyPaymentApproximateSize } = getEstimatedTotalFundPension({
     totalWithdrawableAmount,
     durationYears: mandate.duration.durationYears,
-    singleWithdrawalAmount: withdrawalAmount.singleWithdrawalAmount,
+    singleWithdrawalAmount: amountStep.singleWithdrawalAmount,
   });
 
   const fundPensionMonthlyPaymentFromPillar =
@@ -411,14 +411,14 @@ const PartialWithdrawalMandateDescription = ({
 }) => {
   const { data: mandateDeadlines } = useMandateDeadlines();
   const { data: eligibility } = useWithdrawalsEligibility();
-  const { withdrawalAmount, pensionHoldings } = useWithdrawalsContext();
+  const { amountStep, pensionHoldings } = useWithdrawalsContext();
 
-  if (!pensionHoldings || !mandateDeadlines || !withdrawalAmount.singleWithdrawalAmount) {
+  if (!pensionHoldings || !mandateDeadlines || !amountStep.singleWithdrawalAmount) {
     return <Loader className="align-middle my-4" />;
   }
 
   const totalAvailableToWithdraw = getTotalWithdrawableAmount(
-    withdrawalAmount.pillarsToWithdrawFrom,
+    amountStep.pillarsToWithdrawFrom,
     pensionHoldings,
   );
 
@@ -426,8 +426,7 @@ const PartialWithdrawalMandateDescription = ({
     mandate.pillar
   ];
 
-  const partialWithdrawalSizeFromPillar =
-    withdrawalAmount.singleWithdrawalAmount * pillarRatioOfTotal;
+  const partialWithdrawalSizeFromPillar = amountStep.singleWithdrawalAmount * pillarRatioOfTotal;
 
   const estimatedWithdrawalSizeWithTax = partialWithdrawalSizeFromPillar * 0.9;
 

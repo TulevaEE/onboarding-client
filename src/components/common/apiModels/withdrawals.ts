@@ -1,5 +1,3 @@
-import { Pillar } from '.';
-
 export type FundPensionStatus = {
   fundPensions: FundPension[];
 };

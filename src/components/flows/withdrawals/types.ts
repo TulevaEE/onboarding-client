@@ -3,9 +3,7 @@ import { TranslationKey } from '../../translations';
 
 export type WithdrawalsContextState = {
   currentStep: WithdrawalStep | null;
-  withdrawalAmount: WithdrawalsAmountStepState;
-  taxAmount: number;
-  fundPension: FundPensionState;
+  amountStep: WithdrawalsAmountStepState;
   personalDetails: PersonalDetailsStepState;
   pensionHoldings: PensionHoldings | null;
 
@@ -15,7 +13,7 @@ export type WithdrawalsContextState = {
 
   mandatesSubmitted: boolean;
   onMandatesSubmitted: () => unknown;
-  setWithdrawalAmount: (state: WithdrawalsAmountStepState) => unknown;
+  setAmountStep: (state: Partial<WithdrawalsAmountStepState>) => unknown;
   setPersonalDetails: (state: PersonalDetailsStepState) => unknown;
 
   navigateToNextStep: () => void;
@@ -31,12 +29,7 @@ export type PensionHoldings = {
 export type WithdrawalsAmountStepState = {
   pillarsToWithdrawFrom: PillarToWithdrawFrom;
   singleWithdrawalAmount: number | null;
-};
-
-export type FundPensionState = {
-  estimatedMonthlyPayment: number;
-  maxMonthlyPayment: number;
-  percentageLiquidatedMonthly: number;
+  fundPensionEnabled: boolean;
 };
 
 export type PersonalDetailsStepState = {
