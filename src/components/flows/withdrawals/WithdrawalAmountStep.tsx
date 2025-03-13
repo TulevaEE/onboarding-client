@@ -137,7 +137,7 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
             aria-expanded="false"
             aria-controls="single-withdrawal-body"
           />
-          <span className="ps-1">
+          <span className="d-inline-block ps-1">
             <FormattedMessage id="withdrawals.withdrawalAmount.partialWithdrawTitle" />
           </span>
         </label>
@@ -187,11 +187,10 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
               {taxAmount < 0 ? ': ' : '.'}
               {taxAmount < 0 && (
                 <span className={styles.warningText}>{formatAmountForCurrency(taxAmount, 2)}</span>
-              )}{' '}
-              <br className="d-none d-md-block" />
-              <span className="text-body-secondary">
-                <FormattedMessage id="withdrawals.withdrawalAmount.precisePriceAtSaleDisclaimer" />
-              </span>
+              )}
+            </p>
+            <p className="m-0 text-body-secondary">
+              <FormattedMessage id="withdrawals.withdrawalAmount.precisePriceAtSaleDisclaimer" />
             </p>
           </div>
         </div>
@@ -232,7 +231,7 @@ const FundPensionStatusBox = () => {
             aria-expanded={fundPensionSwitch}
             aria-controls="fund-pension-body"
           />
-          <span className="ps-1">
+          <span className="d-inline-block ps-1">
             <FormattedMessage id="withdrawals.withdrawalAmount.fundPensionTitle" />
           </span>
         </label>
@@ -242,7 +241,7 @@ const FundPensionStatusBox = () => {
         <div id="fund-pension-body">
           <div className="card-body border-top p-4">
             <div className="d-flex flex-column flex-sm-row justify-content-between fs-3">
-              <div className="d-flex flex-row align-items-center gap-2">
+              <div className="d-sm-flex flex-row align-items-center text-balance">
                 <span>
                   <FormattedMessage
                     id="withdrawals.withdrawalAmount.receiveMonthlyAndTaxFree"
@@ -250,9 +249,10 @@ const FundPensionStatusBox = () => {
                       duration: eligibility.recommendedDurationYears,
                     }}
                   />
-                </span>{' '}
+                </span>
+                &nbsp;
                 <InfoTooltip
-                  name="receiveMonthlyAndTaxFreeTooltip"
+                  name="fundPensionRecommendedPeriodDescriptionTooltip"
                   className="info-tooltip-modern"
                   place="bottom"
                 >
@@ -311,8 +311,8 @@ const SummaryBox = () => {
             <p id="summary-title" className="m-0 fw-bold">
               <FormattedMessage id="withdrawals.withdrawalAmount.summary.title" />
             </p>
-            <div>
-              <p className="m-0 d-flex flex-row justify-content-between">
+            <div className="d-flex flex-column row-gap-2 row-gap-sm-0">
+              <p className="m-0 d-flex flex-column flex-sm-row column-gap-2 justify-content-between">
                 <span>
                   <FormattedMessage id="withdrawals.withdrawalAmount.summary.immediateWithdrawal" />
                 </span>
@@ -324,7 +324,7 @@ const SummaryBox = () => {
                 </span>
               </p>
               {taxAmount < 0 && (
-                <p className="m-0 d-flex flex-row justify-content-between">
+                <p className="m-0 d-flex flex-column flex-sm-row column-gap-2 justify-content-between">
                   <span>
                     <FormattedMessage id="withdrawals.withdrawalAmount.summary.taxPayment" />
                   </span>{' '}
@@ -334,12 +334,10 @@ const SummaryBox = () => {
                 </p>
               )}
             </div>
-            <div className="m-0 d-flex flex-row justify-content-between">
-              <div className="d-flex flex-row align-items-center gap-2">
-                <span>
-                  <FormattedMessage id="withdrawals.withdrawalAmount.summary.monthlyReceipt" />
-                </span>
-              </div>
+            <div className="m-0 d-flex flex-column flex-sm-row column-gap-2 justify-content-between">
+              <span>
+                <FormattedMessage id="withdrawals.withdrawalAmount.summary.monthlyReceipt" />
+              </span>
               <span className="fw-bold text-nowrap">
                 {fundPension.maxMonthlyPayment > fundPension.estimatedMonthlyPayment && (
                   <>
@@ -347,7 +345,7 @@ const SummaryBox = () => {
                       ~{formatAmountForCurrency(fundPension.maxMonthlyPayment, 0)}
                     </del>{' '}
                     <InfoTooltip
-                      name="monthlyReceiptTootlip"
+                      name="partialWithdrawImpactToFundPensionTooltip"
                       className="info-tooltip-modern me-2"
                       place="bottom"
                     >
