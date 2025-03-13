@@ -30,13 +30,13 @@ export const InnerWithdrawals: React.FunctionComponent = () => {
   if (!user || !eligibility || !conversion || !fundPensionStatus) {
     return (
       <div className="d-flex flex-column align-items-center">
-        <div style={{ width: '336px' }} className="mb-4">
+        <div style={{ width: '330px' }} className="mb-4">
           <Shimmer height={36} />
         </div>
-        <div style={{ width: '540px' }}>
+        <div style={{ width: '480px' }}>
           <Shimmer height={60} />
         </div>
-        <div style={{ width: '540px' }} className="my-5">
+        <div style={{ width: '480px' }} className="my-5">
           <Shimmer height={32} />
         </div>
         <div className="col-12 col-md-11 col-lg-8 mx-auto">

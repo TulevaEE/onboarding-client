@@ -423,6 +423,9 @@ const NotEligible = () => (
         <p className="m-0">
           <FormattedMessage id="withdrawals.additionalInfoUnderEarlyRetirementAge" />
         </p>
+        <p className="m-0">
+          <FormattedMessage id="withdrawals.additionalInfoUnavoidableExpense" />
+        </p>
       </div>
       <div className="d-grid">
         <button className="btn btn-lg btn-secondary" type="button" disabled>

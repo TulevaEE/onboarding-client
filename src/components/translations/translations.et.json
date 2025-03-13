@@ -734,6 +734,7 @@
   "withdrawals.subHeadingThirdPilllarReducedTax": "Oled <b>{age}-aastane</b> ja sul on õigus III samba pensionivara <b>soodustingimustel</b> kasutama hakata.",
   "withdrawals.subHeadingUnderEarlyRetirementAge": "Oled <b>{age}-aastane</b> ja sul on õigus kogutud pensionivara <b>soodustingimustel</b> kasutama hakata <b>{yearsToGo} aasta pärast</b>.",
   "withdrawals.additionalInfoUnderEarlyRetirementAge": "Seniks näed siit lehelt, kui suurt igakuist fondipensioni võiksid saada eelpensioniikka jõudes, arvestades tänaseks kogutud vara.",
+  "withdrawals.additionalInfoUnavoidableExpense": "Kui vajad raha mõneks vältimatuks kulutuseks, eelista esmalt III samba makseid. Selleks esita avaldus Pensionikeskuse lehel või oma netipangas.",
 
   "withdrawals.steps.withdrawalSize": "Väljamakse suurus",
   "withdrawals.steps.yourInformation": "Sinu andmed",
@@ -744,6 +745,7 @@
   "withdrawals.navigation.forward": "Edasi",
   "withdrawals.navigation.notEligible": "Sa pole veel eelpensioniealine ega saa jätkata",
 
+  "withdrawals.withdrawalAmount.recommended": "Soovitame",
   "withdrawals.withdrawalAmount.partialWithdrawTitle": "Võtan osa raha kohe välja",
   "withdrawals.withdrawalAmount.partialWithdrawInputLabel": "Võtan välja 10% tulumaksuga",
   "withdrawals.withdrawalAmount.partialWithdrawalTax": "Väljamakselt peab riik kinni 10% tulumaksu",
@@ -764,7 +766,7 @@
 
   "withdrawals.withdrawalAmount.monthlyPaymentSize": "Iga kuu saad kätte {percentageLiquidated} fondiosakutest. Hetkehinnas on see {paymentAmount}.",
 
-  "withdrawals.withdrawalAmount.fundPensionGrowth": "Sinu fondi jääv vara <b>teenib järgnevad {duration} aastat tootlust edasi</b>. Kui osaku turuhind kasvab või kahaneb, siis suurenevad või vähenevad ka sinu väljamaksed.",
+  "withdrawals.withdrawalAmount.fundPensionGrowth": "<b>Sinu fondi jääv vara teenib järgnevad {duration} aastat tootlust edasi.</b> Kui osaku turuhind kasvab või kahaneb, siis suurenevad või vähenevad ka sinu väljamaksed.",
   "withdrawals.withdrawalAmount.fundPensionLinkText": "Kui suureks võivad väljamaksed kasvada?",
 
   "withdrawals.withdrawalAmount.summary.title": "Väljamaksete kokkuvõte",
