@@ -33,9 +33,6 @@ export const InnerWithdrawals: React.FunctionComponent = () => {
         <div style={{ width: '336px' }} className="mb-4">
           <Shimmer height={36} />
         </div>
-        <div style={{ width: '540px' }} className="mb-3">
-          <Shimmer height={60} />
-        </div>
         <div style={{ width: '540px' }}>
           <Shimmer height={60} />
         </div>
@@ -49,14 +46,10 @@ export const InnerWithdrawals: React.FunctionComponent = () => {
             <Shimmer height={32} />
           </div>
           <div className="card p-4 d-flex flex-column gap-2 mt-3">
-            <Shimmer height={32} />
-            <Shimmer height={32} />
-            <Shimmer height={32} />
+            <Shimmer height={30} />
           </div>
           <div className="card p-4 d-flex flex-column gap-2 mt-3">
-            <Shimmer height={32} />
-            <Shimmer height={32} />
-            <Shimmer height={32} />
+            <Shimmer height={30} />
           </div>
         </div>
       </div>
