@@ -311,6 +311,7 @@ const SummaryBox = () => {
   const { amountStep, navigateToNextStep, mandatesToCreate } = useWithdrawalsContext();
   const taxAmount = getSingleWithdrawalTaxAmount(amountStep) ?? 0;
   const fundPension = useFundPensionCalculation();
+  const { fundPensionEnabled } = amountStep;
 
   const isLoading = !fundPension;
   if (isLoading) {
@@ -355,20 +356,21 @@ const SummaryBox = () => {
                 <FormattedMessage id="withdrawals.withdrawalAmount.summary.monthlyReceipt" />
               </span>
               <span className="fw-bold text-nowrap">
-                {fundPension.maxMonthlyPayment > fundPension.estimatedMonthlyPayment && (
-                  <>
-                    <del className="text-secondary fw-normal">
-                      ~{formatAmountForCurrency(fundPension.maxMonthlyPayment, 0)}
-                    </del>{' '}
-                    <InfoTooltip
-                      name="partialWithdrawImpactToFundPensionTooltip"
-                      className="info-tooltip-modern me-2"
-                      place="bottom"
-                    >
-                      <FormattedMessage id="withdrawals.withdrawalAmount.summary.partialWithdrawImpactToFundPension" />
-                    </InfoTooltip>
-                  </>
-                )}
+                {fundPension.maxMonthlyPayment > fundPension.estimatedMonthlyPayment &&
+                  fundPensionEnabled && (
+                    <>
+                      <del className="text-secondary fw-normal">
+                        ~{formatAmountForCurrency(fundPension.maxMonthlyPayment, 0)}
+                      </del>{' '}
+                      <InfoTooltip
+                        name="partialWithdrawImpactToFundPensionTooltip"
+                        className="info-tooltip-modern me-2"
+                        place="bottom"
+                      >
+                        <FormattedMessage id="withdrawals.withdrawalAmount.summary.partialWithdrawImpactToFundPension" />
+                      </InfoTooltip>
+                    </>
+                  )}
                 <EstimatedMonthlyPayment />
               </span>
             </div>
