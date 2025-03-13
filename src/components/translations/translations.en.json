@@ -747,10 +747,10 @@
   "withdrawals.withdrawalAmount.partialWithdrawalTax": "Partial withdrawal will be subject to 10% income tax",
   "withdrawals.withdrawalAmount.precisePriceAtSaleDisclaimer": "The exact amount depends on the price of shares.",
   "withdrawals.withdrawalAmount.fundPensionPrecisePriceAtSaleDisclaimer": "The exact amounts depend on the price of shares.",
+  "withdrawals.withdrawalAmount.fundPensionRecommendedPeriodDescription": "Fund pension is tax-free if the period is equal to or longer than the recommended number of years. The recommended period is calculated based on your age and the average lifespan for men and women, published by Statistics Estonia",
 
   "withdrawals.withdrawalAmount.fundPensionTitle": "Receive monthly fund pension payments",
   "withdrawals.withdrawalAmount.receiveMonthlyAndTaxFree": "Tax-free over {duration} years",
-  "withdrawals.withdrawalAmount.receiveMonthlyAndTaxFree.tooltip": "Tax-free indeed",
   "withdrawals.perMonth": "per month",
 
   "withdrawals.withdrawalAmount.secondPillarTotal": "Your holdings in II pillar",
@@ -769,7 +769,7 @@
   "withdrawals.withdrawalAmount.summary.immediateWithdrawal": "Withdraw immediately",
   "withdrawals.withdrawalAmount.summary.taxPayment": "and pay income tax on it",
   "withdrawals.withdrawalAmount.summary.monthlyReceipt": "Receive monthly",
-  "withdrawals.withdrawalAmount.summary.monthlyReceipt.tooltip": "Receive monthly indeed",
+  "withdrawals.withdrawalAmount.summary.partialWithdrawImpactToFundPension": "If you withdraw money partially, it will reduce the amount of your monthly fund pension payments.",
 
   "withdrawals.personalDetails.bankAccount.ibanLabel": "Bank account number (IBAN)",
   "withdrawals.personalDetails.bankAccount.taxResidencyLabel": "Tax residency",

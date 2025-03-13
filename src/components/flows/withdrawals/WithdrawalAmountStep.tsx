@@ -252,7 +252,7 @@ const FundPensionStatusBox = () => {
                   />
                 </span>{' '}
                 <InfoTooltip name="receiveMonthlyAndTaxFreeTooltip" className="info-tooltip-modern">
-                  <FormattedMessage id="withdrawals.withdrawalAmount.receiveMonthlyAndTaxFree.tooltip" />
+                  <FormattedMessage id="withdrawals.withdrawalAmount.fundPensionRecommendedPeriodDescription" />
                 </InfoTooltip>
               </div>
               <strong>
@@ -334,10 +334,7 @@ const SummaryBox = () => {
               <div className="d-flex flex-row align-items-center gap-2">
                 <span>
                   <FormattedMessage id="withdrawals.withdrawalAmount.summary.monthlyReceipt" />
-                </span>{' '}
-                <InfoTooltip name="monthlyReceiptTootlip" className="info-tooltip-modern">
-                  <FormattedMessage id="withdrawals.withdrawalAmount.summary.monthlyReceipt.tooltip" />
-                </InfoTooltip>
+                </span>
               </div>
               <span className="fw-bold text-nowrap">
                 {fundPension.maxMonthlyPayment > fundPension.estimatedMonthlyPayment && (
@@ -345,6 +342,13 @@ const SummaryBox = () => {
                     <del className="text-secondary fw-normal">
                       ~{formatAmountForCurrency(fundPension.maxMonthlyPayment, 0)}
                     </del>{' '}
+                    <InfoTooltip
+                      name="monthlyReceiptTootlip"
+                      place="bottom"
+                      className="info-tooltip-modern me-2"
+                    >
+                      <FormattedMessage id="withdrawals.withdrawalAmount.summary.partialWithdrawImpactToFundPension" />
+                    </InfoTooltip>
                   </>
                 )}
                 ~{formatAmountForCurrency(fundPension.estimatedMonthlyPayment, 0)}&nbsp;
