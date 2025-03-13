@@ -125,6 +125,40 @@ describe('withdrawals flow with both pillars', () => {
     assertDoneScreenSecondPillarWarning();
   }, 20_000);
 
+  test('reaches final confirmation step with only fund pension', async () => {
+    expect(await screen.findByText(/60 years old/i)).toBeInTheDocument();
+    expect(await screen.findByText(/under preferential conditions/i)).toBeInTheDocument();
+    expect(screen.queryByText(/you might receive/i)).not.toBeInTheDocument();
+
+    expect(
+      await screen.findByText(/Withdraw from the entire pension holding/i),
+    ).toBeInTheDocument();
+
+    await assertFundPensionCalculations('503 € per month');
+
+    userEvent.click(nextButton());
+
+    await enterIban('EE591254471322749514');
+    userEvent.click(nextButton());
+
+    expect(
+      await screen.findByText(/I submit the following applications and am aware of their terms/i),
+    ).toBeInTheDocument();
+
+    expect(await screen.findByText(/EE591254471322749514/i)).toBeInTheDocument();
+    expect(await screen.findByText('EST')).toBeInTheDocument();
+
+    assertMandateCount(2);
+
+    await assertFundPensionMandate('SECOND', '479 €');
+    await assertFundPensionMandate('THIRD', '24 €');
+
+    await confirmAndSignAndAssertDone();
+
+    assertDoneScreenFundPension();
+    assertDoneScreenSecondPillarWarning();
+  }, 20_000);
+
   test('reaches final confirmation step with iban validation', async () => {
     userEvent.click(await singleWithdrawalCheckbox());
     userEvent.type(await partialWithdrawalSizeInput(), '100');
