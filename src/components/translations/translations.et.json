@@ -748,10 +748,10 @@
   "withdrawals.withdrawalAmount.partialWithdrawInputLabel": "Võtan välja 10% tulumaksuga",
   "withdrawals.withdrawalAmount.partialWithdrawalTax": "Väljamakselt peab riik kinni 10% tulumaksu",
   "withdrawals.withdrawalAmount.precisePriceAtSaleDisclaimer": "Täpne summa selgub osakute müümisel ja sõltub osakute turuhinnast.",
+  "withdrawals.withdrawalAmount.fundPensionRecommendedPeriodDescription": "Fondipension on tulumaksuvaba, kui selle kestuseks on soovituslik aastate arv või sellest pikem aeg. Soovituslik periood arvutatakse sinu vanuse ning meeste ja naiste keskmise eluea järgi, mille avaldab Statistikaamet.",
 
   "withdrawals.withdrawalAmount.fundPensionTitle": "Hakkan saama igakuist fondipensioni",
   "withdrawals.withdrawalAmount.receiveMonthlyAndTaxFree": "Tulumaksuvabalt {duration} aasta jooksul",
-  "withdrawals.withdrawalAmount.receiveMonthlyAndTaxFree.tooltip": "Täiesti tulumaksuvabalt",
   "withdrawals.perMonth": "kuus",
   "withdrawals.withdrawalAmount.fundPensionPrecisePriceAtSaleDisclaimer": "Täpsed summad selguvad osakute müümise hetkel ja varieeruvad.",
 
@@ -771,7 +771,7 @@
   "withdrawals.withdrawalAmount.summary.immediateWithdrawal": "Võtan kohe välja",
   "withdrawals.withdrawalAmount.summary.taxPayment": "ja maksan sellest tulumaksuks",
   "withdrawals.withdrawalAmount.summary.monthlyReceipt": "Hakkan saama igakuiselt",
-  "withdrawals.withdrawalAmount.summary.monthlyReceipt.tooltip": "Täiesti tulumaksuvabalt",
+  "withdrawals.withdrawalAmount.summary.partialWithdrawImpactToFundPension": "Kui võtad raha välja osaliselt, vähendab see sinu igakuiste fondipensioni väljamaksete suurust.",
 
   "withdrawals.personalDetails.bankAccount.ibanLabel": "Pangakonto number (IBAN)",
   "withdrawals.personalDetails.bankAccount.taxResidencyLabel": "Maksuresidentsus",
