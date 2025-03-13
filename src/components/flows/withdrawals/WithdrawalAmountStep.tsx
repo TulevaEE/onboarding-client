@@ -124,13 +124,12 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
       <div className={`card-header ${singleWithdrawalSwitch ? '' : 'bg-white'} border-0 p-0`}>
         <label
           id="single-withdrawal-title"
-          className={`d-block form-check form-switch form-check-label m-0 p-4 fs-3 ${
+          className={`d-block form-check form-check-label m-0 p-4 fs-3 ${
             singleWithdrawalSwitch ? 'fw-semibold' : ''
           }`}
         >
           <input
             type="checkbox"
-            role="switch"
             className="form-check-input"
             id="single-withdrawal-switch"
             checked={singleWithdrawalSwitch}
@@ -220,13 +219,12 @@ const FundPensionStatusBox = () => {
       <div className={`card-header ${fundPensionSwitch ? '' : 'bg-white'} border-0 p-0`}>
         <label
           id="fund-pension-title"
-          className={`d-block form-check form-switch form-check-label m-0 p-4 fs-3 ${
+          className={`d-block form-check form-check-label m-0 p-4 fs-3 ${
             fundPensionSwitch ? 'fw-semibold' : ''
           }`}
         >
           <input
             type="checkbox"
-            role="switch"
             className="form-check-input"
             id="fund-pension-switch"
             checked={fundPensionSwitch}
