@@ -261,8 +261,7 @@ const FundPensionStatusBox = () => {
                 </InfoTooltip>
               </div>
               <strong>
-                ~{formatAmountForCurrency(fundPension.estimatedMonthlyPayment, 0)}&nbsp;
-                <FormattedMessage id="withdrawals.perMonth" />
+                <EstimatedMonthlyPayment />
               </strong>
             </div>
             <p className="m-0 mt-4">
@@ -362,8 +361,7 @@ const SummaryBox = () => {
                     </InfoTooltip>
                   </>
                 )}
-                ~{formatAmountForCurrency(fundPension.estimatedMonthlyPayment, 0)}&nbsp;
-                <FormattedMessage id="withdrawals.perMonth" />
+                <EstimatedMonthlyPayment />
               </span>
             </div>
           </div>
@@ -378,6 +376,19 @@ const SummaryBox = () => {
           </div>
         </div>
       </div>
+    </>
+  );
+};
+
+const EstimatedMonthlyPayment = () => {
+  const { estimatedMonthlyPayment } = useFundPensionCalculation() ?? {
+    estimatedMonthlyPayment: 0,
+  };
+  return (
+    <>
+      {estimatedMonthlyPayment > 0 ? '~' : ''}
+      {formatAmountForCurrency(estimatedMonthlyPayment, 0)}&nbsp;
+      <FormattedMessage id="withdrawals.perMonth" />
     </>
   );
 };
