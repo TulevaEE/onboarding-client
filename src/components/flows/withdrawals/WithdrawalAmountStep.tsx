@@ -21,7 +21,8 @@ import Slider from './Slider';
 export const WithdrawalAmountStep = () => {
   const { data: eligibility } = useWithdrawalsEligibility();
 
-  const { amountStep, setAmountStep, pensionHoldings } = useWithdrawalsContext();
+  const { amountStep, setAmountStep, pensionHoldings, navigateToNextStep } =
+    useWithdrawalsContext();
 
   const isTestModeEnabled = useTestMode();
 
@@ -37,11 +38,10 @@ export const WithdrawalAmountStep = () => {
 
   const totalAmount = getTotalWithdrawableAmount(amountStep.pillarsToWithdrawFrom, pensionHoldings);
 
-  const canNavigateToNextStep =
+  const isEligible =
     eligibility.hasReachedEarlyRetirementAge ||
     (canOnlyWithdrawThirdPillarTaxFree(eligibility) &&
-      amountStep.pillarsToWithdrawFrom === 'THIRD') ||
-    isTestModeEnabled;
+      amountStep.pillarsToWithdrawFrom === 'THIRD');
 
   return (
     <div className="my-5">
@@ -54,7 +54,14 @@ export const WithdrawalAmountStep = () => {
       />
       <SingleWithdrawalSelectionBox totalAmount={totalAmount} />
       <FundPensionStatusBox />
-      {canNavigateToNextStep ? <SummaryBox /> : <NotEligible />}
+      {isEligible || isTestModeEnabled ? <SummaryBox /> : <NotEligible />}
+      {isTestModeEnabled && (
+        <div className="d-flex flex-row-reverse mt-3">
+          <button type="button" className="btn btn-light" onClick={navigateToNextStep}>
+            <FormattedMessage id="withdrawals.navigation.forward" />
+          </button>
+        </div>
+      )}
     </div>
   );
 };
@@ -301,8 +308,7 @@ const FundPensionStatusBox = () => {
 };
 
 const SummaryBox = () => {
-  const { amountStep, navigateToNextStep } = useWithdrawalsContext();
-
+  const { amountStep, navigateToNextStep, mandatesToCreate } = useWithdrawalsContext();
   const taxAmount = getSingleWithdrawalTaxAmount(amountStep) ?? 0;
   const fundPension = useFundPensionCalculation();
 
@@ -310,6 +316,8 @@ const SummaryBox = () => {
   if (isLoading) {
     return null;
   }
+
+  const canNavigateToNextStep = mandatesToCreate ? mandatesToCreate.length > 0 : false;
 
   return (
     <>
@@ -369,7 +377,8 @@ const SummaryBox = () => {
             <button
               className="btn btn-lg btn-primary"
               type="button"
-              onClick={() => navigateToNextStep()}
+              onClick={navigateToNextStep}
+              disabled={!canNavigateToNextStep}
             >
               <FormattedMessage id="withdrawals.navigation.continue" />
             </button>
@@ -381,9 +390,14 @@ const SummaryBox = () => {
 };
 
 const EstimatedMonthlyPayment = () => {
-  const { estimatedMonthlyPayment } = useFundPensionCalculation() ?? {
+  let { estimatedMonthlyPayment } = useFundPensionCalculation() ?? {
     estimatedMonthlyPayment: 0,
   };
+  const { amountStep } = useWithdrawalsContext();
+  const { fundPensionEnabled } = amountStep;
+  if (!fundPensionEnabled) {
+    estimatedMonthlyPayment = 0;
+  }
   return (
     <>
       {estimatedMonthlyPayment > 0 ? '~' : ''}
