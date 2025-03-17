@@ -6,6 +6,7 @@ import {
   useMe,
   useWithdrawalsEligibility,
 } from '../../common/apiHooks';
+import { usePageTitle } from '../../common/usePageTitle';
 import { WithdrawalsHeader } from './WithdrawalsHeader';
 import { Shimmer } from '../../common/shimmer/Shimmer';
 import { WithdrawalsSteps } from './WithdrawalsSteps';
@@ -20,6 +21,8 @@ export const Withdrawals = () => (
 );
 
 export const InnerWithdrawals: React.FunctionComponent = () => {
+  usePageTitle('pageTitle.withdrawals');
+
   const { data: user } = useMe();
   const { data: conversion } = useConversion();
   const { data: eligibility } = useWithdrawalsEligibility();
