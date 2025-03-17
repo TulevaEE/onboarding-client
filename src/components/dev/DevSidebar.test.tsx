@@ -43,7 +43,7 @@ describe('DevSidebar', () => {
 
   test('renders user conversion and user data correctly', async () => {
     await waitFor(() => {
-      expect(screen.getByText('User conversion data')).toBeInTheDocument();
+      expect(screen.getByText('Conversion data')).toBeInTheDocument();
     });
     await waitFor(() => {
       expect(screen.getByText('User data')).toBeInTheDocument();

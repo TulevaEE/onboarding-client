@@ -233,7 +233,7 @@ const DevSidebar: React.FC<StateProperties> = ({ conversion, userData }) => {
   return (
     <aside className="offcanvas offcanvas-end show bg-gray-2">
       <div className="offcanvas-body">
-        <h2 className="m-0 mb-3">User conversion data</h2>
+        <h2 className="m-0 mb-3">Conversion data</h2>
         {renderPaths(editableConversion as unknown as NestedStateField, 'userConversion')}
         <div className="d-grid">
           <button
@@ -264,11 +264,7 @@ const DevSidebar: React.FC<StateProperties> = ({ conversion, userData }) => {
           </div>
           <hr />
           <div className="d-flex gap-2">
-            <button
-              className="btn btn-sm btn-outline-primary flex-fill"
-              type="button"
-              onClick={exportState}
-            >
+            <button className="btn btn-sm btn-light flex-fill" type="button" onClick={exportState}>
               Export state
             </button>
             <input
@@ -278,7 +274,7 @@ const DevSidebar: React.FC<StateProperties> = ({ conversion, userData }) => {
               id="fileInput"
               accept=".json"
             />
-            <label htmlFor="fileInput" className="btn btn-sm btn-outline-primary flex-fill">
+            <label htmlFor="fileInput" className="btn btn-sm btn-light flex-fill">
               Import state
             </label>
           </div>
