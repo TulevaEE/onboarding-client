@@ -216,12 +216,7 @@ export const shouldRedirectToAml = (state) =>
   state.aml.missingAmlChecks &&
   state.aml.missingAmlChecks.length > 0 &&
   !state.aml.createAmlChecksSuccess &&
-  state.login.user &&
-  state.login.user.thirdPillarActive &&
-  state.thirdPillar.sourceFunds &&
-  state.thirdPillar.sourceFunds.some(
-    (fund) => isTuleva(fund) && (fund.price + fund.unavailablePrice > 0 || fund.activeFund),
-  );
+  state.login.user;
 
 const mapStateToProps = (state) => ({
   secondPillarSourceFunds: [
@@ -255,6 +250,7 @@ const mapStateToProps = (state) => ({
   error: state.exchange.error,
   shouldRedirectToAml: shouldRedirectToAml(state),
 });
+
 const mapDispatchToProps = (dispatch) =>
   bindActionCreators(
     {
