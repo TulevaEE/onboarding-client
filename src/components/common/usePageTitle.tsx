@@ -9,12 +9,17 @@ export function usePageTitle(messageId: TranslationKey) {
   const intl = useIntl();
 
   useEffect(() => {
+    const previousTitle = document.title;
+
     const hasTranslation = intl.messages && intl.messages[messageId];
     const translatedTitle = hasTranslation ? intl.formatMessage({ id: messageId }) : '';
-
     const finalTitle = translatedTitle
       ? `${translatedTitle}${separator}${companyName}`
       : companyName;
     document.title = finalTitle;
-  }, []);
+
+    return () => {
+      document.title = previousTitle;
+    };
+  }, [intl, messageId]);
 }

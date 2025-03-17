@@ -892,5 +892,10 @@
   "fees.perYear": " per year",
 
   "pageTitle.withdrawals": "Withdrawals",
-  "pageTitle.contactDetails": "My details"
+  "pageTitle.contactDetails": "My details",
+  "pageTitle.capitalTransactions": "Member capital transactions",
+  "pageTitle.secondPillarTransactions": "II pillar transactions",
+  "pageTitle.thirdPillarTransactions": "III pillar transactions",
+  "pageTitle.secondPillarContributions": "II pillar contributions",
+  "pageTitle.thirdPillarContributions": "III pillar contributions"
 }

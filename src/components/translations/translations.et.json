@@ -894,5 +894,10 @@
   "fees.perYear": " aastas",
 
   "pageTitle.withdrawals": "Väljamaksed",
-  "pageTitle.contactDetails": "Minu andmed"
+  "pageTitle.contactDetails": "Minu andmed",
+  "pageTitle.capitalTransactions": "Liikmekapitali tehingud",
+  "pageTitle.secondPillarTransactions": "II samba tehingud",
+  "pageTitle.thirdPillarTransactions": "III samba tehingud",
+  "pageTitle.secondPillarContributions": "II samba sissemaksed",
+  "pageTitle.thirdPillarContributions": "III samba sissemaksed"
 }

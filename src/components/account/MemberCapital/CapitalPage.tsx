@@ -7,8 +7,11 @@ import { useCapitalEvents } from '../../common/apiHooks';
 import Table from '../../common/table';
 import { Euro } from '../../common/Euro';
 import { Shimmer } from '../../common/shimmer/Shimmer';
+import { usePageTitle } from '../../common/usePageTitle';
 
 export const CapitalPage: React.FunctionComponent = () => {
+  usePageTitle('pageTitle.capitalTransactions');
+
   const { data: capitalEvents } = useCapitalEvents();
 
   if (!capitalEvents) {
