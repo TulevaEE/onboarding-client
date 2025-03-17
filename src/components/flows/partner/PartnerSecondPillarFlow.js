@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { FormattedMessage } from 'react-intl';
+import { usePageTitle } from '../../common/usePageTitle';
 import SelectSources from '../secondPillar/selectSources';
 import ConfirmMandate from '../secondPillar/confirmMandate';
 import Success from '../secondPillar/success';
@@ -39,6 +40,10 @@ const steps = [
   },
 ];
 
-const PartnerSecondPillarFlow = () => <Flow flowPath={flowPath} steps={steps} />;
+const PartnerSecondPillarFlow = () => {
+  usePageTitle('pageTitle.secondPillarFlow');
+
+  return <Flow flowPath={flowPath} steps={steps} />;
+};
 
 export default PartnerSecondPillarFlow;

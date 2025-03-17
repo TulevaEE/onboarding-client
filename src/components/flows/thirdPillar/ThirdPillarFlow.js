@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { FormattedMessage } from 'react-intl';
+import { usePageTitle } from '../../common/usePageTitle';
 import ThirdPillarSetup from './ThirdPillarSetup';
 import ThirdPillarSelectSources from './ThirdPillarSelectSources';
 import AddressStep from '../common/AddressStep';
@@ -54,4 +55,9 @@ const steps = [
   },
 ];
 
-export default () => <Flow flowPath={flowPath} steps={steps} />;
+const thirdPillarFlow = () => {
+  usePageTitle('pageTitle.thirdPillarFlow');
+  return <Flow flowPath={flowPath} steps={steps} />;
+};
+
+export default thirdPillarFlow;
