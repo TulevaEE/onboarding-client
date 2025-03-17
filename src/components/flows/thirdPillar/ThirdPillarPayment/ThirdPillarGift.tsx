@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { captureException } from '@sentry/browser';
 import { redirectToPayment } from '../../../common/api';
 import { PaymentChannel } from '../../../common/apiModels';
+import { usePageTitle } from '../../../common/usePageTitle';
 import { PaymentAmountInput } from './PaymentAmountInput';
 import { OtherBankPaymentDetails } from './paymentDetails/OtherBankPaymentDetails';
 import { isValidPersonalCode } from './PersonalCode';
@@ -13,6 +14,8 @@ import { BankKey } from './types';
 import { PaymentBankButtons } from './PaymentBankButtons';
 
 export const ThirdPillarGift: React.FunctionComponent = () => {
+  usePageTitle('pageTitle.thirdPillarGift');
+
   const { formatMessage } = useIntl();
 
   const [paymentPersonalCode, setPaymentPersonalCode] = useState<string>('');

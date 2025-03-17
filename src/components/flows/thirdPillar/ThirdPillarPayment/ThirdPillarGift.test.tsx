@@ -44,7 +44,7 @@ describe('When a user is making a third pillar gift', () => {
   test('gift page is being shown', async () => {
     expect(
       // eslint-disable-next-line no-irregular-whitespace
-      await screen.findByText(/A.gift.to.a.loved.one’s.Tuleva.III.Pillar.Pension.Fund/),
+      await screen.findByText(/A.gift.to.a.loved.one’s.III.pillar.fund/),
     ).toBeInTheDocument();
     const makePayment = await makePaymentButton();
     expect(makePayment).toBeDisabled();

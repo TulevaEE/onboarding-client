@@ -4,15 +4,19 @@ import { Redirect } from 'react-router-dom';
 import { State } from '../../../../types';
 import { Payment } from './Payment';
 import { getAuthentication } from '../../../common/authenticationManager';
+import { usePageTitle } from '../../../common/usePageTitle';
 
 export const PaymentPage: React.FunctionComponent<{
   noThirdPillar: boolean;
-}> = ({ noThirdPillar }) => (
-  <>
-    {noThirdPillar && <Redirect to="/3rd-pillar-flow" />}
-    <Payment />
-  </>
-);
+}> = ({ noThirdPillar }) => {
+  usePageTitle('pageTitle.thirdPillarPayment');
+  return (
+    <>
+      {noThirdPillar && <Redirect to="/3rd-pillar-flow" />}
+      <Payment />
+    </>
+  );
+};
 
 const mapStateToProps = (state: State) => {
   const isAuthenticated = getAuthentication().isAuthenticated();

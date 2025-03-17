@@ -413,8 +413,8 @@
   "aml.occupation.retired": "Retired",
   "aml.occupation.unemployed": "Unemployed",
 
-  "thirdPillarPayment.title": "Payment instructions for Tuleva III pillar pension fund",
-  "thirdPillarPayment.giftTitle": "A gift to a loved one’s Tuleva III Pillar Pension Fund",
+  "thirdPillarPayment.title": "Contribution to Tuleva’s III pillar fund",
+  "thirdPillarPayment.giftTitle": "A gift to a loved one’s III pillar fund",
   "thirdPillarPayment.giftDescription": "Did you know that you can put the III pillar to work for your loved ones? Yes, it is also possible to make contributions to another person’s III pillar.",
 
   "thirdPillarPayment.RECURRING.swedbank": "How to set up a recurring payment in Swedbank",
@@ -894,11 +894,14 @@
   "pageTitle.accountPage": "My account",
   "pageTitle.secondPillarFlow": "II pillar",
   "pageTitle.thirdPillarFlow": "III pillar",
+  "pageTitle.secondPillarPayment": "II pillar contribution",
+  "pageTitle.thirdPillarPayment": "III pillar contribution",
+  "pageTitle.thirdPillarGift": "III pillar gift",
+  "pageTitle.secondPillarContributions": "II pillar contributions",
+  "pageTitle.thirdPillarContributions": "III pillar contributions",
   "pageTitle.withdrawals": "Withdrawals",
   "pageTitle.contactDetails": "My details",
   "pageTitle.capitalTransactions": "Member capital transactions",
   "pageTitle.secondPillarTransactions": "II pillar transactions",
-  "pageTitle.thirdPillarTransactions": "III pillar transactions",
-  "pageTitle.secondPillarContributions": "II pillar contributions",
-  "pageTitle.thirdPillarContributions": "III pillar contributions"
+  "pageTitle.thirdPillarTransactions": "III pillar transactions"
 }

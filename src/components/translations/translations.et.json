@@ -414,8 +414,8 @@
   "aml.occupation.retired": "Pensionär",
   "aml.occupation.unemployed": "Hetkel ei tööta",
 
-  "thirdPillarPayment.title": "Sissemakse Tuleva III samba pensionifondi",
-  "thirdPillarPayment.giftTitle": "Kingitus lähedase Tuleva III Samba Pensionifondi",
+  "thirdPillarPayment.title": "Sissemakse Tuleva III samba fondi",
+  "thirdPillarPayment.giftTitle": "Kingitus lähedase III samba fondi",
   "thirdPillarPayment.giftDescription": "Kas teadsid, et saad III samba tööle panna mitte ainult enda tuleviku tarbeks, vaid ka oma kõige kallimate jaoks? Jah, sissemakseid on võimalik teha ka teise inimese III sambasse.",
 
   "thirdPillarPayment.RECURRING.swedbank": "Püsimakse juhend Swedbankis",
@@ -896,11 +896,14 @@
   "pageTitle.accountPage": "Minu konto",
   "pageTitle.secondPillarFlow": "II sammas",
   "pageTitle.thirdPillarFlow": "III sammas",
+  "pageTitle.secondPillarPayment": "II samba sissemakse",
+  "pageTitle.thirdPillarPayment": "III samba sissemakse",
+  "pageTitle.thirdPillarGift": "III samba kingitus",
+  "pageTitle.secondPillarContributions": "II samba sissemaksed",
+  "pageTitle.thirdPillarContributions": "III samba sissemaksed",
   "pageTitle.withdrawals": "Väljamaksed",
   "pageTitle.contactDetails": "Minu andmed",
   "pageTitle.capitalTransactions": "Liikmekapitali tehingud",
   "pageTitle.secondPillarTransactions": "II samba tehingud",
-  "pageTitle.thirdPillarTransactions": "III samba tehingud",
-  "pageTitle.secondPillarContributions": "II samba sissemaksed",
-  "pageTitle.thirdPillarContributions": "III samba sissemaksed"
+  "pageTitle.thirdPillarTransactions": "III samba tehingud"
 }

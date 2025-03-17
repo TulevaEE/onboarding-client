@@ -178,7 +178,7 @@ const paymentStepHeading = () =>
   screen.findByRole(
     'heading',
     // eslint-disable-next-line no-irregular-whitespace
-    { name: /Payment instructions for Tuleva III pillar pension fund/i },
+    { name: /Contribution to Tuleva’s III pillar fund/i },
     { timeout: 10_000 },
   );
 

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, Redirect } from 'react-router-dom';
 import { AuthenticationLoader, ErrorMessage, Radio } from '../../common';
+import { usePageTitle } from '../../common/usePageTitle';
 import { useSecondPillarPaymentRate } from './hooks';
 import { PaymentRate } from './types';
 import { useMandateDeadlines, useMe } from '../../common/apiHooks';
@@ -9,6 +10,8 @@ import { SecondPillarPaymentRateTaxWin } from './SecondPillarPaymentRateTaxWin';
 import { formatDateYear } from '../../common/dateFormatter';
 
 export const SecondPillarPaymentRate: React.FunctionComponent = () => {
+  usePageTitle('pageTitle.secondPillarPayment');
+
   const { data: user } = useMe();
   const pendingPaymentRate =
     user?.secondPillarPaymentRates.pending || user?.secondPillarPaymentRates.current || null;
