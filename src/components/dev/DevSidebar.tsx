@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps, useDispatch } from 'react-redux';
 import { User, UserConversion } from '../common/apiModels';
-import styles from './DevSidebar.module.scss';
 import { GET_USER_CONVERSION_SUCCESS, GET_USER_SUCCESS } from '../login/constants';
 
 interface RootState {
@@ -55,11 +54,15 @@ const DevSidebar: React.FC<StateProperties> = ({ conversion, userData }) => {
   ) {
     if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
       return (
-        <div key={path}>
-          <label onClick={() => toggleCollapse(path)} style={{ cursor: 'pointer' }}>
-            {isCollapsed ? '[+]' : '[-]'} {key}
+        <div key={path} className="mb-3">
+          <label
+            onClick={() => toggleCollapse(path)}
+            style={{ cursor: 'pointer' }}
+            className="d-inline-block fs-6 fw-semibold"
+          >
+            <span className="ff-system fw-normal">{isCollapsed ? '[+]' : '[−]'}</span> {key}
           </label>
-          {!isCollapsed && <div style={{ marginLeft: '20px' }}>{renderPaths(value, path)}</div>}
+          {!isCollapsed && <div className="ms-3 mt-3">{renderPaths(value, path)}</div>}
         </div>
       );
     }
@@ -91,43 +94,52 @@ const DevSidebar: React.FC<StateProperties> = ({ conversion, userData }) => {
   };
 
   const renderBooleanField = (path: string, value: boolean) => (
-    <div key={path} className={styles.fieldContainer}>
-      <div className={styles.label}>
-        <label>{path}:</label>
-      </div>
-      <div className={styles.radioGroup}>
-        <label>
+    <div key={path} className="mb-3">
+      <label className="form-label fw-normal">{path}</label>
+      <div>
+        <div className="form-check form-check-inline">
           <input
             type="radio"
             name={path}
+            className="form-check-input"
             checked={value}
             onChange={() => handleFieldChange(path, true)}
+            id={`${path}-true`}
             data-testid={`${path}-true`}
           />
-          True
-        </label>
-        <label>
+          <label className="form-check-label" htmlFor={`${path}-true`}>
+            True
+          </label>
+        </div>
+        <div className="form-check form-check-inline">
           <input
             type="radio"
             name={path}
+            className="form-check-input"
             checked={!value}
             onChange={() => handleFieldChange(path, false)}
+            id={`${path}-false`}
             data-testid={`${path}-false`}
           />
-          False
-        </label>
+          <label className="form-check-label" htmlFor={`${path}-false`}>
+            False
+          </label>
+        </div>
       </div>
     </div>
   );
 
   const renderTextField = (path: string, value: string) => (
-    <div key={path} className={styles.fieldContainer}>
-      <label className={styles.label}>{path}:</label>
+    <div key={path} className="mb-3">
+      <label htmlFor={`${path}-input`} className="form-label fw-normal">
+        {path}
+      </label>
       <input
         type="text"
-        className={styles.textField}
+        className="form-control"
         value={value}
         onChange={(e) => handleFieldChange(path, e.target.value)}
+        id={`${path}-input`}
         data-testid={`${path}-input`}
       />
     </div>
@@ -218,42 +230,55 @@ const DevSidebar: React.FC<StateProperties> = ({ conversion, userData }) => {
   };
 
   return (
-    <aside className={styles.devSidebar}>
-      <h2>User Conversion Data</h2>
-      {renderPaths(editableConversion as unknown as NestedStateField, 'userConversion')}
-      <button
-        type="button"
-        className={styles.button}
-        onClick={() =>
-          dispatch({ type: GET_USER_CONVERSION_SUCCESS, userConversion: editableConversion })
-        }
-      >
-        Update Conversion
-      </button>
-      <h2>User Data</h2>
-      {renderPaths(editableUser as unknown as NestedStateField, 'user')}
-      <button
-        type="button"
-        className={styles.button}
-        onClick={() => dispatch({ type: GET_USER_SUCCESS, user: editableUser })}
-      >
-        Update User
-      </button>
-
-      <div>
-        <button className={styles.button} type="button" onClick={exportState}>
-          Export State
-        </button>
-        <input
-          type="file"
-          onChange={importState}
-          style={{ display: 'none' }}
-          id="fileInput"
-          accept=".json"
-        />
-        <label htmlFor="fileInput" className={`${styles.button} ${styles.buttonLabel}`}>
-          Import State
-        </label>
+    <aside className="offcanvas offcanvas-end show bg-gray-2">
+      <div className="offcanvas-body">
+        <h2 className="m-0 mb-3">User conversion data</h2>
+        {renderPaths(editableConversion as unknown as NestedStateField, 'userConversion')}
+        <div className="d-grid">
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() =>
+              dispatch({ type: GET_USER_CONVERSION_SUCCESS, userConversion: editableConversion })
+            }
+          >
+            Update conversion
+          </button>
+        </div>
+        <hr className="my-3" />
+        <h2 className="mb-3">User data</h2>
+        {renderPaths(editableUser as unknown as NestedStateField, 'user')}
+        <div className="d-flex flex-column gap-3">
+          <div className="d-grid">
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => dispatch({ type: GET_USER_SUCCESS, user: editableUser })}
+            >
+              Update user
+            </button>
+          </div>
+          <hr />
+          <div className="d-flex gap-2">
+            <button
+              className="btn btn-sm btn-outline-primary flex-fill"
+              type="button"
+              onClick={exportState}
+            >
+              Export state
+            </button>
+            <input
+              type="file"
+              onChange={importState}
+              style={{ display: 'none' }}
+              id="fileInput"
+              accept=".json"
+            />
+            <label htmlFor="fileInput" className="btn btn-sm btn-outline-primary flex-fill">
+              Import state
+            </label>
+          </div>
+        </div>
       </div>
     </aside>
   );

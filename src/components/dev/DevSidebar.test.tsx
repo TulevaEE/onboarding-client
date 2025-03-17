@@ -43,10 +43,10 @@ describe('DevSidebar', () => {
 
   test('renders user conversion and user data correctly', async () => {
     await waitFor(() => {
-      expect(screen.getByText('User Conversion Data')).toBeInTheDocument();
+      expect(screen.getByText('User conversion data')).toBeInTheDocument();
     });
     await waitFor(() => {
-      expect(screen.getByText('User Data')).toBeInTheDocument();
+      expect(screen.getByText('User data')).toBeInTheDocument();
     });
   });
 
@@ -56,7 +56,7 @@ describe('DevSidebar', () => {
     userEvent.clear(input);
     userEvent.type(input, updatedValue);
 
-    const updateButton = screen.getByRole('button', { name: 'Update Conversion' });
+    const updateButton = screen.getByRole('button', { name: 'Update conversion' });
     userEvent.click(updateButton);
 
     await waitFor(() => {
@@ -73,18 +73,18 @@ describe('DevSidebar', () => {
   test('imports state from a file and updates state accordingly', async () => {
     const state = {
       userConversion: {
-        exampleConversionField: 'Imported Conversion Value',
+        exampleConversionField: 'Imported conversion value',
         exampleBooleanField: true,
       },
       user: {
-        exampleUserField: 'Imported User Info',
+        exampleUserField: 'Imported user info',
       },
     };
     const fileContent = JSON.stringify(state);
 
     const file = new File([fileContent], 'state.json', { type: 'application/json' });
 
-    const fileInput = screen.getByLabelText('Import State');
+    const fileInput = screen.getByLabelText('Import state');
     userEvent.upload(fileInput, file);
 
     await waitFor(() => {
@@ -132,7 +132,7 @@ describe('DevSidebar', () => {
 
   test('exports state to a file', async () => {
     global.URL.createObjectURL = jest.fn();
-    const exportButton = screen.getByRole('button', { name: 'Export State' });
+    const exportButton = screen.getByRole('button', { name: 'Export state' });
     userEvent.click(exportButton);
 
     await waitFor(() => {
@@ -141,12 +141,12 @@ describe('DevSidebar', () => {
   });
 
   test('updates user data and dispatches GET_USER_SUCCESS', async () => {
-    const updatedUserInfo = 'Updated User Info';
+    const updatedUserInfo = 'Updated user info';
     const userInput = await screen.findByTestId('user.exampleUserField-input');
     userEvent.clear(userInput);
     userEvent.type(userInput, updatedUserInfo);
 
-    const updateUserButton = screen.getByRole('button', { name: 'Update User' });
+    const updateUserButton = screen.getByRole('button', { name: 'Update user' });
     userEvent.click(updateUserButton);
 
     await waitFor(() => {
@@ -168,7 +168,7 @@ describe('DevSidebar', () => {
       expect(radioTrue).toBeChecked();
     });
 
-    const updateConversionButton = screen.getByRole('button', { name: 'Update Conversion' });
+    const updateConversionButton = screen.getByRole('button', { name: 'Update conversion' });
     userEvent.click(updateConversionButton);
 
     await waitFor(() => {
