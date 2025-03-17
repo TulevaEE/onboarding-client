@@ -4,6 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
+import { usePageTitle } from '../common/usePageTitle';
 
 import { ErrorMessage } from '../common';
 import { Shimmer } from '../common/shimmer/Shimmer';
@@ -40,6 +41,8 @@ export function AccountPage(
     shouldRedirectToAml: false,
   },
 ) {
+  usePageTitle('pageTitle.accountPage');
+
   const getData = () => {
     const { shouldGetMemberCapital, onGetMemberCapital } = props;
 
