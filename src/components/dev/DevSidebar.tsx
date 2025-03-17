@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps, useDispatch } from 'react-redux';
+import _ from 'lodash';
 import { User, UserConversion } from '../common/apiModels';
 import { GET_USER_CONVERSION_SUCCESS, GET_USER_SUCCESS } from '../login/constants';
 
@@ -239,7 +240,10 @@ const DevSidebar: React.FC<StateProperties> = ({ conversion, userData }) => {
             type="button"
             className="btn btn-primary"
             onClick={() =>
-              dispatch({ type: GET_USER_CONVERSION_SUCCESS, userConversion: editableConversion })
+              dispatch({
+                type: GET_USER_CONVERSION_SUCCESS,
+                userConversion: _.cloneDeep(editableConversion),
+              })
             }
           >
             Update conversion
@@ -253,7 +257,7 @@ const DevSidebar: React.FC<StateProperties> = ({ conversion, userData }) => {
             <button
               type="button"
               className="btn btn-primary"
-              onClick={() => dispatch({ type: GET_USER_SUCCESS, user: editableUser })}
+              onClick={() => dispatch({ type: GET_USER_SUCCESS, user: _.cloneDeep(editableUser) })}
             >
               Update user
             </button>
