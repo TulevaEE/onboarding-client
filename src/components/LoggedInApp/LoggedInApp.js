@@ -18,6 +18,7 @@ import {
 } from '../flows/cancellation/CancellationFlow';
 import { Footer } from './footer';
 import { ContactDetailsPage } from '../contact-details/ContactDetailsPage';
+import { ContactDetailsGatekeep } from '../contact-details/ContactDetailsGatekeep';
 import AmlPage, { actions as amlActions } from '../aml';
 import SignUpPage from '../newUserFlow';
 import { TransactionPageThirdPillar } from '../account/TransactionSection/TransactionPageThirdPillar';
@@ -92,11 +93,39 @@ export class LoggedInApp extends PureComponent {
             <Route path={AML_PATH} component={AmlPage} />
             <Route path="/join" component={SignUpPage} />
             <Route path="/contact-details" component={ContactDetailsPage} />
-            <Route path="/2nd-pillar-flow" component={SecondPillarFlow} />
-            <Route path="/3rd-pillar-flow" component={ThirdPillarFlow} />
-            <Route path="/partner/2nd-pillar-flow" component={PartnerSecondPillarFlow} />
+            <Route
+              path="/2nd-pillar-flow"
+              render={() => (
+                <ContactDetailsGatekeep>
+                  <SecondPillarFlow />
+                </ContactDetailsGatekeep>
+              )}
+            />
+            <Route
+              path="/3rd-pillar-flow"
+              render={() => (
+                <ContactDetailsGatekeep>
+                  <ThirdPillarFlow />
+                </ContactDetailsGatekeep>
+              )}
+            />
+            <Route
+              path="/partner/2nd-pillar-flow"
+              render={() => (
+                <ContactDetailsGatekeep>
+                  <PartnerSecondPillarFlow />
+                </ContactDetailsGatekeep>
+              )}
+            />
             <Route path="/partner/2nd-pillar-flow-success" component={Success} />
-            <Route path="/partner/3rd-pillar-flow" component={PartnerThirdPillarFlow} />
+            <Route
+              path="/partner/3rd-pillar-flow"
+              render={() => (
+                <ContactDetailsGatekeep>
+                  <PartnerThirdPillarFlow />
+                </ContactDetailsGatekeep>
+              )}
+            />
             <Route path="/partner/3rd-pillar-flow-success" component={BackToPartner} />
             <Route path="/3rd-pillar-payment" component={ThirdPillarPaymentPage} />
             <Route path="/3rd-pillar-success" component={ThirdPillarSuccess} />
@@ -107,14 +136,36 @@ export class LoggedInApp extends PureComponent {
             <Route path="/2nd-pillar-contributions" component={ContributionPageSecondPillar} />
             <Route path="/3rd-pillar-contributions" component={ContributionPageThirdPillar} />
             <Route path="/2nd-pillar-upsell" component={SecondPillarUpsellCard} />
-            <Route path="/2nd-pillar-payment-rate" component={SecondPillarPaymentRate} />
+            <Route
+              path="/2nd-pillar-payment-rate"
+              component={SecondPillarPaymentRate}
+              render={() => (
+                <ContactDetailsGatekeep>
+                  <SecondPillarPaymentRate />
+                </ContactDetailsGatekeep>
+              )}
+            />
             <Route path="/capital" component={CapitalPage} />
             <Route
               path="/2nd-pillar-payment-rate-success"
               component={SecondPillarPaymentRateSuccess}
             />
-            <Route path={cancellationFlowPath} component={CancellationFlow} />
-            <Route path="/withdrawals" component={Withdrawals} />
+            <Route
+              path={cancellationFlowPath}
+              component={() => (
+                <ContactDetailsGatekeep>
+                  <CancellationFlow />
+                </ContactDetailsGatekeep>
+              )}
+            />
+            <Route
+              path="/withdrawals"
+              render={() => (
+                <ContactDetailsGatekeep>
+                  <Withdrawals />
+                </ContactDetailsGatekeep>
+              )}
+            />
 
             <Redirect exact path="/" to={ACCOUNT_PATH} />
           </Switch>

@@ -344,6 +344,7 @@
   "new.user.flow.new.user.alternative.no.benefit.join": "Tuleva liikmeks astumine ei too sulle rahalist boonust",
   "new.user.flow.new.user.alternative.you.can.still.join": "Võid astuda liikmeks kui soovid Tuleva ideed toetada ja oma häälega sellest märku anda",
   "update.user.details.title": "My details",
+  "update.user.details.mandatoryUpdate": "According to instructions from Pensionikeskuse, we require our clients to update their info at least once a year. Please help us in this and check your details below. Thank you!",
   "update.user.save": "Save",
   "update.user.thanks": "Thanks!",
   "update.user.success.message": "Your details have been updated.",

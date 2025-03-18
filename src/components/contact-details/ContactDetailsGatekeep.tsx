@@ -1,9 +1,13 @@
 import moment from 'moment';
-import { Redirect, RouteComponentProps, useLocation } from 'react-router-dom';
+import { Redirect, useLocation } from 'react-router-dom';
 import { PropsWithChildren } from 'react';
+import { LocationDescriptor } from 'history';
 import { useMe } from '../common/apiHooks';
 import { User } from '../common/apiModels';
 
+export type ContactDetailsRedirectState = { from: string; mandatoryUpdate: true };
+
+// TODO II III pillar specific only email + phone
 export const ContactDetailsGatekeep = ({ children }: PropsWithChildren<unknown>) => {
   const { data: user } = useMe();
 
@@ -14,7 +18,12 @@ export const ContactDetailsGatekeep = ({ children }: PropsWithChildren<unknown>)
   }
 
   if (!areContactDetailsUpToDate(user) && hasPensionAccount(user)) {
-    return <Redirect to="/contact-details" />;
+    const redirectLocation: LocationDescriptor<ContactDetailsRedirectState> = {
+      pathname: '/contact-details',
+      state: { from: location.pathname, mandatoryUpdate: true },
+    };
+
+    return <Redirect to={redirectLocation} />;
   }
 
   return <>{children}</>;
