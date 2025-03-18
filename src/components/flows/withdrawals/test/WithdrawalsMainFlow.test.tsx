@@ -18,10 +18,11 @@ import {
   assertFundPensionCalculations,
   assertFundPensionMandate,
   assertMandateCount,
+  assertPartialWithdrawalCalculations,
   assertPartialWithdrawalMandate,
-  assertTotalTaxText,
   confirmAndSignAndAssertDone,
   enterIban,
+  fundPensionCheckbox,
   nextButton,
   partialWithdrawalSizeInput,
   singleWithdrawalCheckbox,
@@ -66,13 +67,13 @@ describe('withdrawals flow with both pillars', () => {
       await screen.findByText(/Withdraw from the entire pension holding/i),
     ).toBeInTheDocument();
 
-    await assertFundPensionCalculations('503 € per month');
+    await assertFundPensionCalculations('~503 € per month');
 
     userEvent.click(await singleWithdrawalCheckbox());
     userEvent.type(await partialWithdrawalSizeInput(), '20000');
-    assertTotalTaxText('−2 000.00 €');
+    assertPartialWithdrawalCalculations('20 000.00 €', '−2 000.00 €');
 
-    await assertFundPensionCalculations('420 € per month');
+    await assertFundPensionCalculations('~420 € per month');
 
     userEvent.click(nextButton());
 
@@ -134,7 +135,7 @@ describe('withdrawals flow with both pillars', () => {
       await screen.findByText(/Withdraw from the entire pension holding/i),
     ).toBeInTheDocument();
 
-    await assertFundPensionCalculations('503 € per month');
+    await assertFundPensionCalculations('~503 € per month');
 
     userEvent.click(nextButton());
 
@@ -156,6 +157,72 @@ describe('withdrawals flow with both pillars', () => {
     await confirmAndSignAndAssertDone();
 
     assertDoneScreenFundPension();
+    assertDoneScreenSecondPillarWarning();
+  }, 20_000);
+
+  test('reaches final confirmation step with only single withdrawal', async () => {
+    expect(await screen.findByText(/60 years old/i)).toBeInTheDocument();
+    expect(await screen.findByText(/under preferential conditions/i)).toBeInTheDocument();
+    expect(screen.queryByText(/you might receive/i)).not.toBeInTheDocument();
+
+    expect(
+      await screen.findByText(/Withdraw from the entire pension holding/i),
+    ).toBeInTheDocument();
+
+    await assertFundPensionCalculations('~503 € per month');
+
+    userEvent.click(await singleWithdrawalCheckbox());
+    userEvent.type(await partialWithdrawalSizeInput(), '120699.36'); // max amount
+    assertPartialWithdrawalCalculations('120 699.36 €', '−12 069.94 €');
+
+    await assertFundPensionCalculations('0 € per month');
+    userEvent.click(await fundPensionCheckbox());
+    await assertFundPensionCalculations('0 € per month');
+
+    userEvent.click(nextButton());
+
+    await enterIban('EE591254471322749514');
+    userEvent.click(nextButton());
+
+    expect(
+      await screen.findByText(/I submit the following applications and am aware of their terms/i),
+    ).toBeInTheDocument();
+
+    expect(await screen.findByText(/EE591254471322749514/i)).toBeInTheDocument();
+    expect(await screen.findByText('EST')).toBeInTheDocument();
+
+    assertMandateCount(2);
+
+    await assertPartialWithdrawalMandate(
+      'SECOND',
+      [
+        {
+          fundName: 'Tuleva World Stocks Pension Fund',
+          liquidationAmount: '100%',
+        },
+        {
+          fundName: 'Swedbank Pension Fund K60',
+          liquidationAmount: '100%',
+        },
+      ],
+      '103 500 €', // 115 000 - 10% tax
+    );
+
+    await assertPartialWithdrawalMandate(
+      'THIRD',
+      [
+        {
+          fundName: 'Tuleva III Samba Pensionifond',
+          liquidationAmount: '7294.71 units', // 5699.36 / nav 0.7813
+        },
+      ],
+      '5 129 €', // 5699.36 - 10% tax
+    );
+
+    await confirmAndSignAndAssertDone();
+
+    assertDoneScreenPartialWithdrawal('SECOND');
+    assertDoneScreenPartialWithdrawal('THIRD');
     assertDoneScreenSecondPillarWarning();
   }, 20_000);
 
@@ -215,18 +282,18 @@ describe('withdrawals flow with both pillars', () => {
       await screen.findByText(/Withdraw from the entire pension holding/i),
     ).toBeInTheDocument();
 
-    await assertFundPensionCalculations('503 € per month');
+    await assertFundPensionCalculations('~503 € per month');
 
     userEvent.click(await screen.findByLabelText(/Withdraw only from II pillar/i));
 
-    await assertFundPensionCalculations('479 € per month');
+    await assertFundPensionCalculations('~479 € per month');
 
     userEvent.click(await singleWithdrawalCheckbox());
     userEvent.type(await partialWithdrawalSizeInput(), '20000');
-    assertTotalTaxText('−2 000.00 €');
+    assertPartialWithdrawalCalculations('20 000.00 €', '−2 000.00 €');
 
     const finalFundPensionSize = '396 €';
-    await assertFundPensionCalculations(`${finalFundPensionSize} per month`);
+    await assertFundPensionCalculations(`~${finalFundPensionSize} per month`);
     userEvent.click(nextButton());
 
     await enterIban('EE591254471322749514');
@@ -259,12 +326,12 @@ describe('withdrawals flow with both pillars', () => {
       await screen.findByText(/Withdraw from the entire pension holding/i),
     ).toBeInTheDocument();
 
-    await assertFundPensionCalculations('503 € per month');
+    await assertFundPensionCalculations('~503 € per month');
 
     userEvent.click(await screen.findByLabelText(/Withdraw only from II pillar/i));
 
     const finalFundPensionSize = '479 €';
-    await assertFundPensionCalculations(`${finalFundPensionSize} per month`);
+    await assertFundPensionCalculations(`~${finalFundPensionSize} per month`);
 
     userEvent.click(nextButton());
 
@@ -283,18 +350,18 @@ describe('withdrawals flow with both pillars', () => {
       await screen.findByText(/Withdraw from the entire pension holding/i),
     ).toBeInTheDocument();
 
-    await assertFundPensionCalculations('503 € per month');
+    await assertFundPensionCalculations('~503 € per month');
 
     userEvent.click(await screen.findByLabelText(/Withdraw only from III pillar/i));
 
-    await assertFundPensionCalculations('24 € per month');
+    await assertFundPensionCalculations('~24 € per month');
 
     userEvent.click(await singleWithdrawalCheckbox());
     userEvent.type(await partialWithdrawalSizeInput(), '1000');
-    assertTotalTaxText('−100.00 €');
+    assertPartialWithdrawalCalculations('1 000.00 €', '−100.00 €');
 
     const finalFundPensionSize = '20 €';
-    await assertFundPensionCalculations(`${finalFundPensionSize} per month`);
+    await assertFundPensionCalculations(`~${finalFundPensionSize} per month`);
 
     userEvent.click(nextButton());
 
@@ -324,12 +391,12 @@ describe('withdrawals flow with both pillars', () => {
       await screen.findByText(/Withdraw from the entire pension holding/i),
     ).toBeInTheDocument();
 
-    await assertFundPensionCalculations('503 € per month');
+    await assertFundPensionCalculations('~503 € per month');
 
     userEvent.click(await screen.findByLabelText(/Withdraw only from III pillar/i));
 
     const finalFundPensionSize = '24 €';
-    await assertFundPensionCalculations(`${finalFundPensionSize} per month`);
+    await assertFundPensionCalculations(`~${finalFundPensionSize} per month`);
 
     userEvent.click(nextButton());
 
@@ -422,13 +489,13 @@ describe('withdrawals flow with only second pillar and arrests/bankruptcy', () =
       await screen.findByText(/Your holdings in II pillar/i, { exact: false }),
     ).toBeInTheDocument();
 
-    await assertFundPensionCalculations('479 € per month');
+    await assertFundPensionCalculations('~479 € per month');
 
     userEvent.click(await singleWithdrawalCheckbox());
     userEvent.type(await partialWithdrawalSizeInput(), '50000');
-    assertTotalTaxText('−5 000.00 €');
+    assertPartialWithdrawalCalculations('50 000.00 €', '−5 000.00 €');
 
-    await assertFundPensionCalculations('271 € per month');
+    await assertFundPensionCalculations('~271 € per month');
 
     userEvent.click(nextButton());
 

@@ -102,17 +102,30 @@ export const assertFundPensionCalculations = async (
   const fundPensionCard = screen.getByRole('region', {
     name: /Receive monthly fund pension payments/i,
   });
+  const summaryBox = screen.getByRole('region', { name: /Withdrawal summary/i });
 
   expect(within(explanationText).getByText(liquidatedMonthlyPercentage)).toBeInTheDocument();
   expect(
     within(fundPensionCard).getByText(new RegExp(fundPensionMonthlySize, 'i')),
   ).toBeInTheDocument();
+  expect(within(summaryBox).getByText(new RegExp(fundPensionMonthlySize, 'i'))).toBeInTheDocument();
   expect(screen.getByText(returnsRegex)).toBeInTheDocument();
 };
 
-export const assertTotalTaxText = (amount: string) => {
+export const assertPartialWithdrawalCalculations = (
+  withdrawalAmount: string,
+  taxAmount: string,
+) => {
   const taxText = screen.getByText(/Partial withdrawal will be subject to 10% income tax/i);
-  expect(within(taxText).getByText(amount)).toBeInTheDocument();
+  expect(within(taxText).getByText(taxAmount)).toBeInTheDocument();
+
+  const summaryBox = screen.getByRole('region', { name: /Withdrawal summary/i });
+  const withdrawImmediately = within(summaryBox).getByText(/Withdraw immediately/i);
+  expect(withdrawImmediately).toBeInTheDocument();
+  const payIncomeTax = within(summaryBox).getByText(/and pay income tax on it/i);
+  expect(payIncomeTax).toBeInTheDocument();
+  expect(within(summaryBox).getByText(taxAmount)).toBeInTheDocument();
+  expect(within(summaryBox).getByText(withdrawalAmount)).toBeInTheDocument();
 };
 
 export const assertFundPensionMandate = async (

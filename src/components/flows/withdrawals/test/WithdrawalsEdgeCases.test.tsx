@@ -18,7 +18,7 @@ import {
   assertFundPensionMandate,
   assertMandateCount,
   assertPartialWithdrawalMandate,
-  assertTotalTaxText,
+  assertPartialWithdrawalCalculations,
   confirmAndSignAndAssertDone,
   confirmAndSignAndAssertFailed,
   enterIban,
@@ -73,17 +73,17 @@ describe('withdrawals flow before early retirement age', () => {
     ).toBeInTheDocument();
 
     await assertFundPensionCalculations(
-      '457 € per month',
+      '~457 € per month',
       '0.38%',
       /will earn returns for the next 22 years/i,
     );
 
     userEvent.click(await singleWithdrawalCheckbox());
     userEvent.type(await partialWithdrawalSizeInput(), '20000');
-    assertTotalTaxText('−2 000.00 €');
+    assertPartialWithdrawalCalculations('20 000.00 €', '−2 000.00 €');
 
     await assertFundPensionCalculations(
-      '381 € per month',
+      '~381 € per month',
       '0.38%',
       /will earn returns for the next 22 years/i,
     );
@@ -142,7 +142,7 @@ describe('withdrawals flow at 55 withdrawing only third pillar', () => {
     );
 
     userEvent.type(await partialWithdrawalSizeInput(), '1000');
-    assertTotalTaxText('−100.00 €');
+    assertPartialWithdrawalCalculations('1 000.00 €', '−100.00 €');
 
     await assertFundPensionCalculations(
       '16 € per month',

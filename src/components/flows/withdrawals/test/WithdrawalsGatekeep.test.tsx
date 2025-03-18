@@ -1,19 +1,15 @@
 import { setupServer } from 'msw/node';
-import { waitFor, screen } from '@testing-library/react';
+import { waitFor } from '@testing-library/react';
 import { Route } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
-import userEvent from '@testing-library/user-event';
 import { initializeConfiguration } from '../../../config/config';
 import LoggedInApp from '../../../LoggedInApp';
 import { createDefaultStore, login, renderWrapped } from '../../../../test/utils';
 import {
   fundPensionStatusBackend,
-  pensionAccountStatementBackend,
   userConversionBackend,
   useTestBackendsExcept,
-  withdrawalsEligibilityBackend,
 } from '../../../../test/backend';
-import { assertFundPensionCalculations, assertTotalTaxText, nextButton } from './utils';
 
 const server = setupServer();
 let history: History;
