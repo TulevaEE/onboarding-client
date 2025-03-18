@@ -6,6 +6,10 @@ export function getValueSum(funds: SourceFund[]): number {
 }
 
 export function getWeightedAverageFee(funds: SourceFund[]): number {
+  if (funds.length === 0) {
+    return 0;
+  }
+
   const valueSum = getValueSum(funds);
   if (valueSum === 0) {
     const arithmeticMean =
