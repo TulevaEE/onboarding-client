@@ -103,15 +103,13 @@ export const WithdrawalsProvider = ({
   const secondPillarSourceFunds = sourceFunds?.filter((fund) => fund.pillar === 2);
   const thirdPillarSourceFunds = sourceFunds?.filter((fund) => fund.pillar === 3);
 
-  const totalSecondPillar = (secondPillarSourceFunds ?? []).reduce(
-    (acc, fund) => acc + fund.price,
-    0,
+  const totalSecondPillar = parseFloat(
+    (secondPillarSourceFunds ?? []).reduce((acc, fund) => acc + fund.price, 0).toFixed(2),
   );
-  const totalThirdPillar = (thirdPillarSourceFunds ?? []).reduce(
-    (acc, fund) => acc + fund.price,
-    0,
+  const totalThirdPillar = parseFloat(
+    (thirdPillarSourceFunds ?? []).reduce((acc, fund) => acc + fund.price, 0).toFixed(2),
   );
-  const totalBothPillars = totalSecondPillar + totalThirdPillar;
+  const totalBothPillars = parseFloat((totalSecondPillar + totalThirdPillar).toFixed(2));
 
   const pensionHoldings = {
     totalSecondPillar,
