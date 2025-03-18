@@ -72,21 +72,27 @@ describe('withdrawals flow before early retirement age', () => {
       await screen.findByText(/Withdraw from the entire pension holding/i),
     ).toBeInTheDocument();
 
-    await assertFundPensionCalculations(
-      '~457 € per month',
-      '0.38%',
-      /will earn returns for the next 22 years/i,
-    );
+    await assertFundPensionCalculations({
+      fundPensionMonthlySize: '~457 € per month',
+      liquidatedMonthlyPercentage: '0.38%',
+      returnsRegex: /will earn returns for the next 22 years/i,
+      assertSummaryBox: false,
+    });
 
     userEvent.click(await singleWithdrawalCheckbox());
     userEvent.type(await partialWithdrawalSizeInput(), '20000');
-    assertPartialWithdrawalCalculations('20 000.00 €', '−2 000.00 €');
+    assertPartialWithdrawalCalculations({
+      withdrawalAmount: '20 000.00 €',
+      taxAmount: '−2 000.00 €',
+      assertSummaryBox: false,
+    });
 
-    await assertFundPensionCalculations(
-      '~381 € per month',
-      '0.38%',
-      /will earn returns for the next 22 years/i,
-    );
+    await assertFundPensionCalculations({
+      fundPensionMonthlySize: '~381 € per month',
+      liquidatedMonthlyPercentage: '0.38%',
+      returnsRegex: /will earn returns for the next 22 years/i,
+      assertSummaryBox: false,
+    });
 
     expect(nextButton()).toBeDisabled();
 
@@ -135,20 +141,20 @@ describe('withdrawals flow at 55 withdrawing only third pillar', () => {
       }),
     ).toBeInTheDocument();
 
-    await assertFundPensionCalculations(
-      '19 € per month',
-      '0.33%',
-      /will earn returns for the next 25 years/i,
-    );
+    await assertFundPensionCalculations({
+      fundPensionMonthlySize: '19 € per month',
+      liquidatedMonthlyPercentage: '0.33%',
+      returnsRegex: /will earn returns for the next 25 years/i,
+    });
 
     userEvent.type(await partialWithdrawalSizeInput(), '1000');
-    assertPartialWithdrawalCalculations('1 000.00 €', '−100.00 €');
+    assertPartialWithdrawalCalculations({ withdrawalAmount: '1 000.00 €', taxAmount: '−100.00 €' });
 
-    await assertFundPensionCalculations(
-      '16 € per month',
-      '0.33%',
-      /will earn returns for the next 25 years/i,
-    );
+    await assertFundPensionCalculations({
+      fundPensionMonthlySize: '16 € per month',
+      liquidatedMonthlyPercentage: '0.33%',
+      returnsRegex: /will earn returns for the next 25 years/i,
+    });
 
     userEvent.click(nextButton());
 
