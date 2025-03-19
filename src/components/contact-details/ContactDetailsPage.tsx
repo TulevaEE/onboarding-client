@@ -9,13 +9,13 @@ import { ContactDetailsRedirectState } from './ContactDetailsGatekeep';
 
 export const ContactDetailsPage = () => {
   const dispatch = useDispatch();
-  const location = useLocation<ContactDetailsRedirectState>();
+  const location = useLocation<ContactDetailsRedirectState | undefined>();
 
   const updateUserSuccess = useSelector((state: State) => state.contactDetails.updateUserSuccess);
 
   // user is redux form specific value
   const saveUser = (user: unknown) => {
-    if (location.state.updateOnlyEmailAndPhone) {
+    if (location.state?.updateOnlyEmailAndPhone) {
       dispatch(updateUserEmailAndPhone(user));
     } else {
       dispatch(updateUser(user));
@@ -25,17 +25,17 @@ export const ContactDetailsPage = () => {
   usePageTitle('pageTitle.contactDetails');
 
   if (updateUserSuccess) {
-    if ('referrer' in location.state && location.state.referrer) {
-      return <Redirect to={location.state.referrer} />;
+    if (location.state && location.state?.from) {
+      return <Redirect to={location.state.from} />;
     }
   }
 
   return (
-    <div className="col-sm-8 col-md-6 col-lg-5 mx-auto">
+    <div className="col-sm-10 col-md-8 col-lg-6 mx-auto">
       <h1 className="mb-4">
         <FormattedMessage id="update.user.details.title" />
       </h1>
-      {location.state.mandatoryUpdate && (
+      {location.state?.mandatoryUpdate && (
         <p className="mb-5">
           <FormattedMessage id="update.user.details.mandatoryUpdate" />
         </p>

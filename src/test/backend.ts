@@ -1,12 +1,14 @@
 import { DefaultRequestMultipartBody, rest, RestRequest } from 'msw';
 import { SetupServerApi } from 'msw/node';
 import queryString from 'qs';
+import { isEqual } from 'lodash';
 import {
   Application,
   CapitalEvent,
   Conversion,
   FundBalance,
   FundStatus,
+  User,
   UserConversion,
 } from '../components/common/apiModels';
 import { anAuthenticationManager } from '../components/common/authenticationManagerFixture';
@@ -322,7 +324,11 @@ export function partnerAuthenticationBackend(server: SetupServerApi): void {
   );
 }
 
-export function userBackend(server: SetupServerApi, overrides = {}): void {
+export function userBackend(
+  server: SetupServerApi,
+  overrides = {},
+  expectedUser: Partial<User> = mockUser,
+): void {
   server.use(
     rest.get('http://localhost/v1/me', (req, res, ctx) =>
       res(
@@ -332,6 +338,18 @@ export function userBackend(server: SetupServerApi, overrides = {}): void {
         }),
       ),
     ),
+    rest.patch('http://localhost/v1/me', (req, res, ctx) => {
+      if (JSON.stringify(req.body) !== JSON.stringify(expectedUser)) {
+        return res(ctx.status(500), ctx.json({ errors: [] }));
+      }
+
+      return res(
+        ctx.json({
+          ...mockUser,
+          ...expectedUser,
+        }),
+      );
+    }),
   );
 }
 
