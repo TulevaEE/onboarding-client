@@ -326,7 +326,7 @@ export function partnerAuthenticationBackend(server: SetupServerApi): void {
 
 export function userBackend(
   server: SetupServerApi,
-  overrides = {},
+  overrides: Partial<User> = {},
   expectedUser: Partial<User> = mockUser,
 ): void {
   server.use(
@@ -339,16 +339,14 @@ export function userBackend(
       ),
     ),
     rest.patch('http://localhost/v1/me', (req, res, ctx) => {
-      if (JSON.stringify(req.body) !== JSON.stringify(expectedUser)) {
+      // TODO new update date here
+      const user = { ...mockUser, ...overrides, ...expectedUser };
+
+      if (!isEqual(user, req.body)) {
         return res(ctx.status(500), ctx.json({ errors: [] }));
       }
 
-      return res(
-        ctx.json({
-          ...mockUser,
-          ...expectedUser,
-        }),
-      );
+      return res(ctx.json(user));
     }),
   );
 }
