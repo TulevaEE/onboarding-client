@@ -138,7 +138,6 @@ export class LoggedInApp extends PureComponent {
             <Route path="/2nd-pillar-upsell" component={SecondPillarUpsellCard} />
             <Route
               path="/2nd-pillar-payment-rate"
-              component={SecondPillarPaymentRate}
               render={() => (
                 <ContactDetailsGatekeep>
                   <SecondPillarPaymentRate />

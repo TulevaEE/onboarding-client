@@ -1,9 +1,10 @@
-import { screen } from '@testing-library/react';
+import { screen, waitFor, waitForElementToBeRemoved } from '@testing-library/react';
 
 import { setupServer } from 'msw/node';
 import { Route } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
 import userEvent from '@testing-library/user-event';
+import moment from 'moment';
 import LoggedInApp from '../LoggedInApp';
 import { createDefaultStore, login, renderWrapped } from '../../test/utils';
 import { initializeConfiguration } from '../config/config';
@@ -92,4 +93,65 @@ describe('Contact details page', () => {
 
     expect(await screen.findByText('Your details have been updated.')).toBeInTheDocument();
   });
+});
+
+describe('Contact details gatekeep', () => {
+  fit.each([
+    /* '/2nd-pillar-flow',
+    '/3rd-pillar-flow',
+    '/partner/2nd-pillar-flow',
+    '/partner/3rd-pillar-flow', */
+    '/2nd-pillar-payment-rate',
+    '/withdrawals',
+    '/applications/1/cancellation',
+  ])(
+    'shows update user form when attempting to access %s flows, updates user and redirects',
+    async (path: string) => {
+      const expectedPhoneNumber = '555 555 555';
+      const expectedEmail = 'test@tuleva.ee';
+      const expectedCountry = 'FI';
+
+      const contactDetailsLastUpdateDate = moment().subtract(2, 'years').toISOString();
+
+      userBackend(
+        server,
+        {
+          contactDetailsLastUpdateDate,
+        },
+        {
+          phoneNumber: expectedPhoneNumber,
+          email: expectedEmail,
+          address: { countryCode: expectedCountry },
+        },
+      );
+      initializeComponent();
+
+      history.push(path);
+
+      expect(await screen.findByText('My details')).toBeInTheDocument();
+      expect(
+        await screen.findByText(/According to instructions from Pensionikeskus/),
+      ).toBeInTheDocument();
+
+      const emailAddressInput = await screen.findByLabelText(/Email address/);
+      userEvent.clear(emailAddressInput);
+      userEvent.type(emailAddressInput, expectedEmail);
+
+      const phoneNumberInput = await screen.findByLabelText(/Phone number/);
+      userEvent.clear(phoneNumberInput);
+      userEvent.type(phoneNumberInput, expectedPhoneNumber);
+
+      const residencyInput = await screen.findByLabelText(
+        /Permanent or principal country of residence/,
+      );
+      userEvent.selectOptions(residencyInput, expectedCountry);
+
+      const submitButton = screen.getByRole('button', { name: 'Save' });
+
+      userEvent.click(submitButton);
+
+      await waitForElementToBeRemoved(() => screen.queryByText('My details'));
+      // expect(screen.queryByText('My details')).not.toBeInTheDocument();
+    },
+  );
 });
