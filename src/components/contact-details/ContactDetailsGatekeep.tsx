@@ -5,10 +5,16 @@ import { LocationDescriptor } from 'history';
 import { useMe } from '../common/apiHooks';
 import { User } from '../common/apiModels';
 
-export type ContactDetailsRedirectState = { from: string; mandatoryUpdate: true };
+export type ContactDetailsRedirectState = {
+  from: string;
+  mandatoryUpdate: true;
+  updateOnlyEmailAndPhone: boolean;
+};
 
-// TODO II III pillar specific only email + phone
-export const ContactDetailsGatekeep = ({ children }: PropsWithChildren<unknown>) => {
+export const ContactDetailsGatekeep = ({
+  children,
+  updateOnlyEmailAndPhone = false,
+}: PropsWithChildren<{ updateOnlyEmailAndPhone: boolean }>) => {
   const { data: user } = useMe();
 
   const location = useLocation();
@@ -20,7 +26,7 @@ export const ContactDetailsGatekeep = ({ children }: PropsWithChildren<unknown>)
   if (!areContactDetailsUpToDate(user) && hasPensionAccount(user)) {
     const redirectLocation: LocationDescriptor<ContactDetailsRedirectState> = {
       pathname: '/contact-details',
-      state: { from: location.pathname, mandatoryUpdate: true },
+      state: { from: location.pathname, mandatoryUpdate: true, updateOnlyEmailAndPhone },
     };
 
     return <Redirect to={redirectLocation} />;

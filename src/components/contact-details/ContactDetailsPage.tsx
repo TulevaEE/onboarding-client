@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Redirect, useLocation } from 'react-router-dom';
 import { usePageTitle } from '../common/usePageTitle';
 import UpdateUserForm from './updateUserForm';
-import { updateUser } from '../common/user/actions';
+import { updateUser, updateUserEmailAndPhone } from '../common/user/actions';
 import { State } from '../../types';
 import { ContactDetailsRedirectState } from './ContactDetailsGatekeep';
 
@@ -15,7 +15,11 @@ export const ContactDetailsPage = () => {
 
   // user is redux form specific value
   const saveUser = (user: unknown) => {
-    dispatch(updateUser(user));
+    if (location.state.updateOnlyEmailAndPhone) {
+      dispatch(updateUserEmailAndPhone(user));
+    } else {
+      dispatch(updateUser(user));
+    }
   };
 
   usePageTitle('pageTitle.contactDetails');
