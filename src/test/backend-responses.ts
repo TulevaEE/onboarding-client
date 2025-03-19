@@ -61,6 +61,7 @@ export const mockUser: User = {
   retirementAge: 60,
   secondPillarOpenDate: '2010-01-01',
   thirdPillarInitDate: '2019-01-01',
+  contactDetailsLastUpdateDate: moment().format('YYYY-MM-DD'),
 };
 
 export const mockSecondPillarConversion: Conversion = {

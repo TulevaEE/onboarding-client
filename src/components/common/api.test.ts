@@ -721,6 +721,7 @@ describe('API calls', () => {
       secondPillarPaymentRates: { current: 2, pending: 4 },
       secondPillarOpenDate: '2020-01-01',
       thirdPillarInitDate: '2021-01-01',
+      contactDetailsLastUpdateDate: '2024-01-01',
     };
 
     beforeEach(() => {
