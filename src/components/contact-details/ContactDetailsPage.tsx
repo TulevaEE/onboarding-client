@@ -1,9 +1,9 @@
 import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
-import { Redirect, useHistory, useLocation } from 'react-router-dom';
+import { Redirect, useLocation } from 'react-router-dom';
 import { usePageTitle } from '../common/usePageTitle';
 import UpdateUserForm from './updateUserForm';
-import { updateUser, updateUserEmailAndPhone } from '../common/user/actions';
+import { updateUser } from '../common/user/actions';
 import { State } from '../../types';
 import { ContactDetailsRedirectState } from './ContactDetailsGatekeep';
 
