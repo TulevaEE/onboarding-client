@@ -105,7 +105,7 @@ describe('Contact details gatekeep', () => {
     '/partner/2nd-pillar-flow',
     '/partner/3rd-pillar-flow',
   ])(
-    'shows update user form when attempting to access %s flows, updates user and redirects',
+    'shows update user form when attempting to access %s flow, updates user and redirects',
     async (path: string) => {
       const expectedPhoneNumber = '555 555 555';
       const expectedEmail = 'test@tuleva.ee';
@@ -154,6 +154,9 @@ describe('Contact details gatekeep', () => {
 
       await waitForElementToBeRemoved(() => screen.queryByText('My details'));
       expect(screen.queryByText('My details')).not.toBeInTheDocument();
+
+      // substring of path
+      expect(history.location.pathname).toMatch(new RegExp(path));
     },
   );
 });
