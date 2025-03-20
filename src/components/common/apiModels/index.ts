@@ -222,6 +222,7 @@ export interface User {
   secondPillarPaymentRates: PaymentRates;
   secondPillarOpenDate: string;
   thirdPillarInitDate: string;
+  contactDetailsLastUpdateDate: string | null;
 }
 
 export interface UserConversion {

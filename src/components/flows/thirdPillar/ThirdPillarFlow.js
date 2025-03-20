@@ -25,7 +25,11 @@ const steps = [
   {
     path: 'address',
     Component: () => (
-      <AddressStep nextPath={`${flowPath}/confirm-mandate`} updateOnlyEmailAndPhone pillar={3} />
+      <AddressStep
+        nextPath={`${flowPath}/confirm-mandate`}
+        updateOnlyEmailAndPhone // used for opening pension account, see updateUserWithoutEpisUpdate
+        pillar={3}
+      />
     ),
     title: <FormattedMessage id="thirdPillarFlow.steps.address.title" />,
   },

@@ -344,6 +344,7 @@
   "new.user.flow.new.user.alternative.no.benefit.join": "Tuleva liikmeks astumine ei too sulle rahalist boonust",
   "new.user.flow.new.user.alternative.you.can.still.join": "Võid astuda liikmeks, kui soovid Tuleva ideed toetada ja oma häälega sellest märku anda",
   "update.user.details.title": "Minu andmed",
+  "update.user.details.mandatoryUpdate": "Pensionikeskuse juhiste järgi palume kogujatel kord aastas oma andmed üle vaadata. Palun aita meid ja kontrolli, kas midagi vajab muutmist. Aitäh!",
   "update.user.save": "Salvesta",
   "update.user.thanks": "Tänud!",
   "update.user.success.message": "Sinu andmed on uuendatud.",

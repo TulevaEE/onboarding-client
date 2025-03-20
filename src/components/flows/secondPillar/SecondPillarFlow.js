@@ -21,7 +21,7 @@ const steps = [
       <AddressStep
         previousPath={`${flowPath}/select-sources`}
         nextPath={`${flowPath}/confirm-mandate`}
-        updateOnlyEmailAndPhone
+        updateOnlyEmailAndPhone // used for opening pension account, see updateUserWithoutEpisUpdate
         pillar={2}
       />
     ),

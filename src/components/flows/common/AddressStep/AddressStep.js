@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Redirect } from 'react-router-dom';
 import UpdateUserForm from '../../../contact-details/updateUserForm';
-import { updateUser, updateUserEmailAndPhone } from '../../../common/user/actions';
+import { updateUser, updateUserWithoutEpisUpdate } from '../../../common/user/actions';
 import { hasAddress as isAddressFilled } from '../../../common/user/address';
 import { hasContactDetailsAmlCheck as isContactDetailsAmlCheckPassed } from '../../../aml';
 
@@ -62,7 +62,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) =>
   bindActionCreators(
     {
-      updateEmailAndPhone: updateUserEmailAndPhone,
+      updateEmailAndPhone: updateUserWithoutEpisUpdate,
       updateFullUser: updateUser,
     },
     dispatch,
