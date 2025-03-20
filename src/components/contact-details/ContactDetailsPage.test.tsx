@@ -96,14 +96,14 @@ describe('Contact details page', () => {
 });
 
 describe('Contact details gatekeep', () => {
-  fit.each([
-    /* '/2nd-pillar-flow',
-    '/3rd-pillar-flow',
-    '/partner/2nd-pillar-flow',
-    '/partner/3rd-pillar-flow', */
+  it.each([
     '/2nd-pillar-payment-rate',
     '/withdrawals',
     '/applications/1/cancellation',
+    '/2nd-pillar-flow',
+    '/3rd-pillar-flow',
+    '/partner/2nd-pillar-flow',
+    '/partner/3rd-pillar-flow',
   ])(
     'shows update user form when attempting to access %s flows, updates user and redirects',
     async (path: string) => {
@@ -119,6 +119,8 @@ describe('Contact details gatekeep', () => {
           contactDetailsLastUpdateDate,
         },
         {
+          ...mockUser,
+          contactDetailsLastUpdateDate,
           phoneNumber: expectedPhoneNumber,
           email: expectedEmail,
           address: { countryCode: expectedCountry },
@@ -151,7 +153,7 @@ describe('Contact details gatekeep', () => {
       userEvent.click(submitButton);
 
       await waitForElementToBeRemoved(() => screen.queryByText('My details'));
-      // expect(screen.queryByText('My details')).not.toBeInTheDocument();
+      expect(screen.queryByText('My details')).not.toBeInTheDocument();
     },
   );
 });

@@ -96,7 +96,7 @@ export class LoggedInApp extends PureComponent {
             <Route
               path="/2nd-pillar-flow"
               render={() => (
-                <ContactDetailsGatekeep updateOnlyEmailAndPhone>
+                <ContactDetailsGatekeep>
                   <SecondPillarFlow />
                 </ContactDetailsGatekeep>
               )}
@@ -104,7 +104,7 @@ export class LoggedInApp extends PureComponent {
             <Route
               path="/3rd-pillar-flow"
               render={() => (
-                <ContactDetailsGatekeep updateOnlyEmailAndPhone>
+                <ContactDetailsGatekeep>
                   <ThirdPillarFlow />
                 </ContactDetailsGatekeep>
               )}
@@ -112,7 +112,7 @@ export class LoggedInApp extends PureComponent {
             <Route
               path="/partner/2nd-pillar-flow"
               render={() => (
-                <ContactDetailsGatekeep updateOnlyEmailAndPhone>
+                <ContactDetailsGatekeep>
                   <PartnerSecondPillarFlow />
                 </ContactDetailsGatekeep>
               )}
@@ -121,7 +121,7 @@ export class LoggedInApp extends PureComponent {
             <Route
               path="/partner/3rd-pillar-flow"
               render={() => (
-                <ContactDetailsGatekeep updateOnlyEmailAndPhone>
+                <ContactDetailsGatekeep>
                   <PartnerThirdPillarFlow />
                 </ContactDetailsGatekeep>
               )}

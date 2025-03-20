@@ -1,6 +1,6 @@
 import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
-import { Redirect, useLocation } from 'react-router-dom';
+import { Redirect, useHistory, useLocation } from 'react-router-dom';
 import { usePageTitle } from '../common/usePageTitle';
 import UpdateUserForm from './updateUserForm';
 import { updateUser, updateUserEmailAndPhone } from '../common/user/actions';
@@ -15,11 +15,7 @@ export const ContactDetailsPage = () => {
 
   // user is redux form specific value
   const saveUser = (user: unknown) => {
-    if (location.state?.updateOnlyEmailAndPhone) {
-      dispatch(updateUserEmailAndPhone(user));
-    } else {
-      dispatch(updateUser(user));
-    }
+    dispatch(updateUser(user));
   };
 
   usePageTitle('pageTitle.contactDetails');

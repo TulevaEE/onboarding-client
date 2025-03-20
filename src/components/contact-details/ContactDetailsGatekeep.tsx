@@ -2,20 +2,18 @@ import moment from 'moment';
 import { Redirect, useLocation } from 'react-router-dom';
 import { PropsWithChildren } from 'react';
 import { LocationDescriptor } from 'history';
-import { useMe } from '../common/apiHooks';
+import { useSelector } from 'react-redux';
 import { User } from '../common/apiModels';
+import { State } from '../../types';
 
 export type ContactDetailsRedirectState = {
   from: string;
   mandatoryUpdate: true;
-  updateOnlyEmailAndPhone: boolean;
 };
 
-export const ContactDetailsGatekeep = ({
-  children,
-  updateOnlyEmailAndPhone = false,
-}: PropsWithChildren<{ updateOnlyEmailAndPhone: boolean }>) => {
-  const { data: user } = useMe();
+export const ContactDetailsGatekeep = ({ children }: PropsWithChildren<unknown>) => {
+  const user = useSelector((state: State) => state.login.user); // used instead of useMe to prevent potential cache invalidation issues
+  // to use useMe here, need to migrate entire use change logic to react-query mutation
 
   const location = useLocation();
 
@@ -26,7 +24,7 @@ export const ContactDetailsGatekeep = ({
   if (!areContactDetailsUpToDate(user) && hasPensionAccount(user)) {
     const redirectLocation: LocationDescriptor<ContactDetailsRedirectState> = {
       pathname: '/contact-details',
-      state: { from: location.pathname, mandatoryUpdate: true, updateOnlyEmailAndPhone },
+      state: { from: location.pathname, mandatoryUpdate: true },
     };
 
     return <Redirect to={redirectLocation} />;
@@ -35,7 +33,7 @@ export const ContactDetailsGatekeep = ({
   return <>{children}</>;
 };
 
-const areContactDetailsUpToDate = (user: User) => {
+export const areContactDetailsUpToDate = (user: User) => {
   const lastUpdateDate = user.contactDetailsLastUpdateDate;
   if (!user.contactDetailsLastUpdateDate) {
     return false;

@@ -2,6 +2,7 @@ import { DefaultRequestMultipartBody, rest, RestRequest } from 'msw';
 import { SetupServerApi } from 'msw/node';
 import queryString from 'qs';
 import { isEqual } from 'lodash';
+import moment from 'moment';
 import {
   Application,
   CapitalEvent,
@@ -339,14 +340,17 @@ export function userBackend(
       ),
     ),
     rest.patch('http://localhost/v1/me', (req, res, ctx) => {
-      // TODO new update date here
-      const user = { ...mockUser, ...overrides, ...expectedUser };
+      const user = {
+        ...mockUser,
+        ...overrides,
+        ...expectedUser,
+      };
 
-      if (!isEqual(user, req.body)) {
+      if (!isEqual(expectedUser, req.body)) {
         return res(ctx.status(500), ctx.json({ errors: [] }));
       }
 
-      return res(ctx.json(user));
+      return res(ctx.json({ ...user, contactDetailsLastUpdateDate: moment().toISOString() }));
     }),
   );
 }
