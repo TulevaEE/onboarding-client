@@ -5,22 +5,23 @@ import { usePageTitle } from '../common/usePageTitle';
 import UpdateUserForm from './updateUserForm';
 import { updateUser } from '../common/user/actions';
 import { State } from '../../types';
-import { ContactDetailsRedirectState } from './ContactDetailsGatekeep';
+import { areContactDetailsUpToDate, ContactDetailsRedirectState } from './ContactDetailsGatekeep';
 
 export const ContactDetailsPage = () => {
   const dispatch = useDispatch();
   const location = useLocation<ContactDetailsRedirectState | undefined>();
 
   const updateUserSuccess = useSelector((state: State) => state.contactDetails.updateUserSuccess);
+  const user = useSelector((state: State) => state.login.user);
 
   // user is redux form specific value
-  const saveUser = (user: unknown) => {
-    dispatch(updateUser(user));
+  const saveUser = (savedUser: unknown) => {
+    dispatch(updateUser(savedUser));
   };
 
   usePageTitle('pageTitle.contactDetails');
 
-  if (updateUserSuccess) {
+  if (updateUserSuccess && user && areContactDetailsUpToDate(user)) {
     if (location.state && location.state?.from) {
       return <Redirect to={location.state.from} />;
     }
