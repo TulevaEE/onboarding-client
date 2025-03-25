@@ -36,7 +36,10 @@ export const getActiveFundPensionPillars = (
   return new Set(activeFundPensionPillars);
 };
 
-export const canOnlyWithdrawThirdPillarTaxFree = (eligibility: WithdrawalsEligibility) =>
+export const canOnlyPartiallyWithdrawThirdPillar = (eligibility: WithdrawalsEligibility) =>
+  !eligibility.hasReachedEarlyRetirementAge && !eligibility.canWithdrawThirdPillarWithReducedTax;
+
+export const canWithdrawOnlyThirdPillarTaxFree = (eligibility: WithdrawalsEligibility) =>
   !eligibility.hasReachedEarlyRetirementAge && eligibility.canWithdrawThirdPillarWithReducedTax;
 
 export const getYearsToGoUntilEarlyRetirementAge = (eligibility?: WithdrawalsEligibility) => {
@@ -45,34 +48,6 @@ export const getYearsToGoUntilEarlyRetirementAge = (eligibility?: WithdrawalsEli
   }
 
   return 60 - eligibility?.age;
-};
-
-export const decorateSimulatedEligibilityForUnderRetirementAge = (
-  eligibility?: WithdrawalsEligibility,
-): WithdrawalsEligibility | undefined => {
-  if (!eligibility) {
-    return eligibility;
-  }
-
-  if (
-    eligibility.hasReachedEarlyRetirementAge ||
-    eligibility.canWithdrawThirdPillarWithReducedTax
-  ) {
-    return eligibility;
-  }
-
-  // Update every year from:
-  // https://andmed.stat.ee/et/stat/rahvastik__rahvastikunaitajad-ja-koosseis__demograafilised-pehinaitajad/RV045
-  // (Choose males and females, age 60, and the year before last year (current year - 2))
-  const CURRENT_YEARS_TO_LIVE_AT_60 = 22;
-
-  return {
-    age: 60,
-    hasReachedEarlyRetirementAge: true,
-    canWithdrawThirdPillarWithReducedTax: true,
-    recommendedDurationYears: CURRENT_YEARS_TO_LIVE_AT_60,
-    arrestsOrBankruptciesPresent: eligibility.arrestsOrBankruptciesPresent,
-  };
 };
 
 export const getWithdrawalsPath = (subPath: string) => `/withdrawals/${subPath}`;
@@ -302,14 +277,25 @@ export const getAllFundNavsPresent = (
   return allNavsPresent;
 };
 
-export const getSingleWithdrawalTaxAmount = (withdrawalAmount: WithdrawalsAmountStepState) => {
-  const INCOME_TAX_RATE = 0.1;
-
+export const getSingleWithdrawalTaxAmount = (
+  withdrawalAmount: WithdrawalsAmountStepState,
+  eligibility: WithdrawalsEligibility,
+) => {
   if (!withdrawalAmount.singleWithdrawalAmount) {
     return null;
   }
 
+  const INCOME_TAX_RATE = getSingleWithdrawalTaxRate(eligibility);
+
   return withdrawalAmount.singleWithdrawalAmount * INCOME_TAX_RATE;
+};
+
+export const getSingleWithdrawalTaxRate = (eligibility: WithdrawalsEligibility) => {
+  if (canOnlyPartiallyWithdrawThirdPillar(eligibility)) {
+    return 0.22;
+  }
+
+  return 0.1;
 };
 
 export const getFundPensionMonthlyPaymentEstimation = (

@@ -748,8 +748,8 @@
 
   "withdrawals.withdrawalAmount.recommended": "Soovitame",
   "withdrawals.withdrawalAmount.partialWithdrawTitle": "Võtan osa raha kohe välja",
-  "withdrawals.withdrawalAmount.partialWithdrawInputLabel": "Võtan välja 10% tulumaksuga",
-  "withdrawals.withdrawalAmount.partialWithdrawalTax": "Väljamakselt peab riik kinni 10% tulumaksu",
+  "withdrawals.withdrawalAmount.partialWithdrawInputLabel": "Võtan välja {taxPercent}% tulumaksuga",
+  "withdrawals.withdrawalAmount.partialWithdrawalTax": "Väljamakselt peab riik kinni {taxPercent}% tulumaksu",
   "withdrawals.withdrawalAmount.precisePriceAtSaleDisclaimer": "Täpne summa selgub osakute müümisel ja sõltub osakute turuhinnast.",
   "withdrawals.withdrawalAmount.fundPensionRecommendedPeriodDescription": "Fondipension on tulumaksuvaba, kui selle kestuseks on soovituslik aastate arv või sellest pikem aeg. Soovituslik periood arvutatakse sinu vanuse ning meeste ja naiste keskmise eluea järgi, mille avaldab Statistikaamet.",
 
