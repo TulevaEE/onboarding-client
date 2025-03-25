@@ -119,7 +119,7 @@ const SingleWithdrawalSelectionBox = ({
         <SingleWithdrawalSelectionBody
           eligibility={eligibility}
           totalAmount={totalAmount}
-          showTotalAfterTax
+          onlyThirdPillarPartialWithdrawal
           inputValue={inputValue}
           handleInputChange={handleInputChange}
           handleSliderChange={handleSliderChange}
@@ -173,14 +173,14 @@ const SingleWithdrawalSelectionBody = ({
   totalAmount,
   eligibility,
   inputValue,
-  showTotalAfterTax = false,
+  onlyThirdPillarPartialWithdrawal = false,
   handleInputChange,
   handleSliderChange,
 }: {
   totalAmount: number;
   eligibility: WithdrawalsEligibility;
   inputValue: string;
-  showTotalAfterTax?: boolean;
+  onlyThirdPillarPartialWithdrawal?: boolean;
   handleInputChange: (value: string) => unknown;
   handleSliderChange: (value: number) => unknown;
 }) => {
@@ -235,8 +235,8 @@ const SingleWithdrawalSelectionBody = ({
             <div className="text-body-secondary">{formatAmountForCurrency(totalAmount, 2)}</div>
           </div>
         </div>
-        <p className="m-0 mt-3">
-          {showTotalAfterTax ? (
+        <p className={`m-0 mt-3 ${onlyThirdPillarPartialWithdrawal ? 'border-top pt-4' : ''}`}>
+          {onlyThirdPillarPartialWithdrawal ? (
             <div>
               <div className="d-flex justify-content-between">
                 <FormattedMessage
@@ -264,7 +264,11 @@ const SingleWithdrawalSelectionBody = ({
             <TaxAmount amount={taxAmount} />
           )}
         </p>
-        <p className="m-0 text-body-secondary">
+        <p
+          className={`m-0 text-body-secondary ${
+            onlyThirdPillarPartialWithdrawal && withdrawalAmountAfterTax > 0 ? 'pt-3' : ''
+          }`}
+        >
           <FormattedMessage id="withdrawals.withdrawalAmount.precisePriceAtSaleDisclaimer" />
         </p>
       </div>
