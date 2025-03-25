@@ -21,10 +21,7 @@ import Slider from './Slider';
 export const WithdrawalAmountStep = () => {
   const { data: eligibility } = useWithdrawalsEligibility();
 
-  const { amountStep, setAmountStep, pensionHoldings, navigateToNextStep } =
-    useWithdrawalsContext();
-
-  const isTestModeEnabled = useTestMode();
+  const { amountStep, setAmountStep, pensionHoldings } = useWithdrawalsContext();
 
   const handlePillarSelected = (pillar: PillarToWithdrawFrom) => {
     setAmountStep({
@@ -38,11 +35,6 @@ export const WithdrawalAmountStep = () => {
 
   const totalAmount = getTotalWithdrawableAmount(amountStep.pillarsToWithdrawFrom, pensionHoldings);
 
-  const isEligible =
-    eligibility.hasReachedEarlyRetirementAge ||
-    (canOnlyWithdrawThirdPillarTaxFree(eligibility) &&
-      amountStep.pillarsToWithdrawFrom === 'THIRD');
-
   return (
     <div className="my-5">
       <PillarSelection
@@ -54,14 +46,7 @@ export const WithdrawalAmountStep = () => {
       />
       <SingleWithdrawalSelectionBox totalAmount={totalAmount} />
       <FundPensionStatusBox />
-      {isEligible || isTestModeEnabled ? <SummaryBox /> : <NotEligible />}
-      {isTestModeEnabled && (
-        <div className="d-flex flex-row-reverse mt-3">
-          <button type="button" className="btn btn-light" onClick={navigateToNextStep}>
-            <FormattedMessage id="withdrawals.navigation.forward" />
-          </button>
-        </div>
-      )}
+      <SummaryBox />
     </div>
   );
 };
@@ -312,13 +297,48 @@ const SummaryBox = () => {
   const taxAmount = getSingleWithdrawalTaxAmount(amountStep) ?? 0;
   const fundPension = useFundPensionCalculation();
   const { fundPensionEnabled } = amountStep;
+  const { data: eligibility } = useWithdrawalsEligibility();
+  const isTestModeEnabled = useTestMode();
 
-  const isLoading = !fundPension;
-  if (isLoading) {
+  if (!fundPension || !eligibility) {
     return null;
   }
 
-  const canNavigateToNextStep = mandatesToCreate ? mandatesToCreate.length > 0 : false;
+  const canWithdraw =
+    eligibility.hasReachedEarlyRetirementAge ||
+    (canOnlyWithdrawThirdPillarTaxFree(eligibility) &&
+      amountStep.pillarsToWithdrawFrom === 'THIRD');
+
+  if (!canWithdraw && !isTestModeEnabled) {
+    return (
+      <div
+        className="mt-5 card text-center bg-warning-subtle border-warning"
+        role="region"
+        aria-labelledby="not-eligible-title"
+      >
+        <div className="card-body p-4 d-flex flex-column gap-4">
+          <div className="d-flex flex-column gap-2">
+            <h2 id="not-eligible-title" className="m-0 h3 fw-semibold">
+              <FormattedMessage id="withdrawals.navigation.notEligible" />
+            </h2>
+            <p className="m-0">
+              <FormattedMessage id="withdrawals.additionalInfoUnderEarlyRetirementAge" />
+            </p>
+            <p className="m-0">
+              <FormattedMessage id="withdrawals.additionalInfoUnavoidableExpense" />
+            </p>
+          </div>
+          <div className="d-grid">
+            <button className="btn btn-lg btn-secondary" type="button" disabled>
+              <FormattedMessage id="withdrawals.navigation.continue" />
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const canNavigateToNextStep = (mandatesToCreate ?? []).length > 0 || isTestModeEnabled;
 
   return (
     <>
@@ -408,33 +428,6 @@ const EstimatedMonthlyPayment = () => {
     </>
   );
 };
-
-const NotEligible = () => (
-  <div
-    className="mt-5 card text-center bg-warning-subtle border-warning"
-    role="region"
-    aria-labelledby="not-eligible-title"
-  >
-    <div className="card-body p-4 d-flex flex-column gap-4">
-      <div className="d-flex flex-column gap-2">
-        <h2 id="not-eligible-title" className="m-0 h3 fw-semibold">
-          <FormattedMessage id="withdrawals.navigation.notEligible" />
-        </h2>
-        <p className="m-0">
-          <FormattedMessage id="withdrawals.additionalInfoUnderEarlyRetirementAge" />
-        </p>
-        <p className="m-0">
-          <FormattedMessage id="withdrawals.additionalInfoUnavoidableExpense" />
-        </p>
-      </div>
-      <div className="d-grid">
-        <button className="btn btn-lg btn-secondary" type="button" disabled>
-          <FormattedMessage id="withdrawals.navigation.continue" />
-        </button>
-      </div>
-    </div>
-  </div>
-);
 
 const PillarSelection = ({
   secondPillarAmount,
