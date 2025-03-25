@@ -1,7 +1,7 @@
 import React, { ReactChildren } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useWithdrawalsEligibility } from '../../common/apiHooks';
-import { getYearsToGoUntilEarlyRetirementAge } from './utils';
+import { canOnlyPartiallyWithdrawThirdPillar, getYearsToGoUntilEarlyRetirementAge } from './utils';
 import { useWithdrawalsContext } from './hooks';
 import { WithdrawalsEligibility } from '../../common/apiModels/withdrawals';
 import { TranslationKey } from '../../translations';
@@ -20,16 +20,31 @@ export const WithdrawalsHeader = () => {
         <FormattedMessage id="withdrawals.heading" />
       </h1>
       {currentStep?.type === 'WITHDRAWAL_SIZE' && (
-        <p className="m-0 lead text-center">
-          <FormattedMessage
-            id={getSubheadingTranslationId(eligibility)}
-            values={{
-              b: (children: ReactChildren) => <span className="fw-bold">{children}</span>,
-              age: eligibility.age,
-              yearsToGo: getYearsToGoUntilEarlyRetirementAge(eligibility),
-            }}
-          />
-        </p>
+        <>
+          <p className="m-0 lead text-center">
+            <FormattedMessage
+              id={getSubheadingTranslationId(eligibility)}
+              values={{
+                b: (children: ReactChildren) => <span className="fw-bold">{children}</span>,
+                age: eligibility.age,
+                yearsToGo: getYearsToGoUntilEarlyRetirementAge(eligibility),
+              }}
+            />
+            {canOnlyPartiallyWithdrawThirdPillar(eligibility) && (
+              <>
+                <br />
+                <p className="pt-3">
+                  <FormattedMessage
+                    id="withdrawals.additionalInfoUnder55"
+                    values={{
+                      b: (children: ReactChildren) => <span className="fw-bold">{children}</span>,
+                    }}
+                  />
+                </p>
+              </>
+            )}
+          </p>
+        </>
       )}
     </div>
   );
