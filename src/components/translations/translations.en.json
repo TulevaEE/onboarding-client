@@ -746,8 +746,8 @@
 
   "withdrawals.withdrawalAmount.recommended": "Recommended",
   "withdrawals.withdrawalAmount.partialWithdrawTitle": "Withdraw some money right away",
-  "withdrawals.withdrawalAmount.partialWithdrawInputLabel": "Withdraw with 10% income tax",
-  "withdrawals.withdrawalAmount.partialWithdrawalTax": "Partial withdrawal will be subject to 10% income tax",
+  "withdrawals.withdrawalAmount.partialWithdrawInputLabel": "Withdraw with {taxPercent}% income tax",
+  "withdrawals.withdrawalAmount.partialWithdrawalTax": "Partial withdrawal will be subject to {taxPercent}% income tax",
   "withdrawals.withdrawalAmount.precisePriceAtSaleDisclaimer": "The exact amount depends on the price of shares.",
   "withdrawals.withdrawalAmount.fundPensionPrecisePriceAtSaleDisclaimer": "The exact amounts depend on the price of shares.",
   "withdrawals.withdrawalAmount.fundPensionRecommendedPeriodDescription": "Fund pension is tax-free if the period is equal to or longer than the recommended number of years. The recommended period is calculated based on your age and the average lifespan for men and women, published by Statistics Estonia",

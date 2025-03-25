@@ -4,13 +4,14 @@ import { Collapse } from 'react-bootstrap';
 import { formatAmountForCurrency } from '../../common/utils';
 import { useWithdrawalsEligibility } from '../../common/apiHooks';
 import { InfoTooltip, Radio } from '../../common';
-import { PillarToWithdrawFrom } from './types';
+import { PillarToWithdrawFrom, WithdrawalsAmountStepState } from './types';
 import { useFundPensionCalculation, useWithdrawalsContext } from './hooks';
 import Percentage from '../../common/Percentage';
 import {
-  canOnlyWithdrawThirdPillarTaxFree,
-  decorateSimulatedEligibilityForUnderRetirementAge,
+  canOnlyPartiallyWithdrawThirdPillar,
+  canWithdrawOnlyThirdPillarTaxFree,
   getSingleWithdrawalTaxAmount,
+  getSingleWithdrawalTaxRate,
   getTotalWithdrawableAmount,
 } from './utils';
 import styles from './Withdrawals.module.scss';
@@ -44,21 +45,25 @@ export const WithdrawalAmountStep = () => {
         eligibility={eligibility}
         setSelectedPillar={handlePillarSelected}
       />
-      <SingleWithdrawalSelectionBox totalAmount={totalAmount} />
+      <SingleWithdrawalSelectionBox totalAmount={totalAmount} eligibility={eligibility} />
       <FundPensionStatusBox />
       <SummaryBox />
     </div>
   );
 };
 
-const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) => {
+const SingleWithdrawalSelectionBox = ({
+  totalAmount,
+  eligibility,
+}: {
+  totalAmount: number;
+  eligibility: WithdrawalsEligibility;
+}) => {
   const { amountStep, setAmountStep } = useWithdrawalsContext();
   const [singleWithdrawalSwitch, setSingleWithdrawalSwitch] = useState(
     amountStep.singleWithdrawalAmount !== null,
   );
   const [inputValue, setInputValue] = useState(amountStep.singleWithdrawalAmount?.toString() || '');
-
-  const taxAmount = getSingleWithdrawalTaxAmount(amountStep) ?? 0;
 
   const onSingleWithdrawalSwitchChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSingleWithdrawalSwitch(event.target.checked);
@@ -103,6 +108,24 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
     setInputValue(amount === 0 ? '' : amount.toFixed(2));
   };
 
+  if (canOnlyPartiallyWithdrawThirdPillar(eligibility)) {
+    return (
+      <div
+        className="mt-3 card overflow-hidden"
+        role="region"
+        aria-labelledby="single-withdrawal-title"
+      >
+        <SingleWithdrawalSelectionBody
+          eligibility={eligibility}
+          totalAmount={totalAmount}
+          inputValue={inputValue}
+          handleInputChange={handleInputChange}
+          handleSliderChange={handleSliderChange}
+        />
+      </div>
+    );
+  }
+
   return (
     <div
       className="mt-3 card overflow-hidden"
@@ -132,64 +155,96 @@ const SingleWithdrawalSelectionBox = ({ totalAmount }: { totalAmount: number }) 
       </div>
 
       <Collapse in={singleWithdrawalSwitch}>
-        <div id="single-withdrawal-body">
-          <div className="card-body border-top p-4">
-            <div className="d-flex flex-column flex-md-row justify-content-md-between align-items-md-center fs-3">
-              <label htmlFor="single-withdrawal-amount" className="mb-0">
-                <FormattedMessage id="withdrawals.withdrawalAmount.partialWithdrawInputLabel" />
-              </label>
-              <div
-                className={`input-group input-group-lg flex-shrink-1 w-25 mt-2 mt-md-0 ${styles.singleWithdrawalAmountInputContainer}`}
-              >
-                <input
-                  id="single-withdrawal-amount"
-                  type="text"
-                  inputMode="decimal"
-                  className="form-control form-control-lg text-end"
-                  value={inputValue}
-                  onChange={(event) => handleInputChange(event.target.value)}
-                  onWheel={(event) => event.currentTarget.blur()}
-                  min={0}
-                  max={totalAmount}
-                  placeholder="0"
-                />
-                <div className="input-group-text">&euro;</div>
-              </div>
-            </div>
+        <SingleWithdrawalSelectionBody
+          eligibility={eligibility}
+          totalAmount={totalAmount}
+          inputValue={inputValue}
+          handleInputChange={handleInputChange}
+          handleSliderChange={handleSliderChange}
+        />
+      </Collapse>
+    </div>
+  );
+};
 
-            <div className="mt-4">
-              <Slider
-                value={amountStep.singleWithdrawalAmount ?? 0}
-                onChange={handleSliderChange}
-                min={0}
-                max={totalAmount}
-                step={0.01}
-              />
-              <div className="mt-2 d-flex justify-content-between">
-                <div className="text-body-secondary">{formatAmountForCurrency(0, 0)}</div>
-                <div className="text-body-secondary">{formatAmountForCurrency(totalAmount, 2)}</div>
-              </div>
-            </div>
-            <p className="m-0 mt-3">
-              <FormattedMessage id="withdrawals.withdrawalAmount.partialWithdrawalTax" />
-              {taxAmount > 0 ? ': ' : '.'}
-              {taxAmount > 0 && (
-                <span className={styles.warningText}>{formatAmountForCurrency(-taxAmount, 2)}</span>
-              )}
-            </p>
-            <p className="m-0 text-body-secondary">
-              <FormattedMessage id="withdrawals.withdrawalAmount.precisePriceAtSaleDisclaimer" />
-            </p>
+const SingleWithdrawalSelectionBody = ({
+  totalAmount,
+  eligibility,
+  inputValue,
+  handleInputChange,
+  handleSliderChange,
+}: {
+  totalAmount: number;
+  eligibility: WithdrawalsEligibility;
+  inputValue: string;
+  handleInputChange: (value: string) => unknown;
+  handleSliderChange: (value: number) => unknown;
+}) => {
+  const { amountStep } = useWithdrawalsContext();
+  const taxAmount = getSingleWithdrawalTaxAmount(amountStep, eligibility) ?? 0;
+
+  return (
+    <div id="single-withdrawal-body">
+      <div className="card-body p-4">
+        <div className="d-flex flex-column flex-md-row justify-content-md-between align-items-md-center fs-3">
+          <label htmlFor="single-withdrawal-amount" className="mb-0">
+            <FormattedMessage
+              id="withdrawals.withdrawalAmount.partialWithdrawInputLabel"
+              values={{ taxPercent: getSingleWithdrawalTaxRate(eligibility) * 100 }}
+            />
+          </label>
+          <div
+            className={`input-group input-group-lg flex-shrink-1 w-25 mt-2 mt-md-0 ${styles.singleWithdrawalAmountInputContainer}`}
+          >
+            <input
+              id="single-withdrawal-amount"
+              type="text"
+              inputMode="decimal"
+              className="form-control form-control-lg text-end"
+              value={inputValue}
+              onChange={(event) => handleInputChange(event.target.value)}
+              onWheel={(event) => event.currentTarget.blur()}
+              min={0}
+              max={totalAmount}
+              placeholder="0"
+            />
+            <div className="input-group-text">&euro;</div>
           </div>
         </div>
-      </Collapse>
+
+        <div className="mt-4">
+          <Slider
+            value={amountStep.singleWithdrawalAmount ?? 0}
+            onChange={handleSliderChange}
+            min={0}
+            max={totalAmount}
+            step={0.01}
+          />
+          <div className="mt-2 d-flex justify-content-between">
+            <div className="text-body-secondary">{formatAmountForCurrency(0, 0)}</div>
+            <div className="text-body-secondary">{formatAmountForCurrency(totalAmount, 2)}</div>
+          </div>
+        </div>
+        <p className="m-0 mt-3">
+          <FormattedMessage
+            id="withdrawals.withdrawalAmount.partialWithdrawalTax"
+            values={{ taxPercent: getSingleWithdrawalTaxRate(eligibility) * 100 }}
+          />
+          {taxAmount > 0 ? ': ' : '.'}
+          {taxAmount > 0 && (
+            <span className={styles.warningText}>{formatAmountForCurrency(-taxAmount, 2)}</span>
+          )}
+        </p>
+        <p className="m-0 text-body-secondary">
+          <FormattedMessage id="withdrawals.withdrawalAmount.precisePriceAtSaleDisclaimer" />
+        </p>
+      </div>
     </div>
   );
 };
 
 const FundPensionStatusBox = () => {
   const { data: eligibility } = useWithdrawalsEligibility();
-  const decoratedEligibility = decorateSimulatedEligibilityForUnderRetirementAge(eligibility);
 
   const fundPension = useFundPensionCalculation();
 
@@ -201,8 +256,12 @@ const FundPensionStatusBox = () => {
     setAmountStep({ fundPensionEnabled: event.target.checked });
   };
 
-  const isLoading = !decoratedEligibility || !fundPension;
+  const isLoading = !eligibility || !fundPension;
   if (isLoading) {
+    return null;
+  }
+
+  if (canOnlyPartiallyWithdrawThirdPillar(eligibility)) {
     return null;
   }
 
@@ -239,7 +298,7 @@ const FundPensionStatusBox = () => {
                   <FormattedMessage
                     id="withdrawals.withdrawalAmount.receiveMonthlyAndTaxFree"
                     values={{
-                      duration: decoratedEligibility.recommendedDurationYears,
+                      duration: eligibility.recommendedDurationYears,
                     }}
                   />
                 </span>
@@ -272,7 +331,7 @@ const FundPensionStatusBox = () => {
               <FormattedMessage
                 id="withdrawals.withdrawalAmount.fundPensionGrowth"
                 values={{
-                  duration: decoratedEligibility.recommendedDurationYears,
+                  duration: eligibility.recommendedDurationYears,
                   b: (chunks: ReactChildren) => <strong>{chunks}</strong>,
                   br: <br className="d-none d-md-block" />,
                 }}
@@ -294,7 +353,6 @@ const FundPensionStatusBox = () => {
 
 const SummaryBox = () => {
   const { amountStep, navigateToNextStep, mandatesToCreate } = useWithdrawalsContext();
-  const taxAmount = getSingleWithdrawalTaxAmount(amountStep) ?? 0;
   const fundPension = useFundPensionCalculation();
   const { fundPensionEnabled } = amountStep;
   const { data: eligibility } = useWithdrawalsEligibility();
@@ -304,41 +362,23 @@ const SummaryBox = () => {
     return null;
   }
 
-  const canWithdraw =
-    eligibility.hasReachedEarlyRetirementAge ||
-    (canOnlyWithdrawThirdPillarTaxFree(eligibility) &&
-      amountStep.pillarsToWithdrawFrom === 'THIRD');
+  const taxAmount = getSingleWithdrawalTaxAmount(amountStep, eligibility) ?? 0;
+  const canNavigateToNextStep = (mandatesToCreate ?? []).length > 0 || isTestModeEnabled;
 
-  if (!canWithdraw && !isTestModeEnabled) {
+  if (canOnlyPartiallyWithdrawThirdPillar(eligibility)) {
     return (
-      <div
-        className="mt-5 card text-center bg-warning-subtle border-warning"
-        role="region"
-        aria-labelledby="not-eligible-title"
-      >
-        <div className="card-body p-4 d-flex flex-column gap-4">
-          <div className="d-flex flex-column gap-2">
-            <h2 id="not-eligible-title" className="m-0 h3 fw-semibold">
-              <FormattedMessage id="withdrawals.navigation.notEligible" />
-            </h2>
-            <p className="m-0">
-              <FormattedMessage id="withdrawals.additionalInfoUnderEarlyRetirementAge" />
-            </p>
-            <p className="m-0">
-              <FormattedMessage id="withdrawals.additionalInfoUnavoidableExpense" />
-            </p>
-          </div>
-          <div className="d-grid">
-            <button className="btn btn-lg btn-secondary" type="button" disabled>
-              <FormattedMessage id="withdrawals.navigation.continue" />
-            </button>
-          </div>
-        </div>
+      <div className="d-flex flex-row-reverse mt-5">
+        <button
+          className="btn btn-lg btn-primary"
+          type="button"
+          onClick={navigateToNextStep}
+          disabled={!canNavigateToNextStep}
+        >
+          <FormattedMessage id="withdrawals.navigation.continue" />
+        </button>
       </div>
     );
   }
-
-  const canNavigateToNextStep = (mandatesToCreate ?? []).length > 0 || isTestModeEnabled;
 
   return (
     <>
@@ -443,7 +483,9 @@ const PillarSelection = ({
   setSelectedPillar: (pillar: PillarToWithdrawFrom) => unknown;
 }) => {
   const onlyThirdPillarEnabled = useMemo(
-    () => canOnlyWithdrawThirdPillarTaxFree(eligibility),
+    () =>
+      canWithdrawOnlyThirdPillarTaxFree(eligibility) ||
+      canOnlyPartiallyWithdrawThirdPillar(eligibility),
     [eligibility],
   );
 

@@ -11,7 +11,7 @@ import {
 import styles from './Withdrawals.module.scss';
 import Percentage from '../../common/Percentage';
 import {
-  canOnlyWithdrawThirdPillarTaxFree,
+  canWithdrawOnlyThirdPillarTaxFree,
   getEstimatedTotalFundPension,
   getPillarRatios,
   getTotalWithdrawableAmount,
@@ -137,7 +137,7 @@ export const ReviewAndConfirmStep = () => {
       return true;
     }
 
-    if (canOnlyWithdrawThirdPillarTaxFree(eligibility)) {
+    if (canWithdrawOnlyThirdPillarTaxFree(eligibility)) {
       return false;
     }
 

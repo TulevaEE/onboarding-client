@@ -17,8 +17,8 @@ import {
 } from './types';
 import { useFunds, useSourceFunds, useWithdrawalsEligibility } from '../../common/apiHooks';
 import {
-  canOnlyWithdrawThirdPillarTaxFree,
-  decorateSimulatedEligibilityForUnderRetirementAge,
+  canOnlyPartiallyWithdrawThirdPillar,
+  canWithdrawOnlyThirdPillarTaxFree,
   getAllFundNavsPresent,
   getFundPensionMonthlyPaymentEstimation,
   getMandatesToCreate,
@@ -128,8 +128,13 @@ export const WithdrawalsProvider = ({
   );
 
   useEffect(() => {
-    if (eligibility && canOnlyWithdrawThirdPillarTaxFree(eligibility)) {
-      setAmountStep({ pillarsToWithdrawFrom: 'THIRD' });
+    if (eligibility) {
+      if (canWithdrawOnlyThirdPillarTaxFree(eligibility)) {
+        setAmountStep({ pillarsToWithdrawFrom: 'THIRD' });
+      } else if (canOnlyPartiallyWithdrawThirdPillar(eligibility)) {
+        setAmountStep({ fundPensionEnabled: false, pillarsToWithdrawFrom: 'THIRD' });
+      }
+
       return;
     }
 
@@ -210,13 +215,12 @@ export const WithdrawalsProvider = ({
 };
 
 export const useFundPensionCalculation = () => {
-  const { data } = useWithdrawalsEligibility();
+  const { data: eligibility } = useWithdrawalsEligibility();
   const { amountStep, pensionHoldings } = useWithdrawalsContext();
-  const decoratedEligibility = decorateSimulatedEligibilityForUnderRetirementAge(data);
 
-  if (!decoratedEligibility || !pensionHoldings) {
+  if (!eligibility || !pensionHoldings) {
     return null;
   }
 
-  return getFundPensionMonthlyPaymentEstimation(amountStep, decoratedEligibility, pensionHoldings);
+  return getFundPensionMonthlyPaymentEstimation(amountStep, eligibility, pensionHoldings);
 };

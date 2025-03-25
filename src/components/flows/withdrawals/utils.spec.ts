@@ -8,7 +8,6 @@ import {
   withdrawalEligibility,
 } from './fixture';
 import {
-  decorateSimulatedEligibilityForUnderRetirementAge,
   getAllFundNavsPresent,
   getBankAccountDetails,
   getFundPensionMandatesToCreate,
@@ -49,41 +48,6 @@ describe('getYearsToGoUntilEarlyRetirementAge', () => {
         arrestsOrBankruptciesPresent: false,
       }),
     ).toBe(0);
-  });
-});
-describe('decorateSimulatedEligibilityForUnderRetirementAge', () => {
-  it('returns original eligibility when user is over early retirement age', () => {
-    const eligibility = {
-      age: 60,
-      hasReachedEarlyRetirementAge: true,
-      canWithdrawThirdPillarWithReducedTax: true,
-      recommendedDurationYears: 20,
-      arrestsOrBankruptciesPresent: false,
-    };
-    expect(decorateSimulatedEligibilityForUnderRetirementAge(eligibility)).toStrictEqual(
-      eligibility,
-    );
-  });
-
-  it('returns simulated eligibility when user is under retirement age', () => {
-    const age = 30;
-    const yearsLeftToLive = 55;
-
-    const eligibility = {
-      age,
-      hasReachedEarlyRetirementAge: false,
-      canWithdrawThirdPillarWithReducedTax: false,
-      recommendedDurationYears: yearsLeftToLive,
-      arrestsOrBankruptciesPresent: false,
-    };
-
-    expect(decorateSimulatedEligibilityForUnderRetirementAge(eligibility)).toStrictEqual({
-      age: 60,
-      hasReachedEarlyRetirementAge: true,
-      canWithdrawThirdPillarWithReducedTax: true,
-      recommendedDurationYears: 22,
-      arrestsOrBankruptciesPresent: false,
-    });
   });
 });
 
