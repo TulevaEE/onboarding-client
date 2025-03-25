@@ -14,6 +14,7 @@ import {
   canWithdrawOnlyThirdPillarTaxFree,
   getEstimatedTotalFundPension,
   getPillarRatios,
+  getSingleWithdrawalTaxRate,
   getTotalWithdrawableAmount,
 } from './utils';
 import { formatAmountForCurrency } from '../../common/utils';
@@ -413,7 +414,7 @@ const PartialWithdrawalMandateDescription = ({
   const { data: eligibility } = useWithdrawalsEligibility();
   const { amountStep, pensionHoldings } = useWithdrawalsContext();
 
-  if (!pensionHoldings || !mandateDeadlines || !amountStep.singleWithdrawalAmount) {
+  if (!pensionHoldings || !mandateDeadlines || !amountStep.singleWithdrawalAmount || !eligibility) {
     return <Loader className="align-middle my-4" />;
   }
 
@@ -476,6 +477,7 @@ const PartialWithdrawalMandateDescription = ({
               withdrawalDate: (
                 <WithdrawalPaymentDate mandate={mandate} mandateDeadlines={mandateDeadlines} />
               ),
+              taxPercent: getSingleWithdrawalTaxRate(eligibility) * 100,
             }}
           />
         </p>

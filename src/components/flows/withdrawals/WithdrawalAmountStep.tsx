@@ -10,6 +10,7 @@ import Percentage from '../../common/Percentage';
 import {
   canOnlyPartiallyWithdrawThirdPillar,
   canWithdrawOnlyThirdPillarTaxFree,
+  getSingleWithdrawalEstimateAfterTax,
   getSingleWithdrawalTaxAmount,
   getSingleWithdrawalTaxRate,
   getTotalWithdrawableAmount,
@@ -118,6 +119,7 @@ const SingleWithdrawalSelectionBox = ({
         <SingleWithdrawalSelectionBody
           eligibility={eligibility}
           totalAmount={totalAmount}
+          showTotalAfterTax
           inputValue={inputValue}
           handleInputChange={handleInputChange}
           handleSliderChange={handleSliderChange}
@@ -171,17 +173,24 @@ const SingleWithdrawalSelectionBody = ({
   totalAmount,
   eligibility,
   inputValue,
+  showTotalAfterTax = false,
   handleInputChange,
   handleSliderChange,
 }: {
   totalAmount: number;
   eligibility: WithdrawalsEligibility;
   inputValue: string;
+  showTotalAfterTax?: boolean;
   handleInputChange: (value: string) => unknown;
   handleSliderChange: (value: number) => unknown;
 }) => {
   const { amountStep } = useWithdrawalsContext();
   const taxAmount = getSingleWithdrawalTaxAmount(amountStep, eligibility) ?? 0;
+
+  const withdrawalAmountAfterTax =
+    getSingleWithdrawalEstimateAfterTax(amountStep, eligibility) ?? 0;
+
+  const sliderColor = canOnlyPartiallyWithdrawThirdPillar(eligibility) ? 'BLUE' : 'RED';
 
   return (
     <div id="single-withdrawal-body">
@@ -219,6 +228,7 @@ const SingleWithdrawalSelectionBody = ({
             min={0}
             max={totalAmount}
             step={0.01}
+            color={sliderColor}
           />
           <div className="mt-2 d-flex justify-content-between">
             <div className="text-body-secondary">{formatAmountForCurrency(0, 0)}</div>
@@ -226,13 +236,32 @@ const SingleWithdrawalSelectionBody = ({
           </div>
         </div>
         <p className="m-0 mt-3">
-          <FormattedMessage
-            id="withdrawals.withdrawalAmount.partialWithdrawalTax"
-            values={{ taxPercent: getSingleWithdrawalTaxRate(eligibility) * 100 }}
-          />
-          {taxAmount > 0 ? ': ' : '.'}
-          {taxAmount > 0 && (
-            <span className={styles.warningText}>{formatAmountForCurrency(-taxAmount, 2)}</span>
+          {showTotalAfterTax ? (
+            <div>
+              <div className="d-flex justify-content-between">
+                <FormattedMessage
+                  id="withdrawals.withdrawalAmount.partialWithdrawalTax"
+                  values={{ taxPercent: getSingleWithdrawalTaxRate(eligibility) * 100 }}
+                />
+                {taxAmount > 0 ? ': ' : '.'}
+                <div>
+                  <TaxAmount amount={taxAmount} />
+                </div>
+              </div>
+              {withdrawalAmountAfterTax > 0 && (
+                <div className="d-flex justify-content-between">
+                  <FormattedMessage
+                    id="withdrawals.withdrawalAmount.partialWithdrawalAfterTaxEstimate"
+                    values={{ taxPercent: getSingleWithdrawalTaxRate(eligibility) * 100 }}
+                  />
+                  <div>
+                    <b>{formatAmountForCurrency(withdrawalAmountAfterTax, 2)}</b>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <TaxAmount amount={taxAmount} />
           )}
         </p>
         <p className="m-0 text-body-secondary">
@@ -242,6 +271,14 @@ const SingleWithdrawalSelectionBody = ({
     </div>
   );
 };
+
+const TaxAmount = ({ amount }: { amount: number }) => (
+  <>
+    {amount > 0 && (
+      <span className={styles.warningText}>{formatAmountForCurrency(-amount, 2)}</span>
+    )}
+  </>
+);
 
 const FundPensionStatusBox = () => {
   const { data: eligibility } = useWithdrawalsEligibility();
@@ -489,6 +526,11 @@ const PillarSelection = ({
     [eligibility],
   );
 
+  const showSecondPillarLaterInfo = useMemo(
+    () => canWithdrawOnlyThirdPillarTaxFree(eligibility),
+    [eligibility],
+  );
+
   if (secondPillarAmount > 0 && thirdPillarAmount === 0) {
     return (
       <div className="card p-4 d-flex flex-row justify-content-between mb-3" role="region">
@@ -517,7 +559,7 @@ const PillarSelection = ({
       className={`card d-flex flex-column mb-3  ${styles.pillarSelectionContainer}`}
       role="region"
     >
-      {onlyThirdPillarEnabled && (
+      {showSecondPillarLaterInfo && (
         <div className={styles.pillarSelectionContainerWarning}>
           <FormattedMessage id="withdrawals.withdrawalAmount.secondPillarAtEarlyPensionAge" />
         </div>

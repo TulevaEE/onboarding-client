@@ -3,12 +3,14 @@ import { Link, Redirect } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { useWithdrawalsContext } from './hooks';
 import styles from './Withdrawals.module.scss';
-import { useMandateDeadlines } from '../../common/apiHooks';
+import { useMandateDeadlines, useWithdrawalsEligibility } from '../../common/apiHooks';
 import { Loader } from '../../common';
 import { formatDateRange, formatDateTime } from '../../common/dateFormatter';
+import { getSingleWithdrawalTaxRate } from './utils';
 
 export const DoneStep = () => {
   const { mandatesToCreate, mandatesSubmitted } = useWithdrawalsContext();
+  const { data: eligibility } = useWithdrawalsEligibility();
   const { data: mandateDeadlines } = useMandateDeadlines();
 
   const fundPensionMandateDone = mandatesToCreate?.some(
@@ -31,7 +33,7 @@ export const DoneStep = () => {
     return <Redirect to="/withdrawals" />;
   }
 
-  if (!mandateDeadlines || !mandatesToCreate) {
+  if (!mandateDeadlines || !mandatesToCreate || !eligibility) {
     return <Loader className="align-middle my-4" />;
   }
 

@@ -9,6 +9,7 @@ import {
 } from '../../common/apiModels/withdrawals';
 import { Fund, SourceFund, UserConversion } from '../../common/apiModels/index';
 import { PensionHoldings, PersonalDetailsStepState, WithdrawalsAmountStepState } from './types';
+import { withdrawalEligibility } from './fixture';
 
 export const canAccessWithdrawals = (
   conversion: UserConversion,
@@ -125,6 +126,13 @@ export const getPartialWithdrawalMandatesToCreate = (
     personalDetails.taxResidencyCode,
   );
 
+  if (
+    canOnlyPartiallyWithdrawThirdPillar(withdrawalEligibility) &&
+    withdrawalAmount.pillarsToWithdrawFrom !== 'THIRD'
+  ) {
+    return [];
+  }
+
   if (withdrawalAmount.pillarsToWithdrawFrom === 'THIRD') {
     return [thirdPillarWithdrawal];
   }
@@ -147,6 +155,10 @@ export const getFundPensionMandatesToCreate = (
     pensionHoldings,
   );
   if (!withdrawalAmount.fundPensionEnabled) {
+    return [];
+  }
+
+  if (canOnlyPartiallyWithdrawThirdPillar(withdrawalEligibility)) {
     return [];
   }
 
@@ -350,3 +362,15 @@ export const getPillarRatios = (
   SECOND: holdings.totalSecondPillar / totalAvailableToWithdraw,
   THIRD: holdings.totalThirdPillar / totalAvailableToWithdraw,
 });
+
+export const getSingleWithdrawalEstimateAfterTax = (
+  withdrawalAmount: WithdrawalsAmountStepState,
+  eligibility: WithdrawalsEligibility,
+) => {
+  const taxAmount = getSingleWithdrawalTaxAmount(withdrawalAmount, eligibility);
+  if (withdrawalAmount.singleWithdrawalAmount === null || taxAmount == null) {
+    return null;
+  }
+
+  return withdrawalAmount.singleWithdrawalAmount - taxAmount;
+};
