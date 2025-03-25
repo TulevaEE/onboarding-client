@@ -98,6 +98,10 @@ const SingleWithdrawalSelectionBox = ({
       setAmountStep({
         singleWithdrawalAmount: clampedValue === 0 ? null : clampedValue,
       });
+
+      if (parsedValue > totalAmount) {
+        setInputValue(totalAmount.toFixed(2));
+      }
     }
   };
 
