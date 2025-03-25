@@ -748,6 +748,7 @@
   "withdrawals.withdrawalAmount.partialWithdrawTitle": "Withdraw some money right away",
   "withdrawals.withdrawalAmount.partialWithdrawInputLabel": "Withdraw with {taxPercent}% income tax",
   "withdrawals.withdrawalAmount.partialWithdrawalTax": "Partial withdrawal will be subject to {taxPercent}% income tax",
+  "withdrawals.withdrawalAmount.partialWithdrawalAfterTaxEstimate": "You will receive approximately",
   "withdrawals.withdrawalAmount.precisePriceAtSaleDisclaimer": "The exact amount depends on the price of shares.",
   "withdrawals.withdrawalAmount.fundPensionPrecisePriceAtSaleDisclaimer": "The exact amounts depend on the price of shares.",
   "withdrawals.withdrawalAmount.fundPensionRecommendedPeriodDescription": "Fund pension is tax-free if the period is equal to or longer than the recommended number of years. The recommended period is calculated based on your age and the average lifespan for men and women, published by Statistics Estonia",
@@ -798,7 +799,7 @@
   "withdrawals.mandates.partialWithdrawal.shares": "units",
   "withdrawals.mandates.partialWithdrawal.percentageOfShares": "of units",
 
-  "withdrawals.mandates.partialWithdrawal.dateAndSize": "The payment will be sent on <b>{withdrawalDate}</b>. It will be reflected in the income declaration. <warningText>10% income tax</warningText> will be withheld, so I will receive an estimated <b>{estimatedWithdrawalSizeWithTax}</b>. The exact amount will be determined at the time of selling the fund units.",
+  "withdrawals.mandates.partialWithdrawal.dateAndSize": "The payment will be sent on <b>{withdrawalDate}</b>. It will be reflected in the income declaration. <warningText>{taxPercent}% income tax</warningText> will be withheld, so I will receive an estimated <b>{estimatedWithdrawalSizeWithTax}</b>. The exact amount will be determined at the time of selling the fund units.",
   "withdrawals.mandates.partialWithdrawal.secondPillarPaymentsFinished": "Upon submitting the application, <b>II pillar contributions will stop</b> from {endingDate} and cannot be restored later.",
   "withdrawals.mandates.arrestsBankrupticesDisclaimer": "<b>You cannot cancel the application</b> because there is an active arrest or bankruptcy claim registered in the pension registry.",
 
