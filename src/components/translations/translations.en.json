@@ -759,6 +759,7 @@
   "withdrawals.withdrawalAmount.secondPillarTotal": "Your holdings in II pillar",
   "withdrawals.withdrawalAmount.thirdPillarTotal": "Your holdings in III pillar",
   "withdrawals.withdrawalAmount.secondPillarAtEarlyPensionAge": "You will be able to use your II pillar holdings under preferential conditions when you are 60 years old.",
+  "withdrawals.withdrawalAmount.secondPillarAvailableIn": "You will be able to use your II pillar holdings under preferential conditions in {years} years.",
   "withdrawals.withdrawalAmount.useEntirePensionHoldings": "Withdraw from the entire pension holding",
   "withdrawals.withdrawalAmount.withdrawOnlySecondPillar": "Withdraw only from II pillar",
   "withdrawals.withdrawalAmount.withdrawOnlyThirdPillar": "Withdraw only from III pillar",

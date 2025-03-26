@@ -761,6 +761,7 @@
   "withdrawals.withdrawalAmount.secondPillarTotal": "Sul on II sambas kokku",
   "withdrawals.withdrawalAmount.thirdPillarTotal": "Sul on III sambas kokku",
   "withdrawals.withdrawalAmount.secondPillarAtEarlyPensionAge": "II samba vara saad soodustingimusel kasutama hakata 60-aastaselt.",
+  "withdrawals.withdrawalAmount.secondPillarAvailableIn": "II samba vara saad soodustingimusel kasutama hakata {years} aasta pärast.",
   "withdrawals.withdrawalAmount.useEntirePensionHoldings": "Kasutan kogu pensionivara",
   "withdrawals.withdrawalAmount.withdrawOnlySecondPillar": "Võtan ainult II sambast",
   "withdrawals.withdrawalAmount.withdrawOnlyThirdPillar": "Võtan ainult III sambast",

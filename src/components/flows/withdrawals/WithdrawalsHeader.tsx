@@ -1,14 +1,18 @@
 import React, { ReactChildren } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useWithdrawalsEligibility } from '../../common/apiHooks';
-import { canOnlyPartiallyWithdrawThirdPillar, getYearsToGoUntilEarlyRetirementAge } from './utils';
+import {
+  canOnlyPartiallyWithdrawThirdPillar,
+  canWithdrawOnlyThirdPillarTaxFree,
+  getYearsToGoUntilEarlyRetirementAge,
+} from './utils';
 import { useWithdrawalsContext } from './hooks';
 import { WithdrawalsEligibility } from '../../common/apiModels/withdrawals';
 import { TranslationKey } from '../../translations';
 
 export const WithdrawalsHeader = () => {
   const { data: eligibility } = useWithdrawalsEligibility();
-  const { currentStep } = useWithdrawalsContext();
+  const { currentStep, pensionHoldings } = useWithdrawalsContext();
 
   if (!eligibility) {
     return null;
@@ -30,19 +34,20 @@ export const WithdrawalsHeader = () => {
                 yearsToGo: getYearsToGoUntilEarlyRetirementAge(eligibility),
               }}
             />
-            {canOnlyPartiallyWithdrawThirdPillar(eligibility) && (
-              <>
-                <br />
-                <p className="pt-3">
-                  <FormattedMessage
-                    id="withdrawals.additionalInfoUnder55"
-                    values={{
-                      b: (children: ReactChildren) => <span className="fw-bold">{children}</span>,
-                    }}
-                  />
-                </p>
-              </>
-            )}
+            {canOnlyPartiallyWithdrawThirdPillar(eligibility) &&
+              (pensionHoldings?.totalThirdPillar ?? 0) > 0 && (
+                <>
+                  <br />
+                  <p className="pt-3">
+                    <FormattedMessage
+                      id="withdrawals.additionalInfoUnder55"
+                      values={{
+                        b: (children: ReactChildren) => <span className="fw-bold">{children}</span>,
+                      }}
+                    />
+                  </p>
+                </>
+              )}
           </p>
         </>
       )}

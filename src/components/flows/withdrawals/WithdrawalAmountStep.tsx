@@ -1,10 +1,10 @@
-import React, { ChangeEvent, ReactChildren, useMemo, useState } from 'react';
+import React, { ChangeEvent, ReactChildren, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Collapse } from 'react-bootstrap';
 import { formatAmountForCurrency } from '../../common/utils';
 import { useWithdrawalsEligibility } from '../../common/apiHooks';
 import { InfoTooltip, Radio } from '../../common';
-import { PillarToWithdrawFrom, WithdrawalsAmountStepState } from './types';
+import { PillarToWithdrawFrom } from './types';
 import { useFundPensionCalculation, useWithdrawalsContext } from './hooks';
 import Percentage from '../../common/Percentage';
 import {
@@ -14,6 +14,7 @@ import {
   getSingleWithdrawalTaxAmount,
   getSingleWithdrawalTaxRate,
   getTotalWithdrawableAmount,
+  getYearsToGoUntilEarlyRetirementAge,
 } from './utils';
 import styles from './Withdrawals.module.scss';
 import { useTestMode } from '../../common/test-mode';
@@ -65,6 +66,11 @@ const SingleWithdrawalSelectionBox = ({
     amountStep.singleWithdrawalAmount !== null,
   );
   const [inputValue, setInputValue] = useState(amountStep.singleWithdrawalAmount?.toString() || '');
+
+  useEffect(() => {
+    // when pillar selection is changed
+    handleInputChange('0.00');
+  }, [totalAmount]);
 
   const onSingleWithdrawalSwitchChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSingleWithdrawalSwitch(event.target.checked);
@@ -161,13 +167,16 @@ const SingleWithdrawalSelectionBox = ({
       </div>
 
       <Collapse in={singleWithdrawalSwitch}>
-        <SingleWithdrawalSelectionBody
-          eligibility={eligibility}
-          totalAmount={totalAmount}
-          inputValue={inputValue}
-          handleInputChange={handleInputChange}
-          handleSliderChange={handleSliderChange}
-        />
+        {/* https://stackoverflow.com/questions/60510444/react-bootstrap-collapse-not-working-with-custom-components */}
+        <div>
+          <SingleWithdrawalSelectionBody
+            eligibility={eligibility}
+            totalAmount={totalAmount}
+            inputValue={inputValue}
+            handleInputChange={handleInputChange}
+            handleSliderChange={handleSliderChange}
+          />
+        </div>
       </Collapse>
     </div>
   );
@@ -198,7 +207,7 @@ const SingleWithdrawalSelectionBody = ({
 
   return (
     <div id="single-withdrawal-body">
-      <div className="card-body p-4">
+      <div className={`card-body p-4 ${!onlyThirdPillarPartialWithdrawal ? 'border-top' : ''}`}>
         <div className="d-flex flex-column flex-md-row justify-content-md-between align-items-md-center fs-3">
           <label htmlFor="single-withdrawal-amount" className="mb-0">
             <FormattedMessage
@@ -265,7 +274,14 @@ const SingleWithdrawalSelectionBody = ({
               )}
             </div>
           ) : (
-            <TaxAmount amount={taxAmount} />
+            <p className="m-0 mt-3">
+              <FormattedMessage
+                id="withdrawals.withdrawalAmount.partialWithdrawalTax"
+                values={{ taxPercent: getSingleWithdrawalTaxRate(eligibility) * 100 }}
+              />
+              {taxAmount > 0 ? ': ' : '.'}
+              <TaxAmount amount={taxAmount} />
+            </p>
           )}
         </p>
         <p
@@ -411,6 +427,35 @@ const SummaryBox = () => {
   const canNavigateToNextStep = (mandatesToCreate ?? []).length > 0 || isTestModeEnabled;
 
   if (canOnlyPartiallyWithdrawThirdPillar(eligibility)) {
+    if (amountStep.pillarsToWithdrawFrom !== 'THIRD') {
+      return (
+        <div
+          className="mt-5 card text-center bg-warning-subtle border-warning"
+          role="region"
+          aria-labelledby="not-eligible-title"
+        >
+          <div className="card-body p-4 d-flex flex-column gap-4">
+            <div className="d-flex flex-column gap-2">
+              <h2 id="not-eligible-title" className="m-0 h3 fw-semibold">
+                <FormattedMessage id="withdrawals.navigation.notEligible" />
+              </h2>
+              <p className="m-0">
+                <FormattedMessage
+                  id="withdrawals.withdrawalAmount.secondPillarAvailableIn"
+                  values={{ years: getYearsToGoUntilEarlyRetirementAge(eligibility) }}
+                />
+              </p>
+            </div>
+            <div className="d-grid">
+              <button className="btn btn-lg btn-secondary" type="button" disabled>
+                <FormattedMessage id="withdrawals.navigation.continue" />
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="d-flex flex-row-reverse mt-5">
         <button

@@ -9,7 +9,6 @@ import {
 } from '../../common/apiModels/withdrawals';
 import { Fund, SourceFund, UserConversion } from '../../common/apiModels/index';
 import { PensionHoldings, PersonalDetailsStepState, WithdrawalsAmountStepState } from './types';
-import { withdrawalEligibility } from './fixture';
 
 export const canAccessWithdrawals = (
   conversion: UserConversion,
@@ -65,6 +64,7 @@ export const getBankAccountDetails = (
 export const getPartialWithdrawalMandatesToCreate = (
   personalDetails: PersonalDetailsStepState,
   withdrawalAmount: WithdrawalsAmountStepState,
+  eligibility: WithdrawalsEligibility,
   pensionHoldings: PensionHoldings,
   funds: Fund[],
   secondPillarSourceFunds: SourceFund[],
@@ -127,7 +127,7 @@ export const getPartialWithdrawalMandatesToCreate = (
   );
 
   if (
-    canOnlyPartiallyWithdrawThirdPillar(withdrawalEligibility) &&
+    canOnlyPartiallyWithdrawThirdPillar(eligibility) &&
     withdrawalAmount.pillarsToWithdrawFrom !== 'THIRD'
   ) {
     return [];
@@ -158,7 +158,11 @@ export const getFundPensionMandatesToCreate = (
     return [];
   }
 
-  if (canOnlyPartiallyWithdrawThirdPillar(withdrawalEligibility)) {
+  if (canOnlyPartiallyWithdrawThirdPillar(withdrawalsEligibility)) {
+    return [];
+  }
+
+  if (canWithdrawOnlyThirdPillarTaxFree(withdrawalsEligibility)) {
     return [];
   }
 
@@ -231,6 +235,7 @@ export const getMandatesToCreate = ({
     ...getPartialWithdrawalMandatesToCreate(
       personalDetails,
       amountStep,
+      eligibility,
       pensionHoldings,
       funds,
       secondPillarSourceFunds,

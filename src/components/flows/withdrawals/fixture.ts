@@ -2,7 +2,7 @@ import { PersonalDetailsStepState, PensionHoldings } from './types';
 import { Fund, SourceFund } from '../../common/apiModels';
 import { WithdrawalsEligibility } from '../../common/apiModels/withdrawals';
 
-export const withdrawalEligibility: WithdrawalsEligibility = {
+export const withdrawalEligibilityFixture: WithdrawalsEligibility = {
   hasReachedEarlyRetirementAge: true,
   canWithdrawThirdPillarWithReducedTax: true,
   recommendedDurationYears: 20,
