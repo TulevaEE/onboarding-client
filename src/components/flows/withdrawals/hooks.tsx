@@ -131,7 +131,7 @@ export const WithdrawalsProvider = ({
     if (eligibility) {
       if (canWithdrawOnlyThirdPillarTaxFree(eligibility)) {
         setAmountStep({ pillarsToWithdrawFrom: 'THIRD' });
-      } else if (canOnlyPartiallyWithdrawThirdPillar(eligibility)) {
+      } else if (canOnlyPartiallyWithdrawThirdPillar(eligibility) && totalThirdPillar > 0) {
         setAmountStep({ fundPensionEnabled: false, pillarsToWithdrawFrom: 'THIRD' });
       }
 

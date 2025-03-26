@@ -5,7 +5,7 @@ import {
   secondPillarSourceFunds,
   TEST_NAVS,
   thirdPillarSourceFunds,
-  withdrawalEligibility,
+  withdrawalEligibilityFixture,
 } from './fixture';
 import {
   getAllFundNavsPresent,
@@ -130,6 +130,7 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
           pillarsToWithdrawFrom: 'BOTH',
           singleWithdrawalAmount: null,
         },
+        withdrawalEligibilityFixture,
         pensionHoldings,
         funds,
         secondPillarSourceFunds,
@@ -146,6 +147,7 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
         pillarsToWithdrawFrom: 'BOTH',
         singleWithdrawalAmount: pensionHoldings.totalBothPillars,
       },
+      withdrawalEligibilityFixture,
       pensionHoldings,
       funds,
       secondPillarSourceFunds,
@@ -196,6 +198,7 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
         pillarsToWithdrawFrom: 'BOTH',
         singleWithdrawalAmount: pensionHoldings.totalBothPillars * 0.4,
       },
+      withdrawalEligibilityFixture,
       pensionHoldings,
       funds,
       secondPillarSourceFunds,
@@ -250,6 +253,7 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
         pillarsToWithdrawFrom: 'SECOND',
         singleWithdrawalAmount: pensionHoldings.totalSecondPillar * 0.4,
       },
+      withdrawalEligibilityFixture,
       pensionHoldings,
       funds,
       secondPillarSourceFunds,
@@ -288,6 +292,7 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
         pillarsToWithdrawFrom: 'THIRD',
         singleWithdrawalAmount: pensionHoldings.totalThirdPillar * 0.4,
       },
+      withdrawalEligibilityFixture,
       pensionHoldings,
       funds,
       secondPillarSourceFunds,
@@ -325,7 +330,7 @@ describe('getFundPensionMandatesToCreate', () => {
           pillarsToWithdrawFrom: 'BOTH',
           singleWithdrawalAmount: pensionHoldings.totalBothPillars,
         },
-        withdrawalEligibility,
+        withdrawalEligibilityFixture,
         pensionHoldings,
       ),
     ).toStrictEqual([]);
@@ -338,7 +343,7 @@ describe('getFundPensionMandatesToCreate', () => {
           pillarsToWithdrawFrom: 'SECOND',
           singleWithdrawalAmount: pensionHoldings.totalSecondPillar,
         },
-        withdrawalEligibility,
+        withdrawalEligibilityFixture,
         pensionHoldings,
       ),
     ).toStrictEqual([]);
@@ -351,7 +356,7 @@ describe('getFundPensionMandatesToCreate', () => {
           pillarsToWithdrawFrom: 'THIRD',
           singleWithdrawalAmount: pensionHoldings.totalThirdPillar,
         },
-        withdrawalEligibility,
+        withdrawalEligibilityFixture,
         pensionHoldings,
       ),
     ).toStrictEqual([]);
@@ -366,7 +371,7 @@ describe('getFundPensionMandatesToCreate', () => {
           pillarsToWithdrawFrom: 'BOTH',
           singleWithdrawalAmount: pensionHoldings.totalBothPillars,
         },
-        withdrawalEligibility,
+        withdrawalEligibilityFixture,
         pensionHoldings,
       ),
     ).toStrictEqual([]);
@@ -379,7 +384,7 @@ describe('getFundPensionMandatesToCreate', () => {
           pillarsToWithdrawFrom: 'SECOND',
           singleWithdrawalAmount: pensionHoldings.totalSecondPillar,
         },
-        withdrawalEligibility,
+        withdrawalEligibilityFixture,
         pensionHoldings,
       ),
     ).toStrictEqual([]);
@@ -392,7 +397,7 @@ describe('getFundPensionMandatesToCreate', () => {
           pillarsToWithdrawFrom: 'THIRD',
           singleWithdrawalAmount: pensionHoldings.totalThirdPillar,
         },
-        withdrawalEligibility,
+        withdrawalEligibilityFixture,
         pensionHoldings,
       ),
     ).toStrictEqual([]);
@@ -406,7 +411,7 @@ describe('getFundPensionMandatesToCreate', () => {
         pillarsToWithdrawFrom: 'BOTH',
         singleWithdrawalAmount: null,
       },
-      withdrawalEligibility,
+      withdrawalEligibilityFixture,
       pensionHoldings,
     );
 
@@ -444,7 +449,7 @@ describe('getFundPensionMandatesToCreate', () => {
         pillarsToWithdrawFrom: 'SECOND',
         singleWithdrawalAmount: null,
       },
-      withdrawalEligibility,
+      withdrawalEligibilityFixture,
       pensionHoldings,
     );
 
@@ -470,7 +475,7 @@ describe('getFundPensionMandatesToCreate', () => {
         pillarsToWithdrawFrom: 'THIRD',
         singleWithdrawalAmount: null,
       },
-      withdrawalEligibility,
+      withdrawalEligibilityFixture,
       pensionHoldings,
     );
 
@@ -502,7 +507,7 @@ describe('getMandatesToCreate', () => {
       funds,
       secondPillarSourceFunds,
       thirdPillarSourceFunds,
-      eligibility: withdrawalEligibility,
+      eligibility: withdrawalEligibilityFixture,
     });
 
     expect(mandates?.length).toBe(4);
