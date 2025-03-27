@@ -273,9 +273,15 @@ export const SelectSources = ({
                   onChange={(event) => onSelectFutureContributionsFund(event.target.value)}
                   value={selectedFutureContributionsFundIsin || ''}
                 >
-                  <option value="1" hidden>
-                    <FormattedMessage id="transfer.future.capital.other.fund" />
-                  </option>
+                  {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+                  {/* @ts-ignore */}
+                  <FormattedMessage id="transfer.future.capital.other.fund">
+                    {(message: string) => (
+                      <option value="1" hidden>
+                        {message}
+                      </option>
+                    )}
+                  </FormattedMessage>
                   {targetFunds.map((fund: Fund) => (
                     <option value={fund.isin} key={fund.isin}>
                       {fund.name}
