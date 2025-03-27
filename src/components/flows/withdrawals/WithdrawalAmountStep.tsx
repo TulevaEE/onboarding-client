@@ -69,7 +69,7 @@ const SingleWithdrawalSelectionBox = ({
 
   useEffect(() => {
     // when pillar selection is changed
-    handleInputChange('0.00');
+    handleInputChange('');
   }, [totalAmount]);
 
   const onSingleWithdrawalSwitchChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -198,10 +198,11 @@ const SingleWithdrawalSelectionBody = ({
   handleSliderChange: (value: number) => unknown;
 }) => {
   const { amountStep } = useWithdrawalsContext();
-  const taxAmount = getSingleWithdrawalTaxAmount(amountStep, eligibility) ?? 0;
+  const taxAmount =
+    getSingleWithdrawalTaxAmount(amountStep.singleWithdrawalAmount, eligibility) ?? 0;
 
   const withdrawalAmountAfterTax =
-    getSingleWithdrawalEstimateAfterTax(amountStep, eligibility) ?? 0;
+    getSingleWithdrawalEstimateAfterTax(amountStep.singleWithdrawalAmount, eligibility) ?? 0;
 
   const sliderColor = canOnlyPartiallyWithdrawThirdPillar(eligibility) ? 'BLUE' : 'RED';
 
@@ -423,7 +424,8 @@ const SummaryBox = () => {
     return null;
   }
 
-  const taxAmount = getSingleWithdrawalTaxAmount(amountStep, eligibility) ?? 0;
+  const taxAmount =
+    getSingleWithdrawalTaxAmount(amountStep.singleWithdrawalAmount, eligibility) ?? 0;
   const canNavigateToNextStep = (mandatesToCreate ?? []).length > 0 || isTestModeEnabled;
 
   if (canOnlyPartiallyWithdrawThirdPillar(eligibility)) {

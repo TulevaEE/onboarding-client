@@ -162,10 +162,6 @@ export const getFundPensionMandatesToCreate = (
     return [];
   }
 
-  if (canWithdrawOnlyThirdPillarTaxFree(withdrawalsEligibility)) {
-    return [];
-  }
-
   if (totalAmount === withdrawalAmount.singleWithdrawalAmount) {
     return [];
   }
@@ -295,16 +291,16 @@ export const getAllFundNavsPresent = (
 };
 
 export const getSingleWithdrawalTaxAmount = (
-  withdrawalAmount: WithdrawalsAmountStepState,
+  withdrawalAmount: number | null,
   eligibility: WithdrawalsEligibility,
 ) => {
-  if (!withdrawalAmount.singleWithdrawalAmount) {
+  if (withdrawalAmount === null) {
     return null;
   }
 
   const INCOME_TAX_RATE = getSingleWithdrawalTaxRate(eligibility);
 
-  return withdrawalAmount.singleWithdrawalAmount * INCOME_TAX_RATE;
+  return withdrawalAmount * INCOME_TAX_RATE;
 };
 
 export const getSingleWithdrawalTaxRate = (eligibility: WithdrawalsEligibility) => {
@@ -369,13 +365,13 @@ export const getPillarRatios = (
 });
 
 export const getSingleWithdrawalEstimateAfterTax = (
-  withdrawalAmount: WithdrawalsAmountStepState,
+  withdrawalAmount: number | null,
   eligibility: WithdrawalsEligibility,
 ) => {
   const taxAmount = getSingleWithdrawalTaxAmount(withdrawalAmount, eligibility);
-  if (withdrawalAmount.singleWithdrawalAmount === null || taxAmount == null) {
+  if (withdrawalAmount === null || taxAmount == null) {
     return null;
   }
 
-  return withdrawalAmount.singleWithdrawalAmount - taxAmount;
+  return withdrawalAmount - taxAmount;
 };

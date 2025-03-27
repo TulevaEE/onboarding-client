@@ -52,55 +52,215 @@ beforeEach(async () => {
 });
 
 describe('withdrawals flow before early retirement age', () => {
-  beforeEach(() => {
-    pensionAccountStatementBackend(server);
+  test('with only second pillar can not proceed', async () => {
+    pensionAccountStatementBackend(server, [
+      {
+        fund: {
+          fundManager: { name: 'Swedbank' },
+          isin: 'EE3600019758',
+          name: 'Swedbank Pension Fund K60',
+          managementFeeRate: 0.0083,
+          pillar: 2,
+          ongoingChargesFigure: 0.0065,
+          status: 'ACTIVE',
+          inceptionDate: '2017-01-01',
+          nav: 1,
+        },
+        value: 10000,
+        unavailableValue: 0,
+        currency: 'EUR',
+        activeContributions: true,
+        contributions: 112233.44,
+        subtractions: 0,
+        profit: -12233.44,
+      },
+    ]);
     withdrawalsEligibilityBackend(server, {
       age: 25,
       hasReachedEarlyRetirementAge: false,
       canWithdrawThirdPillarWithReducedTax: false,
       recommendedDurationYears: 55,
-      arrestsOrBankruptciesPresent: true,
+      arrestsOrBankruptciesPresent: false,
     });
-  });
-
-  test('can only make calculations on first step and not proceed', async () => {
     expect(await screen.findByText(/25 years old/i)).toBeInTheDocument();
-    expect(await screen.findByText(/in 35 years/i)).toBeInTheDocument();
-    expect(await screen.findByText(/you might receive/i)).toBeInTheDocument();
-
     expect(
-      await screen.findByText(/Withdraw from the entire pension holding/i),
+      await screen.findByText(
+        /You will be able to use your II pillar holdings under preferential conditions in 35 years./i,
+      ),
     ).toBeInTheDocument();
 
-    await assertFundPensionCalculations({
-      fundPensionMonthlySize: '~457 € per month',
-      liquidatedMonthlyPercentage: '0.38%',
-      returnsRegex: /will earn returns for the next 22 years/i,
-      assertSummaryBox: false,
-    });
+    expect(await screen.findByText(/Your holdings in II pillar/i)).toBeInTheDocument();
 
-    userEvent.click(await singleWithdrawalCheckbox());
-    userEvent.type(await partialWithdrawalSizeInput(), '20000');
+    userEvent.type(await partialWithdrawalSizeInput('22%'), '10000');
     assertPartialWithdrawalCalculations({
-      withdrawalAmount: '20 000.00 €',
-      taxAmount: '−2 000.00 €',
+      amount: '10 000.00 €',
+      taxAmount: '−2 200.00 €',
       assertSummaryBox: false,
-    });
-
-    await assertFundPensionCalculations({
-      fundPensionMonthlySize: '~381 € per month',
-      liquidatedMonthlyPercentage: '0.38%',
-      returnsRegex: /will earn returns for the next 22 years/i,
-      assertSummaryBox: false,
+      taxRate: '22%',
     });
 
     expect(nextButton()).toBeDisabled();
 
     userEvent.click(nextButton());
 
+    expect(await screen.findByText(/Your holdings in II pillar/i)).toBeInTheDocument();
+  });
+
+  test('with second and third pillar, can only withdraw third pillar', async () => {
+    pensionAccountStatementBackend(server);
+    withdrawalsEligibilityBackend(server, {
+      age: 25,
+      hasReachedEarlyRetirementAge: false,
+      canWithdrawThirdPillarWithReducedTax: false,
+      recommendedDurationYears: 20 + (60 - 25),
+      arrestsOrBankruptciesPresent: false,
+    });
+
+    expect(await screen.findByText(/25 years old/i)).toBeInTheDocument();
     expect(
-      await screen.findByText(/Withdraw from the entire pension holding/i),
+      await screen.findByText(
+        /eligible to start using your accumulated pension holdings under preferential conditions/i,
+      ),
     ).toBeInTheDocument();
+    expect(await screen.findByText(/in 35 years/i)).toBeInTheDocument();
+
+    expect(
+      await screen.findByText(/Before the age of 60, you can only withdraw money from/i),
+    ).toBeInTheDocument();
+
+    userEvent.click(await screen.findByLabelText(/Withdraw only from II pillar/i));
+
+    expect(
+      await screen.findByText(/Withdraw only from III pillar/i, undefined, {
+        timeout: 1000,
+      }),
+    ).toBeInTheDocument();
+
+    userEvent.type(await partialWithdrawalSizeInput('22%'), '1000');
+    assertPartialWithdrawalCalculations({
+      amount: '1 000.00 €',
+      taxAmount: '−220.00 €',
+      taxRate: '22%',
+      assertSummaryBox: false,
+    });
+
+    userEvent.click(nextButton());
+
+    await enterIban('EE591254471322749514');
+    userEvent.click(nextButton());
+
+    expect(
+      await screen.findByText(/I submit the following applications and am aware of their terms/i),
+    ).toBeInTheDocument();
+
+    expect(await screen.findByText(/EE591254471322749514/i)).toBeInTheDocument();
+    expect(await screen.findByText('EST')).toBeInTheDocument();
+
+    assertMandateCount(1);
+
+    await assertPartialWithdrawalMandate({
+      pillar: 'THIRD',
+      rows: [
+        {
+          fundName: 'Tuleva III Samba Pensionifond',
+          liquidationAmount: '1279.92 units',
+        },
+      ],
+      amount: '780 €',
+      taxRate: '22%',
+    });
+
+    await confirmAndSignAndAssertDone('SINGLE_APPLICATION');
+
+    assertDoneScreenPartialWithdrawal('THIRD');
+  });
+
+  test('with only third pillar, can withdraw', async () => {
+    pensionAccountStatementBackend(server, [
+      {
+        fund: {
+          fundManager: { name: 'Tuleva' },
+          isin: 'EE3600001707',
+          name: 'Tuleva III Samba Pensionifond',
+          managementFeeRate: 0.003,
+          pillar: 3,
+          ongoingChargesFigure: 0.0043,
+          status: 'ACTIVE',
+          inceptionDate: '2017-01-01',
+          nav: 1,
+        },
+        value: 5699.36,
+        unavailableValue: 0,
+        currency: 'EUR',
+        activeContributions: true,
+        contributions: 9876.54,
+        subtractions: 0,
+        profit: -1876.54,
+      },
+    ]);
+    withdrawalsEligibilityBackend(server, {
+      age: 25,
+      hasReachedEarlyRetirementAge: false,
+      canWithdrawThirdPillarWithReducedTax: false,
+      recommendedDurationYears: 20 + (60 - 25),
+      arrestsOrBankruptciesPresent: false,
+    });
+
+    expect(await screen.findByText(/25 years old/i)).toBeInTheDocument();
+    expect(
+      await screen.findByText(
+        /eligible to start using your accumulated pension holdings under preferential conditions/i,
+      ),
+    ).toBeInTheDocument();
+    expect(await screen.findByText(/in 35 years/i)).toBeInTheDocument();
+
+    expect(
+      await screen.findByText(/Before the age of 60, you can only withdraw money from/i),
+    ).toBeInTheDocument();
+
+    expect(
+      await screen.findByText(/Your holdings in III pillar/i, undefined, {
+        timeout: 1000,
+      }),
+    ).toBeInTheDocument();
+
+    userEvent.type(await partialWithdrawalSizeInput('22%'), '1000');
+    assertPartialWithdrawalCalculations({
+      amount: '1 000.00 €',
+      taxAmount: '−220.00 €',
+      taxRate: '22%',
+      assertSummaryBox: false,
+    });
+
+    userEvent.click(nextButton());
+
+    await enterIban('EE591254471322749514');
+    userEvent.click(nextButton());
+
+    expect(
+      await screen.findByText(/I submit the following applications and am aware of their terms/i),
+    ).toBeInTheDocument();
+
+    expect(await screen.findByText(/EE591254471322749514/i)).toBeInTheDocument();
+    expect(await screen.findByText('EST')).toBeInTheDocument();
+
+    assertMandateCount(1);
+
+    await assertPartialWithdrawalMandate({
+      pillar: 'THIRD',
+      rows: [
+        {
+          fundName: 'Tuleva III Samba Pensionifond',
+          liquidationAmount: '1279.92 units',
+        },
+      ],
+      amount: '780 €',
+      taxRate: '22%',
+    });
+
+    await confirmAndSignAndAssertDone('SINGLE_APPLICATION');
+
+    assertDoneScreenPartialWithdrawal('THIRD');
   });
 });
 
@@ -148,7 +308,7 @@ describe('withdrawals flow at 55 withdrawing only third pillar', () => {
     });
 
     userEvent.type(await partialWithdrawalSizeInput(), '1000');
-    assertPartialWithdrawalCalculations({ withdrawalAmount: '1 000.00 €', taxAmount: '−100.00 €' });
+    assertPartialWithdrawalCalculations({ amount: '1 000.00 €', taxAmount: '−100.00 €' });
 
     await assertFundPensionCalculations({
       fundPensionMonthlySize: '16 € per month',
@@ -171,16 +331,16 @@ describe('withdrawals flow at 55 withdrawing only third pillar', () => {
     assertMandateCount(2);
 
     await assertFundPensionMandate('THIRD', '16 €');
-    await assertPartialWithdrawalMandate(
-      'THIRD',
-      [
+    await assertPartialWithdrawalMandate({
+      pillar: 'THIRD',
+      rows: [
         {
           fundName: 'Tuleva III Samba Pensionifond',
           liquidationAmount: '1279.92 units',
         },
       ],
-      '900 €',
-    );
+      amount: '900 €',
+    });
 
     await confirmAndSignAndAssertDone();
 

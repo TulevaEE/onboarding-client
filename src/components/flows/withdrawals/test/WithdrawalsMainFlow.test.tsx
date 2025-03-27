@@ -72,7 +72,7 @@ describe('withdrawals flow with both pillars', () => {
     userEvent.click(await singleWithdrawalCheckbox());
     userEvent.type(await partialWithdrawalSizeInput(), '20000');
     assertPartialWithdrawalCalculations({
-      withdrawalAmount: '20 000.00 €',
+      amount: '20 000.00 €',
       taxAmount: '−2 000.00 €',
     });
 
@@ -95,9 +95,9 @@ describe('withdrawals flow with both pillars', () => {
     await assertFundPensionMandate('SECOND', '400 €');
     await assertFundPensionMandate('THIRD', '20 €');
 
-    await assertPartialWithdrawalMandate(
-      'SECOND',
-      [
+    await assertPartialWithdrawalMandate({
+      pillar: 'SECOND',
+      rows: [
         {
           fundName: 'Tuleva World Stocks Pension Fund',
           liquidationAmount: '16%',
@@ -107,19 +107,19 @@ describe('withdrawals flow with both pillars', () => {
           liquidationAmount: '16%',
         },
       ],
-      '17 150 €',
-    );
+      amount: '17 150 €',
+    });
 
-    await assertPartialWithdrawalMandate(
-      'THIRD',
-      [
+    await assertPartialWithdrawalMandate({
+      pillar: 'THIRD',
+      rows: [
         {
           fundName: 'Tuleva III Samba Pensionifond',
           liquidationAmount: '1208.74 units',
         },
       ],
-      '850 €',
-    );
+      amount: '850 €',
+    });
 
     await confirmAndSignAndAssertDone();
 
@@ -177,7 +177,7 @@ describe('withdrawals flow with both pillars', () => {
     userEvent.click(await singleWithdrawalCheckbox());
     userEvent.type(await partialWithdrawalSizeInput(), '120699.36'); // max amount
     assertPartialWithdrawalCalculations({
-      withdrawalAmount: '120 699.36 €',
+      amount: '120 699.36 €',
       taxAmount: '−12 069.94 €',
     });
 
@@ -199,9 +199,9 @@ describe('withdrawals flow with both pillars', () => {
 
     assertMandateCount(2);
 
-    await assertPartialWithdrawalMandate(
-      'SECOND',
-      [
+    await assertPartialWithdrawalMandate({
+      pillar: 'SECOND',
+      rows: [
         {
           fundName: 'Tuleva World Stocks Pension Fund',
           liquidationAmount: '100%',
@@ -211,19 +211,19 @@ describe('withdrawals flow with both pillars', () => {
           liquidationAmount: '100%',
         },
       ],
-      '103 500 €', // 115 000 - 10% tax
-    );
+      amount: '103 500 €', // 115 000 - 10% tax
+    });
 
-    await assertPartialWithdrawalMandate(
-      'THIRD',
-      [
+    await assertPartialWithdrawalMandate({
+      pillar: 'THIRD',
+      rows: [
         {
           fundName: 'Tuleva III Samba Pensionifond',
           liquidationAmount: '7294.71 units', // 5699.36 / nav 0.7813
         },
       ],
-      '5 129 €', // 5699.36 - 10% tax
-    );
+      amount: '5 129 €', // 5699.36 - 10% tax
+    });
 
     await confirmAndSignAndAssertDone();
 
@@ -297,7 +297,7 @@ describe('withdrawals flow with both pillars', () => {
     userEvent.click(await singleWithdrawalCheckbox());
     userEvent.type(await partialWithdrawalSizeInput(), '20000');
     assertPartialWithdrawalCalculations({
-      withdrawalAmount: '20 000.00 €',
+      amount: '20 000.00 €',
       taxAmount: '−2 000.00 €',
     });
 
@@ -314,9 +314,9 @@ describe('withdrawals flow with both pillars', () => {
 
     await assertFundPensionMandate('SECOND', finalFundPensionSize);
 
-    await assertPartialWithdrawalMandate(
-      'SECOND',
-      [
+    await assertPartialWithdrawalMandate({
+      pillar: 'SECOND',
+      rows: [
         {
           fundName: 'Tuleva World Stocks Pension Fund',
           liquidationAmount: '17%',
@@ -326,8 +326,8 @@ describe('withdrawals flow with both pillars', () => {
           liquidationAmount: '17%',
         },
       ],
-      '18 000 €',
-    );
+      amount: '18 000 €',
+    });
 
     await confirmAndSignAndAssertDone();
   }, 20_000);
@@ -355,7 +355,7 @@ describe('withdrawals flow with both pillars', () => {
 
     await assertFundPensionMandate('SECOND', finalFundPensionSize);
 
-    await confirmAndSignAndAssertDone(true);
+    await confirmAndSignAndAssertDone('SINGLE_APPLICATION');
   }, 20_000);
 
   test('uses only third pillar with partial withdrawal ', async () => {
@@ -371,7 +371,7 @@ describe('withdrawals flow with both pillars', () => {
 
     userEvent.click(await singleWithdrawalCheckbox());
     userEvent.type(await partialWithdrawalSizeInput(), '1000');
-    assertPartialWithdrawalCalculations({ withdrawalAmount: '1 000.00 €', taxAmount: '−100.00 €' });
+    assertPartialWithdrawalCalculations({ amount: '1 000.00 €', taxAmount: '−100.00 €' });
 
     const finalFundPensionSize = '20 €';
     await assertFundPensionCalculations({
@@ -387,16 +387,16 @@ describe('withdrawals flow with both pillars', () => {
 
     await assertFundPensionMandate('THIRD', finalFundPensionSize);
 
-    await assertPartialWithdrawalMandate(
-      'THIRD',
-      [
+    await assertPartialWithdrawalMandate({
+      pillar: 'THIRD',
+      rows: [
         {
           fundName: 'Tuleva III Samba Pensionifond',
           liquidationAmount: '1279.92 units',
         },
       ],
-      '900 €',
-    );
+      amount: '900 €',
+    });
 
     await confirmAndSignAndAssertDone();
   }, 20_000);
@@ -423,7 +423,7 @@ describe('withdrawals flow with both pillars', () => {
     assertMandateCount(1);
     await assertFundPensionMandate('THIRD', finalFundPensionSize);
 
-    await confirmAndSignAndAssertDone(true);
+    await confirmAndSignAndAssertDone('SINGLE_APPLICATION');
   }, 20_000);
 });
 
@@ -511,7 +511,7 @@ describe('withdrawals flow with only second pillar and arrests/bankruptcy', () =
     userEvent.click(await singleWithdrawalCheckbox());
     userEvent.type(await partialWithdrawalSizeInput(), '50000');
     assertPartialWithdrawalCalculations({
-      withdrawalAmount: '50 000.00 €',
+      amount: '50 000.00 €',
       taxAmount: '−5 000.00 €',
     });
 
@@ -525,9 +525,9 @@ describe('withdrawals flow with only second pillar and arrests/bankruptcy', () =
     assertMandateCount(2);
 
     assertFundPensionMandate('SECOND', '271 €', 'BANKRUPTCIES_ARRESTS_PRESENT');
-    assertPartialWithdrawalMandate(
-      'SECOND',
-      [
+    assertPartialWithdrawalMandate({
+      pillar: 'SECOND',
+      rows: [
         {
           fundName: 'Tuleva World Stocks Pension Fund',
           liquidationAmount: '43%',
@@ -537,9 +537,9 @@ describe('withdrawals flow with only second pillar and arrests/bankruptcy', () =
           liquidationAmount: '43%',
         },
       ],
-      '45 000 €',
-      'BANKRUPTCIES_ARRESTS_PRESENT',
-    );
+      amount: '45 000 €',
+      bankruptciesPresent: 'BANKRUPTCIES_ARRESTS_PRESENT',
+    });
 
     await confirmAndSignAndAssertDone();
   });
@@ -588,16 +588,16 @@ describe('withdrawals flow with only third pillar', () => {
     assertMandateCount(2);
 
     assertFundPensionMandate('THIRD', '23 €');
-    assertPartialWithdrawalMandate(
-      'THIRD',
-      [
+    assertPartialWithdrawalMandate({
+      pillar: 'THIRD',
+      rows: [
         {
           fundName: 'Tuleva III Samba Pensionifond',
           liquidationAmount: '127.99 units',
         },
       ],
-      '90 €',
-    );
+      amount: '90 €',
+    });
 
     await confirmAndSignAndAssertDone();
   });
