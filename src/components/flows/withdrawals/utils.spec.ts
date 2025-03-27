@@ -13,6 +13,9 @@ import {
   getFundPensionMandatesToCreate,
   getMandatesToCreate,
   getPartialWithdrawalMandatesToCreate,
+  getSingleWithdrawalEstimateAfterTax,
+  getSingleWithdrawalTaxAmount,
+  getSingleWithdrawalTaxRate,
   getYearsToGoUntilEarlyRetirementAge,
 } from './utils';
 
@@ -48,6 +51,128 @@ describe('getYearsToGoUntilEarlyRetirementAge', () => {
         arrestsOrBankruptciesPresent: false,
       }),
     ).toBe(0);
+  });
+});
+
+describe('getSingleWithdrawalTaxRate', () => {
+  it('return correct tax rate', () => {
+    expect(
+      getSingleWithdrawalTaxRate({
+        age: 25,
+        hasReachedEarlyRetirementAge: false,
+        canWithdrawThirdPillarWithReducedTax: false,
+        recommendedDurationYears: 50,
+        arrestsOrBankruptciesPresent: false,
+      }),
+    ).toBe(0.22);
+
+    expect(
+      getSingleWithdrawalTaxRate({
+        age: 55,
+        hasReachedEarlyRetirementAge: false,
+        canWithdrawThirdPillarWithReducedTax: true,
+        recommendedDurationYears: 15,
+        arrestsOrBankruptciesPresent: false,
+      }),
+    ).toBe(0.1);
+
+    expect(
+      getSingleWithdrawalTaxRate({
+        age: 60,
+        hasReachedEarlyRetirementAge: true,
+        canWithdrawThirdPillarWithReducedTax: true,
+        recommendedDurationYears: 20,
+        arrestsOrBankruptciesPresent: false,
+      }),
+    ).toBe(0.1);
+  });
+});
+
+describe('getSingleWithdrawalTaxAmount', () => {
+  it('return correct tax amount', () => {
+    expect(
+      getSingleWithdrawalTaxAmount(null, {
+        age: 25,
+        hasReachedEarlyRetirementAge: false,
+        canWithdrawThirdPillarWithReducedTax: false,
+        recommendedDurationYears: 50,
+        arrestsOrBankruptciesPresent: false,
+      }),
+    ).toBe(null);
+
+    expect(
+      getSingleWithdrawalTaxAmount(10000, {
+        age: 25,
+        hasReachedEarlyRetirementAge: false,
+        canWithdrawThirdPillarWithReducedTax: false,
+        recommendedDurationYears: 50,
+        arrestsOrBankruptciesPresent: false,
+      }),
+    ).toBe(2200);
+
+    expect(
+      getSingleWithdrawalTaxAmount(10000, {
+        age: 55,
+        hasReachedEarlyRetirementAge: false,
+        canWithdrawThirdPillarWithReducedTax: true,
+        recommendedDurationYears: 15,
+        arrestsOrBankruptciesPresent: false,
+      }),
+    ).toBe(1000);
+
+    expect(
+      getSingleWithdrawalTaxAmount(10000, {
+        age: 60,
+        hasReachedEarlyRetirementAge: true,
+        canWithdrawThirdPillarWithReducedTax: true,
+        recommendedDurationYears: 20,
+        arrestsOrBankruptciesPresent: false,
+      }),
+    ).toBe(1000);
+  });
+});
+
+describe('getSingleWithdrawalEstimateAfterTax', () => {
+  it('return correct amount after tax', () => {
+    expect(
+      getSingleWithdrawalEstimateAfterTax(null, {
+        age: 25,
+        hasReachedEarlyRetirementAge: false,
+        canWithdrawThirdPillarWithReducedTax: false,
+        recommendedDurationYears: 50,
+        arrestsOrBankruptciesPresent: false,
+      }),
+    ).toBe(null);
+
+    expect(
+      getSingleWithdrawalEstimateAfterTax(10000, {
+        age: 25,
+        hasReachedEarlyRetirementAge: false,
+        canWithdrawThirdPillarWithReducedTax: false,
+        recommendedDurationYears: 50,
+        arrestsOrBankruptciesPresent: false,
+      }),
+    ).toBe(7800);
+
+    expect(
+      getSingleWithdrawalEstimateAfterTax(10000, {
+        age: 55,
+        hasReachedEarlyRetirementAge: false,
+        canWithdrawThirdPillarWithReducedTax: true,
+        recommendedDurationYears: 15,
+        arrestsOrBankruptciesPresent: false,
+      }),
+    ).toBe(9000);
+
+    expect(
+      getSingleWithdrawalEstimateAfterTax(10000, {
+        age: 60,
+        hasReachedEarlyRetirementAge: true,
+        canWithdrawThirdPillarWithReducedTax: true,
+        recommendedDurationYears: 20,
+        arrestsOrBankruptciesPresent: false,
+      }),
+    ).toBe(9000);
   });
 });
 
@@ -135,6 +260,48 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
         funds,
         secondPillarSourceFunds,
         thirdPillarSourceFunds,
+      ),
+    ).toStrictEqual([]);
+  });
+
+  it('returns nothing when withdrawing second pillar and <55', () => {
+    const under55Eligibility = {
+      hasReachedEarlyRetirementAge: false,
+      canWithdrawThirdPillarWithReducedTax: false,
+      recommendedDurationYears: 45,
+      age: 25,
+      arrestsOrBankruptciesPresent: false,
+    };
+
+    expect(
+      getPartialWithdrawalMandatesToCreate(
+        personalDetails,
+        {
+          fundPensionEnabled: true,
+          pillarsToWithdrawFrom: 'BOTH',
+          singleWithdrawalAmount: null,
+        },
+        under55Eligibility,
+        pensionHoldings,
+        funds,
+        secondPillarSourceFunds,
+        thirdPillarSourceFunds,
+      ),
+    ).toStrictEqual([]);
+
+    expect(
+      getPartialWithdrawalMandatesToCreate(
+        personalDetails,
+        {
+          fundPensionEnabled: true,
+          pillarsToWithdrawFrom: 'SECOND',
+          singleWithdrawalAmount: null,
+        },
+        under55Eligibility,
+        pensionHoldings,
+        funds,
+        secondPillarSourceFunds,
+        [],
       ),
     ).toStrictEqual([]);
   });
@@ -357,6 +524,55 @@ describe('getFundPensionMandatesToCreate', () => {
           singleWithdrawalAmount: pensionHoldings.totalThirdPillar,
         },
         withdrawalEligibilityFixture,
+        pensionHoldings,
+      ),
+    ).toStrictEqual([]);
+  });
+
+  it('returns nothing when under 55', () => {
+    const under55Eligibility = {
+      hasReachedEarlyRetirementAge: false,
+      canWithdrawThirdPillarWithReducedTax: false,
+      recommendedDurationYears: 45,
+      age: 25,
+      arrestsOrBankruptciesPresent: false,
+    };
+
+    expect(
+      getFundPensionMandatesToCreate(
+        personalDetails,
+        {
+          fundPensionEnabled: false,
+          pillarsToWithdrawFrom: 'BOTH',
+          singleWithdrawalAmount: pensionHoldings.totalBothPillars,
+        },
+        under55Eligibility,
+        pensionHoldings,
+      ),
+    ).toStrictEqual([]);
+
+    expect(
+      getFundPensionMandatesToCreate(
+        personalDetails,
+        {
+          fundPensionEnabled: false,
+          pillarsToWithdrawFrom: 'SECOND',
+          singleWithdrawalAmount: pensionHoldings.totalSecondPillar,
+        },
+        under55Eligibility,
+        pensionHoldings,
+      ),
+    ).toStrictEqual([]);
+
+    expect(
+      getFundPensionMandatesToCreate(
+        personalDetails,
+        {
+          fundPensionEnabled: false,
+          pillarsToWithdrawFrom: 'THIRD',
+          singleWithdrawalAmount: pensionHoldings.totalThirdPillar,
+        },
+        under55Eligibility,
         pensionHoldings,
       ),
     ).toStrictEqual([]);
