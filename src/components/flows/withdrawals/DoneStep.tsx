@@ -6,7 +6,6 @@ import styles from './Withdrawals.module.scss';
 import { useMandateDeadlines, useWithdrawalsEligibility } from '../../common/apiHooks';
 import { Loader } from '../../common';
 import { formatDateRange, formatDateTime } from '../../common/dateFormatter';
-import { getSingleWithdrawalTaxRate } from './utils';
 
 export const DoneStep = () => {
   const { mandatesToCreate, mandatesSubmitted } = useWithdrawalsContext();
