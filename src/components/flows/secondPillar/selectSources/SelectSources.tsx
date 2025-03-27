@@ -273,10 +273,8 @@ export const SelectSources = ({
                   onChange={(event) => onSelectFutureContributionsFund(event.target.value)}
                   value={selectedFutureContributionsFundIsin || ''}
                 >
-                  {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-                  {/* @ts-ignore */}
                   <FormattedMessage id="transfer.future.capital.other.fund">
-                    {(message: string) => (
+                    {(message) => (
                       <option value="1" hidden>
                         {message}
                       </option>
