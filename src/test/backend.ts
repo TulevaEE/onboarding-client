@@ -621,7 +621,6 @@ export function mandatesBackend(
 ) {
   server.use(
     rest.post('http://localhost/v1/mandates', (req, res, ctx) => {
-      console.log('mandate request: ', req.body, ' expected:', expectedRequest);
       if (
         expectedRequest !== null &&
         JSON.stringify(req.body) !== JSON.stringify(expectedRequest)

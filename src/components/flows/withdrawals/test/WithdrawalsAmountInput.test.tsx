@@ -11,6 +11,7 @@ import {
   useTestBackendsExcept,
   withdrawalsEligibilityBackend,
 } from '../../../../test/backend';
+import { singleWithdrawalCheckbox } from './utils';
 
 const server = setupServer();
 let history: History;
@@ -37,9 +38,10 @@ beforeEach(async () => {
 });
 
 describe('withdrawals amount input', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     pensionAccountStatementBackend(server);
     withdrawalsEligibilityBackend(server);
+    userEvent.click(await singleWithdrawalCheckbox());
   });
 
   test('can type amount', async () => {

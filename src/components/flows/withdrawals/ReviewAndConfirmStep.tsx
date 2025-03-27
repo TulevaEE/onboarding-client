@@ -11,9 +11,11 @@ import {
 import styles from './Withdrawals.module.scss';
 import Percentage from '../../common/Percentage';
 import {
+  canOnlyPartiallyWithdrawThirdPillar,
   canWithdrawOnlyThirdPillarTaxFree,
   getEstimatedTotalFundPension,
   getPillarRatios,
+  getSingleWithdrawalEstimateAfterTax,
   getSingleWithdrawalTaxRate,
   getTotalWithdrawableAmount,
 } from './utils';
@@ -136,6 +138,10 @@ export const ReviewAndConfirmStep = () => {
 
     if (!eligibility) {
       return true;
+    }
+
+    if (canOnlyPartiallyWithdrawThirdPillar(eligibility)) {
+      return false;
     }
 
     if (canWithdrawOnlyThirdPillarTaxFree(eligibility)) {
@@ -429,7 +435,10 @@ const PartialWithdrawalMandateDescription = ({
 
   const partialWithdrawalSizeFromPillar = amountStep.singleWithdrawalAmount * pillarRatioOfTotal;
 
-  const estimatedWithdrawalSizeWithTax = partialWithdrawalSizeFromPillar * 0.9;
+  const estimatedWithdrawalSizeWithTax = getSingleWithdrawalEstimateAfterTax(
+    partialWithdrawalSizeFromPillar,
+    eligibility,
+  );
 
   return (
     <>
@@ -471,7 +480,7 @@ const PartialWithdrawalMandateDescription = ({
                 <b className={styles.warningText}>{children}</b>
               ),
               estimatedWithdrawalSizeWithTax: formatAmountForCurrency(
-                estimatedWithdrawalSizeWithTax,
+                estimatedWithdrawalSizeWithTax ?? undefined,
                 0,
               ),
               withdrawalDate: (

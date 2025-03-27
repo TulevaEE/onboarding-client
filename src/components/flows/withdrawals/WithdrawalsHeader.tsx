@@ -1,11 +1,7 @@
 import React, { ReactChildren } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useWithdrawalsEligibility } from '../../common/apiHooks';
-import {
-  canOnlyPartiallyWithdrawThirdPillar,
-  canWithdrawOnlyThirdPillarTaxFree,
-  getYearsToGoUntilEarlyRetirementAge,
-} from './utils';
+import { canOnlyPartiallyWithdrawThirdPillar, getYearsToGoUntilEarlyRetirementAge } from './utils';
 import { useWithdrawalsContext } from './hooks';
 import { WithdrawalsEligibility } from '../../common/apiModels/withdrawals';
 import { TranslationKey } from '../../translations';

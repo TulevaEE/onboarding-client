@@ -33,7 +33,7 @@ export const confirmAndSignAndAssertFailed = async () => {
   expect(signButton()).toBeInTheDocument();
 };
 
-export const confirmAndSignAndAssertDone = async (singleApplication = false) => {
+export const confirmAndSignAndAssertDone = async (singleApplication?: 'SINGLE_APPLICATION') => {
   userEvent.click(confirmationCheckbox());
   expect(signButton()).toBeEnabled();
 
@@ -124,15 +124,19 @@ export const assertFundPensionCalculations = async ({
 };
 
 export const assertPartialWithdrawalCalculations = ({
-  withdrawalAmount,
+  amount,
   taxAmount,
+  taxRate = '10%',
   assertSummaryBox = true,
 }: {
-  withdrawalAmount: string;
+  amount: string;
   taxAmount: string;
+  taxRate?: '10%' | '22%';
   assertSummaryBox?: boolean;
 }) => {
-  const taxText = screen.getByText(/Partial withdrawal will be subject to 10% income tax/i);
+  const taxText = screen.getByText(
+    new RegExp(`Partial withdrawal will be subject to ${taxRate} income tax`, 'i'),
+  );
   expect(within(taxText).getByText(taxAmount)).toBeInTheDocument();
 
   if (assertSummaryBox) {
@@ -140,7 +144,7 @@ export const assertPartialWithdrawalCalculations = ({
     expect(within(summaryBox).getByText(/Withdraw immediately/i)).toBeInTheDocument();
     expect(within(summaryBox).getByText(/and pay income tax on it/i)).toBeInTheDocument();
     expect(within(summaryBox).getByText(taxAmount)).toBeInTheDocument();
-    expect(within(summaryBox).getByText(withdrawalAmount)).toBeInTheDocument();
+    expect(within(summaryBox).getByText(amount)).toBeInTheDocument();
   }
 };
 
@@ -207,12 +211,19 @@ export const assertFundPensionMandate = async (
   }
 };
 
-export const assertPartialWithdrawalMandate = async (
-  pillar: WithdrawalMandateDetails['pillar'],
-  rows: { fundName: string; liquidationAmount: string }[],
-  partialWithdrawalAmount: string,
-  bankruptciesPresent?: 'BANKRUPTCIES_ARRESTS_PRESENT',
-) => {
+export const assertPartialWithdrawalMandate = async ({
+  pillar,
+  rows,
+  amount,
+  bankruptciesPresent,
+  taxRate = '10%',
+}: {
+  pillar: WithdrawalMandateDetails['pillar'];
+  rows: { fundName: string; liquidationAmount: string }[];
+  amount: string;
+  bankruptciesPresent?: 'BANKRUPTCIES_ARRESTS_PRESENT';
+  taxRate?: '22%' | '10%';
+}) => {
   const partialWithdrawalSection = await screen.findByTestId(`PARTIAL_WITHDRAWAL_${pillar}`);
 
   if (pillar === 'SECOND') {
@@ -253,11 +264,9 @@ export const assertPartialWithdrawalMandate = async (
     expect(within(paymentDeadline).getByText(/in four working days/)).toBeInTheDocument();
   }
 
-  expect(within(partialWithdrawalSection).getByText(/10% income tax/)).toBeInTheDocument();
+  expect(within(partialWithdrawalSection).getByText(`${taxRate} income tax`)).toBeInTheDocument();
 
-  expect(
-    within(partialWithdrawalSection).getByText(new RegExp(partialWithdrawalAmount)),
-  ).toBeInTheDocument();
+  expect(within(partialWithdrawalSection).getByText(new RegExp(amount))).toBeInTheDocument();
 
   if (pillar === 'SECOND') {
     const pillarStoppedWarning = within(partialWithdrawalSection).getByText(
@@ -278,5 +287,5 @@ export const assertPartialWithdrawalMandate = async (
   }
 };
 
-export const partialWithdrawalSizeInput = async () =>
-  screen.findByLabelText(/Withdraw with 10% income tax/);
+export const partialWithdrawalSizeInput = async (taxRate: '22%' | '10%' = '10%') =>
+  screen.findByLabelText(`Withdraw with ${taxRate} income tax`);
