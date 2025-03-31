@@ -277,7 +277,7 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
       getPartialWithdrawalMandatesToCreate(
         personalDetails,
         {
-          fundPensionEnabled: true,
+          fundPensionEnabled: false,
           pillarsToWithdrawFrom: 'BOTH',
           singleWithdrawalAmount: null,
         },
@@ -293,7 +293,7 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
       getPartialWithdrawalMandatesToCreate(
         personalDetails,
         {
-          fundPensionEnabled: true,
+          fundPensionEnabled: false,
           pillarsToWithdrawFrom: 'SECOND',
           singleWithdrawalAmount: null,
         },
@@ -304,6 +304,43 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
         [],
       ),
     ).toStrictEqual([]);
+  });
+
+  it('returns correct when withdrawing third pillar and <55', () => {
+    const under55Eligibility = {
+      hasReachedEarlyRetirementAge: false,
+      canWithdrawThirdPillarWithReducedTax: false,
+      recommendedDurationYears: 45,
+      age: 25,
+      arrestsOrBankruptciesPresent: false,
+    };
+
+    expect(
+      getPartialWithdrawalMandatesToCreate(
+        personalDetails,
+        {
+          fundPensionEnabled: false,
+          pillarsToWithdrawFrom: 'THIRD',
+          singleWithdrawalAmount: pensionHoldings.totalThirdPillar,
+        },
+        under55Eligibility,
+        pensionHoldings,
+        funds,
+        secondPillarSourceFunds,
+        thirdPillarSourceFunds,
+      ),
+    ).toStrictEqual([
+      {
+        mandateType: 'PARTIAL_WITHDRAWAL',
+        pillar: 'THIRD',
+        taxResidency: 'EST',
+        bankAccountDetails: getBankAccountDetails(personalDetails),
+        fundWithdrawalAmounts: [
+          { isin: 'EE3600001707', percentage: 100, units: 1000 / TEST_NAVS.TULEVA_THIRD_PILLAR },
+          { isin: 'EE3600010294', percentage: 100, units: 400 / TEST_NAVS.LHV_THIRD_PILLAR },
+        ],
+      },
+    ]);
   });
 
   it('returns correct mandates when withdrawing everything from both pillars', () => {
@@ -545,6 +582,19 @@ describe('getFundPensionMandatesToCreate', () => {
           fundPensionEnabled: false,
           pillarsToWithdrawFrom: 'BOTH',
           singleWithdrawalAmount: pensionHoldings.totalBothPillars,
+        },
+        under55Eligibility,
+        pensionHoldings,
+      ),
+    ).toStrictEqual([]);
+
+    expect(
+      getFundPensionMandatesToCreate(
+        personalDetails,
+        {
+          fundPensionEnabled: true, // safeguard against potential buggy state
+          pillarsToWithdrawFrom: 'BOTH',
+          singleWithdrawalAmount: null,
         },
         under55Eligibility,
         pensionHoldings,
