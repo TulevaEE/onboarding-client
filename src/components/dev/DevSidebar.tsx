@@ -19,9 +19,9 @@ export const DevSidebar = () => {
   ) => {
     const profileOptionToWrite = selectedProfileOption !== 'null' ? selectedProfileOption : null;
 
+    // @ts-ignore
     setConfiguration({
       ...configuration,
-      // @ts-ignore
       [profileName]: profileOptionToWrite,
     });
   };
@@ -32,10 +32,12 @@ export const DevSidebar = () => {
         <h2 className="m-0 mb-3">Mock mode profiles</h2>
 
         {availableOptions.map((profileName) => (
-          <div key={profileName}>
-            <label htmlFor={profileName}>
-              <b>{profileName}</b>
-            </label>
+          <div key={profileName} className="pt-2">
+            <div>
+              <label htmlFor={profileName}>
+                <b>{profileName}</b>
+              </label>
+            </div>
             <select
               name={profileName}
               key={profileName}

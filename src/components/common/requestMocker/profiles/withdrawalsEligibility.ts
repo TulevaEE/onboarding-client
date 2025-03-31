@@ -1,4 +1,6 @@
-export const withdrawalsEligibilityProfiles = {
+import { WithdrawalsEligibility } from '../../apiModels/withdrawals';
+
+export const withdrawalsEligibilityProfiles: Record<string, WithdrawalsEligibility> = {
   UNDER_55: {
     age: 25,
     hasReachedEarlyRetirementAge: false,
