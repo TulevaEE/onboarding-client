@@ -55,7 +55,7 @@ export const DevSidebar = () => {
               value={configuration?.[profileName] ?? 'null'}
               onChange={(e) => handleProfileSelected(profileName, e.target.value)}
             >
-              <option value="null">None</option>
+              <option value="null">None – use real values</option>
               {getProfileOptions(profileName).map((profileOption) => (
                 <option value={profileOption} key={profileOption}>
                   {profileOption}
