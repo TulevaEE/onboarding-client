@@ -77,7 +77,7 @@ export const DevSidebar = () => {
           <code>{JSON.stringify(configuration, null, 2)}</code>
         </pre>
 
-        <h3 className="m-0 mt-3">Backend responses</h3>
+        <h3 className="m-0 mt-3">Backend full mocked responses</h3>
         <pre className="pre-scrollable mt-4">
           <code>{JSON.stringify(configurationWithExpandedProfileValue, null, 2)}</code>
         </pre>
