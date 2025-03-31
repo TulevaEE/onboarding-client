@@ -31,8 +31,6 @@ export const DevSidebar = () => {
       <div className="offcanvas-body">
         <h2 className="m-0 mb-3">Mock mode profiles</h2>
 
-        <code>{JSON.stringify(configuration)}</code>
-
         {availableOptions.map((profileName) => (
           <div key={profileName}>
             <label htmlFor={profileName}>
@@ -53,6 +51,18 @@ export const DevSidebar = () => {
             </select>
           </div>
         ))}
+
+        <pre className="pre-scrollable mt-4">
+          <code>{JSON.stringify(configuration, null, 2)}</code>
+        </pre>
+
+        <button
+          type="button"
+          onClick={() => window.location.reload()}
+          className="btn btn-primary btn-large mt-3"
+        >
+          Apply & reload
+        </button>
       </div>
     </aside>
   );
