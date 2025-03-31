@@ -25,5 +25,3 @@ export const userMockProfiles: Record<string, User> = {
     ...mockUser,
   },
 } as const;
-
-export type UserMockProfile = keyof typeof userMockProfiles;

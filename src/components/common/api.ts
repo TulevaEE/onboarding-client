@@ -307,7 +307,10 @@ export function updateUserWithToken(user: User): Promise<User> {
 }
 
 export function getUserConversionWithToken(): Promise<UserConversion> {
-  return getWithAuthentication(getEndpoint('/v1/me/conversion'), undefined);
+  return mockRequestInMockMode(
+    getWithAuthentication(getEndpoint('/v1/me/conversion'), undefined),
+    'conversion',
+  );
 }
 
 export function getCapitalRowsWithToken(): Promise<CapitalRow[]> {
