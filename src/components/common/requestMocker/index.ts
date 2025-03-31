@@ -39,7 +39,8 @@ export async function mockRequestInMockMode<TResponse = unknown>(
     return response;
   }
 
-  console.warn('Mocking request to ', endpointName, ' with profile', selectedProfile);
+  // eslint-disable-next-line no-console
+  console.warn('Mocking request to', endpointName, 'with profile', selectedProfile);
 
   return mockModeProfiles[endpointName][selectedProfile] as TResponse;
 }
