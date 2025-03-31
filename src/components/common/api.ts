@@ -146,7 +146,7 @@ export function downloadMandateWithId(entityId: string): Promise<Blob> {
 }
 
 export function getUserWithToken(): Promise<User> {
-  return getWithAuthentication(getEndpoint('/v1/me'), undefined);
+  return mockRequestInMockMode(getWithAuthentication(getEndpoint('/v1/me'), undefined), 'user');
 }
 
 export function getWithdrawalsEligibility(): Promise<WithdrawalsEligibility> {
