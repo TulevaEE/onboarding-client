@@ -1,10 +1,12 @@
 import { userMockProfiles } from './user';
 import { MockModeConfiguration } from '../types';
 import { withdrawalsEligibilityProfiles } from './withdrawalsEligibility';
+import { conversionMockProfiles } from './conversion';
 
 export const mockModeProfiles: Record<keyof MockModeConfiguration, Record<string, unknown>> = {
   withdrawalsEligibility: withdrawalsEligibilityProfiles,
   user: userMockProfiles,
+  conversion: conversionMockProfiles,
 } as const;
 
 export const getAllProfileNames = () =>

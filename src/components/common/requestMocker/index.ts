@@ -21,6 +21,8 @@ export const readMockModeConfiguration = () => {
   return JSON.parse(config) as MockModeConfiguration;
 };
 
+export const isMockModeEnabled = () => readMockModeConfiguration() !== null;
+
 export async function mockRequestInMockMode<TResponse = unknown>(
   response: Promise<TResponse>,
   endpointName: MockModeEndpoint,
