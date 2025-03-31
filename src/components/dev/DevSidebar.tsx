@@ -1,7 +1,11 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { useEffect, useState } from 'react';
 import { readMockModeConfiguration, writeMockModeConfiguration } from '../common/requestMocker';
-import { getAllProfileNames, getProfileOptions } from '../common/requestMocker/profiles';
+import {
+  getAllProfileNames,
+  getProfileOptions,
+  mockModeProfiles,
+} from '../common/requestMocker/profiles';
 import { MockModeConfiguration } from '../common/requestMocker/types';
 
 export const DevSidebar = () => {
@@ -25,6 +29,13 @@ export const DevSidebar = () => {
       [profileName]: profileOptionToWrite,
     });
   };
+
+  const configurationWithExpandedProfileValue = Object.entries(configuration ?? {}).map(
+    ([key, value]) => [
+      key,
+      value ? mockModeProfiles[key as keyof MockModeConfiguration][value] : null,
+    ],
+  );
 
   return (
     <aside className="offcanvas offcanvas-end show bg-gray-2">
@@ -53,11 +64,6 @@ export const DevSidebar = () => {
             </select>
           </div>
         ))}
-
-        <pre className="pre-scrollable mt-4">
-          <code>{JSON.stringify(configuration, null, 2)}</code>
-        </pre>
-
         <button
           type="button"
           onClick={() => window.location.reload()}
@@ -65,6 +71,16 @@ export const DevSidebar = () => {
         >
           Apply & reload
         </button>
+
+        <h3 className="m-0 mt-3">Selected profiles</h3>
+        <pre className="pre-scrollable mt-4">
+          <code>{JSON.stringify(configuration, null, 2)}</code>
+        </pre>
+
+        <h3 className="m-0 mt-3">Backend responses</h3>
+        <pre className="pre-scrollable mt-4">
+          <code>{JSON.stringify(configurationWithExpandedProfileValue, null, 2)}</code>
+        </pre>
       </div>
     </aside>
   );

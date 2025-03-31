@@ -32,5 +32,3 @@ export const withdrawalsEligibilityProfiles: Record<string, WithdrawalsEligibili
     arrestsOrBankruptciesPresent: true,
   },
 } as const;
-
-export type WithdrawalsEligibilityProfile = keyof typeof withdrawalsEligibilityProfiles;

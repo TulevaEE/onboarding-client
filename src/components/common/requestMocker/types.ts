@@ -1,9 +1,11 @@
-import { UserMockProfile } from './profiles/user';
-import { WithdrawalsEligibilityProfile } from './profiles/withdrawalsEligibility';
+import { conversionMockProfiles } from './profiles/conversion';
+import { userMockProfiles } from './profiles/user';
+import { withdrawalsEligibilityProfiles } from './profiles/withdrawalsEligibility';
 
 export type MockModeConfiguration = {
-  withdrawalsEligibility: WithdrawalsEligibilityProfile | null;
-  user: UserMockProfile | null;
+  withdrawalsEligibility: keyof typeof withdrawalsEligibilityProfiles | null;
+  user: keyof typeof userMockProfiles | null;
+  conversion: keyof typeof conversionMockProfiles | null;
 };
 
 export type MockModeEndpoint = keyof MockModeConfiguration;
