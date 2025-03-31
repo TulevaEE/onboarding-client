@@ -42,6 +42,7 @@ import {
   MandateBatchDto,
   WithdrawalsEligibility,
 } from './apiModels/withdrawals';
+import { mockRequestInMockMode } from './requestMocker';
 
 const API_URI = '/api';
 
@@ -149,7 +150,10 @@ export function getUserWithToken(): Promise<User> {
 }
 
 export function getWithdrawalsEligibility(): Promise<WithdrawalsEligibility> {
-  return getWithAuthentication(getEndpoint('/v1/withdrawals/eligibility'), undefined);
+  return mockRequestInMockMode(
+    getWithAuthentication(getEndpoint('/v1/withdrawals/eligibility'), undefined),
+    'withdrawalsEligibility',
+  );
 }
 
 export function getFundPensionStatus(): Promise<FundPensionStatus> {
