@@ -33,11 +33,12 @@ import { SecondPillarPaymentRate } from '../flows/secondPillarPaymentRate/Second
 import { SecondPillarPaymentRateSuccess } from '../flows/secondPillarPaymentRate/SecondPillarPaymentRateSuccess';
 import BackToPartner from '../flows/partner/BackToPartner';
 import ThirdPillarPaymentPage from '../flows/thirdPillar/ThirdPillarPayment/ThirdPillarPaymentPage';
-import DevSidebar from '../dev/DevSidebar';
+import { DevSidebar } from '../dev/DevSidebar';
 import Success from '../flows/secondPillar/success';
 import { getAuthentication } from '../common/authenticationManager';
 import { CapitalPage } from '../account/MemberCapital/CapitalPage';
 import { Withdrawals } from '../flows/withdrawals/Withdrawals';
+import { isMockModeEnabled } from '../common/requestMocker';
 
 export const ACCOUNT_PATH = '/account';
 export const AML_PATH = '/aml';
@@ -77,7 +78,8 @@ export class LoggedInApp extends PureComponent {
   isDevelopmentMode() {
     const { location } = this.props;
     const queryParams = new URLSearchParams(location.search);
-    return queryParams.get('development') === 'true';
+
+    return queryParams.has('development') || isMockModeEnabled();
   }
 
   render() {

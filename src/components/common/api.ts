@@ -42,6 +42,7 @@ import {
   MandateBatchDto,
   WithdrawalsEligibility,
 } from './apiModels/withdrawals';
+import { mockRequestInMockMode } from './requestMocker';
 
 const API_URI = '/api';
 
@@ -145,11 +146,14 @@ export function downloadMandateWithId(entityId: string): Promise<Blob> {
 }
 
 export function getUserWithToken(): Promise<User> {
-  return getWithAuthentication(getEndpoint('/v1/me'), undefined);
+  return mockRequestInMockMode(getWithAuthentication(getEndpoint('/v1/me'), undefined), 'user');
 }
 
 export function getWithdrawalsEligibility(): Promise<WithdrawalsEligibility> {
-  return getWithAuthentication(getEndpoint('/v1/withdrawals/eligibility'), undefined);
+  return mockRequestInMockMode(
+    getWithAuthentication(getEndpoint('/v1/withdrawals/eligibility'), undefined),
+    'withdrawalsEligibility',
+  );
 }
 
 export function getFundPensionStatus(): Promise<FundPensionStatus> {
@@ -302,7 +306,10 @@ export function updateUserWithToken(user: User): Promise<User> {
 }
 
 export function getUserConversionWithToken(): Promise<UserConversion> {
-  return getWithAuthentication(getEndpoint('/v1/me/conversion'), undefined);
+  return mockRequestInMockMode(
+    getWithAuthentication(getEndpoint('/v1/me/conversion'), undefined),
+    'conversion',
+  );
 }
 
 export function getCapitalRowsWithToken(): Promise<CapitalRow[]> {
