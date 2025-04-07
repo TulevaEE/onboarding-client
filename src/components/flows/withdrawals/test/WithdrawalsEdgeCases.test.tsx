@@ -164,7 +164,7 @@ describe('withdrawals flow before early retirement age', () => {
       rows: [
         {
           fundName: 'Tuleva III Samba Pensionifond',
-          liquidationAmount: '1279.92 units',
+          liquidationAmount: '1279.00 units',
         },
       ],
       amount: '780 €',
@@ -253,7 +253,7 @@ describe('withdrawals flow before early retirement age', () => {
       rows: [
         {
           fundName: 'Tuleva III Samba Pensionifond',
-          liquidationAmount: '1279.92 units',
+          liquidationAmount: '1279.00 units',
         },
       ],
       amount: '780 €',
@@ -338,7 +338,7 @@ describe('withdrawals flow at 55 withdrawing only third pillar', () => {
       rows: [
         {
           fundName: 'Tuleva III Samba Pensionifond',
-          liquidationAmount: '1279.92 units',
+          liquidationAmount: '1279.00 units',
         },
       ],
       amount: '900 €',

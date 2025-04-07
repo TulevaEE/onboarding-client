@@ -109,7 +109,7 @@ export const getPartialWithdrawalMandatesToCreate = (
         .map((fund) => ({
           isin: fund.isin,
           percentage: Math.floor(partialWithdrawalOfTotal * 100),
-          units: getSourceFundTotalUnits(fund) * partialWithdrawalOfTotal, // TODO bigdecimal <-> JS IEEE754 floating point handling
+          units: Math.floor(getSourceFundTotalUnits(fund) * partialWithdrawalOfTotal), // TODO bigdecimal <-> JS IEEE754 floating point handling
         })),
       taxResidency,
     };
