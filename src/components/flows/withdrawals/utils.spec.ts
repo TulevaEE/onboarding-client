@@ -524,7 +524,7 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
     });
   });
 
-  test('returns correct mandates and uses unit calculation fallback when units not available', () => {
+  it('returns correct mandates and uses unit calculation fallback when units not available', () => {
     const mandates = getPartialWithdrawalMandatesToCreate(
       personalDetails,
       {
@@ -592,6 +592,41 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
           units: 1000 / TEST_NAVS.TULEVA_THIRD_PILLAR,
         },
         { isin: 'EE3600010294', percentage: 100, units: 400 / TEST_NAVS.LHV_THIRD_PILLAR },
+      ],
+    });
+  });
+
+  test('returns correct mandates when withdrawing below 1 unit', () => {
+    const mandates = getPartialWithdrawalMandatesToCreate(
+      personalDetails,
+      {
+        fundPensionEnabled: true,
+        pillarsToWithdrawFrom: 'THIRD',
+        singleWithdrawalAmount: 1,
+      },
+      withdrawalEligibilityFixture,
+      pensionHoldings,
+      funds,
+      [],
+      thirdPillarSourceFunds,
+    );
+
+    expect(mandates.length).toBe(1);
+
+    const [thirdPillarMandate] = mandates;
+
+    expect(thirdPillarMandate).toStrictEqual({
+      mandateType: 'PARTIAL_WITHDRAWAL',
+      pillar: 'THIRD',
+      taxResidency: 'EST',
+      bankAccountDetails: getBankAccountDetails(personalDetails),
+      fundWithdrawalAmounts: [
+        {
+          isin: 'EE3600001707',
+          percentage: 0,
+          units: 0.5 / TEST_NAVS.TULEVA_THIRD_PILLAR,
+        },
+        { isin: 'EE3600010294', percentage: 0, units: 0.2 / TEST_NAVS.LHV_THIRD_PILLAR },
       ],
     });
   });
