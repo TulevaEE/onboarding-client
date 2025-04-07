@@ -41,36 +41,37 @@ export const DevSidebar = () => {
     <aside className="offcanvas offcanvas-end show bg-gray-2">
       <div className="offcanvas-body">
         <h2 className="m-0 mb-3">Mock mode profiles</h2>
-
-        {availableOptions.map((profileName) => (
-          <div key={profileName} className="pt-2">
-            <div>
-              <label htmlFor={profileName}>
-                <b>{profileName}</b>
+        <div className="d-grid gap-3">
+          {availableOptions.map((profileName) => (
+            <div key={profileName}>
+              <label className="form-label" htmlFor={profileName}>
+                {profileName}
               </label>
+              <select
+                className="form-select"
+                id={profileName}
+                name={profileName}
+                key={profileName}
+                value={configuration?.[profileName] ?? 'null'}
+                onChange={(e) => handleProfileSelected(profileName, e.target.value)}
+              >
+                <option value="null">None, use real values</option>
+                {getProfileOptions(profileName).map((profileOption) => (
+                  <option value={profileOption} key={profileOption}>
+                    {profileOption}
+                  </option>
+                ))}
+              </select>
             </div>
-            <select
-              name={profileName}
-              key={profileName}
-              value={configuration?.[profileName] ?? 'null'}
-              onChange={(e) => handleProfileSelected(profileName, e.target.value)}
-            >
-              <option value="null">None – use real values</option>
-              {getProfileOptions(profileName).map((profileOption) => (
-                <option value={profileOption} key={profileOption}>
-                  {profileOption}
-                </option>
-              ))}
-            </select>
-          </div>
-        ))}
-        <button
-          type="button"
-          onClick={() => window.location.reload()}
-          className="btn btn-primary btn-large mt-3"
-        >
-          Apply & reload
-        </button>
+          ))}
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="btn btn-primary btn-large"
+          >
+            Apply and reload
+          </button>
+        </div>
 
         <h3 className="m-0 mt-3">Selected profiles</h3>
         <pre className="pre-scrollable mt-4">
