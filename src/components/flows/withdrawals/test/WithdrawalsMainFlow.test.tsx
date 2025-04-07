@@ -115,7 +115,7 @@ describe('withdrawals flow with both pillars', () => {
       rows: [
         {
           fundName: 'Tuleva III Samba Pensionifond',
-          liquidationAmount: '1208.74 units',
+          liquidationAmount: '1208.00 units',
         },
       ],
       amount: '850 €',
@@ -219,7 +219,7 @@ describe('withdrawals flow with both pillars', () => {
       rows: [
         {
           fundName: 'Tuleva III Samba Pensionifond',
-          liquidationAmount: '7294.71 units', // 5699.36 / nav 0.7813
+          liquidationAmount: '7294.00 units', // 5699.36 / nav 0.7813
         },
       ],
       amount: '5 129 €', // 5699.36 - 10% tax
@@ -392,7 +392,7 @@ describe('withdrawals flow with both pillars', () => {
       rows: [
         {
           fundName: 'Tuleva III Samba Pensionifond',
-          liquidationAmount: '1279.92 units',
+          liquidationAmount: '1279.00 units',
         },
       ],
       amount: '900 €',
@@ -597,7 +597,7 @@ describe('withdrawals flow with only third pillar', () => {
       rows: [
         {
           fundName: 'Tuleva III Samba Pensionifond',
-          liquidationAmount: '127.99 units',
+          liquidationAmount: '127.00 units',
         },
       ],
       amount: '90 €',
