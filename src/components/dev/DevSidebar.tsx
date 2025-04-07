@@ -39,9 +39,20 @@ export const DevSidebar = () => {
 
   return (
     <aside className="offcanvas offcanvas-end show bg-gray-2">
+      <div className="offcanvas-header">
+        <h2 className="offcanvas-title" id="offcanvasLabel">
+          Mock mode
+        </h2>
+        <button
+          type="button"
+          className="btn-close"
+          data-bs-dismiss="offcanvas"
+          aria-label="Close"
+        />
+      </div>
       <div className="offcanvas-body">
-        <h2 className="m-0 mb-3">Mock mode profiles</h2>
         <div className="d-grid gap-3">
+          <h3 className="m-0">Profiles</h3>
           {availableOptions.map((profileName) => (
             <div key={profileName}>
               <label className="form-label" htmlFor={profileName}>
@@ -74,13 +85,17 @@ export const DevSidebar = () => {
           </button>
         </div>
 
-        <h3 className="m-0 mt-3">Selected profiles</h3>
-        <pre className="pre-scrollable mt-4">
+        <hr className="my-4" />
+
+        <h3 className="m-0 mb-3">Selected profiles</h3>
+        <pre className="pre-scrollable m-0">
           <code>{JSON.stringify(configuration, null, 2)}</code>
         </pre>
 
-        <h3 className="m-0 mt-3">Backend full mocked responses</h3>
-        <pre className="pre-scrollable mt-4">
+        <hr className="my-4" />
+
+        <h3 className="m-0 mb-3">Backend full mocked responses</h3>
+        <pre className="pre-scrollable m-0">
           <code>{JSON.stringify(configurationWithExpandedProfileValue, null, 2)}</code>
         </pre>
       </div>
