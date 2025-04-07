@@ -35,7 +35,7 @@ export async function mockRequestInMockMode<TResponse = unknown>(
 
   const selectedProfile = config[endpointName];
 
-  if (selectedProfile === null) {
+  if (!selectedProfile) {
     return response;
   }
 
