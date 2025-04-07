@@ -118,6 +118,7 @@ export const activeSecondPillar: SourceFund = {
   contributions: 500,
   subtractions: 0,
   profit: 500,
+  units: 10000,
 };
 
 export const tulevaSecondPillarFund: Fund = {
@@ -146,6 +147,7 @@ export const activeThirdPillar: SourceFund = {
   contributions: 500,
   subtractions: 0,
   profit: 500,
+  units: 23,
 };
 
 export const highFeeThirdPillar: SourceFund = {
@@ -162,6 +164,7 @@ export const highFeeThirdPillar: SourceFund = {
   contributions: 500,
   subtractions: 0,
   profit: 500,
+  units: 23,
 };
 
 export const highFeeSecondPillar: SourceFund = {
@@ -178,4 +181,5 @@ export const highFeeSecondPillar: SourceFund = {
   contributions: 500,
   subtractions: 0,
   profit: 500,
+  units: 20000,
 };

@@ -449,6 +449,7 @@ describe('withdrawals flow with only second pillar and arrests/bankruptcy', () =
         contributions: 12345.67,
         subtractions: 0,
         profit: 2654.33,
+        units: 15000,
       },
       {
         fund: {
@@ -469,6 +470,7 @@ describe('withdrawals flow with only second pillar and arrests/bankruptcy', () =
         contributions: 112233.44,
         subtractions: 0,
         profit: -12233.44,
+        units: 100000,
       },
 
       {
@@ -490,6 +492,7 @@ describe('withdrawals flow with only second pillar and arrests/bankruptcy', () =
         contributions: 112233.44,
         subtractions: 0,
         profit: -12233.44,
+        units: 0,
       },
     ]);
     withdrawalsEligibilityBackend(server, {
@@ -558,7 +561,7 @@ describe('withdrawals flow with only third pillar', () => {
           ongoingChargesFigure: 0.0043,
           status: 'ACTIVE',
           inceptionDate: '2017-01-01',
-          nav: 1,
+          nav: 0.7813,
         },
         value: 5699.36,
         unavailableValue: 0,
@@ -567,6 +570,7 @@ describe('withdrawals flow with only third pillar', () => {
         contributions: 9876.54,
         subtractions: 0,
         profit: -1876.54,
+        units: 5699.36 / 0.7813, // value from mocked funds backend,
       },
     ]);
     withdrawalsEligibilityBackend(server);

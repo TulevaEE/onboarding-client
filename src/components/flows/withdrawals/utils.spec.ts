@@ -236,6 +236,7 @@ describe('getAllFundNavsPresent', () => {
             contributions: 1000,
             subtractions: 0,
             profit: 500,
+            units: 1500,
           },
         ],
         thirdPillarSourceFunds,

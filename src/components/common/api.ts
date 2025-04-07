@@ -184,6 +184,7 @@ const transformFundBalance = (fundBalance: FundBalance): SourceFund => ({
   contributions: fundBalance.contributions,
   subtractions: fundBalance.subtractions,
   profit: fundBalance.profit,
+  units: fundBalance.units,
 });
 
 export function saveMandateWithAuthentication(mandate: string): Promise<Mandate> {

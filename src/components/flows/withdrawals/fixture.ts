@@ -90,6 +90,7 @@ export const secondPillarSourceFunds: SourceFund[] = [
     contributions: 1000,
     subtractions: 0,
     profit: 500,
+    units: 1000,
   },
   {
     isin: 'EE3600109443',
@@ -105,6 +106,7 @@ export const secondPillarSourceFunds: SourceFund[] = [
     contributions: 800,
     subtractions: 0,
     profit: 200,
+    units: 800,
   },
   {
     isin: 'EE3600109443',
@@ -120,6 +122,7 @@ export const secondPillarSourceFunds: SourceFund[] = [
     contributions: 0,
     subtractions: 0,
     profit: 0,
+    units: 0,
   },
 ];
 
@@ -138,6 +141,7 @@ export const thirdPillarSourceFunds: SourceFund[] = [
     contributions: 1000,
     subtractions: 50,
     profit: 300,
+    units: 1000,
   },
   {
     isin: 'EE3600010294',
@@ -153,5 +157,6 @@ export const thirdPillarSourceFunds: SourceFund[] = [
     contributions: 400,
     subtractions: 0,
     profit: 100,
+    units: 80,
   },
 ];

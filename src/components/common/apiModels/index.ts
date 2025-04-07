@@ -163,6 +163,7 @@ export interface FundBalance {
   contributions: number;
   subtractions: number;
   profit: number;
+  units: number;
 }
 
 export interface SourceFund {
@@ -179,6 +180,7 @@ export interface SourceFund {
   contributions: number;
   subtractions: number;
   profit: number;
+  units: number;
 }
 
 export interface FundManager {

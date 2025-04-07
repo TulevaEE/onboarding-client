@@ -407,7 +407,7 @@ export function pensionAccountStatementBackend(
             ongoingChargesFigure: 0.0039,
             status: 'ACTIVE',
             inceptionDate: '2017-01-01',
-            nav: 1,
+            nav: 0.87831,
           },
           value: 15000.0,
           unavailableValue: 0,
@@ -416,6 +416,7 @@ export function pensionAccountStatementBackend(
           contributions: 12345.67,
           subtractions: 0,
           profit: 2654.33,
+          units: 15000 / 0.87831, // cross-referenced from fund backend, those values are actually used
         },
         {
           fund: {
@@ -427,7 +428,7 @@ export function pensionAccountStatementBackend(
             ongoingChargesFigure: 0.0065,
             status: 'ACTIVE',
             inceptionDate: '2017-01-01',
-            nav: 1,
+            nav: 1.46726,
           },
           value: 100000,
           unavailableValue: 0,
@@ -436,6 +437,7 @@ export function pensionAccountStatementBackend(
           contributions: 112233.44,
           subtractions: 0,
           profit: -12233.44,
+          units: 100000 / 1.46726,
         },
         {
           fund: {
@@ -447,7 +449,7 @@ export function pensionAccountStatementBackend(
             ongoingChargesFigure: 0.0043,
             status: 'ACTIVE',
             inceptionDate: '2017-01-01',
-            nav: 1,
+            nav: 0.7813, // cross-referenced from fund backend, those values are actually used
           },
           value: 5699.36,
           unavailableValue: 0,
@@ -456,6 +458,7 @@ export function pensionAccountStatementBackend(
           contributions: 9876.54,
           subtractions: 0,
           profit: -1876.54,
+          units: 5699.36 / 0.7813,
         },
       ];
       return res(ctx.json(fundBalances || defaultFundBalances));
