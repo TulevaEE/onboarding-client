@@ -523,6 +523,78 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
       ],
     });
   });
+
+  test('returns correct mandates and uses unit calculation fallback when units not available', () => {
+    const mandates = getPartialWithdrawalMandatesToCreate(
+      personalDetails,
+      {
+        fundPensionEnabled: true,
+        pillarsToWithdrawFrom: 'THIRD',
+        singleWithdrawalAmount: pensionHoldings.totalThirdPillar,
+      },
+      withdrawalEligibilityFixture,
+      pensionHoldings,
+      funds,
+      [],
+      [
+        {
+          isin: 'EE3600001707',
+          price: 1000,
+          unavailablePrice: 500,
+          activeFund: false,
+          currency: 'EUR',
+          name: 'Tuleva III Samba Pensionifond',
+          fundManager: { name: 'Tuleva' },
+          managementFeePercent: 0.34,
+          pillar: 2,
+          ongoingChargesFigure: 0.0047,
+          contributions: 1000,
+          subtractions: 50,
+          profit: 300,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          units: null,
+        },
+        {
+          isin: 'EE3600010294',
+          price: 400,
+          unavailablePrice: 100,
+          activeFund: false,
+          currency: 'EUR',
+          name: 'LHV Pensionifond Aktiivne III',
+          fundManager: { name: 'LHV' },
+          managementFeePercent: 0.36,
+          pillar: 2,
+          ongoingChargesFigure: 0.0047,
+          contributions: 400,
+          subtractions: 0,
+          profit: 100,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          units: null,
+        },
+      ],
+    );
+
+    expect(mandates.length).toBe(1);
+
+    const [thirdPillarMandate] = mandates;
+
+    expect(thirdPillarMandate).toStrictEqual({
+      mandateType: 'PARTIAL_WITHDRAWAL',
+      pillar: 'THIRD',
+      taxResidency: 'EST',
+      bankAccountDetails: getBankAccountDetails(personalDetails),
+      fundWithdrawalAmounts: [
+        {
+          isin: 'EE3600001707',
+          percentage: 100,
+          units: 1000 / TEST_NAVS.TULEVA_THIRD_PILLAR,
+        },
+        { isin: 'EE3600010294', percentage: 100, units: 400 / TEST_NAVS.LHV_THIRD_PILLAR },
+      ],
+    });
+  });
 });
 
 describe('getFundPensionMandatesToCreate', () => {
