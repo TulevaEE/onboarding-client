@@ -201,6 +201,7 @@ const tulevaFund: FundBalance = {
   contributions: 9876.54,
   subtractions: 0,
   profit: -1876.54,
+  units: 5699.36 / 1,
 };
 
 const otherFund: FundBalance = {
@@ -222,4 +223,5 @@ const otherFund: FundBalance = {
   contributions: 1000.0,
   subtractions: 0,
   profit: 234.56,
+  units: 1234.56 / 1,
 };

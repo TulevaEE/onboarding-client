@@ -19,6 +19,7 @@ import { useFunds, useSourceFunds, useWithdrawalsEligibility } from '../../commo
 import {
   canOnlyPartiallyWithdrawThirdPillar,
   canWithdrawOnlyThirdPillarTaxFree,
+  clampWithdrawalValue,
   getAllFundNavsPresent,
   getFundPensionMonthlyPaymentEstimation,
   getMandatesToCreate,
@@ -103,13 +104,13 @@ export const WithdrawalsProvider = ({
   const secondPillarSourceFunds = sourceFunds?.filter((fund) => fund.pillar === 2);
   const thirdPillarSourceFunds = sourceFunds?.filter((fund) => fund.pillar === 3);
 
-  const totalSecondPillar = parseFloat(
-    (secondPillarSourceFunds ?? []).reduce((acc, fund) => acc + fund.price, 0).toFixed(2),
+  const totalSecondPillar = clampWithdrawalValue(
+    (secondPillarSourceFunds ?? []).reduce((acc, fund) => acc + fund.price, 0),
   );
-  const totalThirdPillar = parseFloat(
-    (thirdPillarSourceFunds ?? []).reduce((acc, fund) => acc + fund.price, 0).toFixed(2),
+  const totalThirdPillar = clampWithdrawalValue(
+    (thirdPillarSourceFunds ?? []).reduce((acc, fund) => acc + fund.price, 0),
   );
-  const totalBothPillars = parseFloat((totalSecondPillar + totalThirdPillar).toFixed(2));
+  const totalBothPillars = clampWithdrawalValue(totalSecondPillar + totalThirdPillar);
 
   const pensionHoldings = {
     totalSecondPillar,

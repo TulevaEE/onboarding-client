@@ -98,7 +98,7 @@ export const getPartialWithdrawalMandatesToCreate = (
     taxResidency: string,
   ): PartialWithdrawalMandateDetails => {
     const getSourceFundTotalUnits = (fund: SourceFund) =>
-      fund.price / fundIsinToFundNavMap[fund.isin];
+      typeof fund.units === 'number' ? fund.units : fund.price / fundIsinToFundNavMap[fund.isin];
 
     return {
       mandateType: 'PARTIAL_WITHDRAWAL',
@@ -375,3 +375,5 @@ export const getSingleWithdrawalEstimateAfterTax = (
 
   return withdrawalAmount - taxAmount;
 };
+
+export const clampWithdrawalValue = (amount: number) => parseFloat(amount.toFixed(2));
