@@ -47,7 +47,8 @@ export const DevSidebar = () => {
           type="button"
           className="btn-close"
           data-bs-dismiss="offcanvas"
-          aria-label="Close"
+          aria-label="Clear and close"
+          title="Clear and close"
         />
       </div>
       <div className="offcanvas-body">
