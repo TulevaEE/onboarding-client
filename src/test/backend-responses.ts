@@ -94,7 +94,7 @@ export const mockFunds: Fund[] = [
     isin: 'EE3600001707',
     name: 'Tuleva III Samba Pensionifond',
     managementFeeRate: 0.003,
-    nav: 120,
+    nav: 0.7813,
     pillar: 3,
     ongoingChargesFigure: 0.0043,
     status: 'ACTIVE',
