@@ -1,4 +1,4 @@
-import { useMutation, UseMutationResult } from 'react-query';
+import { useMutation, UseMutationResult } from '@tanstack/react-query';
 import { useMandateSigning } from '../../exchange/hooks';
 import { createSecondPillarPaymentRateChange } from './api';
 import { PaymentRate, SecondPillarPaymentRateChangeMandate } from './types';

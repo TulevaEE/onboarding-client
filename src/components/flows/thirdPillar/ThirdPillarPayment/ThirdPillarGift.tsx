@@ -65,7 +65,6 @@ export const ThirdPillarGift: React.FunctionComponent = () => {
           <FormattedMessage id="thirdPillarPayment.errorGeneratingLink" />
         </div>
       )}
-
       <div className="mt-5">
         <label className="mb-2 fw-bold" htmlFor="payment-personal-code">
           <FormattedMessage id="thirdPillarPayment.giftRecipient" />
@@ -83,7 +82,6 @@ export const ThirdPillarGift: React.FunctionComponent = () => {
           onWheel={(event) => event.currentTarget.blur()}
         />
       </div>
-
       <div className="mt-4">
         <PaymentAmountInput
           paymentType="GIFT"
@@ -101,14 +99,12 @@ export const ThirdPillarGift: React.FunctionComponent = () => {
           className="mb-2 fw-bold"
         />
       </div>
-
       <p className="mt-4 mb-2 fw-bold">
         <FormattedMessage id="thirdPillarPayment.singlePaymentBank" />
       </p>
       <div className="d-flex gap-2 flex-wrap mt-2 payment-banks">
         <PaymentBankButtons paymentBank={paymentBank} setPaymentBank={setPaymentBank} />
       </div>
-
       {paymentBank === 'other' &&
         paymentPersonalCode &&
         isValidPersonalCode(paymentPersonalCode) && (
