@@ -1,4 +1,4 @@
-import { useMutation, UseMutationResult, useQuery, UseQueryResult } from 'react-query';
+import { useMutation, UseMutationResult, useQuery, UseQueryResult } from '@tanstack/react-query';
 
 import {
   createApplicationCancellation,
@@ -36,23 +36,23 @@ import {
 } from './apiModels/withdrawals';
 
 export function usePendingApplications(): UseQueryResult<Application[]> {
-  return useQuery('pendingApplications', () => getPendingApplications());
+  return useQuery(['pendingApplications'], () => getPendingApplications());
 }
 
 export function useTransactions(): UseQueryResult<Transaction[]> {
-  return useQuery('transactions', () => getTransactions());
+  return useQuery(['transactions'], () => getTransactions());
 }
 
 export function useCapitalEvents(): UseQueryResult<CapitalEvent[]> {
-  return useQuery('capitalEvents', () => getCapitalEvents());
+  return useQuery(['capitalEvents'], () => getCapitalEvents());
 }
 
 export function useContributions(): UseQueryResult<Contribution[]> {
-  return useQuery('contributions', () => getContributions());
+  return useQuery(['contributions'], () => getContributions());
 }
 
 export function useFunds(): UseQueryResult<Fund[]> {
-  return useQuery('funds', () => getFunds());
+  return useQuery(['funds'], () => getFunds());
 }
 
 export function useApplicationCancellation(): UseMutationResult<
@@ -74,27 +74,27 @@ export function useApplication(id: number): UseQueryResult<Application | null> {
 }
 
 export function useMandateDeadlines(): UseQueryResult<MandateDeadlines> {
-  return useQuery('mandateDeadlines', () => getMandateDeadlines());
+  return useQuery(['mandateDeadlines'], () => getMandateDeadlines());
 }
 
 export function useMe(): UseQueryResult<User> {
-  return useQuery('user', () => getUserWithToken());
+  return useQuery(['user'], () => getUserWithToken());
 }
 
 export function useWithdrawalsEligibility(): UseQueryResult<WithdrawalsEligibility> {
-  return useQuery('withdrawalsEligibility', () => getWithdrawalsEligibility());
+  return useQuery(['withdrawalsEligibility'], () => getWithdrawalsEligibility());
 }
 
 export function useFundPensionStatus(): UseQueryResult<FundPensionStatus> {
-  return useQuery('fundPensionStatus', () => getFundPensionStatus());
+  return useQuery(['fundPensionStatus'], () => getFundPensionStatus());
 }
 
 export function useConversion(): UseQueryResult<UserConversion> {
-  return useQuery('conversion', () => getUserConversionWithToken());
+  return useQuery(['conversion'], () => getUserConversionWithToken());
 }
 
 export function useSourceFunds(): UseQueryResult<SourceFund[]> {
-  return useQuery('sourceFunds', () => getSourceFunds());
+  return useQuery(['sourceFunds'], () => getSourceFunds());
 }
 
 export function useCreateMandateBatch(): UseMutationResult<

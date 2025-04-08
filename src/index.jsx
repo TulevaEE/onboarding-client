@@ -10,7 +10,7 @@ import { Provider as ReduxProvider } from 'react-redux';
 import { Route, Switch } from 'react-router-dom';
 import { ConnectedRouter, routerMiddleware } from 'connected-react-router';
 import ReactGA from 'react-ga4';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import moment from 'moment';
 import 'moment/locale/et';
 import TagManager from 'react-gtm-module';

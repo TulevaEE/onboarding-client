@@ -4,7 +4,7 @@ import { Provider as ReduxProvider } from 'react-redux';
 import configureMockStore, { MockStore } from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { ConnectedRouter, routerMiddleware } from 'connected-react-router';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 import { render, RenderResult } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';

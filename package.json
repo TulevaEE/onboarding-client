@@ -9,6 +9,7 @@
   "dependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@sentry/browser": "^7.74.0",
+    "@tanstack/react-query": "^4.36.1",
     "array.prototype.find": "^2.1.2",
     "axios": "^0.24.0",
     "bootstrap": "^5.3.3",
@@ -33,7 +34,6 @@
     "react-global-configuration": "^1.4.1",
     "react-gtm-module": "^2.0.11",
     "react-intl": "^5.25.1",
-    "react-query": "^3.31.0",
     "react-redux": "^7.2.9",
     "react-router-dom": "^5.3.4",
     "react-tooltip": "4.2.17",
@@ -58,6 +58,7 @@
     "prepare": "husky"
   },
   "devDependencies": {
+    "@tanstack/react-query-devtools": "^4.36.1",
     "@testing-library/jest-dom": "^6.1.4",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",

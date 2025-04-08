@@ -1,4 +1,4 @@
-import { useQuery, UseQueryResult } from 'react-query';
+import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { getReturnComparison, Key, ReturnComparison } from './api';
 
 const START_DATE = '2003-01-07';
@@ -18,7 +18,7 @@ export function useReturns(
     indexKey,
   }: { personalKey: Key; pensionFundKey: Key | string; indexKey: Key },
 ): UseQueryResult<ReturnComparison> {
-  return useQuery('returns', () =>
+  return useQuery(['returns'], () =>
     getReturnComparison(date, { personalKey, pensionFundKey, indexKey }),
   );
 }
