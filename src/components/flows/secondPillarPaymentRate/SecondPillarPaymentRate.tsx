@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, Redirect } from 'react-router-dom';
-import { AuthenticationLoader, ErrorMessage, Radio } from '../../common';
+import { AuthenticationLoader, ErrorMessage, Loader, Radio } from '../../common';
 import { usePageTitle } from '../../common/usePageTitle';
 import { useSecondPillarPaymentRate } from './hooks';
 import { PaymentRate } from './types';
@@ -34,6 +34,10 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
   } = useSecondPillarPaymentRate();
 
   const { data: mandateDeadlines } = useMandateDeadlines();
+
+  if (!user) {
+    return <Loader className="align-middle my-4" />;
+  }
 
   if (signedMandateId && signedMandateId === paymentRateChangeMandateId) {
     return (
