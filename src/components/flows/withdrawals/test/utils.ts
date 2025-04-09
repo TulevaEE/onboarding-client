@@ -71,7 +71,7 @@ export const assertDoneScreenPartialWithdrawal = (pillar: 'SECOND' | 'THIRD') =>
 
   if (pillar === 'SECOND') {
     paymentDeadline = screen.getByText(/The partial withdrawal from II pillar will be sent on/i);
-    expect(within(paymentDeadline).getByText(/16 – 20 January/)).toBeInTheDocument();
+    expect(within(paymentDeadline).getByText(/January 16–20/)).toBeInTheDocument();
   } else {
     paymentDeadline = screen.getByText(/The partial withdrawal from III pillar will be sent on/i);
     expect(within(paymentDeadline).getByText(/four working days/)).toBeInTheDocument();
@@ -182,7 +182,7 @@ export const assertFundPensionMandate = async (
 
   const paymentDeadline = within(fundPensionSection).getByText(/The first payment will be sent on/);
 
-  expect(within(paymentDeadline).getByText(/16 – 20 January/)).toBeInTheDocument();
+  expect(within(paymentDeadline).getByText(/January 16–20/)).toBeInTheDocument();
   expect(within(paymentDeadline).getByText(new RegExp(fundPensionSize))).toBeInTheDocument();
 
   if (pillar === 'SECOND') {
@@ -259,7 +259,7 @@ export const assertPartialWithdrawalMandate = async ({
   const paymentDeadline = within(partialWithdrawalSection).getByText(/The payment will be sent on/);
 
   if (pillar === 'SECOND') {
-    expect(within(paymentDeadline).getByText(/16 – 20 January/)).toBeInTheDocument();
+    expect(within(paymentDeadline).getByText(/January 16–20/)).toBeInTheDocument();
   } else {
     expect(within(paymentDeadline).getByText(/in four working days/)).toBeInTheDocument();
   }

@@ -59,7 +59,7 @@ exports[`MemberStatusBox renders the full component 1`] = `
           id="account.member.statement.comment"
           values={
             Object {
-              "memberJoinDate": "February 16, 2024",
+              "memberJoinDate": "February 16, 2024",
             }
           }
         />
