@@ -122,9 +122,8 @@
   "proxy": "http://localhost:9000",
   "//proxy": "https://onboarding-service.tuleva.ee",
   "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
+    ">0.3% in EE",
+    "last 2 versions and last 2 years and supports es6-module",
+    "not dead"
   ]
 }
