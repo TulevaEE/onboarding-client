@@ -2,7 +2,7 @@ import { mockUser } from '../../../../test/backend-responses';
 import { User } from '../../apiModels';
 
 export const userMockProfiles: Record<string, User> = {
-  NO_SECOND_THIRD_PILLAR: {
+  NO_SECOND_NO_THIRD_PILLAR: {
     ...mockUser,
     memberNumber: null,
     secondPillarActive: false,
@@ -38,6 +38,10 @@ export const userMockProfiles: Record<string, User> = {
   PAYMENT_RATE_6: {
     ...mockUser,
     secondPillarPaymentRates: { current: 6, pending: null },
+  },
+  PAYMENT_RATE_2_TO_6: {
+    ...mockUser,
+    secondPillarPaymentRates: { current: 2, pending: 6 },
   },
   PAYMENT_RATE_6_TO_2: {
     ...mockUser,
