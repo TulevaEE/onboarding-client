@@ -45,6 +45,7 @@ export const mockUser: User = {
   email: 'john.doe@example.com',
   phoneNumber: '55667788',
   memberNumber: 987,
+  memberJoinDate: '2019-04-01T06:46:55.000Z',
   pensionAccountNumber: '9876543210',
   address: {
     countryCode: 'EE',

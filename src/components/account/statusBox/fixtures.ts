@@ -26,6 +26,32 @@ export const incompleteConversion: UserConversion = {
   },
 };
 
+export const lowFeesNoTulevaConversion: UserConversion = {
+  weightedAverageFee: 0.0001,
+  secondPillar: {
+    selectionComplete: false,
+    selectionPartial: false,
+    transfersComplete: false,
+    transfersPartial: false,
+    paymentComplete: false,
+    pendingWithdrawal: false,
+    contribution: { yearToDate: 200, lastYear: 40, total: 250 },
+    subtraction: { yearToDate: 0, lastYear: 0, total: 0 },
+    weightedAverageFee: 0.0005,
+  },
+  thirdPillar: {
+    selectionComplete: false,
+    selectionPartial: false,
+    transfersComplete: false,
+    transfersPartial: false,
+    paymentComplete: false,
+    pendingWithdrawal: false,
+    contribution: { yearToDate: 300, lastYear: 50, total: 450 },
+    subtraction: { yearToDate: 0, lastYear: 0, total: 0 },
+    weightedAverageFee: 0.0005,
+  },
+};
+
 export const completeConversion: UserConversion = {
   weightedAverageFee: 0.004,
   secondPillar: {
