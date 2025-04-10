@@ -79,7 +79,7 @@ export class LoggedInApp extends PureComponent {
     const { location } = this.props;
     const queryParams = new URLSearchParams(location.search);
 
-    return queryParams.has('development') || isMockModeEnabled();
+    return queryParams.has('dev') || isMockModeEnabled();
   }
 
   render() {
