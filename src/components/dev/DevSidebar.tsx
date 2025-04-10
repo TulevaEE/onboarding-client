@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { useEffect, useState } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 import { readMockModeConfiguration, writeMockModeConfiguration } from '../common/requestMocker';
 import {
   getAllProfileNames,
@@ -12,6 +13,9 @@ export const DevSidebar = () => {
   const [configuration, setConfiguration] = useState(readMockModeConfiguration());
 
   const availableOptions = getAllProfileNames();
+
+  const location = useLocation();
+  const history = useHistory();
 
   useEffect(() => {
     writeMockModeConfiguration(configuration);
@@ -28,13 +32,21 @@ export const DevSidebar = () => {
       ...configuration,
       [profileName]: profileOptionToWrite,
     });
+    window.location.reload();
   };
 
-  const configurationWithExpandedProfileValue = Object.entries(configuration ?? {}).map(
-    ([key, value]) => [
+  const handleClearConfiguration = () => {
+    setConfiguration(null);
+
+    history.push(location.pathname);
+    window.location.reload();
+  };
+
+  const configurationWithExpandedProfileValue = Object.fromEntries(
+    Object.entries(configuration ?? {}).map(([key, value]) => [
       key,
       value ? mockModeProfiles[key as keyof MockModeConfiguration][value] : null,
-    ],
+    ]),
   );
 
   return (
@@ -49,6 +61,7 @@ export const DevSidebar = () => {
           data-bs-dismiss="offcanvas"
           aria-label="Clear and close"
           title="Clear and close"
+          onClick={() => handleClearConfiguration()}
         />
       </div>
       <div className="offcanvas-body">
@@ -77,13 +90,6 @@ export const DevSidebar = () => {
               </select>
             </div>
           ))}
-          <button
-            type="button"
-            onClick={() => window.location.reload()}
-            className="btn btn-primary btn-large"
-          >
-            Apply and reload
-          </button>
         </div>
 
         <hr className="my-4" />

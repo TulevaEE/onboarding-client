@@ -212,7 +212,8 @@ export interface User {
   lastName: string;
   email: string;
   phoneNumber: string;
-  memberNumber: number;
+  memberNumber: number | null;
+  memberJoinDate: string | null;
   pensionAccountNumber: string;
   secondPillarPikNumber: string;
   address: Address;
