@@ -710,6 +710,7 @@ describe('API calls', () => {
       email: 'john.doe@example.com',
       phoneNumber: '1234567',
       memberNumber: 123,
+      memberJoinDate: null,
       pensionAccountNumber: 'EE123',
       secondPillarPikNumber: '1234567',
       address: { countryCode: 'EE' },
