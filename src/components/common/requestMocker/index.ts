@@ -3,7 +3,7 @@ import { mockModeProfiles } from './profiles';
 
 const MOCK_MODE_CONFIGURATION_KEY_NAME = 'MOCK_MODE';
 
-export const writeMockModeConfiguration = (config: MockModeConfiguration | null) => {
+export const writeMockModeConfiguration = (config: Partial<MockModeConfiguration> | null) => {
   if (config === null) {
     sessionStorage.removeItem(MOCK_MODE_CONFIGURATION_KEY_NAME);
   } else {
@@ -18,7 +18,7 @@ export const readMockModeConfiguration = () => {
     return null;
   }
 
-  return JSON.parse(config) as MockModeConfiguration;
+  return JSON.parse(config) as Partial<MockModeConfiguration>;
 };
 
 export const isMockModeEnabled = () => readMockModeConfiguration() !== null;
@@ -29,7 +29,7 @@ export async function mockRequestInMockMode<TResponse = unknown>(
 ) {
   const config = readMockModeConfiguration();
 
-  if (config === null) {
+  if (config === null || !config) {
     return response;
   }
 
