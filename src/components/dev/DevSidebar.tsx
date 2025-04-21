@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
+// @ts-ignore: no type definitions for bootstrap offcanvas
+import Offcanvas from 'bootstrap/js/dist/offcanvas';
 import { readMockModeConfiguration, writeMockModeConfiguration } from '../common/requestMocker';
 import {
   getAllProfileNames,
@@ -16,6 +18,42 @@ export const DevSidebar = () => {
 
   const location = useLocation();
   const history = useHistory();
+
+  const sidebarRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const offcanvasEl = sidebarRef.current;
+    if (!offcanvasEl) {
+      return () => {};
+    }
+
+    // Initialize Bootstrap Offcanvas instance
+    const bs = Offcanvas.getInstance(offcanvasEl) || new Offcanvas(offcanvasEl);
+
+    const handleShow = () => {
+      const width = window.getComputedStyle(offcanvasEl).getPropertyValue('width');
+      document.body.style.paddingRight = width;
+    };
+    const handleHide = () => {
+      document.body.style.paddingRight = '';
+    };
+
+    offcanvasEl.addEventListener('show.bs.offcanvas', handleShow);
+    offcanvasEl.addEventListener('hidden.bs.offcanvas', handleHide);
+
+    // If URL has ?dev or already open, show & apply padding
+    if (location.search.includes('dev')) {
+      bs.show();
+    }
+    if (offcanvasEl.classList.contains('show')) {
+      handleShow();
+    }
+
+    return () => {
+      offcanvasEl.removeEventListener('show.bs.offcanvas', handleShow);
+      offcanvasEl.removeEventListener('hidden.bs.offcanvas', handleHide);
+    };
+  }, [location.search]);
 
   useEffect(() => {
     writeMockModeConfiguration(configuration);
@@ -50,7 +88,12 @@ export const DevSidebar = () => {
   );
 
   return (
-    <aside className="offcanvas offcanvas-end show bg-gray-2">
+    <aside
+      ref={sidebarRef}
+      className="offcanvas offcanvas-end show bg-gray-2"
+      data-bs-scroll="true"
+      data-bs-backdrop="false"
+    >
       <div className="offcanvas-header">
         <h2 className="offcanvas-title" id="offcanvasLabel">
           Mock mode
