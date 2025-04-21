@@ -7,6 +7,8 @@ import { connect } from 'react-redux';
 import './LoginPage.scss';
 
 import { logo, AuthenticationLoader, ErrorAlert } from '../common';
+import { usePageTitle } from '../common/usePageTitle';
+
 import LoginForm from './loginForm';
 import {
   changePhoneNumber,
@@ -35,10 +37,14 @@ export const LoginPage = ({
   monthlyThirdPillarContribution,
   exchangeExistingThirdPillarUnits,
   location,
-}) =>
-  isAuthenticated ? (
-    <Redirect to={location.state && location.state.from ? location.state.from : ''} />
-  ) : (
+}) => {
+  usePageTitle('pageTitle.loginPage');
+
+  if (isAuthenticated) {
+    return <Redirect to={location.state && location.state.from ? location.state.from : '/'} />;
+  }
+
+  return (
     <div className="login-page">
       <div className="container py-5">
         <div className="row justify-content-center">
@@ -74,6 +80,7 @@ export const LoginPage = ({
       </div>
     </div>
   );
+};
 
 const noop = () => null;
 
