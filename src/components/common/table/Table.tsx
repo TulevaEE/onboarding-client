@@ -7,6 +7,7 @@ export interface TableColumn {
   footer?: React.ReactNode;
   hideOnMobile?: boolean;
   align?: 'left' | 'right' | string;
+  padding?: boolean;
   width100?: boolean;
 }
 

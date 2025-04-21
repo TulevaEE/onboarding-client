@@ -11,16 +11,16 @@ export const memberCapitalProfiles: Record<string, CapitalRow[]> = {
     },
     {
       type: 'MEMBERSHIP_BONUS',
-      contributions: 1000,
-      profit: 200,
-      value: 1200,
+      contributions: 50,
+      profit: 10,
+      value: 60,
       currency: 'EUR',
     },
     {
       type: 'WORK_COMPENSATION',
-      contributions: 1000,
-      profit: 200,
-      value: 1200,
+      contributions: 10000,
+      profit: 2000,
+      value: 12000,
       currency: 'EUR',
     },
     {
@@ -28,6 +28,15 @@ export const memberCapitalProfiles: Record<string, CapitalRow[]> = {
       contributions: 1000,
       profit: 200,
       value: 1200,
+      currency: 'EUR',
+    },
+  ],
+  ONLY_MEMBERSHIP: [
+    {
+      type: 'MEMBERSHIP_BONUS',
+      contributions: 50,
+      profit: 10,
+      value: 60,
       currency: 'EUR',
     },
   ],
