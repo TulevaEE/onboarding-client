@@ -82,7 +82,7 @@
   "accountStatement.secondPillar.activeFundNotice": "* siia lähevad igakuised maksed. II sambast väljumise avalduse saad teha pensionikeskus.ee lehel.",
   "accountStatement.thirdPillar.activeFundNotice": "* siia lähevad igakuised maksed",
 
-  "memberCapital.heading": "Sinu liikmekapital",
+  "memberCapital.heading": "Liikmekapital",
   "memberCapital.columns.source.title": "Allikas",
   "memberCapital.columns.source.total": "Kokku",
   "memberCapital.columns.value.title": "Summa",
