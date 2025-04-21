@@ -314,7 +314,10 @@ export function getUserConversionWithToken(): Promise<UserConversion> {
 }
 
 export function getCapitalRowsWithToken(): Promise<CapitalRow[]> {
-  return getWithAuthentication(getEndpoint('/v1/me/capital'), undefined);
+  return mockRequestInMockMode(
+    getWithAuthentication(getEndpoint('/v1/me/capital'), undefined),
+    'memberCapital',
+  );
 }
 
 export function createAmlCheck(
