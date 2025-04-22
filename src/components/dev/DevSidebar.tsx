@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { readMockModeConfiguration, writeMockModeConfiguration } from '../common/requestMocker';
 import {
