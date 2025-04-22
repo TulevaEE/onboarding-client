@@ -10,7 +10,7 @@ import { ErrorMessage } from '../common';
 import { Shimmer } from '../common/shimmer/Shimmer';
 import ComparisonCalculator from './ComparisonCalculator';
 import AccountStatement from './AccountStatement';
-import { MemberCapital } from './MemberCapital';
+import { MemberCapitalTable } from './MemberCapital';
 import { StatusBox } from './statusBox';
 import GreetingBar from './GreetingBar';
 import AccountSummary from './AccountSummary';
@@ -188,11 +188,9 @@ export function AccountPage(
               <Shimmer height={32} />
             </>
           )}
-          {memberCapital && <MemberCapital rows={memberCapital} />}
+          {memberCapital && <MemberCapitalTable rows={memberCapital} />}
         </div>
-      ) : (
-        ''
-      )}
+      ) : null}
     </>
   );
 }

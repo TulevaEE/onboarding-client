@@ -11,7 +11,7 @@ import { InfoTooltip } from '../../common';
 interface Props {
   rows: CapitalRow[];
 }
-export const MemberCapital: FC<Props> = ({ rows = [] }) => {
+export const MemberCapitalTable: FC<Props> = ({ rows = [] }) => {
   const contributionsSum = sumBy(rows, (row) => row.contributions);
   const profitSum = sumBy(rows, (row) => row.profit);
   const valueSum = sumBy(rows, (row) => row.value);
