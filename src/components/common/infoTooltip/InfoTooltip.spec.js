@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import InfoTooltip from './InfoTooltip';
+import { InfoTooltip } from './InfoTooltip';
 
 describe('InfoTooltip', () => {
   let component;

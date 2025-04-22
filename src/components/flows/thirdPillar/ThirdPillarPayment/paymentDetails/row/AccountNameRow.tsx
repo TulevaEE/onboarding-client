@@ -1,6 +1,6 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import { InfoTooltip } from '../../../../../common';
+import { InfoTooltip } from '../../../../../common/infoTooltip/InfoTooltip';
 
 export const AccountNameRow: React.FunctionComponent<{
   children: React.ReactNode;

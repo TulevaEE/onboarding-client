@@ -1,6 +1,6 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import { InfoTooltip } from '../../../../../common';
+import { InfoTooltip } from '../../../../../common/infoTooltip/InfoTooltip';
 
 const accountNumber: { [bank: string]: string } = {
   swedbank: 'EE362200221067235244',

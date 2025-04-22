@@ -4,11 +4,11 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import StatusBoxRow from '../statusBoxRow';
 import { Application, Conversion, SourceFund } from '../../../common/apiModels';
-import { InfoTooltip } from '../../../common';
 import { State } from '../../../../types';
 import ThirdPillarPaymentsAmount from './ThirdPillarContributionAmount';
 import { useFundPensionStatus, usePendingApplications } from '../../../common/apiHooks';
 import { ActiveFundPensionDescription } from '../ActiveFundPensionDescription';
+import { InfoTooltip } from '../../../common/infoTooltip/InfoTooltip';
 
 interface Props {
   conversion: Conversion;
