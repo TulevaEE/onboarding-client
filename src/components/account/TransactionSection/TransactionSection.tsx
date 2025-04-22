@@ -60,7 +60,7 @@ export const TransactionSection: React.FunctionComponent<{
     {
       title: <FormattedMessage id="transactions.columns.fund.title" />,
       dataIndex: 'fund',
-      width100: true,
+      width: 100,
       align: 'left',
     },
     {

@@ -7,7 +7,10 @@ export interface TableColumn {
   footer?: React.ReactNode;
   hideOnMobile?: boolean;
   align?: 'left' | 'right' | string;
-  width100?: boolean;
+  /**
+   * Optional width percentage (5, 10, ..., 100) or 'auto' for w-auto.
+   */
+  width?: number | 'auto';
 }
 
 export interface Props {
@@ -33,10 +36,10 @@ const Table: React.FC<Props> = ({ columns, dataSource }) => (
       <tbody>
         {dataSource.map(({ key, ...data }) => (
           <tr key={key}>
-            {columns.map(({ dataIndex, hideOnMobile, width100, align }) => (
+            {columns.map(({ dataIndex, hideOnMobile, width, align }) => (
               <td
                 key={dataIndex}
-                className={`${getAlignClass(align)} ${getWidthClass(width100)} ${getMobileClass(
+                className={`${getAlignClass(align)} ${getWidthClass(width)} ${getMobileClass(
                   hideOnMobile,
                 )}`}
               >
@@ -76,8 +79,11 @@ function getAlignClass(align?: string) {
   return '';
 }
 
-function getWidthClass(width100?: boolean) {
-  return width100 ? 'w-100' : '';
+/**
+ * Converts a numeric width (5-100) or 'auto' to the corresponding Bootstrap class.
+ */
+function getWidthClass(width?: number | 'auto'): string {
+  return width !== undefined ? `w-${width}` : '';
 }
 
 export default Table;

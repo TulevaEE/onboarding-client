@@ -28,7 +28,6 @@ const AccountStatement: React.FC<Props> = ({ funds, activeFundNotice }) => {
       title: <FormattedMessage id="accountStatement.columns.fund.title" />,
       dataIndex: 'fund',
       footer: <FormattedMessage id="accountStatement.columns.fund.footer" />,
-      width100: true,
     },
     {
       title: (
@@ -38,6 +37,7 @@ const AccountStatement: React.FC<Props> = ({ funds, activeFundNotice }) => {
         </>
       ),
       dataIndex: 'feesPercent',
+      width: 15,
       footer: <Fees value={weightedAverageFee} />,
     },
     ...(weightedAverageFee * valueSum === 0
@@ -51,6 +51,7 @@ const AccountStatement: React.FC<Props> = ({ funds, activeFundNotice }) => {
               </>
             ),
             dataIndex: 'feesEuro',
+            width: 15,
             footer: (
               <Euro className="text-body-secondary" amount={-(weightedAverageFee * valueSum)} />
             ),
@@ -60,6 +61,7 @@ const AccountStatement: React.FC<Props> = ({ funds, activeFundNotice }) => {
     {
       title: <FormattedMessage id="accountStatement.columns.value.title" />,
       dataIndex: 'value',
+      width: 15,
       footer: <Euro className="fw-bold" amount={valueSum} />,
     },
   ];

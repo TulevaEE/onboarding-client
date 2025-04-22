@@ -86,7 +86,7 @@ export const ContributionSection: React.FunctionComponent<{
     {
       title: <FormattedMessage id="contributions.columns.sender.title" />,
       dataIndex: 'sender',
-      width100: true,
+      width: 100,
       align: 'left',
       footer: footerMessage(),
     },

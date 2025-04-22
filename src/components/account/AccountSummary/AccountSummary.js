@@ -107,7 +107,7 @@ const AccountSummary = ({
       title: <FormattedMessage id="accountSummary.columns.pillar.title" />,
       dataIndex: 'pillarLabel',
       footer: <FormattedMessage id="accountSummary.columns.pillar.footer" />,
-      width100: true,
+      width: 100,
     },
     ...(weightedAverageFee === 0
       ? []

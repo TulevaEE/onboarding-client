@@ -27,22 +27,24 @@ export const MemberCapitalTable: FC<Props> = ({ rows = [] }) => {
           <FormattedMessage id="memberCapital.columns.source.total" />
         </span>
       ),
-      width100: true,
     },
     {
       title: <FormattedMessage id="memberCapital.columns.contributions.title" />,
       dataIndex: 'contributions',
+      width: 15,
       footer: shouldRenderFooter && <Euro amount={contributionsSum} />,
     },
     {
       title: <FormattedMessage id="memberCapital.columns.profit.title" />,
       dataIndex: 'profit',
+      width: 15,
       footer: shouldRenderFooter && <Euro amount={profitSum} />,
       hideOnMobile: true,
     },
     {
       title: <FormattedMessage id="memberCapital.columns.value.title" />,
       dataIndex: 'value',
+      width: 15,
       footer: shouldRenderFooter && <Euro amount={valueSum} />,
     },
   ];

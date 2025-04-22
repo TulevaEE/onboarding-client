@@ -34,7 +34,7 @@ export const CapitalPage: React.FunctionComponent = () => {
     {
       title: <FormattedMessage id="capitalEvents.columns.source.title" />,
       dataIndex: 'type',
-      width100: true,
+      width: 100,
       align: 'left',
     },
     {
