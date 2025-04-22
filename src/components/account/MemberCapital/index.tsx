@@ -33,7 +33,6 @@ export const MemberCapitalTable: FC<Props> = ({ rows = [] }) => {
       title: <FormattedMessage id="memberCapital.columns.contributions.title" />,
       dataIndex: 'contributions',
       footer: shouldRenderFooter && <Euro amount={contributionsSum} />,
-      hideOnMobile: true,
     },
     {
       title: <FormattedMessage id="memberCapital.columns.profit.title" />,

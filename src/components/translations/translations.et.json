@@ -87,7 +87,7 @@
   "memberCapital.columns.source.total": "Kokku",
   "memberCapital.columns.contributions.title": "Panus",
   "memberCapital.columns.profit.title": "Tulu",
-  "memberCapital.columns.value.title": "Summa",
+  "memberCapital.columns.value.title": "Väärtus",
   "memberCapital.source.CAPITAL_PAYMENT": "Algkapital",
   "memberCapital.source.MEMBERSHIP_BONUS": "Liikmeboonus",
   "membercapital.source.MEMBERSHIP_BONUS.tooltip": "Tuleva liikmena teenid igal aastal boonust 0,05% oma pensionivara aasta keskmiselt väärtuselt. Kanname boonuse sinu Tuleva kapitalikontole, kus see kasvab koos pensionivaraga ja teenib investeerimistootlust.",
