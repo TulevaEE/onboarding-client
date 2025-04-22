@@ -1,6 +1,6 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import { InfoTooltip } from '../../../../../common';
+import { InfoTooltip } from '../../../../../common/infoTooltip/InfoTooltip';
 
 export const PaymentDescriptionRow: React.FunctionComponent<{
   personalCode: string;

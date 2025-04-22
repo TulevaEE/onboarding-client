@@ -3,7 +3,7 @@ import { FormattedMessage } from 'react-intl';
 import { Collapse } from 'react-bootstrap';
 import { formatAmountForCurrency } from '../../common/utils';
 import { useWithdrawalsEligibility } from '../../common/apiHooks';
-import { InfoTooltip, Radio } from '../../common';
+import { Radio } from '../../common';
 import { PillarToWithdrawFrom } from './types';
 import { useFundPensionCalculation, useWithdrawalsContext } from './hooks';
 import Percentage from '../../common/Percentage';
@@ -20,6 +20,7 @@ import styles from './Withdrawals.module.scss';
 import { useTestMode } from '../../common/test-mode';
 import { WithdrawalsEligibility } from '../../common/apiModels/withdrawals';
 import Slider from './Slider';
+import { InfoTooltip } from '../../common/infoTooltip/InfoTooltip';
 
 export const WithdrawalAmountStep = () => {
   const { data: eligibility } = useWithdrawalsEligibility();
@@ -365,11 +366,7 @@ const FundPensionStatusBox = () => {
                   />
                 </span>
                 &nbsp;
-                <InfoTooltip
-                  name="fundPensionRecommendedPeriodDescriptionTooltip"
-                  className="info-tooltip-modern"
-                  place="bottom"
-                >
+                <InfoTooltip name="fundPensionRecommendedPeriodDescriptionTooltip" place="bottom">
                   <FormattedMessage id="withdrawals.withdrawalAmount.fundPensionRecommendedPeriodDescription" />
                 </InfoTooltip>
               </div>
@@ -516,7 +513,7 @@ const SummaryBox = () => {
                       </del>{' '}
                       <InfoTooltip
                         name="partialWithdrawImpactToFundPensionTooltip"
-                        className="info-tooltip-modern me-2"
+                        className="me-2"
                         place="bottom"
                       >
                         <FormattedMessage id="withdrawals.withdrawalAmount.summary.partialWithdrawImpactToFundPension" />

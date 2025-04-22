@@ -3,10 +3,10 @@ import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import StatusBoxRow from '../statusBoxRow';
-import { InfoTooltip } from '../../../common';
 import { formatDateYear } from '../../../common/dateFormatter';
 import { useCapitalEvents } from '../../../common/apiHooks';
 import { Euro } from '../../../common/Euro';
+import { InfoTooltip } from '../../../common/infoTooltip/InfoTooltip';
 
 interface Props {
   loading: boolean;

@@ -12,7 +12,6 @@ import { Option, OptionGroup } from './select/Select';
 import Percentage from '../../common/Percentage';
 import { createTrackedEvent } from '../../common/api';
 import { Shimmer } from '../../common/shimmer/Shimmer';
-import { InfoTooltip } from '../../common';
 import {
   BarHeights,
   ContentTextProperties,
@@ -30,6 +29,7 @@ import {
   sortFundsWithTulevaFirst,
 } from './utility';
 import { TranslationKey } from '../../translations';
+import { InfoTooltip } from '../../common/infoTooltip/InfoTooltip';
 
 const formatMessageWithTags = ({ id, values }: FormatTagsMessageDescriptor) => (
   <FormattedMessage
@@ -1185,14 +1185,14 @@ const ComparisonCalculator: React.FC = () => {
   function getContentTextCtaSubtext() {
     if (performanceVerdictProperties.comparison === 'FUND') {
       return (
-        <InfoTooltip name="cta-tooltip" className="info-tooltip-modern ms-3 align-middle">
+        <InfoTooltip name="cta-tooltip" className="ms-3 align-middle">
           <FormattedMessage id="comparisonCalculator.content.performance.cta.subtext" />
         </InfoTooltip>
       );
     }
     if (performanceVerdictProperties.comparison === 'INFLATION') {
       return (
-        <InfoTooltip name="cta-tooltip" className="info-tooltip-modern ms-3 align-middle">
+        <InfoTooltip name="cta-tooltip" className="ms-3 align-middle">
           <FormattedMessage id="comparisonCalculator.content.performance.cta.subtext" />
         </InfoTooltip>
       );

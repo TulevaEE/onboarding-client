@@ -6,7 +6,7 @@ import Table from '../../common/table';
 import { Euro } from '../../common/Euro';
 import { CapitalRow } from '../../common/apiModels';
 import { TableColumn } from '../../common/table/Table';
-import { InfoTooltip } from '../../common';
+import { InfoTooltip } from '../../common/infoTooltip/InfoTooltip';
 
 interface Props {
   rows: CapitalRow[];

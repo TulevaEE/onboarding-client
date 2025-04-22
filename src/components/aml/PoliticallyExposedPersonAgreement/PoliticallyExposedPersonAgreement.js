@@ -6,7 +6,7 @@ import { Field } from 'redux-form';
 
 import { FormattedMessage } from 'react-intl';
 import { changeIsPoliticallyExposed } from '../actions';
-import { InfoTooltip } from '../../common';
+import { InfoTooltip } from '../../common/infoTooltip/InfoTooltip';
 import { requiredField } from '../../common/form';
 
 export const PoliticallyExposedPersonAgreement = ({

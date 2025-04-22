@@ -16,7 +16,7 @@ import {
   SourceFund,
 } from '../../../common/apiModels';
 import { State } from '../../../../types';
-import InfoTooltip from '../../../common/infoTooltip';
+import { InfoTooltip } from '../../../common/infoTooltip/InfoTooltip';
 import { isTuleva } from '../../../common/utils';
 import { getValueSum } from '../../AccountStatement/fundSelector';
 import { Euro } from '../../../common/Euro';
