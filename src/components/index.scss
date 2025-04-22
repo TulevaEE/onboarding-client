@@ -8,6 +8,17 @@
 @import '~font-awesome/scss/font-awesome.scss';
 
 /**
+ * Extend width classes
+ */
+
+@for $i from 0 through 20 {
+  $pct: $i * 5%;
+  .w-#{$i * 5} {
+    width: $pct !important;
+  }
+}
+
+/**
  * Element overrides
  */
 
