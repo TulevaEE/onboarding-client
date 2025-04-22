@@ -22,7 +22,11 @@ export const MemberCapital: FC<Props> = ({ rows = [] }) => {
     {
       title: <FormattedMessage id="memberCapital.columns.source.title" />,
       dataIndex: 'type',
-      footer: shouldRenderFooter && <FormattedMessage id="memberCapital.columns.source.total" />,
+      footer: shouldRenderFooter && (
+        <span data-testid="member-capital-total">
+          <FormattedMessage id="memberCapital.columns.source.total" />
+        </span>
+      ),
       width100: true,
     },
     {

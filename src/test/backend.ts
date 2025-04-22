@@ -6,6 +6,7 @@ import moment from 'moment';
 import {
   Application,
   CapitalEvent,
+  CapitalRow,
   Conversion,
   FundBalance,
   FundStatus,
@@ -505,11 +506,12 @@ export function returnsBackend(server: SetupServerApi): void {
   );
 }
 
-export function userCapitalBackend(server: SetupServerApi): void {
+export function userCapitalBackend(
+  server: SetupServerApi,
+  capitalRows: CapitalRow[] = capitalRowsResponse,
+): void {
   server.use(
-    rest.get('http://localhost/v1/me/capital', (req, res, ctx) =>
-      res(ctx.json(capitalRowsResponse)),
-    ),
+    rest.get('http://localhost/v1/me/capital', (req, res, ctx) => res(ctx.json(capitalRows))),
   );
 }
 
