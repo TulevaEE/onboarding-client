@@ -7,9 +7,6 @@ export interface TableColumn {
   footer?: React.ReactNode;
   hideOnMobile?: boolean;
   align?: 'left' | 'right' | string;
-  /**
-   * Optional width percentage (5, 10, ..., 100) or 'auto' for w-auto.
-   */
   width?: number | 'auto';
 }
 
@@ -79,9 +76,6 @@ function getAlignClass(align?: string) {
   return '';
 }
 
-/**
- * Converts a numeric width (5-100) or 'auto' to the corresponding Bootstrap class.
- */
 function getWidthClass(width?: number | 'auto'): string {
   return width !== undefined ? `w-${width}` : '';
 }
