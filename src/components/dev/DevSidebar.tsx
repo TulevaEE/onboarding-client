@@ -77,7 +77,7 @@ export const DevSidebar = () => {
           <h3 className="m-0">Profiles</h3>
           {availableOptions.map((profileName) => (
             <div key={profileName}>
-              <label className="form-label" htmlFor={profileName}>
+              <label className="form-label mb-1" htmlFor={profileName}>
                 {profileName}
               </label>
               <select
