@@ -62,7 +62,7 @@ describe('happy path', () => {
 
   test('pension summary table is shown', async () => {
     // eslint-disable-next-line testing-library/no-node-access,@typescript-eslint/no-non-null-assertion
-    const summarySection = screen.getByText('Your pension summary').parentElement!.parentElement!;
+    const summarySection = screen.getByText('Your asset summary').parentElement!.parentElement!;
 
     expect(
       await within(summarySection).findByRole('cell', { name: 'Member capital' }),
@@ -71,13 +71,13 @@ describe('happy path', () => {
       // eslint-disable-next-line testing-library/no-node-access,@typescript-eslint/no-non-null-assertion
       within(summarySection).getByRole('cell', { name }).parentElement!;
 
-    const secondPillarRow = getRow('II Pillar');
+    const secondPillarRow = getRow('II pillar');
     expect(within(secondPillarRow).getByText('12 345.67 €')).toBeInTheDocument();
     expect(within(secondPillarRow).queryByText('0.00 €')).not.toBeInTheDocument();
     expect(within(secondPillarRow).getByText('102 654.33 €')).toBeInTheDocument();
     expect(within(secondPillarRow).getByText('115 000.00 €')).toBeInTheDocument();
 
-    const thirdPillarRow = getRow('III Pillar');
+    const thirdPillarRow = getRow('III pillar');
     expect(within(thirdPillarRow).getByText('9 876.54 €')).toBeInTheDocument();
     expect(within(thirdPillarRow).queryByText('0.00 €')).not.toBeInTheDocument();
     expect(within(thirdPillarRow).getByText('−4 177.18 €')).toBeInTheDocument();
