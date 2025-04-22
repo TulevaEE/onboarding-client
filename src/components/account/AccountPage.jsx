@@ -165,7 +165,7 @@ export function AccountPage(
         <>
           <SectionHeading titleId="accountStatement.thirdPillar.heading">
             {!isThirdPillarFullyConverted && (
-              <Link className="btn btn-light" to="/3rd-pillar-flow">
+              <Link className="icon-link" to="/3rd-pillar-flow">
                 <FormattedMessage id="change.my.pension.fund.third.pillar" />
               </Link>
             )}
