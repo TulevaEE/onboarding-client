@@ -75,6 +75,7 @@ describe('Member capital table', () => {
     ]);
     userBackend(server, { ...mockUser, memberNumber: 123, memberJoinDate: '2020-01-01' });
     expect(await screen.findByText('Contribution')).toBeInTheDocument();
+    expect(await screen.findByText('Membership bonus')).toBeInTheDocument();
     expect(screen.queryByTestId('member-capital-total')).not.toBeInTheDocument();
   });
 
@@ -99,6 +100,10 @@ describe('Member capital table', () => {
     userCapitalBackend(server, capitalRowsResponse);
     userBackend(server, { ...mockUser, memberNumber: 123, memberJoinDate: '2020-01-01' });
     expect(await screen.findByText('Contribution')).toBeInTheDocument();
+    expect(await screen.findByText('Initial capital')).toBeInTheDocument();
+    expect(await screen.findByText('Membership bonus')).toBeInTheDocument();
+    expect(await screen.findByText('Work compensation')).toBeInTheDocument();
+    expect(await screen.findByText('Unvested work compensation')).toBeInTheDocument();
     expect(await screen.findByTestId('member-capital-total')).toBeInTheDocument();
   });
 });
