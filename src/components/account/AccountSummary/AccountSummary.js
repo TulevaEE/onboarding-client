@@ -135,7 +135,7 @@ const AccountSummary = ({
             ),
             dataIndex: 'feesEuro',
             footer: <Euro className="text-body-secondary" amount={-feesEuroSum} />,
-            hideOnMobile: true,
+            hideOnBreakpoint: 'xs',
           },
         ]),
     ...(contributionsSum === 0
@@ -144,7 +144,7 @@ const AccountSummary = ({
           {
             title: <FormattedMessage id="accountSummary.columns.contributions" />,
             dataIndex: 'contributions',
-            hideOnMobile: true,
+            hideOnBreakpoint: 'xs',
             footer: <Euro amount={contributionsSum} />,
           },
         ]),
@@ -154,14 +154,14 @@ const AccountSummary = ({
           {
             title: <FormattedMessage id="accountSummary.columns.subtractions" />,
             dataIndex: 'subtractions',
-            hideOnMobile: true,
+            hideOnBreakpoint: 'xs',
             footer: <Euro amount={subtractionsSum} />,
           },
         ]),
     {
       title: <FormattedMessage id="accountSummary.columns.profit" />,
       dataIndex: 'profit',
-      hideOnMobile: true,
+      hideOnBreakpoint: 'xs',
       footer: <Euro amount={profitSum} />,
     },
     {

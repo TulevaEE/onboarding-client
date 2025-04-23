@@ -5,7 +5,7 @@ export interface TableColumn {
   title: React.ReactNode;
   dataIndex: string;
   footer?: React.ReactNode;
-  hideOnMobile?: boolean;
+  hideOnBreakpoint?: string;
   align?: 'left' | 'right' | string;
   width?: number | 'auto';
 }
@@ -20,10 +20,10 @@ const Table: React.FC<Props> = ({ columns, dataSource }) => (
     <table className="table mb-0">
       <thead>
         <tr>
-          {columns.map(({ dataIndex, title, hideOnMobile, align }) => (
+          {columns.map(({ dataIndex, title, hideOnBreakpoint, align }) => (
             <th
               key={dataIndex}
-              className={`${getAlignClass(align)} ${getMobileClass(hideOnMobile)}`}
+              className={`${getAlignClass(align)} ${getBreakpointClass(hideOnBreakpoint)}`}
             >
               {title}
             </th>
@@ -33,11 +33,11 @@ const Table: React.FC<Props> = ({ columns, dataSource }) => (
       <tbody>
         {dataSource.map(({ key, ...data }) => (
           <tr key={key}>
-            {columns.map(({ dataIndex, hideOnMobile, width, align }) => (
+            {columns.map(({ dataIndex, hideOnBreakpoint, width, align }) => (
               <td
                 key={dataIndex}
-                className={`${getAlignClass(align)} ${getWidthClass(width)} ${getMobileClass(
-                  hideOnMobile,
+                className={`${getAlignClass(align)} ${getWidthClass(width)} ${getBreakpointClass(
+                  hideOnBreakpoint,
                 )}`}
               >
                 {data[dataIndex]}
@@ -49,8 +49,8 @@ const Table: React.FC<Props> = ({ columns, dataSource }) => (
       {columns.some(({ footer }) => !!footer) && (
         <tfoot>
           <tr>
-            {columns.map(({ dataIndex, footer, hideOnMobile }) => (
-              <td key={dataIndex} className={getMobileClass(hideOnMobile)}>
+            {columns.map(({ dataIndex, footer, hideOnBreakpoint }) => (
+              <td key={dataIndex} className={getBreakpointClass(hideOnBreakpoint)}>
                 {footer}
               </td>
             ))}
@@ -60,11 +60,6 @@ const Table: React.FC<Props> = ({ columns, dataSource }) => (
     </table>
   </div>
 );
-
-function getMobileClass(hideOnMobile?: boolean) {
-  const HIDDEN_ON_MOBILE_CELL_CLASS = 'd-none d-sm-table-cell';
-  return hideOnMobile ? HIDDEN_ON_MOBILE_CELL_CLASS : undefined;
-}
 
 function getAlignClass(align?: string) {
   if (align === 'left') {
@@ -78,6 +73,41 @@ function getAlignClass(align?: string) {
 
 function getWidthClass(width?: number | 'auto'): string {
   return width !== undefined ? `w-${width}` : '';
+}
+
+function getBreakpointClass(hideOnBreakpoint?: string): string {
+  const breakpoints = ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'];
+  if (!hideOnBreakpoint) {
+    return '';
+  }
+  const points = hideOnBreakpoint.split(' ').filter(Boolean);
+  const indices = Array.from(
+    new Set(points.map((bp) => breakpoints.indexOf(bp)).filter((i) => i >= 0)),
+  ).sort((a, b) => a - b);
+
+  const classes: string[] = [];
+  let idx = 0;
+  while (idx < indices.length) {
+    const start = indices[idx];
+    let end = start;
+    while (idx + 1 < indices.length && indices[idx + 1] === end + 1) {
+      idx += 1;
+      end = indices[idx];
+    }
+    // hide starting at this breakpoint
+    if (start === 0) {
+      classes.push('d-none');
+    } else {
+      classes.push(`d-${breakpoints[start]}-none`);
+    }
+    // show from the next breakpoint after the end of the hide range
+    if (end < breakpoints.length - 1) {
+      const next = breakpoints[end + 1];
+      classes.push(`d-${next}-table-cell`);
+    }
+    idx += 1;
+  }
+  return classes.join(' ');
 }
 
 export default Table;

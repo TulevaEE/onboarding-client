@@ -69,7 +69,7 @@ describe('Table', () => {
     expect(foot().exists()).toBe(false);
   });
 
-  it('hides columns with hideOnMobile flag on mobile', () => {
+  it('hides columns with hideOnBreakpoint on XS breakpoint', () => {
     component = shallow(
       <Table
         columns={[
@@ -77,7 +77,7 @@ describe('Table', () => {
             title: 'Flower',
             dataIndex: 'flower',
             footer: 'power',
-            hideOnMobile: true,
+            hideOnBreakpoint: 'xs',
           },
           { title: 'Color', dataIndex: 'color', footer: 'rainbow' },
         ]}
