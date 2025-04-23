@@ -48,6 +48,10 @@ describe('SecondPillarStatusBox', () => {
     component.setProps({ currentPaymentRate: 2, pendingPaymentRate: 2 });
     expect(component).toMatchSnapshot();
   });
+  it('renders the payment rate flow', () => {
+    component.setProps({ currentPaymentRate: 6, pendingPaymentRate: 2 });
+    expect(component).toMatchSnapshot();
+  });
 
   it('renders no 2nd pillar flow when no second pillar', () => {
     component.setProps({ secondPillarActive: false });

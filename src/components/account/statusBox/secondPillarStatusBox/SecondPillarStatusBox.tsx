@@ -59,19 +59,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
     );
 
   if (!secondPillarActive) {
-    return (
-      <StatusBoxRow
-        error
-        showAction={!loading}
-        name={<FormattedMessage id="account.status.choice.pillar.second" />}
-        lines={[<FormattedMessage id="account.status.choice.pillar.second.missing.label" />]}
-      >
-        {/* People who left the 2nd pillar can't rejoin for 10 years, so a CTA might be misleading */}
-        {/* <Link to="/2nd-pillar-flow" className="btn btn-primary"> */}
-        {/*  <FormattedMessage id="account.status.choice.pillar.second.missing.action" /> */}
-        {/* </Link> */}
-      </StatusBoxRow>
-    );
+    return secondPillarMissing();
   }
 
   if (conversion.pendingWithdrawal) {
@@ -199,9 +187,35 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
     );
   }
 
-  const isFullyConverted = conversion.selectionComplete && conversion.transfersComplete;
+  if ((currentPaymentRate < 4 && pendingPaymentRate < 4) || pendingPaymentRate < 4) {
+    return increasePaymentRate();
+  }
 
-  if (currentPaymentRate < 4 && pendingPaymentRate < 4) {
+  const isFullyConvertedToTuleva = conversion.selectionComplete && conversion.transfersComplete;
+
+  if (!isFullyConvertedToTuleva) {
+    return inLowFeeFund();
+  }
+
+  return fullyConvertedToTuleva();
+
+  function secondPillarMissing() {
+    return (
+      <StatusBoxRow
+        error
+        showAction={!loading}
+        name={<FormattedMessage id="account.status.choice.pillar.second" />}
+        lines={[<FormattedMessage id="account.status.choice.pillar.second.missing.label" />]}
+      >
+        {/* People who left the 2nd pillar can't rejoin for 10 years, so a CTA might be misleading */}
+        {/* <Link to="/2nd-pillar-flow" className="btn btn-primary"> */}
+        {/*  <FormattedMessage id="account.status.choice.pillar.second.missing.action" /> */}
+        {/* </Link> */}
+      </StatusBoxRow>
+    );
+  }
+
+  function increasePaymentRate() {
     return (
       <StatusBoxRow
         warning
@@ -221,7 +235,40 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
     );
   }
 
-  if (!isFullyConverted) {
+  function fullyConvertedToTuleva() {
+    return (
+      <StatusBoxRow
+        ok
+        name={<FormattedMessage id="account.status.choice.pillar.second" />}
+        showAction={!loading}
+        lines={[
+          <FormattedMessage
+            id="account.status.choice.lowFee.index.2.label"
+            values={{
+              paymentRate: currentPaymentRate,
+            }}
+          />,
+          ...(currentPaymentRate !== pendingPaymentRate
+            ? [
+                <small className="text-body-secondary">
+                  <FormattedMessage
+                    id="account.status.choice.lowFee.index.2.description"
+                    values={{
+                      paymentRate: pendingPaymentRate,
+                      paymentRateFulfillmentDate: formatDateYear(
+                        mandateDeadlines?.paymentRateFulfillmentDate,
+                      ),
+                    }}
+                  />
+                </small>,
+              ]
+            : []),
+        ]}
+      />
+    );
+  }
+
+  function inLowFeeFund() {
     return (
       <StatusBoxRow
         ok
@@ -258,37 +305,6 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
       </StatusBoxRow>
     );
   }
-
-  return (
-    <StatusBoxRow
-      ok
-      name={<FormattedMessage id="account.status.choice.pillar.second" />}
-      showAction={!loading}
-      lines={[
-        <FormattedMessage
-          id="account.status.choice.lowFee.index.2.label"
-          values={{
-            paymentRate: currentPaymentRate,
-          }}
-        />,
-        ...(currentPaymentRate !== pendingPaymentRate
-          ? [
-              <small className="text-body-secondary">
-                <FormattedMessage
-                  id="account.status.choice.lowFee.index.2.description"
-                  values={{
-                    paymentRate: pendingPaymentRate,
-                    paymentRateFulfillmentDate: formatDateYear(
-                      mandateDeadlines?.paymentRateFulfillmentDate,
-                    ),
-                  }}
-                />
-              </small>,
-            ]
-          : []),
-      ]}
-    />
-  );
 };
 
 function feeComparison(currentFeesEuro: number, tulevaFeesEuro: number) {

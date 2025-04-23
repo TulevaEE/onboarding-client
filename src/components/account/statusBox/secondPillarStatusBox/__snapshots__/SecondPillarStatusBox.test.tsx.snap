@@ -334,6 +334,39 @@ exports[`SecondPillarStatusBox renders the payment rate flow 1`] = `
 </StatusBoxRow>
 `;
 
+exports[`SecondPillarStatusBox renders the payment rate flow 2`] = `
+<StatusBoxRow
+  lines={
+    Array [
+      <Memo(MemoizedFormattedMessage)
+        id="account.status.choice.pillar.second.tax.benefit.warning"
+      />,
+      <small
+        className="text-body-secondary"
+      >
+        <SecondPillarPaymentRateTaxWin />
+      </small>,
+    ]
+  }
+  name={
+    <Memo(MemoizedFormattedMessage)
+      id="account.status.choice.pillar.second"
+    />
+  }
+  showAction={true}
+  warning={true}
+>
+  <Link
+    className="btn btn-primary"
+    to="/2nd-pillar-payment-rate"
+  >
+    <MemoizedFormattedMessage
+      id="account.status.choice.paymentRate.increase"
+    />
+  </Link>
+</StatusBoxRow>
+`;
+
 exports[`SecondPillarStatusBox renders the success flow 1`] = `
 <StatusBoxRow
   lines={
