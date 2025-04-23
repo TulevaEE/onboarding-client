@@ -4,6 +4,33 @@ import Table from '.';
 
 describe('Table', () => {
   let component;
+
+  // all potential breakpoint classes for hideOnBreakpoint
+  const allBreakpointClasses = [
+    'd-none',
+    'd-table-cell',
+    'd-sm-none',
+    'd-sm-table-cell',
+    'd-md-none',
+    'd-md-table-cell',
+    'd-lg-none',
+    'd-lg-table-cell',
+    'd-xl-none',
+    'd-xl-table-cell',
+    'd-xxl-none',
+    'd-xxl-table-cell',
+  ];
+
+  // helper to assert hideOnBreakpoint classes
+  const assertHideOn = (wrapper, expectedClasses) => {
+    const headCell = wrapper.find('thead tr th').at(0);
+    const bodyCell = wrapper.find('tbody tr td').at(0);
+    expectedClasses.forEach((cls) => {
+      expect(headCell.hasClass(cls)).toBe(true);
+      expect(bodyCell.hasClass(cls)).toBe(true);
+    });
+  };
+
   it('renders column titles in header', () => {
     component = shallow(
       <Table
@@ -69,50 +96,35 @@ describe('Table', () => {
     expect(foot().exists()).toBe(false);
   });
 
-  it('hides columns with hideOnBreakpoint on XS breakpoint', () => {
+  test.each`
+    breakpoints | expectedClasses
+    ${'xs'}     | ${['d-none', 'd-sm-table-cell']}
+    ${'sm xl'}  | ${['d-sm-none', 'd-md-table-cell', 'd-xl-none', 'd-xxl-table-cell']}
+  `('hides columns with hideOnBreakpoint="$breakpoints"', ({ breakpoints, expectedClasses }) => {
     component = shallow(
       <Table
-        columns={[
-          {
-            title: 'Flower',
-            dataIndex: 'flower',
-            footer: 'power',
-            hideOnBreakpoint: 'xs',
-          },
-          { title: 'Color', dataIndex: 'color', footer: 'rainbow' },
-        ]}
-        dataSource={[
-          { flower: 'rose', color: 'red', key: 'rose' },
-          { flower: 'violet', color: 'blue', key: 'violet' },
-        ]}
+        columns={[{ title: 'Flower', dataIndex: 'flower', hideOnBreakpoint: breakpoints }]}
+        dataSource={[{ flower: 'rose', key: 'rose' }]}
       />,
     );
-
-    expect(headCellIsHidden(0)).toBe(true);
-    expect(headCellIsHidden(1)).toBe(false);
-
-    expect(bodyCellIsHidden(0, 0)).toBe(true);
-    expect(bodyCellIsHidden(0, 1)).toBe(false);
-    expect(bodyCellIsHidden(1, 0)).toBe(true);
-    expect(bodyCellIsHidden(1, 1)).toBe(false);
-
-    expect(footCellIsHidden(0)).toBe(true);
-    expect(footCellIsHidden(1)).toBe(false);
+    assertHideOn(component, expectedClasses);
+    // ensure no unexpected breakpoint classes are present
+    const headCell = component.find('thead tr th').at(0);
+    const bodyCell = component.find('tbody tr td').at(0);
+    const absentClasses = allBreakpointClasses.filter((cls) => !expectedClasses.includes(cls));
+    absentClasses.forEach((cls) => {
+      expect(headCell.hasClass(cls)).toBe(false);
+      expect(bodyCell.hasClass(cls)).toBe(false);
+    });
   });
-
-  const isHiddenOnMobile = (node) => node.hasClass('d-none d-sm-table-cell');
 
   const headCells = () => component.find('thead tr th');
   const titles = () => headCells().map((node) => node.text());
   const rows = () => component.find('tbody tr');
-  const headCellIsHidden = (index) => isHiddenOnMobile(headCells().at(index));
-
   const bodyCell = (rowIndex, cellIndex) => rows().at(rowIndex).find('td').at(cellIndex);
-  const bodyCellIsHidden = (rowIndex, cellIndex) => isHiddenOnMobile(bodyCell(rowIndex, cellIndex));
   const textInBodyCell = (rowIndex, cellIndex) => bodyCell(rowIndex, cellIndex).text();
 
   const foot = () => component.find('tfoot');
   const footCells = () => foot().find('tr td');
   const footers = () => footCells().map((node) => node.text());
-  const footCellIsHidden = (index) => isHiddenOnMobile(footCells().at(index));
 });
