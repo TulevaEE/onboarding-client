@@ -4,6 +4,7 @@ import { Props, SecondPillarStatusBox } from './SecondPillarStatusBox';
 import StatusBoxRow from '../statusBoxRow';
 import {
   activeSecondPillar,
+  activeSecondPillarBondFund,
   completeSecondPillarConversion,
   highFeeSecondPillar,
   tulevaSecondPillarFund,
@@ -34,6 +35,7 @@ describe('SecondPillarStatusBox', () => {
     secondPillarActive: true,
     pendingPaymentRate: 6,
     currentPaymentRate: 6,
+    activeFundIsin: 'EE000123',
   };
 
   beforeEach(() => {
@@ -48,6 +50,7 @@ describe('SecondPillarStatusBox', () => {
     component.setProps({ currentPaymentRate: 2, pendingPaymentRate: 2 });
     expect(component).toMatchSnapshot();
   });
+
   it('renders the payment rate flow', () => {
     component.setProps({ currentPaymentRate: 6, pendingPaymentRate: 2 });
     expect(component).toMatchSnapshot();
@@ -108,6 +111,14 @@ describe('SecondPillarStatusBox', () => {
         selectionComplete: true,
         weightedAverageFee: 0.01,
       },
+    });
+    expect(component).toMatchSnapshot();
+  });
+
+  it('renders the bond fund nudge', () => {
+    component.setProps({
+      sourceFunds: [activeSecondPillarBondFund],
+      activeFundIsin: 'EE3600109443',
     });
     expect(component).toMatchSnapshot();
   });

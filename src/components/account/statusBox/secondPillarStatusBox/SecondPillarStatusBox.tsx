@@ -36,6 +36,7 @@ export interface Props {
   secondPillarActive: boolean;
   currentPaymentRate: number;
   pendingPaymentRate: number;
+  activeFundIsin: string | undefined;
 }
 
 export const SecondPillarStatusBox: React.FC<Props> = ({
@@ -46,6 +47,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
   secondPillarActive,
   currentPaymentRate,
   pendingPaymentRate,
+  activeFundIsin,
 }: Props) => {
   // TODO improve loading state handling here
   const { data: mandateDeadlines } = useMandateDeadlines();
@@ -197,6 +199,11 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
     return inLowFeeFund();
   }
 
+  const TULEVA_2ND_PILLAR_BOND_FUND_ISIN = 'EE3600109443';
+  if (activeFundIsin === TULEVA_2ND_PILLAR_BOND_FUND_ISIN) {
+    return fullyConvertedToTulevaBonds();
+  }
+
   return fullyConvertedToTuleva();
 
   function secondPillarMissing() {
@@ -232,6 +239,39 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
           <FormattedMessage id="account.status.choice.paymentRate.increase" />
         </Link>
       </StatusBoxRow>
+    );
+  }
+
+  function fullyConvertedToTulevaBonds() {
+    return (
+      <StatusBoxRow
+        ok
+        name={<FormattedMessage id="account.status.choice.pillar.second" />}
+        showAction={!loading}
+        lines={[
+          <FormattedMessage
+            id="account.status.choice.lowFee.index.2.label"
+            values={{
+              paymentRate: currentPaymentRate,
+            }}
+          />,
+          ...(currentPaymentRate !== pendingPaymentRate
+            ? [
+                <small className="text-body-secondary">
+                  <FormattedMessage
+                    id="account.status.choice.lowFee.index.2.description"
+                    values={{
+                      paymentRate: pendingPaymentRate,
+                      paymentRateFulfillmentDate: formatDateYear(
+                        mandateDeadlines?.paymentRateFulfillmentDate,
+                      ),
+                    }}
+                  />
+                </small>,
+              ]
+            : []),
+        ]}
+      />
     );
   }
 
@@ -475,6 +515,7 @@ const mapStateToProps = (state: State) => ({
     (state.login.user || {}).secondPillarPaymentRates.pending ||
     (state.login.user || {}).secondPillarPaymentRates.current ||
     2,
+  activeFundIsin: state.exchange.sourceFunds?.find((sourceFund) => sourceFund.activeFund)?.isin,
 });
 
 export default connect(mapStateToProps)(SecondPillarStatusBox);

@@ -301,6 +301,30 @@ exports[`SecondPillarStatusBox renders no 2nd pillar flow when no second pillar 
 />
 `;
 
+exports[`SecondPillarStatusBox renders the bond fund nudge 1`] = `
+<StatusBoxRow
+  lines={
+    Array [
+      <Memo(MemoizedFormattedMessage)
+        id="account.status.choice.lowFee.index.2.label"
+        values={
+          Object {
+            "paymentRate": 6,
+          }
+        }
+      />,
+    ]
+  }
+  name={
+    <Memo(MemoizedFormattedMessage)
+      id="account.status.choice.pillar.second"
+    />
+  }
+  ok={true}
+  showAction={true}
+/>
+`;
+
 exports[`SecondPillarStatusBox renders the payment rate flow 1`] = `
 <StatusBoxRow
   lines={

@@ -147,6 +147,23 @@ export const activeSecondPillar: SourceFund = {
   units: 10000,
 };
 
+export const activeSecondPillarBondFund: SourceFund = {
+  activeFund: true,
+  name: 'Tuleva II Samba Võlakirjad',
+  fundManager: { name: 'Tuleva' },
+  pillar: 2,
+  managementFeePercent: 0.003,
+  isin: 'EE3600109443',
+  price: 20000,
+  unavailablePrice: 0,
+  currency: 'EUR',
+  ongoingChargesFigure: 0.0049,
+  contributions: 500,
+  subtractions: 0,
+  profit: 500,
+  units: 10000,
+};
+
 export const tulevaSecondPillarFund: Fund = {
   isin: 'EE123',
   name: 'Tuleva II Samba Fond',
