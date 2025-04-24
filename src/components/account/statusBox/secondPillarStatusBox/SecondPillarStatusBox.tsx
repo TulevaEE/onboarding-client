@@ -245,31 +245,29 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
   function fullyConvertedToTulevaBonds() {
     return (
       <StatusBoxRow
-        ok
+        warning
         name={<FormattedMessage id="account.status.choice.pillar.second" />}
         showAction={!loading}
         lines={[
           <FormattedMessage
-            id="account.status.choice.lowFee.index.2.label"
+            id="account.status.choice.tulevaBondFund.index.label"
             values={{
               paymentRate: currentPaymentRate,
             }}
           />,
-          ...(currentPaymentRate !== pendingPaymentRate
-            ? [
-                <small className="text-body-secondary">
-                  <FormattedMessage
-                    id="account.status.choice.lowFee.index.2.description"
-                    values={{
-                      paymentRate: pendingPaymentRate,
-                      paymentRateFulfillmentDate: formatDateYear(
-                        mandateDeadlines?.paymentRateFulfillmentDate,
-                      ),
-                    }}
-                  />
-                </small>,
-              ]
-            : []),
+          <span className="text-body-secondary">
+            {currentPaymentRate !== pendingPaymentRate && (
+              <FormattedMessage
+                id="account.status.choice.lowFee.index.2.description"
+                values={{
+                  paymentRate: pendingPaymentRate,
+                  paymentRateFulfillmentDate: formatDateYear(
+                    mandateDeadlines?.paymentRateFulfillmentDate,
+                  ),
+                }}
+              />
+            )}
+          </span>,
         ]}
       />
     );
