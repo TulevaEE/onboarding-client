@@ -52,7 +52,7 @@ exports[`MemberStatusBox renders the full component 1`] = `
           }
         }
       />,
-      <small
+      <span
         className="text-body-secondary"
       >
         <Memo(MemoizedFormattedMessage)
@@ -63,7 +63,7 @@ exports[`MemberStatusBox renders the full component 1`] = `
             }
           }
         />
-      </small>,
+      </span>,
     ]
   }
   name={
