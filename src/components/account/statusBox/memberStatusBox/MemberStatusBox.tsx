@@ -28,7 +28,7 @@ export const MemberStatusBox: React.FunctionComponent<Props> = ({
   const tulevaData = isTulevaMember
     ? [
         <FormattedMessage id="account.member.statement" values={{ memberNumber }} />,
-        <small className="text-body-secondary">
+        <span className="text-body-secondary">
           {lastMembershipBonus ? (
             <FormattedMessage
               id="account.member.statement.comment.amount"
@@ -47,7 +47,7 @@ export const MemberStatusBox: React.FunctionComponent<Props> = ({
               values={{ memberJoinDate: formatDateYear(memberJoinDate) }}
             />
           )}
-        </small>,
+        </span>,
       ]
     : [
         <>
@@ -68,7 +68,7 @@ export const MemberStatusBox: React.FunctionComponent<Props> = ({
       lines={tulevaData}
     >
       {!isTulevaMember && (
-        <Link to="/join" className="btn btn-light">
+        <Link to="/join" className="btn btn-outline-primary">
           <FormattedMessage id="account.status.choice.join.tuleva" />
         </Link>
       )}

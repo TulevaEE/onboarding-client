@@ -161,7 +161,7 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when partially conv
   showAction={true}
 >
   <Link
-    className="btn btn-light"
+    className="btn btn-outline-primary"
     to="/3rd-pillar-flow"
   >
     <MemoizedFormattedMessage
@@ -228,7 +228,7 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when user has some 
   showAction={true}
 >
   <Link
-    className="btn btn-light"
+    className="btn btn-outline-primary"
     to="/3rd-pillar-flow"
   >
     <MemoizedFormattedMessage
