@@ -266,6 +266,11 @@ exports[`SecondPillarStatusBox renders low fee when fund selection incomplete 1`
           }
         }
       />,
+      <PaymentRateSubRow
+        currentPaymentRate={6}
+        futurePaymentRate={6}
+        paymentRateFulfillmentDate=""
+      />,
     ]
   }
   name={
@@ -305,13 +310,47 @@ exports[`SecondPillarStatusBox renders the bond fund nudge 1`] = `
 <StatusBoxRow
   lines={
     Array [
-      <Memo(MemoizedFormattedMessage)
-        id="account.status.choice.lowFee.index.2.label"
-        values={
-          Object {
-            "paymentRate": 6,
+      <React.Fragment>
+        <Memo(MemoizedFormattedMessage)
+          id="account.status.choice.tulevaBondFund.index.label"
+          values={
+            Object {
+              "paymentRate": 6,
+            }
           }
-        }
+        />
+        <InfoTooltip
+          name="bonds-fund-tooltip"
+        >
+          <React.Fragment>
+            <p
+              className="m-0 fw-bold"
+            >
+              <Memo(MemoizedFormattedMessage)
+                id="target.funds.EE3600109443.title"
+              />
+            </p>
+            <p
+              className="m-0 mt-2"
+            >
+              <Memo(MemoizedFormattedMessage)
+                id="target.funds.EE3600109443.description"
+              />
+            </p>
+            <p
+              className="m-0 mt-2"
+            >
+              <Memo(MemoizedFormattedMessage)
+                id="target.funds.EE3600109443.description.2"
+              />
+            </p>
+          </React.Fragment>
+        </InfoTooltip>
+      </React.Fragment>,
+      <PaymentRateSubRow
+        currentPaymentRate={6}
+        futurePaymentRate={6}
+        paymentRateFulfillmentDate=""
       />,
     ]
   }
@@ -320,9 +359,18 @@ exports[`SecondPillarStatusBox renders the bond fund nudge 1`] = `
       id="account.status.choice.pillar.second"
     />
   }
-  ok={true}
   showAction={true}
-/>
+  warning={true}
+>
+  <Link
+    className="btn btn-outline-primary"
+    to="/2nd-pillar-flow"
+  >
+    <MemoizedFormattedMessage
+      id="account.status.choice.choose.stock.fund"
+    />
+  </Link>
+</StatusBoxRow>
 `;
 
 exports[`SecondPillarStatusBox renders the payment rate flow 1`] = `
@@ -402,6 +450,11 @@ exports[`SecondPillarStatusBox renders the success flow 1`] = `
             "paymentRate": 6,
           }
         }
+      />,
+      <PaymentRateSubRow
+        currentPaymentRate={6}
+        futurePaymentRate={6}
+        paymentRateFulfillmentDate=""
       />,
     ]
   }
