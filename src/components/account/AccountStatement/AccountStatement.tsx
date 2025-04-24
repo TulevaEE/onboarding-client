@@ -10,10 +10,9 @@ import { SourceFund } from '../../common/apiModels';
 
 interface Props {
   funds: SourceFund[];
-  activeFundNotice?: React.ReactElement | string;
 }
 
-const AccountStatement: React.FC<Props> = ({ funds, activeFundNotice }) => {
+const AccountStatement: React.FC<Props> = ({ funds }) => {
   if (!funds) {
     return <Shimmer height={26} />;
   }
@@ -78,10 +77,23 @@ const AccountStatement: React.FC<Props> = ({ funds, activeFundNotice }) => {
     const prefix = isMuted
       ? formatMessage({ id: 'accountStatement.columns.fund.muted.prefix' })
       : '';
-    const suffix = fund.activeFund ? ' *' : '';
+    const suffix = fund.activeFund ? (
+      <span
+        className="ms-2 badge rounded-pill bg-blue-2 text-navy small fw-normal"
+        title={formatMessage({ id: `accountStatement.activeFundDescription` })}
+      >
+        <FormattedMessage id="accountStatement.activeFund" />
+      </span>
+    ) : null;
     const feesEuro = -(fund.ongoingChargesFigure * fundValue);
     return {
-      fund: <span className={className}>{`${prefix}${fund.name}${suffix}`}</span>,
+      fund: (
+        <span className={className}>
+          {prefix}
+          {fund.name}
+          {suffix}
+        </span>
+      ),
       feesPercent: <Fees value={fund.ongoingChargesFigure} />,
       feesEuro: !feesEuro ? <></> : <Euro className="text-body-secondary" amount={feesEuro} />,
       value: !fundValue ? <></> : <Euro className={className} amount={fundValue} />,
@@ -89,20 +101,9 @@ const AccountStatement: React.FC<Props> = ({ funds, activeFundNotice }) => {
     };
   });
 
-  const showActiveFundNotice = funds.some(({ activeFund }) => activeFund);
-  const fundPillar = funds.every(({ pillar }) => pillar === 2) ? 'secondPillar' : 'thirdPillar';
-
   return (
     <>
       <Table columns={columns} dataSource={dataSource} />
-
-      {showActiveFundNotice && (
-        <p className="m-0 mt-3 text-body-secondary text-center small">
-          {activeFundNotice || (
-            <FormattedMessage id={`accountStatement.${fundPillar}.activeFundNotice`} />
-          )}
-        </p>
-      )}
     </>
   );
 };

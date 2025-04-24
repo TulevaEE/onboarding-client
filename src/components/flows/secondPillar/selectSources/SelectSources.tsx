@@ -155,10 +155,7 @@ export const SelectSources = ({
             <p>
               <FormattedMessage id="select.sources.current.status" />
             </p>
-            <AccountStatement
-              funds={sourceFunds}
-              activeFundNotice={<FormattedMessage id="select.sources.active.fund" />}
-            />
+            <AccountStatement funds={sourceFunds} />
           </div>
         </div>
       </div>

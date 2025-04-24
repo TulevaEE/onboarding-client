@@ -83,6 +83,8 @@
   "accountStatement.columns.fund.muted.prefix": "For fee comparison: ",
   "accountStatement.secondPillar.activeFundNotice": "* currently active fund. If you want to submit a II pillar withdrawal application, go to pensionikeskus.ee",
   "accountStatement.thirdPillar.activeFundNotice": "* currently active fund",
+  "accountStatement.activeFund": "Active fund",
+  "accountStatement.activeFundDescription": "Monthly contributions go to this fund.",
 
   "memberCapital.heading": "Member capital",
   "memberCapital.columns.source.title": "Source",

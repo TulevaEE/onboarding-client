@@ -1,7 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { Redirect } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { ErrorMessage, Loader, Radio } from '../../../common';
 import ExactFundSelector from './exactFundSelector';
@@ -43,14 +42,7 @@ describe('Select sources step', () => {
   it('renders a pension fund table with given funds', () => {
     const sourceFunds = [{ iAmAFund: true }, { iAmAlsoAFund: true }];
     component.setProps({ sourceFunds, targetFunds: [] });
-    expect(
-      component.contains(
-        <AccountStatement
-          funds={sourceFunds}
-          activeFundNotice={<FormattedMessage id="select.sources.active.fund" />}
-        />,
-      ),
-    ).toBe(true);
+    expect(component.contains(<AccountStatement funds={sourceFunds} />)).toBe(true);
   });
 
   it('renders a button to the next step', () => {
