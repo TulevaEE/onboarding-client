@@ -68,7 +68,7 @@ export const MemberStatusBox: React.FunctionComponent<Props> = ({
       lines={tulevaData}
     >
       {!isTulevaMember && (
-        <Link to="/join" className="btn btn-light">
+        <Link to="/join" className="btn btn-outline-primary">
           <FormattedMessage id="account.status.choice.join.tuleva" />
         </Link>
       )}
