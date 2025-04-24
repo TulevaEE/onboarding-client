@@ -29,7 +29,7 @@ exports[`MemberStatusBox offers to join when not member 1`] = `
   warning={true}
 >
   <Link
-    className="btn btn-light"
+    className="btn btn-outline-primary"
     to="/join"
   >
     <MemoizedFormattedMessage
