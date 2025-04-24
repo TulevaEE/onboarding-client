@@ -95,7 +95,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
           name={<FormattedMessage id="account.status.choice.pillar.second" />}
           lines={[
             <FormattedMessage id="account.status.choice.pillar.second.fundPensionOpeningPartialWithdrawal" />,
-            <small className="text-body-secondary">
+            <span className="text-body-secondary">
               <FormattedMessage
                 id="account.status.choice.pillar.second.withdrawalContributionEndingDisclaimer.plural"
                 values={{
@@ -105,7 +105,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
                   ),
                 }}
               />
-            </small>,
+            </span>,
           ]}
         />
       );
@@ -119,7 +119,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
           name={<FormattedMessage id="account.status.choice.pillar.second" />}
           lines={[
             <FormattedMessage id="account.status.choice.pillar.second.partialWithdrawal" />,
-            <small className="text-body-secondary">
+            <span className="text-body-secondary">
               <FormattedMessage
                 id="account.status.choice.pillar.second.withdrawalContributionEndingDisclaimer.singular"
                 values={{
@@ -129,7 +129,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
                   ),
                 }}
               />
-            </small>,
+            </span>,
           ]}
         />
       );
@@ -143,7 +143,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
           name={<FormattedMessage id="account.status.choice.pillar.second" />}
           lines={[
             <FormattedMessage id="account.status.choice.pillar.second.fundPensionOpening" />,
-            <small className="text-body-secondary">
+            <span className="text-body-secondary">
               <FormattedMessage
                 id="account.status.choice.pillar.second.withdrawalContributionEndingDisclaimer.singular"
                 values={{
@@ -153,7 +153,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
                   ),
                 }}
               />
-            </small>,
+            </span>,
           ]}
         />
       );
@@ -230,9 +230,9 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
         name={<FormattedMessage id="account.status.choice.pillar.second" />}
         lines={[
           <FormattedMessage id="account.status.choice.pillar.second.tax.benefit.warning" />,
-          <small className="text-body-secondary">
+          <span className="text-body-secondary">
             <SecondPillarPaymentRateTaxWin />
-          </small>,
+          </span>,
         ]}
       >
         <Link to="/2nd-pillar-payment-rate" className="btn btn-primary">
@@ -249,19 +249,38 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
         name={<FormattedMessage id="account.status.choice.pillar.second" />}
         showAction={!loading}
         lines={[
-          <FormattedMessage
-            id="account.status.choice.tulevaBondFund.index.label"
-            values={{
-              paymentRate: currentPaymentRate,
-            }}
-          />,
+          <>
+            <FormattedMessage
+              id="account.status.choice.tulevaBondFund.index.label"
+              values={{
+                paymentRate: currentPaymentRate,
+              }}
+            />
+            <InfoTooltip name="bonds-fund-tooltip">
+              <>
+                <p className="m-0 fw-bold">
+                  <FormattedMessage id="target.funds.EE3600109443.title" />
+                </p>
+                <p className="m-0 mt-2">
+                  <FormattedMessage id="target.funds.EE3600109443.description" />
+                </p>
+                <p className="m-0 mt-2">
+                  <FormattedMessage id="target.funds.EE3600109443.description.2" />
+                </p>
+              </>
+            </InfoTooltip>
+          </>,
           <PaymentRateSubRow
             currentPaymentRate={currentPaymentRate}
             futurePaymentRate={pendingPaymentRate}
             paymentRateFulfillmentDate={mandateDeadlines?.paymentRateFulfillmentDate ?? ''}
           />,
         ]}
-      />
+      >
+        <Link to="/2nd-pillar-flow" className="btn btn-outline-primary">
+          <FormattedMessage id="account.status.choice.choose.stock.fund" />
+        </Link>
+      </StatusBoxRow>
     );
   }
 
@@ -328,7 +347,7 @@ const PaymentRateSubRow = ({
 }) => {
   if (currentPaymentRate !== futurePaymentRate) {
     return (
-      <small className="text-body-secondary">
+      <span className="text-body-secondary">
         <FormattedMessage
           id="account.status.choice.futurePaymentRate"
           values={{
@@ -337,25 +356,25 @@ const PaymentRateSubRow = ({
             paymentRateFulfillmentDate: formatDateYear(paymentRateFulfillmentDate),
           }}
         />
-      </small>
+      </span>
     );
   }
 
   return (
-    <small className="text-body-secondary">
+    <span className="text-body-secondary">
       <FormattedMessage
         id="account.status.choice.paymentRate"
         values={{
           currentPaymentRate,
         }}
       />
-    </small>
+    </span>
   );
 };
 
 function feeComparison(currentFeesEuro: number, tulevaFeesEuro: number) {
   return (
-    <small className="text-body-secondary">
+    <span className="text-body-secondary">
       <FormattedMessage
         id="account.status.choice.highFee.comment"
         values={{
@@ -367,7 +386,7 @@ function feeComparison(currentFeesEuro: number, tulevaFeesEuro: number) {
           ),
         }}
       />
-    </small>
+    </span>
   );
 }
 

@@ -18,7 +18,7 @@ export const ThirdPillarContributionAmount: React.FunctionComponent<Props> = ({
     return <Shimmer height={24} />;
   }
   return (
-    <small className={`text-body-secondary ${className}`}>
+    <span className={`text-body-secondary ${className}`}>
       <FormattedMessage
         id="account.status.contributionAmount"
         values={{
@@ -30,7 +30,7 @@ export const ThirdPillarContributionAmount: React.FunctionComponent<Props> = ({
           ),
         }}
       />
-    </small>
+    </span>
   );
 };
 

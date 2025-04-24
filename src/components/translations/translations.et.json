@@ -303,13 +303,14 @@
   "account.status.choice.lowFee.index.2.label": "Sa kogud Tuleva madala tasuga indeksfondis: {paymentRate}% brutopalgast",
   "account.status.choice.lowFee.index.2.description": "Sinu panus alates {paymentRateFulfillmentDate}: {paymentRate}% brutopalgast",
 
-  "account.status.choice.paymentRate": "Sinu panus: {currentPaymentRate}% brutopalgast",
-  "account.status.choice.futurePaymentRate": "Sinu panus: {currentPaymentRate}% brutopalgast · Alates {paymentRateFulfillmentDate}: {futurePaymentRate}% brutopalgast",
+  "account.status.choice.paymentRate": "Sinu panus on {currentPaymentRate}% brutopalgast",
+  "account.status.choice.futurePaymentRate": "Sinu panus on {currentPaymentRate}% brutopalgast, alates {paymentRateFulfillmentDate} muutub see {futurePaymentRate}% peale",
 
-  "account.status.choice.tulevaBondFund.index.label": "Kogud Tuleva konservatiivses võlakirjafondis",
+  "account.status.choice.tulevaBondFund.index.label": "Sa kogud Tuleva konservatiivses võlakirjafondis",
 
   "account.status.choice.tuleva": "Tuleva ühistu",
   "account.status.choice.choose.low.fees": "Vali madalad tasud",
+  "account.status.choice.choose.stock.fund": "Valin aktsiafondi",
   "account.status.choice.bring.to.tuleva": "Toon Tulevasse",
   "account.status.choice.join.tuleva.2": "Vali Tuleva",
   "account.status.choice.cancel.application": "Tühista ootel avaldus",
