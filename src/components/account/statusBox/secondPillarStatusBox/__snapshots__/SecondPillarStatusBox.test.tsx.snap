@@ -91,7 +91,7 @@ exports[`SecondPillarStatusBox renders high fee flow when fund selection incompl
           />
         </InfoTooltip>
       </React.Fragment>,
-      <small
+      <span
         className="text-body-secondary"
       >
         <Memo(MemoizedFormattedMessage)
@@ -111,7 +111,7 @@ exports[`SecondPillarStatusBox renders high fee flow when fund selection incompl
             }
           }
         />
-      </small>,
+      </span>,
     ]
   }
   name={
@@ -218,7 +218,7 @@ exports[`SecondPillarStatusBox renders high fee message when in high fee fund an
           />
         </InfoTooltip>
       </React.Fragment>,
-      <small
+      <span
         className="text-body-secondary"
       >
         <Memo(MemoizedFormattedMessage)
@@ -238,7 +238,7 @@ exports[`SecondPillarStatusBox renders high fee message when in high fee fund an
             }
           }
         />
-      </small>,
+      </span>,
     ]
   }
   name={
@@ -332,11 +332,11 @@ exports[`SecondPillarStatusBox renders the payment rate flow 1`] = `
       <Memo(MemoizedFormattedMessage)
         id="account.status.choice.pillar.second.tax.benefit.warning"
       />,
-      <small
+      <span
         className="text-body-secondary"
       >
         <SecondPillarPaymentRateTaxWin />
-      </small>,
+      </span>,
     ]
   }
   name={
@@ -365,11 +365,11 @@ exports[`SecondPillarStatusBox renders the payment rate flow 2`] = `
       <Memo(MemoizedFormattedMessage)
         id="account.status.choice.pillar.second.tax.benefit.warning"
       />,
-      <small
+      <span
         className="text-body-secondary"
       >
         <SecondPillarPaymentRateTaxWin />
-      </small>,
+      </span>,
     ]
   }
   name={
@@ -506,7 +506,7 @@ exports[`SecondPillarStatusBox renders the transfer flow when fund transfers inc
           />
         </InfoTooltip>
       </React.Fragment>,
-      <small
+      <span
         className="text-body-secondary"
       >
         <Memo(MemoizedFormattedMessage)
@@ -526,7 +526,7 @@ exports[`SecondPillarStatusBox renders the transfer flow when fund transfers inc
             }
           }
         />
-      </small>,
+      </span>,
     ]
   }
   name={
