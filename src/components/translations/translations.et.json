@@ -81,6 +81,8 @@
   "accountStatement.columns.fund.muted.prefix": "Võrdlus tasudes: ",
   "accountStatement.secondPillar.activeFundNotice": "* siia lähevad igakuised maksed. II sambast väljumise avalduse saad teha pensionikeskus.ee lehel.",
   "accountStatement.thirdPillar.activeFundNotice": "* siia lähevad igakuised maksed",
+  "accountStatement.activeFund": "Aktiivne fond",
+  "accountStatement.activeFundDescription": "Siia fondi lähevad igakuised maksed.",
 
   "memberCapital.heading": "Liikmekapital",
   "memberCapital.columns.source.title": "Allikas",

@@ -136,7 +136,11 @@ describe('partner 2nd pillar flow', () => {
       await screen.findByText(/Your pension account overview/i, undefined, { timeout: 1000 }),
     ).toBeInTheDocument();
 
-    expect(await screen.findByText(/Swedbank Pension Fund K60.\*/)).toBeInTheDocument();
+    // Verify the "Active fund" badge is rendered for the current fund
+    const fundElementActive = await screen.findByText(/Swedbank Pension Fund K60/);
+    expect(
+      within(fundElementActive).getByText(/Active[\u00A0 ]fund/, { exact: false }),
+    ).toBeInTheDocument();
 
     userEvent.click(screen.getByText('Transfer II pillar selectively'));
 
@@ -199,7 +203,11 @@ describe('partner 2nd pillar flow', () => {
       await screen.findByText(/Your pension account overview/i, undefined, { timeout: 1000 }),
     ).toBeInTheDocument();
 
-    expect(await screen.findByText(/Swedbank Pension Fund K60.\*/)).toBeInTheDocument();
+    // Verify the "Active fund" badge is rendered for the current fund
+    const fundElementActive = await screen.findByText(/Swedbank Pension Fund K60/);
+    expect(
+      within(fundElementActive).getByText(/Active[\u00A0 ]fund/, { exact: false }),
+    ).toBeInTheDocument();
 
     userEvent.click(screen.getByText('Transfer II pillar selectively'));
 
