@@ -255,19 +255,11 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
               paymentRate: currentPaymentRate,
             }}
           />,
-          <span className="text-body-secondary">
-            {currentPaymentRate !== pendingPaymentRate && (
-              <FormattedMessage
-                id="account.status.choice.lowFee.index.2.description"
-                values={{
-                  paymentRate: pendingPaymentRate,
-                  paymentRateFulfillmentDate: formatDateYear(
-                    mandateDeadlines?.paymentRateFulfillmentDate,
-                  ),
-                }}
-              />
-            )}
-          </span>,
+          <PaymentRateSubRow
+            currentPaymentRate={currentPaymentRate}
+            futurePaymentRate={pendingPaymentRate}
+            paymentRateFulfillmentDate={mandateDeadlines?.paymentRateFulfillmentDate ?? ''}
+          />,
         ]}
       />
     );
@@ -286,21 +278,11 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
               paymentRate: currentPaymentRate,
             }}
           />,
-          ...(currentPaymentRate !== pendingPaymentRate
-            ? [
-                <small className="text-body-secondary">
-                  <FormattedMessage
-                    id="account.status.choice.lowFee.index.2.description"
-                    values={{
-                      paymentRate: pendingPaymentRate,
-                      paymentRateFulfillmentDate: formatDateYear(
-                        mandateDeadlines?.paymentRateFulfillmentDate,
-                      ),
-                    }}
-                  />
-                </small>,
-              ]
-            : []),
+          <PaymentRateSubRow
+            currentPaymentRate={currentPaymentRate}
+            futurePaymentRate={pendingPaymentRate}
+            paymentRateFulfillmentDate={mandateDeadlines?.paymentRateFulfillmentDate ?? ''}
+          />,
         ]}
       />
     );
@@ -319,21 +301,11 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
               paymentRate: currentPaymentRate,
             }}
           />,
-          ...(currentPaymentRate !== pendingPaymentRate
-            ? [
-                <small className="text-body-secondary">
-                  <FormattedMessage
-                    id="account.status.choice.lowFee.index.2.description"
-                    values={{
-                      paymentRate: pendingPaymentRate,
-                      paymentRateFulfillmentDate: formatDateYear(
-                        mandateDeadlines?.paymentRateFulfillmentDate,
-                      ),
-                    }}
-                  />
-                </small>,
-              ]
-            : []),
+          <PaymentRateSubRow
+            currentPaymentRate={currentPaymentRate}
+            futurePaymentRate={pendingPaymentRate}
+            paymentRateFulfillmentDate={mandateDeadlines?.paymentRateFulfillmentDate ?? ''}
+          />,
         ]}
       >
         <SecondPillarActionButton
@@ -343,6 +315,42 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
       </StatusBoxRow>
     );
   }
+};
+
+const PaymentRateSubRow = ({
+  currentPaymentRate,
+  futurePaymentRate,
+  paymentRateFulfillmentDate,
+}: {
+  currentPaymentRate: number;
+  futurePaymentRate: number;
+  paymentRateFulfillmentDate: string;
+}) => {
+  if (currentPaymentRate !== futurePaymentRate) {
+    return (
+      <small className="text-body-secondary">
+        <FormattedMessage
+          id="account.status.choice.futurePaymentRate"
+          values={{
+            currentPaymentRate,
+            futurePaymentRate,
+            paymentRateFulfillmentDate: formatDateYear(paymentRateFulfillmentDate),
+          }}
+        />
+      </small>
+    );
+  }
+
+  return (
+    <small className="text-body-secondary">
+      <FormattedMessage
+        id="account.status.choice.paymentRate"
+        values={{
+          currentPaymentRate,
+        }}
+      />
+    </small>
+  );
 };
 
 function feeComparison(currentFeesEuro: number, tulevaFeesEuro: number) {
