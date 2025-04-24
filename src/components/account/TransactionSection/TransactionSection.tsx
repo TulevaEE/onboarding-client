@@ -8,6 +8,7 @@ import Table from '../../common/table';
 import { Euro } from '../../common/Euro';
 import { Shimmer } from '../../common/shimmer/Shimmer';
 import { formatDate } from '../../common/dateFormatter';
+import { TableColumn } from '../../common/table/Table';
 
 export const TransactionSection: React.FunctionComponent<{
   limit?: number;
@@ -45,7 +46,7 @@ export const TransactionSection: React.FunctionComponent<{
 
   const amountSum = sumBy(fundTransactions, (transaction) => transaction.amount);
 
-  const columns = [
+  const columns: TableColumn[] = [
     {
       title: <FormattedMessage id="transactions.columns.date.title" />,
       dataIndex: 'date',

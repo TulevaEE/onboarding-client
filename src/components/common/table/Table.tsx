@@ -78,7 +78,7 @@ function getWidthClass(width?: number | 'auto'): string {
 export type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
 
 function getBreakpointClass(breakpointsToHide?: Breakpoint[]): string {
-  const allBreakpoints: Breakpoint[] = ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'] as const;
+  const allBreakpoints: Breakpoint[] = ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'];
   if (!breakpointsToHide || breakpointsToHide?.length === 0) {
     return '';
   }

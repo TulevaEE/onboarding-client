@@ -7,6 +7,7 @@ import { getValueSum, getWeightedAverageFee } from './fundSelector';
 import { Fees } from '../../common/Percentage/Fees';
 import { Shimmer } from '../../common/shimmer/Shimmer';
 import { SourceFund } from '../../common/apiModels';
+import { TableColumn } from '../../common/table/Table';
 
 interface Props {
   funds: SourceFund[];
@@ -22,7 +23,7 @@ const AccountStatement: React.FC<Props> = ({ funds }) => {
 
   const weightedAverageFee = valueSum <= 0 ? 0 : getWeightedAverageFee(funds);
 
-  const columns = [
+  const columns: TableColumn[] = [
     {
       title: <FormattedMessage id="accountStatement.columns.fund.title" />,
       dataIndex: 'fund',
@@ -41,7 +42,7 @@ const AccountStatement: React.FC<Props> = ({ funds }) => {
     },
     ...(weightedAverageFee * valueSum === 0
       ? []
-      : [
+      : ([
           {
             title: (
               <>
@@ -56,7 +57,7 @@ const AccountStatement: React.FC<Props> = ({ funds }) => {
             ),
             hideOnBreakpoint: ['xs'],
           },
-        ]),
+        ] as TableColumn[])),
     {
       title: <FormattedMessage id="accountStatement.columns.value.title" />,
       dataIndex: 'value',
