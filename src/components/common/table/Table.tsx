@@ -5,7 +5,7 @@ export interface TableColumn {
   title: React.ReactNode;
   dataIndex: string;
   footer?: React.ReactNode;
-  hideOnBreakpoint?: string;
+  hideOnBreakpoint?: Breakpoint[];
   align?: 'left' | 'right' | string;
   width?: number | 'auto';
 }
@@ -75,39 +75,28 @@ function getWidthClass(width?: number | 'auto'): string {
   return width !== undefined ? `w-${width}` : '';
 }
 
-function getBreakpointClass(hideOnBreakpoint?: string): string {
-  const breakpoints = ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'];
-  if (!hideOnBreakpoint) {
+export type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
+
+function getBreakpointClass(breakpointsToHide?: Breakpoint[]): string {
+  const allBreakpoints: Breakpoint[] = ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'] as const;
+  if (!breakpointsToHide || breakpointsToHide?.length === 0) {
     return '';
   }
-  const points = hideOnBreakpoint.split(' ').filter(Boolean);
-  const indices = Array.from(
-    new Set(points.map((bp) => breakpoints.indexOf(bp)).filter((i) => i >= 0)),
-  ).sort((a, b) => a - b);
 
-  const classes: string[] = [];
-  let idx = 0;
-  while (idx < indices.length) {
-    const start = indices[idx];
-    let end = start;
-    while (idx + 1 < indices.length && indices[idx + 1] === end + 1) {
-      idx += 1;
-      end = indices[idx];
+  const mapBreakpointToClass = (breakpoint: Breakpoint, hide: boolean) => {
+    if (hide) {
+      if (breakpoint === 'xs') {
+        return 'd-none';
+      }
+      return `d-${breakpoint}-none`;
     }
-    // hide starting at this breakpoint
-    if (start === 0) {
-      classes.push('d-none');
-    } else {
-      classes.push(`d-${breakpoints[start]}-none`);
-    }
-    // show from the next breakpoint after the end of the hide range
-    if (end < breakpoints.length - 1) {
-      const next = breakpoints[end + 1];
-      classes.push(`d-${next}-table-cell`);
-    }
-    idx += 1;
-  }
-  return classes.join(' ');
+
+    return `d-${breakpoint}-table-cell`;
+  };
+
+  return allBreakpoints
+    .map((breakpoint) => mapBreakpointToClass(breakpoint, breakpointsToHide.includes(breakpoint)))
+    .join(' ');
 }
 
 export default Table;

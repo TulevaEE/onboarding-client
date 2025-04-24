@@ -55,7 +55,7 @@ const AccountStatement: React.FC<Props> = ({ funds, activeFundNotice }) => {
             footer: (
               <Euro className="text-body-secondary" amount={-(weightedAverageFee * valueSum)} />
             ),
-            hideOnBreakpoint: 'xs',
+            hideOnBreakpoint: ['xs'],
           },
         ]),
     {

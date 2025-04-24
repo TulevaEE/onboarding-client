@@ -55,7 +55,7 @@ export const TransactionSection: React.FunctionComponent<{
     {
       title: <></>,
       dataIndex: 'type',
-      hideOnBreakpoint: 'xs',
+      hideOnBreakpoint: ['xs', 'sm'],
     },
     {
       title: <FormattedMessage id="transactions.columns.fund.title" />,

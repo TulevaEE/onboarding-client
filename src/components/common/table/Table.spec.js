@@ -1,6 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import Table from '.';
+import { getBreakpointClass } from './Table';
 
 describe('Table', () => {
   let component;
@@ -96,11 +97,41 @@ describe('Table', () => {
     expect(foot().exists()).toBe(false);
   });
 
-  test.each`
-    breakpoints | expectedClasses
-    ${'xs'}     | ${['d-none', 'd-sm-table-cell']}
-    ${'sm xl'}  | ${['d-sm-none', 'd-md-table-cell', 'd-xl-none', 'd-xxl-table-cell']}
-  `('hides columns with hideOnBreakpoint="$breakpoints"', ({ breakpoints, expectedClasses }) => {
+  test.each([
+    [
+      ['xs'],
+      [
+        'd-none',
+        'd-sm-table-cell',
+        'd-md-table-cell',
+        'd-lg-table-cell',
+        'd-xl-table-cell',
+        'd-xxl-table-cell',
+      ],
+    ],
+    [
+      ['sm', 'xl'],
+      [
+        'd-xs-table-cell',
+        'd-sm-none',
+        'd-md-table-cell',
+        'd-lg-table-cell',
+        'd-xl-none',
+        'd-xxl-table-cell',
+      ],
+    ],
+    [
+      ['sm', 'md', 'xl'],
+      [
+        'd-xs-table-cell',
+        'd-sm-none',
+        'd-md-none',
+        'd-lg-table-cell',
+        'd-xl-none',
+        'd-xxl-table-cell',
+      ],
+    ],
+  ])('hides columns with hideOnBreakpoint="%s"', (breakpoints, expectedClasses) => {
     component = shallow(
       <Table
         columns={[{ title: 'Flower', dataIndex: 'flower', hideOnBreakpoint: breakpoints }]}

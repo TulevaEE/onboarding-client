@@ -39,7 +39,7 @@ export const MemberCapitalTable: FC<Props> = ({ rows = [] }) => {
       dataIndex: 'profit',
       width: 15,
       footer: shouldRenderFooter && <Euro amount={profitSum} />,
-      hideOnBreakpoint: 'xs',
+      hideOnBreakpoint: ['xs'],
     },
     {
       title: <FormattedMessage id="memberCapital.columns.value.title" />,
