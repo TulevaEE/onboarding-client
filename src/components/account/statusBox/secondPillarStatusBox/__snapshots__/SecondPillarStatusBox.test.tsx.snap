@@ -313,11 +313,6 @@ exports[`SecondPillarStatusBox renders the bond fund nudge 1`] = `
       <React.Fragment>
         <Memo(MemoizedFormattedMessage)
           id="account.status.choice.tulevaBondFund.index.label"
-          values={
-            Object {
-              "paymentRate": 6,
-            }
-          }
         />
         <InfoTooltip
           name="bonds-fund-tooltip"

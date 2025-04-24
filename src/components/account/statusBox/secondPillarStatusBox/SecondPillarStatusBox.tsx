@@ -250,12 +250,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
         showAction={!loading}
         lines={[
           <>
-            <FormattedMessage
-              id="account.status.choice.tulevaBondFund.index.label"
-              values={{
-                paymentRate: currentPaymentRate,
-              }}
-            />
+            <FormattedMessage id="account.status.choice.tulevaBondFund.index.label" />
             <InfoTooltip name="bonds-fund-tooltip">
               <>
                 <p className="m-0 fw-bold">
