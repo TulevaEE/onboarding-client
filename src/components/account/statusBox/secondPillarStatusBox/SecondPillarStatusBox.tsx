@@ -286,12 +286,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
         name={<FormattedMessage id="account.status.choice.pillar.second" />}
         showAction={!loading}
         lines={[
-          <FormattedMessage
-            id="account.status.choice.lowFee.index.2.label"
-            values={{
-              paymentRate: currentPaymentRate,
-            }}
-          />,
+          <FormattedMessage id="account.status.choice.lowFee.index.label" />,
           <PaymentRateSubRow
             currentPaymentRate={currentPaymentRate}
             futurePaymentRate={pendingPaymentRate}
@@ -309,12 +304,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
         showAction={!loading}
         name={<FormattedMessage id="account.status.choice.pillar.second" />}
         lines={[
-          <FormattedMessage
-            id="account.status.choice.lowFee.2.label"
-            values={{
-              paymentRate: currentPaymentRate,
-            }}
-          />,
+          <FormattedMessage id="account.status.choice.lowFee.label" />,
           <PaymentRateSubRow
             currentPaymentRate={currentPaymentRate}
             futurePaymentRate={pendingPaymentRate}

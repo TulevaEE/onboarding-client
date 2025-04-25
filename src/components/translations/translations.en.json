@@ -299,11 +299,8 @@
   "account.status.choice.highFee.description": "Your portfolio weighted average cost is above 0.5% per year",
   "account.status.choice.highFee.comment": "You’re paying {currentFeesEuro} per year in fees. In Tuleva, you would pay {tulevaFeesEuro} per year.",
   "account.status.choice.lowFee.label": "You’re in a low cost fund",
-  "account.status.choice.lowFee.2.label": "You’re in a low cost fund: {paymentRate}% of your gross salary",
   "account.status.choice.lowFee.description": "Your portfolio weighted average cost is below 0.5% per year",
   "account.status.choice.lowFee.index.label": "You’re in a Tuleva low cost index fund",
-  "account.status.choice.lowFee.index.2.label": "You’re in a Tuleva low cost index fund: {paymentRate}% of your gross salary",
-  "account.status.choice.lowFee.index.2.description": "Your contribution starting from {paymentRateFulfillmentDate}: {paymentRate}% of gross salary",
 
   "account.status.choice.paymentRate": "Your contribution is {currentPaymentRate}% of gross salary",
   "account.status.choice.futurePaymentRate": "Your contribution is {currentPaymentRate}% of gross salary, changing to {futurePaymentRate}% from {paymentRateFulfillmentDate}",
