@@ -141,7 +141,7 @@ export function AccountPage(
           <h2 className="mt-5 mb-4">
             <FormattedMessage id="accountStatement.heading" />
           </h2>
-          <div className="my-4 d-flex flex-wrap column-gap-3 row-gap-2 justify-content-between align-items-baseline">
+          <div className="mt-5 mb-4 d-flex flex-wrap column-gap-3 row-gap-2 justify-content-between align-items-baseline">
             <h3 className="m-0">
               <FormattedMessage id="accountStatement.secondPillar.heading" />
             </h3>
