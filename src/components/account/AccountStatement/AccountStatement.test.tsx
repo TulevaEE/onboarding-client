@@ -40,6 +40,6 @@ describe('happy path', () => {
     );
 
     expect(await screen.findAllByText(/115\s000.00\s€/)).toHaveLength(2);
-    expect(await screen.findAllByText(/5\s699.36\s€/)).toHaveLength(3);
+    expect(await screen.findAllByText(/5\s699.36\s€/)).toHaveLength(2);
   });
 });

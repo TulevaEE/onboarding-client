@@ -46,7 +46,7 @@ const Table: React.FC<Props> = ({ columns, dataSource }) => (
           </tr>
         ))}
       </tbody>
-      {columns.some(({ footer }) => !!footer) && (
+      {dataSource.length !== 1 && columns.some(({ footer }) => !!footer) && (
         <tfoot>
           <tr>
             {columns.map(({ dataIndex, footer, hideOnBreakpoint }) => (
