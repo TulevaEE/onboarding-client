@@ -61,11 +61,6 @@ describe('SecondPillarStatusBox', () => {
     expect(component).toMatchSnapshot();
   });
 
-  it('does not show action when still loading', () => {
-    component.setProps({ loading: true });
-    expect(component.find(StatusBoxRow).prop('showAction')).toBeFalsy();
-  });
-
   it('renders the withdrawal flow when withdrawal is in progress', () => {
     component.setProps({ conversion: { pendingWithdrawal: true } });
     expect(component).toMatchSnapshot();

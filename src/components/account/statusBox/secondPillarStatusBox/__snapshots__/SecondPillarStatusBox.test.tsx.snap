@@ -1,609 +1,663 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`SecondPillarStatusBox renders high fee flow when fund selection incomplete 1`] = `
-<StatusBoxRow
-  error={true}
-  extraBottom={
-    <div
-      className="card card-primary border-0 mt-3 ms-3 ms-md-5 me-3 my-2 px-4 py-3"
-    >
-      <div
-        className="row"
-      >
-        <TinyCard
-          img="euro.svg"
-          text={
-            <Memo(MemoizedFormattedMessage)
-              id="account.status.choice.pillar.second.feecard.text"
-              values={
-                Object {
-                  "b": [Function],
-                }
-              }
-            />
-          }
-          title={
-            <Memo(MemoizedFormattedMessage)
-              id="account.status.choice.pillar.second.feecard.title"
-            />
-          }
-        />
-        <TinyCard
-          img="basket.svg"
-          text={
-            <React.Fragment>
-              <Memo(MemoizedFormattedMessage)
-                id="account.status.choice.pillar.second.basketcard.text"
-                values={
-                  Object {
-                    "b": [Function],
-                  }
-                }
-              />
-              <InfoTooltip
-                name="diversification-tooltip"
-              >
-                <Memo(MemoizedFormattedMessage)
-                  id="account.status.choice.pillar.second.basketcard.tooltip"
-                />
-              </InfoTooltip>
-            </React.Fragment>
-          }
-          title={
-            <Memo(MemoizedFormattedMessage)
-              id="account.status.choice.pillar.second.basketcard.title"
-            />
-          }
-        />
-        <TinyCard
-          img="deadline.svg"
-          text={
-            <Memo(MemoizedFormattedMessage)
-              id="account.status.choice.pillar.second.deadlinecard.text"
-              values={
-                Object {
-                  "b": [Function],
-                  "periodEnding": "July 31 at 00:59",
-                }
-              }
-            />
-          }
-          title={
-            <Memo(MemoizedFormattedMessage)
-              id="account.status.choice.pillar.second.deadlinecard.title"
-            />
-          }
-        />
-      </div>
-    </div>
+<HighFee
+  conversion={
+    Object {
+      "selectionComplete": false,
+      "selectionPartial": false,
+      "weightedAverageFee": 0.0051,
+    }
   }
-  lines={
+  currentPaymentRate={6}
+  loading={false}
+  mandateDeadlines={
+    Object {
+      "periodEnding": "2024-07-31T00:59:59.999999999Z",
+    }
+  }
+  pendingPaymentRate={6}
+  sourceFunds={
     Array [
-      <React.Fragment>
-        <Memo(MemoizedFormattedMessage)
-          id="account.status.choice.highFee.label"
-        />
-        <InfoTooltip
-          name="second-pillar-tooltip"
-        >
-          <Memo(MemoizedFormattedMessage)
-            id="account.status.choice.highFee.description"
-          />
-        </InfoTooltip>
-      </React.Fragment>,
-      <span
-        className="text-body-secondary"
-      >
-        <Memo(MemoizedFormattedMessage)
-          id="account.status.choice.highFee.comment"
-          values={
-            Object {
-              "currentFeesEuro": <Euro
-                amount={102.00000000000001}
-                className="text-danger"
-                fractionDigits={0}
-              />,
-              "tulevaFeesEuro": <Euro
-                amount={98}
-                className="text-success"
-                fractionDigits={0}
-              />,
-            }
-          }
-        />
-      </span>,
+      Object {
+        "activeFund": true,
+        "contributions": 500,
+        "currency": "EUR",
+        "fundManager": Object {
+          "name": "LHV",
+        },
+        "isin": "EE432432",
+        "managementFeePercent": 0.015,
+        "name": "LHV High Cost Fund II",
+        "ongoingChargesFigure": 0.0156,
+        "pillar": 2,
+        "price": 20000,
+        "profit": 500,
+        "subtractions": 0,
+        "unavailablePrice": 0,
+        "units": 20000,
+      },
     ]
   }
-  name={
-    <Memo(MemoizedFormattedMessage)
-      id="account.status.choice.pillar.second"
-    />
+  targetFunds={
+    Array [
+      Object {
+        "fundManager": Object {
+          "name": "Tuleva",
+        },
+        "inceptionDate": "2017-01-01",
+        "isin": "EE123",
+        "managementFeeRate": 0.003,
+        "name": "Tuleva II Samba Fond",
+        "nav": 1,
+        "ongoingChargesFigure": 0.0049,
+        "pillar": 2,
+        "status": "ACTIVE",
+      },
+    ]
   }
-  showAction={true}
->
-  <SecondPillarActionButton
-    className="btn-primary"
-  />
-</StatusBoxRow>
+/>
 `;
 
 exports[`SecondPillarStatusBox renders high fee message when in high fee fund and no partial conversion 1`] = `
-<StatusBoxRow
-  error={true}
-  extraBottom={
-    <div
-      className="card card-primary border-0 mt-3 ms-3 ms-md-5 me-3 my-2 px-4 py-3"
-    >
-      <div
-        className="row"
-      >
-        <TinyCard
-          img="euro.svg"
-          text={
-            <Memo(MemoizedFormattedMessage)
-              id="account.status.choice.pillar.second.feecard.text"
-              values={
-                Object {
-                  "b": [Function],
-                }
-              }
-            />
-          }
-          title={
-            <Memo(MemoizedFormattedMessage)
-              id="account.status.choice.pillar.second.feecard.title"
-            />
-          }
-        />
-        <TinyCard
-          img="basket.svg"
-          text={
-            <React.Fragment>
-              <Memo(MemoizedFormattedMessage)
-                id="account.status.choice.pillar.second.basketcard.text"
-                values={
-                  Object {
-                    "b": [Function],
-                  }
-                }
-              />
-              <InfoTooltip
-                name="diversification-tooltip"
-              >
-                <Memo(MemoizedFormattedMessage)
-                  id="account.status.choice.pillar.second.basketcard.tooltip"
-                />
-              </InfoTooltip>
-            </React.Fragment>
-          }
-          title={
-            <Memo(MemoizedFormattedMessage)
-              id="account.status.choice.pillar.second.basketcard.title"
-            />
-          }
-        />
-        <TinyCard
-          img="deadline.svg"
-          text={
-            <Memo(MemoizedFormattedMessage)
-              id="account.status.choice.pillar.second.deadlinecard.text"
-              values={
-                Object {
-                  "b": [Function],
-                  "periodEnding": "July 31 at 00:59",
-                }
-              }
-            />
-          }
-          title={
-            <Memo(MemoizedFormattedMessage)
-              id="account.status.choice.pillar.second.deadlinecard.title"
-            />
-          }
-        />
-      </div>
-    </div>
+<HighFee
+  conversion={
+    Object {
+      "selectionComplete": false,
+      "selectionPartial": false,
+      "transfersComplete": false,
+      "transfersPartial": false,
+      "weightedAverageFee": 0.01,
+    }
   }
-  lines={
+  currentPaymentRate={6}
+  loading={false}
+  mandateDeadlines={
+    Object {
+      "periodEnding": "2024-07-31T00:59:59.999999999Z",
+    }
+  }
+  pendingPaymentRate={6}
+  sourceFunds={
     Array [
-      <React.Fragment>
-        <Memo(MemoizedFormattedMessage)
-          id="account.status.choice.highFee.label"
-        />
-        <InfoTooltip
-          name="second-pillar-tooltip"
-        >
-          <Memo(MemoizedFormattedMessage)
-            id="account.status.choice.highFee.description"
-          />
-        </InfoTooltip>
-      </React.Fragment>,
-      <span
-        className="text-body-secondary"
-      >
-        <Memo(MemoizedFormattedMessage)
-          id="account.status.choice.highFee.comment"
-          values={
-            Object {
-              "currentFeesEuro": <Euro
-                amount={200}
-                className="text-danger"
-                fractionDigits={0}
-              />,
-              "tulevaFeesEuro": <Euro
-                amount={98}
-                className="text-success"
-                fractionDigits={0}
-              />,
-            }
-          }
-        />
-      </span>,
+      Object {
+        "activeFund": true,
+        "contributions": 500,
+        "currency": "EUR",
+        "fundManager": Object {
+          "name": "LHV",
+        },
+        "isin": "EE432432",
+        "managementFeePercent": 0.015,
+        "name": "LHV High Cost Fund II",
+        "ongoingChargesFigure": 0.0156,
+        "pillar": 2,
+        "price": 20000,
+        "profit": 500,
+        "subtractions": 0,
+        "unavailablePrice": 0,
+        "units": 20000,
+      },
     ]
   }
-  name={
-    <Memo(MemoizedFormattedMessage)
-      id="account.status.choice.pillar.second"
-    />
+  targetFunds={
+    Array [
+      Object {
+        "fundManager": Object {
+          "name": "Tuleva",
+        },
+        "inceptionDate": "2017-01-01",
+        "isin": "EE123",
+        "managementFeeRate": 0.003,
+        "name": "Tuleva II Samba Fond",
+        "nav": 1,
+        "ongoingChargesFigure": 0.0049,
+        "pillar": 2,
+        "status": "ACTIVE",
+      },
+    ]
   }
-  showAction={true}
->
-  <SecondPillarActionButton
-    className="btn-primary"
-  />
-</StatusBoxRow>
+/>
 `;
 
 exports[`SecondPillarStatusBox renders low fee when fund selection incomplete 1`] = `
-<StatusBoxRow
-  lines={
+<InLowFeeFund
+  conversion={
+    Object {
+      "selectionComplete": false,
+      "selectionPartial": false,
+      "weightedAverageFee": 0.0049,
+    }
+  }
+  currentPaymentRate={6}
+  loading={false}
+  mandateDeadlines={
+    Object {
+      "periodEnding": "2024-07-31T00:59:59.999999999Z",
+    }
+  }
+  pendingPaymentRate={6}
+  sourceFunds={
     Array [
-      <Memo(MemoizedFormattedMessage)
-        id="account.status.choice.lowFee.label"
-      />,
-      <PaymentRateSubRow
-        currentPaymentRate={6}
-        futurePaymentRate={6}
-        paymentRateFulfillmentDate=""
-      />,
+      Object {
+        "activeFund": true,
+        "contributions": 500,
+        "currency": "EUR",
+        "fundManager": Object {
+          "name": "Tuleva",
+        },
+        "isin": "EE000123",
+        "managementFeePercent": 0.003,
+        "name": "Tuleva II Samba Pensionifond",
+        "ongoingChargesFigure": 0.0049,
+        "pillar": 2,
+        "price": 20000,
+        "profit": 500,
+        "subtractions": 0,
+        "unavailablePrice": 0,
+        "units": 10000,
+      },
     ]
   }
-  name={
-    <Memo(MemoizedFormattedMessage)
-      id="account.status.choice.pillar.second"
-    />
+  targetFunds={
+    Array [
+      Object {
+        "fundManager": Object {
+          "name": "Tuleva",
+        },
+        "inceptionDate": "2017-01-01",
+        "isin": "EE123",
+        "managementFeeRate": 0.003,
+        "name": "Tuleva II Samba Fond",
+        "nav": 1,
+        "ongoingChargesFigure": 0.0049,
+        "pillar": 2,
+        "status": "ACTIVE",
+      },
+    ]
   }
-  ok={true}
-  showAction={true}
->
-  <SecondPillarActionButton
-    className="btn-outline-primary"
-  />
-</StatusBoxRow>
+/>
 `;
 
 exports[`SecondPillarStatusBox renders no 2nd pillar flow when no second pillar 1`] = `
-<StatusBoxRow
-  error={true}
-  lines={
+<SecondPillarMissing
+  conversion={
+    Object {
+      "contribution": Object {
+        "lastYear": 100,
+        "total": 37000,
+        "yearToDate": 2500,
+      },
+      "paymentComplete": true,
+      "pendingWithdrawal": false,
+      "selectionComplete": true,
+      "selectionPartial": true,
+      "subtraction": Object {
+        "lastYear": 0,
+        "total": 0,
+        "yearToDate": 0,
+      },
+      "transfersComplete": true,
+      "transfersPartial": true,
+      "weightedAverageFee": 0.0049,
+    }
+  }
+  currentPaymentRate={6}
+  loading={false}
+  mandateDeadlines={
+    Object {
+      "periodEnding": "2024-07-31T00:59:59.999999999Z",
+    }
+  }
+  pendingPaymentRate={6}
+  sourceFunds={
     Array [
-      <Memo(MemoizedFormattedMessage)
-        id="account.status.choice.pillar.second.missing.label"
-      />,
+      Object {
+        "activeFund": true,
+        "contributions": 500,
+        "currency": "EUR",
+        "fundManager": Object {
+          "name": "Tuleva",
+        },
+        "isin": "EE000123",
+        "managementFeePercent": 0.003,
+        "name": "Tuleva II Samba Pensionifond",
+        "ongoingChargesFigure": 0.0049,
+        "pillar": 2,
+        "price": 20000,
+        "profit": 500,
+        "subtractions": 0,
+        "unavailablePrice": 0,
+        "units": 10000,
+      },
     ]
   }
-  name={
-    <Memo(MemoizedFormattedMessage)
-      id="account.status.choice.pillar.second"
-    />
+  targetFunds={
+    Array [
+      Object {
+        "fundManager": Object {
+          "name": "Tuleva",
+        },
+        "inceptionDate": "2017-01-01",
+        "isin": "EE123",
+        "managementFeeRate": 0.003,
+        "name": "Tuleva II Samba Fond",
+        "nav": 1,
+        "ongoingChargesFigure": 0.0049,
+        "pillar": 2,
+        "status": "ACTIVE",
+      },
+    ]
   }
-  showAction={true}
 />
 `;
 
 exports[`SecondPillarStatusBox renders the bond fund nudge 1`] = `
-<StatusBoxRow
-  lines={
+<FullyConvertedToTulevaBonds
+  conversion={
+    Object {
+      "contribution": Object {
+        "lastYear": 100,
+        "total": 37000,
+        "yearToDate": 2500,
+      },
+      "paymentComplete": true,
+      "pendingWithdrawal": false,
+      "selectionComplete": true,
+      "selectionPartial": true,
+      "subtraction": Object {
+        "lastYear": 0,
+        "total": 0,
+        "yearToDate": 0,
+      },
+      "transfersComplete": true,
+      "transfersPartial": true,
+      "weightedAverageFee": 0.0049,
+    }
+  }
+  currentPaymentRate={6}
+  loading={false}
+  mandateDeadlines={
+    Object {
+      "periodEnding": "2024-07-31T00:59:59.999999999Z",
+    }
+  }
+  pendingPaymentRate={6}
+  sourceFunds={
     Array [
-      <React.Fragment>
-        <Memo(MemoizedFormattedMessage)
-          id="account.status.choice.tulevaBondFund.index.label"
-        />
-        <InfoTooltip
-          name="bonds-fund-tooltip"
-        >
-          <React.Fragment>
-            <p
-              className="m-0 fw-bold"
-            >
-              <Memo(MemoizedFormattedMessage)
-                id="target.funds.EE3600109443.title"
-              />
-            </p>
-            <p
-              className="m-0 mt-2"
-            >
-              <Memo(MemoizedFormattedMessage)
-                id="target.funds.EE3600109443.description"
-              />
-            </p>
-            <p
-              className="m-0 mt-2"
-            >
-              <Memo(MemoizedFormattedMessage)
-                id="target.funds.EE3600109443.description.2"
-              />
-            </p>
-          </React.Fragment>
-        </InfoTooltip>
-      </React.Fragment>,
-      <PaymentRateSubRow
-        currentPaymentRate={6}
-        futurePaymentRate={6}
-        paymentRateFulfillmentDate=""
-      />,
+      Object {
+        "activeFund": true,
+        "contributions": 500,
+        "currency": "EUR",
+        "fundManager": Object {
+          "name": "Tuleva",
+        },
+        "isin": "EE3600109443",
+        "managementFeePercent": 0.003,
+        "name": "Tuleva II Samba Võlakirjad",
+        "ongoingChargesFigure": 0.0049,
+        "pillar": 2,
+        "price": 20000,
+        "profit": 500,
+        "subtractions": 0,
+        "unavailablePrice": 0,
+        "units": 10000,
+      },
     ]
   }
-  name={
-    <Memo(MemoizedFormattedMessage)
-      id="account.status.choice.pillar.second"
-    />
+  targetFunds={
+    Array [
+      Object {
+        "fundManager": Object {
+          "name": "Tuleva",
+        },
+        "inceptionDate": "2017-01-01",
+        "isin": "EE123",
+        "managementFeeRate": 0.003,
+        "name": "Tuleva II Samba Fond",
+        "nav": 1,
+        "ongoingChargesFigure": 0.0049,
+        "pillar": 2,
+        "status": "ACTIVE",
+      },
+    ]
   }
-  showAction={true}
-  warning={true}
->
-  <Link
-    className="btn btn-outline-primary"
-    to="/2nd-pillar-flow"
-  >
-    <MemoizedFormattedMessage
-      id="account.status.choice.choose.stock.fund"
-    />
-  </Link>
-</StatusBoxRow>
+/>
 `;
 
 exports[`SecondPillarStatusBox renders the payment rate flow 1`] = `
-<StatusBoxRow
-  lines={
+<IncreasePaymentRate
+  conversion={
+    Object {
+      "contribution": Object {
+        "lastYear": 100,
+        "total": 37000,
+        "yearToDate": 2500,
+      },
+      "paymentComplete": true,
+      "pendingWithdrawal": false,
+      "selectionComplete": true,
+      "selectionPartial": true,
+      "subtraction": Object {
+        "lastYear": 0,
+        "total": 0,
+        "yearToDate": 0,
+      },
+      "transfersComplete": true,
+      "transfersPartial": true,
+      "weightedAverageFee": 0.0049,
+    }
+  }
+  currentPaymentRate={2}
+  loading={false}
+  mandateDeadlines={
+    Object {
+      "periodEnding": "2024-07-31T00:59:59.999999999Z",
+    }
+  }
+  pendingPaymentRate={2}
+  sourceFunds={
     Array [
-      <Memo(MemoizedFormattedMessage)
-        id="account.status.choice.pillar.second.tax.benefit.warning"
-      />,
-      <span
-        className="text-body-secondary"
-      >
-        <SecondPillarPaymentRateTaxWin />
-      </span>,
+      Object {
+        "activeFund": true,
+        "contributions": 500,
+        "currency": "EUR",
+        "fundManager": Object {
+          "name": "Tuleva",
+        },
+        "isin": "EE000123",
+        "managementFeePercent": 0.003,
+        "name": "Tuleva II Samba Pensionifond",
+        "ongoingChargesFigure": 0.0049,
+        "pillar": 2,
+        "price": 20000,
+        "profit": 500,
+        "subtractions": 0,
+        "unavailablePrice": 0,
+        "units": 10000,
+      },
     ]
   }
-  name={
-    <Memo(MemoizedFormattedMessage)
-      id="account.status.choice.pillar.second"
-    />
+  targetFunds={
+    Array [
+      Object {
+        "fundManager": Object {
+          "name": "Tuleva",
+        },
+        "inceptionDate": "2017-01-01",
+        "isin": "EE123",
+        "managementFeeRate": 0.003,
+        "name": "Tuleva II Samba Fond",
+        "nav": 1,
+        "ongoingChargesFigure": 0.0049,
+        "pillar": 2,
+        "status": "ACTIVE",
+      },
+    ]
   }
-  showAction={true}
-  warning={true}
->
-  <Link
-    className="btn btn-primary"
-    to="/2nd-pillar-payment-rate"
-  >
-    <MemoizedFormattedMessage
-      id="account.status.choice.paymentRate.increase"
-    />
-  </Link>
-</StatusBoxRow>
+/>
 `;
 
 exports[`SecondPillarStatusBox renders the payment rate flow 2`] = `
-<StatusBoxRow
-  lines={
+<IncreasePaymentRate
+  conversion={
+    Object {
+      "contribution": Object {
+        "lastYear": 100,
+        "total": 37000,
+        "yearToDate": 2500,
+      },
+      "paymentComplete": true,
+      "pendingWithdrawal": false,
+      "selectionComplete": true,
+      "selectionPartial": true,
+      "subtraction": Object {
+        "lastYear": 0,
+        "total": 0,
+        "yearToDate": 0,
+      },
+      "transfersComplete": true,
+      "transfersPartial": true,
+      "weightedAverageFee": 0.0049,
+    }
+  }
+  currentPaymentRate={6}
+  loading={false}
+  mandateDeadlines={
+    Object {
+      "periodEnding": "2024-07-31T00:59:59.999999999Z",
+    }
+  }
+  pendingPaymentRate={2}
+  sourceFunds={
     Array [
-      <Memo(MemoizedFormattedMessage)
-        id="account.status.choice.pillar.second.tax.benefit.warning"
-      />,
-      <span
-        className="text-body-secondary"
-      >
-        <SecondPillarPaymentRateTaxWin />
-      </span>,
+      Object {
+        "activeFund": true,
+        "contributions": 500,
+        "currency": "EUR",
+        "fundManager": Object {
+          "name": "Tuleva",
+        },
+        "isin": "EE000123",
+        "managementFeePercent": 0.003,
+        "name": "Tuleva II Samba Pensionifond",
+        "ongoingChargesFigure": 0.0049,
+        "pillar": 2,
+        "price": 20000,
+        "profit": 500,
+        "subtractions": 0,
+        "unavailablePrice": 0,
+        "units": 10000,
+      },
     ]
   }
-  name={
-    <Memo(MemoizedFormattedMessage)
-      id="account.status.choice.pillar.second"
-    />
+  targetFunds={
+    Array [
+      Object {
+        "fundManager": Object {
+          "name": "Tuleva",
+        },
+        "inceptionDate": "2017-01-01",
+        "isin": "EE123",
+        "managementFeeRate": 0.003,
+        "name": "Tuleva II Samba Fond",
+        "nav": 1,
+        "ongoingChargesFigure": 0.0049,
+        "pillar": 2,
+        "status": "ACTIVE",
+      },
+    ]
   }
-  showAction={true}
-  warning={true}
->
-  <Link
-    className="btn btn-primary"
-    to="/2nd-pillar-payment-rate"
-  >
-    <MemoizedFormattedMessage
-      id="account.status.choice.paymentRate.increase"
-    />
-  </Link>
-</StatusBoxRow>
+/>
 `;
 
 exports[`SecondPillarStatusBox renders the success flow 1`] = `
-<StatusBoxRow
-  lines={
+<FullyConvertedToTuleva
+  conversion={
+    Object {
+      "contribution": Object {
+        "lastYear": 100,
+        "total": 37000,
+        "yearToDate": 2500,
+      },
+      "paymentComplete": true,
+      "pendingWithdrawal": false,
+      "selectionComplete": true,
+      "selectionPartial": true,
+      "subtraction": Object {
+        "lastYear": 0,
+        "total": 0,
+        "yearToDate": 0,
+      },
+      "transfersComplete": true,
+      "transfersPartial": true,
+      "weightedAverageFee": 0.0049,
+    }
+  }
+  currentPaymentRate={6}
+  loading={false}
+  mandateDeadlines={
+    Object {
+      "periodEnding": "2024-07-31T00:59:59.999999999Z",
+    }
+  }
+  pendingPaymentRate={6}
+  sourceFunds={
     Array [
-      <Memo(MemoizedFormattedMessage)
-        id="account.status.choice.lowFee.index.label"
-      />,
-      <PaymentRateSubRow
-        currentPaymentRate={6}
-        futurePaymentRate={6}
-        paymentRateFulfillmentDate=""
-      />,
+      Object {
+        "activeFund": true,
+        "contributions": 500,
+        "currency": "EUR",
+        "fundManager": Object {
+          "name": "Tuleva",
+        },
+        "isin": "EE000123",
+        "managementFeePercent": 0.003,
+        "name": "Tuleva II Samba Pensionifond",
+        "ongoingChargesFigure": 0.0049,
+        "pillar": 2,
+        "price": 20000,
+        "profit": 500,
+        "subtractions": 0,
+        "unavailablePrice": 0,
+        "units": 10000,
+      },
     ]
   }
-  name={
-    <Memo(MemoizedFormattedMessage)
-      id="account.status.choice.pillar.second"
-    />
+  targetFunds={
+    Array [
+      Object {
+        "fundManager": Object {
+          "name": "Tuleva",
+        },
+        "inceptionDate": "2017-01-01",
+        "isin": "EE123",
+        "managementFeeRate": 0.003,
+        "name": "Tuleva II Samba Fond",
+        "nav": 1,
+        "ongoingChargesFigure": 0.0049,
+        "pillar": 2,
+        "status": "ACTIVE",
+      },
+    ]
   }
-  ok={true}
-  showAction={true}
 />
 `;
 
 exports[`SecondPillarStatusBox renders the transfer flow when fund transfers incomplete 1`] = `
-<StatusBoxRow
-  error={true}
-  extraBottom={
-    <div
-      className="card card-primary border-0 mt-3 ms-3 ms-md-5 me-3 my-2 px-4 py-3"
-    >
-      <div
-        className="row"
-      >
-        <TinyCard
-          img="euro.svg"
-          text={
-            <Memo(MemoizedFormattedMessage)
-              id="account.status.choice.pillar.second.feecard.text"
-              values={
-                Object {
-                  "b": [Function],
-                }
-              }
-            />
-          }
-          title={
-            <Memo(MemoizedFormattedMessage)
-              id="account.status.choice.pillar.second.feecard.title"
-            />
-          }
-        />
-        <TinyCard
-          img="basket.svg"
-          text={
-            <React.Fragment>
-              <Memo(MemoizedFormattedMessage)
-                id="account.status.choice.pillar.second.basketcard.text"
-                values={
-                  Object {
-                    "b": [Function],
-                  }
-                }
-              />
-              <InfoTooltip
-                name="diversification-tooltip"
-              >
-                <Memo(MemoizedFormattedMessage)
-                  id="account.status.choice.pillar.second.basketcard.tooltip"
-                />
-              </InfoTooltip>
-            </React.Fragment>
-          }
-          title={
-            <Memo(MemoizedFormattedMessage)
-              id="account.status.choice.pillar.second.basketcard.title"
-            />
-          }
-        />
-        <TinyCard
-          img="deadline.svg"
-          text={
-            <Memo(MemoizedFormattedMessage)
-              id="account.status.choice.pillar.second.deadlinecard.text"
-              values={
-                Object {
-                  "b": [Function],
-                  "periodEnding": "July 31 at 00:59",
-                }
-              }
-            />
-          }
-          title={
-            <Memo(MemoizedFormattedMessage)
-              id="account.status.choice.pillar.second.deadlinecard.title"
-            />
-          }
-        />
-      </div>
-    </div>
+<HighFee
+  conversion={
+    Object {
+      "selectionComplete": true,
+      "selectionPartial": true,
+      "transfersComplete": false,
+      "transfersPartial": false,
+      "weightedAverageFee": 0.01,
+    }
   }
-  lines={
+  currentPaymentRate={6}
+  loading={false}
+  mandateDeadlines={
+    Object {
+      "periodEnding": "2024-07-31T00:59:59.999999999Z",
+    }
+  }
+  pendingPaymentRate={6}
+  sourceFunds={
     Array [
-      <React.Fragment>
-        <Memo(MemoizedFormattedMessage)
-          id="account.status.choice.highFee.label"
-        />
-        <InfoTooltip
-          name="second-pillar-tooltip"
-        >
-          <Memo(MemoizedFormattedMessage)
-            id="account.status.choice.highFee.description"
-          />
-        </InfoTooltip>
-      </React.Fragment>,
-      <span
-        className="text-body-secondary"
-      >
-        <Memo(MemoizedFormattedMessage)
-          id="account.status.choice.highFee.comment"
-          values={
-            Object {
-              "currentFeesEuro": <Euro
-                amount={200}
-                className="text-danger"
-                fractionDigits={0}
-              />,
-              "tulevaFeesEuro": <Euro
-                amount={98}
-                className="text-success"
-                fractionDigits={0}
-              />,
-            }
-          }
-        />
-      </span>,
+      Object {
+        "activeFund": true,
+        "contributions": 500,
+        "currency": "EUR",
+        "fundManager": Object {
+          "name": "Tuleva",
+        },
+        "isin": "EE000123",
+        "managementFeePercent": 0.003,
+        "name": "Tuleva II Samba Pensionifond",
+        "ongoingChargesFigure": 0.0049,
+        "pillar": 2,
+        "price": 20000,
+        "profit": 500,
+        "subtractions": 0,
+        "unavailablePrice": 0,
+        "units": 10000,
+      },
     ]
   }
-  name={
-    <Memo(MemoizedFormattedMessage)
-      id="account.status.choice.pillar.second"
-    />
+  targetFunds={
+    Array [
+      Object {
+        "fundManager": Object {
+          "name": "Tuleva",
+        },
+        "inceptionDate": "2017-01-01",
+        "isin": "EE123",
+        "managementFeeRate": 0.003,
+        "name": "Tuleva II Samba Fond",
+        "nav": 1,
+        "ongoingChargesFigure": 0.0049,
+        "pillar": 2,
+        "status": "ACTIVE",
+      },
+    ]
   }
-  showAction={true}
->
-  <SecondPillarActionButton
-    className="btn-primary"
-  />
-</StatusBoxRow>
+/>
 `;
 
 exports[`SecondPillarStatusBox renders the withdrawal flow when withdrawal is in progress 1`] = `
-<StatusBoxRow
-  error={true}
-  lines={
+<PendingPartialWithdrawalOrFundPension
+  conversion={
+    Object {
+      "pendingWithdrawal": true,
+    }
+  }
+  currentPaymentRate={6}
+  loading={false}
+  mandateDeadlines={
+    Object {
+      "periodEnding": "2024-07-31T00:59:59.999999999Z",
+    }
+  }
+  pendingPaymentRate={6}
+  sourceFunds={
     Array [
-      <Memo(MemoizedFormattedMessage)
-        id="account.status.choice.pillar.second.withdraw"
-      />,
+      Object {
+        "activeFund": true,
+        "contributions": 500,
+        "currency": "EUR",
+        "fundManager": Object {
+          "name": "Tuleva",
+        },
+        "isin": "EE000123",
+        "managementFeePercent": 0.003,
+        "name": "Tuleva II Samba Pensionifond",
+        "ongoingChargesFigure": 0.0049,
+        "pillar": 2,
+        "price": 20000,
+        "profit": 500,
+        "subtractions": 0,
+        "unavailablePrice": 0,
+        "units": 10000,
+      },
     ]
   }
-  name={
-    <Memo(MemoizedFormattedMessage)
-      id="account.status.choice.pillar.second"
-    />
+  targetFunds={
+    Array [
+      Object {
+        "fundManager": Object {
+          "name": "Tuleva",
+        },
+        "inceptionDate": "2017-01-01",
+        "isin": "EE123",
+        "managementFeeRate": 0.003,
+        "name": "Tuleva II Samba Fond",
+        "nav": 1,
+        "ongoingChargesFigure": 0.0049,
+        "pillar": 2,
+        "status": "ACTIVE",
+      },
+    ]
   }
-  showAction={true}
->
-  <Link
-    className="btn btn-primary"
-    to="/applications/undefined/cancellation"
-  >
-    <MemoizedFormattedMessage
-      id="account.status.choice.pillar.second.withdraw.cancel"
-    />
-  </Link>
-</StatusBoxRow>
+/>
 `;
