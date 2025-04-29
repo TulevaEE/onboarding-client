@@ -320,7 +320,7 @@
   "account.status.choice.fundPension.description": "Fondipensioni väljamaksed lõppevad <b>{endDate}</b>",
 
   "account.status.choice.join.tuleva": "Astu liikmeks",
-  "account.status.contributionAmount": "Oled sel aastal maksnud III sambasse {thisYearContribution} ja eelmisel aastal {lastYearContribution}",
+  "account.status.contributionAmount": "Oled sel aastal maksnud III sambasse {thisYearContribution} ja eelmisel aastal {lastYearContribution}",
   "account.greeting": "Tere",
   "account.update.contact": "Uuendan andmeid",
   "new.user.flow.new.user.total.fund.value": "Pensionikeskuse andmetel on sinu II sambasse tänaseks kogunenud ",
@@ -535,7 +535,7 @@
   "thirdPillarSuccess.button.account": "Minu konto",
   "thirdPillarSuccess.button": "Vaata lähemalt",
   "thirdPillarSuccess.ourFund": "Tuleva Maailma Aktsiate pensionifond",
-  "thirdPillarSuccess.currentFund": "Sinu valitud pensionifondid",
+  "thirdPillarSuccess.currentFund": "Sinu valitud fondid",
 
   "thirdPillarBackToPartner.opened": "Sinu III sammas on avatud",
   "thirdPillarBackToPartner.account": "Vaata oma kontoseisu",
@@ -682,8 +682,8 @@
   "comparisonCalculator.shortTimePeriodWarningLink": "Loe lähemalt",
 
   "comparisonCalculator.comparisonOptions.benchmarks": "Mõõdikud",
-  "comparisonCalculator.comparisonOptions.lowFeeFunds": "Madala tasuga pensionifondid (alla 0.5%)",
-  "comparisonCalculator.comparisonOptions.highFeeFunds": "Kõrge tasuga pensionifondid ({minimumFee}%–1.56%)",
+  "comparisonCalculator.comparisonOptions.lowFeeFunds": "Madala tasuga fondid (alla 0.5%)",
+  "comparisonCalculator.comparisonOptions.highFeeFunds": "Kõrge tasuga fondid ({minimumFee}%–1.56%)",
   "comparisonCalculator.comparisonOptions.unionStockIndex": "Maailmaturu indeks",
   "comparisonCalculator.comparisonOptions.epi": "Eesti keskmine II samba fond",
   "comparisonCalculator.comparisonOptions.cpi": "Eesti inflatsioon",

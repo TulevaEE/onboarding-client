@@ -320,7 +320,7 @@
   "account.status.choice.fundPension.description": "Fund pension payments will end in <b>{endDate}</b>",
 
   "account.status.choice.join.tuleva": "Sign up",
-  "account.status.contributionAmount": "You have contributed {thisYearContribution} to your III pillar this year and {lastYearContribution} last year",
+  "account.status.contributionAmount": "You have contributed {thisYearContribution} to your III pillar this year and {lastYearContribution} last year",
   "account.greeting": "Hi",
   "account.update.contact": "Update info",
   "new.user.flow.new.user.total.fund.value": "Your current second pillar total savings are ",
@@ -680,8 +680,8 @@
   "comparisonCalculator.shortTimePeriodWarningLink": "Read more",
 
   "comparisonCalculator.comparisonOptions.benchmarks": "Benchmarks",
-  "comparisonCalculator.comparisonOptions.lowFeeFunds": "Low fee pension funds (below 0.5%)",
-  "comparisonCalculator.comparisonOptions.highFeeFunds": "High fee pension funds ({minimumFee}%–1.56%)",
+  "comparisonCalculator.comparisonOptions.lowFeeFunds": "Low fee funds (below 0.5%)",
+  "comparisonCalculator.comparisonOptions.highFeeFunds": "High fee funds ({minimumFee}%–1.56%)",
   "comparisonCalculator.comparisonOptions.unionStockIndex": "World market index",
   "comparisonCalculator.comparisonOptions.epi": "Estonian II pillar funds average performance",
   "comparisonCalculator.comparisonOptions.cpi": "Estonia inflation rate",
