@@ -319,7 +319,7 @@
 
   "account.status.choice.fundPension.description": "Fondipensioni väljamaksed lõppevad <b>{endDate}</b>",
 
-  "account.status.choice.join.tuleva": "Astu liikmeks",
+  "account.status.choice.join.tuleva": "Astun liikmeks",
   "account.status.contributionAmount": "Oled sel aastal maksnud III sambasse {thisYearContribution} ja eelmisel aastal {lastYearContribution}",
   "account.greeting": "Tere",
   "account.update.contact": "Uuendan andmeid",
