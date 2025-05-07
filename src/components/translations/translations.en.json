@@ -741,7 +741,7 @@
   "withdrawals.subHeading": "You are <b>{age} years old</b> and eligible to start using your accumulated pension holdings <b>under preferential conditions</b>.",
   "withdrawals.subHeadingThirdPilllarReducedTax": "You are <b>{age} years old</b> and eligible to start using your III pillar holdings <b>under preferential conditions</b>.",
   "withdrawals.subHeadingUnderEarlyRetirementAge": "You are <b>{age} years old</b> and eligible to start using your accumulated pension holdings under preferential conditions <b>in {yearsToGo} years</b>.",
-  "withdrawals.additionalInfoUnder55": "Before the age of 60, you can only withdraw money from <b>the III pillar</b>. This is only worth doing for <b>unavoidable expenses</b>, as the state withholds <b>22% income tax</b> from withdrawals for those under 60.",
+  "withdrawals.additionalInfoUnder55": "Before the age of 60, you can withdraw money only from <b>the III pillar</b> when using Tuleva’s site. This is only worth doing for <b>unavoidable expenses</b>, as the state withholds <b>22% income tax</b> from withdrawals for those under 60.",
 
   "withdrawals.steps.withdrawalSize": "Withdrawal amount",
   "withdrawals.steps.yourInformation": "Your information",

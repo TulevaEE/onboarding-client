@@ -126,7 +126,7 @@ describe('withdrawals flow before early retirement age', () => {
     expect(await screen.findByText(/in 35 years/i)).toBeInTheDocument();
 
     expect(
-      await screen.findByText(/Before the age of 60, you can only withdraw money from/i),
+      await screen.findByText(/Before the age of 60, you can withdraw money only from/i),
     ).toBeInTheDocument();
 
     userEvent.click(await screen.findByLabelText(/Withdraw only from II pillar/i));
@@ -217,7 +217,7 @@ describe('withdrawals flow before early retirement age', () => {
     expect(await screen.findByText(/in 35 years/i)).toBeInTheDocument();
 
     expect(
-      await screen.findByText(/Before the age of 60, you can only withdraw money from/i),
+      await screen.findByText(/Before the age of 60, you can withdraw money only from/i),
     ).toBeInTheDocument();
 
     expect(
