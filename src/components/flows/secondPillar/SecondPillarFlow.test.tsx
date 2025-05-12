@@ -123,7 +123,7 @@ describe('2nd pillar flow', () => {
     // Verify the "Active fund" badge is rendered for the active fund
     const fundElement = await screen.findByText(/Swedbank Pension Fund K60/);
     expect(
-      within(fundElement).getByText(/Active[\u00A0 ]fund/, { exact: false }),
+      within(fundElement).getByText(/Active[\u00A0 ]choice/, { exact: false }),
     ).toBeInTheDocument();
 
     userEvent.click(screen.getByText('Transfer II pillar selectively'));
@@ -190,7 +190,7 @@ describe('2nd pillar flow', () => {
     // Verify the "Active fund" badge is rendered for the active fund
     const fundElement = await screen.findByText(/Swedbank Pension Fund K60/);
     expect(
-      within(fundElement).getByText(/Active[\u00A0 ]fund/, { exact: false }),
+      within(fundElement).getByText(/Active[\u00A0 ]choice/, { exact: false }),
     ).toBeInTheDocument();
 
     userEvent.click(screen.getByText('Transfer II pillar selectively'));
