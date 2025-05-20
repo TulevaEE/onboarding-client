@@ -12,7 +12,7 @@
     "@tanstack/react-query": "^4.36.1",
     "array.prototype.find": "^2.1.2",
     "axios": "^0.24.0",
-    "bootstrap": "^5.3.3",
+    "bootstrap": "^5.3.6",
     "classnames": "^2.2.6",
     "connected-react-router": "^6.9.3",
     "downloadjs": "^1.4.7",
@@ -40,7 +40,7 @@
     "redux": "^4.2.1",
     "redux-form": "^8.3.10",
     "redux-thunk": "^2.4.0",
-    "sass": "^1.69.3",
+    "sass": "^1.89.0",
     "typescript": "^4.9.5",
     "uuid": "^3.3.3"
   },
