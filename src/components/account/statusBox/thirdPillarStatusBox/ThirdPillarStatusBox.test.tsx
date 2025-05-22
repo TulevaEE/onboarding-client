@@ -172,4 +172,19 @@ describe('ThirdPillarStatusBox', () => {
     });
     expect(component).toMatchSnapshot();
   });
+
+  it('shows high fee notice when balance is zero but active fund has high fee', () => {
+    component.setProps({
+      conversion: {
+        selectionPartial: false,
+        selectionComplete: false,
+        transfersPartial: false,
+        transfersComplete: false,
+        contribution: { yearToDate: 0, total: 0 },
+        weightedAverageFee: 0,
+      },
+      thirdPillarFunds: [highFeeThirdPillar],
+    });
+    expect(component).toMatchSnapshot();
+  });
 });

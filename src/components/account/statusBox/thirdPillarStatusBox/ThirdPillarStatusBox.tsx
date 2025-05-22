@@ -121,7 +121,12 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
 
   const isPartiallyConverted = conversion.selectionPartial || conversion.transfersPartial;
   if (!isPartiallyConverted) {
-    if (conversion.weightedAverageFee > 0.005) {
+    const activeFundFee = activeFund?.ongoingChargesFigure || 0;
+    const hasHighFees =
+      conversion.weightedAverageFee > 0.005 ||
+      (conversion.contribution.total === 0 && activeFundFee > 0.005);
+
+    if (hasHighFees) {
       return (
         <StatusBoxRow
           error
@@ -144,7 +149,6 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
       );
     }
     return (
-      // TODO: bug - if fund balance is 0, it always shows this message. rather, it should then consider the active fund fee
       <StatusBoxRow
         ok
         showAction={!loading}
