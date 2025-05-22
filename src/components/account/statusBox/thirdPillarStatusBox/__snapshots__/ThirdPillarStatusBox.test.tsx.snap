@@ -396,3 +396,41 @@ exports[`ThirdPillarStatusBox renders the success flow when funds have not trans
   </Link>
 </StatusBoxRow>
 `;
+
+exports[`ThirdPillarStatusBox shows high fee notice when balance is zero but active fund has high fee 1`] = `
+<StatusBoxRow
+  error={true}
+  lines={
+    Array [
+      <React.Fragment>
+        <Memo(MemoizedFormattedMessage)
+          id="account.status.choice.highFee.label"
+        />
+        <InfoTooltip
+          name="third-pillar-tooltip"
+        >
+          <Memo(MemoizedFormattedMessage)
+            id="account.status.choice.highFee.description"
+          />
+        </InfoTooltip>
+      </React.Fragment>,
+      <Memo(Connect(ThirdPillarContributionAmount)) />,
+    ]
+  }
+  name={
+    <Memo(MemoizedFormattedMessage)
+      id="account.status.choice.pillar.third"
+    />
+  }
+  showAction={true}
+>
+  <Link
+    className="btn btn-primary"
+    to="/3rd-pillar-flow"
+  >
+    <MemoizedFormattedMessage
+      id="account.status.choice.choose.low.fees"
+    />
+  </Link>
+</StatusBoxRow>
+`;

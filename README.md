@@ -7,9 +7,9 @@
 
 ## Tech evolution
 
-Originally, this repo was built using js, redux and enzyme for testing. Over the years react has grown, rendering some of these tehcnologies less useful. This architecture has shown itself to be overcomplicated and the current tests to not give as much value as they could. Thus, whenever you are working on new functionality in this repo, try to do the following:
+Originally, this repo was built using js, redux and enzyme for testing. Over the years react has grown, rendering some of these technologies less useful. This architecture has shown itself to be overcomplicated and the current tests to not give as much value as they could. Thus, whenever you are working on new functionality in this repo, try to do the following:
 
-- Convert files you touch to typescript, this can be easily done as typescript and js can be used interchangably in this repo.
+- Convert files you touch to typescript, this can be easily done as typescript and js can be used interchangeably in this repo.
 - Convert class components to functional if possible.
 - Try to not use Redux (See below)
 - Use react testing library and msw for tests and try to mock as little as possible, building tests to imitate how a user would use your application. See the [`CancellationFlow`](./src/components/flows/cancellation/CancellationFlow.tsx) for an example of how to incrementally move to this structure while reusing previous redux code.

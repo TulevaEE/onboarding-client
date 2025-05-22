@@ -26,9 +26,11 @@ describe('Target fund selector', () => {
     ];
     component.setProps({ targetFunds, isSelected: jest.fn() });
     expect(component.find('button').length).toBe(3);
-    targetFunds.forEach((fund) => {
+    targetFunds.forEach((fund, index) => {
       expect(component.contains(fund.name)).toBe(true);
-      // TODO: add test for terms link once we have the links.
+      expect(component.find('a.tv-target-fund__terms-link').at(index).prop('href')).toEqual(
+        `target.funds.${fund.isin}.terms.link`,
+      );
     });
   });
 
