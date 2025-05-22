@@ -1,6 +1,6 @@
 import React from 'react';
 
-// TODO refac props to union type of 'SUCCESS' | 'ERROR' | 'WARNING'
+// TODO refactor props to union type of 'SUCCESS' | 'ERROR' | 'WARNING'
 const StatusBoxIcon: React.FunctionComponent<{
   checked?: boolean;
   warning?: boolean;

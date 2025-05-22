@@ -1,5 +1,5 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import { render, screen } from '@testing-library/react';
 import config from 'react-global-configuration';
 
 import LanguageSwitcher from '.';
@@ -10,16 +10,16 @@ describe('Language Switcher', () => {
   it('can switch to English when the language is Estonian', () => {
     config.set({ language: 'et' }, options);
 
-    const language = shallow(<LanguageSwitcher />).text();
+    render(<LanguageSwitcher />);
 
-    expect(language).toBe('EN');
+    expect(screen.getByText('EN')).toBeInTheDocument();
   });
 
   it('can switch to Estonian when the language is English', () => {
     config.set({ language: 'en' }, options);
 
-    const language = shallow(<LanguageSwitcher />).text();
+    render(<LanguageSwitcher />);
 
-    expect(language).toBe('ET');
+    expect(screen.getByText('ET')).toBeInTheDocument();
   });
 });
