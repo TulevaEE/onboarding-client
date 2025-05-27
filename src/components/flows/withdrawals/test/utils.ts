@@ -245,6 +245,10 @@ export const assertPartialWithdrawalMandate = async ({
     await waitForElementToBeRemoved(loader);
   }
 
+  expect((await within(partialWithdrawalSection).findAllByTestId('fund-row')).length).toBe(
+    rows.length,
+  );
+
   rows.forEach(({ fundName, liquidationAmount }) => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const rowElement = within(partialWithdrawalSection).getByText(

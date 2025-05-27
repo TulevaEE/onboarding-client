@@ -447,7 +447,7 @@ const PartialWithdrawalMandateDescription = ({
       </b>
       <div>
         {mandate.fundWithdrawalAmounts.map((amount) => (
-          <div className="d-flex justify-content-between" key={amount.isin}>
+          <div className="d-flex justify-content-between" key={amount.isin} data-testid="fund-row">
             <div>{fundIsinToFundNameMap[amount.isin]}</div>
             <div>
               {mandate.pillar === 'THIRD' ? (

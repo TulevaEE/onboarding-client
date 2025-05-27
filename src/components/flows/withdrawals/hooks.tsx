@@ -61,8 +61,10 @@ export const WithdrawalsProvider = ({
   const { data: rawSourceFunds } = useSourceFunds();
   const { data: funds } = useFunds();
 
-  // without empty value
-  const sourceFunds = rawSourceFunds?.filter((sourceFund) => sourceFund.price > 0);
+  const sourceFunds = rawSourceFunds
+    ?.filter((sourceFund) => sourceFund.price > 0) // without empty value
+    .filter((fund) => !fund.name?.toLowerCase().includes('väljumine piiratud')) // unliquidatable funds
+    .filter((fund) => !fund.name?.toLowerCase().includes('limited redemption'));
 
   const { pathname } = useLocation();
   const history = useHistory();
