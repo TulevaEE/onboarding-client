@@ -11,7 +11,7 @@ export const BackToInternetBankButton: React.FC = () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         !(window as any).ReactNativeWebView && redirectUri ? (
           <div className="d-flex justify-content-center mt-2">
-            <a href={`${redirectUri}deposits${config.get('language') === 'en' ? '-eng' : ''}`}>
+            <a href={`${redirectUri}i/deposits?lang=${config.get('language')}`}>
               <FormattedMessage id="success.backButton" />
             </a>
           </div>
