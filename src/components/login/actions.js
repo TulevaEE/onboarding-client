@@ -188,7 +188,7 @@ function safariSpecialHandlingIdCardAuth() {
 }
 
 export function authenticateWithIdCard() {
-  safariSpecialHandlingIdCardAuth();
+  // safariSpecialHandlingIdCardAuth();
   return (dispatch) => {
     dispatch({ type: ID_CARD_AUTHENTICATION_START });
     return api
