@@ -178,6 +178,7 @@ function getIdCardTokens() {
   };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function safariSpecialHandlingIdCardAuth() {
   // Safari doesn't support sending client certificates via CORS,
   // so we have to do a full page reload
