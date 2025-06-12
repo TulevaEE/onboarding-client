@@ -1,5 +1,5 @@
 import { FormattedMessage, useIntl } from 'react-intl';
-import { ContrastModeSwitch } from '../../common/accessibility/ContrastModeSwitch';
+// import { ContrastModeSwitch } from '../../common/accessibility/ContrastModeSwitch';
 
 export const Footer = () => {
   const { formatMessage } = useIntl();
