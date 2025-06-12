@@ -1,8 +1,9 @@
-import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { ContrastModeSwitch } from '../../common/accessibility/ContrastModeSwitch';
 
 export const Footer = () => {
   const { formatMessage } = useIntl();
+
   return (
     <footer className="mt-5 pt-4 pb-5 border-top app-footer">
       <address className="d-flex flex-wrap gap-4 row-gap-1 align-items-baseline justify-content-center small text-body-secondary">
@@ -17,6 +18,7 @@ export const Footer = () => {
           <FormattedMessage id="footer.phone.number" />
         </a>
         <FormattedMessage id="footer.registration.code" />
+        {/* <ContrastModeSwitch /> */}
       </address>
     </footer>
   );

@@ -165,6 +165,8 @@
   "footer.email": "tuleva@tuleva.ee",
   "footer.phone.number": "+372 644 5100",
   "footer.registration.code": "Reg. code: 14118923",
+  "footer.highContrast.turnOn": "Turn on high–contrast mode",
+  "footer.highContrast.turnOff": "Turn off high–contrast mode",
   "success.done": "Application finished",
   "success.shares.switched": "Your current fund units will be transferred on <b>the first working day following {transferDate}.</b>",
   "success.your.payments": "Your future contributions will be directed to your selected pension fund <b>starting from the next payment.</b>",
