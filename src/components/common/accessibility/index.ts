@@ -1,6 +1,8 @@
+import moment from 'moment';
 import { useState } from 'react';
 
-export const HIGH_CONTRAST_MODE_KEY = 'high-contrast';
+// synced with wordpress-theme
+const HIGH_CONTRAST_MODE_COOKIE_NAME = 'high-contrast';
 
 export const useHighContrastMode = () => {
   const [enabled, setEnabled] = useState(isHighContrastModeEnabled());
@@ -14,11 +16,11 @@ export const useHighContrastMode = () => {
 };
 
 const toggleHighContrastMode = () => {
-  if (isHighContrastModeEnabled()) {
-    localStorage.removeItem(HIGH_CONTRAST_MODE_KEY);
-  } else {
-    localStorage.setItem(HIGH_CONTRAST_MODE_KEY, 'true');
-  }
+  const domain = window.location.host.includes('localhost') ? 'localhost' : '.tuleva.ee';
+
+  // if enabled, set expiry to UTC epoch to delete, if not enabled then set it to 12 months in future
+  const expiry = (isHighContrastModeEnabled() ? moment(0) : moment().add(12, 'months')).toDate();
+  document.cookie = `${HIGH_CONTRAST_MODE_COOKIE_NAME}=true;expires=${expiry};domain=${domain};path=/`;
 };
 
-const isHighContrastModeEnabled = () => localStorage.getItem(HIGH_CONTRAST_MODE_KEY) !== null;
+const isHighContrastModeEnabled = () => document.cookie.includes(HIGH_CONTRAST_MODE_COOKIE_NAME);
