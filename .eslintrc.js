@@ -18,6 +18,7 @@ module.exports = {
         ],
       },
     ], // for Enzyme
+    'no-irregular-whitespace': 0, // zero width spaces sometimes used
     '@typescript-eslint/no-use-before-define': 0, // for clean code
     '@typescript-eslint/explicit-member-accessibility': 0, // too verbose for React components
     '@typescript-eslint/explicit-function-return-type': 0, // to fix build after ESLint upgrade. TODO: activate
