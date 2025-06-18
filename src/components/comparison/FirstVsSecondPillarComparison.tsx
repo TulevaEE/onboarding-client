@@ -5,6 +5,7 @@ import { useContributions, useSourceFunds } from '../common/apiHooks';
 import { Shimmer } from '../common/shimmer/Shimmer';
 import { SecondPillarContribution } from '../common/apiModels';
 import { Euro } from '../common/Euro';
+import { InfoTooltip } from '../common/infoTooltip/InfoTooltip';
 
 export const FirstVsSecondPillarComparison = () => {
   const { data: contributions } = useContributions();
@@ -87,7 +88,7 @@ export const FirstVsSecondPillarComparison = () => {
 
   const impactOfReduction = totalDiff * pricePerUnit; // EUR per month
 
-  const breakEven = secondPillarSum / impactOfReduction;
+  const breakEvenYears = secondPillarSum / (impactOfReduction * 12);
 
   return (
     <div className="col-12 col-md-11 col-lg-8 mx-auto">
@@ -123,7 +124,8 @@ export const FirstVsSecondPillarComparison = () => {
         </div>
 
         <p className="text-center mt-3 mb-1 fs-6">
-          Tasuvusaeg ≈<strong id="breakEven"> {breakEven.toFixed(0)} aastat</strong>
+          Tasuvusaeg ≈<strong id="breakEven"> {breakEvenYears.toFixed(0)} aastat</strong>{' '}
+          <InfoTooltip>Kui pika pensionipõlvega oleks I sambast rohkem kasu</InfoTooltip>
         </p>
         <p className="text-center text-muted small mt-3">
           Arvestame aastaid 2018–2024, sest see on periood, mil Tuleva on tegutsenud ja mille kohta
