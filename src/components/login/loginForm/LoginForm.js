@@ -173,6 +173,7 @@ const renderSmartId = (onIdCodeSubmit, personalCode, onPersonalCodeChange, forma
           onChange={(event) => onPersonalCodeChange(event.target.value)}
           className="form-control form-control-lg"
           placeholder={formatMessage({ id: 'login.id.code' })}
+          aria-label={formatMessage({ id: 'login.id.code' })}
         />
       </div>
       <div className="d-grid mb-3">
@@ -209,6 +210,7 @@ const renderMobileId = (
           onChange={(event) => onPersonalCodeChange(event.target.value)}
           className="form-control form-control-lg"
           placeholder={formatMessage({ id: 'login.id.code' })}
+          aria-label={formatMessage({ id: 'login.id.code' })}
         />
       </div>
       <div className="mb-3">
@@ -220,6 +222,7 @@ const renderMobileId = (
           onChange={(event) => onPhoneNumberChange(event.target.value)}
           className="form-control form-control-lg"
           placeholder={formatMessage({ id: 'login.phone.number' })}
+          aria-label={formatMessage({ id: 'login.phone.number' })}
         />
       </div>
       <div className="d-grid mb-3">
