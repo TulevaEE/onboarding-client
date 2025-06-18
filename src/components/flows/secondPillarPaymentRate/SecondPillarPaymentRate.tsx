@@ -170,7 +170,7 @@ const Currently = () => (
 );
 
 const Recommended = () => (
-  <span className="me-2 badge rounded-pill text-bg-primary align-text-bottom">
+  <span className="me-1 badge rounded-pill text-bg-primary align-text-bottom">
     <FormattedMessage id="secondPillarPaymentRate.recommended" />
   </span>
 );
