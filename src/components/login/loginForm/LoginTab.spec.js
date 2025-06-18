@@ -8,20 +8,20 @@ describe('Login Tab', () => {
     const wrapper = shallow(
       <LoginTab label="Smart ID" hideOnMobile="false" activeTab="Smart ID" onClick={onClick} />,
     );
-    expect(wrapper.find('.tab-list-item').hasClass('tab-list-active')).toBe(true);
+    expect(wrapper.find('.nav-link').hasClass('active')).toBe(true);
   });
   it('should contain inactive button', () => {
     const onClick = jest.fn();
     const wrapper = shallow(
       <LoginTab label="Mobile ID" hideOnMobile="false" activeTab="Smart ID" onClick={onClick} />,
     );
-    expect(wrapper.find('.tab-list-item').hasClass('tab-list-active')).toBe(false);
+    expect(wrapper.find('.nav-link').hasClass('active')).toBe(false);
   });
   it('should contain hidden button', () => {
     const onClick = jest.fn();
     const wrapper = shallow(
       <LoginTab label="Smart ID" hideOnMobile="true" activeTab="Smart ID" onClick={onClick} />,
     );
-    expect(wrapper.find('.tab-list-item').hasClass('d-md-table-cell')).toBe(true);
+    expect(wrapper.find('.nav-link').hasClass('d-md-block')).toBe(true);
   });
 });

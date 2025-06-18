@@ -21,20 +21,22 @@ class LoginTab extends Component {
       props: { activeTab, label, hideOnMobile },
     } = this;
 
-    let className = 'tab-list-item';
+    let className = 'nav-link';
 
     if (activeTab === label) {
-      className += ' tab-list-active';
+      className += ' active';
     }
 
     if (hideOnMobile === 'true') {
-      className += ' d-none d-md-table-cell';
+      className += ' d-none d-md-block';
     }
 
     return (
-      <button type="button" className={className} onClick={onClick}>
-        <FormattedMessage id={label} />
-      </button>
+      <li className="nav-item" role="presentation">
+        <button type="button" role="tab" className={className} onClick={onClick}>
+          <FormattedMessage id={label} />
+        </button>
+      </li>
     );
   }
 }

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, createRef } from 'react';
 import PropTypes from 'prop-types';
 
 import LoginTab from './LoginTab';
@@ -8,9 +8,18 @@ class LoginTabs extends Component {
     children: PropTypes.instanceOf(Array).isRequired,
   };
 
+  panelRef = createRef();
+
   state = {
     activeTab: this.props.children[0].props.label,
   };
+
+  componentDidUpdate(_prevProps, { activeTab: prevActiveTab }) {
+    const { activeTab } = this.state; // destructure current state
+    if (prevActiveTab !== activeTab) {
+      this.panelRef.current?.focus();
+    }
+  }
 
   onClickTabItem = (tab) => {
     this.setState({ activeTab: tab });
@@ -18,14 +27,14 @@ class LoginTabs extends Component {
 
   render() {
     const {
-      onClickTabItem,
       props: { children },
       state: { activeTab },
+      onClickTabItem,
     } = this;
 
     return (
-      <div className="m-0 mt-4 tabs">
-        <ol className="tab-list">
+      <>
+        <ul className="my-4 nav nav-tabs nav-fill" role="tablist">
           {React.Children.map(children, (child) => {
             const { label, hideOnMobile } = child.props;
 
@@ -39,8 +48,14 @@ class LoginTabs extends Component {
               />
             );
           })}
-        </ol>
-        <div className="tab-content">
+        </ul>
+        <div
+          className="tab-content"
+          role="tabpanel"
+          tabIndex="-1"
+          aria-live="polite"
+          ref={this.panelRef}
+        >
           {React.Children.map(children, (child) => {
             if (child.props.label !== activeTab) {
               return undefined;
@@ -48,7 +63,7 @@ class LoginTabs extends Component {
             return child.props.children;
           })}
         </div>
-      </div>
+      </>
     );
   }
 }
