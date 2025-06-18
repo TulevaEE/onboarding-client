@@ -19,9 +19,10 @@ export const FirstVsSecondPillarComparison = () => {
     );
   }
 
-  const secondPillarSum = sourceFunds
-    ?.filter(({ pillar }) => pillar === 2)
-    .reduce((total, { price, unavailablePrice }) => total + price + unavailablePrice, 0);
+  const secondPillarSum =
+    sourceFunds
+      ?.filter(({ pillar }) => pillar === 2)
+      .reduce((total, { price, unavailablePrice }) => total + price + unavailablePrice, 0) * 0.7;
 
   const contribs = contributions
     .filter((contribution): contribution is SecondPillarContribution => contribution.pillar === 2)
@@ -98,7 +99,7 @@ export const FirstVsSecondPillarComparison = () => {
           Kogud igal kuul II sambasse vara. Riik lisab sellele võimenduse. Teisalt on su I sammas
           selle võrra natukene väiksem.
         </p>
-        <p className="mt-3 text-center">Võrdle ise, kumb tundub sulle kasulikum.</p>
+        <p className="text-center">Võrdle ise, kumb tundub sulle kasulikum.</p>
         <div className="row g-3" id="results" aria-live="polite">
           <div className="col-12 col-md-6">
             <div className="card result-card alert alert-danger text-center border-0 m-0">
@@ -128,9 +129,9 @@ export const FirstVsSecondPillarComparison = () => {
           <InfoTooltip>Kui pika pensionipõlvega oleks I sambast rohkem kasu</InfoTooltip>
         </p>
         <p className="text-center text-muted small mt-3">
-          Arvestame aastaid 2018–2024, sest see on periood, mil Tuleva on tegutsenud ja mille kohta
-          on meil andmed olemas. 2025. aastat see ei arvesta, sest I samba õiguseid arvutatakse
-          täisaasta kohta. Mõlemad summad on tänases väärtuses. Pea meeles, et tulevikus mõjutavad
+          Mõlemad summad on tänases väärtuses. Arvestame aastaid 2018–2024, sest see on periood, mil
+          Tuleva on tegutsenud ja mille kohta on meil andmed olemas. 2025. aastat see ei arvesta,
+          sest I samba õiguseid arvutatakse täisaasta kohta. Pea meeles, et tulevikus mõjutavad
           I sammast ka indekseerimine ning II sammast tootlust.
         </p>
         <p className="text-center mb-0">
