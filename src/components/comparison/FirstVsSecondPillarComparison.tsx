@@ -92,11 +92,11 @@ export const FirstVsSecondPillarComparison = () => {
 
   return (
     <div className="col-12 col-md-11 col-lg-8 mx-auto">
-      <div className="card shadow-lg border-0 rounded-4 p-4 mt-4">
-        <h1 className="mb-4 text-center">Kui palju vähendab II sambas kogumine sinu I sammast?</h1>
-        <p className="m-0 text-center">
-          Kui kogud II sambasse, suunab riik sinna osa sinu sotsiaalmaksust. Seepärast koguneb sulle
-          II sambasse rohkem raha, aga I samba pension tuleb tulevikus veidi väiksem.
+      <div className="card shadow rounded-4 p-4 mt-4">
+        <h1 className="text-center">Kas II sambas kogumine on sulle kasulik?</h1>
+        <p className="text-center">
+          Kogud igal kuul II sambasse vara. Riik lisab sellele võimenduse. Teisalt on su I sammas
+          selle võrra natukene väiksem.
         </p>
         <p className="mt-3 text-center">Võrdle ise, kumb tundub sulle kasulikum.</p>
         <div className="row g-3" id="results" aria-live="polite">
