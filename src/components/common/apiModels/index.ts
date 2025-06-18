@@ -347,13 +347,27 @@ export interface Transaction {
 }
 
 export type TransactionType = 'CONTRIBUTION_CASH' | 'CONTRIBUTION_CASH_WORKPLACE' | 'SUBTRACTION';
-export interface Contribution {
+export interface BaseContribution {
   time: string;
   sender: string;
   amount: number;
   currency: Currency;
   pillar: Pillar;
 }
+
+export interface SecondPillarContribution extends BaseContribution {
+  pillar: 2;
+  additionalParentalBenefit: number;
+  employeeWithheldPortion: number;
+  socialTaxPortion: number;
+  interest: number;
+}
+
+export interface ThirdPillarContribution extends BaseContribution {
+  pillar: 3;
+}
+
+export type Contribution = SecondPillarContribution | ThirdPillarContribution;
 
 export interface MandateDeadlines {
   transferMandateFulfillmentDate: string;
