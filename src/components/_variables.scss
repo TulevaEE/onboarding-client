@@ -8,7 +8,7 @@ $container-max-widths: (
   lg: 960px,
   xl: 960px,
   // override for xl breakpoint
-  xxl: 960px // override for xxl breakpoint,,
+  xxl: 960px // override for xxl breakpoint,,,
 );
 
 /**
@@ -50,28 +50,30 @@ $font-weight-base: $font-weight-normal;
  * Colors
  */
 
-$text-primary: #293036;
-$text-secondary: #6d7276;
-$text-tertiary: #909396;
+$black: #000;
+$white: #fff;
 
-$form-check-input-border: 1px solid $text-tertiary;
-
-$text-body-primary: $text-primary;
-$text-body-secondary: $text-secondary;
-$text-body-tertiary: $text-tertiary;
-
-$table-color: $text-primary;
-
-$blue: #0072ec;
 $navy-blue: #002f63;
-$navy-blue-secondary: #5c738c;
-$blue-light: #00aeea;
-$orange: #ff4800;
-$yellow: #fce228;
-$green: #51c26c;
-$text-green: #00ac00;
-$red: $orange;
+$bright-blue: #00aeea;
 
+$red: #db2200;
+$red-light: #ff4614;
+$green: #008300;
+$green-light: #00a100;
+$blue: #006ce6;
+$blue-light: #00aeea;
+
+$yellow: #fce228;
+
+$text-primary: #293036;
+$text-secondary: #6b7074;
+$text-tertiary: #8a8d91;
+
+$text-navy-secondary: #5c738c;
+
+$text-green: $green;
+$text-red: $red;
+$text-blue: $blue;
 $text-navy: $navy-blue;
 
 $link-color: $blue;
@@ -92,8 +94,14 @@ $blue-border-1: #ddeefa;
 $blue-border-2: #d3e6f4;
 $blue-border-3: #cadeee;
 
+$table-color: $text-primary;
+$text-body-primary: $text-primary;
+$text-body-secondary: $text-secondary;
+$text-body-tertiary: $text-tertiary;
+
 $border-color: $gray-border-3;
 $card-border-color: $gray-border-3;
+$form-check-input-border: 1px solid $text-tertiary;
 
 :root {
   --blue: #{$blue};
