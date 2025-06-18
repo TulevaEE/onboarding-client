@@ -4,8 +4,6 @@ import { Redirect, withRouter } from 'react-router-dom';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import './LoginPage.scss';
-
 import { logo, AuthenticationLoader, ErrorAlert } from '../common';
 import { usePageTitle } from '../common/usePageTitle';
 
