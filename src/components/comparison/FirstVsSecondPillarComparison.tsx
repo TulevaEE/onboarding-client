@@ -102,10 +102,10 @@ export const FirstVsSecondPillarComparison = () => {
           <div className="col-12 col-md-6">
             <div className="card result-card alert alert-danger text-center border-0 m-0">
               <div className="card-body">
-                <h2 className="fw-bold">
+                <h1 className="fw-bold">
                   -<Euro amount={impactOfReduction} fractionDigits={0} />
                   <span className="fs-6"> kuus</span>
-                </h2>
+                </h1>
                 <p className="card-text mb-0 fw-medium">Vähem I sambast</p>
               </div>
             </div>
@@ -113,9 +113,9 @@ export const FirstVsSecondPillarComparison = () => {
           <div className="col-12 col-md-6">
             <div className="card result-card alert alert-success text-center border-0 m-0">
               <div className="card-body">
-                <h2 className="fw-bold">
+                <h1 className="fw-bold">
                   +<Euro amount={secondPillarSum} fractionDigits={0} />
-                </h2>
+                </h1>
                 <p className="card-text mb-0 fw-medium">Rohkem II sambas</p>
               </div>
             </div>
