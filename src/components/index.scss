@@ -28,6 +28,22 @@ html {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Skip link */
+
+.skip-link {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 100000;
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: $border-radius-sm;
+  background: $white;
+  font-weight: $font-weight-medium;
+  text-decoration: none !important;
+  color: $text-navy;
+}
+
 /* typography */
 
 h1,

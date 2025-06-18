@@ -89,7 +89,7 @@ export class LoggedInApp extends PureComponent {
       <div className="container">
         <Header user={user} loading={loading} onLogout={onLogout} />
         {this.isDevelopmentMode() && <DevSidebar />}
-        <main className="pb-5">
+        <main id="main" className="pb-5">
           <Switch>
             <Route path={ACCOUNT_PATH} component={AccountPage} />
             <Route path={AML_PATH} component={AmlPage} />
