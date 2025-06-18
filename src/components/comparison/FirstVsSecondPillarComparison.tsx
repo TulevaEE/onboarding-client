@@ -1,18 +1,27 @@
+/* eslint-disable no-irregular-whitespace */
+
 import React from 'react';
-import { useContributions } from '../common/apiHooks';
+import { useContributions, useSourceFunds } from '../common/apiHooks';
 import { Shimmer } from '../common/shimmer/Shimmer';
 import { SecondPillarContribution } from '../common/apiModels';
+import { Euro } from '../common/Euro';
+import { InfoTooltip } from '../common/infoTooltip/InfoTooltip';
 
 export const FirstVsSecondPillarComparison = () => {
   const { data: contributions } = useContributions();
+  const { data: sourceFunds } = useSourceFunds();
 
-  if (!contributions) {
+  if (!contributions || !sourceFunds) {
     return (
       <section className="mt-5">
         <Shimmer height={32} />
       </section>
     );
   }
+
+  const secondPillarSum = sourceFunds
+    ?.filter(({ pillar }) => pillar === 2)
+    .reduce((total, { price, unavailablePrice }) => total + price + unavailablePrice, 0);
 
   const contribs = contributions
     .filter((contribution): contribution is SecondPillarContribution => contribution.pillar === 2)
@@ -70,18 +79,77 @@ export const FirstVsSecondPillarComparison = () => {
       return { year, total, average, ratio, ratioWithReduction };
     });
 
+  const totalDiff = yearStats.reduce(
+    (acc, { ratio, ratioWithReduction }) => acc + (ratio - ratioWithReduction),
+    0,
+  );
+
+  const pricePerUnit = 10.0; // EUR
+
+  const impactOfReduction = totalDiff * pricePerUnit; // EUR per month
+
+  const breakEvenYears = secondPillarSum / (impactOfReduction * 12);
+
   return (
-    <>
-      <>year – total – average – ratio – ratioWithReduction</>
-      <br />
-      {yearStats.map((yearStat) => (
-        <>
-          {yearStat.year} – {yearStat.total.toFixed(2)} – {yearStat.average} –{' '}
-          {yearStat.ratio.toFixed(3)} – {yearStat.ratioWithReduction.toFixed(3)}
-          <br />
-        </>
-      ))}
-    </>
+    <div className="col-12 col-md-11 col-lg-8 mx-auto">
+      <div className="card shadow-lg border-0 rounded-4 p-4 mt-4">
+        <h1 className="mb-4 text-center">Kui palju vähendab II sambas kogumine sinu I sammast?</h1>
+        <p className="m-0 text-center">
+          Kui kogud II sambasse, suunab riik sinna osa sinu sotsiaalmaksust. Seepärast koguneb sulle
+          II sambasse rohkem raha, aga I samba pension tuleb tulevikus veidi väiksem.
+        </p>
+        <p className="mt-3 text-center">Võrdle ise, kumb tundub sulle kasulikum.</p>
+        <div className="row g-3" id="results" aria-live="polite">
+          <div className="col-12 col-md-6">
+            <div className="card result-card alert alert-danger text-center border-0 m-0">
+              <div className="card-body">
+                <h1 className="fw-bold">
+                  -<Euro amount={impactOfReduction} fractionDigits={0} />
+                  <span className="fs-6"> kuus</span>
+                </h1>
+                <p className="card-text mb-0 fw-medium">Vähem I sambast</p>
+              </div>
+            </div>
+          </div>
+          <div className="col-12 col-md-6">
+            <div className="card result-card alert alert-success text-center border-0 m-0">
+              <div className="card-body">
+                <h1 className="fw-bold">
+                  +<Euro amount={secondPillarSum} fractionDigits={0} />
+                </h1>
+                <p className="card-text mb-0 fw-medium">Rohkem II sambas</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p className="text-center mt-3 mb-1 fs-6">
+          Tasuvusaeg ≈<strong id="breakEven"> {breakEvenYears.toFixed(0)} aastat</strong>{' '}
+          <InfoTooltip>Kui pika pensionipõlvega oleks I sambast rohkem kasu</InfoTooltip>
+        </p>
+        <p className="text-center text-muted small mt-3">
+          Arvestame aastaid 2018–2024, sest see on periood, mil Tuleva on tegutsenud ja mille kohta
+          on meil andmed olemas. 2025. aastat see ei arvesta, sest I samba õiguseid arvutatakse
+          täisaasta kohta. Mõlemad summad on tänases väärtuses. Pea meeles, et tulevikus mõjutavad
+          I sammast ka indekseerimine ning II sammast tootlust.
+        </p>
+        <p className="text-center mb-0">
+          <a href="?asdf">Kuidas see arvutus täpselt käib?</a>
+        </p>
+      </div>
+
+      <div className="m-5 text-white small">
+        <>year – total – average – ratio – ratioWithReduction</>
+        <br />
+        {yearStats.map((yearStat) => (
+          <>
+            {yearStat.year} – {yearStat.total.toFixed(2)} – {yearStat.average} –{' '}
+            {yearStat.ratio.toFixed(3)} – {yearStat.ratioWithReduction.toFixed(3)}
+            <br />
+          </>
+        ))}
+      </div>
+    </div>
   );
 };
 
