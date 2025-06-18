@@ -26,13 +26,13 @@ export const ContributionSection: React.FunctionComponent<{
   if (!contributions.length) {
     return <></>;
   }
+  type Aggregated = Pick<Contribution, 'time' | 'sender' | 'amount' | 'currency' | 'pillar'>;
+  type BySender = Record<string, Aggregated>;
   const sumAmountsBySender = (
-    result: {
-      [sender: string]: Contribution;
-    },
+    result: BySender,
     // eslint-disable-next-line @typescript-eslint/no-shadow
     { time, sender, amount, currency, pillar }: Contribution,
-  ) => ({
+  ): BySender => ({
     ...result,
     [sender.toLowerCase()]: {
       time,

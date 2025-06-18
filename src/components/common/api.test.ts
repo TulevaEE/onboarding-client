@@ -40,12 +40,12 @@ import {
   Application,
   CancellationMandate,
   CapitalRow,
-  Contribution,
   Fund,
   LoginMethod,
   MandateDeadlines,
   Payment,
   PaymentLink,
+  ThirdPillarContribution,
   Transaction,
   User,
   UserConversion,
@@ -965,8 +965,8 @@ describe('API calls', () => {
   });
 
   describe('getContributions', () => {
-    const mockContributions: Contribution[] = [
-      { time: '2020-01-01T00:00:00Z', sender: 'Employer', amount: 100, currency: 'EUR', pillar: 2 },
+    const mockContributions: ThirdPillarContribution[] = [
+      { time: '2020-01-01T00:00:00Z', sender: 'Employer', amount: 100, currency: 'EUR', pillar: 3 },
     ];
 
     beforeEach(() => {

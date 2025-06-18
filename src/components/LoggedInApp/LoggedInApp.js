@@ -39,6 +39,7 @@ import { getAuthentication } from '../common/authenticationManager';
 import { CapitalPage } from '../account/MemberCapital/CapitalPage';
 import { Withdrawals } from '../flows/withdrawals/Withdrawals';
 import { isMockModeEnabled } from '../common/requestMocker';
+import { FirstVsSecondPillarComparison } from '../comparison/FirstVsSecondPillarComparison';
 
 export const ACCOUNT_PATH = '/account';
 export const AML_PATH = '/aml';
@@ -167,6 +168,7 @@ export class LoggedInApp extends PureComponent {
                 </ContactDetailsGatekeep>
               )}
             />
+            <Route path="/1st-vs-2nd-pillar" render={() => <FirstVsSecondPillarComparison />} />
 
             <Redirect exact path="/" to={ACCOUNT_PATH} />
           </Switch>
