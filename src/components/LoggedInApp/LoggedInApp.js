@@ -39,7 +39,13 @@ import { getAuthentication } from '../common/authenticationManager';
 import { CapitalPage } from '../account/MemberCapital/CapitalPage';
 import { Withdrawals } from '../flows/withdrawals/Withdrawals';
 import { isMockModeEnabled } from '../common/requestMocker';
+<<<<<<< HEAD
 import { FirstVsSecondPillarComparison } from '../comparison/FirstVsSecondPillarComparison';
+=======
+import { Listings } from '../listings/Listings';
+import { MembersOnlyGatekeep } from '../common/MembersOnlyGatekeep';
+import { AddListing } from '../listings/AddListing';
+>>>>>>> 9f40ddb2 (WIP Start working on member capital listings)
 
 export const ACCOUNT_PATH = '/account';
 export const AML_PATH = '/aml';
@@ -147,7 +153,31 @@ export class LoggedInApp extends PureComponent {
                 </ContactDetailsGatekeep>
               )}
             />
-            <Route path="/capital" component={CapitalPage} />
+            <Route
+              path="/capital/listings/add"
+              render={() => (
+                <MembersOnlyGatekeep>
+                  <AddListing />
+                </MembersOnlyGatekeep>
+              )}
+            />
+            <Route
+              path="/capital/listings"
+              render={() => (
+                <MembersOnlyGatekeep>
+                  <Listings />
+                </MembersOnlyGatekeep>
+              )}
+            />
+            <Route
+              path="/capital"
+              render={() => (
+                <MembersOnlyGatekeep>
+                  <CapitalPage />
+                </MembersOnlyGatekeep>
+              )}
+            />
+
             <Route
               path="/2nd-pillar-payment-rate-success"
               component={SecondPillarPaymentRateSuccess}
