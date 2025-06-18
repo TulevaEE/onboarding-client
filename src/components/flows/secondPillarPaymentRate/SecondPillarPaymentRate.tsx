@@ -89,14 +89,12 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
           selected={paymentRate === 2}
           onSelect={() => setPaymentRate(2)}
         >
-          <div className="mb-1">
-            <h3 className="d-inline">
-              <span className="me-2">
-                <FormattedMessage id="secondPillarPaymentRate.option.2Percent" />
-              </span>
-              {pendingPaymentRate === 2 && <Currently />}
-            </h3>
-          </div>
+          <p className="mb-1">
+            <span className="fs-3 lh-sm fw-medium me-2">
+              <FormattedMessage id="secondPillarPaymentRate.option.2Percent" />
+            </span>
+            {pendingPaymentRate === 2 && <Currently />}
+          </p>
           <p className="m-0">
             <FormattedMessage
               id="secondPillarPaymentRate.calculation.2Percent"
@@ -110,12 +108,12 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
           selected={paymentRate === 4}
           onSelect={() => setPaymentRate(4)}
         >
-          <h3 className="mb-1">
-            <span className="me-2">
+          <p className="mb-1">
+            <span className="fs-3 lh-sm fw-medium me-2">
               <FormattedMessage id="secondPillarPaymentRate.option.4Percent" />
             </span>
             {pendingPaymentRate === 4 && <Currently />}
-          </h3>
+          </p>
           <p className="m-0">
             <FormattedMessage
               id="secondPillarPaymentRate.calculation.4Percent"
@@ -129,15 +127,13 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
           selected={paymentRate === 6}
           onSelect={() => setPaymentRate(6)}
         >
-          <div className="mb-1">
-            <h3 className="d-inline">
-              <span className="me-2">
-                <FormattedMessage id="secondPillarPaymentRate.option.6Percent" />
-              </span>
-              <Recommended />
-              {pendingPaymentRate === 6 && <Currently />}
-            </h3>
-          </div>
+          <p className="mb-1">
+            <span className="fs-3 lh-sm fw-medium me-2">
+              <FormattedMessage id="secondPillarPaymentRate.option.6Percent" />
+            </span>
+            <Recommended />
+            {pendingPaymentRate === 6 && <Currently />}
+          </p>
           <p className="mb-1">
             <FormattedMessage
               id="secondPillarPaymentRate.calculation.6Percent"

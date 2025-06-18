@@ -51,7 +51,7 @@ describe('When a user is changing their 2nd pillar payment rate', () => {
     const paymentRateOption = screen.getByText('2% of Gross Salary');
 
     // eslint-disable-next-line testing-library/no-node-access
-    const currently = paymentRateOption.closest('h3')?.querySelector('.badge');
+    const currently = paymentRateOption.closest('p')?.querySelector('.badge');
     expect(currently).toBeInTheDocument();
     expect(currently).toHaveTextContent('Current choice');
   });
