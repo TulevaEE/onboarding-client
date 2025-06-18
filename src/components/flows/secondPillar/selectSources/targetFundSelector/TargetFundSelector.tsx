@@ -35,7 +35,7 @@ export const TargetFundSelector: React.FunctionComponent<Props> = ({
             {isSelected(fund) ? (
               <div className="tv-target-fund__corner-check">
                 <span>
-                  <img src={checkImage} alt="Success" />
+                  <img src={checkImage} alt="" />
                 </span>
               </div>
             ) : (

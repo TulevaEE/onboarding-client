@@ -9,7 +9,13 @@ const StatusBoxIcon: React.FunctionComponent<{
   if (error) {
     return (
       <div className="status-box-icon" data-testid="status-icon-error">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          fill="none"
+          aria-hidden="true"
+        >
           <path
             fill="#FF4800"
             fillRule="evenodd"
@@ -38,7 +44,13 @@ const StatusBoxIcon: React.FunctionComponent<{
   if (warning) {
     return (
       <div className="status-box-icon" data-testid="status-icon-warning">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          fill="none"
+          aria-hidden="true"
+        >
           <path
             fill="#F8AF18"
             fillRule="evenodd"
@@ -65,7 +77,13 @@ const StatusBoxIcon: React.FunctionComponent<{
   if (checked) {
     return (
       <div className="status-box-icon" data-testid="status-icon-success">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          fill="none"
+          aria-hidden="true"
+        >
           <path
             fill="#51C26C"
             fillRule="evenodd"
