@@ -18,7 +18,6 @@ import { ApplicationSection } from './ApplicationSection/ApplicationSection';
 import { isTuleva } from '../common/utils';
 import { AccountSummaryLoader } from './AccountSummary/AccountSummary';
 import { getInitialCapital } from './actions';
-import SecondPillarUpsell from './SecondPillarUpsell/SecondPillarUpsell';
 import { getAuthentication } from '../common/authenticationManager';
 import { SectionHeading } from './SectionHeading';
 import { TransactionSection } from './TransactionSection/TransactionSection';
@@ -99,9 +98,6 @@ export function AccountPage(
 
       <div className="mt-5">
         <StatusBox />
-      </div>
-      <div className="mt-5">
-        <SecondPillarUpsell />
       </div>
 
       {error && error.body ? <ErrorMessage errors={error.body} /> : ''}
