@@ -33,7 +33,7 @@ const StatusBoxIcon: React.FunctionComponent<{
             stroke="#000"
             strokeLinecap="round"
             strokeLinejoin="round"
-            strokeOpacity=".08"
+            strokeOpacity=".16"
             strokeWidth=".5"
           />
         </svg>
@@ -68,7 +68,7 @@ const StatusBoxIcon: React.FunctionComponent<{
           <path
             d="m12 14.5c.8284 0 1.5.6716 1.5 1.5s-.6716 1.5-1.5 1.5-1.5-.6716-1.5-1.5.6716-1.5 1.5-1.5zm0-8c.7691 0 1.3868.61163 1.4131 1.3623l-.0029.15235-.3575 5.00485c-.0394.5524-.499.9805-1.0527.9805-.5191 0-.9559-.3759-1.041-.8779l-.0117-.1026-.3575-5.00485c-.0584-.81846.5897-1.51465 1.4102-1.51465z"
             stroke="#000"
-            strokeOpacity=".16"
+            strokeOpacity=".24"
             strokeWidth=".5"
           />
         </svg>
@@ -103,7 +103,7 @@ const StatusBoxIcon: React.FunctionComponent<{
             stroke="#000"
             strokeLinecap="round"
             strokeLinejoin="round"
-            strokeOpacity=".08"
+            strokeOpacity=".16"
             strokeWidth=".5"
           />
         </svg>
