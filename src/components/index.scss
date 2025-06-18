@@ -28,7 +28,24 @@ html {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Skip link */
+/**
+ * Links
+ */
+
+a {
+  text-decoration-color: color-mix(
+    in srgb,
+    currentColor $link-underline-opacity,
+    transparent
+  ) !important;
+  text-underline-offset: $link-underline-offset !important;
+  text-decoration-thickness: $link-underline-thickness !important;
+}
+
+a:hover,
+a:focus {
+  text-decoration-color: currentColor !important;
+}
 
 .skip-link {
   position: absolute;
@@ -44,7 +61,9 @@ html {
   color: $text-navy;
 }
 
-/* typography */
+/**
+ * Typography
+ */
 
 h1,
 h2,
@@ -220,7 +239,9 @@ hr {
   text-wrap: balance;
 }
 
-// Backgrounds
+/**
+ * Backgrounds
+ */
 
 .bg-gray-1 {
   background-color: $gray-bg-1;
@@ -234,26 +255,4 @@ hr {
 }
 .bg-blue-2 {
   background-color: $blue-bg-2;
-}
-
-/* layout */
-
-.app-footer a {
-  color: inherit;
-  text-decoration-color: currentcolor !important;
-}
-
-/* Bootstrap 5 Migration */
-
-a:not(.btn),
-.btn.btn-link {
-  text-decoration: none;
-  &:hover,
-  &:focus {
-    text-decoration: underline;
-    text-decoration-color: rgba($link-hover-color, var(--bs-link-underline-opacity, 1));
-    text-decoration-thickness: 0.0625em;
-    text-underline-offset: 0.125em;
-    --bs-link-underline-opacity: 0.75;
-  }
 }
