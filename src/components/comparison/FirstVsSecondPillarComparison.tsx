@@ -96,8 +96,8 @@ export const FirstVsSecondPillarComparison = () => {
       <div className="card shadow rounded-4 p-4 mt-4">
         <h1 className="text-center">Kas II sambas kogumine on sulle kasulik?</h1>
         <p className="text-center">
-          Kogud igal kuul II sambasse vara. Riik lisab sellele võimenduse. Teisalt on su I sammas
-          selle võrra natukene väiksem.
+          Kogud igal kuul II sambasse vara. Riik lisab sellele omapoolse maksuvõimenduse. Teisalt on
+          sinu I sammas selle võrra natukene väiksem.
         </p>
         <p className="text-center">Võrdle ise, kumb tundub sulle kasulikum.</p>
         <div className="row g-3" id="results" aria-live="polite">
@@ -129,10 +129,9 @@ export const FirstVsSecondPillarComparison = () => {
           <InfoTooltip>Kui pika pensionipõlvega oleks I sambast rohkem kasu</InfoTooltip>
         </p>
         <p className="text-center text-muted small mt-3">
-          Mõlemad summad on tänases väärtuses. Arvestame aastaid 2018–2024, sest see on periood, mil
-          Tuleva on tegutsenud ja mille kohta on meil andmed olemas. 2025. aastat see ei arvesta,
-          sest I samba õiguseid arvutatakse täisaasta kohta. Pea meeles, et tulevikus mõjutavad
-          I sammast ka indekseerimine ning II sammast tootlust.
+          Mõlemad summad on tänases väärtuses. I sammast mõjutab ka indekseerimine ja II sammast
+          tootlus. Arvestame aastaid 2018–2024, mil Tuleva on tegutsenud, sest selle kohta on meil
+          andmed olemas.
         </p>
         <p className="text-center mb-0">
           <a href="?asdf">Kuidas see arvutus täpselt käib?</a>
