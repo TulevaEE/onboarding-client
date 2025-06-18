@@ -211,7 +211,11 @@ const SingleWithdrawalSelectionBody = ({
     <div id="single-withdrawal-body">
       <div className={`card-body p-4 ${!onlyThirdPillarPartialWithdrawal ? 'border-top' : ''}`}>
         <div className="d-flex flex-column flex-md-row justify-content-md-between align-items-md-center fs-3">
-          <label htmlFor="single-withdrawal-amount" className="mb-0">
+          <label
+            id="single-withdrawal-amount-label"
+            htmlFor="single-withdrawal-amount"
+            className="mb-0"
+          >
             <FormattedMessage
               id="withdrawals.withdrawalAmount.partialWithdrawInputLabel"
               values={{ taxPercent: getSingleWithdrawalTaxRate(eligibility) * 100 }}
@@ -244,6 +248,7 @@ const SingleWithdrawalSelectionBody = ({
             max={totalAmount}
             step={0.01}
             color={sliderColor}
+            aria-labelledby="single-withdrawal-amount-label"
           />
           <div className="mt-2 d-flex justify-content-between">
             <div className="text-body-secondary">{formatAmountForCurrency(0, 0)}</div>
