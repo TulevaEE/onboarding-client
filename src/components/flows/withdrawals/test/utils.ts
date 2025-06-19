@@ -291,5 +291,9 @@ export const assertPartialWithdrawalMandate = async ({
   }
 };
 
-export const partialWithdrawalSizeInput = async (taxRate: '22%' | '10%' = '10%') =>
-  screen.findByLabelText(`Withdraw with ${taxRate} income tax`);
+export const partialWithdrawalSizeInput = async (
+  taxRate: '22%' | '10%' = '10%',
+): Promise<HTMLInputElement> =>
+  screen.findByLabelText(`Withdraw with ${taxRate} income tax`, {
+    selector: 'input[type="text"]',
+  });

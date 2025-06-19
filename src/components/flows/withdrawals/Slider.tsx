@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { AriaAttributes } from 'react';
 import styles from './Slider.module.scss';
 
-interface SliderProps {
+interface SliderProps extends AriaAttributes {
   value: number;
   onChange: (value: number) => void;
   min: number;
   max: number;
   step: number;
   color?: 'RED' | 'BLUE';
+  ariaLabelledBy: string;
 }
 
 const Slider: React.FC<SliderProps> = ({
@@ -17,6 +18,7 @@ const Slider: React.FC<SliderProps> = ({
   max,
   step,
   color = 'RED',
+  ariaLabelledBy,
 }: SliderProps) => (
   <input
     type="range"
@@ -26,6 +28,7 @@ const Slider: React.FC<SliderProps> = ({
     min={min}
     max={max}
     step={step}
+    aria-labelledby={ariaLabelledBy}
     style={{
       background: `linear-gradient(to right, ${colorToGradientMap[color]} ${
         (value / max) * 100

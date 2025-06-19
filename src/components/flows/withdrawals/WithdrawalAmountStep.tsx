@@ -248,7 +248,7 @@ const SingleWithdrawalSelectionBody = ({
             max={totalAmount}
             step={0.01}
             color={sliderColor}
-            aria-labelledby="single-withdrawal-amount-label"
+            ariaLabelledBy="single-withdrawal-amount-label"
           />
           <div className="mt-2 d-flex justify-content-between">
             <div className="text-body-secondary">{formatAmountForCurrency(0, 0)}</div>

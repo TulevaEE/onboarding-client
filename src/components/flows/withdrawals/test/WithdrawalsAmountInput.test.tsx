@@ -11,7 +11,7 @@ import {
   useTestBackendsExcept,
   withdrawalsEligibilityBackend,
 } from '../../../../test/backend';
-import { singleWithdrawalCheckbox } from './utils';
+import { partialWithdrawalSizeInput, singleWithdrawalCheckbox } from './utils';
 
 const server = setupServer();
 let history: History;
@@ -151,10 +151,6 @@ describe('withdrawals amount input', () => {
     expect(input.value).toBe('123.40');
   });
 });
-
-async function partialWithdrawalSizeInput(): Promise<HTMLInputElement> {
-  return screen.findByLabelText(/Withdraw with 10% income tax/);
-}
 
 async function sliderInput(): Promise<HTMLInputElement> {
   return screen.findByRole('slider');
