@@ -1,11 +1,11 @@
 /* eslint-disable no-irregular-whitespace */
+/* eslint-disable no-console */
 
 import React from 'react';
 import { useContributions, useSourceFunds } from '../common/apiHooks';
 import { Shimmer } from '../common/shimmer/Shimmer';
 import { SecondPillarContribution } from '../common/apiModels';
 import { Euro } from '../common/Euro';
-import { InfoTooltip } from '../common/infoTooltip/InfoTooltip';
 
 export const FirstVsSecondPillarComparison = () => {
   const fromDate = '2018-01-01';
@@ -92,64 +92,60 @@ export const FirstVsSecondPillarComparison = () => {
 
   const breakEvenYears = secondPillarSum / (impactOfReduction * 12);
 
+  const tabularData = yearStats.map(({ year, total, average, ratio, ratioWithReduction }) => ({
+    year,
+    total: Number(total.toFixed(2)),
+    average,
+    ratio: Number(ratio.toFixed(3)),
+    ratioWithReduction: Number(ratioWithReduction.toFixed(3)),
+  }));
+  console.table(tabularData);
+
   return (
     <div className="col-12 col-md-11 col-lg-8 mx-auto">
-      <div className="card shadow rounded-4 p-4 mt-4">
-        <h1 className="text-center">Kas II sambas kogumine on sulle kasulik?</h1>
-        <p className="text-center">
-          Kogud igal kuul II sambasse vara. Riik lisab sellele omapoolse maksuvõimenduse. Teisalt on
-          sinu I sammas selle võrra natukene väiksem.
-        </p>
-        <p className="text-center">Võrdle ise, kumb tundub sulle kasulikum.</p>
-        <div className="row g-3" id="results" aria-live="polite">
-          <div className="col-12 col-md-6">
-            <div className="card result-card alert alert-danger text-center border-0 m-0">
-              <div className="card-body">
-                <h1 className="fw-bold">
-                  -<Euro amount={impactOfReduction} fractionDigits={0} />
-                  <span className="fs-6"> kuus</span>
-                </h1>
-                <p className="card-text mb-0 fw-medium">Vähem I sambast</p>
-              </div>
-            </div>
-          </div>
-          <div className="col-12 col-md-6">
-            <div className="card result-card alert alert-success text-center border-0 m-0">
-              <div className="card-body">
-                <h1 className="fw-bold">
-                  +<Euro amount={secondPillarSum} fractionDigits={0} />
-                </h1>
-                <p className="card-text mb-0 fw-medium">Rohkem II sambas</p>
-              </div>
+      <h1 className="mb-4">Kas II sambas kogumine on sulle kasulik?</h1>
+      <p>
+        Kogud igal kuul II sambasse vara. Riik lisab sellele omapoolse maksuvõimenduse. Teisalt on
+        sinu I sammas selle võrra natukene väiksem.
+      </p>
+      <p>Võrdle ise, kumb tundub sulle kasulikum.</p>
+      <div className="row g-3" id="results" aria-live="polite">
+        <div className="col-12 col-md-6">
+          <div className="card result-card alert alert-danger text-center border-0 m-0">
+            <div className="card-body">
+              <h1 className="fw-bold">
+                &minus;
+                <Euro amount={impactOfReduction} fractionDigits={0} />
+                <span className="fs-6"> kuus</span>
+              </h1>
+              <p className="card-text mb-0 fw-medium">vähem I sambas</p>
             </div>
           </div>
         </div>
-
-        <p className="text-center mt-3 mb-1 fs-6">
-          Tasuvusaeg ≈<strong id="breakEven"> {breakEvenYears.toFixed(0)} aastat</strong>{' '}
-          <InfoTooltip>Kui pika pensionipõlvega oleks I sambast rohkem kasu</InfoTooltip>
-        </p>
-        <p className="text-center text-muted small mt-3">
-          Mõlemad summad on tänases väärtuses. I sammast mõjutab ka indekseerimine ja II sammast
-          tootlus. Arvestame aastaid 2018–2024, mil Tuleva on tegutsenud, sest selle kohta on meil
-          andmed olemas.
-        </p>
-        <p className="text-center mb-0">
-          <a href="?asdf">Kuidas see arvutus täpselt käib?</a>
-        </p>
+        <div className="col-12 col-md-6">
+          <div className="card result-card alert alert-success text-center border-0 m-0">
+            <div className="card-body">
+              <h1 className="fw-bold">
+                +<Euro amount={secondPillarSum} fractionDigits={0} />
+              </h1>
+              <p className="card-text mb-0 fw-medium">rohkem II sambas</p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="m-5 text-white small">
-        <>year – total – average – ratio – ratioWithReduction</>
-        <br />
-        {yearStats.map((yearStat) => (
-          <>
-            {yearStat.year} – {yearStat.total.toFixed(2)} – {yearStat.average} –{' '}
-            {yearStat.ratio.toFixed(3)} – {yearStat.ratioWithReduction.toFixed(3)}
-            <br />
-          </>
-        ))}
-      </div>
+      <p className="mt-3 mb-1 fs-6">
+        Kui pika pensionipõlvega oleks I sambast rohkem kasu ≈
+        <strong id="breakEven"> {breakEvenYears.toFixed(0)} aastat</strong>{' '}
+      </p>
+      <p className="text-muted mt-3">
+        Mõlemad summad on tänases väärtuses. I sammast mõjutab ka indekseerimine ja II sammast
+        tootlus. Arvestame aastaid 2018–2024, mil Tuleva on tegutsenud, sest selle kohta on meil
+        andmed olemas.
+      </p>
+      <p className="mb-0">
+        <a href="?asdf">Kuidas see arvutus täpselt käib?</a>
+      </p>
     </div>
   );
 };
