@@ -18,6 +18,6 @@ describe('Login Tab', () => {
     const wrapper = shallow(
       <LoginTab label="Smart ID" hideOnMobile activeTab="Smart ID" onClick={onClick} />,
     );
-    expect(wrapper.find('.nav-link').hasClass('d-md-block')).toBe(true);
+    expect(wrapper.find('.nav-item').hasClass('d-md-block')).toBe(true);
   });
 });

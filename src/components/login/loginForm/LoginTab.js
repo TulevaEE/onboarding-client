@@ -21,13 +21,14 @@ class LoginTab extends Component {
       props: { activeTab, label, hideOnMobile },
     } = this;
 
-    const className = `nav-link ${activeTab === label ? 'active' : ''} ${
-      hideOnMobile ? 'd-none d-md-block' : ''
-    }`;
-
     return (
-      <li className="nav-item" role="presentation">
-        <button type="button" role="tab" className={className} onClick={onClick}>
+      <li role="presentation" className={`nav-item ${hideOnMobile ? 'd-none d-md-block' : ''}`}>
+        <button
+          type="button"
+          role="tab"
+          className={`nav-link ${activeTab === label ? 'active' : ''}`}
+          onClick={onClick}
+        >
           <FormattedMessage id={label} />
         </button>
       </li>
