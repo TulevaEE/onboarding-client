@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 import sumBy from 'lodash/sumBy';
 import { useFunds, useTransactions } from '../../common/apiHooks';
@@ -15,7 +15,6 @@ export const TransactionSection: React.FunctionComponent<{
   pillar?: number;
   children?: React.ReactNode;
 }> = ({ limit, pillar, children }) => {
-  const intl = useIntl();
   const { data: transactions } = useTransactions();
   const { data: funds } = useFunds();
 
@@ -54,8 +53,9 @@ export const TransactionSection: React.FunctionComponent<{
       ...(!limit && { footer: <FormattedMessage id="transactions.columns.date.footer" /> }),
     },
     {
-      title: <></>,
+      title: <FormattedMessage id="transactions.columns.entity.title" />,
       dataIndex: 'type',
+      align: 'left',
       hideOnBreakpoint: ['xs', 'sm'],
     },
     {
@@ -90,15 +90,9 @@ export const TransactionSection: React.FunctionComponent<{
         {
           type:
             transaction.type === 'CONTRIBUTION_CASH_WORKPLACE' ? (
-              <span
-                className="fa fa-briefcase text-body-secondary"
-                title={intl.formatMessage({ id: 'transactions.workplace' })}
-              />
+              <FormattedMessage id="transactions.workplace" />
             ) : (
-              <span
-                className="fa fa-user-o text-body-secondary"
-                title={intl.formatMessage({ id: 'transactions.personal' })}
-              />
+              <FormattedMessage id="transactions.personal" />
             ),
           date: <span className="text-nowrap">{date}</span>,
           fund: <span>{transaction.fundName}</span>,
