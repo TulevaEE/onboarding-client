@@ -462,7 +462,7 @@ describe('API calls', () => {
       ]);
       expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith(
         expect.stringContaining('/v1/pension-account-statement'),
-        undefined,
+        {},
       );
     });
   });
