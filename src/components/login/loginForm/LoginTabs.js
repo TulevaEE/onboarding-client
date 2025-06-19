@@ -15,7 +15,7 @@ class LoginTabs extends Component {
   };
 
   componentDidUpdate(_prevProps, { activeTab: prevActiveTab }) {
-    const { activeTab } = this.state; // destructure current state
+    const { activeTab } = this.state;
     if (prevActiveTab !== activeTab) {
       this.panelRef.current?.focus();
     }
