@@ -115,8 +115,7 @@ export const FirstVsSecondPillarComparison = () => {
             <div className="card-body">
               <h1 className="fw-bold">
                 &minus;
-                <Euro amount={impactOfReduction} fractionDigits={0} />
-                <span className="fs-6"> kuus</span>
+                <Euro amount={impactOfReduction} fractionDigits={0} /> kuus
               </h1>
               <p className="card-text mb-0 fw-medium">vähem I sambas</p>
             </div>
