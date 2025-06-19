@@ -167,6 +167,7 @@
   "footer.registration.code": "Reg-kood: 14118923",
   "footer.highContrast.turnOn": "Lülita sisse kõrge kontrasti režiim",
   "footer.highContrast.turnOff": "Lülita välja kõrge kontrasti režiim",
+  "footer.accessibilityStatement": "Ligipääsetavus",
   "success.done": "Avaldus on esitatud",
   "success.shares.switched": "Sinu seni kogutud pensionivara osakute vahetus jõustub <b>{transferDate} järgneval tööpäeval.</b>",
   "success.your.payments": "Sinu uued sissemaksed suunatakse valitud pensionifondi <b>alates järgmisest maksest.</b>",
