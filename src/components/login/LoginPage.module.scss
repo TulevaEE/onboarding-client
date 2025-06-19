@@ -1,0 +1,6 @@
+@import '../variables';
+
+html:has(.loginPage),
+body:has(.loginPage) {
+  background-color: $gray-bg-2;
+}

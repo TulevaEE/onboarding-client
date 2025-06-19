@@ -27,10 +27,6 @@ html {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
-html:has(.login-page),
-body:has(.login-page) {
-  background-color: $gray-bg-2;
-}
 
 /**
  * Links

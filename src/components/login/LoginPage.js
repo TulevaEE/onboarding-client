@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 
 import { logo, AuthenticationLoader, ErrorAlert } from '../common';
 import { usePageTitle } from '../common/usePageTitle';
+import styles from './LoginPage.module.scss';
 
 import LoginForm from './loginForm';
 import {
@@ -43,7 +44,7 @@ export const LoginPage = ({
   }
 
   return (
-    <div className="login-page">
+    <div className={styles.loginPage}>
       <div className="container py-5">
         <div className="row justify-content-center">
           <div className="col-12 col-md-9 col-lg-7">
