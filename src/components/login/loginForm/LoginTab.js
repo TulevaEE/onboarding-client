@@ -7,7 +7,7 @@ class LoginTab extends Component {
     activeTab: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
     onClick: PropTypes.func.isRequired,
-    hideOnMobile: PropTypes.string.isRequired,
+    hideOnMobile: PropTypes.bool,
   };
 
   onClick = () => {
@@ -21,20 +21,17 @@ class LoginTab extends Component {
       props: { activeTab, label, hideOnMobile },
     } = this;
 
-    let className = 'tab-list-item';
-
-    if (activeTab === label) {
-      className += ' tab-list-active';
-    }
-
-    if (hideOnMobile === 'true') {
-      className += ' d-none d-md-table-cell';
-    }
-
     return (
-      <button type="button" className={className} onClick={onClick}>
-        <FormattedMessage id={label} />
-      </button>
+      <li role="presentation" className={`nav-item ${hideOnMobile ? 'd-none d-md-block' : ''}`}>
+        <button
+          type="button"
+          role="tab"
+          className={`nav-link ${activeTab === label ? 'active' : ''}`}
+          onClick={onClick}
+        >
+          <FormattedMessage id={label} />
+        </button>
+      </li>
     );
   }
 }

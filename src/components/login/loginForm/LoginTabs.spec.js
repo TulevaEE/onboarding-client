@@ -16,7 +16,7 @@ describe('Login Tabs', () => {
   });
 
   it('should make first tab active', () => {
-    const activeItem = component.find('ol').children().first().prop('activeTab');
+    const activeItem = component.find('ul').children().first().prop('activeTab');
     expect(activeItem).toBe('Smart ID');
   });
 });

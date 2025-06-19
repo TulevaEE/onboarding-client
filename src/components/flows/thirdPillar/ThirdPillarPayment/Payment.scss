@@ -11,28 +11,28 @@
 .btn.btn-swedbank,
 .btn.btn-swedbank:hover {
   background-color: white;
-  border-color: #fb4f00;
-  color: #fb4f00;
+  border-color: #dd3300;
+  color: #dd3300;
 }
 
 .btn.btn-swedbank:not(:disabled):not(.disabled):active,
 .btn.btn-swedbank:not(:disabled):not(.disabled).active {
-  background-color: #fb4f00;
-  border-color: #fb4f00;
+  background-color: #dd3300;
+  border-color: #dd3300;
   color: white;
 }
 
 .btn.btn-seb,
 .btn.btn-seb:hover {
   background-color: white;
-  border-color: #45b400;
-  color: #45b400;
+  border-color: #008a00;
+  color: #008a00;
 }
 
 .btn.btn-seb:not(:disabled):not(.disabled):active,
 .btn.btn-seb:not(:disabled):not(.disabled).active {
-  background-color: #45b400;
-  border-color: #45b400;
+  background-color: #008a00;
+  border-color: #008a00;
   color: white;
 }
 
