@@ -1,6 +1,6 @@
 @import '../variables';
 
-html:has(.loginPage),
-body:has(.loginPage) {
-  background-color: $gray-bg-2;
+.loginPage {
+  min-height: 100vh;
+  background: $gray-bg-2;
 }
