@@ -55,11 +55,12 @@ const ComparisonCalculator: React.FC = () => {
     shortPeriod: false,
   });
 
-  const initialReturns = {
+  const initialReturns: ReturnComparison = {
     personal: null,
     pensionFund: null,
     index: null,
     from: '',
+    to: '',
   };
   const [returns, setReturns] = useState<ReturnComparison>(initialReturns);
 
@@ -623,11 +624,14 @@ const ComparisonCalculator: React.FC = () => {
 
     setLoadingReturns(true);
     try {
-      const result = await getReturnComparison(fromDate, {
-        personalKey: selectedPersonalKey,
-        pensionFundKey: selectedFundKey,
-        indexKey: selectedIndexKey,
-      });
+      const result = await getReturnComparison(
+        {
+          personalKey: selectedPersonalKey,
+          pensionFundKey: selectedFundKey,
+          indexKey: selectedIndexKey,
+        },
+        fromDate,
+      );
       if (requestId === latestRequestId.current) {
         setReturns(result);
       }

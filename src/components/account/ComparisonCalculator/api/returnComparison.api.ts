@@ -21,8 +21,9 @@ export interface Return {
 }
 
 export interface ReturnsResponse {
-  from: string;
   returns: Return[];
+  from: string;
+  to: string;
 }
 
 export interface ReturnComparison {
@@ -30,31 +31,41 @@ export interface ReturnComparison {
   pensionFund: Return | null;
   index: Return | null;
   from: string;
+  to: string;
 }
 
 export async function getReturnComparison(
-  date: string,
   {
     personalKey,
     pensionFundKey,
     indexKey,
   }: { personalKey: Key; pensionFundKey: Key | string; indexKey: Key },
+  fromDate: string,
+  toDate?: string,
 ): Promise<ReturnComparison> {
-  const { returns, from } = await getReturns(date, [personalKey, pensionFundKey, indexKey]);
+  const { returns, from, to } = await getReturns(
+    [personalKey, pensionFundKey, indexKey],
+    fromDate,
+    toDate,
+  );
 
   const personal = getReturnByKey(personalKey, returns);
   const pensionFund = getReturnByKey(pensionFundKey, returns);
   const index = getReturnByKey(indexKey, returns);
 
-  return { personal, pensionFund, index, from };
+  return { personal, pensionFund, index, from, to };
 }
 
 function getReturnByKey(key: string, returns: Return[]): Return | null {
   return returns?.find((ret) => ret.key === key) || null;
 }
 
-function getReturns(startDate: string, keys: (Key | string)[]): Promise<ReturnsResponse> {
-  const params = { from: startDate, keys };
+export function getReturns(
+  keys: (Key | string)[],
+  fromDate: string,
+  toDate?: string,
+): Promise<ReturnsResponse> {
+  const params = { keys, from: fromDate, to: toDate };
 
   return getWithAuthentication(getEndpoint('/v1/returns'), params);
 }

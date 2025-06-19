@@ -94,7 +94,7 @@ export function useConversion(): UseQueryResult<UserConversion> {
 }
 
 export function useSourceFunds(fromDate?: string, toDate?: string): UseQueryResult<SourceFund[]> {
-  return useQuery(['sourceFunds'], () => getSourceFunds(fromDate, toDate));
+  return useQuery(['sourceFunds', fromDate, toDate], () => getSourceFunds(fromDate, toDate));
 }
 
 export function useCreateMandateBatch(): UseMutationResult<

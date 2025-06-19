@@ -877,7 +877,8 @@ describe('ComparisonCalculator', () => {
 });
 
 const returnsData2YearsAgo: ReturnsResponse = {
-  from: moment().subtract(2, 'years').add(1, 'days').format(),
+  from: moment().subtract(2, 'years').add(1, 'days').format('YYYY-MM-DD'),
+  to: moment().format('YYYY-MM-DD'),
   returns: [
     {
       key: 'UNION_STOCK_INDEX',
@@ -899,7 +900,8 @@ const returnsData2YearsAgo: ReturnsResponse = {
 };
 
 const returnsData2YearsAnd1DayAgo: ReturnsResponse = {
-  from: moment().subtract(2, 'years').subtract(1, 'days').format(),
+  from: moment().subtract(2, 'years').subtract(1, 'days').format('YYYY-MM-DD'),
+  to: moment().format('YYYY-MM-DD'),
   returns: [
     {
       key: 'UNION_STOCK_INDEX',
@@ -921,7 +923,8 @@ const returnsData2YearsAnd1DayAgo: ReturnsResponse = {
 };
 
 const returnsData4YearsAgo: ReturnsResponse = {
-  from: moment().subtract(4, 'years').format(),
+  from: moment().subtract(4, 'years').format('YYYY-MM-DD'),
+  to: moment().format('YYYY-MM-DD'),
   returns: [
     {
       key: 'UNION_STOCK_INDEX',
@@ -943,6 +946,7 @@ const returnsData4YearsAgo: ReturnsResponse = {
 };
 const returnsData2ndPillarIndexNegative: ReturnsResponse = {
   from: '2018-06-06',
+  to: moment().format('YYYY-MM-DD'),
   returns: [
     {
       key: 'UNION_STOCK_INDEX',
@@ -965,6 +969,7 @@ const returnsData2ndPillarIndexNegative: ReturnsResponse = {
 
 const returnsData2ndPillarIndexAbsoluteNegative: ReturnsResponse = {
   from: '2018-06-06',
+  to: moment().format('YYYY-MM-DD'),
   returns: [
     {
       key: 'UNION_STOCK_INDEX',
@@ -986,7 +991,8 @@ const returnsData2ndPillarIndexAbsoluteNegative: ReturnsResponse = {
 };
 
 const returnsData2ndPillarIndexPositive: ReturnsResponse = {
-  from: moment().subtract(4, 'years').format(),
+  from: moment().subtract(4, 'years').format('YYYY-MM-DD'),
+  to: moment().format('YYYY-MM-DD'),
   returns: [
     {
       key: 'UNION_STOCK_INDEX',
@@ -1007,7 +1013,8 @@ const returnsData2ndPillarIndexPositive: ReturnsResponse = {
   ],
 };
 const returnsData2ndPillarIndexNeutral: ReturnsResponse = {
-  from: moment().subtract(6, 'years').format(),
+  from: moment().subtract(6, 'years').format('YYYY-MM-DD'),
+  to: moment().format('YYYY-MM-DD'),
   returns: [
     {
       key: 'UNION_STOCK_INDEX',
@@ -1029,6 +1036,7 @@ const returnsData2ndPillarIndexNeutral: ReturnsResponse = {
 };
 const returnsData3rdPillarIndexNegative: ReturnsResponse = {
   from: '2018-06-06',
+  to: moment().format('YYYY-MM-DD'),
   returns: [
     {
       key: 'UNION_STOCK_INDEX',
@@ -1049,7 +1057,8 @@ const returnsData3rdPillarIndexNegative: ReturnsResponse = {
   ],
 };
 const returnsData3rdPillarIndexPositive: ReturnsResponse = {
-  from: moment().subtract(4, 'years').format(),
+  from: moment().subtract(4, 'years').format('YYYY-MM-DD'),
+  to: moment().format('YYYY-MM-DD'),
   returns: [
     {
       key: 'UNION_STOCK_INDEX',
@@ -1070,7 +1079,8 @@ const returnsData3rdPillarIndexPositive: ReturnsResponse = {
   ],
 };
 const returnsData3rdPillarIndexNeutral: ReturnsResponse = {
-  from: moment().subtract(6, 'years').format(),
+  from: moment().subtract(6, 'years').format('YYYY-MM-DD'),
+  to: moment().format('YYYY-MM-DD'),
   returns: [
     {
       key: 'UNION_STOCK_INDEX',
@@ -1092,7 +1102,8 @@ const returnsData3rdPillarIndexNeutral: ReturnsResponse = {
 };
 
 const returnsData2ndPillarAverage: ReturnsResponse = {
-  from: moment().subtract(6, 'years').format(),
+  from: moment().subtract(6, 'years').format('YYYY-MM-DD'),
+  to: moment().format('YYYY-MM-DD'),
   returns: [
     {
       key: 'EPI',
@@ -1122,7 +1133,8 @@ const returnsData2ndPillarAverage: ReturnsResponse = {
 };
 
 const returnsData2ndPillarCpi: ReturnsResponse = {
-  from: moment().subtract(6, 'years').format(),
+  from: moment().subtract(6, 'years').format('YYYY-MM-DD'),
+  to: moment().format('YYYY-MM-DD'),
   returns: [
     {
       key: 'CPI',
@@ -1152,7 +1164,8 @@ const returnsData2ndPillarCpi: ReturnsResponse = {
 };
 
 const returnsData2ndPillarAndFund: ReturnsResponse = {
-  from: moment().subtract(6, 'years').format(),
+  from: moment().subtract(6, 'years').format('YYYY-MM-DD'),
+  to: moment().format('YYYY-MM-DD'),
   returns: [
     {
       key: 'EE0123',
@@ -1182,7 +1195,8 @@ const returnsData2ndPillarAndFund: ReturnsResponse = {
 };
 
 const returnsData2ndPillarAndIncomparableFund: ReturnsResponse = {
-  from: moment().subtract(1, 'years').format(),
+  from: moment().subtract(1, 'years').format('YYYY-MM-DD'),
+  to: moment().format('YYYY-MM-DD'),
   returns: [
     {
       key: 'EE0123',
@@ -1213,6 +1227,7 @@ const returnsData2ndPillarAndIncomparableFund: ReturnsResponse = {
 
 const returnsData2ndPillarSmallPersonalReturn: ReturnsResponse = {
   from: '2018-06-06',
+  to: moment().format('YYYY-MM-DD'),
   returns: [
     {
       key: 'UNION_STOCK_INDEX',

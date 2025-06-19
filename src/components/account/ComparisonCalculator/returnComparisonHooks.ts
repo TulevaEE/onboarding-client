@@ -1,24 +1,25 @@
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
-import { getReturnComparison, Key, ReturnComparison } from './api';
+import { getReturnComparison, getReturns, Key, ReturnComparison, ReturnsResponse } from './api';
 
 const START_DATE = '2003-01-07';
 
 export function useDefaultReturns(): UseQueryResult<ReturnComparison> {
-  return useReturns(START_DATE, {
-    personalKey: Key.SECOND_PILLAR,
-    pensionFundKey: Key.EPI,
-    indexKey: Key.UNION_STOCK_INDEX,
-  });
-}
-export function useReturns(
-  date: string,
-  {
-    personalKey,
-    pensionFundKey,
-    indexKey,
-  }: { personalKey: Key; pensionFundKey: Key | string; indexKey: Key },
-): UseQueryResult<ReturnComparison> {
   return useQuery(['returns'], () =>
-    getReturnComparison(date, { personalKey, pensionFundKey, indexKey }),
+    getReturnComparison(
+      {
+        personalKey: Key.SECOND_PILLAR,
+        pensionFundKey: Key.EPI,
+        indexKey: Key.UNION_STOCK_INDEX,
+      },
+      START_DATE,
+    ),
   );
+}
+
+export function useReturns(
+  keys: (Key | string)[],
+  fromDate: string,
+  toDate?: string,
+): UseQueryResult<ReturnsResponse> {
+  return useQuery(['returns'], () => getReturns(keys, fromDate, toDate));
 }

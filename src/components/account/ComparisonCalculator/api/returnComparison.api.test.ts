@@ -15,11 +15,14 @@ describe('Return comparison API', () => {
     (getWithAuthentication as jest.Mock).mockResolvedValueOnce({ returns: [] });
 
     expect(getWithAuthentication).not.toHaveBeenCalled();
-    await getReturnComparison('2019-02-28', {
-      personalKey: Key.THIRD_PILLAR,
-      pensionFundKey: 'EE12345',
-      indexKey: Key.CPI,
-    });
+    await getReturnComparison(
+      {
+        personalKey: Key.THIRD_PILLAR,
+        pensionFundKey: 'EE12345',
+        indexKey: Key.CPI,
+      },
+      '2019-02-28',
+    );
     expect(getWithAuthentication).toHaveBeenCalledWith('/transformed/v1/returns', {
       from: '2019-02-28',
       keys: [Key.THIRD_PILLAR, 'EE12345', Key.CPI],
@@ -31,37 +34,47 @@ describe('Return comparison API', () => {
     const fundReturn = { key: 'EE123456', rate: 0.0228, amount: 883.45, currency: 'EUR' };
     const indexReturn = { key: Key.CPI, rate: 0.0686, amount: 224.23, currency: 'EUR' };
     (getWithAuthentication as jest.Mock).mockResolvedValueOnce({
-      from: '2020-01-01',
       returns: [indexReturn, fundReturn, personalReturn],
+      from: '2020-01-01',
+      to: '2025-01-01',
     });
 
-    const comparison = await getReturnComparison('', {
-      personalKey: Key.THIRD_PILLAR,
-      pensionFundKey: 'EE123456',
-      indexKey: Key.CPI,
-    });
+    const comparison = await getReturnComparison(
+      {
+        personalKey: Key.THIRD_PILLAR,
+        pensionFundKey: 'EE123456',
+        indexKey: Key.CPI,
+      },
+      '',
+    );
     expect(comparison).toStrictEqual({
       personal: personalReturn,
       pensionFund: fundReturn,
       index: indexReturn,
       from: '2020-01-01',
+      to: '2025-01-01',
     });
   });
 
   it('returns return comparison object with null values when respective keys are not found', async () => {
     const fundReturn = { key: 'EPI', rate: 0.0228, amount: 220.204, currency: 'EUR' };
     (getWithAuthentication as jest.Mock).mockResolvedValueOnce({
-      from: '',
       returns: [fundReturn],
+      from: '',
+      to: '',
     });
 
-    const comparison = await getReturnComparison('', {
-      personalKey: Key.THIRD_PILLAR,
-      pensionFundKey: Key.EPI,
-      indexKey: Key.CPI,
-    });
+    const comparison = await getReturnComparison(
+      {
+        personalKey: Key.THIRD_PILLAR,
+        pensionFundKey: Key.EPI,
+        indexKey: Key.CPI,
+      },
+      '',
+    );
     expect(comparison).toStrictEqual({
       from: '',
+      to: '',
       personal: null,
       pensionFund: fundReturn,
       index: null,

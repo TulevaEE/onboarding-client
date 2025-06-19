@@ -6,15 +6,21 @@ import { useContributions, useSourceFunds } from '../common/apiHooks';
 import { Shimmer } from '../common/shimmer/Shimmer';
 import { SecondPillarContribution } from '../common/apiModels';
 import { Euro } from '../common/Euro';
+import { useReturns } from '../account/ComparisonCalculator/returnComparisonHooks';
+import { Key } from '../account/ComparisonCalculator/api';
 
 export const FirstVsSecondPillarComparison = () => {
+  const BEGINNING_OF_TIME = '2000-01-01';
   const fromDate = '2018-01-01';
   const toDate = '2024-12-31';
+  const yearsBetween = 7;
 
   const { data: contributions } = useContributions();
-  const { data: sourceFunds } = useSourceFunds(fromDate, toDate);
+  const { data: beginSourceFunds } = useSourceFunds(BEGINNING_OF_TIME, fromDate);
+  const { data: endSourceFunds } = useSourceFunds(BEGINNING_OF_TIME, toDate);
+  const { data: returnsResponse } = useReturns([Key.SECOND_PILLAR], fromDate, toDate);
 
-  if (!contributions || !sourceFunds) {
+  if (!contributions || !beginSourceFunds || !endSourceFunds || !returnsResponse) {
     return (
       <section className="mt-5">
         <Shimmer height={32} />
@@ -22,9 +28,29 @@ export const FirstVsSecondPillarComparison = () => {
     );
   }
 
-  const secondPillarSum = sourceFunds
+  const { returns } = returnsResponse;
+  const returnRate = returns.find((r) => r.key === Key.SECOND_PILLAR)?.rate || 0;
+
+  const beginSum = beginSourceFunds
     ?.filter(({ pillar }) => pillar === 2)
     .reduce((total, { price, unavailablePrice }) => total + price + unavailablePrice, 0);
+
+  const endSum = endSourceFunds
+    ?.filter(({ pillar }) => pillar === 2)
+    .reduce((total, { price, unavailablePrice }) => total + price + unavailablePrice, 0);
+
+  const beginSumWithGrowth = beginSum * (1 + returnRate) ** yearsBetween;
+  const secondPillarSum = endSum - beginSumWithGrowth;
+  console.log(
+    'beginSum',
+    beginSum,
+    'beginSumWithGrowth',
+    beginSumWithGrowth,
+    'endSum',
+    endSum,
+    'secondPillarSum',
+    secondPillarSum,
+  );
 
   const contribs = contributions
     .filter((contribution): contribution is SecondPillarContribution => contribution.pillar === 2)
