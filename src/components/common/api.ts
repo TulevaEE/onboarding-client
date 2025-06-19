@@ -166,11 +166,14 @@ export function createMandateBatch(
   return postWithAuthentication(getEndpoint('/v1/mandate-batches'), createMandateBatchDto);
 }
 
-export async function getSourceFunds(): Promise<SourceFund[]> {
-  const funds = await getWithAuthentication(
-    getEndpoint('/v1/pension-account-statement'),
-    undefined,
-  );
+export async function getSourceFunds(fromDate?: string, toDate?: string): Promise<SourceFund[]> {
+  const params: Record<string, string> = {
+    ...(fromDate && { 'from-date': fromDate }),
+    ...(toDate && { 'to-date': toDate }),
+  };
+
+  const funds = await getWithAuthentication(getEndpoint('/v1/pension-account-statement'), params);
+
   return funds.map(transformFundBalance);
 }
 

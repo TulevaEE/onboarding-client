@@ -8,8 +8,11 @@ import { Euro } from '../common/Euro';
 import { InfoTooltip } from '../common/infoTooltip/InfoTooltip';
 
 export const FirstVsSecondPillarComparison = () => {
+  const fromDate = '2018-01-01';
+  const toDate = '2024-12-31';
+
   const { data: contributions } = useContributions();
-  const { data: sourceFunds } = useSourceFunds();
+  const { data: sourceFunds } = useSourceFunds(fromDate, toDate);
 
   if (!contributions || !sourceFunds) {
     return (
@@ -19,10 +22,9 @@ export const FirstVsSecondPillarComparison = () => {
     );
   }
 
-  const secondPillarSum =
-    sourceFunds
-      ?.filter(({ pillar }) => pillar === 2)
-      .reduce((total, { price, unavailablePrice }) => total + price + unavailablePrice, 0) * 0.7;
+  const secondPillarSum = sourceFunds
+    ?.filter(({ pillar }) => pillar === 2)
+    .reduce((total, { price, unavailablePrice }) => total + price + unavailablePrice, 0);
 
   const contribs = contributions
     .filter((contribution): contribution is SecondPillarContribution => contribution.pillar === 2)
@@ -34,8 +36,7 @@ export const FirstVsSecondPillarComparison = () => {
         } as SecondPillarContribution),
     )
     .filter(
-      ({ time }) =>
-        new Date(time) >= new Date('2018-01-01') && new Date(time) <= new Date('2024-12-31'),
+      ({ time }) => new Date(time) >= new Date(fromDate) && new Date(time) <= new Date(toDate),
     )
     .map((contribution) => {
       const salary = contribution.employeeWithheldPortion / 0.02;
