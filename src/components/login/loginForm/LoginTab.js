@@ -7,7 +7,7 @@ class LoginTab extends Component {
     activeTab: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
     onClick: PropTypes.func.isRequired,
-    hideOnMobile: PropTypes.string.isRequired,
+    hideOnMobile: PropTypes.bool,
   };
 
   onClick = () => {
@@ -21,15 +21,9 @@ class LoginTab extends Component {
       props: { activeTab, label, hideOnMobile },
     } = this;
 
-    let className = 'nav-link';
-
-    if (activeTab === label) {
-      className += ' active';
-    }
-
-    if (hideOnMobile === 'true') {
-      className += ' d-none d-md-block';
-    }
+    const className = `nav-link ${activeTab === label ? 'active' : ''} ${
+      hideOnMobile ? 'd-none d-md-block' : ''
+    }`;
 
     return (
       <li className="nav-item" role="presentation">
