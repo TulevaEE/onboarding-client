@@ -2,6 +2,7 @@
 /* eslint-disable no-console */
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useContributions, useSourceFunds } from '../common/apiHooks';
 import { Shimmer } from '../common/shimmer/Shimmer';
 import { SecondPillarContribution } from '../common/apiModels';
@@ -116,8 +117,6 @@ export const FirstVsSecondPillarComparison = () => {
 
   const impactOfReduction = totalDiff * pricePerUnit; // EUR per month
 
-  const breakEvenYears = secondPillarSum / (impactOfReduction * 12);
-
   const tabularData = yearStats.map(({ year, total, average, ratio, ratioWithReduction }) => ({
     year,
     total: Number(total.toFixed(2)),
@@ -129,48 +128,48 @@ export const FirstVsSecondPillarComparison = () => {
 
   return (
     <div className="col-12 col-md-11 col-lg-8 mx-auto">
-      <h1 className="mb-4">Kas II sambas kogumine on sulle kasulik?</h1>
+      <h2 className="mb-4">Kui palju vähendab II sammas sinu riiklikku pensionit?</h2>
       <p>
-        Kogud igal kuul II sambasse vara. Riik lisab sellele omapoolse maksuvõimenduse. Teisalt on
-        sinu I sammas selle võrra natukene väiksem.
+        Kogud igal kuul II sambasse vara ja riik lisab sellele omapoolse maksuvõimenduse. Teisalt on
+        sinu riiklik pension selle võrra natukene väiksem. Täpsemalt on viimase 8 aasta (2018-2024)
+        tulemus selline:
       </p>
-      <p>Võrdle ise, kumb tundub sulle kasulikum.</p>
-      <div className="row g-3" id="results" aria-live="polite">
-        <div className="col-12 col-md-6">
-          <div className="card result-card alert alert-danger text-center border-0 m-0">
-            <div className="card-body">
-              <h1 className="fw-bold">
-                &minus;
-                <Euro amount={impactOfReduction} fractionDigits={0} /> kuus
-              </h1>
-              <p className="card-text mb-0 fw-medium">vähem I sambas</p>
-            </div>
-          </div>
-        </div>
-        <div className="col-12 col-md-6">
-          <div className="card result-card alert alert-success text-center border-0 m-0">
-            <div className="card-body">
-              <h1 className="fw-bold">
-                +<Euro amount={secondPillarSum} fractionDigits={0} />
-              </h1>
-              <p className="card-text mb-0 fw-medium">rohkem II sambas</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <ul>
+        <li>
+          Sa said {totalDiff.toFixed(1).replace('.', ',')} kindlustusosakut vähem kui siis kui sa
+          poleks II sambasse kogunud. Kui sa oleksid täna 65-aastane ja läheksid pensionile, oleks
+          sinu <strong>riiklik pension</strong> seetõttu{' '}
+          <strong>
+            <Euro amount={impactOfReduction} fractionDigits={0} /> kuus väiksem
+          </strong>
+          .
+        </li>
+        <li>
+          Aga samal ajal kogunes sinu <strong>II samba</strong> kontole koos sissemaksete ja neilt
+          teenitud tootlusega{' '}
+          <strong>
+            <Euro amount={secondPillarSum} fractionDigits={0} /> rohkem
+          </strong>{' '}
+          kui siis kui sa poleks sel perioodil II sambasse kogunud.
+        </li>
+      </ul>
 
-      <p className="mt-3 mb-1 fs-6">
-        Kui pika pensionipõlvega oleks I sambast rohkem kasu ≈
-        <strong id="breakEven"> {breakEvenYears.toFixed(0)} aastat</strong>{' '}
+      <p className="mt-3">
+        Keeruline võrrelda? Need summad ei olegi objektiivselt võrreldavad. Üks on riigi lubadus
+        maksta sulle kunagi tulevikus igakuist sissetulekut, teine on sinu isiklikul kontol olev
+        vara, mida saad igal hetkel kasutada. Meie Tulevas usume, et kuigi riigi lubadused on
+        toredad, siis kindlam on ikka oma kontol vara omada.
       </p>
-      <p className="text-muted mt-3">
-        Mõlemad summad on tänases väärtuses. I sammast mõjutab ka indekseerimine ja II sammast
-        tootlus. Arvestame aastaid 2018–2024, mil Tuleva on tegutsenud, sest selle kohta on meil
-        andmed olemas.
-      </p>
-      <p className="mb-0">
-        <a href="?asdf">Kuidas see arvutus täpselt käib?</a>
-      </p>
+      <div className="text-center mt-4">
+        <Link className="btn btn-outline-primary" to="/account">
+          Vaata oma konto seisu
+        </Link>
+        <p className="mt-4">
+          <a href="https://tuleva.ee/kui-palju-vahendab-ii-sammas-sinu-riiklikku-pensionit/">
+            Kuidas see arvutus täpselt käib?
+          </a>
+        </p>
+      </div>
     </div>
   );
 };
