@@ -923,5 +923,6 @@
   "pageTitle.contactDetails": "Minu andmed",
   "pageTitle.capitalTransactions": "Liikmekapitali tehingud",
   "pageTitle.secondPillarTransactions": "II samba tehingud",
-  "pageTitle.thirdPillarTransactions": "III samba tehingud"
+  "pageTitle.thirdPillarTransactions": "III samba tehingud",
+  "pageTitle.firstVsSecondPillar": "I vs II sammas"
 }

@@ -921,5 +921,6 @@
   "pageTitle.contactDetails": "My details",
   "pageTitle.capitalTransactions": "Member capital transactions",
   "pageTitle.secondPillarTransactions": "II pillar transactions",
-  "pageTitle.thirdPillarTransactions": "III pillar transactions"
+  "pageTitle.thirdPillarTransactions": "III pillar transactions",
+  "pageTitle.firstVsSecondPillar": "I vs II pillar"
 }

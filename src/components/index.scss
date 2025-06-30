@@ -113,8 +113,15 @@ h6,
 }
 
 .lead {
-  font-size: 1.25em;
+  font-size: $font-size-lead;
   font-weight: $font-weight-normal;
+}
+
+.fs-base {
+  font-size: $font-size-base;
+}
+.lh-base {
+  line-height: $line-height-base;
 }
 
 small {

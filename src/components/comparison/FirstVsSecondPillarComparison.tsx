@@ -5,12 +5,15 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useContributions, useSourceFunds } from '../common/apiHooks';
 import { Shimmer } from '../common/shimmer/Shimmer';
+import { usePageTitle } from '../common/usePageTitle';
 import { SecondPillarContribution } from '../common/apiModels';
 import { Euro } from '../common/Euro';
 import { useReturns } from '../account/ComparisonCalculator/returnComparisonHooks';
 import { Key } from '../account/ComparisonCalculator/api';
 
 export const FirstVsSecondPillarComparison = () => {
+  usePageTitle('pageTitle.firstVsSecondPillar');
+
   const BEGINNING_OF_TIME = '2000-01-01';
   const fromDate = '2018-01-01';
   const toDate = '2024-12-31';
@@ -23,9 +26,19 @@ export const FirstVsSecondPillarComparison = () => {
 
   if (!contributions || !beginSourceFunds || !endSourceFunds || !returnsResponse) {
     return (
-      <section className="mt-5">
-        <Shimmer height={32} />
-      </section>
+      <div className="col-12 col-md-10 col-lg-7 mx-auto pt-5">
+        <div className="d-flex flex-column gap-4">
+          <Shimmer height={72} />
+          <div className="d-flex flex-column gap-3">
+            <Shimmer height={48} />
+            <Shimmer height={24} />
+          </div>
+          <div className="d-flex flex-column gap-2">
+            <Shimmer height={104} />
+            <Shimmer height={104} />
+          </div>
+        </div>
+      </div>
     );
   }
 
@@ -127,48 +140,100 @@ export const FirstVsSecondPillarComparison = () => {
   console.table(tabularData);
 
   return (
-    <div className="col-12 col-md-11 col-lg-8 mx-auto">
-      <h2 className="mb-4">Kui palju vähendab II sammas sinu riiklikku pensionit?</h2>
+    <div className="col-12 col-md-10 col-lg-7 mx-auto pt-5">
+      <h1 className="mb-4">Kui palju vähendab II sambasse kogumine sinu riiklikku pensioni?</h1>
       <p>
-        Kogud igal kuul II sambasse vara ja riik lisab sellele omapoolse maksuvõimenduse. Teisalt on
-        sinu riiklik pension selle võrra natukene väiksem. Täpsemalt on viimase 8 aasta (2018-2024)
-        tulemus selline:
+        Kui kogud raha II sambasse, lisab riik sellele omapoolse maksuvõimenduse. See vähendab pisut
+        sinu riikliku pensioni ehk I sammast.
       </p>
-      <ul>
-        <li>
-          Sa said {totalDiff.toFixed(1).replace('.', ',')} kindlustusosakut vähem kui siis kui sa
-          poleks II sambasse kogunud. Kui sa oleksid täna 65-aastane ja läheksid pensionile, oleks
-          sinu <strong>riiklik pension</strong> seetõttu{' '}
-          <strong>
-            <Euro amount={impactOfReduction} fractionDigits={0} /> kuus väiksem
-          </strong>
-          .
-        </li>
-        <li>
-          Aga samal ajal kogunes sinu <strong>II samba</strong> kontole koos sissemaksete ja neilt
-          teenitud tootlusega{' '}
-          <strong>
-            <Euro amount={secondPillarSum} fractionDigits={0} /> rohkem
-          </strong>{' '}
-          kui siis kui sa poleks sel perioodil II sambasse kogunud.
-        </li>
-      </ul>
+      <p>Täpsemalt on viimase 8 aasta (2018–2024) tulemus selline:</p>
+      <div className="my-4 vstack gap-2">
+        <div className="card">
+          <div className="card-body">
+            <p className="card-text">
+              Sa said I sambasse {totalDiff.toFixed(1).replace('.', ',')} kindlustusosakut vähem kui
+              juhul, kui sa poleks II sambasse kogunud. Kui läheksid täna 65-aastaselt pensionile,
+              oleks sinu <strong>riiklik pension</strong> seetõttu{' '}
+              <strong>
+                <Euro amount={impactOfReduction} fractionDigits={0} /> kuus väiksem
+              </strong>
+              .
+            </p>
+          </div>
+        </div>
+        <div className="card">
+          <div className="card-body">
+            <p className="card-text">
+              Samal ajal kogunes sinu <strong>II samba</strong> kontole koos sissemaksete ja neilt
+              teenitud tootlusega{' '}
+              <strong>
+                <Euro amount={secondPillarSum} fractionDigits={0} /> rohkem
+              </strong>{' '}
+              võrreldes olukorraga, kus sa poleks II sambasse kogunud.
+            </p>
+          </div>
+        </div>
+      </div>
+      <h2 className="mt-5 mb-3">Keeruline võrrelda?</h2>
+      <p>
+        Need summad ei olegi objektiivselt võrreldavad. Üks on riigi lubadus maksta sulle kunagi
+        tulevikus igakuist sissetulekut, teine on sinu isiklikul kontol olev vara, mida saad igal
+        hetkel kasutada.
+      </p>
+      <p>
+        Meie Tulevas usume, et kuigi riigi lubadused on toredad, siis kindlam on ikka oma isiklikul
+        pensionikontol vara omada. <Link to="/account">Vaata oma kontoseisu</Link>
+      </p>
 
-      <p className="mt-3">
-        Keeruline võrrelda? Need summad ei olegi objektiivselt võrreldavad. Üks on riigi lubadus
-        maksta sulle kunagi tulevikus igakuist sissetulekut, teine on sinu isiklikul kontol olev
-        vara, mida saad igal hetkel kasutada. Meie Tulevas usume, et kuigi riigi lubadused on
-        toredad, siis kindlam on ikka oma kontol vara omada.
-      </p>
-      <div className="text-center mt-4">
-        <Link className="btn btn-outline-primary" to="/account">
-          Vaata oma konto seisu
-        </Link>
-        <p className="mt-4">
-          <a href="https://tuleva.ee/kui-palju-vahendab-ii-sammas-sinu-riiklikku-pensionit/">
-            Kuidas see arvutus täpselt käib?
-          </a>
+      <h2 className="mt-5 mb-3">
+        <button
+          id="calculationDetailsToggle"
+          className="btn btn-light"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#calculationDetails"
+          aria-expanded="false"
+          aria-controls="calculationDetails"
+        >
+          Kuidas see arvutus täpselt käib?
+        </button>
+      </h2>
+      <div className="collapse" id="calculationDetails" aria-labelledby="calculationDetailsToggle">
+        <p>
+          I samba pensioni suurus sõltub sinu sissetulekust. Täpsemalt, igal aastal arvutab
+          sotsiaalkindlustusamet välja, mitu “osakut” sa viimase aasta eest said. Kogunenud osakute
+          arvu näed <a href="https://eesti.ee">eesti.ee</a> lehel sisse logides. Need, kes on
+          ühinenud II sambaga, saavad iga aasta eest 20% vähem osakuid. See on õiglane, sest II
+           sambaga ühinedes läheb osa sinu palgalt tasutud sotsiaalmaksust sinu kontole, mitte
+          riigikassasse.
         </p>
+        <ul className="d-flex flex-column gap-3">
+          <li>
+            <strong>Riiklik pension.</strong> Võtsime sinu 2018–2024 tehtud II samba sissemaksed ja
+            arvutasime nende alusel välja, kui palju sa sel perioodil osakuid oleks teeninud, kui sa
+            II sambaga ühinenud poleks. Korrutasime selle 0,2-ga ja saimegi teada, kui palju vähem
+            osakuid tegelikult riik sulle kirja pani. Kuna tugineme II samba sissemaksetele, on
+            arvutus mõnel juhul ebatäpne. Näiteks kui oled teeninud tulu ettevõtluskontoga või kui
+            sinu eest on mõnel kuul makstud sotsiaalmaksu, aga sa pole palka saanud. Täpse arvutuse
+            leiad eesti.ee lehelt.
+          </li>
+          <li>
+            <strong>Osaku väärtus.</strong> Osak ei ole vara, vaid lihtsalt riigi viis arvet pidada
+            selle üle, kui palju ta sulle I samba pensionit maksma peaks kui sa pensioniikka jõuad.
+            Sel aastal maksab riik iga osaku eest 10 eurot kuus pensionit.
+          </li>
+          <li>
+            <strong>Miks just 2018–2024?</strong> II sambaga sai ühineda juba 2002. aasta suvel. Me
+            võtsime arvutuse aluseks viimased 8 aastat kahel põhjusel. Esiteks, see on aeg, mil
+            paljud meist koguvad Tulevas. Teiseks, varasematel perioodidel on II samba sissemaksetes
+            olnud mitu muutust, mis teevad nende alusel palga arvutamise võimatuks.
+          </li>
+          <li>
+            <strong>II samba kasv.</strong> Seepärast ei vaata me kogu sinu II sambasse kogunenud
+            summat vaid ainult seda osa, mis on tekkinud 2018–2024 tehtud sissemaksetest ja nendele
+            kogunenud kasumist.
+          </li>
+        </ul>
       </div>
     </div>
   );
