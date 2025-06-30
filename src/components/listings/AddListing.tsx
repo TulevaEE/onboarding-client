@@ -2,15 +2,19 @@ import { Dispatch, PropsWithChildren, ReactNode, SetStateAction, useState } from
 import { Link } from 'react-router-dom';
 import { ListingType } from '../common/apiModels/listings';
 import styles from './AddListing.module.scss';
-import { formatAmountForCurrency } from '../common/utils';
+import { formatAmountForCurrency, useNumberInput } from '../common/utils';
 import { useMe } from '../common/apiHooks';
+import { useMemberCapitalHoldings } from './hooks';
+import { Shimmer } from '../common/shimmer/Shimmer';
 
 // TODO break up this component
 export const AddListing = () => {
   const [listingType, setListingType] = useState<ListingType>('BUY');
 
-  const [unitAmount, setUnitAmount] = useState<number | null>(null);
-  const [unitPrice, setUnitPrice] = useState<number | null>(null);
+  const unitPriceInput = useNumberInput();
+  const unitAmountInput = useNumberInput();
+
+  const memberCapitalHoldings = useMemberCapitalHoldings();
 
   return (
     <div className="col-12 col-md-11 col-lg-9 mx-auto">
@@ -49,8 +53,7 @@ export const AddListing = () => {
                 id="unit-amount"
                 placeholder="0"
                 aria-label="Ühikute arv"
-                value={unitAmount ?? ''} // TODO improve ergonomics
-                onChange={(e) => setUnitAmount(Number(e.target.value))}
+                {...unitAmountInput.inputProps}
               />
             </div>
           </div>
@@ -65,8 +68,7 @@ export const AddListing = () => {
                   className="form-control form-control-lg"
                   placeholder="0"
                   aria-label="Ühiku hind"
-                  value={unitPrice ?? ''} // TODO improve ergonomics
-                  onChange={(e) => setUnitPrice(Number(e.target.value))}
+                  {...unitPriceInput.inputProps}
                 />
                 <div className="input-group-text">&euro;</div>
               </div>
@@ -79,7 +81,7 @@ export const AddListing = () => {
               </label>
               <div className="input-group input-group-lg">
                 <input
-                  value={(unitAmount ?? 0) * (unitPrice ?? 0)}
+                  value={(unitAmountInput.value ?? 0) * (unitPriceInput.value ?? 0)}
                   type="number"
                   disabled
                   className="form-control form-control-lg"
@@ -90,9 +92,16 @@ export const AddListing = () => {
             </div>
           </div>
         </div>
-        <div className="text-secondary mt-1">
-          Sul on hetkel liikmekapitali <b>8009.33</b> ühikut. Ühe ühiku raamatupidamislik väärtus on
-          1.00 € ja alla selle tehingut teostada ei saa.
+        <div className="text-secondary mt-2">
+          Sul on hetkel liikmekapitali{' '}
+          {memberCapitalHoldings !== null ? (
+            <>
+              <b>{memberCapitalHoldings}</b> ühikut
+            </>
+          ) : (
+            '...'
+          )}
+          . Ühe ühiku raamatupidamislik väärtus on 1.00 € ja alla selle tehingut teostada ei saa.
         </div>
         <div className="row mt-4">
           <div className="col-lg mb-3 mb-lg-0">
@@ -119,11 +128,11 @@ export const AddListing = () => {
           <AssurancesSection />
         </div>
 
-        <div className={`d-flex justify-content-between mt-4 pt-4 ${styles.submitButtonGroup}`}>
-          <button type="button" className="btn btn-light">
+        <div className={`d-flex justify-content-between mt-5 pt-4 ${styles.submitButtonGroup}`}>
+          <button type="button" className="btn btn-lg btn-light">
             Tagasi
           </button>
-          <button type="button" className="btn btn-primary">
+          <button type="button" className="btn btn-lg btn-primary">
             Avaldan ostukuulutuse
           </button>
         </div>
