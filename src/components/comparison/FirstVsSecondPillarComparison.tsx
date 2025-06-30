@@ -151,11 +151,25 @@ export const FirstVsSecondPillarComparison = () => {
       <p>Täpsemalt on viimase 8 aasta (2018–2024) tulemus selline:</p>
       <div className="my-4 vstack gap-2">
         <div className="card">
-          <div className="card-body">
+          <div className="card-body d-flex gap-3">
+            <span className="text-body-tertiary">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="currentColor"
+                className="bi bi-calculator"
+                viewBox="0 0 16 16"
+                aria-hidden="true"
+              >
+                <path d="M12 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM4 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z" />
+                <path d="M4 2.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm0 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm0 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3-6a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm0 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm0 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3-6a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm0 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5z" />
+              </svg>
+            </span>
             <p className="card-text">
-              Sa said I sambasse {totalDiff.toFixed(1).replace('.', ',')} kindlustusosakut vähem kui
-              juhul, kui sa poleks II sambasse kogunud. Kui läheksid täna 65-aastaselt pensionile,
-              oleks sinu <strong>riiklik pension</strong> seetõttu{' '}
+              Sa said I sambasse {totalDiff.toFixed(1).replace('.', ',')} osakut vähem kui juhul,
+              kui sa poleks II sambasse kogunud. Kui läheksid täna 65-aastaselt pensionile, oleks
+              sinu <strong>riiklik pension</strong> seetõttu{' '}
               <strong>
                 <Euro amount={impactOfReduction} fractionDigits={0} /> kuus väiksem
               </strong>
@@ -164,9 +178,23 @@ export const FirstVsSecondPillarComparison = () => {
           </div>
         </div>
         <div className="card">
-          <div className="card-body">
+          <div className="card-body d-flex gap-3">
+            <span className="text-body-tertiary">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="currentColor"
+                className="bi bi-calculator"
+                viewBox="0 0 16 16"
+                aria-hidden="true"
+              >
+                <path d="M12 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM4 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z" />
+                <path d="M4 2.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm0 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm0 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3-6a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm0 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm0 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3-6a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm0 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5z" />
+              </svg>
+            </span>
             <p className="card-text">
-              Samal ajal kogunes sinu <strong>II samba</strong> kontole koos sissemaksete ja neilt
+              Samal perioodil kogunes sinu <strong>II sambasse</strong> koos sissemaksete ja neilt
               teenitud tootlusega{' '}
               <strong>
                 <Euro amount={secondPillarSum} fractionDigits={0} /> rohkem
@@ -184,13 +212,31 @@ export const FirstVsSecondPillarComparison = () => {
       </p>
       <p>
         Meie Tulevas usume, et kuigi riigi lubadused on toredad, siis kindlam on ikka oma isiklikul
-        pensionikontol vara omada. <Link to="/account">Vaata oma kontoseisu</Link>
+        pensionikontol vara omada.{' '}
+        <Link to="/account" className="icon-link fw-medium">
+          Vaata oma kontoseisu
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="lucide lucide-arrow-right-icon lucide-arrow-right"
+          >
+            <path d="M5 12h14" />
+            <path d="m12 5 7 7-7 7" />
+          </svg>
+        </Link>
       </p>
 
       <h2 className="mt-5 mb-3">
         <button
           id="calculationDetailsToggle"
-          className="btn btn-light"
+          className="btn btn-light fw-normal"
           type="button"
           onClick={() => setCalculationDetailsToggle(!calculationDetailsToggle)}
           aria-expanded="false"
@@ -205,8 +251,8 @@ export const FirstVsSecondPillarComparison = () => {
             I samba pensioni suurus sõltub sinu sissetulekust. Täpsemalt, igal aastal arvutab
             sotsiaalkindlustusamet välja, mitu “osakut” sa viimase aasta eest said. Kogunenud
             osakute arvu näed <a href="https://eesti.ee">eesti.ee</a> lehel sisse logides. Need, kes
-            on ühinenud II sambaga, saavad iga aasta eest 20% vähem osakuid. See on õiglane, sest II
-             sambaga ühinedes läheb osa sinu palgalt tasutud sotsiaalmaksust sinu kontole, mitte
+            on ühinenud II sambaga, saavad iga aasta eest 20% vähem osakuid. See on õiglane, sest
+            II sambaga ühinedes läheb osa sinu palgalt tasutud sotsiaalmaksust sinu kontole, mitte
             riigikassasse.
           </p>
           <ul className="d-flex flex-column gap-3">
