@@ -146,12 +146,15 @@ export function downloadMandateWithId(entityId: string): Promise<Blob> {
 }
 
 export function getUserWithToken(): Promise<User> {
-  return mockRequestInMockMode(getWithAuthentication(getEndpoint('/v1/me'), undefined), 'user');
+  return mockRequestInMockMode(
+    () => getWithAuthentication(getEndpoint('/v1/me'), undefined),
+    'user',
+  );
 }
 
 export function getWithdrawalsEligibility(): Promise<WithdrawalsEligibility> {
   return mockRequestInMockMode(
-    getWithAuthentication(getEndpoint('/v1/withdrawals/eligibility'), undefined),
+    () => getWithAuthentication(getEndpoint('/v1/withdrawals/eligibility'), undefined),
     'withdrawalsEligibility',
   );
 }
@@ -311,14 +314,14 @@ export function updateUserWithToken(user: User): Promise<User> {
 
 export function getUserConversionWithToken(): Promise<UserConversion> {
   return mockRequestInMockMode(
-    getWithAuthentication(getEndpoint('/v1/me/conversion'), undefined),
+    () => getWithAuthentication(getEndpoint('/v1/me/conversion'), undefined),
     'conversion',
   );
 }
 
 export function getCapitalRowsWithToken(): Promise<CapitalRow[]> {
   return mockRequestInMockMode(
-    getWithAuthentication(getEndpoint('/v1/me/capital'), undefined),
+    () => getWithAuthentication(getEndpoint('/v1/me/capital'), undefined),
     'memberCapital',
   );
 }
