@@ -1,3 +1,4 @@
+import { ChangeEventHandler, useState } from 'react';
 import { Fund, User } from './apiModels';
 
 const isTruthy = (value: unknown) => !!value;
@@ -57,3 +58,35 @@ export type TulevaFundIsin =
   | TulevaThirdPillarFund;
 export const isTulevaIsin = (value: string): value is TulevaFundIsin =>
   ['EE3600109435', 'EE3600109443', 'EE3600001707'].includes(value);
+
+export const useNumberInput = (isValid: (inputValue: string) => boolean = () => true) => {
+  const [inputValue, setInputValue] = useState('');
+  const [value, setValue] = useState<number | null>(null);
+
+  const handleInputChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+    const changedInputValue = event.target.value;
+
+    const formattedInputValue = changedInputValue.replace(',', '.');
+
+    if (changedInputValue === '' || isValid(changedInputValue)) {
+      setInputValue(formattedInputValue);
+    }
+
+    if (changedInputValue === '') {
+      setValue(null);
+      return;
+    }
+
+    if (!isValid(changedInputValue)) {
+      return;
+    }
+
+    const parsedValue = Number(formattedInputValue);
+
+    if (!Number.isNaN(parsedValue)) {
+      setValue(parsedValue);
+    }
+  };
+
+  return { inputProps: { value: inputValue, onChange: handleInputChange }, value };
+};

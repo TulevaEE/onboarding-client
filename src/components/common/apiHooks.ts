@@ -4,6 +4,7 @@ import {
   createApplicationCancellation,
   createMandateBatch,
   getCapitalEvents,
+  getCapitalRowsWithToken,
   getContributions,
   getFundPensionStatus,
   getFunds,
@@ -19,6 +20,7 @@ import {
   Application,
   CancellationMandate,
   CapitalEvent,
+  CapitalRow,
   Contribution,
   ErrorResponse,
   Fund,
@@ -45,6 +47,10 @@ export function useTransactions(): UseQueryResult<Transaction[]> {
 
 export function useCapitalEvents(): UseQueryResult<CapitalEvent[]> {
   return useQuery(['capitalEvents'], () => getCapitalEvents());
+}
+
+export function useCapitalRows(): UseQueryResult<CapitalRow[]> {
+  return useQuery(['capitalRows'], () => getCapitalRowsWithToken());
 }
 
 export function useContributions(): UseQueryResult<Contribution[]> {
