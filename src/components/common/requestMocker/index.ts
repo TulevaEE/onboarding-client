@@ -24,19 +24,19 @@ export const readMockModeConfiguration = () => {
 export const isMockModeEnabled = () => readMockModeConfiguration() !== null;
 
 export async function mockRequestInMockMode<TResponse = unknown>(
-  response: Promise<TResponse>,
+  fetcher: () => Promise<TResponse>,
   endpointName: MockModeEndpoint,
 ) {
   const config = readMockModeConfiguration();
 
   if (config === null || !config) {
-    return response;
+    return fetcher();
   }
 
   const selectedProfile = config[endpointName];
 
   if (!selectedProfile) {
-    return response;
+    return fetcher();
   }
 
   // eslint-disable-next-line no-console

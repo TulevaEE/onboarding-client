@@ -11,44 +11,62 @@ describe('mockRequestInMockMode', () => {
   });
 
   it('does not mock request when config is not set', async () => {
-    expect(await mockRequestInMockMode(Promise.resolve(mockUser), 'user')).toBe(mockUser);
+    expect(await mockRequestInMockMode(() => Promise.resolve(mockUser), 'user')).toBe(mockUser);
 
-    expect(await mockRequestInMockMode(Promise.resolve(completeConversion), 'conversion')).toBe(
-      completeConversion,
-    );
+    expect(
+      await mockRequestInMockMode(() => Promise.resolve(completeConversion), 'conversion'),
+    ).toBe(completeConversion);
   });
 
   it('does not mock request when config is not empty', async () => {
     writeMockModeConfiguration({});
-    expect(await mockRequestInMockMode(Promise.resolve(mockUser), 'user')).toBe(mockUser);
+    expect(await mockRequestInMockMode(() => Promise.resolve(mockUser), 'user')).toBe(mockUser);
 
-    expect(await mockRequestInMockMode(Promise.resolve(completeConversion), 'conversion')).toBe(
-      completeConversion,
-    );
+    expect(
+      await mockRequestInMockMode(() => Promise.resolve(completeConversion), 'conversion'),
+    ).toBe(completeConversion);
   });
 
   it('does not mock request when config is null', async () => {
     writeMockModeConfiguration(null);
-    expect(await mockRequestInMockMode(Promise.resolve(mockUser), 'user')).toBe(mockUser);
+    expect(await mockRequestInMockMode(() => Promise.resolve(mockUser), 'user')).toBe(mockUser);
 
-    expect(await mockRequestInMockMode(Promise.resolve(completeConversion), 'conversion')).toBe(
-      completeConversion,
-    );
+    expect(
+      await mockRequestInMockMode(() => Promise.resolve(completeConversion), 'conversion'),
+    ).toBe(completeConversion);
   });
 
   it('mocks request when config is set but does not mock unset requests', async () => {
     writeMockModeConfiguration({ user: 'NO_SECOND_NO_THIRD_PILLAR', conversion: 'INCOMPLETE' });
-    expect(await mockRequestInMockMode(Promise.resolve(mockUser), 'user')).toBe(
+    expect(await mockRequestInMockMode(() => Promise.resolve(mockUser), 'user')).toBe(
       userMockProfiles.NO_SECOND_NO_THIRD_PILLAR,
     );
 
-    expect(await mockRequestInMockMode(Promise.resolve(completeConversion), 'conversion')).toBe(
-      conversionMockProfiles.INCOMPLETE,
-    );
+    expect(
+      await mockRequestInMockMode(() => Promise.resolve(completeConversion), 'conversion'),
+    ).toBe(conversionMockProfiles.INCOMPLETE);
 
     expect(
       await mockRequestInMockMode(
-        Promise.resolve(withdrawalsEligibilityProfiles.UNDER_55),
+        () => Promise.resolve(withdrawalsEligibilityProfiles.UNDER_55),
+        'withdrawalsEligibility',
+      ),
+    ).toBe(withdrawalsEligibilityProfiles.UNDER_55);
+  });
+
+  it('mocks request when config is set and does not fail when endpoint throws', async () => {
+    writeMockModeConfiguration({ user: 'NO_SECOND_NO_THIRD_PILLAR', conversion: 'INCOMPLETE' });
+    expect(await mockRequestInMockMode(() => Promise.reject(new Error('bla bla')), 'user')).toBe(
+      userMockProfiles.NO_SECOND_NO_THIRD_PILLAR,
+    );
+
+    expect(
+      await mockRequestInMockMode(() => Promise.resolve(completeConversion), 'conversion'),
+    ).toBe(conversionMockProfiles.INCOMPLETE);
+
+    expect(
+      await mockRequestInMockMode(
+        () => Promise.resolve(withdrawalsEligibilityProfiles.UNDER_55),
         'withdrawalsEligibility',
       ),
     ).toBe(withdrawalsEligibilityProfiles.UNDER_55);
