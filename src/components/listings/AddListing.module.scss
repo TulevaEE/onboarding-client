@@ -7,6 +7,14 @@
   background: $gray-bg-1;
 }
 
+.warningInput {
+  border-color: $red;
+}
+
+.warningText {
+  color: $red;
+}
+
 .submitButtonGroup {
   border-top: 1px solid $gray-border-3;
 }

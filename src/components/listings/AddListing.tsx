@@ -1,11 +1,10 @@
-import { Dispatch, PropsWithChildren, ReactNode, SetStateAction, useState } from 'react';
+import { PropsWithChildren, ReactNode, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ListingType } from '../common/apiModels/listings';
 import styles from './AddListing.module.scss';
-import { formatAmountForCurrency, useNumberInput } from '../common/utils';
+import { useNumberInput } from '../common/utils';
 import { useMe } from '../common/apiHooks';
 import { useMemberCapitalHoldings } from './hooks';
-import { Shimmer } from '../common/shimmer/Shimmer';
 
 // TODO break up this component
 export const AddListing = () => {
@@ -15,6 +14,23 @@ export const AddListing = () => {
   const unitAmountInput = useNumberInput();
 
   const memberCapitalHoldings = useMemberCapitalHoldings();
+
+  const [triedSubmit, setTriedSubmit] = useState(false);
+
+  const errors = {
+    noPriceValue: typeof unitPriceInput.value !== 'number',
+    noUnitAmountValue: typeof unitPriceInput.value !== 'number',
+    moreThanMemberCapital:
+      memberCapitalHoldings && memberCapitalHoldings < (unitAmountInput.value ?? 0),
+    priceLessThanBookValue: unitPriceInput.value !== null && unitPriceInput.value < 1,
+  };
+
+  const valuesPresent = !errors.noPriceValue && !errors.noUnitAmountValue;
+
+  const handleSubmit = () => {
+    setTriedSubmit(true);
+    // TODO api call
+  };
 
   return (
     <div className="col-12 col-md-11 col-lg-9 mx-auto">
@@ -49,7 +65,9 @@ export const AddListing = () => {
               </label>
               <input
                 type="number"
-                className="form-control form-control-lg"
+                className={`form-control form-control-lg text-end pe-0 ${
+                  errors.moreThanMemberCapital ? styles.warningInput : ''
+                }`}
                 id="unit-amount"
                 placeholder="0"
                 aria-label="Ühikute arv"
@@ -65,9 +83,11 @@ export const AddListing = () => {
               <div className="input-group input-group-lg">
                 <input
                   type="number"
-                  className="form-control form-control-lg"
                   placeholder="0"
                   aria-label="Ühiku hind"
+                  className={`form-control form-control-lg text-end pe-0 ${
+                    errors.priceLessThanBookValue ? styles.warningInput : ''
+                  }`}
                   {...unitPriceInput.inputProps}
                 />
                 <div className="input-group-text">&euro;</div>
@@ -84,7 +104,7 @@ export const AddListing = () => {
                   value={(unitAmountInput.value ?? 0) * (unitPriceInput.value ?? 0)}
                   type="number"
                   disabled
-                  className="form-control form-control-lg"
+                  className="form-control form-control-lg text-end pe-0"
                   aria-label="Kogusumma"
                 />
                 <div className="input-group-text">&euro;</div>
@@ -103,6 +123,17 @@ export const AddListing = () => {
           )}
           . Ühe ühiku raamatupidamislik väärtus on 1.00 € ja alla selle tehingut teostada ei saa.
         </div>
+
+        {errors.moreThanMemberCapital && (
+          <div className={`pt-2 ${styles.warningText}`}>
+            Ühikute arv ei saa olla suurem sinu liikmekapitali kogumahust.
+          </div>
+        )}
+        {errors.priceLessThanBookValue && (
+          <div className={`pt-2 ${styles.warningText}`}>
+            Ühiku hind ei saa olla väiksem raamatupidamislikust väärtusest 1.00 €.
+          </div>
+        )}
         <div className="row mt-4">
           <div className="col-lg mb-3 mb-lg-0">
             <div>
@@ -132,7 +163,16 @@ export const AddListing = () => {
           <button type="button" className="btn btn-lg btn-light">
             Tagasi
           </button>
-          <button type="button" className="btn btn-lg btn-primary">
+          <button
+            type="button"
+            className="btn btn-lg btn-primary"
+            onClick={handleSubmit}
+            disabled={
+              (triedSubmit && !valuesPresent) ||
+              errors.moreThanMemberCapital ||
+              errors.priceLessThanBookValue
+            }
+          >
             Avaldan ostukuulutuse
           </button>
         </div>
