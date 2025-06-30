@@ -145,10 +145,11 @@ export const FirstVsSecondPillarComparison = () => {
     <div className="col-12 col-md-10 col-lg-7 mx-auto pt-5">
       <h1 className="mb-4">Kui palju vähendab II sambasse kogumine sinu riiklikku pensioni?</h1>
       <p>
-        Kui kogud raha II sambasse, lisab riik sellele omapoolse maksuvõimenduse. See vähendab pisut
-        sinu riikliku pensioni ehk I sammast.
+        Kogud raha II sambasse ja lisab riik sellele omapoolse maksuvõimenduse. Selle arvelt teenid
+        igal aastal natuke vähem I samba osakuid ehk tulevikus maksab riik sulle pisut väiksemat
+        riiklikku pensioni.
       </p>
-      <p>Täpsemalt on viimase 8 aasta (2018–2024) tulemus selline:</p>
+      <p>Täpsemalt on viimase 8 aasta (2018–2024) vahekokkuvõte selline:</p>
       <div className="my-4 vstack gap-2">
         <div className="card">
           <div className="card-body d-flex gap-3">
@@ -166,8 +167,8 @@ export const FirstVsSecondPillarComparison = () => {
               </svg>
             </span>
             <p className="card-text">
-              Sa said I sambasse {totalDiff.toFixed(1).replace('.', ',')} osakut vähem kui juhul,
-              kui sa poleks II sambasse kogunud. Kui läheksid täna 65-aastaselt pensionile, oleks
+              Teenisid I sambasse {totalDiff.toFixed(1).replace('.', ',')} osakut vähem, kui oleksid
+              teeninud ilma II sambasse kogumata. Kui läheksid täna 65-aastaselt pensionile, oleks
               sinu <strong>riiklik pension</strong> seetõttu{' '}
               <strong>
                 <Euro amount={impactOfReduction} fractionDigits={0} /> kuus väiksem
@@ -192,12 +193,12 @@ export const FirstVsSecondPillarComparison = () => {
               </svg>
             </span>
             <p className="card-text">
-              Samal perioodil kogunes sinu <strong>II sambasse</strong> koos sissemaksete ja neilt
+              Samal ajal aga kogunes sinu <strong>II sambasse</strong> koos sissemaksete ja neilt
               teenitud tootlusega{' '}
               <strong>
-                <Euro amount={secondPillarSum} fractionDigits={0} /> rohkem
-              </strong>{' '}
-              võrreldes olukorraga, kus sa poleks II sambasse kogunud.
+                <Euro amount={secondPillarSum} fractionDigits={0} /> juurde
+              </strong>
+              . See summa jäänuks sul ainult I samba korral saamata.
             </p>
           </div>
         </div>
@@ -205,7 +206,7 @@ export const FirstVsSecondPillarComparison = () => {
       <h2 className="mt-5 mb-3">Keeruline võrrelda?</h2>
       <p>
         Need summad ei olegi objektiivselt võrreldavad. Üks on riigi lubadus maksta sulle kunagi
-        tulevikus igakuist sissetulekut, teine on sinu isiklikul kontol olev vara, mida saad igal
+        tulevikus igakuist sissetulekut. Teine on sinu isiklikul kontol olev vara, mida saad igal
         hetkel kasutada.
       </p>
       <p>
@@ -234,12 +235,25 @@ export const FirstVsSecondPillarComparison = () => {
       <h2 className="mt-5 mb-3">
         <button
           id="calculationDetailsToggle"
-          className="btn btn-light fw-normal"
+          className="btn p-0 border-0 focus-ring d-flex align-items-center gap-1 fw-normal"
           type="button"
           onClick={() => setCalculationDetailsToggle(!calculationDetailsToggle)}
           aria-expanded="false"
           aria-controls="calculationDetails"
         >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="12"
+            height="12"
+            fill="currentColor"
+            viewBox="0 0 16 16"
+            style={{
+              transform: calculationDetailsToggle ? 'rotate(90deg)' : 'rotate(0deg)',
+              transition: 'transform 0.2s ease',
+            }}
+          >
+            <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
+          </svg>
           Kuidas see arvutus täpselt käib?
         </button>
       </h2>
@@ -247,11 +261,11 @@ export const FirstVsSecondPillarComparison = () => {
         <div id="calculationDetails" aria-labelledby="calculationDetailsToggle">
           <p>
             I samba pensioni suurus sõltub sinu sissetulekust. Täpsemalt, igal aastal arvutab
-            sotsiaalkindlustusamet välja, mitu “osakut” sa viimase aasta eest said. Kogunenud
-            osakute arvu näed <a href="https://eesti.ee">eesti.ee</a> lehel sisse logides. Need, kes
-            on ühinenud II sambaga, saavad iga aasta eest 20% vähem osakuid. See on õiglane, sest
+            sotsiaalkindlustusamet välja, mitu osakut sa viimasel aastal teenisid. Kogunenud osakute
+            arvu näed <a href="https://eesti.ee">eesti.ee</a> lehel sisse logides. Need, kes on
+            ühinenud II sambaga, saavad iga aasta eest 20% vähem osakuid. See on õiglane, sest
             II sambaga ühinedes läheb osa sinu palgalt tasutud sotsiaalmaksust sinu kontole, mitte
-            riigikassasse.
+            riigikassasse tänaste pensionide maksmiseks.
           </p>
           <ul className="d-flex flex-column gap-3">
             <li>
@@ -259,14 +273,15 @@ export const FirstVsSecondPillarComparison = () => {
               ja arvutasime nende alusel välja, kui palju sa sel perioodil osakuid oleks teeninud,
               kui sa II sambaga ühinenud poleks. Korrutasime selle 0,2-ga ja saimegi teada, kui
               palju vähem osakuid tegelikult riik sulle kirja pani. Kuna tugineme II samba
-              sissemaksetele, on arvutus mõnel juhul ebatäpne. Näiteks kui oled teeninud tulu
+              sissemaksetele, on arvutus mõnel juhul ebatäpne. Näiteks juhul, kui oled teeninud tulu
               ettevõtluskontoga või kui sinu eest on mõnel kuul makstud sotsiaalmaksu, aga sa pole
               palka saanud. Täpse arvutuse leiad eesti.ee lehelt.
             </li>
             <li>
               <strong>Osaku väärtus.</strong> Osak ei ole vara, vaid lihtsalt riigi viis arvet
               pidada selle üle, kui palju ta sulle I samba pensionit maksma peaks kui sa
-              pensioniikka jõuad. Sel aastal maksab riik iga osaku eest 10 eurot kuus pensionit.
+              pensioniikka jõuad. Sel aastal maksab riik iga teenitud osaku eest 10 eurot kuus
+              pensionit.
             </li>
             <li>
               <strong>Miks just 2018–2024?</strong> II sambaga sai ühineda juba 2002. aasta suvel.
@@ -276,7 +291,7 @@ export const FirstVsSecondPillarComparison = () => {
             </li>
             <li>
               <strong>II samba kasv.</strong> Seepärast ei vaata me kogu sinu II sambasse kogunenud
-              summat vaid ainult seda osa, mis on tekkinud 2018–2024 tehtud sissemaksetest ja
+              summat, vaid ainult seda osa, mis on tekkinud 2018–2024 tehtud sissemaksetest ja
               nendele kogunenud kasumist.
             </li>
           </ul>
