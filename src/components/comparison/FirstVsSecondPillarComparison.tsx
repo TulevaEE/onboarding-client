@@ -1,8 +1,9 @@
 /* eslint-disable no-irregular-whitespace */
 /* eslint-disable no-console */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Collapse } from 'react-bootstrap';
 import { useContributions, useSourceFunds } from '../common/apiHooks';
 import { Shimmer } from '../common/shimmer/Shimmer';
 import { usePageTitle } from '../common/usePageTitle';
@@ -13,6 +14,7 @@ import { Key } from '../account/ComparisonCalculator/api';
 
 export const FirstVsSecondPillarComparison = () => {
   usePageTitle('pageTitle.firstVsSecondPillar');
+  const [calculationDetailsToggle, setCalculationDetailsToggle] = useState(false);
 
   const BEGINNING_OF_TIME = '2000-01-01';
   const fromDate = '2018-01-01';
@@ -190,51 +192,52 @@ export const FirstVsSecondPillarComparison = () => {
           id="calculationDetailsToggle"
           className="btn btn-light"
           type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#calculationDetails"
+          onClick={() => setCalculationDetailsToggle(!calculationDetailsToggle)}
           aria-expanded="false"
           aria-controls="calculationDetails"
         >
           Kuidas see arvutus täpselt käib?
         </button>
       </h2>
-      <div className="collapse" id="calculationDetails" aria-labelledby="calculationDetailsToggle">
-        <p>
-          I samba pensioni suurus sõltub sinu sissetulekust. Täpsemalt, igal aastal arvutab
-          sotsiaalkindlustusamet välja, mitu “osakut” sa viimase aasta eest said. Kogunenud osakute
-          arvu näed <a href="https://eesti.ee">eesti.ee</a> lehel sisse logides. Need, kes on
-          ühinenud II sambaga, saavad iga aasta eest 20% vähem osakuid. See on õiglane, sest II
-           sambaga ühinedes läheb osa sinu palgalt tasutud sotsiaalmaksust sinu kontole, mitte
-          riigikassasse.
-        </p>
-        <ul className="d-flex flex-column gap-3">
-          <li>
-            <strong>Riiklik pension.</strong> Võtsime sinu 2018–2024 tehtud II samba sissemaksed ja
-            arvutasime nende alusel välja, kui palju sa sel perioodil osakuid oleks teeninud, kui sa
-            II sambaga ühinenud poleks. Korrutasime selle 0,2-ga ja saimegi teada, kui palju vähem
-            osakuid tegelikult riik sulle kirja pani. Kuna tugineme II samba sissemaksetele, on
-            arvutus mõnel juhul ebatäpne. Näiteks kui oled teeninud tulu ettevõtluskontoga või kui
-            sinu eest on mõnel kuul makstud sotsiaalmaksu, aga sa pole palka saanud. Täpse arvutuse
-            leiad eesti.ee lehelt.
-          </li>
-          <li>
-            <strong>Osaku väärtus.</strong> Osak ei ole vara, vaid lihtsalt riigi viis arvet pidada
-            selle üle, kui palju ta sulle I samba pensionit maksma peaks kui sa pensioniikka jõuad.
-            Sel aastal maksab riik iga osaku eest 10 eurot kuus pensionit.
-          </li>
-          <li>
-            <strong>Miks just 2018–2024?</strong> II sambaga sai ühineda juba 2002. aasta suvel. Me
-            võtsime arvutuse aluseks viimased 8 aastat kahel põhjusel. Esiteks, see on aeg, mil
-            paljud meist koguvad Tulevas. Teiseks, varasematel perioodidel on II samba sissemaksetes
-            olnud mitu muutust, mis teevad nende alusel palga arvutamise võimatuks.
-          </li>
-          <li>
-            <strong>II samba kasv.</strong> Seepärast ei vaata me kogu sinu II sambasse kogunenud
-            summat vaid ainult seda osa, mis on tekkinud 2018–2024 tehtud sissemaksetest ja nendele
-            kogunenud kasumist.
-          </li>
-        </ul>
-      </div>
+      <Collapse in={calculationDetailsToggle}>
+        <div id="calculationDetails" aria-labelledby="calculationDetailsToggle">
+          <p>
+            I samba pensioni suurus sõltub sinu sissetulekust. Täpsemalt, igal aastal arvutab
+            sotsiaalkindlustusamet välja, mitu “osakut” sa viimase aasta eest said. Kogunenud
+            osakute arvu näed <a href="https://eesti.ee">eesti.ee</a> lehel sisse logides. Need, kes
+            on ühinenud II sambaga, saavad iga aasta eest 20% vähem osakuid. See on õiglane, sest II
+             sambaga ühinedes läheb osa sinu palgalt tasutud sotsiaalmaksust sinu kontole, mitte
+            riigikassasse.
+          </p>
+          <ul className="d-flex flex-column gap-3">
+            <li>
+              <strong>Riiklik pension.</strong> Võtsime sinu 2018–2024 tehtud II samba sissemaksed
+              ja arvutasime nende alusel välja, kui palju sa sel perioodil osakuid oleks teeninud,
+              kui sa II sambaga ühinenud poleks. Korrutasime selle 0,2-ga ja saimegi teada, kui
+              palju vähem osakuid tegelikult riik sulle kirja pani. Kuna tugineme II samba
+              sissemaksetele, on arvutus mõnel juhul ebatäpne. Näiteks kui oled teeninud tulu
+              ettevõtluskontoga või kui sinu eest on mõnel kuul makstud sotsiaalmaksu, aga sa pole
+              palka saanud. Täpse arvutuse leiad eesti.ee lehelt.
+            </li>
+            <li>
+              <strong>Osaku väärtus.</strong> Osak ei ole vara, vaid lihtsalt riigi viis arvet
+              pidada selle üle, kui palju ta sulle I samba pensionit maksma peaks kui sa
+              pensioniikka jõuad. Sel aastal maksab riik iga osaku eest 10 eurot kuus pensionit.
+            </li>
+            <li>
+              <strong>Miks just 2018–2024?</strong> II sambaga sai ühineda juba 2002. aasta suvel.
+              Me võtsime arvutuse aluseks viimased 8 aastat kahel põhjusel. Esiteks, see on aeg, mil
+              paljud meist koguvad Tulevas. Teiseks, varasematel perioodidel on II samba
+              sissemaksetes olnud mitu muutust, mis teevad nende alusel palga arvutamise võimatuks.
+            </li>
+            <li>
+              <strong>II samba kasv.</strong> Seepärast ei vaata me kogu sinu II sambasse kogunenud
+              summat vaid ainult seda osa, mis on tekkinud 2018–2024 tehtud sissemaksetest ja
+              nendele kogunenud kasumist.
+            </li>
+          </ul>
+        </div>
+      </Collapse>
     </div>
   );
 };
