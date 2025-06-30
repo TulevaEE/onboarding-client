@@ -158,7 +158,6 @@ export const FirstVsSecondPillarComparison = () => {
                 width="24"
                 height="24"
                 fill="currentColor"
-                className="bi bi-calculator"
                 viewBox="0 0 16 16"
                 aria-hidden="true"
               >
@@ -185,7 +184,6 @@ export const FirstVsSecondPillarComparison = () => {
                 width="24"
                 height="24"
                 fill="currentColor"
-                className="bi bi-calculator"
                 viewBox="0 0 16 16"
                 aria-hidden="true"
               >
@@ -225,7 +223,7 @@ export const FirstVsSecondPillarComparison = () => {
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="lucide lucide-arrow-right-icon lucide-arrow-right"
+            aria-hidden="true"
           >
             <path d="M5 12h14" />
             <path d="m12 5 7 7-7 7" />
