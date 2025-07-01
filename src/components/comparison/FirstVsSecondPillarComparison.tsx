@@ -55,6 +55,7 @@ export const FirstVsSecondPillarComparison = () => {
             arvutada.
           </p>
         </div>
+        {/* todo: näidata ainult neile, kel pole II sammast olnud? II sambast lahkujad ei pruugi saada veel taasliituda
         <p>
           II sambasse kogumine on vabatahtlik, kuid Tulevas usume, et see on maksusoodne viis
           iseenda ja oma lähedaste tuleviku kindlustamiseks.
@@ -64,6 +65,7 @@ export const FirstVsSecondPillarComparison = () => {
             Valin Tuleva II samba fondi
           </Link>
         </p>
+        */}
       </div>
     );
   }
