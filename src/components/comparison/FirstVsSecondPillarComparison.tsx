@@ -61,7 +61,7 @@ export const FirstVsSecondPillarComparison = () => {
         </p>
         <p className="mt-4">
           <Link to="/2nd-pillar-flow/" className="btn btn-primary">
-            Vali Tuleva II samba fond
+            Valin Tuleva II samba fondi
           </Link>
         </p>
       </div>
