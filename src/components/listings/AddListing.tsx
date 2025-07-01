@@ -1,14 +1,14 @@
 import { PropsWithChildren, ReactNode, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ListingType } from '../common/apiModels/listings';
 import styles from './AddListing.module.scss';
 import { useNumberInput } from '../common/utils';
 import { useMe } from '../common/apiHooks';
 import { useMemberCapitalHoldings } from './hooks';
+import { MemberCapitalListingType } from '../common/apiModels';
 
 // TODO break up this component
 export const AddListing = () => {
-  const [listingType, setListingType] = useState<ListingType>('BUY');
+  const [listingType, setListingType] = useState<MemberCapitalListingType>('BUY');
 
   const unitPriceInput = useNumberInput();
   const unitAmountInput = useNumberInput();
@@ -273,9 +273,9 @@ const ListingButton = ({
   listingTypeOfButton,
   onSetListingType,
 }: PropsWithChildren<{
-  listingType: ListingType;
-  listingTypeOfButton: ListingType;
-  onSetListingType: (listingTypeOfButton: ListingType) => unknown;
+  listingType: MemberCapitalListingType;
+  listingTypeOfButton: MemberCapitalListingType;
+  onSetListingType: (listingTypeOfButton: MemberCapitalListingType) => unknown;
 }>) => (
   <button
     type="button"

@@ -9,6 +9,7 @@ import {
   getFundPensionStatus,
   getFunds,
   getMandateDeadlines,
+  getMemberCapitalListings,
   getPendingApplications,
   getSourceFunds,
   getTransactions,
@@ -25,6 +26,7 @@ import {
   ErrorResponse,
   Fund,
   MandateDeadlines,
+  MemberCapitalListing,
   SourceFund,
   Transaction,
   User,
@@ -110,4 +112,8 @@ export function useCreateMandateBatch(): UseMutationResult<
   unknown
 > {
   return useMutation((dto) => createMandateBatch(dto));
+}
+
+export function useMemberCapitalListings(): UseQueryResult<MemberCapitalListing[]> {
+  return useQuery(['memberCapitalListings'], () => getMemberCapitalListings());
 }

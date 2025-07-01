@@ -37,6 +37,9 @@ export function formatAmountForCurrency(
   return `${sign}${formattedAmount}\u00A0€`;
 }
 
+export const formatAmountForCount = (amount: number, fractionDigits = 2) =>
+  new Intl.NumberFormat('et-EE').format(parseFloat(amount.toFixed(fractionDigits)));
+
 export function formatLargeAmountForCurrency(amount = 0) {
   return `${Math.round(amount).toLocaleString('et-EE')}\u00A0€`; // hardcoded euro until more currencies.
 }

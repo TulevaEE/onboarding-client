@@ -386,3 +386,23 @@ export interface MandateDeadlines {
 export interface PaymentLink {
   url: string;
 }
+
+export type MemberCapitalListingType = 'BUY' | 'SELL';
+
+export type MemberCapitalListingCreationRequest = {
+  type: MemberCapitalListingType;
+  units: number;
+  pricePerUnit: number;
+  currency: Currency;
+  expiryDate: string;
+};
+
+export type MemberCapitalListing = {
+  id: number;
+  type: MemberCapitalListingType;
+  units: number;
+  pricePerUnit: number;
+  currency: Currency;
+  expiryTime: string;
+  createdTime: string;
+};
