@@ -405,4 +405,5 @@ export type MemberCapitalListing = {
   currency: Currency;
   expiryTime: string;
   createdTime: string;
+  language: 'EE' | 'EN';
 };

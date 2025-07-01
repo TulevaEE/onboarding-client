@@ -43,6 +43,7 @@ import { FirstVsSecondPillarComparison } from '../comparison/FirstVsSecondPillar
 import { Listings } from '../listings/Listings';
 import { MembersOnlyGatekeep } from '../common/MembersOnlyGatekeep';
 import { AddListing } from '../listings/AddListing';
+import { ListingDetails } from '../listings/ListingDetails';
 
 export const ACCOUNT_PATH = '/account';
 export const AML_PATH = '/aml';
@@ -155,6 +156,14 @@ export class LoggedInApp extends PureComponent {
               render={() => (
                 <MembersOnlyGatekeep>
                   <AddListing />
+                </MembersOnlyGatekeep>
+              )}
+            />
+            <Route
+              path="/capital/listings/:id"
+              render={() => (
+                <MembersOnlyGatekeep>
+                  <ListingDetails />
                 </MembersOnlyGatekeep>
               )}
             />
