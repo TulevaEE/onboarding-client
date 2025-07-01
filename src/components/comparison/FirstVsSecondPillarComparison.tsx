@@ -4,7 +4,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Collapse } from 'react-bootstrap';
-import { useContributions, useSourceFunds } from '../common/apiHooks';
+import { useContributions, useMe, useSourceFunds } from '../common/apiHooks';
 import { Shimmer } from '../common/shimmer/Shimmer';
 import { usePageTitle } from '../common/usePageTitle';
 import { SecondPillarContribution } from '../common/apiModels';
@@ -21,12 +21,13 @@ export const FirstVsSecondPillarComparison = () => {
   const toDate = '2024-12-31';
   const yearsBetween = 7;
 
+  const { data: user } = useMe();
   const { data: contributions } = useContributions();
   const { data: beginSourceFunds } = useSourceFunds(BEGINNING_OF_TIME, fromDate);
   const { data: endSourceFunds } = useSourceFunds(BEGINNING_OF_TIME, toDate);
   const { data: returnsResponse } = useReturns([Key.SECOND_PILLAR], fromDate, toDate);
 
-  if (!contributions || !beginSourceFunds || !endSourceFunds || !returnsResponse) {
+  if (!user || !contributions || !beginSourceFunds || !endSourceFunds || !returnsResponse) {
     return (
       <div className="col-12 col-md-10 col-lg-7 mx-auto pt-5">
         <div className="d-flex flex-column gap-4">
@@ -42,6 +43,10 @@ export const FirstVsSecondPillarComparison = () => {
         </div>
       </div>
     );
+  }
+
+  if (!user.secondPillarActive) {
+    return <>Sul pole II sammast</>;
   }
 
   const { returns } = returnsResponse;
@@ -91,11 +96,14 @@ export const FirstVsSecondPillarComparison = () => {
 
   type YearTotals = Record<number, number>;
 
-  const totalsByYear = contribs.reduce((acc, { time, socialTaxPensionInsurancePortion }) => {
-    const year = new Date(time).getUTCFullYear();
-    acc[year] = (acc[year] ?? 0) + socialTaxPensionInsurancePortion;
-    return acc;
-  }, {} as YearTotals);
+  const totalsByYear = contribs.reduce(
+    (accumulator, { time, socialTaxPensionInsurancePortion }) => {
+      const year = new Date(time).getUTCFullYear();
+      accumulator[year] = (accumulator[year] ?? 0) + socialTaxPensionInsurancePortion;
+      return accumulator;
+    },
+    {} as YearTotals,
+  );
 
   interface YearStat {
     year: number;
@@ -110,8 +118,8 @@ export const FirstVsSecondPillarComparison = () => {
     ...AVG_PERSONALIZED_SOCIAL_TAX_PENSION_COMPONENT_EUR_BY_YEAR,
   })
     .map(Number)
-    .filter((y) => y >= 2018 && y <= 2024)
-    .sort((a, b) => a - b)
+    .filter((year) => year >= 2018 && year <= 2024)
+    .sort((year1, year2) => year1 - year2)
     .map((year) => {
       const total = totalsByYear[year] ?? 0;
       const average = AVG_PERSONALIZED_SOCIAL_TAX_PENSION_COMPONENT_EUR_BY_YEAR[year];
@@ -124,7 +132,7 @@ export const FirstVsSecondPillarComparison = () => {
     });
 
   const totalDiff = yearStats.reduce(
-    (acc, { ratio, ratioWithReduction }) => acc + (ratio - ratioWithReduction),
+    (accumulator, { ratio, ratioWithReduction }) => accumulator + (ratio - ratioWithReduction),
     0,
   );
 
@@ -145,7 +153,7 @@ export const FirstVsSecondPillarComparison = () => {
     <div className="col-12 col-md-10 col-lg-7 mx-auto pt-5">
       <h1 className="mb-4">Kui palju vähendab II sambasse kogumine sinu riiklikku pensioni?</h1>
       <p>
-        Kogud raha II sambasse ja lisab riik sellele omapoolse maksuvõimenduse. Selle arvelt teenid
+        Kogud raha II sambasse ja riik lisab sellele omapoolse maksuvõimenduse. Selle arvelt teenid
         igal aastal natuke vähem I samba osakuid ehk tulevikus maksab riik sulle pisut väiksemat
         riiklikku pensioni.
       </p>
