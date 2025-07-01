@@ -13,6 +13,7 @@ import {
   LoginMethod,
   Mandate,
   MandateDeadlines,
+  MemberCapitalListing,
   MobileSignatureResponse,
   MobileSignatureStatusResponse,
   Payment,
@@ -156,6 +157,13 @@ export function getWithdrawalsEligibility(): Promise<WithdrawalsEligibility> {
   return mockRequestInMockMode(
     () => getWithAuthentication(getEndpoint('/v1/withdrawals/eligibility'), undefined),
     'withdrawalsEligibility',
+  );
+}
+
+export function getMemberCapitalListings(): Promise<MemberCapitalListing[]> {
+  return mockRequestInMockMode(
+    () => getWithAuthentication(getEndpoint('/v1/listings'), undefined),
+    'memberCapitalListings',
   );
 }
 
