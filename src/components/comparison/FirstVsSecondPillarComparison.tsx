@@ -46,7 +46,26 @@ export const FirstVsSecondPillarComparison = () => {
   }
 
   if (!user.secondPillarActive) {
-    return <>Sul pole II sammast</>;
+    return (
+      <div className="col-12 col-md-10 col-lg-7 mx-auto pt-5">
+        <h1 className="mb-4">Kui palju vähendab II sambasse kogumine sinu riiklikku pensioni?</h1>
+        <div className="alert alert-light my-5" role="alert">
+          <p className="m-0">
+            Sul pole II sammast ja seetõttu ei saa me selle mõju sinu riikliku pensioni suurusele
+            arvutada.
+          </p>
+        </div>
+        <p>
+          II sambasse kogumine on vabatahtlik, kuid Tulevas usume, et see on maksusoodne viis
+          iseenda ja oma lähedaste tuleviku kindlustamiseks.
+        </p>
+        <p className="mt-4">
+          <Link to="/2nd-pillar-flow/" className="btn btn-primary">
+            Vali Tuleva II samba fond
+          </Link>
+        </p>
+      </div>
+    );
   }
 
   const { returns } = returnsResponse;
