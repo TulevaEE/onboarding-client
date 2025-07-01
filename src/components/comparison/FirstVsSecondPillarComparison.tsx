@@ -149,7 +149,7 @@ export const FirstVsSecondPillarComparison = () => {
         igal aastal natuke vähem I samba osakuid ehk tulevikus maksab riik sulle pisut väiksemat
         riiklikku pensioni.
       </p>
-      <p>Täpsemalt on viimase 8 aasta (2018–2024) vahekokkuvõte selline:</p>
+      <p>Täpsemalt on viimase 7 aasta (2018–2024) vahekokkuvõte selline:</p>
       <div className="my-4 vstack gap-2">
         <div className="card">
           <div className="card-body d-flex gap-3">
@@ -285,7 +285,7 @@ export const FirstVsSecondPillarComparison = () => {
             </li>
             <li>
               <strong>Miks just 2018–2024?</strong> II sambaga sai ühineda juba 2002. aasta suvel.
-              Me võtsime arvutuse aluseks viimased 8 aastat kahel põhjusel. Esiteks, see on aeg, mil
+              Me võtsime arvutuse aluseks viimased 7 aastat kahel põhjusel. Esiteks, see on aeg, mil
               paljud meist koguvad Tulevas. Teiseks, varasematel perioodidel on II samba
               sissemaksetes olnud mitu muutust, mis teevad nende alusel palga arvutamise võimatuks.
             </li>
