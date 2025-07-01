@@ -168,8 +168,8 @@ export const FirstVsSecondPillarComparison = () => {
             </span>
             <p className="card-text">
               Teenisid I sambasse {totalDiff.toFixed(1).replace('.', ',')} osakut vähem, kui oleksid
-              teeninud ilma II sambasse kogumata. Kui läheksid täna 65-aastaselt pensionile, oleks
-              sinu <strong>riiklik pension</strong> seetõttu{' '}
+              teeninud ilma II sambata. Kui läheksid täna 65-aastaselt pensionile, oleks sinu{' '}
+              <strong>riiklik pension</strong> seetõttu{' '}
               <strong>
                 <Euro amount={impactOfReduction} fractionDigits={0} /> kuus väiksem
               </strong>
@@ -198,7 +198,7 @@ export const FirstVsSecondPillarComparison = () => {
               <strong>
                 <Euro amount={secondPillarSum} fractionDigits={0} /> juurde
               </strong>
-              . See summa jäänuks sul ainult I samba korral saamata.
+              . Seda vara saad kasutada igal hetkel.
             </p>
           </div>
         </div>
@@ -279,7 +279,7 @@ export const FirstVsSecondPillarComparison = () => {
             </li>
             <li>
               <strong>Osaku väärtus.</strong> Osak ei ole vara, vaid lihtsalt riigi viis arvet
-              pidada selle üle, kui palju ta sulle I samba pensionit maksma peaks kui sa
+              pidada selle üle, kui palju ta sulle I samba pensionit maksma peaks, kui sa
               pensioniikka jõuad. Sel aastal maksab riik iga teenitud osaku eest 10 eurot kuus
               pensionit.
             </li>
