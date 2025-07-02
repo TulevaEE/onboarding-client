@@ -34,8 +34,6 @@ export const AddListing = () => {
     priceLessThanBookValue: unitPriceInput.value !== null && unitPriceInput.value < 1,
   };
 
-  const valuesPresent = !errors.noPriceValue && !errors.noUnitAmountValue;
-
   const handleSubmit = async () => {
     setSubmitting(true);
     if (unitAmountInput.value === null || unitPriceInput.value === null) {
@@ -108,13 +106,14 @@ export const AddListing = () => {
           </div>
           <div className="col-lg mb-3 mb-lg-0">
             <div>
-              <label htmlFor="unit-amount" className="form-label">
+              <label htmlFor="unit-price" className="form-label">
                 Ühiku hind
               </label>
               <div className="input-group input-group-lg">
                 <input
                   type="number"
                   placeholder="0"
+                  id="unit-price"
                   aria-label="Ühiku hind"
                   className={`form-control form-control-lg text-end pe-0 ${
                     errors.priceLessThanBookValue ? styles.warningInput : ''

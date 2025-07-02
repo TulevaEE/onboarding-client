@@ -10,6 +10,7 @@ import {
   Conversion,
   FundBalance,
   FundStatus,
+  MemberCapitalListing,
   User,
   UserConversion,
 } from '../components/common/apiModels';
@@ -34,6 +35,7 @@ import {
   mockUser,
   secondPillarPaymentRateChangeResponse,
 } from './backend-responses';
+import { memberCapitalListingsProfiles } from '../components/common/requestMocker/profiles/memberCapitalListings';
 
 export function cancellationBackend(server: SetupServerApi): {
   cancellationCreated: boolean;
@@ -590,6 +592,61 @@ export function withdrawalsEligibilityBackend(
   );
 }
 
+export function memberCapitalListingsBackend(
+  server: SetupServerApi,
+  listings: MemberCapitalListing[] = [
+    {
+      id: 1,
+      type: 'BUY',
+      units: 10,
+      pricePerUnit: 2,
+      language: 'en',
+      isOwnListing: false,
+      currency: 'EUR',
+      expiryTime: moment().add(1, 'months').toISOString(),
+      createdTime: moment().subtract(5, 'days').toISOString(),
+    },
+    {
+      id: 2,
+      type: 'SELL',
+      units: 100,
+      pricePerUnit: 2.5,
+      currency: 'EUR',
+      isOwnListing: false,
+      language: 'et',
+      expiryTime: moment().add(1, 'months').toISOString(),
+      createdTime: moment().subtract(5, 'days').toISOString(),
+    },
+    {
+      id: 3,
+      type: 'BUY',
+      units: 10000,
+      language: 'en',
+      pricePerUnit: 2.34,
+      currency: 'EUR',
+      isOwnListing: true,
+      expiryTime: moment().add(1, 'months').toISOString(),
+      createdTime: moment().subtract(5, 'days').toISOString(),
+    },
+  ],
+) {
+  server.use(
+    rest.get('http://localhost/v1/listings', (req, res, ctx) => res(ctx.json(listings))),
+    rest.post('http://localhost/v1/listings', (req, res, ctx) => {
+      const body = req.body as Record<string, unknown>;
+
+      return res(
+        ctx.json({
+          ...body,
+          id: 99,
+          createdTime: moment().toISOString(),
+        }),
+      );
+    }),
+    rest.delete('http://localhost/v1/listings/3', (req, res, ctx) => res()),
+  );
+}
+
 export function fundPensionStatusBackend(
   server: SetupServerApi,
   fundPensionStatus: FundPensionStatus = {
@@ -664,6 +721,7 @@ const TEST_BACKENDS = {
   mandateDeadlines: mandateDeadlinesBackend,
   mandateBatch: mandateBatchBackend,
   mandates: mandatesBackend,
+  memberCapitalListings: memberCapitalListingsBackend,
 } as const;
 
 export type TestBackendName = keyof typeof TEST_BACKENDS;
