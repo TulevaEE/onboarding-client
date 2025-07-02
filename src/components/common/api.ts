@@ -25,8 +25,10 @@ import {
   Transaction,
   User,
   UserConversion,
-} from './apiModels';
+  CreateMemberCapitalListingDto,
+} from './apiModels/index';
 import {
+  deleteWithAuthentication,
   downloadFileWithAuthentication,
   getWithAuthentication,
   patchWithAuthentication,
@@ -165,6 +167,18 @@ export function getMemberCapitalListings(): Promise<MemberCapitalListing[]> {
     () => getWithAuthentication(getEndpoint('/v1/listings'), undefined),
     'memberCapitalListings',
   );
+}
+
+export function createMemberCapitalListing(
+  dto: CreateMemberCapitalListingDto,
+): Promise<MemberCapitalListing> {
+  return postWithAuthentication(getEndpoint('/v1/listings'), dto);
+}
+
+export function deleteMemberCapitalListing(
+  listing: MemberCapitalListing,
+): Promise<MemberCapitalListing> {
+  return deleteWithAuthentication(getEndpoint(`/v1/listings/${listing.id}`));
 }
 
 export function getFundPensionStatus(): Promise<FundPensionStatus> {

@@ -62,6 +62,15 @@ export async function postWithAuthentication<TResponse = any>(
   return response.data;
 }
 
+export async function deleteWithAuthentication<TResponse = any>(
+  url: string,
+  axiosConfig = {},
+): Promise<any> {
+  const axiosInstance = createAxiosInstance();
+  const response = await axiosInstance.delete<TResponse>(url, axiosConfig);
+  return response.data;
+}
+
 export async function putWithAuthentication<TResponse = any>(
   url: string,
   data = {},

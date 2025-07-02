@@ -1,8 +1,16 @@
-import { useMutation, UseMutationResult, useQuery, UseQueryResult } from '@tanstack/react-query';
+import {
+  useMutation,
+  UseMutationResult,
+  useQuery,
+  useQueryClient,
+  UseQueryResult,
+} from '@tanstack/react-query';
 
 import {
   createApplicationCancellation,
   createMandateBatch,
+  createMemberCapitalListing,
+  deleteMemberCapitalListing,
   getCapitalEvents,
   getCapitalRowsWithToken,
   getContributions,
@@ -23,6 +31,7 @@ import {
   CapitalEvent,
   CapitalRow,
   Contribution,
+  CreateMemberCapitalListingDto,
   ErrorResponse,
   Fund,
   MandateDeadlines,
@@ -116,4 +125,34 @@ export function useCreateMandateBatch(): UseMutationResult<
 
 export function useMemberCapitalListings(): UseQueryResult<MemberCapitalListing[]> {
   return useQuery(['memberCapitalListings'], () => getMemberCapitalListings());
+}
+
+export function useCreateMemberCapitalListing(): UseMutationResult<
+  MemberCapitalListing,
+  ErrorResponse,
+  CreateMemberCapitalListingDto,
+  unknown
+> {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (dto) => createMemberCapitalListing(dto),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['memberCapitalListings'] });
+    },
+  });
+}
+
+export function useDeleteMemberCapitalListing(): UseMutationResult<
+  MemberCapitalListing,
+  ErrorResponse,
+  MemberCapitalListing,
+  unknown
+> {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (listing) => deleteMemberCapitalListing(listing),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['memberCapitalListings'] });
+    },
+  });
 }
