@@ -14,7 +14,7 @@ Originally, this repo was built using js, redux and enzyme for testing. Over the
 - Try to not use Redux (See below)
 - Use react testing library and msw for tests and try to mock as little as possible, building tests to imitate how a user would use your application. See the [`CancellationFlow`](./src/components/flows/cancellation/CancellationFlow.tsx) for an example of how to incrementally move to this structure while reusing previous redux code.
 
-### Migrating away from Redux 
+### Migrating away from Redux
 
 * Prefer [React Query](https://react-query.tanstack.com/) hooks in new code
 * Prefer [React's native context](https://react.dev/learn/passing-data-deeply-with-context) for localized state sharing, example in `withdrawals/hooks.ts`.
@@ -30,7 +30,7 @@ Then it's later possible to replace `useSelector` and `useDispatch` within those
 ## Prerequisites
 
 - Git
-- Node.js LTS (20.14.0) and NPM (10.7.0)
+- Node.js LTS (22.17.0) and NPM (10.9.2)
 
 Easiest way to get a specific version of Nodejs (or almost anything really) is to use [asdf](https://asdf-vm.com)
 - *asdf plugin add nodejs*
