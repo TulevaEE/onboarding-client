@@ -1,4 +1,4 @@
-import { Link, useParams } from 'react-router-dom';
+import { Link, useHistory, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import config from 'react-global-configuration';
 import { info } from 'sass';
@@ -15,6 +15,8 @@ export const ListingDetails = () => {
   const { data: me } = useMe();
 
   const [message, setMessage] = useState<string>();
+
+  const history = useHistory();
 
   const listing = listings?.find((otherListing) => otherListing.id === Number(urlId));
 
@@ -106,7 +108,7 @@ export const ListingDetails = () => {
         </div>
 
         <div className={`d-flex justify-content-between mt-5 pt-4 ${styles.submitButtonGroup}`}>
-          <button type="button" className="btn btn-lg btn-light">
+          <button type="button" className="btn btn-lg btn-light" onClick={() => history.goBack()}>
             Tagasi
           </button>
           <button type="button" className="btn btn-lg btn-primary" disabled={!message}>
