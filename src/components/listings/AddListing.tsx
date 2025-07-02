@@ -1,35 +1,61 @@
 import { PropsWithChildren, ReactNode, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
+import moment from 'moment';
 import styles from './AddListing.module.scss';
 import { useNumberInput } from '../common/utils';
-import { useMe } from '../common/apiHooks';
+import { useCreateMemberCapitalListing, useMe } from '../common/apiHooks';
 import { useMemberCapitalHoldings } from './hooks';
 import { MemberCapitalListingType } from '../common/apiModels';
 
 // TODO break up this component
 export const AddListing = () => {
+  const history = useHistory();
+
   const [listingType, setListingType] = useState<MemberCapitalListingType>('BUY');
+
+  const [expiryInMonths, setExpiryInMonths] = useState<number>(1);
 
   const unitPriceInput = useNumberInput();
   const unitAmountInput = useNumberInput();
 
+  const { mutateAsync: createListing, error } = useCreateMemberCapitalListing();
+
   const memberCapitalHoldings = useMemberCapitalHoldings();
 
-  const [triedSubmit, setTriedSubmit] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const errors = {
     noPriceValue: typeof unitPriceInput.value !== 'number',
     noUnitAmountValue: typeof unitPriceInput.value !== 'number',
     moreThanMemberCapital:
-      memberCapitalHoldings && memberCapitalHoldings < (unitAmountInput.value ?? 0),
+      listingType === 'SELL' &&
+      memberCapitalHoldings !== null &&
+      memberCapitalHoldings < (unitAmountInput.value ?? 0),
     priceLessThanBookValue: unitPriceInput.value !== null && unitPriceInput.value < 1,
   };
 
   const valuesPresent = !errors.noPriceValue && !errors.noUnitAmountValue;
 
-  const handleSubmit = () => {
-    setTriedSubmit(true);
-    // TODO api call
+  const handleSubmit = async () => {
+    setSubmitting(true);
+    if (unitAmountInput.value === null || unitPriceInput.value === null) {
+      return;
+    }
+
+    const expiryTime = moment().add(expiryInMonths, 'months').endOf('day').toISOString();
+
+    try {
+      await createListing({
+        type: listingType,
+        units: unitAmountInput.value,
+        pricePerUnit: unitPriceInput.value,
+        currency: 'EUR',
+        expiryTime,
+      });
+      history.push('/capital/listings');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -39,6 +65,11 @@ export const AddListing = () => {
       </div>
 
       <section className={`my-5 ${styles.addListingContainer}`}>
+        {error && (
+          <div className="alert alert-danger">
+            Kuulutuse lisamisel tekkis viga. Palun võta meiega ühendust
+          </div>
+        )}
         <div className="btn-group d-flex" role="group" aria-label="Basic example">
           <ListingButton
             listingType={listingType}
@@ -142,13 +173,15 @@ export const AddListing = () => {
               </label>
               <div className="input-group input-group-lg">
                 <select
+                  value={expiryInMonths}
+                  onChange={(e) => setExpiryInMonths(Number(e.target.value))}
                   className="form-select form-control-lg"
                   placeholder="0"
-                  aria-label="Ühiku hind"
+                  aria-label="Kuulutuse kestus kuudes"
                 >
-                  <option value="1_MONTHS">1 kuu pärast</option>
-                  <option value="3_MONTHS">3 kuu pärast</option>
-                  <option value="6_MONTHS">6 kuu pärast</option>
+                  <option value="1">1 kuu pärast</option>
+                  <option value="3">3 kuu pärast</option>
+                  <option value="6">6 kuu pärast</option>
                 </select>
               </div>
             </div>
@@ -160,18 +193,14 @@ export const AddListing = () => {
         </div>
 
         <div className={`d-flex justify-content-between mt-5 pt-4 ${styles.submitButtonGroup}`}>
-          <button type="button" className="btn btn-lg btn-light">
+          <button type="button" className="btn btn-lg btn-light" onClick={() => history.goBack()}>
             Tagasi
           </button>
           <button
             type="button"
             className="btn btn-lg btn-primary"
             onClick={handleSubmit}
-            disabled={
-              (triedSubmit && !valuesPresent) ||
-              errors.moreThanMemberCapital ||
-              errors.priceLessThanBookValue
-            }
+            disabled={submitting || errors.moreThanMemberCapital || errors.priceLessThanBookValue}
           >
             Avaldan ostukuulutuse
           </button>

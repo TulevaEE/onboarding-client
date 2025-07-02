@@ -397,6 +397,14 @@ export type MemberCapitalListingCreationRequest = {
   expiryDate: string;
 };
 
+export type CreateMemberCapitalListingDto = {
+  type: MemberCapitalListingType;
+  units: number;
+  pricePerUnit: number;
+  currency: Currency;
+  expiryTime: string;
+};
+
 export type MemberCapitalListing = {
   id: number;
   type: MemberCapitalListingType;
@@ -405,5 +413,6 @@ export type MemberCapitalListing = {
   currency: Currency;
   expiryTime: string;
   createdTime: string;
-  language: 'EE' | 'EN';
+  isOwnListing: boolean;
+  language: 'et' | 'en';
 };

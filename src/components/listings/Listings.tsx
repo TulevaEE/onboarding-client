@@ -1,23 +1,34 @@
+import { Link } from 'react-router-dom';
+import { useMemberCapitalListings } from '../common/apiHooks';
 import { ListingsList } from './components/ListingsList';
 
-export const Listings = () => (
-  <div className="col-12 col-md-11 col-lg-9 mx-auto">
-    <div className="my-5">
-      <h1 className="mb-4 text-center">Liikmekapitali kuulutused</h1>
+export const Listings = () => {
+  const { data: listings } = useMemberCapitalListings();
 
-      <p className="m-0 lead text-center">
-        Tuleva ühistu liikmed saavad liikmekapitali omavahel osta ja müüa.
-      </p>
+  return (
+    <div className="col-12 col-md-11 col-lg-9 mx-auto">
+      <div className="my-5 text-center">
+        <h1 className="mb-4">Liikmekapitali kuulutused</h1>
 
-      <p className="pt-3 lead text-center">
-        Selleks lisa oma kuulutus või vasta olemasolevale ja esitage ühine avaldus. Ühistu juhatus
-        vaatab saadetud avaldused iga kuu esimestel tööpäevadel üle ja kiidab tehingu heaks, kui see
-        vastab kehtestatud korrale.
-      </p>
+        <p className="m-0 lead">
+          Tuleva ühistu liikmed saavad liikmekapitali omavahel osta ja müüa.
+        </p>
+
+        <p className="pt-3 lead">
+          Selleks lisa oma kuulutus või vasta olemasolevale ja esitage ühine avaldus. Ühistu juhatus
+          vaatab saadetud avaldused iga kuu esimestel tööpäevadel üle ja kiidab tehingu heaks, kui
+          see vastab kehtestatud korrale.
+        </p>
+        {(listings?.length ?? 0) > 0 && (
+          <Link to="/capital/listings/add" className="mt-2 btn btn-primary align-middle">
+            + Lisan kuulutuse
+          </Link>
+        )}
+      </div>
+
+      <div className="my-5">
+        <ListingsList />
+      </div>
     </div>
-
-    <div className="my-5">
-      <ListingsList />
-    </div>
-  </div>
-);
+  );
+};
