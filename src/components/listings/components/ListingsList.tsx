@@ -61,7 +61,7 @@ const ListingRow = ({ listing }: { listing: MemberCapitalListing }) => {
     setDeleteDropdownOpen(false);
   };
   return (
-    <tr>
+    <tr data-testid="listing">
       <td>
         {listing.type === 'BUY' ? 'Ost' : 'Müük'} #{listing.id}
       </td>
@@ -74,7 +74,7 @@ const ListingRow = ({ listing }: { listing: MemberCapitalListing }) => {
             <button
               type="button"
               className="btn btn-link p-0 d-inline-flex align-items-center"
-              aria-expanded="false"
+              aria-expanded={deleteDropdownOpen}
               onClick={() => setDeleteDropdownOpen((oldVal) => !oldVal)}
             >
               <svg
@@ -141,7 +141,7 @@ const ListingRow = ({ listing }: { listing: MemberCapitalListing }) => {
                 fill="#0072EC"
               />
             </svg>
-            {listing.type === 'BUY' ? 'Soovin müüa' : 'Soovin osta'}
+            {listing.type === 'BUY' ? 'Soovin osta' : 'Soovin müüa'}
           </Link>
         )}
       </td>

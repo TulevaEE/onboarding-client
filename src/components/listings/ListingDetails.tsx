@@ -1,7 +1,6 @@
 import { Link, useHistory, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import config from 'react-global-configuration';
-import { info } from 'sass';
 import { useMe, useMemberCapitalListings } from '../common/apiHooks';
 import { Loader } from '../common';
 import styles from './ListingDetails.module.scss';
