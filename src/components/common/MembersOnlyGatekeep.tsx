@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import { Redirect, useLocation } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import { PropsWithChildren } from 'react';
 import { State } from '../../types';
 
