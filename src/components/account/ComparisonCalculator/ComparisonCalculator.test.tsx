@@ -202,7 +202,7 @@ describe('ComparisonCalculator', () => {
     expect(comparisonSelect).toBeInTheDocument();
 
     expect(comparisonSelect).toHaveTextContent('World market index');
-    expect(comparisonSelect).toHaveTextContent('Estonian II pillar funds average performance');
+    expect(comparisonSelect).toHaveTextContent('Average Estonian II pillar fund');
     expect(comparisonSelect).toHaveTextContent('Estonia inflation rate');
     expect(comparisonSelect).toHaveTextContent('Tuleva World Stocks Pension Fund');
     expect(comparisonSelect).toHaveTextContent('Tuleva World Bonds Pension Fund');
@@ -218,6 +218,7 @@ describe('ComparisonCalculator', () => {
     expect(comparisonSelect).toBeInTheDocument();
 
     expect(comparisonSelect).toHaveTextContent('World market index');
+    expect(comparisonSelect).toHaveTextContent('Average Estonian III pillar fund');
     expect(comparisonSelect).toHaveTextContent('Estonia inflation rate');
     expect(comparisonSelect).toHaveTextContent('Tuleva III Samba Pensionifond');
   });
@@ -500,10 +501,7 @@ describe('ComparisonCalculator', () => {
     userBackend(server);
     setReturnsData(returnsData2ndPillarAverage);
     await component();
-    userEvent.selectOptions(
-      await comparedToSelect(),
-      'Estonian II pillar funds average performance',
-    );
+    userEvent.selectOptions(await comparedToSelect(), 'Average Estonian II pillar fund');
     await component();
 
     // Content text
@@ -514,7 +512,7 @@ describe('ComparisonCalculator', () => {
     ).toBeInTheDocument();
 
     expect(
-      await screen.findByText(/Estonian II pillar funds average/i, { selector: 'strong' }),
+      await screen.findByText(/average Estonian II pillar fund/i, { selector: 'strong' }),
     ).toBeInTheDocument();
 
     expect(await screen.findByText(/performance./i)).toBeInTheDocument();
@@ -545,11 +543,9 @@ describe('ComparisonCalculator', () => {
     const secondBarGraph = within(graph).getByText('6.9%').closest('.bar-graph');
     expect(secondBarGraph).toHaveStyle('height: 136.25px');
     expect(within(graph).getByText('+10 900 €')).toBeInTheDocument();
-    expect(
-      within(graph).getByText('Estonian II pillar funds average performance'),
-    ).toBeInTheDocument();
+    expect(within(graph).getByText('Average Estonian II pillar fund')).toBeInTheDocument();
     const secondBar = within(graph)
-      .getByText('Estonian II pillar funds average performance')
+      .getByText('Average Estonian II pillar fund')
       // eslint-disable-next-line testing-library/no-node-access
       .closest('.bar');
     expect(secondBar).toHaveAttribute('data-testid', 'bar-NEGATIVE');

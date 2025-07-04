@@ -5,6 +5,7 @@ export enum Key {
   SECOND_PILLAR = 'SECOND_PILLAR',
   THIRD_PILLAR = 'THIRD_PILLAR',
   EPI = 'EPI',
+  EPI_3 = 'EPI_3',
   UNION_STOCK_INDEX = 'UNION_STOCK_INDEX',
   CPI = 'CPI',
 }

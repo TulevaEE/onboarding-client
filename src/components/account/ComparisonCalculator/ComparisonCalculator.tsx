@@ -831,17 +831,22 @@ const ComparisonCalculator: React.FC = () => {
   function populateCompareToOptions() {
     const stockIndexOption = {
       value: Key.UNION_STOCK_INDEX,
-      label: formatMessage({ id: 'comparisonCalculator.comparisonOptions.unionStockIndex' }),
+      label: formatMessage({ id: 'comparisonCalculator.comparisonOptions.UNION_STOCK_INDEX' }),
     };
 
     const inflationOption = {
       value: Key.CPI,
-      label: formatMessage({ id: 'comparisonCalculator.comparisonOptions.cpi' }),
+      label: formatMessage({ id: 'comparisonCalculator.comparisonOptions.CPI' }),
     };
 
     const secondPillarAverageOption = {
       value: Key.EPI,
-      label: formatMessage({ id: 'comparisonCalculator.comparisonOptions.epi' }),
+      label: formatMessage({ id: 'comparisonCalculator.comparisonOptions.EPI' }),
+    };
+
+    const thirdPillarAverageOption = {
+      value: Key.EPI_3,
+      label: formatMessage({ id: 'comparisonCalculator.comparisonOptions.EPI_3' }),
     };
 
     let funds = secondPillarFunds;
@@ -852,6 +857,9 @@ const ComparisonCalculator: React.FC = () => {
     const benchmarkOptions = [stockIndexOption];
     if (selectedPillar === Key.SECOND_PILLAR) {
       benchmarkOptions.push(secondPillarAverageOption);
+    }
+    if (selectedPillar === Key.THIRD_PILLAR) {
+      benchmarkOptions.push(thirdPillarAverageOption);
     }
     benchmarkOptions.push(inflationOption);
 
@@ -994,13 +1002,23 @@ const ComparisonCalculator: React.FC = () => {
       let fundLabel = getFundLabelByKey(selectedComparison);
       if (selectedComparison === Key.EPI) {
         fundLabel = formatMessage({
-          id: 'comparisonCalculator.content.performance.epi.alpha.label.negative',
+          id: 'comparisonCalculator.content.performance.EPI.alpha.label.negative',
+        });
+      }
+      if (selectedComparison === Key.EPI_3) {
+        fundLabel = formatMessage({
+          id: 'comparisonCalculator.content.performance.EPI_3.alpha.label.negative',
         });
       }
       if (performanceVerdictProperties.verdict === 'POSITIVE_ALPHA') {
         if (selectedComparison === Key.EPI) {
           fundLabel = formatMessage({
-            id: 'comparisonCalculator.content.performance.epi.alpha.label.positive',
+            id: 'comparisonCalculator.content.performance.EPI.alpha.label.positive',
+          });
+        }
+        if (selectedComparison === Key.EPI_3) {
+          fundLabel = formatMessage({
+            id: 'comparisonCalculator.content.performance.EPI_3.alpha.label.positive',
           });
         }
         return (
@@ -1061,17 +1079,17 @@ const ComparisonCalculator: React.FC = () => {
         return (
           <>
             {formatMessageWithTags({
-              id: 'comparisonCalculator.content.performance.cpi.alpha.start',
+              id: 'comparisonCalculator.content.performance.CPI.alpha.start',
               values: {
                 years: contentTextProperties.years.toString(),
                 pillar: contentTextProperties.pillar,
               },
             })}{' '}
-            <FormattedMessage id="comparisonCalculator.content.performance.cpi.alpha.wordPositive" />{' '}
+            <FormattedMessage id="comparisonCalculator.content.performance.CPI.alpha.wordPositive" />{' '}
             <span className="result-positive">
               {formatAmountForCurrency(performanceVerdictProperties.amount, 0, { isSigned: true })}
             </span>{' '}
-            <FormattedMessage id="comparisonCalculator.content.performance.cpi.alpha.positiveVerdict" />
+            <FormattedMessage id="comparisonCalculator.content.performance.CPI.alpha.positiveVerdict" />
           </>
         );
       }
@@ -1093,19 +1111,19 @@ const ComparisonCalculator: React.FC = () => {
         return (
           <>
             {formatMessageWithTags({
-              id: 'comparisonCalculator.content.performance.cpi.alpha.start',
+              id: 'comparisonCalculator.content.performance.CPI.alpha.start',
               values: {
                 years: contentTextProperties.years.toString(),
                 pillar: contentTextProperties.pillar,
               },
             })}
             {formatMessageWithTags({
-              id: 'comparisonCalculator.content.performance.cpi.alpha.wordNegative',
+              id: 'comparisonCalculator.content.performance.CPI.alpha.wordNegative',
             })}{' '}
             <strong className="text-danger">
               {formatAmountForCurrency(performanceVerdictProperties.amount, 0, { isSigned: true })}
             </strong>{' '}
-            <FormattedMessage id="comparisonCalculator.content.performance.cpi.alpha.negativeVerdict" />
+            <FormattedMessage id="comparisonCalculator.content.performance.CPI.alpha.negativeVerdict" />
           </>
         );
       }
@@ -1206,13 +1224,16 @@ const ComparisonCalculator: React.FC = () => {
 
   function getFundLabelByKey(key: string) {
     if (key === Key.CPI) {
-      return formatMessage({ id: 'comparisonCalculator.comparisonOptions.cpi' });
+      return formatMessage({ id: 'comparisonCalculator.comparisonOptions.CPI' });
     }
     if (key === Key.EPI) {
-      return formatMessage({ id: 'comparisonCalculator.comparisonOptions.epi' });
+      return formatMessage({ id: 'comparisonCalculator.comparisonOptions.EPI' });
+    }
+    if (key === Key.EPI_3) {
+      return formatMessage({ id: 'comparisonCalculator.comparisonOptions.EPI_3' });
     }
     if (key === Key.UNION_STOCK_INDEX) {
-      return formatMessage({ id: 'comparisonCalculator.comparisonOptions.unionStockIndex' });
+      return formatMessage({ id: 'comparisonCalculator.comparisonOptions.UNION_STOCK_INDEX' });
     }
 
     return [...secondPillarFunds, ...thirdPillarFunds].find((it) => it.isin === key)?.name || key;
