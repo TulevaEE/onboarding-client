@@ -463,7 +463,7 @@ const ComparisonCalculator: React.FC = () => {
         data-testid={`bar-${properties.color}`}
       >
         <div className="bar-amount" style={barAmountStyle}>
-          {formatAmountForCurrency(properties.amount, 0, { isSigned: true })}
+          {formatAmountForCurrencyWithPrecisionWhenNeeded(properties.amount, 0, { isSigned: true })}
         </div>
         <div className="bar-graph" role="presentation" style={{ height: `${height}px` }}>
           {showPercentage && (
@@ -959,7 +959,11 @@ const ComparisonCalculator: React.FC = () => {
             })}{' '}
             <FormattedMessage id="comparisonCalculator.content.performance.index.alpha.wordPositive" />{' '}
             <span className="result-positive">
-              {formatAmountForCurrency(performanceVerdictProperties.amount, 0, { isSigned: true })}
+              {formatAmountForCurrencyWithPrecisionWhenNeeded(
+                performanceVerdictProperties.amount,
+                0,
+                { isSigned: true },
+              )}
             </span>{' '}
             <FormattedMessage id="comparisonCalculator.content.performance.index.alpha.positiveVerdict" />
           </>
@@ -990,7 +994,11 @@ const ComparisonCalculator: React.FC = () => {
             })}{' '}
             <FormattedMessage id="comparisonCalculator.content.performance.index.alpha.wordNegative" />{' '}
             <strong className="text-danger">
-              {formatAmountForCurrency(performanceVerdictProperties.amount, 0, { isSigned: true })}
+              {formatAmountForCurrencyWithPrecisionWhenNeeded(
+                performanceVerdictProperties.amount,
+                0,
+                { isSigned: true },
+              )}
             </strong>{' '}
             <FormattedMessage id="comparisonCalculator.content.performance.index.alpha.negativeVerdict" />
           </>
@@ -1033,7 +1041,11 @@ const ComparisonCalculator: React.FC = () => {
             })}{' '}
             <FormattedMessage id="comparisonCalculator.content.performance.fund.alpha.wordPositive" />{' '}
             <span className="result-positive">
-              {formatAmountForCurrency(performanceVerdictProperties.amount, 0, { isSigned: true })}
+              {formatAmountForCurrencyWithPrecisionWhenNeeded(
+                performanceVerdictProperties.amount,
+                0,
+                { isSigned: true },
+              )}
             </span>{' '}
             <FormattedMessage id="comparisonCalculator.content.performance.fund.alpha.positiveVerdict" />
           </>
@@ -1066,7 +1078,11 @@ const ComparisonCalculator: React.FC = () => {
             })}{' '}
             <FormattedMessage id="comparisonCalculator.content.performance.fund.alpha.wordNegative" />{' '}
             <strong className="text-danger">
-              {formatAmountForCurrency(performanceVerdictProperties.amount, 0, { isSigned: true })}
+              {formatAmountForCurrencyWithPrecisionWhenNeeded(
+                performanceVerdictProperties.amount,
+                0,
+                { isSigned: true },
+              )}
             </strong>{' '}
             <FormattedMessage id="comparisonCalculator.content.performance.fund.alpha.negativeVerdict" />
           </>
@@ -1087,7 +1103,11 @@ const ComparisonCalculator: React.FC = () => {
             })}{' '}
             <FormattedMessage id="comparisonCalculator.content.performance.CPI.alpha.wordPositive" />{' '}
             <span className="result-positive">
-              {formatAmountForCurrency(performanceVerdictProperties.amount, 0, { isSigned: true })}
+              {formatAmountForCurrencyWithPrecisionWhenNeeded(
+                performanceVerdictProperties.amount,
+                0,
+                { isSigned: true },
+              )}
             </span>{' '}
             <FormattedMessage id="comparisonCalculator.content.performance.CPI.alpha.positiveVerdict" />
           </>
@@ -1121,7 +1141,11 @@ const ComparisonCalculator: React.FC = () => {
               id: 'comparisonCalculator.content.performance.CPI.alpha.wordNegative',
             })}{' '}
             <strong className="text-danger">
-              {formatAmountForCurrency(performanceVerdictProperties.amount, 0, { isSigned: true })}
+              {formatAmountForCurrencyWithPrecisionWhenNeeded(
+                performanceVerdictProperties.amount,
+                0,
+                { isSigned: true },
+              )}
             </strong>{' '}
             <FormattedMessage id="comparisonCalculator.content.performance.CPI.alpha.negativeVerdict" />
           </>
@@ -1179,10 +1203,18 @@ const ComparisonCalculator: React.FC = () => {
             {formatMessageWithTags({
               id: 'comparisonCalculator.content.performance.fund.indexUnderperformance.explanation',
               values: {
-                currentAmount: formatAmountForCurrency(returns.personal?.amount, 0, {
-                  isSigned: true,
-                }),
-                indexAmount: formatAmountForCurrency(returns.index?.amount, 0, { isSigned: true }),
+                currentAmount: formatAmountForCurrencyWithPrecisionWhenNeeded(
+                  returns.personal?.amount,
+                  0,
+                  {
+                    isSigned: true,
+                  },
+                ),
+                indexAmount: formatAmountForCurrencyWithPrecisionWhenNeeded(
+                  returns.index?.amount,
+                  0,
+                  { isSigned: true },
+                ),
               },
             })}
           </>
@@ -1193,10 +1225,20 @@ const ComparisonCalculator: React.FC = () => {
           {formatMessageWithTags({
             id: 'comparisonCalculator.content.performance.fund.indexOverperformance.explanation',
             values: {
-              currentAmount: formatAmountForCurrency(returns.personal?.amount, 0, {
-                isSigned: true,
-              }),
-              indexAmount: formatAmountForCurrency(returns.index?.amount, 0, { isSigned: true }),
+              currentAmount: formatAmountForCurrencyWithPrecisionWhenNeeded(
+                returns.personal?.amount,
+                0,
+                {
+                  isSigned: true,
+                },
+              ),
+              indexAmount: formatAmountForCurrencyWithPrecisionWhenNeeded(
+                returns.index?.amount,
+                0,
+                {
+                  isSigned: true,
+                },
+              ),
             },
           })}
         </>
@@ -1248,6 +1290,22 @@ const ComparisonCalculator: React.FC = () => {
     }
     return pillarAsString;
   }
+};
+
+const formatAmountForCurrencyWithPrecisionWhenNeeded = (
+  ...args: Parameters<typeof formatAmountForCurrency>
+) => {
+  const [value, fractionDigits, options] = args;
+
+  if (value === null || typeof value === 'undefined') {
+    return formatAmountForCurrency(value, 0, options);
+  }
+
+  if (Math.abs(value) < 10) {
+    return formatAmountForCurrency(value, 2, options);
+  }
+
+  return formatAmountForCurrency(value, fractionDigits, options);
 };
 
 export default ComparisonCalculator;
