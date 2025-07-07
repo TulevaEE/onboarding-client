@@ -1301,7 +1301,7 @@ const formatAmountForCurrencyWithPrecisionWhenNeeded = (
     return formatAmountForCurrency(value, 0, options);
   }
 
-  if (Math.abs(value) < 10) {
+  if (value !== 0 && Math.abs(value) < 10) {
     return formatAmountForCurrency(value, 2, options);
   }
 
