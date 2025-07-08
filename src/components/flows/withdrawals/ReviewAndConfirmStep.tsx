@@ -213,7 +213,7 @@ export const ReviewAndConfirmStep = () => {
             <FormattedMessage id="withdrawals.reviewAndConfirm.episDisclaimer" />
           </label>
           {agreedToTermsError && (
-            <div className={styles.warningText}>
+            <div className="text-danger">
               <FormattedMessage id="withdrawals.reviewAndConfirm.episDisclaimerError" />
             </div>
           )}
@@ -476,9 +476,7 @@ const PartialWithdrawalMandateDescription = ({
             id="withdrawals.mandates.partialWithdrawal.dateAndSize"
             values={{
               b: (children: ReactChildren) => <b>{children}</b>,
-              warningText: (children: ReactChildren) => (
-                <b className={styles.warningText}>{children}</b>
-              ),
+              warningText: (children: ReactChildren) => <b className="text-danger">{children}</b>,
               estimatedWithdrawalSizeWithTax: formatAmountForCurrency(
                 estimatedWithdrawalSizeWithTax ?? undefined,
                 0,

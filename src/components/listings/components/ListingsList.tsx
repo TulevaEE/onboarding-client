@@ -18,9 +18,6 @@ export const ListingsList = () => {
     return (
       <div className={styles.noListingsContainer}>
         <div className="text-secondary">Aktiivseid kuulutusi ei ole</div>
-        <Link to="/capital/listings/add" className="mt-4 btn btn-primary">
-          + Lisan kuulutuse
-        </Link>
       </div>
     );
   }

@@ -106,7 +106,7 @@ export const ListingDetails = () => {
           </div>
         </div>
 
-        <div className={`d-flex justify-content-between mt-5 pt-4 ${styles.submitButtonGroup}`}>
+        <div className="d-flex justify-content-between mt-5 pt-4 border-top">
           <button type="button" className="btn btn-lg btn-light" onClick={() => history.goBack()}>
             Tagasi
           </button>
