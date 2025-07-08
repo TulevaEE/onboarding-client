@@ -5,7 +5,7 @@ import { formatAmountForCurrency, getFullName } from '../../../../common/utils';
 import { useCreateTransferContext } from '../hooks';
 
 export const ConfirmAndSign = () => {
-  const { buyer, unitCount, pricePerUnit, sellerIban, setCurrentStepType } =
+  const { buyer, unitCount, pricePerUnit, sellerIban, navigateToNextStep, navigateToPreviousStep } =
     useCreateTransferContext();
   const { data: me } = useMe();
 
@@ -107,7 +107,7 @@ export const ConfirmAndSign = () => {
         <button
           type="button"
           className="btn btn-lg btn-light"
-          onClick={() => setCurrentStepType('ENTER_DATA')}
+          onClick={() => navigateToPreviousStep()}
         >
           Tagasi
         </button>

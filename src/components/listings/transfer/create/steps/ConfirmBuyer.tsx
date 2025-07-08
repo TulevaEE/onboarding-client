@@ -5,7 +5,7 @@ import { CreateTransferContextState } from '../types';
 
 export const ConfirmBuyer = () => {
   const history = useHistory();
-  const { buyer, setBuyer, setCurrentStepType } = useCreateTransferContext();
+  const { buyer, setBuyer, navigateToNextStep } = useCreateTransferContext();
 
   const [personalCode, setPersonalCode] = useState(buyer?.personalCode ?? '');
   const [searched, setSearched] = useState<CreateTransferContextState['buyer']>(buyer ?? null);
@@ -27,7 +27,7 @@ export const ConfirmBuyer = () => {
     }
 
     setBuyer(searched);
-    setCurrentStepType('ENTER_DATA');
+    navigateToNextStep();
   };
 
   return (
