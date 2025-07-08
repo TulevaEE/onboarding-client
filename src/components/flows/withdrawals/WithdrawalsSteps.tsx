@@ -13,7 +13,7 @@ export const WithdrawalsSteps = () => {
 
   return (
     <div
-      className={`tv-steps my-5 d-flex flex-column px-4 justify-content-start align-items-start flex-md-row px-md-0 justify-content-md-center align-items-md-center ${styles.stepper}`}
+      className={`tv-steps my-5 d-flex flex-column justify-content-start align-items-start flex-md-row justify-content-md-center align-items-md-center ${styles.stepper}`}
     >
       {WITHDRAWAL_STEPS.map(
         (step, idx) =>

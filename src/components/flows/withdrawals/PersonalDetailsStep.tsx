@@ -58,7 +58,7 @@ export const PersonalDetailsStep = () => {
             <FormattedMessage id="withdrawals.personalDetails.bankAccount.ibanDescription" />
           </div>
           {ibanError && (
-            <div className={`pt-2 ${styles.warningText}`}>
+            <div className="pt-2 text-danger">
               <FormattedMessage id="withdrawals.personalDetails.bankAccount.ibanError" />
             </div>
           )}
