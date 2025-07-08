@@ -304,11 +304,7 @@ const SingleWithdrawalSelectionBody = ({
 };
 
 const TaxAmount = ({ amount }: { amount: number }) => (
-  <>
-    {amount > 0 && (
-      <span className={styles.warningText}>{formatAmountForCurrency(-amount, 2)}</span>
-    )}
-  </>
+  <>{amount > 0 && <span className="text-danger">{formatAmountForCurrency(-amount, 2)}</span>}</>
 );
 
 const FundPensionStatusBox = () => {

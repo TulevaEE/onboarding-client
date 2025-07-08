@@ -19,11 +19,12 @@ export const Listings = () => {
           vaatab saadetud avaldused iga kuu esimestel tööpäevadel üle ja kiidab tehingu heaks, kui
           see vastab kehtestatud korrale.
         </p>
-        {(listings?.length ?? 0) > 0 && (
-          <Link to="/capital/listings/add" className="mt-2 btn btn-primary align-middle">
-            + Lisan kuulutuse
-          </Link>
-        )}
+        <Link to="/capital/listings/add" className="mt-2 btn btn-light align-middle">
+          + Lisan kuulutuse
+        </Link>
+        <Link to="/capital/transfer/create" className="mt-2 ms-2 btn btn-light align-middle">
+          Vormistan müügi
+        </Link>
       </div>
 
       <div className="my-5">

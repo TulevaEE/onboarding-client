@@ -95,7 +95,7 @@ export const AddListing = () => {
               <input
                 type="number"
                 className={`form-control form-control-lg text-end pe-0 ${
-                  errors.moreThanMemberCapital ? styles.warningInput : ''
+                  errors.moreThanMemberCapital ? 'border-danger' : ''
                 }`}
                 id="unit-amount"
                 placeholder="0"
@@ -116,7 +116,7 @@ export const AddListing = () => {
                   id="unit-price"
                   aria-label="Ühiku hind"
                   className={`form-control form-control-lg text-end pe-0 ${
-                    errors.priceLessThanBookValue ? styles.warningInput : ''
+                    errors.priceLessThanBookValue ? 'border-danger' : ''
                   }`}
                   {...unitPriceInput.inputProps}
                 />
@@ -155,12 +155,12 @@ export const AddListing = () => {
         </div>
 
         {errors.moreThanMemberCapital && (
-          <div className={`pt-2 ${styles.warningText}`}>
+          <div className="pt-2 text-danger">
             Ühikute arv ei saa olla suurem sinu liikmekapitali kogumahust.
           </div>
         )}
         {errors.priceLessThanBookValue && (
-          <div className={`pt-2 ${styles.warningText}`}>
+          <div className="pt-2 text-danger">
             Ühiku hind ei saa olla väiksem raamatupidamislikust väärtusest 1.00 €.
           </div>
         )}
@@ -191,7 +191,7 @@ export const AddListing = () => {
           <AssurancesSection />
         </div>
 
-        <div className={`d-flex justify-content-between mt-5 pt-4 ${styles.submitButtonGroup}`}>
+        <div className="d-flex justify-content-between mt-5 pt-4 border-top">
           <button type="button" className="btn btn-lg btn-light" onClick={() => history.goBack()}>
             Tagasi
           </button>
