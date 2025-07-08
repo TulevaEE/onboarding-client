@@ -44,7 +44,8 @@ export function formatLargeAmountForCurrency(amount = 0) {
   return `${Math.round(amount).toLocaleString('et-EE')}\u00A0€`; // hardcoded euro until more currencies.
 }
 
-export const getFullName = (user: User) => `${user.firstName} ${user.lastName}`;
+export const getFullName = (user: { firstName: string; lastName: string }) =>
+  `${user.firstName} ${user.lastName}`;
 
 export const isActive = (fund: Fund) => fund.status === 'ACTIVE';
 export const isSecondPillar = (fund: Fund) => fund.pillar === 2;
