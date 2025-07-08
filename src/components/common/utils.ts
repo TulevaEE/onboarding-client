@@ -62,9 +62,12 @@ export type TulevaFundIsin =
 export const isTulevaIsin = (value: string): value is TulevaFundIsin =>
   ['EE3600109435', 'EE3600109443', 'EE3600001707'].includes(value);
 
-export const useNumberInput = (isValid: (inputValue: string) => boolean = () => true) => {
-  const [inputValue, setInputValue] = useState('');
-  const [value, setValue] = useState<number | null>(null);
+export const useNumberInput = (
+  defaultValue: number | null = null,
+  isValid: (inputValue: string) => boolean = () => true,
+) => {
+  const [inputValue, setInputValue] = useState(defaultValue?.toString() ?? '');
+  const [value, setValue] = useState<number | null>(defaultValue);
 
   const handleInputChange: ChangeEventHandler<HTMLInputElement> = (event) => {
     const changedInputValue = event.target.value;

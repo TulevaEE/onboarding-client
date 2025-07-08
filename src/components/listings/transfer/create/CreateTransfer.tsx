@@ -1,9 +1,12 @@
+import { Redirect, Route, Switch } from 'react-router-dom';
 import styles from './CreateTransfer.module.scss';
 import { CreateTransferSteps } from './CreateTransferSteps';
 import { CreateTransferProvider, useCreateTransferContext } from './hooks';
 import { ConfirmAndSign } from './steps/ConfirmAndSign';
 import { ConfirmBuyer } from './steps/ConfirmBuyer';
 import { EnterData } from './steps/EnterData';
+import { CREATE_TRANSFER_STEPS } from './types';
+import { getTransferCreatePath } from './utils';
 
 const CreateTransferForm = () => {
   const { currentStepType } = useCreateTransferContext();
@@ -14,9 +17,25 @@ const CreateTransferForm = () => {
 
       <section className={styles.container}>
         <CreateTransferSteps />
-        {currentStepType === 'CONFIRM_BUYER' && <ConfirmBuyer />}
-        {currentStepType === 'ENTER_DATA' && <EnterData />}
-        {currentStepType === 'SIGN_CONTRACT' && <ConfirmAndSign />}
+        <Switch>
+          <Route
+            path={getTransferCreatePath(CREATE_TRANSFER_STEPS[0].subPath)}
+            component={ConfirmBuyer}
+          />
+          <Route
+            path={getTransferCreatePath(CREATE_TRANSFER_STEPS[1].subPath)}
+            component={EnterData}
+          />
+          <Route
+            path={getTransferCreatePath(CREATE_TRANSFER_STEPS[2].subPath)}
+            component={ConfirmAndSign}
+          />
+          <Redirect
+            exact
+            path="/capital/transfer/create"
+            to={getTransferCreatePath(CREATE_TRANSFER_STEPS[0].subPath)}
+          />
+        </Switch>
       </section>
     </div>
   );
