@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useWithdrawalsContext } from './hooks';
 import { isValidIban, preProcessIban } from './iban';
-import styles from './Withdrawals.module.scss';
 import { TaxResidencySelect } from './TaxResidencySelect';
 import { useTestMode } from '../../common/test-mode';
 

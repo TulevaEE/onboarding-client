@@ -1,17 +1,24 @@
 import { useState } from 'react';
-import { useHistory } from 'react-router-dom';
 import { useNumberInput } from '../../../../common/utils';
 import { useMemberCapitalHoldings } from '../../../hooks';
 import { useCreateTransferContext } from '../hooks';
 
 export const EnterData = () => {
-  const { setCurrentStepType, setPricePerUnit, setSellerIban, setUnitCount } =
-    useCreateTransferContext();
+  const {
+    navigateToNextStep,
+    navigateToPreviousStep,
+    pricePerUnit,
+    unitCount,
+    sellerIban,
+    setPricePerUnit,
+    setSellerIban,
+    setUnitCount,
+  } = useCreateTransferContext();
 
-  const unitPriceInput = useNumberInput();
-  const unitAmountInput = useNumberInput();
+  const unitPriceInput = useNumberInput(pricePerUnit ?? null);
+  const unitAmountInput = useNumberInput(unitCount ?? null);
 
-  const [bankIban, setBankIban] = useState('');
+  const [bankIban, setBankIban] = useState(sellerIban ?? '');
 
   const memberCapitalHoldings = useMemberCapitalHoldings();
 
@@ -35,7 +42,7 @@ export const EnterData = () => {
     setPricePerUnit(unitPriceInput.value);
     setUnitCount(unitAmountInput.value);
     setSellerIban(bankIban);
-    setCurrentStepType('SIGN_CONTRACT');
+    navigateToNextStep();
   };
 
   return (
@@ -130,7 +137,7 @@ export const EnterData = () => {
         <button
           type="button"
           className="btn btn-lg btn-light"
-          onClick={() => setCurrentStepType('CONFIRM_BUYER')}
+          onClick={() => navigateToPreviousStep()}
         >
           Tagasi
         </button>
