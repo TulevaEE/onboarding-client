@@ -44,6 +44,7 @@ import { Listings } from '../listings/Listings';
 import { MembersOnlyGatekeep } from '../common/MembersOnlyGatekeep';
 import { AddListing } from '../listings/AddListing';
 import { ListingDetails } from '../listings/ListingDetails';
+import { TransferStatus } from '../listings/transfer/status/TransferStatus';
 import { CreateTransfer } from '../listings/transfer/create/CreateTransfer';
 
 export const ACCOUNT_PATH = '/account';
@@ -176,12 +177,19 @@ export class LoggedInApp extends PureComponent {
                 </MembersOnlyGatekeep>
               )}
             />
-
             <Route
               path="/capital/transfer/create"
               render={() => (
                 <MembersOnlyGatekeep>
                   <CreateTransfer />
+                </MembersOnlyGatekeep>
+              )}
+            />
+            <Route
+              path="/capital/transfer/:id"
+              render={() => (
+                <MembersOnlyGatekeep>
+                  <TransferStatus />
                 </MembersOnlyGatekeep>
               )}
             />

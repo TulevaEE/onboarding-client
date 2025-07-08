@@ -62,7 +62,7 @@ export const AddListing = () => {
         <h1 className="mb-4 text-center">Uus kuulutus</h1>
       </div>
 
-      <section className={`my-5 ${styles.addListingContainer}`}>
+      <section className={`my-5 ${styles.container}`}>
         {error && (
           <div className="alert alert-danger">
             Kuulutuse lisamisel tekkis viga. Palun võta meiega ühendust
