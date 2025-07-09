@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNumberInput } from '../../../../common/utils';
 import { useMemberCapitalHoldings } from '../../../hooks';
-import { useCreateTransferContext } from '../hooks';
+import { useCreateCapitalTransferContext } from '../hooks';
 
 export const EnterData = () => {
   const {
@@ -13,7 +13,7 @@ export const EnterData = () => {
     setPricePerUnit,
     setSellerIban,
     setUnitCount,
-  } = useCreateTransferContext();
+  } = useCreateCapitalTransferContext();
 
   const unitPriceInput = useNumberInput(pricePerUnit ?? null);
   const unitAmountInput = useNumberInput(unitCount ?? null);

@@ -1,9 +1,15 @@
 import { PropsWithChildren } from 'react';
 import { formatAmountForCurrency, getFullName } from '../../../common/utils';
 
+type Progress = {
+  signed: { buyer: boolean; seller: boolean };
+  confirmed: { buyer: boolean; seller: boolean };
+};
+
 export const ContractDetails = ({
   seller,
   buyer,
+  userRole,
   unitCount,
   pricePerUnit,
   sellerIban,
@@ -11,13 +17,11 @@ export const ContractDetails = ({
 }: {
   seller: { firstName: string; lastName: string; personalCode: string };
   buyer: { firstName: string; lastName: string; personalCode: string };
+  userRole: 'BUYER' | 'SELLER';
   unitCount: number;
   pricePerUnit: number;
   sellerIban: string;
-  progress?: {
-    signed: { buyer: boolean; seller: boolean };
-    confirmed: { buyer: boolean; seller: boolean };
-  };
+  progress?: Progress;
 }) => (
   <div>
     <div className="row pb-4 border-bottom">
@@ -25,43 +29,13 @@ export const ContractDetails = ({
         <b className="fs-6">Müüja</b>
         <div className="fs-3">{getFullName(seller)}</div>
         <div className="text-secondary">{seller.personalCode}</div>
-        {progress && (
-          <>
-            <div>
-              <ProgressStep status={progress.signed.seller}>
-                {progress.signed.seller ? 'Allkirjastatud' : 'Sinu allkirja ootel'}
-              </ProgressStep>
-            </div>
-            {progress.signed.seller && progress.signed.buyer && (
-              <div>
-                <ProgressStep status={progress.confirmed.seller}>
-                  {progress.confirmed.seller ? 'Makse kinnitatud' : 'Maksekinnituse ootel'}
-                </ProgressStep>
-              </div>
-            )}
-          </>
-        )}
+        {progress && <SellerProgressContainer progress={progress} userRole={userRole} />}
       </div>
       <div className="col">
         <b className="fs-6">Ostja</b>
         <div className="fs-3">{getFullName(buyer)}</div>
         <div className="text-secondary">{buyer.personalCode}</div>
-        {progress && (
-          <>
-            <div>
-              <ProgressStep status={progress.signed.buyer}>
-                {progress.signed.seller ? 'Allkirjastatud' : 'Sinu allkirja ootel'}
-              </ProgressStep>
-            </div>
-            {progress.signed.seller && progress.signed.buyer && (
-              <div>
-                <ProgressStep status={progress.confirmed.buyer}>
-                  {progress.confirmed.buyer ? 'Makse teostatud' : 'Makse ootel'}
-                </ProgressStep>
-              </div>
-            )}
-          </>
-        )}
+        {progress && <BuyerProgressContainer progress={progress} userRole={userRole} />}
       </div>
     </div>
 
@@ -104,6 +78,62 @@ export const ContractDetails = ({
     </div>
   </div>
 );
+
+const BuyerProgressContainer = ({
+  progress,
+  userRole,
+}: {
+  progress: Progress;
+  userRole: 'BUYER' | 'SELLER';
+}) => {
+  const waitingForSignatureText =
+    userRole === 'BUYER' ? 'Sinu allkirja ootel' : 'Ostja allkirja ootel';
+
+  return (
+    <>
+      <div>
+        <ProgressStep status={progress.signed.buyer}>
+          {progress.signed.buyer ? 'Allkirjastatud' : waitingForSignatureText}
+        </ProgressStep>
+      </div>
+      {progress.signed.seller && progress.signed.buyer && (
+        <div>
+          <ProgressStep status={progress.confirmed.buyer}>
+            {progress.confirmed.buyer ? 'Makse teostatud' : 'Makse ootel'}
+          </ProgressStep>
+        </div>
+      )}
+    </>
+  );
+};
+
+const SellerProgressContainer = ({
+  progress,
+  userRole,
+}: {
+  progress: Progress;
+  userRole: 'BUYER' | 'SELLER';
+}) => {
+  const waitingForSignatureText =
+    userRole === 'SELLER' ? 'Sinu allkirja ootel' : 'Müüja allkirja ootel';
+
+  return (
+    <>
+      <div>
+        <ProgressStep status={progress.signed.seller}>
+          {progress.signed.seller ? 'Allkirjastatud' : waitingForSignatureText}
+        </ProgressStep>
+      </div>
+      {progress.signed.seller && progress.signed.buyer && (
+        <div>
+          <ProgressStep status={progress.confirmed.seller}>
+            {progress.confirmed.seller ? 'Makse teostatud' : 'Maksekinnituse ootel'}
+          </ProgressStep>
+        </div>
+      )}
+    </>
+  );
+};
 
 const ProgressStep = ({ status, children }: PropsWithChildren<{ status: boolean }>) => {
   if (!status) {
