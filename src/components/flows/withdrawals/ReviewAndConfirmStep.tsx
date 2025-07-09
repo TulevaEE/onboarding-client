@@ -35,7 +35,7 @@ import { useTestMode } from '../../common/test-mode';
 
 export const ReviewAndConfirmStep = () => {
   const {
-    startSigningMandateBatch,
+    startSigning,
     cancelSigning,
     signed,
     error: signingError,
@@ -114,7 +114,7 @@ export const ReviewAndConfirmStep = () => {
       const mandateBatch = await createMandateBatch({
         mandates: mandatesToCreate.map((details) => ({ details })),
       });
-      startSigningMandateBatch(mandateBatch);
+      startSigning(mandateBatch);
     } catch (e) {
       setBatchCreationError(e as ErrorResponse);
     }
@@ -213,7 +213,7 @@ export const ReviewAndConfirmStep = () => {
             <FormattedMessage id="withdrawals.reviewAndConfirm.episDisclaimer" />
           </label>
           {agreedToTermsError && (
-            <div className={styles.warningText}>
+            <div className="text-danger">
               <FormattedMessage id="withdrawals.reviewAndConfirm.episDisclaimerError" />
             </div>
           )}
@@ -476,9 +476,7 @@ const PartialWithdrawalMandateDescription = ({
             id="withdrawals.mandates.partialWithdrawal.dateAndSize"
             values={{
               b: (children: ReactChildren) => <b>{children}</b>,
-              warningText: (children: ReactChildren) => (
-                <b className={styles.warningText}>{children}</b>
-              ),
+              warningText: (children: ReactChildren) => <b className="text-danger">{children}</b>,
               estimatedWithdrawalSizeWithTax: formatAmountForCurrency(
                 estimatedWithdrawalSizeWithTax ?? undefined,
                 0,
