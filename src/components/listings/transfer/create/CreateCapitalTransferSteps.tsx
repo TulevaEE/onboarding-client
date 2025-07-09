@@ -1,18 +1,22 @@
 import { Fragment } from 'react';
-import { CREATE_TRANSFER_STEPS } from './types';
-import { useCreateTransferContext } from './hooks';
+import { CREATE_CAPITAL_TRANSFER_STEPS } from './types';
+import { useCreateCapitalTransferContext } from './hooks';
 import styles from './CreateTransfer.module.scss';
 
 export const CreateTransferSteps = () => {
-  const { currentStepType } = useCreateTransferContext();
-  const currentStepIndex = CREATE_TRANSFER_STEPS.findIndex((step) => step.type === currentStepType);
+  const { currentStepType } = useCreateCapitalTransferContext();
+  const currentStepIndex = CREATE_CAPITAL_TRANSFER_STEPS.findIndex(
+    (step) => step.type === currentStepType,
+  );
 
   return (
     <div className="tv-steps d-flex flex-column  justify-content-start align-items-start flex-md-row px-md-0 justify-content-md-center align-items-md-center">
-      {CREATE_TRANSFER_STEPS.map((step, idx) => (
+      {CREATE_CAPITAL_TRANSFER_STEPS.map((step, idx) => (
         <Fragment key={step.type}>
           <CreateTransferStep step={idx} currentStep={currentStepIndex} title={step.title} />
-          {idx !== CREATE_TRANSFER_STEPS.length - 1 && <div className={styles.stepDivider} />}
+          {idx !== CREATE_CAPITAL_TRANSFER_STEPS.length - 1 && (
+            <div className={styles.stepDivider} />
+          )}
         </Fragment>
       ))}
     </div>
