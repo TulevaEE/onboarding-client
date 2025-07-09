@@ -419,6 +419,22 @@ export type MemberCapitalListing = {
   language: 'et' | 'en';
 };
 
+export type MemberCapitalTransferContract = {
+  seller: {
+    personalCode: string;
+    firstName: string;
+    lastName: string;
+  };
+  buyer: {
+    personalCode: string;
+    firstName: string;
+    lastName: string;
+  };
+  pricePerUnit: number;
+  unitCount: number;
+  sellerIban: string;
+};
+
 export type MemberCapitalTransferContractState =
   | 'CREATED'
   | 'SELLER_SIGNED'
