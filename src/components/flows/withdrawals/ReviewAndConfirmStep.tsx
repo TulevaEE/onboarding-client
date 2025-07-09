@@ -35,7 +35,7 @@ import { useTestMode } from '../../common/test-mode';
 
 export const ReviewAndConfirmStep = () => {
   const {
-    startSigningMandateBatch,
+    startSigning,
     cancelSigning,
     signed,
     error: signingError,
@@ -114,7 +114,7 @@ export const ReviewAndConfirmStep = () => {
       const mandateBatch = await createMandateBatch({
         mandates: mandatesToCreate.map((details) => ({ details })),
       });
-      startSigningMandateBatch(mandateBatch);
+      startSigning(mandateBatch);
     } catch (e) {
       setBatchCreationError(e as ErrorResponse);
     }

@@ -46,6 +46,7 @@ import {
   WithdrawalsEligibility,
 } from './apiModels/withdrawals';
 import { mockRequestInMockMode } from './requestMocker';
+import { SignableEntity } from './signing/types';
 
 const API_URI = '/api';
 
@@ -223,17 +224,29 @@ export function saveMandateWithAuthentication(mandate: string): Promise<Mandate>
   return postWithAuthentication(getEndpoint('/v1/mandates'), mandate);
 }
 
+const getSigningBaseUrl = (entityId: string, type: SignableEntity) => {
+  if (type === 'CAPITAL_TRANSFER_CONTRACT') {
+    return `/v1/capital/transfer/${entityId}/signature`;
+  }
+
+  if (type === 'MANDATE_BATCH') {
+    return `/v1/mandate-batches/${entityId}/signature`;
+  }
+
+  return `/v1/mandates/${entityId}/signature`;
+};
+
 export async function getMobileIdSignatureChallengeCode({
   entityId,
   type = 'MANDATE',
 }: {
   entityId: string;
-  type?: 'MANDATE' | 'MANDATE_BATCH';
+  type?: SignableEntity;
 }): Promise<string | null> {
   const path =
     type === 'MANDATE'
-      ? `/v1/mandates/${entityId}/signature/mobileId`
-      : `/v1/mandate-batches/${entityId}/signature/mobile-id`;
+      ? `${getSigningBaseUrl(entityId, type)}/mobileId`
+      : `${getSigningBaseUrl(entityId, type)}/mobile-id`;
 
   const { challengeCode } = await putWithAuthentication<MobileSignatureResponse>(
     getEndpoint(path),
@@ -247,12 +260,12 @@ export async function getMobileIdSignatureStatus({
   type = 'MANDATE',
 }: {
   entityId: string;
-  type?: 'MANDATE' | 'MANDATE_BATCH';
+  type?: SignableEntity;
 }): Promise<MobileSignatureStatusResponse> {
   const path =
     type === 'MANDATE'
-      ? `/v1/mandates/${entityId}/signature/mobileId/status`
-      : `/v1/mandate-batches/${entityId}/signature/mobile-id/status`;
+      ? `${getSigningBaseUrl(entityId, type)}/mobileId/status`
+      : `${getSigningBaseUrl(entityId, type)}/mobile-id/status`;
 
   return getWithAuthentication<MobileSignatureStatusResponse>(getEndpoint(path), undefined);
 }
@@ -262,12 +275,12 @@ export async function getSmartIdSignatureChallengeCode({
   type = 'MANDATE',
 }: {
   entityId: string;
-  type?: 'MANDATE' | 'MANDATE_BATCH';
+  type?: SignableEntity;
 }): Promise<string | null> {
   const path =
     type === 'MANDATE'
-      ? `/v1/mandates/${entityId}/signature/smartId`
-      : `/v1/mandate-batches/${entityId}/signature/smart-id`;
+      ? `${getSigningBaseUrl(entityId, type)}/smartId`
+      : `${getSigningBaseUrl(entityId, type)}/smart-id`;
 
   const { challengeCode } = await putWithAuthentication<MobileSignatureResponse>(
     getEndpoint(path),
@@ -281,12 +294,12 @@ export async function getSmartIdSignatureStatus({
   type = 'MANDATE',
 }: {
   entityId: string;
-  type?: 'MANDATE' | 'MANDATE_BATCH';
+  type?: SignableEntity;
 }): Promise<MobileSignatureStatusResponse> {
   const path =
     type === 'MANDATE'
-      ? `/v1/mandates/${entityId}/signature/smartId/status`
-      : `/v1/mandate-batches/${entityId}/signature/smart-id/status`;
+      ? `${getSigningBaseUrl(entityId, type)}/smartId/status`
+      : `${getSigningBaseUrl(entityId, type)}/smart-id/status`;
 
   return getWithAuthentication<MobileSignatureStatusResponse>(getEndpoint(path), undefined);
 }
@@ -298,12 +311,12 @@ export async function getIdCardSignatureHash({
 }: {
   entityId: string;
   certificateHex: string;
-  type?: 'MANDATE' | 'MANDATE_BATCH';
+  type?: SignableEntity;
 }) {
   const path =
     type === 'MANDATE'
-      ? `/v1/mandates/${entityId}/signature/idCard`
-      : `/v1/mandate-batches/${entityId}/signature/id-card`;
+      ? `${getSigningBaseUrl(entityId, type)}/idCard`
+      : `${getSigningBaseUrl(entityId, type)}/id-card`;
 
   const { hash } = await putWithAuthentication<IdCardSignatureResponse>(getEndpoint(path), {
     clientCertificate: certificateHex,
@@ -318,13 +331,13 @@ export async function getIdCardSignatureStatus({
   signedHash,
 }: {
   entityId: string;
-  type?: 'MANDATE' | 'MANDATE_BATCH';
+  type?: SignableEntity;
   signedHash: string;
 }): Promise<string> {
   const path =
     type === 'MANDATE'
-      ? `/v1/mandates/${entityId}/signature/idCard/status`
-      : `/v1/mandate-batches/${entityId}/signature/id-card/status`;
+      ? `${getSigningBaseUrl(entityId, type)}/idCard/status`
+      : `${getSigningBaseUrl(entityId, type)}/id-card/status`;
 
   const { statusCode } = await putWithAuthentication(getEndpoint(path), { signedHash });
   return statusCode;
