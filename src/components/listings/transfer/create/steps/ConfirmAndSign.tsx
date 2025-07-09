@@ -1,14 +1,17 @@
 import { useState } from 'react';
-import { Redirect } from 'react-router-dom';
+import { Link, Redirect, useHistory } from 'react-router-dom';
 import { Loader } from '../../../../common';
 import { useMe } from '../../../../common/apiHooks';
 import { useCreateCapitalTransferContext } from '../hooks';
 import { ContractDetails } from '../../components/ContractDetails';
+import { SuccessAlert } from '../../../../common/successAlert';
 
 export const ConfirmAndSign = () => {
-  const { buyer, unitCount, pricePerUnit, sellerIban, navigateToPreviousStep } =
+  const { buyer, unitCount, pricePerUnit, sellerIban, navigateToPreviousStep, navigateToNextStep } =
     useCreateCapitalTransferContext();
   const { data: me } = useMe();
+
+  const history = useHistory();
 
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [agreedToTermsError, setAgreedToTermsError] = useState(false);
@@ -28,6 +31,8 @@ export const ConfirmAndSign = () => {
     }
 
     setAgreedToTermsError(false);
+
+    navigateToNextStep();
   };
 
   return (
