@@ -6,6 +6,16 @@ type Progress = {
   confirmed: { buyer: boolean; seller: boolean };
 };
 
+export type ContractDetailsProps = {
+  seller: { firstName: string; lastName: string; personalCode: string };
+  buyer: { firstName: string; lastName: string; personalCode: string };
+  userRole: 'BUYER' | 'SELLER';
+  unitCount: number;
+  pricePerUnit: number;
+  sellerIban: string;
+  progress?: Progress;
+};
+
 export const ContractDetails = ({
   seller,
   buyer,
@@ -14,15 +24,7 @@ export const ContractDetails = ({
   pricePerUnit,
   sellerIban,
   progress,
-}: {
-  seller: { firstName: string; lastName: string; personalCode: string };
-  buyer: { firstName: string; lastName: string; personalCode: string };
-  userRole: 'BUYER' | 'SELLER';
-  unitCount: number;
-  pricePerUnit: number;
-  sellerIban: string;
-  progress?: Progress;
-}) => (
+}: ContractDetailsProps) => (
   <div>
     <div className="row pb-4 border-bottom">
       <div className="col">

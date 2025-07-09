@@ -76,7 +76,7 @@ export const ConfirmAndSign = () => {
           className="btn btn-lg btn-primary"
           onClick={() => handleSubmitClicked()}
         >
-          Kinnitan ostja
+          Allkirjastan lepingu
         </button>
       </div>
     </>
