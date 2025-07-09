@@ -6,6 +6,7 @@ import {
 import { ContractDetails } from '../../components/ContractDetails';
 import { getContractDetailsPropsFromContract, getMyRole } from '../utils';
 import { formatAmountForCurrency } from '../../../../common/utils';
+import { StepDoneAlert } from '../StepDoneAlert';
 
 export const SellerConfirm = ({
   state,
@@ -19,6 +20,8 @@ export const SellerConfirm = ({
   const [confirmMoneyReceived, setConfirmMoneyReceived] = useState(false);
   const [confirmMoneyReceivedError, setConfirmMoneyReceivedError] = useState(false);
 
+  const [success, setSuccess] = useState(false);
+
   const handleConfirmationClicked = () => {
     if (!confirmMoneyReceived) {
       setConfirmMoneyReceivedError(true);
@@ -26,11 +29,19 @@ export const SellerConfirm = ({
     }
 
     setConfirmMoneyReceivedError(false);
-    onConfirmed();
+    setSuccess(true);
   };
 
+  if (success) {
+    return (
+      <StepDoneAlert onClick={() => onConfirmed()}>
+        <h2 className="pb-2">Avaldus on saadetud Tuleva ühistu juhatusele</h2>
+        <div>Vaatame avalduse 1 nädala jooksul üle ja teavitame osapooli otsusest e-postiga.</div>
+      </StepDoneAlert>
+    );
+  }
   return (
-    <>
+    <div className="bg-gray-1 border rounded br-3 p-4">
       <h1>Lepingu andmed</h1>
       <div className="pt-4">
         <ContractDetails
@@ -65,6 +76,6 @@ export const SellerConfirm = ({
           </button>
         </div>
       </div>
-    </>
+    </div>
   );
 };

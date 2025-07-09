@@ -6,7 +6,7 @@ export const Steps = <T extends string>({
   currentStepType,
   alignCenter = true,
 }: {
-  steps: readonly { title: string; type: T }[];
+  steps: readonly { title: string; type: T; hidden?: boolean }[];
   currentStepType: T;
   alignCenter?: boolean;
 }) => {
@@ -20,8 +20,10 @@ export const Steps = <T extends string>({
     >
       {steps.map((step, idx) => (
         <Fragment key={step.type}>
-          <Step step={idx} currentStep={currentStepIndex} title={step.title} />
-          {idx !== steps.length - 1 && <div className={styles.stepDivider} />}
+          {!step.hidden && <Step step={idx} currentStep={currentStepIndex} title={step.title} />}
+          {idx < steps.filter(({ hidden }) => !hidden).length - 1 && (
+            <div className={styles.stepDivider} />
+          )}
         </Fragment>
       ))}
     </div>

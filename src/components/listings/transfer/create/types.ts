@@ -27,6 +27,7 @@ export const CREATE_CAPITAL_TRANSFER_STEPS = [
   { title: 'Kinnita ostja', type: 'CONFIRM_BUYER', subPath: 'confirm-buyer' },
   { title: 'Sisesta andmed', type: 'ENTER_DATA', subPath: 'enter-data' },
   { title: 'Allkirjasta leping', type: 'SIGN_CONTRACT', subPath: 'confirm' },
+  { title: 'Tehtud', type: 'DONE', subPath: 'done', hidden: true },
 ] as const;
 
 export type CreateCapitalTransferStepType = (typeof CREATE_CAPITAL_TRANSFER_STEPS)[number]['type'];

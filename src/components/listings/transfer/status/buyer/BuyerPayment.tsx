@@ -7,6 +7,8 @@ import {
 } from '../../../../common/utils';
 import { Steps } from '../../../../common/steps';
 import { BUYER_STEPS } from '../steps';
+import { SuccessAlert } from '../../../../common/successAlert';
+import { StepDoneAlert } from '../StepDoneAlert';
 
 export const BuyerPayment = ({
   contract,
@@ -15,6 +17,7 @@ export const BuyerPayment = ({
   contract: MemberCapitalTransferContract;
   onPaid: () => unknown;
 }) => {
+  const [success, setSuccess] = useState(false);
   const [confirmPaid, setConfirmPaid] = useState(false);
   const [confirmPaidError, setConfirmPaidError] = useState(false);
 
@@ -25,10 +28,23 @@ export const BuyerPayment = ({
     }
 
     setConfirmPaidError(false);
-    onPaid();
+    setSuccess(true);
   };
+
+  if (success) {
+    return (
+      <StepDoneAlert onClick={() => onPaid()}>
+        <h2 className="pb-2">Sinu poolt on kõik vajalik tehtud</h2>
+        <div>
+          Teavitasime müüjat, nüüd tuleb vaid oodata tema kinnitust raha laekumise kohta. Anname
+          sulle e-postiga märku kohe, kui ta on seda teinud.
+        </div>
+      </StepDoneAlert>
+    );
+  }
+
   return (
-    <>
+    <div className="bg-gray-1 border rounded br-3 p-4">
       <Steps steps={BUYER_STEPS} currentStepType="SEND_PAYMENT_AND_CONFIRM" />
 
       <div className="pt-4">
@@ -100,6 +116,6 @@ export const BuyerPayment = ({
           Kinnitan makse tegemist
         </button>
       </div>
-    </>
+    </div>
   );
 };

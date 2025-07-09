@@ -1,0 +1,16 @@
+@import '../../variables';
+
+.doneAlert {
+  background: $blue-bg-2;
+  border-radius: 16px;
+  padding: 1.75em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: $navy-blue;
+  text-align: center;
+
+  h3 {
+    color: $navy-blue;
+  }
+}

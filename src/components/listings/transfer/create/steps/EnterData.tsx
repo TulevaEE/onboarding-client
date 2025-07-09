@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Redirect } from 'react-router-dom';
 import { useNumberInput } from '../../../../common/utils';
 import { useMemberCapitalHoldings } from '../../../hooks';
 import { useCreateCapitalTransferContext } from '../hooks';
@@ -7,6 +8,7 @@ export const EnterData = () => {
   const {
     navigateToNextStep,
     navigateToPreviousStep,
+    buyer,
     pricePerUnit,
     unitCount,
     sellerIban,
@@ -44,6 +46,10 @@ export const EnterData = () => {
     setSellerIban(bankIban);
     navigateToNextStep();
   };
+
+  if (!buyer) {
+    return <Redirect to="/capital/transfer/create" />;
+  }
 
   return (
     <>
