@@ -1,39 +1,67 @@
 import { Redirect, Route, Switch } from 'react-router-dom';
+import { PropsWithChildren } from 'react';
 import { CreateTransferSteps } from './CreateCapitalTransferSteps';
-import { CreateTransferProvider } from './hooks';
+import { CreateTransferProvider, useCreateCapitalTransferContext } from './hooks';
 import { ConfirmAndSign } from './steps/ConfirmAndSign';
 import { ConfirmBuyer } from './steps/ConfirmBuyer';
 import { EnterData } from './steps/EnterData';
 import { CREATE_CAPITAL_TRANSFER_STEPS } from './types';
 import { getTransferCreatePath } from './utils';
+import { DoneStep } from './steps/DoneStep';
 
-const CreateCapitalTransferForm = () => (
-  <div className="col-12 col-md-11 col-lg-9 mx-auto p-4">
-    <h1 className="mb-4 text-center">Liikmekapitali üleandmise avaldus</h1>
-
-    <section className="bg-gray-1 border rounded br-3 p-4">
-      <CreateTransferSteps />
+const CreateCapitalTransferForm = () => {
+  const { currentStepType } = useCreateCapitalTransferContext();
+  return (
+    <div className="col-12 col-md-11 col-lg-9 mx-auto p-4">
       <Switch>
         <Route
           path={getTransferCreatePath(CREATE_CAPITAL_TRANSFER_STEPS[0].subPath)}
-          component={ConfirmBuyer}
+          render={() => (
+            <Container>
+              <ConfirmBuyer />
+            </Container>
+          )}
         />
         <Route
           path={getTransferCreatePath(CREATE_CAPITAL_TRANSFER_STEPS[1].subPath)}
-          component={EnterData}
+          render={() => (
+            <Container>
+              <EnterData />
+            </Container>
+          )}
         />
         <Route
           path={getTransferCreatePath(CREATE_CAPITAL_TRANSFER_STEPS[2].subPath)}
-          component={ConfirmAndSign}
+          render={() => (
+            <Container>
+              <ConfirmAndSign />
+            </Container>
+          )}
         />
+
+        <Route
+          path={getTransferCreatePath(CREATE_CAPITAL_TRANSFER_STEPS[3].subPath)}
+          render={() => <DoneStep />}
+        />
+
         <Redirect
           exact
           path="/capital/transfer/create"
           to={getTransferCreatePath(CREATE_CAPITAL_TRANSFER_STEPS[0].subPath)}
         />
       </Switch>
-    </section>
-  </div>
+    </div>
+  );
+};
+
+const Container = ({ children }: PropsWithChildren<unknown>) => (
+  <section className="bg-gray-1 border rounded br-3 p-4">
+    <h1 className="mb-4 text-center">Liikmekapitali üleandmise avaldus</h1>
+
+    <CreateTransferSteps />
+
+    {children}
+  </section>
 );
 
 export const CreateCapitalTransfer = () => (

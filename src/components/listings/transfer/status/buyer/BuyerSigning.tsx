@@ -45,7 +45,7 @@ export const BuyerSigning = ({
   };
 
   return (
-    <>
+    <div className="bg-gray-1 border rounded br-3 p-4">
       <Steps steps={BUYER_STEPS} currentStepType="BUYER_SIGN" alignCenter={false} />
       <div className="pt-2">
         <h1 className="py-5">Lepingu andmed</h1>
@@ -88,6 +88,6 @@ export const BuyerSigning = ({
           Allkirjastan lepingu
         </button>
       </div>
-    </>
+    </div>
   );
 };

@@ -16,7 +16,7 @@ export const CapitalTransferStatus = () => {
 
   const { data: me } = useMe();
 
-  const [debugState, setDebugState] = useState<MemberCapitalTransferContractState>('CREATED');
+  const [debugState, setDebugState] = useState<MemberCapitalTransferContractState>('SELLER_SIGNED');
   const [myDebugRole, setMyDebugRole] = useState<'BUYER' | 'SELLER'>('SELLER');
 
   if (!me) {
@@ -94,25 +94,23 @@ export const CapitalTransferStatus = () => {
           <option value="BUYER">BUYER</option>
         </select>
       </div>
-      <div className="bg-gray-1 border rounded br-3 p-4">
-        {showBuyerFlow && (
-          <BuyerFlow
-            contract={mockContract}
-            state={debugState}
-            setDebugState={(state) => setDebugState(state)}
-          />
-        )}
-        {showSellerConfirmation && (
-          <SellerConfirm
-            contract={mockContract}
-            state={debugState}
-            onConfirmed={() => setDebugState('PAYMENT_CONFIRMED_BY_SELLER')}
-          />
-        )}
-        {!showBuyerFlow && !showSellerConfirmation && (
-          <StatusDisplay state={debugState} contract={mockContract} />
-        )}
-      </div>
+      {showBuyerFlow && (
+        <BuyerFlow
+          contract={mockContract}
+          state={debugState}
+          setDebugState={(state) => setDebugState(state)}
+        />
+      )}
+      {showSellerConfirmation && (
+        <SellerConfirm
+          contract={mockContract}
+          state={debugState}
+          onConfirmed={() => setDebugState('PAYMENT_CONFIRMED_BY_SELLER')}
+        />
+      )}
+      {!showBuyerFlow && !showSellerConfirmation && (
+        <StatusDisplay state={debugState} contract={mockContract} />
+      )}
     </div>
   );
 };
@@ -131,7 +129,7 @@ const StatusDisplay = ({
   }
 
   return (
-    <>
+    <div className="bg-gray-1 border rounded br-3 p-4">
       {state === 'CANCELLED' && (
         <div className="alert alert-warning">TODO Avaldus on tühistatud</div>
       )}
@@ -179,6 +177,6 @@ const StatusDisplay = ({
           userRole={getMyRole(me, contract)}
         />
       </div>
-    </>
+    </div>
   );
 };
