@@ -1,20 +1,24 @@
 import { useState } from 'react';
+import { Redirect } from 'react-router-dom';
 import { Loader } from '../../../../common';
 import { useMe } from '../../../../common/apiHooks';
-import { formatAmountForCurrency, getFullName } from '../../../../common/utils';
-import { useCreateTransferContext } from '../hooks';
+import { useCreateCapitalTransferContext } from '../hooks';
 import { ContractDetails } from '../../components/ContractDetails';
 
 export const ConfirmAndSign = () => {
-  const { buyer, unitCount, pricePerUnit, sellerIban, navigateToNextStep, navigateToPreviousStep } =
-    useCreateTransferContext();
+  const { buyer, unitCount, pricePerUnit, sellerIban, navigateToPreviousStep } =
+    useCreateCapitalTransferContext();
   const { data: me } = useMe();
 
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [agreedToTermsError, setAgreedToTermsError] = useState(false);
 
-  if (!me || !buyer || !unitCount || !pricePerUnit || !sellerIban) {
+  if (!me) {
     return <Loader className="align-middle" />;
+  }
+
+  if (!unitCount || !pricePerUnit || !sellerIban || !buyer) {
+    return <Redirect to="/capital/transfer/create" />;
   }
 
   const handleSubmitClicked = () => {
@@ -33,6 +37,7 @@ export const ConfirmAndSign = () => {
       <div>
         <ContractDetails
           seller={me}
+          userRole="SELLER"
           buyer={buyer}
           unitCount={unitCount}
           pricePerUnit={pricePerUnit}

@@ -18,17 +18,17 @@ type Setters = {
 };
 
 type RoutingContext = {
-  currentStepType: CreateTransferStepType;
+  currentStepType: CreateCapitalTransferStepType;
   navigateToNextStep: () => unknown;
   navigateToPreviousStep: () => unknown;
 };
 
-export const CREATE_TRANSFER_STEPS = [
+export const CREATE_CAPITAL_TRANSFER_STEPS = [
   { title: 'Kinnita ostja', type: 'CONFIRM_BUYER', subPath: 'confirm-buyer' },
   { title: 'Sisesta andmed', type: 'ENTER_DATA', subPath: 'enter-data' },
   { title: 'Allkirjasta leping', type: 'SIGN_CONTRACT', subPath: 'confirm' },
 ] as const;
 
-export type CreateTransferStepType = (typeof CREATE_TRANSFER_STEPS)[number]['type'];
+export type CreateCapitalTransferStepType = (typeof CREATE_CAPITAL_TRANSFER_STEPS)[number]['type'];
 
-export type CreateTransferContextState = StateContext & RoutingContext & Setters;
+export type CreateCapitalTransferContextState = StateContext & RoutingContext & Setters;

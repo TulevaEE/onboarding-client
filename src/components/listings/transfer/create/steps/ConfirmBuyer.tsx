@@ -1,14 +1,17 @@
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { useCreateTransferContext } from '../hooks';
-import { CreateTransferContextState } from '../types';
+import { useCreateCapitalTransferContext } from '../hooks';
+import { CreateCapitalTransferContextState } from '../types';
 
 export const ConfirmBuyer = () => {
   const history = useHistory();
-  const { buyer, setBuyer, navigateToNextStep } = useCreateTransferContext();
+  const { buyer, setBuyer, navigateToNextStep } = useCreateCapitalTransferContext();
 
   const [personalCode, setPersonalCode] = useState(buyer?.personalCode ?? '');
-  const [searched, setSearched] = useState<CreateTransferContextState['buyer']>(buyer ?? null);
+  const [searched, setSearched] = useState<CreateCapitalTransferContextState['buyer']>(
+    buyer ?? null,
+  );
+  const [noBuyerError, setNoBuyerError] = useState(false);
 
   const handleSearchClicked = () => {
     setSearched({
@@ -23,6 +26,7 @@ export const ConfirmBuyer = () => {
 
   const handleSubmitClicked = () => {
     if (!searched) {
+      setNoBuyerError(true);
       return;
     }
 
@@ -88,13 +92,22 @@ export const ConfirmBuyer = () => {
           </div>
         )}
 
-        <div className="d-flex justify-content-between mt-5 pt-4 border-top">
-          <button type="button" className="btn btn-lg btn-light" onClick={() => history.goBack()}>
+        {noBuyerError && !searched && (
+          <div className="text-danger pt-2">Jätkamiseks sisesta ostja</div>
+        )}
+
+        <div className="d-flex justify-content-between mt-4 pt-4 border-top">
+          <button
+            type="button"
+            className="btn btn-lg btn-light"
+            onClick={() => history.push('/capital/listings')}
+          >
             Tagasi
           </button>
           <button
             type="button"
             className="btn btn-lg btn-primary"
+            disabled={noBuyerError && !searched}
             onClick={() => handleSubmitClicked()}
           >
             Kinnitan ostja
