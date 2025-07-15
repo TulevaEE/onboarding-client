@@ -1,6 +1,4 @@
-/**
- * Container max-widths
- */
+// Layout
 
 $container-max-widths: (
   sm: 540px,
@@ -12,9 +10,130 @@ $container-max-widths: (
   xxl: 960px,
 );
 
-/**
- * Fonts customization
- */
+$container-padding-x: 2rem;
+$grid-gutter-width: 2rem;
+
+$spacer: 1rem !default;
+$spacers: (
+  0: 0,
+  1: (
+    $spacer * 0.25,
+  ),
+  2: (
+    $spacer * 0.5,
+  ),
+  3: $spacer,
+  4: (
+    $spacer * 1.5,
+  ),
+  5: (
+    $spacer * 3,
+  ),
+  6: (
+    $spacer * 6,
+  ),
+) !default;
+
+// Links
+
+$link-underline-opacity: 25% !default;
+$link-underline-offset: 0.125em !default;
+$link-underline-thickness: 0.0625em !default;
+
+$icon-link-gap: 0.25em;
+$icon-link-underline-offset: $link-underline-offset;
+
+// Colors
+
+:root {
+  --gray-bg-1: #fafbfc;
+  --gray-bg-2: #f5f7f9;
+  --gray-border-1: #e0e6ec;
+  --gray-border-2: #d6dee6;
+  --gray-border-3: #c8d0d8;
+
+  --blue-bg-1: #f2fafe;
+  --blue-bg-2: #edf7fd;
+  --blue-border-1: #d3e8f5;
+  --blue-border-2: #c9e0ee;
+  --blue-border-3: #bad2e4;
+
+  --bs-box-shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+
+  --box-shadow-dropdown: 0 0 0 1px rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.04),
+    0 4px 8px 0 rgba(0, 0, 0, 0.04), 0 12px 24px 0 rgba(0, 0, 0, 0.08);
+
+  --box-shadow-calculator: 0 0 0 1px rgba(0, 0, 0, 0.02), 0 1px 3px 0 rgba(0, 0, 0, 0.04),
+    0 3px 9px 0 rgba(0, 0, 0, 0.04), 0 6px 18px 0 rgba(0, 0, 0, 0.04);
+
+  --box-shadow-hc: 0 0 0 1px #8a8d91;
+}
+
+$black: #000;
+$white: #fff;
+
+$navy-blue: #002f63;
+$bright-blue: #00aeea;
+
+$red: #db2200;
+$red-light: #ff4614;
+$green: #008300;
+$green-light: #00a100;
+$blue: #006ce6;
+$blue-light: #00aeea;
+
+$yellow: #fce228;
+
+$note-bg: #fff6d9;
+$note-border: #faeed0;
+
+$text-primary: #293036;
+$text-secondary: #6b7074;
+$text-tertiary: #8a8d91;
+
+$text-navy: #002f63;
+$text-navy-secondary: #5c738c;
+$text-navy-tertiary: #7d8fa3;
+
+:root {
+  --red: #{$red};
+  --green: #{$green};
+  --blue: #{$blue};
+}
+
+$body-color: $text-primary !default;
+
+$text-green: $green;
+$text-red: $red;
+$text-blue: $blue;
+$text-navy: $navy-blue;
+
+$gray-bg-1: var(--gray-bg-1) !default;
+$gray-bg-2: var(--gray-bg-2) !default;
+$gray-border-1: var(--gray-border-1) !default;
+$gray-border-2: var(--gray-border-2) !default;
+$gray-border-3: var(--gray-border-3) !default;
+$gray-border-hc: $text-tertiary;
+
+$blue-bg-1: var(--blue-bg-1) !default;
+$blue-bg-2: var(--blue-bg-2) !default;
+$blue-border-1: var(--blue-border-1) !default;
+$blue-border-2: var(--blue-border-2) !default;
+$blue-border-3: var(--blue-border-3) !default;
+$blue-border-hc: $text-navy-tertiary;
+
+$table-color: $text-primary;
+$text-body-primary: $text-primary;
+$text-body-secondary: $text-secondary;
+$text-body-tertiary: $text-tertiary;
+
+// Borders
+
+$border-color: $gray-border-3 !default;
+$card-border-color: $gray-border-3 !default;
+$input-focus-border-color: $blue !default;
+
+// Typography
 
 $font-family-sans-serif: 'Roboto', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif !default;
 $font-family-serif: 'Merriweather', Georgia, 'Times New Roman', Times, serif !default;
@@ -49,174 +168,17 @@ $font-weight-bold: 700;
 $font-weight-bolder: bolder;
 $font-weight-base: $font-weight-normal;
 
-/**
- * Links
- */
+// Buttons
 
-$icon-link-gap: 0.25em;
-$link-underline-opacity: 25% !default;
-$link-underline-offset: 0.125em !default;
-$link-underline-thickness: 0.0625em !default;
+$btn-padding-x: 1em !default;
+$btn-font-weight: 450 !default;
+$btn-white-space: nowrap !default;
 
-$icon-link-underline-offset: $link-underline-offset;
-
-/**
- * Colors
- */
-
-$black: #000;
-$white: #fff;
-
-$navy-blue: #002f63;
-$bright-blue: #00aeea;
-
-$red: #db2200;
-$red-light: #ff4614;
-$green: #008300;
-$green-light: #00a100;
-$blue: #006ce6;
-$blue-light: #00aeea;
-
-$yellow: #fce228;
-
-$text-primary: #293036;
-$text-secondary: #6b7074;
-$text-tertiary: #8a8d91;
-
-$text-navy-secondary: #5c738c;
-
-$text-green: $green;
-$text-red: $red;
-$text-blue: $blue;
-$text-navy: $navy-blue;
-
-$link-color: $blue;
-$link-hover-color: $blue;
-
-$note-bg: #fff6d9;
-$note-border: #faeed0;
-
-$gray-bg-1: #fafbfc;
-$gray-bg-2: #f5f7f9;
-$gray-border-1: #ebeef3;
-$gray-border-2: #e0e6ec;
-$gray-border-3: #d6dee6;
-
-$blue-bg-1: #f3fafe;
-$blue-bg-2: #eef7fd;
-$blue-border-1: #ddeefa;
-$blue-border-2: #d3e6f4;
-$blue-border-3: #cadeee;
-
-$table-color: $text-primary;
-$text-body-primary: $text-primary;
-$text-body-secondary: $text-secondary;
-$text-body-tertiary: $text-tertiary;
-
-$border-color: $gray-border-3;
-$card-border-color: $gray-border-3;
-$form-check-input-border: 1px solid $text-tertiary;
-
-// Spacing
-
-$spacer: 1rem !default;
-$spacers: (
-  0: 0,
-  1: (
-    $spacer * 0.25,
-  ),
-  2: (
-    $spacer * 0.5,
-  ),
-  3: $spacer,
-  4: (
-    $spacer * 1.5,
-  ),
-  5: (
-    $spacer * 3,
-  ),
-  6: (
-    $spacer * 6,
-  ),
-) !default;
-
-:root {
-  --blue: #{$blue};
-  --red: #{$red};
-  --green: #{$green};
-}
-
-/**
- * Buttons
- */
-
-$btn-font-weight: 450;
-$btn-padding-x: 1rem;
-
-/**
- * Brand definitions
- */
-
-$brand-primary: $blue !default;
-$brand-success: $green !default;
-$body-color: $text-primary !default;
-
-//== Media queries breakpoints
-//
-//## Define the breakpoints at which your layout will change, adapting to different screen sizes.
-
-// Extra small screen / phone
-$screen-xs: 480px !default;
-//** Deprecated `$screen-xs-min` as of v3.2.0
-$screen-xs-min: $screen-xs !default;
-//** Deprecated `$screen-phone` as of v3.0.1
-$screen-phone: $screen-xs-min !default;
-
-// Small screen / tablet
-$screen-sm: 768px !default;
-$screen-sm-min: $screen-sm !default;
-$screen-tablet: $screen-sm-min !default;
-
-// Medium screen / desktop
-$screen-md: 992px !default;
-$screen-md-min: $screen-md !default;
-$screen-desktop: $screen-md-min !default;
-
-// Large screen / wide desktop
-$screen-lg: 1224px !default;
-$screen-lg-min: $screen-lg !default;
-$screen-lg-desktop: $screen-lg-min !default;
-
-// Extra large screen / extra wide desktop
-$screen-xl: 1600px !default;
-$screen-xl-min: $screen-xl !default;
-$screen-xl-desktop: $screen-xl-min !default;
-
-// So media queries don't overlap when required, provide a maximum
-$screen-xs-max: ($screen-sm-min - 1) !default;
-$screen-sm-max: ($screen-md-min - 1) !default;
-$screen-md-max: ($screen-lg-min - 1) !default;
-$screen-lg-max: ($screen-xl-min - 1) !default;
-
-// TODO: put someplace else
-@mixin mobile {
-  // mobile < 768px
-  @media (max-width: #{$screen-xs-max}) {
-    @content;
-  }
-}
-
-@mixin not-mobile {
-  // not-mobile > 768px
-  @media (min-width: #{$screen-sm-min}) {
-    @content;
-  }
-}
-
-$fa-font-path: '~font-awesome/fonts';
+// Form controls
 
 $form-range-thumb-width: 1.5rem !default;
 $form-range-thumb-border-radius: 100% !default;
 
-//$transition-collapse:         height .35s ease !default;
-//$transition-collapse-width:   width .35s ease !default;
+// Font Awesome
+// Taimar: delete?
+$fa-font-path: '~font-awesome/fonts';
