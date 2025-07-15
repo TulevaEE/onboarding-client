@@ -88,6 +88,8 @@
   "memberCapital.columns.source.title": "Allikas",
   "memberCapital.columns.source.total": "Kokku",
   "memberCapital.columns.contributions.title": "Sissemaksed",
+  "memberCapital.columns.contributions.unitCount": "Ühikute arv",
+  "memberCapital.columns.contributions.unitPrice": "Ühiku hind",
   "memberCapital.columns.profit.title": "Tulu",
   "memberCapital.columns.value.title": "Väärtus",
   "memberCapital.source.CAPITAL_PAYMENT": "Rahaline panus",

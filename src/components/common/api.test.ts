@@ -795,6 +795,8 @@ describe('API calls', () => {
         contributions: 100,
         profit: 50,
         value: 150,
+        unitCount: 100,
+        unitPrice: 1.5,
         currency: 'EUR',
       },
       {
@@ -802,6 +804,8 @@ describe('API calls', () => {
         contributions: 200,
         profit: 100,
         value: 300,
+        unitCount: 200,
+        unitPrice: 1.5,
         currency: 'EUR',
       },
       {
@@ -809,6 +813,8 @@ describe('API calls', () => {
         contributions: 300,
         profit: 150,
         value: 450,
+        unitCount: 300,
+        unitPrice: 1.5,
         currency: 'EUR',
       },
       {
@@ -816,6 +822,8 @@ describe('API calls', () => {
         contributions: 400,
         profit: 200,
         value: 600,
+        unitCount: 400,
+        unitPrice: 1.5,
         currency: 'EUR',
       },
     ];

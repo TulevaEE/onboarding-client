@@ -70,6 +70,8 @@ describe('Member capital table', () => {
         contributions: 1.23,
         profit: 0,
         value: 1.23,
+        unitCount: 1.23,
+        unitPrice: 1,
         currency: 'EUR',
       },
     ]);

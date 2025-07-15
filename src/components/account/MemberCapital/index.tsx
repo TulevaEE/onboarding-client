@@ -7,6 +7,8 @@ import { Euro } from '../../common/Euro';
 import { CapitalRow, CapitalType } from '../../common/apiModels';
 import { TableColumn } from '../../common/table/Table';
 import { InfoTooltip } from '../../common/infoTooltip/InfoTooltip';
+import { useTestMode } from '../../common/test-mode';
+import { formatAmountForCount } from '../../common/utils';
 
 interface Props {
   rows: CapitalRow[];
@@ -14,9 +16,14 @@ interface Props {
 export const MemberCapitalTable: FC<Props> = ({ rows = [] }) => {
   const contributionsSum = sumBy(rows, (row) => row.contributions);
   const profitSum = sumBy(rows, (row) => row.profit);
+  const unitCountSum = sumBy(rows, (row) => row.unitCount);
+  const currentUnitPrice =
+    (rows.find(({ unitPrice }) => unitPrice !== 0) as CapitalRow)?.unitPrice ?? null;
   const valueSum = sumBy(rows, (row) => row.value);
 
-  const columns: TableColumn[] = [
+  const testMode = useTestMode();
+
+  const oldColumns: TableColumn[] = [
     {
       title: <FormattedMessage id="memberCapital.columns.source.title" />,
       dataIndex: 'type',
@@ -47,6 +54,42 @@ export const MemberCapitalTable: FC<Props> = ({ rows = [] }) => {
     },
   ];
 
+  const newColumns: TableColumn[] = [
+    {
+      title: <FormattedMessage id="memberCapital.columns.source.title" />,
+      dataIndex: 'type',
+      footer: (
+        <span data-testid="member-capital-total">
+          <FormattedMessage id="memberCapital.columns.source.total" />
+        </span>
+      ),
+    },
+    {
+      title: <FormattedMessage id="memberCapital.columns.contributions.title" />,
+      dataIndex: 'contributions',
+      width: 15,
+      footer: <Euro amount={contributionsSum} />,
+    },
+    {
+      title: <FormattedMessage id="memberCapital.columns.contributions.unitCount" />,
+      dataIndex: 'unitCount',
+      width: 15,
+      footer: <>{formatAmountForCount(unitCountSum)}</>,
+    },
+    {
+      title: <FormattedMessage id="memberCapital.columns.contributions.unitPrice" />,
+      dataIndex: 'unitPrice',
+      width: 15,
+      footer: currentUnitPrice ? <Euro amount={currentUnitPrice} /> : null,
+    },
+    {
+      title: <FormattedMessage id="memberCapital.columns.value.title" />,
+      dataIndex: 'value',
+      width: 15,
+      footer: <Euro amount={valueSum} />,
+    },
+  ];
+
   const capitalRowOrder: CapitalType[] = [
     'CAPITAL_PAYMENT',
     'MEMBERSHIP_BONUS',
@@ -59,7 +102,7 @@ export const MemberCapitalTable: FC<Props> = ({ rows = [] }) => {
       ({ type: typeA }, { type: typeB }) =>
         capitalRowOrder.indexOf(typeA) - capitalRowOrder.indexOf(typeB),
     )
-    .map(({ type, contributions, profit, value }) => ({
+    .map(({ type, contributions, profit, value, unitCount, unitPrice }) => ({
       type: (
         <>
           <FormattedMessage id={`memberCapital.source.${type}`} />
@@ -73,8 +116,10 @@ export const MemberCapitalTable: FC<Props> = ({ rows = [] }) => {
       contributions: <Euro amount={contributions} />,
       profit: <Euro amount={profit} />,
       value: <Euro amount={value} />,
+      unitPrice: unitPrice ? <Euro amount={unitPrice} /> : null,
+      unitCount: <>{formatAmountForCount(unitCount)}</>,
       key: type.toString(),
     }));
 
-  return <Table columns={columns} dataSource={dataSource} />;
+  return <Table columns={testMode ? newColumns : oldColumns} dataSource={dataSource} />;
 };

@@ -8,6 +8,8 @@ export const memberCapitalProfiles: Record<string, CapitalRow[]> = {
       profit: 200,
       value: 1200,
       currency: 'EUR',
+      unitCount: 1000,
+      unitPrice: 1.2,
     },
     {
       type: 'MEMBERSHIP_BONUS',
@@ -15,6 +17,8 @@ export const memberCapitalProfiles: Record<string, CapitalRow[]> = {
       profit: 10,
       value: 60,
       currency: 'EUR',
+      unitCount: 50,
+      unitPrice: 1.2,
     },
     {
       type: 'WORK_COMPENSATION',
@@ -22,6 +26,8 @@ export const memberCapitalProfiles: Record<string, CapitalRow[]> = {
       profit: 2000,
       value: 12000,
       currency: 'EUR',
+      unitCount: 10000,
+      unitPrice: 1.2,
     },
     {
       type: 'UNVESTED_WORK_COMPENSATION',
@@ -29,6 +35,8 @@ export const memberCapitalProfiles: Record<string, CapitalRow[]> = {
       profit: 200,
       value: 1200,
       currency: 'EUR',
+      unitCount: 1000,
+      unitPrice: 1.2,
     },
   ],
   ONLY_MEMBERSHIP: [
@@ -38,6 +46,8 @@ export const memberCapitalProfiles: Record<string, CapitalRow[]> = {
       profit: 10,
       value: 60,
       currency: 'EUR',
+      unitCount: 50,
+      unitPrice: 1.2,
     },
   ],
 };

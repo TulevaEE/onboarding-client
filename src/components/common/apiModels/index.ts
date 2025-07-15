@@ -257,6 +257,8 @@ export interface CapitalRow {
   contributions: number;
   profit: number;
   value: number;
+  unitCount: number;
+  unitPrice: number;
   currency: Currency;
 }
 

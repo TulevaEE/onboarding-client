@@ -154,6 +154,8 @@ export const capitalRowsResponse: CapitalRow[] = [
     profit: -123.45,
     value: 1000.0 - 123.45,
     currency: 'EUR',
+    unitPrice: (1000 - 123.45) / 1000,
+    unitCount: 1000,
   },
   {
     type: 'UNVESTED_WORK_COMPENSATION',
@@ -161,12 +163,16 @@ export const capitalRowsResponse: CapitalRow[] = [
     profit: 0,
     value: 0,
     currency: 'EUR',
+    unitCount: 0,
+    unitPrice: (1000 - 123.45) / 1000,
   },
   {
     type: 'WORK_COMPENSATION',
     contributions: 0,
     profit: 0,
     value: 0,
+    unitCount: 0,
+    unitPrice: 1.23,
     currency: 'EUR',
   },
   {
@@ -175,6 +181,8 @@ export const capitalRowsResponse: CapitalRow[] = [
     profit: 0,
     value: 1.23,
     currency: 'EUR',
+    unitPrice: 1.23,
+    unitCount: 1,
   },
 ];
 
