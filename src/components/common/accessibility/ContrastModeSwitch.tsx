@@ -5,10 +5,18 @@ export const ContrastModeSwitch = () => {
   const { enabled, toggleContrastMode } = useHighContrastMode();
 
   return (
-    <button type="button" className="btn btn-link mt-2 btn-sm" onClick={() => toggleContrastMode()}>
-      <FormattedMessage
-        id={enabled ? 'footer.highContrast.turnOff' : 'footer.highContrast.turnOn'}
+    <div className="form-check form-switch">
+      <input
+        type="checkbox"
+        role="switch"
+        className="form-check-input"
+        id="contrastModeSwitch"
+        onChange={() => toggleContrastMode(!enabled)}
+        checked={enabled}
       />
-    </button>
+      <label className="form-check-label" htmlFor="contrastModeSwitch">
+        <FormattedMessage id="footer.highContrast.increaseContrast" />
+      </label>
+    </div>
   );
 };
