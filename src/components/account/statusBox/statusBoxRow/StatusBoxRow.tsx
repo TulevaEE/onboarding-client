@@ -146,9 +146,9 @@ export const StatusBoxRow: React.FunctionComponent<{
           ))}
         </div>
       </div>
-      <div className="d-flex flex-column justify-content-center text-nowrap">
-        {showAction && children ? children : ''}
-      </div>
+      {showAction && children && (
+        <div className="d-flex flex-column justify-content-center text-nowrap">{children}</div>
+      )}
     </div>
     {extraBottom}
   </div>
