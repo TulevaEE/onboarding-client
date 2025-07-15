@@ -33,7 +33,7 @@ export const PaymentSubmitSection = ({
   return (
     <>
       <div className="mt-5 d-flex flex-column">
-        <div className="me-auto">
+        <div className="me-auto text-body-secondary">
           <button
             type="button"
             className="btn btn-lg btn-primary payment-button text-nowrap"
@@ -45,26 +45,36 @@ export const PaymentSubmitSection = ({
               <FormattedMessage id="thirdPillarPayment.setupRecurringPayment" />
             )}
           </button>
-          <div className="mt-2">
-            <small className="text-body-secondary">
-              {paymentType === 'SINGLE' && (
+          {paymentType === 'SINGLE' && (
+            <>
+              <p className="m-0 mt-3">
                 <FormattedMessage
                   id="thirdPillarPayment.freeSinglePayment"
                   values={{
                     b: (chunks: string) => <b>{chunks}</b>,
                   }}
                 />
-              )}
-              {paymentType === 'RECURRING' && (
+              </p>
+              <p className="m-0">
+                <FormattedMessage id="thirdPillarPayment.singlePaymentDetails" />
+              </p>
+            </>
+          )}
+          {paymentType === 'RECURRING' && (
+            <>
+              <p className="m-0 mt-3">
                 <FormattedMessage
                   id="thirdPillarPayment.freeRecurringPayment"
                   values={{
                     b: (chunks: string) => <b>{chunks}</b>,
                   }}
                 />
-              )}
-            </small>
-          </div>
+              </p>
+              <p className="m-0">
+                <FormattedMessage id="thirdPillarPayment.recurringPaymentDetails" />
+              </p>
+            </>
+          )}
         </div>
         {paymentType === 'RECURRING' && !disabled && (
           <div className="mt-5 d-flex gap-2 align-items-center">

@@ -84,19 +84,17 @@ export const Payment: React.FunctionComponent = () => {
           className="mt-5 form-label fw-bold"
         />
 
-        <div className="payment-amount-input-footer mt-2">
+        <div className="payment-amount-input-footer mt-3 text-body-secondary">
           <ThirdPillarPaymentsAmount />
           <div>
-            <small className="text-body-secondary">
-              <a href="//tuleva.ee/iii-sammas/" target="_blank" rel="noreferrer">
-                {paymentType === 'SINGLE' && (
-                  <FormattedMessage id="thirdPillarPayment.singlePaymentHowMuch" />
-                )}
-                {paymentType === 'RECURRING' && (
-                  <FormattedMessage id="thirdPillarPayment.recurringPaymentHowMuch" />
-                )}
-              </a>
-            </small>
+            <a href="//tuleva.ee/iii-sammas/" target="_blank" rel="noreferrer">
+              {paymentType === 'SINGLE' && (
+                <FormattedMessage id="thirdPillarPayment.singlePaymentHowMuch" />
+              )}
+              {paymentType === 'RECURRING' && (
+                <FormattedMessage id="thirdPillarPayment.recurringPaymentHowMuch" />
+              )}
+            </a>
           </div>
         </div>
 
