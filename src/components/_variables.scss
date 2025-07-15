@@ -129,9 +129,35 @@ $text-body-tertiary: $text-tertiary;
 
 // Borders
 
+$border-radius-xxl: 1.5rem;
+
 $border-color: $gray-border-3 !default;
 $card-border-color: $gray-border-3 !default;
 $input-focus-border-color: $blue !default;
+$table-border-color: $gray-border-2 !default;
+
+$border-radius: 0.375rem;
+$border-radius-sm: 0.25rem;
+$border-radius-lg: 0.5rem;
+$border-radius-xl: 1rem;
+$border-radius-xxl: 1.5rem;
+
+$card-border-radius: $border-radius-lg;
+
+// Buttons
+
+$btn-padding-x: 1em !default;
+$btn-font-weight: 450 !default;
+$btn-white-space: nowrap !default;
+
+// Form controls
+
+$form-range-thumb-width: 1.5rem !default;
+$form-range-thumb-border-radius: 100% !default;
+
+// Font Awesome
+// Taimar: delete?
+$fa-font-path: '~font-awesome/fonts';
 
 // Typography
 
@@ -167,18 +193,3 @@ $font-weight-semibold: 600;
 $font-weight-bold: 700;
 $font-weight-bolder: bolder;
 $font-weight-base: $font-weight-normal;
-
-// Buttons
-
-$btn-padding-x: 1em !default;
-$btn-font-weight: 450 !default;
-$btn-white-space: nowrap !default;
-
-// Form controls
-
-$form-range-thumb-width: 1.5rem !default;
-$form-range-thumb-border-radius: 100% !default;
-
-// Font Awesome
-// Taimar: delete?
-$fa-font-path: '~font-awesome/fonts';
