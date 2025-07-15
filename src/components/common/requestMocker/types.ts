@@ -1,3 +1,4 @@
+import { pendingApplicationsProfiles } from './profiles/pendingApplications';
 import { conversionMockProfiles } from './profiles/conversion';
 import { memberCapitalProfiles } from './profiles/memberCapital';
 import { memberCapitalListingsProfiles } from './profiles/memberCapitalListings';
@@ -10,6 +11,7 @@ export type MockModeConfiguration = {
   conversion: keyof typeof conversionMockProfiles | null;
   memberCapital: keyof typeof memberCapitalProfiles | null;
   memberCapitalListings: keyof typeof memberCapitalListingsProfiles | null;
+  pendingApplications: keyof typeof pendingApplicationsProfiles | null;
 };
 
 export type MockModeEndpoint = keyof MockModeConfiguration;

@@ -4,6 +4,7 @@ import { MockModeConfiguration } from '../types';
 import { withdrawalsEligibilityProfiles } from './withdrawalsEligibility';
 import { conversionMockProfiles } from './conversion';
 import { memberCapitalProfiles } from './memberCapital';
+import { pendingApplicationsProfiles } from './pendingApplications';
 
 export const mockModeProfiles: Record<keyof MockModeConfiguration, Record<string, unknown>> = {
   withdrawalsEligibility: withdrawalsEligibilityProfiles,
@@ -11,6 +12,7 @@ export const mockModeProfiles: Record<keyof MockModeConfiguration, Record<string
   conversion: conversionMockProfiles,
   memberCapital: memberCapitalProfiles,
   memberCapitalListings: memberCapitalListingsProfiles,
+  pendingApplications: pendingApplicationsProfiles,
 } as const;
 
 export const getAllProfileNames = () =>

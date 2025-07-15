@@ -369,9 +369,13 @@ export function getFunds(): Promise<Fund[]> {
 }
 
 export function getPendingApplications(): Promise<Application[]> {
-  return getWithAuthentication(getEndpoint('/v1/applications'), {
-    status: 'PENDING',
-  });
+  return mockRequestInMockMode(
+    () =>
+      getWithAuthentication(getEndpoint('/v1/applications'), {
+        status: 'PENDING',
+      }),
+    'pendingApplications',
+  );
 }
 
 export function getTransactions(): Promise<Transaction[]> {
