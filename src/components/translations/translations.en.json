@@ -90,6 +90,7 @@
   "memberCapital.columns.source.title": "Source",
   "memberCapital.columns.source.total": "Total",
   "memberCapital.columns.contributions.title": "Contributions",
+  "memberCapital.columns.contribution.title": "Contribution",
   "memberCapital.columns.contributions.unitCount": "Unit amount",
   "memberCapital.columns.contributions.unitPrice": "Unit price",
   "memberCapital.columns.profit.title": "Profit",

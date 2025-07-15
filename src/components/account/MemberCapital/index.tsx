@@ -65,7 +65,7 @@ export const MemberCapitalTable: FC<Props> = ({ rows = [] }) => {
       ),
     },
     {
-      title: <FormattedMessage id="memberCapital.columns.contributions.title" />,
+      title: <FormattedMessage id="memberCapital.columns.contribution.title" />,
       dataIndex: 'contributions',
       width: 15,
       footer: <Euro amount={contributionsSum} />,

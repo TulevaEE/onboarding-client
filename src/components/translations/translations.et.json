@@ -88,6 +88,7 @@
   "memberCapital.columns.source.title": "Allikas",
   "memberCapital.columns.source.total": "Kokku",
   "memberCapital.columns.contributions.title": "Sissemaksed",
+  "memberCapital.columns.contribution.title": "Sissemakse",
   "memberCapital.columns.contributions.unitCount": "Ühikute arv",
   "memberCapital.columns.contributions.unitPrice": "Ühiku hind",
   "memberCapital.columns.profit.title": "Tulu",
