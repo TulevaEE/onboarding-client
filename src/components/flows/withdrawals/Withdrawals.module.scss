@@ -1,16 +1,16 @@
 @import '../../variables';
 
 .stepDivider {
-  width: 24px;
+  width: 1.5rem;
   height: 1px;
-  background: $gray-border-3;
-  margin: 0 8px;
+  background: $card-border-color;
+  margin: 0 0.5rem;
 }
 @media (max-width: 767.98px) {
   .stepDivider {
     width: 1px;
-    height: 16px;
-    margin: 4px 15.5px;
+    height: 1rem;
+    margin: 0.25rem 1rem;
   }
 }
 
@@ -31,7 +31,7 @@
 .mandateHeading {
   font-size: 1.25rem;
   line-height: 1.75rem;
-  font-weight: 600;
+  font-weight: $font-weight-semibold;
 }
 
 .pillarSelectionContainer {
@@ -47,9 +47,9 @@
   padding: 1em 1.25em;
   font-size: 0.75em;
   text-align: center;
-  border-bottom: 1px solid $gray-border-3;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
+  border-bottom: 1px solid $card-border-color;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
 }
 
 .singleWithdrawalAmountInputContainer {
@@ -63,7 +63,7 @@
 
 .doneAlert {
   background: $blue-bg-2;
-  border-radius: 16px;
+  border-radius: 1rem;
   padding: 1.75em;
   display: flex;
   flex-direction: column;

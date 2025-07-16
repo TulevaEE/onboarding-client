@@ -1,0 +1,75 @@
+// Toggle needs to meet WCAG AA contrast requirements
+
+.high-contrast-switch {
+  .form-check-input {
+    --bs-border-color: #{$text-tertiary};
+  }
+  .form-check-input,
+  .form-check-label {
+    cursor: pointer;
+  }
+  .form-check-label {
+    color: #{$text-body-primary};
+    user-select: none;
+    white-space: nowrap;
+  }
+}
+
+.form-switch .form-check-input {
+  --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23#{str-slice(inspect($text-tertiary), 2)}'/%3e%3c/svg%3e");
+}
+.form-switch .form-check-input:checked {
+  --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23#{str-slice(inspect($white), 2)}'/%3e%3c/svg%3e");
+}
+
+// High contrast styles
+
+.high-contrast {
+  --bs-border-color: #{$gray-border-hc};
+
+  @each $n in (1, 2, 3) {
+    --gray-border-#{$n}: #{$gray-border-hc};
+  }
+  @each $n in (1, 2, 3) {
+    --blue-border-#{$n}: #{$blue};
+  }
+
+  --bs-box-shadow: var(--box-shadow-hc);
+  --bs-box-shadow-sm: var(--box-shadow-hc);
+  --bs-box-shadow-lg: var(--box-shadow-hc);
+
+  --box-shadow-calculator: var(--box-shadow-hc);
+  --box-shadow-dropdown: var(--box-shadow-hc);
+
+  a {
+    text-decoration-color: currentColor !important;
+  }
+
+  .header {
+    box-shadow: 0 1px 0 0 #{$gray-border-hc};
+  }
+  .navbar .dropdown-menu {
+    @include media-breakpoint-up(lg) {
+      box-shadow: var(--box-shadow-hc);
+    }
+  }
+  .tooltip-inner {
+    box-shadow: var(--box-shadow-hc);
+  }
+
+  .btn-light {
+    --bs-btn-border-color: #{$gray-border-3};
+  }
+
+  .form-switch .form-check-input {
+    --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23#{str-slice(inspect($text-tertiary), 2)}'/%3e%3c/svg%3e");
+  }
+  .form-switch .form-check-input:checked {
+    --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23#{str-slice(inspect($white), 2)}'/%3e%3c/svg%3e");
+  }
+
+  .carousel-control-prev,
+  .carousel-control-next {
+    opacity: 1;
+  }
+}

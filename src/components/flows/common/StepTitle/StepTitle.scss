@@ -4,19 +4,19 @@
   user-select: none;
 }
 .tv-step__number {
-  width: 32px;
-  height: 32px;
+  width: 2rem;
+  height: 2rem;
   color: $blue;
   display: inline-block;
   border-color: $gray-border-3;
   border-width: 1px;
-  line-height: 30px; // minus border
+  line-height: calc(100% - 2px); // minus borders
   border-style: solid;
   border-radius: 50%;
   text-align: center;
   background-color: white;
   z-index: 3;
-  flex-basis: 32px;
+  flex-basis: 2rem;
   flex-shrink: 0;
 }
 
@@ -62,10 +62,10 @@
   }
 
   &--upcoming {
-    color: #6c757d;
+    color: $text-secondary;
     & .tv-step__number {
-      color: #6c757d;
-      background-color: white;
+      color: $text-secondary;
+      background-color: $white;
     }
   }
 

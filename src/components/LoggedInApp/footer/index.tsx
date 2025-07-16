@@ -1,5 +1,5 @@
 import { FormattedMessage, useIntl } from 'react-intl';
-// import { ContrastModeSwitch } from '../../common/accessibility/ContrastModeSwitch';
+import { ContrastModeSwitch } from '../../common/accessibility/ContrastModeSwitch';
 
 export const Footer = () => {
   const { formatMessage } = useIntl();
@@ -19,6 +19,7 @@ export const Footer = () => {
           </span>
         </p>
         <p className="d-flex flex-wrap gap-4 row-gap-1 justify-content-center">
+          <ContrastModeSwitch />
           <a href="https://tuleva.ee/ligipaasetavus/" target="_blank" rel="noreferrer">
             <FormattedMessage id="footer.accessibilityStatement" />
           </a>
@@ -28,7 +29,6 @@ export const Footer = () => {
           <a href={`mailto:${formatMessage({ id: 'footer.email' })}`}>
             <FormattedMessage id="footer.email" />
           </a>
-          {/* <ContrastModeSwitch /> */}
         </p>
       </address>
     </footer>
