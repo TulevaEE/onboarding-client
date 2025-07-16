@@ -22,4 +22,10 @@ jest.mock('react-intl', () => {
   };
 });
 
+window.matchMedia = () => ({
+  matches: false,
+  addListener: jest.fn(),
+  removeListener: jest.fn(),
+});
+
 configure({ adapter: new Adapter() });
