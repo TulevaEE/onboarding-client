@@ -6,24 +6,30 @@ import {
   UseQueryResult,
 } from '@tanstack/react-query';
 
+import { AxiosError } from 'axios';
+import { useState } from 'react';
 import {
   createApplicationCancellation,
+  createCapitalTransferContract,
   createMandateBatch,
   createMemberCapitalListing,
   deleteMemberCapitalListing,
   getCapitalEvents,
   getCapitalRowsWithToken,
+  getCapitalTransferContract,
   getContributions,
   getFundPensionStatus,
   getFunds,
   getMandateDeadlines,
   getMemberCapitalListings,
+  getMemberLookup,
   getPendingApplications,
   getSourceFunds,
   getTransactions,
   getUserConversionWithToken,
   getUserWithToken,
   getWithdrawalsEligibility,
+  updateCapitalTransferContract,
 } from './api';
 import {
   Application,
@@ -36,6 +42,7 @@ import {
   Fund,
   MandateDeadlines,
   MemberCapitalListing,
+  MemberLookup,
   SourceFund,
   Transaction,
   User,
@@ -47,6 +54,11 @@ import {
   MandateBatchDto,
   WithdrawalsEligibility,
 } from './apiModels/withdrawals';
+import {
+  CapitalTransferContract,
+  CreateCapitalTransferDto,
+  UpdateCapitalTransferContractDto,
+} from './apiModels/capital-transfer';
 
 export function usePendingApplications(): UseQueryResult<Application[]> {
   return useQuery(['pendingApplications'], () => getPendingApplications());
@@ -121,6 +133,32 @@ export function useCreateMandateBatch(): UseMutationResult<
   unknown
 > {
   return useMutation((dto) => createMandateBatch(dto));
+}
+
+export function useCreateCapitalTransferContract(): UseMutationResult<
+  CapitalTransferContract,
+  ErrorResponse,
+  CreateCapitalTransferDto,
+  unknown
+> {
+  return useMutation((dto) => createCapitalTransferContract(dto));
+}
+
+export function useCapitalTransferContract(
+  id: number,
+  manualRefetch: boolean,
+): UseQueryResult<CapitalTransferContract> {
+  return useQuery([], () => getCapitalTransferContract(id), { enabled: !manualRefetch });
+}
+
+export function useUpdateCapitalTransferContract(): UseMutationResult<
+  CapitalTransferContract,
+  ErrorResponse,
+  UpdateCapitalTransferContractDto,
+  unknown
+> {
+  // todo invalidate here
+  return useMutation((dto) => updateCapitalTransferContract(dto));
 }
 
 export function useMemberCapitalListings(): UseQueryResult<MemberCapitalListing[]> {

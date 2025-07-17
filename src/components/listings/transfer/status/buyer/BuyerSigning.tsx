@@ -1,0 +1,106 @@
+import { useEffect, useState } from 'react';
+import { AuthenticationLoader, ErrorMessage, Loader } from '../../../../common';
+import { useMe } from '../../../../common/apiHooks';
+import { Steps } from '../../../../common/steps';
+import { ContractDetails } from '../../components/ContractDetails';
+import { getContractDetailsPropsFromContract, getMyRole } from '../utils';
+import { BUYER_STEPS } from '../steps';
+import { formatAmountForCurrency } from '../../../../common/utils';
+import { CapitalTransferContract } from '../../../../common/apiModels/capital-transfer';
+import { useCapitalTransferContractSigning } from '../hooks';
+
+export const BuyerSigning = ({
+  contract,
+  onSigned,
+}: {
+  contract: CapitalTransferContract;
+  onSigned: () => unknown;
+}) => {
+  const { data: me } = useMe();
+
+  const {
+    startSigning,
+    cancelSigning,
+    signed,
+    error: signingError,
+    loading: signingInProgress,
+    challengeCode,
+  } = useCapitalTransferContractSigning();
+
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [agreedToTermsError, setAgreedToTermsError] = useState(false);
+
+  useEffect(() => {
+    if (signed) {
+      onSigned();
+    }
+  }, [signed]);
+
+  if (!me) {
+    return <Loader className="align-middle" />;
+  }
+
+  const handleSignClicked = async () => {
+    if (!agreedToTerms) {
+      setAgreedToTermsError(true);
+      return;
+    }
+
+    setAgreedToTermsError(false);
+    startSigning(contract);
+  };
+
+  return (
+    <div className="bg-gray-1 border rounded br-3 p-4">
+      {(signingInProgress || challengeCode) && (
+        <AuthenticationLoader controlCode={challengeCode} onCancel={cancelSigning} overlayed />
+      )}
+      {signingError && (
+        <ErrorMessage errors={signingError.body} onCancel={cancelSigning} overlayed />
+      )}
+
+      <Steps steps={BUYER_STEPS} currentStepType="BUYER_SIGN" alignCenter={false} />
+      <div className="pt-2">
+        <h1 className="py-5">Lepingu andmed</h1>
+
+        <ContractDetails
+          {...getContractDetailsPropsFromContract(contract)}
+          userRole={getMyRole(me, contract)}
+        />
+        <div className="form-check py-5">
+          <input
+            checked={agreedToTerms}
+            onChange={() => setAgreedToTerms(!agreedToTerms)}
+            type="checkbox"
+            className="form-check-input"
+            id="agree-to-terms-checkbox"
+          />
+          <label className="form-check-label" htmlFor="agree-to-terms-checkbox">
+            Kinnitan, et täidan võlaõigusseaduse kohaselt oma lepingulisi kohustusi täies ulatuses
+            ja kohustun tasuma {formatAmountForCurrency(contract.unitPrice * contract.unitCount)}
+          </label>
+          {agreedToTermsError && (
+            <div className="text-danger">
+              TODO Ostuprotsessi alustamiseks pead tingimustega nõustuma
+            </div>
+          )}
+          {signingError && (
+            <div className="text-danger">
+              Allkirjastamisel esines viga. Palun proovi hiljem uuesti või võta meiega ühendust
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="d-flex justify-content-between flex-row-reverse pt-4 border-top">
+        <button
+          type="button"
+          className="btn btn-lg btn-primary"
+          onClick={() => handleSignClicked()}
+        >
+          Allkirjastan lepingu
+        </button>
+      </div>
+    </div>
+  );
+};
