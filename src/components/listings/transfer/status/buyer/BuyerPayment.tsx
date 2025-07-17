@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { MemberCapitalTransferContract } from '../../../../common/apiModels';
 import {
   formatAmountForCount,
   formatAmountForCurrency,
@@ -9,12 +8,13 @@ import { Steps } from '../../../../common/steps';
 import { BUYER_STEPS } from '../steps';
 import { SuccessAlert } from '../../../../common/successAlert';
 import { StepDoneAlert } from '../StepDoneAlert';
+import { CapitalTransferContract } from '../../../../common/apiModels/capital-transfer';
 
 export const BuyerPayment = ({
   contract,
   onPaid,
 }: {
-  contract: MemberCapitalTransferContract;
+  contract: CapitalTransferContract;
   onPaid: () => unknown;
 }) => {
   const [success, setSuccess] = useState(false);
@@ -59,7 +59,7 @@ export const BuyerPayment = ({
           </b>{' '}
           ostab <b>{formatAmountForCount(contract.unitCount)} ühikut liikmekapitali</b> (sellest
           TODO ühikut liikmeboonust) hinnaga{' '}
-          <b>{formatAmountForCurrency(contract.pricePerUnit)} ühiku kohta</b>.
+          <b>{formatAmountForCurrency(contract.unitPrice)} ühiku kohta</b>.
         </div>
       </div>
       <div className="pt-5">
@@ -71,12 +71,12 @@ export const BuyerPayment = ({
           </div>
           <div className="row pb-3">
             <div className="col fw-bold">Saaja konto (IBAN)</div>
-            <div className="col">{contract.sellerIban}</div>
+            <div className="col">{contract.iban}</div>
           </div>
           <div className="row pb-3">
             <div className="col fw-bold">Summa</div>
             <div className="col">
-              {formatAmountForCurrency(contract.pricePerUnit * contract.unitCount)}
+              {formatAmountForCurrency(contract.unitPrice * contract.unitCount)}
             </div>
           </div>
           <div className="row">
@@ -98,7 +98,7 @@ export const BuyerPayment = ({
           />
           <label className="form-check-label" htmlFor="agree-to-terms-checkbox">
             Kandsin üle {getFullName(contract.seller)} ({contract.seller.personalCode}) kontole{' '}
-            {formatAmountForCurrency(contract.pricePerUnit * contract.unitCount)}
+            {formatAmountForCurrency(contract.unitPrice * contract.unitCount)}
           </label>
           {confirmPaidError && (
             <div className="text-danger">

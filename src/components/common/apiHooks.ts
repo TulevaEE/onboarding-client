@@ -144,8 +144,11 @@ export function useCreateCapitalTransferContract(): UseMutationResult<
   return useMutation((dto) => createCapitalTransferContract(dto));
 }
 
-export function useCapitalTransferContract(id: number): UseQueryResult<CapitalTransferContract> {
-  return useQuery([], () => getCapitalTransferContract(id));
+export function useCapitalTransferContract(
+  id: number,
+  manualRefetch: boolean,
+): UseQueryResult<CapitalTransferContract> {
+  return useQuery([], () => getCapitalTransferContract(id), { enabled: !manualRefetch });
 }
 
 export function useUpdateCapitalTransferContract(): UseMutationResult<
@@ -154,6 +157,7 @@ export function useUpdateCapitalTransferContract(): UseMutationResult<
   UpdateCapitalTransferContractDto,
   unknown
 > {
+  // todo invalidate here
   return useMutation((dto) => updateCapitalTransferContract(dto));
 }
 

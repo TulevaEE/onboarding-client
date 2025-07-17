@@ -1,19 +1,19 @@
 import { useState } from 'react';
 import { Loader } from '../../../../common';
 import { useMe } from '../../../../common/apiHooks';
-import { MemberCapitalTransferContract } from '../../../../common/apiModels';
 import { Steps } from '../../../../common/steps';
 import { ContractDetails } from '../../components/ContractDetails';
 import { getContractDetailsPropsFromContract, getMyRole } from '../utils';
 import { BUYER_STEPS } from '../steps';
 import { formatAmountForCurrency } from '../../../../common/utils';
+import { CapitalTransferContract } from '../../../../common/apiModels/capital-transfer';
 
 export const BuyerSigning = ({
   contract,
   state,
   onSigned,
 }: {
-  contract: MemberCapitalTransferContract;
+  contract: CapitalTransferContract;
   state: 'SELLER_SIGNED' | 'BUYER_SIGNED';
   onSigned: () => unknown;
 }) => {
@@ -51,7 +51,7 @@ export const BuyerSigning = ({
         <h1 className="py-5">Lepingu andmed</h1>
 
         <ContractDetails
-          {...getContractDetailsPropsFromContract(contract, state)}
+          {...getContractDetailsPropsFromContract(contract)}
           userRole={getMyRole(me, contract)}
         />
         <div className="form-check py-5">
@@ -64,7 +64,7 @@ export const BuyerSigning = ({
           />
           <label className="form-check-label" htmlFor="agree-to-terms-checkbox">
             Kinnitan, et täidan võlaõigusseaduse kohaselt oma lepingulisi kohustusi täies ulatuses
-            ja kohustun tasuma {formatAmountForCurrency(contract.pricePerUnit * contract.unitCount)}
+            ja kohustun tasuma {formatAmountForCurrency(contract.unitPrice * contract.unitCount)}
           </label>
           {agreedToTermsError && (
             <div className="text-danger">
