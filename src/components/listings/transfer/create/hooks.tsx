@@ -6,6 +6,7 @@ import {
   CreateCapitalTransferStepType,
 } from './types';
 import { getTransferCreatePath } from './utils';
+import { CapitalTransferContract } from '../../../common/apiModels/capital-transfer';
 
 const CreateTransferContext = createContext<CreateCapitalTransferContextState>({
   buyer: null,
@@ -13,12 +14,14 @@ const CreateTransferContext = createContext<CreateCapitalTransferContextState>({
   pricePerUnit: null,
   sellerIban: null,
   currentStepType: 'CONFIRM_BUYER',
+  createdCapitalTransferContract: null,
   setBuyer: () => {},
   setUnitCount: () => {},
   setPricePerUnit: () => {},
   setSellerIban: () => {},
   navigateToNextStep: () => {},
   navigateToPreviousStep: () => {},
+  setCreatedCapitalTransferContract: () => {},
 });
 
 export const useCreateCapitalTransferContext = () => useContext(CreateTransferContext);
@@ -34,6 +37,8 @@ export const CreateTransferProvider = ({ children }: PropsWithChildren<unknown>)
     useState<CreateCapitalTransferContextState['sellerIban']>(null);
   const [currentStepType, setCurrentStepType] =
     useState<CreateCapitalTransferStepType>('CONFIRM_BUYER');
+  const [createdCapitalTransferContract, setCreatedCapitalTransferContract] =
+    useState<CapitalTransferContract | null>(null);
 
   useEffect(() => {
     const stepForPath = CREATE_CAPITAL_TRANSFER_STEPS.find(
@@ -77,12 +82,14 @@ export const CreateTransferProvider = ({ children }: PropsWithChildren<unknown>)
         pricePerUnit,
         sellerIban,
         currentStepType,
+        createdCapitalTransferContract,
         setBuyer,
         setUnitCount,
         setPricePerUnit,
         setSellerIban,
         navigateToNextStep,
         navigateToPreviousStep,
+        setCreatedCapitalTransferContract,
       }}
     >
       {children}

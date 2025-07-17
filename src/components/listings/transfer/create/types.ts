@@ -1,3 +1,5 @@
+import { CapitalTransferContract } from '../../../common/apiModels/capital-transfer';
+
 type StateContext = {
   buyer: {
     id: number;
@@ -11,6 +13,7 @@ type StateContext = {
   unitCount: number | null;
   pricePerUnit: number | null;
   sellerIban: string | null;
+  createdCapitalTransferContract: CapitalTransferContract | null;
 };
 
 type Setters = {
