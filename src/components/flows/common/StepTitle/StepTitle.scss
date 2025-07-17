@@ -10,7 +10,7 @@
   display: inline-block;
   border-color: $gray-border-3;
   border-width: 1px;
-  line-height: calc(100% - 2px); // minus borders
+  line-height: calc(2rem - 2px); // minus borders
   border-style: solid;
   border-radius: 50%;
   text-align: center;

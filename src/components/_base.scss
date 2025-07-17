@@ -126,8 +126,8 @@ small {
 
 .btn-light {
   color: $blue;
-  border: 1px solid $gray-border-3;
-  background: white;
+  border-color: var(--bs-border-color);
+  background: $white;
 }
 
 .brand-logo {

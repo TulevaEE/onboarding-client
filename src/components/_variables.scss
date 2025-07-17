@@ -99,6 +99,12 @@ $text-navy-tertiary: #7d8fa3;
   --red: #{$red};
   --green: #{$green};
   --blue: #{$blue};
+
+  --bs-border-color: var(--gray-border-3); // inputs and other
+  --bs-card-border-color: var(--gray-border-2);
+}
+.table {
+  --bs-table-border-color: var(--gray-border-2);
 }
 
 $body-color: $text-primary !default;
@@ -129,12 +135,12 @@ $text-body-tertiary: $text-tertiary;
 
 // Borders
 
-$border-radius-xxl: 1.5rem;
-
-$border-color: $gray-border-3 !default;
-$card-border-color: $gray-border-2 !default;
+//$border-color: var(--gray-border-2) !default;
+$card-border-color: var(--gray-border-2) !default;
 $input-focus-border-color: $blue !default;
-$table-border-color: $gray-border-2 !default;
+//$table-border-color: var(--gray-border-2) !default;
+
+$border-radius-xxl: 1.5rem;
 
 $border-radius: 0.375rem;
 $border-radius-sm: 0.25rem;

@@ -1,6 +1,6 @@
-// Toggle needs to meet WCAG AA contrast requirements
+// Switch needs to meet WCAG AA contrast requirements
 
-.high-contrast-switch {
+.high-contrast-toggle {
   .form-check-input {
     --bs-border-color: #{$text-tertiary};
   }
@@ -25,10 +25,10 @@
 // High contrast styles
 
 .high-contrast {
-  --bs-border-color: #{$gray-border-hc};
+  --bs-border-color: #{$text-tertiary};
 
   @each $n in (1, 2, 3) {
-    --gray-border-#{$n}: #{$gray-border-hc};
+    --gray-border-#{$n}: #{$text-tertiary};
   }
   @each $n in (1, 2, 3) {
     --blue-border-#{$n}: #{$blue};
@@ -45,8 +45,16 @@
     text-decoration-color: currentColor !important;
   }
 
+  .card {
+    --bs-card-border-color: var(--gray-border-3);
+  }
+
+  .table {
+    --bs-table-border-color: var(--gray-border-3);
+  }
+
   .header {
-    box-shadow: 0 1px 0 0 #{$gray-border-hc};
+    box-shadow: 0 1px 0 0 #{$text-tertiary};
   }
   .navbar .dropdown-menu {
     @include media-breakpoint-up(lg) {

@@ -7,13 +7,13 @@
   border-top-style: solid;
   border-bottom-width: 1px;
   border-bottom-style: solid;
-  border-color: $gray-border-2;
+  border-color: var(--bs-card-border-color);
 }
 
 .tv-table__row {
   border-bottom-width: 1px;
   border-bottom-style: solid;
-  border-color: $gray-border-2;
+  border-color: var(--bs-card-border-color);
 }
 
 .fund-selections-container {
