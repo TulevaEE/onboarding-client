@@ -6,9 +6,9 @@ import {
 } from '../../../../common/utils';
 import { Steps } from '../../../../common/steps';
 import { BUYER_STEPS } from '../steps';
-import { SuccessAlert } from '../../../../common/successAlert';
 import { StepDoneAlert } from '../StepDoneAlert';
 import { CapitalTransferContract } from '../../../../common/apiModels/capital-transfer';
+import { useUpdateCapitalTransferContract } from '../../../../common/apiHooks';
 
 export const BuyerPayment = ({
   contract,
@@ -17,17 +17,19 @@ export const BuyerPayment = ({
   contract: CapitalTransferContract;
   onPaid: () => unknown;
 }) => {
+  const { mutateAsync: updateContractState, error } = useUpdateCapitalTransferContract();
   const [success, setSuccess] = useState(false);
   const [confirmPaid, setConfirmPaid] = useState(false);
   const [confirmPaidError, setConfirmPaidError] = useState(false);
 
-  const handlePaymentDoneClicked = () => {
+  const handlePaymentDoneClicked = async () => {
     if (!confirmPaid) {
       setConfirmPaidError(true);
       return;
     }
 
     setConfirmPaidError(false);
+    await updateContractState({ id: contract.id, state: 'PAYMENT_CONFIRMED_BY_BUYER' });
     setSuccess(true);
   };
 
@@ -47,6 +49,11 @@ export const BuyerPayment = ({
     <div className="bg-gray-1 border rounded br-3 p-4">
       <Steps steps={BUYER_STEPS} currentStepType="SEND_PAYMENT_AND_CONFIRM" />
 
+      {error && (
+        <div className="alert alert-warning mt-2">
+          Makse kinnitamisel tekkis viga. Palun proovi hiljem uuesti või võta meiega ühendust
+        </div>
+      )}
       <div className="pt-4">
         <h1>Lepingu andmed</h1>
         <div className="pt-3">

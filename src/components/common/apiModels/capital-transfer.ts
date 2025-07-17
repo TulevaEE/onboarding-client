@@ -23,7 +23,8 @@ export type CapitalTransferContract = {
 
 export type UpdateCapitalTransferContractDto = {
   id: number;
-  state: CapitalTransferContractState & ('BUYER_SIGNED' | 'PAYMENT_CONFIRMED_BY_BUYER');
+  state: CapitalTransferContractState &
+    ('PAYMENT_CONFIRMED_BY_SELLER' | 'PAYMENT_CONFIRMED_BY_BUYER');
 };
 
 export type CapitalTransferContractState =
