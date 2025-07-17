@@ -47,6 +47,11 @@ import {
 } from './apiModels/withdrawals';
 import { mockRequestInMockMode } from './requestMocker';
 import { SignableEntity } from './signing/types';
+import {
+  CapitalTransferContract,
+  CreateCapitalTransferDto,
+  UpdateCapitalTransferContractDto,
+} from './apiModels/capital-transfer';
 
 const API_URI = '/api';
 
@@ -226,7 +231,7 @@ export function saveMandateWithAuthentication(mandate: string): Promise<Mandate>
 
 const getSigningBaseUrl = (entityId: string, type: SignableEntity) => {
   if (type === 'CAPITAL_TRANSFER_CONTRACT') {
-    return `/v1/capital/transfer/${entityId}/signature`;
+    return `/v1/capital-transfer-contracts/${entityId}/signature`;
   }
 
   if (type === 'MANDATE_BATCH') {
@@ -397,6 +402,27 @@ export function getTransactions(): Promise<Transaction[]> {
 
 export function getCapitalEvents(): Promise<CapitalEvent[]> {
   return getWithAuthentication(getEndpoint('/v1/me/capital/events'), undefined);
+}
+
+export function createCapitalTransferContract(
+  createCapitalTransferDto: CreateCapitalTransferDto,
+): Promise<CapitalTransferContract> {
+  return postWithAuthentication(
+    getEndpoint('/api/v1/capital-transfer-contracts'),
+    createCapitalTransferDto,
+  );
+}
+
+export function getCapitalTransferContract(id: number): Promise<CapitalTransferContract> {
+  return getWithAuthentication(getEndpoint(`/api/v1/capital-transfer-contracts/${id}`));
+}
+
+export function updateCapitalTransferContract(
+  dto: UpdateCapitalTransferContractDto,
+): Promise<CapitalTransferContract> {
+  return patchWithAuthentication(getEndpoint(`/api/v1/capital-transfer-contracts/${dto.id}`), {
+    state: dto.state,
+  });
 }
 
 export function getContributions(): Promise<Contribution[]> {

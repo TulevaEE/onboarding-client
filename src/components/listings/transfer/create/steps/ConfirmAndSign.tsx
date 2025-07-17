@@ -1,20 +1,49 @@
-import { useState } from 'react';
-import { Link, Redirect, useHistory } from 'react-router-dom';
-import { Loader } from '../../../../common';
-import { useMe } from '../../../../common/apiHooks';
+import { useEffect, useState } from 'react';
+import { Redirect, useHistory } from 'react-router-dom';
+import { AuthenticationLoader, ErrorMessage, Loader } from '../../../../common';
+import { useCreateCapitalTransferContract, useMe } from '../../../../common/apiHooks';
 import { useCreateCapitalTransferContext } from '../hooks';
 import { ContractDetails } from '../../components/ContractDetails';
-import { SuccessAlert } from '../../../../common/successAlert';
+import { useCapitalTransferContractSigning } from '../../status/hooks';
+import { ErrorResponse } from '../../../../common/apiModels';
 
 export const ConfirmAndSign = () => {
-  const { buyer, unitCount, pricePerUnit, sellerIban, navigateToPreviousStep, navigateToNextStep } =
-    useCreateCapitalTransferContext();
+  const {
+    buyer,
+    unitCount,
+    pricePerUnit,
+    sellerIban,
+    navigateToPreviousStep,
+    navigateToNextStep,
+    setCreatedCapitalTransferContract,
+  } = useCreateCapitalTransferContext();
   const { data: me } = useMe();
+
+  const { mutateAsync: createCapitalTransferContract } = useCreateCapitalTransferContract();
+
+  const {
+    startSigning,
+    cancelSigning,
+    signed,
+    error: signingError,
+    loading: signingInProgress,
+    challengeCode,
+  } = useCapitalTransferContractSigning();
+
+  const [contractCreationLoading, setContractCreationLoading] = useState(false);
+  const [contractCreationError, setContractCreationError] = useState<ErrorResponse | null>(null);
 
   const history = useHistory();
 
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [agreedToTermsError, setAgreedToTermsError] = useState(false);
+
+  useEffect(() => {
+    if (signed) {
+      history.replace('/');
+      navigateToNextStep();
+    }
+  }, [signed]);
 
   if (!me) {
     return <Loader className="align-middle" />;
@@ -24,7 +53,12 @@ export const ConfirmAndSign = () => {
     return <Redirect to="/capital/transfer/create" />;
   }
 
-  const handleSubmitClicked = () => {
+  const handleContractCreationErrorCancel = () => {
+    cancelSigning();
+    setContractCreationError(null);
+  };
+
+  const handleSubmitClicked = async () => {
     if (!agreedToTerms) {
       setAgreedToTermsError(true);
       return;
@@ -32,11 +66,43 @@ export const ConfirmAndSign = () => {
 
     setAgreedToTermsError(false);
 
-    navigateToNextStep();
+    setContractCreationLoading(true);
+
+    try {
+      const contract = await createCapitalTransferContract({
+        buyerMemberId: buyer.memberId,
+        iban: sellerIban,
+        unitPrice: pricePerUnit,
+        unitCount,
+        unitsOfMemberBonus: 0, // TODO
+      });
+
+      setCreatedCapitalTransferContract(contract);
+
+      startSigning(contract);
+    } catch (e) {
+      setContractCreationError(e as ErrorResponse); // TODO validate type
+    }
+
+    setContractCreationLoading(false);
   };
 
   return (
     <>
+      {(signingInProgress || challengeCode) && (
+        <AuthenticationLoader controlCode={challengeCode} onCancel={cancelSigning} overlayed />
+      )}
+      {signingError && (
+        <ErrorMessage errors={signingError.body} onCancel={cancelSigning} overlayed />
+      )}
+      {contractCreationError && (
+        <ErrorMessage
+          errors={contractCreationError.body}
+          onCancel={handleContractCreationErrorCancel}
+          overlayed
+        />
+      )}
+
       <h2 className="py-5">Lepingu eelvaade</h2>
 
       <div>
@@ -78,6 +144,7 @@ export const ConfirmAndSign = () => {
         </button>
         <button
           type="button"
+          disabled={contractCreationLoading || signingInProgress}
           className="btn btn-lg btn-primary"
           onClick={() => handleSubmitClicked()}
         >
