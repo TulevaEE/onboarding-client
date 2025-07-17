@@ -1,20 +1,15 @@
 import { useState } from 'react';
-import {
-  MemberCapitalTransferContract,
-  MemberCapitalTransferContractState,
-} from '../../../../common/apiModels';
 import { ContractDetails } from '../../components/ContractDetails';
-import { getContractDetailsPropsFromContract, getMyRole } from '../utils';
+import { getContractDetailsPropsFromContract } from '../utils';
 import { formatAmountForCurrency } from '../../../../common/utils';
 import { StepDoneAlert } from '../StepDoneAlert';
+import { CapitalTransferContract } from '../../../../common/apiModels/capital-transfer';
 
 export const SellerConfirm = ({
-  state,
   contract,
   onConfirmed,
 }: {
-  state: MemberCapitalTransferContractState;
-  contract: MemberCapitalTransferContract;
+  contract: CapitalTransferContract;
   onConfirmed: () => unknown;
 }) => {
   const [confirmMoneyReceived, setConfirmMoneyReceived] = useState(false);
@@ -44,10 +39,7 @@ export const SellerConfirm = ({
     <div className="bg-gray-1 border rounded br-3 p-4">
       <h1>Lepingu andmed</h1>
       <div className="pt-4">
-        <ContractDetails
-          {...getContractDetailsPropsFromContract(contract, state)}
-          userRole="SELLER"
-        />
+        <ContractDetails {...getContractDetailsPropsFromContract(contract)} userRole="SELLER" />
         <div className="form-check py-5">
           <input
             checked={confirmMoneyReceived}
@@ -57,7 +49,7 @@ export const SellerConfirm = ({
             id="agree-to-terms-checkbox"
           />
           <label className="form-check-label" htmlFor="agree-to-terms-checkbox">
-            Kinnitan, et olen {formatAmountForCurrency(contract.pricePerUnit * contract.unitCount)}{' '}
+            Kinnitan, et olen {formatAmountForCurrency(contract.unitPrice * contract.unitCount)}{' '}
             kätte saanud ja valmis liikmekapitali üle andma
           </label>
           {confirmMoneyReceivedError && (

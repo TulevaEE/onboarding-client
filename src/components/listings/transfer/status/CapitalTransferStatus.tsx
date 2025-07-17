@@ -1,127 +1,47 @@
 import { useParams } from 'react-router-dom';
 import { useState } from 'react';
-import { useMe } from '../../../common/apiHooks';
+import { useCapitalTransferContract, useMe } from '../../../common/apiHooks';
 import { Loader } from '../../../common';
 import { ContractDetails } from '../components/ContractDetails';
-import {
-  MemberCapitalTransferContract,
-  MemberCapitalTransferContractState,
-} from '../../../common/apiModels';
 import { getContractDetailsPropsFromContract, getMyRole } from './utils';
 import { BuyerFlow } from './buyer/BuyerFlow';
 import { SellerConfirm } from './seller/SellerConfirm';
+import { CapitalTransferContract } from '../../../common/apiModels/capital-transfer';
 
 export const CapitalTransferStatus = () => {
   const params = useParams<{ id: string }>();
 
   const { data: me } = useMe();
 
-  const [debugState, setDebugState] = useState<MemberCapitalTransferContractState>('SELLER_SIGNED');
-  const [myDebugRole, setMyDebugRole] = useState<'BUYER' | 'SELLER'>('SELLER');
+  // TODO while signing or confirming disable this
+  const [manualFetching, setManualFetching] = useState(false);
+  const { data: contract, refetch } = useCapitalTransferContract(Number(params.id), manualFetching);
 
-  if (!me) {
+  // TODO will random refetches cause interruptions?
+  if (!me || !contract) {
     return <Loader className="align-middle" />;
   }
 
-  const mockContract: MemberCapitalTransferContract = {
-    seller:
-      myDebugRole === 'SELLER'
-        ? me
-        : {
-            personalCode: '38406250123',
-            firstName: 'Kaarel',
-            lastName: 'Karikakar',
-          },
-    buyer:
-      myDebugRole === 'BUYER'
-        ? me
-        : {
-            personalCode: '38406250123',
-            firstName: 'Kaarel',
-            lastName: 'Karikakar',
-          },
-    pricePerUnit: 2,
-    unitCount: 2000,
-    sellerIban: 'EE_TEST_IBAN',
-  };
-
-  const myRole = getMyRole(me, mockContract);
+  const myRole = getMyRole(me, contract);
 
   const showBuyerFlow =
-    (debugState === 'SELLER_SIGNED' || debugState === 'BUYER_SIGNED') && myRole === 'BUYER';
+    (contract.state === 'SELLER_SIGNED' || contract.state === 'BUYER_SIGNED') && myRole === 'BUYER';
 
-  const showSellerConfirmation = debugState === 'PAYMENT_CONFIRMED_BY_BUYER' && myRole === 'SELLER';
+  const showSellerConfirmation =
+    contract.state === 'PAYMENT_CONFIRMED_BY_BUYER' && myRole === 'SELLER';
 
   return (
     <div className="col-12 col-md-11 col-lg-9 mx-auto">
-      <div>
-        <label htmlFor="test-state" className="form-label">
-          Test state
-        </label>
-        <select
-          name="test-state"
-          id="test-state"
-          value={debugState}
-          onChange={(e) => setDebugState(e.target.value as MemberCapitalTransferContractState)}
-        >
-          {[
-            'CREATED',
-            'SELLER_SIGNED',
-            'BUYER_SIGNED',
-            'PAYMENT_CONFIRMED_BY_BUYER',
-            'PAYMENT_CONFIRMED_BY_SELLER',
-            'APPROVED',
-            'CANCELLED',
-          ].map((stateOption) => (
-            <option key={stateOption} value={stateOption}>
-              {stateOption}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div>
-        <label htmlFor="test-role" className="form-label">
-          Test role
-        </label>
-        <select
-          name="test-role"
-          id="test-role"
-          value={myDebugRole}
-          onChange={(e) => setMyDebugRole(e.target.value as 'BUYER' | 'SELLER')}
-        >
-          <option value="SELLER">SELLER</option>
-          <option value="BUYER">BUYER</option>
-        </select>
-      </div>
-      {showBuyerFlow && (
-        <BuyerFlow
-          contract={mockContract}
-          state={debugState}
-          setDebugState={(state) => setDebugState(state)}
-        />
-      )}
+      {showBuyerFlow && <BuyerFlow contract={contract} onRefetch={() => refetch()} />}
       {showSellerConfirmation && (
-        <SellerConfirm
-          contract={mockContract}
-          state={debugState}
-          onConfirmed={() => setDebugState('PAYMENT_CONFIRMED_BY_SELLER')}
-        />
+        <SellerConfirm contract={contract} onConfirmed={() => refetch()} />
       )}
-      {!showBuyerFlow && !showSellerConfirmation && (
-        <StatusDisplay state={debugState} contract={mockContract} />
-      )}
+      {!showBuyerFlow && !showSellerConfirmation && <StatusDisplay contract={contract} />}
     </div>
   );
 };
 
-const StatusDisplay = ({
-  state,
-  contract,
-}: {
-  state: MemberCapitalTransferContractState;
-  contract: MemberCapitalTransferContract;
-}) => {
+const StatusDisplay = ({ contract }: { contract: CapitalTransferContract }) => {
   const { data: me } = useMe();
 
   if (!me) {
@@ -130,10 +50,10 @@ const StatusDisplay = ({
 
   return (
     <div className="bg-gray-1 border rounded br-3 p-4">
-      {state === 'CANCELLED' && (
+      {contract.state === 'CANCELLED' && (
         <div className="alert alert-warning">TODO Avaldus on tühistatud</div>
       )}
-      {state === 'PAYMENT_CONFIRMED_BY_SELLER' && (
+      {contract.state === 'PAYMENT_CONFIRMED_BY_SELLER' && (
         <div className="alert alert-info d-flex">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -164,7 +84,7 @@ const StatusDisplay = ({
         </div>
       )}
 
-      {state === 'APPROVED' && (
+      {contract.state === 'APPROVED' && (
         <div className="alert alert-success">
           TODO Avaldus on kinnitatud Tuleva ühistu juhatuse poolt.
         </div>
@@ -173,7 +93,7 @@ const StatusDisplay = ({
       <h1>Lepingu andmed</h1>
       <div className="pt-4">
         <ContractDetails
-          {...getContractDetailsPropsFromContract(contract, state)}
+          {...getContractDetailsPropsFromContract(contract)}
           userRole={getMyRole(me, contract)}
         />
       </div>

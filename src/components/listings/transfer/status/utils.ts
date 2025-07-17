@@ -1,11 +1,11 @@
 import {
-  MemberCapitalTransferContract,
-  MemberCapitalTransferContractState,
-  User,
-} from '../../../common/apiModels';
+  CapitalTransferContractState,
+  CapitalTransferContract,
+} from '../../../common/apiModels/capital-transfer';
+import { User } from '../../../common/apiModels';
 import { ContractDetailsProps } from '../components/ContractDetails';
 
-export const getMyRole = (me: User, contract: MemberCapitalTransferContract) => {
+export const getMyRole = (me: User, contract: CapitalTransferContract) => {
   if (contract.buyer.personalCode === me.personalCode) {
     return 'BUYER';
   }
@@ -18,22 +18,21 @@ export const getMyRole = (me: User, contract: MemberCapitalTransferContract) => 
 };
 
 export const getContractDetailsPropsFromContract = (
-  contract: MemberCapitalTransferContract,
-  state: MemberCapitalTransferContractState,
+  contract: CapitalTransferContract,
 ): Pick<
   ContractDetailsProps,
   'seller' | 'buyer' | 'pricePerUnit' | 'unitCount' | 'sellerIban' | 'progress'
 > => ({
   seller: contract.seller,
   buyer: contract.buyer,
-  pricePerUnit: contract.pricePerUnit,
+  pricePerUnit: contract.unitPrice,
   unitCount: contract.unitCount,
-  sellerIban: contract.sellerIban,
-  progress: getProgressFromStatus(state) ?? undefined,
+  sellerIban: contract.iban,
+  progress: getProgressFromStatus(contract.state) ?? undefined,
 });
 
 const getProgressFromStatus = (
-  status: MemberCapitalTransferContractState,
+  status: CapitalTransferContractState,
 ): {
   signed: { seller: boolean; buyer: boolean };
   confirmed: { seller: boolean; buyer: boolean };
