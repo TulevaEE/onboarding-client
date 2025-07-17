@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Loader } from '../../../../common';
+import { useEffect, useState } from 'react';
+import { AuthenticationLoader, ErrorMessage, Loader } from '../../../../common';
 import { useMe } from '../../../../common/apiHooks';
 import { Steps } from '../../../../common/steps';
 import { ContractDetails } from '../../components/ContractDetails';
@@ -7,45 +7,58 @@ import { getContractDetailsPropsFromContract, getMyRole } from '../utils';
 import { BUYER_STEPS } from '../steps';
 import { formatAmountForCurrency } from '../../../../common/utils';
 import { CapitalTransferContract } from '../../../../common/apiModels/capital-transfer';
+import { useCapitalTransferContractSigning } from '../hooks';
 
 export const BuyerSigning = ({
   contract,
-  state,
   onSigned,
 }: {
   contract: CapitalTransferContract;
-  state: 'SELLER_SIGNED' | 'BUYER_SIGNED';
   onSigned: () => unknown;
 }) => {
   const { data: me } = useMe();
 
+  const {
+    startSigning,
+    cancelSigning,
+    signed,
+    error: signingError,
+    loading: signingInProgress,
+    challengeCode,
+  } = useCapitalTransferContractSigning();
+
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [agreedToTermsError, setAgreedToTermsError] = useState(false);
-  const [signingError, setSigningError] = useState(false);
+
+  useEffect(() => {
+    if (signed) {
+      onSigned();
+    }
+  }, [signed]);
 
   if (!me) {
     return <Loader className="align-middle" />;
   }
 
-  const handleSignClicked = () => {
+  const handleSignClicked = async () => {
     if (!agreedToTerms) {
       setAgreedToTermsError(true);
       return;
     }
 
     setAgreedToTermsError(false);
-    setSigningError(true);
-
-    // eslint-disable-next-line no-restricted-globals
-    if (confirm('TODO allkirjastan?')) {
-      onSigned();
-    } else {
-      setSigningError(true);
-    }
+    startSigning(contract);
   };
 
   return (
     <div className="bg-gray-1 border rounded br-3 p-4">
+      {(signingInProgress || challengeCode) && (
+        <AuthenticationLoader controlCode={challengeCode} onCancel={cancelSigning} overlayed />
+      )}
+      {signingError && (
+        <ErrorMessage errors={signingError.body} onCancel={cancelSigning} overlayed />
+      )}
+
       <Steps steps={BUYER_STEPS} currentStepType="BUYER_SIGN" alignCenter={false} />
       <div className="pt-2">
         <h1 className="py-5">Lepingu andmed</h1>

@@ -17,7 +17,6 @@ export const CapitalTransferStatus = () => {
   const [manualFetching, setManualFetching] = useState(false);
   const { data: contract, refetch } = useCapitalTransferContract(Number(params.id), manualFetching);
 
-  // TODO will random refetches cause interruptions?
   if (!me || !contract) {
     return <Loader className="align-middle" />;
   }

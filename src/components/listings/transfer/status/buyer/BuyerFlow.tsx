@@ -10,7 +10,7 @@ export const BuyerFlow = ({
   onRefetch: () => unknown;
 }) => {
   if (contract.state === 'SELLER_SIGNED') {
-    return <BuyerSigning contract={contract} state={contract.state} onSigned={() => onRefetch()} />;
+    return <BuyerSigning contract={contract} onSigned={() => onRefetch()} />;
   }
 
   return (

@@ -4,6 +4,7 @@ import { getContractDetailsPropsFromContract } from '../utils';
 import { formatAmountForCurrency } from '../../../../common/utils';
 import { StepDoneAlert } from '../StepDoneAlert';
 import { CapitalTransferContract } from '../../../../common/apiModels/capital-transfer';
+import { useUpdateCapitalTransferContract } from '../../../../common/apiHooks';
 
 export const SellerConfirm = ({
   contract,
@@ -14,16 +15,18 @@ export const SellerConfirm = ({
 }) => {
   const [confirmMoneyReceived, setConfirmMoneyReceived] = useState(false);
   const [confirmMoneyReceivedError, setConfirmMoneyReceivedError] = useState(false);
+  const { mutateAsync: updateContractState, error } = useUpdateCapitalTransferContract();
 
   const [success, setSuccess] = useState(false);
 
-  const handleConfirmationClicked = () => {
+  const handleConfirmationClicked = async () => {
     if (!confirmMoneyReceived) {
       setConfirmMoneyReceivedError(true);
       return;
     }
 
     setConfirmMoneyReceivedError(false);
+    await updateContractState({ id: contract.id, state: 'PAYMENT_CONFIRMED_BY_SELLER' });
     setSuccess(true);
   };
 
@@ -38,6 +41,11 @@ export const SellerConfirm = ({
   return (
     <div className="bg-gray-1 border rounded br-3 p-4">
       <h1>Lepingu andmed</h1>
+      {error && (
+        <div className="alert alert-warning mt-2">
+          Makse kinnitamisel tekkis viga. Palun proovi hiljem uuesti või võta meiega ühendust
+        </div>
+      )}
       <div className="pt-4">
         <ContractDetails {...getContractDetailsPropsFromContract(contract)} userRole="SELLER" />
         <div className="form-check py-5">
