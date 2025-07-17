@@ -228,6 +228,14 @@ export interface User {
   contactDetailsLastUpdateDate: string | null;
 }
 
+export interface MemberLookup {
+  id: number;
+  memberNumber: number;
+  firstName: string;
+  lastName: string;
+  personalCode: string;
+}
+
 export interface UserConversion {
   secondPillar: Conversion;
   thirdPillar: Conversion;

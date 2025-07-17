@@ -6,6 +6,8 @@ import {
   UseQueryResult,
 } from '@tanstack/react-query';
 
+import { AxiosError } from 'axios';
+import { useState } from 'react';
 import {
   createApplicationCancellation,
   createCapitalTransferContract,
@@ -20,6 +22,7 @@ import {
   getFunds,
   getMandateDeadlines,
   getMemberCapitalListings,
+  getMemberLookup,
   getPendingApplications,
   getSourceFunds,
   getTransactions,
@@ -39,6 +42,7 @@ import {
   Fund,
   MandateDeadlines,
   MemberCapitalListing,
+  MemberLookup,
   SourceFund,
   Transaction,
   User,
@@ -141,7 +145,7 @@ export function useCreateCapitalTransferContract(): UseMutationResult<
 }
 
 export function useCapitalTransferContract(id: number): UseQueryResult<CapitalTransferContract> {
-  return useQuery(['capitalTransferContract'], () => getCapitalTransferContract(id));
+  return useQuery([], () => getCapitalTransferContract(id));
 }
 
 export function useUpdateCapitalTransferContract(): UseMutationResult<
