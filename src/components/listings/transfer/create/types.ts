@@ -1,14 +1,8 @@
+import { MemberLookup } from '../../../common/apiModels';
 import { CapitalTransferContract } from '../../../common/apiModels/capital-transfer';
 
 type StateContext = {
-  buyer: {
-    id: number;
-    memberId: number;
-    memberNumber: string;
-    personalCode: string;
-    firstName: string;
-    lastName: string;
-  } | null;
+  buyer: MemberLookup | null;
 
   unitCount: number | null;
   pricePerUnit: number | null;

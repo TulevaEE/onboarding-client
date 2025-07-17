@@ -70,7 +70,7 @@ export const ConfirmAndSign = () => {
 
     try {
       const contract = await createCapitalTransferContract({
-        buyerMemberId: buyer.memberId,
+        buyerMemberId: buyer.id,
         iban: sellerIban,
         unitPrice: pricePerUnit,
         unitCount,

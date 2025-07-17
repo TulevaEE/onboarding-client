@@ -26,6 +26,7 @@ import {
   User,
   UserConversion,
   CreateMemberCapitalListingDto,
+  MemberLookup,
 } from './apiModels/index';
 import {
   deleteWithAuthentication,
@@ -231,14 +232,14 @@ export function saveMandateWithAuthentication(mandate: string): Promise<Mandate>
 
 const getSigningBaseUrl = (entityId: string, type: SignableEntity) => {
   if (type === 'CAPITAL_TRANSFER_CONTRACT') {
-    return `/v1/capital-transfer-contracts/${entityId}/signature`;
+    return `/api/v1/capital-transfer-contracts/${entityId}/signature`;
   }
 
   if (type === 'MANDATE_BATCH') {
-    return `/v1/mandate-batches/${entityId}/signature`;
+    return `/api/v1/mandate-batches/${entityId}/signature`;
   }
 
-  return `/v1/mandates/${entityId}/signature`;
+  return `/api/v1/mandates/${entityId}/signature`;
 };
 
 export async function getMobileIdSignatureChallengeCode({
@@ -402,6 +403,13 @@ export function getTransactions(): Promise<Transaction[]> {
 
 export function getCapitalEvents(): Promise<CapitalEvent[]> {
   return getWithAuthentication(getEndpoint('/v1/me/capital/events'), undefined);
+}
+
+export function getMemberLookup(personalCode: string): Promise<MemberLookup> {
+  return getWithAuthentication(
+    getEndpoint(`/v1/members/lookup?personalCode=${personalCode}`),
+    undefined,
+  );
 }
 
 export function createCapitalTransferContract(
