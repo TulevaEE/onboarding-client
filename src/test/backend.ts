@@ -9,10 +9,8 @@ import {
   CapitalRow,
   Conversion,
   FundBalance,
-  FundStatus,
   MemberCapitalListing,
   User,
-  UserConversion,
 } from '../components/common/apiModels';
 import { anAuthenticationManager } from '../components/common/authenticationManagerFixture';
 import { ReturnsResponse } from '../components/account/ComparisonCalculator/api';
@@ -35,7 +33,6 @@ import {
   mockUser,
   secondPillarPaymentRateChangeResponse,
 } from './backend-responses';
-import { memberCapitalListingsProfiles } from '../components/common/requestMocker/profiles/memberCapitalListings';
 
 export function cancellationBackend(server: SetupServerApi): {
   cancellationCreated: boolean;
