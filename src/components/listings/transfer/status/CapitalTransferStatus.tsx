@@ -14,7 +14,7 @@ export const CapitalTransferStatus = () => {
   const { data: me } = useMe();
 
   // TODO while signing or confirming disable this
-  const [manualFetching, setManualFetching] = useState(false);
+  const [manualFetching] = useState(false);
   const { data: contract, refetch } = useCapitalTransferContract(Number(params.id), manualFetching);
 
   if (!me || !contract) {

@@ -36,6 +36,7 @@ export const ConfirmBuyer = () => {
       setIsLoading(true);
       setSearched(await getMemberLookup(personalCode.trim()));
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.log(e); // TODO
       setSearched('NOT_FOUND');
     }

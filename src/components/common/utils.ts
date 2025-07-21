@@ -1,5 +1,5 @@
 import { ChangeEventHandler, useState } from 'react';
-import { Fund, User } from './apiModels';
+import { Fund } from './apiModels';
 
 const isTruthy = (value: unknown) => !!value;
 
