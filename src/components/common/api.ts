@@ -232,14 +232,14 @@ export function saveMandateWithAuthentication(mandate: string): Promise<Mandate>
 
 const getSigningBaseUrl = (entityId: string, type: SignableEntity) => {
   if (type === 'CAPITAL_TRANSFER_CONTRACT') {
-    return `/api/v1/capital-transfer-contracts/${entityId}/signature`;
+    return `/v1/capital-transfer-contracts/${entityId}/signature`;
   }
 
   if (type === 'MANDATE_BATCH') {
-    return `/api/v1/mandate-batches/${entityId}/signature`;
+    return `/v1/mandate-batches/${entityId}/signature`;
   }
 
-  return `/api/v1/mandates/${entityId}/signature`;
+  return `/v1/mandates/${entityId}/signature`;
 };
 
 export async function getMobileIdSignatureChallengeCode({
@@ -416,19 +416,19 @@ export function createCapitalTransferContract(
   createCapitalTransferDto: CreateCapitalTransferDto,
 ): Promise<CapitalTransferContract> {
   return postWithAuthentication(
-    getEndpoint('/api/v1/capital-transfer-contracts'),
+    getEndpoint('/v1/capital-transfer-contracts'),
     createCapitalTransferDto,
   );
 }
 
 export function getCapitalTransferContract(id: number): Promise<CapitalTransferContract> {
-  return getWithAuthentication(getEndpoint(`/api/v1/capital-transfer-contracts/${id}`));
+  return getWithAuthentication(getEndpoint(`/v1/capital-transfer-contracts/${id}`));
 }
 
 export function updateCapitalTransferContract(
   dto: UpdateCapitalTransferContractDto,
 ): Promise<CapitalTransferContract> {
-  return patchWithAuthentication(getEndpoint(`/api/v1/capital-transfer-contracts/${dto.id}`), {
+  return patchWithAuthentication(getEndpoint(`/v1/capital-transfer-contracts/${dto.id}`), {
     state: dto.state,
   });
 }
