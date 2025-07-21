@@ -102,9 +102,7 @@ export const ConfirmAndSign = () => {
           overlayed
         />
       )}
-
-      <h2 className="py-5">Lepingu eelvaade</h2>
-
+      <h2 className="py-5">Lepingu eelvaade</h2>D
       <div>
         <ContractDetails
           seller={me}
@@ -133,7 +131,6 @@ export const ConfirmAndSign = () => {
           )}
         </div>
       </div>
-
       <div className="d-flex justify-content-between mt-5 pt-4 border-top">
         <button
           type="button"

@@ -121,7 +121,7 @@ export const EnterData = () => {
       <div className="row mt-4">
         <div className="col-lg mb-3 mb-lg-0">
           <div>
-            <label htmlFor="unit-amount" className="form-label">
+            <label htmlFor="bank-account-iban" className="form-label">
               Müüja pangakonto (IBAN)
             </label>
             <input
@@ -160,7 +160,7 @@ export const EnterData = () => {
           className="btn btn-lg btn-primary"
           onClick={() => handleSubmitClicked()}
         >
-          Kinnitan ostja
+          Lepingu eelvaatesse
         </button>
       </div>
     </>
