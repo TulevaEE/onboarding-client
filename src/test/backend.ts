@@ -11,7 +11,8 @@ import {
   FundBalance,
   MemberCapitalListing,
   User,
-} from '../components/common/apiModels';
+  MemberLookup,
+} from '../components/common/apiModels/index';
 import { anAuthenticationManager } from '../components/common/authenticationManagerFixture';
 import { ReturnsResponse } from '../components/account/ComparisonCalculator/api';
 import {
@@ -33,6 +34,10 @@ import {
   mockUser,
   secondPillarPaymentRateChangeResponse,
 } from './backend-responses';
+import {
+  CapitalTransferContract,
+  UpdateCapitalTransferContractDto,
+} from '../components/common/apiModels/capital-transfer';
 
 export function cancellationBackend(server: SetupServerApi): {
   cancellationCreated: boolean;
@@ -644,6 +649,100 @@ export function memberCapitalListingsBackend(
   );
 }
 
+export function memberLookupBackend(
+  server: SetupServerApi,
+  member: MemberLookup = {
+    id: 1,
+    memberNumber: 9999,
+    firstName: 'Olev',
+    lastName: 'Ostja',
+    personalCode: '30303039914',
+  },
+) {
+  server.use(
+    rest.get('http://localhost/v1/members/lookup', (req, res, ctx) => {
+      if (req.url.searchParams.get('personalCode') !== member.personalCode) {
+        return res(ctx.status(400));
+      }
+
+      return res(ctx.json(member));
+    }),
+  );
+}
+
+export function capitalTransferContractBackend(
+  server: SetupServerApi,
+  contract: CapitalTransferContract = {
+    id: 1,
+    seller: mockUser,
+    buyer: mockUser,
+    iban: 'EE_TEST_IBAN',
+    unitPrice: 2,
+    unitCount: 1000,
+    unitsOfMemberBonus: 10,
+    state: 'SELLER_SIGNED',
+    createdAt: '2025-07-21T07:00:00+0000',
+    updatedAt: '2025-07-21T07:00:00+0000',
+  },
+  currentRole: 'BUYER' | 'SELLER' = 'SELLER',
+) {
+  let { state } = contract;
+  server.use(
+    rest.post('http://localhost/v1/capital-transfer-contracts/', (req, res, ctx) =>
+      res(ctx.json({ ...contract, state })),
+    ),
+    rest.get('http://localhost/v1/capital-transfer-contracts/1', (req, res, ctx) =>
+      res(ctx.json({ ...contract, state })),
+    ),
+    rest.patch<{ state: UpdateCapitalTransferContractDto['state'] }>(
+      'http://localhost/v1/capital-transfer-contracts/1',
+      (req, res, ctx) => {
+        state = req.body.state;
+        return res(ctx.json({ ...contract, state }));
+      },
+    ),
+  );
+
+  const signingBackend = {
+    signed: false,
+    statusCount: 0,
+  };
+
+  server.use(
+    rest.put(
+      'http://localhost/v1/capital-transfer-contracts/1/signature/smart-id',
+      (req, res, ctx) => {
+        if (req.headers.get('Authorization') !== 'Bearer an access token') {
+          return res(ctx.status(401), ctx.json(authErrorResponse));
+        }
+        signingBackend.signed = true;
+        return res(ctx.status(200), ctx.json(getMobileSignatureResponse(null)));
+      },
+    ),
+    rest.get(
+      'http://localhost/v1/capital-transfer-contracts/1/signature/smart-id/status',
+      (req, res, ctx) => {
+        if (req.headers.get('Authorization') !== 'Bearer an access token') {
+          return res(ctx.status(401), ctx.json(authErrorResponse));
+        }
+
+        signingBackend.statusCount += 1;
+
+        if (signingBackend.statusCount >= 2) {
+          state = `${currentRole}_SIGNED`;
+          return res(ctx.status(200), ctx.json(getMobileSignatureStatusResponse('SIGNATURE')));
+        }
+
+        return res(
+          ctx.status(200),
+          ctx.json(getMobileSignatureStatusResponse('OUTSTANDING_TRANSACTION')),
+        );
+      },
+    ),
+  );
+  return signingBackend;
+}
+
 export function fundPensionStatusBackend(
   server: SetupServerApi,
   fundPensionStatus: FundPensionStatus = {
@@ -719,6 +818,8 @@ const TEST_BACKENDS = {
   mandateBatch: mandateBatchBackend,
   mandates: mandatesBackend,
   memberCapitalListings: memberCapitalListingsBackend,
+  capitalTransferContract: capitalTransferContractBackend,
+  memberLookup: memberLookupBackend,
 } as const;
 
 export type TestBackendName = keyof typeof TEST_BACKENDS;
