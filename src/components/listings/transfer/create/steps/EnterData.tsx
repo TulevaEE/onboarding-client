@@ -3,6 +3,7 @@ import { Redirect } from 'react-router-dom';
 import { useNumberInput } from '../../../../common/utils';
 import { useMemberCapitalHoldings } from '../../../hooks';
 import { useCreateCapitalTransferContext } from '../hooks';
+import { isValidIban } from '../../../../common/iban';
 
 export const EnterData = () => {
   const {
@@ -21,6 +22,7 @@ export const EnterData = () => {
   const unitAmountInput = useNumberInput(unitCount ?? null);
 
   const [bankIban, setBankIban] = useState(sellerIban ?? '');
+  const [ibanError, setIbanError] = useState(false);
 
   const memberCapitalHoldings = useMemberCapitalHoldings();
 
@@ -33,8 +35,13 @@ export const EnterData = () => {
   };
 
   const handleSubmitClicked = () => {
-    if (!unitPriceInput.value || !unitAmountInput.value || !bankIban) {
+    const formattedIban = bankIban.trim();
+    if (!unitPriceInput.value || !unitAmountInput.value || !formattedIban) {
       return;
+    }
+
+    if (!isValidIban(formattedIban)) {
+      setIbanError(true);
     }
 
     if (Object.values(errors).some((error) => !!error)) {
@@ -43,7 +50,7 @@ export const EnterData = () => {
 
     setPricePerUnit(unitPriceInput.value);
     setUnitCount(unitAmountInput.value);
-    setSellerIban(bankIban);
+    setSellerIban(formattedIban);
     navigateToNextStep();
   };
 
@@ -129,6 +136,7 @@ export const EnterData = () => {
           </div>
         </div>
       </div>
+      {ibanError && <div className="pt-2 text-danger">TODO See IBAN ei tundu korrektne</div>}
       {errors.moreThanMemberCapital && (
         <div className="pt-2 text-danger">
           Ühikute arv ei saa olla suurem sinu liikmekapitali kogumahust.

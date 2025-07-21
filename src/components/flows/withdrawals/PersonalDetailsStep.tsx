@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useWithdrawalsContext } from './hooks';
-import { isValidIban, preProcessIban } from './iban';
+import { isValidIban, preProcessIban } from '../../common/iban';
 import { TaxResidencySelect } from './TaxResidencySelect';
 import { useTestMode } from '../../common/test-mode';
 
@@ -16,7 +16,7 @@ export const PersonalDetailsStep = () => {
   const [ibanError, setIbanError] = useState(false);
 
   const canProceed = () => {
-    if (!iban || !isValidIban(iban)) {
+    if (!iban || !isValidIban(iban, 'EE')) {
       setIbanError(true);
       return false;
     }

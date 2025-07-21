@@ -34,7 +34,7 @@ export const ConfirmBuyer = () => {
 
     try {
       setIsLoading(true);
-      setSearched(await getMemberLookup(personalCode));
+      setSearched(await getMemberLookup(personalCode.trim()));
     } catch (e) {
       console.log(e); // TODO
       setSearched('NOT_FOUND');
