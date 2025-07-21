@@ -1,5 +1,93 @@
 const IBAN_CODE_LENGTHS = {
   EE: 20,
+  AL: 28,
+  AD: 24,
+  AT: 20,
+  AZ: 28,
+  BH: 22,
+  BE: 16,
+  BA: 20,
+  BR: 29,
+  BG: 22,
+  CR: 22,
+  HR: 21,
+  CY: 28,
+  CZ: 24,
+  FO: 18,
+  GL: 18,
+  DK: 18,
+  DO: 28,
+  EG: 29,
+  FI: 18,
+  FR: 27,
+  GE: 22,
+  DE: 22,
+  GI: 23,
+  GR: 27,
+  GT: 28,
+  HU: 28,
+  IS: 26,
+  IE: 22,
+  IL: 23,
+  IT: 27,
+  JO: 30,
+  KZ: 20,
+  XK: 20,
+  KW: 30,
+  LV: 21,
+  LB: 28,
+  LI: 21,
+  LT: 20,
+  LU: 20,
+  MK: 19,
+  MT: 31,
+  MR: 27,
+  MU: 30,
+  MD: 24,
+  MC: 27,
+  ME: 22,
+  NL: 18,
+  NO: 15,
+  PK: 24,
+  PS: 29,
+  PL: 28,
+  PT: 25,
+  QA: 29,
+  RO: 24,
+  SM: 27,
+  LC: 32,
+  ST: 25,
+  SA: 24,
+  RS: 22,
+  SK: 24,
+  SI: 19,
+  ES: 24,
+  SE: 24,
+  CH: 21,
+  TL: 23,
+  TN: 24,
+  TR: 26,
+  AE: 23,
+  GB: 22,
+  VA: 22,
+  VG: 24,
+  UA: 29,
+  SC: 31,
+  IQ: 23,
+  BY: 28,
+  SV: 28,
+  LY: 25,
+  SD: 18,
+  BI: 27,
+  DJ: 27,
+  RU: 33,
+  SO: 23,
+  NI: 28,
+  MN: 20,
+  FK: 18,
+  OM: 23,
+  YE: 30,
+  HN: 28,
 };
 
 export const preProcessIban = (iban: string) => iban.trim().toUpperCase();
@@ -19,7 +107,10 @@ const getIbanCountry = (input: string): keyof typeof IBAN_CODE_LENGTHS | null =>
   return countryCode;
 };
 
-export const isValidIban = (input: string): boolean => {
+export const isValidIban = (
+  input: string,
+  onlyFromCountry?: keyof typeof IBAN_CODE_LENGTHS,
+): boolean => {
   const iban = String(input)
     .toUpperCase()
     .replace(/[^A-Z0-9]/g, ''); // keep only alphanumeric characters
@@ -31,12 +122,12 @@ export const isValidIban = (input: string): boolean => {
 
   const countryCode = getIbanCountry(input);
 
-  if (countryCode !== 'EE') {
+  if (onlyFromCountry && countryCode !== onlyFromCountry) {
     return false;
   }
 
   // check syntax and length
-  if (!code || iban.length !== IBAN_CODE_LENGTHS[countryCode]) {
+  if (!code || !countryCode || iban.length !== IBAN_CODE_LENGTHS[countryCode]) {
     return false;
   }
   // rearrange country code and check digits, and convert chars to ints
