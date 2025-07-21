@@ -1,7 +1,7 @@
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { PropsWithChildren } from 'react';
 import { CreateTransferSteps } from './CreateCapitalTransferSteps';
-import { CreateTransferProvider, useCreateCapitalTransferContext } from './hooks';
+import { CreateTransferProvider } from './hooks';
 import { ConfirmAndSign } from './steps/ConfirmAndSign';
 import { ConfirmBuyer } from './steps/ConfirmBuyer';
 import { EnterData } from './steps/EnterData';

@@ -1,4 +1,4 @@
-import { Link, Redirect, useHistory } from 'react-router-dom';
+import { Redirect, useHistory } from 'react-router-dom';
 import { SuccessAlert } from '../../../../common/successAlert';
 import { useCreateCapitalTransferContext } from '../hooks';
 

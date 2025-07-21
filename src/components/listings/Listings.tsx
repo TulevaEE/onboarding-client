@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { useMemberCapitalListings } from '../common/apiHooks';
 import { ListingsList } from './components/ListingsList';
 
 export const Listings = () => (
