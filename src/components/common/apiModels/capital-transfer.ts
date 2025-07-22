@@ -1,4 +1,4 @@
-import { User } from '.';
+import { MemberLookup, User } from '.';
 
 export type CreateCapitalTransferDto = {
   buyerMemberId: number;
@@ -10,8 +10,8 @@ export type CreateCapitalTransferDto = {
 
 export type CapitalTransferContract = {
   id: number;
-  seller: User;
-  buyer: User;
+  seller: MemberLookup;
+  buyer: MemberLookup;
   iban: string;
   unitPrice: number;
   unitCount: number;

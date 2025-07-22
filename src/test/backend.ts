@@ -674,8 +674,20 @@ export function capitalTransferContractBackend(
   server: SetupServerApi,
   contract: CapitalTransferContract = {
     id: 1,
-    seller: mockUser,
-    buyer: mockUser,
+    buyer: {
+      id: 1,
+      memberNumber: 10,
+      firstName: 'Olev',
+      lastName: 'Ostja',
+      personalCode: '30303039914',
+    },
+    seller: {
+      id: 2,
+      memberNumber: mockUser.memberNumber as number,
+      firstName: mockUser.firstName,
+      lastName: mockUser.lastName,
+      personalCode: mockUser.personalCode,
+    },
     iban: 'EE_TEST_IBAN',
     unitPrice: 2,
     unitCount: 1000,

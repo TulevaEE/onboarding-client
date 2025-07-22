@@ -27,13 +27,13 @@ export const ContractDetails = ({
 }: ContractDetailsProps) => (
   <div>
     <div className="row pb-4 border-bottom">
-      <div className="col">
+      <div className="col" data-testid="seller-details">
         <b className="fs-6">Müüja</b>
         <div className="fs-3">{getFullName(seller)}</div>
         <div className="text-secondary">{seller.personalCode}</div>
         {progress && <SellerProgressContainer progress={progress} userRole={userRole} />}
       </div>
-      <div className="col">
+      <div className="col" data-testid="buyer-details">
         <b className="fs-6">Ostja</b>
         <div className="fs-3">{getFullName(buyer)}</div>
         <div className="text-secondary">{buyer.personalCode}</div>
