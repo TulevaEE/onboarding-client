@@ -42,6 +42,7 @@ export const EnterData = () => {
 
     if (!isValidIban(formattedIban)) {
       setIbanError(true);
+      return;
     }
 
     if (Object.values(errors).some((error) => !!error)) {

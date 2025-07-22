@@ -9,6 +9,7 @@ import { initializeConfiguration } from '../../../config/config';
 import LoggedInApp from '../../../LoggedInApp';
 import { mockUser } from '../../../../test/backend-responses';
 import { getFullName } from '../../../common/utils';
+import { getBuyerDetailsSection, getSellerDetailsSection } from '../testUtils';
 
 const server = setupServer();
 let history: History;
@@ -219,6 +220,3 @@ describe('capital transfer seller flow', () => {
     expect(await within(sellerSection).findByText(/Allkirjastatud/i)).toBeInTheDocument();
   });
 });
-
-const getBuyerDetailsSection = async () => screen.findByTestId('buyer-details');
-const getSellerDetailsSection = async () => screen.findByTestId('seller-details');
