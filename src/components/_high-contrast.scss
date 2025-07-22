@@ -33,12 +33,12 @@
     --blue-border-#{$n}: var(--gray-border-hc) !important;
   }
 
-  --bs-box-shadow: var(--box-shadow-hc);
-  --bs-box-shadow-sm: var(--box-shadow-hc);
-  --bs-box-shadow-lg: var(--box-shadow-hc);
+  --bs-box-shadow: var(--box-shadow-hc) !important;
+  --bs-box-shadow-sm: var(--box-shadow-hc) !important;
+  --bs-box-shadow-lg: var(--box-shadow-hc) !important;
 
-  --box-shadow-calculator: var(--box-shadow-hc);
-  --box-shadow-dropdown: var(--box-shadow-hc);
+  --box-shadow-calculator: var(--box-shadow-hc) !important;
+  --box-shadow-dropdown: var(--box-shadow-hc) !important;
 
   a {
     text-decoration-color: currentColor !important;
