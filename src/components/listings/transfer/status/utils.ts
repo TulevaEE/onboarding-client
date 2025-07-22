@@ -5,7 +5,7 @@ import {
 import { User } from '../../../common/apiModels';
 import { ContractDetailsProps } from '../components/ContractDetails';
 
-export const getMyRole = (me: User, contract: CapitalTransferContract) => {
+export const getMyRole = (me: User, contract: CapitalTransferContract): 'BUYER' | 'SELLER' => {
   if (contract.buyer.personalCode === me.personalCode) {
     return 'BUYER';
   }

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ListingsList } from './components/ListingsList';
+import { TransferList } from './transfer/TransferList';
 
 export const Listings = () => (
   <div className="col-12 col-md-11 col-lg-9 mx-auto">
@@ -19,6 +20,10 @@ export const Listings = () => (
       <Link to="/capital/transfer/create" className="mt-2 ms-2 btn btn-light align-middle">
         Vormistan müügi
       </Link>
+    </div>
+
+    <div className="my-5">
+      <TransferList />
     </div>
 
     <div className="my-5">

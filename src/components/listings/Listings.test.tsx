@@ -1,12 +1,21 @@
 import { setupServer } from 'msw/node';
-import { screen, within } from '@testing-library/react';
+import { findAllByTestId, getAllByTestId, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Route } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
-import { memberCapitalListingsBackend, useTestBackendsExcept } from '../../test/backend';
+import {
+  capitalTransferContractBackend,
+  memberCapitalListingsBackend,
+  useTestBackendsExcept,
+} from '../../test/backend';
 import LoggedInApp from '../LoggedInApp';
 import { createDefaultStore, login, renderWrapped } from '../../test/utils';
 import { initializeConfiguration } from '../config/config';
+import { mockUser } from '../../test/backend-responses';
+import {
+  CapitalTransferContract,
+  CapitalTransferContractState,
+} from '../common/apiModels/capital-transfer';
 
 const server = setupServer();
 let history: History;
@@ -26,7 +35,7 @@ afterAll(() => server.close());
 beforeEach(async () => {
   initializeConfiguration();
 
-  useTestBackendsExcept(server, ['memberCapitalListings']);
+  useTestBackendsExcept(server, ['memberCapitalListings', 'capitalTransferContract']);
   initializeComponent();
 
   history.push('/capital/listings');
@@ -35,6 +44,7 @@ beforeEach(async () => {
 describe('member capital listings with no listings', () => {
   beforeEach(() => {
     memberCapitalListingsBackend(server, []);
+    capitalTransferContractBackend(server);
   });
 
   test('shows empty listings screen, allows to create listing', async () => {
@@ -66,6 +76,7 @@ describe('member capital listings with no listings', () => {
 describe('member capital listings with listings', () => {
   beforeEach(() => {
     memberCapitalListingsBackend(server);
+    capitalTransferContractBackend(server);
   });
 
   test('shows listings, allows to contact', async () => {
@@ -126,4 +137,122 @@ describe('member capital listings with listings', () => {
       }),
     ).toBeInTheDocument();
   });
+});
+
+describe('member capital listings with pending tranactions', () => {
+  beforeEach(() => {
+    const states = [
+      'CREATED',
+      'SELLER_SIGNED',
+      'BUYER_SIGNED',
+      'PAYMENT_CONFIRMED_BY_BUYER',
+      'PAYMENT_CONFIRMED_BY_SELLER',
+      'APPROVED',
+      'CANCELLED',
+    ];
+    const roles = ['BUYER', 'SELLER'];
+
+    const contracts: CapitalTransferContract[] = states
+      .map((state, stateIdx) =>
+        roles.map((role, roleIdx) => {
+          const id = Number(`${stateIdx}${roleIdx}`);
+
+          if (role === 'BUYER') {
+            return {
+              id,
+              seller: {
+                id: 1,
+                memberNumber: 10,
+                firstName: 'Mairo',
+                lastName: 'Müüja',
+                personalCode: '30303039914',
+              },
+              buyer: {
+                id: 2,
+                memberNumber: mockUser.memberNumber as number,
+                firstName: mockUser.firstName,
+                lastName: mockUser.lastName,
+                personalCode: mockUser.personalCode,
+              },
+              iban: 'EE_TEST_IBAN',
+              unitPrice: 2,
+              unitCount: 1000,
+              unitsOfMemberBonus: 10,
+              state: state as CapitalTransferContractState,
+              createdAt: '2025-07-21T07:00:00+0000',
+              updatedAt: '2025-07-21T07:00:00+0000',
+            };
+          }
+
+          return {
+            id,
+            buyer: {
+              id: 1,
+              memberNumber: 10,
+              firstName: 'Olev',
+              lastName: 'Ostja',
+              personalCode: '30303039914',
+            },
+            seller: {
+              id: 2,
+              memberNumber: mockUser.memberNumber as number,
+              firstName: mockUser.firstName,
+              lastName: mockUser.lastName,
+              personalCode: mockUser.personalCode,
+            },
+            iban: 'EE_TEST_IBAN',
+            unitPrice: 2,
+            unitCount: 1000,
+            unitsOfMemberBonus: 10,
+            state: state as CapitalTransferContractState,
+            createdAt: '2025-07-21T07:00:00+0000',
+            updatedAt: '2025-07-21T07:00:00+0000',
+          };
+        }),
+      )
+      .flat();
+    memberCapitalListingsBackend(server);
+    capitalTransferContractBackend(server, undefined, undefined, contracts);
+  });
+
+  test.each([
+    ['BUYER', 'CREATED', 'Müüja allkirja ootel: Mairo Müüja', 'Vaatan'],
+    ['BUYER', 'SELLER_SIGNED', 'Sinu allkirja ootel', 'Allkirjastama'],
+    ['BUYER', 'BUYER_SIGNED', 'Sinu makse tegemise ootel', 'Makset tegema'],
+    ['BUYER', 'PAYMENT_CONFIRMED_BY_BUYER', 'Müüja maksekinnituse ootel: Mairo Müüja', 'Vaatan'],
+    ['BUYER', 'PAYMENT_CONFIRMED_BY_SELLER', 'Tuleva ühistu juhatuse otsuse ootel', 'Vaatan'],
+    ['BUYER', 'APPROVED', null, null],
+    ['BUYER', 'CANCELLED', null, null],
+    ['SELLER', 'CREATED', 'Sinu allkirja ootel', 'Allkirjastama'],
+    ['SELLER', 'SELLER_SIGNED', 'Ostja allkirja ootel: Olev Ostja', 'Vaatan'],
+    ['SELLER', 'BUYER_SIGNED', 'Ostja maksekinnituse ootel: Olev Ostja', 'Vaatan'],
+    [
+      'SELLER',
+      'PAYMENT_CONFIRMED_BY_BUYER',
+      'Sinu kinnituse ootel raha laekumise kohta',
+      'Kinnitama',
+    ],
+    ['SELLER', 'PAYMENT_CONFIRMED_BY_SELLER', 'Tuleva ühistu juhatuse otsuse ootel', 'Vaatan'],
+    ['SELLER', 'APPROVED', null, null],
+    ['SELLER', 'CANCELLED', null, null],
+  ])(
+    'shows pending transaction correctly for %s in %s status',
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async (_role, _state, statusText, linkText) => {
+      expect(await screen.findByText(/Liikmekapitali kuulutused/i)).toBeInTheDocument();
+
+      expect((await screen.findAllByTestId('active-capital-transfer-contract')).length).toBe(
+        14 - 4 + 1,
+      );
+
+      if (statusText === null) {
+        return;
+      }
+
+      expect((await screen.findAllByText(new RegExp(statusText))).length).toBeGreaterThanOrEqual(1);
+      expect(
+        (await screen.findAllByRole('link', { name: linkText })).length,
+      ).toBeGreaterThanOrEqual(1);
+    },
+  );
 });

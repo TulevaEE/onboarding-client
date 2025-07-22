@@ -425,6 +425,10 @@ export function getCapitalTransferContract(id: number): Promise<CapitalTransferC
   return getWithAuthentication(getEndpoint(`/v1/capital-transfer-contracts/${id}`));
 }
 
+export function getMyCapitalTransferContracts(): Promise<CapitalTransferContract[]> {
+  return getWithAuthentication(getEndpoint(`/v1/capital-transfer-contracts`));
+}
+
 export function updateCapitalTransferContract(
   dto: UpdateCapitalTransferContractDto,
 ): Promise<CapitalTransferContract> {

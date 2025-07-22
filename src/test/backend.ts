@@ -697,11 +697,15 @@ export function capitalTransferContractBackend(
     updatedAt: '2025-07-21T07:00:00+0000',
   },
   currentRole: 'BUYER' | 'SELLER' = 'SELLER',
+  activeContracts: CapitalTransferContract[] = [],
 ) {
   let { state } = contract;
   server.use(
     rest.post('http://localhost/v1/capital-transfer-contracts/', (req, res, ctx) =>
       res(ctx.json({ ...contract, state })),
+    ),
+    rest.get('http://localhost/v1/capital-transfer-contracts/', (req, res, ctx) =>
+      res(ctx.json([{ ...contract, state }, ...activeContracts])),
     ),
     rest.get('http://localhost/v1/capital-transfer-contracts/1', (req, res, ctx) =>
       res(ctx.json({ ...contract, state })),

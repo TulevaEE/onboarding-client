@@ -20,6 +20,7 @@ import {
   getFunds,
   getMandateDeadlines,
   getMemberCapitalListings,
+  getMyCapitalTransferContracts,
   getPendingApplications,
   getSourceFunds,
   getTransactions,
@@ -140,6 +141,10 @@ export function useCreateCapitalTransferContract(): UseMutationResult<
   return useMutation((dto) => createCapitalTransferContract(dto));
 }
 
+export function useMyCapitalTransferContracts(): UseQueryResult<CapitalTransferContract[]> {
+  return useQuery(['myContracts'], () => getMyCapitalTransferContracts());
+}
+
 export function useCapitalTransferContract(
   id: number,
   manualRefetch: boolean,
@@ -153,7 +158,7 @@ export function useUpdateCapitalTransferContract(): UseMutationResult<
   UpdateCapitalTransferContractDto,
   unknown
 > {
-  // todo invalidate here
+  // TODO invalidate here
   return useMutation((dto) => updateCapitalTransferContract(dto));
 }
 
