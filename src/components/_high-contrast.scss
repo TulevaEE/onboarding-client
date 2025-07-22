@@ -25,13 +25,12 @@
 // High contrast styles
 
 .high-contrast {
-  --bs-border-color: #{$text-tertiary};
+  --bs-border-color: var(--gray-border-hc) !important;
+  --input-border-color: var(--input-border-color-hc) !important;
 
   @each $n in (1, 2, 3) {
-    --gray-border-#{$n}: #{$text-tertiary};
-  }
-  @each $n in (1, 2, 3) {
-    --blue-border-#{$n}: #{$blue};
+    --gray-border-#{$n}: var(--gray-border-hc) !important;
+    --blue-border-#{$n}: var(--gray-border-hc) !important;
   }
 
   --bs-box-shadow: var(--box-shadow-hc);
@@ -46,27 +45,22 @@
   }
 
   .card {
-    --bs-card-border-color: var(--gray-border-3);
-  }
-
-  .table {
-    --bs-table-border-color: var(--gray-border-3);
-  }
-
-  .header {
-    box-shadow: 0 1px 0 0 #{$text-tertiary};
-  }
-  .navbar .dropdown-menu {
-    @include media-breakpoint-up(lg) {
-      box-shadow: var(--box-shadow-hc);
+    &.card-primary {
+      border-color: var(--blue-border-hc) !important;
+      & .header-section,
+      & .middle-section,
+      & .footer-section {
+        border-color: var(--blue-border-hc) !important;
+      }
     }
   }
+
   .tooltip-inner {
     box-shadow: var(--box-shadow-hc);
   }
 
   .btn-light {
-    --bs-btn-border-color: #{$gray-border-3};
+    --bs-border-color: var(--input-border-color-hc) !important;
   }
 
   .form-switch .form-check-input {
@@ -76,8 +70,5 @@
     --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23#{str-slice(inspect($white), 2)}'/%3e%3c/svg%3e");
   }
 
-  .carousel-control-prev,
-  .carousel-control-next {
-    opacity: 1;
-  }
+  // domain specific styles
 }

@@ -45,30 +45,6 @@ $icon-link-underline-offset: $link-underline-offset;
 
 // Colors
 
-:root {
-  --gray-bg-1: #fafbfc;
-  --gray-bg-2: #f5f7f9;
-  --gray-border-1: #e0e6ec;
-  --gray-border-2: #d6dee6;
-  --gray-border-3: #c8d0d8;
-
-  --blue-bg-1: #f2fafe;
-  --blue-bg-2: #edf7fd;
-  --blue-border-1: #d3e8f5;
-  --blue-border-2: #c9e0ee;
-  --blue-border-3: #bad2e4;
-
-  --bs-box-shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-
-  --box-shadow-dropdown: 0 0 0 1px rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.04),
-    0 4px 8px 0 rgba(0, 0, 0, 0.04), 0 12px 24px 0 rgba(0, 0, 0, 0.08);
-
-  --box-shadow-calculator: 0 0 0 1px rgba(0, 0, 0, 0.02), 0 1px 3px 0 rgba(0, 0, 0, 0.04),
-    0 3px 9px 0 rgba(0, 0, 0, 0.04), 0 6px 18px 0 rgba(0, 0, 0, 0.04);
-
-  --box-shadow-hc: 0 0 0 1px #8a8d91;
-}
-
 $black: #000;
 $white: #fff;
 
@@ -100,9 +76,38 @@ $text-navy-tertiary: #7d8fa3;
   --green: #{$green};
   --blue: #{$blue};
 
-  --bs-border-color: var(--gray-border-3); // inputs and other
+  --gray-bg-1: #fafbfc;
+  --gray-bg-2: #f5f7f9;
+  --gray-border-1: #e0e6ec;
+  --gray-border-2: #d6dee6;
+  --gray-border-3: #c8d0d8;
+
+  --blue-bg-1: #f2fafe;
+  --blue-bg-2: #edf7fd;
+  --blue-border-1: #d3e8f5;
+  --blue-border-2: #c9e0ee;
+  --blue-border-3: #bad2e4;
+
+  --gray-border-hc: #bac2ca;
+  --blue-border-hc: #a8c2d7;
+
+  --input-border-color: var(--gray-border-3);
+  --input-border-color-hc: #{$text-navy-tertiary};
+
+  --bs-border-color: var(--gray-border-3);
   --bs-card-border-color: var(--gray-border-2);
+
+  --bs-box-shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+
+  --box-shadow-dropdown: 0 0 0 1px rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.04),
+    0 4px 8px 0 rgba(0, 0, 0, 0.04), 0 12px 24px 0 rgba(0, 0, 0, 0.08);
+
+  --box-shadow-calculator: 0 0 0 1px rgba(0, 0, 0, 0.02), 0 1px 3px 0 rgba(0, 0, 0, 0.04),
+    0 3px 9px 0 rgba(0, 0, 0, 0.04), 0 6px 18px 0 rgba(0, 0, 0, 0.04);
+
+  --box-shadow-hc: 0 0 0 1px var(--gray-border-hc);
 }
+
 .table {
   --bs-table-border-color: var(--gray-border-2);
 }
@@ -119,14 +124,12 @@ $gray-bg-2: var(--gray-bg-2) !default;
 $gray-border-1: var(--gray-border-1) !default;
 $gray-border-2: var(--gray-border-2) !default;
 $gray-border-3: var(--gray-border-3) !default;
-$gray-border-hc: $text-tertiary;
 
 $blue-bg-1: var(--blue-bg-1) !default;
 $blue-bg-2: var(--blue-bg-2) !default;
 $blue-border-1: var(--blue-border-1) !default;
 $blue-border-2: var(--blue-border-2) !default;
 $blue-border-3: var(--blue-border-3) !default;
-$blue-border-hc: $text-navy-tertiary;
 
 $table-color: $text-primary;
 $text-body-primary: $text-primary;
@@ -135,10 +138,12 @@ $text-body-tertiary: $text-tertiary;
 
 // Borders
 
-//$border-color: var(--gray-border-2) !default;
+$border-color: var(--gray-border-3) !default;
+$input-border-color: var(--input-border-color) !default;
 $card-border-color: var(--gray-border-2) !default;
+$form-check-input-focus-border: $blue !default;
 $input-focus-border-color: $blue !default;
-//$table-border-color: var(--gray-border-2) !default;
+$table-border-color: var(--gray-border-2) !default;
 
 $border-radius-xxl: 1.5rem;
 
