@@ -11,7 +11,7 @@
   "login.invalid.personal.code": "Vale isikukood. Palun proovi uuesti.",
   "login.phone.number": "Telefoninumber",
   "login.id.code": "Isikukood",
-  "login.enter": "Sisene",
+  "login.enter": "Sisenen",
   "login.control.code": "Veendu, et sinu telefoni saabunud kontrollkood oleks sama:",
   "login.stop": "Katkesta",
   "login.error.invalid.user.credentials": "Sa pole veel Tuleva liige",

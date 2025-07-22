@@ -34,7 +34,7 @@ class LoginTabs extends Component {
 
     return (
       <>
-        <ul className="my-4 nav nav-tabs nav-fill" role="tablist">
+        <ul className="mt-4 mt-sm-5 mb-4 nav nav-tabs nav-fill" role="tablist">
           {React.Children.map(children, (child) => {
             const { label, hideOnMobile } = child.props;
 
