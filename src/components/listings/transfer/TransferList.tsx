@@ -10,7 +10,6 @@ export const TransferList = () => {
   const { data: contracts, isLoading: isLoadingContracts } = useMyCapitalTransferContracts();
   const { data: me, isLoading: isLoadingUser } = useMe();
 
-  console.log(isLoadingContracts, isLoadingUser, me);
   if (isLoadingContracts || isLoadingUser || !me) {
     return <Loader className="align-middle" />;
   }
