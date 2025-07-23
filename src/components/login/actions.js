@@ -36,6 +36,7 @@ import { getAuthentication } from '../common/authenticationManager';
 
 const POLL_DELAY = 1000;
 let timeout;
+let inflight = null;
 
 export function changePhoneNumber(phoneNumber) {
   return { type: CHANGE_PHONE_NUMBER, phoneNumber };
@@ -125,46 +126,60 @@ if (!window.__smartIdVisibilityLoggerAttached) {
   window.__smartIdVisibilityLoggerAttached = true;
 }
 
-function getSmartIdTokens(authenticationHash) {
-  return (dispatch, getState) => {
-    logPoll('schedule-timeout', POLL_DELAY);
+export const getSmartIdTokens = (authenticationHash) => (dispatch, getState) => {
+  logPoll('schedule-timeout', POLL_DELAY);
 
-    timeout = setTimeout(() => {
-      logPoll('timeout-fired');
+  timeout = setTimeout(async () => {
+    if (inflight) {
+      logPoll('skip-new-request-because-inflight');
+      return undefined;
+    }
 
-      api
-        .getSmartIdTokens(authenticationHash)
-        .then((tokens) => {
-          logPoll('fetch-resolved', tokens);
+    logPoll('request-start');
+    const controller = new AbortController();
 
-          if (isTokenPresent(tokens)) {
-            logPoll('token-present → SUCCESS');
+    inflight = api
+      .getSmartIdTokens(authenticationHash, { signal: controller.signal })
+      .finally(() => {
+        inflight = null;
+      });
 
-            dispatch({
-              type: MOBILE_AUTHENTICATION_SUCCESS,
-              tokens,
-              method: 'SMART_ID',
-            });
-            dispatch(handleLogin());
-          } else if (getState().login.loadingAuthentication) {
-            logPoll('token-absent → poll-again');
-            dispatch(getSmartIdTokens(authenticationHash)); // poll again
-          }
-        })
-        .catch((error) => {
-          logPoll('fetch-error', error);
+    try {
+      const tokens = await inflight;
+      logPoll('fetch-resolved', tokens);
 
-          if (error.message === 'Load failed') {
-            logPoll('load-failed → poll-again');
-            dispatch(getSmartIdTokens(authenticationHash)); // poll again
-          } else {
-            logPoll('fatal-error → STOP');
-            dispatch({ type: MOBILE_AUTHENTICATION_ERROR, error });
-          }
+      if (tokens?.accessToken && tokens?.refreshToken) {
+        logPoll('token-present → SUCCESS');
+        clearTimeout(timeout);
+        controller.abort(); // ignore any late replies
+
+        dispatch({
+          type: MOBILE_AUTHENTICATION_SUCCESS,
+          tokens,
+          method: 'SMART_ID',
         });
-    }, POLL_DELAY);
-  };
-}
+        return dispatch(handleLogin());
+      }
+
+      if (getState().login.loadingAuthentication) {
+        logPoll('token-absent → poll-again');
+        return dispatch(getSmartIdTokens(authenticationHash));
+      }
+    } catch (error) {
+      logPoll('fetch-error', error);
+
+      if (error.message === 'Load failed') {
+        logPoll('load-failed → poll-again');
+        return dispatch(getSmartIdTokens(authenticationHash));
+      }
+
+      clearTimeout(timeout);
+      logPoll('fatal-error → STOP');
+      return dispatch({ type: MOBILE_AUTHENTICATION_ERROR, error });
+    }
+    return undefined;
+  }, POLL_DELAY);
+};
 
 export function authenticateWithIdCode(personalCode) {
   return (dispatch) => {

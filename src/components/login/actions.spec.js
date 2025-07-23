@@ -238,6 +238,10 @@ describe('Login actions', () => {
         expect(dispatch).not.toHaveBeenCalled();
         expect(mockApi.getSmartIdTokens).toHaveBeenCalled();
       })
+      .then(async () => {
+        jest.runOnlyPendingTimers();
+        return Promise.resolve();
+      })
       .then(() => {
         expect(dispatch).toHaveBeenCalledWith({
           type: MOBILE_AUTHENTICATION_SUCCESS,
