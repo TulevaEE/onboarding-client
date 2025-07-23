@@ -112,14 +112,34 @@ export function authenticateWithMobileId(phoneNumber, personalCode) {
   };
 }
 
+const logPoll = (stage, value = '') =>
+  // eslint-disable-next-line no-console
+  console.log(`[poll] ${stage}`, value, Date.now());
+
+// eslint-disable-next-line no-underscore-dangle
+if (!window.__smartIdVisibilityLoggerAttached) {
+  document.addEventListener('visibilitychange', () =>
+    logPoll('tab-visibility', document.visibilityState),
+  );
+  // eslint-disable-next-line no-underscore-dangle
+  window.__smartIdVisibilityLoggerAttached = true;
+}
+
 function getSmartIdTokens(authenticationHash) {
   return (dispatch, getState) => {
+    logPoll('schedule-timeout', POLL_DELAY);
+
     timeout = setTimeout(() => {
+      logPoll('timeout-fired');
+
       api
         .getSmartIdTokens(authenticationHash)
         .then((tokens) => {
+          logPoll('fetch-resolved', tokens);
+
           if (isTokenPresent(tokens)) {
-            // authentication complete
+            logPoll('token-present → SUCCESS');
+
             dispatch({
               type: MOBILE_AUTHENTICATION_SUCCESS,
               tokens,
@@ -127,14 +147,18 @@ function getSmartIdTokens(authenticationHash) {
             });
             dispatch(handleLogin());
           } else if (getState().login.loadingAuthentication) {
-            // authentication not yet completed
+            logPoll('token-absent → poll-again');
             dispatch(getSmartIdTokens(authenticationHash)); // poll again
           }
         })
         .catch((error) => {
+          logPoll('fetch-error', error);
+
           if (error.message === 'Load failed') {
+            logPoll('load-failed → poll-again');
             dispatch(getSmartIdTokens(authenticationHash)); // poll again
           } else {
+            logPoll('fatal-error → STOP');
             dispatch({ type: MOBILE_AUTHENTICATION_ERROR, error });
           }
         });
