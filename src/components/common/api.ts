@@ -27,6 +27,8 @@ import {
   UserConversion,
   CreateMemberCapitalListingDto,
   MemberLookup,
+  ContactListingOwnerDto,
+  ContactListingOwnerResponse,
 } from './apiModels/index';
 import {
   deleteWithAuthentication,
@@ -186,6 +188,14 @@ export function deleteMemberCapitalListing(
   listing: MemberCapitalListing,
 ): Promise<MemberCapitalListing> {
   return deleteWithAuthentication(getEndpoint(`/v1/listings/${listing.id}`));
+}
+
+export function contactMemberCapitalListingOwner(
+  dto: ContactListingOwnerDto,
+): Promise<ContactListingOwnerResponse> {
+  return postWithAuthentication(getEndpoint(`/v1/listings/${dto.id}/contact`), {
+    message: dto.message,
+  });
 }
 
 export function getFundPensionStatus(): Promise<FundPensionStatus> {

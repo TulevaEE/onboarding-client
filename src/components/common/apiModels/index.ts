@@ -426,3 +426,13 @@ export type MemberCapitalListing = {
   isOwnListing: boolean;
   language: 'et' | 'en';
 };
+
+export type ContactListingOwnerDto = {
+  id: number;
+  message: string;
+};
+
+export type ContactListingOwnerResponse = {
+  id: number;
+  status: string;
+};

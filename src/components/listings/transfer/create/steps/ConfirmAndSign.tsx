@@ -102,7 +102,7 @@ export const ConfirmAndSign = () => {
           overlayed
         />
       )}
-      <h2 className="py-5">Lepingu eelvaade</h2>D
+      <h2 className="py-5">Lepingu eelvaade</h2>
       <div>
         <ContractDetails
           seller={me}

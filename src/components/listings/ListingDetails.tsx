@@ -1,23 +1,48 @@
 import { Link, useHistory, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import config from 'react-global-configuration';
-import { useMe, useMemberCapitalListings } from '../common/apiHooks';
+import {
+  useContactMemberCapitalListing,
+  useMe,
+  useMemberCapitalListings,
+} from '../common/apiHooks';
 import { Loader } from '../common';
 import styles from './ListingDetails.module.scss';
 import { MemberCapitalListing, User } from '../common/apiModels';
 import { formatAmountForCount, formatAmountForCurrency, getFullName } from '../common/utils';
+import { SuccessAlert } from '../common/successAlert';
 
 export const ListingDetails = () => {
   const { id: urlId } = useParams<{ id: string }>();
 
   const { data: listings } = useMemberCapitalListings();
+  const {
+    mutate: sendMessageRequest,
+    isLoading: sending,
+    error,
+  } = useContactMemberCapitalListing();
   const { data: me } = useMe();
 
   const [message, setMessage] = useState<string>();
 
+  const [success, setSuccess] = useState(false);
+
   const history = useHistory();
 
   const listing = listings?.find((otherListing) => otherListing.id === Number(urlId));
+
+  const handleContactButtonClicked = async () => {
+    if (!listing || !message) {
+      return;
+    }
+
+    try {
+      await sendMessageRequest({ message, id: listing?.id });
+      setSuccess(true);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   useEffect(() => {
     // no conditional hooks
@@ -41,6 +66,28 @@ export const ListingDetails = () => {
       </div>
     );
   }
+
+  if (success) {
+    <SuccessAlert>
+      <h2 className="py-2">Sõnum on saadetud</h2>
+
+      <div className="pb-2">Jää ootele, kuulutuse lisaja annab sulle loodetavasti peagi märku.</div>
+
+      <button
+        type="button"
+        className="btn btn-outline-primary my-3"
+        onClick={() => {
+          history.push(`/capital/listings/`);
+        }}
+      >
+        Vaatan kõiki kuulutusi
+      </button>
+    </SuccessAlert>;
+  }
+
+  /* if (listing.isOwnListing) {
+    return <Redirect to="/capital/listings/" />;
+  } */
 
   const isDifferentLanguage = config.get('language') !== listing.language;
 
@@ -83,6 +130,11 @@ export const ListingDetails = () => {
             inglise keeles.
           </div>
         )}
+        {error && (
+          <div className="alert alert-warning">
+            Sõnumi saatmisel tekkis viga. Palun proovi hiljem uuesti või võta meiega ühendust
+          </div>
+        )}
         <div>
           <label htmlFor="unit-amount" className="form-label">
             Sõnum <span className="text-secondary fw-normal">(vajadusel täienda)</span>
@@ -110,7 +162,12 @@ export const ListingDetails = () => {
           <button type="button" className="btn btn-lg btn-light" onClick={() => history.goBack()}>
             Tagasi
           </button>
-          <button type="button" className="btn btn-lg btn-primary" disabled={!message}>
+          <button
+            type="button"
+            className="btn btn-lg btn-primary"
+            disabled={!message || sending}
+            onClick={() => handleContactButtonClicked()}
+          >
             Saadan {listing.type === 'BUY' ? 'ostjale' : 'müüjale'}
           </button>
         </div>

@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-query';
 
 import {
+  contactMemberCapitalListingOwner,
   createApplicationCancellation,
   createCapitalTransferContract,
   createMandateBatch,
@@ -34,6 +35,8 @@ import {
   CancellationMandate,
   CapitalEvent,
   CapitalRow,
+  ContactListingOwnerDto,
+  ContactListingOwnerResponse,
   Contribution,
   CreateMemberCapitalListingDto,
   ErrorResponse,
@@ -142,14 +145,16 @@ export function useCreateCapitalTransferContract(): UseMutationResult<
 }
 
 export function useMyCapitalTransferContracts(): UseQueryResult<CapitalTransferContract[]> {
-  return useQuery(['myContracts'], () => getMyCapitalTransferContracts());
+  return useQuery(['myCapitalTransferContracts'], () => getMyCapitalTransferContracts());
 }
 
 export function useCapitalTransferContract(
   id: number,
   manualRefetch: boolean,
 ): UseQueryResult<CapitalTransferContract> {
-  return useQuery([], () => getCapitalTransferContract(id), { enabled: !manualRefetch });
+  return useQuery(['capitalTransferContract', id], () => getCapitalTransferContract(id), {
+    enabled: !manualRefetch,
+  });
 }
 
 export function useUpdateCapitalTransferContract(): UseMutationResult<
@@ -158,8 +163,14 @@ export function useUpdateCapitalTransferContract(): UseMutationResult<
   UpdateCapitalTransferContractDto,
   unknown
 > {
-  // TODO invalidate here
-  return useMutation((dto) => updateCapitalTransferContract(dto));
+  const queryClient = useQueryClient();
+
+  return useMutation((dto) => updateCapitalTransferContract(dto), {
+    onSuccess: () => {
+      queryClient.invalidateQueries(['capitalTransferContract']);
+      queryClient.invalidateQueries(['myCapitalTransferContracts']);
+    },
+  });
 }
 
 export function useMemberCapitalListings(): UseQueryResult<MemberCapitalListing[]> {
@@ -193,5 +204,16 @@ export function useDeleteMemberCapitalListing(): UseMutationResult<
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['memberCapitalListings'] });
     },
+  });
+}
+
+export function useContactMemberCapitalListing(): UseMutationResult<
+  ContactListingOwnerResponse,
+  ErrorResponse,
+  ContactListingOwnerDto,
+  unknown
+> {
+  return useMutation({
+    mutationFn: (dto) => contactMemberCapitalListingOwner(dto),
   });
 }
