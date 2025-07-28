@@ -17,7 +17,7 @@ export const ListingDetails = () => {
 
   const { data: listings } = useMemberCapitalListings();
   const {
-    mutate: sendMessageRequest,
+    mutateAsync: sendMessageRequest,
     isLoading: sending,
     error,
   } = useContactMemberCapitalListing();
