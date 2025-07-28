@@ -167,7 +167,6 @@ export function useUpdateCapitalTransferContract(): UseMutationResult<
 
   return useMutation((dto) => updateCapitalTransferContract(dto), {
     onSuccess: () => {
-      queryClient.invalidateQueries(['capitalTransferContract']);
       queryClient.invalidateQueries(['myCapitalTransferContracts']);
     },
   });

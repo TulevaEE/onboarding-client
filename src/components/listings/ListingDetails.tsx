@@ -36,12 +36,8 @@ export const ListingDetails = () => {
       return;
     }
 
-    try {
-      await sendMessageRequest({ message, id: listing?.id });
-      setSuccess(true);
-    } catch (e) {
-      console.error(e);
-    }
+    await sendMessageRequest({ message, id: listing?.id });
+    setSuccess(true);
   };
 
   useEffect(() => {
