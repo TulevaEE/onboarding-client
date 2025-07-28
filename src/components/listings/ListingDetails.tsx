@@ -64,21 +64,25 @@ export const ListingDetails = () => {
   }
 
   if (success) {
-    <SuccessAlert>
-      <h2 className="py-2">Sõnum on saadetud</h2>
+    return (
+      <SuccessAlert>
+        <h2 className="py-2">Sõnum on saadetud</h2>
 
-      <div className="pb-2">Jää ootele, kuulutuse lisaja annab sulle loodetavasti peagi märku.</div>
+        <div className="pb-2">
+          Jää ootele, kuulutuse lisaja annab sulle loodetavasti peagi märku.
+        </div>
 
-      <button
-        type="button"
-        className="btn btn-outline-primary my-3"
-        onClick={() => {
-          history.push(`/capital/listings/`);
-        }}
-      >
-        Vaatan kõiki kuulutusi
-      </button>
-    </SuccessAlert>;
+        <button
+          type="button"
+          className="btn btn-outline-primary my-3"
+          onClick={() => {
+            history.push(`/capital/listings/`);
+          }}
+        >
+          Vaatan kõiki kuulutusi
+        </button>
+      </SuccessAlert>
+    );
   }
 
   /* if (listing.isOwnListing) {
