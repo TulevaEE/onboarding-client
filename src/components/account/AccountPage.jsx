@@ -67,6 +67,7 @@ export function AccountPage(
     memberCapital,
     loadingCapital,
     error,
+    user,
     shouldRedirectToAml,
   } = props;
 
@@ -81,6 +82,14 @@ export function AccountPage(
     }
 
     return canAccessWithdrawals(conversion, fundPensionStatus);
+  };
+
+  const shouldShowSecondPillarActions = () => {
+    if (!user) {
+      return true;
+    }
+
+    return user.secondPillarActive;
   };
 
   return (
@@ -142,12 +151,16 @@ export function AccountPage(
               <FormattedMessage id="accountStatement.secondPillar.heading" />
             </h3>
             <div className="d-flex flex-wrap column-gap-3 row-gap-2 align-items-baseline justify-content-between">
-              <Link className="icon-link" to="/2nd-pillar-payment-rate">
-                <FormattedMessage id="account.status.choice.paymentRate.change" />
-              </Link>
-              <Link className="icon-link" to="/2nd-pillar-flow">
-                <FormattedMessage id="change.my.pension.fund" />
-              </Link>
+              {shouldShowSecondPillarActions() && (
+                <>
+                  <Link className="icon-link" to="/2nd-pillar-payment-rate">
+                    <FormattedMessage id="account.status.choice.paymentRate.change" />
+                  </Link>
+                  <Link className="icon-link" to="/2nd-pillar-flow">
+                    <FormattedMessage id="change.my.pension.fund" />
+                  </Link>
+                </>
+              )}
             </div>
           </div>
 
@@ -248,6 +261,7 @@ const mapStateToProps = (state) => ({
   loadingCapital: state.account.loadingInitialCapital,
   error: state.exchange.error,
   shouldRedirectToAml: shouldRedirectToAml(state),
+  user: state.login.user,
 });
 const mapDispatchToProps = (dispatch) =>
   bindActionCreators(
