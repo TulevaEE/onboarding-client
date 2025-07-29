@@ -1,5 +1,5 @@
 import { setupServer } from 'msw/node';
-import { findAllByTestId, getAllByTestId, screen, within } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Route } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
@@ -229,8 +229,6 @@ describe('member capital listings with pending tranactions', () => {
     ['BUYER', 'BUYER_SIGNED', 'Sinu makse tegemise ootel', 'Makset tegema'],
     ['BUYER', 'PAYMENT_CONFIRMED_BY_BUYER', 'Müüja maksekinnituse ootel: Mairo Müüja', 'Vaatan'],
     ['BUYER', 'PAYMENT_CONFIRMED_BY_SELLER', 'Tuleva ühistu juhatuse otsuse ootel', 'Vaatan'],
-    ['BUYER', 'APPROVED', null, null],
-    ['BUYER', 'CANCELLED', null, null],
     ['SELLER', 'CREATED', 'Sinu allkirja ootel', 'Allkirjastama'],
     ['SELLER', 'SELLER_SIGNED', 'Ostja allkirja ootel: Olev Ostja', 'Vaatan'],
     ['SELLER', 'BUYER_SIGNED', 'Ostja maksekinnituse ootel: Olev Ostja', 'Vaatan'],
@@ -241,26 +239,41 @@ describe('member capital listings with pending tranactions', () => {
       'Kinnitama',
     ],
     ['SELLER', 'PAYMENT_CONFIRMED_BY_SELLER', 'Tuleva ühistu juhatuse otsuse ootel', 'Vaatan'],
-    ['SELLER', 'APPROVED', null, null],
-    ['SELLER', 'CANCELLED', null, null],
   ])(
     'shows pending transaction correctly for %s in %s status',
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async (_role, _state, statusText, linkText) => {
+    async (expectedRole, expectedState, statusText, linkText) => {
       expect(await screen.findByText(/Liikmekapitali kuulutused/i)).toBeInTheDocument();
 
-      expect((await screen.findAllByTestId('active-capital-transfer-contract')).length).toBe(
-        14 - 4 + 1,
-      );
+      const contracts = await screen.findAllByTestId('active-capital-transfer-contract');
 
-      if (statusText === null) {
-        return;
+      // 10 contracts plus one from test backend
+      const contractCount = 10 + 1;
+
+      expect(contracts.length).toBe(contractCount);
+
+      expect(
+        await screen.findByText(`Sul on ${contractCount} pooleliolevat avaldust`),
+      ).toBeInTheDocument();
+
+      let found = false;
+
+      // eslint-disable-next-line no-plusplus
+      for (let i = 0; i < contracts.length; i++) {
+        const contract = contracts[i];
+        const role = contract.getAttribute('data-myrole');
+        const state = contract.getAttribute('data-state');
+
+        if (role === expectedRole && state === expectedState) {
+          found = true;
+
+          expect(within(contract).getByText(new RegExp(statusText))).toBeInTheDocument();
+          expect(within(contract).getByRole('link', { name: linkText })).toBeInTheDocument();
+        }
       }
 
-      expect((await screen.findAllByText(new RegExp(statusText))).length).toBeGreaterThanOrEqual(1);
-      expect(
-        (await screen.findAllByRole('link', { name: linkText })).length,
-      ).toBeGreaterThanOrEqual(1);
+      if (!found) {
+        throw new Error(`No transfer in state ${expectedState} for role ${expectedRole}`);
+      }
     },
   );
 });

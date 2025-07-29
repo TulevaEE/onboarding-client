@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom';
+import { FormattedMessage } from 'react-intl';
 import { Loader } from '../../common';
 import { useMe, useMyCapitalTransferContracts } from '../../common/apiHooks';
 import { User } from '../../common/apiModels';
 import { CapitalTransferContract } from '../../common/apiModels/capital-transfer';
 import { getFullName } from '../../common/utils';
 import { getMyRole } from './status/utils';
+import { isTranslationKey, TranslationKey } from '../../translations';
 
 export const TransferList = () => {
   const { data: contracts, isLoading: isLoadingContracts } = useMyCapitalTransferContracts();
@@ -29,14 +31,18 @@ export const TransferList = () => {
     return statusSortOrders.indexOf(contract.state) * -1; // either 0, 1 for relevant status or -1 for irrelevant status
   });
 
-  const title =
-    filteredContracts.length > 1
-      ? `Sul on ${filteredContracts.length} pooleliolevat avaldust`
-      : 'Sul on pooleliolev avaldus';
-
   return (
     <div className="card p-4">
-      <b className="pb-2">{title}</b>
+      <b className="pb-2">
+        {filteredContracts.length > 1 ? (
+          <FormattedMessage
+            id="capital.transfer.pendingMultiple"
+            values={{ count: filteredContracts.length }}
+          />
+        ) : (
+          <FormattedMessage id="capital.transfer.pendingSingle" />
+        )}
+      </b>
       {sortedContracts.map((contract) => (
         <TransferItem contract={contract} me={me} key={contract.id} />
       ))}
@@ -59,6 +65,8 @@ const TransferItem = ({ contract, me }: { contract: CapitalTransferContract; me:
     <div
       className="d-flex justify-content-between my-1"
       data-testid="active-capital-transfer-contract"
+      data-myrole={myRole}
+      data-state={contract.state}
     >
       <div className="d-flex align-items-center">
         {isPendingOnMyAction ? (
@@ -108,69 +116,51 @@ const TransferItem = ({ contract, me }: { contract: CapitalTransferContract; me:
             </defs>
           </svg>
         )}
-        <div>{stateDescription}</div>
+        <div>
+          <FormattedMessage
+            id={stateDescription}
+            values={{
+              buyerName: getFullName(contract.buyer),
+              sellerName: getFullName(contract.seller),
+            }}
+          />
+        </div>
       </div>
       <Link to={`/capital/transfer/${contract.id}`}>
-        {getStateActionLinkText(contract, myRole)}
+        <FormattedMessage
+          id={getStateActionLinkText(contract, myRole)}
+          values={{
+            buyerName: getFullName(contract.buyer),
+            sellerName: getFullName(contract.seller),
+          }}
+        />
       </Link>
     </div>
   );
 };
 
-const getStateDescription = (contract: CapitalTransferContract, myRole: 'BUYER' | 'SELLER') => {
-  if (myRole === 'BUYER') {
-    switch (contract.state) {
-      case 'SELLER_SIGNED':
-        return 'Sinu allkirja ootel';
-      case 'BUYER_SIGNED':
-        return 'Sinu makse tegemise ootel';
-      case 'PAYMENT_CONFIRMED_BY_BUYER':
-        return `Müüja maksekinnituse ootel: ${getFullName(contract.seller)}`;
-      case 'CREATED':
-        return `Müüja allkirja ootel: ${getFullName(contract.seller)}`;
-      case 'PAYMENT_CONFIRMED_BY_SELLER':
-        return 'Tuleva ühistu juhatuse otsuse ootel';
-      default:
-        return null;
-    }
+const getStateDescription = (
+  contract: CapitalTransferContract,
+  myRole: 'BUYER' | 'SELLER',
+): TranslationKey | null => {
+  const key = `capital.transfer.list.stateDescription.${myRole}.${contract.state}`;
+  if (isTranslationKey(key)) {
+    return key;
   }
 
-  switch (contract.state) {
-    case 'SELLER_SIGNED':
-      return `Ostja allkirja ootel: ${getFullName(contract.buyer)}`;
-    case 'BUYER_SIGNED':
-      return `Ostja maksekinnituse ootel: ${getFullName(contract.buyer)}`;
-    case 'PAYMENT_CONFIRMED_BY_BUYER':
-      return 'Sinu kinnituse ootel raha laekumise kohta';
-    case 'CREATED':
-      return 'Sinu allkirja ootel';
-    case 'PAYMENT_CONFIRMED_BY_SELLER':
-      return 'Tuleva ühistu juhatuse otsuse ootel';
-    default:
-      return null;
-  }
+  return null;
 };
 
-const getStateActionLinkText = (contract: CapitalTransferContract, myRole: 'BUYER' | 'SELLER') => {
-  if (myRole === 'BUYER') {
-    switch (contract.state) {
-      case 'SELLER_SIGNED':
-        return 'Allkirjastama';
-      case 'BUYER_SIGNED':
-        return 'Makset tegema';
-      default:
-        return 'Vaatan';
-    }
+const getStateActionLinkText = (
+  contract: CapitalTransferContract,
+  myRole: 'BUYER' | 'SELLER',
+): TranslationKey => {
+  const key = `capital.transfer.list.action.${myRole}.${contract.state}`;
+  if (isTranslationKey(key)) {
+    return key;
   }
 
-  switch (contract.state) {
-    case 'PAYMENT_CONFIRMED_BY_BUYER':
-      return 'Kinnitama';
-    case 'CREATED':
-      return 'Allkirjastama';
-    default:
-      return 'Vaatan';
-  }
+  return 'capital.transfer.list.action.default';
 };
 
 const getStateSortOrder = (myRole: 'BUYER' | 'SELLER') => {
