@@ -645,7 +645,10 @@ export function memberCapitalListingsBackend(
         }),
       );
     }),
-    rest.delete('http://localhost/v1/listings/3', (req, res, ctx) => res()),
+    rest.post('http://localhost/v1/listings/*/contact', (req, res, ctx) =>
+      res(ctx.json({ status: 'sent' })),
+    ),
+    rest.delete('http://localhost/v1/listings/*', (req, res, ctx) => res()),
   );
 }
 

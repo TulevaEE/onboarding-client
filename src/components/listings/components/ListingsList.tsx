@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
+import { FormattedMessage } from 'react-intl';
 import styles from './ListingsList.module.scss';
 import { useDeleteMemberCapitalListing, useMemberCapitalListings } from '../../common/apiHooks';
 import Loader from '../../common/loader';
@@ -17,7 +18,9 @@ export const ListingsList = () => {
   if (listings.length === 0) {
     return (
       <div className={styles.noListingsContainer}>
-        <div className="text-secondary">Aktiivseid kuulutusi ei ole</div>
+        <div className="text-secondary">
+          <FormattedMessage id="capital.listings.noListings" />
+        </div>
       </div>
     );
   }
@@ -39,11 +42,21 @@ export const ListingsList = () => {
 const TableHeader = () => (
   <thead>
     <tr>
-      <th scope="col">Kuulutus</th>
-      <th scope="col">Ühikute arv</th>
-      <th scope="col">Ühiku hind</th>
-      <th scope="col">Kogusumma</th>
-      <th scope="col">Tegevus</th>
+      <th scope="col">
+        <FormattedMessage id="capital.listings.header.listing" />
+      </th>
+      <th scope="col">
+        <FormattedMessage id="capital.listings.header.units" />
+      </th>
+      <th scope="col">
+        <FormattedMessage id="capital.listings.header.unitPrice" />
+      </th>
+      <th scope="col">
+        <FormattedMessage id="capital.listings.header.total" />
+      </th>
+      <th scope="col">
+        <FormattedMessage id="capital.listings.header.action" />
+      </th>
     </tr>
   </thead>
 );
@@ -60,7 +73,12 @@ const ListingRow = ({ listing }: { listing: MemberCapitalListing }) => {
   return (
     <tr data-testid="listing">
       <td>
-        {listing.type === 'BUY' ? 'Ost' : 'Müük'} #{listing.id}
+        {listing.type === 'BUY' ? (
+          <FormattedMessage id="capital.listings.type.buy" />
+        ) : (
+          <FormattedMessage id="capital.listings.type.sell" />
+        )}{' '}
+        #{listing.id}
       </td>
       <td>{formatAmountForCount(listing.units)}</td>
       <td>{formatAmountForCurrency(listing.pricePerUnit)}</td>
@@ -87,34 +105,39 @@ const ListingRow = ({ listing }: { listing: MemberCapitalListing }) => {
                   fill="#006CE6"
                 />
               </svg>
-              Kustutan
+              <FormattedMessage id="capital.listings.action.delete" />
             </button>
             <div
               className={`dropdown-menu p-4 ${styles.deletionDropdown} ${
                 deleteDropdownOpen ? 'show' : ''
               }`}
             >
-              <b>Soovid oma kuulutuse kustutada?</b>
+              <b>
+                <FormattedMessage id="capital.listings.action.delete.confirmTitle" />
+              </b>
 
               {error && (
                 <div className="alert alert-danger">
-                  Kuulutuse kustutamisel tekkis viga. Palun võta meiega ühendust
+                  <FormattedMessage id="capital.listings.action.delete.error" />
                 </div>
               )}
               <div className="text-secondary">
-                Kuulutus aegub {formatDateYear(listing.expiryTime)}
+                <FormattedMessage
+                  id="capital.listings.action.delete.expiry"
+                  values={{ date: formatDateYear(listing.expiryTime) }}
+                />
               </div>
 
               <div className="pt-3">
                 <button className="btn btn-primary me-2" type="button" onClick={handleDeleteSubmit}>
-                  Kustutan
+                  <FormattedMessage id="capital.listings.action.delete.confirm" />
                 </button>
                 <button
                   className="btn btn-light"
                   type="button"
                   onClick={() => setDeleteDropdownOpen(false)}
                 >
-                  Ei kustuta
+                  <FormattedMessage id="capital.listings.action.delete.cancel" />
                 </button>
               </div>
             </div>
@@ -138,7 +161,11 @@ const ListingRow = ({ listing }: { listing: MemberCapitalListing }) => {
                 fill="#0072EC"
               />
             </svg>
-            {listing.type === 'BUY' ? 'Soovin osta' : 'Soovin müüa'}
+            {listing.type === 'BUY' ? (
+              <FormattedMessage id="capital.listings.wantTo.buy" />
+            ) : (
+              <FormattedMessage id="capital.listings.wantTo.sell" />
+            )}
           </Link>
         )}
       </td>

@@ -106,6 +106,14 @@ describe('member capital listings with listings', () => {
     userEvent.click(await within(listings[0]).findByText('Soovin osta'));
 
     expect(await screen.findByText(/Sõnum ostjale/i)).toBeInTheDocument();
+
+    userEvent.click(await screen.findByText(/Saadan ostjale/i));
+
+    expect(
+      await screen.findByText(/Sõnum on saadetud/i, {}, { timeout: 3000 }),
+    ).toBeInTheDocument();
+    userEvent.click(await screen.findByText(/Vaatan kõiki kuulutusi/i));
+    expect(await screen.findByText(/Liikmekapitali kuulutused/i)).toBeInTheDocument();
   });
 
   test('shows listings, allows to delete', async () => {

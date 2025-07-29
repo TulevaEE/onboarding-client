@@ -1,6 +1,7 @@
 import { Link, useHistory, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import config from 'react-global-configuration';
+import { FormattedMessage } from 'react-intl';
 import {
   useContactMemberCapitalListing,
   useMe,
@@ -56,7 +57,7 @@ export const ListingDetails = () => {
       <div className="col-12 col-md-11 col-lg-9 mx-auto">
         <div className="my-5">
           <div className="alert alert-warning" role="alert">
-            Sellist kuulutust ei leidu!
+            <FormattedMessage id="capital.listings.details.notFound" />
           </div>
         </div>
       </div>
@@ -66,10 +67,12 @@ export const ListingDetails = () => {
   if (success) {
     return (
       <SuccessAlert>
-        <h2 className="py-2">Sõnum on saadetud</h2>
+        <h2 className="py-2">
+          <FormattedMessage id="capital.listings.details.success.title" />
+        </h2>
 
         <div className="pb-2">
-          Jää ootele, kuulutuse lisaja annab sulle loodetavasti peagi märku.
+          <FormattedMessage id="capital.listings.details.success.info" />
         </div>
 
         <button
@@ -79,7 +82,7 @@ export const ListingDetails = () => {
             history.push(`/capital/listings/`);
           }}
         >
-          Vaatan kõiki kuulutusi
+          <FormattedMessage id="capital.listings.details.success.backToListings" />
         </button>
       </SuccessAlert>
     );
@@ -95,7 +98,11 @@ export const ListingDetails = () => {
     <div className="col-12 col-md-11 col-lg-10 mx-auto">
       <div className="my-5">
         <h1 className="mb-4 text-center">
-          {listing.type === 'BUY' ? 'Sõnum ostjale' : 'Sõnum müüjale'}
+          {listing.type === 'BUY' ? (
+            <FormattedMessage id="capital.listings.details.heading.messageToBuyer" />
+          ) : (
+            <FormattedMessage id="capital.listings.details.heading.messageToSeller" />
+          )}
         </h1>
       </div>
 
@@ -126,18 +133,20 @@ export const ListingDetails = () => {
                 </clipPath>
               </defs>
             </svg>
-            See kuulutus on lisatud inglise keeles, seega tõenäoliselt eeldab ostja suhtlust samuti
-            inglise keeles.
+            <FormattedMessage id="capital.listings.details.differentLanguage.info" />
           </div>
         )}
         {error && (
           <div className="alert alert-warning">
-            Sõnumi saatmisel tekkis viga. Palun proovi hiljem uuesti või võta meiega ühendust
+            <FormattedMessage id="capital.listings.details.messsage.error" />
           </div>
         )}
         <div>
           <label htmlFor="unit-amount" className="form-label">
-            Sõnum <span className="text-secondary fw-normal">(vajadusel täienda)</span>
+            <FormattedMessage id="capital.listings.details.label.message" />
+            <span className="text-secondary fw-normal">
+              <FormattedMessage id="capital.listings.details.label.messageHint" />
+            </span>
           </label>
           <textarea
             className="form-control form-control-lg mt-1"
@@ -150,17 +159,22 @@ export const ListingDetails = () => {
         </div>
 
         <div className="pt-5">
-          <b>Sõnumile lisatakse automaatselt sinu kontaktandmed:</b>
+          <b>
+            <FormattedMessage id="capital.listings.details.contactInfo.prefix" />
+          </b>
 
           <div className="pt-3">{getFullName(me)}</div>
           <div>
-            {me.email} · <Link to="/contact-details">Uuendan andmeid</Link>
+            {me.email} ·{' '}
+            <Link to="/contact-details">
+              <FormattedMessage id="capital.listings.details.contactInfo.update" />
+            </Link>
           </div>
         </div>
 
         <div className="d-flex justify-content-between mt-5 pt-4 border-top">
           <button type="button" className="btn btn-lg btn-light" onClick={() => history.goBack()}>
-            Tagasi
+            <FormattedMessage id="capital.listings.details.button.back" />
           </button>
           <button
             type="button"
@@ -168,7 +182,11 @@ export const ListingDetails = () => {
             disabled={!message || sending}
             onClick={() => handleContactButtonClicked()}
           >
-            Saadan {listing.type === 'BUY' ? 'ostjale' : 'müüjale'}
+            {listing.type === 'BUY' ? (
+              <FormattedMessage id="capital.listings.details.button.sendToBuyer" />
+            ) : (
+              <FormattedMessage id="capital.listings.details.button.sendToSeller" />
+            )}
           </button>
         </div>
       </section>
