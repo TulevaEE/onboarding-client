@@ -143,7 +143,7 @@ export const ListingDetails = () => {
         )}
         <div>
           <label htmlFor="unit-amount" className="form-label">
-            <FormattedMessage id="capital.listings.details.label.message" />
+            <FormattedMessage id="capital.listings.details.label.message" />{' '}
             <span className="text-secondary fw-normal">
               <FormattedMessage id="capital.listings.details.label.messageHint" />
             </span>

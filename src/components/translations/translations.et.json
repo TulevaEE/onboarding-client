@@ -827,7 +827,7 @@
   "capital.listings.heading": "Liikmekapitali kuulutused",
   "capital.listings.intro": "Tuleva ühistu liikmed saavad liikmekapitali omavahel osta ja müüa.",
   "capital.listings.instructions": "Selleks lisa oma kuulutus või vasta olemasolevale ja esitage ühine avaldus. Ühistu juhatus vaatab saadetud avaldused iga kuu esimestel tööpäevadel üle ja kiidab tehingu heaks, kui see vastab kehtestatud korrale.",
-  "capital.listings.add": "+ Lisan kuulutuse",
+  "capital.listings.add": "Lisan kuulutuse",
   "capital.listings.transfer": "Vormistan müügi",
   "capital.listings.noListings": "Aktiivseid kuulutusi ei ole",
   "capital.listings.header.listing": "Kuulutus",
