@@ -88,19 +88,22 @@ describe('member capital listings with listings', () => {
 
     expect(listings.length).toBe(3);
 
-    expect(await within(listings[0]).findByText('Ost #1')).toBeInTheDocument();
+    expect(await within(listings[0]).findByText('Ost')).toBeInTheDocument();
+    expect(await within(listings[0]).findByText('#1')).toBeInTheDocument();
     expect(await within(listings[0]).findByText('10')).toBeInTheDocument();
     expect(await within(listings[0]).findByText('2.00 €')).toBeInTheDocument();
     expect(await within(listings[0]).findByText('20 €')).toBeInTheDocument();
     expect(await within(listings[0]).findByText('Soovin osta')).toBeInTheDocument();
 
-    expect(await within(listings[1]).findByText('Müük #2')).toBeInTheDocument();
+    expect(await within(listings[1]).findByText('Müük')).toBeInTheDocument();
+    expect(await within(listings[1]).findByText('#2')).toBeInTheDocument();
     expect(await within(listings[1]).findByText('100')).toBeInTheDocument();
     expect(await within(listings[1]).findByText('2.50 €')).toBeInTheDocument();
     expect(await within(listings[1]).findByText('250 €')).toBeInTheDocument();
     expect(await within(listings[1]).findByText('Soovin müüa')).toBeInTheDocument();
 
-    expect(await within(listings[2]).findByText('Ost #3')).toBeInTheDocument();
+    expect(await within(listings[2]).findByText('Ost')).toBeInTheDocument();
+    expect(await within(listings[2]).findByText('#3')).toBeInTheDocument();
     expect(await within(listings[2]).findByText('10 000')).toBeInTheDocument();
     expect(await within(listings[2]).findByText('2.34 €')).toBeInTheDocument();
     expect(await within(listings[2]).findByText('23 400 €')).toBeInTheDocument();
