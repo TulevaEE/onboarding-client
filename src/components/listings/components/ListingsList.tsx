@@ -78,7 +78,7 @@ const ListingRow = ({ listing }: { listing: MemberCapitalListing }) => {
         ) : (
           <FormattedMessage id="capital.listings.type.sell" />
         )}{' '}
-        #{listing.id}
+        <span className="text-secondary">#{listing.id}</span>
       </td>
       <td>{formatAmountForCount(listing.units, 0)}</td>
       <td>{formatAmountForCurrency(listing.pricePerUnit)}</td>

@@ -201,7 +201,7 @@ export const AddListing = () => {
             onClick={handleSubmit}
             disabled={submitting || errors.moreThanMemberCapital || errors.priceLessThanBookValue}
           >
-            Avaldan ostukuulutuse
+            {listingType === 'BUY' ? <>Avaldan ostukuulutuse</> : <>Avaldan müügikuulutuse</>}
           </button>
         </div>
       </section>
