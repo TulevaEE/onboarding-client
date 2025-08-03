@@ -28,21 +28,22 @@ export function formatAmountForCurrency(
   fractionDigits = 2,
   options: { isSigned?: boolean } = {},
 ) {
+  return `${formatAmountForCount(amount, fractionDigits, options)}\u00A0€`;
+}
+
+export const formatAmountForCount = (
+  amount = 0,
+  fractionDigits = 2,
+  options: { isSigned?: boolean } = {},
+) => {
   const { isSigned = false } = options;
   const sign = amount > 0 && isSigned ? '+' : '';
   let formattedAmount = amount.toFixed(fractionDigits).replace(/\B(?=(\d{3})+(?!\d))/g, '\u00A0');
   if (amount < 0) {
     formattedAmount = formattedAmount.replace('-', '−');
   }
-  return `${sign}${formattedAmount}\u00A0€`;
-}
-
-export const formatAmountForCount = (amount: number, fractionDigits = 2) =>
-  new Intl.NumberFormat('et-EE').format(parseFloat(amount.toFixed(fractionDigits)));
-
-export function formatLargeAmountForCurrency(amount = 0) {
-  return `${Math.round(amount).toLocaleString('et-EE')}\u00A0€`; // hardcoded euro until more currencies.
-}
+  return `${sign}${formattedAmount}`;
+};
 
 export const getFullName = (user: { firstName: string; lastName: string }) =>
   `${user.firstName} ${user.lastName}`;

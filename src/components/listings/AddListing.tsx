@@ -2,7 +2,7 @@ import { PropsWithChildren, ReactNode, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import moment from 'moment';
 import styles from './AddListing.module.scss';
-import { useNumberInput } from '../common/utils';
+import { formatAmountForCount, useNumberInput } from '../common/utils';
 import { useCreateMemberCapitalListing, useMe } from '../common/apiHooks';
 import { useMemberCapitalHoldings } from './hooks';
 import { MemberCapitalListingType } from '../common/apiModels';
@@ -146,7 +146,7 @@ export const AddListing = () => {
           Sul on hetkel liikmekapitali{' '}
           {memberCapitalHoldings !== null ? (
             <>
-              <b>{memberCapitalHoldings}</b> ühikut
+              <b>{formatAmountForCount(memberCapitalHoldings)}</b> ühikut
             </>
           ) : (
             '...'

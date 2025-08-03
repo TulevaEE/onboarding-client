@@ -80,9 +80,9 @@ const ListingRow = ({ listing }: { listing: MemberCapitalListing }) => {
         )}{' '}
         #{listing.id}
       </td>
-      <td>{formatAmountForCount(listing.units)}</td>
+      <td>{formatAmountForCount(listing.units, 0)}</td>
       <td>{formatAmountForCurrency(listing.pricePerUnit)}</td>
-      <td>{formatAmountForCurrency(listing.units * listing.pricePerUnit)}</td>
+      <td>{formatAmountForCurrency(listing.units * listing.pricePerUnit, 0)}</td>
       <td>
         {listing.isOwnListing && (
           <div className="dropdown">
