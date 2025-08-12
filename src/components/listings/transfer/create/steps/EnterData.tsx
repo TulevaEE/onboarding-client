@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Redirect } from 'react-router-dom';
 import { useNumberInput } from '../../../../common/utils';
-import { useMemberCapitalHoldings } from '../../../hooks';
 import { useCreateCapitalTransferContext } from '../hooks';
 import { isValidIban } from '../../../../common/iban';
+import { useMemberCapitalSum } from '../../../hooks';
 
 export const EnterData = () => {
   const {
@@ -24,13 +24,12 @@ export const EnterData = () => {
   const [bankIban, setBankIban] = useState(sellerIban ?? '');
   const [ibanError, setIbanError] = useState(false);
 
-  const memberCapitalHoldings = useMemberCapitalHoldings();
+  const { bookValue } = useMemberCapitalSum();
 
   const errors = {
     noPriceValue: typeof unitPriceInput.value !== 'number',
     noUnitAmountValue: typeof unitPriceInput.value !== 'number',
-    moreThanMemberCapital:
-      memberCapitalHoldings !== null && memberCapitalHoldings < (unitAmountInput.value ?? 0),
+    moreThanMemberCapital: bookValue !== null && bookValue < (unitAmountInput.value ?? 0),
     priceLessThanBookValue: unitPriceInput.value !== null && unitPriceInput.value < 1,
   };
 

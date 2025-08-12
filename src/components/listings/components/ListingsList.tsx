@@ -45,15 +45,8 @@ const TableHeader = () => (
       <th scope="col">
         <FormattedMessage id="capital.listings.header.listing" />
       </th>
-      <th scope="col">
-        <FormattedMessage id="capital.listings.header.units" />
-      </th>
-      <th scope="col">
-        <FormattedMessage id="capital.listings.header.unitPrice" />
-      </th>
-      <th scope="col">
-        <FormattedMessage id="capital.listings.header.total" />
-      </th>
+      <th scope="col">Maht</th>
+      <th scope="col">Hind</th>
       <th scope="col">
         <FormattedMessage id="capital.listings.header.action" />
       </th>
@@ -81,8 +74,7 @@ const ListingRow = ({ listing }: { listing: MemberCapitalListing }) => {
         <span className="text-secondary">#{listing.id}</span>
       </td>
       <td>{formatAmountForCount(listing.units, 0)}</td>
-      <td>{formatAmountForCurrency(listing.pricePerUnit)}</td>
-      <td>{formatAmountForCurrency(listing.units * listing.pricePerUnit, 0)}</td>
+      <td>{formatAmountForCurrency(listing.totalPrice)}</td>
       <td>
         {listing.isOwnListing && (
           <div className="dropdown">
