@@ -4,8 +4,10 @@ import moment from 'moment';
 import styles from './AddListing.module.scss';
 import { formatAmountForCount, useNumberInput } from '../common/utils';
 import { useCreateMemberCapitalListing, useMe } from '../common/apiHooks';
-import { useMemberCapitalHoldings } from './hooks';
+import { useMemberCapitalSum } from './hooks';
 import { MemberCapitalListingType } from '../common/apiModels';
+import { Loader } from '../common';
+import { InfoTooltip } from '../common/infoTooltip/InfoTooltip';
 
 // TODO break up this component
 export const AddListing = () => {
@@ -15,28 +17,29 @@ export const AddListing = () => {
 
   const [expiryInMonths, setExpiryInMonths] = useState<number>(1);
 
-  const unitPriceInput = useNumberInput();
+  const totalPriceInput = useNumberInput();
   const unitAmountInput = useNumberInput();
 
   const { mutateAsync: createListing, error } = useCreateMemberCapitalListing();
 
-  const memberCapitalHoldings = useMemberCapitalHoldings();
+  const { unitAmount, bookValue } = useMemberCapitalSum();
 
   const [submitting, setSubmitting] = useState(false);
 
   const errors = {
-    noPriceValue: typeof unitPriceInput.value !== 'number',
-    noUnitAmountValue: typeof unitPriceInput.value !== 'number',
+    noPriceValue: typeof totalPriceInput.value !== 'number',
+    noUnitAmountValue: typeof totalPriceInput.value !== 'number',
     moreThanMemberCapital:
-      listingType === 'SELL' &&
-      memberCapitalHoldings !== null &&
-      memberCapitalHoldings < (unitAmountInput.value ?? 0),
-    priceLessThanBookValue: unitPriceInput.value !== null && unitPriceInput.value < 1,
+      listingType === 'SELL' && unitAmount !== null && unitAmount < (unitAmountInput.value ?? 0),
+    priceLessThanBookValue:
+      totalPriceInput.value !== null &&
+      unitAmountInput.value !== null &&
+      totalPriceInput.value / unitAmountInput.value < 1,
   };
 
   const handleSubmit = async () => {
     setSubmitting(true);
-    if (unitAmountInput.value === null || unitPriceInput.value === null) {
+    if (unitAmountInput.value === null || totalPriceInput.value === null) {
       return;
     }
 
@@ -46,7 +49,7 @@ export const AddListing = () => {
       await createListing({
         type: listingType,
         units: unitAmountInput.value,
-        pricePerUnit: unitPriceInput.value,
+        totalPrice: totalPriceInput.value,
         currency: 'EUR',
         expiryTime,
       });
@@ -89,8 +92,65 @@ export const AddListing = () => {
         <div className="row mt-5">
           <div className="col-lg mb-3 mb-lg-0">
             <div>
+              {unitAmount !== null ? (
+                <>
+                  <label htmlFor="total-amount" className="form-label">
+                    Sul on liikmekapitali kogumahus
+                  </label>
+                  <div className="input-group input-group-lg">
+                    <input
+                      type="number"
+                      className="form-control form-control-lg text-end pe-0"
+                      disabled
+                      id="total-amount"
+                      value={unitAmount}
+                      placeholder="0"
+                      aria-label="Liikmekapitali kogumaht"
+                    />
+                    <div className="input-group-text">&euro;</div>
+                  </div>
+                </>
+              ) : (
+                <Loader />
+              )}
+            </div>
+          </div>
+
+          <div className="col-lg mb-3 mb-lg-0">
+            {bookValue !== null ? (
+              <div>
+                <label htmlFor="book-value" className="form-label">
+                  Väärtusega
+                  <InfoTooltip name="book-value-description" place="bottom">
+                    See on sinu liikmekapitali raamatupidamislik väärtus – ligikaudne summa, mille
+                    saaksid ühistust lahkudes hüvitisena. Pea meeles, et hüvitis makstakse välja
+                    aasta lõpus ja selle suurus võib turukõikumiste tõttu erineda tänasest
+                    väärtusest. Alla hetkeväärtuse ei pruugi sul olla mõistlik oma liikmekapitali
+                    maha müüa.
+                  </InfoTooltip>
+                </label>
+                <div className="input-group input-group-lg">
+                  <input
+                    value={bookValue}
+                    type="number"
+                    disabled
+                    className="form-control form-control-lg text-end pe-0"
+                    aria-label="Kogusumma"
+                  />
+                  <div className="input-group-text">&euro;</div>
+                </div>
+              </div>
+            ) : (
+              <Loader />
+            )}
+          </div>
+        </div>
+
+        <div className="row mt-3">
+          <div className="col-lg mb-3 mb-lg-0">
+            <div>
               <label htmlFor="unit-amount" className="form-label">
-                Ühikute arv
+                {listingType === 'BUY' ? 'Ostan kogumahule juurde' : 'Müün kogumahust maha'}
               </label>
               <input
                 type="number"
@@ -107,7 +167,7 @@ export const AddListing = () => {
           <div className="col-lg mb-3 mb-lg-0">
             <div>
               <label htmlFor="unit-price" className="form-label">
-                Ühiku hind
+                Hinnaga
               </label>
               <div className="input-group input-group-lg">
                 <input
@@ -118,50 +178,20 @@ export const AddListing = () => {
                   className={`form-control form-control-lg text-end pe-0 ${
                     errors.priceLessThanBookValue ? 'border-danger' : ''
                   }`}
-                  {...unitPriceInput.inputProps}
+                  {...totalPriceInput.inputProps}
                 />
                 <div className="input-group-text">&euro;</div>
               </div>
             </div>
           </div>
-          <div className="col-lg mb-3 mb-lg-0">
-            <div>
-              <label htmlFor="unit-amount" className="form-label">
-                Kogusumma
-              </label>
-              <div className="input-group input-group-lg">
-                <input
-                  value={(unitAmountInput.value ?? 0) * (unitPriceInput.value ?? 0)}
-                  type="number"
-                  disabled
-                  className="form-control form-control-lg text-end pe-0"
-                  aria-label="Kogusumma"
-                />
-                <div className="input-group-text">&euro;</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="text-secondary mt-2">
-          Sul on hetkel liikmekapitali{' '}
-          {memberCapitalHoldings !== null ? (
-            <>
-              <b>{formatAmountForCount(memberCapitalHoldings)}</b> ühikut
-            </>
-          ) : (
-            '...'
-          )}
-          . Ühe ühiku raamatupidamislik väärtus on 1.00 € ja alla selle tehingut teostada ei saa.
         </div>
 
         {errors.moreThanMemberCapital && (
-          <div className="pt-2 text-danger">
-            Ühikute arv ei saa olla suurem sinu liikmekapitali kogumahust.
-          </div>
+          <div className="pt-2 text-danger">TODO Sul ei ole piisavalt liikmekapitali mahtu</div>
         )}
         {errors.priceLessThanBookValue && (
           <div className="pt-2 text-danger">
-            Ühiku hind ei saa olla väiksem raamatupidamislikust väärtusest 1.00 €.
+            TODO Sa ei saa müüa liikmekapitali hinnaga alla raamatupidamisliku väärtuse
           </div>
         )}
         <div className="row mt-4">

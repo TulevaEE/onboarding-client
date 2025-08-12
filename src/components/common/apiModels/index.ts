@@ -402,7 +402,7 @@ export type MemberCapitalListingType = 'BUY' | 'SELL';
 export type MemberCapitalListingCreationRequest = {
   type: MemberCapitalListingType;
   units: number;
-  pricePerUnit: number;
+  totalPrice: number;
   currency: Currency;
   expiryDate: string;
 };
@@ -410,7 +410,7 @@ export type MemberCapitalListingCreationRequest = {
 export type CreateMemberCapitalListingDto = {
   type: MemberCapitalListingType;
   units: number;
-  pricePerUnit: number;
+  totalPrice: number;
   currency: Currency;
   expiryTime: string;
 };
@@ -419,7 +419,7 @@ export type MemberCapitalListing = {
   id: number;
   type: MemberCapitalListingType;
   units: number;
-  pricePerUnit: number;
+  totalPrice: number;
   currency: Currency;
   expiryTime: string;
   createdTime: string;
