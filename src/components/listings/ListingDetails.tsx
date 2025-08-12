@@ -25,8 +25,10 @@ export const ListingDetails = () => {
   const { data: me } = useMe();
 
   const [message, setMessage] = useState<string>();
-
   const [success, setSuccess] = useState(false);
+
+  const [addPhone, setAddPhone] = useState(false);
+  const [addPersonalCode, setAddPersonalCode] = useState(false);
 
   const history = useHistory();
 
@@ -171,6 +173,34 @@ export const ListingDetails = () => {
             </Link>
           </div>
         </div>
+        <div className="form-check mt-3">
+          <input
+            checked={addPhone}
+            onChange={() => setAddPhone(!addPhone)}
+            type="checkbox"
+            className="form-check-input"
+            id="add-phone-checkbox"
+          />
+          <label className="form-check-label" htmlFor="add-phone-checkbox">
+            Lisan ka oma telefoninumbri: {me.phoneNumber}
+          </label>
+        </div>
+
+        <div className="form-check mt-2">
+          <input
+            checked={addPersonalCode}
+            onChange={() => setAddPersonalCode(!addPersonalCode)}
+            type="checkbox"
+            className="form-check-input"
+            id="add-personal-code-checkbox"
+          />
+          <label className="form-check-label" htmlFor="add-personal-code-checkbox">
+            Lisan ka oma isikukoodi: {me.personalCode}
+          </label>
+          <div className="text-secondary">
+            Müüjalt küsitakse sinu isikukoodi liikmekapitali võõrandamise avaldusel
+          </div>
+        </div>
 
         <div className="d-flex justify-content-between mt-5 pt-4 border-top">
           <button type="button" className="btn btn-lg btn-light" onClick={() => history.goBack()}>
@@ -196,8 +226,7 @@ export const ListingDetails = () => {
 
 const getListingDefaultMessage = (listing: MemberCapitalListing, me: User): string => {
   const units = formatAmountForCount(listing.units);
-  const pricePerUnit = formatAmountForCurrency(listing.pricePerUnit);
-  const totalAmount = formatAmountForCurrency(listing.units * listing.pricePerUnit);
+  const totalAmount = formatAmountForCurrency(listing.totalPrice);
 
   if (listing.language === 'en') {
     return `
@@ -205,12 +234,12 @@ Hello!
 
 ${
   listing.type === 'BUY'
-    ? `I’m interested in selling units of my membership capital.`
-    : `I’m interested in buying units of your membership capital.`
+    ? `I’m interested in selling membership capital of Tuleva:`
+    : `I’m interested in purchasing membership capital of Tuleva:`
 }
-Units: ${units}; Unit price: ${pricePerUnit}; Total amount: ${totalAmount}
+Amount: ${units}; Price: ${totalAmount}
 
-If the number of units and price are suitable, please fill out the application included in this email, digitally sign it, and return it to me for review and my own digital signature. Afterward, we can jointly submit it to the board of Tuleva Commercial Association for consideration.
+If the amount and price are suitable, please initiate the application via the “Finalize the sale” button on the Tuleva membership capital transfer page.
 
 Thank you,
 ${getFullName(me)}`.trim();
@@ -221,12 +250,12 @@ Tere!
 
 ${
   listing.type === 'BUY'
-    ? `Olen huvitatud Tuleva ühistu liikmekapitali müümisest.`
-    : `Olen huvitatud Tuleva ühistu liikmekapitali ostmisest.`
+    ? `Olen huvitatud Tuleva ühistu liikmekapitali müümisest:`
+    : `Olen huvitatud Tuleva ühistu liikmekapitali ostmisest:`
 }
-Ühikute arv: ${units}; Ühiku hind: ${pricePerUnit}; Summa: ${totalAmount}
+Mahus: ${units}; Hinnaga: ${totalAmount}
 
-Kui ühikute arv ja hind sobivad, palun täitke omalt poolt kirjaga kaasatulev avaldus, digiallkirjastage see, ning saatke mulle tutvumiseks ja ka minu poolt digiallkirjastamiseks tagasi. Seejärel saame juba selle ühiselt Tuleva ühistu juhatusele ülevaatamiseks saata.
+Kui maht ja hind sobivad, siis palun alustage avalduse vormistamist “Vormistan müügi” nupu kaudu Tuleva liikmekapitali võõrandamise lehel.
 
 Aitäh,
 ${getFullName(me)}`.trim();

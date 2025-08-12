@@ -2,7 +2,7 @@ import { PropsWithChildren, ReactNode, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import moment from 'moment';
 import styles from './AddListing.module.scss';
-import { formatAmountForCount, useNumberInput } from '../common/utils';
+import { useNumberInput } from '../common/utils';
 import { useCreateMemberCapitalListing, useMe } from '../common/apiHooks';
 import { useMemberCapitalSum } from './hooks';
 import { MemberCapitalListingType } from '../common/apiModels';
@@ -71,7 +71,7 @@ export const AddListing = () => {
             Kuulutuse lisamisel tekkis viga. Palun võta meiega ühendust
           </div>
         )}
-        <div className="btn-group d-flex" role="group" aria-label="Basic example">
+        <div className="btn-group d-flex" role="group">
           <ListingButton
             listingType={listingType}
             listingTypeOfButton="BUY"
@@ -121,7 +121,7 @@ export const AddListing = () => {
               <div>
                 <label htmlFor="book-value" className="form-label">
                   Väärtusega
-                  <InfoTooltip name="book-value-description" place="bottom">
+                  <InfoTooltip name="book-value-description" place="top">
                     See on sinu liikmekapitali raamatupidamislik väärtus – ligikaudne summa, mille
                     saaksid ühistust lahkudes hüvitisena. Pea meeles, et hüvitis makstakse välja
                     aasta lõpus ja selle suurus võib turukõikumiste tõttu erineda tänasest
@@ -134,6 +134,7 @@ export const AddListing = () => {
                     value={bookValue}
                     type="number"
                     disabled
+                    id="book-value"
                     className="form-control form-control-lg text-end pe-0"
                     aria-label="Kogusumma"
                   />
@@ -159,7 +160,7 @@ export const AddListing = () => {
                 }`}
                 id="unit-amount"
                 placeholder="0"
-                aria-label="Ühikute arv"
+                aria-label={listingType === 'BUY' ? 'Ostetav kogumaht' : 'Müüdav kogumaht'}
                 {...unitAmountInput.inputProps}
               />
             </div>
@@ -174,7 +175,7 @@ export const AddListing = () => {
                   type="number"
                   placeholder="0"
                   id="unit-price"
-                  aria-label="Ühiku hind"
+                  aria-label="Tehingu koguhind"
                   className={`form-control form-control-lg text-end pe-0 ${
                     errors.priceLessThanBookValue ? 'border-danger' : ''
                   }`}
@@ -231,7 +232,7 @@ export const AddListing = () => {
             onClick={handleSubmit}
             disabled={submitting || errors.moreThanMemberCapital || errors.priceLessThanBookValue}
           >
-            {listingType === 'BUY' ? <>Avaldan ostukuulutuse</> : <>Avaldan müügikuulutuse</>}
+            {listingType === 'BUY' ? 'Avaldan ostukuulutuse' : 'Avaldan müügikuulutuse'}
           </button>
         </div>
       </section>
