@@ -69,7 +69,7 @@ export const EnterData = () => {
             </label>
             <input
               type="number"
-              className={`form-control form-control-lg text-end pe-0 ${
+              className={`form-control form-control-lg text-end ${
                 errors.moreThanMemberCapital ? 'border-danger' : ''
               }`}
               id="unit-amount"
@@ -90,7 +90,7 @@ export const EnterData = () => {
                 placeholder="0"
                 id="unit-price"
                 aria-label="Ühiku hind"
-                className={`form-control form-control-lg text-end pe-0 ${
+                className={`form-control form-control-lg text-end ${
                   errors.priceLessThanBookValue ? 'border-danger' : ''
                 }`}
                 {...unitPriceInput.inputProps}
@@ -109,7 +109,7 @@ export const EnterData = () => {
                 value={(unitAmountInput.value ?? 0) * (unitPriceInput.value ?? 0)}
                 type="number"
                 disabled
-                className="form-control form-control-lg text-end pe-0"
+                className="form-control form-control-lg text-end"
                 aria-label="Kogusumma"
               />
               <div className="input-group-text">&euro;</div>

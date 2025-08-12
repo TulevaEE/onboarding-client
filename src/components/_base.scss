@@ -1,6 +1,4 @@
-/**
- * Extend width classes
- */
+// Extend width classes
 
 @for $i from 0 through 20 {
   $pct: $i * 5%;
@@ -9,19 +7,24 @@
   }
 }
 
-/**
- * Element overrides
- */
+// Base
 
 html {
   min-width: 320px;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
 }
 
-/**
- * Links
- */
+hr {
+  margin: 0;
+  padding: 0;
+  border-color: $gray-border-3;
+  background-color: white;
+  opacity: 1;
+}
+
+// Links
 
 a {
   text-decoration-color: color-mix(
@@ -38,6 +41,10 @@ a:focus {
   text-decoration-color: currentColor !important;
 }
 
+a abbr[title] {
+  cursor: inherit;
+}
+
 .skip-link {
   position: absolute;
   top: 0.5rem;
@@ -52,9 +59,59 @@ a:focus {
   color: $text-navy;
 }
 
-/**
- * Typography
- */
+// Forms & Buttons
+
+input::-webkit-contacts-auto-fill-button {
+  visibility: hidden;
+  display: none !important;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+}
+
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type='number'] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.form-control::placeholder {
+  color: $text-tertiary;
+}
+
+.btn-light {
+  color: $blue;
+  border-color: var(--bs-border-color);
+  background: $white;
+}
+
+.form-check-label {
+  cursor: pointer;
+}
+
+.custom-select {
+  width: 100%;
+}
+
+.form-label {
+  font-weight: $font-weight-semibold;
+}
+
+.control-code {
+  font-size: 5em;
+  font-weight: bold;
+}
+
+.alert-success-notice {
+  background-color: rgba(11, 250, 67, 0.12);
+}
+
+// Typography
 
 h1,
 h2,
@@ -103,6 +160,11 @@ h6,
   line-height: $h6-line-height;
 }
 
+small {
+  font-size: $font-size-small;
+  color: $text-primary;
+}
+
 .lead {
   font-size: $font-size-lead;
   font-weight: $font-weight-normal;
@@ -113,99 +175,6 @@ h6,
 }
 .lh-base {
   line-height: $line-height-base;
-}
-
-small {
-  font-size: $font-size-small;
-  color: $text-primary;
-}
-
-.form-control::placeholder {
-  color: $text-tertiary;
-}
-
-.btn-light {
-  color: $blue;
-  border-color: var(--bs-border-color);
-  background: $white;
-}
-
-.brand-logo {
-  max-width: 146px;
-}
-
-.app-header {
-  .brand-logo {
-    width: auto;
-    height: 60px;
-  }
-
-  @media (max-width: 576px) {
-    .brand-logo {
-      height: 52px;
-    }
-  }
-  @media (max-width: 375px) {
-    /* iPhone 6 and newer */
-    .brand-logo {
-      height: 48px;
-    }
-  }
-  @media (max-width: 359px) {
-    .brand-logo {
-      height: 42px;
-    }
-  }
-}
-
-.control-code {
-  font-size: 5em;
-  font-weight: bold;
-}
-
-hr {
-  margin: 0;
-  padding: 0;
-  border-color: $gray-border-3;
-  background-color: white;
-  opacity: 1;
-}
-
-.custom-select {
-  width: 100%;
-}
-
-.form-label {
-  font-weight: $font-weight-semibold;
-}
-
-.alert-success-notice {
-  background-color: rgba(11, 250, 67, 0.12);
-}
-
-.card {
-  border-radius: 0.5rem;
-
-  &-primary {
-    border-color: $blue-light;
-    background-color: $blue-bg-2;
-  }
-
-  &-header {
-    &-collapsed {
-      border-bottom-width: 0;
-    }
-    & .form-check {
-      padding-left: 54px !important; // 24px + 30px
-    }
-    & .form-switch {
-      padding-left: 74px !important; // 24px + 50px
-    }
-  }
-}
-
-.form-check-label {
-  cursor: pointer;
 }
 
 .ff-system {
@@ -237,9 +206,60 @@ hr {
   text-wrap: balance;
 }
 
-/**
- * Backgrounds
- */
+// Header
+
+.brand-logo {
+  max-width: 146px;
+}
+
+.app-header {
+  .brand-logo {
+    width: auto;
+    height: 60px;
+  }
+
+  @media (max-width: 576px) {
+    .brand-logo {
+      height: 52px;
+    }
+  }
+  @media (max-width: 375px) {
+    /* iPhone 6 and newer */
+    .brand-logo {
+      height: 48px;
+    }
+  }
+  @media (max-width: 359px) {
+    .brand-logo {
+      height: 42px;
+    }
+  }
+}
+
+// Cards
+
+.card {
+  border-radius: 0.5rem;
+
+  &-primary {
+    border-color: $blue-light;
+    background-color: $blue-bg-2;
+  }
+
+  &-header {
+    &-collapsed {
+      border-bottom-width: 0;
+    }
+    & .form-check {
+      padding-left: 54px !important; // 24px + 30px
+    }
+    & .form-switch {
+      padding-left: 74px !important; // 24px + 50px
+    }
+  }
+}
+
+// Backgrounds
 
 .bg-gray-1 {
   background-color: $gray-bg-1;

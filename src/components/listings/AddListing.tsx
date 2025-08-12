@@ -100,7 +100,7 @@ export const AddListing = () => {
                   <div className="input-group input-group-lg">
                     <input
                       type="number"
-                      className="form-control form-control-lg text-end pe-0"
+                      className="form-control form-control-lg text-end"
                       disabled
                       id="total-amount"
                       value={unitAmount}
@@ -135,7 +135,7 @@ export const AddListing = () => {
                     type="number"
                     disabled
                     id="book-value"
-                    className="form-control form-control-lg text-end pe-0"
+                    className="form-control form-control-lg text-end"
                     aria-label="Kogusumma"
                   />
                   <div className="input-group-text">&euro;</div>
@@ -155,7 +155,7 @@ export const AddListing = () => {
               </label>
               <input
                 type="number"
-                className={`form-control form-control-lg text-end pe-0 ${
+                className={`form-control form-control-lg text-end ${
                   errors.moreThanMemberCapital ? 'border-danger' : ''
                 }`}
                 id="unit-amount"
@@ -176,7 +176,7 @@ export const AddListing = () => {
                   placeholder="0"
                   id="unit-price"
                   aria-label="Tehingu koguhind"
-                  className={`form-control form-control-lg text-end pe-0 ${
+                  className={`form-control form-control-lg text-end ${
                     errors.priceLessThanBookValue ? 'border-danger' : ''
                   }`}
                   {...totalPriceInput.inputProps}
