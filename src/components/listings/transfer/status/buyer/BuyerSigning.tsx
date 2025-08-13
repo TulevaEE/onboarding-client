@@ -76,8 +76,8 @@ export const BuyerSigning = ({
             id="agree-to-terms-checkbox"
           />
           <label className="form-check-label" htmlFor="agree-to-terms-checkbox">
-            Kinnitan, et täidan võlaõigusseaduse kohaselt oma lepingulisi kohustusi täies ulatuses
-            ja kohustun tasuma {formatAmountForCurrency(contract.unitPrice * contract.unitCount)}
+            Kinnitan, et müüja ja ostja on kokku leppinud liikmekapitali võõrandamises eelpool
+            nimetatud tingimustel.
           </label>
           {agreedToTermsError && (
             <div className="text-danger">

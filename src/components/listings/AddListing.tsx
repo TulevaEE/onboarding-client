@@ -167,14 +167,13 @@ export const AddListing = () => {
           </div>
           <div className="col-lg mb-3 mb-lg-0">
             <div>
-              <label htmlFor="unit-price" className="form-label">
+              <label htmlFor="total-price" className="form-label">
                 Hinnaga
               </label>
               <div className="input-group input-group-lg">
                 <input
-                  type="number"
                   placeholder="0"
-                  id="unit-price"
+                  id="total-price"
                   aria-label="Tehingu koguhind"
                   className={`form-control form-control-lg text-end ${
                     errors.priceLessThanBookValue ? 'border-danger' : ''

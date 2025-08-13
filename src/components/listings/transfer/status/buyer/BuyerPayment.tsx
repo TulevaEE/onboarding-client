@@ -9,6 +9,7 @@ import { BUYER_STEPS } from '../steps';
 import { StepDoneAlert } from '../StepDoneAlert';
 import { CapitalTransferContract } from '../../../../common/apiModels/capital-transfer';
 import { useUpdateCapitalTransferContract } from '../../../../common/apiHooks';
+import { CopyButton } from '../../../../common/CopyButton';
 
 export const BuyerPayment = ({
   contract,
@@ -64,9 +65,8 @@ export const BuyerPayment = ({
           <b>
             {getFullName(contract.buyer)} ({contract.buyer.personalCode})
           </b>{' '}
-          ostab <b>{formatAmountForCount(contract.unitCount)} ühikut liikmekapitali</b> (sellest
-          TODO ühikut liikmeboonust) hinnaga{' '}
-          <b>{formatAmountForCurrency(contract.unitPrice)} ühiku kohta</b>.
+          ostab <b>{formatAmountForCount(contract.unitCount)} liikmekapitali</b> (sellest TODO
+          ühikut liikmeboonust) hinnaga <b>{formatAmountForCurrency(contract.totalPrice)}</b>.
         </div>
       </div>
       <div className="pt-5">
@@ -74,21 +74,31 @@ export const BuyerPayment = ({
         <div>
           <div className="row py-3">
             <div className="col fw-bold">Saaja nimi</div>
-            <div className="col">{getFullName(contract.seller)}</div>
+            <div className="col d-flex justify-content-between">
+              {getFullName(contract.seller)}{' '}
+              <CopyButton textToCopy={getFullName(contract.seller)} />
+            </div>
           </div>
           <div className="row pb-3">
             <div className="col fw-bold">Saaja konto (IBAN)</div>
-            <div className="col">{contract.iban}</div>
+            <div className="col d-flex justify-content-between">
+              {contract.iban} <CopyButton textToCopy={contract.iban} />
+            </div>
           </div>
           <div className="row pb-3">
             <div className="col fw-bold">Summa</div>
-            <div className="col">
-              {formatAmountForCurrency(contract.unitPrice * contract.unitCount)}
+            <div className="col d-flex justify-content-between">
+              {formatAmountForCurrency(contract.totalPrice)}{' '}
+              <CopyButton textToCopy={contract.totalPrice.toString()} />
             </div>
           </div>
           <div className="row">
             <div className="col fw-bold">Selgitus</div>
-            <div className="col">Tuleva ühistu liikmekapitali ost</div>
+            <div className="col d-flex justify-content-between">
+              {/* TODO translate ? */}
+              Tuleva ühistu liikmekapitali ost{' '}
+              <CopyButton textToCopy="Tuleva ühistu liikmekapitali ost" />
+            </div>
           </div>
         </div>
       </div>
@@ -105,7 +115,7 @@ export const BuyerPayment = ({
           />
           <label className="form-check-label" htmlFor="agree-to-terms-checkbox">
             Kandsin üle {getFullName(contract.seller)} ({contract.seller.personalCode}) kontole{' '}
-            {formatAmountForCurrency(contract.unitPrice * contract.unitCount)}
+            {formatAmountForCurrency(contract.totalPrice)}
           </label>
           {confirmPaidError && (
             <div className="text-danger">

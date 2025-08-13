@@ -11,7 +11,7 @@ export const ConfirmAndSign = () => {
   const {
     buyer,
     unitCount,
-    pricePerUnit,
+    totalPrice,
     sellerIban,
     navigateToPreviousStep,
     navigateToNextStep,
@@ -49,7 +49,7 @@ export const ConfirmAndSign = () => {
     return <Loader className="align-middle" />;
   }
 
-  if (!unitCount || !pricePerUnit || !sellerIban || !buyer) {
+  if (!unitCount || !totalPrice || !sellerIban || !buyer) {
     return <Redirect to="/capital/transfer/create" />;
   }
 
@@ -72,7 +72,7 @@ export const ConfirmAndSign = () => {
       const contract = await createCapitalTransferContract({
         buyerMemberId: buyer.id,
         iban: sellerIban,
-        unitPrice: pricePerUnit,
+        totalPrice,
         unitCount,
         unitsOfMemberBonus: 0, // TODO
       });
@@ -109,7 +109,7 @@ export const ConfirmAndSign = () => {
           userRole="SELLER"
           buyer={buyer}
           unitCount={unitCount}
-          pricePerUnit={pricePerUnit}
+          totalPrice={totalPrice}
           sellerIban={sellerIban}
         />
         <div className="form-check">

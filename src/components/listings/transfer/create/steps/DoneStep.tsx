@@ -4,10 +4,10 @@ import { useCreateCapitalTransferContext } from '../hooks';
 
 export const DoneStep = () => {
   const history = useHistory();
-  const { buyer, unitCount, pricePerUnit, sellerIban, createdCapitalTransferContract } =
+  const { buyer, unitCount, totalPrice, sellerIban, createdCapitalTransferContract } =
     useCreateCapitalTransferContext();
 
-  if (!unitCount || !pricePerUnit || !sellerIban || !buyer) {
+  if (!unitCount || !totalPrice || !sellerIban || !buyer) {
     return <Redirect to="/capital/transfer/create" />;
   }
 

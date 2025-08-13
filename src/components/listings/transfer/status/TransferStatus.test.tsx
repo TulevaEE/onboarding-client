@@ -56,7 +56,7 @@ describe('capital transfer buyer flow', () => {
           personalCode: mockUser.personalCode,
         },
         iban: 'EE_TEST_IBAN',
-        unitPrice: 2,
+        totalPrice: 2000,
         unitCount: 1000,
         unitsOfMemberBonus: 10,
         state: 'SELLER_SIGNED',
@@ -79,12 +79,12 @@ describe('capital transfer buyer flow', () => {
     expect(await within(sellerSection).findByText(/30303039914/i)).toBeInTheDocument();
     expect(await within(sellerSection).findByText(/Allkirjastatud/i)).toBeInTheDocument();
 
-    expect(await screen.findByText(/1000 ühikut/i)).toBeInTheDocument();
+    expect(await screen.findByText(/1.000.00.€/i)).toBeInTheDocument();
     // TODO unitsOfMemberCapital assert
 
     userEvent.click(
       await screen.findByLabelText(
-        /Kinnitan, et täidan võlaõigusseaduse kohaselt oma lepingulisi kohustusi täies ulatuses ja kohustun tasuma.+/i,
+        /Kinnitan, et müüja ja ostja on kokku leppinud liikmekapitali võõrandamises eelpool nimetatud tingimustel./i,
       ),
     );
 
@@ -132,7 +132,7 @@ describe('capital transfer seller flow', () => {
           personalCode: mockUser.personalCode,
         },
         iban: 'EE_TEST_IBAN',
-        unitPrice: 2,
+        totalPrice: 2000,
         unitCount: 1000,
         unitsOfMemberBonus: 10,
         state: 'PAYMENT_CONFIRMED_BY_BUYER',
@@ -196,7 +196,7 @@ describe('capital transfer seller flow', () => {
           personalCode: mockUser.personalCode,
         },
         iban: 'EE_TEST_IBAN',
-        unitPrice: 2,
+        totalPrice: 2000,
         unitCount: 1000,
         unitsOfMemberBonus: 10,
         state: 'BUYER_SIGNED',

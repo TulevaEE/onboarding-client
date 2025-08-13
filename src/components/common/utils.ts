@@ -1,4 +1,4 @@
-import { ChangeEventHandler, useState } from 'react';
+import { ChangeEventHandler, HTMLProps, useState } from 'react';
 import { Fund } from './apiModels';
 
 const isTruthy = (value: unknown) => !!value;
@@ -67,7 +67,7 @@ export const isTulevaIsin = (value: string): value is TulevaFundIsin =>
 export const useNumberInput = (
   defaultValue: number | null = null,
   isValid: (inputValue: string) => boolean = () => true,
-) => {
+): { inputProps: Partial<HTMLProps<HTMLInputElement>>; value: number | null } => {
   const [inputValue, setInputValue] = useState(defaultValue?.toString() ?? '');
   const [value, setValue] = useState<number | null>(defaultValue);
 
@@ -96,5 +96,13 @@ export const useNumberInput = (
     }
   };
 
-  return { inputProps: { value: inputValue, onChange: handleInputChange }, value };
+  return {
+    inputProps: {
+      value: inputValue,
+      onChange: handleInputChange,
+      type: 'text',
+      inputMode: 'decimal',
+    },
+    value,
+  };
 };

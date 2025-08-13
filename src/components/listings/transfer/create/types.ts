@@ -5,7 +5,7 @@ type StateContext = {
   buyer: MemberLookup | null;
 
   unitCount: number | null;
-  pricePerUnit: number | null;
+  totalPrice: number | null;
   sellerIban: string | null;
   createdCapitalTransferContract: CapitalTransferContract | null;
 };

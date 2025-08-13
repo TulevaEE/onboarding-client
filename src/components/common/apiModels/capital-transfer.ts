@@ -3,7 +3,7 @@ import { MemberLookup, User } from '.';
 export type CreateCapitalTransferDto = {
   buyerMemberId: number;
   iban: string;
-  unitPrice: number;
+  totalPrice: number;
   unitCount: number;
   unitsOfMemberBonus: number;
 };
@@ -13,7 +13,7 @@ export type CapitalTransferContract = {
   seller: MemberLookup;
   buyer: MemberLookup;
   iban: string;
-  unitPrice: number;
+  totalPrice: number;
   unitCount: number;
   unitsOfMemberBonus: number;
   state: CapitalTransferContractState;

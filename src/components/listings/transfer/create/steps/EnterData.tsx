@@ -10,15 +10,15 @@ export const EnterData = () => {
     navigateToNextStep,
     navigateToPreviousStep,
     buyer,
-    pricePerUnit,
+    totalPrice,
     unitCount,
     sellerIban,
-    setPricePerUnit,
+    setTotalPrice,
     setSellerIban,
     setUnitCount,
   } = useCreateCapitalTransferContext();
 
-  const unitPriceInput = useNumberInput(pricePerUnit ?? null);
+  const totalPriceInput = useNumberInput(totalPrice ?? null);
   const unitAmountInput = useNumberInput(unitCount ?? null);
 
   const [bankIban, setBankIban] = useState(sellerIban ?? '');
@@ -27,15 +27,18 @@ export const EnterData = () => {
   const { bookValue } = useMemberCapitalSum();
 
   const errors = {
-    noPriceValue: typeof unitPriceInput.value !== 'number',
-    noUnitAmountValue: typeof unitPriceInput.value !== 'number',
+    noPriceValue: typeof totalPriceInput.value !== 'number',
+    noUnitAmountValue: typeof totalPriceInput.value !== 'number',
     moreThanMemberCapital: bookValue !== null && bookValue < (unitAmountInput.value ?? 0),
-    priceLessThanBookValue: unitPriceInput.value !== null && unitPriceInput.value < 1,
+    priceLessThanBookValue:
+      totalPriceInput.value !== null &&
+      unitAmountInput.value !== null &&
+      totalPriceInput.value / unitAmountInput.value < 1,
   };
 
   const handleSubmitClicked = () => {
     const formattedIban = bankIban.trim();
-    if (!unitPriceInput.value || !unitAmountInput.value || !formattedIban) {
+    if (!totalPriceInput.value || !unitAmountInput.value || !formattedIban) {
       return;
     }
 
@@ -48,7 +51,7 @@ export const EnterData = () => {
       return;
     }
 
-    setPricePerUnit(unitPriceInput.value);
+    setTotalPrice(totalPriceInput.value);
     setUnitCount(unitAmountInput.value);
     setSellerIban(formattedIban);
     navigateToNextStep();
@@ -61,39 +64,23 @@ export const EnterData = () => {
   return (
     <>
       <h2 className="py-5">Tehingu andmed</h2>
-      <div className="row">
+
+      <div className="row mt-3">
         <div className="col-lg mb-3 mb-lg-0">
           <div>
             <label htmlFor="unit-amount" className="form-label">
-              Ühikute arv
-            </label>
-            <input
-              type="number"
-              className={`form-control form-control-lg text-end ${
-                errors.moreThanMemberCapital ? 'border-danger' : ''
-              }`}
-              id="unit-amount"
-              placeholder="0"
-              aria-label="Ühikute arv"
-              {...unitAmountInput.inputProps}
-            />
-          </div>
-        </div>
-        <div className="col-lg mb-3 mb-lg-0">
-          <div>
-            <label htmlFor="unit-price" className="form-label">
-              Ühiku hind
+              Müüdav liikmekapitali maht
             </label>
             <div className="input-group input-group-lg">
               <input
                 type="number"
-                placeholder="0"
-                id="unit-price"
-                aria-label="Ühiku hind"
                 className={`form-control form-control-lg text-end ${
-                  errors.priceLessThanBookValue ? 'border-danger' : ''
+                  errors.moreThanMemberCapital ? 'border-danger' : ''
                 }`}
-                {...unitPriceInput.inputProps}
+                id="unit-amount"
+                placeholder="0"
+                aria-label="Müüdav kogumaht"
+                {...unitAmountInput.inputProps}
               />
               <div className="input-group-text">&euro;</div>
             </div>
@@ -101,16 +88,18 @@ export const EnterData = () => {
         </div>
         <div className="col-lg mb-3 mb-lg-0">
           <div>
-            <label htmlFor="unit-amount" className="form-label">
-              Kogusumma
+            <label htmlFor="total-price" className="form-label">
+              Hinnaga
             </label>
             <div className="input-group input-group-lg">
               <input
-                value={(unitAmountInput.value ?? 0) * (unitPriceInput.value ?? 0)}
-                type="number"
-                disabled
-                className="form-control form-control-lg text-end"
-                aria-label="Kogusumma"
+                placeholder="0"
+                id="total-price"
+                aria-label="Tehingu koguhind"
+                className={`form-control form-control-lg text-end ${
+                  errors.priceLessThanBookValue ? 'border-danger' : ''
+                }`}
+                {...totalPriceInput.inputProps}
               />
               <div className="input-group-text">&euro;</div>
             </div>
@@ -138,13 +127,11 @@ export const EnterData = () => {
       </div>
       {ibanError && <div className="pt-2 text-danger">TODO See IBAN ei tundu korrektne</div>}
       {errors.moreThanMemberCapital && (
-        <div className="pt-2 text-danger">
-          Ühikute arv ei saa olla suurem sinu liikmekapitali kogumahust.
-        </div>
+        <div className="pt-2 text-danger">TODO Sul ei ole piisavalt liikmekapitali mahtu</div>
       )}
       {errors.priceLessThanBookValue && (
         <div className="pt-2 text-danger">
-          Ühiku hind ei saa olla väiksem raamatupidamislikust väärtusest 1.00 €.
+          TODO Sa ei saa müüa liikmekapitali hinnaga alla raamatupidamisliku väärtuse 1.00 €
         </div>
       )}
       <div className="d-flex justify-content-between mt-5 pt-4 border-top">

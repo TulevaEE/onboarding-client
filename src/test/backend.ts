@@ -692,7 +692,7 @@ export function capitalTransferContractBackend(
       personalCode: mockUser.personalCode,
     },
     iban: 'EE_TEST_IBAN',
-    unitPrice: 2,
+    totalPrice: 2000,
     unitCount: 1000,
     unitsOfMemberBonus: 10,
     state: 'SELLER_SIGNED',
