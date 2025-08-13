@@ -5,7 +5,6 @@ import { Steps } from '../../../../common/steps';
 import { ContractDetails } from '../../components/ContractDetails';
 import { getContractDetailsPropsFromContract, getMyRole } from '../utils';
 import { BUYER_STEPS } from '../steps';
-import { formatAmountForCurrency } from '../../../../common/utils';
 import { CapitalTransferContract } from '../../../../common/apiModels/capital-transfer';
 import { useCapitalTransferContractSigning } from '../hooks';
 
