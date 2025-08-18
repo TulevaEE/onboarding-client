@@ -1,16 +1,15 @@
 import { Link, useHistory, useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import config from 'react-global-configuration';
 import { FormattedMessage } from 'react-intl';
 import {
   useContactMemberCapitalListing,
   useMe,
   useMemberCapitalListings,
+  usePreviewMemberCapitalListingMessage,
 } from '../common/apiHooks';
 import { Loader } from '../common';
 import styles from './ListingDetails.module.scss';
-import { MemberCapitalListing, User } from '../common/apiModels';
-import { formatAmountForCount, formatAmountForCurrency, getFullName } from '../common/utils';
 import { SuccessAlert } from '../common/successAlert';
 
 export const ListingDetails = () => {
@@ -24,11 +23,16 @@ export const ListingDetails = () => {
   } = useContactMemberCapitalListing();
   const { data: me } = useMe();
 
-  const [message, setMessage] = useState<string>();
   const [success, setSuccess] = useState(false);
 
-  const [addPhone, setAddPhone] = useState(false);
+  const [addPhoneNumber, setAddPhoneNumber] = useState(false);
   const [addPersonalCode, setAddPersonalCode] = useState(false);
+
+  const { data: message, isLoading: isLoadingPreview } = usePreviewMemberCapitalListingMessage({
+    id: Number(urlId),
+    addPersonalCode,
+    addPhoneNumber,
+  });
 
   const history = useHistory();
 
@@ -39,19 +43,12 @@ export const ListingDetails = () => {
       return;
     }
 
-    await sendMessageRequest({ message, id: listing?.id });
+    await sendMessageRequest({ addPersonalCode, addPhoneNumber, id: listing?.id });
     setSuccess(true);
   };
 
-  useEffect(() => {
-    // no conditional hooks
-    if (listing && me && !message) {
-      setMessage(getListingDefaultMessage(listing, me));
-    }
-  }, [listing, me]);
-
   if (!listings || !me) {
-    return <Loader />;
+    return <Loader className="align-middle" />;
   }
 
   if (!listing) {
@@ -100,11 +97,7 @@ export const ListingDetails = () => {
     <div className="col-12 col-md-11 col-lg-10 mx-auto">
       <div className="my-5">
         <h1 className="mb-4 text-center">
-          {listing.type === 'BUY' ? (
-            <FormattedMessage id="capital.listings.details.heading.messageToBuyer" />
-          ) : (
-            <FormattedMessage id="capital.listings.details.heading.messageToSeller" />
-          )}
+          <FormattedMessage id={`capital.listings.details.heading.messageTo.${listing.type}`} />
         </h1>
       </div>
 
@@ -145,44 +138,28 @@ export const ListingDetails = () => {
         )}
         <div>
           <label htmlFor="unit-amount" className="form-label">
-            <FormattedMessage id="capital.listings.details.label.message" />{' '}
-            <span className="text-secondary fw-normal">
-              <FormattedMessage id="capital.listings.details.label.messageHint" />
-            </span>
+            <FormattedMessage id={`capital.listings.details.label.message.${listing.type}`} />
           </label>
-          <textarea
-            className="form-control form-control-lg mt-1"
-            id="unit-amount"
-            aria-label="Sõnum"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            rows={14}
-          />
+          {!message || isLoadingPreview ? (
+            <div className="pt-5">
+              <Loader className={`align-middle ${styles.listingLoader}`} />
+            </div>
+          ) : (
+            // eslint-disable-next-line react/no-danger
+            <div className="card mt-1 p-3" dangerouslySetInnerHTML={{ __html: message }} />
+          )}
         </div>
 
-        <div className="pt-5">
-          <b>
-            <FormattedMessage id="capital.listings.details.contactInfo.prefix" />
-          </b>
-
-          <div className="pt-3">{getFullName(me)}</div>
-          <div>
-            {me.email} ·{' '}
-            <Link to="/contact-details">
-              <FormattedMessage id="capital.listings.details.contactInfo.update" />
-            </Link>
-          </div>
-        </div>
         <div className="form-check mt-3">
           <input
-            checked={addPhone}
-            onChange={() => setAddPhone(!addPhone)}
+            checked={addPhoneNumber}
+            onChange={() => setAddPhoneNumber(!addPhoneNumber)}
             type="checkbox"
             className="form-check-input"
             id="add-phone-checkbox"
           />
           <label className="form-check-label" htmlFor="add-phone-checkbox">
-            Lisan ka oma telefoninumbri: {me.phoneNumber}
+            Avaldan oma telefoninumbri: {me.phoneNumber}
           </label>
         </div>
 
@@ -195,68 +172,40 @@ export const ListingDetails = () => {
             id="add-personal-code-checkbox"
           />
           <label className="form-check-label" htmlFor="add-personal-code-checkbox">
-            Lisan ka oma isikukoodi: {me.personalCode}
+            Avaldan oma isikukoodi: {me.personalCode}
           </label>
           <div className="text-secondary">
             Müüjalt küsitakse sinu isikukoodi liikmekapitali võõrandamise avaldusel
           </div>
         </div>
 
-        <div className="d-flex justify-content-between mt-5 pt-4 border-top">
+        <div className="pt-3">
+          <div>
+            <Link
+              to={{
+                pathname: '/contact-details',
+                state: { from: `/capital/listings/${listing.id}` },
+              }}
+            >
+              Soovid uuendada oma kontaktandmeid?
+            </Link>
+          </div>
+        </div>
+
+        <div className="d-flex justify-content-between mt-4 pt-4 border-top">
           <button type="button" className="btn btn-lg btn-light" onClick={() => history.goBack()}>
             <FormattedMessage id="capital.listings.details.button.back" />
           </button>
           <button
             type="button"
             className="btn btn-lg btn-primary"
-            disabled={!message || sending}
-            onClick={() => handleContactButtonClicked()}
+            disabled={sending || isLoadingPreview}
+            onClick={handleContactButtonClicked}
           >
-            {listing.type === 'BUY' ? (
-              <FormattedMessage id="capital.listings.details.button.sendToBuyer" />
-            ) : (
-              <FormattedMessage id="capital.listings.details.button.sendToSeller" />
-            )}
+            <FormattedMessage id={`capital.listings.details.button.sendTo.${listing.type}`} />
           </button>
         </div>
       </section>
     </div>
   );
-};
-
-const getListingDefaultMessage = (listing: MemberCapitalListing, me: User): string => {
-  const units = formatAmountForCount(listing.units);
-  const totalAmount = formatAmountForCurrency(listing.totalPrice);
-
-  if (listing.language === 'en') {
-    return `
-Hello!
-
-${
-  listing.type === 'BUY'
-    ? `I’m interested in selling membership capital of Tuleva:`
-    : `I’m interested in purchasing membership capital of Tuleva:`
-}
-Amount: ${units}; Price: ${totalAmount}
-
-If the amount and price are suitable, please initiate the application via the “Finalize the sale” button on the Tuleva membership capital transfer page.
-
-Thank you,
-${getFullName(me)}`.trim();
-  }
-
-  return `
-Tere!
-
-${
-  listing.type === 'BUY'
-    ? `Olen huvitatud Tuleva ühistu liikmekapitali müümisest:`
-    : `Olen huvitatud Tuleva ühistu liikmekapitali ostmisest:`
-}
-Mahus: ${units}; Hinnaga: ${totalAmount}
-
-Kui maht ja hind sobivad, siis palun alustage avalduse vormistamist “Vormistan müügi” nupu kaudu Tuleva liikmekapitali võõrandamise lehel.
-
-Aitäh,
-${getFullName(me)}`.trim();
 };

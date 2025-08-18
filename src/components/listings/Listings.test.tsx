@@ -1,5 +1,5 @@
 import { setupServer } from 'msw/node';
-import { screen, within } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Route } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
@@ -87,8 +87,7 @@ describe('member capital listings with listings', () => {
     capitalTransferContractBackend(server);
   });
 
-  // TODO re-enable when read only message ready
-  xit('shows listings, allows to contact', async () => {
+  test('shows listings correctly', async () => {
     expect(await screen.findByText(/Liikmekapitali kuulutused/i)).toBeInTheDocument();
     const createLink = await screen.findByText(/Lisan kuulutuse/i);
     expect(createLink).toBeInTheDocument();
@@ -100,34 +99,71 @@ describe('member capital listings with listings', () => {
     expect(await within(listings[0]).findByText('Ost')).toBeInTheDocument();
     expect(await within(listings[0]).findByText('#1')).toBeInTheDocument();
     expect(await within(listings[0]).findByText('10')).toBeInTheDocument();
-    expect(await within(listings[0]).findByText('2.00 €')).toBeInTheDocument();
-    expect(await within(listings[0]).findByText('20 €')).toBeInTheDocument();
-    expect(await within(listings[0]).findByText('Soovin osta')).toBeInTheDocument();
+    expect(await within(listings[0]).findByText('20.00 €')).toBeInTheDocument();
+    expect(await within(listings[0]).findByText('Soovin müüa')).toBeInTheDocument();
 
     expect(await within(listings[1]).findByText('Müük')).toBeInTheDocument();
     expect(await within(listings[1]).findByText('#2')).toBeInTheDocument();
     expect(await within(listings[1]).findByText('100')).toBeInTheDocument();
-    expect(await within(listings[1]).findByText('2.50 €')).toBeInTheDocument();
-    expect(await within(listings[1]).findByText('250 €')).toBeInTheDocument();
-    expect(await within(listings[1]).findByText('Soovin müüa')).toBeInTheDocument();
+    expect(await within(listings[1]).findByText('250.00 €')).toBeInTheDocument();
+    expect(await within(listings[1]).findByText('Soovin osta')).toBeInTheDocument();
 
     expect(await within(listings[2]).findByText('Ost')).toBeInTheDocument();
     expect(await within(listings[2]).findByText('#3')).toBeInTheDocument();
     expect(await within(listings[2]).findByText('10 000')).toBeInTheDocument();
-    expect(await within(listings[2]).findByText('2.34 €')).toBeInTheDocument();
-    expect(await within(listings[2]).findByText('23 400 €')).toBeInTheDocument();
+    expect(await within(listings[2]).findByText('23 400.00 €')).toBeInTheDocument();
     expect((await within(listings[2]).findAllByText('Kustutan')).length).toBe(2);
+  });
 
-    userEvent.click(await within(listings[0]).findByText('Soovin osta'));
+  test('allows to contact for BUY listing', async () => {
+    expect(await screen.findByText(/Liikmekapitali kuulutused/i)).toBeInTheDocument();
+    const createLink = await screen.findByText(/Lisan kuulutuse/i);
+    expect(createLink).toBeInTheDocument();
 
-    expect(await screen.findByText(/Sõnum ostjale/i)).toBeInTheDocument();
+    const listings = await screen.findAllByTestId('listing');
 
+    expect(listings.length).toBe(3);
+
+    userEvent.click(await within(listings[0]).findByText('Soovin müüa'));
+
+    expect(await screen.findByText(/Ostja saab järgneva sisuga meili/i)).toBeInTheDocument();
+
+    await waitFor(async () => expect(await screen.findByText(/Saadan ostjale/i)).toBeEnabled(), {
+      timeout: 5000,
+    });
     userEvent.click(await screen.findByText(/Saadan ostjale/i));
 
     expect(
       await screen.findByText(/Sõnum on saadetud/i, {}, { timeout: 3000 }),
     ).toBeInTheDocument();
     userEvent.click(await screen.findByText(/Vaatan kõiki kuulutusi/i));
+
+    expect(await screen.findByText(/Liikmekapitali kuulutused/i)).toBeInTheDocument();
+  });
+
+  test('allows to contact for SELL listing', async () => {
+    expect(await screen.findByText(/Liikmekapitali kuulutused/i)).toBeInTheDocument();
+    const createLink = await screen.findByText(/Lisan kuulutuse/i);
+    expect(createLink).toBeInTheDocument();
+
+    const listings = await screen.findAllByTestId('listing');
+
+    expect(listings.length).toBe(3);
+
+    userEvent.click(await within(listings[1]).findByText('Soovin osta'));
+
+    expect(await screen.findByText(/Müüja saab järgneva sisuga meili/i)).toBeInTheDocument();
+
+    await waitFor(async () => expect(await screen.findByText(/Saadan müüjale/i)).toBeEnabled(), {
+      timeout: 5000,
+    });
+    userEvent.click(await screen.findByText(/Saadan müüjale/i));
+
+    expect(
+      await screen.findByText(/Sõnum on saadetud/i, {}, { timeout: 3000 }),
+    ).toBeInTheDocument();
+    userEvent.click(await screen.findByText(/Vaatan kõiki kuulutusi/i));
+
     expect(await screen.findByText(/Liikmekapitali kuulutused/i)).toBeInTheDocument();
   });
 

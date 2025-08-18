@@ -429,7 +429,8 @@ export type MemberCapitalListing = {
 
 export type ContactListingOwnerDto = {
   id: number;
-  message: string;
+  addPersonalCode: boolean;
+  addPhoneNumber: boolean;
 };
 
 export type ContactListingOwnerResponse = {

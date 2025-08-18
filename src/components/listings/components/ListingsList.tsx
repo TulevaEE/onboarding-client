@@ -153,11 +153,7 @@ const ListingRow = ({ listing }: { listing: MemberCapitalListing }) => {
                 fill="#0072EC"
               />
             </svg>
-            {listing.type === 'BUY' ? (
-              <FormattedMessage id="capital.listings.wantTo.buy" />
-            ) : (
-              <FormattedMessage id="capital.listings.wantTo.sell" />
-            )}
+            <FormattedMessage id={`capital.listings.wantTo.forListing.${listing.type}`} />
           </Link>
         )}
       </td>

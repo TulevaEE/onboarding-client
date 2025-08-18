@@ -28,6 +28,7 @@ import {
   getUserConversionWithToken,
   getUserWithToken,
   getWithdrawalsEligibility,
+  previewMessageForMemberCapitalListing,
   updateCapitalTransferContract,
 } from './api';
 import {
@@ -204,6 +205,16 @@ export function useDeleteMemberCapitalListing(): UseMutationResult<
       queryClient.invalidateQueries({ queryKey: ['memberCapitalListings'] });
     },
   });
+}
+
+export function usePreviewMemberCapitalListingMessage(dto: ContactListingOwnerDto) {
+  return useQuery(
+    ['listingMessage', dto.id, dto.addPersonalCode, dto.addPhoneNumber],
+    () => previewMessageForMemberCapitalListing(dto),
+    {
+      enabled: true,
+    },
+  );
 }
 
 export function useContactMemberCapitalListing(): UseMutationResult<

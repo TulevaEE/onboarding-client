@@ -645,10 +645,13 @@ export function memberCapitalListingsBackend(
         }),
       );
     }),
+    rest.post('http://localhost/v1/listings/*/preview-message', (req, res, ctx) =>
+      res(ctx.body('Hello! Test message!')),
+    ),
     rest.post('http://localhost/v1/listings/*/contact', (req, res, ctx) =>
       res(ctx.json({ status: 'sent' })),
     ),
-    rest.delete('http://localhost/v1/listings/*', (req, res, ctx) => res()),
+    rest.delete('http://localhost/v1/listings/*', (req, res) => res()),
   );
 }
 

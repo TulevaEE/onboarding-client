@@ -194,7 +194,17 @@ export function contactMemberCapitalListingOwner(
   dto: ContactListingOwnerDto,
 ): Promise<ContactListingOwnerResponse> {
   return postWithAuthentication(getEndpoint(`/v1/listings/${dto.id}/contact`), {
-    message: dto.message,
+    addPhoneNumber: dto.addPhoneNumber,
+    addPersonalCode: dto.addPersonalCode,
+  });
+}
+
+export async function previewMessageForMemberCapitalListing(
+  dto: ContactListingOwnerDto,
+): Promise<string> {
+  return postWithAuthentication(getEndpoint(`/v1/listings/${dto.id}/preview-message`), {
+    addPhoneNumber: dto.addPhoneNumber,
+    addPersonalCode: dto.addPersonalCode,
   });
 }
 
