@@ -17,9 +17,7 @@ export type CapitalTransferContract = {
   seller: MemberLookup;
   buyer: MemberLookup;
   iban: string;
-  totalPrice: number;
-  unitCount: number;
-  unitsOfMemberBonus: number;
+  transferAmounts: CapitalTransferAmount[];
   state: CapitalTransferContractState;
   createdAt: string;
   updatedAt: string;

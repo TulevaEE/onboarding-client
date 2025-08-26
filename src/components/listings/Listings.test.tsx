@@ -13,6 +13,7 @@ import { createDefaultStore, login, renderWrapped } from '../../test/utils';
 import { initializeConfiguration } from '../config/config';
 import { mockUser } from '../../test/backend-responses';
 import {
+  CapitalTransferAmount,
   CapitalTransferContract,
   CapitalTransferContractState,
 } from '../common/apiModels/capital-transfer';
@@ -234,9 +235,7 @@ describe('member capital listings with pending tranactions', () => {
                 personalCode: mockUser.personalCode,
               },
               iban: 'EE_TEST_IBAN',
-              totalPrice: 2000,
-              unitCount: 1000,
-              unitsOfMemberBonus: 10,
+              transferAmounts: [{ type: 'CAPITAL_PAYMENT' as const, units: 1000, price: 2000 }],
               state: state as CapitalTransferContractState,
               createdAt: '2025-07-21T07:00:00+0000',
               updatedAt: '2025-07-21T07:00:00+0000',
@@ -260,9 +259,7 @@ describe('member capital listings with pending tranactions', () => {
               personalCode: mockUser.personalCode,
             },
             iban: 'EE_TEST_IBAN',
-            totalPrice: 2000,
-            unitCount: 1000,
-            unitsOfMemberBonus: 10,
+            transferAmounts: [{ type: 'CAPITAL_PAYMENT' as const, units: 1000, price: 2000 }],
             state: state as CapitalTransferContractState,
             createdAt: '2025-07-21T07:00:00+0000',
             updatedAt: '2025-07-21T07:00:00+0000',
