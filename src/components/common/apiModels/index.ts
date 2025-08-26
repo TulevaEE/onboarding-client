@@ -281,7 +281,7 @@ export type CapitalType =
   | 'CAPITAL_PAYMENT'
   | 'UNVESTED_WORK_COMPENSATION'
   | 'WORK_COMPENSATION'
-  | 'MEMBERSHIP_BONUS';
+  | 'MEMBERSHIP_BONUS'; // TODO investment bonus
 
 export interface AmlCheck {
   type: string;

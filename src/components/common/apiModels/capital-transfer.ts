@@ -1,11 +1,15 @@
-import { MemberLookup, User } from '.';
+import { CapitalType, MemberLookup } from '.';
 
 export type CreateCapitalTransferDto = {
   buyerMemberId: number;
   iban: string;
-  totalPrice: number;
-  unitCount: number;
-  unitsOfMemberBonus: number;
+  transferAmounts: CapitalTransferAmount[];
+};
+
+export type CapitalTransferAmount = {
+  type: CapitalType;
+  price: number;
+  units: number;
 };
 
 export type CapitalTransferContract = {
