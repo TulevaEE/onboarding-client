@@ -1,11 +1,16 @@
 import { useEffect, useState } from 'react';
 import { Redirect, useHistory } from 'react-router-dom';
 import { AuthenticationLoader, ErrorMessage, Loader } from '../../../../common';
-import { useCreateCapitalTransferContract, useMe } from '../../../../common/apiHooks';
+import {
+  useCapitalRows,
+  useCreateCapitalTransferContract,
+  useMe,
+} from '../../../../common/apiHooks';
 import { useCreateCapitalTransferContext } from '../hooks';
 import { ContractDetails } from '../../components/ContractDetails';
 import { useCapitalTransferContractSigning } from '../../status/hooks';
 import { ErrorResponse } from '../../../../common/apiModels';
+import { calculateTransferAmounts } from '../utils';
 
 export const ConfirmAndSign = () => {
   const {
@@ -30,6 +35,8 @@ export const ConfirmAndSign = () => {
     challengeCode,
   } = useCapitalTransferContractSigning();
 
+  const { data: capitalRows } = useCapitalRows();
+
   const [contractCreationLoading, setContractCreationLoading] = useState(false);
   const [contractCreationError, setContractCreationError] = useState<ErrorResponse | null>(null);
 
@@ -45,7 +52,7 @@ export const ConfirmAndSign = () => {
     }
   }, [signed]);
 
-  if (!me) {
+  if (!me || !capitalRows) {
     return <Loader className="align-middle" />;
   }
 
@@ -72,9 +79,7 @@ export const ConfirmAndSign = () => {
       const contract = await createCapitalTransferContract({
         buyerMemberId: buyer.id,
         iban: sellerIban,
-        totalPrice,
-        unitCount,
-        unitsOfMemberBonus: 0, // TODO
+        transferAmounts: calculateTransferAmounts({ totalPrice, unitCount }, capitalRows),
       });
 
       setCreatedCapitalTransferContract(contract);
