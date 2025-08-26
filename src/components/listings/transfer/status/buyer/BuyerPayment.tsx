@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   formatAmountForCount,
   formatAmountForCurrency,
@@ -10,6 +10,7 @@ import { StepDoneAlert } from '../StepDoneAlert';
 import { CapitalTransferContract } from '../../../../common/apiModels/capital-transfer';
 import { useUpdateCapitalTransferContract } from '../../../../common/apiHooks';
 import { CopyButton } from '../../../../common/CopyButton';
+import { getTotalPrice, getTotalUnitCount } from '../utils';
 
 export const BuyerPayment = ({
   contract,
@@ -22,6 +23,9 @@ export const BuyerPayment = ({
   const [success, setSuccess] = useState(false);
   const [confirmPaid, setConfirmPaid] = useState(false);
   const [confirmPaidError, setConfirmPaidError] = useState(false);
+
+  const totalUnitCount = useMemo(() => getTotalUnitCount(contract), [contract]);
+  const totalPrice = useMemo(() => getTotalPrice(contract), [contract]);
 
   const handlePaymentDoneClicked = async () => {
     if (!confirmPaid) {
@@ -65,8 +69,8 @@ export const BuyerPayment = ({
           <b>
             {getFullName(contract.buyer)} ({contract.buyer.personalCode})
           </b>{' '}
-          ostab <b>{formatAmountForCount(contract.unitCount)} liikmekapitali</b> (sellest TODO
-          ühikut liikmeboonust) hinnaga <b>{formatAmountForCurrency(contract.totalPrice)}</b>.
+          ostab <b>{formatAmountForCount(totalUnitCount)} liikmekapitali</b> (sellest TODO ühikut
+          liikmeboonust) hinnaga <b>{formatAmountForCurrency(totalPrice)}</b>.
         </div>
       </div>
       <div className="pt-5">
@@ -88,8 +92,8 @@ export const BuyerPayment = ({
           <div className="row pb-3">
             <div className="col fw-bold">Summa</div>
             <div className="col d-flex justify-content-between">
-              {formatAmountForCurrency(contract.totalPrice)}{' '}
-              <CopyButton textToCopy={contract.totalPrice.toString()} />
+              {formatAmountForCurrency(totalUnitCount)}{' '}
+              <CopyButton textToCopy={totalUnitCount.toString()} />
             </div>
           </div>
           <div className="row">
@@ -115,7 +119,7 @@ export const BuyerPayment = ({
           />
           <label className="form-check-label" htmlFor="agree-to-terms-checkbox">
             Kandsin üle {getFullName(contract.seller)} ({contract.seller.personalCode}) kontole{' '}
-            {formatAmountForCurrency(contract.totalPrice)}
+            {formatAmountForCurrency(totalPrice)}
           </label>
           {confirmPaidError && (
             <div className="text-danger">

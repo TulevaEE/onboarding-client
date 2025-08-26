@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ContractDetails } from '../../components/ContractDetails';
-import { getContractDetailsPropsFromContract } from '../utils';
+import { getContractDetailsPropsFromContract, getTotalPrice } from '../utils';
 import { formatAmountForCurrency } from '../../../../common/utils';
 import { StepDoneAlert } from '../StepDoneAlert';
 import { CapitalTransferContract } from '../../../../common/apiModels/capital-transfer';
@@ -18,6 +18,8 @@ export const SellerConfirm = ({
   const { mutateAsync: updateContractState, error } = useUpdateCapitalTransferContract();
 
   const [success, setSuccess] = useState(false);
+
+  const totalPrice = useMemo(() => getTotalPrice(contract), [contract]);
 
   const handleConfirmationClicked = async () => {
     if (!confirmMoneyReceived) {
@@ -57,7 +59,7 @@ export const SellerConfirm = ({
             id="agree-to-terms-checkbox"
           />
           <label className="form-check-label" htmlFor="agree-to-terms-checkbox">
-            Kinnitan, et olen {formatAmountForCurrency(contract.totalPrice)} kätte saanud ja valmis
+            Kinnitan, et olen {formatAmountForCurrency(totalPrice)} kätte saanud ja valmis
             liikmekapitali üle andma
           </label>
           {confirmMoneyReceivedError && (

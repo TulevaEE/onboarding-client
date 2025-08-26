@@ -17,6 +17,12 @@ export const getMyRole = (me: User, contract: CapitalTransferContract): 'BUYER' 
   throw new Error('Cannot match current user to buyer or seller');
 };
 
+export const getTotalPrice = (contract: CapitalTransferContract) =>
+  contract.transferAmounts.reduce((acc, amount) => acc + amount.price, 0);
+
+export const getTotalUnitCount = (contract: CapitalTransferContract) =>
+  contract.transferAmounts.reduce((acc, amount) => acc + amount.units, 0);
+
 export const getContractDetailsPropsFromContract = (
   contract: CapitalTransferContract,
 ): Pick<
@@ -25,8 +31,8 @@ export const getContractDetailsPropsFromContract = (
 > => ({
   seller: contract.seller,
   buyer: contract.buyer,
-  totalPrice: contract.totalPrice,
-  unitCount: contract.unitCount,
+  totalPrice: getTotalPrice(contract),
+  unitCount: getTotalUnitCount(contract),
   sellerIban: contract.iban,
   progress: getProgressFromStatus(contract.state) ?? undefined,
 });
