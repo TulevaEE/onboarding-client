@@ -15,6 +15,7 @@ import {
   deleteMemberCapitalListing,
   getCapitalEvents,
   getCapitalRowsWithToken,
+  getCapitalTotal,
   getCapitalTransferContract,
   getContributions,
   getFundPensionStatus,
@@ -36,6 +37,7 @@ import {
   CancellationMandate,
   CapitalEvent,
   CapitalRow,
+  CapitalTotal,
   ContactListingOwnerDto,
   ContactListingOwnerResponse,
   Contribution,
@@ -75,6 +77,10 @@ export function useCapitalEvents(): UseQueryResult<CapitalEvent[]> {
 
 export function useCapitalRows(): UseQueryResult<CapitalRow[]> {
   return useQuery(['capitalRows'], () => getCapitalRowsWithToken());
+}
+
+export function useCapitalTotal(): UseQueryResult<CapitalTotal> {
+  return useQuery(['capitalTotal'], () => getCapitalTotal());
 }
 
 export function useContributions(): UseQueryResult<Contribution[]> {

@@ -270,6 +270,12 @@ export interface CapitalRow {
   currency: Currency;
 }
 
+export interface CapitalTotal {
+  unitAmount: number;
+  totalValue: number;
+  unitPrice: number;
+}
+
 export interface CapitalEvent {
   date: string;
   type: CapitalType;

@@ -516,6 +516,15 @@ export function userCapitalBackend(
 ): void {
   server.use(
     rest.get('http://localhost/v1/me/capital', (req, res, ctx) => res(ctx.json(capitalRows))),
+    rest.get('http://localhost/v1/capital/total', (req, res, ctx) =>
+      res(
+        ctx.json({
+          unitAmount: 5000000.0,
+          totalValue: 8000000.0,
+          unitPrice: 1.6,
+        }),
+      ),
+    ),
   );
 }
 

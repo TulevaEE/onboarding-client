@@ -29,6 +29,7 @@ import {
   MemberLookup,
   ContactListingOwnerDto,
   ContactListingOwnerResponse,
+  CapitalTotal,
 } from './apiModels/index';
 import {
   deleteWithAuthentication,
@@ -385,6 +386,10 @@ export function getCapitalRowsWithToken(): Promise<CapitalRow[]> {
     () => getWithAuthentication(getEndpoint('/v1/me/capital'), undefined),
     'memberCapital',
   );
+}
+
+export function getCapitalTotal(): Promise<CapitalTotal> {
+  return getWithAuthentication(getEndpoint('/v1/capital/total'), undefined);
 }
 
 export function createAmlCheck(

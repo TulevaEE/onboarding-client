@@ -4,6 +4,8 @@ import { useNumberInput } from '../../../../common/utils';
 import { useCreateCapitalTransferContext } from '../hooks';
 import { isValidIban } from '../../../../common/iban';
 import { useMemberCapitalSum } from '../../../hooks';
+import { useCapitalTotal } from '../../../../common/apiHooks';
+import { SaleOfTotalCapitalDescription } from '../../components/SaleOfTotalCapitalDescription';
 
 export const EnterData = () => {
   const {
@@ -25,6 +27,8 @@ export const EnterData = () => {
   const [ibanError, setIbanError] = useState(false);
 
   const { bookValue } = useMemberCapitalSum();
+
+  const { data: capitalTotal } = useCapitalTotal();
 
   const errors = {
     noPriceValue: typeof totalPriceInput.value !== 'number',
@@ -106,6 +110,7 @@ export const EnterData = () => {
           </div>
         </div>
       </div>
+      <SaleOfTotalCapitalDescription saleUnitAmount={unitAmountInput.value ?? 0} />
 
       <div className="row mt-4">
         <div className="col-lg mb-3 mb-lg-0">
