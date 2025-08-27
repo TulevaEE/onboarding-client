@@ -2,11 +2,12 @@ import { PropsWithChildren, ReactNode, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import moment from 'moment';
 import styles from './AddListing.module.scss';
-import { useNumberInput } from '../common/utils';
+import { formatAmountForCurrency, useNumberInput } from '../common/utils';
 import { useCreateMemberCapitalListing, useMe } from '../common/apiHooks';
 import { useMemberCapitalSum } from './hooks';
 import { MemberCapitalListingType } from '../common/apiModels';
 import { SaleOfTotalCapitalDescription } from './transfer/components/SaleOfTotalCapitalDescription';
+import Slider from '../flows/withdrawals/Slider';
 
 // TODO break up this component
 export const AddListing = () => {
@@ -21,7 +22,7 @@ export const AddListing = () => {
 
   const { mutateAsync: createListing, error } = useCreateMemberCapitalListing();
 
-  const { bookValue } = useMemberCapitalSum();
+  const { bookValue: totalBookValue } = useMemberCapitalSum();
 
   const [submitting, setSubmitting] = useState(false);
 
@@ -29,11 +30,17 @@ export const AddListing = () => {
     noPriceValue: typeof totalPriceInput.value !== 'number',
     noBookValue: typeof bookValueInput.value !== 'number',
     moreThanMemberCapital:
-      listingType === 'SELL' && bookValue !== null && bookValue < (bookValueInput.value ?? 0),
+      listingType === 'SELL' &&
+      totalBookValue !== null &&
+      totalBookValue < (bookValueInput.value ?? 0),
     priceLessThanBookValue:
       totalPriceInput.value !== null &&
       bookValueInput.value !== null &&
       totalPriceInput.value / bookValueInput.value < 1,
+  };
+
+  const handleSliderChange = (amount: number) => {
+    bookValueInput.setInputValue(amount === 0 ? '' : amount.toFixed(2));
   };
 
   const handleSubmit = async () => {
@@ -112,6 +119,29 @@ export const AddListing = () => {
             </div>
           </div>
         </div>
+
+        {listingType === 'SELL' && (
+          <div className="row">
+            <div className="mt-4">
+              <Slider
+                value={bookValueInput.value ?? 0}
+                onChange={handleSliderChange}
+                min={0}
+                max={totalBookValue ?? 0}
+                step={0.01}
+                color="BLUE"
+                ariaLabelledBy="book-value"
+              />
+
+              <div className="mt-2 d-flex justify-content-between">
+                <div className="text-body-secondary">{formatAmountForCurrency(0, 0)}</div>
+                <div className="text-body-secondary">
+                  {formatAmountForCurrency(totalBookValue ?? 0, 2)}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="row mt-3">
           <SaleOfTotalCapitalDescription
