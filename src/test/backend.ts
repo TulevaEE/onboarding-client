@@ -609,7 +609,7 @@ export function memberCapitalListingsBackend(
     {
       id: 1,
       type: 'BUY',
-      units: 10,
+      bookValue: 10,
       totalPrice: 20,
       language: 'en',
       isOwnListing: false,
@@ -620,7 +620,7 @@ export function memberCapitalListingsBackend(
     {
       id: 2,
       type: 'SELL',
-      units: 100,
+      bookValue: 100,
       totalPrice: 250,
       currency: 'EUR',
       isOwnListing: false,
@@ -631,7 +631,7 @@ export function memberCapitalListingsBackend(
     {
       id: 3,
       type: 'BUY',
-      units: 10000,
+      bookValue: 10000,
       language: 'en',
       totalPrice: 23400,
       currency: 'EUR',

@@ -6,8 +6,7 @@ import { useNumberInput } from '../common/utils';
 import { useCreateMemberCapitalListing, useMe } from '../common/apiHooks';
 import { useMemberCapitalSum } from './hooks';
 import { MemberCapitalListingType } from '../common/apiModels';
-import { Loader } from '../common';
-import { InfoTooltip } from '../common/infoTooltip/InfoTooltip';
+import { SaleOfTotalCapitalDescription } from './transfer/components/SaleOfTotalCapitalDescription';
 
 // TODO break up this component
 export const AddListing = () => {
@@ -18,28 +17,28 @@ export const AddListing = () => {
   const [expiryInMonths, setExpiryInMonths] = useState<number>(1);
 
   const totalPriceInput = useNumberInput();
-  const unitAmountInput = useNumberInput();
+  const bookValueInput = useNumberInput();
 
   const { mutateAsync: createListing, error } = useCreateMemberCapitalListing();
 
-  const { unitAmount, bookValue } = useMemberCapitalSum();
+  const { bookValue } = useMemberCapitalSum();
 
   const [submitting, setSubmitting] = useState(false);
 
   const errors = {
     noPriceValue: typeof totalPriceInput.value !== 'number',
-    noUnitAmountValue: typeof totalPriceInput.value !== 'number',
+    noBookValue: typeof bookValueInput.value !== 'number',
     moreThanMemberCapital:
-      listingType === 'SELL' && unitAmount !== null && unitAmount < (unitAmountInput.value ?? 0),
+      listingType === 'SELL' && bookValue !== null && bookValue < (bookValueInput.value ?? 0),
     priceLessThanBookValue:
       totalPriceInput.value !== null &&
-      unitAmountInput.value !== null &&
-      totalPriceInput.value / unitAmountInput.value < 1,
+      bookValueInput.value !== null &&
+      totalPriceInput.value / bookValueInput.value < 1,
   };
 
   const handleSubmit = async () => {
     setSubmitting(true);
-    if (unitAmountInput.value === null || totalPriceInput.value === null) {
+    if (bookValueInput.value === null || totalPriceInput.value === null) {
       return;
     }
 
@@ -48,7 +47,7 @@ export const AddListing = () => {
     try {
       await createListing({
         type: listingType,
-        units: unitAmountInput.value,
+        bookValue: bookValueInput.value,
         totalPrice: totalPriceInput.value,
         currency: 'EUR',
         expiryTime,
@@ -60,7 +59,7 @@ export const AddListing = () => {
   };
 
   return (
-    <div className="col-12 col-md-11 col-lg-9 mx-auto">
+    <div className="col-12 col-md-11 col-lg-8 mx-auto">
       <div className="my-5">
         <h1 className="mb-4 text-center">Uus kuulutus</h1>
       </div>
@@ -71,7 +70,7 @@ export const AddListing = () => {
             Kuulutuse lisamisel tekkis viga. Palun võta meiega ühendust
           </div>
         )}
-        <div className="btn-group d-flex" role="group">
+        <div className="btn-group d-flex px-6" role="group">
           <ListingButton
             listingType={listingType}
             listingTypeOfButton="BUY"
@@ -88,139 +87,100 @@ export const AddListing = () => {
             Müün
           </ListingButton>
         </div>
-
         <div className="row mt-5">
-          <div className="col-lg mb-3 mb-lg-0">
-            <div>
-              {unitAmount !== null ? (
-                <>
-                  <label htmlFor="total-amount" className="form-label">
-                    Sul on liikmekapitali kogumahus
-                  </label>
-                  <div className="input-group input-group-lg">
-                    <input
-                      type="number"
-                      className="form-control form-control-lg text-end"
-                      disabled
-                      id="total-amount"
-                      value={unitAmount}
-                      placeholder="0"
-                      aria-label="Liikmekapitali kogumaht"
-                    />
-                    <div className="input-group-text">&euro;</div>
-                  </div>
-                </>
-              ) : (
-                <Loader />
-              )}
-            </div>
+          <div className="col-lg d-flex align-items-center">
+            <label htmlFor="book-value" className="fs-3 fw-bold">
+              {listingType === 'BUY'
+                ? 'Kui palju liikmekapitali ostad?'
+                : 'Kui palju liikmekapitali müüd?'}
+            </label>
           </div>
 
-          <div className="col-lg mb-3 mb-lg-0">
-            {bookValue !== null ? (
-              <div>
-                <label htmlFor="book-value" className="form-label">
-                  Väärtusega
-                  <InfoTooltip name="book-value-description" place="top">
-                    See on sinu liikmekapitali raamatupidamislik väärtus – ligikaudne summa, mille
-                    saaksid ühistust lahkudes hüvitisena. Pea meeles, et hüvitis makstakse välja
-                    aasta lõpus ja selle suurus võib turukõikumiste tõttu erineda tänasest
-                    väärtusest. Alla hetkeväärtuse ei pruugi sul olla mõistlik oma liikmekapitali
-                    maha müüa.
-                  </InfoTooltip>
-                </label>
-                <div className="input-group input-group-lg">
-                  <input
-                    value={bookValue}
-                    type="number"
-                    disabled
-                    id="book-value"
-                    className="form-control form-control-lg text-end"
-                    aria-label="Kogusumma"
-                  />
-                  <div className="input-group-text">&euro;</div>
-                </div>
-              </div>
-            ) : (
-              <Loader />
-            )}
-          </div>
-        </div>
-
-        <div className="row mt-3">
-          <div className="col-lg mb-3 mb-lg-0">
-            <div>
-              <label htmlFor="unit-amount" className="form-label">
-                {listingType === 'BUY' ? 'Ostan kogumahule juurde' : 'Müün kogumahust maha'}
-              </label>
+          <div className="col-lg d-flex justify-content-end">
+            <div className={`input-group input-group-lg ${styles.inputGroup}`}>
               <input
                 type="number"
                 className={`form-control form-control-lg text-end ${
                   errors.moreThanMemberCapital ? 'border-danger' : ''
                 }`}
-                id="unit-amount"
+                id="book-value"
                 placeholder="0"
                 aria-label={listingType === 'BUY' ? 'Ostetav kogumaht' : 'Müüdav kogumaht'}
-                {...unitAmountInput.inputProps}
+                {...bookValueInput.inputProps}
               />
-            </div>
-          </div>
-          <div className="col-lg mb-3 mb-lg-0">
-            <div>
-              <label htmlFor="total-price" className="form-label">
-                Hinnaga
-              </label>
-              <div className="input-group input-group-lg">
-                <input
-                  placeholder="0"
-                  id="total-price"
-                  aria-label="Tehingu koguhind"
-                  className={`form-control form-control-lg text-end ${
-                    errors.priceLessThanBookValue ? 'border-danger' : ''
-                  }`}
-                  {...totalPriceInput.inputProps}
-                />
-                <div className="input-group-text">&euro;</div>
-              </div>
+              <div className="input-group-text">&euro;</div>
             </div>
           </div>
         </div>
 
+        <div className="row mt-3">
+          <SaleOfTotalCapitalDescription
+            saleBookValueAmount={bookValueInput.value ?? 0}
+            transactionType={listingType}
+          />
+        </div>
+
         {errors.moreThanMemberCapital && (
-          <div className="pt-2 text-danger">TODO Sul ei ole piisavalt liikmekapitali mahtu</div>
+          <div className="pt-2 text-danger">TODO Sul ei ole piisavalt liikmekapitali</div>
         )}
+
+        <div className="row mt-5">
+          <div className="col-lg d-flex align-items-center">
+            <label htmlFor="total-price" className="fs-3 fw-bold">
+              {listingType === 'BUY' ? 'Mis hinnaga ostad?' : 'Mis hinnaga müüd?'}
+            </label>
+          </div>
+
+          <div className="col-lg d-flex justify-content-end">
+            <div className={`input-group input-group-lg ${styles.inputGroup}`}>
+              <input
+                placeholder="0"
+                id="total-price"
+                aria-label="Tehingu koguhind"
+                className={`form-control form-control-lg text-end ${
+                  errors.priceLessThanBookValue ? 'border-danger' : ''
+                }`}
+                {...totalPriceInput.inputProps}
+              />
+              <div className="input-group-text">&euro;</div>
+            </div>
+          </div>
+        </div>
+
         {errors.priceLessThanBookValue && (
           <div className="pt-2 text-danger">
             TODO Sa ei saa müüa liikmekapitali hinnaga alla raamatupidamisliku väärtuse
           </div>
         )}
-        <div className="row mt-4">
-          <div className="col-lg mb-3 mb-lg-0">
-            <div>
-              <label htmlFor="unit-amount" className="form-label">
-                Kuulutus aegub automaatselt
-              </label>
-              <div className="input-group input-group-lg">
-                <select
-                  value={expiryInMonths}
-                  onChange={(e) => setExpiryInMonths(Number(e.target.value))}
-                  className="form-select form-control-lg"
-                  placeholder="0"
-                  aria-label="Kuulutuse kestus kuudes"
-                >
-                  <option value="1">1 kuu pärast</option>
-                  <option value="3">3 kuu pärast</option>
-                  <option value="6">6 kuu pärast</option>
-                </select>
-              </div>
+
+        <div className="row mt-5">
+          <div className="col-lg d-flex align-items-center">
+            <label htmlFor="expiry-select" className="fs-3 fw-bold">
+              Kuulutus kehtib
+            </label>
+          </div>
+
+          <div className="col-lg d-flex justify-content-end">
+            <div className={`input-group input-group-lg ${styles.inputGroup}`}>
+              <select
+                value={expiryInMonths}
+                onChange={(e) => setExpiryInMonths(Number(e.target.value))}
+                className="form-select form-control-lg fw-bold"
+                placeholder="0"
+                id="expiry-select"
+                aria-label="Kuulutuse kestus kuudes"
+              >
+                <option value="1">1 kuu</option>
+                <option value="3">3 kuud</option>
+                <option value="6">6 kuud</option>
+              </select>
             </div>
           </div>
         </div>
 
-        <div className="mt-5">
+        <div className="mt-5 pt-5 border-top">
           <AssurancesSection />
         </div>
-
         <div className="d-flex justify-content-between mt-5 pt-4 border-top">
           <button type="button" className="btn btn-lg btn-light" onClick={() => history.goBack()}>
             Tagasi

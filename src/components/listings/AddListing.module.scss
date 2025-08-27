@@ -1,8 +1,16 @@
 @import '../variables';
+@import '~bootstrap/scss/bootstrap.scss';
 
 .container {
   padding: 1.5rem;
   border-radius: 8px;
-  border: 1px solid $card-border-color;
-  background: $gray-bg-1;
+}
+
+
+.inputGroup {
+  @include media-breakpoint-down(lg) {
+    max-width: unset;
+  }
+
+  max-width: 200px;
 }

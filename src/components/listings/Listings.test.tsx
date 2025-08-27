@@ -13,7 +13,6 @@ import { createDefaultStore, login, renderWrapped } from '../../test/utils';
 import { initializeConfiguration } from '../config/config';
 import { mockUser } from '../../test/backend-responses';
 import {
-  CapitalTransferAmount,
   CapitalTransferContract,
   CapitalTransferContractState,
 } from '../common/apiModels/capital-transfer';
@@ -56,20 +55,8 @@ describe('member capital listings with no listings', () => {
     userEvent.click(createLink);
     expect(await screen.findByText(/Uus kuulutus/i)).toBeInTheDocument();
 
-    const totalUnitsInput = (await screen.findByLabelText(
-      /Sul on liikmekapitali kogumahus/i,
-    )) as HTMLInputElement;
-
-    expect(totalUnitsInput).toBeInTheDocument();
-    expect(totalUnitsInput.value).toBe('1001');
-
-    const totalBookValueInput = (await screen.findByLabelText(/Väärtusega/i)) as HTMLInputElement;
-
-    expect(totalBookValueInput).toBeInTheDocument();
-    expect(totalBookValueInput.value).toBe('877.78'); // nonsensical value from capital endpoint mock
-
-    const amountInput = await screen.findByLabelText(/Ostan kogumahule juurde/i);
-    const totalPriceInput = await screen.findByLabelText(/Hinnaga/i);
+    const amountInput = await screen.findByLabelText(/Kui palju liikmekapitali ostad?/i);
+    const totalPriceInput = await screen.findByLabelText(/Mis hinnaga ostad?/i);
 
     userEvent.type(amountInput, '100');
     userEvent.type(totalPriceInput, '250');
@@ -99,19 +86,19 @@ describe('member capital listings with listings', () => {
 
     expect(await within(listings[0]).findByText('Ost')).toBeInTheDocument();
     expect(await within(listings[0]).findByText('#1')).toBeInTheDocument();
-    expect(await within(listings[0]).findByText('10')).toBeInTheDocument();
+    expect(await within(listings[0]).findByText('10.00 €')).toBeInTheDocument();
     expect(await within(listings[0]).findByText('20.00 €')).toBeInTheDocument();
     expect(await within(listings[0]).findByText('Soovin müüa')).toBeInTheDocument();
 
     expect(await within(listings[1]).findByText('Müük')).toBeInTheDocument();
     expect(await within(listings[1]).findByText('#2')).toBeInTheDocument();
-    expect(await within(listings[1]).findByText('100')).toBeInTheDocument();
+    expect(await within(listings[1]).findByText('100.00 €')).toBeInTheDocument();
     expect(await within(listings[1]).findByText('250.00 €')).toBeInTheDocument();
     expect(await within(listings[1]).findByText('Soovin osta')).toBeInTheDocument();
 
     expect(await within(listings[2]).findByText('Ost')).toBeInTheDocument();
     expect(await within(listings[2]).findByText('#3')).toBeInTheDocument();
-    expect(await within(listings[2]).findByText('10 000')).toBeInTheDocument();
+    expect(await within(listings[2]).findByText('10 000.00 €')).toBeInTheDocument();
     expect(await within(listings[2]).findByText('23 400.00 €')).toBeInTheDocument();
     expect((await within(listings[2]).findAllByText('Kustutan')).length).toBe(2);
   });

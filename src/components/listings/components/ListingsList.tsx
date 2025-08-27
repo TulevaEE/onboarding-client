@@ -5,7 +5,7 @@ import styles from './ListingsList.module.scss';
 import { useDeleteMemberCapitalListing, useMemberCapitalListings } from '../../common/apiHooks';
 import Loader from '../../common/loader';
 import { MemberCapitalListing } from '../../common/apiModels';
-import { formatAmountForCount, formatAmountForCurrency } from '../../common/utils';
+import { formatAmountForCurrency } from '../../common/utils';
 import { formatDateYear } from '../../common/dateFormatter';
 
 export const ListingsList = () => {
@@ -45,7 +45,7 @@ const TableHeader = () => (
       <th scope="col">
         <FormattedMessage id="capital.listings.header.listing" />
       </th>
-      <th scope="col">Maht</th>
+      <th scope="col">TODO Maht</th>
       <th scope="col">Hind</th>
       <th scope="col">
         <FormattedMessage id="capital.listings.header.action" />
@@ -73,7 +73,7 @@ const ListingRow = ({ listing }: { listing: MemberCapitalListing }) => {
         )}{' '}
         <span className="text-secondary">#{listing.id}</span>
       </td>
-      <td>{formatAmountForCount(listing.units, 0)}</td>
+      <td>{formatAmountForCurrency(listing.bookValue)}</td>
       <td>{formatAmountForCurrency(listing.totalPrice)}</td>
       <td>
         {listing.isOwnListing && (
