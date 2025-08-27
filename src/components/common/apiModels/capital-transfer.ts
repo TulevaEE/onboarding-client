@@ -9,7 +9,7 @@ export type CreateCapitalTransferDto = {
 export type CapitalTransferAmount = {
   type: CapitalType;
   price: number;
-  units: number;
+  bookValue: number;
 };
 
 export type CapitalTransferContract = {

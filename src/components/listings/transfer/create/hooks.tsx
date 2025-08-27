@@ -10,13 +10,13 @@ import { CapitalTransferContract } from '../../../common/apiModels/capital-trans
 
 const CreateTransferContext = createContext<CreateCapitalTransferContextState>({
   buyer: null,
-  unitCount: null,
+  bookValue: null,
   totalPrice: null,
   sellerIban: null,
   currentStepType: 'CONFIRM_BUYER',
   createdCapitalTransferContract: null,
   setBuyer: () => {},
-  setUnitCount: () => {},
+  setBookValue: () => {},
   setTotalPrice: () => {},
   setSellerIban: () => {},
   navigateToNextStep: () => {},
@@ -30,7 +30,7 @@ export const CreateTransferProvider = ({ children }: PropsWithChildren<unknown>)
   const history = useHistory();
   const location = useLocation();
   const [buyer, setBuyer] = useState<CreateCapitalTransferContextState['buyer']>(null);
-  const [unitCount, setUnitCount] = useState<CreateCapitalTransferContextState['unitCount']>(null);
+  const [bookValue, setBookValue] = useState<CreateCapitalTransferContextState['bookValue']>(null);
   const [totalPrice, setTotalPrice] =
     useState<CreateCapitalTransferContextState['totalPrice']>(null);
   const [sellerIban, setSellerIban] =
@@ -78,13 +78,13 @@ export const CreateTransferProvider = ({ children }: PropsWithChildren<unknown>)
     <CreateTransferContext.Provider
       value={{
         buyer,
-        unitCount,
+        bookValue,
         totalPrice,
         sellerIban,
         currentStepType,
         createdCapitalTransferContract,
         setBuyer,
-        setUnitCount,
+        setBookValue,
         setTotalPrice,
         setSellerIban,
         navigateToNextStep,

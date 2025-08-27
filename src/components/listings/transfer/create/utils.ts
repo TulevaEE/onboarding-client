@@ -18,7 +18,7 @@ export const getTransferCreatePath = (subPath: string) => `/capital/transfer/cre
 export const calculateTransferAmounts = (
   userInputs: {
     totalPrice: number;
-    unitCount: number;
+    bookValue: number;
   },
   userMemberCapitalRows: CapitalRow[],
 ): CapitalTransferAmount[] => {
@@ -26,11 +26,15 @@ export const calculateTransferAmounts = (
   const memberCapitalSums = getMemberCapitalSums(filteredRows);
 
   // TODO go over liquidation preference and amounts
-  const liquidationCoefficient = userInputs.totalPrice / memberCapitalSums.bookValue;
+  const liquidationCoefficient = userInputs.bookValue / memberCapitalSums.bookValue;
 
-  return filteredRows.map((row) => ({
-    type: row.type,
-    units: row.unitCount * liquidationCoefficient,
-    price: row.value * liquidationCoefficient,
-  }));
+  return filteredRows.map((row) => {
+    const rowBookValueShareOfTotal = row.value / memberCapitalSums.bookValue;
+
+    return {
+      type: row.type,
+      bookValue: row.value * liquidationCoefficient,
+      price: userInputs.totalPrice * rowBookValueShareOfTotal,
+    };
+  });
 };

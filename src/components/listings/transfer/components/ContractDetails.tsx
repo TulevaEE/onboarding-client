@@ -10,7 +10,7 @@ export type ContractDetailsProps = {
   seller: { firstName: string; lastName: string; personalCode: string };
   buyer: { firstName: string; lastName: string; personalCode: string };
   userRole: 'BUYER' | 'SELLER';
-  unitCount: number;
+  bookValue: number;
   totalPrice: number;
   sellerIban: string;
   progress?: Progress;
@@ -20,7 +20,7 @@ export const ContractDetails = ({
   seller,
   buyer,
   userRole,
-  unitCount,
+  bookValue,
   totalPrice,
   sellerIban,
   progress,
@@ -43,13 +43,13 @@ export const ContractDetails = ({
 
     <div className="row mt-4 py-2">
       <div className="col">
-        <b>Müüdav liikmekapitali maht</b>
+        <b>TODO Müüdav liikmekapitali maht</b>
         <div>– sellest liikmekapitali sissemakse</div>
         <div>– sellest liikmeboonus</div>
       </div>
 
       <div className="col">
-        <b>{formatAmountForCurrency(unitCount)}</b>
+        <b>{formatAmountForCurrency(bookValue)}</b>
         <div>TODO ühikut</div>
         <div>TODO ühikut</div>
       </div>

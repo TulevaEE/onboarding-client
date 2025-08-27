@@ -67,13 +67,19 @@ export const isTulevaIsin = (value: string): value is TulevaFundIsin =>
 export const useNumberInput = (
   defaultValue: number | null = null,
   isValid: (inputValue: string) => boolean = () => true,
-): { inputProps: Partial<HTMLProps<HTMLInputElement>>; value: number | null } => {
+): {
+  inputProps: Partial<HTMLProps<HTMLInputElement>>;
+  value: number | null;
+  setInputValue: (val: string) => unknown;
+} => {
   const [inputValue, setInputValue] = useState(defaultValue?.toString() ?? '');
   const [value, setValue] = useState<number | null>(defaultValue);
 
-  const handleInputChange: ChangeEventHandler<HTMLInputElement> = (event) => {
-    const changedInputValue = event.target.value;
+  const handleInputChangeEvent: ChangeEventHandler<HTMLInputElement> = (event) => {
+    updateInput(event.target.value);
+  };
 
+  const updateInput = (changedInputValue: string) => {
     const formattedInputValue = changedInputValue.replace(',', '.');
 
     if (changedInputValue === '' || isValid(changedInputValue)) {
@@ -99,10 +105,11 @@ export const useNumberInput = (
   return {
     inputProps: {
       value: inputValue,
-      onChange: handleInputChange,
+      onChange: handleInputChangeEvent,
       type: 'text',
       inputMode: 'decimal',
     },
     value,
+    setInputValue: updateInput,
   };
 };

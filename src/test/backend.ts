@@ -704,7 +704,7 @@ export function capitalTransferContractBackend(
       personalCode: mockUser.personalCode,
     },
     iban: 'EE_TEST_IBAN',
-    transferAmounts: [{ type: 'CAPITAL_PAYMENT', units: 1000, price: 2000 }],
+    transferAmounts: [{ type: 'CAPITAL_PAYMENT', bookValue: 1000, price: 2000 }],
     state: 'SELLER_SIGNED',
     createdAt: '2025-07-21T07:00:00+0000',
     updatedAt: '2025-07-21T07:00:00+0000',

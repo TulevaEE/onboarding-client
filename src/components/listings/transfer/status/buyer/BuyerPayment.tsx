@@ -10,7 +10,7 @@ import { StepDoneAlert } from '../StepDoneAlert';
 import { CapitalTransferContract } from '../../../../common/apiModels/capital-transfer';
 import { useUpdateCapitalTransferContract } from '../../../../common/apiHooks';
 import { CopyButton } from '../../../../common/CopyButton';
-import { getTotalPrice, getTotalUnitCount } from '../utils';
+import { getTotalPrice, getTotalBookValue } from '../utils';
 
 export const BuyerPayment = ({
   contract,
@@ -24,7 +24,7 @@ export const BuyerPayment = ({
   const [confirmPaid, setConfirmPaid] = useState(false);
   const [confirmPaidError, setConfirmPaidError] = useState(false);
 
-  const totalUnitCount = useMemo(() => getTotalUnitCount(contract), [contract]);
+  const totalBookValue = useMemo(() => getTotalBookValue(contract), [contract]);
   const totalPrice = useMemo(() => getTotalPrice(contract), [contract]);
 
   const handlePaymentDoneClicked = async () => {
@@ -69,7 +69,7 @@ export const BuyerPayment = ({
           <b>
             {getFullName(contract.buyer)} ({contract.buyer.personalCode})
           </b>{' '}
-          ostab <b>{formatAmountForCount(totalUnitCount)} liikmekapitali</b> (sellest TODO ühikut
+          ostab <b>{formatAmountForCount(totalBookValue)} liikmekapitali</b> (sellest TODO ühikut
           liikmeboonust) hinnaga <b>{formatAmountForCurrency(totalPrice)}</b>.
         </div>
       </div>
@@ -92,8 +92,8 @@ export const BuyerPayment = ({
           <div className="row pb-3">
             <div className="col fw-bold">Summa</div>
             <div className="col d-flex justify-content-between">
-              {formatAmountForCurrency(totalUnitCount)}{' '}
-              <CopyButton textToCopy={totalUnitCount.toString()} />
+              {formatAmountForCurrency(totalBookValue)}{' '}
+              <CopyButton textToCopy={totalBookValue.toString()} />
             </div>
           </div>
           <div className="row">

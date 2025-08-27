@@ -20,19 +20,19 @@ export const getMyRole = (me: User, contract: CapitalTransferContract): 'BUYER' 
 export const getTotalPrice = (contract: CapitalTransferContract) =>
   contract.transferAmounts.reduce((acc, amount) => acc + amount.price, 0);
 
-export const getTotalUnitCount = (contract: CapitalTransferContract) =>
-  contract.transferAmounts.reduce((acc, amount) => acc + amount.units, 0);
+export const getTotalBookValue = (contract: CapitalTransferContract) =>
+  contract.transferAmounts.reduce((acc, amount) => acc + amount.bookValue, 0);
 
 export const getContractDetailsPropsFromContract = (
   contract: CapitalTransferContract,
 ): Pick<
   ContractDetailsProps,
-  'seller' | 'buyer' | 'totalPrice' | 'unitCount' | 'sellerIban' | 'progress'
+  'seller' | 'buyer' | 'totalPrice' | 'bookValue' | 'sellerIban' | 'progress'
 > => ({
   seller: contract.seller,
   buyer: contract.buyer,
   totalPrice: getTotalPrice(contract),
-  unitCount: getTotalUnitCount(contract),
+  bookValue: getTotalBookValue(contract),
   sellerIban: contract.iban,
   progress: getProgressFromStatus(contract.state) ?? undefined,
 });

@@ -54,8 +54,8 @@ describe('member capital transfer creation', () => {
 
     userEvent.click(await screen.findByText(/Kinnitan ostja/i));
 
-    const amountInput = await screen.findByLabelText(/Müüdav liikmekapitali maht/i);
-    const priceInput = await screen.findByLabelText(/Hinnaga/i);
+    const amountInput = await screen.findByLabelText(/Kui palju liikmekapitali müüd?/i);
+    const priceInput = await screen.findByLabelText(/Mis hinnaga müüd?/i);
 
     userEvent.type(amountInput, '100');
     userEvent.type(priceInput, '250');
@@ -65,7 +65,7 @@ describe('member capital transfer creation', () => {
 
     userEvent.click(await screen.findByText(/Lepingu eelvaatesse/i));
 
-    expect(await screen.findByText(/Lepingu eelvaade/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Allkirjastan lepingu/i)).toBeInTheDocument();
 
     const buyerSection = await getBuyerDetailsSection();
     expect(await within(buyerSection).findByText(/Olev Ostja/i)).toBeInTheDocument();
@@ -124,8 +124,8 @@ describe('member capital transfer creation', () => {
 
     userEvent.click(await screen.findByText(/Kinnitan ostja/i));
 
-    const amountInput = await screen.findByLabelText(/Müüdav liikmekapitali maht/i);
-    const priceInput = await screen.findByLabelText(/Hinnaga/i);
+    const amountInput = await screen.findByLabelText(/Kui palju liikmekapitali müüd?/i);
+    const priceInput = await screen.findByLabelText(/Mis hinnaga müüd?/i);
 
     userEvent.type(amountInput, '10000000');
     userEvent.type(priceInput, '2.5');
@@ -136,7 +136,7 @@ describe('member capital transfer creation', () => {
     userEvent.click(await screen.findByText(/Lepingu eelvaatesse/i));
 
     expect(
-      await screen.findByText(/TODO Sul ei ole piisavalt liikmekapitali mahtu/i),
+      await screen.findByText(/TODO Sul ei ole piisavalt liikmekapitali/i),
     ).toBeInTheDocument();
 
     expect(amountInput).toBeInTheDocument();
@@ -156,8 +156,8 @@ describe('member capital transfer creation', () => {
 
     userEvent.click(await screen.findByText(/Kinnitan ostja/i));
 
-    const amountInput = await screen.findByLabelText(/Müüdav liikmekapitali maht/i);
-    const priceInput = await screen.findByLabelText(/Hinnaga/i);
+    const amountInput = await screen.findByLabelText(/Kui palju liikmekapitali müüd?/i);
+    const priceInput = await screen.findByLabelText(/Mis hinnaga müüd?/i);
 
     userEvent.type(amountInput, '10');
     userEvent.type(priceInput, '0.1');
@@ -190,8 +190,8 @@ describe('member capital transfer creation', () => {
 
     userEvent.click(await screen.findByText(/Kinnitan ostja/i));
 
-    const amountInput = await screen.findByLabelText(/Müüdav liikmekapitali maht/i);
-    const priceInput = await screen.findByLabelText(/Hinnaga/i);
+    const amountInput = await screen.findByLabelText(/Kui palju liikmekapitali müüd?/i);
+    const priceInput = await screen.findByLabelText(/Mis hinnaga müüd?/i);
 
     userEvent.type(amountInput, '10');
     userEvent.type(priceInput, '2');

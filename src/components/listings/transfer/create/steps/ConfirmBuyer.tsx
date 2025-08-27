@@ -62,8 +62,6 @@ export const ConfirmBuyer = () => {
 
   return (
     <>
-      <h2 className="py-5">Ostja kinnitamine</h2>
-
       <div>
         <label htmlFor="id-code-search" className="form-label">
           Sisesta ostja isikukood

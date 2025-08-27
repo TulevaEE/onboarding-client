@@ -15,7 +15,7 @@ import { calculateTransferAmounts } from '../utils';
 export const ConfirmAndSign = () => {
   const {
     buyer,
-    unitCount,
+    bookValue,
     totalPrice,
     sellerIban,
     navigateToPreviousStep,
@@ -56,7 +56,7 @@ export const ConfirmAndSign = () => {
     return <Loader className="align-middle" />;
   }
 
-  if (!unitCount || !totalPrice || !sellerIban || !buyer) {
+  if (!bookValue || !totalPrice || !sellerIban || !buyer) {
     return <Redirect to="/capital/transfer/create" />;
   }
 
@@ -79,7 +79,7 @@ export const ConfirmAndSign = () => {
       const contract = await createCapitalTransferContract({
         buyerMemberId: buyer.id,
         iban: sellerIban,
-        transferAmounts: calculateTransferAmounts({ totalPrice, unitCount }, capitalRows),
+        transferAmounts: calculateTransferAmounts({ totalPrice, bookValue }, capitalRows),
       });
 
       setCreatedCapitalTransferContract(contract);
@@ -107,13 +107,12 @@ export const ConfirmAndSign = () => {
           overlayed
         />
       )}
-      <h2 className="py-5">Lepingu eelvaade</h2>
       <div>
         <ContractDetails
           seller={me}
           userRole="SELLER"
           buyer={buyer}
-          unitCount={unitCount}
+          bookValue={bookValue}
           totalPrice={totalPrice}
           sellerIban={sellerIban}
         />
