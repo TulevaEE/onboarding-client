@@ -36,10 +36,6 @@ export const EnterData = () => {
   const [ibanError, setIbanError] = useState(false);
 
   useEffect(() => {
-    bookValueInput.setInputValue(bookValue.toFixed(2));
-  }, [bookValue]);
-
-  useEffect(() => {
     if (bookValueInput.value !== null) {
       setBookValue(bookValueInput.value);
     }
@@ -63,7 +59,7 @@ export const EnterData = () => {
   };
 
   const handleSliderChange = (amount: number) => {
-    bookValueInput.setInputValue(amount === 0 ? '0' : amount.toFixed(2));
+    bookValueInput.setInputValue(amount === 0 ? '0' : amount.toFixed(2), true);
   };
 
   const handleSubmitClicked = () => {

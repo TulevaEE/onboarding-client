@@ -70,7 +70,7 @@ export const useNumberInput = (
 ): {
   inputProps: Partial<HTMLProps<HTMLInputElement>>;
   value: number | null;
-  setInputValue: (val: string) => unknown;
+  setInputValue: (val: string, updateParsedValue: boolean) => unknown;
 } => {
   const [inputValue, setInputValue] = useState(defaultValue?.toString() ?? '');
   const [value, setValue] = useState<number | null>(defaultValue);
@@ -79,7 +79,7 @@ export const useNumberInput = (
     updateInput(event.target.value);
   };
 
-  const updateInput = (changedInputValue: string) => {
+  const updateInput = (changedInputValue: string, updateParsedValue = true) => {
     const formattedInputValue = changedInputValue.replace(',', '.');
 
     if (changedInputValue === '' || isValid(changedInputValue)) {
@@ -97,7 +97,7 @@ export const useNumberInput = (
 
     const parsedValue = Number(formattedInputValue);
 
-    if (!Number.isNaN(parsedValue)) {
+    if (!Number.isNaN(parsedValue) && updateParsedValue) {
       setValue(parsedValue);
     }
   };

@@ -20,7 +20,11 @@ export const CapitalTypeInput = ({
   }, [bookValueAmountInput.value]);
 
   useEffect(() => {
-    bookValueAmountInput.setInputValue(transferAmount.bookValue.toString());
+    if (transferAmount.bookValue === 0) {
+      bookValueAmountInput.setInputValue('', false);
+    } else if (transferAmount.bookValue.toFixed(2) !== bookValueAmountInput.value?.toFixed(2)) {
+      bookValueAmountInput.setInputValue(transferAmount.bookValue.toFixed(2), false);
+    }
   }, [transferAmount.bookValue]);
 
   if (!(type in typeToNameMap)) {
