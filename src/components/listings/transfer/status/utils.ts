@@ -3,7 +3,7 @@ import {
   CapitalTransferContract,
 } from '../../../common/apiModels/capital-transfer';
 import { User } from '../../../common/apiModels';
-import { ContractDetailsProps } from '../components/ContractDetails';
+import { ContractDetailsProps } from '../create/types';
 
 export const getMyRole = (me: User, contract: CapitalTransferContract): 'BUYER' | 'SELLER' => {
   if (contract.buyer.personalCode === me.personalCode) {
@@ -17,22 +17,22 @@ export const getMyRole = (me: User, contract: CapitalTransferContract): 'BUYER' 
   throw new Error('Cannot match current user to buyer or seller');
 };
 
-export const getTotalPrice = (contract: CapitalTransferContract) =>
+export const getTotalPrice = (contract: Pick<CapitalTransferContract, 'transferAmounts'>) =>
   contract.transferAmounts.reduce((acc, amount) => acc + amount.price, 0);
 
-export const getTotalBookValue = (contract: CapitalTransferContract) =>
+export const getTotalBookValue = (contract: Pick<CapitalTransferContract, 'transferAmounts'>) =>
   contract.transferAmounts.reduce((acc, amount) => acc + amount.bookValue, 0);
 
 export const getContractDetailsPropsFromContract = (
   contract: CapitalTransferContract,
 ): Pick<
   ContractDetailsProps,
-  'seller' | 'buyer' | 'totalPrice' | 'bookValue' | 'sellerIban' | 'progress'
+  'seller' | 'buyer' | 'totalPrice' | 'amounts' | 'sellerIban' | 'progress'
 > => ({
   seller: contract.seller,
   buyer: contract.buyer,
   totalPrice: getTotalPrice(contract),
-  bookValue: getTotalBookValue(contract),
+  amounts: contract.transferAmounts,
   sellerIban: contract.iban,
   progress: getProgressFromStatus(contract.state) ?? undefined,
 });
