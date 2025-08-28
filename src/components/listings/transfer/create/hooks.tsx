@@ -5,23 +5,36 @@ import {
   CreateCapitalTransferContextState,
   CreateCapitalTransferStepType,
 } from './types';
-import { getTransferCreatePath } from './utils';
-import { CapitalTransferContract } from '../../../common/apiModels/capital-transfer';
+import {
+  calculateTransferAmountPrices,
+  calculateTransferAmountsFromNewTotalBookValue,
+  getTransferCreatePath,
+  initializeCapitalTransferAmounts,
+} from './utils';
+import {
+  CapitalTransferAmount,
+  CapitalTransferContract,
+} from '../../../common/apiModels/capital-transfer';
+import { useCapitalRows } from '../../../common/apiHooks';
+import { CapitalType } from '../../../common/apiModels';
 
 const CreateTransferContext = createContext<CreateCapitalTransferContextState>({
   buyer: null,
-  bookValue: null,
+  bookValue: 0,
   totalPrice: null,
   sellerIban: null,
   currentStepType: 'CONFIRM_BUYER',
   createdCapitalTransferContract: null,
+  capitalTransferAmounts: [],
   setBuyer: () => {},
-  setBookValue: () => {},
   setTotalPrice: () => {},
   setSellerIban: () => {},
   navigateToNextStep: () => {},
   navigateToPreviousStep: () => {},
   setCreatedCapitalTransferContract: () => {},
+  setCapitalTransferAmounts: () => {},
+  setBookValue: () => {},
+  setBookValueForType: () => {},
 });
 
 export const useCreateCapitalTransferContext = () => useContext(CreateTransferContext);
@@ -29,8 +42,8 @@ export const useCreateCapitalTransferContext = () => useContext(CreateTransferCo
 export const CreateTransferProvider = ({ children }: PropsWithChildren<unknown>) => {
   const history = useHistory();
   const location = useLocation();
+  const { data: capitalRows } = useCapitalRows();
   const [buyer, setBuyer] = useState<CreateCapitalTransferContextState['buyer']>(null);
-  const [bookValue, setBookValue] = useState<CreateCapitalTransferContextState['bookValue']>(null);
   const [totalPrice, setTotalPrice] =
     useState<CreateCapitalTransferContextState['totalPrice']>(null);
   const [sellerIban, setSellerIban] =
@@ -39,6 +52,38 @@ export const CreateTransferProvider = ({ children }: PropsWithChildren<unknown>)
     useState<CreateCapitalTransferStepType>('CONFIRM_BUYER');
   const [createdCapitalTransferContract, setCreatedCapitalTransferContract] =
     useState<CapitalTransferContract | null>(null);
+  const [capitalTransferAmounts, setCapitalTransferAmounts] = useState<CapitalTransferAmount[]>([]);
+
+  useEffect(() => {
+    if (capitalRows) {
+      setCapitalTransferAmounts(initializeCapitalTransferAmounts(capitalRows));
+    }
+  }, [capitalRows]);
+
+  const bookValue = capitalTransferAmounts.reduce((acc, amount) => acc + amount.bookValue, 0);
+  const setBookValue = (newBookValue: number) => {
+    setCapitalTransferAmounts(
+      calculateTransferAmountPrices(
+        { bookValue: newBookValue, totalPrice: totalPrice ?? 0 },
+        calculateTransferAmountsFromNewTotalBookValue(
+          { bookValue: newBookValue },
+          capitalRows ?? [],
+        ),
+      ),
+    );
+  };
+
+  const setBookValueForType = (newBookValue: number, type: CapitalType) => {
+    const otherAmounts = capitalTransferAmounts.filter((amount) => amount.type !== type);
+
+    const newAmount = capitalTransferAmounts.find((amount) => amount.type === type);
+
+    if (!newAmount) {
+      throw new Error(`Cannot find book value for type ${type}`);
+    }
+
+    setCapitalTransferAmounts([...otherAmounts, { ...newAmount, bookValue: newBookValue }]);
+  };
 
   useEffect(() => {
     const stepForPath = CREATE_CAPITAL_TRANSFER_STEPS.find(
@@ -83,6 +128,7 @@ export const CreateTransferProvider = ({ children }: PropsWithChildren<unknown>)
         sellerIban,
         currentStepType,
         createdCapitalTransferContract,
+        capitalTransferAmounts,
         setBuyer,
         setBookValue,
         setTotalPrice,
@@ -90,6 +136,8 @@ export const CreateTransferProvider = ({ children }: PropsWithChildren<unknown>)
         navigateToNextStep,
         navigateToPreviousStep,
         setCreatedCapitalTransferContract,
+        setCapitalTransferAmounts,
+        setBookValueForType,
       }}
     >
       {children}

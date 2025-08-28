@@ -1,4 +1,4 @@
-import { CapitalRow, CapitalType } from '../../../common/apiModels';
+import { CapitalRow, CapitalType } from '../../../common/apiModels/index';
 import { CapitalTransferAmount } from '../../../common/apiModels/capital-transfer';
 
 export const isLiquidatableCapitalType = (type: CapitalType) =>
@@ -15,9 +15,8 @@ export const getMemberCapitalSums = (rows: CapitalRow[]) => {
 
 export const getTransferCreatePath = (subPath: string) => `/capital/transfer/create/${subPath}`;
 
-export const calculateTransferAmounts = (
+export const calculateTransferAmountsFromNewTotalBookValue = (
   userInputs: {
-    totalPrice: number;
     bookValue: number;
   },
   userMemberCapitalRows: CapitalRow[],
@@ -28,13 +27,34 @@ export const calculateTransferAmounts = (
   // TODO go over liquidation preference and amounts
   const liquidationCoefficient = userInputs.bookValue / memberCapitalSums.bookValue;
 
-  return filteredRows.map((row) => {
-    const rowBookValueShareOfTotal = row.value / memberCapitalSums.bookValue;
+  return filteredRows.map((row) => ({
+    type: row.type,
+    bookValue: row.value * liquidationCoefficient,
+    price: 0,
+  }));
+};
+
+export const calculateTransferAmountPrices = (
+  userInputs: {
+    bookValue: number;
+    totalPrice: number;
+  },
+  amounts: CapitalTransferAmount[],
+): CapitalTransferAmount[] =>
+  amounts.map((amount) => {
+    const bookValueShareOfTotal = amount.bookValue / userInputs.bookValue;
 
     return {
-      type: row.type,
-      bookValue: row.value * liquidationCoefficient,
-      price: userInputs.totalPrice * rowBookValueShareOfTotal,
+      ...amount,
+      price: bookValueShareOfTotal * userInputs.totalPrice,
     };
   });
-};
+
+export const initializeCapitalTransferAmounts = (rows: CapitalRow[]): CapitalTransferAmount[] =>
+  rows
+    .filter((row) => isLiquidatableCapitalType(row.type))
+    .map((row) => ({
+      type: row.type,
+      bookValue: 0,
+      price: 0,
+    }));

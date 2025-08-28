@@ -10,7 +10,6 @@ import { useCreateCapitalTransferContext } from '../hooks';
 import { ContractDetails } from '../../components/ContractDetails';
 import { useCapitalTransferContractSigning } from '../../status/hooks';
 import { ErrorResponse } from '../../../../common/apiModels';
-import { calculateTransferAmounts } from '../utils';
 
 export const ConfirmAndSign = () => {
   const {
@@ -18,6 +17,7 @@ export const ConfirmAndSign = () => {
     bookValue,
     totalPrice,
     sellerIban,
+    capitalTransferAmounts,
     navigateToPreviousStep,
     navigateToNextStep,
     setCreatedCapitalTransferContract,
@@ -71,6 +71,10 @@ export const ConfirmAndSign = () => {
       return;
     }
 
+    if (capitalTransferAmounts === null) {
+      return;
+    }
+
     setAgreedToTermsError(false);
 
     setContractCreationLoading(true);
@@ -79,7 +83,7 @@ export const ConfirmAndSign = () => {
       const contract = await createCapitalTransferContract({
         buyerMemberId: buyer.id,
         iban: sellerIban,
-        transferAmounts: calculateTransferAmounts({ totalPrice, bookValue }, capitalRows),
+        transferAmounts: capitalTransferAmounts,
       });
 
       setCreatedCapitalTransferContract(contract);
@@ -112,7 +116,7 @@ export const ConfirmAndSign = () => {
           seller={me}
           userRole="SELLER"
           buyer={buyer}
-          bookValue={bookValue}
+          amounts={capitalTransferAmounts}
           totalPrice={totalPrice}
           sellerIban={sellerIban}
         />

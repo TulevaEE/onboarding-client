@@ -1,13 +1,20 @@
-import { MemberLookup } from '../../../common/apiModels';
-import { CapitalTransferContract } from '../../../common/apiModels/capital-transfer';
+import { CapitalType, MemberLookup } from '../../../common/apiModels';
+import {
+  CapitalTransferAmount,
+  CapitalTransferContract,
+} from '../../../common/apiModels/capital-transfer';
 
 type StateContext = {
   buyer: MemberLookup | null;
-
-  bookValue: number | null;
+  bookValue: number;
   totalPrice: number | null;
   sellerIban: string | null;
+  capitalTransferAmounts: CapitalTransferAmount[];
   createdCapitalTransferContract: CapitalTransferContract | null;
+};
+
+type OtherStateContext = {
+  setBookValueForType: (newBookValue: number, type: CapitalType) => unknown;
 };
 
 type Setters = {
@@ -20,6 +27,21 @@ type RoutingContext = {
   navigateToPreviousStep: () => unknown;
 };
 
+export type ContractStatusProgress = {
+  signed: { buyer: boolean; seller: boolean };
+  confirmed: { buyer: boolean; seller: boolean };
+};
+
+export type ContractDetailsProps = {
+  seller: { firstName: string; lastName: string; personalCode: string };
+  buyer: { firstName: string; lastName: string; personalCode: string };
+  userRole: 'BUYER' | 'SELLER';
+  totalPrice: number;
+  sellerIban: string;
+  progress?: ContractStatusProgress;
+  amounts: CapitalTransferAmount[];
+};
+
 export const CREATE_CAPITAL_TRANSFER_STEPS = [
   { title: 'Kinnita ostja', type: 'CONFIRM_BUYER', subPath: 'confirm-buyer' },
   { title: 'Sisesta andmed', type: 'ENTER_DATA', subPath: 'enter-data' },
@@ -29,4 +51,7 @@ export const CREATE_CAPITAL_TRANSFER_STEPS = [
 
 export type CreateCapitalTransferStepType = (typeof CREATE_CAPITAL_TRANSFER_STEPS)[number]['type'];
 
-export type CreateCapitalTransferContextState = StateContext & RoutingContext & Setters;
+export type CreateCapitalTransferContextState = StateContext &
+  Setters &
+  OtherStateContext &
+  RoutingContext;

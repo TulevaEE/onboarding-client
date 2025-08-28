@@ -1,26 +1,14 @@
 import { PropsWithChildren } from 'react';
 import { formatAmountForCurrency, getFullName } from '../../../common/utils';
-
-type Progress = {
-  signed: { buyer: boolean; seller: boolean };
-  confirmed: { buyer: boolean; seller: boolean };
-};
-
-export type ContractDetailsProps = {
-  seller: { firstName: string; lastName: string; personalCode: string };
-  buyer: { firstName: string; lastName: string; personalCode: string };
-  userRole: 'BUYER' | 'SELLER';
-  bookValue: number;
-  totalPrice: number;
-  sellerIban: string;
-  progress?: Progress;
-};
+import { TransferAmountBreakdown } from './TransferAmountBreakdown';
+import { getTotalBookValue } from '../status/utils';
+import { ContractDetailsProps, ContractStatusProgress } from '../create/types';
 
 export const ContractDetails = ({
   seller,
   buyer,
   userRole,
-  bookValue,
+  amounts,
   totalPrice,
   sellerIban,
   progress,
@@ -41,19 +29,10 @@ export const ContractDetails = ({
       </div>
     </div>
 
-    <div className="row mt-4 py-2">
-      <div className="col">
-        <b>TODO Müüdav liikmekapitali maht</b>
-        <div>– sellest liikmekapitali sissemakse</div>
-        <div>– sellest liikmeboonus</div>
-      </div>
-
-      <div className="col">
-        <b>{formatAmountForCurrency(bookValue)}</b>
-        <div>TODO ühikut</div>
-        <div>TODO ühikut</div>
-      </div>
-    </div>
+    <TransferAmountBreakdown
+      amounts={amounts}
+      totalBookValue={getTotalBookValue({ transferAmounts: amounts })}
+    />
 
     <div className="row py-2">
       <div className="col">
@@ -77,7 +56,7 @@ const BuyerProgressContainer = ({
   progress,
   userRole,
 }: {
-  progress: Progress;
+  progress: ContractStatusProgress;
   userRole: 'BUYER' | 'SELLER';
 }) => {
   const waitingForSignatureText =
@@ -105,7 +84,7 @@ const SellerProgressContainer = ({
   progress,
   userRole,
 }: {
-  progress: Progress;
+  progress: ContractStatusProgress;
   userRole: 'BUYER' | 'SELLER';
 }) => {
   const waitingForSignatureText =

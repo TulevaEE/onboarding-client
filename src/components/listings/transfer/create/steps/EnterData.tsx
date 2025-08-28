@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 import { formatAmountForCurrency, useNumberInput } from '../../../../common/utils';
 import { useCreateCapitalTransferContext } from '../hooks';
@@ -7,6 +7,9 @@ import { SaleOfTotalCapitalDescription } from '../../components/SaleOfTotalCapit
 import styles from '../../../AddListing.module.scss';
 import Slider from '../../../../flows/withdrawals/Slider';
 import { useMemberCapitalSum } from '../../../hooks';
+import { useCapitalRows } from '../../../../common/apiHooks';
+import { Loader } from '../../../../common';
+import { CapitalTypeInput } from './CapitalTypeInput';
 
 export const EnterData = () => {
   const {
@@ -16,18 +19,37 @@ export const EnterData = () => {
     totalPrice,
     bookValue,
     sellerIban,
+    capitalTransferAmounts,
     setTotalPrice,
     setSellerIban,
     setBookValue,
+    setBookValueForType,
   } = useCreateCapitalTransferContext();
 
   const totalPriceInput = useNumberInput(totalPrice ?? null);
   const bookValueInput = useNumberInput(bookValue ?? null);
 
+  const { data: capitalRows } = useCapitalRows();
   const { bookValue: totalBookValue } = useMemberCapitalSum();
 
   const [bankIban, setBankIban] = useState(sellerIban ?? '');
   const [ibanError, setIbanError] = useState(false);
+
+  useEffect(() => {
+    bookValueInput.setInputValue(bookValue.toFixed(2));
+  }, [bookValue]);
+
+  useEffect(() => {
+    if (bookValueInput.value !== null) {
+      setBookValue(bookValueInput.value);
+    }
+  }, [bookValueInput.value]);
+
+  useEffect(() => {
+    if (totalPriceInput.value !== null) {
+      setTotalPrice(totalPriceInput.value);
+    }
+  }, [totalPriceInput.value]);
 
   const errors = {
     noPriceValue: typeof totalPriceInput.value !== 'number',
@@ -41,7 +63,7 @@ export const EnterData = () => {
   };
 
   const handleSliderChange = (amount: number) => {
-    bookValueInput.setInputValue(amount === 0 ? '' : amount.toFixed(2));
+    bookValueInput.setInputValue(amount === 0 ? '0' : amount.toFixed(2));
   };
 
   const handleSubmitClicked = () => {
@@ -69,8 +91,13 @@ export const EnterData = () => {
     return <Redirect to="/capital/transfer/create" />;
   }
 
+  if (!capitalRows) {
+    return <Loader className="align-middle" />;
+  }
+
   return (
     <>
+      <code>{JSON.stringify(capitalTransferAmounts)}</code>
       <div className="row">
         <div className="col-lg d-flex align-items-center">
           <label htmlFor="book-value" className="fs-3 fw-bold">
@@ -113,6 +140,24 @@ export const EnterData = () => {
             </div>
           </div>
         </div>
+      </div>
+
+      <div className="row mt-3">
+        {capitalTransferAmounts.map((amount) => {
+          const rowForAmount = capitalRows?.find((row) => amount.type === row.type);
+
+          if (!rowForAmount) {
+            return null;
+          }
+
+          return (
+            <CapitalTypeInput
+              transferAmount={amount}
+              capitalRow={rowForAmount}
+              onValueUpdate={setBookValueForType}
+            />
+          );
+        })}
       </div>
 
       <div className="row mt-3">
