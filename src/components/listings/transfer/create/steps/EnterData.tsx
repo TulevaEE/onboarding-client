@@ -13,9 +13,9 @@ import { CapitalTypeInput } from './CapitalTypeInput';
 import {
   calculateTransferAmountPrices,
   calculateTransferAmountInputsFromNewTotalBookValue,
-  getBookValueSum,
   initializeCapitalTransferAmounts,
   sortTransferAmounts,
+  getBookValueSum,
 } from '../utils';
 import { CapitalType } from '../../../../common/apiModels';
 import { CapitalTransferAmountInputState } from '../../../../common/apiModels/capital-transfer';
@@ -34,7 +34,7 @@ export const EnterData = () => {
   } = useCreateCapitalTransferContext();
 
   const totalPriceInput = useNumberInput(totalPrice ?? null);
-  const bookValueInput = useNumberInput(bookValue ?? null);
+  const bookValueInput = useNumberInput(bookValue ?? null); // TODO need to break out from numberinput here for more fine grained control
 
   const { data: capitalRows } = useCapitalRows();
   const { bookValue: totalBookValue } = useMemberCapitalSum();
@@ -72,15 +72,13 @@ export const EnterData = () => {
   }, [totalPriceInput.value]);
 
   useEffect(() => {
-    handleSumAmountInputChange(bookValueInput.value ?? 0);
+    // TODO this needs to only be triggered when value changes as a result of user input
+    handleBookValueChange(bookValueInput.value ?? 0);
   }, [bookValueInput.value]);
 
-  const handleSumAmountInputChange = (newBookValue: number) => {
+  const handleBookValueChange = (newBookValue: number) => {
     setCapitalTransferAmountsInput(
-      calculateTransferAmountPrices(
-        { bookValue: newBookValue, totalPrice: totalPrice ?? 0 },
-        calculateTransferAmountInputsFromNewTotalBookValue(newBookValue, capitalRows ?? []),
-      ),
+      calculateTransferAmountInputsFromNewTotalBookValue(newBookValue, capitalRows ?? []),
     );
   };
 
@@ -96,7 +94,7 @@ export const EnterData = () => {
     const newAmounts = [...otherAmounts, { ...newAmount, bookValue: newBookValue }];
 
     setCapitalTransferAmountsInput(newAmounts);
-    bookValueInput.setInputValue(getBookValueSum(newAmounts).toFixed(2), false);
+    bookValueInput.setInputValue(getBookValueSum(newAmounts).toFixed(2), true);
   };
 
   const errors = {
@@ -151,6 +149,9 @@ export const EnterData = () => {
   return (
     <>
       <code>{JSON.stringify(capitalTransferAmountsInput)}</code>
+      <code>
+        {JSON.stringify({ totalPrice: totalPriceInput.value, bookValue: bookValueInput.value })}
+      </code>
       <div className="row">
         <div className="col-lg d-flex align-items-center">
           <label htmlFor="book-value" className="fs-3 fw-bold">
@@ -161,7 +162,6 @@ export const EnterData = () => {
         <div className="col-lg d-flex justify-content-end">
           <div className={`input-group input-group-lg ${styles.inputGroup}`}>
             <input
-              type="number"
               className={`form-control form-control-lg text-end ${
                 errors.moreThanMemberCapital ? 'border-danger' : ''
               }`}
@@ -177,7 +177,7 @@ export const EnterData = () => {
       <div className="row">
         <div className="mt-4">
           <Slider
-            value={bookValueInput.inputProps.value as number}
+            value={(bookValueInput.value as number) ?? 0}
             onChange={handleSliderChange}
             min={0}
             max={totalBookValue ?? 0}
