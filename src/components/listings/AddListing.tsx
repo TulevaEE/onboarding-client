@@ -40,7 +40,7 @@ export const AddListing = () => {
   };
 
   const handleSliderChange = (amount: number) => {
-    bookValueInput.setInputValue(amount === 0 ? '' : amount.toFixed(2), true);
+    bookValueInput.setInputValue(amount === 0 ? '' : amount.toFixed(2));
   };
 
   const handleSubmit = async () => {

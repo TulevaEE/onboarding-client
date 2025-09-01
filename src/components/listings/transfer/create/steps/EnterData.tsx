@@ -10,6 +10,15 @@ import { useMemberCapitalSum } from '../../../hooks';
 import { useCapitalRows } from '../../../../common/apiHooks';
 import { Loader } from '../../../../common';
 import { CapitalTypeInput } from './CapitalTypeInput';
+import {
+  calculateTransferAmountPrices,
+  calculateTransferAmountInputsFromNewTotalBookValue,
+  getBookValueSum,
+  initializeCapitalTransferAmounts,
+  sortTransferAmounts,
+} from '../utils';
+import { CapitalType } from '../../../../common/apiModels';
+import { CapitalTransferAmountInputState } from '../../../../common/apiModels/capital-transfer';
 
 export const EnterData = () => {
   const {
@@ -19,11 +28,9 @@ export const EnterData = () => {
     totalPrice,
     bookValue,
     sellerIban,
-    capitalTransferAmounts,
     setTotalPrice,
     setSellerIban,
-    setBookValue,
-    setBookValueForType,
+    setCapitalTransferAmounts: setFinalCapitalTransferAmounts,
   } = useCreateCapitalTransferContext();
 
   const totalPriceInput = useNumberInput(totalPrice ?? null);
@@ -35,17 +42,62 @@ export const EnterData = () => {
   const [bankIban, setBankIban] = useState(sellerIban ?? '');
   const [ibanError, setIbanError] = useState(false);
 
+  const [capitalTransferAmountsInput, setCapitalTransferAmountsInput] = useState<
+    CapitalTransferAmountInputState[]
+  >([]);
+
   useEffect(() => {
-    if (bookValueInput.value !== null) {
-      setBookValue(bookValueInput.value);
+    if (capitalRows) {
+      setCapitalTransferAmountsInput(initializeCapitalTransferAmounts(capitalRows));
     }
-  }, [bookValueInput.value]);
+  }, [capitalRows]);
+
+  /* useEffect(() => {
+    bookValueInput.setInputValue(bookValue.toFixed(2));
+    /* if (bookValue === 0) {
+      bookValueInput.setInputValue('', false);
+    } else if (bookValue.toFixed(2) !== bookValueInput.value?.toFixed(2)) {
+      bookValueInput.setInputValue(bookValue.toFixed(2), false);
+    }
+  }, [bookValue]); */
+
+  /* useEffect(() => {
+    setBookValue(bookValueInput.value ?? 0);
+  }, [bookValueInput.value]); */
 
   useEffect(() => {
     if (totalPriceInput.value !== null) {
       setTotalPrice(totalPriceInput.value);
     }
   }, [totalPriceInput.value]);
+
+  useEffect(() => {
+    handleSumAmountInputChange(bookValueInput.value ?? 0);
+  }, [bookValueInput.value]);
+
+  const handleSumAmountInputChange = (newBookValue: number) => {
+    setCapitalTransferAmountsInput(
+      calculateTransferAmountPrices(
+        { bookValue: newBookValue, totalPrice: totalPrice ?? 0 },
+        calculateTransferAmountInputsFromNewTotalBookValue(newBookValue, capitalRows ?? []),
+      ),
+    );
+  };
+
+  const handleCapitalTypeInputChange = (newBookValue: number, type: CapitalType) => {
+    const otherAmounts = capitalTransferAmountsInput.filter((amount) => amount.type !== type);
+
+    const newAmount = capitalTransferAmountsInput.find((amount) => amount.type === type);
+
+    if (!newAmount) {
+      throw new Error(`Cannot find book value for type ${type}`);
+    }
+
+    const newAmounts = [...otherAmounts, { ...newAmount, bookValue: newBookValue }];
+
+    setCapitalTransferAmountsInput(newAmounts);
+    bookValueInput.setInputValue(getBookValueSum(newAmounts).toFixed(2), false);
+  };
 
   const errors = {
     noPriceValue: typeof totalPriceInput.value !== 'number',
@@ -59,7 +111,7 @@ export const EnterData = () => {
   };
 
   const handleSliderChange = (amount: number) => {
-    bookValueInput.setInputValue(amount === 0 ? '0' : amount.toFixed(2), true);
+    bookValueInput.setInputValue(amount === 0 ? '' : amount.toFixed(2));
   };
 
   const handleSubmitClicked = () => {
@@ -78,7 +130,12 @@ export const EnterData = () => {
     }
 
     setTotalPrice(totalPriceInput.value);
-    setBookValue(bookValueInput.value);
+    setFinalCapitalTransferAmounts(
+      calculateTransferAmountPrices(
+        { bookValue: bookValueInput.value, totalPrice: totalPriceInput.value },
+        capitalTransferAmountsInput,
+      ),
+    );
     setSellerIban(formattedIban);
     navigateToNextStep();
   };
@@ -93,7 +150,7 @@ export const EnterData = () => {
 
   return (
     <>
-      <code>{JSON.stringify(capitalTransferAmounts)}</code>
+      <code>{JSON.stringify(capitalTransferAmountsInput)}</code>
       <div className="row">
         <div className="col-lg d-flex align-items-center">
           <label htmlFor="book-value" className="fs-3 fw-bold">
@@ -120,7 +177,7 @@ export const EnterData = () => {
       <div className="row">
         <div className="mt-4">
           <Slider
-            value={bookValueInput.value ?? 0}
+            value={bookValueInput.inputProps.value as number}
             onChange={handleSliderChange}
             min={0}
             max={totalBookValue ?? 0}
@@ -139,7 +196,7 @@ export const EnterData = () => {
       </div>
 
       <div className="row mt-3">
-        {capitalTransferAmounts.map((amount) => {
+        {sortTransferAmounts(capitalTransferAmountsInput).map((amount) => {
           const rowForAmount = capitalRows?.find((row) => amount.type === row.type);
 
           if (!rowForAmount) {
@@ -148,9 +205,10 @@ export const EnterData = () => {
 
           return (
             <CapitalTypeInput
+              key={amount.type}
               transferAmount={amount}
               capitalRow={rowForAmount}
-              onValueUpdate={setBookValueForType}
+              onValueUpdate={handleCapitalTypeInputChange}
             />
           );
         })}

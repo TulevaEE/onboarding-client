@@ -12,6 +12,8 @@ export type CapitalTransferAmount = {
   bookValue: number;
 };
 
+export type CapitalTransferAmountInputState = Omit<CapitalTransferAmount, 'price'>;
+
 export type CapitalTransferContract = {
   id: number;
   seller: MemberLookup;
