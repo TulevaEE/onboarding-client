@@ -112,6 +112,7 @@ export const ConfirmAndSign = () => {
         />
       )}
       <div>
+        <code>{JSON.stringify(capitalTransferAmounts)}</code>
         <ContractDetails
           seller={me}
           userRole="SELLER"

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { CapitalRow, CapitalType } from '../../../../common/apiModels';
-import { CapitalTransferAmount } from '../../../../common/apiModels/capital-transfer';
+import { CapitalTransferAmountInputState } from '../../../../common/apiModels/capital-transfer';
 import { formatAmountForCurrency, useNumberInput } from '../../../../common/utils';
 
 export const CapitalTypeInput = ({
@@ -8,12 +8,12 @@ export const CapitalTypeInput = ({
   capitalRow,
   onValueUpdate,
 }: {
-  transferAmount: CapitalTransferAmount;
+  transferAmount: CapitalTransferAmountInputState;
   capitalRow: CapitalRow;
   onValueUpdate: (newBookValue: number, type: CapitalType) => unknown;
 }) => {
   const { type } = transferAmount;
-  const bookValueAmountInput = useNumberInput(transferAmount.bookValue ?? null);
+  const bookValueAmountInput = useNumberInput(transferAmount.bookValue);
 
   useEffect(() => {
     onValueUpdate(bookValueAmountInput.value ?? 0, type);

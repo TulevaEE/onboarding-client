@@ -70,7 +70,7 @@ export const useNumberInput = (
 ): {
   inputProps: Partial<HTMLProps<HTMLInputElement>>;
   value: number | null;
-  setInputValue: (val: string, updateParsedValue: boolean) => unknown;
+  setInputValue: (val: string, updateParsedValue?: boolean) => unknown;
 } => {
   const [inputValue, setInputValue] = useState(defaultValue?.toString() ?? '');
   const [value, setValue] = useState<number | null>(defaultValue);

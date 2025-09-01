@@ -2,6 +2,7 @@ import { Fragment } from 'react';
 import { CapitalType } from '../../../common/apiModels';
 import { CapitalTransferAmount } from '../../../common/apiModels/capital-transfer';
 import { formatAmountForCurrency } from '../../../common/utils';
+import { sortTransferAmounts } from '../create/utils';
 
 export const TransferAmountBreakdown = ({
   totalBookValue,
@@ -10,28 +11,33 @@ export const TransferAmountBreakdown = ({
   totalBookValue: number;
   amounts: CapitalTransferAmount[];
 }) => {
-  const sortedAmounts = sortAmounts(amounts);
+  const sortedAmounts = sortTransferAmounts(amounts);
 
   return (
-    <div className="row mt-4 py-2">
-      <div className="col">
-        <div>
+    <>
+      <div className="row mt-4 py-2">
+        <div className="col">
           <b>Müüdav liikmekapital</b>
         </div>
-        {sortedAmounts.map((amount) => (
+
+        <div className="col">
           <div>
-            – <TransferAmountName key={amount.type} type={amount.type} />
+            <b>{formatAmountForCurrency(totalBookValue)}</b>
           </div>
-        ))}
+        </div>
       </div>
 
-      <div className="col">
-        <div>{formatAmountForCurrency(totalBookValue)}</div>
-        {sortedAmounts.map((amount) => (
-          <Fragment key={amount.type}>{formatAmountForCurrency(amount.bookValue)}</Fragment>
-        ))}
-      </div>
-    </div>
+      {sortedAmounts.map((amount) => (
+        <div className="row">
+          <div className="col">
+            – <TransferAmountName key={amount.type} type={amount.type} />
+          </div>
+          <div className="col">
+            <Fragment key={amount.type}>{formatAmountForCurrency(amount.bookValue)}</Fragment>
+          </div>
+        </div>
+      ))}
+    </>
   );
 };
 
@@ -50,7 +56,3 @@ const TransferAmountName = ({ type }: { type: CapitalType }) => {
 
   return null;
 };
-
-const typeOrder = ['CAPITAL_PAYMENT', 'MEMBERSHIP_BONUS', 'WORK_COMPENSATION'];
-const sortAmounts = (amounts: CapitalTransferAmount[]) =>
-  amounts.sort((a, b) => typeOrder.indexOf(a.type) - typeOrder.indexOf(b.type));

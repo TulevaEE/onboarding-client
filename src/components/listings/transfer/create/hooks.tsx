@@ -7,7 +7,7 @@ import {
 } from './types';
 import {
   calculateTransferAmountPrices,
-  calculateTransferAmountsFromNewTotalBookValue,
+  getBookValueSum,
   getTransferCreatePath,
   initializeCapitalTransferAmounts,
 } from './utils';
@@ -33,8 +33,6 @@ const CreateTransferContext = createContext<CreateCapitalTransferContextState>({
   navigateToPreviousStep: () => {},
   setCreatedCapitalTransferContract: () => {},
   setCapitalTransferAmounts: () => {},
-  setBookValue: () => {},
-  setBookValueForType: () => {},
 });
 
 export const useCreateCapitalTransferContext = () => useContext(CreateTransferContext);
@@ -54,36 +52,7 @@ export const CreateTransferProvider = ({ children }: PropsWithChildren<unknown>)
     useState<CapitalTransferContract | null>(null);
   const [capitalTransferAmounts, setCapitalTransferAmounts] = useState<CapitalTransferAmount[]>([]);
 
-  useEffect(() => {
-    if (capitalRows) {
-      setCapitalTransferAmounts(initializeCapitalTransferAmounts(capitalRows));
-    }
-  }, [capitalRows]);
-
-  const bookValue = capitalTransferAmounts.reduce((acc, amount) => acc + amount.bookValue, 0);
-  const setBookValue = (newBookValue: number) => {
-    setCapitalTransferAmounts(
-      calculateTransferAmountPrices(
-        { bookValue: newBookValue, totalPrice: totalPrice ?? 0 },
-        calculateTransferAmountsFromNewTotalBookValue(
-          { bookValue: newBookValue },
-          capitalRows ?? [],
-        ),
-      ),
-    );
-  };
-
-  const setBookValueForType = (newBookValue: number, type: CapitalType) => {
-    const otherAmounts = capitalTransferAmounts.filter((amount) => amount.type !== type);
-
-    const newAmount = capitalTransferAmounts.find((amount) => amount.type === type);
-
-    if (!newAmount) {
-      throw new Error(`Cannot find book value for type ${type}`);
-    }
-
-    setCapitalTransferAmounts([...otherAmounts, { ...newAmount, bookValue: newBookValue }]);
-  };
+  const bookValue = getBookValueSum(capitalTransferAmounts);
 
   useEffect(() => {
     const stepForPath = CREATE_CAPITAL_TRANSFER_STEPS.find(
@@ -130,14 +99,12 @@ export const CreateTransferProvider = ({ children }: PropsWithChildren<unknown>)
         createdCapitalTransferContract,
         capitalTransferAmounts,
         setBuyer,
-        setBookValue,
         setTotalPrice,
         setSellerIban,
         navigateToNextStep,
         navigateToPreviousStep,
         setCreatedCapitalTransferContract,
         setCapitalTransferAmounts,
-        setBookValueForType,
       }}
     >
       {children}

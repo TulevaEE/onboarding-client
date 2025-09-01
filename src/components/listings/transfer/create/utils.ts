@@ -1,5 +1,8 @@
 import { CapitalRow, CapitalType } from '../../../common/apiModels/index';
-import { CapitalTransferAmount } from '../../../common/apiModels/capital-transfer';
+import {
+  CapitalTransferAmount,
+  CapitalTransferAmountInputState,
+} from '../../../common/apiModels/capital-transfer';
 
 export const isLiquidatableCapitalType = (type: CapitalType) =>
   ['CAPITAL_PAYMENT', 'WORK_COMPENSATION', 'MEMBERSHIP_BONUS'].includes(type);
@@ -15,22 +18,19 @@ export const getMemberCapitalSums = (rows: CapitalRow[]) => {
 
 export const getTransferCreatePath = (subPath: string) => `/capital/transfer/create/${subPath}`;
 
-export const calculateTransferAmountsFromNewTotalBookValue = (
-  userInputs: {
-    bookValue: number;
-  },
+export const calculateTransferAmountInputsFromNewTotalBookValue = (
+  bookValue: number,
   userMemberCapitalRows: CapitalRow[],
-): CapitalTransferAmount[] => {
+): CapitalTransferAmountInputState[] => {
   const filteredRows = userMemberCapitalRows.filter((row) => isLiquidatableCapitalType(row.type));
   const memberCapitalSums = getMemberCapitalSums(filteredRows);
 
   // TODO go over liquidation preference and amounts
-  const liquidationCoefficient = userInputs.bookValue / memberCapitalSums.bookValue;
+  const liquidationCoefficient = bookValue / memberCapitalSums.bookValue;
 
   return filteredRows.map((row) => ({
     type: row.type,
     bookValue: row.value * liquidationCoefficient,
-    price: 0,
   }));
 };
 
@@ -39,7 +39,7 @@ export const calculateTransferAmountPrices = (
     bookValue: number;
     totalPrice: number;
   },
-  amounts: CapitalTransferAmount[],
+  amounts: CapitalTransferAmountInputState[],
 ): CapitalTransferAmount[] =>
   amounts.map((amount) => {
     const bookValueShareOfTotal = amount.bookValue / userInputs.bookValue;
@@ -50,11 +50,17 @@ export const calculateTransferAmountPrices = (
     };
   });
 
-export const initializeCapitalTransferAmounts = (rows: CapitalRow[]): CapitalTransferAmount[] =>
+export const initializeCapitalTransferAmounts = (rows: CapitalRow[]): CapitalTransferAmountInputState[] =>
   rows
     .filter((row) => isLiquidatableCapitalType(row.type))
     .map((row) => ({
       type: row.type,
       bookValue: 0,
-      price: 0,
     }));
+
+const capitalTypeOrder = ['CAPITAL_PAYMENT', 'MEMBERSHIP_BONUS', 'WORK_COMPENSATION'];
+export const sortTransferAmounts = (amounts: CapitalTransferAmountInputState[]) =>
+  amounts.sort((a, b) => capitalTypeOrder.indexOf(a.type) - capitalTypeOrder.indexOf(b.type));
+
+export const getBookValueSum = (amounts: { bookValue: number }[]) =>
+  amounts.reduce((acc, amount) => acc + amount.bookValue, 0);

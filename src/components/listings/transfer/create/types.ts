@@ -1,12 +1,11 @@
-import { CapitalType, MemberLookup } from '../../../common/apiModels';
 import {
   CapitalTransferAmount,
   CapitalTransferContract,
 } from '../../../common/apiModels/capital-transfer';
+import { CapitalType, MemberLookup } from '../../../common/apiModels';
 
 type StateContext = {
   buyer: MemberLookup | null;
-  bookValue: number;
   totalPrice: number | null;
   sellerIban: string | null;
   capitalTransferAmounts: CapitalTransferAmount[];
@@ -14,7 +13,7 @@ type StateContext = {
 };
 
 type OtherStateContext = {
-  setBookValueForType: (newBookValue: number, type: CapitalType) => unknown;
+  bookValue: number;
 };
 
 type Setters = {

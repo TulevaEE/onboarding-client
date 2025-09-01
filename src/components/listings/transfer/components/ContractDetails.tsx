@@ -34,12 +34,14 @@ export const ContractDetails = ({
       totalBookValue={getTotalBookValue({ transferAmounts: amounts })}
     />
 
-    <div className="row py-2">
+    <div className="row pt-2 pb-4 mt-3 border-bottom">
       <div className="col">
         <b>Hinnaga</b>
       </div>
 
-      <div className="col">{formatAmountForCurrency(totalPrice)}</div>
+      <div className="col">
+        <b>{formatAmountForCurrency(totalPrice)}</b>
+      </div>
     </div>
 
     <div className="row pt-4 pb-4 ">
