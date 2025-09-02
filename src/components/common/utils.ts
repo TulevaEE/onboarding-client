@@ -70,7 +70,8 @@ export const useNumberInput = (
 ): {
   inputProps: Partial<HTMLProps<HTMLInputElement>>;
   value: number | null;
-  setInputValue: (val: string, updateParsedValue?: boolean) => unknown;
+  setInputValue: (val: string) => unknown;
+  setInputDisplayValueOnly: (val: string) => unknown;
 } => {
   const [inputValue, setInputValue] = useState(defaultValue?.toString() ?? '');
   const [value, setValue] = useState<number | null>(defaultValue);
@@ -110,6 +111,7 @@ export const useNumberInput = (
       inputMode: 'decimal',
     },
     value,
-    setInputValue: updateInput,
+    setInputValue: (val) => updateInput(val, true),
+    setInputDisplayValueOnly: (val) => updateInput(val, false),
   };
 };
