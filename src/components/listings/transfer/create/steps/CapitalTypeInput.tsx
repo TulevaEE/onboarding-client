@@ -3,6 +3,9 @@ import { CapitalRow, CapitalType } from '../../../../common/apiModels';
 import { CapitalTransferAmountInputState } from '../../../../common/apiModels/capital-transfer';
 import { formatAmountForCurrency, useNumberInput } from '../../../../common/utils';
 
+import styles from '../../../AddListing.module.scss';
+import { InfoTooltip } from '../../../../common/infoTooltip/InfoTooltip';
+
 export const CapitalTypeInput = ({
   transferAmount,
   capitalRow,
@@ -21,9 +24,9 @@ export const CapitalTypeInput = ({
 
   useEffect(() => {
     if (transferAmount.bookValue === 0) {
-      bookValueAmountInput.setInputValue('', false);
+      bookValueAmountInput.setInputDisplayValueOnly('');
     } else if (transferAmount.bookValue.toFixed(2) !== bookValueAmountInput.value?.toFixed(2)) {
-      bookValueAmountInput.setInputValue(transferAmount.bookValue.toFixed(2), false);
+      bookValueAmountInput.setInputDisplayValueOnly(transferAmount.bookValue.toFixed(2));
     }
   }, [transferAmount.bookValue]);
 
@@ -33,13 +36,21 @@ export const CapitalTypeInput = ({
 
   const displayName = typeToNameMap[type as keyof typeof typeToNameMap];
   return (
-    <div className="d-flex justify-space-between">
+    <div className="d-flex justify-space-between mb-3">
       <div className="col">
-        <div>{displayName}</div>
+        <div>
+          {displayName}{' '}
+          {transferAmount.type === 'CAPITAL_PAYMENT' && (
+            <InfoTooltip>
+              Müümist võib olla mõistlik alustada rahalisest panusest, sest saad selle
+              soetamismaksumuse tuludeklaratsiooni esitades maksustatavast tulust maha arvata.
+            </InfoTooltip>
+          )}
+        </div>
         <div className="text-secondary">max {formatAmountForCurrency(capitalRow.value)}</div>
       </div>
-      <div className="col">
-        <div className="input-group">
+      <div className="col d-flex justify-content-end">
+        <div className={`input-group ${styles.inputGroup}`}>
           <input
             className={`form-control form-control-lg text-end ${
               bookValueAmountInput.value && bookValueAmountInput.value > capitalRow.value

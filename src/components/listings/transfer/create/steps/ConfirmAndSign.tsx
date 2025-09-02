@@ -112,7 +112,6 @@ export const ConfirmAndSign = () => {
         />
       )}
       <div>
-        <code>{JSON.stringify(capitalTransferAmounts)}</code>
         <ContractDetails
           seller={me}
           userRole="SELLER"
@@ -121,7 +120,7 @@ export const ConfirmAndSign = () => {
           totalPrice={totalPrice}
           sellerIban={sellerIban}
         />
-        <div className="form-check">
+        <div className="form-check mt-5">
           <input
             checked={agreedToTerms}
             onChange={() => setAgreedToTerms(!agreedToTerms)}

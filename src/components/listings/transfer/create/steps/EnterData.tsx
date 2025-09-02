@@ -43,7 +43,7 @@ export const EnterData = () => {
   const [bankIban, setBankIban] = useState(sellerIban ?? '');
   const [ibanError, setIbanError] = useState(false);
 
-  const [lastInput, setLastInput] = useState<'TOTAL' | 'TYPE_INPUTS' | null>(null);
+  const [lastInput, setLastInput] = useState<'TOTAL' | 'TYPE_INPUTS'>('TOTAL');
 
   const [capitalTransferAmountsInput, setCapitalTransferAmountsInput] = useState<
     CapitalTransferAmountInputState[]
@@ -88,7 +88,7 @@ export const EnterData = () => {
 
     setLastInput('TYPE_INPUTS');
     setCapitalTransferAmountsInput(newAmounts);
-    bookValueInput.setInputValue(getBookValueSum(newAmounts).toFixed(2), true);
+    bookValueInput.setInputValue(getBookValueSum(newAmounts).toFixed(2));
   };
 
   const errors = {
@@ -186,7 +186,7 @@ export const EnterData = () => {
         </div>
       </div>
 
-      <div className="row mt-3">
+      <div className="row mt-4">
         {sortTransferAmounts(capitalTransferAmountsInput).map((amount) => {
           const rowForAmount = capitalRows?.find((row) => amount.type === row.type);
 
@@ -205,7 +205,7 @@ export const EnterData = () => {
         })}
       </div>
 
-      <div className="row mt-3">
+      <div className="row mt-2">
         <SaleOfTotalCapitalDescription
           saleBookValueAmount={bookValueInput.value ?? 0}
           transactionType="SELL"

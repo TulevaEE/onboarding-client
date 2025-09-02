@@ -50,7 +50,9 @@ export const calculateTransferAmountPrices = (
     };
   });
 
-export const initializeCapitalTransferAmounts = (rows: CapitalRow[]): CapitalTransferAmountInputState[] =>
+export const initializeCapitalTransferAmounts = (
+  rows: CapitalRow[],
+): CapitalTransferAmountInputState[] =>
   rows
     .filter((row) => isLiquidatableCapitalType(row.type))
     .map((row) => ({
@@ -59,7 +61,7 @@ export const initializeCapitalTransferAmounts = (rows: CapitalRow[]): CapitalTra
     }));
 
 const capitalTypeOrder = ['CAPITAL_PAYMENT', 'MEMBERSHIP_BONUS', 'WORK_COMPENSATION'];
-export const sortTransferAmounts = (amounts: CapitalTransferAmountInputState[]) =>
+export const sortTransferAmounts = <T extends { type: CapitalType }>(amounts: T[]) =>
   amounts.sort((a, b) => capitalTypeOrder.indexOf(a.type) - capitalTypeOrder.indexOf(b.type));
 
 export const getBookValueSum = (amounts: { bookValue: number }[]) =>

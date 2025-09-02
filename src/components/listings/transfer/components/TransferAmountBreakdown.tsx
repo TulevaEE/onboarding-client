@@ -11,7 +11,33 @@ export const TransferAmountBreakdown = ({
   totalBookValue: number;
   amounts: CapitalTransferAmount[];
 }) => {
-  const sortedAmounts = sortTransferAmounts(amounts);
+  const sortedAmounts = sortTransferAmounts(amounts).filter((amount) => amount.bookValue !== 0);
+
+  if (sortedAmounts.length === 1) {
+    return (
+      <>
+        <div className="row mt-4 py-2">
+          <div className="col">
+            <b>Müüdav liikmekapital</b>
+          </div>
+
+          <div className="col">
+            <div>
+              <b>{formatAmountForCurrency(totalBookValue)}</b>
+            </div>
+          </div>
+        </div>
+
+        {sortedAmounts.map((amount) => (
+          <div className="row" key={amount.type}>
+            <div className="col">
+              (<TransferAmountName type={amount.type} />)
+            </div>
+          </div>
+        ))}
+      </>
+    );
+  }
 
   return (
     <>
@@ -28,13 +54,11 @@ export const TransferAmountBreakdown = ({
       </div>
 
       {sortedAmounts.map((amount) => (
-        <div className="row">
+        <div className="row" key={amount.type}>
           <div className="col">
-            – <TransferAmountName key={amount.type} type={amount.type} />
+            – <TransferAmountName type={amount.type} />
           </div>
-          <div className="col">
-            <Fragment key={amount.type}>{formatAmountForCurrency(amount.bookValue)}</Fragment>
-          </div>
+          <div className="col">{formatAmountForCurrency(amount.bookValue)}</div>
         </div>
       ))}
     </>
