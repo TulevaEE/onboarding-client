@@ -1,7 +1,7 @@
 import { ChangeEventHandler, useEffect, useState } from 'react';
 import { CapitalRow, CapitalType } from '../../../../common/apiModels';
 import { CapitalTransferAmountInputState } from '../../../../common/apiModels/capital-transfer';
-import { formatAmountForCurrency, useNumberInput } from '../../../../common/utils';
+import { formatAmountForCurrency } from '../../../../common/utils';
 
 import styles from '../../../AddListing.module.scss';
 import { InfoTooltip } from '../../../../common/infoTooltip/InfoTooltip';

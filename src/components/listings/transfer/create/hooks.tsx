@@ -5,18 +5,12 @@ import {
   CreateCapitalTransferContextState,
   CreateCapitalTransferStepType,
 } from './types';
-import {
-  calculateTransferAmountPrices,
-  getBookValueSum,
-  getTransferCreatePath,
-  initializeCapitalTransferAmounts,
-} from './utils';
+import { getBookValueSum, getTransferCreatePath } from './utils';
 import {
   CapitalTransferAmount,
   CapitalTransferContract,
 } from '../../../common/apiModels/capital-transfer';
 import { useCapitalRows } from '../../../common/apiHooks';
-import { CapitalType } from '../../../common/apiModels';
 
 const CreateTransferContext = createContext<CreateCapitalTransferContextState>({
   buyer: null,
