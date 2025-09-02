@@ -10,7 +10,6 @@ import {
   CapitalTransferAmount,
   CapitalTransferContract,
 } from '../../../common/apiModels/capital-transfer';
-import { useCapitalRows } from '../../../common/apiHooks';
 
 const CreateTransferContext = createContext<CreateCapitalTransferContextState>({
   buyer: null,
@@ -34,7 +33,6 @@ export const useCreateCapitalTransferContext = () => useContext(CreateTransferCo
 export const CreateTransferProvider = ({ children }: PropsWithChildren<unknown>) => {
   const history = useHistory();
   const location = useLocation();
-  const { data: capitalRows } = useCapitalRows();
   const [buyer, setBuyer] = useState<CreateCapitalTransferContextState['buyer']>(null);
   const [totalPrice, setTotalPrice] =
     useState<CreateCapitalTransferContextState['totalPrice']>(null);
