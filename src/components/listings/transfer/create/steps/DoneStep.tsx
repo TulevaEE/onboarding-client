@@ -19,19 +19,24 @@ export const DoneStep = () => {
 
   return (
     <SuccessAlert>
-      <h2 className="py-2">Leping on sinu poolt allkirjastatud</h2>
+      <div className="d-flex flex-column gap-4">
+        <div className="d-flex flex-column gap-3">
+          <h2 className="m-0">Leping on sinu poolt allkirjastatud</h2>
+          <p className="m-0">Teavitasime ostjat ja leping on nüüd tema allkirjastamise ootel.</p>
+        </div>
 
-      <div className="pb-2">Teavitasime ostjat ja leping on nüüd tema allkirjastamise ootel.</div>
-
-      <button
-        type="button"
-        className="btn btn-outline-primary my-3"
-        onClick={() => {
-          history.push(`/capital/transfer/${createdCapitalTransferContract.id}`);
-        }}
-      >
-        Vaatan staatust
-      </button>
+        <div className="d-flex justify-content-center gap-2">
+          <button
+            type="button"
+            className="btn btn-outline-primary"
+            onClick={() => {
+              history.push(`/capital/transfer/${createdCapitalTransferContract.id}`);
+            }}
+          >
+            Vaatan staatust
+          </button>
+        </div>
+      </div>
     </SuccessAlert>
   );
 };

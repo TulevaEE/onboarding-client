@@ -15,8 +15,8 @@ export const TransferAmountBreakdown = ({
 
   if (sortedAmounts.length === 1) {
     return (
-      <>
-        <div className="row mt-4 py-2" data-testid="capital-row-TOTAL">
+      <div>
+        <div className="d-flex pb-4" data-testid="capital-row-TOTAL">
           <div className="col">
             <b>Müüdav liikmekapital</b>
           </div>
@@ -35,7 +35,7 @@ export const TransferAmountBreakdown = ({
             </div>
           </div>
         ))}
-      </>
+      </div>
     );
   }
 

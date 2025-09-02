@@ -2,10 +2,11 @@
 
 .doneAlert {
   background: $blue-bg-2;
-  border-radius: 16px;
-  padding: 1.75em;
+  border-radius: $border-radius-xl;
+  padding: 3rem 1.5rem;
   display: flex;
   flex-direction: column;
+  gap: 0.5rem;
   align-items: center;
   color: $navy-blue;
   text-align: center;

@@ -118,7 +118,7 @@ export const ConfirmAndSign = () => {
           overlayed
         />
       )}
-      <div>
+      <div className="d-flex flex-column gap-5 py-4">
         <ContractDetails
           seller={me}
           userRole="SELLER"
@@ -127,7 +127,7 @@ export const ConfirmAndSign = () => {
           totalPrice={totalPrice}
           sellerIban={sellerIban}
         />
-        <div className="form-check mt-5">
+        <div className="form-check m-0">
           <input
             checked={agreedToTerms}
             onChange={() => setAgreedToTerms(!agreedToTerms)}
@@ -136,17 +136,18 @@ export const ConfirmAndSign = () => {
             id="agree-to-terms-checkbox"
           />
           <label className="form-check-label" htmlFor="agree-to-terms-checkbox">
-            Kinnitan, et täidan võlaõigusseaduse kohaselt oma lepingulisi kohustusi täies ulatuses
-            ja vastavalt kokkulepitud tingimustele.
+            Kinnitan, et müüja ja ostja on kokku leppinud liikmekapitali võõrandamises eelpool
+            nimetatud tingimustel.
           </label>
           {agreedToTermsError && (
-            <div className="text-danger">
+            <p className="m-0 text-danger">
               TODO Müügiprotsessi alustamiseks pead tingimustega nõustuma
-            </div>
+            </p>
           )}
         </div>
       </div>
-      <div className="d-flex justify-content-between mt-5 pt-4 border-top">
+
+      <div className="d-flex flex-column-reverse flex-sm-row justify-content-between pt-4 border-top gap-3">
         <button
           type="button"
           className="btn btn-lg btn-light"

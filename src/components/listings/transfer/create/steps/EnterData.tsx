@@ -151,136 +151,123 @@ export const EnterData = () => {
 
   return (
     <>
-      <div className="row">
-        <div className="col-lg d-flex align-items-center">
-          <label htmlFor="book-value" className="fs-3 fw-bold">
-            Kui palju liikmekapitali müüd?
-          </label>
-        </div>
-
-        <div className="col-lg d-flex justify-content-end">
-          <div className={`input-group input-group-lg ${styles.inputGroup}`}>
-            <input
-              className={`form-control form-control-lg text-end ${
-                errors.moreThanMemberCapital ? 'border-danger' : ''
-              }`}
-              id="book-value"
-              placeholder="0"
-              aria-label="Müüdav kogumaht"
-              type="text"
-              inputMode="decimal"
-              value={bookValueInputDisplayValue}
-              onChange={handleBookValueInputChange}
-            />
-            <div className="input-group-text">&euro;</div>
-          </div>
-        </div>
-      </div>
-      <div className="row">
-        <div className="mt-4">
-          <Slider
-            value={(bookValue as number) ?? 0}
-            onChange={handleSliderChange}
-            min={0}
-            max={totalBookValue ?? 0}
-            step={0.01}
-            color="BLUE"
-            ariaLabelledBy="book-value"
-          />
-
-          <div className="mt-2 d-flex justify-content-between">
-            <div className="text-body-secondary">{formatAmountForCurrency(0, 0)}</div>
-            <div className="text-body-secondary">
-              {formatAmountForCurrency(totalBookValue ?? 0, 2)}
+      <div className="d-flex flex-column gap-5 py-4">
+        <div className="form-section d-flex flex-column gap-3">
+          <div className="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 row-gap-2">
+            <label htmlFor="book-value" className="fs-3 fw-semibold">
+              Kui palju liikmekapitali müüd?
+            </label>
+            <div className={`input-group input-group-lg ${styles.inputGroup}`}>
+              <input
+                className={`form-control form-control-lg fw-semibold ${
+                  errors.moreThanMemberCapital ? 'border-danger' : ''
+                }`}
+                id="book-value"
+                placeholder="0"
+                type="text"
+                inputMode="decimal"
+                value={bookValueInputDisplayValue}
+                onChange={handleBookValueInputChange}
+              />
+              <span className="input-group-text fw-semibold">&euro;</span>
             </div>
           </div>
-        </div>
-      </div>
 
-      <div className="row mt-4">
-        {capitalTransferAmountsInput.length > 1
-          ? sortTransferAmounts(capitalTransferAmountsInput).map((amount) => {
-              const rowForAmount = capitalRows?.find((row) => amount.type === row.type);
-
-              if (!rowForAmount) {
-                return null;
-              }
-
-              return (
-                <CapitalTypeInput
-                  key={amount.type}
-                  transferAmount={amount}
-                  capitalRow={rowForAmount}
-                  lastInput={lastInput}
-                  setLastInput={setLastInput}
-                  onValueUpdate={handleCapitalTypeInputChange}
-                />
-              );
-            })
-          : null}
-      </div>
-
-      <div className="row mt-2">
-        <SaleOfTotalCapitalDescription
-          saleBookValueAmount={bookValue ?? 0}
-          transactionType="SELL"
-        />
-      </div>
-
-      {errors.moreThanMemberCapital && (
-        <div className="pt-2 text-danger">TODO Sul ei ole piisavalt liikmekapitali</div>
-      )}
-
-      <div className="row mt-5">
-        <div className="col-lg d-flex align-items-center">
-          <label htmlFor="total-price" className="fs-3 fw-bold">
-            Mis hinnaga müüd?
-          </label>
-        </div>
-
-        <div className="col-lg d-flex justify-content-end">
-          <div className={`input-group input-group-lg ${styles.inputGroup}`}>
-            <input
-              placeholder="0"
-              id="total-price"
-              aria-label="Tehingu koguhind"
-              className={`form-control form-control-lg text-end ${
-                errors.priceLessThanBookValue ? 'border-danger' : ''
-              }`}
-              {...totalPriceInput.inputProps}
+          <div className="d-flex flex-column gap-2">
+            <Slider
+              value={(bookValue as number) ?? 0}
+              onChange={handleSliderChange}
+              min={0}
+              max={totalBookValue ?? 0}
+              step={0.01}
+              color="BLUE"
+              ariaLabelledBy="book-value"
             />
-            <div className="input-group-text">&euro;</div>
+            <div className="d-flex justify-content-between">
+              <span className="text-body-secondary">{formatAmountForCurrency(0, 0)}</span>
+              <span className="text-body-secondary">
+                {formatAmountForCurrency(totalBookValue ?? 0, 2)}
+              </span>
+            </div>
+          </div>
+
+          {capitalTransferAmountsInput.length > 1
+            ? sortTransferAmounts(capitalTransferAmountsInput).map((amount) => {
+                const rowForAmount = capitalRows?.find((row) => amount.type === row.type);
+
+                if (!rowForAmount) {
+                  return null;
+                }
+
+                return (
+                  <CapitalTypeInput
+                    key={amount.type}
+                    transferAmount={amount}
+                    capitalRow={rowForAmount}
+                    lastInput={lastInput}
+                    setLastInput={setLastInput}
+                    onValueUpdate={handleCapitalTypeInputChange}
+                  />
+                );
+              })
+            : null}
+
+          <div className="d-flex flex-column gap-2">
+            {errors.moreThanMemberCapital && (
+              <p className="m-0 text-danger">TODO Sul ei ole piisavalt liikmekapitali.</p>
+            )}
+            <SaleOfTotalCapitalDescription
+              saleBookValueAmount={bookValue ?? 0}
+              transactionType="SELL"
+            />
           </div>
         </div>
-      </div>
 
-      {errors.priceLessThanBookValue && (
-        <div className="pt-2 text-danger">
-          TODO Sa ei saa müüa liikmekapitali hinnaga alla raamatupidamisliku väärtuse 1.00 €
+        <div className="form-section d-flex flex-column gap-3">
+          <div className="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 row-gap-2">
+            <label htmlFor="total-price" className="fs-3 fw-semibold">
+              Mis hinnaga müüd?
+            </label>
+            <div className={`input-group input-group-lg ${styles.inputGroup}`}>
+              <input
+                placeholder="0"
+                id="total-price"
+                className={`form-control form-control-lg fw-semibold ${
+                  errors.priceLessThanBookValue ? 'border-danger' : ''
+                }`}
+                {...totalPriceInput.inputProps}
+              />
+              <div className="input-group-text fw-semibold">&euro;</div>
+            </div>
+          </div>
+          {errors.priceLessThanBookValue && (
+            <p className="m-0 text-danger">
+              TODO Sa ei saa müüa liikmekapitali hinnaga alla raamatupidamisliku väärtuse 1.00 €
+            </p>
+          )}
         </div>
-      )}
 
-      <div className="row mt-5">
-        <div className="col-lg mb-3 mb-lg-0">
+        <div className="form-section d-flex flex-column gap-3">
           <div>
             <label htmlFor="bank-account-iban" className="fs-4 fw-bold form-label">
               Müüja pangakonto (IBAN)
             </label>
             <input
               type="text"
-              className="form-control form-control-lg  pe-0"
+              className="form-control form-control-lg"
               id="bank-account-iban"
-              aria-label="Müüja pangakonto"
               value={bankIban}
               onChange={(e) => setBankIban(e.target.value)}
             />
-            <div className="text-secondary mt-1">Pangakonto peab kuuluma sinule.</div>
+          </div>
+          <div className="d-flex flex-column gap-2">
+            {ibanError && <p className="m-0 text-danger">TODO See IBAN ei tundu korrektne.</p>}
+            <p className="m-0 text-secondary">Pangakonto peab kuuluma sinule.</p>
           </div>
         </div>
       </div>
-      {ibanError && <div className="pt-2 text-danger">TODO See IBAN ei tundu korrektne</div>}
 
-      <div className="d-flex justify-content-between mt-5 pt-4 border-top">
+      <div className="d-flex flex-column-reverse flex-sm-row justify-content-between pt-4 border-top gap-3">
         <button
           type="button"
           className="btn btn-lg btn-light"

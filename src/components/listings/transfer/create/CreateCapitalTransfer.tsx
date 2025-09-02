@@ -10,7 +10,7 @@ import { getTransferCreatePath } from './utils';
 import { DoneStep } from './steps/DoneStep';
 
 const CreateCapitalTransferForm = () => (
-  <div className="col-12 col-md-11 col-lg-9 mx-auto p-4">
+  <div className="col-12 col-md-10 col-lg-7 mx-auto d-flex flex-column gap-5">
     <Switch>
       <Route
         path={getTransferCreatePath(CREATE_CAPITAL_TRANSFER_STEPS[0].subPath)}
@@ -52,13 +52,13 @@ const CreateCapitalTransferForm = () => (
 );
 
 const Container = ({ children }: PropsWithChildren<unknown>) => (
-  <section className="p-4">
-    <h1 className="mb-4 text-center">Liikmekapitali üleandmise avaldus</h1>
-    <div className="py-4">
+  <>
+    <div className="d-flex flex-column gap-4">
+      <h1 className="m-0 text-md-center">Liikmekapitali üleandmise avaldus</h1>
       <CreateTransferSteps />
     </div>
-    <div className="py-5">{children}</div>
-  </section>
+    <div className="d-flex flex-column gap-5">{children}</div>
+  </>
 );
 
 export const CreateCapitalTransfer = () => (

@@ -116,7 +116,7 @@ export const AddListing = () => {
           </div>
 
           {listingType === 'SELL' && (
-            <div className="d-fex flex-column">
+            <div className="d-flex flex-column gap-2">
               <Slider
                 value={bookValueInput.value ?? 0}
                 onChange={handleSliderChange}
@@ -126,7 +126,7 @@ export const AddListing = () => {
                 color="BLUE"
                 ariaLabelledBy="book-value"
               />
-              <div className="mt-2 d-flex justify-content-between">
+              <div className="d-flex justify-content-between">
                 <span className="text-body-secondary">{formatAmountForCurrency(0, 0)}</span>
                 <span className="text-body-secondary">
                   {formatAmountForCurrency(totalBookValue ?? 0, 2)}

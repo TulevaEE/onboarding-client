@@ -13,16 +13,16 @@ export const ContractDetails = ({
   sellerIban,
   progress,
 }: ContractDetailsProps) => (
-  <div>
-    <div className="row pb-4 border-bottom">
+  <div className="d-flex flex-column gap-4">
+    <div className="d-flex flex-column flex-sm-row row-gap-3 pb-4 border-bottom">
       <div className="col" data-testid="seller-details">
-        <b className="fs-6">Müüja</b>
+        <b>Müüja</b>
         <div className="fs-3">{getFullName(seller)}</div>
         <div className="text-secondary">{seller.personalCode}</div>
         {progress && <SellerProgressContainer progress={progress} userRole={userRole} />}
       </div>
       <div className="col" data-testid="buyer-details">
-        <b className="fs-6">Ostja</b>
+        <b>Ostja</b>
         <div className="fs-3">{getFullName(buyer)}</div>
         <div className="text-secondary">{buyer.personalCode}</div>
         {progress && <BuyerProgressContainer progress={progress} userRole={userRole} />}
@@ -34,21 +34,19 @@ export const ContractDetails = ({
       totalBookValue={getTotalBookValue({ transferAmounts: amounts })}
     />
 
-    <div className="row pt-2 pb-4 mt-3 border-bottom">
+    <div className="d-flex pb-4 border-bottom">
       <div className="col">
         <b>Hinnaga</b>
       </div>
-
       <div className="col">
         <b>{formatAmountForCurrency(totalPrice)}</b>
       </div>
     </div>
 
-    <div className="row pt-4 pb-4 ">
+    <div className="d-flex flex-column flex-sm-row">
       <div className="col">
-        <b>Müüja pangakonto</b>
+        <b>Müüja pangakonto (IBAN)</b>
       </div>
-
       <div className="col">{sellerIban}</div>
     </div>
   </div>

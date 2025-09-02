@@ -128,7 +128,7 @@ describe('member capital transfer creation', () => {
 
     userEvent.click(
       await screen.findByLabelText(
-        /Kinnitan, et täidan võlaõigusseaduse kohaselt oma lepingulisi kohustusi täies ulatuses ja vastavalt kokkulepitud tingimustele./i,
+        /Kinnitan, et müüja ja ostja on kokku leppinud liikmekapitali võõrandamises eelpool nimetatud tingimustel./i,
       ),
     );
 
@@ -193,7 +193,7 @@ describe('member capital transfer creation', () => {
 
     userEvent.click(
       await screen.findByLabelText(
-        /Kinnitan, et täidan võlaõigusseaduse kohaselt oma lepingulisi kohustusi täies ulatuses ja vastavalt kokkulepitud tingimustele./i,
+        /Kinnitan, et müüja ja ostja on kokku leppinud liikmekapitali võõrandamises eelpool nimetatud tingimustel./i,
       ),
     );
 
@@ -375,7 +375,7 @@ describe('member capital transfer creation single row', () => {
 
     userEvent.click(
       await screen.findByLabelText(
-        /Kinnitan, et täidan võlaõigusseaduse kohaselt oma lepingulisi kohustusi täies ulatuses ja vastavalt kokkulepitud tingimustele./i,
+        /Kinnitan, et müüja ja ostja on kokku leppinud liikmekapitali võõrandamises eelpool nimetatud tingimustel./i,
       ),
     );
 
