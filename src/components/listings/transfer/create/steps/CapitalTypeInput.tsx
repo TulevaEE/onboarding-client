@@ -13,7 +13,7 @@ export const CapitalTypeInput = ({
   onValueUpdate: (newBookValue: number, type: CapitalType) => unknown;
 }) => {
   const { type } = transferAmount;
-  const bookValueAmountInput = useNumberInput(transferAmount.bookValue);
+  const bookValueAmountInput = useNumberInput(Number(transferAmount.bookValue.toFixed(2)));
 
   useEffect(() => {
     onValueUpdate(bookValueAmountInput.value ?? 0, type);
