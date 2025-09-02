@@ -28,6 +28,7 @@ export const EnterData = () => {
     totalPrice,
     bookValue,
     sellerIban,
+    capitalTransferAmounts,
     setTotalPrice,
     setSellerIban,
     setCapitalTransferAmounts: setFinalCapitalTransferAmounts,
@@ -46,10 +47,10 @@ export const EnterData = () => {
 
   const [capitalTransferAmountsInput, setCapitalTransferAmountsInput] = useState<
     CapitalTransferAmountInputState[]
-  >([]);
+  >(capitalTransferAmounts ?? []);
 
   useEffect(() => {
-    if (capitalRows) {
+    if (capitalRows && capitalTransferAmounts.length === 0) {
       setCapitalTransferAmountsInput(initializeCapitalTransferAmounts(capitalRows));
     }
   }, [capitalRows]);
@@ -142,14 +143,6 @@ export const EnterData = () => {
 
   return (
     <>
-      <code>{JSON.stringify(capitalTransferAmountsInput)}</code>
-      <code>
-        {JSON.stringify({
-          totalPrice: totalPriceInput.value,
-          bookValue: bookValueInput.value,
-          lastInput,
-        })}
-      </code>
       <div className="row">
         <div className="col-lg d-flex align-items-center">
           <label htmlFor="book-value" className="fs-3 fw-bold">
