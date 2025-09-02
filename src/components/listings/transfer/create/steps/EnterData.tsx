@@ -42,6 +42,8 @@ export const EnterData = () => {
   const [bankIban, setBankIban] = useState(sellerIban ?? '');
   const [ibanError, setIbanError] = useState(false);
 
+  const [lastInput, setLastInput] = useState<'TOTAL' | 'TYPE_INPUTS' | null>(null);
+
   const [capitalTransferAmountsInput, setCapitalTransferAmountsInput] = useState<
     CapitalTransferAmountInputState[]
   >([]);
@@ -52,19 +54,6 @@ export const EnterData = () => {
     }
   }, [capitalRows]);
 
-  /* useEffect(() => {
-    bookValueInput.setInputValue(bookValue.toFixed(2));
-    /* if (bookValue === 0) {
-      bookValueInput.setInputValue('', false);
-    } else if (bookValue.toFixed(2) !== bookValueInput.value?.toFixed(2)) {
-      bookValueInput.setInputValue(bookValue.toFixed(2), false);
-    }
-  }, [bookValue]); */
-
-  /* useEffect(() => {
-    setBookValue(bookValueInput.value ?? 0);
-  }, [bookValueInput.value]); */
-
   useEffect(() => {
     if (totalPriceInput.value !== null) {
       setTotalPrice(totalPriceInput.value);
@@ -72,14 +61,17 @@ export const EnterData = () => {
   }, [totalPriceInput.value]);
 
   useEffect(() => {
-    // TODO this needs to only be triggered when value changes as a result of user input
-    handleBookValueChange(bookValueInput.value ?? 0);
+    if (lastInput === 'TOTAL') {
+      handleBookValueChange(bookValueInput.value ?? 0);
+    }
   }, [bookValueInput.value]);
 
   const handleBookValueChange = (newBookValue: number) => {
     setCapitalTransferAmountsInput(
       calculateTransferAmountInputsFromNewTotalBookValue(newBookValue, capitalRows ?? []),
     );
+
+    setLastInput('TOTAL');
   };
 
   const handleCapitalTypeInputChange = (newBookValue: number, type: CapitalType) => {
@@ -93,6 +85,7 @@ export const EnterData = () => {
 
     const newAmounts = [...otherAmounts, { ...newAmount, bookValue: newBookValue }];
 
+    setLastInput('TYPE_INPUTS');
     setCapitalTransferAmountsInput(newAmounts);
     bookValueInput.setInputValue(getBookValueSum(newAmounts).toFixed(2), true);
   };
@@ -110,6 +103,7 @@ export const EnterData = () => {
 
   const handleSliderChange = (amount: number) => {
     bookValueInput.setInputValue(amount === 0 ? '' : amount.toFixed(2));
+    setLastInput('TOTAL');
   };
 
   const handleSubmitClicked = () => {
@@ -150,7 +144,11 @@ export const EnterData = () => {
     <>
       <code>{JSON.stringify(capitalTransferAmountsInput)}</code>
       <code>
-        {JSON.stringify({ totalPrice: totalPriceInput.value, bookValue: bookValueInput.value })}
+        {JSON.stringify({
+          totalPrice: totalPriceInput.value,
+          bookValue: bookValueInput.value,
+          lastInput,
+        })}
       </code>
       <div className="row">
         <div className="col-lg d-flex align-items-center">
