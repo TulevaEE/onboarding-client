@@ -25,7 +25,7 @@ export const SaleOfTotalCapitalDescription = ({
         {formatAmountForCurrency(saleBookValueAmount)}. See on{' '}
         {saleBookValueAmount !== 0 ? '~' : ''}
         {formatAmountForCount(saleUnitPercentage)}% osalus kogu Tuleva ühistu liikmekapitali
-        väärtusest ({formatAmountForCurrency(totalUnitAmountMillions)} mln).
+        raamatupidamislikust väärtusest ({formatAmountForCurrency(totalUnitAmountMillions)} mln).
       </p>
     );
   }
@@ -35,7 +35,7 @@ export const SaleOfTotalCapitalDescription = ({
       Ostad liikmekapitali raamatupidamislikus väärtuses{' '}
       {formatAmountForCurrency(saleBookValueAmount)}. See on {saleBookValueAmount !== 0 ? '~' : ''}
       {formatAmountForCount(saleUnitPercentage)}% osalus kogu Tuleva ühistu liikmekapitali
-      väärtusest ({formatAmountForCurrency(totalUnitAmountMillions)} mln).
+      raamatupidamislikust väärtusest ({formatAmountForCurrency(totalUnitAmountMillions)} mln).
     </p>
   );
 };
