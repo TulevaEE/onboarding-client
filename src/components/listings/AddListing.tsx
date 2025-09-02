@@ -15,7 +15,7 @@ export const AddListing = () => {
 
   const [listingType, setListingType] = useState<MemberCapitalListingType>('BUY');
 
-  const [expiryInMonths, setExpiryInMonths] = useState<number>(1);
+  const [expiryInMonths, setExpiryInMonths] = useState<number>(6);
 
   const totalPriceInput = useNumberInput();
   const bookValueInput = useNumberInput();
