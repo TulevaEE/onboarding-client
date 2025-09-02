@@ -103,7 +103,7 @@ export const AddListing = () => {
             <div className={`input-group input-group-lg ${styles.inputGroup}`}>
               <input
                 type="number"
-                className={`form-control form-control-lg text-end ${
+                className={`form-control form-control-lg fw-semibold ${
                   errors.moreThanMemberCapital ? 'border-danger' : ''
                 }`}
                 id="book-value"
@@ -111,7 +111,7 @@ export const AddListing = () => {
                 aria-label={listingType === 'BUY' ? 'Ostetav kogumaht' : 'Müüdav kogumaht'}
                 {...bookValueInput.inputProps}
               />
-              <span className="input-group-text">&euro;</span>
+              <span className="input-group-text fw-semibold">&euro;</span>
             </div>
           </div>
 
@@ -156,12 +156,12 @@ export const AddListing = () => {
                 placeholder="0"
                 id="total-price"
                 aria-label="Tehingu koguhind"
-                className={`form-control form-control-lg text-end ${
+                className={`form-control form-control-lg fw-semibold ${
                   errors.priceLessThanBookValue ? 'border-danger' : ''
                 }`}
                 {...totalPriceInput.inputProps}
               />
-              <span className="input-group-text">&euro;</span>
+              <span className="input-group-text fw-semibold">&euro;</span>
             </div>
           </div>
 
