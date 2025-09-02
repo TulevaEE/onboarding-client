@@ -137,6 +137,7 @@ export const EnterData = () => {
       ),
     );
     setSellerIban(formattedIban);
+
     navigateToNextStep();
   };
 

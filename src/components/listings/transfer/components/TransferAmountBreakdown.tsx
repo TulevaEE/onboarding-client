@@ -16,7 +16,7 @@ export const TransferAmountBreakdown = ({
   if (sortedAmounts.length === 1) {
     return (
       <>
-        <div className="row mt-4 py-2">
+        <div className="row mt-4 py-2" data-testid="capital-row-TOTAL">
           <div className="col">
             <b>Müüdav liikmekapital</b>
           </div>
@@ -29,7 +29,7 @@ export const TransferAmountBreakdown = ({
         </div>
 
         {sortedAmounts.map((amount) => (
-          <div className="row" key={amount.type}>
+          <div className="row" key={amount.type} data-testid={`capital-row-${amount.type}`}>
             <div className="col">
               (<TransferAmountName type={amount.type} />)
             </div>
@@ -41,7 +41,7 @@ export const TransferAmountBreakdown = ({
 
   return (
     <>
-      <div className="row mt-4 py-2">
+      <div className="row mt-4 py-2" data-testid="capital-row-TOTAL">
         <div className="col">
           <b>Müüdav liikmekapital</b>
         </div>
@@ -54,7 +54,7 @@ export const TransferAmountBreakdown = ({
       </div>
 
       {sortedAmounts.map((amount) => (
-        <div className="row" key={amount.type}>
+        <div className="row" key={amount.type} data-testid={`capital-row-${amount.type}`}>
           <div className="col">
             – <TransferAmountName type={amount.type} />
           </div>

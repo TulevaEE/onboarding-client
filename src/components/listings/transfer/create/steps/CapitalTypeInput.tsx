@@ -61,7 +61,7 @@ export const CapitalTypeInput = ({
 
   const displayName = typeToNameMap[type as keyof typeof typeToNameMap];
   return (
-    <div className="d-flex justify-space-between mb-3">
+    <div className="d-flex justify-space-between mb-3" data-testid={`capital-input-${type}`}>
       <div className="col">
         <div>
           {displayName}{' '}
@@ -82,7 +82,7 @@ export const CapitalTypeInput = ({
             }`}
             id={type}
             placeholder="0"
-            aria-label={`Müüdav osa ${displayName}-st`}
+            aria-label={`Müüdav osa ${displayName.toLowerCase()}est`}
             value={inputValue}
             onChange={handleInputChangeEvent}
             type="text"
