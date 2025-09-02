@@ -51,11 +51,7 @@ export const CapitalTypeInput = ({
 
   useEffect(() => {
     if (lastInput === 'TOTAL') {
-      if (transferAmount.bookValue === 0) {
-        setInputValue('');
-      } else {
-        setInputValue(transferAmount.bookValue.toFixed(2));
-      }
+      setInputValue(transferAmount.bookValue.toFixed(2));
     }
   }, [lastInput, transferAmount.bookValue]);
 

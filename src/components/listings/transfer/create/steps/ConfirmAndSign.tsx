@@ -57,6 +57,13 @@ export const ConfirmAndSign = () => {
   }
 
   if (!bookValue || !totalPrice || !sellerIban || !buyer) {
+    // eslint-disable-next-line no-console
+    console.error('Missing data, redirecting to start', {
+      bookValue,
+      totalPrice,
+      sellerIban,
+      buyer,
+    });
     return <Redirect to="/capital/transfer/create" />;
   }
 

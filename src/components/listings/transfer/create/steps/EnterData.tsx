@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { ChangeEventHandler, useEffect, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 import { formatAmountForCurrency, useNumberInput } from '../../../../common/utils';
 import { useCreateCapitalTransferContext } from '../hooks';
@@ -26,7 +26,7 @@ export const EnterData = () => {
     navigateToPreviousStep,
     buyer,
     totalPrice,
-    bookValue,
+    bookValue: bookValueFromContext,
     sellerIban,
     capitalTransferAmounts,
     setTotalPrice,
@@ -35,7 +35,11 @@ export const EnterData = () => {
   } = useCreateCapitalTransferContext();
 
   const totalPriceInput = useNumberInput(totalPrice ?? null);
-  const bookValueInput = useNumberInput(bookValue ?? null); // TODO need to break out from numberinput here for more fine grained control
+
+  const [bookValueInputDisplayValue, setBookValueInputDisplayValue] = useState(
+    Number(bookValueFromContext.toFixed(2)).toString(),
+  );
+  const [bookValue, setBookValue] = useState<number | null>(bookValueFromContext);
 
   const { data: capitalRows } = useCapitalRows();
   const { bookValue: totalBookValue } = useMemberCapitalSum();
@@ -55,25 +59,29 @@ export const EnterData = () => {
     }
   }, [capitalRows]);
 
-  useEffect(() => {
-    if (totalPriceInput.value !== null) {
-      setTotalPrice(totalPriceInput.value);
-    }
-  }, [totalPriceInput.value]);
+  const handleBookValueInputChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+    handleBookValueChange(e.target.value);
+  };
 
-  useEffect(() => {
-    console.log('lastInput', lastInput, bookValueInput);
-    if (lastInput === 'TOTAL') {
-      handleBookValueChange(bookValueInput.value ?? 0);
-    }
-  }, [lastInput, bookValueInput.value]);
-
-  const handleBookValueChange = (newBookValue: number) => {
-    setCapitalTransferAmountsInput(
-      calculateTransferAmountInputsFromNewTotalBookValue(newBookValue, capitalRows ?? []),
-    );
-
+  const handleBookValueChange = (newValue: string) => {
     setLastInput('TOTAL');
+    const formattedInputValue = newValue.replace(',', '.');
+
+    setBookValueInputDisplayValue(formattedInputValue);
+
+    if (newValue === '') {
+      setBookValue(null);
+      return;
+    }
+
+    const parsedValue = Number(formattedInputValue);
+
+    if (!Number.isNaN(parsedValue)) {
+      setBookValue(parsedValue);
+      setCapitalTransferAmountsInput(
+        calculateTransferAmountInputsFromNewTotalBookValue(parsedValue, capitalRows ?? []),
+      );
+    }
   };
 
   const handleCapitalTypeInputChange = (newBookValue: number, type: CapitalType) => {
@@ -89,28 +97,26 @@ export const EnterData = () => {
 
     setLastInput('TYPE_INPUTS');
     setCapitalTransferAmountsInput(newAmounts);
-    bookValueInput.setInputValue(getBookValueSum(newAmounts).toFixed(2));
+    const sum = getBookValueSum(newAmounts);
+    setBookValue(sum);
+    setBookValueInputDisplayValue(sum.toFixed(2));
   };
 
   const errors = {
     noPriceValue: typeof totalPriceInput.value !== 'number',
     noUnitAmountValue: typeof totalPriceInput.value !== 'number',
-    moreThanMemberCapital:
-      totalBookValue !== null && (totalBookValue ?? 0) < (bookValueInput.value ?? 0),
+    moreThanMemberCapital: totalBookValue !== null && (totalBookValue ?? 0) < (bookValue ?? 0),
     priceLessThanBookValue:
-      totalPriceInput.value !== null &&
-      bookValueInput.value !== null &&
-      totalPriceInput.value / bookValueInput.value < 1,
+      totalPriceInput.value !== null && bookValue !== null && totalPriceInput.value / bookValue < 1,
   };
 
   const handleSliderChange = (amount: number) => {
-    bookValueInput.setInputValue(amount === 0 ? '' : amount.toFixed(2));
-    setLastInput('TOTAL');
+    handleBookValueChange(amount === 0 ? '' : amount.toFixed(2));
   };
 
   const handleSubmitClicked = () => {
     const formattedIban = bankIban.trim();
-    if (!totalPriceInput.value || !bookValueInput.value || !formattedIban) {
+    if (!totalPriceInput.value || !bookValue || !formattedIban) {
       return;
     }
 
@@ -126,7 +132,7 @@ export const EnterData = () => {
     setTotalPrice(totalPriceInput.value);
     setFinalCapitalTransferAmounts(
       calculateTransferAmountPrices(
-        { bookValue: bookValueInput.value, totalPrice: totalPriceInput.value },
+        { bookValue, totalPrice: totalPriceInput.value },
         capitalTransferAmountsInput,
       ),
     );
@@ -160,7 +166,10 @@ export const EnterData = () => {
               id="book-value"
               placeholder="0"
               aria-label="Müüdav kogumaht"
-              {...bookValueInput.inputProps}
+              type="text"
+              inputMode="decimal"
+              value={bookValueInputDisplayValue}
+              onChange={handleBookValueInputChange}
             />
             <div className="input-group-text">&euro;</div>
           </div>
@@ -169,7 +178,7 @@ export const EnterData = () => {
       <div className="row">
         <div className="mt-4">
           <Slider
-            value={(bookValueInput.value as number) ?? 0}
+            value={(bookValue as number) ?? 0}
             onChange={handleSliderChange}
             min={0}
             max={totalBookValue ?? 0}
@@ -210,7 +219,7 @@ export const EnterData = () => {
 
       <div className="row mt-2">
         <SaleOfTotalCapitalDescription
-          saleBookValueAmount={bookValueInput.value ?? 0}
+          saleBookValueAmount={bookValue ?? 0}
           transactionType="SELL"
         />
       </div>
