@@ -198,24 +198,26 @@ export const EnterData = () => {
       </div>
 
       <div className="row mt-4">
-        {sortTransferAmounts(capitalTransferAmountsInput).map((amount) => {
-          const rowForAmount = capitalRows?.find((row) => amount.type === row.type);
+        {capitalTransferAmountsInput.length > 1
+          ? sortTransferAmounts(capitalTransferAmountsInput).map((amount) => {
+              const rowForAmount = capitalRows?.find((row) => amount.type === row.type);
 
-          if (!rowForAmount) {
-            return null;
-          }
+              if (!rowForAmount) {
+                return null;
+              }
 
-          return (
-            <CapitalTypeInput
-              key={amount.type}
-              transferAmount={amount}
-              capitalRow={rowForAmount}
-              lastInput={lastInput}
-              setLastInput={setLastInput}
-              onValueUpdate={handleCapitalTypeInputChange}
-            />
-          );
-        })}
+              return (
+                <CapitalTypeInput
+                  key={amount.type}
+                  transferAmount={amount}
+                  capitalRow={rowForAmount}
+                  lastInput={lastInput}
+                  setLastInput={setLastInput}
+                  onValueUpdate={handleCapitalTypeInputChange}
+                />
+              );
+            })
+          : null}
       </div>
 
       <div className="row mt-2">
