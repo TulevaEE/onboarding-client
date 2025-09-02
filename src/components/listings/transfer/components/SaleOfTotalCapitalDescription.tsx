@@ -31,7 +31,7 @@ export const SaleOfTotalCapitalDescription = ({
   }
 
   return (
-    <div className="text-secondary ">
+    <div className="text-secondary">
       Ostad liikmekapitali raamatupidamislikus väärtuses{' '}
       {formatAmountForCurrency(saleBookValueAmount)}. See on {saleBookValueAmount !== 0 ? '~' : ''}
       {formatAmountForCount(saleUnitPercentage)}% osalus kogu Tuleva ühistu liikmekapitali
