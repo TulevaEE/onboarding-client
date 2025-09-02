@@ -2,7 +2,7 @@ import {
   CapitalTransferAmount,
   CapitalTransferContract,
 } from '../../../common/apiModels/capital-transfer';
-import { CapitalType, MemberLookup } from '../../../common/apiModels';
+import { MemberLookup } from '../../../common/apiModels';
 
 type StateContext = {
   buyer: MemberLookup | null;
