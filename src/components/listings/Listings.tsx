@@ -4,34 +4,30 @@ import { ListingsList } from './components/ListingsList';
 import { TransferList } from './transfer/TransferList';
 
 export const Listings = () => (
-  <div className="col-12 col-md-11 col-lg-9 mx-auto">
-    <div className="my-5 text-center">
-      <h1 className="mb-4">
+  <div className="col-12 col-md-11 col-lg-9 mx-auto d-flex flex-column gap-5">
+    <div className="d-flex flex-column gap-4 text-center">
+      <h1 className="m-0">
         <FormattedMessage id="capital.listings.heading" />
       </h1>
-
       <p className="m-0 lead">
         <FormattedMessage id="capital.listings.intro" />
       </p>
-
-      <p className="pt-3 lead">
+      <p className="m-0 lead">
         <FormattedMessage id="capital.listings.instructions" />
       </p>
+    </div>
 
-      <Link to="/capital/listings/add" className="mt-2 btn btn-light align-middle">
+    <div className="d-flex gap-2 justify-content-center">
+      <Link to="/capital/listings/add" className="btn btn-light">
         <FormattedMessage id="capital.listings.add" />
       </Link>
-      <Link to="/capital/transfer/create" className="mt-2 ms-2 btn btn-light align-middle">
+      <Link to="/capital/transfer/create" className="btn btn-light">
         <FormattedMessage id="capital.listings.transfer" />
       </Link>
     </div>
 
-    <div className="my-5">
-      <TransferList />
-    </div>
+    <TransferList />
 
-    <div className="my-5">
-      <ListingsList />
-    </div>
+    <ListingsList />
   </div>
 );

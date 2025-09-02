@@ -274,7 +274,7 @@ export const EnterData = () => {
               value={bankIban}
               onChange={(e) => setBankIban(e.target.value)}
             />
-            <div className="text-secondary mt-1">Pangakonto peab kuuluma sinule</div>
+            <div className="text-secondary mt-1">Pangakonto peab kuuluma sinule.</div>
           </div>
         </div>
       </div>
