@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { ChangeEventHandler, useEffect, useState } from 'react';
 import { CapitalRow, CapitalType } from '../../../../common/apiModels';
 import { CapitalTransferAmountInputState } from '../../../../common/apiModels/capital-transfer';
 import { formatAmountForCurrency, useNumberInput } from '../../../../common/utils';
@@ -10,25 +10,54 @@ export const CapitalTypeInput = ({
   transferAmount,
   capitalRow,
   onValueUpdate,
+  lastInput,
+  setLastInput,
 }: {
   transferAmount: CapitalTransferAmountInputState;
   capitalRow: CapitalRow;
   onValueUpdate: (newBookValue: number, type: CapitalType) => unknown;
+  lastInput: 'TOTAL' | 'TYPE_INPUTS';
+  setLastInput: (type: 'TOTAL' | 'TYPE_INPUTS') => unknown;
 }) => {
   const { type } = transferAmount;
-  const bookValueAmountInput = useNumberInput(Number(transferAmount.bookValue.toFixed(2)));
 
-  useEffect(() => {
-    onValueUpdate(bookValueAmountInput.value ?? 0, type);
-  }, [bookValueAmountInput.value]);
+  const [inputValue, setInputValue] = useState(
+    Number(transferAmount.bookValue.toFixed(2)).toString(),
+  );
+  const [value, setValue] = useState<number | null>(transferAmount.bookValue);
 
-  useEffect(() => {
-    if (transferAmount.bookValue === 0) {
-      bookValueAmountInput.setInputDisplayValueOnly('');
-    } else if (transferAmount.bookValue.toFixed(2) !== bookValueAmountInput.value?.toFixed(2)) {
-      bookValueAmountInput.setInputDisplayValueOnly(transferAmount.bookValue.toFixed(2));
+  const handleInputChangeEvent: ChangeEventHandler<HTMLInputElement> = (event) => {
+    setLastInput('TYPE_INPUTS');
+    updateInput(event.target.value);
+  };
+
+  const updateInput = (changedInputValue: string, updateParsedValue = true) => {
+    const formattedInputValue = changedInputValue.replace(',', '.');
+
+    setInputValue(formattedInputValue);
+
+    if (changedInputValue === '') {
+      setValue(null);
+      return;
     }
-  }, [transferAmount.bookValue]);
+
+    const parsedValue = Number(formattedInputValue);
+
+    if (!Number.isNaN(parsedValue) && updateParsedValue) {
+      setValue(parsedValue);
+      onValueUpdate(parsedValue, type);
+    }
+  };
+
+  useEffect(() => {
+    if (lastInput === 'TOTAL') {
+      if (transferAmount.bookValue === 0) {
+        setInputValue('');
+      } else {
+        setInputValue(transferAmount.bookValue.toFixed(2));
+      }
+    }
+  }, [lastInput, transferAmount.bookValue]);
 
   if (!(type in typeToNameMap)) {
     return null;
@@ -53,14 +82,15 @@ export const CapitalTypeInput = ({
         <div className={`input-group ${styles.inputGroup}`}>
           <input
             className={`form-control form-control-lg text-end ${
-              bookValueAmountInput.value && bookValueAmountInput.value > capitalRow.value
-                ? 'border-danger'
-                : ''
+              value && value > capitalRow.value ? 'border-danger' : ''
             }`}
             id={type}
             placeholder="0"
             aria-label={`Müüdav osa ${displayName}-st`}
-            {...bookValueAmountInput.inputProps}
+            value={inputValue}
+            onChange={handleInputChangeEvent}
+            type="text"
+            inputMode="decimal"
           />
           <div className="input-group-text">&euro;</div>
         </div>

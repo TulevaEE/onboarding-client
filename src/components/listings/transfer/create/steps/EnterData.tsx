@@ -62,10 +62,11 @@ export const EnterData = () => {
   }, [totalPriceInput.value]);
 
   useEffect(() => {
+    console.log('lastInput', lastInput, bookValueInput);
     if (lastInput === 'TOTAL') {
       handleBookValueChange(bookValueInput.value ?? 0);
     }
-  }, [bookValueInput.value]);
+  }, [lastInput, bookValueInput.value]);
 
   const handleBookValueChange = (newBookValue: number) => {
     setCapitalTransferAmountsInput(
@@ -199,6 +200,8 @@ export const EnterData = () => {
               key={amount.type}
               transferAmount={amount}
               capitalRow={rowForAmount}
+              lastInput={lastInput}
+              setLastInput={setLastInput}
               onValueUpdate={handleCapitalTypeInputChange}
             />
           );
