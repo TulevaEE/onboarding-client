@@ -20,22 +20,22 @@ export const SaleOfTotalCapitalDescription = ({
 
   if (transactionType === 'SELL') {
     return (
-      <div className="text-secondary">
+      <p className="m-0 text-secondary">
         Müüd liikmekapitali raamatupidamislikus väärtuses{' '}
         {formatAmountForCurrency(saleBookValueAmount)}. See on{' '}
         {saleBookValueAmount !== 0 ? '~' : ''}
         {formatAmountForCount(saleUnitPercentage)}% osalus kogu Tuleva ühistu liikmekapitali
         väärtusest ({formatAmountForCurrency(totalUnitAmountMillions)} mln).
-      </div>
+      </p>
     );
   }
 
   return (
-    <div className="text-secondary">
+    <p className="m-0 text-secondary ">
       Ostad liikmekapitali raamatupidamislikus väärtuses{' '}
       {formatAmountForCurrency(saleBookValueAmount)}. See on {saleBookValueAmount !== 0 ? '~' : ''}
       {formatAmountForCount(saleUnitPercentage)}% osalus kogu Tuleva ühistu liikmekapitali
       väärtusest ({formatAmountForCurrency(totalUnitAmountMillions)} mln).
-    </div>
+    </p>
   );
 };

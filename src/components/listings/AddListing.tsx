@@ -66,18 +66,10 @@ export const AddListing = () => {
   };
 
   return (
-    <div className="col-12 col-md-11 col-lg-8 mx-auto">
-      <div className="my-5">
-        <h1 className="mb-4 text-center">Uus kuulutus</h1>
-      </div>
-
-      <section className={`my-5 ${styles.container}`}>
-        {error && (
-          <div className="alert alert-danger">
-            Kuulutuse lisamisel tekkis viga. Palun võta meiega ühendust
-          </div>
-        )}
-        <div className="btn-group d-flex px-6" role="group">
+    <div className="col-12 col-md-11 col-lg-8 mx-auto d-flex flex-column gap-5">
+      <div className="d-flex flex-column gap-4">
+        <h1 className="m-0 text-center">Uus kuulutus</h1>
+        <div className="btn-group d-flex px-0 px-sm-6 pb-4" role="group">
           <ListingButton
             listingType={listingType}
             listingTypeOfButton="BUY"
@@ -85,7 +77,6 @@ export const AddListing = () => {
           >
             Ostan
           </ListingButton>
-
           <ListingButton
             listingType={listingType}
             listingTypeOfButton="SELL"
@@ -94,16 +85,21 @@ export const AddListing = () => {
             Müün
           </ListingButton>
         </div>
-        <div className="row mt-5">
-          <div className="col-lg d-flex align-items-center">
-            <label htmlFor="book-value" className="fs-3 fw-bold">
+      </div>
+
+      <section className={`d-flex flex-column gap-5 ${styles.content}`}>
+        {error && (
+          <div className="alert alert-danger">
+            Kuulutuse lisamisel tekkis viga. Palun võta meiega ühendust.
+          </div>
+        )}
+        <div className="form-section d-flex flex-column gap-3">
+          <div className="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 row-gap-2">
+            <label htmlFor="book-value" className="fs-3 fw-semibold">
               {listingType === 'BUY'
                 ? 'Kui palju liikmekapitali ostad?'
                 : 'Kui palju liikmekapitali müüd?'}
             </label>
-          </div>
-
-          <div className="col-lg d-flex justify-content-end">
             <div className={`input-group input-group-lg ${styles.inputGroup}`}>
               <input
                 type="number"
@@ -115,14 +111,12 @@ export const AddListing = () => {
                 aria-label={listingType === 'BUY' ? 'Ostetav kogumaht' : 'Müüdav kogumaht'}
                 {...bookValueInput.inputProps}
               />
-              <div className="input-group-text">&euro;</div>
+              <span className="input-group-text">&euro;</span>
             </div>
           </div>
-        </div>
 
-        {listingType === 'SELL' && (
-          <div className="row">
-            <div className="mt-4">
+          {listingType === 'SELL' && (
+            <div className="d-fex flex-column">
               <Slider
                 value={bookValueInput.value ?? 0}
                 onChange={handleSliderChange}
@@ -132,36 +126,31 @@ export const AddListing = () => {
                 color="BLUE"
                 ariaLabelledBy="book-value"
               />
-
               <div className="mt-2 d-flex justify-content-between">
-                <div className="text-body-secondary">{formatAmountForCurrency(0, 0)}</div>
-                <div className="text-body-secondary">
+                <span className="text-body-secondary">{formatAmountForCurrency(0, 0)}</span>
+                <span className="text-body-secondary">
                   {formatAmountForCurrency(totalBookValue ?? 0, 2)}
-                </div>
+                </span>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        <div className="row mt-3">
-          <SaleOfTotalCapitalDescription
-            saleBookValueAmount={bookValueInput.value ?? 0}
-            transactionType={listingType}
-          />
+          <div className="d-flex flex-column gap-2">
+            {errors.moreThanMemberCapital && (
+              <p className="m-0 text-danger">TODO Sul ei ole piisavalt liikmekapitali</p>
+            )}
+            <SaleOfTotalCapitalDescription
+              saleBookValueAmount={bookValueInput.value ?? 0}
+              transactionType={listingType}
+            />
+          </div>
         </div>
 
-        {errors.moreThanMemberCapital && (
-          <div className="pt-2 text-danger">TODO Sul ei ole piisavalt liikmekapitali</div>
-        )}
-
-        <div className="row mt-5">
-          <div className="col-lg d-flex align-items-center">
-            <label htmlFor="total-price" className="fs-3 fw-bold">
+        <div className="form-section d-flex flex-column gap-3">
+          <div className="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 row-gap-2">
+            <label htmlFor="total-price" className="fs-3 fw-semibold">
               {listingType === 'BUY' ? 'Mis hinnaga ostad?' : 'Mis hinnaga müüd?'}
             </label>
-          </div>
-
-          <div className="col-lg d-flex justify-content-end">
             <div className={`input-group input-group-lg ${styles.inputGroup}`}>
               <input
                 placeholder="0"
@@ -172,30 +161,27 @@ export const AddListing = () => {
                 }`}
                 {...totalPriceInput.inputProps}
               />
-              <div className="input-group-text">&euro;</div>
+              <span className="input-group-text">&euro;</span>
             </div>
           </div>
+
+          {errors.priceLessThanBookValue && (
+            <p className="m-0 text-danger">
+              TODO Sa ei saa müüa liikmekapitali hinnaga alla raamatupidamisliku väärtuse
+            </p>
+          )}
         </div>
 
-        {errors.priceLessThanBookValue && (
-          <div className="pt-2 text-danger">
-            TODO Sa ei saa müüa liikmekapitali hinnaga alla raamatupidamisliku väärtuse
-          </div>
-        )}
-
-        <div className="row mt-5">
-          <div className="col-lg d-flex align-items-center">
-            <label htmlFor="expiry-select" className="fs-3 fw-bold">
+        <div className="form-section d-flex flex-column gap-3">
+          <div className="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 row-gap-2">
+            <label htmlFor="expiry-select" className="fs-3 fw-semibold">
               Kuulutus kehtib
             </label>
-          </div>
-
-          <div className="col-lg d-flex justify-content-end">
             <div className={`input-group input-group-lg ${styles.inputGroup}`}>
               <select
                 value={expiryInMonths}
                 onChange={(e) => setExpiryInMonths(Number(e.target.value))}
-                className="form-select form-control-lg fw-bold"
+                className="form-select form-control-lg fw-semibold"
                 placeholder="0"
                 id="expiry-select"
                 aria-label="Kuulutuse kestus kuudes"
@@ -208,10 +194,11 @@ export const AddListing = () => {
           </div>
         </div>
 
-        <div className="mt-5 pt-5 border-top">
+        <div className="pt-5 border-top">
           <AssurancesSection />
         </div>
-        <div className="d-flex justify-content-between mt-5 pt-4 border-top">
+
+        <div className="d-flex flex-column-reverse flex-sm-row justify-content-between pt-4 border-top gap-3">
           <button type="button" className="btn btn-lg btn-light" onClick={() => history.goBack()}>
             Tagasi
           </button>

@@ -1,16 +1,9 @@
 @import '../variables';
 @import '~bootstrap/scss/bootstrap.scss';
 
-.container {
-  padding: 1.5rem;
-  border-radius: 8px;
-}
-
-
 .inputGroup {
-  @include media-breakpoint-down(lg) {
+  @include media-breakpoint-down(sm) {
     max-width: unset;
   }
-
   max-width: 200px;
 }

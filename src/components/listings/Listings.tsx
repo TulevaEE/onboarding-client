@@ -19,7 +19,7 @@ export const Listings = () => (
       </p>
 
       <Link to="/capital/listings/add" className="mt-2 btn btn-light align-middle">
-        + <FormattedMessage id="capital.listings.add" />
+        <FormattedMessage id="capital.listings.add" />
       </Link>
       <Link to="/capital/transfer/create" className="mt-2 ms-2 btn btn-light align-middle">
         <FormattedMessage id="capital.listings.transfer" />
