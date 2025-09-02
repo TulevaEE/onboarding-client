@@ -15,9 +15,9 @@ export const CapitalTypeInput = ({
   const { type } = transferAmount;
   const bookValueAmountInput = useNumberInput(transferAmount.bookValue);
 
-  /* useEffect(() => {
+  useEffect(() => {
     onValueUpdate(bookValueAmountInput.value ?? 0, type);
-  }, [bookValueAmountInput.value]); */
+  }, [bookValueAmountInput.value]);
 
   useEffect(() => {
     if (transferAmount.bookValue === 0) {
@@ -26,11 +26,6 @@ export const CapitalTypeInput = ({
       bookValueAmountInput.setInputValue(transferAmount.bookValue.toFixed(2), false);
     }
   }, [transferAmount.bookValue]);
-
-  const commitValue = () => {
-    // bookValueAmountInput.setInputValue(transferAmount.bookValue.toFixed(2));
-    onValueUpdate(bookValueAmountInput.value ?? 0, type);
-  };
 
   if (!(type in typeToNameMap)) {
     return null;
@@ -54,7 +49,6 @@ export const CapitalTypeInput = ({
             id={type}
             placeholder="0"
             aria-label={`Müüdav osa ${displayName}-st`}
-            onBlur={commitValue}
             {...bookValueAmountInput.inputProps}
           />
           <div className="input-group-text">&euro;</div>
