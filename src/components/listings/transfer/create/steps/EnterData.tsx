@@ -72,6 +72,7 @@ export const EnterData = () => {
 
     if (newValue === '') {
       setBookValue(null);
+      setCapitalTransferAmountsInput(initializeCapitalTransferAmounts(capitalRows ?? []));
       return;
     }
 
