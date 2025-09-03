@@ -8,9 +8,12 @@ import { useMemberCapitalSum } from './hooks';
 import { MemberCapitalListingType } from '../common/apiModels';
 import { SaleOfTotalCapitalDescription } from './transfer/components/SaleOfTotalCapitalDescription';
 import Slider from '../flows/withdrawals/Slider';
+import { usePageTitle } from '../common/usePageTitle';
 
 // TODO break up this component
 export const AddListing = () => {
+  usePageTitle('pageTitle.capitalListingNew');
+
   const history = useHistory();
 
   const [listingType, setListingType] = useState<MemberCapitalListingType>('BUY');

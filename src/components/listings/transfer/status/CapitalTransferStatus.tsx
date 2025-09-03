@@ -7,8 +7,11 @@ import { getContractDetailsPropsFromContract, getMyRole } from './utils';
 import { BuyerFlow } from './buyer/BuyerFlow';
 import { SellerConfirm } from './seller/SellerConfirm';
 import { CapitalTransferContract } from '../../../common/apiModels/capital-transfer';
+import { usePageTitle } from '../../../common/usePageTitle';
 
 export const CapitalTransferStatus = () => {
+  usePageTitle('pageTitle.capitalNewApplication');
+
   const params = useParams<{ id: string }>();
 
   const { data: me } = useMe();

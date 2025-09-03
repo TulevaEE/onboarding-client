@@ -824,7 +824,7 @@
   "withdrawals.done.secondPillarDisclaimer": "Pea meeles, et II sambast väljamaksete tegemisel <b>lõppevad sissemaksed sinu II sambasse igaveseks</b>. Selle vältimiseks on sul aega väljamaksed tühistada kuni <b>{cancellationDate}</b>.",
   "withdrawals.done.myAccount": "Minu konto",
 
-  "capital.listings.heading": "Liikmekapitali kuulutused",
+  "capital.listings.heading": "Liikmekapitali võõrandamine",
   "capital.listings.intro": "Tuleva ühistu liikmed saavad liikmekapitali omavahel osta ja müüa.",
   "capital.listings.instructions": "Selleks lisa oma kuulutus või vasta olemasolevale ja esitage ühine avaldus. Ühistu juhatus vaatab saadetud avaldused iga kuu esimestel tööpäevadel üle ja kiidab tehingu heaks, kui see vastab kehtestatud korrale.",
   "capital.listings.add": "Lisan kuulutuse",
@@ -964,5 +964,8 @@
   "pageTitle.capitalTransactions": "Liikmekapitali tehingud",
   "pageTitle.secondPillarTransactions": "II samba tehingud",
   "pageTitle.thirdPillarTransactions": "III samba tehingud",
-  "pageTitle.firstVsSecondPillar": "I vs II sammas"
+  "pageTitle.firstVsSecondPillar": "I vs II sammas",
+  "pageTitle.capitalListings": "Liikmekapitali võõrandamine",
+  "pageTitle.capitalListingNew": "Uus kuulutus",
+  "pageTitle.capitalNewApplication": "Avaldus"
 }

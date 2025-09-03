@@ -48,7 +48,7 @@ describe('member capital listings with no listings', () => {
   });
 
   test('shows empty listings screen, allows to create listing', async () => {
-    expect(await screen.findByText(/Liikmekapitali kuulutused/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Liikmekapitali võõrandamine/i)).toBeInTheDocument();
     const createLink = await screen.findByText(/Lisan kuulutuse/i);
     expect(createLink).toBeInTheDocument();
 
@@ -65,7 +65,7 @@ describe('member capital listings with no listings', () => {
 
     userEvent.click(screen.getByRole('button', { name: 'Avaldan ostukuulutuse' }));
 
-    expect(await screen.findByText(/Liikmekapitali kuulutused/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Liikmekapitali võõrandamine/i)).toBeInTheDocument();
   });
 });
 
@@ -76,7 +76,7 @@ describe('member capital listings with listings', () => {
   });
 
   test('shows listings correctly', async () => {
-    expect(await screen.findByText(/Liikmekapitali kuulutused/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Liikmekapitali võõrandamine/i)).toBeInTheDocument();
     const createLink = await screen.findByText(/Lisan kuulutuse/i);
     expect(createLink).toBeInTheDocument();
 
@@ -104,7 +104,7 @@ describe('member capital listings with listings', () => {
   });
 
   test('allows to contact for BUY listing', async () => {
-    expect(await screen.findByText(/Liikmekapitali kuulutused/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Liikmekapitali võõrandamine/i)).toBeInTheDocument();
     const createLink = await screen.findByText(/Lisan kuulutuse/i);
     expect(createLink).toBeInTheDocument();
 
@@ -126,11 +126,11 @@ describe('member capital listings with listings', () => {
     ).toBeInTheDocument();
     userEvent.click(await screen.findByText(/Vaatan kõiki kuulutusi/i));
 
-    expect(await screen.findByText(/Liikmekapitali kuulutused/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Liikmekapitali võõrandamine/i)).toBeInTheDocument();
   });
 
   test('allows to contact for SELL listing', async () => {
-    expect(await screen.findByText(/Liikmekapitali kuulutused/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Liikmekapitali võõrandamine/i)).toBeInTheDocument();
     const createLink = await screen.findByText(/Lisan kuulutuse/i);
     expect(createLink).toBeInTheDocument();
 
@@ -152,11 +152,11 @@ describe('member capital listings with listings', () => {
     ).toBeInTheDocument();
     userEvent.click(await screen.findByText(/Vaatan kõiki kuulutusi/i));
 
-    expect(await screen.findByText(/Liikmekapitali kuulutused/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Liikmekapitali võõrandamine/i)).toBeInTheDocument();
   });
 
   test('shows listings, allows to delete', async () => {
-    expect(await screen.findByText(/Liikmekapitali kuulutused/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Liikmekapitali võõrandamine/i)).toBeInTheDocument();
     const createLink = await screen.findByText(/Lisan kuulutuse/i);
     expect(createLink).toBeInTheDocument();
 
@@ -277,7 +277,7 @@ describe('member capital listings with pending tranactions', () => {
   ])(
     'shows pending transaction correctly for %s in %s status',
     async (expectedRole, expectedState, statusText, linkText) => {
-      expect(await screen.findByText(/Liikmekapitali kuulutused/i)).toBeInTheDocument();
+      expect(await screen.findByText(/Liikmekapitali võõrandamine/i)).toBeInTheDocument();
 
       const contracts = await screen.findAllByTestId('active-capital-transfer-contract');
 

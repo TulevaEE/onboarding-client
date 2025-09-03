@@ -822,7 +822,7 @@
   "withdrawals.done.secondPillarDisclaimer": "When making withdrawals from the II pillar, <b>contributions to your second pillar will stop permanently</b>. To avoid this, you can cancel the withdrawals until <b>{cancellationDate}</b>.",
   "withdrawals.done.myAccount": "My Account",
 
-  "capital.listings.heading": "Liikmekapitali kuulutused",
+  "capital.listings.heading": "Liikmekapitali võõrandamine",
   "capital.listings.intro": "Tuleva ühistu liikmed saavad liikmekapitali omavahel osta ja müüa.",
   "capital.listings.instructions": "Selleks lisa oma kuulutus või vasta olemasolevale ja esitage ühine avaldus. Ühistu juhatus vaatab saadetud avaldused iga kuu esimestel tööpäevadel üle ja kiidab tehingu heaks, kui see vastab kehtestatud korrale.",
   "capital.listings.add": "Lisan kuulutuse",
@@ -962,5 +962,8 @@
   "pageTitle.capitalTransactions": "Member capital transactions",
   "pageTitle.secondPillarTransactions": "II pillar transactions",
   "pageTitle.thirdPillarTransactions": "III pillar transactions",
-  "pageTitle.firstVsSecondPillar": "I vs II pillar"
+  "pageTitle.firstVsSecondPillar": "I vs II pillar",
+  "pageTitle.capitalListings": "Liikmekapitali võõrandamine",
+  "pageTitle.capitalListingNew": "Uus kuulutus",
+  "pageTitle.capitalNewApplication": "Avaldus"
 }

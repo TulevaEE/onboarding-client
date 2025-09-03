@@ -239,7 +239,7 @@ export const EnterData = () => {
         <div className="form-section d-flex flex-column gap-3">
           <div className="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 row-gap-2">
             <label htmlFor="total-price" className="fs-3 fw-semibold">
-              Mis hinnaga müüd?
+              Kokkulepitud müügihind
             </label>
             <div className={`input-group input-group-lg ${styles.inputGroup}`}>
               <input
@@ -257,7 +257,7 @@ export const EnterData = () => {
 
         <div className="form-section d-flex flex-column gap-3">
           <div>
-            <label htmlFor="bank-account-iban" className="fs-4 fw-bold form-label">
+            <label htmlFor="bank-account-iban" className="fs-3 fw-bold form-label">
               Müüja pangakonto (IBAN)
             </label>
             <input

@@ -135,7 +135,7 @@ const ListingRow = ({ listing }: { listing: MemberCapitalListing }) => {
         {!listing.isOwnListing && (
           <Link
             to={`/capital/listings/${listing.id}`}
-            className="d-flex align-items-center justify-content-end"
+            className="d-flex align-items-center gap-1 justify-content-end"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
