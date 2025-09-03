@@ -98,7 +98,7 @@ describe('member capital transfer creation', () => {
     userEvent.click(await screen.findByText(/Kinnitan ostja/i));
 
     const amountInput = await screen.findByLabelText(/Kui palju liikmekapitali müüd?/i);
-    const priceInput = await screen.findByLabelText(/Mis hinnaga müüd?/i);
+    const priceInput = await screen.findByLabelText(/Kokkulepitud müügihind/i);
 
     userEvent.type(amountInput, '100');
     userEvent.type(priceInput, '250');
@@ -166,7 +166,7 @@ describe('member capital transfer creation', () => {
     userEvent.type(workCompensationAmountInput, '150');
     userEvent.type(memberCapitalAmountInput, '100');
 
-    const priceInput = await screen.findByLabelText(/Mis hinnaga müüd?/i);
+    const priceInput = await screen.findByLabelText(/Kokkulepitud müügihind/i);
     userEvent.type(priceInput, '350');
 
     const ibanInput = await screen.findByLabelText(/Müüja pangakonto/i);
@@ -237,7 +237,7 @@ describe('member capital transfer creation', () => {
     userEvent.click(await screen.findByText(/Kinnitan ostja/i));
 
     const amountInput = await screen.findByLabelText(/Kui palju liikmekapitali müüd?/i);
-    const priceInput = await screen.findByLabelText(/Mis hinnaga müüd?/i);
+    const priceInput = await screen.findByLabelText(/Kokkulepitud müügihind/i);
 
     userEvent.type(amountInput, '10000000');
     userEvent.type(priceInput, '2.5');
@@ -264,7 +264,7 @@ describe('member capital transfer creation', () => {
     userEvent.click(await screen.findByText(/Kinnitan ostja/i));
 
     const amountInput = await screen.findByLabelText(/Kui palju liikmekapitali müüd?/i);
-    const priceInput = await screen.findByLabelText(/Mis hinnaga müüd?/i);
+    const priceInput = await screen.findByLabelText(/Kokkulepitud müügihind/i);
 
     userEvent.type(amountInput, '10');
     userEvent.type(priceInput, '2');
@@ -309,7 +309,7 @@ describe('member capital transfer creation single row', () => {
     userEvent.click(await screen.findByText(/Kinnitan ostja/i));
 
     const amountInput = await screen.findByLabelText(/Kui palju liikmekapitali müüd?/i);
-    const priceInput = await screen.findByLabelText(/Mis hinnaga müüd?/i);
+    const priceInput = await screen.findByLabelText(/Kokkulepitud müügihind/i);
 
     userEvent.type(amountInput, '100');
     userEvent.type(priceInput, '250');
