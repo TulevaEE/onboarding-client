@@ -45,7 +45,8 @@ export const EnterData = () => {
   const { bookValue: totalBookValue } = useMemberCapitalSum();
 
   const [bankIban, setBankIban] = useState(sellerIban ?? '');
-  const [ibanError, setIbanError] = useState(false);
+
+  const [submitAttempted, setSubmitAttempted] = useState(false);
 
   const [lastInput, setLastInput] = useState<'TOTAL' | 'TYPE_INPUTS'>('TOTAL');
 
@@ -115,26 +116,25 @@ export const EnterData = () => {
     noPriceValue:
       typeof totalPriceInput.value !== 'number' ||
       (typeof totalPriceInput.value === 'number' && totalPriceInput.value < 0),
-    noUnitAmountValue: typeof bookValue !== 'number',
+    noBookValue: !bookValue,
     moreThanMemberCapital: totalBookValue !== null && (totalBookValue ?? 0) < (bookValue ?? 0),
+    ibanError: !isValidIban(bankIban),
   };
 
   const handleSliderChange = (amount: number) => {
-    handleBookValueChange(amount === 0 ? '' : amount.toFixed(2));
+    handleBookValueChange(amount === 0 ? '0' : amount.toFixed(2));
   };
 
+  const hasErrors = Object.values(errors).some((error) => !!error);
+
   const handleSubmitClicked = () => {
+    setSubmitAttempted(true);
     const formattedIban = bankIban.trim();
     if (!totalPriceInput.value || !bookValue || !formattedIban) {
       return;
     }
 
-    if (!isValidIban(formattedIban)) {
-      setIbanError(true);
-      return;
-    }
-
-    if (Object.values(errors).some((error) => !!error)) {
+    if (hasErrors) {
       return;
     }
 
@@ -146,6 +146,7 @@ export const EnterData = () => {
       ),
     );
     setSellerIban(formattedIban);
+    setSubmitAttempted(false);
 
     navigateToNextStep();
   };
@@ -169,7 +170,9 @@ export const EnterData = () => {
             <div className={`input-group input-group-lg ${styles.inputGroup}`}>
               <input
                 className={`form-control form-control-lg fw-semibold ${
-                  errors.moreThanMemberCapital ? 'border-danger' : ''
+                  errors.moreThanMemberCapital || (submitAttempted && errors.noBookValue)
+                    ? 'border-danger'
+                    : ''
                 }`}
                 id="book-value"
                 placeholder="0"
@@ -241,7 +244,9 @@ export const EnterData = () => {
               <input
                 placeholder="0"
                 id="total-price"
-                className="form-control form-control-lg fw-semibold"
+                className={`form-control form-control-lg fw-semibold ${
+                  submitAttempted && errors.noPriceValue ? 'border-danger' : ''
+                }`}
                 {...totalPriceInput.inputProps}
               />
               <div className="input-group-text fw-semibold">&euro;</div>
@@ -256,16 +261,34 @@ export const EnterData = () => {
             </label>
             <input
               type="text"
-              className="form-control form-control-lg"
+              className={`form-control form-control-lg ${
+                submitAttempted && errors.ibanError ? 'border-danger' : ''
+              }`}
               id="bank-account-iban"
               value={bankIban}
               onChange={(e) => setBankIban(e.target.value)}
             />
           </div>
           <div className="d-flex flex-column gap-2">
-            {ibanError && <p className="m-0 text-danger">TODO See IBAN ei tundu korrektne.</p>}
             <p className="m-0 text-secondary">Pangakonto peab kuuluma sinule.</p>
           </div>
+
+          {submitAttempted && errors.ibanError && (
+            <div className="d-flex flex-column gap-2">
+              <p className="m-0 text-danger">Sisestatud IBAN ei ole korrektne.</p>
+            </div>
+          )}
+          {submitAttempted && errors.noPriceValue && (
+            <div className="d-flex flex-column gap-2">
+              <p className="m-0 text-danger">Jätkamiseks sisesta hind</p>
+            </div>
+          )}
+
+          {submitAttempted && errors.noBookValue && (
+            <div className="d-flex flex-column gap-2">
+              <p className="m-0 text-danger">Jätkamiseks sisesta müüdava liikmekapitali kogus</p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -281,6 +304,7 @@ export const EnterData = () => {
           type="button"
           className="btn btn-lg btn-primary"
           onClick={() => handleSubmitClicked()}
+          disabled={submitAttempted && hasErrors}
         >
           Lepingu eelvaatesse
         </button>

@@ -14,7 +14,8 @@ export const ConfirmBuyer = () => {
   const [personalCode, setPersonalCode] = useState(buyer?.personalCode ?? null);
 
   const [noBuyerError, setNoBuyerError] = useState(false);
-  const [selfBuyerError, setSelfBuyerError] = useState(false);
+
+  const selfBuyerError = (personalCode ?? '').trim() === me?.personalCode;
 
   // TODO does not look like the best
 
@@ -22,13 +23,18 @@ export const ConfirmBuyer = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSearchClicked = () => {
-    setSelfBuyerError(false);
     setNoBuyerError(false);
     lookupMember();
   };
 
   const lookupMember = async () => {
     if (personalCode === null) {
+      return null;
+    }
+
+    const trimmed = personalCode.trim();
+
+    if (trimmed === me?.personalCode) {
       return null;
     }
 
@@ -52,7 +58,6 @@ export const ConfirmBuyer = () => {
     }
 
     if (searched.personalCode === me?.personalCode) {
-      setSelfBuyerError(true);
       return;
     }
 
@@ -66,7 +71,13 @@ export const ConfirmBuyer = () => {
         <label htmlFor="id-code-search" className="form-label">
           Sisesta ostja isikukood
         </label>
-        <div className="d-flex gap-2">
+        <form
+          className="d-flex gap-2"
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSearchClicked();
+          }}
+        >
           <input
             type="text"
             id="id-code-search"
@@ -76,15 +87,10 @@ export const ConfirmBuyer = () => {
             inputMode="numeric"
             onChange={(e) => setPersonalCode(e.target.value)}
           />
-          <button
-            type="button"
-            className="btn btn-lg btn-light"
-            disabled={isLoading}
-            onClick={() => handleSearchClicked()}
-          >
+          <button type="submit" className="btn btn-lg btn-light" disabled={isLoading}>
             Otsin
           </button>
-        </div>
+        </form>
       </div>
 
       <SearchResponse loading={isLoading} searched={buyer ?? searched} />
