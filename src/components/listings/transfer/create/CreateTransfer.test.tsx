@@ -249,40 +249,6 @@ describe('member capital transfer creation', () => {
     expect(amountInput).toHaveValue('1077.78000');
   });
 
-  test('does not allow to create with invalid price', async () => {
-    expect(await screen.findByText(/Liikmekapitali üleandmise avaldus/i)).toBeInTheDocument();
-
-    const personalCodeInput = await screen.findByLabelText(/Sisesta ostja isikukood/i);
-    userEvent.type(personalCodeInput, '30303039914');
-
-    userEvent.click(await screen.findByText(/Otsin/i));
-
-    expect(await screen.findByText(/Sellele isikukoodile vastab/i)).toBeInTheDocument();
-    expect(await screen.findByText(/Olev Ostja/i)).toBeInTheDocument();
-    expect(await screen.findByText(/Tuleva ühistu liige #9999/i)).toBeInTheDocument();
-
-    userEvent.click(await screen.findByText(/Kinnitan ostja/i));
-
-    const amountInput = await screen.findByLabelText(/Kui palju liikmekapitali müüd?/i);
-    const priceInput = await screen.findByLabelText(/Mis hinnaga müüd?/i);
-
-    userEvent.type(amountInput, '10');
-    userEvent.type(priceInput, '0.1');
-
-    const ibanInput = await screen.findByLabelText(/Müüja pangakonto/i);
-    userEvent.type(ibanInput, 'EE591254471322749514');
-
-    userEvent.click(await screen.findByText(/Lepingu eelvaatesse/i));
-
-    expect(
-      await screen.findByText(
-        /TODO Sa ei saa müüa liikmekapitali hinnaga alla raamatupidamisliku väärtuse /i,
-      ),
-    ).toBeInTheDocument();
-
-    expect(amountInput).toBeInTheDocument();
-  });
-
   test('does not allow to create with invalid iban', async () => {
     expect(await screen.findByText(/Liikmekapitali üleandmise avaldus/i)).toBeInTheDocument();
 

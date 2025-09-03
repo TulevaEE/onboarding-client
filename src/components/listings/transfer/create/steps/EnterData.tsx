@@ -112,11 +112,11 @@ export const EnterData = () => {
   };
 
   const errors = {
-    noPriceValue: typeof totalPriceInput.value !== 'number',
-    noUnitAmountValue: typeof totalPriceInput.value !== 'number',
+    noPriceValue:
+      typeof totalPriceInput.value !== 'number' ||
+      (typeof totalPriceInput.value === 'number' && totalPriceInput.value < 0),
+    noUnitAmountValue: typeof bookValue !== 'number',
     moreThanMemberCapital: totalBookValue !== null && (totalBookValue ?? 0) < (bookValue ?? 0),
-    priceLessThanBookValue:
-      totalPriceInput.value !== null && bookValue !== null && totalPriceInput.value / bookValue < 1,
   };
 
   const handleSliderChange = (amount: number) => {
@@ -241,19 +241,12 @@ export const EnterData = () => {
               <input
                 placeholder="0"
                 id="total-price"
-                className={`form-control form-control-lg fw-semibold ${
-                  errors.priceLessThanBookValue ? 'border-danger' : ''
-                }`}
+                className="form-control form-control-lg fw-semibold"
                 {...totalPriceInput.inputProps}
               />
               <div className="input-group-text fw-semibold">&euro;</div>
             </div>
           </div>
-          {errors.priceLessThanBookValue && (
-            <p className="m-0 text-danger">
-              TODO Sa ei saa müüa liikmekapitali hinnaga alla raamatupidamisliku väärtuse 1.00 €
-            </p>
-          )}
         </div>
 
         <div className="form-section d-flex flex-column gap-3">

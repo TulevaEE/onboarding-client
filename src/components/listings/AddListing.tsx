@@ -27,16 +27,16 @@ export const AddListing = () => {
   const [submitting, setSubmitting] = useState(false);
 
   const errors = {
-    noPriceValue: typeof totalPriceInput.value !== 'number',
-    noBookValue: typeof bookValueInput.value !== 'number',
+    noPriceValue:
+      typeof totalPriceInput.value !== 'number' ||
+      (typeof totalPriceInput.value === 'number' && totalPriceInput.value <= 0),
+    noBookValue:
+      typeof bookValueInput.value !== 'number' ||
+      (typeof bookValueInput.value === 'number' && bookValueInput.value <= 0),
     moreThanMemberCapital:
       listingType === 'SELL' &&
       totalBookValue !== null &&
       totalBookValue < (bookValueInput.value ?? 0),
-    priceLessThanBookValue:
-      totalPriceInput.value !== null &&
-      bookValueInput.value !== null &&
-      totalPriceInput.value / bookValueInput.value < 1,
   };
 
   const handleSliderChange = (amount: number) => {
@@ -140,7 +140,7 @@ export const AddListing = () => {
               <p className="m-0 text-danger">TODO Sul ei ole piisavalt liikmekapitali</p>
             )}
             <SaleOfTotalCapitalDescription
-              saleBookValueAmount={bookValueInput.value ?? 0}
+              saleBookValueAmount={Math.max(bookValueInput.value ?? 0, 0)}
               transactionType={listingType}
             />
           </div>
@@ -156,20 +156,12 @@ export const AddListing = () => {
                 placeholder="0"
                 id="total-price"
                 aria-label="Tehingu koguhind"
-                className={`form-control form-control-lg fw-semibold ${
-                  errors.priceLessThanBookValue ? 'border-danger' : ''
-                }`}
+                className="form-control form-control-lg fw-semibold"
                 {...totalPriceInput.inputProps}
               />
               <span className="input-group-text fw-semibold">&euro;</span>
             </div>
           </div>
-
-          {errors.priceLessThanBookValue && (
-            <p className="m-0 text-danger">
-              TODO Sa ei saa müüa liikmekapitali hinnaga alla raamatupidamisliku väärtuse
-            </p>
-          )}
         </div>
 
         <div className="form-section d-flex flex-column gap-3">
@@ -206,7 +198,12 @@ export const AddListing = () => {
             type="button"
             className="btn btn-lg btn-primary"
             onClick={handleSubmit}
-            disabled={submitting || errors.moreThanMemberCapital || errors.priceLessThanBookValue}
+            disabled={
+              submitting ||
+              errors.moreThanMemberCapital ||
+              errors.noBookValue ||
+              errors.noPriceValue
+            }
           >
             {listingType === 'BUY' ? 'Avaldan ostukuulutuse' : 'Avaldan müügikuulutuse'}
           </button>
