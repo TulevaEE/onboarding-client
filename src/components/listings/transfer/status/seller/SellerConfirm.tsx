@@ -45,16 +45,18 @@ export const SellerConfirm = ({
     );
   }
   return (
-    <div className="p-4">
-      <h1>Liikmekapitali võõrandamise avaldus</h1>
+    <>
+      <div className="d-flex flex-column gap-4 text-center">
+        <h1 className="m-0 text-md-center">Liikmekapitali võõrandamise avaldus</h1>
+      </div>
       {error && (
-        <div className="alert alert-warning mt-2">
+        <div className="alert alert-warning mt-2" role="alert">
           Makse kinnitamisel tekkis viga. Palun proovi hiljem uuesti või võta meiega ühendust
         </div>
       )}
-      <div className="pt-4">
+      <div className="py-4 d-flex flex-column gap-5">
         <ContractDetails {...getContractDetailsPropsFromContract(contract)} userRole="SELLER" />
-        <div className="form-check py-5">
+        <div className="form-check m-0">
           <input
             checked={confirmMoneyReceived}
             onChange={() => setConfirmMoneyReceived(!confirmMoneyReceived)}
@@ -72,23 +74,23 @@ export const SellerConfirm = ({
             </div>
           )}
         </div>
-        <div className="d-flex justify-content-between  pt-4 border-top">
-          <button
-            type="button"
-            className="btn btn-lg btn-light"
-            onClick={() => history.push('/capital/listings/')}
-          >
-            Tagasi
-          </button>
-          <button
-            type="button"
-            className="btn btn-lg btn-primary"
-            onClick={() => handleConfirmationClicked()}
-          >
-            Kinnitan ja saadan avalduse
-          </button>
-        </div>
       </div>
-    </div>
+      <div className="d-flex flex-column-reverse flex-sm-row justify-content-between pt-4 border-top gap-3">
+        <button
+          type="button"
+          className="btn btn-lg btn-light"
+          onClick={() => history.push('/capital/listings/')}
+        >
+          Tagasi
+        </button>
+        <button
+          type="button"
+          className="btn btn-lg btn-primary"
+          onClick={() => handleConfirmationClicked()}
+        >
+          Kinnitan ja saadan avalduse
+        </button>
+      </div>
+    </>
   );
 };

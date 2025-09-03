@@ -65,8 +65,6 @@ describe('capital transfer buyer flow', () => {
     );
   });
   test('allows buyer to sign and confirm', async () => {
-    expect(await screen.findByText(/Lepingu andmed/i)).toBeInTheDocument();
-
     const buyerSection = await screen.findByTestId('buyer-details');
     expect(await within(buyerSection).findByText(getFullName(mockUser))).toBeInTheDocument();
     expect(await within(buyerSection).findByText(mockUser.personalCode)).toBeInTheDocument();

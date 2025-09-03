@@ -53,17 +53,25 @@ const StatusDisplay = ({ contract }: { contract: CapitalTransferContract }) => {
 
   return (
     <>
+      <div className="d-flex flex-column gap-4 text-center">
+        <h1 className="m-0 text-md-center">Liikmekapitali võõrandamise avaldus</h1>
+      </div>
+
       {contract.state === 'CANCELLED' && (
-        <div className="alert alert-warning">TODO Avaldus on tühistatud</div>
+        <div className="alert alert-warning m-0" role="alert">
+          TODO Avaldus on tühistatud
+        </div>
       )}
+
       {contract.state === 'PAYMENT_CONFIRMED_BY_SELLER' && (
-        <div className="alert alert-info d-flex">
+        <div className="alert alert-primary d-flex align-items-top gap-2 m-0" role="alert">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="16"
             height="16"
             fill="currentColor"
             viewBox="0 0 16 16"
+            className="flex-shrink-0 mt-1"
             aria-hidden="true"
           >
             <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
@@ -75,12 +83,10 @@ const StatusDisplay = ({ contract }: { contract: CapitalTransferContract }) => {
       )}
 
       {contract.state === 'APPROVED' && (
-        <div className="alert alert-success">
+        <div className="alert alert-success m-0" role="alert">
           TODO Avaldus on kinnitatud Tuleva ühistu juhatuse poolt.
         </div>
       )}
-
-      <h1 className="m-0">Liikmekapitali võõrandamise avaldus</h1>
 
       <div className="py-4">
         <ContractDetails

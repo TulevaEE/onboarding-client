@@ -92,7 +92,7 @@ export const AddListing = () => {
 
       <section className={`d-flex flex-column gap-5 ${styles.content}`}>
         {error && (
-          <div className="alert alert-danger">
+          <div className="alert alert-danger" role="alert">
             Kuulutuse lisamisel tekkis viga. Palun võta meiega ühendust.
           </div>
         )}

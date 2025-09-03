@@ -106,7 +106,7 @@ const ListingRow = ({ listing }: { listing: MemberCapitalListing }) => {
               </b>
 
               {error && (
-                <div className="alert alert-danger">
+                <div className="alert alert-danger" role="alert">
                   <FormattedMessage id="capital.listings.action.delete.error" />
                 </div>
               )}

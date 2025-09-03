@@ -103,7 +103,7 @@ export const ListingDetails = () => {
 
       <section className={styles.listingDetailsContainer}>
         {isDifferentLanguage && (
-          <div className="alert alert-info d-flex">
+          <div className="alert alert-info d-flex" role="alert">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="me-2 mt-1"
@@ -132,7 +132,7 @@ export const ListingDetails = () => {
           </div>
         )}
         {error && (
-          <div className="alert alert-warning">
+          <div className="alert alert-warning" role="alert">
             <FormattedMessage id="capital.listings.details.messsage.error" />
           </div>
         )}

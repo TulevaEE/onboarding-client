@@ -52,7 +52,11 @@ export const BuyerSigning = ({
   };
 
   return (
-    <div className="p-4">
+    <>
+      <div className="d-flex flex-column gap-4 text-center">
+        <h1 className="m-0 text-md-center">Liikmekapitali võõrandamise avaldus</h1>
+        <Steps steps={BUYER_STEPS} currentStepType="BUYER_SIGN" />
+      </div>
       {(signingInProgress || challengeCode) && (
         <AuthenticationLoader controlCode={challengeCode} onCancel={cancelSigning} overlayed />
       )}
@@ -60,15 +64,12 @@ export const BuyerSigning = ({
         <ErrorMessage errors={signingError.body} onCancel={cancelSigning} overlayed />
       )}
 
-      <Steps steps={BUYER_STEPS} currentStepType="BUYER_SIGN" alignCenter={false} />
-      <div className="pt-2">
-        <h1 className="py-5">Lepingu andmed</h1>
-
+      <div className="py-4 d-flex flex-column gap-5">
         <ContractDetails
           {...getContractDetailsPropsFromContract(contract)}
           userRole={getMyRole(me, contract)}
         />
-        <div className="form-check py-5">
+        <div className="form-check m-0">
           <input
             checked={agreedToTerms}
             onChange={() => setAgreedToTerms(!agreedToTerms)}
@@ -92,8 +93,7 @@ export const BuyerSigning = ({
           )}
         </div>
       </div>
-
-      <div className="d-flex justify-content-between pt-4 border-top">
+      <div className="d-flex flex-column-reverse flex-sm-row justify-content-between pt-4 border-top gap-3">
         <button
           type="button"
           className="btn btn-lg btn-light"
@@ -109,6 +109,6 @@ export const BuyerSigning = ({
           Allkirjastan lepingu
         </button>
       </div>
-    </div>
+    </>
   );
 };
