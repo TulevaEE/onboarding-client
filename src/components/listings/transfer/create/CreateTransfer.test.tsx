@@ -100,7 +100,7 @@ describe('member capital transfer creation', () => {
     const amountInput = await screen.findByLabelText(/Kui palju liikmekapitali müüd?/i);
     const priceInput = await screen.findByLabelText(/Kokkulepitud müügihind/i);
 
-    userEvent.type(amountInput, '100');
+    userEvent.type(amountInput, '1077.78');
     userEvent.type(priceInput, '250');
 
     const ibanInput = await screen.findByLabelText(/Müüja pangakonto/i);
@@ -118,13 +118,12 @@ describe('member capital transfer creation', () => {
     expect(await within(sellerSection).findByText(getFullName(mockUser))).toBeInTheDocument();
     expect(await within(sellerSection).findByText(mockUser.personalCode)).toBeInTheDocument();
 
-    expect(await screen.findByText(/100.00 €/i)).toBeInTheDocument();
     expect(await screen.findByText(/250.00 €/i)).toBeInTheDocument();
 
-    await assertMemberCapitalAmount('TOTAL', /Müüdav liikmekapital/i, /100.00 €/i);
-    await assertMemberCapitalAmount('CAPITAL_PAYMENT', /rahaline panus/i, /81.33 €/i);
-    await assertMemberCapitalAmount('MEMBERSHIP_BONUS', /liikmeboonus/i, /0.11 €/i);
-    await assertMemberCapitalAmount('WORK_COMPENSATION', /tööpanus/i, /18.56 €/i);
+    await assertMemberCapitalAmount('TOTAL', /Müüdav liikmekapital/i, /1 077.78 €/i);
+    await assertMemberCapitalAmount('CAPITAL_PAYMENT', /rahaline panus/i, /876.55 €/i);
+    await assertMemberCapitalAmount('WORK_COMPENSATION', /tööpanus/i, /200.00 €/i);
+    await assertMemberCapitalAmount('MEMBERSHIP_BONUS', /liikmeboonus/i, /1.23 €/i);
 
     userEvent.click(
       await screen.findByLabelText(

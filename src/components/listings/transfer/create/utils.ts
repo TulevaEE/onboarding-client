@@ -22,15 +22,34 @@ export const calculateTransferAmountInputsFromNewTotalBookValue = (
   bookValue: number,
   userMemberCapitalRows: CapitalRow[],
 ): CapitalTransferAmountInputState[] => {
-  const filteredRows = userMemberCapitalRows.filter((row) => isLiquidatableCapitalType(row.type));
-  const memberCapitalSums = getMemberCapitalSums(filteredRows);
+  const filteredRows = sortTransferAmounts(userMemberCapitalRows).filter((row) =>
+    isLiquidatableCapitalType(row.type),
+  );
 
-  const liquidationCoefficient = bookValue / memberCapitalSums.bookValue;
-
-  return filteredRows.map((row) => ({
+  const amounts: CapitalTransferAmountInputState[] = filteredRows.map((row) => ({
     type: row.type,
-    bookValue: row.value * liquidationCoefficient,
+    bookValue: 0,
   }));
+
+  let runningBookValue = bookValue;
+  // eslint-disable-next-line no-plusplus
+  for (let i = 0; i < filteredRows.length; i++) {
+    const row = filteredRows[i];
+
+    if (row.value >= runningBookValue) {
+      amounts[i].bookValue = runningBookValue;
+    } else {
+      amounts[i].bookValue = row.value;
+    }
+
+    runningBookValue -= row.value;
+
+    if (runningBookValue <= 0) {
+      return amounts;
+    }
+  }
+
+  return amounts;
 };
 
 export const calculateTransferAmountPrices = (
@@ -59,7 +78,7 @@ export const initializeCapitalTransferAmounts = (
       bookValue: 0,
     }));
 
-const capitalTypeOrder = ['CAPITAL_PAYMENT', 'MEMBERSHIP_BONUS', 'WORK_COMPENSATION'];
+const capitalTypeOrder = ['CAPITAL_PAYMENT', 'WORK_COMPENSATION', 'MEMBERSHIP_BONUS'];
 export const sortTransferAmounts = <T extends { type: CapitalType }>(amounts: T[]) =>
   amounts.sort((a, b) => capitalTypeOrder.indexOf(a.type) - capitalTypeOrder.indexOf(b.type));
 
