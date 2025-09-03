@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { AuthenticationLoader, ErrorMessage, Loader } from '../../../../common';
 import { useMe } from '../../../../common/apiHooks';
 import { Steps } from '../../../../common/steps';
@@ -16,6 +17,7 @@ export const BuyerSigning = ({
   onSigned: () => unknown;
 }) => {
   const { data: me } = useMe();
+  const history = useHistory();
 
   const {
     startSigning,
@@ -50,7 +52,7 @@ export const BuyerSigning = ({
   };
 
   return (
-    <div className="bg-gray-1 border rounded br-3 p-4">
+    <div className="p-4">
       {(signingInProgress || challengeCode) && (
         <AuthenticationLoader controlCode={challengeCode} onCancel={cancelSigning} overlayed />
       )}
@@ -91,7 +93,14 @@ export const BuyerSigning = ({
         </div>
       </div>
 
-      <div className="d-flex justify-content-between flex-row-reverse pt-4 border-top">
+      <div className="d-flex justify-content-between pt-4 border-top">
+        <button
+          type="button"
+          className="btn btn-lg btn-light"
+          onClick={() => history.push('/capital/listings/')}
+        >
+          Tagasi
+        </button>
         <button
           type="button"
           className="btn btn-lg btn-primary"

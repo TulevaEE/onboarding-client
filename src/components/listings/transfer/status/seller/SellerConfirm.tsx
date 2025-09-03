@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { ContractDetails } from '../../components/ContractDetails';
 import { getContractDetailsPropsFromContract, getTotalPrice } from '../utils';
 import { formatAmountForCurrency } from '../../../../common/utils';
@@ -13,6 +14,7 @@ export const SellerConfirm = ({
   contract: CapitalTransferContract;
   onConfirmed: () => unknown;
 }) => {
+  const history = useHistory();
   const [confirmMoneyReceived, setConfirmMoneyReceived] = useState(false);
   const [confirmMoneyReceivedError, setConfirmMoneyReceivedError] = useState(false);
   const { mutateAsync: updateContractState, error } = useUpdateCapitalTransferContract();
@@ -41,7 +43,7 @@ export const SellerConfirm = ({
     );
   }
   return (
-    <div className="bg-gray-1 border rounded br-3 p-4">
+    <div className="p-4">
       <h1>Lepingu andmed</h1>
       {error && (
         <div className="alert alert-warning mt-2">
@@ -68,7 +70,14 @@ export const SellerConfirm = ({
             </div>
           )}
         </div>
-        <div className="d-flex justify-content-between flex-row-reverse pt-4 border-top">
+        <div className="d-flex justify-content-between  pt-4 border-top">
+          <button
+            type="button"
+            className="btn btn-lg btn-light"
+            onClick={() => history.push('/capital/listings/')}
+          >
+            Tagasi
+          </button>
           <button
             type="button"
             className="btn btn-lg btn-primary"

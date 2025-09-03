@@ -1,4 +1,3 @@
-import { Fragment } from 'react';
 import { CapitalType } from '../../../common/apiModels';
 import { CapitalTransferAmount } from '../../../common/apiModels/capital-transfer';
 import { formatAmountForCurrency } from '../../../common/utils';
@@ -14,11 +13,15 @@ export const TransferAmountBreakdown = ({
   const sortedAmounts = sortTransferAmounts(amounts).filter((amount) => amount.bookValue !== 0);
 
   if (sortedAmounts.length === 1) {
+    const amount = sortedAmounts[0];
     return (
-      <div>
+      <>
         <div className="d-flex pb-4" data-testid="capital-row-TOTAL">
           <div className="col">
             <b>Müüdav liikmekapital</b>
+            <div className="lh-lg" data-testid={`capital-row-${amount.type}`}>
+              (<TransferAmountName type={amount.type} />)
+            </div>
           </div>
 
           <div className="col">
@@ -27,15 +30,7 @@ export const TransferAmountBreakdown = ({
             </div>
           </div>
         </div>
-
-        {sortedAmounts.map((amount) => (
-          <div className="row" key={amount.type} data-testid={`capital-row-${amount.type}`}>
-            <div className="col">
-              (<TransferAmountName type={amount.type} />)
-            </div>
-          </div>
-        ))}
-      </div>
+      </>
     );
   }
 

@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import {
   formatAmountForCount,
   formatAmountForCurrency,
@@ -19,6 +20,7 @@ export const BuyerPayment = ({
   contract: CapitalTransferContract;
   onPaid: () => unknown;
 }) => {
+  const history = useHistory();
   const { mutateAsync: updateContractState, error } = useUpdateCapitalTransferContract();
   const [success, setSuccess] = useState(false);
   const [confirmPaid, setConfirmPaid] = useState(false);
@@ -51,7 +53,7 @@ export const BuyerPayment = ({
   }
 
   return (
-    <div className="bg-gray-1 border rounded br-3 p-4">
+    <div className="p-4">
       <Steps steps={BUYER_STEPS} currentStepType="SEND_PAYMENT_AND_CONFIRM" />
 
       {error && (
@@ -128,7 +130,14 @@ export const BuyerPayment = ({
           )}
         </div>
       </div>
-      <div className="d-flex justify-content-between flex-row-reverse pt-4 border-top">
+      <div className="d-flex justify-content-between pt-4 border-top">
+        <button
+          type="button"
+          className="btn btn-lg btn-light"
+          onClick={() => history.push('/capital/listings/')}
+        >
+          Tagasi
+        </button>
         <button
           type="button"
           className="btn btn-lg btn-primary"

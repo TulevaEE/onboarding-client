@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { useState } from 'react';
 import { useCapitalTransferContract, useMe } from '../../../common/apiHooks';
 import { Loader } from '../../../common';
@@ -42,13 +42,14 @@ export const CapitalTransferStatus = () => {
 
 const StatusDisplay = ({ contract }: { contract: CapitalTransferContract }) => {
   const { data: me } = useMe();
+  const history = useHistory();
 
   if (!me) {
     return <Loader className="align-middle" />;
   }
 
   return (
-    <div className="bg-gray-1 border rounded br-3 p-4">
+    <div className="p-4">
       {contract.state === 'CANCELLED' && (
         <div className="alert alert-warning">TODO Avaldus on tühistatud</div>
       )}
@@ -90,11 +91,21 @@ const StatusDisplay = ({ contract }: { contract: CapitalTransferContract }) => {
       )}
 
       <h1>Lepingu andmed</h1>
-      <div className="pt-4">
+      <div className="py-5 border-bottom">
         <ContractDetails
           {...getContractDetailsPropsFromContract(contract)}
           userRole={getMyRole(me, contract)}
         />
+      </div>
+
+      <div className="d-flex justify-content-between pt-4">
+        <button
+          type="button"
+          className="btn btn-lg btn-light"
+          onClick={() => history.push('/capital/listings/')}
+        >
+          Tagasi
+        </button>
       </div>
     </div>
   );
