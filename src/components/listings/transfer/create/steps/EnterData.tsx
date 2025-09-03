@@ -76,11 +76,20 @@ export const EnterData = () => {
 
     const parsedValue = Number(formattedInputValue);
 
-    if (!Number.isNaN(parsedValue)) {
-      setBookValue(parsedValue);
+    const zeroOrMoreValue = Math.max(0, parsedValue);
+
+    const clampedValue =
+      totalBookValue !== null ? Math.min(totalBookValue, zeroOrMoreValue) : zeroOrMoreValue;
+
+    if (!Number.isNaN(clampedValue)) {
+      setBookValue(clampedValue);
       setCapitalTransferAmountsInput(
-        calculateTransferAmountInputsFromNewTotalBookValue(parsedValue, capitalRows ?? []),
+        calculateTransferAmountInputsFromNewTotalBookValue(clampedValue, capitalRows ?? []),
       );
+
+      if (parsedValue < 0 || (totalBookValue && parsedValue > totalBookValue)) {
+        setBookValueInputDisplayValue(clampedValue?.toFixed(2));
+      }
     }
   };
 

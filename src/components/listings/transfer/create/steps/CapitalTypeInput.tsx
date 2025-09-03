@@ -42,10 +42,17 @@ export const CapitalTypeInput = ({
     }
 
     const parsedValue = Number(formattedInputValue);
+    const zeroOrMoreValue = Math.max(0, parsedValue);
+
+    const clampedValue = Math.min(capitalRow.value, zeroOrMoreValue);
 
     if (!Number.isNaN(parsedValue) && updateParsedValue) {
-      setValue(parsedValue);
-      onValueUpdate(parsedValue, type);
+      setValue(clampedValue);
+      onValueUpdate(clampedValue, type);
+
+      if (parsedValue < 0 || parsedValue > capitalRow.value) {
+        setInputValue(clampedValue.toFixed(2));
+      }
     }
   };
 

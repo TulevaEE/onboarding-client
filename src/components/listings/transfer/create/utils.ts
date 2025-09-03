@@ -25,7 +25,6 @@ export const calculateTransferAmountInputsFromNewTotalBookValue = (
   const filteredRows = userMemberCapitalRows.filter((row) => isLiquidatableCapitalType(row.type));
   const memberCapitalSums = getMemberCapitalSums(filteredRows);
 
-  // TODO go over liquidation preference and amounts
   const liquidationCoefficient = bookValue / memberCapitalSums.bookValue;
 
   return filteredRows.map((row) => ({

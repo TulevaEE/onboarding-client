@@ -245,13 +245,8 @@ describe('member capital transfer creation', () => {
     const ibanInput = await screen.findByLabelText(/Müüja pangakonto/i);
     userEvent.type(ibanInput, 'EE591254471322749514');
 
-    userEvent.click(await screen.findByText(/Lepingu eelvaatesse/i));
-
-    expect(
-      await screen.findByText(/TODO Sul ei ole piisavalt liikmekapitali/i),
-    ).toBeInTheDocument();
-
     expect(amountInput).toBeInTheDocument();
+    expect(amountInput).toHaveValue('1077.78000');
   });
 
   test('does not allow to create with invalid price', async () => {

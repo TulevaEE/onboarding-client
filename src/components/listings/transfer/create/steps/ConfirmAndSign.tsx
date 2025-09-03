@@ -97,7 +97,7 @@ export const ConfirmAndSign = () => {
 
       startSigning(contract);
     } catch (e) {
-      setContractCreationError(e as ErrorResponse); // TODO validate type
+      setContractCreationError(e as ErrorResponse);
     }
 
     setContractCreationLoading(false);
