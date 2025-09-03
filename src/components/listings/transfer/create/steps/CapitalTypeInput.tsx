@@ -38,6 +38,7 @@ export const CapitalTypeInput = ({
 
     if (changedInputValue === '') {
       setValue(null);
+      onValueUpdate(0, type);
       return;
     }
 
