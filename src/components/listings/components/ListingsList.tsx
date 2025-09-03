@@ -80,7 +80,7 @@ const ListingRow = ({ listing }: { listing: MemberCapitalListing }) => {
           <div className="dropdown">
             <button
               type="button"
-              className="btn btn-link p-0 d-inline-flex align-items-center gap-1"
+              className="btn btn-link p-0 border-0 d-inline-flex align-items-center gap-1 align-top"
               aria-expanded={deleteDropdownOpen}
               onClick={() => setDeleteDropdownOpen((oldVal) => !oldVal)}
             >
