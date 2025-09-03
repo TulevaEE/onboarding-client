@@ -38,6 +38,15 @@ export const memberCapitalProfiles: Record<string, CapitalRow[]> = {
       unitCount: 1000,
       unitPrice: 1.2,
     },
+    {
+      type: 'CAPITAL_ACQUIRED',
+      contributions: 30,
+      profit: 0,
+      value: 30,
+      currency: 'EUR',
+      unitCount: 15,
+      unitPrice: 2,
+    },
   ],
   ONLY_MEMBERSHIP: [
     {

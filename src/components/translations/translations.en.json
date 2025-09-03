@@ -99,6 +99,7 @@
   "memberCapital.source.MEMBERSHIP_BONUS": "Membership bonus",
   "membercapital.source.MEMBERSHIP_BONUS.tooltip": "As a Tuleva member, you earn an annual bonus of 0.05% of the average annual value of your pension holdings. We transfer the bonus to your Tuleva capital account, where it grows with your pension assets and earns investment returns.",
   "memberCapital.source.WORK_COMPENSATION": "Work compensation",
+  "memberCapital.source.CAPITAL_ACQUIRED": "Acquired member capital",
   "memberCapital.source.UNVESTED_WORK_COMPENSATION": "Unvested work compensation",
   "memberCapital.source.profit": "Investment profit",
   "memberCapital.transactions": "View transactions",

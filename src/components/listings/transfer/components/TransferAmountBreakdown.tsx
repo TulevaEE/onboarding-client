@@ -16,7 +16,7 @@ export const TransferAmountBreakdown = ({
     const amount = sortedAmounts[0];
     return (
       <>
-        <div className="d-flex pb-4" data-testid="capital-row-TOTAL">
+        <div className="d-flex" data-testid="capital-row-TOTAL">
           <div className="col">
             <b>Müüdav liikmekapital</b>
             <div className="lh-lg" data-testid={`capital-row-${amount.type}`}>

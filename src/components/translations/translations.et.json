@@ -98,6 +98,7 @@
   "membercapital.source.MEMBERSHIP_BONUS.tooltip": "Tuleva liikmena teenid igal aastal boonust 0,05% oma pensionivara aasta keskmiselt väärtuselt. Kanname boonuse sinu Tuleva kapitalikontole, kus see kasvab koos pensionivaraga ja teenib investeerimistootlust.",
   "memberCapital.source.WORK_COMPENSATION": "Tööpanus",
   "memberCapital.source.UNVESTED_WORK_COMPENSATION": "Broneeritud tööpanus",
+  "memberCapital.source.CAPITAL_ACQUIRED": "Omandatud liikmekapital",
   "memberCapital.source.profit": "Teenitud investeerimiskasum",
   "memberCapital.transactions": "Vaatan tehinguid",
 
