@@ -54,7 +54,7 @@ const CreateCapitalTransferForm = () => (
 const Container = ({ children }: PropsWithChildren<unknown>) => (
   <>
     <div className="d-flex flex-column gap-4">
-      <h1 className="m-0 text-md-center">Liikmekapitali üleandmise avaldus</h1>
+      <h1 className="m-0 text-md-center">Liikmekapitali võõrandamise avaldus</h1>
       <CreateTransferSteps />
     </div>
     <div className="d-flex flex-column gap-5">{children}</div>

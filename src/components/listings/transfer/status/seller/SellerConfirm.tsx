@@ -37,14 +37,16 @@ export const SellerConfirm = ({
   if (success) {
     return (
       <StepDoneAlert onClick={() => onConfirmed()}>
-        <h2 className="pb-2">Avaldus on saadetud Tuleva ühistu juhatusele</h2>
-        <div>Vaatame avalduse 1 nädala jooksul üle ja teavitame osapooli otsusest e-postiga.</div>
+        <h2 className="mb-2">Avaldus on saadetud Tuleva ühistu juhatusele</h2>
+        <p className="m-0">
+          Vaatame avalduse läbi ühe nädala jooksul ja teavitame osapooli otsusest meiliga.
+        </p>
       </StepDoneAlert>
     );
   }
   return (
     <div className="p-4">
-      <h1>Lepingu andmed</h1>
+      <h1>Liikmekapitali võõrandamise avaldus</h1>
       {error && (
         <div className="alert alert-warning mt-2">
           Makse kinnitamisel tekkis viga. Palun proovi hiljem uuesti või võta meiega ühendust

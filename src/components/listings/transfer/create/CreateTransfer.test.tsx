@@ -84,7 +84,7 @@ describe('member capital transfer creation', () => {
   });
 
   test('allows to create transfer', async () => {
-    expect(await screen.findByText(/Liikmekapitali üleandmise avaldus/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Liikmekapitali võõrandamise avaldus/i)).toBeInTheDocument();
 
     const personalCodeInput = await screen.findByLabelText(/Sisesta ostja isikukood/i);
     userEvent.type(personalCodeInput, '30303039914');
@@ -145,7 +145,7 @@ describe('member capital transfer creation', () => {
   });
 
   test('allows to create transfer with custom breakdown', async () => {
-    expect(await screen.findByText(/Liikmekapitali üleandmise avaldus/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Liikmekapitali võõrandamise avaldus/i)).toBeInTheDocument();
 
     const personalCodeInput = await screen.findByLabelText(/Sisesta ostja isikukood/i);
     userEvent.type(personalCodeInput, '30303039914');
@@ -210,7 +210,7 @@ describe('member capital transfer creation', () => {
   });
 
   test('does not allow to create without selected member', async () => {
-    expect(await screen.findByText(/Liikmekapitali üleandmise avaldus/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Liikmekapitali võõrandamise avaldus/i)).toBeInTheDocument();
 
     const personalCodeInput = await screen.findByLabelText(/Sisesta ostja isikukood/i);
     userEvent.type(personalCodeInput, '30303039913');
@@ -223,7 +223,7 @@ describe('member capital transfer creation', () => {
   });
 
   test('does not allow to create with invalid amount', async () => {
-    expect(await screen.findByText(/Liikmekapitali üleandmise avaldus/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Liikmekapitali võõrandamise avaldus/i)).toBeInTheDocument();
 
     const personalCodeInput = await screen.findByLabelText(/Sisesta ostja isikukood/i);
     userEvent.type(personalCodeInput, '30303039914');
@@ -250,7 +250,7 @@ describe('member capital transfer creation', () => {
   });
 
   test('does not allow to create with invalid iban', async () => {
-    expect(await screen.findByText(/Liikmekapitali üleandmise avaldus/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Liikmekapitali võõrandamise avaldus/i)).toBeInTheDocument();
 
     const personalCodeInput = await screen.findByLabelText(/Sisesta ostja isikukood/i);
     userEvent.type(personalCodeInput, '30303039914');
@@ -295,7 +295,7 @@ describe('member capital transfer creation single row', () => {
   });
 
   test('allows to create transfer', async () => {
-    expect(await screen.findByText(/Liikmekapitali üleandmise avaldus/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Liikmekapitali võõrandamise avaldus/i)).toBeInTheDocument();
 
     const personalCodeInput = await screen.findByLabelText(/Sisesta ostja isikukood/i);
     userEvent.type(personalCodeInput, '30303039914');

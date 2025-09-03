@@ -139,7 +139,7 @@ describe('capital transfer seller flow', () => {
     );
   });
   test('allows seller to confirm', async () => {
-    expect(await screen.findByText(/Lepingu andmed/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Liikmekapitali võõrandamise avaldus/i)).toBeInTheDocument();
 
     const buyerSection = await getBuyerDetailsSection();
     expect(await within(buyerSection).findByText(/Olev Ostja/i)).toBeInTheDocument();
@@ -201,7 +201,7 @@ describe('capital transfer seller flow', () => {
     );
   });
   test('allows seller to check status when payment not confirmed by buyer', async () => {
-    expect(await screen.findByText(/Lepingu andmed/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Liikmekapitali võõrandamise avaldus/i)).toBeInTheDocument();
 
     const buyerSection = await getBuyerDetailsSection();
     expect(await within(buyerSection).findByText(/Olev Ostja/i)).toBeInTheDocument();
