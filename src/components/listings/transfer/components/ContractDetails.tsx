@@ -29,12 +29,10 @@ export const ContractDetails = ({
       </div>
     </div>
 
-    <div className="px-2">
-      <TransferAmountBreakdown
-        amounts={amounts}
-        totalBookValue={getTotalBookValue({ transferAmounts: amounts })}
-      />
-    </div>
+    <TransferAmountBreakdown
+      amounts={amounts}
+      totalBookValue={getTotalBookValue({ transferAmounts: amounts })}
+    />
 
     <div className="d-flex pb-4 border-bottom">
       <div className="col">
