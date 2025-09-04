@@ -952,6 +952,8 @@
   "fees.perYear": " aastas",
 
   "global.skipToContent": "Liigu edasi sisu juurde",
+  "global.copy": "Kopeerin",
+  "global.copied": "Kopeeritud",
 
   "pageTitle.loginPage": "Sisene",
   "pageTitle.accountPage": "Minu konto",

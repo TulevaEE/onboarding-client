@@ -950,6 +950,8 @@
   "fees.perYear": " per year",
 
   "global.skipToContent": "Skip to content",
+  "global.copy": "Copy",
+  "global.copied": "Copied",
 
   "pageTitle.loginPage": "Log in",
   "pageTitle.accountPage": "My account",
