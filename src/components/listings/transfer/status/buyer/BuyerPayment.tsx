@@ -70,8 +70,8 @@ export const BuyerPayment = ({
             <b>{getFullName(contract.seller)}</b> ({contract.seller.personalCode}) müüb ja{' '}
             <b>{getFullName(contract.buyer)}</b> ({contract.buyer.personalCode}) ostab{' '}
             liikmekapitali raamatupidamislikus väärtuses{' '}
-            <b>{formatAmountForCount(totalBookValue)}</b>{' '}
-            <b>hinnaga {formatAmountForCurrency(totalPrice)}</b>.
+            <b>{formatAmountForCount(totalBookValue)}</b> hinnaga{' '}
+            <b>{formatAmountForCurrency(totalPrice)}</b>.
           </p>
         </div>
         <div className="form-section d-flex flex-column gap-4">
