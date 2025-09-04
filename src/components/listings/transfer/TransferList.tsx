@@ -3,7 +3,10 @@ import { FormattedMessage } from 'react-intl';
 import { Loader } from '../../common';
 import { useMe, useMyCapitalTransferContracts } from '../../common/apiHooks';
 import { User } from '../../common/apiModels';
-import { CapitalTransferContract } from '../../common/apiModels/capital-transfer';
+import {
+  CapitalTransferContract,
+  CapitalTransferContractState,
+} from '../../common/apiModels/capital-transfer';
 import { getFullName } from '../../common/utils';
 import { getMyRole } from './status/utils';
 import { isTranslationKey, TranslationKey } from '../../translations';
@@ -16,8 +19,14 @@ export const TransferList = () => {
     return <Loader className="align-middle" />;
   }
 
-  const filteredContracts = (contracts ?? []).filter(
-    (contract) => contract.state !== 'APPROVED' && contract.state !== 'CANCELLED',
+  const filteredContracts = (contracts ?? []).filter((contract) =>
+    [
+      'CREATED',
+      'SELLER_SIGNED',
+      'BUYER_SIGNED',
+      'PAYMENT_CONFIRMED_BY_BUYER',
+      'PAYMENT_CONFIRMED_BY_SELLER',
+    ].includes(contract.state),
   );
 
   if (filteredContracts.length === 0) {
@@ -26,9 +35,12 @@ export const TransferList = () => {
 
   const sortedContracts = filteredContracts.sort((contract) => {
     const myRole = getMyRole(me, contract);
-    const statusSortOrders = getStateSortOrder(myRole);
 
-    return statusSortOrders.indexOf(contract.state) * -1; // either 0, 1 for relevant status or -1 for irrelevant status
+    if (isPendingOnMyAction(contract.state, myRole)) {
+      return -1;
+    }
+
+    return defaultSortOrder.indexOf(contract.state);
   });
 
   return (
@@ -54,8 +66,7 @@ export const TransferList = () => {
 
 const TransferItem = ({ contract, me }: { contract: CapitalTransferContract; me: User }) => {
   const myRole = getMyRole(me, contract);
-  const pendingActionsForMyRole = getStateSortOrder(myRole);
-  const isPendingOnMyAction = pendingActionsForMyRole.includes(contract.state);
+  const pendingOnMyAction = isPendingOnMyAction(contract.state, myRole);
 
   const stateDescription = getStateDescription(contract, myRole);
 
@@ -72,7 +83,7 @@ const TransferItem = ({ contract, me }: { contract: CapitalTransferContract; me:
     >
       <span className="d-flex align-items-start column-gap-2">
         <span className="d-inline-block" aria-hidden="true">
-          {isPendingOnMyAction ? (
+          {pendingOnMyAction ? (
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -144,14 +155,31 @@ const getStateActionLinkText = (
   return 'capital.transfer.list.action.default';
 };
 
-const getStateSortOrder = (myRole: 'BUYER' | 'SELLER') => {
-  const pendingBuyerActionStatuses = ['BUYER_SIGNED', 'SELLER_SIGNED'];
-
-  const pendingSellerActionStatuses = ['CREATED', 'PAYMENT_CONFIRMED_BY_BUYER'];
-
+const isPendingOnMyAction = (state: CapitalTransferContractState, myRole: 'BUYER' | 'SELLER') => {
   if (myRole === 'BUYER') {
-    return pendingBuyerActionStatuses;
+    return pendingBuyerActionStatuses.includes(state);
   }
 
-  return pendingSellerActionStatuses;
+  return pendingSellerActionStatuses.includes(state);
 };
+
+const defaultSortOrder: CapitalTransferContractState[] = [
+  'CREATED',
+  'SELLER_SIGNED',
+  'BUYER_SIGNED',
+  'PAYMENT_CONFIRMED_BY_BUYER',
+  'PAYMENT_CONFIRMED_BY_SELLER',
+  'APPROVED',
+  'EXECUTED',
+  'APPROVED_AND_NOTIFIED',
+  'CANCELLED',
+];
+
+const pendingBuyerActionStatuses: CapitalTransferContractState[] = [
+  'BUYER_SIGNED',
+  'SELLER_SIGNED',
+];
+const pendingSellerActionStatuses: CapitalTransferContractState[] = [
+  'CREATED',
+  'PAYMENT_CONFIRMED_BY_BUYER',
+];

@@ -21,7 +21,7 @@ export const BuyerPayment = ({
   onPaid: () => unknown;
 }) => {
   const history = useHistory();
-  const { mutateAsync: updateContractState, error } = useUpdateCapitalTransferContract();
+  const { mutateAsync: updateContractState, isLoading, error } = useUpdateCapitalTransferContract();
   const [success, setSuccess] = useState(false);
   const [confirmPaid, setConfirmPaid] = useState(false);
   const [confirmPaidError, setConfirmPaidError] = useState(false);
@@ -93,8 +93,8 @@ export const BuyerPayment = ({
             <div className="row">
               <div className="col fw-bold">Summa</div>
               <div className="col d-flex justify-content-between">
-                {formatAmountForCurrency(totalBookValue)}{' '}
-                <CopyButton textToCopy={totalBookValue.toString()} />
+                {formatAmountForCurrency(totalPrice)}{' '}
+                <CopyButton textToCopy={totalPrice.toString()} />
               </div>
             </div>
             <div className="row">
@@ -141,6 +141,7 @@ export const BuyerPayment = ({
           type="button"
           className="btn btn-lg btn-primary"
           onClick={() => handlePaymentDoneClicked()}
+          disabled={isLoading}
         >
           Kinnitan makse tegemist
         </button>

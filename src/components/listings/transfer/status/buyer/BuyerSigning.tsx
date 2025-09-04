@@ -105,6 +105,7 @@ export const BuyerSigning = ({
           type="button"
           className="btn btn-lg btn-primary"
           onClick={() => handleSignClicked()}
+          disabled={signingInProgress}
         >
           Allkirjastan lepingu
         </button>

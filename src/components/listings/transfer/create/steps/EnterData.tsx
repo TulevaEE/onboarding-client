@@ -231,6 +231,7 @@ export const EnterData = () => {
             )}
             <SaleOfTotalCapitalDescription
               saleBookValueAmount={bookValue ?? 0}
+              type="TRANSFER"
               transactionType="SELL"
             />
           </div>

@@ -63,6 +63,9 @@ export const AddListing = () => {
         expiryTime,
       });
       history.push('/capital/listings');
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to create listing', e);
     } finally {
       setSubmitting(false);
     }
@@ -143,6 +146,7 @@ export const AddListing = () => {
               <p className="m-0 text-danger">TODO Sul ei ole piisavalt liikmekapitali</p>
             )}
             <SaleOfTotalCapitalDescription
+              type="LISTING"
               saleBookValueAmount={Math.max(bookValueInput.value ?? 0, 0)}
               transactionType={listingType}
             />

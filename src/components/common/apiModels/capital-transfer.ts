@@ -38,4 +38,6 @@ export type CapitalTransferContractState =
   | 'PAYMENT_CONFIRMED_BY_BUYER'
   | 'PAYMENT_CONFIRMED_BY_SELLER'
   | 'APPROVED'
+  | 'EXECUTED'
+  | 'APPROVED_AND_NOTIFIED'
   | 'CANCELLED';

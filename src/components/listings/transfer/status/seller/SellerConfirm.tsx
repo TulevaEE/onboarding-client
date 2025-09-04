@@ -17,7 +17,7 @@ export const SellerConfirm = ({
   const history = useHistory();
   const [confirmMoneyReceived, setConfirmMoneyReceived] = useState(false);
   const [confirmMoneyReceivedError, setConfirmMoneyReceivedError] = useState(false);
-  const { mutateAsync: updateContractState, error } = useUpdateCapitalTransferContract();
+  const { mutateAsync: updateContractState, isLoading, error } = useUpdateCapitalTransferContract();
 
   const [success, setSuccess] = useState(false);
 
@@ -87,6 +87,7 @@ export const SellerConfirm = ({
           type="button"
           className="btn btn-lg btn-primary"
           onClick={() => handleConfirmationClicked()}
+          disabled={isLoading}
         >
           Kinnitan ja saadan avalduse
         </button>

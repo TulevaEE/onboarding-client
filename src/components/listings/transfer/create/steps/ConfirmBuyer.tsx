@@ -85,7 +85,10 @@ export const ConfirmBuyer = () => {
             value={personalCode ?? ''}
             pattern="[0-9]*"
             inputMode="numeric"
-            onChange={(e) => setPersonalCode(e.target.value)}
+            onChange={(e) => {
+              setSearched(null);
+              setPersonalCode(e.target.value);
+            }}
           />
           <button type="submit" className="btn btn-lg btn-light" disabled={isLoading}>
             Otsin
