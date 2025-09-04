@@ -69,9 +69,12 @@ export const CapitalTypeInput = ({
 
   const displayName = typeToNameMap[type as keyof typeof typeToNameMap];
   return (
-    <div className="d-flex justify-space-between mb-3" data-testid={`capital-input-${type}`}>
-      <div className="col">
-        <div>
+    <div
+      className="d-flex justify-content-between align-items-center"
+      data-testid={`capital-input-${type}`}
+    >
+      <div>
+        <span className="d-block">
           {displayName}{' '}
           {transferAmount.type === 'CAPITAL_PAYMENT' && (
             <InfoTooltip>
@@ -79,25 +82,23 @@ export const CapitalTypeInput = ({
               soetamismaksumuse tuludeklaratsiooni esitades maksustatavast tulust maha arvata.
             </InfoTooltip>
           )}
-        </div>
-        <div className="text-secondary">max {formatAmountForCurrency(capitalRow.value)}</div>
+        </span>
+        <span className="d-block text-secondary small lh-sm">
+          max {formatAmountForCurrency(capitalRow.value)}
+        </span>
       </div>
-      <div className="col d-flex justify-content-end">
-        <div className={`input-group ${styles.inputGroup}`}>
-          <input
-            className={`form-control form-control-lg text-end ${
-              value && value > capitalRow.value ? 'border-danger' : ''
-            }`}
-            id={type}
-            placeholder="0"
-            aria-label={`Müüdav osa ${displayName.toLowerCase()}est`}
-            value={inputValue}
-            onChange={handleInputChangeEvent}
-            type="text"
-            inputMode="decimal"
-          />
-          <div className="input-group-text">&euro;</div>
-        </div>
+      <div className={`input-group ${styles.subInputGroup}`}>
+        <input
+          className={`form-control ${value && value > capitalRow.value ? 'border-danger' : ''}`}
+          id={type}
+          placeholder="0"
+          aria-label={`Müüdav osa ${displayName.toLowerCase()}est`}
+          value={inputValue}
+          onChange={handleInputChangeEvent}
+          type="text"
+          inputMode="decimal"
+        />
+        <span className="input-group-text">&euro;</span>
       </div>
     </div>
   );

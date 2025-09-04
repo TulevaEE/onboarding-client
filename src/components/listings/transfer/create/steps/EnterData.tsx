@@ -185,7 +185,6 @@ export const EnterData = () => {
               <span className="input-group-text fw-semibold">&euro;</span>
             </div>
           </div>
-
           <div className="d-flex flex-column gap-2">
             <Slider
               value={(bookValue as number) ?? 0}
@@ -204,8 +203,9 @@ export const EnterData = () => {
             </div>
           </div>
 
-          {capitalTransferAmountsInput.length > 1
-            ? sortTransferAmounts(capitalTransferAmountsInput).map((amount) => {
+          {capitalTransferAmountsInput.length > 1 ? (
+            <div className="d-flex flex-column gap-2">
+              {sortTransferAmounts(capitalTransferAmountsInput).map((amount) => {
                 const rowForAmount = capitalRows?.find((row) => amount.type === row.type);
 
                 if (!rowForAmount) {
@@ -222,8 +222,9 @@ export const EnterData = () => {
                     onValueUpdate={handleCapitalTypeInputChange}
                   />
                 );
-              })
-            : null}
+              })}
+            </div>
+          ) : null}
 
           <div className="d-flex flex-column gap-2">
             {errors.moreThanMemberCapital && (

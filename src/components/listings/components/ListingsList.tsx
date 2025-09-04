@@ -47,7 +47,7 @@ const TableHeader = () => (
       </th>
       <th scope="col">Väärtuses</th>
       <th scope="col">Hinnaga</th>
-      <th scope="col">
+      <th scope="col " className="w-20 text-start text-nowrap">
         <FormattedMessage id="capital.listings.header.action" />
       </th>
     </tr>
@@ -75,7 +75,7 @@ const ListingRow = ({ listing }: { listing: MemberCapitalListing }) => {
       </td>
       <td>{formatAmountForCurrency(listing.bookValue)}</td>
       <td>{formatAmountForCurrency(listing.totalPrice)}</td>
-      <td>
+      <td className="text-start text-nowrap">
         {listing.isOwnListing && (
           <div className="dropdown">
             <button

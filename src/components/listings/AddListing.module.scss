@@ -7,3 +7,9 @@
   }
   max-width: 200px;
 }
+.subInputGroup {
+  @include media-breakpoint-down(sm) {
+    max-width: unset;
+  }
+  max-width: 160px;
+}
