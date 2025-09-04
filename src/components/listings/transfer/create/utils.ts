@@ -89,3 +89,13 @@ export const sortTransferAmounts = <T extends { type: CapitalType }>(amounts: T[
 
 export const getBookValueSum = (amounts: { bookValue: number }[]) =>
   amounts.reduce((acc, amount) => acc + amount.bookValue, 0);
+
+export const filterZeroBookValueAmounts = (amounts: CapitalTransferAmount[]) =>
+  amounts.filter(({ bookValue }) => bookValue > 0);
+
+export const roundValuesToSecondDecimal = (amounts: CapitalTransferAmount[]) =>
+  amounts.map((amount) => ({
+    ...amount,
+    bookValue: Number(amount.bookValue.toFixed(2)),
+    price: Number(amount.price.toFixed(2)),
+  }));

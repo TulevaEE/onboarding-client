@@ -134,9 +134,9 @@ export const ListingDetails = () => {
               <Loader className={`align-middle ${styles.listingLoader}`} />
             </div>
           ) : (
-            // eslint-disable-next-line react/no-danger
             <div
               className="card p-3 bg-gray-1 d-inline-block"
+              // eslint-disable-next-line react/no-danger
               dangerouslySetInnerHTML={{ __html: message }}
             />
           )}
