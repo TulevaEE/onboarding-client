@@ -11,6 +11,7 @@ import {
 import { Loader } from '../common';
 import styles from './ListingDetails.module.scss';
 import { SuccessAlert } from '../common/successAlert';
+import { usePageTitle } from '../common/usePageTitle';
 
 export const ListingDetails = () => {
   const { id: urlId } = useParams<{ id: string }>();
@@ -37,6 +38,8 @@ export const ListingDetails = () => {
   const history = useHistory();
 
   const listing = listings?.find((otherListing) => otherListing.id === Number(urlId));
+
+  usePageTitle(listing ? `capital.listings.details.title.to.${listing.type}` : null);
 
   const handleContactButtonClicked = async () => {
     if (!listing || !message) {

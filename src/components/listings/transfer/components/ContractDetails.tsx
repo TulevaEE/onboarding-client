@@ -3,6 +3,7 @@ import { formatAmountForCurrency, getFullName } from '../../../common/utils';
 import { TransferAmountBreakdown } from './TransferAmountBreakdown';
 import { getTotalBookValue } from '../status/utils';
 import { ContractDetailsProps, ContractStatusProgress } from '../create/types';
+import { formatDateYear } from '../../../common/dateFormatter';
 
 export const ContractDetails = ({
   seller,
@@ -12,6 +13,7 @@ export const ContractDetails = ({
   totalPrice,
   sellerIban,
   progress,
+  creationDate,
 }: ContractDetailsProps) => (
   <div className="d-flex flex-column gap-4">
     <div className="d-flex flex-column flex-sm-row row-gap-3 pb-4 border-bottom">
@@ -53,6 +55,15 @@ export const ContractDetails = ({
       </div>
       <div className="col">{sellerIban}</div>
     </div>
+
+    {creationDate && (
+      <div className="d-flex flex-column flex-sm-row">
+        <div className="col">
+          <b>Avalduse kuupäev</b>
+        </div>
+        <div className="col">{formatDateYear(creationDate)}</div>
+      </div>
+    )}
   </div>
 );
 

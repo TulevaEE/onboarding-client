@@ -5,13 +5,13 @@ import { TranslationKey } from '../translations';
 const companyName = 'Tuleva';
 const separator = ' – ';
 
-export function usePageTitle(messageId: TranslationKey) {
+export function usePageTitle(messageId: TranslationKey | null) {
   const intl = useIntl();
 
   useEffect(() => {
     const previousTitle = document.title;
 
-    const hasTranslation = intl.messages && intl.messages[messageId];
+    const hasTranslation = intl.messages && messageId && intl.messages[messageId];
     const translatedTitle = hasTranslation ? intl.formatMessage({ id: messageId }) : '';
     const finalTitle = translatedTitle
       ? `${translatedTitle}${separator}${companyName}`

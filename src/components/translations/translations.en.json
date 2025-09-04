@@ -844,6 +844,8 @@
   "capital.listings.action.delete.cancel": "Ei kustuta",
   "capital.listings.wantTo.forListing.SELL": "Soovin osta",
   "capital.listings.wantTo.forListing.BUY": "Soovin müüa",
+  "capital.listings.details.title.to.SELL": "Sõnum müüjale",
+  "capital.listings.details.title.to.BUY": "Sõnum ostjale",
   "capital.listings.details.notFound": "Sellist kuulutust ei leidu!",
   "capital.listings.details.success.title": "Sõnum on saadetud",
   "capital.listings.details.success.info": "Jää ootele, kuulutuse lisaja annab sulle loodetavasti peagi märku.",

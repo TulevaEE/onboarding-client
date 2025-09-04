@@ -39,6 +39,7 @@ export type ContractDetailsProps = {
   sellerIban: string;
   progress?: ContractStatusProgress;
   amounts: CapitalTransferAmount[];
+  creationDate?: string;
 };
 
 export const CREATE_CAPITAL_TRANSFER_STEPS = [

@@ -27,7 +27,7 @@ export const getContractDetailsPropsFromContract = (
   contract: CapitalTransferContract,
 ): Pick<
   ContractDetailsProps,
-  'seller' | 'buyer' | 'totalPrice' | 'amounts' | 'sellerIban' | 'progress'
+  'seller' | 'buyer' | 'totalPrice' | 'amounts' | 'sellerIban' | 'progress' | 'creationDate'
 > => ({
   seller: contract.seller,
   buyer: contract.buyer,
@@ -35,6 +35,7 @@ export const getContractDetailsPropsFromContract = (
   amounts: contract.transferAmounts,
   sellerIban: contract.iban,
   progress: getProgressFromStatus(contract.state) ?? undefined,
+  creationDate: contract.createdAt,
 });
 
 const getProgressFromStatus = (
