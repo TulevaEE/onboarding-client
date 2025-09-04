@@ -82,7 +82,7 @@ const TransferItem = ({ contract, me }: { contract: CapitalTransferContract; me:
       data-state={contract.state}
     >
       <span className="d-flex align-items-start column-gap-2">
-        <span className="d-inline-block" aria-hidden="true">
+        <span className="d-inline-block text-secondary" aria-hidden="true">
           {pendingOnMyAction ? (
             <svg
               xmlns="http://www.w3.org/2000/svg"
