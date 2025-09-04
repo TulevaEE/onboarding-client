@@ -65,8 +65,8 @@ export const SellerConfirm = ({
             id="agree-to-terms-checkbox"
           />
           <label className="form-check-label" htmlFor="agree-to-terms-checkbox">
-            Kinnitan, et olen {formatAmountForCurrency(totalPrice)} kätte saanud ja valmis
-            liikmekapitali üle andma
+            Olen {formatAmountForCurrency(totalPrice)} kätte saanud ja valmis liikmekapitali üle
+            andma
           </label>
           {confirmMoneyReceivedError && (
             <div className="text-danger">

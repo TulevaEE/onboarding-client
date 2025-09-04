@@ -99,7 +99,7 @@ describe('capital transfer buyer flow', () => {
     userEvent.click(await screen.findByText(/Vaatan staatust/i));
 
     expect(
-      await within(await getSellerDetailsSection()).findByText(/Maksekinnituse ootel/i),
+      await within(await getSellerDetailsSection()).findByText(/Raha laekumise ootel/i),
     ).toBeInTheDocument();
     expect(
       await within(await getBuyerDetailsSection()).findByText(/Makse teostatud/i),
@@ -149,7 +149,7 @@ describe('capital transfer seller flow', () => {
     expect(await within(sellerSection).findByText(getFullName(mockUser))).toBeInTheDocument();
     expect(await within(sellerSection).findByText(mockUser.personalCode)).toBeInTheDocument();
     expect(await within(sellerSection).findByText(/Allkirjastatud/i)).toBeInTheDocument();
-    expect(await within(sellerSection).findByText(/Maksekinnituse ootel/i)).toBeInTheDocument();
+    expect(await within(sellerSection).findByText(/Raha laekumise ootel/i)).toBeInTheDocument();
 
     userEvent.click(
       await screen.findByLabelText(/kätte saanud ja valmis liikmekapitali üle andma/i),

@@ -5,7 +5,7 @@ export const ContrastModeSwitch = () => {
   const { enabled, toggleContrastMode } = useHighContrastMode();
 
   return (
-    <div className="form-check form-switch high-contrast-toggle">
+    <span className="form-check form-switch high-contrast-toggle">
       <input
         type="checkbox"
         role="switch"
@@ -17,6 +17,6 @@ export const ContrastModeSwitch = () => {
       <label className="form-check-label" htmlFor="contrastModeSwitch">
         <FormattedMessage id="footer.highContrast.increaseContrast" />
       </label>
-    </div>
+    </span>
   );
 };

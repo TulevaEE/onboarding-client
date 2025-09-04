@@ -843,7 +843,7 @@
   "capital.listings.action.delete.error": "Kuulutuse kustutamisel tekkis viga. Palun võta meiega ühendust",
   "capital.listings.action.delete.expiry": "Kuulutus aegub {date}",
   "capital.listings.action.delete.confirm": "Kustutan",
-  "capital.listings.action.delete.cancel": "Ei kustuta",
+  "capital.listings.action.delete.cancel": "Jätan alles",
   "capital.listings.wantTo.forListing.SELL": "Soovin osta",
   "capital.listings.wantTo.forListing.BUY": "Soovin müüa",
   "capital.listings.details.title.to.SELL": "Sõnum müüjale",

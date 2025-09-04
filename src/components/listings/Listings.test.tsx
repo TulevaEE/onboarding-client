@@ -100,7 +100,7 @@ describe('member capital listings with listings', () => {
     expect(await within(listings[2]).findByText('#3')).toBeInTheDocument();
     expect(await within(listings[2]).findByText('10 000.00 €')).toBeInTheDocument();
     expect(await within(listings[2]).findByText('23 400.00 €')).toBeInTheDocument();
-    expect((await within(listings[2]).findAllByText('Kustutan')).length).toBe(2);
+    expect((await within(listings[2]).findAllByText('Delete')).length).toBe(2);
   });
 
   test('allows to contact for BUY listing', async () => {
@@ -165,7 +165,7 @@ describe('member capital listings with listings', () => {
     const ownListing = listings[2];
 
     userEvent.click(
-      await within(ownListing).findByText('Kustutan', {
+      await within(ownListing).findByText('Delete', {
         selector: '[aria-expanded="false"]',
       }),
     );
@@ -173,13 +173,13 @@ describe('member capital listings with listings', () => {
     expect(await screen.findByText(/Soovid oma kuulutuse kustutada?/i)).toBeInTheDocument();
 
     userEvent.click(
-      await within(ownListing).findByText('Kustutan', {
+      await within(ownListing).findByText('Delete', {
         selector: ':not([aria-expanded])',
       }),
     );
 
     expect(
-      await within(ownListing).findByText('Kustutan', {
+      await within(ownListing).findByText('Delete', {
         selector: '[aria-expanded="false"]',
       }),
     ).toBeInTheDocument();
