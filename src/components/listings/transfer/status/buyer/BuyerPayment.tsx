@@ -1,10 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import {
-  formatAmountForCount,
-  formatAmountForCurrency,
-  getFullName,
-} from '../../../../common/utils';
+import { formatAmountForCurrency, getFullName } from '../../../../common/utils';
 import { Steps } from '../../../../common/steps';
 import { BUYER_STEPS } from '../steps';
 import { StepDoneAlert } from '../StepDoneAlert';
@@ -70,7 +66,7 @@ export const BuyerPayment = ({
             <b>{getFullName(contract.seller)}</b> ({contract.seller.personalCode}) müüb ja{' '}
             <b>{getFullName(contract.buyer)}</b> ({contract.buyer.personalCode}) ostab{' '}
             liikmekapitali raamatupidamislikus väärtuses{' '}
-            <b>{formatAmountForCount(totalBookValue)}</b> hinnaga{' '}
+            <b>{formatAmountForCurrency(totalBookValue)}</b> hinnaga{' '}
             <b>{formatAmountForCurrency(totalPrice)}</b>.
           </p>
         </div>

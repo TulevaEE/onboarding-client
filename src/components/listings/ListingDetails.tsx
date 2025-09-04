@@ -185,7 +185,11 @@ export const ListingDetails = () => {
         </div>
       </div>
       <div className="d-flex flex-column-reverse flex-sm-row justify-content-between pt-4 border-top gap-3">
-        <button type="button" className="btn btn-lg btn-light" onClick={() => history.goBack()}>
+        <button
+          type="button"
+          className="btn btn-lg btn-light"
+          onClick={() => history.push('/capital/listings')}
+        >
           <FormattedMessage id="capital.listings.details.button.back" />
         </button>
         <button
