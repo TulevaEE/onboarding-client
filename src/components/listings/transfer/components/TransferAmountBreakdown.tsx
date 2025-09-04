@@ -61,6 +61,9 @@ export const TransferAmountBreakdown = ({
 };
 
 const TransferAmountName = ({ type }: { type: CapitalType }) => {
+  if (type === 'CAPITAL_ACQUIRED') {
+    return <>omandatud liikmekapital</>;
+  }
   if (type === 'CAPITAL_PAYMENT') {
     return <>rahaline panus</>;
   }

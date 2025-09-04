@@ -5,7 +5,7 @@ import {
 } from '../../../common/apiModels/capital-transfer';
 
 export const isLiquidatableCapitalType = (type: CapitalType) =>
-  ['CAPITAL_PAYMENT', 'WORK_COMPENSATION', 'MEMBERSHIP_BONUS'].includes(type);
+  ['CAPITAL_PAYMENT', 'WORK_COMPENSATION', 'CAPITAL_ACQUIRED', 'MEMBERSHIP_BONUS'].includes(type);
 
 export const getMemberCapitalSums = (rows: CapitalRow[]) => {
   const filteredRows = rows.filter((row) => isLiquidatableCapitalType(row.type));
@@ -78,7 +78,12 @@ export const initializeCapitalTransferAmounts = (
       bookValue: 0,
     }));
 
-const capitalTypeOrder = ['CAPITAL_PAYMENT', 'WORK_COMPENSATION', 'MEMBERSHIP_BONUS'];
+const capitalTypeOrder = [
+  'CAPITAL_ACQUIRED',
+  'CAPITAL_PAYMENT',
+  'WORK_COMPENSATION',
+  'MEMBERSHIP_BONUS',
+];
 export const sortTransferAmounts = <T extends { type: CapitalType }>(amounts: T[]) =>
   amounts.sort((a, b) => capitalTypeOrder.indexOf(a.type) - capitalTypeOrder.indexOf(b.type));
 

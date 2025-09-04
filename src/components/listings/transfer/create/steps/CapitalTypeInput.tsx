@@ -103,7 +103,9 @@ export const CapitalTypeInput = ({
   );
 };
 
+// TODO map to translationkey
 const typeToNameMap = {
+  CAPITAL_ACQUIRED: 'Omandatud kapital',
   CAPITAL_PAYMENT: 'Rahaline panus',
   WORK_COMPENSATION: 'Tööpanus',
   MEMBERSHIP_BONUS: 'Liikmeboonus',
