@@ -135,7 +135,10 @@ export const ListingDetails = () => {
             </div>
           ) : (
             // eslint-disable-next-line react/no-danger
-            <div className="card p-3 bg-gray-1" dangerouslySetInnerHTML={{ __html: message }} />
+            <div
+              className="card p-3 bg-gray-1 d-inline-block"
+              dangerouslySetInnerHTML={{ __html: message }}
+            />
           )}
         </div>
 
