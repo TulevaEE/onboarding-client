@@ -26,7 +26,8 @@ hr {
 
 // Links
 
-a {
+a,
+.btn-link {
   text-decoration-color: color-mix(
     in srgb,
     currentColor $link-underline-opacity,
@@ -37,7 +38,9 @@ a {
 }
 
 a:hover,
-a:focus {
+a:focus,
+.btn-link:hover,
+.btn-link:focus {
   text-decoration-color: currentColor !important;
 }
 

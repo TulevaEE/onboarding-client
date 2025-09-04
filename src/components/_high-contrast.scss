@@ -40,7 +40,8 @@
   --box-shadow-calculator: var(--box-shadow-hc) !important;
   --box-shadow-dropdown: var(--box-shadow-hc) !important;
 
-  a {
+  a,
+  .btn-link {
     text-decoration-color: currentColor !important;
   }
 
