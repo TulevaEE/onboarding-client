@@ -108,7 +108,7 @@ const SellerProgressContainer = ({
       </ProgressStep>
       {progress.signed.seller && progress.signed.buyer && progress.confirmed.buyer && (
         <ProgressStep status={progress.confirmed.seller}>
-          {progress.confirmed.seller ? 'Makse teostatud' : 'Maksekinnituse ootel'}
+          {progress.confirmed.seller ? 'Makse laekunud' : 'Maksekinnituse ootel'}
         </ProgressStep>
       )}
     </>

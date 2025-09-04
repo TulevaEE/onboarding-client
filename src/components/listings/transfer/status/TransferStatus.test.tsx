@@ -164,7 +164,7 @@ describe('capital transfer seller flow', () => {
     userEvent.click(await screen.findByText(/Vaatan staatust/i));
 
     expect(
-      await within(await getSellerDetailsSection()).findByText(/Makse teostatud/i, {}),
+      await within(await getSellerDetailsSection()).findByText(/Makse laekunud/i, {}),
     ).toBeInTheDocument();
   });
 });
