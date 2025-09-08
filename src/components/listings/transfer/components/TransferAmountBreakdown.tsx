@@ -22,10 +22,10 @@ export const TransferAmountBreakdown = ({
           <div className="col">
             <b>
               <FormattedMessage id="capital.transfer.details.amount.total" />
-            </b>
-            <div className="lh-lg" data-testid={`capital-row-${amount.type}`}>
+            </b>{' '}
+            <span className="text-nowrap" data-testid={`capital-row-${amount.type}`}>
               (<TransferAmountName type={amount.type} />)
-            </div>
+            </span>
           </div>
 
           <div className="col">
