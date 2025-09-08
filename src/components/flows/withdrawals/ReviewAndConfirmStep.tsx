@@ -32,6 +32,7 @@ import { AuthenticationLoader, ErrorMessage, Loader } from '../../common';
 import { ErrorResponse, MandateDeadlines } from '../../common/apiModels';
 import { TranslationKey } from '../../translations';
 import { useTestMode } from '../../common/test-mode';
+import { getBankName } from '../../common/iban';
 
 export const ReviewAndConfirmStep = () => {
   const {
@@ -190,7 +191,14 @@ export const ReviewAndConfirmStep = () => {
           <div>
             <FormattedMessage id="withdrawals.personalDetails.bankAccount.ibanLabel" />:
           </div>
-          <b>{personalDetails.bankAccountIban}</b>
+          <div className="text-end">
+            <b>{personalDetails.bankAccountIban}</b>
+            <div className="text-secondary">
+              {personalDetails.bankAccountIban
+                ? getBankName(personalDetails.bankAccountIban)
+                : null}
+            </div>
+          </div>
         </div>
         <div className="d-flex justify-content-between">
           <div>

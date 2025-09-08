@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useWithdrawalsContext } from './hooks';
-import { isValidIban, preProcessIban } from '../../common/iban';
+import { getBankName, isValidIban, preProcessIban } from '../../common/iban';
 import { TaxResidencySelect } from './TaxResidencySelect';
 import { useTestMode } from '../../common/test-mode';
 
@@ -43,8 +43,11 @@ export const PersonalDetailsStep = () => {
     <>
       <div className="my-5 card p-4">
         <div className="mb-3">
-          <label className="form-label" htmlFor="bank-account-iban">
-            <FormattedMessage id="withdrawals.personalDetails.bankAccount.ibanLabel" />
+          <label className="form-label d-flex justify-content-between" htmlFor="bank-account-iban">
+            <span>
+              <FormattedMessage id="withdrawals.personalDetails.bankAccount.ibanLabel" />
+            </span>
+            <span className="fw-normal text-secondary">{getBankName(iban)}</span>
           </label>
           <input
             type="text"
