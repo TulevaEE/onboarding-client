@@ -901,6 +901,17 @@
   "capital.transfer.list.action.SELLER.CREATED": "Allkirjastama",
   "capital.transfer.list.action.default": "Vaatan",
 
+  "capital.transfer.create.label.enterBuyerIdCode": "Sisesta ostja isikukood",
+  "capital.transfer.create.button.search": "Otsin",
+  "capital.transfer.create.status.searching": "Otsin",
+  "capital.transfer.create.error.selfBuyer": "Ostjaks ei saa määrata iseennast.",
+  "capital.transfer.create.error.notFound": "Sellele isikukoodile ei vasta ühtegi Tuleva ühistu liiget.",
+  "capital.transfer.create.error.noBuyer": "Jätkamiseks sisesta ostja.",
+  "capital.transfer.create.button.back": "Tagasi",
+  "capital.transfer.create.button.confirmBuyer": "Kinnitan ostja",
+  "capital.transfer.create.searchResult.heading": "Sellele isikukoodile vastab",
+  "capital.transfer.create.member.label": "Tuleva ühistu liige #{memberNumber}",
+
   "capital.transfer.saleOfTotalCapitalDescription.TRANSFER.SELL": "Oled ostjaga kokku leppinud liikmekapitali müümises, mille raamatupidamislik väärtus on {saleAmount}. See on {percentOfTotal} osalus kogu Tuleva ühistu liikmekapitali raamatupidamislikust väärtusest ({totalBookValueMillions} mln).",
   "capital.transfer.saleOfTotalCapitalDescription.LISTING.SELL": "Müüd liikmekapitali raamatupidamislikus väärtuses {saleAmount}. See on {percentOfTotal} osalus kogu Tuleva ühistu liikmekapitali raamatupidamislikust väärtusest ({totalBookValueMillions} mln).",
   "capital.transfer.saleOfTotalCapitalDescription.LISTING.BUY": "Ostad liikmekapitali raamatupidamislikus väärtuses {saleAmount}. See on {percentOfTotal} osalus kogu Tuleva ühistu liikmekapitali raamatupidamislikust väärtusest ({totalBookValueMillions} mln).",

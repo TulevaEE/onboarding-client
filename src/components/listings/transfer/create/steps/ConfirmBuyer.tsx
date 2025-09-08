@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useCreateCapitalTransferContext } from '../hooks';
 import { useMe } from '../../../../common/apiHooks';
 import { MemberLookup } from '../../../../common/apiModels';
 import { getMemberLookup } from '../../../../common/api';
+import { getFullName } from '../../../../common/utils';
 
 export const ConfirmBuyer = () => {
   const history = useHistory();
@@ -69,7 +71,7 @@ export const ConfirmBuyer = () => {
       <div className="d-flex flex-column gap-5 py-4">
         <div className="form-section">
           <label htmlFor="id-code-search" className="form-label">
-            Sisesta ostja isikukood
+            <FormattedMessage id="capital.transfer.create.label.enterBuyerIdCode" />
           </label>
           <form
             className="d-flex gap-2"
@@ -98,7 +100,9 @@ export const ConfirmBuyer = () => {
               {isLoading ? (
                 <>
                   <span className="spinner-border spinner-border-sm" aria-hidden="true" />
-                  <span>Otsin</span>
+                  <span>
+                    <FormattedMessage id="capital.transfer.create.button.search" />
+                  </span>
                 </>
               ) : (
                 <>
@@ -113,15 +117,21 @@ export const ConfirmBuyer = () => {
                   >
                     <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
                   </svg>
-                  <span role="status">Otsin</span>
+                  <span role="status">
+                    <FormattedMessage id="capital.transfer.create.status.searching" />
+                  </span>
                 </>
               )}
             </button>
           </form>
-          {selfBuyerError && <p className="text-danger pt-2">Ostjaks ei saa määrata iseennast.</p>}
+          {selfBuyerError && (
+            <p className="text-danger pt-2">
+              <FormattedMessage id="capital.transfer.create.error.selfBuyer" />
+            </p>
+          )}
           {searched === 'NOT_FOUND' && (
             <p className="text-danger pt-2">
-              Sellele isikukoodile ei vasta ühtegi Tuleva ühistu liiget.
+              <FormattedMessage id="capital.transfer.create.error.notFound" />
             </p>
           )}
         </div>
@@ -129,7 +139,9 @@ export const ConfirmBuyer = () => {
         <SearchResponse loading={isLoading} searched={buyer ?? searched} />
 
         {noBuyerError && (searched === 'NOT_FOUND' || !searched) && (
-          <p className="m-0 text-danger">Jätkamiseks sisesta ostja.</p>
+          <p className="m-0 text-danger">
+            <FormattedMessage id="capital.transfer.create.error.noBuyer" />
+          </p>
         )}
       </div>
 
@@ -139,7 +151,7 @@ export const ConfirmBuyer = () => {
           className="btn btn-lg btn-light"
           onClick={() => history.push('/capital/listings')}
         >
-          Tagasi
+          <FormattedMessage id="capital.transfer.create.button.back" />
         </button>
         <button
           type="button"
@@ -147,7 +159,7 @@ export const ConfirmBuyer = () => {
           disabled={noBuyerError && !searched}
           onClick={() => handleSubmitClicked()}
         >
-          Kinnitan ostja
+          <FormattedMessage id="capital.transfer.create.button.confirmBuyer" />
         </button>
       </div>
     </>
@@ -161,6 +173,8 @@ const SearchResponse = ({
   loading: boolean;
   searched: MemberLookup | 'NOT_FOUND' | null | undefined;
 }) => {
+  const { formatMessage } = useIntl();
+
   if (loading) {
     return null;
   }
@@ -175,7 +189,9 @@ const SearchResponse = ({
 
   return (
     <div className="form-section d-flex flex-column gap-2">
-      <p className="m-0 fw-bold">Sellele isikukoodile vastab</p>
+      <p className="m-0 fw-bold">
+        <FormattedMessage id="capital.transfer.create.searchResult.heading" />
+      </p>
       <div className="d-flex align-items-center gap-3">
         <span className="text-success" aria-hidden="true">
           <svg
@@ -190,11 +206,12 @@ const SearchResponse = ({
           </svg>
         </span>
         <span>
-          <span className="d-block lead">
-            {searched.firstName} {searched.lastName}
-          </span>
+          <span className="d-block lead">{getFullName(searched)}</span>
           <span className="d-block text-secondary">
-            Tuleva ühistu liige #{searched.memberNumber}
+            {formatMessage(
+              { id: 'capital.transfer.create.member.label' },
+              { memberNumber: searched.memberNumber },
+            )}
           </span>
         </span>
       </div>
