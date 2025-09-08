@@ -55,7 +55,7 @@ export const TransferList = () => {
           <FormattedMessage id="capital.transfer.pendingSingle" />
         )}
       </p>
-      <ul className="list-unstyled m-0">
+      <ul className="list-unstyled m-0 d-flex flex-column row-gap-2">
         {sortedContracts.map((contract) => (
           <TransferItem contract={contract} me={me} key={contract.id} />
         ))}
@@ -76,7 +76,7 @@ const TransferItem = ({ contract, me }: { contract: CapitalTransferContract; me:
 
   return (
     <li
-      className="d-flex justify-content-between row-gap-2"
+      className="d-flex flex-column flex-sm-row justify-content-between column-gap-2"
       data-testid="active-capital-transfer-contract"
       data-myrole={myRole}
       data-state={contract.state}
@@ -118,7 +118,7 @@ const TransferItem = ({ contract, me }: { contract: CapitalTransferContract; me:
           />
         </span>
       </span>
-      <Link to={`/capital/transfer/${contract.id}`}>
+      <Link className="ms-4 ms-sm-0" to={`/capital/transfer/${contract.id}`}>
         <FormattedMessage
           id={getStateActionLinkText(contract, myRole)}
           values={{

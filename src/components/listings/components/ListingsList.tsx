@@ -26,8 +26,8 @@ export const ListingsList = () => {
   }
 
   return (
-    <div className="table-container">
-      <table className="table m-0">
+    <div className="table-responsive">
+      <table className="table m-0 text-nowrap">
         <TableHeader />
         <tbody>
           {listings.map((listing) => (
