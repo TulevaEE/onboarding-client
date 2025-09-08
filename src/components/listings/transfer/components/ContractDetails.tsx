@@ -129,7 +129,7 @@ const SellerProgressContainer = ({
       ) : (
         <FormattedMessage
           id={`capital.transfer.details.status.waitingForSignature.${
-            userRole === 'BUYER' ? 'USER' : 'SELLER'
+            userRole === 'SELLER' ? 'USER' : 'SELLER'
           }`}
         />
       )}

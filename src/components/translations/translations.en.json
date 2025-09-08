@@ -850,6 +850,12 @@
   "capital.transfer.details.status.paymentReceived": "Raha laekunud",
   "capital.transfer.details.status.waitingPaymentReceived": "Raha laekumise ootel",
 
+  "capital.transfer.details.amount.total": "Müüdav liikmekapital",
+  "capital.transfer.details.amount.type.CAPITAL_ACQUIRED": "omandatud liikmekapital",
+  "capital.transfer.details.amount.type.CAPITAL_PAYMENT": "rahaline panus",
+  "capital.transfer.details.amount.type.MEMBERSHIP_BONUS": "liikmeboonus",
+  "capital.transfer.details.amount.type.WORK_COMPENSATION": "tööpanus",
+
   "capital.transfer.saleOfTotalCapitalDescription.TRANSFER.SELL": "Oled ostjaga kokku leppinud liikmekapitali müümises, mille raamatupidamislik väärtus on {saleAmount}. See on {percentOfTotal} osalus kogu Tuleva ühistu liikmekapitali raamatupidamislikust väärtusest ({totalBookValueMillions} mln).",
   "capital.transfer.saleOfTotalCapitalDescription.LISTING.SELL": "Müüd liikmekapitali raamatupidamislikus väärtuses {saleAmount}. See on {percentOfTotal} osalus kogu Tuleva ühistu liikmekapitali raamatupidamislikust väärtusest ({totalBookValueMillions} mln).",
   "capital.transfer.saleOfTotalCapitalDescription.LISTING.BUY": "Ostad liikmekapitali raamatupidamislikus väärtuses {saleAmount}. See on {percentOfTotal} osalus kogu Tuleva ühistu liikmekapitali raamatupidamislikust väärtusest ({totalBookValueMillions} mln).",

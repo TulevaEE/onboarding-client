@@ -1,7 +1,9 @@
+import { FormattedMessage } from 'react-intl';
 import { CapitalType } from '../../../common/apiModels';
 import { CapitalTransferAmount } from '../../../common/apiModels/capital-transfer';
 import { formatAmountForCurrency } from '../../../common/utils';
 import { sortTransferAmounts } from '../create/utils';
+import { isTranslationKey } from '../../../translations';
 
 export const TransferAmountBreakdown = ({
   totalBookValue,
@@ -18,7 +20,9 @@ export const TransferAmountBreakdown = ({
       <>
         <div className="d-flex" data-testid="capital-row-TOTAL">
           <div className="col">
-            <b>Müüdav liikmekapital</b>
+            <b>
+              <FormattedMessage id="capital.transfer.details.amount.total" />
+            </b>
             <div className="lh-lg" data-testid={`capital-row-${amount.type}`}>
               (<TransferAmountName type={amount.type} />)
             </div>
@@ -38,7 +42,9 @@ export const TransferAmountBreakdown = ({
     <div className="d-flex flex-column">
       <div className="d-flex" data-testid="capital-row-TOTAL">
         <div className="col">
-          <b>Müüdav liikmekapital</b>
+          <b>
+            <FormattedMessage id="capital.transfer.details.amount.total" />
+          </b>
         </div>
 
         <div className="col">
@@ -61,20 +67,9 @@ export const TransferAmountBreakdown = ({
 };
 
 const TransferAmountName = ({ type }: { type: CapitalType }) => {
-  if (type === 'CAPITAL_ACQUIRED') {
-    return <>omandatud liikmekapital</>;
+  const key = `capital.transfer.details.amount.type.${type}`;
+  if (isTranslationKey(key)) {
+    return <FormattedMessage id={key} />;
   }
-  if (type === 'CAPITAL_PAYMENT') {
-    return <>rahaline panus</>;
-  }
-
-  if (type === 'MEMBERSHIP_BONUS') {
-    return <>liikmeboonus</>;
-  }
-
-  if (type === 'WORK_COMPENSATION') {
-    return <>tööpanus</>;
-  }
-
   return null;
 };
