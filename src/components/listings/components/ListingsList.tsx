@@ -81,12 +81,13 @@ const ListingRow = ({ listing }: { listing: MemberCapitalListing }) => {
       <td>{formatAmountForCurrency(listing.totalPrice)}</td>
       <td className="text-start text-nowrap">
         {listing.isOwnListing && (
-          <div className="dropdown dropstart">
+          <div className="dropdown d-inline-block">
             <button
               type="button"
               className="btn btn-link p-0 border-0 d-inline-flex align-items-center gap-1 align-top"
               aria-expanded={deleteDropdownOpen}
               onClick={() => setDeleteDropdownOpen((oldVal) => !oldVal)}
+              data-bs-display="static"
             >
               {deleteDropdownOpen ? (
                 <>
@@ -124,6 +125,7 @@ const ListingRow = ({ listing }: { listing: MemberCapitalListing }) => {
               className={`dropdown-menu dropdown-menu-end p-4 shadow ${styles.deletionDropdown} ${
                 deleteDropdownOpen ? 'show' : ''
               }`}
+              data-bs-popper="static"
             >
               <b>
                 <FormattedMessage id="capital.listings.action.delete.confirmTitle" />
