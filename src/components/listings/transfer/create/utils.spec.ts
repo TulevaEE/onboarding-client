@@ -236,7 +236,7 @@ describe('calculateTransferAmountInputsFromNewTotalBookValue', () => {
 
 describe('calculateTransferAmountPrices', () => {
   it('should calculate price proprtionally', () => {
-    const [first, second] = calculateTransferAmountPrices({ bookValue: 3000, totalPrice: 6000 }, [
+    const [first, second] = calculateTransferAmountPrices({ totalPrice: 6000 }, [
       { type: 'CAPITAL_PAYMENT', bookValue: 2000 },
       { type: 'WORK_COMPENSATION', bookValue: 1000 },
     ]);

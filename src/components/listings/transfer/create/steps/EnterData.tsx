@@ -143,7 +143,7 @@ export const EnterData = () => {
     setTotalPrice(totalPriceInput.value);
     setFinalCapitalTransferAmounts(
       calculateTransferAmountPrices(
-        { bookValue, totalPrice: totalPriceInput.value },
+        { totalPrice: totalPriceInput.value },
         capitalTransferAmountsInput,
       ),
     );

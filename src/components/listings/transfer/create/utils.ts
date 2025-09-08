@@ -54,19 +54,21 @@ export const calculateTransferAmountInputsFromNewTotalBookValue = (
 
 export const calculateTransferAmountPrices = (
   userInputs: {
-    bookValue: number;
     totalPrice: number;
   },
   amounts: CapitalTransferAmountInputState[],
-): CapitalTransferAmount[] =>
-  amounts.map((amount) => {
-    const bookValueShareOfTotal = amount.bookValue / userInputs.bookValue;
+): CapitalTransferAmount[] => {
+  const amountsTotalBookValue = amounts.reduce((acc, amount) => amount.bookValue + acc, 0);
+
+  return amounts.map((amount) => {
+    const bookValueShareOfTotal = amount.bookValue / amountsTotalBookValue;
 
     return {
       ...amount,
       price: bookValueShareOfTotal * userInputs.totalPrice,
     };
   });
+};
 
 export const initializeCapitalTransferAmounts = (
   rows: CapitalRow[],
