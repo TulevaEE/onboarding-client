@@ -92,13 +92,13 @@ const IBAN_CODE_LENGTHS = {
 
 const ESTONIAN_IBAN_CHECK_CODE_TO_BANK_NAME = {
   42: 'Coop Pank',
-  10: 'SEB Pank',
+  10: 'SEB',
   22: 'Swedbank',
-  96: 'Luminor Bank',
-  17: 'Luminor Bank',
-  77: 'LHV Pank',
+  96: 'Luminor',
+  17: 'Luminor',
+  77: 'LHV',
   75: 'Bigbank',
-  12: 'Citadele pank',
+  12: 'Citadele',
 };
 
 export const getBankName = (iban: string): string | null => {
