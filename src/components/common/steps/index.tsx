@@ -51,7 +51,9 @@ const Step = ({
         <span className="tv-step__number me-2">
           <Checkmark />
         </span>
-        <span>{title}</span>
+        <span>
+          <FormattedMessage id={title} />
+        </span>
       </div>
     );
   }
@@ -71,7 +73,9 @@ const Step = ({
     return (
       <div className="tv-step__title tv-step__title--upcoming">
         <span className="tv-step__number me-2">{step + 1}</span>
-        <span>{title}</span>
+        <span>
+          <FormattedMessage id={title} />
+        </span>
       </div>
     );
   }
