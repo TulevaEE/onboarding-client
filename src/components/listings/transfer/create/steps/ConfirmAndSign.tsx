@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Redirect, useHistory } from 'react-router-dom';
+import { FormattedMessage } from 'react-intl';
 import { AuthenticationLoader, ErrorMessage, Loader } from '../../../../common';
 import {
   useCapitalRows,
@@ -122,6 +123,7 @@ export const ConfirmAndSign = () => {
           overlayed
         />
       )}
+
       <div className="d-flex flex-column gap-5 py-4">
         <ContractDetails
           seller={me}
@@ -131,6 +133,7 @@ export const ConfirmAndSign = () => {
           totalPrice={totalPrice}
           sellerIban={sellerIban}
         />
+
         <div className="form-check m-0">
           <input
             checked={agreedToTerms}
@@ -140,12 +143,12 @@ export const ConfirmAndSign = () => {
             id="agree-to-terms-checkbox"
           />
           <label className="form-check-label" htmlFor="agree-to-terms-checkbox">
-            Kinnitan, et müüja ja ostja on kokku leppinud liikmekapitali võõrandamises eelpool
-            nimetatud tingimustel.
+            <FormattedMessage id="capital.transfer.create.terms.label" />
           </label>
+
           {agreedToTermsError && (
             <p className="m-0 text-danger">
-              TODO Müügiprotsessi alustamiseks pead tingimustega nõustuma
+              <FormattedMessage id="capital.transfer.create.error.mustAgree" />
             </p>
           )}
         </div>
@@ -157,7 +160,7 @@ export const ConfirmAndSign = () => {
           className="btn btn-lg btn-light"
           onClick={() => navigateToPreviousStep()}
         >
-          Tagasi
+          <FormattedMessage id="capital.transfer.create.button.back" />
         </button>
         <button
           type="button"
@@ -165,7 +168,7 @@ export const ConfirmAndSign = () => {
           className="btn btn-lg btn-primary"
           onClick={() => handleSubmitClicked()}
         >
-          Allkirjastan lepingu
+          <FormattedMessage id="capital.transfer.create.button.signContract" />
         </button>
       </div>
     </>

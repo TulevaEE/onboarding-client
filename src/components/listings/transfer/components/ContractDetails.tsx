@@ -1,4 +1,5 @@
 import { PropsWithChildren } from 'react';
+import { FormattedMessage } from 'react-intl';
 import { formatAmountForCurrency, getFullName } from '../../../common/utils';
 import { TransferAmountBreakdown } from './TransferAmountBreakdown';
 import { getTotalBookValue } from '../status/utils';
@@ -19,15 +20,20 @@ export const ContractDetails = ({
   <div className="d-flex flex-column gap-4">
     <div className="d-flex flex-column flex-sm-row row-gap-3 pb-4 border-bottom">
       <div className="col d-flex flex-column gap-2" data-testid="seller-details">
-        <b>Müüja</b>
+        <b>
+          <FormattedMessage id="capital.transfer.details.seller.label" />
+        </b>
         <div>
           <div className="fs-3">{getFullName(seller)}</div>
           <div className="text-secondary">{seller.personalCode}</div>
         </div>
         {progress && <SellerProgressContainer progress={progress} userRole={userRole} />}
       </div>
+
       <div className="col d-flex flex-column gap-2" data-testid="buyer-details">
-        <b>Ostja</b>
+        <b>
+          <FormattedMessage id="capital.transfer.details.buyer.label" />
+        </b>
         <div>
           <div className="fs-3">{getFullName(buyer)}</div>
           <div className="text-secondary">{buyer.personalCode}</div>
@@ -43,7 +49,9 @@ export const ContractDetails = ({
 
     <div className="d-flex pb-4 border-bottom">
       <div className="col">
-        <b>Hinnaga</b>
+        <b>
+          <FormattedMessage id="capital.transfer.details.price.label" />
+        </b>
       </div>
       <div className="col">
         <b>{formatAmountForCurrency(totalPrice)}</b>
@@ -52,7 +60,9 @@ export const ContractDetails = ({
 
     <div className="d-flex flex-column flex-sm-row">
       <div className="col d-flex justify-content-between">
-        <b>Müüja pangakonto (IBAN)</b>
+        <b>
+          <FormattedMessage id="capital.transfer.details.bankAccount.label" />
+        </b>
       </div>
       <div className="col">
         {sellerIban}
@@ -63,7 +73,9 @@ export const ContractDetails = ({
     {creationDate && (
       <div className="d-flex flex-column flex-sm-row">
         <div className="col">
-          <b>Avalduse kuupäev</b>
+          <b>
+            <FormattedMessage id="capital.transfer.details.creationDate.label" />
+          </b>
         </div>
         <div className="col">{formatDateYear(creationDate)}</div>
       </div>
@@ -77,23 +89,31 @@ const BuyerProgressContainer = ({
 }: {
   progress: ContractStatusProgress;
   userRole: 'BUYER' | 'SELLER';
-}) => {
-  const waitingForSignatureText =
-    userRole === 'BUYER' ? 'Sinu allkirja ootel' : 'Ostja allkirja ootel';
-
-  return (
-    <>
-      <ProgressStep status={progress.signed.buyer}>
-        {progress.signed.buyer ? 'Allkirjastatud' : waitingForSignatureText}
-      </ProgressStep>
-      {progress.signed.seller && progress.signed.buyer && (
-        <ProgressStep status={progress.confirmed.buyer}>
-          {progress.confirmed.buyer ? 'Makse teostatud' : 'Makse ootel'}
-        </ProgressStep>
+}) => (
+  <>
+    <ProgressStep status={progress.signed.buyer}>
+      {progress.signed.buyer ? (
+        <FormattedMessage id="capital.transfer.details.status.signed" />
+      ) : (
+        <FormattedMessage
+          id={`capital.transfer.details.status.waitingForSignature.${
+            userRole === 'BUYER' ? 'USER' : 'BUYER'
+          }`}
+        />
       )}
-    </>
-  );
-};
+    </ProgressStep>
+
+    {progress.signed.seller && progress.signed.buyer && (
+      <ProgressStep status={progress.confirmed.buyer}>
+        {progress.confirmed.buyer ? (
+          <FormattedMessage id="capital.transfer.details.status.paymentDone" />
+        ) : (
+          <FormattedMessage id="capital.transfer.details.status.paymentPending" />
+        )}
+      </ProgressStep>
+    )}
+  </>
+);
 
 const SellerProgressContainer = ({
   progress,
@@ -101,23 +121,30 @@ const SellerProgressContainer = ({
 }: {
   progress: ContractStatusProgress;
   userRole: 'BUYER' | 'SELLER';
-}) => {
-  const waitingForSignatureText =
-    userRole === 'SELLER' ? 'Sinu allkirja ootel' : 'Müüja allkirja ootel';
-
-  return (
-    <>
-      <ProgressStep status={progress.signed.seller}>
-        {progress.signed.seller ? 'Allkirjastatud' : waitingForSignatureText}
-      </ProgressStep>
-      {progress.signed.seller && progress.signed.buyer && progress.confirmed.buyer && (
-        <ProgressStep status={progress.confirmed.seller}>
-          {progress.confirmed.seller ? 'Raha laekunud' : 'Raha laekumise ootel'}
-        </ProgressStep>
+}) => (
+  <>
+    <ProgressStep status={progress.signed.seller}>
+      {progress.signed.seller ? (
+        <FormattedMessage id="capital.transfer.details.status.signed" />
+      ) : (
+        <FormattedMessage
+          id={`capital.transfer.details.status.waitingForSignature.${
+            userRole === 'BUYER' ? 'USER' : 'SELLER'
+          }`}
+        />
       )}
-    </>
-  );
-};
+    </ProgressStep>
+    {progress.signed.seller && progress.signed.buyer && progress.confirmed.buyer && (
+      <ProgressStep status={progress.confirmed.seller}>
+        {progress.confirmed.seller ? (
+          <FormattedMessage id="capital.transfer.details.status.paymentReceived" />
+        ) : (
+          <FormattedMessage id="capital.transfer.details.status.waitingPaymentReceived" />
+        )}
+      </ProgressStep>
+    )}
+  </>
+);
 
 const ProgressStep = ({ status, children }: PropsWithChildren<{ status: boolean }>) => {
   if (!status) {
