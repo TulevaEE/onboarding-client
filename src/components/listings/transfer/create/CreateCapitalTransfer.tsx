@@ -1,5 +1,6 @@
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { PropsWithChildren } from 'react';
+import { FormattedMessage } from 'react-intl';
 import { CreateTransferSteps } from './CreateCapitalTransferSteps';
 import { CreateTransferProvider } from './hooks';
 import { ConfirmAndSign } from './steps/ConfirmAndSign';
@@ -58,7 +59,9 @@ const CreateCapitalTransferForm = () => {
 const Container = ({ children }: PropsWithChildren<unknown>) => (
   <>
     <div className="d-flex flex-column gap-4">
-      <h1 className="m-0 text-md-center">Liikmekapitali võõrandamise avaldus</h1>
+      <h1 className="m-0 text-md-center">
+        <FormattedMessage id="capital.transfer.details.heading" />
+      </h1>
       <CreateTransferSteps />
     </div>
     <div className="d-flex flex-column gap-5">{children}</div>

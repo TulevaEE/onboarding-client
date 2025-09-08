@@ -161,8 +161,8 @@ describe('member capital transfer creation', () => {
 
     userEvent.click(await screen.findByText(/Kinnitan ostja/i));
 
-    const workCompensationAmountInput = await screen.findByLabelText(/Müüdav osa tööpanusest/i);
-    const memberCapitalAmountInput = await screen.findByLabelText(/Müüdav osa rahaline panusest/i);
+    const workCompensationAmountInput = await screen.findByLabelText(/Tööpanus/i);
+    const memberCapitalAmountInput = await screen.findByLabelText(/Rahaline panus/i);
 
     userEvent.clear(workCompensationAmountInput);
     userEvent.clear(memberCapitalAmountInput);

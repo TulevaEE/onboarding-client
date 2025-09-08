@@ -19,7 +19,6 @@ export const ConfirmBuyer = () => {
   const selfBuyerError = (personalCode ?? '').trim() === me?.personalCode;
 
   // TODO does not look like the best
-
   const [searched, setSearched] = useState<MemberLookup | 'NOT_FOUND' | null>(buyer ?? null);
   const [isLoading, setIsLoading] = useState(false);
 

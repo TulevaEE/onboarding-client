@@ -1,4 +1,5 @@
 import { Redirect, useHistory } from 'react-router-dom';
+import { FormattedMessage } from 'react-intl';
 import { SuccessAlert } from '../../../../common/successAlert';
 import { useCreateCapitalTransferContext } from '../hooks';
 
@@ -21,8 +22,12 @@ export const DoneStep = () => {
     <SuccessAlert>
       <div className="d-flex flex-column gap-4">
         <div className="d-flex flex-column gap-3">
-          <h2 className="m-0">Leping on sinu poolt allkirjastatud</h2>
-          <p className="m-0">Teavitasime ostjat ja leping on nüüd tema allkirjastamise ootel.</p>
+          <h2 className="m-0">
+            <FormattedMessage id="capital.transfer.create.success.signedTitle" />
+          </h2>
+          <p className="m-0">
+            <FormattedMessage id="capital.transfer.create.success.signedDescription" />
+          </p>
         </div>
 
         <div className="d-flex justify-content-center gap-2">
@@ -33,7 +38,7 @@ export const DoneStep = () => {
               history.push(`/capital/transfer/${createdCapitalTransferContract.id}`);
             }}
           >
-            Vaatan staatust
+            <FormattedMessage id="capital.transfer.details.button.seeStatus" />
           </button>
         </div>
       </div>

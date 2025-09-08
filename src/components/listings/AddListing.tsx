@@ -145,7 +145,9 @@ export const AddListing = () => {
 
           <div className="d-flex flex-column gap-2">
             {errors.moreThanMemberCapital && (
-              <p className="m-0 text-danger">TODO Sul ei ole piisavalt liikmekapitali</p>
+              <p className="m-0 text-danger">
+                <FormattedMessage id="capital.listings.create.error.moreThanMemberCapital" />
+              </p>
             )}
             <SaleOfTotalCapitalDescription
               type="LISTING"

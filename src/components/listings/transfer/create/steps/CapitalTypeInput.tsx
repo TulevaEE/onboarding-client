@@ -1,10 +1,12 @@
 import { ChangeEventHandler, useEffect, useState } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { CapitalRow, CapitalType } from '../../../../common/apiModels';
 import { CapitalTransferAmountInputState } from '../../../../common/apiModels/capital-transfer';
 import { formatAmountForCurrency } from '../../../../common/utils';
 
 import styles from '../../../AddListing.module.scss';
 import { InfoTooltip } from '../../../../common/infoTooltip/InfoTooltip';
+import { isTranslationKey } from '../../../../translations';
 
 export const CapitalTypeInput = ({
   transferAmount,
@@ -19,6 +21,7 @@ export const CapitalTypeInput = ({
   lastInput: 'TOTAL' | 'TYPE_INPUTS';
   setLastInput: (type: 'TOTAL' | 'TYPE_INPUTS') => unknown;
 }) => {
+  const { formatMessage } = useIntl();
   const { type } = transferAmount;
 
   const [inputValue, setInputValue] = useState(
@@ -63,11 +66,11 @@ export const CapitalTypeInput = ({
     }
   }, [lastInput, transferAmount.bookValue]);
 
-  if (!(type in typeToNameMap)) {
+  const translationKey = `capital.transfer.create.amount.type.${type}`;
+  if (!isTranslationKey(translationKey)) {
     return null;
   }
 
-  const displayName = typeToNameMap[type as keyof typeof typeToNameMap];
   return (
     <div
       className="d-flex justify-content-between align-items-center"
@@ -75,11 +78,10 @@ export const CapitalTypeInput = ({
     >
       <div>
         <span className="d-block">
-          {displayName}{' '}
+          <FormattedMessage id={translationKey} />
           {transferAmount.type === 'CAPITAL_PAYMENT' && (
             <InfoTooltip>
-              Müümist võib olla mõistlik alustada rahalisest panusest, sest saad selle
-              soetamismaksumuse tuludeklaratsiooni esitades maksustatavast tulust maha arvata.
+              <FormattedMessage id="capital.transfer.create.amount.type.CAPITAL_ACQUIRED.tooltip" />
             </InfoTooltip>
           )}
         </span>
@@ -92,7 +94,7 @@ export const CapitalTypeInput = ({
           className={`form-control ${value && value > capitalRow.value ? 'border-danger' : ''}`}
           id={type}
           placeholder="0"
-          aria-label={`Müüdav osa ${displayName.toLowerCase()}est`}
+          aria-label={formatMessage({ id: translationKey })}
           value={inputValue}
           onChange={handleInputChangeEvent}
           type="text"
@@ -103,11 +105,3 @@ export const CapitalTypeInput = ({
     </div>
   );
 };
-
-// TODO map to translationkey
-const typeToNameMap = {
-  CAPITAL_ACQUIRED: 'Omandatud kapital',
-  CAPITAL_PAYMENT: 'Rahaline panus',
-  WORK_COMPENSATION: 'Tööpanus',
-  MEMBERSHIP_BONUS: 'Liikmeboonus',
-} as const;

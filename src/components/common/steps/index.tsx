@@ -1,12 +1,14 @@
 import { Fragment } from 'react';
+import { FormattedMessage } from 'react-intl';
 import styles from './Steps.module.scss';
+import { TranslationKey } from '../../translations';
 
 export const Steps = <T extends string>({
   steps,
   currentStepType,
   alignCenter = true,
 }: {
-  steps: readonly { title: string; type: T; hidden?: boolean }[];
+  steps: readonly { title: TranslationKey; type: T; hidden?: boolean }[];
   currentStepType: T;
   alignCenter?: boolean;
 }) => {
@@ -37,7 +39,7 @@ const Step = ({
 }: {
   step: number;
   currentStep: number;
-  title: string;
+  title: TranslationKey;
 }) => {
   const isStepCompleted = currentStep > step;
   const isStepUpcoming = currentStep < step;
@@ -58,7 +60,9 @@ const Step = ({
     return (
       <div className="tv-step__title tv-step__title--current">
         <span className="tv-step__number me-2">{step + 1}</span>
-        <span>{title}</span>
+        <span>
+          <FormattedMessage id={title} />
+        </span>
       </div>
     );
   }

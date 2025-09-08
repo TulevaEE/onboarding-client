@@ -43,10 +43,27 @@ export type ContractDetailsProps = {
 };
 
 export const CREATE_CAPITAL_TRANSFER_STEPS = [
-  { title: 'Kinnita ostja', type: 'CONFIRM_BUYER', subPath: 'confirm-buyer' },
-  { title: 'Sisesta andmed', type: 'ENTER_DATA', subPath: 'enter-data' },
-  { title: 'Allkirjasta leping', type: 'SIGN_CONTRACT', subPath: 'confirm' },
-  { title: 'Tehtud', type: 'DONE', subPath: 'done', hidden: true },
+  {
+    title: 'capital.transfer.create.steps.CONFIRM_BUYER',
+    type: 'CONFIRM_BUYER',
+    subPath: 'confirm-buyer',
+  },
+  {
+    title: 'capital.transfer.create.steps.ENTER_DATA',
+    type: 'ENTER_DATA',
+    subPath: 'enter-data',
+  },
+  {
+    title: 'capital.transfer.create.steps.SIGN_CONTRACT',
+    type: 'SIGN_CONTRACT',
+    subPath: 'confirm',
+  },
+  {
+    title: 'capital.transfer.create.steps.DONE',
+    type: 'DONE',
+    subPath: 'done',
+    hidden: true,
+  },
 ] as const;
 
 export type CreateCapitalTransferStepType = (typeof CREATE_CAPITAL_TRANSFER_STEPS)[number]['type'];
