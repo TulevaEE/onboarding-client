@@ -2,7 +2,7 @@ import { ChangeEventHandler, useEffect, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 import { formatAmountForCurrency, useNumberInput } from '../../../../common/utils';
 import { useCreateCapitalTransferContext } from '../hooks';
-import { isValidIban } from '../../../../common/iban';
+import { getBankName, isValidIban } from '../../../../common/iban';
 import { SaleOfTotalCapitalDescription } from '../../components/SaleOfTotalCapitalDescription';
 import styles from '../../../AddListing.module.scss';
 import Slider from '../../../../flows/withdrawals/Slider';
@@ -259,8 +259,12 @@ export const EnterData = () => {
 
         <div className="form-section d-flex flex-column gap-3">
           <div>
-            <label htmlFor="bank-account-iban" className="fs-3 fw-bold form-label">
-              Müüja pangakonto (IBAN)
+            <label
+              htmlFor="bank-account-iban"
+              className="form-label d-flex justify-content-between"
+            >
+              <span className="fs-3 fw-bold">Müüja pangakonto (IBAN)</span>
+              <span className="fw-normal text-secondary">{getBankName(bankIban)}</span>
             </label>
             <input
               type="text"

@@ -4,6 +4,7 @@ import { TransferAmountBreakdown } from './TransferAmountBreakdown';
 import { getTotalBookValue } from '../status/utils';
 import { ContractDetailsProps, ContractStatusProgress } from '../create/types';
 import { formatDateYear } from '../../../common/dateFormatter';
+import { getBankName } from '../../../common/iban';
 
 export const ContractDetails = ({
   seller,
@@ -50,10 +51,13 @@ export const ContractDetails = ({
     </div>
 
     <div className="d-flex flex-column flex-sm-row">
-      <div className="col">
+      <div className="col d-flex justify-content-between">
         <b>Müüja pangakonto (IBAN)</b>
       </div>
-      <div className="col">{sellerIban}</div>
+      <div className="col">
+        {sellerIban}
+        <div className="text-secondary">{getBankName(sellerIban)}</div>
+      </div>
     </div>
 
     {creationDate && (

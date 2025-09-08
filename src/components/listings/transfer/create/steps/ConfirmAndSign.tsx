@@ -53,10 +53,6 @@ export const ConfirmAndSign = () => {
     }
   }, [signed]);
 
-  if (!me || !capitalRows || !bookValue || !totalPrice || !sellerIban) {
-    return <Loader className="align-middle" />;
-  }
-
   if (!buyer) {
     // eslint-disable-next-line no-console
     console.error('Missing buyer, redirecting to start', {
@@ -67,6 +63,10 @@ export const ConfirmAndSign = () => {
       buyer,
     });
     return <Redirect to="/capital/transfer/create" />;
+  }
+
+  if (!me || !capitalRows || !bookValue || !totalPrice || !sellerIban) {
+    return <Loader className="align-middle" />;
   }
 
   const handleContractCreationErrorCancel = () => {

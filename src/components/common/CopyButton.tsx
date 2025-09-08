@@ -15,23 +15,19 @@ export const CopyButton = ({ textToCopy }: { textToCopy: string }) => {
   const handleClick = async () => {
     await navigator.clipboard.writeText(textToCopy);
 
-    // Reset any previous hide timer to keep tooltip visible from this click
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
 
-    // Show "Copied" and ensure it's the only visible tooltip
     setCopied(true);
     showCurrentTooltip();
 
-    // Force-hide after timeout regardless of hover/focus
     timeoutRef.current = setTimeout(() => {
       setCopied(false);
       hideCurrentTooltip();
     }, 2000);
   };
 
-  // Show/hide helpers; always hide others first to keep a single visible tooltip
   const showCurrentTooltip = () => {
     ReactTooltip.hide();
     setShowTooltip(true);
@@ -39,6 +35,7 @@ export const CopyButton = ({ textToCopy }: { textToCopy: string }) => {
       ReactTooltip.show(targetRef.current);
     }
   };
+
   const hideCurrentTooltip = () => {
     setShowTooltip(false);
     if (targetRef.current) {

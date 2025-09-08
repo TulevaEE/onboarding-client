@@ -90,6 +90,35 @@ const IBAN_CODE_LENGTHS = {
   HN: 28,
 };
 
+const ESTONIAN_IBAN_CHECK_CODE_TO_BANK_NAME = {
+  42: 'Coop Pank aktsiaselts',
+  10: 'AS SEB Pank',
+  22: 'Swedbank AS',
+  96: 'Luminor Bank AS',
+  17: 'Luminor Bank AS',
+  77: 'AS LHV Pank',
+  75: 'BigBank AS',
+  12: 'AS Citadele banka Eesti filiaal',
+};
+
+export const getBankName = (iban: string): string | null => {
+  if (!isValidIban(iban)) {
+    return null;
+  }
+
+  const country = getIbanCountry(iban);
+
+  if (country !== 'EE') {
+    return null;
+  }
+
+  const checkDigits = Number(
+    preProcessIban(iban).substring(4, 6),
+  ) as keyof typeof ESTONIAN_IBAN_CHECK_CODE_TO_BANK_NAME;
+
+  return ESTONIAN_IBAN_CHECK_CODE_TO_BANK_NAME[checkDigits] ?? null;
+};
+
 export const preProcessIban = (iban: string) => iban.trim().toUpperCase();
 
 const getIbanCountry = (input: string): keyof typeof IBAN_CODE_LENGTHS | null => {
