@@ -1,3 +1,4 @@
+import { FormattedMessage } from 'react-intl';
 import { Loader } from '../../../common';
 import { useCapitalTotal } from '../../../common/apiHooks';
 import { formatAmountForCount, formatAmountForCurrency } from '../../../common/utils';
@@ -25,39 +26,39 @@ export const SaleOfTotalCapitalDescription = ({
     return <Loader />;
   }
 
-  const saleUnitPercentage = Math.min((saleBookValueAmount / capitalTotal.unitAmount) * 100, 100);
-  const totalUnitAmountMillions = capitalTotal.unitAmount / 10e5;
+  const saleUnitPercentage = Math.min((saleBookValueAmount / capitalTotal.totalValue) * 100, 100);
+  const totalBookValueMillions = capitalTotal.totalValue / 10e5;
 
   if (type === 'TRANSFER') {
     return (
       <p className="m-0 text-secondary">
-        Oled ostjaga kokku leppinud liikmekapitali müümises, mille raamatupidamislik väärtus on{' '}
-        {formatAmountForCurrency(saleBookValueAmount)}. See on{' '}
-        {saleBookValueAmount !== 0 ? '~' : ''}
-        {formatAmountForCount(saleUnitPercentage)}% osalus kogu Tuleva ühistu liikmekapitali
-        raamatupidamislikust väärtusest ({formatAmountForCurrency(totalUnitAmountMillions)} mln).
+        <FormattedMessage
+          id="capital.transfer.saleOfTotalCapitalDescription.TRANSFER.SELL"
+          values={{
+            saleAmount: formatAmountForCurrency(saleBookValueAmount),
+            percentOfTotal: `${
+              (saleBookValueAmount !== 0 ? '~' : '') + formatAmountForCount(saleUnitPercentage)
+            }%`,
+            totalBookValueMillions,
+          }}
+        />
       </p>
     );
   }
 
-  if (transactionType === 'SELL') {
-    return (
-      <p className="m-0 text-secondary">
-        Müüd liikmekapitali raamatupidamislikus väärtuses{' '}
-        {formatAmountForCurrency(saleBookValueAmount)}. See on{' '}
-        {saleBookValueAmount !== 0 ? '~' : ''}
-        {formatAmountForCount(saleUnitPercentage)}% osalus kogu Tuleva ühistu liikmekapitali
-        raamatupidamislikust väärtusest ({formatAmountForCurrency(totalUnitAmountMillions)} mln).
-      </p>
-    );
-  }
-
+  // have to repeat this for TS
   return (
-    <p className="m-0 text-secondary ">
-      Ostad liikmekapitali raamatupidamislikus väärtuses{' '}
-      {formatAmountForCurrency(saleBookValueAmount)}. See on {saleBookValueAmount !== 0 ? '~' : ''}
-      {formatAmountForCount(saleUnitPercentage)}% osalus kogu Tuleva ühistu liikmekapitali
-      raamatupidamislikust väärtusest ({formatAmountForCurrency(totalUnitAmountMillions)} mln).
+    <p className="m-0 text-secondary">
+      <FormattedMessage
+        id={`capital.transfer.saleOfTotalCapitalDescription.LISTING.${transactionType}`}
+        values={{
+          saleAmount: formatAmountForCurrency(saleBookValueAmount),
+          percentOfTotal: `${
+            (saleBookValueAmount !== 0 ? '~' : '') + formatAmountForCount(saleUnitPercentage)
+          }%`,
+          totalBookValueMillions,
+        }}
+      />
     </p>
   );
 };

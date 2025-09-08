@@ -37,7 +37,6 @@
   "select.sources.active.fund": "* currently active fund",
   "select.sources.intro": "In Tuleva, there are only index funds with low fees that invest all money into the world’s securities markets. Fund exchange is free of charge.",
   "select.sources.free": "Fund exchange is free of charge.",
-
   "select.sources.current.status": "Your pension account overview",
   "select.sources.total": "Total",
   "select.sources.select.all": "Transfer my entire II pillar to Tuleva",
@@ -55,9 +54,7 @@
   "select.sources.select.some.delete": "Remove selection",
   "select.sources.error.source.fund.is.target.fund": "Current fund and new fund can not be on the same exchange row",
   "select.sources.error.source.fund.percentages.over.100": "More than 100% of fund units can not be transferred from current fund",
-
   "select": "Select",
-
   "accountSummary.heading": "Your asset summary",
   "accountSummary.withdrawalsLink": "Withdrawals",
   "accountSummary.transactions": "Transactions",
@@ -69,7 +66,6 @@
   "accountSummary.columns.profit": "Profit",
   "accountSummary.columns.value": "Value of units",
   "accountSummary.disclaimer": "Low fees (below 0.5% per year) <a>predict</a> higher long-term returns.",
-
   "accountStatement.heading": "Your portfolio details",
   "accountStatement.secondPillar.heading": "II pillar",
   "accountStatement.thirdPillar.heading": "III pillar",
@@ -85,7 +81,6 @@
   "accountStatement.thirdPillar.activeFundNotice": "* currently active fund",
   "accountStatement.activeFund": "Active choice",
   "accountStatement.activeFundDescription": "Monthly contributions go to this fund.",
-
   "memberCapital.heading": "Member capital",
   "memberCapital.columns.source.title": "Source",
   "memberCapital.columns.source.total": "Total",
@@ -103,29 +98,24 @@
   "memberCapital.source.UNVESTED_WORK_COMPENSATION": "Unvested work compensation",
   "memberCapital.source.profit": "Investment profit",
   "memberCapital.transactions": "View transactions",
-
   "capitalEvents.columns.date.title": "Date",
   "capitalEvents.columns.source.title": "Source",
   "capitalEvents.columns.value.title": "Amount",
   "capitalEvents.columns.date.footer": "Total",
   "capitalEvents.backToAccountPage": "Back to account page",
   "capitalEvents.title": "Your member capital transactions",
-
   "target.funds.EE3600109435.title": "Tuleva World Stocks Pension Fund",
   "target.funds.EE3600109435.description": "A low-cost index fund that invests entirely in stocks. The annual returns of this fund can vary sharply. However, projected long-term returns are nevertheless significantly higher than for the bond fund.",
   "target.funds.EE3600109435.description.2": "Suitable for you if you want to achieve <b>the best long-term returns</b> and do not plan to withdraw your entire II pillar within the next 5 years.",
   "target.funds.EE3600109435.terms.link": "https://tuleva.ee/en/tuleva-world-stocks-pension-fund/",
-
   "target.funds.EE3600109443.title": "Tuleva World Bonds Pension Fund",
   "target.funds.EE3600109443.description": "A conservative index fund that invests entirely in low-risk bonds. Lower risk also means lower returns compared to the stock fund. It is impossible to combine low risk with high returns.",
   "target.funds.EE3600109443.description.2": "Suitable for you if you plan to withdraw your entire II pillar within the next 5 years and are willing to give up returns for security.",
   "target.funds.EE3600109443.terms.link": "https://tuleva.ee/en/tuleva-world-bonds-pension-funds/",
-
   "target.funds.EE3600001707.title": "Tuleva III Pillar Pension Fund",
   "target.funds.EE3600001707.description": "A low-cost index fund that invests entirely in stocks. The annual returns of this fund can vary sharply, yet without consciously taking risks, achieving high returns is impossible.",
   "target.funds.EE3600001707.description.2": "Suitable for you if you want to achieve <b>the best long-term returns</b> and do not plan to withdraw your entire III pillar within the next 5 years.",
   "target.funds.EE3600001707.terms.link": "https://tuleva.ee/tuleva-iii-samba-pensionifond/",
-
   "target.funds.EE3600109435.tooltip.title": "Tuleva World Stocks Pension Fund",
   "target.funds.EE3600109435.tooltip.investment.1": "iShares Developed World ex-Tobacco Index Fund — 8%",
   "target.funds.EE3600109435.tooltip.investment.2": "iShares Developed World Index Fund — 28%",
@@ -245,7 +235,6 @@
   "smart.id.user.refused": "Smart-ID user refused",
   "smart.id.technical.error": "Smart-ID technical error",
   "id.card.signature.session.not.found": "ID-card session is expired. Please log in again.",
-
   "header.my.account": "My account",
   "account.member.statement": "You are Tuleva member no. {memberNumber}",
   "account.member.statement.comment": "Since {memberJoinDate}, you earn a 0.05% annual membership bonus",
@@ -268,12 +257,9 @@
   "account.status.choice.pillar.second.pik": "Pension investment account: {secondPillarPikNumber}",
   "account.status.choice.pillar.second.paymentRate": "You contribute {paymentRate}% of your gross salary to II pillar",
   "account.status.choice.pillar.second.paymentRate.comment": "Act before <b>November 30 at 23:59</b> to avoid missing out on <b>tax benefits</b> next year",
-
   "account.status.choice.pillar.second.fundPension.active": "Contributions have ended and you are receiving regular fund pension payments",
-
   "account.status.choice.pillar.second.tax.benefit.warning": "Increase your II pillar tax benefits",
   "account.status.choice.pillar.second.tax.benefit.deadline": "Act before <b>November 30 at 23:59</b> to avoid missing out on <b>{estimatedWin}</b> in tax benefits next year",
-
   "account.status.choice.pillar.second.deadlinecard.title": "Deadline!",
   "account.status.choice.pillar.second.deadlinecard.text": "This exchange period ends on <b>{periodEnding}</b>",
   "account.status.choice.pillar.second.basketcard.title": "Diversification",
@@ -281,7 +267,6 @@
   "account.status.choice.pillar.second.basketcard.tooltip": "Tuleva World Stocks Pension Fund invests in the shares of 3000 of the world’s largest companies.",
   "account.status.choice.pillar.second.feecard.title": "Low Fees",
   "account.status.choice.pillar.second.feecard.text": "You accumulate in Tuleva’s II pillar funds with <b>low fees</b>",
-
   "account.status.choice.pillar.third": "III pillar",
   "account.status.choice.pillar.third.missing.action": "Open III pillar",
   "account.status.choice.pillar.third.missing.label": "You have not opened your III pillar yet",
@@ -293,26 +278,20 @@
   "account.status.choice.pillar.third.paymentInfo": "Note that fund units appear on your third pillar account by the end of the next working day. If you paid on Friday after 4pm or on the weekend, the units will appear on your account by Tuesday afternoon.",
   "account.status.choice.pillar.third.paymentDeadline": "The deadline for this year’s III pillar contribution is <b>December 27 at 15:59</b>.",
   "account.status.choice.pillar.third.success.action": "Make a payment",
-
   "account.status.choice.pillar.third.partialWithdrawal": "You have a pending partial withdrawal application",
   "account.status.choice.pillar.third.fundPensionOpeningPartialWithdrawal": "You have a pending fund pension application for regular payments and a pending partial withdrawal application",
   "account.status.choice.pillar.third.fundPensionOpening": "You have a pending fund pension application for regular payments",
   "account.status.choice.pillar.third.withdrawalContributionSuggestion": "Continue contributing 15% of your income ",
-
   "account.status.choice.pillar.third.fundPension.active": "You are receiving regular fund pension payments",
-
   "account.status.choice.highFee.label": "You’re in a high cost fund",
   "account.status.choice.highFee.description": "Your portfolio weighted average cost is above 0.5% per year",
   "account.status.choice.highFee.comment": "You’re paying {currentFeesEuro} per year in fees. In Tuleva, you would pay {tulevaFeesEuro} per year.",
   "account.status.choice.lowFee.label": "You’re in a low cost fund",
   "account.status.choice.lowFee.description": "Your portfolio weighted average cost is below 0.5% per year",
   "account.status.choice.lowFee.index.label": "You’re in a Tuleva low cost index fund",
-
   "account.status.choice.paymentRate": "Your contribution is {currentPaymentRate}% of gross salary",
   "account.status.choice.futurePaymentRate": "Your contribution is {currentPaymentRate}% of gross salary, changing to {futurePaymentRate}% from {paymentRateFulfillmentDate}",
-
   "account.status.choice.tulevaBondFund.index.label": "You’re in Tuleva’s conservative bond fund",
-
   "account.status.choice.tuleva": "Tuleva",
   "account.status.choice.choose.low.fees": "Choose low fees",
   "account.status.choice.choose.stock.fund": "Choose stock fund",
@@ -322,9 +301,7 @@
   "account.status.choice.transfer.tuleva.2": "Switch fund",
   "account.status.choice.paymentRate.increase": "Increase contribution",
   "account.status.choice.paymentRate.change": "Change contribution",
-
   "account.status.choice.fundPension.description": "Fund pension payments will end in <b>{endDate}</b>",
-
   "account.status.choice.join.tuleva": "Sign up",
   "account.status.contributionAmount": "You have contributed {thisYearContribution} to your III pillar this year and {lastYearContribution} last year",
   "account.greeting": "Hi",
@@ -368,17 +345,14 @@
   "change.my.pension.fund": "Change II pillar fund",
   "change.my.pension.fund.third.pillar": "Change III pillar fund",
   "returnComparison.title": "Your asset return",
-
   "thirdPillarFlow.steps.setup.title": "Open a III pillar account",
   "thirdPillarFlow.steps.selectSources.title": "Start saving in Tuleva",
   "thirdPillarFlow.steps.address.title": "Enter your contact details",
   "thirdPillarFlow.steps.confirmMandate.title": "Confirm mandate",
   "thirdPillarFlow.steps.payment.title": "Make a payment",
-
   "thirdPillarFlowSetup.text": "This account is in pensions registry, does not cost anything nor brings any obligations to do anything.",
   "thirdPillarFlowSetup.subtext": "Selection mandate activates your pension account and until you decide otherwise, directs your future contributions to selected pension fund.",
   "thirdPillarFlowSetup.buttonText": "Next step",
-
   "thirdPillarFlowSelectSources.title": "Your available III pillar units",
   "thirdPillarFlowSelectSources.selectAll.title": "Transfer your whole III pillar to Tuleva",
   "thirdPillarFlowSelectSources.selectAll.subtitle": "Your future contributions will be directed to Tuleva and your existing fund units will be transferred. Your portfolio will benefit from Tuleva’s low fees. The transfer is free of charge.",
@@ -386,15 +360,12 @@
   "thirdPillarFlowSelectSources.insurance_info.link": "https://tuleva.ee/iii-sammas-kindlustusleping/",
   "thirdPillarFlowSelectSources.futureContributions.title": "I’ll direct only future payments to Tuleva",
   "thirdPillarFlowSelectSources.futureContributions.subtitle": "Your existing fund units will remain in your current fund and new contributions will be directed to the Tuleva III Pillar Pension Fund.",
-
   "confirmThirdPillarMandate.intro": "By signing I confirm that:",
   "confirmThirdPillarMandate.contribution": "I wish to transfer my supplementary pension fund contributions to:",
   "confirmThirdPillarMandate.exchangeExistingUnits": "I wish to exchange current fund units for:",
-
   "thirdPillarAgreement.termsConfirmation": "I confirm that I have had the chance to view all <a>supplementary pension funds’ terms and prospectuses</a> and that I am acquiring units in a voluntary pension fund of my own free will. I agree to the terms of my chosen pension fund(s) and understand the risks associated with acquiring units in a voluntary pension fund. The fund manager has not assessed the suitability of the chosen pension fund for me, and I understand that my interests may therefore be less protected.",
   "thirdPillarAgreement.termsConfirmation.link": "https://www.pensionikeskus.ee/en/iii-pillar/supplementary-pension-funds/",
   "thirdPillarAgreement.signingExplanation": "By clicking “sign and send“ a digitally signed application will be sent to the register *",
-
   "aml.updateContactDetails": "The law requires that we check our third pillar clients’ info at least once a year. Please help us in this and check your details below. Thank you!",
   "aml.isNotPep": "I confirm that I am not a politically exposed person, his/her close relative or close associate *",
   "aml.pepTooltip": "A politically exposed person (PEP) is someone who currently or in the past  has been entrusted with a prominent public function. That includes  head of state or head of government, government minister or member of parliament, important political party officials, supreme court member, member of the board of the central bank or state comptroller, ambassador, senior military officials, senior executives or members of the board of state owned corporations or international organisations. Relatives of PEPs include their spouse or person deemed equivalent to a spouse, parents, children and their spouse or persons deemed equivalent to a spouse. Close associates of PEPs include individuals who co-own a company or have any legal connection with a PEP or are in close business relations with a PEP. Persons with beneficial ownership of legal entities or arrangements known to have been founded for the benefit of a PEP are also considered close associates.",
@@ -408,11 +379,9 @@
   "aml.occupation.student": "Student",
   "aml.occupation.retired": "Retired",
   "aml.occupation.unemployed": "Unemployed",
-
   "thirdPillarPayment.title": "Contribution to Tuleva’s III pillar fund",
   "thirdPillarPayment.giftTitle": "A gift to a loved one’s III pillar fund",
   "thirdPillarPayment.giftDescription": "Did you know that you can put the III pillar to work for your loved ones? Yes, it is also possible to make contributions to another person’s III pillar.",
-
   "thirdPillarPayment.RECURRING.swedbank": "How to set up a recurring payment in Swedbank",
   "thirdPillarPayment.RECURRING.swedbank.login": "Click the button below and log into your Swedbank internet bank.",
   "thirdPillarPayment.RECURRING.swedbank.form": "The standing order form is pre-filled with your data. Check the following fields and confirm the order:",
@@ -422,31 +391,26 @@
   "thirdPillarPayment.chooseAccount": "Choose account",
   "thirdPillarPayment.firstPaymentDate": "Date of first payment",
   "thirdPillarPayment.yourPaymentDate": "Pick a date",
-
   "thirdPillarPayment.RECURRING.seb": "How to set up a recurring payment in SEB",
   "thirdPillarPayment.RECURRING.seb.login": "Click the button below and log into your SEB internet bank.",
   "thirdPillarPayment.RECURRING.seb.form": "The standing order form is pre-filled with your data. Check the following fields and confirm the order:",
   "thirdPillarPayment.bankAccount": "Pay from account",
   "thirdPillarPayment.firstPaymentDate2": "Date of first payment",
-
   "thirdPillarPayment.RECURRING.lhv": "How to set up a recurring payment in LHV",
   "thirdPillarPayment.RECURRING.lhv.login": "Click the button below and log into your LHV internet bank.",
   "thirdPillarPayment.RECURRING.lhv.form": "The standing order form is pre-filled with your data. Check the following fields and confirm the order:",
   "thirdPillarPayment.fromAccount": "From account",
   "thirdPillarPayment.firstPayment": "First payment",
-
   "thirdPillarPayment.RECURRING.luminor": "How to set up a recurring payment in Luminor",
   "thirdPillarPayment.RECURRING.luminor.login": "Click the button below and log into your Luminor internet bank.",
   "thirdPillarPayment.RECURRING.luminor.form": "The standing order form is pre-filled with your data. Check the following fields and confirm the order:",
   "thirdPillarPayment.beneficiaryName": "Beneficiary name",
   "thirdPillarPayment.amountInEur": "Amount in EUR",
   "thirdPillarPayment.description": "Description",
-
   "thirdPillarPayment.RECURRING.coop": "How to set up a recurring payment in Coop Pank",
   "thirdPillarPayment.RECURRING.coop.login": "Click the button below and log into your Coop Pank internet bank.",
   "thirdPillarPayment.RECURRING.coop.form": "The standing order form is pre-filled with your data. Check the following fields and conclude the agreement:",
   "thirdPillarPayment.payer": "Remitter",
-
   "thirdPillarPayment.RECURRING.other": "How to set up a recurring payment in another bank",
   "thirdPillarPayment.RECURRING.other.login": "Log in to your internet bank.",
   "thirdPillarPayment.RECURRING.other.form": "Set up a recurring payment with the following details:",
@@ -456,7 +420,6 @@
   "thirdPillarPayment.SINGLE.other.login": "Log in to your internet bank.",
   "thirdPillarPayment.SINGLE.other.form": "Make a new payment with the following details:",
   "thirdPillarPayment.SINGLE.finalStep": "Your fund units will appear on your third pillar account in 2 business days.",
-
   "thirdPillarPayment.accountName": "Pay to",
   "thirdPillarPayment.accountNumber": "Account number",
   "thirdPillarPayment.amount": "Amount",
@@ -495,7 +458,6 @@
   "thirdPillarPayment.processingCodeAndPersonalCode": "III pillar processing code, personal code and Tuleva III Pillar Pension Fund ISIN",
   "thirdPillarPayment.pensionAccountNumber": "Your pension account number",
   "thirdPillarPayment.errorGeneratingLink": "There was an error initiating the payment. Please try again later or contact us: tuleva@tuleva.ee",
-
   "thirdPillarPayment.EMPLOYER.title": "Application to the employer to pay directly from the salary to III pillar",
   "thirdPillarPayment.EMPLOYER.publicEmployer": "I’m a public sector employee",
   "thirdPillarPayment.EMPLOYER.privateEmployer": "I’m a private sector employee",
@@ -513,7 +475,6 @@
   "thirdPillarPayment.EMPLOYER.rtkNavigationGuide": "Navigate: Isikuandmed → Esita avaldus → III samba sissemaksed otse palgast",
   "thirdPillarPayment.EMPLOYER.rtkFormFields": "Necessary information for the application:",
   "thirdPillarPayment.EMPLOYER.rtkDigitalSignature": "Digitally sign the application in RTK.",
-
   "thirdPillarSuccess.done": "Payment done",
   "thirdPillarSuccess.message": "Payment will reach the fund within 2 working days.",
   "thirdPillarSuccess.notice.header": "Tasudeks makstud eurod tootlust ei teeni",
@@ -522,7 +483,6 @@
   "thirdPillarSuccess.button": "Learn more",
   "thirdPillarSuccess.ourFund": "Tuleva World Stocks Pension Fund",
   "thirdPillarSuccess.currentFund": "Your selected pension funds",
-
   "thirdPillarBackToPartner.opened": "Your III pillar is opened",
   "thirdPillarBackToPartner.account": "View your account balance",
   "thirdPillarBackToPartner.automateNext": "Make contributions automatic",
@@ -533,17 +493,14 @@
   "thirdPillarBackToPartner.singlePayment.button": "Make a payment",
   "thirdPillarBackToPartner.back.button": "Back to internet bank",
   "thirdPillarBackToPartner.payment.subtitle": "We will redirect you back to your bank to make the payment.",
-
   "applications.title": "Your pending applications",
   "applications.cancel": "Cancel application",
-
   "applications.type.paymentRate.title": "II pillar contribution rate",
   "applications.type.paymentRate.status": "Status",
   "applications.type.paymentRate.status.pending": "Takes effect on {paymentRateFulfillmentDate}",
   "applications.type.paymentRate.application": "Application",
   "applications.type.paymentRate.application.paymentRate": "Contribution rate change: {paymentRate}% of your gross salary",
   "applications.type.paymentRate.rate": "Contribution rate",
-
   "applications.type.payment.title": "III pillar contribution",
   "applications.type.payment.status": "Status",
   "applications.type.payment.status.pending": "On its way to Pensionikeskus",
@@ -567,26 +524,20 @@
   "applications.type.withdrawal.title": "II pillar withdrawal application",
   "applications.type.withdrawal.month": "Withdrawal month",
   "applications.type.withdrawal.account": "Bank account",
-
   "applications.type.fundPensionOpening.title": "II pillar fund pension opening application",
   "applications.type.fundPensionOpeningThirdPillar.title": "III pillar fund pension opening application",
-
   "applications.type.fundPensionOpening.account": "Bank account",
   "applications.type.partialWithdrawal.account": "Bank account",
-
   "applications.type.fundPensionOpening.startDate": "Start date",
   "applications.type.fundPensionOpening.duration": "Duration",
   "applications.type.fundPensionOpening.years": "{count} years",
-
   "applications.type.fundPensionOpening.frequency": "Payout frequency",
   "applications.type.fundPensionOpening.frequency.monthly": "Once a month",
   "applications.type.fundPensionOpening.frequency.quarterly": "Once every 3 months",
   "applications.type.fundPensionOpening.frequency.yearly": "Once a year",
-
   "applications.type.partialWithdrawal.title": "II pillar partial withdrawal application",
   "applications.type.partialWithdrawal.paymentDate": "Payment date",
   "applications.type.withdrawalThirdPillar.title": "III pillar withdrawal application",
-
   "transactions.title": "Your latest transactions",
   "transactions.title.2nd": "Your II pillar transactions",
   "transactions.title.3rd": "Your III pillar transactions",
@@ -602,7 +553,6 @@
   "transactions.backToAccountPage": "Back to account page",
   "transactions.workplace": "Employer",
   "transactions.personal": "Individual",
-
   "contributions.title": "Your contributions",
   "contributions.title.2nd": "Your II pillar contributions",
   "contributions.title.3rd": "Your III pillar contributions",
@@ -615,15 +565,12 @@
   "contributions.notice.3rd": "NB! Contributions made before 2018 are missing from this table.",
   "contributions.seeAll.2": "II pillar",
   "contributions.seeAll.3": "III pillar",
-
   "cancellation.flow.confirm.title": "Confirm cancelling application",
   "cancellation.flow.confirm.content": "By signing you confirm that you would like to cancel following application:",
   "cancellation.flow.success.title": "Application cancelled",
   "cancellation.flow.success.download": "Download application",
   "cancellation.flow.success.back": "Back to account page",
-
   "partnerFlow.error": "An unexpected error occurred while initiating process",
-
   "secondPillarUpsell.cardTitle": "II pillar",
   "secondPillarUpsell.notInTuleva": "Not in Tuleva",
   "secondPillarUpsell.worldMarketAverageReturn": "The goal of the Tuleva World Stocks Pension Fund is to achieve the average return of the world market.",
@@ -638,7 +585,6 @@
   "secondPillarUpsell.amountInIndexFund": "With the world market average return you would have",
   "secondPillarUpsell.whatDoTheseNumbersMean": "What do these numbers mean?",
   "secondPillarUpsell.disclaimer": "This is a financial service. The graph is illustrative.",
-
   "secondPillarPaymentRate.contributionChange": "Increase your II pillar tax benefits",
   "secondPillarPaymentRate.chooseContributionRate": "Choose how much you would like to contribute:",
   "secondPillarPaymentRate.applicationDeadline": "The change will be applied on {paymentRateFulfillmentDate}. You can change your choice every year until the end of November.",
@@ -655,19 +601,16 @@
   "secondPillarPaymentRate.confirm.mandate.agree.to.terms": "By clicking “Sign and send“ a digitally signed application will be sent to the register.",
   "secondPillarPaymentRate.confirm.mandate.sign": "Sign and send",
   "secondPillarPaymentRate.cancel": "Cancel",
-
   "secondPillarPaymentRateSuccess.title": "All done",
   "secondPillarPaymentRateSuccess.descriptionNewRate": "From <b>{paymentRateFulfillmentDate}</b>, you will contribute <b>{paymentRate}%</b> of your gross salary to the II pillar.",
   "secondPillarPaymentRateSuccess.descriptionEmployer": "The change will take effect automatically and no further action is required.",
   "secondPillarPaymentRateSuccess.accountLink": "My Account",
-
   "comparisonCalculator.timePeriod": "Time period",
   "comparisonCalculator.comparedTo": "Compared to",
   "comparisonCalculator.yourIIpillar": "Your II pillar",
   "comparisonCalculator.yourIIIpillar": "Your III pillar",
   "comparisonCalculator.shortTimePeriodWarning": "The comparison period is short. Avoid the temptation to make sudden moves based on short-term fluctuations.",
   "comparisonCalculator.shortTimePeriodWarningLink": "Read more",
-
   "comparisonCalculator.comparisonOptions.benchmarks": "Benchmarks",
   "comparisonCalculator.comparisonOptions.lowFeeFunds": "Low fee funds (below 0.5%)",
   "comparisonCalculator.comparisonOptions.highFeeFunds": "High fee funds ({minimumFee}%–1.56%)",
@@ -675,17 +618,14 @@
   "comparisonCalculator.comparisonOptions.EPI": "Average Estonian II pillar fund",
   "comparisonCalculator.comparisonOptions.EPI_3": "Average Estonian III pillar fund",
   "comparisonCalculator.comparisonOptions.CPI": "Estonia inflation rate",
-
   "comparisonCalculator.content.performance.index.alpha.start": "Your {pillar} pillar during the past {years} years, when compared to <b>all world market index</b> has ",
   "comparisonCalculator.content.performance.index.alpha.wordNegative": " ",
   "comparisonCalculator.content.performance.index.alpha.wordPositive": " ",
   "comparisonCalculator.content.performance.index.alpha.negativeVerdict": "underperformance.",
   "comparisonCalculator.content.performance.index.alpha.positiveVerdict": "better performance.",
   "comparisonCalculator.content.performance.index.alpha.explanation": "<b>Tuleva stock funds</b> follow the world market index, meaning they endeavor to achieve the most similar long-term performance.",
-
   "comparisonCalculator.content.performance.index.neutral.start": "Your {pillar} pillar during the past {years} years, when compared to <b>all world market index</b> has similar performance.",
   "comparisonCalculator.content.performance.index.neutral.explanation": "Stick with a low-cost index fund and keep investing, no matter the market’s highs and lows.",
-
   "comparisonCalculator.content.performance.fund.alpha.start": "Your {pillar} pillar during the past {years} years, when compared to <b>{fund}</b> has ",
   "comparisonCalculator.content.performance.fund.alpha.wordNegative": " ",
   "comparisonCalculator.content.performance.fund.alpha.wordPositive": " ",
@@ -694,23 +634,18 @@
   "comparisonCalculator.content.performance.fund.indexOverperformance.explanation": "If you had earned <b>the world market index</b> return, your pension assets would have grown instead of {currentAmount} to {indexAmount}",
   "comparisonCalculator.content.performance.fund.indexUnderperformance.explanation": "If you had earned <b>the world market index</b> return, your pension assets would have grown instead of  {currentAmount} to <b>{indexAmount}</b>",
   "comparisonCalculator.content.performance.fund.neutral.start": "Your {pillar} pillar over the past {years} years has achieved a result close to <b>{fund}</b> performance.",
-
   "comparisonCalculator.content.performance.EPI.alpha.label.negative": "average Estonian II pillar fund",
   "comparisonCalculator.content.performance.EPI.alpha.label.positive": "average Estonian II pillar fund",
   "comparisonCalculator.content.performance.EPI_3.alpha.label.negative": "average Estonian III pillar fund",
   "comparisonCalculator.content.performance.EPI_3.alpha.label.positive": "average Estonian III pillar fund",
-
   "comparisonCalculator.content.performance.CPI.alpha.start": "Your {pillar} pillar during the past {years} years, when compared to <b>Estonian inflation</b> has ",
   "comparisonCalculator.content.performance.CPI.alpha.wordNegative": " ",
   "comparisonCalculator.content.performance.CPI.alpha.wordPositive": " ",
   "comparisonCalculator.content.performance.CPI.alpha.negativeVerdict": "underperformance.",
   "comparisonCalculator.content.performance.CPI.alpha.positiveVerdict": "better performance.",
-
   "comparisonCalculator.content.incomparable.intro": "<b>{comparison}</b> is younger ({date} years) than selected time period, performances are not comparable.",
   "comparisonCalculator.content.incomparable.selectNew": "Shorten the time period or select another comparison.",
-
   "comparisonCalculator.content.performance.cta.subtext": "Tuleva World Stock Pension Fund follows the world market index, it tries to achieve a long-term return as similar as possible to it.",
-
   "comparisonCalculator.ctaButton": "Bring your {pillar} pillar to Tuleva",
   "comparisonCalculator.graphWorldMarketStockIndex": "World market index",
   "comparisonCalculator.graphYourIIPillar": "Your II pillar",
@@ -728,13 +663,11 @@
   "comparisonCalculator.period.threeYears": "Last 3 years",
   "comparisonCalculator.period.twoYears": "Last 2 years",
   "comparisonCalculator.period.oneYear": "Last year",
-
   "withdrawals.heading": "II and III pillar withdrawals",
   "withdrawals.subHeading": "You are <b>{age} years old</b> and eligible to start using your accumulated pension holdings <b>under preferential conditions</b>.",
   "withdrawals.subHeadingThirdPilllarReducedTax": "You are <b>{age} years old</b> and eligible to start using your III pillar holdings <b>under preferential conditions</b>.",
   "withdrawals.subHeadingUnderEarlyRetirementAge": "You are <b>{age} years old</b> and eligible to start using your accumulated pension holdings under preferential conditions <b>in {yearsToGo} years</b>.",
   "withdrawals.additionalInfoUnder55": "Before the age of 60, you can withdraw money only from <b>the III pillar</b> when using Tuleva’s site. This is only worth doing for <b>unavoidable expenses</b>, as the state withholds <b>22% income tax</b> from withdrawals for those under 60.",
-
   "withdrawals.steps.withdrawalSize": "Withdrawal amount",
   "withdrawals.steps.yourInformation": "Your information",
   "withdrawals.steps.confirmApplication": "Confirmation",
@@ -743,7 +676,6 @@
   "withdrawals.navigation.continue": "Continue",
   "withdrawals.navigation.forward": "Forward",
   "withdrawals.navigation.notEligible": "You aren't 60 years old yet and can’t continue",
-
   "withdrawals.withdrawalAmount.recommended": "Recommended",
   "withdrawals.withdrawalAmount.partialWithdrawTitle": "Withdraw some money right away",
   "withdrawals.withdrawalAmount.partialWithdrawInputLabel": "Withdraw with {taxPercent}% income tax",
@@ -752,11 +684,9 @@
   "withdrawals.withdrawalAmount.precisePriceAtSaleDisclaimer": "The exact amount depends on the price of shares.",
   "withdrawals.withdrawalAmount.fundPensionPrecisePriceAtSaleDisclaimer": "The exact amounts depend on the price of shares.",
   "withdrawals.withdrawalAmount.fundPensionRecommendedPeriodDescription": "Fund pension is tax-free if the period is equal to or longer than the recommended number of years. The recommended period is calculated based on your age and the average lifespan for men and women, published by Statistics Estonia",
-
   "withdrawals.withdrawalAmount.fundPensionTitle": "Receive monthly fund pension payments",
   "withdrawals.withdrawalAmount.receiveMonthlyAndTaxFree": "Tax-free over {duration} years",
   "withdrawals.perMonth": "per month",
-
   "withdrawals.withdrawalAmount.secondPillarTotal": "Your holdings in II pillar",
   "withdrawals.withdrawalAmount.thirdPillarTotal": "Your holdings in III pillar",
   "withdrawals.withdrawalAmount.secondPillarAtEarlyPensionAge": "You will be able to use your II pillar holdings under preferential conditions when you are 60 years old.",
@@ -764,55 +694,41 @@
   "withdrawals.withdrawalAmount.useEntirePensionHoldings": "Withdraw from the entire pension holding",
   "withdrawals.withdrawalAmount.withdrawOnlySecondPillar": "Withdraw only from II pillar",
   "withdrawals.withdrawalAmount.withdrawOnlyThirdPillar": "Withdraw only from III pillar",
-
   "withdrawals.withdrawalAmount.monthlyPaymentSize": "Every month you will receive {percentageLiquidated} of fund shares. With current prices, this amounts to {paymentAmount}.",
-
   "withdrawals.withdrawalAmount.fundPensionGrowth": "<b>The holdings left in the fund will earn returns for the next {duration} years</b>. When the price of the share rises or falls, the size of the payment will change accordingly.",
   "withdrawals.withdrawalAmount.fundPensionLinkText": "How large can my payments grow?",
-
   "withdrawals.withdrawalAmount.summary.title": "Withdrawal summary",
   "withdrawals.withdrawalAmount.summary.immediateWithdrawal": "Withdraw immediately",
   "withdrawals.withdrawalAmount.summary.taxPayment": "and pay income tax on it",
   "withdrawals.withdrawalAmount.summary.monthlyReceipt": "Receive monthly",
   "withdrawals.withdrawalAmount.summary.partialWithdrawImpactToFundPension": "If you withdraw money partially, your monthly fund pension payments will decrease, as there will be less money remaining in the pillar.",
-
   "withdrawals.personalDetails.bankAccount.ibanLabel": "Bank account number (IBAN)",
   "withdrawals.personalDetails.bankAccount.taxResidencyLabel": "Tax residency",
   "withdrawals.personalDetails.bankAccount.ibanDescription": "The bank account must be opened in Estonia and belong to you.",
   "withdrawals.personalDetails.bankAccount.ibanError": "The entered IBAN is incorrect. An Estonian IBAN has 20 characters.",
-
   "withdrawals.reviewAndConfirm.confirmAndSubmit": "I submit the following applications and am aware of their terms:",
   "withdrawals.reviewAndConfirm.episDisclaimer": "I am aware that AS Pensionikeskus collects and processes my personal data within the European Union to the extent specified in the Mandatory Pension Act and the Securities Register Act.",
   "withdrawals.reviewAndConfirm.episDisclaimerError": "This field is mandatory.",
   "withdrawals.error.generic": "Submitting withdrawal applications failed. Please contact us: tuleva@tuleva.ee",
-
   "withdrawals.reviewAndConfirm.signMandateSingle": "Sign {amount} application",
   "withdrawals.reviewAndConfirm.signMandatePlural": "Sign {amount} applications",
-
   "withdrawals.reviewAndConfirm.application": "Application #{number}",
-
   "withdrawals.mandates.partialWithdrawal.secondPillar.title": "Partial withdrawal from II pillar",
   "withdrawals.mandates.partialWithdrawal.thirdPillar.title": "Partial withdrawal from III pillar",
   "withdrawals.mandates.fundPension.secondPillar.title": "Monthly fund pension payments from II pillar",
   "withdrawals.mandates.fundPension.thirdPillar.title": "Monthly fund pension payments from III pillar",
-
   "withdrawals.mandates.partialWithdrawal.withdrawFromFundsProportionally": "Withdraw proportionally from each fund:",
   "withdrawals.mandates.partialWithdrawal.shares": "units",
   "withdrawals.mandates.partialWithdrawal.percentageOfShares": "of units",
-
   "withdrawals.mandates.partialWithdrawal.dateAndSize": "The payment will be sent on <b>{withdrawalDate}</b>. It will be reflected in the income declaration. <warningText>{taxPercent}% income tax</warningText> will be withheld, so I will receive an estimated <b>{estimatedWithdrawalSizeWithTax}</b>. The exact amount will be determined at the time of selling the fund units.",
   "withdrawals.mandates.partialWithdrawal.secondPillarPaymentsFinished": "Upon submitting the application, <b>II pillar contributions will stop</b> from {endingDate} and cannot be restored later.",
   "withdrawals.mandates.arrestsBankrupticesDisclaimer": "<b>You cannot cancel the application</b> because there is an active arrest or bankruptcy claim registered in the pension registry.",
-
   "withdrawals.mandates.fundPension.recommendedDurationTaxFree": "Payments are <b>for the recommended duration</b> ({duration} years) and <successText>tax-free</successText>.",
   "withdrawals.mandates.fundPension.yearsLeftToLiveDescription": "The recommended duration is calculated based on the average years left to live according to your age. Currently, it is {duration} years.",
-
   "withdrawals.mandates.fundPension.dateAndSize": "The first payment will be sent on <b>{withdrawalDate}</b> and is expected to be <b>{paymentSize}</b>. <muted>Amounts vary and are determined at the time of selling the fund units.</muted>",
   "withdrawals.mandates.fundPension.cancellationUntil": "I can cancel the application until <b>{cancellationDate}</b>.",
   "withdrawals.mandates.fundPension.stopResumePayments": "I can stop and resume payments at any time.",
-
   "withdrawals.mandates.fundPension.fourWorkingDays": "in four working days",
-
   "withdrawals.done.heading": "The application has been submitted",
   "withdrawals.done.heading.plural": "The applications have been submitted",
   "withdrawals.done.subHeading": "We have sent the digitally signed application to your email address.",
@@ -822,7 +738,6 @@
   "withdrawals.done.partialWithdrawal.third": "The partial withdrawal from III pillar will be sent on <b>within four working days</b>.",
   "withdrawals.done.secondPillarDisclaimer": "When making withdrawals from the II pillar, <b>contributions to your second pillar will stop permanently</b>. To avoid this, you can cancel the withdrawals until <b>{cancellationDate}</b>.",
   "withdrawals.done.myAccount": "My Account",
-
   "capital.listings.heading": "Liikmekapitali võõrandamine",
   "capital.listings.intro": "Tuleva ühistu liikmed saavad liikmekapitali omavahel osta ja müüa.",
   "capital.listings.instructions": "Selleks lisa oma kuulutus või vasta olemasolevale ja esitage ühine avaldus. Ühistu juhatus vaatab saadetud avaldused iga kuu esimestel tööpäevadel üle ja kiidab tehingu heaks, kui see vastab kehtestatud korrale.",
@@ -858,7 +773,6 @@
   "capital.listings.details.button.back": "Tagasi",
   "capital.listings.details.button.sendTo.SELL": "Saadan müüjale",
   "capital.listings.details.button.sendTo.BUY": "Saadan ostjale",
-
   "capital.listings.create.button.BUY": "Ostan",
   "capital.listings.create.button.SELL": "Müün",
   "capital.listings.create.error": "Kuulutuse lisamisel tekkis viga. Palun võta meiega ühendust.",
@@ -880,7 +794,6 @@
   "capital.listings.create.assurance.noFees": "Tehingutasud puuduvad.",
   "capital.listings.create.submit.BUY": "Avaldan ostukuulutuse",
   "capital.listings.create.submit.SELL": "Avaldan müügikuulutuse",
-
   "capital.transfer.pendingMultiple": "Sul on {count} pooleliolevat avaldust",
   "capital.transfer.pendingSingle": "Sul on pooleliolev avaldus",
   "capital.transfer.list.stateDescription.BUYER.SELLER_SIGNED": "Sinu allkirja ootel",
@@ -898,6 +811,10 @@
   "capital.transfer.list.action.SELLER.PAYMENT_CONFIRMED_BY_BUYER": "Kinnitama",
   "capital.transfer.list.action.SELLER.CREATED": "Allkirjastama",
   "capital.transfer.list.action.default": "Vaatan",
+
+  "capital.transfer.saleOfTotalCapitalDescription.TRANSFER.SELL": "Oled ostjaga kokku leppinud liikmekapitali müümises, mille raamatupidamislik väärtus on {saleAmount}. See on {percentOfTotal} osalus kogu Tuleva ühistu liikmekapitali raamatupidamislikust väärtusest ({totalBookValueMillions} mln).",
+  "capital.transfer.saleOfTotalCapitalDescription.LISTING.SELL": "Müüd liikmekapitali raamatupidamislikus väärtuses {saleAmount}. See on {percentOfTotal} osalus kogu Tuleva ühistu liikmekapitali raamatupidamislikust väärtusest ({totalBookValueMillions} mln).",
+  "capital.transfer.saleOfTotalCapitalDescription.LISTING.BUY": "Ostad liikmekapitali raamatupidamislikus väärtuses {saleAmount}. See on {percentOfTotal} osalus kogu Tuleva ühistu liikmekapitali raamatupidamislikust väärtusest ({totalBookValueMillions} mln).",
 
   "LHV Pensionifond XL": "Pension Fund LHV XL",
   "Tuleva Maailma Aktsiate Pensionifond": "Tuleva World Stocks Pension Fund",
@@ -967,13 +884,10 @@
   "LHV Pensionifond Eesti": "LHV Estonian Pension Fund",
   "Luminor A Pensionifond": "Luminor A Pension Fund",
   "Luminor A Pluss Pensionifond": "Luminor A Plus Pension Fund",
-
   "fees.perYear": " per year",
-
   "global.skipToContent": "Skip to content",
   "global.copy": "Copy",
   "global.copied": "Copied",
-
   "pageTitle.loginPage": "Log in",
   "pageTitle.accountPage": "My account",
   "pageTitle.secondPillarFlow": "II pillar",

@@ -901,6 +901,10 @@
   "capital.transfer.list.action.SELLER.CREATED": "Allkirjastama",
   "capital.transfer.list.action.default": "Vaatan",
 
+  "capital.transfer.saleOfTotalCapitalDescription.TRANSFER.SELL": "Oled ostjaga kokku leppinud liikmekapitali müümises, mille raamatupidamislik väärtus on {saleAmount}. See on {percentOfTotal} osalus kogu Tuleva ühistu liikmekapitali raamatupidamislikust väärtusest ({totalBookValueMillions} mln).",
+  "capital.transfer.saleOfTotalCapitalDescription.LISTING.SELL": "Müüd liikmekapitali raamatupidamislikus väärtuses {saleAmount}. See on {percentOfTotal} osalus kogu Tuleva ühistu liikmekapitali raamatupidamislikust väärtusest ({totalBookValueMillions} mln).",
+  "capital.transfer.saleOfTotalCapitalDescription.LISTING.BUY": "Ostad liikmekapitali raamatupidamislikus väärtuses {saleAmount}. See on {percentOfTotal} osalus kogu Tuleva ühistu liikmekapitali raamatupidamislikust väärtusest ({totalBookValueMillions} mln).",
+
   "LHV Pensionifond XL": "LHV Pensionifond XL",
   "Tuleva Maailma Aktsiate Pensionifond": "Tuleva Maailma Aktsiate Pensionifond",
   "Tuleva Maailma Võlakirjade Pensionifond": "Tuleva Maailma Võlakirjade Pensionifond",
