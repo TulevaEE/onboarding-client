@@ -53,14 +53,15 @@ export const ConfirmAndSign = () => {
     }
   }, [signed]);
 
-  if (!me || !capitalRows) {
+  if (!me || !capitalRows || !bookValue || !totalPrice || !sellerIban) {
     return <Loader className="align-middle" />;
   }
 
-  if (!bookValue || !totalPrice || !sellerIban || !buyer) {
+  if (!buyer) {
     // eslint-disable-next-line no-console
-    console.error('Missing data, redirecting to start', {
+    console.error('Missing buyer, redirecting to start', {
       bookValue,
+      capitalTransferAmounts,
       totalPrice,
       sellerIban,
       buyer,
