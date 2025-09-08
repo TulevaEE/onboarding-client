@@ -81,7 +81,7 @@ describe('withdrawals flow with both pillars', () => {
     userEvent.click(nextButton());
 
     await enterIban('EE591254471322749514');
-    expect(await screen.findByText(/AS Citadele banka Eesti filiaal/)).toBeInTheDocument();
+    expect(await screen.findByText(/Citadele pank/)).toBeInTheDocument();
     userEvent.click(nextButton());
 
     expect(
@@ -89,7 +89,7 @@ describe('withdrawals flow with both pillars', () => {
     ).toBeInTheDocument();
 
     expect(await screen.findByText(/EE591254471322749514/i)).toBeInTheDocument();
-    expect(await screen.findByText(/AS Citadele banka Eesti filiaal/)).toBeInTheDocument();
+    expect(await screen.findByText(/Citadele pank/)).toBeInTheDocument();
     expect(await screen.findByText('EST')).toBeInTheDocument();
 
     assertMandateCount(4);

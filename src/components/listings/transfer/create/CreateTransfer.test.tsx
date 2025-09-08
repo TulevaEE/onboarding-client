@@ -106,7 +106,7 @@ describe('member capital transfer creation', () => {
     const ibanInput = await screen.findByLabelText(/Müüja pangakonto/i);
     userEvent.type(ibanInput, 'EE591254471322749514');
 
-    expect(await screen.findByText(/AS Citadele banka Eesti filiaal/)).toBeInTheDocument();
+    expect(await screen.findByText(/Citadele pank/)).toBeInTheDocument();
 
     userEvent.click(await screen.findByText(/Lepingu eelvaatesse/i));
 
@@ -120,7 +120,7 @@ describe('member capital transfer creation', () => {
     expect(await within(sellerSection).findByText(getFullName(mockUser))).toBeInTheDocument();
     expect(await within(sellerSection).findByText(mockUser.personalCode)).toBeInTheDocument();
 
-    expect(await screen.findByText(/AS Citadele banka Eesti filiaal/)).toBeInTheDocument();
+    expect(await screen.findByText(/Citadele pank/)).toBeInTheDocument();
 
     expect(await screen.findByText(/250.00 €/i)).toBeInTheDocument();
 
