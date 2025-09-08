@@ -35,8 +35,8 @@ export const TransferAmountBreakdown = ({
   }
 
   return (
-    <>
-      <div className="row mt-4 py-2" data-testid="capital-row-TOTAL">
+    <div className="d-flex flex-column">
+      <div className="d-flex" data-testid="capital-row-TOTAL">
         <div className="col">
           <b>Müüdav liikmekapital</b>
         </div>
@@ -49,14 +49,14 @@ export const TransferAmountBreakdown = ({
       </div>
 
       {sortedAmounts.map((amount) => (
-        <div className="row" key={amount.type} data-testid={`capital-row-${amount.type}`}>
+        <div className="d-flex" key={amount.type} data-testid={`capital-row-${amount.type}`}>
           <div className="col">
             – <TransferAmountName type={amount.type} />
           </div>
           <div className="col">{formatAmountForCurrency(amount.bookValue)}</div>
         </div>
       ))}
-    </>
+    </div>
   );
 };
 

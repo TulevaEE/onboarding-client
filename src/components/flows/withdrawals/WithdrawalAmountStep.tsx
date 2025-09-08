@@ -236,7 +236,7 @@ const SingleWithdrawalSelectionBody = ({
               max={totalAmount}
               placeholder="0"
             />
-            <div className="input-group-text">&euro;</div>
+            <span className="input-group-text">&euro;</span>
           </div>
         </div>
 

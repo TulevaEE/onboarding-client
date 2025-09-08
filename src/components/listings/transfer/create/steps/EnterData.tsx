@@ -253,12 +253,12 @@ export const EnterData = () => {
                 }`}
                 {...totalPriceInput.inputProps}
               />
-              <div className="input-group-text fw-semibold">&euro;</div>
+              <span className="input-group-text fw-semibold">&euro;</span>
             </div>
           </div>
         </div>
 
-        <div className="form-section d-flex flex-column gap-3">
+        <div className="form-section d-flex flex-column gap-2">
           <div>
             <label
               htmlFor="bank-account-iban"
@@ -277,25 +277,17 @@ export const EnterData = () => {
               onChange={(e) => setBankIban(e.target.value)}
             />
           </div>
-          <div className="d-flex flex-column gap-2">
-            <p className="m-0 text-secondary">Pangakonto peab kuuluma sinule.</p>
-          </div>
+          <p className="m-0 text-secondary">Pangakonto peab kuuluma sinule.</p>
 
           {submitAttempted && errors.ibanError && (
-            <div className="d-flex flex-column gap-2">
-              <p className="m-0 text-danger">Sisestatud IBAN ei ole korrektne.</p>
-            </div>
+            <p className="m-0 text-danger">Sisestatud IBAN ei ole korrektne.</p>
           )}
           {submitAttempted && errors.noPriceValue && (
-            <div className="d-flex flex-column gap-2">
-              <p className="m-0 text-danger">Jätkamiseks sisesta hind</p>
-            </div>
+            <p className="m-0 text-danger">Jätkamiseks sisesta hind.</p>
           )}
 
           {submitAttempted && errors.noBookValue && (
-            <div className="d-flex flex-column gap-2">
-              <p className="m-0 text-danger">Jätkamiseks sisesta müüdava liikmekapitali kogus</p>
-            </div>
+            <p className="m-0 text-danger">Jätkamiseks sisesta müüdava liikmekapitali kogus.</p>
           )}
         </div>
       </div>
