@@ -262,7 +262,7 @@ export const EnterData = () => {
           <div>
             <label
               htmlFor="bank-account-iban"
-              className="form-label d-flex justify-content-between"
+              className="form-label d-flex justify-content-between align-items-baseline"
             >
               <span className="fs-3 fw-bold">Müüja pangakonto (IBAN)</span>
               <span className="fw-normal text-secondary">{getBankName(bankIban)}</span>
