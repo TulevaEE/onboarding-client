@@ -167,7 +167,7 @@ export const EnterData = () => {
         <div className="form-section d-flex flex-column gap-3">
           <div className="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 row-gap-2">
             <label htmlFor="book-value" className="fs-3 fw-semibold">
-              Kui palju liikmekapitali müüd?
+              <FormattedMessage id="capital.transfer.create.bookValue.label" />
             </label>
             <div className={`input-group input-group-lg ${styles.inputGroup}`}>
               <input
@@ -186,6 +186,7 @@ export const EnterData = () => {
               <span className="input-group-text fw-semibold">&euro;</span>
             </div>
           </div>
+
           <div className="d-flex flex-column gap-2">
             <Slider
               value={(bookValue as number) ?? 0}
@@ -229,7 +230,9 @@ export const EnterData = () => {
 
           <div className="d-flex flex-column gap-2">
             {errors.moreThanMemberCapital && (
-              <p className="m-0 text-danger">TODO Sul ei ole piisavalt liikmekapitali.</p>
+              <p className="m-0 text-danger">
+                <FormattedMessage id="capital.transfer.create.error.moreThanMemberCapital" />
+              </p>
             )}
             <SaleOfTotalCapitalDescription
               saleBookValueAmount={bookValue ?? 0}
@@ -242,7 +245,7 @@ export const EnterData = () => {
         <div className="form-section d-flex flex-column gap-3">
           <div className="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 row-gap-2">
             <label htmlFor="total-price" className="fs-3 fw-semibold">
-              Kokkulepitud müügihind
+              <FormattedMessage id="capital.transfer.create.totalPrice.label" />
             </label>
             <div className={`input-group input-group-lg ${styles.inputGroup}`}>
               <input
@@ -264,7 +267,9 @@ export const EnterData = () => {
               htmlFor="bank-account-iban"
               className="form-label d-flex justify-content-between align-items-baseline"
             >
-              <span className="fs-3 fw-bold">Müüja pangakonto (IBAN)</span>
+              <span className="fs-3 fw-bold">
+                <FormattedMessage id="capital.transfer.create.bankAccount.label" />
+              </span>
               <span className="fw-normal text-secondary">{getBankName(bankIban)}</span>
             </label>
             <input
@@ -277,17 +282,25 @@ export const EnterData = () => {
               onChange={(e) => setBankIban(e.target.value)}
             />
           </div>
-          <p className="m-0 text-secondary">Pangakonto peab kuuluma sinule.</p>
+
+          <p className="m-0 text-secondary">
+            <FormattedMessage id="capital.transfer.create.bankAccount.yourOwnAccount" />
+          </p>
 
           {submitAttempted && errors.ibanError && (
-            <p className="m-0 text-danger">Sisestatud IBAN ei ole korrektne.</p>
+            <p className="m-0 text-danger">
+              <FormattedMessage id="capital.transfer.create.error.ibanInvalid" />
+            </p>
           )}
           {submitAttempted && errors.noPriceValue && (
-            <p className="m-0 text-danger">Jätkamiseks sisesta hind.</p>
+            <p className="m-0 text-danger">
+              <FormattedMessage id="capital.transfer.create.error.noPriceValue" />
+            </p>
           )}
-
           {submitAttempted && errors.noBookValue && (
-            <p className="m-0 text-danger">Jätkamiseks sisesta müüdava liikmekapitali kogus.</p>
+            <p className="m-0 text-danger">
+              <FormattedMessage id="capital.transfer.create.error.noBookValue" />
+            </p>
           )}
         </div>
       </div>
@@ -298,7 +311,7 @@ export const EnterData = () => {
           className="btn btn-lg btn-light"
           onClick={() => navigateToPreviousStep()}
         >
-          <FormattedMessage id="capital.listings.details.button.back" />
+          <FormattedMessage id="capital.transfer.create.button.back" />
         </button>
         <button
           type="button"
@@ -306,7 +319,7 @@ export const EnterData = () => {
           onClick={() => handleSubmitClicked()}
           disabled={submitAttempted && hasErrors}
         >
-          Lepingu eelvaatesse
+          <FormattedMessage id="capital.transfer.create.button.previewContract" />
         </button>
       </div>
     </>
