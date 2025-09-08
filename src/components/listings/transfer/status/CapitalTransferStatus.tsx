@@ -1,5 +1,6 @@
 import { useHistory, useParams } from 'react-router-dom';
 import { useState } from 'react';
+import { FormattedMessage } from 'react-intl';
 import { useCapitalTransferContract, useMe } from '../../../common/apiHooks';
 import { Loader } from '../../../common';
 import { ContractDetails } from '../components/ContractDetails';
@@ -54,12 +55,14 @@ const StatusDisplay = ({ contract }: { contract: CapitalTransferContract }) => {
   return (
     <>
       <div className="d-flex flex-column gap-4 text-center">
-        <h1 className="m-0 text-md-center">Liikmekapitali võõrandamise avaldus</h1>
+        <h1 className="m-0 text-md-center">
+          <FormattedMessage id="capital.transfer.details.heading" />
+        </h1>
       </div>
 
       {contract.state === 'CANCELLED' && (
         <div className="alert alert-warning m-0" role="alert">
-          TODO Avaldus on tühistatud
+          <FormattedMessage id="capital.transfer.details.state.cancelled" />
         </div>
       )}
 
@@ -77,14 +80,13 @@ const StatusDisplay = ({ contract }: { contract: CapitalTransferContract }) => {
             <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
             <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0" />
           </svg>
-          Avaldus on saadetud Tuleva ühistu juhatusele. Vaatame avalduse läbi ühe nädala jooksul ja
-          teavitame osapooli otsusest meiliga.
+          <FormattedMessage id="capital.transfer.details.state.sentToBoard" />
         </div>
       )}
 
-      {contract.state === 'APPROVED' && (
+      {['APPROVED', 'EXECUTED', 'APPROVED_AND_NOTIFIED'].includes(contract.state) && (
         <div className="alert alert-success m-0" role="alert">
-          TODO Avaldus on kinnitatud Tuleva ühistu juhatuse poolt.
+          <FormattedMessage id="capital.transfer.details.state.approved" />
         </div>
       )}
 
@@ -101,7 +103,7 @@ const StatusDisplay = ({ contract }: { contract: CapitalTransferContract }) => {
           className="btn btn-lg btn-light"
           onClick={() => history.push('/capital/listings/')}
         >
-          Tagasi
+          <FormattedMessage id="capital.transfer.details.button.back" />
         </button>
       </div>
     </>

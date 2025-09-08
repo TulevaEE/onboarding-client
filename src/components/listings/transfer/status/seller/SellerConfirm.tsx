@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { FormattedMessage } from 'react-intl';
 import { ContractDetails } from '../../components/ContractDetails';
 import { getContractDetailsPropsFromContract, getTotalPrice } from '../utils';
 import { formatAmountForCurrency } from '../../../../common/utils';
@@ -37,25 +38,33 @@ export const SellerConfirm = ({
   if (success) {
     return (
       <StepDoneAlert onClick={() => onConfirmed()}>
-        <h2 className="mb-2">Avaldus on saadetud Tuleva ühistu juhatusele</h2>
+        <h2 className="mb-2">
+          <FormattedMessage id="capital.transfer.details.success.submittedTitle" />
+        </h2>
         <p className="m-0">
-          Vaatame avalduse läbi ühe nädala jooksul ja teavitame osapooli otsusest meiliga.
+          <FormattedMessage id="capital.transfer.details.success.submittedDescription" />
         </p>
       </StepDoneAlert>
     );
   }
+
   return (
     <>
       <div className="d-flex flex-column gap-4 text-center">
-        <h1 className="m-0 text-md-center">Liikmekapitali võõrandamise avaldus</h1>
+        <h1 className="m-0 text-md-center">
+          <FormattedMessage id="capital.transfer.details.heading" />
+        </h1>
       </div>
+
       {error && (
         <div className="alert alert-warning mt-2" role="alert">
-          Makse kinnitamisel tekkis viga. Palun proovi hiljem uuesti või võta meiega ühendust
+          <FormattedMessage id="capital.transfer.details.error.payment" />
         </div>
       )}
+
       <div className="py-4 d-flex flex-column gap-5">
         <ContractDetails {...getContractDetailsPropsFromContract(contract)} userRole="SELLER" />
+
         <div className="form-check m-0">
           <input
             checked={confirmMoneyReceived}
@@ -65,23 +74,27 @@ export const SellerConfirm = ({
             id="agree-to-terms-checkbox"
           />
           <label className="form-check-label" htmlFor="agree-to-terms-checkbox">
-            Olen {formatAmountForCurrency(totalPrice)} kätte saanud ja valmis liikmekapitali üle
-            andma
+            <FormattedMessage
+              id="capital.transfer.details.confirm.moneyReceived"
+              values={{ totalPrice: formatAmountForCurrency(totalPrice) }}
+            />
           </label>
+
           {confirmMoneyReceivedError && (
             <div className="text-danger">
-              TODO Avalduse esitamiseks pead kinnitama, et oled makse kätte saanud
+              <FormattedMessage id="capital.transfer.details.error.mustConfirmMoneyReceived" />
             </div>
           )}
         </div>
       </div>
+
       <div className="d-flex flex-column-reverse flex-sm-row justify-content-between pt-4 border-top gap-3">
         <button
           type="button"
           className="btn btn-lg btn-light"
           onClick={() => history.push('/capital/listings/')}
         >
-          Tagasi
+          <FormattedMessage id="capital.transfer.details.button.back" />
         </button>
         <button
           type="button"
@@ -89,7 +102,7 @@ export const SellerConfirm = ({
           onClick={() => handleConfirmationClicked()}
           disabled={isLoading}
         >
-          Kinnitan ja saadan avalduse
+          <FormattedMessage id="capital.transfer.details.button.submitApplication" />
         </button>
       </div>
     </>
