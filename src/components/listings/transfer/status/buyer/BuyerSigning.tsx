@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { FormattedMessage } from 'react-intl';
 import { AuthenticationLoader, ErrorMessage, Loader } from '../../../../common';
 import { useMe } from '../../../../common/apiHooks';
 import { Steps } from '../../../../common/steps';
@@ -54,9 +55,12 @@ export const BuyerSigning = ({
   return (
     <>
       <div className="d-flex flex-column gap-4 text-center">
-        <h1 className="m-0 text-md-center">Liikmekapitali võõrandamise avaldus</h1>
+        <h1 className="m-0 text-md-center">
+          <FormattedMessage id="capital.transfer.heading" />
+        </h1>
         <Steps steps={BUYER_STEPS} currentStepType="BUYER_SIGN" />
       </div>
+
       {(signingInProgress || challengeCode) && (
         <AuthenticationLoader controlCode={challengeCode} onCancel={cancelSigning} overlayed />
       )}
@@ -69,6 +73,7 @@ export const BuyerSigning = ({
           {...getContractDetailsPropsFromContract(contract)}
           userRole={getMyRole(me, contract)}
         />
+
         <div className="form-check m-0">
           <input
             checked={agreedToTerms}
@@ -78,28 +83,30 @@ export const BuyerSigning = ({
             id="agree-to-terms-checkbox"
           />
           <label className="form-check-label" htmlFor="agree-to-terms-checkbox">
-            Kinnitan, et müüja ja ostja on kokku leppinud liikmekapitali võõrandamises eelpool
-            nimetatud tingimustel.
+            <FormattedMessage id="capital.transfer.details.terms.label" />
           </label>
+
           {agreedToTermsError && (
             <div className="text-danger">
-              TODO Ostuprotsessi alustamiseks pead tingimustega nõustuma
+              <FormattedMessage id="capital.transfer.details.error.mustAgreeBuyer" />
             </div>
           )}
+
           {signingError && (
             <div className="text-danger">
-              Allkirjastamisel esines viga. Palun proovi hiljem uuesti või võta meiega ühendust
+              <FormattedMessage id="capital.transfer.details.error.signingFailed" />
             </div>
           )}
         </div>
       </div>
+
       <div className="d-flex flex-column-reverse flex-sm-row justify-content-between pt-4 border-top gap-3">
         <button
           type="button"
           className="btn btn-lg btn-light"
           onClick={() => history.push('/capital/listings/')}
         >
-          Tagasi
+          <FormattedMessage id="capital.listings.details.button.back" />
         </button>
         <button
           type="button"
@@ -107,7 +114,7 @@ export const BuyerSigning = ({
           onClick={() => handleSignClicked()}
           disabled={signingInProgress}
         >
-          Allkirjastan lepingu
+          <FormattedMessage id="capital.transfer.create.button.signContract" />
         </button>
       </div>
     </>

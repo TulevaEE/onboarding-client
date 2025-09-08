@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { FormattedMessage } from 'react-intl';
 import { formatAmountForCurrency, getFullName } from '../../../../common/utils';
 import { Steps } from '../../../../common/steps';
 import { BUYER_STEPS } from '../steps';
@@ -39,10 +40,11 @@ export const BuyerPayment = ({
   if (success) {
     return (
       <StepDoneAlert onClick={() => onPaid()}>
-        <h2 className="pb-2">Sinu poolt on kõik vajalik tehtud</h2>
+        <h2 className="pb-2">
+          <FormattedMessage id="capital.transfer.details.success.buyer.title" />
+        </h2>
         <div>
-          Teavitasime müüjat, nüüd tuleb vaid oodata tema kinnitust raha laekumise kohta. Anname
-          sulle e-postiga märku kohe, kui ta on seda teinud.
+          <FormattedMessage id="capital.transfer.details.success.buyer.description" />
         </div>
       </StepDoneAlert>
     );
@@ -51,60 +53,85 @@ export const BuyerPayment = ({
   return (
     <>
       <div className="d-flex flex-column gap-4 text-center">
-        <h1 className="m-0 text-md-center">Liikmekapitali võõrandamise avaldus</h1>
+        <h1 className="m-0 text-md-center">
+          <FormattedMessage id="capital.transfer.heading" />
+        </h1>
         <Steps steps={BUYER_STEPS} currentStepType="SEND_PAYMENT_AND_CONFIRM" />
       </div>
+
       {error && (
         <div className="alert alert-warning mt-2" role="alert">
-          Makse kinnitamisel tekkis viga. Palun proovi hiljem uuesti või võta meiega ühendust
+          <FormattedMessage id="capital.transfer.details.error.payment" />
         </div>
       )}
+
       <div className="d-flex flex-column gap-5 py-4">
         <div className="form-section d-flex flex-column gap-4">
-          <h2 className="m-0">Lepingu andmed</h2>
+          <h2 className="m-0">
+            <FormattedMessage id="capital.transfer.details.contract.title" />
+          </h2>
           <p className="m-0">
-            <b>{getFullName(contract.seller)}</b> ({contract.seller.personalCode}) müüb ja{' '}
-            <b>{getFullName(contract.buyer)}</b> ({contract.buyer.personalCode}) ostab{' '}
-            liikmekapitali raamatupidamislikus väärtuses{' '}
-            <b>{formatAmountForCurrency(totalBookValue)}</b> hinnaga{' '}
-            <b>{formatAmountForCurrency(totalPrice)}</b>.
+            <FormattedMessage
+              id="capital.transfer.details.contract.description"
+              values={{
+                sellerName: getFullName(contract.seller),
+                sellerCode: contract.seller.personalCode,
+                buyerName: getFullName(contract.buyer),
+                buyerCode: contract.buyer.personalCode,
+                totalBookValue: formatAmountForCurrency(totalBookValue),
+                totalPrice: formatAmountForCurrency(totalPrice),
+              }}
+            />
           </p>
         </div>
+
         <div className="form-section d-flex flex-column gap-4">
-          <h2 className="m-0">Tee pangaülekanne</h2>
+          <h2 className="m-0">
+            <FormattedMessage id="capital.transfer.details.payment.title" />
+          </h2>
           <div className="d-flex flex-column gap-3">
             <div className="row">
-              <div className="col fw-bold">Saaja nimi</div>
+              <div className="col fw-bold">
+                <FormattedMessage id="capital.transfer.details.payment.receiverName" />
+              </div>
               <div className="col d-flex justify-content-between">
                 {getFullName(contract.seller)}{' '}
                 <CopyButton textToCopy={getFullName(contract.seller)} />
               </div>
             </div>
             <div className="row">
-              <div className="col fw-bold">Saaja konto (IBAN)</div>
+              <div className="col fw-bold">
+                <FormattedMessage id="capital.transfer.details.payment.receiverIban" />
+              </div>
               <div className="col d-flex justify-content-between">
                 {contract.iban} <CopyButton textToCopy={contract.iban} />
               </div>
             </div>
             <div className="row">
-              <div className="col fw-bold">Summa</div>
+              <div className="col fw-bold">
+                <FormattedMessage id="capital.transfer.details.payment.amount" />
+              </div>
               <div className="col d-flex justify-content-between">
                 {formatAmountForCurrency(totalPrice)}{' '}
                 <CopyButton textToCopy={totalPrice.toString()} />
               </div>
             </div>
             <div className="row">
-              <div className="col fw-bold">Selgitus</div>
+              <div className="col fw-bold">
+                <FormattedMessage id="capital.transfer.details.payment.reference" />
+              </div>
               <div className="col d-flex justify-content-between">
-                {/* TODO translate ? */}
                 Tuleva ühistu liikmekapitali ost{' '}
                 <CopyButton textToCopy="Tuleva ühistu liikmekapitali ost" />
               </div>
             </div>
           </div>
         </div>
+
         <div className="form-section d-flex flex-column gap-4">
-          <h2 className="m-0">Kinnita makse</h2>
+          <h2 className="m-0">
+            <FormattedMessage id="capital.transfer.details.confirm.title" />
+          </h2>
           <div className="form-check">
             <input
               checked={confirmPaid}
@@ -114,24 +141,31 @@ export const BuyerPayment = ({
               id="agree-to-terms-checkbox"
             />
             <label className="form-check-label" htmlFor="agree-to-terms-checkbox">
-              Kandsin üle {getFullName(contract.seller)} ({contract.seller.personalCode}) kontole{' '}
-              {formatAmountForCurrency(totalPrice)}
+              <FormattedMessage
+                id="capital.transfer.details.confirm.checkbox"
+                values={{
+                  sellerName: getFullName(contract.seller),
+                  sellerCode: contract.seller.personalCode,
+                  totalPrice: formatAmountForCurrency(totalPrice),
+                }}
+              />
             </label>
             {confirmPaidError && (
               <div className="text-danger">
-                TODO Jätkamiseks pead tegema ülekande ja seda kinnitama
+                <FormattedMessage id="capital.transfer.details.error.mustConfirm" />
               </div>
             )}
           </div>
         </div>
       </div>
+
       <div className="d-flex flex-column-reverse flex-sm-row justify-content-between pt-4 border-top gap-3">
         <button
           type="button"
           className="btn btn-lg btn-light"
           onClick={() => history.push('/capital/listings/')}
         >
-          Tagasi
+          <FormattedMessage id="capital.transfer.details.button.back" />
         </button>
         <button
           type="button"
@@ -139,7 +173,7 @@ export const BuyerPayment = ({
           onClick={() => handlePaymentDoneClicked()}
           disabled={isLoading}
         >
-          Kinnitan makse tegemist
+          <FormattedMessage id="capital.transfer.details.button.confirmPayment" />
         </button>
       </div>
     </>
