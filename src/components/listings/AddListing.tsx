@@ -1,6 +1,7 @@
 import { PropsWithChildren, ReactNode, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import moment from 'moment';
+import { FormattedMessage, useIntl } from 'react-intl';
 import styles from './AddListing.module.scss';
 import { formatAmountForCurrency, useNumberInput } from '../common/utils';
 import { useCreateMemberCapitalListing, useMe } from '../common/apiHooks';
@@ -15,6 +16,7 @@ export const AddListing = () => {
   usePageTitle('pageTitle.capitalListingNew');
 
   const history = useHistory();
+  const { formatMessage } = useIntl();
 
   const [listingType, setListingType] = useState<MemberCapitalListingType>('BUY');
 
@@ -81,14 +83,14 @@ export const AddListing = () => {
             listingTypeOfButton="BUY"
             onSetListingType={setListingType}
           >
-            Ostan
+            <FormattedMessage id="capital.listings.create.button.BUY" />
           </ListingButton>
           <ListingButton
             listingType={listingType}
             listingTypeOfButton="SELL"
             onSetListingType={setListingType}
           >
-            Müün
+            <FormattedMessage id="capital.listings.create.button.SELL" />
           </ListingButton>
         </div>
       </div>
@@ -96,15 +98,13 @@ export const AddListing = () => {
       <section className={`d-flex flex-column gap-5 ${styles.content}`}>
         {error && (
           <div className="alert alert-danger" role="alert">
-            Kuulutuse lisamisel tekkis viga. Palun võta meiega ühendust.
+            <FormattedMessage id="capital.listings.create.error" />
           </div>
         )}
         <div className="form-section d-flex flex-column gap-3">
           <div className="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 row-gap-2">
             <label htmlFor="book-value" className="fs-3 fw-semibold">
-              {listingType === 'BUY'
-                ? 'Kui palju liikmekapitali ostad?'
-                : 'Kui palju liikmekapitali müüd?'}
+              <FormattedMessage id={`capital.listings.create.amountInput.label.${listingType}`} />
             </label>
             <div className={`input-group input-group-lg ${styles.inputGroup}`}>
               <input
@@ -114,7 +114,9 @@ export const AddListing = () => {
                 }`}
                 id="book-value"
                 placeholder="0"
-                aria-label={listingType === 'BUY' ? 'Ostetav kogumaht' : 'Müüdav kogumaht'}
+                aria-label={formatMessage({
+                  id: `capital.listings.create.amountInput.ariaLabel.${listingType}`,
+                })}
                 {...bookValueInput.inputProps}
               />
               <span className="input-group-text fw-semibold">&euro;</span>
@@ -156,13 +158,13 @@ export const AddListing = () => {
         <div className="form-section d-flex flex-column gap-3">
           <div className="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 row-gap-2">
             <label htmlFor="total-price" className="fs-3 fw-semibold">
-              {listingType === 'BUY' ? 'Mis hinnaga ostad?' : 'Mis hinnaga müüd?'}
+              <FormattedMessage id={`capital.listings.create.priceInput.label.${listingType}`} />
             </label>
             <div className={`input-group input-group-lg ${styles.inputGroup}`}>
               <input
                 placeholder="0"
                 id="total-price"
-                aria-label="Tehingu koguhind"
+                aria-label={formatMessage({ id: 'capital.listings.create.priceInput.ariaLabel' })}
                 className="form-control form-control-lg fw-semibold"
                 {...totalPriceInput.inputProps}
               />
@@ -174,7 +176,7 @@ export const AddListing = () => {
         <div className="form-section d-flex flex-column gap-3">
           <div className="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 row-gap-2">
             <label htmlFor="expiry-select" className="fs-3 fw-semibold">
-              Kuulutus kehtib
+              <FormattedMessage id="capital.listings.create.expiryInput.label" />
             </label>
             <div className={`input-group input-group-lg ${styles.inputGroup}`}>
               <select
@@ -183,11 +185,17 @@ export const AddListing = () => {
                 className="form-select form-control-lg fw-semibold"
                 placeholder="0"
                 id="expiry-select"
-                aria-label="Kuulutuse kestus kuudes"
+                aria-label={formatMessage({ id: 'capital.listings.create.expiryInput.ariaLabel' })}
               >
-                <option value="1">1 kuu</option>
-                <option value="3">3 kuud</option>
-                <option value="6">6 kuud</option>
+                <option value="1">
+                  {formatMessage({ id: 'capital.listings.create.expiryInput.value.1' })}
+                </option>
+                <option value="3">
+                  {formatMessage({ id: 'capital.listings.create.expiryInput.value.3' })}
+                </option>
+                <option value="6">
+                  {formatMessage({ id: 'capital.listings.create.expiryInput.value.6' })}
+                </option>
               </select>
             </div>
           </div>
@@ -199,7 +207,7 @@ export const AddListing = () => {
 
         <div className="d-flex flex-column-reverse flex-sm-row justify-content-between pt-4 border-top gap-3">
           <button type="button" className="btn btn-lg btn-light" onClick={() => history.goBack()}>
-            Tagasi
+            <FormattedMessage id="capital.listings.details.button.back" />
           </button>
           <button
             type="button"
@@ -212,7 +220,7 @@ export const AddListing = () => {
               errors.noPriceValue
             }
           >
-            {listingType === 'BUY' ? 'Avaldan ostukuulutuse' : 'Avaldan müügikuulutuse'}
+            <FormattedMessage id={`capital.listings.create.submit.${listingType}`} />
           </button>
         </div>
       </section>
@@ -239,11 +247,15 @@ const AssurancesSection = () => {
           </svg>
         }
       >
-        Huvilised saavad vastata sulle:
+        <FormattedMessage id="capital.listings.create.contactDetails" />
         <br />
         {user?.email}{' '}
         <span className="text-secondary">
-          (<Link to="/contact-details">uuendan</Link>)
+          (
+          <Link to="/contact-details">
+            <FormattedMessage id="capital.listings.create.contactDetails.update" />
+          </Link>
+          )
         </span>
       </AssuranceItem>
 
@@ -262,8 +274,7 @@ const AssurancesSection = () => {
           </svg>
         }
       >
-        Sinu nimi ega meiliaadress pole avalikult nähtavad seni, kuniks sa mõnele huvilisele ise ei
-        vasta.
+        <FormattedMessage id="capital.listings.create.assurance.nameEmailPrivacy" />
       </AssuranceItem>
 
       <AssuranceItem
@@ -280,7 +291,7 @@ const AssurancesSection = () => {
           </svg>
         }
       >
-        Tehingutasud puuduvad.
+        <FormattedMessage id="capital.listings.create.assurance.noFees" />
       </AssuranceItem>
     </ul>
   );

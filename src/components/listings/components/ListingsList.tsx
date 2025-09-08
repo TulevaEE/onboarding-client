@@ -45,8 +45,12 @@ const TableHeader = () => (
       <th scope="col">
         <FormattedMessage id="capital.listings.header.listing" />
       </th>
-      <th scope="col">Väärtuses</th>
-      <th scope="col">Hinnaga</th>
+      <th scope="col">
+        <FormattedMessage id="capital.listings.header.value" />
+      </th>
+      <th scope="col">
+        <FormattedMessage id="capital.listings.header.totalPrice" />
+      </th>
       <th scope="col " className="w-20 text-start text-nowrap">
         <FormattedMessage id="capital.listings.header.action" />
       </th>

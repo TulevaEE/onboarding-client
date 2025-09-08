@@ -1,5 +1,6 @@
 import { ChangeEventHandler, useEffect, useState } from 'react';
 import { Redirect } from 'react-router-dom';
+import { FormattedMessage } from 'react-intl';
 import { formatAmountForCurrency, useNumberInput } from '../../../../common/utils';
 import { useCreateCapitalTransferContext } from '../hooks';
 import { getBankName, isValidIban } from '../../../../common/iban';
@@ -305,7 +306,7 @@ export const EnterData = () => {
           className="btn btn-lg btn-light"
           onClick={() => navigateToPreviousStep()}
         >
-          Tagasi
+          <FormattedMessage id="capital.listings.details.button.back" />
         </button>
         <button
           type="button"
