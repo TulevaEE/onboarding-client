@@ -172,7 +172,7 @@ export const ConfirmBuyer = () => {
           )}
         </div>
 
-        <SearchResponse loading={isLoading} searched={buyer ?? searched} />
+        <SearchResponse loading={isLoading} searched={searched} />
       </div>
 
       <div className="d-flex flex-column-reverse flex-sm-row justify-content-between pt-4 border-top gap-3">
