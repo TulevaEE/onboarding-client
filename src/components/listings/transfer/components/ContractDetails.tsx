@@ -18,7 +18,7 @@ export const ContractDetails = ({
   creationDate,
 }: ContractDetailsProps) => (
   <div className="d-flex flex-column gap-4">
-    <div className="d-flex flex-column flex-sm-row row-gap-3 pb-4 border-bottom">
+    <div className="d-flex flex-column flex-sm-row column-gap-3 row-gap-3 pb-4 border-bottom">
       <div className="col d-flex flex-column gap-2" data-testid="seller-details">
         <b>
           <FormattedMessage id="capital.transfer.details.seller.label" />
@@ -47,7 +47,7 @@ export const ContractDetails = ({
       totalBookValue={getTotalBookValue({ transferAmounts: amounts })}
     />
 
-    <div className="d-flex pb-4 border-bottom">
+    <div className="d-flex column-gap-3 pb-4 border-bottom">
       <div className="col">
         <b>
           <FormattedMessage id="capital.transfer.details.price.label" />
@@ -58,7 +58,7 @@ export const ContractDetails = ({
       </div>
     </div>
 
-    <div className="d-flex flex-column flex-sm-row">
+    <div className="d-flex flex-column flex-sm-row column-gap-3">
       <div className="col d-flex justify-content-between">
         <b>
           <FormattedMessage id="capital.transfer.details.bankAccount.label" />
@@ -71,7 +71,7 @@ export const ContractDetails = ({
     </div>
 
     {creationDate && (
-      <div className="d-flex flex-column flex-sm-row">
+      <div className="d-flex flex-column flex-sm-row column-gap-3">
         <div className="col">
           <b>
             <FormattedMessage id="capital.transfer.details.creationDate.label" />

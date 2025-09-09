@@ -18,7 +18,7 @@ export const TransferAmountBreakdown = ({
     const amount = sortedAmounts[0];
     return (
       <>
-        <div className="d-flex" data-testid="capital-row-TOTAL">
+        <div className="d-flex column-gap-3" data-testid="capital-row-TOTAL">
           <div className="col">
             <b>
               <FormattedMessage id="capital.transfer.details.amount.total" />
@@ -40,7 +40,7 @@ export const TransferAmountBreakdown = ({
 
   return (
     <div className="d-flex flex-column">
-      <div className="d-flex" data-testid="capital-row-TOTAL">
+      <div className="d-flex column-gap-3" data-testid="capital-row-TOTAL">
         <div className="col">
           <b>
             <FormattedMessage id="capital.transfer.details.amount.total" />
@@ -55,7 +55,11 @@ export const TransferAmountBreakdown = ({
       </div>
 
       {sortedAmounts.map((amount) => (
-        <div className="d-flex" key={amount.type} data-testid={`capital-row-${amount.type}`}>
+        <div
+          className="d-flex column-gap-3"
+          key={amount.type}
+          data-testid={`capital-row-${amount.type}`}
+        >
           <div className="col">
             – <TransferAmountName type={amount.type} />
           </div>
