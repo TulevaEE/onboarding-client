@@ -68,80 +68,80 @@ export const ConfirmBuyer = () => {
   return (
     <>
       <div className="d-flex flex-column gap-5 py-4">
-        <div className="form-section">
-          <label htmlFor="id-code-search" className="form-label">
-            <FormattedMessage id="capital.transfer.create.label.enterBuyerIdCode" />
-          </label>
+        <div className="form-section d-flex flex-column gap-2">
           <form
-            className="d-flex gap-2"
             onSubmit={(e) => {
               e.preventDefault();
               handleSearchClicked();
             }}
           >
-            <input
-              type="text"
-              id="id-code-search"
-              className="form-control form-control-lg"
-              value={personalCode ?? ''}
-              pattern="[0-9]*"
-              inputMode="numeric"
-              onChange={(e) => {
-                setSearched(null);
-                setPersonalCode(e.target.value);
-              }}
-            />
-            <button
-              type="submit"
-              className="btn btn-lg btn-outline-primary d-flex align-items-center gap-2"
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <>
-                  <span className="spinner-border spinner-border-sm" aria-hidden="true" />
-                  <span>
-                    <FormattedMessage id="capital.transfer.create.button.searching" />
-                  </span>
-                </>
-              ) : (
-                <>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    viewBox="0 0 16 16"
-                    className="align-top"
-                    aria-hidden="true"
-                  >
-                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-                  </svg>
-                  <span role="status">
-                    <FormattedMessage id="capital.transfer.create.button.search" />
-                  </span>
-                </>
-              )}
-            </button>
+            <label htmlFor="id-code-search" className="form-label">
+              <FormattedMessage id="capital.transfer.create.label.enterBuyerIdCode" />
+            </label>
+            <div className="d-flex gap-2">
+              <input
+                type="text"
+                id="id-code-search"
+                className="form-control form-control-lg"
+                value={personalCode ?? ''}
+                pattern="[0-9]*"
+                inputMode="numeric"
+                onChange={(e) => {
+                  setSearched(null);
+                  setPersonalCode(e.target.value);
+                }}
+              />
+              <button
+                type="submit"
+                className="btn btn-lg btn-outline-primary d-flex align-items-center gap-2"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm" aria-hidden="true" />
+                    <span>
+                      <FormattedMessage id="capital.transfer.create.button.searching" />
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      fill="currentColor"
+                      viewBox="0 0 16 16"
+                      className="align-top"
+                      aria-hidden="true"
+                    >
+                      <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                    </svg>
+                    <span role="status">
+                      <FormattedMessage id="capital.transfer.create.button.search" />
+                    </span>
+                  </>
+                )}
+              </button>
+            </div>
           </form>
           {selfBuyerError && (
-            <p className="text-danger pt-2">
+            <p className="m-0 text-danger">
               <FormattedMessage id="capital.transfer.create.error.selfBuyer" />
             </p>
           )}
           {searched === 'NOT_FOUND' && (
-            <p className="text-danger pt-2">
+            <p className="m-0 text-danger">
               <FormattedMessage id="capital.transfer.create.error.notFound" />
+            </p>
+          )}
+          {noBuyerError && (searched === 'NOT_FOUND' || !searched) && (
+            <p className="m-0 text-danger">
+              <FormattedMessage id="capital.transfer.create.error.noBuyer" />
             </p>
           )}
         </div>
 
         <SearchResponse loading={isLoading} searched={buyer ?? searched} />
-
-        {noBuyerError && (searched === 'NOT_FOUND' || !searched) && (
-          <p className="m-0 text-danger">
-            <FormattedMessage id="capital.transfer.create.error.noBuyer" />
-          </p>
-        )}
       </div>
 
       <div className="d-flex flex-column-reverse flex-sm-row justify-content-between pt-4 border-top gap-3">
