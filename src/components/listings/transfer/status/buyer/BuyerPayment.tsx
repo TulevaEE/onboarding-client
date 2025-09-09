@@ -118,7 +118,7 @@ export const BuyerPayment = ({
               </div>
               <div className="col d-flex justify-content-between">
                 {formatAmountForCurrency(totalPrice)}{' '}
-                <CopyButton textToCopy={formatAmountForCount(totalPrice)} />
+                <CopyButton textToCopy={formatAmountForCount(totalPrice).replace(/\s+/g, '')} />
               </div>
             </div>
             <div className="row">
