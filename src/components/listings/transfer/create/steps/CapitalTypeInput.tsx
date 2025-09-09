@@ -81,7 +81,7 @@ export const CapitalTypeInput = ({
           <FormattedMessage id={translationKey} />
           {transferAmount.type === 'CAPITAL_PAYMENT' && (
             <InfoTooltip>
-              <FormattedMessage id="capital.transfer.create.amount.type.CAPITAL_ACQUIRED.tooltip" />
+              <FormattedMessage id="capital.transfer.create.amount.type.CAPITAL_PAYMENT.tooltip" />
             </InfoTooltip>
           )}
         </span>

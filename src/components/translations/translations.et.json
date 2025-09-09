@@ -939,7 +939,7 @@
   "capital.transfer.create.button.signContract": "Allkirjastan lepingu",
 
   "capital.transfer.create.amount.type.CAPITAL_ACQUIRED": "Omandatud liikmekapital",
-  "capital.transfer.create.amount.type.CAPITAL_ACQUIRED.tooltip": "Müümist võib olla mõistlik alustada rahalisest panusest, sest saad selle soetamismaksumuse tuludeklaratsiooni esitades maksustatavast tulust maha arvata.",
+  "capital.transfer.create.amount.type.CAPITAL_PAYMENT.tooltip": "Müümist võib olla mõistlik alustada rahalisest panusest, sest saad selle soetamismaksumuse tuludeklaratsiooni esitades maksustatavast tulust maha arvata.",
   "capital.transfer.create.amount.type.CAPITAL_PAYMENT": "Rahaline panus",
   "capital.transfer.create.amount.type.MEMBERSHIP_BONUS": "Liikmeboonus",
   "capital.transfer.create.amount.type.WORK_COMPENSATION": "Tööpanus",
@@ -990,7 +990,7 @@
   "capital.transfer.details.status.signed": "Allkirjastatud",
   "capital.transfer.details.status.waitingForSignature.USER": "Sinu allkirja ootel",
   "capital.transfer.details.status.waitingForSignature.BUYER": "Ostja allkirja ootel",
-  "capital.transfer.details.status.waitingForSignature.SELLER": "Ostja allkirja ootel",
+  "capital.transfer.details.status.waitingForSignature.SELLER": "Müüja allkirja ootel",
   "capital.transfer.details.status.paymentDone": "Makse teostatud",
   "capital.transfer.details.status.paymentPending": "Makse ootel",
   "capital.transfer.details.status.paymentReceived": "Raha laekunud",
