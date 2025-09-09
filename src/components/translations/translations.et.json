@@ -861,6 +861,7 @@
   "capital.listings.details.button.sendTo.BUY": "Saadan ostjale",
   "capital.listings.details.button.sendTo.SELL": "Saadan müüjale",
 
+  "capital.listings.create.heading": "Uus kuulutus",
   "capital.listings.create.button.BUY": "Ostan",
   "capital.listings.create.button.SELL": "Müün",
   "capital.listings.create.error": "Kuulutuse lisamisel tekkis viga. Palun võta meiega ühendust.",

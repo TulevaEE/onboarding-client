@@ -84,33 +84,37 @@ describe('member capital transfer creation', () => {
   });
 
   test('allows to create transfer', async () => {
-    expect(await screen.findByText(/Liikmekapitali võõrandamise avaldus/i)).toBeInTheDocument();
+    expect(
+      await screen.findByText(/Application for transfer of member capital/i),
+    ).toBeInTheDocument();
 
-    const personalCodeInput = await screen.findByLabelText(/Sisesta ostja isikukood/i);
+    const personalCodeInput = await screen.findByLabelText(/Enter buyer’s personal ID code/i);
     userEvent.type(personalCodeInput, '30303039914');
 
-    userEvent.click(await screen.findByText(/Otsin/i));
+    userEvent.click(await screen.findByText(/Search/i));
 
-    expect(await screen.findByText(/Sellele isikukoodile vastab/i)).toBeInTheDocument();
+    expect(await screen.findByText(/This personal ID code matches/i)).toBeInTheDocument();
     expect(await screen.findByText(/Olev Ostja/i)).toBeInTheDocument();
-    expect(await screen.findByText(/Tuleva ühistu liige #9999/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Tuleva cooperative member #9999/i)).toBeInTheDocument();
 
-    userEvent.click(await screen.findByText(/Kinnitan ostja/i));
+    userEvent.click(await screen.findByRole('button', { name: /Confirm buyer/i }, {}));
 
-    const amountInput = await screen.findByLabelText(/Kui palju liikmekapitali müüd?/i);
-    const priceInput = await screen.findByLabelText(/Kokkulepitud müügihind/i);
+    const amountInput = await screen.findByLabelText(/How much member capital are you selling?/i);
+    const priceInput = await screen.findByLabelText(/Agreed sale price/i);
 
     userEvent.type(amountInput, '1077.78');
     userEvent.type(priceInput, '250');
 
-    const ibanInput = await screen.findByLabelText(/Müüja pangakonto/i);
+    const ibanInput = await screen.findByLabelText(/Seller’s bank account \(IBAN\)/i);
     userEvent.type(ibanInput, 'EE591254471322749514');
 
     expect(await screen.findByText(/Citadele/)).toBeInTheDocument();
 
-    userEvent.click(await screen.findByText(/Lepingu eelvaatesse/i));
+    userEvent.click(await screen.findByText(/Preview application/i));
 
-    expect(await screen.findByText(/Allkirjastan lepingu/i)).toBeInTheDocument();
+    expect(
+      await screen.findByRole('button', { name: /Sign application/i }, {}),
+    ).toBeInTheDocument();
 
     const buyerSection = await getBuyerDetailsSection();
     expect(await within(buyerSection).findByText(/Olev Ostja/i)).toBeInTheDocument();
@@ -124,60 +128,64 @@ describe('member capital transfer creation', () => {
 
     expect(await screen.findByText(/250.00 €/i)).toBeInTheDocument();
 
-    await assertMemberCapitalAmount('TOTAL', /Müüdav liikmekapital/i, /1 077.78 €/i);
-    await assertMemberCapitalAmount('CAPITAL_PAYMENT', /rahaline panus/i, /876.55 €/i);
-    await assertMemberCapitalAmount('WORK_COMPENSATION', /tööpanus/i, /200.00 €/i);
-    await assertMemberCapitalAmount('MEMBERSHIP_BONUS', /liikmeboonus/i, /1.23 €/i);
+    await assertMemberCapitalAmount('TOTAL', /Member capital to be sold/i, /1 077.78 €/i);
+    await assertMemberCapitalAmount('CAPITAL_PAYMENT', /monetary contribution/i, /876.55 €/i);
+    await assertMemberCapitalAmount('WORK_COMPENSATION', /work contribution/i, /200.00 €/i);
+    await assertMemberCapitalAmount('MEMBERSHIP_BONUS', /membership bonus/i, /1.23 €/i);
 
     userEvent.click(
       await screen.findByLabelText(
-        /Kinnitan, et müüja ja ostja on kokku leppinud liikmekapitali võõrandamises eelpool nimetatud tingimustel./i,
+        /I confirm that the seller and the buyer have agreed to the transfer of member capital under the above-mentioned conditions./i,
       ),
     );
 
-    userEvent.click(await screen.findByText(/Allkirjastan lepingu/i));
+    userEvent.click(await screen.findByRole('button', { name: /Sign application/i }, {}));
 
     expect(
-      await screen.findByText(/Leping on sinu poolt allkirjastatud/i, {}, { timeout: 10_000 }),
+      await screen.findByText(/The application has been signed/i, {}, { timeout: 10_000 }),
     ).toBeInTheDocument();
 
-    userEvent.click(await screen.findByText(/Vaatan staatust/i));
+    userEvent.click(await screen.findByText(/View status/i));
 
-    expect(await screen.findByText(/Allkirjastatud/i)).toBeInTheDocument();
-    expect(await screen.findByText(/Ostja allkirja ootel/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Signed/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Awaiting/i)).toBeInTheDocument();
   });
 
   test('allows to create transfer with custom breakdown', async () => {
-    expect(await screen.findByText(/Liikmekapitali võõrandamise avaldus/i)).toBeInTheDocument();
+    expect(
+      await screen.findByText(/Application for transfer of member capital/i),
+    ).toBeInTheDocument();
 
-    const personalCodeInput = await screen.findByLabelText(/Sisesta ostja isikukood/i);
+    const personalCodeInput = await screen.findByLabelText(/Enter buyer’s personal ID code/i);
     userEvent.type(personalCodeInput, '30303039914');
 
-    userEvent.click(await screen.findByText(/Otsin/i));
+    userEvent.click(await screen.findByText(/Search/i));
 
-    expect(await screen.findByText(/Sellele isikukoodile vastab/i)).toBeInTheDocument();
+    expect(await screen.findByText(/This personal ID code matches/i)).toBeInTheDocument();
     expect(await screen.findByText(/Olev Ostja/i)).toBeInTheDocument();
-    expect(await screen.findByText(/Tuleva ühistu liige #9999/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Tuleva cooperative member #9999/i)).toBeInTheDocument();
 
-    userEvent.click(await screen.findByText(/Kinnitan ostja/i));
+    userEvent.click(await screen.findByRole('button', { name: /Confirm buyer/i }, {}));
 
-    const workCompensationAmountInput = await screen.findByLabelText(/Tööpanus/i);
-    const memberCapitalAmountInput = await screen.findByLabelText(/Rahaline panus/i);
+    const workCompensationAmountInput = await screen.findByLabelText(/Work contribution/i);
+    const memberCapitalAmountInput = await screen.findByLabelText(/Monetary contribution/i);
 
     userEvent.clear(workCompensationAmountInput);
     userEvent.clear(memberCapitalAmountInput);
     userEvent.type(workCompensationAmountInput, '150');
     userEvent.type(memberCapitalAmountInput, '100');
 
-    const priceInput = await screen.findByLabelText(/Kokkulepitud müügihind/i);
+    const priceInput = await screen.findByLabelText(/Agreed sale price/i);
     userEvent.type(priceInput, '350');
 
-    const ibanInput = await screen.findByLabelText(/Müüja pangakonto/i);
+    const ibanInput = await screen.findByLabelText(/Seller’s bank account \(IBAN\)/i);
     userEvent.type(ibanInput, 'EE591254471322749514');
 
-    userEvent.click(await screen.findByText(/Lepingu eelvaatesse/i));
+    userEvent.click(await screen.findByText(/Preview application/i));
 
-    expect(await screen.findByText(/Allkirjastan lepingu/i)).toBeInTheDocument();
+    expect(
+      await screen.findByRole('button', { name: /Sign application/i }, {}),
+    ).toBeInTheDocument();
 
     const buyerSection = await getBuyerDetailsSection();
     expect(await within(buyerSection).findByText(/Olev Ostja/i)).toBeInTheDocument();
@@ -190,62 +198,66 @@ describe('member capital transfer creation', () => {
     expect(await screen.findByText(/250.00 €/i)).toBeInTheDocument();
     expect(await screen.findByText(/350.00 €/i)).toBeInTheDocument();
 
-    await assertMemberCapitalAmount('TOTAL', /Müüdav liikmekapital/i, /250.00 €/i);
-    await assertMemberCapitalAmount('WORK_COMPENSATION', /tööpanus/i, /150.00 €/i);
-    await assertMemberCapitalAmount('CAPITAL_PAYMENT', /rahaline panus/i, /100.00 €/i);
+    await assertMemberCapitalAmount('TOTAL', /Member capital to be sold/i, /250.00 €/i);
+    await assertMemberCapitalAmount('WORK_COMPENSATION', /work contribution/i, /150.00 €/i);
+    await assertMemberCapitalAmount('CAPITAL_PAYMENT', /monetary contribution/i, /100.00 €/i);
 
     userEvent.click(
       await screen.findByLabelText(
-        /Kinnitan, et müüja ja ostja on kokku leppinud liikmekapitali võõrandamises eelpool nimetatud tingimustel./i,
+        /I confirm that the seller and the buyer have agreed to the transfer of member capital under the above-mentioned conditions./i,
       ),
     );
 
-    userEvent.click(await screen.findByText(/Allkirjastan lepingu/i));
+    userEvent.click(await screen.findByRole('button', { name: /Sign application/i }, {}));
 
     expect(
-      await screen.findByText(/Leping on sinu poolt allkirjastatud/i, {}, { timeout: 10_000 }),
+      await screen.findByText(/The application has been signed/i, {}, { timeout: 10_000 }),
     ).toBeInTheDocument();
 
-    userEvent.click(await screen.findByText(/Vaatan staatust/i));
+    userEvent.click(await screen.findByText(/View status/i));
 
-    expect(await screen.findByText(/Allkirjastatud/i)).toBeInTheDocument();
-    expect(await screen.findByText(/Ostja allkirja ootel/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Signed/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Awaiting buyer.s signature/i)).toBeInTheDocument();
   });
 
   test('does not allow to create without selected member', async () => {
-    expect(await screen.findByText(/Liikmekapitali võõrandamise avaldus/i)).toBeInTheDocument();
+    expect(
+      await screen.findByText(/Application for transfer of member capital/i),
+    ).toBeInTheDocument();
 
-    const personalCodeInput = await screen.findByLabelText(/Sisesta ostja isikukood/i);
+    const personalCodeInput = await screen.findByLabelText(/Enter buyer’s personal ID code/i);
     userEvent.type(personalCodeInput, '30303039913');
 
-    userEvent.click(await screen.findByText(/Otsin/i));
+    userEvent.click(await screen.findByText(/Search/i));
 
     expect(
-      await screen.findByText(/Sellele isikukoodile ei vasta ühtegi Tuleva ühistu liiget./i),
+      await screen.findByText(/No Tuleva cooperative member matches this personal ID code./i),
     ).toBeInTheDocument();
   });
 
   test('does not allow to create with invalid amount', async () => {
-    expect(await screen.findByText(/Liikmekapitali võõrandamise avaldus/i)).toBeInTheDocument();
+    expect(
+      await screen.findByText(/Application for transfer of member capital/i),
+    ).toBeInTheDocument();
 
-    const personalCodeInput = await screen.findByLabelText(/Sisesta ostja isikukood/i);
+    const personalCodeInput = await screen.findByLabelText(/Enter buyer’s personal ID code/i);
     userEvent.type(personalCodeInput, '30303039914');
 
-    userEvent.click(await screen.findByText(/Otsin/i));
+    userEvent.click(await screen.findByText(/Search/i));
 
-    expect(await screen.findByText(/Sellele isikukoodile vastab/i)).toBeInTheDocument();
+    expect(await screen.findByText(/This personal ID code matches/i)).toBeInTheDocument();
     expect(await screen.findByText(/Olev Ostja/i)).toBeInTheDocument();
-    expect(await screen.findByText(/Tuleva ühistu liige #9999/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Tuleva cooperative member #9999/i)).toBeInTheDocument();
 
-    userEvent.click(await screen.findByText(/Kinnitan ostja/i));
+    userEvent.click(await screen.findByRole('button', { name: /Confirm buyer/i }, {}));
 
-    const amountInput = await screen.findByLabelText(/Kui palju liikmekapitali müüd?/i);
-    const priceInput = await screen.findByLabelText(/Kokkulepitud müügihind/i);
+    const amountInput = await screen.findByLabelText(/How much member capital are you selling?/i);
+    const priceInput = await screen.findByLabelText(/Agreed sale price/i);
 
     userEvent.type(amountInput, '10000000');
     userEvent.type(priceInput, '2.5');
 
-    const ibanInput = await screen.findByLabelText(/Müüja pangakonto/i);
+    const ibanInput = await screen.findByLabelText(/Seller’s bank account \(IBAN\)/i);
     userEvent.type(ibanInput, 'EE591254471322749514');
 
     expect(amountInput).toBeInTheDocument();
@@ -253,29 +265,31 @@ describe('member capital transfer creation', () => {
   });
 
   test('does not allow to create with invalid iban', async () => {
-    expect(await screen.findByText(/Liikmekapitali võõrandamise avaldus/i)).toBeInTheDocument();
+    expect(
+      await screen.findByText(/Application for transfer of member capital/i),
+    ).toBeInTheDocument();
 
-    const personalCodeInput = await screen.findByLabelText(/Sisesta ostja isikukood/i);
+    const personalCodeInput = await screen.findByLabelText(/Enter buyer’s personal ID code/i);
     userEvent.type(personalCodeInput, '30303039914');
 
-    userEvent.click(await screen.findByText(/Otsin/i));
+    userEvent.click(await screen.findByText(/Search/i));
 
-    expect(await screen.findByText(/Sellele isikukoodile vastab/i)).toBeInTheDocument();
+    expect(await screen.findByText(/This personal ID code matches/i)).toBeInTheDocument();
     expect(await screen.findByText(/Olev Ostja/i)).toBeInTheDocument();
-    expect(await screen.findByText(/Tuleva ühistu liige #9999/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Tuleva cooperative member #9999/i)).toBeInTheDocument();
 
-    userEvent.click(await screen.findByText(/Kinnitan ostja/i));
+    userEvent.click(await screen.findByRole('button', { name: /Confirm buyer/i }, {}));
 
-    const amountInput = await screen.findByLabelText(/Kui palju liikmekapitali müüd?/i);
-    const priceInput = await screen.findByLabelText(/Kokkulepitud müügihind/i);
+    const amountInput = await screen.findByLabelText(/How much member capital are you selling?/i);
+    const priceInput = await screen.findByLabelText(/Agreed sale price/i);
 
     userEvent.type(amountInput, '10');
     userEvent.type(priceInput, '2');
 
-    const ibanInput = await screen.findByLabelText(/Müüja pangakonto/i);
+    const ibanInput = await screen.findByLabelText(/Seller’s bank account \(IBAN\)/i);
     userEvent.type(ibanInput, 'INVALID_IBAN');
 
-    userEvent.click(await screen.findByText(/Lepingu eelvaatesse/i));
+    userEvent.click(await screen.findByText(/Preview application/i));
 
     expect(amountInput).toBeInTheDocument();
   });
@@ -298,31 +312,35 @@ describe('member capital transfer creation single row', () => {
   });
 
   test('allows to create transfer', async () => {
-    expect(await screen.findByText(/Liikmekapitali võõrandamise avaldus/i)).toBeInTheDocument();
+    expect(
+      await screen.findByText(/Application for transfer of member capital/i),
+    ).toBeInTheDocument();
 
-    const personalCodeInput = await screen.findByLabelText(/Sisesta ostja isikukood/i);
+    const personalCodeInput = await screen.findByLabelText(/Enter buyer’s personal ID code/i);
     userEvent.type(personalCodeInput, '30303039914');
 
-    userEvent.click(await screen.findByText(/Otsin/i));
+    userEvent.click(await screen.findByText(/Search/i));
 
-    expect(await screen.findByText(/Sellele isikukoodile vastab/i)).toBeInTheDocument();
+    expect(await screen.findByText(/This personal ID code matches/i)).toBeInTheDocument();
     expect(await screen.findByText(/Olev Ostja/i)).toBeInTheDocument();
-    expect(await screen.findByText(/Tuleva ühistu liige #9999/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Tuleva cooperative member #9999/i)).toBeInTheDocument();
 
-    userEvent.click(await screen.findByText(/Kinnitan ostja/i));
+    userEvent.click(await screen.findByRole('button', { name: /Confirm buyer/i }, {}));
 
-    const amountInput = await screen.findByLabelText(/Kui palju liikmekapitali müüd?/i);
-    const priceInput = await screen.findByLabelText(/Kokkulepitud müügihind/i);
+    const amountInput = await screen.findByLabelText(/How much member capital are you selling?/i);
+    const priceInput = await screen.findByLabelText(/Agreed sale price/i);
 
     userEvent.type(amountInput, '100');
     userEvent.type(priceInput, '250');
 
-    const ibanInput = await screen.findByLabelText(/Müüja pangakonto/i);
+    const ibanInput = await screen.findByLabelText(/Seller’s bank account \(IBAN\)/i);
     userEvent.type(ibanInput, 'EE591254471322749514');
 
-    userEvent.click(await screen.findByText(/Lepingu eelvaatesse/i));
+    userEvent.click(await screen.findByText(/Preview application/i));
 
-    expect(await screen.findByText(/Allkirjastan lepingu/i)).toBeInTheDocument();
+    expect(
+      await screen.findByRole('button', { name: /Sign application/i }, {}),
+    ).toBeInTheDocument();
 
     const buyerSection = await getBuyerDetailsSection();
     expect(await within(buyerSection).findByText(/Olev Ostja/i)).toBeInTheDocument();
@@ -335,24 +353,24 @@ describe('member capital transfer creation single row', () => {
     expect(await screen.findByText(/100.00 €/i)).toBeInTheDocument();
     expect(await screen.findByText(/250.00 €/i)).toBeInTheDocument();
 
-    await assertMemberCapitalAmount('CAPITAL_PAYMENT', /(rahaline panus)/i);
+    await assertMemberCapitalAmount('CAPITAL_PAYMENT', /(monetary contribution)/i);
 
     userEvent.click(
       await screen.findByLabelText(
-        /Kinnitan, et müüja ja ostja on kokku leppinud liikmekapitali võõrandamises eelpool nimetatud tingimustel./i,
+        /I confirm that the seller and the buyer have agreed to the transfer of member capital under the above-mentioned conditions./i,
       ),
     );
 
-    userEvent.click(await screen.findByText(/Allkirjastan lepingu/i));
+    userEvent.click(await screen.findByRole('button', { name: /Sign application/i }, {}));
 
     expect(
-      await screen.findByText(/Leping on sinu poolt allkirjastatud/i, {}, { timeout: 10_000 }),
+      await screen.findByText(/The application has been signed/i, {}, { timeout: 10_000 }),
     ).toBeInTheDocument();
 
-    userEvent.click(await screen.findByText(/Vaatan staatust/i));
+    userEvent.click(await screen.findByText(/View status/i));
 
-    expect(await screen.findByText(/Allkirjastatud/i)).toBeInTheDocument();
-    expect(await screen.findByText(/Ostja allkirja ootel/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Signed/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Awaiting buyer.s signature/i)).toBeInTheDocument();
   });
 });
 

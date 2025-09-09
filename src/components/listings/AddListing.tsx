@@ -76,7 +76,9 @@ export const AddListing = () => {
   return (
     <div className="col-12 col-md-10 col-lg-7 mx-auto d-flex flex-column gap-5">
       <div className="d-flex flex-column gap-4">
-        <h1 className="m-0 text-center">Uus kuulutus</h1>
+        <h1 className="m-0 text-center">
+          <FormattedMessage id="capital.listings.create.heading" />
+        </h1>
         <div className="btn-group d-flex px-0 px-sm-6 pb-4" role="group">
           <ListingButton
             listingType={listingType}

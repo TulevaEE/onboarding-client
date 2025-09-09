@@ -68,41 +68,43 @@ describe('capital transfer buyer flow', () => {
     const buyerSection = await screen.findByTestId('buyer-details');
     expect(await within(buyerSection).findByText(getFullName(mockUser))).toBeInTheDocument();
     expect(await within(buyerSection).findByText(mockUser.personalCode)).toBeInTheDocument();
-    expect(await within(buyerSection).findByText(/Sinu allkirja ootel/i)).toBeInTheDocument();
+    expect(await within(buyerSection).findByText(/Awaiting your signature/i)).toBeInTheDocument();
 
     const sellerSection = await screen.findByTestId('seller-details');
     expect(await within(sellerSection).findByText(/Mairo Müüja/i)).toBeInTheDocument();
     expect(await within(sellerSection).findByText(/30303039914/i)).toBeInTheDocument();
-    expect(await within(sellerSection).findByText(/Allkirjastatud/i)).toBeInTheDocument();
+    expect(await within(sellerSection).findByText(/Signed/i)).toBeInTheDocument();
 
     expect(await screen.findByText(/1.000.00.€/i)).toBeInTheDocument();
     // TODO unitsOfMemberCapital assert
 
     userEvent.click(
       await screen.findByLabelText(
-        /Kinnitan, et müüja ja ostja on kokku leppinud liikmekapitali võõrandamises eelpool nimetatud tingimustel./i,
+        /I confirm that the seller and the buyer have agreed to the transfer of member capital under the above-mentioned conditions./i,
       ),
     );
 
-    userEvent.click(await screen.findByText(/Allkirjastan lepingu/i));
+    userEvent.click(await screen.findByRole('button', { name: /Sign application/i }, {}));
 
     expect(
-      await screen.findByText(/Tee pangaülekanne/i, {}, { timeout: 3000 }),
+      await screen.findByText(/Make a bank transfer/i, {}, { timeout: 3000 }),
     ).toBeInTheDocument();
     expect(await screen.findByText(/EE_TEST_IBAN/i)).toBeInTheDocument();
 
-    userEvent.click(await screen.findByLabelText(/Kandsin üle.+/i));
+    userEvent.click(await screen.findByLabelText(/I transferred.+/i));
 
-    userEvent.click(await screen.findByText(/Kinnitan makse tegemist/i));
-
-    expect(await screen.findByText(/Sinu poolt on kõik vajalik tehtud/i, {})).toBeInTheDocument();
-    userEvent.click(await screen.findByText(/Vaatan staatust/i));
+    userEvent.click(await screen.findByRole('button', { name: /Confirm payment/i }, {}));
 
     expect(
-      await within(await getSellerDetailsSection()).findByText(/Raha laekumise ootel/i),
+      await screen.findByText(/Everything required from you has been completed/i, {}),
+    ).toBeInTheDocument();
+    userEvent.click(await screen.findByText(/View status/i));
+
+    expect(
+      await within(await getSellerDetailsSection()).findByText(/Awaiting payment confirmation/i),
     ).toBeInTheDocument();
     expect(
-      await within(await getBuyerDetailsSection()).findByText(/Makse teostatud/i),
+      await within(await getBuyerDetailsSection()).findByText(/Payment made/i),
     ).toBeInTheDocument();
   });
 });
@@ -137,34 +139,38 @@ describe('capital transfer seller flow', () => {
     );
   });
   test('allows seller to confirm', async () => {
-    expect(await screen.findByText(/Liikmekapitali võõrandamise avaldus/i)).toBeInTheDocument();
+    expect(
+      await screen.findByText(/Application for transfer of member capital/i),
+    ).toBeInTheDocument();
 
     const buyerSection = await getBuyerDetailsSection();
     expect(await within(buyerSection).findByText(/Olev Ostja/i)).toBeInTheDocument();
     expect(await within(buyerSection).findByText(/30303039914/i)).toBeInTheDocument();
-    expect(await within(buyerSection).findByText(/Allkirjastatud/i)).toBeInTheDocument();
-    expect(await within(buyerSection).findByText(/Makse teostatud/i)).toBeInTheDocument();
+    expect(await within(buyerSection).findByText(/Signed/i)).toBeInTheDocument();
+    expect(await within(buyerSection).findByText(/Payment made/i)).toBeInTheDocument();
 
     const sellerSection = await getSellerDetailsSection();
     expect(await within(sellerSection).findByText(getFullName(mockUser))).toBeInTheDocument();
     expect(await within(sellerSection).findByText(mockUser.personalCode)).toBeInTheDocument();
-    expect(await within(sellerSection).findByText(/Allkirjastatud/i)).toBeInTheDocument();
-    expect(await within(sellerSection).findByText(/Raha laekumise ootel/i)).toBeInTheDocument();
-
-    userEvent.click(
-      await screen.findByLabelText(/kätte saanud ja valmis liikmekapitali üle andma/i),
-    );
-
-    userEvent.click(await screen.findByText(/Kinnitan ja saadan avalduse/i));
-
+    expect(await within(sellerSection).findByText(/Signed/i)).toBeInTheDocument();
     expect(
-      await screen.findByText(/Avaldus on saadetud Tuleva ühistu juhatusele/i),
+      await within(sellerSection).findByText(/Awaiting payment confirmation/i),
     ).toBeInTheDocument();
 
-    userEvent.click(await screen.findByText(/Vaatan staatust/i));
+    userEvent.click(await screen.findByLabelText(/and am ready to transfer the member capital/i));
+
+    userEvent.click(await screen.findByText(/Confirm and submit application/i));
 
     expect(
-      await within(await getSellerDetailsSection()).findByText(/Raha laekunud/i, {}),
+      await screen.findByText(
+        /The application has been submitted to the Tuleva cooperative board/i,
+      ),
+    ).toBeInTheDocument();
+
+    userEvent.click(await screen.findByText(/View status/i));
+
+    expect(
+      await within(await getSellerDetailsSection()).findByText(/Payment received/i, {}),
     ).toBeInTheDocument();
   });
 });
@@ -199,16 +205,18 @@ describe('capital transfer seller flow', () => {
     );
   });
   test('allows seller to check status when payment not confirmed by buyer', async () => {
-    expect(await screen.findByText(/Liikmekapitali võõrandamise avaldus/i)).toBeInTheDocument();
+    expect(
+      await screen.findByText(/Application for transfer of member capital/i),
+    ).toBeInTheDocument();
 
     const buyerSection = await getBuyerDetailsSection();
     expect(await within(buyerSection).findByText(/Olev Ostja/i)).toBeInTheDocument();
     expect(await within(buyerSection).findByText(/30303039914/i)).toBeInTheDocument();
-    expect(await within(buyerSection).findByText(/Allkirjastatud/i)).toBeInTheDocument();
+    expect(await within(buyerSection).findByText(/Signed/i)).toBeInTheDocument();
 
     const sellerSection = await getSellerDetailsSection();
     expect(await within(sellerSection).findByText(getFullName(mockUser))).toBeInTheDocument();
     expect(await within(sellerSection).findByText(mockUser.personalCode)).toBeInTheDocument();
-    expect(await within(sellerSection).findByText(/Allkirjastatud/i)).toBeInTheDocument();
+    expect(await within(sellerSection).findByText(/Signed/i)).toBeInTheDocument();
   });
 });

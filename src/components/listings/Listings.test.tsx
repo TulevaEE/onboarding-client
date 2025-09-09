@@ -48,24 +48,24 @@ describe('member capital listings with no listings', () => {
   });
 
   test('shows empty listings screen, allows to create listing', async () => {
-    expect(await screen.findByText(/Liikmekapitali võõrandamine/i)).toBeInTheDocument();
-    const createLink = await screen.findByText(/Lisan kuulutuse/i);
+    expect(await screen.findByText(/Sale of membership capital/i)).toBeInTheDocument();
+    const createLink = await screen.findByText(/Add listing/i);
     expect(createLink).toBeInTheDocument();
 
     userEvent.click(createLink);
-    expect(await screen.findByText(/Uus kuulutus/i)).toBeInTheDocument();
+    expect(await screen.findByText(/New listing/i)).toBeInTheDocument();
 
-    const amountInput = await screen.findByLabelText(/Kui palju liikmekapitali ostad?/i);
-    const totalPriceInput = await screen.findByLabelText(/Mis hinnaga ostad?/i);
+    const amountInput = await screen.findByLabelText(/How much member capital are you buying\?/i);
+    const totalPriceInput = await screen.findByLabelText(/At what price are you buying\?/i);
 
     userEvent.type(amountInput, '100');
     userEvent.type(totalPriceInput, '250');
 
-    userEvent.selectOptions(await screen.findByLabelText(/Kuulutuse kestus kuudes/i), '3');
+    userEvent.selectOptions(await screen.findByLabelText(/Listing will be visible for/i), '3');
 
-    userEvent.click(screen.getByRole('button', { name: 'Avaldan ostukuulutuse' }));
+    userEvent.click(screen.getByRole('button', { name: 'Publish purchase listing' }));
 
-    expect(await screen.findByText(/Liikmekapitali võõrandamine/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Sale of membership capital/i)).toBeInTheDocument();
   });
 });
 
@@ -76,27 +76,27 @@ describe('member capital listings with listings', () => {
   });
 
   test('shows listings correctly', async () => {
-    expect(await screen.findByText(/Liikmekapitali võõrandamine/i)).toBeInTheDocument();
-    const createLink = await screen.findByText(/Lisan kuulutuse/i);
+    expect(await screen.findByText(/Sale of membership capital/i)).toBeInTheDocument();
+    const createLink = await screen.findByText(/Add listing/i);
     expect(createLink).toBeInTheDocument();
 
     const listings = await screen.findAllByTestId('listing');
 
     expect(listings.length).toBe(3);
 
-    expect(await within(listings[0]).findByText('Ost')).toBeInTheDocument();
+    expect(await within(listings[0]).findByText('Purchase')).toBeInTheDocument();
     expect(await within(listings[0]).findByText('#1')).toBeInTheDocument();
     expect(await within(listings[0]).findByText('10.00 €')).toBeInTheDocument();
     expect(await within(listings[0]).findByText('20.00 €')).toBeInTheDocument();
-    expect(await within(listings[0]).findByText('Soovin müüa')).toBeInTheDocument();
+    expect(await within(listings[0]).findByText('I wish to sell')).toBeInTheDocument();
 
-    expect(await within(listings[1]).findByText('Müük')).toBeInTheDocument();
+    expect(await within(listings[1]).findByText('Sale')).toBeInTheDocument();
     expect(await within(listings[1]).findByText('#2')).toBeInTheDocument();
     expect(await within(listings[1]).findByText('100.00 €')).toBeInTheDocument();
     expect(await within(listings[1]).findByText('250.00 €')).toBeInTheDocument();
-    expect(await within(listings[1]).findByText('Soovin osta')).toBeInTheDocument();
+    expect(await within(listings[1]).findByText('I wish to buy')).toBeInTheDocument();
 
-    expect(await within(listings[2]).findByText('Ost')).toBeInTheDocument();
+    expect(await within(listings[2]).findByText('Purchase')).toBeInTheDocument();
     expect(await within(listings[2]).findByText('#3')).toBeInTheDocument();
     expect(await within(listings[2]).findByText('10 000.00 €')).toBeInTheDocument();
     expect(await within(listings[2]).findByText('23 400.00 €')).toBeInTheDocument();
@@ -104,60 +104,60 @@ describe('member capital listings with listings', () => {
   });
 
   test('allows to contact for BUY listing', async () => {
-    expect(await screen.findByText(/Liikmekapitali võõrandamine/i)).toBeInTheDocument();
-    const createLink = await screen.findByText(/Lisan kuulutuse/i);
+    expect(await screen.findByText(/Sale of membership capital/i)).toBeInTheDocument();
+    const createLink = await screen.findByText(/Add listing/i);
     expect(createLink).toBeInTheDocument();
 
     const listings = await screen.findAllByTestId('listing');
 
     expect(listings.length).toBe(3);
 
-    userEvent.click(await within(listings[0]).findByText('Soovin müüa'));
-
-    expect(await screen.findByText(/Ostja saab järgneva sisuga meili/i)).toBeInTheDocument();
-
-    await waitFor(async () => expect(await screen.findByText(/Saadan ostjale/i)).toBeEnabled(), {
-      timeout: 5000,
-    });
-    userEvent.click(await screen.findByText(/Saadan ostjale/i));
+    userEvent.click(await within(listings[0]).findByText('I wish to sell'));
 
     expect(
-      await screen.findByText(/Sõnum on saadetud/i, {}, { timeout: 3000 }),
+      await screen.findByText(/The buyer will get an email with the following content/i),
     ).toBeInTheDocument();
-    userEvent.click(await screen.findByText(/Vaatan kõiki kuulutusi/i));
 
-    expect(await screen.findByText(/Liikmekapitali võõrandamine/i)).toBeInTheDocument();
+    await waitFor(async () => expect(await screen.findByText(/Send to buyer/i)).toBeEnabled(), {
+      timeout: 5000,
+    });
+    userEvent.click(await screen.findByText(/Send to buyer/i));
+
+    expect(await screen.findByText(/Message sent/i, {}, { timeout: 3000 })).toBeInTheDocument();
+    userEvent.click(await screen.findByText(/See all listings/i));
+
+    expect(await screen.findByText(/Sale of membership capital/i)).toBeInTheDocument();
   });
 
   test('allows to contact for SELL listing', async () => {
-    expect(await screen.findByText(/Liikmekapitali võõrandamine/i)).toBeInTheDocument();
-    const createLink = await screen.findByText(/Lisan kuulutuse/i);
+    expect(await screen.findByText(/Sale of membership capital/i)).toBeInTheDocument();
+    const createLink = await screen.findByText(/Add listing/i);
     expect(createLink).toBeInTheDocument();
 
     const listings = await screen.findAllByTestId('listing');
 
     expect(listings.length).toBe(3);
 
-    userEvent.click(await within(listings[1]).findByText('Soovin osta'));
-
-    expect(await screen.findByText(/Müüja saab järgneva sisuga meili/i)).toBeInTheDocument();
-
-    await waitFor(async () => expect(await screen.findByText(/Saadan müüjale/i)).toBeEnabled(), {
-      timeout: 5000,
-    });
-    userEvent.click(await screen.findByText(/Saadan müüjale/i));
+    userEvent.click(await within(listings[1]).findByText('I wish to buy'));
 
     expect(
-      await screen.findByText(/Sõnum on saadetud/i, {}, { timeout: 3000 }),
+      await screen.findByText(/The seller will get an email with the following content/i),
     ).toBeInTheDocument();
-    userEvent.click(await screen.findByText(/Vaatan kõiki kuulutusi/i));
 
-    expect(await screen.findByText(/Liikmekapitali võõrandamine/i)).toBeInTheDocument();
+    await waitFor(async () => expect(await screen.findByText(/Send to seller/i)).toBeEnabled(), {
+      timeout: 5000,
+    });
+    userEvent.click(await screen.findByText(/Send to seller/i));
+
+    expect(await screen.findByText(/Message sent/i, {}, { timeout: 3000 })).toBeInTheDocument();
+    userEvent.click(await screen.findByText(/See all listings/i));
+
+    expect(await screen.findByText(/Sale of membership capital/i)).toBeInTheDocument();
   });
 
   test('shows listings, allows to delete', async () => {
-    expect(await screen.findByText(/Liikmekapitali võõrandamine/i)).toBeInTheDocument();
-    const createLink = await screen.findByText(/Lisan kuulutuse/i);
+    expect(await screen.findByText(/Sale of membership capital/i)).toBeInTheDocument();
+    const createLink = await screen.findByText(/Add listing/i);
     expect(createLink).toBeInTheDocument();
 
     const listings = await screen.findAllByTestId('listing');
@@ -170,7 +170,7 @@ describe('member capital listings with listings', () => {
       }),
     );
 
-    expect(await screen.findByText(/Soovid oma kuulutuse kustutada?/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Do you wish to delete your listing?/i)).toBeInTheDocument();
 
     userEvent.click(
       await within(ownListing).findByText('Delete', {
@@ -259,25 +259,40 @@ describe('member capital listings with pending tranactions', () => {
   });
 
   test.each([
-    ['BUYER', 'CREATED', 'Müüja allkirja ootel: Mairo Müüja', 'Vaatan'],
-    ['BUYER', 'SELLER_SIGNED', 'Sinu allkirja ootel', 'Allkirjastama'],
-    ['BUYER', 'BUYER_SIGNED', 'Sinu makse tegemise ootel', 'Makset tegema'],
-    ['BUYER', 'PAYMENT_CONFIRMED_BY_BUYER', 'Müüja maksekinnituse ootel: Mairo Müüja', 'Vaatan'],
-    ['BUYER', 'PAYMENT_CONFIRMED_BY_SELLER', 'Tuleva ühistu juhatuse otsuse ootel', 'Vaatan'],
-    ['SELLER', 'CREATED', 'Sinu allkirja ootel', 'Allkirjastama'],
-    ['SELLER', 'SELLER_SIGNED', 'Ostja allkirja ootel: Olev Ostja', 'Vaatan'],
-    ['SELLER', 'BUYER_SIGNED', 'Ostja maksekinnituse ootel: Olev Ostja', 'Vaatan'],
+    ['BUYER', 'CREATED', "Awaiting seller's signature: Mairo Müüja", 'View'],
+    ['BUYER', 'SELLER_SIGNED', 'Awaiting your signature', 'To signing'],
+    ['BUYER', 'BUYER_SIGNED', 'Awaiting your payment', 'To making payment'],
+    [
+      'BUYER',
+      'PAYMENT_CONFIRMED_BY_BUYER',
+      "Awaiting seller's confirmation of received payment: Mairo Müüja",
+      'View',
+    ],
+    [
+      'BUYER',
+      'PAYMENT_CONFIRMED_BY_SELLER',
+      "Awaiting decision from Tuleva cooperative's board",
+      'View',
+    ],
+    ['SELLER', 'CREATED', 'Awaiting your signature', 'To signing'],
+    ['SELLER', 'SELLER_SIGNED', "Awaiting buyer's signature: Olev Ostja", 'View'],
+    ['SELLER', 'BUYER_SIGNED', "Awaiting buyer's confirmation of payment: Olev Ostja", 'View'],
     [
       'SELLER',
       'PAYMENT_CONFIRMED_BY_BUYER',
-      'Sinu kinnituse ootel raha laekumise kohta',
-      'Kinnitama',
+      'Awaiting your confirmation about receiving payment',
+      'To confirming',
     ],
-    ['SELLER', 'PAYMENT_CONFIRMED_BY_SELLER', 'Tuleva ühistu juhatuse otsuse ootel', 'Vaatan'],
+    [
+      'SELLER',
+      'PAYMENT_CONFIRMED_BY_SELLER',
+      "Awaiting decision from Tuleva cooperative's board",
+      'View',
+    ],
   ])(
     'shows pending transaction correctly for %s in %s status',
     async (expectedRole, expectedState, statusText, linkText) => {
-      expect(await screen.findByText(/Liikmekapitali võõrandamine/i)).toBeInTheDocument();
+      expect(await screen.findByText(/Sale of membership capital/i)).toBeInTheDocument();
 
       const contracts = await screen.findAllByTestId('active-capital-transfer-contract');
 
@@ -287,7 +302,7 @@ describe('member capital listings with pending tranactions', () => {
       expect(contracts.length).toBe(contractCount);
 
       expect(
-        await screen.findByText(`Sul on ${contractCount} pooleliolevat avaldust`),
+        await screen.findByText(`You have ${contractCount} pending applications`),
       ).toBeInTheDocument();
 
       let found = false;
