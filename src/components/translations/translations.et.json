@@ -955,7 +955,7 @@
   "capital.transfer.details.success.buyer.description": "Teavitasime müüjat, nüüd tuleb vaid oodata tema kinnitust raha laekumise kohta. Anname sulle e-postiga märku kohe, kui ta on seda teinud.",
   "capital.transfer.details.error.payment": "Makse kinnitamisel tekkis viga. Palun proovi hiljem uuesti või võta meiega ühendust.",
   "capital.transfer.details.contract.title": "Lepingu andmed",
-  "capital.transfer.details.contract.description": "{sellerName} ({sellerCode}) müüb ja {buyerName} ({buyerCode}) ostab liikmekapitali raamatupidamislikus väärtuses {totalBookValue} hinnaga {totalPrice}.",
+  "capital.transfer.details.contract.description": "<b>{sellerName}</b> ({sellerCode}) müüb ja <b>{buyerName}</b> ({buyerCode}) ostab liikmekapitali raamatupidamislikus väärtuses <b>{totalBookValue}</b> hinnaga <b>{totalPrice}</b>.",
   "capital.transfer.details.payment.title": "Tee pangaülekanne",
   "capital.transfer.details.payment.receiverName": "Saaja nimi",
   "capital.transfer.details.payment.receiverIban": "Saaja konto (IBAN)",

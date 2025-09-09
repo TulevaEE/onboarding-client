@@ -80,6 +80,7 @@ export const BuyerPayment = ({
                 buyerCode: contract.buyer.personalCode,
                 totalBookValue: formatAmountForCurrency(totalBookValue),
                 totalPrice: formatAmountForCurrency(totalPrice),
+                b: (chunks: string) => <b>{chunks}</b>,
               }}
             />
           </p>
