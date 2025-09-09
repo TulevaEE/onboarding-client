@@ -88,13 +88,13 @@ describe('member capital listings with listings', () => {
     expect(await within(listings[0]).findByText('#1')).toBeInTheDocument();
     expect(await within(listings[0]).findByText('10.00 €')).toBeInTheDocument();
     expect(await within(listings[0]).findByText('20.00 €')).toBeInTheDocument();
-    expect(await within(listings[0]).findByText('I wish to sell')).toBeInTheDocument();
+    expect(await within(listings[0]).findByText('Contact buyer')).toBeInTheDocument();
 
     expect(await within(listings[1]).findByText('Sale')).toBeInTheDocument();
     expect(await within(listings[1]).findByText('#2')).toBeInTheDocument();
     expect(await within(listings[1]).findByText('100.00 €')).toBeInTheDocument();
     expect(await within(listings[1]).findByText('250.00 €')).toBeInTheDocument();
-    expect(await within(listings[1]).findByText('I wish to buy')).toBeInTheDocument();
+    expect(await within(listings[1]).findByText('Contact seller')).toBeInTheDocument();
 
     expect(await within(listings[2]).findByText('Purchase')).toBeInTheDocument();
     expect(await within(listings[2]).findByText('#3')).toBeInTheDocument();
@@ -112,7 +112,7 @@ describe('member capital listings with listings', () => {
 
     expect(listings.length).toBe(3);
 
-    userEvent.click(await within(listings[0]).findByText('I wish to sell'));
+    userEvent.click(await within(listings[0]).findByText('Contact buyer'));
 
     expect(
       await screen.findByText(/The buyer will get an email with the following content/i),
@@ -138,7 +138,7 @@ describe('member capital listings with listings', () => {
 
     expect(listings.length).toBe(3);
 
-    userEvent.click(await within(listings[1]).findByText('I wish to buy'));
+    userEvent.click(await within(listings[1]).findByText('Contact seller'));
 
     expect(
       await screen.findByText(/The seller will get an email with the following content/i),
