@@ -68,25 +68,31 @@ export const ListingDetails = () => {
 
   if (success) {
     return (
-      <SuccessAlert>
-        <h2 className="py-2">
-          <FormattedMessage id="capital.listings.details.success.title" />
-        </h2>
-
-        <div className="pb-2">
-          <FormattedMessage id="capital.listings.details.success.info" />
-        </div>
-
-        <button
-          type="button"
-          className="btn btn-outline-primary my-3"
-          onClick={() => {
-            history.push(`/capital/listings/`);
-          }}
-        >
-          <FormattedMessage id="capital.listings.details.success.backToListings" />
-        </button>
-      </SuccessAlert>
+      <div className="col-12 col-md-11 col-lg-8 mx-auto">
+        <SuccessAlert>
+          <div className="d-flex flex-column gap-4">
+            <div className="d-flex flex-column gap-3">
+              <h2 className="m-0">
+                <FormattedMessage id="capital.listings.details.success.title" />
+              </h2>
+              <p className="m-0">
+                <FormattedMessage id="capital.listings.details.success.info" />
+              </p>
+            </div>
+            <div className="d-flex justify-content-center gap-2">
+              <button
+                type="button"
+                className="btn btn-outline-primary"
+                onClick={() => {
+                  history.push(`/capital/listings/`);
+                }}
+              >
+                <FormattedMessage id="capital.listings.details.success.backToListings" />
+              </button>
+            </div>
+          </div>
+        </SuccessAlert>
+      </div>
     );
   }
 
