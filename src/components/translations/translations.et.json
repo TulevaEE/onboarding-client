@@ -921,7 +921,7 @@
   "capital.transfer.create.button.searching": "Otsin",
   "capital.transfer.create.error.selfBuyer": "Ostjaks ei saa määrata iseennast.",
   "capital.transfer.create.error.notFound": "Sellele isikukoodile ei vasta ühtegi Tuleva ühistu liiget.",
-  "capital.transfer.create.error.noBuyer": "Jätkamiseks sisesta ostja.",
+  "capital.transfer.create.error.noBuyer": "Jätkamiseks otsi liikmete seast ostuhuviline.",
   "capital.transfer.create.button.back": "Tagasi",
   "capital.transfer.create.button.confirmBuyer": "Kinnitan ostja",
   "capital.transfer.create.searchResult.heading": "Sellele isikukoodile vastab",

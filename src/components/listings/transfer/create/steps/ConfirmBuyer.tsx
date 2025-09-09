@@ -14,16 +14,37 @@ export const ConfirmBuyer = () => {
 
   const [personalCode, setPersonalCode] = useState(buyer?.personalCode ?? null);
 
-  const [noBuyerError, setNoBuyerError] = useState(false);
-
-  const selfBuyerError = (personalCode ?? '').trim() === me?.personalCode;
+  type ErrorId = 'selfBuyer' | 'notFound' | 'noBuyer' | null;
+  const [errorId, setErrorId] = useState<ErrorId>(null);
 
   // TODO does not look like the best
   const [searched, setSearched] = useState<MemberLookup | 'NOT_FOUND' | null>(buyer ?? null);
   const [isLoading, setIsLoading] = useState(false);
 
+  const errorMessageMap = {
+    selfBuyer: 'capital.transfer.create.error.selfBuyer',
+    notFound: 'capital.transfer.create.error.notFound',
+    noBuyer: 'capital.transfer.create.error.noBuyer',
+  } as const;
+
+  const isNonNullErrorId = (e: ErrorId): e is Exclude<ErrorId, null> => e !== null;
+
   const handleSearchClicked = () => {
-    setNoBuyerError(false);
+    const trimmed = (personalCode ?? '').trim();
+
+    if (!trimmed) {
+      setSearched(null);
+      setErrorId('noBuyer');
+      return;
+    }
+
+    if (trimmed === me?.personalCode) {
+      setSearched(null);
+      setErrorId('selfBuyer');
+      return;
+    }
+
+    setErrorId(null);
     lookupMember();
   };
 
@@ -34,17 +55,21 @@ export const ConfirmBuyer = () => {
 
     const trimmed = personalCode.trim();
 
-    if (trimmed === me?.personalCode) {
+    if (!trimmed || trimmed === me?.personalCode) {
+      setSearched(null);
       return null;
     }
 
     try {
       setIsLoading(true);
-      setSearched(await getMemberLookup(personalCode.trim()));
+      const result = await getMemberLookup(personalCode.trim());
+      setSearched(result);
+      setErrorId(null);
     } catch (e) {
       // eslint-disable-next-line no-console
       console.log(e); // TODO
       setSearched('NOT_FOUND');
+      setErrorId('notFound');
     }
 
     setIsLoading(false);
@@ -52,12 +77,25 @@ export const ConfirmBuyer = () => {
   };
 
   const handleSubmitClicked = () => {
-    if (!searched || searched === 'NOT_FOUND') {
-      setNoBuyerError(true);
+    const trimmed = (personalCode ?? '').trim();
+
+    if (!trimmed) {
+      setErrorId('noBuyer');
       return;
     }
 
-    if (searched.personalCode === me?.personalCode) {
+    if (trimmed === me?.personalCode) {
+      setErrorId('noBuyer');
+      return;
+    }
+
+    if (searched === 'NOT_FOUND') {
+      setErrorId('noBuyer');
+      return;
+    }
+
+    if (!searched) {
+      setErrorId('noBuyer');
       return;
     }
 
@@ -87,8 +125,11 @@ export const ConfirmBuyer = () => {
                 pattern="[0-9]*"
                 inputMode="numeric"
                 onChange={(e) => {
+                  const { value } = e.target;
                   setSearched(null);
-                  setPersonalCode(e.target.value);
+                  setPersonalCode(value);
+                  const trimmed = value.trim();
+                  setErrorId(trimmed && trimmed === me?.personalCode ? 'selfBuyer' : null);
                 }}
               />
               <button
@@ -124,19 +165,9 @@ export const ConfirmBuyer = () => {
               </button>
             </div>
           </form>
-          {selfBuyerError && (
+          {isNonNullErrorId(errorId) && (
             <p className="m-0 text-danger">
-              <FormattedMessage id="capital.transfer.create.error.selfBuyer" />
-            </p>
-          )}
-          {searched === 'NOT_FOUND' && (
-            <p className="m-0 text-danger">
-              <FormattedMessage id="capital.transfer.create.error.notFound" />
-            </p>
-          )}
-          {noBuyerError && (searched === 'NOT_FOUND' || !searched) && (
-            <p className="m-0 text-danger">
-              <FormattedMessage id="capital.transfer.create.error.noBuyer" />
+              <FormattedMessage id={errorMessageMap[errorId]} />
             </p>
           )}
         </div>
@@ -155,7 +186,7 @@ export const ConfirmBuyer = () => {
         <button
           type="button"
           className="btn btn-lg btn-primary"
-          disabled={noBuyerError && !searched}
+          disabled={errorId === 'noBuyer' && !searched}
           onClick={() => handleSubmitClicked()}
         >
           <FormattedMessage id="capital.transfer.create.button.confirmBuyer" />

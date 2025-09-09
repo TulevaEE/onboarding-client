@@ -825,7 +825,7 @@
   "capital.transfer.create.button.searching": "Searching",
   "capital.transfer.create.error.selfBuyer": "You cannot assign yourself as the buyer.",
   "capital.transfer.create.error.notFound": "No Tuleva cooperative member matches this personal ID code.",
-  "capital.transfer.create.error.noBuyer": "Enter a buyer to continue.",
+  "capital.transfer.create.error.noBuyer": "Search for a buyer to continue.",
   "capital.transfer.create.button.back": "Back",
   "capital.transfer.create.button.confirmBuyer": "Confirm buyer",
   "capital.transfer.create.searchResult.heading": "This personal ID code matches",
