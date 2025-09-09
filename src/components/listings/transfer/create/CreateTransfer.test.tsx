@@ -99,7 +99,7 @@ describe('member capital transfer creation', () => {
 
     userEvent.click(await screen.findByRole('button', { name: /Confirm buyer/i }, {}));
 
-    const amountInput = await screen.findByLabelText(/How much member capital are you selling?/i);
+    const amountInput = await screen.findByLabelText(/How much member capital are you selling\?/i);
     const priceInput = await screen.findByLabelText(/Agreed sale price/i);
 
     userEvent.type(amountInput, '1077.78');
@@ -251,7 +251,7 @@ describe('member capital transfer creation', () => {
 
     userEvent.click(await screen.findByRole('button', { name: /Confirm buyer/i }, {}));
 
-    const amountInput = await screen.findByLabelText(/How much member capital are you selling?/i);
+    const amountInput = await screen.findByLabelText(/How much member capital are you selling\?/i);
     const priceInput = await screen.findByLabelText(/Agreed sale price/i);
 
     userEvent.type(amountInput, '10000000');
@@ -280,7 +280,7 @@ describe('member capital transfer creation', () => {
 
     userEvent.click(await screen.findByRole('button', { name: /Confirm buyer/i }, {}));
 
-    const amountInput = await screen.findByLabelText(/How much member capital are you selling?/i);
+    const amountInput = await screen.findByLabelText(/How much member capital are you selling\?/i);
     const priceInput = await screen.findByLabelText(/Agreed sale price/i);
 
     userEvent.type(amountInput, '10');
@@ -327,7 +327,7 @@ describe('member capital transfer creation single row', () => {
 
     userEvent.click(await screen.findByRole('button', { name: /Confirm buyer/i }, {}));
 
-    const amountInput = await screen.findByLabelText(/How much member capital are you selling?/i);
+    const amountInput = await screen.findByLabelText(/How much member capital are you selling\?/i);
     const priceInput = await screen.findByLabelText(/Agreed sale price/i);
 
     userEvent.type(amountInput, '100');

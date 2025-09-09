@@ -170,7 +170,7 @@ describe('member capital listings with listings', () => {
       }),
     );
 
-    expect(await screen.findByText(/Do you wish to delete your listing?/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Do you wish to delete your listing\?/i)).toBeInTheDocument();
 
     userEvent.click(
       await within(ownListing).findByText('Delete', {

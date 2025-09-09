@@ -100,7 +100,7 @@ export const ConfirmBuyer = () => {
                 <>
                   <span className="spinner-border spinner-border-sm" aria-hidden="true" />
                   <span>
-                    <FormattedMessage id="capital.transfer.create.button.search" />
+                    <FormattedMessage id="capital.transfer.create.button.searching" />
                   </span>
                 </>
               ) : (
@@ -117,7 +117,7 @@ export const ConfirmBuyer = () => {
                     <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
                   </svg>
                   <span role="status">
-                    <FormattedMessage id="capital.transfer.create.status.searching" />
+                    <FormattedMessage id="capital.transfer.create.button.search" />
                   </span>
                 </>
               )}

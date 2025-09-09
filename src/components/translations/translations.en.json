@@ -822,7 +822,7 @@
   "capital.transfer.details.steps.SEND_PAYMENT_AND_CONFIRM": "Make and confirm payment",
   "capital.transfer.create.label.enterBuyerIdCode": "Enter buyer’s personal ID code",
   "capital.transfer.create.button.search": "Search",
-  "capital.transfer.create.status.searching": "Searching",
+  "capital.transfer.create.button.searching": "Searching",
   "capital.transfer.create.error.selfBuyer": "You cannot assign yourself as the buyer.",
   "capital.transfer.create.error.notFound": "No Tuleva cooperative member matches this personal ID code.",
   "capital.transfer.create.error.noBuyer": "Enter a buyer to continue.",
