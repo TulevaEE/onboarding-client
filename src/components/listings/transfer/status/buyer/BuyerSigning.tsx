@@ -74,28 +74,28 @@ export const BuyerSigning = ({
           userRole={getMyRole(me, contract)}
         />
 
-        <div className="form-check m-0">
-          <input
-            checked={agreedToTerms}
-            onChange={() => setAgreedToTerms(!agreedToTerms)}
-            type="checkbox"
-            className="form-check-input"
-            id="agree-to-terms-checkbox"
-          />
-          <label className="form-check-label" htmlFor="agree-to-terms-checkbox">
-            <FormattedMessage id="capital.transfer.details.terms.label" />
-          </label>
-
+        <div className="d-flex flex-column gap-2">
+          <div className="form-check m-0">
+            <input
+              checked={agreedToTerms}
+              onChange={() => setAgreedToTerms(!agreedToTerms)}
+              type="checkbox"
+              className="form-check-input"
+              id="agree-to-terms-checkbox"
+            />
+            <label className="form-check-label" htmlFor="agree-to-terms-checkbox">
+              <FormattedMessage id="capital.transfer.details.terms.label" />
+            </label>
+          </div>
           {agreedToTermsError && (
-            <div className="text-danger">
+            <p className="m-0 text-danger">
               <FormattedMessage id="capital.transfer.create.error.mustAgree" />
-            </div>
+            </p>
           )}
-
           {signingError && (
-            <div className="text-danger">
+            <p className="m-0 text-danger">
               <FormattedMessage id="capital.transfer.details.error.signingFailed" />
-            </div>
+            </p>
           )}
         </div>
       </div>

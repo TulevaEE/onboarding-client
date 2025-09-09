@@ -91,7 +91,9 @@ export const CapitalTypeInput = ({
       </div>
       <div className={`input-group ${styles.subInputGroup}`}>
         <input
-          className={`form-control ${value && value > capitalRow.value ? 'border-danger' : ''}`}
+          className={`form-control ${
+            value && value > capitalRow.value ? 'border-danger focus-ring focus-ring-danger' : ''
+          }`}
           id={type}
           placeholder="0"
           aria-label={formatMessage({ id: translationKey })}

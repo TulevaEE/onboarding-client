@@ -173,7 +173,7 @@ export const EnterData = () => {
               <input
                 className={`form-control form-control-lg fw-semibold ${
                   errors.moreThanMemberCapital || (submitAttempted && errors.noBookValue)
-                    ? 'border-danger'
+                    ? 'border-danger focus-ring focus-ring-danger'
                     : ''
                 }`}
                 id="book-value"
@@ -228,10 +228,15 @@ export const EnterData = () => {
             </div>
           ) : null}
 
-          <div className="d-flex flex-column gap-2">
+          <div className="d-flex flex-column gap-1">
             {errors.moreThanMemberCapital && (
               <p className="m-0 text-danger">
                 <FormattedMessage id="capital.transfer.create.error.moreThanMemberCapital" />
+              </p>
+            )}
+            {submitAttempted && errors.noBookValue && (
+              <p className="m-0 text-danger">
+                <FormattedMessage id="capital.transfer.create.error.noBookValue" />
               </p>
             )}
             <SaleOfTotalCapitalDescription
@@ -242,7 +247,7 @@ export const EnterData = () => {
           </div>
         </div>
 
-        <div className="form-section d-flex flex-column gap-3">
+        <div className="form-section d-flex flex-column gap-2">
           <div className="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 row-gap-2">
             <label htmlFor="total-price" className="fs-3 fw-semibold">
               <FormattedMessage id="capital.transfer.create.totalPrice.label" />
@@ -252,13 +257,20 @@ export const EnterData = () => {
                 placeholder="0"
                 id="total-price"
                 className={`form-control form-control-lg fw-semibold ${
-                  submitAttempted && errors.noPriceValue ? 'border-danger' : ''
+                  submitAttempted && errors.noPriceValue
+                    ? 'border-danger focus-ring focus-ring-danger'
+                    : ''
                 }`}
                 {...totalPriceInput.inputProps}
               />
               <span className="input-group-text fw-semibold">&euro;</span>
             </div>
           </div>
+          {submitAttempted && errors.noPriceValue && (
+            <p className="m-0 text-danger">
+              <FormattedMessage id="capital.transfer.create.error.noPriceValue" />
+            </p>
+          )}
         </div>
 
         <div className="form-section d-flex flex-column gap-2">
@@ -275,33 +287,25 @@ export const EnterData = () => {
             <input
               type="text"
               className={`form-control form-control-lg ${
-                submitAttempted && errors.ibanError ? 'border-danger' : ''
+                submitAttempted && errors.ibanError
+                  ? 'border-danger focus-ring focus-ring-danger'
+                  : ''
               }`}
               id="bank-account-iban"
               value={bankIban}
               onChange={(e) => setBankIban(e.target.value)}
             />
           </div>
-
-          <p className="m-0 text-secondary">
-            <FormattedMessage id="capital.transfer.create.bankAccount.yourOwnAccount" />
-          </p>
-
-          {submitAttempted && errors.ibanError && (
-            <p className="m-0 text-danger">
-              <FormattedMessage id="capital.transfer.create.error.ibanInvalid" />
+          <div className="d-flex flex-column gap-1">
+            {submitAttempted && errors.ibanError && (
+              <p className="m-0 text-danger">
+                <FormattedMessage id="capital.transfer.create.error.ibanInvalid" />
+              </p>
+            )}
+            <p className="m-0 text-secondary">
+              <FormattedMessage id="capital.transfer.create.bankAccount.yourOwnAccount" />
             </p>
-          )}
-          {submitAttempted && errors.noPriceValue && (
-            <p className="m-0 text-danger">
-              <FormattedMessage id="capital.transfer.create.error.noPriceValue" />
-            </p>
-          )}
-          {submitAttempted && errors.noBookValue && (
-            <p className="m-0 text-danger">
-              <FormattedMessage id="capital.transfer.create.error.noBookValue" />
-            </p>
-          )}
+          </div>
         </div>
       </div>
 

@@ -137,28 +137,30 @@ export const BuyerPayment = ({
           <h2 className="m-0">
             <FormattedMessage id="capital.transfer.details.confirm.title" />
           </h2>
-          <div className="form-check">
-            <input
-              checked={confirmPaid}
-              onChange={() => setConfirmPaid(!confirmPaid)}
-              type="checkbox"
-              className="form-check-input"
-              id="agree-to-terms-checkbox"
-            />
-            <label className="form-check-label" htmlFor="agree-to-terms-checkbox">
-              <FormattedMessage
-                id="capital.transfer.details.confirm.checkbox"
-                values={{
-                  sellerName: getFullName(contract.seller),
-                  sellerCode: contract.seller.personalCode,
-                  totalPrice: formatAmountForCurrency(totalPrice),
-                }}
+          <div className="d-flex flex-column gap-2">
+            <div className="form-check">
+              <input
+                checked={confirmPaid}
+                onChange={() => setConfirmPaid(!confirmPaid)}
+                type="checkbox"
+                className="form-check-input"
+                id="agree-to-terms-checkbox"
               />
-            </label>
+              <label className="form-check-label" htmlFor="agree-to-terms-checkbox">
+                <FormattedMessage
+                  id="capital.transfer.details.confirm.checkbox"
+                  values={{
+                    sellerName: getFullName(contract.seller),
+                    sellerCode: contract.seller.personalCode,
+                    totalPrice: formatAmountForCurrency(totalPrice),
+                  }}
+                />
+              </label>
+            </div>
             {confirmPaidError && (
-              <div className="text-danger">
+              <p className="m-0 text-danger">
                 <FormattedMessage id="capital.transfer.details.error.mustConfirm" />
-              </div>
+              </p>
             )}
           </div>
         </div>

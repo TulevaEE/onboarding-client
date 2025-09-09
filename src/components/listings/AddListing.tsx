@@ -112,7 +112,7 @@ export const AddListing = () => {
               <input
                 type="number"
                 className={`form-control form-control-lg fw-semibold ${
-                  errors.moreThanMemberCapital ? 'border-danger' : ''
+                  errors.moreThanMemberCapital ? 'border-danger focus-ring focus-ring-danger' : ''
                 }`}
                 id="book-value"
                 placeholder="0"

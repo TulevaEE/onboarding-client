@@ -69,26 +69,27 @@ export const SellerConfirm = ({
 
       <div className="py-4 d-flex flex-column gap-5">
         <ContractDetails {...getContractDetailsPropsFromContract(contract)} userRole="SELLER" />
-
-        <div className="form-check m-0">
-          <input
-            checked={confirmMoneyReceived}
-            onChange={() => setConfirmMoneyReceived(!confirmMoneyReceived)}
-            type="checkbox"
-            className="form-check-input"
-            id="agree-to-terms-checkbox"
-          />
-          <label className="form-check-label" htmlFor="agree-to-terms-checkbox">
-            <FormattedMessage
-              id="capital.transfer.details.confirm.moneyReceived"
-              values={{ totalPrice: formatAmountForCurrency(totalPrice) }}
+        <div className="d-flex flex-column gap-2">
+          <div className="form-check m-0">
+            <input
+              checked={confirmMoneyReceived}
+              onChange={() => setConfirmMoneyReceived(!confirmMoneyReceived)}
+              type="checkbox"
+              className="form-check-input"
+              id="agree-to-terms-checkbox"
             />
-          </label>
+            <label className="form-check-label" htmlFor="agree-to-terms-checkbox">
+              <FormattedMessage
+                id="capital.transfer.details.confirm.moneyReceived"
+                values={{ totalPrice: formatAmountForCurrency(totalPrice) }}
+              />
+            </label>
+          </div>
 
           {confirmMoneyReceivedError && (
-            <div className="text-danger">
+            <p className="m-0 text-danger">
               <FormattedMessage id="capital.transfer.details.error.mustConfirmMoneyReceived" />
-            </div>
+            </p>
           )}
         </div>
       </div>
