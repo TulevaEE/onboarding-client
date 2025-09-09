@@ -18,7 +18,7 @@ export const CapitalTransferStatus = () => {
   const { data: me } = useMe();
 
   // TODO while signing or confirming disable this
-  const [manualFetching] = useState(false);
+  const [manualFetching, setManualFetching] = useState(false);
   const { data: contract, refetch } = useCapitalTransferContract(Number(params.id), manualFetching);
 
   if (!me || !contract) {
@@ -37,7 +37,11 @@ export const CapitalTransferStatus = () => {
     <div className="col-12 col-md-10 col-lg-7 mx-auto d-flex flex-column gap-5">
       {showBuyerFlow && <BuyerFlow contract={contract} onRefetch={() => refetch()} />}
       {showSellerConfirmation && (
-        <SellerConfirm contract={contract} onConfirmed={() => refetch()} />
+        <SellerConfirm
+          contract={contract}
+          onConfirmed={() => refetch()}
+          onShown={() => setManualFetching(true)}
+        />
       )}
       {!showBuyerFlow && !showSellerConfirmation && <StatusDisplay contract={contract} />}
     </div>

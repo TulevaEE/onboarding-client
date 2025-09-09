@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { ContractDetails } from '../../components/ContractDetails';
@@ -11,15 +11,20 @@ import { useUpdateCapitalTransferContract } from '../../../../common/apiHooks';
 export const SellerConfirm = ({
   contract,
   onConfirmed,
+  onShown,
 }: {
   contract: CapitalTransferContract;
   onConfirmed: () => unknown;
+  onShown: () => unknown;
 }) => {
   const history = useHistory();
   const [confirmMoneyReceived, setConfirmMoneyReceived] = useState(false);
   const [confirmMoneyReceivedError, setConfirmMoneyReceivedError] = useState(false);
   const { mutateAsync: updateContractState, isLoading, error } = useUpdateCapitalTransferContract();
 
+  useEffect(() => {
+    onShown();
+  }, []);
   const [success, setSuccess] = useState(false);
 
   const totalPrice = useMemo(() => getTotalPrice(contract), [contract]);
