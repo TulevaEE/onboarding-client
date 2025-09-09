@@ -1,7 +1,11 @@
 import { useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
-import { formatAmountForCurrency, getFullName } from '../../../../common/utils';
+import {
+  formatAmountForCount,
+  formatAmountForCurrency,
+  getFullName,
+} from '../../../../common/utils';
 import { Steps } from '../../../../common/steps';
 import { BUYER_STEPS } from '../steps';
 import { StepDoneAlert } from '../StepDoneAlert';
@@ -114,7 +118,7 @@ export const BuyerPayment = ({
               </div>
               <div className="col d-flex justify-content-between">
                 {formatAmountForCurrency(totalPrice)}{' '}
-                <CopyButton textToCopy={totalPrice.toFixed(2)} />
+                <CopyButton textToCopy={formatAmountForCount(totalPrice)} />
               </div>
             </div>
             <div className="row">
