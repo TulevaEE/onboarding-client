@@ -48,7 +48,7 @@ describe('member capital listings with no listings', () => {
   });
 
   test('shows empty listings screen, allows to create listing', async () => {
-    expect(await screen.findByText(/Sale of membership capital/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Sale of member capital/i)).toBeInTheDocument();
     const createLink = await screen.findByText(/Add listing/i);
     expect(createLink).toBeInTheDocument();
 
@@ -65,7 +65,7 @@ describe('member capital listings with no listings', () => {
 
     userEvent.click(screen.getByRole('button', { name: 'Publish purchase listing' }));
 
-    expect(await screen.findByText(/Sale of membership capital/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Sale of member capital/i)).toBeInTheDocument();
   });
 });
 
@@ -76,7 +76,7 @@ describe('member capital listings with listings', () => {
   });
 
   test('shows listings correctly', async () => {
-    expect(await screen.findByText(/Sale of membership capital/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Sale of member capital/i)).toBeInTheDocument();
     const createLink = await screen.findByText(/Add listing/i);
     expect(createLink).toBeInTheDocument();
 
@@ -104,7 +104,7 @@ describe('member capital listings with listings', () => {
   });
 
   test('allows to contact for BUY listing', async () => {
-    expect(await screen.findByText(/Sale of membership capital/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Sale of member capital/i)).toBeInTheDocument();
     const createLink = await screen.findByText(/Add listing/i);
     expect(createLink).toBeInTheDocument();
 
@@ -126,11 +126,11 @@ describe('member capital listings with listings', () => {
     expect(await screen.findByText(/Message sent/i, {}, { timeout: 3000 })).toBeInTheDocument();
     userEvent.click(await screen.findByText(/See all listings/i));
 
-    expect(await screen.findByText(/Sale of membership capital/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Sale of member capital/i)).toBeInTheDocument();
   });
 
   test('allows to contact for SELL listing', async () => {
-    expect(await screen.findByText(/Sale of membership capital/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Sale of member capital/i)).toBeInTheDocument();
     const createLink = await screen.findByText(/Add listing/i);
     expect(createLink).toBeInTheDocument();
 
@@ -152,11 +152,11 @@ describe('member capital listings with listings', () => {
     expect(await screen.findByText(/Message sent/i, {}, { timeout: 3000 })).toBeInTheDocument();
     userEvent.click(await screen.findByText(/See all listings/i));
 
-    expect(await screen.findByText(/Sale of membership capital/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Sale of member capital/i)).toBeInTheDocument();
   });
 
   test('shows listings, allows to delete', async () => {
-    expect(await screen.findByText(/Sale of membership capital/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Sale of member capital/i)).toBeInTheDocument();
     const createLink = await screen.findByText(/Add listing/i);
     expect(createLink).toBeInTheDocument();
 
@@ -186,7 +186,7 @@ describe('member capital listings with listings', () => {
   });
 });
 
-describe('member capital listings with pending tranactions', () => {
+describe('member capital listings with pending transactions', () => {
   beforeEach(() => {
     const states = [
       'CREATED',
@@ -259,24 +259,24 @@ describe('member capital listings with pending tranactions', () => {
   });
 
   test.each([
-    ['BUYER', 'CREATED', "Awaiting seller's signature: Mairo Müüja", 'View'],
+    ['BUYER', 'CREATED', 'Awaiting seller’s signature: Mairo Müüja', 'View'],
     ['BUYER', 'SELLER_SIGNED', 'Awaiting your signature', 'To signing'],
     ['BUYER', 'BUYER_SIGNED', 'Awaiting your payment', 'To making payment'],
     [
       'BUYER',
       'PAYMENT_CONFIRMED_BY_BUYER',
-      "Awaiting seller's confirmation of received payment: Mairo Müüja",
+      'Awaiting seller’s confirmation of received payment: Mairo Müüja',
       'View',
     ],
     [
       'BUYER',
       'PAYMENT_CONFIRMED_BY_SELLER',
-      "Awaiting decision from Tuleva cooperative's board",
+      'Awaiting decision from Tuleva cooperative’s board',
       'View',
     ],
     ['SELLER', 'CREATED', 'Awaiting your signature', 'To signing'],
-    ['SELLER', 'SELLER_SIGNED', "Awaiting buyer's signature: Olev Ostja", 'View'],
-    ['SELLER', 'BUYER_SIGNED', "Awaiting buyer's confirmation of payment: Olev Ostja", 'View'],
+    ['SELLER', 'SELLER_SIGNED', 'Awaiting buyer’s signature: Olev Ostja', 'View'],
+    ['SELLER', 'BUYER_SIGNED', 'Awaiting buyer’s confirmation of payment: Olev Ostja', 'View'],
     [
       'SELLER',
       'PAYMENT_CONFIRMED_BY_BUYER',
@@ -286,13 +286,13 @@ describe('member capital listings with pending tranactions', () => {
     [
       'SELLER',
       'PAYMENT_CONFIRMED_BY_SELLER',
-      "Awaiting decision from Tuleva cooperative's board",
+      'Awaiting decision from Tuleva cooperative’s board',
       'View',
     ],
   ])(
     'shows pending transaction correctly for %s in %s status',
     async (expectedRole, expectedState, statusText, linkText) => {
-      expect(await screen.findByText(/Sale of membership capital/i)).toBeInTheDocument();
+      expect(await screen.findByText(/Sale of member capital/i)).toBeInTheDocument();
 
       const contracts = await screen.findAllByTestId('active-capital-transfer-contract');
 

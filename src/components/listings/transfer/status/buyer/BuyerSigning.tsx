@@ -88,7 +88,7 @@ export const BuyerSigning = ({
 
           {agreedToTermsError && (
             <div className="text-danger">
-              <FormattedMessage id="capital.transfer.details.error.mustAgreeBuyer" />
+              <FormattedMessage id="capital.transfer.create.error.mustAgree" />
             </div>
           )}
 
