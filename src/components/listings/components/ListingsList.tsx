@@ -32,11 +32,11 @@ export const ListingsList = () => {
   const { data: listings } = useMemberCapitalListings();
   const sortedListings = useMemo(() => listings?.sort(sortListings), [listings]);
 
-  if (!listings) {
+  if (!sortedListings) {
     return <Loader className="align-middle" />;
   }
 
-  if (listings.length === 0) {
+  if (sortedListings.length === 0) {
     return (
       <div className={styles.noListingsContainer}>
         <div className="text-secondary">
