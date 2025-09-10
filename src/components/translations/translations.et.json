@@ -101,6 +101,7 @@
   "memberCapital.source.CAPITAL_ACQUIRED": "Omandatud liikmekapital",
   "memberCapital.source.profit": "Teenitud investeerimiskasum",
   "memberCapital.transactions": "Vaatan tehinguid",
+  "memberCapital.listings": "Ostan-müün",
 
   "capitalEvents.columns.date.title": "Kuupäev",
   "capitalEvents.columns.source.title": "Allikas",

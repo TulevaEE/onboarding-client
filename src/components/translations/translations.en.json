@@ -98,6 +98,7 @@
   "memberCapital.source.UNVESTED_WORK_COMPENSATION": "Unvested work compensation",
   "memberCapital.source.profit": "Investment profit",
   "memberCapital.transactions": "View transactions",
+  "memberCapital.listings": "Buy-sell",
   "capitalEvents.columns.date.title": "Date",
   "capitalEvents.columns.source.title": "Source",
   "capitalEvents.columns.value.title": "Amount",
