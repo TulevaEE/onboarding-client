@@ -55,7 +55,7 @@ export const SellerConfirm = ({
 
   return (
     <>
-      <div className="d-flex flex-column gap-4 text-center">
+      <div className="d-flex flex-column gap-4">
         <h1 className="m-0 text-md-center">
           <FormattedMessage id="capital.transfer.details.heading" />
         </h1>
