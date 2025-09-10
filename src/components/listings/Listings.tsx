@@ -16,7 +16,29 @@ export const Listings = () => {
           <FormattedMessage id="capital.listings.intro" />
         </p>
         <p className="m-0 lead">
-          <FormattedMessage id="capital.listings.instructions" />
+          <FormattedMessage id="capital.listings.instructions" />{' '}
+          <a
+            href="https://tuleva.ee/?p=34610"
+            className="icon-link gap-0"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <FormattedMessage id="capital.listings.instructions.more" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M7 7h10v10" />
+              <path d="M7 17 17 7" />
+            </svg>
+          </a>
         </p>
       </div>
 

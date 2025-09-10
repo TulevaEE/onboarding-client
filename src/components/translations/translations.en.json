@@ -742,6 +742,7 @@
   "capital.listings.heading": "Member capital transfer",
   "capital.listings.intro": "Tuleva members can buy and sell member capital.",
   "capital.listings.instructions": "To do so, add your own listing or find an existing one, agree on the transaction details, and complete the sale. The cooperative’s board reviews applications once a week and approves the transaction if it meets our criteria.",
+  "capital.listings.instructions.more": "Read more",
   "capital.listings.add": "Add listing",
   "capital.listings.transfer": "Create transfer application",
   "capital.listings.noListings": "There are no active listing",

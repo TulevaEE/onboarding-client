@@ -829,6 +829,7 @@
   "capital.listings.heading": "Liikmekapitali võõrandamine",
   "capital.listings.intro": "Tuleva ühistu liikmed saavad liikmekapitali osta ja müüa.",
   "capital.listings.instructions": "Selleks lisa oma kuulutus või leia olemasolev, leppige tehingu detailides kokku ja vormistage müük. Ühistu juhatus vaatab avaldused kord nädalas üle ja kiidab tehingu heaks, kui see vastab kehtestatud korrale.",
+  "capital.listings.instructions.more": "Loe lisaks",
   "capital.listings.add": "Lisan kuulutuse",
   "capital.listings.transfer": "Vormistan müügi",
   "capital.listings.noListings": "Aktiivseid kuulutusi ei ole",
