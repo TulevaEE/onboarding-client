@@ -7,7 +7,6 @@ import { Euro } from '../../common/Euro';
 import { CapitalRow, CapitalType } from '../../common/apiModels';
 import { TableColumn } from '../../common/table/Table';
 import { InfoTooltip } from '../../common/infoTooltip/InfoTooltip';
-import { useTestMode } from '../../common/test-mode';
 import { formatAmountForCount } from '../../common/utils';
 
 interface Props {
