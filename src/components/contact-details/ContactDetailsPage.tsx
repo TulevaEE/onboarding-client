@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Redirect, useLocation } from 'react-router-dom';
 import { usePageTitle } from '../common/usePageTitle';
 import UpdateUserForm from './updateUserForm';
-import { updateUser } from '../common/user/actions';
+import { updateUser, userUpdated } from '../common/user/actions';
 import { State } from '../../types';
 import { areContactDetailsUpToDate, ContactDetailsRedirectState } from './ContactDetailsGatekeep';
 
@@ -23,6 +23,7 @@ export const ContactDetailsPage = () => {
 
   if (updateUserSuccess && user && areContactDetailsUpToDate(user)) {
     if (location.state && location.state?.from) {
+      dispatch(userUpdated());
       return <Redirect to={location.state.from} />;
     }
   }

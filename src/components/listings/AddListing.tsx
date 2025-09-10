@@ -1,5 +1,5 @@
 import { PropsWithChildren, ReactNode, useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import moment from 'moment';
 import { FormattedMessage, useIntl } from 'react-intl';
 import styles from './AddListing.module.scss';
@@ -11,19 +11,30 @@ import { SaleOfTotalCapitalDescription } from './transfer/components/SaleOfTotal
 import Slider from '../flows/withdrawals/Slider';
 import { usePageTitle } from '../common/usePageTitle';
 
+type StateFromContactDetailsRedirect = {
+  listingType: MemberCapitalListingType;
+  expiryInMonths: number;
+  totalPrice: number | null;
+  bookValue: number | null;
+};
+
 // TODO break up this component
 export const AddListing = () => {
   usePageTitle('pageTitle.capitalListingNew');
 
+  const { state } = useLocation<StateFromContactDetailsRedirect | undefined>();
+
   const history = useHistory();
   const { formatMessage } = useIntl();
 
-  const [listingType, setListingType] = useState<MemberCapitalListingType>('BUY');
+  const [listingType, setListingType] = useState<MemberCapitalListingType>(
+    state?.listingType ?? 'BUY',
+  );
 
-  const [expiryInMonths, setExpiryInMonths] = useState<number>(6);
+  const [expiryInMonths, setExpiryInMonths] = useState<number>(state?.expiryInMonths ?? 6);
 
-  const totalPriceInput = useNumberInput();
-  const bookValueInput = useNumberInput();
+  const totalPriceInput = useNumberInput(state?.totalPrice ?? undefined);
+  const bookValueInput = useNumberInput(state?.bookValue ?? undefined);
 
   const { mutateAsync: createListing, error } = useCreateMemberCapitalListing();
 
@@ -206,7 +217,14 @@ export const AddListing = () => {
         </div>
 
         <div className="pt-5 border-top">
-          <AssurancesSection />
+          <AssurancesSection
+            stateForContactDetailsRedirect={{
+              listingType,
+              expiryInMonths,
+              totalPrice: totalPriceInput.value,
+              bookValue: bookValueInput.value,
+            }}
+          />
         </div>
 
         <div className="d-flex flex-column-reverse flex-sm-row justify-content-between pt-4 border-top gap-3">
@@ -236,7 +254,11 @@ export const AddListing = () => {
   );
 };
 
-const AssurancesSection = () => {
+const AssurancesSection = ({
+  stateForContactDetailsRedirect,
+}: {
+  stateForContactDetailsRedirect: StateFromContactDetailsRedirect;
+}) => {
   const { data: user } = useMe();
 
   return (
@@ -260,7 +282,14 @@ const AssurancesSection = () => {
         {user?.email}{' '}
         <span className="text-secondary">
           (
-          <Link to="/contact-details">
+          <Link
+            to={{
+              pathname: '/contact-details',
+              state: {
+                from: { pathname: `/capital/listings/add`, state: stateForContactDetailsRedirect },
+              },
+            }}
+          >
             <FormattedMessage id="capital.listings.create.contactDetails.update" />
           </Link>
           )
