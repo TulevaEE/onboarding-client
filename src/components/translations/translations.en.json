@@ -885,7 +885,7 @@
   "capital.transfer.details.success.buyer.title": "Everything required from you has been completed",
   "capital.transfer.details.success.buyer.description": "We have notified the seller. Now you just need to wait for them to confirm the receipt of funds. We’ll notify you by email as soon as they have done so.",
   "capital.transfer.details.error.payment": "An error occurred while confirming the payment. Please try again later or contact us.",
-  "capital.transfer.details.contract.title": "Contract details",
+  "capital.transfer.details.contract.title": "Application details",
   "capital.transfer.details.contract.description": "<b>{sellerName}</b> ({sellerCode}) sells and <b>{buyerName}</b> ({buyerCode}) buys member capital with an accounting value of <b>{totalBookValue}</b> at the price of <b>{totalPrice}</b>.",
   "capital.transfer.details.payment.title": "Make a bank transfer",
   "capital.transfer.details.payment.receiverName": "Recipient’s name",
