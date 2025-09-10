@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import styles from './ListingsList.module.scss';
 import { useDeleteMemberCapitalListing, useMemberCapitalListings } from '../../common/apiHooks';
@@ -8,8 +8,29 @@ import { MemberCapitalListing } from '../../common/apiModels';
 import { formatAmountForCurrency } from '../../common/utils';
 import { formatDateYear } from '../../common/dateFormatter';
 
+const sortListings = (listingA: MemberCapitalListing, listingB: MemberCapitalListing) => {
+  if (listingA.type === 'BUY') {
+    if (listingB.type === 'SELL') {
+      return -1;
+    }
+
+    return listingB.bookValue - listingA.bookValue;
+  }
+
+  if (listingB.type === 'BUY') {
+    if (listingA.type === 'SELL') {
+      return 1;
+    }
+
+    return listingB.bookValue - listingA.bookValue;
+  }
+
+  return 0;
+};
+
 export const ListingsList = () => {
   const { data: listings } = useMemberCapitalListings();
+  const sortedListings = useMemo(() => listings?.sort(sortListings), [listings]);
 
   if (!listings) {
     return <Loader className="align-middle" />;
@@ -30,7 +51,7 @@ export const ListingsList = () => {
       <table className="table m-0 text-nowrap">
         <TableHeader />
         <tbody>
-          {listings.map((listing) => (
+          {sortedListings.map((listing) => (
             <ListingRow key={listing.id} listing={listing} />
           ))}
         </tbody>

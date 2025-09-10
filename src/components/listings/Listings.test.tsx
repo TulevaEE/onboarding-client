@@ -85,22 +85,22 @@ describe('member capital listings with listings', () => {
     expect(listings.length).toBe(3);
 
     expect(await within(listings[0]).findByText('Purchase')).toBeInTheDocument();
-    expect(await within(listings[0]).findByText('#1')).toBeInTheDocument();
-    expect(await within(listings[0]).findByText('10.00 €')).toBeInTheDocument();
-    expect(await within(listings[0]).findByText('20.00 €')).toBeInTheDocument();
-    expect(await within(listings[0]).findByText('Contact buyer')).toBeInTheDocument();
+    expect(await within(listings[0]).findByText('#3')).toBeInTheDocument();
+    expect(await within(listings[0]).findByText('10 000.00 €')).toBeInTheDocument();
+    expect(await within(listings[0]).findByText('23 400.00 €')).toBeInTheDocument();
+    expect((await within(listings[0]).findAllByText('Delete')).length).toBe(2);
 
-    expect(await within(listings[1]).findByText('Sale')).toBeInTheDocument();
-    expect(await within(listings[1]).findByText('#2')).toBeInTheDocument();
-    expect(await within(listings[1]).findByText('100.00 €')).toBeInTheDocument();
-    expect(await within(listings[1]).findByText('250.00 €')).toBeInTheDocument();
-    expect(await within(listings[1]).findByText('Contact seller')).toBeInTheDocument();
+    expect(await within(listings[1]).findByText('Purchase')).toBeInTheDocument();
+    expect(await within(listings[1]).findByText('#1')).toBeInTheDocument();
+    expect(await within(listings[1]).findByText('10.00 €')).toBeInTheDocument();
+    expect(await within(listings[1]).findByText('20.00 €')).toBeInTheDocument();
+    expect(await within(listings[1]).findByText('Contact buyer')).toBeInTheDocument();
 
-    expect(await within(listings[2]).findByText('Purchase')).toBeInTheDocument();
-    expect(await within(listings[2]).findByText('#3')).toBeInTheDocument();
-    expect(await within(listings[2]).findByText('10 000.00 €')).toBeInTheDocument();
-    expect(await within(listings[2]).findByText('23 400.00 €')).toBeInTheDocument();
-    expect((await within(listings[2]).findAllByText('Delete')).length).toBe(2);
+    expect(await within(listings[2]).findByText('Sale')).toBeInTheDocument();
+    expect(await within(listings[2]).findByText('#2')).toBeInTheDocument();
+    expect(await within(listings[2]).findByText('100.00 €')).toBeInTheDocument();
+    expect(await within(listings[2]).findByText('250.00 €')).toBeInTheDocument();
+    expect(await within(listings[2]).findByText('Contact seller')).toBeInTheDocument();
   });
 
   test('allows to contact for BUY listing', async () => {
@@ -112,7 +112,7 @@ describe('member capital listings with listings', () => {
 
     expect(listings.length).toBe(3);
 
-    userEvent.click(await within(listings[0]).findByText('Contact buyer'));
+    userEvent.click(await within(listings[1]).findByText('Contact buyer'));
 
     expect(
       await screen.findByText(/The buyer will get an email with the following content/i),
@@ -138,7 +138,7 @@ describe('member capital listings with listings', () => {
 
     expect(listings.length).toBe(3);
 
-    userEvent.click(await within(listings[1]).findByText('Contact seller'));
+    userEvent.click(await within(listings[2]).findByText('Contact seller'));
 
     expect(
       await screen.findByText(/The seller will get an email with the following content/i),
@@ -162,7 +162,7 @@ describe('member capital listings with listings', () => {
 
     const listings = await screen.findAllByTestId('listing');
 
-    const ownListing = listings[2];
+    const ownListing = listings[0];
 
     userEvent.click(
       await within(ownListing).findByText('Delete', {
