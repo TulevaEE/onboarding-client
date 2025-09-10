@@ -206,7 +206,7 @@ export const EnterData = () => {
           </div>
 
           {capitalTransferAmountsInput.length > 1 ? (
-            <div className="d-flex flex-column gap-2">
+            <div className="d-flex flex-column gap-3 gap-sm-2">
               {sortTransferAmounts(capitalTransferAmountsInput).map((amount) => {
                 const rowForAmount = capitalRows?.find((row) => amount.type === row.type);
 

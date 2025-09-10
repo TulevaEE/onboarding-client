@@ -73,18 +73,18 @@ export const CapitalTypeInput = ({
 
   return (
     <div
-      className="d-flex justify-content-between align-items-center"
+      className="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center row-gap-1 column-gap-3"
       data-testid={`capital-input-${type}`}
     >
-      <div>
-        <span className="d-block">
+      <div className="d-flex flex-row flex-sm-column align-items-baseline column-gap-2">
+        <label className="d-block" htmlFor={type}>
           <FormattedMessage id={translationKey} />
           {transferAmount.type === 'CAPITAL_PAYMENT' && (
             <InfoTooltip>
               <FormattedMessage id="capital.transfer.create.amount.type.CAPITAL_PAYMENT.tooltip" />
             </InfoTooltip>
           )}
-        </span>
+        </label>
         <span className="d-block text-secondary small lh-sm">
           max {formatAmountForCurrency(capitalRow.value)}
         </span>
