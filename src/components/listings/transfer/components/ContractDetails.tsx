@@ -47,13 +47,13 @@ export const ContractDetails = ({
       totalBookValue={getTotalBookValue({ transferAmounts: amounts })}
     />
 
-    <div className="d-flex column-gap-3 pb-4 border-bottom">
-      <div className="col">
+    <div className="row pb-4 border-bottom">
+      <div className="col pe-0">
         <b>
           <FormattedMessage id="capital.transfer.details.price.label" />
         </b>
       </div>
-      <div className="col">
+      <div className="col-auto col-sm text-nowrap text-end text-sm-start">
         <b>{formatAmountForCurrency(totalPrice)}</b>
       </div>
     </div>

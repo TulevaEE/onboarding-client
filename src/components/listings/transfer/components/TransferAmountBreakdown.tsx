@@ -18,8 +18,8 @@ export const TransferAmountBreakdown = ({
     const amount = sortedAmounts[0];
     return (
       <>
-        <div className="d-flex column-gap-3" data-testid="capital-row-TOTAL">
-          <div className="col">
+        <div className="row" data-testid="capital-row-TOTAL">
+          <div className="col pe-0">
             <b>
               <FormattedMessage id="capital.transfer.details.amount.total" />
             </b>{' '}
@@ -27,11 +27,8 @@ export const TransferAmountBreakdown = ({
               (<TransferAmountName type={amount.type} />)
             </span>
           </div>
-
-          <div className="col">
-            <div>
-              <b>{formatAmountForCurrency(totalBookValue)}</b>
-            </div>
+          <div className="col-auto col-sm text-nowrap text-end text-sm-start">
+            <b>{formatAmountForCurrency(totalBookValue)}</b>
           </div>
         </div>
       </>
@@ -40,30 +37,25 @@ export const TransferAmountBreakdown = ({
 
   return (
     <div className="d-flex flex-column">
-      <div className="d-flex column-gap-3" data-testid="capital-row-TOTAL">
-        <div className="col">
+      <div className="row" data-testid="capital-row-TOTAL">
+        <div className="col pe-0">
           <b>
             <FormattedMessage id="capital.transfer.details.amount.total" />
           </b>
         </div>
-
-        <div className="col">
-          <div>
-            <b>{formatAmountForCurrency(totalBookValue)}</b>
-          </div>
+        <div className="col-auto col-sm text-nowrap text-end text-sm-start">
+          <b>{formatAmountForCurrency(totalBookValue)}</b>
         </div>
       </div>
 
       {sortedAmounts.map((amount) => (
-        <div
-          className="d-flex column-gap-3"
-          key={amount.type}
-          data-testid={`capital-row-${amount.type}`}
-        >
-          <div className="col">
+        <div className="row" key={amount.type} data-testid={`capital-row-${amount.type}`}>
+          <div className="col pe-0">
             – <TransferAmountName type={amount.type} />
           </div>
-          <div className="col">{formatAmountForCurrency(amount.bookValue)}</div>
+          <div className="col-auto col-sm text-nowrap text-end text-sm-start">
+            {formatAmountForCurrency(amount.bookValue)}
+          </div>
         </div>
       ))}
     </div>

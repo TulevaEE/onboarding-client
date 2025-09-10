@@ -95,8 +95,8 @@ export const BuyerPayment = ({
             <FormattedMessage id="capital.transfer.details.payment.title" />
           </h2>
           <div className="d-flex flex-column gap-3">
-            <div className="row align-items-baseline">
-              <div className="col-4 col-sm-5 fw-bold">
+            <div className="d-flex align-items-baseline">
+              <div className="col-4 col-sm-5 fw-bold pe-3">
                 <FormattedMessage id="capital.transfer.details.payment.receiverName" />
               </div>
               <div className="col-8 col-sm-7 d-flex justify-content-between column-gap-2 text-break">
@@ -104,16 +104,16 @@ export const BuyerPayment = ({
                 <CopyButton textToCopy={getFullName(contract.seller)} />
               </div>
             </div>
-            <div className="row align-items-baseline">
-              <div className="col-4 col-sm-5 fw-bold">
+            <div className="d-flex align-items-baseline">
+              <div className="col-4 col-sm-5 fw-bold pe-3">
                 <FormattedMessage id="capital.transfer.details.payment.receiverIban" />
               </div>
               <div className="col-8 col-sm-7 d-flex justify-content-between column-gap-2 text-break">
                 <span>{contract.iban}</span> <CopyButton textToCopy={contract.iban} />
               </div>
             </div>
-            <div className="row align-items-baseline">
-              <div className="col-4 col-sm-5 fw-bold">
+            <div className="d-flex align-items-baseline">
+              <div className="col-4 col-sm-5 fw-bold pe-3">
                 <FormattedMessage id="capital.transfer.details.payment.amount" />
               </div>
               <div className="col-8 col-sm-7 d-flex justify-content-between column-gap-2 text-break">
@@ -121,8 +121,8 @@ export const BuyerPayment = ({
                 <CopyButton textToCopy={formatAmountForCount(totalPrice).replace(/\s+/g, '')} />
               </div>
             </div>
-            <div className="row align-items-baseline">
-              <div className="col-4 col-sm-5 fw-bold">
+            <div className="d-flex align-items-baseline">
+              <div className="col-4 col-sm-5 fw-bold pe-3">
                 <FormattedMessage id="capital.transfer.details.payment.reference" />
               </div>
               <div className="col-8 col-sm-7 d-flex justify-content-between column-gap-2 text-break">
