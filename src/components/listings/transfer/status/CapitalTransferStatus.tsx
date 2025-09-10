@@ -1,5 +1,5 @@
 import { useHistory, useParams } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useCapitalTransferContract, useMe } from '../../../common/apiHooks';
 import { Loader } from '../../../common';
@@ -17,7 +17,6 @@ export const CapitalTransferStatus = () => {
 
   const { data: me } = useMe();
 
-  // TODO while signing or confirming disable this
   const [manualFetching, setManualFetching] = useState(false);
   const { data: contract, refetch } = useCapitalTransferContract(Number(params.id), manualFetching);
 
@@ -35,7 +34,13 @@ export const CapitalTransferStatus = () => {
 
   return (
     <div className="col-12 col-md-10 col-lg-7 mx-auto d-flex flex-column gap-5">
-      {showBuyerFlow && <BuyerFlow contract={contract} onRefetch={() => refetch()} />}
+      {showBuyerFlow && (
+        <BuyerFlow
+          contract={contract}
+          onRefetch={() => refetch()}
+          onShown={() => setManualFetching(true)}
+        />
+      )}
       {showSellerConfirmation && (
         <SellerConfirm
           contract={contract}
@@ -43,14 +48,26 @@ export const CapitalTransferStatus = () => {
           onShown={() => setManualFetching(true)}
         />
       )}
-      {!showBuyerFlow && !showSellerConfirmation && <StatusDisplay contract={contract} />}
+      {!showBuyerFlow && !showSellerConfirmation && (
+        <StatusDisplay contract={contract} onShown={() => setManualFetching(false)} />
+      )}
     </div>
   );
 };
 
-const StatusDisplay = ({ contract }: { contract: CapitalTransferContract }) => {
+const StatusDisplay = ({
+  contract,
+  onShown,
+}: {
+  contract: CapitalTransferContract;
+  onShown: () => unknown;
+}) => {
   const { data: me } = useMe();
   const history = useHistory();
+
+  useEffect(() => {
+    onShown();
+  }, []);
 
   if (!me) {
     return <Loader className="align-middle" />;
