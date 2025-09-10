@@ -150,7 +150,10 @@ export const ListingDetails = () => {
 
         <div className="d-flex flex-column gap-2">
           <p className="m-0">
-            <strong className="form-label">Sinu kontaktandmed</strong>{' '}
+            <strong className="form-label">
+              {' '}
+              <FormattedMessage id="capital.listings.details.yourContactDetails" />
+            </strong>{' '}
             <span className="text-secondary">
               (
               <Link
@@ -159,7 +162,7 @@ export const ListingDetails = () => {
                   state: { from: `/capital/listings/${listing.id}` },
                 }}
               >
-                uuendan
+                <FormattedMessage id="capital.listings.details.updateContactDetails" />
               </Link>
               )
             </span>
@@ -173,24 +176,32 @@ export const ListingDetails = () => {
               id="add-phone-checkbox"
             />
             <label className="form-check-label" htmlFor="add-phone-checkbox">
-              Avaldan oma telefoninumbri: {me.phoneNumber}
+              <FormattedMessage
+                id="capital.listings.details.attachPhoneNumber"
+                values={{ phoneNumber: me.phoneNumber }}
+              />
             </label>
           </div>
-          <div className="form-check m-0">
-            <input
-              checked={addPersonalCode}
-              onChange={() => setAddPersonalCode(!addPersonalCode)}
-              type="checkbox"
-              className="form-check-input"
-              id="add-personal-code-checkbox"
-            />
-            <label className="form-check-label" htmlFor="add-personal-code-checkbox">
-              Avaldan oma isikukoodi: {me.personalCode}
-            </label>
-            <div className="text-secondary">
-              Müüjalt küsitakse sinu isikukoodi liikmekapitali võõrandamise avaldusel
+          {listing.type === 'SELL' && (
+            <div className="form-check m-0">
+              <input
+                checked={addPersonalCode}
+                onChange={() => setAddPersonalCode(!addPersonalCode)}
+                type="checkbox"
+                className="form-check-input"
+                id="add-personal-code-checkbox"
+              />
+              <label className="form-check-label" htmlFor="add-personal-code-checkbox">
+                <FormattedMessage
+                  id="capital.listings.details.attachPersonalCode"
+                  values={{ personalCode: me.personalCode }}
+                />
+              </label>
+              <div className="text-secondary">
+                <FormattedMessage id="capital.listings.details.personalCodeExplainer" />
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
       <div className="d-flex flex-column-reverse flex-sm-row justify-content-between pt-4 border-top gap-3">
