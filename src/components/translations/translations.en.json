@@ -739,9 +739,9 @@
   "withdrawals.done.partialWithdrawal.third": "The partial withdrawal from III pillar will be sent on <b>within four working days</b>.",
   "withdrawals.done.secondPillarDisclaimer": "When making withdrawals from the II pillar, <b>contributions to your second pillar will stop permanently</b>. To avoid this, you can cancel the withdrawals until <b>{cancellationDate}</b>.",
   "withdrawals.done.myAccount": "My Account",
-  "capital.listings.heading": "Sale of member capital",
-  "capital.listings.intro": "Tuleva members can buy and sell member capital between each other",
-  "capital.listings.instructions": "To do this, add your own listing or respond to an existing one and submit a joint application. The cooperative board reviews submitted applications during the first working days of each month and approves the transaction if it complies with the established rules.",
+  "capital.listings.heading": "Member capital transfer",
+  "capital.listings.intro": "Tuleva members can buy and sell member capital.",
+  "capital.listings.instructions": "To do so, add your own listing or find an existing one, agree on the transaction details, and complete the sale. The cooperative’s board reviews applications once a week and approves the transaction if it meets our criteria.",
   "capital.listings.add": "Add listing",
   "capital.listings.transfer": "Create transfer application",
   "capital.listings.noListings": "There are no active listing",
@@ -980,10 +980,13 @@
   "LHV Pensionifond Eesti": "LHV Estonian Pension Fund",
   "Luminor A Pensionifond": "Luminor A Pension Fund",
   "Luminor A Pluss Pensionifond": "Luminor A Plus Pension Fund",
+
   "fees.perYear": " per year",
+
   "global.skipToContent": "Skip to content",
   "global.copy": "Copy",
   "global.copied": "Copied",
+
   "pageTitle.loginPage": "Log in",
   "pageTitle.accountPage": "My account",
   "pageTitle.secondPillarFlow": "II pillar",
@@ -999,7 +1002,7 @@
   "pageTitle.secondPillarTransactions": "II pillar transactions",
   "pageTitle.thirdPillarTransactions": "III pillar transactions",
   "pageTitle.firstVsSecondPillar": "I vs II pillar",
-  "pageTitle.capitalListings": "Liikmekapitali võõrandamine",
-  "pageTitle.capitalListingNew": "Uus kuulutus",
-  "pageTitle.capitalNewApplication": "Avaldus"
+  "pageTitle.capitalListings": "Member capital transfer",
+  "pageTitle.capitalListingNew": "New listing",
+  "pageTitle.capitalNewApplication": "Application"
 }
