@@ -37,7 +37,8 @@ export const SaleOfTotalCapitalDescription = ({
           values={{
             saleAmount: formatAmountForCurrency(saleBookValueAmount),
             percentOfTotal: `${
-              (saleBookValueAmount !== 0 ? '~' : '') + formatAmountForCount(saleUnitPercentage)
+              (saleBookValueAmount !== 0 ? '~' : '') +
+              formatAmountForCount(saleUnitPercentage, 2, { smartDecimals: true })
             }%`,
             totalBookValueMillions: formatAmountForCurrency(totalBookValueMillions),
           }}
@@ -54,7 +55,8 @@ export const SaleOfTotalCapitalDescription = ({
         values={{
           saleAmount: formatAmountForCurrency(saleBookValueAmount),
           percentOfTotal: `${
-            (saleBookValueAmount !== 0 ? '~' : '') + formatAmountForCount(saleUnitPercentage)
+            (saleBookValueAmount !== 0 ? '~' : '') +
+            formatAmountForCount(saleUnitPercentage, 2, { smartDecimals: true })
           }%`,
           totalBookValueMillions: formatAmountForCurrency(totalBookValueMillions),
         }}

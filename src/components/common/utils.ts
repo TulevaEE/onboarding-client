@@ -23,27 +23,58 @@ export function createClamper(lowerLimit = 0, upperLimit = 10) {
   return (value: number): number => Math.max(Math.min(value, upperLimit), lowerLimit);
 }
 
-export function formatAmountForCurrency(
+export const formatAmountForCurrency = (
   amount = 0,
   fractionDigits = 2,
-  options: { isSigned?: boolean } = {},
-) {
-  return `${formatAmountForCount(amount, fractionDigits, options)}\u00A0€`;
-}
+  options: { isSigned?: boolean; smartDecimals?: boolean } = {},
+) => `${formatAmountForCount(amount, fractionDigits, options)}\u00A0€`;
 
 export const formatAmountForCount = (
   amount = 0,
   fractionDigits = 2,
-  options: { isSigned?: boolean } = {},
+  options: { isSigned?: boolean; smartDecimals?: boolean } = {},
 ) => {
-  const { isSigned = false } = options;
+  const { isSigned = false, smartDecimals = false } = options;
+
   const sign = amount > 0 && isSigned ? '+' : '';
-  let formattedAmount = amount.toFixed(fractionDigits).replace(/\B(?=(\d{3})+(?!\d))/g, '\u00A0');
+  const decimals = smartDecimals
+    ? fractionDigitsForSignificance(amount, fractionDigits) // fractionDigits = min
+    : fractionDigits;
+
+  let formattedAmount = formatWithNbspThousands(amount.toFixed(decimals));
+
   if (amount < 0) {
     formattedAmount = formattedAmount.replace('-', '−');
   }
   return `${sign}${formattedAmount}`;
 };
+
+function fractionDigitsForSignificance(value: number, min: number): number {
+  if (!Number.isFinite(value) || value === 0) {
+    return min;
+  }
+  const abs = Math.abs(value);
+  if (abs >= 1) {
+    return min;
+  }
+
+  let decimalsUntilFirstSignificant = 0;
+  let scaledAbs = abs;
+  const SAFETY_CAP = 12;
+
+  while (scaledAbs < 1 && decimalsUntilFirstSignificant < SAFETY_CAP) {
+    decimalsUntilFirstSignificant += 1;
+    scaledAbs *= 10;
+  }
+
+  return Math.max(min, decimalsUntilFirstSignificant);
+}
+
+function formatWithNbspThousands(numericString: string): string {
+  const [intPart, decPart] = numericString.split('.');
+  const intWithSpaces = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, '\u00A0');
+  return decPart !== undefined ? `${intWithSpaces}.${decPart}` : intWithSpaces;
+}
 
 export const getFullName = (user: { firstName: string; lastName: string }) =>
   `${user.firstName} ${user.lastName}`;
