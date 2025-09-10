@@ -8,6 +8,8 @@ import styles from '../../../AddListing.module.scss';
 import { InfoTooltip } from '../../../../common/infoTooltip/InfoTooltip';
 import { isTranslationKey } from '../../../../translations';
 
+const zeroOrTwoDecimalPoints = (a: number) => (a === 0 ? a.toString() : a.toFixed(2));
+
 export const CapitalTypeInput = ({
   transferAmount,
   capitalRow,
@@ -55,14 +57,14 @@ export const CapitalTypeInput = ({
       onValueUpdate(clampedValue, type);
 
       if (parsedValue < 0 || parsedValue > capitalRow.value) {
-        setInputValue(clampedValue.toFixed(2));
+        setInputValue(zeroOrTwoDecimalPoints(clampedValue));
       }
     }
   };
 
   useEffect(() => {
     if (lastInput === 'TOTAL') {
-      setInputValue(transferAmount.bookValue.toFixed(2));
+      setInputValue(zeroOrTwoDecimalPoints(transferAmount.bookValue));
     }
   }, [lastInput, transferAmount.bookValue]);
 
