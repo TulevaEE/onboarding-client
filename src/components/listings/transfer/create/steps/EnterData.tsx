@@ -61,6 +61,18 @@ export const EnterData = () => {
     }
   }, [capitalRows]);
 
+  useEffect(() => {
+    if (totalPriceInput.value) {
+      setTotalPrice(totalPriceInput.value);
+      setFinalCapitalTransferAmounts(
+        calculateTransferAmountPrices(
+          { totalPrice: totalPriceInput.value },
+          capitalTransferAmountsInput,
+        ),
+      );
+    }
+  }, [capitalTransferAmountsInput, totalPriceInput.value]);
+
   const handleBookValueInputChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     handleBookValueChange(e.target.value);
   };
