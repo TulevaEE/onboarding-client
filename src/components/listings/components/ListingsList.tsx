@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useMemo, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import styles from './ListingsList.module.scss';
 import { useDeleteMemberCapitalListing, useMemberCapitalListings } from '../../common/apiHooks';
 import Loader from '../../common/loader';
@@ -47,16 +47,14 @@ export const ListingsList = () => {
   }
 
   return (
-    <div className="table-responsive">
-      <table className="table m-0 text-nowrap">
-        <TableHeader />
-        <tbody>
-          {sortedListings.map((listing) => (
-            <ListingRow key={listing.id} listing={listing} />
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <table className="table m-0 text-nowrap">
+      <TableHeader />
+      <tbody>
+        {sortedListings.map((listing) => (
+          <ListingRow key={listing.id} listing={listing} />
+        ))}
+      </tbody>
+    </table>
   );
 };
 
@@ -72,8 +70,10 @@ const TableHeader = () => (
       <th scope="col">
         <FormattedMessage id="capital.listings.header.totalPrice" />
       </th>
-      <th scope="col " className="w-20 text-start text-nowrap">
-        <FormattedMessage id="capital.listings.header.action" />
+      <th scope="col" className="w-10 text-start text-nowrap">
+        <span className="d-none d-sm-inline">
+          <FormattedMessage id="capital.listings.header.action" />
+        </span>
       </th>
     </tr>
   </thead>
@@ -81,6 +81,7 @@ const TableHeader = () => (
 
 const ListingRow = ({ listing }: { listing: MemberCapitalListing }) => {
   const [deleteDropdownOpen, setDeleteDropdownOpen] = useState(false);
+  const intl = useIntl();
 
   const { mutateAsync: deleteListing, error } = useDeleteMemberCapitalListing();
 
@@ -102,11 +103,16 @@ const ListingRow = ({ listing }: { listing: MemberCapitalListing }) => {
       <td>{formatAmountForCurrency(listing.totalPrice)}</td>
       <td className="text-start text-nowrap">
         {listing.isOwnListing && (
-          <div className="dropdown d-inline-block">
+          <div className="dropdown">
             <button
               type="button"
-              className="btn btn-link p-0 border-0 d-inline-flex align-items-center gap-1 align-top"
+              className="btn btn-link p-1 p-sm-0 border-0 d-inline-flex align-items-center gap-1 align-top"
               aria-expanded={deleteDropdownOpen}
+              aria-label={
+                deleteDropdownOpen
+                  ? intl.formatMessage({ id: 'capital.listings.action.delete.cancel' })
+                  : intl.formatMessage({ id: 'capital.listings.action.delete' })
+              }
               onClick={() => setDeleteDropdownOpen((oldVal) => !oldVal)}
               data-bs-display="static"
             >
@@ -123,8 +129,12 @@ const ListingRow = ({ listing }: { listing: MemberCapitalListing }) => {
                     <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
                     <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
                   </svg>
-
-                  <FormattedMessage id="capital.listings.action.delete.cancel" />
+                  <span className="d-none d-sm-inline">
+                    <FormattedMessage
+                      id="capital.listings.action.delete.cancel"
+                      aria-hidden="true"
+                    />
+                  </span>
                 </>
               ) : (
                 <>
@@ -138,7 +148,9 @@ const ListingRow = ({ listing }: { listing: MemberCapitalListing }) => {
                   >
                     <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5" />
                   </svg>
-                  <FormattedMessage id="capital.listings.action.delete" />
+                  <span className="d-none d-sm-inline">
+                    <FormattedMessage id="capital.listings.action.delete" aria-hidden="true" />
+                  </span>
                 </>
               )}
             </button>
@@ -180,7 +192,13 @@ const ListingRow = ({ listing }: { listing: MemberCapitalListing }) => {
           </div>
         )}
         {!listing.isOwnListing && (
-          <Link to={`/capital/listings/${listing.id}`} className="icon-link align-top">
+          <Link
+            to={`/capital/listings/${listing.id}`}
+            className="icon-link p-1 p-sm-0 align-top"
+            aria-label={intl.formatMessage({
+              id: `capital.listings.wantTo.forListing.${listing.type}`,
+            })}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -191,7 +209,12 @@ const ListingRow = ({ listing }: { listing: MemberCapitalListing }) => {
             >
               <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z" />
             </svg>
-            <FormattedMessage id={`capital.listings.wantTo.forListing.${listing.type}`} />
+            <span className="d-none d-sm-inline">
+              <FormattedMessage
+                id={`capital.listings.wantTo.forListing.${listing.type}`}
+                aria-hidden="true"
+              />
+            </span>
           </Link>
         )}
       </td>
