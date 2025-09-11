@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
-import { Loader } from '../../common';
 import { useMe, useMyCapitalTransferContracts } from '../../common/apiHooks';
 import { User } from '../../common/apiModels';
 import {
@@ -16,7 +15,7 @@ export const TransferList = () => {
   const { data: me, isLoading: isLoadingUser } = useMe();
 
   if (isLoadingContracts || isLoadingUser || !me) {
-    return <Loader className="align-middle" />;
+    return null;
   }
 
   const filteredContracts = (contracts ?? []).filter((contract) =>
