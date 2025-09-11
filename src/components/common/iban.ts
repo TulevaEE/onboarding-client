@@ -119,7 +119,7 @@ export const getBankName = (iban: string): string | null => {
   return ESTONIAN_IBAN_CHECK_CODE_TO_BANK_NAME[checkDigits] ?? null;
 };
 
-export const preProcessIban = (iban: string) => iban.trim().toUpperCase();
+export const preProcessIban = (iban: string) => iban.trim().replace(/\s/g, '').toUpperCase();
 
 const getIbanCountry = (input: string): keyof typeof IBAN_CODE_LENGTHS | null => {
   const iban = String(input)

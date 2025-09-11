@@ -254,7 +254,7 @@ describe('withdrawals flow with both pillars', () => {
 
     userEvent.clear(ibanInput);
 
-    userEvent.type(ibanInput, 'EE591254471322749514');
+    userEvent.type(ibanInput, 'EE 59125 44713 2274 9514');
 
     userEvent.click(nextButton());
 
