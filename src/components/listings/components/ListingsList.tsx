@@ -194,11 +194,11 @@ const ListingRow = ({
                 />
               </div>
 
-              <div className="pt-3">
-                <button className="btn btn-primary me-2" type="button" onClick={handleDeleteSubmit}>
+              <div className="d-flex gap-2 pt-3">
+                <button className="btn btn-primary col" type="button" onClick={handleDeleteSubmit}>
                   <FormattedMessage id="capital.listings.action.delete.confirm" />
                 </button>
-                <button className="btn btn-light" type="button" onClick={onCloseDeleteDropdown}>
+                <button className="btn btn-light col" type="button" onClick={onCloseDeleteDropdown}>
                   <FormattedMessage id="capital.listings.action.delete.cancel" />
                 </button>
               </div>

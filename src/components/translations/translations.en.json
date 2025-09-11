@@ -757,7 +757,7 @@
   "capital.listings.action.delete.error": "An error occured while deleting the listing. Please contact us.",
   "capital.listings.action.delete.expiry": "The listing will expire on {date}",
   "capital.listings.action.delete.confirm": "Delete",
-  "capital.listings.action.delete.cancel": "Cancel",
+  "capital.listings.action.delete.cancel": "Keep",
   "capital.listings.wantTo.forListing.SELL": "Contact seller",
   "capital.listings.wantTo.forListing.BUY": "Contact buyer",
   "capital.listings.details.title.to.SELL": "Message to seller",
