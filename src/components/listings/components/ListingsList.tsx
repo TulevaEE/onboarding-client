@@ -31,6 +31,7 @@ const sortListings = (listingA: MemberCapitalListing, listingB: MemberCapitalLis
 export const ListingsList = () => {
   const { data: listings } = useMemberCapitalListings();
   const sortedListings = useMemo(() => listings?.sort(sortListings), [listings]);
+  const [openDeleteListingId, setOpenDeleteListingId] = useState<number | null>(null);
 
   if (!sortedListings) {
     return <Loader className="align-middle" />;
@@ -51,7 +52,15 @@ export const ListingsList = () => {
       <TableHeader />
       <tbody>
         {sortedListings.map((listing) => (
-          <ListingRow key={listing.id} listing={listing} />
+          <ListingRow
+            key={listing.id}
+            listing={listing}
+            deleteDropdownOpen={openDeleteListingId === listing.id}
+            onToggleDeleteDropdown={() =>
+              setOpenDeleteListingId((prev) => (prev === listing.id ? null : listing.id))
+            }
+            onCloseDeleteDropdown={() => setOpenDeleteListingId(null)}
+          />
         ))}
       </tbody>
     </table>
@@ -79,15 +88,24 @@ const TableHeader = () => (
   </thead>
 );
 
-const ListingRow = ({ listing }: { listing: MemberCapitalListing }) => {
-  const [deleteDropdownOpen, setDeleteDropdownOpen] = useState(false);
+const ListingRow = ({
+  listing,
+  deleteDropdownOpen,
+  onToggleDeleteDropdown,
+  onCloseDeleteDropdown,
+}: {
+  listing: MemberCapitalListing;
+  deleteDropdownOpen: boolean;
+  onToggleDeleteDropdown: () => void;
+  onCloseDeleteDropdown: () => void;
+}) => {
   const intl = useIntl();
 
   const { mutateAsync: deleteListing, error } = useDeleteMemberCapitalListing();
 
   const handleDeleteSubmit = async () => {
     await deleteListing(listing);
-    setDeleteDropdownOpen(false);
+    onCloseDeleteDropdown();
   };
   return (
     <tr data-testid="listing">
@@ -113,7 +131,7 @@ const ListingRow = ({ listing }: { listing: MemberCapitalListing }) => {
                   ? intl.formatMessage({ id: 'capital.listings.action.delete.cancel' })
                   : intl.formatMessage({ id: 'capital.listings.action.delete' })
               }
-              onClick={() => setDeleteDropdownOpen((oldVal) => !oldVal)}
+              onClick={onToggleDeleteDropdown}
               data-bs-display="static"
             >
               {deleteDropdownOpen ? (
@@ -180,11 +198,7 @@ const ListingRow = ({ listing }: { listing: MemberCapitalListing }) => {
                 <button className="btn btn-primary me-2" type="button" onClick={handleDeleteSubmit}>
                   <FormattedMessage id="capital.listings.action.delete.confirm" />
                 </button>
-                <button
-                  className="btn btn-light"
-                  type="button"
-                  onClick={() => setDeleteDropdownOpen(false)}
-                >
+                <button className="btn btn-light" type="button" onClick={onCloseDeleteDropdown}>
                   <FormattedMessage id="capital.listings.action.delete.cancel" />
                 </button>
               </div>
