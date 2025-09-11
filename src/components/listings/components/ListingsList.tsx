@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import styles from './ListingsList.module.scss';
 import { useDeleteMemberCapitalListing, useMemberCapitalListings } from '../../common/apiHooks';
 import Loader from '../../common/loader';
 import { MemberCapitalListing } from '../../common/apiModels';
@@ -39,10 +38,10 @@ export const ListingsList = () => {
 
   if (sortedListings.length === 0) {
     return (
-      <div className={styles.noListingsContainer}>
-        <div className="text-secondary">
+      <div className="card px-4 py-5 py-sm-6 text-center text-secondary">
+        <p className="m-0">
           <FormattedMessage id="capital.listings.noListings" />
-        </div>
+        </p>
       </div>
     );
   }
@@ -173,7 +172,7 @@ const ListingRow = ({
               )}
             </button>
             <div
-              className={`dropdown-menu dropdown-menu-end p-4 shadow ${styles.deletionDropdown} ${
+              className={`dropdown-menu dropdown-menu-end p-4 shadow ${
                 deleteDropdownOpen ? 'show' : ''
               }`}
               data-bs-popper="static"

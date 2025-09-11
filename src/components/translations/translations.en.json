@@ -745,7 +745,7 @@
   "capital.listings.instructions.more": "Read more",
   "capital.listings.add": "Add listing",
   "capital.listings.transfer": "Create transfer application",
-  "capital.listings.noListings": "There are no active listing",
+  "capital.listings.noListings": "No active listings.",
   "capital.listings.header.listing": "Listing",
   "capital.listings.header.value": "Value",
   "capital.listings.header.totalPrice": "Price",

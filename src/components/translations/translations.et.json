@@ -832,7 +832,7 @@
   "capital.listings.instructions.more": "Loe lisaks",
   "capital.listings.add": "Lisan kuulutuse",
   "capital.listings.transfer": "Vormistan müügi",
-  "capital.listings.noListings": "Aktiivseid kuulutusi ei ole",
+  "capital.listings.noListings": "Aktiivseid kuulutusi ei ole.",
   "capital.listings.header.listing": "Kuulutus",
   "capital.listings.header.value": "Väärtuses",
   "capital.listings.header.totalPrice": "Hinnaga",
