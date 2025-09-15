@@ -21,7 +21,7 @@ export const MemberStatusBox: React.FunctionComponent<Props> = ({
 }) => {
   const { data: capitalEvents } = useCapitalEvents();
   const lastMembershipBonus = capitalEvents
-    ?.filter((event) => event.type === 'MEMBERSHIP_BONUS' && event.value >= 0)
+    ?.filter((event) => event.type === 'MEMBERSHIP_BONUS' && event.value > 0)
     .sort((event1, event2) => event2.date.localeCompare(event1.date))[0];
 
   const isTulevaMember = memberNumber != null;
