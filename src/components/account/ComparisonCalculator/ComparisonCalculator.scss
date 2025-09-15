@@ -1,4 +1,5 @@
 @import '../../variables';
+@import '~bootstrap/scss/bootstrap.scss';
 
 .comparison-calculator {
   .card-primary {
@@ -28,18 +29,15 @@
       }
     }
 
-    //To scale header buttons on smaller screens
-    @media (max-width: 768px) {
+    @include media-breakpoint-down(md) {
       .btn-group {
         width: 100%;
-        margin-left: 15px;
-        margin-right: 15px;
       }
       .btn-group .btn {
         width: 50%;
         min-width: auto;
-        padding-left: 7px;
-        padding-right: 7px;
+        padding-left: calc($btn-padding-x / 2);
+        padding-right: calc($btn-padding-x / 2);
       }
     }
   }

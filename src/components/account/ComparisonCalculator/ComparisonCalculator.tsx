@@ -207,8 +207,8 @@ const ComparisonCalculator: React.FC = () => {
           <div className="card card-primary">
             <div className="header-section container p-4">
               {showPillarSelection && (
-                <div className="pillar-selection row justify-content-center">
-                  <div className="btn-group">
+                <div className="pillar-selection text-center">
+                  <div className="btn-group" role="group">
                     <button
                       type="button"
                       className={`btn ${
