@@ -21,10 +21,7 @@ import { InfoTooltip } from '../../../common/infoTooltip/InfoTooltip';
 import { isTuleva } from '../../../common/utils';
 import { getValueSum } from '../../AccountStatement/fundSelector';
 import { Euro } from '../../../common/Euro';
-import { formatDate, formatDateTime } from '../../../common/dateFormatter';
-import deadline from './deadline.svg';
-import euro from './euro.svg';
-import basket from './basket.svg';
+import { formatDate } from '../../../common/dateFormatter';
 import { isBeforeCancellationDeadline } from '../../ApplicationSection/ApplicationFunctions';
 import { SecondPillarPaymentRateTaxWin } from '../../../flows/secondPillarPaymentRate/SecondPillarPaymentRateTaxWin';
 import { ActiveFundPensionDescription } from '../ActiveFundPensionDescription';
@@ -274,14 +271,7 @@ const ActiveFundPension = ({ fundPension }: { fundPension: FundPension }) => (
   />
 );
 
-const HighFee = ({
-  loading,
-  conversion,
-  sourceFunds,
-  targetFunds,
-  mandateDeadlines,
-  leaveApplication,
-}: RowProps) => {
+const HighFee = ({ loading, conversion, sourceFunds, targetFunds, leaveApplication }: RowProps) => {
   const value = getValueSum(sourceFunds);
   const currentFeesEuro = conversion.weightedAverageFee * value;
   const tulevaTargetFunds =
