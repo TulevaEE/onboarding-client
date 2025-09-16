@@ -209,6 +209,14 @@ small {
   text-wrap: balance;
 }
 
+.items-count-badge {
+  min-width: 20px;
+  padding: $spacer * 0.25;
+  font-size: $font-size-base * 0.75;
+  line-height: 1;
+  text-align: center;
+}
+
 // Header
 
 .brand-logo {

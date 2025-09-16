@@ -99,6 +99,7 @@
   "memberCapital.source.profit": "Investment profit",
   "memberCapital.transactions": "View transactions",
   "memberCapital.listings": "Buy-sell",
+  "listings": "{count, plural, =1 {listing} other {listings}}",
   "capitalEvents.columns.date.title": "Date",
   "capitalEvents.columns.source.title": "Source",
   "capitalEvents.columns.value.title": "Amount",

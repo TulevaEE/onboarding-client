@@ -21,7 +21,7 @@ import { getInitialCapital } from './actions';
 import { getAuthentication } from '../common/authenticationManager';
 import { SectionHeading } from './SectionHeading';
 import { TransactionSection } from './TransactionSection/TransactionSection';
-import { useFundPensionStatus } from '../common/apiHooks';
+import { useFundPensionStatus, useMemberCapitalListings } from '../common/apiHooks';
 import { canAccessWithdrawals } from '../flows/withdrawals/utils';
 
 const noop = () => null;
@@ -50,6 +50,9 @@ export function AccountPage(
     }
   };
   const { data: fundPensionStatus, loading: isFundPensionStatusLoading } = useFundPensionStatus();
+  const { data: memberCapitalListings } = useMemberCapitalListings();
+
+  const activeListingsCount = memberCapitalListings?.length ?? 0;
 
   useEffect(() => {
     getData();
@@ -189,8 +192,16 @@ export function AccountPage(
         <div className="mt-5">
           <SectionHeading titleId="memberCapital.heading">
             <div className="d-flex flex-wrap column-gap-3 row-gap-2 align-items-baseline justify-content-between">
-              <Link className="icon-link" to="/capital/listings">
+              <Link className="icon-link position-relative" to="/capital/listings">
                 <FormattedMessage id="memberCapital.listings" />
+                {activeListingsCount > 0 && (
+                  <span className="badge rounded-pill text-bg-primary items-count-badge">
+                    {activeListingsCount}
+                    <span className="visually-hidden">
+                      <FormattedMessage id="listings" values={{ count: activeListingsCount }} />
+                    </span>
+                  </span>
+                )}
               </Link>
               <Link className="icon-link" to="/capital">
                 <FormattedMessage id="memberCapital.transactions" />

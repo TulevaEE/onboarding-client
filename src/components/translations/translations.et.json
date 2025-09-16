@@ -102,6 +102,7 @@
   "memberCapital.source.profit": "Teenitud investeerimiskasum",
   "memberCapital.transactions": "Vaatan tehinguid",
   "memberCapital.listings": "Ostan-müün",
+  "listings": "{count, plural, =1 {kuulutus} other {kuulutust}}",
 
   "capitalEvents.columns.date.title": "Kuupäev",
   "capitalEvents.columns.source.title": "Allikas",
