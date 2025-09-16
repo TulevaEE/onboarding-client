@@ -145,20 +145,6 @@ const FeeComparison = ({
   </span>
 );
 
-const TinyCard = ({ title, text, img }: { title: JSX.Element; text: JSX.Element; img: string }) => (
-  <div className="col-md-4 my-3 my-md-0">
-    <div className="d-flex align-items-center">
-      <div className="me-3">
-        <img width={36} src={img} alt="" />
-      </div>
-      <div>
-        <h5 className="card-title mb-1">{title}</h5>
-        <small className="card-text">{text}</small>
-      </div>
-    </div>
-  </div>
-);
-
 function SecondPillarActionButton({
   leaveApplication,
   className,
@@ -321,56 +307,6 @@ const HighFee = ({
           ? [<FeeComparison currentFeesEuro={currentFeesEuro} tulevaFeesEuro={tulevaFeesEuro} />]
           : []),
       ]}
-      extraBottom={
-        <div className="card card-primary border-0 mt-3 ms-3 ms-md-5 me-3 my-2 px-4 py-3">
-          <div className="row">
-            <TinyCard
-              img={euro}
-              title={<FormattedMessage id="account.status.choice.pillar.second.feecard.title" />}
-              text={
-                <FormattedMessage
-                  id="account.status.choice.pillar.second.feecard.text"
-                  values={{
-                    b: (chunks: string) => <b>{chunks}</b>,
-                  }}
-                />
-              }
-            />
-            <TinyCard
-              img={basket}
-              title={<FormattedMessage id="account.status.choice.pillar.second.basketcard.title" />}
-              text={
-                <>
-                  <FormattedMessage
-                    id="account.status.choice.pillar.second.basketcard.text"
-                    values={{
-                      b: (chunks: string) => <b>{chunks}</b>,
-                    }}
-                  />
-                  <InfoTooltip name="diversification-tooltip">
-                    <FormattedMessage id="account.status.choice.pillar.second.basketcard.tooltip" />
-                  </InfoTooltip>
-                </>
-              }
-            />
-            <TinyCard
-              img={deadline}
-              title={
-                <FormattedMessage id="account.status.choice.pillar.second.deadlinecard.title" />
-              }
-              text={
-                <FormattedMessage
-                  id="account.status.choice.pillar.second.deadlinecard.text"
-                  values={{
-                    periodEnding: formatDateTime(mandateDeadlines?.periodEnding),
-                    b: (chunks: string) => <b className="text-nowrap">{chunks}</b>,
-                  }}
-                />
-              }
-            />
-          </div>
-        </div>
-      }
     >
       <SecondPillarActionButton leaveApplication={leaveApplication} className="btn-primary" />
     </StatusBoxRow>

@@ -123,7 +123,6 @@ export const StatusBoxRow: React.FunctionComponent<{
   error?: boolean;
   last?: boolean;
   children?: React.ReactNode;
-  extraBottom?: React.ReactNode;
 }> = ({
   name = '',
   lines = [],
@@ -133,7 +132,6 @@ export const StatusBoxRow: React.FunctionComponent<{
   error = false,
   children = '',
   last = false,
-  extraBottom = <></>,
 }) => (
   <div className={`status-box-row ${!last ? 'tv-table__row' : ''}`} data-testid="status-box-row">
     <div className="d-flex gap-3 flex-column flex-sm-row justify-content-between p-3">
@@ -150,7 +148,6 @@ export const StatusBoxRow: React.FunctionComponent<{
         <div className="d-flex flex-column justify-content-center text-nowrap">{children}</div>
       )}
     </div>
-    {extraBottom}
   </div>
 );
 
