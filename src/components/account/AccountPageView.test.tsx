@@ -2,6 +2,7 @@ import { setupServer } from 'msw/node';
 import { screen, waitFor, within } from '@testing-library/react';
 import { Route } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
+import userEvent from '@testing-library/user-event';
 import { initializeConfiguration } from '../config/config';
 import LoggedInApp from '../LoggedInApp';
 import { createDefaultStore, login, renderWrapped } from '../../test/utils';
@@ -58,6 +59,14 @@ describe('happy path', () => {
     expect(await screen.findByText('Hi, John Doe')).toBeInTheDocument();
     expect(screen.getByText('john.doe@example.com')).toBeInTheDocument();
     expect(screen.getByText('55667788')).toBeInTheDocument();
+  });
+
+  test('shows capital listings link', async () => {
+    const link = await screen.findByRole('link', { name: 'Buy-sell' });
+    expect(link).toBeInTheDocument();
+    userEvent.click(link);
+
+    expect(history.location.pathname).toBe('/capital/listings');
   });
 
   test('pension summary table is shown', async () => {

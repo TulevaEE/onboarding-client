@@ -23,7 +23,6 @@ import { SectionHeading } from './SectionHeading';
 import { TransactionSection } from './TransactionSection/TransactionSection';
 import { useFundPensionStatus } from '../common/apiHooks';
 import { canAccessWithdrawals } from '../flows/withdrawals/utils';
-import { isTestMode } from '../common/test-mode';
 
 const noop = () => null;
 
@@ -76,8 +75,6 @@ export function AccountPage(
     conversion &&
     conversion.thirdPillar.selectionComplete &&
     conversion.thirdPillar.transfersComplete;
-
-  const testMode = isTestMode();
 
   const shouldShowWithdrawalsButton = () => {
     if (isFundPensionStatusLoading || !conversion || !fundPensionStatus) {
@@ -192,11 +189,9 @@ export function AccountPage(
         <div className="mt-5">
           <SectionHeading titleId="memberCapital.heading">
             <div className="d-flex flex-wrap column-gap-3 row-gap-2 align-items-baseline justify-content-between">
-              {testMode && (
-                <Link className="icon-link" to="/capital/listings">
-                  <FormattedMessage id="memberCapital.listings" />
-                </Link>
-              )}
+              <Link className="icon-link" to="/capital/listings">
+                <FormattedMessage id="memberCapital.listings" />
+              </Link>
               <Link className="icon-link" to="/capital">
                 <FormattedMessage id="memberCapital.transactions" />
               </Link>
