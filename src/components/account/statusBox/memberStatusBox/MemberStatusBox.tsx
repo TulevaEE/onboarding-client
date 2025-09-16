@@ -36,7 +36,7 @@ export const MemberStatusBox: React.FunctionComponent<Props> = ({
                 year: new Date(lastMembershipBonus.date).getFullYear(),
                 amount: (
                   <strong>
-                    <Euro amount={lastMembershipBonus.value} />
+                    <Euro amount={lastMembershipBonus.value} fractionDigits={0} />
                   </strong>
                 ),
               }}

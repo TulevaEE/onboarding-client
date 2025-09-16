@@ -21,7 +21,7 @@ import { InfoTooltip } from '../../../common/infoTooltip/InfoTooltip';
 import { isTuleva } from '../../../common/utils';
 import { getValueSum } from '../../AccountStatement/fundSelector';
 import { Euro } from '../../../common/Euro';
-import { formatDate, formatDateTime, formatDateYear } from '../../../common/dateFormatter';
+import { formatDate, formatDateTime } from '../../../common/dateFormatter';
 import deadline from './deadline.svg';
 import euro from './euro.svg';
 import basket from './basket.svg';
@@ -29,6 +29,7 @@ import { isBeforeCancellationDeadline } from '../../ApplicationSection/Applicati
 import { SecondPillarPaymentRateTaxWin } from '../../../flows/secondPillarPaymentRate/SecondPillarPaymentRateTaxWin';
 import { ActiveFundPensionDescription } from '../ActiveFundPensionDescription';
 import { FundPension } from '../../../common/apiModels/withdrawals';
+import { PaymentRateSubRow } from './PaymentRateSubRow';
 
 export interface Props {
   loading: boolean;
@@ -100,12 +101,12 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
     return <ActiveFundPension fundPension={activeSecondPillarFundPension} />;
   }
 
-  if (conversion.weightedAverageFee > 0.005) {
-    return <HighFee {...rowProps} />;
+  if (pendingPaymentRate < 6) {
+    return <IncreasePaymentRate {...rowProps} />;
   }
 
-  if ((currentPaymentRate < 4 && pendingPaymentRate < 4) || pendingPaymentRate < 4) {
-    return <IncreasePaymentRate {...rowProps} />;
+  if (conversion.weightedAverageFee > 0.005) {
+    return <HighFee {...rowProps} />;
   }
 
   const isFullyConvertedToTuleva = conversion.selectionComplete && conversion.transfersComplete;
@@ -120,42 +121,6 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
   }
 
   return <FullyConvertedToTuleva {...rowProps} />;
-};
-
-const PaymentRateSubRow = ({
-  currentPaymentRate,
-  futurePaymentRate,
-  paymentRateFulfillmentDate,
-}: {
-  currentPaymentRate: number;
-  futurePaymentRate: number;
-  paymentRateFulfillmentDate: string;
-}) => {
-  if (currentPaymentRate !== futurePaymentRate) {
-    return (
-      <span className="text-body-secondary">
-        <FormattedMessage
-          id="account.status.choice.futurePaymentRate"
-          values={{
-            currentPaymentRate,
-            futurePaymentRate,
-            paymentRateFulfillmentDate: formatDateYear(paymentRateFulfillmentDate),
-          }}
-        />
-      </span>
-    );
-  }
-
-  return (
-    <span className="text-body-secondary">
-      <FormattedMessage
-        id="account.status.choice.paymentRate"
-        values={{
-          currentPaymentRate,
-        }}
-      />
-    </span>
-  );
 };
 
 const FeeComparison = ({
@@ -342,7 +307,7 @@ const HighFee = ({
 
   return (
     <StatusBoxRow
-      error
+      warning
       showAction={!loading}
       name={<FormattedMessage id="account.status.choice.pillar.second" />}
       lines={[
@@ -451,13 +416,22 @@ const SecondPillarMissing = ({ loading }: RowProps) => (
   </StatusBoxRow>
 );
 
-const IncreasePaymentRate = ({ loading }: RowProps) => (
+const IncreasePaymentRate = ({
+  loading,
+  currentPaymentRate,
+  pendingPaymentRate,
+  mandateDeadlines,
+}: RowProps) => (
   <StatusBoxRow
     warning
     showAction={!loading}
     name={<FormattedMessage id="account.status.choice.pillar.second" />}
     lines={[
-      <FormattedMessage id="account.status.choice.pillar.second.tax.benefit.warning" />,
+      <PaymentRateSubRow
+        currentPaymentRate={currentPaymentRate}
+        futurePaymentRate={pendingPaymentRate}
+        paymentRateFulfillmentDate={mandateDeadlines?.paymentRateFulfillmentDate ?? ''}
+      />,
       <span className="text-body-secondary">
         <SecondPillarPaymentRateTaxWin />
       </span>,
@@ -496,11 +470,13 @@ const FullyConvertedToTulevaBonds = ({
           </>
         </InfoTooltip>
       </>,
-      <PaymentRateSubRow
-        currentPaymentRate={currentPaymentRate}
-        futurePaymentRate={pendingPaymentRate}
-        paymentRateFulfillmentDate={mandateDeadlines?.paymentRateFulfillmentDate ?? ''}
-      />,
+      <span className="text-body-secondary">
+        <PaymentRateSubRow
+          currentPaymentRate={currentPaymentRate}
+          futurePaymentRate={pendingPaymentRate}
+          paymentRateFulfillmentDate={mandateDeadlines?.paymentRateFulfillmentDate ?? ''}
+        />
+      </span>,
     ]}
   >
     <Link to="/2nd-pillar-flow" className="btn btn-outline-primary">
@@ -521,11 +497,16 @@ const FullyConvertedToTuleva = ({
     showAction={!loading}
     lines={[
       <FormattedMessage id="account.status.choice.lowFee.index.label" />,
-      <PaymentRateSubRow
-        currentPaymentRate={currentPaymentRate}
-        futurePaymentRate={pendingPaymentRate}
-        paymentRateFulfillmentDate={mandateDeadlines?.paymentRateFulfillmentDate ?? ''}
-      />,
+      <span className="text-body-secondary">
+        <PaymentRateSubRow
+          currentPaymentRate={currentPaymentRate}
+          futurePaymentRate={pendingPaymentRate}
+          paymentRateFulfillmentDate={mandateDeadlines?.paymentRateFulfillmentDate ?? ''}
+        />
+      </span>,
+      <span className="text-body-secondary">
+        <SecondPillarPaymentRateTaxWin />
+      </span>,
     ]}
   />
 );
@@ -543,11 +524,13 @@ const InLowFeeFund = ({
     name={<FormattedMessage id="account.status.choice.pillar.second" />}
     lines={[
       <FormattedMessage id="account.status.choice.lowFee.label" />,
-      <PaymentRateSubRow
-        currentPaymentRate={currentPaymentRate}
-        futurePaymentRate={pendingPaymentRate}
-        paymentRateFulfillmentDate={mandateDeadlines?.paymentRateFulfillmentDate ?? ''}
-      />,
+      <span className="text-body-secondary">
+        <PaymentRateSubRow
+          currentPaymentRate={currentPaymentRate}
+          futurePaymentRate={pendingPaymentRate}
+          paymentRateFulfillmentDate={mandateDeadlines?.paymentRateFulfillmentDate ?? ''}
+        />
+      </span>,
     ]}
   >
     <SecondPillarActionButton leaveApplication={leaveApplication} className="btn-outline-primary" />

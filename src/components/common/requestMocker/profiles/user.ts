@@ -31,6 +31,10 @@ export const userMockProfiles: Record<string, User> = {
     ...mockUser,
     memberNumber: 123,
   },
+  PAYMENT_RATE_2: {
+    ...mockUser,
+    secondPillarPaymentRates: { current: 2, pending: null },
+  },
   PAYMENT_RATE_4: {
     ...mockUser,
     secondPillarPaymentRates: { current: 4, pending: null },
@@ -39,12 +43,40 @@ export const userMockProfiles: Record<string, User> = {
     ...mockUser,
     secondPillarPaymentRates: { current: 6, pending: null },
   },
+  PAYMENT_RATE_2_TO_2: {
+    ...mockUser,
+    secondPillarPaymentRates: { current: 2, pending: 2 },
+  },
+  PAYMENT_RATE_2_TO_4: {
+    ...mockUser,
+    secondPillarPaymentRates: { current: 2, pending: 4 },
+  },
   PAYMENT_RATE_2_TO_6: {
     ...mockUser,
     secondPillarPaymentRates: { current: 2, pending: 6 },
   },
+  PAYMENT_RATE_4_TO_2: {
+    ...mockUser,
+    secondPillarPaymentRates: { current: 4, pending: 2 },
+  },
+  PAYMENT_RATE_4_TO_4: {
+    ...mockUser,
+    secondPillarPaymentRates: { current: 4, pending: 4 },
+  },
+  PAYMENT_RATE_4_TO_6: {
+    ...mockUser,
+    secondPillarPaymentRates: { current: 4, pending: 6 },
+  },
   PAYMENT_RATE_6_TO_2: {
     ...mockUser,
     secondPillarPaymentRates: { current: 6, pending: 2 },
+  },
+  PAYMENT_RATE_6_TO_4: {
+    ...mockUser,
+    secondPillarPaymentRates: { current: 6, pending: 4 },
+  },
+  PAYMENT_RATE_6_TO_6: {
+    ...mockUser,
+    secondPillarPaymentRates: { current: 6, pending: 6 },
   },
 } as const;

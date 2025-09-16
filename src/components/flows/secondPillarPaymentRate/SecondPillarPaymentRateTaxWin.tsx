@@ -1,66 +1,40 @@
 import { FormattedMessage } from 'react-intl';
 import React from 'react';
-import { useFunds, useMe, useTransactions } from '../../common/apiHooks';
+import { useContributions } from '../../common/apiHooks';
 import { Euro } from '../../common/Euro';
-import { Fund, Transaction } from '../../common/apiModels';
+import { Contribution, SecondPillarContribution } from '../../common/apiModels';
+import { Shimmer } from '../../common/shimmer/Shimmer';
 
 export const SecondPillarPaymentRateTaxWin = () => {
-  const { data: transactions } = useTransactions();
-  const { data: funds } = useFunds();
-  const { data: user } = useMe();
-  const currentPaymentRate = user?.secondPillarPaymentRates.current || 2;
-  const estimatedYearlyTaxWin = estimateYearlyTaxWin(transactions, funds, currentPaymentRate);
-  const message = (
+  const { data: contributions } = useContributions();
+  if (!contributions) {
+    return <Shimmer height={24} />;
+  }
+  const taxWin = yearToDateTaxWin(contributions);
+  return (
     <FormattedMessage
-      id="account.status.choice.pillar.second.tax.benefit.deadline"
+      id="account.status.choice.pillar.second.tax.benefit"
       values={{
-        estimatedWin: <Euro amount={estimatedYearlyTaxWin} fractionDigits={0} />,
-        b: (chunks: string) => <b>{chunks}</b>,
-      }}
-    />
-  );
-  return estimatedYearlyTaxWin >= 1 ? (
-    message
-  ) : (
-    <FormattedMessage
-      id="account.status.choice.pillar.second.paymentRate.comment"
-      values={{
+        estimatedWin: <Euro amount={taxWin} fractionDigits={0} />,
         b: (chunks: string) => <b>{chunks}</b>,
       }}
     />
   );
 };
 
-const estimateYearlyTaxWin = (
-  transactions: Transaction[] | undefined,
-  funds: Fund[] | undefined,
-  currentPaymentRate: number,
-) => {
-  const averageSecondPillarPayment =
-    transactions
-      ?.map((transaction) => {
-        const fund = funds?.find((fnd) => fnd.isin === transaction.isin);
-        return {
-          ...transaction,
-          pillar: fund?.pillar,
-        };
-      })
-      .filter((transaction) => transaction.pillar === 2)
-      .slice(0, 6)
-      .reduce(
-        (acc, transaction, _, secondPillarTransactions) =>
-          acc + transaction.amount / secondPillarTransactions.length,
-        0,
-      ) || 0;
+const yearToDateTaxWin = (contributions: Contribution[]) => {
+  const currentYear = new Date().getFullYear();
+  const yearStart = new Date(currentYear, 0, 1);
+  const nextYearStart = new Date(currentYear + 1, 0, 1);
 
-  const governmentPaymentRate = 4;
+  const sumOfSecondPillarPayments = contributions
+    .filter((contribution): contribution is SecondPillarContribution => contribution.pillar === 2)
+    .filter(({ time }) => {
+      const contributionDate = new Date(time);
+      return contributionDate >= yearStart && contributionDate < nextYearStart;
+    })
+    .reduce((total, contribution) => total + contribution.employeeWithheldPortion, 0);
 
-  const estimatedWage =
-    averageSecondPillarPayment / ((currentPaymentRate + governmentPaymentRate) / 100);
-
-  const maxPercentage = 0.06;
-  const incomeTax = 0.22;
-  const months = 12;
-
-  return estimatedWage * maxPercentage * incomeTax * months;
+  const incomeTaxRate = 0.22;
+  return sumOfSecondPillarPayments * incomeTaxRate;
 };
