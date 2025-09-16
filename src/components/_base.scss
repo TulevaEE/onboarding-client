@@ -210,11 +210,11 @@ small {
 }
 
 .items-count-badge {
-  min-width: 20px;
+  min-width: $font-size-base * 0.75 + $spacer * 0.25 + $spacer * 0.25;
   margin-left: $spacer * 0.125;
-  padding: $spacer * 0.25;
+  padding: $spacer * 0.25 $spacer * 0.375;
   font-size: $font-size-base * 0.75;
-  line-height: 1;
+  line-height: $font-size-base * 0.75;
   text-align: center;
 }
 
