@@ -211,6 +211,7 @@ small {
 
 .items-count-badge {
   min-width: 20px;
+  margin-left: $spacer * 0.125;
   padding: $spacer * 0.25;
   font-size: $font-size-base * 0.75;
   line-height: 1;

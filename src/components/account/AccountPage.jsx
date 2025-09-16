@@ -192,7 +192,7 @@ export function AccountPage(
         <div className="mt-5">
           <SectionHeading titleId="memberCapital.heading">
             <div className="d-flex flex-wrap column-gap-3 row-gap-2 align-items-baseline justify-content-between">
-              <Link className="icon-link position-relative" to="/capital/listings">
+              <Link className="icon-link" to="/capital/listings">
                 <FormattedMessage id="memberCapital.listings" />
                 {activeListingsCount > 0 && (
                   <span className="badge rounded-pill text-bg-primary items-count-badge">
