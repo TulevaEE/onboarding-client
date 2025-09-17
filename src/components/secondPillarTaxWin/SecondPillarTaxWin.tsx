@@ -5,6 +5,7 @@ import { useContributions, useMe } from '../common/apiHooks';
 import { SecondPillarContribution } from '../common/apiModels';
 import { Euro } from '../common/Euro';
 import { formatAmountForCurrency } from '../common/utils';
+import { Shimmer } from '../common/shimmer/Shimmer';
 
 interface ChartFontDefaults {
   family: string;
@@ -472,37 +473,59 @@ const SecondPillarTaxWin = () => {
         }
       }
     };
-  }, []);
+  }, [
+    contributions,
+    netSalaryLossAt2Percent,
+    netSalaryLoss,
+    incomeTaxSavedAt2Percent,
+    incomeTaxSaved,
+    socialTaxPortionYTD,
+  ]);
 
   return (
     <div className="col-12 col-md-10 col-lg-7 mx-auto">
       <div className="d-flex flex-column gap-5">
         <div className="d-flex flex-column gap-3">
           <h1 className="m-0">Sinu II samba maksuvõit</h1>
-          <p className="m-0 lead">
-            Kuulud Eesti kõige nutikamate investorite hulka, sest tõstsid eelmisel aastal II samba
-            sissemakseid. {currentYear}. aasta esimese {lastContributionMonth} kuuga oled
-            II sambasse kogunud juba{' '}
-            <strong>
-              <Euro
-                amount={netSalaryLoss + incomeTaxSaved + socialTaxPortionYTD}
-                fractionDigits={0}
-              />
-            </strong>
-            .
-          </p>
+          {!contributions || !user ? (
+            <Shimmer height={90} />
+          ) : (
+            <p className="m-0 lead">
+              Kuulud Eesti kõige nutikamate investorite hulka, sest tõstsid eelmisel aastal II samba
+              sissemakseid. {currentYear}. aasta esimese {lastContributionMonth} kuuga oled
+              II sambasse kogunud juba{' '}
+              <strong>
+                <Euro
+                  amount={netSalaryLoss + incomeTaxSaved + socialTaxPortionYTD}
+                  fractionDigits={0}
+                />
+              </strong>
+              .
+            </p>
+          )}
         </div>
 
         <div className="d-flex flex-column gap-2">
           <h2 className="m-0 h3">Mille arvelt võitsid sissemakset tõstes?</h2>
-          <p className="m-0">
-            Tänu II samba sissemaksete tõstmisele oled sel aastal{' '}
-            <strong>maksnud {incomeTaxSaved} € vähem tulumaksu</strong>.
-          </p>
+          {!contributions || !user ? (
+            <Shimmer height={48} />
+          ) : (
+            <p className="m-0">
+              Tänu II samba sissemaksete tõstmisele oled sel aastal{' '}
+              <strong>
+                maksnud <Euro amount={incomeTaxSaved} fractionDigits={0} /> vähem tulumaksu
+              </strong>
+              .
+            </p>
+          )}
         </div>
 
         <div className="card p-3 p-sm-4" style={{ minHeight: '400px' }}>
-          <canvas ref={chartContainerRef} aria-label="II samba maksuvõit" />
+          {!contributions ? (
+            <Shimmer height={350} />
+          ) : (
+            <canvas ref={chartContainerRef} aria-label="II samba maksuvõit" />
+          )}
         </div>
 
         <div className="d-flex flex-column gap-2">
