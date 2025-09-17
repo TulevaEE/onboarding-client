@@ -20,11 +20,19 @@ import { Shimmer } from '../common/shimmer/Shimmer';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ChartDataLabels);
 
-const CHART_FONT_FAMILY = "'Roboto', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif";
+const CHART_FONT_FAMILY = '"Roboto", "Segoe UI", "Helvetica Neue", Arial, sans-serif';
+const CHART_FONT_SIZE = 14;
+const CHART_FONT_LINE_HEIGHT = 1.2857;
+const CHART_FONT_COLOR = '#6B7074';
 const DATALABEL_FONT_SIZE = 16;
 const DATALABEL_FONT_LINE_HEIGHT = 1.25;
 const STACKED_BAR_SEPARATOR_WIDTH = 1;
 const STACKED_BAR_SEPARATOR_COLOR = '#fff';
+
+ChartJS.defaults.font.family = CHART_FONT_FAMILY;
+ChartJS.defaults.font.size = CHART_FONT_SIZE;
+ChartJS.defaults.font.lineHeight = CHART_FONT_LINE_HEIGHT;
+ChartJS.defaults.color = CHART_FONT_COLOR;
 
 const SecondPillarTaxWin = () => {
   usePageTitle('pageTitle.secondPillarTaxWin');
