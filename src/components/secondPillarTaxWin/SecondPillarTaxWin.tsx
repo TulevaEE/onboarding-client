@@ -283,7 +283,7 @@ const SecondPillarTaxWin = () => {
       const configuration: ChartConfiguration = {
         type: 'bar',
         data: {
-          labels: ['2025 2%ga', '2025 6%ga'],
+          labels: ['2% panusega', '6% panusega'],
           datasets: [
             {
               label: 'Sinu netopalgast',
@@ -363,7 +363,7 @@ const SecondPillarTaxWin = () => {
               stacked: true,
               beginAtZero: true,
               display: false,
-              grace: '10%',
+              grace: '15%',
               grid: {
                 display: false,
               },
