@@ -40,6 +40,7 @@ import { CapitalPage } from '../account/MemberCapital/CapitalPage';
 import { Withdrawals } from '../flows/withdrawals/Withdrawals';
 import { isMockModeEnabled } from '../common/requestMocker';
 import { FirstVsSecondPillarComparison } from '../comparison/FirstVsSecondPillarComparison';
+import SecondPillarTaxWin from '../secondPillarTaxWin/SecondPillarTaxWin';
 import { Listings } from '../listings/Listings';
 import { MembersOnlyGatekeep } from '../common/MembersOnlyGatekeep';
 import { AddListing } from '../listings/AddListing';
@@ -222,6 +223,7 @@ export class LoggedInApp extends PureComponent {
                 </ContactDetailsGatekeep>
               )}
             />
+            <Route path="/2nd-pillar-tax-win" component={SecondPillarTaxWin} />
             <Route path="/1st-vs-2nd-pillar" render={() => <FirstVsSecondPillarComparison />} />
 
             <Redirect exact path="/" to={ACCOUNT_PATH} />
