@@ -135,8 +135,11 @@ const SecondPillarTaxWin = () => {
 
   const formatCurrency = (value: number) => formatAmountForCurrency(value, 0);
 
+  const basePaymentRateLabel = '2% panusega';
+  const currentPaymentRateLabel = `Sinu ${currentPaymentRate}% panusega`;
+
   const chartData = {
-    labels: ['2% panusega', '6% panusega'],
+    labels: [basePaymentRateLabel, currentPaymentRateLabel],
     datasets: [
       {
         label: 'Sinu netopalgast',
