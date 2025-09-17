@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { FormattedMessage } from 'react-intl';
-import { Loader, Radio } from '../../../common';
+import { Radio } from '../../../common';
 import { ThirdPillarSelectSources } from './ThirdPillarSelectSources';
 import AccountStatement from '../../../account/AccountStatement';
 import { Shimmer } from '../../../common/shimmer/Shimmer';

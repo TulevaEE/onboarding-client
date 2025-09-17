@@ -1,7 +1,5 @@
-import React from 'react';
 import { shallow } from 'enzyme';
 
-import { FormattedMessage } from 'react-intl';
 import FundExchangeRow from './fundExchangeRow';
 import ExactFundSelector from './ExactFundSelector';
 

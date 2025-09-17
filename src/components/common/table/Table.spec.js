@@ -1,7 +1,5 @@
-import React from 'react';
 import { shallow } from 'enzyme';
 import Table from '.';
-import { getBreakpointClass } from './Table';
 
 describe('Table', () => {
   let component;

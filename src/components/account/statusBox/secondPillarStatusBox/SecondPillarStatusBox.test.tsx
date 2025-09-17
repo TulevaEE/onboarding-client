@@ -1,7 +1,5 @@
-import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 import { Props, SecondPillarStatusBox } from './SecondPillarStatusBox';
-import StatusBoxRow from '../statusBoxRow';
 import {
   activeSecondPillar,
   activeSecondPillarBondFund,

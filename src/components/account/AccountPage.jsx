@@ -21,11 +21,7 @@ import { getInitialCapital } from './actions';
 import { getAuthentication } from '../common/authenticationManager';
 import { SectionHeading } from './SectionHeading';
 import { TransactionSection } from './TransactionSection/TransactionSection';
-import {
-  useFundPensionStatus,
-  useMemberCapitalListingCount,
-  useMemberCapitalListings,
-} from '../common/apiHooks';
+import { useFundPensionStatus, useMemberCapitalListingCount } from '../common/apiHooks';
 import { canAccessWithdrawals } from '../flows/withdrawals/utils';
 
 const noop = () => null;

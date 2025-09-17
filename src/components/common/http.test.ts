@@ -1,5 +1,4 @@
 import * as apiFunctions from './http';
-import { AuthenticationManager } from './authenticationManager';
 
 const mockData = 'mockData';
 jest.mock('./tokenManagement', () => ({

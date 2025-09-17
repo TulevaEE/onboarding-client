@@ -50,11 +50,11 @@
     "develop": "react-scripts --openssl-legacy-provider start",
     "develop-production": "HTTPS=true HOST=local.tuleva.ee DANGEROUSLY_DISABLE_HOST_CHECK=true npm run develop",
     "develop-production-win": "set HTTPS=true&&set HOST=local.tuleva.ee&&npm run develop",
-    "lint": "eslint --ext .js,.ts,.jsx,.tsx src/",
+    "lint": "eslint --ext .js,.ts,.jsx,.tsx src/ --max-warnings=0",
     "test": "TZ=UTC react-scripts test --coverage --json --outputFile=test-results.json",
     "update-snapshot": "react-scripts test --updateSnapshot",
     "eject": "react-scripts eject",
-    "format": "eslint --ext .js,.ts,.jsx,.tsx src/ --fix",
+    "format": "eslint --ext .js,.ts,.jsx,.tsx src/ --fix --max-warnings=0",
     "prepare": "husky"
   },
   "devDependencies": {
@@ -111,12 +111,13 @@
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
+      "npm run lint",
       "prettier --write"
     ]
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged"
+      "pre-commit": "lint-staged --debug"
     }
   },
   "proxy": "http://localhost:9000",

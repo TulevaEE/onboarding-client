@@ -1,6 +1,4 @@
-import React from 'react';
 import { shallow } from 'enzyme';
-import { FormattedMessage } from 'react-intl';
 import { StatusBoxRow } from './StatusBoxRow';
 
 describe('Status Box Row', () => {

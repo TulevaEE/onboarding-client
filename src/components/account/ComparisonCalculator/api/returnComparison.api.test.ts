@@ -1,5 +1,5 @@
 import { getReturnComparison } from '.';
-import { get, getWithAuthentication } from '../../../common/http';
+import { getWithAuthentication } from '../../../common/http';
 import { getEndpoint } from '../../../common/api';
 import { Key } from './returnComparison.api';
 
