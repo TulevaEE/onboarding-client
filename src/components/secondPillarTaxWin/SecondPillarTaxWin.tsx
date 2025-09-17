@@ -1,6 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Collapse } from 'react-bootstrap';
 import { usePageTitle } from '../common/usePageTitle';
+import { useContributions, useMe } from '../common/apiHooks';
+import { SecondPillarContribution } from '../common/apiModels';
+import { Euro } from '../common/Euro';
+import { formatAmountForCurrency } from '../common/utils';
 
 interface ChartFontDefaults {
   family: string;
@@ -126,6 +130,100 @@ const STACKED_BAR_SEPARATOR_COLOR = '#fff';
 
 const SecondPillarTaxWin = () => {
   usePageTitle('pageTitle.secondPillarTaxWin');
+  const { data: user } = useMe();
+  const { data: contributions } = useContributions();
+  const currentPaymentRate = user?.secondPillarPaymentRates.current || 2;
+
+  const calculateYTDContributionMetrics = () => {
+    if (!contributions) {
+      return {
+        socialTaxPortionYTD: 0,
+        incomeTaxSaved: 0,
+        netSalaryLoss: 0,
+        incomeTaxSavedAt2Percent: 0,
+        netSalaryLossAt2Percent: 0,
+        lastContributionMonth: 0,
+      };
+    }
+
+    const currentYear = new Date().getFullYear();
+
+    const ytdSecondPillarContributions = contributions
+      .filter((contribution) => contribution.pillar === 2)
+      .filter((contribution) => new Date(contribution.time).getFullYear() === currentYear);
+
+    const lastContributionMonth =
+      ytdSecondPillarContributions.length > 0
+        ? Math.max(
+            ...ytdSecondPillarContributions.map(
+              (contribution) => new Date(contribution.time).getMonth() + 1,
+            ),
+          )
+        : 0;
+
+    const januaryContributions = ytdSecondPillarContributions.filter(
+      (contribution) => new Date(contribution.time).getMonth() === 0,
+    );
+
+    const nonJanuaryContributions = ytdSecondPillarContributions.filter(
+      (contribution) => new Date(contribution.time).getMonth() !== 0,
+    );
+
+    const employeeWithheldPortionYTD = ytdSecondPillarContributions.reduce(
+      (sum, contribution) =>
+        sum + (contribution as SecondPillarContribution).employeeWithheldPortion,
+      0,
+    );
+
+    const socialTaxPortionYTD = ytdSecondPillarContributions.reduce(
+      (sum, contribution) => sum + (contribution as SecondPillarContribution).socialTaxPortion,
+      0,
+    );
+
+    const januaryEmployeeWithheldPortion = januaryContributions.reduce(
+      (sum, contribution) =>
+        sum + (contribution as SecondPillarContribution).employeeWithheldPortion,
+      0,
+    );
+
+    const nonJanuaryEmployeeWithheldPortion = nonJanuaryContributions.reduce(
+      (sum, contribution) =>
+        sum + (contribution as SecondPillarContribution).employeeWithheldPortion,
+      0,
+    );
+
+    const nonJanuaryEmployeeWithheldPortionAt2Percent =
+      (nonJanuaryEmployeeWithheldPortion / currentPaymentRate) * 2;
+
+    const employeeWithheldPortionYTDAt2Percent =
+      januaryEmployeeWithheldPortion + nonJanuaryEmployeeWithheldPortionAt2Percent;
+
+    const incomeTaxSaved = employeeWithheldPortionYTD * 0.22;
+    const netSalaryLoss = employeeWithheldPortionYTD * 0.78;
+
+    const incomeTaxSavedAt2Percent = employeeWithheldPortionYTDAt2Percent * 0.22;
+    const netSalaryLossAt2Percent = employeeWithheldPortionYTDAt2Percent * 0.78;
+
+    return {
+      socialTaxPortionYTD,
+      incomeTaxSaved,
+      netSalaryLoss,
+      incomeTaxSavedAt2Percent,
+      netSalaryLossAt2Percent,
+      lastContributionMonth,
+    };
+  };
+
+  const {
+    socialTaxPortionYTD,
+    incomeTaxSaved,
+    netSalaryLoss,
+    incomeTaxSavedAt2Percent,
+    netSalaryLossAt2Percent,
+    lastContributionMonth,
+  } = calculateYTDContributionMetrics();
+
+  const currentYear = new Date().getFullYear();
 
   const [calculationDetailsToggle, setCalculationDetailsToggle] = useState(false);
   const chartContainerRef = useRef<HTMLCanvasElement | null>(null);
@@ -144,13 +242,7 @@ const SecondPillarTaxWin = () => {
     let datalabelsScriptListenerAttached = false;
     let datalabelsRegistered = false;
 
-    const formatCurrency = (value: number) =>
-      value.toLocaleString('et-EE', {
-        style: 'currency',
-        currency: 'EUR',
-        minimumFractionDigits: value % 1 === 0 ? 0 : 2,
-        maximumFractionDigits: 2,
-      });
+    const formatCurrency = (value: number) => formatAmountForCurrency(value, 0);
 
     const applyFontDefaults = (chartLibrary: ChartLibrary) => {
       if (!chartLibrary.defaults?.font) {
@@ -194,17 +286,17 @@ const SecondPillarTaxWin = () => {
           datasets: [
             {
               label: 'Sinu netopalgast',
-              data: [374.4, 1123.2],
+              data: [netSalaryLossAt2Percent, netSalaryLoss],
               backgroundColor: '#84C5E6',
             },
             {
               label: 'Tulumaksust',
-              data: [105.6, 316.8],
+              data: [incomeTaxSavedAt2Percent, incomeTaxSaved],
               backgroundColor: '#4CBB51',
             },
             {
               label: 'Sotsiaalmaksust',
-              data: [960, 960],
+              data: [socialTaxPortionYTD, socialTaxPortionYTD],
               backgroundColor: '#FECF49',
             },
           ].map((dataset, index) => ({
@@ -389,8 +481,15 @@ const SecondPillarTaxWin = () => {
           <h1 className="m-0">Sinu II samba maksuvõit</h1>
           <p className="m-0 lead">
             Kuulud Eesti kõige nutikamate investorite hulka, sest tõstsid eelmisel aastal II samba
-            sissemakseid. 2025. aasta esimese 8 kuuga oled II sambasse kogunud juba{' '}
-            <strong>2400 €</strong>.
+            sissemakseid. {currentYear}. aasta esimese {lastContributionMonth} kuuga oled
+            II sambasse kogunud juba{' '}
+            <strong>
+              <Euro
+                amount={netSalaryLoss + incomeTaxSaved + socialTaxPortionYTD}
+                fractionDigits={0}
+              />
+            </strong>
+            .
           </p>
         </div>
 
@@ -398,7 +497,7 @@ const SecondPillarTaxWin = () => {
           <h2 className="m-0 h3">Mille arvelt võitsid sissemakset tõstes?</h2>
           <p className="m-0">
             Tänu II samba sissemaksete tõstmisele oled sel aastal{' '}
-            <strong>maksnud 123 € vähem tulumaksu</strong>.
+            <strong>maksnud {incomeTaxSaved} € vähem tulumaksu</strong>.
           </p>
         </div>
 
