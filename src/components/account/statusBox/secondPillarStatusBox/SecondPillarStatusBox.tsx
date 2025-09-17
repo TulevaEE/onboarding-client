@@ -416,26 +416,43 @@ const FullyConvertedToTuleva = ({
   currentPaymentRate,
   pendingPaymentRate,
   mandateDeadlines,
-}: RowProps) => (
-  <StatusBoxRow
-    ok
-    name={<FormattedMessage id="account.status.choice.pillar.second" />}
-    showAction={!loading}
-    lines={[
-      <FormattedMessage id="account.status.choice.lowFee.index.label" />,
-      <span className="text-body-secondary">
-        <PaymentRateSubRow
-          currentPaymentRate={currentPaymentRate}
-          futurePaymentRate={pendingPaymentRate}
-          paymentRateFulfillmentDate={mandateDeadlines?.paymentRateFulfillmentDate ?? ''}
-        />
-      </span>,
-      <span className="text-body-secondary">
-        <SecondPillarPaymentRateTaxWin />
-      </span>,
-    ]}
-  />
-);
+}: RowProps) => {
+  const showPendingRateChange = currentPaymentRate !== pendingPaymentRate;
+
+  return (
+    <StatusBoxRow
+      ok
+      name={<FormattedMessage id="account.status.choice.pillar.second" />}
+      showAction={!loading}
+      lines={[
+        <FormattedMessage id="account.status.choice.lowFee.index.label" />,
+        <span className="text-body-secondary">
+          {showPendingRateChange ? (
+            <PaymentRateSubRow
+              currentPaymentRate={currentPaymentRate}
+              futurePaymentRate={pendingPaymentRate}
+              paymentRateFulfillmentDate={mandateDeadlines?.paymentRateFulfillmentDate ?? ''}
+            />
+          ) : (
+            <FormattedMessage
+              id="account.status.choice.paymentRate.taxWinCombined"
+              values={{
+                paymentRate: (
+                  <PaymentRateSubRow
+                    currentPaymentRate={currentPaymentRate}
+                    futurePaymentRate={pendingPaymentRate}
+                    paymentRateFulfillmentDate={mandateDeadlines?.paymentRateFulfillmentDate ?? ''}
+                  />
+                ),
+                taxWin: <SecondPillarPaymentRateTaxWin variant="inline" />,
+              }}
+            />
+          )}
+        </span>,
+      ]}
+    />
+  );
+};
 
 const InLowFeeFund = ({
   loading,

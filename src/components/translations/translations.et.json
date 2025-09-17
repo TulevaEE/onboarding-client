@@ -273,6 +273,7 @@
 
   "account.status.choice.pillar.second.tax.benefit.warning": "Suurenda oma II samba maksuvõitu",
   "account.status.choice.pillar.second.tax.benefit": "Oled sel aastal võitnud tulumaksult <b>{estimatedWin}</b>",
+  "account.status.choice.pillar.second.tax.benefit.inline": "oled sel aastal võitnud tulumaksult <b>{estimatedWin}</b>",
   "account.status.choice.pillar.second.tax.benefit.deadline": "Tegutse enne <b>30. novembrit kell 23.59</b>, sest muidu jääd järgmisel aastal ilma <b>{estimatedWin} maksuvõidust</b>",
 
   "account.status.choice.pillar.second.deadlinecard.title": "Tähtaeg!",
@@ -311,6 +312,7 @@
   "account.status.choice.lowFee.index.label": "Sa kogud Tuleva madala tasuga indeksfondis",
 
   "account.status.choice.paymentRate": "Sinu panus on {currentPaymentRate}% brutopalgast",
+  "account.status.choice.paymentRate.taxWinCombined": "{paymentRate} ja {taxWin}",
   "account.status.choice.futurePaymentRate": "Sinu panus on {currentPaymentRate}% brutopalgast, alates uuest aastast muutub see {futurePaymentRate}% peale",
   "account.status.choice.futurePaymentRate.withDate": "Sinu panus on {currentPaymentRate}% brutopalgast, alates {paymentRateFulfillmentDate} muutub see {futurePaymentRate}% peale",
 

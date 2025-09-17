@@ -5,7 +5,13 @@ import { Euro } from '../../common/Euro';
 import { Contribution, SecondPillarContribution } from '../../common/apiModels';
 import { Shimmer } from '../../common/shimmer/Shimmer';
 
-export const SecondPillarPaymentRateTaxWin = () => {
+type SecondPillarPaymentRateTaxWinProps = {
+  variant?: 'default' | 'inline';
+};
+
+export const SecondPillarPaymentRateTaxWin = ({
+  variant = 'default',
+}: SecondPillarPaymentRateTaxWinProps = {}) => {
   const { data: contributions } = useContributions();
   if (!contributions) {
     return <Shimmer height={24} />;
@@ -13,7 +19,11 @@ export const SecondPillarPaymentRateTaxWin = () => {
   const taxWin = yearToDateTaxWin(contributions);
   return (
     <FormattedMessage
-      id="account.status.choice.pillar.second.tax.benefit"
+      id={
+        variant === 'inline'
+          ? 'account.status.choice.pillar.second.tax.benefit.inline'
+          : 'account.status.choice.pillar.second.tax.benefit'
+      }
       values={{
         estimatedWin: <Euro amount={taxWin} fractionDigits={0} />,
         b: (chunks: string) => <b>{chunks}</b>,
