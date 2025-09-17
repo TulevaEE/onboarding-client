@@ -643,6 +643,9 @@ export function memberCapitalListingsBackend(
 ) {
   server.use(
     rest.get('http://localhost/v1/listings', (req, res, ctx) => res(ctx.json(listings))),
+    rest.head('http://localhost/v1/listings', (req, res, ctx) =>
+      res(ctx.set('x-total-count', listings.length.toString()), ctx.status(200)),
+    ),
     rest.post('http://localhost/v1/listings', (req, res, ctx) => {
       const body = req.body as Record<string, unknown>;
 

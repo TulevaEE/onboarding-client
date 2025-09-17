@@ -21,7 +21,11 @@ import { getInitialCapital } from './actions';
 import { getAuthentication } from '../common/authenticationManager';
 import { SectionHeading } from './SectionHeading';
 import { TransactionSection } from './TransactionSection/TransactionSection';
-import { useFundPensionStatus, useMemberCapitalListings } from '../common/apiHooks';
+import {
+  useFundPensionStatus,
+  useMemberCapitalListingCount,
+  useMemberCapitalListings,
+} from '../common/apiHooks';
 import { canAccessWithdrawals } from '../flows/withdrawals/utils';
 
 const noop = () => null;
@@ -50,9 +54,9 @@ export function AccountPage(
     }
   };
   const { data: fundPensionStatus, loading: isFundPensionStatusLoading } = useFundPensionStatus();
-  const { data: memberCapitalListings } = useMemberCapitalListings();
+  const { data: memberCapitalListingsCount } = useMemberCapitalListingCount();
 
-  const activeListingsCount = memberCapitalListings?.length ?? 0;
+  const activeListingsCount = memberCapitalListingsCount ?? 0;
 
   useEffect(() => {
     getData();
@@ -195,7 +199,10 @@ export function AccountPage(
               <Link className="icon-link" to="/capital/listings">
                 <FormattedMessage id="memberCapital.listings" />
                 {activeListingsCount > 0 && (
-                  <span className="badge rounded-pill text-bg-primary items-count-badge">
+                  <span
+                    className="badge rounded-pill text-bg-primary items-count-badge"
+                    data-testid="member-capital-listings-count"
+                  >
                     {activeListingsCount}
                     <span className="visually-hidden">
                       <FormattedMessage id="listings" values={{ count: activeListingsCount }} />

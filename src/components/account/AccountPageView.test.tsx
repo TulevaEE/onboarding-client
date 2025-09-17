@@ -61,8 +61,11 @@ describe('happy path', () => {
     expect(screen.getByText('55667788')).toBeInTheDocument();
   });
 
-  test('shows capital listings link', async () => {
-    const link = await screen.findByRole('link', { name: 'Buy-sell' });
+  test('shows capital listings link and count', async () => {
+    const count = await screen.findByTestId('member-capital-listings-count');
+    expect(await within(count).findByText('3')).toBeInTheDocument();
+
+    const link = await screen.findByRole('link', { name: /Buy-sell/ });
     expect(link).toBeInTheDocument();
     userEvent.click(link);
 

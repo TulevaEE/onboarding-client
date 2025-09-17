@@ -21,6 +21,7 @@ import {
   getFundPensionStatus,
   getFunds,
   getMandateDeadlines,
+  getMemberCapitalListingCount,
   getMemberCapitalListings,
   getMyCapitalTransferContracts,
   getPendingApplications,
@@ -181,6 +182,10 @@ export function useUpdateCapitalTransferContract(): UseMutationResult<
 
 export function useMemberCapitalListings(): UseQueryResult<MemberCapitalListing[]> {
   return useQuery(['memberCapitalListings'], () => getMemberCapitalListings());
+}
+
+export function useMemberCapitalListingCount(): UseQueryResult<number> {
+  return useQuery(['memberCapitalListingCount'], () => getMemberCapitalListingCount());
 }
 
 export function useCreateMemberCapitalListing(): UseMutationResult<

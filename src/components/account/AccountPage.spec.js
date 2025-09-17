@@ -12,7 +12,7 @@ import { activeThirdPillar } from './statusBox/fixtures';
 
 jest.mock('../common/apiHooks', () => ({
   useFundPensionStatus: () => ({ data: { fundPensions: [] } }),
-  useMemberCapitalListings: () => ({ data: [] }),
+  useMemberCapitalListingCount: () => ({ data: [] }),
 }));
 /**
  * @deprecated Use AccountPageView.test.tsx

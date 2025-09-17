@@ -35,6 +35,7 @@ import {
   deleteWithAuthentication,
   downloadFileWithAuthentication,
   getWithAuthentication,
+  head,
   patchWithAuthentication,
   post,
   postForm,
@@ -177,6 +178,11 @@ export function getMemberCapitalListings(): Promise<MemberCapitalListing[]> {
     () => getWithAuthentication(getEndpoint('/v1/listings'), undefined),
     'memberCapitalListings',
   );
+}
+
+export async function getMemberCapitalListingCount(): Promise<number | null> {
+  const request = await head(getEndpoint('/v1/listings'));
+  return Number(request.headers.get('x-total-count') ?? null);
 }
 
 export function createMemberCapitalListing(
