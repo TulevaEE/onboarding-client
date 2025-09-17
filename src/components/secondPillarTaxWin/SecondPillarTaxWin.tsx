@@ -39,6 +39,10 @@ const SecondPillarTaxWin = () => {
   const { data: user } = useMe();
   const { data: contributions } = useContributions();
   const currentPaymentRate = user?.secondPillarPaymentRates.current || 2;
+  const numericCurrentPaymentRate = Number(currentPaymentRate);
+  const isTwoPercentPaymentRate = numericCurrentPaymentRate === 2;
+  const isFourPercentPaymentRate = numericCurrentPaymentRate === 4;
+  const isSixPercentPaymentRate = numericCurrentPaymentRate === 6;
 
   const calculateYTDContributionMetrics = () => {
     if (!contributions) {
@@ -238,57 +242,38 @@ const SecondPillarTaxWin = () => {
     },
   };
 
-  return (
-    <div className="col-12 col-md-10 col-lg-7 mx-auto">
-      <div className="d-flex flex-column gap-5">
-        <div className="d-flex flex-column gap-3">
-          <h1 className="m-0">Sinu II samba maksuvõit</h1>
-          {!contributions || !user ? (
-            <Shimmer height={90} />
-          ) : (
-            <p className="m-0 lead">
-              Kuulud Eesti kõige nutikamate investorite hulka, sest tõstsid eelmisel aastal II samba
-              sissemakseid. {currentYear}. aasta esimese {lastContributionMonth} kuuga oled
-              II sambasse kogunud juba{' '}
-              <strong>
-                <Euro
-                  amount={netSalaryLoss + incomeTaxSaved + socialTaxPortionYTD}
-                  fractionDigits={0}
-                />
-              </strong>
-              .
-            </p>
-          )}
-        </div>
+  const ctaContent = (() => {
+    if (isTwoPercentPaymentRate) {
+      return (
+        <>
+          <h2 className="m-0 h3">Kuidas saaksid maksuvõitu suurendada?</h2>
+          <p className="m-0">
+            <a href="/2nd-pillar-payment-rate">Tõsta II samba sissemakse 6% peale</a>. Suuremate
+            sissemaksetega oleksid sellel aastal saanud <strong>veel 123 € maksuvõitu</strong>.
+          </p>
+        </>
+      );
+    }
 
-        <div className="d-flex flex-column gap-2">
-          <h2 className="m-0 h3">Mille arvelt võitsid sissemakset tõstes?</h2>
-          {!contributions || !user ? (
-            <Shimmer height={48} />
-          ) : (
-            <p className="m-0">
-              Tänu II samba sissemaksete tõstmisele oled sel aastal{' '}
-              <strong>
-                maksnud <Euro amount={incomeTaxSaved} fractionDigits={0} /> vähem tulumaksu
-              </strong>
-              .
-            </p>
-          )}
-        </div>
+    if (isFourPercentPaymentRate) {
+      return (
+        <>
+          <h2 className="m-0 h3">Kuidas saaksid maksuvõitu veelgi suurendada?</h2>
+          <p className="m-0">
+            <a href="/2nd-pillar-payment-rate">Tõsta II samba sissemakse 6% peale</a>. Suuremate
+            sissemaksetega oleksid sellel aastal saanud <strong>veel 123 € maksuvõitu</strong>.
+          </p>
+        </>
+      );
+    }
 
-        <div className="card p-3 p-sm-4" style={{ minHeight: '400px' }}>
-          {!contributions || !user ? (
-            <Shimmer height={350} />
-          ) : (
-            <Chart type="bar" data={chartData} options={chartOptions} />
-          )}
-        </div>
-
-        <div className="d-flex flex-column gap-2">
+    if (isSixPercentPaymentRate) {
+      return (
+        <>
           <h2 className="m-0 h3">Kuidas saaksid maksuvõitu veelgi suurendada?</h2>
           <p className="m-0">
             <a className="icon-link icon-link-hover" href="/3rd-pillar-payment">
-              Tee sissemakse III sambasse
+              Tee sissemakse III sambasse
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="16"
@@ -304,7 +289,71 @@ const SecondPillarTaxWin = () => {
               </svg>
             </a>
           </p>
+        </>
+      );
+    }
+
+    return null;
+  })();
+
+  return (
+    <div className="col-12 col-md-10 col-lg-7 mx-auto">
+      <div className="d-flex flex-column gap-5">
+        <div className="d-flex flex-column gap-3">
+          <h1 className="m-0">Sinu II samba maksuvõit</h1>
+          {!contributions || !user ? (
+            <>
+              <Shimmer height={90} />
+              <Shimmer height={60} />
+            </>
+          ) : null}
+          {contributions &&
+            user &&
+            (isTwoPercentPaymentRate ? (
+              <>
+                <p className="m-0 lead">
+                  2025. aasta esimese 8 kuuga oled II sambasse investeerinud 1440 € ning oled saanud
+                  riigilt maksuvõitu 1065 €.
+                </p>
+                <p className="m-0 lead">
+                  Kui oleksid II samba maksemäära tõstnud, oleksid kogunud tervelt 960 € rohkem.{' '}
+                  <strong>Sellest 211 € oleksid saanud riigilt</strong> Kuidas nii? Uuri graafikult:
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="m-0 lead">
+                  Kuulud Eesti kõige nutikamate investorite hulka, sest tõstsid eelmisel aastal
+                  II samba sissemakseid. {currentYear}. aasta esimese {lastContributionMonth} kuuga
+                  oled II sambasse kogunud juba{' '}
+                  <strong>
+                    <Euro
+                      amount={netSalaryLoss + incomeTaxSaved + socialTaxPortionYTD}
+                      fractionDigits={0}
+                    />
+                  </strong>
+                  .
+                </p>
+                <p className="m-0 lead">
+                  Tänu II samba sissemaksete tõstmisele oled sel aastal{' '}
+                  <strong>
+                    maksnud <Euro amount={incomeTaxSaved} fractionDigits={0} /> vähem tulumaksu
+                  </strong>
+                  .
+                </p>
+              </>
+            ))}
         </div>
+
+        <div className="card p-3 p-sm-4" style={{ minHeight: '400px' }}>
+          {!contributions || !user ? (
+            <Shimmer height={350} />
+          ) : (
+            <Chart type="bar" data={chartData} options={chartOptions} />
+          )}
+        </div>
+
+        <div className="d-flex flex-column gap-2">{ctaContent}</div>
 
         <div className="d-flex flex-column gap-3">
           <h2 className="m-0">
