@@ -391,7 +391,7 @@ const SecondPillarTaxWin = () => {
             <strong>2400 €</strong>. Sellest märkimisväärne osa on <strong>tulumaksuvõit</strong>.
           </p>
         </div>
-        <div style={{ minHeight: '320px' }}>
+        <div style={{ minHeight: '360px' }}>
           <canvas ref={chartContainerRef} aria-label="II samba maksuvõit" />
         </div>
         <div className="d-flex flex-column gap-3">
