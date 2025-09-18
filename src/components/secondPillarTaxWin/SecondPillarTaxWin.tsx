@@ -12,6 +12,8 @@ import {
 } from 'chart.js';
 import { Chart } from 'react-chartjs-2';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import { FormattedMessage } from 'react-intl';
+import { Link } from 'react-router-dom';
 import { usePageTitle } from '../common/usePageTitle';
 import { useContributions, useMe } from '../common/apiHooks';
 import { SecondPillarContribution } from '../common/apiModels';
@@ -162,7 +164,7 @@ const SecondPillarTaxWin = () => {
   const getChartData = () => {
     if (currentPaymentRate === 2) {
       return {
-        labels: ['Sinu 2% sissemaksega', '6% sissemaksega'],
+        labels: ['sinu 2% sissemakse', 'vs. 6% sissemakse'],
         leftData: {
           netSalaryLoss,
           incomeTaxSaved,
@@ -175,7 +177,7 @@ const SecondPillarTaxWin = () => {
     }
     if (currentPaymentRate === 4) {
       return {
-        labels: ['Sinu 4% sissemaksega', '6% sissemaksega'],
+        labels: ['sinu 4% sissemakse', 'vs. 6% sissemakse'],
         leftData: {
           netSalaryLoss,
           incomeTaxSaved,
@@ -187,14 +189,14 @@ const SecondPillarTaxWin = () => {
       };
     }
     return {
-      labels: ['2% sissemaksega', 'Sinu 6% sissemaksega'],
+      labels: ['sinu 6% sissemakse', 'vs. 2% sissemakse'],
       leftData: {
-        netSalaryLoss: netSalaryLossAt2Percent,
-        incomeTaxSaved: incomeTaxSavedAt2Percent,
-      },
-      rightData: {
         netSalaryLoss,
         incomeTaxSaved,
+      },
+      rightData: {
+        netSalaryLoss: netSalaryLossAt2Percent,
+        incomeTaxSaved: incomeTaxSavedAt2Percent,
       },
     };
   };
@@ -205,7 +207,7 @@ const SecondPillarTaxWin = () => {
     labels: chartDataConfig.labels,
     datasets: [
       {
-        label: 'Sotsiaalmaksust',
+        label: 'sotsiaalmaksust',
         data: [socialTaxPortionYTD, socialTaxPortionYTD],
         backgroundColor: '#D0D5DC',
         hoverBackgroundColor: '#B5BEC8',
@@ -215,7 +217,7 @@ const SecondPillarTaxWin = () => {
         borderRadius: 0,
       },
       {
-        label: 'Netopalgast',
+        label: 'netopalgast',
         data: [chartDataConfig.leftData.netSalaryLoss, chartDataConfig.rightData.netSalaryLoss],
         backgroundColor: '#84C5E6',
         hoverBackgroundColor: '#53AFDC',
@@ -225,7 +227,7 @@ const SecondPillarTaxWin = () => {
         borderRadius: 0,
       },
       {
-        label: 'Tulumaksust',
+        label: 'tulumaksust',
         data: [chartDataConfig.leftData.incomeTaxSaved, chartDataConfig.rightData.incomeTaxSaved],
         backgroundColor: '#4CBB51',
         hoverBackgroundColor: '#409D44',
@@ -339,15 +341,19 @@ const SecondPillarTaxWin = () => {
     if (currentPaymentRate === 2) {
       return (
         <>
-          <h2 className="m-0 h3">Kuidas saaksid maksuvõitu suurendada?</h2>
+          <h2 className="m-0 h3">Kuidas maksuvõitu suurendada?</h2>
           <p className="m-0">
-            <a href="/2nd-pillar-payment-rate">Tõsta II samba sissemakse 6% peale</a>. Suurema
-            sissemaksega oleksid tänavu saanud veel{' '}
+            Tõsta II samba sissemakse 6% peale. Suurema sissemaksega oleksid tänavu saanud{' '}
             <strong>
-              <Euro amount={additionalTaxSavings} fractionDigits={0} /> maksuvõitu lisaks
+              <Euro amount={additionalTaxSavings} fractionDigits={0} /> rohkem maksuvõitu
             </strong>
             .
           </p>
+          <div className="text-center mt-3">
+            <Link to="/2nd-pillar-payment-rate" className="btn btn-primary btn-lg">
+              <FormattedMessage id="success.2ndPillarPaymentUpsell.button" />
+            </Link>
+          </div>
         </>
       );
     }
@@ -355,15 +361,19 @@ const SecondPillarTaxWin = () => {
     if (currentPaymentRate === 4) {
       return (
         <>
-          <h2 className="m-0 h3">Kuidas saaksid maksuvõitu veelgi suurendada?</h2>
+          <h2 className="m-0 h3">Kuidas maksuvõitu veelgi suurendada?</h2>
           <p className="m-0">
-            <a href="/2nd-pillar-payment-rate">Tõsta II samba sissemakse 6% peale</a>. Suuremate
-            sissemaksetega oleksid tänavu saanud{' '}
+            Tõsta II samba sissemakse 6% peale. Suurema sissemaksega oleksid tänavu saanud{' '}
             <strong>
-              veel <Euro amount={additionalTaxSavings} fractionDigits={0} /> maksuvõitu
+              <Euro amount={additionalTaxSavings} fractionDigits={0} /> rohkem maksuvõitu
             </strong>
             .
           </p>
+          <div className="text-center mt-3">
+            <Link to="/2nd-pillar-payment-rate" className="btn btn-primary btn-lg">
+              <FormattedMessage id="success.2ndPillarPaymentUpsell.button" />
+            </Link>
+          </div>
         </>
       );
     }
@@ -371,7 +381,7 @@ const SecondPillarTaxWin = () => {
     if (currentPaymentRate === 6) {
       return (
         <>
-          <h2 className="m-0 h3">Kuidas saaksid maksuvõitu veelgi suurendada?</h2>
+          <h2 className="m-0 h3">Kuidas maksuvõitu veelgi suurendada?</h2>
           <p className="m-0">
             <a className="icon-link icon-link-hover" href="/3rd-pillar-payment">
               Tee sissemakse III sambasse
