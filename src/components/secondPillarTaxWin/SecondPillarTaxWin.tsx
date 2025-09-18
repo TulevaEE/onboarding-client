@@ -162,6 +162,7 @@ const SecondPillarTaxWin = () => {
         borderColor: STACKED_BAR_SEPARATOR_COLOR,
         borderWidth: 0,
         borderSkipped: false,
+        borderRadius: 0,
       },
       {
         label: 'Tulumaksust',
@@ -170,6 +171,7 @@ const SecondPillarTaxWin = () => {
         borderColor: STACKED_BAR_SEPARATOR_COLOR,
         borderWidth: { bottom: STACKED_BAR_SEPARATOR_WIDTH },
         borderSkipped: false,
+        borderRadius: 0,
       },
       {
         label: 'Sotsiaalmaksust',
@@ -178,6 +180,12 @@ const SecondPillarTaxWin = () => {
         borderColor: STACKED_BAR_SEPARATOR_COLOR,
         borderWidth: { bottom: STACKED_BAR_SEPARATOR_WIDTH },
         borderSkipped: false,
+        borderRadius: {
+          topLeft: 4,
+          topRight: 4,
+          bottomLeft: 0,
+          bottomRight: 0,
+        },
       },
     ],
   };
@@ -191,8 +199,29 @@ const SecondPillarTaxWin = () => {
     plugins: {
       legend: {
         position: 'top' as const,
+        onClick: () => undefined,
+        labels: {
+          boxWidth: 16,
+          boxHeight: 16,
+          padding: 16,
+          useBorderRadius: true,
+          borderRadius: 8,
+        },
       },
       tooltip: {
+        backgroundColor: '#fff',
+        bodyColor: '#212529',
+        titleColor: '#212529',
+        borderColor: 'rgba(0, 0, 0, 0.16)',
+        borderWidth: 1,
+        cornerRadius: 8,
+        padding: {
+          top: 12,
+          bottom: 12,
+          left: 16,
+          right: 16,
+        },
+        boxPadding: 4,
         callbacks: {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           label(context: any) {
