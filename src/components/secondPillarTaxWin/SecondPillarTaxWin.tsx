@@ -389,7 +389,7 @@ const SecondPillarTaxWin = () => {
             ))}
         </div>
 
-        <div className="card p-3 p-sm-4" style={{ minHeight: '400px' }}>
+        <div className="card p-3 py-sm-4 px-sm-5" style={{ minHeight: '400px' }}>
           {!contributions || !user ? (
             <Shimmer height={350} />
           ) : (
