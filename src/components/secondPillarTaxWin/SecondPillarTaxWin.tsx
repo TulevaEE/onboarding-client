@@ -438,7 +438,7 @@ const SecondPillarTaxWin = () => {
             ) : (
               <>
                 <p className="m-0 lead">
-                  Kuulud Eesti nutikamate investorite hulka, sest tõstsid eelmisel aastal II samba
+                  Kuulud Eesti nutikamate investorite hulka, kes tõstsid eelmisel aastal II samba
                   sissemakset.
                 </p>
                 <p className="m-0 lead">
