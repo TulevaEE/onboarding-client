@@ -151,8 +151,6 @@ const SecondPillarTaxWin = () => {
     netSalaryLoss,
     incomeTaxSavedAt2Percent,
     netSalaryLossAt2Percent,
-    incomeTaxSavedAt4Percent,
-    netSalaryLossAt4Percent,
     incomeTaxSavedAt6Percent,
     netSalaryLossAt6Percent,
   } = calculateYTDContributionMetrics();
@@ -166,8 +164,8 @@ const SecondPillarTaxWin = () => {
       return {
         labels: ['Sinu 2% panusega', '6% panusega'],
         leftData: {
-          netSalaryLoss: netSalaryLossAt2Percent,
-          incomeTaxSaved: incomeTaxSavedAt2Percent,
+          netSalaryLoss,
+          incomeTaxSaved,
         },
         rightData: {
           netSalaryLoss: netSalaryLossAt6Percent,
@@ -179,8 +177,8 @@ const SecondPillarTaxWin = () => {
       return {
         labels: ['Sinu 4% panusega', '6% panusega'],
         leftData: {
-          netSalaryLoss: netSalaryLossAt4Percent,
-          incomeTaxSaved: incomeTaxSavedAt4Percent,
+          netSalaryLoss,
+          incomeTaxSaved,
         },
         rightData: {
           netSalaryLoss: netSalaryLossAt6Percent,
@@ -195,8 +193,8 @@ const SecondPillarTaxWin = () => {
         incomeTaxSaved: incomeTaxSavedAt2Percent,
       },
       rightData: {
-        netSalaryLoss: netSalaryLossAt6Percent,
-        incomeTaxSaved: incomeTaxSavedAt6Percent,
+        netSalaryLoss,
+        incomeTaxSaved,
       },
     };
   };
