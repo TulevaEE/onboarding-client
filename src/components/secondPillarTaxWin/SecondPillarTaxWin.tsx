@@ -194,17 +194,12 @@ const SecondPillarTaxWin = () => {
       {
         label: 'Sotsiaalmaksust',
         data: [socialTaxPortionYTD, socialTaxPortionYTD],
-        backgroundColor: '#B5BEC8',
-        hoverBackgroundColor: '#9AA6B5',
+        backgroundColor: '#D0D5DC',
+        hoverBackgroundColor: '#B5BEC8',
         borderColor: STACKED_BAR_SEPARATOR_COLOR,
         borderWidth: 0,
         borderSkipped: false,
-        borderRadius: {
-          topLeft: 0,
-          topRight: 0,
-          bottomLeft: 4,
-          bottomRight: 4,
-        },
+        borderRadius: 0,
       },
       {
         label: 'Sinu netopalgast',
