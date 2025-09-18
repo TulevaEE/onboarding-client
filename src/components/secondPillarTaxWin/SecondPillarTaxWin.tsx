@@ -215,7 +215,7 @@ const SecondPillarTaxWin = () => {
         borderRadius: 0,
       },
       {
-        label: 'Sinu netopalgast',
+        label: 'Netopalgast',
         data: [chartDataConfig.leftData.netSalaryLoss, chartDataConfig.rightData.netSalaryLoss],
         backgroundColor: '#84C5E6',
         hoverBackgroundColor: '#53AFDC',
@@ -341,10 +341,10 @@ const SecondPillarTaxWin = () => {
         <>
           <h2 className="m-0 h3">Kuidas saaksid maksuvõitu suurendada?</h2>
           <p className="m-0">
-            <a href="/2nd-pillar-payment-rate">Tõsta II samba sissemakse 6% peale</a>. Suuremate
-            sissemaksetega oleksid sellel aastal saanud{' '}
+            <a href="/2nd-pillar-payment-rate">Tõsta II samba sissemakse 6% peale</a>. Suurema
+            sissemaksega oleksid tänavu saanud veel{' '}
             <strong>
-              veel <Euro amount={additionalTaxSavings} fractionDigits={0} /> maksuvõitu
+              <Euro amount={additionalTaxSavings} fractionDigits={0} /> maksuvõitu lisaks
             </strong>
             .
           </p>
@@ -358,7 +358,7 @@ const SecondPillarTaxWin = () => {
           <h2 className="m-0 h3">Kuidas saaksid maksuvõitu veelgi suurendada?</h2>
           <p className="m-0">
             <a href="/2nd-pillar-payment-rate">Tõsta II samba sissemakse 6% peale</a>. Suuremate
-            sissemaksetega oleksid sellel aastal saanud{' '}
+            sissemaksetega oleksid tänavu saanud{' '}
             <strong>
               veel <Euro amount={additionalTaxSavings} fractionDigits={0} /> maksuvõitu
             </strong>
@@ -401,7 +401,7 @@ const SecondPillarTaxWin = () => {
     <div className="col-12 col-md-10 col-lg-7 mx-auto">
       <div className="d-flex flex-column gap-5">
         <div className="d-flex flex-column gap-3">
-          <h1 className="m-0">Sinu II samba maksuvõit</h1>
+          <h1 className="m-0">Sinu II sammas</h1>
           {!contributions || !user ? (
             <>
               <Shimmer height={90} />
@@ -413,12 +413,12 @@ const SecondPillarTaxWin = () => {
             (currentPaymentRate === 2 ? (
               <>
                 <p className="m-0 lead">
-                  Oled sel aastal II sambasse investeerinud{' '}
+                  Oled tänavu II sambasse kogunud{' '}
                   <Euro
                     amount={netSalaryLoss + incomeTaxSaved + socialTaxPortionYTD}
                     fractionDigits={0}
                   />{' '}
-                  ja saanud riigilt maksuvõitu <Euro amount={incomeTaxSaved} fractionDigits={0} />.
+                  ja saanud sellest <Euro amount={incomeTaxSaved} fractionDigits={0} /> maksuvõitu.
                 </p>
                 <p className="m-0 lead">
                   Kui oleksid II samba sissemakset tõstnud, oleksid kogunud tervelt{' '}
@@ -428,11 +428,11 @@ const SecondPillarTaxWin = () => {
                     }
                     fractionDigits={0}
                   />
-                  .{' '}
+                  , millest{' '}
                   <strong>
-                    Sellest <Euro amount={incomeTaxSavedAt6Percent} fractionDigits={0} /> oleksid
-                    saanud riigilt.
+                    <Euro amount={incomeTaxSavedAt6Percent} fractionDigits={0} /> oleks maksuvõit
                   </strong>
+                  .
                 </p>
               </>
             ) : (
@@ -442,16 +442,16 @@ const SecondPillarTaxWin = () => {
                   sissemakset.
                 </p>
                 <p className="m-0 lead">
-                  Oled tänavu kokku kogunud juba{' '}
+                  Tänu sissemakse tõstmisele oled tänavu kokku kogunud juba{' '}
                   <strong>
                     <Euro
                       amount={netSalaryLoss + incomeTaxSaved + socialTaxPortionYTD}
                       fractionDigits={0}
                     />
                   </strong>{' '}
-                  ja tänu sissemakse tõstmisele maksnud{' '}
+                  ja saanud{' '}
                   <strong>
-                    <Euro amount={incomeTaxSaved} fractionDigits={0} /> vähem tulumaksu
+                    <Euro amount={incomeTaxSaved} fractionDigits={0} /> maksuvõitu
                   </strong>
                   .
                 </p>
