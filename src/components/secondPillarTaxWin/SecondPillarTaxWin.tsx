@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Collapse } from 'react-bootstrap';
 import {
+  BarController,
   BarElement,
   CategoryScale,
   Chart as ChartJS,
@@ -18,7 +19,16 @@ import { Euro } from '../common/Euro';
 import { formatAmountForCurrency } from '../common/utils';
 import { Shimmer } from '../common/shimmer/Shimmer';
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ChartDataLabels);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarController,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ChartDataLabels,
+);
 
 const CHART_FONT_FAMILY = '"Roboto", "Segoe UI", "Helvetica Neue", Arial, sans-serif';
 const CHART_FONT_SIZE = 14;
