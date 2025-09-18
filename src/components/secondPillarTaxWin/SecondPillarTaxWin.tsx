@@ -326,7 +326,7 @@ const SecondPillarTaxWin = () => {
         stacked: true,
         beginAtZero: true,
         display: false,
-        grace: '15%',
+        grace: '25%',
         grid: {
           display: false,
         },
@@ -438,7 +438,7 @@ const SecondPillarTaxWin = () => {
             ) : (
               <>
                 <p className="m-0 lead">
-                  Kuulud Eesti nutikamate investorite hulka, kes tõstsid eelmisel aastal II samba
+                  Kuulud Eesti nutikamate investorite hulka, sest tõstsid eelmisel aastal II samba
                   sissemakset.
                 </p>
                 <p className="m-0 lead">
@@ -449,7 +449,7 @@ const SecondPillarTaxWin = () => {
                       fractionDigits={0}
                     />
                   </strong>{' '}
-                  ja tänu sissemakse tõstmisele oled maksnud{' '}
+                  ja tänu sissemakse tõstmisele maksnud{' '}
                   <strong>
                     <Euro amount={incomeTaxSaved} fractionDigits={0} /> vähem tulumaksu
                   </strong>
@@ -459,7 +459,7 @@ const SecondPillarTaxWin = () => {
             ))}
         </div>
 
-        <div className="card p-3 py-sm-4 px-sm-5" style={{ minHeight: '400px' }}>
+        <div className="card px-2 py-3 px-sm-5 py-sm-4" style={{ minHeight: '400px' }}>
           {!contributions || !user ? (
             <Shimmer height={350} />
           ) : (
