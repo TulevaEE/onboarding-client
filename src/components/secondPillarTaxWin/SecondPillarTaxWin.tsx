@@ -438,9 +438,8 @@ const SecondPillarTaxWin = () => {
                   <strong>
                     Sellest{' '}
                     <Euro amount={incomeTaxSavedAt6Percent - incomeTaxSaved} fractionDigits={0} />{' '}
-                    oleksid saanud riigilt
-                  </strong>{' '}
-                  Kuidas nii? Uuri graafikult:
+                    oleksid saanud riigilt.
+                  </strong>
                 </p>
               </>
             ) : (
