@@ -14,7 +14,7 @@ export const SecondPillarPaymentRateTaxWin = ({
 }: SecondPillarPaymentRateTaxWinProps = {}) => {
   const { data: contributions } = useContributions();
   if (!contributions) {
-    return <Shimmer height={24} />;
+    return variant === 'inline' ? null : <Shimmer height={24} />;
   }
   const taxWin = yearToDateTaxWin(contributions);
   return (

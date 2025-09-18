@@ -7,7 +7,7 @@ export const StatusBoxLoader: React.FunctionComponent = () => (
     <StatusBoxTitle />
     <div className="card card-secondary">
       <div className="d-flex p-3 status-box-row tv-table__row">
-        <Shimmer height={52} />
+        <Shimmer height={76} />
       </div>
       <div className="d-flex p-3 status-box-row tv-table__row">
         <Shimmer height={76} />
