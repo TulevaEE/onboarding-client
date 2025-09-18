@@ -49,10 +49,6 @@ const SecondPillarTaxWin = () => {
   const { data: user } = useMe();
   const { data: contributions } = useContributions();
   const currentPaymentRate = user?.secondPillarPaymentRates.current || 2;
-  const numericCurrentPaymentRate = Number(currentPaymentRate);
-  const isTwoPercentPaymentRate = numericCurrentPaymentRate === 2;
-  const isFourPercentPaymentRate = numericCurrentPaymentRate === 4;
-  const isSixPercentPaymentRate = numericCurrentPaymentRate === 6;
 
   const calculateYTDContributionMetrics = () => {
     if (!contributions) {
@@ -62,6 +58,8 @@ const SecondPillarTaxWin = () => {
         netSalaryLoss: 0,
         incomeTaxSavedAt2Percent: 0,
         netSalaryLossAt2Percent: 0,
+        incomeTaxSavedAt6Percent: 0,
+        netSalaryLossAt6Percent: 0,
         lastContributionMonth: 0,
       };
     }
@@ -121,8 +119,17 @@ const SecondPillarTaxWin = () => {
     const incomeTaxSaved = employeeWithheldPortionYTD * 0.22;
     const netSalaryLoss = employeeWithheldPortionYTD * 0.78;
 
+    const nonJanuaryEmployeeWithheldPortionAt6Percent =
+      (nonJanuaryEmployeeWithheldPortion / currentPaymentRate) * 6;
+
+    const employeeWithheldPortionYTDAt6Percent =
+      januaryEmployeeWithheldPortion + nonJanuaryEmployeeWithheldPortionAt6Percent;
+
     const incomeTaxSavedAt2Percent = employeeWithheldPortionYTDAt2Percent * 0.22;
     const netSalaryLossAt2Percent = employeeWithheldPortionYTDAt2Percent * 0.78;
+
+    const incomeTaxSavedAt6Percent = employeeWithheldPortionYTDAt6Percent * 0.22;
+    const netSalaryLossAt6Percent = employeeWithheldPortionYTDAt6Percent * 0.78;
 
     return {
       socialTaxPortionYTD,
@@ -130,6 +137,8 @@ const SecondPillarTaxWin = () => {
       netSalaryLoss,
       incomeTaxSavedAt2Percent,
       netSalaryLossAt2Percent,
+      incomeTaxSavedAt6Percent,
+      netSalaryLossAt6Percent,
       lastContributionMonth,
     };
   };
@@ -140,6 +149,8 @@ const SecondPillarTaxWin = () => {
     netSalaryLoss,
     incomeTaxSavedAt2Percent,
     netSalaryLossAt2Percent,
+    incomeTaxSavedAt6Percent,
+    netSalaryLossAt6Percent,
     lastContributionMonth,
   } = calculateYTDContributionMetrics();
 
@@ -149,15 +160,54 @@ const SecondPillarTaxWin = () => {
 
   const formatCurrency = (value: number) => formatAmountForCurrency(value, 0);
 
-  const basePaymentRateLabel = '2% panusega';
-  const currentPaymentRateLabel = `Sinu ${currentPaymentRate}% panusega`;
+  const getChartData = () => {
+    if (currentPaymentRate === 2) {
+      return {
+        labels: ['2% panusega', '6% panusega'],
+        leftData: {
+          netSalaryLoss: netSalaryLossAt2Percent,
+          incomeTaxSaved: incomeTaxSavedAt2Percent,
+        },
+        rightData: {
+          netSalaryLoss: netSalaryLossAt6Percent,
+          incomeTaxSaved: incomeTaxSavedAt6Percent,
+        },
+      };
+    }
+    if (currentPaymentRate === 4) {
+      return {
+        labels: ['4% panusega', '6% panusega'],
+        leftData: {
+          netSalaryLoss,
+          incomeTaxSaved,
+        },
+        rightData: {
+          netSalaryLoss: netSalaryLossAt6Percent,
+          incomeTaxSaved: incomeTaxSavedAt6Percent,
+        },
+      };
+    }
+    return {
+      labels: ['2% panusega', '6% panusega'],
+      leftData: {
+        netSalaryLoss: netSalaryLossAt2Percent,
+        incomeTaxSaved: incomeTaxSavedAt2Percent,
+      },
+      rightData: {
+        netSalaryLoss,
+        incomeTaxSaved,
+      },
+    };
+  };
+
+  const chartDataConfig = getChartData();
 
   const chartData = {
-    labels: [basePaymentRateLabel, currentPaymentRateLabel],
+    labels: chartDataConfig.labels,
     datasets: [
       {
         label: 'Sinu netopalgast',
-        data: [netSalaryLossAt2Percent, netSalaryLoss],
+        data: [chartDataConfig.leftData.netSalaryLoss, chartDataConfig.rightData.netSalaryLoss],
         backgroundColor: '#84C5E6',
         hoverBackgroundColor: '#53AFDC',
         borderColor: STACKED_BAR_SEPARATOR_COLOR,
@@ -167,7 +217,7 @@ const SecondPillarTaxWin = () => {
       },
       {
         label: 'Tulumaksust',
-        data: [incomeTaxSavedAt2Percent, incomeTaxSaved],
+        data: [chartDataConfig.leftData.incomeTaxSaved, chartDataConfig.rightData.incomeTaxSaved],
         backgroundColor: '#4CBB51',
         hoverBackgroundColor: '#409D44',
         borderColor: STACKED_BAR_SEPARATOR_COLOR,
@@ -286,31 +336,40 @@ const SecondPillarTaxWin = () => {
   };
 
   const ctaContent = (() => {
-    if (isTwoPercentPaymentRate) {
+    const additionalTaxSavings = incomeTaxSavedAt6Percent - incomeTaxSaved;
+    if (currentPaymentRate === 2) {
       return (
         <>
           <h2 className="m-0 h3">Kuidas saaksid maksuvõitu suurendada?</h2>
           <p className="m-0">
             <a href="/2nd-pillar-payment-rate">Tõsta II samba sissemakse 6% peale</a>. Suuremate
-            sissemaksetega oleksid sellel aastal saanud <strong>veel 123 € maksuvõitu</strong>.
+            sissemaksetega oleksid sellel aastal saanud{' '}
+            <strong>
+              veel <Euro amount={additionalTaxSavings} fractionDigits={0} /> maksuvõitu
+            </strong>
+            .
           </p>
         </>
       );
     }
 
-    if (isFourPercentPaymentRate) {
+    if (currentPaymentRate === 4) {
       return (
         <>
           <h2 className="m-0 h3">Kuidas saaksid maksuvõitu veelgi suurendada?</h2>
           <p className="m-0">
             <a href="/2nd-pillar-payment-rate">Tõsta II samba sissemakse 6% peale</a>. Suuremate
-            sissemaksetega oleksid sellel aastal saanud <strong>veel 123 € maksuvõitu</strong>.
+            sissemaksetega oleksid sellel aastal saanud{' '}
+            <strong>
+              veel <Euro amount={additionalTaxSavings} fractionDigits={0} /> maksuvõitu
+            </strong>
+            .
           </p>
         </>
       );
     }
 
-    if (isSixPercentPaymentRate) {
+    if (currentPaymentRate === 6) {
       return (
         <>
           <h2 className="m-0 h3">Kuidas saaksid maksuvõitu veelgi suurendada?</h2>
@@ -352,15 +411,36 @@ const SecondPillarTaxWin = () => {
           ) : null}
           {contributions &&
             user &&
-            (isTwoPercentPaymentRate ? (
+            (currentPaymentRate === 2 ? (
               <>
                 <p className="m-0 lead">
-                  2025. aasta esimese 8 kuuga oled II sambasse investeerinud 1440 € ning oled saanud
-                  riigilt maksuvõitu 1065 €.
+                  {currentYear}. aasta esimese {lastContributionMonth} kuuga oled II sambasse
+                  investeerinud{' '}
+                  <Euro
+                    amount={netSalaryLoss + incomeTaxSaved + socialTaxPortionYTD}
+                    fractionDigits={0}
+                  />{' '}
+                  ning oled saanud riigilt maksuvõitu{' '}
+                  <Euro amount={incomeTaxSaved} fractionDigits={0} />.
                 </p>
                 <p className="m-0 lead">
-                  Kui oleksid II samba maksemäära tõstnud, oleksid kogunud tervelt 960 € rohkem.{' '}
-                  <strong>Sellest 211 € oleksid saanud riigilt</strong> Kuidas nii? Uuri graafikult:
+                  Kui oleksid II samba maksemäära tõstnud, oleksid kogunud tervelt{' '}
+                  <Euro
+                    amount={
+                      netSalaryLossAt6Percent +
+                      incomeTaxSavedAt6Percent -
+                      netSalaryLoss -
+                      incomeTaxSaved
+                    }
+                    fractionDigits={0}
+                  />{' '}
+                  rohkem.{' '}
+                  <strong>
+                    Sellest{' '}
+                    <Euro amount={incomeTaxSavedAt6Percent - incomeTaxSaved} fractionDigits={0} />{' '}
+                    oleksid saanud riigilt
+                  </strong>{' '}
+                  Kuidas nii? Uuri graafikult:
                 </p>
               </>
             ) : (
