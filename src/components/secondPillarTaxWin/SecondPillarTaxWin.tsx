@@ -58,6 +58,8 @@ const SecondPillarTaxWin = () => {
         netSalaryLoss: 0,
         incomeTaxSavedAt2Percent: 0,
         netSalaryLossAt2Percent: 0,
+        incomeTaxSavedAt4Percent: 0,
+        netSalaryLossAt4Percent: 0,
         incomeTaxSavedAt6Percent: 0,
         netSalaryLossAt6Percent: 0,
       };
@@ -109,6 +111,12 @@ const SecondPillarTaxWin = () => {
     const incomeTaxSaved = employeeWithheldPortionYTD * 0.22;
     const netSalaryLoss = employeeWithheldPortionYTD * 0.78;
 
+    const nonJanuaryEmployeeWithheldPortionAt4Percent =
+      (nonJanuaryEmployeeWithheldPortion / currentPaymentRate) * 4;
+
+    const employeeWithheldPortionYTDAt4Percent =
+      januaryEmployeeWithheldPortion + nonJanuaryEmployeeWithheldPortionAt4Percent;
+
     const nonJanuaryEmployeeWithheldPortionAt6Percent =
       (nonJanuaryEmployeeWithheldPortion / currentPaymentRate) * 6;
 
@@ -117,6 +125,9 @@ const SecondPillarTaxWin = () => {
 
     const incomeTaxSavedAt2Percent = employeeWithheldPortionYTDAt2Percent * 0.22;
     const netSalaryLossAt2Percent = employeeWithheldPortionYTDAt2Percent * 0.78;
+
+    const incomeTaxSavedAt4Percent = employeeWithheldPortionYTDAt4Percent * 0.22;
+    const netSalaryLossAt4Percent = employeeWithheldPortionYTDAt4Percent * 0.78;
 
     const incomeTaxSavedAt6Percent = employeeWithheldPortionYTDAt6Percent * 0.22;
     const netSalaryLossAt6Percent = employeeWithheldPortionYTDAt6Percent * 0.78;
@@ -127,6 +138,8 @@ const SecondPillarTaxWin = () => {
       netSalaryLoss,
       incomeTaxSavedAt2Percent,
       netSalaryLossAt2Percent,
+      incomeTaxSavedAt4Percent,
+      netSalaryLossAt4Percent,
       incomeTaxSavedAt6Percent,
       netSalaryLossAt6Percent,
     };
@@ -138,6 +151,8 @@ const SecondPillarTaxWin = () => {
     netSalaryLoss,
     incomeTaxSavedAt2Percent,
     netSalaryLossAt2Percent,
+    incomeTaxSavedAt4Percent,
+    netSalaryLossAt4Percent,
     incomeTaxSavedAt6Percent,
     netSalaryLossAt6Percent,
   } = calculateYTDContributionMetrics();
@@ -164,8 +179,8 @@ const SecondPillarTaxWin = () => {
       return {
         labels: ['Sinu 4% panusega', '6% panusega'],
         leftData: {
-          netSalaryLoss,
-          incomeTaxSaved,
+          netSalaryLoss: netSalaryLossAt4Percent,
+          incomeTaxSaved: incomeTaxSavedAt4Percent,
         },
         rightData: {
           netSalaryLoss: netSalaryLossAt6Percent,
@@ -180,8 +195,8 @@ const SecondPillarTaxWin = () => {
         incomeTaxSaved: incomeTaxSavedAt2Percent,
       },
       rightData: {
-        netSalaryLoss,
-        incomeTaxSaved,
+        netSalaryLoss: netSalaryLossAt6Percent,
+        incomeTaxSaved: incomeTaxSavedAt6Percent,
       },
     };
   };
