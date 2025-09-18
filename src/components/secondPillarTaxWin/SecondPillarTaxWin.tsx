@@ -431,7 +431,7 @@ const SecondPillarTaxWin = () => {
               <>
                 <p className="m-0 lead">
                   Kuulud Eesti kõige nutikamate investorite hulka, sest tõstsid eelmisel aastal
-                  II samba sissemakseid ja oled käesoleval aastal kogunud juba{' '}
+                  II samba sissemakseid ja oled tänavu kogunud juba{' '}
                   <strong>
                     <Euro
                       amount={netSalaryLoss + incomeTaxSaved + socialTaxPortionYTD}
@@ -441,7 +441,7 @@ const SecondPillarTaxWin = () => {
                   .
                 </p>
                 <p className="m-0 lead">
-                  Tänu II samba sissemaksete tõstmisele oled sel aastal{' '}
+                  Tänu II samba sissemaksete tõstmisele oled tänavu{' '}
                   <strong>
                     maksnud{' '}
                     <Euro amount={incomeTaxSaved - incomeTaxSavedAt2Percent} fractionDigits={0} />{' '}
