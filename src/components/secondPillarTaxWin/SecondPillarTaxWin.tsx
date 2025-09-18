@@ -12,7 +12,6 @@ import {
 } from 'chart.js';
 import { Chart } from 'react-chartjs-2';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 import { usePageTitle } from '../common/usePageTitle';
 import { useContributions, useMe } from '../common/apiHooks';
@@ -337,54 +336,13 @@ const SecondPillarTaxWin = () => {
   };
 
   const ctaContent = (() => {
-    const additionalTaxSavings = incomeTaxSavedAt6Percent - incomeTaxSaved;
     if (currentPaymentRate === 2) {
       return (
         <>
-          <h2 className="m-0 h3">Kuidas maksuvõitu suurendada?</h2>
+          <h2 className="m-0 h3">Soovid maksuvõitu suurendada?</h2>
           <p className="m-0">
-            Tõsta II samba sissemakse 6% peale. Suurema sissemaksega oleksid tänavu saanud{' '}
-            <strong>
-              <Euro amount={additionalTaxSavings} fractionDigits={0} /> rohkem maksuvõitu
-            </strong>
-            .
-          </p>
-          <div className="text-center mt-3">
-            <Link to="/2nd-pillar-payment-rate" className="btn btn-primary btn-lg">
-              <FormattedMessage id="success.2ndPillarPaymentUpsell.button" />
-            </Link>
-          </div>
-        </>
-      );
-    }
-
-    if (currentPaymentRate === 4) {
-      return (
-        <>
-          <h2 className="m-0 h3">Kuidas maksuvõitu veelgi suurendada?</h2>
-          <p className="m-0">
-            Tõsta II samba sissemakse 6% peale. Suurema sissemaksega oleksid tänavu saanud{' '}
-            <strong>
-              <Euro amount={additionalTaxSavings} fractionDigits={0} /> rohkem maksuvõitu
-            </strong>
-            .
-          </p>
-          <div className="text-center mt-3">
-            <Link to="/2nd-pillar-payment-rate" className="btn btn-primary btn-lg">
-              <FormattedMessage id="success.2ndPillarPaymentUpsell.button" />
-            </Link>
-          </div>
-        </>
-      );
-    }
-
-    if (currentPaymentRate === 6) {
-      return (
-        <>
-          <h2 className="m-0 h3">Kuidas maksuvõitu veelgi suurendada?</h2>
-          <p className="m-0">
-            <a className="icon-link icon-link-hover" href="/3rd-pillar-payment">
-              Tee sissemakse III sambasse
+            <Link to="/2nd-pillar-payment-rate" className="icon-link icon-link-hover">
+              Tõsta II samba sissemakse 6% peale
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="16"
@@ -398,7 +356,59 @@ const SecondPillarTaxWin = () => {
                   d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
                 />
               </svg>
-            </a>
+            </Link>
+          </p>
+        </>
+      );
+    }
+
+    if (currentPaymentRate === 4) {
+      return (
+        <>
+          <h2 className="m-0 h3">Soovid maksuvõitu veelgi suurendada?</h2>
+          <p className="m-0">
+            <Link to="/2nd-pillar-payment-rate" className="icon-link icon-link-hover">
+              Tõsta II samba sissemakse 6% peale
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                className="bi bi-arrow-right"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
+                />
+              </svg>
+            </Link>
+          </p>
+        </>
+      );
+    }
+
+    if (currentPaymentRate === 6) {
+      return (
+        <>
+          <h2 className="m-0 h3">Kuidas maksuvõitu veelgi suurendada?</h2>
+          <p className="m-0">
+            <Link to="/3rd-pillar-payment" className="icon-link icon-link-hover">
+              Tee III samba sissemakse
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                className="bi bi-arrow-right"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
+                />
+              </svg>
+            </Link>
           </p>
         </>
       );
@@ -428,7 +438,8 @@ const SecondPillarTaxWin = () => {
                     amount={netSalaryLoss + incomeTaxSaved + socialTaxPortionYTD}
                     fractionDigits={0}
                   />{' '}
-                  ja saanud sellest <Euro amount={incomeTaxSaved} fractionDigits={0} /> maksuvõitu.
+                  ja maksnud seetõttu <Euro amount={incomeTaxSaved} fractionDigits={0} /> vähem
+                  tulumaksu.
                 </p>
                 <p className="m-0 lead">
                   Kui oleksid II samba sissemakset tõstnud, oleksid kogunud tervelt{' '}
@@ -437,10 +448,11 @@ const SecondPillarTaxWin = () => {
                       netSalaryLossAt6Percent + incomeTaxSavedAt6Percent + socialTaxPortionYTD
                     }
                     fractionDigits={0}
-                  />
-                  , millest{' '}
+                  />{' '}
+                  ja{' '}
                   <strong>
-                    <Euro amount={incomeTaxSavedAt6Percent} fractionDigits={0} /> oleks maksuvõit
+                    saanud riigilt <Euro amount={incomeTaxSavedAt6Percent} fractionDigits={0} />{' '}
+                    maksuvõitu
                   </strong>
                   .
                 </p>
@@ -452,16 +464,16 @@ const SecondPillarTaxWin = () => {
                   sissemakset.
                 </p>
                 <p className="m-0 lead">
-                  Tänu sissemakse tõstmisele oled tänavu kokku kogunud juba{' '}
+                  Tänu sissemakse tõstmisele oled tänavu kogunud juba{' '}
                   <strong>
                     <Euro
                       amount={netSalaryLoss + incomeTaxSaved + socialTaxPortionYTD}
                       fractionDigits={0}
                     />
                   </strong>{' '}
-                  ja saanud{' '}
+                  ja maksnud seetõttu kokku{' '}
                   <strong>
-                    <Euro amount={incomeTaxSaved} fractionDigits={0} /> maksuvõitu
+                    <Euro amount={incomeTaxSaved} fractionDigits={0} /> vähem tulumaksu
                   </strong>
                   .
                 </p>
