@@ -441,18 +441,17 @@ const SecondPillarTaxWin = () => {
                   .
                 </p>
                 <p className="m-0 lead">
-                  Kui oleksid II samba sissemakset tõstnud, oleksid kogunud tervelt{' '}
+                  Kui oleksid II samba sissemakset tõstnud, oleksid saanud riigilt{' '}
+                  <strong>
+                    <Euro amount={incomeTaxSavedAt6Percent} fractionDigits={0} /> maksuvõitu
+                  </strong>{' '}
+                  ja kogunud tervelt{' '}
                   <Euro
                     amount={
                       netSalaryLossAt6Percent + incomeTaxSavedAt6Percent + socialTaxPortionYTD
                     }
                     fractionDigits={0}
-                  />{' '}
-                  ja{' '}
-                  <strong>
-                    saanud riigilt <Euro amount={incomeTaxSavedAt6Percent} fractionDigits={0} />{' '}
-                    maksuvõitu
-                  </strong>
+                  />
                   .
                 </p>
               </>
