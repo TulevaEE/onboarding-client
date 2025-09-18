@@ -162,7 +162,7 @@ const SecondPillarTaxWin = () => {
   const getChartData = () => {
     if (currentPaymentRate === 2) {
       return {
-        labels: ['Sinu 2% panusega', '6% panusega'],
+        labels: ['Sinu 2% sissemaksega', '6% sissemaksega'],
         leftData: {
           netSalaryLoss,
           incomeTaxSaved,
@@ -175,7 +175,7 @@ const SecondPillarTaxWin = () => {
     }
     if (currentPaymentRate === 4) {
       return {
-        labels: ['Sinu 4% panusega', '6% panusega'],
+        labels: ['Sinu 4% sissemaksega', '6% sissemaksega'],
         leftData: {
           netSalaryLoss,
           incomeTaxSaved,
@@ -187,7 +187,7 @@ const SecondPillarTaxWin = () => {
       };
     }
     return {
-      labels: ['2% panusega', 'Sinu 6% panusega'],
+      labels: ['2% sissemaksega', 'Sinu 6% sissemaksega'],
       leftData: {
         netSalaryLoss: netSalaryLossAt2Percent,
         incomeTaxSaved: incomeTaxSavedAt2Percent,
@@ -421,7 +421,7 @@ const SecondPillarTaxWin = () => {
                   ja saanud riigilt maksuvõitu <Euro amount={incomeTaxSaved} fractionDigits={0} />.
                 </p>
                 <p className="m-0 lead">
-                  Kui oleksid II samba maksemäära tõstnud, oleksid kogunud tervelt{' '}
+                  Kui oleksid II samba sissemakset tõstnud, oleksid kogunud tervelt{' '}
                   <Euro
                     amount={
                       netSalaryLossAt6Percent + incomeTaxSavedAt6Percent + socialTaxPortionYTD
@@ -438,22 +438,20 @@ const SecondPillarTaxWin = () => {
             ) : (
               <>
                 <p className="m-0 lead">
-                  Kuulud Eesti kõige nutikamate investorite hulka, sest tõstsid eelmisel aastal
-                  II samba sissemakseid ja oled tänavu kogunud juba{' '}
+                  Kuulud Eesti nutikamate investorite hulka, kes tõstsid eelmisel aastal II samba
+                  sissemakset.
+                </p>
+                <p className="m-0 lead">
+                  Oled tänavu kokku kogunud juba{' '}
                   <strong>
                     <Euro
                       amount={netSalaryLoss + incomeTaxSaved + socialTaxPortionYTD}
                       fractionDigits={0}
                     />
-                  </strong>
-                  .
-                </p>
-                <p className="m-0 lead">
-                  Tänu II samba sissemaksete tõstmisele oled{' '}
+                  </strong>{' '}
+                  ja tänu sissemakse tõstmisele oled maksnud{' '}
                   <strong>
-                    maksnud{' '}
-                    <Euro amount={incomeTaxSaved - incomeTaxSavedAt2Percent} fractionDigits={0} />{' '}
-                    vähem tulumaksu
+                    <Euro amount={incomeTaxSaved} fractionDigits={0} /> vähem tulumaksu
                   </strong>
                   .
                 </p>
