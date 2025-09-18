@@ -206,12 +206,27 @@ const SecondPillarTaxWin = () => {
     labels: chartDataConfig.labels,
     datasets: [
       {
+        label: 'Sotsiaalmaksust',
+        data: [socialTaxPortionYTD, socialTaxPortionYTD],
+        backgroundColor: '#E5E7EB',
+        hoverBackgroundColor: '#D1D5DB',
+        borderColor: STACKED_BAR_SEPARATOR_COLOR,
+        borderWidth: 0,
+        borderSkipped: false,
+        borderRadius: {
+          topLeft: 0,
+          topRight: 0,
+          bottomLeft: 4,
+          bottomRight: 4,
+        },
+      },
+      {
         label: 'Sinu netopalgast',
         data: [chartDataConfig.leftData.netSalaryLoss, chartDataConfig.rightData.netSalaryLoss],
         backgroundColor: '#84C5E6',
         hoverBackgroundColor: '#53AFDC',
         borderColor: STACKED_BAR_SEPARATOR_COLOR,
-        borderWidth: 0,
+        borderWidth: { bottom: STACKED_BAR_SEPARATOR_WIDTH },
         borderSkipped: false,
         borderRadius: 0,
       },
@@ -220,16 +235,6 @@ const SecondPillarTaxWin = () => {
         data: [chartDataConfig.leftData.incomeTaxSaved, chartDataConfig.rightData.incomeTaxSaved],
         backgroundColor: '#4CBB51',
         hoverBackgroundColor: '#409D44',
-        borderColor: STACKED_BAR_SEPARATOR_COLOR,
-        borderWidth: { bottom: STACKED_BAR_SEPARATOR_WIDTH },
-        borderSkipped: false,
-        borderRadius: 0,
-      },
-      {
-        label: 'Sotsiaalmaksust',
-        data: [socialTaxPortionYTD, socialTaxPortionYTD],
-        backgroundColor: '#FECF49',
-        hoverBackgroundColor: '#E3B740',
         borderColor: STACKED_BAR_SEPARATOR_COLOR,
         borderWidth: { bottom: STACKED_BAR_SEPARATOR_WIDTH },
         borderSkipped: false,
@@ -427,18 +432,14 @@ const SecondPillarTaxWin = () => {
                   Kui oleksid II samba maksemäära tõstnud, oleksid kogunud tervelt{' '}
                   <Euro
                     amount={
-                      netSalaryLossAt6Percent +
-                      incomeTaxSavedAt6Percent -
-                      netSalaryLoss -
-                      incomeTaxSaved
+                      netSalaryLossAt6Percent + incomeTaxSavedAt6Percent + socialTaxPortionYTD
                     }
                     fractionDigits={0}
-                  />{' '}
-                  rohkem.{' '}
+                  />
+                  .{' '}
                   <strong>
-                    Sellest{' '}
-                    <Euro amount={incomeTaxSavedAt6Percent - incomeTaxSaved} fractionDigits={0} />{' '}
-                    oleksid saanud riigilt.
+                    Sellest <Euro amount={incomeTaxSavedAt6Percent} fractionDigits={0} /> oleksid
+                    saanud riigilt.
                   </strong>
                 </p>
               </>
