@@ -436,7 +436,7 @@ const SecondPillarTaxWin = () => {
                   .
                 </p>
                 <p className="m-0 lead">
-                  Tänu II samba sissemaksete tõstmisele oled tänavu{' '}
+                  Tänu II samba sissemaksete tõstmisele oled{' '}
                   <strong>
                     maksnud{' '}
                     <Euro amount={incomeTaxSaved - incomeTaxSavedAt2Percent} fractionDigits={0} />{' '}
