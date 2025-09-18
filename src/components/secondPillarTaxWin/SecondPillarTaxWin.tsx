@@ -499,10 +499,10 @@ const SecondPillarTaxWin = () => {
             <div id="calculationDetails" aria-labelledby="calculationDetailsToggle">
               <div className="d-flex flex-column gap-3">
                 <p className="m-0">
-                  II sambasse makstakse igal kuul sinu brutopalgast 2%, 4% või 6%, lähtuvalt sinu
-                  valitud panusest. Graafiku tulpades on kujutatud sinu tegelikke makseid
-                  II sambasse 2025. aasta jooksul ning arvutatud, millised olnuks maksed kõrgema või
-                  madalama maksemäära juures.
+                  II sambasse makstakse igal kuul sinu brutopalgast kuni 6%, lähtuvalt sinu valitud
+                  panusest. Graafiku tulpades on kujutatud sinu tegelikke makseid II sambasse
+                  2025. aasta jooksul ning arvutatud, millised olnuks maksed kõrgema või madalama
+                  sissemakse juures.
                 </p>
                 <p className="m-0">
                   Kuna sissemaksed tehakse brutopalgast enne tulumaksu kinnipidamist, siis on{' '}
@@ -514,11 +514,11 @@ const SecondPillarTaxWin = () => {
                 </p>
                 <p className="m-0">
                   II samba makseid tõstes saad aasta peale kuni{' '}
-                  <strong>kolm korda suuremat maksuvõitu</strong>. 2000-eurose palga näitel teenib
+                  <strong>kolm korda suuremat maksuvõitu</strong>. 2000‑eurose palga näitel teenib
                   koguja maksuvõitu 345 eurot, mis läheb tema II sambasse kasvama.
                 </p>
                 <p className="m-0">
-                  Lisaks makstakse II sambasse 4% brutopalgast sotsiaalmaksu arvelt. 2000-eurose
+                  Lisaks makstakse II sambasse 4% brutopalgast sotsiaalmaksu arvelt. 2000‑eurose
                   kuupalga juures on see 80 eurot. See ei sõltu koguja panusest. II sambasse makstud
                   sotsiaalmaks <a href="/1st-vs-2nd-pillar">mõjutab vähesel määral ka I sammast</a>.
                 </p>
