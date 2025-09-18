@@ -60,7 +60,6 @@ const SecondPillarTaxWin = () => {
         netSalaryLossAt2Percent: 0,
         incomeTaxSavedAt6Percent: 0,
         netSalaryLossAt6Percent: 0,
-        lastContributionMonth: 0,
       };
     }
 
@@ -69,15 +68,6 @@ const SecondPillarTaxWin = () => {
     const ytdSecondPillarContributions = contributions
       .filter((contribution) => contribution.pillar === 2)
       .filter((contribution) => new Date(contribution.time).getFullYear() === currentYear);
-
-    const lastContributionMonth =
-      ytdSecondPillarContributions.length > 0
-        ? Math.max(
-            ...ytdSecondPillarContributions.map(
-              (contribution) => new Date(contribution.time).getMonth() + 1,
-            ),
-          )
-        : 0;
 
     const januaryContributions = ytdSecondPillarContributions.filter(
       (contribution) => new Date(contribution.time).getMonth() === 0,
@@ -139,7 +129,6 @@ const SecondPillarTaxWin = () => {
       netSalaryLossAt2Percent,
       incomeTaxSavedAt6Percent,
       netSalaryLossAt6Percent,
-      lastContributionMonth,
     };
   };
 
@@ -151,10 +140,7 @@ const SecondPillarTaxWin = () => {
     netSalaryLossAt2Percent,
     incomeTaxSavedAt6Percent,
     netSalaryLossAt6Percent,
-    lastContributionMonth,
   } = calculateYTDContributionMetrics();
-
-  const currentYear = new Date().getFullYear();
 
   const [calculationDetailsToggle, setCalculationDetailsToggle] = useState(false);
 
@@ -208,8 +194,8 @@ const SecondPillarTaxWin = () => {
       {
         label: 'Sotsiaalmaksust',
         data: [socialTaxPortionYTD, socialTaxPortionYTD],
-        backgroundColor: '#E5E7EB',
-        hoverBackgroundColor: '#D1D5DB',
+        backgroundColor: '#B5BEC8',
+        hoverBackgroundColor: '#9AA6B5',
         borderColor: STACKED_BAR_SEPARATOR_COLOR,
         borderWidth: 0,
         borderSkipped: false,
@@ -419,14 +405,12 @@ const SecondPillarTaxWin = () => {
             (currentPaymentRate === 2 ? (
               <>
                 <p className="m-0 lead">
-                  {currentYear}. aasta esimese {lastContributionMonth} kuuga oled II sambasse
-                  investeerinud{' '}
+                  Oled sel aastal II sambasse investeerinud{' '}
                   <Euro
                     amount={netSalaryLoss + incomeTaxSaved + socialTaxPortionYTD}
                     fractionDigits={0}
                   />{' '}
-                  ning oled saanud riigilt maksuvõitu{' '}
-                  <Euro amount={incomeTaxSaved} fractionDigits={0} />.
+                  ja saanud riigilt maksuvõitu <Euro amount={incomeTaxSaved} fractionDigits={0} />.
                 </p>
                 <p className="m-0 lead">
                   Kui oleksid II samba maksemäära tõstnud, oleksid kogunud tervelt{' '}
@@ -447,8 +431,7 @@ const SecondPillarTaxWin = () => {
               <>
                 <p className="m-0 lead">
                   Kuulud Eesti kõige nutikamate investorite hulka, sest tõstsid eelmisel aastal
-                  II samba sissemakseid. {currentYear}. aasta esimese {lastContributionMonth} kuuga
-                  oled II sambasse kogunud juba{' '}
+                  II samba sissemakseid ja oled käesoleval aastal II sambasse kogunud juba{' '}
                   <strong>
                     <Euro
                       amount={netSalaryLoss + incomeTaxSaved + socialTaxPortionYTD}
