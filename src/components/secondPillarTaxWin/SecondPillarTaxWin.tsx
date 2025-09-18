@@ -437,9 +437,8 @@ const SecondPillarTaxWin = () => {
                   <Euro
                     amount={netSalaryLoss + incomeTaxSaved + socialTaxPortionYTD}
                     fractionDigits={0}
-                  />{' '}
-                  ja maksnud seetõttu <Euro amount={incomeTaxSaved} fractionDigits={0} /> vähem
-                  tulumaksu.
+                  />
+                  .
                 </p>
                 <p className="m-0 lead">
                   Kui oleksid II samba sissemakset tõstnud, oleksid kogunud tervelt{' '}
@@ -460,20 +459,18 @@ const SecondPillarTaxWin = () => {
             ) : (
               <>
                 <p className="m-0 lead">
-                  Kuulud Eesti nutikamate investorite hulka, kes tõstsid eelmisel aastal II samba
+                  Kuulud Eesti nutikaimate investorite hulka, kes tõstsid eelmisel aastal II samba
                   sissemakset.
                 </p>
                 <p className="m-0 lead">
                   Tänu sissemakse tõstmisele oled tänavu kogunud juba{' '}
+                  <Euro
+                    amount={netSalaryLoss + incomeTaxSaved + socialTaxPortionYTD}
+                    fractionDigits={0}
+                  />
+                  , millest{' '}
                   <strong>
-                    <Euro
-                      amount={netSalaryLoss + incomeTaxSaved + socialTaxPortionYTD}
-                      fractionDigits={0}
-                    />
-                  </strong>{' '}
-                  ja maksnud seetõttu kokku{' '}
-                  <strong>
-                    <Euro amount={incomeTaxSaved} fractionDigits={0} /> vähem tulumaksu
+                    <Euro amount={incomeTaxSaved} fractionDigits={0} /> on vähemmakstud tulumaks
                   </strong>
                   .
                 </p>
