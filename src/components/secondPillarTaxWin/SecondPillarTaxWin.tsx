@@ -149,7 +149,7 @@ const SecondPillarTaxWin = () => {
   const getChartData = () => {
     if (currentPaymentRate === 2) {
       return {
-        labels: ['2% panusega', '6% panusega'],
+        labels: ['Sinu 2% panusega', '6% panusega'],
         leftData: {
           netSalaryLoss: netSalaryLossAt2Percent,
           incomeTaxSaved: incomeTaxSavedAt2Percent,
@@ -162,7 +162,7 @@ const SecondPillarTaxWin = () => {
     }
     if (currentPaymentRate === 4) {
       return {
-        labels: ['4% panusega', '6% panusega'],
+        labels: ['Sinu 4% panusega', '6% panusega'],
         leftData: {
           netSalaryLoss,
           incomeTaxSaved,
@@ -174,7 +174,7 @@ const SecondPillarTaxWin = () => {
       };
     }
     return {
-      labels: ['2% panusega', '6% panusega'],
+      labels: ['2% panusega', 'Sinu 6% panusega'],
       leftData: {
         netSalaryLoss: netSalaryLossAt2Percent,
         incomeTaxSaved: incomeTaxSavedAt2Percent,
