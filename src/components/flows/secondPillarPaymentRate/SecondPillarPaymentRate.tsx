@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, Redirect } from 'react-router-dom';
 import { AuthenticationLoader, ErrorMessage, Loader, Radio } from '../../common';
+import { Shimmer } from '../../common/shimmer/Shimmer';
 import { usePageTitle } from '../../common/usePageTitle';
 import { useSecondPillarPaymentRate } from './hooks';
 import { PaymentRate } from './types';
 import { useMandateDeadlines, useMe } from '../../common/apiHooks';
-import { SecondPillarPaymentRateTaxWin } from './SecondPillarPaymentRateTaxWin';
 import { formatDateYear } from '../../common/dateFormatter';
 
 export const SecondPillarPaymentRate: React.FunctionComponent = () => {
@@ -62,21 +62,18 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
         <FormattedMessage id="secondPillarPaymentRate.contributionChange" />
       </h1>
       <p className="mb-5">
-        {!pendingPaymentRate || pendingPaymentRate < 6 ? (
-          <>
-            <SecondPillarPaymentRateTaxWin />.{' '}
-          </>
+        {!mandateDeadlines ? (
+          <Shimmer height={24} />
         ) : (
-          ''
+          <FormattedMessage
+            id="secondPillarPaymentRate.applicationDeadline"
+            values={{
+              paymentRateFulfillmentDate: formatDateYear(
+                mandateDeadlines?.paymentRateFulfillmentDate,
+              ),
+            }}
+          />
         )}
-        <FormattedMessage
-          id="secondPillarPaymentRate.applicationDeadline"
-          values={{
-            paymentRateFulfillmentDate: formatDateYear(
-              mandateDeadlines?.paymentRateFulfillmentDate,
-            ),
-          }}
-        />
       </p>
       <p className="mb-4">
         <FormattedMessage id="secondPillarPaymentRate.chooseContributionRate" />
