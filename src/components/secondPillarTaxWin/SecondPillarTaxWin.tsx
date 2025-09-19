@@ -245,7 +245,7 @@ const SecondPillarTaxWin = () => {
     responsive: true,
     maintainAspectRatio: false,
     animation: {
-      duration: 200,
+      duration: 400,
     },
     plugins: {
       legend: {
