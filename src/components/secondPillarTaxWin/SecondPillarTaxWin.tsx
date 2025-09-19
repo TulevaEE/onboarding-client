@@ -466,7 +466,7 @@ const SecondPillarTaxWin = () => {
                     {currentPaymentRate === 6 && 'kolm'}
                     {currentPaymentRate === 4 && 'kaks'} korda suurema tulumaksuvõidu
                   </strong>{' '}
-                  ning oled kogunud juba{' '}
+                  ja kogunud juba{' '}
                   {(netSalaryLoss + incomeTaxSaved + socialTaxPortionYTD).toFixed(0)} €.
                 </p>
               </>
