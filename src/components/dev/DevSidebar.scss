@@ -1,0 +1,19 @@
+/* eslint-disable rule-name */
+@import '../variables';
+
+#dev-offcanvas {
+  transition: none;
+}
+
+.offcanvas-title {
+  line-height: 1.3333;
+}
+
+.dev-sidebar-toggle {
+  color: $text-secondary;
+
+  &:hover,
+  &:focus-visible {
+    color: $text-primary;
+  }
+}
