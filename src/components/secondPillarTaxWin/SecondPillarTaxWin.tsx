@@ -479,7 +479,7 @@ const SecondPillarTaxWin = () => {
             <Chart type="bar" data={chartData} options={chartOptions} />
           )}
         </div>
-        <div className="d-flex flex-column gap-2">{ctaContent}</div>
+        <div className="d-flex flex-column gap-3">{ctaContent}</div>
         <div className="d-flex flex-column gap-3">
           <h2 className="m-0">
             <button
