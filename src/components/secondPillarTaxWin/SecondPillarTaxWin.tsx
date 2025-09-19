@@ -16,8 +16,6 @@ import { Link } from 'react-router-dom';
 import { usePageTitle } from '../common/usePageTitle';
 import { useContributions, useMe } from '../common/apiHooks';
 import { SecondPillarContribution } from '../common/apiModels';
-import { Euro } from '../common/Euro';
-import { formatAmountForCurrency } from '../common/utils';
 import { Shimmer } from '../common/shimmer/Shimmer';
 
 ChartJS.register(
@@ -158,7 +156,7 @@ const SecondPillarTaxWin = () => {
 
   const [calculationDetailsToggle, setCalculationDetailsToggle] = useState(false);
 
-  const formatCurrency = (value: number) => formatAmountForCurrency(value, 0);
+  const formatCurrency = (value: number) => `${value.toFixed(0)} €`;
 
   const getChartData = () => {
     if (currentPaymentRate === 2) {
@@ -188,14 +186,14 @@ const SecondPillarTaxWin = () => {
       };
     }
     return {
-      labels: ['sinu 6% sissemakse', 'vs. 2% sissemakse'],
+      labels: ['vs. 2% sissemakse', 'sinu 6% sissemakse'],
       leftData: {
-        netSalaryLoss,
-        incomeTaxSaved,
-      },
-      rightData: {
         netSalaryLoss: netSalaryLossAt2Percent,
         incomeTaxSaved: incomeTaxSavedAt2Percent,
+      },
+      rightData: {
+        netSalaryLoss,
+        incomeTaxSaved,
       },
     };
   };
@@ -268,7 +266,7 @@ const SecondPillarTaxWin = () => {
         borderColor: 'rgba(0, 0, 0, 0.16)',
         borderWidth: 1,
         cornerRadius: 8,
-        caretSize: 6,
+        caretSize: 0,
         padding: {
           top: 12,
           bottom: 12,
@@ -277,10 +275,11 @@ const SecondPillarTaxWin = () => {
         },
         boxPadding: 4,
         callbacks: {
+          title: () => '',
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           label(context: any) {
             const value = context.parsed?.y ?? 0;
-            return `${context.dataset.label}: ${formatCurrency(value)}`;
+            return `${context.dataset.label} ${formatCurrency(value)}`;
           },
         },
       },
@@ -358,6 +357,11 @@ const SecondPillarTaxWin = () => {
               </svg>
             </Link>
           </p>
+          <p className="m-0">
+            Riigi pakutavad maksusoodustused tasub ära kasutada. Kuskilt mujalt tasuta lõunat ei
+            saa. Pealegi annab see sinu investeeringule suure võimenduse. Täpselt samal põhjusel
+            kogud juba praegu tõenäoliselt ka III sambas.
+          </p>
         </>
       );
     }
@@ -383,6 +387,11 @@ const SecondPillarTaxWin = () => {
                 />
               </svg>
             </Link>
+          </p>
+          <p className="m-0">
+            Riigi pakutavad maksusoodustused tasub ära kasutada. Kuskilt mujalt tasuta lõunat ei
+            saa. Pealegi annab see sinu investeeringule suure võimenduse. Täpselt samal põhjusel
+            kogud juba praegu tõenäoliselt ka III sambas.
           </p>
         </>
       );
@@ -410,6 +419,10 @@ const SecondPillarTaxWin = () => {
               </svg>
             </Link>
           </p>
+          <p className="m-0">
+            III samba sissemaksed on tulumaksuvabad. Igalt sinu III sambasse paigutatud eurolt
+            maksab riik sulle 22% tulumaksu tagasi.
+          </p>
         </>
       );
     }
@@ -434,25 +447,11 @@ const SecondPillarTaxWin = () => {
               <>
                 <p className="m-0 lead">
                   Oled tänavu II sambasse kogunud{' '}
-                  <Euro
-                    amount={netSalaryLoss + incomeTaxSaved + socialTaxPortionYTD}
-                    fractionDigits={0}
-                  />
-                  .
+                  {(netSalaryLoss + incomeTaxSaved + socialTaxPortionYTD).toFixed(0)} €.
                 </p>
                 <p className="m-0 lead">
                   Kui oleksid II samba sissemakset tõstnud, oleksid saanud riigilt{' '}
-                  <strong>
-                    <Euro amount={incomeTaxSavedAt6Percent} fractionDigits={0} /> maksuvõitu
-                  </strong>{' '}
-                  ja kogunud tervelt{' '}
-                  <Euro
-                    amount={
-                      netSalaryLossAt6Percent + incomeTaxSavedAt6Percent + socialTaxPortionYTD
-                    }
-                    fractionDigits={0}
-                  />
-                  .
+                  <strong>kolm korda rohkem tulumaksuvõitu</strong>.
                 </p>
               </>
             ) : (
@@ -462,21 +461,17 @@ const SecondPillarTaxWin = () => {
                   sissemakset.
                 </p>
                 <p className="m-0 lead">
-                  Tänu sissemakse tõstmisele oled tänavu kogunud juba{' '}
-                  <Euro
-                    amount={netSalaryLoss + incomeTaxSaved + socialTaxPortionYTD}
-                    fractionDigits={0}
-                  />
-                  , millest{' '}
+                  Tänu sissemakse tõstmisele oled tänavu saanud{' '}
                   <strong>
-                    <Euro amount={incomeTaxSaved} fractionDigits={0} /> on vähemmakstud tulumaks
-                  </strong>
-                  .
+                    {currentPaymentRate === 6 && 'kolm'}
+                    {currentPaymentRate === 4 && 'kaks'} korda suurema tulumaksuvõidu
+                  </strong>{' '}
+                  ning oled kogunud juba{' '}
+                  {(netSalaryLoss + incomeTaxSaved + socialTaxPortionYTD).toFixed(0)} €.
                 </p>
               </>
             ))}
         </div>
-
         <div className="card px-2 py-3 px-sm-5 py-sm-4" style={{ minHeight: '400px' }}>
           {!contributions || !user ? (
             <Shimmer height={350} />
@@ -484,9 +479,7 @@ const SecondPillarTaxWin = () => {
             <Chart type="bar" data={chartData} options={chartOptions} />
           )}
         </div>
-
         <div className="d-flex flex-column gap-2">{ctaContent}</div>
-
         <div className="d-flex flex-column gap-3">
           <h2 className="m-0">
             <button
@@ -527,8 +520,8 @@ const SecondPillarTaxWin = () => {
                   <strong>II samba maksed tulumaksuvabad</strong>. Näiteks, kui sinu palk on
                   2000 eurot ja sinu panus on 2%, siis kantakse sinu II sambasse 40 eurot kuus.
                   Sellest 31,2 eurot tuleb netopalgast ja 8,8 eurot tulumaksust. Samas kui sinu
-                  panus oleks 6%, siis läheks sinu II sambasse 120 eurot kuus. Sellest 26,4 eurot on
-                  tulumaksuvõit.
+                  panus oleks 6%, siis läheks sinu II sambasse 120 eurot kuus, millest 26,4 eurot on{' '}
+                  <strong>tulumaksuvõit</strong>.
                 </p>
                 <p className="m-0">
                   II samba makseid tõstes saad aasta peale kuni{' '}
