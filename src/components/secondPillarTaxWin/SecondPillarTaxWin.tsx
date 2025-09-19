@@ -161,7 +161,7 @@ const SecondPillarTaxWin = () => {
   const getChartData = () => {
     if (currentPaymentRate === 2) {
       return {
-        labels: ['sinu 2% sissemakse', 'vs. 6% sissemakse'],
+        labels: ['sinu 2% sissemakse', '6% sissemakse'],
         leftData: {
           netSalaryLoss,
           incomeTaxSaved,
@@ -174,7 +174,7 @@ const SecondPillarTaxWin = () => {
     }
     if (currentPaymentRate === 4) {
       return {
-        labels: ['sinu 4% sissemakse', 'vs. 6% sissemakse'],
+        labels: ['sinu 4% sissemakse', '6% sissemakse'],
         leftData: {
           netSalaryLoss,
           incomeTaxSaved,
@@ -186,7 +186,7 @@ const SecondPillarTaxWin = () => {
       };
     }
     return {
-      labels: ['vs. 2% sissemakse', 'sinu 6% sissemakse'],
+      labels: ['2% sissemakse', 'sinu 6% sissemakse'],
       leftData: {
         netSalaryLoss: netSalaryLossAt2Percent,
         incomeTaxSaved: incomeTaxSavedAt2Percent,
@@ -340,7 +340,7 @@ const SecondPillarTaxWin = () => {
         <>
           <h2 className="m-0 h3">Soovid maksuvõitu suurendada?</h2>
           <p className="m-0">
-            <Link to="/2nd-pillar-payment-rate" className="icon-link icon-link-hover">
+            <Link to="/2nd-pillar-payment-rate" className="icon-link icon-link-hover fw-medium">
               Tõsta II samba sissemakse 6% peale
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -371,7 +371,7 @@ const SecondPillarTaxWin = () => {
         <>
           <h2 className="m-0 h3">Soovid maksuvõitu veelgi suurendada?</h2>
           <p className="m-0">
-            <Link to="/2nd-pillar-payment-rate" className="icon-link icon-link-hover">
+            <Link to="/2nd-pillar-payment-rate" className="icon-link icon-link-hover fw-medium">
               Tõsta II samba sissemakse 6% peale
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -402,7 +402,7 @@ const SecondPillarTaxWin = () => {
         <>
           <h2 className="m-0 h3">Kuidas maksuvõitu veelgi suurendada?</h2>
           <p className="m-0">
-            <Link to="/3rd-pillar-payment" className="icon-link icon-link-hover">
+            <Link to="/3rd-pillar-payment" className="icon-link icon-link-hover fw-medium">
               Tee III samba sissemakse
               <svg
                 xmlns="http://www.w3.org/2000/svg"
