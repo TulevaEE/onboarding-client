@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Link } from 'react-router-dom';
+import config from 'react-global-configuration';
 
 import { logo } from '../../common';
 import { Header } from '.';
@@ -10,6 +10,10 @@ import { Shimmer } from '../../common/shimmer/Shimmer';
 describe('Header', () => {
   let component;
 
+  beforeAll(() => {
+    config.set({ language: 'et' }, { freeze: false });
+  });
+
   beforeEach(() => {
     component = shallow(<Header />);
   });
@@ -17,9 +21,9 @@ describe('Header', () => {
   it('shows a header logo with a link', () => {
     expect(
       component.contains(
-        <Link to="/account">
+        <a href="/account">
           <img src={logo} alt="Tuleva" className="brand-logo" />
-        </Link>,
+        </a>,
       ),
     ).toBe(true);
   });
@@ -50,7 +54,7 @@ describe('Header', () => {
   it('renders my account button', () => {
     const onLogout = jest.fn();
     component.setProps({ loading: false, onLogout, user: { name: 'name' } });
-    expect(component.find(Link).at(1)).toMatchSnapshot();
+    expect(component.find('[href="/account"]').at(1)).toMatchSnapshot();
   });
 
   it('renders the language switcher', () => {

@@ -1,12 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Header renders my account button 1`] = `
-<Link
+<a
   className="icon-link"
-  to="/account"
+  href="/account"
 >
   <MemoizedFormattedMessage
     id="header.my.account"
   />
-</Link>
+</a>
 `;
