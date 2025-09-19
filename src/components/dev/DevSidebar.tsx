@@ -234,6 +234,7 @@ export const DevSidebar = () => {
               const options = ['null', ...getProfileOptions(profileName)];
               const currentValue = configuration?.[profileName] ?? 'null';
               const currentIndex = options.indexOf(currentValue);
+              const isNoneSelected = configuration?.[profileName] == null;
 
               const selectAdjacentOption = (direction: 'up' | 'down') => {
                 if (currentIndex === -1) {
@@ -256,7 +257,7 @@ export const DevSidebar = () => {
                   </label>
                   <div className="d-flex gap-1 align-items-center">
                     <select
-                      className="form-select"
+                      className={`form-select${isNoneSelected ? ' text-secondary' : ''}`}
                       id={profileName}
                       name={profileName}
                       key={profileName}
