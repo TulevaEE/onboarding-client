@@ -13,6 +13,7 @@ import {
 import { Chart } from 'react-chartjs-2';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { Link } from 'react-router-dom';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { usePageTitle } from '../common/usePageTitle';
 import { useContributions, useMe } from '../common/apiHooks';
 import { SecondPillarContribution } from '../common/apiModels';
@@ -44,6 +45,7 @@ ChartJS.defaults.font.lineHeight = CHART_FONT_LINE_HEIGHT;
 ChartJS.defaults.color = CHART_FONT_COLOR;
 
 const SecondPillarTaxWin = () => {
+  const intl = useIntl();
   usePageTitle('pageTitle.secondPillarTaxWin');
   const { data: user } = useMe();
   const { data: contributions } = useContributions();
@@ -161,7 +163,10 @@ const SecondPillarTaxWin = () => {
   const getChartData = () => {
     if (currentPaymentRate === 2) {
       return {
-        labels: ['sinu 2% sissemakse', '6% sissemakse'],
+        labels: [
+          intl.formatMessage({ id: 'secondPillarTaxWin.chart.your2PercentContribution' }),
+          intl.formatMessage({ id: 'secondPillarTaxWin.chart.6PercentContribution' }),
+        ],
         leftData: {
           netSalaryLoss,
           incomeTaxSaved,
@@ -174,7 +179,10 @@ const SecondPillarTaxWin = () => {
     }
     if (currentPaymentRate === 4) {
       return {
-        labels: ['sinu 4% sissemakse', '6% sissemakse'],
+        labels: [
+          intl.formatMessage({ id: 'secondPillarTaxWin.chart.your4PercentContribution' }),
+          intl.formatMessage({ id: 'secondPillarTaxWin.chart.6PercentContribution' }),
+        ],
         leftData: {
           netSalaryLoss,
           incomeTaxSaved,
@@ -186,7 +194,10 @@ const SecondPillarTaxWin = () => {
       };
     }
     return {
-      labels: ['2% sissemakse', 'sinu 6% sissemakse'],
+      labels: [
+        intl.formatMessage({ id: 'secondPillarTaxWin.chart.2PercentContribution' }),
+        intl.formatMessage({ id: 'secondPillarTaxWin.chart.your6PercentContribution' }),
+      ],
       leftData: {
         netSalaryLoss: netSalaryLossAt2Percent,
         incomeTaxSaved: incomeTaxSavedAt2Percent,
@@ -204,7 +215,7 @@ const SecondPillarTaxWin = () => {
     labels: chartDataConfig.labels,
     datasets: [
       {
-        label: 'sotsiaalmaksust',
+        label: intl.formatMessage({ id: 'secondPillarTaxWin.chart.fromSocialTax' }),
         data: [socialTaxPortionYTD, socialTaxPortionYTD],
         backgroundColor: '#D0D5DC',
         hoverBackgroundColor: '#B5BEC8',
@@ -214,7 +225,7 @@ const SecondPillarTaxWin = () => {
         borderRadius: 0,
       },
       {
-        label: 'netopalgast',
+        label: intl.formatMessage({ id: 'secondPillarTaxWin.chart.fromNetSalary' }),
         data: [chartDataConfig.leftData.netSalaryLoss, chartDataConfig.rightData.netSalaryLoss],
         backgroundColor: '#84C5E6',
         hoverBackgroundColor: '#53AFDC',
@@ -224,7 +235,7 @@ const SecondPillarTaxWin = () => {
         borderRadius: 0,
       },
       {
-        label: 'tulumaksust',
+        label: intl.formatMessage({ id: 'secondPillarTaxWin.chart.fromIncomeTax' }),
         data: [chartDataConfig.leftData.incomeTaxSaved, chartDataConfig.rightData.incomeTaxSaved],
         backgroundColor: '#4CBB51',
         hoverBackgroundColor: '#409D44',
@@ -338,10 +349,12 @@ const SecondPillarTaxWin = () => {
     if (currentPaymentRate === 2) {
       return (
         <>
-          <h2 className="m-0 h3">Soovid maksuvõitu suurendada?</h2>
+          <h2 className="m-0 h3">
+            <FormattedMessage id="secondPillarTaxWin.cta.wantToIncreaseTaxBenefit" />
+          </h2>
           <p className="m-0">
             <Link to="/2nd-pillar-payment-rate" className="icon-link icon-link-hover fw-medium">
-              Tõsta II samba sissemakse 6% peale
+              <FormattedMessage id="secondPillarTaxWin.cta.increaseContributionTo6Percent" />
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="16"
@@ -358,9 +371,7 @@ const SecondPillarTaxWin = () => {
             </Link>
           </p>
           <p className="m-0">
-            Riigi pakutavad maksusoodustused tasub ära kasutada. Kuskilt mujalt tasuta lõunat ei
-            saa. Pealegi annab see sinu investeeringule suure võimenduse. Täpselt samal põhjusel
-            kogud juba praegu tõenäoliselt ka III sambas.
+            <FormattedMessage id="secondPillarTaxWin.cta.governmentTaxBenefitsDescription" />
           </p>
         </>
       );
@@ -369,10 +380,12 @@ const SecondPillarTaxWin = () => {
     if (currentPaymentRate === 4) {
       return (
         <>
-          <h2 className="m-0 h3">Soovid maksuvõitu veelgi suurendada?</h2>
+          <h2 className="m-0 h3">
+            <FormattedMessage id="secondPillarTaxWin.cta.wantToIncreaseEvenMore" />
+          </h2>
           <p className="m-0">
             <Link to="/2nd-pillar-payment-rate" className="icon-link icon-link-hover fw-medium">
-              Tõsta II samba sissemakse 6% peale
+              <FormattedMessage id="secondPillarTaxWin.cta.increaseContributionTo6Percent" />
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="16"
@@ -389,9 +402,7 @@ const SecondPillarTaxWin = () => {
             </Link>
           </p>
           <p className="m-0">
-            Riigi pakutavad maksusoodustused tasub ära kasutada. Kuskilt mujalt tasuta lõunat ei
-            saa. Pealegi annab see sinu investeeringule suure võimenduse. Täpselt samal põhjusel
-            kogud juba praegu tõenäoliselt ka III sambas.
+            <FormattedMessage id="secondPillarTaxWin.cta.governmentTaxBenefitsDescription" />
           </p>
         </>
       );
@@ -400,10 +411,12 @@ const SecondPillarTaxWin = () => {
     if (currentPaymentRate === 6) {
       return (
         <>
-          <h2 className="m-0 h3">Kuidas maksuvõitu veelgi suurendada?</h2>
+          <h2 className="m-0 h3">
+            <FormattedMessage id="secondPillarTaxWin.cta.howToIncreaseEvenMore" />
+          </h2>
           <p className="m-0">
             <Link to="/3rd-pillar-payment" className="icon-link icon-link-hover fw-medium">
-              Tee III samba sissemakse
+              <FormattedMessage id="secondPillarTaxWin.cta.makeThirdPillarContribution" />
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="16"
@@ -420,8 +433,7 @@ const SecondPillarTaxWin = () => {
             </Link>
           </p>
           <p className="m-0">
-            III samba sissemaksed on tulumaksuvabad. Igalt sinu III sambasse paigutatud eurolt
-            maksab riik sulle 22% tulumaksu tagasi.
+            <FormattedMessage id="secondPillarTaxWin.cta.thirdPillarTaxFree" />
           </p>
         </>
       );
@@ -434,7 +446,9 @@ const SecondPillarTaxWin = () => {
     <div className="col-12 col-md-10 col-lg-7 mx-auto">
       <div className="d-flex flex-column gap-5">
         <div className="d-flex flex-column gap-3">
-          <h1 className="m-0">Sinu II sammas</h1>
+          <h1 className="m-0">
+            <FormattedMessage id="secondPillarTaxWin.title" />
+          </h1>
           {!contributions || !user ? (
             <>
               <Shimmer height={90} />
@@ -446,28 +460,39 @@ const SecondPillarTaxWin = () => {
             (currentPaymentRate === 2 ? (
               <>
                 <p className="m-0 lead">
-                  Oled tänavu II sambasse kogunud{' '}
-                  {(netSalaryLoss + incomeTaxSaved + socialTaxPortionYTD).toFixed(0)} €.
+                  <FormattedMessage
+                    id="secondPillarTaxWin.accumulated2Percent"
+                    values={{
+                      amount: (netSalaryLoss + incomeTaxSaved + socialTaxPortionYTD).toFixed(0),
+                    }}
+                  />
                 </p>
                 <p className="m-0 lead">
-                  Kui oleksid II samba sissemakset tõstnud, oleksid saanud riigilt{' '}
-                  <strong>kolm korda rohkem tulumaksuvõitu</strong>.
+                  <FormattedMessage
+                    id="secondPillarTaxWin.couldHaveGained"
+                    values={{
+                      b: (chunks: string) => <strong>{chunks}</strong>,
+                    }}
+                  />
                 </p>
               </>
             ) : (
               <>
                 <p className="m-0 lead">
-                  Kuulud Eesti nutikaimate investorite hulka, kes tõstsid eelmisel aastal II samba
-                  sissemakset.
+                  <FormattedMessage id="secondPillarTaxWin.smartInvestor" />
                 </p>
                 <p className="m-0 lead">
-                  Tänu sissemakse tõstmisele oled tänavu saanud{' '}
-                  <strong>
-                    {currentPaymentRate === 6 && 'kolm'}
-                    {currentPaymentRate === 4 && 'kaks'} korda suurema tulumaksuvõidu
-                  </strong>{' '}
-                  ja kogunud juba{' '}
-                  {(netSalaryLoss + incomeTaxSaved + socialTaxPortionYTD).toFixed(0)} €.
+                  <FormattedMessage
+                    id="secondPillarTaxWin.increasedContribution"
+                    values={{
+                      multiplier:
+                        currentPaymentRate === 6
+                          ? intl.formatMessage({ id: 'secondPillarTaxWin.three' })
+                          : intl.formatMessage({ id: 'secondPillarTaxWin.two' }),
+                      amount: (netSalaryLoss + incomeTaxSaved + socialTaxPortionYTD).toFixed(0),
+                      b: (chunks: string) => <strong>{chunks}</strong>,
+                    }}
+                  />
                 </p>
               </>
             ))}
@@ -490,7 +515,7 @@ const SecondPillarTaxWin = () => {
               aria-expanded="false"
               aria-controls="calculationDetails"
             >
-              Kuidas see arvutus täpselt käib?
+              <FormattedMessage id="secondPillarTaxWin.calculationDetails.title" />
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="12"
@@ -510,28 +535,31 @@ const SecondPillarTaxWin = () => {
             <div id="calculationDetails" aria-labelledby="calculationDetailsToggle">
               <div className="d-flex flex-column gap-3">
                 <p className="m-0">
-                  II sambasse makstakse igal kuul sinu brutopalgast kuni 6%, lähtuvalt sinu valitud
-                  panusest. Graafiku tulpades on kujutatud sinu tegelikke makseid II sambasse
-                  2025. aasta jooksul ning arvutatud, millised olnuks maksed kõrgema või madalama
-                  sissemakse juures.
+                  <FormattedMessage id="secondPillarTaxWin.calculationDetails.paragraph1" />
                 </p>
                 <p className="m-0">
-                  Kuna sissemaksed tehakse brutopalgast enne tulumaksu kinnipidamist, siis on{' '}
-                  <strong>II samba maksed tulumaksuvabad</strong>. Näiteks, kui sinu palk on
-                  2000 eurot ja sinu panus on 2%, siis kantakse sinu II sambasse 40 eurot kuus.
-                  Sellest 31,2 eurot tuleb netopalgast ja 8,8 eurot tulumaksust. Samas kui sinu
-                  panus oleks 6%, siis läheks sinu II sambasse 120 eurot kuus, millest 26,4 eurot on{' '}
-                  <strong>tulumaksuvõit</strong>.
+                  <FormattedMessage
+                    id="secondPillarTaxWin.calculationDetails.paragraph2"
+                    values={{
+                      b: (chunks: string) => <strong>{chunks}</strong>,
+                    }}
+                  />
                 </p>
                 <p className="m-0">
-                  II samba makseid tõstes saad aasta peale kuni{' '}
-                  <strong>kolm korda suuremat maksuvõitu</strong>. 2000‑eurose palga näitel teenib
-                  koguja maksuvõitu 345 eurot, mis läheb tema II sambasse kasvama.
+                  <FormattedMessage
+                    id="secondPillarTaxWin.calculationDetails.paragraph3"
+                    values={{
+                      b: (chunks: string) => <strong>{chunks}</strong>,
+                    }}
+                  />
                 </p>
                 <p className="m-0">
-                  Lisaks makstakse II sambasse 4% brutopalgast sotsiaalmaksu arvelt. 2000‑eurose
-                  kuupalga juures on see 80 eurot. See ei sõltu koguja panusest. II sambasse makstud
-                  sotsiaalmaks <a href="/1st-vs-2nd-pillar">mõjutab vähesel määral ka I sammast</a>.
+                  <FormattedMessage
+                    id="secondPillarTaxWin.calculationDetails.paragraph4"
+                    values={{
+                      link: (chunks: string) => <Link to="/1st-vs-2nd-pillar">{chunks}</Link>,
+                    }}
+                  />
                 </p>
               </div>
             </div>
