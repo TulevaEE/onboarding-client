@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import { Conversion } from '../../../common/apiModels';
 import { State } from '../../../../types';
 import { Shimmer } from '../../../common/shimmer/Shimmer';
-import { Euro } from '../../../common/Euro';
 
 interface Props {
   conversion: Conversion;
@@ -24,14 +23,10 @@ export const ThirdPillarContributionAmount: React.FunctionComponent<Props> = ({
         id="account.status.contributionAmount"
         values={{
           thisYearContribution: (
-            <b className="text-nowrap">
-              <Euro amount={conversion.contribution.yearToDate || 0} fractionDigits={0} />
-            </b>
+            <b className="text-nowrap">{(conversion.contribution.yearToDate || 0).toFixed(0)} €</b>
           ),
           lastYearContribution: (
-            <b className="text-nowrap">
-              <Euro amount={conversion.contribution.lastYear || 0} fractionDigits={0} />
-            </b>
+            <b className="text-nowrap">{(conversion.contribution.lastYear || 0).toFixed(0)} €</b>
           ),
         }}
       />
