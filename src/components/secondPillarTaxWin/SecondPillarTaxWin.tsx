@@ -277,7 +277,7 @@ const SecondPillarTaxWin = () => {
         borderColor: 'rgba(0, 0, 0, 0.16)',
         borderWidth: 1,
         cornerRadius: 8,
-        caretSize: 0,
+        caretSize: 6,
         padding: {
           top: 12,
           bottom: 12,
