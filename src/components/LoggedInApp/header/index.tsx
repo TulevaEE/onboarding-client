@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { FormattedMessage } from 'react-intl';
+import { Link } from 'react-router-dom';
 import { logo } from '../../common';
 import LanguageSwitcher from './languageSwitcher';
 import { Shimmer } from '../../common/shimmer/Shimmer';
@@ -18,9 +19,9 @@ export const Header = ({ user, loading, onLogout }: Props) => (
       <FormattedMessage id="global.skipToContent" />
     </a>
     <header className="d-flex justify-content-between align-items-center border-bottom py-4 mb-5 app-header">
-      <a href="/account">
+      <Link to="/account">
         <img src={logo} alt="Tuleva" className="brand-logo" />
-      </a>
+      </Link>
       <div>
         {loading || !user ? (
           <div className="d-flex flex-column gap-2 align-items-end">
@@ -47,9 +48,9 @@ export const Header = ({ user, loading, onLogout }: Props) => (
               </a>
             </p>
             <p className="m-0 mt-2 d-flex gap-3 justify-content-end align-items-baseline">
-              <a className="icon-link" href="/account">
+              <Link className="icon-link" to="/account">
                 <FormattedMessage id="header.my.account" />
-              </a>
+              </Link>
               <LanguageSwitcher />
             </p>
           </>
