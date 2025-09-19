@@ -1,5 +1,6 @@
 import { FormattedMessage } from 'react-intl';
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useContributions } from '../../common/apiHooks';
 import { Euro } from '../../common/Euro';
 import { Contribution, SecondPillarContribution } from '../../common/apiModels';
@@ -27,6 +28,7 @@ export const SecondPillarPaymentRateTaxWin = ({
       values={{
         estimatedWin: <Euro amount={taxWin} fractionDigits={0} />,
         b: (chunks: string) => <b>{chunks}</b>,
+        link: (chunks: string) => <Link to="/2nd-pillar-tax-win">{chunks}</Link>,
       }}
     />
   );

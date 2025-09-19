@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
+import { MemoryRouter } from 'react-router-dom';
 import { SecondPillarPaymentRateTaxWin } from './SecondPillarPaymentRateTaxWin';
 import { useContributions } from '../../common/apiHooks';
 import { SecondPillarContribution, ThirdPillarContribution } from '../../common/apiModels';
@@ -14,9 +15,11 @@ const mockUseContributions = useContributions as jest.MockedFunction<typeof useC
 
 const renderComponentWithTranslations = (component: React.ReactElement) =>
   render(
-    <IntlProvider locale="en" messages={translations.en}>
-      {component}
-    </IntlProvider>,
+    <MemoryRouter>
+      <IntlProvider locale="en" messages={translations.en}>
+        {component}
+      </IntlProvider>
+    </MemoryRouter>,
   );
 
 const createSecondPillarContributionWithEmployeePortion = (
@@ -65,6 +68,8 @@ describe('SecondPillarPaymentRateTaxWin', () => {
     renderComponentWithTranslations(<SecondPillarPaymentRateTaxWin />);
 
     expect(screen.getByText('0 €')).toBeInTheDocument();
+    const link = screen.getByRole('link', { name: /saved/i });
+    expect(link).toHaveAttribute('href', '/2nd-pillar-tax-win');
   });
 
   it('renders shimmer when contributions is undefined', () => {
