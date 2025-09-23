@@ -295,6 +295,9 @@ const SecondPillarTaxWin = () => {
                 rotation: undefined,
                 textAlign: 'left' as const,
                 datasetIndex: index,
+                hidden: false,
+                fontColor: '#6B7074',
+                borderRadius: 8,
               };
             });
           },
@@ -308,6 +311,7 @@ const SecondPillarTaxWin = () => {
         borderWidth: 1,
         cornerRadius: 8,
         caretSize: 6,
+        usePointStyle: true,
         padding: {
           top: 12,
           bottom: 12,
