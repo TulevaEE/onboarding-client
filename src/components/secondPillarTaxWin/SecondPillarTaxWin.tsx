@@ -33,7 +33,7 @@ ChartJS.register(
 const CHART_FONT_FAMILY = '"Roboto", "Segoe UI", "Helvetica Neue", Arial, sans-serif';
 const CHART_FONT_SIZE = 14;
 const CHART_FONT_LINE_HEIGHT = 1.2857;
-const CHART_FONT_COLOR = '#6B7074';
+const CHART_FONT_COLOR = '#002F63FF';
 const DATALABEL_FONT_SIZE = 16;
 const DATALABEL_FONT_LINE_HEIGHT = 1.25;
 const STACKED_BAR_SEPARATOR_WIDTH = 1;
@@ -227,8 +227,8 @@ const SecondPillarTaxWin = () => {
       {
         label: intl.formatMessage({ id: 'secondPillarTaxWin.chart.fromNetSalary' }),
         data: [chartDataConfig.leftData.netSalaryLoss, chartDataConfig.rightData.netSalaryLoss],
-        backgroundColor: '#84C5E6',
-        hoverBackgroundColor: '#53AFDC',
+        backgroundColor: 'rgba(132,197,230,0.7)',
+        hoverBackgroundColor: 'rgba(83,175,220,0.7)',
         borderColor: STACKED_BAR_SEPARATOR_COLOR,
         borderWidth: { bottom: STACKED_BAR_SEPARATOR_WIDTH },
         borderSkipped: false,
@@ -261,6 +261,7 @@ const SecondPillarTaxWin = () => {
     plugins: {
       legend: {
         position: 'top' as const,
+        reverse: true,
         onClick: () => undefined,
         labels: {
           boxWidth: 16,
@@ -268,6 +269,7 @@ const SecondPillarTaxWin = () => {
           padding: 16,
           useBorderRadius: true,
           borderRadius: 8,
+          color: '#6B7074',
         },
       },
       tooltip: {
@@ -297,7 +299,7 @@ const SecondPillarTaxWin = () => {
       datalabels: {
         anchor: 'end' as const,
         align: 'top' as const,
-        color: '#212529',
+        color: '#002F63FF',
         clamp: true,
         font: {
           family: CHART_FONT_FAMILY,
@@ -353,7 +355,10 @@ const SecondPillarTaxWin = () => {
             <FormattedMessage id="secondPillarTaxWin.cta.wantToIncreaseTaxBenefit" />
           </h2>
           <p className="m-0">
-            <Link to="/2nd-pillar-payment-rate" className="icon-link icon-link-hover fw-medium">
+            <Link
+              to="/2nd-pillar-payment-rate"
+              className="icon-link icon-link-hover fw-medium lead"
+            >
               <FormattedMessage id="secondPillarTaxWin.cta.increaseContributionTo6Percent" />
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -384,7 +389,10 @@ const SecondPillarTaxWin = () => {
             <FormattedMessage id="secondPillarTaxWin.cta.wantToIncreaseEvenMore" />
           </h2>
           <p className="m-0">
-            <Link to="/2nd-pillar-payment-rate" className="icon-link icon-link-hover fw-medium">
+            <Link
+              to="/2nd-pillar-payment-rate"
+              className="icon-link icon-link-hover fw-medium lead"
+            >
               <FormattedMessage id="secondPillarTaxWin.cta.increaseContributionTo6Percent" />
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -415,7 +423,7 @@ const SecondPillarTaxWin = () => {
             <FormattedMessage id="secondPillarTaxWin.cta.howToIncreaseEvenMore" />
           </h2>
           <p className="m-0">
-            <Link to="/3rd-pillar-payment" className="icon-link icon-link-hover fw-medium">
+            <Link to="/3rd-pillar-payment" className="icon-link icon-link-hover fw-medium lead">
               <FormattedMessage id="secondPillarTaxWin.cta.makeThirdPillarContribution" />
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -447,7 +455,11 @@ const SecondPillarTaxWin = () => {
       <div className="d-flex flex-column gap-5">
         <div className="d-flex flex-column gap-3">
           <h1 className="m-0">
-            <FormattedMessage id="secondPillarTaxWin.title" />
+            {currentPaymentRate === 2 ? (
+              <FormattedMessage id="secondPillarTaxWin.title.2PercentContribution" />
+            ) : (
+              <FormattedMessage id="secondPillarTaxWin.title" />
+            )}
           </h1>
           {!contributions || !user ? (
             <>
