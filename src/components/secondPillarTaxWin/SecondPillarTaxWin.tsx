@@ -305,7 +305,7 @@ const SecondPillarTaxWin = () => {
       datalabels: {
         anchor: 'end' as const,
         align: 'top' as const,
-        color: '#002F63FF',
+        color: '#212529',
         clamp: true,
         font: {
           family: CHART_FONT_FAMILY,
@@ -544,7 +544,17 @@ const SecondPillarTaxWin = () => {
           </div>
         </div>
 
-        <div className="d-flex flex-column gap-3">{ctaContent}</div>
+        <div className="d-flex flex-column gap-3">
+          {!contributions || !user ? (
+            <>
+              <Shimmer height={28} />
+              <Shimmer height={30} />
+              <Shimmer height={48} />
+            </>
+          ) : (
+            ctaContent
+          )}
+        </div>
         <div className="d-flex flex-column gap-3">
           <h2 className="m-0">
             <button
