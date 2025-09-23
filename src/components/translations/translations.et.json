@@ -1106,12 +1106,12 @@
   "pageTitle.capitalNewApplication": "Avaldus",
   "secondPillarTaxWin.title": "Sinu kasu II samba panuse tõstmisest",
   "secondPillarTaxWin.title.2PercentContribution": "Kuidas saada II sambast suuremat võitu?",
-  "secondPillarTaxWin.chart.your2PercentContribution": "sinu 2% sissemakse",
-  "secondPillarTaxWin.chart.your4PercentContribution": "sinu 4% sissemakse",
-  "secondPillarTaxWin.chart.your6PercentContribution": "sinu 6% sissemakse",
-  "secondPillarTaxWin.chart.2PercentContribution": "2% sissemakse",
-  "secondPillarTaxWin.chart.6PercentContribution": "6% sissemakse",
-  "secondPillarTaxWin.chart.fromSocialTax": "sotsiaalmaksust",
+  "secondPillarTaxWin.chart.your2PercentContribution": "sinu 2% sissemaksega",
+  "secondPillarTaxWin.chart.your4PercentContribution": "sinu 4% sissemaksega",
+  "secondPillarTaxWin.chart.your6PercentContribution": "sinu 6% sissemaksega",
+  "secondPillarTaxWin.chart.2PercentContribution": "2% sissemaksega",
+  "secondPillarTaxWin.chart.6PercentContribution": "6% sissemaksega",
+  "secondPillarTaxWin.chart.fromSocialTax": "sotsiaalmaksust 4%",
   "secondPillarTaxWin.chart.fromNetSalary": "netopalgast",
   "secondPillarTaxWin.chart.fromIncomeTax": "tulumaksuvõit",
   "secondPillarTaxWin.accumulated2Percent": "Oled tänavu II sambasse kogunud {amount} €.",
@@ -1132,6 +1132,6 @@
   "secondPillarTaxWin.calculationDetails.paragraph2": "Kuna sissemaksed tehakse brutopalgast enne tulumaksu kinnipidamist, siis on <b>II samba maksed tulumaksuvabad</b>. Näiteks, kui sinu palk on 2000 € ja sinu panus on 2%, siis kantakse sinu II sambasse 40 € kuus. Sellest 31,2 € tuleb netopalgast ja 8,8 € tulumaksust. Samas kui sinu panus oleks 6%, siis läheks sinu II sambasse 120 € kuus, millest 26,4 € on <b>tulumaksuvõit</b>.",
   "secondPillarTaxWin.calculationDetails.paragraph3": "II samba makseid tõstes saad aasta peale kuni <b>kolm korda suuremat maksuvõitu</b>. 2000 € palga näitel teenib koguja maksuvõitu 345 €, mis läheb tema II sambasse kasvama.",
   "secondPillarTaxWin.calculationDetails.paragraph4": "Lisaks makstakse II sambasse 4% brutopalgast sotsiaalmaksu arvelt. 2000 € kuupalga juures on see 80 €. See ei sõltu koguja panusest. II sambasse makstud sotsiaalmaks <link>mõjutab vähesel määral ka I sammast</link>.",
-  "secondPillarTaxWin.chart.title.2PercentContribution": "Graafik: kuidas suurem sissemakse kasvataks sinu II sammast?",
-  "secondPillarTaxWin.chart.title": "Graafik: kuidas on suurem sissemakse kasvatanud sinu II sammast?"
+  "secondPillarTaxWin.chart.title.2PercentContribution": "Graafik: kuidas suurem sissemakse kasvataks sinu II sammast",
+  "secondPillarTaxWin.chart.title": "Graafik: kuidas on suurem sissemakse sinu II sammast 2025. a kasvatanud. Lisaks kannab jätkuvalt riik sinu II sambasse 4% sotsiaalmaksust juurde."
 }

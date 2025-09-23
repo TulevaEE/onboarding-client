@@ -276,6 +276,28 @@ const SecondPillarTaxWin = () => {
           useBorderRadius: true,
           borderRadius: 8,
           color: '#6B7074',
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          generateLabels: (chart: any) => {
+            const { datasets } = chart.data;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            return datasets.map((dataset: any, index: number) => {
+              let { label } = dataset;
+              // Show only "sotsiaalmaksust" for the social tax dataset
+              if (dataset.label.includes('sotsiaalmaksust')) {
+                label = 'sotsiaalmaksust';
+              }
+              return {
+                text: label,
+                fillStyle: dataset.backgroundColor,
+                strokeStyle: dataset.borderColor,
+                lineWidth: dataset.borderWidth,
+                pointStyle: undefined,
+                rotation: undefined,
+                textAlign: 'left' as const,
+                datasetIndex: index,
+              };
+            });
+          },
         },
       },
       tooltip: {
@@ -298,7 +320,14 @@ const SecondPillarTaxWin = () => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           label(context: any) {
             const value = context.parsed?.y ?? 0;
-            return `${context.dataset.label} ${formatCurrency(value)}`;
+            let { label } = context.dataset;
+
+            // Show full "sotsiaalmaksust 4%" format in tooltip for social tax dataset
+            if (context.dataset.label.includes('sotsiaalmaksust')) {
+              label = context.dataset.label; // Keep the original full label with percentage
+            }
+
+            return `${label}: ${formatCurrency(value)}`;
           },
         },
       },
@@ -503,7 +532,12 @@ const SecondPillarTaxWin = () => {
             ) : (
               <>
                 <p className="m-0 lead">
-                  <FormattedMessage id="secondPillarTaxWin.smartInvestor" />
+                  <FormattedMessage
+                    id="secondPillarTaxWin.smartInvestor"
+                    values={{
+                      currentPaymentRate,
+                    }}
+                  />
                 </p>
                 <p className="m-0 lead">
                   <FormattedMessage
