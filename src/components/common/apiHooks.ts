@@ -159,9 +159,10 @@ export function useMyCapitalTransferContracts(): UseQueryResult<CapitalTransferC
 export function useCapitalTransferContract(
   id: number,
   manualRefetch: boolean,
-): UseQueryResult<CapitalTransferContract> {
+): UseQueryResult<CapitalTransferContract, { status: number }> {
   return useQuery(['capitalTransferContract', id], () => getCapitalTransferContract(id), {
     enabled: !manualRefetch,
+    retry: false,
   });
 }
 

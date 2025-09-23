@@ -896,6 +896,8 @@
   "capital.listings.create.assurance.noFees": "Tehingutasud puuduvad.",
   "capital.listings.create.submit.BUY": "Avaldan ostukuulutuse",
   "capital.listings.create.submit.SELL": "Avaldan müügikuulutuse",
+  "capital.transfer.notFound": "Sellist avaldust ei leidu.",
+  "capital.transfer.otherError": "Avalduse kuvamisel tekkis viga. Palun võta meiega ühendust",
 
   "capital.transfer.pendingMultiple": "Sul on {count} pooleliolevat avaldust",
   "capital.transfer.pendingSingle": "Sul on pooleliolev avaldus",

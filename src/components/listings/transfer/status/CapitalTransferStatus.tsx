@@ -18,7 +18,27 @@ export const CapitalTransferStatus = () => {
   const { data: me } = useMe();
 
   const [manualFetching, setManualFetching] = useState(false);
-  const { data: contract, refetch } = useCapitalTransferContract(Number(params.id), manualFetching);
+  const {
+    data: contract,
+    error,
+    refetch,
+  } = useCapitalTransferContract(Number(params.id), manualFetching);
+
+  if (error) {
+    if (error.status === 404) {
+      return (
+        <div className="alert alert-warning">
+          <FormattedMessage id="capital.transfer.notFound" />
+        </div>
+      );
+    }
+
+    return (
+      <div className="alert alert-warning">
+        <FormattedMessage id="capital.transfer.otherError" />
+      </div>
+    );
+  }
 
   if (!me || !contract) {
     return <Loader className="align-middle" />;

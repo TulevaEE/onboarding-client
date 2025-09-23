@@ -807,6 +807,9 @@
   "capital.listings.create.assurance.noFees": "No transaction fees.",
   "capital.listings.create.submit.BUY": "Publish purchase listing",
   "capital.listings.create.submit.SELL": "Publish sale listing",
+  "capital.transfer.notFound": "This application cannot be found.",
+  "capital.transfer.otherError": "There was an error displaying the application. Please contact us",
+
   "capital.transfer.pendingMultiple": "You have {count} pending applications",
   "capital.transfer.pendingSingle": "You have a pending application",
   "capital.transfer.list.stateDescription.BUYER.SELLER_SIGNED": "Awaiting your signature",
