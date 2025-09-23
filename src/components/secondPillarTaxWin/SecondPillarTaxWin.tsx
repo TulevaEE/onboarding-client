@@ -33,7 +33,7 @@ ChartJS.register(
 const CHART_FONT_FAMILY = '"Roboto", "Segoe UI", "Helvetica Neue", Arial, sans-serif';
 const CHART_FONT_SIZE = 14;
 const CHART_FONT_LINE_HEIGHT = 1.2857;
-const CHART_FONT_COLOR = '#002F63FF';
+const CHART_FONT_COLOR = '#6B7074FF';
 const DATALABEL_FONT_SIZE = 16;
 const DATALABEL_FONT_LINE_HEIGHT = 1.25;
 const STACKED_BAR_SEPARATOR_WIDTH = 1;
@@ -180,16 +180,17 @@ const SecondPillarTaxWin = () => {
     if (currentPaymentRate === 4) {
       return {
         labels: [
+          intl.formatMessage({ id: 'secondPillarTaxWin.chart.2PercentContribution' }),
+
           intl.formatMessage({ id: 'secondPillarTaxWin.chart.your4PercentContribution' }),
-          intl.formatMessage({ id: 'secondPillarTaxWin.chart.6PercentContribution' }),
         ],
         leftData: {
-          netSalaryLoss,
-          incomeTaxSaved,
+          netSalaryLoss: netSalaryLossAt2Percent,
+          incomeTaxSaved: incomeTaxSavedAt2Percent,
         },
         rightData: {
-          netSalaryLoss: netSalaryLossAt6Percent,
-          incomeTaxSaved: incomeTaxSavedAt6Percent,
+          netSalaryLoss,
+          incomeTaxSaved,
         },
       };
     }
@@ -259,6 +260,11 @@ const SecondPillarTaxWin = () => {
       duration: 400,
     },
     plugins: {
+      // title: {
+      //   display: true,
+      //   text: `Kui palju kasvatab ${currentPaymentRate}% panus sinu II sammast?`,
+      //   color: '#6B7074',
+      // },
       legend: {
         position: 'top' as const,
         reverse: true,
@@ -455,15 +461,21 @@ const SecondPillarTaxWin = () => {
       <div className="d-flex flex-column gap-5">
         <div className="d-flex flex-column gap-3">
           <h1 className="m-0">
-            {currentPaymentRate === 2 ? (
-              <FormattedMessage id="secondPillarTaxWin.title.2PercentContribution" />
+            {!contributions || !user ? (
+              <Shimmer height={34} />
             ) : (
-              <FormattedMessage id="secondPillarTaxWin.title" />
+              <>
+                {currentPaymentRate === 2 ? (
+                  <FormattedMessage id="secondPillarTaxWin.title.2PercentContribution" />
+                ) : (
+                  <FormattedMessage id="secondPillarTaxWin.title" />
+                )}
+              </>
             )}
           </h1>
           {!contributions || !user ? (
             <>
-              <Shimmer height={90} />
+              <Shimmer height={60} />
               <Shimmer height={60} />
             </>
           ) : null}
@@ -509,13 +521,29 @@ const SecondPillarTaxWin = () => {
               </>
             ))}
         </div>
-        <div className="card px-2 py-3 px-sm-5 py-sm-4" style={{ minHeight: '400px' }}>
-          {!contributions || !user ? (
-            <Shimmer height={350} />
-          ) : (
-            <Chart type="bar" data={chartData} options={chartOptions} />
-          )}
+        <div>
+          <div className="card px-2 py-3 px-sm-5 py-sm-4" style={{ minHeight: '400px' }}>
+            {!contributions || !user ? (
+              <Shimmer height={350} />
+            ) : (
+              <Chart type="bar" data={chartData} options={chartOptions} />
+            )}
+          </div>
+          <div className="text-secondary mt-1">
+            {!contributions || !user ? (
+              <Shimmer height={24} />
+            ) : (
+              <>
+                {currentPaymentRate === 2 ? (
+                  <FormattedMessage id="secondPillarTaxWin.chart.title.2PercentContribution" />
+                ) : (
+                  <FormattedMessage id="secondPillarTaxWin.chart.title" />
+                )}
+              </>
+            )}
+          </div>
         </div>
+
         <div className="d-flex flex-column gap-3">{ctaContent}</div>
         <div className="d-flex flex-column gap-3">
           <h2 className="m-0">
