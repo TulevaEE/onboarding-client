@@ -378,7 +378,7 @@ describe('member capital transfer creation with precise values', () => {
   beforeEach(() => {
     capitalTransferContractBackend(server, {
       expectedBookValues: {
-        CAPITAL_PAYMENT: 1000.44,
+        CAPITAL_PAYMENT: 1000.4400123,
       },
     });
     userCapitalBackend(server, [
@@ -386,10 +386,10 @@ describe('member capital transfer creation with precise values', () => {
         type: 'CAPITAL_PAYMENT',
         contributions: 1000.0,
         profit: 0,
-        value: 1000.4497,
+        value: 1000.4400123,
         currency: 'EUR',
         unitPrice: 1,
-        unitCount: 1000.4497,
+        unitCount: 1000.4400123,
       },
     ]);
   });

@@ -41,6 +41,7 @@ export const formatAmountForCount = (
     ? fractionDigitsForSignificance(amount, fractionDigits) // fractionDigits = min
     : fractionDigits;
 
+  // TODO tofixed rounds
   let formattedAmount = formatWithNbspThousands(amount.toFixed(decimals));
 
   if (amount < 0) {

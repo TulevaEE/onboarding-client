@@ -16,6 +16,12 @@ export const getMemberCapitalSums = (rows: CapitalRow[]) => {
   };
 };
 
+export const valuesEqualToSecondDecimalPoint = (a: number, b: number) => {
+  const difference = Math.abs(a - b);
+
+  return difference < 0.01;
+};
+
 export const getTransferCreatePath = (subPath: string) => `/capital/transfer/create/${subPath}`;
 
 export const calculateTransferAmountInputsFromNewTotalBookValue = (
@@ -52,21 +58,39 @@ export const calculateTransferAmountInputsFromNewTotalBookValue = (
   return amounts;
 };
 
-export const calculateTransferAmountPrices = (
+export const calculateClampedTransferAmountsAndPrices = (
   userInputs: {
     totalPrice: number;
   },
+  capitalRows: CapitalRow[],
   amounts: CapitalTransferAmountInputState[],
 ): CapitalTransferAmount[] => {
   const amountsTotalBookValue = amounts.reduce((acc, amount) => amount.bookValue + acc, 0);
 
+  const userTotalCapital = capitalRows.reduce(
+    (acc, row) => ({
+      ...acc,
+      [row.type]: row.value + (acc[row.type] ?? 0),
+    }),
+    {} as Record<CapitalType, number>,
+  );
+
   return amounts.map((amount) => {
     const bookValueShareOfTotal = amount.bookValue / amountsTotalBookValue;
+    const price = floorValueToSecondDecimal(bookValueShareOfTotal * userInputs.totalPrice);
+
+    if (valuesEqualToSecondDecimalPoint(userTotalCapital[amount.type], amount.bookValue)) {
+      return {
+        ...amount,
+        price,
+        bookValue: userTotalCapital[amount.type],
+      };
+    }
 
     return {
       ...amount,
+      price,
       bookValue: floorValueToSecondDecimal(amount.bookValue),
-      price: floorValueToSecondDecimal(bookValueShareOfTotal * userInputs.totalPrice),
     };
   });
 };

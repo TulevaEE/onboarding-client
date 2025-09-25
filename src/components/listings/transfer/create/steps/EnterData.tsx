@@ -12,7 +12,7 @@ import { useCapitalRows } from '../../../../common/apiHooks';
 import { Loader } from '../../../../common';
 import { CapitalTypeInput } from './CapitalTypeInput';
 import {
-  calculateTransferAmountPrices,
+  calculateClampedTransferAmountsAndPrices,
   calculateTransferAmountInputsFromNewTotalBookValue,
   initializeCapitalTransferAmounts,
   sortTransferAmounts,
@@ -62,11 +62,12 @@ export const EnterData = () => {
   }, [capitalRows]);
 
   useEffect(() => {
-    if (totalPriceInput.value) {
+    if (capitalRows && totalPriceInput.value) {
       setTotalPrice(totalPriceInput.value);
       setFinalCapitalTransferAmounts(
-        calculateTransferAmountPrices(
+        calculateClampedTransferAmountsAndPrices(
           { totalPrice: totalPriceInput.value },
+          capitalRows,
           capitalTransferAmountsInput,
         ),
       );
@@ -144,7 +145,7 @@ export const EnterData = () => {
   const handleSubmitClicked = () => {
     setSubmitAttempted(true);
     const formattedIban = bankIban.trim();
-    if (!totalPriceInput.value || !bookValue || !formattedIban) {
+    if (!totalPriceInput.value || !bookValue || !formattedIban || !capitalRows) {
       return;
     }
 
@@ -154,8 +155,9 @@ export const EnterData = () => {
 
     setTotalPrice(totalPriceInput.value);
     setFinalCapitalTransferAmounts(
-      calculateTransferAmountPrices(
+      calculateClampedTransferAmountsAndPrices(
         { totalPrice: totalPriceInput.value },
+        capitalRows,
         capitalTransferAmountsInput,
       ),
     );

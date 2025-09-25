@@ -1,7 +1,7 @@
 import { CapitalRow } from '../../../common/apiModels';
 import {
   calculateTransferAmountInputsFromNewTotalBookValue,
-  calculateTransferAmountPrices,
+  calculateClampedTransferAmountsAndPrices,
   filterZeroBookValueAmounts,
   getMemberCapitalSums,
   isLiquidatableCapitalType,
@@ -234,12 +234,16 @@ describe('calculateTransferAmountInputsFromNewTotalBookValue', () => {
   });
 });
 
-describe('calculateTransferAmountPrices', () => {
+describe('calculateClampedTransferAmountsAndPrices', () => {
   it('should calculate price proprtionally', () => {
-    const [first, second] = calculateTransferAmountPrices({ totalPrice: 6000 }, [
-      { type: 'CAPITAL_PAYMENT', bookValue: 2000 },
-      { type: 'WORK_COMPENSATION', bookValue: 1000 },
-    ]);
+    const [first, second] = calculateClampedTransferAmountsAndPrices(
+      { totalPrice: 6000 },
+      [],
+      [
+        { type: 'CAPITAL_PAYMENT', bookValue: 2000 },
+        { type: 'WORK_COMPENSATION', bookValue: 1000 },
+      ],
+    );
 
     expect(first).toStrictEqual({
       type: 'CAPITAL_PAYMENT',
@@ -251,6 +255,90 @@ describe('calculateTransferAmountPrices', () => {
       type: 'WORK_COMPENSATION',
       bookValue: 1000,
       price: 2000,
+    });
+  });
+
+  it('should set amounts to second decimal if they are not close to maximum', () => {
+    const [first, second] = calculateClampedTransferAmountsAndPrices(
+      { totalPrice: 6000 },
+      [
+        {
+          type: 'CAPITAL_PAYMENT',
+          contributions: 1000.4596,
+          profit: 0,
+          value: 1000.4596,
+          currency: 'EUR',
+          unitPrice: 0,
+          unitCount: 0,
+        },
+        {
+          type: 'WORK_COMPENSATION',
+          contributions: 2000.4412,
+          profit: 0,
+          value: 2000.4412,
+          unitCount: 0,
+          unitPrice: 0,
+          currency: 'EUR',
+        },
+      ],
+      [
+        { type: 'CAPITAL_PAYMENT', bookValue: 800.4596 },
+        { type: 'WORK_COMPENSATION', bookValue: 1000.4432 },
+      ],
+    );
+
+    expect(first).toStrictEqual({
+      type: 'CAPITAL_PAYMENT',
+      bookValue: 800.45,
+      price: 2666.86,
+    });
+
+    expect(second).toStrictEqual({
+      type: 'WORK_COMPENSATION',
+      bookValue: 1000.44,
+      price: 3333.13,
+    });
+  });
+
+  it('should use all of capital if amounts are less than 1 cent to their capital sums', () => {
+    const [first, second] = calculateClampedTransferAmountsAndPrices(
+      { totalPrice: 6000 },
+      [
+        {
+          type: 'CAPITAL_PAYMENT',
+          contributions: 1000.4596,
+          profit: 0,
+          value: 1000.4596,
+          currency: 'EUR',
+          unitPrice: 0,
+          unitCount: 0,
+        },
+        {
+          type: 'WORK_COMPENSATION',
+          contributions: 2000.4412,
+          profit: 0,
+          value: 2000.4412,
+          unitCount: 0,
+          unitPrice: 0,
+          currency: 'EUR',
+        },
+      ],
+      [
+        { type: 'CAPITAL_PAYMENT', bookValue: 1000.450002 },
+        { type: 'WORK_COMPENSATION', bookValue: 2000.443 },
+      ],
+    );
+
+    expect(first).toStrictEqual({
+      type: 'CAPITAL_PAYMENT',
+      bookValue: 1000.4596,
+      price: 2000.3,
+    });
+
+    expect(second).toStrictEqual({
+      type: 'WORK_COMPENSATION',
+      bookValue: 2000.4412,
+      price: 3999.69,
     });
   });
 });
