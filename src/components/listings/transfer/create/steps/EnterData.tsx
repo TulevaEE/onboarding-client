@@ -56,7 +56,7 @@ export const EnterData = () => {
   >(capitalTransferAmounts ?? []);
 
   useEffect(() => {
-    if (capitalRows && capitalTransferAmounts.length === 0) {
+    if (capitalRows && !totalPriceInput.value && capitalTransferAmountsInput.length === 0) {
       setCapitalTransferAmountsInput(initializeCapitalTransferAmounts(capitalRows));
     }
   }, [capitalRows]);
