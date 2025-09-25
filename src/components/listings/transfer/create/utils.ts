@@ -77,7 +77,7 @@ export const calculateClampedTransferAmountsAndPrices = (
 
   return amounts.map((amount) => {
     const bookValueShareOfTotal = amount.bookValue / amountsTotalBookValue;
-    const price = floorValueToSecondDecimal(bookValueShareOfTotal * userInputs.totalPrice);
+    const price = bookValueShareOfTotal * userInputs.totalPrice;
 
     if (valuesEqualToSecondDecimalPoint(userTotalCapital[amount.type], amount.bookValue)) {
       return {

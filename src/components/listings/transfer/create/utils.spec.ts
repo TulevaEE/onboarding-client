@@ -290,13 +290,13 @@ describe('calculateClampedTransferAmountsAndPrices', () => {
     expect(first).toStrictEqual({
       type: 'CAPITAL_PAYMENT',
       bookValue: 800.45,
-      price: 2666.86,
+      price: 2666.8610876722496,
     });
 
     expect(second).toStrictEqual({
       type: 'WORK_COMPENSATION',
       bookValue: 1000.44,
-      price: 3333.13,
+      price: 3333.1389123277504,
     });
   });
 
@@ -332,13 +332,13 @@ describe('calculateClampedTransferAmountsAndPrices', () => {
     expect(first).toStrictEqual({
       type: 'CAPITAL_PAYMENT',
       bookValue: 1000.4596,
-      price: 2000.3,
+      price: 2000.3045786702132,
     });
 
     expect(second).toStrictEqual({
       type: 'WORK_COMPENSATION',
       bookValue: 2000.4412,
-      price: 3999.69,
+      price: 3999.6954213297877,
     });
   });
 });
