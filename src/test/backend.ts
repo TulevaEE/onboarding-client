@@ -12,6 +12,7 @@ import {
   MemberCapitalListing,
   User,
   MemberLookup,
+  CapitalType,
 } from '../components/common/apiModels/index';
 import { anAuthenticationManager } from '../components/common/authenticationManagerFixture';
 import { ReturnsResponse } from '../components/account/ComparisonCalculator/api';
@@ -36,6 +37,7 @@ import {
 } from './backend-responses';
 import {
   CapitalTransferContract,
+  CreateCapitalTransferDto,
   UpdateCapitalTransferContractDto,
 } from '../components/common/apiModels/capital-transfer';
 
@@ -690,36 +692,57 @@ export function memberLookupBackend(
 
 export function capitalTransferContractBackend(
   server: SetupServerApi,
-  contract: CapitalTransferContract = {
-    id: 1,
-    buyer: {
+  {
+    contract = {
       id: 1,
-      memberNumber: 10,
-      firstName: 'Olev',
-      lastName: 'Ostja',
-      personalCode: '30303039914',
+      buyer: {
+        id: 1,
+        memberNumber: 10,
+        firstName: 'Olev',
+        lastName: 'Ostja',
+        personalCode: '30303039914',
+      },
+      seller: {
+        id: 2,
+        memberNumber: mockUser.memberNumber as number,
+        firstName: mockUser.firstName,
+        lastName: mockUser.lastName,
+        personalCode: mockUser.personalCode,
+      },
+      iban: 'EE_TEST_IBAN',
+      transferAmounts: [{ type: 'CAPITAL_PAYMENT', bookValue: 1000, price: 2000 }],
+      state: 'SELLER_SIGNED',
+      createdAt: '2025-07-21T07:00:00+0000',
+      updatedAt: '2025-07-21T07:00:00+0000',
     },
-    seller: {
-      id: 2,
-      memberNumber: mockUser.memberNumber as number,
-      firstName: mockUser.firstName,
-      lastName: mockUser.lastName,
-      personalCode: mockUser.personalCode,
-    },
-    iban: 'EE_TEST_IBAN',
-    transferAmounts: [{ type: 'CAPITAL_PAYMENT', bookValue: 1000, price: 2000 }],
-    state: 'SELLER_SIGNED',
-    createdAt: '2025-07-21T07:00:00+0000',
-    updatedAt: '2025-07-21T07:00:00+0000',
-  },
-  currentRole: 'BUYER' | 'SELLER' = 'SELLER',
-  activeContracts: CapitalTransferContract[] = [],
+    currentRole = 'SELLER',
+    activeContracts = [],
+    expectedBookValues = {},
+  }: Partial<{
+    contract: CapitalTransferContract;
+    currentRole: 'BUYER' | 'SELLER';
+    activeContracts: CapitalTransferContract[];
+    expectedBookValues: Partial<Record<CapitalType, number>>;
+  }> = {},
 ) {
   let { state } = contract;
   server.use(
-    rest.post('http://localhost/v1/capital-transfer-contracts/', (req, res, ctx) =>
-      res(ctx.json({ ...contract, state })),
-    ),
+    rest.post('http://localhost/v1/capital-transfer-contracts/', (req, res, ctx) => {
+      if (Object.keys(expectedBookValues).length > 0) {
+        const amountsInCreationDto = (req.body as CreateCapitalTransferDto).transferAmounts;
+
+        const allAmountsMatchExact = amountsInCreationDto.every(
+          (transferAmount) => transferAmount.bookValue === expectedBookValues[transferAmount.type],
+        );
+
+        if (!allAmountsMatchExact) {
+          // eslint-disable-next-line no-console
+          console.error('Invalid amounts', amountsInCreationDto, 'expected', expectedBookValues);
+          return res(ctx.status(400), ctx.json({ error: 'Not enough capital' }));
+        }
+      }
+      return res(ctx.json({ ...contract, state }));
+    }),
     rest.get('http://localhost/v1/capital-transfer-contracts/', (req, res, ctx) =>
       res(ctx.json([{ ...contract, state }, ...activeContracts])),
     ),

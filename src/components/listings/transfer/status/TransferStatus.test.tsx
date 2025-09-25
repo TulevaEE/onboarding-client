@@ -37,9 +37,8 @@ beforeEach(async () => {
 
 describe('capital transfer buyer flow', () => {
   beforeEach(() => {
-    capitalTransferContractBackend(
-      server,
-      {
+    capitalTransferContractBackend(server, {
+      contract: {
         id: 1,
         seller: {
           id: 1,
@@ -61,8 +60,8 @@ describe('capital transfer buyer flow', () => {
         createdAt: '2025-07-21T07:00:00+0000',
         updatedAt: '2025-07-21T07:00:00+0000',
       },
-      'BUYER', // TODO correlate with /me endpoint
-    );
+      currentRole: 'BUYER', // TODO correlate with /me endpoint
+    });
   });
   test('allows buyer to sign and confirm', async () => {
     const buyerSection = await screen.findByTestId('buyer-details');
@@ -111,9 +110,8 @@ describe('capital transfer buyer flow', () => {
 
 describe('capital transfer seller flow', () => {
   beforeEach(() => {
-    capitalTransferContractBackend(
-      server,
-      {
+    capitalTransferContractBackend(server, {
+      contract: {
         id: 1,
         buyer: {
           id: 1,
@@ -135,8 +133,8 @@ describe('capital transfer seller flow', () => {
         createdAt: '2025-07-21T07:00:00+0000',
         updatedAt: '2025-07-21T07:00:00+0000',
       },
-      'SELLER',
-    );
+      currentRole: 'SELLER',
+    });
   });
   test('allows seller to confirm', async () => {
     expect(
@@ -177,9 +175,8 @@ describe('capital transfer seller flow', () => {
 
 describe('capital transfer seller flow', () => {
   beforeEach(() => {
-    capitalTransferContractBackend(
-      server,
-      {
+    capitalTransferContractBackend(server, {
+      contract: {
         id: 1,
         buyer: {
           id: 1,
@@ -201,8 +198,8 @@ describe('capital transfer seller flow', () => {
         createdAt: '2025-07-21T07:00:00+0000',
         updatedAt: '2025-07-21T07:00:00+0000',
       },
-      'SELLER',
-    );
+      currentRole: 'SELLER',
+    });
   });
   test('allows seller to check status when payment not confirmed by buyer', async () => {
     expect(

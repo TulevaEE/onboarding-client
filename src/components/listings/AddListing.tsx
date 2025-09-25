@@ -10,6 +10,7 @@ import { MemberCapitalListingType } from '../common/apiModels';
 import { SaleOfTotalCapitalDescription } from './transfer/components/SaleOfTotalCapitalDescription';
 import Slider from '../flows/withdrawals/Slider';
 import { usePageTitle } from '../common/usePageTitle';
+import { floorValueToSecondDecimal } from './transfer/create/utils';
 
 type StateFromContactDetailsRedirect = {
   listingType: MemberCapitalListingType;
@@ -56,7 +57,7 @@ export const AddListing = () => {
   };
 
   const handleSliderChange = (amount: number) => {
-    bookValueInput.setInputValue(amount === 0 ? '' : amount.toFixed(2));
+    bookValueInput.setInputValue(amount === 0 ? '' : floorValueToSecondDecimal(amount).toString());
   };
 
   const handleSubmit = async () => {

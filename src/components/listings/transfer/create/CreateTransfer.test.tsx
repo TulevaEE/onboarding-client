@@ -374,6 +374,92 @@ describe('member capital transfer creation single row', () => {
   });
 });
 
+describe('member capital transfer creation with precise values', () => {
+  beforeEach(() => {
+    capitalTransferContractBackend(server, {
+      expectedBookValues: {
+        CAPITAL_PAYMENT: 1000.44,
+      },
+    });
+    userCapitalBackend(server, [
+      {
+        type: 'CAPITAL_PAYMENT',
+        contributions: 1000.0,
+        profit: 0,
+        value: 1000.4497,
+        currency: 'EUR',
+        unitPrice: 1,
+        unitCount: 1000.4497,
+      },
+    ]);
+  });
+
+  test('allows to create transfer that liquidates to second', async () => {
+    expect(
+      await screen.findByText(/Application for transfer of member capital/i),
+    ).toBeInTheDocument();
+
+    const personalCodeInput = await screen.findByLabelText(/Enter buyer’s personal ID code/i);
+    userEvent.type(personalCodeInput, '30303039914');
+
+    userEvent.click(await screen.findByText(/Search/i));
+
+    expect(await screen.findByText(/This personal ID code matches/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Olev Ostja/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Tuleva cooperative member #9999/i)).toBeInTheDocument();
+
+    userEvent.click(await screen.findByRole('button', { name: /Confirm buyer/i }, {}));
+
+    const amountInput = await screen.findByLabelText(/How much member capital are you selling\?/i);
+    const priceInput = await screen.findByLabelText(/Agreed sale price/i);
+
+    userEvent.type(amountInput, '1000.44');
+    userEvent.type(priceInput, '250');
+
+    const ibanInput = await screen.findByLabelText(/Seller’s bank account \(IBAN\)/i);
+    userEvent.type(ibanInput, 'EE591254471322749514');
+
+    expect(await screen.findByText(/Citadele/)).toBeInTheDocument();
+
+    userEvent.click(await screen.findByText(/Preview application/i));
+
+    expect(
+      await screen.findByRole('button', { name: /Sign application/i }, {}),
+    ).toBeInTheDocument();
+
+    const buyerSection = await getBuyerDetailsSection();
+    expect(await within(buyerSection).findByText(/Olev Ostja/i)).toBeInTheDocument();
+    expect(await within(buyerSection).findByText(/30303039914/i)).toBeInTheDocument();
+
+    const sellerSection = await getSellerDetailsSection();
+    expect(await within(sellerSection).findByText(getFullName(mockUser))).toBeInTheDocument();
+    expect(await within(sellerSection).findByText(mockUser.personalCode)).toBeInTheDocument();
+
+    expect(await screen.findByText(/Citadele/)).toBeInTheDocument();
+
+    expect(await screen.findByText(/250.00 €/i)).toBeInTheDocument();
+
+    await assertMemberCapitalAmount('TOTAL', /Member capital to be sold/i, /1 000.44 €/i);
+
+    userEvent.click(
+      await screen.findByLabelText(
+        /I confirm that the seller and the buyer have agreed to the transfer of member capital under the above-mentioned conditions./i,
+      ),
+    );
+
+    userEvent.click(await screen.findByRole('button', { name: /Sign application/i }, {}));
+
+    expect(
+      await screen.findByText(/The application has been signed/i, {}, { timeout: 10_000 }),
+    ).toBeInTheDocument();
+
+    userEvent.click(await screen.findByText(/View status/i));
+
+    expect(await screen.findByText(/Signed/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Awaiting/i)).toBeInTheDocument();
+  });
+});
+
 const assertMemberCapitalAmount = async (
   type: CapitalType | 'TOTAL',
   titleRegex: RegExp,

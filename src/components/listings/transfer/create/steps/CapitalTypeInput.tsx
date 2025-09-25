@@ -7,8 +7,10 @@ import { formatAmountForCurrency } from '../../../../common/utils';
 import styles from '../../../AddListing.module.scss';
 import { InfoTooltip } from '../../../../common/infoTooltip/InfoTooltip';
 import { isTranslationKey } from '../../../../translations';
+import { floorValueToSecondDecimal } from '../utils';
 
-const zeroOrTwoDecimalPoints = (a: number) => (a === 0 ? a.toString() : a.toFixed(2));
+const zeroOrTwoDecimalPoints = (a: number) =>
+  a === 0 ? a.toString() : floorValueToSecondDecimal(a).toString();
 
 export const CapitalTypeInput = ({
   transferAmount,
@@ -27,7 +29,7 @@ export const CapitalTypeInput = ({
   const { type } = transferAmount;
 
   const [inputValue, setInputValue] = useState(
-    Number(transferAmount.bookValue.toFixed(2)).toString(),
+    floorValueToSecondDecimal(transferAmount.bookValue).toString(),
   );
   const [value, setValue] = useState<number | null>(transferAmount.bookValue);
 

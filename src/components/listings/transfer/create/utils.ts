@@ -65,7 +65,8 @@ export const calculateTransferAmountPrices = (
 
     return {
       ...amount,
-      price: bookValueShareOfTotal * userInputs.totalPrice,
+      bookValue: floorValueToSecondDecimal(amount.bookValue),
+      price: floorValueToSecondDecimal(bookValueShareOfTotal * userInputs.totalPrice),
     };
   });
 };
@@ -95,9 +96,11 @@ export const getBookValueSum = (amounts: { bookValue: number }[]) =>
 export const filterZeroBookValueAmounts = (amounts: CapitalTransferAmount[]) =>
   amounts.filter(({ bookValue }) => bookValue > 0);
 
-export const roundValuesToSecondDecimal = (amounts: CapitalTransferAmount[]) =>
+export const floorValuesToSecondDecimal = (amounts: CapitalTransferAmount[]) =>
   amounts.map((amount) => ({
     ...amount,
-    bookValue: Number(amount.bookValue.toFixed(2)),
-    price: Number(amount.price.toFixed(2)),
+    bookValue: floorValueToSecondDecimal(amount.bookValue),
+    price: floorValueToSecondDecimal(amount.price),
   }));
+
+export const floorValueToSecondDecimal = (number: number) => Math.floor(number * 100) / 100;

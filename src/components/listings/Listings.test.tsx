@@ -195,7 +195,7 @@ describe('member capital listings with pending transactions', () => {
     ];
     const roles = ['BUYER', 'SELLER'];
 
-    const contracts: CapitalTransferContract[] = states
+    const activeContracts: CapitalTransferContract[] = states
       .map((state, stateIdx) =>
         roles.map((role, roleIdx) => {
           const id = Number(`${stateIdx}${roleIdx}`);
@@ -251,7 +251,7 @@ describe('member capital listings with pending transactions', () => {
       )
       .flat();
     memberCapitalListingsBackend(server);
-    capitalTransferContractBackend(server, undefined, undefined, contracts);
+    capitalTransferContractBackend(server, { activeContracts });
   });
 
   test.each([

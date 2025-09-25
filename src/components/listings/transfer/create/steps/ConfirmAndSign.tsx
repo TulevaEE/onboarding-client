@@ -11,7 +11,7 @@ import { useCreateCapitalTransferContext } from '../hooks';
 import { ContractDetails } from '../../components/ContractDetails';
 import { useCapitalTransferContractSigning } from '../../status/hooks';
 import { ErrorResponse } from '../../../../common/apiModels';
-import { filterZeroBookValueAmounts, roundValuesToSecondDecimal } from '../utils';
+import { filterZeroBookValueAmounts, floorValuesToSecondDecimal } from '../utils';
 
 export const ConfirmAndSign = () => {
   const {
@@ -94,7 +94,7 @@ export const ConfirmAndSign = () => {
         buyerMemberId: buyer.id,
         iban: sellerIban,
         transferAmounts: filterZeroBookValueAmounts(
-          roundValuesToSecondDecimal(capitalTransferAmounts),
+          floorValuesToSecondDecimal(capitalTransferAmounts),
         ),
       });
 

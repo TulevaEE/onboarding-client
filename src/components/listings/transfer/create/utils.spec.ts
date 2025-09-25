@@ -5,7 +5,7 @@ import {
   filterZeroBookValueAmounts,
   getMemberCapitalSums,
   isLiquidatableCapitalType,
-  roundValuesToSecondDecimal,
+  floorValuesToSecondDecimal,
 } from './utils';
 
 describe('isLiquidatableCapitalType', () => {
@@ -270,10 +270,18 @@ describe('filterZeroBookValues', () => {
   });
 });
 
-describe('roundValuesToSecondDecimal', () => {
-  it('should round book values', () => {
+describe('floorValuesToSecondDecimal', () => {
+  it('should floor book values', () => {
     expect(
-      roundValuesToSecondDecimal([{ type: 'CAPITAL_PAYMENT', bookValue: 1 / 3, price: 2000 }]),
+      floorValuesToSecondDecimal([{ type: 'CAPITAL_PAYMENT', bookValue: 1 / 3, price: 2000 }]),
+    ).toStrictEqual([{ type: 'CAPITAL_PAYMENT', bookValue: 0.33, price: 2000 }]);
+
+    expect(
+      floorValuesToSecondDecimal([{ type: 'CAPITAL_PAYMENT', bookValue: 0.337, price: 2000 }]),
+    ).toStrictEqual([{ type: 'CAPITAL_PAYMENT', bookValue: 0.33, price: 2000 }]);
+
+    expect(
+      floorValuesToSecondDecimal([{ type: 'CAPITAL_PAYMENT', bookValue: 0.33493, price: 2000 }]),
     ).toStrictEqual([{ type: 'CAPITAL_PAYMENT', bookValue: 0.33, price: 2000 }]);
   });
 });
