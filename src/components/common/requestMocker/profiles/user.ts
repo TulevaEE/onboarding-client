@@ -79,4 +79,9 @@ export const userMockProfiles: Record<string, User> = {
     ...mockUser,
     secondPillarPaymentRates: { current: 6, pending: 6 },
   },
+  NON_MEMBER: {
+    ...mockUser,
+    memberNumber: null,
+    memberJoinDate: null,
+  },
 } as const;
