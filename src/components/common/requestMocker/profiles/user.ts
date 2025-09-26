@@ -5,24 +5,27 @@ export const userMockProfiles: Record<string, User> = {
   NO_SECOND_NO_THIRD_PILLAR: {
     ...mockUser,
     memberNumber: null,
+    memberJoinDate: null,
     secondPillarActive: false,
-    secondPillarOpenDate: null as unknown as string,
+    secondPillarOpenDate: null,
     thirdPillarActive: false,
-    thirdPillarInitDate: null as unknown as string,
+    thirdPillarInitDate: null,
   },
 
   SECOND_NO_THIRD_PILLAR: {
     ...mockUser,
     memberNumber: null,
+    memberJoinDate: null,
     thirdPillarActive: false,
-    thirdPillarInitDate: null as unknown as string,
+    thirdPillarInitDate: null,
   },
 
   THIRD_NO_SECOND_PILLAR: {
     ...mockUser,
     memberNumber: null,
+    memberJoinDate: null,
     secondPillarActive: false,
-    secondPillarOpenDate: null as unknown as string,
+    secondPillarOpenDate: null,
   },
   ALL_PILLARS: {
     ...mockUser,

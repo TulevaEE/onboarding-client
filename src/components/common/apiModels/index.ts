@@ -223,8 +223,8 @@ export interface User {
   age: number;
   retirementAge: number;
   secondPillarPaymentRates: PaymentRates;
-  secondPillarOpenDate: string;
-  thirdPillarInitDate: string;
+  secondPillarOpenDate: string | null;
+  thirdPillarInitDate: string | null;
   contactDetailsLastUpdateDate: string | null;
 }
 
