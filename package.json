@@ -65,7 +65,7 @@
     "@testing-library/jest-dom": "^6.1.4",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",
-    "@transferwise/eslint-config": "^6.1.0",
+    "@transferwise/eslint-config": "^7.4.1",
     "@types/classnames": "^2.2.11",
     "@types/downloadjs": "^1.4.4",
     "@types/enzyme": "^3.10.10",
