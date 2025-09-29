@@ -1,4 +1,4 @@
-import { PropsWithChildren, ReactNode, useState } from 'react';
+import { PropsWithChildren, useState } from 'react';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import moment from 'moment';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -11,6 +11,7 @@ import { SaleOfTotalCapitalDescription } from './transfer/components/SaleOfTotal
 import Slider from '../flows/withdrawals/Slider';
 import { usePageTitle } from '../common/usePageTitle';
 import { floorValueToSecondDecimal } from './transfer/create/utils';
+import { SimpleListItem, SimpleList } from '../common/simpleList';
 
 type StateFromContactDetailsRedirect = {
   listingType: MemberCapitalListingType;
@@ -261,11 +262,36 @@ const AssurancesSection = ({
   stateForContactDetailsRedirect: StateFromContactDetailsRedirect;
 }) => {
   const { data: user } = useMe();
+  const intl = useIntl();
 
   return (
-    <ul className="d-flex flex-column row-gap-3 list-unstyled m-0">
-      <AssuranceItem
-        svg={
+    <SimpleList>
+      <SimpleListItem
+        title={
+          <>
+            <FormattedMessage id="capital.listings.create.contactDetails" />
+            <br />
+            {user?.email}{' '}
+            <span className="text-secondary">
+              (
+              <Link
+                to={{
+                  pathname: '/contact-details',
+                  state: {
+                    from: {
+                      pathname: `/capital/listings/add`,
+                      state: stateForContactDetailsRedirect,
+                    },
+                  },
+                }}
+              >
+                <FormattedMessage id="capital.listings.create.contactDetails.update" />
+              </Link>
+              )
+            </span>
+          </>
+        }
+        media={
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="16"
@@ -277,28 +303,11 @@ const AssurancesSection = ({
             <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z" />
           </svg>
         }
-      >
-        <FormattedMessage id="capital.listings.create.contactDetails" />
-        <br />
-        {user?.email}{' '}
-        <span className="text-secondary">
-          (
-          <Link
-            to={{
-              pathname: '/contact-details',
-              state: {
-                from: { pathname: `/capital/listings/add`, state: stateForContactDetailsRedirect },
-              },
-            }}
-          >
-            <FormattedMessage id="capital.listings.create.contactDetails.update" />
-          </Link>
-          )
-        </span>
-      </AssuranceItem>
+      />
 
-      <AssuranceItem
-        svg={
+      <SimpleListItem
+        title={intl.formatMessage({ id: 'capital.listings.create.assurance.nameEmailPrivacy' })}
+        media={
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="16"
@@ -311,12 +320,11 @@ const AssurancesSection = ({
             <path d="M10.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0" />
           </svg>
         }
-      >
-        <FormattedMessage id="capital.listings.create.assurance.nameEmailPrivacy" />
-      </AssuranceItem>
+      />
 
-      <AssuranceItem
-        svg={
+      <SimpleListItem
+        title={intl.formatMessage({ id: 'capital.listings.create.assurance.noFees' })}
+        media={
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="16"
@@ -328,21 +336,10 @@ const AssurancesSection = ({
             <path d="M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0" />
           </svg>
         }
-      >
-        <FormattedMessage id="capital.listings.create.assurance.noFees" />
-      </AssuranceItem>
-    </ul>
+      />
+    </SimpleList>
   );
 };
-
-const AssuranceItem = ({ children, svg }: PropsWithChildren<{ svg: ReactNode }>) => (
-  <li className="d-flex gap-2 align-items-start">
-    <span aria-hidden="true" className="mt-1 me-1">
-      {svg}
-    </span>
-    <span>{children}</span>
-  </li>
-);
 
 const ListingButton = ({
   children,

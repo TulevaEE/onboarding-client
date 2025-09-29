@@ -1,14 +1,23 @@
-import React from 'react';
-import { PropTypes as Types } from 'prop-types';
-
 import './Radio.scss';
+import { FC } from 'react';
 
-const Radio = ({
-  children,
-  onSelect,
-  selected,
+type RadioProps = {
+  children?: React.ReactNode | string | React.ReactNode[];
+  onSelect?: (value: boolean) => void;
+  selected?: boolean;
+  name: string;
+  className?: string;
+  id: string;
+  alignRadioCenter?: boolean;
+  disabled?: boolean;
+};
+
+const Radio: FC<RadioProps> = ({
+  children = '',
+  onSelect = () => null,
+  selected = false,
   name,
-  className,
+  className = '',
   id,
   alignRadioCenter = false,
   disabled = false,
@@ -28,12 +37,12 @@ const Radio = ({
           id={id}
           checked={selected}
           disabled={disabled}
-          onChange={() => !selected && onSelect(!selected)}
+          onChange={() => !selected && onSelect?.(!selected)}
         />
         <button
           type="button"
           className="tv-radio__button"
-          onClick={() => !selected && onSelect(!selected)}
+          onClick={() => !selected && onSelect?.(!selected)}
           disabled={disabled}
           aria-pressed={selected}
         >
@@ -44,25 +53,5 @@ const Radio = ({
     </div>
   </label>
 );
-
-const noop = () => null;
-
-Radio.defaultProps = {
-  children: '',
-  onSelect: noop,
-  selected: false,
-  className: '',
-  disabled: false,
-};
-
-Radio.propTypes = {
-  children: Types.oneOfType([Types.node, Types.string, Types.arrayOf(Types.node)]),
-  onSelect: Types.func,
-  selected: Types.bool,
-  name: Types.string.isRequired,
-  className: Types.string,
-  id: Types.string.isRequired,
-  disabled: Types.bool,
-};
 
 export default Radio;
