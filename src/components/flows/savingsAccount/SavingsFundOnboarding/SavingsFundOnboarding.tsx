@@ -7,6 +7,8 @@ export const SavingsFundOnboarding: FC = () => {
   usePageTitle('pageTitle.savingsFundOnboarding');
 
   const history = useHistory();
+  const [hasAcceptedTerms, setHasAcceptedTerms] = useState(false);
+  const [showTermsError, setShowTermsError] = useState(false);
   const sections = [
     <section className="d-flex flex-column gap-4" key="citizenship">
       <div className="section-header d-flex flex-column gap-1" id="section01-header">
@@ -346,7 +348,7 @@ export const SavingsFundOnboarding: FC = () => {
       <div className="section-content d-flex flex-column gap-5">
         <p className="m-0">
           <a
-            className="d-flex align-items-center gap-3 p-3 p-sm-4 bg-blue-1 border border-blue-2 rounded-3"
+            className="d-flex align-items-center gap-2 p-3 p-sm-4 bg-blue-1 border border-blue-2 rounded-3 lead"
             href="https://tuleva.ee/"
             target="_blank"
             rel="noreferrer"
@@ -381,10 +383,26 @@ export const SavingsFundOnboarding: FC = () => {
           </a>
         </p>
         <div className="form-check m-0">
-          <input className="form-check-input" type="checkbox" id="checkSet02-01" />
+          <input
+            className="form-check-input"
+            type="checkbox"
+            id="checkSet02-01"
+            checked={hasAcceptedTerms}
+            onChange={(event) => {
+              setHasAcceptedTerms(event.target.checked);
+              if (event.target.checked) {
+                setShowTermsError(false);
+              }
+            }}
+          />
           <label className="form-check-label" htmlFor="checkSet02-01">
             Kinnitan, et olen tutvunud tingimustega
           </label>
+          {showTermsError && (
+            <p className="m-0 text-danger" role="alert">
+              Jätkamiseks pead tingimustega nõustuma.
+            </p>
+          )}
         </div>
       </div>
     </section>,
@@ -395,9 +413,9 @@ export const SavingsFundOnboarding: FC = () => {
   const currentSection = activeSection + 1;
   const progressPercentage = (currentSection / totalSections) * 100;
   const isFirstSection = activeSection === 0;
-  const isLastSection = activeSection === totalSections - 1;
 
   const showPreviousSection = () => {
+    setShowTermsError(false);
     if (isFirstSection) {
       history.push('/account');
       return;
@@ -407,10 +425,17 @@ export const SavingsFundOnboarding: FC = () => {
   };
 
   const showNextSection = () => {
-    if (isLastSection) {
+    if (activeSection === totalSections - 1) {
+      if (!hasAcceptedTerms) {
+        setShowTermsError(true);
+        return;
+      }
+
+      setShowTermsError(false);
       return;
     }
 
+    setShowTermsError(false);
     setActiveSection((current) => Math.min(current + 1, totalSections - 1));
   };
 
@@ -440,12 +465,7 @@ export const SavingsFundOnboarding: FC = () => {
         <button type="button" className="btn btn-lg btn-light" onClick={showPreviousSection}>
           <FormattedMessage id="savingsFundOnboarding.back" />
         </button>
-        <button
-          type="button"
-          className="btn btn-lg btn-primary"
-          onClick={showNextSection}
-          disabled={isLastSection}
-        >
+        <button type="button" className="btn btn-lg btn-primary" onClick={showNextSection}>
           <FormattedMessage id="savingsFundOnboarding.continue" />
         </button>
       </div>
