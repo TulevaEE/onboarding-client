@@ -2,8 +2,8 @@ import { FC } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { usePageTitle } from '../../../common/usePageTitle';
 
-export const SavingsFundSetup: FC = () => {
-  usePageTitle('pageTitle.savingsFundSetup');
+export const SavingsFundOnboarding: FC = () => {
+  usePageTitle('pageTitle.savingsFundOnboarding');
 
   return (
     <div className="col-12 col-md-10 col-lg-7 mx-auto d-flex flex-column gap-5">
@@ -32,10 +32,10 @@ export const SavingsFundSetup: FC = () => {
 
       <div className="d-flex flex-column-reverse flex-sm-row justify-content-between pt-4 border-top gap-3">
         <button type="button" className="btn btn-lg btn-light">
-          <FormattedMessage id="savingsFundSetup.back" />
+          <FormattedMessage id="savingsFundOnboarding.back" />
         </button>
         <button type="button" className="btn btn-lg btn-primary">
-          <FormattedMessage id="savingsFundSetup.continue" />
+          <FormattedMessage id="savingsFundOnboarding.continue" />
         </button>
       </div>
     </div>

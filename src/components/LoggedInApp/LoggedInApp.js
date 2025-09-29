@@ -47,7 +47,7 @@ import { AddListing } from '../listings/AddListing';
 import { ListingDetails } from '../listings/ListingDetails';
 import { CapitalTransferStatus } from '../listings/transfer/status/CapitalTransferStatus';
 import { CreateCapitalTransfer } from '../listings/transfer/create/CreateCapitalTransfer';
-import { SavingsFundSetup } from '../flows/savingsAccount/SavingsFundSetup';
+import { SavingsFundOnboarding } from '../flows/savingsAccount/SavingsFundOnboarding';
 
 export const ACCOUNT_PATH = '/account';
 export const AML_PATH = '/aml';
@@ -137,7 +137,7 @@ export class LoggedInApp extends PureComponent {
                 </ContactDetailsGatekeep>
               )}
             />
-            <Route path="/savings-fund/setup" component={SavingsFundSetup} />
+            <Route path="/savings-fund/onboarding" component={SavingsFundOnboarding} />
             <Route path="/partner/3rd-pillar-flow-success" component={BackToPartner} />
             <Route path="/3rd-pillar-payment" component={ThirdPillarPaymentPage} />
             <Route path="/3rd-pillar-success" component={ThirdPillarSuccess} />
