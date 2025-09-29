@@ -11,10 +11,7 @@ export const SavingsFundOnboarding: FC = () => {
         <div
           className="progress flex-fill"
           role="progressbar"
-          aria-label="Basic example"
-          aria-valuenow={75}
-          aria-valuemin={0}
-          aria-valuemax={100}
+          aria-hidden="true"
           style={{ height: '8px' }}
         >
           <div className="progress-bar" style={{ width: '12.5%' }} />
@@ -28,7 +25,462 @@ export const SavingsFundOnboarding: FC = () => {
         <h1 className="m-0 text-center">Täiendava kogumisfondi avamine</h1>
       </div>
 
-      <div>Sisu…</div>
+      <section className="d-flex flex-column gap-4">
+        <div className="section-header d-flex flex-column gap-1" id="section01-header">
+          <h2 className="m-0">Mis riigi kodanik sa oled?</h2>
+          <p className="m-0">Vali kõik riigid, mille kodakondsus sul on.</p>
+        </div>
+        <div className="section-content d-flex flex-column gap-4">
+          <select className="form-select form-select-lg" aria-label="section01-header" multiple>
+            <optgroup label="Euroopa">
+              <option>Eesti</option>
+              <option>Austria</option>
+              <option>Soome</option>
+            </optgroup>
+            <optgroup label="Muu maailm">
+              <option>Kongo</option>
+              <option>Valgevene</option>
+              <option>Venezuela</option>
+            </optgroup>
+          </select>
+        </div>
+      </section>
+
+      <hr />
+
+      <section className="d-flex flex-column gap-4">
+        <div className="section-header d-flex flex-column gap-1">
+          <h2 className="m-0">Sinu alaline elukoht</h2>
+        </div>
+        <div className="section-content d-flex flex-column gap-4">
+          <div>
+            <label htmlFor="section02a-control01" className="form-label">
+              Riik
+            </label>
+            <select
+              className="form-select form-select-lg"
+              id="section02a-control01"
+              autoComplete="country"
+            >
+              <option>Eesti</option>
+            </select>
+          </div>
+          <div>
+            <label htmlFor="section02a-control02" className="form-label">
+              Aadress
+            </label>
+            <input
+              type="text"
+              className="form-control form-control-lg"
+              id="section02a-control02"
+              autoComplete="off"
+            />
+          </div>
+          <div className="row">
+            <div className="col-4">
+              <label htmlFor="section02a-control03" className="form-label">
+                Korteri number
+              </label>
+              <select
+                className="form-select form-select-lg"
+                id="section02a-control03"
+                autoComplete="off"
+              >
+                <option>20</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr />
+
+      <section className="d-flex flex-column gap-4">
+        <div className="section-header d-flex flex-column gap-1">
+          <h2 className="m-0">Sinu alaline elukoht</h2>
+        </div>
+        <div className="section-content d-flex flex-column gap-4">
+          <div>
+            <label htmlFor="section02b-control01" className="form-label">
+              Riik
+            </label>
+            <select
+              className="form-select form-select-lg"
+              id="section02b-control01"
+              autoComplete="country"
+            >
+              <option>Soome</option>
+            </select>
+          </div>
+          <div className="row gx-3">
+            <div className="col-8">
+              <label htmlFor="section02b-control02" className="form-label">
+                Linn
+              </label>
+              <input
+                type="text"
+                className="form-control form-control-lg"
+                id="section02b-control02"
+                autoComplete="address-level2"
+              />
+            </div>
+            <div className="col-4">
+              <label htmlFor="section02b-control03" className="form-label">
+                Postiindeks
+              </label>
+              <input
+                type="text"
+                className="form-control form-control-lg"
+                id="section02b-control03"
+                autoComplete="postal-code"
+              />
+            </div>
+          </div>
+          <div>
+            <label htmlFor="section02b-control04" className="form-label">
+              Aadress (tänav, maja, korter)
+            </label>
+            <input
+              type="text"
+              className="form-control form-control-lg"
+              id="section02b-control04"
+              autoComplete="address-line1"
+            />
+          </div>
+        </div>
+      </section>
+
+      <hr />
+
+      <section className="d-flex flex-column gap-4">
+        <div className="section-header d-flex flex-column gap-1">
+          <h2 className="m-0">Sinu kontaktandmed</h2>
+        </div>
+        <div className="section-content d-flex flex-column gap-4">
+          <div>
+            <label htmlFor="section03-control01" className="form-label">
+              E-post
+            </label>
+            <input
+              type="email"
+              className="form-control form-control-lg"
+              id="section03-control01"
+              autoComplete="email"
+            />
+          </div>
+          <div>
+            <label htmlFor="section03-control02" className="form-label">
+              Telefon <span className="text-secondary fw-normal">(valikuline)</span>
+            </label>
+            <input
+              type="tel"
+              className="form-control form-control-lg"
+              id="section03-control02"
+              autoComplete="tel"
+            />
+          </div>
+        </div>
+      </section>
+
+      <hr />
+
+      <section className="d-flex flex-column gap-4">
+        <div className="section-header d-flex flex-column gap-1">
+          <h2 className="m-0">Kas oled riikliku taustaga isik?</h2>
+          <p className="m-0">
+            Riikliku taustaga isik on eraisik, kes täidab või on viimase aasta jooksul täitnud
+            avaliku võimu olulisi ülesandeid või kes on sellise isiku pereliige või lähedane
+            kaastöötaja.
+          </p>
+        </div>
+        <div className="section-content d-flex flex-column gap-4">
+          <div className="selection-group d-flex flex-column gap-2">
+            <div className="form-check m-0">
+              <input
+                className="form-check-input"
+                type="radio"
+                name="radioSet01"
+                id="radioSet01-01"
+              />
+              <label className="form-check-label" htmlFor="radioSet01-01">
+                Olen riikliku taustaga isik
+              </label>
+            </div>
+            <div className="form-check m-0">
+              <input
+                className="form-check-input"
+                type="radio"
+                name="radioSet01"
+                id="radioSet01-02"
+              />
+              <label className="form-check-label" htmlFor="radioSet01-02">
+                Ma ei ole riikliku taustaga isik
+              </label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr />
+
+      <section className="d-flex flex-column gap-4">
+        <div className="section-header d-flex flex-column gap-1">
+          <h2 className="m-0">Mis on sinu investeerimise eesmärk?</h2>
+        </div>
+        <div className="section-content d-flex flex-column gap-4">
+          <div className="selection-group d-flex flex-column gap-2">
+            <div className="form-check m-0">
+              <input
+                className="form-check-input"
+                type="radio"
+                name="radioSet02"
+                id="radioSet02-01"
+              />
+              <label className="form-check-label" htmlFor="radioSet02-01">
+                Pikaajaline investeerimine, sh pension
+              </label>
+            </div>
+            <div className="form-check m-0">
+              <input
+                className="form-check-input"
+                type="radio"
+                name="radioSet02"
+                id="radioSet02-02"
+              />
+              <label className="form-check-label" htmlFor="radioSet02-02">
+                Konkreetne eesmärk (kodu, haridus jms)
+              </label>
+            </div>
+            <div className="form-check m-0">
+              <input
+                className="form-check-input"
+                type="radio"
+                name="radioSet02"
+                id="radioSet02-03"
+              />
+              <label className="form-check-label" htmlFor="radioSet02-03">
+                Lapse tuleviku tarbeks kogumine
+              </label>
+            </div>
+            <div className="form-check m-0">
+              <input
+                className="form-check-input"
+                type="radio"
+                name="radioSet02"
+                id="radioSet02-04"
+              />
+              <label className="form-check-label" htmlFor="radioSet02-04">
+                Aktiivne sh igapäevane kauplemine
+              </label>
+            </div>
+            <div className="form-check m-0">
+              <input
+                className="form-check-input"
+                type="radio"
+                name="radioSet02"
+                id="radioSet02-05"
+              />
+              <label className="form-check-label" htmlFor="radioSet02-05">
+                Muu…
+              </label>
+            </div>
+            <div className="form-check m-0">
+              <input
+                className="form-check-input"
+                type="radio"
+                name="radioSet02"
+                id="radioSet02-06"
+              />
+              <label className="form-check-label" htmlFor="radioSet02-06" id="radioSet02-06-label">
+                Muu…
+              </label>
+              <input
+                type="text"
+                className="form-control form-control-lg mt-2"
+                aria-labelledby="radioSet02-06-label"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr />
+
+      <section className="d-flex flex-column gap-4">
+        <div className="section-header d-flex flex-column gap-1">
+          <h2 className="m-0">Kui palju on sul investeeritavat vara?</h2>
+          <p className="m-0">
+            Investeeritavad varad on kohe kasutatav raha ja investeeringud, mida saad kiiresti müüa
+            – näiteks pangakontol või hoiusel olev raha ning aktsiad, võlakirjad ja fondid.
+          </p>
+        </div>
+        <div className="section-content d-flex flex-column gap-4">
+          <div className="selection-group d-flex flex-column gap-2">
+            <div className="form-check m-0">
+              <input
+                className="form-check-input"
+                type="radio"
+                name="radioSet03"
+                id="radioSet03-01"
+              />
+              <label className="form-check-label" htmlFor="radioSet03-01">
+                Kuni 20 000 €
+              </label>
+            </div>
+            <div className="form-check m-0">
+              <input
+                className="form-check-input"
+                type="radio"
+                name="radioSet03"
+                id="radioSet03-02"
+              />
+              <label className="form-check-label" htmlFor="radioSet03-02">
+                20 001–40 000 €
+              </label>
+            </div>
+            <div className="form-check m-0">
+              <input
+                className="form-check-input"
+                type="radio"
+                name="radioSet03"
+                id="radioSet03-03"
+              />
+              <label className="form-check-label" htmlFor="radioSet03-03">
+                40 001–80 000 €
+              </label>
+            </div>
+            <div className="form-check m-0">
+              <input
+                className="form-check-input"
+                type="radio"
+                name="radioSet03"
+                id="radioSet03-04"
+              />
+              <label className="form-check-label" htmlFor="radioSet03-04">
+                80 001 € või enam
+              </label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr />
+
+      <section className="d-flex flex-column gap-4">
+        <div className="section-header d-flex flex-column gap-1">
+          <h2 className="m-0">Millised on sinu sissetulekuallikad?</h2>
+          <p className="m-0">Vali kõik allikad, kust sissetulekut saad.</p>
+        </div>
+        <div className="section-content d-flex flex-column gap-4">
+          <div className="selection-group d-flex flex-column gap-2">
+            <div className="form-check m-0">
+              <input className="form-check-input" type="checkbox" id="checkSet01-01" />
+              <label className="form-check-label" htmlFor="checkSet01-01">
+                Palk
+              </label>
+            </div>
+            <div className="form-check m-0">
+              <input className="form-check-input" type="checkbox" id="checkSet01-02" />
+              <label className="form-check-label" htmlFor="checkSet01-02">
+                Säästud ja hoiused
+              </label>
+            </div>
+            <div className="form-check m-0">
+              <input className="form-check-input" type="checkbox" id="checkSet01-03" />
+              <label className="form-check-label" htmlFor="checkSet01-03">
+                Investeeringud (väärtpaberid, kinnisvara, jm)
+              </label>
+            </div>
+            <div className="form-check m-0">
+              <input className="form-check-input" type="checkbox" id="checkSet01-04" />
+              <label className="form-check-label" htmlFor="checkSet01-04">
+                Pension ja sotsiaaltoetused
+              </label>
+            </div>
+            <div className="form-check m-0">
+              <input className="form-check-input" type="checkbox" id="checkSet01-05" />
+              <label className="form-check-label" htmlFor="checkSet01-05">
+                Abikaasa ja pere raha, sh pärand
+              </label>
+            </div>
+            <div className="form-check m-0">
+              <input className="form-check-input" type="checkbox" id="checkSet01-06" />
+              <label className="form-check-label" htmlFor="checkSet01-06">
+                Tulu äriühingust (dividendid, juhatuse tasu)
+              </label>
+            </div>
+            <div className="form-check m-0">
+              <input className="form-check-input" type="checkbox" id="checkSet01-07" />
+              <label className="form-check-label" htmlFor="checkSet01-07">
+                Muu…
+              </label>
+            </div>
+            <div className="form-check m-0">
+              <input className="form-check-input" type="checkbox" id="checkSet01-08" />
+              <label className="form-check-label" htmlFor="checkSet01-08" id="checkSet01-08-label">
+                Muu…
+              </label>
+              <input
+                type="text"
+                className="form-control form-control-lg mt-2"
+                aria-labelledby="checkSet01-08-label"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr />
+
+      <section className="d-flex flex-column gap-4">
+        <div className="section-header d-flex flex-column gap-1">
+          <h2 className="m-0">Tutvu tingimustega</h2>
+        </div>
+        <div className="section-content d-flex flex-column gap-5">
+          <p className="m-0">
+            <a
+              className="d-flex align-items-center gap-3 p-3 p-sm-4 bg-blue-1 border border-blue-2 rounded-3"
+              href="https://tuleva.ee/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="currentColor"
+                viewBox="0 0 16 16"
+                aria-hidden="true"
+              >
+                <path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5" />
+                <path d="M9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.5zm0 1v2A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z" />
+              </svg>
+              <span className="flex-fill">Täiendava kogumisfondi tingimused</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-label="(avaneb uues aknas)"
+              >
+                <path d="M7 7h10v10" />
+                <path d="M7 17 17 7" />
+              </svg>
+            </a>
+          </p>
+          <div className="form-check m-0">
+            <input className="form-check-input" type="checkbox" id="checkSet02-01" />
+            <label className="form-check-label" htmlFor="checkSet02-01">
+              Kinnitan, et olen tutvunud tingimustega
+            </label>
+          </div>
+        </div>
+      </section>
 
       <div className="d-flex flex-column-reverse flex-sm-row justify-content-between pt-4 border-top gap-3">
         <button type="button" className="btn btn-lg btn-light">
