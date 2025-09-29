@@ -134,33 +134,33 @@ h6,
 h1,
 .h1 {
   font-size: $h1-font-size;
-  line-height: $h1-line-height;
+  line-height: $h1-line-height !important;
   font-weight: $font-weight-semibold;
 }
 h2,
 .h2 {
   font-size: $h2-font-size;
-  line-height: $h2-line-height;
+  line-height: $h2-line-height !important;
 }
 h3,
 .h3 {
   font-size: $h3-font-size;
-  line-height: $h3-line-height;
+  line-height: $h3-line-height !important;
 }
 h4,
 .h4 {
   font-size: $h4-font-size;
-  line-height: $h4-line-height;
+  line-height: $h4-line-height !important;
 }
 h5,
 .h5 {
   font-size: $h5-font-size;
-  line-height: $h5-line-height;
+  line-height: $h5-line-height !important;
 }
 h6,
 .h6 {
   font-size: $h6-font-size;
-  line-height: $h6-line-height;
+  line-height: $h6-line-height !important;
 }
 
 small {
