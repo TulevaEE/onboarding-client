@@ -1046,5 +1046,20 @@
   "secondPillarTaxWin.calculationDetails.paragraph3": "By increasing II pillar payments, you can get up to <b>three times greater tax benefit</b> per year. With a 2000 € salary example, the saver earns 345 € in tax benefits, which goes to grow in their II pillar.",
   "secondPillarTaxWin.calculationDetails.paragraph4": "Additionally, 4% of gross salary is paid to the II pillar from social tax. For a 2000 € monthly salary, this is 80 €. This doesn't depend on the saver's contribution. Social tax paid to the II pillar <link>affects the I pillar to a small extent</link>. The calculation may be incorrect for you if you have been on parental leave this year.",
   "secondPillarTaxWin.chart.title.2PercentContribution": "Chart: How would a higher contribution rate increase your II pillar?",
-  "secondPillarTaxWin.chart.title": "Chart: How has a higher contribution increased your II pillar?"
+  "secondPillarTaxWin.chart.title": "Chart: How has a higher contribution increased your II pillar?",
+
+  "savingsFund.payment.pageTitle": "Contribution",
+  "savingsFund.payment.title": "Contribution to additional savings fund",
+  "savingsFund.payment.form.amount.required": "Enter an amount",
+  "savingsFund.payment.form.amount.min": "Contribution amount must be at least 1 euro",
+  "savingsFund.payment.form.amount.label": "Amount",
+  "savingsFund.payment.form.amount.ariaLabel": "Contribution amount in euros",
+  "savingsFund.payment.form.paymentMethod.label": "Select bank",
+  "savingsFund.payment.form.paymentMethod.other.label": "Other...",
+  "savingsFund.payment.form.submit.label": "Continue",
+  "savingsFund.payment.form.cancel.label": "Back",
+  "savingsFund.payment.infoSection.investmentAccount": "You can defer paying income tax on investment returns if you declare your bank account as an investment account.",
+  "savingsFund.payment.infoSection.investmentAccount.learnMore": "What is this and how does it work?",
+  "savingsFund.payment.infoSection.creditor": "The money must come from a bank account in your name.",
+  "savingsFund.payment.infoSection.fees": "No service fees."
 }
