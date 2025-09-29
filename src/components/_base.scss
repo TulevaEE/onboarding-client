@@ -83,6 +83,10 @@ input[type='number'] {
   -moz-appearance: textfield;
 }
 
+select optgroup {
+  font-style: normal;
+}
+
 .form-control::placeholder {
   color: $text-tertiary;
 }
