@@ -431,9 +431,7 @@ export const SavingsFundOnboarding: FC = () => {
           </span>
         </div>
 
-        <div className="d-flex flex-column gap-4">
-          <h1 className="m-0">Täiendava kogumisfondi avamine</h1>
-        </div>
+        <h1 className="m-0">Täiendava kogumisfondi avamine</h1>
       </div>
 
       {sections[activeSection]}
