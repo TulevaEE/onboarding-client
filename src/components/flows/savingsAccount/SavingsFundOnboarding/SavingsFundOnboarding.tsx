@@ -109,8 +109,8 @@ export const SavingsFundOnboarding: FC = () => {
                 autoComplete="off"
               />
             </div>
-            <div className="row">
-              <div className="col-4">
+            <div className="row gx-3">
+              <div className="col-sm-4">
                 <label htmlFor="section02a-control03" className="form-label">
                   Korteri number
                 </label>
@@ -126,8 +126,8 @@ export const SavingsFundOnboarding: FC = () => {
           </>
         ) : (
           <>
-            <div className="row gx-3">
-              <div className="col-8">
+            <div className="row gx-3 row-gap-4">
+              <div className="col-sm-8">
                 <label htmlFor="section02b-control02" className="form-label">
                   Linn
                 </label>
@@ -138,7 +138,7 @@ export const SavingsFundOnboarding: FC = () => {
                   autoComplete="address-level2"
                 />
               </div>
-              <div className="col-4">
+              <div className="col-sm-4">
                 <label htmlFor="section02b-control03" className="form-label">
                   Postiindeks
                 </label>
