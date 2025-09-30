@@ -37,36 +37,37 @@ describe(SavingsFundPayment, () => {
     history.push('/savings-fund/payment');
   });
 
-  it('validates the deposit amount', async () => {
+  it('validates the deposit amount and bank selection', async () => {
     expect(
       await screen.findByRole('heading', { name: 'Deposit to additional savings fund' }),
     ).toBeInTheDocument();
 
     const amountInput = screen.getByRole('textbox', { name: 'Amount' });
     const submitButton = screen.getByRole('button', { name: 'Continue' });
+    const amountValidationMessage = 'The deposit amount must be at least one euro.';
+    const bankSelectionValidationMessage = 'Select the bank you want to use for the deposit.';
 
     expect(amountInput).toBeInTheDocument();
 
     // Trigger minimum amount validation
     userEvent.type(amountInput, '-1');
     userEvent.click(submitButton); // Trigger validation
-    expect(
-      await screen.findByText('Contribution amount must be at least 1 euro.'),
-    ).toBeInTheDocument();
+    expect(await screen.findByText(amountValidationMessage)).toBeInTheDocument();
 
     // Trigger required field validation
     userEvent.clear(amountInput);
     userEvent.click(submitButton); // Trigger validation
-    expect(await screen.findByText('Enter an amount.')).toBeInTheDocument();
+    expect(await screen.findByText(amountValidationMessage)).toBeInTheDocument();
 
     // Enter valid amount
     userEvent.type(amountInput, '123.45');
     userEvent.click(submitButton); // Trigger validation
     expect(amountInput).toHaveValue('123.45');
-    await waitFor(() => expect(screen.queryByText('Enter an amount.')).not.toBeInTheDocument());
-    expect(
-      screen.queryByText('Contribution amount must be at least 1 euro.'),
-    ).not.toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.queryByText(amountValidationMessage)).not.toBeInTheDocument(),
+    );
+
+    expect(screen.getByText(bankSelectionValidationMessage)).toBeInTheDocument();
 
     expect(submitButton).toBeEnabled();
   });
