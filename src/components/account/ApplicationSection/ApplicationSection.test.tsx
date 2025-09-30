@@ -70,7 +70,7 @@ describe('Application section', () => {
     mockApplications([]);
     initializeComponent();
     await waitForRequestToFinish();
-    expect(screen.queryByText('Your pending applications')).not.toBeInTheDocument();
+    expect(screen.queryByText('Pending applications and transactions')).not.toBeInTheDocument();
   });
 
   it('does not render at all when there has been an error fetching', async () => {
@@ -81,13 +81,13 @@ describe('Application section', () => {
     );
     initializeComponent();
     await waitForRequestToFinish();
-    expect(screen.queryByText('Your pending applications')).not.toBeInTheDocument();
+    expect(screen.queryByText('Pending applications and transactions')).not.toBeInTheDocument();
   });
 
   it('renders the title when there are pending applications', async () => {
     mockApplications([transfer2Pillar]);
     initializeComponent();
-    expect(await screen.findByText('Your pending applications')).toBeInTheDocument();
+    expect(await screen.findByText('Pending applications and transactions')).toBeInTheDocument();
   });
 
   it('renders 2. pillar transfer applications successfully', async () => {

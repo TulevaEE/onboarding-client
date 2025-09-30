@@ -498,7 +498,7 @@
   "thirdPillarBackToPartner.singlePayment.button": "Make a payment",
   "thirdPillarBackToPartner.back.button": "Back to internet bank",
   "thirdPillarBackToPartner.payment.subtitle": "We will redirect you back to your bank to make the payment.",
-  "applications.title": "Your pending applications",
+  "applications.title": "Pending applications and transactions",
   "applications.cancel": "Cancel application",
   "applications.type.paymentRate.title": "II pillar contribution rate",
   "applications.type.paymentRate.status": "Status",
