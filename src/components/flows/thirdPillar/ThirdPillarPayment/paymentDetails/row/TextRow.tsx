@@ -8,6 +8,7 @@ export const TextRow: React.FunctionComponent<{
     <td className="align-bottom ps-2">
       <b>{children[1]}</b>
     </td>
+    {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
     <td className="d-none d-sm-table-cell"> </td>
   </tr>
 );
