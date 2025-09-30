@@ -141,7 +141,7 @@ export const SavingsFundPayment: FC = () => {
           </div>
 
           <div className="form-section d-flex flex-column gap-3">
-            <div className="d-flex flex-column justify-content-between align-items-start gap-3 row-gap-2">
+            <div className="d-flex flex-column gap-3">
               <label htmlFor="payment-method" className="fs-3 fw-semibold">
                 <FormattedMessage id="savingsFund.payment.form.paymentMethod.label" />
               </label>

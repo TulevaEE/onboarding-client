@@ -21,23 +21,25 @@ export const BankButton = ({ bankKey, paymentBank, setPaymentBank, disabled = fa
   };
 
   return (
-    <label
-      className={`btn btn-outline-secondary btn-payment btn-${bankKey} ${
-        paymentBank === bankKey ? 'active' : ''
-      }`}
-    >
-      <input
-        className="btn-check"
-        type="radio"
-        name="banks"
-        id={bankKey}
-        checked={paymentBank === bankKey}
-        onChange={() => {
-          setPaymentBank(bankKey);
-        }}
-        disabled={disabled}
-      />
-      {getBankName(bankKey)}
-    </label>
+    <div className="col-6 col-sm-4">
+      <label
+        className={`btn btn-outline-secondary btn-payment d-block btn-${bankKey} ${
+          paymentBank === bankKey ? 'active' : ''
+        }`}
+      >
+        <input
+          className="btn-check"
+          type="radio"
+          name="banks"
+          id={bankKey}
+          checked={paymentBank === bankKey}
+          onChange={() => {
+            setPaymentBank(bankKey);
+          }}
+          disabled={disabled}
+        />
+        {getBankName(bankKey)}
+      </label>
+    </div>
   );
 };

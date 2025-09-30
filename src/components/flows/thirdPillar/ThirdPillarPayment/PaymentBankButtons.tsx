@@ -11,7 +11,7 @@ const BANK_KEYS: readonly BankKey[] = ['swedbank', 'seb', 'lhv', 'luminor', 'coo
 
 export const PaymentBankButtons = ({ paymentBank, setPaymentBank, showOther = true }: Props) => (
   <>
-    <div className="d-flex gap-2 flex-wrap mt-2 payment-banks">
+    <div className="row g-2 payment-banks">
       {BANK_KEYS.map((bankKey) => (
         <BankButton
           bankKey={bankKey}
