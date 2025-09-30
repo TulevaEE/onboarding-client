@@ -1,4 +1,7 @@
 import { FC, useEffect, useRef, useState } from 'react';
+import TomSelect from 'tom-select';
+import 'tom-select/dist/css/tom-select.bootstrap5.css';
+import 'tom-select/dist/js/plugins/remove_button';
 import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 import { usePageTitle } from '../../../common/usePageTitle';
@@ -23,7 +26,10 @@ export const SavingsFundOnboarding: FC = () => {
   const [hasAcceptedTerms, setHasAcceptedTerms] = useState(false);
   const [showTermsError, setShowTermsError] = useState(false);
   const [residenceCountry, setResidenceCountry] = useState('Eesti');
+  const [activeSection, setActiveSection] = useState(0);
   const isEstonianResidence = residenceCountry === 'Eesti';
+  const citizenshipSelectRef = useRef<HTMLSelectElement>(null);
+  const tomSelectInstanceRef = useRef<TomSelect | null>(null);
   const {
     isSelected: isOtherIncomeSelected,
     setIsSelected: setIsOtherIncomeSelected,
@@ -42,6 +48,7 @@ export const SavingsFundOnboarding: FC = () => {
       </div>
       <div className="section-content d-flex flex-column gap-4">
         <select
+          ref={citizenshipSelectRef}
           className="form-select form-select-lg"
           aria-label="section01-header"
           multiple
@@ -469,7 +476,36 @@ export const SavingsFundOnboarding: FC = () => {
     </section>,
   ];
 
-  const [activeSection, setActiveSection] = useState(0);
+  useEffect(() => {
+    const destroyTomSelect = () => {
+      if (tomSelectInstanceRef.current) {
+        tomSelectInstanceRef.current.destroy();
+        tomSelectInstanceRef.current = null;
+      }
+    };
+
+    if (activeSection !== 0) {
+      destroyTomSelect();
+      return destroyTomSelect;
+    }
+
+    const selectElement = citizenshipSelectRef.current;
+    if (!selectElement) {
+      destroyTomSelect();
+      return destroyTomSelect;
+    }
+
+    if (!tomSelectInstanceRef.current) {
+      tomSelectInstanceRef.current = new TomSelect(selectElement, {
+        plugins: ['remove_button'],
+        placeholder: 'Vali riigid…',
+        maxItems: null,
+      });
+    }
+
+    return destroyTomSelect;
+  }, [activeSection]);
+
   const totalSections = sections.length;
   const currentSection = activeSection + 1;
   const progressPercentage = (currentSection / totalSections) * 100;
