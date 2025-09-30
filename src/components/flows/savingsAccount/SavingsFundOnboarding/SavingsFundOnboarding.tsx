@@ -1,7 +1,20 @@
-import { FC, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 import { usePageTitle } from '../../../common/usePageTitle';
+
+const useOtherInput = () => {
+  const [isSelected, setIsSelected] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isSelected) {
+      inputRef.current?.focus();
+    }
+  }, [isSelected]);
+
+  return { isSelected, setIsSelected, inputRef };
+};
 
 export const SavingsFundOnboarding: FC = () => {
   usePageTitle('pageTitle.savingsFundOnboarding');
@@ -9,6 +22,16 @@ export const SavingsFundOnboarding: FC = () => {
   const history = useHistory();
   const [hasAcceptedTerms, setHasAcceptedTerms] = useState(false);
   const [showTermsError, setShowTermsError] = useState(false);
+  const {
+    isSelected: isOtherIncomeSelected,
+    setIsSelected: setIsOtherIncomeSelected,
+    inputRef: otherIncomeInputRef,
+  } = useOtherInput();
+  const {
+    isSelected: isOtherInvestmentGoalSelected,
+    setIsSelected: setIsOtherInvestmentGoalSelected,
+    inputRef: otherInvestmentGoalInputRef,
+  } = useOtherInput();
   const sections = [
     <section className="d-flex flex-column gap-4" key="citizenship">
       <div className="section-header d-flex flex-column gap-1" id="section01-header">
@@ -198,45 +221,73 @@ export const SavingsFundOnboarding: FC = () => {
       <div className="section-content d-flex flex-column gap-4">
         <div className="selection-group d-flex flex-column gap-2">
           <div className="form-check m-0">
-            <input className="form-check-input" type="radio" name="radioSet02" id="radioSet02-01" />
+            <input
+              className="form-check-input"
+              type="radio"
+              name="radioSet02"
+              id="radioSet02-01"
+              onChange={() => setIsOtherInvestmentGoalSelected(false)}
+            />
             <label className="form-check-label" htmlFor="radioSet02-01">
               Pikaajaline investeerimine, sh pension
             </label>
           </div>
           <div className="form-check m-0">
-            <input className="form-check-input" type="radio" name="radioSet02" id="radioSet02-02" />
+            <input
+              className="form-check-input"
+              type="radio"
+              name="radioSet02"
+              id="radioSet02-02"
+              onChange={() => setIsOtherInvestmentGoalSelected(false)}
+            />
             <label className="form-check-label" htmlFor="radioSet02-02">
               Konkreetne eesmärk (kodu, haridus jms)
             </label>
           </div>
           <div className="form-check m-0">
-            <input className="form-check-input" type="radio" name="radioSet02" id="radioSet02-03" />
+            <input
+              className="form-check-input"
+              type="radio"
+              name="radioSet02"
+              id="radioSet02-03"
+              onChange={() => setIsOtherInvestmentGoalSelected(false)}
+            />
             <label className="form-check-label" htmlFor="radioSet02-03">
               Lapse tuleviku tarbeks kogumine
             </label>
           </div>
           <div className="form-check m-0">
-            <input className="form-check-input" type="radio" name="radioSet02" id="radioSet02-04" />
+            <input
+              className="form-check-input"
+              type="radio"
+              name="radioSet02"
+              id="radioSet02-04"
+              onChange={() => setIsOtherInvestmentGoalSelected(false)}
+            />
             <label className="form-check-label" htmlFor="radioSet02-04">
               Aktiivne sh igapäevane kauplemine
             </label>
           </div>
           <div className="form-check m-0">
-            <input className="form-check-input" type="radio" name="radioSet02" id="radioSet02-05" />
-            <label className="form-check-label" htmlFor="radioSet02-05">
-              Muu…
-            </label>
-          </div>
-          <div className="form-check m-0">
-            <input className="form-check-input" type="radio" name="radioSet02" id="radioSet02-06" />
-            <label className="form-check-label" htmlFor="radioSet02-06" id="radioSet02-06-label">
-              Muu…
-            </label>
             <input
-              type="text"
-              className="form-control form-control-lg mt-2"
-              aria-labelledby="radioSet02-06-label"
+              className="form-check-input"
+              type="radio"
+              name="radioSet02"
+              id="radioSet02-05"
+              checked={isOtherInvestmentGoalSelected}
+              onChange={(event) => setIsOtherInvestmentGoalSelected(event.target.checked)}
             />
+            <label className="form-check-label" htmlFor="radioSet02-05" id="radioSet02-05-label">
+              Muu…
+            </label>
+            {isOtherInvestmentGoalSelected ? (
+              <input
+                ref={otherInvestmentGoalInputRef}
+                type="text"
+                className="form-control form-control-lg mt-2"
+                aria-labelledby="radioSet02-05-label"
+              />
+            ) : null}
           </div>
         </div>
       </div>
@@ -322,21 +373,24 @@ export const SavingsFundOnboarding: FC = () => {
             </label>
           </div>
           <div className="form-check m-0">
-            <input className="form-check-input" type="checkbox" id="checkSet01-07" />
-            <label className="form-check-label" htmlFor="checkSet01-07">
-              Muu…
-            </label>
-          </div>
-          <div className="form-check m-0">
-            <input className="form-check-input" type="checkbox" id="checkSet01-08" />
-            <label className="form-check-label" htmlFor="checkSet01-08" id="checkSet01-08-label">
-              Muu…
-            </label>
             <input
-              type="text"
-              className="form-control form-control-lg mt-2"
-              aria-labelledby="checkSet01-08-label"
+              className="form-check-input"
+              type="checkbox"
+              id="checkSet01-07"
+              checked={isOtherIncomeSelected}
+              onChange={(event) => setIsOtherIncomeSelected(event.target.checked)}
             />
+            <label className="form-check-label" htmlFor="checkSet01-07" id="checkSet01-07-label">
+              Muu…
+            </label>
+            {isOtherIncomeSelected ? (
+              <input
+                ref={otherIncomeInputRef}
+                type="text"
+                className="form-control form-control-lg mt-2"
+                aria-labelledby="checkSet01-07-label"
+              />
+            ) : null}
           </div>
         </div>
       </div>
