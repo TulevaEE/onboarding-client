@@ -49,6 +49,7 @@ import { CapitalTransferStatus } from '../listings/transfer/status/CapitalTransf
 import { CreateCapitalTransfer } from '../listings/transfer/create/CreateCapitalTransfer';
 import { SavingsFundOnboarding } from '../flows/savingsAccount/SavingsFundOnboarding';
 import { SavingsFundPayment } from '../flows/savingsAccount/SavingsFundPayment';
+import SavingsFundPaymentSuccess from '../flows/savingsAccount/SavingsFundPayment/SavingsFundPaymentSuccess';
 
 export const ACCOUNT_PATH = '/account';
 export const AML_PATH = '/aml';
@@ -202,6 +203,14 @@ export class LoggedInApp extends PureComponent {
               render={() => (
                 <MembersOnlyGatekeep>
                   <CapitalPage />
+                </MembersOnlyGatekeep>
+              )}
+            />
+            <Route
+              path="/savings-fund/payment/success"
+              render={() => (
+                <MembersOnlyGatekeep>
+                  <SavingsFundPaymentSuccess />
                 </MembersOnlyGatekeep>
               )}
             />

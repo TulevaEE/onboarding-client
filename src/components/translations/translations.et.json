@@ -1153,5 +1153,11 @@
   "savingsFund.payment.infoSection.investmentAccount.learnMore": "Mis see on ja kuidas see käib?",
   "savingsFund.payment.infoSection.creditor": "Raha peab laekuma sinu enda pangakontolt.",
   "savingsFund.payment.infoSection.fees": "Teenustasud puuduvad.",
-  "savingsFund.payment.linkGenerationError": "Makse algatamisel tekkis viga. Palun proovi hiljem uuesti või võta meiega ühendust: tuleva@tuleva.ee"
+  "savingsFund.payment.linkGenerationError": "Makse algatamisel tekkis viga. Palun proovi hiljem uuesti või võta meiega ühendust: tuleva@tuleva.ee",
+
+  "savingsFund.payment.success.pageTitle": "Sissemakse tehtud",
+  "savingsFund.payment.success.title": "Sissemakse on tehtud",
+  "savingsFund.payment.success.description": "Sissemakse summa investeeritakse fondi homse tööpäeva lõpuks. Teavitame sind sellest meili teel.",
+  "savingsFund.payment.success.cancellationNotice": "Sissemakset on võimalik tühistada täna kuni kell 15:59.",
+  "savingsFund.payment.success.myAccountButton.label": "Minu konto"
 }
