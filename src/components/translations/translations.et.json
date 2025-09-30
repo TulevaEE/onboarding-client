@@ -1141,6 +1141,7 @@
   "savingsFund.payment.pageTitle": "Sissemakse",
   "savingsFund.payment.title": "Sissemakse täiendavasse kogumisfondi",
   "savingsFund.payment.form.amount.required": "Sisesta summa",
+  "savingsFund.payment.form.paymentMethod.required": "Vali, millisest pangast soovid sissemakse teha",
   "savingsFund.payment.form.amount.min": "Sissemakse summa peab olema vähemalt 1 euro",
   "savingsFund.payment.form.amount.label": "Summa",
   "savingsFund.payment.form.amount.ariaLabel": "Sissemakse summa eurodes",
@@ -1151,5 +1152,6 @@
   "savingsFund.payment.infoSection.investmentAccount": "Saad investeerimistulult tulumaksu tasumise edasi lükata, kui deklareerid oma pangakonto investeerimiskontona.",
   "savingsFund.payment.infoSection.investmentAccount.learnMore": "Mis see on ja kuidas see käib?",
   "savingsFund.payment.infoSection.creditor": "Raha peab laekuma sinu enda pangakontolt.",
-  "savingsFund.payment.infoSection.fees": "Teenustasud puuduvad."
+  "savingsFund.payment.infoSection.fees": "Teenustasud puuduvad.",
+  "savingsFund.payment.linkGenerationError": "Makse algatamisel tekkis viga. Palun proovi hiljem uuesti või võta meiega ühendust: tuleva@tuleva.ee"
 }

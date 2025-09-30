@@ -42,7 +42,7 @@ describe(SavingsFundPayment, () => {
       await screen.findByRole('heading', { name: 'Contribution to additional savings fund' }),
     ).toBeInTheDocument();
 
-    const amountInput = screen.getByRole('spinbutton', { name: 'Amount' });
+    const amountInput = screen.getByRole('textbox', { name: 'Amount' });
     const submitButton = screen.getByRole('button', { name: 'Continue' });
 
     expect(amountInput).toBeInTheDocument();
@@ -63,15 +63,35 @@ describe(SavingsFundPayment, () => {
     // Enter valid amount
     userEvent.type(amountInput, '123.45');
     userEvent.click(submitButton); // Trigger validation by clicking away from input
-    expect(amountInput).toHaveValue(123.45);
+    expect(amountInput).toHaveValue('123.45');
     await waitFor(() => expect(screen.queryByText('Enter an amount')).not.toBeInTheDocument());
     expect(
       screen.queryByText('Contribution amount must be at least 1 euro'),
     ).not.toBeInTheDocument();
 
-    expect(submitButton).toBeEnabled();
+    await waitFor(() => expect(submitButton).toBeEnabled());
+  });
+
+  it('lets user select a bank and start the payment', async () => {
+    expect(
+      await screen.findByRole('heading', { name: 'Contribution to additional savings fund' }),
+    ).toBeInTheDocument();
+
+    const amountInput = screen.getByRole('textbox', { name: 'Amount' });
+    const submitButton = screen.getByRole('button', { name: 'Continue' });
+    userEvent.type(amountInput, '123.45');
+
+    const lhvRadio = screen.getByRole('radio', { name: 'LHV' });
+    userEvent.click(lhvRadio);
+    expect(lhvRadio).toBeChecked();
+    await waitFor(() => expect(submitButton).toBeEnabled());
     userEvent.click(submitButton);
 
-    // TODO: assert api is called with correct params
+    await waitFor(() =>
+      expect(windowLocation).toHaveBeenCalledWith(
+        'https://sandbox-payments.montonio.com?payment_token=example.jwt.token.with.123.45.EUR.LHV',
+      ),
+    );
+    expect(windowLocation).toHaveBeenCalledTimes(1);
   });
 });
