@@ -22,6 +22,8 @@ export const SavingsFundOnboarding: FC = () => {
   const history = useHistory();
   const [hasAcceptedTerms, setHasAcceptedTerms] = useState(false);
   const [showTermsError, setShowTermsError] = useState(false);
+  const [residenceCountry, setResidenceCountry] = useState('Eesti');
+  const isEstonianResidence = residenceCountry === 'Eesti';
   const {
     isSelected: isOtherIncomeSelected,
     setIsSelected: setIsOtherIncomeSelected,
@@ -62,102 +64,105 @@ export const SavingsFundOnboarding: FC = () => {
         </select>
       </div>
     </section>,
-    <section className="d-flex flex-column gap-4" key="residence-ee">
+    <section className="d-flex flex-column gap-4" key="residence">
       <div className="section-header d-flex flex-column gap-1">
         <h2 className="m-0">Sinu alaline elukoht</h2>
       </div>
       <div className="section-content d-flex flex-column gap-4">
         <div>
-          <label htmlFor="section02a-control01" className="form-label">
+          <label htmlFor="section02-control01" className="form-label">
             Riik
           </label>
           <select
             className="form-select form-select-lg"
-            id="section02a-control01"
+            id="section02-control01"
             autoComplete="country"
+            value={residenceCountry}
+            onChange={(event) => setResidenceCountry(event.target.value)}
           >
-            <option>Eesti</option>
+            <optgroup label="Euroopa">
+              <option value="Eesti">Eesti</option>
+              <option value="Austria">Austria</option>
+              <option value="Soome">Soome</option>
+            </optgroup>
+            <optgroup label="Muu maailm">
+              <option value="Malta">Malta</option>
+              <option value="Põhja-Korea">Põhja-Korea</option>
+              <option value="Ukraina">Ukraina</option>
+              <option value="Valgevene">Valgevene</option>
+              <option value="Venemaa">Venemaa</option>
+              <option value="Venezuela">Venezuela</option>
+              <option value="Zimbabwe">Zimbabwe</option>
+            </optgroup>
           </select>
         </div>
-        <div>
-          <label htmlFor="section02a-control02" className="form-label">
-            Aadress
-          </label>
-          <input
-            type="text"
-            className="form-control form-control-lg"
-            id="section02a-control02"
-            autoComplete="off"
-          />
-        </div>
-        <div className="row">
-          <div className="col-4">
-            <label htmlFor="section02a-control03" className="form-label">
-              Korteri number
-            </label>
-            <select
-              className="form-select form-select-lg"
-              id="section02a-control03"
-              autoComplete="off"
-            >
-              <option>20</option>
-            </select>
-          </div>
-        </div>
-      </div>
-    </section>,
-    <section className="d-flex flex-column gap-4" key="residence-not-ee">
-      <div className="section-header d-flex flex-column gap-1">
-        <h2 className="m-0">Sinu alaline elukoht</h2>
-      </div>
-      <div className="section-content d-flex flex-column gap-4">
-        <div>
-          <label htmlFor="section02b-control01" className="form-label">
-            Riik
-          </label>
-          <select
-            className="form-select form-select-lg"
-            id="section02b-control01"
-            autoComplete="country"
-          >
-            <option>Soome</option>
-          </select>
-        </div>
-        <div className="row gx-3">
-          <div className="col-8">
-            <label htmlFor="section02b-control02" className="form-label">
-              Linn
-            </label>
-            <input
-              type="text"
-              className="form-control form-control-lg"
-              id="section02b-control02"
-              autoComplete="address-level2"
-            />
-          </div>
-          <div className="col-4">
-            <label htmlFor="section02b-control03" className="form-label">
-              Postiindeks
-            </label>
-            <input
-              type="text"
-              className="form-control form-control-lg"
-              id="section02b-control03"
-              autoComplete="postal-code"
-            />
-          </div>
-        </div>
-        <div>
-          <label htmlFor="section02b-control04" className="form-label">
-            Aadress (tänav, maja, korter)
-          </label>
-          <input
-            type="text"
-            className="form-control form-control-lg"
-            id="section02b-control04"
-            autoComplete="address-line1"
-          />
-        </div>
+        {isEstonianResidence ? (
+          <>
+            <div>
+              <label htmlFor="section02a-control02" className="form-label">
+                Aadress
+              </label>
+              <input
+                type="text"
+                className="form-control form-control-lg"
+                id="section02a-control02"
+                autoComplete="off"
+              />
+            </div>
+            <div className="row">
+              <div className="col-4">
+                <label htmlFor="section02a-control03" className="form-label">
+                  Korteri number
+                </label>
+                <select
+                  className="form-select form-select-lg"
+                  id="section02a-control03"
+                  autoComplete="off"
+                >
+                  <option>20</option>
+                </select>
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="row gx-3">
+              <div className="col-8">
+                <label htmlFor="section02b-control02" className="form-label">
+                  Linn
+                </label>
+                <input
+                  type="text"
+                  className="form-control form-control-lg"
+                  id="section02b-control02"
+                  autoComplete="address-level2"
+                />
+              </div>
+              <div className="col-4">
+                <label htmlFor="section02b-control03" className="form-label">
+                  Postiindeks
+                </label>
+                <input
+                  type="text"
+                  className="form-control form-control-lg"
+                  id="section02b-control03"
+                  autoComplete="postal-code"
+                />
+              </div>
+            </div>
+            <div>
+              <label htmlFor="section02b-control04" className="form-label">
+                Aadress (tänav, maja, korter)
+              </label>
+              <input
+                type="text"
+                className="form-control form-control-lg"
+                id="section02b-control04"
+                autoComplete="address-line1"
+              />
+            </div>
+          </>
+        )}
       </div>
     </section>,
     <section className="d-flex flex-column gap-4" key="contacts">
