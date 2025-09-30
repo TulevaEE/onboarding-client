@@ -26,7 +26,7 @@ export const SavingsFundPayment: FC = () => {
   const {
     handleSubmit,
     control,
-    formState: { errors, isDirty, isValid, isSubmitting },
+    formState: { errors, isSubmitting },
   } = useForm<IPaymentForm>({
     defaultValues: {
       amount: undefined,
@@ -59,22 +59,6 @@ export const SavingsFundPayment: FC = () => {
       setSubmitError(true);
       captureException(e);
     }
-  };
-
-  const renderErrorMessage = () => {
-    if (submitError) {
-      return (
-        <div className="alert alert-danger" role="alert">
-          <FormattedMessage id="savingsFund.payment.linkGenerationError" />
-        </div>
-      );
-    }
-
-    return errors.amount?.message || errors.paymentMethod?.message ? (
-      <div className="alert alert-danger" role="alert">
-        {errors.amount?.message || errors.paymentMethod?.message}
-      </div>
-    ) : null;
   };
 
   return (
@@ -138,6 +122,9 @@ export const SavingsFundPayment: FC = () => {
                 )}
               />
             </div>
+            {errors.amount ? (
+              <div className="d-block invalid-feedback">{errors.amount.message}</div>
+            ) : null}
           </div>
 
           <div className="form-section d-flex flex-column gap-3">
@@ -172,9 +159,16 @@ export const SavingsFundPayment: FC = () => {
                 }}
               />
             </div>
+            {errors.paymentMethod ? (
+              <div className="d-block invalid-feedback">{errors.paymentMethod.message}</div>
+            ) : null}
           </div>
 
-          {renderErrorMessage()}
+          {submitError ? (
+            <div className="alert alert-danger" role="alert">
+              <FormattedMessage id="savingsFund.payment.linkGenerationError" />
+            </div>
+          ) : null}
 
           <div className="d-flex justify-content-between border-top">
             <button
@@ -190,7 +184,7 @@ export const SavingsFundPayment: FC = () => {
             <button
               type="submit"
               className="btn btn-primary btn-lg mt-4 btn-loading"
-              disabled={(!isDirty && !isValid) || !user.personalCode || isSubmitting}
+              disabled={!user.personalCode || isSubmitting}
             >
               <FormattedMessage id="savingsFund.payment.form.submit.label" />
             </button>

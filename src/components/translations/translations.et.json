@@ -1143,7 +1143,6 @@
   "savingsFund.payment.form.paymentMethod.required": "Vali, millisest pangast soovid sissemakse teha.",
   "savingsFund.payment.form.amount.min": "Sissemakse summa peab olema vähemalt üks euro.",
   "savingsFund.payment.form.amount.label": "Summa",
-  "savingsFund.payment.form.amount.ariaLabel": "Sissemakse summa eurodes",
   "savingsFund.payment.form.paymentMethod.label": "Vali pank",
   "savingsFund.payment.form.submit.label": "Jätkan",
   "savingsFund.payment.form.cancel.label": "Tagasi",

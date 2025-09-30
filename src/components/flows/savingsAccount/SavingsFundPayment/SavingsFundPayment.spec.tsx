@@ -44,28 +44,31 @@ describe(SavingsFundPayment, () => {
 
     const amountInput = screen.getByRole('textbox', { name: 'Amount' });
     const submitButton = screen.getByRole('button', { name: 'Continue' });
-    const validationMessage = 'The deposit amount must be at least one euro.';
 
     expect(amountInput).toBeInTheDocument();
-    expect(submitButton).toBeDisabled(); // Disabled until form is touched
 
     // Trigger minimum amount validation
     userEvent.type(amountInput, '-1');
-    userEvent.click(submitButton); // Trigger validation by clicking away from input
-    expect(await screen.findByText(validationMessage)).toBeInTheDocument();
+    userEvent.click(submitButton); // Trigger validation
+    expect(
+      await screen.findByText('Contribution amount must be at least 1 euro.'),
+    ).toBeInTheDocument();
 
     // Trigger required field validation
     userEvent.clear(amountInput);
-    userEvent.click(submitButton); // Trigger validation by clicking away from input
-    expect(await screen.findByText(validationMessage)).toBeInTheDocument();
+    userEvent.click(submitButton); // Trigger validation
+    expect(await screen.findByText('Enter an amount.')).toBeInTheDocument();
 
     // Enter valid amount
     userEvent.type(amountInput, '123.45');
-    userEvent.click(submitButton); // Trigger validation by clicking away from input
+    userEvent.click(submitButton); // Trigger validation
     expect(amountInput).toHaveValue('123.45');
-    await waitFor(() => expect(screen.queryByText(validationMessage)).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByText('Enter an amount.')).not.toBeInTheDocument());
+    expect(
+      screen.queryByText('Contribution amount must be at least 1 euro.'),
+    ).not.toBeInTheDocument();
 
-    await waitFor(() => expect(submitButton).toBeEnabled());
+    expect(submitButton).toBeEnabled();
   });
 
   it('lets user select a bank and start the payment', async () => {
@@ -80,7 +83,6 @@ describe(SavingsFundPayment, () => {
     const lhvRadio = screen.getByRole('radio', { name: 'LHV' });
     userEvent.click(lhvRadio);
     expect(lhvRadio).toBeChecked();
-    await waitFor(() => expect(submitButton).toBeEnabled());
     userEvent.click(submitButton);
 
     await waitFor(() =>

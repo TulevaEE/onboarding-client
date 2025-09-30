@@ -1053,7 +1053,6 @@
   "savingsFund.payment.form.paymentMethod.required": "Select the bank you want to use for the deposit.",
   "savingsFund.payment.form.amount.min": "The deposit amount must be at least one euro.",
   "savingsFund.payment.form.amount.label": "Amount",
-  "savingsFund.payment.form.amount.ariaLabel": "Deposit amount in euros",
   "savingsFund.payment.form.paymentMethod.label": "Select bank",
   "savingsFund.payment.form.submit.label": "Continue",
   "savingsFund.payment.form.cancel.label": "Back",
@@ -1061,7 +1060,7 @@
   "savingsFund.payment.infoSection.investmentAccount.learnMore": "What is this and how does it work?",
   "savingsFund.payment.infoSection.creditor": "The money must come from a bank account in your name.",
   "savingsFund.payment.infoSection.fees": "No service fees.",
-  "savingsFund.payment.linkGenerationError": "There was an error initiating the payment. Please try again later or contact us: tuleva@tuleva.ee",
+  "savingsFund.payment.linkGenerationError": "There was an error initiating the payment. Please try again later or contact us: tuleva@tuleva.ee.",
 
   "savingsFund.payment.success.pageTitle": "Deposit made",
   "savingsFund.payment.success.title": "Deposit made",
