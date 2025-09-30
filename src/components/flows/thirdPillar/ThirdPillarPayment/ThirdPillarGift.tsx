@@ -102,9 +102,7 @@ export const ThirdPillarGift: React.FunctionComponent = () => {
       <p className="mt-4 mb-2 fw-bold">
         <FormattedMessage id="thirdPillarPayment.singlePaymentBank" />
       </p>
-      <div className="d-flex gap-2 flex-wrap mt-2 payment-banks">
-        <PaymentBankButtons paymentBank={paymentBank} setPaymentBank={setPaymentBank} />
-      </div>
+      <PaymentBankButtons paymentBank={paymentBank} setPaymentBank={setPaymentBank} />
       {paymentBank === 'other' &&
         paymentPersonalCode &&
         isValidPersonalCode(paymentPersonalCode) && (
