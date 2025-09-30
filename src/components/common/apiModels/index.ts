@@ -338,7 +338,7 @@ export interface Payment {
 
 export type Currency = 'EUR';
 
-export type PaymentType = 'SINGLE' | 'RECURRING' | 'EMPLOYER' | 'GIFT' | 'MEMBER_FEE';
+export type PaymentType = 'SINGLE' | 'RECURRING' | 'EMPLOYER' | 'GIFT' | 'MEMBER_FEE' | 'SAVINGS';
 
 export type PaymentChannel =
   | 'SWEDBANK'

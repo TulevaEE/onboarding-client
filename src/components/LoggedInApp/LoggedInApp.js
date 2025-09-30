@@ -48,6 +48,7 @@ import { ListingDetails } from '../listings/ListingDetails';
 import { CapitalTransferStatus } from '../listings/transfer/status/CapitalTransferStatus';
 import { CreateCapitalTransfer } from '../listings/transfer/create/CreateCapitalTransfer';
 import { SavingsFundOnboarding } from '../flows/savingsAccount/SavingsFundOnboarding';
+import { SavingsFundPayment } from '../flows/savingsAccount/SavingsFundPayment';
 
 export const ACCOUNT_PATH = '/account';
 export const AML_PATH = '/aml';
@@ -204,7 +205,14 @@ export class LoggedInApp extends PureComponent {
                 </MembersOnlyGatekeep>
               )}
             />
-
+            <Route
+              path="/savings-fund/payment"
+              render={() => (
+                <MembersOnlyGatekeep>
+                  <SavingsFundPayment />
+                </MembersOnlyGatekeep>
+              )}
+            />
             <Route
               path="/2nd-pillar-payment-rate-success"
               component={SecondPillarPaymentRateSuccess}

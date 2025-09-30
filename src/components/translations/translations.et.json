@@ -1136,5 +1136,22 @@
   "secondPillarTaxWin.calculationDetails.paragraph3": "II samba makseid tõstes saad aasta peale kuni <b>kolm korda suuremat maksuvõitu</b>. 2000 € palga näitel teenib koguja maksuvõitu 345 €, mis läheb tema II sambasse kasvama.",
   "secondPillarTaxWin.calculationDetails.paragraph4": "Lisaks makstakse II sambasse 4% brutopalgast sotsiaalmaksu arvelt. 2000 € kuupalga juures on see 80 €. See ei sõltu koguja panusest. II sambasse makstud sotsiaalmaks <link>mõjutab vähesel määral ka I sammast</link>. Arvutus võib olla sinu jaoks vale, kui oled sellel aastal olnud vanemapuhkusel.",
   "secondPillarTaxWin.chart.title.2PercentContribution": "Graafik: kuidas suurem sissemakse kasvataks sinu II sammast",
-  "secondPillarTaxWin.chart.title": "Graafik: kuidas on suurem sissemakse sinu II sammast 2025. a kasvatanud"
+  "secondPillarTaxWin.chart.title": "Graafik: kuidas on suurem sissemakse sinu II sammast 2025. a kasvatanud",
+
+  "savingsFund.payment.pageTitle": "Sissemakse",
+  "savingsFund.payment.title": "Sissemakse täiendavasse kogumisfondi",
+  "savingsFund.payment.form.amount.required": "Sisesta summa",
+  "savingsFund.payment.form.paymentMethod.required": "Vali, millisest pangast soovid sissemakse teha",
+  "savingsFund.payment.form.amount.min": "Sissemakse summa peab olema vähemalt 1 euro",
+  "savingsFund.payment.form.amount.label": "Summa",
+  "savingsFund.payment.form.amount.ariaLabel": "Sissemakse summa eurodes",
+  "savingsFund.payment.form.paymentMethod.label": "Vali pank",
+  "savingsFund.payment.form.paymentMethod.other.label": "Muu...",
+  "savingsFund.payment.form.submit.label": "Jätkan",
+  "savingsFund.payment.form.cancel.label": "Tagasi",
+  "savingsFund.payment.infoSection.investmentAccount": "Saad investeerimistulult tulumaksu tasumise edasi lükata, kui deklareerid oma pangakonto investeerimiskontona.",
+  "savingsFund.payment.infoSection.investmentAccount.learnMore": "Mis see on ja kuidas see käib?",
+  "savingsFund.payment.infoSection.creditor": "Raha peab laekuma sinu enda pangakontolt.",
+  "savingsFund.payment.infoSection.fees": "Teenustasud puuduvad.",
+  "savingsFund.payment.linkGenerationError": "Makse algatamisel tekkis viga. Palun proovi hiljem uuesti või võta meiega ühendust: tuleva@tuleva.ee"
 }
