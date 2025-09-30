@@ -5,7 +5,7 @@ import { BankKey, bankKeyToBankNameMap } from './types';
 type Props = {
   bankKey: BankKey | 'other';
   paymentBank: BankKey | 'other' | null;
-  setPaymentBank: (paymentBank: BankKey | 'other') => void;
+  setPaymentBank: (paymentBank: BankKey | 'other' | null) => void;
   disabled?: boolean;
 };
 

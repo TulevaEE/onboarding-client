@@ -4,13 +4,14 @@ import { Controller, useForm } from 'react-hook-form';
 import classNames from 'classnames';
 import { captureException } from '@sentry/browser';
 import styles from './SavingsFundPayment.module.scss';
-import { PaymentBanksRadios } from './PaymentBanksRadios';
+import { PaymentBankButtons } from '../../thirdPillar/ThirdPillarPayment/PaymentBankButtons';
 import { BankKey } from '../../thirdPillar/ThirdPillarPayment/types';
 import { InfoSection } from './InfoSection';
 import { usePageTitle } from '../../../common/usePageTitle';
 import { redirectToPayment } from '../../../common/api';
 import { useMe } from '../../../common/apiHooks';
 import { PaymentChannel } from '../../../common/apiModels';
+import '../../thirdPillar/ThirdPillarPayment/Payment.scss';
 
 type IPaymentForm = {
   amount: number;
@@ -152,10 +153,23 @@ export const SavingsFundPayment: FC = () => {
                     id: 'savingsFund.payment.form.paymentMethod.required',
                   }),
                 }}
-                render={({ field: { onChange, value } }) => (
-                  // TODO: Add support for "other"
-                  <PaymentBanksRadios selected={value} onSelect={onChange} />
-                )}
+                render={({ field }) => {
+                  const selectedBank = (field.value as BankKey | null | undefined) ?? null;
+
+                  return (
+                    <PaymentBankButtons
+                      paymentBank={selectedBank}
+                      setPaymentBank={(bank) => {
+                        if (!bank || bank === 'other') {
+                          return;
+                        }
+
+                        field.onChange(bank);
+                      }}
+                      showOther={false}
+                    />
+                  );
+                }}
               />
             </div>
           </div>
