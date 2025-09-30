@@ -204,13 +204,13 @@ export const SavingsFundOnboarding: FC = () => {
       </div>
       <div className="section-content d-flex flex-column gap-4">
         <div className="selection-group d-flex flex-column gap-2">
-          <div className="form-check m-0">
+          <div className="form-check m-0 lead">
             <input className="form-check-input" type="radio" name="radioSet01" id="radioSet01-01" />
             <label className="form-check-label" htmlFor="radioSet01-01">
               Olen riikliku taustaga isik
             </label>
           </div>
-          <div className="form-check m-0">
+          <div className="form-check m-0 lead">
             <input className="form-check-input" type="radio" name="radioSet01" id="radioSet01-02" />
             <label className="form-check-label" htmlFor="radioSet01-02">
               Ma ei ole riikliku taustaga isik
@@ -225,7 +225,7 @@ export const SavingsFundOnboarding: FC = () => {
       </div>
       <div className="section-content d-flex flex-column gap-4">
         <div className="selection-group d-flex flex-column gap-2">
-          <div className="form-check m-0">
+          <div className="form-check m-0 lead">
             <input
               className="form-check-input"
               type="radio"
@@ -237,7 +237,7 @@ export const SavingsFundOnboarding: FC = () => {
               Pikaajaline investeerimine, sh pension
             </label>
           </div>
-          <div className="form-check m-0">
+          <div className="form-check m-0 lead">
             <input
               className="form-check-input"
               type="radio"
@@ -249,7 +249,7 @@ export const SavingsFundOnboarding: FC = () => {
               Konkreetne eesmärk (kodu, haridus jms)
             </label>
           </div>
-          <div className="form-check m-0">
+          <div className="form-check m-0 lead">
             <input
               className="form-check-input"
               type="radio"
@@ -261,7 +261,7 @@ export const SavingsFundOnboarding: FC = () => {
               Lapse tuleviku tarbeks kogumine
             </label>
           </div>
-          <div className="form-check m-0">
+          <div className="form-check m-0 lead">
             <input
               className="form-check-input"
               type="radio"
@@ -273,7 +273,7 @@ export const SavingsFundOnboarding: FC = () => {
               Aktiivne sh igapäevane kauplemine
             </label>
           </div>
-          <div className="form-check m-0">
+          <div className="form-check m-0 lead">
             <input
               className="form-check-input"
               type="radio"
@@ -291,6 +291,7 @@ export const SavingsFundOnboarding: FC = () => {
                 type="text"
                 className="form-control form-control-lg mt-2"
                 aria-labelledby="radioSet02-05-label"
+                placeholder="Sisesta investeerimise eesmärk"
               />
             ) : null}
           </div>
@@ -307,25 +308,25 @@ export const SavingsFundOnboarding: FC = () => {
       </div>
       <div className="section-content d-flex flex-column gap-4">
         <div className="selection-group d-flex flex-column gap-2">
-          <div className="form-check m-0">
+          <div className="form-check m-0 lead">
             <input className="form-check-input" type="radio" name="radioSet03" id="radioSet03-01" />
             <label className="form-check-label" htmlFor="radioSet03-01">
               Kuni 20 000 €
             </label>
           </div>
-          <div className="form-check m-0">
+          <div className="form-check m-0 lead">
             <input className="form-check-input" type="radio" name="radioSet03" id="radioSet03-02" />
             <label className="form-check-label" htmlFor="radioSet03-02">
               20 001–40 000 €
             </label>
           </div>
-          <div className="form-check m-0">
+          <div className="form-check m-0 lead">
             <input className="form-check-input" type="radio" name="radioSet03" id="radioSet03-03" />
             <label className="form-check-label" htmlFor="radioSet03-03">
               40 001–80 000 €
             </label>
           </div>
-          <div className="form-check m-0">
+          <div className="form-check m-0 lead">
             <input className="form-check-input" type="radio" name="radioSet03" id="radioSet03-04" />
             <label className="form-check-label" htmlFor="radioSet03-04">
               80 001 € või enam
@@ -341,43 +342,43 @@ export const SavingsFundOnboarding: FC = () => {
       </div>
       <div className="section-content d-flex flex-column gap-4">
         <div className="selection-group d-flex flex-column gap-2">
-          <div className="form-check m-0">
+          <div className="form-check m-0 lead">
             <input className="form-check-input" type="checkbox" id="checkSet01-01" />
             <label className="form-check-label" htmlFor="checkSet01-01">
               Palk
             </label>
           </div>
-          <div className="form-check m-0">
+          <div className="form-check m-0 lead">
             <input className="form-check-input" type="checkbox" id="checkSet01-02" />
             <label className="form-check-label" htmlFor="checkSet01-02">
               Säästud ja hoiused
             </label>
           </div>
-          <div className="form-check m-0">
+          <div className="form-check m-0 lead">
             <input className="form-check-input" type="checkbox" id="checkSet01-03" />
             <label className="form-check-label" htmlFor="checkSet01-03">
               Investeeringud (väärtpaberid, kinnisvara, jm)
             </label>
           </div>
-          <div className="form-check m-0">
+          <div className="form-check m-0 lead">
             <input className="form-check-input" type="checkbox" id="checkSet01-04" />
             <label className="form-check-label" htmlFor="checkSet01-04">
               Pension ja sotsiaaltoetused
             </label>
           </div>
-          <div className="form-check m-0">
+          <div className="form-check m-0 lead">
             <input className="form-check-input" type="checkbox" id="checkSet01-05" />
             <label className="form-check-label" htmlFor="checkSet01-05">
               Abikaasa ja pere raha, sh pärand
             </label>
           </div>
-          <div className="form-check m-0">
+          <div className="form-check m-0 lead">
             <input className="form-check-input" type="checkbox" id="checkSet01-06" />
             <label className="form-check-label" htmlFor="checkSet01-06">
               Tulu äriühingust (dividendid, juhatuse tasu)
             </label>
           </div>
-          <div className="form-check m-0">
+          <div className="form-check m-0 lead">
             <input
               className="form-check-input"
               type="checkbox"
@@ -394,6 +395,7 @@ export const SavingsFundOnboarding: FC = () => {
                 type="text"
                 className="form-control form-control-lg mt-2"
                 aria-labelledby="checkSet01-07-label"
+                placeholder="Sisesta sissetulekuallikas"
               />
             ) : null}
           </div>
@@ -441,7 +443,7 @@ export const SavingsFundOnboarding: FC = () => {
             </svg>
           </a>
         </p>
-        <div className="form-check m-0">
+        <div className="form-check m-0 lead">
           <input
             className="form-check-input"
             type="checkbox"
@@ -458,7 +460,7 @@ export const SavingsFundOnboarding: FC = () => {
             Kinnitan, et olen tutvunud tingimustega
           </label>
           {showTermsError && (
-            <p className="m-0 text-danger" role="alert">
+            <p className="m-0 text-danger fs-base" role="alert">
               Jätkamiseks pead tingimustega nõustuma.
             </p>
           )}
