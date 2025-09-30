@@ -118,6 +118,54 @@ select optgroup {
   background-color: rgba(11, 250, 67, 0.12);
 }
 
+// Tom Select
+
+.ts-dropdown {
+  overflow: hidden !important;
+  line-height: 1.2 !important;
+  border-radius: 0.5rem !important;
+}
+.ts-dropdown-content {
+  max-height: 320px !important;
+  padding-top: 0.5rem !important;
+  padding-bottom: 0.5rem !important;
+}
+.ts-dropdown .option,
+.ts-dropdown .optgroup-header,
+.ts-dropdown .no-results,
+.ts-dropdown .create {
+  padding: 0.5rem 1rem !important;
+}
+.ts-dropdown .optgroup-header {
+  line-height: 1.4286 !important;
+}
+
+.ts-wrapper.form-select {
+  background-image: none !important;
+}
+.ts-wrapper.multi .ts-control {
+  padding: 0.5rem 0.5rem 0.25rem !important;
+}
+.ts-wrapper.multi .ts-control > div {
+  margin: 0 0.25rem 0.25rem 0 !important;
+  padding: 0.25rem 0.75rem !important;
+}
+
+.ts-wrapper .ts-control > input,
+.ts-wrapper.has-items .ts-control > input {
+  margin: 0 0.25rem 0.25rem 0.5rem !important;
+  padding-top: 0.25rem !important;
+  padding-bottom: 0.25rem !important;
+}
+
+.ts-wrapper.plugin-remove_button:not(.rtl) .item .remove {
+  margin-left: 0.75rem !important;
+}
+.ts-wrapper.plugin-remove_button .item .remove {
+  padding: 0 0.5rem !important;
+  background: none !important;
+}
+
 // Typography
 
 h1,
