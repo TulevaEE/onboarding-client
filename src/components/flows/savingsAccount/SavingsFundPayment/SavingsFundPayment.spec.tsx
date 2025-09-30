@@ -37,13 +37,14 @@ describe(SavingsFundPayment, () => {
     history.push('/savings-fund/payment');
   });
 
-  it('lets user enter an amount', async () => {
+  it('validates the deposit amount', async () => {
     expect(
-      await screen.findByRole('heading', { name: 'Contribution to additional savings fund' }),
+      await screen.findByRole('heading', { name: 'Deposit to additional savings fund' }),
     ).toBeInTheDocument();
 
     const amountInput = screen.getByRole('textbox', { name: 'Amount' });
     const submitButton = screen.getByRole('button', { name: 'Continue' });
+    const validationMessage = 'The deposit amount must be at least one euro.';
 
     expect(amountInput).toBeInTheDocument();
     expect(submitButton).toBeDisabled(); // Disabled until form is touched
@@ -51,30 +52,25 @@ describe(SavingsFundPayment, () => {
     // Trigger minimum amount validation
     userEvent.type(amountInput, '-1');
     userEvent.click(submitButton); // Trigger validation by clicking away from input
-    expect(
-      await screen.findByText('Contribution amount must be at least 1 euro'),
-    ).toBeInTheDocument();
+    expect(await screen.findByText(validationMessage)).toBeInTheDocument();
 
     // Trigger required field validation
     userEvent.clear(amountInput);
     userEvent.click(submitButton); // Trigger validation by clicking away from input
-    expect(await screen.findByText('Enter an amount')).toBeInTheDocument();
+    expect(await screen.findByText(validationMessage)).toBeInTheDocument();
 
     // Enter valid amount
     userEvent.type(amountInput, '123.45');
     userEvent.click(submitButton); // Trigger validation by clicking away from input
     expect(amountInput).toHaveValue('123.45');
-    await waitFor(() => expect(screen.queryByText('Enter an amount')).not.toBeInTheDocument());
-    expect(
-      screen.queryByText('Contribution amount must be at least 1 euro'),
-    ).not.toBeInTheDocument();
+    await waitFor(() => expect(screen.queryByText(validationMessage)).not.toBeInTheDocument());
 
     await waitFor(() => expect(submitButton).toBeEnabled());
   });
 
   it('lets user select a bank and start the payment', async () => {
     expect(
-      await screen.findByRole('heading', { name: 'Contribution to additional savings fund' }),
+      await screen.findByRole('heading', { name: 'Deposit to additional savings fund' }),
     ).toBeInTheDocument();
 
     const amountInput = screen.getByRole('textbox', { name: 'Amount' });

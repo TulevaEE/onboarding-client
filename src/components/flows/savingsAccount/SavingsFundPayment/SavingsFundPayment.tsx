@@ -105,7 +105,7 @@ export const SavingsFundPayment: FC = () => {
                 rules={{
                   required: {
                     value: true,
-                    message: intl.formatMessage({ id: 'savingsFund.payment.form.amount.required' }),
+                    message: intl.formatMessage({ id: 'savingsFund.payment.form.amount.min' }),
                   },
                   min: {
                     value: 1,
