@@ -1,12 +1,37 @@
-import { FC, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 import { usePageTitle } from '../../../common/usePageTitle';
+
+const useOtherInput = () => {
+  const [isSelected, setIsSelected] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isSelected) {
+      inputRef.current?.focus();
+    }
+  }, [isSelected]);
+
+  return { isSelected, setIsSelected, inputRef };
+};
 
 export const SavingsFundOnboarding: FC = () => {
   usePageTitle('pageTitle.savingsFundOnboarding');
 
   const history = useHistory();
+  const [hasAcceptedTerms, setHasAcceptedTerms] = useState(false);
+  const [showTermsError, setShowTermsError] = useState(false);
+  const {
+    isSelected: isOtherIncomeSelected,
+    setIsSelected: setIsOtherIncomeSelected,
+    inputRef: otherIncomeInputRef,
+  } = useOtherInput();
+  const {
+    isSelected: isOtherInvestmentGoalSelected,
+    setIsSelected: setIsOtherInvestmentGoalSelected,
+    inputRef: otherInvestmentGoalInputRef,
+  } = useOtherInput();
   const sections = [
     <section className="d-flex flex-column gap-4" key="citizenship">
       <div className="section-header d-flex flex-column gap-1" id="section01-header">
@@ -196,45 +221,73 @@ export const SavingsFundOnboarding: FC = () => {
       <div className="section-content d-flex flex-column gap-4">
         <div className="selection-group d-flex flex-column gap-2">
           <div className="form-check m-0">
-            <input className="form-check-input" type="radio" name="radioSet02" id="radioSet02-01" />
+            <input
+              className="form-check-input"
+              type="radio"
+              name="radioSet02"
+              id="radioSet02-01"
+              onChange={() => setIsOtherInvestmentGoalSelected(false)}
+            />
             <label className="form-check-label" htmlFor="radioSet02-01">
               Pikaajaline investeerimine, sh pension
             </label>
           </div>
           <div className="form-check m-0">
-            <input className="form-check-input" type="radio" name="radioSet02" id="radioSet02-02" />
+            <input
+              className="form-check-input"
+              type="radio"
+              name="radioSet02"
+              id="radioSet02-02"
+              onChange={() => setIsOtherInvestmentGoalSelected(false)}
+            />
             <label className="form-check-label" htmlFor="radioSet02-02">
               Konkreetne eesmärk (kodu, haridus jms)
             </label>
           </div>
           <div className="form-check m-0">
-            <input className="form-check-input" type="radio" name="radioSet02" id="radioSet02-03" />
+            <input
+              className="form-check-input"
+              type="radio"
+              name="radioSet02"
+              id="radioSet02-03"
+              onChange={() => setIsOtherInvestmentGoalSelected(false)}
+            />
             <label className="form-check-label" htmlFor="radioSet02-03">
               Lapse tuleviku tarbeks kogumine
             </label>
           </div>
           <div className="form-check m-0">
-            <input className="form-check-input" type="radio" name="radioSet02" id="radioSet02-04" />
+            <input
+              className="form-check-input"
+              type="radio"
+              name="radioSet02"
+              id="radioSet02-04"
+              onChange={() => setIsOtherInvestmentGoalSelected(false)}
+            />
             <label className="form-check-label" htmlFor="radioSet02-04">
               Aktiivne sh igapäevane kauplemine
             </label>
           </div>
           <div className="form-check m-0">
-            <input className="form-check-input" type="radio" name="radioSet02" id="radioSet02-05" />
-            <label className="form-check-label" htmlFor="radioSet02-05">
-              Muu…
-            </label>
-          </div>
-          <div className="form-check m-0">
-            <input className="form-check-input" type="radio" name="radioSet02" id="radioSet02-06" />
-            <label className="form-check-label" htmlFor="radioSet02-06" id="radioSet02-06-label">
-              Muu…
-            </label>
             <input
-              type="text"
-              className="form-control form-control-lg mt-2"
-              aria-labelledby="radioSet02-06-label"
+              className="form-check-input"
+              type="radio"
+              name="radioSet02"
+              id="radioSet02-05"
+              checked={isOtherInvestmentGoalSelected}
+              onChange={(event) => setIsOtherInvestmentGoalSelected(event.target.checked)}
             />
+            <label className="form-check-label" htmlFor="radioSet02-05" id="radioSet02-05-label">
+              Muu…
+            </label>
+            {isOtherInvestmentGoalSelected ? (
+              <input
+                ref={otherInvestmentGoalInputRef}
+                type="text"
+                className="form-control form-control-lg mt-2"
+                aria-labelledby="radioSet02-05-label"
+              />
+            ) : null}
           </div>
         </div>
       </div>
@@ -320,21 +373,24 @@ export const SavingsFundOnboarding: FC = () => {
             </label>
           </div>
           <div className="form-check m-0">
-            <input className="form-check-input" type="checkbox" id="checkSet01-07" />
-            <label className="form-check-label" htmlFor="checkSet01-07">
-              Muu…
-            </label>
-          </div>
-          <div className="form-check m-0">
-            <input className="form-check-input" type="checkbox" id="checkSet01-08" />
-            <label className="form-check-label" htmlFor="checkSet01-08" id="checkSet01-08-label">
-              Muu…
-            </label>
             <input
-              type="text"
-              className="form-control form-control-lg mt-2"
-              aria-labelledby="checkSet01-08-label"
+              className="form-check-input"
+              type="checkbox"
+              id="checkSet01-07"
+              checked={isOtherIncomeSelected}
+              onChange={(event) => setIsOtherIncomeSelected(event.target.checked)}
             />
+            <label className="form-check-label" htmlFor="checkSet01-07" id="checkSet01-07-label">
+              Muu…
+            </label>
+            {isOtherIncomeSelected ? (
+              <input
+                ref={otherIncomeInputRef}
+                type="text"
+                className="form-control form-control-lg mt-2"
+                aria-labelledby="checkSet01-07-label"
+              />
+            ) : null}
           </div>
         </div>
       </div>
@@ -346,7 +402,7 @@ export const SavingsFundOnboarding: FC = () => {
       <div className="section-content d-flex flex-column gap-5">
         <p className="m-0">
           <a
-            className="d-flex align-items-center gap-3 p-3 p-sm-4 bg-blue-1 border border-blue-2 rounded-3"
+            className="d-flex align-items-center gap-2 p-3 p-sm-4 bg-blue-1 border border-blue-2 rounded-3 lead"
             href="https://tuleva.ee/"
             target="_blank"
             rel="noreferrer"
@@ -381,10 +437,26 @@ export const SavingsFundOnboarding: FC = () => {
           </a>
         </p>
         <div className="form-check m-0">
-          <input className="form-check-input" type="checkbox" id="checkSet02-01" />
+          <input
+            className="form-check-input"
+            type="checkbox"
+            id="checkSet02-01"
+            checked={hasAcceptedTerms}
+            onChange={(event) => {
+              setHasAcceptedTerms(event.target.checked);
+              if (event.target.checked) {
+                setShowTermsError(false);
+              }
+            }}
+          />
           <label className="form-check-label" htmlFor="checkSet02-01">
             Kinnitan, et olen tutvunud tingimustega
           </label>
+          {showTermsError && (
+            <p className="m-0 text-danger" role="alert">
+              Jätkamiseks pead tingimustega nõustuma.
+            </p>
+          )}
         </div>
       </div>
     </section>,
@@ -395,9 +467,9 @@ export const SavingsFundOnboarding: FC = () => {
   const currentSection = activeSection + 1;
   const progressPercentage = (currentSection / totalSections) * 100;
   const isFirstSection = activeSection === 0;
-  const isLastSection = activeSection === totalSections - 1;
 
   const showPreviousSection = () => {
+    setShowTermsError(false);
     if (isFirstSection) {
       history.push('/account');
       return;
@@ -407,10 +479,17 @@ export const SavingsFundOnboarding: FC = () => {
   };
 
   const showNextSection = () => {
-    if (isLastSection) {
+    if (activeSection === totalSections - 1) {
+      if (!hasAcceptedTerms) {
+        setShowTermsError(true);
+        return;
+      }
+
+      setShowTermsError(false);
       return;
     }
 
+    setShowTermsError(false);
     setActiveSection((current) => Math.min(current + 1, totalSections - 1));
   };
 
@@ -440,12 +519,7 @@ export const SavingsFundOnboarding: FC = () => {
         <button type="button" className="btn btn-lg btn-light" onClick={showPreviousSection}>
           <FormattedMessage id="savingsFundOnboarding.back" />
         </button>
-        <button
-          type="button"
-          className="btn btn-lg btn-primary"
-          onClick={showNextSection}
-          disabled={isLastSection}
-        >
+        <button type="button" className="btn btn-lg btn-primary" onClick={showNextSection}>
           <FormattedMessage id="savingsFundOnboarding.continue" />
         </button>
       </div>
