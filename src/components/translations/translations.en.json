@@ -1073,7 +1073,6 @@
 
   "savingsFund.payment.success.pageTitle": "Deposit made",
   "savingsFund.payment.success.title": "Deposit made",
-  "savingsFund.payment.success.description": "The deposit amount will be invested in the fund by the end of tomorrow's business day. We will notify you of this by email.",
-  "savingsFund.payment.success.cancellationNotice": "The deposit can be cancelled today until 15:59.",
+  "savingsFund.payment.success.description": "The deposit amount will be invested in the fund by the end of next business day. We will notify you of this by email.",
   "savingsFund.payment.success.myAccountButton.label": "My Account"
 }

@@ -1165,7 +1165,6 @@
 
   "savingsFund.payment.success.pageTitle": "Sissemakse tehtud",
   "savingsFund.payment.success.title": "Sissemakse on tehtud",
-  "savingsFund.payment.success.description": "Sissemakse summa investeeritakse fondi homse tööpäeva lõpuks. Teavitame sind sellest meili teel.",
-  "savingsFund.payment.success.cancellationNotice": "Sissemakset on võimalik tühistada täna kuni kell 15:59.",
+  "savingsFund.payment.success.description": "Sissemakse summa investeeritakse fondi järgneva tööpäeva lõpuks. Teavitame sind sellest meili teel.",
   "savingsFund.payment.success.myAccountButton.label": "Minu konto"
 }

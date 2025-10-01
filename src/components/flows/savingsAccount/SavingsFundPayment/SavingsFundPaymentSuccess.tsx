@@ -23,9 +23,6 @@ const SavingsFundPaymentSuccess: FC = () => {
         <p className="m-0">
           <FormattedMessage id="savingsFund.payment.success.description" />
         </p>
-        <p className="m-0">
-          <FormattedMessage id="savingsFund.payment.success.cancellationNotice" />
-        </p>
       </StatusAlert>
     </div>
   );
