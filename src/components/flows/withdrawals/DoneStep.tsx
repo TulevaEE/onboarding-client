@@ -5,7 +5,7 @@ import { useWithdrawalsContext } from './hooks';
 import { useMandateDeadlines, useWithdrawalsEligibility } from '../../common/apiHooks';
 import { Loader } from '../../common';
 import { formatDateRange, formatDateTime } from '../../common/dateFormatter';
-import { SuccessAlert } from '../../common/successAlert';
+import { StatusAlert } from '../../common/statusAlert';
 
 export const DoneStep = () => {
   const { mandatesToCreate, mandatesSubmitted } = useWithdrawalsContext();
@@ -36,25 +36,34 @@ export const DoneStep = () => {
     return <Loader className="align-middle my-4" />;
   }
 
-  return (
-    <SuccessAlert>
-      <h3 className="text-center mt-3">
-        {mandatesToCreate.length === 1 ? (
-          <FormattedMessage id="withdrawals.done.heading" />
-        ) : (
-          <FormattedMessage id="withdrawals.done.heading.plural" />
-        )}
-      </h3>
-      <div className="mt-4">
-        {mandatesToCreate.length === 1 ? (
-          <FormattedMessage id="withdrawals.done.subHeading" />
-        ) : (
-          <FormattedMessage id="withdrawals.done.subHeading.plural" />
-        )}
-      </div>
+  const headingId =
+    mandatesToCreate.length === 1 ? 'withdrawals.done.heading' : 'withdrawals.done.heading.plural';
+  const subHeadingId =
+    mandatesToCreate.length === 1
+      ? 'withdrawals.done.subHeading'
+      : 'withdrawals.done.subHeading.plural';
 
-      <div className="pt-3">
-        {fundPensionMandateDone && (
+  return (
+    <StatusAlert
+      title={
+        <h3 className="m-0">
+          <FormattedMessage id={headingId} />
+        </h3>
+      }
+      actions={
+        <Link to="/account" className="w-100">
+          <button type="button" className="btn btn-outline-primary w-100">
+            <FormattedMessage id="withdrawals.done.myAccount" />
+          </button>
+        </Link>
+      }
+    >
+      <p className="m-0">
+        <FormattedMessage id={subHeadingId} />
+      </p>
+
+      {fundPensionMandateDone && (
+        <p className="m-0">
           <FormattedMessage
             id="withdrawals.done.fundPension.dateAndSize"
             values={{
@@ -65,37 +74,40 @@ export const DoneStep = () => {
               ),
             }}
           />
-        )}
-        {partialWithdrawalPillars.size > 0 && (
-          <div>
-            {partialWithdrawalPillars.has('SECOND') && (
-              <>
-                <FormattedMessage
-                  id="withdrawals.done.partialWithdrawal.second"
-                  values={{
-                    b: (children: ReactChildren) => <b>{children}</b>,
-                    withdrawalDate: formatDateRange(
-                      mandateDeadlines.withdrawalFulfillmentDate,
-                      mandateDeadlines.withdrawalLatestFulfillmentDate,
-                    ),
-                  }}
-                />{' '}
-              </>
-            )}
-            {partialWithdrawalPillars.has('THIRD') && (
+        </p>
+      )}
+
+      {partialWithdrawalPillars.size > 0 && (
+        <div className="d-flex flex-column gap-2">
+          {partialWithdrawalPillars.has('SECOND') && (
+            <p className="m-0">
+              <FormattedMessage
+                id="withdrawals.done.partialWithdrawal.second"
+                values={{
+                  b: (children: ReactChildren) => <b>{children}</b>,
+                  withdrawalDate: formatDateRange(
+                    mandateDeadlines.withdrawalFulfillmentDate,
+                    mandateDeadlines.withdrawalLatestFulfillmentDate,
+                  ),
+                }}
+              />
+            </p>
+          )}
+          {partialWithdrawalPillars.has('THIRD') && (
+            <p className="m-0">
               <FormattedMessage
                 id="withdrawals.done.partialWithdrawal.third"
                 values={{
                   b: (children: ReactChildren) => <b>{children}</b>,
                 }}
               />
-            )}
-          </div>
-        )}
-      </div>
+            </p>
+          )}
+        </div>
+      )}
 
       {secondPillarMandateDone && (
-        <div className="pt-3">
+        <p className="m-0">
           <FormattedMessage
             id="withdrawals.done.secondPillarDisclaimer"
             values={{
@@ -103,13 +115,8 @@ export const DoneStep = () => {
               cancellationDate: formatDateTime(mandateDeadlines.withdrawalCancellationDeadline),
             }}
           />
-        </div>
+        </p>
       )}
-      <Link to="/account">
-        <button type="button" className="btn btn-outline-primary mt-5">
-          <FormattedMessage id="withdrawals.done.myAccount" />
-        </button>
-      </Link>
-    </SuccessAlert>
+    </StatusAlert>
   );
 };

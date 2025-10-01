@@ -515,6 +515,10 @@ export const SavingsFundOnboarding: FC = () => {
   const progressPercentage = (currentSection / totalSections) * 100;
   const isFirstSection = activeSection === 0;
 
+  const redirectToOutcome = (outcome: 'pending' | 'success') => {
+    history.push(`/savings-fund/onboarding/${outcome}`);
+  };
+
   const showPreviousSection = () => {
     setShowTermsError(false);
     if (isFirstSection) {
@@ -533,6 +537,7 @@ export const SavingsFundOnboarding: FC = () => {
       }
 
       setShowTermsError(false);
+      redirectToOutcome('success');
       return;
     }
 

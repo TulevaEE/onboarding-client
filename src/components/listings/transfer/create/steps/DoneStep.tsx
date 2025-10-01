@@ -1,6 +1,6 @@
 import { Redirect, useHistory } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
-import { SuccessAlert } from '../../../../common/successAlert';
+import { StatusAlert } from '../../../../common/statusAlert';
 import { useCreateCapitalTransferContext } from '../hooks';
 
 export const DoneStep = () => {
@@ -19,29 +19,27 @@ export const DoneStep = () => {
   }
 
   return (
-    <SuccessAlert>
-      <div className="d-flex flex-column gap-4">
-        <div className="d-flex flex-column gap-3">
-          <h2 className="m-0">
-            <FormattedMessage id="capital.transfer.create.success.signedTitle" />
-          </h2>
-          <p className="m-0">
-            <FormattedMessage id="capital.transfer.create.success.signedDescription" />
-          </p>
-        </div>
-
-        <div className="d-flex justify-content-center gap-2">
-          <button
-            type="button"
-            className="btn btn-outline-primary"
-            onClick={() => {
-              history.push(`/capital/transfer/${createdCapitalTransferContract.id}`);
-            }}
-          >
-            <FormattedMessage id="capital.transfer.details.button.seeStatus" />
-          </button>
-        </div>
-      </div>
-    </SuccessAlert>
+    <StatusAlert
+      title={
+        <h2 className="m-0">
+          <FormattedMessage id="capital.transfer.create.success.signedTitle" />
+        </h2>
+      }
+      actions={
+        <button
+          type="button"
+          className="btn btn-outline-primary"
+          onClick={() => {
+            history.push(`/capital/transfer/${createdCapitalTransferContract.id}`);
+          }}
+        >
+          <FormattedMessage id="capital.transfer.details.button.seeStatus" />
+        </button>
+      }
+    >
+      <p className="m-0">
+        <FormattedMessage id="capital.transfer.create.success.signedDescription" />
+      </p>
+    </StatusAlert>
   );
 };

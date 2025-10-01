@@ -1107,6 +1107,17 @@
   "pageTitle.savingsFundOnboarding": "Täiendava kogumisfondi avamine",
   "savingsFundOnboarding.back": "Tagasi",
   "savingsFundOnboarding.continue": "Jätkan",
+  "savingsFund.onboarding.success.pageTitle": "Fond on avatud",
+  "savingsFund.onboarding.success.title": "Korras! Üks samm veel…",
+  "savingsFund.onboarding.success.description": "Suuna oma raha kohe tootlust teenima ja tee täiendavasse kogumisfondi sissemakse. Alusta kasvõi ühest eurost.",
+  "savingsFund.onboarding.success.primaryButton.label": "Teen sissemakse",
+  "savingsFund.onboarding.success.secondaryButton.label": "Mitte praegu",
+
+  "savingsFund.onboarding.pending.pageTitle": "Läbivaatamisel",
+  "savingsFund.onboarding.pending.title": "Taotlus on läbivaatamisel",
+  "savingsFund.onboarding.pending.description": "Aitäh, saime su taotluse kätte. Vaatame selle läbi nädala jooksul ja teavitame sind otsusest meiliga.",
+  "savingsFund.onboarding.pending.myAccountButton.label": "Minu konto",
+
   "secondPillarTaxWin.title": "Sinu kasu II samba panuse tõstmisest",
   "secondPillarTaxWin.title.2PercentContribution": "Kuidas saada II sambast suuremat võitu?",
   "secondPillarTaxWin.chart.your2PercentContribution": "sinu 2% sissemaksega",

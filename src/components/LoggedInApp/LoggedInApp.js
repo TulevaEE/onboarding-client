@@ -47,7 +47,11 @@ import { AddListing } from '../listings/AddListing';
 import { ListingDetails } from '../listings/ListingDetails';
 import { CapitalTransferStatus } from '../listings/transfer/status/CapitalTransferStatus';
 import { CreateCapitalTransfer } from '../listings/transfer/create/CreateCapitalTransfer';
-import { SavingsFundOnboarding } from '../flows/savingsAccount/SavingsFundOnboarding';
+import {
+  SavingsFundOnboarding,
+  SavingsFundOnboardingPending,
+  SavingsFundOnboardingSuccess,
+} from '../flows/savingsAccount/SavingsFundOnboarding';
 import { SavingsFundPayment } from '../flows/savingsAccount/SavingsFundPayment';
 import SavingsFundPaymentSuccess from '../flows/savingsAccount/SavingsFundPayment/SavingsFundPaymentSuccess';
 
@@ -138,6 +142,14 @@ export class LoggedInApp extends PureComponent {
                   <PartnerThirdPillarFlow />
                 </ContactDetailsGatekeep>
               )}
+            />
+            <Route
+              path="/savings-fund/onboarding/success"
+              component={SavingsFundOnboardingSuccess}
+            />
+            <Route
+              path="/savings-fund/onboarding/pending"
+              component={SavingsFundOnboardingPending}
             />
             <Route path="/savings-fund/onboarding" component={SavingsFundOnboarding} />
             <Route path="/partner/3rd-pillar-flow-success" component={BackToPartner} />
