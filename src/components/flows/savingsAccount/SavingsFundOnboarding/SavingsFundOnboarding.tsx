@@ -5,7 +5,6 @@ import 'tom-select/dist/js/plugins/remove_button';
 import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 import { usePageTitle } from '../../../common/usePageTitle';
-import { AddressDetails, useAddressLookupScript } from './useAddressLookup';
 
 const useOtherInput = () => {
   const [isSelected, setIsSelected] = useState(false);
@@ -27,7 +26,6 @@ export const SavingsFundOnboarding: FC = () => {
   const [hasAcceptedTerms, setHasAcceptedTerms] = useState(false);
   const [showTermsError, setShowTermsError] = useState(false);
   const [residenceCountry, setResidenceCountry] = useState('Eesti');
-  const [address, setAddress] = useState<string | null>(null);
   const [activeSection, setActiveSection] = useState(0);
   const isEstonianResidence = residenceCountry === 'Eesti';
   const citizenshipSelectRef = useRef<HTMLSelectElement>(null);
@@ -42,7 +40,6 @@ export const SavingsFundOnboarding: FC = () => {
     setIsSelected: setIsOtherInvestmentGoalSelected,
     inputRef: otherInvestmentGoalInputRef,
   } = useOtherInput();
-
   const sections = [
     <section className="d-flex flex-column gap-4" key="citizenship">
       <div className="section-header d-flex flex-column gap-1" id="section01-header">
@@ -78,7 +75,6 @@ export const SavingsFundOnboarding: FC = () => {
       <div className="section-header d-flex flex-column gap-1">
         <h2 className="m-0">Sinu alaline elukoht</h2>
       </div>
-
       <div className="section-content d-flex flex-column gap-4">
         <div>
           <label htmlFor="section02-control01" className="form-label">
@@ -113,7 +109,26 @@ export const SavingsFundOnboarding: FC = () => {
               <label htmlFor="section02a-control02" className="form-label">
                 Aadress
               </label>
-              <div id="addressInput" />
+              <input
+                type="text"
+                className="form-control form-control-lg"
+                id="section02a-control02"
+                autoComplete="off"
+              />
+            </div>
+            <div className="row gx-3">
+              <div className="col-sm-4">
+                <label htmlFor="section02a-control03" className="form-label">
+                  Korteri number
+                </label>
+                <select
+                  className="form-select form-select-lg"
+                  id="section02a-control03"
+                  autoComplete="off"
+                >
+                  <option>20</option>
+                </select>
+              </div>
             </div>
           </>
         ) : (
@@ -491,37 +506,10 @@ export const SavingsFundOnboarding: FC = () => {
     return destroyTomSelect;
   }, [activeSection]);
 
-  // TODO move from array of sections to enum -> section a la withdrawals
   const totalSections = sections.length;
   const currentSection = activeSection + 1;
   const progressPercentage = (currentSection / totalSections) * 100;
   const isFirstSection = activeSection === 0;
-
-  const addressInputRef = useRef<unknown>();
-
-  const handleAddressSet = ({ detail }: { detail: AddressDetails[] }) => {
-    if (detail.length === 0) {
-      // TODO no address error
-      return;
-    }
-
-    const [firstDetails] = detail;
-
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    setAddress(firstDetails.paadress);
-  };
-
-  const { setupInput, destroyInput } = useAddressLookupScript(address, handleAddressSet);
-
-  useEffect(() => {
-    if (activeSection === 1 && isEstonianResidence) {
-      setupInput(addressInputRef, 'addressInput');
-    } else if (addressInputRef.current) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      destroyInput(addressInputRef);
-    }
-  }, [currentSection, isEstonianResidence]);
 
   const showPreviousSection = () => {
     setShowTermsError(false);
