@@ -22,7 +22,7 @@ import { isTuleva } from '../../../common/utils';
 import { getValueSum } from '../../AccountStatement/fundSelector';
 import { Euro } from '../../../common/Euro';
 import { formatDate } from '../../../common/dateFormatter';
-import { isBeforeCancellationDeadline } from '../../ApplicationSection/ApplicationFunctions';
+import { isDateSameOrBeforeCancellationDeadline } from '../../ApplicationSection/ApplicationFunctions';
 import { SecondPillarPaymentRateTaxWin } from '../../../flows/secondPillarPaymentRate/SecondPillarPaymentRateTaxWin';
 import { ActiveFundPensionDescription } from '../ActiveFundPensionDescription';
 import { FundPension } from '../../../common/apiModels/withdrawals';
@@ -151,7 +151,7 @@ function SecondPillarActionButton({
 }) {
   return (
     <>
-      {leaveApplication && isBeforeCancellationDeadline(leaveApplication) ? (
+      {leaveApplication && isDateSameOrBeforeCancellationDeadline(leaveApplication) ? (
         <Link
           to={`/applications/${leaveApplication.id}/cancellation`}
           className={`btn ${className}`}

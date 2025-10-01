@@ -1,3 +1,5 @@
+import { SavingsFundPaymentApplication } from '../../common/apiModels';
+
 export const transfer2Pillar = {
   id: 1234,
   type: 'TRANSFER',
@@ -151,6 +153,19 @@ export const resumeContributions = {
   details: {
     cancellationDeadline: '3000-01-01T23:59:59.999999999Z',
     resumeTime: new Date('December 18, 1995 03:24:00').toISOString(),
+  },
+};
+
+export const savingFundPaymentApplication: SavingsFundPaymentApplication = {
+  id: 321,
+  type: 'SAVING_FUND_PAYMENT',
+  status: 'PENDING',
+  creationTime: '2024-01-15T10:30:00.000Z',
+  details: {
+    amount: 250.99,
+    currency: 'EUR',
+    cancellationDeadline: '2024-02-15T23:59:59.999999999Z',
+    fulfillmentDeadline: '2024-02-01',
   },
 };
 

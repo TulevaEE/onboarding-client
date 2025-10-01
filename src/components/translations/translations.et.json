@@ -543,6 +543,7 @@
 
   "applications.title": "Ootel avaldused ja tehingud",
   "applications.cancel": "Tühistan avalduse",
+  "applications.cancelDeposit": "Katkestan sissemakse",
 
   "applications.type.paymentRate.title": "Minu II samba panus",
   "applications.type.paymentRate.status": "Staatus",
@@ -593,6 +594,10 @@
   "applications.type.partialWithdrawal.title": "II samba osalise väljamakse avaldus",
   "applications.type.partialWithdrawal.paymentDate": "Laekumise kuupäev",
   "applications.type.withdrawalThirdPillar.title": "III samba väljamakse avaldus",
+
+  "applications.type.savingFundPayment.title": "{amountWithCurrency} sissemakse täiendavasse kogumisfondi",
+  "applications.type.savingFundPayment.cancellationNotice": "Sissemakset saad katkestada kuni {cancellationDeadline}",
+  "applications.type.savingFundPayment.fulfillmentNotice": "Sissemakse summa investeeritakse fondi {fulfillmentDeadline}",
 
   "transactions.title": "Sinu viimased tehingud",
   "transactions.title.2nd": "Sinu II samba tehingud",

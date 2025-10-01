@@ -7,6 +7,7 @@ export type Application =
   | EarlyWithdrawalApplication
   | WithdrawalApplication
   | PaymentApplication
+  | SavingsFundPaymentApplication
   | PaymentRateApplication
   | FundPensionOpeningApplication
   | PartialWithdrawalApplication
@@ -27,6 +28,16 @@ export type PaymentApplication = BaseApplication<
     amount: number;
     currency: Currency;
     targetFund: Fund;
+  }
+>;
+
+export type SavingsFundPaymentApplication = BaseApplication<
+  'SAVING_FUND_PAYMENT',
+  {
+    amount: number;
+    currency: Currency;
+    cancellationDeadline: string;
+    fulfillmentDeadline: string;
   }
 >;
 
@@ -116,6 +127,7 @@ export type ApplicationType =
   | 'EARLY_WITHDRAWAL'
   | 'WITHDRAWAL'
   | 'PAYMENT'
+  | 'SAVING_FUND_PAYMENT'
   | 'PAYMENT_RATE'
   | 'FUND_PENSION_OPENING'
   | 'FUND_PENSION_OPENING_THIRD_PILLAR'

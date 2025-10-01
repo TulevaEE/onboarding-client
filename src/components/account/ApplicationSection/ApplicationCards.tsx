@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { FC, ReactNode } from 'react';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
+import classNames from 'classnames';
 import { DefinitionList } from './DefinitionList';
 import styles from './ApplicationCards.module.scss';
 import {
@@ -16,12 +17,17 @@ import {
   WithdrawalApplication,
   PartialWithdrawalApplication,
   ThirdPillarWithdrawalApplication,
+  SavingsFundPaymentApplication,
+  ApplicationType,
 } from '../../common/apiModels';
 import Percentage from '../../common/Percentage';
 import { Euro } from '../../common/Euro';
 import { Fees } from '../../common/Percentage/Fees';
 import { formatMonth } from '../../common/dateFormatter';
-import { isBeforeCancellationDeadline } from './ApplicationFunctions';
+import {
+  isDateSameOrBeforeCancellationDeadline,
+  isTimeBeforeCancellationDeadline,
+} from './ApplicationFunctions';
 import { TranslationKey } from '../../translations';
 
 export const ApplicationCard: React.FunctionComponent<{
@@ -50,6 +56,10 @@ export const ApplicationCard: React.FunctionComponent<{
       return <PartialWithdrawalCard application={application} allowedActions={[]} />;
     case 'WITHDRAWAL_THIRD_PILLAR':
       return <ThirdPillarWithdrawalCard application={application} allowedActions={[]} />;
+    case 'SAVING_FUND_PAYMENT':
+      return (
+        <SavingsFundApplicationCard application={application} allowedActions={allowedActions} />
+      );
     default:
       return <></>;
   }
@@ -61,7 +71,7 @@ const PaymentRateApplicationCard: React.FunctionComponent<{
   <BaseApplicationCard
     application={application}
     allowedActions={[]}
-    titleKey="applications.type.paymentRate.title"
+    title={<FormattedMessage id="applications.type.paymentRate.title" />}
   >
     <DefinitionList
       definitions={[
@@ -102,7 +112,7 @@ const PaymentApplicationCard: React.FunctionComponent<{
   <BaseApplicationCard
     application={application}
     allowedActions={[]}
-    titleKey="applications.type.payment.title"
+    title={<FormattedMessage id="applications.type.payment.title" />}
   >
     <DefinitionList
       definitions={[
@@ -128,6 +138,42 @@ const PaymentApplicationCard: React.FunctionComponent<{
   </BaseApplicationCard>
 );
 
+const SavingsFundApplicationCard: FC<{
+  application: SavingsFundPaymentApplication;
+  allowedActions: ApplicationAction[];
+}> = ({ application, allowedActions }) => (
+  <BaseApplicationCard
+    application={application}
+    allowedActions={allowedActions}
+    title={
+      <FormattedMessage
+        id="applications.type.savingFundPayment.title"
+        values={{ amountWithCurrency: <Euro amount={application.details.amount} /> }}
+      />
+    }
+    description={
+      isCancellationAllowed(application, allowedActions) ? (
+        <FormattedMessage
+          id="applications.type.savingFundPayment.cancellationNotice"
+          values={{
+            cancellationDeadline: (
+              <strong>{formatDateTime(application.details.cancellationDeadline)}</strong>
+            ),
+          }}
+        />
+      ) : (
+        <FormattedMessage
+          id="applications.type.savingFundPayment.fulfillmentNotice"
+          values={{
+            fulfillmentDeadline: formatShortDate(application.details.fulfillmentDeadline),
+          }}
+        />
+      )
+    }
+    showCreationTime={false}
+  />
+);
+
 const TransferApplicationCard: React.FunctionComponent<{
   application: TransferApplication;
   allowedActions: ApplicationAction[];
@@ -141,7 +187,11 @@ const TransferApplicationCard: React.FunctionComponent<{
     <BaseApplicationCard
       application={application}
       allowedActions={transferActions}
-      titleKey={`applications.type.transfer.title.${application.details.sourceFund.pillar}`}
+      title={
+        <FormattedMessage
+          id={`applications.type.transfer.title.${application.details.sourceFund.pillar}`}
+        />
+      }
     >
       <DefinitionList
         definitions={[
@@ -196,7 +246,7 @@ const EarlyWithdrawalCard: React.FunctionComponent<{
   <BaseApplicationCard
     allowedActions={allowedActions}
     application={application}
-    titleKey="applications.type.earlyWithdrawal.title"
+    title={<FormattedMessage id="applications.type.earlyWithdrawal.title" />}
   >
     <DefinitionList
       definitions={[
@@ -220,7 +270,7 @@ const WithdrawalCard: React.FunctionComponent<{
   <BaseApplicationCard
     allowedActions={allowedActions}
     application={application}
-    titleKey="applications.type.withdrawal.title"
+    title={<FormattedMessage id="applications.type.withdrawal.title" />}
   >
     <DefinitionList
       definitions={[
@@ -251,10 +301,12 @@ const FundPensionOpeningCard: React.FunctionComponent<{
     <BaseApplicationCard
       allowedActions={allowedActions}
       application={application}
-      titleKey={
-        application.type === 'FUND_PENSION_OPENING'
-          ? 'applications.type.fundPensionOpening.title'
-          : 'applications.type.fundPensionOpeningThirdPillar.title'
+      title={
+        application.type === 'FUND_PENSION_OPENING' ? (
+          <FormattedMessage id="applications.type.fundPensionOpening.title" />
+        ) : (
+          <FormattedMessage id="applications.type.fundPensionOpeningThirdPillar.title" />
+        )
       }
     >
       <DefinitionList
@@ -306,7 +358,7 @@ const PartialWithdrawalCard: React.FunctionComponent<{
   <BaseApplicationCard
     allowedActions={allowedActions}
     application={application}
-    titleKey="applications.type.partialWithdrawal.title"
+    title={<FormattedMessage id="applications.type.partialWithdrawal.title" />}
   >
     <DefinitionList
       definitions={[
@@ -330,7 +382,7 @@ const ThirdPillarWithdrawalCard: React.FunctionComponent<{
   <BaseApplicationCard
     allowedActions={allowedActions}
     application={application}
-    titleKey="applications.type.withdrawalThirdPillar.title"
+    title={<FormattedMessage id="applications.type.withdrawalThirdPillar.title" />}
   >
     <DefinitionList
       definitions={[
@@ -354,7 +406,7 @@ const StopContributionsCard: React.FunctionComponent<{
   <BaseApplicationCard
     allowedActions={allowedActions}
     application={application}
-    titleKey="applications.type.stopContributions.title"
+    title={<FormattedMessage id="applications.type.stopContributions.title" />}
   >
     <DefinitionList
       definitions={[
@@ -378,7 +430,7 @@ const ResumeContributionsCard: React.FunctionComponent<{
   <BaseApplicationCard
     allowedActions={allowedActions}
     application={application}
-    titleKey="applications.type.resumeContributions.title"
+    title={<FormattedMessage id="applications.type.resumeContributions.title" />}
   >
     <DefinitionList
       definitions={[
@@ -391,36 +443,53 @@ const ResumeContributionsCard: React.FunctionComponent<{
   </BaseApplicationCard>
 );
 
-const BaseApplicationCard: React.FunctionComponent<{
-  titleKey: TranslationKey;
+const BaseApplicationCard: FC<{
+  title: ReactNode;
+  description?: ReactNode;
   application: Application;
-  children: React.ReactNode;
   allowedActions: ApplicationAction[];
-}> = ({ application, titleKey, children, allowedActions }) => {
+  showCreationTime?: boolean;
+}> = ({ application, title, children, description, allowedActions, showCreationTime = true }) => {
   const cancellationUrl = `/applications/${application.id}/cancellation`;
-  const canCancel = allowedActions.includes('CANCEL') && isBeforeCancellationDeadline(application);
+  const canCancel = isCancellationAllowed(application, allowedActions);
+  const cancelLabel =
+    application.type === 'SAVING_FUND_PAYMENT' ? (
+      <FormattedMessage id="applications.cancelDeposit" />
+    ) : (
+      <FormattedMessage id="applications.cancel" />
+    );
+
   return (
     <div className={styles.card}>
-      <div className={styles.header}>
+      <div className={classNames(styles.header, 'd-flex', { [styles.headerBorder]: children })}>
         <div className="d-flex">
-          <b className="me-3">
-            <FormattedMessage id={titleKey} />
-          </b>
-          <span className="text-nowrap">{formatDate(application.creationTime)}</span>
+          <div className="me-3">
+            <strong>{title}</strong>
+            {description ? (
+              <>
+                <br />
+                <span className="text-muted">{description}</span>
+              </>
+            ) : null}
+          </div>
+
+          {showCreationTime ? (
+            <span className="text-nowrap">{formatDate(application.creationTime)}</span>
+          ) : null}
         </div>
 
         {canCancel && (
           <Link to={cancellationUrl} className="btn btn-light d-none d-md-block ms-2">
-            <FormattedMessage id="applications.cancel" />
+            {cancelLabel}
           </Link>
         )}
       </div>
 
-      <div className={styles.content}>{children}</div>
+      {children ? <div className={styles.content}>{children}</div> : null}
       {canCancel && (
         <div className={`${styles.footer} d-md-none`}>
           <Link to={cancellationUrl} className="btn btn-light">
-            <FormattedMessage id="applications.cancel" />
+            {cancelLabel}
           </Link>
         </div>
       )}
@@ -434,3 +503,26 @@ function formatDate(date: string): string {
   const format = moment.localeData().longDateFormat('LL');
   return moment(date).format(format);
 }
+
+function formatShortDate(date: string): string {
+  const format = moment.localeData().longDateFormat('L');
+  return moment(date).format(format);
+}
+
+function formatDateTime(dateTime: string): string {
+  const format = moment.localeData().longDateFormat('LLL');
+  return moment(dateTime).format(format);
+}
+
+const isCancellationAllowed = (application: Application, allowedActions: ApplicationAction[]) => {
+  const requiresCancellationTimeCheck = (['SAVING_FUND_PAYMENT'] as ApplicationType[]).includes(
+    application.type,
+  );
+
+  return (
+    allowedActions.includes('CANCEL') &&
+    (requiresCancellationTimeCheck
+      ? isTimeBeforeCancellationDeadline(application)
+      : isDateSameOrBeforeCancellationDeadline(application))
+  );
+};

@@ -22,6 +22,7 @@ import {
   thirdPillarFundPensionOpening,
   partialWithdrawal,
   thirdPillarWithdrawal,
+  savingFundPaymentApplication,
 } from './fixtures';
 import { initializeConfiguration } from '../../config/config';
 import { getAuthentication } from '../../common/authenticationManager';
@@ -352,6 +353,18 @@ describe('Application section', () => {
 
     expect(screen.getByText(/Bank account/i)).toBeInTheDocument();
     expect(screen.getByText(fundPensionOpening.details.depositAccountIBAN)).toBeInTheDocument();
+  });
+
+  it('renders correct fields for savings fund payment application', async () => {
+    const application = savingFundPaymentApplication;
+    mockApplications([application]);
+    initializeComponent();
+
+    expect(await screen.findByText('deposit to additional saving fund')).toBeInTheDocument();
+    expect(screen.getByText('250.99 €')).toBeInTheDocument();
+    expect(
+      screen.getByText('The deposit amount will be invested in the fund 02/01/2024'),
+    ).toBeInTheDocument();
   });
 
   function waitForRequestToFinish() {

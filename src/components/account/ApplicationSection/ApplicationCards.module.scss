@@ -13,12 +13,13 @@ $padding: 15px;
 
 .header {
   padding: $padding 18px;
-  display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid $card-border-color;
 }
 
+.headerBorder {
+  border-bottom: 1px solid $card-border-color;
+}
 .content {
   background-color: $gray-bg-1;
   padding: $padding 18px;
