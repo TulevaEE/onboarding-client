@@ -497,7 +497,11 @@ export const SavingsFundOnboarding: FC = () => {
 
     if (!tomSelectInstanceRef.current) {
       tomSelectInstanceRef.current = new TomSelect(selectElement, {
-        plugins: ['remove_button'],
+        plugins: {
+          remove_button: {
+            title: 'Eemaldan',
+          },
+        },
         placeholder: 'Vali riigid…',
         maxItems: null,
       });
