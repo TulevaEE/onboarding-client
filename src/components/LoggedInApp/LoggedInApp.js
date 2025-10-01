@@ -222,6 +222,7 @@ export class LoggedInApp extends PureComponent {
                 </MembersOnlyGatekeep>
               )}
             />
+            <Redirect exact path="/savings-fund" to="/" />
             <Route
               path="/2nd-pillar-payment-rate-success"
               component={SecondPillarPaymentRateSuccess}
