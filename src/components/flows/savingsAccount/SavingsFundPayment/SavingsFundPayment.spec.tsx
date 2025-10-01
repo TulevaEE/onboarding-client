@@ -39,7 +39,7 @@ describe(SavingsFundPayment, () => {
 
   it('validates the deposit amount and bank selection', async () => {
     expect(
-      await screen.findByRole('heading', { name: 'Deposit to additional savings fund' }),
+      await screen.findByRole('heading', { name: 'Deposit to additional saving fund' }),
     ).toBeInTheDocument();
 
     const amountInput = screen.getByRole('textbox', { name: 'Amount' });
@@ -74,7 +74,7 @@ describe(SavingsFundPayment, () => {
 
   it('lets user select a bank and start the payment', async () => {
     expect(
-      await screen.findByRole('heading', { name: 'Deposit to additional savings fund' }),
+      await screen.findByRole('heading', { name: 'Deposit to additional saving fund' }),
     ).toBeInTheDocument();
 
     const amountInput = screen.getByRole('textbox', { name: 'Amount' });
