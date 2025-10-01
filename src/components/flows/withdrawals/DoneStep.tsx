@@ -45,11 +45,7 @@ export const DoneStep = () => {
 
   return (
     <StatusAlert
-      title={
-        <h3 className="m-0">
-          <FormattedMessage id={headingId} />
-        </h3>
-      }
+      title={<FormattedMessage id={headingId} />}
       actions={
         <Link to="/account" className="w-100">
           <button type="button" className="btn btn-outline-primary w-100">
@@ -58,12 +54,12 @@ export const DoneStep = () => {
         </Link>
       }
     >
-      <p className="m-0">
+      <p>
         <FormattedMessage id={subHeadingId} />
       </p>
 
       {fundPensionMandateDone && (
-        <p className="m-0">
+        <p>
           <FormattedMessage
             id="withdrawals.done.fundPension.dateAndSize"
             values={{
@@ -80,7 +76,7 @@ export const DoneStep = () => {
       {partialWithdrawalPillars.size > 0 && (
         <div className="d-flex flex-column gap-2">
           {partialWithdrawalPillars.has('SECOND') && (
-            <p className="m-0">
+            <p>
               <FormattedMessage
                 id="withdrawals.done.partialWithdrawal.second"
                 values={{
@@ -94,7 +90,7 @@ export const DoneStep = () => {
             </p>
           )}
           {partialWithdrawalPillars.has('THIRD') && (
-            <p className="m-0">
+            <p>
               <FormattedMessage
                 id="withdrawals.done.partialWithdrawal.third"
                 values={{
@@ -107,7 +103,7 @@ export const DoneStep = () => {
       )}
 
       {secondPillarMandateDone && (
-        <p className="m-0">
+        <p>
           <FormattedMessage
             id="withdrawals.done.secondPillarDisclaimer"
             values={{

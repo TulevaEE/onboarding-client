@@ -70,11 +70,7 @@ export const ListingDetails = () => {
     return (
       <div className="col-12 col-md-11 col-lg-8 mx-auto">
         <StatusAlert
-          title={
-            <h2 className="m-0">
-              <FormattedMessage id="capital.listings.details.success.title" />
-            </h2>
-          }
+          title={<FormattedMessage id="capital.listings.details.success.title" />}
           actions={
             <button
               type="button"
@@ -87,7 +83,7 @@ export const ListingDetails = () => {
             </button>
           }
         >
-          <p className="m-0">
+          <p>
             <FormattedMessage id="capital.listings.details.success.info" />
           </p>
         </StatusAlert>

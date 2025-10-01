@@ -42,11 +42,11 @@ export const SellerConfirm = ({
 
   if (success) {
     return (
-      <StepDoneAlert onClick={() => onConfirmed()}>
-        <h2 className="mb-2">
-          <FormattedMessage id="capital.transfer.details.success.submittedTitle" />
-        </h2>
-        <p className="m-0">
+      <StepDoneAlert
+        onClick={() => onConfirmed()}
+        title={<FormattedMessage id="capital.transfer.details.success.submittedTitle" />}
+      >
+        <p>
           <FormattedMessage id="capital.transfer.details.success.submittedDescription" />
         </p>
       </StepDoneAlert>

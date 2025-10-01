@@ -1,23 +1,21 @@
-import { Children, PropsWithChildren } from 'react';
+import { PropsWithChildren, ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { StatusAlert } from '../../../common/statusAlert';
 
-export const StepDoneAlert = ({
-  onClick,
-  children,
-}: PropsWithChildren<{ onClick: () => unknown }>) => {
-  const [title, ...body] = Children.toArray(children);
+type StepDoneAlertProps = PropsWithChildren<{
+  onClick: () => unknown;
+  title: ReactNode;
+}>;
 
-  return (
-    <StatusAlert
-      title={title}
-      actions={
-        <button type="button" className="btn btn-outline-primary" onClick={onClick}>
-          <FormattedMessage id="capital.transfer.details.button.seeStatus" />
-        </button>
-      }
-    >
-      {body}
-    </StatusAlert>
-  );
-};
+export const StepDoneAlert = ({ onClick, title, children }: StepDoneAlertProps) => (
+  <StatusAlert
+    title={title}
+    actions={
+      <button type="button" className="btn btn-outline-primary" onClick={onClick}>
+        <FormattedMessage id="capital.transfer.details.button.seeStatus" />
+      </button>
+    }
+  >
+    {children}
+  </StatusAlert>
+);

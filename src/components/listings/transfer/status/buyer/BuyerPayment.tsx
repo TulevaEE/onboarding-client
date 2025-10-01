@@ -43,13 +43,13 @@ export const BuyerPayment = ({
 
   if (success) {
     return (
-      <StepDoneAlert onClick={() => onPaid()}>
-        <h2 className="pb-2">
-          <FormattedMessage id="capital.transfer.details.success.buyer.title" />
-        </h2>
-        <div>
+      <StepDoneAlert
+        onClick={() => onPaid()}
+        title={<FormattedMessage id="capital.transfer.details.success.buyer.title" />}
+      >
+        <p>
           <FormattedMessage id="capital.transfer.details.success.buyer.description" />
-        </div>
+        </p>
       </StepDoneAlert>
     );
   }

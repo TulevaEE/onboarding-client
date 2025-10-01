@@ -20,11 +20,7 @@ export const DoneStep = () => {
 
   return (
     <StatusAlert
-      title={
-        <h2 className="m-0">
-          <FormattedMessage id="capital.transfer.create.success.signedTitle" />
-        </h2>
-      }
+      title={<FormattedMessage id="capital.transfer.create.success.signedTitle" />}
       actions={
         <button
           type="button"
@@ -37,7 +33,7 @@ export const DoneStep = () => {
         </button>
       }
     >
-      <p className="m-0">
+      <p>
         <FormattedMessage id="capital.transfer.create.success.signedDescription" />
       </p>
     </StatusAlert>

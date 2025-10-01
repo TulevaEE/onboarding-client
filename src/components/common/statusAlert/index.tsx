@@ -74,11 +74,7 @@ export const StatusAlert = ({
       return null;
     }
 
-    if (typeof value === 'string') {
-      return <h2 className={styles.statusAlert__heading}>{value}</h2>;
-    }
-
-    return value;
+    return <h1 className={`${styles.statusAlert__heading} h2 m-0`}>{value}</h1>;
   };
 
   return (
