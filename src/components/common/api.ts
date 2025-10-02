@@ -480,6 +480,10 @@ export function createApplicationCancellation(applicationId: number): Promise<Ca
   return postWithAuthentication(getEndpoint(`/v1/applications/${applicationId}/cancellations`), {});
 }
 
+export function createSavingsFundPaymentCancellation(paymentId: string): Promise<void> {
+  return deleteWithAuthentication(getEndpoint(`/v1/savings/payments/${paymentId}`));
+}
+
 export function createTrackedEvent(type: string, data: Record<string, unknown>): Promise<unknown> {
   return postWithAuthentication(getEndpoint('/v1/t'), { type, data });
 }

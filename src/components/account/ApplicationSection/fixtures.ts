@@ -166,6 +166,7 @@ export const savingFundPaymentApplication: SavingsFundPaymentApplication = {
     currency: 'EUR',
     cancellationDeadline: '2024-02-15T23:59:59.999999999Z',
     fulfillmentDeadline: '2024-02-01',
+    paymentId: 'PAYMENT123456',
   },
 };
 

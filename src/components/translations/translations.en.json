@@ -1083,5 +1083,14 @@
   "savingsFund.payment.success.pageTitle": "Deposit made",
   "savingsFund.payment.success.title": "Deposit made",
   "savingsFund.payment.success.description": "The deposit amount will be invested in the fund by the end of next business day. We will notify you of this by email.",
-  "savingsFund.payment.success.myAccountButton.label": "My Account"
+
+  "common.cancel": "Cancel",
+  "common.back": "Back",
+  "common.myAccount": "My Account",
+
+  "savingsFund.paymentCancellation.pageTitle": "Cancel deposit",
+  "savingsFund.paymentCancellation.title": "Cancel deposit",
+  "savingsFund.paymentCancellation.success.title": "Deposit cancelled",
+  "savingsFund.paymentCancellation.success.description": "We will refund the money to the same bank account within one business day.",
+  "savingsFund.paymentCancellation.error": "There was an error cancelling the payment. Please try again later or contact us: tuleva@tuleva.ee"
 }

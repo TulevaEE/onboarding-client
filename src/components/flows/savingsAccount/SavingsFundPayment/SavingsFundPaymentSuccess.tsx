@@ -12,7 +12,7 @@ const SavingsFundPaymentSuccess: FC = () => {
         title={<FormattedMessage id="savingsFund.payment.success.title" />}
         actions={
           <a href="/account" className="btn btn-outline-primary">
-            <FormattedMessage id="savingsFund.payment.success.myAccountButton.label" />
+            <FormattedMessage id="common.myAccount" />
           </a>
         }
       >

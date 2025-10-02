@@ -38,6 +38,7 @@ export type SavingsFundPaymentApplication = BaseApplication<
     currency: Currency;
     cancellationDeadline: string;
     fulfillmentDeadline: string;
+    paymentId: string;
   }
 >;
 
@@ -119,6 +120,10 @@ export type ThirdPillarWithdrawalApplication = BaseApplication<
     fulfillmentDate: string;
   }
 >;
+
+export type SavingsFundPaymentCancellationCommand = {
+  paymentId: string;
+};
 
 export type ApplicationType =
   | 'TRANSFER'

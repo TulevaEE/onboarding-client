@@ -1174,5 +1174,14 @@
   "savingsFund.payment.success.pageTitle": "Sissemakse tehtud",
   "savingsFund.payment.success.title": "Sissemakse on tehtud",
   "savingsFund.payment.success.description": "Sissemakse summa investeeritakse fondi järgneva tööpäeva lõpuks. Teavitame sind sellest meili teel.",
-  "savingsFund.payment.success.myAccountButton.label": "Minu konto"
+
+  "common.cancel": "Katkestan",
+  "common.back": "Tagasi",
+  "common.myAccount": "Minu konto",
+
+  "savingsFund.paymentCancellation.pageTitle": "Katkesta sissemakse",
+  "savingsFund.paymentCancellation.title": "Sissemakse katkestamine",
+  "savingsFund.paymentCancellation.success.title": "Sissemakse on katkestatud",
+  "savingsFund.paymentCancellation.success.description": "Tagastame raha ühe tööpäeva jooksul samale pangakontole, kust see laekus.",
+  "savingsFund.paymentCancellation.error": "Makse katkestamisel tekkis viga. Palun proovi hiljem uuesti või võta meiega ühendust: tuleva@tuleva.ee"
 }

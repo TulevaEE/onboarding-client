@@ -3,6 +3,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Controller, useForm } from 'react-hook-form';
 import classNames from 'classnames';
 import { captureException } from '@sentry/browser';
+import { Link } from 'react-router-dom';
 import styles from './SavingsFundPayment.module.scss';
 import { PaymentBankButtons } from '../../thirdPillar/ThirdPillarPayment/PaymentBankButtons';
 import { BankKey } from '../../thirdPillar/ThirdPillarPayment/types';
@@ -34,12 +35,6 @@ export const SavingsFundPayment: FC = () => {
     },
   });
   usePageTitle('savingsFund.payment.pageTitle');
-
-  const redirectToAccount = () => {
-    if (typeof window !== 'undefined') {
-      window.location.href = '/account';
-    }
-  };
 
   if (!user) {
     return null;
@@ -171,15 +166,9 @@ export const SavingsFundPayment: FC = () => {
           ) : null}
 
           <div className="d-flex justify-content-between border-top">
-            <button
-              type="button"
-              className="btn btn-outline-primary btn-lg mt-4"
-              onClick={() => {
-                redirectToAccount();
-              }}
-            >
+            <Link to="/account" className="btn btn-outline-primary btn-lg mt-4">
               <FormattedMessage id="savingsFund.payment.form.cancel.label" />
-            </button>
+            </Link>
 
             <button
               type="submit"

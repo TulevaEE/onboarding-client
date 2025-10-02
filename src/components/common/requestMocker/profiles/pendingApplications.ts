@@ -346,5 +346,19 @@ export const pendingApplicationsProfiles: Record<string, Application[]> = {
         cancellationDeadline: moment().add(7, 'days').toISOString(),
       },
     },
+
+    {
+      type: 'SAVING_FUND_PAYMENT',
+      id: 123456789,
+      status: 'PENDING',
+      creationTime: moment().subtract(1, 'hours').toISOString(),
+      details: {
+        amount: 100,
+        currency: 'EUR',
+        paymentId: 'payment-123',
+        cancellationDeadline: moment().add(7, 'days').toISOString(),
+        fulfillmentDeadline: moment().add(14, 'days').toISOString(),
+      },
+    },
   ],
 };

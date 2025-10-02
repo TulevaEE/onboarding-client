@@ -2,9 +2,7 @@ import React, { FC, ReactNode } from 'react';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
-import classNames from 'classnames';
 import { DefinitionList } from './DefinitionList';
-import styles from './ApplicationCards.module.scss';
 import {
   Application,
   EarlyWithdrawalApplication,
@@ -29,6 +27,7 @@ import {
   isTimeBeforeCancellationDeadline,
 } from './ApplicationFunctions';
 import { TranslationKey } from '../../translations';
+import { Card } from '../../common/card/Card';
 
 export const ApplicationCard: React.FunctionComponent<{
   application: Application;
@@ -450,7 +449,11 @@ const BaseApplicationCard: FC<{
   allowedActions: ApplicationAction[];
   showCreationTime?: boolean;
 }> = ({ application, title, children, description, allowedActions, showCreationTime = true }) => {
-  const cancellationUrl = `/applications/${application.id}/cancellation`;
+  const cancellationUrlPrefix =
+    application.type === 'SAVING_FUND_PAYMENT'
+      ? `/savings-fund/payment/${application.details.paymentId}`
+      : `/applications/${application.id}`;
+  const cancellationUrl = `${cancellationUrlPrefix}/cancellation`;
   const canCancel = isCancellationAllowed(application, allowedActions);
   const cancelLabel =
     application.type === 'SAVING_FUND_PAYMENT' ? (
@@ -460,40 +463,24 @@ const BaseApplicationCard: FC<{
     );
 
   return (
-    <div className={styles.card}>
-      <div className={classNames(styles.header, 'd-flex', { [styles.headerBorder]: children })}>
-        <div className="d-flex">
-          <div className="me-3">
-            <strong>{title}</strong>
-            {description ? (
-              <>
-                <br />
-                <span className="text-muted">{description}</span>
-              </>
-            ) : null}
-          </div>
-
-          {showCreationTime ? (
-            <span className="text-nowrap">{formatDate(application.creationTime)}</span>
-          ) : null}
-        </div>
-
-        {canCancel && (
-          <Link to={cancellationUrl} className="btn btn-light d-none d-md-block ms-2">
-            {cancelLabel}
-          </Link>
-        )}
-      </div>
-
-      {children ? <div className={styles.content}>{children}</div> : null}
-      {canCancel && (
-        <div className={`${styles.footer} d-md-none`}>
+    <Card
+      title={title}
+      description={description}
+      timestamp={
+        showCreationTime ? (
+          <span className="text-nowrap">{formatDate(application.creationTime)}</span>
+        ) : undefined
+      }
+      actions={
+        canCancel ? (
           <Link to={cancellationUrl} className="btn btn-light">
             {cancelLabel}
           </Link>
-        </div>
-      )}
-    </div>
+        ) : undefined
+      }
+    >
+      {children}
+    </Card>
   );
 };
 

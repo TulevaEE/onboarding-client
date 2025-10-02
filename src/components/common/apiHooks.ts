@@ -12,6 +12,7 @@ import {
   createCapitalTransferContract,
   createMandateBatch,
   createMemberCapitalListing,
+  createSavingsFundPaymentCancellation,
   deleteMemberCapitalListing,
   getCapitalEvents,
   getCapitalRowsWithToken,
@@ -48,6 +49,7 @@ import {
   Fund,
   MandateDeadlines,
   MemberCapitalListing,
+  SavingsFundPaymentCancellationCommand,
   SourceFund,
   Transaction,
   User,
@@ -100,6 +102,17 @@ export function useApplicationCancellation(): UseMutationResult<
   unknown
 > {
   return useMutation((applicationId: number) => createApplicationCancellation(applicationId));
+}
+
+export function useSavingsFundPaymentCancellation(): UseMutationResult<
+  void,
+  unknown,
+  SavingsFundPaymentCancellationCommand,
+  unknown
+> {
+  return useMutation(({ paymentId }: SavingsFundPaymentCancellationCommand) =>
+    createSavingsFundPaymentCancellation(paymentId),
+  );
 }
 
 export function useApplication(id: number): UseQueryResult<Application | null> {
