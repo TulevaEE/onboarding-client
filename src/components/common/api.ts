@@ -509,7 +509,7 @@ function getWindow(paymentType: PaymentType): Window {
 export async function getSavingsFundBalance(): Promise<SourceFund | null> {
   try {
     const fund = await getWithAuthentication(getEndpoint('/v1/savings-account-statement'));
-    if (!fund) {
+    if (!fund || fund.value === 0) {
       return null;
     }
     return transformFundBalance(fund);
