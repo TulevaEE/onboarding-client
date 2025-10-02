@@ -551,6 +551,7 @@
   "applications.type.savingFundPayment.title": "{amountWithCurrency} deposit to additional savings fund",
   "applications.type.savingFundPayment.cancellationNotice": "Deposit can be canceled until {cancellationDeadline}",
   "applications.type.savingFundPayment.fulfillmentNotice": "The deposit amount will be invested in the fund {fulfillmentDeadline}",
+  "applications.type.savingFundPayment.cancelledNotice": "Deposit has been canceled on {cancellationDate}",
 
   "transactions.title": "Your latest transactions",
   "transactions.title.2nd": "Your II pillar transactions",

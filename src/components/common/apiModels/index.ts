@@ -36,8 +36,9 @@ export type SavingsFundPaymentApplication = BaseApplication<
   {
     amount: number;
     currency: Currency;
-    cancellationDeadline: string;
+    cancellationDeadline: string | null;
     fulfillmentDeadline: string;
+    cancelledAt: string | null;
     paymentId: string;
   }
 >;

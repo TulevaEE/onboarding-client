@@ -164,6 +164,7 @@ export const savingFundPaymentApplication: SavingsFundPaymentApplication = {
   details: {
     amount: 250.99,
     currency: 'EUR',
+    cancelledAt: null,
     cancellationDeadline: '2024-02-15T23:59:59.999999999Z',
     fulfillmentDeadline: '2024-02-01',
     paymentId: 'PAYMENT123456',

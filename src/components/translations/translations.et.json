@@ -601,6 +601,7 @@
   "applications.type.savingFundPayment.title": "{amountWithCurrency} sissemakse täiendavasse kogumisfondi",
   "applications.type.savingFundPayment.cancellationNotice": "Sissemakset saad katkestada kuni {cancellationDeadline}",
   "applications.type.savingFundPayment.fulfillmentNotice": "Sissemakse summa investeeritakse fondi {fulfillmentDeadline}",
+  "applications.type.savingFundPayment.cancelledNotice": "Sissemakse on katkestatud {cancellationDate}",
 
   "transactions.title": "Sinu viimased tehingud",
   "transactions.title.2nd": "Sinu II samba tehingud",

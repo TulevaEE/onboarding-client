@@ -140,38 +140,52 @@ const PaymentApplicationCard: React.FunctionComponent<{
 const SavingsFundApplicationCard: FC<{
   application: SavingsFundPaymentApplication;
   allowedActions: ApplicationAction[];
-}> = ({ application, allowedActions }) => (
-  <BaseApplicationCard
-    application={application}
-    allowedActions={allowedActions}
-    title={
+}> = ({ application, allowedActions }) => {
+  const { details } = application;
+  const getDescription = () => {
+    const { cancelledAt, cancellationDeadline } = details;
+
+    if (cancelledAt) {
+      return (
+        <FormattedMessage
+          id="applications.type.savingFundPayment.cancelledNotice"
+          values={{ cancellationDate: formatDateTime(cancelledAt) }}
+        />
+      );
+    }
+
+    return cancellationDeadline && isCancellationAllowed(application, allowedActions) ? (
       <FormattedMessage
-        id="applications.type.savingFundPayment.title"
-        values={{ amountWithCurrency: <Euro amount={application.details.amount} /> }}
+        id="applications.type.savingFundPayment.cancellationNotice"
+        values={{
+          cancellationDeadline: <strong>{formatDateTime(cancellationDeadline)}</strong>,
+        }}
       />
-    }
-    description={
-      isCancellationAllowed(application, allowedActions) ? (
+    ) : (
+      <FormattedMessage
+        id="applications.type.savingFundPayment.fulfillmentNotice"
+        values={{
+          fulfillmentDeadline: formatShortDate(application.details.fulfillmentDeadline),
+        }}
+      />
+    );
+  };
+
+  return (
+    <BaseApplicationCard
+      application={application}
+      allowedActions={allowedActions}
+      title={
         <FormattedMessage
-          id="applications.type.savingFundPayment.cancellationNotice"
-          values={{
-            cancellationDeadline: (
-              <strong>{formatDateTime(application.details.cancellationDeadline)}</strong>
-            ),
-          }}
+          id="applications.type.savingFundPayment.title"
+          values={{ amountWithCurrency: <Euro amount={application.details.amount} /> }}
         />
-      ) : (
-        <FormattedMessage
-          id="applications.type.savingFundPayment.fulfillmentNotice"
-          values={{
-            fulfillmentDeadline: formatShortDate(application.details.fulfillmentDeadline),
-          }}
-        />
-      )
-    }
-    showCreationTime={false}
-  />
-);
+      }
+      description={getDescription()}
+      showCreationTime={false}
+    />
+  );
+};
 
 const TransferApplicationCard: React.FunctionComponent<{
   application: TransferApplication;
@@ -505,6 +519,17 @@ const isCancellationAllowed = (application: Application, allowedActions: Applica
   const requiresCancellationTimeCheck = (['SAVING_FUND_PAYMENT'] as ApplicationType[]).includes(
     application.type,
   );
+
+  if ('cancellationDeadline' in application.details === false) {
+    return false;
+  }
+
+  if (
+    'cancellationDeadline' in application.details &&
+    application.details.cancellationDeadline === null
+  ) {
+    return false;
+  }
 
   return (
     allowedActions.includes('CANCEL') &&
