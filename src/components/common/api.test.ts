@@ -21,6 +21,7 @@ import {
   getMobileIdTokens,
   getPaymentLink,
   getPendingApplications,
+  getSavingsFundBalance,
   getSmartIdSignatureChallengeCode,
   getSmartIdSignatureStatus,
   getSmartIdTokens,
@@ -1151,6 +1152,60 @@ describe('API calls', () => {
       // @ts-ignore
       const newWindow = window.open.mock.results[0].value;
       expect(newWindow.document.write).toHaveBeenCalledWith('Loading...');
+    });
+  });
+
+  describe('getSavingsFundBalance', () => {
+    const mockSavingsAccountStatement = {
+      fund: {
+        fundManager: {
+          name: 'Tuleva',
+        },
+        isin: 'EE0000000000',
+        name: 'Tuleva Täiendav Kogumisfond',
+        managementFeeRate: 0.0049,
+        pillar: null,
+        ongoingChargesFigure: 0.0049,
+        status: 'ACTIVE',
+        inceptionDate: '2025-10-01',
+      },
+      value: 12,
+      unavailableValue: null,
+      currency: 'EUR',
+      activeContributions: null,
+      contributions: 10,
+      subtractions: 0,
+      profit: 2,
+      units: 10,
+    };
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+      mockHttp.getWithAuthentication.mockResolvedValue(mockSavingsAccountStatement);
+    });
+
+    it('retrieves and transforms savings fund balance correctly', async () => {
+      const savingsFundBalance = await getSavingsFundBalance();
+
+      expect(savingsFundBalance).toEqual({
+        isin: 'EE0000000000',
+        price: 12,
+        unavailablePrice: 0,
+        activeFund: null,
+        currency: 'EUR',
+        name: 'Tuleva Täiendav Kogumisfond',
+        fundManager: { name: 'Tuleva' },
+        managementFeePercent: 0.49,
+        pillar: null,
+        ongoingChargesFigure: 0.0049,
+        contributions: 10,
+        subtractions: 0,
+        profit: 2,
+        units: 10,
+      });
+      expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith(
+        expect.stringContaining('/v1/savings-account-statement'),
+      );
     });
   });
 });

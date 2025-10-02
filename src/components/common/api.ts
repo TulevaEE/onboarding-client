@@ -239,7 +239,7 @@ export async function getSourceFunds(fromDate?: string, toDate?: string): Promis
 const transformFundBalance = (fundBalance: FundBalance): SourceFund => ({
   isin: fundBalance.fund.isin,
   price: fundBalance.value,
-  unavailablePrice: fundBalance.unavailableValue,
+  unavailablePrice: fundBalance.unavailableValue || 0,
   activeFund: fundBalance.activeContributions,
   currency: fundBalance.currency || 'EUR',
   name: fundBalance.fund.name,
@@ -504,4 +504,16 @@ function getWindow(paymentType: PaymentType): Window {
   }
   newWindow.document.write('Loading...');
   return newWindow;
+}
+
+export async function getSavingsFundBalance(): Promise<SourceFund | null> {
+  try {
+    const fund = await getWithAuthentication(getEndpoint('/v1/savings-account-statement'));
+    if (!fund) {
+      return null;
+    }
+    return transformFundBalance(fund);
+  } catch (error) {
+    return null;
+  }
 }

@@ -21,7 +21,11 @@ import { getInitialCapital } from './actions';
 import { getAuthentication } from '../common/authenticationManager';
 import { SectionHeading } from './SectionHeading';
 import { TransactionSection } from './TransactionSection/TransactionSection';
-import { useFundPensionStatus, useMemberCapitalListingCount } from '../common/apiHooks';
+import {
+  useFundPensionStatus,
+  useMemberCapitalListingCount,
+  useSavingsFundBalance,
+} from '../common/apiHooks';
 import { canAccessWithdrawals } from '../flows/withdrawals/utils';
 
 const noop = () => null;
@@ -51,6 +55,7 @@ export function AccountPage(
   };
   const { data: fundPensionStatus, loading: isFundPensionStatusLoading } = useFundPensionStatus();
   const { data: memberCapitalListingsCount } = useMemberCapitalListingCount();
+  const { data: savingsFundBalance } = useSavingsFundBalance();
 
   const activeListingsCount = memberCapitalListingsCount ?? 0;
 
@@ -134,6 +139,7 @@ export function AccountPage(
             memberCapital={memberCapital}
             secondPillarSourceFunds={secondPillarSourceFunds}
             thirdPillarSourceFunds={thirdPillarSourceFunds}
+            savingsFundBalance={savingsFundBalance}
           />
         ) : (
           <AccountSummaryLoader />
@@ -185,6 +191,24 @@ export function AccountPage(
           {thirdPillarSourceFunds && thirdPillarSourceFunds.length > 0 && (
             <AccountStatement funds={thirdPillarSourceFunds} />
           )}
+        </>
+      )}
+
+      {savingsFundBalance && (
+        <>
+          <SectionHeading titleId="accountStatement.savingsFund.heading">
+            <div className="d-flex flex-wrap column-gap-3 row-gap-2 align-items-baseline justify-content-between">
+              <>
+                <Link to="/savings-fund/payment">
+                  <FormattedMessage id="accountStatement.savingsFund.deposit" />
+                </Link>
+                <Link to="/savings-fund/withdraw">
+                  <FormattedMessage id="accountStatement.savingsFund.withdraw" />
+                </Link>
+              </>
+            </div>
+          </SectionHeading>
+          <AccountStatement funds={[savingsFundBalance]} />
         </>
       )}
 

@@ -10,9 +10,11 @@ import { StatusBox } from './statusBox';
 import { ApplicationSection } from './ApplicationSection/ApplicationSection';
 import { activeThirdPillar } from './statusBox/fixtures';
 
+let mockSavingsFundBalance = null;
 jest.mock('../common/apiHooks', () => ({
   useFundPensionStatus: () => ({ data: { fundPensions: [] } }),
   useMemberCapitalListingCount: () => ({ data: [] }),
+  useSavingsFundBalance: () => ({ data: mockSavingsFundBalance }),
 }));
 /**
  * @deprecated Use AccountPageView.test.tsx
@@ -53,6 +55,7 @@ describe('Account page', () => {
   ];
 
   beforeEach(() => {
+    mockSavingsFundBalance = null;
     props = {};
     component = shallow(<AccountPage {...props} />);
   });
@@ -141,6 +144,29 @@ describe('Account page', () => {
     component.setProps({ error, funds });
 
     expect(component.contains(<ErrorMessage errors={error.body} />)).toBe(true);
+  });
+
+  it('renders savings fund section', () => {
+    mockSavingsFundBalance = {
+      isin: 'EE0000000000',
+      price: 12,
+      unavailablePrice: 0,
+      activeFund: false,
+      currency: 'EUR',
+      name: 'Tuleva Täiendav Kogumisfond',
+      fundManager: { name: 'Tuleva' },
+      managementFeePercent: 0.49,
+      pillar: null,
+      ongoingChargesFigure: 0.0049,
+      contributions: 10,
+      subtractions: 0,
+      profit: 2,
+      units: 10,
+    };
+    component = shallow(<AccountPage {...props} />);
+
+    expect(component.find('#accountStatement.savingsFund.heading')).toBeDefined();
+    expect(component.contains(<AccountStatement funds={[mockSavingsFundBalance]} />)).toBe(true);
   });
 
   describe('aml redirect', () => {

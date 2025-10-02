@@ -37,6 +37,7 @@ const AccountSummary = ({
   thirdPillarSourceFunds,
 
   memberCapital,
+  savingsFundBalance,
 }) => {
   const getPillarSummary = (pillar, pillarLabel, contributions, subtractions, funds) => {
     const value = getValueSum(funds);
@@ -94,6 +95,18 @@ const AccountSummary = ({
       profit: sumBy(memberCapital, (row) => row.profit),
       value: sumBy(memberCapital, (row) => row.value),
     });
+  }
+
+  if (savingsFundBalance) {
+    summary.push(
+      getPillarSummary(
+        -1,
+        'accountStatement.savingsFund.heading',
+        savingsFundBalance.contributions,
+        savingsFundBalance.subtractions,
+        [savingsFundBalance],
+      ),
+    );
   }
 
   const feesEuroSum = sumBy(summary, (summaryItem) => summaryItem.feesEuro);

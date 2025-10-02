@@ -25,6 +25,7 @@ import {
   getMemberCapitalListings,
   getMyCapitalTransferContracts,
   getPendingApplications,
+  getSavingsFundBalance,
   getSourceFunds,
   getTransactions,
   getUserConversionWithToken,
@@ -238,4 +239,8 @@ export function useContactMemberCapitalListing(): UseMutationResult<
   return useMutation({
     mutationFn: (dto) => contactMemberCapitalListingOwner(dto),
   });
+}
+
+export function useSavingsFundBalance(): UseQueryResult<SourceFund | null> {
+  return useQuery(['savingsFundBalance'], () => getSavingsFundBalance());
 }

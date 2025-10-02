@@ -106,12 +106,28 @@ describe('Account summary', () => {
             currency: 'EUR',
           },
         ]}
+        savingsFundBalance={{
+          isin: 'EE0000000000',
+          price: 12,
+          unavailablePrice: 0,
+          activeFund: false,
+          currency: 'EUR',
+          name: 'Tuleva Täiendav Kogumisfond',
+          fundManager: { name: 'Tuleva' },
+          managementFeePercent: 0.49,
+          pillar: -1,
+          ongoingChargesFigure: 0.0049,
+          contributions: 10,
+          subtractions: 0,
+          profit: 2,
+          units: 10,
+        }}
       />,
     );
 
     const dataSource = tableProp('dataSource');
 
-    expect(dataSource).toHaveLength(3);
+    expect(dataSource).toHaveLength(4);
     expect(dataSource[0].pillarLabel).toEqual(
       <FormattedMessage id="accountStatement.secondPillar.heading" />,
     );
@@ -143,6 +159,14 @@ describe('Account summary', () => {
     expect(dataSource[0].value).toEqual(<Euro amount={114} />);
     expect(dataSource[1].value).toEqual(<Euro amount={66} />);
     expect(dataSource[2].value).toEqual(<Euro amount={6} />);
+
+    expect(dataSource[3].pillarLabel).toEqual(
+      <FormattedMessage id="accountStatement.savingsFund.heading" />,
+    );
+    expect(dataSource[3].contributions).toEqual(<Euro amount={10} />);
+    expect(dataSource[3].subtractions).toEqual(<Euro amount={0} />);
+    expect(dataSource[3].profit).toEqual(<Euro amount={2} />);
+    expect(dataSource[3].value).toEqual(<Euro amount={12} />);
   });
 
   it('passes total as each column footer', () => {

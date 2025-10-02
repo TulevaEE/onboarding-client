@@ -220,20 +220,9 @@ export class LoggedInApp extends PureComponent {
             />
             <Route
               path="/savings-fund/payment/success"
-              render={() => (
-                <MembersOnlyGatekeep>
-                  <SavingsFundPaymentSuccess />
-                </MembersOnlyGatekeep>
-              )}
+              render={() => <SavingsFundPaymentSuccess />}
             />
-            <Route
-              path="/savings-fund/payment"
-              render={() => (
-                <MembersOnlyGatekeep>
-                  <SavingsFundPayment />
-                </MembersOnlyGatekeep>
-              )}
-            />
+            <Route path="/savings-fund/payment" render={() => <SavingsFundPayment />} />
             <Redirect exact path="/savings-fund" to="/" />
             <Route
               path="/2nd-pillar-payment-rate-success"
