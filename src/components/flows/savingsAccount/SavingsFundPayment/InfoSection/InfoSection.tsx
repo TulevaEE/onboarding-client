@@ -1,6 +1,6 @@
 import { FC, ReactNode } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { BadgeCheck, CircleOff, Repeat } from './assets';
+import { Verify, Deposit, Defer } from './assets';
 import { SimpleList, SimpleListItem } from '../../../../common/simpleList';
 
 export const InfoSection: FC = () => {
@@ -10,7 +10,7 @@ export const InfoSection: FC = () => {
     <SimpleList>
       <SimpleListItem
         title={intl.formatMessage({ id: 'savingsFund.payment.infoSection.creditor' })}
-        media={<BadgeCheck />}
+        media={<Verify />}
       />
       <SimpleListItem
         title={
@@ -25,11 +25,11 @@ export const InfoSection: FC = () => {
             </a>
           </>
         }
-        media={<Repeat />}
+        media={<Defer />}
       />
       <SimpleListItem
         title={intl.formatMessage({ id: 'savingsFund.payment.infoSection.fees' })}
-        media={<CircleOff />}
+        media={<Deposit />}
       />
     </SimpleList>
   );

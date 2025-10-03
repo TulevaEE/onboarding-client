@@ -16,6 +16,9 @@ $grid-gutter-width: 2rem;
 $spacer: 1rem !default;
 $spacers: (
   0: 0,
+  '05': (
+    $spacer * 0.125,
+  ),
   1: (
     $spacer * 0.25,
   ),

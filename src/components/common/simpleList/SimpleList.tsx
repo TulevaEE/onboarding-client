@@ -8,7 +8,7 @@ type SimpleListItemProps = {
 export const SimpleListItem: FC<SimpleListItemProps> = ({ media, title }) => (
   <li className="d-flex gap-2 align-items-start">
     {media ? (
-      <span aria-hidden="true" className="mt-1 me-1">
+      <span aria-hidden="true" className="mt-05 me-1">
         {media}
       </span>
     ) : null}
