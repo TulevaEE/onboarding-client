@@ -43,7 +43,11 @@ const SavingsFundStatusBox: FC<SavingsFundStatusBoxProps> = ({ loading }) => {
           <FormattedMessage
             id="savingsFund.status.secondary.investedBalance"
             values={{
-              investedAmount: <Euro amount={savingsFundBalance.contributions} fractionDigits={0} />,
+              investedAmount: (
+                <strong>
+                  <Euro amount={savingsFundBalance.contributions} fractionDigits={0} />
+                </strong>
+              ),
             }}
           />
         </span>,
