@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
+import moment from 'moment';
 import {
   usePendingApplications,
   useSavingsFundPaymentCancellation,
@@ -39,6 +40,10 @@ const SavingsFundPaymentCancellation: FC = () => {
     return null;
   }
 
+  const { cancellationDeadline } = application.details;
+  const isToday = moment().isSame(cancellationDeadline, 'day');
+  const formattedTime = formatTime(cancellationDeadline);
+
   const renderCancellationConfirmation = () => (
     <>
       <h1 className="m-0 text-center">
@@ -53,15 +58,27 @@ const SavingsFundPaymentCancellation: FC = () => {
           />
         }
         description={
-          <FormattedMessage
-            id="applications.type.savingFundPayment.cancellationNotice"
-            values={{
-              deadlineDate: (
-                <strong>{formatShortDate(application.details.cancellationDeadline)}</strong>
-              ),
-              deadlineTime: <strong>{formatTime(application.details.cancellationDeadline)}</strong>,
-            }}
-          />
+          isToday ? (
+            <FormattedMessage
+              id="applications.type.savingFundPayment.cancellationTodayNotice"
+              values={{
+                deadlineTime: <strong>{formattedTime}</strong>,
+                today: (
+                  <strong>
+                    <FormattedMessage id="applications.type.savingFundPayment.cancellationTodayNotice.today" />
+                  </strong>
+                ),
+              }}
+            />
+          ) : (
+            <FormattedMessage
+              id="applications.type.savingFundPayment.cancellationNotice"
+              values={{
+                deadlineDate: <strong>{formatShortDate(cancellationDeadline)}</strong>,
+                deadlineTime: <strong>{formattedTime}</strong>,
+              }}
+            />
+          )
         }
       />
 
