@@ -21,7 +21,7 @@ import {
 import Percentage from '../../common/Percentage';
 import { Euro } from '../../common/Euro';
 import { Fees } from '../../common/Percentage/Fees';
-import { formatMonth } from '../../common/dateFormatter';
+import { formatMonth, formatShortDate } from '../../common/dateFormatter';
 import {
   isDateSameOrBeforeCancellationDeadline,
   isTimeBeforeCancellationDeadline,
@@ -142,6 +142,7 @@ const SavingsFundApplicationCard: FC<{
   allowedActions: ApplicationAction[];
 }> = ({ application, allowedActions }) => {
   const { details } = application;
+
   const getDescription = () => {
     const { cancelledAt, cancellationDeadline } = details;
 
@@ -149,19 +150,42 @@ const SavingsFundApplicationCard: FC<{
       return (
         <FormattedMessage
           id="applications.type.savingFundPayment.cancelledNotice"
-          values={{ cancellationDate: formatDateTime(cancelledAt) }}
+          values={{
+            cancellationDate: formatShortDate(cancelledAt),
+            cancellationTime: formatTime(cancelledAt),
+          }}
         />
       );
     }
 
-    return cancellationDeadline && isCancellationAllowed(application, allowedActions) ? (
-      <FormattedMessage
-        id="applications.type.savingFundPayment.cancellationNotice"
-        values={{
-          cancellationDeadline: <strong>{formatDateTime(cancellationDeadline)}</strong>,
-        }}
-      />
-    ) : (
+    if (cancellationDeadline && isCancellationAllowed(application, allowedActions)) {
+      const isToday = moment().isSame(cancellationDeadline, 'day');
+      const formattedTime = formatTime(cancellationDeadline);
+
+      return isToday ? (
+        <FormattedMessage
+          id="applications.type.savingFundPayment.cancellationTodayNotice"
+          values={{
+            deadlineTime: <strong>{formattedTime}</strong>,
+            today: (
+              <strong>
+                <FormattedMessage id="applications.type.savingFundPayment.cancellationTodayNotice.today" />
+              </strong>
+            ),
+          }}
+        />
+      ) : (
+        <FormattedMessage
+          id="applications.type.savingFundPayment.cancellationNotice"
+          values={{
+            deadlineDate: <strong>{formatShortDate(cancellationDeadline)}</strong>,
+            deadlineTime: <strong>{formattedTime}</strong>,
+          }}
+        />
+      );
+    }
+
+    return (
       <FormattedMessage
         id="applications.type.savingFundPayment.fulfillmentNotice"
         values={{
@@ -505,14 +529,9 @@ function formatDate(date: string): string {
   return moment(date).format(format);
 }
 
-function formatShortDate(date: string): string {
-  const format = moment.localeData().longDateFormat('L');
-  return moment(date).format(format);
-}
-
-function formatDateTime(dateTime: string): string {
-  const format = moment.localeData().longDateFormat('LLL');
-  return moment(dateTime).format(format);
+function formatTime(time: string): string {
+  const format = moment.localeData().longDateFormat('LT');
+  return moment(time).format(format);
 }
 
 const isCancellationAllowed = (application: Application, allowedActions: ApplicationAction[]) => {

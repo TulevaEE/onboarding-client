@@ -549,9 +549,11 @@
   "applications.type.withdrawalThirdPillar.title": "III pillar withdrawal application",
 
   "applications.type.savingFundPayment.title": "{amountWithCurrency} deposit to additional savings fund",
-  "applications.type.savingFundPayment.cancellationNotice": "Deposit can be canceled until {cancellationDeadline}",
+  "applications.type.savingFundPayment.cancellationNotice": "You can cancel the deposit until {deadlineDate} at {deadlineTime}",
+  "applications.type.savingFundPayment.cancellationTodayNotice": "You can cancel the deposit {today} until {deadlineTime}",
+  "applications.type.savingFundPayment.cancellationTodayNotice.today": "today",
   "applications.type.savingFundPayment.fulfillmentNotice": "The deposit amount will be invested in the fund {fulfillmentDeadline}",
-  "applications.type.savingFundPayment.cancelledNotice": "Deposit has been canceled on {cancellationDate}",
+  "applications.type.savingFundPayment.cancelledNotice": "Deposit has been canceled on {cancellationDate} at {cancellationTime}",
 
   "transactions.title": "Your latest transactions",
   "transactions.title.2nd": "Your II pillar transactions",

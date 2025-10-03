@@ -8,7 +8,7 @@ import {
 import { Application, SavingsFundPaymentApplication } from '../../../common/apiModels';
 import { Card } from '../../../common/card/Card';
 import { Euro } from '../../../common/Euro';
-import { formatDateTime } from '../../../common/dateFormatter';
+import { formatShortDate, formatTime } from '../../../common/dateFormatter';
 import { StatusAlert } from '../../../common/statusAlert';
 import { usePageTitle } from '../../../common/usePageTitle';
 
@@ -56,9 +56,10 @@ const SavingsFundPaymentCancellation: FC = () => {
           <FormattedMessage
             id="applications.type.savingFundPayment.cancellationNotice"
             values={{
-              cancellationDeadline: (
-                <strong>{formatDateTime(application.details.cancellationDeadline)}</strong>
+              deadlineDate: (
+                <strong>{formatShortDate(application.details.cancellationDeadline)}</strong>
               ),
+              deadlineTime: <strong>{formatTime(application.details.cancellationDeadline)}</strong>,
             }}
           />
         }

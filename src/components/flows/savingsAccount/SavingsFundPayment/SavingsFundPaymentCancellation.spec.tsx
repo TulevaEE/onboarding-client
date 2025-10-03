@@ -38,8 +38,9 @@ describe('SavingsFundPaymentCancellation', () => {
     // Check that the payment amount is displayed (in the format: "250.99 €")
     expect(screen.getByText('250.99 €')).toBeInTheDocument();
 
-    // Check that the cancellation deadline is displayed (formatted as "February 15 at 23:59")
-    expect(screen.getByText('February 15 at 23:59')).toBeInTheDocument();
+    // Check that the cancellation deadline is displayed
+    expect(screen.getByText('02/15/2024')).toBeInTheDocument();
+    expect(screen.getByText('11:59 PM')).toBeInTheDocument();
 
     // Check that both buttons are present
     expect(screen.getByRole('link', { name: 'Back' })).toBeInTheDocument();

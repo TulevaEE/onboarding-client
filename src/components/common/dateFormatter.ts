@@ -27,12 +27,28 @@ export function formatDateRange(firstDate: string, secondDate: string): string {
   return `${formatDate(firstDate)}\u00A0–\u00A0${formatDate(secondDate)}`;
 }
 
+export function formatTime(time: string | null): string {
+  if (!time) {
+    return '…';
+  }
+  const format = moment.localeData().longDateFormat('LT');
+  return moment(time).format(format);
+}
+
 export function formatDateTime(date?: string | null): string {
   if (!date) {
     return '…';
   }
   const format =
     moment.locale() === 'et' ? 'D.\u00A0MMMM [kell]\u00A0HH:mm' : 'MMMM\u00A0D [at]\u00A0HH:mm';
+  return moment(date).format(format);
+}
+
+export function formatShortDate(date?: string | null): string {
+  if (!date) {
+    return '…';
+  }
+  const format = moment.localeData().longDateFormat('L');
   return moment(date).format(format);
 }
 

@@ -599,9 +599,11 @@
   "applications.type.withdrawalThirdPillar.title": "III samba väljamakse avaldus",
 
   "applications.type.savingFundPayment.title": "{amountWithCurrency} sissemakse täiendavasse kogumisfondi",
-  "applications.type.savingFundPayment.cancellationNotice": "Sissemakset saad katkestada kuni {cancellationDeadline}",
+  "applications.type.savingFundPayment.cancellationNotice": "Sissemakset saad katkestada kuni {deadlineDate} kell {deadlineTime}",
+  "applications.type.savingFundPayment.cancellationTodayNotice": "Sissemakset saad katkestada {today} kuni {deadlineTime}",
+  "applications.type.savingFundPayment.cancellationTodayNotice.today": "täna",
   "applications.type.savingFundPayment.fulfillmentNotice": "Sissemakse summa investeeritakse fondi {fulfillmentDeadline}",
-  "applications.type.savingFundPayment.cancelledNotice": "Sissemakse on katkestatud {cancellationDate}",
+  "applications.type.savingFundPayment.cancelledNotice": "Sissemakse on katkestatud {cancellationDate} kell {cancellationTime}",
 
   "transactions.title": "Sinu viimased tehingud",
   "transactions.title.2nd": "Sinu II samba tehingud",
