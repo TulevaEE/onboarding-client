@@ -1084,7 +1084,7 @@
   "savingsFund.payment.form.paymentMethod.label": "Select bank",
   "savingsFund.payment.form.submit.label": "Continue",
   "savingsFund.payment.form.cancel.label": "Back",
-  "savingsFund.payment.infoSection.investmentAccount": "You can defer paying income tax on investment returns if you declare your bank account as an investment account.",
+  "savingsFund.payment.infoSection.investmentAccount": "You can defer paying income tax on investment returns if you declare your bank account as an <b>investment account</b>.",
   "savingsFund.payment.infoSection.investmentAccount.learnMore": "What is this and how does it work?",
   "savingsFund.payment.infoSection.creditor": "The money must come from a bank account in your name.",
   "savingsFund.payment.infoSection.fees": "No service fees.",

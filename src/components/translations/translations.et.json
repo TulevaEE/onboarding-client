@@ -1168,7 +1168,7 @@
   "savingsFund.payment.form.paymentMethod.label": "Vali pank",
   "savingsFund.payment.form.submit.label": "Jätkan",
   "savingsFund.payment.form.cancel.label": "Tagasi",
-  "savingsFund.payment.infoSection.investmentAccount": "Saad investeerimistulult tulumaksu tasumise edasi lükata, kui deklareerid oma pangakonto investeerimiskontona.",
+  "savingsFund.payment.infoSection.investmentAccount": "Saad investeerimistulult tulumaksu tasumise edasi lükata, kui deklareerid oma pangakonto <b>investeerimiskontona</b>.",
   "savingsFund.payment.infoSection.investmentAccount.learnMore": "Mis see on ja kuidas see käib?",
   "savingsFund.payment.infoSection.creditor": "Raha peab laekuma sinu enda pangakontolt.",
   "savingsFund.payment.infoSection.fees": "Teenustasud puuduvad.",
