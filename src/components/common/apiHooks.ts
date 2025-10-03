@@ -27,6 +27,7 @@ import {
   getMyCapitalTransferContracts,
   getPendingApplications,
   getSavingsFundBalance,
+  getSavingsFundOnboardingStatus,
   getSourceFunds,
   getTransactions,
   getUserConversionWithToken,
@@ -49,6 +50,7 @@ import {
   Fund,
   MandateDeadlines,
   MemberCapitalListing,
+  SavingsFundOnboardingStatus,
   SavingsFundPaymentCancellationCommand,
   SourceFund,
   Transaction,
@@ -146,6 +148,10 @@ export function useConversion(): UseQueryResult<UserConversion> {
 
 export function useSourceFunds(fromDate?: string, toDate?: string): UseQueryResult<SourceFund[]> {
   return useQuery(['sourceFunds', fromDate, toDate], () => getSourceFunds(fromDate, toDate));
+}
+
+export function useSavingsFundOnboardingStatus(): UseQueryResult<SavingsFundOnboardingStatus> {
+  return useQuery(['savingsFundOnboardingStatus'], () => getSavingsFundOnboardingStatus());
 }
 
 export function useCreateMandateBatch(): UseMutationResult<

@@ -6,6 +6,7 @@ import { StatusBoxTitle } from './StatusBoxTitle';
 import ThirdPillarStatusBox from './thirdPillarStatusBox';
 import MemberStatusBox from './memberStatusBox';
 import { SourceFund, UserConversion } from '../../common/apiModels';
+import SavingsFundStatusBox from './savingsFundStatusBox/SavingsFundStatusBox';
 
 interface Props {
   conversion?: UserConversion;
@@ -28,6 +29,7 @@ export const StatusBoxComponent: React.FunctionComponent<Props> = ({
       <div className="card card-secondary">
         <SecondPillarStatusBox />
         <ThirdPillarStatusBox />
+        <SavingsFundStatusBox />
         <MemberStatusBox />
       </div>
     </>

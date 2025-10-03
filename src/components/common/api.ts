@@ -30,6 +30,7 @@ import {
   ContactListingOwnerDto,
   ContactListingOwnerResponse,
   CapitalTotal,
+  SavingsFundOnboardingStatus,
 } from './apiModels/index';
 import {
   deleteWithAuthentication,
@@ -216,7 +217,11 @@ export async function previewMessageForMemberCapitalListing(
 }
 
 export function getFundPensionStatus(): Promise<FundPensionStatus> {
-  return getWithAuthentication(getEndpoint('/v1/withdrawals/fund-pension-status'), undefined);
+  return getWithAuthentication(getEndpoint('/v1/withdrawals/fund-pension-status'));
+}
+
+export function getSavingsFundOnboardingStatus(): Promise<SavingsFundOnboardingStatus> {
+  return getWithAuthentication(getEndpoint('/v1/savings/onboarding/status'));
 }
 
 export function createMandateBatch(
@@ -513,9 +518,6 @@ function getWindow(paymentType: PaymentType): Window {
 export async function getSavingsFundBalance(): Promise<SourceFund | null> {
   try {
     const fund = await getWithAuthentication(getEndpoint('/v1/savings-account-statement'));
-    if (!fund || fund.value === 0) {
-      return null;
-    }
     return transformFundBalance(fund);
   } catch (error) {
     return null;

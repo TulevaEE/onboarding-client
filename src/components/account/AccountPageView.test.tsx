@@ -3,6 +3,7 @@ import { screen, waitFor, within } from '@testing-library/react';
 import { Route } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
 import userEvent from '@testing-library/user-event';
+import { rest } from 'msw';
 import { initializeConfiguration } from '../config/config';
 import LoggedInApp from '../LoggedInApp';
 import { createDefaultStore, login, renderWrapped } from '../../test/utils';
@@ -19,6 +20,7 @@ import {
   PartialWithdrawalApplication,
   ThirdPillarWithdrawalApplication,
 } from '../common/apiModels';
+import { additionalSavingsFund } from './statusBox/fixtures';
 
 const server = setupServer();
 let history: History;
@@ -34,6 +36,10 @@ function initializeComponent() {
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
+beforeEach(() => {
+  server.use(savingsFundOnboardingStatus.notStarted());
+  server.use(savingsAccountStatement.zero());
+});
 
 const getStatusBoxRow = async (type: 'SECOND' | 'THIRD' | 'MEMBER') => {
   const rows = await screen.findAllByTestId('status-box-row');
@@ -475,3 +481,94 @@ describe('withdrawals link', () => {
     });
   });
 });
+
+describe('additional savings fund status', () => {
+  beforeEach(() => {
+    initializeConfiguration();
+    useTestBackends(server);
+    initializeComponent();
+
+    history.push('/account');
+  });
+
+  it('renders nothing when savings fund onboarding is not completed', async () => {
+    server.use(savingsFundOnboardingStatus.notStarted());
+
+    const rows = await screen.findAllByTestId('status-box-row');
+    expect(rows).toHaveLength(3);
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, testing-library/no-node-access
+    const rowContainer = rows[0].parentElement!;
+
+    expect(within(rowContainer).queryByText('Additional savings fund')).not.toBeInTheDocument();
+  });
+
+  it('shows status when onboarding is completed', async () => {
+    server.use(savingsFundOnboardingStatus.completed());
+    server.use(savingsAccountStatement.zero());
+
+    // We fetch additional savings fund with react-query, so we need to wait for it to appear
+    await waitFor(async () => {
+      const rows = await screen.findAllByTestId('status-box-row');
+      expect(rows).toHaveLength(4);
+    });
+
+    const savingsFundRow = screen.getAllByTestId('status-box-row')[2];
+
+    expect(
+      within(savingsFundRow).getByRole('heading', { name: 'Additional savings fund' }),
+    ).toBeInTheDocument();
+    expect(
+      within(savingsFundRow).getByText(
+        'Make a payment to start investing in Tuleva low cost index fund',
+      ),
+    ).toBeInTheDocument();
+    expect(
+      within(savingsFundRow).getByRole('link', { name: 'Make a payment' }),
+    ).toBeInTheDocument();
+  });
+
+  it('shows status and invested amount for non-zero contributions', async () => {
+    server.use(savingsFundOnboardingStatus.completed());
+    server.use(savingsAccountStatement.nonZero());
+
+    // We fetch additional savings fund with react-query, so we need to wait for it to appear
+    await waitFor(async () => {
+      const rows = await screen.findAllByTestId('status-box-row');
+      expect(rows).toHaveLength(4);
+    });
+
+    const savingsFundRow = screen.getAllByTestId('status-box-row')[2];
+
+    expect(
+      within(savingsFundRow).getByRole('heading', { name: 'Additional savings fund' }),
+    ).toBeInTheDocument();
+    expect(
+      within(savingsFundRow).getByText('You are investing in Tuleva low cost index fund'),
+    ).toBeInTheDocument();
+    expect(within(savingsFundRow).getByText('You have invested an additional')).toBeInTheDocument();
+    expect(within(savingsFundRow).getByText('1 €')).toBeInTheDocument();
+  });
+});
+
+const savingsFundOnboardingStatus = {
+  completed: () =>
+    rest.get('/v1/savings/onboarding/status', (req, res, ctx) =>
+      res(ctx.json({ status: 'COMPLETED' })),
+    ),
+  notStarted: () =>
+    rest.get('/v1/savings/onboarding/status', (req, res, ctx) =>
+      res(ctx.json({ status: 'NOT_STARTED' })),
+    ),
+};
+
+const savingsAccountStatement = {
+  zero: () =>
+    rest.get('http://localhost/v1/savings-account-statement', (req, res, ctx) =>
+      res(ctx.json({ ...additionalSavingsFund, contributions: 0 })),
+    ),
+  nonZero: () =>
+    rest.get('http://localhost/v1/savings-account-statement', (req, res, ctx) =>
+      res(ctx.json({ ...additionalSavingsFund, contributions: 1 })),
+    ),
+};

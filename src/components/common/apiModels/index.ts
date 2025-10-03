@@ -165,6 +165,10 @@ export interface Fund {
 
 export type Pillar = 2 | 3;
 
+export type SavingsFundOnboardingStatus = {
+  status: 'COMPLETED' | 'NOT_STARTED';
+};
+
 export type FundStatus =
   | 'ACTIVE'
   | 'LIQUIDATED'

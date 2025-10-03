@@ -1186,5 +1186,11 @@
   "savingsFund.paymentCancellation.title": "Sissemakse katkestamine",
   "savingsFund.paymentCancellation.success.title": "Sissemakse on katkestatud",
   "savingsFund.paymentCancellation.success.description": "Tagastame raha ühe tööpäeva jooksul samale pangakontole, kust see laekus.",
-  "savingsFund.paymentCancellation.error": "Makse katkestamisel tekkis viga. Palun proovi hiljem uuesti või võta meiega ühendust: tuleva@tuleva.ee"
+  "savingsFund.paymentCancellation.error": "Makse katkestamisel tekkis viga. Palun proovi hiljem uuesti või võta meiega ühendust: tuleva@tuleva.ee",
+
+  "savingsFund.status.title": "Täiendav kogumisfond",
+  "savingsFund.status.description.hasInvested": "Sa kogud Tuleva madala tasuga indeksifondis",
+  "savingsFund.status.description.zeroBalance": "Tee sissemakse, et alustada investeerimist Tuleva madala tasuga indeksifondis",
+  "savingsFund.status.investedBalance": "Oled investeerinud täiendavalt {investedAmount}",
+  "savingsFund.status.makeDeposit.label": "Teen sissemakse"
 }

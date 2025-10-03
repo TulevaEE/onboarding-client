@@ -8,6 +8,7 @@ exports[`Status Box renders all subcomponents when present 1`] = `
   >
     <Connect(SecondPillarStatusBox) />
     <Connect(ThirdPillarStatusBox) />
+    <Connect(SavingsFundStatusBox) />
     <Connect(MemberStatusBox) />
   </div>
 </Fragment>

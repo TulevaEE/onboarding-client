@@ -555,6 +555,12 @@
   "applications.type.savingFundPayment.fulfillmentNotice": "The deposit amount will be invested in the fund {fulfillmentDeadline}",
   "applications.type.savingFundPayment.cancelledNotice": "Deposit has been canceled on {cancellationDate} at {cancellationTime}",
 
+  "savingsFund.status.title": "Additional savings fund",
+  "savingsFund.status.description.hasInvested": "You are investing in Tuleva low cost index fund",
+  "savingsFund.status.description.zeroBalance": "Make a payment to start investing in Tuleva low cost index fund",
+  "savingsFund.status.investedBalance": "You have invested an additional {investedAmount}",
+  "savingsFund.status.makeDeposit.label": "Make a payment",
+
   "transactions.title": "Your latest transactions",
   "transactions.title.2nd": "Your II pillar transactions",
   "transactions.title.3rd": "Your III pillar transactions",

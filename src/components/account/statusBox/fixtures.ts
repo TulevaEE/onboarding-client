@@ -1,4 +1,4 @@
-import { Fund, SourceFund, UserConversion } from '../../common/apiModels';
+import { Fund, FundBalance, SourceFund, UserConversion } from '../../common/apiModels';
 
 export const incompleteConversion: UserConversion = {
   weightedAverageFee: 0.004,
@@ -225,4 +225,28 @@ export const highFeeSecondPillar: SourceFund = {
   subtractions: 0,
   profit: 500,
   units: 20000,
+};
+
+export const additionalSavingsFund: FundBalance = {
+  fund: {
+    fundManager: {
+      name: 'Tuleva',
+    },
+    isin: 'EE0000000000',
+    name: 'Tuleva täiendav kogumisfond',
+    managementFeeRate: 0.0049,
+    // @ts-expect-error TODO: refactor to allow null Pillar
+    pillar: null,
+    ongoingChargesFigure: 0.0049,
+    status: 'ACTIVE',
+    inceptionDate: '2025-10-01',
+  },
+  value: 0,
+  unavailableValue: 0,
+  currency: 'EUR',
+  activeContributions: false,
+  contributions: 0,
+  subtractions: 0,
+  profit: 0,
+  units: 0,
 };
