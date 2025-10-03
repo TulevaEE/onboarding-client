@@ -1171,7 +1171,7 @@
   "savingsFund.payment.infoSection.investmentAccount": "Saad investeerimistulult tulumaksu tasumise edasi lükata, kui deklareerid oma pangakonto <b>investeerimiskontona</b>.",
   "savingsFund.payment.infoSection.investmentAccount.learnMore": "Mis see on ja kuidas see käib?",
   "savingsFund.payment.infoSection.creditor": "Raha peab laekuma sinu enda pangakontolt.",
-  "savingsFund.payment.infoSection.fees": "Teenustasud puuduvad.",
+  "savingsFund.payment.infoSection.fees": "Sissemakse tegemine on tasuta.",
   "savingsFund.payment.linkGenerationError": "Makse algatamisel tekkis viga. Palun proovi hiljem uuesti või võta meiega ühendust: tuleva@tuleva.ee",
 
   "savingsFund.payment.success.pageTitle": "Sissemakse tehtud",

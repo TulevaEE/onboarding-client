@@ -1087,7 +1087,7 @@
   "savingsFund.payment.infoSection.investmentAccount": "You can defer paying income tax on investment returns if you declare your bank account as an <b>investment account</b>.",
   "savingsFund.payment.infoSection.investmentAccount.learnMore": "What is this and how does it work?",
   "savingsFund.payment.infoSection.creditor": "The money must come from a bank account in your name.",
-  "savingsFund.payment.infoSection.fees": "No service fees.",
+  "savingsFund.payment.infoSection.fees": "Making a deposit is free.",
   "savingsFund.payment.linkGenerationError": "There was an error initiating the payment. Please try again later or contact us: tuleva@tuleva.ee.",
 
   "savingsFund.payment.success.pageTitle": "Deposit made",
