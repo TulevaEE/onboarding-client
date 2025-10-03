@@ -548,7 +548,7 @@ describe('additional savings fund status', () => {
       within(savingsFundRow).getByText('You are investing in Tuleva low cost index fund'),
     ).toBeInTheDocument();
     expect(within(savingsFundRow).getByText('You have invested an additional')).toBeInTheDocument();
-    expect(within(savingsFundRow).getByText('1 €')).toBeInTheDocument();
+    expect(within(savingsFundRow).getByText('1.00 €')).toBeInTheDocument();
   });
 });
 

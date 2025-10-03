@@ -45,7 +45,7 @@ const SavingsFundStatusBox: FC<SavingsFundStatusBoxProps> = ({ loading }) => {
             values={{
               investedAmount: (
                 <strong>
-                  <Euro amount={savingsFundBalance.contributions} fractionDigits={0} />
+                  <Euro amount={savingsFundBalance.contributions} />
                 </strong>
               ),
             }}
