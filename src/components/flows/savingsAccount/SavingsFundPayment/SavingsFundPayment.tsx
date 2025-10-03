@@ -100,6 +100,7 @@ export const SavingsFundPayment: FC = () => {
                     {/* TODO: Consider extracting to a AmountInput component */}
                     <div className={`input-group input-group-lg ${styles.inputGroup}`}>
                       <input
+                        autoComplete="off"
                         type="text"
                         id="payment-amount"
                         placeholder="0"
