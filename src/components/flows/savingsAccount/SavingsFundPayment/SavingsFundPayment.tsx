@@ -45,7 +45,7 @@ export const SavingsFundPayment: FC = () => {
       setSubmitError(false);
       await redirectToPayment({
         recipientPersonalCode: user.personalCode,
-        amount,
+        amount: Number(String(amount).replace(',', '.')),
         currency: 'EUR',
         type: 'SAVINGS',
         paymentChannel: paymentMethod?.toUpperCase() as PaymentChannel,
@@ -91,7 +91,8 @@ export const SavingsFundPayment: FC = () => {
                     message: intl.formatMessage({ id: 'savingsFund.payment.form.amount.min' }),
                   },
                   validate: {
-                    validateNumber: (value) => !Number.isNaN(Number(value)),
+                    validateNumber: (value) =>
+                      !Number.isNaN(Number(String(value).replace(',', '.'))),
                   },
                 }}
                 render={({ field, fieldState: { error } }) => (
@@ -108,7 +109,12 @@ export const SavingsFundPayment: FC = () => {
                         })}
                         {...field}
                         onChange={(e) => {
-                          field.onChange(e.target.value.replace(',', '.'));
+                          const { value } = e.target;
+                          const euroRegex = /^\d+([.,]\d{0,2})?$/;
+
+                          if (value === '' || euroRegex.test(value)) {
+                            field.onChange(value);
+                          }
                         }}
                       />
                       <span className="input-group-text fw-semibold">&euro;</span>
