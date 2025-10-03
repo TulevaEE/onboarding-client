@@ -69,7 +69,7 @@ const SavingsFundStatusBox: FC<SavingsFundStatusBoxProps> = ({ loading }) => {
   return (
     <div>
       <StatusBoxRow
-        status={hasUnits ? 'SUCCESS' : 'TODO'}
+        status={savingsFundBalance && hasContributions && hasUnits ? 'SUCCESS' : 'TODO'}
         showAction={!loading}
         name={intl.formatMessage({ id: 'savingsFund.status.title' })}
         lines={getLines()}

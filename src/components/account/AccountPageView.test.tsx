@@ -515,6 +515,7 @@ describe('additional savings fund status', () => {
 
     const savingsFundRow = screen.getAllByTestId('status-box-row')[2];
 
+    expect(within(savingsFundRow).getByTestId('status-icon-todo')).toBeInTheDocument();
     expect(
       within(savingsFundRow).getByRole('heading', { name: 'Additional savings fund' }),
     ).toBeInTheDocument();
