@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -6,6 +6,7 @@ import StatusBoxRow from '../statusBoxRow';
 import { useSavingsFundBalance, useSavingsFundOnboardingStatus } from '../../../common/apiHooks';
 import { Login } from '../../../login/types';
 import { Euro } from '../../../common/Euro';
+import { Shimmer } from '../../../common/shimmer/Shimmer';
 
 type SavingsFundStatusBoxProps = {
   loading: boolean;
@@ -14,47 +15,60 @@ type SavingsFundStatusBoxProps = {
 const SavingsFundStatusBox: FC<SavingsFundStatusBoxProps> = ({ loading }) => {
   const intl = useIntl();
   const { data: onboardingStatus } = useSavingsFundOnboardingStatus();
-  const { data: savingsFundBalance } = useSavingsFundBalance();
+  const { data: savingsFundBalance, isLoading } = useSavingsFundBalance();
 
   if (!onboardingStatus || onboardingStatus?.status !== 'COMPLETED') {
     return null;
   }
 
-  const noContributions = savingsFundBalance?.contributions === 0;
+  const hasUnits = savingsFundBalance?.units !== 0;
+  const hasContributions = savingsFundBalance?.contributions !== 0;
+
+  const getLines = () => {
+    const lines: ReactNode[] = [];
+
+    if (!savingsFundBalance && isLoading) {
+      lines.push(<Shimmer />);
+      return lines;
+    }
+
+    if (savingsFundBalance && hasContributions && hasUnits) {
+      lines.push(
+        <span>
+          <FormattedMessage id="savingsFund.status.description.hasInvested" />
+        </span>,
+      );
+      lines.push(
+        <span className="text-body-secondary">
+          <FormattedMessage
+            id="savingsFund.status.secondary.investedBalance"
+            values={{
+              investedAmount: <Euro amount={savingsFundBalance.contributions} fractionDigits={0} />,
+            }}
+          />
+        </span>,
+      );
+      return lines;
+    }
+
+    lines.push(
+      <span>
+        <FormattedMessage id="savingsFund.status.description.zeroBalance" />
+      </span>,
+      <span className="text-body-secondary">
+        <FormattedMessage id="savingsFund.status.secondary.zeroBalance" />
+      </span>,
+    );
+    return lines;
+  };
 
   return (
     <div>
       <StatusBoxRow
-        ok
+        status={hasUnits ? 'SUCCESS' : 'TODO'}
         showAction={!loading}
         name={intl.formatMessage({ id: 'savingsFund.status.title' })}
-        lines={
-          noContributions
-            ? [
-                <span>
-                  <FormattedMessage id="savingsFund.status.description.zeroBalance" />
-                </span>,
-              ]
-            : [
-                <span>
-                  <FormattedMessage id="savingsFund.status.description.hasInvested" />
-                </span>,
-                ...(savingsFundBalance
-                  ? [
-                      <span className="text-body-secondary">
-                        <FormattedMessage
-                          id="savingsFund.status.investedBalance"
-                          values={{
-                            investedAmount: (
-                              <Euro amount={savingsFundBalance.contributions} fractionDigits={0} />
-                            ),
-                          }}
-                        />
-                      </span>,
-                    ]
-                  : []),
-              ]
-        }
+        lines={getLines()}
       >
         <Link to="/savings-fund/payment" className="btn btn-outline-primary">
           <FormattedMessage id="savingsFund.status.makeDeposit.label" />

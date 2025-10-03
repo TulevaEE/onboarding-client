@@ -1190,7 +1190,8 @@
 
   "savingsFund.status.title": "Täiendav kogumisfond",
   "savingsFund.status.description.hasInvested": "Sa kogud Tuleva madala tasuga indeksifondis",
-  "savingsFund.status.description.zeroBalance": "Tee sissemakse, et alustada investeerimist Tuleva madala tasuga indeksifondis",
-  "savingsFund.status.investedBalance": "Oled investeerinud täiendavalt {investedAmount}",
+  "savingsFund.status.description.zeroBalance": "Laialt hajutatud indeksfond, mis investeerib maailma aktsiaturule",
+  "savingsFund.status.secondary.investedBalance": "Oled investeerinud täiendavalt {investedAmount}",
+  "savingsFund.status.secondary.zeroBalance": "Jätka investeerimist väljaspool sambaid, kui vundament on juba loodud",
   "savingsFund.status.makeDeposit.label": "Teen sissemakse"
 }

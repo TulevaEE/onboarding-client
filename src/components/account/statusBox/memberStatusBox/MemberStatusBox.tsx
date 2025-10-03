@@ -61,8 +61,7 @@ export const MemberStatusBox: React.FunctionComponent<Props> = ({
   return (
     <StatusBoxRow
       last
-      ok={isTulevaMember}
-      warning={!isTulevaMember}
+      status={isTulevaMember ? 'SUCCESS' : 'WARNING'}
       showAction={!loading}
       name={<FormattedMessage id="account.status.choice.tuleva" />}
       lines={tulevaData}

@@ -520,7 +520,7 @@ describe('additional savings fund status', () => {
     ).toBeInTheDocument();
     expect(
       within(savingsFundRow).getByText(
-        'Make a payment to start investing in Tuleva low cost index fund',
+        'A widely diversified index fund that invests in the global stock market',
       ),
     ).toBeInTheDocument();
     expect(
@@ -565,10 +565,10 @@ const savingsFundOnboardingStatus = {
 const savingsAccountStatement = {
   zero: () =>
     rest.get('http://localhost/v1/savings-account-statement', (req, res, ctx) =>
-      res(ctx.json({ ...additionalSavingsFund, contributions: 0 })),
+      res(ctx.json({ ...additionalSavingsFund, value: 0, contributions: 0 })),
     ),
   nonZero: () =>
     rest.get('http://localhost/v1/savings-account-statement', (req, res, ctx) =>
-      res(ctx.json({ ...additionalSavingsFund, contributions: 1 })),
+      res(ctx.json({ ...additionalSavingsFund, value: 1, units: 1, contributions: 1 })),
     ),
 };

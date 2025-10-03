@@ -175,7 +175,7 @@ const PendingPartialWithdrawalOrFundPension = ({ loading, mandateDeadlines }: Ro
   if (pendingEarlyWithdrawal) {
     return (
       <StatusBoxRow
-        error
+        status="ERROR"
         showAction={!loading}
         name={<FormattedMessage id="account.status.choice.pillar.second" />}
         lines={[<FormattedMessage id="account.status.choice.pillar.second.withdraw" />]}
@@ -193,7 +193,7 @@ const PendingPartialWithdrawalOrFundPension = ({ loading, mandateDeadlines }: Ro
   if (pendingFundPensionOpening && pendingPartialWithdrawal) {
     return (
       <StatusBoxRow
-        warning
+        status="WARNING"
         showAction={false}
         name={<FormattedMessage id="account.status.choice.pillar.second" />}
         lines={[
@@ -215,7 +215,7 @@ const PendingPartialWithdrawalOrFundPension = ({ loading, mandateDeadlines }: Ro
   if (pendingPartialWithdrawal) {
     return (
       <StatusBoxRow
-        warning
+        status="WARNING"
         showAction={false}
         name={<FormattedMessage id="account.status.choice.pillar.second" />}
         lines={[
@@ -237,7 +237,7 @@ const PendingPartialWithdrawalOrFundPension = ({ loading, mandateDeadlines }: Ro
   if (pendingFundPensionOpening) {
     return (
       <StatusBoxRow
-        warning
+        status="WARNING"
         showAction={false}
         name={<FormattedMessage id="account.status.choice.pillar.second" />}
         lines={[
@@ -261,7 +261,7 @@ const PendingPartialWithdrawalOrFundPension = ({ loading, mandateDeadlines }: Ro
 
 const ActiveFundPension = ({ fundPension }: { fundPension: FundPension }) => (
   <StatusBoxRow
-    ok
+    status="SUCCESS"
     name={<FormattedMessage id="account.status.choice.pillar.second" />}
     showAction={false}
     lines={[
@@ -283,7 +283,7 @@ const HighFee = ({ loading, conversion, sourceFunds, targetFunds, leaveApplicati
 
   return (
     <StatusBoxRow
-      warning
+      status="WARNING"
       showAction={!loading}
       name={<FormattedMessage id="account.status.choice.pillar.second" />}
       lines={[
@@ -330,7 +330,7 @@ const mapStateToProps = (state: State) => ({
 
 const SecondPillarMissing = ({ loading }: RowProps) => (
   <StatusBoxRow
-    error
+    status="ERROR"
     showAction={!loading}
     name={<FormattedMessage id="account.status.choice.pillar.second" />}
     lines={[<FormattedMessage id="account.status.choice.pillar.second.missing.label" />]}
@@ -349,7 +349,7 @@ const IncreasePaymentRate = ({
   mandateDeadlines,
 }: RowProps) => (
   <StatusBoxRow
-    warning
+    status="WARNING"
     showAction={!loading}
     name={<FormattedMessage id="account.status.choice.pillar.second" />}
     lines={[
@@ -376,7 +376,7 @@ const FullyConvertedToTulevaBonds = ({
   mandateDeadlines,
 }: RowProps) => (
   <StatusBoxRow
-    warning
+    status="WARNING"
     name={<FormattedMessage id="account.status.choice.pillar.second" />}
     showAction={!loading}
     lines={[
@@ -421,7 +421,7 @@ const FullyConvertedToTuleva = ({
 
   return (
     <StatusBoxRow
-      ok
+      status="SUCCESS"
       name={<FormattedMessage id="account.status.choice.pillar.second" />}
       showAction={!loading}
       lines={[
@@ -462,7 +462,7 @@ const InLowFeeFund = ({
   leaveApplication,
 }: RowProps) => (
   <StatusBoxRow
-    ok
+    status="SUCCESS"
     showAction={!loading}
     name={<FormattedMessage id="account.status.choice.pillar.second" />}
     lines={[

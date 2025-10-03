@@ -2,7 +2,6 @@
 
 exports[`ThirdPillarStatusBox renders the "open third pillar" flow when user has no third pillar active 1`] = `
 <StatusBoxRow
-  error={true}
   lines={
     Array [
       <Memo(MemoizedFormattedMessage)
@@ -16,6 +15,7 @@ exports[`ThirdPillarStatusBox renders the "open third pillar" flow when user has
     />
   }
   showAction={true}
+  status="ERROR"
 >
   <Link
     className="btn btn-primary"
@@ -53,7 +53,7 @@ exports[`ThirdPillarStatusBox renders the "payment incomplete" flow when funds h
     />
   }
   showAction={true}
-  warning={true}
+  status="WARNING"
 >
   <Link
     className="btn btn-primary"
@@ -68,7 +68,6 @@ exports[`ThirdPillarStatusBox renders the "payment incomplete" flow when funds h
 
 exports[`ThirdPillarStatusBox renders the "payment incomplete" flow when no funds have ever been transferred 1`] = `
 <StatusBoxRow
-  error={true}
   lines={
     Array [
       <React.Fragment>
@@ -92,6 +91,7 @@ exports[`ThirdPillarStatusBox renders the "payment incomplete" flow when no fund
     />
   }
   showAction={true}
+  status="ERROR"
 >
   <Link
     className="btn btn-primary"
@@ -120,7 +120,7 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when partially conv
     />
   }
   showAction={true}
-  warning={true}
+  status="WARNING"
 >
   <Link
     className="btn btn-primary"
@@ -157,8 +157,8 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when partially conv
       id="account.status.choice.pillar.third"
     />
   }
-  ok={true}
   showAction={true}
+  status="SUCCESS"
 >
   <Link
     className="btn btn-outline-primary"
@@ -186,8 +186,8 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when partially conv
       id="account.status.choice.pillar.third"
     />
   }
-  ok={true}
   showAction={true}
+  status="SUCCESS"
 >
   <Link
     className="btn btn-outline-primary"
@@ -224,8 +224,8 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when user has some 
       id="account.status.choice.pillar.third"
     />
   }
-  ok={true}
   showAction={true}
+  status="SUCCESS"
 >
   <Link
     className="btn btn-outline-primary"
@@ -240,7 +240,6 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when user has some 
 
 exports[`ThirdPillarStatusBox renders the "pick tuleva" flow with error when in high cost fund 1`] = `
 <StatusBoxRow
-  error={true}
   lines={
     Array [
       <React.Fragment>
@@ -264,6 +263,7 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow with error when in 
     />
   }
   showAction={true}
+  status="ERROR"
 >
   <Link
     className="btn btn-primary"
@@ -292,7 +292,7 @@ exports[`ThirdPillarStatusBox renders the "transfer incomplete" flow when user h
     />
   }
   showAction={true}
-  warning={true}
+  status="WARNING"
 >
   <Link
     className="btn btn-primary"
@@ -307,7 +307,6 @@ exports[`ThirdPillarStatusBox renders the "transfer incomplete" flow when user h
 
 exports[`ThirdPillarStatusBox renders the december flow when date in december 1`] = `
 <StatusBoxRow
-  error={true}
   lines={
     Array [
       <Memo(MemoizedFormattedMessage)
@@ -327,6 +326,7 @@ exports[`ThirdPillarStatusBox renders the december flow when date in december 1`
     />
   }
   showAction={true}
+  status="ERROR"
 >
   <Link
     className="btn btn-primary"
@@ -354,8 +354,8 @@ exports[`ThirdPillarStatusBox renders the success flow 1`] = `
       id="account.status.choice.pillar.third"
     />
   }
-  ok={true}
   showAction={true}
+  status="SUCCESS"
 >
   <Link
     className="btn btn-outline-primary"
@@ -383,8 +383,8 @@ exports[`ThirdPillarStatusBox renders the success flow when funds have not trans
       id="account.status.choice.pillar.third"
     />
   }
-  ok={true}
   showAction={true}
+  status="SUCCESS"
 >
   <Link
     className="btn btn-outline-primary"
@@ -399,7 +399,6 @@ exports[`ThirdPillarStatusBox renders the success flow when funds have not trans
 
 exports[`ThirdPillarStatusBox shows high fee notice when balance is zero but active fund has high fee 1`] = `
 <StatusBoxRow
-  error={true}
   lines={
     Array [
       <React.Fragment>
@@ -423,6 +422,7 @@ exports[`ThirdPillarStatusBox shows high fee notice when balance is zero but act
     />
   }
   showAction={true}
+  status="ERROR"
 >
   <Link
     className="btn btn-primary"

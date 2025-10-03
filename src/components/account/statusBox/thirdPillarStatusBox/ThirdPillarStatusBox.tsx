@@ -29,7 +29,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
   if (!thirdPillarActive || !activeFund) {
     return (
       <StatusBoxRow
-        error
+        status="ERROR"
         showAction={!loading}
         name={<FormattedMessage id="account.status.choice.pillar.third" />}
         lines={[<FormattedMessage id="account.status.choice.pillar.third.missing.label" />]}
@@ -48,7 +48,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
   if (activeThirdPillarFundPension) {
     return (
       <StatusBoxRow
-        ok
+        status="SUCCESS"
         name={<FormattedMessage id="account.status.choice.pillar.third" />}
         showAction={false}
         lines={[
@@ -70,7 +70,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
     if (pendingFundPensionOpeningApplication && pendingPartialWithdrawalApplication) {
       return (
         <StatusBoxRow
-          ok
+          status="SUCCESS"
           showAction={!loading}
           name={<FormattedMessage id="account.status.choice.pillar.third" />}
           lines={[
@@ -87,7 +87,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
     if (pendingFundPensionOpeningApplication) {
       return (
         <StatusBoxRow
-          ok
+          status="SUCCESS"
           showAction={!loading}
           name={<FormattedMessage id="account.status.choice.pillar.third" />}
           lines={[<FormattedMessage id="account.status.choice.pillar.third.fundPensionOpening" />]}
@@ -102,7 +102,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
     if (pendingPartialWithdrawalApplication) {
       return (
         <StatusBoxRow
-          ok
+          status="SUCCESS"
           showAction={!loading}
           name={<FormattedMessage id="account.status.choice.pillar.third" />}
           lines={[<FormattedMessage id="account.status.choice.pillar.third.partialWithdrawal" />]}
@@ -129,7 +129,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
     if (hasHighFees) {
       return (
         <StatusBoxRow
-          error
+          status="ERROR"
           showAction={!loading}
           name={<FormattedMessage id="account.status.choice.pillar.third" />}
           lines={[
@@ -150,7 +150,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
     }
     return (
       <StatusBoxRow
-        ok
+        status="SUCCESS"
         showAction={!loading}
         name={<FormattedMessage id="account.status.choice.pillar.third" />}
         lines={[
@@ -174,7 +174,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
   if (!isFullyConverted) {
     return (
       <StatusBoxRow
-        warning
+        status="WARNING"
         showAction={!loading}
         name={<FormattedMessage id="account.status.choice.pillar.third" />}
         lines={[
@@ -192,7 +192,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
   if (conversion.contribution.total === 0) {
     return (
       <StatusBoxRow
-        error
+        status="ERROR"
         showAction={!loading}
         name={<FormattedMessage id="account.status.choice.pillar.third" />}
         lines={[
@@ -215,7 +215,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
   if (conversion.contribution.yearToDate === 0 && isFebruaryToNovember) {
     return (
       <StatusBoxRow
-        warning
+        status="WARNING"
         showAction={!loading}
         name={<FormattedMessage id="account.status.choice.pillar.third" />}
         lines={[
@@ -238,7 +238,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
   if (conversion.contribution.yearToDate === 0 && isDecember) {
     return (
       <StatusBoxRow
-        error
+        status="ERROR"
         showAction={!loading}
         name={<FormattedMessage id="account.status.choice.pillar.third" />}
         lines={[
@@ -260,7 +260,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
 
   return (
     <StatusBoxRow
-      ok
+      status="SUCCESS"
       showAction={!loading}
       name={<FormattedMessage id="account.status.choice.pillar.third" />}
       lines={[
