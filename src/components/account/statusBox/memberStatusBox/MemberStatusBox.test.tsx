@@ -82,7 +82,7 @@ describe('member status box with existing membership and latest received members
     expect(
       await within(memberStatusRow).findByText(/In 20\d\d, you earned a membership bonus of/),
     ).toBeInTheDocument();
-    expect(await within(memberStatusRow).findByText(/5 €/)).toBeInTheDocument();
+    expect(await within(memberStatusRow).findByText('5.00 €')).toBeInTheDocument();
   });
 });
 
@@ -115,7 +115,7 @@ describe('member status box with existing membership and membership bonus sale',
     expect(
       await within(memberStatusRow).findByText(/In 20\d\d, you earned a membership bonus of/),
     ).toBeInTheDocument();
-    expect(await within(memberStatusRow).findByText(/5 €/)).toBeInTheDocument();
+    expect(await within(memberStatusRow).findByText('5.00 €')).toBeInTheDocument();
   });
 });
 
