@@ -86,7 +86,7 @@ const AccountSummary = ({
 
   if (memberCapital) {
     summary.push({
-      pillar: -1,
+      pillar: null,
       pillarLabel: 'memberCapital.heading',
       feesPercent: 0,
       feesEuro: 0,
@@ -100,7 +100,7 @@ const AccountSummary = ({
   if (savingsFundBalance) {
     summary.push(
       getPillarSummary(
-        -1,
+        null,
         'accountStatement.savingsFund.heading',
         savingsFundBalance.contributions,
         savingsFundBalance.subtractions,

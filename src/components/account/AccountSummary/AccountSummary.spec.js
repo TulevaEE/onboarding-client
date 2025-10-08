@@ -115,7 +115,7 @@ describe('Account summary', () => {
           name: 'Tuleva Täiendav Kogumisfond',
           fundManager: { name: 'Tuleva' },
           managementFeePercent: 0.49,
-          pillar: -1,
+          pillar: null,
           ongoingChargesFigure: 0.0049,
           contributions: 10,
           subtractions: 0,
