@@ -627,10 +627,15 @@
   "secondPillarPaymentRate.confirm.mandate.agree.to.terms": "By clicking “Sign and send“ a digitally signed application will be sent to the register.",
   "secondPillarPaymentRate.confirm.mandate.sign": "Sign and send",
   "secondPillarPaymentRate.cancel": "Cancel",
-  "secondPillarPaymentRateSuccess.title": "All done",
-  "secondPillarPaymentRateSuccess.descriptionNewRate": "From <b>{paymentRateFulfillmentDate}</b>, you will contribute <b>{paymentRate}%</b> of your gross salary to the II pillar.",
-  "secondPillarPaymentRateSuccess.descriptionEmployer": "The change will take effect automatically and no further action is required.",
+
+  "secondPillarPaymentRateSuccess.title.increase": "All done",
+  "secondPillarPaymentRateSuccess.title.decrease": "You lowered your II pillar contribution",
+  "secondPillarPaymentRateSuccess.descriptionNewRate.increase": "From <b>{paymentRateFulfillmentDate}</b>, you will contribute <b>{paymentRate}%</b> of your gross salary to the II pillar.",
+  "secondPillarPaymentRateSuccess.descriptionNewRate.decrease": "From <b>{paymentRateFulfillmentDate}</b>, you will contribute less than before — namely <b>{paymentRate}%</b> of your gross salary — to your II pillar.",
+  "secondPillarPaymentRateSuccess.descriptionEmployer.increase": "The change takes effect automatically and you don’t need to do anything else.",
+  "secondPillarPaymentRateSuccess.descriptionEmployer.decrease": "You can still change your decision until <b>{paymentRateDeadline}</b>.",
   "secondPillarPaymentRateSuccess.accountLink": "My Account",
+
   "comparisonCalculator.timePeriod": "Time period",
   "comparisonCalculator.comparedTo": "Compared to",
   "comparisonCalculator.yourIIpillar": "Your II pillar",

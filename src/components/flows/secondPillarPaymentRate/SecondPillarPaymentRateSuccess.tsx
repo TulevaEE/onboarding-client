@@ -7,18 +7,29 @@ import { useMandateDeadlines } from '../../common/apiHooks';
 import { formatDateYear } from '../../common/dateFormatter';
 
 export const SecondPillarPaymentRateSuccess: React.FC = () => {
-  const location: Location<{ fulfillmentDate: string; paymentRate: number }> = useLocation();
-  const { paymentRate } = location.state || {};
+  const location: Location<{ fulfillmentDate: string; paymentRate: number; isDecreased: boolean }> =
+    useLocation();
+  const { paymentRate, isDecreased } = location.state || {};
   const { data: mandateDeadlines } = useMandateDeadlines();
 
   return (
     <SuccessNotice>
       <h2 className="text-center mt-3">
-        <FormattedMessage id="secondPillarPaymentRateSuccess.title" />
+        <FormattedMessage
+          id={
+            isDecreased
+              ? 'secondPillarPaymentRateSuccess.title.decrease'
+              : 'secondPillarPaymentRateSuccess.title.increase'
+          }
+        />
       </h2>
       <p className="m-0 mt-5">
         <FormattedMessage
-          id="secondPillarPaymentRateSuccess.descriptionNewRate"
+          id={
+            isDecreased
+              ? 'secondPillarPaymentRateSuccess.descriptionNewRate.decrease'
+              : 'secondPillarPaymentRateSuccess.descriptionNewRate.increase'
+          }
           values={{
             paymentRateFulfillmentDate:
               formatDateYear(mandateDeadlines?.paymentRateFulfillmentDate) || '...',
@@ -28,7 +39,17 @@ export const SecondPillarPaymentRateSuccess: React.FC = () => {
         />
       </p>
       <p className="m-0">
-        <FormattedMessage id="secondPillarPaymentRateSuccess.descriptionEmployer" />
+        <FormattedMessage
+          id={
+            isDecreased
+              ? 'secondPillarPaymentRateSuccess.descriptionEmployer.decrease'
+              : 'secondPillarPaymentRateSuccess.descriptionEmployer.increase'
+          }
+          values={{
+            paymentRateDeadline: formatDateYear(mandateDeadlines?.paymentRateDeadline) || '...',
+            b: (chunks: string) => <b>{chunks}</b>,
+          }}
+        />
       </p>
       <a className="btn btn-primary mt-5 profile-link" href="/account">
         <FormattedMessage id="secondPillarPaymentRateSuccess.accountLink" />

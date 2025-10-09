@@ -676,9 +676,12 @@
   "secondPillarPaymentRate.confirm.mandate.sign": "Allkirjastan ja saadan",
   "secondPillarPaymentRate.cancel": "Katkestan",
 
-  "secondPillarPaymentRateSuccess.title": "Muudatus tehtud",
-  "secondPillarPaymentRateSuccess.descriptionNewRate": "Alates <b>{paymentRateFulfillmentDate}</b> panustad II sambasse <b>{paymentRate}%</b> brutopalgast.",
-  "secondPillarPaymentRateSuccess.descriptionEmployer": "Muudatus jõustub automaatselt ja sa ei pea rohkem midagi tegema.",
+  "secondPillarPaymentRateSuccess.title.increase": "Muudatus tehtud",
+  "secondPillarPaymentRateSuccess.title.decrease": "Langetasid II samba makset",
+  "secondPillarPaymentRateSuccess.descriptionNewRate.increase": "Alates <b>{paymentRateFulfillmentDate}</b> panustad II sambasse <b>{paymentRate}%</b> brutopalgast.",
+  "secondPillarPaymentRateSuccess.descriptionNewRate.decrease": "Alates <b>{paymentRateFulfillmentDate}</b> panustad II sambasse senisest vähem ehk <b>{paymentRate}%</b> brutopalgast.",
+  "secondPillarPaymentRateSuccess.descriptionEmployer.increase": "Muudatus jõustub automaatselt ja sa ei pea rohkem midagi tegema.",
+  "secondPillarPaymentRateSuccess.descriptionEmployer.decrease": "Oma otsust saad veel muuta kuni <b>{paymentRateDeadline}</b>.",
   "secondPillarPaymentRateSuccess.accountLink": "Minu konto",
 
   "comparisonCalculator.timePeriod": "Ajaperioodil",

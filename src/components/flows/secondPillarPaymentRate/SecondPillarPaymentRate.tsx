@@ -44,7 +44,15 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
       <Redirect
         to={{
           pathname: '/2nd-pillar-payment-rate-success',
-          state: { fulfillmentDate: mandateDeadlines?.paymentRateFulfillmentDate, paymentRate },
+          state: {
+            fulfillmentDate: mandateDeadlines?.paymentRateFulfillmentDate,
+            paymentRate,
+            isDecreased:
+              paymentRate === 2 ||
+              (paymentRate !== null &&
+                pendingPaymentRate !== null &&
+                paymentRate < pendingPaymentRate),
+          },
         }}
       />
     );
