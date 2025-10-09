@@ -50,6 +50,9 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
     );
   }
 
+  // Simple logic: if current rate is 6, they can only decrease
+  const isDecreasingScenario = pendingPaymentRate === 6;
+
   return (
     <div className="col-12 col-md-11 col-lg-8 mx-auto">
       {(signing || challengeCode) && (
@@ -59,18 +62,29 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
       {error && <ErrorMessage errors={error.body} onCancel={resetError} overlayed />}
 
       <h1 className="mb-3">
-        <FormattedMessage id="secondPillarPaymentRate.contributionChange" />
+        <FormattedMessage
+          id={
+            isDecreasingScenario
+              ? 'secondPillarPaymentRate.contributionChange.decrease'
+              : 'secondPillarPaymentRate.contributionChange.increase'
+          }
+        />
       </h1>
       <p className="mb-5">
         {!mandateDeadlines ? (
           <Shimmer height={24} />
         ) : (
           <FormattedMessage
-            id="secondPillarPaymentRate.applicationDeadline"
+            id={
+              isDecreasingScenario
+                ? 'secondPillarPaymentRate.applicationDeadline.decrease'
+                : 'secondPillarPaymentRate.applicationDeadline.increase'
+            }
             values={{
               paymentRateFulfillmentDate: formatDateYear(
                 mandateDeadlines?.paymentRateFulfillmentDate,
               ),
+              a: (chunks: string) => <Link to="/2nd-pillar-tax-win">{chunks}</Link>,
             }}
           />
         )}
