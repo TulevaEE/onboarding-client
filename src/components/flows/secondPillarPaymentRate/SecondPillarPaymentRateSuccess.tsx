@@ -2,6 +2,7 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useLocation } from 'react-router-dom';
 import { Location } from 'history';
+import config from 'react-global-configuration';
 import { SuccessNotice } from '../common/SuccessNotice/SuccessNotice';
 import { useMandateDeadlines } from '../../common/apiHooks';
 import { formatDateYear } from '../../common/dateFormatter';
@@ -51,9 +52,16 @@ export const SecondPillarPaymentRateSuccess: React.FC = () => {
           }}
         />
       </p>
-      <a className="btn btn-primary mt-5 profile-link" href="/account">
-        <FormattedMessage id="secondPillarPaymentRateSuccess.accountLink" />
-      </a>
+
+      {config.get('language') === 'en' ? (
+        <a className="btn btn-primary mt-5 profile-link" href="/account?language=en">
+          <FormattedMessage id="secondPillarPaymentRateSuccess.accountLink" />
+        </a>
+      ) : (
+        <a className="btn btn-primary mt-5 profile-link" href="/account">
+          <FormattedMessage id="secondPillarPaymentRateSuccess.accountLink" />
+        </a>
+      )}
     </SuccessNotice>
   );
 };
