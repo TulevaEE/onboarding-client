@@ -226,7 +226,7 @@ const TransferApplicationCard: React.FunctionComponent<{
       allowedActions={transferActions}
       title={
         <FormattedMessage
-          id={`applications.type.transfer.title.${application.details.sourceFund.pillar}`}
+          id={`applications.type.transfer.title.${application.details.sourceFund.pillar || 2}`}
         />
       }
     >
