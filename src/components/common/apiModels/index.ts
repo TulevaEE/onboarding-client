@@ -155,7 +155,7 @@ export interface Fund {
   isin: string;
   name: string;
   nav: number | null;
-  pillar: Pillar;
+  pillar: Pillar | null;
   managementFeeRate: number;
   ongoingChargesFigure: number;
   fundManager: FundManager;
@@ -192,7 +192,7 @@ export interface SourceFund {
   fundManager: FundManager;
   activeFund: boolean;
   name: string;
-  pillar: Pillar;
+  pillar: Pillar | null;
   managementFeePercent: number;
   isin: string;
   price: number;
