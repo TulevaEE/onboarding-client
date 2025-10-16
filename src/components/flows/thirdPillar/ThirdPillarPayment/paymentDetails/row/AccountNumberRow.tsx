@@ -1,6 +1,7 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { InfoTooltip } from '../../../../../common/infoTooltip/InfoTooltip';
+import { PaymentDetailRow } from './PaymentDetailRow';
 
 const accountNumber: { [bank: string]: string } = {
   swedbank: 'EE362200221067235244',
@@ -13,19 +14,15 @@ type Bank = 'swedbank' | 'seb' | 'lhv' | 'luminor';
 
 export const AccountNumberRow: React.FunctionComponent<{
   bank: Bank;
-  children: React.ReactNode;
-}> = ({ bank, children }) => (
-  <tr>
-    <td className="align-top text-end">{children}:</td>
-    <>
-      <td className="align-bottom ps-2">
-        <b>{accountNumber[bank]}</b>
-      </td>
-      <td className="ps-2 d-none d-sm-block">
-        <InfoTooltip name={`third-pillar-payment-bank-${bank}`}>
-          <FormattedMessage id={`thirdPillarPayment.accountNumber.${bank}`} />
-        </InfoTooltip>
-      </td>
-    </>
-  </tr>
+  label: React.ReactNode;
+}> = ({ bank, label }) => (
+  <PaymentDetailRow
+    label={label}
+    value={accountNumber[bank]}
+    tooltip={
+      <InfoTooltip name={`third-pillar-payment-bank-${bank}`}>
+        <FormattedMessage id={`thirdPillarPayment.accountNumber.${bank}`} />
+      </InfoTooltip>
+    }
+  />
 );

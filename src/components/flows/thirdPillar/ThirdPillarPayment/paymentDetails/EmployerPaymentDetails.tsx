@@ -1,6 +1,6 @@
 import { PropsWithChildren, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { TextRow } from './row/TextRow';
+import { PaymentDetailRow } from './row/PaymentDetailRow';
 import { useMe } from '../../../../common/apiHooks';
 import { Shimmer } from '../../../../common/shimmer/Shimmer';
 import { getFullName } from '../../../../common/utils';
@@ -77,23 +77,19 @@ const PublicEmployerGuide = ({ user }: { user: User }) => (
 
     <Step number={3}>
       <FormattedMessage id="thirdPillarPayment.EMPLOYER.rtkFormFields" />
-      <div className="mt-3 p-4 ms-n4 payment-details-table">
-        <table>
-          <tbody>
-            <TextRow>
-              <FormattedMessage id="thirdPillarPayment.EMPLOYER.rtkAmount" />
-              <FormattedMessage id="thirdPillarPayment.EMPLOYER.rtkAmount.description" />
-            </TextRow>
-            <TextRow>
-              <FormattedMessage id="thirdPillarPayment.EMPLOYER.pensionAccountNumber" />
-              {user.pensionAccountNumber}
-            </TextRow>
-            <TextRow>
-              <FormattedMessage id="thirdPillarPayment.EMPLOYER.fullName" />
-              {getFullName(user)}
-            </TextRow>
-          </tbody>
-        </table>
+      <div className="mt-3 p-4 payment-details-table">
+        <PaymentDetailRow
+          label={<FormattedMessage id="thirdPillarPayment.EMPLOYER.rtkAmount" />}
+          value={<FormattedMessage id="thirdPillarPayment.EMPLOYER.rtkAmount.description" />}
+        />
+        <PaymentDetailRow
+          label={<FormattedMessage id="thirdPillarPayment.EMPLOYER.pensionAccountNumber" />}
+          value={user.pensionAccountNumber}
+        />
+        <PaymentDetailRow
+          label={<FormattedMessage id="thirdPillarPayment.EMPLOYER.fullName" />}
+          value={getFullName(user)}
+        />
       </div>
     </Step>
     <Step number={4}>
@@ -120,23 +116,19 @@ export const PrivateEmployerGuide = ({ user }: { user: User }) => (
 
     <Step number={2}>
       <FormattedMessage id="thirdPillarPayment.EMPLOYER.formFields" />
-      <div className="mt-3 p-4 ms-n4 payment-details-table">
-        <table>
-          <tbody>
-            <TextRow>
-              <FormattedMessage id="thirdPillarPayment.EMPLOYER.percent" />
-              <FormattedMessage id="thirdPillarPayment.EMPLOYER.percent.description" />
-            </TextRow>
-            <TextRow>
-              <FormattedMessage id="thirdPillarPayment.EMPLOYER.pensionAccountNumber" />
-              {user.pensionAccountNumber}
-            </TextRow>
-            <TextRow>
-              <FormattedMessage id="thirdPillarPayment.EMPLOYER.fullName" />
-              {getFullName(user)}
-            </TextRow>
-          </tbody>
-        </table>
+      <div className="mt-3 p-4 payment-details-table">
+        <PaymentDetailRow
+          label={<FormattedMessage id="thirdPillarPayment.EMPLOYER.percent" />}
+          value={<FormattedMessage id="thirdPillarPayment.EMPLOYER.percent.description" />}
+        />
+        <PaymentDetailRow
+          label={<FormattedMessage id="thirdPillarPayment.EMPLOYER.pensionAccountNumber" />}
+          value={user.pensionAccountNumber}
+        />
+        <PaymentDetailRow
+          label={<FormattedMessage id="thirdPillarPayment.EMPLOYER.fullName" />}
+          value={getFullName(user)}
+        />
       </div>
     </Step>
     <Step number={3}>
@@ -149,10 +141,10 @@ export const PrivateEmployerGuide = ({ user }: { user: User }) => (
 );
 
 const Step = ({ number, children }: PropsWithChildren<{ number: number }>) => (
-  <div className="d-sm-flex py-2">
+  <div className="d-flex py-2">
     <span className="flex-shrink-0 tv-step__number me-3">
       <b>{number}</b>
     </span>
-    <span className="flex-grow-1 align-self-center">{children}</span>
+    <div className="flex-grow-1 align-self-center">{children}</div>
   </div>
 );

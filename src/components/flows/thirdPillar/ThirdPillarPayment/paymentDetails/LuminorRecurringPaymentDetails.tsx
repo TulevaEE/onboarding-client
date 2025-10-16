@@ -13,48 +13,45 @@ export const LuminorRecurringPaymentDetails: React.FunctionComponent<{
     <h3>
       <FormattedMessage id="thirdPillarPayment.RECURRING.luminor" />
     </h3>
-    <div className="d-sm-flex py-2">
+    <div className="d-flex py-2">
       <span className="flex-shrink-0 tv-step__number me-3">
         <b>1</b>
       </span>
-      <span className="flex-grow-1 align-self-center">
+      <div className="flex-grow-1 align-self-center">
         <FormattedMessage id="thirdPillarPayment.RECURRING.luminor.login" />
-      </span>
+      </div>
     </div>
-    <div className="d-sm-flex py-2">
+    <div className="d-flex py-2">
       <span className="flex-shrink-0 tv-step__number me-3">
         <b>2</b>
       </span>
-      <span className="flex-grow-1 align-self-center">
+      <div className="flex-grow-1 align-self-center">
         <FormattedMessage id="thirdPillarPayment.RECURRING.luminor.form" />
-        <div className="mt-3 p-4 ms-n4 payment-details-table">
-          <table>
-            <tbody>
-              <AccountNameRow>
-                <FormattedMessage id="thirdPillarPayment.beneficiaryName" />
-              </AccountNameRow>
-              <PaymentAmountRow amount={amount}>
-                <FormattedMessage id="thirdPillarPayment.amountInEur" />
-                {null}
-              </PaymentAmountRow>
-              <AccountNumberRow bank="luminor">
-                <FormattedMessage id="thirdPillarPayment.accountNumber" />
-              </AccountNumberRow>
-              <PaymentDescriptionRow personalCode={personalCode}>
-                <FormattedMessage id="thirdPillarPayment.description" />
-              </PaymentDescriptionRow>
-            </tbody>
-          </table>
+        <div className="mt-3 p-4 payment-details-table">
+          <AccountNameRow label={<FormattedMessage id="thirdPillarPayment.beneficiaryName" />} />
+          <PaymentAmountRow
+            amount={amount}
+            label={<FormattedMessage id="thirdPillarPayment.amountInEur" />}
+            tooltip={<></>}
+          />
+          <AccountNumberRow
+            bank="luminor"
+            label={<FormattedMessage id="thirdPillarPayment.accountNumber" />}
+          />
+          <PaymentDescriptionRow
+            personalCode={personalCode}
+            label={<FormattedMessage id="thirdPillarPayment.description" />}
+          />
         </div>
-      </span>
+      </div>
     </div>
-    <div className="d-sm-flex py-2">
+    <div className="d-flex py-2">
       <span className="flex-shrink-0 tv-step__number me-3">
         <b>3</b>
       </span>
-      <span className="flex-grow-1 align-self-center">
+      <div className="flex-grow-1 align-self-center">
         <FormattedMessage id="thirdPillarPayment.RECURRING.finalStep" />
-      </span>
+      </div>
     </div>
   </div>
 );

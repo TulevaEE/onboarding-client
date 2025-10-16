@@ -91,16 +91,15 @@
 .payment-details-table {
   background-color: $blue-bg-2;
   border-radius: 0.25rem;
-  display: table;
+  margin-left: -3rem !important;
 
-  table {
-    tr td {
-      padding: 0.75rem;
-      border-bottom: 1px solid $gray-border-2;
-    }
+  .row {
+    padding: 0.75rem;
+    border-bottom: 1px solid $gray-border-2;
 
-    tr:last-child td {
+    &:last-child {
       border-bottom: none;
+      margin-bottom: 0 !important;
     }
   }
 }
