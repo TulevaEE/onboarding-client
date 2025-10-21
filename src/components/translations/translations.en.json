@@ -628,12 +628,12 @@
   "secondPillarPaymentRate.confirm.mandate.sign": "Sign and send",
   "secondPillarPaymentRate.cancel": "Cancel",
 
-  "secondPillarPaymentRateSuccess.title.increase": "All done",
+  "secondPillarPaymentRateSuccess.title.increase": "You increased your II pillar contribution",
   "secondPillarPaymentRateSuccess.title.decrease": "You lowered your II pillar contribution",
-  "secondPillarPaymentRateSuccess.descriptionNewRate.increase": "From <b>{paymentRateFulfillmentDate}</b>, you will contribute <b>{paymentRate}%</b> of your gross salary to the II pillar.",
-  "secondPillarPaymentRateSuccess.descriptionNewRate.decrease": "From <b>{paymentRateFulfillmentDate}</b>, you will contribute less than before — namely <b>{paymentRate}%</b> of your gross salary — to your II pillar.",
-  "secondPillarPaymentRateSuccess.descriptionEmployer.increase": "The change takes effect automatically and you don’t need to do anything else.",
-  "secondPillarPaymentRateSuccess.descriptionEmployer.decrease": "You can still change your decision until <b>{paymentRateDeadline}</b>.",
+  "secondPillarPaymentRateSuccess.descriptionNewRate.increase": "From <b>{paymentRateFulfillmentDate}</b>, you will contribute <b>{paymentRate}%</b> of your gross salary to the II pillar. The change takes effect automatically.",
+  "secondPillarPaymentRateSuccess.descriptionNewRate.decrease": "From <b>{paymentRateFulfillmentDate}</b>, you will contribute less than before — namely <b>{paymentRate}%</b> of your gross salary — to your II pillar. You can still change your decision until <b>{paymentRateDeadline}</b>.",
+  "secondPillarPaymentRateSuccess.highFeesWarning": "Make sure that your fund fees are <b>below 0.5% per year</b> to achieve the best long-term returns.",
+  "secondPillarPaymentRateSuccess.reviewFeesLink": "Review now",
   "secondPillarPaymentRateSuccess.accountLink": "My Account",
 
   "comparisonCalculator.timePeriod": "Time period",

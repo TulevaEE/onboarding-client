@@ -1,7 +1,7 @@
 import { Fund, FundBalance, SourceFund, UserConversion } from '../../common/apiModels';
 
 export const incompleteConversion: UserConversion = {
-  weightedAverageFee: 0.004,
+  weightedAverageFee: 0.01,
   secondPillar: {
     selectionComplete: false,
     selectionPartial: false,
@@ -53,7 +53,7 @@ export const lowFeesNoTulevaConversion: UserConversion = {
 };
 
 export const completeConversion: UserConversion = {
-  weightedAverageFee: 0.004,
+  weightedAverageFee: 0.0049,
   secondPillar: {
     selectionComplete: true,
     selectionPartial: true,

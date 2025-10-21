@@ -100,7 +100,11 @@ describe('When a user is changing their 2nd pillar payment rate', () => {
   const fourPercentOption = async () => screen.findByText('4% of Gross Salary');
   const signButton = async () => screen.findByRole('button', { name: 'Sign and send' });
   const allDone = async () =>
-    screen.findByRole('heading', { name: 'All done' }, { timeout: 10_000 });
+    screen.findByRole(
+      'heading',
+      { name: 'You increased your II pillar contribution' },
+      { timeout: 10_000 },
+    );
   const paymentRateFulfillmentDate = () => screen.findByText('January 1, 2025');
   const newPaymentRate = () => screen.findByText('4%');
 });
