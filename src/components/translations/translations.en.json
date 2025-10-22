@@ -629,7 +629,7 @@
   "secondPillarPaymentRateSuccess.title.decrease": "You lowered your II pillar contribution",
   "secondPillarPaymentRateSuccess.descriptionNewRate.increase": "From <b>{paymentRateFulfillmentDate}</b>, you will contribute <b>{paymentRate}%</b> of your gross salary to the II pillar. The change takes effect automatically.",
   "secondPillarPaymentRateSuccess.descriptionNewRate.decrease": "From <b>{paymentRateFulfillmentDate}</b>, you will contribute less than before — namely <b>{paymentRate}%</b> of your gross salary — to your II pillar. You can still change your decision until <b>{paymentRateDeadline}</b>.",
-  "secondPillarPaymentRateSuccess.highFeesWarning": "Make sure that your fund fees are <b>below 0.5% per year</b> to achieve the best long-term returns.",
+  "secondPillarPaymentRateSuccess.highFeesWarning": "Now make sure your fund fees are <b>below 0.5% per year</b>, because low fees provide the best conditions for the best long-term returns.",
   "secondPillarPaymentRateSuccess.reviewFeesLink": "Review now",
   "secondPillarPaymentRateSuccess.accountLink": "My Account",
 

@@ -27,7 +27,7 @@ export const SecondPillarPaymentRateSuccess: React.FC = () => {
           }
         />
       </h2>
-      <p className="mt-5">
+      <p className="mt-5 mb-0">
         <FormattedMessage
           id={
             isDecreased
@@ -45,7 +45,7 @@ export const SecondPillarPaymentRateSuccess: React.FC = () => {
       </p>
 
       {hasHighFees && (
-        <p className="m-0">
+        <p className="mt-3 mb-0">
           <FormattedMessage
             id="secondPillarPaymentRateSuccess.highFeesWarning"
             values={{

@@ -677,7 +677,7 @@
   "secondPillarPaymentRateSuccess.title.decrease": "Langetasid II samba makset",
   "secondPillarPaymentRateSuccess.descriptionNewRate.increase": "Alates <b>{paymentRateFulfillmentDate}</b> panustad II sambasse <b>{paymentRate}%</b> brutopalgast. Muudatus jõustub automaatselt.",
   "secondPillarPaymentRateSuccess.descriptionNewRate.decrease": "Alates <b>{paymentRateFulfillmentDate}</b> panustad II sambasse senisest vähem ehk <b>{paymentRate}%</b> brutopalgast. Oma otsust saad veel muuta kuni <b>{paymentRateDeadline}</b>.",
-  "secondPillarPaymentRateSuccess.highFeesWarning": "Nüüd veendu, et sinu fondi tasud oleksid <b>alla 0.5% aastas</b>, et saavutada parimat pikaajalist tootlust.",
+  "secondPillarPaymentRateSuccess.highFeesWarning": "Nüüd veendu, et sinu fondi tasud oleksid <b>alla 0.5% aastas</b>, sest madalad tasud annavad parimad eeldused parimaks pikaajaliseks tootluseks.",
   "secondPillarPaymentRateSuccess.reviewFeesLink": "Vaatan üle",
   "secondPillarPaymentRateSuccess.accountLink": "Minu konto",
 
