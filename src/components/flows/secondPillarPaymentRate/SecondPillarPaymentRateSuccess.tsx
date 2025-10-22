@@ -61,14 +61,11 @@ export const SecondPillarPaymentRateSuccess: React.FC = () => {
         </Link>
       )}
 
-      {!hasHighFees && config.get('language') === 'en' && (
-        <a className="btn btn-primary mt-5" href="/account?language=en">
-          <FormattedMessage id="secondPillarPaymentRateSuccess.accountLink" />
-        </a>
-      )}
-
-      {!hasHighFees && config.get('language') !== 'en' && (
-        <a className="btn btn-primary mt-5" href="/account">
+      {!hasHighFees && (
+        <a
+          className="btn btn-primary mt-5"
+          href={`/account${config.get('language') === 'en' ? '?language=en' : ''}`}
+        >
           <FormattedMessage id="secondPillarPaymentRateSuccess.accountLink" />
         </a>
       )}

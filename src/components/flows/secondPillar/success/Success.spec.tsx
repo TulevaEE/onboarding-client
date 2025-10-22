@@ -60,4 +60,18 @@ describe('When is at the partner 2nd pillar flow success screen', () => {
   test('success title is shown', async () => {
     expect(await screen.findByText('Application finished')).toBeInTheDocument();
   });
+
+  describe('payment rate increase upsell', () => {
+    test('shows upsell when user has 2% contribution rate', async () => {
+      expect(await screen.findByText(/Increase your II pillar contribution/i)).toBeInTheDocument();
+    });
+
+    test('upsell has link to payment rate change page', async () => {
+      const increaseLink = await screen.findByRole('link', {
+        name: /Increase contribution/i,
+      });
+      expect(increaseLink).toBeInTheDocument();
+      expect(increaseLink).toHaveAttribute('href', '/2nd-pillar-payment-rate');
+    });
+  });
 });
