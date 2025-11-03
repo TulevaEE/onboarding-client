@@ -11,6 +11,51 @@ references:
       at: *workspace_root
 
 jobs:
+  build-ecs:
+    executor:
+      name: node/default
+      tag: '22.17.0'
+    steps:
+      - *attach_workspace
+      - checkout
+      - node/install-packages
+      - run:
+          name: Build
+          command: npm run build:ecs
+      - run:
+          name: Copy assets
+          command: |
+            set -exu
+            mv build /tmp/workspace
+      - persist_to_workspace:
+          root: *workspace_root
+          paths:
+            - build
+  test-ecs:
+    executor:
+      name: node/default
+      tag: '22.17.0'
+    steps:
+      - checkout
+      - node/install-packages
+      - run:
+          name: Lint
+          command: npm run lint
+      - run:
+          name: Run tests
+          command: npm test -- --maxWorkers=2
+      - store_test_results:
+          path: ./test-results.json
+      - codecov/upload
+  deploy-ecs:
+    executor: aws-cli/default
+    steps:
+      - checkout
+      - *attach_workspace
+      - aws-cli/setup
+      - run:
+          name: Deploy to ECS
+          command: aws s3 cp /tmp/workspace/build s3://ecs-pension.tuleva.ee --recursive
   build-staging:
     executor:
       name: node/default
@@ -120,6 +165,19 @@ jobs:
 
 workflows:
   version: 2
+  onboarding-client-ecs:
+    jobs:
+      - build-ecs
+      - test-ecs:
+          requires:
+            - build-ecs
+      - deploy-ecs:
+          requires:
+            - test-ecs
+          context: aws
+          filters:
+            branches:
+              only: master
   onboarding-client-production:
     jobs:
       - build-staging

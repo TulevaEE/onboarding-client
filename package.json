@@ -52,6 +52,7 @@
   "scripts": {
     "build": "react-scripts --openssl-legacy-provider build",
     "build:staging": "REACT_APP_ENV=staging react-scripts build",
+    "build:ecs": "REACT_APP_ENV=ecs react-scripts build",
     "develop": "react-scripts --openssl-legacy-provider start",
     "develop-production": "HTTPS=true HOST=local.tuleva.ee DANGEROUSLY_DISABLE_HOST_CHECK=true npm run develop",
     "develop-production-win": "set HTTPS=true&&set HOST=local.tuleva.ee&&npm run develop",
