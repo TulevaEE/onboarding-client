@@ -12,12 +12,14 @@ enum Procedure {
   PARTNER_2ND_PILLAR_FLOW = 'partner-2nd-pillar-flow',
   PARTNER_3RD_PILLAR_FLOW = 'partner-3rd-pillar-flow',
   ACCOUNT = 'account',
+  SECOND_PILLAR_PAYMENT_RATE = '2nd-pillar-payment-rate',
 }
 
 const procedureToPath = new Map<Procedure, string>([
   [Procedure.PARTNER_2ND_PILLAR_FLOW, '/partner/2nd-pillar-flow'],
   [Procedure.PARTNER_3RD_PILLAR_FLOW, '/partner/3rd-pillar-flow'],
   [Procedure.ACCOUNT, '/account'],
+  [Procedure.SECOND_PILLAR_PAYMENT_RATE, '/2nd-pillar-payment-rate'],
 ]);
 
 const stringToProvider: Record<string, ExternalProvider> = Object.fromEntries(

@@ -121,4 +121,15 @@ describe('When an external provider process is triggered', () => {
     expect(getAuthentication().accessToken).toBe(anAuthenticationManager().accessToken);
     expect(getAuthentication().refreshToken).toBe(anAuthenticationManager().refreshToken);
   });
+
+  test('redirects to 2nd pillar payment rate if valid data is provided', async () => {
+    const handoverToken =
+      'eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJzaWduaW5nTWV0aG9kIjoic21hcnRJZCJ9.V-eWT1WG1CKKAsUkPOOU8zL9SbGNdv9RIO5viE9V_vORSu48UqnYKk5wHUQxOK2EvG1O64RRnc1aBTrkr0zxpHgUxshPtAYOY7SThLWLjxBbQ7T4EnZp1wJjGkpsucOmdSw7YSDdGpEn7uIrqPAaxrKzO9YKkvXYNfbS1fYAcc9mckHxf0_IyYBnrg1vxBzlSdwwmNUvhJELaKSdhrrmqZRU8zg0IHrHf0RQTZrpK8q5Pz29IgjoZNHFkuI6RW0AmypCSneoXUdPGIPxLJkyw2j1xVDHBVa37rCnZ3GNiMOAiGREld80ZXyYR4cfOT5Z4LYghWB5Pkgjxi1KcHhxoA';
+    initializeComponent(
+      `?provider=COOP_PANK&procedure=2nd-pillar-payment-rate&handoverToken=${handoverToken}`,
+    );
+    expect(await screen.findByText('redirecting to', { exact: false })).toBeInTheDocument();
+    expect(getAuthentication().accessToken).toBe(anAuthenticationManager().accessToken);
+    expect(getAuthentication().refreshToken).toBe(anAuthenticationManager().refreshToken);
+  });
 });
