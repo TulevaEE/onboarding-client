@@ -96,8 +96,16 @@ export async function authenticateWithIdCode(personalCode: string): Promise<Auth
 }
 
 export async function authenticateWithIdCard(): Promise<boolean> {
-  await simpleFetch('GET', config.get('idCardUrl')); // http://stackoverflow.com/a/16818527
-  const { success } = await simpleFetch('POST', `${config.get('idCardUrl')}/idLogin`);
+  // NGINX (id.tuleva.ee, id-staging.tuleva.ee) can handle preliminary GET request
+  // ALB mTLS verify mode (alb-id.tuleva.ee) requires certificates for ALL requests, so skip GET
+  const idCardUrl = config.get('idCardUrl');
+  const isAlbMtls = idCardUrl.includes('alb-id');
+
+  if (!isAlbMtls) {
+    await simpleFetch('GET', idCardUrl); // Pre-prompt for certificate selection (NGINX only)
+  }
+
+  const { success } = await simpleFetch('POST', `${idCardUrl}/idLogin`);
   return success;
 }
 
