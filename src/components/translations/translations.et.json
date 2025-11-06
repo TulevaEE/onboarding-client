@@ -22,7 +22,7 @@
   "login.permission.note.url": "https://tuleva.ee/privaatsuspoliitika-ja-veebilehe-kasutustingimused/",
   "login.not.member": "Sa pole veel Tuleva liige?",
   "login.apply.link": "Täida liitumisavaldus",
-  "login.epis_maintenance": "Pensionikontole sisenemine ei pruugi olla praegu võimalik, sest Eesti pensioniregistri töös on planeeritud katkestus.",
+  "login.epis_maintenance": "Pensionikontole sisenemine ei pruugi olla praegu võimalik, sest rakenduse töös on planeeritud katkestus.",
   "log.out": "Väljun",
   "steps.next": "Järgmine samm",
   "steps.previous": "Eelmine samm",
