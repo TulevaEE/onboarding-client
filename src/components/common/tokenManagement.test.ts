@@ -4,6 +4,7 @@ import config from 'react-global-configuration';
 import { createAxiosInstance } from './tokenManagement';
 import { AuthenticationManager } from './authenticationManager';
 import * as authenticationManager from './authenticationManager';
+import { loginPath } from '../login/constants';
 import Mock = jest.Mock;
 
 jest.mock('./authenticationManager', () => ({
@@ -72,8 +73,12 @@ describe('Axios Instance Creation and Interceptors', () => {
     );
   });
 
-  it('removes principal on refresh token expiration', async () => {
+  it('removes principal and redirects to login on refresh token expiration', async () => {
     const axiosInstance = createAxiosInstance();
+
+    // Mock window.location
+    delete (window as any).location;
+    window.location = { href: '' } as any;
 
     // First request fails with 401, indicating expired token
     mockAxios.onGet('/test').replyOnce(401, { error: 'TOKEN_EXPIRED' });
@@ -85,6 +90,7 @@ describe('Axios Instance Creation and Interceptors', () => {
       await axiosInstance.get('/test');
     } catch (error) {
       expect(mockPrincipal.remove).toHaveBeenCalled();
+      expect(window.location.href).toBe(loginPath);
     }
   });
 

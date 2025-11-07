@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import { logo, AuthenticationLoader, ErrorAlert } from '../common';
 import { usePageTitle } from '../common/usePageTitle';
 import styles from './LoginPage.module.scss';
+import { loginPath } from './constants';
 
 import LoginForm from './loginForm';
 import {
@@ -83,8 +84,6 @@ export const LoginPage = ({
 
 const noop = () => null;
 
-export const loginPath = '/login';
-
 LoginPage.defaultProps = {
   onPhoneNumberChange: noop,
   onPersonalCodeChange: noop,
@@ -152,5 +151,7 @@ const mapDispatchToProps = (dispatch) =>
   );
 
 const withRedux = connect(mapStateToProps, mapDispatchToProps);
+
+export { loginPath };
 
 export default withRouter(withRedux(LoginPage));

@@ -2,6 +2,7 @@ import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
 import config from 'react-global-configuration';
 import { AuthenticationPrincipal, Token } from './apiModels';
 import { AuthenticationManager, getAuthentication } from './authenticationManager';
+import { loginPath } from '../login/constants';
 
 let currentAccessToken: string | null = null;
 
@@ -159,6 +160,7 @@ function handleTokenRefreshFailure(
     if (axiosError.response) {
       if (isRefreshTokenExpired(axiosError)) {
         authenticationPrincipal.remove();
+        window.location.href = loginPath;
         return Promise.reject(axiosError.response.data);
       }
     }
