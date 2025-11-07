@@ -4,7 +4,7 @@ import { restoreAuthenticationFromSession } from '../common/authenticationManage
 const BASE_CONFIG = {
   clientCredentialsAccessToken: undefined,
   language: 'et',
-  idCardUrl: 'https://id.tuleva.ee',
+  idCardUrl: 'https://alb-id.tuleva.ee',
 } as const;
 
 const ENV_CONFIGS = {
