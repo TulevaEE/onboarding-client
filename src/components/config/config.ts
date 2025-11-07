@@ -26,7 +26,7 @@ const ENV_CONFIGS = {
   },
   ecs: {
     ...BASE_CONFIG,
-    applicationUrl: 'https://ecs-pension.tuleva.ee',
+    applicationUrl: 'https://pension.tuleva.ee',
     clientCredentialsAccessToken: '705e26c1-9316-47f2-94b8-a5c6b0dfb566',
     idCardUrl: 'https://alb-id.tuleva.ee',
   },
