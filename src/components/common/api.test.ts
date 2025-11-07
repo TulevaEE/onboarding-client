@@ -80,27 +80,14 @@ describe('API calls', () => {
   });
 
   describe('authenticateWithIdCard', () => {
-    it('should authenticate using ID card successfully with NGINX (includes preliminary GET)', async () => {
-      mockHttp.simpleFetch.mockResolvedValueOnce({});
+    it('should authenticate using ID card successfully via ALB mTLS', async () => {
+      config.set({ idCardUrl: 'https://id.tuleva.ee' }, { freeze: false, assign: false });
       mockHttp.simpleFetch.mockResolvedValueOnce({ success: true });
 
       const result = await authenticateWithIdCard();
 
       expect(result).toBe(true);
-      expect(mockHttp.simpleFetch).toHaveBeenCalledWith('GET', 'https://id.tuleva.ee');
       expect(mockHttp.simpleFetch).toHaveBeenCalledWith('POST', 'https://id.tuleva.ee/idLogin');
-      expect(mockHttp.simpleFetch).toHaveBeenCalledTimes(2);
-    });
-
-    it('should authenticate using ID card successfully with ALB mTLS (skips preliminary GET)', async () => {
-      config.set({ idCardUrl: 'https://alb-id.tuleva.ee' }, { freeze: false, assign: false });
-      mockHttp.simpleFetch.mockResolvedValueOnce({ success: true });
-
-      const result = await authenticateWithIdCard();
-
-      expect(result).toBe(true);
-      expect(mockHttp.simpleFetch).not.toHaveBeenCalledWith('GET', 'https://alb-id.tuleva.ee');
-      expect(mockHttp.simpleFetch).toHaveBeenCalledWith('POST', 'https://alb-id.tuleva.ee/idLogin');
       expect(mockHttp.simpleFetch).toHaveBeenCalledTimes(1);
     });
   });

@@ -95,7 +95,8 @@ describe('When a user is logging in', () => {
     expect(
       await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
     ).toBeInTheDocument();
-    expect(backend.acceptedCertificate).toBeTruthy();
+    // ALB mTLS: no preliminary GET request, so acceptedCertificate remains false
+    expect(backend.acceptedCertificate).toBeFalsy();
     expect(backend.authenticatedWithIdCard).toBeTruthy();
   });
 });
