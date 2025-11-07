@@ -287,11 +287,8 @@ export function idCardAuthenticationBackend(server: SetupServerApi): {
 } {
   const backend = { authenticatedWithIdCard: false, acceptedCertificate: false };
   server.use(
-    rest.get('https://id.tuleva.ee', (req, res, ctx) => {
+    rest.post('https://alb-id.tuleva.ee/idLogin', (req, res, ctx) => {
       backend.acceptedCertificate = true;
-      return res(ctx.status(200), ctx.json({ success: true }));
-    }),
-    rest.post('https://id.tuleva.ee/idLogin', (req, res, ctx) => {
       backend.authenticatedWithIdCard = true;
       return res(ctx.status(200), ctx.json({ success: true }));
     }),
