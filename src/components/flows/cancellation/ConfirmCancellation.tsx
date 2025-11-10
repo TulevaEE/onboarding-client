@@ -1,14 +1,17 @@
 import React from 'react';
-import { Redirect, useParams } from 'react-router-dom';
+import { Redirect, useParams, useHistory } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
+import { useSelector } from 'react-redux';
 import { useApplication } from '../../common/apiHooks';
 import { AuthenticationLoader } from '../../common';
 import { Loader } from '../../common/loader/Loader';
 import { ApplicationCard } from '../../account/ApplicationSection/ApplicationCards';
 import { useCancellationPreview, useCancellationWithSigning } from './cancellationHooks';
+import { flowPath, successPath } from './paths';
 
 export const ConfirmCancellation: React.FunctionComponent = () => {
   const applicationId = useApplicationIdFromUrl();
+  const history = useHistory();
   const { isLoading, data: application } = useApplication(applicationId);
   const {
     cancelApplication,
@@ -19,6 +22,36 @@ export const ConfirmCancellation: React.FunctionComponent = () => {
     cancellationMandateId,
   } = useCancellationWithSigning();
   const { downloadPreview } = useCancellationPreview();
+
+  // BRUTE FORCE: Poll Redux directly and force redirect when signing completes
+  const reduxSignedMandateId = useSelector(
+    (state: { exchange?: { signedMandateId: number | null } }) => state.exchange?.signedMandateId,
+  );
+  const [localCancellationMandateId, setLocalCancellationMandateId] = React.useState<number | null>(
+    null,
+  );
+
+  // Store the cancellation mandate ID when it's created
+  React.useEffect(() => {
+    if (cancellationMandateId && !localCancellationMandateId) {
+      setLocalCancellationMandateId(cancellationMandateId);
+    }
+  }, [cancellationMandateId, localCancellationMandateId]);
+
+  // Force redirect when Redux signing completes
+  React.useEffect(() => {
+    if (
+      reduxSignedMandateId &&
+      localCancellationMandateId &&
+      reduxSignedMandateId === localCancellationMandateId
+    ) {
+      const successUrl = `${flowPath.replace(
+        ':applicationId',
+        applicationId.toString(),
+      )}/${successPath}`;
+      history.push(successUrl);
+    }
+  }, [reduxSignedMandateId, localCancellationMandateId, applicationId, history]);
 
   function confirmCancellation() {
     cancelApplication(applicationId);
@@ -33,7 +66,11 @@ export const ConfirmCancellation: React.FunctionComponent = () => {
   }
 
   if (signedMandateId && signedMandateId === cancellationMandateId) {
-    return <Redirect to={`/applications/${applicationId}/cancellation/success`} />;
+    const successUrl = `${flowPath.replace(
+      ':applicationId',
+      applicationId.toString(),
+    )}/${successPath}`;
+    return <Redirect to={successUrl} />;
   }
 
   return (

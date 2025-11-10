@@ -3,8 +3,8 @@ import { FormattedMessage } from 'react-intl';
 import Flow from '../common/Flow'; // eslint-disable-line import/no-named-as-default
 import { CancellationSuccess } from './CancellationSuccess';
 import { ConfirmCancellation } from './ConfirmCancellation';
+import { flowPath, successPath } from './paths';
 
-export const flowPath = '/applications/:applicationId/cancellation';
 const steps = [
   {
     path: 'confirm',
@@ -12,7 +12,7 @@ const steps = [
     title: <FormattedMessage id="cancellation.flow.confirm.title" />,
   },
   {
-    path: 'success',
+    path: successPath,
     Component: () => <CancellationSuccess />,
   },
 ];
@@ -20,3 +20,5 @@ const steps = [
 export const CancellationFlow: React.FunctionComponent = () => (
   <Flow flowPath={flowPath} steps={steps} />
 );
+
+export { flowPath, successPath };
