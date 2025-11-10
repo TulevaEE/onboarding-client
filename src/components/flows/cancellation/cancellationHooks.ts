@@ -3,7 +3,7 @@ import { useApplicationCancellation } from '../../common/apiHooks';
 import { useMandatePreview, useMandateSigning } from '../../exchange/hooks';
 
 export function useCancellationWithSigning(): {
-  cancelApplication: (applicationId: number) => void;
+  cancelApplication: (applicationId: number) => Promise<number>;
   cancelSigning: () => void;
   cancellationMandateId: number | null;
   signedMandateId: number | null;
@@ -14,10 +14,11 @@ export function useCancellationWithSigning(): {
   const signing = useMandateSigning();
   const [persistedMandateId, setPersistedMandateId] = React.useState<number | null>(null);
 
-  async function cancelApplication(applicationId: number) {
+  async function cancelApplication(applicationId: number): Promise<number> {
     const cancellation = await mutation.mutateAsync(applicationId);
     setPersistedMandateId(cancellation.mandateId);
     signing.sign({ id: cancellation.mandateId, pillar: 2 });
+    return cancellation.mandateId;
   }
 
   function cancelSigning() {
