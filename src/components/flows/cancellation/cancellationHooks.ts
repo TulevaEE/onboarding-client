@@ -1,3 +1,4 @@
+import React from 'react';
 import { useApplicationCancellation } from '../../common/apiHooks';
 import { useMandatePreview, useMandateSigning } from '../../exchange/hooks';
 
@@ -11,20 +12,23 @@ export function useCancellationWithSigning(): {
 } {
   const mutation = useApplicationCancellation();
   const signing = useMandateSigning();
+  const [persistedMandateId, setPersistedMandateId] = React.useState<number | null>(null);
 
   async function cancelApplication(applicationId: number) {
     const cancellation = await mutation.mutateAsync(applicationId);
+    setPersistedMandateId(cancellation.mandateId);
     signing.sign({ id: cancellation.mandateId, pillar: 2 });
   }
 
   function cancelSigning() {
+    setPersistedMandateId(null);
     signing.cancel();
   }
 
   return {
     cancelApplication,
     cancelSigning,
-    cancellationMandateId: mutation.data?.mandateId || null,
+    cancellationMandateId: persistedMandateId,
     signedMandateId: signing.signedMandateId,
     loading: mutation.isLoading || signing.loading,
     challengeCode: signing.challengeCode,
