@@ -30,6 +30,7 @@ export const ConfirmCancellation: React.FunctionComponent = () => {
   const [localCancellationMandateId, setLocalCancellationMandateId] = React.useState<number | null>(
     null,
   );
+  const [, forceUpdate] = React.useReducer((x) => x + 1, 0);
 
   // Store the cancellation mandate ID when it's created
   React.useEffect(() => {
@@ -37,6 +38,17 @@ export const ConfirmCancellation: React.FunctionComponent = () => {
       setLocalCancellationMandateId(cancellationMandateId);
     }
   }, [cancellationMandateId, localCancellationMandateId]);
+
+  // Force re-render every second while signing to catch Redux updates
+  React.useEffect(() => {
+    if (signing || challengeCode) {
+      const interval = setInterval(() => {
+        forceUpdate();
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+    return undefined;
+  }, [signing, challengeCode]);
 
   // Force redirect when Redux signing completes
   React.useEffect(() => {
