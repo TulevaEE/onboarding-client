@@ -36,11 +36,17 @@ export const ConfirmCancellation: React.FunctionComponent = () => {
     return <Redirect to={`/applications/${applicationId}/cancellation/success`} />;
   }
 
+  const debugInfo =
+    signedMandateId || cancellationMandateId
+      ? `[DEBUG: signed=${signedMandateId}, cancel=${cancellationMandateId}]`
+      : null;
+
   return (
     <>
       {(signing || challengeCode) && (
         <AuthenticationLoader controlCode={challengeCode} onCancel={cancelSigning} overlayed />
       )}
+      {debugInfo && <div style={{ color: 'red', fontWeight: 'bold' }}>{debugInfo}</div>}
       <p>
         <FormattedMessage id="cancellation.flow.confirm.content" />
       </p>
