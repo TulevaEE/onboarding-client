@@ -23,6 +23,7 @@ import {
   SIGN_MANDATE_SUCCESS,
   SIGN_MANDATE_ERROR,
   NO_SIGN_MANDATE_ERROR,
+  SET_CANCELLATION_MANDATE_ID,
 } from './constants';
 
 import {
@@ -47,6 +48,7 @@ const initialState = {
   mandateSigningControlCode: null,
   mandateSigningError: null,
   signedMandateId: null,
+  cancellationMandateId: null,
   agreedToTerms: false,
 };
 
@@ -222,6 +224,13 @@ export default function exchangeReducer(state = initialState, action) {
         loadingMandate: false,
         mandateSigningControlCode: null,
         signedMandateId: null,
+        cancellationMandateId: null,
+      };
+
+    case SET_CANCELLATION_MANDATE_ID:
+      return {
+        ...state,
+        cancellationMandateId: action.mandateId,
       };
 
     case CHANGE_AGREEMENT_TO_TERMS:

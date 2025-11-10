@@ -28,6 +28,7 @@ import {
   NO_SIGN_MANDATE_ERROR,
   SELECT_EXCHANGE_SOURCES,
   SELECT_TARGET_FUND,
+  SET_CANCELLATION_MANDATE_ID,
   SIGN_MANDATE_ERROR,
   SIGN_MANDATE_ID_CARD_SIGN_HASH_SUCCESS,
   SIGN_MANDATE_ID_CARD_START,
@@ -365,4 +366,8 @@ export function cancelSigningMandate() {
 
 export function closeErrorMessages() {
   return { type: NO_SIGN_MANDATE_ERROR };
+}
+
+export function setCancellationMandateId(mandateId: number | null) {
+  return { type: SET_CANCELLATION_MANDATE_ID, mandateId };
 }
