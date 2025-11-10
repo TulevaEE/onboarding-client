@@ -52,6 +52,17 @@ export const ConfirmCancellation: React.FunctionComponent = () => {
 
   // Force redirect when Redux signing completes
   React.useEffect(() => {
+    // eslint-disable-next-line no-console
+    console.log('CANCELLATION DEBUG:', {
+      reduxSignedMandateId,
+      localCancellationMandateId,
+      cancellationMandateId,
+      signedMandateId,
+      signing,
+      challengeCode,
+      match: reduxSignedMandateId === localCancellationMandateId,
+    });
+
     if (
       reduxSignedMandateId &&
       localCancellationMandateId &&
@@ -61,9 +72,20 @@ export const ConfirmCancellation: React.FunctionComponent = () => {
         ':applicationId',
         applicationId.toString(),
       )}/${successPath}`;
+      // eslint-disable-next-line no-console
+      console.log('REDIRECTING TO:', successUrl);
       history.push(successUrl);
     }
-  }, [reduxSignedMandateId, localCancellationMandateId, applicationId, history]);
+  }, [
+    reduxSignedMandateId,
+    localCancellationMandateId,
+    cancellationMandateId,
+    signedMandateId,
+    signing,
+    challengeCode,
+    applicationId,
+    history,
+  ]);
 
   function confirmCancellation() {
     cancelApplication(applicationId);
