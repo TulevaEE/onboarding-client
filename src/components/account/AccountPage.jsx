@@ -27,6 +27,7 @@ import {
   useSavingsFundBalance,
 } from '../common/apiHooks';
 import { canAccessWithdrawals } from '../flows/withdrawals/utils';
+import { getBankName } from '../common/iban';
 
 const noop = () => null;
 
@@ -280,7 +281,7 @@ const mapStateToProps = (state) => ({
       ? [
           {
             isin: state.login.user.secondPillarPikNumber,
-            name: `PIK: ${state.login.user.secondPillarPikNumber}`,
+            name: `${getBankName(state.login.user.secondPillarPikNumber)} PIK`,
             activeFund: true,
             pillar: 2,
             ongoingChargesFigure: 0,

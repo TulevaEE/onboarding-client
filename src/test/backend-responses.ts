@@ -57,7 +57,7 @@ export const mockUser: User = {
     current: 2,
     pending: null,
   },
-  secondPillarPikNumber: 'TEST_PIK',
+  secondPillarPikNumber: 'EE812233986174431932', // Swedbank PIK
   dateOfBirth: '1989-01-01',
   retirementAge: 60,
   secondPillarOpenDate: '2010-01-01',

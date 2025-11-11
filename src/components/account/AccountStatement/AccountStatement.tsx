@@ -80,7 +80,7 @@ const AccountStatement: React.FC<Props> = ({ funds }) => {
       : '';
     const suffix = fund.activeFund ? (
       <span
-        className="ms-2 badge rounded-pill bg-blue-2 text-navy small fw-normal"
+        className="ms-1 badge rounded-pill bg-blue-2 text-navy small fw-normal"
         title={formatMessage({ id: `accountStatement.activeFundDescription` })}
       >
         <FormattedMessage id="accountStatement.activeFund" />
@@ -90,9 +90,7 @@ const AccountStatement: React.FC<Props> = ({ funds }) => {
     return {
       fund: (
         <span className={className}>
-          {prefix}
-          {fund.name}
-          {suffix}
+          {prefix} {fund.name} {suffix}
         </span>
       ),
       feesPercent: <Fees value={fund.ongoingChargesFigure} />,

@@ -8,11 +8,11 @@ import { initializeConfiguration } from '../config/config';
 import LoggedInApp from '../LoggedInApp';
 import { createDefaultStore, login, renderWrapped } from '../../test/utils';
 import {
-  fundPensionStatusBackend,
-  useTestBackendsExcept,
-  useTestBackends,
   applicationsBackend,
+  fundPensionStatusBackend,
   userConversionBackend,
+  useTestBackends,
+  useTestBackendsExcept,
 } from '../../test/backend';
 import {
   Application,
@@ -112,6 +112,11 @@ describe('happy path', () => {
     expect(within(totalRow).queryByText('0.00 €')).not.toBeInTheDocument();
     expect(within(totalRow).getByText('98 353.70 €')).toBeInTheDocument();
     expect(within(totalRow).getByText('121 577.14 €')).toBeInTheDocument();
+  });
+
+  test('shows PIK account with bank name in account statement', async () => {
+    expect(await screen.findByText('Hi, John Doe')).toBeInTheDocument();
+    expect(await screen.findByText('Swedbank PIK')).toBeInTheDocument();
   });
 });
 
