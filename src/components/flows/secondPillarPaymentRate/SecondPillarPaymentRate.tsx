@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, Redirect } from 'react-router-dom';
 import { AuthenticationLoader, ErrorMessage, Loader, Radio } from '../../common';
@@ -16,11 +16,7 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
   const pendingPaymentRate =
     user?.secondPillarPaymentRates.pending || user?.secondPillarPaymentRates.current || null;
 
-  const [paymentRate, setPaymentRate] = useState<PaymentRate | null>(null);
-
-  useEffect(() => {
-    setPaymentRate(pendingPaymentRate);
-  }, [pendingPaymentRate]);
+  const [paymentRate, setPaymentRate] = useState<PaymentRate | null>(6);
 
   const {
     changePaymentRate,
