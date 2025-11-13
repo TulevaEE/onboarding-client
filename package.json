@@ -11,7 +11,7 @@
     "@sentry/browser": "^7.120.4",
     "@tanstack/react-query": "^4.41.0",
     "array.prototype.find": "^2.2.3",
-    "axios": "^0.24.0",
+    "axios": "^1.13.2",
     "bootstrap": "^5.3.8",
     "chart.js": "^4.5.0",
     "chartjs-plugin-datalabels": "^2.2.0",
