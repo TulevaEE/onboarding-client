@@ -416,43 +416,26 @@ const FullyConvertedToTuleva = ({
   currentPaymentRate,
   pendingPaymentRate,
   mandateDeadlines,
-}: RowProps) => {
-  const showPendingRateChange = currentPaymentRate !== pendingPaymentRate;
-
-  return (
-    <StatusBoxRow
-      status="SUCCESS"
-      name={<FormattedMessage id="account.status.choice.pillar.second" />}
-      showAction={!loading}
-      lines={[
-        <FormattedMessage id="account.status.choice.lowFee.index.label" />,
-        <span className="text-body-secondary">
-          {showPendingRateChange ? (
-            <PaymentRateSubRow
-              currentPaymentRate={currentPaymentRate}
-              futurePaymentRate={pendingPaymentRate}
-              paymentRateFulfillmentDate={mandateDeadlines?.paymentRateFulfillmentDate ?? ''}
-            />
-          ) : (
-            <FormattedMessage
-              id="account.status.choice.paymentRate.taxWinCombined"
-              values={{
-                paymentRate: (
-                  <PaymentRateSubRow
-                    currentPaymentRate={currentPaymentRate}
-                    futurePaymentRate={pendingPaymentRate}
-                    paymentRateFulfillmentDate={mandateDeadlines?.paymentRateFulfillmentDate ?? ''}
-                  />
-                ),
-                taxWin: <SecondPillarPaymentRateTaxWin variant="inline" />,
-              }}
-            />
-          )}
-        </span>,
-      ]}
-    />
-  );
-};
+}: RowProps) => (
+  <StatusBoxRow
+    status="SUCCESS"
+    name={<FormattedMessage id="account.status.choice.pillar.second" />}
+    showAction={!loading}
+    lines={[
+      <FormattedMessage id="account.status.choice.lowFee.index.label" />,
+      <span className="text-body-secondary">
+        <PaymentRateSubRow
+          currentPaymentRate={currentPaymentRate}
+          futurePaymentRate={pendingPaymentRate}
+          paymentRateFulfillmentDate={mandateDeadlines?.paymentRateFulfillmentDate ?? ''}
+        />
+      </span>,
+      <span className="text-body-secondary">
+        <SecondPillarPaymentRateTaxWin />
+      </span>,
+    ]}
+  />
+);
 
 const InLowFeeFund = ({
   loading,
@@ -473,6 +456,9 @@ const InLowFeeFund = ({
           futurePaymentRate={pendingPaymentRate}
           paymentRateFulfillmentDate={mandateDeadlines?.paymentRateFulfillmentDate ?? ''}
         />
+      </span>,
+      <span className="text-body-secondary">
+        <SecondPillarPaymentRateTaxWin />
       </span>,
     ]}
   >
