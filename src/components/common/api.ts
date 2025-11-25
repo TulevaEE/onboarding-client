@@ -219,7 +219,10 @@ export async function previewMessageForMemberCapitalListing(
 }
 
 export function getFundPensionStatus(): Promise<FundPensionStatus> {
-  return getWithAuthentication(getEndpoint('/v1/withdrawals/fund-pension-status'));
+  return mockRequestInMockMode(
+    () => getWithAuthentication(getEndpoint('/v1/withdrawals/fund-pension-status')),
+    'fundPensionStatus',
+  );
 }
 
 export function getSavingsFundOnboardingStatus(): Promise<SavingsFundOnboardingStatus> {

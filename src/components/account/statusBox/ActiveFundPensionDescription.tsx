@@ -4,7 +4,7 @@ import { FundPension } from '../../common/apiModels/withdrawals';
 import { formatMonth } from '../../common/dateFormatter';
 
 export const ActiveFundPensionDescription = ({ fundPension }: { fundPension: FundPension }) => (
-  <small className="text-body-secondary">
+  <span className="text-body-secondary">
     <FormattedMessage
       id="account.status.choice.fundPension.description"
       values={{
@@ -12,7 +12,7 @@ export const ActiveFundPensionDescription = ({ fundPension }: { fundPension: Fun
         b: (chunks: string) => <b>{chunks}</b>,
       }}
     />
-  </small>
+  </span>
 );
 
 const getFundPensionEndFormatted = (fundPension: FundPension) => {

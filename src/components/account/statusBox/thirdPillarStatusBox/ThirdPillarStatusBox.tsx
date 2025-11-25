@@ -50,7 +50,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
       <StatusBoxRow
         status="SUCCESS"
         name={<FormattedMessage id="account.status.choice.pillar.third" />}
-        showAction={false}
+        showAction={!loading}
         lines={[
           <FormattedMessage id="account.status.choice.pillar.third.fundPension.active" />,
           <ActiveFundPensionDescription fundPension={activeThirdPillarFundPension} />,

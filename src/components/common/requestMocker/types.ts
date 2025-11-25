@@ -1,3 +1,4 @@
+import { fundPensionStatusProfiles } from './profiles/fundPensionStatus';
 import { pendingApplicationsProfiles } from './profiles/pendingApplications';
 import { conversionMockProfiles } from './profiles/conversion';
 import { memberCapitalProfiles } from './profiles/memberCapital';
@@ -12,6 +13,7 @@ export type MockModeConfiguration = {
   memberCapital: keyof typeof memberCapitalProfiles | null;
   memberCapitalListings: keyof typeof memberCapitalListingsProfiles | null;
   pendingApplications: keyof typeof pendingApplicationsProfiles | null;
+  fundPensionStatus: keyof typeof fundPensionStatusProfiles | null;
 };
 
 export type MockModeEndpoint = keyof MockModeConfiguration;

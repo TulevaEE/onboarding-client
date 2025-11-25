@@ -183,7 +183,11 @@ export function AccountPage(
       {!loadingCurrentBalance && (
         <>
           <SectionHeading titleId="accountStatement.thirdPillar.heading">
-            {!isThirdPillarFullyConverted && (
+            {isThirdPillarFullyConverted ? (
+              <Link className="icon-link" to="/3rd-pillar-payment">
+                <FormattedMessage id="account.status.choice.pillar.third.success.action" />
+              </Link>
+            ) : (
               <Link className="icon-link" to="/3rd-pillar-flow">
                 <FormattedMessage id="change.my.pension.fund.third.pillar" />
               </Link>

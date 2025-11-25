@@ -434,3 +434,32 @@ exports[`ThirdPillarStatusBox shows high fee notice when balance is zero but act
   </Link>
 </StatusBoxRow>
 `;
+
+exports[`ThirdPillarStatusBox with active fund pension renders active fund pension status 1`] = `
+<StatusBoxRow
+  lines={
+    Array [
+      <Memo(MemoizedFormattedMessage)
+        id="account.status.choice.lowFee.index.label"
+      />,
+      <Memo(Connect(ThirdPillarContributionAmount)) />,
+    ]
+  }
+  name={
+    <Memo(MemoizedFormattedMessage)
+      id="account.status.choice.pillar.third"
+    />
+  }
+  showAction={true}
+  status="SUCCESS"
+>
+  <Link
+    className="btn btn-outline-primary"
+    to="/3rd-pillar-payment"
+  >
+    <MemoizedFormattedMessage
+      id="account.status.choice.pillar.third.success.action"
+    />
+  </Link>
+</StatusBoxRow>
+`;

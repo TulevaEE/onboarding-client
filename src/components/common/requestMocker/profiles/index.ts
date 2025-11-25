@@ -1,3 +1,4 @@
+import { fundPensionStatusProfiles } from './fundPensionStatus';
 import { memberCapitalListingsProfiles } from './memberCapitalListings';
 import { userMockProfiles } from './user';
 import { MockModeConfiguration } from '../types';
@@ -13,6 +14,7 @@ export const mockModeProfiles: Record<keyof MockModeConfiguration, Record<string
   memberCapital: memberCapitalProfiles,
   memberCapitalListings: memberCapitalListingsProfiles,
   pendingApplications: pendingApplicationsProfiles,
+  fundPensionStatus: fundPensionStatusProfiles,
 } as const;
 
 export const getAllProfileNames = () =>

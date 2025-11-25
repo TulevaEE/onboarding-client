@@ -3,9 +3,11 @@ import { shallow, ShallowWrapper } from 'enzyme';
 import { ThirdPillarStatusBox } from './ThirdPillarStatusBox';
 import StatusBoxRow from '../statusBoxRow';
 import { activeThirdPillar, completeThirdPillarConversion, highFeeThirdPillar } from '../fixtures';
+import * as apiHooks from '../../../common/apiHooks';
 
 jest.mock('../../../common/apiHooks', () => ({
-  useFundPensionStatus: () => ({ fundPensions: [] }),
+  useFundPensionStatus: () => ({ data: { fundPensions: [] } }),
+  usePendingApplications: () => ({ data: [] }),
 }));
 
 /**
@@ -185,6 +187,40 @@ describe('ThirdPillarStatusBox', () => {
       },
       thirdPillarFunds: [highFeeThirdPillar],
     });
+    expect(component).toMatchSnapshot();
+  });
+});
+
+describe('ThirdPillarStatusBox with active fund pension', () => {
+  const props = {
+    conversion: completeThirdPillarConversion.thirdPillar,
+    loading: false,
+    thirdPillarFunds: [activeThirdPillar],
+    thirdPillarActive: true,
+  };
+
+  beforeEach(() => {
+    jest.spyOn(apiHooks, 'useFundPensionStatus').mockReturnValue({
+      data: {
+        fundPensions: [
+          {
+            pillar: 'THIRD',
+            active: true,
+            startDate: '2024-01-01',
+            endDate: null,
+            durationYears: 15,
+          },
+        ],
+      },
+    } as ReturnType<typeof apiHooks.useFundPensionStatus>);
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('renders active fund pension status', () => {
+    const component = shallow(<ThirdPillarStatusBox {...props} />);
     expect(component).toMatchSnapshot();
   });
 });
