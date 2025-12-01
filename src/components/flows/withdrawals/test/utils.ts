@@ -1,6 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { screen, waitForElementToBeRemoved, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import userEvent, { UserEvent } from '@testing-library/user-event';
 import { WithdrawalMandateDetails } from '../../../common/apiModels/withdrawals';
 
 export const singleWithdrawalCheckbox = async () =>
@@ -13,9 +13,9 @@ export const confirmationCheckbox = () => screen.getByRole('checkbox');
 
 export const signButton = () => screen.getByRole('button', { name: /Sign/ });
 
-export const enterIban = async (iban: string) => {
+export const enterIban = async (iban: string, user: UserEvent) => {
   const ibanInput = await screen.findByLabelText('Bank account number (IBAN)');
-  userEvent.type(ibanInput, iban);
+  await user.type(ibanInput, iban);
 };
 
 export const confirmAndSignAndAssertFailed = async () => {

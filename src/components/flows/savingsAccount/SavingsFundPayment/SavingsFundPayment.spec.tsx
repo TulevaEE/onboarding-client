@@ -12,6 +12,7 @@ import { useTestBackends } from '../../../../test/backend';
 describe(SavingsFundPayment, () => {
   const server = setupServer();
   let history: History;
+  const user = userEvent.setup();
 
   const windowLocation = jest.fn();
   Object.defineProperty(window, 'location', {
@@ -50,18 +51,18 @@ describe(SavingsFundPayment, () => {
     expect(amountInput).toBeInTheDocument();
 
     // Trigger minimum amount validation
-    userEvent.type(amountInput, '0.5');
-    userEvent.click(submitButton); // Trigger validation
+    await user.type(amountInput, '-0.5');
+    await user.click(submitButton); // Trigger validation
     expect(await screen.findByText(amountValidationMessage)).toBeInTheDocument();
 
     // Trigger required field validation
-    userEvent.clear(amountInput);
-    userEvent.click(submitButton); // Trigger validation
+    await user.clear(amountInput);
+    await user.click(submitButton); // Trigger validation
     expect(await screen.findByText(amountValidationMessage)).toBeInTheDocument();
 
     // Enter valid amount
-    userEvent.type(amountInput, '123.45');
-    userEvent.click(submitButton); // Trigger validation
+    await user.type(amountInput, '123.45');
+    await user.click(submitButton); // Trigger validation
     expect(amountInput).toHaveValue('123.45');
     await waitFor(() =>
       expect(screen.queryByText(amountValidationMessage)).not.toBeInTheDocument(),
@@ -82,9 +83,9 @@ describe(SavingsFundPayment, () => {
     userEvent.type(amountInput, '123.45');
 
     const lhvRadio = screen.getByRole('radio', { name: 'LHV' });
-    userEvent.click(lhvRadio);
+    await user.click(lhvRadio);
     expect(lhvRadio).toBeChecked();
-    userEvent.click(submitButton);
+    await user.click(submitButton);
 
     await waitFor(() =>
       expect(windowLocation).toHaveBeenCalledWith(

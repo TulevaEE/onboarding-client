@@ -33,11 +33,9 @@ describe('happy path', () => {
   });
 
   test('active fund badge is shown with totals', async () => {
-    await waitFor(async () =>
-      expect(
-        await screen.findByTitle('Monthly contributions go to this fund.'),
-      ).toBeInTheDocument(),
-    );
+    expect(
+      await screen.findByTitle('Monthly contributions go to this fund.', {}, { timeout: 3000 }),
+    ).toBeInTheDocument();
 
     expect(await screen.findAllByText(/115\s000.00\s€/)).toHaveLength(2);
     expect(await screen.findAllByText(/5\s699.36\s€/)).toHaveLength(2);

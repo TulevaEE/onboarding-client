@@ -51,12 +51,13 @@ describe('When a user is logging in', () => {
   afterAll(() => server.close());
 
   test('they can sign in with smart id, showing the security code', async () => {
+    const user = userEvent.setup();
     const identityCode = '396112341234';
     const backend = smartIdAuthenticationBackend(server, { challengeCode: '1928', identityCode });
     expect(await screen.findByText('Log in')).toBeInTheDocument();
-    userEvent.click(screen.getByText(/Smart-ID/gi));
-    userEvent.type(screen.getByPlaceholderText(/Identity code/gi), identityCode);
-    userEvent.click(screen.getByText(/Log in$/gi));
+    await user.click(screen.getByText(/Smart-ID/gi));
+    await user.type(screen.getByPlaceholderText(/Identity code/gi), identityCode);
+    await user.click(screen.getByText(/Log in$/gi));
     expect(await screen.findByText('1928')).toBeInTheDocument();
     backend.resolvePolling();
     expect(
@@ -65,6 +66,7 @@ describe('When a user is logging in', () => {
   });
 
   test('they can sign in with mobile id, showing the security code', async () => {
+    const user = userEvent.setup();
     const identityCode = '396112341234';
     const phoneNumber = '+372123456789';
     const backend = mobileIdAuthenticationBackend(server, {
@@ -73,10 +75,10 @@ describe('When a user is logging in', () => {
       phoneNumber,
     });
     expect(await screen.findByText('Log in')).toBeInTheDocument();
-    userEvent.click(screen.getByText(/Mobile-ID/gi));
-    userEvent.type(screen.getByPlaceholderText(/Identity code/gi), identityCode);
-    userEvent.type(screen.getByPlaceholderText(/Phone number/gi), phoneNumber);
-    userEvent.click(screen.getByText(/Log in$/gi));
+    await user.click(screen.getByText(/Mobile-ID/gi));
+    await user.type(screen.getByPlaceholderText(/Identity code/gi), identityCode);
+    await user.type(screen.getByPlaceholderText(/Phone number/gi), phoneNumber);
+    await user.click(screen.getByText(/Log in$/gi));
     expect(await screen.findByText('4321')).toBeInTheDocument();
     backend.resolvePolling();
     expect(
@@ -85,12 +87,13 @@ describe('When a user is logging in', () => {
   });
 
   test('they can sign in with id card', async () => {
+    const user = userEvent.setup();
     const backend = idCardAuthenticationBackend(server);
     expect(backend.acceptedCertificate).toBeFalsy();
     expect(backend.authenticatedWithIdCard).toBeFalsy();
     expect(await screen.findByText('Log in')).toBeInTheDocument();
-    userEvent.click(screen.getByText(/ID-card/gi));
-    userEvent.click(screen.getByText(/Log in$/gi));
+    await user.click(screen.getByText(/ID-card/gi));
+    await user.click(screen.getByText(/Log in$/gi));
 
     expect(
       await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),

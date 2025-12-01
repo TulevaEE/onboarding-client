@@ -1,6 +1,6 @@
 import 'react-app-polyfill/ie11';
 import React, { Component } from 'react';
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import config from 'react-global-configuration';
 import { createBrowserHistory } from 'history';
 import { applyMiddleware, compose, createStore } from 'redux';
@@ -139,4 +139,6 @@ export class App extends Component {
   }
 }
 
-render(<App />, document.getElementById('root'));
+const container = document.getElementById('root');
+const root = createRoot(container);
+root.render(<App />);
