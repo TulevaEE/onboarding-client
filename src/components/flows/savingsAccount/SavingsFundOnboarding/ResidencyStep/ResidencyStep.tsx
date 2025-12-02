@@ -32,14 +32,16 @@ export const ResidencyStep: FC<ResidencyStepProps> = ({ control }) => {
             name="address.countryCode"
             render={({ field }) => (
               <>
-                <label htmlFor="section02-control01" className="form-label">
+                <label htmlFor={field.name} className="form-label">
                   <FormattedMessage id="flows.savingsFundOnboarding.residencyStep.country.label" />
                 </label>
                 <Select
+                  className="form-select-lg"
                   options={countryOptions}
                   selected={field.value}
                   onChange={field.onChange}
                   name={field.name}
+                  id={field.name}
                   translate={false}
                 />
               </>

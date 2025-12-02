@@ -43,6 +43,7 @@ export const ContactDetailsStep: FC<ContactDetailsStepProps> = ({ control }) => 
               <label htmlFor={field.name} className="form-label">
                 <FormattedMessage id="flows.savingsFundOnboarding.contactDetailsStep.phone.label" />
                 <span className="text-secondary fw-normal">
+                  {' '}
                   <FormattedMessage id="flows.savingsFundOnboarding.contactDetailsStep.phone.optional" />
                 </span>
               </label>

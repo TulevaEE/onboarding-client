@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react';
-import { useForm, useWatch } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { usePageTitle } from '../../../common/usePageTitle';
@@ -40,16 +40,16 @@ export const SavingsFundOnboarding: FC = () => {
     },
   });
 
-  const citizenship = useWatch({ control, name: 'citizenship' });
-  const residencyCountry = useWatch({ control, name: 'address.countryCode' });
-  const hasAcceptedTerms = useWatch({ control, name: 'termsAccepted' });
+  const citizenship = watch('citizenship');
+  const residencyCountry = watch('address.countryCode');
+  const hasAcceptedTerms = watch('termsAccepted');
 
-  // Auto-set residency country if user has only one citizenship
+  // Auto-set residency country to first citizenship
   useEffect(() => {
-    if (!residencyCountry && citizenship.length === 1) {
+    if (!residencyCountry && citizenship.length > 0) {
       setValue('address.countryCode', citizenship[0]);
     }
-  }, [watch('citizenship'), setValue]);
+  }, [citizenship, setValue]);
 
   const sections = [
     <CitizenshipStep key="citizenship" control={control} />,

@@ -1224,6 +1224,7 @@
   "flows.savingsFundOnboarding.citizenshipStep.title": "Mis riigi kodanik sa oled?",
   "flows.savingsFundOnboarding.citizenshipStep.description": "Vali kõik riigid, mille kodakondsus sul on.",
   "flows.savingsFundOnboarding.citizenshipStep.input.placeholder": "Vali riigid…",
+  "flows.savingsFundOnboarding.citizenshipStep.input.deleteButtonTitle": "Eemalda",
 
   "flows.savingsFundOnboarding.residencyStep.title": "Sinu alaline elukoht",
   "flows.savingsFundOnboarding.residencyStep.country.label": "Riik",

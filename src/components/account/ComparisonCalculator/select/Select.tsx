@@ -1,5 +1,6 @@
 import { FC } from 'react';
 import { useIntl } from 'react-intl';
+import classNames from 'classnames';
 import { TranslationKey } from '../../../translations';
 
 export type Option = BaseOption & TranslateOption;
@@ -32,6 +33,7 @@ interface SelectProps {
   translate?: boolean;
   name?: string;
   id?: string;
+  className?: string;
 }
 
 export const Select: FC<SelectProps> = ({
@@ -42,6 +44,7 @@ export const Select: FC<SelectProps> = ({
   disabled = false,
   translate = true,
   id,
+  className,
 }) => {
   const { formatMessage } = useIntl();
 
@@ -77,7 +80,7 @@ export const Select: FC<SelectProps> = ({
 
   return (
     <select
-      className="form-select"
+      className={classNames('form-select', className)}
       onChange={(event): void => onChange(event.target.value)}
       value={selected}
       disabled={disabled}

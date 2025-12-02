@@ -52,7 +52,7 @@ export const EstonianAddressForm: FC<EstonianAddressFormProps> = ({ control }) =
       cityField.onChange(selectedAddress.omavalitsus);
       postalCodeField.onChange(selectedAddress.sihtnumber);
     }
-  }, [selectedAddress, streetField, cityField, postalCodeField]);
+  }, [selectedAddress]);
 
   useEffect(() => {
     let instance: MaaAmetInstance | null = null;

@@ -1135,6 +1135,7 @@
   "flows.savingsFundOnboarding.citizenshipStep.title": "What is your citizenship?",
   "flows.savingsFundOnboarding.citizenshipStep.description": "Choose all countries of citizenship.",
   "flows.savingsFundOnboarding.citizenshipStep.input.placeholder": "Select countries…",
+  "flows.savingsFundOnboarding.citizenshipStep.input.deleteButtonTitle": "Remove",
 
   "flows.savingsFundOnboarding.residencyStep.title": "Your permanent residence",
   "flows.savingsFundOnboarding.residencyStep.country.label": "Country",

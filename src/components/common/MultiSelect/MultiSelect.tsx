@@ -15,8 +15,9 @@ export type MultiSelectOptionGroup = {
 
 type MultiSelectProps = {
   options: (MultiSelectOption | MultiSelectOptionGroup)[];
-  selected?: string[];
   placeholder?: string;
+  selected?: string[];
+  deleteButtonTitle?: string;
   onChange?: (values: string[]) => void;
   onBlur?: () => void;
   ariaLabel?: string;
@@ -27,7 +28,8 @@ type MultiSelectProps = {
 export const MultiSelect: FC<MultiSelectProps> = ({
   options,
   selected = [],
-  placeholder = 'Vali…',
+  placeholder,
+  deleteButtonTitle,
   onChange,
   onBlur,
   ariaLabel,
@@ -45,9 +47,13 @@ export const MultiSelect: FC<MultiSelectProps> = ({
 
     tomSelectRef.current = new TomSelect(selectElement, {
       plugins: {
-        remove_button: {
-          title: 'Eemalda',
-        },
+        ...(deleteButtonTitle
+          ? {
+              remove_button: {
+                title: deleteButtonTitle,
+              },
+            }
+          : {}),
       },
       placeholder,
       maxItems: null,
@@ -65,7 +71,13 @@ export const MultiSelect: FC<MultiSelectProps> = ({
         tomSelectRef.current = null;
       }
     };
-  }, [placeholder, onChange, selected]);
+  }, []); // Only run once on mount
+
+  useEffect(() => {
+    if (tomSelectRef.current) {
+      tomSelectRef.current.setValue(selected, true); // silent = true to avoid triggering onChange
+    }
+  }, [selected]);
 
   const isOptionGroup = (
     option: MultiSelectOption | MultiSelectOptionGroup,

@@ -31,7 +31,7 @@ export const CitizenshipStep: FC<CitizenshipStepProps> = ({ control }) => {
         <Controller
           control={control}
           name="citizenship"
-          rules={{ required: { value: true, message: 'Vali vähemalt üks riik' } }}
+          rules={{ required: true }}
           render={({ field, fieldState: { error } }) => (
             <div>
               <MultiSelect
@@ -40,6 +40,9 @@ export const CitizenshipStep: FC<CitizenshipStepProps> = ({ control }) => {
                 selected={field.value}
                 placeholder={intl.formatMessage({
                   id: 'flows.savingsFundOnboarding.citizenshipStep.input.placeholder',
+                })}
+                deleteButtonTitle={intl.formatMessage({
+                  id: 'flows.savingsFundOnboarding.citizenshipStep.input.deleteButtonTitle',
                 })}
                 onChange={field.onChange}
                 onBlur={field.onBlur}
