@@ -13,7 +13,7 @@ import { AmountInput } from '../AmountInput';
 import { InfoSection } from '../InfoSection';
 
 type IPaymentForm = {
-  amount: string;
+  amount: number | undefined;
   paymentMethod: BankKey;
 };
 
@@ -28,7 +28,7 @@ export const SavingsFundPayment: FC = () => {
     formState: { errors, isSubmitting },
   } = useForm<IPaymentForm>({
     defaultValues: {
-      amount: '',
+      amount: undefined,
       paymentMethod: undefined,
     },
   });
@@ -43,7 +43,7 @@ export const SavingsFundPayment: FC = () => {
       setSubmitError(false);
       await redirectToPayment({
         recipientPersonalCode: user.personalCode,
-        amount: Number(String(amount).replace(',', '.')),
+        amount,
         currency: 'EUR',
         type: 'SAVINGS',
         paymentChannel: paymentMethod?.toUpperCase() as PaymentChannel,

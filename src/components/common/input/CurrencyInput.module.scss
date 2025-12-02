@@ -1,0 +1,9 @@
+@import '../../variables';
+@import '~bootstrap/scss/bootstrap.scss';
+
+.inputGroup {
+  max-width: 200px;
+  @include media-breakpoint-down(sm) {
+    max-width: unset;
+  }
+}

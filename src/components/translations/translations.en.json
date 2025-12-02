@@ -1098,8 +1098,8 @@
   "savingsFund.payment.success.title": "Deposit made",
   "savingsFund.payment.success.description": "The deposit amount will be invested in the fund by the end of next business day. We will notify you of this by email.",
 
-  "savingsFund.withdraw.pageTitle": "Withdrawal",
-  "savingsFund.withdraw.title": "Withdrawal from additional savings fund",
+  "savingsFund.withdraw.pageTitle": "Withdraw",
+  "savingsFund.withdraw.title": "Withdraw from additional savings fund",
   "savingsFund.withdraw.form.amount.min": "The withdrawal amount must be at least one euro.",
   "savingsFund.withdraw.form.amount.label": "Amount",
   "savingsFund.withdraw.form.amount.description": "The withdrawal will be processed within three business days. The exact amount will be determined by the sale of units and depends on the market price of the units.",

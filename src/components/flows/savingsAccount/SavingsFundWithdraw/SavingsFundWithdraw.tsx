@@ -23,7 +23,7 @@ const parseAmount = (value: string | number | undefined): number => {
 };
 
 type IWithdrawalForm = {
-  amount: string;
+  amount: number | undefined;
   iban: string;
 };
 
@@ -40,7 +40,7 @@ export const SavingsFundWithdraw: FC = () => {
     formState: { errors, isSubmitting },
   } = useForm<IWithdrawalForm>({
     defaultValues: {
-      amount: '',
+      amount: undefined,
       iban: '',
     },
   });
