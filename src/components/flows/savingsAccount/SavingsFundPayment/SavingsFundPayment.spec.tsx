@@ -50,7 +50,7 @@ describe(SavingsFundPayment, () => {
     expect(amountInput).toBeInTheDocument();
 
     // Trigger minimum amount validation
-    userEvent.type(amountInput, '-1');
+    userEvent.type(amountInput, '0.5');
     userEvent.click(submitButton); // Trigger validation
     expect(await screen.findByText(amountValidationMessage)).toBeInTheDocument();
 

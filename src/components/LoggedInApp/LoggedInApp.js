@@ -55,6 +55,10 @@ import {
 import { SavingsFundPayment } from '../flows/savingsAccount/SavingsFundPayment';
 import SavingsFundPaymentSuccess from '../flows/savingsAccount/SavingsFundPayment/SavingsFundPaymentSuccess';
 import SavingsFundPaymentCancellation from '../flows/savingsAccount/SavingsFundPayment/SavingsFundPaymentCancellation';
+import {
+  SavingsFundWithdraw,
+  SavingsFundWithdrawSuccess,
+} from '../flows/savingsAccount/SavingsFundWithdraw';
 
 export const ACCOUNT_PATH = '/account';
 export const AML_PATH = '/aml';
@@ -228,6 +232,11 @@ export class LoggedInApp extends PureComponent {
               render={() => <SavingsFundPaymentSuccess />}
             />
             <Route path="/savings-fund/payment" render={() => <SavingsFundPayment />} />
+            <Route
+              path="/savings-fund/withdraw/success"
+              render={() => <SavingsFundWithdrawSuccess />}
+            />
+            <Route path="/savings-fund/withdraw" render={() => <SavingsFundWithdraw />} />
             <Redirect exact path="/savings-fund" to="/" />
             <Route
               path="/2nd-pillar-payment-rate-success"

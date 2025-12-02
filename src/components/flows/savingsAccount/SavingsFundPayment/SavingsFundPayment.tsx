@@ -1,21 +1,19 @@
-import { FC, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { Controller, useForm } from 'react-hook-form';
-import classNames from 'classnames';
 import { captureException } from '@sentry/browser';
+import { FC, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
-import styles from './SavingsFundPayment.module.scss';
-import { PaymentBankButtons } from '../../thirdPillar/ThirdPillarPayment/PaymentBankButtons';
-import { BankKey } from '../../thirdPillar/ThirdPillarPayment/types';
-import { InfoSection } from './InfoSection';
-import { usePageTitle } from '../../../common/usePageTitle';
 import { redirectToPayment } from '../../../common/api';
 import { useMe } from '../../../common/apiHooks';
 import { PaymentChannel } from '../../../common/apiModels';
-import '../../thirdPillar/ThirdPillarPayment/Payment.scss';
+import { usePageTitle } from '../../../common/usePageTitle';
+import { PaymentBankButtons } from '../../thirdPillar/ThirdPillarPayment/PaymentBankButtons';
+import { BankKey } from '../../thirdPillar/ThirdPillarPayment/types';
+import { AmountInput } from '../AmountInput';
+import { InfoSection } from '../InfoSection';
 
 type IPaymentForm = {
-  amount: number;
+  amount: string;
   paymentMethod: BankKey;
 };
 
@@ -30,7 +28,7 @@ export const SavingsFundPayment: FC = () => {
     formState: { errors, isSubmitting },
   } = useForm<IPaymentForm>({
     defaultValues: {
-      amount: undefined,
+      amount: '',
       paymentMethod: undefined,
     },
   });
@@ -67,67 +65,18 @@ export const SavingsFundPayment: FC = () => {
       {/* TODO: RadioControl for recurring payments/single payment */}
 
       <div className="pt-4 pb-4 border-top border-bottom">
-        <InfoSection />
+        <InfoSection variant="payment" />
       </div>
 
-      {/* eslint-disable-next-line no-console */}
       <form onSubmit={handleSubmit((data) => handleRedirect(data))} method="post">
-        <section className={`d-flex flex-column gap-5 ${styles.content}`}>
-          <div className="form-section d-flex flex-column gap-3">
-            <div className="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 row-gap-2">
-              <label htmlFor="payment-amount" className="fs-3 fw-semibold">
-                <FormattedMessage id="savingsFund.payment.form.amount.label" />
-              </label>
-              <Controller
-                control={control}
-                name="amount"
-                rules={{
-                  required: {
-                    value: true,
-                    message: intl.formatMessage({ id: 'savingsFund.payment.form.amount.min' }),
-                  },
-                  min: {
-                    value: 1,
-                    message: intl.formatMessage({ id: 'savingsFund.payment.form.amount.min' }),
-                  },
-                  validate: {
-                    validateNumber: (value) =>
-                      !Number.isNaN(Number(String(value).replace(',', '.'))),
-                  },
-                }}
-                render={({ field, fieldState: { error } }) => (
-                  <>
-                    {/* TODO: Consider extracting to a AmountInput component */}
-                    <div className={`input-group input-group-lg ${styles.inputGroup}`}>
-                      <input
-                        autoComplete="off"
-                        type="text"
-                        id="payment-amount"
-                        placeholder="0"
-                        inputMode="decimal"
-                        className={classNames(`form-control form-control-lg fw-semibold`, {
-                          'border-danger focus-ring focus-ring-danger': !!error,
-                        })}
-                        {...field}
-                        onChange={(e) => {
-                          const { value } = e.target;
-                          const euroRegex = /^\d+([.,]\d{0,2})?$/;
-
-                          if (value === '' || euroRegex.test(value)) {
-                            field.onChange(value);
-                          }
-                        }}
-                      />
-                      <span className="input-group-text fw-semibold">&euro;</span>
-                    </div>
-                  </>
-                )}
-              />
-            </div>
-            {errors.amount ? (
-              <div className="d-block invalid-feedback">{errors.amount.message}</div>
-            ) : null}
-          </div>
+        <section className="d-flex flex-column gap-5">
+          <AmountInput
+            control={control}
+            name="amount"
+            error={errors.amount}
+            label={<FormattedMessage id="savingsFund.payment.form.amount.label" />}
+            errorMessage={intl.formatMessage({ id: 'savingsFund.payment.form.amount.min' })}
+          />
 
           <div className="form-section d-flex flex-column gap-3">
             <div className="d-flex flex-column gap-3">

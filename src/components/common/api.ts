@@ -58,6 +58,7 @@ import {
   CreateCapitalTransferDto,
   UpdateCapitalTransferContractDto,
 } from './apiModels/capital-transfer';
+import { SavingsFundWithdrawal } from './apiModels/savings-fund';
 
 const API_URI = '/api';
 
@@ -534,4 +535,14 @@ export async function getSavingsFundBalance(): Promise<SourceFund | null> {
   } catch (error) {
     return null;
   }
+}
+
+export async function getSavingsFundBankAccounts(): Promise<string[]> {
+  return getWithAuthentication(getEndpoint('/v1/savings/bank-accounts'));
+}
+
+export async function createSavingsFundWithdrawal(
+  withdrawal: SavingsFundWithdrawal,
+): Promise<void> {
+  return postWithAuthentication(getEndpoint('/v1/savings/redemptions'), withdrawal);
 }

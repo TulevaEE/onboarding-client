@@ -27,6 +27,7 @@ import {
   getMyCapitalTransferContracts,
   getPendingApplications,
   getSavingsFundBalance,
+  getSavingsFundBankAccounts,
   getSavingsFundOnboardingStatus,
   getSourceFunds,
   getTransactions,
@@ -262,4 +263,8 @@ export function useContactMemberCapitalListing(): UseMutationResult<
 
 export function useSavingsFundBalance(): UseQueryResult<SourceFund | null> {
   return useQuery(['savingsFundBalance'], () => getSavingsFundBalance());
+}
+
+export function useSavingsFundBankAccounts(): UseQueryResult<string[]> {
+  return useQuery(['savingsFundBankAccounts'], () => getSavingsFundBankAccounts());
 }
