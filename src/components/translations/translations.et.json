@@ -544,6 +544,7 @@
   "applications.title": "Ootel avaldused ja tehingud",
   "applications.cancel": "Tühistan avalduse",
   "applications.cancelDeposit": "Katkestan sissemakse",
+  "applications.cancelWithdrawal": "Katkestan väljamakse",
 
   "applications.type.paymentRate.title": "Minu II samba panus",
   "applications.type.paymentRate.status": "Staatus",
@@ -601,6 +602,11 @@
   "applications.type.savingFundPayment.cancellationTodayNotice.today": "täna",
   "applications.type.savingFundPayment.fulfillmentNotice": "Sissemakse summa investeeritakse fondi {fulfillmentDeadline}",
   "applications.type.savingFundPayment.cancelledNotice": "Sissemakse on katkestatud {cancellationDate} kell {cancellationTime}",
+
+  "applications.type.savingFundWithdrawal.title": "Väljamakse täiendavast kogumisfondist",
+  "applications.type.savingFundWithdrawal.paymentDate": "Laekumise kuupäev",
+  "applications.type.savingFundWithdrawal.account": "Pangakonto",
+  "applications.type.savingFundWithdrawal.amount": "Summa",
 
   "transactions.title": "Sinu viimased tehingud",
   "transactions.title.2nd": "Sinu II samba tehingud",
@@ -1209,6 +1215,12 @@
   "savingsFund.paymentCancellation.success.title": "Sissemakse on katkestatud",
   "savingsFund.paymentCancellation.success.description": "Tagastame raha ühe tööpäeva jooksul samale pangakontole, kust see laekus.",
   "savingsFund.paymentCancellation.error": "Makse katkestamisel tekkis viga. Palun proovi hiljem uuesti või võta meiega ühendust: tuleva@tuleva.ee",
+
+  "savingsFund.withdrawalCancellation.pageTitle": "Väljamakse katkestamine",
+  "savingsFund.withdrawalCancellation.title": "Väljamakse katkestamine",
+  "savingsFund.withdrawalCancellation.success.title": "Väljamakse on katkestatud",
+  "savingsFund.withdrawalCancellation.success.description": "Väljamakse on edukalt katkestatud.",
+  "savingsFund.withdrawalCancellation.error": "Väljamakse katkestamisel tekkis viga. Palun proovi hiljem uuesti või võta meiega ühendust: tuleva@tuleva.ee",
 
   "savingsFund.status.title": "Täiendav kogumisfond",
   "savingsFund.status.description.hasInvested": "Sa kogud Tuleva madala tasuga indeksifondis",

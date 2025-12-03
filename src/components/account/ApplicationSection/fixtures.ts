@@ -1,4 +1,7 @@
-import { SavingsFundPaymentApplication } from '../../common/apiModels';
+import {
+  SavingsFundPaymentApplication,
+  SavingsFundWithdrawalApplication,
+} from '../../common/apiModels';
 
 export const transfer2Pillar = {
   id: 1234,
@@ -258,5 +261,20 @@ export const paymentRateChange = {
     paymentRate: 6,
     cancellationDeadline: '2024-11-30T23:59:59.999999999Z',
     fulfillmentDate: '2025-01-01',
+  },
+};
+
+export const savingsFundWithdrawalApplication: SavingsFundWithdrawalApplication = {
+  id: 456,
+  type: 'SAVING_FUND_WITHDRAWAL',
+  status: 'PENDING',
+  creationTime: '2024-01-20T14:30:00.000Z',
+  details: {
+    id: 'WITHDRAWAL987654',
+    amount: 500.5,
+    currency: 'EUR',
+    iban: 'EE382200221020145685',
+    cancellationDeadline: '2024-03-15T23:59:59.999999999Z',
+    fulfillmentDeadline: '2024-03-01',
   },
 };

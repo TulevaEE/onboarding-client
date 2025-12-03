@@ -501,6 +501,7 @@
   "applications.title": "Pending applications and transactions",
   "applications.cancel": "Cancel application",
   "applications.cancelDeposit": "Cancel deposit",
+  "applications.cancelWithdrawal": "Cancel withdrawal",
   "applications.type.paymentRate.title": "II pillar contribution rate",
   "applications.type.paymentRate.status": "Status",
   "applications.type.paymentRate.status.pending": "Takes effect on {paymentRateFulfillmentDate}",
@@ -551,6 +552,11 @@
   "applications.type.savingFundPayment.cancellationTodayNotice.today": "today",
   "applications.type.savingFundPayment.fulfillmentNotice": "The deposit amount will be invested in the fund {fulfillmentDeadline}",
   "applications.type.savingFundPayment.cancelledNotice": "Deposit has been canceled on {cancellationDate} at {cancellationTime}",
+
+  "applications.type.savingFundWithdrawal.title": "Additional savings fund withdrawal",
+  "applications.type.savingFundWithdrawal.paymentDate": "Payment date",
+  "applications.type.savingFundWithdrawal.account": "Bank account",
+  "applications.type.savingFundWithdrawal.amount": "Amount",
 
   "savingsFund.status.title": "Additional savings fund",
   "savingsFund.status.description.hasInvested": "You are investing in Tuleva low cost index fund",
@@ -1127,6 +1133,12 @@
   "savingsFund.paymentCancellation.success.title": "Deposit cancelled",
   "savingsFund.paymentCancellation.success.description": "We will refund the money to the same bank account within one business day.",
   "savingsFund.paymentCancellation.error": "There was an error cancelling the payment. Please try again later or contact us: tuleva@tuleva.ee",
+
+  "savingsFund.withdrawalCancellation.pageTitle": "Cancel withdrawal",
+  "savingsFund.withdrawalCancellation.title": "Cancel withdrawal",
+  "savingsFund.withdrawalCancellation.success.title": "Withdrawal cancelled",
+  "savingsFund.withdrawalCancellation.success.description": "The withdrawal has been successfully cancelled.",
+  "savingsFund.withdrawalCancellation.error": "There was an error cancelling the withdrawal. Please try again later or contact us: tuleva@tuleva.ee",
 
   "flows.savingsFundOnboarding.title": "Opening an additional savings fund",
   "flows.savingsFundOnboarding.currentStep": "Samm {currentStep} / {totalSteps}",

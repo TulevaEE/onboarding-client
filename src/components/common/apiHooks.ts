@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-query';
 
 import {
+  cancelSavingsFundWithdrawal,
   contactMemberCapitalListingOwner,
   createApplicationCancellation,
   createCapitalTransferContract,
@@ -267,4 +268,13 @@ export function useSavingsFundBalance(): UseQueryResult<SourceFund | null> {
 
 export function useSavingsFundBankAccounts(): UseQueryResult<string[]> {
   return useQuery(['savingsFundBankAccounts'], () => getSavingsFundBankAccounts());
+}
+
+export function useSavingsFundWithdrawalCancellation(): UseMutationResult<
+  void,
+  unknown,
+  { id: string },
+  unknown
+> {
+  return useMutation(({ id }: { id: string }) => cancelSavingsFundWithdrawal(id));
 }

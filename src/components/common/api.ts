@@ -546,3 +546,7 @@ export async function createSavingsFundWithdrawal(
 ): Promise<void> {
   return postWithAuthentication(getEndpoint('/v1/savings/redemptions'), withdrawal);
 }
+
+export async function cancelSavingsFundWithdrawal(withdrawalId: string): Promise<void> {
+  return deleteWithAuthentication(getEndpoint(`/v1/savings/redemptions/${withdrawalId}`));
+}

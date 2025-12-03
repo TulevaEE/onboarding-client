@@ -58,6 +58,7 @@ import SavingsFundPaymentCancellation from '../flows/savingsAccount/SavingsFundP
 import {
   SavingsFundWithdraw,
   SavingsFundWithdrawSuccess,
+  SavingsFundWithdrawCancellation,
 } from '../flows/savingsAccount/SavingsFundWithdraw';
 
 export const ACCOUNT_PATH = '/account';
@@ -232,6 +233,10 @@ export class LoggedInApp extends PureComponent {
               render={() => <SavingsFundPaymentSuccess />}
             />
             <Route path="/savings-fund/payment" render={() => <SavingsFundPayment />} />
+            <Route
+              path="/savings-fund/withdraw/:withdrawalId/cancellation"
+              render={() => <SavingsFundWithdrawCancellation />}
+            />
             <Route
               path="/savings-fund/withdraw/success"
               render={() => <SavingsFundWithdrawSuccess />}

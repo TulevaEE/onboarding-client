@@ -16,6 +16,7 @@ import {
   PartialWithdrawalApplication,
   ThirdPillarWithdrawalApplication,
   SavingsFundPaymentApplication,
+  SavingsFundWithdrawalApplication,
   ApplicationType,
 } from '../../common/apiModels';
 import Percentage from '../../common/Percentage';
@@ -58,6 +59,10 @@ export const ApplicationCard: React.FunctionComponent<{
     case 'SAVING_FUND_PAYMENT':
       return (
         <SavingsFundApplicationCard application={application} allowedActions={allowedActions} />
+      );
+    case 'SAVING_FUND_WITHDRAWAL':
+      return (
+        <SavingsFundWithdrawalCard application={application} allowedActions={allowedActions} />
       );
     default:
       return <></>;
@@ -210,6 +215,39 @@ const SavingsFundApplicationCard: FC<{
     />
   );
 };
+
+const SavingsFundWithdrawalCard: FC<{
+  application: SavingsFundWithdrawalApplication;
+  allowedActions: ApplicationAction[];
+}> = ({ application, allowedActions }) => (
+  <BaseApplicationCard
+    application={application}
+    allowedActions={allowedActions}
+    title={<FormattedMessage id="applications.type.savingFundWithdrawal.title" />}
+  >
+    <DefinitionList
+      definitions={[
+        {
+          key: 'applications.type.savingFundWithdrawal.paymentDate',
+          value: formatDate(application.details.fulfillmentDeadline),
+        },
+        [
+          [
+            {
+              key: 'applications.type.savingFundWithdrawal.account',
+              value: application.details.iban,
+            },
+            {
+              key: 'applications.type.savingFundWithdrawal.amount',
+              value: <Euro amount={application.details.amount} />,
+              alignRight: true,
+            },
+          ],
+        ],
+      ]}
+    />
+  </BaseApplicationCard>
+);
 
 const TransferApplicationCard: React.FunctionComponent<{
   application: TransferApplication;
@@ -480,6 +518,28 @@ const ResumeContributionsCard: React.FunctionComponent<{
   </BaseApplicationCard>
 );
 
+const getCancellationUrl = (application: Application): string => {
+  switch (application.type) {
+    case 'SAVING_FUND_PAYMENT':
+      return `/savings-fund/payment/${application.details.paymentId}/cancellation`;
+    case 'SAVING_FUND_WITHDRAWAL':
+      return `/savings-fund/withdraw/${application.details.id}/cancellation`;
+    default:
+      return `/applications/${application.id}/cancellation`;
+  }
+};
+
+const getCancelLabel = (application: Application): ReactNode => {
+  switch (application.type) {
+    case 'SAVING_FUND_PAYMENT':
+      return <FormattedMessage id="applications.cancelDeposit" />;
+    case 'SAVING_FUND_WITHDRAWAL':
+      return <FormattedMessage id="applications.cancelWithdrawal" />;
+    default:
+      return <FormattedMessage id="applications.cancel" />;
+  }
+};
+
 const BaseApplicationCard: FC<{
   title: ReactNode;
   description?: ReactNode;
@@ -487,18 +547,9 @@ const BaseApplicationCard: FC<{
   allowedActions: ApplicationAction[];
   showCreationTime?: boolean;
 }> = ({ application, title, children, description, allowedActions, showCreationTime = true }) => {
-  const cancellationUrlPrefix =
-    application.type === 'SAVING_FUND_PAYMENT'
-      ? `/savings-fund/payment/${application.details.paymentId}`
-      : `/applications/${application.id}`;
-  const cancellationUrl = `${cancellationUrlPrefix}/cancellation`;
+  const cancellationUrl = getCancellationUrl(application);
   const canCancel = isCancellationAllowed(application, allowedActions);
-  const cancelLabel =
-    application.type === 'SAVING_FUND_PAYMENT' ? (
-      <FormattedMessage id="applications.cancelDeposit" />
-    ) : (
-      <FormattedMessage id="applications.cancel" />
-    );
+  const cancelLabel = getCancelLabel(application);
 
   return (
     <Card
@@ -535,9 +586,9 @@ function formatTime(time: string): string {
 }
 
 const isCancellationAllowed = (application: Application, allowedActions: ApplicationAction[]) => {
-  const requiresCancellationTimeCheck = (['SAVING_FUND_PAYMENT'] as ApplicationType[]).includes(
-    application.type,
-  );
+  const requiresCancellationTimeCheck = (
+    ['SAVING_FUND_PAYMENT', 'SAVING_FUND_WITHDRAWAL'] as ApplicationType[]
+  ).includes(application.type);
 
   if ('cancellationDeadline' in application.details === false) {
     return false;

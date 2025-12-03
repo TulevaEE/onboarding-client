@@ -23,6 +23,7 @@ import {
   partialWithdrawal,
   thirdPillarWithdrawal,
   savingFundPaymentApplication,
+  savingsFundWithdrawalApplication,
 } from './fixtures';
 import { initializeConfiguration } from '../../config/config';
 import { getAuthentication } from '../../common/authenticationManager';
@@ -365,6 +366,21 @@ describe('Application section', () => {
     expect(
       screen.getByText('The deposit amount will be invested in the fund 02/01/2024'),
     ).toBeInTheDocument();
+  });
+
+  it('renders savings fund withdrawal application successfully', async () => {
+    const application = savingsFundWithdrawalApplication;
+    mockApplications([application]);
+    initializeComponent();
+
+    expect(await screen.findByText('Additional savings fund withdrawal')).toBeInTheDocument();
+    expect(screen.getByText('January 20, 2024')).toBeInTheDocument();
+    expect(screen.getByText(/Payment date/i)).toBeInTheDocument();
+    expect(screen.getByText('March 1, 2024')).toBeInTheDocument();
+    expect(screen.getByText(/Bank account/i)).toBeInTheDocument();
+    expect(screen.getByText(application.details.iban)).toBeInTheDocument();
+    expect(screen.getByText(/Amount/i)).toBeInTheDocument();
+    expect(screen.getByText('500.50 €')).toBeInTheDocument();
   });
 
   function waitForRequestToFinish() {
