@@ -14,6 +14,7 @@ type MaaAmetAddress = {
 
 type MaaAmetInstance = {
   hideResult: () => void;
+  setAddress: (address: string, search: boolean) => void;
 };
 
 const isMaaAmetAddress = (address: unknown): address is MaaAmetAddress => {
@@ -41,10 +42,34 @@ type EstonianAddressFormProps = {
 export const EstonianAddressForm: FC<EstonianAddressFormProps> = ({ control }) => {
   const [selectedAddress, setSelectedAddress] = useState<MaaAmetAddress | null>(null);
   const intl = useIntl();
-  const { field: streetField } = useController({ control, name: 'address.street' });
-  const { field: cityField } = useController({ control, name: 'address.city' });
-  const { field: postalCodeField } = useController({ control, name: 'address.postalCode' });
+
+  const validationRules = {
+    required: {
+      value: true,
+      message: intl.formatMessage({
+        id: 'flows.savingsFundOnboarding.residencyStep.estonianAddress.required',
+      }),
+    },
+  };
+
+  const { field: streetField, fieldState: streetFieldState } = useController({
+    control,
+    name: 'address.street',
+    rules: validationRules,
+  });
+  const { field: cityField, fieldState: cityFieldState } = useController({
+    control,
+    name: 'address.city',
+    rules: validationRules,
+  });
+  const { field: postalCodeField, fieldState: postalCodeFieldState } = useController({
+    control,
+    name: 'address.postalCode',
+    rules: validationRules,
+  });
+
   const language = intl.locale.slice(0, 2);
+  const error = streetFieldState.error || cityFieldState.error || postalCodeFieldState.error;
 
   useEffect(() => {
     if (selectedAddress) {
@@ -55,8 +80,8 @@ export const EstonianAddressForm: FC<EstonianAddressFormProps> = ({ control }) =
   }, [selectedAddress]);
 
   useEffect(() => {
-    let instance: MaaAmetInstance | null = null;
     const container = document.getElementById(ADDRESS_CONTAINER_ID);
+    let instance: MaaAmetInstance | null = null;
 
     if (!container) {
       return undefined;
@@ -122,6 +147,11 @@ export const EstonianAddressForm: FC<EstonianAddressFormProps> = ({ control }) =
         <FormattedMessage id="flows.savingsFundOnboarding.residencyStep.street.label" />
         <div id={ADDRESS_CONTAINER_ID} />
       </label>
+      {error && error.message ? (
+        <p className="m-0 text-danger fs-base" role="alert">
+          {error.message}
+        </p>
+      ) : null}
     </div>
   );
 };

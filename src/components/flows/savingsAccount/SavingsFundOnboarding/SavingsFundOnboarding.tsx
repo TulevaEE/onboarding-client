@@ -1,7 +1,8 @@
 import { FC, useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, FieldPath } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
+import { captureException } from '@sentry/browser';
 import { usePageTitle } from '../../../common/usePageTitle';
 import { CitizenshipStep } from './CitizenshipStep';
 import { ResidencyStep } from './ResidencyStep';
@@ -12,16 +13,18 @@ import { InvestableAssetsStep } from './InvestableAssetsStep';
 import { IncomeSourcesStep } from './IncomeSourcesStep';
 import { TermsStep } from './TermsStep';
 import { OnboardingFormData } from './types';
+import { useSubmitSavingsFundOnboardingSurvey } from '../../../common/apiHooks';
+import { transformFormDataToOnboardingSurveryCommand } from '../utils';
+import { ErrorResponse } from '../../../common/apiModels';
 
 export const SavingsFundOnboarding: FC = () => {
   usePageTitle('pageTitle.savingsFundOnboarding');
 
   const history = useHistory();
-  const [showTermsError, setShowTermsError] = useState(false);
   const [activeSection, setActiveSection] = useState(0);
+  const [submitError, setSubmitError] = useState<ErrorResponse | null>(null);
 
-  const { control, setValue, watch } = useForm<OnboardingFormData>({
-    mode: 'onBlur',
+  const { control, setValue, watch, handleSubmit, trigger } = useForm<OnboardingFormData>({
     defaultValues: {
       citizenship: [],
       address: {
@@ -42,7 +45,12 @@ export const SavingsFundOnboarding: FC = () => {
 
   const citizenship = watch('citizenship');
   const residencyCountry = watch('address.countryCode');
-  const hasAcceptedTerms = watch('termsAccepted');
+
+  const { mutateAsync: submitSurvey, error } = useSubmitSavingsFundOnboardingSurvey();
+
+  const submitForm = handleSubmit(async (data) => {
+    await submitSurvey(transformFormDataToOnboardingSurveryCommand(data));
+  });
 
   // Auto-set residency country to first citizenship
   useEffect(() => {
@@ -51,18 +59,45 @@ export const SavingsFundOnboarding: FC = () => {
     }
   }, [citizenship, setValue]);
 
-  const sections = [
-    <CitizenshipStep key="citizenship" control={control} />,
-    <ResidencyStep key="residency" control={control} />,
-    <ContactDetailsStep key="contact-details" control={control} />,
-    <PepStep key="pep" control={control} />,
-    <InvestmentGoalStep key="investment-goal" control={control} />,
-    <InvestableAssetsStep key="investable-assets" control={control} />,
-    <IncomeSourcesStep key="income-sources" control={control} />,
-    <TermsStep key="terms" control={control} showError={showTermsError} />,
+  const steps: Array<{
+    component: JSX.Element;
+    fields: FieldPath<OnboardingFormData>[];
+  }> = [
+    {
+      component: <CitizenshipStep key="citizenship" control={control} />,
+      fields: ['citizenship'],
+    },
+    {
+      component: <ResidencyStep key="residency" control={control} />,
+      fields: ['address.countryCode', 'address.street', 'address.city', 'address.postalCode'],
+    },
+    {
+      component: <ContactDetailsStep key="contact-details" control={control} />,
+      fields: ['email'],
+    },
+    {
+      component: <PepStep key="pep" control={control} />,
+      fields: ['pepSelfDeclaration'],
+    },
+    {
+      component: <InvestmentGoalStep key="investment-goal" control={control} />,
+      fields: ['investmentGoals'],
+    },
+    {
+      component: <InvestableAssetsStep key="investable-assets" control={control} />,
+      fields: ['investableAssets'],
+    },
+    {
+      component: <IncomeSourcesStep key="income-sources" control={control} />,
+      fields: ['sourceOfIncome'],
+    },
+    {
+      component: <TermsStep key="terms" control={control} />,
+      fields: ['termsAccepted'],
+    },
   ];
 
-  const totalSections = sections.length;
+  const totalSections = steps.length;
   const currentSection = activeSection + 1;
   const progressPercentage = (currentSection / totalSections) * 100;
   const isFirstSection = activeSection === 0;
@@ -72,7 +107,6 @@ export const SavingsFundOnboarding: FC = () => {
   };
 
   const showPreviousSection = () => {
-    setShowTermsError(false);
     if (isFirstSection) {
       history.push('/account');
       return;
@@ -82,21 +116,27 @@ export const SavingsFundOnboarding: FC = () => {
   };
 
   const showNextSection = async () => {
-    if (activeSection === totalSections - 1) {
-      if (!hasAcceptedTerms) {
-        setShowTermsError(true);
-        return;
-      }
+    const fieldsToValidate = steps[activeSection].fields;
+    const isStepValid = await trigger(fieldsToValidate);
 
-      setShowTermsError(false);
-      redirectToOutcome('success');
+    if (!isStepValid) {
       return;
     }
 
-    // TODO: Validate current section before proceeding
-    // TODO: Add submission
+    if (activeSection === totalSections - 1) {
+      try {
+        setSubmitError(null);
+        await submitForm();
+        // TODO: call status
+        // redirectToOutcome('pending');
+        redirectToOutcome('success');
+      } catch (e) {
+        setSubmitError(error);
+        captureException(e);
+      }
+      return;
+    }
 
-    setShowTermsError(false);
     setActiveSection((current) => Math.min(current + 1, totalSections - 1));
   };
 
@@ -131,7 +171,13 @@ export const SavingsFundOnboarding: FC = () => {
         </h1>
       </div>
 
-      {sections[activeSection]}
+      {steps[activeSection].component}
+
+      {submitError ? (
+        <div className="alert alert-danger" role="alert">
+          <FormattedMessage id="flows.savingsFundOnboarding.error" />
+        </div>
+      ) : null}
 
       <div className="d-flex flex-column-reverse flex-sm-row justify-content-between pt-4 border-top gap-3">
         <button type="button" className="btn btn-lg btn-light" onClick={showPreviousSection}>

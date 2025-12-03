@@ -31,7 +31,13 @@ export const CitizenshipStep: FC<CitizenshipStepProps> = ({ control }) => {
         <Controller
           control={control}
           name="citizenship"
-          rules={{ required: true }}
+          rules={{
+            validate: (value) =>
+              value.length > 0 ||
+              intl.formatMessage({
+                id: 'flows.savingsFundOnboarding.citizenshipStep.input.required',
+              }),
+          }}
           render={({ field, fieldState: { error } }) => (
             <div>
               <MultiSelect

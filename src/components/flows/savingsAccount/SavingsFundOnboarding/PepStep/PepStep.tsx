@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { Control, Controller } from 'react-hook-form';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { OnboardingFormData } from '../types';
 import { Radio } from '../../../../common';
 
@@ -39,26 +39,44 @@ const generateRadioOptions = (
     </Radio>
   ));
 
-export const PepStep: FC<PepStepProps> = ({ control }) => (
-  <section className="d-flex flex-column gap-4" key="politically-exposed">
-    <div className="section-header d-flex flex-column gap-1">
-      <h2 className="m-0">
-        <FormattedMessage id="flows.savingsFundOnboarding.pepStep.title" />
-      </h2>
-      <p className="m-0">
-        <FormattedMessage id="flows.savingsFundOnboarding.pepStep.description" />
-      </p>
-    </div>
-    <div className="section-content d-flex flex-column gap-4">
-      <Controller
-        control={control}
-        name="pepSelfDeclaration"
-        render={({ field }) => (
-          <div className="selection-group d-flex flex-column gap-2">
-            {generateRadioOptions(field.name, field.value, field.onChange)}
-          </div>
-        )}
-      />
-    </div>
-  </section>
-);
+export const PepStep: FC<PepStepProps> = ({ control }) => {
+  const intl = useIntl();
+  return (
+    <section className="d-flex flex-column gap-4" key="politically-exposed">
+      <div className="section-header d-flex flex-column gap-1">
+        <h2 className="m-0">
+          <FormattedMessage id="flows.savingsFundOnboarding.pepStep.title" />
+        </h2>
+        <p className="m-0">
+          <FormattedMessage id="flows.savingsFundOnboarding.pepStep.description" />
+        </p>
+      </div>
+      <div className="section-content d-flex flex-column gap-4">
+        <Controller
+          control={control}
+          name="pepSelfDeclaration"
+          rules={{
+            required: {
+              value: true,
+              message: intl.formatMessage({
+                id: 'flows.savingsFundOnboarding.pepStep.required',
+              }),
+            },
+          }}
+          render={({ field, fieldState: { error } }) => (
+            <>
+              <div className="selection-group d-flex flex-column gap-2">
+                {generateRadioOptions(field.name, field.value, field.onChange)}
+                {error && error.message ? (
+                  <p className="m-0 text-danger fs-base" role="alert">
+                    {error.message}
+                  </p>
+                ) : null}
+              </div>
+            </>
+          )}
+        />
+      </div>
+    </section>
+  );
+};

@@ -59,6 +59,7 @@ import {
   UpdateCapitalTransferContractDto,
 } from './apiModels/capital-transfer';
 import { SavingsFundWithdrawal } from './apiModels/savings-fund';
+import { OnboardingSurveyCommand } from '../flows/savingsAccount/SavingsFundOnboarding/types.api';
 
 const API_URI = '/api';
 
@@ -228,6 +229,10 @@ export function getFundPensionStatus(): Promise<FundPensionStatus> {
 
 export function getSavingsFundOnboardingStatus(): Promise<SavingsFundOnboardingStatus> {
   return getWithAuthentication(getEndpoint('/v1/savings/onboarding/status'));
+}
+
+export function postSavingsFundOnboardingSurvey(command: OnboardingSurveyCommand): Promise<void> {
+  return postWithAuthentication(getEndpoint('/v1/kyc/surveys'), command);
 }
 
 export function createMandateBatch(

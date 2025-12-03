@@ -67,40 +67,36 @@ type CountriesValue = {
 };
 
 type CitizenshipSurveyItem = {
-  item: 'CITIZENSHIP';
+  type: 'CITIZENSHIP';
   value: CountriesValue;
 };
 type AddressSurveyItem = {
-  item: 'ADDRESS';
+  type: 'ADDRESS';
   value: AddressValue;
 };
 type EmailSurveyItem = {
-  item: 'EMAIL';
+  type: 'EMAIL';
   value: TextValue;
 };
 type PhoneNumberSurveyItem = {
-  item: 'PHONE_NUMBER';
+  type: 'PHONE_NUMBER';
   value: TextValue;
 };
 type PepSelfDeclarationSurveyItem = {
-  item: 'PEP_SELF_DECLARATION';
+  type: 'PEP_SELF_DECLARATION';
   value: OptionValue<PepSelfDeclaration>;
 };
 type InvestmentGoalsSurveyItem = {
-  item: 'INVESTMENT_GOALS';
+  type: 'INVESTMENT_GOALS';
   value: OptionValue<InvestmentGoalOption> | TextValue;
 };
 type InvestableAssetsSurveyItem = {
-  item: 'INVESTABLE_ASSETS';
+  type: 'INVESTABLE_ASSETS';
   value: OptionValue<InvestableAssetsOption>;
 };
 export type SourceOfIncomeSurveyItem = {
-  item: 'SOURCE_OF_INCOME';
+  type: 'SOURCE_OF_INCOME';
   value: (OptionValue<SourceOfIncomeOption> | TextValue)[];
-};
-type TermsSurveyItem = {
-  item: 'TERMS';
-  value: OptionValue<'ACCEPTED'>;
 };
 
 type OnboardingSurveyItem =
@@ -111,8 +107,7 @@ type OnboardingSurveyItem =
   | PepSelfDeclarationSurveyItem
   | InvestmentGoalsSurveyItem
   | InvestableAssetsSurveyItem
-  | SourceOfIncomeSurveyItem
-  | TermsSurveyItem;
+  | SourceOfIncomeSurveyItem;
 
 export type OnboardingSurveyCommand = {
   answers: OnboardingSurveyItem[];
