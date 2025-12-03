@@ -109,6 +109,17 @@ describe('CurrencyInput', () => {
     expect(input).toHaveValue('50.25');
   });
 
+  it('rounds max value to 2 decimal places when max has more decimals', async () => {
+    renderWrapped(<CurrencyInputWrapper max={32.12345} />);
+
+    const input = screen.getByDisplayValue('');
+    userEvent.type(input, '50');
+
+    await waitFor(() => {
+      expect(input).toHaveValue('32.12');
+    });
+  });
+
   it('allows clearing the input', async () => {
     renderWrapped(<CurrencyInputWrapper />);
 

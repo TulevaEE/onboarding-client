@@ -51,8 +51,8 @@ export function CurrencyInput({
       return;
     }
     if (max !== undefined && num > max) {
-      num = max;
-      setInputValue(max.toFixed(2));
+      num = Number(max.toFixed(2));
+      setInputValue(num.toFixed(2));
     }
     onChange(num);
   };
