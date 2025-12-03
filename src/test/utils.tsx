@@ -6,7 +6,7 @@ import thunk from 'redux-thunk';
 import { ConnectedRouter, routerMiddleware } from 'connected-react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
-import { render, RenderResult } from '@testing-library/react';
+import { act, render, RenderResult } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import translations from '../components/translations';
 import { MOBILE_AUTHENTICATION_SUCCESS } from '../components/login/constants';
@@ -72,3 +72,15 @@ export function login(store: Store, method = 'SMART_ID'): void {
     method,
   });
 }
+
+export const selectCountryOptionInTomSelect = (select: HTMLSelectElement, countryCode: string) => {
+  // Get the TomSelect instance from the select element
+  const tomSelectInstance = (select as any).tomselect;
+
+  // Use TomSelect's API to add an item
+  if (tomSelectInstance) {
+    act(() => {
+      tomSelectInstance.addItem(countryCode);
+    });
+  }
+};

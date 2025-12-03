@@ -35,6 +35,7 @@ import {
   getUserConversionWithToken,
   getUserWithToken,
   getWithdrawalsEligibility,
+  postSavingsFundOnboardingSurvey,
   previewMessageForMemberCapitalListing,
   updateCapitalTransferContract,
 } from './api';
@@ -70,6 +71,7 @@ import {
   CreateCapitalTransferDto,
   UpdateCapitalTransferContractDto,
 } from './apiModels/capital-transfer';
+import { OnboardingSurveyCommand } from '../flows/savingsAccount/SavingsFundOnboarding/types.api';
 
 export function usePendingApplications(): UseQueryResult<Application[]> {
   return useQuery(['pendingApplications'], () => getPendingApplications());
@@ -223,6 +225,17 @@ export function useCreateMemberCapitalListing(): UseMutationResult<
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['memberCapitalListings'] });
     },
+  });
+}
+
+export function useSubmitSavingsFundOnboardingSurvey(): UseMutationResult<
+  void,
+  ErrorResponse,
+  OnboardingSurveyCommand,
+  unknown
+> {
+  return useMutation({
+    mutationFn: (command) => postSavingsFundOnboardingSurvey(command),
   });
 }
 

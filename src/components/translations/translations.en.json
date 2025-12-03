@@ -1141,29 +1141,37 @@
   "savingsFund.withdrawalCancellation.error": "There was an error cancelling the withdrawal. Please try again later or contact us: tuleva@tuleva.ee",
 
   "flows.savingsFundOnboarding.title": "Opening an additional savings fund",
-  "flows.savingsFundOnboarding.currentStep": "Samm {currentStep} / {totalSteps}",
+  "flows.savingsFundOnboarding.currentStep": "Step {currentStep} / {totalSteps}",
+  "flows.savingsFundOnboarding.error": "There was an error while submitting your application. Please try again later or contact us: tuleva@tuleva.ee",
 
   "flows.savingsFundOnboarding.citizenshipStep.input.ariaLabel": "Choose all countries of citizenship",
   "flows.savingsFundOnboarding.citizenshipStep.title": "What is your citizenship?",
   "flows.savingsFundOnboarding.citizenshipStep.description": "Choose all countries of citizenship.",
   "flows.savingsFundOnboarding.citizenshipStep.input.placeholder": "Select countries…",
   "flows.savingsFundOnboarding.citizenshipStep.input.deleteButtonTitle": "Remove",
+  "flows.savingsFundOnboarding.citizenshipStep.input.required": "Select countries of citizenship to continue.",
 
   "flows.savingsFundOnboarding.residencyStep.title": "Your permanent residence",
   "flows.savingsFundOnboarding.residencyStep.country.label": "Country",
   "flows.savingsFundOnboarding.residencyStep.street.label": "Address (street, house, apartment)",
   "flows.savingsFundOnboarding.residencyStep.city.label": "City",
   "flows.savingsFundOnboarding.residencyStep.postalCode.label": "Postal code",
+  "flows.savingsFundOnboarding.residencyStep.estonianAddress.required": "Enter a valid address.",
+  "flows.savingsFundOnboarding.residencyStep.city.required": "Enter a city.",
+  "flows.savingsFundOnboarding.residencyStep.postalCode.required": "Enter a postal code.",
+  "flows.savingsFundOnboarding.residencyStep.street.required": "Enter a street address.",
 
   "flows.savingsFundOnboarding.contactDetailsStep.title": "Your contact details",
   "flows.savingsFundOnboarding.contactDetailsStep.email.label": "Email",
   "flows.savingsFundOnboarding.contactDetailsStep.phone.label": "Phone number",
   "flows.savingsFundOnboarding.contactDetailsStep.phone.optional": "(optional)",
+  "flows.savingsFundOnboarding.contactDetailsStep.email.required": "Enter an email address.",
 
   "flows.savingsFundOnboarding.pepStep.title": "Are you a politically exposed person?",
   "flows.savingsFundOnboarding.pepStep.description": "A politically exposed person is an individual who performs or has performed important public functions in the last year, or who is a family member or close associate of such a person.",
   "flows.savingsFundOnboarding.pepStep.yes": "I am a politically exposed person",
   "flows.savingsFundOnboarding.pepStep.no": "I am not a politically exposed person",
+  "flows.savingsFundOnboarding.pepStep.required": "Select an option to continue.",
 
   "flows.savingsFundOnboarding.investmentGoalStep.title": "What is your investment goal?",
   "flows.savingsFundOnboarding.investmentGoalStep.longTerm": "Long-term investment, including pension",
@@ -1172,6 +1180,8 @@
   "flows.savingsFundOnboarding.investmentGoalStep.activeTrading": "Active trading, including daily trading",
   "flows.savingsFundOnboarding.investmentGoalStep.other": "Other…",
   "flows.savingsFundOnboarding.investmentGoalStep.otherPlaceholder": "Enter investment goal",
+  "flows.savingsFundOnboarding.investmentGoalStep.required": "Select an option to continue.",
+  "flows.savingsFundOnboarding.investmentGoalStep.other.required": "Enter your investment goal.",
 
   "flows.savingsFundOnboarding.investableAssetsStep.title": "How much investable assets do you have?",
   "flows.savingsFundOnboarding.investableAssetsStep.description": "Investable assets are immediately available money and investments that you can sell quickly – for example, money in a bank account or deposit, and stocks, bonds, and funds.",
@@ -1179,6 +1189,7 @@
   "flows.savingsFundOnboarding.investableAssetsStep.from20kTo40k": "€20,001–€40,000",
   "flows.savingsFundOnboarding.investableAssetsStep.from40kTo80k": "€40,001–€80,000",
   "flows.savingsFundOnboarding.investableAssetsStep.over80k": "€80,001 or more",
+  "flows.savingsFundOnboarding.investableAssetsStep.required": "Select an option to continue.",
 
   "flows.savingsFundOnboarding.incomeSourcesStep.title": "What are your sources of income?",
   "flows.savingsFundOnboarding.incomeSourcesStep.description": "Select all sources from which you receive income.",
@@ -1190,6 +1201,8 @@
   "flows.savingsFundOnboarding.incomeSourcesStep.business": "Business income (dividends, board fees)",
   "flows.savingsFundOnboarding.incomeSourcesStep.other": "Other…",
   "flows.savingsFundOnboarding.incomeSourcesStep.otherPlaceholder": "Enter income source",
+  "flows.savingsFundOnboarding.incomeSourcesStep.required": "Select income sources to continue.",
+  "flows.savingsFundOnboarding.incomeSourcesStep.other.required": "Enter your income source.",
 
   "flows.savingsFundOnboarding.termsStep.title": "Review the terms",
   "flows.savingsFundOnboarding.termsStep.linkText": "Additional savings fund terms",

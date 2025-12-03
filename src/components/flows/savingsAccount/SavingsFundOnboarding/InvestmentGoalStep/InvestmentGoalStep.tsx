@@ -82,7 +82,22 @@ export const InvestmentGoalStep: FC<InvestmentGoalStepProps> = ({ control }) => 
         <Controller
           control={control}
           name="investmentGoals"
-          render={({ field }) => (
+          rules={{
+            validate: (value) => {
+              if (!value) {
+                return intl.formatMessage({
+                  id: 'flows.savingsFundOnboarding.investmentGoalStep.required',
+                });
+              }
+              if (value.type === 'TEXT' && value.value.length === 0) {
+                return intl.formatMessage({
+                  id: 'flows.savingsFundOnboarding.investmentGoalStep.other.required',
+                });
+              }
+              return true;
+            },
+          }}
+          render={({ field, fieldState: { error } }) => (
             <div className="selection-group d-flex flex-column gap-2">
               {generateRadioOptions(field.name, field.value, field.onChange, setIsOtherSelected)}
               <Radio
@@ -110,6 +125,11 @@ export const InvestmentGoalStep: FC<InvestmentGoalStepProps> = ({ control }) => 
                   value={field.value?.type === 'TEXT' ? field.value.value : ''}
                   onChange={(e) => field.onChange({ type: 'TEXT', value: e.target.value })}
                 />
+              ) : null}
+              {error && error.message ? (
+                <p className="m-0 text-danger fs-base" role="alert">
+                  {error.message}
+                </p>
               ) : null}
             </div>
           )}

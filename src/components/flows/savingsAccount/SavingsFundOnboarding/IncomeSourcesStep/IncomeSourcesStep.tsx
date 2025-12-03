@@ -117,7 +117,28 @@ export const IncomeSourcesStep: FC<IncomeSourcesStepProps> = ({ control }) => {
         <Controller
           control={control}
           name="sourceOfIncome"
-          render={({ field }) => (
+          rules={{
+            validate: (value) => {
+              const hasOption = value.some((item) => item.type === 'OPTION');
+              const textItem = value.find((item) => item.type === 'TEXT');
+              const hasValidText = textItem && textItem.value.trim().length > 0;
+
+              if (!hasOption && !textItem) {
+                return intl.formatMessage({
+                  id: 'flows.savingsFundOnboarding.incomeSourcesStep.required',
+                });
+              }
+
+              if (textItem && !hasValidText) {
+                return intl.formatMessage({
+                  id: 'flows.savingsFundOnboarding.incomeSourcesStep.other.required',
+                });
+              }
+
+              return true;
+            },
+          }}
+          render={({ field, fieldState: { error } }) => (
             <div className="selection-group d-flex flex-column gap-2">
               {generateCheckboxOptions(isChecked, handleCheckboxChange, field.onChange)}
               <div className="form-check m-0 lead">
@@ -163,6 +184,11 @@ export const IncomeSourcesStep: FC<IncomeSourcesStepProps> = ({ control }) => {
                   />
                 ) : null}
               </div>
+              {error && error.message ? (
+                <p className="m-0 text-danger fs-base" role="alert">
+                  {error.message}
+                </p>
+              ) : null}
             </div>
           )}
         />

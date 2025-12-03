@@ -1,4 +1,4 @@
-import { FC, useMemo } from 'react';
+import { FC, useMemo, useState, useEffect } from 'react';
 import { Control, Controller, useWatch } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { OnboardingFormData } from '../types';
@@ -14,7 +14,15 @@ type ResidencyStepProps = {
 export const ResidencyStep: FC<ResidencyStepProps> = ({ control }) => {
   const intl = useIntl();
   const countryCode = useWatch({ control, name: 'address.countryCode' });
+  const street = useWatch({ control, name: 'address.street' });
   const isEstonianResidence = countryCode === 'EE';
+  const [hasVisitedBefore, setHasVisitedBefore] = useState(false);
+
+  useEffect(() => {
+    if (street) {
+      setHasVisitedBefore(true);
+    }
+  }, []);
 
   const countryOptions = useMemo(() => mapCountriesToGroupedOptions(intl), [intl]);
 
@@ -48,7 +56,7 @@ export const ResidencyStep: FC<ResidencyStepProps> = ({ control }) => {
             )}
           />
         </div>
-        {isEstonianResidence ? (
+        {isEstonianResidence && !hasVisitedBefore ? (
           <EstonianAddressForm control={control} />
         ) : (
           <AddressForm control={control} />

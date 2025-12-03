@@ -1231,28 +1231,36 @@
 
   "flows.savingsFundOnboarding.title": "Täiendava kogumisfondi avamine",
   "flows.savingsFundOnboarding.currentStep": "Samm {currentStep} / {totalSteps}",
+  "flows.savingsFundOnboarding.error": "Avalduse esitamisel tekkis viga. Palun proovi hiljem uuesti või võta meiega ühendust: tuleva@tuleva.ee",
 
   "flows.savingsFundOnboarding.citizenshipStep.input.ariaLabel": "Vali kõik riigid, mille kodanik sa oled",
   "flows.savingsFundOnboarding.citizenshipStep.title": "Mis riigi kodanik sa oled?",
   "flows.savingsFundOnboarding.citizenshipStep.description": "Vali kõik riigid, mille kodakondsus sul on.",
   "flows.savingsFundOnboarding.citizenshipStep.input.placeholder": "Vali riigid…",
   "flows.savingsFundOnboarding.citizenshipStep.input.deleteButtonTitle": "Eemalda",
+  "flows.savingsFundOnboarding.citizenshipStep.input.required": "Jätkamiseks vali vähemalt üks riik.",
 
   "flows.savingsFundOnboarding.residencyStep.title": "Sinu alaline elukoht",
   "flows.savingsFundOnboarding.residencyStep.country.label": "Riik",
   "flows.savingsFundOnboarding.residencyStep.street.label": "Aadress (tänav, maja, korter)",
   "flows.savingsFundOnboarding.residencyStep.city.label": "Linn",
   "flows.savingsFundOnboarding.residencyStep.postalCode.label": "Postiindeks",
+  "flows.savingsFundOnboarding.residencyStep.estonianAddress.required": "Sisesta korrektne aadress.",
+  "flows.savingsFundOnboarding.residencyStep.city.required": "Sisesta linn.",
+  "flows.savingsFundOnboarding.residencyStep.postalCode.required": "Sisesta postiindeks.",
+  "flows.savingsFundOnboarding.residencyStep.street.required": "Sisesta tänava aadress.",
 
   "flows.savingsFundOnboarding.contactDetailsStep.title": "Sinu kontaktandmed",
   "flows.savingsFundOnboarding.contactDetailsStep.email.label": "E-post",
   "flows.savingsFundOnboarding.contactDetailsStep.phone.label": "Telefon",
   "flows.savingsFundOnboarding.contactDetailsStep.phone.optional": "(valikuline)",
+  "flows.savingsFundOnboarding.contactDetailsStep.email.required": "Sisesta e-posti aadress.",
 
   "flows.savingsFundOnboarding.pepStep.title": "Kas oled riikliku taustaga isik?",
   "flows.savingsFundOnboarding.pepStep.description": "Riikliku taustaga isik on eraisik, kes täidab või on viimase aasta jooksul täitnud avaliku võimu olulisi ülesandeid või kes on sellise isiku pereliige või lähedane kaastöötaja.",
   "flows.savingsFundOnboarding.pepStep.yes": "Olen riikliku taustaga isik",
   "flows.savingsFundOnboarding.pepStep.no": "Ma ei ole riikliku taustaga isik",
+  "flows.savingsFundOnboarding.pepStep.required": "Jätkamiseks tee valik.",
 
   "flows.savingsFundOnboarding.investmentGoalStep.title": "Mis on sinu investeerimise eesmärk?",
   "flows.savingsFundOnboarding.investmentGoalStep.longTerm": "Pikaajaline investeerimine, sh pension",
@@ -1261,6 +1269,8 @@
   "flows.savingsFundOnboarding.investmentGoalStep.activeTrading": "Aktiivne sh igapäevane kauplemine",
   "flows.savingsFundOnboarding.investmentGoalStep.other": "Muu…",
   "flows.savingsFundOnboarding.investmentGoalStep.otherPlaceholder": "Sisesta investeerimise eesmärk",
+  "flows.savingsFundOnboarding.investmentGoalStep.required": "Jätkamiseks tee valik.",
+  "flows.savingsFundOnboarding.investmentGoalStep.other.required": "Sisesta investeerimise eesmärk.",
 
   "flows.savingsFundOnboarding.investableAssetsStep.title": "Kui palju on sul investeeritavat vara?",
   "flows.savingsFundOnboarding.investableAssetsStep.description": "Investeeritavad varad on kohe kasutatav raha ja investeeringud, mida saad kiiresti müüa – näiteks pangakontol või hoiusel olev raha ning aktsiad, võlakirjad ja fondid.",
@@ -1268,6 +1278,7 @@
   "flows.savingsFundOnboarding.investableAssetsStep.from20kTo40k": "20 001–40 000 €",
   "flows.savingsFundOnboarding.investableAssetsStep.from40kTo80k": "40 001–80 000 €",
   "flows.savingsFundOnboarding.investableAssetsStep.over80k": "80 001 € või enam",
+  "flows.savingsFundOnboarding.investableAssetsStep.required": "Jätkamiseks tee valik.",
 
   "flows.savingsFundOnboarding.incomeSourcesStep.title": "Millised on sinu sissetulekuallikad?",
   "flows.savingsFundOnboarding.incomeSourcesStep.description": "Vali kõik allikad, kust sissetulekut saad.",
@@ -1279,6 +1290,8 @@
   "flows.savingsFundOnboarding.incomeSourcesStep.business": "Tulu äriühingust (dividendid, juhatuse tasu)",
   "flows.savingsFundOnboarding.incomeSourcesStep.other": "Muu…",
   "flows.savingsFundOnboarding.incomeSourcesStep.otherPlaceholder": "Sisesta sissetulekuallikas",
+  "flows.savingsFundOnboarding.incomeSourcesStep.required": "Jätkamiseks vali sissetulekuallikad.",
+  "flows.savingsFundOnboarding.incomeSourcesStep.other.required": "Sisesta sissetulekuallikas.",
 
   "flows.savingsFundOnboarding.termsStep.title": "Tutvu tingimustega",
   "flows.savingsFundOnboarding.termsStep.linkText": "Täiendava kogumisfondi tingimused",
