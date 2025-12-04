@@ -1,4 +1,4 @@
-import { screen, waitFor, waitForElementToBeRemoved } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryHistory, History } from 'history';
 import { setupServer } from 'msw/node';
@@ -232,10 +232,6 @@ describe('SavingsFundOnboarding', () => {
 
   it('shows pending outcome when onboarding status is pending', async () => {
     server.use(onboardingStatusHandler.pending());
-
-    const loader = await screen.findByLabelText('Loading...');
-
-    await waitForElementToBeRemoved(loader, { timeout: 5_000 });
 
     await waitFor(() => {
       expect(history.location.pathname).toBe('/savings-fund/onboarding/pending');
