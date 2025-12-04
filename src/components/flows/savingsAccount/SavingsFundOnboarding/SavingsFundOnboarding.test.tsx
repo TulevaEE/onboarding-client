@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, waitForElementToBeRemoved } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryHistory, History } from 'history';
 import { setupServer } from 'msw/node';
@@ -66,6 +66,8 @@ describe('SavingsFundOnboarding', () => {
   });
 
   it('allows completing the full happy flow', async () => {
+    server.use(onboardingStatusHandler.notStarted());
+
     const user = userEvent;
 
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
@@ -73,9 +75,13 @@ describe('SavingsFundOnboarding', () => {
 
     const continueButton = await screen.findByRole('button', { name: 'Continue' });
 
-    // Step 1: Citizenship - select Finland to get regular AddressForm (easier to test)
+    // Step 1: Citizenship - select Finland to get regular AddressForm
     expect(
-      screen.getByRole('heading', { name: 'What is your citizenship?', level: 2 }),
+      await screen.findByRole(
+        'heading',
+        { name: 'What is your citizenship?', level: 2 },
+        { timeout: 3_000 },
+      ),
     ).toBeInTheDocument();
 
     const select = screen.getByRole('listbox', {
@@ -182,6 +188,8 @@ describe('SavingsFundOnboarding', () => {
     const termsCheckbox = screen.getByLabelText('I confirm that I have reviewed the terms');
     user.click(termsCheckbox);
 
+    server.use(onboardingStatusHandler.completed());
+
     user.click(continueButton);
 
     await waitFor(() => {
@@ -190,13 +198,15 @@ describe('SavingsFundOnboarding', () => {
   });
 
   it('allows navigation back through steps', async () => {
+    server.use(onboardingStatusHandler.notStarted());
+
     const user = userEvent;
 
     expect(screen.getByText('1/8')).toBeInTheDocument();
 
-    const select = screen.getByRole('listbox', {
+    const select = (await screen.findByRole('listbox', {
       name: 'Choose all countries of citizenship',
-    }) as HTMLSelectElement;
+    })) as HTMLSelectElement;
 
     selectCountryOptionInTomSelect(select, 'FI');
 
@@ -219,4 +229,33 @@ describe('SavingsFundOnboarding', () => {
     user.click(screen.getByRole('button', { name: 'Back' }));
     expect(history.location.pathname).toBe('/account');
   });
+
+  it('shows pending outcome when onboarding status is pending', async () => {
+    server.use(onboardingStatusHandler.pending());
+
+    const loader = await screen.findByLabelText('Loading...');
+
+    await waitForElementToBeRemoved(loader, { timeout: 5_000 });
+
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/savings-fund/onboarding/pending');
+    });
+
+    expect(screen.getByRole('heading', { name: 'Application under review' })).toBeInTheDocument();
+  });
+
+  const onboardingStatusHandler = {
+    notStarted: () =>
+      rest.get('http://localhost/v1/savings/onboarding/status', (req, res, ctx) =>
+        res(ctx.json({ status: 'NOT_STARTED' })),
+      ),
+    pending: () =>
+      rest.get('http://localhost/v1/savings/onboarding/status', (req, res, ctx) =>
+        res(ctx.json({ status: 'PENDING' })),
+      ),
+    completed: () =>
+      rest.get('http://localhost/v1/savings/onboarding/status', (req, res, ctx) =>
+        res(ctx.json({ status: 'COMPLETED' })),
+      ),
+  };
 });

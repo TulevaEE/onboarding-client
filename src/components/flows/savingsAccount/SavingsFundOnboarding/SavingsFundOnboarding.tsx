@@ -13,9 +13,13 @@ import { InvestableAssetsStep } from './InvestableAssetsStep';
 import { IncomeSourcesStep } from './IncomeSourcesStep';
 import { TermsStep } from './TermsStep';
 import { OnboardingFormData } from './types';
-import { useSubmitSavingsFundOnboardingSurvey } from '../../../common/apiHooks';
+import {
+  useSavingsFundOnboardingStatus,
+  useSubmitSavingsFundOnboardingSurvey,
+} from '../../../common/apiHooks';
 import { transformFormDataToOnboardingSurveryCommand } from '../utils';
 import { ErrorResponse } from '../../../common/apiModels';
+import { Loader } from '../../../common';
 
 export const SavingsFundOnboarding: FC = () => {
   usePageTitle('pageTitle.savingsFundOnboarding');
@@ -47,10 +51,25 @@ export const SavingsFundOnboarding: FC = () => {
   const residencyCountry = watch('address.countryCode');
 
   const { mutateAsync: submitSurvey, error } = useSubmitSavingsFundOnboardingSurvey();
+  const {
+    data: onboardingStatus,
+    isLoading: loadingOnboardingStatus,
+    refetch: refetchOnboardingStatus,
+  } = useSavingsFundOnboardingStatus();
 
   const submitForm = handleSubmit(async (data) => {
     await submitSurvey(transformFormDataToOnboardingSurveryCommand(data));
   });
+
+  useEffect(() => {
+    if (onboardingStatus?.status === 'REJECTED' || onboardingStatus?.status === 'PENDING') {
+      redirectToOutcome('pending');
+    }
+
+    if (onboardingStatus?.status === 'COMPLETED') {
+      redirectToOutcome('success');
+    }
+  }, [onboardingStatus]);
 
   // Auto-set residency country to first citizenship
   useEffect(() => {
@@ -127,9 +146,7 @@ export const SavingsFundOnboarding: FC = () => {
       try {
         setSubmitError(null);
         await submitForm();
-        // TODO: call status
-        // redirectToOutcome('pending');
-        redirectToOutcome('success');
+        await refetchOnboardingStatus();
       } catch (e) {
         setSubmitError(error);
         captureException(e);
@@ -171,7 +188,7 @@ export const SavingsFundOnboarding: FC = () => {
         </h1>
       </div>
 
-      {steps[activeSection].component}
+      {!onboardingStatus && loadingOnboardingStatus ? <Loader /> : steps[activeSection].component}
 
       {submitError ? (
         <div className="alert alert-danger" role="alert">
