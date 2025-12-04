@@ -532,7 +532,7 @@ export async function getSavingsFundBalance(): Promise<SourceFund | null> {
       getEndpoint('/v1/savings-account-statement'),
     );
 
-    if (!fund || fund.value === 0) {
+    if (!fund || (fund.value === 0 && fund.unavailableValue === 0)) {
       return null;
     }
 
