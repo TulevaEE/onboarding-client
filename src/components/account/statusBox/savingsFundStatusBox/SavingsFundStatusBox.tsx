@@ -17,7 +17,7 @@ const SavingsFundStatusBox: FC<SavingsFundStatusBoxProps> = ({ loading }) => {
   const { data: onboardingStatus } = useSavingsFundOnboardingStatus();
   const { data: savingsFundBalance, isLoading } = useSavingsFundBalance();
 
-  if (!onboardingStatus || onboardingStatus?.status !== 'COMPLETED') {
+  if (!onboardingStatus || onboardingStatus?.status === null) {
     return null;
   }
 

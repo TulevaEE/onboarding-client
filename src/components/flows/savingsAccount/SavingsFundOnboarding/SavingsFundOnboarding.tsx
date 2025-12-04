@@ -14,6 +14,7 @@ import { IncomeSourcesStep } from './IncomeSourcesStep';
 import { TermsStep } from './TermsStep';
 import { OnboardingFormData } from './types';
 import {
+  useMe,
   useSavingsFundOnboardingStatus,
   useSubmitSavingsFundOnboardingSurvey,
 } from '../../../common/apiHooks';
@@ -28,7 +29,16 @@ export const SavingsFundOnboarding: FC = () => {
   const [activeSection, setActiveSection] = useState(0);
   const [submitError, setSubmitError] = useState<ErrorResponse | null>(null);
 
+  const { mutateAsync: submitSurvey, error } = useSubmitSavingsFundOnboardingSurvey();
+  const {
+    data: onboardingStatus,
+    isLoading: loadingOnboardingStatus,
+    refetch: refetchOnboardingStatus,
+  } = useSavingsFundOnboardingStatus();
+  const { data: user } = useMe();
+
   const { control, setValue, watch, handleSubmit, trigger } = useForm<OnboardingFormData>({
+    mode: 'onChange',
     defaultValues: {
       citizenship: [],
       address: {
@@ -50,18 +60,15 @@ export const SavingsFundOnboarding: FC = () => {
   const citizenship = watch('citizenship');
   const residencyCountry = watch('address.countryCode');
 
-  const { mutateAsync: submitSurvey, error } = useSubmitSavingsFundOnboardingSurvey();
-  const {
-    data: onboardingStatus,
-    isLoading: loadingOnboardingStatus,
-    refetch: refetchOnboardingStatus,
-  } = useSavingsFundOnboardingStatus();
-
   const submitForm = handleSubmit(async (data) => {
     await submitSurvey(transformFormDataToOnboardingSurveryCommand(data));
   });
 
   useEffect(() => {
+    if (onboardingStatus?.status === null) {
+      history.push('/account');
+    }
+
     if (onboardingStatus?.status === 'REJECTED' || onboardingStatus?.status === 'PENDING') {
       redirectToOutcome('pending');
     }
@@ -77,6 +84,16 @@ export const SavingsFundOnboarding: FC = () => {
       setValue('address.countryCode', citizenship[0]);
     }
   }, [citizenship, setValue]);
+
+  useEffect(() => {
+    if (user?.email) {
+      setValue('email', user.email);
+    }
+
+    if (user?.phoneNumber) {
+      setValue('phoneNumber', user.phoneNumber);
+    }
+  }, [user, setValue]);
 
   const steps: Array<{
     component: JSX.Element;

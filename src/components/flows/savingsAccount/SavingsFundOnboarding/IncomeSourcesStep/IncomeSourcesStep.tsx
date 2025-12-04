@@ -57,7 +57,7 @@ const generateCheckboxOptions = (
         checked={isChecked(value)}
         onChange={(e) => handleCheckboxChange(fieldOnChange, value, e.target.checked)}
       />
-      <label className="form-check-label" htmlFor={id}>
+      <label className="form-check-label w-100" htmlFor={id}>
         <FormattedMessage id={labelId} />
       </label>
     </div>
