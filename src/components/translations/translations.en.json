@@ -564,6 +564,7 @@
   "savingsFund.status.secondary.investedBalance": "You have invested an additional {investedAmount}",
   "savingsFund.status.secondary.zeroBalance": "Continue investing outside the pillar system once the foundation is already established",
   "savingsFund.status.makeDeposit.label": "Make a payment",
+  "savingsFund.status.startSaving.label": "Start investing",
 
   "transactions.title": "Your latest transactions",
   "transactions.title.2nd": "Your II pillar transactions",

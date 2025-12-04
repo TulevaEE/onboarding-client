@@ -1228,6 +1228,7 @@
   "savingsFund.status.secondary.investedBalance": "Oled investeerinud täiendavalt {investedAmount}",
   "savingsFund.status.secondary.zeroBalance": "Jätka investeerimist väljaspool sambaid, kui vundament on juba loodud",
   "savingsFund.status.makeDeposit.label": "Teen sissemakse",
+  "savingsFund.status.startSaving.label": "Alustan kogumist",
 
   "flows.savingsFundOnboarding.title": "Täiendava kogumisfondi avamine",
   "flows.savingsFundOnboarding.currentStep": "Samm {currentStep} / {totalSteps}",

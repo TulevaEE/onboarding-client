@@ -74,9 +74,15 @@ const SavingsFundStatusBox: FC<SavingsFundStatusBoxProps> = ({ loading }) => {
         name={intl.formatMessage({ id: 'savingsFund.status.title' })}
         lines={getLines()}
       >
-        <Link to="/savings-fund/payment" className="btn btn-outline-primary">
-          <FormattedMessage id="savingsFund.status.makeDeposit.label" />
-        </Link>
+        {onboardingStatus?.status === 'COMPLETED' ? (
+          <Link to="/savings-fund/payment" className="btn btn-outline-primary">
+            <FormattedMessage id="savingsFund.status.makeDeposit.label" />
+          </Link>
+        ) : (
+          <Link to="/savings-fund/onboarding" className="btn btn-outline-primary">
+            <FormattedMessage id="savingsFund.status.startSaving.label" />
+          </Link>
+        )}
       </StatusBoxRow>
     </div>
   );
