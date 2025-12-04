@@ -29,7 +29,11 @@ export const SavingsFundOnboarding: FC = () => {
   const [activeSection, setActiveSection] = useState(0);
   const [submitError, setSubmitError] = useState<ErrorResponse | null>(null);
 
-  const { mutateAsync: submitSurvey, error } = useSubmitSavingsFundOnboardingSurvey();
+  const {
+    mutateAsync: submitSurvey,
+    isPending: submittingSurvey,
+    error,
+  } = useSubmitSavingsFundOnboardingSurvey();
   const {
     data: onboardingStatus,
     isLoading: loadingOnboardingStatus,
@@ -217,7 +221,19 @@ export const SavingsFundOnboarding: FC = () => {
         <button type="button" className="btn btn-lg btn-light" onClick={showPreviousSection}>
           <FormattedMessage id="savingsFundOnboarding.back" />
         </button>
-        <button type="button" className="btn btn-lg btn-primary" onClick={showNextSection}>
+        <button
+          type="button"
+          className="btn btn-lg btn-primary"
+          onClick={showNextSection}
+          disabled={submittingSurvey}
+        >
+          {submittingSurvey ? (
+            <span
+              className="spinner-border spinner-border-sm me-2"
+              role="status"
+              aria-hidden="true"
+            />
+          ) : null}
           <FormattedMessage id="savingsFundOnboarding.continue" />
         </button>
       </div>
