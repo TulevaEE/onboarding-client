@@ -7,6 +7,7 @@ import ThirdPillarStatusBox from './thirdPillarStatusBox';
 import MemberStatusBox from './memberStatusBox';
 import { SourceFund, UserConversion } from '../../common/apiModels';
 import SavingsFundStatusBox from './savingsFundStatusBox/SavingsFundStatusBox';
+import { useSavingsFundOnboardingStatus } from '../../common/apiHooks';
 
 interface Props {
   conversion?: UserConversion;
@@ -19,6 +20,8 @@ export const StatusBoxComponent: React.FunctionComponent<Props> = ({
   secondPillarFunds,
   thirdPillarFunds,
 }) => {
+  useSavingsFundOnboardingStatus();
+
   if (!conversion || !secondPillarFunds || !thirdPillarFunds) {
     return <StatusBoxLoader />;
   }

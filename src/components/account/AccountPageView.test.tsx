@@ -37,7 +37,7 @@ beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 beforeEach(() => {
-  server.use(savingsFundOnboardingStatus.notStarted());
+  server.use(savingsFundOnboardingStatus.whitelisted());
   server.use(savingsAccountStatement.zero());
 });
 
@@ -491,13 +491,13 @@ describe('additional savings fund status', () => {
   beforeEach(() => {
     initializeConfiguration();
     useTestBackends(server);
-    initializeComponent();
-
-    history.push('/account');
   });
 
-  it('renders nothing when savings fund onboarding is not completed', async () => {
-    server.use(savingsFundOnboardingStatus.notStarted());
+  it('renders nothing when user is not whitelisted', async () => {
+    server.use(savingsFundOnboardingStatus.notWhitelisted());
+
+    initializeComponent();
+    history.push('/account');
 
     const rows = await screen.findAllByTestId('status-box-row');
     expect(rows).toHaveLength(3);
@@ -511,6 +511,9 @@ describe('additional savings fund status', () => {
   it('shows status when onboarding is completed', async () => {
     server.use(savingsFundOnboardingStatus.completed());
     server.use(savingsAccountStatement.zero());
+
+    initializeComponent();
+    history.push('/account');
 
     // We fetch additional savings fund with react-query, so we need to wait for it to appear
     await waitFor(async () => {
@@ -538,6 +541,9 @@ describe('additional savings fund status', () => {
     server.use(savingsFundOnboardingStatus.completed());
     server.use(savingsAccountStatement.nonZero());
 
+    initializeComponent();
+    history.push('/account');
+
     // We fetch additional savings fund with react-query, so we need to wait for it to appear
     await waitFor(async () => {
       const rows = await screen.findAllByTestId('status-box-row');
@@ -562,10 +568,12 @@ const savingsFundOnboardingStatus = {
     rest.get('/v1/savings/onboarding/status', (req, res, ctx) =>
       res(ctx.json({ status: 'COMPLETED' })),
     ),
-  notStarted: () =>
+  whitelisted: () =>
     rest.get('/v1/savings/onboarding/status', (req, res, ctx) =>
-      res(ctx.json({ status: 'NOT_STARTED' })),
+      res(ctx.json({ status: 'WHITELISTED' })),
     ),
+  notWhitelisted: () =>
+    rest.get('/v1/savings/onboarding/status', (req, res, ctx) => res(ctx.json({ status: null }))),
 };
 
 const savingsAccountStatement = {

@@ -49,6 +49,9 @@ describe(SavingsFundWithdraw, () => {
     useTestBackends(server);
 
     server.use(
+      rest.get('http://localhost/v1/savings/onboarding/status', (_req, res, ctx) =>
+        res(ctx.json({ status: 'COMPLETED' })),
+      ),
       rest.get('http://localhost/v1/savings-account-statement', (_req, res, ctx) =>
         res(
           ctx.json({
