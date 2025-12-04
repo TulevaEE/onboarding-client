@@ -59,6 +59,7 @@ export const MultiSelect: FC<MultiSelectProps> = ({
       maxItems: null,
       maxOptions: 200,
       items: selected,
+      closeAfterSelect: true,
       onChange: (values: string | string[]) => {
         const valuesArray = Array.isArray(values) ? values : [values];
         onChange?.(valuesArray);
