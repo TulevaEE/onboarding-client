@@ -44,7 +44,9 @@ export const formatAmountForCount = (
   // TODO tofixed rounds
   let formattedAmount = formatWithNbspThousands(amount.toFixed(decimals));
 
-  if (amount < 0) {
+  if (Number(amount.toFixed(decimals)) === 0) {
+    formattedAmount = formattedAmount.replace('-', ''); // -0 = 0
+  } else if (amount < 0) {
     formattedAmount = formattedAmount.replace('-', '−');
   }
   return `${sign}${formattedAmount}`;

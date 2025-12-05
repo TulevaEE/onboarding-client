@@ -157,6 +157,10 @@ describe('Utils', () => {
     it('uses Unicode minus for negatives', () => {
       expect(formatAmountForCount(-5, 0)).toBe(`${UMINUS}5`);
     });
+
+    it('rounds -0.001 to 0 with default fraction digits', () => {
+      expect(formatAmountForCount(-0.001)).toBe('0.00');
+    });
   });
 
   describe('formatAmountForCount with smartDecimals=true', () => {
