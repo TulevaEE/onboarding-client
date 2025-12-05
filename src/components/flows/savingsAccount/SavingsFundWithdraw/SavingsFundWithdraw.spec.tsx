@@ -179,6 +179,10 @@ describe(SavingsFundWithdraw, () => {
     userEvent.selectOptions(bankAccountSelect, mockBankAccounts[0]);
     userEvent.click(submitButton);
 
+    const confirmButton = await screen.findByRole('button', { name: 'Confirm' });
+    expect(screen.getByText('250.75 €')).toBeInTheDocument();
+    userEvent.click(confirmButton);
+
     await waitFor(() => expect(withdrawalRequested).toBe(true));
     expect(submittedData).toEqual({
       amount: 250.75,
@@ -207,6 +211,9 @@ describe(SavingsFundWithdraw, () => {
     userEvent.type(amountInput, '100');
     userEvent.selectOptions(bankAccountSelect, mockBankAccounts[0]);
     userEvent.click(submitButton);
+
+    const confirmButton = await screen.findByRole('button', { name: 'Confirm' });
+    userEvent.click(confirmButton);
 
     const errorAlert = await screen.findByRole('alert');
     expect(errorAlert).toHaveTextContent(/There was an error processing your withdrawal request/i);
@@ -269,6 +276,9 @@ describe(SavingsFundWithdraw, () => {
     userEvent.type(amountInput, '123,45');
     userEvent.selectOptions(bankAccountSelect, mockBankAccounts[0]);
     userEvent.click(submitButton);
+
+    const confirmButton = await screen.findByRole('button', { name: 'Confirm' });
+    userEvent.click(confirmButton);
 
     await waitFor(() => expect(submittedData).toBeTruthy());
     expect(submittedData.amount).toBe(123.45);
