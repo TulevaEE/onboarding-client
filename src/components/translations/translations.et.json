@@ -1247,6 +1247,7 @@
   "flows.savingsFundOnboarding.residencyStep.title": "Sinu alaline elukoht",
   "flows.savingsFundOnboarding.residencyStep.country.label": "Riik",
   "flows.savingsFundOnboarding.residencyStep.street.label": "Aadress (tänav, maja, korter)",
+  "flows.savingsFundOnboarding.residencyStep.apartment.label": "Korter",
   "flows.savingsFundOnboarding.residencyStep.city.label": "Linn",
   "flows.savingsFundOnboarding.residencyStep.postalCode.label": "Postiindeks",
   "flows.savingsFundOnboarding.residencyStep.estonianAddress.required": "Sisesta korrektne aadress.",

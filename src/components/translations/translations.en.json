@@ -1158,6 +1158,7 @@
   "flows.savingsFundOnboarding.residencyStep.title": "Your permanent residence",
   "flows.savingsFundOnboarding.residencyStep.country.label": "Country",
   "flows.savingsFundOnboarding.residencyStep.street.label": "Address (street, house, apartment)",
+  "flows.savingsFundOnboarding.residencyStep.apartment.label": "Apartment",
   "flows.savingsFundOnboarding.residencyStep.city.label": "City",
   "flows.savingsFundOnboarding.residencyStep.postalCode.label": "Postal code",
   "flows.savingsFundOnboarding.residencyStep.estonianAddress.required": "Enter a valid address.",

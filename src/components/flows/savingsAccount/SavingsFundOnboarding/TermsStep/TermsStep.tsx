@@ -73,7 +73,7 @@ export const TermsStep: FC<TermsStepProps> = ({ control, showError }) => {
                 checked={field.value}
                 onChange={field.onChange}
               />
-              <label className="form-check-label" htmlFor="terms-accepted">
+              <label className="form-check-label w-100" htmlFor="terms-accepted">
                 <FormattedMessage id="flows.savingsFundOnboarding.termsStep.confirmText" />
               </label>
               {showError && (

@@ -4,7 +4,12 @@ import { Control, useController } from 'react-hook-form';
 
 import { OnboardingFormData } from '../../types';
 
+import './EstonianAddressForm.scss';
+
 const ADDRESS_CONTAINER_ID = 'maaAmetAddressComponent';
+const ADDRESS_INPUT_ID = 'estonianAddressInput';
+const APARTMENT_SELECT_ID = 'estonianApartmentSelect';
+const APARTMENT_LABEL_ID = 'estonianApartmentLabel';
 
 type MaaAmetAddress = {
   lahiaadress: string;
@@ -82,6 +87,7 @@ export const EstonianAddressForm: FC<EstonianAddressFormProps> = ({ control }) =
   useEffect(() => {
     const container = document.getElementById(ADDRESS_CONTAINER_ID);
     let instance: MaaAmetInstance | null = null;
+    let observer: MutationObserver | null = null;
 
     if (!container) {
       return undefined;
@@ -89,6 +95,42 @@ export const EstonianAddressForm: FC<EstonianAddressFormProps> = ({ control }) =
 
     // Clear any existing content from previous renders
     container.innerHTML = '';
+
+    const updateApartmentLabel = () => {
+      const apartmentSelect = container.querySelector<HTMLSelectElement>('.inads-appartment');
+      const existingLabel = document.getElementById(APARTMENT_LABEL_ID);
+
+      // If select exists and is visible, ensure wrapper with label exists
+      if (apartmentSelect && !apartmentSelect.classList.contains('hidden')) {
+        apartmentSelect.id = APARTMENT_SELECT_ID;
+
+        if (!existingLabel) {
+          // Create wrapper row with Bootstrap grid classes
+          const wrapper = document.createElement('div');
+          wrapper.className = 'row apartment-row';
+
+          const column = document.createElement('div');
+          column.className = 'col-sm-4';
+
+          const label = document.createElement('label');
+          label.id = APARTMENT_LABEL_ID;
+          label.htmlFor = APARTMENT_SELECT_ID;
+          label.className = 'form-label';
+          label.textContent = intl.formatMessage({
+            id: 'flows.savingsFundOnboarding.residencyStep.apartment.label',
+          });
+
+          // Move select into the column and build the structure
+          column.appendChild(label);
+          apartmentSelect.parentNode?.insertBefore(wrapper, apartmentSelect);
+          column.appendChild(apartmentSelect);
+          wrapper.appendChild(column);
+        }
+      } else if (existingLabel) {
+        // If select doesn't exist or is hidden, remove the wrapper (which contains label and select)
+        existingLabel.closest('.apartment-row')?.remove();
+      }
+    };
 
     const handleAddressSelected = (e: Event) => {
       const eventDetail = (e as CustomEvent).detail;
@@ -103,6 +145,9 @@ export const EstonianAddressForm: FC<EstonianAddressFormProps> = ({ control }) =
       }
       // TODO: Handle case where address is not valid/full
       instance?.hideResult();
+
+      // Update apartment label after address selection
+      updateApartmentLabel();
     };
 
     const handleInaadressLoaded = () => {
@@ -111,8 +156,30 @@ export const EstonianAddressForm: FC<EstonianAddressFormProps> = ({ control }) =
       if (formContainer) {
         formContainer.style.removeProperty('height');
         formContainer.style.setProperty('min-height', 'fit-content');
+
+        const input = formContainer.querySelector<HTMLInputElement>('.inads-input');
+        if (input) {
+          input.id = ADDRESS_INPUT_ID;
+        }
       }
     };
+
+    // Watch for DOM changes to handle apartment select being added/removed
+    observer = new MutationObserver((mutations) => {
+      const hasRelevantChange = mutations.some(
+        (mutation) => mutation.type === 'childList' || mutation.type === 'attributes',
+      );
+      if (hasRelevantChange) {
+        updateApartmentLabel();
+      }
+    });
+
+    observer.observe(container, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['class'],
+    });
 
     document.addEventListener('addressSelected', handleAddressSelected);
     document.addEventListener('inaadressLoaded', handleInaadressLoaded);
@@ -130,6 +197,7 @@ export const EstonianAddressForm: FC<EstonianAddressFormProps> = ({ control }) =
     return () => {
       document.removeEventListener('addressSelected', handleAddressSelected);
       document.removeEventListener('inaadressLoaded', handleInaadressLoaded);
+      observer?.disconnect();
 
       if (container) {
         container.innerHTML = '';
@@ -137,16 +205,14 @@ export const EstonianAddressForm: FC<EstonianAddressFormProps> = ({ control }) =
 
       instance = null;
     };
-  }, [language]);
+  }, [language, intl]);
 
   return (
     <div>
-      {/* FIXME: Unable to attach htmlFor to label because the input is rendered by an external script */}
-      {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-      <label className="form-label w-100">
+      <label htmlFor={ADDRESS_INPUT_ID} className="form-label w-100">
         <FormattedMessage id="flows.savingsFundOnboarding.residencyStep.street.label" />
-        <div id={ADDRESS_CONTAINER_ID} />
       </label>
+      <div id={ADDRESS_CONTAINER_ID} />
       {error && error.message ? (
         <p className="m-0 text-danger fs-base" role="alert">
           {error.message}

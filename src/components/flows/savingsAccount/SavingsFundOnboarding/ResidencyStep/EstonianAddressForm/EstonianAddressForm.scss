@@ -1,0 +1,156 @@
+// Styles for the Maa-amet InAddress component
+// Overrides the default styles to match our Bootstrap 5 design system
+
+@import '../../../../../variables';
+
+// Focus ring color derived from $blue
+$input-focus-box-shadow: 0 0 0 0.25rem rgba($blue, 0.25);
+
+#maaAmetAddressComponent {
+  // Container div - use block layout, not flex
+  .inads-input-div {
+    position: relative;
+    z-index: 1;
+    display: block !important;
+    height: auto !important;
+    margin-top: 0 !important;
+  }
+
+  // Text input - block level, full width
+  .inads-input {
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    padding: ($spacer * 0.5) $spacer !important;
+    font-family: inherit !important;
+    font-size: $font-size-lead !important;
+    font-weight: $font-weight-normal;
+    line-height: 1.5;
+    color: $text-primary !important;
+    background-color: $white !important;
+    background-image: none !important;
+    border: 1px solid $input-border-color !important;
+    border-radius: $border-radius-lg !important;
+    outline: none !important;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+    &::placeholder {
+      color: $text-tertiary;
+      opacity: 1;
+    }
+
+    &:focus {
+      border-color: $input-focus-border-color !important;
+      box-shadow: $input-focus-box-shadow !important;
+    }
+
+    // When apartment selector is visible, input has this class - override the right offset
+    &.appartment {
+      right: auto !important;
+    }
+  }
+
+  // Hide all icons
+  .inads-input-search,
+  .inads_spinner,
+  .inads-input-clear {
+    display: none !important;
+  }
+
+  // Apartment row wrapper - use Bootstrap grid for responsive width
+  .apartment-row {
+    margin-top: $spacer;
+  }
+
+  // Apartment select dropdown - block level, full width within column
+  .inads-appartment {
+    position: relative !important;
+    right: auto !important;
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    padding: ($spacer * 0.5) ($spacer * 2) ($spacer * 0.5) $spacer !important;
+    font-family: inherit !important;
+    font-size: $font-size-lead !important;
+    font-weight: $font-weight-normal;
+    line-height: 1.5;
+    color: $text-primary;
+    appearance: none;
+    background-color: $white !important;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+    background-repeat: no-repeat !important;
+    background-position: right ($spacer * 0.75) center !important;
+    background-size: 16px 12px !important;
+    border: 1px solid $input-border-color !important;
+    border-radius: $border-radius-lg !important;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+    &:focus {
+      border-color: $input-focus-border-color !important;
+      outline: 0 !important;
+      box-shadow: $input-focus-box-shadow !important;
+    }
+
+    &.hidden {
+      display: none !important;
+    }
+  }
+
+  // Hide copyright link
+  .inads-copyright {
+    display: none !important;
+  }
+
+  // Results dropdown container
+  .inads-result-container {
+    position: relative;
+  }
+
+  // Results list - absolute positioned relative to container
+  .inads-result {
+    position: absolute;
+    top: ($spacer * 0.25) !important;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    max-height: 320px;
+    padding: ($spacer * 0.5) 0 !important;
+    margin: 0;
+    overflow-y: auto;
+    list-style: none;
+    background-color: $white !important;
+    border: 1px solid $gray-border-2 !important;
+    border-radius: $border-radius-lg !important;
+    box-shadow: var(--box-shadow-dropdown);
+
+    &.searchonly {
+      top: ($spacer * 0.25) !important;
+    }
+
+    li {
+      padding: ($spacer * 0.5) $spacer !important;
+      border-bottom: 1px solid $gray-border-1 !important;
+      color: $text-primary !important;
+      cursor: pointer;
+      transition: background-color 0.15s ease-in-out;
+
+      &:last-child {
+        border-bottom: 0 !important;
+      }
+
+      &:hover,
+      &.active {
+        background-color: $gray-bg-2 !important;
+        color: $text-primary !important;
+      }
+
+      span {
+        font-family: inherit !important;
+        font-size: $font-size-small !important;
+      }
+    }
+  }
+}

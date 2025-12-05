@@ -161,7 +161,11 @@ export const IncomeSourcesStep: FC<IncomeSourcesStepProps> = ({ control }) => {
                     }
                   }}
                 />
-                <label className="form-check-label" htmlFor="income-other" id="income-other-label">
+                <label
+                  className="form-check-label w-100"
+                  htmlFor="income-other"
+                  id="income-other-label"
+                >
                   <FormattedMessage id="flows.savingsFundOnboarding.incomeSourcesStep.other" />
                 </label>
                 {isOtherSelected ? (
