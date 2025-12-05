@@ -110,7 +110,7 @@ export const SavingsFundWithdraw: FC = () => {
                     render={({ field }) => (
                       <Slider
                         value={parseAmount(field.value)}
-                        onChange={(value) => field.onChange(value.toFixed(2))}
+                        onChange={field.onChange}
                         min={0}
                         max={savingsFundBalance.price}
                         step={0.01}
