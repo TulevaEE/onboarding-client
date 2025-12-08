@@ -1,4 +1,5 @@
 import config from 'react-global-configuration';
+import { authenticate as webEidAuthenticate } from '@web-eid/web-eid-library/web-eid';
 import {
   AmlCheck,
   Application,
@@ -97,12 +98,22 @@ export async function authenticateWithIdCode(personalCode: string): Promise<Auth
   return { challengeCode, authenticationHash };
 }
 
-export async function authenticateWithIdCard(): Promise<boolean> {
-  // All environments use ALB mTLS which requires client certificates for ALL requests
-  // We skip the preliminary GET request that would fail without a certificate
+export async function authenticateWithIdCardMtls(): Promise<boolean> {
   const idCardUrl = config.get('idCardUrl');
   const { success } = await simpleFetch('POST', `${idCardUrl}/idLogin`);
   return success;
+}
+
+export async function authenticateWithIdCardWebEid(language: string): Promise<Token> {
+  const { challengeCode } = await post(getEndpoint('/authenticate'), { type: 'ID_CARD' });
+  const authToken = await webEidAuthenticate(challengeCode, { lang: language });
+  const tokens = await getTokensWithGrantType('ID_CARD', {
+    authToken: JSON.stringify(authToken),
+  });
+  if (!tokens) {
+    throw new Error('Authentication failed');
+  }
+  return tokens;
 }
 
 export function logout(): Promise<void> {

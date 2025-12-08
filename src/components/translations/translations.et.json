@@ -8,6 +8,8 @@
   "login.smart.id": "Smart-ID",
   "login.id.card": "ID-kaart",
   "login.id.card.start.failed": "Palun kontrolli, et ID-kaart on lugejas ja lugeja ühendatud ning ID-kaardiga allkirjastamise laiendus töötab. Vajadusel tee veebilehitsejale restart ja proovi uuesti.",
+  "login.web.eid.user.cancelled": "Autentimine katkestati.",
+  "login.web.eid.extension.unavailable": "Web eID laiendus ei ole saadaval. Palun paigalda Web eID laiendus ja proovi uuesti.",
   "login.invalid.personal.code": "Vale isikukood. Palun proovi uuesti.",
   "login.phone.number": "Telefoninumber",
   "login.id.code": "Isikukood",

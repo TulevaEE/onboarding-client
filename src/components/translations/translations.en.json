@@ -8,6 +8,8 @@
   "login.smart.id": "Smart-ID",
   "login.id.card": "ID-card",
   "login.id.card.start.failed": "Please check that your ID‑card reader is connected and try again.",
+  "login.web.eid.user.cancelled": "Authentication was cancelled.",
+  "login.web.eid.extension.unavailable": "Web eID extension is not available. Please install the Web eID extension and try again.",
   "login.invalid.personal.code": "Invalid personal code. Please try again.",
   "login.phone.number": "Phone number",
   "login.id.code": "Identity code",

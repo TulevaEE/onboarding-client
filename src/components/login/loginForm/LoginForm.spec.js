@@ -137,13 +137,12 @@ describe('Login form', () => {
     expect(onIdCodeSubmit).toHaveBeenCalledWith(personalCode);
   });
 
-  it('can log in with id card', () => {
+  it('passes id card auth handler to IdCardLoginTab', () => {
     const onAuthenticateWithIdCard = jest.fn();
     component.setProps({ onAuthenticateWithIdCard });
 
-    expect(onAuthenticateWithIdCard).not.toHaveBeenCalled();
-    component.find('button').simulate('click');
-    expect(onAuthenticateWithIdCard).toHaveBeenCalledTimes(1);
+    const idCardTab = component.find('IdCardLoginTab');
+    expect(idCardTab.prop('onAuthenticateWithIdCardMtls')).toBe(onAuthenticateWithIdCard);
   });
 
   describe('when time within maintenance window', () => {
