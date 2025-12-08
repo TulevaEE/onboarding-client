@@ -1,6 +1,7 @@
 import config from 'react-global-configuration';
 import {
-  authenticateWithIdCard,
+  authenticateWithIdCardMtls,
+  authenticateWithIdCardWebEid,
   authenticateWithIdCode,
   authenticateWithMobileId,
   createAmlCheck,
@@ -60,6 +61,12 @@ jest.mock('./authenticationManager', () => ({
   getAuthentication: jest.fn(),
   remove: jest.fn(),
 }));
+
+const mockWebEidAuthenticate = jest.fn();
+jest.mock('@web-eid/web-eid-library/web-eid', () => ({
+  authenticate: (...args: unknown[]) => mockWebEidAuthenticate(...args),
+}));
+
 const mockHttp = http as jest.Mocked<typeof http>;
 
 describe('API calls', () => {
@@ -79,16 +86,58 @@ describe('API calls', () => {
     jest.resetModules();
   });
 
-  describe('authenticateWithIdCard', () => {
+  describe('authenticateWithIdCardMtls', () => {
     it('should authenticate using ID card successfully via ALB mTLS', async () => {
       config.set({ idCardUrl: 'https://id.tuleva.ee' }, { freeze: false, assign: false });
       mockHttp.simpleFetch.mockResolvedValueOnce({ success: true });
 
-      const result = await authenticateWithIdCard();
+      const result = await authenticateWithIdCardMtls();
 
       expect(result).toBe(true);
       expect(mockHttp.simpleFetch).toHaveBeenCalledWith('POST', 'https://id.tuleva.ee/idLogin');
       expect(mockHttp.simpleFetch).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('authenticateWithIdCardWebEid', () => {
+    const challengeCode = 'test-challenge-nonce';
+    const mockAuthToken = {
+      unverifiedCertificate: 'cert-data',
+      algorithm: 'RS256',
+      signature: 'signature-data',
+      format: 'web-eid:1.0',
+    };
+    const expectedTokens = { accessToken: 'access-token', refreshToken: 'refresh-token' };
+
+    it('should authenticate using Web eID successfully', async () => {
+      mockHttp.post.mockResolvedValueOnce({ challengeCode });
+      mockWebEidAuthenticate.mockResolvedValueOnce(mockAuthToken);
+      mockHttp.postForm.mockResolvedValueOnce({
+        access_token: expectedTokens.accessToken,
+        refresh_token: expectedTokens.refreshToken,
+      });
+
+      const result = await authenticateWithIdCardWebEid('et');
+
+      expect(mockHttp.post).toHaveBeenCalledWith('/authenticate', { type: 'ID_CARD' });
+      expect(mockWebEidAuthenticate).toHaveBeenCalledWith(challengeCode, { lang: 'et' });
+      expect(mockHttp.postForm).toHaveBeenCalledWith(
+        '/oauth/token',
+        expect.objectContaining({
+          grant_type: 'ID_CARD',
+          authToken: JSON.stringify(mockAuthToken),
+        }),
+        expect.any(Object),
+      );
+      expect(result).toEqual(expectedTokens);
+    });
+
+    it('should throw error when tokens are not returned', async () => {
+      mockHttp.post.mockResolvedValueOnce({ challengeCode });
+      mockWebEidAuthenticate.mockResolvedValueOnce(mockAuthToken);
+      mockHttp.postForm.mockRejectedValueOnce({ error: 'AUTHENTICATION_NOT_COMPLETE' });
+
+      await expect(authenticateWithIdCardWebEid('en')).rejects.toThrow('Authentication failed');
     });
   });
 

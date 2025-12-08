@@ -115,9 +115,9 @@ describe('Login actions', () => {
     });
   });
 
-  it('can authenticate with an id card', () => {
+  it('can authenticate with an id card (mTLS)', () => {
     const tokens = { accessToken: 'token', refreshToken: 'refreshToken' };
-    mockApi.authenticateWithIdCard = jest.fn(() => {
+    mockApi.authenticateWithIdCardMtls = jest.fn(() => {
       expect(dispatch).toHaveBeenCalledTimes(1);
       expect(dispatch).toHaveBeenCalledWith({
         type: ID_CARD_AUTHENTICATION_START,
@@ -153,13 +153,13 @@ describe('Login actions', () => {
     });
   });
 
-  it('can handle authenticate with an id card start error', () => {
+  it('can handle authenticate with an id card start error (mTLS)', () => {
     const initialError = new Error('oh no!');
     const actualBroadcastedError = {
       body: { errors: [{ code: ID_CARD_LOGIN_START_FAILED_ERROR }] },
     };
 
-    mockApi.authenticateWithIdCard = jest.fn(() => {
+    mockApi.authenticateWithIdCardMtls = jest.fn(() => {
       expect(dispatch).toHaveBeenCalledTimes(1);
       expect(dispatch).toHaveBeenCalledWith({
         type: ID_CARD_AUTHENTICATION_START,
@@ -251,9 +251,9 @@ describe('Login actions', () => {
       });
   });
 
-  it('starts polling until succeeds when authenticating with id card', () => {
+  it('starts polling until succeeds when authenticating with id card (mTLS)', () => {
     const tokens = { accessToken: 'token', refreshToken: 'refreshToken' };
-    mockApi.authenticateWithIdCard = jest.fn(() => Promise.resolve());
+    mockApi.authenticateWithIdCardMtls = jest.fn(() => Promise.resolve());
     mockApi.getIdCardTokens = jest.fn(() => Promise.resolve(null));
     const authenticateWithIdCard = createBoundAction(actions.authenticateWithIdCard);
     return authenticateWithIdCard()
@@ -272,9 +272,9 @@ describe('Login actions', () => {
       });
   });
 
-  it('starts polling until fails when authenticating with id card', () => {
+  it('starts polling until fails when authenticating with id card (mTLS)', () => {
     const error = new Error('oh no!');
-    mockApi.authenticateWithIdCard = jest.fn(() => Promise.resolve());
+    mockApi.authenticateWithIdCardMtls = jest.fn(() => Promise.resolve());
     mockApi.getIdCardTokens = jest.fn(() => Promise.resolve(null));
     const authenticateWithIdCard = createBoundAction(actions.authenticateWithIdCard);
     return authenticateWithIdCard()
@@ -420,8 +420,8 @@ describe('Login actions', () => {
     });
   });
 
-  it('can handle redirect login with id card', () => {
-    mockApi.authenticateWithIdCard = jest.fn(() => Promise.resolve());
+  it('can handle redirect login with id card (mTLS)', () => {
+    mockApi.authenticateWithIdCardMtls = jest.fn(() => Promise.resolve());
     const useRedirectLoginWithIdCard = createBoundAction(actions.useRedirectLoginWithIdCard);
     useRedirectLoginWithIdCard();
     expect(dispatch).toHaveBeenCalledWith({ type: SET_LOGIN_TO_REDIRECT });

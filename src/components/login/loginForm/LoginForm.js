@@ -3,6 +3,7 @@ import { PropTypes as Types } from 'prop-types';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import LoginTabs from './LoginTabs';
+import { IdCardLoginTab } from './IdCardLoginTab';
 import { Maintenance } from '../Maintenance';
 
 function runWithDefaultPrevention(fn) {
@@ -155,7 +156,10 @@ const renderLoginTabs = (
       formatMessage,
       onPhoneNumberChange,
     )}
-    {renderIdCard(onAuthenticateWithIdCard)}
+    {/* eslint-disable-next-line react/no-unknown-property */}
+    <div label="login.id.card" hideOnMobile>
+      <IdCardLoginTab onAuthenticateWithIdCardMtls={onAuthenticateWithIdCard} />
+    </div>
   </LoginTabs>
 );
 
@@ -235,17 +239,6 @@ const renderMobileId = (
         />
       </div>
     </form>
-  </div>
-);
-
-const renderIdCard = (onAuthenticateWithIdCard) => (
-  // eslint-disable-next-line react/no-unknown-property
-  <div label="login.id.card" hideOnMobile>
-    <div className="d-grid">
-      <button type="button" className="btn btn-primary btn-lg" onClick={onAuthenticateWithIdCard}>
-        <FormattedMessage id="login.enter" />
-      </button>
-    </div>
   </div>
 );
 

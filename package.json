@@ -10,6 +10,7 @@
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@sentry/browser": "^7.120.4",
     "@tanstack/react-query": "^4.41.0",
+    "@web-eid/web-eid-library": "^2.0.2",
     "array.prototype.find": "^2.2.3",
     "axios": "^0.24.0",
     "bootstrap": "^5.3.8",
@@ -113,6 +114,9 @@
     ],
     "snapshotSerializers": [
       "enzyme-to-json/serializer"
+    ],
+    "transformIgnorePatterns": [
+      "node_modules/(?!(@web-eid)/)"
     ]
   },
   "lint-staged": {
@@ -129,8 +133,8 @@
       "pre-commit": "lint-staged --debug"
     }
   },
-  "proxy": "http://localhost:9000",
-  "//proxy": "https://onboarding-service.tuleva.ee",
+  "//proxy": "http://localhost:9000",
+  "proxy": "https://onboarding-service.tuleva.ee",
   "browserslist": [
     ">0.3% in EE",
     "last 2 versions and last 2 years and supports es6-module",
