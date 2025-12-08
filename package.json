@@ -116,7 +116,7 @@
       "enzyme-to-json/serializer"
     ],
     "transformIgnorePatterns": [
-      "node_modules/(?!(@web-eid)/)"
+      "/node_modules/(?!@web-eid).+\\.js$"
     ]
   },
   "lint-staged": {
