@@ -279,7 +279,7 @@
   "account.status.choice.pillar.third.paymentIncomplete.label": "Your contributions have not reached the fund yet",
   "account.status.choice.pillar.third.thisYearPaymentIncomplete.label": "Your this year’s contributions have not reached the fund yet",
   "account.status.choice.pillar.third.paymentInfo": "Note that fund units appear on your third pillar account by the end of the next working day. If you paid on Friday after 4pm or on the weekend, the units will appear on your account by Tuesday afternoon.",
-  "account.status.choice.pillar.third.paymentDeadline": "The deadline for this year’s III pillar contribution is <b>December 27 at 15:59</b>.",
+  "account.status.choice.pillar.third.paymentDeadline": "The deadline for this year's III pillar contribution is <b>{deadline}</b>.",
   "account.status.choice.pillar.third.success.action": "Make a payment",
   "account.status.choice.pillar.third.partialWithdrawal": "You have a pending partial withdrawal application",
   "account.status.choice.pillar.third.fundPensionOpeningPartialWithdrawal": "You have a pending fund pension application for regular payments and a pending partial withdrawal application",

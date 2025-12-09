@@ -104,6 +104,32 @@ export const completeThirdPillarConversion: UserConversion = {
   },
 };
 
+export const thirdPillarNoPaymentThisYear: UserConversion = {
+  weightedAverageFee: 0.004,
+  secondPillar: {
+    selectionComplete: true,
+    selectionPartial: true,
+    transfersComplete: true,
+    transfersPartial: true,
+    paymentComplete: true,
+    pendingWithdrawal: false,
+    contribution: { yearToDate: 560, lastYear: 100, total: 20600 },
+    subtraction: { yearToDate: 0, lastYear: 0, total: 0 },
+    weightedAverageFee: 0.0049,
+  },
+  thirdPillar: {
+    selectionComplete: true,
+    selectionPartial: true,
+    transfersComplete: true,
+    transfersPartial: true,
+    paymentComplete: true,
+    pendingWithdrawal: false,
+    contribution: { yearToDate: 0, lastYear: 1000, total: 37000 },
+    subtraction: { yearToDate: 0, lastYear: 0, total: 0 },
+    weightedAverageFee: 0.0049,
+  },
+};
+
 export const completeSecondPillarConversion: UserConversion = {
   weightedAverageFee: 0.004,
   secondPillar: {

@@ -434,6 +434,7 @@ export interface MandateDeadlines {
   paymentRateDeadline: string;
   paymentRateFulfillmentDate: string;
   secondPillarContributionEndDate: string;
+  thirdPillarPaymentDeadline: string;
 }
 
 export interface PaymentLink {

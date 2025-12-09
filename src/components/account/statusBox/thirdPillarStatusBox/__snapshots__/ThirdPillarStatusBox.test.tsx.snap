@@ -314,6 +314,7 @@ exports[`ThirdPillarStatusBox renders the december flow when date in december 1`
         values={
           Object {
             "b": [Function],
+            "deadline": "December 28 at 13:59",
           }
         }
       />,

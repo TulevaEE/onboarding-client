@@ -6,9 +6,14 @@ import StatusBoxRow from '../statusBoxRow';
 import { Application, Conversion, SourceFund } from '../../../common/apiModels';
 import { State } from '../../../../types';
 import ThirdPillarPaymentsAmount from './ThirdPillarContributionAmount';
-import { useFundPensionStatus, usePendingApplications } from '../../../common/apiHooks';
+import {
+  useFundPensionStatus,
+  useMandateDeadlines,
+  usePendingApplications,
+} from '../../../common/apiHooks';
 import { ActiveFundPensionDescription } from '../ActiveFundPensionDescription';
 import { InfoTooltip } from '../../../common/infoTooltip/InfoTooltip';
+import { formatDateTime } from '../../../common/dateFormatter';
 
 interface Props {
   conversion: Conversion;
@@ -25,6 +30,9 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
 }) => {
   const activeFund = thirdPillarFunds.find((fund) => fund.activeFund);
   const { data: fundPensionStatus } = useFundPensionStatus();
+  const { data: mandateDeadlines } = useMandateDeadlines();
+
+  const formattedPaymentDeadline = formatDateTime(mandateDeadlines?.thirdPillarPaymentDeadline);
 
   if (!thirdPillarActive || !activeFund) {
     return (
@@ -245,6 +253,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
           <FormattedMessage
             id="account.status.choice.pillar.third.paymentDeadline"
             values={{
+              deadline: formattedPaymentDeadline,
               b: (chunks: string) => <b className="highlight text-nowrap">{chunks}</b>,
             }}
           />,

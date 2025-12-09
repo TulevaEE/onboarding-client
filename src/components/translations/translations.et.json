@@ -294,7 +294,7 @@
   "account.status.choice.pillar.third.thisYearPaymentIncomplete.label": "Sinu selle aasta sissemakse pole veel fondi jõudnud",
   "account.status.choice.pillar.third.success.action": "Teen sissemakse",
   "account.status.choice.pillar.third.paymentInfo": "Fondiosakud jõuavad sinu kolmanda samba kontole ühe tööpäeva möödudes makse teostamisest. \n Kui teed makse reede pärastlõunal või nädalavahetusel, jõuavad osakud sinu kontole teisipäeva õhtuks.",
-  "account.status.choice.pillar.third.paymentDeadline": "Selle aasta III samba sissemakse tegemise viimane tähtaeg on <b>27. detsember 15:59</b>.",
+  "account.status.choice.pillar.third.paymentDeadline": "Selle aasta III samba sissemakse tegemise viimane tähtaeg on <b>{deadline}</b>.",
 
   "account.status.choice.pillar.third.fundPensionOpeningPartialWithdrawal": "Sul on ootel regulaarsete fondipensioni väljamaksete avaldus ja osalise väljamakse avaldus",
   "account.status.choice.pillar.third.fundPensionOpening": "Sul on ootel regulaarsete fondipensioni väljamaksete avaldus",
@@ -1202,7 +1202,7 @@
   "savingsFund.withdraw.confirmation.card.description": "Täpne summa selgub osakute müümisel ja sõltub osakute turuhinnast.",
   "savingsFund.withdraw.infoSection.investmentAccount": "Saad investeerimistulult tulumaksu tasumise edasi lükata, kui deklareerid oma pangakonto <b>investeerimiskontona</b>.",
   "savingsFund.withdraw.infoSection.investmentAccount.learnMore": "Mis see on ja kuidas see käib?",
-  "savingsFund.withdraw.infoSection.creditor": "Raha saad kanda sinu enda pangakontole.",
+  "savingsFund.withdraw.infoSection.creditor": "Raha saad kanda oma enda pangakontole.",
   "savingsFund.withdraw.infoSection.fees": "Väljamakse tegemine on tasuta.",
   "savingsFund.withdraw.error": "Väljamakse algatamisel tekkis viga. Palun proovi hiljem uuesti või võta meiega ühendust: tuleva@tuleva.ee",
 

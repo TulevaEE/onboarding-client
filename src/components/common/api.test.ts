@@ -992,17 +992,18 @@ describe('API calls', () => {
 
   describe('getMandateDeadlines', () => {
     const mockMandateDeadlines: MandateDeadlines = {
-      transferMandateFulfillmentDate: '2020-02-01',
-      periodEnding: '2020-01-31',
-      withdrawalFulfillmentDate: '2020-03-15',
-      withdrawalLatestFulfillmentDate: '2020-03-20',
-      earlyWithdrawalFulfillmentDate: '2020-02-15',
-      transferMandateCancellationDeadline: '2020-01-15',
-      withdrawalCancellationDeadline: '2020-02-15',
-      earlyWithdrawalCancellationDeadline: '2020-01-20',
-      paymentRateDeadline: '2020-01-10',
-      paymentRateFulfillmentDate: '2020-02-10',
-      secondPillarContributionEndDate: '2021-04-01',
+      transferMandateFulfillmentDate: '2020-05-04',
+      periodEnding: '2020-03-31T20:59:59.999999999Z',
+      withdrawalFulfillmentDate: '2020-01-16',
+      withdrawalLatestFulfillmentDate: '2020-01-20',
+      earlyWithdrawalFulfillmentDate: '2020-09-01',
+      transferMandateCancellationDeadline: '2020-03-31T20:59:59.999999999Z',
+      withdrawalCancellationDeadline: '2019-12-31T21:59:59.999999999Z',
+      earlyWithdrawalCancellationDeadline: '2020-07-31T20:59:59.999999999Z',
+      paymentRateDeadline: '2020-11-30T21:59:59.999999999Z',
+      paymentRateFulfillmentDate: '2021-01-01',
+      secondPillarContributionEndDate: '2020-09-01',
+      thirdPillarPaymentDeadline: '2019-12-27T13:59:59.999999999Z',
     };
 
     beforeEach(() => {
