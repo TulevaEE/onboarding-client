@@ -37,7 +37,11 @@ export const IdCardLoginTab: React.FC<IdCardLoginTabProps> = ({ onAuthenticateWi
       >
         {isLoading ? (
           <>
-            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" />
+            <span
+              className="spinner-border spinner-border-sm me-2"
+              role="status"
+              aria-hidden="true"
+            />
             <FormattedMessage id="login.enter" />
           </>
         ) : (
