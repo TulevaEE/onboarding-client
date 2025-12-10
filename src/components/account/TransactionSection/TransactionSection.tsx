@@ -15,10 +15,10 @@ export const TransactionSection: React.FunctionComponent<{
   pillar?: number;
   children?: React.ReactNode;
 }> = ({ limit, pillar, children }) => {
-  const { data: transactions } = useTransactions();
-  const { data: funds } = useFunds();
+  const { data: transactions = [], isLoading: transactionsLoading } = useTransactions();
+  const { data: funds = [], isLoading: fundsLoading } = useFunds();
 
-  if (!transactions || !funds) {
+  if (transactionsLoading || fundsLoading) {
     return (
       <section className="mt-5">
         <Shimmer height={32} />
