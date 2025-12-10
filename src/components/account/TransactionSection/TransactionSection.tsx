@@ -1,4 +1,5 @@
 import React from 'react';
+import { captureException } from '@sentry/browser';
 
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
@@ -18,7 +19,22 @@ export const TransactionSection: React.FunctionComponent<{
   const { data: transactions = [], isLoading: transactionsLoading } = useTransactions();
   const { data: funds = [], isLoading: fundsLoading } = useFunds();
 
-  if (transactionsLoading || fundsLoading) {
+  if (!Array.isArray(transactions) || !Array.isArray(funds)) {
+    captureException(
+      new Error(
+        `TransactionSection received non-array data: transactions=${JSON.stringify(
+          transactions,
+        )}, funds=${JSON.stringify(funds)}`,
+      ),
+    );
+  }
+
+  if (
+    transactionsLoading ||
+    fundsLoading ||
+    !Array.isArray(transactions) ||
+    !Array.isArray(funds)
+  ) {
     return (
       <section className="mt-5">
         <Shimmer height={32} />
