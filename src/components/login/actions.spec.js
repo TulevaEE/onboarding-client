@@ -23,7 +23,11 @@ import {
   CHANGE_PERSONAL_CODE,
 } from './constants';
 
-import { ID_CARD_LOGIN_START_FAILED_ERROR } from '../common/errorAlert/ErrorAlert';
+import {
+  ID_CARD_LOGIN_START_FAILED_ERROR,
+  WEB_EID_USER_CANCELLED,
+  WEB_EID_EXTENSION_UNAVAILABLE,
+} from '../common/errorAlert/ErrorAlert';
 
 const mockHttp = jest.genMockFromModule('../common/http');
 jest.mock('../common/http', () => mockHttp);
@@ -60,6 +64,9 @@ describe('Login actions', () => {
     mockApi.getMobileIdTokens = () => Promise.reject();
     mockApi.getSmartIdTokens = () => Promise.reject();
     mockApi.getIdCardTokens = () => Promise.reject();
+    mockApi.authenticateWithIdCardWebEid = () => Promise.reject();
+    delete window.location;
+    window.location = { search: '' };
   });
 
   afterEach(() => {
@@ -166,6 +173,111 @@ describe('Login actions', () => {
       });
       dispatch.mockClear();
       return Promise.reject(initialError);
+    });
+    const authenticateWithIdCard = createBoundAction(actions.authenticateWithIdCard);
+    expect(dispatch).not.toHaveBeenCalled();
+    return authenticateWithIdCard().then(() => {
+      expect(dispatch).toHaveBeenCalledWith({
+        type: ID_CARD_AUTHENTICATION_START_ERROR,
+        error: actualBroadcastedError,
+      });
+    });
+  });
+
+  it('can authenticate with an id card (Web eID)', () => {
+    delete window.location;
+    window.location = { search: '?webeid=true' };
+
+    const tokens = { accessToken: 'token', refreshToken: 'refreshToken' };
+    mockApi.authenticateWithIdCardWebEid = jest.fn(() => {
+      expect(dispatch).toHaveBeenCalledTimes(1);
+      expect(dispatch).toHaveBeenCalledWith({
+        type: ID_CARD_AUTHENTICATION_START,
+      });
+      dispatch.mockClear();
+      return Promise.resolve(tokens);
+    });
+    const authenticateWithIdCard = createBoundAction(actions.authenticateWithIdCard);
+    expect(dispatch).not.toHaveBeenCalled();
+    return authenticateWithIdCard().then(() => {
+      expect(dispatch).toHaveBeenCalledTimes(2);
+      expect(dispatch).toHaveBeenCalledWith({
+        type: ID_CARD_AUTHENTICATION_SUCCESS,
+        tokens,
+      });
+    });
+  });
+
+  it('can handle Web eID user cancelled error', () => {
+    delete window.location;
+    window.location = { search: '?webeid=true' };
+
+    const webEidError = { code: 'ERR_WEBEID_USER_CANCELLED' };
+    const actualBroadcastedError = {
+      body: { errors: [{ code: WEB_EID_USER_CANCELLED }] },
+    };
+
+    mockApi.authenticateWithIdCardWebEid = jest.fn(() => {
+      expect(dispatch).toHaveBeenCalledTimes(1);
+      expect(dispatch).toHaveBeenCalledWith({
+        type: ID_CARD_AUTHENTICATION_START,
+      });
+      dispatch.mockClear();
+      return Promise.reject(webEidError);
+    });
+    const authenticateWithIdCard = createBoundAction(actions.authenticateWithIdCard);
+    expect(dispatch).not.toHaveBeenCalled();
+    return authenticateWithIdCard().then(() => {
+      expect(dispatch).toHaveBeenCalledWith({
+        type: ID_CARD_AUTHENTICATION_START_ERROR,
+        error: actualBroadcastedError,
+      });
+    });
+  });
+
+  it('can handle Web eID extension unavailable error', () => {
+    delete window.location;
+    window.location = { search: '?webeid=true' };
+
+    const webEidError = { code: 'ERR_WEBEID_EXTENSION_UNAVAILABLE' };
+    const actualBroadcastedError = {
+      body: { errors: [{ code: WEB_EID_EXTENSION_UNAVAILABLE }] },
+    };
+
+    mockApi.authenticateWithIdCardWebEid = jest.fn(() => {
+      expect(dispatch).toHaveBeenCalledTimes(1);
+      expect(dispatch).toHaveBeenCalledWith({
+        type: ID_CARD_AUTHENTICATION_START,
+      });
+      dispatch.mockClear();
+      return Promise.reject(webEidError);
+    });
+    const authenticateWithIdCard = createBoundAction(actions.authenticateWithIdCard);
+    expect(dispatch).not.toHaveBeenCalled();
+    return authenticateWithIdCard().then(() => {
+      expect(dispatch).toHaveBeenCalledWith({
+        type: ID_CARD_AUTHENTICATION_START_ERROR,
+        error: actualBroadcastedError,
+      });
+    });
+  });
+
+  it('can handle Web eID generic error', () => {
+    delete window.location;
+    window.location = { search: '?webeid=true' };
+
+    const webEidError = new Error('Some other error');
+    const actualBroadcastedError = {
+      body: { errors: [{ code: ID_CARD_LOGIN_START_FAILED_ERROR }] },
+    };
+
+    mockApi.authenticateWithIdCardWebEid = jest.fn(() => {
+      expect(dispatch).toHaveBeenCalledTimes(1);
+      expect(dispatch).toHaveBeenCalledWith({
+        type: ID_CARD_AUTHENTICATION_START,
+      });
+      dispatch.mockClear();
+      return Promise.reject(webEidError);
     });
     const authenticateWithIdCard = createBoundAction(actions.authenticateWithIdCard);
     expect(dispatch).not.toHaveBeenCalled();
