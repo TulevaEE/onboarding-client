@@ -125,7 +125,7 @@ describe('API calls', () => {
         '/oauth/token',
         expect.objectContaining({
           grant_type: 'ID_CARD',
-          authToken: JSON.stringify(mockAuthToken),
+          authenticationHash: JSON.stringify(mockAuthToken),
         }),
         expect.any(Object),
       );

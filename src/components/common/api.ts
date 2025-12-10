@@ -108,7 +108,7 @@ export async function authenticateWithIdCardWebEid(language: string): Promise<To
   const { challengeCode } = await post(getEndpoint('/authenticate'), { type: 'ID_CARD' });
   const authToken = await webEidAuthenticate(challengeCode, { lang: language });
   const tokens = await getTokensWithGrantType('ID_CARD', {
-    authToken: JSON.stringify(authToken),
+    authenticationHash: JSON.stringify(authToken),
   });
   if (!tokens) {
     throw new Error('Authentication failed');
