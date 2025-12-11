@@ -22,9 +22,9 @@ export const TransactionSection: React.FunctionComponent<{
   if (!Array.isArray(transactions) || !Array.isArray(funds)) {
     captureException(
       new Error(
-        `TransactionSection received non-array data: transactions=${JSON.stringify(
+        `TransactionSection received non-array data: transactionsType=${typeof transactions}, fundsType=${typeof funds}, transactions=${JSON.stringify(
           transactions,
-        )}, funds=${JSON.stringify(funds)}`,
+        )?.slice(0, 200)}, funds=${JSON.stringify(funds)?.slice(0, 200)}`,
       ),
     );
   }
