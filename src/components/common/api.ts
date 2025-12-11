@@ -1,5 +1,5 @@
 import config from 'react-global-configuration';
-import { authenticate as webEidAuthenticate } from '@web-eid/web-eid-library/web-eid';
+import { authenticate as webEidAuthenticate } from '@web-eid/web-eid-library';
 import {
   AmlCheck,
   Application,

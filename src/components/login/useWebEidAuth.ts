@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { useHistory } from 'react-router-dom';
 import config from 'react-global-configuration';
-import { ErrorCode } from '@web-eid/web-eid-library/web-eid';
+import { ErrorCode } from '@web-eid/web-eid-library';
 
 import { authenticateWithIdCardWebEid } from '../common/api';
 import {

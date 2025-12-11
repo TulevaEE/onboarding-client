@@ -6,7 +6,7 @@ import { Router } from 'react-router-dom';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import config from 'react-global-configuration';
 import { IntlProvider } from 'react-intl';
-import { ErrorCode } from '@web-eid/web-eid-library/web-eid';
+import { ErrorCode } from '@web-eid/web-eid-library';
 
 import { IdCardLoginTab } from './loginForm/IdCardLoginTab';
 import translations from '../translations/translations.en.json';

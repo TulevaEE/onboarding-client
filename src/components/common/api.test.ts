@@ -63,7 +63,7 @@ jest.mock('./authenticationManager', () => ({
 }));
 
 const mockWebEidAuthenticate = jest.fn();
-jest.mock('@web-eid/web-eid-library/web-eid', () => ({
+jest.mock('@web-eid/web-eid-library', () => ({
   authenticate: (...args: unknown[]) => mockWebEidAuthenticate(...args),
 }));
 

@@ -2,7 +2,7 @@
 
 import * as Sentry from '@sentry/browser';
 import config from 'react-global-configuration';
-import { ErrorCode } from '@web-eid/web-eid-library/web-eid';
+import { ErrorCode } from '@web-eid/web-eid-library';
 
 import {
   CHANGE_PHONE_NUMBER,
