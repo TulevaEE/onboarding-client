@@ -64,7 +64,7 @@
     "prepare": "husky"
   },
   "devDependencies": {
-    "@tanstack/react-query-devtools": "^4.41.0",
+    "@tanstack/react-query-devtools": "^5.91.1",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.0",
     "@testing-library/react": "^12.1.5",
