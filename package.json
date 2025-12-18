@@ -9,7 +9,7 @@
   "dependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@sentry/browser": "^7.120.4",
-    "@tanstack/react-query": "^4.41.0",
+    "@tanstack/react-query": "^5.90.12",
     "@web-eid/web-eid-library": "github:ErkoRisthein/web-eid.js",
     "array.prototype.find": "^2.2.3",
     "axios": "^1.13.2",
