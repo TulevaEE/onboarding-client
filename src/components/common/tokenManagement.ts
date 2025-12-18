@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
+import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 import config from 'react-global-configuration';
 import { AuthenticationPrincipal, Token } from './apiModels';
 import { AuthenticationManager, getAuthentication } from './authenticationManager';
@@ -81,7 +81,8 @@ const refreshCurrentToken = async (
 };
 
 function isAccessTokenExpired(error: AxiosError) {
-  return error.response?.status === 401 && error.response.data.error === 'TOKEN_EXPIRED';
+  const data = error.response?.data as { error?: string } | undefined;
+  return error.response?.status === 401 && data?.error === 'TOKEN_EXPIRED';
 }
 
 export function createAxiosInstance(): AxiosInstance {
@@ -92,18 +93,16 @@ export function createAxiosInstance(): AxiosInstance {
   });
 
   axiosInstance.interceptors.request.use(
-    (configuration: AxiosRequestConfig) => {
+    (configuration: InternalAxiosRequestConfig) => {
       const token = getCurrentAccessToken();
       const language = config.get('language');
 
-      return {
-        ...configuration,
-        headers: {
-          ...configuration.headers,
-          Authorization: token ? `Bearer ${token}` : configuration.headers?.Authorization ?? '',
-          'Accept-Language': language,
-        },
-      };
+      if (token) {
+        configuration.headers.set('Authorization', `Bearer ${token}`);
+      }
+      configuration.headers.set('Accept-Language', language);
+
+      return configuration;
     },
     (error) => Promise.reject(error),
   );
@@ -144,10 +143,8 @@ export function createAxiosInstance(): AxiosInstance {
 }
 
 function isRefreshTokenExpired(axiosError: AxiosError) {
-  return (
-    axiosError.response?.status === 403 &&
-    axiosError.response?.data.error === 'REFRESH_TOKEN_EXPIRED'
-  );
+  const data = axiosError.response?.data as { error?: string } | undefined;
+  return axiosError.response?.status === 403 && data?.error === 'REFRESH_TOKEN_EXPIRED';
 }
 
 function handleTokenRefreshFailure(
