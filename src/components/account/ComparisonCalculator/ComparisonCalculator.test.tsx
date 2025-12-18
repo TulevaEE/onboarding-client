@@ -175,6 +175,40 @@ describe('ComparisonCalculator', () => {
     expect(timeSelect).toHaveTextContent('Last year');
   });
 
+  test('defaults to Tuleva inception date when user started II pillar before Tuleva', async () => {
+    userBackend(server, { secondPillarOpenDate: '2004-03-19' });
+    await component();
+
+    const timeSelect = await timePeriodSelect();
+    expect(timeSelect).toHaveValue('2017-04-27');
+  });
+
+  test('defaults to user start date when user started II pillar after Tuleva inception', async () => {
+    userBackend(server, { secondPillarOpenDate: '2020-01-01' });
+    await component();
+
+    const timeSelect = await timePeriodSelect();
+    expect(timeSelect).toHaveValue('2020-01-01');
+  });
+
+  test('defaults to Tuleva inception date when user started III pillar before Tuleva', async () => {
+    userBackend(server, { thirdPillarInitDate: '2004-03-19' });
+    await component();
+    userEvent.click(await pillar3button());
+
+    const timeSelect = await timePeriodSelect();
+    expect(timeSelect).toHaveValue('2019-10-14');
+  });
+
+  test('defaults to user start date when user started III pillar after Tuleva inception', async () => {
+    userBackend(server, { thirdPillarInitDate: '2022-01-01' });
+    await component();
+    userEvent.click(await pillar3button());
+
+    const timeSelect = await timePeriodSelect();
+    expect(timeSelect).toHaveValue('2022-01-01');
+  });
+
   test('renders 3rd pillar time period select', async () => {
     await component();
     userEvent.click(await pillar3button());

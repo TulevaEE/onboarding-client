@@ -157,8 +157,9 @@ const ComparisonCalculator: React.FC = () => {
     (state: RootState) => state.login.user?.thirdPillarInitDate || '2004-03-19',
   );
   useEffect(() => {
-    setTimePeriodOptions(getFromDateOptions());
-    setSelectedTimePeriod(getFromDateOptions()[0].value);
+    const options = getFromDateOptions();
+    setTimePeriodOptions(options);
+    setSelectedTimePeriod(options[0]?.value || '');
     setSelectedComparison(Key.UNION_STOCK_INDEX);
   }, [secondPillarOpenDate, thirdPillarInitDate, selectedPillar]);
 
@@ -531,19 +532,6 @@ const ComparisonCalculator: React.FC = () => {
     const inceptionDate = selectedPillar === Key.SECOND_PILLAR ? INCEPTION : THIRD_PILLAR_INCEPTION;
 
     const topGroup = [
-      {
-        value: beginning,
-        label: formatMessage(
-          {
-            id: 'comparisonCalculator.period.all',
-          },
-          {
-            pillar: getPillarAsString(),
-            date: beginning,
-          },
-        ),
-        translate: false,
-      },
       ...(new Date(inceptionDate) >= new Date(referenceDate)
         ? [
             {
@@ -561,6 +549,19 @@ const ComparisonCalculator: React.FC = () => {
             },
           ]
         : []),
+      {
+        value: beginning,
+        label: formatMessage(
+          {
+            id: 'comparisonCalculator.period.all',
+          },
+          {
+            pillar: getPillarAsString(),
+            date: beginning,
+          },
+        ),
+        translate: false,
+      },
     ];
 
     const twentyYearsAgo = format(moment().subtract(20, 'years'));
