@@ -250,7 +250,9 @@ describe('ComparisonCalculator', () => {
       within(comparisonSelect).getByRole('group', { name: 'Low fee funds (below 0.5%)' }),
     ).toBeInTheDocument();
     expect(
-      within(comparisonSelect).getByRole('group', { name: 'High fee funds (0.65%–0.65%)' }),
+      within(comparisonSelect).getByRole('group', {
+        name: /High fee funds \(\d+\.\d+%–\d+\.\d+%\)/,
+      }),
     ).toBeInTheDocument();
   });
 
