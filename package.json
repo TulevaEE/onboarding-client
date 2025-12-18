@@ -88,7 +88,7 @@
     "buffer": "^6.0.3",
     "enzyme": "^3.11.0",
     "enzyme-to-json": "^3.6.2",
-    "eslint-plugin-formatjs": "^4.13.3",
+    "eslint-plugin-formatjs": "^6.0.2",
     "eslint-plugin-fp": "^2.3.0",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-jest-dom": "^5.5.0",
