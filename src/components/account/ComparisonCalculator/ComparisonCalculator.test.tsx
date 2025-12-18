@@ -242,6 +242,18 @@ describe('ComparisonCalculator', () => {
     expect(comparisonSelect).toHaveTextContent('Swedbank Pension Fund K60');
   });
 
+  test('renders dynamic fee range in comparison dropdown group labels', async () => {
+    await component();
+
+    const comparisonSelect = await comparedToSelect();
+    expect(
+      within(comparisonSelect).getByRole('group', { name: 'Low fee funds (below 0.5%)' }),
+    ).toBeInTheDocument();
+    expect(
+      within(comparisonSelect).getByRole('group', { name: 'High fee funds (0.65%–0.65%)' }),
+    ).toBeInTheDocument();
+  });
+
   test('renders 3rd pillar compare to select', async () => {
     userBackend(server);
     await component();

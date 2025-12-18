@@ -882,6 +882,8 @@ const ComparisonCalculator: React.FC = () => {
 
     const lowestHighFeeFund =
       Math.round(Math.min(...highFeeFunds.map((fund) => fund.ongoingChargesFigure)) * 10000) / 100;
+    const highestHighFeeFund =
+      Math.round(Math.max(...highFeeFunds.map((fund) => fund.ongoingChargesFigure)) * 10000) / 100;
 
     const groups: OptionGroup[] = [
       {
@@ -901,6 +903,7 @@ const ComparisonCalculator: React.FC = () => {
           },
           {
             minimumFee: lowestHighFeeFund,
+            maximumFee: highestHighFeeFund,
           },
         ),
         options: highFeeComparisonOptions,
