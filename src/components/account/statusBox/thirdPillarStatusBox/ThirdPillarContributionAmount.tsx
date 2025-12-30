@@ -23,10 +23,10 @@ export const ThirdPillarContributionAmount: React.FunctionComponent<Props> = ({
         id="account.status.contributionAmount"
         values={{
           thisYearContribution: (
-            <b className="text-nowrap">{(conversion.contribution.yearToDate || 0).toFixed(0)} €</b>
+            <b className="text-nowrap">{conversion.contribution.yearToDate || 0} €</b>
           ),
           lastYearContribution: (
-            <b className="text-nowrap">{(conversion.contribution.lastYear || 0).toFixed(0)} €</b>
+            <b className="text-nowrap">{conversion.contribution.lastYear || 0} €</b>
           ),
         }}
       />
