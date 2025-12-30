@@ -251,7 +251,7 @@ describe('SecondPillarPaymentRateTaxWin', () => {
   it('handles large contribution amounts', () => {
     const employeeWithheldPortion10ThousandEuros = 10_000;
     const january10th2024 = '2024-01-10T10:00:00Z';
-    const expectedFormattedLargeAmount = '2 200 €';
+    const expectedFormattedLargeAmount = '2200 €';
 
     const largeAmountContribution = [
       createSecondPillarContributionWithEmployeePortion(
