@@ -38,7 +38,7 @@
     "react-global-configuration": "^1.4.1",
     "react-gtm-module": "^2.0.11",
     "react-hook-form": "^7.63.0",
-    "react-intl": "^5.25.1",
+    "react-intl": "^8.0.9",
     "react-redux": "^7.2.9",
     "react-router-dom": "^5.3.4",
     "react-tooltip": "4.2.17",
