@@ -61,15 +61,13 @@ describe('SecondPillarPaymentRateTaxWin', () => {
     jest.clearAllMocks();
   });
 
-  it('renders with zero tax win when no contributions', () => {
+  it('renders nothing when no contributions', () => {
     const emptyContributionsList: SecondPillarContribution[] = [];
     mockUseContributions.mockReturnValue({ data: emptyContributionsList } as any);
 
-    renderComponentWithTranslations(<SecondPillarPaymentRateTaxWin />);
+    const { container } = renderComponentWithTranslations(<SecondPillarPaymentRateTaxWin />);
 
-    expect(screen.getByText('0 €')).toBeInTheDocument();
-    const link = screen.getByRole('link', { name: /saved/i });
-    expect(link).toHaveAttribute('href', '/2nd-pillar-tax-win');
+    expect(container).toBeEmptyDOMElement();
   });
 
   it('renders shimmer when contributions is undefined', () => {
@@ -267,10 +265,9 @@ describe('SecondPillarPaymentRateTaxWin', () => {
     expect(screen.getByText(expectedFormattedLargeAmount)).toBeInTheDocument();
   });
 
-  it('handles zero employee withheld portion contributions', () => {
+  it('renders nothing when zero employee withheld portion contributions', () => {
     const employeeWithheldPortionZeroEuros = 0;
     const january10th2024 = '2024-01-10T10:00:00Z';
-    const expectedZeroTaxBenefit = '0 €';
 
     const zeroAmountContribution = [
       createSecondPillarContributionWithEmployeePortion(
@@ -281,9 +278,9 @@ describe('SecondPillarPaymentRateTaxWin', () => {
 
     mockUseContributions.mockReturnValue({ data: zeroAmountContribution } as any);
 
-    renderComponentWithTranslations(<SecondPillarPaymentRateTaxWin />);
+    const { container } = renderComponentWithTranslations(<SecondPillarPaymentRateTaxWin />);
 
-    expect(screen.getByText(expectedZeroTaxBenefit)).toBeInTheDocument();
+    expect(container).toBeEmptyDOMElement();
   });
 
   it('handles very small decimal amounts correctly', () => {

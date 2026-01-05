@@ -17,6 +17,9 @@ export const SecondPillarPaymentRateTaxWin = ({
     return variant === 'inline' ? null : <Shimmer height={24} />;
   }
   const taxWin = yearToDateTaxWin(contributions);
+  if (taxWin <= 0) {
+    return null;
+  }
   return (
     <FormattedMessage
       id={
