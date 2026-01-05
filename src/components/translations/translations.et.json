@@ -231,7 +231,7 @@
   "new.user.flow.payment.intro": "Vali sobiv viis liitumistasu maksmiseks. Seejärel saad valida Tuleva pensionifondi. Tähelepanu: liitumistasu peab laekuma enda pangakontolt.",
   "new.user.flow.payment.bank.links": "Pangalingid",
   "invalid.mandate.source.amount.exceeded": "Mõne fondi ületoomise protsent on rohkem kui 100%.",
-  "invalid.mandate.checks.missing": "Rahapesu kontrolliga seotud piirangute tõttu saate teha avalduse Swedbanki või SEB netipangas või pensionikeskuses, Tuleva rakenduses veel mitte.",
+  "invalid.mandate.checks.missing": "Hoolsusmeetmete kontrolliga seotud piirangute tõttu saate teha avalduse Swedbanki või SEB netipangas või pensionikeskuses, Tuleva rakenduses veel mitte.",
   "invalid.mandate.same.source.and.target.transfer.present": "Mõne fondi osakute vahetus on hetkel määratud samasse fondi - seda ei saa teostada.",
   "invalid.mandate.future.contributions.to.same.fund": "Valitud edasiste sissemakste fond on juba aktiivne.",
   "mobile.id.session.not.found": "Mobiil-ID sessioon on aegunud, palun logi uuesti sisse.",
@@ -698,7 +698,7 @@
 
   "comparisonCalculator.comparisonOptions.benchmarks": "Mõõdikud",
   "comparisonCalculator.comparisonOptions.lowFeeFunds": "Madala tasuga fondid (alla 0.5%)",
-  "comparisonCalculator.comparisonOptions.highFeeFunds": "Kõrge tasuga fondid ({minimumFee}%–1.56%)",
+  "comparisonCalculator.comparisonOptions.highFeeFunds": "Kõrge tasuga fondid ({minimumFee}%–{maximumFee}%)",
   "comparisonCalculator.comparisonOptions.UNION_STOCK_INDEX": "Maailmaturu indeks",
   "comparisonCalculator.comparisonOptions.EPI": "Eesti keskmine II samba fond",
   "comparisonCalculator.comparisonOptions.EPI_3": "Eesti keskmine III samba fond",
