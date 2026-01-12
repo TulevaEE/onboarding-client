@@ -45,8 +45,7 @@ export const ConfirmThirdPillarMandate = ({
   mandateSigningError,
 }) => {
   const isTestModeEnabled = isTestMode();
-  const buttonDisabled =
-    !agreedToTerms || !isResident || !(isPoliticallyExposed === false) || !occupation;
+  const buttonDisabled = !agreedToTerms || !isResident || !occupation;
   return (
     <>
       {!isTestModeEnabled && (
