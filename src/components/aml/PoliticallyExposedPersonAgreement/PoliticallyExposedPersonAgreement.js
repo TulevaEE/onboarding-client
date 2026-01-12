@@ -7,7 +7,6 @@ import { Field } from 'redux-form';
 import { FormattedMessage } from 'react-intl';
 import { changeIsPoliticallyExposed } from '../actions';
 import { InfoTooltip } from '../../common/infoTooltip/InfoTooltip';
-import { requiredField } from '../../common/form';
 
 export const PoliticallyExposedPersonAgreement = ({
   isPoliticallyExposed,
@@ -24,7 +23,6 @@ export const PoliticallyExposedPersonAgreement = ({
         name="aml.isNotPoliticallyExposed"
         id="aml-not-pep-checkbox"
         className="form-check-input"
-        validate={[requiredField]}
       />
       <label className="form-check-label" htmlFor="aml-not-pep-checkbox">
         <FormattedMessage id="aml.isNotPep" />

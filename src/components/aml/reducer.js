@@ -12,7 +12,7 @@ import {
 import { UPDATE_USER_SUCCESS } from '../common/user/constants';
 
 export const initialState = {
-  isPoliticallyExposed: null,
+  isPoliticallyExposed: true,
   isResident: null,
   occupation: null,
   loading: false,

@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import UpdateUserForm from '../contact-details/updateUserForm';
+import PoliticallyExposedPersonAgreement from './PoliticallyExposedPersonAgreement';
 import ResidencyAgreement from './ResidencyAgreement';
 import OccupationAgreement from './OccupationAgreement';
 import { updateUserAndAml } from './actions';
@@ -23,6 +24,7 @@ export const AmlPage = ({ save, updateUserSuccess, createAmlChecksSuccess, locat
       <FormattedMessage id="aml.updateContactDetails" />
     </p>
     <UpdateUserForm onSubmit={save}>
+      <PoliticallyExposedPersonAgreement className="mt-3" />
       <OccupationAgreement className="mt-3" />
       <ResidencyAgreement className="mt-3 mb-4" />
     </UpdateUserForm>
