@@ -39,11 +39,13 @@ export const PoliticallyExposedPersonAgreement = ({
 PoliticallyExposedPersonAgreement.propTypes = {
   isPoliticallyExposed: Types.bool,
   onPoliticallyExposedChange: Types.func,
+  className: Types.string,
 };
 
 PoliticallyExposedPersonAgreement.defaultProps = {
   isPoliticallyExposed: null,
   onPoliticallyExposedChange: () => {},
+  className: '',
 };
 
 const mapStateToProps = (state) => ({
