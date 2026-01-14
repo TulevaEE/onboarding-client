@@ -26,7 +26,11 @@ export const InfoSection: FC<InfoSectionProps> = ({ variant }) => {
               values={{ b: (chunks: ReactNode) => <strong>{chunks}</strong> }}
             />
             <br />
-            <a href="/" target="_blank" rel="noreferrer">
+            <a
+              href="https://tuleva.ee/soovitused/miks-kasutada-kogumisfondi-puhul-investeerimiskontot/"
+              target="_blank"
+              rel="noreferrer"
+            >
               <FormattedMessage
                 id={`savingsFund.${variant}.infoSection.investmentAccount.learnMore`}
               />

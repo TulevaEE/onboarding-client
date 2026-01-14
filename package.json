@@ -133,8 +133,8 @@
       "pre-commit": "lint-staged --debug"
     }
   },
-  "proxy": "http://localhost:9000",
-  "//proxy": "https://onboarding-service.tuleva.ee",
+  "//proxy": "http://localhost:9000",
+  "proxy": "https://onboarding-service.tuleva.ee",
   "browserslist": [
     ">0.3% in EE",
     "last 2 versions and last 2 years and supports es6-module",

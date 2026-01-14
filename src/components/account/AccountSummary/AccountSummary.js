@@ -84,6 +84,18 @@ const AccountSummary = ({
           0,
         );
 
+  if (savingsFundBalance) {
+    summary.push(
+      getPillarSummary(
+        null,
+        'accountStatement.savingsFund.heading',
+        savingsFundBalance.contributions,
+        savingsFundBalance.subtractions,
+        [savingsFundBalance],
+      ),
+    );
+  }
+
   if (memberCapital) {
     summary.push({
       pillar: null,
@@ -95,18 +107,6 @@ const AccountSummary = ({
       profit: sumBy(memberCapital, (row) => row.profit),
       value: sumBy(memberCapital, (row) => row.value),
     });
-  }
-
-  if (savingsFundBalance) {
-    summary.push(
-      getPillarSummary(
-        null,
-        'accountStatement.savingsFund.heading',
-        savingsFundBalance.contributions,
-        savingsFundBalance.subtractions,
-        [savingsFundBalance],
-      ),
-    );
   }
 
   const feesEuroSum = sumBy(summary, (summaryItem) => summaryItem.feesEuro);

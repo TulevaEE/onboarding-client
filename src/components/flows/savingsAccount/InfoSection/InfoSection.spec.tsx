@@ -14,7 +14,11 @@ describe('InfoSection', () => {
         screen.getByText(/You can defer paying income tax on investment returns/i),
       ).toBeInTheDocument();
       expect(screen.getByText('investment account')).toBeInTheDocument();
-      expect(screen.getByText('Making a deposit is free.')).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          'Making a deposit is free. Make sure your bank account transfer limit is large enough.',
+        ),
+      ).toBeInTheDocument();
     });
 
     it('renders learn more link', () => {
@@ -24,7 +28,10 @@ describe('InfoSection', () => {
         name: 'What is this and how does it work?',
       });
       expect(learnMoreLink).toBeInTheDocument();
-      expect(learnMoreLink).toHaveAttribute('href', '/');
+      expect(learnMoreLink).toHaveAttribute(
+        'href',
+        'https://tuleva.ee/soovitused/miks-kasutada-kogumisfondi-puhul-investeerimiskontot/',
+      );
       expect(learnMoreLink).toHaveAttribute('target', '_blank');
       expect(learnMoreLink).toHaveAttribute('rel', 'noreferrer');
     });
@@ -51,7 +58,10 @@ describe('InfoSection', () => {
         name: 'What is this and how does it work?',
       });
       expect(learnMoreLink).toBeInTheDocument();
-      expect(learnMoreLink).toHaveAttribute('href', '/');
+      expect(learnMoreLink).toHaveAttribute(
+        'href',
+        'https://tuleva.ee/soovitused/miks-kasutada-kogumisfondi-puhul-investeerimiskontot/',
+      );
       expect(learnMoreLink).toHaveAttribute('target', '_blank');
       expect(learnMoreLink).toHaveAttribute('rel', 'noreferrer');
     });

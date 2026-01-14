@@ -93,4 +93,95 @@ describe(SavingsFundPayment, () => {
     );
     expect(windowLocation).toHaveBeenCalledTimes(1);
   });
+
+  it('shows "Other bank" option and displays payment details when selected', async () => {
+    expect(
+      await screen.findByRole('heading', { name: 'Deposit to additional savings fund' }),
+    ).toBeInTheDocument();
+
+    const otherBankRadio = screen.getByRole('radio', { name: 'Other bank' });
+    userEvent.click(otherBankRadio);
+    expect(otherBankRadio).toBeChecked();
+
+    expect(await screen.findByText('Make a deposit from another bank')).toBeInTheDocument();
+    expect(screen.getByText('Tuleva Täiendav Kogumisfond')).toBeInTheDocument();
+    expect(screen.getByText('EE711010220306707220')).toBeInTheDocument();
+    expect(screen.getByText('39001011234')).toBeInTheDocument();
+  });
+
+  it('shows "Back to account page" link when "Other bank" is selected', async () => {
+    expect(
+      await screen.findByRole('heading', { name: 'Deposit to additional savings fund' }),
+    ).toBeInTheDocument();
+
+    const otherBankRadio = screen.getByRole('radio', { name: 'Other bank' });
+    userEvent.click(otherBankRadio);
+
+    expect(await screen.findByText('Did you make the payment?')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Back to account page' })).toHaveAttribute(
+      'href',
+      '/account',
+    );
+    expect(screen.queryByRole('button', { name: 'Continue' })).not.toBeInTheDocument();
+  });
+
+  it('shows amount in payment details when "Other bank" is selected', async () => {
+    expect(
+      await screen.findByRole('heading', { name: 'Deposit to additional savings fund' }),
+    ).toBeInTheDocument();
+
+    const amountInput = screen.getByRole('textbox', { name: 'Amount' });
+    userEvent.type(amountInput, '250');
+
+    const otherBankRadio = screen.getByRole('radio', { name: 'Other bank' });
+    userEvent.click(otherBankRadio);
+
+    expect(await screen.findByText('250.00 EUR')).toBeInTheDocument();
+  });
+
+  it('hides bank selection and shows manual payment details when amount is 15000 or more', async () => {
+    expect(
+      await screen.findByRole('heading', { name: 'Deposit to additional savings fund' }),
+    ).toBeInTheDocument();
+
+    const amountInput = screen.getByRole('textbox', { name: 'Amount' });
+    userEvent.type(amountInput, '15000');
+
+    expect(screen.queryByRole('radio', { name: 'LHV' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('radio', { name: 'Other bank' })).not.toBeInTheDocument();
+
+    expect(await screen.findByText('Make a deposit via bank transfer')).toBeInTheDocument();
+    expect(screen.getByText('Tuleva Täiendav Kogumisfond')).toBeInTheDocument();
+    expect(screen.getByText('EE711010220306707220')).toBeInTheDocument();
+    expect(screen.getByText('15000.00 EUR')).toBeInTheDocument();
+  });
+
+  it('shows "Back to account page" link when amount is 15000 or more', async () => {
+    expect(
+      await screen.findByRole('heading', { name: 'Deposit to additional savings fund' }),
+    ).toBeInTheDocument();
+
+    const amountInput = screen.getByRole('textbox', { name: 'Amount' });
+    userEvent.type(amountInput, '15000');
+
+    expect(await screen.findByText('Did you make the payment?')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Back to account page' })).toHaveAttribute(
+      'href',
+      '/account',
+    );
+    expect(screen.queryByRole('button', { name: 'Continue' })).not.toBeInTheDocument();
+  });
+
+  it('shows bank selection when amount is below 15000', async () => {
+    expect(
+      await screen.findByRole('heading', { name: 'Deposit to additional savings fund' }),
+    ).toBeInTheDocument();
+
+    const amountInput = screen.getByRole('textbox', { name: 'Amount' });
+    userEvent.type(amountInput, '14999');
+
+    expect(screen.getByRole('radio', { name: 'LHV' })).toBeInTheDocument();
+    expect(screen.getByRole('radio', { name: 'Other bank' })).toBeInTheDocument();
+    expect(screen.queryByText('Make a deposit from another bank')).not.toBeInTheDocument();
+  });
 });

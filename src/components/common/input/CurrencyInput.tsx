@@ -25,9 +25,12 @@ export function CurrencyInput({
     if (value == null || Number.isNaN(value)) {
       setInputValue('');
     } else {
-      setInputValue(value.toString());
+      const currentNumericValue = Number(inputValue.replace(',', '.'));
+      if (currentNumericValue !== value) {
+        setInputValue(value.toString());
+      }
     }
-  }, [value]);
+  }, [value, inputValue]);
 
   const handleChange = (raw: string) => {
     const euroRegex = /^\d+([.,]\d{0,2})?$/;

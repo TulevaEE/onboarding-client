@@ -4,16 +4,20 @@ interface PaymentDetailRowProps {
   label: React.ReactNode;
   value: React.ReactNode;
   tooltip?: React.ReactNode;
+  labelCol?: number;
+  valueCol?: number;
 }
 
 export const PaymentDetailRow: React.FunctionComponent<PaymentDetailRowProps> = ({
   label,
   value,
   tooltip,
+  labelCol = 6,
+  valueCol = 6,
 }) => (
   <div className="row mb-2">
-    <div className={`col-12 col-md-${tooltip ? 4 : 6} text-md-end`}>{label}:</div>
-    <div className="col-12 col-md-6">
+    <div className={`col-12 col-md-${tooltip ? 4 : labelCol} text-md-end`}>{label}:</div>
+    <div className={`col-12 col-md-${valueCol}`}>
       <b>{value}</b>
     </div>
     {tooltip && <div className="col-12 col-md-2 d-none d-md-block">{tooltip}</div>}

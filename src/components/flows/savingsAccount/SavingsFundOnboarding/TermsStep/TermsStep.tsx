@@ -21,7 +21,7 @@ export const TermsStep: FC<TermsStepProps> = ({ control, showError }) => {
         <p className="m-0">
           <a
             className="d-flex align-items-center gap-2 p-3 p-sm-4 bg-blue-1 border border-blue-2 rounded-3 lead"
-            href="https://tuleva.ee/wp-content/uploads/2025/05/Tuleva-III-Samba-Pensionifondi-tingimused-15.06.2025.pdf"
+            href="https://tuleva.ee/wp-content/uploads/2026/01/Tuleva-Taiendav-Kogumisfond.-Tingimused.-12.01.2026.pdf"
             target="_blank"
             rel="noreferrer"
           >
