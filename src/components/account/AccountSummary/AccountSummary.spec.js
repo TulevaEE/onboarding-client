@@ -134,7 +134,10 @@ describe('Account summary', () => {
     expect(dataSource[1].pillarLabel).toEqual(
       <FormattedMessage id="accountStatement.thirdPillar.heading" />,
     );
-    expect(dataSource[2].pillarLabel).toEqual(<FormattedMessage id="memberCapital.heading" />);
+    expect(dataSource[2].pillarLabel).toEqual(
+      <FormattedMessage id="accountStatement.savingsFund.heading" />,
+    );
+    expect(dataSource[3].pillarLabel).toEqual(<FormattedMessage id="memberCapital.heading" />);
 
     expect(dataSource[0].contributions).toEqual(
       <Link to="/2nd-pillar-contributions">
@@ -150,23 +153,20 @@ describe('Account summary', () => {
     );
     expect(dataSource[1].subtractions).toEqual(<Euro amount={-2} />);
 
-    expect(dataSource[2].contributions).toEqual(<Euro amount={3} />);
+    expect(dataSource[2].contributions).toEqual(<Euro amount={10} />);
     expect(dataSource[2].subtractions).toEqual(<Euro amount={0} />);
+
+    expect(dataSource[3].contributions).toEqual(<Euro amount={3} />);
+    expect(dataSource[3].subtractions).toEqual(<Euro amount={0} />);
 
     expect(dataSource[0].profit).toEqual(<Euro amount={112} />);
     expect(dataSource[1].profit).toEqual(<Euro amount={-36} />);
-    expect(dataSource[2].profit).toEqual(<Euro amount={3} />);
+    expect(dataSource[2].profit).toEqual(<Euro amount={2} />);
+    expect(dataSource[3].profit).toEqual(<Euro amount={3} />);
     expect(dataSource[0].value).toEqual(<Euro amount={114} />);
     expect(dataSource[1].value).toEqual(<Euro amount={66} />);
-    expect(dataSource[2].value).toEqual(<Euro amount={6} />);
-
-    expect(dataSource[3].pillarLabel).toEqual(
-      <FormattedMessage id="accountStatement.savingsFund.heading" />,
-    );
-    expect(dataSource[3].contributions).toEqual(<Euro amount={10} />);
-    expect(dataSource[3].subtractions).toEqual(<Euro amount={0} />);
-    expect(dataSource[3].profit).toEqual(<Euro amount={2} />);
-    expect(dataSource[3].value).toEqual(<Euro amount={12} />);
+    expect(dataSource[2].value).toEqual(<Euro amount={12} />);
+    expect(dataSource[3].value).toEqual(<Euro amount={6} />);
   });
 
   it('passes total as each column footer', () => {

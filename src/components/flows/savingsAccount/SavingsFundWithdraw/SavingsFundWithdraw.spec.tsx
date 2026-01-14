@@ -250,7 +250,7 @@ describe(SavingsFundWithdraw, () => {
     userEvent.type(amountInput, '5000');
 
     await waitFor(() => {
-      expect(amountInput).toHaveValue(mockSavingsFundBalance.price.toString());
+      expect(amountInput).toHaveValue(mockSavingsFundBalance.price.toFixed(2));
     });
   });
 

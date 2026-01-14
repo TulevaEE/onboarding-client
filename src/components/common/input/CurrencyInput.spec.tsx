@@ -96,7 +96,7 @@ describe('CurrencyInput', () => {
     userEvent.type(input, '150');
 
     await waitFor(() => {
-      expect(input).toHaveValue('100');
+      expect(input).toHaveValue('100.00');
     });
   });
 
