@@ -14,7 +14,7 @@
     "array.prototype.find": "^2.2.3",
     "axios": "^1.13.2",
     "bootstrap": "^5.3.8",
-    "chart.js": "^4.5.0",
+    "chart.js": "^4.5.1",
     "chartjs-plugin-datalabels": "^2.2.0",
     "classnames": "^2.2.6",
     "connected-react-router": "^6.9.3",
