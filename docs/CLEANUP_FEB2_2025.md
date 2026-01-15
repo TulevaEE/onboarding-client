@@ -47,6 +47,32 @@ Remove feature flag check from `isCancellationAllowed` function:
 - }
 ```
 
+### 4. Simplify SavingsFundPaymentSuccess.tsx
+**File**: `src/components/flows/savingsAccount/SavingsFundPayment/SavingsFundPaymentSuccess.tsx`
+
+Remove import:
+```diff
+- import { isSavingsFundWithdrawalEnabled } from '../../../common/featureFlags';
+```
+
+Remove conditional description logic:
+```diff
+- const descriptionKey = isSavingsFundWithdrawalEnabled()
+-   ? 'savingsFund.payment.success.description'
+-   : 'savingsFund.payment.success.description.initialOffer';
+...
+- <FormattedMessage id={descriptionKey} />
++ <FormattedMessage id="savingsFund.payment.success.description" />
+```
+
+### 5. Remove Initial Offer Translation Keys
+**Files**: `src/components/translations/translations.et.json`, `translations.en.json`
+
+Remove:
+```diff
+- "savingsFund.payment.success.description.initialOffer": "..."
+```
+
 ## Verification
 1. Run `npm test` - all tests should pass
 2. Manually verify withdraw link appears on account page

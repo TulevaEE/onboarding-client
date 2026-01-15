@@ -1118,6 +1118,7 @@
   "savingsFund.payment.success.pageTitle": "Deposit made",
   "savingsFund.payment.success.title": "Deposit made",
   "savingsFund.payment.success.description": "The deposit amount will be invested in the fund by the end of next business day. We will notify you of this by email.",
+  "savingsFund.payment.success.description.initialOffer": "Units will arrive in your Tuleva account after the initial offer ends in early February. We will notify you by email.",
 
   "savingsFund.withdraw.pageTitle": "Withdraw",
   "savingsFund.withdraw.title": "Withdraw from additional savings fund",

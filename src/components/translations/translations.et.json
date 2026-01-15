@@ -1199,6 +1199,7 @@
   "savingsFund.payment.success.pageTitle": "Sissemakse tehtud",
   "savingsFund.payment.success.title": "Sissemakse on tehtud",
   "savingsFund.payment.success.description": "Sissemakse summa investeeritakse fondi järgneva tööpäeva lõpuks. Teavitame sind sellest meili teel.",
+  "savingsFund.payment.success.description.initialOffer": "Osakud jõuavad sinu Tuleva kontole pärast esmase pakkumise lõppu veebruari alguses. Teavitame sind sellest meili teel.",
 
   "savingsFund.withdraw.pageTitle": "Väljamakse",
   "savingsFund.withdraw.title": "Väljamakse täiendavast kogumisfondist",
