@@ -62,7 +62,9 @@ describe('TermsStep', () => {
     renderWrapped(<TermsStepWrapper />);
 
     expect(
-      screen.getByRole('checkbox', { name: 'I confirm that I have reviewed the terms' }),
+      screen.getByRole('checkbox', {
+        name: 'I confirm that I have reviewed the terms and understand that the investment may increase or decrease in value over time',
+      }),
     ).toBeInTheDocument();
   });
 
@@ -89,7 +91,7 @@ describe('TermsStep', () => {
     renderWrapped(<TermsStepWrapper />);
 
     const termsCheckbox = screen.getByRole('checkbox', {
-      name: 'I confirm that I have reviewed the terms',
+      name: 'I confirm that I have reviewed the terms and understand that the investment may increase or decrease in value over time',
     });
     userEvent.click(termsCheckbox);
 
