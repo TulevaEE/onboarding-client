@@ -1313,10 +1313,12 @@
   "flows.savingsFundOnboarding.incomeSourcesStep.required": "Jätkamiseks vali sissetulekuallikad.",
   "flows.savingsFundOnboarding.incomeSourcesStep.other.required": "Sisesta sissetulekuallikas.",
 
-  "flows.savingsFundOnboarding.termsStep.title": "Tutvu tingimustega",
-  "flows.savingsFundOnboarding.termsStep.linkText": "Täiendava kogumisfondi tingimused",
-  "flows.savingsFundOnboarding.termsStep.confirmText": "Kinnitan, et olen tutvunud tingimustega ja mõistan, et investeering võib ajas nii kasvada kui kahaneda",
-  "flows.savingsFundOnboarding.termsStep.error": "Jätkamiseks pead tingimustega nõustuma.",
+  "flows.savingsFundOnboarding.termsStep.title": "Tutvu fondi dokumentidega",
+  "flows.savingsFundOnboarding.termsStep.linkText.terms": "Tingimused",
+  "flows.savingsFundOnboarding.termsStep.linkText.prospectus": "Prospekt",
+  "flows.savingsFundOnboarding.termsStep.linkText.keyInfo": "Põhiteave",
+  "flows.savingsFundOnboarding.termsStep.confirmText": "Kinnitan, et olen dokumentidega tutvunud ja mõistan, et investeering võib ajas nii kasvada kui kahaneda",
+  "flows.savingsFundOnboarding.termsStep.error": "Jätkamiseks pead dokumentidega tutvuma.",
 
   "continents.EUROPE": "Euroopa",
   "continents.ASIA": "Aasia",

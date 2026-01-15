@@ -1224,10 +1224,12 @@
   "flows.savingsFundOnboarding.incomeSourcesStep.required": "Select income sources to continue.",
   "flows.savingsFundOnboarding.incomeSourcesStep.other.required": "Enter your income source.",
 
-  "flows.savingsFundOnboarding.termsStep.title": "Review the terms",
-  "flows.savingsFundOnboarding.termsStep.linkText": "Additional savings fund terms",
-  "flows.savingsFundOnboarding.termsStep.confirmText": "I confirm that I have reviewed the terms and understand that the investment may increase or decrease in value over time",
-  "flows.savingsFundOnboarding.termsStep.error": "You must agree to the terms to continue.",
+  "flows.savingsFundOnboarding.termsStep.title": "Review fund documents",
+  "flows.savingsFundOnboarding.termsStep.linkText.terms": "Terms",
+  "flows.savingsFundOnboarding.termsStep.linkText.prospectus": "Prospectus",
+  "flows.savingsFundOnboarding.termsStep.linkText.keyInfo": "Key information",
+  "flows.savingsFundOnboarding.termsStep.confirmText": "I confirm that I have reviewed the documents and understand that the investment may increase or decrease in value over time",
+  "flows.savingsFundOnboarding.termsStep.error": "You must review the documents to continue.",
 
   "continents.EUROPE": "Europe",
   "continents.ASIA": "Asia",
