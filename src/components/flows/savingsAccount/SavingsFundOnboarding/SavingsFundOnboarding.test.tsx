@@ -183,9 +183,11 @@ describe('SavingsFundOnboarding', () => {
 
     // Step 8: Terms
     expect(
-      await screen.findByRole('heading', { name: 'Review the terms', level: 2 }),
+      await screen.findByRole('heading', { name: 'Review fund documents', level: 2 }),
     ).toBeInTheDocument();
-    const termsCheckbox = screen.getByLabelText('I confirm that I have reviewed the terms');
+    const termsCheckbox = screen.getByLabelText(
+      'I confirm that I have reviewed the documents and understand that the investment may increase or decrease in value over time',
+    );
     user.click(termsCheckbox);
 
     server.use(onboardingStatusHandler.completed());
