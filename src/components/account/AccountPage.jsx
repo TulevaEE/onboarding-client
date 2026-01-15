@@ -28,6 +28,7 @@ import {
 } from '../common/apiHooks';
 import { canAccessWithdrawals } from '../flows/withdrawals/utils';
 import { getBankName } from '../common/iban';
+import { isSavingsFundWithdrawalEnabled } from '../common/featureFlags';
 
 const noop = () => null;
 
@@ -207,9 +208,11 @@ export function AccountPage(
                 <Link to="/savings-fund/payment">
                   <FormattedMessage id="accountStatement.savingsFund.deposit" />
                 </Link>
-                <Link to="/savings-fund/withdraw">
-                  <FormattedMessage id="accountStatement.savingsFund.withdraw" />
-                </Link>
+                {isSavingsFundWithdrawalEnabled() && (
+                  <Link to="/savings-fund/withdraw">
+                    <FormattedMessage id="accountStatement.savingsFund.withdraw" />
+                  </Link>
+                )}
               </>
             </div>
           </SectionHeading>

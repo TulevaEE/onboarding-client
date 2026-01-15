@@ -29,6 +29,7 @@ import {
 } from './ApplicationFunctions';
 import { TranslationKey } from '../../translations';
 import { Card } from '../../common/card/Card';
+import { isSavingsFundWithdrawalEnabled } from '../../common/featureFlags';
 
 export const ApplicationCard: React.FunctionComponent<{
   application: Application;
@@ -586,9 +587,14 @@ function formatTime(time: string): string {
 }
 
 const isCancellationAllowed = (application: Application, allowedActions: ApplicationAction[]) => {
-  const requiresCancellationTimeCheck = (
+  const isSavingsFundType = (
     ['SAVING_FUND_PAYMENT', 'SAVING_FUND_WITHDRAWAL'] as ApplicationType[]
   ).includes(application.type);
+
+  // Disable cancellations for savings fund types until feature is enabled
+  if (isSavingsFundType && !isSavingsFundWithdrawalEnabled()) {
+    return false;
+  }
 
   if ('cancellationDeadline' in application.details === false) {
     return false;
@@ -603,7 +609,7 @@ const isCancellationAllowed = (application: Application, allowedActions: Applica
 
   return (
     allowedActions.includes('CANCEL') &&
-    (requiresCancellationTimeCheck
+    (isSavingsFundType
       ? isTimeBeforeCancellationDeadline(application)
       : isDateSameOrBeforeCancellationDeadline(application))
   );
