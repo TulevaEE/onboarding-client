@@ -191,11 +191,21 @@ const SavingsFundApplicationCard: FC<{
       );
     }
 
+    if (!isSavingsFundWithdrawalEnabled()) {
+      return undefined;
+    }
+
+    const minFulfillmentDate = '2026-02-02';
+    const fulfillmentDate =
+      application.details.fulfillmentDeadline < minFulfillmentDate
+        ? minFulfillmentDate
+        : application.details.fulfillmentDeadline;
+
     return (
       <FormattedMessage
         id="applications.type.savingFundPayment.fulfillmentNotice"
         values={{
-          fulfillmentDeadline: formatShortDate(application.details.fulfillmentDeadline),
+          fulfillmentDeadline: formatShortDate(fulfillmentDate),
         }}
       />
     );

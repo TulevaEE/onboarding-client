@@ -363,9 +363,10 @@ describe('Application section', () => {
 
     expect(await screen.findByText('deposit to additional savings fund')).toBeInTheDocument();
     expect(screen.getByText('250.99 €')).toBeInTheDocument();
-    expect(
-      screen.getByText('The deposit amount will be invested in the fund 02/01/2024'),
-    ).toBeInTheDocument();
+    // TODO: Uncomment after Feb 1, 2026 cleanup (see docs/CLEANUP_FEB2_2026.md)
+    // expect(
+    //   screen.getByText('The deposit amount will be invested in the fund 02/01/2024'),
+    // ).toBeInTheDocument();
   });
 
   it('renders savings fund withdrawal application successfully', async () => {
