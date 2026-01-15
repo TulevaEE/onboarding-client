@@ -1226,7 +1226,7 @@
 
   "flows.savingsFundOnboarding.termsStep.title": "Review the terms",
   "flows.savingsFundOnboarding.termsStep.linkText": "Additional savings fund terms",
-  "flows.savingsFundOnboarding.termsStep.confirmText": "I confirm that I have reviewed the terms",
+  "flows.savingsFundOnboarding.termsStep.confirmText": "I confirm that I have reviewed the terms and understand that the investment may increase or decrease in value over time",
   "flows.savingsFundOnboarding.termsStep.error": "You must agree to the terms to continue.",
 
   "continents.EUROPE": "Europe",

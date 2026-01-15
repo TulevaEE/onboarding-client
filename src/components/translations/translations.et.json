@@ -1315,7 +1315,7 @@
 
   "flows.savingsFundOnboarding.termsStep.title": "Tutvu tingimustega",
   "flows.savingsFundOnboarding.termsStep.linkText": "Täiendava kogumisfondi tingimused",
-  "flows.savingsFundOnboarding.termsStep.confirmText": "Kinnitan, et olen tutvunud tingimustega",
+  "flows.savingsFundOnboarding.termsStep.confirmText": "Kinnitan, et olen tutvunud tingimustega ja mõistan, et investeering võib ajas nii kasvada kui kahaneda",
   "flows.savingsFundOnboarding.termsStep.error": "Jätkamiseks pead tingimustega nõustuma.",
 
   "continents.EUROPE": "Euroopa",
