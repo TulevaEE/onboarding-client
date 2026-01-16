@@ -72,14 +72,6 @@ const SecondPillarTaxWin = () => {
       .filter((contribution) => contribution.pillar === 2)
       .filter((contribution) => new Date(contribution.time).getFullYear() === currentYear);
 
-    const januaryContributions = ytdSecondPillarContributions.filter(
-      (contribution) => new Date(contribution.time).getMonth() === 0,
-    );
-
-    const nonJanuaryContributions = ytdSecondPillarContributions.filter(
-      (contribution) => new Date(contribution.time).getMonth() !== 0,
-    );
-
     const employeeWithheldPortionYTD = ytdSecondPillarContributions.reduce(
       (sum, contribution) =>
         sum + (contribution as SecondPillarContribution).employeeWithheldPortion,
@@ -91,38 +83,27 @@ const SecondPillarTaxWin = () => {
       0,
     );
 
-    const januaryEmployeeWithheldPortion = januaryContributions.reduce(
-      (sum, contribution) =>
-        sum + (contribution as SecondPillarContribution).employeeWithheldPortion,
-      0,
-    );
+    const calculateAtRate = (targetRate: number) =>
+      ytdSecondPillarContributions.reduce((sum, contribution) => {
+        const secondPillarContribution = contribution as SecondPillarContribution;
+        if (secondPillarContribution.socialTaxPortion === 0) {
+          return sum;
+        }
+        const actualRate =
+          (secondPillarContribution.employeeWithheldPortion /
+            secondPillarContribution.socialTaxPortion) *
+          4;
+        const scaledAmount =
+          (secondPillarContribution.employeeWithheldPortion / actualRate) * targetRate;
+        return sum + scaledAmount;
+      }, 0);
 
-    const nonJanuaryEmployeeWithheldPortion = nonJanuaryContributions.reduce(
-      (sum, contribution) =>
-        sum + (contribution as SecondPillarContribution).employeeWithheldPortion,
-      0,
-    );
-
-    const nonJanuaryEmployeeWithheldPortionAt2Percent =
-      (nonJanuaryEmployeeWithheldPortion / currentPaymentRate) * 2;
-
-    const employeeWithheldPortionYTDAt2Percent =
-      januaryEmployeeWithheldPortion + nonJanuaryEmployeeWithheldPortionAt2Percent;
+    const employeeWithheldPortionYTDAt2Percent = calculateAtRate(2);
+    const employeeWithheldPortionYTDAt4Percent = calculateAtRate(4);
+    const employeeWithheldPortionYTDAt6Percent = calculateAtRate(6);
 
     const incomeTaxSaved = employeeWithheldPortionYTD * 0.22;
     const netSalaryLoss = employeeWithheldPortionYTD * 0.78;
-
-    const nonJanuaryEmployeeWithheldPortionAt4Percent =
-      (nonJanuaryEmployeeWithheldPortion / currentPaymentRate) * 4;
-
-    const employeeWithheldPortionYTDAt4Percent =
-      januaryEmployeeWithheldPortion + nonJanuaryEmployeeWithheldPortionAt4Percent;
-
-    const nonJanuaryEmployeeWithheldPortionAt6Percent =
-      (nonJanuaryEmployeeWithheldPortion / currentPaymentRate) * 6;
-
-    const employeeWithheldPortionYTDAt6Percent =
-      januaryEmployeeWithheldPortion + nonJanuaryEmployeeWithheldPortionAt6Percent;
 
     const incomeTaxSavedAt2Percent = employeeWithheldPortionYTDAt2Percent * 0.22;
     const netSalaryLossAt2Percent = employeeWithheldPortionYTDAt2Percent * 0.78;
@@ -152,6 +133,8 @@ const SecondPillarTaxWin = () => {
     netSalaryLoss,
     incomeTaxSavedAt2Percent,
     netSalaryLossAt2Percent,
+    incomeTaxSavedAt4Percent,
+    netSalaryLossAt4Percent,
     incomeTaxSavedAt6Percent,
     netSalaryLossAt6Percent,
   } = calculateYTDContributionMetrics();
@@ -168,8 +151,8 @@ const SecondPillarTaxWin = () => {
           intl.formatMessage({ id: 'secondPillarTaxWin.chart.6PercentContribution' }),
         ],
         leftData: {
-          netSalaryLoss,
-          incomeTaxSaved,
+          netSalaryLoss: netSalaryLossAt2Percent,
+          incomeTaxSaved: incomeTaxSavedAt2Percent,
         },
         rightData: {
           netSalaryLoss: netSalaryLossAt6Percent,
@@ -181,7 +164,6 @@ const SecondPillarTaxWin = () => {
       return {
         labels: [
           intl.formatMessage({ id: 'secondPillarTaxWin.chart.2PercentContribution' }),
-
           intl.formatMessage({ id: 'secondPillarTaxWin.chart.your4PercentContribution' }),
         ],
         leftData: {
@@ -189,8 +171,8 @@ const SecondPillarTaxWin = () => {
           incomeTaxSaved: incomeTaxSavedAt2Percent,
         },
         rightData: {
-          netSalaryLoss,
-          incomeTaxSaved,
+          netSalaryLoss: netSalaryLossAt4Percent,
+          incomeTaxSaved: incomeTaxSavedAt4Percent,
         },
       };
     }
@@ -204,8 +186,8 @@ const SecondPillarTaxWin = () => {
         incomeTaxSaved: incomeTaxSavedAt2Percent,
       },
       rightData: {
-        netSalaryLoss,
-        incomeTaxSaved,
+        netSalaryLoss: netSalaryLossAt6Percent,
+        incomeTaxSaved: incomeTaxSavedAt6Percent,
       },
     };
   };
