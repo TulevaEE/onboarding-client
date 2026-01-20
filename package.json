@@ -33,7 +33,7 @@
     "react-bootstrap": "^2.10.10",
     "react-chartjs-2": "^5.3.0",
     "react-dom": "^17.0.2",
-    "react-facebook": "^8.1.4",
+    "react-facebook": "^10.0.1",
     "react-ga4": "^1.4.1",
     "react-global-configuration": "^1.4.1",
     "react-gtm-module": "^2.0.11",
