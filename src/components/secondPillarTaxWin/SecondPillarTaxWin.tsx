@@ -557,7 +557,10 @@ const SecondPillarTaxWin = () => {
                 {currentPaymentRate === 2 ? (
                   <FormattedMessage id="secondPillarTaxWin.chart.title.2PercentContribution" />
                 ) : (
-                  <FormattedMessage id="secondPillarTaxWin.chart.title" />
+                  <FormattedMessage
+                    id="secondPillarTaxWin.chart.title"
+                    values={{ currentYear: new Date().getFullYear() }}
+                  />
                 )}
               </>
             )}
@@ -605,7 +608,10 @@ const SecondPillarTaxWin = () => {
             <div id="calculationDetails" aria-labelledby="calculationDetailsToggle">
               <div className="d-flex flex-column gap-3">
                 <p className="m-0">
-                  <FormattedMessage id="secondPillarTaxWin.calculationDetails.paragraph1" />
+                  <FormattedMessage
+                    id="secondPillarTaxWin.calculationDetails.paragraph1"
+                    values={{ currentYear: new Date().getFullYear() }}
+                  />
                 </p>
                 <p className="m-0">
                   <FormattedMessage
