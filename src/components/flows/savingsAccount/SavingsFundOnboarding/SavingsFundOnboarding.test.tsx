@@ -242,18 +242,10 @@ describe('SavingsFundOnboarding', () => {
     expect(screen.getByRole('heading', { name: 'Application under review' })).toBeInTheDocument();
   });
 
-  it('goes to account page if user is not whitelisted', async () => {
-    server.use(onboardingStatusHandler.null());
-
-    await waitFor(() => {
-      expect(history.location.pathname).toBe('/account');
-    });
-  });
-
   const onboardingStatusHandler = {
     notStarted: () =>
       rest.get('http://localhost/v1/savings/onboarding/status', (req, res, ctx) =>
-        res(ctx.json({ status: 'WHITELISTED' })),
+        res(ctx.json({ status: null })),
       ),
     pending: () =>
       rest.get('http://localhost/v1/savings/onboarding/status', (req, res, ctx) =>
@@ -262,10 +254,6 @@ describe('SavingsFundOnboarding', () => {
     completed: () =>
       rest.get('http://localhost/v1/savings/onboarding/status', (req, res, ctx) =>
         res(ctx.json({ status: 'COMPLETED' })),
-      ),
-    null: () =>
-      rest.get('http://localhost/v1/savings/onboarding/status', (req, res, ctx) =>
-        res(ctx.json({ status: null })),
       ),
   };
 });

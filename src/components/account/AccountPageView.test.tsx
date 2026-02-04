@@ -37,7 +37,7 @@ beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 beforeEach(() => {
-  server.use(savingsFundOnboardingStatus.whitelisted());
+  server.use(savingsFundOnboardingStatus.notStarted());
   server.use(savingsAccountStatement.zero());
 });
 
@@ -493,19 +493,26 @@ describe('additional savings fund status', () => {
     useTestBackends(server);
   });
 
-  it('renders nothing when user is not whitelisted', async () => {
-    server.use(savingsFundOnboardingStatus.notWhitelisted());
+  it('shows start investing when user has not started onboarding', async () => {
+    server.use(savingsFundOnboardingStatus.notStarted());
+    server.use(savingsAccountStatement.zero());
 
     initializeComponent();
     history.push('/account');
 
-    const rows = await screen.findAllByTestId('status-box-row');
-    expect(rows).toHaveLength(3);
+    await waitFor(async () => {
+      const rows = await screen.findAllByTestId('status-box-row');
+      expect(rows).toHaveLength(4);
+    });
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, testing-library/no-node-access
-    const rowContainer = rows[0].parentElement!;
+    const savingsFundRow = screen.getAllByTestId('status-box-row')[2];
 
-    expect(within(rowContainer).queryByText('Additional savings fund')).not.toBeInTheDocument();
+    expect(
+      within(savingsFundRow).getByRole('heading', { name: 'Additional savings fund' }),
+    ).toBeInTheDocument();
+    expect(
+      within(savingsFundRow).getByRole('link', { name: 'Start investing' }),
+    ).toBeInTheDocument();
   });
 
   it('shows status when onboarding is completed', async () => {
@@ -568,11 +575,7 @@ const savingsFundOnboardingStatus = {
     rest.get('/v1/savings/onboarding/status', (req, res, ctx) =>
       res(ctx.json({ status: 'COMPLETED' })),
     ),
-  whitelisted: () =>
-    rest.get('/v1/savings/onboarding/status', (req, res, ctx) =>
-      res(ctx.json({ status: 'WHITELISTED' })),
-    ),
-  notWhitelisted: () =>
+  notStarted: () =>
     rest.get('/v1/savings/onboarding/status', (req, res, ctx) => res(ctx.json({ status: null }))),
 };
 

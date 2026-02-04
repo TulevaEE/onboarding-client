@@ -69,10 +69,6 @@ export const SavingsFundOnboarding: FC = () => {
   });
 
   useEffect(() => {
-    if (onboardingStatus?.status === null) {
-      history.push('/account');
-    }
-
     if (onboardingStatus?.status === 'REJECTED' || onboardingStatus?.status === 'PENDING') {
       redirectToOutcome('pending');
     }

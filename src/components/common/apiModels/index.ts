@@ -180,7 +180,7 @@ export interface Fund {
 export type Pillar = 2 | 3;
 
 export type SavingsFundOnboardingStatus = {
-  status: null | 'WHITELISTED' | 'COMPLETED' | 'REJECTED' | 'PENDING';
+  status: null | 'COMPLETED' | 'REJECTED' | 'PENDING';
 };
 
 export type FundStatus =
