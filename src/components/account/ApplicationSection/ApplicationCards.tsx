@@ -29,7 +29,6 @@ import {
 } from './ApplicationFunctions';
 import { TranslationKey } from '../../translations';
 import { Card } from '../../common/card/Card';
-import { isSavingsFundWithdrawalEnabled } from '../../common/featureFlags';
 
 export const ApplicationCard: React.FunctionComponent<{
   application: Application;
@@ -191,21 +190,11 @@ const SavingsFundApplicationCard: FC<{
       );
     }
 
-    if (!isSavingsFundWithdrawalEnabled()) {
-      return undefined;
-    }
-
-    const minFulfillmentDate = '2026-02-02';
-    const fulfillmentDate =
-      application.details.fulfillmentDeadline < minFulfillmentDate
-        ? minFulfillmentDate
-        : application.details.fulfillmentDeadline;
-
     return (
       <FormattedMessage
         id="applications.type.savingFundPayment.fulfillmentNotice"
         values={{
-          fulfillmentDeadline: formatShortDate(fulfillmentDate),
+          fulfillmentDeadline: formatShortDate(application.details.fulfillmentDeadline),
         }}
       />
     );
@@ -600,11 +589,6 @@ const isCancellationAllowed = (application: Application, allowedActions: Applica
   const isSavingsFundType = (
     ['SAVING_FUND_PAYMENT', 'SAVING_FUND_WITHDRAWAL'] as ApplicationType[]
   ).includes(application.type);
-
-  // Disable cancellations for savings fund types until feature is enabled
-  if (isSavingsFundType && !isSavingsFundWithdrawalEnabled()) {
-    return false;
-  }
 
   if ('cancellationDeadline' in application.details === false) {
     return false;
