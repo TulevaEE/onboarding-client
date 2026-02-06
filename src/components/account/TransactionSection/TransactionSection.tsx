@@ -91,9 +91,6 @@ export const TransactionSection: React.FunctionComponent<{
     },
   ];
 
-  const formatNumber = (value: number) =>
-    intl.formatNumber(value, { minimumFractionDigits: 4, maximumFractionDigits: 5 });
-
   let dataSource = fundTransactions
     .sort((transaction1, transaction2) => transaction2.time.localeCompare(transaction1.time))
     .flatMap((transaction, index) => {
@@ -123,14 +120,11 @@ export const TransactionSection: React.FunctionComponent<{
           key: transaction.time,
           ...(transaction.nav != null &&
             transaction.units != null && {
-              tooltip: [
-                `${intl.formatMessage({ id: 'transactions.detail.nav' })}: ${formatNumber(
-                  transaction.nav,
-                )} €`,
-                `${intl.formatMessage({ id: 'transactions.detail.units' })}: ${formatNumber(
-                  transaction.units,
-                )}`,
-              ].join(' · '),
+              tooltip: `${intl.formatMessage({ id: 'transactions.detail.nav' })}: ${
+                transaction.nav
+              } € · ${intl.formatMessage({ id: 'transactions.detail.units' })}: ${
+                transaction.units
+              }`,
             }),
         },
       ];
