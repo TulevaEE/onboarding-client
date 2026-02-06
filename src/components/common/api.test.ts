@@ -1005,6 +1005,8 @@ describe('API calls', () => {
         time: '2020-01-01T00:00:00Z',
         isin: 'EE3600109435',
         type: 'CONTRIBUTION_CASH',
+        units: 10.0,
+        nav: 10.0,
       },
     ];
 

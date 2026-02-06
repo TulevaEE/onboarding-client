@@ -1,7 +1,7 @@
 import React from 'react';
 import { captureException } from '@sentry/browser';
 
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 import sumBy from 'lodash/sumBy';
 import { useFunds, useTransactions } from '../../common/apiHooks';
@@ -17,6 +17,7 @@ export const TransactionSection: React.FunctionComponent<{
   pillar?: number | null;
   children?: React.ReactNode;
 }> = ({ limit, pillar, children }) => {
+  const intl = useIntl();
   const { data: transactions = [], isLoading: transactionsLoading } = useTransactions();
   const { data: funds = [], isLoading: fundsLoading } = useFunds();
 
@@ -90,6 +91,9 @@ export const TransactionSection: React.FunctionComponent<{
     },
   ];
 
+  const formatNumber = (value: number) =>
+    intl.formatNumber(value, { minimumFractionDigits: 4, maximumFractionDigits: 5 });
+
   let dataSource = fundTransactions
     .sort((transaction1, transaction2) => transaction2.time.localeCompare(transaction1.time))
     .flatMap((transaction, index) => {
@@ -117,6 +121,17 @@ export const TransactionSection: React.FunctionComponent<{
           fund: <span>{transaction.fundName}</span>,
           amount: <Euro amount={transaction.amount} />,
           key: transaction.time,
+          ...(transaction.nav != null &&
+            transaction.units != null && {
+              tooltip: [
+                `${intl.formatMessage({ id: 'transactions.detail.nav' })}: ${formatNumber(
+                  transaction.nav,
+                )} €`,
+                `${intl.formatMessage({ id: 'transactions.detail.units' })}: ${formatNumber(
+                  transaction.units,
+                )}`,
+              ].join(' · '),
+            }),
         },
       ];
     });

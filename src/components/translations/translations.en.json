@@ -583,6 +583,8 @@
   "transactions.seeAll.3": "III pillar",
   "transactions.seeAll.savingsFund": "Savings fund",
   "transactions.backToAccountPage": "Back to account page",
+  "transactions.detail.nav": "Unit price (NAV)",
+  "transactions.detail.units": "Units",
   "transactions.workplace": "Employer",
   "transactions.personal": "Individual",
   "contributions.title": "Your contributions",

@@ -397,6 +397,8 @@ export interface Transaction {
   time: string;
   isin: string;
   type: TransactionType;
+  units: number;
+  nav: number;
 }
 
 export type TransactionType = 'CONTRIBUTION_CASH' | 'CONTRIBUTION_CASH_WORKPLACE' | 'SUBTRACTION';

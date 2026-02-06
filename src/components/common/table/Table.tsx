@@ -12,7 +12,7 @@ export interface TableColumn {
 
 export interface Props {
   columns: TableColumn[];
-  dataSource: { key: string; [key: string]: unknown }[];
+  dataSource: { key: string; tooltip?: string; [key: string]: unknown }[];
 }
 
 const Table: React.FC<Props> = ({ columns, dataSource }) => (
@@ -31,8 +31,8 @@ const Table: React.FC<Props> = ({ columns, dataSource }) => (
         </tr>
       </thead>
       <tbody>
-        {dataSource.map(({ key, ...data }) => (
-          <tr key={key}>
+        {dataSource.map(({ key, tooltip, ...data }) => (
+          <tr key={key} title={tooltip}>
             {columns.map(({ dataIndex, hideOnBreakpoint, width, align }) => (
               <td
                 key={dataIndex}

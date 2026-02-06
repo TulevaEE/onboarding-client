@@ -6,6 +6,8 @@ export const contribution: Transaction = {
   time: '2023-01-23T15:12:58Z',
   isin: 'EE3600109435',
   type: 'CONTRIBUTION_CASH',
+  units: 31.357,
+  nav: 10.0,
 };
 
 export const subtraction: Transaction = {
@@ -14,4 +16,6 @@ export const subtraction: Transaction = {
   time: '2023-01-24T16:20:55Z',
   isin: 'EE3600001707',
   type: 'SUBTRACTION',
+  units: 10.0,
+  nav: 10.0,
 };
