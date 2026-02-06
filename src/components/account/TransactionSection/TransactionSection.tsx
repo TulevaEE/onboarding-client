@@ -10,10 +10,11 @@ import { Euro } from '../../common/Euro';
 import { Shimmer } from '../../common/shimmer/Shimmer';
 import { formatDate } from '../../common/dateFormatter';
 import { TableColumn } from '../../common/table/Table';
+import { getNextTransactionPage } from './getNextTransactionPage';
 
 export const TransactionSection: React.FunctionComponent<{
   limit?: number;
-  pillar?: number;
+  pillar?: number | null;
   children?: React.ReactNode;
 }> = ({ limit, pillar, children }) => {
   const { data: transactions = [], isLoading: transactionsLoading } = useTransactions();
@@ -55,9 +56,11 @@ export const TransactionSection: React.FunctionComponent<{
     };
   });
 
-  if (pillar) {
+  if (pillar !== undefined) {
     fundTransactions = fundTransactions.filter((transaction) => transaction.pillar === pillar);
   }
+
+  const nextPage = getNextTransactionPage(pillar, funds);
 
   const amountSum = sumBy(fundTransactions, (transaction) => transaction.amount);
 
@@ -124,7 +127,7 @@ export const TransactionSection: React.FunctionComponent<{
 
   return (
     <section className="mt-5">
-      {!pillar ? (
+      {pillar === undefined ? (
         <div className="mt-5 mb-4 d-flex flex-wrap column-gap-3 row-gap-2 align-items-baseline justify-content-between">
           <h2 className="m-0">{children || <FormattedMessage id="transactions.title" />}</h2>
           <Link className="icon-link" to="/2nd-pillar-transactions">
@@ -135,14 +138,9 @@ export const TransactionSection: React.FunctionComponent<{
         <div className="mt-5 mb-4 d-flex flex-md-row flex-column align-items-baseline justify-content-between">
           <h2 className="m-0">{children || <FormattedMessage id="transactions.title" />}</h2>
           <div className="d-flex gap-3">
-            {pillar === 2 && (
-              <Link className="icon-link" to="/3rd-pillar-transactions">
-                <FormattedMessage id="transactions.seeAll.3" />
-              </Link>
-            )}
-            {pillar === 3 && (
-              <Link className="icon-link" to="/2nd-pillar-transactions">
-                <FormattedMessage id="transactions.seeAll.2" />
+            {nextPage && (
+              <Link className="icon-link" to={nextPage.path}>
+                <FormattedMessage id={nextPage.labelId} />
               </Link>
             )}
             {!limit && (
