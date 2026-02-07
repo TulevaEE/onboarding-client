@@ -1,6 +1,7 @@
 import { Transaction } from '../../common/apiModels';
 
 export const contribution: Transaction = {
+  id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
   amount: 313.57,
   currency: 'EUR',
   time: '2023-01-23T15:12:58Z',
@@ -11,6 +12,7 @@ export const contribution: Transaction = {
 };
 
 export const subtraction: Transaction = {
+  id: 'b2c3d4e5-f6a7-8901-bcde-f12345678901',
   amount: -100.0,
   currency: 'EUR',
   time: '2023-01-24T16:20:55Z',

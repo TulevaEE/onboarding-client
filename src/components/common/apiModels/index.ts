@@ -392,6 +392,7 @@ export interface Authentication {
 }
 
 export interface Transaction {
+  id: string;
   amount: number;
   currency: Currency;
   time: string;

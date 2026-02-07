@@ -29,6 +29,7 @@ import { EmployerPaymentDetails } from '../flows/thirdPillar/ThirdPillarPayment/
 import { ContributionPageSecondPillar } from '../contribution/ContributionPageSecondPillar';
 import { TransactionPageSecondPillar } from '../account/TransactionSection/TransactionPageSecondPillar';
 import { SavingsTransactionPage } from '../account/TransactionSection/SavingsTransactionPage';
+import { TransactionDetailPage } from '../account/TransactionSection/TransactionDetailPage';
 import SecondPillarUpsellCard from '../account/SecondPillarUpsell/SecondPillarUpsellCard';
 import { SecondPillarPaymentRate } from '../flows/secondPillarPaymentRate/SecondPillarPaymentRate';
 import { SecondPillarPaymentRateSuccess } from '../flows/secondPillarPaymentRate/SecondPillarPaymentRateSuccess';
@@ -167,6 +168,7 @@ export class LoggedInApp extends PureComponent {
             <Route path="/2nd-pillar-transactions" component={TransactionPageSecondPillar} />
             <Route path="/3rd-pillar-transactions" component={TransactionPageThirdPillar} />
             <Route path="/savings-fund-transactions" component={SavingsTransactionPage} />
+            <Route path="/transaction/:id" component={TransactionDetailPage} />
             <Route path="/2nd-pillar-contributions" component={ContributionPageSecondPillar} />
             <Route path="/3rd-pillar-contributions" component={ContributionPageThirdPillar} />
             <Route path="/2nd-pillar-upsell" component={SecondPillarUpsellCard} />

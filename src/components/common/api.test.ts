@@ -1000,6 +1000,7 @@ describe('API calls', () => {
   describe('getTransactions', () => {
     const mockTransactions: Transaction[] = [
       {
+        id: 'c3d4e5f6-a7b8-9012-cdef-123456789012',
         amount: 100,
         currency: 'EUR',
         time: '2020-01-01T00:00:00Z',

@@ -1,20 +1,12 @@
 {
   "hooks": {
-    "postToolUse": [
+    "Stop": [
       {
-        "matcher": "write|edit|notebookedit",
+        "matcher": "",
         "hooks": [
           {
             "type": "command",
-            "command": "npx prettier --write $CLAUDE_FILE_PATHS"
-          },
-          {
-            "type": "command",
-            "command": "npx eslint $CLAUDE_FILE_PATHS"
-          },
-          {
-            "type": "command",
-            "command": "npx tsc --noEmit"
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/lint-and-typecheck.sh"
           }
         ]
       }
