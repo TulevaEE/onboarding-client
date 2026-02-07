@@ -1254,7 +1254,7 @@
   "savingsFund.withdrawalCancellation.error": "Väljamakse katkestamisel tekkis viga. Palun proovi hiljem uuesti või võta meiega ühendust: tuleva@tuleva.ee",
 
   "savingsFund.status.title": "Täiendav kogumisfond",
-  "savingsFund.status.description.hasInvested": "Sa kogud Tuleva madala tasuga indeksifondis",
+  "savingsFund.status.description.hasInvested": "Sa kogud Tuleva madala tasuga indeksfondis",
   "savingsFund.status.description.zeroBalance": "Laialt hajutatud indeksfond, mis investeerib maailma aktsiaturule",
   "savingsFund.status.secondary.investedBalance": "Oled investeerinud täiendavalt {investedAmount}",
   "savingsFund.status.secondary.zeroBalance": "Jätka investeerimist väljaspool sambaid, kui vundament on juba loodud",
