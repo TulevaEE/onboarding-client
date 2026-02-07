@@ -31,14 +31,15 @@ export const MemberCapitalTable: FC<Props> = ({ rows = [] }) => {
       title: <FormattedMessage id="memberCapital.columns.contributions.title" />,
       dataIndex: 'contributions',
       width: 15,
+      hideOnBreakpoint: ['xs'],
       footer: <Euro amount={contributionsSum} />,
     },
     {
       title: <FormattedMessage id="memberCapital.columns.profit.title" />,
       dataIndex: 'profit',
       width: 15,
-      footer: <Euro amount={profitSum} />,
       hideOnBreakpoint: ['xs'],
+      footer: <Euro amount={profitSum} />,
     },
     {
       title: <FormattedMessage id="memberCapital.columns.value.title" />,
