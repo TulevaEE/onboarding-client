@@ -60,3 +60,22 @@ const renderWithIntl = (component) =>
 3. Use queryBy* when element might not exist
 4. Test what users see and do, not how it works
 5. Keep code clean and self-documenting
+
+## Strict TDD: Red-Green-Refactor
+
+**This project enforces strict Test-Driven Development. Never write production code without a failing test first.**
+
+The cycle for every change — bug fixes, new features, and refactors:
+
+1. **Red**: Write a failing test that describes the desired behavior. Run it and confirm it fails.
+2. **Green**: Write the minimal production code to make the test pass. Nothing more.
+3. **Refactor**: Clean up the code while keeping tests green.
+
+Repeat in small increments. Each cycle should be minutes, not hours.
+
+**Rules:**
+- Never write production code without a failing test demanding it
+- Never write more test code than is sufficient to fail (compilation failures count as failures)
+- Never write more production code than is sufficient to pass the currently failing test
+- Run tests after every change — both after writing the test (must fail) and after writing the code (must pass)
+- If you find yourself writing production code "just to be safe" without a test, stop and write the test first
