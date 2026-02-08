@@ -27,3 +27,9 @@ yarn-error.log
 
 # Coverage report
 test-results.json
+
+# Claude Code local settings
+.claude/settings.local.json
+
+# TDD Guard data (generated test results)
+.claude/tdd-guard/data/
