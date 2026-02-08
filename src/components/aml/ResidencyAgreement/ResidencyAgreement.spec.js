@@ -25,10 +25,10 @@ describe('ResidencyAgreement', () => {
     component.setProps({ onResidentChange: mock });
 
     component.find('Field').simulate('change', { target: { checked: true } });
-    expect(mock).toBeCalledWith(true);
+    expect(mock).toHaveBeenCalledWith(true);
 
     component.find('Field').simulate('change', { target: { checked: false } });
-    expect(mock).toBeCalledWith(false);
+    expect(mock).toHaveBeenCalledWith(false);
   });
 
   it('has resident tooltip', () => {

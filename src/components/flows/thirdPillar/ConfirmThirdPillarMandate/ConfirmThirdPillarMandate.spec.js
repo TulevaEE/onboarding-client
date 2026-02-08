@@ -76,9 +76,9 @@ describe('ConfirmThirdPillarMandate', () => {
       ...amlProps,
     });
 
-    expect(onPreview).not.toBeCalled();
+    expect(onPreview).not.toHaveBeenCalled();
     previewButton().simulate('click');
-    expect(onPreview).toBeCalledWith(
+    expect(onPreview).toHaveBeenCalledWith(
       {
         fundTransferExchanges: [
           { amount: 1, sourceFundIsin: 'EE123', targetFundIsin: 'EE789' },
@@ -111,9 +111,9 @@ describe('ConfirmThirdPillarMandate', () => {
       ...amlProps,
     });
 
-    expect(onSign).not.toBeCalled();
+    expect(onSign).not.toHaveBeenCalled();
     signButton().simulate('click');
-    expect(onSign).toBeCalledWith(
+    expect(onSign).toHaveBeenCalledWith(
       {
         fundTransferExchanges: [
           { amount: 1, sourceFundIsin: 'EE123', targetFundIsin: 'EE789' },

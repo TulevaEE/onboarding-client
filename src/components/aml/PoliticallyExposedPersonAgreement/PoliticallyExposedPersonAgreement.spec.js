@@ -25,10 +25,10 @@ describe('PoliticallyExposedPersonAgreement', () => {
     component.setProps({ onPoliticallyExposedChange: mock });
 
     component.find('Field').simulate('change', { target: { checked: true } });
-    expect(mock).toBeCalledWith(false);
+    expect(mock).toHaveBeenCalledWith(false);
 
     component.find('Field').simulate('change', { target: { checked: false } });
-    expect(mock).toBeCalledWith(true);
+    expect(mock).toHaveBeenCalledWith(true);
   });
 
   it('has pep tooltip', () => {

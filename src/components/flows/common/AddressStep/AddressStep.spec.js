@@ -55,7 +55,7 @@ describe('AddressStep', () => {
 
     component.find(UpdateUserForm).simulate('submit', user);
 
-    expect(updateFullUser).toBeCalledWith(user);
+    expect(updateFullUser).toHaveBeenCalledWith(user);
     expect(updateEmailAndPhone).not.toHaveBeenCalled();
   });
 
@@ -73,7 +73,7 @@ describe('AddressStep', () => {
 
     component.find(UpdateUserForm).simulate('submit', user);
 
-    expect(updateEmailAndPhone).toBeCalledWith(user);
+    expect(updateEmailAndPhone).toHaveBeenCalledWith(user);
     expect(updateFullUser).not.toHaveBeenCalled();
   });
 });

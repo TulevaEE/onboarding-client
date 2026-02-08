@@ -64,6 +64,8 @@ npm run develop-production
 npm test
 ```
 
+When running tests from IntelliJ, add `TZ=UTC` to the run configuration's environment variables. The `npm test` script sets this automatically, but IntelliJ's test runner does not. Without it, timezone-dependent tests will fail.
+
 [`onboarding-service`](https://github.com/TulevaEE/onboarding-service) is expected to run on port 9000 when not running against production.
 
 ### Development against the production service (https://onboarding-service.tuleva.ee)

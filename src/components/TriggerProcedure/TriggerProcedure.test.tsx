@@ -27,8 +27,8 @@ describe('When an external provider process is triggered', () => {
   }
 
   const expectConsoledError = (match: RegExp) => {
-    expect(consoleError).toBeCalledWith(expect.any(Error));
-    expect(consoleError).toBeCalledWith(
+    expect(consoleError).toHaveBeenCalledWith(expect.any(Error));
+    expect(consoleError).toHaveBeenCalledWith(
       expect.objectContaining({
         message: expect.stringMatching(match),
       }),

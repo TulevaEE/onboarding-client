@@ -17,11 +17,11 @@ describe('OccupationAgreement', () => {
     component
       .find('#occupation-agreement')
       .simulate('change', { target: { value: 'PRIVATE_SECTOR' } });
-    expect(mock).toBeCalledWith('PRIVATE_SECTOR');
+    expect(mock).toHaveBeenCalledWith('PRIVATE_SECTOR');
 
     component
       .find('#occupation-agreement')
       .simulate('change', { target: { value: 'PUBLIC_SECTOR' } });
-    expect(mock).toBeCalledWith('PUBLIC_SECTOR');
+    expect(mock).toHaveBeenCalledWith('PUBLIC_SECTOR');
   });
 });

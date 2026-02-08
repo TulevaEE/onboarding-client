@@ -60,9 +60,9 @@ describe('Select', () => {
   });
 
   it('executes callback with value on change', () => {
-    expect(onChange).not.toBeCalled();
+    expect(onChange).not.toHaveBeenCalled();
     select().simulate('change', { target: { value: 'four' } });
-    expect(onChange).toBeCalledWith('four');
+    expect(onChange).toHaveBeenCalledWith('four');
   });
 
   it('displays original option and group labels without translation', () => {

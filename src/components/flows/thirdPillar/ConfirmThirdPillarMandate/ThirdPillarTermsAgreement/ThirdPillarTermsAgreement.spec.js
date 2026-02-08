@@ -20,12 +20,12 @@ describe('ThirdPillarTermsAgreement', () => {
     const onAgreementChange = jest.fn();
     component.setProps({ onAgreementChange });
 
-    expect(onAgreementChange).not.toBeCalled();
+    expect(onAgreementChange).not.toHaveBeenCalled();
     checkbox().simulate('change');
-    expect(onAgreementChange).toBeCalledWith(true);
+    expect(onAgreementChange).toHaveBeenCalledWith(true);
     component.setProps({ agreed: true });
     checkbox().simulate('change');
-    expect(onAgreementChange).toBeCalledWith(false);
+    expect(onAgreementChange).toHaveBeenCalledWith(false);
   });
 
   const checkbox = () => component.find('#third-pillar-terms-checkbox');
