@@ -10,7 +10,7 @@ import { Euro } from '../../common/Euro';
 import { Shimmer } from '../../common/shimmer/Shimmer';
 import { formatDate } from '../../common/dateFormatter';
 import { TableColumn } from '../../common/table/Table';
-import { getNextTransactionPage } from './getNextTransactionPage';
+import { getOtherTransactionPages } from './getOtherTransactionPages';
 
 export const TransactionSection: React.FunctionComponent<{
   limit?: number;
@@ -60,7 +60,7 @@ export const TransactionSection: React.FunctionComponent<{
     fundTransactions = fundTransactions.filter((transaction) => transaction.pillar === pillar);
   }
 
-  const nextPage = getNextTransactionPage(pillar, funds);
+  const otherPages = getOtherTransactionPages(pillar, funds);
 
   const amountSum = sumBy(fundTransactions, (transaction) => transaction.amount);
 
@@ -145,16 +145,11 @@ export const TransactionSection: React.FunctionComponent<{
         <div className="mt-5 mb-4 d-flex flex-md-row flex-column align-items-baseline justify-content-between">
           <h2 className="m-0">{children || <FormattedMessage id="transactions.title" />}</h2>
           <div className="d-flex gap-3">
-            {nextPage && (
-              <Link className="icon-link" to={nextPage.path}>
-                <FormattedMessage id={nextPage.labelId} />
+            {otherPages.map((page) => (
+              <Link key={page.path} className="icon-link" to={page.path}>
+                <FormattedMessage id={page.labelId} />
               </Link>
-            )}
-            {!limit && (
-              <Link className="icon-link" to="/account">
-                <FormattedMessage id="transactions.backToAccountPage" />
-              </Link>
-            )}
+            ))}
           </div>
         </div>
       )}

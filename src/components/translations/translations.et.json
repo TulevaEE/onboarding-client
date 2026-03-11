@@ -632,7 +632,7 @@
   "transactions.detail.amount": "Summa",
   "transactions.detail.type.subscription": "Osakute märkimine",
   "transactions.detail.type.redemption": "Osakute tagasivõtt",
-  "transactions.detail.nav": "Osaku hind",
+  "transactions.detail.nav": "Osaku hind",
   "transactions.detail.units": "Osakud",
   "transactions.detail.back": "Tagasi tehingute juurde",
   "transactions.workplace": "Tööandja",

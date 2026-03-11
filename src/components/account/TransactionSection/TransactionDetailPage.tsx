@@ -53,7 +53,7 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
 
   return (
     <section className="mt-5">
-      <div className="mt-5 mb-4 d-flex flex-md-row flex-column align-items-baseline justify-content-between">
+      <div className="mt-5 mb-4 d-flex flex-sm-row flex-column align-items-baseline justify-content-between">
         <h2 className="m-0">
           <FormattedMessage id="transactions.detail.title" />
         </h2>
