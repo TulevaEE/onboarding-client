@@ -45,6 +45,7 @@ import { FirstVsSecondPillarComparison } from '../comparison/FirstVsSecondPillar
 import SecondPillarTaxWin from '../secondPillarTaxWin/SecondPillarTaxWin';
 import { Listings } from '../listings/Listings';
 import { MembersOnlyGatekeep } from '../common/MembersOnlyGatekeep';
+import { SavingsFundOnboardingGatekeep } from '../common/SavingsFundOnboardingGatekeep';
 import { AddListing } from '../listings/AddListing';
 import { ListingDetails } from '../listings/ListingDetails';
 import { CapitalTransferStatus } from '../listings/transfer/status/CapitalTransferStatus';
@@ -236,7 +237,14 @@ export class LoggedInApp extends PureComponent {
               path="/savings-fund/payment/success"
               render={() => <SavingsFundPaymentSuccess />}
             />
-            <Route path="/savings-fund/payment" render={() => <SavingsFundPayment />} />
+            <Route
+              path="/savings-fund/payment"
+              render={() => (
+                <SavingsFundOnboardingGatekeep>
+                  <SavingsFundPayment />
+                </SavingsFundOnboardingGatekeep>
+              )}
+            />
             <Route
               path="/savings-fund/withdraw/:withdrawalId/cancellation"
               render={() => <SavingsFundWithdrawCancellation />}
@@ -245,7 +253,14 @@ export class LoggedInApp extends PureComponent {
               path="/savings-fund/withdraw/success"
               render={() => <SavingsFundWithdrawSuccess />}
             />
-            <Route path="/savings-fund/withdraw" render={() => <SavingsFundWithdraw />} />
+            <Route
+              path="/savings-fund/withdraw"
+              render={() => (
+                <SavingsFundOnboardingGatekeep>
+                  <SavingsFundWithdraw />
+                </SavingsFundOnboardingGatekeep>
+              )}
+            />
             <Redirect exact path="/savings-fund" to="/" />
             <Route
               path="/2nd-pillar-payment-rate-success"

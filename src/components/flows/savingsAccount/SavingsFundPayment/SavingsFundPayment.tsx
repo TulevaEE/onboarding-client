@@ -20,7 +20,6 @@ type IPaymentForm = {
   paymentMethod: BankKey | 'other';
 };
 
-// TODO: redirect away if not eligilbe to see
 export const SavingsFundPayment: FC = () => {
   const [submitError, setSubmitError] = useState(false);
   const intl = useIntl();

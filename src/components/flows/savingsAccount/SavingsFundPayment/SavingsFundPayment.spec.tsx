@@ -1,6 +1,7 @@
 import { Route } from 'react-router-dom';
 import { setupServer } from 'msw/node';
 import { createMemoryHistory, History } from 'history';
+import { rest } from 'msw';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SavingsFundPayment } from './SavingsFundPayment';
@@ -33,6 +34,11 @@ describe(SavingsFundPayment, () => {
   beforeEach(async () => {
     initializeConfiguration();
     useTestBackends(server);
+    server.use(
+      rest.get('http://localhost/v1/savings/onboarding/status', (req, res, ctx) =>
+        res(ctx.json({ status: 'COMPLETED' })),
+      ),
+    );
     initApp();
     history.push('/savings-fund/payment');
   });
