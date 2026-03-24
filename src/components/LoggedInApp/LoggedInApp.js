@@ -51,6 +51,7 @@ import { ListingDetails } from '../listings/ListingDetails';
 import { CapitalTransferStatus } from '../listings/transfer/status/CapitalTransferStatus';
 import { CreateCapitalTransfer } from '../listings/transfer/create/CreateCapitalTransfer';
 import {
+  SavingsFundCompanyOnboarding,
   SavingsFundOnboarding,
   SavingsFundOnboardingPending,
   SavingsFundOnboardingSuccess,
@@ -161,6 +162,10 @@ export class LoggedInApp extends PureComponent {
               component={SavingsFundOnboardingPending}
             />
             <Route path="/savings-fund/onboarding" component={SavingsFundOnboarding} />
+            <Route
+              path="/savings-fund/company/onboarding"
+              component={SavingsFundCompanyOnboarding}
+            />
             <Route path="/partner/3rd-pillar-flow-success" component={BackToPartner} />
             <Route path="/3rd-pillar-payment" component={ThirdPillarPaymentPage} />
             <Route path="/3rd-pillar-success" component={ThirdPillarSuccess} />
