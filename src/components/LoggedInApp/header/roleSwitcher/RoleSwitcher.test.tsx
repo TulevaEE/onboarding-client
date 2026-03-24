@@ -12,9 +12,6 @@ import { mockUser } from '../../../../test/backend-responses';
 import { switchRoleBackend } from '../../../../test/backend';
 import { RoleSwitcher } from './RoleSwitcher';
 
-(global as any).setImmediate =
-  (global as any).setImmediate || ((fn: () => void) => setTimeout(fn, 0));
-
 const server = setupServer();
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
@@ -112,6 +109,7 @@ describe('RoleSwitcher', () => {
     ];
     rolesBackend(roles);
     userBackend({ actingAs: { type: 'PERSON', code: '39001011234' } });
+    switchRoleBackend(server);
 
     renderWrapped(<RoleSwitcher userName="John Doe" />);
 
