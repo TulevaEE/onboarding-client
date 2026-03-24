@@ -1183,6 +1183,10 @@
   "flows.savingsFundOnboarding.citizenshipStep.input.deleteButtonTitle": "Remove",
   "flows.savingsFundOnboarding.citizenshipStep.input.required": "Select countries of citizenship to continue.",
 
+  "flows.savingsFundOnboarding.businessRegistryStep.title": "What is your company's registry code?",
+  "flows.savingsFundOnboarding.businessRegistryStep.description": "Or company name",
+  "flows.savingsFundOnboarding.businessRegistryStep.input.required": "Select a company to continue.",
+
   "flows.savingsFundOnboarding.residencyStep.title": "Your permanent residence",
   "flows.savingsFundOnboarding.residencyStep.country.label": "Country",
   "flows.savingsFundOnboarding.residencyStep.street.label": "Address (street, house, apartment)",

@@ -112,3 +112,5 @@ type OnboardingSurveyItem =
 export type OnboardingSurveyCommand = {
   answers: OnboardingSurveyItem[];
 };
+
+export type BusinessRegistrySearchResult = { company_id: number; name: string; reg_code: string };

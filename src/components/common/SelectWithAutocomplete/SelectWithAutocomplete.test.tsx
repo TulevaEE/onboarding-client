@@ -66,8 +66,8 @@ describe('SelectWithAutocomplete', () => {
 
   test('renders provided options', () => {
     const options: SelectOption[] = [
-      { value: 'opt1', label: 'Option One' },
-      { value: 'opt2', label: 'Option Two' },
+      { value: 'opt1', text: 'Option One' },
+      { value: 'opt2', text: 'Option Two' },
     ];
 
     render(
@@ -79,7 +79,7 @@ describe('SelectWithAutocomplete', () => {
     );
 
     options.forEach((option) => {
-      expect(screen.getByRole('option', { name: option.label })).toBeInTheDocument();
+      expect(screen.getByRole('option', { name: option.text })).toBeInTheDocument();
     });
   });
 
@@ -100,7 +100,7 @@ describe('SelectWithAutocomplete', () => {
   });
 
   test('calls lookup via TomSelect load callback', async () => {
-    const results: SelectOption[] = [{ value: 'acme', label: 'Acme Inc' }];
+    const results: SelectOption[] = [{ value: 'acme', text: 'Acme Inc' }];
     lookup.mockResolvedValue(results);
 
     render(
@@ -127,8 +127,8 @@ describe('SelectWithAutocomplete', () => {
 
   test('calls onChange with selected option', () => {
     const options: SelectOption[] = [
-      { value: 'opt1', label: 'Option One' },
-      { value: 'opt2', label: 'Option Two' },
+      { value: 'opt1', text: 'Option One' },
+      { value: 'opt2', text: 'Option Two' },
     ];
 
     render(

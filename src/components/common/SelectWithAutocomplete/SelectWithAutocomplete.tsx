@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import TomSelect from 'tom-select';
 import 'tom-select/dist/css/tom-select.bootstrap5.css';
 
-export type SelectOption = { value: string; label: string };
+export type SelectOption = { value: string; text: string };
 
 type Props<T extends SelectOption> = {
   lookup: (query: string) => Promise<T[]>;
@@ -43,7 +43,7 @@ export const SelectWithAutocomplete = <T extends SelectOption>({
     <select ref={selectRef} className={className} aria-label={ariaLabel} onBlur={onBlur}>
       {options?.map((option) => (
         <option key={option.value} value={option.value}>
-          {option.label}
+          {option.text}
         </option>
       ))}
     </select>
