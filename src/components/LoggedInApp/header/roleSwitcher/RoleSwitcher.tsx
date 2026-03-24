@@ -1,21 +1,30 @@
 import React, { useState } from 'react';
-import { useMe, useRoles } from '../../../common/apiHooks';
+import { useMe, useRoles, useSwitchRole } from '../../../common/apiHooks';
+import { ActingAs } from '../../../common/apiModels';
 
 type Props = {
   userName: string;
+  onRoleSwitch?: () => void;
 };
 
-export const RoleSwitcher = ({ userName }: Props) => {
+export const RoleSwitcher = ({ userName, onRoleSwitch }: Props) => {
   const { data: roles } = useRoles();
   const { data: user } = useMe();
+  const switchRole = useSwitchRole();
   const [open, setOpen] = useState(false);
 
   if (!roles || roles.length <= 1) {
     return <span className="text-body">{userName}</span>;
   }
 
-  const isActiveRole = (role: { actingAs: { type: string; code: string } }) =>
+  const isActiveRole = (role: { actingAs: ActingAs }) =>
     user?.actingAs?.type === role.actingAs.type && user?.actingAs?.code === role.actingAs.code;
+
+  const handleRoleClick = async (actingAs: ActingAs) => {
+    setOpen(false);
+    await switchRole.mutateAsync(actingAs);
+    onRoleSwitch?.();
+  };
 
   return (
     <div className="dropdown">
@@ -46,7 +55,7 @@ export const RoleSwitcher = ({ userName }: Props) => {
               key={role.actingAs.code}
               type="button"
               className={`dropdown-item${isActiveRole(role) ? ' active' : ''}`}
-              onClick={() => setOpen(false)}
+              onClick={() => handleRoleClick(role.actingAs)}
             >
               {role.name}
             </button>

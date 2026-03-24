@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -8,7 +9,11 @@ import { getAuthentication } from '../../../common/authenticationManager';
 import { anAuthenticationManager } from '../../../common/authenticationManagerFixture';
 import { renderWrapped } from '../../../../test/utils';
 import { mockUser } from '../../../../test/backend-responses';
+import { switchRoleBackend } from '../../../../test/backend';
 import { RoleSwitcher } from './RoleSwitcher';
+
+(global as any).setImmediate =
+  (global as any).setImmediate || ((fn: () => void) => setTimeout(fn, 0));
 
 const server = setupServer();
 
@@ -122,5 +127,40 @@ describe('RoleSwitcher', () => {
       .queryAllByRole('button')
       .filter((btn) => btn.classList.contains('dropdown-item'));
     expect(dropdownItems).toHaveLength(0);
+  });
+
+  it('calls switchRole API and onRoleSwitch when selecting a different role', async () => {
+    const roles = [
+      { actingAs: { type: 'PERSON', code: '39001011234' }, name: 'John Doe' },
+      { actingAs: { type: 'COMPANY', code: '12345678' }, name: 'Test OÜ' },
+    ];
+    rolesBackend(roles);
+    userBackend({ actingAs: { type: 'PERSON', code: '39001011234' } });
+    const backend = switchRoleBackend(server);
+    // Also register roles handler for refetch after invalidation with new token
+    server.use(
+      rest.get('http://localhost/v1/me/roles', (req, res, ctx) => res(ctx.json(roles))),
+      rest.get('http://localhost/v1/me', (req, res, ctx) =>
+        res(ctx.json({ ...mockUser, actingAs: { type: 'COMPANY', code: '12345678' } })),
+      ),
+    );
+
+    const onRoleSwitch = jest.fn();
+    renderWrapped(<RoleSwitcher userName="John Doe" onRoleSwitch={onRoleSwitch} />);
+
+    const toggle = await screen.findByRole('button', { name: /John Doe/i });
+    userEvent.click(toggle);
+
+    const companyItem = screen
+      .getAllByRole('button')
+      .filter((btn) => btn.textContent === 'Test OÜ')[0];
+    userEvent.click(companyItem);
+
+    await waitFor(() => {
+      expect(backend.switchedRole).toEqual({ type: 'COMPANY', code: '12345678' });
+    });
+    await waitFor(() => {
+      expect(onRoleSwitch).toHaveBeenCalled();
+    });
   });
 });

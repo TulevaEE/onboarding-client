@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 
 import { actions as loginActions } from '../login';
 import { actions as exchangeActions } from '../exchange';
-import { Header } from './header';
+import { Header } from './header/Header';
 import AccountPage from '../account';
 import SecondPillarFlow from '../flows/secondPillar';
 import ThirdPillarFlow from '../flows/thirdPillar';
@@ -72,31 +72,28 @@ export class LoggedInApp extends PureComponent {
     await this.getUserAndConversionData();
   }
 
+  async handleRoleSwitch() {
+    const { history } = this.props;
+    await this.fetchAllUserData();
+    history.push('/account');
+  }
+
   async getUserAndConversionData() {
-    const {
-      hasError,
-      shouldLoadAllUserData,
-      onLogout,
-      onGetUserConversion,
-      onGetUser,
-      onGetAmlChecks,
-    } = this.props;
+    const { hasError, shouldLoadAllUserData, onLogout } = this.props;
 
     if (hasError) {
       onLogout();
     } else if (shouldLoadAllUserData) {
-      await Promise.all([onGetUserConversion(), onGetUser(), onGetAmlChecks()]);
-      await this.getSourceAndTargetFundsData();
+      await this.fetchAllUserData();
     }
   }
 
-  getSourceAndTargetFundsData() {
-    const { shouldLoadSourceAndTargetFunds, onGetSourceFunds, onGetTargetFunds } = this.props;
-
-    if (shouldLoadSourceAndTargetFunds) {
-      onGetSourceFunds();
-      onGetTargetFunds();
-    }
+  async fetchAllUserData() {
+    const { onGetUser, onGetUserConversion, onGetAmlChecks, onGetSourceFunds, onGetTargetFunds } =
+      this.props;
+    await Promise.all([onGetUser(), onGetUserConversion(), onGetAmlChecks()]);
+    onGetSourceFunds();
+    onGetTargetFunds();
   }
 
   isDevelopmentMode() {
@@ -111,7 +108,12 @@ export class LoggedInApp extends PureComponent {
 
     return (
       <div className="container">
-        <Header user={user} loading={loading} onLogout={onLogout} />
+        <Header
+          user={user}
+          loading={loading}
+          onLogout={onLogout}
+          onRoleSwitch={() => this.handleRoleSwitch()}
+        />
         {this.isDevelopmentMode() && <DevSidebar />}
         <main id="main" className="pb-5">
           <Switch>
@@ -301,7 +303,6 @@ LoggedInApp.defaultProps = {
   hasError: false,
   loading: false,
   shouldLoadAllUserData: false,
-  shouldLoadSourceAndTargetFunds: false,
 
   onLogout: noop,
   onGetUserConversion: noop,
@@ -316,7 +317,6 @@ LoggedInApp.propTypes = {
   hasError: Types.bool,
   loading: Types.bool,
   shouldLoadAllUserData: Types.bool,
-  shouldLoadSourceAndTargetFunds: Types.bool,
 
   onLogout: Types.func,
   onGetUserConversion: Types.func,
@@ -337,14 +337,6 @@ const mapStateToProps = (state) => ({
     (!(state.login.user || state.login.loadingUser) ||
       !(state.login.userConversion || state.login.loadingUserConversion) ||
       !(state.aml.missingAmlChecks || state.aml.loading)),
-  shouldLoadSourceAndTargetFunds:
-    getAuthentication().isAuthenticated() &&
-    !(
-      state.exchange.sourceFunds ||
-      state.exchange.loadingSourceFunds ||
-      state.exchange.targetFunds ||
-      state.exchange.loadingTargetFunds
-    ),
 });
 
 const mapDispatchToProps = (dispatch) =>

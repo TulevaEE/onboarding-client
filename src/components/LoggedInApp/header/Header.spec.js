@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import config from 'react-global-configuration';
 
 import { logo } from '../../common';
-import { Header } from '.';
+import { Header } from './Header';
 import LanguageSwitcher from './languageSwitcher';
 import { Shimmer } from '../../common/shimmer/Shimmer';
 import { RoleSwitcher } from './roleSwitcher';

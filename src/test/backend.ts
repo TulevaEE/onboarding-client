@@ -846,6 +846,19 @@ export function mandatesBackend(
   );
 }
 
+export function switchRoleBackend(server: SetupServerApi): { switchedRole: any } {
+  const backend = { switchedRole: null as any };
+  server.use(
+    rest.post('http://localhost/v1/me/role', (req, res, ctx) => {
+      backend.switchedRole = req.body;
+      return res(
+        ctx.json({ access_token: 'new-access-token', refresh_token: 'new-refresh-token' }),
+      );
+    }),
+  );
+  return backend;
+}
+
 export function rolesBackend(server: SetupServerApi): void {
   server.use(
     rest.get('http://localhost/v1/me/roles', (req, res, ctx) =>
@@ -891,6 +904,7 @@ const TEST_BACKENDS = {
   capitalTransferContract: capitalTransferContractBackend,
   memberLookup: memberLookupBackend,
   roles: rolesBackend,
+  switchRole: switchRoleBackend,
 } as const;
 
 export type TestBackendName = keyof typeof TEST_BACKENDS;

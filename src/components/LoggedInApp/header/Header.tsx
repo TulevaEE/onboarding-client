@@ -12,9 +12,10 @@ type Props = {
   user: { name: string };
   loading: boolean;
   onLogout: () => unknown;
+  onRoleSwitch?: () => void;
 };
 
-export const Header = ({ user, loading, onLogout }: Props) => (
+export const Header = ({ user, loading, onLogout, onRoleSwitch }: Props) => (
   <>
     <a className="skip-link visually-hidden-focusable" href="#main">
       <FormattedMessage id="global.skipToContent" />
@@ -42,7 +43,7 @@ export const Header = ({ user, loading, onLogout }: Props) => (
         ) : (
           <>
             <p className="m-0 d-flex gap-3 justify-content-end align-items-baseline">
-              <RoleSwitcher userName={user.name} />
+              <RoleSwitcher userName={user.name} onRoleSwitch={onRoleSwitch} />
               <a
                 href="/login"
                 className="icon-link"

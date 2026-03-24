@@ -1,13 +1,18 @@
 import config from 'react-global-configuration';
 import { authenticate as webEidAuthenticate } from '@web-eid/web-eid-library';
 import {
+  ActingAs,
   AmlCheck,
   Application,
   Authentication,
   CancellationMandate,
   CapitalEvent,
   CapitalRow,
+  CapitalTotal,
+  ContactListingOwnerDto,
+  ContactListingOwnerResponse,
   Contribution,
+  CreateMemberCapitalListingDto,
   Fund,
   FundBalance,
   IdCardSignatureResponse,
@@ -15,24 +20,20 @@ import {
   Mandate,
   MandateDeadlines,
   MemberCapitalListing,
+  MemberLookup,
   MobileSignatureResponse,
   MobileSignatureStatusResponse,
   Payment,
   PaymentLink,
   PaymentType,
+  Role,
+  SavingsFundOnboardingStatus,
   SigningMethod,
   SourceFund,
   Token,
   Transaction,
   User,
   UserConversion,
-  CreateMemberCapitalListingDto,
-  MemberLookup,
-  ContactListingOwnerDto,
-  ContactListingOwnerResponse,
-  CapitalTotal,
-  SavingsFundOnboardingStatus,
-  Role,
 } from './apiModels/index';
 import {
   deleteWithAuthentication,
@@ -570,4 +571,20 @@ export async function cancelSavingsFundWithdrawal(withdrawalId: string): Promise
 
 export function getRoles(): Promise<Role[]> {
   return getWithAuthentication(getEndpoint('/v1/me/roles'));
+}
+
+export async function switchRole(actingAs: ActingAs): Promise<Token> {
+  const { access_token: accessToken, refresh_token: refreshToken } = await postWithAuthentication(
+    getEndpoint('/v1/me/role'),
+    actingAs,
+  );
+
+  getAuthentication().update({
+    accessToken,
+    refreshToken,
+    loginMethod: getAuthentication().loginMethod,
+    signingMethod: getAuthentication().signingMethod,
+  });
+
+  return { accessToken, refreshToken };
 }

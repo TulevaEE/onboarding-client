@@ -34,6 +34,7 @@ import {
   getTransactions,
   getUserConversionWithToken,
   getRoles,
+  switchRole,
   getUserWithToken,
   getWithdrawalsEligibility,
   postSavingsFundOnboardingSurvey,
@@ -54,7 +55,9 @@ import {
   Fund,
   MandateDeadlines,
   MemberCapitalListing,
+  ActingAs,
   Role,
+  Token,
   SavingsFundOnboardingStatus,
   SavingsFundPaymentCancellationCommand,
   SourceFund,
@@ -321,4 +324,14 @@ export function useSavingsFundWithdrawalCancellation(): UseMutationResult<
 
 export function useRoles(): UseQueryResult<Role[]> {
   return useQuery({ queryKey: ['roles'], queryFn: () => getRoles() });
+}
+
+export function useSwitchRole(): UseMutationResult<Token, ErrorResponse, ActingAs, unknown> {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (actingAs: ActingAs) => switchRole(actingAs),
+    onSuccess: () => {
+      queryClient.invalidateQueries();
+    },
+  });
 }
