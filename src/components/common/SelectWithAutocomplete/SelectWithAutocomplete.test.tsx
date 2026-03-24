@@ -150,6 +150,20 @@ describe('SelectWithAutocomplete', () => {
     );
   });
 
+  test('passes placeholder to TomSelect', () => {
+    render(
+      <SelectWithAutocomplete<SelectOption>
+        lookup={lookup}
+        onChange={onChange}
+        ariaLabel="Test select"
+        placeholder="Search here"
+      />,
+    );
+
+    const select = screen.getByRole('combobox', { name: 'Test select' }) as any;
+    expect(select.tomselect.settings.placeholder).toBe('Search here');
+  });
+
   test('destroys TomSelect on unmount', () => {
     const destroySpy = jest.spyOn(TomSelect.prototype, 'destroy');
     const { unmount } = render(

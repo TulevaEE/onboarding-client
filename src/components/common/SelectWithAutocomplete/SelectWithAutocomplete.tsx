@@ -11,6 +11,7 @@ type Props<T extends SelectOption> = {
   onBlur?: () => void;
   ariaLabel?: string;
   className?: string;
+  placeholder?: string;
 };
 
 export const SelectWithAutocomplete = <T extends SelectOption>({
@@ -20,6 +21,7 @@ export const SelectWithAutocomplete = <T extends SelectOption>({
   lookup,
   onChange,
   onBlur,
+  placeholder,
 }: Props<T>) => {
   const selectRef = useRef<HTMLSelectElement>(null);
   const tomSelectRef = useRef<TomSelect | null>(null);
@@ -32,7 +34,7 @@ export const SelectWithAutocomplete = <T extends SelectOption>({
       maxItems: 1,
       load: (q: string, cb: (o: T[]) => void) => lookup(q).then(cb),
       onChange: (value: string) => onChange(tomSelectRef.current.options[value]),
-      placeholder: 'Placeholder',
+      placeholder,
     });
     return () => {
       tomSelectRef.current?.destroy();

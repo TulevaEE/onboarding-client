@@ -50,6 +50,13 @@ describe('BusinessRegistryStep', () => {
     expect(screen.getByText('Or company name')).toBeInTheDocument();
   });
 
+  it('renders placeholder in the autocomplete input', () => {
+    renderWrapped(<BusinessRegistryStepWrapper />);
+
+    const tomselect = getTomSelectInstance();
+    expect(tomselect.settings.placeholder).toBe('Search...');
+  });
+
   it('does not show validation error initially', () => {
     renderWrapped(<BusinessRegistryStepWrapper />);
 
@@ -64,7 +71,7 @@ describe('BusinessRegistryStep', () => {
 
     const alert = await screen.findByRole('alert');
     expect(alert).toBeInTheDocument();
-    expect(alert).toHaveTextContent('Find a company to continue.');
+    expect(alert).toHaveTextContent('Select a company to continue.');
   });
 
   describe('fetch behavior', () => {

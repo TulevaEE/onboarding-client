@@ -69,6 +69,9 @@ export const BusinessRegistryStep = ({ control }: BusinessRegistryStepProps) => 
                 lookup={fetchSuggestions}
                 onChange={field.onChange}
                 onBlur={field.onBlur}
+                placeholder={intl.formatMessage({
+                  id: 'flows.savingsFundOnboarding.businessRegistryStep.input.placeholder',
+                })}
               />
               {error && error.message ? (
                 <p className="m-0 text-danger fs-base" role="alert">
