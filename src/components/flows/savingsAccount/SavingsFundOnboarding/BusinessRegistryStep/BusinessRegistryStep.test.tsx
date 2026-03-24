@@ -1,11 +1,9 @@
 import { act, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useForm } from 'react-hook-form';
-import { IntlProvider } from 'react-intl';
 import { renderWrapped } from '../../../../../test/utils';
 import { BusinessRegistryStep } from './BusinessRegistryStep';
 import { CompanyOnboardingFormData } from '../types';
-import translations from '../../../../translations';
 
 const BusinessRegistryStepWrapper = () => {
   const { control, trigger } = useForm<CompanyOnboardingFormData>({
@@ -14,23 +12,12 @@ const BusinessRegistryStepWrapper = () => {
   });
 
   return (
-    <IntlProvider
-      locale="en"
-      messages={translations.en}
-      onError={(err) => {
-        if (err.code === 'MISSING_TRANSLATION') {
-          return;
-        }
-        throw err;
-      }}
-    >
-      <form>
-        <BusinessRegistryStep control={control} />
-        <button type="button" onClick={() => trigger('registryLookup')}>
-          Validate
-        </button>
-      </form>
-    </IntlProvider>
+    <form>
+      <BusinessRegistryStep control={control} />
+      <button type="button" onClick={() => trigger('registryLookup')}>
+        Validate
+      </button>
+    </form>
   );
 };
 
