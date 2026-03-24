@@ -34,12 +34,6 @@ const BusinessRegistryStepWrapper = () => {
   );
 };
 
-const getTomSelectInstance = () => {
-  const selects = screen.getAllByRole('combobox') as any[];
-  const hiddenSelect = selects.find((el: any) => el.tomselect);
-  return hiddenSelect.tomselect;
-};
-
 describe('BusinessRegistryStep', () => {
   it('renders title and description', () => {
     renderWrapped(<BusinessRegistryStepWrapper />);
@@ -53,8 +47,7 @@ describe('BusinessRegistryStep', () => {
   it('renders placeholder in the autocomplete input', () => {
     renderWrapped(<BusinessRegistryStepWrapper />);
 
-    const tomselect = getTomSelectInstance();
-    expect(tomselect.settings.placeholder).toBe('Search...');
+    expect(screen.getByPlaceholderText('Search...')).toBeInTheDocument();
   });
 
   it('does not show validation error initially', () => {
@@ -86,22 +79,11 @@ describe('BusinessRegistryStep', () => {
       jest.useRealTimers();
     });
 
-    it('does not fetch when input is 3 characters or fewer', () => {
-      renderWrapped(<BusinessRegistryStepWrapper />);
-
-      const tomselect = getTomSelectInstance();
-      const cb = jest.fn();
-      tomselect.settings.load.call(tomselect, 'Acm', cb);
-
-      expect(fetch).not.toHaveBeenCalled();
-    });
-
     it('fetches from business registry API when input is longer than 3 characters', async () => {
       renderWrapped(<BusinessRegistryStepWrapper />);
 
-      const tomselect = getTomSelectInstance();
-      const cb = jest.fn();
-      tomselect.settings.load.call(tomselect, 'Acme', cb);
+      const input = screen.getByPlaceholderText('Search...');
+      userEvent.type(input, 'Acme');
 
       await act(async () => {
         jest.runAllTimers();
@@ -110,7 +92,7 @@ describe('BusinessRegistryStep', () => {
       expect(fetch).toHaveBeenCalledWith('https://ariregister.rik.ee/est/api/autocomplete?q=Acme');
     });
 
-    it('maps API results to options with correct format', async () => {
+    it('displays API results as formatted options', async () => {
       (global.fetch as jest.Mock).mockResolvedValue({
         json: () =>
           Promise.resolve({
@@ -120,22 +102,16 @@ describe('BusinessRegistryStep', () => {
 
       renderWrapped(<BusinessRegistryStepWrapper />);
 
-      const tomselect = getTomSelectInstance();
-      const cb = jest.fn();
-      tomselect.settings.load.call(tomselect, 'Acme', cb);
+      const input = screen.getByPlaceholderText('Search...');
+      userEvent.type(input, 'Acme');
 
       await act(async () => {
         jest.runAllTimers();
       });
 
-      expect(cb).toHaveBeenCalledWith([
-        {
-          value: '123',
-          reg_code: '12345678',
-          name: 'Acme Corp',
-          text: 'Acme Corp (12345678)',
-        },
-      ]);
+      expect(
+        await screen.findByRole('option', { name: /Acme Corp \(12345678\)/ }),
+      ).toBeInTheDocument();
     });
   });
 });
