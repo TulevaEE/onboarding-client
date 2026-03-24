@@ -33,6 +33,7 @@ import {
   getSourceFunds,
   getTransactions,
   getUserConversionWithToken,
+  getRoles,
   getUserWithToken,
   getWithdrawalsEligibility,
   postSavingsFundOnboardingSurvey,
@@ -53,6 +54,7 @@ import {
   Fund,
   MandateDeadlines,
   MemberCapitalListing,
+  Role,
   SavingsFundOnboardingStatus,
   SavingsFundPaymentCancellationCommand,
   SourceFund,
@@ -74,31 +76,31 @@ import {
 import { OnboardingSurveyCommand } from '../flows/savingsAccount/SavingsFundOnboarding/types.api';
 
 export function usePendingApplications(): UseQueryResult<Application[]> {
-  return useQuery(['pendingApplications'], () => getPendingApplications());
+  return useQuery({ queryKey: ['pendingApplications'], queryFn: () => getPendingApplications() });
 }
 
 export function useTransactions(): UseQueryResult<Transaction[]> {
-  return useQuery(['transactions'], () => getTransactions());
+  return useQuery({ queryKey: ['transactions'], queryFn: () => getTransactions() });
 }
 
 export function useCapitalEvents(): UseQueryResult<CapitalEvent[]> {
-  return useQuery(['capitalEvents'], () => getCapitalEvents());
+  return useQuery({ queryKey: ['capitalEvents'], queryFn: () => getCapitalEvents() });
 }
 
 export function useCapitalRows(): UseQueryResult<CapitalRow[]> {
-  return useQuery(['capitalRows'], () => getCapitalRowsWithToken());
+  return useQuery({ queryKey: ['capitalRows'], queryFn: () => getCapitalRowsWithToken() });
 }
 
 export function useCapitalTotal(): UseQueryResult<CapitalTotal> {
-  return useQuery(['capitalTotal'], () => getCapitalTotal());
+  return useQuery({ queryKey: ['capitalTotal'], queryFn: () => getCapitalTotal() });
 }
 
 export function useContributions(): UseQueryResult<Contribution[]> {
-  return useQuery(['contributions'], () => getContributions());
+  return useQuery({ queryKey: ['contributions'], queryFn: () => getContributions() });
 }
 
 export function useFunds(): UseQueryResult<Fund[]> {
-  return useQuery(['funds'], () => getFunds());
+  return useQuery({ queryKey: ['funds'], queryFn: () => getFunds() });
 }
 
 export function useApplicationCancellation(): UseMutationResult<
@@ -107,7 +109,9 @@ export function useApplicationCancellation(): UseMutationResult<
   number,
   unknown
 > {
-  return useMutation((applicationId: number) => createApplicationCancellation(applicationId));
+  return useMutation({
+    mutationFn: (applicationId: number) => createApplicationCancellation(applicationId),
+  });
 }
 
 export function useSavingsFundPaymentCancellation(): UseMutationResult<
@@ -116,9 +120,10 @@ export function useSavingsFundPaymentCancellation(): UseMutationResult<
   SavingsFundPaymentCancellationCommand,
   unknown
 > {
-  return useMutation(({ paymentId }: SavingsFundPaymentCancellationCommand) =>
-    createSavingsFundPaymentCancellation(paymentId),
-  );
+  return useMutation({
+    mutationFn: ({ paymentId }: SavingsFundPaymentCancellationCommand) =>
+      createSavingsFundPaymentCancellation(paymentId),
+  });
 }
 
 export function useApplication(id: number): UseQueryResult<Application | null> {
@@ -131,31 +136,40 @@ export function useApplication(id: number): UseQueryResult<Application | null> {
 }
 
 export function useMandateDeadlines(): UseQueryResult<MandateDeadlines> {
-  return useQuery(['mandateDeadlines'], () => getMandateDeadlines());
+  return useQuery({ queryKey: ['mandateDeadlines'], queryFn: () => getMandateDeadlines() });
 }
 
 export function useMe(): UseQueryResult<User> {
-  return useQuery(['user'], () => getUserWithToken());
+  return useQuery({ queryKey: ['user'], queryFn: () => getUserWithToken() });
 }
 
 export function useWithdrawalsEligibility(): UseQueryResult<WithdrawalsEligibility> {
-  return useQuery(['withdrawalsEligibility'], () => getWithdrawalsEligibility());
+  return useQuery({
+    queryKey: ['withdrawalsEligibility'],
+    queryFn: () => getWithdrawalsEligibility(),
+  });
 }
 
 export function useFundPensionStatus(): UseQueryResult<FundPensionStatus> {
-  return useQuery(['fundPensionStatus'], () => getFundPensionStatus());
+  return useQuery({ queryKey: ['fundPensionStatus'], queryFn: () => getFundPensionStatus() });
 }
 
 export function useConversion(): UseQueryResult<UserConversion> {
-  return useQuery(['conversion'], () => getUserConversionWithToken());
+  return useQuery({ queryKey: ['conversion'], queryFn: () => getUserConversionWithToken() });
 }
 
 export function useSourceFunds(fromDate?: string, toDate?: string): UseQueryResult<SourceFund[]> {
-  return useQuery(['sourceFunds', fromDate, toDate], () => getSourceFunds(fromDate, toDate));
+  return useQuery({
+    queryKey: ['sourceFunds', fromDate, toDate],
+    queryFn: () => getSourceFunds(fromDate, toDate),
+  });
 }
 
 export function useSavingsFundOnboardingStatus(): UseQueryResult<SavingsFundOnboardingStatus> {
-  return useQuery(['savingsFundOnboardingStatus'], () => getSavingsFundOnboardingStatus());
+  return useQuery({
+    queryKey: ['savingsFundOnboardingStatus'],
+    queryFn: () => getSavingsFundOnboardingStatus(),
+  });
 }
 
 export function useCreateMandateBatch(): UseMutationResult<
@@ -164,7 +178,7 @@ export function useCreateMandateBatch(): UseMutationResult<
   CreateMandateBatchDto,
   unknown
 > {
-  return useMutation((dto) => createMandateBatch(dto));
+  return useMutation({ mutationFn: (dto) => createMandateBatch(dto) });
 }
 
 export function useCreateCapitalTransferContract(): UseMutationResult<
@@ -173,18 +187,23 @@ export function useCreateCapitalTransferContract(): UseMutationResult<
   CreateCapitalTransferDto,
   unknown
 > {
-  return useMutation((dto) => createCapitalTransferContract(dto));
+  return useMutation({ mutationFn: (dto) => createCapitalTransferContract(dto) });
 }
 
 export function useMyCapitalTransferContracts(): UseQueryResult<CapitalTransferContract[]> {
-  return useQuery(['myCapitalTransferContracts'], () => getMyCapitalTransferContracts());
+  return useQuery({
+    queryKey: ['myCapitalTransferContracts'],
+    queryFn: () => getMyCapitalTransferContracts(),
+  });
 }
 
 export function useCapitalTransferContract(
   id: number,
   manualRefetch: boolean,
 ): UseQueryResult<CapitalTransferContract, { status: number }> {
-  return useQuery(['capitalTransferContract', id], () => getCapitalTransferContract(id), {
+  return useQuery({
+    queryKey: ['capitalTransferContract', id],
+    queryFn: () => getCapitalTransferContract(id),
     enabled: !manualRefetch,
     retry: false,
   });
@@ -198,19 +217,26 @@ export function useUpdateCapitalTransferContract(): UseMutationResult<
 > {
   const queryClient = useQueryClient();
 
-  return useMutation((dto) => updateCapitalTransferContract(dto), {
+  return useMutation({
+    mutationFn: (dto) => updateCapitalTransferContract(dto),
     onSuccess: () => {
-      queryClient.invalidateQueries(['myCapitalTransferContracts']);
+      queryClient.invalidateQueries({ queryKey: ['myCapitalTransferContracts'] });
     },
   });
 }
 
 export function useMemberCapitalListings(): UseQueryResult<MemberCapitalListing[]> {
-  return useQuery(['memberCapitalListings'], () => getMemberCapitalListings());
+  return useQuery({
+    queryKey: ['memberCapitalListings'],
+    queryFn: () => getMemberCapitalListings(),
+  });
 }
 
 export function useMemberCapitalListingCount(): UseQueryResult<number> {
-  return useQuery(['memberCapitalListingCount'], () => getMemberCapitalListingCount());
+  return useQuery({
+    queryKey: ['memberCapitalListingCount'],
+    queryFn: () => getMemberCapitalListingCount(),
+  });
 }
 
 export function useCreateMemberCapitalListing(): UseMutationResult<
@@ -255,13 +281,11 @@ export function useDeleteMemberCapitalListing(): UseMutationResult<
 }
 
 export function usePreviewMemberCapitalListingMessage(dto: ContactListingOwnerDto) {
-  return useQuery(
-    ['listingMessage', dto.id, dto.addPersonalCode, dto.addPhoneNumber],
-    () => previewMessageForMemberCapitalListing(dto),
-    {
-      enabled: true,
-    },
-  );
+  return useQuery({
+    queryKey: ['listingMessage', dto.id, dto.addPersonalCode, dto.addPhoneNumber],
+    queryFn: () => previewMessageForMemberCapitalListing(dto),
+    enabled: true,
+  });
 }
 
 export function useContactMemberCapitalListing(): UseMutationResult<
@@ -276,11 +300,14 @@ export function useContactMemberCapitalListing(): UseMutationResult<
 }
 
 export function useSavingsFundBalance(): UseQueryResult<SourceFund | null> {
-  return useQuery(['savingsFundBalance'], () => getSavingsFundBalance());
+  return useQuery({ queryKey: ['savingsFundBalance'], queryFn: () => getSavingsFundBalance() });
 }
 
 export function useSavingsFundBankAccounts(): UseQueryResult<string[]> {
-  return useQuery(['savingsFundBankAccounts'], () => getSavingsFundBankAccounts());
+  return useQuery({
+    queryKey: ['savingsFundBankAccounts'],
+    queryFn: () => getSavingsFundBankAccounts(),
+  });
 }
 
 export function useSavingsFundWithdrawalCancellation(): UseMutationResult<
@@ -289,5 +316,9 @@ export function useSavingsFundWithdrawalCancellation(): UseMutationResult<
   { id: string },
   unknown
 > {
-  return useMutation(({ id }: { id: string }) => cancelSavingsFundWithdrawal(id));
+  return useMutation({ mutationFn: ({ id }: { id: string }) => cancelSavingsFundWithdrawal(id) });
+}
+
+export function useRoles(): UseQueryResult<Role[]> {
+  return useQuery({ queryKey: ['roles'], queryFn: () => getRoles() });
 }

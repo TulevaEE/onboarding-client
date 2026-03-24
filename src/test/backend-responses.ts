@@ -63,6 +63,7 @@ export const mockUser: User = {
   secondPillarOpenDate: '2010-01-01',
   thirdPillarInitDate: '2019-01-01',
   contactDetailsLastUpdateDate: moment().format('YYYY-MM-DD'),
+  actingAs: { type: 'PERSON', code: '39001011234' },
 };
 
 export const mockSecondPillarConversion: Conversion = {

@@ -241,6 +241,18 @@ interface PaymentRates {
   pending: PaymentRate | null;
 }
 
+export type ActingAsType = 'PERSON' | 'COMPANY';
+
+export interface ActingAs {
+  type: ActingAsType;
+  code: string;
+}
+
+export interface Role {
+  actingAs: ActingAs;
+  name: string;
+}
+
 export interface User {
   id: number;
   personalCode: string;
@@ -262,6 +274,7 @@ export interface User {
   secondPillarOpenDate: string | null;
   thirdPillarInitDate: string | null;
   contactDetailsLastUpdateDate: string | null;
+  actingAs: ActingAs;
 }
 
 export interface MemberLookup {

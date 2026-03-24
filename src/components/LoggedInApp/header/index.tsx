@@ -5,6 +5,7 @@ import config from 'react-global-configuration';
 import { logo } from '../../common';
 import LanguageSwitcher from './languageSwitcher';
 import { Shimmer } from '../../common/shimmer/Shimmer';
+import { RoleSwitcher } from './roleSwitcher';
 
 type Props = {
   // TODO move to useMe hook here
@@ -41,7 +42,7 @@ export const Header = ({ user, loading, onLogout }: Props) => (
         ) : (
           <>
             <p className="m-0 d-flex gap-3 justify-content-end align-items-baseline">
-              <span className="text-body">{user.name}</span>
+              <RoleSwitcher userName={user.name} />
               <a
                 href="/login"
                 className="icon-link"

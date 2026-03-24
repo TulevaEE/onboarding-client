@@ -846,6 +846,21 @@ export function mandatesBackend(
   );
 }
 
+export function rolesBackend(server: SetupServerApi): void {
+  server.use(
+    rest.get('http://localhost/v1/me/roles', (req, res, ctx) =>
+      res(
+        ctx.json([
+          {
+            actingAs: { type: 'PERSON', code: mockUser.personalCode },
+            name: `${mockUser.firstName} ${mockUser.lastName}`,
+          },
+        ]),
+      ),
+    ),
+  );
+}
+
 const TEST_BACKENDS = {
   cancellation: cancellationBackend,
   mandatePreview: mandatePreviewBackend,
@@ -875,6 +890,7 @@ const TEST_BACKENDS = {
   memberCapitalListings: memberCapitalListingsBackend,
   capitalTransferContract: capitalTransferContractBackend,
   memberLookup: memberLookupBackend,
+  roles: rolesBackend,
 } as const;
 
 export type TestBackendName = keyof typeof TEST_BACKENDS;

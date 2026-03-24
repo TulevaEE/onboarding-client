@@ -6,6 +6,7 @@ import { logo } from '../../common';
 import { Header } from '.';
 import LanguageSwitcher from './languageSwitcher';
 import { Shimmer } from '../../common/shimmer/Shimmer';
+import { RoleSwitcher } from './roleSwitcher';
 
 describe('Header', () => {
   let component;
@@ -34,7 +35,7 @@ describe('Header', () => {
       user: { name },
       loading: false,
     });
-    expect(component.text()).toContain(name);
+    expect(component.find(RoleSwitcher).prop('userName')).toBe(name);
     expect(component.contains(<Shimmer height={24} />)).toBe(false);
   });
 

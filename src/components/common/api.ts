@@ -32,6 +32,7 @@ import {
   ContactListingOwnerResponse,
   CapitalTotal,
   SavingsFundOnboardingStatus,
+  Role,
 } from './apiModels/index';
 import {
   deleteWithAuthentication,
@@ -565,4 +566,8 @@ export async function createSavingsFundWithdrawal(
 
 export async function cancelSavingsFundWithdrawal(withdrawalId: string): Promise<void> {
   return deleteWithAuthentication(getEndpoint(`/v1/savings/redemptions/${withdrawalId}`));
+}
+
+export function getRoles(): Promise<Role[]> {
+  return getWithAuthentication(getEndpoint('/v1/me/roles'));
 }
