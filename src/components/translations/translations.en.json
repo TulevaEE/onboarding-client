@@ -1505,5 +1505,13 @@
   "countries.EH": "Western Sahara",
   "countries.YE": "Yemen",
   "countries.ZM": "Zambia",
-  "countries.ZW": "Zimbabwe"
+  "countries.ZW": "Zimbabwe",
+
+  "flows.savingsFundCompanyOnboarding.title": "Opening a company savings fund",
+  "flows.savingsFundCompanyOnboarding.requirementsCheckStep.title": "Company requirements",
+  "flows.savingsFundCompanyOnboarding.requirementsCheckStep.description": "We will check if your company meets the requirements.",
+  "flows.savingsFundCompanyOnboarding.companyAddressStep.title": "Company address",
+  "flows.savingsFundCompanyOnboarding.companyAddressStep.description": "Confirm or enter your company's address.",
+  "flows.savingsFundCompanyOnboarding.companyIncomeSourceStep.title": "Source of company income",
+  "flows.savingsFundCompanyOnboarding.companyIncomeSourceStep.description": "Confirm the source of your company's income."
 }

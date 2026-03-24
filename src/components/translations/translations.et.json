@@ -1594,5 +1594,13 @@
   "countries.EH": "Lääne-Sahara",
   "countries.YE": "Jeemen",
   "countries.ZM": "Sambia",
-  "countries.ZW": "Zimbabwe"
+  "countries.ZW": "Zimbabwe",
+
+  "flows.savingsFundCompanyOnboarding.title": "Ettevõtte kogumifondi avamine",
+  "flows.savingsFundCompanyOnboarding.requirementsCheckStep.title": "Ettevõtte nõuded",
+  "flows.savingsFundCompanyOnboarding.requirementsCheckStep.description": "Kontrollime, kas teie ettevõte vastab nõuetele.",
+  "flows.savingsFundCompanyOnboarding.companyAddressStep.title": "Ettevõtte aadress",
+  "flows.savingsFundCompanyOnboarding.companyAddressStep.description": "Kinnitage või sisestage oma ettevõtte aadress.",
+  "flows.savingsFundCompanyOnboarding.companyIncomeSourceStep.title": "Ettevõtte tuluallikas",
+  "flows.savingsFundCompanyOnboarding.companyIncomeSourceStep.description": "Kinnitage oma ettevõtte tuluallikas."
 }
