@@ -241,16 +241,17 @@ interface PaymentRates {
   pending: PaymentRate | null;
 }
 
-export type ActingAsType = 'PERSON' | 'COMPANY';
-
-export interface ActingAs {
-  type: ActingAsType;
-  code: string;
-}
+export type RoleType = 'PERSON' | 'LEGAL_ENTITY';
 
 export interface Role {
-  actingAs: ActingAs;
+  type: RoleType;
+  code: string;
   name: string;
+}
+
+export interface SwitchRoleCommand {
+  type: RoleType;
+  code: string;
 }
 
 export interface User {
@@ -274,7 +275,7 @@ export interface User {
   secondPillarOpenDate: string | null;
   thirdPillarInitDate: string | null;
   contactDetailsLastUpdateDate: string | null;
-  actingAs: ActingAs;
+  role: Role;
 }
 
 export interface MemberLookup {

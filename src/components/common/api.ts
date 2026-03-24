@@ -1,7 +1,7 @@
 import config from 'react-global-configuration';
 import { authenticate as webEidAuthenticate } from '@web-eid/web-eid-library';
 import {
-  ActingAs,
+  SwitchRoleCommand,
   AmlCheck,
   Application,
   Authentication,
@@ -573,10 +573,10 @@ export function getRoles(): Promise<Role[]> {
   return getWithAuthentication(getEndpoint('/v1/me/roles'));
 }
 
-export async function switchRole(actingAs: ActingAs): Promise<Token> {
+export async function switchRole(command: SwitchRoleCommand): Promise<Token> {
   const { access_token: accessToken, refresh_token: refreshToken } = await postWithAuthentication(
     getEndpoint('/v1/me/role'),
-    actingAs,
+    command,
   );
 
   getAuthentication().update({

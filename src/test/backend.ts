@@ -865,7 +865,8 @@ export function rolesBackend(server: SetupServerApi): void {
       res(
         ctx.json([
           {
-            actingAs: { type: 'PERSON', code: mockUser.personalCode },
+            type: 'PERSON',
+            code: mockUser.personalCode,
             name: `${mockUser.firstName} ${mockUser.lastName}`,
           },
         ]),

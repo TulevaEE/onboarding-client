@@ -772,7 +772,7 @@ describe('API calls', () => {
       secondPillarOpenDate: '2020-01-01',
       thirdPillarInitDate: '2021-01-01',
       contactDetailsLastUpdateDate: '2024-01-01',
-      actingAs: { type: 'PERSON', code: '12345678901' },
+      role: { type: 'PERSON', code: '12345678901', name: 'Test User' },
     };
 
     beforeEach(() => {

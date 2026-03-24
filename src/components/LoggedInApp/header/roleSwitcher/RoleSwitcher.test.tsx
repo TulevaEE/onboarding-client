@@ -23,7 +23,7 @@ beforeEach(() => {
   getAuthentication().update(anAuthenticationManager());
 });
 
-function rolesBackend(roles: Array<{ actingAs: { type: string; code: string }; name: string }>) {
+function rolesBackend(roles: Array<{ type: string; code: string; name: string }>) {
   server.use(rest.get('http://localhost/v1/me/roles', (req, res, ctx) => res(ctx.json(roles))));
 }
 
@@ -38,11 +38,12 @@ function userBackend(overrides = {}) {
 describe('RoleSwitcher', () => {
   it('renders user name as plain text when there is only one role', async () => {
     const personalRole = {
-      actingAs: { type: 'PERSON', code: '39001011234' },
+      type: 'PERSON',
+      code: '39001011234',
       name: 'John Doe',
     };
     rolesBackend([personalRole]);
-    userBackend({ actingAs: { type: 'PERSON', code: '39001011234' } });
+    userBackend({ role: { type: 'PERSON', code: '39001011234', name: 'John Doe' } });
 
     renderWrapped(<RoleSwitcher userName="John Doe" />);
 
@@ -52,11 +53,11 @@ describe('RoleSwitcher', () => {
 
   it('renders a dropdown button when there are multiple roles', async () => {
     const roles = [
-      { actingAs: { type: 'PERSON', code: '39001011234' }, name: 'John Doe' },
-      { actingAs: { type: 'COMPANY', code: '12345678' }, name: 'Test OÜ' },
+      { type: 'PERSON', code: '39001011234', name: 'John Doe' },
+      { type: 'COMPANY', code: '12345678', name: 'Test OÜ' },
     ];
     rolesBackend(roles);
-    userBackend({ actingAs: { type: 'PERSON', code: '39001011234' } });
+    userBackend({ role: { type: 'PERSON', code: '39001011234', name: 'John Doe' } });
 
     renderWrapped(<RoleSwitcher userName="John Doe" />);
 
@@ -65,11 +66,11 @@ describe('RoleSwitcher', () => {
 
   it('shows all roles in dropdown menu when clicked', async () => {
     const roles = [
-      { actingAs: { type: 'PERSON', code: '39001011234' }, name: 'John Doe' },
-      { actingAs: { type: 'COMPANY', code: '12345678' }, name: 'Test OÜ' },
+      { type: 'PERSON', code: '39001011234', name: 'John Doe' },
+      { type: 'COMPANY', code: '12345678', name: 'Test OÜ' },
     ];
     rolesBackend(roles);
-    userBackend({ actingAs: { type: 'PERSON', code: '39001011234' } });
+    userBackend({ role: { type: 'PERSON', code: '39001011234', name: 'John Doe' } });
 
     renderWrapped(<RoleSwitcher userName="John Doe" />);
 
@@ -84,11 +85,11 @@ describe('RoleSwitcher', () => {
 
   it('highlights the current active role', async () => {
     const roles = [
-      { actingAs: { type: 'PERSON', code: '39001011234' }, name: 'John Doe' },
-      { actingAs: { type: 'COMPANY', code: '12345678' }, name: 'Test OÜ' },
+      { type: 'PERSON', code: '39001011234', name: 'John Doe' },
+      { type: 'COMPANY', code: '12345678', name: 'Test OÜ' },
     ];
     rolesBackend(roles);
-    userBackend({ actingAs: { type: 'PERSON', code: '39001011234' } });
+    userBackend({ role: { type: 'PERSON', code: '39001011234', name: 'John Doe' } });
 
     renderWrapped(<RoleSwitcher userName="John Doe" />);
 
@@ -104,11 +105,11 @@ describe('RoleSwitcher', () => {
 
   it('closes the dropdown when clicking a role', async () => {
     const roles = [
-      { actingAs: { type: 'PERSON', code: '39001011234' }, name: 'John Doe' },
-      { actingAs: { type: 'COMPANY', code: '12345678' }, name: 'Test OÜ' },
+      { type: 'PERSON', code: '39001011234', name: 'John Doe' },
+      { type: 'COMPANY', code: '12345678', name: 'Test OÜ' },
     ];
     rolesBackend(roles);
-    userBackend({ actingAs: { type: 'PERSON', code: '39001011234' } });
+    userBackend({ role: { type: 'PERSON', code: '39001011234', name: 'John Doe' } });
     switchRoleBackend(server);
 
     renderWrapped(<RoleSwitcher userName="John Doe" />);
@@ -129,17 +130,22 @@ describe('RoleSwitcher', () => {
 
   it('calls switchRole API and onRoleSwitch when selecting a different role', async () => {
     const roles = [
-      { actingAs: { type: 'PERSON', code: '39001011234' }, name: 'John Doe' },
-      { actingAs: { type: 'COMPANY', code: '12345678' }, name: 'Test OÜ' },
+      { type: 'PERSON', code: '39001011234', name: 'John Doe' },
+      { type: 'COMPANY', code: '12345678', name: 'Test OÜ' },
     ];
     rolesBackend(roles);
-    userBackend({ actingAs: { type: 'PERSON', code: '39001011234' } });
+    userBackend({ role: { type: 'PERSON', code: '39001011234', name: 'John Doe' } });
     const backend = switchRoleBackend(server);
     // Also register roles handler for refetch after invalidation with new token
     server.use(
       rest.get('http://localhost/v1/me/roles', (req, res, ctx) => res(ctx.json(roles))),
       rest.get('http://localhost/v1/me', (req, res, ctx) =>
-        res(ctx.json({ ...mockUser, actingAs: { type: 'COMPANY', code: '12345678' } })),
+        res(
+          ctx.json({
+            ...mockUser,
+            role: { type: 'COMPANY', code: '12345678', name: 'Test OÜ' },
+          }),
+        ),
       ),
     );
 
