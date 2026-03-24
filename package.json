@@ -54,6 +54,7 @@
     "build": "react-scripts --openssl-legacy-provider build",
     "build:staging": "REACT_APP_ENV=staging react-scripts build",
     "develop": "react-scripts --openssl-legacy-provider start",
+    "develop:local": "PROXY_TARGET=http://localhost:9000 react-scripts --openssl-legacy-provider start",
     "develop-production": "HTTPS=true HOST=local.tuleva.ee DANGEROUSLY_DISABLE_HOST_CHECK=true npm run develop",
     "develop-production-win": "set HTTPS=true&&set HOST=local.tuleva.ee&&npm run develop",
     "lint": "eslint --ext .js,.ts,.jsx,.tsx src/ --max-warnings=0",
@@ -134,8 +135,6 @@
       "pre-commit": "lint-staged --debug"
     }
   },
-  "//proxy": "http://localhost:9000",
-  "proxy": "https://onboarding-service.tuleva.ee",
   "browserslist": [
     ">0.3% in EE",
     "last 2 versions and last 2 years and supports es6-module",
