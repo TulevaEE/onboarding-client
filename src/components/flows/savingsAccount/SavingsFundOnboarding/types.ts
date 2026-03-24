@@ -7,26 +7,41 @@ import type {
   SourceOfIncomeSurveyItem,
 } from './types.api';
 
-export interface OnboardingFormData {
-  citizenship: ISO2CountryCode[];
-  address: Address;
-  email: string;
-  phoneNumber?: string;
-  pepSelfDeclaration: PepSelfDeclaration | null;
+export interface SharedOnboardingFields {
   investmentGoals:
     | { type: 'OPTION'; value: InvestmentGoalOption }
     | { type: 'TEXT'; value: string }
     | null;
   investableAssets: InvestableAssetsOption | null;
-  sourceOfIncome: SourceOfIncomeSurveyItem['value'];
   termsAccepted: boolean;
 }
 
-export interface CompanyOnboardingFormData {
+export interface OnboardingFormData extends SharedOnboardingFields {
+  citizenship: ISO2CountryCode[];
+  address: Address;
+  email: string;
+  phoneNumber?: string;
+  pepSelfDeclaration: PepSelfDeclaration | null;
+  sourceOfIncome: SourceOfIncomeSurveyItem['value'];
+}
+
+export interface CompanyOnboardingFormData extends SharedOnboardingFields {
   // step 1
   registryLookup?: {
     registryNumber: string;
     registryName: string;
   };
-  // more steps to come
+  // step 2
+  requirementsBackendCheck: boolean;
+  // step 3
+  companyAddress:
+    | {
+        reuseBackendAddress: true;
+      }
+    | {
+        reuseBackendAddress: false;
+        address: Address;
+      };
+  // step 6
+  sourceOfCompanyIncome: boolean;
 }
