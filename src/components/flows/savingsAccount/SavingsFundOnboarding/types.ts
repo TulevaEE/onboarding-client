@@ -25,7 +25,7 @@ export interface OnboardingFormData {
 export interface CompanyOnboardingFormData {
   // step 1
   registryLookup?: {
-    registryNumber: number;
+    registryNumber: string;
     registryName: string;
   };
   // more steps to come

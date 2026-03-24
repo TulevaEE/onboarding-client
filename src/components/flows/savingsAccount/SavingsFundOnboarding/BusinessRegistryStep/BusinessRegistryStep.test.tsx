@@ -5,8 +5,10 @@ import { renderWrapped } from '../../../../../test/utils';
 import { BusinessRegistryStep } from './BusinessRegistryStep';
 import { CompanyOnboardingFormData } from '../types';
 
+const onSubmitSpy = jest.fn();
+
 const BusinessRegistryStepWrapper = () => {
-  const { control, trigger } = useForm<CompanyOnboardingFormData>({
+  const { control, trigger, getValues } = useForm<CompanyOnboardingFormData>({
     mode: 'onChange',
     defaultValues: { registryLookup: undefined },
   });
@@ -16,6 +18,9 @@ const BusinessRegistryStepWrapper = () => {
       <BusinessRegistryStep control={control} />
       <button type="button" onClick={() => trigger('registryLookup')}>
         Validate
+      </button>
+      <button type="button" onClick={() => onSubmitSpy(getValues())}>
+        Submit
       </button>
     </form>
   );
@@ -77,6 +82,53 @@ describe('BusinessRegistryStep', () => {
       });
 
       expect(fetch).toHaveBeenCalledWith('https://ariregister.rik.ee/est/api/autocomplete?q=Acme');
+    });
+
+    it('URL-encodes special characters in the query', async () => {
+      renderWrapped(<BusinessRegistryStepWrapper />);
+
+      const input = screen.getByPlaceholderText('Search...');
+      userEvent.type(input, 'Acme & Co');
+
+      await act(async () => {
+        jest.runAllTimers();
+      });
+
+      expect(fetch).toHaveBeenCalledWith(
+        'https://ariregister.rik.ee/est/api/autocomplete?q=Acme%20%20Co',
+      );
+    });
+
+    it('maps selected option to registryLookup form shape', async () => {
+      (global.fetch as jest.Mock).mockResolvedValue({
+        json: () =>
+          Promise.resolve({
+            data: [{ company_id: 123, name: 'Acme Corp', reg_code: '12345678' }],
+          }),
+      });
+
+      renderWrapped(<BusinessRegistryStepWrapper />);
+
+      const input = screen.getByPlaceholderText('Search...');
+      userEvent.type(input, 'Acme');
+
+      await act(async () => {
+        jest.runAllTimers();
+      });
+
+      expect(await screen.findByRole('option', { name: /Acme Corp/ })).toBeInTheDocument();
+
+      // eslint-disable-next-line testing-library/no-node-access
+      const selectElement = document.querySelector('select') as any;
+      act(() => {
+        selectElement.tomselect.setValue('123');
+      });
+
+      userEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
+      expect(onSubmitSpy).toHaveBeenCalledWith({
+        registryLookup: { registryNumber: '12345678', registryName: 'Acme Corp' },
+      });
     });
 
     it('displays API results as formatted options', async () => {

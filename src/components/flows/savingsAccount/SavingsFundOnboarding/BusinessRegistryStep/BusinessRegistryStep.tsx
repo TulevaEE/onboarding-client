@@ -1,9 +1,10 @@
-import { useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Control, Controller } from 'react-hook-form';
 import { CompanyOnboardingFormData } from '../types';
 import { SelectOption, SelectWithAutocomplete } from '../../../../common/SelectWithAutocomplete';
 import { BusinessRegistrySearchResult } from '../types.api';
+
+const BUSINESS_REGISTRY_API_URL = 'https://ariregister.rik.ee/est/api/autocomplete';
 
 type BusinessRegistryStepProps = {
   control: Control<CompanyOnboardingFormData>;
@@ -14,32 +15,29 @@ type BusinessRegistryOption = SelectOption & {
   name: string;
 };
 
+const fetchSuggestions = async (value: string) => {
+  if (value.length <= 3) {
+    return [];
+  }
+
+  const results = await fetch(`${BUSINESS_REGISTRY_API_URL}?q=${encodeURIComponent(value)}`).then(
+    (res) => res.json(),
+  );
+
+  const mappedData: BusinessRegistryOption[] = results.data.map(
+    (company: BusinessRegistrySearchResult): BusinessRegistryOption => ({
+      value: String(company.company_id),
+      reg_code: company.reg_code,
+      name: company.name,
+      text: `${company.name} (${company.reg_code})`,
+    }),
+  );
+
+  return mappedData;
+};
+
 export const BusinessRegistryStep = ({ control }: BusinessRegistryStepProps) => {
   const intl = useIntl();
-
-  const fetchSuggestions = useMemo(
-    () => async (value: string) => {
-      if (value.length <= 3) {
-        return [];
-      }
-
-      const results = await fetch(
-        `https://ariregister.rik.ee/est/api/autocomplete?q=${value}`,
-      ).then((res) => res.json());
-
-      const mappedData: BusinessRegistryOption[] = results.data.map(
-        (company: BusinessRegistrySearchResult): BusinessRegistryOption => ({
-          value: String(company.company_id),
-          reg_code: company.reg_code,
-          name: company.name,
-          text: `${company.name} (${company.reg_code})`,
-        }),
-      );
-
-      return mappedData;
-    },
-    [],
-  );
 
   return (
     <section className="d-flex flex-column gap-4" key="businessRegistry">
@@ -67,7 +65,13 @@ export const BusinessRegistryStep = ({ control }: BusinessRegistryStepProps) => 
               <SelectWithAutocomplete<BusinessRegistryOption>
                 className="mb-2 form-select form-select-lg"
                 lookup={fetchSuggestions}
-                onChange={field.onChange}
+                onChange={(option) =>
+                  field.onChange(
+                    option
+                      ? { registryNumber: option.reg_code, registryName: option.name }
+                      : undefined,
+                  )
+                }
                 onBlur={field.onBlur}
                 placeholder={intl.formatMessage({
                   id: 'flows.savingsFundOnboarding.businessRegistryStep.input.placeholder',
