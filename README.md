@@ -52,11 +52,15 @@ npm install
 npm run develop
 ```
 
-Or alternatively, when running against production, switch the `proxy` field in `package.json` against the production server, and run:
+Or alternatively, if you want to run against production:
 
 ```
 npm run develop-production
 ```
+
+Very likely chrome won't open the page due to a certificate error, type: `thisisunsafe` or continue through UI to ignore HTTPs errors
+
+[`onboarding-service`](https://github.com/TulevaEE/onboarding-service) is expected to run on port 9000 when not running against production.
 
 3. Run tests
 
@@ -65,14 +69,6 @@ npm test
 ```
 
 When running tests from IntelliJ, add `TZ=UTC` to the run configuration's environment variables. The `npm test` script sets this automatically, but IntelliJ's test runner does not. Without it, timezone-dependent tests will fail.
-
-[`onboarding-service`](https://github.com/TulevaEE/onboarding-service) is expected to run on port 9000 when not running against production.
-
-### Development against the production service (https://onboarding-service.tuleva.ee)
-
-1. Point the proxy server to production in `package.json`: `"proxy": "https://onboarding-service.tuleva.ee"`
-1. `npm run develop-production`
-1. If chrome won't open the page due to a certificate error, type: `thisisunsafe`
 
 ### Deployment
 
