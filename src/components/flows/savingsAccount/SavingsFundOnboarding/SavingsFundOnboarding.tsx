@@ -21,6 +21,7 @@ import {
 import { transformFormDataToOnboardingSurveryCommand } from '../utils';
 import { ErrorResponse } from '../../../common/apiModels';
 import { Loader } from '../../../common';
+import { OnboardingWizardLayout } from './OnboardingWizardLayout';
 
 export const SavingsFundOnboarding: FC = () => {
   usePageTitle('pageTitle.savingsFundOnboarding');
@@ -29,11 +30,7 @@ export const SavingsFundOnboarding: FC = () => {
   const [activeSection, setActiveSection] = useState(0);
   const [submitError, setSubmitError] = useState<ErrorResponse | null>(null);
 
-  const {
-    mutateAsync: submitSurvey,
-    isPending: submittingSurvey,
-    error,
-  } = useSubmitSavingsFundOnboardingSurvey();
+  const { mutateAsync: submitSurvey, error } = useSubmitSavingsFundOnboardingSurvey();
   const {
     data: onboardingStatus,
     isLoading: loadingOnboardingStatus,
@@ -135,7 +132,6 @@ export const SavingsFundOnboarding: FC = () => {
 
   const totalSections = steps.length;
   const currentSection = activeSection + 1;
-  const progressPercentage = (currentSection / totalSections) * 100;
   const isFirstSection = activeSection === 0;
 
   const redirectToOutcome = (outcome: 'pending' | 'success') => {
@@ -175,64 +171,21 @@ export const SavingsFundOnboarding: FC = () => {
   };
 
   return (
-    <div className="col-12 col-md-10 col-lg-7 mx-auto d-flex flex-column gap-5">
-      <div className="d-flex flex-column gap-4">
-        <div className="d-flex align-items-center gap-2">
-          <div
-            className="progress flex-fill"
-            role="progressbar"
-            aria-hidden="true"
-            style={{ height: '8px' }}
-          >
-            <div className="progress-bar" style={{ width: `${progressPercentage}%` }} />
+    <div className="col-12 col-md-10 col-lg-7 mx-auto">
+      <OnboardingWizardLayout
+        currentStep={currentSection}
+        totalSteps={totalSections}
+        onBack={showPreviousSection}
+        onNext={showNextSection}
+      >
+        {!onboardingStatus && loadingOnboardingStatus ? <Loader /> : steps[activeSection].component}
+
+        {submitError ? (
+          <div className="alert alert-danger" role="alert">
+            <FormattedMessage id="flows.savingsFundOnboarding.error" />
           </div>
-          <span className="fs-xs lh-1 text-secondary fw-medium">
-            <span className="visually-hidden">
-              <FormattedMessage
-                id="flows.savingsFundOnboarding.currentStep"
-                values={{
-                  currentStep: currentSection,
-                  totalSteps: totalSections,
-                }}
-              />
-            </span>{' '}
-            {currentSection}/{totalSections}
-          </span>
-        </div>
-
-        <h1 className="m-0">
-          <FormattedMessage id="flows.savingsFundOnboarding.title" />
-        </h1>
-      </div>
-
-      {!onboardingStatus && loadingOnboardingStatus ? <Loader /> : steps[activeSection].component}
-
-      {submitError ? (
-        <div className="alert alert-danger" role="alert">
-          <FormattedMessage id="flows.savingsFundOnboarding.error" />
-        </div>
-      ) : null}
-
-      <div className="d-flex flex-column-reverse flex-sm-row justify-content-between pt-4 border-top gap-3">
-        <button type="button" className="btn btn-lg btn-light" onClick={showPreviousSection}>
-          <FormattedMessage id="savingsFundOnboarding.back" />
-        </button>
-        <button
-          type="button"
-          className="btn btn-lg btn-primary"
-          onClick={showNextSection}
-          disabled={submittingSurvey}
-        >
-          {submittingSurvey ? (
-            <span
-              className="spinner-border spinner-border-sm me-2"
-              role="status"
-              aria-hidden="true"
-            />
-          ) : null}
-          <FormattedMessage id="savingsFundOnboarding.continue" />
-        </button>
-      </div>
+        ) : null}
+      </OnboardingWizardLayout>
     </div>
   );
 };
