@@ -5,10 +5,10 @@ export const RequirementsCheckStep: FC = () => (
   <section className="d-flex flex-column gap-4">
     <div className="section-header d-flex flex-column gap-1">
       <h2 className="m-0">
-        <FormattedMessage id="flows.savingsFundCompanyOnboarding.requirementsCheckStep.title" />
+        <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.title" />
       </h2>
       <p className="m-0">
-        <FormattedMessage id="flows.savingsFundCompanyOnboarding.requirementsCheckStep.description" />
+        <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.description" />
       </p>
     </div>
   </section>

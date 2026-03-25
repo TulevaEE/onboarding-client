@@ -6,12 +6,14 @@ describe('CompanyAddressStep', () => {
   it('renders title', () => {
     renderWrapped(<CompanyAddressStep />);
 
-    expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('Company address');
+    expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(
+      'Where does your company operate from?',
+    );
   });
 
   it('renders description', () => {
     renderWrapped(<CompanyAddressStep />);
 
-    expect(screen.getByText("Confirm or enter your company's address.")).toBeInTheDocument();
+    expect(screen.getByText("Confirm or enter your company's address. TODO")).toBeInTheDocument();
   });
 });

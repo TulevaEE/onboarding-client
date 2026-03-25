@@ -6,14 +6,16 @@ describe('RequirementsCheckStep', () => {
   it('renders title', () => {
     renderWrapped(<RequirementsCheckStep />);
 
-    expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('Company requirements');
+    expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('Company data');
   });
 
   it('renders description', () => {
     renderWrapped(<RequirementsCheckStep />);
 
     expect(
-      screen.getByText('We will check if your company meets the requirements.'),
+      screen.getByText(
+        'If the information here is incorrect, the data must be updated in the business registry.',
+      ),
     ).toBeInTheDocument();
   });
 });

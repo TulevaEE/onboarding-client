@@ -1188,6 +1188,15 @@
   "flows.savingsFundOnboarding.businessRegistryStep.input.required": "Select a company to continue.",
   "flows.savingsFundOnboarding.businessRegistryStep.input.placeholder": "Search...",
 
+  "flows.savingsFundOnboarding.businessValidationStep.title": "Company data",
+  "flows.savingsFundOnboarding.businessValidationStep.description": "If the information here is incorrect, the data must be updated in the business registry.",
+
+  "flows.savingsFundOnboarding.companyAddressStep.title": "Where does your company operate from?",
+  "flows.savingsFundOnboarding.companyAddressStep.description": "Confirm or enter your company's address. TODO",
+
+  "flows.savingsFundOnboarding.companyIncomeSourceStep.title": "Sources of income",
+  "flows.savingsFundOnboarding.companyIncomeSourceStep.description": "I confirm that",
+
   "flows.savingsFundOnboarding.residencyStep.title": "Your permanent residence",
   "flows.savingsFundOnboarding.residencyStep.country.label": "Country",
   "flows.savingsFundOnboarding.residencyStep.street.label": "Address (street, house, apartment)",
@@ -1505,13 +1514,5 @@
   "countries.EH": "Western Sahara",
   "countries.YE": "Yemen",
   "countries.ZM": "Zambia",
-  "countries.ZW": "Zimbabwe",
-
-  "flows.savingsFundCompanyOnboarding.title": "Opening a company savings fund",
-  "flows.savingsFundCompanyOnboarding.requirementsCheckStep.title": "Company requirements",
-  "flows.savingsFundCompanyOnboarding.requirementsCheckStep.description": "We will check if your company meets the requirements.",
-  "flows.savingsFundCompanyOnboarding.companyAddressStep.title": "Company address",
-  "flows.savingsFundCompanyOnboarding.companyAddressStep.description": "Confirm or enter your company's address.",
-  "flows.savingsFundCompanyOnboarding.companyIncomeSourceStep.title": "Source of company income",
-  "flows.savingsFundCompanyOnboarding.companyIncomeSourceStep.description": "Confirm the source of your company's income."
+  "countries.ZW": "Zimbabwe"
 }
