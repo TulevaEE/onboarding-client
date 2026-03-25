@@ -242,6 +242,13 @@ describe('SavingsFundOnboarding', () => {
     expect(screen.getByRole('heading', { name: 'Application under review' })).toBeInTheDocument();
   });
 
+  it('hides navigation buttons while loading onboarding status', async () => {
+    server.use(onboardingStatusHandler.delayed());
+
+    expect(screen.queryByRole('button', { name: /back/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /continue/i })).not.toBeInTheDocument();
+  });
+
   const onboardingStatusHandler = {
     notStarted: () =>
       rest.get('http://localhost/v1/savings/onboarding/status', (req, res, ctx) =>
@@ -254,6 +261,10 @@ describe('SavingsFundOnboarding', () => {
     completed: () =>
       rest.get('http://localhost/v1/savings/onboarding/status', (req, res, ctx) =>
         res(ctx.json({ status: 'COMPLETED' })),
+      ),
+    delayed: () =>
+      rest.get('http://localhost/v1/savings/onboarding/status', (req, res, ctx) =>
+        res(ctx.delay('infinite')),
       ),
   };
 });

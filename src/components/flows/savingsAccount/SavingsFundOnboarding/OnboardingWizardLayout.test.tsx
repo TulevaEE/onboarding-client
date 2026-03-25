@@ -57,4 +57,30 @@ describe('OnboardingWizardLayout', () => {
 
     expect(onNext).toHaveBeenCalledTimes(1);
   });
+
+  it('renders loader instead of children when loading', () => {
+    renderLayout({ loading: true });
+
+    expect(screen.getByRole('progressbar', { name: /loading/i })).toBeInTheDocument();
+    expect(screen.queryByText('Step content')).not.toBeInTheDocument();
+  });
+
+  it('does not render navigation buttons when loading', () => {
+    renderLayout({ loading: true });
+
+    expect(screen.queryByRole('button', { name: /back/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /continue/i })).not.toBeInTheDocument();
+  });
+
+  it('disables continue button when submitting', () => {
+    renderLayout({ submitting: true });
+
+    expect(screen.getByRole('button', { name: /continue/i })).toBeDisabled();
+  });
+
+  it('renders spinner in continue button when submitting', () => {
+    renderLayout({ submitting: true });
+
+    expect(screen.getByRole('status', { hidden: true })).toBeInTheDocument();
+  });
 });

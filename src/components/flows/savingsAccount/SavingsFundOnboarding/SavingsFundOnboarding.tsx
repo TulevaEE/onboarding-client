@@ -20,7 +20,6 @@ import {
 } from '../../../common/apiHooks';
 import { transformFormDataToOnboardingSurveryCommand } from '../utils';
 import { ErrorResponse } from '../../../common/apiModels';
-import { Loader } from '../../../common';
 import { OnboardingWizardLayout } from './OnboardingWizardLayout';
 
 export const SavingsFundOnboarding: FC = () => {
@@ -30,7 +29,11 @@ export const SavingsFundOnboarding: FC = () => {
   const [activeSection, setActiveSection] = useState(0);
   const [submitError, setSubmitError] = useState<ErrorResponse | null>(null);
 
-  const { mutateAsync: submitSurvey, error } = useSubmitSavingsFundOnboardingSurvey();
+  const {
+    mutateAsync: submitSurvey,
+    isPending: submittingSurvey,
+    error,
+  } = useSubmitSavingsFundOnboardingSurvey();
   const {
     data: onboardingStatus,
     isLoading: loadingOnboardingStatus,
@@ -177,8 +180,10 @@ export const SavingsFundOnboarding: FC = () => {
         totalSteps={totalSections}
         onBack={showPreviousSection}
         onNext={showNextSection}
+        loading={!onboardingStatus && loadingOnboardingStatus}
+        submitting={submittingSurvey}
       >
-        {!onboardingStatus && loadingOnboardingStatus ? <Loader /> : steps[activeSection].component}
+        {steps[activeSection].component}
 
         {submitError ? (
           <div className="alert alert-danger" role="alert">
