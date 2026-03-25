@@ -13,7 +13,7 @@ import { OnboardingWizardLayout } from './OnboardingWizardLayout';
 export const SavingsFundCompanyOnboarding = () => {
   const [activeSection, setActiveSection] = useState(0);
 
-  const { control, watch } = useForm<CompanyOnboardingFormData>({
+  const { control, watch, trigger } = useForm<CompanyOnboardingFormData>({
     mode: 'onChange',
     defaultValues: {
       registryLookup: undefined,
@@ -23,21 +23,32 @@ export const SavingsFundCompanyOnboarding = () => {
   const registryLookup = watch('registryLookup');
 
   const steps = [
-    <>
-      <BusinessRegistryStep key="registry" control={control} />
-      {registryLookup && (
-        <div className="mt-4">
-          <p>{registryLookup.registryName}</p>
-          <p>{registryLookup.registryNumber}</p>
-        </div>
-      )}
-    </>,
-    <RequirementsCheckStep key="requirements" />,
-    <CompanyAddressStep key="address" />,
-    <InvestmentGoalStep key="investmentGoal" control={control} />,
-    <InvestableAssetsStep key="investableAssets" control={control} />,
-    <CompanyIncomeSourceStep key="incomeSource" />,
-    <TermsStep key="terms" control={control} />,
+    {
+      component: (
+        <>
+          <BusinessRegistryStep key="registry" control={control} />
+          {registryLookup && (
+            <div className="mt-4">
+              <p>{registryLookup.registryName}</p>
+              <p>{registryLookup.registryNumber}</p>
+            </div>
+          )}
+        </>
+      ),
+      fields: ['registryLookup'] as const,
+    },
+    { component: <RequirementsCheckStep key="requirements" />, fields: [] as const },
+    { component: <CompanyAddressStep key="address" />, fields: [] as const },
+    {
+      component: <InvestmentGoalStep key="investmentGoal" control={control} />,
+      fields: ['investmentGoals'] as const,
+    },
+    {
+      component: <InvestableAssetsStep key="investableAssets" control={control} />,
+      fields: ['investableAssets'] as const,
+    },
+    { component: <CompanyIncomeSourceStep key="incomeSource" />, fields: [] as const },
+    { component: <TermsStep key="terms" control={control} />, fields: ['termsAccepted'] as const },
   ];
 
   const totalSections = steps.length;
@@ -47,7 +58,12 @@ export const SavingsFundCompanyOnboarding = () => {
     setActiveSection((current) => Math.max(current - 1, 0));
   };
 
-  const showNextSection = () => {
+  const showNextSection = async () => {
+    const fieldsToValidate = steps[activeSection].fields as string[];
+    const isStepValid = await trigger(fieldsToValidate);
+    if (!isStepValid) {
+      return;
+    }
     setActiveSection((current) => Math.min(current + 1, totalSections - 1));
   };
 
@@ -59,7 +75,7 @@ export const SavingsFundCompanyOnboarding = () => {
         onBack={showPreviousSection}
         onNext={showNextSection}
       >
-        {steps[activeSection]}
+        {steps[activeSection].component}
       </OnboardingWizardLayout>
     </div>
   );
