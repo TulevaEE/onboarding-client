@@ -26,14 +26,11 @@ export interface OnboardingFormData extends SharedOnboardingFields {
 }
 
 export interface CompanyOnboardingFormData extends SharedOnboardingFields {
-  // step 1
   registryLookup?: {
     registryNumber: string;
     registryName: string;
   };
-  // step 2
   requirementsBackendCheck: boolean;
-  // step 3
   companyAddress:
     | {
         reuseBackendAddress: true;
@@ -42,6 +39,5 @@ export interface CompanyOnboardingFormData extends SharedOnboardingFields {
         reuseBackendAddress: false;
         address: Address;
       };
-  // step 6
   sourceOfCompanyIncome: boolean;
 }

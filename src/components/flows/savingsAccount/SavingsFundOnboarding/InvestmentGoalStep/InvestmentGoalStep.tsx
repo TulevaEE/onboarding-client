@@ -88,13 +88,13 @@ export const InvestmentGoalStep = <T extends SharedOnboardingFields = SharedOnbo
           name={'investmentGoals' as Path<T>}
           rules={{
             validate: (raw) => {
-              const v = raw as SharedOnboardingFields['investmentGoals'];
-              if (!v) {
+              const value = raw as SharedOnboardingFields['investmentGoals'];
+              if (!value) {
                 return intl.formatMessage({
                   id: 'flows.savingsFundOnboarding.investmentGoalStep.required',
                 });
               }
-              if (v.type === 'TEXT' && v.value.length === 0) {
+              if (value.type === 'TEXT' && value.value.length === 0) {
                 return intl.formatMessage({
                   id: 'flows.savingsFundOnboarding.investmentGoalStep.other.required',
                 });
