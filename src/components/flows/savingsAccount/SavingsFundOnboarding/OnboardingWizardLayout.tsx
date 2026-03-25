@@ -5,6 +5,7 @@ interface OnboardingWizardLayoutProps {
   currentStep: number;
   totalSteps: number;
   onBack: () => void;
+  onNext: () => void;
   children: ReactNode;
 }
 
@@ -12,6 +13,7 @@ export const OnboardingWizardLayout: FC<OnboardingWizardLayoutProps> = ({
   currentStep,
   totalSteps,
   onBack,
+  onNext,
   children,
 }) => {
   const progressPercentage = (currentStep / totalSteps) * 100;
@@ -35,6 +37,9 @@ export const OnboardingWizardLayout: FC<OnboardingWizardLayoutProps> = ({
       <div>
         <button type="button" className="btn btn-lg btn-light" onClick={onBack}>
           <FormattedMessage id="savingsFundOnboarding.back" />
+        </button>
+        <button type="button" className="btn btn-lg btn-primary" onClick={onNext}>
+          <FormattedMessage id="savingsFundOnboarding.continue" />
         </button>
       </div>
     </div>

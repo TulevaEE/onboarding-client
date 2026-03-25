@@ -41,4 +41,13 @@ describe('OnboardingWizardLayout', () => {
 
     expect(onBack).toHaveBeenCalledTimes(1);
   });
+
+  it('calls onNext when Continue button is clicked', () => {
+    const onNext = jest.fn();
+    renderLayout({ onNext });
+
+    userEvent.click(screen.getByRole('button', { name: /continue/i }));
+
+    expect(onNext).toHaveBeenCalledTimes(1);
+  });
 });
