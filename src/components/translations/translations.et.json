@@ -1272,6 +1272,11 @@
   "flows.savingsFundOnboarding.citizenshipStep.input.deleteButtonTitle": "Eemalda",
   "flows.savingsFundOnboarding.citizenshipStep.input.required": "Jätkamiseks vali vähemalt üks riik.",
 
+  "flows.savingsFundOnboarding.businessRegistryStep.title": "Mis on su ettevõtte registrikood?",
+  "flows.savingsFundOnboarding.businessRegistryStep.description": "Või ettevõtte nimi",
+  "flows.savingsFundOnboarding.businessRegistryStep.input.required": "Jätkamiseks vali ettevõte.",
+  "flows.savingsFundOnboarding.businessRegistryStep.input.placeholder": "Otsi...",
+
   "flows.savingsFundOnboarding.residencyStep.title": "Sinu alaline elukoht",
   "flows.savingsFundOnboarding.residencyStep.country.label": "Riik",
   "flows.savingsFundOnboarding.residencyStep.street.label": "Aadress (tänav, maja, korter)",

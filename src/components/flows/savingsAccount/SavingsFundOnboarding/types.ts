@@ -21,3 +21,12 @@ export interface OnboardingFormData {
   sourceOfIncome: SourceOfIncomeSurveyItem['value'];
   termsAccepted: boolean;
 }
+
+export interface CompanyOnboardingFormData {
+  // step 1
+  registryLookup?: {
+    registryNumber: string;
+    registryName: string;
+  };
+  // more steps to come
+}
