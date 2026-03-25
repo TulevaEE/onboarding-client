@@ -52,13 +52,15 @@ export const SavingsFundCompanyOnboarding = () => {
   };
 
   return (
-    <OnboardingWizardLayout
-      currentStep={currentSection}
-      totalSteps={totalSections}
-      onBack={showPreviousSection}
-      onNext={showNextSection}
-    >
-      {steps[activeSection]}
-    </OnboardingWizardLayout>
+    <div className="col-12 col-md-10 col-lg-7 mx-auto">
+      <OnboardingWizardLayout
+        currentStep={currentSection}
+        totalSteps={totalSections}
+        onBack={showPreviousSection}
+        onNext={showNextSection}
+      >
+        {steps[activeSection]}
+      </OnboardingWizardLayout>
+    </div>
   );
 };

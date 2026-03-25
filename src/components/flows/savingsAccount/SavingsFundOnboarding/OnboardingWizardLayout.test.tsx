@@ -33,6 +33,13 @@ describe('OnboardingWizardLayout', () => {
     expect(screen.getByText('3/8')).toBeInTheDocument();
   });
 
+  it('renders flow title', () => {
+    renderLayout();
+
+    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+    expect(screen.getByText('Opening an additional savings fund')).toBeInTheDocument();
+  });
+
   it('calls onBack when Back button is clicked', () => {
     const onBack = jest.fn();
     renderLayout({ onBack });
