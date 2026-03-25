@@ -75,12 +75,18 @@ describe('SelectWithAutocomplete', () => {
         lookup={lookup}
         onChange={onChange}
         options={options}
+        ariaLabel="Test select"
       />,
     );
 
-    options.forEach((option) => {
-      expect(screen.getByRole('option', { name: option.text })).toBeInTheDocument();
-    });
+    const select = screen.getByRole('combobox', { name: 'Test select' }) as any;
+    const tomSelectOptions = select.tomselect.options;
+    expect(tomSelectOptions.opt1).toEqual(
+      expect.objectContaining({ value: 'opt1', text: 'Option One' }),
+    );
+    expect(tomSelectOptions.opt2).toEqual(
+      expect.objectContaining({ value: 'opt2', text: 'Option Two' }),
+    );
   });
 
   test('calls onBlur handler', () => {
@@ -162,6 +168,26 @@ describe('SelectWithAutocomplete', () => {
 
     const select = screen.getByRole('combobox', { name: 'Test select' }) as any;
     expect(select.tomselect.settings.placeholder).toBe('Search here');
+  });
+
+  test('pre-selects defaultValue in TomSelect', () => {
+    const options: SelectOption[] = [
+      { value: 'opt1', text: 'Option One' },
+      { value: 'opt2', text: 'Option Two' },
+    ];
+
+    render(
+      <SelectWithAutocomplete<SelectOption>
+        lookup={lookup}
+        onChange={onChange}
+        options={options}
+        defaultValue="opt1"
+        ariaLabel="Test select"
+      />,
+    );
+
+    const select = screen.getByRole('combobox', { name: 'Test select' }) as any;
+    expect(select.tomselect.items).toContain('opt1');
   });
 
   test('destroys TomSelect on unmount', () => {
