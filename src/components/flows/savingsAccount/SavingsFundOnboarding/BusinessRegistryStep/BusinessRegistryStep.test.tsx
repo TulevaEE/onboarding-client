@@ -125,13 +125,11 @@ describe('BusinessRegistryStep', () => {
 
       const input = screen.getByPlaceholderText('Search...');
       userEvent.type(input, 'Acme');
+      const option = await screen.findByRole('option', { name: /Acme Corp/ });
 
-      expect(await screen.findByRole('option', { name: /Acme Corp/ })).toBeInTheDocument();
-
-      // eslint-disable-next-line testing-library/no-node-access
-      const selectElement = document.querySelector('select') as any;
-      act(() => {
-        selectElement.tomselect.setValue('12345678');
+      // eslint-disable-next-line testing-library/no-unnecessary-act
+      await act(async () => {
+        userEvent.click(option);
       });
 
       userEvent.click(screen.getByRole('button', { name: 'Submit' }));
