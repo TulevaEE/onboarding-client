@@ -1,14 +1,17 @@
-import { FC, ReactNode } from 'react';
-import { Control, Controller } from 'react-hook-form';
+import { ReactNode } from 'react';
+import { Control, Controller, Path } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { OnboardingFormData } from '../types';
+import { SharedOnboardingFields } from '../types';
 
-type TermsStepProps = {
-  control: Control<OnboardingFormData>;
+type TermsStepProps<T extends SharedOnboardingFields = SharedOnboardingFields> = {
+  control: Control<T>;
   showError?: boolean;
 };
 
-export const TermsStep: FC<TermsStepProps> = ({ control, showError }) => {
+export const TermsStep = <T extends SharedOnboardingFields = SharedOnboardingFields>({
+  control,
+  showError,
+}: TermsStepProps<T>) => {
   const intl = useIntl();
   return (
     <section className="d-flex flex-column gap-4" key="conditions">
@@ -31,7 +34,7 @@ export const TermsStep: FC<TermsStepProps> = ({ control, showError }) => {
         </div>
         <Controller
           control={control}
-          name="termsAccepted"
+          name={'termsAccepted' as Path<T>}
           rules={{
             validate: (value) =>
               value === true ||
@@ -43,7 +46,7 @@ export const TermsStep: FC<TermsStepProps> = ({ control, showError }) => {
                 className="form-check-input"
                 type="checkbox"
                 id="terms-accepted"
-                checked={field.value}
+                checked={field.value as boolean}
                 onChange={field.onChange}
               />
               <label className="form-check-label w-100" htmlFor="terms-accepted">
@@ -67,7 +70,7 @@ export const TermsStep: FC<TermsStepProps> = ({ control, showError }) => {
   );
 };
 
-const DocumentLink: FC<{ href: string; children: ReactNode }> = ({ href, children }) => (
+const DocumentLink = ({ href, children }: { href: string; children: ReactNode }) => (
   <a
     className="d-flex align-items-center gap-2 p-3 p-sm-4 bg-blue-1 border border-blue-2 rounded-3 lead"
     href={href}

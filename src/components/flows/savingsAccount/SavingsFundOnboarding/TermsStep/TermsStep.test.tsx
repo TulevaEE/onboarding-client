@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { IntlProvider } from 'react-intl';
 import { renderWrapped } from '../../../../../test/utils';
 import { TermsStep } from './TermsStep';
-import { OnboardingFormData } from '../types';
+import { OnboardingFormData, CompanyOnboardingFormData } from '../types';
 import translations from '../../../../translations';
 
 const TermsStepWrapper = ({ showError = false }: { showError?: boolean }) => {
@@ -32,6 +32,32 @@ const TermsStepWrapper = ({ showError = false }: { showError?: boolean }) => {
     <IntlProvider locale="en" messages={translations.en}>
       <form>
         <TermsStep control={control} showError={showError} />
+        <button type="button" onClick={() => trigger('termsAccepted')}>
+          Validate
+        </button>
+      </form>
+    </IntlProvider>
+  );
+};
+
+const CompanyTermsStepWrapper = () => {
+  const { control, trigger } = useForm<CompanyOnboardingFormData>({
+    mode: 'onBlur',
+    defaultValues: {
+      registryLookup: undefined,
+      requirementsBackendCheck: false,
+      companyAddress: { reuseBackendAddress: true },
+      investmentGoals: null,
+      investableAssets: null,
+      sourceOfCompanyIncome: false,
+      termsAccepted: false,
+    },
+  });
+
+  return (
+    <IntlProvider locale="en" messages={translations.en}>
+      <form>
+        <TermsStep control={control} />
         <button type="button" onClick={() => trigger('termsAccepted')}>
           Validate
         </button>
@@ -99,6 +125,12 @@ describe('TermsStep', () => {
     expect(screen.getByRole('alert')).toHaveTextContent(
       'You must review the documents to continue.',
     );
+  });
+
+  test('works with CompanyOnboardingFormData', () => {
+    renderWrapped(<CompanyTermsStepWrapper />);
+
+    expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('Review fund documents');
   });
 
   test('does not show validation error when checkbox is checked', async () => {

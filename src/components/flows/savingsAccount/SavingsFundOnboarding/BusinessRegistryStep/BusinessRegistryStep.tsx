@@ -26,7 +26,7 @@ const fetchSuggestions = async (value: string) => {
 
   const mappedData: BusinessRegistryOption[] = results.data.map(
     (company: BusinessRegistrySearchResult): BusinessRegistryOption => ({
-      value: String(company.company_id),
+      value: company.reg_code,
       reg_code: company.reg_code,
       name: company.name,
       text: `${company.name} (${company.reg_code})`,
@@ -60,30 +60,46 @@ export const BusinessRegistryStep = ({ control }: BusinessRegistryStepProps) => 
                 id: 'flows.savingsFundOnboarding.businessRegistryStep.input.required',
               }),
           }}
-          render={({ field, fieldState: { error } }) => (
-            <div>
-              <SelectWithAutocomplete<BusinessRegistryOption>
-                className="mb-2 form-select form-select-lg"
-                lookup={fetchSuggestions}
-                onChange={(option) =>
-                  field.onChange(
-                    option
-                      ? { registryNumber: option.reg_code, registryName: option.name }
-                      : undefined,
-                  )
-                }
-                onBlur={field.onBlur}
-                placeholder={intl.formatMessage({
-                  id: 'flows.savingsFundOnboarding.businessRegistryStep.input.placeholder',
-                })}
-              />
-              {error && error.message ? (
-                <p className="m-0 text-danger fs-base" role="alert">
-                  {error.message}
-                </p>
-              ) : null}
-            </div>
-          )}
+          render={({ field, fieldState: { error } }) => {
+            const previousSelectionOption: BusinessRegistryOption[] = field.value
+              ? [
+                  {
+                    value: field.value.registryNumber,
+                    reg_code: field.value.registryNumber,
+                    name: field.value.registryName,
+                    text: `${field.value.registryName} (${field.value.registryNumber})`,
+                  },
+                ]
+              : [];
+            const previousSelectionValue = previousSelectionOption[0]?.value;
+
+            return (
+              <div>
+                <SelectWithAutocomplete<BusinessRegistryOption>
+                  className="mb-2 form-select form-select-lg"
+                  lookup={fetchSuggestions}
+                  options={previousSelectionOption}
+                  defaultValue={previousSelectionValue}
+                  onChange={(option) =>
+                    field.onChange(
+                      option
+                        ? { registryNumber: option.reg_code, registryName: option.name }
+                        : undefined,
+                    )
+                  }
+                  onBlur={field.onBlur}
+                  placeholder={intl.formatMessage({
+                    id: 'flows.savingsFundOnboarding.businessRegistryStep.input.placeholder',
+                  })}
+                />
+                {error && error.message ? (
+                  <p className="m-0 text-danger fs-base" role="alert">
+                    {error.message}
+                  </p>
+                ) : null}
+              </div>
+            );
+          }}
         />
       </div>
     </section>

@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { IntlProvider } from 'react-intl';
 import { renderWrapped } from '../../../../../test/utils';
 import { InvestableAssetsStep } from './InvestableAssetsStep';
-import { OnboardingFormData } from '../types';
+import { OnboardingFormData, CompanyOnboardingFormData } from '../types';
 import translations from '../../../../translations';
 
 const InvestableAssetsStepWrapper = () => {
@@ -24,6 +24,32 @@ const InvestableAssetsStepWrapper = () => {
       investmentGoals: null,
       investableAssets: null,
       sourceOfIncome: [],
+      termsAccepted: false,
+    },
+  });
+
+  return (
+    <IntlProvider locale="en" messages={translations.en}>
+      <form>
+        <InvestableAssetsStep control={control} />
+        <button type="button" onClick={() => trigger('investableAssets')}>
+          Validate
+        </button>
+      </form>
+    </IntlProvider>
+  );
+};
+
+const CompanyInvestableAssetsStepWrapper = () => {
+  const { control, trigger } = useForm<CompanyOnboardingFormData>({
+    mode: 'onBlur',
+    defaultValues: {
+      registryLookup: undefined,
+      requirementsBackendCheck: false,
+      companyAddress: { reuseBackendAddress: true },
+      investmentGoals: null,
+      investableAssets: null,
+      sourceOfCompanyIncome: false,
       termsAccepted: false,
     },
   });
@@ -89,5 +115,13 @@ describe('InvestableAssetsStep', () => {
     expect(screen.getByText(/20,001.*40,000/)).toBeInTheDocument();
     expect(screen.getByText(/40,001.*80,000/)).toBeInTheDocument();
     expect(screen.getByText(/80,001.*or more/)).toBeInTheDocument();
+  });
+
+  test('works with CompanyOnboardingFormData', () => {
+    renderWrapped(<CompanyInvestableAssetsStepWrapper />);
+
+    expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(
+      'How much investable assets do you have?',
+    );
   });
 });

@@ -11,10 +11,14 @@ const onSubmitSpy = jest.fn();
 
 const BUSINESS_REGISTRY_URL = 'https://ariregister.rik.ee/est/api/autocomplete';
 
-const BusinessRegistryStepWrapper = () => {
+const BusinessRegistryStepWrapper = ({
+  defaultValues,
+}: {
+  defaultValues?: CompanyOnboardingFormData['registryLookup'];
+}) => {
   const { control, trigger, getValues } = useForm<CompanyOnboardingFormData>({
     mode: 'onChange',
-    defaultValues: { registryLookup: undefined },
+    defaultValues: { registryLookup: defaultValues },
   });
 
   return (
@@ -121,13 +125,11 @@ describe('BusinessRegistryStep', () => {
 
       const input = screen.getByPlaceholderText('Search...');
       userEvent.type(input, 'Acme');
+      const option = await screen.findByRole('option', { name: /Acme Corp/ });
 
-      expect(await screen.findByRole('option', { name: /Acme Corp/ })).toBeInTheDocument();
-
-      // eslint-disable-next-line testing-library/no-node-access
-      const selectElement = document.querySelector('select') as any;
-      act(() => {
-        selectElement.tomselect.setValue('123');
+      // eslint-disable-next-line testing-library/no-unnecessary-act
+      await act(async () => {
+        userEvent.click(option);
       });
 
       userEvent.click(screen.getByRole('button', { name: 'Submit' }));
@@ -157,5 +159,17 @@ describe('BusinessRegistryStep', () => {
         await screen.findByRole('option', { name: /Acme Corp \(12345678\)/ }),
       ).toBeInTheDocument();
     });
+  });
+
+  it('displays previously selected company when form has a saved value', () => {
+    renderWrapped(
+      <BusinessRegistryStepWrapper
+        defaultValues={{ registryNumber: '12345678', registryName: 'Acme Corp' }}
+      />,
+    );
+
+    // eslint-disable-next-line testing-library/no-node-access
+    const selectElement = document.querySelector('select') as any;
+    expect(selectElement.tomselect.items).toContain('12345678');
   });
 });

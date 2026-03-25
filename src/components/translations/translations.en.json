@@ -1188,6 +1188,15 @@
   "flows.savingsFundOnboarding.businessRegistryStep.input.required": "Select a company to continue.",
   "flows.savingsFundOnboarding.businessRegistryStep.input.placeholder": "Search...",
 
+  "flows.savingsFundOnboarding.businessValidationStep.title": "Company data",
+  "flows.savingsFundOnboarding.businessValidationStep.description": "If the information here is incorrect, the data must be updated in the business registry.",
+
+  "flows.savingsFundOnboarding.companyAddressStep.title": "Where does your company operate from?",
+  "flows.savingsFundOnboarding.companyAddressStep.description": "Confirm or enter your company's address. TODO",
+
+  "flows.savingsFundOnboarding.companyIncomeSourceStep.title": "Sources of income",
+  "flows.savingsFundOnboarding.companyIncomeSourceStep.description": "I confirm that",
+
   "flows.savingsFundOnboarding.residencyStep.title": "Your permanent residence",
   "flows.savingsFundOnboarding.residencyStep.country.label": "Country",
   "flows.savingsFundOnboarding.residencyStep.street.label": "Address (street, house, apartment)",

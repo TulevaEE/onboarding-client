@@ -8,6 +8,7 @@ type Props<T extends SelectOption> = {
   lookup: (query: string) => Promise<T[]>;
   onChange: (value: T | undefined) => void;
   options?: T[];
+  defaultValue?: string;
   onBlur?: () => void;
   ariaLabel?: string;
   className?: string;
@@ -17,6 +18,7 @@ type Props<T extends SelectOption> = {
 export const SelectWithAutocomplete = <T extends SelectOption>({
   className = 'form-select form-select-lg',
   options,
+  defaultValue,
   ariaLabel,
   lookup,
   onChange,
@@ -34,6 +36,8 @@ export const SelectWithAutocomplete = <T extends SelectOption>({
       maxItems: 1,
       load: (q: string, cb: (o: T[]) => void) => lookup(q).then(cb),
       onChange: (value: string) => onChange(tomSelectRef.current.options[value]),
+      options,
+      items: defaultValue ? [defaultValue] : [],
       placeholder,
     });
     return () => {
@@ -41,13 +45,5 @@ export const SelectWithAutocomplete = <T extends SelectOption>({
       tomSelectRef.current = null;
     };
   }, []);
-  return (
-    <select ref={selectRef} className={className} aria-label={ariaLabel} onBlur={onBlur}>
-      {options?.map((option) => (
-        <option key={option.value} value={option.value}>
-          {option.text}
-        </option>
-      ))}
-    </select>
-  );
+  return <select ref={selectRef} className={className} aria-label={ariaLabel} onBlur={onBlur} />;
 };

@@ -1,16 +1,16 @@
-import { FC, useEffect, useRef, useState } from 'react';
-import { Control, Controller, useController } from 'react-hook-form';
+import { useEffect, useRef, useState } from 'react';
+import { Control, Controller, Path, useController } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { OnboardingFormData } from '../types';
+import { SharedOnboardingFields } from '../types';
 import Radio from '../../../../common/radio';
 
-type InvestmentGoalStepProps = {
-  control: Control<OnboardingFormData>;
+type InvestmentGoalStepProps<T extends SharedOnboardingFields = SharedOnboardingFields> = {
+  control: Control<T>;
 };
 
 const generateRadioOptions = (
   fieldName: string,
-  fieldValue: OnboardingFormData['investmentGoals'],
+  fieldValue: SharedOnboardingFields['investmentGoals'],
   onChange: (value: { type: 'OPTION'; value: string }) => void,
   setIsOtherSelected: (value: boolean) => void,
 ) =>
@@ -53,19 +53,23 @@ const generateRadioOptions = (
     </Radio>
   ));
 
-export const InvestmentGoalStep: FC<InvestmentGoalStepProps> = ({ control }) => {
+export const InvestmentGoalStep = <T extends SharedOnboardingFields = SharedOnboardingFields>({
+  control,
+}: InvestmentGoalStepProps<T>) => {
   const intl = useIntl();
-  const { field: investmentGoalsField } = useController({ control, name: 'investmentGoals' });
-  const [isOtherSelected, setIsOtherSelected] = useState(
-    investmentGoalsField.value?.type === 'TEXT',
-  );
+  const { field: investmentGoalsField } = useController({
+    control,
+    name: 'investmentGoals' as Path<T>,
+  });
+  const fieldValue = investmentGoalsField.value as SharedOnboardingFields['investmentGoals'];
+  const [isOtherSelected, setIsOtherSelected] = useState(fieldValue?.type === 'TEXT');
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (isOtherSelected) {
       inputRef.current?.focus();
 
-      if (investmentGoalsField.value && investmentGoalsField.value.type === 'OPTION') {
+      if (fieldValue && fieldValue.type === 'OPTION') {
         investmentGoalsField.onChange({ type: 'TEXT', value: '' });
       }
     }
@@ -81,9 +85,10 @@ export const InvestmentGoalStep: FC<InvestmentGoalStepProps> = ({ control }) => 
       <div className="section-content d-flex flex-column gap-4">
         <Controller
           control={control}
-          name="investmentGoals"
+          name={'investmentGoals' as Path<T>}
           rules={{
-            validate: (value) => {
+            validate: (raw) => {
+              const value = raw as SharedOnboardingFields['investmentGoals'];
               if (!value) {
                 return intl.formatMessage({
                   id: 'flows.savingsFundOnboarding.investmentGoalStep.required',
@@ -97,42 +102,48 @@ export const InvestmentGoalStep: FC<InvestmentGoalStepProps> = ({ control }) => 
               return true;
             },
           }}
-          render={({ field, fieldState: { error } }) => (
-            <div className="selection-group d-flex flex-column gap-2">
-              {generateRadioOptions(field.name, field.value, field.onChange, setIsOtherSelected)}
-              <Radio
-                name={field.name}
-                id="investment-goal-other"
-                selected={isOtherSelected}
-                onSelect={() => {
-                  setIsOtherSelected(true);
-                }}
-                className="p-3"
-              >
-                <label className="form-check-label fs-3 lh-sm me-2" htmlFor="investment-goal-other">
-                  <FormattedMessage id="flows.savingsFundOnboarding.investmentGoalStep.other" />
-                </label>
-              </Radio>
-              {isOtherSelected ? (
-                <input
-                  ref={inputRef}
-                  type="text"
-                  className="form-control form-control-lg mt-2"
-                  aria-labelledby="investment-goal-other"
-                  placeholder={intl.formatMessage({
-                    id: 'flows.savingsFundOnboarding.investmentGoalStep.otherPlaceholder',
-                  })}
-                  value={field.value?.type === 'TEXT' ? field.value.value : ''}
-                  onChange={(e) => field.onChange({ type: 'TEXT', value: e.target.value })}
-                />
-              ) : null}
-              {error && error.message ? (
-                <p className="m-0 text-danger fs-base" role="alert">
-                  {error.message}
-                </p>
-              ) : null}
-            </div>
-          )}
+          render={({ field, fieldState: { error } }) => {
+            const value = field.value as SharedOnboardingFields['investmentGoals'];
+            return (
+              <div className="selection-group d-flex flex-column gap-2">
+                {generateRadioOptions(field.name, value, field.onChange, setIsOtherSelected)}
+                <Radio
+                  name={field.name}
+                  id="investment-goal-other"
+                  selected={isOtherSelected}
+                  onSelect={() => {
+                    setIsOtherSelected(true);
+                  }}
+                  className="p-3"
+                >
+                  <label
+                    className="form-check-label fs-3 lh-sm me-2"
+                    htmlFor="investment-goal-other"
+                  >
+                    <FormattedMessage id="flows.savingsFundOnboarding.investmentGoalStep.other" />
+                  </label>
+                </Radio>
+                {isOtherSelected ? (
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    className="form-control form-control-lg mt-2"
+                    aria-labelledby="investment-goal-other"
+                    placeholder={intl.formatMessage({
+                      id: 'flows.savingsFundOnboarding.investmentGoalStep.otherPlaceholder',
+                    })}
+                    value={value?.type === 'TEXT' ? value.value : ''}
+                    onChange={(e) => field.onChange({ type: 'TEXT', value: e.target.value })}
+                  />
+                ) : null}
+                {error && error.message ? (
+                  <p className="m-0 text-danger fs-base" role="alert">
+                    {error.message}
+                  </p>
+                ) : null}
+              </div>
+            );
+          }}
         />
       </div>
     </section>

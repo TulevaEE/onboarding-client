@@ -1,5 +1,6 @@
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import TomSelect from 'tom-select';
+import userEvent from '@testing-library/user-event';
 import { SelectWithAutocomplete, SelectOption } from './SelectWithAutocomplete';
 
 const lookup = jest.fn();
@@ -8,6 +9,11 @@ const onChange = jest.fn();
 describe('SelectWithAutocomplete', () => {
   beforeEach(() => {
     lookup.mockResolvedValue([]);
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   test('renders a single-select combobox', () => {
@@ -64,7 +70,7 @@ describe('SelectWithAutocomplete', () => {
     expect(screen.getByRole('combobox', { name: 'Search companies' })).toBeInTheDocument();
   });
 
-  test('renders provided options', () => {
+  test('renders provided options', async () => {
     const options: SelectOption[] = [
       { value: 'opt1', text: 'Option One' },
       { value: 'opt2', text: 'Option Two' },
@@ -75,12 +81,20 @@ describe('SelectWithAutocomplete', () => {
         lookup={lookup}
         onChange={onChange}
         options={options}
+        ariaLabel="Test select"
+        placeholder="Search..."
       />,
     );
 
-    options.forEach((option) => {
-      expect(screen.getByRole('option', { name: option.text })).toBeInTheDocument();
+    const input = screen.getByPlaceholderText('Search...');
+    userEvent.type(input, 'Option');
+
+    await act(async () => {
+      jest.runAllTimers();
     });
+
+    expect(screen.getByRole('option', { name: 'Option One' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: 'Option Two' })).toBeInTheDocument();
   });
 
   test('calls onBlur handler', () => {
@@ -108,24 +122,21 @@ describe('SelectWithAutocomplete', () => {
         lookup={lookup}
         onChange={onChange}
         ariaLabel="Test select"
+        placeholder="Search..."
       />,
     );
 
-    jest.useFakeTimers();
-    const select = screen.getByRole('combobox', { name: 'Test select' }) as any;
-    const tomSelectInstance = select.tomselect;
-    const cb = jest.fn();
-    tomSelectInstance.settings.load.call(tomSelectInstance, 'acme', cb);
+    const input = screen.getByPlaceholderText('Search...');
+    userEvent.type(input, 'acme');
 
     await act(async () => {
       jest.runAllTimers();
     });
 
     expect(lookup).toHaveBeenCalledWith('acme');
-    jest.useRealTimers();
   });
 
-  test('calls onChange with selected option', () => {
+  test('calls onChange with selected option', async () => {
     const options: SelectOption[] = [
       { value: 'opt1', text: 'Option One' },
       { value: 'opt2', text: 'Option Two' },
@@ -137,20 +148,26 @@ describe('SelectWithAutocomplete', () => {
         onChange={onChange}
         options={options}
         ariaLabel="Test select"
+        placeholder="Search..."
       />,
     );
 
-    const select = screen.getByRole('combobox', { name: 'Test select' }) as any;
-    act(() => {
-      select.tomselect.setValue('opt1');
+    const input = screen.getByPlaceholderText('Search...');
+    userEvent.type(input, 'One');
+
+    await act(async () => {
+      jest.runAllTimers();
     });
+
+    const option = await screen.findByRole('option', { name: /Option One/ });
+    userEvent.click(option);
 
     expect(onChange).toHaveBeenCalledWith(
       expect.objectContaining({ value: 'opt1', text: 'Option One' }),
     );
   });
 
-  test('passes placeholder to TomSelect', () => {
+  test('renders placeholder text', () => {
     render(
       <SelectWithAutocomplete<SelectOption>
         lookup={lookup}
@@ -160,8 +177,27 @@ describe('SelectWithAutocomplete', () => {
       />,
     );
 
-    const select = screen.getByRole('combobox', { name: 'Test select' }) as any;
-    expect(select.tomselect.settings.placeholder).toBe('Search here');
+    expect(screen.getByPlaceholderText('Search here')).toBeInTheDocument();
+  });
+
+  test('pre-selects defaultValue', () => {
+    const options: SelectOption[] = [
+      { value: 'opt1', text: 'Option One' },
+      { value: 'opt2', text: 'Option Two' },
+    ];
+
+    render(
+      <SelectWithAutocomplete<SelectOption>
+        lookup={lookup}
+        onChange={onChange}
+        options={options}
+        defaultValue="opt1"
+        ariaLabel="Test select"
+      />,
+    );
+
+    const selectedItem = screen.getByText('Option One', { selector: '[data-ts-item]' });
+    expect(selectedItem).toBeInTheDocument();
   });
 
   test('destroys TomSelect on unmount', () => {

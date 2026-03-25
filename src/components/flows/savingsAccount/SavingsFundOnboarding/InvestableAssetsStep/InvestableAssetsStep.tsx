@@ -1,11 +1,10 @@
-import { FC } from 'react';
-import { Control, Controller } from 'react-hook-form';
+import { Control, Controller, Path } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { OnboardingFormData } from '../types';
+import { SharedOnboardingFields } from '../types';
 import { Radio } from '../../../../common';
 
-type InvestableAssetsStepProps = {
-  control: Control<OnboardingFormData>;
+type InvestableAssetsStepProps<T extends SharedOnboardingFields = SharedOnboardingFields> = {
+  control: Control<T>;
 };
 
 const generateRadioOptions = (
@@ -49,7 +48,9 @@ const generateRadioOptions = (
     </Radio>
   ));
 
-export const InvestableAssetsStep: FC<InvestableAssetsStepProps> = ({ control }) => {
+export const InvestableAssetsStep = <T extends SharedOnboardingFields = SharedOnboardingFields>({
+  control,
+}: InvestableAssetsStepProps<T>) => {
   const intl = useIntl();
   return (
     <section className="d-flex flex-column gap-4" key="investment-assets">
@@ -64,7 +65,7 @@ export const InvestableAssetsStep: FC<InvestableAssetsStepProps> = ({ control })
       <div className="section-content d-flex flex-column gap-4">
         <Controller
           control={control}
-          name="investableAssets"
+          name={'investableAssets' as Path<T>}
           rules={{
             required: {
               value: true,
@@ -75,7 +76,7 @@ export const InvestableAssetsStep: FC<InvestableAssetsStepProps> = ({ control })
           }}
           render={({ field, fieldState: { error } }) => (
             <div className="selection-group d-flex flex-column gap-2">
-              {generateRadioOptions(field.name, field.value, field.onChange)}
+              {generateRadioOptions(field.name, field.value as string | null, field.onChange)}
               {error && error.message ? (
                 <p className="m-0 text-danger fs-base" role="alert">
                   {error.message}
