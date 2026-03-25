@@ -13,8 +13,10 @@ export const RoleSwitcher = ({ userName, onRoleSwitch }: Props) => {
   const switchRole = useSwitchRole();
   const [open, setOpen] = useState(false);
 
+  const displayName = user?.role?.name ?? userName;
+
   if (!roles || roles.length <= 1) {
-    return <span className="text-body">{userName}</span>;
+    return <span className="text-body">{displayName}</span>;
   }
 
   const isActiveRole = (role: Role) =>
@@ -34,7 +36,7 @@ export const RoleSwitcher = ({ userName, onRoleSwitch }: Props) => {
         aria-expanded={open}
         onClick={() => setOpen(!open)}
       >
-        {userName}
+        {displayName}
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="16"

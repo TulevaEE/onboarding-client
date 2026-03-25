@@ -79,8 +79,10 @@ describe('happy path', () => {
   });
 
   test('pension summary table is shown', async () => {
-    // eslint-disable-next-line testing-library/no-node-access,@typescript-eslint/no-non-null-assertion
-    const summarySection = screen.getByText('Your asset summary').parentElement!.parentElement!;
+    /* eslint-disable testing-library/no-node-access,@typescript-eslint/no-non-null-assertion */
+    const summarySection = (await screen.findByText('Your asset summary')).parentElement!
+      .parentElement!;
+    /* eslint-enable testing-library/no-node-access,@typescript-eslint/no-non-null-assertion */
 
     expect(
       await within(summarySection).findByRole('cell', { name: 'Member capital' }),
@@ -254,6 +256,9 @@ describe('pending withdrawal transactions', () => {
       thirdPillarFundPensionOpeningApplication,
     ]);
 
+    expect(
+      await screen.findByText('on August 1 your II pillar contributions will end'),
+    ).toBeInTheDocument();
     const secondPillarRow = await getStatusBoxRow('SECOND');
     const thirdPillarRow = await getStatusBoxRow('THIRD');
 
@@ -286,6 +291,9 @@ describe('pending withdrawal transactions', () => {
       thirdPillarWithdrawalApplication,
     ]);
 
+    expect(
+      await screen.findByText('on August 1 your II pillar contributions will end'),
+    ).toBeInTheDocument();
     const secondPillarRow = await getStatusBoxRow('SECOND');
     const thirdPillarRow = await getStatusBoxRow('THIRD');
 
@@ -315,6 +323,9 @@ describe('pending withdrawal transactions', () => {
       thirdPillarFundPensionOpeningApplication,
     ]);
 
+    expect(
+      await screen.findByText('on August 1 your II pillar contributions will end'),
+    ).toBeInTheDocument();
     const secondPillarRow = await getStatusBoxRow('SECOND');
     const thirdPillarRow = await getStatusBoxRow('THIRD');
 

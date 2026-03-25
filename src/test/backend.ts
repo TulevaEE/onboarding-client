@@ -11,6 +11,7 @@ import {
   FundBalance,
   MemberCapitalListing,
   User,
+  Role,
   MemberLookup,
   CapitalType,
 } from '../components/common/apiModels/index';
@@ -859,18 +860,35 @@ export function switchRoleBackend(server: SetupServerApi): { switchedRole: any }
   return backend;
 }
 
-export function rolesBackend(server: SetupServerApi): void {
+export function rolesBackend(
+  server: SetupServerApi,
+  roles: Role[] = [
+    {
+      type: 'PERSON',
+      code: mockUser.personalCode,
+      name: `${mockUser.firstName} ${mockUser.lastName}`,
+    },
+  ],
+): void {
+  server.use(rest.get('http://localhost/v1/me/roles', (req, res, ctx) => res(ctx.json(roles))));
+}
+
+export function contributionsBackend(server: SetupServerApi): void {
+  server.use(rest.get('http://localhost/v1/contributions', (req, res, ctx) => res(ctx.json([]))));
+}
+
+export function savingsFundOnboardingStatusBackend(server: SetupServerApi): void {
   server.use(
-    rest.get('http://localhost/v1/me/roles', (req, res, ctx) =>
-      res(
-        ctx.json([
-          {
-            type: 'PERSON',
-            code: mockUser.personalCode,
-            name: `${mockUser.firstName} ${mockUser.lastName}`,
-          },
-        ]),
-      ),
+    rest.get('http://localhost/v1/savings/onboarding/status', (req, res, ctx) =>
+      res(ctx.json({ status: null })),
+    ),
+  );
+}
+
+export function savingsAccountStatementBackend(server: SetupServerApi): void {
+  server.use(
+    rest.get('http://localhost/v1/savings-account-statement', (req, res, ctx) =>
+      res(ctx.json(null)),
     ),
   );
 }
@@ -906,6 +924,7 @@ const TEST_BACKENDS = {
   memberLookup: memberLookupBackend,
   roles: rolesBackend,
   switchRole: switchRoleBackend,
+  contributions: contributionsBackend,
 } as const;
 
 export type TestBackendName = keyof typeof TEST_BACKENDS;

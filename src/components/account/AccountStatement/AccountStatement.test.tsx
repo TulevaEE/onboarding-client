@@ -1,11 +1,11 @@
 import { setupServer } from 'msw/node';
-import { screen, waitFor } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { Route } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
 import { createDefaultStore, login, renderWrapped } from '../../../test/utils';
 import LoggedInApp from '../../LoggedInApp';
 import { initializeConfiguration } from '../../config/config';
-import { useTestBackendsExcept } from '../../../test/backend';
+import { useTestBackends } from '../../../test/backend';
 
 const server = setupServer();
 let history: History;
@@ -25,7 +25,7 @@ afterAll(() => server.close());
 describe('happy path', () => {
   beforeEach(() => {
     initializeConfiguration();
-    useTestBackendsExcept(server, []);
+    useTestBackends(server);
 
     initializeComponent();
 
@@ -33,11 +33,11 @@ describe('happy path', () => {
   });
 
   test('active fund badge is shown with totals', async () => {
-    await waitFor(async () =>
-      expect(
-        await screen.findByTitle('Monthly contributions go to this fund.'),
-      ).toBeInTheDocument(),
-    );
+    expect(await screen.findByText('Hi, John Doe')).toBeInTheDocument();
+
+    expect(
+      (await screen.findAllByTitle('Monthly contributions go to this fund.')).length,
+    ).toBeGreaterThan(0);
 
     expect(await screen.findAllByText(/115\s000.00\s€/)).toHaveLength(2);
     expect(await screen.findAllByText(/5\s699.36\s€/)).toHaveLength(2);
