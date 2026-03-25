@@ -15,7 +15,7 @@ export const TermsStep = <T extends SharedOnboardingFields = SharedOnboardingFie
   const intl = useIntl();
   return (
     <section className="d-flex flex-column gap-4" key="conditions">
-      <div className="section-header d-flex flex-column gap-1">
+      <div className="d-flex flex-column gap-1">
         <h2 className="m-0">
           <FormattedMessage id="flows.savingsFundOnboarding.termsStep.title" />
         </h2>

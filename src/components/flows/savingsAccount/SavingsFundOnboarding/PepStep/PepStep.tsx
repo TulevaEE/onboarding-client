@@ -43,7 +43,7 @@ export const PepStep: FC<PepStepProps> = ({ control }) => {
   const intl = useIntl();
   return (
     <section className="d-flex flex-column gap-4" key="politically-exposed">
-      <div className="section-header d-flex flex-column gap-1">
+      <div className="d-flex flex-column gap-1">
         <h2 className="m-0">
           <FormattedMessage id="flows.savingsFundOnboarding.pepStep.title" />
         </h2>

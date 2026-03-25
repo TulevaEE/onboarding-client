@@ -19,7 +19,7 @@ export const CitizenshipStep: FC<CitizenshipStepProps> = ({ control }) => {
 
   return (
     <section className="d-flex flex-column gap-4" key="citizenship">
-      <div className="section-header d-flex flex-column gap-1" id="section01-header">
+      <div className="d-flex flex-column gap-1">
         <h2 className="m-0">
           <FormattedMessage id="flows.savingsFundOnboarding.citizenshipStep.title" />
         </h2>

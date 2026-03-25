@@ -28,7 +28,7 @@ export const ResidencyStep: FC<ResidencyStepProps> = ({ control }) => {
 
   return (
     <section className="d-flex flex-column gap-4" key="residence">
-      <div className="section-header d-flex flex-column gap-1">
+      <div className="d-flex flex-column gap-1">
         <h2 className="m-0">
           <FormattedMessage id="flows.savingsFundOnboarding.residencyStep.title" />
         </h2>

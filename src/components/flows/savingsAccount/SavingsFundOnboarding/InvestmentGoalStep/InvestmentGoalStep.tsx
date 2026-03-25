@@ -77,7 +77,7 @@ export const InvestmentGoalStep = <T extends SharedOnboardingFields = SharedOnbo
 
   return (
     <section className="d-flex flex-column gap-4" key="investment-goal">
-      <div className="section-header d-flex flex-column gap-1">
+      <div className="d-flex flex-column gap-1">
         <h2 className="m-0">
           <FormattedMessage id="flows.savingsFundOnboarding.investmentGoalStep.title" />
         </h2>

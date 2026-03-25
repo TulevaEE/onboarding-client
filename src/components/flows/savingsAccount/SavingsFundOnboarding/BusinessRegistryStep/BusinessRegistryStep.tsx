@@ -41,7 +41,7 @@ export const BusinessRegistryStep = ({ control }: BusinessRegistryStepProps) => 
 
   return (
     <section className="d-flex flex-column gap-4" key="businessRegistry">
-      <div className="section-header d-flex flex-column gap-1" id="section01-header">
+      <div className="d-flex flex-column gap-1">
         <h2 className="m-0">
           <FormattedMessage id="flows.savingsFundOnboarding.businessRegistryStep.title" />
         </h2>
