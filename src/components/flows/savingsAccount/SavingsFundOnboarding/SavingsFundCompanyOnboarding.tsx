@@ -13,31 +13,19 @@ import { OnboardingWizardLayout } from './OnboardingWizardLayout';
 export const SavingsFundCompanyOnboarding = () => {
   const [activeSection, setActiveSection] = useState(0);
 
-  const { control, watch, trigger } = useForm<CompanyOnboardingFormData>({
+  const { control, trigger } = useForm<CompanyOnboardingFormData>({
     mode: 'onChange',
     defaultValues: {
       registryLookup: undefined,
     },
   });
 
-  const registryLookup = watch('registryLookup');
-
   const steps: Array<{
     component: JSX.Element;
     fields: FieldPath<CompanyOnboardingFormData>[];
   }> = [
     {
-      component: (
-        <>
-          <BusinessRegistryStep key="registry" control={control} />
-          {registryLookup && (
-            <div className="mt-4">
-              <p>{registryLookup.registryName}</p>
-              <p>{registryLookup.registryNumber}</p>
-            </div>
-          )}
-        </>
-      ),
+      component: <BusinessRegistryStep key="registry" control={control} />,
       fields: ['registryLookup'],
     },
     { component: <RequirementsCheckStep key="requirements" />, fields: [] },
