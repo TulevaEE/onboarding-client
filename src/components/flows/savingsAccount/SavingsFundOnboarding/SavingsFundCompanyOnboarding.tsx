@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, FieldPath } from 'react-hook-form';
 import { CompanyOnboardingFormData } from './types';
 import { BusinessRegistryStep } from './BusinessRegistryStep';
 import { RequirementsCheckStep } from './RequirementsCheckStep';
@@ -22,7 +22,10 @@ export const SavingsFundCompanyOnboarding = () => {
 
   const registryLookup = watch('registryLookup');
 
-  const steps = [
+  const steps: Array<{
+    component: JSX.Element;
+    fields: FieldPath<CompanyOnboardingFormData>[];
+  }> = [
     {
       component: (
         <>
@@ -35,20 +38,20 @@ export const SavingsFundCompanyOnboarding = () => {
           )}
         </>
       ),
-      fields: ['registryLookup'] as const,
+      fields: ['registryLookup'],
     },
-    { component: <RequirementsCheckStep key="requirements" />, fields: [] as const },
-    { component: <CompanyAddressStep key="address" />, fields: [] as const },
+    { component: <RequirementsCheckStep key="requirements" />, fields: [] },
+    { component: <CompanyAddressStep key="address" />, fields: [] },
     {
       component: <InvestmentGoalStep key="investmentGoal" control={control} />,
-      fields: ['investmentGoals'] as const,
+      fields: ['investmentGoals'],
     },
     {
       component: <InvestableAssetsStep key="investableAssets" control={control} />,
-      fields: ['investableAssets'] as const,
+      fields: ['investableAssets'],
     },
-    { component: <CompanyIncomeSourceStep key="incomeSource" />, fields: [] as const },
-    { component: <TermsStep key="terms" control={control} />, fields: ['termsAccepted'] as const },
+    { component: <CompanyIncomeSourceStep key="incomeSource" />, fields: [] },
+    { component: <TermsStep key="terms" control={control} />, fields: ['termsAccepted'] },
   ];
 
   const totalSections = steps.length;
@@ -59,7 +62,7 @@ export const SavingsFundCompanyOnboarding = () => {
   };
 
   const showNextSection = async () => {
-    const fieldsToValidate = steps[activeSection].fields as string[];
+    const fieldsToValidate = steps[activeSection].fields;
     const isStepValid = await trigger(fieldsToValidate);
     if (!isStepValid) {
       return;
