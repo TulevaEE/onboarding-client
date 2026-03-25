@@ -16,7 +16,8 @@ export const TransactionSection: React.FunctionComponent<{
   limit?: number;
   pillar?: number | null;
   children?: React.ReactNode;
-}> = ({ limit, pillar, children }) => {
+  allTransactionsPath?: string;
+}> = ({ limit, pillar, children, allTransactionsPath }) => {
   const { data: transactions = [], isLoading: transactionsLoading } = useTransactions();
   const { data: funds = [], isLoading: fundsLoading } = useFunds();
 
@@ -137,7 +138,7 @@ export const TransactionSection: React.FunctionComponent<{
       {pillar === undefined ? (
         <div className="mt-5 mb-4 d-flex flex-wrap column-gap-3 row-gap-2 align-items-baseline justify-content-between">
           <h2 className="m-0">{children || <FormattedMessage id="transactions.title" />}</h2>
-          <Link className="icon-link" to="/2nd-pillar-transactions">
+          <Link className="icon-link" to={allTransactionsPath ?? '/2nd-pillar-transactions'}>
             <FormattedMessage id="transactions.seeAll" />
           </Link>
         </div>

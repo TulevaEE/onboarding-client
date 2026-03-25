@@ -10,9 +10,10 @@ import { Shimmer } from '../../../common/shimmer/Shimmer';
 
 type SavingsFundStatusBoxProps = {
   loading: boolean;
+  last?: boolean;
 };
 
-const SavingsFundStatusBox: FC<SavingsFundStatusBoxProps> = ({ loading }) => {
+const SavingsFundStatusBox: FC<SavingsFundStatusBoxProps> = ({ loading, last }) => {
   const intl = useIntl();
   const { data: onboardingStatus } = useSavingsFundOnboardingStatus();
   const { data: savingsFundBalance, isLoading } = useSavingsFundBalance();
@@ -73,6 +74,7 @@ const SavingsFundStatusBox: FC<SavingsFundStatusBoxProps> = ({ loading }) => {
         showAction={!loading}
         name={intl.formatMessage({ id: 'savingsFund.status.title' })}
         lines={getLines()}
+        last={last}
       >
         {onboardingStatus?.status === 'COMPLETED' ? (
           <Link to="/savings-fund/payment" className="btn btn-outline-primary">

@@ -1,7 +1,7 @@
 # Running Tests
 
 ```bash
-npx react-scripts test --watchAll=false --no-coverage --reporters=default --reporters=tdd-guard-jest --testPathPattern=<pattern>
+TZ=UTC npx react-scripts test --watchAll=false --no-coverage --reporters=default --reporters=tdd-guard-jest --testPathPattern=<pattern>
 ```
 
 # React Testing Library Best Practices

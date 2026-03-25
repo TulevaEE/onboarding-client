@@ -7,7 +7,7 @@ type Props = PropsWithChildren<{
   lead?: boolean;
 }>;
 
-export const SectionHeading = ({ titleId, lead, children }: Props): React.ReactNode => (
+export const SectionHeading = ({ titleId, lead, children }: Props): React.JSX.Element => (
   <div className="mt-5 mb-4 d-flex flex-wrap column-gap-3 row-gap-2 justify-content-between align-items-baseline">
     {lead ? (
       <h2 className="m-0">
