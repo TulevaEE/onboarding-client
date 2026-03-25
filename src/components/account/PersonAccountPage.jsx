@@ -31,7 +31,7 @@ import { getBankName } from '../common/iban';
 
 const noop = () => null;
 
-export function AccountPage(
+export function PersonAccountPage(
   props = {
     user: {},
     secondPillarSourceFunds: [],
@@ -252,7 +252,7 @@ export function AccountPage(
   );
 }
 
-AccountPage.propTypes = {
+PersonAccountPage.propTypes = {
   user: Types.shape({}),
   secondPillarSourceFunds: Types.arrayOf(Types.shape({})),
   thirdPillarSourceFunds: Types.arrayOf(Types.shape({})),
@@ -321,4 +321,4 @@ const mapDispatchToProps = (dispatch) =>
 
 const withRedux = connect(mapStateToProps, mapDispatchToProps);
 
-export default withRedux(AccountPage);
+export default withRedux(PersonAccountPage);

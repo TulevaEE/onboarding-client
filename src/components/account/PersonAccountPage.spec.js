@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { ErrorMessage } from '../common';
-import { AccountPage, shouldRedirectToAml } from './AccountPage';
+import { PersonAccountPage, shouldRedirectToAml } from './PersonAccountPage';
 import AccountStatement from './AccountStatement';
 import GreetingBar from './GreetingBar';
 import AccountSummary from './AccountSummary';
@@ -17,9 +17,9 @@ jest.mock('../common/apiHooks', () => ({
   useSavingsFundBalance: () => ({ data: mockSavingsFundBalance }),
 }));
 /**
- * @deprecated Use AccountPageView.test.tsx
+ * @deprecated Use PersonAccountPageView.test.tsx
  */
-describe('Account page', () => {
+describe('Person account page', () => {
   let component;
   let props;
 
@@ -57,7 +57,7 @@ describe('Account page', () => {
   beforeEach(() => {
     mockSavingsFundBalance = null;
     props = {};
-    component = shallow(<AccountPage {...props} />);
+    component = shallow(<PersonAccountPage {...props} />);
   });
 
   describe('when 2nd and 3rd pillar source funds exist', () => {
@@ -163,7 +163,7 @@ describe('Account page', () => {
       profit: 2,
       units: 10,
     };
-    component = shallow(<AccountPage {...props} />);
+    component = shallow(<PersonAccountPage {...props} />);
 
     expect(component.find('#accountStatement.savingsFund.heading')).toBeDefined();
     expect(component.contains(<AccountStatement funds={[mockSavingsFundBalance]} />)).toBe(true);
