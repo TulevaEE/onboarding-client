@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { FormattedMessage } from 'react-intl';
 import { useForm } from 'react-hook-form';
 import { CompanyOnboardingFormData } from './types';
 import { BusinessRegistryStep } from './BusinessRegistryStep';
@@ -9,6 +8,7 @@ import { InvestmentGoalStep } from './InvestmentGoalStep';
 import { InvestableAssetsStep } from './InvestableAssetsStep';
 import { CompanyIncomeSourceStep } from './CompanyIncomeSourceStep';
 import { TermsStep } from './TermsStep';
+import { OnboardingWizardLayout } from './OnboardingWizardLayout';
 
 export const SavingsFundCompanyOnboarding = () => {
   const [activeSection, setActiveSection] = useState(0);
@@ -51,25 +51,14 @@ export const SavingsFundCompanyOnboarding = () => {
     setActiveSection((current) => Math.min(current + 1, totalSections - 1));
   };
 
-  const progressPercentage = (currentSection / totalSections) * 100;
-
   return (
-    <div>
-      <div className="progress" role="progressbar" aria-hidden="true" style={{ height: '8px' }}>
-        <div className="progress-bar" style={{ width: `${progressPercentage}%` }} />
-      </div>
-      <span>
-        {currentSection}/{totalSections}
-      </span>
+    <OnboardingWizardLayout
+      currentStep={currentSection}
+      totalSteps={totalSections}
+      onBack={showPreviousSection}
+      onNext={showNextSection}
+    >
       {steps[activeSection]}
-      <div>
-        <button type="button" onClick={showPreviousSection}>
-          <FormattedMessage id="savingsFundOnboarding.back" />
-        </button>
-        <button type="button" onClick={showNextSection}>
-          <FormattedMessage id="savingsFundOnboarding.continue" />
-        </button>
-      </div>
-    </div>
+    </OnboardingWizardLayout>
   );
 };
