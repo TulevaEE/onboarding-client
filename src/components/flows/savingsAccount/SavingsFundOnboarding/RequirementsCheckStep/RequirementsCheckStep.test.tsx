@@ -9,21 +9,44 @@ import { CompanyOnboardingFormData } from '../types';
 import { RequirementsCheckStep } from './RequirementsCheckStep';
 
 const validatedCompany: BusinessRegistryValidatedData = {
-  name: { value: 'Test OÜ', errors: [] },
-  registryCode: { value: '11223344', errors: [] },
-  status: { value: 'R', errors: [] },
-  address: { value: 'Tallinn, Harju maakond', errors: [] },
-  businessActivity: { value: '62.01', errors: [] },
+  name: {
+    value: 'Company Company OÜ',
+    errors: [],
+  },
+  registryCode: {
+    value: '11223344',
+    errors: [],
+  },
+  legalForm: {
+    value: 'OÜ',
+    errors: [],
+  },
+  status: {
+    value: 'REGISTERED',
+    errors: [],
+  },
+  address: {
+    value: 'Telliskivi 60/1, 10412 Tallinn',
+    errors: [],
+  },
+  businessActivity: {
+    value: 'Arvutialased konsultatsioonid',
+    errors: [],
+  },
+  naceCode: {
+    value: '62.02',
+    errors: [],
+  },
   relatedPersons: {
     value: [
       {
-        personalCode: '38501010002',
-        name: 'Jaan Tamm',
-        boardMember: true,
-        shareholder: true,
-        beneficialOwner: true,
-        ownershipPercent: 100.0,
-        kycStatus: 'COMPLETED',
+        personalCode: '40404049996',
+        name: 'Person McPerson',
+        boardMember: false,
+        shareholder: false,
+        beneficialOwner: false,
+        ownershipPercent: null,
+        kycStatus: 'UNKNOWN',
       },
     ],
     errors: [],
@@ -89,7 +112,7 @@ describe('RequirementsCheckStep', () => {
       />,
     );
 
-    expect(await screen.findByText('Tallinn, Harju maakond')).toBeInTheDocument();
+    expect(await screen.findByText('Telliskivi 60/1, 10412 Tallinn')).toBeInTheDocument();
   });
 
   it('renders company data from a different registry code', async () => {
@@ -112,5 +135,26 @@ describe('RequirementsCheckStep', () => {
     );
 
     expect(await screen.findByText('Tartu, Tartu maakond')).toBeInTheDocument();
+  });
+
+  it('renders company name from the previous step', () => {
+    renderWrapped(
+      <RequirementsCheckStepWrapper
+        defaultValues={{ registryNumber: '11223344', registryName: 'Test OÜ' }}
+      />,
+    );
+
+    expect(screen.getByText('Company name')).toBeInTheDocument();
+    expect(screen.getByText('Test OÜ')).toBeInTheDocument();
+  });
+
+  it('renders business activity from business registry validation', async () => {
+    renderWrapped(
+      <RequirementsCheckStepWrapper
+        defaultValues={{ registryNumber: '11223344', registryName: 'Test OÜ' }}
+      />,
+    );
+
+    expect(await screen.findByText('Arvutialased konsultatsioonid (62.02)')).toBeInTheDocument();
   });
 });

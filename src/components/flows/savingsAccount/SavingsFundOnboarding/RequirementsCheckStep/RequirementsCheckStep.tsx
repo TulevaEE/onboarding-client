@@ -10,6 +10,7 @@ type RequirementsCheckStepProps = {
 
 export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control }) => {
   const registryCode = useWatch({ control, name: 'registryLookup.registryNumber' });
+  const registryName = useWatch({ control, name: 'registryLookup.registryName' });
   const { data } = useCompanyBusinessRegistryValidation(registryCode);
 
   return (
@@ -27,7 +28,7 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
           <div className="col-6 fw-bold">
             <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.label.companyName" />
           </div>
-          <div className="col-6">Long value that could overflow to multiple lines</div>
+          <div className="col-6">{registryName}</div>
         </div>
         <div className="d-sm-flex gap-3 align-items-center">
           <div className="col-6 fw-bold">
@@ -54,7 +55,9 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
             {' '}
             <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.label.activityArea" />
           </div>
-          <div className="col-6">Value</div>
+          <div className="col-6">
+            {data && `${data.businessActivity.value} (${data.naceCode.value})`}
+          </div>
         </div>
         <div className="border-top border-gray-2" />
         <div className="d-flex">Element</div>

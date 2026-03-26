@@ -16,15 +16,23 @@ export type BusinessRegistryValidatedData = {
     value: string; // enum
     errors: unknown[];
   };
+  legalForm: {
+    value: string;
+    errors: [];
+  };
+  naceCode: {
+    value: string;
+    errors: [];
+  };
   relatedPersons: {
     value: [
       {
         personalCode: string;
         name: string;
-        boardMember: true;
-        shareholder: true;
-        beneficialOwner: true;
-        ownershipPercent: number;
+        boardMember: boolean;
+        shareholder: boolean;
+        beneficialOwner: boolean;
+        ownershipPercent: number | null;
         kycStatus: string; // enum
       },
     ];
