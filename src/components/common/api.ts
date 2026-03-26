@@ -61,7 +61,8 @@ import {
   CreateCapitalTransferDto,
   UpdateCapitalTransferContractDto,
 } from './apiModels/capital-transfer';
-import { BusinessRegistryValidatedData, SavingsFundWithdrawal } from './apiModels/savings-fund';
+import { SavingsFundWithdrawal } from './apiModels/savings-fund';
+import { BusinessRegistryValidatedData } from './apiModels/company-onboarding';
 import { OnboardingSurveyCommand } from '../flows/savingsAccount/SavingsFundOnboarding/types.api';
 
 const API_URI = '/api';

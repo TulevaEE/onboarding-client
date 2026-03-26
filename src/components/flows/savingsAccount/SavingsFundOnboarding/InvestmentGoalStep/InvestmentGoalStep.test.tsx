@@ -11,7 +11,7 @@ const CompanyInvestmentGoalStepWrapper = () => {
     mode: 'onBlur',
     defaultValues: {
       registryLookup: undefined,
-      requirementsBackendCheck: false,
+      companyValidatedData: undefined,
       companyAddress: { reuseBackendAddress: true },
       investmentGoals: null,
       investableAssets: null,

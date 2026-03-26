@@ -6,6 +6,7 @@ import type {
   Address,
   SourceOfIncomeSurveyItem,
 } from './types.api';
+import { BusinessRegistryValidatedData } from '../../../common/apiModels/company-onboarding';
 
 export interface SharedOnboardingFields {
   investmentGoals:
@@ -30,7 +31,7 @@ export interface CompanyOnboardingFormData extends SharedOnboardingFields {
     registryNumber: string;
     registryName: string;
   };
-  requirementsBackendCheck: boolean;
+  companyValidatedData?: BusinessRegistryValidatedData;
   companyAddress:
     | {
         reuseBackendAddress: true;

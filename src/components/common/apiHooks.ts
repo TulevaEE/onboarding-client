@@ -77,7 +77,7 @@ import {
   CreateCapitalTransferDto,
   UpdateCapitalTransferContractDto,
 } from './apiModels/capital-transfer';
-import { BusinessRegistryValidatedData } from './apiModels/savings-fund';
+import { BusinessRegistryValidatedData } from './apiModels/company-onboarding';
 import { OnboardingSurveyCommand } from '../flows/savingsAccount/SavingsFundOnboarding/types.api';
 
 export function usePendingApplications(): UseQueryResult<Application[]> {

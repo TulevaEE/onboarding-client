@@ -1,6 +1,6 @@
 import './RequirementsCheckStep.scss';
-import { FC } from 'react';
-import { Control, Controller, useWatch } from 'react-hook-form';
+import { FC, useEffect } from 'react';
+import { Control, useController, useWatch } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 import { useCompanyBusinessRegistryValidation } from '../../../../common/apiHooks';
 import { formatDateYear } from '../../../../common/dateFormatter';
@@ -15,7 +15,31 @@ type RequirementsCheckStepProps = {
 export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control }) => {
   const registryCode = useWatch({ control, name: 'registryLookup.registryNumber' });
   const registryName = useWatch({ control, name: 'registryLookup.registryName' });
-  const { data, isLoading } = useCompanyBusinessRegistryValidation(registryCode);
+  const { data, isSuccess, isLoading } = useCompanyBusinessRegistryValidation(registryCode);
+  const { field } = useController({
+    control,
+    name: 'companyValidatedData',
+    rules: {
+      validate: (companyData) => {
+        if (isLoading) {
+          return 'Loading';
+        }
+        if (!companyData) {
+          return 'No data';
+        }
+
+        return hasNoValidationErrors(companyData) || 'Validation failed';
+      },
+    },
+  });
+
+  useEffect(() => {
+    if (!isSuccess || !data) {
+      return;
+    }
+
+    field.onChange(data);
+  }, [isSuccess, data]);
 
   return (
     <section className="d-flex flex-column gap-5 bg-light border border-gray-2 rounded rounded-4 p-4">
@@ -45,7 +69,7 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
             <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.label.foundingDate" />
           </div>
           <div className="half-column">
-            {!isLoading && data ? formatDateYear(data.foundingDate.value) : <Shimmer />}
+            {isSuccess && data ? formatDateYear(data.foundingDate.value) : <Shimmer />}
           </div>
         </div>
         <div className="d-sm-flex gap-3 align-items-center">
@@ -53,7 +77,7 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
             <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.label.companyAddress" />
           </div>
           <div className="half-column">
-            {!isLoading && data ? data.address.value.fullAddress : <Shimmer />}
+            {isSuccess && data ? data.address.value.fullAddress : <Shimmer />}
           </div>
         </div>
         <div className="d-sm-flex gap-3 align-items-center">
@@ -61,7 +85,7 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
             <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.label.activityArea" />
           </div>
           <div className="half-column">
-            {!isLoading && data ? (
+            {isSuccess && data ? (
               `${data.businessActivity.value} (${data.naceCode.value})`
             ) : (
               <Shimmer />
@@ -69,19 +93,6 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
           </div>
         </div>
       </div>
-      <Controller
-        control={control}
-        name="requirementsBackendCheck"
-        rules={{
-          validate: () => {
-            if (isLoading || !data) {
-              return 'Loading';
-            }
-            return hasNoValidationErrors(data) || 'Validation failed';
-          },
-        }}
-        render={() => <></>}
-      />
     </section>
   );
 };

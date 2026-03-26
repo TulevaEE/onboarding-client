@@ -150,7 +150,7 @@ describe('RequirementsCheckStep', () => {
         mode: 'onChange',
         defaultValues: {
           registryLookup: { registryNumber: '11223344', registryName: 'Test OÜ' },
-          requirementsBackendCheck: false,
+          companyValidatedData: undefined,
         },
       });
 
@@ -160,7 +160,7 @@ describe('RequirementsCheckStep', () => {
           <button
             type="button"
             onClick={async () => {
-              const valid = await trigger('requirementsBackendCheck');
+              const valid = await trigger('companyValidatedData');
               document.title = valid ? 'valid' : 'invalid';
             }}
           >
@@ -186,7 +186,7 @@ describe('RequirementsCheckStep', () => {
         mode: 'onChange',
         defaultValues: {
           registryLookup: { registryNumber: '11223344', registryName: 'Test OÜ' },
-          requirementsBackendCheck: false,
+          companyValidatedData: undefined,
         },
       });
 
@@ -196,7 +196,7 @@ describe('RequirementsCheckStep', () => {
           <button
             type="button"
             onClick={async () => {
-              const valid = await trigger('requirementsBackendCheck');
+              const valid = await trigger('companyValidatedData');
               document.title = valid ? 'valid' : 'invalid';
             }}
           >

@@ -9,7 +9,7 @@ import {
   MobileSignatureStatusResponse,
   User,
 } from '../components/common/apiModels';
-import { BusinessRegistryValidatedData } from '../components/common/apiModels/savings-fund';
+import { BusinessRegistryValidatedData } from '../components/common/apiModels/company-onboarding';
 import { SecondPillarPaymentRateChangeMandate } from '../components/flows/secondPillarPaymentRate/types';
 
 export const authErrorResponse = {
