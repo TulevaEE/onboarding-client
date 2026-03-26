@@ -3,75 +3,20 @@ import userEvent from '@testing-library/user-event';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { useForm } from 'react-hook-form';
-import { BusinessRegistryValidatedData } from '../../../../common/apiModels/savings-fund';
+import { companyValidationBackend } from '../../../../../test/backend';
+import { mockValidatedCompany } from '../../../../../test/backend-responses';
 import { initializeConfiguration } from '../../../../config/config';
 import { renderWrapped } from '../../../../../test/utils';
 import { CompanyOnboardingFormData } from '../types';
 import { RequirementsCheckStep } from './RequirementsCheckStep';
 
-const validatedCompany: BusinessRegistryValidatedData = {
-  name: {
-    value: 'Company Company OÜ',
-    errors: [],
-  },
-  registryCode: {
-    value: '11223344',
-    errors: [],
-  },
-  legalForm: {
-    value: 'OÜ',
-    errors: [],
-  },
-  status: {
-    value: 'REGISTERED',
-    errors: [],
-  },
-  address: {
-    value: {
-      fullAddress: 'Telliskivi 60/1, 10412 Tallinn',
-      street: 'Telliskivi 60/1',
-      city: 'Telliskivi linnaosa, Tallinn, Harju maakond',
-      postalCode: '10412',
-      countryCode: 'EST',
-    },
-    errors: [],
-  },
-  businessActivity: {
-    value: 'Arvutialased konsultatsioonid',
-    errors: [],
-  },
-  naceCode: {
-    value: '62.02',
-    errors: [],
-  },
-  foundingDate: {
-    value: '2026-02-15',
-    errors: [],
-  },
-  relatedPersons: {
-    value: [
-      {
-        personalCode: '40404049996',
-        name: 'Person McPerson',
-        boardMember: false,
-        shareholder: false,
-        beneficialOwner: false,
-        ownershipPercent: null,
-        kycStatus: 'UNKNOWN',
-      },
-    ],
-    errors: [],
-  },
-};
-
-const server = setupServer(
-  rest.get('http://localhost/v1/kyb/surveys/initial-validation', (_req, res, ctx) =>
-    res(ctx.json(validatedCompany)),
-  ),
-);
+const server = setupServer();
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
-beforeEach(() => initializeConfiguration());
+beforeEach(() => {
+  initializeConfiguration();
+  companyValidationBackend(server);
+});
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
@@ -131,7 +76,7 @@ describe('RequirementsCheckStep', () => {
       rest.get('http://localhost/v1/kyb/surveys/initial-validation', (_req, res, ctx) =>
         res(
           ctx.json({
-            ...validatedCompany,
+            ...mockValidatedCompany,
             name: { value: 'Another OÜ', errors: [] },
             address: {
               value: {
@@ -193,7 +138,7 @@ describe('RequirementsCheckStep', () => {
       rest.get('http://localhost/v1/kyb/surveys/initial-validation', (_req, res, ctx) =>
         res(
           ctx.json({
-            ...validatedCompany,
+            ...mockValidatedCompany,
             status: { value: 'INVALID', errors: ['INVALID_STATUS'] },
           }),
         ),

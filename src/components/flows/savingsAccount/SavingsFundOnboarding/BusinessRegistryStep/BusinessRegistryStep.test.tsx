@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { useForm } from 'react-hook-form';
+import { businessRegistryBackend } from '../../../../../test/backend';
 import { renderWrapped } from '../../../../../test/utils';
 import { BusinessRegistryStep } from './BusinessRegistryStep';
 import { CompanyOnboardingFormData } from '../types';
@@ -34,11 +35,10 @@ const BusinessRegistryStepWrapper = ({
   );
 };
 
-const server = setupServer(
-  rest.get(BUSINESS_REGISTRY_URL, (_req, res, ctx) => res(ctx.json({ data: [] }))),
-);
+const server = setupServer();
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+beforeEach(() => businessRegistryBackend(server));
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
