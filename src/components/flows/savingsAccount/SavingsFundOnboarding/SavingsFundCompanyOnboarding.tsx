@@ -28,7 +28,7 @@ export const SavingsFundCompanyOnboarding = () => {
       component: <BusinessRegistryStep key="registry" control={control} />,
       fields: ['registryLookup'],
     },
-    { component: <RequirementsCheckStep key="requirements" />, fields: [] },
+    { component: <RequirementsCheckStep key="requirements" control={control} />, fields: [] },
     { component: <CompanyAddressStep key="address" />, fields: [] },
     {
       component: <InvestmentGoalStep key="investmentGoal" control={control} />,

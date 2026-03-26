@@ -1190,6 +1190,11 @@
 
   "flows.savingsFundOnboarding.businessValidationStep.title": "Company data",
   "flows.savingsFundOnboarding.businessValidationStep.description": "If the information here is incorrect, the data must be updated in the business registry.",
+  "flows.savingsFundOnboarding.businessValidationStep.label.companyName": "Company name",
+  "flows.savingsFundOnboarding.businessValidationStep.label.registryCode": "Registry code",
+  "flows.savingsFundOnboarding.businessValidationStep.label.foundingDate": "Founding date",
+  "flows.savingsFundOnboarding.businessValidationStep.label.companyAddress": "Company address",
+  "flows.savingsFundOnboarding.businessValidationStep.label.activityArea": "Primary company activity area",
 
   "flows.savingsFundOnboarding.companyAddressStep.title": "Where does your company operate from?",
   "flows.savingsFundOnboarding.companyAddressStep.description": "Confirm or enter your company's address. TODO",

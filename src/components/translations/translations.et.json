@@ -1279,6 +1279,11 @@
 
   "flows.savingsFundOnboarding.businessValidationStep.title": "Ettevõtte andmed",
   "flows.savingsFundOnboarding.businessValidationStep.description": "Kui siinne info ei vasta tõele, tuleb andmeid uuendada äriregistris.",
+  "flows.savingsFundOnboarding.businessValidationStep.label.companyName": "Ettevõtte nimi",
+  "flows.savingsFundOnboarding.businessValidationStep.label.registryCode": "Registrikood",
+  "flows.savingsFundOnboarding.businessValidationStep.label.foundingDate": "Asutamise kuupäev",
+  "flows.savingsFundOnboarding.businessValidationStep.label.companyAddress": "Aadress",
+  "flows.savingsFundOnboarding.businessValidationStep.label.activityArea": "Põhitegevusala",
 
   "flows.savingsFundOnboarding.companyAddressStep.title": "Kust sinu ettevõte opereerib?",
   "flows.savingsFundOnboarding.companyAddressStep.description": "Kinnitage või sisestage oma ettevõtte aadress. TODO",
