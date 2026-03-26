@@ -2,10 +2,12 @@ import { useEffect, useRef, useState } from 'react';
 import { Control, Controller, Path, useController } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { SharedOnboardingFields } from '../types';
+import { InvestmentGoalOption } from '../types.api';
 import Radio from '../../../../common/radio';
 
 type InvestmentGoalStepProps<T extends SharedOnboardingFields = SharedOnboardingFields> = {
   control: Control<T>;
+  options: InvestmentGoalOption[];
 };
 
 const generateRadioOptions = (
@@ -13,6 +15,7 @@ const generateRadioOptions = (
   fieldValue: SharedOnboardingFields['investmentGoals'],
   onChange: (value: { type: 'OPTION'; value: string }) => void,
   setIsOtherSelected: (value: boolean) => void,
+  options: InvestmentGoalOption[],
 ) =>
   [
     {
@@ -35,26 +38,29 @@ const generateRadioOptions = (
       value: 'TRADING',
       labelId: 'flows.savingsFundOnboarding.investmentGoalStep.activeTrading' as const,
     },
-  ].map(({ id, value, labelId }) => (
-    <Radio
-      key={id}
-      name={fieldName}
-      id={id}
-      selected={fieldValue?.type === 'OPTION' && fieldValue.value === value}
-      onSelect={() => {
-        setIsOtherSelected(false);
-        onChange({ type: 'OPTION', value });
-      }}
-      className="p-3"
-    >
-      <label className="form-check-label fs-3 lh-sm me-2" htmlFor={id}>
-        <FormattedMessage id={labelId} />
-      </label>
-    </Radio>
-  ));
+  ]
+    .filter(({ value }) => options.includes(value as InvestmentGoalOption))
+    .map(({ id, value, labelId }) => (
+      <Radio
+        key={id}
+        name={fieldName}
+        id={id}
+        selected={fieldValue?.type === 'OPTION' && fieldValue.value === value}
+        onSelect={() => {
+          setIsOtherSelected(false);
+          onChange({ type: 'OPTION', value });
+        }}
+        className="p-3"
+      >
+        <label className="form-check-label fs-3 lh-sm me-2" htmlFor={id}>
+          <FormattedMessage id={labelId} />
+        </label>
+      </Radio>
+    ));
 
 export const InvestmentGoalStep = <T extends SharedOnboardingFields = SharedOnboardingFields>({
   control,
+  options,
 }: InvestmentGoalStepProps<T>) => {
   const intl = useIntl();
   const { field: investmentGoalsField } = useController({
@@ -106,7 +112,13 @@ export const InvestmentGoalStep = <T extends SharedOnboardingFields = SharedOnbo
             const value = field.value as SharedOnboardingFields['investmentGoals'];
             return (
               <div className="selection-group d-flex flex-column gap-2">
-                {generateRadioOptions(field.name, value, field.onChange, setIsOtherSelected)}
+                {generateRadioOptions(
+                  field.name,
+                  value,
+                  field.onChange,
+                  setIsOtherSelected,
+                  options,
+                )}
                 <Radio
                   name={field.name}
                   id="investment-goal-other"

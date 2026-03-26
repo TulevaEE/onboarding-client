@@ -34,7 +34,13 @@ export const SavingsFundCompanyOnboarding = () => {
     },
     { component: <CompanyAddressStep key="address" />, fields: [] },
     {
-      component: <InvestmentGoalStep key="investmentGoal" control={control} />,
+      component: (
+        <InvestmentGoalStep
+          key="investmentGoal"
+          control={control}
+          options={['LONG_TERM', 'SPECIFIC_GOAL', 'TRADING']}
+        />
+      ),
       fields: ['investmentGoals'],
     },
     {

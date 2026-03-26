@@ -116,7 +116,13 @@ export const SavingsFundOnboarding: FC = () => {
       fields: ['pepSelfDeclaration'],
     },
     {
-      component: <InvestmentGoalStep key="investment-goal" control={control} />,
+      component: (
+        <InvestmentGoalStep
+          key="investment-goal"
+          control={control}
+          options={['LONG_TERM', 'SPECIFIC_GOAL', 'CHILD', 'TRADING']}
+        />
+      ),
       fields: ['investmentGoals'],
     },
     {
