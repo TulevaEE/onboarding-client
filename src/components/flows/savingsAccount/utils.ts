@@ -1,5 +1,8 @@
-import { OnboardingFormData } from './SavingsFundOnboarding/types';
-import { OnboardingSurveyCommand } from './SavingsFundOnboarding/types.api';
+import { CompanyOnboardingFormData, OnboardingFormData } from './SavingsFundOnboarding/types';
+import {
+  CompanyOnboardingSurveyCommand,
+  OnboardingSurveyCommand,
+} from './SavingsFundOnboarding/types.api';
 
 export const transformFormDataToOnboardingSurveryCommand = (
   data: OnboardingFormData,
@@ -74,3 +77,9 @@ export const transformFormDataToOnboardingSurveryCommand = (
 
   return { answers };
 };
+
+export const transformCompanyFormDataToSurveyCommand = (
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  data: CompanyOnboardingFormData,
+  // @ts-expect-error not implemented yet
+): CompanyOnboardingSurveyCommand => {};

@@ -40,6 +40,10 @@ export type SourceOfIncomeOption =
   | 'PENSION_OR_BENEFITS'
   | 'FAMILY_FUNDS_OR_INHERITANCE'
   | 'BUSINESS_INCOME';
+export type CompanySourceOfIncomeOption =
+  | 'OPERATING_ONLY_IN_ESTONIA'
+  | 'NOT_SANCTIONED_AND_NOT_DOING_BUSINESS_WITH_SANCTIONED_COUNTRIES'
+  | 'NOT_IN_CRYPTO';
 
 export type Address = {
   street: string;
@@ -99,6 +103,19 @@ export type SourceOfIncomeSurveyItem = {
   value: (OptionValue<SourceOfIncomeOption> | TextValue)[];
 };
 
+type BusinessRegistryNumberSurveyItem = {
+  type: 'BUSINESS_REGISTRY_NUMBER';
+  value: TextValue;
+};
+type CompanyAddressSurveyItem = {
+  type: 'COMPANY_ADDRESS';
+  value: AddressValue;
+};
+type CompanySourceOfIncomeSurveyItem = {
+  type: 'COMPANY_SOURCE_OF_INCOME';
+  value: OptionValue<CompanySourceOfIncomeOption>[];
+};
+
 type OnboardingSurveyItem =
   | CitizenshipSurveyItem
   | AddressSurveyItem
@@ -111,6 +128,17 @@ type OnboardingSurveyItem =
 
 export type OnboardingSurveyCommand = {
   answers: OnboardingSurveyItem[];
+};
+
+type CompanyOnboardingSurveyItem =
+  | BusinessRegistryNumberSurveyItem
+  | CompanyAddressSurveyItem
+  | InvestmentGoalsSurveyItem
+  | InvestableAssetsSurveyItem
+  | CompanySourceOfIncomeSurveyItem;
+
+export type CompanyOnboardingSurveyCommand = {
+  answers: CompanyOnboardingSurveyItem[];
 };
 
 export type BusinessRegistrySearchResult = { company_id: number; name: string; reg_code: string };
