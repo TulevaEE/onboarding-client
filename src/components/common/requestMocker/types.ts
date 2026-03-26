@@ -1,6 +1,7 @@
 import { fundPensionStatusProfiles } from './profiles/fundPensionStatus';
 import { savingsFundBalanceProfiles } from './profiles/savingsFundBalance';
 import { transactionsProfiles } from './profiles/transactions';
+import { rolesProfiles } from './profiles/roles';
 import { pendingApplicationsProfiles } from './profiles/pendingApplications';
 import { conversionMockProfiles } from './profiles/conversion';
 import { memberCapitalProfiles } from './profiles/memberCapital';
@@ -18,6 +19,7 @@ export type MockModeConfiguration = {
   fundPensionStatus: keyof typeof fundPensionStatusProfiles | null;
   savingsFundBalance: keyof typeof savingsFundBalanceProfiles | null;
   transactions: keyof typeof transactionsProfiles | null;
+  roles: keyof typeof rolesProfiles | null;
 };
 
 export type MockModeEndpoint = keyof MockModeConfiguration;

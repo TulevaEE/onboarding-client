@@ -575,7 +575,7 @@ export async function cancelSavingsFundWithdrawal(withdrawalId: string): Promise
 }
 
 export function getRoles(): Promise<Role[]> {
-  return getWithAuthentication(getEndpoint('/v1/me/roles'));
+  return mockRequestInMockMode(() => getWithAuthentication(getEndpoint('/v1/me/roles')), 'roles');
 }
 
 export async function switchRole(command: SwitchRoleCommand): Promise<Token> {

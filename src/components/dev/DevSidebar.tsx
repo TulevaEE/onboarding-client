@@ -42,7 +42,7 @@ export const DevSidebar = () => {
     setIsOpen(false);
   };
 
-  const availableOptions = getAllProfileNames();
+  const availableOptions = getAllProfileNames().filter((name) => name !== 'roles');
 
   const location = useLocation();
   const history = useHistory();
@@ -103,11 +103,19 @@ export const DevSidebar = () => {
   ) => {
     const profileOptionToWrite = selectedProfileOption !== 'null' ? selectedProfileOption : null;
 
-    // @ts-ignore
-    setConfiguration({
+    const updatedConfig: Partial<MockModeConfiguration> = {
       ...configuration,
       [profileName]: profileOptionToWrite,
-    });
+    };
+
+    if (profileName === 'user') {
+      // @ts-ignore
+      updatedConfig.roles =
+        selectedProfileOption === 'LEGAL_ENTITY' ? 'PERSON_AND_LEGAL_ENTITY' : null;
+    }
+
+    // @ts-ignore
+    setConfiguration(updatedConfig);
     window.location.reload();
   };
 
