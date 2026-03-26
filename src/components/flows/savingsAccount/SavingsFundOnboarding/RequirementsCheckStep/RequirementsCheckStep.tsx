@@ -1,11 +1,12 @@
 import './RequirementsCheckStep.scss';
 import { FC } from 'react';
-import { Control, useWatch } from 'react-hook-form';
+import { Control, Controller, useWatch } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 import { useCompanyBusinessRegistryValidation } from '../../../../common/apiHooks';
 import { formatDateYear } from '../../../../common/dateFormatter';
 import { Shimmer } from '../../../../common/shimmer/Shimmer';
 import { CompanyOnboardingFormData } from '../types';
+import { hasNoValidationErrors } from './hasNoValidationErrors';
 
 type RequirementsCheckStepProps = {
   control: Control<CompanyOnboardingFormData>;
@@ -67,9 +68,20 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
             )}
           </div>
         </div>
-        <div className="border-top border-gray-2" />
-        <div className="d-flex">Element</div>
       </div>
+      <Controller
+        control={control}
+        name="requirementsBackendCheck"
+        rules={{
+          validate: () => {
+            if (isLoading || !data) {
+              return 'Loading';
+            }
+            return hasNoValidationErrors(data) || 'Validation failed';
+          },
+        }}
+        render={() => <></>}
+      />
     </section>
   );
 };

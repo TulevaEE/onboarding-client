@@ -1,4 +1,5 @@
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { useForm } from 'react-hook-form';
@@ -185,6 +186,89 @@ describe('RequirementsCheckStep', () => {
     );
 
     expect(await screen.findByText('February 15, 2026')).toBeInTheDocument();
+  });
+
+  it('fails validation when backend returns errors', async () => {
+    server.use(
+      rest.get('http://localhost/v1/kyb/surveys/initial-validation', (_req, res, ctx) =>
+        res(
+          ctx.json({
+            ...validatedCompany,
+            status: { value: 'INVALID', errors: ['INVALID_STATUS'] },
+          }),
+        ),
+      ),
+    );
+
+    const ValidationWrapper = () => {
+      const { control, trigger } = useForm<CompanyOnboardingFormData>({
+        mode: 'onChange',
+        defaultValues: {
+          registryLookup: { registryNumber: '11223344', registryName: 'Test OÜ' },
+          requirementsBackendCheck: false,
+        },
+      });
+
+      return (
+        <>
+          <RequirementsCheckStep control={control} />
+          <button
+            type="button"
+            onClick={async () => {
+              const valid = await trigger('requirementsBackendCheck');
+              document.title = valid ? 'valid' : 'invalid';
+            }}
+          >
+            Validate
+          </button>
+        </>
+      );
+    };
+
+    renderWrapped(<ValidationWrapper />);
+    expect(await screen.findByText('Telliskivi 60/1, 10412 Tallinn')).toBeInTheDocument();
+
+    userEvent.click(screen.getByRole('button', { name: 'Validate' }));
+
+    await waitFor(() => {
+      expect(document.title).toBe('invalid');
+    });
+  });
+
+  it('passes validation when backend returns no errors', async () => {
+    const ValidationWrapper = () => {
+      const { control, trigger } = useForm<CompanyOnboardingFormData>({
+        mode: 'onChange',
+        defaultValues: {
+          registryLookup: { registryNumber: '11223344', registryName: 'Test OÜ' },
+          requirementsBackendCheck: false,
+        },
+      });
+
+      return (
+        <>
+          <RequirementsCheckStep control={control} />
+          <button
+            type="button"
+            onClick={async () => {
+              const valid = await trigger('requirementsBackendCheck');
+              document.title = valid ? 'valid' : 'invalid';
+            }}
+          >
+            Validate
+          </button>
+        </>
+      );
+    };
+
+    renderWrapped(<ValidationWrapper />);
+    expect(await screen.findByText('Telliskivi 60/1, 10412 Tallinn')).toBeInTheDocument();
+
+    userEvent.click(screen.getByRole('button', { name: 'Validate' }));
+
+    await waitFor(() => {
+      expect(document.title).toBe('valid');
+    });
   });
 
   it('renders shimmer while loading backend data', () => {
