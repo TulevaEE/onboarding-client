@@ -26,7 +26,13 @@ const validatedCompany: BusinessRegistryValidatedData = {
     errors: [],
   },
   address: {
-    value: 'Telliskivi 60/1, 10412 Tallinn',
+    value: {
+      fullAddress: 'Telliskivi 60/1, 10412 Tallinn',
+      street: 'Telliskivi 60/1',
+      city: 'Telliskivi linnaosa, Tallinn, Harju maakond',
+      postalCode: '10412',
+      countryCode: 'EST',
+    },
     errors: [],
   },
   businessActivity: {
@@ -122,7 +128,16 @@ describe('RequirementsCheckStep', () => {
           ctx.json({
             ...validatedCompany,
             name: { value: 'Another OÜ', errors: [] },
-            address: { value: 'Tartu, Tartu maakond', errors: [] },
+            address: {
+              value: {
+                fullAddress: 'Riia 1, Tartu, Tartu maakond',
+                street: 'Riia 1',
+                city: 'Tartu, Tartu maakond',
+                postalCode: '51004',
+                countryCode: 'EST',
+              },
+              errors: [],
+            },
           }),
         ),
       ),
@@ -134,7 +149,7 @@ describe('RequirementsCheckStep', () => {
       />,
     );
 
-    expect(await screen.findByText('Tartu, Tartu maakond')).toBeInTheDocument();
+    expect(await screen.findByText('Riia 1, Tartu, Tartu maakond')).toBeInTheDocument();
   });
 
   it('renders company name from the previous step', () => {
@@ -156,5 +171,22 @@ describe('RequirementsCheckStep', () => {
     );
 
     expect(await screen.findByText('Arvutialased konsultatsioonid (62.02)')).toBeInTheDocument();
+  });
+
+  it('renders shimmer while loading backend data', () => {
+    server.use(
+      rest.get('http://localhost/v1/kyb/surveys/initial-validation', (_req, res, ctx) =>
+        res(ctx.delay(1000)),
+      ),
+    );
+
+    renderWrapped(
+      <RequirementsCheckStepWrapper
+        defaultValues={{ registryNumber: '11223344', registryName: 'Test OÜ' }}
+      />,
+    );
+
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(document.querySelectorAll('.shimmerDefault')).toHaveLength(2);
   });
 });

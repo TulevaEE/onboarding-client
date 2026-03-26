@@ -11,7 +11,16 @@ export type BusinessRegistryValidatedData = {
     value: string; // enum
     errors: unknown[];
   };
-  address: { value: string; errors: unknown[] };
+  address: {
+    value: {
+      fullAddress: string;
+      street: string;
+      city: string;
+      postalCode: string;
+      countryCode: string | null;
+    };
+    errors: unknown[];
+  };
   businessActivity: {
     value: string; // enum
     errors: unknown[];
