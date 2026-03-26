@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import { Control, useWatch } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
+import { useCompanyBusinessRegistryValidation } from '../../../../common/apiHooks';
 import { CompanyOnboardingFormData } from '../types';
 
 type RequirementsCheckStepProps = {
@@ -9,6 +10,7 @@ type RequirementsCheckStepProps = {
 
 export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control }) => {
   const registryCode = useWatch({ control, name: 'registryLookup.registryNumber' });
+  const { data } = useCompanyBusinessRegistryValidation(registryCode);
 
   return (
     <section className="d-flex flex-column gap-5 bg-light border border-gray-2 rounded rounded-4 p-4">
@@ -45,7 +47,7 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
             {' '}
             <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.label.companyAddress" />
           </div>
-          <div className="col-6">Value</div>
+          <div className="col-6">{data?.address.value}</div>
         </div>
         <div className="d-sm-flex gap-3 align-items-center">
           <div className="col-6 fw-bold">

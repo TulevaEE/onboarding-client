@@ -19,6 +19,7 @@ import {
   getCapitalRowsWithToken,
   getCapitalTotal,
   getCapitalTransferContract,
+  getCompanyBusinessRegistryValidation,
   getContributions,
   getFundPensionStatus,
   getFunds,
@@ -76,6 +77,7 @@ import {
   CreateCapitalTransferDto,
   UpdateCapitalTransferContractDto,
 } from './apiModels/capital-transfer';
+import { BusinessRegistryValidatedData } from './apiModels/savings-fund';
 import { OnboardingSurveyCommand } from '../flows/savingsAccount/SavingsFundOnboarding/types.api';
 
 export function usePendingApplications(): UseQueryResult<Application[]> {
@@ -165,6 +167,16 @@ export function useSourceFunds(fromDate?: string, toDate?: string): UseQueryResu
   return useQuery({
     queryKey: ['sourceFunds', fromDate, toDate],
     queryFn: () => getSourceFunds(fromDate, toDate),
+  });
+}
+
+export function useCompanyBusinessRegistryValidation(
+  registryCode: string,
+): UseQueryResult<BusinessRegistryValidatedData> {
+  return useQuery({
+    queryKey: ['companyBusinessRegistryValidation', registryCode],
+    queryFn: () => getCompanyBusinessRegistryValidation(registryCode),
+    enabled: !!registryCode,
   });
 }
 
