@@ -4,6 +4,8 @@
 TZ=UTC npx react-scripts test --watchAll=false --no-coverage --reporters=default --reporters=tdd-guard-jest --testPathPattern=<pattern>
 ```
 
+Running tests with tdd-guard-jest reporter is important so that tdd-guard gets accurate information about failing tests and allows coding agent to do changes.
+
 # React Testing Library Best Practices
 
 ## Core Principle

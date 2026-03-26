@@ -5,6 +5,7 @@ import type {
   InvestableAssetsOption,
   Address,
   SourceOfIncomeSurveyItem,
+  CompanySourceOfIncomeOption,
 } from './types.api';
 import { BusinessRegistryValidatedData } from '../../../common/apiModels/company-onboarding';
 
@@ -40,5 +41,5 @@ export interface CompanyOnboardingFormData extends SharedOnboardingFields {
         reuseBackendAddress: false;
         address: Address;
       };
-  sourceOfCompanyIncome: boolean;
+  sourceOfCompanyIncome: Record<CompanySourceOfIncomeOption, boolean>;
 }

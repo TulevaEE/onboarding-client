@@ -49,7 +49,11 @@ const CompanyInvestableAssetsStepWrapper = () => {
       companyAddress: { reuseBackendAddress: true },
       investmentGoals: null,
       investableAssets: null,
-      sourceOfCompanyIncome: false,
+      sourceOfCompanyIncome: {
+        OPERATING_ONLY_IN_ESTONIA: false,
+        NOT_SANCTIONED_AND_NOT_DOING_BUSINESS_WITH_SANCTIONED_COUNTRIES: false,
+        NOT_IN_CRYPTO: false,
+      },
       termsAccepted: false,
     },
   });

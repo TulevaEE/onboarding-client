@@ -17,6 +17,12 @@ export const SavingsFundCompanyOnboarding = () => {
     mode: 'onChange',
     defaultValues: {
       registryLookup: undefined,
+      companyValidatedData: undefined,
+      sourceOfCompanyIncome: {
+        OPERATING_ONLY_IN_ESTONIA: false,
+        NOT_SANCTIONED_AND_NOT_DOING_BUSINESS_WITH_SANCTIONED_COUNTRIES: false,
+        NOT_IN_CRYPTO: false,
+      },
     },
   });
 
@@ -47,7 +53,10 @@ export const SavingsFundCompanyOnboarding = () => {
       component: <InvestableAssetsStep key="investableAssets" control={control} />,
       fields: ['investableAssets'],
     },
-    { component: <CompanyIncomeSourceStep key="incomeSource" />, fields: [] },
+    {
+      component: <CompanyIncomeSourceStep key="incomeSource" control={control} />,
+      fields: ['sourceOfCompanyIncome'],
+    },
     { component: <TermsStep key="terms" control={control} />, fields: ['termsAccepted'] },
   ];
 
