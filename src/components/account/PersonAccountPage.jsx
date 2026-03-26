@@ -147,9 +147,9 @@ export function PersonAccountPage(
         )}
       </div>
 
-      <TransactionSection limit={3} />
-
       <ApplicationSection />
+
+      <TransactionSection limit={3} />
 
       {!loadingCurrentBalance && (
         <>

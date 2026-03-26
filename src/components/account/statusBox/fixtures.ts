@@ -258,8 +258,8 @@ export const additionalSavingsFund: FundBalance = {
     fundManager: {
       name: 'Tuleva',
     },
-    isin: 'EE0000000000',
-    name: 'Tuleva täiendav kogumisfond',
+    isin: 'EE0000003283',
+    name: 'Tuleva Täiendav Kogumisfond',
     managementFeeRate: 0.2,
     pillar: null,
     ongoingChargesFigure: 0.0049,

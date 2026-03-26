@@ -9,12 +9,13 @@ import {
   CapitalRow,
   Conversion,
   FundBalance,
+  Transaction,
   MemberCapitalListing,
   User,
   Role,
   MemberLookup,
   CapitalType,
-} from '../components/common/apiModels/index';
+} from '../components/common/apiModels';
 import { anAuthenticationManager } from '../components/common/authenticationManagerFixture';
 import { ReturnsResponse } from '../components/account/ComparisonCalculator/api';
 import {
@@ -540,8 +541,13 @@ export function applicationsBackend(
   );
 }
 
-export function transactionsBackend(server: SetupServerApi): void {
-  server.use(rest.get('http://localhost/v1/transactions', (req, res, ctx) => res(ctx.json([]))));
+export function transactionsBackend(
+  server: SetupServerApi,
+  transactions: Transaction[] = [],
+): void {
+  server.use(
+    rest.get('http://localhost/v1/transactions', (req, res, ctx) => res(ctx.json(transactions))),
+  );
 }
 
 export function paymentLinkBackend(server: SetupServerApi): void {
@@ -885,10 +891,13 @@ export function savingsFundOnboardingStatusBackend(server: SetupServerApi): void
   );
 }
 
-export function savingsAccountStatementBackend(server: SetupServerApi): void {
+export function savingsAccountStatementBackend(
+  server: SetupServerApi,
+  statement: FundBalance | null = null,
+): void {
   server.use(
     rest.get('http://localhost/v1/savings-account-statement', (req, res, ctx) =>
-      res(ctx.json(null)),
+      res(ctx.json(statement)),
     ),
   );
 }

@@ -73,11 +73,6 @@ const AccountStatement: React.FC<Props> = ({ funds }) => {
 
   const dataSource = sortedFunds.map((fund) => {
     const fundValue = fund.price + fund.unavailablePrice;
-    const isMuted = !fund.activeFund && fundValue === 0;
-    const className = isMuted ? 'text-body-secondary' : undefined;
-    const prefix = isMuted
-      ? formatMessage({ id: 'accountStatement.columns.fund.muted.prefix' })
-      : '';
     const suffix = fund.activeFund ? (
       <span
         className="ms-1 badge rounded-pill bg-blue-2 text-navy small fw-normal"
@@ -89,13 +84,13 @@ const AccountStatement: React.FC<Props> = ({ funds }) => {
     const feesEuro = -(fund.ongoingChargesFigure * fundValue);
     return {
       fund: (
-        <span className={className}>
-          {prefix} {fund.name} {suffix}
+        <span>
+          {fund.name} {suffix}
         </span>
       ),
       feesPercent: <Fees value={fund.ongoingChargesFigure} />,
       feesEuro: !feesEuro ? <></> : <Euro className="text-body-secondary" amount={feesEuro} />,
-      value: !fundValue ? <></> : <Euro className={className} amount={fundValue} />,
+      value: <Euro amount={fundValue} />,
       key: fund.isin,
     };
   });

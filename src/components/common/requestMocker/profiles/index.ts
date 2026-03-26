@@ -6,6 +6,8 @@ import { withdrawalsEligibilityProfiles } from './withdrawalsEligibility';
 import { conversionMockProfiles } from './conversion';
 import { memberCapitalProfiles } from './memberCapital';
 import { pendingApplicationsProfiles } from './pendingApplications';
+import { savingsFundBalanceProfiles } from './savingsFundBalance';
+import { transactionsProfiles } from './transactions';
 
 export const mockModeProfiles: Record<keyof MockModeConfiguration, Record<string, unknown>> = {
   withdrawalsEligibility: withdrawalsEligibilityProfiles,
@@ -15,6 +17,8 @@ export const mockModeProfiles: Record<keyof MockModeConfiguration, Record<string
   memberCapitalListings: memberCapitalListingsProfiles,
   pendingApplications: pendingApplicationsProfiles,
   fundPensionStatus: fundPensionStatusProfiles,
+  savingsFundBalance: savingsFundBalanceProfiles,
+  transactions: transactionsProfiles,
 } as const;
 
 export const getAllProfileNames = () =>
@@ -22,9 +26,3 @@ export const getAllProfileNames = () =>
 
 export const getProfileOptions = (key: keyof MockModeConfiguration) =>
   Object.keys(mockModeProfiles[key]);
-
-export const getAllProfileKeys = () => {
-  const profileSets = Object.values(mockModeProfiles);
-
-  return profileSets.map((profileSet) => Object.keys(profileSet));
-};

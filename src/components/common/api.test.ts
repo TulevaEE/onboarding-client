@@ -1260,5 +1260,28 @@ describe('API calls', () => {
         expect.stringContaining('/v1/savings-account-statement'),
       );
     });
+
+    it('returns fund with zero balance instead of null', async () => {
+      mockHttp.getWithAuthentication.mockResolvedValue({
+        ...mockSavingsAccountStatement,
+        value: 0,
+        unavailableValue: 0,
+        contributions: 0,
+        subtractions: 0,
+        profit: 0,
+        units: 0,
+      });
+
+      const savingsFundBalance = await getSavingsFundBalance();
+
+      expect(savingsFundBalance).not.toBeNull();
+      expect(savingsFundBalance).toEqual(
+        expect.objectContaining({
+          isin: 'EE0000000000',
+          price: 0,
+          unavailablePrice: 0,
+        }),
+      );
+    });
   });
 });

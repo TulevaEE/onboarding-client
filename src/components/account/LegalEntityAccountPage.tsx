@@ -1,10 +1,9 @@
 import { Link } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
-import { StatusBoxTitle } from './statusBox/StatusBoxTitle';
-import SavingsFundStatusBox from './statusBox/savingsFundStatusBox/SavingsFundStatusBox';
 import AccountStatement from './AccountStatement';
 import { SectionHeading } from './SectionHeading';
 import { TransactionSection } from './TransactionSection/TransactionSection';
+import { ApplicationSection } from './ApplicationSection/ApplicationSection';
 import { useMe, useSavingsFundBalance } from '../common/apiHooks';
 
 export function LegalEntityAccountPage() {
@@ -19,28 +18,19 @@ export function LegalEntityAccountPage() {
         </p>
       )}
 
-      <div className="mt-5">
-        <StatusBoxTitle />
-        <div className="card card-secondary">
-          <SavingsFundStatusBox last />
+      <SectionHeading titleId="accountStatement.savingsFund.heading">
+        <div className="d-flex flex-wrap column-gap-3 row-gap-2 align-items-baseline justify-content-between">
+          <Link to="/savings-fund/payment">
+            <FormattedMessage id="accountStatement.savingsFund.deposit" />
+          </Link>
+          <Link to="/savings-fund/withdraw">
+            <FormattedMessage id="accountStatement.savingsFund.withdraw" />
+          </Link>
         </div>
-      </div>
+      </SectionHeading>
+      <AccountStatement funds={savingsFundBalance ? [savingsFundBalance] : []} />
 
-      {savingsFundBalance && (
-        <>
-          <SectionHeading titleId="accountStatement.savingsFund.heading">
-            <div className="d-flex flex-wrap column-gap-3 row-gap-2 align-items-baseline justify-content-between">
-              <Link to="/savings-fund/payment">
-                <FormattedMessage id="accountStatement.savingsFund.deposit" />
-              </Link>
-              <Link to="/savings-fund/withdraw">
-                <FormattedMessage id="accountStatement.savingsFund.withdraw" />
-              </Link>
-            </div>
-          </SectionHeading>
-          <AccountStatement funds={[savingsFundBalance]} />
-        </>
-      )}
+      <ApplicationSection />
 
       <TransactionSection limit={3} allTransactionsPath="/savings-fund-transactions" />
     </section>

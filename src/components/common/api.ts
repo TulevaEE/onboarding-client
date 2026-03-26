@@ -458,7 +458,10 @@ export function getPendingApplications(): Promise<Application[]> {
 }
 
 export function getTransactions(): Promise<Transaction[]> {
-  return getWithAuthentication(getEndpoint('/v1/transactions'), undefined);
+  return mockRequestInMockMode(
+    () => getWithAuthentication(getEndpoint('/v1/transactions'), undefined),
+    'transactions',
+  );
 }
 
 export function getCapitalEvents(): Promise<CapitalEvent[]> {
@@ -540,19 +543,21 @@ function getWindow(paymentType: PaymentType): Window {
 }
 
 export async function getSavingsFundBalance(): Promise<SourceFund | null> {
-  try {
-    const fund = await getWithAuthentication<FundBalance>(
-      getEndpoint('/v1/savings-account-statement'),
-    );
+  return mockRequestInMockMode(async () => {
+    try {
+      const fund = await getWithAuthentication<FundBalance>(
+        getEndpoint('/v1/savings-account-statement'),
+      );
 
-    if (!fund || (fund.value === 0 && fund.unavailableValue === 0)) {
+      if (!fund) {
+        return null;
+      }
+
+      return transformFundBalance(fund);
+    } catch (error) {
       return null;
     }
-
-    return transformFundBalance(fund);
-  } catch (error) {
-    return null;
-  }
+  }, 'savingsFundBalance');
 }
 
 export async function getSavingsFundBankAccounts(): Promise<string[]> {

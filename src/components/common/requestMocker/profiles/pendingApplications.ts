@@ -376,4 +376,20 @@ export const pendingApplicationsProfiles: Record<string, Application[]> = {
       },
     },
   ],
+  SAVINGS_FUND: [
+    {
+      type: 'SAVING_FUND_PAYMENT',
+      id: 900001,
+      status: 'PENDING',
+      creationTime: moment().subtract(1, 'hours').toISOString(),
+      details: {
+        amount: 250,
+        currency: 'EUR',
+        paymentId: 'payment-sf-1',
+        cancellationDeadline: moment().add(7, 'days').toISOString(),
+        cancelledAt: null,
+        fulfillmentDeadline: moment().add(14, 'days').toISOString(),
+      },
+    },
+  ] as Application[],
 };

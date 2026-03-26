@@ -18,7 +18,7 @@ jest.mock('react-redux');
 describe('Transaction section', () => {
   const server = setupServer();
 
-  function initializeComponent() {
+  function initializeComponent(props: { limit?: number; pillar?: number | null } = {}) {
     render(
       <IntlProvider
         locale="en"
@@ -31,7 +31,7 @@ describe('Transaction section', () => {
       >
         <MemoryRouter>
           <QueryClientProvider client={new QueryClient()}>
-            <TransactionSection />
+            <TransactionSection {...props} />
           </QueryClientProvider>
         </MemoryRouter>
       </IntlProvider>,
@@ -61,10 +61,41 @@ describe('Transaction section', () => {
     expect(screen.queryByText('transactions.title')).not.toBeInTheDocument();
   });
 
+  it('does not render when transactions are empty and limit is set', async () => {
+    mockTransactions([]);
+    initializeComponent({ limit: 3 });
+    await waitForRequestToFinish();
+    expect(screen.queryByText('transactions.title')).not.toBeInTheDocument();
+  });
+
+  it('renders pillar page with navigation links even when transactions are empty', async () => {
+    mockTransactions([]);
+    initializeComponent({ pillar: 2 });
+    expect(await screen.findByText('transactions.title')).toBeInTheDocument();
+  });
+
   it('renders the title when there are transactions', async () => {
     mockTransactions([contribution]);
     initializeComponent();
     expect(await screen.findByText('transactions.title')).toBeInTheDocument();
+  });
+
+  it('hides type column for savings fund transactions', async () => {
+    mockTransactions([
+      {
+        id: 'sf-1',
+        amount: 100,
+        currency: 'EUR',
+        time: '2024-01-15T10:00:00Z',
+        isin: 'EE_SAVINGS',
+        type: 'CONTRIBUTION_CASH',
+        units: 89,
+        nav: 1.12,
+      },
+    ]);
+    initializeComponent();
+    expect(await screen.findByText('transactions.title')).toBeInTheDocument();
+    expect(screen.queryByText('transactions.columns.entity.title')).not.toBeInTheDocument();
   });
 
   function waitForRequestToFinish() {

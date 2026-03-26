@@ -87,4 +87,14 @@ export const userMockProfiles: Record<string, User> = {
     memberNumber: null,
     memberJoinDate: null,
   },
+  LEGAL_ENTITY: {
+    ...mockUser,
+    role: { type: 'LEGAL_ENTITY', code: '12345678', name: 'Test OÜ' },
+    secondPillarActive: false,
+    secondPillarOpenDate: null,
+    thirdPillarActive: false,
+    thirdPillarInitDate: null,
+    memberNumber: null,
+    memberJoinDate: null,
+  },
 } as const;

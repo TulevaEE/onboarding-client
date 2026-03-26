@@ -9,7 +9,7 @@ import Table from '../../common/table';
 import { Euro } from '../../common/Euro';
 import { Shimmer } from '../../common/shimmer/Shimmer';
 import { formatDate } from '../../common/dateFormatter';
-import { TableColumn } from '../../common/table/Table';
+import { Breakpoint, TableColumn } from '../../common/table/Table';
 import { getOtherTransactionPages } from './getOtherTransactionPages';
 
 export const TransactionSection: React.FunctionComponent<{
@@ -65,6 +65,8 @@ export const TransactionSection: React.FunctionComponent<{
 
   const amountSum = sumBy(fundTransactions, (transaction) => transaction.amount);
 
+  const hasPensionTransactions = fundTransactions.some((transaction) => transaction.pillar);
+
   const columns: TableColumn[] = [
     {
       title: <FormattedMessage id="transactions.columns.date.title" />,
@@ -72,12 +74,16 @@ export const TransactionSection: React.FunctionComponent<{
       align: 'right',
       ...(!limit && { footer: <FormattedMessage id="transactions.columns.date.footer" /> }),
     },
-    {
-      title: <FormattedMessage id="transactions.columns.entity.title" />,
-      dataIndex: 'type',
-      align: 'left',
-      hideOnBreakpoint: ['xs', 'sm'],
-    },
+    ...(hasPensionTransactions
+      ? [
+          {
+            title: <FormattedMessage id="transactions.columns.entity.title" />,
+            dataIndex: 'type',
+            align: 'left' as const,
+            hideOnBreakpoint: ['xs', 'sm'] as Breakpoint[],
+          },
+        ]
+      : []),
     {
       title: <FormattedMessage id="transactions.columns.fund.title" />,
       dataIndex: 'fund',
@@ -131,6 +137,10 @@ export const TransactionSection: React.FunctionComponent<{
 
   if (limit) {
     dataSource = dataSource.slice(0, limit);
+  }
+
+  if (!dataSource.length && limit) {
+    return <></>;
   }
 
   return (

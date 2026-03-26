@@ -81,22 +81,6 @@ describe('RoleSwitcher', () => {
     expect(itemNames).toContain('Test OÜ');
   });
 
-  it('highlights the current active role', async () => {
-    rolesBackend(server, multipleRoles);
-    userBackend(server, { role: personalRole });
-
-    renderRoleSwitcher();
-
-    const toggle = await screen.findByRole('button', { name: /John Doe/i });
-    userEvent.click(toggle);
-
-    const items = screen
-      .getAllByRole('button')
-      .filter((btn) => btn.classList.contains('dropdown-item'));
-    const activeItem = items.find((item) => item.classList.contains('active'));
-    expect(activeItem).toHaveTextContent('John Doe');
-  });
-
   it('closes the dropdown when clicking a role', async () => {
     setupSwitchFlow();
 
