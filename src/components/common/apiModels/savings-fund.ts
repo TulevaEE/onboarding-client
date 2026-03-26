@@ -27,11 +27,15 @@ export type BusinessRegistryValidatedData = {
   };
   legalForm: {
     value: string;
-    errors: [];
+    errors: unknown[];
   };
   naceCode: {
     value: string;
-    errors: [];
+    errors: unknown[];
+  };
+  foundingDate: {
+    value: string;
+    errors: unknown[];
   };
   relatedPersons: {
     value: [

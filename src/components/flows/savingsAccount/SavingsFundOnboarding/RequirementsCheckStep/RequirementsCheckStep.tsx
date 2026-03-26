@@ -3,6 +3,7 @@ import { FC } from 'react';
 import { Control, useWatch } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 import { useCompanyBusinessRegistryValidation } from '../../../../common/apiHooks';
+import { formatDateYear } from '../../../../common/dateFormatter';
 import { Shimmer } from '../../../../common/shimmer/Shimmer';
 import { CompanyOnboardingFormData } from '../types';
 
@@ -42,7 +43,9 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
           <div className="half-column fw-bold">
             <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.label.foundingDate" />
           </div>
-          <div className="half-column">Value</div>
+          <div className="half-column">
+            {!isLoading && data ? formatDateYear(data.foundingDate.value) : <Shimmer />}
+          </div>
         </div>
         <div className="d-sm-flex gap-3 align-items-center">
           <div className="half-column fw-bold">

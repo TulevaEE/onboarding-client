@@ -43,6 +43,10 @@ const validatedCompany: BusinessRegistryValidatedData = {
     value: '62.02',
     errors: [],
   },
+  foundingDate: {
+    value: '2026-02-15',
+    errors: [],
+  },
   relatedPersons: {
     value: [
       {
@@ -173,6 +177,16 @@ describe('RequirementsCheckStep', () => {
     expect(await screen.findByText('Arvutialased konsultatsioonid (62.02)')).toBeInTheDocument();
   });
 
+  it('renders founding date from business registry validation', async () => {
+    renderWrapped(
+      <RequirementsCheckStepWrapper
+        defaultValues={{ registryNumber: '11223344', registryName: 'Test OÜ' }}
+      />,
+    );
+
+    expect(await screen.findByText('February 15, 2026')).toBeInTheDocument();
+  });
+
   it('renders shimmer while loading backend data', () => {
     server.use(
       rest.get('http://localhost/v1/kyb/surveys/initial-validation', (_req, res, ctx) =>
@@ -187,6 +201,6 @@ describe('RequirementsCheckStep', () => {
     );
 
     // eslint-disable-next-line testing-library/no-node-access
-    expect(document.querySelectorAll('.shimmerDefault')).toHaveLength(2);
+    expect(document.querySelectorAll('.shimmerDefault')).toHaveLength(3);
   });
 });
