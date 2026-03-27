@@ -36,11 +36,6 @@ export type BusinessRegistryValidatedData = {
       {
         personalCode: string;
         name: string;
-        boardMember: boolean;
-        shareholder: boolean;
-        beneficialOwner: boolean;
-        ownershipPercent: number | null;
-        kycStatus: string; // enum
       },
     ];
     errors: unknown[];

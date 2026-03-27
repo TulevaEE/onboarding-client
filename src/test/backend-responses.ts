@@ -211,11 +211,6 @@ export const mockValidatedCompany: BusinessRegistryValidatedData = {
       {
         personalCode: '40404049996',
         name: 'Person McPerson',
-        boardMember: false,
-        shareholder: false,
-        beneficialOwner: false,
-        ownershipPercent: null,
-        kycStatus: 'UNKNOWN',
       },
     ],
     errors: [],

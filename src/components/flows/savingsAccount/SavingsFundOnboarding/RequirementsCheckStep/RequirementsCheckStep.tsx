@@ -98,7 +98,13 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
               </div>
             </div>
             <div className="border-top border-gray-2" />
-            <div className="d-flex">Members here</div>
+            {isSuccess &&
+              data?.relatedPersons.value.map((person) => (
+                <div key={person.personalCode} className="d-sm-flex gap-3 align-items-center">
+                  <div className="half-column fw-bold">{person.name}</div>
+                  <div className="half-column">{person.personalCode}</div>
+                </div>
+              ))}
           </>
         )}
         {isNotBoardMember && (
