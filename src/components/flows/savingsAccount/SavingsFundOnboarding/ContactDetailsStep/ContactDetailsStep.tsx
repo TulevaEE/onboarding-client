@@ -11,7 +11,7 @@ export const ContactDetailsStep: FC<ContactDetailsStepProps> = ({ control }) => 
 
   return (
     <section className="d-flex flex-column gap-4" key="contacts">
-      <div className="section-header d-flex flex-column gap-1">
+      <div className="d-flex flex-column gap-1">
         <h2 className="m-0">
           <FormattedMessage id="flows.savingsFundOnboarding.contactDetailsStep.title" />
         </h2>

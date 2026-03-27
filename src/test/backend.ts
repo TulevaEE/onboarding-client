@@ -35,6 +35,7 @@ import {
   mockSecondPillarConversion,
   mockThirdPillarConversion,
   mockUser,
+  mockValidatedCompany,
   secondPillarPaymentRateChangeResponse,
 } from './backend-responses';
 import {
@@ -902,6 +903,22 @@ export function savingsAccountStatementBackend(
   );
 }
 
+export function businessRegistryBackend(server: SetupServerApi, data: unknown[] = []): void {
+  server.use(
+    rest.get('https://ariregister.rik.ee/est/api/autocomplete', (_req, res, ctx) =>
+      res(ctx.json({ data })),
+    ),
+  );
+}
+
+export function companyValidationBackend(server: SetupServerApi): void {
+  server.use(
+    rest.get('http://localhost/v1/kyb/surveys/initial-validation', (_req, res, ctx) =>
+      res(ctx.json(mockValidatedCompany)),
+    ),
+  );
+}
+
 const TEST_BACKENDS = {
   cancellation: cancellationBackend,
   mandatePreview: mandatePreviewBackend,
@@ -934,6 +951,8 @@ const TEST_BACKENDS = {
   roles: rolesBackend,
   switchRole: switchRoleBackend,
   contributions: contributionsBackend,
+  businessRegistry: businessRegistryBackend,
+  companyValidation: companyValidationBackend,
 } as const;
 
 export type TestBackendName = keyof typeof TEST_BACKENDS;

@@ -9,6 +9,7 @@ import {
   MobileSignatureStatusResponse,
   User,
 } from '../components/common/apiModels';
+import { BusinessRegistryValidatedData } from '../components/common/apiModels/company-onboarding';
 import { SecondPillarPaymentRateChangeMandate } from '../components/flows/secondPillarPaymentRate/types';
 
 export const authErrorResponse = {
@@ -186,6 +187,40 @@ export const capitalRowsResponse: CapitalRow[] = [
     unitCount: 1,
   },
 ];
+
+export const mockValidatedCompany: BusinessRegistryValidatedData = {
+  name: { value: 'Acme Corp', errors: [] },
+  registryCode: { value: '12345678', errors: [] },
+  legalForm: { value: 'OÜ', errors: [] },
+  status: { value: 'REGISTERED', errors: [] },
+  address: {
+    value: {
+      fullAddress: 'Telliskivi 60/1, 10412 Tallinn',
+      street: 'Telliskivi 60/1',
+      city: 'Tallinn',
+      postalCode: '10412',
+      countryCode: 'EST',
+    },
+    errors: [],
+  },
+  businessActivity: { value: 'Arvutialased konsultatsioonid', errors: [] },
+  naceCode: { value: '62.02', errors: [] },
+  foundingDate: { value: '2026-02-15', errors: [] },
+  relatedPersons: {
+    value: [
+      {
+        personalCode: '40404049996',
+        name: 'Person McPerson',
+        boardMember: false,
+        shareholder: false,
+        beneficialOwner: false,
+        ownershipPercent: null,
+        kycStatus: 'UNKNOWN',
+      },
+    ],
+    errors: [],
+  },
+};
 
 export const mandateDeadlinesResponse: MandateDeadlines = {
   periodEnding: '2024-03-31T20:59:59.999999999Z',

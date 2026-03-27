@@ -54,7 +54,7 @@ export const InvestableAssetsStep = <T extends SharedOnboardingFields = SharedOn
   const intl = useIntl();
   return (
     <section className="d-flex flex-column gap-4" key="investment-assets">
-      <div className="section-header d-flex flex-column gap-1">
+      <div className="d-flex flex-column gap-1">
         <h2 className="m-0">
           <FormattedMessage id="flows.savingsFundOnboarding.investableAssetsStep.title" />
         </h2>

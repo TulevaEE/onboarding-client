@@ -1279,12 +1279,21 @@
 
   "flows.savingsFundOnboarding.businessValidationStep.title": "Ettevõtte andmed",
   "flows.savingsFundOnboarding.businessValidationStep.description": "Kui siinne info ei vasta tõele, tuleb andmeid uuendada äriregistris.",
+  "flows.savingsFundOnboarding.businessValidationStep.label.companyName": "Ettevõtte nimi",
+  "flows.savingsFundOnboarding.businessValidationStep.label.registryCode": "Registrikood",
+  "flows.savingsFundOnboarding.businessValidationStep.label.foundingDate": "Asutamise kuupäev",
+  "flows.savingsFundOnboarding.businessValidationStep.label.companyAddress": "Aadress",
+  "flows.savingsFundOnboarding.businessValidationStep.label.activityArea": "Põhitegevusala",
 
   "flows.savingsFundOnboarding.companyAddressStep.title": "Kust sinu ettevõte opereerib?",
   "flows.savingsFundOnboarding.companyAddressStep.description": "Kinnitage või sisestage oma ettevõtte aadress. TODO",
 
   "flows.savingsFundOnboarding.companyIncomeSourceStep.title": "Sissetulekuallikad",
   "flows.savingsFundOnboarding.companyIncomeSourceStep.description": "Kinnitan, et",
+  "flows.savingsFundOnboarding.companyIncomeSourceStep.onlyActiveInEstonia": "Ettevõte tegutseb ainult Eestis",
+  "flows.savingsFundOnboarding.companyIncomeSourceStep.notSanctioned": "Pole sanktsioneeritud ega tee äri sanktsioneeritud riikide suunal",
+  "flows.savingsFundOnboarding.companyIncomeSourceStep.notInCrypto": "Ei tegutse krüptoäris",
+  "flows.savingsFundOnboarding.companyIncomeSourceStep.error": "Jätkamiseks peate hetkel kõigile tingimustele vastama",
 
   "flows.savingsFundOnboarding.residencyStep.title": "Sinu alaline elukoht",
   "flows.savingsFundOnboarding.residencyStep.country.label": "Riik",

@@ -105,7 +105,7 @@ export const IncomeSourcesStep: FC<IncomeSourcesStepProps> = ({ control }) => {
 
   return (
     <section className="d-flex flex-column gap-4" key="income-sources">
-      <div className="section-header d-flex flex-column gap-1">
+      <div className="d-flex flex-column gap-1">
         <h2 className="m-0">
           <FormattedMessage id="flows.savingsFundOnboarding.incomeSourcesStep.title" />
         </h2>

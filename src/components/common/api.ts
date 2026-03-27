@@ -62,7 +62,11 @@ import {
   UpdateCapitalTransferContractDto,
 } from './apiModels/capital-transfer';
 import { SavingsFundWithdrawal } from './apiModels/savings-fund';
-import { OnboardingSurveyCommand } from '../flows/savingsAccount/SavingsFundOnboarding/types.api';
+import { BusinessRegistryValidatedData } from './apiModels/company-onboarding';
+import {
+  CompanyOnboardingSurveyCommand,
+  OnboardingSurveyCommand,
+} from '../flows/savingsAccount/SavingsFundOnboarding/types.api';
 
 const API_URI = '/api';
 
@@ -246,6 +250,32 @@ export function getSavingsFundOnboardingStatus(): Promise<SavingsFundOnboardingS
 
 export function postSavingsFundOnboardingSurvey(command: OnboardingSurveyCommand): Promise<void> {
   return postWithAuthentication(getEndpoint('/v1/kyc/surveys'), command);
+}
+
+export function getSavingsFundCompanyOnboardingStatus(
+  registryCode: string,
+): Promise<SavingsFundOnboardingStatus> {
+  return getWithAuthentication(
+    getEndpoint(`/v1/savings/onboarding/status/legal-entity?registry-code=${registryCode}`),
+  );
+}
+
+export function postSavingsFundCompanyOnboardingSurvey(
+  command: CompanyOnboardingSurveyCommand,
+  registryCode: string,
+): Promise<void> {
+  return postWithAuthentication(
+    getEndpoint(`/v1/kyb/surveys?registry-code=${registryCode}`),
+    command,
+  );
+}
+
+export function getCompanyBusinessRegistryValidation(
+  companyRegistryCode: string,
+): Promise<BusinessRegistryValidatedData> {
+  return getWithAuthentication(
+    getEndpoint(`/v1/kyb/surveys/initial-validation?registry-code=${companyRegistryCode}`),
+  );
 }
 
 export function createMandateBatch(

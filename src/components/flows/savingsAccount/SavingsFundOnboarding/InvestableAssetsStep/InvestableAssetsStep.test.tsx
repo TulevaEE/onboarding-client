@@ -45,11 +45,15 @@ const CompanyInvestableAssetsStepWrapper = () => {
     mode: 'onBlur',
     defaultValues: {
       registryLookup: undefined,
-      requirementsBackendCheck: false,
+      companyValidatedData: undefined,
       companyAddress: { reuseBackendAddress: true },
       investmentGoals: null,
       investableAssets: null,
-      sourceOfCompanyIncome: false,
+      sourceOfCompanyIncome: {
+        ONLY_ACTIVE_IN_ESTONIA: false,
+        NOT_SANCTIONED_NOT_PROFITING_FROM_SANCTIONED_COUNTRIES: false,
+        NOT_IN_CRYPTO: false,
+      },
       termsAccepted: false,
     },
   });

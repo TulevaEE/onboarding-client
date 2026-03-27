@@ -19,6 +19,7 @@ import {
   getCapitalRowsWithToken,
   getCapitalTotal,
   getCapitalTransferContract,
+  getCompanyBusinessRegistryValidation,
   getContributions,
   getFundPensionStatus,
   getFunds,
@@ -29,6 +30,7 @@ import {
   getPendingApplications,
   getSavingsFundBalance,
   getSavingsFundBankAccounts,
+  getSavingsFundCompanyOnboardingStatus,
   getSavingsFundOnboardingStatus,
   getSourceFunds,
   getTransactions,
@@ -37,6 +39,7 @@ import {
   switchRole,
   getUserWithToken,
   getWithdrawalsEligibility,
+  postSavingsFundCompanyOnboardingSurvey,
   postSavingsFundOnboardingSurvey,
   previewMessageForMemberCapitalListing,
   updateCapitalTransferContract,
@@ -76,7 +79,11 @@ import {
   CreateCapitalTransferDto,
   UpdateCapitalTransferContractDto,
 } from './apiModels/capital-transfer';
-import { OnboardingSurveyCommand } from '../flows/savingsAccount/SavingsFundOnboarding/types.api';
+import { BusinessRegistryValidatedData } from './apiModels/company-onboarding';
+import {
+  CompanyOnboardingSurveyCommand,
+  OnboardingSurveyCommand,
+} from '../flows/savingsAccount/SavingsFundOnboarding/types.api';
 
 export function usePendingApplications(): UseQueryResult<Application[]> {
   return useQuery({ queryKey: ['pendingApplications'], queryFn: () => getPendingApplications() });
@@ -168,6 +175,16 @@ export function useSourceFunds(fromDate?: string, toDate?: string): UseQueryResu
   });
 }
 
+export function useCompanyBusinessRegistryValidation(
+  registryCode: string,
+): UseQueryResult<BusinessRegistryValidatedData> {
+  return useQuery({
+    queryKey: ['companyBusinessRegistryValidation', registryCode],
+    queryFn: () => getCompanyBusinessRegistryValidation(registryCode),
+    enabled: !!registryCode,
+  });
+}
+
 export function useSavingsFundOnboardingStatus(): UseQueryResult<SavingsFundOnboardingStatus> {
   return useQuery({
     queryKey: ['savingsFundOnboardingStatus'],
@@ -254,6 +271,28 @@ export function useCreateMemberCapitalListing(): UseMutationResult<
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['memberCapitalListings'] });
     },
+  });
+}
+
+export function useSavingsFundCompanyOnboardingStatus(
+  registryCode: string | undefined,
+): UseQueryResult<SavingsFundOnboardingStatus> {
+  return useQuery({
+    queryKey: ['savingsFundCompanyOnboardingStatus'],
+    queryFn: () => getSavingsFundCompanyOnboardingStatus(registryCode ?? ''),
+    enabled: Boolean(registryCode),
+  });
+}
+
+export function useSubmitSavingsFundCompanyOnboardingSurvey(): UseMutationResult<
+  void,
+  ErrorResponse,
+  { command: CompanyOnboardingSurveyCommand; registryCode: string },
+  unknown
+> {
+  return useMutation({
+    mutationFn: ({ command, registryCode }) =>
+      postSavingsFundCompanyOnboardingSurvey(command, registryCode),
   });
 }
 

@@ -5,7 +5,9 @@ import type {
   InvestableAssetsOption,
   Address,
   SourceOfIncomeSurveyItem,
+  CompanySourceOfIncomeOption,
 } from './types.api';
+import { BusinessRegistryValidatedData } from '../../../common/apiModels/company-onboarding';
 
 export interface SharedOnboardingFields {
   investmentGoals:
@@ -30,7 +32,7 @@ export interface CompanyOnboardingFormData extends SharedOnboardingFields {
     registryNumber: string;
     registryName: string;
   };
-  requirementsBackendCheck: boolean;
+  companyValidatedData?: BusinessRegistryValidatedData;
   companyAddress:
     | {
         reuseBackendAddress: true;
@@ -39,5 +41,5 @@ export interface CompanyOnboardingFormData extends SharedOnboardingFields {
         reuseBackendAddress: false;
         address: Address;
       };
-  sourceOfCompanyIncome: boolean;
+  sourceOfCompanyIncome: Record<CompanySourceOfIncomeOption, boolean>;
 }
