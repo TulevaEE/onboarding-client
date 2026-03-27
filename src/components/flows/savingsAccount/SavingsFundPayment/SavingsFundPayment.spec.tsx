@@ -1,14 +1,17 @@
 import { Route } from 'react-router-dom';
 import { setupServer } from 'msw/node';
 import { createMemoryHistory, History } from 'history';
-import { rest } from 'msw';
-import { screen, waitFor } from '@testing-library/react';
+import { cleanup, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SavingsFundPayment } from './SavingsFundPayment';
 import { createDefaultStore, login, renderWrapped } from '../../../../test/utils';
 import LoggedInApp from '../../../LoggedInApp';
 import { initializeConfiguration } from '../../../config/config';
-import { useTestBackends } from '../../../../test/backend';
+import {
+  savingsFundOnboardingStatusBackend,
+  useTestBackends,
+  userBackend,
+} from '../../../../test/backend';
 
 describe(SavingsFundPayment, () => {
   const server = setupServer();
@@ -28,25 +31,22 @@ describe(SavingsFundPayment, () => {
     renderWrapped(<Route path="" component={LoggedInApp} />, history as any, store);
   };
 
+  const findPageHeading = () =>
+    screen.findByRole('heading', { name: 'Deposit to additional savings fund' });
+
   beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
   afterEach(() => server.resetHandlers());
   afterAll(() => server.close());
   beforeEach(async () => {
     initializeConfiguration();
     useTestBackends(server);
-    server.use(
-      rest.get('http://localhost/v1/savings/onboarding/status', (req, res, ctx) =>
-        res(ctx.json({ status: 'COMPLETED' })),
-      ),
-    );
+    savingsFundOnboardingStatusBackend(server, 'COMPLETED');
     initApp();
     history.push('/savings-fund/payment');
   });
 
   it('validates the deposit amount and bank selection', async () => {
-    expect(
-      await screen.findByRole('heading', { name: 'Deposit to additional savings fund' }),
-    ).toBeInTheDocument();
+    expect(await findPageHeading()).toBeInTheDocument();
 
     const amountInput = screen.getByRole('textbox', { name: 'Amount' });
     const submitButton = screen.getByRole('button', { name: 'Continue' });
@@ -79,9 +79,7 @@ describe(SavingsFundPayment, () => {
   });
 
   it('lets user select a bank and start the payment', async () => {
-    expect(
-      await screen.findByRole('heading', { name: 'Deposit to additional savings fund' }),
-    ).toBeInTheDocument();
+    expect(await findPageHeading()).toBeInTheDocument();
 
     const amountInput = screen.getByRole('textbox', { name: 'Amount' });
     const submitButton = screen.getByRole('button', { name: 'Continue' });
@@ -101,9 +99,7 @@ describe(SavingsFundPayment, () => {
   });
 
   it('shows "Other bank" option and displays payment details when selected', async () => {
-    expect(
-      await screen.findByRole('heading', { name: 'Deposit to additional savings fund' }),
-    ).toBeInTheDocument();
+    expect(await findPageHeading()).toBeInTheDocument();
 
     const otherBankRadio = screen.getByRole('radio', { name: 'Other bank' });
     userEvent.click(otherBankRadio);
@@ -116,9 +112,7 @@ describe(SavingsFundPayment, () => {
   });
 
   it('shows "Back to account page" link when "Other bank" is selected', async () => {
-    expect(
-      await screen.findByRole('heading', { name: 'Deposit to additional savings fund' }),
-    ).toBeInTheDocument();
+    expect(await findPageHeading()).toBeInTheDocument();
 
     const otherBankRadio = screen.getByRole('radio', { name: 'Other bank' });
     userEvent.click(otherBankRadio);
@@ -132,9 +126,7 @@ describe(SavingsFundPayment, () => {
   });
 
   it('shows amount in payment details when "Other bank" is selected', async () => {
-    expect(
-      await screen.findByRole('heading', { name: 'Deposit to additional savings fund' }),
-    ).toBeInTheDocument();
+    expect(await findPageHeading()).toBeInTheDocument();
 
     const amountInput = screen.getByRole('textbox', { name: 'Amount' });
     userEvent.type(amountInput, '250');
@@ -146,9 +138,7 @@ describe(SavingsFundPayment, () => {
   });
 
   it('hides bank selection and shows manual payment details when amount is 15000 or more', async () => {
-    expect(
-      await screen.findByRole('heading', { name: 'Deposit to additional savings fund' }),
-    ).toBeInTheDocument();
+    expect(await findPageHeading()).toBeInTheDocument();
 
     const amountInput = screen.getByRole('textbox', { name: 'Amount' });
     userEvent.type(amountInput, '15000');
@@ -163,9 +153,7 @@ describe(SavingsFundPayment, () => {
   });
 
   it('shows "Back to account page" link when amount is 15000 or more', async () => {
-    expect(
-      await screen.findByRole('heading', { name: 'Deposit to additional savings fund' }),
-    ).toBeInTheDocument();
+    expect(await findPageHeading()).toBeInTheDocument();
 
     const amountInput = screen.getByRole('textbox', { name: 'Amount' });
     userEvent.type(amountInput, '15000');
@@ -179,9 +167,7 @@ describe(SavingsFundPayment, () => {
   });
 
   it('shows bank selection when amount is below 15000', async () => {
-    expect(
-      await screen.findByRole('heading', { name: 'Deposit to additional savings fund' }),
-    ).toBeInTheDocument();
+    expect(await findPageHeading()).toBeInTheDocument();
 
     const amountInput = screen.getByRole('textbox', { name: 'Amount' });
     userEvent.type(amountInput, '14999');
@@ -189,5 +175,27 @@ describe(SavingsFundPayment, () => {
     expect(screen.getByRole('radio', { name: 'LHV' })).toBeInTheDocument();
     expect(screen.getByRole('radio', { name: 'Other bank' })).toBeInTheDocument();
     expect(screen.queryByText('Make a deposit from another bank')).not.toBeInTheDocument();
+  });
+
+  describe('when acting as a company', () => {
+    beforeEach(async () => {
+      cleanup();
+      userBackend(server, {
+        role: { type: 'LEGAL_ENTITY', code: '12345678', name: 'Test Company OÜ' },
+      });
+
+      initApp();
+      history.push('/savings-fund/payment');
+    });
+
+    it('shows registry code in other bank payment details', async () => {
+      expect(await findPageHeading()).toBeInTheDocument();
+
+      const otherBankRadio = screen.getByRole('radio', { name: 'Other bank' });
+      userEvent.click(otherBankRadio);
+
+      expect(await screen.findByText('Make a deposit from another bank')).toBeInTheDocument();
+      expect(screen.getByText('12345678')).toBeInTheDocument();
+    });
   });
 });

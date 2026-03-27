@@ -884,10 +884,13 @@ export function contributionsBackend(server: SetupServerApi): void {
   server.use(rest.get('http://localhost/v1/contributions', (req, res, ctx) => res(ctx.json([]))));
 }
 
-export function savingsFundOnboardingStatusBackend(server: SetupServerApi): void {
+export function savingsFundOnboardingStatusBackend(
+  server: SetupServerApi,
+  status: string | null = null,
+): void {
   server.use(
     rest.get('http://localhost/v1/savings/onboarding/status', (req, res, ctx) =>
-      res(ctx.json({ status: null })),
+      res(ctx.json({ status })),
     ),
   );
 }

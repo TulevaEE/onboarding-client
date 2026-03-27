@@ -51,7 +51,7 @@ export const SavingsFundPayment: FC = () => {
     try {
       setSubmitError(false);
       await redirectToPayment({
-        recipientPersonalCode: user.personalCode,
+        recipientPersonalCode: user.role.code,
         amount: data.amount,
         currency: 'EUR',
         type: 'SAVINGS',
@@ -130,7 +130,7 @@ export const SavingsFundPayment: FC = () => {
           {showManualPayment && (
             <SavingsFundOtherBankDetails
               amount={amount}
-              personalCode={user.personalCode}
+              personalCode={user.role.code}
               titleId={
                 isOverMaxAmount
                   ? 'savingsFund.payment.manualTransfer.title'
