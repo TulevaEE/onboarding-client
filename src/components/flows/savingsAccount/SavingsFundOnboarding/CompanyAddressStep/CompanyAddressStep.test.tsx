@@ -1,11 +1,9 @@
 import { screen } from '@testing-library/react';
 import { useForm } from 'react-hook-form';
-import { IntlProvider } from 'react-intl';
 import { renderWrapped } from '../../../../../test/utils';
 import { mockValidatedCompany } from '../../../../../test/backend-responses';
 import { CompanyAddressStep } from './CompanyAddressStep';
 import { CompanyOnboardingFormData } from '../types';
-import translations from '../../../../translations';
 
 const CompanyAddressStepWrapper = () => {
   const { control } = useForm<CompanyOnboardingFormData>({
@@ -25,13 +23,7 @@ const CompanyAddressStepWrapper = () => {
     },
   });
 
-  return (
-    <IntlProvider locale="en" messages={translations.en}>
-      <form>
-        <CompanyAddressStep control={control} />
-      </form>
-    </IntlProvider>
-  );
+  return <CompanyAddressStep control={control} />;
 };
 
 describe('CompanyAddressStep', () => {
