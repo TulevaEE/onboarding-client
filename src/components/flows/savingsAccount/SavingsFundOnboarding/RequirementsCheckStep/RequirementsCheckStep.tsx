@@ -98,16 +98,21 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
               </div>
             </div>
             <div className="border-top border-gray-2" />
-            {isSuccess && data ? (
-              data.relatedPersons.value.map((person) => (
-                <div key={person.personalCode} className="d-sm-flex gap-3 align-items-center">
-                  <div className="half-column fw-bold">{person.name}</div>
-                  <div className="half-column">{person.personalCode}</div>
-                </div>
-              ))
-            ) : (
-              <Shimmer />
-            )}
+            <div className="d-sm-grid flex-wrap gap-3 half-column-grid">
+              {isSuccess && data ? (
+                data.relatedPersons.value.map((person) => (
+                  <div key={person.personalCode} className="d-flex flex-column gap-1">
+                    <div className="fw-bold">Seotud isik</div>
+                    <div>
+                      <div className="fs-3">{person.name}</div>
+                      <div>{person.personalCode}</div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <Shimmer />
+              )}
+            </div>
           </>
         )}
         {isNotBoardMember && (
