@@ -1286,7 +1286,8 @@
   "flows.savingsFundOnboarding.businessValidationStep.label.activityArea": "Põhitegevusala",
 
   "flows.savingsFundOnboarding.companyAddressStep.title": "Kust sinu ettevõte opereerib?",
-  "flows.savingsFundOnboarding.companyAddressStep.description": "Kinnitage või sisestage oma ettevõtte aadress. TODO",
+  "flows.savingsFundOnboarding.companyAddressStep.description": "Kui siinne info ei vasta tõele, tuleb andmeid uuendada äriregistris.",
+  "flows.savingsFundOnboarding.companyAddressStep.reUseAddress": "Samal addressil, mis äriregistris",
 
   "flows.savingsFundOnboarding.companyIncomeSourceStep.title": "Sissetulekuallikad",
   "flows.savingsFundOnboarding.companyIncomeSourceStep.description": "Kinnitan, et",

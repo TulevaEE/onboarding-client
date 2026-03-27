@@ -1197,7 +1197,8 @@
   "flows.savingsFundOnboarding.businessValidationStep.label.activityArea": "Primary company activity area",
 
   "flows.savingsFundOnboarding.companyAddressStep.title": "Where does your company operate from?",
-  "flows.savingsFundOnboarding.companyAddressStep.description": "Confirm or enter your company's address. TODO",
+  "flows.savingsFundOnboarding.companyAddressStep.description": "If the information here is incorrect, the data must be updated in the business registry.",
+  "flows.savingsFundOnboarding.companyAddressStep.reUseAddress": "Same address as in business registry",
 
   "flows.savingsFundOnboarding.companyIncomeSourceStep.title": "Sources of income",
   "flows.savingsFundOnboarding.companyIncomeSourceStep.description": "I confirm that",

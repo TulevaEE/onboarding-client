@@ -70,7 +70,10 @@ export const SavingsFundCompanyOnboarding = () => {
       component: <RequirementsCheckStep key="requirements" control={control} />,
       fields: ['companyValidatedData'],
     },
-    { component: <CompanyAddressStep key="address" />, fields: [] },
+    {
+      component: <CompanyAddressStep key="address" control={control} />,
+      fields: ['companyAddress'],
+    },
     {
       component: (
         <InvestmentGoalStep
