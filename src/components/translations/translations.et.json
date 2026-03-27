@@ -1285,6 +1285,7 @@
   "flows.savingsFundOnboarding.businessValidationStep.label.companyAddress": "Aadress",
   "flows.savingsFundOnboarding.businessValidationStep.label.activityArea": "Põhitegevusala",
   "flows.savingsFundOnboarding.businessValidationStep.error.notBoardMember": "Te ei ole selle ettevõtte juhatuse liige. Ainult juhatuse liikmed saavad jätkata.",
+  "flows.savingsFundOnboarding.businessValidationStep.error.notFitting": "Teie ettevõtte ei vasta hetkel meie reeglitele",
 
   "flows.savingsFundOnboarding.companyAddressStep.title": "Kust sinu ettevõte opereerib?",
   "flows.savingsFundOnboarding.companyAddressStep.description": "Kui siinne info ei vasta tõele, tuleb andmeid uuendada äriregistris.",

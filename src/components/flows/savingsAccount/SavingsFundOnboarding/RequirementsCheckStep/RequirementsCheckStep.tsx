@@ -6,6 +6,7 @@ import { useCompanyBusinessRegistryValidation } from '../../../../common/apiHook
 import { formatDateYear } from '../../../../common/dateFormatter';
 import { Shimmer } from '../../../../common/shimmer/Shimmer';
 import { CompanyOnboardingFormData } from '../types';
+import { collectValidationErrors } from './collectValidationErrors';
 import { hasNoValidationErrors } from './hasNoValidationErrors';
 
 type RequirementsCheckStepProps = {
@@ -68,37 +69,61 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
           <div className="half-column">{registryCode}</div>
         </div>
         {!isError && (
-          <div className="d-sm-flex gap-3 align-items-center">
-            <div className="half-column fw-bold">
-              <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.label.foundingDate" />
+          <>
+            <div className="d-sm-flex gap-3 align-items-center">
+              <div className="half-column fw-bold">
+                <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.label.foundingDate" />
+              </div>
+              <div className="half-column">
+                {isSuccess && data ? formatDateYear(data.foundingDate.value) : <Shimmer />}
+              </div>
             </div>
-            <div className="half-column">
-              {isSuccess && data ? formatDateYear(data.foundingDate.value) : <Shimmer />}
+            <div className="d-sm-flex gap-3 align-items-center">
+              <div className="half-column fw-bold">
+                <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.label.companyAddress" />
+              </div>
+              <div className="half-column">
+                {isSuccess && data ? data.address.value.fullAddress : <Shimmer />}
+              </div>
             </div>
-          </div>
-        )}
-        {!isError && (
-          <div className="d-sm-flex gap-3 align-items-center">
-            <div className="half-column fw-bold">
-              <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.label.companyAddress" />
+            <div className="d-sm-flex gap-3 align-items-center">
+              <div className="half-column fw-bold">
+                <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.label.activityArea" />
+              </div>
+              <div className="half-column">
+                {isSuccess && data ? (
+                  `${data.businessActivity.value} (${data.naceCode.value})`
+                ) : (
+                  <Shimmer />
+                )}
+              </div>
             </div>
-            <div className="half-column">
-              {isSuccess && data ? data.address.value.fullAddress : <Shimmer />}
-            </div>
-          </div>
-        )}
-        {!isError && (
-          <div className="d-sm-flex gap-3 align-items-center">
-            <div className="half-column fw-bold">
-              <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.label.activityArea" />
-            </div>
-            <div className="half-column">
+            <div className="border-top border-gray-2" />
+            <div className="d-flex flex-column d-sm-grid flex-wrap gap-3 half-column-grid">
               {isSuccess && data ? (
-                `${data.businessActivity.value} (${data.naceCode.value})`
+                data.relatedPersons.value.map((person) => (
+                  <div key={person.personalCode} className="d-flex flex-column gap-1">
+                    <div className="fw-bold">Seotud isik</div>
+                    <div>
+                      <div className="fs-3">{person.name}</div>
+                      <div>{person.personalCode}</div>
+                    </div>
+                  </div>
+                ))
               ) : (
                 <Shimmer />
               )}
             </div>
+          </>
+        )}
+        {isSuccess && data && !hasNoValidationErrors(data) && (
+          <div className="alert alert-danger m-0" role="alert">
+            <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.error.notFitting" />
+            <ul className="m-0">
+              {collectValidationErrors(data).map((validationError) => (
+                <li key={String(validationError)}>{String(validationError)}</li>
+              ))}
+            </ul>
           </div>
         )}
         {isNotBoardMember && (

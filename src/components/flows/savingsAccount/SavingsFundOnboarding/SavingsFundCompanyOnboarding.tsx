@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useForm, FieldPath } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
+import { FormattedMessage } from 'react-intl';
 import { CompanyOnboardingFormData } from './types';
 import { BusinessRegistryStep } from './BusinessRegistryStep';
 import { RequirementsCheckStep } from './RequirementsCheckStep';
@@ -27,12 +28,8 @@ export const SavingsFundCompanyOnboarding = () => {
     useSubmitSavingsFundCompanyOnboardingSurvey();
 
   useEffect(() => {
-    if (onboardingStatus?.status === 'REJECTED' || onboardingStatus?.status === 'PENDING') {
-      history.push('/savings-fund/company/onboarding/pending');
-    }
-
-    if (onboardingStatus?.status === 'COMPLETED') {
-      history.push('/savings-fund/company/onboarding/success');
+    if (onboardingStatus) {
+      history.push('/savings-fund/onboarding/pending');
     }
   }, [onboardingStatus]);
 
@@ -100,6 +97,9 @@ export const SavingsFundCompanyOnboarding = () => {
 
   const showPreviousSection = () => {
     setActiveSection((current) => Math.max(current - 1, 0));
+    if (submitError) {
+      setSubmitError(false);
+    }
   };
 
   const showNextSection = async () => {
@@ -133,7 +133,7 @@ export const SavingsFundCompanyOnboarding = () => {
 
         {submitError ? (
           <div className="alert alert-danger" role="alert">
-            Something went wrong. Please try again.
+            <FormattedMessage id="flows.savingsFundOnboarding.error" />
           </div>
         ) : null}
       </OnboardingWizardLayout>
