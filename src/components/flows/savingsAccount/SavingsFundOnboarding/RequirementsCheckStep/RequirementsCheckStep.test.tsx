@@ -322,6 +322,27 @@ describe('RequirementsCheckStep', () => {
     expect(screen.queryByText('Primary company activity area')).not.toBeInTheDocument();
   });
 
+  it('displays validation errors from backend', async () => {
+    server.use(
+      rest.get('http://localhost/v1/kyb/surveys/initial-validation', (_req, res, ctx) =>
+        res(
+          ctx.json({
+            ...mockValidatedCompany,
+            status: { value: 'INVALID', errors: ['Company status is invalid'] },
+          }),
+        ),
+      ),
+    );
+
+    renderWrapped(
+      <RequirementsCheckStepWrapper
+        defaultValues={{ registryNumber: '11223344', registryName: 'Test OÜ' }}
+      />,
+    );
+
+    expect(await screen.findByText('Company status is invalid')).toBeInTheDocument();
+  });
+
   it('renders related persons from business registry validation', async () => {
     renderWrapped(
       <RequirementsCheckStepWrapper

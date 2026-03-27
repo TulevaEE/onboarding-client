@@ -6,6 +6,7 @@ import { useCompanyBusinessRegistryValidation } from '../../../../common/apiHook
 import { formatDateYear } from '../../../../common/dateFormatter';
 import { Shimmer } from '../../../../common/shimmer/Shimmer';
 import { CompanyOnboardingFormData } from '../types';
+import { collectValidationErrors } from './collectValidationErrors';
 import { hasNoValidationErrors } from './hasNoValidationErrors';
 
 type RequirementsCheckStepProps = {
@@ -98,7 +99,7 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
               </div>
             </div>
             <div className="border-top border-gray-2" />
-            <div className="d-sm-grid flex-wrap gap-3 half-column-grid">
+            <div className="d-flex flex-column d-sm-grid flex-wrap gap-3 half-column-grid">
               {isSuccess && data ? (
                 data.relatedPersons.value.map((person) => (
                   <div key={person.personalCode} className="d-flex flex-column gap-1">
@@ -114,6 +115,16 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
               )}
             </div>
           </>
+        )}
+        {isSuccess && data && !hasNoValidationErrors(data) && (
+          <div className="alert alert-danger m-0" role="alert">
+            <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.error.notFitting" />
+            <ul className="m-0">
+              {collectValidationErrors(data).map((validationError) => (
+                <li key={String(validationError)}>{String(validationError)}</li>
+              ))}
+            </ul>
+          </div>
         )}
         {isNotBoardMember && (
           <div className="alert alert-danger m-0" role="alert">

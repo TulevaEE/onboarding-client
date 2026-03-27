@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useForm, FieldPath } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
+import { FormattedMessage } from 'react-intl';
 import { CompanyOnboardingFormData } from './types';
 import { BusinessRegistryStep } from './BusinessRegistryStep';
 import { RequirementsCheckStep } from './RequirementsCheckStep';
@@ -96,6 +97,9 @@ export const SavingsFundCompanyOnboarding = () => {
 
   const showPreviousSection = () => {
     setActiveSection((current) => Math.max(current - 1, 0));
+    if (submitError) {
+      setSubmitError(false);
+    }
   };
 
   const showNextSection = async () => {
@@ -129,7 +133,7 @@ export const SavingsFundCompanyOnboarding = () => {
 
         {submitError ? (
           <div className="alert alert-danger" role="alert">
-            Something went wrong. Please try again.
+            <FormattedMessage id="flows.savingsFundOnboarding.error" />
           </div>
         ) : null}
       </OnboardingWizardLayout>
