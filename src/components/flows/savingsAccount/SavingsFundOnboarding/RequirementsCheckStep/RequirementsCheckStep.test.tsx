@@ -347,6 +347,6 @@ describe('RequirementsCheckStep', () => {
     );
 
     // eslint-disable-next-line testing-library/no-node-access
-    expect(document.querySelectorAll('.shimmerDefault')).toHaveLength(3);
+    expect(document.querySelectorAll('.shimmerDefault')).toHaveLength(4);
   });
 });
