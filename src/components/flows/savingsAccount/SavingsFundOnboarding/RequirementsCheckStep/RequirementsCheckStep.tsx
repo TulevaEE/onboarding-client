@@ -15,7 +15,10 @@ type RequirementsCheckStepProps = {
 export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control }) => {
   const registryCode = useWatch({ control, name: 'registryLookup.registryNumber' });
   const registryName = useWatch({ control, name: 'registryLookup.registryName' });
-  const { data, isSuccess, isLoading } = useCompanyBusinessRegistryValidation(registryCode);
+  const { data, isSuccess, isLoading, isError, error } =
+    useCompanyBusinessRegistryValidation(registryCode);
+  const isNotBoardMember =
+    isError && (error as { body?: { error?: string } })?.body?.error === 'NOT_BOARD_MEMBER';
   const { field } = useController({
     control,
     name: 'companyValidatedData',
@@ -64,34 +67,45 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
           </div>
           <div className="half-column">{registryCode}</div>
         </div>
-        <div className="d-sm-flex gap-3 align-items-center">
-          <div className="half-column fw-bold">
-            <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.label.foundingDate" />
+        {!isError && (
+          <div className="d-sm-flex gap-3 align-items-center">
+            <div className="half-column fw-bold">
+              <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.label.foundingDate" />
+            </div>
+            <div className="half-column">
+              {isSuccess && data ? formatDateYear(data.foundingDate.value) : <Shimmer />}
+            </div>
           </div>
-          <div className="half-column">
-            {isSuccess && data ? formatDateYear(data.foundingDate.value) : <Shimmer />}
+        )}
+        {!isError && (
+          <div className="d-sm-flex gap-3 align-items-center">
+            <div className="half-column fw-bold">
+              <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.label.companyAddress" />
+            </div>
+            <div className="half-column">
+              {isSuccess && data ? data.address.value.fullAddress : <Shimmer />}
+            </div>
           </div>
-        </div>
-        <div className="d-sm-flex gap-3 align-items-center">
-          <div className="half-column fw-bold">
-            <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.label.companyAddress" />
+        )}
+        {!isError && (
+          <div className="d-sm-flex gap-3 align-items-center">
+            <div className="half-column fw-bold">
+              <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.label.activityArea" />
+            </div>
+            <div className="half-column">
+              {isSuccess && data ? (
+                `${data.businessActivity.value} (${data.naceCode.value})`
+              ) : (
+                <Shimmer />
+              )}
+            </div>
           </div>
-          <div className="half-column">
-            {isSuccess && data ? data.address.value.fullAddress : <Shimmer />}
+        )}
+        {isNotBoardMember && (
+          <div className="alert alert-danger m-0" role="alert">
+            <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.error.notBoardMember" />
           </div>
-        </div>
-        <div className="d-sm-flex gap-3 align-items-center">
-          <div className="half-column fw-bold">
-            <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.label.activityArea" />
-          </div>
-          <div className="half-column">
-            {isSuccess && data ? (
-              `${data.businessActivity.value} (${data.naceCode.value})`
-            ) : (
-              <Shimmer />
-            )}
-          </div>
-        </div>
+        )}
       </div>
     </section>
   );

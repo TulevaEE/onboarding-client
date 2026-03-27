@@ -1195,6 +1195,7 @@
   "flows.savingsFundOnboarding.businessValidationStep.label.foundingDate": "Founding date",
   "flows.savingsFundOnboarding.businessValidationStep.label.companyAddress": "Company address",
   "flows.savingsFundOnboarding.businessValidationStep.label.activityArea": "Primary company activity area",
+  "flows.savingsFundOnboarding.businessValidationStep.error.notBoardMember": "You are not a board member of this company. Only board members can proceed with onboarding.",
 
   "flows.savingsFundOnboarding.companyAddressStep.title": "Where does your company operate from?",
   "flows.savingsFundOnboarding.companyAddressStep.description": "If the information here is incorrect, the data must be updated in the business registry.",
