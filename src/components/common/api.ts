@@ -63,7 +63,10 @@ import {
 } from './apiModels/capital-transfer';
 import { SavingsFundWithdrawal } from './apiModels/savings-fund';
 import { BusinessRegistryValidatedData } from './apiModels/company-onboarding';
-import { OnboardingSurveyCommand } from '../flows/savingsAccount/SavingsFundOnboarding/types.api';
+import {
+  CompanyOnboardingSurveyCommand,
+  OnboardingSurveyCommand,
+} from '../flows/savingsAccount/SavingsFundOnboarding/types.api';
 
 const API_URI = '/api';
 
@@ -247,6 +250,20 @@ export function getSavingsFundOnboardingStatus(): Promise<SavingsFundOnboardingS
 
 export function postSavingsFundOnboardingSurvey(command: OnboardingSurveyCommand): Promise<void> {
   return postWithAuthentication(getEndpoint('/v1/kyc/surveys'), command);
+}
+
+export function getSavingsFundCompanyOnboardingStatus(): Promise<SavingsFundOnboardingStatus> {
+  return getWithAuthentication(getEndpoint('/v1/kyb/onboarding/status'));
+}
+
+export function postSavingsFundCompanyOnboardingSurvey(
+  command: CompanyOnboardingSurveyCommand,
+  registryCode: string,
+): Promise<void> {
+  return postWithAuthentication(
+    getEndpoint(`/v1/kyb/surveys?registry-code=${registryCode}`),
+    command,
+  );
 }
 
 export function getCompanyBusinessRegistryValidation(

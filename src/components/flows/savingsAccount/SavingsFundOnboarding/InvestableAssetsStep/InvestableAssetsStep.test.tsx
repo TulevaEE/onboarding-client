@@ -50,8 +50,8 @@ const CompanyInvestableAssetsStepWrapper = () => {
       investmentGoals: null,
       investableAssets: null,
       sourceOfCompanyIncome: {
-        OPERATING_ONLY_IN_ESTONIA: false,
-        NOT_SANCTIONED_AND_NOT_DOING_BUSINESS_WITH_SANCTIONED_COUNTRIES: false,
+        ONLY_ACTIVE_IN_ESTONIA: false,
+        NOT_SANCTIONED_NOT_PROFITING_FROM_SANCTIONED_COUNTRIES: false,
         NOT_IN_CRYPTO: false,
       },
       termsAccepted: false,

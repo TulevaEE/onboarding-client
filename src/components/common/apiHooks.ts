@@ -30,6 +30,7 @@ import {
   getPendingApplications,
   getSavingsFundBalance,
   getSavingsFundBankAccounts,
+  getSavingsFundCompanyOnboardingStatus,
   getSavingsFundOnboardingStatus,
   getSourceFunds,
   getTransactions,
@@ -38,6 +39,7 @@ import {
   switchRole,
   getUserWithToken,
   getWithdrawalsEligibility,
+  postSavingsFundCompanyOnboardingSurvey,
   postSavingsFundOnboardingSurvey,
   previewMessageForMemberCapitalListing,
   updateCapitalTransferContract,
@@ -78,7 +80,10 @@ import {
   UpdateCapitalTransferContractDto,
 } from './apiModels/capital-transfer';
 import { BusinessRegistryValidatedData } from './apiModels/company-onboarding';
-import { OnboardingSurveyCommand } from '../flows/savingsAccount/SavingsFundOnboarding/types.api';
+import {
+  CompanyOnboardingSurveyCommand,
+  OnboardingSurveyCommand,
+} from '../flows/savingsAccount/SavingsFundOnboarding/types.api';
 
 export function usePendingApplications(): UseQueryResult<Application[]> {
   return useQuery({ queryKey: ['pendingApplications'], queryFn: () => getPendingApplications() });
@@ -266,6 +271,25 @@ export function useCreateMemberCapitalListing(): UseMutationResult<
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['memberCapitalListings'] });
     },
+  });
+}
+
+export function useSavingsFundCompanyOnboardingStatus(): UseQueryResult<SavingsFundOnboardingStatus> {
+  return useQuery({
+    queryKey: ['savingsFundCompanyOnboardingStatus'],
+    queryFn: () => getSavingsFundCompanyOnboardingStatus(),
+  });
+}
+
+export function useSubmitSavingsFundCompanyOnboardingSurvey(): UseMutationResult<
+  void,
+  ErrorResponse,
+  { command: CompanyOnboardingSurveyCommand; registryCode: string },
+  unknown
+> {
+  return useMutation({
+    mutationFn: ({ command, registryCode }) =>
+      postSavingsFundCompanyOnboardingSurvey(command, registryCode),
   });
 }
 

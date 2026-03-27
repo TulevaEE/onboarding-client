@@ -1,5 +1,6 @@
 import { act, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { createMemoryHistory } from 'history';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { businessRegistryBackend, companyValidationBackend } from '../../../../test/backend';
@@ -96,5 +97,467 @@ describe('SavingsFundCompanyOnboarding', () => {
     });
 
     expect(screen.getByText('2/7')).toBeInTheDocument();
+  });
+
+  it('redirects to pending outcome when onboarding status is PENDING', async () => {
+    server.use(
+      rest.get('http://localhost/v1/kyb/onboarding/status', (_req, res, ctx) =>
+        res(ctx.json({ status: 'PENDING' })),
+      ),
+    );
+
+    const history = createMemoryHistory();
+    renderWrapped(<SavingsFundCompanyOnboarding />, history);
+
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/savings-fund/company/onboarding/pending');
+    });
+  });
+
+  it('redirects to success outcome when onboarding status is COMPLETED', async () => {
+    server.use(
+      rest.get('http://localhost/v1/kyb/onboarding/status', (_req, res, ctx) =>
+        res(ctx.json({ status: 'COMPLETED' })),
+      ),
+    );
+
+    const history = createMemoryHistory();
+    renderWrapped(<SavingsFundCompanyOnboarding />, history);
+
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/savings-fund/company/onboarding/success');
+    });
+  });
+
+  it('submits survey on the last step and redirects to success', async () => {
+    server.use(
+      rest.get('http://localhost/v1/kyb/onboarding/status', (_req, res, ctx) =>
+        res(ctx.json({ status: null })),
+      ),
+    );
+
+    const history = createMemoryHistory();
+    renderWrapped(<SavingsFundCompanyOnboarding />, history);
+
+    const user = userEvent;
+    const continueButton = screen.getByRole('button', { name: /continue/i });
+
+    // Step 1: Business Registry - select company
+    const input = screen.getByPlaceholderText('Search...');
+    user.type(input, 'Acme');
+    const option = await screen.findByRole('option', { name: /Acme Corp/ });
+    // eslint-disable-next-line testing-library/no-unnecessary-act
+    await act(async () => {
+      user.click(option);
+    });
+    user.click(continueButton);
+    await waitFor(() => {
+      expect(screen.getByText('2/7')).toBeInTheDocument();
+    });
+
+    // Step 2: Requirements Check - wait for validation data to load
+    expect(await screen.findByText('Telliskivi 60/1, 10412 Tallinn')).toBeInTheDocument();
+    // eslint-disable-next-line testing-library/no-unnecessary-act
+    await act(async () => {
+      user.click(continueButton);
+    });
+    await waitFor(() => {
+      expect(screen.getByText('3/7')).toBeInTheDocument();
+    });
+
+    // Step 3: Company Address - no fields to fill
+    user.click(continueButton);
+    await waitFor(() => {
+      expect(screen.getByText('4/7')).toBeInTheDocument();
+    });
+
+    // Step 4: Investment Goal
+    const longTermRadio = screen.getByRole('radio', {
+      name: 'Long-term investment, including pension',
+    });
+    user.click(longTermRadio);
+    user.click(continueButton);
+    await waitFor(() => {
+      expect(screen.getByText('5/7')).toBeInTheDocument();
+    });
+
+    // Step 5: Investable Assets
+    const assetsRadio = screen.getByRole('radio', { name: '€20,001–€40,000' });
+    user.click(assetsRadio);
+    user.click(continueButton);
+    await waitFor(() => {
+      expect(screen.getByText('6/7')).toBeInTheDocument();
+    });
+
+    // Step 6: Company Income Source
+    const checkbox1 = screen.getByRole('checkbox', {
+      name: /operates only in Estonia/i,
+    });
+    const checkbox2 = screen.getByRole('checkbox', {
+      name: /not sanctioned and does not do business/i,
+    });
+    const checkbox3 = screen.getByRole('checkbox', {
+      name: /not involved in cryptocurrency/i,
+    });
+    user.click(checkbox1);
+    user.click(checkbox2);
+    user.click(checkbox3);
+    user.click(continueButton);
+    await waitFor(() => {
+      expect(screen.getByText('7/7')).toBeInTheDocument();
+    });
+
+    // Step 7: Terms
+    const termsCheckbox = screen.getByRole('checkbox');
+    user.click(termsCheckbox);
+
+    // Set up survey POST handler and status to return COMPLETED after submit
+    server.use(
+      rest.post('http://localhost/v1/kyb/surveys', (_req, res, ctx) => res(ctx.status(200))),
+      rest.get('http://localhost/v1/kyb/onboarding/status', (_req, res, ctx) =>
+        res(ctx.json({ status: 'COMPLETED' })),
+      ),
+    );
+
+    user.click(continueButton);
+
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/savings-fund/company/onboarding/success');
+    });
+  });
+
+  it('includes registry code as query parameter in survey POST', async () => {
+    server.use(
+      rest.get('http://localhost/v1/kyb/onboarding/status', (_req, res, ctx) =>
+        res(ctx.json({ status: null })),
+      ),
+    );
+
+    renderWrapped(<SavingsFundCompanyOnboarding />);
+
+    const user = userEvent;
+    const continueButton = screen.getByRole('button', { name: /continue/i });
+
+    const input = screen.getByPlaceholderText('Search...');
+    user.type(input, 'Acme');
+    const option = await screen.findByRole('option', { name: /Acme Corp/ });
+    // eslint-disable-next-line testing-library/no-unnecessary-act
+    await act(async () => {
+      user.click(option);
+    });
+    user.click(continueButton);
+    await waitFor(() => {
+      expect(screen.getByText('2/7')).toBeInTheDocument();
+    });
+
+    expect(await screen.findByText('Telliskivi 60/1, 10412 Tallinn')).toBeInTheDocument();
+    // eslint-disable-next-line testing-library/no-unnecessary-act
+    await act(async () => {
+      user.click(continueButton);
+    });
+    await waitFor(() => {
+      expect(screen.getByText('3/7')).toBeInTheDocument();
+    });
+
+    user.click(continueButton);
+    await waitFor(() => {
+      expect(screen.getByText('4/7')).toBeInTheDocument();
+    });
+
+    user.click(screen.getByRole('radio', { name: 'Long-term investment, including pension' }));
+    user.click(continueButton);
+    await waitFor(() => {
+      expect(screen.getByText('5/7')).toBeInTheDocument();
+    });
+
+    user.click(screen.getByRole('radio', { name: '€20,001–€40,000' }));
+    user.click(continueButton);
+    await waitFor(() => {
+      expect(screen.getByText('6/7')).toBeInTheDocument();
+    });
+
+    user.click(screen.getByRole('checkbox', { name: /operates only in Estonia/i }));
+    user.click(screen.getByRole('checkbox', { name: /not sanctioned and does not do business/i }));
+    user.click(screen.getByRole('checkbox', { name: /not involved in cryptocurrency/i }));
+    user.click(continueButton);
+    await waitFor(() => {
+      expect(screen.getByText('7/7')).toBeInTheDocument();
+    });
+
+    user.click(screen.getByRole('checkbox'));
+
+    let surveyRequestUrl: string | null = null;
+    server.use(
+      rest.post('http://localhost/v1/kyb/surveys', (req, res, ctx) => {
+        surveyRequestUrl = req.url.toString();
+        return res(ctx.status(200));
+      }),
+      rest.get('http://localhost/v1/kyb/onboarding/status', (_req, res, ctx) =>
+        res(ctx.json({ status: 'COMPLETED' })),
+      ),
+    );
+
+    user.click(continueButton);
+
+    await waitFor(() => {
+      expect(surveyRequestUrl).toContain('registry-code=12345678');
+    });
+  });
+
+  it('POSTs survey data to /v1/kyb/surveys on the last step', async () => {
+    server.use(
+      rest.get('http://localhost/v1/kyb/onboarding/status', (_req, res, ctx) =>
+        res(ctx.json({ status: null })),
+      ),
+    );
+
+    const history = createMemoryHistory();
+    renderWrapped(<SavingsFundCompanyOnboarding />, history);
+
+    const user = userEvent;
+    const continueButton = screen.getByRole('button', { name: /continue/i });
+
+    // Step 1: Business Registry - select company
+    const input = screen.getByPlaceholderText('Search...');
+    user.type(input, 'Acme');
+    const option = await screen.findByRole('option', { name: /Acme Corp/ });
+    // eslint-disable-next-line testing-library/no-unnecessary-act
+    await act(async () => {
+      user.click(option);
+    });
+    user.click(continueButton);
+    await waitFor(() => {
+      expect(screen.getByText('2/7')).toBeInTheDocument();
+    });
+
+    // Step 2: Requirements Check
+    expect(await screen.findByText('Telliskivi 60/1, 10412 Tallinn')).toBeInTheDocument();
+    // eslint-disable-next-line testing-library/no-unnecessary-act
+    await act(async () => {
+      user.click(continueButton);
+    });
+    await waitFor(() => {
+      expect(screen.getByText('3/7')).toBeInTheDocument();
+    });
+
+    // Step 3: Company Address
+    user.click(continueButton);
+    await waitFor(() => {
+      expect(screen.getByText('4/7')).toBeInTheDocument();
+    });
+
+    // Step 4: Investment Goal
+    user.click(screen.getByRole('radio', { name: 'Long-term investment, including pension' }));
+    user.click(continueButton);
+    await waitFor(() => {
+      expect(screen.getByText('5/7')).toBeInTheDocument();
+    });
+
+    // Step 5: Investable Assets
+    user.click(screen.getByRole('radio', { name: '€20,001–€40,000' }));
+    user.click(continueButton);
+    await waitFor(() => {
+      expect(screen.getByText('6/7')).toBeInTheDocument();
+    });
+
+    // Step 6: Company Income Source
+    user.click(screen.getByRole('checkbox', { name: /operates only in Estonia/i }));
+    user.click(screen.getByRole('checkbox', { name: /not sanctioned and does not do business/i }));
+    user.click(screen.getByRole('checkbox', { name: /not involved in cryptocurrency/i }));
+    user.click(continueButton);
+    await waitFor(() => {
+      expect(screen.getByText('7/7')).toBeInTheDocument();
+    });
+
+    // Step 7: Terms
+    user.click(screen.getByRole('checkbox'));
+
+    // Capture POST request body
+    let surveyRequestBody: Record<string, unknown> | null = null;
+    server.use(
+      rest.post('http://localhost/v1/kyb/surveys', (req, res, ctx) => {
+        surveyRequestBody = req.body as Record<string, unknown>;
+        return res(ctx.status(200));
+      }),
+      rest.get('http://localhost/v1/kyb/onboarding/status', (_req, res, ctx) =>
+        res(ctx.json({ status: 'COMPLETED' })),
+      ),
+    );
+
+    user.click(continueButton);
+
+    await waitFor(() => {
+      expect(surveyRequestBody).not.toBeNull();
+    });
+    expect(surveyRequestBody).toEqual(
+      expect.objectContaining({
+        answers: expect.arrayContaining([
+          expect.objectContaining({ type: 'BUSINESS_REGISTRY_NUMBER' }),
+        ]),
+      }),
+    );
+  });
+
+  it('displays an error when survey submission fails', async () => {
+    server.use(
+      rest.get('http://localhost/v1/kyb/onboarding/status', (_req, res, ctx) =>
+        res(ctx.json({ status: null })),
+      ),
+    );
+
+    renderWrapped(<SavingsFundCompanyOnboarding />);
+
+    const user = userEvent;
+    const continueButton = screen.getByRole('button', { name: /continue/i });
+
+    // Step 1: Business Registry
+    const input = screen.getByPlaceholderText('Search...');
+    user.type(input, 'Acme');
+    const option = await screen.findByRole('option', { name: /Acme Corp/ });
+    // eslint-disable-next-line testing-library/no-unnecessary-act
+    await act(async () => {
+      user.click(option);
+    });
+    user.click(continueButton);
+    await waitFor(() => {
+      expect(screen.getByText('2/7')).toBeInTheDocument();
+    });
+
+    // Step 2: Requirements Check
+    expect(await screen.findByText('Telliskivi 60/1, 10412 Tallinn')).toBeInTheDocument();
+    // eslint-disable-next-line testing-library/no-unnecessary-act
+    await act(async () => {
+      user.click(continueButton);
+    });
+    await waitFor(() => {
+      expect(screen.getByText('3/7')).toBeInTheDocument();
+    });
+
+    // Step 3: Company Address
+    user.click(continueButton);
+    await waitFor(() => {
+      expect(screen.getByText('4/7')).toBeInTheDocument();
+    });
+
+    // Step 4: Investment Goal
+    user.click(screen.getByRole('radio', { name: 'Long-term investment, including pension' }));
+    user.click(continueButton);
+    await waitFor(() => {
+      expect(screen.getByText('5/7')).toBeInTheDocument();
+    });
+
+    // Step 5: Investable Assets
+    user.click(screen.getByRole('radio', { name: '€20,001–€40,000' }));
+    user.click(continueButton);
+    await waitFor(() => {
+      expect(screen.getByText('6/7')).toBeInTheDocument();
+    });
+
+    // Step 6: Company Income Source
+    user.click(screen.getByRole('checkbox', { name: /operates only in Estonia/i }));
+    user.click(screen.getByRole('checkbox', { name: /not sanctioned and does not do business/i }));
+    user.click(screen.getByRole('checkbox', { name: /not involved in cryptocurrency/i }));
+    user.click(continueButton);
+    await waitFor(() => {
+      expect(screen.getByText('7/7')).toBeInTheDocument();
+    });
+
+    // Step 7: Terms
+    user.click(screen.getByRole('checkbox'));
+
+    server.use(
+      rest.post('http://localhost/v1/kyb/surveys', (_req, res, ctx) =>
+        res(ctx.status(500), ctx.json({ error: 'INTERNAL_ERROR' })),
+      ),
+    );
+
+    user.click(continueButton);
+
+    await waitFor(() => {
+      expect(screen.getByRole('alert')).toBeInTheDocument();
+    });
+  });
+
+  it('disables the continue button while survey is being submitted', async () => {
+    server.use(
+      rest.get('http://localhost/v1/kyb/onboarding/status', (_req, res, ctx) =>
+        res(ctx.json({ status: null })),
+      ),
+    );
+
+    renderWrapped(<SavingsFundCompanyOnboarding />);
+
+    const user = userEvent;
+    const continueButton = screen.getByRole('button', { name: /continue/i });
+
+    // Step 1: Business Registry
+    const input = screen.getByPlaceholderText('Search...');
+    user.type(input, 'Acme');
+    const option = await screen.findByRole('option', { name: /Acme Corp/ });
+    // eslint-disable-next-line testing-library/no-unnecessary-act
+    await act(async () => {
+      user.click(option);
+    });
+    user.click(continueButton);
+    await waitFor(() => {
+      expect(screen.getByText('2/7')).toBeInTheDocument();
+    });
+
+    // Step 2: Requirements Check
+    expect(await screen.findByText('Telliskivi 60/1, 10412 Tallinn')).toBeInTheDocument();
+    // eslint-disable-next-line testing-library/no-unnecessary-act
+    await act(async () => {
+      user.click(continueButton);
+    });
+    await waitFor(() => {
+      expect(screen.getByText('3/7')).toBeInTheDocument();
+    });
+
+    // Step 3: Company Address
+    user.click(continueButton);
+    await waitFor(() => {
+      expect(screen.getByText('4/7')).toBeInTheDocument();
+    });
+
+    // Step 4: Investment Goal
+    user.click(screen.getByRole('radio', { name: 'Long-term investment, including pension' }));
+    user.click(continueButton);
+    await waitFor(() => {
+      expect(screen.getByText('5/7')).toBeInTheDocument();
+    });
+
+    // Step 5: Investable Assets
+    user.click(screen.getByRole('radio', { name: '€20,001–€40,000' }));
+    user.click(continueButton);
+    await waitFor(() => {
+      expect(screen.getByText('6/7')).toBeInTheDocument();
+    });
+
+    // Step 6: Company Income Source
+    user.click(screen.getByRole('checkbox', { name: /operates only in Estonia/i }));
+    user.click(screen.getByRole('checkbox', { name: /not sanctioned and does not do business/i }));
+    user.click(screen.getByRole('checkbox', { name: /not involved in cryptocurrency/i }));
+    user.click(continueButton);
+    await waitFor(() => {
+      expect(screen.getByText('7/7')).toBeInTheDocument();
+    });
+
+    // Step 7: Terms
+    user.click(screen.getByRole('checkbox'));
+
+    server.use(
+      rest.post('http://localhost/v1/kyb/surveys', (_req, res, ctx) =>
+        res(ctx.delay(200), ctx.status(200)),
+      ),
+      rest.get('http://localhost/v1/kyb/onboarding/status', (_req, res, ctx) =>
+        res(ctx.json({ status: 'COMPLETED' })),
+      ),
+    );
+
+    user.click(continueButton);
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /continue/i })).toBeDisabled();
+    });
   });
 });

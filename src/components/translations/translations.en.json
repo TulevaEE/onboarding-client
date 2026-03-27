@@ -1201,7 +1201,7 @@
 
   "flows.savingsFundOnboarding.companyIncomeSourceStep.title": "Sources of income",
   "flows.savingsFundOnboarding.companyIncomeSourceStep.description": "I confirm that",
-  "flows.savingsFundOnboarding.companyIncomeSourceStep.operatingOnlyInEstonia": "The company operates only in Estonia",
+  "flows.savingsFundOnboarding.companyIncomeSourceStep.onlyActiveInEstonia": "The company operates only in Estonia",
   "flows.savingsFundOnboarding.companyIncomeSourceStep.notSanctioned": "The company is not sanctioned and does not do business with sanctioned countries",
   "flows.savingsFundOnboarding.companyIncomeSourceStep.notInCrypto": "The company is not involved in cryptocurrency activities",
   "flows.savingsFundOnboarding.companyIncomeSourceStep.error": "You must confirm all statements to continue.",

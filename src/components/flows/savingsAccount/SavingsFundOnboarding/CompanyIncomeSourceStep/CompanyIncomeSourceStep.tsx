@@ -5,18 +5,18 @@ import { CompanyOnboardingFormData } from '../types';
 
 const CHECKBOX_OPTIONS = [
   {
-    key: 'OPERATING_ONLY_IN_ESTONIA' as const,
-    labelId: 'flows.savingsFundOnboarding.companyIncomeSourceStep.operatingOnlyInEstonia' as const,
+    key: 'ONLY_ACTIVE_IN_ESTONIA',
+    labelId: 'flows.savingsFundOnboarding.companyIncomeSourceStep.onlyActiveInEstonia',
   },
   {
-    key: 'NOT_SANCTIONED_AND_NOT_DOING_BUSINESS_WITH_SANCTIONED_COUNTRIES' as const,
-    labelId: 'flows.savingsFundOnboarding.companyIncomeSourceStep.notSanctioned' as const,
+    key: 'NOT_SANCTIONED_NOT_PROFITING_FROM_SANCTIONED_COUNTRIES',
+    labelId: 'flows.savingsFundOnboarding.companyIncomeSourceStep.notSanctioned',
   },
   {
-    key: 'NOT_IN_CRYPTO' as const,
-    labelId: 'flows.savingsFundOnboarding.companyIncomeSourceStep.notInCrypto' as const,
+    key: 'NOT_IN_CRYPTO',
+    labelId: 'flows.savingsFundOnboarding.companyIncomeSourceStep.notInCrypto',
   },
-];
+] as const;
 
 type CompanyIncomeSourceStepProps = {
   control: Control<CompanyOnboardingFormData>;

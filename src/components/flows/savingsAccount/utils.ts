@@ -1,6 +1,9 @@
 import { CompanyOnboardingFormData, OnboardingFormData } from './SavingsFundOnboarding/types';
 import {
+  Address,
   CompanyOnboardingSurveyCommand,
+  CompanySourceOfIncomeOption,
+  ISO2CountryCode,
   OnboardingSurveyCommand,
 } from './SavingsFundOnboarding/types.api';
 
@@ -79,7 +82,51 @@ export const transformFormDataToOnboardingSurveryCommand = (
 };
 
 export const transformCompanyFormDataToSurveyCommand = (
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   data: CompanyOnboardingFormData,
-  // @ts-expect-error not implemented yet
-): CompanyOnboardingSurveyCommand => {};
+): CompanyOnboardingSurveyCommand => {
+  const answers: CompanyOnboardingSurveyCommand['answers'] = [];
+
+  if (data.registryLookup) {
+    answers.push({
+      type: 'BUSINESS_REGISTRY_NUMBER',
+      value: { type: 'TEXT', value: data.registryLookup.registryNumber },
+    });
+  }
+
+  let resolvedAddress: Address;
+  if (data.companyAddress.reuseBackendAddress) {
+    const validatedAddress = data.companyValidatedData?.address.value;
+    resolvedAddress = {
+      street: validatedAddress?.street ?? '',
+      city: validatedAddress?.city ?? '',
+      postalCode: validatedAddress?.postalCode ?? '',
+      countryCode: (validatedAddress?.countryCode ?? '') as ISO2CountryCode,
+    };
+  } else {
+    resolvedAddress = data.companyAddress.address;
+  }
+
+  answers.push({
+    type: 'COMPANY_ADDRESS',
+    value: { type: 'ADDRESS', value: resolvedAddress },
+  });
+
+  if (data.investmentGoals) {
+    answers.push({ type: 'INVESTMENT_GOALS', value: data.investmentGoals });
+  }
+
+  if (data.investableAssets) {
+    answers.push({
+      type: 'INVESTABLE_ASSETS',
+      value: { type: 'OPTION', value: data.investableAssets },
+    });
+  }
+
+  const selectedIncomeSources = Object.entries(data.sourceOfCompanyIncome).map(([key]) => ({
+    type: 'OPTION' as const,
+    value: key as CompanySourceOfIncomeOption,
+  }));
+  answers.push({ type: 'COMPANY_SOURCE_OF_INCOME', value: selectedIncomeSources });
+
+  return { answers };
+};

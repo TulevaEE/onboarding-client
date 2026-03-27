@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm, FieldPath } from 'react-hook-form';
+import { useHistory } from 'react-router-dom';
 import { CompanyOnboardingFormData } from './types';
 import { BusinessRegistryStep } from './BusinessRegistryStep';
 import { RequirementsCheckStep } from './RequirementsCheckStep';
@@ -9,21 +10,51 @@ import { InvestableAssetsStep } from './InvestableAssetsStep';
 import { CompanyIncomeSourceStep } from './CompanyIncomeSourceStep';
 import { TermsStep } from './TermsStep';
 import { OnboardingWizardLayout } from './OnboardingWizardLayout';
+import {
+  useSavingsFundCompanyOnboardingStatus,
+  useSubmitSavingsFundCompanyOnboardingSurvey,
+} from '../../../common/apiHooks';
+import { transformCompanyFormDataToSurveyCommand } from '../utils';
 
 export const SavingsFundCompanyOnboarding = () => {
+  const history = useHistory();
   const [activeSection, setActiveSection] = useState(0);
+  const [submitError, setSubmitError] = useState(false);
 
-  const { control, trigger } = useForm<CompanyOnboardingFormData>({
+  const { data: onboardingStatus, refetch: refetchOnboardingStatus } =
+    useSavingsFundCompanyOnboardingStatus();
+  const { mutateAsync: submitSurvey, isPending: submittingSurvey } =
+    useSubmitSavingsFundCompanyOnboardingSurvey();
+
+  useEffect(() => {
+    if (onboardingStatus?.status === 'REJECTED' || onboardingStatus?.status === 'PENDING') {
+      history.push('/savings-fund/company/onboarding/pending');
+    }
+
+    if (onboardingStatus?.status === 'COMPLETED') {
+      history.push('/savings-fund/company/onboarding/success');
+    }
+  }, [onboardingStatus]);
+
+  const { control, trigger, handleSubmit } = useForm<CompanyOnboardingFormData>({
     mode: 'onChange',
     defaultValues: {
       registryLookup: undefined,
       companyValidatedData: undefined,
+      companyAddress: { reuseBackendAddress: true },
       sourceOfCompanyIncome: {
-        OPERATING_ONLY_IN_ESTONIA: false,
-        NOT_SANCTIONED_AND_NOT_DOING_BUSINESS_WITH_SANCTIONED_COUNTRIES: false,
+        ONLY_ACTIVE_IN_ESTONIA: false,
+        NOT_SANCTIONED_NOT_PROFITING_FROM_SANCTIONED_COUNTRIES: false,
         NOT_IN_CRYPTO: false,
       },
     },
+  });
+
+  const submitForm = handleSubmit(async (data) => {
+    await submitSurvey({
+      command: transformCompanyFormDataToSurveyCommand(data),
+      registryCode: data.registryLookup?.registryNumber ?? '',
+    });
   });
 
   const steps: Array<{
@@ -73,6 +104,16 @@ export const SavingsFundCompanyOnboarding = () => {
     if (!isStepValid) {
       return;
     }
+    if (activeSection === totalSections - 1) {
+      try {
+        setSubmitError(false);
+        await submitForm();
+        await refetchOnboardingStatus();
+      } catch (e) {
+        setSubmitError(true);
+      }
+      return;
+    }
     setActiveSection((current) => Math.min(current + 1, totalSections - 1));
   };
 
@@ -83,8 +124,15 @@ export const SavingsFundCompanyOnboarding = () => {
         totalSteps={totalSections}
         onBack={showPreviousSection}
         onNext={showNextSection}
+        submitting={submittingSurvey}
       >
         {steps[activeSection].component}
+
+        {submitError ? (
+          <div className="alert alert-danger" role="alert">
+            Something went wrong. Please try again.
+          </div>
+        ) : null}
       </OnboardingWizardLayout>
     </div>
   );
