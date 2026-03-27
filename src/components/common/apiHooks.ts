@@ -183,7 +183,10 @@ export function useCompanyBusinessRegistryValidation(
     queryFn: () => getCompanyBusinessRegistryValidation(registryCode),
     enabled: !!registryCode,
     refetchOnWindowFocus: false,
-    retry: (_failureCount, error) => (error as { status?: number }).status !== 403,
+    retry: (_failureCount, error) => {
+      const { status } = error as { status?: number };
+      return status !== 403 && status !== 501;
+    },
   });
 }
 

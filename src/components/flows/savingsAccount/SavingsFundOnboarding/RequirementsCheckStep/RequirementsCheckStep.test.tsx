@@ -354,6 +354,107 @@ describe('RequirementsCheckStep', () => {
     expect(screen.getByText('40404049996')).toBeInTheDocument();
   });
 
+  it('displays error when backend returns 501 UNEXPECTED_ERROR', async () => {
+    server.use(
+      rest.get('http://localhost/v1/kyb/surveys/initial-validation', (_req, res, ctx) =>
+        res(
+          ctx.status(501),
+          ctx.json({
+            error: 'UNEXPECTED_ERROR',
+            error_description: 'An unexpected error occurred',
+          }),
+        ),
+      ),
+    );
+
+    renderWrapped(
+      <RequirementsCheckStepWrapper
+        defaultValues={{ registryNumber: '11223344', registryName: 'Test OÜ' }}
+      />,
+    );
+
+    expect(
+      await screen.findByText('An unexpected error occurred. Please try again later.'),
+    ).toBeInTheDocument();
+  });
+
+  it('fails validation when backend returns 501 UNEXPECTED_ERROR', async () => {
+    server.use(
+      rest.get('http://localhost/v1/kyb/surveys/initial-validation', (_req, res, ctx) =>
+        res(
+          ctx.status(501),
+          ctx.json({
+            error: 'UNEXPECTED_ERROR',
+            error_description: 'An unexpected error occurred',
+          }),
+        ),
+      ),
+    );
+
+    const ValidationWrapper = () => {
+      const { control, trigger } = useForm<CompanyOnboardingFormData>({
+        mode: 'onChange',
+        defaultValues: {
+          registryLookup: { registryNumber: '11223344', registryName: 'Test OÜ' },
+          companyValidatedData: undefined,
+        },
+      });
+
+      return (
+        <>
+          <RequirementsCheckStep control={control} />
+          <button
+            type="button"
+            onClick={async () => {
+              const valid = await trigger('companyValidatedData');
+              document.title = valid ? 'valid' : 'invalid';
+            }}
+          >
+            Validate
+          </button>
+        </>
+      );
+    };
+
+    renderWrapped(<ValidationWrapper />);
+
+    expect(
+      await screen.findByText('An unexpected error occurred. Please try again later.'),
+    ).toBeInTheDocument();
+
+    userEvent.click(screen.getByRole('button', { name: 'Validate' }));
+
+    await waitFor(() => {
+      expect(document.title).toBe('invalid');
+    });
+  });
+
+  it('hides data rows when backend returns 501 UNEXPECTED_ERROR', async () => {
+    server.use(
+      rest.get('http://localhost/v1/kyb/surveys/initial-validation', (_req, res, ctx) =>
+        res(
+          ctx.status(501),
+          ctx.json({
+            error: 'UNEXPECTED_ERROR',
+            error_description: 'An unexpected error occurred',
+          }),
+        ),
+      ),
+    );
+
+    renderWrapped(
+      <RequirementsCheckStepWrapper
+        defaultValues={{ registryNumber: '11223344', registryName: 'Test OÜ' }}
+      />,
+    );
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+
+    expect(screen.queryByText('Founding date')).not.toBeInTheDocument();
+    expect(screen.queryByText('Company address')).not.toBeInTheDocument();
+    expect(screen.queryByText('Primary company activity area')).not.toBeInTheDocument();
+  });
+
   it('renders shimmer while loading backend data', () => {
     server.use(
       rest.get('http://localhost/v1/kyb/surveys/initial-validation', (_req, res, ctx) =>

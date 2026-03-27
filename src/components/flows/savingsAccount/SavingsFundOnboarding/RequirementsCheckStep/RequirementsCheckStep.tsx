@@ -20,6 +20,8 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
     useCompanyBusinessRegistryValidation(registryCode);
   const isNotBoardMember =
     isError && (error as { body?: { error?: string } })?.body?.error === 'NOT_BOARD_MEMBER';
+  const isUnexpectedError =
+    isError && (error as { body?: { error?: string } })?.body?.error === 'UNEXPECTED_ERROR';
   const { field } = useController({
     control,
     name: 'companyValidatedData',
@@ -129,6 +131,11 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
         {isNotBoardMember && (
           <div className="alert alert-danger m-0" role="alert">
             <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.error.notBoardMember" />
+          </div>
+        )}
+        {isUnexpectedError && (
+          <div className="alert alert-danger m-0" role="alert">
+            <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.error.unexpectedError" />
           </div>
         )}
       </div>
