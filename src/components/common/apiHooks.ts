@@ -274,10 +274,13 @@ export function useCreateMemberCapitalListing(): UseMutationResult<
   });
 }
 
-export function useSavingsFundCompanyOnboardingStatus(): UseQueryResult<SavingsFundOnboardingStatus> {
+export function useSavingsFundCompanyOnboardingStatus(
+  registryCode: string | undefined,
+): UseQueryResult<SavingsFundOnboardingStatus> {
   return useQuery({
     queryKey: ['savingsFundCompanyOnboardingStatus'],
-    queryFn: () => getSavingsFundCompanyOnboardingStatus(),
+    queryFn: () => getSavingsFundCompanyOnboardingStatus(registryCode ?? ''),
+    enabled: Boolean(registryCode),
   });
 }
 

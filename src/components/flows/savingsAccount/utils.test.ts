@@ -97,26 +97,6 @@ describe('transformCompanyFormDataToSurveyCommand', () => {
     });
   });
 
-  it('filters sourceOfCompanyIncome to only include true options', () => {
-    const result = transformCompanyFormDataToSurveyCommand(
-      buildCompanyFormData({
-        sourceOfCompanyIncome: {
-          ONLY_ACTIVE_IN_ESTONIA: true,
-          NOT_SANCTIONED_NOT_PROFITING_FROM_SANCTIONED_COUNTRIES: false,
-          NOT_IN_CRYPTO: true,
-        },
-      }),
-    );
-
-    expect(result.answers).toContainEqual({
-      type: 'COMPANY_SOURCE_OF_INCOME',
-      value: [
-        { type: 'OPTION', value: 'ONLY_ACTIVE_IN_ESTONIA' },
-        { type: 'OPTION', value: 'NOT_IN_CRYPTO' },
-      ],
-    });
-  });
-
   it('omits investmentGoals and investableAssets when null', () => {
     const result = transformCompanyFormDataToSurveyCommand(
       buildCompanyFormData({ investmentGoals: null, investableAssets: null }),

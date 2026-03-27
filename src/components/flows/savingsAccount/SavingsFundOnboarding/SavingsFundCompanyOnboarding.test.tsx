@@ -49,6 +49,25 @@ describe('SavingsFundCompanyOnboarding', () => {
     expect(screen.getByText('1/7')).toBeInTheDocument();
   });
 
+  it('does not fetch onboarding status before form is submitted', async () => {
+    let statusRequested = false;
+    server.use(
+      rest.get('http://localhost/v1/savings/onboarding/status/legal-entity', (_req, res, ctx) => {
+        statusRequested = true;
+        return res(ctx.json({ status: 'PENDING' }));
+      }),
+    );
+
+    renderWrapped(<SavingsFundCompanyOnboarding />);
+
+    // Wait a tick to ensure no request fires
+    await waitFor(() => {
+      expect(screen.getByText('1/7')).toBeInTheDocument();
+    });
+
+    expect(statusRequested).toBe(false);
+  });
+
   it('has Continue and Back buttons', () => {
     renderWrapped(<SavingsFundCompanyOnboarding />);
 
@@ -99,43 +118,7 @@ describe('SavingsFundCompanyOnboarding', () => {
     expect(screen.getByText('2/7')).toBeInTheDocument();
   });
 
-  it('redirects to pending outcome when onboarding status is PENDING', async () => {
-    server.use(
-      rest.get('http://localhost/v1/kyb/onboarding/status', (_req, res, ctx) =>
-        res(ctx.json({ status: 'PENDING' })),
-      ),
-    );
-
-    const history = createMemoryHistory();
-    renderWrapped(<SavingsFundCompanyOnboarding />, history);
-
-    await waitFor(() => {
-      expect(history.location.pathname).toBe('/savings-fund/company/onboarding/pending');
-    });
-  });
-
-  it('redirects to success outcome when onboarding status is COMPLETED', async () => {
-    server.use(
-      rest.get('http://localhost/v1/kyb/onboarding/status', (_req, res, ctx) =>
-        res(ctx.json({ status: 'COMPLETED' })),
-      ),
-    );
-
-    const history = createMemoryHistory();
-    renderWrapped(<SavingsFundCompanyOnboarding />, history);
-
-    await waitFor(() => {
-      expect(history.location.pathname).toBe('/savings-fund/company/onboarding/success');
-    });
-  });
-
   it('submits survey on the last step and redirects to success', async () => {
-    server.use(
-      rest.get('http://localhost/v1/kyb/onboarding/status', (_req, res, ctx) =>
-        res(ctx.json({ status: null })),
-      ),
-    );
-
     const history = createMemoryHistory();
     renderWrapped(<SavingsFundCompanyOnboarding />, history);
 
@@ -214,7 +197,7 @@ describe('SavingsFundCompanyOnboarding', () => {
     // Set up survey POST handler and status to return COMPLETED after submit
     server.use(
       rest.post('http://localhost/v1/kyb/surveys', (_req, res, ctx) => res(ctx.status(200))),
-      rest.get('http://localhost/v1/kyb/onboarding/status', (_req, res, ctx) =>
+      rest.get('http://localhost/v1/savings/onboarding/status/legal-entity', (_req, res, ctx) =>
         res(ctx.json({ status: 'COMPLETED' })),
       ),
     );
@@ -227,12 +210,6 @@ describe('SavingsFundCompanyOnboarding', () => {
   });
 
   it('includes registry code as query parameter in survey POST', async () => {
-    server.use(
-      rest.get('http://localhost/v1/kyb/onboarding/status', (_req, res, ctx) =>
-        res(ctx.json({ status: null })),
-      ),
-    );
-
     renderWrapped(<SavingsFundCompanyOnboarding />);
 
     const user = userEvent;
@@ -292,7 +269,7 @@ describe('SavingsFundCompanyOnboarding', () => {
         surveyRequestUrl = req.url.toString();
         return res(ctx.status(200));
       }),
-      rest.get('http://localhost/v1/kyb/onboarding/status', (_req, res, ctx) =>
+      rest.get('http://localhost/v1/savings/onboarding/status/legal-entity', (_req, res, ctx) =>
         res(ctx.json({ status: 'COMPLETED' })),
       ),
     );
@@ -305,14 +282,7 @@ describe('SavingsFundCompanyOnboarding', () => {
   });
 
   it('POSTs survey data to /v1/kyb/surveys on the last step', async () => {
-    server.use(
-      rest.get('http://localhost/v1/kyb/onboarding/status', (_req, res, ctx) =>
-        res(ctx.json({ status: null })),
-      ),
-    );
-
-    const history = createMemoryHistory();
-    renderWrapped(<SavingsFundCompanyOnboarding />, history);
+    renderWrapped(<SavingsFundCompanyOnboarding />);
 
     const user = userEvent;
     const continueButton = screen.getByRole('button', { name: /continue/i });
@@ -379,7 +349,7 @@ describe('SavingsFundCompanyOnboarding', () => {
         surveyRequestBody = req.body as Record<string, unknown>;
         return res(ctx.status(200));
       }),
-      rest.get('http://localhost/v1/kyb/onboarding/status', (_req, res, ctx) =>
+      rest.get('http://localhost/v1/savings/onboarding/status/legal-entity', (_req, res, ctx) =>
         res(ctx.json({ status: 'COMPLETED' })),
       ),
     );
@@ -399,12 +369,6 @@ describe('SavingsFundCompanyOnboarding', () => {
   });
 
   it('displays an error when survey submission fails', async () => {
-    server.use(
-      rest.get('http://localhost/v1/kyb/onboarding/status', (_req, res, ctx) =>
-        res(ctx.json({ status: null })),
-      ),
-    );
-
     renderWrapped(<SavingsFundCompanyOnboarding />);
 
     const user = userEvent;
@@ -479,12 +443,6 @@ describe('SavingsFundCompanyOnboarding', () => {
   });
 
   it('disables the continue button while survey is being submitted', async () => {
-    server.use(
-      rest.get('http://localhost/v1/kyb/onboarding/status', (_req, res, ctx) =>
-        res(ctx.json({ status: null })),
-      ),
-    );
-
     renderWrapped(<SavingsFundCompanyOnboarding />);
 
     const user = userEvent;
@@ -549,7 +507,7 @@ describe('SavingsFundCompanyOnboarding', () => {
       rest.post('http://localhost/v1/kyb/surveys', (_req, res, ctx) =>
         res(ctx.delay(200), ctx.status(200)),
       ),
-      rest.get('http://localhost/v1/kyb/onboarding/status', (_req, res, ctx) =>
+      rest.get('http://localhost/v1/savings/onboarding/status/legal-entity', (_req, res, ctx) =>
         res(ctx.json({ status: 'COMPLETED' })),
       ),
     );

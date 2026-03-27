@@ -252,8 +252,12 @@ export function postSavingsFundOnboardingSurvey(command: OnboardingSurveyCommand
   return postWithAuthentication(getEndpoint('/v1/kyc/surveys'), command);
 }
 
-export function getSavingsFundCompanyOnboardingStatus(): Promise<SavingsFundOnboardingStatus> {
-  return getWithAuthentication(getEndpoint('/v1/kyb/onboarding/status'));
+export function getSavingsFundCompanyOnboardingStatus(
+  registryCode: string,
+): Promise<SavingsFundOnboardingStatus> {
+  return getWithAuthentication(
+    getEndpoint(`/v1/savings/onboarding/status/legal-entity?registry-code=${registryCode}`),
+  );
 }
 
 export function postSavingsFundCompanyOnboardingSurvey(

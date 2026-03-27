@@ -20,9 +20,9 @@ export const SavingsFundCompanyOnboarding = () => {
   const history = useHistory();
   const [activeSection, setActiveSection] = useState(0);
   const [submitError, setSubmitError] = useState(false);
+  const [submittedRegistryCode, setSubmittedRegistryCode] = useState<string | undefined>(undefined);
 
-  const { data: onboardingStatus, refetch: refetchOnboardingStatus } =
-    useSavingsFundCompanyOnboardingStatus();
+  const { data: onboardingStatus } = useSavingsFundCompanyOnboardingStatus(submittedRegistryCode);
   const { mutateAsync: submitSurvey, isPending: submittingSurvey } =
     useSubmitSavingsFundCompanyOnboardingSurvey();
 
@@ -55,6 +55,7 @@ export const SavingsFundCompanyOnboarding = () => {
       command: transformCompanyFormDataToSurveyCommand(data),
       registryCode: data.registryLookup?.registryNumber ?? '',
     });
+    setSubmittedRegistryCode(data.registryLookup?.registryNumber ?? '');
   });
 
   const steps: Array<{
@@ -108,7 +109,6 @@ export const SavingsFundCompanyOnboarding = () => {
       try {
         setSubmitError(false);
         await submitForm();
-        await refetchOnboardingStatus();
       } catch (e) {
         setSubmitError(true);
       }
