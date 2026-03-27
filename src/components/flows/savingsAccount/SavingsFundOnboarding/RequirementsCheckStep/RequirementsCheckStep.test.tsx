@@ -216,6 +216,112 @@ describe('RequirementsCheckStep', () => {
     });
   });
 
+  it('displays error when backend returns 403 NOT_BOARD_MEMBER', async () => {
+    server.use(
+      rest.get('http://localhost/v1/kyb/surveys/initial-validation', (_req, res, ctx) =>
+        res(
+          ctx.status(403),
+          ctx.json({
+            error: 'NOT_BOARD_MEMBER',
+            error_description:
+              'Person is not a board member of the company: registryCode=11223344, personalCode=40404049996',
+          }),
+        ),
+      ),
+    );
+
+    renderWrapped(
+      <RequirementsCheckStepWrapper
+        defaultValues={{ registryNumber: '11223344', registryName: 'Test OÜ' }}
+      />,
+    );
+
+    expect(
+      await screen.findByText(
+        'You are not a board member of this company. Only board members can proceed with onboarding.',
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('fails validation when backend returns 403 NOT_BOARD_MEMBER', async () => {
+    server.use(
+      rest.get('http://localhost/v1/kyb/surveys/initial-validation', (_req, res, ctx) =>
+        res(
+          ctx.status(403),
+          ctx.json({
+            error: 'NOT_BOARD_MEMBER',
+            error_description: 'Person is not a board member of the company',
+          }),
+        ),
+      ),
+    );
+
+    const ValidationWrapper = () => {
+      const { control, trigger } = useForm<CompanyOnboardingFormData>({
+        mode: 'onChange',
+        defaultValues: {
+          registryLookup: { registryNumber: '11223344', registryName: 'Test OÜ' },
+          companyValidatedData: undefined,
+        },
+      });
+
+      return (
+        <>
+          <RequirementsCheckStep control={control} />
+          <button
+            type="button"
+            onClick={async () => {
+              const valid = await trigger('companyValidatedData');
+              document.title = valid ? 'valid' : 'invalid';
+            }}
+          >
+            Validate
+          </button>
+        </>
+      );
+    };
+
+    renderWrapped(<ValidationWrapper />);
+
+    expect(
+      await screen.findByText(
+        'You are not a board member of this company. Only board members can proceed with onboarding.',
+      ),
+    ).toBeInTheDocument();
+
+    userEvent.click(screen.getByRole('button', { name: 'Validate' }));
+
+    await waitFor(() => {
+      expect(document.title).toBe('invalid');
+    });
+  });
+
+  it('hides data rows when backend returns 403 NOT_BOARD_MEMBER', async () => {
+    server.use(
+      rest.get('http://localhost/v1/kyb/surveys/initial-validation', (_req, res, ctx) =>
+        res(
+          ctx.status(403),
+          ctx.json({
+            error: 'NOT_BOARD_MEMBER',
+            error_description: 'Person is not a board member of the company',
+          }),
+        ),
+      ),
+    );
+
+    renderWrapped(
+      <RequirementsCheckStepWrapper
+        defaultValues={{ registryNumber: '11223344', registryName: 'Test OÜ' }}
+      />,
+    );
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+
+    expect(screen.queryByText('Founding date')).not.toBeInTheDocument();
+    expect(screen.queryByText('Company address')).not.toBeInTheDocument();
+    expect(screen.queryByText('Primary company activity area')).not.toBeInTheDocument();
+  });
+
   it('renders shimmer while loading backend data', () => {
     server.use(
       rest.get('http://localhost/v1/kyb/surveys/initial-validation', (_req, res, ctx) =>

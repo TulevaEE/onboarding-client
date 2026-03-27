@@ -182,6 +182,8 @@ export function useCompanyBusinessRegistryValidation(
     queryKey: ['companyBusinessRegistryValidation', registryCode],
     queryFn: () => getCompanyBusinessRegistryValidation(registryCode),
     enabled: !!registryCode,
+    refetchOnWindowFocus: false,
+    retry: (_failureCount, error) => (error as { status?: number }).status !== 403,
   });
 }
 
