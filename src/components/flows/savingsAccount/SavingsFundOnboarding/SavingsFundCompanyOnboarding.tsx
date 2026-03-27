@@ -27,12 +27,8 @@ export const SavingsFundCompanyOnboarding = () => {
     useSubmitSavingsFundCompanyOnboardingSurvey();
 
   useEffect(() => {
-    if (onboardingStatus?.status === 'REJECTED' || onboardingStatus?.status === 'PENDING') {
-      history.push('/savings-fund/company/onboarding/pending');
-    }
-
-    if (onboardingStatus?.status === 'COMPLETED') {
-      history.push('/savings-fund/company/onboarding/success');
+    if (onboardingStatus) {
+      history.push('/savings-fund/onboarding/pending');
     }
   }, [onboardingStatus]);
 
