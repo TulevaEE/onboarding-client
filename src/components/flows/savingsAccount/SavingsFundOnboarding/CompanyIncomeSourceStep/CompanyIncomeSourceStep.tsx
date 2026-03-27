@@ -50,10 +50,11 @@ export const CompanyIncomeSourceStep: FC<CompanyIncomeSourceStepProps> = ({ cont
             {CHECKBOX_OPTIONS.map(({ key, labelId }) => {
               const isChecked = field.value[key];
               return (
-                <div
+                <label
+                  htmlFor={key}
                   className={`d-flex flex-column border ${
                     isChecked ? 'bg-blue-1 border-primary border-2' : 'bg-gray-1 border-gray-2'
-                  } rounded rounded-3 p-3`}
+                  } rounded rounded-3 p-3 form-check-label`}
                 >
                   <div
                     className={`d-flex gap-3 fs-3 border border-transparent ${
@@ -70,11 +71,9 @@ export const CompanyIncomeSourceStep: FC<CompanyIncomeSourceStepProps> = ({ cont
                       checked={isChecked}
                       onChange={(e) => field.onChange({ ...field.value, [key]: e.target.checked })}
                     />
-                    <label className="form-check-label" htmlFor={key}>
-                      <FormattedMessage id={labelId} />
-                    </label>
+                    <FormattedMessage id={labelId} />
                   </div>
-                </div>
+                </label>
               );
             })}
             {error && error.message ? (
