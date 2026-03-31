@@ -319,11 +319,11 @@ const mapStateToProps = (state: State) => ({
   conversion: state.login.userConversion.secondPillar,
   sourceFunds: state.exchange.sourceFunds || [],
   targetFunds: state.exchange.targetFunds || [],
-  secondPillarActive: (state.login.user || {}).secondPillarActive,
-  currentPaymentRate: (state.login.user || {}).secondPillarPaymentRates.current || 2,
+  secondPillarActive: state.login.user?.secondPillarActive,
+  currentPaymentRate: state.login.user?.secondPillarPaymentRates?.current ?? 2,
   pendingPaymentRate:
-    (state.login.user || {}).secondPillarPaymentRates.pending ||
-    (state.login.user || {}).secondPillarPaymentRates.current ||
+    state.login.user?.secondPillarPaymentRates?.pending ??
+    state.login.user?.secondPillarPaymentRates?.current ??
     2,
   activeFundIsin: state.exchange.sourceFunds?.find((sourceFund) => sourceFund.activeFund)?.isin,
 });

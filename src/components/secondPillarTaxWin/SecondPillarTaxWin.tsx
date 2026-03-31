@@ -49,7 +49,7 @@ const SecondPillarTaxWin = () => {
   usePageTitle('pageTitle.secondPillarTaxWin');
   const { data: user } = useMe();
   const { data: contributions } = useContributions();
-  const currentPaymentRate = user?.secondPillarPaymentRates.current || 2;
+  const currentPaymentRate = user?.secondPillarPaymentRates?.current ?? 2;
 
   const calculateYTDContributionMetrics = () => {
     if (!contributions) {

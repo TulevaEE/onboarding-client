@@ -14,7 +14,7 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
 
   const { data: user } = useMe();
   const pendingPaymentRate =
-    user?.secondPillarPaymentRates.pending || user?.secondPillarPaymentRates.current || null;
+    user?.secondPillarPaymentRates?.pending ?? user?.secondPillarPaymentRates?.current ?? null;
 
   const [paymentRate, setPaymentRate] = useState<PaymentRate | null>(6);
 

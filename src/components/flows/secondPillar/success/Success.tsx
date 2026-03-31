@@ -24,8 +24,8 @@ export const Success: React.FC<Props> = ({
     return null;
   }
 
-  const currentRate = user?.secondPillarPaymentRates.current || 2;
-  const pendingRate = user?.secondPillarPaymentRates.pending || null;
+  const currentRate = user?.secondPillarPaymentRates?.current ?? 2;
+  const pendingRate = user?.secondPillarPaymentRates?.pending ?? null;
 
   const isMax = pendingRate === 6 || (currentRate === 6 && pendingRate == null);
   const showUpsell = !isMax;
