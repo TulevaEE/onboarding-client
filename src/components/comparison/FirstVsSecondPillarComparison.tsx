@@ -18,8 +18,8 @@ export const FirstVsSecondPillarComparison = () => {
 
   const BEGINNING_OF_TIME = '2000-01-01';
   const fromDate = '2018-01-01';
-  const toDate = '2024-12-31';
-  const yearsBetween = 7;
+  const toDate = '2025-12-31';
+  const yearsBetween = 8;
 
   const { data: user } = useMe();
   const { data: contributions } = useContributions();
@@ -139,7 +139,7 @@ export const FirstVsSecondPillarComparison = () => {
     ...AVG_PERSONALIZED_SOCIAL_TAX_PENSION_COMPONENT_EUR_BY_YEAR,
   })
     .map(Number)
-    .filter((year) => year >= 2018 && year <= 2024)
+    .filter((year) => year >= 2018 && year <= 2025)
     .sort((year1, year2) => year1 - year2)
     .map((year) => {
       const total = totalsByYear[year] ?? 0;
@@ -157,7 +157,7 @@ export const FirstVsSecondPillarComparison = () => {
     0,
   );
 
-  const pricePerUnit = 10.0; // EUR
+  const pricePerUnit = 10.477; // EUR (2026: 10.0 × 1.0477, index formula: 1 + 0.053 × 0.9)
 
   const impactOfReduction = totalDiff * pricePerUnit; // EUR per month
 
@@ -178,7 +178,7 @@ export const FirstVsSecondPillarComparison = () => {
         igal aastal natuke vähem I samba osakuid ehk tulevikus maksab riik sulle pisut väiksemat
         riiklikku pensioni.
       </p>
-      <p>Täpsemalt on viimase 7 aasta (2018–2024) vahekokkuvõte selline:</p>
+      <p>Täpsemalt on viimase 8 aasta (2018–2025) vahekokkuvõte selline:</p>
       <div className="my-4 vstack gap-2">
         <div className="card">
           <div className="card-body d-flex gap-3">
@@ -298,7 +298,7 @@ export const FirstVsSecondPillarComparison = () => {
           </p>
           <ul className="d-flex flex-column gap-3">
             <li>
-              <strong>Riiklik pension.</strong> Võtsime sinu 2018–2024 tehtud II samba sissemaksed
+              <strong>Riiklik pension.</strong> Võtsime sinu 2018–2025 tehtud II samba sissemaksed
               ja arvutasime nende alusel välja, kui palju sa sel perioodil osakuid oleks teeninud,
               kui sa II sambaga ühinenud poleks. Korrutasime selle 0,2-ga ja saimegi teada, kui
               palju vähem osakuid tegelikult riik sulle kirja pani. Kuna tugineme II samba
@@ -309,18 +309,18 @@ export const FirstVsSecondPillarComparison = () => {
             <li>
               <strong>Osaku väärtus.</strong> Osak ei ole vara, vaid lihtsalt riigi viis arvet
               pidada selle üle, kui palju ta sulle I samba pensionit maksma peaks, kui sa
-              pensioniikka jõuad. Sel aastal maksab riik iga teenitud osaku eest 10 eurot kuus
+              pensioniikka jõuad. Sel aastal maksab riik iga teenitud osaku eest 10,48 eurot kuus
               pensionit.
             </li>
             <li>
-              <strong>Miks just 2018–2024?</strong> II sambaga sai ühineda juba 2002. aasta suvel.
-              Me võtsime arvutuse aluseks viimased 7 aastat kahel põhjusel. Esiteks, see on aeg, mil
+              <strong>Miks just 2018–2025?</strong> II sambaga sai ühineda juba 2002. aasta suvel.
+              Me võtsime arvutuse aluseks viimased 8 aastat kahel põhjusel. Esiteks, see on aeg, mil
               paljud meist koguvad Tulevas. Teiseks, varasematel perioodidel on II samba
               sissemaksetes olnud mitu muutust, mis teevad nende alusel palga arvutamise võimatuks.
             </li>
             <li>
               <strong>II samba kasv.</strong> Seepärast ei vaata me kogu sinu II sambasse kogunenud
-              summat, vaid ainult seda osa, mis on tekkinud 2018–2024 tehtud sissemaksetest ja
+              summat, vaid ainult seda osa, mis on tekkinud 2018–2025 tehtud sissemaksetest ja
               nendele kogunenud kasumist.
             </li>
           </ul>
@@ -330,7 +330,9 @@ export const FirstVsSecondPillarComparison = () => {
   );
 };
 
+// Source: https://www.riigiteataja.ee/akt/119032026018
 export const AVG_PERSONALIZED_SOCIAL_TAX_PENSION_COMPONENT_EUR_BY_YEAR: Record<number, number> = {
+  2025: 4845.72,
   2024: 4567.33,
   2023: 4212.07,
   2022: 3786.82,
