@@ -59,7 +59,7 @@ describe('3rd pillar flow', () => {
 
     userEvent.click(confirmationCheckbox());
 
-    userEvent.click(pepCheckbox());
+    userEvent.click(pepRadio());
 
     userEvent.click(residencyCheckbox());
 
@@ -104,7 +104,7 @@ describe('3rd pillar flow', () => {
     expect(targetFundName()).toBeInTheDocument();
 
     userEvent.click(confirmationCheckbox());
-    userEvent.click(pepCheckbox());
+    userEvent.click(pepRadio());
     userEvent.click(residencyCheckbox());
     userEvent.selectOptions(occupationSelect(), 'Private sector');
 
@@ -151,12 +151,12 @@ const sourceFundName = () => screen.getByText(/Swedbank III Pillar Pension Fund/
 
 const confirmationCheckbox = () =>
   screen.getByRole('checkbox', {
-    name: /I confirm that I have had the chance to view all supplementary pension funds’ terms and prospectuses/i,
+    name: /I have had the chance to view all supplementary pension funds.* terms and prospectuses/i,
   });
 
-const pepCheckbox = () =>
-  screen.getByRole('checkbox', {
-    name: /I confirm that I am not a politically exposed person/i,
+const pepRadio = () =>
+  screen.getByRole('radio', {
+    name: /I am not a politically exposed person/i,
   });
 
 const residencyCheckbox = () =>
@@ -177,7 +177,7 @@ const sign = () =>
 const paymentStepHeading = () =>
   screen.findByRole(
     'heading',
-    { name: /Contribution to Tuleva’s III pillar fund/i },
+    { name: /Contribution to Tuleva's III pillar fund/i },
     { timeout: 10_000 },
   );
 
