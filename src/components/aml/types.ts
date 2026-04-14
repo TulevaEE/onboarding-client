@@ -1,7 +1,7 @@
 import { AmlCheck, ErrorResponse } from '../common/apiModels';
 
 export type Aml = {
-  isPoliticallyExposed: boolean;
+  isPoliticallyExposed: boolean | null;
   isResident: boolean;
   occupation: string;
   loading: boolean;

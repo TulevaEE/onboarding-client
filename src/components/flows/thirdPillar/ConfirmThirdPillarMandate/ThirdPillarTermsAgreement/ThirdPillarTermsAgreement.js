@@ -10,7 +10,7 @@ export const ThirdPillarTermsAgreement = ({ agreed, onAgreementChange }) => {
   const { formatMessage } = useIntl();
 
   return (
-    <div className="mt-5">
+    <div className="mt-3">
       <div className="form-check">
         <input
           checked={agreed}

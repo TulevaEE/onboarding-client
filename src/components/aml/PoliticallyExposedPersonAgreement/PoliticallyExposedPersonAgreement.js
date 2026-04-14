@@ -2,7 +2,6 @@ import React from 'react';
 import Types from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Field } from 'redux-form';
 
 import { FormattedMessage } from 'react-intl';
 import { changeIsPoliticallyExposed } from '../actions';
@@ -14,23 +13,38 @@ export const PoliticallyExposedPersonAgreement = ({
   className,
 }) => (
   <div className={className}>
+    <span className="form-label mb-2 d-block">
+      <FormattedMessage id="aml.pepTitle" />
+      <InfoTooltip name="pep-tooltip" place="top">
+        <div className="content">
+          <FormattedMessage id="aml.pepTooltip" />
+        </div>
+      </InfoTooltip>
+    </span>
     <div className="form-check">
-      <Field
-        checked={isPoliticallyExposed === false}
-        onChange={(e) => onPoliticallyExposedChange(!e.target.checked)}
-        component="input"
-        type="checkbox"
-        name="aml.isNotPoliticallyExposed"
-        id="aml-not-pep-checkbox"
+      <input
+        type="radio"
+        name="aml.isPoliticallyExposed"
+        id="aml-pep-yes"
+        checked={isPoliticallyExposed === true}
+        onChange={() => onPoliticallyExposedChange(true)}
         className="form-check-input"
       />
-      <label className="form-check-label" htmlFor="aml-not-pep-checkbox">
+      <label className="form-check-label" htmlFor="aml-pep-yes">
+        <FormattedMessage id="aml.isPep" />
+      </label>
+    </div>
+    <div className="form-check">
+      <input
+        type="radio"
+        name="aml.isPoliticallyExposed"
+        id="aml-pep-no"
+        checked={isPoliticallyExposed === false}
+        onChange={() => onPoliticallyExposedChange(false)}
+        className="form-check-input"
+      />
+      <label className="form-check-label" htmlFor="aml-pep-no">
         <FormattedMessage id="aml.isNotPep" />
-        <InfoTooltip name="pep-tooltip">
-          <div className="content">
-            <FormattedMessage id="aml.pepTooltip" />
-          </div>
-        </InfoTooltip>
       </label>
     </div>
   </div>

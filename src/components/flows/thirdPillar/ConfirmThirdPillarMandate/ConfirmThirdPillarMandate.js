@@ -45,7 +45,8 @@ export const ConfirmThirdPillarMandate = ({
   mandateSigningError,
 }) => {
   const isTestModeEnabled = isTestMode();
-  const buttonDisabled = !agreedToTerms || !isResident || !occupation;
+  const buttonDisabled =
+    !agreedToTerms || !isResident || !occupation || isPoliticallyExposed == null;
   return (
     <>
       {!isTestModeEnabled && (
@@ -96,9 +97,9 @@ export const ConfirmThirdPillarMandate = ({
 
       <ThirdPillarTermsAgreement />
 
-      <PoliticallyExposedPersonAgreement className="mt-3" />
       <ResidencyAgreement className="mt-3" />
       <OccupationAgreement className="col-md-5 mt-3 px-0" />
+      <PoliticallyExposedPersonAgreement className="mt-3" />
 
       {mandateSigningError ? (
         <ErrorMessage errors={mandateSigningError.body} onCancel={onCloseErrorMessages} overlayed />

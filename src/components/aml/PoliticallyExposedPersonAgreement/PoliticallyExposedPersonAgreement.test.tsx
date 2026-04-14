@@ -1,65 +1,64 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryHistory } from 'history';
-import { reduxForm } from 'redux-form';
 import { renderWrapped, createDefaultStore } from '../../../test/utils';
 import PepAgreement from './PoliticallyExposedPersonAgreement';
 
-const FormWrapper = reduxForm({ form: 'testForm' })(() => (
-  <form>
-    <PepAgreement />
-  </form>
-));
-
 describe('PoliticallyExposedPersonAgreement', () => {
-  test('checkbox starts unchecked (user is considered a PEP by default)', () => {
+  test('no radio is selected by default', () => {
     const history = createMemoryHistory();
     const store = createDefaultStore(history);
 
-    renderWrapped(<FormWrapper />, history, store);
+    renderWrapped(<PepAgreement />, history, store);
 
-    const checkbox = screen.getByRole('checkbox');
-    expect(checkbox).not.toBeChecked();
+    const radios = screen.getAllByRole('radio');
+    expect(radios).toHaveLength(2);
+    radios.forEach((radio) => expect(radio).not.toBeChecked());
+    expect(store.getState().aml.isPoliticallyExposed).toBeNull();
+  });
+
+  test('user can select "I am a PEP"', () => {
+    const history = createMemoryHistory();
+    const store = createDefaultStore(history);
+
+    renderWrapped(<PepAgreement />, history, store);
+
+    userEvent.click(screen.getByRole('radio', { name: /I am a politically exposed person/i }));
+
+    expect(screen.getByRole('radio', { name: /I am a politically exposed person/i })).toBeChecked();
     expect(store.getState().aml.isPoliticallyExposed).toBe(true);
   });
 
-  test('user can check the box to declare they are NOT a PEP', () => {
+  test('user can select "I am not a PEP"', () => {
     const history = createMemoryHistory();
     const store = createDefaultStore(history);
 
-    renderWrapped(<FormWrapper />, history, store);
+    renderWrapped(<PepAgreement />, history, store);
 
-    const checkbox = screen.getByRole('checkbox');
-    userEvent.click(checkbox);
+    userEvent.click(screen.getByRole('radio', { name: /I am not a politically exposed person/i }));
 
-    expect(checkbox).toBeChecked();
+    expect(
+      screen.getByRole('radio', { name: /I am not a politically exposed person/i }),
+    ).toBeChecked();
     expect(store.getState().aml.isPoliticallyExposed).toBe(false);
   });
 
-  test('user can uncheck the box to declare they ARE a PEP', () => {
+  test('user can change selection from yes to no', () => {
     const history = createMemoryHistory();
     const store = createDefaultStore(history);
 
-    renderWrapped(<FormWrapper />, history, store);
+    renderWrapped(<PepAgreement />, history, store);
 
-    const checkbox = screen.getByRole('checkbox');
-
-    userEvent.click(checkbox);
-    expect(checkbox).toBeChecked();
-
-    userEvent.click(checkbox);
-    expect(checkbox).not.toBeChecked();
+    userEvent.click(screen.getByRole('radio', { name: /I am a politically exposed person/i }));
     expect(store.getState().aml.isPoliticallyExposed).toBe(true);
-  });
 
-  test('displays PEP explanation label', () => {
-    const history = createMemoryHistory();
-    const store = createDefaultStore(history);
-
-    renderWrapped(<FormWrapper />, history, store);
-
+    userEvent.click(screen.getByRole('radio', { name: /I am not a politically exposed person/i }));
     expect(
-      screen.getByText(/I confirm that I am not a politically exposed person/i),
-    ).toBeInTheDocument();
+      screen.getByRole('radio', { name: /I am not a politically exposed person/i }),
+    ).toBeChecked();
+    expect(
+      screen.getByRole('radio', { name: /I am a politically exposed person/i }),
+    ).not.toBeChecked();
+    expect(store.getState().aml.isPoliticallyExposed).toBe(false);
   });
 });
