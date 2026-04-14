@@ -151,7 +151,7 @@ const sourceFundName = () => screen.getByText(/Swedbank III Pillar Pension Fund/
 
 const confirmationCheckbox = () =>
   screen.getByRole('checkbox', {
-    name: /I have had the chance to view all supplementary pension funds.* terms and prospectuses/i,
+    name: /I have had the chance to view all supplementary pension funds’ terms and prospectuses/i,
   });
 
 const pepRadio = () =>
