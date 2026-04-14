@@ -10,7 +10,7 @@ const defaultProps = {
   selectedFutureContributionsFund: { isin: 'EE123', name: 'Test Fund' },
   agreedToTerms: true,
   isResident: true,
-  isPoliticallyExposed: true,
+  isPoliticallyExposed: false,
   occupation: 'PRIVATE_SECTOR',
 };
 
@@ -21,7 +21,7 @@ const createWrappedComponent = (overrideProps = {}) => {
 };
 
 describe('ConfirmThirdPillarMandate', () => {
-  test('sign button is enabled when all required fields are filled (PEP checkbox not required)', () => {
+  test('sign button is enabled when all required fields are filled', () => {
     const history = createMemoryHistory();
     const store = createDefaultStore(history);
     const WrappedComponent = createWrappedComponent();
@@ -65,7 +65,17 @@ describe('ConfirmThirdPillarMandate', () => {
     expect(signButton).toBeDisabled();
   });
 
-  test('sign button stays enabled regardless of PEP checkbox state', () => {
+  test('sign button is disabled when PEP is not selected', () => {
+    const history = createMemoryHistory();
+    const store = createDefaultStore(history);
+    const WrappedComponent = createWrappedComponent({ isPoliticallyExposed: null });
+
+    renderWrapped(<WrappedComponent />, history, store);
+
+    expect(screen.getByRole('button', { name: /sign/i })).toBeDisabled();
+  });
+
+  test('sign button is enabled when user declares they are a PEP', () => {
     const history = createMemoryHistory();
     const store = createDefaultStore(history);
     const WrappedComponent = createWrappedComponent({ isPoliticallyExposed: true });
@@ -75,7 +85,7 @@ describe('ConfirmThirdPillarMandate', () => {
     expect(screen.getByRole('button', { name: /sign/i })).toBeEnabled();
   });
 
-  test('sign button is enabled when user is not a PEP', () => {
+  test('sign button is enabled when user declares they are not a PEP', () => {
     const history = createMemoryHistory();
     const store = createDefaultStore(history);
     const WrappedComponent = createWrappedComponent({ isPoliticallyExposed: false });
