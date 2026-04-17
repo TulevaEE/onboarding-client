@@ -9,6 +9,7 @@ import Table from '../../common/table';
 import { Euro } from '../../common/Euro';
 import { Shimmer } from '../../common/shimmer/Shimmer';
 import { formatDate } from '../../common/dateFormatter';
+import { formatAmountForCount } from '../../common/utils';
 import { Breakpoint, TableColumn } from '../../common/table/Table';
 import { getOtherTransactionPages } from './getOtherTransactionPages';
 
@@ -67,6 +68,27 @@ export const TransactionSection: React.FunctionComponent<{
 
   const hasPensionTransactions = fundTransactions.some((transaction) => transaction.pillar);
 
+  const unitsColumn = (() => {
+    if (limit) {
+      return [];
+    }
+    const allSameFund =
+      fundTransactions.length > 0 && new Set(fundTransactions.map((t) => t.isin)).size === 1;
+    const unitsSum = sumBy(fundTransactions, (transaction) =>
+      transaction.type === 'SUBTRACTION' ? -(transaction.units ?? 0) : transaction.units ?? 0,
+    );
+    return [
+      {
+        title: <FormattedMessage id="transactions.columns.units.title" />,
+        dataIndex: 'units',
+        hideOnBreakpoint: ['xs', 'sm'] as Breakpoint[],
+        ...(allSameFund && {
+          footer: formatAmountForCount(unitsSum, 2),
+        }),
+      },
+    ];
+  })();
+
   const columns: TableColumn[] = [
     {
       title: <FormattedMessage id="transactions.columns.date.title" />,
@@ -90,6 +112,7 @@ export const TransactionSection: React.FunctionComponent<{
       width: 100,
       align: 'left',
     },
+    ...unitsColumn,
     {
       title: <FormattedMessage id="transactions.columns.amount.title" />,
       dataIndex: 'amount',
@@ -120,16 +143,25 @@ export const TransactionSection: React.FunctionComponent<{
             ) : (
               <FormattedMessage id="transactions.personal" />
             ),
-          date: <span className="text-nowrap">{date}</span>,
-          fund: <span>{transaction.fundName}</span>,
-          amount:
+          date:
             !limit && transaction.id ? (
-              <Link to={`/transaction/${transaction.id}`}>
-                <Euro amount={transaction.amount} />
+              <Link to={`/transaction/${transaction.id}`} className="text-nowrap">
+                {date}
               </Link>
             ) : (
-              <Euro amount={transaction.amount} />
+              <span className="text-nowrap">{date}</span>
             ),
+          fund: <span>{transaction.fundName}</span>,
+          ...(!limit &&
+            transaction.units != null && {
+              // Backend returns positive units for subtractions (unlike amounts which are negative).
+              // Negate here to match the amount sign convention. Remove if backend starts returning signed units.
+              units: formatAmountForCount(
+                transaction.type === 'SUBTRACTION' ? -transaction.units : transaction.units,
+                2,
+              ),
+            }),
+          amount: <Euro amount={transaction.amount} />,
           key: transaction.time,
         },
       ];
