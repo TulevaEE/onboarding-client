@@ -621,6 +621,7 @@
   "transactions.columns.date.footer": "Kokku",
   "transactions.columns.pillar.title": "Sammas",
   "transactions.columns.amount.title": "Summa",
+  "transactions.columns.units.title": "Osakud",
   "transactions.columns.entity.title": "Teostaja",
   "transactions.seeAll": "Vaatan kõiki tehinguid",
   "transactions.seeAll.2": "II sammas",

@@ -579,6 +579,7 @@
   "transactions.columns.date.title": "Date",
   "transactions.columns.date.footer": "Total",
   "transactions.columns.amount.title": "Amount",
+  "transactions.columns.units.title": "Units",
   "transactions.columns.entity.title": "Done by",
   "transactions.seeAll": "View all transactions",
   "transactions.seeAll.2": "II pillar",
