@@ -91,6 +91,11 @@ select optgroup {
   color: $text-tertiary;
 }
 
+select.form-select {
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+}
+
 .btn-light {
   color: $blue;
   border-color: var(--bs-border-color);
