@@ -46,6 +46,7 @@ describe('LegalEntityAccountPage', () => {
       profit: 500,
       units: 1000,
     });
+    applicationsBackend(server, [savingFundPaymentApplication]);
     initializeComponent();
     history.push('/account');
   });
@@ -77,9 +78,6 @@ describe('LegalEntityAccountPage', () => {
   });
 
   test('renders pending savings fund applications', async () => {
-    applicationsBackend(server, [savingFundPaymentApplication]);
-    initializeComponent();
-    history.push('/account');
     expect(await screen.findByText('Pending applications and transactions')).toBeInTheDocument();
     expect(screen.getByText(/deposit to additional savings fund/)).toBeInTheDocument();
   });
