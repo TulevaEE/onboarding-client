@@ -37,7 +37,7 @@ describe('RequirementsCheckStep', () => {
   it('renders title', () => {
     renderWrapped(<RequirementsCheckStepWrapper />);
 
-    expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('Company data');
+    expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('Company details');
   });
 
   it('renders description', () => {

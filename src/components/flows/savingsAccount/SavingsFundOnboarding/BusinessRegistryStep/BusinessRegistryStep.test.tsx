@@ -47,9 +47,9 @@ describe('BusinessRegistryStep', () => {
     renderWrapped(<BusinessRegistryStepWrapper />);
 
     expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(
-      "What is your company's registry code?",
+      "Enter your company's name",
     );
-    expect(screen.getByText('Or company name')).toBeInTheDocument();
+    expect(screen.getByText('Or registry code')).toBeInTheDocument();
   });
 
   it('renders placeholder in the autocomplete input', () => {

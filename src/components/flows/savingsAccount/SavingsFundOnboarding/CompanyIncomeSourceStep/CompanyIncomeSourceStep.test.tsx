@@ -41,7 +41,7 @@ describe('CompanyIncomeSourceStep', () => {
   it('renders title', () => {
     renderWrapped(<CompanyIncomeSourceStepWrapper />);
 
-    expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('Sources of income');
+    expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('I confirm the following');
   });
 
   it('renders description', () => {
