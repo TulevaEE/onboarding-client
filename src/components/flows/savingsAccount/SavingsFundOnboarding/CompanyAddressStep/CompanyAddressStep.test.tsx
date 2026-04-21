@@ -31,7 +31,7 @@ describe('CompanyAddressStep', () => {
     renderWrapped(<CompanyAddressStepWrapper />);
 
     expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(
-      'Where does your company operate from?',
+      'Where does your company operate?',
     );
   });
 
