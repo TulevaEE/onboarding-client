@@ -97,7 +97,7 @@ describe('SecondPillarGrowth', () => {
         }),
       );
       renderWithProviders(<SecondPillarGrowth />);
-      expect(segmentAmount('You')).toBeCloseTo(5531.39, 2);
+      expect(segmentAmount('Your contribution')).toBeCloseTo(5531.39, 2);
       expect(segmentAmount('State')).toBeCloseTo(10011.86, 2);
       expect(segmentAmount('Return')).toBeCloseTo(155.11, 2);
       expect(segmentAmount('Withdrawn')).toBeCloseTo(0, 2);
@@ -133,7 +133,7 @@ describe('SecondPillarGrowth', () => {
       expect(segmentAmount('Withdrawn')).toBeCloseTo(-7160.25, 2);
       expect(segmentAmount('Return')).toBeCloseTo(2230.67, 2);
       const sum =
-        segmentAmount('You') +
+        segmentAmount('Your contribution') +
         segmentAmount('State') +
         segmentAmount('Return') +
         segmentAmount('Withdrawn');
@@ -154,7 +154,7 @@ describe('SecondPillarGrowth', () => {
       expect(segmentAmount('Return')).toBeLessThan(0);
       expect(segmentAmount('Withdrawn')).toBeCloseTo(-3500.25, 2);
       const sum =
-        segmentAmount('You') +
+        segmentAmount('Your contribution') +
         segmentAmount('State') +
         segmentAmount('Return') +
         segmentAmount('Withdrawn');
@@ -169,7 +169,7 @@ describe('SecondPillarGrowth', () => {
         }),
       );
       renderWithProviders(<SecondPillarGrowth />);
-      expect(segmentAmount('You')).toBeCloseTo(0, 2);
+      expect(segmentAmount('Your contribution')).toBeCloseTo(0, 2);
       expect(segmentAmount('State')).toBeCloseTo(396.5, 2);
       expect(segmentAmount('Return')).toBeCloseTo(29.2, 2);
       expect(segmentAmount('Withdrawn')).toBeCloseTo(0, 2);
@@ -228,7 +228,7 @@ describe('SecondPillarGrowth', () => {
         }),
       );
       renderWithProviders(<SecondPillarGrowth />);
-      expect(segmentAmount('You')).toBeCloseTo(9419.9, 2);
+      expect(segmentAmount('Your contribution')).toBeCloseTo(9419.9, 2);
       expect(segmentAmount('State')).toBeCloseTo(16453.08, 2);
       expect(segmentAmount('Return')).toBeCloseTo(20175.73, 2);
       expect(segmentAmount('Withdrawn')).toBeCloseTo(0, 2);
@@ -350,7 +350,7 @@ describe('SecondPillarGrowth', () => {
         }),
       );
       renderWithProviders(<SecondPillarGrowth />);
-      expect(accountList().getByText('Balance')).toBeInTheDocument();
+      expect(accountList().getByText('Total')).toBeInTheDocument();
       expect(accountList().getByText(/15.?698 €/)).toBeInTheDocument();
     });
 
@@ -367,7 +367,7 @@ describe('SecondPillarGrowth', () => {
       expect(accountList().getByText('Your contribution')).toBeInTheDocument();
       expect(accountList().getByText('State')).toBeInTheDocument();
       expect(accountList().getByText('Return')).toBeInTheDocument();
-      expect(accountList().getByText('Balance')).toBeInTheDocument();
+      expect(accountList().getByText('Total')).toBeInTheDocument();
     });
 
     it('includes an inheritance row only when inheritance > 0', () => {

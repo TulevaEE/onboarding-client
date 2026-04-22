@@ -1142,7 +1142,7 @@
   "secondPillarGrowth.title": "Kes maksab sinu II sambasse?",
   "secondPillarGrowth.lead": "Sinu enda sissemaksete kõrval aitavad sind kogumisel <b>riik</b> ja <b>tootlus</b>. Sinu II sambas on <b>{balance}</b>. Graafikult näed, kui palju sellest oled ise sisse maksnud, kui palju on aidanud kaasa riik ning kui palju on juurde andnud tootlus.",
   "secondPillarGrowth.chart.label": "Sinu II samba varad",
-  "secondPillarGrowth.chart.yourContributions": "Sinu",
+  "secondPillarGrowth.chart.yourContributions": "Sinu panus",
   "secondPillarGrowth.chart.government": "Riik",
   "secondPillarGrowth.chart.inheritance": "Pärimine",
   "secondPillarGrowth.chart.growth": "Tootlus",

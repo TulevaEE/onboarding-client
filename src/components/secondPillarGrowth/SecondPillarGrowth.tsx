@@ -15,6 +15,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { usePageTitle } from '../common/usePageTitle';
 import { useSecondPillarAssets } from '../common/apiHooks';
 import { Shimmer } from '../common/shimmer/Shimmer';
+import { formatAmountForCurrency } from '../common/utils';
 import { TranslationKey } from '../translations';
 
 ChartJS.register(
@@ -32,35 +33,107 @@ const STACKED_BAR_SEPARATOR_WIDTH = 1;
 const STACKED_BAR_SEPARATOR_COLOR = '#fff';
 const STACK_KEY = 'balance';
 
-const COLOR_SINU = '#156B3B';
-const COLOR_RIIK = '#2E8B57';
-const COLOR_PARIMINE = '#8B5CF6';
-const COLOR_TOOTLUS = '#5AB4E6';
-const COLOR_VALJAMAKSED = '#F0CB5B';
+// Chart palette reuses the tax-win page's softer hues (see
+// SecondPillarTaxWin.tsx) so the two 2nd-pillar charts feel
+// consistent. Each segment comes from a distinct hue family.
+const COLOR_CONTRIBUTION = 'rgba(132,197,230,0.7)'; // tax-win light blue — your contribution
+const COLOR_STATE = '#D0D5DC'; // tax-win gray — neutral state share
+const COLOR_INHERITANCE = '#8B5CF6'; // violet — rare inherited amount, distinct from the rest
+// Growth is semantic: positive = nicer tax-win green, loss = softer red.
+const COLOR_GROWTH_POSITIVE = '#4CBB51'; // tax-win green
+const COLOR_GROWTH_NEGATIVE = '#E74C3C'; // soft red companion
+const COLOR_WITHDRAWN = '#F0CB5B'; // warm mustard — outflow
+
+const HOVER_CONTRIBUTION = 'rgba(83,175,220,0.7)';
+const HOVER_STATE = '#B5BEC8';
+const HOVER_INHERITANCE = '#7048D8';
+const HOVER_GROWTH_POSITIVE = '#409D44';
+const HOVER_GROWTH_NEGATIVE = '#C0392B';
+const HOVER_WITHDRAWN = '#D4B043';
 
 const BLOG_URL = 'https://tuleva.ee/analuusid/kes-maksab-minu-ii-sambasse/';
+
+type AccountRow = {
+  labelId: TranslationKey;
+  amount: number;
+  color: string;
+};
+
+type Segments = {
+  contribution: number;
+  state: number;
+  inheritance: number;
+  growth: number;
+  withdrawn: number;
+};
+
+const orderedAccountRows = (segments: Segments, withdrawals: number): AccountRow[] => {
+  const growthColor = segments.growth >= 0 ? COLOR_GROWTH_POSITIVE : COLOR_GROWTH_NEGATIVE;
+  const rows: AccountRow[] = [];
+  // Positive segments, top-of-bar to just-above-zero (reverse of dataset order)
+  if (segments.growth >= 0) {
+    rows.push({
+      labelId: 'secondPillarGrowth.account.growth',
+      amount: segments.growth,
+      color: growthColor,
+    });
+  }
+  if (segments.inheritance > 0) {
+    rows.push({
+      labelId: 'secondPillarGrowth.account.inheritance',
+      amount: segments.inheritance,
+      color: COLOR_INHERITANCE,
+    });
+  }
+  rows.push({
+    labelId: 'secondPillarGrowth.account.government',
+    amount: segments.state,
+    color: COLOR_STATE,
+  });
+  rows.push({
+    labelId: 'secondPillarGrowth.account.own',
+    amount: segments.contribution,
+    color: COLOR_CONTRIBUTION,
+  });
+  // Negative segments, closest-to-zero first
+  if (segments.growth < 0) {
+    rows.push({
+      labelId: 'secondPillarGrowth.account.growth',
+      amount: segments.growth,
+      color: growthColor,
+    });
+  }
+  if (withdrawals > 0) {
+    rows.push({
+      labelId: 'secondPillarGrowth.account.withdrawals',
+      amount: segments.withdrawn,
+      color: COLOR_WITHDRAWN,
+    });
+  }
+  return rows;
+};
 
 const SecondPillarGrowth = () => {
   const intl = useIntl();
   usePageTitle('pageTitle.secondPillarGrowth');
   const { data: assets } = useSecondPillarAssets();
 
-  const segments = useMemo(() => {
+  const segments: Segments | null = useMemo(() => {
     if (!assets) {
       return null;
     }
-    const sinu = assets.employeeWithheldPortion;
-    const riikJaMuud =
+    const contribution = assets.employeeWithheldPortion;
+    const state =
       assets.socialTaxPortion +
       assets.additionalParentalBenefit +
       assets.compensation +
       assets.interest +
       assets.insurance +
       assets.corrections;
-    const parimine = assets.inheritance;
-    const tootlus = assets.balance + assets.withdrawals - sinu - riikJaMuud - parimine;
-    const valjamaksed = -assets.withdrawals;
-    return { sinu, riikJaMuud, parimine, tootlus, valjamaksed };
+    const { inheritance } = assets;
+    const growth = assets.balance + assets.withdrawals - contribution - state - inheritance;
+    const withdrawn = -assets.withdrawals;
+    return { contribution, state, inheritance, growth, withdrawn };
   }, [assets]);
 
   const subNoteKey = useMemo(() => {
@@ -68,7 +141,7 @@ const SecondPillarGrowth = () => {
       return null;
     }
     const hasWithdrawals = assets.withdrawals > 0;
-    const hasNegativeReturn = segments.tootlus < 0;
+    const hasNegativeReturn = segments.growth < 0;
     if (hasWithdrawals && hasNegativeReturn) {
       return 'withdrawalsAndNegative';
     }
@@ -78,93 +151,99 @@ const SecondPillarGrowth = () => {
     if (hasNegativeReturn) {
       return 'negativeReturn';
     }
-    if (segments.sinu === 0 && segments.riikJaMuud > 0) {
+    if (segments.contribution === 0 && segments.state > 0) {
       return 'parentalLeave';
     }
     return null;
   }, [segments, assets]);
 
-  const formatCurrency = (value: number) => `${Math.round(value).toLocaleString('et-EE')} €`;
+  const formatCurrency = (value: number) => formatAmountForCurrency(value, 0);
 
-  const chartData = segments
-    ? {
-        labels: [intl.formatMessage({ id: 'secondPillarGrowth.chart.label' })],
-        datasets: [
-          {
-            label: intl.formatMessage({ id: 'secondPillarGrowth.chart.yourContributions' }),
-            data: [segments.sinu],
-            backgroundColor: COLOR_SINU,
-            hoverBackgroundColor: '#0F5530',
-            borderColor: STACKED_BAR_SEPARATOR_COLOR,
-            borderWidth: { bottom: STACKED_BAR_SEPARATOR_WIDTH },
-            borderSkipped: false,
-            stack: STACK_KEY,
-          },
-          {
-            label: intl.formatMessage({ id: 'secondPillarGrowth.chart.government' }),
-            data: [segments.riikJaMuud],
-            backgroundColor: COLOR_RIIK,
-            hoverBackgroundColor: '#256F45',
-            borderColor: STACKED_BAR_SEPARATOR_COLOR,
-            borderWidth: { bottom: STACKED_BAR_SEPARATOR_WIDTH },
-            borderSkipped: false,
-            stack: STACK_KEY,
-          },
-          ...(segments.parimine > 0
-            ? [
-                {
-                  label: intl.formatMessage({ id: 'secondPillarGrowth.chart.inheritance' }),
-                  data: [segments.parimine],
-                  backgroundColor: COLOR_PARIMINE,
-                  hoverBackgroundColor: '#7048D8',
-                  borderColor: STACKED_BAR_SEPARATOR_COLOR,
-                  borderWidth: { bottom: STACKED_BAR_SEPARATOR_WIDTH },
-                  borderSkipped: false,
-                  stack: STACK_KEY,
-                },
-              ]
-            : []),
-          {
-            label: intl.formatMessage({ id: 'secondPillarGrowth.chart.growth' }),
-            data: [segments.tootlus],
-            backgroundColor: COLOR_TOOTLUS,
-            hoverBackgroundColor: '#3A9ED0',
-            borderColor: STACKED_BAR_SEPARATOR_COLOR,
-            borderWidth: { bottom: STACKED_BAR_SEPARATOR_WIDTH },
-            borderSkipped: false,
-            stack: STACK_KEY,
-          },
-          {
-            label: intl.formatMessage({ id: 'secondPillarGrowth.chart.withdrawals' }),
-            data: [segments.valjamaksed],
-            backgroundColor: COLOR_VALJAMAKSED,
-            hoverBackgroundColor: '#D4B043',
-            borderColor: STACKED_BAR_SEPARATOR_COLOR,
-            borderWidth: { bottom: STACKED_BAR_SEPARATOR_WIDTH },
-            borderSkipped: false,
-            stack: STACK_KEY,
-          },
-        ],
+  const chartData = (() => {
+    if (!segments) {
+      return null;
+    }
+
+    const growthIsPositive = segments.growth >= 0;
+    const rawDatasets = [
+      {
+        label: intl.formatMessage({ id: 'secondPillarGrowth.chart.yourContributions' }),
+        value: segments.contribution,
+        color: COLOR_CONTRIBUTION,
+        hover: HOVER_CONTRIBUTION,
+      },
+      {
+        label: intl.formatMessage({ id: 'secondPillarGrowth.chart.government' }),
+        value: segments.state,
+        color: COLOR_STATE,
+        hover: HOVER_STATE,
+      },
+      ...(segments.inheritance > 0
+        ? [
+            {
+              label: intl.formatMessage({ id: 'secondPillarGrowth.chart.inheritance' }),
+              value: segments.inheritance,
+              color: COLOR_INHERITANCE,
+              hover: HOVER_INHERITANCE,
+            },
+          ]
+        : []),
+      {
+        label: intl.formatMessage({ id: 'secondPillarGrowth.chart.growth' }),
+        value: segments.growth,
+        color: growthIsPositive ? COLOR_GROWTH_POSITIVE : COLOR_GROWTH_NEGATIVE,
+        hover: growthIsPositive ? HOVER_GROWTH_POSITIVE : HOVER_GROWTH_NEGATIVE,
+      },
+      {
+        label: intl.formatMessage({ id: 'secondPillarGrowth.chart.withdrawals' }),
+        value: segments.withdrawn,
+        color: COLOR_WITHDRAWN,
+        hover: HOVER_WITHDRAWN,
+      },
+    ];
+
+    // Top of visual stack: last dataset with a positive value.
+    // Bottom of visual stack: last dataset with a negative value.
+    let topPositiveIdx = -1;
+    let bottomNegativeIdx = -1;
+    rawDatasets.forEach((ds, i) => {
+      if (ds.value > 0) {
+        topPositiveIdx = i;
       }
-    : null;
+      if (ds.value < 0) {
+        bottomNegativeIdx = i;
+      }
+    });
+
+    const roundedCorner = 6;
+
+    return {
+      labels: [intl.formatMessage({ id: 'secondPillarGrowth.chart.label' })],
+      datasets: rawDatasets.map((ds, i) => ({
+        label: ds.label,
+        data: [ds.value],
+        backgroundColor: ds.color,
+        hoverBackgroundColor: ds.hover,
+        borderColor: STACKED_BAR_SEPARATOR_COLOR,
+        borderWidth: { bottom: STACKED_BAR_SEPARATOR_WIDTH },
+        borderSkipped: false,
+        stack: STACK_KEY,
+        borderRadius: {
+          topLeft: i === topPositiveIdx ? roundedCorner : 0,
+          topRight: i === topPositiveIdx ? roundedCorner : 0,
+          bottomLeft: i === bottomNegativeIdx ? roundedCorner : 0,
+          bottomRight: i === bottomNegativeIdx ? roundedCorner : 0,
+        },
+      })),
+    };
+  })();
 
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
     animation: { duration: 400 },
     plugins: {
-      legend: {
-        position: 'top' as const,
-        onClick: () => undefined,
-        labels: {
-          boxWidth: 16,
-          boxHeight: 16,
-          padding: 16,
-          useBorderRadius: true,
-          borderRadius: 8,
-          color: '#6B7074',
-        },
-      },
+      legend: { display: false },
       tooltip: {
         backgroundColor: '#fff',
         bodyColor: '#212529',
@@ -185,32 +264,61 @@ const SecondPillarGrowth = () => {
           },
         },
       },
-      datalabels: { display: false },
+      datalabels: {
+        anchor: 'end' as const,
+        align: 'top' as const,
+        color: '#212529',
+        clamp: true,
+        font: {
+          family: '"Roboto", "Segoe UI", "Helvetica Neue", Arial, sans-serif',
+          size: 16,
+          lineHeight: 1.25,
+          weight: 'bold' as const,
+        },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        formatter(_value: number, context: any) {
+          const { datasets } = context.chart.data;
+          let topPositiveIndex = -1;
+          datasets.forEach((ds: { data: number[] }, i: number) => {
+            if ((ds.data[context.dataIndex] ?? 0) > 0) {
+              topPositiveIndex = i;
+            }
+          });
+          if (context.datasetIndex !== topPositiveIndex) {
+            return '';
+          }
+          const total = datasets.reduce(
+            (acc: number, ds: { data: number[] }) => acc + (ds.data[context.dataIndex] ?? 0),
+            0,
+          );
+          return formatCurrency(total);
+        },
+      },
     },
     scales: {
       x: {
         stacked: true,
         grid: { display: false },
-        border: { color: '#D6DEE6' },
+        border: { display: false },
       },
       y: {
         stacked: true,
         beginAtZero: true,
-        grace: '10%' as const,
+        grace: '25%' as const,
+        ticks: { display: false },
+        border: { display: false },
         grid: {
-          color: (ctx: { tick: { value: number } }) =>
-            ctx.tick.value === 0 ? '#6B7074' : 'rgba(0,0,0,0)',
+          display: true,
+          drawTicks: false,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          color: (ctx: any) => (ctx.tick?.value === 0 ? 'rgba(0, 0, 0, 0.175)' : 'rgba(0,0,0,0)'),
+          lineWidth: 1,
         },
       },
     },
   };
 
-  const renderAccountRow = (
-    labelId: TranslationKey,
-    amount: number,
-    swatchColor: string,
-    options: { negative?: boolean } = {},
-  ) => (
+  const renderAccountRow = (labelId: TranslationKey, amount: number, swatchColor: string) => (
     <div className="d-flex justify-content-between align-items-center py-2 border-bottom">
       <span className="d-flex align-items-center gap-2">
         <span
@@ -225,7 +333,7 @@ const SecondPillarGrowth = () => {
         />
         <FormattedMessage id={labelId} />
       </span>
-      <span className={options.negative ? 'text-danger' : ''}>{formatCurrency(amount)}</span>
+      <span>{formatCurrency(amount)}</span>
     </div>
   );
 
@@ -251,73 +359,55 @@ const SecondPillarGrowth = () => {
           )}
         </div>
 
-        <div className="row g-4">
-          <div className="col-md-7">
-            <div className="card px-2 py-3 px-sm-5 py-sm-4" style={{ minHeight: '420px' }}>
-              {!chartData ? (
-                <Shimmer height={370} />
-              ) : (
-                <Chart type="bar" data={chartData} options={chartOptions} />
-              )}
-            </div>
-            {assets?.pikFlag && (
-              <div className="alert alert-info mt-3 mb-0" role="note" data-testid="pik-disclaimer">
-                <FormattedMessage id="secondPillarGrowth.pikDisclaimer" />
-              </div>
-            )}
-            {subNoteKey && segments && assets && (
-              <div className="text-body-secondary mt-3" data-testid="sub-note">
-                <FormattedMessage
-                  id={`secondPillarGrowth.subNote.${subNoteKey}`}
-                  values={{
-                    withdrawn: formatCurrency(assets.withdrawals),
-                    ownContribution: formatCurrency(segments.sinu),
-                    rest: formatCurrency(assets.withdrawals - segments.sinu),
-                    stateAmount: formatCurrency(segments.riikJaMuud),
-                    b: (chunks: string) => <strong>{chunks}</strong>,
-                  }}
-                />
-              </div>
-            )}
-          </div>
-
-          <div className="col-md-5">
-            {segments && assets && (
-              <dl className="m-0" data-testid="account-list">
-                {renderAccountRow('secondPillarGrowth.account.own', segments.sinu, COLOR_SINU)}
-                {renderAccountRow(
-                  'secondPillarGrowth.account.government',
-                  segments.riikJaMuud,
-                  COLOR_RIIK,
-                )}
-                {segments.parimine > 0 &&
-                  renderAccountRow(
-                    'secondPillarGrowth.account.inheritance',
-                    segments.parimine,
-                    COLOR_PARIMINE,
+        <div>
+          <div className="card px-2 py-3 px-sm-4 py-sm-4">
+            <div className="row g-4 align-items-center">
+              <div className="col-md-7">
+                <div style={{ minHeight: '360px' }}>
+                  {!chartData ? (
+                    <Shimmer height={340} />
+                  ) : (
+                    <Chart type="bar" data={chartData} options={chartOptions} />
                   )}
-                {renderAccountRow(
-                  'secondPillarGrowth.account.growth',
-                  segments.tootlus,
-                  COLOR_TOOTLUS,
-                  { negative: segments.tootlus < 0 },
-                )}
-                {assets.withdrawals > 0 &&
-                  renderAccountRow(
-                    'secondPillarGrowth.account.withdrawals',
-                    segments.valjamaksed,
-                    COLOR_VALJAMAKSED,
-                    { negative: true },
-                  )}
-                <div className="d-flex justify-content-between align-items-center py-2 fw-bold border-top border-2 mt-1 pt-2">
-                  <span>
-                    <FormattedMessage id="secondPillarGrowth.account.balance" />
-                  </span>
-                  <span>{formatCurrency(assets.balance)}</span>
                 </div>
-              </dl>
-            )}
+              </div>
+
+              <div className="col-md-5">
+                {segments && assets && (
+                  <dl className="m-0" data-testid="account-list">
+                    {orderedAccountRows(segments, assets.withdrawals).map((row) =>
+                      renderAccountRow(row.labelId, row.amount, row.color),
+                    )}
+                    <div className="d-flex justify-content-between align-items-center py-2 fw-bold">
+                      <span>
+                        <FormattedMessage id="secondPillarGrowth.account.balance" />
+                      </span>
+                      <span>{formatCurrency(assets.balance)}</span>
+                    </div>
+                  </dl>
+                )}
+              </div>
+            </div>
           </div>
+          {subNoteKey && segments && assets && (
+            <div className="text-secondary mt-1" data-testid="sub-note">
+              <FormattedMessage
+                id={`secondPillarGrowth.subNote.${subNoteKey}`}
+                values={{
+                  withdrawn: formatCurrency(assets.withdrawals),
+                  ownContribution: formatCurrency(segments.contribution),
+                  rest: formatCurrency(assets.withdrawals - segments.contribution),
+                  stateAmount: formatCurrency(segments.state),
+                  b: (chunks: string) => <strong>{chunks}</strong>,
+                }}
+              />
+            </div>
+          )}
+          {assets?.pikFlag && (
+            <div className="text-secondary mt-1" role="note" data-testid="pik-disclaimer">
+              <FormattedMessage id="secondPillarGrowth.pikDisclaimer" />
+            </div>
+          )}
         </div>
 
         <div className="d-flex flex-column gap-3">
