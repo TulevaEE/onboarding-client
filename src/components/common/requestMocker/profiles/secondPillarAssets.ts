@@ -19,7 +19,6 @@ export const secondPillarAssetsProfiles: Record<string, SecondPillarAssets> = {
     balance: 15698.36,
     employeeWithheldPortion: 5531.39,
     socialTaxPortion: 8782.61,
-    insurance: 1229.25,
   },
 
   TEST_2_NEGATIVE_GROWTH: {
@@ -27,7 +26,6 @@ export const secondPillarAssetsProfiles: Record<string, SecondPillarAssets> = {
     balance: 14700.5,
     employeeWithheldPortion: 4903.95,
     socialTaxPortion: 9807.09,
-    insurance: 220,
   },
 
   TEST_3_FULLY_WITHDRAWN: {
@@ -51,7 +49,7 @@ export const secondPillarAssetsProfiles: Record<string, SecondPillarAssets> = {
   TEST_5_PARENTAL_LEAVE_ONLY: {
     ...empty,
     balance: 425.7,
-    socialTaxPortion: 396.5,
+    additionalParentalBenefit: 396.5,
   },
 
   TEST_6_PIK_CONVERSION: {
@@ -76,5 +74,16 @@ export const secondPillarAssetsProfiles: Record<string, SecondPillarAssets> = {
     socialTaxPortion: 13056.3,
     inheritance: 5000,
     // expected: sinu 8 042 / riik+muud 18 056 (13 056 + 5 000 inheritance) / tootlus +2 022
+  },
+
+  TEST_9_PENSIONILEPING_UNWOUND: {
+    ...empty,
+    balance: 12500,
+    employeeWithheldPortion: 4000,
+    socialTaxPortion: 6500,
+    withdrawals: 3000,
+    insurance: 2700,
+    // bought pensionileping for 3 000 €, surrendered and got 2 700 € back
+    // net väljamakstud = −300 €
   },
 };

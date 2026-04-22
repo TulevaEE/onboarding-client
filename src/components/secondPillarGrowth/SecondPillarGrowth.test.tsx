@@ -13,15 +13,7 @@ jest.mock('../common/apiHooks', () => ({
 }));
 
 jest.mock('react-chartjs-2', () => ({
-  Chart: ({ data }: { data: { datasets: { label: string; data: number[] }[] } }) => (
-    <div data-testid="mock-chart">
-      {data.datasets.map((dataset) => (
-        <span key={dataset.label} data-testid={`segment-${dataset.label}`}>
-          {dataset.data[0].toFixed(2)}
-        </span>
-      ))}
-    </div>
-  ),
+  Chart: () => <div data-testid="mock-chart" />,
 }));
 
 const mockUseSecondPillarAssets = useSecondPillarAssets as jest.MockedFunction<
@@ -58,15 +50,11 @@ const mockAssets = (assets: SecondPillarAssets) =>
     isLoading: false,
   } as ReturnType<typeof useSecondPillarAssets>);
 
-const segmentAmount = (label: string): number => {
-  const node = screen.queryByTestId(`segment-${label}`);
-  if (!node) {
-    return 0;
-  }
-  return parseFloat(node.textContent ?? '0');
-};
-
 const accountList = () => within(screen.getByTestId('account-list'));
+
+const expectRow = (label: string, amount: string) => {
+  expect(accountList().getByRole('definition', { name: label })).toHaveTextContent(amount);
+};
 const subNote = () => screen.getByTestId('sub-note');
 const querySubNote = () => screen.queryByTestId('sub-note');
 
@@ -93,15 +81,15 @@ describe('SecondPillarGrowth', () => {
           balance: 15698.36,
           employeeWithheldPortion: 5531.39,
           socialTaxPortion: 8782.61,
-          insurance: 1229.25,
         }),
       );
       renderWithProviders(<SecondPillarGrowth />);
-      expect(segmentAmount('Your contribution')).toBeCloseTo(5531.39, 2);
-      expect(segmentAmount('Social tax')).toBeCloseTo(10011.86, 2);
-      expect(segmentAmount('Return')).toBeCloseTo(155.11, 2);
-      expect(segmentAmount('Withdrawn')).toBeCloseTo(0, 2);
-      expect(screen.queryByTestId('segment-Inheritance')).not.toBeInTheDocument();
+      expectRow('Your contribution', '5 531 €');
+      expectRow('Social tax', '8 783 €');
+      expectRow('Return', '1 384 €');
+      expectRow('Total', '15 698 €');
+      expect(accountList().queryByText('Inheritance')).not.toBeInTheDocument();
+      expect(accountList().queryByText('Withdrawn')).not.toBeInTheDocument();
     });
 
     it('case 2 — negative growth, no withdrawals', () => {
@@ -110,13 +98,14 @@ describe('SecondPillarGrowth', () => {
           balance: 14700.5,
           employeeWithheldPortion: 4903.95,
           socialTaxPortion: 9807.09,
-          insurance: 220,
         }),
       );
       renderWithProviders(<SecondPillarGrowth />);
-      expect(segmentAmount('Return')).toBeLessThan(0);
-      expect(segmentAmount('Return')).toBeCloseTo(-230.54, 2);
-      expect(segmentAmount('Withdrawn')).toBeCloseTo(0, 2);
+      expectRow('Your contribution', '4 904 €');
+      expectRow('Social tax', '9 807 €');
+      expectRow('Return', '−11 €');
+      expectRow('Total', '14 701 €');
+      expect(accountList().queryByText('Withdrawn')).not.toBeInTheDocument();
     });
 
     it('case 3 — fully withdrawn, balance 0', () => {
@@ -130,14 +119,11 @@ describe('SecondPillarGrowth', () => {
         }),
       );
       renderWithProviders(<SecondPillarGrowth />);
-      expect(segmentAmount('Withdrawn')).toBeCloseTo(-7160.25, 2);
-      expect(segmentAmount('Return')).toBeCloseTo(2230.67, 2);
-      const sum =
-        segmentAmount('Your contribution') +
-        segmentAmount('Social tax') +
-        segmentAmount('Return') +
-        segmentAmount('Withdrawn');
-      expect(sum).toBeCloseTo(0, 2);
+      expectRow('Your contribution', '1 696 €');
+      expectRow('Social tax', '2 923 €');
+      expectRow('Return', '2 231 €');
+      expectRow('Withdrawn', '−6 850 €');
+      expectRow('Total', '0 €');
     });
 
     it('case 4 — small residual + negative growth + partial withdrawal', () => {
@@ -151,28 +137,25 @@ describe('SecondPillarGrowth', () => {
         }),
       );
       renderWithProviders(<SecondPillarGrowth />);
-      expect(segmentAmount('Return')).toBeLessThan(0);
-      expect(segmentAmount('Withdrawn')).toBeCloseTo(-3500.25, 2);
-      const sum =
-        segmentAmount('Your contribution') +
-        segmentAmount('Social tax') +
-        segmentAmount('Return') +
-        segmentAmount('Withdrawn');
-      expect(sum).toBeCloseTo(53, 2);
+      expectRow('Your contribution', '1 096 €');
+      expectRow('Social tax', '2 323 €');
+      expectRow('Return', '−216 €');
+      expectRow('Withdrawn', '−3 150 €');
+      expectRow('Total', '53 €');
     });
 
-    it('case 5 — parental leave only (no employee contribution)', () => {
+    it('case 5 — parental leave only (state pays on member behalf)', () => {
       mockAssets(
         zeroAssets({
           balance: 425.7,
-          socialTaxPortion: 396.5,
+          additionalParentalBenefit: 396.5,
         }),
       );
       renderWithProviders(<SecondPillarGrowth />);
-      expect(segmentAmount('Your contribution')).toBeCloseTo(0, 2);
-      expect(segmentAmount('Social tax')).toBeCloseTo(396.5, 2);
-      expect(segmentAmount('Return')).toBeCloseTo(29.2, 2);
-      expect(segmentAmount('Withdrawn')).toBeCloseTo(0, 2);
+      expectRow('Your contribution', '397 €');
+      expectRow('Return', '29 €');
+      expectRow('Total', '426 €');
+      expect(accountList().queryByText('Social tax')).not.toBeInTheDocument();
     });
 
     it('case 6 — PIK conversion renders a disclaimer', () => {
@@ -205,18 +188,11 @@ describe('SecondPillarGrowth', () => {
         }),
       );
       renderWithProviders(<SecondPillarGrowth />);
-      expect(segmentAmount('Your contribution')).toBeCloseTo(8042.15, 2);
-      expect(segmentAmount('Social tax')).toBeCloseTo(13056.3, 2);
-      expect(segmentAmount('Inheritance')).toBeCloseTo(5000, 2);
-      expect(segmentAmount('Return')).toBeCloseTo(2022, 2);
-      expect(segmentAmount('Withdrawn')).toBeCloseTo(0, 2);
-      const sum =
-        segmentAmount('Your contribution') +
-        segmentAmount('Social tax') +
-        segmentAmount('Inheritance') +
-        segmentAmount('Return') +
-        segmentAmount('Withdrawn');
-      expect(sum).toBeCloseTo(28120.45, 2);
+      expectRow('Your contribution', '8 042 €');
+      expectRow('Social tax', '13 056 €');
+      expectRow('Inheritance', '5 000 €');
+      expectRow('Return', '2 022 €');
+      expectRow('Total', '28 120 €');
     });
 
     it('case 7 — long-term saver with big positive growth', () => {
@@ -228,10 +204,10 @@ describe('SecondPillarGrowth', () => {
         }),
       );
       renderWithProviders(<SecondPillarGrowth />);
-      expect(segmentAmount('Your contribution')).toBeCloseTo(9419.9, 2);
-      expect(segmentAmount('Social tax')).toBeCloseTo(16453.08, 2);
-      expect(segmentAmount('Return')).toBeCloseTo(20175.73, 2);
-      expect(segmentAmount('Withdrawn')).toBeCloseTo(0, 2);
+      expectRow('Your contribution', '9 420 €');
+      expectRow('Social tax', '16 453 €');
+      expectRow('Return', '20 176 €');
+      expectRow('Total', '46 049 €');
     });
   });
 
@@ -246,26 +222,24 @@ describe('SecondPillarGrowth', () => {
         }),
       );
       renderWithProviders(<SecondPillarGrowth />);
-      expect(screen.getByTestId('segment-Inheritance')).toBeInTheDocument();
-      expect(segmentAmount('Inheritance')).toBeCloseTo(3000, 2);
-      expect(segmentAmount('Return')).toBeCloseTo(2000, 2);
+      expectRow('Inheritance', '3 000 €');
+      expectRow('Return', '2 000 €');
     });
 
     it('omits the inheritance segment when inheritance is zero', () => {
       mockAssets(zeroAssets({ inheritance: 0 }));
       renderWithProviders(<SecondPillarGrowth />);
-      expect(screen.queryByTestId('segment-Inheritance')).not.toBeInTheDocument();
+      expect(accountList().queryByText('Inheritance')).not.toBeInTheDocument();
     });
   });
 
   describe('sub-notes below chart', () => {
-    it('shows the withdrawals sub-note when the user has withdrawn money with positive return', () => {
+    it('shows the plain withdrawals sub-note when there are withdrawals but no insurance receipts', () => {
       mockAssets(
         zeroAssets({
           balance: 0,
           employeeWithheldPortion: 1696.38,
           socialTaxPortion: 2923.2,
-          insurance: 310,
           withdrawals: 7160.25,
         }),
       );
@@ -273,7 +247,22 @@ describe('SecondPillarGrowth', () => {
       expect(subNote()).toHaveTextContent(/you have withdrawn/i);
     });
 
-    it('shows the combined withdrawals-and-negative sub-note when both conditions hold', () => {
+    it('shows the pensionileping-unwound sub-note when insurance > 0 and withdrawals > 0', () => {
+      mockAssets(
+        zeroAssets({
+          balance: 12500,
+          employeeWithheldPortion: 4000,
+          socialTaxPortion: 6500,
+          insurance: 2700,
+          withdrawals: 3000,
+        }),
+      );
+      renderWithProviders(<SecondPillarGrowth />);
+      expect(subNote()).toHaveTextContent(/you have paid/i);
+      expect(subNote()).toHaveTextContent(/came back/i);
+    });
+
+    it('shows the pensionileping-unwound-and-negative sub-note when insurance > 0 and return is negative', () => {
       mockAssets(
         zeroAssets({
           balance: 53,
@@ -284,8 +273,9 @@ describe('SecondPillarGrowth', () => {
         }),
       );
       renderWithProviders(<SecondPillarGrowth />);
-      expect(subNote()).toHaveTextContent(/you have withdrawn/i);
-      expect(subNote()).toHaveTextContent(/your II pillar is at a loss/i);
+      expect(subNote()).toHaveTextContent(/you have paid/i);
+      expect(subNote()).toHaveTextContent(/came back/i);
+      expect(subNote()).toHaveTextContent(/at a loss/i);
     });
 
     it('shows the negative-return sub-note when return is negative and nothing has been withdrawn', () => {
@@ -294,7 +284,6 @@ describe('SecondPillarGrowth', () => {
           balance: 14700.5,
           employeeWithheldPortion: 4903.95,
           socialTaxPortion: 9807.09,
-          insurance: 220,
         }),
       );
       renderWithProviders(<SecondPillarGrowth />);
@@ -318,7 +307,6 @@ describe('SecondPillarGrowth', () => {
           balance: 15698.36,
           employeeWithheldPortion: 5531.39,
           socialTaxPortion: 8782.61,
-          insurance: 1229.25,
         }),
       );
       renderWithProviders(<SecondPillarGrowth />);
@@ -347,7 +335,6 @@ describe('SecondPillarGrowth', () => {
           balance: 15698.36,
           employeeWithheldPortion: 5531.39,
           socialTaxPortion: 8782.61,
-          insurance: 1229.25,
         }),
       );
       renderWithProviders(<SecondPillarGrowth />);
@@ -361,7 +348,6 @@ describe('SecondPillarGrowth', () => {
           balance: 15698.36,
           employeeWithheldPortion: 5531.39,
           socialTaxPortion: 8782.61,
-          insurance: 1229.25,
         }),
       );
       renderWithProviders(<SecondPillarGrowth />);
@@ -426,17 +412,16 @@ describe('SecondPillarGrowth', () => {
     it('collapses the methodology section by default', () => {
       mockAssets(zeroAssets());
       renderWithProviders(<SecondPillarGrowth />);
-      const details = screen.getByTestId('methodology') as HTMLDetailsElement;
-      expect(details.open).toBe(false);
+      const toggle = screen.getByRole('button', { name: /how is this calculated/i });
+      expect(toggle).toHaveAttribute('aria-expanded', 'false');
     });
 
     it('reveals the methodology content on click', () => {
       mockAssets(zeroAssets());
       renderWithProviders(<SecondPillarGrowth />);
-      const details = screen.getByTestId('methodology') as HTMLDetailsElement;
-      const summary = within(details).getByText(/how is this calculated/i);
-      userEvent.click(summary);
-      expect(details.open).toBe(true);
+      const toggle = screen.getByRole('button', { name: /how is this calculated/i });
+      userEvent.click(toggle);
+      expect(toggle).toHaveAttribute('aria-expanded', 'true');
     });
 
     it('mentions that corrections and late-payment interest are folded into the return segment', () => {

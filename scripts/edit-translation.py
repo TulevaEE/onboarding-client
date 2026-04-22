@@ -12,11 +12,13 @@ and rendered back as \\u00A0 on read, making NBSPs visible when you inspect.
 
 Usage:
   scripts/edit-translation.py get <lang> <key>
-  scripts/edit-translation.py set <lang> <key> <value>
+  scripts/edit-translation.py set <lang> <key> <value>     # upsert: updates or inserts
   scripts/edit-translation.py delete <lang> <key>
   scripts/edit-translation.py list <lang> [<prefix>]
 
   <lang> is 'en' or 'et'.
+  set inserts missing keys after the existing key that shares the longest dot-prefix
+  (so "foo.bar.baz" lands next to other "foo.bar.*" keys).
 """
 
 from __future__ import annotations
@@ -79,6 +81,29 @@ def cmd_get(args: argparse.Namespace) -> int:
     return 1
 
 
+def _find_sibling_anchor(lines: list[bytes], new_key: str) -> int:
+    # Pick the last existing key sharing the longest dot-prefix with new_key;
+    # fall back to the last key line in the file.
+    line_pattern = re.compile(rb'^\s*"([^"]+)"\s*:\s*"')
+    keyed = [(i, line_pattern.match(raw).group(1).decode())
+             for i, raw in enumerate(lines)
+             if line_pattern.match(raw)]
+    if not keyed:
+        return max(0, len(lines) - 2)
+    new_parts = new_key.split(".")
+    best_idx = keyed[-1][0]
+    best_shared = -1
+    for idx, key in keyed:
+        parts = key.split(".")
+        shared = 0
+        while shared < min(len(parts), len(new_parts)) and parts[shared] == new_parts[shared]:
+            shared += 1
+        if shared >= best_shared:
+            best_shared = shared
+            best_idx = idx
+    return best_idx
+
+
 def cmd_set(args: argparse.Namespace) -> int:
     value = _resolve_input(args.value)
     pattern = _key_regex(args.key)
@@ -97,8 +122,22 @@ def cmd_set(args: argparse.Namespace) -> int:
             _save_lines(args.lang, lines)
             print(f"set {args.lang}:{args.key} = {_visible(value)}")
             return 0
-    print(f"key not found: {args.key} (use append if adding new keys manually)", file=sys.stderr)
-    return 1
+    # Key missing — insert after the best sibling.
+    anchor_idx = _find_sibling_anchor(lines, args.key)
+    anchor = lines[anchor_idx]
+    eol = b"\r\n" if anchor.endswith(b"\r\n") else b"\n"
+    indent_m = re.match(rb"^(\s*)", anchor)
+    indent = indent_m.group(1).decode() if indent_m else "  "
+    new_line = (
+        f'{indent}"{args.key}": "'.encode()
+        + _encode_value(value)
+        + b'",'
+        + eol
+    )
+    lines.insert(anchor_idx + 1, new_line)
+    _save_lines(args.lang, lines)
+    print(f"added {args.lang}:{args.key} = {_visible(value)}")
+    return 0
 
 
 def cmd_delete(args: argparse.Namespace) -> int:
@@ -134,7 +173,7 @@ def main() -> int:
     g.add_argument("key")
     g.set_defaults(func=cmd_get)
 
-    s = sub.add_parser("set", help="update a key's value (\\u00A0 in value becomes NBSP)")
+    s = sub.add_parser("set", help="upsert a key's value (\\u00A0 in value becomes NBSP)")
     s.add_argument("lang", choices=FILES.keys())
     s.add_argument("key")
     s.add_argument("value")
