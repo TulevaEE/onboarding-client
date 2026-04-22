@@ -2,7 +2,7 @@ How to use mocking
 
 ###
 
-1. Add `?development` to URL
+1. Add `?dev` to URL
 2. Select profiles from the right hand side menu.
 3. Click apply and reload to use them.
 4. Use the **Clear and close** button to reset mocked responses.

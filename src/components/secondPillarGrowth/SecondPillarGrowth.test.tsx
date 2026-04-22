@@ -214,6 +214,30 @@ describe('SecondPillarGrowth', () => {
       expect(screen.queryByTestId('pik-disclaimer')).not.toBeInTheDocument();
     });
 
+    it('case 8 — inherited 2nd pillar assets fold into Riik+muud', () => {
+      mockAssets(
+        buildAssets({
+          balance: 28120.45,
+          employeeWithheldPortion: 8042.15,
+          socialTaxPortion: 13056.3,
+          additionalParentalBenefit: 0,
+          compensation: 0,
+          interest: 0,
+          insurance: 0,
+          corrections: 0,
+          inheritance: 5000,
+          withdrawals: 0,
+        }),
+      );
+      renderWithProviders(<SecondPillarGrowth />);
+      const { sinu, riikJaMuud, tootlus, valjamaksed } = readSegments();
+      expect(sinu).toBeCloseTo(8042.15, 2);
+      expect(riikJaMuud).toBeCloseTo(18056.3, 2);
+      expect(tootlus).toBeCloseTo(2022, 2);
+      expect(valjamaksed).toBeCloseTo(0, 2);
+      expect(sinu + riikJaMuud + tootlus + valjamaksed).toBeCloseTo(28120.45, 2);
+    });
+
     it('case 7 — long-term saver with big positive growth', () => {
       mockAssets(
         buildAssets({

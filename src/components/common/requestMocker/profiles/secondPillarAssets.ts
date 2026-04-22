@@ -68,4 +68,13 @@ export const secondPillarAssetsProfiles: Record<string, SecondPillarAssets> = {
     employeeWithheldPortion: 9419.9,
     socialTaxPortion: 16453.08,
   },
+
+  TEST_8_INHERITED: {
+    ...empty,
+    balance: 28120.45,
+    employeeWithheldPortion: 8042.15,
+    socialTaxPortion: 13056.3,
+    inheritance: 5000,
+    // expected: sinu 8 042 / riik+muud 18 056 (13 056 + 5 000 inheritance) / tootlus +2 022
+  },
 };
