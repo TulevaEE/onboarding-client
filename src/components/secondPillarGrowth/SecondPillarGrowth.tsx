@@ -27,13 +27,17 @@ ChartJS.register(
   ChartDataLabels,
 );
 
-const CHART_FONT_FAMILY = '"Roboto", "Segoe UI", "Helvetica Neue", Arial, sans-serif';
-const DATALABEL_FONT_SIZE = 16;
-const DATALABEL_FONT_LINE_HEIGHT = 1.25;
 const STACKED_BAR_SEPARATOR_WIDTH = 1;
 const STACKED_BAR_SEPARATOR_COLOR = '#fff';
-
 const STACK_KEY = 'balance';
+
+const COLOR_SINU = '#156B3B';
+const COLOR_RIIK = '#2E8B57';
+const COLOR_PARIMINE = '#8B5CF6';
+const COLOR_TOOTLUS = '#5AB4E6';
+const COLOR_VALJAMAKSED = '#F0CB5B';
+
+const BLOG_URL = 'https://tuleva.ee/analuusid/kes-maksab-minu-ii-sambasse/';
 
 const SecondPillarGrowth = () => {
   const intl = useIntl();
@@ -51,12 +55,33 @@ const SecondPillarGrowth = () => {
       assets.compensation +
       assets.interest +
       assets.insurance +
-      assets.corrections +
-      assets.inheritance;
-    const tootlus = assets.balance + assets.withdrawals - sinu - riikJaMuud;
+      assets.corrections;
+    const parimine = assets.inheritance;
+    const tootlus = assets.balance + assets.withdrawals - sinu - riikJaMuud - parimine;
     const valjamaksed = -assets.withdrawals;
-    return { sinu, riikJaMuud, tootlus, valjamaksed, balance: assets.balance };
+    return { sinu, riikJaMuud, parimine, tootlus, valjamaksed };
   }, [assets]);
+
+  const subNoteKey = useMemo(() => {
+    if (!segments || !assets || assets.pikFlag) {
+      return null;
+    }
+    const hasWithdrawals = assets.withdrawals > 0;
+    const hasNegativeReturn = segments.tootlus < 0;
+    if (hasWithdrawals && hasNegativeReturn) {
+      return 'withdrawalsAndNegative';
+    }
+    if (hasWithdrawals) {
+      return 'withdrawals';
+    }
+    if (hasNegativeReturn) {
+      return 'negativeReturn';
+    }
+    if (segments.sinu === 0 && segments.riikJaMuud > 0) {
+      return 'parentalLeave';
+    }
+    return null;
+  }, [segments, assets]);
 
   const formatCurrency = (value: number) => `${Math.round(value).toLocaleString('et-EE')} €`;
 
@@ -67,7 +92,7 @@ const SecondPillarGrowth = () => {
           {
             label: intl.formatMessage({ id: 'secondPillarGrowth.chart.yourContributions' }),
             data: [segments.sinu],
-            backgroundColor: '#156B3B',
+            backgroundColor: COLOR_SINU,
             hoverBackgroundColor: '#0F5530',
             borderColor: STACKED_BAR_SEPARATOR_COLOR,
             borderWidth: { bottom: STACKED_BAR_SEPARATOR_WIDTH },
@@ -77,17 +102,31 @@ const SecondPillarGrowth = () => {
           {
             label: intl.formatMessage({ id: 'secondPillarGrowth.chart.government' }),
             data: [segments.riikJaMuud],
-            backgroundColor: '#2E8B57',
+            backgroundColor: COLOR_RIIK,
             hoverBackgroundColor: '#256F45',
             borderColor: STACKED_BAR_SEPARATOR_COLOR,
             borderWidth: { bottom: STACKED_BAR_SEPARATOR_WIDTH },
             borderSkipped: false,
             stack: STACK_KEY,
           },
+          ...(segments.parimine > 0
+            ? [
+                {
+                  label: intl.formatMessage({ id: 'secondPillarGrowth.chart.inheritance' }),
+                  data: [segments.parimine],
+                  backgroundColor: COLOR_PARIMINE,
+                  hoverBackgroundColor: '#7048D8',
+                  borderColor: STACKED_BAR_SEPARATOR_COLOR,
+                  borderWidth: { bottom: STACKED_BAR_SEPARATOR_WIDTH },
+                  borderSkipped: false,
+                  stack: STACK_KEY,
+                },
+              ]
+            : []),
           {
             label: intl.formatMessage({ id: 'secondPillarGrowth.chart.growth' }),
             data: [segments.tootlus],
-            backgroundColor: '#5AB4E6',
+            backgroundColor: COLOR_TOOTLUS,
             hoverBackgroundColor: '#3A9ED0',
             borderColor: STACKED_BAR_SEPARATOR_COLOR,
             borderWidth: { bottom: STACKED_BAR_SEPARATOR_WIDTH },
@@ -97,7 +136,7 @@ const SecondPillarGrowth = () => {
           {
             label: intl.formatMessage({ id: 'secondPillarGrowth.chart.withdrawals' }),
             data: [segments.valjamaksed],
-            backgroundColor: '#F0CB5B',
+            backgroundColor: COLOR_VALJAMAKSED,
             hoverBackgroundColor: '#D4B043',
             borderColor: STACKED_BAR_SEPARATOR_COLOR,
             borderWidth: { bottom: STACKED_BAR_SEPARATOR_WIDTH },
@@ -145,22 +184,7 @@ const SecondPillarGrowth = () => {
           },
         },
       },
-      datalabels: {
-        color: '#212529',
-        font: {
-          family: CHART_FONT_FAMILY,
-          size: DATALABEL_FONT_SIZE,
-          lineHeight: DATALABEL_FONT_LINE_HEIGHT,
-          weight: 'bold' as const,
-        },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        formatter(value: number) {
-          if (Math.abs(value) < 1) {
-            return '';
-          }
-          return formatCurrency(value);
-        },
-      },
+      datalabels: { display: false },
     },
     scales: {
       x: {
@@ -180,40 +204,196 @@ const SecondPillarGrowth = () => {
     },
   };
 
+  const renderAccountRow = (
+    labelId: string,
+    amount: number,
+    swatchColor: string,
+    options: { negative?: boolean } = {},
+  ) => (
+    <div className="d-flex justify-content-between align-items-center py-2 border-bottom">
+      <span className="d-flex align-items-center gap-2">
+        <span
+          aria-hidden
+          style={{
+            display: 'inline-block',
+            width: 12,
+            height: 12,
+            borderRadius: 2,
+            backgroundColor: swatchColor,
+          }}
+        />
+        <FormattedMessage id={labelId} />
+      </span>
+      <span className={options.negative ? 'text-danger' : ''}>{formatCurrency(amount)}</span>
+    </div>
+  );
+
   return (
-    <div className="col-12 col-md-10 col-lg-7 mx-auto">
+    <div className="col-12 col-md-10 col-lg-9 mx-auto">
       <div className="d-flex flex-column gap-5">
         <div className="d-flex flex-column gap-3">
           <h1 className="m-0">
             {!assets ? <Shimmer height={34} /> : <FormattedMessage id="secondPillarGrowth.title" />}
           </h1>
-          {!segments ? (
+          {!assets ? (
             <Shimmer height={60} />
           ) : (
             <p className="m-0 lead">
               <FormattedMessage
                 id="secondPillarGrowth.lead"
                 values={{
-                  balance: formatCurrency(segments.balance),
+                  balance: formatCurrency(assets.balance),
                   b: (chunks: string) => <strong>{chunks}</strong>,
                 }}
               />
             </p>
           )}
         </div>
-        <div>
-          <div className="card px-2 py-3 px-sm-5 py-sm-4" style={{ minHeight: '420px' }}>
-            {!chartData ? (
-              <Shimmer height={370} />
-            ) : (
-              <Chart type="bar" data={chartData} options={chartOptions} />
+
+        <div className="row g-4">
+          <div className="col-md-7">
+            <div className="card px-2 py-3 px-sm-5 py-sm-4" style={{ minHeight: '420px' }}>
+              {!chartData ? (
+                <Shimmer height={370} />
+              ) : (
+                <Chart type="bar" data={chartData} options={chartOptions} />
+              )}
+            </div>
+            {assets?.pikFlag && (
+              <div className="alert alert-info mt-3 mb-0" role="note" data-testid="pik-disclaimer">
+                <FormattedMessage id="secondPillarGrowth.pikDisclaimer" />
+              </div>
+            )}
+            {subNoteKey && segments && assets && (
+              <div className="text-body-secondary mt-3" data-testid="sub-note">
+                <FormattedMessage
+                  id={`secondPillarGrowth.subNote.${subNoteKey}`}
+                  values={{
+                    withdrawn: formatCurrency(assets.withdrawals),
+                    ownContribution: formatCurrency(segments.sinu),
+                    rest: formatCurrency(assets.withdrawals - segments.sinu),
+                    stateAmount: formatCurrency(segments.riikJaMuud),
+                    b: (chunks: string) => <strong>{chunks}</strong>,
+                  }}
+                />
+              </div>
             )}
           </div>
-          {assets?.pikFlag && (
-            <div className="alert alert-info mt-3 mb-0" role="note" data-testid="pik-disclaimer">
-              <FormattedMessage id="secondPillarGrowth.pikDisclaimer" />
+
+          <div className="col-md-5">
+            {segments && assets && (
+              <dl className="m-0" data-testid="account-list">
+                {renderAccountRow('secondPillarGrowth.account.own', segments.sinu, COLOR_SINU)}
+                {renderAccountRow(
+                  'secondPillarGrowth.account.government',
+                  segments.riikJaMuud,
+                  COLOR_RIIK,
+                )}
+                {segments.parimine > 0 &&
+                  renderAccountRow(
+                    'secondPillarGrowth.account.inheritance',
+                    segments.parimine,
+                    COLOR_PARIMINE,
+                  )}
+                {renderAccountRow(
+                  'secondPillarGrowth.account.growth',
+                  segments.tootlus,
+                  COLOR_TOOTLUS,
+                  { negative: segments.tootlus < 0 },
+                )}
+                {assets.withdrawals > 0 &&
+                  renderAccountRow(
+                    'secondPillarGrowth.account.withdrawals',
+                    segments.valjamaksed,
+                    COLOR_VALJAMAKSED,
+                    { negative: true },
+                  )}
+                <div className="d-flex justify-content-between align-items-center py-2 fw-bold border-top border-2 mt-1 pt-2">
+                  <span>
+                    <FormattedMessage id="secondPillarGrowth.account.balance" />
+                  </span>
+                  <span>{formatCurrency(assets.balance)}</span>
+                </div>
+              </dl>
+            )}
+          </div>
+        </div>
+
+        <div className="d-flex flex-column gap-3">
+          <p className="m-0">
+            <a
+              className="icon-link icon-link-hover fw-medium lead"
+              href={BLOG_URL}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <FormattedMessage id="secondPillarGrowth.blogLink" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
+                />
+              </svg>
+            </a>
+          </p>
+
+          <details className="text-body-secondary" data-testid="methodology">
+            <summary className="fw-medium" style={{ cursor: 'pointer' }}>
+              <FormattedMessage id="secondPillarGrowth.methodology.summary" />
+            </summary>
+            <div className="mt-2 small">
+              <p>
+                <FormattedMessage id="secondPillarGrowth.methodology.intro" />
+              </p>
+              <ul>
+                <li>
+                  <FormattedMessage
+                    id="secondPillarGrowth.methodology.item.own"
+                    values={{ b: (c: string) => <strong>{c}</strong> }}
+                  />
+                </li>
+                <li>
+                  <FormattedMessage
+                    id="secondPillarGrowth.methodology.item.state"
+                    values={{ b: (c: string) => <strong>{c}</strong> }}
+                  />
+                </li>
+                <li>
+                  <FormattedMessage
+                    id="secondPillarGrowth.methodology.item.return"
+                    values={{ b: (c: string) => <strong>{c}</strong> }}
+                  />
+                </li>
+                <li>
+                  <FormattedMessage
+                    id="secondPillarGrowth.methodology.item.inheritance"
+                    values={{ b: (c: string) => <strong>{c}</strong> }}
+                  />
+                </li>
+                <li>
+                  <FormattedMessage
+                    id="secondPillarGrowth.methodology.item.withdrawals"
+                    values={{ b: (c: string) => <strong>{c}</strong> }}
+                  />
+                </li>
+                <li>
+                  <FormattedMessage
+                    id="secondPillarGrowth.methodology.item.pik"
+                    values={{ b: (c: string) => <strong>{c}</strong> }}
+                  />
+                </li>
+              </ul>
+              <p className="mb-0">
+                <FormattedMessage id="secondPillarGrowth.methodology.source" />
+              </p>
             </div>
-          )}
+          </details>
         </div>
       </div>
     </div>
