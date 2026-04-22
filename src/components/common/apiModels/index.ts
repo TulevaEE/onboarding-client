@@ -439,6 +439,20 @@ export interface ThirdPillarContribution extends BaseContribution {
 
 export type Contribution = SecondPillarContribution | ThirdPillarContribution;
 
+export interface SecondPillarAssets {
+  pikFlag: boolean;
+  balance: number;
+  employeeWithheldPortion: number;
+  socialTaxPortion: number;
+  additionalParentalBenefit: number;
+  interest: number;
+  compensation: number;
+  insurance: number;
+  corrections: number;
+  inheritance: number;
+  withdrawals: number;
+}
+
 export interface MandateDeadlines {
   transferMandateFulfillmentDate: string;
   periodEnding: string;

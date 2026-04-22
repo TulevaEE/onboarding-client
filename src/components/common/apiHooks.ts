@@ -32,6 +32,7 @@ import {
   getSavingsFundBankAccounts,
   getSavingsFundCompanyOnboardingStatus,
   getSavingsFundOnboardingStatus,
+  getSecondPillarAssets,
   getSourceFunds,
   getTransactions,
   getUserConversionWithToken,
@@ -59,6 +60,7 @@ import {
   MandateDeadlines,
   MemberCapitalListing,
   Role,
+  SecondPillarAssets,
   SwitchRoleCommand,
   Token,
   SavingsFundOnboardingStatus,
@@ -107,6 +109,13 @@ export function useCapitalTotal(): UseQueryResult<CapitalTotal> {
 
 export function useContributions(): UseQueryResult<Contribution[]> {
   return useQuery({ queryKey: ['contributions'], queryFn: () => getContributions() });
+}
+
+export function useSecondPillarAssets(): UseQueryResult<SecondPillarAssets> {
+  return useQuery({
+    queryKey: ['secondPillarAssets'],
+    queryFn: () => getSecondPillarAssets(),
+  });
 }
 
 export function useFunds(): UseQueryResult<Fund[]> {

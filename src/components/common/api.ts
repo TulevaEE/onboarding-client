@@ -28,6 +28,7 @@ import {
   PaymentType,
   Role,
   SavingsFundOnboardingStatus,
+  SecondPillarAssets,
   SigningMethod,
   SourceFund,
   Token,
@@ -532,6 +533,13 @@ export function updateCapitalTransferContract(
 
 export function getContributions(): Promise<Contribution[]> {
   return getWithAuthentication(getEndpoint('/v1/contributions'), undefined);
+}
+
+export function getSecondPillarAssets(): Promise<SecondPillarAssets> {
+  return mockRequestInMockMode(
+    () => getWithAuthentication(getEndpoint('/v1/second-pillar-assets'), undefined),
+    'secondPillarAssets',
+  );
 }
 
 export function getMandateDeadlines(): Promise<MandateDeadlines> {

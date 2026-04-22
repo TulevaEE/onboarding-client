@@ -7,6 +7,7 @@ import {
   MandateDeadlines,
   MobileSignatureResponse,
   MobileSignatureStatusResponse,
+  SecondPillarAssets,
   User,
 } from '../components/common/apiModels';
 import { BusinessRegistryValidatedData } from '../components/common/apiModels/company-onboarding';
@@ -215,6 +216,20 @@ export const mockValidatedCompany: BusinessRegistryValidatedData = {
     ],
     errors: [],
   },
+};
+
+export const secondPillarAssetsResponse: SecondPillarAssets = {
+  pikFlag: false,
+  balance: 25000,
+  employeeWithheldPortion: 10000,
+  socialTaxPortion: 8000,
+  additionalParentalBenefit: 500,
+  interest: 0,
+  compensation: 0,
+  insurance: 0,
+  corrections: 0,
+  inheritance: 0,
+  withdrawals: 0,
 };
 
 export const mandateDeadlinesResponse: MandateDeadlines = {
