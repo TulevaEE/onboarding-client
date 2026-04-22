@@ -157,7 +157,11 @@ const SecondPillarGrowth = () => {
     return null;
   }, [segments, assets]);
 
+<<<<<<< HEAD
   const formatCurrency = (value: number) => formatAmountForCurrency(value, 0);
+=======
+  const formatCurrency = (value: number) => `${Math.round(value).toLocaleString('et-EE')} €`;
+>>>>>>> a7d59b91 (2nd-pillar-growth: non-breaking spaces around "II sammas" forms and currency)
 
   const chartData = (() => {
     if (!segments) {
