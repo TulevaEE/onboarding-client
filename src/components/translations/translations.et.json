@@ -1142,7 +1142,7 @@
 
   "secondPillarGrowth.title": "Kes maksab sinu II sambasse?",
   "secondPillarGrowth.lead": "Sinu enda sissemaksete kõrval lisandub II sambasse <b>sotsiaalmaksu osa</b> ja <b>tootlus</b>. Sinu II sambas on <b>{balance}</b>. Vaata, kui palju sellest annavad sinu sissemaksed, kui palju sotsiaalmaks ja kui palju tootlus.",
-  "secondPillarGrowth.chart.label": "Sinu II samba varad",
+  "secondPillarGrowth.chart.label": "Sinu II sammas",
   "secondPillarGrowth.chart.yourContributions": "Sinu panus brutopalgast",
   "secondPillarGrowth.chart.government": "4% sotsiaalmaksust",
   "secondPillarGrowth.chart.inheritance": "Pärimine",

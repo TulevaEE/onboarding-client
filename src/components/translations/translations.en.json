@@ -1062,7 +1062,7 @@
   "pageTitle.secondPillarGrowth": "II pillar growth",
   "secondPillarGrowth.title": "Who pays into your II pillar?",
   "secondPillarGrowth.lead": "Alongside your own contributions, a <b>share of your social tax</b> and <b>investment return</b> add to your II pillar. Your II pillar balance is <b>{balance}</b>. See how much of it comes from your contributions, how much from the state's share, and how much from investment return.",
-  "secondPillarGrowth.chart.label": "Your II pillar assets",
+  "secondPillarGrowth.chart.label": "Your II pillar",
   "secondPillarGrowth.chart.yourContributions": "From your gross salary",
   "secondPillarGrowth.chart.government": "4% from social tax",
   "secondPillarGrowth.chart.inheritance": "Inheritance",
