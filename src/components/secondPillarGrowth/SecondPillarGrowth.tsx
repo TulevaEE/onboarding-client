@@ -15,6 +15,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { usePageTitle } from '../common/usePageTitle';
 import { useSecondPillarAssets } from '../common/apiHooks';
 import { Shimmer } from '../common/shimmer/Shimmer';
+import { TranslationKey } from '../translations';
 
 ChartJS.register(
   CategoryScale,
@@ -205,7 +206,7 @@ const SecondPillarGrowth = () => {
   };
 
   const renderAccountRow = (
-    labelId: string,
+    labelId: TranslationKey,
     amount: number,
     swatchColor: string,
     options: { negative?: boolean } = {},
