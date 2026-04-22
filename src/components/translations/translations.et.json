@@ -1141,7 +1141,7 @@
   "pageTitle.secondPillarGrowth": "II samba kasv",
 
   "secondPillarGrowth.title": "Kes maksab sinu II sambasse?",
-  "secondPillarGrowth.lead": "Sinu enda sissemaksete kõrval lisandub II sambasse <b>sotsiaalmaksu osa</b> ja <b>tootlus</b>. Sinu II sambas on <b>{balance}</b>. Vaata, kui palju sellest annavad sinu sissemaksed, kui palju sotsiaalmaks ja kui palju tootlus.",
+  "secondPillarGrowth.lead": "Sinu II sambas on <b>{balance}</b>, millest <b>{ownPercentage}%</b> on sinu enda sissemaksed. Vaata järele, kui palju lisavad <b>sotsiaalmaksu osa</b> ja <b>tootlus</b>.",
   "secondPillarGrowth.chart.label": "Sinu II sammas",
   "secondPillarGrowth.chart.yourContributions": "Sinu panus brutopalgast",
   "secondPillarGrowth.chart.government": "4% sotsiaalmaksust",
@@ -1160,7 +1160,7 @@
   "secondPillarGrowth.subNote.parentalLeave": "Sa pole ise veel oma II sambasse sissemakseid teinud.",
   "secondPillarGrowth.subNote.pensionilepingUnwound": "Oled II sambast pensionilepingusse maksnud <b>{gross}</b>. Pärast lepingu lõppu on tagasi laekunud <b>{insurance}</b>.",
   "secondPillarGrowth.subNote.pensionilepingUnwoundAndNegative": "Oled II sambast pensionilepingusse maksnud <b>{gross}</b>. Pärast lepingu lõppu on tagasi laekunud <b>{insurance}</b>. II sammas on samuti miinuses — tootlus sõltub fondivalikust, tasudest ja turuolukorrast.",
-  "secondPillarGrowth.pikDisclaimer": "Osa sinu II samba rahast on pensioni investeerimiskontol (PIK). See osa siin ei kajastu, sest seda näed ainult pangas.",
+  "secondPillarGrowth.pikDisclaimer": "Osa sinu II samba rahast on pensioni investeerimiskontol (PIK) – seda näed ainult pangas.",
   "secondPillarGrowth.blogLink": "Loe pikemalt: Kes maksab minu II sambasse?",
   "secondPillarGrowth.methodology.summary": "Kuidas see arvutus käib?",
   "secondPillarGrowth.methodology.intro": "Graafikul on näha sinu II samba vara allikate kaupa.",

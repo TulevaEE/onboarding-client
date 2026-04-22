@@ -55,7 +55,7 @@ const SWATCH_SIZE = 14;
 // Chart palette reuses the tax-win page's softer hues (see
 // SecondPillarTaxWin.tsx) so the two 2nd-pillar charts feel
 // consistent. Each segment comes from a distinct hue family.
-const COLOR_CONTRIBUTION = 'rgba(132,197,230,0.7)'; // tax-win light blue — your contribution
+const COLOR_CONTRIBUTION = '#7DD3FC'; // sky-300 — your contribution (bolder anchor color)
 const COLOR_STATE = '#D0D5DC'; // tax-win gray — neutral state share
 const COLOR_INHERITANCE = '#C4B5FD'; // pastel violet — rare inherited amount, distinct from the rest
 // Growth is semantic: positive = nicer tax-win green, loss = softer red.
@@ -63,7 +63,7 @@ const COLOR_GROWTH_POSITIVE = '#A3D9AC'; // muted pastel green
 const COLOR_GROWTH_NEGATIVE = '#FCA5A5'; // pastel red (Tailwind red-300)
 const COLOR_WITHDRAWN = '#F3D47A'; // soft mustard — outflow
 
-const HOVER_CONTRIBUTION = 'rgba(83,175,220,0.7)';
+const HOVER_CONTRIBUTION = '#5FC5F8';
 const HOVER_STATE = '#B5BEC8';
 const HOVER_INHERITANCE = '#A692F7';
 const HOVER_GROWTH_POSITIVE = '#8CC496';
@@ -414,6 +414,10 @@ const SecondPillarGrowth = () => {
                 id="secondPillarGrowth.lead"
                 values={{
                   balance: formatCurrency(assets.balance),
+                  ownPercentage:
+                    segments && assets.balance > 0
+                      ? Math.round((segments.contribution / assets.balance) * 100)
+                      : 0,
                   b: (chunks: string) => <strong>{chunks}</strong>,
                 }}
               />
@@ -454,7 +458,7 @@ const SecondPillarGrowth = () => {
             </div>
           </div>
           {subNoteKey && segments && assets && (
-            <div className="text-secondary mt-1" data-testid="sub-note">
+            <div className="text-secondary mt-2" data-testid="sub-note">
               <FormattedMessage
                 id={`secondPillarGrowth.subNote.${subNoteKey}`}
                 values={{
@@ -470,7 +474,7 @@ const SecondPillarGrowth = () => {
             </div>
           )}
           {assets?.pikFlag && (
-            <div className="text-secondary mt-1" role="note" data-testid="pik-disclaimer">
+            <div className="text-secondary mt-2" role="note" data-testid="pik-disclaimer">
               <FormattedMessage id="secondPillarGrowth.pikDisclaimer" />
             </div>
           )}
