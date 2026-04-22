@@ -98,7 +98,7 @@ describe('SecondPillarGrowth', () => {
       );
       renderWithProviders(<SecondPillarGrowth />);
       expect(segmentAmount('Your contribution')).toBeCloseTo(5531.39, 2);
-      expect(segmentAmount('State')).toBeCloseTo(10011.86, 2);
+      expect(segmentAmount('Social tax')).toBeCloseTo(10011.86, 2);
       expect(segmentAmount('Return')).toBeCloseTo(155.11, 2);
       expect(segmentAmount('Withdrawn')).toBeCloseTo(0, 2);
       expect(screen.queryByTestId('segment-Inheritance')).not.toBeInTheDocument();
@@ -134,7 +134,7 @@ describe('SecondPillarGrowth', () => {
       expect(segmentAmount('Return')).toBeCloseTo(2230.67, 2);
       const sum =
         segmentAmount('Your contribution') +
-        segmentAmount('State') +
+        segmentAmount('Social tax') +
         segmentAmount('Return') +
         segmentAmount('Withdrawn');
       expect(sum).toBeCloseTo(0, 2);
@@ -155,7 +155,7 @@ describe('SecondPillarGrowth', () => {
       expect(segmentAmount('Withdrawn')).toBeCloseTo(-3500.25, 2);
       const sum =
         segmentAmount('Your contribution') +
-        segmentAmount('State') +
+        segmentAmount('Social tax') +
         segmentAmount('Return') +
         segmentAmount('Withdrawn');
       expect(sum).toBeCloseTo(53, 2);
@@ -170,7 +170,7 @@ describe('SecondPillarGrowth', () => {
       );
       renderWithProviders(<SecondPillarGrowth />);
       expect(segmentAmount('Your contribution')).toBeCloseTo(0, 2);
-      expect(segmentAmount('State')).toBeCloseTo(396.5, 2);
+      expect(segmentAmount('Social tax')).toBeCloseTo(396.5, 2);
       expect(segmentAmount('Return')).toBeCloseTo(29.2, 2);
       expect(segmentAmount('Withdrawn')).toBeCloseTo(0, 2);
     });
@@ -195,28 +195,28 @@ describe('SecondPillarGrowth', () => {
       expect(screen.queryByTestId('pik-disclaimer')).not.toBeInTheDocument();
     });
 
-    it('case 8 — inherited 2nd pillar assets fold into Riik+muud', () => {
+    it('case 8 — inherited 2nd pillar assets render as a separate segment', () => {
       mockAssets(
-        buildAssets({
+        zeroAssets({
           balance: 28120.45,
           employeeWithheldPortion: 8042.15,
           socialTaxPortion: 13056.3,
-          additionalParentalBenefit: 0,
-          compensation: 0,
-          interest: 0,
-          insurance: 0,
-          corrections: 0,
           inheritance: 5000,
-          withdrawals: 0,
         }),
       );
       renderWithProviders(<SecondPillarGrowth />);
-      const { sinu, riikJaMuud, tootlus, valjamaksed } = readSegments();
-      expect(sinu).toBeCloseTo(8042.15, 2);
-      expect(riikJaMuud).toBeCloseTo(18056.3, 2);
-      expect(tootlus).toBeCloseTo(2022, 2);
-      expect(valjamaksed).toBeCloseTo(0, 2);
-      expect(sinu + riikJaMuud + tootlus + valjamaksed).toBeCloseTo(28120.45, 2);
+      expect(segmentAmount('Your contribution')).toBeCloseTo(8042.15, 2);
+      expect(segmentAmount('Social tax')).toBeCloseTo(13056.3, 2);
+      expect(segmentAmount('Inheritance')).toBeCloseTo(5000, 2);
+      expect(segmentAmount('Return')).toBeCloseTo(2022, 2);
+      expect(segmentAmount('Withdrawn')).toBeCloseTo(0, 2);
+      const sum =
+        segmentAmount('Your contribution') +
+        segmentAmount('Social tax') +
+        segmentAmount('Inheritance') +
+        segmentAmount('Return') +
+        segmentAmount('Withdrawn');
+      expect(sum).toBeCloseTo(28120.45, 2);
     });
 
     it('case 7 — long-term saver with big positive growth', () => {
@@ -229,7 +229,7 @@ describe('SecondPillarGrowth', () => {
       );
       renderWithProviders(<SecondPillarGrowth />);
       expect(segmentAmount('Your contribution')).toBeCloseTo(9419.9, 2);
-      expect(segmentAmount('State')).toBeCloseTo(16453.08, 2);
+      expect(segmentAmount('Social tax')).toBeCloseTo(16453.08, 2);
       expect(segmentAmount('Return')).toBeCloseTo(20175.73, 2);
       expect(segmentAmount('Withdrawn')).toBeCloseTo(0, 2);
     });
@@ -270,7 +270,7 @@ describe('SecondPillarGrowth', () => {
         }),
       );
       renderWithProviders(<SecondPillarGrowth />);
-      expect(subNote()).toHaveTextContent(/you have already received/i);
+      expect(subNote()).toHaveTextContent(/you have withdrawn/i);
     });
 
     it('shows the combined withdrawals-and-negative sub-note when both conditions hold', () => {
@@ -284,7 +284,8 @@ describe('SecondPillarGrowth', () => {
         }),
       );
       renderWithProviders(<SecondPillarGrowth />);
-      expect(subNote()).toHaveTextContent(/investment return is also currently negative/i);
+      expect(subNote()).toHaveTextContent(/you have withdrawn/i);
+      expect(subNote()).toHaveTextContent(/your II pillar is at a loss/i);
     });
 
     it('shows the negative-return sub-note when return is negative and nothing has been withdrawn', () => {
@@ -297,7 +298,7 @@ describe('SecondPillarGrowth', () => {
         }),
       );
       renderWithProviders(<SecondPillarGrowth />);
-      expect(subNote()).toHaveTextContent(/your investment return is currently negative/i);
+      expect(subNote()).toHaveTextContent(/your II pillar is at a loss/i);
     });
 
     it('shows the parental-leave sub-note when own contribution is zero and state contribution is positive', () => {
@@ -308,7 +309,7 @@ describe('SecondPillarGrowth', () => {
         }),
       );
       renderWithProviders(<SecondPillarGrowth />);
-      expect(subNote()).toHaveTextContent(/haven't made any contributions of your own/i);
+      expect(subNote()).toHaveTextContent(/haven't made any contributions to your II pillar yet/i);
     });
 
     it('shows no sub-note on the happy path', () => {
@@ -365,7 +366,7 @@ describe('SecondPillarGrowth', () => {
       );
       renderWithProviders(<SecondPillarGrowth />);
       expect(accountList().getByText('Your contribution')).toBeInTheDocument();
-      expect(accountList().getByText('State')).toBeInTheDocument();
+      expect(accountList().getByText('Social tax')).toBeInTheDocument();
       expect(accountList().getByText('Return')).toBeInTheDocument();
       expect(accountList().getByText('Total')).toBeInTheDocument();
     });
