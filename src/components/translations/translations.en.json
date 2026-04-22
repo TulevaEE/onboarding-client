@@ -1063,7 +1063,7 @@
   "secondPillarGrowth.title": "Who pays into your II pillar?",
   "secondPillarGrowth.lead": "Alongside your own contributions, the <b>state</b> and <b>investment return</b> help build your II pillar. Your II pillar balance is <b>{balance}</b>. The chart shows how much you have contributed yourself, how much the state has added, and how much investment return has added.",
   "secondPillarGrowth.chart.label": "Your II pillar assets",
-  "secondPillarGrowth.chart.yourContributions": "You",
+  "secondPillarGrowth.chart.yourContributions": "Your contribution",
   "secondPillarGrowth.chart.government": "State",
   "secondPillarGrowth.chart.inheritance": "Inheritance",
   "secondPillarGrowth.chart.growth": "Return",
