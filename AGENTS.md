@@ -6,6 +6,47 @@ TZ=UTC npx react-scripts test --watchAll=false --no-coverage --reporters=default
 
 Running tests with tdd-guard-jest reporter is important so that tdd-guard gets accurate information about failing tests and allows coding agent to do changes.
 
+`TZ=UTC` is required — the test suite encodes UTC-formatted timestamps (e.g. `December 31 at 21:59`) that only match when the process runs in UTC. Running without it breaks withdrawal-flow date assertions in non-UTC timezones.
+
+# Editing Translation JSON
+
+`src/components/translations/translations.{en,et}.json` contain NBSPs (U+00A0) that are **intentional** — they prevent undesired line breaks in the rendered UI (e.g. keep "II pillar", "1000 €", or "II sammas" on one line). Most editors render NBSP as a regular space, so using `Edit`/`Write` to modify these files silently corrupts NBSPs and causes cascading test failures.
+
+**Do not edit these two files with `Edit` or `Write`.** Use the script instead:
+
+```bash
+# Read a key (NBSPs rendered as literal   so they're visible):
+scripts/edit-translation.py get en 'account.title'
+
+# Update a key (use   in your value for NBSP):
+scripts/edit-translation.py set en 'account.title' 'II pillar'
+scripts/edit-translation.py set et 'account.title' 'II sammas'
+
+# Remove a key:
+scripts/edit-translation.py delete en 'account.title'
+
+# List keys (optionally filtered by prefix):
+scripts/edit-translation.py list en 'secondPillarGrowth.chart'
+```
+
+The script preserves the rest of the file byte-for-byte (blank lines, ordering, unrelated NBSPs). Set/get are round-trip-safe: `set $(get …)` produces an identical file.
+
+## NBSPs in Tests
+
+`getByRole(role, { name })` uses an **identity normalizer** for accessible names, so a plain-string matcher like `{ name: 'II pillar' }` will not match DOM text `"II pillar"`. Use a regex with `\s` (which matches NBSP in JS) for any cross-NBSP-boundary assertion:
+
+```javascript
+// ❌ breaks when the translation contains NBSP
+getByRole('heading', { name: 'Monthly fund pension payments from II pillar' });
+
+// ✅ matches both regular space and NBSP
+getByRole('heading', { name: /^Monthly fund pension payments from II\spillar$/ });
+```
+
+`getByText` and `findByText` normalize NBSP to a regular space automatically — no change needed.
+
+`userEvent.selectOptions` takes the option's `value` attribute or exact `innerHTML` (no regex). When the visible label contains NBSP, prefer resolving the option via `findByRole('option', { name: /label with II\spillar/ })` and passing the element rather than a string.
+
 # React Testing Library Best Practices
 
 ## Core Principle

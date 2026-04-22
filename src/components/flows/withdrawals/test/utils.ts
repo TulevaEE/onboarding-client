@@ -158,13 +158,13 @@ export const assertFundPensionMandate = async (
   if (pillar === 'SECOND') {
     expect(
       await within(fundPensionSection).findByRole('heading', {
-        name: 'Monthly fund pension payments from II pillar',
+        name: /^Monthly fund pension payments from II\spillar$/,
       }),
     ).toBeInTheDocument();
   } else {
     expect(
       await within(fundPensionSection).findByRole('heading', {
-        name: 'Monthly fund pension payments from III pillar',
+        name: /^Monthly fund pension payments from III\spillar$/,
       }),
     ).toBeInTheDocument();
   }
@@ -229,13 +229,13 @@ export const assertPartialWithdrawalMandate = async ({
   if (pillar === 'SECOND') {
     expect(
       await within(partialWithdrawalSection).findByRole('heading', {
-        name: 'Partial withdrawal from II pillar',
+        name: /^Partial withdrawal from II\spillar$/,
       }),
     ).toBeInTheDocument();
   } else {
     expect(
       await within(partialWithdrawalSection).findByRole('heading', {
-        name: 'Partial withdrawal from III pillar',
+        name: /^Partial withdrawal from III\spillar$/,
       }),
     ).toBeInTheDocument();
   }

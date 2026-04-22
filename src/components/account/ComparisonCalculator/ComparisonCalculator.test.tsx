@@ -78,7 +78,7 @@ async function checkForExplanationSubtext() {
 }
 
 async function pillar3button() {
-  return screen.findByRole('button', { name: /Your III pillar/i });
+  return screen.findByRole('button', { name: /Your III\spillar/i });
 }
 
 async function expectAllWorldMarketInBold() {
@@ -103,8 +103,12 @@ describe('ComparisonCalculator', () => {
     renderApp();
     const calculator = await component();
 
-    const secondPillarButton = within(calculator).getByRole('button', { name: 'Your II pillar' });
-    const thirdPillarButton = within(calculator).getByRole('button', { name: 'Your III pillar' });
+    const secondPillarButton = within(calculator).getByRole('button', {
+      name: /^Your II\spillar$/,
+    });
+    const thirdPillarButton = within(calculator).getByRole('button', {
+      name: /^Your III\spillar$/,
+    });
 
     expect(secondPillarButton).toBeInTheDocument();
     expect(thirdPillarButton).toBeInTheDocument();
@@ -118,10 +122,10 @@ describe('ComparisonCalculator', () => {
     const calculator = await component();
 
     const secondPillarButton = within(calculator).queryByRole('button', {
-      name: 'Your II pillar',
+      name: /^Your II\spillar$/,
     });
     const thirdPillarButton = within(calculator).queryByRole('button', {
-      name: 'Your III pillar',
+      name: /^Your III\spillar$/,
     });
 
     expect(secondPillarButton).not.toBeInTheDocument();
@@ -133,10 +137,10 @@ describe('ComparisonCalculator', () => {
     const calculator = await component();
 
     const secondPillarButton = within(calculator).queryByRole('button', {
-      name: 'Your II pillar',
+      name: /^Your II\spillar$/,
     });
     const thirdPillarButton = within(calculator).queryByRole('button', {
-      name: 'Your III pillar',
+      name: /^Your III\spillar$/,
     });
 
     expect(secondPillarButton).not.toBeInTheDocument();
@@ -544,7 +548,10 @@ describe('ComparisonCalculator', () => {
     renderApp();
     setReturnsData(returnsData2ndPillarAverage);
     await component();
-    userEvent.selectOptions(await comparedToSelect(), 'Average Estonian II pillar fund');
+    userEvent.selectOptions(
+      await comparedToSelect(),
+      await screen.findByRole('option', { name: /Average Estonian II\spillar fund/ }),
+    );
     await component();
 
     // Content text

@@ -43,9 +43,13 @@ jobs:
           command: npm run lint
       - run:
           name: Run tests
-          command: npm test -- --maxWorkers=2
+          command: npm test -- --ci --maxWorkers=2 --reporters=default --reporters=jest-junit
+          environment:
+            JEST_JUNIT_OUTPUT_DIR: ./test-results
+            JEST_JUNIT_OUTPUT_NAME: junit.xml
+            JEST_JUNIT_ADD_FILE_ATTRIBUTE: "true"
       - store_test_results:
-          path: ./test-results.json
+          path: ./test-results
       - codecov/upload
   deploy-staging:
     executor: aws-cli/default
@@ -88,9 +92,13 @@ jobs:
           command: npm run lint
       - run:
           name: Run tests
-          command: npm test -- --maxWorkers=2
+          command: npm test -- --ci --maxWorkers=2 --reporters=default --reporters=jest-junit
+          environment:
+            JEST_JUNIT_OUTPUT_DIR: ./test-results
+            JEST_JUNIT_OUTPUT_NAME: junit.xml
+            JEST_JUNIT_ADD_FILE_ATTRIBUTE: "true"
       - store_test_results:
-          path: ./test-results.json
+          path: ./test-results
       - codecov/upload
   deploy-production:
     executor: aws-cli/default

@@ -87,17 +87,17 @@ describe('happy path', () => {
     expect(
       await within(summarySection).findByRole('cell', { name: 'Member capital' }),
     ).toBeInTheDocument();
-    const getRow = (name: string) =>
+    const getRow = (name: string | RegExp) =>
       // eslint-disable-next-line testing-library/no-node-access,@typescript-eslint/no-non-null-assertion
       within(summarySection).getByRole('cell', { name }).parentElement!;
 
-    const secondPillarRow = getRow('II pillar');
+    const secondPillarRow = getRow(/^II\spillar$/);
     expect(within(secondPillarRow).getByText('12 345.67 €')).toBeInTheDocument();
     expect(within(secondPillarRow).queryByText('0.00 €')).not.toBeInTheDocument();
     expect(within(secondPillarRow).getByText('102 654.33 €')).toBeInTheDocument();
     expect(within(secondPillarRow).getByText('115 000.00 €')).toBeInTheDocument();
 
-    const thirdPillarRow = getRow('III pillar');
+    const thirdPillarRow = getRow(/^III\spillar$/);
     expect(within(thirdPillarRow).getByText('9 876.54 €')).toBeInTheDocument();
     expect(within(thirdPillarRow).queryByText('0.00 €')).not.toBeInTheDocument();
     expect(within(thirdPillarRow).getByText('−4 177.18 €')).toBeInTheDocument();
