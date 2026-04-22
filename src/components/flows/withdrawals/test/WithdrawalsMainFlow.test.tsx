@@ -92,7 +92,7 @@ describe('withdrawals flow with both pillars', () => {
     expect(await screen.findByText(/Citadele/)).toBeInTheDocument();
     expect(await screen.findByText('EST')).toBeInTheDocument();
 
-    assertMandateCount(4);
+    await assertMandateCount(4);
 
     await assertFundPensionMandate('SECOND', '400 €');
     await assertFundPensionMandate('THIRD', '20 €');
@@ -154,7 +154,7 @@ describe('withdrawals flow with both pillars', () => {
     expect(await screen.findByText(/EE591254471322749514/i)).toBeInTheDocument();
     expect(await screen.findByText('EST')).toBeInTheDocument();
 
-    assertMandateCount(2);
+    await assertMandateCount(2);
 
     await assertFundPensionMandate('SECOND', '479 €');
     await assertFundPensionMandate('THIRD', '24 €');
@@ -199,7 +199,7 @@ describe('withdrawals flow with both pillars', () => {
     expect(await screen.findByText(/EE591254471322749514/i)).toBeInTheDocument();
     expect(await screen.findByText('EST')).toBeInTheDocument();
 
-    assertMandateCount(2);
+    await assertMandateCount(2);
 
     await assertPartialWithdrawalMandate({
       pillar: 'SECOND',
@@ -312,7 +312,7 @@ describe('withdrawals flow with both pillars', () => {
     await enterIban('EE591254471322749514');
     userEvent.click(nextButton());
 
-    assertMandateCount(2);
+    await assertMandateCount(2);
 
     await assertFundPensionMandate('SECOND', finalFundPensionSize);
 
@@ -353,7 +353,7 @@ describe('withdrawals flow with both pillars', () => {
     await enterIban('EE591254471322749514');
     userEvent.click(nextButton());
 
-    assertMandateCount(1);
+    await assertMandateCount(1);
 
     await assertFundPensionMandate('SECOND', finalFundPensionSize);
 
@@ -385,7 +385,7 @@ describe('withdrawals flow with both pillars', () => {
     await enterIban('EE591254471322749514');
     userEvent.click(nextButton());
 
-    assertMandateCount(2);
+    await assertMandateCount(2);
 
     await assertFundPensionMandate('THIRD', finalFundPensionSize);
 
@@ -422,7 +422,7 @@ describe('withdrawals flow with both pillars', () => {
     await enterIban('EE591254471322749514');
     userEvent.click(nextButton());
 
-    assertMandateCount(1);
+    await assertMandateCount(1);
     await assertFundPensionMandate('THIRD', finalFundPensionSize);
 
     await confirmAndSignAndAssertDone('SINGLE_APPLICATION');
@@ -527,7 +527,7 @@ describe('withdrawals flow with only second pillar and arrests/bankruptcy', () =
     await enterIban('EE591254471322749514');
     userEvent.click(nextButton());
 
-    assertMandateCount(2);
+    await assertMandateCount(2);
 
     assertFundPensionMandate('SECOND', '271 €', 'BANKRUPTCIES_ARRESTS_PRESENT');
     assertPartialWithdrawalMandate({
@@ -591,7 +591,7 @@ describe('withdrawals flow with only third pillar', () => {
     await enterIban('EE591254471322749514');
     userEvent.click(nextButton());
 
-    assertMandateCount(2);
+    await assertMandateCount(2);
 
     assertFundPensionMandate('THIRD', '23 €');
     assertPartialWithdrawalMandate({

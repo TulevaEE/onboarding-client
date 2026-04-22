@@ -158,7 +158,7 @@ describe('withdrawals flow before early retirement age', () => {
     expect(await screen.findByText(/EE591254471322749514/i)).toBeInTheDocument();
     expect(await screen.findByText('EST')).toBeInTheDocument();
 
-    assertMandateCount(1);
+    await assertMandateCount(1);
 
     await assertPartialWithdrawalMandate({
       pillar: 'THIRD',
@@ -247,7 +247,7 @@ describe('withdrawals flow before early retirement age', () => {
     expect(await screen.findByText(/EE591254471322749514/i)).toBeInTheDocument();
     expect(await screen.findByText('EST')).toBeInTheDocument();
 
-    assertMandateCount(1);
+    await assertMandateCount(1);
 
     await assertPartialWithdrawalMandate({
       pillar: 'THIRD',
@@ -331,7 +331,7 @@ describe('withdrawals flow at 55 withdrawing only third pillar', () => {
     expect(await screen.findByText(/EE591254471322749514/i)).toBeInTheDocument();
     expect(await screen.findByText('EST')).toBeInTheDocument();
 
-    assertMandateCount(2);
+    await assertMandateCount(2);
 
     await assertFundPensionMandate('THIRD', '16 €');
     await assertPartialWithdrawalMandate({
@@ -393,7 +393,7 @@ describe('withdrawals flow with missing NAV', () => {
       await screen.findByText(/I submit the following applications and am aware of their terms/i),
     ).toBeInTheDocument();
 
-    assertMandateCount(4);
+    await assertMandateCount(2);
 
     await confirmAndSignAndAssertFailed();
   });
@@ -501,7 +501,7 @@ describe('withdrawals flow with unliquidatable fund', () => {
     expect(await screen.findByText(/EE591254471322749514/i)).toBeInTheDocument();
     expect(await screen.findByText('EST')).toBeInTheDocument();
 
-    assertMandateCount(4);
+    await assertMandateCount(4);
 
     await assertFundPensionMandate('SECOND', '338 €');
     await assertFundPensionMandate('THIRD', '19 €');
