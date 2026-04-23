@@ -230,6 +230,7 @@ export const secondPillarAssetsResponse: SecondPillarAssets = {
   corrections: 0,
   inheritance: 0,
   withdrawals: 0,
+  transferredToPik: 0,
 };
 
 export const mandateDeadlinesResponse: MandateDeadlines = {

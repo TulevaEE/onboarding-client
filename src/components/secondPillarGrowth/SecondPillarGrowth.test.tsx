@@ -1,18 +1,14 @@
 import React from 'react';
-import { render, screen, within } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { IntlProvider } from 'react-intl';
-import { MemoryRouter } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { createMemoryHistory } from 'history';
 import SecondPillarGrowth from './SecondPillarGrowth';
 import { SecondPillarAssets } from '../common/apiModels';
-import translations from '../translations';
 import { initializeConfiguration } from '../config/config';
-import { getAuthentication } from '../common/authenticationManager';
-import { anAuthenticationManager } from '../common/authenticationManagerFixture';
-import { secondPillarAssetsBackend, userBackend } from '../../test/backend';
+import { createDefaultStore, login, renderWrapped } from '../../test/utils';
+import { secondPillarAssetsBackend, userBackend, userConversionBackend } from '../../test/backend';
 import { secondPillarAssetsResponse } from '../../test/backend-responses';
 
 jest.mock('react-chartjs-2', () => ({
@@ -21,16 +17,12 @@ jest.mock('react-chartjs-2', () => ({
 
 const server = setupServer();
 
-const renderWithProviders = () =>
-  render(
-    <MemoryRouter>
-      <IntlProvider locale="en" messages={translations.en}>
-        <QueryClientProvider client={new QueryClient()}>
-          <SecondPillarGrowth />
-        </QueryClientProvider>
-      </IntlProvider>
-    </MemoryRouter>,
-  );
+const renderWithProviders = () => {
+  const history = createMemoryHistory();
+  const store = createDefaultStore(history as any);
+  login(store);
+  return renderWrapped(<SecondPillarGrowth />, history as any, store);
+};
 
 const accountList = () => within(screen.getByTestId('account-list'));
 
@@ -44,7 +36,6 @@ const expectNoRow = (label: string) => {
   expect(accountList().queryByRole('term', { name: label })).not.toBeInTheDocument();
 };
 
-const subNote = () => screen.getByTestId('sub-note');
 const querySubNote = () => screen.queryByTestId('sub-note');
 
 const mockAssets = (overrides: Partial<SecondPillarAssets> = {}) =>
@@ -60,6 +51,7 @@ const mockAssets = (overrides: Partial<SecondPillarAssets> = {}) =>
     corrections: 0,
     inheritance: 0,
     withdrawals: 0,
+    transferredToPik: 0,
     ...overrides,
   });
 
@@ -70,14 +62,14 @@ describe('SecondPillarGrowth', () => {
 
   beforeEach(() => {
     initializeConfiguration();
-    getAuthentication().update(anAuthenticationManager());
     userBackend(server);
+    userConversionBackend(server);
   });
 
   it('shows a shimmer while data is loading', () => {
     server.use(
       rest.get('http://localhost/v1/second-pillar-assets', (req, res, ctx) =>
-        res(ctx.delay('infinite'), ctx.json(secondPillarAssetsResponse)),
+        res(ctx.delay(50), ctx.json(secondPillarAssetsResponse)),
       ),
     );
     renderWithProviders();
@@ -92,8 +84,8 @@ describe('SecondPillarGrowth', () => {
         socialTaxPortion: 8782.61,
       });
       renderWithProviders();
-      await expectRow('Your contribution', '5 531 €');
-      await expectRow('Social tax', '8 783 €');
+      await expectRow('Your contribution', '4 425 €');
+      await expectRow('Tax win', '9 889 €');
       await expectRow('Return', '1 384 €');
       await expectRow('Total', '15 698 €');
       expectNoRow('Inheritance');
@@ -107,8 +99,8 @@ describe('SecondPillarGrowth', () => {
         socialTaxPortion: 9807.09,
       });
       renderWithProviders();
-      await expectRow('Your contribution', '4 904 €');
-      await expectRow('Social tax', '9 807 €');
+      await expectRow('Your contribution', '3 923 €');
+      await expectRow('Tax win', '10 788 €');
       await expectRow('Return', '−11 €');
       await expectRow('Total', '14 701 €');
       expectNoRow('Withdrawn');
@@ -123,10 +115,11 @@ describe('SecondPillarGrowth', () => {
         withdrawals: 7160.25,
       });
       renderWithProviders();
-      await expectRow('Your contribution', '1 696 €');
-      await expectRow('Social tax', '2 923 €');
+      await expectRow('Your contribution', '1 357 €');
+      await expectRow('Tax win', '3 262 €');
+      await expectRow('Inheritance', '310 €');
       await expectRow('Return', '2 231 €');
-      await expectRow('Withdrawn', '−6 850 €');
+      await expectRow('Withdrawn', '−7 160 €');
       await expectRow('Total', '0 €');
     });
 
@@ -139,10 +132,11 @@ describe('SecondPillarGrowth', () => {
         withdrawals: 3500.25,
       });
       renderWithProviders();
-      await expectRow('Your contribution', '1 096 €');
-      await expectRow('Social tax', '2 323 €');
+      await expectRow('Your contribution', '877 €');
+      await expectRow('Tax win', '2 542 €');
+      await expectRow('Inheritance', '350 €');
       await expectRow('Return', '−216 €');
-      await expectRow('Withdrawn', '−3 150 €');
+      await expectRow('Withdrawn', '−3 500 €');
       await expectRow('Total', '53 €');
     });
 
@@ -155,7 +149,7 @@ describe('SecondPillarGrowth', () => {
       await expectRow('Your contribution', '397 €');
       await expectRow('Return', '29 €');
       await expectRow('Total', '426 €');
-      expectNoRow('Social tax');
+      expectNoRow('Tax win');
     });
 
     it('case 6 — PIK conversion renders a disclaimer', async () => {
@@ -168,6 +162,39 @@ describe('SecondPillarGrowth', () => {
       renderWithProviders();
       expect(await screen.findByTestId('pik-disclaimer')).toBeInTheDocument();
       expect(screen.getByTestId('mock-chart')).toBeInTheDocument();
+    });
+
+    it('case 6b — PIK user with one outflow raises growth by the transferred amount', async () => {
+      // User routed one month of contributions to PIK. Balance excludes PIK
+      // but employeeWithheldPortion includes it, so naive growth would be
+      // short by ~706.66. transferredToPik corrects the formula so the
+      // growth matches the XIRR calculator on the account page.
+      mockAssets({
+        pikFlag: true,
+        balance: 33465,
+        employeeWithheldPortion: 5000,
+        socialTaxPortion: 9853,
+        transferredToPik: 706.66,
+      });
+      renderWithProviders();
+      await expectRow('Transferred to PIK', '−707 €');
+      await expectRow('Return', '19 319 €');
+    });
+
+    it('falls back to the pre-PIK formula when the backend omits transferredToPik', async () => {
+      // Simulates running the frontend against an older backend (e.g. prod
+      // before the /v1/second-pillar-assets enrichment is deployed). Without
+      // a fallback, assets.transferredToPik would be undefined and growth
+      // would be NaN, so the Return row would disappear entirely.
+      mockAssets({
+        balance: 15698.36,
+        employeeWithheldPortion: 5531.39,
+        socialTaxPortion: 8782.61,
+        transferredToPik: undefined as unknown as number,
+      });
+      renderWithProviders();
+      await expectRow('Return', '1 384 €');
+      await expectRow('Total', '15 698 €');
     });
 
     it('does not render the PIK disclaimer for a non-PIK user', async () => {
@@ -185,8 +212,8 @@ describe('SecondPillarGrowth', () => {
         inheritance: 5000,
       });
       renderWithProviders();
-      await expectRow('Your contribution', '8 042 €');
-      await expectRow('Social tax', '13 056 €');
+      await expectRow('Your contribution', '6 434 €');
+      await expectRow('Tax win', '14 665 €');
       await expectRow('Inheritance', '5 000 €');
       await expectRow('Return', '2 022 €');
       await expectRow('Total', '28 120 €');
@@ -199,8 +226,8 @@ describe('SecondPillarGrowth', () => {
         socialTaxPortion: 16453.08,
       });
       renderWithProviders();
-      await expectRow('Your contribution', '9 420 €');
-      await expectRow('Social tax', '16 453 €');
+      await expectRow('Your contribution', '7 536 €');
+      await expectRow('Tax win', '18 337 €');
       await expectRow('Return', '20 176 €');
       await expectRow('Total', '46 049 €');
     });
@@ -228,7 +255,7 @@ describe('SecondPillarGrowth', () => {
   });
 
   describe('sub-notes below chart', () => {
-    it('shows the plain withdrawals sub-note when there are withdrawals but no insurance receipts', async () => {
+    it('does not add a withdrawals sub-note when growth is positive (the chart already shows it)', async () => {
       mockAssets({
         balance: 0,
         employeeWithheldPortion: 1696.38,
@@ -236,10 +263,11 @@ describe('SecondPillarGrowth', () => {
         withdrawals: 7160.25,
       });
       renderWithProviders();
-      expect(await screen.findByTestId('sub-note')).toHaveTextContent(/you have withdrawn/i);
+      expect(await screen.findByTestId('mock-chart')).toBeInTheDocument();
+      expect(querySubNote()).not.toBeInTheDocument();
     });
 
-    it('shows the pensionileping-unwound sub-note when insurance > 0 and withdrawals > 0', async () => {
+    it('renders insurance receipts as inheritance rather than a special sub-note', async () => {
       mockAssets({
         balance: 12500,
         employeeWithheldPortion: 4000,
@@ -248,22 +276,8 @@ describe('SecondPillarGrowth', () => {
         withdrawals: 3000,
       });
       renderWithProviders();
-      expect(await screen.findByTestId('sub-note')).toHaveTextContent(/you have paid/i);
-      expect(subNote()).toHaveTextContent(/came back/i);
-    });
-
-    it('shows the pensionileping-unwound-and-negative sub-note when insurance > 0 and return is negative', async () => {
-      mockAssets({
-        balance: 53,
-        employeeWithheldPortion: 1096.38,
-        socialTaxPortion: 2323.2,
-        insurance: 350,
-        withdrawals: 3500.25,
-      });
-      renderWithProviders();
-      expect(await screen.findByTestId('sub-note')).toHaveTextContent(/you have paid/i);
-      expect(subNote()).toHaveTextContent(/came back/i);
-      expect(subNote()).toHaveTextContent(/at a loss/i);
+      await expectRow('Inheritance', '2 700 €');
+      expect(querySubNote()).not.toBeInTheDocument();
     });
 
     it('shows the negative-return sub-note when return is negative and nothing has been withdrawn', async () => {
@@ -331,8 +345,8 @@ describe('SecondPillarGrowth', () => {
         socialTaxPortion: 8782.61,
       });
       renderWithProviders();
-      await expectRow('Your contribution', '5 531 €');
-      await expectRow('Social tax', '8 783 €');
+      await expectRow('Your contribution', '4 425 €');
+      await expectRow('Tax win', '9 889 €');
       await expectRow('Return', '1 384 €');
       await expectRow('Total', '15 698 €');
     });
@@ -364,7 +378,7 @@ describe('SecondPillarGrowth', () => {
         withdrawals: 7160.25,
       });
       renderWithProviders();
-      await expectRow('Withdrawn', '−6 850 €');
+      await expectRow('Withdrawn', '−7 160 €');
     });
 
     it('omits the withdrawals row when no money has been withdrawn', async () => {
@@ -376,33 +390,48 @@ describe('SecondPillarGrowth', () => {
   });
 
   describe('call-to-action', () => {
-    it('points 2% contributors to the payment-rate flow', async () => {
+    it('marks the raise-rate item as pending for 2% contributors', async () => {
       server.resetHandlers();
       userBackend(server, { secondPillarPaymentRates: { current: 2, pending: null } });
+      userConversionBackend(server);
       mockAssets();
       renderWithProviders();
-      const link = await screen.findByRole('link', {
-        name: /raise your II\spillar contribution to 6%/i,
-      });
-      expect(link).toHaveAttribute('href', '/2nd-pillar-payment-rate');
+      const raiseItem = await screen.findByTestId('cta-item-raiseRate');
+      expect(raiseItem).toHaveAttribute('data-done', 'false');
     });
 
-    it('points 4% contributors to the payment-rate flow', async () => {
+    it('keeps the raise-rate item pending for 4% contributors so they can still raise to 6%', async () => {
       server.resetHandlers();
       userBackend(server, { secondPillarPaymentRates: { current: 4, pending: null } });
+      userConversionBackend(server);
       mockAssets();
       renderWithProviders();
-      const link = await screen.findByRole('link', {
-        name: /raise your II\spillar contribution to 6%/i,
-      });
-      expect(link).toHaveAttribute('href', '/2nd-pillar-payment-rate');
+      const raiseItem = await screen.findByTestId('cta-item-raiseRate');
+      expect(raiseItem).toHaveAttribute('data-done', 'false');
     });
 
-    it('points 6% contributors to the III pillar payment flow', async () => {
+    it('keeps the raise-rate item pending when a pending filing lowers the rate below 6%', async () => {
       server.resetHandlers();
-      userBackend(server, { secondPillarPaymentRates: { current: 6, pending: null } });
+      userBackend(server, { secondPillarPaymentRates: { current: 6, pending: 4 } });
+      userConversionBackend(server);
       mockAssets();
       renderWithProviders();
+      const raiseItem = await screen.findByTestId('cta-item-raiseRate');
+      expect(raiseItem).toHaveAttribute('data-done', 'false');
+    });
+
+    it('still renders the checklist when every item is done', async () => {
+      server.resetHandlers();
+      userBackend(server, {
+        secondPillarActive: true,
+        secondPillarPaymentRates: { current: 6, pending: null },
+      });
+      userConversionBackend(server, { weightedAverageFee: 0.003 });
+      mockAssets();
+      renderWithProviders();
+      expect(await screen.findByTestId('cta-item-taxWin')).toHaveAttribute('data-done', 'true');
+      expect(screen.getByTestId('cta-item-indexFund')).toHaveAttribute('data-done', 'true');
+      expect(screen.getByTestId('cta-item-raiseRate')).toHaveAttribute('data-done', 'true');
       const link = await screen.findByRole('link', { name: /make a III\spillar contribution/i });
       expect(link).toHaveAttribute('href', '/3rd-pillar-payment');
     });
@@ -424,10 +453,11 @@ describe('SecondPillarGrowth', () => {
       expect(toggle).toHaveAttribute('aria-expanded', 'true');
     });
 
-    it('mentions employer late-payment interest in the social-tax bullet', async () => {
+    it('explains the tax win breakdown (social tax + income tax savings)', async () => {
       mockAssets();
       renderWithProviders();
-      expect(await screen.findByText(/employer late-payment interest/i)).toBeInTheDocument();
+      expect(await screen.findByText(/4% funded from your social tax/i)).toBeInTheDocument();
+      expect(await screen.findByText(/income-tax savings/i)).toBeInTheDocument();
     });
   });
 });

@@ -19,6 +19,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 import { usePageTitle } from '../common/usePageTitle';
 import { useConversion, useMe, useSecondPillarAssets } from '../common/apiHooks';
+import { SecondPillarAssets } from '../common/apiModels';
 import { Shimmer } from '../common/shimmer/Shimmer';
 import { formatAmountForCurrency } from '../common/utils';
 import { TranslationKey } from '../translations';
@@ -53,6 +54,74 @@ const STACKED_BAR_SEPARATOR_COLOR = '#fff';
 const STACK_KEY = 'balance';
 const SWATCH_SIZE = 14;
 
+// Blue = employeeWithheldPortion * 0.80 + additionalParentalBenefit.
+// Yellow = employeeWithheldPortion * 0.20 + socialTaxPortion + compensation
+// + interest + corrections. The 80/20 split uses Estonia's historically
+// dominant 20% income-tax rate — approximate values are prefixed with "~"
+// in the tooltip.
+const INCOME_TAX_RATE = 0.2;
+
+type TooltipEntry = { labelId: TranslationKey; amount: number; approximate?: boolean };
+
+const contributionBreakdown = (assets: SecondPillarAssets): TooltipEntry[] => {
+  const entries: TooltipEntry[] = [];
+  if (assets.employeeWithheldPortion > 0) {
+    entries.push({
+      labelId: 'secondPillarGrowth.tooltip.netContribution',
+      amount: assets.employeeWithheldPortion * (1 - INCOME_TAX_RATE),
+      approximate: true,
+    });
+  }
+  if (assets.additionalParentalBenefit > 0) {
+    entries.push({
+      labelId: 'secondPillarGrowth.tooltip.parentalBenefit',
+      amount: assets.additionalParentalBenefit,
+    });
+  }
+  if (assets.interest > 0) {
+    entries.push({
+      labelId: 'secondPillarGrowth.tooltip.interest',
+      amount: assets.interest,
+    });
+  }
+  if (assets.corrections > 0) {
+    entries.push({
+      labelId: 'secondPillarGrowth.tooltip.corrections',
+      amount: assets.corrections,
+    });
+  }
+  return entries;
+};
+
+const taxWinBreakdown = (assets: SecondPillarAssets): TooltipEntry[] => {
+  const entries: TooltipEntry[] = [];
+  const socialTaxAmount = assets.socialTaxPortion + assets.compensation;
+  if (socialTaxAmount > 0) {
+    entries.push({
+      labelId: 'secondPillarGrowth.tooltip.socialTax',
+      amount: socialTaxAmount,
+    });
+  }
+  if (assets.employeeWithheldPortion > 0) {
+    entries.push({
+      labelId: 'secondPillarGrowth.tooltip.taxGain',
+      amount: assets.employeeWithheldPortion * INCOME_TAX_RATE,
+      approximate: true,
+    });
+  }
+  return entries;
+};
+
+const formatBreakdown = (
+  entries: TooltipEntry[],
+  intl: { formatMessage: (descriptor: { id: TranslationKey }) => string },
+  formatCurrency: (value: number) => string,
+): string[] =>
+  entries.map(
+    ({ labelId, amount, approximate }) =>
+      `${intl.formatMessage({ id: labelId })}: ${approximate ? '~' : ''}${formatCurrency(amount)}`,
+  );
+
 // Chart palette mirrors Tuleva's brand illustrations ("Laura" charts):
 // bright blue for the member's contribution, warm yellow for the
 // social-tax share, saturated green for return, warm orange for the
@@ -64,6 +133,7 @@ const COLOR_INHERITANCE = '#F29B0F'; // warm orange
 const COLOR_GROWTH_POSITIVE = '#52A560'; // saturated green
 const COLOR_GROWTH_NEGATIVE = '#D55C5C'; // muted brand-adjacent red
 const COLOR_WITHDRAWN = '#9AA4AE'; // neutral grey
+const COLOR_TRANSFERRED_TO_PIK = '#BDC5CD'; // slightly lighter grey for PIK outflows
 
 const HOVER_CONTRIBUTION = '#0098CC';
 const HOVER_STATE = '#E8C41E';
@@ -71,6 +141,7 @@ const HOVER_INHERITANCE = '#D48800';
 const HOVER_GROWTH_POSITIVE = '#418C50';
 const HOVER_GROWTH_NEGATIVE = '#BE4848';
 const HOVER_WITHDRAWN = '#7F8A94';
+const HOVER_TRANSFERRED_TO_PIK = '#A3ACB4';
 
 type AccountRow = {
   labelId: TranslationKey;
@@ -84,6 +155,7 @@ type Segments = {
   inheritance: number;
   growth: number;
   withdrawn: number;
+  transferredToPik: number;
 };
 
 const orderedAccountRows = (segments: Segments): AccountRow[] => {
@@ -125,6 +197,13 @@ const orderedAccountRows = (segments: Segments): AccountRow[] => {
       labelId: 'secondPillarGrowth.account.growth',
       amount: segments.growth,
       color: growthColor,
+    });
+  }
+  if (segments.transferredToPik > 0) {
+    rows.push({
+      labelId: 'secondPillarGrowth.account.transferredToPik',
+      amount: -segments.transferredToPik,
+      color: COLOR_TRANSFERRED_TO_PIK,
     });
   }
   if (netWithdrawn > 0) {
@@ -171,30 +250,41 @@ const SecondPillarGrowth = () => {
       },
       {
         id: 'raiseRate',
-        done: currentPaymentRate >= 4 || pendingPaymentRate >= 4,
+        done: pendingPaymentRate >= 6,
         link: '/2nd-pillar-payment-rate',
       },
     ];
   }, [user, conversion, currentPaymentRate, pendingPaymentRate]);
   const ctaAllDone = ctaItems.every((item) => item.done);
+  const contributionLabel = intl.formatMessage({
+    id: 'secondPillarGrowth.chart.yourContributions',
+  });
+  const taxAdvantageLabel = intl.formatMessage({
+    id: 'secondPillarGrowth.chart.government',
+  });
 
   const segments: Segments | null = useMemo(() => {
     if (!assets) {
       return null;
     }
-    if (assets.insurance > assets.withdrawals) {
-      throw new Error(
-        `SecondPillarGrowth invariant violation: insurance receipts (${assets.insurance}) exceed withdrawals (${assets.withdrawals}). Expected insurance to be a subset of money previously withdrawn to a pensionileping.`,
-      );
-    }
-    const contribution = assets.employeeWithheldPortion + assets.additionalParentalBenefit;
+    const contribution =
+      assets.employeeWithheldPortion * (1 - INCOME_TAX_RATE) +
+      assets.additionalParentalBenefit +
+      assets.interest +
+      assets.corrections;
     const state =
-      assets.socialTaxPortion + assets.compensation + assets.interest + assets.corrections;
-    const { inheritance } = assets;
-    const netWithdrawals = assets.withdrawals - assets.insurance;
-    const growth = assets.balance + netWithdrawals - contribution - state - inheritance;
-    const withdrawn = -netWithdrawals;
-    return { contribution, state, inheritance, growth, withdrawn };
+      assets.employeeWithheldPortion * INCOME_TAX_RATE +
+      assets.socialTaxPortion +
+      assets.compensation;
+    const inheritance = assets.inheritance + assets.insurance;
+    // transferredToPik is missing when the frontend runs against an older
+    // backend that doesn't compute it yet; fall back to 0 so we degrade to
+    // the pre-PIK-aware formula instead of rendering NaN.
+    const transferredToPik = assets.transferredToPik ?? 0;
+    const growth =
+      assets.balance + assets.withdrawals + transferredToPik - contribution - state - inheritance;
+    const withdrawn = -assets.withdrawals;
+    return { contribution, state, inheritance, growth, withdrawn, transferredToPik };
   }, [assets]);
 
   const [methodologyOpen, setMethodologyOpen] = useState(false);
@@ -203,22 +293,13 @@ const SecondPillarGrowth = () => {
     if (!segments || !assets || assets.pikFlag) {
       return null;
     }
-    const hasWithdrawals = segments.withdrawn < 0;
-    const hasInsuranceReceipts = assets.insurance > 0;
-    const hasNegativeReturn = segments.growth < 0;
-    if (hasInsuranceReceipts) {
-      return hasNegativeReturn ? 'pensionilepingUnwoundAndNegative' : 'pensionilepingUnwound';
-    }
-    if (hasWithdrawals && hasNegativeReturn) {
-      return 'withdrawalsAndNegative';
-    }
-    if (hasWithdrawals) {
-      return 'withdrawals';
-    }
-    if (hasNegativeReturn) {
+    if (segments.growth < 0) {
       return 'negativeReturn';
     }
-    if (segments.contribution === 0 && segments.state > 0) {
+    if (
+      assets.employeeWithheldPortion === 0 &&
+      (assets.additionalParentalBenefit > 0 || assets.socialTaxPortion > 0)
+    ) {
       return 'parentalLeave';
     }
     return null;
@@ -275,7 +356,7 @@ const SecondPillarGrowth = () => {
   const renderCtaItemLabel = (item: CtaItem, labelId: TranslationKey) => {
     if (item.done) {
       return (
-        <span className="text-secondary text-decoration-line-through">
+        <span className="text-secondary">
           <FormattedMessage id={labelId} />
         </span>
       );
@@ -294,28 +375,12 @@ const SecondPillarGrowth = () => {
     );
   };
 
-  const ctaContent = ctaAllDone ? (
+  const ctaContent = (
     <>
       <h2 className="m-0 h3">
-        <FormattedMessage id="secondPillarGrowth.cta.titleAllDone" />
-      </h2>
-      <p className="m-0">
-        <FormattedMessage id="secondPillarGrowth.cta.wantToSaveMore" />
-      </p>
-      <p className="m-0">
-        <Link to="/3rd-pillar-payment" className="icon-link icon-link-hover fw-medium lead">
-          <FormattedMessage id="secondPillarGrowth.cta.makeThirdPillarContribution" />
-          {renderArrow()}
-        </Link>
-      </p>
-      <p className="m-0">
-        <FormattedMessage id="secondPillarGrowth.cta.thirdPillarAdditional" />
-      </p>
-    </>
-  ) : (
-    <>
-      <h2 className="m-0 h3">
-        <FormattedMessage id="secondPillarGrowth.cta.title" />
+        <FormattedMessage
+          id={ctaAllDone ? 'secondPillarGrowth.cta.titleAllDone' : 'secondPillarGrowth.cta.title'}
+        />
       </h2>
       <ul className="list-unstyled m-0 d-flex flex-column gap-2">
         {ctaItems.map((item) => {
@@ -336,6 +401,23 @@ const SecondPillarGrowth = () => {
     </>
   );
 
+  const thirdPillarUpsell = ctaAllDone && (
+    <>
+      <h2 className="m-0 h3">
+        <FormattedMessage id="secondPillarGrowth.cta.wantToSaveMore" />
+      </h2>
+      <p className="m-0">
+        <Link to="/3rd-pillar-payment" className="icon-link icon-link-hover fw-medium lead">
+          <FormattedMessage id="secondPillarGrowth.cta.makeThirdPillarContribution" />
+          {renderArrow()}
+        </Link>
+      </p>
+      <p className="m-0">
+        <FormattedMessage id="secondPillarGrowth.cta.thirdPillarAdditional" />
+      </p>
+    </>
+  );
+
   const formatCurrency = (value: number) => formatAmountForCurrency(value, 0);
 
   const chartData = (() => {
@@ -346,7 +428,7 @@ const SecondPillarGrowth = () => {
     const growthIsPositive = segments.growth >= 0;
     const rawDatasets = [
       {
-        label: intl.formatMessage({ id: 'secondPillarGrowth.chart.yourContributions' }),
+        label: contributionLabel,
         value: segments.contribution,
         color: COLOR_CONTRIBUTION,
         hover: HOVER_CONTRIBUTION,
@@ -378,6 +460,12 @@ const SecondPillarGrowth = () => {
         value: segments.withdrawn,
         color: COLOR_WITHDRAWN,
         hover: HOVER_WITHDRAWN,
+      },
+      {
+        label: intl.formatMessage({ id: 'secondPillarGrowth.chart.transferredToPik' }),
+        value: segments.transferredToPik > 0 ? -segments.transferredToPik : 0,
+        color: COLOR_TRANSFERRED_TO_PIK,
+        hover: HOVER_TRANSFERRED_TO_PIK,
       },
     ];
 
@@ -445,6 +533,12 @@ const SecondPillarGrowth = () => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           label(context: any) {
             const value = context.parsed?.y ?? 0;
+            if (assets && context.dataset.label === contributionLabel) {
+              return formatBreakdown(contributionBreakdown(assets), intl, formatCurrency);
+            }
+            if (assets && context.dataset.label === taxAdvantageLabel) {
+              return formatBreakdown(taxWinBreakdown(assets), intl, formatCurrency);
+            }
             return `${context.dataset.label}: ${formatCurrency(value)}`;
           },
         },
@@ -611,25 +705,19 @@ const SecondPillarGrowth = () => {
               </div>
             </div>
           </div>
-          {subNoteKey && segments && assets && (
+          {subNoteKey && (
             <div className="text-secondary mt-2" data-testid="sub-note">
-              <FormattedMessage
-                id={`secondPillarGrowth.subNote.${subNoteKey}`}
-                values={{
-                  withdrawn: formatCurrency(-segments.withdrawn),
-                  gross: formatCurrency(assets.withdrawals),
-                  insurance: formatCurrency(assets.insurance),
-                  ownContribution: formatCurrency(segments.contribution),
-                  rest: formatCurrency(-segments.withdrawn - segments.contribution),
-                  stateAmount: formatCurrency(segments.state),
-                  b: (chunks: string) => <strong>{chunks}</strong>,
-                }}
-              />
+              <FormattedMessage id={`secondPillarGrowth.subNote.${subNoteKey}`} />
             </div>
           )}
           {assets?.pikFlag && (
             <div className="text-secondary mt-2" role="note" data-testid="pik-disclaimer">
               <FormattedMessage id="secondPillarGrowth.pikDisclaimer" />
+            </div>
+          )}
+          {assets && (
+            <div className="text-secondary mt-2" data-testid="first-pillar-note">
+              <FormattedMessage id="secondPillarGrowth.firstPillarNote" />
             </div>
           )}
         </div>
@@ -645,6 +733,8 @@ const SecondPillarGrowth = () => {
             ctaContent
           )}
         </div>
+
+        {thirdPillarUpsell && <div className="d-flex flex-column gap-3">{thirdPillarUpsell}</div>}
 
         <div className="d-flex flex-column gap-3" data-testid="methodology">
           <h2 className="m-0">

@@ -451,6 +451,9 @@ export interface SecondPillarAssets {
   corrections: number;
   inheritance: number;
   withdrawals: number;
+  // Optional — older backends (prod) don't set it yet. The component falls
+  // back to 0 so the growth calculation keeps working during rollout.
+  transferredToPik?: number;
 }
 
 export interface MandateDeadlines {

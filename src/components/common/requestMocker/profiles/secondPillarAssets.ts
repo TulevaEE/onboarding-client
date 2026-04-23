@@ -11,6 +11,7 @@ const empty: Omit<SecondPillarAssets, 'balance'> = {
   corrections: 0,
   inheritance: 0,
   withdrawals: 0,
+  transferredToPik: 0,
 };
 
 export const secondPillarAssetsProfiles: Record<string, SecondPillarAssets> = {
@@ -58,6 +59,7 @@ export const secondPillarAssetsProfiles: Record<string, SecondPillarAssets> = {
     balance: 0,
     employeeWithheldPortion: 2115.75,
     socialTaxPortion: 4737.2,
+    transferredToPik: 5000,
   },
 
   TEST_7_LONG_TERM_SAVER: {
