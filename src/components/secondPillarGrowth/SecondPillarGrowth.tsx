@@ -18,7 +18,7 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 import { usePageTitle } from '../common/usePageTitle';
-import { useMe, useSecondPillarAssets } from '../common/apiHooks';
+import { useConversion, useMe, useSecondPillarAssets } from '../common/apiHooks';
 import { Shimmer } from '../common/shimmer/Shimmer';
 import { formatAmountForCurrency } from '../common/utils';
 import { TranslationKey } from '../translations';
@@ -137,12 +137,46 @@ const orderedAccountRows = (segments: Segments): AccountRow[] => {
   return rows;
 };
 
+type CtaItem = {
+  id: 'taxWin' | 'indexFund' | 'raiseRate';
+  done: boolean;
+  link: string | null;
+};
+
+const LOW_FEE_THRESHOLD = 0.005;
+
 const SecondPillarGrowth = () => {
   const intl = useIntl();
   usePageTitle('pageTitle.secondPillarGrowth');
   const { data: assets } = useSecondPillarAssets();
   const { data: user } = useMe();
+  const { data: conversion } = useConversion();
   const currentPaymentRate = user?.secondPillarPaymentRates?.current ?? 2;
+  const pendingPaymentRate = user?.secondPillarPaymentRates?.pending ?? currentPaymentRate;
+
+  const ctaItems: CtaItem[] = useMemo(() => {
+    const secondPillarConversion = conversion?.secondPillar;
+    return [
+      {
+        id: 'taxWin',
+        done: user?.secondPillarActive ?? false,
+        link: null,
+      },
+      {
+        id: 'indexFund',
+        done: Boolean(
+          secondPillarConversion && secondPillarConversion.weightedAverageFee <= LOW_FEE_THRESHOLD,
+        ),
+        link: '/2nd-pillar-flow',
+      },
+      {
+        id: 'raiseRate',
+        done: currentPaymentRate >= 4 || pendingPaymentRate >= 4,
+        link: '/2nd-pillar-payment-rate',
+      },
+    ];
+  }, [user, conversion, currentPaymentRate, pendingPaymentRate]);
+  const ctaAllDone = ctaItems.every((item) => item.done);
 
   const segments: Segments | null = useMemo(() => {
     if (!assets) {
@@ -190,69 +224,117 @@ const SecondPillarGrowth = () => {
     return null;
   }, [segments, assets]);
 
-  const ctaContent = (() => {
-    if (currentPaymentRate === 2 || currentPaymentRate === 4) {
+  const renderArrow = () => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      fill="currentColor"
+      className="bi bi-arrow-right"
+      viewBox="0 0 16 16"
+    >
+      <path
+        fillRule="evenodd"
+        d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
+      />
+    </svg>
+  );
+
+  const renderCheckIcon = () => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      fill="currentColor"
+      viewBox="0 0 16 16"
+      className="flex-shrink-0 text-success"
+      style={{ marginTop: '0.2em' }}
+      aria-hidden
+    >
+      <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.011-1.05z" />
+    </svg>
+  );
+
+  const renderCircleIcon = () => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.25"
+      viewBox="0 0 16 16"
+      className="flex-shrink-0 text-secondary"
+      style={{ marginTop: '0.2em' }}
+      aria-hidden
+    >
+      <circle cx="8" cy="8" r="7" />
+    </svg>
+  );
+
+  const renderCtaItemLabel = (item: CtaItem, labelId: TranslationKey) => {
+    if (item.done) {
       return (
-        <>
-          <h2 className="m-0 h3">
-            <FormattedMessage id="secondPillarGrowth.cta.wantMoreOwnContribution" />
-          </h2>
-          <p className="m-0">
-            <Link
-              to="/2nd-pillar-payment-rate"
-              className="icon-link icon-link-hover fw-medium lead"
-            >
-              <FormattedMessage id="secondPillarGrowth.cta.increaseContributionTo6Percent" />
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                fill="currentColor"
-                className="bi bi-arrow-right"
-                viewBox="0 0 16 16"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
-                />
-              </svg>
-            </Link>
-          </p>
-          <p className="m-0">
-            <FormattedMessage id="secondPillarGrowth.cta.higherRateGrowsFaster" />
-          </p>
-        </>
+        <span className="text-secondary text-decoration-line-through">
+          <FormattedMessage id={labelId} />
+        </span>
+      );
+    }
+    if (item.link) {
+      return (
+        <Link to={item.link}>
+          <FormattedMessage id={labelId} />
+        </Link>
       );
     }
     return (
-      <>
-        <h2 className="m-0 h3">
-          <FormattedMessage id="secondPillarGrowth.cta.wantToSaveMore" />
-        </h2>
-        <p className="m-0">
-          <Link to="/3rd-pillar-payment" className="icon-link icon-link-hover fw-medium lead">
-            <FormattedMessage id="secondPillarGrowth.cta.makeThirdPillarContribution" />
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              fill="currentColor"
-              className="bi bi-arrow-right"
-              viewBox="0 0 16 16"
-            >
-              <path
-                fillRule="evenodd"
-                d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
-              />
-            </svg>
-          </Link>
-        </p>
-        <p className="m-0">
-          <FormattedMessage id="secondPillarGrowth.cta.thirdPillarAdditional" />
-        </p>
-      </>
+      <span>
+        <FormattedMessage id={labelId} />
+      </span>
     );
-  })();
+  };
+
+  const ctaContent = ctaAllDone ? (
+    <>
+      <h2 className="m-0 h3">
+        <FormattedMessage id="secondPillarGrowth.cta.titleAllDone" />
+      </h2>
+      <p className="m-0">
+        <FormattedMessage id="secondPillarGrowth.cta.wantToSaveMore" />
+      </p>
+      <p className="m-0">
+        <Link to="/3rd-pillar-payment" className="icon-link icon-link-hover fw-medium lead">
+          <FormattedMessage id="secondPillarGrowth.cta.makeThirdPillarContribution" />
+          {renderArrow()}
+        </Link>
+      </p>
+      <p className="m-0">
+        <FormattedMessage id="secondPillarGrowth.cta.thirdPillarAdditional" />
+      </p>
+    </>
+  ) : (
+    <>
+      <h2 className="m-0 h3">
+        <FormattedMessage id="secondPillarGrowth.cta.title" />
+      </h2>
+      <ul className="list-unstyled m-0 d-flex flex-column gap-2">
+        {ctaItems.map((item) => {
+          const labelId = `secondPillarGrowth.cta.item.${item.id}` as TranslationKey;
+          return (
+            <li
+              key={item.id}
+              className="d-flex align-items-start gap-2"
+              data-testid={`cta-item-${item.id}`}
+              data-done={item.done ? 'true' : 'false'}
+            >
+              {item.done ? renderCheckIcon() : renderCircleIcon()}
+              {renderCtaItemLabel(item, labelId)}
+            </li>
+          );
+        })}
+      </ul>
+    </>
+  );
 
   const formatCurrency = (value: number) => formatAmountForCurrency(value, 0);
 
@@ -553,7 +635,7 @@ const SecondPillarGrowth = () => {
         </div>
 
         <div className="d-flex flex-column gap-3">
-          {!user ? (
+          {!user || !conversion ? (
             <>
               <Shimmer height={28} />
               <Shimmer height={30} />
