@@ -424,12 +424,10 @@ describe('SecondPillarGrowth', () => {
       expect(toggle).toHaveAttribute('aria-expanded', 'true');
     });
 
-    it('mentions that corrections and late-payment interest are folded into the return segment', async () => {
+    it('mentions employer late-payment interest in the social-tax bullet', async () => {
       mockAssets();
       renderWithProviders();
-      expect(
-        await screen.findByText(/late-payment interest from employers and corrections are folded/i),
-      ).toBeInTheDocument();
+      expect(await screen.findByText(/employer late-payment interest/i)).toBeInTheDocument();
     });
   });
 });
