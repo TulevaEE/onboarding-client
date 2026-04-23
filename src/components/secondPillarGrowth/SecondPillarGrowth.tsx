@@ -53,23 +53,24 @@ const STACKED_BAR_SEPARATOR_COLOR = '#fff';
 const STACK_KEY = 'balance';
 const SWATCH_SIZE = 14;
 
-// Chart palette reuses the tax-win page's softer hues (see
-// SecondPillarTaxWin.tsx) so the two 2nd-pillar charts feel
-// consistent. Each segment comes from a distinct hue family.
-const COLOR_CONTRIBUTION = '#7DD3FC'; // sky-300 — your contribution (bolder anchor color)
-const COLOR_STATE = '#D0D5DC'; // tax-win gray — neutral state share
-const COLOR_INHERITANCE = '#C4B5FD'; // pastel violet — rare inherited amount, distinct from the rest
-// Growth is semantic: positive = nicer tax-win green, loss = softer red.
-const COLOR_GROWTH_POSITIVE = '#A3D9AC'; // muted pastel green
-const COLOR_GROWTH_NEGATIVE = '#FCA5A5'; // pastel red (Tailwind red-300)
-const COLOR_WITHDRAWN = '#F3D47A'; // soft mustard — outflow
+// Chart palette mirrors Tuleva's brand illustrations ("Laura" charts):
+// bright blue for the member's contribution, warm yellow for the
+// social-tax share, saturated green for return, warm orange for the
+// rare inheritance, muted red for a loss, and neutral grey below the
+// axis for withdrawn money.
+const COLOR_CONTRIBUTION = '#00AEEA'; // Tuleva Bright Blue
+const COLOR_STATE = '#FDD835'; // warm yellow
+const COLOR_INHERITANCE = '#F29B0F'; // warm orange
+const COLOR_GROWTH_POSITIVE = '#52A560'; // saturated green
+const COLOR_GROWTH_NEGATIVE = '#D55C5C'; // muted brand-adjacent red
+const COLOR_WITHDRAWN = '#9AA4AE'; // neutral grey
 
-const HOVER_CONTRIBUTION = '#5FC5F8';
-const HOVER_STATE = '#B5BEC8';
-const HOVER_INHERITANCE = '#A692F7';
-const HOVER_GROWTH_POSITIVE = '#8CC496';
-const HOVER_GROWTH_NEGATIVE = '#F08785';
-const HOVER_WITHDRAWN = '#DEBF66';
+const HOVER_CONTRIBUTION = '#0098CC';
+const HOVER_STATE = '#E8C41E';
+const HOVER_INHERITANCE = '#D48800';
+const HOVER_GROWTH_POSITIVE = '#418C50';
+const HOVER_GROWTH_NEGATIVE = '#BE4848';
+const HOVER_WITHDRAWN = '#7F8A94';
 
 type AccountRow = {
   labelId: TranslationKey;
@@ -337,8 +338,7 @@ const SecondPillarGrowth = () => {
   const chartOptions: ChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
-    animation: { duration: 400 },
-    layout: { padding: { bottom: 24 } },
+    animation: { duration: 200 },
     plugins: {
       legend: { display: false },
       tooltip: {
@@ -406,6 +406,7 @@ const SecondPillarGrowth = () => {
       },
       y: {
         stacked: true,
+        // Reserve headroom above the stack so the total datalabel isn't clipped.
         max: segments
           ? (segments.contribution +
               segments.state +
@@ -413,7 +414,6 @@ const SecondPillarGrowth = () => {
               segments.inheritance) *
             1.2
           : undefined,
-        min: segments ? (Math.min(0, segments.growth) + Math.min(0, segments.withdrawn)) * 1.05 : 0,
         ticks: { display: false },
         border: { display: false },
         grid: {
