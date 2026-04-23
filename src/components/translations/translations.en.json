@@ -1088,7 +1088,7 @@
   "secondPillarGrowth.methodology.item.state": "<b>Social tax</b> mainly includes contributions into II pillar funded by social tax. We also include compensation payments and employer late-payment interest (for late contributions).",
   "secondPillarGrowth.methodology.item.return": "<b>Return</b> we calculate ourselves: we subtract your contribution, units from social tax and inherited units from your total II pillar assets (including any already withdrawn).",
   "secondPillarGrowth.methodology.item.inheritance": "<b>Inheritance</b> appears on the chart when you have received II pillar units as inheritance.",
-  "secondPillarGrowth.methodology.item.withdrawals": "<b>Withdrawn</b> shows withdrawals you have made from your II pillar (before income tax).",
+  "secondPillarGrowth.methodology.item.withdrawals": "<b>Withdrawn</b> shows withdrawals you have made from your II pillar (before income tax). Insurance refunds (from a closed pension contract) are netted off the withdrawals.",
   "secondPillarGrowth.methodology.item.pik": "<b>PIK</b> (Pension Investment Account) – Pensionikeskus does not publish the amount on a PIK; you see it only in your bank. We add a notice to the page; no separate segment is shown on the chart.",
   "secondPillarGrowth.methodology.source": "You can find each transaction's exact date and amount in the Pensionikeskus self-service.",
   "pageTitle.firstVsSecondPillar": "I vs II pillar",

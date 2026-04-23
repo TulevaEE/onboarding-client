@@ -1168,7 +1168,7 @@
   "secondPillarGrowth.methodology.item.state": "<b>Sotsiaalmaksust</b> sisaldab peamiselt sotsiaalmaksu arvelt tehtud makseid II sambasse. Siia liidame ka kompensatsioonimaksed ja tööandja viivised (hilinenud maksete eest).",
   "secondPillarGrowth.methodology.item.return": "<b>Tootluse</b> arvutame ise: lahutame kogu II samba varast (sh juba välja makstud raha) sinu panuse, sotsiaalmaksust saadud osa ja päritud osa.",
   "secondPillarGrowth.methodology.item.inheritance": "<b>Pärimine</b> kajastub graafikul, kui oled saanud II samba osakuid pärandina.",
-  "secondPillarGrowth.methodology.item.withdrawals": "<b>Väljamaksed</b> kajastab sinu II sambast tehtud väljamakseid (enne tulumaksu).",
+  "secondPillarGrowth.methodology.item.withdrawals": "<b>Väljamaksed</b> kajastab sinu II sambast tehtud väljamakseid (enne tulumaksu). Kindlustusandja tagasimaksed (lõpetatud pensionilepingust) on väljamaksete summast maha arvatud.",
   "secondPillarGrowth.methodology.item.pik": "<b>PIK</b> (pensioni investeerimiskonto) summat Pensionikeskus meile ei avalda – seda näed oma pangas. Lehele lisame märkuse, graafikul eraldi segmenti ei kuvata.",
   "secondPillarGrowth.methodology.source": "Iga kande täpse kuupäeva ja summa leiad Pensionikeskuse iseteenindusest.",
 
