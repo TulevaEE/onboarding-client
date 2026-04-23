@@ -12,7 +12,7 @@ import translations from '../translations';
 import { initializeConfiguration } from '../config/config';
 import { getAuthentication } from '../common/authenticationManager';
 import { anAuthenticationManager } from '../common/authenticationManagerFixture';
-import { secondPillarAssetsBackend } from '../../test/backend';
+import { secondPillarAssetsBackend, userBackend } from '../../test/backend';
 import { secondPillarAssetsResponse } from '../../test/backend-responses';
 
 jest.mock('react-chartjs-2', () => ({
@@ -71,6 +71,7 @@ describe('SecondPillarGrowth', () => {
   beforeEach(() => {
     initializeConfiguration();
     getAuthentication().update(anAuthenticationManager());
+    userBackend(server);
   });
 
   it('shows a shimmer while data is loading', () => {
@@ -374,18 +375,40 @@ describe('SecondPillarGrowth', () => {
     });
   });
 
-  describe('blog link and methodology', () => {
-    it('renders a blog link that opens in a new tab', async () => {
+  describe('call-to-action', () => {
+    it('points 2% contributors to the payment-rate flow', async () => {
+      server.resetHandlers();
+      userBackend(server, { secondPillarPaymentRates: { current: 2, pending: null } });
       mockAssets();
       renderWithProviders();
-      const link = await screen.findByRole('link', { name: /read more/i });
-      expect(link).toHaveAttribute(
-        'href',
-        'https://tuleva.ee/analuusid/kes-maksab-minu-ii-sambasse/',
-      );
-      expect(link).toHaveAttribute('target', '_blank');
+      const link = await screen.findByRole('link', {
+        name: /raise your II\spillar contribution to 6%/i,
+      });
+      expect(link).toHaveAttribute('href', '/2nd-pillar-payment-rate');
     });
 
+    it('points 4% contributors to the payment-rate flow', async () => {
+      server.resetHandlers();
+      userBackend(server, { secondPillarPaymentRates: { current: 4, pending: null } });
+      mockAssets();
+      renderWithProviders();
+      const link = await screen.findByRole('link', {
+        name: /raise your II\spillar contribution to 6%/i,
+      });
+      expect(link).toHaveAttribute('href', '/2nd-pillar-payment-rate');
+    });
+
+    it('points 6% contributors to the III pillar payment flow', async () => {
+      server.resetHandlers();
+      userBackend(server, { secondPillarPaymentRates: { current: 6, pending: null } });
+      mockAssets();
+      renderWithProviders();
+      const link = await screen.findByRole('link', { name: /make a III\spillar contribution/i });
+      expect(link).toHaveAttribute('href', '/3rd-pillar-payment');
+    });
+  });
+
+  describe('methodology', () => {
     it('collapses the methodology section by default', async () => {
       mockAssets();
       renderWithProviders();
