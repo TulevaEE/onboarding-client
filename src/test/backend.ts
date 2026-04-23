@@ -15,6 +15,7 @@ import {
   Role,
   MemberLookup,
   CapitalType,
+  SecondPillarAssets,
 } from '../components/common/apiModels';
 import { anAuthenticationManager } from '../components/common/authenticationManagerFixture';
 import { ReturnsResponse } from '../components/account/ComparisonCalculator/api';
@@ -36,6 +37,7 @@ import {
   mockThirdPillarConversion,
   mockUser,
   mockValidatedCompany,
+  secondPillarAssetsResponse,
   secondPillarPaymentRateChangeResponse,
 } from './backend-responses';
 import {
@@ -478,6 +480,20 @@ export function pensionAccountStatementBackend(
 
 export function fundsBackend(server: SetupServerApi): void {
   server.use(rest.get('http://localhost/v1/funds', (req, res, ctx) => res(ctx.json(mockFunds))));
+}
+
+export function secondPillarAssetsBackend(
+  server: SetupServerApi,
+  overrides: Partial<SecondPillarAssets> = {},
+): void {
+  server.use(
+    rest.get('http://localhost/v1/second-pillar-assets', (req, res, ctx) => {
+      if (req.headers.get('Authorization') !== 'Bearer an access token') {
+        return res(ctx.status(401), ctx.json(authErrorResponse));
+      }
+      return res(ctx.json({ ...secondPillarAssetsResponse, ...overrides }));
+    }),
+  );
 }
 
 let returnData: ReturnsResponse | undefined;
@@ -935,6 +951,7 @@ const TEST_BACKENDS = {
   userConversion: userConversionBackend,
   amlChecks: amlChecksBackend,
   pensionAccountStatement: pensionAccountStatementBackend,
+  secondPillarAssets: secondPillarAssetsBackend,
   funds: fundsBackend,
   returns: returnsBackend,
   userCapital: userCapitalBackend,
