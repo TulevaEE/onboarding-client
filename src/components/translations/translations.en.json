@@ -1084,7 +1084,7 @@
   "secondPillarGrowth.account.balance": "Total",
   "secondPillarGrowth.subNote.negativeReturn": "Your II pillar is at a loss. Investment return depends on your fund choice, fees, and market performance.",
   "secondPillarGrowth.subNote.parentalLeave": "You haven't made any contributions to your II pillar yet.",
-  "secondPillarGrowth.pikDisclaimer": "Part of your II pillar is on a Pension Investment Account (PIK). We show the amount you moved to PIK, but we can't see the return it earned at your bank after the transfer.",
+  "secondPillarGrowth.pikDisclaimer": "Part of your II pillar is on a Pension Investment Account.",
   "secondPillarGrowth.firstPillarNote": "Social tax paid into II pillar also has a small effect on your I pillar.",
   "secondPillarGrowth.methodology.summary": "How is this calculated?",
   "secondPillarGrowth.methodology.intro": "We base the chart on Pensionikeskus data.",
