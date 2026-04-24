@@ -10,10 +10,14 @@ type Props = {
 
 export const PaymentTypeSelection = ({ paymentType, setPaymentType }: Props) => (
   <div className="d-flex flex-column gap-3">
-    <p className="fs-3 fw-semibold m-0">
+    <p id="savings-payment-type-label" className="fs-3 fw-semibold m-0">
       <FormattedMessage id="savingsFund.payment.form.paymentType.label" />
     </p>
-    <div className="d-flex flex-column gap-2">
+    <div
+      className="d-flex flex-column gap-2"
+      role="radiogroup"
+      aria-labelledby="savings-payment-type-label"
+    >
       <Radio
         name="savings-payment-type"
         id="savings-payment-type-single"
