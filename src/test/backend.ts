@@ -570,7 +570,28 @@ export function transactionsBackend(
 export function paymentLinkBackend(server: SetupServerApi): void {
   server.use(
     rest.get('http://localhost/v1/payments/link', (req, res, ctx) => {
-      if (req.url.searchParams.get('type') === 'RECURRING') {
+      const type = req.url.searchParams.get('type');
+      const channel = req.url.searchParams.get('paymentChannel');
+      const amount = req.url.searchParams.get('amount');
+      const personalCode = req.url.searchParams.get('recipientPersonalCode');
+      if (type === 'SAVINGS_RECURRING') {
+        const base = {
+          recipientName: 'Tuleva Täiendav Kogumisfond',
+          recipientIban: 'EE711010220306707220',
+          description: personalCode,
+          amount,
+        };
+        if (channel === 'OTHER') {
+          return res(ctx.json(base));
+        }
+        return res(
+          ctx.json({
+            ...base,
+            url: `https://${channel?.toLowerCase()}.ee/recurring?amount=${amount}&desc=${personalCode}`,
+          }),
+        );
+      }
+      if (type === 'RECURRING') {
         return res(
           ctx.json({
             url:

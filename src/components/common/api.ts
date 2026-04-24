@@ -565,6 +565,9 @@ export function getPaymentLink(payment: Payment): Promise<PaymentLink> {
 export async function redirectToPayment(payment: Payment): Promise<void> {
   const wndw = getWindow(payment.type);
   const paymentLink = await getPaymentLink(payment);
+  if (!paymentLink.url) {
+    throw new Error(`No payment URL returned for type=${payment.type}`);
+  }
   wndw.location.replace(paymentLink.url);
 }
 
