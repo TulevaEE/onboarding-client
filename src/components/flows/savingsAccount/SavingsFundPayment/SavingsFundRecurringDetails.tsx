@@ -5,7 +5,7 @@ import { getPaymentLink } from '../../../common/api';
 import { PaymentChannel, PaymentLink } from '../../../common/apiModels';
 import './SavingsFundRecurring.scss';
 
-type BankKey = 'LHV' | 'COOP' | 'SWEDBANK' | 'SEB' | 'LUMINOR' | 'OTHER';
+export type BankKey = 'LHV' | 'COOP' | 'SWEDBANK' | 'SEB' | 'LUMINOR' | 'OTHER';
 type PanelType = 'A' | 'B' | 'C';
 
 const BANK_META: Record<BankKey, { label: string; channel: PaymentChannel; panel: PanelType }> = {
@@ -20,6 +20,9 @@ const BANK_META: Record<BankKey, { label: string; channel: PaymentChannel; panel
 const INVEST_ACCOUNT_URL =
   'https://tuleva.ee/soovitused/miks-kasutada-kogumisfondi-puhul-investeerimiskontot/';
 const GUIDE_URL = 'https://tuleva.ee/kogumisfondi-sissemaksed/';
+
+const isSafeBankUrl = (url: string | undefined): url is string =>
+  !!url && (url.startsWith('https://') || url.startsWith('http://'));
 
 type Props = {
   bank: BankKey;
@@ -39,12 +42,10 @@ export const SavingsFundRecurringDetails: FC<Props> = ({ bank, amount, personalC
         amount,
         currency: 'EUR',
       }),
-    enabled: Number.isFinite(amount) && amount > 0 && !!personalCode,
+    enabled: Number.isFinite(amount) && amount >= 1 && !!personalCode,
+    retry: false,
   });
 
-  if (isLoading || !data) {
-    return null;
-  }
   if (isError) {
     return (
       <div className="alert alert-danger" role="alert">
@@ -52,6 +53,10 @@ export const SavingsFundRecurringDetails: FC<Props> = ({ bank, amount, personalC
       </div>
     );
   }
+  if (isLoading || !data) {
+    return null;
+  }
+  const bankUrl = isSafeBankUrl(data.url) ? data.url : undefined;
 
   return (
     <div className="recurring-panel d-flex flex-column gap-4">
@@ -68,7 +73,12 @@ export const SavingsFundRecurringDetails: FC<Props> = ({ bank, amount, personalC
           {meta.panel === 'A' && (
             <>
               <strong>
-                <a href={data.url} target="_blank" rel="noreferrer" className="outbound-link">
+                <a
+                  href={bankUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="outbound-link"
+                >
                   <FormattedMessage
                     id="savingsFund.recurring.step.openBank"
                     values={{ bank: meta.label }}
@@ -82,7 +92,7 @@ export const SavingsFundRecurringDetails: FC<Props> = ({ bank, amount, personalC
           )}
           {meta.panel === 'B' && (
             <strong>
-              <a href={data.url} target="_blank" rel="noreferrer" className="outbound-link">
+              <a href={bankUrl} target="_blank" rel="noopener noreferrer" className="outbound-link">
                 <FormattedMessage
                   id="savingsFund.recurring.step.openBank"
                   values={{ bank: meta.label }}
@@ -113,7 +123,7 @@ export const SavingsFundRecurringDetails: FC<Props> = ({ bank, amount, personalC
                   id="savingsFund.recurring.check.investAccount"
                   values={{
                     link: (chunks: string | JSX.Element) => (
-                      <a href={INVEST_ACCOUNT_URL} target="_blank" rel="noreferrer">
+                      <a href={INVEST_ACCOUNT_URL} target="_blank" rel="noopener noreferrer">
                         {chunks}
                       </a>
                     ),
@@ -152,7 +162,7 @@ export const SavingsFundRecurringDetails: FC<Props> = ({ bank, amount, personalC
                     id="savingsFund.recurring.check.investAccount"
                     values={{
                       link: (chunks: string | JSX.Element) => (
-                        <a href={INVEST_ACCOUNT_URL} target="_blank" rel="noreferrer">
+                        <a href={INVEST_ACCOUNT_URL} target="_blank" rel="noopener noreferrer">
                           {chunks}
                         </a>
                       ),
@@ -179,7 +189,7 @@ export const SavingsFundRecurringDetails: FC<Props> = ({ bank, amount, personalC
           id="savingsFund.recurring.help"
           values={{
             guide: (chunks: string | JSX.Element) => (
-              <a href={GUIDE_URL} target="_blank" rel="noreferrer">
+              <a href={GUIDE_URL} target="_blank" rel="noopener noreferrer">
                 {chunks}
               </a>
             ),
@@ -228,16 +238,26 @@ const CopyCard: FC<{ link: PaymentLink }> = ({ link }) => {
 type TranslationKey = Parameters<typeof FormattedMessage>[0]['id'];
 
 const CopyRow: FC<{ labelId: TranslationKey; value: string }> = ({ labelId, value }) => {
-  const [copied, setCopied] = useState(false);
+  const [status, setStatus] = useState<'idle' | 'copied' | 'failed'>('idle');
   const onCopy = async () => {
+    if (!navigator.clipboard?.writeText) {
+      setStatus('failed');
+      return;
+    }
     try {
-      await navigator.clipboard?.writeText(value);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      await navigator.clipboard.writeText(value);
+      setStatus('copied');
+      setTimeout(() => setStatus('idle'), 2000);
     } catch {
-      // ignore — user can still select text manually
+      setStatus('failed');
     }
   };
+  const buttonLabelByStatus: Record<typeof status, TranslationKey> = {
+    idle: 'savingsFund.recurring.copyCard.copy',
+    copied: 'savingsFund.recurring.copyCard.copied',
+    failed: 'savingsFund.recurring.copyCard.copyFailed',
+  };
+  const buttonLabelId = buttonLabelByStatus[status];
   return (
     <div className="copy-row d-flex flex-wrap align-items-center gap-2 py-2 border-top">
       <span className="label text-secondary small">
@@ -245,12 +265,12 @@ const CopyRow: FC<{ labelId: TranslationKey; value: string }> = ({ labelId, valu
       </span>
       <span className="value flex-grow-1">{value}</span>
       <button type="button" className="btn btn-outline-primary btn-sm" onClick={onCopy}>
-        <FormattedMessage
-          id={
-            copied ? 'savingsFund.recurring.copyCard.copied' : 'savingsFund.recurring.copyCard.copy'
-          }
-        />
+        <FormattedMessage id={buttonLabelId} />
       </button>
+      <span className="visually-hidden" aria-live="polite">
+        {status === 'copied' && <FormattedMessage id="savingsFund.recurring.copyCard.copied" />}
+        {status === 'failed' && <FormattedMessage id="savingsFund.recurring.copyCard.copyFailed" />}
+      </span>
     </div>
   );
 };

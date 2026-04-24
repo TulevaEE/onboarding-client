@@ -1245,6 +1245,7 @@
   "savingsFund.recurring.copyCard.amount": "Amount",
   "savingsFund.recurring.copyCard.copy": "Copy",
   "savingsFund.recurring.copyCard.copied": "Copied ✓",
+  "savingsFund.recurring.copyCard.copyFailed": "Copy failed",
   "savingsFund.recurring.help": "Need help? <guide>See the guide</guide>, write to <email>tuleva@tuleva.ee</email> or call <phone>+372 644 5100</phone>.",
 
   "flows.savingsFundOnboarding.title": "Opening an additional savings fund",

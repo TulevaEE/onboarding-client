@@ -16,6 +16,13 @@ import { SavingsFundOtherBankDetails } from './SavingsFundOtherBankDetails';
 import { SavingsFundRecurringDetails } from './SavingsFundRecurringDetails';
 
 const MONTONIO_MAX_AMOUNT = 15000;
+const MIN_RECURRING_AMOUNT = 1;
+const RECURRING_BANK_KEYS = ['LHV', 'COOP', 'SWEDBANK', 'SEB', 'LUMINOR', 'OTHER'] as const;
+type RecurringBankKey = (typeof RECURRING_BANK_KEYS)[number];
+const toRecurringBank = (value: string | undefined): RecurringBankKey | null => {
+  const upper = value?.toUpperCase();
+  return RECURRING_BANK_KEYS.find((key) => key === upper) ?? null;
+};
 
 type IPaymentForm = {
   amount: number | undefined;
@@ -45,7 +52,8 @@ export const SavingsFundPayment: FC = () => {
   const isOverMaxAmount = (amount ?? 0) >= MONTONIO_MAX_AMOUNT;
   const showManualPayment = paymentType === 'SINGLE' && (isOtherBank || isOverMaxAmount);
   const isRecurring = paymentType === 'RECURRING';
-  const recurringBank = isRecurring && paymentMethod ? paymentMethod.toUpperCase() : null;
+  const recurringBank = isRecurring ? toRecurringBank(paymentMethod) : null;
+  const hasValidRecurringAmount = Number.isFinite(amount) && (amount ?? 0) >= MIN_RECURRING_AMOUNT;
   usePageTitle('savingsFund.payment.pageTitle');
 
   if (!user) {
@@ -150,9 +158,9 @@ export const SavingsFundPayment: FC = () => {
             />
           )}
 
-          {isRecurring && recurringBank && amount ? (
+          {isRecurring && recurringBank && hasValidRecurringAmount && amount ? (
             <SavingsFundRecurringDetails
-              bank={recurringBank as 'LHV' | 'COOP' | 'SWEDBANK' | 'SEB' | 'LUMINOR' | 'OTHER'}
+              bank={recurringBank}
               amount={amount}
               personalCode={user.role.code}
             />

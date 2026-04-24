@@ -1335,6 +1335,7 @@
   "savingsFund.recurring.copyCard.amount": "Summa",
   "savingsFund.recurring.copyCard.copy": "Kopeeri",
   "savingsFund.recurring.copyCard.copied": "Kopeeritud ✓",
+  "savingsFund.recurring.copyCard.copyFailed": "Kopeerimine ebaõnnestus",
   "savingsFund.recurring.help": "Vajad abi? <guide>Vaata juhendit</guide>, kirjuta <email>tuleva@tuleva.ee</email> või helista <phone>+372 644 5100</phone>.",
 
   "flows.savingsFundOnboarding.title": "Täiendava Kogumisfondi avamine",
