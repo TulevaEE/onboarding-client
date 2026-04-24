@@ -1,4 +1,5 @@
 import { Route } from 'react-router-dom';
+import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { createMemoryHistory, History } from 'history';
 import { cleanup, screen, waitFor } from '@testing-library/react';
@@ -199,6 +200,46 @@ describe(SavingsFundPayment, () => {
       const lhvLink = await screen.findByRole('link', { name: /LHV/i });
       expect(lhvLink).toHaveAttribute('href', expect.stringContaining('lhv.ee/recurring'));
       expect(lhvLink).toHaveAttribute('target', '_blank');
+    });
+
+    it('shows a landing-URL link and copy-card when SEB is selected for recurring', async () => {
+      expect(await findPageHeading()).toBeInTheDocument();
+      userEvent.type(screen.getByRole('textbox', { name: 'Amount' }), '50');
+      selectRecurring();
+      userEvent.click(screen.getByRole('radio', { name: 'SEB' }));
+
+      const sebLink = await screen.findByRole('link', { name: /SEB/i });
+      expect(sebLink).toHaveAttribute('href', expect.stringContaining('seb.ee/recurring'));
+      expect(screen.getByText('Tuleva Täiendav Kogumisfond')).toBeInTheDocument();
+      expect(screen.getByText('EE711010220306707220')).toBeInTheDocument();
+    });
+
+    it('does not fetch or render recurring details when amount is below minimum', async () => {
+      expect(await findPageHeading()).toBeInTheDocument();
+      selectRecurring();
+      userEvent.type(screen.getByRole('textbox', { name: 'Amount' }), '0.5');
+      userEvent.click(screen.getByRole('radio', { name: 'LHV' }));
+
+      await waitFor(() =>
+        expect(screen.queryByRole('link', { name: /LHV/i })).not.toBeInTheDocument(),
+      );
+    });
+
+    it('shows an error alert when the backend fails for the recurring link', async () => {
+      server.use(
+        rest.get('http://localhost/v1/payments/link', (_req, res, ctx) =>
+          res(ctx.status(500), ctx.json({ error: 'boom' })),
+        ),
+      );
+
+      expect(await findPageHeading()).toBeInTheDocument();
+      userEvent.type(screen.getByRole('textbox', { name: 'Amount' }), '50');
+      selectRecurring();
+      userEvent.click(screen.getByRole('radio', { name: 'LHV' }));
+
+      expect(
+        await screen.findByText(/There was an error initiating the payment/i),
+      ).toBeInTheDocument();
     });
 
     it('shows copy-card instead of auto-link for OTHER bank in recurring flow', async () => {
