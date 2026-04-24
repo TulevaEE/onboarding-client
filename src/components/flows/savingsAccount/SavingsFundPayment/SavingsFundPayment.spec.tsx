@@ -177,6 +177,42 @@ describe(SavingsFundPayment, () => {
     expect(screen.queryByText('Make a deposit from another bank')).not.toBeInTheDocument();
   });
 
+  describe('recurring payment flow', () => {
+    const selectRecurring = () => {
+      const recurringRadio = screen.getByRole('radio', { name: 'Recurring payment' });
+      userEvent.click(recurringRadio);
+      return recurringRadio;
+    };
+
+    it('defaults to single payment and offers a recurring option', async () => {
+      expect(await findPageHeading()).toBeInTheDocument();
+      expect(screen.getByRole('radio', { name: 'Single payment' })).toBeChecked();
+      expect(screen.getByRole('radio', { name: 'Recurring payment' })).not.toBeChecked();
+    });
+
+    it('shows step-by-step instructions with a bank link when LHV is selected for recurring', async () => {
+      expect(await findPageHeading()).toBeInTheDocument();
+      userEvent.type(screen.getByRole('textbox', { name: 'Amount' }), '50');
+      selectRecurring();
+      userEvent.click(screen.getByRole('radio', { name: 'LHV' }));
+
+      const lhvLink = await screen.findByRole('link', { name: /LHV/i });
+      expect(lhvLink).toHaveAttribute('href', expect.stringContaining('lhv.ee/recurring'));
+      expect(lhvLink).toHaveAttribute('target', '_blank');
+    });
+
+    it('shows copy-card instead of auto-link for OTHER bank in recurring flow', async () => {
+      expect(await findPageHeading()).toBeInTheDocument();
+      userEvent.type(screen.getByRole('textbox', { name: 'Amount' }), '50');
+      selectRecurring();
+      userEvent.click(screen.getByRole('radio', { name: 'Other bank' }));
+
+      expect(await screen.findByText('Tuleva Täiendav Kogumisfond')).toBeInTheDocument();
+      expect(screen.getByText('EE711010220306707220')).toBeInTheDocument();
+      expect(screen.getByText('39001011234')).toBeInTheDocument();
+    });
+  });
+
   describe('when acting as a company', () => {
     beforeEach(async () => {
       cleanup();
