@@ -1136,6 +1136,54 @@ describe('API calls', () => {
       expect(paymentLink).toEqual(mockPaymentLink);
       expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith('/v1/payments/link', mockPayment);
     });
+
+    it('retrieves savings fund recurring payment link with recipient details', async () => {
+      const recurringPayment: Payment = {
+        type: 'SAVINGS_RECURRING',
+        paymentChannel: 'LHV',
+        recipientPersonalCode: '38812121215',
+        amount: 50,
+        currency: 'EUR',
+      };
+      const extendedLink: PaymentLink = {
+        url: 'https://www.lhv.ee/ibank/cf/portfolio/payment_standing_add?i_amount=50',
+        recipientName: 'Tuleva Täiendav Kogumisfond',
+        recipientIban: 'EE711010220306707220',
+        description: '38812121215',
+        amount: '50',
+      };
+      mockHttp.getWithAuthentication.mockResolvedValueOnce(extendedLink);
+
+      const paymentLink = await getPaymentLink(recurringPayment);
+
+      expect(paymentLink).toEqual(extendedLink);
+      expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith(
+        '/v1/payments/link',
+        recurringPayment,
+      );
+    });
+
+    it('retrieves savings fund recurring payment link for OTHER channel with null url', async () => {
+      const otherPayment: Payment = {
+        type: 'SAVINGS_RECURRING',
+        paymentChannel: 'OTHER',
+        recipientPersonalCode: '38812121215',
+        amount: 50,
+        currency: 'EUR',
+      };
+      const copyCardLink: PaymentLink = {
+        recipientName: 'Tuleva Täiendav Kogumisfond',
+        recipientIban: 'EE711010220306707220',
+        description: '38812121215',
+        amount: '50',
+      };
+      mockHttp.getWithAuthentication.mockResolvedValueOnce(copyCardLink);
+
+      const paymentLink = await getPaymentLink(otherPayment);
+
+      expect(paymentLink.url).toBeUndefined();
+      expect(paymentLink.recipientIban).toBe('EE711010220306707220');
+    });
   });
 
   describe('redirectToPayment', () => {

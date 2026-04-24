@@ -94,7 +94,7 @@ export const finish = async (result?: string, error?: string, personalCode?: str
     const message = {
       type: result,
       version: '1',
-      data: JSON.parse(paymentLink.url),
+      data: paymentLink.url ? JSON.parse(paymentLink.url) : null,
       time: new Date().toISOString(),
     };
 
@@ -115,10 +115,10 @@ export const finish = async (result?: string, error?: string, personalCode?: str
       result,
       error,
       'and redirecting to',
-      redirectUri + paymentLink.url,
+      (redirectUri ?? '') + (paymentLink.url ?? ''),
     );
 
-    window.location.href = redirectUri + paymentLink.url;
+    window.location.href = (redirectUri ?? '') + (paymentLink.url ?? '');
   }
 };
 

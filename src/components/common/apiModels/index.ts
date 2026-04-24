@@ -388,7 +388,14 @@ export interface Payment {
 
 export type Currency = 'EUR';
 
-export type PaymentType = 'SINGLE' | 'RECURRING' | 'EMPLOYER' | 'GIFT' | 'MEMBER_FEE' | 'SAVINGS';
+export type PaymentType =
+  | 'SINGLE'
+  | 'RECURRING'
+  | 'EMPLOYER'
+  | 'GIFT'
+  | 'MEMBER_FEE'
+  | 'SAVINGS'
+  | 'SAVINGS_RECURRING';
 
 export type PaymentChannel =
   | 'SWEDBANK'
@@ -398,7 +405,8 @@ export type PaymentChannel =
   | 'COOP'
   | 'COOP_WEB'
   | 'PARTNER'
-  | 'TULUNDUSUHISTU';
+  | 'TULUNDUSUHISTU'
+  | 'OTHER';
 
 export interface Authentication {
   authenticationHash: string;
@@ -472,7 +480,11 @@ export interface MandateDeadlines {
 }
 
 export interface PaymentLink {
-  url: string;
+  url?: string;
+  recipientName?: string;
+  recipientIban?: string;
+  description?: string;
+  amount?: string;
 }
 
 export type MemberCapitalListingType = 'BUY' | 'SELL';
