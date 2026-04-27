@@ -7,7 +7,7 @@ export enum Key {
   EPI = 'EPI',
   EPI_3 = 'EPI_3',
   UNION_STOCK_INDEX = 'UNION_STOCK_INDEX',
-  CPI = 'CPI',
+  CPI = 'CPI_ECOICOP2',
 }
 
 type ReturnType = 'PERSONAL' | 'FUND' | 'INDEX';

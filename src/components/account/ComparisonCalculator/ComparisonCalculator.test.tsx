@@ -15,7 +15,7 @@ import {
   userConversionBackend,
 } from '../../../test/backend';
 import LoggedInApp from '../../LoggedInApp';
-import { ReturnsResponse } from './api';
+import { Key, ReturnsResponse } from './api';
 
 const server = setupServer();
 let history: History;
@@ -1186,7 +1186,7 @@ const returnsData2ndPillarCpi: ReturnsResponse = {
   to: moment().format('YYYY-MM-DD'),
   returns: [
     {
-      key: 'CPI',
+      key: Key.CPI,
       rate: 0.1,
       amount: 19000.0,
       paymentsSum: 14000.0,
