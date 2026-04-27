@@ -1163,10 +1163,9 @@ describe('API calls', () => {
       );
     });
 
-    it('retrieves savings fund recurring payment link for OTHER channel with null url', async () => {
+    it('retrieves savings fund recurring payment link without paymentChannel returning null url', async () => {
       const otherPayment: Payment = {
         type: 'SAVINGS_RECURRING',
-        paymentChannel: 'OTHER',
         recipientPersonalCode: '38812121215',
         amount: 50,
         currency: 'EUR',

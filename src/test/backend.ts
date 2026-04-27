@@ -581,13 +581,13 @@ export function paymentLinkBackend(server: SetupServerApi): void {
           description: personalCode,
           amount,
         };
-        if (channel === 'OTHER') {
+        if (!channel) {
           return res(ctx.json(base));
         }
         return res(
           ctx.json({
             ...base,
-            url: `https://${channel?.toLowerCase()}.ee/recurring?amount=${amount}&desc=${personalCode}`,
+            url: `https://${channel.toLowerCase()}.ee/recurring?amount=${amount}&desc=${personalCode}`,
           }),
         );
       }
