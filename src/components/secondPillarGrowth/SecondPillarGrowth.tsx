@@ -705,18 +705,18 @@ const SecondPillarGrowth = () => {
               </div>
             </div>
           </div>
-          {subNoteKey && (
-            <div className="text-secondary mt-2" data-testid="sub-note">
-              <FormattedMessage id={`secondPillarGrowth.subNote.${subNoteKey}`} />
-            </div>
-          )}
           {assets && (
             <div className="text-secondary mt-2" data-testid="first-pillar-note">
               <FormattedMessage id="secondPillarGrowth.firstPillarNote" />
             </div>
           )}
+          {subNoteKey && (
+            <div className="text-secondary mt-1" data-testid="sub-note">
+              <FormattedMessage id={`secondPillarGrowth.subNote.${subNoteKey}`} />
+            </div>
+          )}
           {assets?.pikFlag && (
-            <div className="text-secondary mt-2" role="note" data-testid="pik-disclaimer">
+            <div className="text-secondary mt-1" role="note" data-testid="pik-disclaimer">
               <FormattedMessage id="secondPillarGrowth.pikDisclaimer" />
             </div>
           )}
