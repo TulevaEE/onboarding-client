@@ -73,17 +73,6 @@ const AccountSummary = ({
     ),
   ];
 
-  const secondAndThirdPillarValueSum = sumBy(summary, (summaryItem) => summaryItem.value);
-  const weightedAverageFee =
-    secondAndThirdPillarValueSum <= 0
-      ? 0
-      : summary.reduce(
-          (accumulator, summaryItem) =>
-            accumulator +
-            (summaryItem.feesPercent * summaryItem.value) / secondAndThirdPillarValueSum,
-          0,
-        );
-
   if (savingsFundBalance) {
     summary.push(
       getPillarSummary(
@@ -95,6 +84,10 @@ const AccountSummary = ({
       ),
     );
   }
+
+  const fundValueSum = sumBy(summary, (summaryItem) => summaryItem.value);
+  const weightedAverageFee =
+    fundValueSum <= 0 ? 0 : sumBy(summary, (summaryItem) => summaryItem.feesEuro) / fundValueSum;
 
   if (memberCapital) {
     summary.push({

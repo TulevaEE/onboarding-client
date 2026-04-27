@@ -288,5 +288,51 @@ describe('Account summary', () => {
     expect(valueFooter).toEqual(<Euro amount={6672} />);
   });
 
+  it('includes savings fund in the footer weighted average fee', () => {
+    component = shallow(
+      <AccountSummary
+        secondPillarContributions={0}
+        secondPillarSubtractions={0}
+        thirdPillarContributions={0}
+        thirdPillarSubtractions={0}
+        secondPillarSourceFunds={[
+          {
+            isin: 'EE3600109435',
+            name: 'TUK75',
+            ongoingChargesFigure: 0.0039,
+            contributions: 0,
+            subtractions: 0,
+            profit: 0,
+            price: 10000,
+            unavailablePrice: 0,
+          },
+        ]}
+        thirdPillarSourceFunds={[]}
+        savingsFundBalance={{
+          isin: 'EE0000003283',
+          name: 'TKF100',
+          price: 100000,
+          unavailablePrice: 0,
+          activeFund: false,
+          currency: 'EUR',
+          fundManager: { name: 'Tuleva' },
+          managementFeePercent: 0.0029,
+          pillar: null,
+          ongoingChargesFigure: 0.0029,
+          contributions: 0,
+          subtractions: 0,
+          profit: 0,
+          units: 100000,
+        }}
+      />,
+    );
+
+    const { footer: feesPercentFooter } = tableProp('columns')[1];
+    const { footer: feesEuroFooter } = tableProp('columns')[2];
+
+    expect(feesEuroFooter.props.amount).toBeCloseTo(-329, 2);
+    expect(feesPercentFooter.props.value).toBeCloseTo(329 / 110000, 6);
+  });
+
   const tableProp = (name) => component.find(Table).prop(name);
 });

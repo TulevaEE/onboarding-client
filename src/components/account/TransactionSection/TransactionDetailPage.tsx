@@ -8,10 +8,32 @@ import { formatDateYear } from '../../common/dateFormatter';
 import { usePageTitle } from '../../common/usePageTitle';
 import { Fund } from '../../common/apiModels';
 
+const NAV_SCALE_BY_ISIN: Record<string, number> = {
+  EE3600109435: 5, // TUK75
+  EE3600109443: 5, // TUK00
+  EE3600001707: 4, // TUV100
+  EE0000003283: 4, // TKF100
+};
+
+const MIN_NAV_SCALE = 5;
+const MIN_UNIT_SCALE = 3;
+
 function decimalPlaces(n: number): number {
   const str = String(n);
   const dotIndex = str.indexOf('.');
   return dotIndex === -1 ? 0 : str.length - dotIndex - 1;
+}
+
+function navScaleFor(transaction: { isin: string; nav: number }): number {
+  const known = NAV_SCALE_BY_ISIN[transaction.isin];
+  if (known !== undefined) {
+    return known;
+  }
+  return Math.max(MIN_NAV_SCALE, decimalPlaces(transaction.nav));
+}
+
+function unitScaleFor(units: number): number {
+  return Math.max(MIN_UNIT_SCALE, decimalPlaces(units));
 }
 
 function getBackPath(fund?: Fund): string {
@@ -49,7 +71,6 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
   }
 
   const fund = funds.find((f) => f.isin === transaction.isin);
-  const isSavingsFund = fund?.pillar === null;
 
   return (
     <section className="mt-5">
@@ -96,10 +117,7 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
               <FormattedMessage id="transactions.detail.nav" />
             </dt>
             <dd className="col-sm-10">
-              <Euro
-                amount={transaction.nav}
-                fractionDigits={isSavingsFund ? 4 : Math.max(3, decimalPlaces(transaction.nav))}
-              />
+              <Euro amount={transaction.nav} fractionDigits={navScaleFor(transaction)} />
             </dd>
           </>
         )}
@@ -110,9 +128,7 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
               <FormattedMessage id="transactions.detail.units" />
             </dt>
             <dd className="col-sm-10">
-              {transaction.units.toFixed(
-                isSavingsFund ? 3 : Math.max(3, decimalPlaces(transaction.units)),
-              )}
+              {transaction.units.toFixed(unitScaleFor(transaction.units))}
             </dd>
           </>
         )}
