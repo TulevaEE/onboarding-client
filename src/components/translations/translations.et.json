@@ -1173,7 +1173,7 @@
   "secondPillarGrowth.methodology.item.return": "<b>Tootluse</b> arvutame jäägina: II samba varast (sh juba välja makstud raha) lahutame sinu panuse, maksuvõidu ja päritud osa.",
   "secondPillarGrowth.methodology.item.inheritance": "<b>Pärimine</b> kajastub graafikul, kui oled saanud II samba osakuid pärandina.",
   "secondPillarGrowth.methodology.item.withdrawals": "<b>Väljamaksed</b> kajastab sinu II sambast tehtud väljamakseid (enne tulumaksu).",
-  "secondPillarGrowth.methodology.item.pik": "<b>Pensioni investeerimiskonto</b> summat Pensionikeskus meile ei avalda, seda näed oma pangas. Lehele lisame märkuse, graafikul eraldi segmenti ei kuvata.",
+  "secondPillarGrowth.methodology.item.pik": "<b>Pensioni investeerimiskonto</b> summat Pensionikeskus meile ei avalda, seda näed oma pangas.",
   "secondPillarGrowth.methodology.source": "Iga kande täpse kuupäeva ja summa leiad Pensionikeskuse iseteenindusest.",
   "secondPillarGrowth.cta.increaseContributionTo6Percent": "Tõsta oma II samba sissemakse 6% peale",
   "secondPillarGrowth.cta.wantToSaveMore": "Kuidas veelgi rohkem koguda?",

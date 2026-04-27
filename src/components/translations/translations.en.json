@@ -1093,7 +1093,7 @@
   "secondPillarGrowth.methodology.item.return": "<b>Return</b> we calculate as a residual: from your total II pillar assets (including any already withdrawn) we subtract your contribution, tax win and inherited units.",
   "secondPillarGrowth.methodology.item.inheritance": "<b>Inheritance</b> appears on the chart when you have received II pillar units as inheritance.",
   "secondPillarGrowth.methodology.item.withdrawals": "<b>Withdrawn</b> shows withdrawals you have made from your II pillar (before income tax).",
-  "secondPillarGrowth.methodology.item.pik": "<b>PIK</b> (Pension Investment Account) – Pensionikeskus does not publish the amount on a PIK; you see it only in your bank. We add a notice to the page; no separate segment is shown on the chart.",
+  "secondPillarGrowth.methodology.item.pik": "<b>PIK</b> (Pension Investment Account) – Pensionikeskus does not publish the amount on your PIK; you only see it in your bank.",
   "secondPillarGrowth.methodology.source": "You can find each transaction's exact date and amount in the Pensionikeskus self-service.",
   "secondPillarGrowth.cta.increaseContributionTo6Percent": "Raise your II pillar contribution to 6%",
   "secondPillarGrowth.cta.wantToSaveMore": "How to save even more?",
