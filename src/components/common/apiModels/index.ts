@@ -380,7 +380,7 @@ export interface IdCardSignatureStatusResponse {
 
 export interface Payment {
   type: PaymentType;
-  paymentChannel: PaymentChannel;
+  paymentChannel?: PaymentChannel;
   recipientPersonalCode: string;
   amount?: number;
   currency?: Currency;
@@ -405,8 +405,7 @@ export type PaymentChannel =
   | 'COOP'
   | 'COOP_WEB'
   | 'PARTNER'
-  | 'TULUNDUSUHISTU'
-  | 'OTHER';
+  | 'TULUNDUSUHISTU';
 
 export interface Authentication {
   authenticationHash: string;
