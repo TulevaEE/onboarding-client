@@ -8,13 +8,13 @@ import './SavingsFundRecurring.scss';
 export type BankKey = 'LHV' | 'COOP' | 'SWEDBANK' | 'SEB' | 'LUMINOR' | 'OTHER';
 type PanelType = 'A' | 'B' | 'C';
 
-const BANK_META: Record<BankKey, { label: string; channel: PaymentChannel; panel: PanelType }> = {
+const BANK_META: Record<BankKey, { label: string; channel?: PaymentChannel; panel: PanelType }> = {
   LHV: { label: 'LHV', channel: 'LHV', panel: 'A' },
   COOP: { label: 'Coop Pank', channel: 'COOP', panel: 'A' },
   SWEDBANK: { label: 'Swedbank', channel: 'SWEDBANK', panel: 'A' },
   SEB: { label: 'SEB', channel: 'SEB', panel: 'B' },
   LUMINOR: { label: 'Luminor', channel: 'LUMINOR', panel: 'B' },
-  OTHER: { label: '', channel: 'OTHER', panel: 'C' },
+  OTHER: { label: '', panel: 'C' },
 };
 
 const INVEST_ACCOUNT_URL =
@@ -33,11 +33,11 @@ type Props = {
 export const SavingsFundRecurringDetails: FC<Props> = ({ bank, amount, personalCode }) => {
   const meta = BANK_META[bank];
   const { data, isLoading, isError } = useQuery<PaymentLink>({
-    queryKey: ['paymentLink', 'SAVINGS_RECURRING', meta.channel, amount, personalCode],
+    queryKey: ['paymentLink', 'SAVINGS_RECURRING', meta.channel ?? null, amount, personalCode],
     queryFn: () =>
       getPaymentLink({
         type: 'SAVINGS_RECURRING',
-        paymentChannel: meta.channel,
+        ...(meta.channel ? { paymentChannel: meta.channel } : {}),
         recipientPersonalCode: personalCode,
         amount,
         currency: 'EUR',
