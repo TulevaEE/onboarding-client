@@ -576,6 +576,7 @@ export function paymentLinkBackend(server: SetupServerApi): void {
       const personalCode = req.url.searchParams.get('recipientPersonalCode');
       if (type === 'SAVINGS_RECURRING') {
         const base = {
+          type: 'PREFILLED' as const,
           recipientName: 'Tuleva Täiendav Kogumisfond',
           recipientIban: 'EE711010220306707220',
           description: personalCode,
@@ -594,6 +595,7 @@ export function paymentLinkBackend(server: SetupServerApi): void {
       if (type === 'RECURRING') {
         return res(
           ctx.json({
+            type: 'REDIRECT' as const,
             url:
               `https://${req.url.searchParams.get('paymentChannel')}.EE` +
               `/${req.url.searchParams.get('type')}` +
@@ -604,6 +606,7 @@ export function paymentLinkBackend(server: SetupServerApi): void {
       }
       return res(
         ctx.json({
+          type: 'REDIRECT' as const,
           url:
             `https://sandbox-payments.montonio.com?payment_token=example.jwt.token.with` +
             `.${req.url.searchParams.get('amount')}` +
