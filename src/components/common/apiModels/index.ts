@@ -478,13 +478,21 @@ export interface MandateDeadlines {
   thirdPillarPaymentDeadline: string;
 }
 
-export interface PaymentLink {
-  url?: string;
-  recipientName?: string;
-  recipientIban?: string;
-  description?: string;
-  amount?: string;
+export interface RedirectLink {
+  type: 'REDIRECT';
+  url: string;
 }
+
+export interface PrefilledLink {
+  type: 'PREFILLED';
+  url?: string;
+  recipientName: string;
+  recipientIban: string;
+  description: string;
+  amount: string;
+}
+
+export type PaymentLink = RedirectLink | PrefilledLink;
 
 export type MemberCapitalListingType = 'BUY' | 'SELL';
 

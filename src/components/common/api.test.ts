@@ -1123,7 +1123,7 @@ describe('API calls', () => {
       amount: 100,
       currency: 'EUR',
     };
-    const mockPaymentLink: PaymentLink = { url: 'https://example.com/payment' };
+    const mockPaymentLink: PaymentLink = { type: 'REDIRECT', url: 'https://example.com/payment' };
 
     beforeEach(() => {
       jest.clearAllMocks();
@@ -1146,6 +1146,7 @@ describe('API calls', () => {
         currency: 'EUR',
       };
       const extendedLink: PaymentLink = {
+        type: 'PREFILLED',
         url: 'https://www.lhv.ee/ibank/cf/portfolio/payment_standing_add?i_amount=50',
         recipientName: 'Tuleva Täiendav Kogumisfond',
         recipientIban: 'EE711010220306707220',
@@ -1171,6 +1172,7 @@ describe('API calls', () => {
         currency: 'EUR',
       };
       const copyCardLink: PaymentLink = {
+        type: 'PREFILLED',
         recipientName: 'Tuleva Täiendav Kogumisfond',
         recipientIban: 'EE711010220306707220',
         description: '38812121215',
@@ -1181,7 +1183,10 @@ describe('API calls', () => {
       const paymentLink = await getPaymentLink(otherPayment);
 
       expect(paymentLink.url).toBeUndefined();
-      expect(paymentLink.recipientIban).toBe('EE711010220306707220');
+      expect(paymentLink.type).toBe('PREFILLED');
+      if (paymentLink.type === 'PREFILLED') {
+        expect(paymentLink.recipientIban).toBe('EE711010220306707220');
+      }
     });
   });
 
@@ -1193,7 +1198,7 @@ describe('API calls', () => {
       amount: 100,
       currency: 'EUR',
     };
-    const mockPaymentLink: PaymentLink = { url: 'https://example.com/payment' };
+    const mockPaymentLink: PaymentLink = { type: 'REDIRECT', url: 'https://example.com/payment' };
 
     beforeEach(() => {
       jest.clearAllMocks();
