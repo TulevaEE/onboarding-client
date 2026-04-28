@@ -287,6 +287,14 @@ const SecondPillarGrowth = () => {
     return { contribution, state, inheritance, growth, withdrawn, transferredToPik };
   }, [assets]);
 
+  // Sum of the chart's above-zero segments — equals balance for users with
+  // non-negative growth and no PIK transfer, but stays meaningful when the
+  // current balance is dragged to zero by negative growth, withdrawals, or
+  // PIK outflows.
+  const positiveStackTotal = segments
+    ? segments.contribution + segments.state + segments.inheritance + Math.max(segments.growth, 0)
+    : 0;
+
   const [methodologyOpen, setMethodologyOpen] = useState(false);
 
   const subNoteKey = useMemo(() => {
@@ -329,7 +337,7 @@ const SecondPillarGrowth = () => {
       fill="currentColor"
       viewBox="0 0 16 16"
       className="flex-shrink-0 text-success"
-      style={{ marginTop: '0.2em' }}
+      style={{ marginTop: '0.1em' }}
       aria-hidden
     >
       <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.011-1.05z" />
@@ -346,7 +354,7 @@ const SecondPillarGrowth = () => {
       strokeWidth="1.25"
       viewBox="0 0 16 16"
       className="flex-shrink-0 text-secondary"
-      style={{ marginTop: '0.2em' }}
+      style={{ marginTop: '0.1em' }}
       aria-hidden
     >
       <circle cx="8" cy="8" r="7" />
@@ -583,13 +591,7 @@ const SecondPillarGrowth = () => {
       y: {
         stacked: true,
         // Reserve headroom above the stack so the total datalabel isn't clipped.
-        max: segments
-          ? (segments.contribution +
-              segments.state +
-              Math.max(segments.growth, 0) +
-              segments.inheritance) *
-            1.2
-          : undefined,
+        max: segments ? positiveStackTotal * 1.2 : undefined,
         ticks: { display: false },
         border: { display: false },
         grid: {
@@ -656,8 +658,8 @@ const SecondPillarGrowth = () => {
                 values={{
                   balance: formatCurrency(assets.balance),
                   ownPercentage:
-                    segments && assets.balance > 0
-                      ? Math.round((segments.contribution / assets.balance) * 100)
+                    segments && positiveStackTotal > 0
+                      ? Math.round((segments.contribution / positiveStackTotal) * 100)
                       : 0,
                   b: (chunks: string) => <strong>{chunks}</strong>,
                 }}
