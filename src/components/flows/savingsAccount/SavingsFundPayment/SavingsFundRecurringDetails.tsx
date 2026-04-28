@@ -2,7 +2,7 @@ import { FC, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { FormattedMessage } from 'react-intl';
 import { getPaymentLink } from '../../../common/api';
-import { PaymentChannel, PaymentLink } from '../../../common/apiModels';
+import { PaymentChannel, PaymentLink, PrefilledLink } from '../../../common/apiModels';
 import './SavingsFundRecurring.scss';
 
 export type BankKey = 'LHV' | 'COOP' | 'SWEDBANK' | 'SEB' | 'LUMINOR' | 'OTHER';
@@ -53,7 +53,7 @@ export const SavingsFundRecurringDetails: FC<Props> = ({ bank, amount, personalC
       </div>
     );
   }
-  if (isLoading || !data) {
+  if (isLoading || !data || data.type !== 'PREFILLED') {
     return null;
   }
   const bankUrl = isSafeBankUrl(data.url) ? data.url : undefined;
@@ -219,12 +219,12 @@ const CheckList: FC<{ children: React.ReactNode }> = ({ children }) => (
 
 const CheckItem: FC<{ children: React.ReactNode }> = ({ children }) => <li>{children}</li>;
 
-const CopyCard: FC<{ link: PaymentLink }> = ({ link }) => {
+const CopyCard: FC<{ link: PrefilledLink }> = ({ link }) => {
   const rows: { labelId: TranslationKey; value: string }[] = [
-    { labelId: 'savingsFund.recurring.copyCard.recipientName', value: link.recipientName ?? '' },
-    { labelId: 'savingsFund.recurring.copyCard.recipientIban', value: link.recipientIban ?? '' },
-    { labelId: 'savingsFund.recurring.copyCard.description', value: link.description ?? '' },
-    { labelId: 'savingsFund.recurring.copyCard.amount', value: `${link.amount ?? ''} €` },
+    { labelId: 'savingsFund.recurring.copyCard.recipientName', value: link.recipientName },
+    { labelId: 'savingsFund.recurring.copyCard.recipientIban', value: link.recipientIban },
+    { labelId: 'savingsFund.recurring.copyCard.description', value: link.description },
+    { labelId: 'savingsFund.recurring.copyCard.amount', value: `${link.amount} €` },
   ];
   return (
     <div className="copy-card mt-2">
