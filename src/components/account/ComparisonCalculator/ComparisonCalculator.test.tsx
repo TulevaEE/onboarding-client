@@ -544,6 +544,19 @@ describe('ComparisonCalculator', () => {
     expect(within(graph).getByText('9.5%')).toBeInTheDocument();
   });
 
+  test('II pillar at exactly 1% below index renders POSITIVE bar (handles FP precision)', async () => {
+    renderApp();
+    setReturnsData(returnsData2ndPillarOnePercentBelowIndex);
+    await component();
+
+    expect(await screen.findByText(/has similar performance./i)).toBeInTheDocument();
+
+    const graph = await graphSection();
+    // eslint-disable-next-line testing-library/no-node-access
+    const personalBar = within(graph).getByText('Your II pillar').closest('.bar');
+    expect(personalBar).toHaveAttribute('data-testid', 'bar-POSITIVE');
+  });
+
   test('II pillar content with neutral performance compared to 2nd pillar average with 3 bars', async () => {
     renderApp();
     setReturnsData(returnsData2ndPillarAverage);
@@ -1053,7 +1066,7 @@ const returnsData2ndPillarIndexPositive: ReturnsResponse = {
     },
     {
       key: 'SECOND_PILLAR',
-      rate: 0.1,
+      rate: 0.1001,
       amount: 17000.0,
       paymentsSum: 14000.0,
       currency: 'EUR',
@@ -1078,6 +1091,28 @@ const returnsData2ndPillarIndexNeutral: ReturnsResponse = {
       rate: 0.09,
       amount: 16000.0,
       paymentsSum: 14000.0,
+      currency: 'EUR',
+      type: 'PERSONAL',
+    },
+  ],
+};
+const returnsData2ndPillarOnePercentBelowIndex: ReturnsResponse = {
+  from: moment().subtract(15, 'years').format('YYYY-MM-DD'),
+  to: moment().format('YYYY-MM-DD'),
+  returns: [
+    {
+      key: 'UNION_STOCK_INDEX',
+      rate: 0.07,
+      amount: 15000.0,
+      paymentsSum: 20000.0,
+      currency: 'EUR',
+      type: 'INDEX',
+    },
+    {
+      key: 'SECOND_PILLAR',
+      rate: 0.06,
+      amount: 13000.0,
+      paymentsSum: 20000.0,
       currency: 'EUR',
       type: 'PERSONAL',
     },
@@ -1119,7 +1154,7 @@ const returnsData3rdPillarIndexPositive: ReturnsResponse = {
     },
     {
       key: 'THIRD_PILLAR',
-      rate: 0.1,
+      rate: 0.1001,
       amount: 17000.0,
       paymentsSum: 14000.0,
       currency: 'EUR',

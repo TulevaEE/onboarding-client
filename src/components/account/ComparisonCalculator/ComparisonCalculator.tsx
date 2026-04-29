@@ -654,12 +654,12 @@ const ComparisonCalculator: React.FC = () => {
       personalRate: number,
       comparisonRate: number,
     ): PerformanceVerdict {
-      const comparisonAlphaThreshold = 0.01;
-      const difference = personalRate - comparisonRate;
-      if (difference > 0 && difference > comparisonAlphaThreshold) {
+      const thresholdBps = 100;
+      const differenceBps = Math.round((personalRate - comparisonRate) * 10000);
+      if (differenceBps > thresholdBps) {
         return 'POSITIVE_ALPHA';
       }
-      if (difference < 0 && difference < -comparisonAlphaThreshold) {
+      if (differenceBps < -thresholdBps) {
         return 'NEGATIVE_ALPHA';
       }
       return 'NEUTRAL';
@@ -709,7 +709,9 @@ const ComparisonCalculator: React.FC = () => {
   function calculateGraphProperties(): void {
     const barHeights = calculateGraphBarHeights();
 
-    const negativeColorThreshold = 0.01;
+    const negativeColorThresholdBps = 100;
+    const isMoreThanThresholdBelow = (rate: number, indexRate: number) =>
+      Math.round((indexRate - rate) * 10000) > negativeColorThresholdBps;
 
     const indexBarProperties: GraphBarProperties = {
       color: 'INDEX',
@@ -722,7 +724,7 @@ const ComparisonCalculator: React.FC = () => {
     const personalBarColor =
       returns.personal &&
       returns.index &&
-      returns.personal.rate + negativeColorThreshold < returns.index.rate
+      isMoreThanThresholdBelow(returns.personal.rate, returns.index.rate)
         ? 'NEGATIVE'
         : 'POSITIVE';
 
@@ -745,7 +747,7 @@ const ComparisonCalculator: React.FC = () => {
       comparisonBarColor =
         returns.pensionFund &&
         returns.index &&
-        returns.pensionFund.rate + negativeColorThreshold < returns.index.rate
+        isMoreThanThresholdBelow(returns.pensionFund.rate, returns.index.rate)
           ? 'NEGATIVE'
           : 'POSITIVE';
     }
