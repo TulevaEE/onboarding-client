@@ -120,13 +120,53 @@ export const SavingsFundOnboarding: FC = () => {
         <InvestmentGoalStep
           key="investment-goal"
           control={control}
-          options={['LONG_TERM', 'SPECIFIC_GOAL', 'CHILD', 'TRADING']}
+          options={[
+            {
+              value: 'LONG_TERM',
+              labelId: 'flows.savingsFundOnboarding.investmentGoalStep.longTerm',
+            },
+            {
+              value: 'SPECIFIC_GOAL',
+              labelId: 'flows.savingsFundOnboarding.investmentGoalStep.specificGoal',
+            },
+            {
+              value: 'CHILD',
+              labelId: 'flows.savingsFundOnboarding.investmentGoalStep.childFuture',
+            },
+            {
+              value: 'TRADING',
+              labelId: 'flows.savingsFundOnboarding.investmentGoalStep.activeTrading',
+            },
+          ]}
         />
       ),
       fields: ['investmentGoals'],
     },
     {
-      component: <InvestableAssetsStep key="investable-assets" control={control} />,
+      component: (
+        <InvestableAssetsStep
+          key="investable-assets"
+          control={control}
+          options={[
+            {
+              value: 'LESS_THAN_20K',
+              labelId: 'flows.savingsFundOnboarding.investableAssetsStep.upTo20k',
+            },
+            {
+              value: 'RANGE_20K_40K',
+              labelId: 'flows.savingsFundOnboarding.investableAssetsStep.from20kTo40k',
+            },
+            {
+              value: 'RANGE_40K_80K',
+              labelId: 'flows.savingsFundOnboarding.investableAssetsStep.from40kTo80k',
+            },
+            {
+              value: 'MORE_THAN_80K',
+              labelId: 'flows.savingsFundOnboarding.investableAssetsStep.over80k',
+            },
+          ]}
+        />
+      ),
       fields: ['investableAssets'],
     },
     {
@@ -134,7 +174,26 @@ export const SavingsFundOnboarding: FC = () => {
       fields: ['sourceOfIncome'],
     },
     {
-      component: <TermsStep key="terms" control={control} />,
+      component: (
+        <TermsStep
+          key="terms"
+          control={control}
+          documents={[
+            {
+              href: 'https://tuleva.ee/wp-content/uploads/2026/01/Tuleva-Taiendav-Kogumisfond.-Tingimused.-12.01.2026.pdf',
+              labelId: 'flows.savingsFundOnboarding.termsStep.linkText.terms',
+            },
+            {
+              href: 'https://tuleva.ee/wp-content/uploads/2026/01/Tuleva-Taiendav-Kogumisfond.-Prospekt.-12.01.2026.pdf',
+              labelId: 'flows.savingsFundOnboarding.termsStep.linkText.prospectus',
+            },
+            {
+              href: 'https://tuleva.ee/wp-content/uploads/2026/01/Tuleva-Taiendav-Kogumisfond.-Pohiteabedokument.-12.01.2026.pdf',
+              labelId: 'flows.savingsFundOnboarding.termsStep.linkText.keyInfo',
+            },
+          ]}
+        />
+      ),
       fields: ['termsAccepted'],
     },
   ];

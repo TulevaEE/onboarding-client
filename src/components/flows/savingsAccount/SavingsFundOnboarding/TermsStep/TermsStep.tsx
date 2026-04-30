@@ -2,14 +2,17 @@ import { ReactNode } from 'react';
 import { Control, Controller, Path } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { SharedOnboardingFields } from '../types';
+import { TranslationKey } from '../../../../translations';
 
 type TermsStepProps<T extends SharedOnboardingFields = SharedOnboardingFields> = {
   control: Control<T>;
+  documents: { href: string; labelId: TranslationKey }[];
   showError?: boolean;
 };
 
 export const TermsStep = <T extends SharedOnboardingFields = SharedOnboardingFields>({
   control,
+  documents,
   showError,
 }: TermsStepProps<T>) => {
   const intl = useIntl();
@@ -22,15 +25,11 @@ export const TermsStep = <T extends SharedOnboardingFields = SharedOnboardingFie
       </div>
       <div className="section-content d-flex flex-column gap-5">
         <div className="d-flex flex-column gap-3">
-          <DocumentLink href="https://tuleva.ee/wp-content/uploads/2026/01/Tuleva-Taiendav-Kogumisfond.-Tingimused.-12.01.2026.pdf">
-            <FormattedMessage id="flows.savingsFundOnboarding.termsStep.linkText.terms" />
-          </DocumentLink>
-          <DocumentLink href="https://tuleva.ee/wp-content/uploads/2026/01/Tuleva-Taiendav-Kogumisfond.-Prospekt.-12.01.2026.pdf">
-            <FormattedMessage id="flows.savingsFundOnboarding.termsStep.linkText.prospectus" />
-          </DocumentLink>
-          <DocumentLink href="https://tuleva.ee/wp-content/uploads/2026/01/Tuleva-Taiendav-Kogumisfond.-Pohiteabedokument.-12.01.2026.pdf">
-            <FormattedMessage id="flows.savingsFundOnboarding.termsStep.linkText.keyInfo" />
-          </DocumentLink>
+          {documents.map(({ href, labelId }) => (
+            <DocumentLink key={href} href={href}>
+              <FormattedMessage id={labelId} />
+            </DocumentLink>
+          ))}
         </div>
         <Controller
           control={control}

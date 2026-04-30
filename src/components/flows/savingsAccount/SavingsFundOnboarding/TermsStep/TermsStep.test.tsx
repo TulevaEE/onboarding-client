@@ -5,7 +5,22 @@ import { IntlProvider } from 'react-intl';
 import { renderWrapped } from '../../../../../test/utils';
 import { TermsStep } from './TermsStep';
 import { OnboardingFormData, CompanyOnboardingFormData } from '../types';
-import translations from '../../../../translations';
+import translations, { TranslationKey } from '../../../../translations';
+
+const DOCUMENTS: { href: string; labelId: TranslationKey }[] = [
+  {
+    href: 'https://tuleva.ee/wp-content/uploads/2026/01/Tuleva-Taiendav-Kogumisfond.-Tingimused.-12.01.2026.pdf',
+    labelId: 'flows.savingsFundOnboarding.termsStep.linkText.terms',
+  },
+  {
+    href: 'https://tuleva.ee/wp-content/uploads/2026/01/Tuleva-Taiendav-Kogumisfond.-Prospekt.-12.01.2026.pdf',
+    labelId: 'flows.savingsFundOnboarding.termsStep.linkText.prospectus',
+  },
+  {
+    href: 'https://tuleva.ee/wp-content/uploads/2026/01/Tuleva-Taiendav-Kogumisfond.-Pohiteabedokument.-12.01.2026.pdf',
+    labelId: 'flows.savingsFundOnboarding.termsStep.linkText.keyInfo',
+  },
+];
 
 const TermsStepWrapper = ({ showError = false }: { showError?: boolean }) => {
   const { control, trigger } = useForm<OnboardingFormData>({
@@ -31,7 +46,7 @@ const TermsStepWrapper = ({ showError = false }: { showError?: boolean }) => {
   return (
     <IntlProvider locale="en" messages={translations.en}>
       <form>
-        <TermsStep control={control} showError={showError} />
+        <TermsStep control={control} documents={DOCUMENTS} showError={showError} />
         <button type="button" onClick={() => trigger('termsAccepted')}>
           Validate
         </button>
@@ -61,7 +76,7 @@ const CompanyTermsStepWrapper = () => {
   return (
     <IntlProvider locale="en" messages={translations.en}>
       <form>
-        <TermsStep control={control} />
+        <TermsStep control={control} documents={DOCUMENTS} />
         <button type="button" onClick={() => trigger('termsAccepted')}>
           Validate
         </button>
