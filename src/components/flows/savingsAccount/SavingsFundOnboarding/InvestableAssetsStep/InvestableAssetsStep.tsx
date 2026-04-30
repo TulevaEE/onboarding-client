@@ -1,55 +1,45 @@
 import { Control, Controller, Path } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { SharedOnboardingFields } from '../types';
+import { InvestableAssetsOption } from '../types.api';
+import { TranslationKey } from '../../../../translations';
 import { Radio } from '../../../../common';
 
 type InvestableAssetsStepProps<T extends SharedOnboardingFields = SharedOnboardingFields> = {
   control: Control<T>;
+  options: { value: InvestableAssetsOption; labelId: TranslationKey }[];
 };
+
+const optionRadioId = (value: InvestableAssetsOption) =>
+  `investable-assets-${value.toLowerCase().replace(/_/g, '-')}`;
 
 const generateRadioOptions = (
   fieldName: string,
   fieldValue: string | null,
   onChange: (value: string) => void,
+  options: { value: InvestableAssetsOption; labelId: TranslationKey }[],
 ) =>
-  [
-    {
-      id: 'assets-up-to-20k',
-      value: 'LESS_THAN_20K',
-      labelId: 'flows.savingsFundOnboarding.investableAssetsStep.upTo20k' as const,
-    },
-    {
-      id: 'assets-20k-to-40k',
-      value: 'RANGE_20K_40K',
-      labelId: 'flows.savingsFundOnboarding.investableAssetsStep.from20kTo40k' as const,
-    },
-    {
-      id: 'assets-40k-to-80k',
-      value: 'RANGE_40K_80K',
-      labelId: 'flows.savingsFundOnboarding.investableAssetsStep.from40kTo80k' as const,
-    },
-    {
-      id: 'assets-over-80k',
-      value: 'MORE_THAN_80K',
-      labelId: 'flows.savingsFundOnboarding.investableAssetsStep.over80k' as const,
-    },
-  ].map(({ id, value, labelId }) => (
-    <Radio
-      key={id}
-      name={fieldName}
-      id={id}
-      selected={fieldValue === value}
-      onSelect={() => onChange(value)}
-      className="p-3"
-    >
-      <label className="form-check-label fs-3 lh-sm me-2" htmlFor={id}>
-        <FormattedMessage id={labelId} />
-      </label>
-    </Radio>
-  ));
+  options.map(({ value, labelId }) => {
+    const id = optionRadioId(value);
+    return (
+      <Radio
+        key={id}
+        name={fieldName}
+        id={id}
+        selected={fieldValue === value}
+        onSelect={() => onChange(value)}
+        className="p-3"
+      >
+        <label className="form-check-label fs-3 lh-sm me-2" htmlFor={id}>
+          <FormattedMessage id={labelId} />
+        </label>
+      </Radio>
+    );
+  });
 
 export const InvestableAssetsStep = <T extends SharedOnboardingFields = SharedOnboardingFields>({
   control,
+  options,
 }: InvestableAssetsStepProps<T>) => {
   const intl = useIntl();
   return (
@@ -76,7 +66,12 @@ export const InvestableAssetsStep = <T extends SharedOnboardingFields = SharedOn
           }}
           render={({ field, fieldState: { error } }) => (
             <div className="selection-group d-flex flex-column gap-2">
-              {generateRadioOptions(field.name, field.value as string | null, field.onChange)}
+              {generateRadioOptions(
+                field.name,
+                field.value as string | null,
+                field.onChange,
+                options,
+              )}
               {error && error.message ? (
                 <p className="m-0 text-danger fs-base" role="alert">
                   {error.message}
