@@ -380,7 +380,7 @@ export interface IdCardSignatureStatusResponse {
 
 export interface Payment {
   type: PaymentType;
-  paymentChannel: PaymentChannel;
+  paymentChannel?: PaymentChannel;
   recipientPersonalCode: string;
   amount?: number;
   currency?: Currency;
@@ -388,7 +388,14 @@ export interface Payment {
 
 export type Currency = 'EUR';
 
-export type PaymentType = 'SINGLE' | 'RECURRING' | 'EMPLOYER' | 'GIFT' | 'MEMBER_FEE' | 'SAVINGS';
+export type PaymentType =
+  | 'SINGLE'
+  | 'RECURRING'
+  | 'EMPLOYER'
+  | 'GIFT'
+  | 'MEMBER_FEE'
+  | 'SAVINGS'
+  | 'SAVINGS_RECURRING';
 
 export type PaymentChannel =
   | 'SWEDBANK'
@@ -471,9 +478,21 @@ export interface MandateDeadlines {
   thirdPillarPaymentDeadline: string;
 }
 
-export interface PaymentLink {
+export interface RedirectLink {
+  type: 'REDIRECT';
   url: string;
 }
+
+export interface PrefilledLink {
+  type: 'PREFILLED';
+  url?: string;
+  recipientName: string;
+  recipientIban: string;
+  description: string;
+  amount: string;
+}
+
+export type PaymentLink = RedirectLink | PrefilledLink;
 
 export type MemberCapitalListingType = 'BUY' | 'SELL';
 

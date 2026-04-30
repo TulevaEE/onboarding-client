@@ -11,9 +11,18 @@ import { PaymentBankButtons } from '../../thirdPillar/ThirdPillarPayment/Payment
 import { BankKey } from '../../thirdPillar/ThirdPillarPayment/types';
 import { AmountInput } from '../AmountInput';
 import { InfoSection } from '../InfoSection';
+import { PaymentTypeSelection, SavingsFundPaymentType } from './PaymentTypeSelection';
 import { SavingsFundOtherBankDetails } from './SavingsFundOtherBankDetails';
+import { SavingsFundRecurringDetails } from './SavingsFundRecurringDetails';
 
 const MONTONIO_MAX_AMOUNT = 15000;
+const MIN_RECURRING_AMOUNT = 1;
+const RECURRING_BANK_KEYS = ['LHV', 'COOP', 'SWEDBANK', 'SEB', 'LUMINOR', 'OTHER'] as const;
+type RecurringBankKey = (typeof RECURRING_BANK_KEYS)[number];
+const toRecurringBank = (value: string | undefined): RecurringBankKey | null => {
+  const upper = value?.toUpperCase();
+  return RECURRING_BANK_KEYS.find((key) => key === upper) ?? null;
+};
 
 type IPaymentForm = {
   amount: number | undefined;
@@ -22,6 +31,7 @@ type IPaymentForm = {
 
 export const SavingsFundPayment: FC = () => {
   const [submitError, setSubmitError] = useState(false);
+  const [paymentType, setPaymentType] = useState<SavingsFundPaymentType>('SINGLE');
   const intl = useIntl();
   const { data: user } = useMe();
   const {
@@ -40,7 +50,10 @@ export const SavingsFundPayment: FC = () => {
   const amount = watch('amount');
   const isOtherBank = paymentMethod === 'other';
   const isOverMaxAmount = (amount ?? 0) >= MONTONIO_MAX_AMOUNT;
-  const showManualPayment = isOtherBank || isOverMaxAmount;
+  const showManualPayment = paymentType === 'SINGLE' && (isOtherBank || isOverMaxAmount);
+  const isRecurring = paymentType === 'RECURRING';
+  const recurringBank = isRecurring ? toRecurringBank(paymentMethod) : null;
+  const hasValidRecurringAmount = Number.isFinite(amount) && (amount ?? 0) >= MIN_RECURRING_AMOUNT;
   usePageTitle('savingsFund.payment.pageTitle');
 
   if (!user) {
@@ -71,7 +84,7 @@ export const SavingsFundPayment: FC = () => {
         </h1>
       </div>
 
-      {/* TODO: RadioControl for recurring payments/single payment */}
+      <PaymentTypeSelection paymentType={paymentType} setPaymentType={setPaymentType} />
 
       <div className="pt-4 pb-4 border-top border-bottom">
         <InfoSection variant="payment" />
@@ -87,11 +100,17 @@ export const SavingsFundPayment: FC = () => {
             errorMessage={intl.formatMessage({ id: 'savingsFund.payment.form.amount.min' })}
           />
 
-          {!isOverMaxAmount && (
+          {(!isOverMaxAmount || isRecurring) && (
             <div className="form-section d-flex flex-column gap-3">
               <div className="d-flex flex-column gap-3">
                 <label htmlFor="payment-method" className="fs-3 fw-semibold">
-                  <FormattedMessage id="savingsFund.payment.form.paymentMethod.label" />
+                  <FormattedMessage
+                    id={
+                      isRecurring
+                        ? 'savingsFund.payment.form.paymentMethod.recurring.label'
+                        : 'savingsFund.payment.form.paymentMethod.label'
+                    }
+                  />
                 </label>
                 <Controller
                   control={control}
@@ -139,13 +158,21 @@ export const SavingsFundPayment: FC = () => {
             />
           )}
 
+          {isRecurring && recurringBank && hasValidRecurringAmount && amount ? (
+            <SavingsFundRecurringDetails
+              bank={recurringBank}
+              amount={amount}
+              personalCode={user.role.code}
+            />
+          ) : null}
+
           {submitError ? (
             <div className="alert alert-danger" role="alert">
               <FormattedMessage id="savingsFund.payment.linkGenerationError" />
             </div>
           ) : null}
 
-          {showManualPayment ? (
+          {showManualPayment || isRecurring ? (
             <div className="mt-4 d-flex gap-2 align-items-center border-top pt-4">
               <span>
                 <FormattedMessage id="savingsFund.payment.otherBank.paymentQuestion" />

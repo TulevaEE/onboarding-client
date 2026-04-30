@@ -1123,7 +1123,7 @@ describe('API calls', () => {
       amount: 100,
       currency: 'EUR',
     };
-    const mockPaymentLink: PaymentLink = { url: 'https://example.com/payment' };
+    const mockPaymentLink: PaymentLink = { type: 'REDIRECT', url: 'https://example.com/payment' };
 
     beforeEach(() => {
       jest.clearAllMocks();
@@ -1136,6 +1136,58 @@ describe('API calls', () => {
       expect(paymentLink).toEqual(mockPaymentLink);
       expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith('/v1/payments/link', mockPayment);
     });
+
+    it('retrieves savings fund recurring payment link with recipient details', async () => {
+      const recurringPayment: Payment = {
+        type: 'SAVINGS_RECURRING',
+        paymentChannel: 'LHV',
+        recipientPersonalCode: '38812121215',
+        amount: 50,
+        currency: 'EUR',
+      };
+      const extendedLink: PaymentLink = {
+        type: 'PREFILLED',
+        url: 'https://www.lhv.ee/ibank/cf/portfolio/payment_standing_add?i_amount=50',
+        recipientName: 'Tuleva Täiendav Kogumisfond',
+        recipientIban: 'EE711010220306707220',
+        description: '38812121215',
+        amount: '50',
+      };
+      mockHttp.getWithAuthentication.mockResolvedValueOnce(extendedLink);
+
+      const paymentLink = await getPaymentLink(recurringPayment);
+
+      expect(paymentLink).toEqual(extendedLink);
+      expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith(
+        '/v1/payments/link',
+        recurringPayment,
+      );
+    });
+
+    it('retrieves savings fund recurring payment link without paymentChannel returning null url', async () => {
+      const otherPayment: Payment = {
+        type: 'SAVINGS_RECURRING',
+        recipientPersonalCode: '38812121215',
+        amount: 50,
+        currency: 'EUR',
+      };
+      const copyCardLink: PaymentLink = {
+        type: 'PREFILLED',
+        recipientName: 'Tuleva Täiendav Kogumisfond',
+        recipientIban: 'EE711010220306707220',
+        description: '38812121215',
+        amount: '50',
+      };
+      mockHttp.getWithAuthentication.mockResolvedValueOnce(copyCardLink);
+
+      const paymentLink = await getPaymentLink(otherPayment);
+
+      expect(paymentLink.url).toBeUndefined();
+      expect(paymentLink.type).toBe('PREFILLED');
+      if (paymentLink.type === 'PREFILLED') {
+        expect(paymentLink.recipientIban).toBe('EE711010220306707220');
+      }
+    });
   });
 
   describe('redirectToPayment', () => {
@@ -1146,7 +1198,7 @@ describe('API calls', () => {
       amount: 100,
       currency: 'EUR',
     };
-    const mockPaymentLink: PaymentLink = { url: 'https://example.com/payment' };
+    const mockPaymentLink: PaymentLink = { type: 'REDIRECT', url: 'https://example.com/payment' };
 
     beforeEach(() => {
       jest.clearAllMocks();

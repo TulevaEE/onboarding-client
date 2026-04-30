@@ -14,11 +14,7 @@ describe('InfoSection', () => {
         screen.getByText(/You can defer paying income tax on investment returns/i),
       ).toBeInTheDocument();
       expect(screen.getByText('investment account')).toBeInTheDocument();
-      expect(
-        screen.getByText(
-          'Making a deposit is free. Make sure your bank account transfer limit is large enough.',
-        ),
-      ).toBeInTheDocument();
+      expect(screen.getByText('Making a deposit is free.')).toBeInTheDocument();
     });
 
     it('renders learn more link', () => {

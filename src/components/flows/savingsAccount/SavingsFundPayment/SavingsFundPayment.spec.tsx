@@ -1,4 +1,5 @@
 import { Route } from 'react-router-dom';
+import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { createMemoryHistory, History } from 'history';
 import { cleanup, screen, waitFor } from '@testing-library/react';
@@ -175,6 +176,90 @@ describe(SavingsFundPayment, () => {
     expect(screen.getByRole('radio', { name: 'LHV' })).toBeInTheDocument();
     expect(screen.getByRole('radio', { name: 'Other bank' })).toBeInTheDocument();
     expect(screen.queryByText('Make a deposit from another bank')).not.toBeInTheDocument();
+  });
+
+  describe('recurring payment flow', () => {
+    const selectRecurring = () => {
+      const recurringRadio = screen.getByRole('radio', { name: 'Recurring payment' });
+      userEvent.click(recurringRadio);
+      return recurringRadio;
+    };
+
+    it('defaults to single payment and offers a recurring option', async () => {
+      expect(await findPageHeading()).toBeInTheDocument();
+      expect(screen.getByRole('radio', { name: 'Single payment' })).toBeChecked();
+      expect(screen.getByRole('radio', { name: 'Recurring payment' })).not.toBeChecked();
+    });
+
+    it('shows step-by-step instructions with a bank link when LHV is selected for recurring', async () => {
+      expect(await findPageHeading()).toBeInTheDocument();
+      userEvent.type(screen.getByRole('textbox', { name: 'Amount' }), '50');
+      selectRecurring();
+      userEvent.click(screen.getByRole('radio', { name: 'LHV' }));
+
+      expect(
+        await screen.findByRole('heading', { name: 'Set up the recurring payment in LHV' }),
+      ).toBeInTheDocument();
+      const openBankLink = screen.getByRole('link', { name: 'Open internet bank' });
+      expect(openBankLink).toHaveAttribute('href', expect.stringContaining('lhv.ee/recurring'));
+      expect(openBankLink).toHaveAttribute('target', '_blank');
+    });
+
+    it('shows a landing-URL link and copy-card when SEB is selected for recurring', async () => {
+      expect(await findPageHeading()).toBeInTheDocument();
+      userEvent.type(screen.getByRole('textbox', { name: 'Amount' }), '50');
+      selectRecurring();
+      userEvent.click(screen.getByRole('radio', { name: 'SEB' }));
+
+      expect(
+        await screen.findByRole('heading', { name: 'Set up the recurring payment in SEB' }),
+      ).toBeInTheDocument();
+      const openBankLink = screen.getByRole('link', { name: 'Open internet bank' });
+      expect(openBankLink).toHaveAttribute('href', expect.stringContaining('seb.ee/recurring'));
+      expect(screen.getByText('Tuleva Täiendav Kogumisfond')).toBeInTheDocument();
+      expect(screen.getByText('EE711010220306707220')).toBeInTheDocument();
+    });
+
+    it('does not fetch or render recurring details when amount is below minimum', async () => {
+      expect(await findPageHeading()).toBeInTheDocument();
+      selectRecurring();
+      userEvent.type(screen.getByRole('textbox', { name: 'Amount' }), '0.5');
+      userEvent.click(screen.getByRole('radio', { name: 'LHV' }));
+
+      await waitFor(() =>
+        expect(
+          screen.queryByRole('heading', { name: /Set up the recurring payment/ }),
+        ).not.toBeInTheDocument(),
+      );
+    });
+
+    it('shows an error alert when the backend fails for the recurring link', async () => {
+      server.use(
+        rest.get('http://localhost/v1/payments/link', (_req, res, ctx) =>
+          res(ctx.status(500), ctx.json({ error: 'boom' })),
+        ),
+      );
+
+      expect(await findPageHeading()).toBeInTheDocument();
+      userEvent.type(screen.getByRole('textbox', { name: 'Amount' }), '50');
+      selectRecurring();
+      userEvent.click(screen.getByRole('radio', { name: 'LHV' }));
+
+      expect(
+        await screen.findByText(/There was an error initiating the payment/i),
+      ).toBeInTheDocument();
+    });
+
+    it('shows copy-card instead of auto-link for OTHER bank in recurring flow', async () => {
+      expect(await findPageHeading()).toBeInTheDocument();
+      userEvent.type(screen.getByRole('textbox', { name: 'Amount' }), '50');
+      selectRecurring();
+      userEvent.click(screen.getByRole('radio', { name: 'Other bank' }));
+
+      expect(await screen.findByText('Tuleva Täiendav Kogumisfond')).toBeInTheDocument();
+      expect(screen.getByText('EE711010220306707220')).toBeInTheDocument();
+      expect(screen.getByText('39001011234')).toBeInTheDocument();
+    });
   });
 
   describe('when acting as a company', () => {
