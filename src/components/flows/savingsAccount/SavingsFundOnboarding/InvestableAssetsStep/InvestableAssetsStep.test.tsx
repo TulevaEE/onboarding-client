@@ -5,7 +5,21 @@ import { IntlProvider } from 'react-intl';
 import { renderWrapped } from '../../../../../test/utils';
 import { InvestableAssetsStep } from './InvestableAssetsStep';
 import { OnboardingFormData, CompanyOnboardingFormData } from '../types';
-import translations from '../../../../translations';
+import { InvestableAssetsOption } from '../types.api';
+import translations, { TranslationKey } from '../../../../translations';
+
+const OPTIONS: { value: InvestableAssetsOption; labelId: TranslationKey }[] = [
+  { value: 'LESS_THAN_20K', labelId: 'flows.savingsFundOnboarding.investableAssetsStep.upTo20k' },
+  {
+    value: 'RANGE_20K_40K',
+    labelId: 'flows.savingsFundOnboarding.investableAssetsStep.from20kTo40k',
+  },
+  {
+    value: 'RANGE_40K_80K',
+    labelId: 'flows.savingsFundOnboarding.investableAssetsStep.from40kTo80k',
+  },
+  { value: 'MORE_THAN_80K', labelId: 'flows.savingsFundOnboarding.investableAssetsStep.over80k' },
+];
 
 const InvestableAssetsStepWrapper = () => {
   const { control, trigger } = useForm<OnboardingFormData>({
@@ -31,7 +45,7 @@ const InvestableAssetsStepWrapper = () => {
   return (
     <IntlProvider locale="en" messages={translations.en}>
       <form>
-        <InvestableAssetsStep control={control} />
+        <InvestableAssetsStep control={control} options={OPTIONS} />
         <button type="button" onClick={() => trigger('investableAssets')}>
           Validate
         </button>
@@ -61,7 +75,7 @@ const CompanyInvestableAssetsStepWrapper = () => {
   return (
     <IntlProvider locale="en" messages={translations.en}>
       <form>
-        <InvestableAssetsStep control={control} />
+        <InvestableAssetsStep control={control} options={OPTIONS} />
         <button type="button" onClick={() => trigger('investableAssets')}>
           Validate
         </button>

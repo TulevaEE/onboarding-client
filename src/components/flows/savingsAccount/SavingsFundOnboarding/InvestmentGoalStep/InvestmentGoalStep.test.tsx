@@ -5,9 +5,30 @@ import { renderWrapped } from '../../../../../test/utils';
 import { InvestmentGoalStep } from './InvestmentGoalStep';
 import { CompanyOnboardingFormData } from '../types';
 import { InvestmentGoalOption } from '../types.api';
-import translations from '../../../../translations';
+import translations, { TranslationKey } from '../../../../translations';
 
-const CompanyInvestmentGoalStepWrapper = ({ options }: { options: InvestmentGoalOption[] }) => {
+type StepOption = { value: InvestmentGoalOption; labelId: TranslationKey };
+
+const PRIVATE_OPTIONS: StepOption[] = [
+  { value: 'LONG_TERM', labelId: 'flows.savingsFundOnboarding.investmentGoalStep.longTerm' },
+  {
+    value: 'SPECIFIC_GOAL',
+    labelId: 'flows.savingsFundOnboarding.investmentGoalStep.specificGoal',
+  },
+  { value: 'CHILD', labelId: 'flows.savingsFundOnboarding.investmentGoalStep.childFuture' },
+  { value: 'TRADING', labelId: 'flows.savingsFundOnboarding.investmentGoalStep.activeTrading' },
+];
+
+const COMPANY_OPTIONS: StepOption[] = [
+  { value: 'LONG_TERM', labelId: 'flows.savingsFundOnboarding.investmentGoalStep.longTerm' },
+  {
+    value: 'SPECIFIC_GOAL',
+    labelId: 'flows.savingsFundOnboarding.investmentGoalStep.specificGoal',
+  },
+  { value: 'TRADING', labelId: 'flows.savingsFundOnboarding.investmentGoalStep.activeTrading' },
+];
+
+const CompanyInvestmentGoalStepWrapper = ({ options }: { options: StepOption[] }) => {
   const { control } = useForm<CompanyOnboardingFormData>({
     mode: 'onBlur',
     defaultValues: {
@@ -36,9 +57,7 @@ const CompanyInvestmentGoalStepWrapper = ({ options }: { options: InvestmentGoal
 
 describe('InvestmentGoalStep', () => {
   it('works with CompanyOnboardingFormData', () => {
-    renderWrapped(
-      <CompanyInvestmentGoalStepWrapper options={['LONG_TERM', 'SPECIFIC_GOAL', 'TRADING']} />,
-    );
+    renderWrapped(<CompanyInvestmentGoalStepWrapper options={COMPANY_OPTIONS} />);
 
     expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(
       'What is your investment goal?',
@@ -46,9 +65,7 @@ describe('InvestmentGoalStep', () => {
   });
 
   it('does not render CHILD option when excluded', () => {
-    renderWrapped(
-      <CompanyInvestmentGoalStepWrapper options={['LONG_TERM', 'SPECIFIC_GOAL', 'TRADING']} />,
-    );
+    renderWrapped(<CompanyInvestmentGoalStepWrapper options={COMPANY_OPTIONS} />);
 
     expect(screen.getByText('Long-term investment, including pension')).toBeInTheDocument();
     expect(screen.getByText('Specific goal (home, education, etc.)')).toBeInTheDocument();
@@ -57,12 +74,8 @@ describe('InvestmentGoalStep', () => {
     expect(screen.queryByText("Saving for child's future")).not.toBeInTheDocument();
   });
 
-  it('renders all 4 options when all are passed', () => {
-    renderWrapped(
-      <CompanyInvestmentGoalStepWrapper
-        options={['LONG_TERM', 'SPECIFIC_GOAL', 'CHILD', 'TRADING']}
-      />,
-    );
+  it('renders all 4 options when private labels are passed', () => {
+    renderWrapped(<CompanyInvestmentGoalStepWrapper options={PRIVATE_OPTIONS} />);
 
     expect(screen.getByText('Long-term investment, including pension')).toBeInTheDocument();
     expect(screen.getByText('Specific goal (home, education, etc.)')).toBeInTheDocument();

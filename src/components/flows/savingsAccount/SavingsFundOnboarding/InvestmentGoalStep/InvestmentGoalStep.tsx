@@ -3,44 +3,27 @@ import { Control, Controller, Path, useController } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { SharedOnboardingFields } from '../types';
 import { InvestmentGoalOption } from '../types.api';
+import { TranslationKey } from '../../../../translations';
 import Radio from '../../../../common/radio';
 
 type InvestmentGoalStepProps<T extends SharedOnboardingFields = SharedOnboardingFields> = {
   control: Control<T>;
-  options: InvestmentGoalOption[];
+  options: { value: InvestmentGoalOption; labelId: TranslationKey }[];
 };
+
+const optionRadioId = (value: InvestmentGoalOption) =>
+  `investment-goal-${value.toLowerCase().replace(/_/g, '-')}`;
 
 const generateRadioOptions = (
   fieldName: string,
   fieldValue: SharedOnboardingFields['investmentGoals'],
   onChange: (value: { type: 'OPTION'; value: string }) => void,
   setIsOtherSelected: (value: boolean) => void,
-  options: InvestmentGoalOption[],
+  options: { value: InvestmentGoalOption; labelId: TranslationKey }[],
 ) =>
-  [
-    {
-      id: 'investment-goal-long-term',
-      value: 'LONG_TERM',
-      labelId: 'flows.savingsFundOnboarding.investmentGoalStep.longTerm' as const,
-    },
-    {
-      id: 'investment-goal-specific',
-      value: 'SPECIFIC_GOAL',
-      labelId: 'flows.savingsFundOnboarding.investmentGoalStep.specificGoal' as const,
-    },
-    {
-      id: 'investment-goal-child',
-      value: 'CHILD',
-      labelId: 'flows.savingsFundOnboarding.investmentGoalStep.childFuture' as const,
-    },
-    {
-      id: 'investment-goal-active',
-      value: 'TRADING',
-      labelId: 'flows.savingsFundOnboarding.investmentGoalStep.activeTrading' as const,
-    },
-  ]
-    .filter(({ value }) => options.includes(value as InvestmentGoalOption))
-    .map(({ id, value, labelId }) => (
+  options.map(({ value, labelId }) => {
+    const id = optionRadioId(value);
+    return (
       <Radio
         key={id}
         name={fieldName}
@@ -56,7 +39,8 @@ const generateRadioOptions = (
           <FormattedMessage id={labelId} />
         </label>
       </Radio>
-    ));
+    );
+  });
 
 export const InvestmentGoalStep = <T extends SharedOnboardingFields = SharedOnboardingFields>({
   control,
