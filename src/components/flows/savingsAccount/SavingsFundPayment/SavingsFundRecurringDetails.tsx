@@ -63,14 +63,7 @@ export const SavingsFundRecurringDetails: FC<Props> = ({ bank, amount, personalC
     <>
       <div className="mt-4 payment-details savings-recurring-details p-4">
         <h3>
-          {meta.panel === 'C' ? (
-            <FormattedMessage id="savingsFund.recurring.panel.titleC" />
-          ) : (
-            <FormattedMessage
-              id="savingsFund.recurring.panel.titleA"
-              values={{ bank: meta.label }}
-            />
-          )}
+          <FormattedMessage id={`savingsFund.recurring.panel.title.${bank}`} />
         </h3>
 
         <Step number={1}>
@@ -84,68 +77,65 @@ export const SavingsFundRecurringDetails: FC<Props> = ({ bank, amount, personalC
           )}
         </Step>
 
-        {meta.panel === 'A' ? (
-          <Step number={2}>
-            <strong>
-              <FormattedMessage id="savingsFund.recurring.step.verify" />
-            </strong>
-            <div className="mt-3 p-4 payment-details-table">
-              <PaymentDetailRow
-                label={<FormattedMessage id="savingsFund.recurring.field.payerAccount.label" />}
-                value={<FormattedMessage id="savingsFund.recurring.field.payerAccount.value" />}
-              />
-              <PaymentDetailRow
-                label={<FormattedMessage id="savingsFund.recurring.copyCard.recipientName" />}
-                value={data.recipientName}
-              />
-              <PaymentDetailRow
-                label={<FormattedMessage id="savingsFund.recurring.copyCard.recipientIban" />}
-                value={data.recipientIban}
-              />
-              <PaymentDetailRow
-                label={<FormattedMessage id="savingsFund.recurring.copyCard.description" />}
-                value={data.description}
-              />
-              <PaymentDetailRow
-                label={<FormattedMessage id="savingsFund.recurring.copyCard.amount" />}
-                value={`${data.amount} €`}
-              />
-            </div>
-          </Step>
-        ) : (
-          <>
-            <Step number={2}>
+        <Step number={2}>
+          {meta.panel === 'A' ? (
+            <>
+              <strong>
+                <FormattedMessage id="savingsFund.recurring.step.review" />
+              </strong>
+              <div className="mt-3 p-4 payment-details-table">
+                <PaymentDetailRow
+                  label={<FormattedMessage id="savingsFund.recurring.copyCard.recipientName" />}
+                  value={data.recipientName}
+                />
+                <PaymentDetailRow
+                  label={<FormattedMessage id="savingsFund.recurring.copyCard.recipientIban" />}
+                  value={data.recipientIban}
+                />
+                <PaymentDetailRow
+                  label={<FormattedMessage id="savingsFund.recurring.copyCard.description" />}
+                  value={data.description}
+                />
+                <PaymentDetailRow
+                  label={<FormattedMessage id="savingsFund.recurring.copyCard.amount" />}
+                  value={`${data.amount} €`}
+                />
+              </div>
+            </>
+          ) : (
+            <>
               <strong>
                 <FormattedMessage id="savingsFund.recurring.step.copyFields" />
               </strong>
               <CopyTable link={data} />
-            </Step>
-            <Step number={3}>
-              <strong>
-                <FormattedMessage id="savingsFund.recurring.step.verify" />
-              </strong>
-              <CheckList>
-                <CheckItem>
-                  <FormattedMessage
-                    id="savingsFund.recurring.check.investAccount"
-                    values={{
-                      link: (chunks: string | JSX.Element) => (
-                        <a href={INVEST_ACCOUNT_URL} target="_blank" rel="noopener noreferrer">
-                          {chunks}
-                        </a>
-                      ),
-                    }}
-                  />
-                </CheckItem>
-                <CheckItem>
-                  <FormattedMessage id="savingsFund.recurring.check.frequency" />
-                </CheckItem>
-              </CheckList>
-            </Step>
-          </>
-        )}
+            </>
+          )}
+        </Step>
 
-        <Step number={meta.panel === 'A' ? 3 : 4}>
+        <Step number={3}>
+          <strong>
+            <FormattedMessage id="savingsFund.recurring.step.verify" />
+          </strong>
+          <CheckList>
+            <CheckItem>
+              <FormattedMessage
+                id="savingsFund.recurring.check.investAccount"
+                values={{
+                  link: (chunks: string | JSX.Element) => (
+                    <a href={INVEST_ACCOUNT_URL} target="_blank" rel="noopener noreferrer">
+                      {chunks}
+                    </a>
+                  ),
+                }}
+              />
+            </CheckItem>
+            <CheckItem>
+              <FormattedMessage id="savingsFund.recurring.check.frequency" />
+            </CheckItem>
+          </CheckList>
+        </Step>
+
+        <Step number={4}>
           <strong>
             <FormattedMessage id="savingsFund.recurring.step.confirm" />
           </strong>
