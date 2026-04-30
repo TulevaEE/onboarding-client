@@ -197,9 +197,12 @@ describe(SavingsFundPayment, () => {
       selectRecurring();
       userEvent.click(screen.getByRole('radio', { name: 'LHV' }));
 
-      const lhvLink = await screen.findByRole('link', { name: /LHV/i });
-      expect(lhvLink).toHaveAttribute('href', expect.stringContaining('lhv.ee/recurring'));
-      expect(lhvLink).toHaveAttribute('target', '_blank');
+      expect(
+        await screen.findByRole('heading', { name: 'Set up the recurring payment in LHV' }),
+      ).toBeInTheDocument();
+      const openBankLink = screen.getByRole('link', { name: 'Open internet bank' });
+      expect(openBankLink).toHaveAttribute('href', expect.stringContaining('lhv.ee/recurring'));
+      expect(openBankLink).toHaveAttribute('target', '_blank');
     });
 
     it('shows a landing-URL link and copy-card when SEB is selected for recurring', async () => {
@@ -208,8 +211,11 @@ describe(SavingsFundPayment, () => {
       selectRecurring();
       userEvent.click(screen.getByRole('radio', { name: 'SEB' }));
 
-      const sebLink = await screen.findByRole('link', { name: /SEB/i });
-      expect(sebLink).toHaveAttribute('href', expect.stringContaining('seb.ee/recurring'));
+      expect(
+        await screen.findByRole('heading', { name: 'Set up the recurring payment in SEB' }),
+      ).toBeInTheDocument();
+      const openBankLink = screen.getByRole('link', { name: 'Open internet bank' });
+      expect(openBankLink).toHaveAttribute('href', expect.stringContaining('seb.ee/recurring'));
       expect(screen.getByText('Tuleva Täiendav Kogumisfond')).toBeInTheDocument();
       expect(screen.getByText('EE711010220306707220')).toBeInTheDocument();
     });
@@ -221,7 +227,9 @@ describe(SavingsFundPayment, () => {
       userEvent.click(screen.getByRole('radio', { name: 'LHV' }));
 
       await waitFor(() =>
-        expect(screen.queryByRole('link', { name: /LHV/i })).not.toBeInTheDocument(),
+        expect(
+          screen.queryByRole('heading', { name: /Set up the recurring payment/ }),
+        ).not.toBeInTheDocument(),
       );
     });
 
