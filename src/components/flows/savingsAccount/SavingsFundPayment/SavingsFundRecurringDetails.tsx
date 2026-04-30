@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { FormattedMessage } from 'react-intl';
 import { getPaymentLink } from '../../../common/api';
 import { PaymentChannel, PaymentLink, PrefilledLink } from '../../../common/apiModels';
+import { PaymentDetailRow } from '../../thirdPillar/ThirdPillarPayment/paymentDetails/row/PaymentDetailRow';
 import './SavingsFundRecurring.scss';
 
 export type BankKey = 'LHV' | 'COOP' | 'SWEDBANK' | 'SEB' | 'LUMINOR' | 'OTHER';
@@ -59,56 +60,27 @@ export const SavingsFundRecurringDetails: FC<Props> = ({ bank, amount, personalC
   const bankUrl = isSafeBankUrl(data.url) ? data.url : undefined;
 
   return (
-    <div className="recurring-panel d-flex flex-column gap-4">
-      <h2 className="panel-title m-0">
-        {meta.panel === 'C' ? (
-          <FormattedMessage id="savingsFund.recurring.panel.titleC" />
-        ) : (
-          <FormattedMessage id="savingsFund.recurring.panel.titleA" values={{ bank: meta.label }} />
-        )}
-      </h2>
+    <>
+      <div className="mt-4 payment-details savings-recurring-details p-4">
+        <h3>
+          {meta.panel === 'C' ? (
+            <FormattedMessage id="savingsFund.recurring.panel.titleC" />
+          ) : (
+            <FormattedMessage
+              id="savingsFund.recurring.panel.titleA"
+              values={{ bank: meta.label }}
+            />
+          )}
+        </h3>
 
-      <ol className="step-list list-unstyled d-flex flex-column gap-3 m-0 p-0">
         <Step number={1}>
-          {meta.panel === 'A' && (
-            <>
-              <strong>
-                <a
-                  href={bankUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="outbound-link"
-                >
-                  <FormattedMessage
-                    id="savingsFund.recurring.step.openBank"
-                    values={{ bank: meta.label }}
-                  />
-                </a>
-              </strong>
-              <div className="text-secondary mt-1 small">
-                <FormattedMessage id="savingsFund.recurring.step.openBank.prefillHint" />
-              </div>
-            </>
-          )}
-          {meta.panel === 'B' && (
-            <strong>
-              <a href={bankUrl} target="_blank" rel="noopener noreferrer" className="outbound-link">
-                <FormattedMessage
-                  id="savingsFund.recurring.step.openBank"
-                  values={{ bank: meta.label }}
-                />
-              </a>
-            </strong>
-          )}
-          {meta.panel === 'C' && (
-            <>
-              <strong>
-                <FormattedMessage id="savingsFund.recurring.step.openBank.generic" />
-              </strong>
-              <div className="text-secondary mt-1 small">
-                <FormattedMessage id="savingsFund.recurring.step.openBank.findHint" />
-              </div>
-            </>
+          {meta.panel === 'C' ? (
+            <FormattedMessage id="savingsFund.recurring.step.openBank.generic" />
+          ) : (
+            <FormattedMessage
+              id="savingsFund.recurring.step.openBank"
+              values={{ bank: meta.label }}
+            />
           )}
         </Step>
 
@@ -117,32 +89,28 @@ export const SavingsFundRecurringDetails: FC<Props> = ({ bank, amount, personalC
             <strong>
               <FormattedMessage id="savingsFund.recurring.step.verify" />
             </strong>
-            <CheckList>
-              <CheckItem>
-                <FormattedMessage
-                  id="savingsFund.recurring.check.investAccount"
-                  values={{
-                    link: (chunks: string | JSX.Element) => (
-                      <a href={INVEST_ACCOUNT_URL} target="_blank" rel="noopener noreferrer">
-                        {chunks}
-                      </a>
-                    ),
-                  }}
-                />
-              </CheckItem>
-              <CheckItem>
-                <FormattedMessage
-                  id="savingsFund.recurring.check.recipient"
-                  values={{ strong: (chunks: string | JSX.Element) => <strong>{chunks}</strong> }}
-                />
-              </CheckItem>
-              <CheckItem>
-                <FormattedMessage id="savingsFund.recurring.check.description" />
-              </CheckItem>
-              <CheckItem>
-                <FormattedMessage id="savingsFund.recurring.check.amount" />
-              </CheckItem>
-            </CheckList>
+            <div className="mt-3 p-4 payment-details-table">
+              <PaymentDetailRow
+                label={<FormattedMessage id="savingsFund.recurring.field.payerAccount.label" />}
+                value={<FormattedMessage id="savingsFund.recurring.field.payerAccount.value" />}
+              />
+              <PaymentDetailRow
+                label={<FormattedMessage id="savingsFund.recurring.copyCard.recipientName" />}
+                value={data.recipientName}
+              />
+              <PaymentDetailRow
+                label={<FormattedMessage id="savingsFund.recurring.copyCard.recipientIban" />}
+                value={data.recipientIban}
+              />
+              <PaymentDetailRow
+                label={<FormattedMessage id="savingsFund.recurring.copyCard.description" />}
+                value={data.description}
+              />
+              <PaymentDetailRow
+                label={<FormattedMessage id="savingsFund.recurring.copyCard.amount" />}
+                value={`${data.amount} €`}
+              />
+            </div>
           </Step>
         ) : (
           <>
@@ -150,7 +118,7 @@ export const SavingsFundRecurringDetails: FC<Props> = ({ bank, amount, personalC
               <strong>
                 <FormattedMessage id="savingsFund.recurring.step.copyFields" />
               </strong>
-              <CopyCard link={data} />
+              <CopyTable link={data} />
             </Step>
             <Step number={3}>
               <strong>
@@ -182,9 +150,22 @@ export const SavingsFundRecurringDetails: FC<Props> = ({ bank, amount, personalC
             <FormattedMessage id="savingsFund.recurring.step.confirm" />
           </strong>
         </Step>
-      </ol>
+      </div>
 
-      <p className="text-secondary small m-0">
+      {meta.panel !== 'C' && bankUrl && (
+        <div className="mt-4">
+          <a
+            href={bankUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-lg btn-primary text-nowrap"
+          >
+            <FormattedMessage id="savingsFund.recurring.button.openBank" />
+          </a>
+        </div>
+      )}
+
+      <p className="text-secondary small mt-4 mb-0">
         <FormattedMessage
           id="savingsFund.recurring.help"
           values={{
@@ -202,24 +183,26 @@ export const SavingsFundRecurringDetails: FC<Props> = ({ bank, amount, personalC
           }}
         />
       </p>
-    </div>
+    </>
   );
 };
 
 const Step: FC<{ number: number; children: React.ReactNode }> = ({ number, children }) => (
-  <li className="d-flex gap-3">
-    <span className="tv-step__number">{number}</span>
-    <div className="step-body flex-grow-1">{children}</div>
-  </li>
+  <div className="d-flex py-2">
+    <span className="flex-shrink-0 tv-step__number me-3">
+      <b>{number}</b>
+    </span>
+    <div className="flex-grow-1 align-self-center">{children}</div>
+  </div>
 );
 
 const CheckList: FC<{ children: React.ReactNode }> = ({ children }) => (
-  <ul className="check-list ps-3 mt-2 mb-0">{children}</ul>
+  <ul className="ps-3 mt-2 mb-0">{children}</ul>
 );
 
 const CheckItem: FC<{ children: React.ReactNode }> = ({ children }) => <li>{children}</li>;
 
-const CopyCard: FC<{ link: PrefilledLink }> = ({ link }) => {
+const CopyTable: FC<{ link: PrefilledLink }> = ({ link }) => {
   const rows: { labelId: TranslationKey; value: string }[] = [
     { labelId: 'savingsFund.recurring.copyCard.recipientName', value: link.recipientName },
     { labelId: 'savingsFund.recurring.copyCard.recipientIban', value: link.recipientIban },
@@ -227,7 +210,7 @@ const CopyCard: FC<{ link: PrefilledLink }> = ({ link }) => {
     { labelId: 'savingsFund.recurring.copyCard.amount', value: `${link.amount} €` },
   ];
   return (
-    <div className="copy-card mt-2">
+    <div className="mt-3 p-4 payment-details-table copy-table">
       {rows.map((row) => (
         <CopyRow key={row.labelId} labelId={row.labelId} value={row.value} />
       ))}
@@ -259,18 +242,24 @@ const CopyRow: FC<{ labelId: TranslationKey; value: string }> = ({ labelId, valu
   };
   const buttonLabelId = buttonLabelByStatus[status];
   return (
-    <div className="copy-row d-flex flex-wrap align-items-center gap-2 py-2 border-top">
-      <span className="label text-secondary small">
-        <FormattedMessage id={labelId} />
-      </span>
-      <span className="value flex-grow-1">{value}</span>
-      <button type="button" className="btn btn-outline-primary btn-sm" onClick={onCopy}>
-        <FormattedMessage id={buttonLabelId} />
-      </button>
-      <span className="visually-hidden" aria-live="polite">
-        {status === 'copied' && <FormattedMessage id="savingsFund.recurring.copyCard.copied" />}
-        {status === 'failed' && <FormattedMessage id="savingsFund.recurring.copyCard.copyFailed" />}
-      </span>
+    <div className="row mb-2 copy-row align-items-center">
+      <div className="col-12 col-md-4 text-md-end">
+        <FormattedMessage id={labelId} />:
+      </div>
+      <div className="col-8 col-md-6 copy-value">
+        <b>{value}</b>
+      </div>
+      <div className="col-4 col-md-2">
+        <button type="button" className="btn btn-outline-primary btn-sm" onClick={onCopy}>
+          <FormattedMessage id={buttonLabelId} />
+        </button>
+        <span className="visually-hidden" aria-live="polite">
+          {status === 'copied' && <FormattedMessage id="savingsFund.recurring.copyCard.copied" />}
+          {status === 'failed' && (
+            <FormattedMessage id="savingsFund.recurring.copyCard.copyFailed" />
+          )}
+        </span>
+      </div>
     </div>
   );
 };
