@@ -80,9 +80,7 @@ export const SavingsFundRecurringDetails: FC<Props> = ({ bank, amount, personalC
         <Step number={2}>
           {meta.panel === 'A' ? (
             <>
-              <strong>
-                <FormattedMessage id="savingsFund.recurring.step.review" />
-              </strong>
+              <FormattedMessage id="savingsFund.recurring.step.review" />
               <div className="mt-3 p-4 payment-details-table">
                 <PaymentDetailRow
                   label={<FormattedMessage id="savingsFund.recurring.copyCard.recipientName" />}
@@ -104,18 +102,14 @@ export const SavingsFundRecurringDetails: FC<Props> = ({ bank, amount, personalC
             </>
           ) : (
             <>
-              <strong>
-                <FormattedMessage id="savingsFund.recurring.step.copyFields" />
-              </strong>
+              <FormattedMessage id="savingsFund.recurring.step.copyFields" />
               <CopyTable link={data} />
             </>
           )}
         </Step>
 
         <Step number={3}>
-          <strong>
-            <FormattedMessage id="savingsFund.recurring.step.verify" />
-          </strong>
+          <FormattedMessage id="savingsFund.recurring.step.verify" />
           <CheckList>
             <CheckItem>
               <FormattedMessage
@@ -136,9 +130,7 @@ export const SavingsFundRecurringDetails: FC<Props> = ({ bank, amount, personalC
         </Step>
 
         <Step number={4}>
-          <strong>
-            <FormattedMessage id="savingsFund.recurring.step.confirm" />
-          </strong>
+          <FormattedMessage id="savingsFund.recurring.step.confirm" />
         </Step>
       </div>
 
