@@ -1,5 +1,6 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
+import { PaymentStep } from '../../../common/PaymentStep/PaymentStep';
 import { PaymentDetailRow } from './row/PaymentDetailRow';
 import { PaymentAmountRow } from './row/PaymentAmountRow';
 
@@ -10,60 +11,40 @@ export const SwedbankRecurringPaymentDetails: React.FunctionComponent<{
     <h3>
       <FormattedMessage id="thirdPillarPayment.RECURRING.swedbank" />
     </h3>
-    <div className="d-flex py-2">
-      <span className="flex-shrink-0 tv-step__number me-3">
-        <b>1</b>
-      </span>
-      <div className="flex-grow-1 align-self-center">
-        <FormattedMessage id="thirdPillarPayment.RECURRING.swedbank.login" />
-      </div>
-    </div>
-    <div className="d-flex py-2">
-      <span className="flex-shrink-0 tv-step__number me-3">
-        <b>2</b>
-      </span>
-      <div className="flex-grow-1 align-self-center">
-        <FormattedMessage id="thirdPillarPayment.RECURRING.swedbank.form" />
-        <div className="mt-3 p-3 p-md-4 payment-details-table">
-          <PaymentDetailRow
-            label={<FormattedMessage id="thirdPillarPayment.fund" />}
-            value={<FormattedMessage id="thirdPillarPayment.tuleva3rdPillarFund" />}
-          />
-          <PaymentDetailRow
-            label={<FormattedMessage id="thirdPillarPayment.account" />}
-            value={<FormattedMessage id="thirdPillarPayment.chooseAccount" />}
-          />
-          <PaymentAmountRow
-            amount={amount}
-            label={<FormattedMessage id="thirdPillarPayment.amount" />}
-          />
-          <PaymentDetailRow
-            label={<FormattedMessage id="thirdPillarPayment.firstPaymentDate" />}
-            value={<FormattedMessage id="thirdPillarPayment.yourPaymentDate" />}
-          />
-        </div>
-      </div>
-    </div>
-    <div className="d-flex py-2">
-      <span className="flex-shrink-0 tv-step__number me-3">
-        <b>3</b>
-      </span>
-      <div className="flex-grow-1 align-self-center">
-        <FormattedMessage
-          id="thirdPillarPayment.RECURRING.swedbank.extraStep"
-          values={{
-            b: (chunks: string) => <b>{chunks}</b>,
-          }}
+    <PaymentStep number={1}>
+      <FormattedMessage id="thirdPillarPayment.RECURRING.swedbank.login" />
+    </PaymentStep>
+    <PaymentStep number={2}>
+      <FormattedMessage id="thirdPillarPayment.RECURRING.swedbank.form" />
+      <div className="mt-3 p-3 p-md-4 payment-details-table">
+        <PaymentDetailRow
+          label={<FormattedMessage id="thirdPillarPayment.fund" />}
+          value={<FormattedMessage id="thirdPillarPayment.tuleva3rdPillarFund" />}
+        />
+        <PaymentDetailRow
+          label={<FormattedMessage id="thirdPillarPayment.account" />}
+          value={<FormattedMessage id="thirdPillarPayment.chooseAccount" />}
+        />
+        <PaymentAmountRow
+          amount={amount}
+          label={<FormattedMessage id="thirdPillarPayment.amount" />}
+        />
+        <PaymentDetailRow
+          label={<FormattedMessage id="thirdPillarPayment.firstPaymentDate" />}
+          value={<FormattedMessage id="thirdPillarPayment.yourPaymentDate" />}
         />
       </div>
-    </div>
-    <div className="d-flex py-2">
-      <span className="flex-shrink-0 tv-step__number me-3">
-        <b>4</b>
-      </span>
-      <div className="flex-grow-1 align-self-center">
-        <FormattedMessage id="thirdPillarPayment.RECURRING.finalStep" />
-      </div>
-    </div>
+    </PaymentStep>
+    <PaymentStep number={3}>
+      <FormattedMessage
+        id="thirdPillarPayment.RECURRING.swedbank.extraStep"
+        values={{
+          b: (chunks: string) => <b>{chunks}</b>,
+        }}
+      />
+    </PaymentStep>
+    <PaymentStep number={4}>
+      <FormattedMessage id="thirdPillarPayment.RECURRING.finalStep" />
+    </PaymentStep>
   </div>
 );

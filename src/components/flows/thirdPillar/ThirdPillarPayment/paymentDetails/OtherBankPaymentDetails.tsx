@@ -1,5 +1,6 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
+import { PaymentStep } from '../../../common/PaymentStep/PaymentStep';
 import { AccountNameRow } from './row/AccountNameRow';
 import { AccountNumberRow } from './row/AccountNumberRow';
 import { PaymentDescriptionRow } from './row/PaymentDescriptionRow';
@@ -14,45 +15,30 @@ export const OtherBankPaymentDetails: React.FunctionComponent<{
     <h3>
       <FormattedMessage id={`thirdPillarPayment.${paymentType}.other`} />
     </h3>
-    <div className="d-flex py-2">
-      <span className="flex-shrink-0 tv-step__number me-3">
-        <b>1</b>
-      </span>
-      <div className="flex-grow-1 align-self-center">
-        <FormattedMessage id={`thirdPillarPayment.${paymentType}.other.login`} />
+    <PaymentStep number={1}>
+      <FormattedMessage id={`thirdPillarPayment.${paymentType}.other.login`} />
+    </PaymentStep>
+    <PaymentStep number={2}>
+      <FormattedMessage id={`thirdPillarPayment.${paymentType}.other.form`} />
+      <div className="mt-3 p-3 p-md-4 payment-details-table">
+        <AccountNameRow label={<FormattedMessage id="thirdPillarPayment.accountName" />} />
+        <AccountNumberRow
+          bank="swedbank"
+          label={<FormattedMessage id="thirdPillarPayment.accountNumber" />}
+        />
+        <PaymentDescriptionRow
+          personalCode={personalCode}
+          label={<FormattedMessage id="thirdPillarPayment.paymentDescription" />}
+        />
+        <PaymentAmountRow
+          amount={amount}
+          label={<FormattedMessage id="thirdPillarPayment.amount" />}
+          tooltip={<></>}
+        />
       </div>
-    </div>
-    <div className="d-flex py-2">
-      <span className="flex-shrink-0 tv-step__number me-3">
-        <b>2</b>
-      </span>
-      <div className="flex-grow-1 align-self-center">
-        <FormattedMessage id={`thirdPillarPayment.${paymentType}.other.form`} />
-        <div className="mt-3 p-3 p-md-4 payment-details-table">
-          <AccountNameRow label={<FormattedMessage id="thirdPillarPayment.accountName" />} />
-          <AccountNumberRow
-            bank="swedbank"
-            label={<FormattedMessage id="thirdPillarPayment.accountNumber" />}
-          />
-          <PaymentDescriptionRow
-            personalCode={personalCode}
-            label={<FormattedMessage id="thirdPillarPayment.paymentDescription" />}
-          />
-          <PaymentAmountRow
-            amount={amount}
-            label={<FormattedMessage id="thirdPillarPayment.amount" />}
-            tooltip={<></>}
-          />
-        </div>
-      </div>
-    </div>
-    <div className="d-flex py-2">
-      <span className="flex-shrink-0 tv-step__number me-3">
-        <b>3</b>
-      </span>
-      <div className="flex-grow-1 align-self-center">
-        <FormattedMessage id={`thirdPillarPayment.${paymentType}.finalStep`} />
-      </div>
-    </div>
+    </PaymentStep>
+    <PaymentStep number={3}>
+      <FormattedMessage id={`thirdPillarPayment.${paymentType}.finalStep`} />
+    </PaymentStep>
   </div>
 );

@@ -5,6 +5,7 @@ import { FormattedMessage } from 'react-intl';
 import { getPaymentLink } from '../../../common/api';
 import { PaymentChannel, PaymentLink, PrefilledLink } from '../../../common/apiModels';
 import { PaymentDetailRow } from '../../thirdPillar/ThirdPillarPayment/paymentDetails/row/PaymentDetailRow';
+import { PaymentStep } from '../../common/PaymentStep/PaymentStep';
 import { CopyButton } from '../../../common/CopyButton';
 import { formatAmountForCount, formatAmountForCurrency } from '../../../common/utils';
 
@@ -95,7 +96,7 @@ export const SavingsFundRecurringDetails: FC<Props> = ({ bank, amount, personalC
             <FormattedMessage id={`savingsFund.recurring.panel.title.${bank}`} />
           </h3>
 
-          <Step number={1}>
+          <PaymentStep number={1}>
             {meta.linkBehavior === 'MANUAL' ? (
               <FormattedMessage id="savingsFund.recurring.step.openBank.generic" />
             ) : (
@@ -104,9 +105,9 @@ export const SavingsFundRecurringDetails: FC<Props> = ({ bank, amount, personalC
                 values={{ bank: meta.label }}
               />
             )}
-          </Step>
+          </PaymentStep>
 
-          <Step number={2}>
+          <PaymentStep number={2}>
             {meta.linkBehavior === 'PREFILLED' ? (
               <>
                 <FormattedMessage id="savingsFund.recurring.step.review" />
@@ -137,16 +138,16 @@ export const SavingsFundRecurringDetails: FC<Props> = ({ bank, amount, personalC
                 <CopyTable link={data} />
               </>
             )}
-          </Step>
+          </PaymentStep>
 
-          <Step number={3}>
+          <PaymentStep number={3}>
             <FormattedMessage
               id="savingsFund.recurring.step.verify"
               values={{
                 b: (chunks: string) => <b>{chunks}</b>,
               }}
             />
-          </Step>
+          </PaymentStep>
         </div>
 
         <p className="text-secondary small mt-2 mb-0">
@@ -186,15 +187,6 @@ export const SavingsFundRecurringDetails: FC<Props> = ({ bank, amount, personalC
     </>
   );
 };
-
-const Step: FC<{ number: number; children: React.ReactNode }> = ({ number, children }) => (
-  <div className="d-flex py-2">
-    <span className="flex-shrink-0 tv-step__number me-3">
-      <b>{number}</b>
-    </span>
-    <div className="flex-grow-1 align-self-center">{children}</div>
-  </div>
-);
 
 const CopyTable: FC<{ link: PrefilledLink }> = ({ link }) => {
   const numericAmount = Number(link.amount);

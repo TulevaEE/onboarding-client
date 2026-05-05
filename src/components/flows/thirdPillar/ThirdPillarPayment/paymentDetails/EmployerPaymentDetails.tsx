@@ -1,5 +1,6 @@
-import { PropsWithChildren, useState } from 'react';
+import { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
+import { PaymentStep } from '../../../common/PaymentStep/PaymentStep';
 import { PaymentDetailRow } from './row/PaymentDetailRow';
 import { useMe } from '../../../../common/apiHooks';
 import { Shimmer } from '../../../../common/shimmer/Shimmer';
@@ -60,7 +61,7 @@ export const EmployerPaymentDetails = () => {
 
 const PublicEmployerGuide = ({ user }: { user: User }) => (
   <>
-    <Step number={1}>
+    <PaymentStep number={1}>
       <a
         className="btn btn-primary text-nowrap px-3"
         href="https://www.riigitootaja.ee/rtip-client/login"
@@ -69,13 +70,13 @@ const PublicEmployerGuide = ({ user }: { user: User }) => (
       >
         <FormattedMessage id="thirdPillarPayment.EMPLOYER.signInToRtk" />
       </a>
-    </Step>
+    </PaymentStep>
 
-    <Step number={2}>
+    <PaymentStep number={2}>
       <FormattedMessage id="thirdPillarPayment.EMPLOYER.rtkNavigationGuide" />
-    </Step>
+    </PaymentStep>
 
-    <Step number={3}>
+    <PaymentStep number={3}>
       <FormattedMessage id="thirdPillarPayment.EMPLOYER.rtkFormFields" />
       <div className="mt-3 p-3 p-md-4 payment-details-table">
         <PaymentDetailRow
@@ -91,19 +92,19 @@ const PublicEmployerGuide = ({ user }: { user: User }) => (
           value={getFullName(user)}
         />
       </div>
-    </Step>
-    <Step number={4}>
+    </PaymentStep>
+    <PaymentStep number={4}>
       <FormattedMessage id="thirdPillarPayment.EMPLOYER.rtkDigitalSignature" />
-    </Step>
-    <Step number={5}>
+    </PaymentStep>
+    <PaymentStep number={5}>
       <FormattedMessage id="thirdPillarPayment.EMPLOYER.salaryPayment" />
-    </Step>
+    </PaymentStep>
   </>
 );
 
 export const PrivateEmployerGuide = ({ user }: { user: User }) => (
   <>
-    <Step number={1}>
+    <PaymentStep number={1}>
       <a
         className="btn btn-primary text-nowrap px-3"
         href="https://docs.google.com/document/d/1ZnF9CBxnXWzCjDz-wk1H84pz_yD3EIcD3WPBYt5RuDA/edit"
@@ -112,9 +113,9 @@ export const PrivateEmployerGuide = ({ user }: { user: User }) => (
       >
         <FormattedMessage id="thirdPillarPayment.EMPLOYER.form" />
       </a>
-    </Step>
+    </PaymentStep>
 
-    <Step number={2}>
+    <PaymentStep number={2}>
       <FormattedMessage id="thirdPillarPayment.EMPLOYER.formFields" />
       <div className="mt-3 p-3 p-md-4 payment-details-table">
         <PaymentDetailRow
@@ -130,21 +131,12 @@ export const PrivateEmployerGuide = ({ user }: { user: User }) => (
           value={getFullName(user)}
         />
       </div>
-    </Step>
-    <Step number={3}>
+    </PaymentStep>
+    <PaymentStep number={3}>
       <FormattedMessage id="thirdPillarPayment.EMPLOYER.digitalSignature" />
-    </Step>
-    <Step number={4}>
+    </PaymentStep>
+    <PaymentStep number={4}>
       <FormattedMessage id="thirdPillarPayment.EMPLOYER.salaryPayment" />
-    </Step>
+    </PaymentStep>
   </>
-);
-
-const Step = ({ number, children }: PropsWithChildren<{ number: number }>) => (
-  <div className="d-flex py-2">
-    <span className="flex-shrink-0 tv-step__number me-3">
-      <b>{number}</b>
-    </span>
-    <div className="flex-grow-1 align-self-center">{children}</div>
-  </div>
 );
