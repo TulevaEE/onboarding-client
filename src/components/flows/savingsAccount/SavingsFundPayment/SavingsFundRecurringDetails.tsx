@@ -29,8 +29,24 @@ const BANK_META: Record<
   OTHER: { label: '', linkBehavior: 'MANUAL' },
 };
 
-const isSafeBankUrl = (url: string | undefined): url is string =>
-  !!url && (url.startsWith('https://') || url.startsWith('http://'));
+const ALLOWED_BANK_DOMAINS = ['lhv.ee', 'cooppank.ee', 'swedbank.ee', 'seb.ee', 'luminor.ee'];
+
+const isSafeBankUrl = (url: string | undefined): url is string => {
+  if (!url) {
+    return false;
+  }
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== 'https:') {
+      return false;
+    }
+    return ALLOWED_BANK_DOMAINS.some(
+      (domain) => parsed.hostname === domain || parsed.hostname.endsWith(`.${domain}`),
+    );
+  } catch {
+    return false;
+  }
+};
 
 type Props = {
   bank: BankKey;
