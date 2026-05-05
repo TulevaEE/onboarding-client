@@ -200,7 +200,7 @@ describe(SavingsFundPayment, () => {
       expect(
         await screen.findByRole('heading', { name: 'Set up the recurring payment in LHV' }),
       ).toBeInTheDocument();
-      const openBankLink = screen.getByRole('link', { name: 'Open internet bank' });
+      const openBankLink = screen.getByRole('link', { name: 'Continue' });
       expect(openBankLink).toHaveAttribute('href', expect.stringContaining('lhv.ee/recurring'));
       expect(openBankLink).toHaveAttribute('target', '_blank');
     });
@@ -214,7 +214,7 @@ describe(SavingsFundPayment, () => {
       expect(
         await screen.findByRole('heading', { name: 'Set up the recurring payment in SEB' }),
       ).toBeInTheDocument();
-      const openBankLink = screen.getByRole('link', { name: 'Open internet bank' });
+      const openBankLink = screen.getByRole('link', { name: 'Continue' });
       expect(openBankLink).toHaveAttribute('href', expect.stringContaining('seb.ee/recurring'));
       expect(screen.getByText('Tuleva Täiendav Kogumisfond')).toBeInTheDocument();
       expect(screen.getByText('EE711010220306707220')).toBeInTheDocument();
@@ -231,6 +231,20 @@ describe(SavingsFundPayment, () => {
           screen.queryByRole('heading', { name: /Set up the recurring payment/ }),
         ).not.toBeInTheDocument(),
       );
+    });
+
+    it('shows recurring details (without amount row) when no amount is entered', async () => {
+      expect(await findPageHeading()).toBeInTheDocument();
+      selectRecurring();
+      userEvent.click(screen.getByRole('radio', { name: 'LHV' }));
+
+      expect(
+        await screen.findByRole('heading', { name: 'Set up the recurring payment in LHV' }),
+      ).toBeInTheDocument();
+      expect(screen.getByText('Tuleva Täiendav Kogumisfond')).toBeInTheDocument();
+      expect(screen.getByText('EE711010220306707220')).toBeInTheDocument();
+      expect(screen.queryByText(/^Amount:$/)).not.toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'Continue' })).toBeInTheDocument();
     });
 
     it('shows an error alert when the backend fails for the recurring link', async () => {
@@ -268,10 +282,10 @@ describe(SavingsFundPayment, () => {
       userEvent.click(screen.getByRole('radio', { name: 'Other bank' }));
 
       expect(await screen.findByText('Tuleva Täiendav Kogumisfond')).toBeInTheDocument();
-      expect(screen.queryByRole('link', { name: 'Open internet bank' })).not.toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: 'Continue' })).not.toBeInTheDocument();
     });
 
-    it('renders the verify checklist and confirm step for panel A banks', async () => {
+    it('renders the verify and confirm steps for panel A banks', async () => {
       expect(await findPageHeading()).toBeInTheDocument();
       userEvent.type(screen.getByRole('textbox', { name: 'Amount' }), '50');
       selectRecurring();
@@ -280,9 +294,8 @@ describe(SavingsFundPayment, () => {
       expect(
         await screen.findByRole('heading', { name: 'Set up the recurring payment in LHV' }),
       ).toBeInTheDocument();
-      expect(screen.getByText(/payer account is your/i)).toBeInTheDocument();
-      expect(screen.getByText('Frequency is monthly')).toBeInTheDocument();
-      expect(screen.getByText('Confirm the standing order in the bank')).toBeInTheDocument();
+      expect(screen.getByText(/paying from an/i)).toBeInTheDocument();
+      expect(screen.getByText(/then confirm the standing order/i)).toBeInTheDocument();
     });
 
     it('copies recipient details to the clipboard when Copy is clicked', async () => {
@@ -305,7 +318,29 @@ describe(SavingsFundPayment, () => {
       userEvent.click(copyButtons[0]);
 
       await waitFor(() => expect(writeText).toHaveBeenCalledWith('Tuleva Täiendav Kogumisfond'));
-      expect(await screen.findByRole('button', { name: 'Copied ✓' })).toBeInTheDocument();
+      expect(await screen.findByRole('button', { name: 'Copied' })).toBeInTheDocument();
+    });
+
+    it('copies the amount without the euro suffix', async () => {
+      const writeText = jest.fn().mockResolvedValue(undefined);
+      Object.defineProperty(navigator, 'clipboard', {
+        value: { writeText },
+        configurable: true,
+      });
+
+      expect(await findPageHeading()).toBeInTheDocument();
+      userEvent.type(screen.getByRole('textbox', { name: 'Amount' }), '50');
+      selectRecurring();
+      userEvent.click(screen.getByRole('radio', { name: 'SEB' }));
+
+      expect(
+        await screen.findByRole('heading', { name: 'Set up the recurring payment in SEB' }),
+      ).toBeInTheDocument();
+
+      const copyButtons = screen.getAllByRole('button', { name: 'Copy' });
+      userEvent.click(copyButtons[3]);
+
+      await waitFor(() => expect(writeText).toHaveBeenCalledWith('50.00'));
     });
 
     it('does not render bank link when backend returns a non-http URL', async () => {
@@ -334,7 +369,7 @@ describe(SavingsFundPayment, () => {
       expect(
         await screen.findByRole('heading', { name: 'Set up the recurring payment in LHV' }),
       ).toBeInTheDocument();
-      expect(screen.queryByRole('link', { name: 'Open internet bank' })).not.toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: 'Continue' })).not.toBeInTheDocument();
     });
   });
 

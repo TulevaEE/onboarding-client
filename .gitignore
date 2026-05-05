@@ -34,3 +34,6 @@ test-results/
 
 # TDD Guard data (generated test results)
 .claude/tdd-guard/data/
+
+# Playwright MCP runtime artifacts
+.playwright-mcp/

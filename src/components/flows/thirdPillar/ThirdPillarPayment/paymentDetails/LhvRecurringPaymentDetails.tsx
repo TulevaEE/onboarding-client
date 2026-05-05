@@ -21,7 +21,7 @@ export const LhvRecurringPaymentDetails: React.FunctionComponent = () => (
       </span>
       <div className="flex-grow-1 align-self-center">
         <FormattedMessage id="thirdPillarPayment.RECURRING.lhv.form" />
-        <div className="mt-3 p-4 payment-details-table">
+        <div className="mt-3 p-3 p-md-4 payment-details-table">
           <PaymentDetailRow
             label={<FormattedMessage id="thirdPillarPayment.fromAccount" />}
             value={<FormattedMessage id="thirdPillarPayment.chooseAccount" />}

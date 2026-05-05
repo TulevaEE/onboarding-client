@@ -12,14 +12,20 @@ export const PaymentDetailRow: React.FunctionComponent<PaymentDetailRowProps> = 
   label,
   value,
   tooltip,
-  labelCol = 6,
-  valueCol = 6,
+  labelCol = 4,
+  valueCol = 8,
 }) => (
   <div className="row mb-2">
-    <div className={`col-12 col-md-${tooltip ? 4 : labelCol} text-md-end`}>{label}:</div>
+    <div className={`col-12 col-md-${labelCol}`}>{label}:</div>
     <div className={`col-12 col-md-${valueCol}`}>
-      <b>{value}</b>
+      {tooltip ? (
+        <div className="d-flex justify-content-between align-items-center column-gap-2">
+          <b className="text-break">{value}</b>
+          {tooltip}
+        </div>
+      ) : (
+        <b>{value}</b>
+      )}
     </div>
-    {tooltip && <div className="col-12 col-md-2 d-none d-md-block">{tooltip}</div>}
   </div>
 );
