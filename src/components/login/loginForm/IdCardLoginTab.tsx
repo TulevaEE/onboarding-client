@@ -4,9 +4,9 @@ import { FormattedMessage } from 'react-intl';
 import { useWebEidAuth } from '../useWebEidAuth';
 import { ErrorAlert } from '../../common';
 
-function isWebEidEnabled(): boolean {
+function isLegacyMtlsRequested(): boolean {
   const params = new URLSearchParams(window.location.search);
-  return params.get('webeid') === 'true';
+  return params.get('mtls') === 'true';
 }
 
 interface IdCardLoginTabProps {
@@ -15,14 +15,13 @@ interface IdCardLoginTabProps {
 
 export const IdCardLoginTab: React.FC<IdCardLoginTabProps> = ({ onAuthenticateWithIdCardMtls }) => {
   const { authenticate, isLoading, error, reset } = useWebEidAuth();
-  const useWebEid = isWebEidEnabled();
 
   const handleClick = () => {
-    if (useWebEid) {
+    if (isLegacyMtlsRequested()) {
+      onAuthenticateWithIdCardMtls();
+    } else {
       reset();
       authenticate();
-    } else {
-      onAuthenticateWithIdCardMtls();
     }
   };
 

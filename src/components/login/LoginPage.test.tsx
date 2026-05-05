@@ -84,7 +84,13 @@ describe('When a user is logging in', () => {
     ).toBeInTheDocument();
   });
 
-  test('they can sign in with id card', async () => {
+  test('they can sign in with id card via mTLS escape hatch (?mtls=true)', async () => {
+    Object.defineProperty(window, 'location', {
+      value: { search: '?mtls=true' },
+      writable: true,
+      configurable: true,
+    });
+
     const backend = idCardAuthenticationBackend(server);
     expect(backend.acceptedCertificate).toBeFalsy();
     expect(backend.authenticatedWithIdCard).toBeFalsy();
@@ -95,7 +101,6 @@ describe('When a user is logging in', () => {
     expect(
       await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
     ).toBeInTheDocument();
-    // ALB mTLS: no preliminary GET request, so acceptedCertificate remains false
     expect(backend.acceptedCertificate).toBeFalsy();
     expect(backend.authenticatedWithIdCard).toBeTruthy();
   });

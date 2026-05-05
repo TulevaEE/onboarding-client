@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import config from 'react-global-configuration';
 import { ErrorCode } from '@web-eid/web-eid-library';
 
@@ -23,11 +23,12 @@ function mapWebEidError(error: unknown): string {
 
 export function useWebEidAuth() {
   const history = useHistory();
+  const location = useLocation<{ from?: string } | undefined>();
 
   const mutation = useMutation({
     mutationFn: () => authenticateWithIdCardWebEid(config.get('language') || 'et'),
     onSuccess: () => {
-      history.push('/');
+      history.push(location.state?.from ?? '/');
     },
   });
 

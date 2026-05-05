@@ -2,7 +2,6 @@
 
 import * as Sentry from '@sentry/browser';
 import config from 'react-global-configuration';
-import { ErrorCode } from '@web-eid/web-eid-library';
 
 import {
   CHANGE_PHONE_NUMBER,
@@ -31,11 +30,7 @@ import {
 
 import { api } from '../common';
 
-import {
-  ID_CARD_LOGIN_START_FAILED_ERROR,
-  WEB_EID_EXTENSION_UNAVAILABLE,
-  WEB_EID_USER_CANCELLED,
-} from '../common/errorAlert/ErrorAlert';
+import { ID_CARD_LOGIN_START_FAILED_ERROR } from '../common/errorAlert/ErrorAlert';
 
 import { getAuthentication } from '../common/authenticationManager';
 
@@ -222,40 +217,9 @@ function getIdCardTokens() {
   };
 }
 
-function isWebEidEnabled() {
-  const params = new URLSearchParams(window.location.search);
-  return params.get('webeid') === 'true';
-}
-
-function mapWebEidErrorToCode(error) {
-  if (error?.code === ErrorCode.ERR_WEBEID_USER_CANCELLED) {
-    return WEB_EID_USER_CANCELLED;
-  }
-  if (error?.code === ErrorCode.ERR_WEBEID_EXTENSION_UNAVAILABLE) {
-    return WEB_EID_EXTENSION_UNAVAILABLE;
-  }
-  return ID_CARD_LOGIN_START_FAILED_ERROR;
-}
-
 export function authenticateWithIdCard() {
   return (dispatch) => {
     dispatch({ type: ID_CARD_AUTHENTICATION_START });
-
-    if (isWebEidEnabled()) {
-      const language = config.get('language') || 'et';
-      return api
-        .authenticateWithIdCardWebEid(language)
-        .then((tokens) => {
-          dispatch({ type: ID_CARD_AUTHENTICATION_SUCCESS, tokens });
-          dispatch(handleLogin());
-        })
-        .catch((error) => {
-          const errorResponse = {
-            body: { errors: [{ code: mapWebEidErrorToCode(error) }] },
-          };
-          dispatch({ type: ID_CARD_AUTHENTICATION_START_ERROR, error: errorResponse });
-        });
-    }
 
     return api
       .authenticateWithIdCardMtls()
