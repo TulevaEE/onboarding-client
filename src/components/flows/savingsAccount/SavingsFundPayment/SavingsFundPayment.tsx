@@ -178,18 +178,25 @@ export const SavingsFundPayment: FC = () => {
           )}
 
           {!showManualPayment && !isRecurring && (
-            <div className="d-flex justify-content-between border-top pt-4">
-              <Link to="/account" className="btn btn-outline-primary">
-                <FormattedMessage id="savingsFund.payment.form.cancel.label" />
-              </Link>
+            <div className="border-top pt-4 d-flex flex-column gap-3">
+              {paymentMethod ? (
+                <p className="text-body-secondary m-0">
+                  <FormattedMessage id="savingsFund.payment.investmentAccountReminder" />
+                </p>
+              ) : null}
+              <div className="d-flex justify-content-between">
+                <Link to="/account" className="btn btn-outline-primary">
+                  <FormattedMessage id="savingsFund.payment.form.cancel.label" />
+                </Link>
 
-              <button
-                type="submit"
-                className="btn btn-primary btn-loading"
-                disabled={!user.personalCode || isSubmitting}
-              >
-                <FormattedMessage id="savingsFund.payment.form.submit.label" />
-              </button>
+                <button
+                  type="submit"
+                  className="btn btn-primary btn-loading"
+                  disabled={!user.personalCode || isSubmitting}
+                >
+                  <FormattedMessage id="savingsFund.payment.form.submit.label" />
+                </button>
+              </div>
             </div>
           )}
         </section>
