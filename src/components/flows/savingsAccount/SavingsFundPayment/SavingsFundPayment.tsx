@@ -152,7 +152,7 @@ export const SavingsFundPayment: FC = () => {
             />
           )}
 
-          {isRecurring && recurringBank && (amount === undefined || hasValidRecurringAmount) ? (
+          {isRecurring && recurringBank && (!Number.isFinite(amount) || hasValidRecurringAmount) ? (
             <SavingsFundRecurringDetails
               bank={recurringBank}
               amount={amount}

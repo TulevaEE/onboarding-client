@@ -57,7 +57,7 @@ type Props = {
 export const SavingsFundRecurringDetails: FC<Props> = ({ bank, amount, personalCode }) => {
   const meta = BANK_META[bank];
   const hasAmount = Number.isFinite(amount) && (amount ?? 0) >= 1;
-  const { data, isLoading, isError } = useQuery<PaymentLink>({
+  const { data, isLoading, isFetching, isError } = useQuery<PaymentLink>({
     queryKey: ['paymentLink', 'SAVINGS_RECURRING', meta.channel ?? null, amount, personalCode],
     queryFn: () =>
       getPaymentLink({
@@ -68,6 +68,10 @@ export const SavingsFundRecurringDetails: FC<Props> = ({ bank, amount, personalC
         currency: 'EUR',
       }),
     enabled: !!personalCode,
+    // Keep the previous result visible while a new one fetches so the panel
+    // doesn't flicker on bank-switch / amount edits. Deprecated in v4; on
+    // upgrade to react-query v5, replace with `placeholderData: keepPreviousData`.
+    keepPreviousData: true,
     retry: false,
   });
 
@@ -168,7 +172,7 @@ export const SavingsFundRecurringDetails: FC<Props> = ({ bank, amount, personalC
         <Link to="/account" className="btn btn-outline-primary">
           <FormattedMessage id="savingsFund.payment.form.cancel.label" />
         </Link>
-        {meta.linkBehavior !== 'MANUAL' && bankUrl && (
+        {meta.linkBehavior !== 'MANUAL' && bankUrl && !isFetching && (
           <a
             href={bankUrl}
             target="_blank"

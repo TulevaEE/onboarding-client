@@ -35,5 +35,8 @@ test-results/
 # TDD Guard data (generated test results)
 .claude/tdd-guard/data/
 
+# Scheduled tasks lockfile
+.claude/scheduled_tasks.lock
+
 # Playwright MCP runtime artifacts
 .playwright-mcp/
