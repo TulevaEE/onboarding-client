@@ -9,9 +9,11 @@ import { createMemoryHistory } from 'history';
 import { IdCardLoginTab } from './IdCardLoginTab';
 import translations from '../../translations/translations.en.json';
 
+const mockAuthenticate = jest.fn();
+
 jest.mock('../useWebEidAuth', () => ({
   useWebEidAuth: () => ({
-    authenticate: jest.fn(),
+    authenticate: mockAuthenticate,
     isLoading: false,
     error: null,
     reset: jest.fn(),
@@ -22,7 +24,12 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 });
 
-const renderWithProviders = (ui: React.ReactElement) => {
+const renderWithProviders = (ui: React.ReactElement, searchParams = '') => {
+  Object.defineProperty(window, 'location', {
+    value: { search: searchParams },
+    writable: true,
+  });
+
   const history = createMemoryHistory();
   return render(
     <QueryClientProvider client={queryClient}>
@@ -36,22 +43,38 @@ const renderWithProviders = (ui: React.ReactElement) => {
 };
 
 describe('IdCardLoginTab', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('renders login button', () => {
-    const onAuthenticateWithIdCardMtls = jest.fn();
-    renderWithProviders(
-      <IdCardLoginTab onAuthenticateWithIdCardMtls={onAuthenticateWithIdCardMtls} />,
-    );
+    renderWithProviders(<IdCardLoginTab onAuthenticateWithIdCardMtls={jest.fn()} />);
 
     expect(screen.getByRole('button', { name: /log in/i })).toBeInTheDocument();
   });
 
-  it('calls mTLS handler when webeid param is not set', () => {
+  it('calls WebEid by default', () => {
     const onAuthenticateWithIdCardMtls = jest.fn();
     renderWithProviders(
       <IdCardLoginTab onAuthenticateWithIdCardMtls={onAuthenticateWithIdCardMtls} />,
     );
 
     userEvent.click(screen.getByRole('button'));
+
+    expect(mockAuthenticate).toHaveBeenCalledTimes(1);
+    expect(onAuthenticateWithIdCardMtls).not.toHaveBeenCalled();
+  });
+
+  it('calls mTLS handler when ?mtls=true is set', () => {
+    const onAuthenticateWithIdCardMtls = jest.fn();
+    renderWithProviders(
+      <IdCardLoginTab onAuthenticateWithIdCardMtls={onAuthenticateWithIdCardMtls} />,
+      '?mtls=true',
+    );
+
+    userEvent.click(screen.getByRole('button'));
+
     expect(onAuthenticateWithIdCardMtls).toHaveBeenCalledTimes(1);
+    expect(mockAuthenticate).not.toHaveBeenCalled();
   });
 });

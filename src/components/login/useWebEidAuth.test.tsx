@@ -23,7 +23,7 @@ describe('Web eID Auth Integration', () => {
   let queryClient: QueryClient;
   let history: MemoryHistory;
 
-  const renderWithProviders = (ui: React.ReactElement, searchParams = '?webeid=true') => {
+  const renderWithProviders = (ui: React.ReactElement, searchParams = '') => {
     queryClient = new QueryClient({
       defaultOptions: {
         queries: { retry: false },
@@ -70,6 +70,19 @@ describe('Web eID Auth Integration', () => {
 
     await waitFor(() => {
       expect(history.location.pathname).toBe('/');
+    });
+  });
+
+  it('should redirect to location.state.from when set by PrivateRoute', async () => {
+    mockAuthenticateWithIdCardWebEid.mockResolvedValueOnce({});
+
+    renderWithProviders(<IdCardLoginTab onAuthenticateWithIdCardMtls={jest.fn()} />);
+    history.replace({ pathname: '/login', state: { from: '/capital/listings/42' } });
+
+    userEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/capital/listings/42');
     });
   });
 
@@ -127,11 +140,11 @@ describe('Web eID Auth Integration', () => {
     });
   });
 
-  it('should call mTLS handler when webeid param is not set', () => {
+  it('should call mTLS handler when ?mtls=true is set', () => {
     const onAuthenticateWithIdCardMtls = jest.fn();
     renderWithProviders(
       <IdCardLoginTab onAuthenticateWithIdCardMtls={onAuthenticateWithIdCardMtls} />,
-      '',
+      '?mtls=true',
     );
 
     userEvent.click(screen.getByRole('button'));

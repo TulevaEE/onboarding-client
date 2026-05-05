@@ -64,6 +64,11 @@ describe('Login actions', () => {
 
   afterEach(() => {
     jest.runOnlyPendingTimers();
+    Object.defineProperty(window, 'location', {
+      value: { search: '' },
+      writable: true,
+      configurable: true,
+    });
   });
 
   it('can change mobile identity code', () => {
@@ -150,6 +155,26 @@ describe('Login actions', () => {
     });
     expect(dispatch).toHaveBeenCalledWith({
       type: ID_CARD_AUTHENTICATION_START_SUCCESS,
+    });
+  });
+
+  it('thunk uses mTLS and never calls WebEid api regardless of ?webeid=true flag', () => {
+    Object.defineProperty(window, 'location', {
+      value: { search: '?webeid=true' },
+      writable: true,
+      configurable: true,
+    });
+
+    mockApi.authenticateWithIdCardMtls = jest.fn(() => Promise.resolve());
+    mockApi.authenticateWithIdCardWebEid = jest.fn(() =>
+      Promise.resolve({ accessToken: 't', refreshToken: 'r' }),
+    );
+    mockApi.getIdCardTokens = jest.fn(() => Promise.resolve(null));
+    const authenticateWithIdCard = createBoundAction(actions.authenticateWithIdCard);
+
+    return authenticateWithIdCard().then(() => {
+      expect(mockApi.authenticateWithIdCardMtls).toHaveBeenCalled();
+      expect(mockApi.authenticateWithIdCardWebEid).not.toHaveBeenCalled();
     });
   });
 
