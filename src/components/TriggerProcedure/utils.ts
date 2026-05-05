@@ -91,10 +91,13 @@ export const finish = async (result?: string, error?: string, personalCode?: str
       paymentChannel: 'PARTNER',
       recipientPersonalCode: personalCode,
     });
+    if (!paymentLink.url) {
+      throw new Error(`Payment link for partner flow (${paymentType}) is missing url`);
+    }
     const message = {
       type: result,
       version: '1',
-      data: paymentLink.url ? JSON.parse(paymentLink.url) : null,
+      data: JSON.parse(paymentLink.url),
       time: new Date().toISOString(),
     };
 
@@ -108,6 +111,9 @@ export const finish = async (result?: string, error?: string, personalCode?: str
       paymentChannel: 'COOP_WEB',
       recipientPersonalCode: personalCode,
     });
+    if (!paymentLink.url) {
+      throw new Error(`Payment link for COOP_WEB (${paymentType}) is missing url`);
+    }
     // eslint-disable-next-line no-console -- WIP
     console.log(
       'finishing',
@@ -115,10 +121,10 @@ export const finish = async (result?: string, error?: string, personalCode?: str
       result,
       error,
       'and redirecting to',
-      (redirectUri ?? '') + (paymentLink.url ?? ''),
+      (redirectUri ?? '') + paymentLink.url,
     );
 
-    window.location.href = (redirectUri ?? '') + (paymentLink.url ?? '');
+    window.location.href = (redirectUri ?? '') + paymentLink.url;
   }
 };
 
