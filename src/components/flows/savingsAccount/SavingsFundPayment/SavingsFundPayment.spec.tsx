@@ -79,6 +79,46 @@ describe(SavingsFundPayment, () => {
     expect(submitButton).toBeEnabled();
   });
 
+  it('shows investment account reminder only after a bank is selected', async () => {
+    expect(await findPageHeading()).toBeInTheDocument();
+
+    expect(
+      screen.queryByText('Using an investment account? Check that the payer account is correct.'),
+    ).not.toBeInTheDocument();
+
+    userEvent.click(screen.getByRole('radio', { name: 'LHV' }));
+
+    expect(
+      await screen.findByText(
+        'Using an investment account? Check that the payer account is correct.',
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('does not show investment account reminder when "Other bank" is selected', async () => {
+    expect(await findPageHeading()).toBeInTheDocument();
+
+    const otherBankRadio = screen.getByRole('radio', { name: 'Other bank' });
+    userEvent.click(otherBankRadio);
+
+    expect(await screen.findByText('Did you make the payment?')).toBeInTheDocument();
+    expect(
+      screen.queryByText('Using an investment account? Check that the payer account is correct.'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('does not show investment account reminder when amount is 15000 or more', async () => {
+    expect(await findPageHeading()).toBeInTheDocument();
+
+    const amountInput = screen.getByRole('textbox', { name: 'Amount' });
+    userEvent.type(amountInput, '15000');
+
+    expect(await screen.findByText('Did you make the payment?')).toBeInTheDocument();
+    expect(
+      screen.queryByText('Using an investment account? Check that the payer account is correct.'),
+    ).not.toBeInTheDocument();
+  });
+
   it('lets user select a bank and start the payment', async () => {
     expect(await findPageHeading()).toBeInTheDocument();
 
