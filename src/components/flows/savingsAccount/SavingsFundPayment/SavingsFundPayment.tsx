@@ -104,13 +104,7 @@ export const SavingsFundPayment: FC = () => {
             <div className="form-section d-flex flex-column gap-3">
               <div className="d-flex flex-column gap-3">
                 <label htmlFor="payment-method" className="fs-3 fw-semibold">
-                  <FormattedMessage
-                    id={
-                      isRecurring
-                        ? 'savingsFund.payment.form.paymentMethod.recurring.label'
-                        : 'savingsFund.payment.form.paymentMethod.label'
-                    }
-                  />
+                  <FormattedMessage id="savingsFund.payment.form.paymentMethod.label" />
                 </label>
                 <Controller
                   control={control}
@@ -158,7 +152,7 @@ export const SavingsFundPayment: FC = () => {
             />
           )}
 
-          {isRecurring && recurringBank && hasValidRecurringAmount && amount ? (
+          {isRecurring && recurringBank && (amount === undefined || hasValidRecurringAmount) ? (
             <SavingsFundRecurringDetails
               bank={recurringBank}
               amount={amount}
@@ -172,7 +166,7 @@ export const SavingsFundPayment: FC = () => {
             </div>
           ) : null}
 
-          {showManualPayment || isRecurring ? (
+          {showManualPayment && (
             <div className="mt-4 d-flex gap-2 align-items-center border-top pt-4">
               <span>
                 <FormattedMessage id="savingsFund.payment.otherBank.paymentQuestion" />
@@ -181,15 +175,17 @@ export const SavingsFundPayment: FC = () => {
                 <FormattedMessage id="savingsFund.payment.otherBank.backToAccountPage" />
               </Link>
             </div>
-          ) : (
-            <div className="d-flex justify-content-between border-top">
-              <Link to="/account" className="btn btn-outline-primary btn-lg mt-4">
+          )}
+
+          {!showManualPayment && !isRecurring && (
+            <div className="d-flex justify-content-between border-top pt-4">
+              <Link to="/account" className="btn btn-outline-primary">
                 <FormattedMessage id="savingsFund.payment.form.cancel.label" />
               </Link>
 
               <button
                 type="submit"
-                className="btn btn-primary btn-lg mt-4 btn-loading"
+                className="btn btn-primary btn-loading"
                 disabled={!user.personalCode || isSubmitting}
               >
                 <FormattedMessage id="savingsFund.payment.form.submit.label" />

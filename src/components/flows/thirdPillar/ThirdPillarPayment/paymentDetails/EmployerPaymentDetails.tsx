@@ -77,7 +77,7 @@ const PublicEmployerGuide = ({ user }: { user: User }) => (
 
     <Step number={3}>
       <FormattedMessage id="thirdPillarPayment.EMPLOYER.rtkFormFields" />
-      <div className="mt-3 p-4 payment-details-table">
+      <div className="mt-3 p-3 p-md-4 payment-details-table">
         <PaymentDetailRow
           label={<FormattedMessage id="thirdPillarPayment.EMPLOYER.rtkAmount" />}
           value={<FormattedMessage id="thirdPillarPayment.EMPLOYER.rtkAmount.description" />}
@@ -116,7 +116,7 @@ export const PrivateEmployerGuide = ({ user }: { user: User }) => (
 
     <Step number={2}>
       <FormattedMessage id="thirdPillarPayment.EMPLOYER.formFields" />
-      <div className="mt-3 p-4 payment-details-table">
+      <div className="mt-3 p-3 p-md-4 payment-details-table">
         <PaymentDetailRow
           label={<FormattedMessage id="thirdPillarPayment.EMPLOYER.percent" />}
           value={<FormattedMessage id="thirdPillarPayment.EMPLOYER.percent.description" />}

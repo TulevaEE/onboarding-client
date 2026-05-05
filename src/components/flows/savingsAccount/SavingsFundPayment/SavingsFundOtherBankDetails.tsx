@@ -30,30 +30,22 @@ export const SavingsFundOtherBankDetails: FC<{
       </span>
       <div className="flex-grow-1 align-self-center">
         <FormattedMessage id="savingsFund.payment.otherBank.step2" />
-        <div className="mt-3 p-4 payment-details-table">
+        <div className="mt-3 p-3 p-md-4 payment-details-table">
           <PaymentDetailRow
             label={<FormattedMessage id="savingsFund.payment.otherBank.accountName" />}
             value={ACCOUNT_NAME}
-            labelCol={5}
-            valueCol={7}
           />
           <PaymentDetailRow
             label={<FormattedMessage id="savingsFund.payment.otherBank.accountNumber" />}
             value={ACCOUNT_NUMBER}
-            labelCol={5}
-            valueCol={7}
           />
           <PaymentDetailRow
             label={<FormattedMessage id="savingsFund.payment.otherBank.paymentDescription" />}
             value={personalCode}
-            labelCol={5}
-            valueCol={7}
           />
           <PaymentAmountRow
             amount={amount?.toString() ?? ''}
             label={<FormattedMessage id="savingsFund.payment.otherBank.amount" />}
-            labelCol={5}
-            valueCol={7}
           />
         </div>
       </div>
