@@ -1311,6 +1311,9 @@
   "flows.savingsFundOnboarding.investmentGoalStep.otherPlaceholder": "Enter investment goal",
   "flows.savingsFundOnboarding.investmentGoalStep.required": "Select an option to continue.",
   "flows.savingsFundOnboarding.investmentGoalStep.other.required": "Enter your investment goal.",
+  "flows.savingsFundOnboarding.investmentGoalStep.longTermCompany": "Long-term growth of company assets",
+  "flows.savingsFundOnboarding.investmentGoalStep.specificGoalCompany": "Specific goal (e.g. equipment, property, expansion)",
+  "flows.savingsFundOnboarding.investmentGoalStep.titleCompany": "What is your company's investment goal?",
 
   "flows.savingsFundOnboarding.investableAssetsStep.title": "How much investable assets do you have?",
   "flows.savingsFundOnboarding.investableAssetsStep.description": "Investable assets are immediately available money and investments that you can sell quickly – for example, money in a bank account or deposit, and stocks, bonds, and funds.",
@@ -1319,6 +1322,7 @@
   "flows.savingsFundOnboarding.investableAssetsStep.from40kTo80k": "€40,001–€80,000",
   "flows.savingsFundOnboarding.investableAssetsStep.over80k": "€80,001 or more",
   "flows.savingsFundOnboarding.investableAssetsStep.required": "Select an option to continue.",
+  "flows.savingsFundOnboarding.investableAssetsStep.titleCompany": "How much investable assets does your company have?",
 
   "flows.savingsFundOnboarding.incomeSourcesStep.title": "What are your sources of income?",
   "flows.savingsFundOnboarding.incomeSourcesStep.description": "Select all sources from which you receive income.",

@@ -45,7 +45,11 @@ const InvestableAssetsStepWrapper = () => {
   return (
     <IntlProvider locale="en" messages={translations.en}>
       <form>
-        <InvestableAssetsStep control={control} options={OPTIONS} />
+        <InvestableAssetsStep
+          control={control}
+          options={OPTIONS}
+          titleId="flows.savingsFundOnboarding.investableAssetsStep.title"
+        />
         <button type="button" onClick={() => trigger('investableAssets')}>
           Validate
         </button>
@@ -75,7 +79,11 @@ const CompanyInvestableAssetsStepWrapper = () => {
   return (
     <IntlProvider locale="en" messages={translations.en}>
       <form>
-        <InvestableAssetsStep control={control} options={OPTIONS} />
+        <InvestableAssetsStep
+          control={control}
+          options={OPTIONS}
+          titleId="flows.savingsFundOnboarding.investableAssetsStep.titleCompany"
+        />
         <button type="button" onClick={() => trigger('investableAssets')}>
           Validate
         </button>
@@ -135,8 +143,16 @@ describe('InvestableAssetsStep', () => {
     expect(screen.getByText(/80,001.*or more/)).toBeInTheDocument();
   });
 
-  test('works with CompanyOnboardingFormData', () => {
+  test('renders the company-flow title for CompanyOnboardingFormData', () => {
     renderWrapped(<CompanyInvestableAssetsStepWrapper />);
+
+    expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(
+      'How much investable assets does your company have?',
+    );
+  });
+
+  test('renders the personal-flow title for OnboardingFormData', () => {
+    renderWrapped(<InvestableAssetsStepWrapper />);
 
     expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(
       'How much investable assets do you have?',

@@ -8,6 +8,7 @@ import { Radio } from '../../../../common';
 type InvestableAssetsStepProps<T extends SharedOnboardingFields = SharedOnboardingFields> = {
   control: Control<T>;
   options: { value: InvestableAssetsOption; labelId: TranslationKey }[];
+  titleId: TranslationKey;
 };
 
 const optionRadioId = (value: InvestableAssetsOption) =>
@@ -40,13 +41,14 @@ const generateRadioOptions = (
 export const InvestableAssetsStep = <T extends SharedOnboardingFields = SharedOnboardingFields>({
   control,
   options,
+  titleId,
 }: InvestableAssetsStepProps<T>) => {
   const intl = useIntl();
   return (
     <section className="d-flex flex-column gap-4" key="investment-assets">
       <div className="d-flex flex-column gap-1">
         <h2 className="m-0">
-          <FormattedMessage id="flows.savingsFundOnboarding.investableAssetsStep.title" />
+          <FormattedMessage id={titleId} />
         </h2>
         <p className="m-0">
           <FormattedMessage id="flows.savingsFundOnboarding.investableAssetsStep.description" />

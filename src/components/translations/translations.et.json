@@ -1401,6 +1401,9 @@
   "flows.savingsFundOnboarding.investmentGoalStep.otherPlaceholder": "Sisesta investeerimise eesmärk",
   "flows.savingsFundOnboarding.investmentGoalStep.required": "Jätkamiseks tee valik.",
   "flows.savingsFundOnboarding.investmentGoalStep.other.required": "Sisesta investeerimise eesmärk.",
+  "flows.savingsFundOnboarding.investmentGoalStep.longTermCompany": "Osaühingu varade pikaajaline kasvatamine",
+  "flows.savingsFundOnboarding.investmentGoalStep.specificGoalCompany": "Konkreetne eesmärk (nt seadmed, kinnisvara, laienemine)",
+  "flows.savingsFundOnboarding.investmentGoalStep.titleCompany": "Mis on sinu osaühingu investeerimise eesmärk?",
 
   "flows.savingsFundOnboarding.investableAssetsStep.title": "Kui palju on sul investeeritavat vara?",
   "flows.savingsFundOnboarding.investableAssetsStep.description": "Investeeritavad varad on kohe kasutatav raha ja investeeringud, mida saad kiiresti müüa – näiteks pangakontol või hoiusel olev raha ning aktsiad, võlakirjad ja fondid.",
@@ -1409,6 +1412,7 @@
   "flows.savingsFundOnboarding.investableAssetsStep.from40kTo80k": "40 001–80 000 €",
   "flows.savingsFundOnboarding.investableAssetsStep.over80k": "80 001 € või enam",
   "flows.savingsFundOnboarding.investableAssetsStep.required": "Jätkamiseks tee valik.",
+  "flows.savingsFundOnboarding.investableAssetsStep.titleCompany": "Kui palju on sinu osaühingul investeeritavat vara?",
 
   "flows.savingsFundOnboarding.incomeSourcesStep.title": "Millised on sinu sissetulekuallikad?",
   "flows.savingsFundOnboarding.incomeSourcesStep.description": "Vali kõik allikad, kust sissetulekut saad.",
