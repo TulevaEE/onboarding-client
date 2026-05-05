@@ -120,6 +120,7 @@ export const SavingsFundOnboarding: FC = () => {
         <InvestmentGoalStep
           key="investment-goal"
           control={control}
+          titleId="flows.savingsFundOnboarding.investmentGoalStep.title"
           options={[
             {
               value: 'LONG_TERM',
@@ -147,6 +148,7 @@ export const SavingsFundOnboarding: FC = () => {
         <InvestableAssetsStep
           key="investable-assets"
           control={control}
+          titleId="flows.savingsFundOnboarding.investableAssetsStep.title"
           options={[
             {
               value: 'LESS_THAN_20K',

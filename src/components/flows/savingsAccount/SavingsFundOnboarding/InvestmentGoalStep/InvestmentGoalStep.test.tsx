@@ -20,10 +20,13 @@ const PRIVATE_OPTIONS: StepOption[] = [
 ];
 
 const COMPANY_OPTIONS: StepOption[] = [
-  { value: 'LONG_TERM', labelId: 'flows.savingsFundOnboarding.investmentGoalStep.longTerm' },
+  {
+    value: 'LONG_TERM',
+    labelId: 'flows.savingsFundOnboarding.investmentGoalStep.longTermCompany',
+  },
   {
     value: 'SPECIFIC_GOAL',
-    labelId: 'flows.savingsFundOnboarding.investmentGoalStep.specificGoal',
+    labelId: 'flows.savingsFundOnboarding.investmentGoalStep.specificGoalCompany',
   },
   { value: 'TRADING', labelId: 'flows.savingsFundOnboarding.investmentGoalStep.activeTrading' },
 ];
@@ -49,29 +52,36 @@ const CompanyInvestmentGoalStepWrapper = ({ options }: { options: StepOption[] }
   return (
     <IntlProvider locale="en" messages={translations.en}>
       <form>
-        <InvestmentGoalStep control={control} options={options} />
+        <InvestmentGoalStep
+          control={control}
+          options={options}
+          titleId="flows.savingsFundOnboarding.investmentGoalStep.titleCompany"
+        />
       </form>
     </IntlProvider>
   );
 };
 
 describe('InvestmentGoalStep', () => {
-  it('works with CompanyOnboardingFormData', () => {
+  it('renders the company-flow title for CompanyOnboardingFormData', () => {
     renderWrapped(<CompanyInvestmentGoalStepWrapper options={COMPANY_OPTIONS} />);
 
     expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(
-      'What is your investment goal?',
+      "What is your company's investment goal?",
     );
   });
 
-  it('does not render CHILD option when excluded', () => {
+  it('renders company-specific labels and excludes CHILD', () => {
     renderWrapped(<CompanyInvestmentGoalStepWrapper options={COMPANY_OPTIONS} />);
 
-    expect(screen.getByText('Long-term investment, including pension')).toBeInTheDocument();
-    expect(screen.getByText('Specific goal (home, education, etc.)')).toBeInTheDocument();
+    expect(screen.getByText('Long-term growth of company assets')).toBeInTheDocument();
+    expect(
+      screen.getByText('Specific goal (e.g. equipment, property, expansion)'),
+    ).toBeInTheDocument();
     expect(screen.getByText('Active trading, including daily trading')).toBeInTheDocument();
     expect(screen.getByText('Other…')).toBeInTheDocument();
     expect(screen.queryByText("Saving for child's future")).not.toBeInTheDocument();
+    expect(screen.queryByText('Long-term investment, including pension')).not.toBeInTheDocument();
   });
 
   it('renders all 4 options when private labels are passed', () => {

@@ -226,7 +226,7 @@ const completeStepsThroughTerms = async () => {
   await advanceToStep(4);
 
   // Step 4: Investment Goal
-  userEvent.click(screen.getByRole('radio', { name: 'Long-term investment, including pension' }));
+  userEvent.click(screen.getByRole('radio', { name: 'Long-term growth of company assets' }));
   await advanceToStep(5);
 
   // Step 5: Investable Assets

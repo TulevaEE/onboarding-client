@@ -76,14 +76,15 @@ export const SavingsFundCompanyOnboarding = () => {
         <InvestmentGoalStep
           key="investmentGoal"
           control={control}
+          titleId="flows.savingsFundOnboarding.investmentGoalStep.titleCompany"
           options={[
             {
               value: 'LONG_TERM',
-              labelId: 'flows.savingsFundOnboarding.investmentGoalStep.longTerm',
+              labelId: 'flows.savingsFundOnboarding.investmentGoalStep.longTermCompany',
             },
             {
               value: 'SPECIFIC_GOAL',
-              labelId: 'flows.savingsFundOnboarding.investmentGoalStep.specificGoal',
+              labelId: 'flows.savingsFundOnboarding.investmentGoalStep.specificGoalCompany',
             },
             {
               value: 'TRADING',
@@ -99,6 +100,7 @@ export const SavingsFundCompanyOnboarding = () => {
         <InvestableAssetsStep
           key="investableAssets"
           control={control}
+          titleId="flows.savingsFundOnboarding.investableAssetsStep.titleCompany"
           options={[
             {
               value: 'LESS_THAN_20K',
