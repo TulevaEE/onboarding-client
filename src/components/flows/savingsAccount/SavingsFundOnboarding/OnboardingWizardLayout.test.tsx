@@ -37,7 +37,7 @@ describe('OnboardingWizardLayout', () => {
     renderLayout();
 
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
-    expect(screen.getByText('Opening an additional savings fund')).toBeInTheDocument();
+    expect(screen.getByText('Opening an Additional Savings Fund')).toBeInTheDocument();
   });
 
   it('calls onBack when Back button is clicked', () => {

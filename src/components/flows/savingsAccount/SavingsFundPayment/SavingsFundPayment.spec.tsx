@@ -33,7 +33,7 @@ describe(SavingsFundPayment, () => {
   };
 
   const findPageHeading = () =>
-    screen.findByRole('heading', { name: 'Deposit to additional savings fund' });
+    screen.findByRole('heading', { name: 'Deposit to Additional Savings Fund' });
 
   beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
   afterEach(() => server.resetHandlers());

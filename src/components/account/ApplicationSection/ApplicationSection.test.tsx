@@ -361,7 +361,7 @@ describe('Application section', () => {
     mockApplications([application]);
     initializeComponent();
 
-    expect(await screen.findByText('deposit to additional savings fund')).toBeInTheDocument();
+    expect(await screen.findByText('deposit to Additional Savings Fund')).toBeInTheDocument();
     expect(screen.getByText('250.99 €')).toBeInTheDocument();
     expect(
       screen.getByText('The deposit amount will be invested in the fund 02/01/2024'),
@@ -373,7 +373,7 @@ describe('Application section', () => {
     mockApplications([application]);
     initializeComponent();
 
-    expect(await screen.findByText('Additional savings fund withdrawal')).toBeInTheDocument();
+    expect(await screen.findByText('Additional Savings Fund withdrawal')).toBeInTheDocument();
     expect(screen.getByText('January 20, 2024')).toBeInTheDocument();
     expect(screen.getByText(/Payment date/i)).toBeInTheDocument();
     expect(screen.getByText('March 1, 2024')).toBeInTheDocument();

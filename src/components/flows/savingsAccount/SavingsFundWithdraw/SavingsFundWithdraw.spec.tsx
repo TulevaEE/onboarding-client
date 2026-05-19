@@ -87,7 +87,7 @@ describe(SavingsFundWithdraw, () => {
 
   it('validates the withdrawal amount and bank account selection', async () => {
     expect(
-      await screen.findByRole('heading', { name: 'Withdraw from additional savings fund' }),
+      await screen.findByRole('heading', { name: 'Withdraw from Additional Savings Fund' }),
     ).toBeInTheDocument();
 
     const amountInput = await screen.findByRole('textbox', { name: 'Amount' });
@@ -121,7 +121,7 @@ describe(SavingsFundWithdraw, () => {
 
   it('displays balance slider with correct range', async () => {
     expect(
-      await screen.findByRole('heading', { name: 'Withdraw from additional savings fund' }),
+      await screen.findByRole('heading', { name: 'Withdraw from Additional Savings Fund' }),
     ).toBeInTheDocument();
 
     const slider = await screen.findByRole('slider');
@@ -135,7 +135,7 @@ describe(SavingsFundWithdraw, () => {
 
   it('populates bank account dropdown with available accounts', async () => {
     expect(
-      await screen.findByRole('heading', { name: 'Withdraw from additional savings fund' }),
+      await screen.findByRole('heading', { name: 'Withdraw from Additional Savings Fund' }),
     ).toBeInTheDocument();
 
     const bankAccountSelect = await screen.findByRole('combobox', { name: 'Bank account' });
@@ -167,7 +167,7 @@ describe(SavingsFundWithdraw, () => {
     );
 
     expect(
-      await screen.findByRole('heading', { name: 'Withdraw from additional savings fund' }),
+      await screen.findByRole('heading', { name: 'Withdraw from Additional Savings Fund' }),
     ).toBeInTheDocument();
 
     const amountInput = await screen.findByRole('textbox', { name: 'Amount' });
@@ -200,7 +200,7 @@ describe(SavingsFundWithdraw, () => {
     );
 
     expect(
-      await screen.findByRole('heading', { name: 'Withdraw from additional savings fund' }),
+      await screen.findByRole('heading', { name: 'Withdraw from Additional Savings Fund' }),
     ).toBeInTheDocument();
 
     const amountInput = await screen.findByRole('textbox', { name: 'Amount' });
@@ -221,7 +221,7 @@ describe(SavingsFundWithdraw, () => {
 
   it('displays cancel button that navigates to account page', async () => {
     expect(
-      await screen.findByRole('heading', { name: 'Withdraw from additional savings fund' }),
+      await screen.findByRole('heading', { name: 'Withdraw from Additional Savings Fund' }),
     ).toBeInTheDocument();
 
     const cancelButton = screen.getByRole('link', { name: 'Back' });
@@ -231,7 +231,7 @@ describe(SavingsFundWithdraw, () => {
 
   it('displays info section with withdraw variant', async () => {
     expect(
-      await screen.findByRole('heading', { name: 'Withdraw from additional savings fund' }),
+      await screen.findByRole('heading', { name: 'Withdraw from Additional Savings Fund' }),
     ).toBeInTheDocument();
 
     expect(
@@ -242,7 +242,7 @@ describe(SavingsFundWithdraw, () => {
 
   it('enforces maximum withdrawal amount', async () => {
     expect(
-      await screen.findByRole('heading', { name: 'Withdraw from additional savings fund' }),
+      await screen.findByRole('heading', { name: 'Withdraw from Additional Savings Fund' }),
     ).toBeInTheDocument();
 
     const amountInput = await screen.findByRole('textbox', { name: 'Amount' });
@@ -265,7 +265,7 @@ describe(SavingsFundWithdraw, () => {
     );
 
     expect(
-      await screen.findByRole('heading', { name: 'Withdraw from additional savings fund' }),
+      await screen.findByRole('heading', { name: 'Withdraw from Additional Savings Fund' }),
     ).toBeInTheDocument();
 
     const amountInput = await screen.findByRole('textbox', { name: 'Amount' });
