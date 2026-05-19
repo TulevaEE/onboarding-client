@@ -60,6 +60,8 @@ export const SavingsFundPayment: FC = () => {
     return null;
   }
 
+  const isLegalEntity = user.role.type === 'LEGAL_ENTITY';
+
   const handleRedirect = async (data: IPaymentForm) => {
     try {
       setSubmitError(false);
@@ -87,7 +89,7 @@ export const SavingsFundPayment: FC = () => {
       <PaymentTypeSelection paymentType={paymentType} setPaymentType={setPaymentType} />
 
       <div className="pt-4 pb-4 border-top border-bottom">
-        <InfoSection variant="payment" />
+        <InfoSection variant="payment" roleType={user.role.type} />
       </div>
 
       <form onSubmit={handleSubmit((data) => handleRedirect(data))} method="post">
@@ -179,7 +181,7 @@ export const SavingsFundPayment: FC = () => {
 
           {!showManualPayment && !isRecurring && (
             <div className="border-top pt-4 d-flex flex-column gap-3">
-              {paymentMethod ? (
+              {paymentMethod && !isLegalEntity ? (
                 <p className="text-body-secondary m-0">
                   <FormattedMessage id="savingsFund.payment.investmentAccountReminder" />
                 </p>
