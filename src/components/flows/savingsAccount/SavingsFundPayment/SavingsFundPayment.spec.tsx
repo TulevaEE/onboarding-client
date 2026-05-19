@@ -433,5 +433,41 @@ describe(SavingsFundPayment, () => {
       expect(await screen.findByText('Make a deposit from another bank')).toBeInTheDocument();
       expect(screen.getByText('12345678')).toBeInTheDocument();
     });
+
+    it('shows the company bank account creditor text instead of the personal one', async () => {
+      expect(await findPageHeading()).toBeInTheDocument();
+
+      expect(
+        screen.getByText("The money must come from your company's bank account."),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByText('The money must come from a bank account in your name.'),
+      ).not.toBeInTheDocument();
+    });
+
+    it('hides the investment account info block', async () => {
+      expect(await findPageHeading()).toBeInTheDocument();
+
+      expect(
+        screen.queryByText(/You can defer paying income tax on investment returns/i),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole('link', { name: 'What is this and how does it work?' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('hides the investment account reminder after a bank is selected', async () => {
+      expect(await findPageHeading()).toBeInTheDocument();
+
+      userEvent.click(screen.getByRole('radio', { name: 'LHV' }));
+
+      await waitFor(() =>
+        expect(
+          screen.queryByText(
+            'Using an investment account? Check that the payer account is correct.',
+          ),
+        ).not.toBeInTheDocument(),
+      );
+    });
   });
 });
