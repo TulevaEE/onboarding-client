@@ -23,7 +23,15 @@ export const TargetFundSelector: React.FunctionComponent<Props> = ({
   return (
     <div className="row mx-0 mt-3 tv-target-fund__container align-items-stretch">
       {targetFunds.map((fund) => (
-        <div key={fund.isin} className="col-12 col-sm mb-2 me-2 p-0">
+        <div key={fund.isin} className="col-12 col-sm mb-2 me-2 p-0 position-relative">
+          {fund.isin === 'EE3600109435' && (
+            <span
+              className="badge rounded-pill text-bg-primary fw-medium position-absolute top-0 start-50 translate-middle"
+              style={{ zIndex: 1 }}
+            >
+              <FormattedMessage id="target.funds.EE3600109435.badge" />
+            </span>
+          )}
           <button
             type="button"
             className={`
