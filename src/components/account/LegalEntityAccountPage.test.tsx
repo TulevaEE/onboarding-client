@@ -79,7 +79,7 @@ describe('LegalEntityAccountPage', () => {
 
   test('renders pending savings fund applications', async () => {
     expect(await screen.findByText('Pending applications and transactions')).toBeInTheDocument();
-    expect(screen.getByText(/deposit to additional savings fund/)).toBeInTheDocument();
+    expect(screen.getByText(/deposit to Additional Savings Fund/)).toBeInTheDocument();
   });
 });
 

@@ -55,7 +55,7 @@ describe('SavingsFundOnboardingGatekeep', () => {
     history.push('/savings-fund/payment');
 
     expect(
-      await screen.findByRole('heading', { name: 'Deposit to additional savings fund' }),
+      await screen.findByRole('heading', { name: 'Deposit to Additional Savings Fund' }),
     ).toBeInTheDocument();
   });
 
