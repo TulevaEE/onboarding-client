@@ -46,10 +46,11 @@ describe('transformCompanyFormDataToSurveyCommand', () => {
       value: {
         type: 'ADDRESS',
         value: {
+          fullAddress: 'Telliskivi 60/1, 10412 Tallinn',
           street: 'Telliskivi 60/1',
           city: 'Tallinn',
           postalCode: '10412',
-          countryCode: 'EST',
+          countryCode: 'EE',
         },
       },
     });

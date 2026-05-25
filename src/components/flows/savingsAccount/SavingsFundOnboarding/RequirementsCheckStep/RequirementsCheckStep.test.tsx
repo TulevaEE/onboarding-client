@@ -84,7 +84,7 @@ describe('RequirementsCheckStep', () => {
                 street: 'Riia 1',
                 city: 'Tartu, Tartu maakond',
                 postalCode: '51004',
-                countryCode: 'EST',
+                countryCode: 'EE',
               },
               errors: [],
             },
