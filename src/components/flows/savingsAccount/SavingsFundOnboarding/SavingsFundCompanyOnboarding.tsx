@@ -10,6 +10,7 @@ import { InvestmentGoalStep } from './InvestmentGoalStep';
 import { InvestableAssetsStep } from './InvestableAssetsStep';
 import { CompanyIncomeSourceStep } from './CompanyIncomeSourceStep';
 import { TermsStep } from './TermsStep';
+import { SAVINGS_FUND_DOCUMENTS } from './savingsFundDocuments';
 import { OnboardingWizardLayout } from './OnboardingWizardLayout';
 import {
   useSavingsFundCompanyOnboardingStatus,
@@ -128,26 +129,7 @@ export const SavingsFundCompanyOnboarding = () => {
       fields: ['sourceOfCompanyIncome'],
     },
     {
-      component: (
-        <TermsStep
-          key="terms"
-          control={control}
-          documents={[
-            {
-              href: 'https://tuleva.ee/wp-content/uploads/2026/01/Tuleva-Taiendav-Kogumisfond.-Tingimused.-12.01.2026.pdf',
-              labelId: 'flows.savingsFundOnboarding.termsStep.linkText.terms',
-            },
-            {
-              href: 'https://tuleva.ee/wp-content/uploads/2026/01/Tuleva-Taiendav-Kogumisfond.-Prospekt.-12.01.2026.pdf',
-              labelId: 'flows.savingsFundOnboarding.termsStep.linkText.prospectus',
-            },
-            {
-              href: 'https://tuleva.ee/wp-content/uploads/2026/01/Tuleva-Taiendav-Kogumisfond.-Pohiteabedokument.-12.01.2026.pdf',
-              labelId: 'flows.savingsFundOnboarding.termsStep.linkText.keyInfo',
-            },
-          ]}
-        />
-      ),
+      component: <TermsStep key="terms" control={control} documents={SAVINGS_FUND_DOCUMENTS} />,
       fields: ['termsAccepted'],
     },
   ];
