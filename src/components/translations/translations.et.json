@@ -1278,6 +1278,7 @@
   "savingsFund.withdraw.form.amount.description": "Väljamakse laekub kolme tööpäeva jooksul. Täpne summa selgub osakute müümisel ja sõltub osakute turuhinnast.",
   "savingsFund.withdraw.form.iban.label": "Pangakonto",
   "savingsFund.withdraw.form.iban.description": "Väljamakseid saad teha iseenda pangakontole, millelt oled varasemalt Täiendavasse Kogumisfondi sissemakse teinud.",
+  "savingsFund.withdraw.form.iban.description.legalEntity": "Väljamakseid saad teha osaühingu pangakontole, millelt oled varasemalt Täiendavasse Kogumisfondi sissemakse teinud.",
   "savingsFund.withdraw.form.iban.placeholder": "Vali pangakonto",
   "savingsFund.withdraw.form.iban.required": "Vali, millesele pangakontole soovid väljamakse teha",
   "savingsFund.withdraw.form.continue.label": "Jätkan",
@@ -1288,6 +1289,7 @@
   "savingsFund.withdraw.infoSection.investmentAccount": "Saad investeerimistulult tulumaksu tasumise edasi lükata, kui deklareerid oma pangakonto <b>investeerimiskontona</b>.",
   "savingsFund.withdraw.infoSection.investmentAccount.learnMore": "Mis see on ja kuidas see käib?",
   "savingsFund.withdraw.infoSection.creditor": "Raha saad kanda oma enda pangakontole.",
+  "savingsFund.withdraw.infoSection.creditor.legalEntity": "Raha saad kanda oma osaühingu pangakontole.",
   "savingsFund.withdraw.infoSection.fees": "Väljamakse tegemine on tasuta.",
   "savingsFund.withdraw.error": "Väljamakse algatamisel tekkis viga. Palun proovi hiljem uuesti või võta meiega ühendust: tuleva@tuleva.ee",
 
@@ -1328,6 +1330,7 @@
   "savingsFund.recurring.step.copyFields": "Kopeeri andmed panka",
   "savingsFund.recurring.step.review": "Kontrolli andmed üle",
   "savingsFund.recurring.step.verify": "Veendu, et maksad <b>investeerimiskontolt</b>, ja kinnita püsimakse",
+  "savingsFund.recurring.step.verify.legalEntity": "Veendu, et maksad <b>osaühingu pangakontolt</b>, ja kinnita püsimakse",
   "savingsFund.recurring.copyCard.recipientName": "Saaja nimi",
   "savingsFund.recurring.copyCard.recipientIban": "Kontonumber",
   "savingsFund.recurring.copyCard.description": "Selgitus",

@@ -2,13 +2,13 @@ import { Route } from 'react-router-dom';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import { createMemoryHistory, History } from 'history';
-import { screen, waitFor } from '@testing-library/react';
+import { cleanup, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SavingsFundWithdraw } from './SavingsFundWithdraw';
 import { createDefaultStore, login, renderWrapped } from '../../../../test/utils';
 import LoggedInApp from '../../../LoggedInApp';
 import { initializeConfiguration } from '../../../config/config';
-import { useTestBackends } from '../../../../test/backend';
+import { useTestBackends, userBackend } from '../../../../test/backend';
 import { SourceFund } from '../../../common/apiModels';
 
 const mockSavingsFundBalance: SourceFund = {
@@ -283,5 +283,60 @@ describe(SavingsFundWithdraw, () => {
     await waitFor(() => expect(submittedData).toBeTruthy());
     expect(submittedData.amount).toBe(123.45);
     expect(history.location.pathname).toBe('/savings-fund/withdraw/success');
+  });
+
+  describe('when acting as a company', () => {
+    beforeEach(async () => {
+      cleanup();
+      userBackend(server, {
+        role: { type: 'LEGAL_ENTITY', code: '12345678', name: 'Test Company OÜ' },
+      });
+
+      initApp();
+      history.push('/savings-fund/withdraw');
+    });
+
+    it('hides the investment account info block in the withdraw view', async () => {
+      expect(
+        await screen.findByRole('heading', { name: 'Withdraw from Additional Savings Fund' }),
+      ).toBeInTheDocument();
+
+      expect(
+        screen.queryByText(/You can defer paying income tax on investment returns/i),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole('link', { name: 'What is this and how does it work?' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('shows company-bank creditor text instead of the personal one', async () => {
+      expect(
+        await screen.findByRole('heading', { name: 'Withdraw from Additional Savings Fund' }),
+      ).toBeInTheDocument();
+
+      expect(
+        screen.getByText('You can only withdraw to a bank account belonging to your company.'),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByText('You can only withdraw to a bank account in your name.'),
+      ).not.toBeInTheDocument();
+    });
+
+    it('shows company-bank IBAN description instead of the personal one', async () => {
+      expect(
+        await screen.findByRole('heading', { name: 'Withdraw from Additional Savings Fund' }),
+      ).toBeInTheDocument();
+
+      expect(
+        screen.getByText(
+          /You can only withdraw to a company bank account from which you have previously made a deposit to the Additional Savings Fund\./i,
+        ),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByText(
+          /You can only withdraw to your own bank account from which you have previously made a deposit/i,
+        ),
+      ).not.toBeInTheDocument();
+    });
   });
 });

@@ -469,5 +469,21 @@ describe(SavingsFundPayment, () => {
         ).not.toBeInTheDocument(),
       );
     });
+
+    it('shows company-bank verify step in the recurring panel instead of the investment-account one', async () => {
+      expect(await findPageHeading()).toBeInTheDocument();
+      userEvent.type(screen.getByRole('textbox', { name: 'Amount' }), '50');
+      userEvent.click(screen.getByRole('radio', { name: 'Recurring payment' }));
+      userEvent.click(screen.getByRole('radio', { name: 'LHV' }));
+
+      expect(
+        await screen.findByRole('heading', { name: 'Set up the recurring payment in LHV' }),
+      ).toBeInTheDocument();
+
+      expect(screen.getByText(/paying from the/i)).toBeInTheDocument();
+      expect(screen.getByText(/then confirm the standing order/i)).toBeInTheDocument();
+      expect(screen.queryByText(/paying from an/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/investment account/i)).not.toBeInTheDocument();
+    });
   });
 });
