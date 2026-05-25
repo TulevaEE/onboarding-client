@@ -53,14 +53,14 @@ type Props = {
   bank: BankKey;
   amount: number | undefined;
   personalCode: string;
-  isLegalEntity?: boolean;
+  isLegalEntity: boolean;
 };
 
 export const SavingsFundRecurringDetails: FC<Props> = ({
   bank,
   amount,
   personalCode,
-  isLegalEntity = false,
+  isLegalEntity,
 }) => {
   const meta = BANK_META[bank];
   const hasAmount = Number.isFinite(amount) && (amount ?? 0) >= 1;
