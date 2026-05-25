@@ -11,6 +11,17 @@ interface InfoSectionProps {
   roleType?: RoleType;
 }
 
+const creditorMessageId = (variant: InfoSectionVariant, isLegalEntity: boolean) => {
+  if (!isLegalEntity) {
+    return variant === 'payment'
+      ? ('savingsFund.payment.infoSection.creditor' as const)
+      : ('savingsFund.withdraw.infoSection.creditor' as const);
+  }
+  return variant === 'payment'
+    ? ('savingsFund.payment.infoSection.creditor.legalEntity' as const)
+    : ('savingsFund.withdraw.infoSection.creditor.legalEntity' as const);
+};
+
 export const InfoSection: FC<InfoSectionProps> = ({ variant, roleType = 'PERSON' }) => {
   const intl = useIntl();
   const isLegalEntity = roleType === 'LEGAL_ENTITY';
@@ -18,11 +29,7 @@ export const InfoSection: FC<InfoSectionProps> = ({ variant, roleType = 'PERSON'
   return (
     <SimpleList>
       <SimpleListItem
-        title={
-          variant === 'payment' && isLegalEntity
-            ? intl.formatMessage({ id: 'savingsFund.payment.infoSection.creditor.legalEntity' })
-            : intl.formatMessage({ id: `savingsFund.${variant}.infoSection.creditor` })
-        }
+        title={intl.formatMessage({ id: creditorMessageId(variant, isLegalEntity) })}
         media={<Verify />}
       />
       {!isLegalEntity && (

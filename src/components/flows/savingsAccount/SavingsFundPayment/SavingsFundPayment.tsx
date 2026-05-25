@@ -159,6 +159,7 @@ export const SavingsFundPayment: FC = () => {
               bank={recurringBank}
               amount={amount}
               personalCode={user.role.code}
+              isLegalEntity={isLegalEntity}
             />
           ) : null}
 

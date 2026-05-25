@@ -53,9 +53,15 @@ type Props = {
   bank: BankKey;
   amount: number | undefined;
   personalCode: string;
+  isLegalEntity?: boolean;
 };
 
-export const SavingsFundRecurringDetails: FC<Props> = ({ bank, amount, personalCode }) => {
+export const SavingsFundRecurringDetails: FC<Props> = ({
+  bank,
+  amount,
+  personalCode,
+  isLegalEntity = false,
+}) => {
   const meta = BANK_META[bank];
   const hasAmount = Number.isFinite(amount) && (amount ?? 0) >= 1;
   const { data, isLoading, isFetching, isError } = useQuery<PaymentLink>({
@@ -142,7 +148,11 @@ export const SavingsFundRecurringDetails: FC<Props> = ({ bank, amount, personalC
 
           <PaymentStep number={3}>
             <FormattedMessage
-              id="savingsFund.recurring.step.verify"
+              id={
+                isLegalEntity
+                  ? 'savingsFund.recurring.step.verify.legalEntity'
+                  : 'savingsFund.recurring.step.verify'
+              }
               values={{
                 b: (chunks: string) => <b>{chunks}</b>,
               }}

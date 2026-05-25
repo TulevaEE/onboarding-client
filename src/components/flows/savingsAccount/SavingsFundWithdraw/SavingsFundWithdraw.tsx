@@ -5,7 +5,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useHistory } from 'react-router-dom';
 import { createSavingsFundWithdrawal } from '../../../common/api';
-import { useSavingsFundBalance, useSavingsFundBankAccounts } from '../../../common/apiHooks';
+import { useMe, useSavingsFundBalance, useSavingsFundBankAccounts } from '../../../common/apiHooks';
 import { getBankName } from '../../../common/iban';
 import { usePageTitle } from '../../../common/usePageTitle';
 import { formatAmountForCurrency } from '../../../common/utils';
@@ -34,6 +34,7 @@ export const SavingsFundWithdraw: FC = () => {
   const [currentStep, setCurrentStep] = useState<'INPUT' | 'REVIEW'>('INPUT');
   const intl = useIntl();
   const history = useHistory();
+  const { data: user } = useMe();
   const { data: savingsFundBalance } = useSavingsFundBalance();
   const { data: bankAccounts } = useSavingsFundBankAccounts();
   const {
@@ -86,7 +87,7 @@ export const SavingsFundWithdraw: FC = () => {
 
       {currentStep === 'INPUT' ? (
         <div className="pt-4 pb-4 border-top border-bottom">
-          <InfoSection variant="withdraw" />
+          <InfoSection variant="withdraw" roleType={user?.role.type} />
         </div>
       ) : null}
 
@@ -176,7 +177,13 @@ export const SavingsFundWithdraw: FC = () => {
                 <div className="d-block invalid-feedback">{errors.iban.message}</div>
               ) : null}
               <p className="m-0 text-secondary">
-                <FormattedMessage id="savingsFund.withdraw.form.iban.description" />
+                <FormattedMessage
+                  id={
+                    user?.role.type === 'LEGAL_ENTITY'
+                      ? 'savingsFund.withdraw.form.iban.description.legalEntity'
+                      : 'savingsFund.withdraw.form.iban.description'
+                  }
+                />
               </p>
             </div>
 
