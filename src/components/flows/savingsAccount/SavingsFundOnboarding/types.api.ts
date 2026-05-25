@@ -46,6 +46,7 @@ export type CompanySourceOfIncomeOption =
   | 'NOT_IN_CRYPTO';
 
 export type Address = {
+  fullAddress?: string;
   street: string;
   city: string;
   postalCode: string;

@@ -97,6 +97,7 @@ export const transformCompanyFormDataToSurveyCommand = (
   if (data.companyAddress.reuseBackendAddress) {
     const validatedAddress = data.companyValidatedData?.address.value;
     resolvedAddress = {
+      fullAddress: validatedAddress?.fullAddress,
       street: validatedAddress?.street ?? '',
       city: validatedAddress?.city ?? '',
       postalCode: validatedAddress?.postalCode ?? '',

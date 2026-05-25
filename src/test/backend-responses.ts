@@ -200,7 +200,7 @@ export const mockValidatedCompany: BusinessRegistryValidatedData = {
       street: 'Telliskivi 60/1',
       city: 'Tallinn',
       postalCode: '10412',
-      countryCode: 'EST',
+      countryCode: 'EE',
     },
     errors: [],
   },
