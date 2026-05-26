@@ -6,12 +6,12 @@ import { TransactionSection } from './TransactionSection/TransactionSection';
 import { ApplicationSection } from './ApplicationSection/ApplicationSection';
 import { useMe, useSavingsFundBalance } from '../common/apiHooks';
 
-export function LegalEntityAccountPage() {
+export function RepresentedPartyAccountPage() {
   const { data: user } = useMe();
   const { data: savingsFundBalance } = useSavingsFundBalance();
 
   return (
-    <section aria-label="legal-entity-account">
+    <section aria-label="represented-party-account">
       {user && (
         <p className="my-5 m-0 lead">
           <FormattedMessage id="account.greeting" />, {user.role.name}

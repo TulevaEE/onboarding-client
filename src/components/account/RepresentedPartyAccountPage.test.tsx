@@ -31,7 +31,7 @@ beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-describe('LegalEntityAccountPage', () => {
+describe('RepresentedPartyAccountPage', () => {
   beforeEach(() => {
     initializeConfiguration();
     useTestBackendsExcept(server, ['user']);
@@ -83,7 +83,7 @@ describe('LegalEntityAccountPage', () => {
   });
 });
 
-describe('LegalEntityAccountPage without savings fund balance', () => {
+describe('RepresentedPartyAccountPage without savings fund balance', () => {
   beforeEach(() => {
     initializeConfiguration();
     useTestBackendsExcept(server, ['user']);
@@ -103,7 +103,7 @@ describe('LegalEntityAccountPage without savings fund balance', () => {
   });
 });
 
-describe('LegalEntityAccountPage with zero balance', () => {
+describe('RepresentedPartyAccountPage with zero balance', () => {
   beforeEach(() => {
     initializeConfiguration();
     useTestBackendsExcept(server, ['user']);

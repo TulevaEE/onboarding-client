@@ -1,16 +1,14 @@
 import { useMe } from '../common/apiHooks';
-import { LegalEntityAccountPage } from './LegalEntityAccountPage';
+import { isActingAsSelf } from '../common/utils';
+import { RepresentedPartyAccountPage } from './RepresentedPartyAccountPage';
 import ConnectedPersonAccountPage from './PersonAccountPage';
 
 export default function AccountPage() {
   const { data: user } = useMe();
 
-  switch (user?.role.type) {
-    case 'LEGAL_ENTITY':
-      return <LegalEntityAccountPage />;
-    case 'PERSON':
-      return <ConnectedPersonAccountPage />;
-    default:
-      return null;
+  if (!user) {
+    return null;
   }
+
+  return isActingAsSelf(user) ? <ConnectedPersonAccountPage /> : <RepresentedPartyAccountPage />;
 }

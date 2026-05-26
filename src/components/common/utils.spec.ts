@@ -6,9 +6,11 @@ import {
   isThirdPillar,
   isSecondPillar,
   isActive,
+  isActingAsSelf,
   isTuleva,
   formatAmountForCount,
 } from './utils';
+import { mockUser } from '../../test/backend-responses';
 
 describe('Utils', () => {
   describe('findWhere', () => {
@@ -234,6 +236,34 @@ describe('Utils', () => {
     it('checks if a fund is managed by Tuleva', () => {
       expect(isTuleva(fund)).toBe(true);
       expect(isTuleva({ ...fund, fundManager: { name: 'Other' } })).toBe(false);
+    });
+  });
+
+  describe('isActingAsSelf', () => {
+    it('is true for a PERSON role whose code matches the personal code', () => {
+      expect(isActingAsSelf(mockUser)).toBe(true);
+    });
+
+    it('is false for a PERSON role representing someone else (e.g. a child)', () => {
+      expect(
+        isActingAsSelf({
+          ...mockUser,
+          role: { type: 'PERSON', code: '61506150006', name: 'Child Name' },
+        }),
+      ).toBe(false);
+    });
+
+    it('is false for a LEGAL_ENTITY role', () => {
+      expect(
+        isActingAsSelf({
+          ...mockUser,
+          role: { type: 'LEGAL_ENTITY', code: '12345678', name: 'Acme OÜ' },
+        }),
+      ).toBe(false);
+    });
+
+    it('is false when there is no user', () => {
+      expect(isActingAsSelf(undefined)).toBe(false);
     });
   });
 });

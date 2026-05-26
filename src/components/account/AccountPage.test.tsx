@@ -51,7 +51,42 @@ describe('when user has LEGAL_ENTITY role', () => {
     expect(screen.queryByText('Hi, John Doe')).not.toBeInTheDocument();
   });
 
-  test('renders the legal entity account page', async () => {
-    expect(await screen.findByRole('region', { name: 'legal-entity-account' })).toBeInTheDocument();
+  test('renders the represented party account page', async () => {
+    expect(
+      await screen.findByRole('region', { name: 'represented-party-account' }),
+    ).toBeInTheDocument();
+  });
+});
+
+describe('when user represents a child (PERSON role with a different code)', () => {
+  beforeEach(() => {
+    initializeConfiguration();
+    useTestBackendsExcept(server, ['user']);
+    userBackend(server, {
+      personalCode: '38812121215',
+      role: { type: 'PERSON', code: '61506150006', name: 'Child Name' },
+    });
+    initializeComponent();
+    history.push('/account');
+  });
+
+  test('renders the savings-only represented party account page', async () => {
+    expect(
+      await screen.findByRole('region', { name: 'represented-party-account' }),
+    ).toBeInTheDocument();
+  });
+
+  test('does not render the full person account page greeting', async () => {
+    expect(
+      await screen.findByRole('region', { name: 'represented-party-account' }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText('Hi, John Doe')).not.toBeInTheDocument();
+  });
+
+  test('does not render pillar II/III change-fund action links', async () => {
+    expect(
+      await screen.findByRole('region', { name: 'represented-party-account' }),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /Change II\spillar fund/i })).not.toBeInTheDocument();
   });
 });
