@@ -31,6 +31,7 @@ import {
   getSavingsFundBalance,
   getSavingsFundBankAccounts,
   getSavingsFundCompanyOnboardingStatus,
+  getSavingsFundDocuments,
   getSavingsFundOnboardingStatus,
   getSecondPillarAssets,
   getSourceFunds,
@@ -63,6 +64,7 @@ import {
   SecondPillarAssets,
   SwitchRoleCommand,
   Token,
+  SavingsFundDocuments,
   SavingsFundOnboardingStatus,
   SavingsFundPaymentCancellationCommand,
   SourceFund,
@@ -203,6 +205,13 @@ export function useSavingsFundOnboardingStatus(): UseQueryResult<SavingsFundOnbo
   return useQuery({
     queryKey: ['savingsFundOnboardingStatus'],
     queryFn: () => getSavingsFundOnboardingStatus(),
+  });
+}
+
+export function useSavingsFundDocuments(): UseQueryResult<SavingsFundDocuments> {
+  return useQuery({
+    queryKey: ['savingsFundDocuments'],
+    queryFn: () => getSavingsFundDocuments(),
   });
 }
 

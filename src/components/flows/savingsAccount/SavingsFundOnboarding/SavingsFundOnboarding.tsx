@@ -15,6 +15,7 @@ import { TermsStep } from './TermsStep';
 import { OnboardingFormData } from './types';
 import {
   useMe,
+  useSavingsFundDocuments,
   useSavingsFundOnboardingStatus,
   useSubmitSavingsFundOnboardingSurvey,
 } from '../../../common/apiHooks';
@@ -40,6 +41,7 @@ export const SavingsFundOnboarding: FC = () => {
     refetch: refetchOnboardingStatus,
   } = useSavingsFundOnboardingStatus();
   const { data: user } = useMe();
+  const { data: fundDocuments } = useSavingsFundDocuments();
 
   const { control, setValue, watch, handleSubmit, trigger } = useForm<OnboardingFormData>({
     mode: 'onChange',
@@ -180,20 +182,24 @@ export const SavingsFundOnboarding: FC = () => {
         <TermsStep
           key="terms"
           control={control}
-          documents={[
-            {
-              href: 'https://tuleva.ee/wp-content/uploads/2026/01/Tuleva-Taiendav-Kogumisfond.-Tingimused.-12.01.2026.pdf',
-              labelId: 'flows.savingsFundOnboarding.termsStep.linkText.terms',
-            },
-            {
-              href: 'https://tuleva.ee/wp-content/uploads/2026/01/Tuleva-Taiendav-Kogumisfond.-Prospekt.-12.01.2026.pdf',
-              labelId: 'flows.savingsFundOnboarding.termsStep.linkText.prospectus',
-            },
-            {
-              href: 'https://tuleva.ee/wp-content/uploads/2026/01/Tuleva-Taiendav-Kogumisfond.-Pohiteabedokument.-12.01.2026.pdf',
-              labelId: 'flows.savingsFundOnboarding.termsStep.linkText.keyInfo',
-            },
-          ]}
+          documents={
+            fundDocuments
+              ? [
+                  {
+                    href: fundDocuments.terms,
+                    labelId: 'flows.savingsFundOnboarding.termsStep.linkText.terms',
+                  },
+                  {
+                    href: fundDocuments.prospectus,
+                    labelId: 'flows.savingsFundOnboarding.termsStep.linkText.prospectus',
+                  },
+                  {
+                    href: fundDocuments.keyInformation,
+                    labelId: 'flows.savingsFundOnboarding.termsStep.linkText.keyInfo',
+                  },
+                ]
+              : []
+          }
         />
       ),
       fields: ['termsAccepted'],

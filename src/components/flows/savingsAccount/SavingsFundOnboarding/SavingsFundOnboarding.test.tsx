@@ -185,6 +185,13 @@ describe('SavingsFundOnboarding', () => {
     expect(
       await screen.findByRole('heading', { name: 'Review fund documents', level: 2 }),
     ).toBeInTheDocument();
+
+    // Document links come from the backend (GET /v1/savings/documents), not a hardcoded constant
+    expect(await screen.findByRole('link', { name: /Terms/i })).toHaveAttribute(
+      'href',
+      'https://tuleva.ee/wp-content/uploads/2026/02/Tuleva.eurofond.tingimused.02.02.2026.pdf',
+    );
+
     const termsCheckbox = screen.getByLabelText(
       'I confirm that I have reviewed the documents and understand that the investment may increase or decrease in value over time',
     );

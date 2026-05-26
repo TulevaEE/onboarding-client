@@ -13,6 +13,7 @@ import { TermsStep } from './TermsStep';
 import { OnboardingWizardLayout } from './OnboardingWizardLayout';
 import {
   useSavingsFundCompanyOnboardingStatus,
+  useSavingsFundDocuments,
   useSubmitSavingsFundCompanyOnboardingSurvey,
 } from '../../../common/apiHooks';
 import { transformCompanyFormDataToSurveyCommand } from '../utils';
@@ -24,6 +25,7 @@ export const SavingsFundCompanyOnboarding = () => {
   const [submittedRegistryCode, setSubmittedRegistryCode] = useState<string | undefined>(undefined);
 
   const { data: onboardingStatus } = useSavingsFundCompanyOnboardingStatus(submittedRegistryCode);
+  const { data: fundDocuments } = useSavingsFundDocuments();
   const { mutateAsync: submitSurvey, isPending: submittingSurvey } =
     useSubmitSavingsFundCompanyOnboardingSurvey();
 
@@ -132,20 +134,24 @@ export const SavingsFundCompanyOnboarding = () => {
         <TermsStep
           key="terms"
           control={control}
-          documents={[
-            {
-              href: 'https://tuleva.ee/wp-content/uploads/2026/01/Tuleva-Taiendav-Kogumisfond.-Tingimused.-12.01.2026.pdf',
-              labelId: 'flows.savingsFundOnboarding.termsStep.linkText.terms',
-            },
-            {
-              href: 'https://tuleva.ee/wp-content/uploads/2026/01/Tuleva-Taiendav-Kogumisfond.-Prospekt.-12.01.2026.pdf',
-              labelId: 'flows.savingsFundOnboarding.termsStep.linkText.prospectus',
-            },
-            {
-              href: 'https://tuleva.ee/wp-content/uploads/2026/01/Tuleva-Taiendav-Kogumisfond.-Pohiteabedokument.-12.01.2026.pdf',
-              labelId: 'flows.savingsFundOnboarding.termsStep.linkText.keyInfo',
-            },
-          ]}
+          documents={
+            fundDocuments
+              ? [
+                  {
+                    href: fundDocuments.terms,
+                    labelId: 'flows.savingsFundOnboarding.termsStep.linkText.terms',
+                  },
+                  {
+                    href: fundDocuments.prospectus,
+                    labelId: 'flows.savingsFundOnboarding.termsStep.linkText.prospectus',
+                  },
+                  {
+                    href: fundDocuments.keyInformation,
+                    labelId: 'flows.savingsFundOnboarding.termsStep.linkText.keyInfo',
+                  },
+                ]
+              : []
+          }
         />
       ),
       fields: ['termsAccepted'],

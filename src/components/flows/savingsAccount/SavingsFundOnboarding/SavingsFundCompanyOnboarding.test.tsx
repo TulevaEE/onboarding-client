@@ -3,7 +3,11 @@ import userEvent from '@testing-library/user-event';
 import { createMemoryHistory } from 'history';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { businessRegistryBackend, companyValidationBackend } from '../../../../test/backend';
+import {
+  businessRegistryBackend,
+  companyValidationBackend,
+  savingsFundDocumentsBackend,
+} from '../../../../test/backend';
 import { mockValidatedCompany } from '../../../../test/backend-responses';
 import { initializeConfiguration } from '../../../config/config';
 import { renderWrapped } from '../../../../test/utils';
@@ -16,6 +20,7 @@ beforeEach(() => {
   initializeConfiguration();
   businessRegistryBackend(server, [{ company_id: 123, name: 'Acme Corp', reg_code: '12345678' }]);
   companyValidationBackend(server);
+  savingsFundDocumentsBackend(server);
 });
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());

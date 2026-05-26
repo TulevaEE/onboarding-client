@@ -935,6 +935,23 @@ export function savingsFundOnboardingStatusBackend(
   );
 }
 
+export function savingsFundDocumentsBackend(server: SetupServerApi): void {
+  server.use(
+    rest.get('http://localhost/v1/savings/documents', (req, res, ctx) =>
+      res(
+        ctx.json({
+          terms:
+            'https://tuleva.ee/wp-content/uploads/2026/02/Tuleva.eurofond.tingimused.02.02.2026.pdf',
+          prospectus:
+            'https://tuleva.ee/wp-content/uploads/2026/02/TKF100-Prospekt-kehtib-alates-27.02.2026.pdf',
+          keyInformation:
+            'https://tuleva.ee/wp-content/uploads/2026/02/Pohiteave-TKF100-kehtib-alates-27.02.2026.pdf',
+        }),
+      ),
+    ),
+  );
+}
+
 export function savingsAccountStatementBackend(
   server: SetupServerApi,
   statement: FundBalance | null = null,
@@ -997,6 +1014,7 @@ const TEST_BACKENDS = {
   contributions: contributionsBackend,
   businessRegistry: businessRegistryBackend,
   companyValidation: companyValidationBackend,
+  savingsFundDocuments: savingsFundDocumentsBackend,
 } as const;
 
 export type TestBackendName = keyof typeof TEST_BACKENDS;

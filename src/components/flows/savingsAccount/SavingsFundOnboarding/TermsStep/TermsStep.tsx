@@ -3,6 +3,7 @@ import { Control, Controller, Path } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { SharedOnboardingFields } from '../types';
 import { TranslationKey } from '../../../../translations';
+import { Loader } from '../../../../common/loader/Loader';
 
 type TermsStepProps<T extends SharedOnboardingFields = SharedOnboardingFields> = {
   control: Control<T>;
@@ -23,48 +24,52 @@ export const TermsStep = <T extends SharedOnboardingFields = SharedOnboardingFie
           <FormattedMessage id="flows.savingsFundOnboarding.termsStep.title" />
         </h2>
       </div>
-      <div className="section-content d-flex flex-column gap-5">
-        <div className="d-flex flex-column gap-3">
-          {documents.map(({ href, labelId }) => (
-            <DocumentLink key={href} href={href}>
-              <FormattedMessage id={labelId} />
-            </DocumentLink>
-          ))}
+      {documents.length === 0 ? (
+        <Loader className="align-self-center" />
+      ) : (
+        <div className="section-content d-flex flex-column gap-5">
+          <div className="d-flex flex-column gap-3">
+            {documents.map(({ href, labelId }) => (
+              <DocumentLink key={href} href={href}>
+                <FormattedMessage id={labelId} />
+              </DocumentLink>
+            ))}
+          </div>
+          <Controller
+            control={control}
+            name={'termsAccepted' as Path<T>}
+            rules={{
+              validate: (value) =>
+                value === true ||
+                intl.formatMessage({ id: 'flows.savingsFundOnboarding.termsStep.error' }),
+            }}
+            render={({ field, fieldState: { error } }) => (
+              <div className="form-check m-0 lead">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  id="terms-accepted"
+                  checked={field.value as boolean}
+                  onChange={field.onChange}
+                />
+                <label className="form-check-label w-100" htmlFor="terms-accepted">
+                  <FormattedMessage id="flows.savingsFundOnboarding.termsStep.confirmText" />
+                </label>
+                {showError && (
+                  <p className="m-0 text-danger fs-base" role="alert">
+                    <FormattedMessage id="flows.savingsFundOnboarding.termsStep.error" />
+                  </p>
+                )}
+                {error && error.message ? (
+                  <p className="m-0 text-danger fs-base" role="alert">
+                    {error.message}
+                  </p>
+                ) : null}
+              </div>
+            )}
+          />
         </div>
-        <Controller
-          control={control}
-          name={'termsAccepted' as Path<T>}
-          rules={{
-            validate: (value) =>
-              value === true ||
-              intl.formatMessage({ id: 'flows.savingsFundOnboarding.termsStep.error' }),
-          }}
-          render={({ field, fieldState: { error } }) => (
-            <div className="form-check m-0 lead">
-              <input
-                className="form-check-input"
-                type="checkbox"
-                id="terms-accepted"
-                checked={field.value as boolean}
-                onChange={field.onChange}
-              />
-              <label className="form-check-label w-100" htmlFor="terms-accepted">
-                <FormattedMessage id="flows.savingsFundOnboarding.termsStep.confirmText" />
-              </label>
-              {showError && (
-                <p className="m-0 text-danger fs-base" role="alert">
-                  <FormattedMessage id="flows.savingsFundOnboarding.termsStep.error" />
-                </p>
-              )}
-              {error && error.message ? (
-                <p className="m-0 text-danger fs-base" role="alert">
-                  {error.message}
-                </p>
-              ) : null}
-            </div>
-          )}
-        />
-      </div>
+      )}
     </section>
   );
 };

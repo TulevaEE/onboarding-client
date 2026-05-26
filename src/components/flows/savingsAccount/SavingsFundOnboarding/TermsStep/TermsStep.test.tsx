@@ -22,7 +22,13 @@ const DOCUMENTS: { href: string; labelId: TranslationKey }[] = [
   },
 ];
 
-const TermsStepWrapper = ({ showError = false }: { showError?: boolean }) => {
+const TermsStepWrapper = ({
+  showError = false,
+  documents = DOCUMENTS,
+}: {
+  showError?: boolean;
+  documents?: { href: string; labelId: TranslationKey }[];
+}) => {
   const { control, trigger } = useForm<OnboardingFormData>({
     mode: 'onBlur',
     defaultValues: {
@@ -46,7 +52,7 @@ const TermsStepWrapper = ({ showError = false }: { showError?: boolean }) => {
   return (
     <IntlProvider locale="en" messages={translations.en}>
       <form>
-        <TermsStep control={control} documents={DOCUMENTS} showError={showError} />
+        <TermsStep control={control} documents={documents} showError={showError} />
         <button type="button" onClick={() => trigger('termsAccepted')}>
           Validate
         </button>
@@ -113,6 +119,13 @@ describe('TermsStep', () => {
       'href',
       'https://tuleva.ee/wp-content/uploads/2026/01/Tuleva-Taiendav-Kogumisfond.-Pohiteabedokument.-12.01.2026.pdf',
     );
+  });
+
+  test('shows a loading state and no document links while documents are loading', () => {
+    renderWrapped(<TermsStepWrapper documents={[]} />);
+
+    expect(screen.getByRole('progressbar')).toBeInTheDocument();
+    expect(screen.queryByRole('link')).not.toBeInTheDocument();
   });
 
   test('renders the terms checkbox', () => {

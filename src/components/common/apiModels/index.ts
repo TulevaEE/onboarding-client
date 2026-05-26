@@ -183,6 +183,12 @@ export type SavingsFundOnboardingStatus = {
   status: null | 'COMPLETED' | 'REJECTED' | 'PENDING';
 };
 
+export type SavingsFundDocuments = {
+  terms: string;
+  prospectus: string;
+  keyInformation: string;
+};
+
 export type FundStatus =
   | 'ACTIVE'
   | 'LIQUIDATED'

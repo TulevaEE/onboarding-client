@@ -27,6 +27,7 @@ import {
   PaymentLink,
   PaymentType,
   Role,
+  SavingsFundDocuments,
   SavingsFundOnboardingStatus,
   SecondPillarAssets,
   SigningMethod,
@@ -247,6 +248,10 @@ export function getFundPensionStatus(): Promise<FundPensionStatus> {
 
 export function getSavingsFundOnboardingStatus(): Promise<SavingsFundOnboardingStatus> {
   return getWithAuthentication(getEndpoint('/v1/savings/onboarding/status'));
+}
+
+export function getSavingsFundDocuments(): Promise<SavingsFundDocuments> {
+  return getWithAuthentication(getEndpoint('/v1/savings/documents'));
 }
 
 export function postSavingsFundOnboardingSurvey(command: OnboardingSurveyCommand): Promise<void> {
