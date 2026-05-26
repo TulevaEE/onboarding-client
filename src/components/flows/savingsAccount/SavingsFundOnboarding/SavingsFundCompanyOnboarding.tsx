@@ -134,15 +134,15 @@ export const SavingsFundCompanyOnboarding = () => {
           control={control}
           documents={[
             {
-              href: 'https://tuleva.ee/wp-content/uploads/2026/01/Tuleva-Taiendav-Kogumisfond.-Tingimused.-12.01.2026.pdf',
+              href: 'https://tuleva.ee/wp-content/uploads/2026/02/Tuleva.eurofond.tingimused.02.02.2026.pdf',
               labelId: 'flows.savingsFundOnboarding.termsStep.linkText.terms',
             },
             {
-              href: 'https://tuleva.ee/wp-content/uploads/2026/01/Tuleva-Taiendav-Kogumisfond.-Prospekt.-12.01.2026.pdf',
+              href: 'https://tuleva.ee/wp-content/uploads/2026/02/TKF100-Prospekt-kehtib-alates-27.02.2026.pdf',
               labelId: 'flows.savingsFundOnboarding.termsStep.linkText.prospectus',
             },
             {
-              href: 'https://tuleva.ee/wp-content/uploads/2026/01/Tuleva-Taiendav-Kogumisfond.-Pohiteabedokument.-12.01.2026.pdf',
+              href: 'https://tuleva.ee/wp-content/uploads/2026/02/Pohiteave-TKF100-kehtib-alates-27.02.2026.pdf',
               labelId: 'flows.savingsFundOnboarding.termsStep.linkText.keyInfo',
             },
           ]}
