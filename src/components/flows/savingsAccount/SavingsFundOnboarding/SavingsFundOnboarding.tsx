@@ -251,6 +251,19 @@ export const SavingsFundOnboarding: FC = () => {
       try {
         setSubmitError(null);
         await submitForm();
+
+        // Company-only and both-flow applicants continue into the company (KYB)
+        // flow. Whether the user also invested personally (BOTH) is passed only
+        // through in-memory router state, so separate tabs can't overwrite each
+        // other's context; if it is missing (reload, direct link, role-switcher
+        // entry) the KYB flow safely falls back to direct company onboarding.
+        if (investmentIntent === 'ONLY_VIA_COMPANY' || investmentIntent === 'BOTH') {
+          history.push('/savings-fund/company/onboarding', {
+            fromBothFlow: investmentIntent === 'BOTH',
+          });
+          return;
+        }
+
         await refetchOnboardingStatus();
       } catch (e) {
         setSubmitError(error);
