@@ -115,7 +115,7 @@ describe('SavingsFundOnboarding', () => {
     const user = userEvent;
 
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
-    expect(screen.getByText('1/9')).toBeInTheDocument();
+    expect(screen.getByText('1/8')).toBeInTheDocument();
 
     const continueButton = await screen.findByRole('button', { name: 'Continue' });
 
@@ -185,17 +185,7 @@ describe('SavingsFundOnboarding', () => {
 
     user.click(continueButton);
 
-    // Step 5: Investment Intent - choose personal-only to continue the full personal flow
-    expect(
-      await screen.findByRole('heading', { name: 'How do you want to invest?', level: 2 }),
-    ).toBeInTheDocument();
-
-    const selfIntentRadio = screen.getByRole('radio', { name: 'Only personally' });
-    user.click(selfIntentRadio);
-
-    user.click(continueButton);
-
-    // Step 6: Investment Goals
+    // Step 5: Investment Goals
     expect(
       await screen.findByRole('heading', { name: 'What is your investment goal?', level: 2 }),
     ).toBeInTheDocument();
@@ -261,6 +251,7 @@ describe('SavingsFundOnboarding', () => {
 
   it('skips profile and personal terms steps for company-only intent, omits profile items, and routes to company onboarding', async () => {
     server.use(onboardingStatusHandler.notStarted());
+    history.push('/savings-fund/onboarding/uus');
 
     let capturedAnswerTypes: string[] | null = null;
     server.use(
@@ -308,6 +299,7 @@ describe('SavingsFundOnboarding', () => {
 
   it('routes to company onboarding with both-flow context after a personal + company KYC submission', async () => {
     server.use(onboardingStatusHandler.notStarted());
+    history.push('/savings-fund/onboarding/uus');
 
     await fillKycIdentitySteps();
 
@@ -351,7 +343,7 @@ describe('SavingsFundOnboarding', () => {
 
     const user = userEvent;
 
-    expect(screen.getByText('1/9')).toBeInTheDocument();
+    expect(screen.getByText('1/8')).toBeInTheDocument();
 
     const select = (await screen.findByRole('listbox', {
       name: 'Choose all countries of citizenship',
@@ -367,12 +359,12 @@ describe('SavingsFundOnboarding', () => {
     user.click(screen.getByRole('button', { name: 'Continue' }));
 
     await waitFor(() => {
-      expect(screen.getByText('2/9')).toBeInTheDocument();
+      expect(screen.getByText('2/8')).toBeInTheDocument();
     });
 
     // Go back to step 1
     user.click(screen.getByRole('button', { name: 'Back' }));
-    expect(screen.getByText('1/9')).toBeInTheDocument();
+    expect(screen.getByText('1/8')).toBeInTheDocument();
 
     // Go back from first step should navigate to /account
     user.click(screen.getByRole('button', { name: 'Back' }));

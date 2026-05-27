@@ -31,6 +31,7 @@ type OnboardingStep = {
 const buildSteps = (
   control: Control<OnboardingFormData>,
   investmentIntent: InvestmentIntent | null,
+  companyOnboardingEnabled: boolean,
 ): OnboardingStep[] => {
   const identitySteps: OnboardingStep[] = [
     {
@@ -49,11 +50,11 @@ const buildSteps = (
       component: <PepStep key="pep" control={control} />,
       fields: ['pepSelfDeclaration'],
     },
-    {
-      component: <InvestmentIntentStep key="investment-intent" control={control} />,
-      fields: ['investmentIntent'],
-    },
   ];
+  const intentStep: OnboardingStep = {
+    component: <InvestmentIntentStep key="investment-intent" control={control} />,
+    fields: ['investmentIntent'],
+  };
   const profileSteps: OnboardingStep[] = [
     {
       component: (
@@ -140,15 +141,29 @@ const buildSteps = (
     },
   ];
 
+  if (!companyOnboardingEnabled) {
+    // Public flow: original personal-only onboarding, no intent step.
+    return [...identitySteps, ...profileSteps];
+  }
+
   return investmentIntent === 'ONLY_VIA_COMPANY'
-    ? identitySteps
-    : [...identitySteps, ...profileSteps];
+    ? [...identitySteps, intentStep]
+    : [...identitySteps, intentStep, ...profileSteps];
 };
 
 export const SavingsFundOnboarding: FC = () => {
   usePageTitle('pageTitle.savingsFundOnboarding');
 
   const history = useHistory();
+
+  // Pre-launch gate (TKF #67): the investment-intent + company onboarding flow
+  // is only exposed on this unlisted URL until the 15 June 2026 go-live. The
+  // public onboarding URL keeps the original personal-only flow. To go live,
+  // make this unconditionally true (and point the public URL at this flow).
+  const companyOnboardingEnabled = history.location.pathname.startsWith(
+    '/savings-fund/onboarding/uus',
+  );
+
   const [activeSection, setActiveSection] = useState(0);
   const [submitError, setSubmitError] = useState<ErrorResponse | null>(null);
 
@@ -220,7 +235,7 @@ export const SavingsFundOnboarding: FC = () => {
     }
   }, [user, setValue]);
 
-  const steps = buildSteps(control, investmentIntent);
+  const steps = buildSteps(control, investmentIntent, companyOnboardingEnabled);
 
   const totalSections = steps.length;
   const currentSection = activeSection + 1;
@@ -257,7 +272,10 @@ export const SavingsFundOnboarding: FC = () => {
         // through in-memory router state, so separate tabs can't overwrite each
         // other's context; if it is missing (reload, direct link, role-switcher
         // entry) the KYB flow safely falls back to direct company onboarding.
-        if (investmentIntent === 'ONLY_VIA_COMPANY' || investmentIntent === 'BOTH') {
+        if (
+          companyOnboardingEnabled &&
+          (investmentIntent === 'ONLY_VIA_COMPANY' || investmentIntent === 'BOTH')
+        ) {
           history.push('/savings-fund/company/onboarding', {
             fromBothFlow: investmentIntent === 'BOTH',
           });

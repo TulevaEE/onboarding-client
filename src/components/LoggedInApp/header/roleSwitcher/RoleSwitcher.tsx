@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import { FormattedMessage } from 'react-intl';
 import { useMe, useRoles, useSwitchRole } from '../../../common/apiHooks';
 import { SwitchRoleCommand } from '../../../common/apiModels';
 
@@ -10,7 +8,6 @@ type Props = {
 };
 
 export const RoleSwitcher = ({ userName, onRoleSwitch }: Props) => {
-  const history = useHistory();
   const { data: roles } = useRoles();
   const { data: user } = useMe();
   const switchRole = useSwitchRole();
@@ -18,9 +15,7 @@ export const RoleSwitcher = ({ userName, onRoleSwitch }: Props) => {
 
   const displayName = user?.role?.name ?? userName;
 
-  // The dropdown is always available, even with a single role, so a personal
-  // user can add a company (TKF #67, Path B).
-  if (!roles) {
+  if (!roles || roles.length <= 1) {
     return <span className="text-body">{displayName}</span>;
   }
 
@@ -28,15 +23,6 @@ export const RoleSwitcher = ({ userName, onRoleSwitch }: Props) => {
     setOpen(false);
     await switchRole.mutateAsync(command);
     onRoleSwitch?.();
-  };
-
-  const handleAddCompany = () => {
-    setOpen(false);
-    // Navigate into the company flow. We must NOT call onRoleSwitch here — that
-    // runs the post-role-switch handler which redirects to /account and would
-    // bounce the user straight back off this page. No router state, so the flow
-    // runs as direct onboarding (no account chooser) rather than the both-flow.
-    history.push('/savings-fund/company/onboarding');
   };
 
   return (
@@ -73,10 +59,6 @@ export const RoleSwitcher = ({ userName, onRoleSwitch }: Props) => {
               {role.name}
             </button>
           ))}
-          <div className="dropdown-divider" />
-          <button type="button" className="dropdown-item" onClick={handleAddCompany}>
-            <FormattedMessage id="roleSwitcher.addCompany" />
-          </button>
         </div>
       )}
     </div>
