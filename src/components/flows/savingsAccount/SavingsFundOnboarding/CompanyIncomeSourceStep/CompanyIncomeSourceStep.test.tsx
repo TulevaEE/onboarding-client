@@ -56,6 +56,22 @@ describe('CompanyIncomeSourceStep', () => {
     expect(screen.getAllByRole('checkbox')).toHaveLength(3);
   });
 
+  it('states the company is not sanctioned and does not deal with sanctioned countries or persons', () => {
+    renderWrapped(<CompanyIncomeSourceStepWrapper />);
+
+    expect(
+      screen.getByText(
+        'The company is not sanctioned and does not do business with sanctioned countries or persons',
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('explains what counts as crypto business in a tooltip', () => {
+    renderWrapped(<CompanyIncomeSourceStepWrapper />);
+
+    expect(screen.getByText(/Crypto business means the company/i)).toBeInTheDocument();
+  });
+
   it('shows validation error when not all checkboxes are checked', async () => {
     renderWrapped(<CompanyIncomeSourceStepWrapper />);
 
