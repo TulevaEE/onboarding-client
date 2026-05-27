@@ -9,6 +9,7 @@ interface OnboardingWizardLayoutProps {
   onNext: () => void;
   loading?: boolean;
   submitting?: boolean;
+  nextDisabled?: boolean;
   children: ReactNode;
 }
 
@@ -19,6 +20,7 @@ export const OnboardingWizardLayout: FC<OnboardingWizardLayoutProps> = ({
   onNext,
   loading,
   submitting,
+  nextDisabled,
   children,
 }) => {
   const progressPercentage = (currentStep / totalSteps) * 100;
@@ -53,7 +55,7 @@ export const OnboardingWizardLayout: FC<OnboardingWizardLayoutProps> = ({
             type="button"
             className="btn btn-lg btn-primary"
             onClick={onNext}
-            disabled={submitting}
+            disabled={submitting || nextDisabled}
           >
             {submitting && (
               <span

@@ -1439,6 +1439,7 @@
   "flows.savingsFundOnboarding.termsStep.linkText.keyInfo": "Põhiteave",
   "flows.savingsFundOnboarding.termsStep.confirmText": "Kinnitan, et olen dokumentidega tutvunud ja mõistan, et investeering võib ajas nii kasvada kui kahaneda",
   "flows.savingsFundOnboarding.termsStep.error": "Jätkamiseks pead dokumentidega tutvuma.",
+  "flows.savingsFundOnboarding.termsStep.confirmTextCompany": "Kinnitan ettevõtte nimel, et olen dokumentidega tutvunud ja mõistan, et investeering võib ajas nii kasvada kui kahaneda",
   "flows.savingsFundOnboarding.investmentIntentStep.title": "Kuidas soovid investeerida?",
   "flows.savingsFundOnboarding.investmentIntentStep.description": "See määrab, milliseid küsimusi järgmisena küsime.",
   "flows.savingsFundOnboarding.investmentIntentStep.self": "Ainult isiklikult",

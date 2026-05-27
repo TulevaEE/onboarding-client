@@ -8,12 +8,14 @@ type TermsStepProps<T extends SharedOnboardingFields = SharedOnboardingFields> =
   control: Control<T>;
   documents: { href: string; labelId: TranslationKey }[];
   showError?: boolean;
+  confirmTextId?: TranslationKey;
 };
 
 export const TermsStep = <T extends SharedOnboardingFields = SharedOnboardingFields>({
   control,
   documents,
   showError,
+  confirmTextId = 'flows.savingsFundOnboarding.termsStep.confirmText',
 }: TermsStepProps<T>) => {
   const intl = useIntl();
   return (
@@ -49,7 +51,7 @@ export const TermsStep = <T extends SharedOnboardingFields = SharedOnboardingFie
                 onChange={field.onChange}
               />
               <label className="form-check-label w-100" htmlFor="terms-accepted">
-                <FormattedMessage id="flows.savingsFundOnboarding.termsStep.confirmText" />
+                <FormattedMessage id={confirmTextId} />
               </label>
               {showError && (
                 <p className="m-0 text-danger fs-base" role="alert">
