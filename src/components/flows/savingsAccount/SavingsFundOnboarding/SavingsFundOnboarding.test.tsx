@@ -32,6 +32,50 @@ import LoggedInApp from '../../../LoggedInApp';
   };
 });
 
+// Fills citizenship, residency, contact and PEP, leaving the wizard on the
+// investment-intent step (step 5).
+const fillKycIdentitySteps = async () => {
+  const continueButton = await screen.findByRole('button', { name: 'Continue' });
+
+  const select = (await screen.findByRole('listbox', {
+    name: 'Choose all countries of citizenship',
+  })) as HTMLSelectElement;
+  selectCountryOptionInTomSelect(select, 'FI');
+  await waitFor(() => {
+    expect(screen.getByRole('option', { name: 'Finland', selected: true })).toBeInTheDocument();
+  });
+  userEvent.click(continueButton);
+
+  expect(
+    await screen.findByRole('heading', { name: 'Your permanent residence', level: 2 }),
+  ).toBeInTheDocument();
+  userEvent.selectOptions(screen.getByRole('combobox', { name: 'Country' }), 'FI');
+  const cityInput = await screen.findByRole('textbox', { name: 'City' }, { timeout: 3_000 });
+  userEvent.type(cityInput, 'Helsinki');
+  userEvent.type(screen.getByRole('textbox', { name: 'Postal code' }), '00100');
+  userEvent.type(
+    screen.getByRole('textbox', { name: 'Address (street, house, apartment)' }),
+    'Mannerheimintie 1',
+  );
+  userEvent.click(continueButton);
+
+  expect(
+    await screen.findByRole('heading', { name: 'Your contact details', level: 2 }),
+  ).toBeInTheDocument();
+  userEvent.type(screen.getByRole('textbox', { name: 'Email' }), 'test@example.com');
+  userEvent.click(continueButton);
+
+  expect(
+    await screen.findByRole('heading', { name: 'Are you a politically exposed person?', level: 2 }),
+  ).toBeInTheDocument();
+  userEvent.click(screen.getByRole('radio', { name: 'I am not a politically exposed person' }));
+  userEvent.click(continueButton);
+
+  expect(
+    await screen.findByRole('heading', { name: 'How do you want to invest?', level: 2 }),
+  ).toBeInTheDocument();
+};
+
 describe('SavingsFundOnboarding', () => {
   const server = setupServer();
   let history: History;
@@ -215,7 +259,7 @@ describe('SavingsFundOnboarding', () => {
     });
   });
 
-  it('skips profile and personal terms steps for company-only intent and omits profile items from the payload', async () => {
+  it('skips profile and personal terms steps for company-only intent, omits profile items, and routes to company onboarding', async () => {
     server.use(onboardingStatusHandler.notStarted());
 
     let capturedAnswerTypes: string[] | null = null;
@@ -227,63 +271,22 @@ describe('SavingsFundOnboarding', () => {
       }),
     );
 
-    const user = userEvent;
-    const continueButton = await screen.findByRole('button', { name: 'Continue' });
-
-    // Step 1: Citizenship
-    const select = (await screen.findByRole('listbox', {
-      name: 'Choose all countries of citizenship',
-    })) as HTMLSelectElement;
-    selectCountryOptionInTomSelect(select, 'FI');
-    await waitFor(() => {
-      expect(screen.getByRole('option', { name: 'Finland', selected: true })).toBeInTheDocument();
-    });
-    user.click(continueButton);
-
-    // Step 2: Residency
-    expect(
-      await screen.findByRole('heading', { name: 'Your permanent residence', level: 2 }),
-    ).toBeInTheDocument();
-    const countrySelect = screen.getByRole('combobox', { name: 'Country' });
-    user.selectOptions(countrySelect, 'FI');
-    const cityInput = await screen.findByRole('textbox', { name: 'City' }, { timeout: 3_000 });
-    user.type(cityInput, 'Helsinki');
-    user.type(screen.getByRole('textbox', { name: 'Postal code' }), '00100');
-    user.type(
-      screen.getByRole('textbox', { name: 'Address (street, house, apartment)' }),
-      'Mannerheimintie 1',
-    );
-    user.click(continueButton);
-
-    // Step 3: Contact Details
-    expect(
-      await screen.findByRole('heading', { name: 'Your contact details', level: 2 }),
-    ).toBeInTheDocument();
-    user.type(screen.getByRole('textbox', { name: 'Email' }), 'test@example.com');
-    user.click(continueButton);
-
-    // Step 4: PEP Declaration
-    expect(
-      await screen.findByRole('heading', {
-        name: 'Are you a politically exposed person?',
-        level: 2,
-      }),
-    ).toBeInTheDocument();
-    user.click(screen.getByRole('radio', { name: 'I am not a politically exposed person' }));
-    user.click(continueButton);
+    await fillKycIdentitySteps();
 
     // Step 5: Investment Intent - choose company-only
-    expect(
-      await screen.findByRole('heading', { name: 'How do you want to invest?', level: 2 }),
-    ).toBeInTheDocument();
-    user.click(screen.getByRole('radio', { name: 'Only through my company' }));
+    userEvent.click(screen.getByRole('radio', { name: 'Only through my company' }));
 
-    // Intent is now the final step (profile + personal terms are skipped)
+    // Intent becomes the final step: profile + personal terms steps are skipped
     expect(await screen.findByText('5/5')).toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', { name: 'What is your investment goal?' }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', { name: 'Review fund documents' }),
+    ).not.toBeInTheDocument();
 
-    user.click(continueButton);
+    userEvent.click(screen.getByRole('button', { name: 'Continue' }));
 
-    // Submitting from the intent step means profile/terms steps were never shown
     await waitFor(() => {
       expect(capturedAnswerTypes).not.toBeNull();
     });
@@ -294,12 +297,53 @@ describe('SavingsFundOnboarding', () => {
       expect.arrayContaining(['CITIZENSHIP', 'ADDRESS', 'EMAIL', 'PEP_SELF_DECLARATION']),
     );
 
-    expect(
-      screen.queryByRole('heading', { name: 'What is your investment goal?' }),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole('heading', { name: 'Review fund documents' }),
-    ).not.toBeInTheDocument();
+    // Company-only continues into the KYB flow, without the both-flow context
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/savings-fund/company/onboarding');
+    });
+    expect((history.location.state as { fromBothFlow?: boolean } | undefined)?.fromBothFlow).toBe(
+      false,
+    );
+  });
+
+  it('routes to company onboarding with both-flow context after a personal + company KYC submission', async () => {
+    server.use(onboardingStatusHandler.notStarted());
+
+    await fillKycIdentitySteps();
+
+    // Step 5: Investment Intent - choose both personal and company
+    userEvent.click(screen.getByRole('radio', { name: 'Both personally and through my company' }));
+    const continueButton = screen.getByRole('button', { name: 'Continue' });
+    userEvent.click(continueButton);
+
+    // Step 6: Investment Goals
+    userEvent.click(
+      await screen.findByRole('radio', { name: 'Long-term investment, including pension' }),
+    );
+    userEvent.click(continueButton);
+
+    // Step 7: Investable Assets
+    userEvent.click(await screen.findByRole('radio', { name: '€20,001–€40,000' }));
+    userEvent.click(continueButton);
+
+    // Step 8: Income Sources
+    userEvent.click(await screen.findByRole('checkbox', { name: 'Salary' }));
+    userEvent.click(continueButton);
+
+    // Step 9: Terms
+    userEvent.click(
+      await screen.findByLabelText(
+        'I confirm that I have reviewed the documents and understand that the investment may increase or decrease in value over time',
+      ),
+    );
+    userEvent.click(continueButton);
+
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/savings-fund/company/onboarding');
+    });
+    expect((history.location.state as { fromBothFlow?: boolean } | undefined)?.fromBothFlow).toBe(
+      true,
+    );
   });
 
   it('allows navigation back through steps', async () => {
