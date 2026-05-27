@@ -182,6 +182,11 @@ export const SavingsFundCompanyOnboarding = () => {
   const isTermsStep = activeSection === totalSections - 1;
 
   const showPreviousSection = () => {
+    if (activeSection === 0) {
+      // First step: leave the company flow instead of leaving Back dead.
+      history.push('/account');
+      return;
+    }
     setActiveSection((current) => Math.max(current - 1, 0));
     if (submitError) {
       setSubmitError(false);
