@@ -79,13 +79,16 @@ describe('SavingsFundCompanyOnboarding', () => {
     );
   });
 
-  it('leaves the flow to the account page when Back is clicked on the first step', () => {
-    const history = createMemoryHistory();
+  it('goes back to the previous page (the KYC flow) when Back is clicked on the first step', () => {
+    const history = createMemoryHistory({
+      initialEntries: ['/savings-fund/onboarding/uus', '/savings-fund/company/onboarding'],
+      initialIndex: 1,
+    });
     renderWrapped(<SavingsFundCompanyOnboarding />, history);
 
     userEvent.click(screen.getByRole('button', { name: /back/i }));
 
-    expect(history.location.pathname).toBe('/account');
+    expect(history.location.pathname).toBe('/savings-fund/onboarding/uus');
   });
 
   it('does not advance past step 2 when backend validation fails', async () => {
