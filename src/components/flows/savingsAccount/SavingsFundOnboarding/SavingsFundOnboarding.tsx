@@ -23,6 +23,19 @@ import { transformFormDataToOnboardingSurveryCommand } from '../utils';
 import { ErrorResponse } from '../../../common/apiModels';
 import { OnboardingWizardLayout } from './OnboardingWizardLayout';
 
+// Pre-launch preview (TKF #67). The investment-intent step and the company (KYB)
+// branching are reachable ONLY on this unlisted URL until the 15 June 2026 launch.
+// The public /savings-fund/onboarding route keeps the original personal-only flow.
+//
+// Going live on 2026-06-15 is a pure code change — the public URL stays the same,
+// we just stop hiding the new flow. No feature flag / config / env toggle:
+//   1. Make `companyOnboardingEnabled` always true (see below) — the public
+//      /savings-fund/onboarding then renders the intent flow.
+//   2. Delete the now-dead personal-only branch in buildSteps (the
+//      `if (!companyOnboardingEnabled)` early return) and this constant + its uses.
+//   3. Land the separate role-switcher "Lisan ettevõtte" PR.
+const COMPANY_ONBOARDING_PREVIEW_PATH = '/savings-fund/onboarding/uus';
+
 type OnboardingStep = {
   component: JSX.Element;
   fields: FieldPath<OnboardingFormData>[];
@@ -142,7 +155,8 @@ const buildSteps = (
   ];
 
   if (!companyOnboardingEnabled) {
-    // Public flow: original personal-only onboarding, no intent step.
+    // Current public flow: original personal-only onboarding, no intent step.
+    // Remove this branch at the 2026-06-15 go-live (see COMPANY_ONBOARDING_PREVIEW_PATH).
     return [...identitySteps, ...profileSteps];
   }
 
@@ -156,11 +170,10 @@ export const SavingsFundOnboarding: FC = () => {
 
   const history = useHistory();
 
-  // Pre-launch gate (TKF #67): the investment-intent + company onboarding flow
-  // is only exposed on this unlisted URL until the 15 June 2026 go-live. The
-  // public onboarding URL keeps the original personal-only flow. To go live,
-  // make this unconditionally true (and point the public URL at this flow).
-  const companyOnboardingEnabled = history.location.pathname === '/savings-fund/onboarding/uus';
+  // TODO(2026-06-15) go-live: replace with `const companyOnboardingEnabled = true;`
+  // (then remove COMPANY_ONBOARDING_PREVIEW_PATH and the dead branch in buildSteps).
+  // Until then the intent + company flow is reachable only on the unlisted preview URL.
+  const companyOnboardingEnabled = history.location.pathname === COMPANY_ONBOARDING_PREVIEW_PATH;
 
   const [activeSection, setActiveSection] = useState(0);
   const [submitError, setSubmitError] = useState<ErrorResponse | null>(null);
