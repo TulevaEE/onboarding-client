@@ -18,7 +18,9 @@ export const AccountChoiceStep: FC<AccountChoiceStepProps> = ({ companyCode, com
 
   const chooseRole = async (command: SwitchRoleCommand) => {
     await switchRole.mutateAsync(command);
-    history.push('/account');
+    // Land on the deposit view for the chosen account so the user can make
+    // their first deposit; SavingsFundPayment shows whose account it is.
+    history.push('/savings-fund/payment');
   };
 
   return (

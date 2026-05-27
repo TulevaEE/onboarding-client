@@ -255,7 +255,7 @@ describe('SavingsFundCompanyOnboarding', () => {
     expect(history.location.pathname).toBe('/savings-fund/company/onboarding');
   });
 
-  it('switches to the company account and navigates to /account when the company option is chosen', async () => {
+  it('switches to the company role and opens the deposit view when the company option is chosen', async () => {
     rolesBackend(server, [personalRole, companyRole]);
     const switchBackend = switchRoleBackend(server);
     const history = bothFlowHistory();
@@ -275,8 +275,10 @@ describe('SavingsFundCompanyOnboarding', () => {
     await waitFor(() => {
       expect(switchBackend.switchedRole).toEqual({ type: 'LEGAL_ENTITY', code: '12345678' });
     });
+    // Lands on the deposit view (not the generic account page) so the user
+    // can immediately deposit to the company account (TKF #67 F7).
     await waitFor(() => {
-      expect(history.location.pathname).toBe('/account');
+      expect(history.location.pathname).toBe('/savings-fund/payment');
     });
   });
 });
