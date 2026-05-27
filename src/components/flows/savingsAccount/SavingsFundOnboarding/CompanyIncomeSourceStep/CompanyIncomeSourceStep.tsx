@@ -78,23 +78,21 @@ export const CompanyIncomeSourceStep: FC<CompanyIncomeSourceStepProps> = ({ cont
                       checked={isChecked}
                       onChange={(e) => field.onChange({ ...field.value, [key]: e.target.checked })}
                     />
-                    <span>
-                      <FormattedMessage id={labelId} />
-                      {tooltipId && (
-                        // Stop the click from toggling the checkbox when opening the tooltip.
-                        // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
-                        <span
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                          }}
-                        >
-                          <InfoTooltip name={key}>
-                            <FormattedMessage id={tooltipId} />
-                          </InfoTooltip>
-                        </span>
-                      )}
-                    </span>
+                    <FormattedMessage id={labelId} />
+                    {tooltipId && (
+                      // Stop the click from toggling the checkbox when opening the tooltip.
+                      // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
+                      <span
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }}
+                      >
+                        <InfoTooltip name={key}>
+                          <FormattedMessage id={tooltipId} />
+                        </InfoTooltip>
+                      </span>
+                    )}
                   </div>
                 </label>
               );
