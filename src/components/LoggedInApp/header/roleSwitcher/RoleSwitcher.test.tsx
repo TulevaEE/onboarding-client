@@ -73,7 +73,8 @@ describe('RoleSwitcher', () => {
     userBackend(server, { role: personalRole });
 
     const history = createMemoryHistory();
-    renderWrapped(<RoleSwitcher userName="John Doe" />, history);
+    const onRoleSwitch = jest.fn();
+    renderWrapped(<RoleSwitcher userName="John Doe" onRoleSwitch={onRoleSwitch} />, history);
 
     userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
     userEvent.click(screen.getByRole('button', { name: /add a company/i }));
@@ -82,6 +83,9 @@ describe('RoleSwitcher', () => {
       expect(history.location.pathname).toBe('/savings-fund/company/onboarding');
     });
     expect(history.location.state).toBeUndefined();
+    // Adding a company must not fire the role-switch handler, which would
+    // redirect to /account and bounce the user off the onboarding page.
+    expect(onRoleSwitch).not.toHaveBeenCalled();
   });
 
   it('renders a dropdown button when there are multiple roles', async () => {

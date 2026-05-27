@@ -32,10 +32,11 @@ export const RoleSwitcher = ({ userName, onRoleSwitch }: Props) => {
 
   const handleAddCompany = () => {
     setOpen(false);
-    // No router state, so the company flow runs as direct onboarding (no
-    // account chooser) rather than the both-flow.
+    // Navigate into the company flow. We must NOT call onRoleSwitch here — that
+    // runs the post-role-switch handler which redirects to /account and would
+    // bounce the user straight back off this page. No router state, so the flow
+    // runs as direct onboarding (no account chooser) rather than the both-flow.
     history.push('/savings-fund/company/onboarding');
-    onRoleSwitch?.();
   };
 
   return (
