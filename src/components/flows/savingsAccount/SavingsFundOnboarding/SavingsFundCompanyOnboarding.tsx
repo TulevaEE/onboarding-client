@@ -183,8 +183,9 @@ export const SavingsFundCompanyOnboarding = () => {
 
   const showPreviousSection = () => {
     if (activeSection === 0) {
-      // First step: leave the company flow instead of leaving Back dead.
-      history.push('/account');
+      // First step: go back to wherever the user came from — the KYC flow when
+      // they were chained here as one continuous flow — instead of a dead Back.
+      history.goBack();
       return;
     }
     setActiveSection((current) => Math.max(current - 1, 0));
