@@ -1,7 +1,6 @@
 import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { createMemoryHistory } from 'history';
 import { setupServer } from 'msw/node';
 import { initializeConfiguration } from '../../../config/config';
 import { getAuthentication } from '../../../common/authenticationManager';
@@ -48,44 +47,14 @@ beforeEach(() => {
 });
 
 describe('RoleSwitcher', () => {
-  it('renders a dropdown toggle even when there is a single role', async () => {
+  it('renders user name as plain text when there is only one role', async () => {
     rolesBackend(server, [personalRole]);
     userBackend(server, { role: personalRole });
 
     renderRoleSwitcher();
 
-    expect(await screen.findByRole('button', { name: /John Doe/i })).toBeInTheDocument();
-  });
-
-  it('offers an "Add a company" option in the dropdown for a single-role user', async () => {
-    rolesBackend(server, [personalRole]);
-    userBackend(server, { role: personalRole });
-
-    renderRoleSwitcher();
-
-    userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
-
-    expect(screen.getByRole('button', { name: /add a company/i })).toBeInTheDocument();
-  });
-
-  it('navigates to company onboarding (without both-flow context) when "Add a company" is clicked', async () => {
-    rolesBackend(server, [personalRole]);
-    userBackend(server, { role: personalRole });
-
-    const history = createMemoryHistory();
-    const onRoleSwitch = jest.fn();
-    renderWrapped(<RoleSwitcher userName="John Doe" onRoleSwitch={onRoleSwitch} />, history);
-
-    userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
-    userEvent.click(screen.getByRole('button', { name: /add a company/i }));
-
-    await waitFor(() => {
-      expect(history.location.pathname).toBe('/savings-fund/company/onboarding');
-    });
-    expect(history.location.state).toBeUndefined();
-    // Adding a company must not fire the role-switch handler, which would
-    // redirect to /account and bounce the user off the onboarding page.
-    expect(onRoleSwitch).not.toHaveBeenCalled();
+    expect(await screen.findByText('John Doe')).toBeInTheDocument();
+    expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });
 
   it('renders a dropdown button when there are multiple roles', async () => {
