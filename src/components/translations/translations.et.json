@@ -1270,6 +1270,7 @@
   "savingsFund.payment.success.title": "Sissemakse on tehtud",
   "savingsFund.payment.success.description": "Sissemakse summa investeeritakse fondi järgneva tööpäeva lõpuks. Teavitame sind sellest meili teel.",
   "savingsFund.payment.investmentAccountReminder": "Kasutad investeerimiskontot? Kontrolli, et maksja konto oleks õige.",
+  "savingsFund.payment.accountOwner": "Sissemakse: {accountOwner}",
 
   "savingsFund.withdraw.pageTitle": "Väljamakse",
   "savingsFund.withdraw.title": "Väljamakse Täiendavast Kogumisfondist",
