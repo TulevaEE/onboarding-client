@@ -79,12 +79,13 @@ describe('SavingsFundCompanyOnboarding', () => {
     );
   });
 
-  it('stays on step 1 when Back is clicked on the first step', () => {
-    renderWrapped(<SavingsFundCompanyOnboarding />);
+  it('leaves the flow to the account page when Back is clicked on the first step', () => {
+    const history = createMemoryHistory();
+    renderWrapped(<SavingsFundCompanyOnboarding />, history);
 
     userEvent.click(screen.getByRole('button', { name: /back/i }));
 
-    expect(screen.getByText('1/7')).toBeInTheDocument();
+    expect(history.location.pathname).toBe('/account');
   });
 
   it('does not advance past step 2 when backend validation fails', async () => {
