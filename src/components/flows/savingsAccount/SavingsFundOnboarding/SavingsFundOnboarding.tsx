@@ -160,9 +160,7 @@ export const SavingsFundOnboarding: FC = () => {
   // is only exposed on this unlisted URL until the 15 June 2026 go-live. The
   // public onboarding URL keeps the original personal-only flow. To go live,
   // make this unconditionally true (and point the public URL at this flow).
-  const companyOnboardingEnabled = history.location.pathname.startsWith(
-    '/savings-fund/onboarding/uus',
-  );
+  const companyOnboardingEnabled = history.location.pathname === '/savings-fund/onboarding/uus';
 
   const [activeSection, setActiveSection] = useState(0);
   const [submitError, setSubmitError] = useState<ErrorResponse | null>(null);
