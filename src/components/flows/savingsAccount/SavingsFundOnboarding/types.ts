@@ -18,12 +18,18 @@ export interface SharedOnboardingFields {
   termsAccepted: boolean;
 }
 
+export type InvestmentIntent = 'SELF' | 'BOTH' | 'ONLY_VIA_COMPANY';
+
 export interface OnboardingFormData extends SharedOnboardingFields {
   citizenship: ISO2CountryCode[];
   address: Address;
   email: string;
   phoneNumber?: string;
   pepSelfDeclaration: PepSelfDeclaration | null;
+  // Frontend-only: drives which steps are shown and what the KYC payload
+  // contains. Never sent to the backend — "company-only" is inferred from
+  // the absence of profile answers (see TKF #67).
+  investmentIntent: InvestmentIntent | null;
   sourceOfIncome: SourceOfIncomeSurveyItem['value'];
 }
 

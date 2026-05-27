@@ -54,14 +54,20 @@ export const transformFormDataToOnboardingSurveryCommand = (
     });
   }
 
-  if (data.investmentGoals) {
+  // Company-only applicants never answer the personal profile questions, so
+  // those items are deliberately omitted from the KYC payload. Gating on the
+  // intent (not just on emptiness) keeps the payload correct even if the user
+  // filled in profile answers earlier and then switched to company-only.
+  const isCompanyOnly = data.investmentIntent === 'ONLY_VIA_COMPANY';
+
+  if (!isCompanyOnly && data.investmentGoals) {
     answers.push({
       type: 'INVESTMENT_GOALS',
       value: data.investmentGoals,
     });
   }
 
-  if (data.investableAssets) {
+  if (!isCompanyOnly && data.investableAssets) {
     answers.push({
       type: 'INVESTABLE_ASSETS',
       value: {
@@ -71,7 +77,7 @@ export const transformFormDataToOnboardingSurveryCommand = (
     });
   }
 
-  if (data.sourceOfIncome.length > 0) {
+  if (!isCompanyOnly && data.sourceOfIncome.length > 0) {
     answers.push({
       type: 'SOURCE_OF_INCOME',
       value: data.sourceOfIncome,

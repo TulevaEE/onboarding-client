@@ -8,11 +8,12 @@ import { CitizenshipStep } from './CitizenshipStep';
 import { ResidencyStep } from './ResidencyStep';
 import { ContactDetailsStep } from './ContactDetailsStep';
 import { PepStep } from './PepStep';
+import { InvestmentIntentStep } from './InvestmentIntentStep';
 import { InvestmentGoalStep } from './InvestmentGoalStep';
 import { InvestableAssetsStep } from './InvestableAssetsStep';
 import { IncomeSourcesStep } from './IncomeSourcesStep';
 import { TermsStep } from './TermsStep';
-import { OnboardingFormData } from './types';
+import { OnboardingFormData, InvestmentIntent } from './types';
 import {
   useMe,
   useSavingsFundOnboardingStatus,
@@ -27,107 +28,122 @@ type OnboardingStep = {
   fields: FieldPath<OnboardingFormData>[];
 };
 
-const buildSteps = (control: Control<OnboardingFormData>): OnboardingStep[] => [
-  {
-    component: <CitizenshipStep key="citizenship" control={control} />,
-    fields: ['citizenship'],
-  },
-  {
-    component: <ResidencyStep key="residency" control={control} />,
-    fields: ['address.countryCode', 'address.street', 'address.city', 'address.postalCode'],
-  },
-  {
-    component: <ContactDetailsStep key="contact-details" control={control} />,
-    fields: ['email'],
-  },
-  {
-    component: <PepStep key="pep" control={control} />,
-    fields: ['pepSelfDeclaration'],
-  },
-  {
-    component: (
-      <InvestmentGoalStep
-        key="investment-goal"
-        control={control}
-        titleId="flows.savingsFundOnboarding.investmentGoalStep.title"
-        options={[
-          {
-            value: 'LONG_TERM',
-            labelId: 'flows.savingsFundOnboarding.investmentGoalStep.longTerm',
-          },
-          {
-            value: 'SPECIFIC_GOAL',
-            labelId: 'flows.savingsFundOnboarding.investmentGoalStep.specificGoal',
-          },
-          {
-            value: 'CHILD',
-            labelId: 'flows.savingsFundOnboarding.investmentGoalStep.childFuture',
-          },
-          {
-            value: 'TRADING',
-            labelId: 'flows.savingsFundOnboarding.investmentGoalStep.activeTrading',
-          },
-        ]}
-      />
-    ),
-    fields: ['investmentGoals'],
-  },
-  {
-    component: (
-      <InvestableAssetsStep
-        key="investable-assets"
-        control={control}
-        titleId="flows.savingsFundOnboarding.investableAssetsStep.title"
-        options={[
-          {
-            value: 'LESS_THAN_20K',
-            labelId: 'flows.savingsFundOnboarding.investableAssetsStep.upTo20k',
-          },
-          {
-            value: 'RANGE_20K_40K',
-            labelId: 'flows.savingsFundOnboarding.investableAssetsStep.from20kTo40k',
-          },
-          {
-            value: 'RANGE_40K_80K',
-            labelId: 'flows.savingsFundOnboarding.investableAssetsStep.from40kTo80k',
-          },
-          {
-            value: 'MORE_THAN_80K',
-            labelId: 'flows.savingsFundOnboarding.investableAssetsStep.over80k',
-          },
-        ]}
-      />
-    ),
-    fields: ['investableAssets'],
-  },
-  {
-    component: <IncomeSourcesStep key="income-sources" control={control} />,
-    fields: ['sourceOfIncome'],
-  },
-  {
-    component: (
-      <TermsStep
-        key="terms"
-        control={control}
-        documents={[
-          {
-            href: 'https://tuleva.ee/wp-content/uploads/2026/02/Tuleva.eurofond.tingimused.02.02.2026.pdf',
-            labelId: 'flows.savingsFundOnboarding.termsStep.linkText.terms',
-          },
-          {
-            href: 'https://tuleva.ee/wp-content/uploads/2026/02/TKF100-Prospekt-kehtib-alates-27.02.2026.pdf',
-            labelId: 'flows.savingsFundOnboarding.termsStep.linkText.prospectus',
-          },
-          {
-            href: 'https://tuleva.ee/wp-content/uploads/2026/02/Pohiteave-TKF100-kehtib-alates-27.02.2026.pdf',
-            labelId: 'flows.savingsFundOnboarding.termsStep.linkText.keyInfo',
-          },
-        ]}
-      />
-    ),
-    fields: ['termsAccepted'],
-  },
-];
+const buildSteps = (
+  control: Control<OnboardingFormData>,
+  investmentIntent: InvestmentIntent | null,
+): OnboardingStep[] => {
+  const identitySteps: OnboardingStep[] = [
+    {
+      component: <CitizenshipStep key="citizenship" control={control} />,
+      fields: ['citizenship'],
+    },
+    {
+      component: <ResidencyStep key="residency" control={control} />,
+      fields: ['address.countryCode', 'address.street', 'address.city', 'address.postalCode'],
+    },
+    {
+      component: <ContactDetailsStep key="contact-details" control={control} />,
+      fields: ['email'],
+    },
+    {
+      component: <PepStep key="pep" control={control} />,
+      fields: ['pepSelfDeclaration'],
+    },
+    {
+      component: <InvestmentIntentStep key="investment-intent" control={control} />,
+      fields: ['investmentIntent'],
+    },
+  ];
+  const profileSteps: OnboardingStep[] = [
+    {
+      component: (
+        <InvestmentGoalStep
+          key="investment-goal"
+          control={control}
+          titleId="flows.savingsFundOnboarding.investmentGoalStep.title"
+          options={[
+            {
+              value: 'LONG_TERM',
+              labelId: 'flows.savingsFundOnboarding.investmentGoalStep.longTerm',
+            },
+            {
+              value: 'SPECIFIC_GOAL',
+              labelId: 'flows.savingsFundOnboarding.investmentGoalStep.specificGoal',
+            },
+            {
+              value: 'CHILD',
+              labelId: 'flows.savingsFundOnboarding.investmentGoalStep.childFuture',
+            },
+            {
+              value: 'TRADING',
+              labelId: 'flows.savingsFundOnboarding.investmentGoalStep.activeTrading',
+            },
+          ]}
+        />
+      ),
+      fields: ['investmentGoals'],
+    },
+    {
+      component: (
+        <InvestableAssetsStep
+          key="investable-assets"
+          control={control}
+          titleId="flows.savingsFundOnboarding.investableAssetsStep.title"
+          options={[
+            {
+              value: 'LESS_THAN_20K',
+              labelId: 'flows.savingsFundOnboarding.investableAssetsStep.upTo20k',
+            },
+            {
+              value: 'RANGE_20K_40K',
+              labelId: 'flows.savingsFundOnboarding.investableAssetsStep.from20kTo40k',
+            },
+            {
+              value: 'RANGE_40K_80K',
+              labelId: 'flows.savingsFundOnboarding.investableAssetsStep.from40kTo80k',
+            },
+            {
+              value: 'MORE_THAN_80K',
+              labelId: 'flows.savingsFundOnboarding.investableAssetsStep.over80k',
+            },
+          ]}
+        />
+      ),
+      fields: ['investableAssets'],
+    },
+    {
+      component: <IncomeSourcesStep key="income-sources" control={control} />,
+      fields: ['sourceOfIncome'],
+    },
+    {
+      component: (
+        <TermsStep
+          key="terms"
+          control={control}
+          documents={[
+            {
+              href: 'https://tuleva.ee/wp-content/uploads/2026/02/Tuleva.eurofond.tingimused.02.02.2026.pdf',
+              labelId: 'flows.savingsFundOnboarding.termsStep.linkText.terms',
+            },
+            {
+              href: 'https://tuleva.ee/wp-content/uploads/2026/02/TKF100-Prospekt-kehtib-alates-27.02.2026.pdf',
+              labelId: 'flows.savingsFundOnboarding.termsStep.linkText.prospectus',
+            },
+            {
+              href: 'https://tuleva.ee/wp-content/uploads/2026/02/Pohiteave-TKF100-kehtib-alates-27.02.2026.pdf',
+              labelId: 'flows.savingsFundOnboarding.termsStep.linkText.keyInfo',
+            },
+          ]}
+        />
+      ),
+      fields: ['termsAccepted'],
+    },
+  ];
+
+  return investmentIntent === 'ONLY_VIA_COMPANY'
+    ? identitySteps
+    : [...identitySteps, ...profileSteps];
+};
 
 export const SavingsFundOnboarding: FC = () => {
   usePageTitle('pageTitle.savingsFundOnboarding');
@@ -161,6 +177,7 @@ export const SavingsFundOnboarding: FC = () => {
       email: '',
       phoneNumber: '',
       pepSelfDeclaration: null,
+      investmentIntent: null,
       investmentGoals: null,
       investableAssets: null,
       sourceOfIncome: [],
@@ -170,6 +187,7 @@ export const SavingsFundOnboarding: FC = () => {
 
   const citizenship = watch('citizenship');
   const residencyCountry = watch('address.countryCode');
+  const investmentIntent = watch('investmentIntent');
 
   const submitForm = handleSubmit(async (data) => {
     await submitSurvey(transformFormDataToOnboardingSurveryCommand(data));
@@ -202,7 +220,7 @@ export const SavingsFundOnboarding: FC = () => {
     }
   }, [user, setValue]);
 
-  const steps = buildSteps(control);
+  const steps = buildSteps(control, investmentIntent);
 
   const totalSections = steps.length;
   const currentSection = activeSection + 1;

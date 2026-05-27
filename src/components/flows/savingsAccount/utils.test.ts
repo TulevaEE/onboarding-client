@@ -1,6 +1,25 @@
-import { transformCompanyFormDataToSurveyCommand } from './utils';
-import { CompanyOnboardingFormData } from './SavingsFundOnboarding/types';
+import {
+  transformCompanyFormDataToSurveyCommand,
+  transformFormDataToOnboardingSurveryCommand,
+} from './utils';
+import { CompanyOnboardingFormData, OnboardingFormData } from './SavingsFundOnboarding/types';
 import { mockValidatedCompany } from '../../../test/backend-responses';
+
+const buildOnboardingFormData = (
+  overrides: Partial<OnboardingFormData> = {},
+): OnboardingFormData => ({
+  citizenship: ['EE'],
+  address: { street: 'Foo 1', city: 'Tallinn', postalCode: '10115', countryCode: 'EE' },
+  email: 'test@example.com',
+  phoneNumber: '+37255555555',
+  pepSelfDeclaration: 'IS_NOT_PEP',
+  investmentIntent: 'SELF',
+  investmentGoals: { type: 'OPTION', value: 'LONG_TERM' },
+  investableAssets: 'LESS_THAN_20K',
+  sourceOfIncome: [{ type: 'OPTION', value: 'SALARY' }],
+  termsAccepted: true,
+  ...overrides,
+});
 
 const buildCompanyFormData = (
   overrides: Partial<CompanyOnboardingFormData> = {},
@@ -106,5 +125,39 @@ describe('transformCompanyFormDataToSurveyCommand', () => {
     const types = result.answers.map((a) => a.type);
     expect(types).not.toContain('INVESTMENT_GOALS');
     expect(types).not.toContain('INVESTABLE_ASSETS');
+  });
+});
+
+describe('transformFormDataToOnboardingSurveryCommand', () => {
+  it('includes the personal profile items for a personal (SELF) intent', () => {
+    const result = transformFormDataToOnboardingSurveryCommand(
+      buildOnboardingFormData({ investmentIntent: 'SELF' }),
+    );
+
+    const types = result.answers.map((a) => a.type);
+    expect(types).toEqual(
+      expect.arrayContaining(['INVESTMENT_GOALS', 'INVESTABLE_ASSETS', 'SOURCE_OF_INCOME']),
+    );
+  });
+
+  it('omits the personal profile items for a company-only intent even if they were filled earlier', () => {
+    const result = transformFormDataToOnboardingSurveryCommand(
+      buildOnboardingFormData({
+        investmentIntent: 'ONLY_VIA_COMPANY',
+        // simulate stale answers from a previous SELF/BOTH selection
+        investmentGoals: { type: 'OPTION', value: 'LONG_TERM' },
+        investableAssets: 'LESS_THAN_20K',
+        sourceOfIncome: [{ type: 'OPTION', value: 'SALARY' }],
+      }),
+    );
+
+    const types = result.answers.map((a) => a.type);
+    expect(types).not.toContain('INVESTMENT_GOALS');
+    expect(types).not.toContain('INVESTABLE_ASSETS');
+    expect(types).not.toContain('SOURCE_OF_INCOME');
+    // identity items are still present
+    expect(types).toEqual(
+      expect.arrayContaining(['CITIZENSHIP', 'ADDRESS', 'EMAIL', 'PEP_SELF_DECLARATION']),
+    );
   });
 });
