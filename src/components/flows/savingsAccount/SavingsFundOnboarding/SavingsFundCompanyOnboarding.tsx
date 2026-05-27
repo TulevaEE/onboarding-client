@@ -33,7 +33,7 @@ export const SavingsFundCompanyOnboarding = () => {
     }
   }, [onboardingStatus]);
 
-  const { control, trigger, handleSubmit } = useForm<CompanyOnboardingFormData>({
+  const { control, trigger, handleSubmit, watch } = useForm<CompanyOnboardingFormData>({
     mode: 'onChange',
     defaultValues: {
       registryLookup: undefined,
@@ -44,8 +44,11 @@ export const SavingsFundCompanyOnboarding = () => {
         NOT_SANCTIONED_NOT_PROFITING_FROM_SANCTIONED_COUNTRIES: false,
         NOT_IN_CRYPTO: false,
       },
+      termsAccepted: false,
     },
   });
+
+  const termsAccepted = watch('termsAccepted');
 
   const submitForm = handleSubmit(async (data) => {
     await submitSurvey({
@@ -132,6 +135,7 @@ export const SavingsFundCompanyOnboarding = () => {
         <TermsStep
           key="terms"
           control={control}
+          confirmTextId="flows.savingsFundOnboarding.termsStep.confirmTextCompany"
           documents={[
             {
               href: 'https://tuleva.ee/wp-content/uploads/2026/02/Tuleva.eurofond.tingimused.02.02.2026.pdf',
@@ -154,6 +158,7 @@ export const SavingsFundCompanyOnboarding = () => {
 
   const totalSections = steps.length;
   const currentSection = activeSection + 1;
+  const isTermsStep = activeSection === totalSections - 1;
 
   const showPreviousSection = () => {
     setActiveSection((current) => Math.max(current - 1, 0));
@@ -188,6 +193,7 @@ export const SavingsFundCompanyOnboarding = () => {
         onBack={showPreviousSection}
         onNext={showNextSection}
         submitting={submittingSurvey}
+        nextDisabled={isTermsStep && !termsAccepted}
       >
         {steps[activeSection].component}
 

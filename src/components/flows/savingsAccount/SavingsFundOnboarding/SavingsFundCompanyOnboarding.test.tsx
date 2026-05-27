@@ -196,6 +196,28 @@ describe('SavingsFundCompanyOnboarding', () => {
       expect(continueButton()).toBeDisabled();
     });
   });
+
+  it('shows the on-behalf-of-company confirmation text on the terms step', async () => {
+    await navigateToStep2();
+    await advanceToTerms();
+
+    expect(
+      screen.getByText(/I confirm on behalf of the company that I have reviewed the documents/i),
+    ).toBeInTheDocument();
+  });
+
+  it('keeps the submit button disabled until the company terms are accepted', async () => {
+    await navigateToStep2();
+    await advanceToTerms();
+
+    expect(continueButton()).toBeDisabled();
+
+    userEvent.click(screen.getByRole('checkbox'));
+
+    await waitFor(() => {
+      expect(continueButton()).toBeEnabled();
+    });
+  });
 });
 
 const continueButton = () => screen.getByRole('button', { name: /continue/i });
@@ -216,8 +238,8 @@ const navigateToStep2 = async () => {
   await advanceToStep(2);
 };
 
-// Continues from step 2 through step 7, ending with the terms checkbox checked.
-const completeStepsThroughTerms = async () => {
+// Advances from step 2 through to the terms step (7/7) without accepting the terms.
+const advanceToTerms = async () => {
   // Step 2: Requirements Check — wait for validation data before continuing
   expect(await screen.findByText('Telliskivi 60/1, 10412 Tallinn')).toBeInTheDocument();
   await advanceToStep(3);
@@ -240,7 +262,11 @@ const completeStepsThroughTerms = async () => {
   );
   userEvent.click(screen.getByRole('checkbox', { name: /not involved in cryptocurrency/i }));
   await advanceToStep(7);
+};
 
+// Continues from step 2 through step 7, ending with the terms checkbox checked.
+const completeStepsThroughTerms = async () => {
+  await advanceToTerms();
   // Step 7: Terms
   userEvent.click(screen.getByRole('checkbox'));
 };

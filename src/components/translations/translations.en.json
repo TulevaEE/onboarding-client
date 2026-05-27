@@ -1349,6 +1349,7 @@
   "flows.savingsFundOnboarding.termsStep.linkText.keyInfo": "Key information",
   "flows.savingsFundOnboarding.termsStep.confirmText": "I confirm that I have reviewed the documents and understand that the investment may increase or decrease in value over time",
   "flows.savingsFundOnboarding.termsStep.error": "You must review the documents to continue.",
+  "flows.savingsFundOnboarding.termsStep.confirmTextCompany": "I confirm on behalf of the company that I have reviewed the documents and understand that the investment may increase or decrease in value over time",
   "flows.savingsFundOnboarding.investmentIntentStep.title": "How do you want to invest?",
   "flows.savingsFundOnboarding.investmentIntentStep.description": "This determines which questions we ask next.",
   "flows.savingsFundOnboarding.investmentIntentStep.self": "Only personally",
