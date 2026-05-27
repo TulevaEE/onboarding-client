@@ -3,11 +3,27 @@ import userEvent from '@testing-library/user-event';
 import { createMemoryHistory } from 'history';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { businessRegistryBackend, companyValidationBackend } from '../../../../test/backend';
+import {
+  businessRegistryBackend,
+  companyValidationBackend,
+  rolesBackend,
+  switchRoleBackend,
+} from '../../../../test/backend';
 import { mockValidatedCompany } from '../../../../test/backend-responses';
 import { initializeConfiguration } from '../../../config/config';
 import { renderWrapped } from '../../../../test/utils';
+import { Role } from '../../../common/apiModels';
 import { SavingsFundCompanyOnboarding } from './SavingsFundCompanyOnboarding';
+
+const personalRole: Role = { type: 'PERSON', code: '39001011234', name: 'John Doe' };
+const companyRole: Role = { type: 'LEGAL_ENTITY', code: '12345678', name: 'Acme Corp' };
+
+const bothFlowHistory = () =>
+  createMemoryHistory({
+    initialEntries: [
+      { pathname: '/savings-fund/company/onboarding', state: { fromBothFlow: true } },
+    ],
+  });
 
 const server = setupServer();
 
@@ -216,6 +232,51 @@ describe('SavingsFundCompanyOnboarding', () => {
 
     await waitFor(() => {
       expect(continueButton()).toBeEnabled();
+    });
+  });
+
+  it('shows the account chooser after KYB submission when arriving via the both-flow', async () => {
+    rolesBackend(server, [personalRole, companyRole]);
+    const history = bothFlowHistory();
+    renderWrapped(<SavingsFundCompanyOnboarding />, history);
+    await selectCompany();
+    await advanceToStep(2);
+    await completeStepsThroughTerms();
+
+    server.use(
+      rest.post('http://localhost/v1/kyb/surveys', (_req, res, ctx) => res(ctx.status(200))),
+    );
+
+    userEvent.click(continueButton());
+
+    expect(await screen.findByRole('heading', { name: /All set/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Acme Corp account/i })).toBeInTheDocument();
+    // Choosing is required — no automatic redirect to the pending page
+    expect(history.location.pathname).toBe('/savings-fund/company/onboarding');
+  });
+
+  it('switches to the company account and navigates to /account when the company option is chosen', async () => {
+    rolesBackend(server, [personalRole, companyRole]);
+    const switchBackend = switchRoleBackend(server);
+    const history = bothFlowHistory();
+    renderWrapped(<SavingsFundCompanyOnboarding />, history);
+    await selectCompany();
+    await advanceToStep(2);
+    await completeStepsThroughTerms();
+
+    server.use(
+      rest.post('http://localhost/v1/kyb/surveys', (_req, res, ctx) => res(ctx.status(200))),
+    );
+
+    userEvent.click(continueButton());
+
+    userEvent.click(await screen.findByRole('button', { name: /Acme Corp account/i }));
+
+    await waitFor(() => {
+      expect(switchBackend.switchedRole).toEqual({ type: 'LEGAL_ENTITY', code: '12345678' });
+    });
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/account');
     });
   });
 });

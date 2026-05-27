@@ -1358,6 +1358,10 @@
   "flows.savingsFundOnboarding.investmentIntentStep.child": "On behalf of a child",
   "flows.savingsFundOnboarding.investmentIntentStep.comingSoon": "Coming soon",
   "flows.savingsFundOnboarding.investmentIntentStep.required": "Select an option to continue.",
+  "flows.savingsFundOnboarding.accountChoiceStep.title": "All set!",
+  "flows.savingsFundOnboarding.accountChoiceStep.description": "You completed your personal verification and then added a company. Your personal account and the {company} account are both ready. Which one would you like to open?",
+  "flows.savingsFundOnboarding.accountChoiceStep.personalAccount": "My personal account",
+  "flows.savingsFundOnboarding.accountChoiceStep.companyAccount": "{company} account",
 
   "continents.EUROPE": "Europe",
   "continents.ASIA": "Asia",

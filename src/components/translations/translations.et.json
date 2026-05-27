@@ -1448,6 +1448,10 @@
   "flows.savingsFundOnboarding.investmentIntentStep.child": "Lapse nimel",
   "flows.savingsFundOnboarding.investmentIntentStep.comingSoon": "Tulevikus",
   "flows.savingsFundOnboarding.investmentIntentStep.required": "Jätkamiseks tee valik.",
+  "flows.savingsFundOnboarding.accountChoiceStep.title": "Kõik on valmis!",
+  "flows.savingsFundOnboarding.accountChoiceStep.description": "Tegid esmalt isikliku tuvastamise ja seejärel lisasid ettevõtte. Sinu isiklik konto ja {company} konto on mõlemad valmis. Kelle kontole soovid minna?",
+  "flows.savingsFundOnboarding.accountChoiceStep.personalAccount": "Minu isiklik konto",
+  "flows.savingsFundOnboarding.accountChoiceStep.companyAccount": "{company} konto",
 
   "continents.EUROPE": "Euroopa",
   "continents.ASIA": "Aasia",
