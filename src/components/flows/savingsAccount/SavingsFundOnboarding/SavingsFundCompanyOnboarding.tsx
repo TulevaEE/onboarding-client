@@ -32,7 +32,7 @@ export const SavingsFundCompanyOnboarding = () => {
   // direct entry (e.g. the role-switcher) fall back to direct company
   // onboarding without an account chooser.
   const locationState = history.location.state as { fromBothFlow?: boolean } | undefined;
-  const fromBothFlow = locationState?.fromBothFlow ?? false;
+  const fromBothFlow = locationState?.fromBothFlow === true;
 
   const { data: onboardingStatus } = useSavingsFundCompanyOnboardingStatus(submittedRegistryCode);
   const { mutateAsync: submitSurvey, isPending: submittingSurvey } =
